@@ -287,6 +287,9 @@ public class SelectValues extends BaseStep implements StepInterface
 				{
 					valueMeta.setConversionMask(change.getConversionMask());
 				}
+				
+				valueMeta.setDateFormatLenient(change.isDateFormatLenient());
+				
 				if (!Const.isEmpty(change.getEncoding()))
 				{
 				  valueMeta.setStringEncoding(change.getEncoding());
@@ -352,6 +355,12 @@ public class SelectValues extends BaseStep implements StepInterface
 			setOutputDone();
 			return false;
 		}
+		
+		Object[] rowCopy = null;
+		if (getStepMeta().isDoingErrorHandling()) {
+		  rowCopy = getInputRowMeta().cloneRow(rowData);
+		}
+		
 		if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "SelectValues.Log.GotRowFromPreviousStep")+getInputRowMeta().getString(rowData)); //$NON-NLS-1$
 
 		if (first)
@@ -366,25 +375,33 @@ public class SelectValues extends BaseStep implements StepInterface
 			meta.getMetadataFields(data.metadataRowMeta, getStepname());
 		}
 		
-		Object[] outputData = rowData;
-		
-        if (data.select)   outputData = selectValues(getInputRowMeta(), outputData);
-		if (data.deselect) outputData = removeValues(data.selectRowMeta, outputData);
-		if (data.metadata) outputData = metadataValues(data.deselectRowMeta, outputData);
-		
-		if (outputData==null) 
-		{
-			setOutputDone();  // signal end to receiver(s)
-			return false;
-		} 
-
-        // Send the row on its way
-		putRow(data.metadataRowMeta, outputData);
-        
-		if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "SelectValues.Log.WroteRowToNextStep")+data.metadataRowMeta.getString(outputData)); //$NON-NLS-1$
-
+		try {
+  		Object[] outputData = rowData;
+  		
+          if (data.select)   outputData = selectValues(getInputRowMeta(), outputData);
+          if (data.deselect) outputData = removeValues(data.selectRowMeta, outputData);
+          if (data.metadata) outputData = metadataValues(data.deselectRowMeta, outputData);
+  		
+          if (outputData==null) {
+  			setOutputDone();  // signal end to receiver(s)
+  			return false;
+          } 
+  
+          // Send the row on its way
+          //
+          putRow(data.metadataRowMeta, outputData);
+          if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "SelectValues.Log.WroteRowToNextStep")+data.metadataRowMeta.getString(outputData)); //$NON-NLS-1$
+            
+		} catch(KettleException e) {
+		  if (getStepMeta().isDoingErrorHandling()) {
+		    putError(getInputRowMeta(), rowCopy, 1, e.getMessage(), null, "SELECT001");
+		  } else {
+		    throw e;
+		  }
+		}
+	
         if (checkFeedback(getLinesRead())) logBasic(BaseMessages.getString(PKG, "SelectValues.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
-			
+
 		return true;
 	}
 	

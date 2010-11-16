@@ -718,7 +718,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
 				case JOB_HOP_ICON:
 					JobHopMeta hop = (JobHopMeta) areaOwner.getOwner();
 					if (hop.getFromEntry().evaluates()) {
-						if (hop.isUnconditional()) {
+					    if (hop.isUnconditional()) {
 							hop.setUnconditional(false);
 							hop.setEvaluation(true);
 						} else {
@@ -728,6 +728,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
 								hop.setUnconditional(true);
 							}
 						}
+						spoon.setShellText();
 						redraw();
 					}
 					break;
@@ -741,6 +742,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
                 hop.setEnabled(!hop.isEnabled());
                 JobHopMeta after = (JobHopMeta) hop.clone();
                 spoon.addUndoChange(jobMeta, new JobHopMeta[] { before }, new JobHopMeta[] { after }, new int[] { jobMeta.indexOfJobHop(hop) });
+                spoon.setShellText();
                 redraw();
               } else {
 				// No area-owner means: background:
@@ -2271,8 +2273,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
       
       // Try to see if this transformation is already loaded in another tab...
       //
-      String tabName = spoon.delegates.tabs.makeTabName(launchTransMeta, true);
-      TabMapEntry tabEntry = spoon.delegates.tabs.findTabMapEntry(tabName, ObjectType.TRANSFORMATION_GRAPH);
+      TabMapEntry tabEntry = spoon.delegates.tabs.findTabForTransformation(launchTransMeta);
       if (tabEntry != null) {
         // Switch to this one!
         //

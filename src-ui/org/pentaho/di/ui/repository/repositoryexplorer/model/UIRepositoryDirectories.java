@@ -20,6 +20,8 @@ import org.pentaho.ui.xul.util.AbstractModelNode;
 
 public class UIRepositoryDirectories extends AbstractModelNode<UIRepositoryObject>{
 
+  private static final long serialVersionUID = -4080424591454426385L;
+
   public UIRepositoryDirectories(){
   }
   

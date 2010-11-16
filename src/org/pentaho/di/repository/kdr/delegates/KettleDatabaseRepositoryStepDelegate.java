@@ -213,9 +213,9 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
     	meta.setErrorDescriptionsValuename(repository.getStepAttributeString(stepMeta.getObjectId(), "step_error_handling_descriptions_valuename") );
     	meta.setErrorFieldsValuename( repository.getStepAttributeString(stepMeta.getObjectId(), "step_error_handling_fields_valuename") );
     	meta.setErrorCodesValuename( repository.getStepAttributeString(stepMeta.getObjectId(), "step_error_handling_codes_valuename") );
-    	meta.setMaxErrors( repository.getStepAttributeInteger(stepMeta.getObjectId(), "step_error_handling_max_errors") );
-    	meta.setMaxPercentErrors( (int) repository.getStepAttributeInteger(stepMeta.getObjectId(), "step_error_handling_max_pct_errors") );
-    	meta.setMinPercentRows( repository.getStepAttributeInteger(stepMeta.getObjectId(), "step_error_handling_min_pct_rows") );
+    	meta.setMaxErrors( repository.getStepAttributeString(stepMeta.getObjectId(), "step_error_handling_max_errors") );
+    	meta.setMaxPercentErrors(repository.getStepAttributeString(stepMeta.getObjectId(), "step_error_handling_max_pct_errors") );
+    	meta.setMinPercentRows( repository.getStepAttributeString(stepMeta.getObjectId(), "step_error_handling_min_pct_rows") );
     	
     	return meta;
     }

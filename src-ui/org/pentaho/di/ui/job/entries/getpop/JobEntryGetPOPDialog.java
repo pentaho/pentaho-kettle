@@ -2052,6 +2052,8 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 			wIncludeSubFolders.setSelection(jobEntry.isIncludeSubFolders());
 			wUseProxy.setSelection(jobEntry.isUseProxy());
 			if(jobEntry.getProxyUsername()!=null) wProxyUsername.setText(jobEntry.getProxyUsername());
+			if (jobEntry.getFirstIMAPMails() != null) wIMAPFirstmails.setText(jobEntry.getFirstIMAPMails()); 
+
 	    }
 
 	    private void cancel()

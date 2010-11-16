@@ -553,12 +553,16 @@ public class TextFileOutput extends BaseStep implements StepInterface
 
 	public String buildFilename(String filename, boolean ziparchive)
 	{
-		return TextFileOutputMeta.buildFilename(filename, meta.getExtension(), this, getCopy(), getPartitionID(), data.splitnr, ziparchive, meta);
+		return meta.buildFilename(filename, meta.getExtension(), this, getCopy(), getPartitionID(), data.splitnr, ziparchive, meta);
 	}
 	
 	public void openNewFile(String baseFilename) throws KettleException
 	{
-		data.writer=null;
+	  if(baseFilename == null) {
+	    throw new KettleFileException(BaseMessages.getString(PKG, "TextFileOutput.Exception.FileNameNotSet")); //$NON-NLS-1$
+	  }
+
+	  data.writer=null;
 		
 		ResultFile resultFile = null;
 		
@@ -828,33 +832,37 @@ public class TextFileOutput extends BaseStep implements StepInterface
 			throw new KettleException("Unexpected error while encoding binary fields", e);
 		}
 	}
-	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
-	{
-		meta=(TextFileOutputMeta)smi;
-		data=(TextFileOutputData)sdi;
-		
-		if(data.oneFileOpened) closeFile();
-		
-		try{
-			if(data.fos!=null) { 
-				data.fos.close();
-			}
-		}
-		catch (Exception e)
-		{
-			
-		}
 
-		for (OutputStream outputStream : data.fileWriterMap.values()) {
-			try {
-				outputStream.close();
-			} catch (IOException e) {
-				// Eat exception.
-			}
-		}
-		
+      public void dispose(StepMetaInterface smi, StepDataInterface sdi) {
+        meta = (TextFileOutputMeta) smi;
+        data = (TextFileOutputData) sdi;
+    
+        if (meta.isFileNameInField()) {
+          for (OutputStream outputStream : data.fileWriterMap.values()) {
+            try {
+              outputStream.close();
+            } catch (IOException e) {
+              logError("Unexpected error closing file", e);
+              setErrors(1);
+            }
+          }
+    
+        } else {
+          if (data.oneFileOpened)
+            closeFile();
+    
+          try {
+            if (data.fos != null) {
+              data.fos.close();
+            }
+          } catch (Exception e) {
+            logError("Unexpected error closing file", e);
+            setErrors(1);
+         }
+        }
+    
         super.dispose(smi, sdi);
-	}
+    }
 	
 	public boolean containsSeparatorOrEnclosure(byte[] source, byte[] separator, byte[] enclosure) {
 	  boolean result = false;

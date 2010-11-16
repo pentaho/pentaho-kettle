@@ -212,7 +212,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
      * step partitioning information of the NEXT step
      */
     private StepPartitioningMeta  nextStepPartitioningMeta;
-    
+
     /** The metadata information of the error output row.  There is only one per step so we cache it */
     private RowMetaInterface errorRowMeta = null;
     private RowMetaInterface previewRowMeta;
@@ -264,7 +264,16 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 	/** The lower buffer size boundary after which we manage the thread priority a little bit to prevent excessive locking */
 	private int lowerBufferBoundary;
 
-    /**
+	/** maximum number of errors to allow */
+	private Long maxErrors = -1L;
+	
+	/** maximum percent of errors to allow */
+	private int maxPercentErrors = -1;
+	
+	/** minumum number of rows to process before using maxPercentErrors in calculation */
+	private long minRowsForMaxErrorPercent = -1L;
+
+	/**
      * This is the base step that forms that basis for all steps. You can derive from this class to implement your own
      * steps.
      *
@@ -324,7 +333,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
         else
         {
             terminator_rows = null;
-        }
+        }    
 
         // debug="-"; //$NON-NLS-1$
 
@@ -540,6 +549,54 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
         catch(Exception e) {
         	logError("Unable to initialize remote input steps during step initialisation", e);
         	return false;
+        }
+        
+        //  Getting ans setting the error handling values
+        //    first, get the step meta
+        StepErrorMeta stepErrorMeta = stepMeta.getStepErrorMeta();
+        if (stepErrorMeta !=null) { 
+      
+           //  do an environment substitute for stepErrorMeta.getMaxErrors(), stepErrorMeta.getMinPercentRows()
+           //  and stepErrorMeta.getMaxPercentErrors()
+           //  Catch NumberFormatException since the user can enter anything in the dialog- the value
+           //  they enter must be a number or a variable set to a number
+           
+           //  We will use a boolean to indicate failure so that we can log all errors - not just the first one caught
+           boolean envSubFailed = false;
+           try {
+              maxErrors = (!Const.isEmpty(stepErrorMeta.getMaxErrors()) ? Long.valueOf(trans.environmentSubstitute(stepErrorMeta.getMaxErrors())) : -1L);
+           }
+           catch (NumberFormatException nfe) {
+              log.logError(BaseMessages.getString(PKG, "BaseStep.Log.NumberFormatException", 
+                           BaseMessages.getString(PKG, "BaseStep.Property.MaxErrors.Name"), 
+                           this.stepname, (stepErrorMeta.getMaxErrors()!=null?stepErrorMeta.getMaxErrors():"")));
+              envSubFailed = true;
+           }
+           
+           try {
+              minRowsForMaxErrorPercent = (!Const.isEmpty(stepErrorMeta.getMinPercentRows()) ? Long.valueOf(trans.environmentSubstitute(stepErrorMeta.getMinPercentRows())) : -1L);
+           }
+           catch (NumberFormatException nfe) {
+              log.logError(BaseMessages.getString(PKG, "BaseStep.Log.NumberFormatException", 
+                           BaseMessages.getString(PKG, "BaseStep.Property.MinRowsForErrorsPercentCalc.Name"), 
+                           this.stepname, (stepErrorMeta.getMinPercentRows()!=null?stepErrorMeta.getMinPercentRows():"")));
+              envSubFailed = true;
+           }
+           
+           try {
+              maxPercentErrors = (!Const.isEmpty(stepErrorMeta.getMaxPercentErrors()) ? Integer.valueOf(trans.environmentSubstitute(stepErrorMeta.getMaxPercentErrors())) : -1);
+           }
+           catch (NumberFormatException nfe) {
+              log.logError(BaseMessages.getString(PKG, "BaseStep.Log.NumberFormatException",
+                           BaseMessages.getString(PKG, "BaseStep.Property.MaxPercentErrors.Name"), 
+                           this.stepname, (stepErrorMeta.getMaxPercentErrors()!=null?stepErrorMeta.getMaxPercentErrors():"")));
+              envSubFailed = true;
+           }
+           
+           //  if we failed and environment subsutitue
+           if (envSubFailed) {
+              return false;
+           }
         }
         
         return true;
@@ -1317,21 +1374,22 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     {
         StepErrorMeta stepErrorMeta = stepMeta.getStepErrorMeta();
         if (stepErrorMeta==null) return; // nothing to verify.
-
+      
+        
         // Was this one error too much?
-        if (stepErrorMeta.getMaxErrors()>0 && getLinesRejected()>stepErrorMeta.getMaxErrors())
+        if (maxErrors>0 && getLinesRejected()>maxErrors)
         {
-            logError(BaseMessages.getString(PKG, "BaseStep.Log.TooManyRejectedRows", Long.toString(stepErrorMeta.getMaxErrors()), Long.toString(getLinesRejected())));
+            logError(BaseMessages.getString(PKG, "BaseStep.Log.TooManyRejectedRows", Long.toString(maxErrors), Long.toString(getLinesRejected())));
             setErrors(1L);
             stopAll();
         }
 
-        if ( stepErrorMeta.getMaxPercentErrors()>0 && getLinesRejected()>0 &&
-            ( stepErrorMeta.getMinPercentRows()<=0 || getLinesRead()>=stepErrorMeta.getMinPercentRows())
+        if ( maxPercentErrors>0 && getLinesRejected()>0 &&
+            ( minRowsForMaxErrorPercent<=0 || getLinesRead()>=minRowsForMaxErrorPercent)
             )
         {
             int pct = (int) (100 * getLinesRejected() / getLinesRead() );
-            if (pct>stepErrorMeta.getMaxPercentErrors())
+            if (pct>maxPercentErrors)
             {
                 logError(BaseMessages.getString(PKG, "BaseStep.Log.MaxPercentageRejectedReached", Integer.toString(pct) ,Long.toString(getLinesRejected()), Long.toString(getLinesRead())));
                 setErrors(1L);

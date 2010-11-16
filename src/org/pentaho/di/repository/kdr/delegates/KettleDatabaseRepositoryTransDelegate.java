@@ -1027,8 +1027,8 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
                 RowMetaAndData transRow =  getTransformation(new LongObjectId(id_transformation));
                 if (transRow!=null)
                 {
-                    String transName = transRow.getString(quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_NAME), "<name not found>");
-                    long id_directory = transRow.getInteger(quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_DIRECTORY), -1L);
+                    String transName = transRow.getString(KettleDatabaseRepository.FIELD_TRANSFORMATION_NAME, "<name not found>");
+                    long id_directory = transRow.getInteger(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_DIRECTORY, -1L);
                     RepositoryDirectoryInterface dir = repository.loadRepositoryDirectoryTree().findDirectory(new LongObjectId(id_directory));
                     
                     transList[i]=dir.getPathObjectCombination(transName);

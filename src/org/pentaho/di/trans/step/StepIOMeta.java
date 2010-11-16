@@ -17,7 +17,7 @@ import java.util.List;
 
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 
-public class StepIOMeta implements StepIOMetaInterface {
+public class StepIOMeta implements StepIOMetaInterface, Cloneable {
 	private boolean inputAcceptor;
 	private boolean outputProducer;
 	private boolean	inputOptional;
@@ -39,9 +39,17 @@ public class StepIOMeta implements StepIOMetaInterface {
 		this.outputProducer = outputProducer;
 		this.inputOptional = inputOptional;
 		this.sortedDataRequired = sortedDataRequired;
-		this.streams = new ArrayList<StreamInterface>();
+		this.streams = java.util.Collections.synchronizedList(new ArrayList<StreamInterface>());
 		this.inputDynamic = inputDynamic;
 		this.outputDynamic = outputDynamic;
+	}
+	
+	@Override
+	protected StepIOMeta clone() throws CloneNotSupportedException {
+  	  StepIOMeta ioMeta = (StepIOMeta) super.clone();
+  	  ioMeta.streams = new ArrayList<StreamInterface>();
+  	  ioMeta.streams.addAll(streams);
+  	  return ioMeta;
 	}
 	
 	/**
@@ -90,12 +98,13 @@ public class StepIOMeta implements StepIOMetaInterface {
 	 */
 	public List<StreamInterface> getInfoStreams() {
 		List<StreamInterface> list = new ArrayList<StreamInterface>();
-		for (StreamInterface stream : streams) {
-			if (stream.getStreamType().equals(StreamInterface.StreamType.INFO)) {
-				list.add(stream);
-			}
-		}
-		
+		synchronized(streams) {
+  		for (StreamInterface stream : streams) {
+  			if (stream.getStreamType().equals(StreamInterface.StreamType.INFO)) {
+  				list.add(stream);
+  			}
+  		}
+		}		
 		return list;
 	}
 
@@ -106,12 +115,13 @@ public class StepIOMeta implements StepIOMetaInterface {
 	 */
 	public List<StreamInterface> getTargetStreams() {
 		List<StreamInterface> list = new ArrayList<StreamInterface>();
-		for (StreamInterface stream : streams) {
-			if (stream.getStreamType().equals(StreamInterface.StreamType.TARGET)) {
-				list.add(stream);
-			}
-		}
-		
+		synchronized(streams) {
+  		for (StreamInterface stream : streams) {
+  			if (stream.getStreamType().equals(StreamInterface.StreamType.TARGET)) {
+  				list.add(stream);
+  			}
+  		}
+		}		
 		return list;
 	}
 	
@@ -161,12 +171,13 @@ public class StepIOMeta implements StepIOMetaInterface {
 		// First get the info steps...
 		//
 		List<StreamInterface> list = new ArrayList<StreamInterface>();
-		for (StreamInterface stream : streams) {
-			if (stream.getStreamType().equals(StreamInterface.StreamType.INFO)) {
-				list.add(stream);
-			}
-		}
-		
+		synchronized(streams) {
+  		for (StreamInterface stream : streams) {
+  			if (stream.getStreamType().equals(StreamInterface.StreamType.INFO)) {
+  				list.add(stream);
+  			}
+  		}
+		}		
 		for (int i=0;i<infoSteps.length;i++) {
 			if (i>=list.size()) {
 				throw new RuntimeException("We expect all possible info streams to be pre-populated!");

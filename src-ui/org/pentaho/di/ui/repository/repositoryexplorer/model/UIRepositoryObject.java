@@ -28,6 +28,8 @@ import org.pentaho.ui.xul.util.AbstractModelNode;
 
 public abstract class UIRepositoryObject extends AbstractModelNode<UIRepositoryObject> {
   
+  private static final long serialVersionUID = -456272921332284281L;
+
   // This object can be a Directory or a RepositoryContent
   protected RepositoryObjectInterface obj;
   protected Repository rep;
@@ -126,6 +128,10 @@ public abstract class UIRepositoryObject extends AbstractModelNode<UIRepositoryO
       return t1.compareToIgnoreCase(t2);
     }
     
+  }
+  
+  public String getPath() {
+    return getParentPath() + "/" + getName(); //$NON-NLS-1$
   }
 
   public RepositoryObjectComparator getComparator() {

@@ -356,7 +356,8 @@ public class JobDialog extends Dialog
 		fdJobFilename.top  = new FormAttachment(wJobname, margin);
 		fdJobFilename.right= new FormAttachment(100, 0);
 		wJobFilename.setLayoutData(fdJobFilename);
-		wJobFilename.setEnabled(false);
+		wJobFilename.setEditable(false);
+		wJobFilename.setBackground(GUIResource.getInstance().getColorLightGray());
 
 		// Job description:
 		Label wlJobdescription = new Label(wJobComp, SWT.RIGHT);
@@ -1489,7 +1490,7 @@ public class JobDialog extends Dialog
 						db.connect();
 						
 						RowMetaInterface fields = logTable.getLogRecord(LogStatus.START, null, null).getRowMeta();
-						String schemaTable = logTable.getDatabaseMeta().getSchemaTableCombination(logTable.getSchemaName(), logTable.getTableName());
+                  String schemaTable = logTable.getDatabaseMeta().getSchemaTableCombination(db.environmentSubstitute(logTable.getSchemaName()), db.environmentSubstitute(logTable.getTableName()));
 						String createTable = db.getDDL(schemaTable, fields);
 						
 						if (!Const.isEmpty(createTable))

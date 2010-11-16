@@ -25,6 +25,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.database.dialog.tags.ExtTextbox;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
+import org.pentaho.di.ui.core.dialog.ShowMessageDialog;
 import org.pentaho.ui.database.event.DataHandler;
 import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulTree;
@@ -93,7 +94,7 @@ public class DataOverrideHandler extends DataHandler {
       parent = ((Composite) obj).getShell();
     }
     if( parent == null){
-      throw new IllegalStateException("Could not get Shell reference from Xul Dialog Tree.");
+      throw new IllegalStateException("Could not get Shell reference from Xul Dialog Tree."); //$NON-NLS-1$
     }
     return parent;
   }
@@ -156,6 +157,14 @@ public class DataOverrideHandler extends DataHandler {
 
   public void setDatabases(java.util.List<DatabaseMeta> databases) {
     this.databases = databases;
+  }
+  
+  @Override
+  protected void showMessage(String message, boolean scroll){
+    Shell parent = getShell();
+    
+    ShowMessageDialog msgDialog = new ShowMessageDialog(parent, SWT.ICON_INFORMATION | SWT.OK, BaseMessages.getString(PKG, "DatabaseDialog.DatabaseConnectionTest.title"), message, scroll); //$NON-NLS-1$
+    msgDialog.open();
   }
 
 }

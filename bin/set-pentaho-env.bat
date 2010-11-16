@@ -51,7 +51,8 @@ if exist "%~dp0..\..\jre" goto gotJreTwoFolderUp
 if exist "%~dp0..\..\java" goto gotJavaTwoFolderUp
 if not "%JAVA_HOME%" == "" goto gotJdkHome
 if not "%JRE_HOME%" == "" goto gotJreHome
-goto tryValueFromCaller 
+if exist "%~1" goto gotValueFromCaller
+goto gotPath
 
 :gotPentahoJavaHome
 echo DEBUG: Using PENTAHO_JAVA_HOME
@@ -106,10 +107,6 @@ echo DEBUG: Using JRE_HOME
 set _PENTAHO_JAVA_HOME=%JRE_HOME%
 set _PENTAHO_JAVA=%_PENTAHO_JAVA_HOME%\bin\%__LAUNCHER%
 goto end
-
-:tryValueFromCaller
-if not !%1!==!! goto gotValueFromCaller
-goto :gotPath
 
 :gotValueFromCaller
 echo DEBUG: Using value (%~1) from calling script

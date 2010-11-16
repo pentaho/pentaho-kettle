@@ -1,6 +1,8 @@
 @echo off
 setlocal 
 
+cd /D %~dp0
+
 REM **************************************************
 REM ** Set console window properties                **
 REM **************************************************
@@ -56,13 +58,14 @@ IF %IS64BITJAVA% == 1 GOTO :USE64
 REM ===========================================
 REM Using 32bit Java, so include 32bit SWT Jar
 REM ===========================================
-set LIBSPATH=..\libswt\win32
+set LIBSPATH=libswt\win32
 GOTO :CONTINUE
 :USE64
 REM ===========================================
 REM Using 64bit java, so include 64bit SWT Jar
 REM ===========================================
-set LIBSPATH=..\libswt\win64
+set LIBSPATH=libswt\win64
+set SWTJAR=..\libswt\win64
 :CONTINUE
 popd
 
@@ -84,13 +87,13 @@ REM ** Change 512m to higher values in case you run out of memory   **
 REM ** or set the PENTAHO_DI_JAVA_OPTIONS environment variable      **
 REM ******************************************************************
 
-if "%PENTAHO_DI_JAVA_OPTIONS%"=="" set PENTAHO_DI_JAVA_OPTIONS=-Xmx512m
+if "%PENTAHO_DI_JAVA_OPTIONS%"=="" set PENTAHO_DI_JAVA_OPTIONS="-Xmx512m" "-XX:MaxPermSize=256m"
 
-set OPT="%PENTAHO_DI_JAVA_OPTIONS%" "-Djava.library.path=%LIBSPATH%" "-DKETTLE_HOME=%KETTLE_HOME%" "-DKETTLE_REPOSITORY=%KETTLE_REPOSITORY%" "-DKETTLE_USER=%KETTLE_USER%" "-DKETTLE_PASSWORD=%KETTLE_PASSWORD%" "-DKETTLE_PLUGIN_PACKAGES=%KETTLE_PLUGIN_PACKAGES%" "-DKETTLE_LOG_SIZE_LIMIT=%KETTLE_LOG_SIZE_LIMIT%"
+set OPT=%PENTAHO_DI_JAVA_OPTIONS% "-Djava.library.path=%LIBSPATH%" "-DKETTLE_HOME=%KETTLE_HOME%" "-DKETTLE_REPOSITORY=%KETTLE_REPOSITORY%" "-DKETTLE_USER=%KETTLE_USER%" "-DKETTLE_PASSWORD=%KETTLE_PASSWORD%" "-DKETTLE_PLUGIN_PACKAGES=%KETTLE_PLUGIN_PACKAGES%" "-DKETTLE_LOG_SIZE_LIMIT=%KETTLE_LOG_SIZE_LIMIT%"
 
 REM ***************
 REM ** Run...    **
 REM ***************
 
 @echo on
-start "Spoon" "%_PENTAHO_JAVA%" %OPT% -jar launcher\launcher.jar -lib %LIBSPATH% %_cmdline%
+start "Spoon" "%_PENTAHO_JAVA%" %OPT% -jar launcher\launcher.jar -lib ..\%LIBSPATH% %_cmdline%

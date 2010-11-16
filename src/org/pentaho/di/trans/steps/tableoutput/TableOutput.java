@@ -22,6 +22,7 @@ import java.util.List;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.database.OracleDatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseBatchException;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
@@ -61,7 +62,7 @@ public class TableOutput extends BaseStep implements StepInterface
 	{
 		meta=(TableOutputMeta)smi;
 		data=(TableOutputData)sdi;
-
+	
 		Object[] r=getRow();    // this also waits for a previous step to be finished.
 		if (r==null)  // no more input to be expected...
 		{
@@ -285,9 +286,11 @@ public class TableOutput extends BaseStep implements StepInterface
 		    data.commitCounterMap.put(tableName, Integer.valueOf(commitCounter.intValue()));
 
 		    // Release the savepoint if needed
-		    //
+		    //	    
 			if (data.specialErrorHandling) {
-				data.db.releaseSavepoint(data.savepoint);
+	          if (data.releaseSavepoint) {
+	             data.db.releaseSavepoint(data.savepoint);
+	          }
 			}
 			
 			// Perform a commit if needed
@@ -400,7 +403,9 @@ public class TableOutput extends BaseStep implements StepInterface
     			
             	if (data.specialErrorHandling) {
             		data.db.rollback(data.savepoint);
-            		data.db.releaseSavepoint(data.savepoint);
+            		if (data.releaseSavepoint) {
+               		data.db.releaseSavepoint(data.savepoint);
+            		}
             		// data.db.commit(true); // force a commit on the connection too.
             	}
             	
@@ -542,6 +547,11 @@ public class TableOutput extends BaseStep implements StepInterface
 			{
 				data.databaseMeta = meta.getDatabaseMeta();
 				
+				//  if we are using Oracle then set releaseSavepoint to false
+				if (data.databaseMeta.getDatabaseInterface() instanceof OracleDatabaseMeta) {
+				   data.releaseSavepoint = false;
+				}
+				
 				data.commitSize = Integer.parseInt(environmentSubstitute(meta.getCommitSize()));
 				
                 data.batchMode = data.commitSize>0 && meta.useBatchUpdate();
@@ -578,7 +588,13 @@ public class TableOutput extends BaseStep implements StepInterface
                 }
                 
                 if(log.isBasic()) logBasic("Connected to database ["+meta.getDatabaseMeta()+"] (commit="+data.commitSize+")");
-				data.db.setCommit(data.commitSize);
+
+                // Postpone commit as long as possible.  PDI-2091
+                //
+                if (data.commitSize==0) {
+                  data.commitSize = Integer.MAX_VALUE;
+                }
+                data.db.setCommit(data.commitSize); 
 				
                 if (!meta.isPartitioningEnabled() && !meta.isTableNameInField())
                 {    

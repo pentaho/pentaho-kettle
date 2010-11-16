@@ -1078,7 +1078,10 @@ public class TableView extends Composite
         
         sortTable(sortfield, sortingDescending);
     }
-    
+	public void setSelection(int[] selectedItems)
+	{
+		table.select(selectedItems);
+	}
     public void sortTable(int sortField, boolean sortingDescending)
     {
         this.sortfield = sortField;
@@ -2059,6 +2062,7 @@ public class TableView extends Composite
 				case ValueMetaInterface.TYPE_INTEGER:
 				case ValueMetaInterface.TYPE_BIGNUMBER:
 				case ValueMetaInterface.TYPE_NUMBER: return Const.getNumberFormats();
+				case ValueMetaInterface.TYPE_STRING: return Const.getConversionFormats();
 				default: return new String[0];
 			}
 		} 

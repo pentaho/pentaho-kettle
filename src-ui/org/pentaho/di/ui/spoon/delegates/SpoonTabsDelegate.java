@@ -15,6 +15,7 @@ package org.pentaho.di.ui.spoon.delegates;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.vfs.FileObject;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.LocationListener;
 import org.eclipse.swt.custom.CTabFolder;
@@ -23,7 +24,9 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.EngineMetaInterface;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.gui.SpoonInterface;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.ObjectRevision;
@@ -284,7 +287,37 @@ public class SpoonTabsDelegate extends SpoonDelegate
 		return null;
 	}
 	
-	
+	/**
+	 * Finds the tab for the transformation that matches the metadata provided (either the file must be the same or the repository id).
+	 * 
+	 * @param trans Transformation metadata to look for
+	 * @return Tab with transformation open whose metadata matches {@code trans} or {@code null} if no tab exists. 
+	 * @throws KettleFileException If there is a problem loading the file object for an open transformation with an invalid a filename.
+	 */
+  public TabMapEntry findTabForTransformation(TransMeta trans) throws KettleFileException {
+    // File for the transformation we're looking for.  It will be loaded upon first request.
+    FileObject transFile = null;
+    for (TabMapEntry entry : tabMap) {
+      if (entry.getTabItem().isDisposed()) {
+        continue;
+      }
+      if (trans.getFilename() != null && entry.getFilename() != null) {
+        // If the entry has a file name it is the same as trans iff. they originated from the same files
+        FileObject entryFile = KettleVFS.getFileObject(entry.getFilename());
+        if (transFile == null) {
+          transFile = KettleVFS.getFileObject(trans.getFilename());
+        }
+        if (entryFile.equals(transFile)) {
+          return entry;
+        }
+      } else if (trans.getObjectId() != null && trans.getObjectId().equals(entry.getObject().getMeta().getObjectId())) {
+        // If the transformation has an object id and the entry shares the same id they are the same
+        return entry;
+      }
+    }
+    // No tabs for the transformation exist and are not disposed
+    return null;
+  }
 
 	/**
 	 * Rename the tabs

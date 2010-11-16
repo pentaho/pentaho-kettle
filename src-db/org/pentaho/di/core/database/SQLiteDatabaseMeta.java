@@ -81,9 +81,8 @@ public class SQLiteDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	 */
 	public String getSchemaTableCombination(String schema_name, String table_part)
 	{
-		return "\""+schema_name+"\".\""+table_part+"\"";
-	}
-	
+		return getBackwardsCompatibleSchemaTableCombination(schema_name, table_part);
+	}	
 	/**
 	 * @return true if the database supports bitmap indexes
 	 */

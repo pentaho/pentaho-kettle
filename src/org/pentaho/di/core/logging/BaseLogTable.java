@@ -61,7 +61,7 @@ abstract class BaseLogTable {
 
 	public String toString() {
 		if (isDefined()) {
-			return getDatabaseMeta().getName()+"-"+tableName;
+			return getDatabaseMeta().getName()+"-"+getActualTableName();
 		}
 		return super.toString();
 	}
@@ -137,12 +137,19 @@ abstract class BaseLogTable {
 		
 		return databasesInterface.findDatabase(name);
 	}
-
+	
 	/**
 	 * @return the schemaName
 	 */
-	public String getSchemaName() {
-		return schemaName;
+	public String getActualSchemaName() {
+	  if (!Const.isEmpty(schemaName)) return schemaName;
+	  
+	  String name = space.getVariable(getSchemaNameVariable());
+      if (Const.isEmpty(name)) {
+          return null;
+      } else {
+          return name;
+      }
 	}
 
 	/**
@@ -151,13 +158,29 @@ abstract class BaseLogTable {
 	public void setSchemaName(String schemaName) {
 		this.schemaName = schemaName;
 	}
+	
+	public String getSchemaName() {
+      return schemaName;
+    }
 
 	/**
 	 * @return the tableName
 	 */
-	public String getTableName() {
-		return tableName;
+	public String getActualTableName() {
+      if (!Const.isEmpty(tableName)) return tableName;
+      
+      String name = space.getVariable(getTableNameVariable());
+      if (Const.isEmpty(name)) {
+          return null;
+      } else {
+          return name;
+      }
 	}
+
+	public String getTableName() {
+	  return tableName;
+	}
+
 
 	/**
 	 * @param tableName the tableName to set
@@ -167,7 +190,7 @@ abstract class BaseLogTable {
 	}
 	
 	public String getQuotedSchemaTableCombination() {
-		return getDatabaseMeta().getQuotedSchemaTableCombination(schemaName, tableName);
+		return getDatabaseMeta().getQuotedSchemaTableCombination(getActualSchemaName(), getActualTableName());
 	}
 
 	/**
@@ -338,7 +361,7 @@ abstract class BaseLogTable {
 	}
 	
 	public boolean isDefined() {
-		return getDatabaseMeta()!=null && !Const.isEmpty(tableName);
+		return getDatabaseMeta()!=null && !Const.isEmpty(getActualTableName());
 	}
 
 	/**
@@ -369,4 +392,24 @@ abstract class BaseLogTable {
 		this.connectionName = connectionName;
 	}
 
+    protected String getLogBuffer(VariableSpace space, String logChannelId, LogStatus status, String limit) {
+
+      StringBuffer buffer = CentralLogStore.getAppender().getBuffer(logChannelId, true);
+
+      // See if we need to limit the amount of rows
+      //
+      int nrLines = Const.isEmpty(limit) ? -1 : Const.toInt(space.environmentSubstitute(limit), -1);
+      
+      if (nrLines>0) {
+        int start = buffer.length()-1;
+        for (int i=0;i<nrLines && start>0;i++) {
+          start = buffer.lastIndexOf(Const.CR, start-1);
+        }
+        if (start>0) {
+          buffer.delete(0, start+Const.CR.length());
+        }
+      }
+  
+      return buffer.append(Const.CR + status.getStatus().toUpperCase() + Const.CR).toString();
+    }
 }

@@ -402,6 +402,7 @@ public class TransDialog extends Dialog
         fdTransFilename.right= new FormAttachment(100, 0);
         wTransFilename.setLayoutData(fdTransFilename);
         wTransFilename.setEditable(false);
+        wTransFilename.setBackground(GUIResource.getInstance().getColorLightGray());
 
 		// Transformation description:
 		Label wlTransdescription = new Label(wTransComp, SWT.RIGHT);
@@ -2236,8 +2237,8 @@ public class TransDialog extends Dialog
 						StringBuilder ddl = new StringBuilder();
 						
 						RowMetaInterface fields = logTable.getLogRecord(LogStatus.START, null, null).getRowMeta();
-						String tableName = logTable.getTableName();
-						String schemaTable = logTable.getDatabaseMeta().getSchemaTableCombination(logTable.getSchemaName(), tableName);
+						String tableName = db.environmentSubstitute(logTable.getTableName());
+						String schemaTable = logTable.getDatabaseMeta().getSchemaTableCombination(db.environmentSubstitute(logTable.getSchemaName()), tableName);
 						String createTable = db.getDDL(schemaTable, fields);
 
 						if (!Const.isEmpty(createTable))

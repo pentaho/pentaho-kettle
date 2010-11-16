@@ -322,7 +322,6 @@ public class JsonOutputMeta extends BaseStepMeta  implements StepMetaInterface
     {
         try
         {
-            encoding         = XMLHandler.getTagValue(stepnode, "encoding"); //$NON-NLS-1$
             outputValue      = XMLHandler.getTagValue(stepnode, "outputValue"); //$NON-NLS-1$
             jsonBloc    = XMLHandler.getTagValue(stepnode, "jsonBloc"); //$NON-NLS-1$
             nrRowsInBloc= XMLHandler.getTagValue(stepnode, "nrRowsInBloc"); //$NON-NLS-1$
@@ -394,7 +393,6 @@ public class JsonOutputMeta extends BaseStepMeta  implements StepMetaInterface
     {
         StringBuffer retval=new StringBuffer(500);
         
-        retval.append("    ").append(XMLHandler.addTagValue("encoding",  encoding)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    ").append(XMLHandler.addTagValue("outputValue",  outputValue)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    ").append(XMLHandler.addTagValue("jsonBloc",  jsonBloc)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    ").append(XMLHandler.addTagValue("nrRowsInBloc",  nrRowsInBloc)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -433,7 +431,6 @@ public class JsonOutputMeta extends BaseStepMeta  implements StepMetaInterface
     public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException {
         try
         {
-            encoding        =      rep.getStepAttributeString (id_step, "encoding"); //$NON-NLS-1$
             outputValue     =      rep.getStepAttributeString (id_step, "outputValue"); //$NON-NLS-1$
             jsonBloc   =      rep.getStepAttributeString (id_step, "jsonBloc"); //$NON-NLS-1$
             nrRowsInBloc   =      rep.getStepAttributeString (id_step, "nrRowsInBloc"); //$NON-NLS-1$
@@ -480,7 +477,6 @@ public class JsonOutputMeta extends BaseStepMeta  implements StepMetaInterface
     {
         try
         {
-            rep.saveStepAttribute(id_transformation, id_step, "encoding",           encoding); //$NON-NLS-1$
             rep.saveStepAttribute(id_transformation, id_step, "outputValue",          outputValue); //$NON-NLS-1$
             rep.saveStepAttribute(id_transformation, id_step, "jsonBloc", jsonBloc); //$NON-NLS-1$
             rep.saveStepAttribute(id_transformation, id_step, "nrRowsInBloc", nrRowsInBloc); //$NON-NLS-1$

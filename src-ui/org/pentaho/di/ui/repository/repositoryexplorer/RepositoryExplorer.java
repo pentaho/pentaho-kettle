@@ -42,6 +42,7 @@ import org.pentaho.ui.xul.XulRunner;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.swt.SwtXulLoader;
 import org.pentaho.ui.xul.swt.SwtXulRunner;
+import org.pentaho.ui.xul.swt.tags.SwtDialog;
 
 /**
  *
@@ -123,11 +124,6 @@ public class RepositoryExplorer {
     }
   }
 
-  public Composite getDialogArea() {
-    XulDialog dialog = (XulDialog) container.getDocumentRoot().getElementById("repository-explorer-dialog"); //$NON-NLS-1$
-    return (Composite) dialog.getManagedObject();
-  }
-
   public void show() {
     XulDialog dialog = (XulDialog) container.getDocumentRoot().getElementById("repository-explorer-dialog"); //$NON-NLS-1$
     dialog.show();
@@ -135,8 +131,7 @@ public class RepositoryExplorer {
   }
   
   public void dispose(){
-    getDialogArea().dispose();
-    XulDialog dialog = (XulDialog) container.getDocumentRoot().getElementById("repository-explorer-dialog"); //$NON-NLS-1$
-    ((Shell) dialog.getRootObject()).dispose();
+    SwtDialog dialog = (SwtDialog) container.getDocumentRoot().getElementById("repository-explorer-dialog"); //$NON-NLS-1$
+    dialog.dispose();
   }
 }

@@ -16,7 +16,7 @@ package org.pentaho.di.trans.steps.salesforceinsert;
 
 import java.util.ArrayList;
 
-import com.sforce.soap.partner.sobject.SObject;
+import com.salesforce.soap.partner.sobject.SObject;
 
 import org.apache.axis.message.MessageElement;
 import org.pentaho.di.core.Const;
@@ -194,7 +194,7 @@ public class SalesforceInsert extends BaseStep implements StepInterface
 				         errorMessage = "";
 				         for (int i = 0; i < data.saveResult[j].getErrors().length; i++) {
 								// get the next error
-								com.sforce.soap.partner.Error err = data.saveResult[j].getErrors()[i];
+								com.salesforce.soap.partner.Error err = data.saveResult[j].getErrors()[i];
 								errorMessage+= BaseMessages.getString(PKG, "SalesforceInsert.Error.FlushBuffer", 
 										new Integer(j), err.getStatusCode(), err.getMessage());
 						}
@@ -206,7 +206,7 @@ public class SalesforceInsert extends BaseStep implements StepInterface
 						
 						// Only show the first error
 						//
-							com.sforce.soap.partner.Error err = data.saveResult[j].getErrors()[0];
+							com.salesforce.soap.partner.Error err = data.saveResult[j].getErrors()[0];
 							throw new KettleException(BaseMessages.getString(PKG, "SalesforceInsert.Error.FlushBuffer", 
 									new Integer(j), err.getStatusCode(), err.getMessage()));
 							

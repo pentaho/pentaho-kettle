@@ -66,7 +66,7 @@ public class LoggingRegistry {
 		// This will prevent excessive memory leakage in the registry map too... 
 		//
 		LoggingObjectInterface found = findExistingLoggingSource(loggingSource);
-		if (found!=null) {
+		if (found!=null && found.getParent()!=null) {
 		  // Return the previous log channel ID
 		  //
 			return found.getLogChannelId();
@@ -154,12 +154,9 @@ public class LoggingRegistry {
 			}
 			
 			LoggingObjectInterface parent = loggingObject.getParent(); 
-			if (parent!=null) {
+			if (parent!=null && parent.getLogChannelId()!=null) {
 				// object has a parent, this is a candidate
 				//
-				if (parent.getLogChannelId()==null) {
-					System.out.println("!!!!!!!!!OOOPS!!!!!!!!!");
-				}
 				if (parent.getLogChannelId().equals(parentLogChannelId)) {
 					String childId = loggingObject.getLogChannelId();
 					

@@ -45,6 +45,7 @@ import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
+import org.pentaho.reporting.libraries.base.util.StringUtils;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.Binding;
@@ -268,7 +269,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 		if (this.model.getTable() == null) {
 			return;
 		}
-		SQLEditor theSqlEditor = new SQLEditor(this.dbExplorerDialog.getShell(), SWT.NONE, this.model.getDatabaseMeta(), this.dbcache, "-- TRUNCATE TABLE " + this.model.getTable().getName());
+		SQLEditor theSqlEditor = new SQLEditor(this.dbExplorerDialog.getShell(), SWT.NONE, this.model.getDatabaseMeta(), this.dbcache, "-- TRUNCATE TABLE " + getSchemaAndTable(this.model));
 		theSqlEditor.open();
 	}
 	
@@ -276,12 +277,13 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 		if (this.model.getTable() == null) {
 			return;
 		}
-		SQLEditor theSqlEditor = new SQLEditor(this.dbExplorerDialog.getShell(), SWT.NONE, this.model.getDatabaseMeta(), this.dbcache, "SELECT * FROM " + this.model.getTable().getName());
+		SQLEditor theSqlEditor = new SQLEditor(this.dbExplorerDialog.getShell(), SWT.NONE, this.model.getDatabaseMeta(), this.dbcache, "SELECT * FROM " + getSchemaAndTable(this.model));
 		theSqlEditor.open();
 	}
 	
 	public void showLayout() {
-		XulStepFieldsDialog theStepFieldsDialog = new XulStepFieldsDialog(this.shell, SWT.NONE, this.model.getDatabaseMeta(), this.model.getTable().getName(), null);
+    String schema = this.model.getSchema() != null ? this.model.getSchema().getName() : null;
+		XulStepFieldsDialog theStepFieldsDialog = new XulStepFieldsDialog(this.shell, SWT.NONE, this.model.getDatabaseMeta(), this.model.getTable().getName(), null, schema);
 		theStepFieldsDialog.open(false);
 	}
 	
@@ -290,7 +292,8 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 			return;
 		}
 		try {
-			GetTableSizeProgressDialog pd = new GetTableSizeProgressDialog(this.shell, this.model.getDatabaseMeta(), this.model.getTable().getName());
+			String schema = this.model.getSchema() != null ? this.model.getSchema().getName() : null;
+      GetTableSizeProgressDialog pd = new GetTableSizeProgressDialog(this.shell, this.model.getDatabaseMeta(), this.model.getTable().getName(), schema);
 			Long theCount = pd.open();
 			if (theCount != null) {
 				XulMessageBox theMessageBox = (XulMessageBox) document.createElement("messagebox");
@@ -501,8 +504,10 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 		Database db = new Database(null, this.model.getDatabaseMeta());
 		try {
 			db.connect();
-			RowMetaInterface r = db.getTableFields(this.model.getTable().getName());
-			String sql = db.getCreateTableStatement(this.model.getTable().getName(), r, null, false, null, true);
+      String tableName = getSchemaAndTable(this.model);
+
+			RowMetaInterface r = db.getTableFields(tableName);
+			String sql = db.getCreateTableStatement(tableName, r, null, false, null, true);
 			SQLEditor se = new SQLEditor(this.dbExplorerDialog.getShell(), SWT.NONE, this.model.getDatabaseMeta(), this.dbcache, sql);
 			se.open();
 		} catch (KettleDatabaseException dbe) {
@@ -511,7 +516,9 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 			db.disconnect();
 		}
 	}
-	
+
+
+
 	public void getDDLForOther() {
 		
 		if (databases != null) {
@@ -538,9 +545,10 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 					Database targetdb = new Database(null, targetdbi);
 					try{
 						targetdb.connect();
-						RowMetaInterface r = targetdb.getTableFields(this.model.getTable().getName());
+            String tableName = getSchemaAndTable(model);
+						RowMetaInterface r = targetdb.getTableFields(tableName);
 						
-						String sql = targetdb.getCreateTableStatement(this.model.getTable().getName(), r, null, false, null, true);
+						String sql = targetdb.getCreateTableStatement(tableName, r, null, false, null, true);
 						SQLEditor se = new SQLEditor(this.dbExplorerDialog.getShell(), SWT.NONE, this.model.getDatabaseMeta(), this.dbcache, sql);
 						se.open();
 					} finally {
@@ -561,7 +569,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 	public void dataProfile(){
 		Shell dbShell = (Shell) dbExplorerDialog.getRootObject();
 		try {
-			TransProfileFactory profileFactory = new TransProfileFactory(this.model.getDatabaseMeta(), model.getTable().getName());
+			TransProfileFactory profileFactory = new TransProfileFactory(this.model.getDatabaseMeta(), getSchemaAndTable(this.model));
 			TransMeta transMeta = profileFactory.generateTransformation(new LoggingObject(model.getTable()));
 			TransPreviewProgressDialog progressDialog = new TransPreviewProgressDialog(dbShell, 
 																					   transMeta, 
@@ -619,6 +627,18 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 		}
 	}
 
+  private String getSchemaAndTable(XulDatabaseExplorerModel model) {
+    return getSchemaAndTable(model, model.getDatabaseMeta());
+  }
+  
+  private String getSchemaAndTable(XulDatabaseExplorerModel model, DatabaseMeta meta) {
+    if (model.getSchema() != null) {
+      return meta.getQuotedSchemaTableCombination(model.getSchema().getName(), model.getTable().getName());
+    } else {
+      return model.getTable().getName();
+    }
+  }
+
 	class SelectedItemsConvertor extends BindingConvertor<String, List<DatabaseExplorerNode>> {
 
 		public String targetToSource(List<DatabaseExplorerNode> aValue) {
@@ -632,4 +652,6 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 			return theResult;
 		}
 	}
+
+
 }

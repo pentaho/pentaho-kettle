@@ -11,7 +11,9 @@
 package org.pentaho.di.trans.steps.update;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -68,12 +70,13 @@ public class Update extends BaseStep implements StepInterface
         Object[] lookupRow = new Object[data.lookupParameterRowMeta.size()];
         int lookupIndex = 0;
         
-		for (int i=0;i<meta.getKeyStream().length;i++)
+		for (int i=0;i<data.keynrs.length;i++)
 		{
 			if (data.keynrs[i]>=0)
 			{
 				lookupRow[lookupIndex] = row[ data.keynrs[i] ];
                 lookupIndex++;
+
 			}
 			if (data.keynrs2[i]>=0)
 			{
@@ -224,28 +227,44 @@ public class Update extends BaseStep implements StepInterface
             // lookup the values!
             if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "Update.Log.CheckingRow")+getInputRowMeta().getString(r)); //$NON-NLS-1$
             
-            data.keynrs  = new int[meta.getKeyStream().length];
-            data.keynrs2 = new int[meta.getKeyStream().length];
+            ArrayList<Integer> keynrs = new ArrayList<Integer>(meta.getKeyStream().length);
+            ArrayList<Integer> keynrs2 = new ArrayList<Integer>(meta.getKeyStream().length);
+            
+             
             for (int i=0;i<meta.getKeyStream().length;i++)
             {
-                data.keynrs[i]=getInputRowMeta().indexOfValue(meta.getKeyStream()[i]);
-                if (data.keynrs[i]<0 &&  // couldn't find field!
+                int keynr=getInputRowMeta().indexOfValue(meta.getKeyStream()[i]);
+                
+                if (keynr<0 &&  // couldn't find field!
                     !"IS NULL".equalsIgnoreCase(meta.getKeyCondition()[i]) &&   // No field needed! //$NON-NLS-1$
                     !"IS NOT NULL".equalsIgnoreCase(meta.getKeyCondition()[i])  // No field needed! //$NON-NLS-1$
                    )
                 {
                     throw new KettleStepException(BaseMessages.getString(PKG, "Update.Exception.FieldRequired",meta.getKeyStream()[i])); //$NON-NLS-1$ //$NON-NLS-2$
                 }
-                data.keynrs2[i]=getInputRowMeta().indexOfValue(meta.getKeyStream2()[i]);
-                if (data.keynrs2[i]<0 &&  // couldn't find field!
+                keynrs.add(keynr);
+                
+                // this operator needs two bindings
+                if ("= ~NULL".equalsIgnoreCase(meta.getKeyCondition()[i])){
+                	keynrs.add(keynr);
+                	keynrs2.add(-1);
+                }
+                
+                int keynr2=getInputRowMeta().indexOfValue(meta.getKeyStream2()[i]);
+                if (keynr2<0 &&  // couldn't find field!
                     "BETWEEN".equalsIgnoreCase(meta.getKeyCondition()[i])   // 2 fields needed! //$NON-NLS-1$
                    )
                 {
                     throw new KettleStepException(BaseMessages.getString(PKG, "Update.Exception.FieldRequired",meta.getKeyStream2()[i])); //$NON-NLS-1$ //$NON-NLS-2$
                 }
-                
-                if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "Update.Log.FieldHasDataNumbers",meta.getKeyStream()[i])+""+data.keynrs[i]); //$NON-NLS-1$ //$NON-NLS-2$
+                keynrs2.add(keynr2);
+
+                if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "Update.Log.FieldHasDataNumbers",meta.getKeyStream()[i])+""+keynrs.get(keynrs.size()-1)); //$NON-NLS-1$ //$NON-NLS-2$
             }
+            
+            data.keynrs  = ArrayUtils.toPrimitive(keynrs.toArray(new Integer[0]));
+            data.keynrs2 = ArrayUtils.toPrimitive(keynrs2.toArray(new Integer[0]));
+            
             // Cache the position of the compare fields in Row row
             //
             data.valuenrs = new int[meta.getUpdateLookup().length];
@@ -272,10 +291,15 @@ public class Update extends BaseStep implements StepInterface
 	                 }
 	                 else
 	                 {
-	                     if (!"IS NULL".equalsIgnoreCase(meta.getKeyCondition()[i]) && !"IS NOT NULL".equalsIgnoreCase(meta.getKeyCondition()[i]))
+	                     if ("= ~NULL".equalsIgnoreCase(meta.getKeyCondition()[i])){
+	                    	 data.lookupParameterRowMeta.addValueMeta( getInputRowMeta().searchValueMeta(meta.getKeyStream()[i]) );
+	                    	 data.lookupParameterRowMeta.addValueMeta( getInputRowMeta().searchValueMeta(meta.getKeyStream()[i]).clone() );
+	                     }
+	                     else if (!"IS NULL".equalsIgnoreCase(meta.getKeyCondition()[i]) && !"IS NOT NULL".equalsIgnoreCase(meta.getKeyCondition()[i]))
 	                     {
 	                         data.lookupParameterRowMeta.addValueMeta( getInputRowMeta().searchValueMeta(meta.getKeyStream()[i]) );
 	                     }
+	                     
 	                 }
 	             }
             }
@@ -341,7 +365,12 @@ public class Update extends BaseStep implements StepInterface
 
         for (int i = 0; i < meta.getKeyLookup().length; i++)
         {
-            if (i != 0) sql += " AND ";
+            if (i != 0){
+            	sql += " AND ";
+            } 
+            
+            sql += " ( ( ";
+            
             sql += databaseMeta.quoteField(meta.getKeyLookup()[i]);
             if ("BETWEEN".equalsIgnoreCase(meta.getKeyCondition()[i]))
             {
@@ -355,12 +384,30 @@ public class Update extends BaseStep implements StepInterface
                 {
                     sql += " " + meta.getKeyCondition()[i] + " ";
                 }
+                else if ("= ~NULL".equalsIgnoreCase(meta.getKeyCondition()[i])){
+                	
+                	sql += " IS NULL AND ";
+                    
+                	if (databaseMeta.requiresCastToVariousForIsNull()) {
+                        sql += "CAST(? AS VARCHAR(256)) IS NULL";
+                    }
+                    else{
+                        sql += "? IS NULL";
+                    }
+                	// null check
+                    data.lookupParameterRowMeta.addValueMeta( rowMeta.searchValueMeta(meta.getKeyStream()[i]) );
+                    sql += " ) OR ( "+ databaseMeta.quoteField(meta.getKeyLookup()[i])+" = ?";
+                    // equality check, cloning so auto-rename because of adding same fieldname does not cause problems
+                    data.lookupParameterRowMeta.addValueMeta( rowMeta.searchValueMeta(meta.getKeyStream()[i]).clone() );
+                	
+                }
                 else
                 {
                     sql += " " + meta.getKeyCondition()[i] + " ? ";
                     data.lookupParameterRowMeta.addValueMeta( rowMeta.searchValueMeta(meta.getKeyStream()[i]) );
                 }
             }
+            sql += " ) ) ";
         }
         
         try
@@ -397,6 +444,7 @@ public class Update extends BaseStep implements StepInterface
         for (int i=0;i<meta.getKeyLookup().length;i++)
         {
             if (i!=0) sql += "AND   ";
+            sql += " ( ( ";
             sql += databaseMeta.quoteField(meta.getKeyLookup()[i]);
             if ("BETWEEN".equalsIgnoreCase(meta.getKeyCondition()[i]))
             {
@@ -404,18 +452,34 @@ public class Update extends BaseStep implements StepInterface
                 data.updateParameterRowMeta.addValueMeta( rowMeta.searchValueMeta(meta.getKeyStream()[i]) );
                 data.updateParameterRowMeta.addValueMeta( rowMeta.searchValueMeta(meta.getKeyStream2()[i]) );
             }
-            else
-            if ("IS NULL".equalsIgnoreCase(meta.getKeyCondition()[i]) || "IS NOT NULL".equalsIgnoreCase(meta.getKeyCondition()[i]))
+            else if ("IS NULL".equalsIgnoreCase(meta.getKeyCondition()[i]) || "IS NOT NULL".equalsIgnoreCase(meta.getKeyCondition()[i]))
             {
                 sql += " "+meta.getKeyCondition()[i]+" ";
             }
+            else if ("= ~NULL".equalsIgnoreCase(meta.getKeyCondition()[i])){
+            	
+            	sql += " IS NULL AND ";
+                
+            	if (databaseMeta.requiresCastToVariousForIsNull()) {
+                    sql += "CAST(? AS VARCHAR(256)) IS NULL";
+                }
+                else{
+                    sql += "? IS NULL";
+                }
+            	// null check
+                data.updateParameterRowMeta.addValueMeta( rowMeta.searchValueMeta(meta.getKeyStream()[i]) );
+                sql += " ) OR ( "+ databaseMeta.quoteField(meta.getKeyLookup()[i])+" = ?";
+                // equality check, cloning so auto-rename because of adding same fieldname does not cause problems
+                data.updateParameterRowMeta.addValueMeta( rowMeta.searchValueMeta(meta.getKeyStream()[i]).clone() );
+            	
+            }            
             else
             {
                 sql += " "+meta.getKeyCondition()[i]+" ? ";
                 data.updateParameterRowMeta.addValueMeta( rowMeta.searchValueMeta(meta.getKeyStream()[i]) );
             }
+            sql += " ) ) ";
         }
-
         try
         {            
         	if(log.isDetailed()) logDetailed("Setting update preparedStatement to ["+sql+"]");

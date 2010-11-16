@@ -90,6 +90,7 @@ import org.pentaho.di.core.gui.GCInterface;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.Redrawable;
 import org.pentaho.di.core.gui.SnapAllignDistribute;
+import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
@@ -144,6 +145,7 @@ import org.pentaho.di.ui.core.widget.CheckBoxToolTipListener;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryRevisionBrowserDialogInterface;
 import org.pentaho.di.ui.spoon.AbstractGraph;
+import org.pentaho.di.ui.spoon.ISpoonMenuController;
 import org.pentaho.di.ui.spoon.SWTGC;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.SpoonPluginManager;
@@ -3494,7 +3496,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         setControlStates();
         checkErrorVisuals();
 
-        PreviewRowsDialog previewRowsDialog = new PreviewRowsDialog(shell, transMeta, SWT.APPLICATION_MODAL,
+        PreviewRowsDialog previewRowsDialog = new PreviewRowsDialog(shell, transMeta, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.APPLICATION_MODAL,
             stepDebugMeta.getStepMeta().getName(), rowBufferMeta, rowBuffer);
         previewRowsDialog.setProposingToGetMoreRows(true);
         previewRowsDialog.setProposingToStop(true);
@@ -3620,6 +3622,9 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           if (previewButton != null && !controlDisposed(previewButton)) {
             previewButton.setDisabled(running);
           }
+          
+          Spoon spoon = ((Spoon)SpoonFactory.getInstance());
+          spoon.fireMenuControlers();
         }
 
       });

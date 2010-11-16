@@ -376,19 +376,20 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		final int MetaRows=input.getMeta().length;
 		
 		ColumnInfo[] colmeta=new ColumnInfo[] {
-			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Fieldname"),     ColumnInfo.COLUMN_TYPE_CCOMBO,   new String[]{BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Loading")}, false ), //$NON-NLS-1$
+			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Fieldname"),     ColumnInfo.COLUMN_TYPE_CCOMBO,   new String[]{BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Loading")}, false ), //$NON-NLS-1$ //$NON-NLS-2$
 			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Renameto"),      ColumnInfo.COLUMN_TYPE_TEXT,     false ), //$NON-NLS-1$
 			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Type"),          ColumnInfo.COLUMN_TYPE_CCOMBO,   ValueMeta.getAllTypes(), false), //$NON-NLS-1$
 			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Length"),        ColumnInfo.COLUMN_TYPE_TEXT,     false ), //$NON-NLS-1$
 			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Precision"),     ColumnInfo.COLUMN_TYPE_TEXT,     false ), //$NON-NLS-1$
 			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Storage.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO,   new String[] {BaseMessages.getString(PKG, "System.Combo.Yes"), BaseMessages.getString(PKG, "System.Combo.No"), } ), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Format"),        ColumnInfo.COLUMN_TYPE_FORMAT,   3),
+			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Format"),        ColumnInfo.COLUMN_TYPE_FORMAT,   3), //$NON-NLS-1$
+			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.DateLenient"),   ColumnInfo.COLUMN_TYPE_CCOMBO,   new String[] {BaseMessages.getString(PKG, "System.Combo.Yes"), BaseMessages.getString(PKG, "System.Combo.No"), } ), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Encoding"),      ColumnInfo.COLUMN_TYPE_CCOMBO,   getCharsets(), false), //$NON-NLS-1$
-			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Decimal"),       ColumnInfo.COLUMN_TYPE_TEXT,     false),
-			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Grouping"),      ColumnInfo.COLUMN_TYPE_TEXT,     false),
-			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Currency"),      ColumnInfo.COLUMN_TYPE_TEXT,     false),
+			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Decimal"),       ColumnInfo.COLUMN_TYPE_TEXT,     false), //$NON-NLS-1$
+			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Grouping"),      ColumnInfo.COLUMN_TYPE_TEXT,     false), //$NON-NLS-1$
+			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Currency"),      ColumnInfo.COLUMN_TYPE_TEXT,     false), //$NON-NLS-1$
 		};
-		colmeta[5].setToolTip(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Storage.Tooltip"));
+		colmeta[5].setToolTip(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Storage.Tooltip")); //$NON-NLS-1$
 		fieldColumns.add(colmeta[0]);
 		wMeta=new TableView(transMeta, wMetaComp, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -595,10 +596,11 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 				item.setText( 5, change.getPrecision()<0?"":""+change.getPrecision()); //$NON-NLS-1$ //$NON-NLS-2$
 				item.setText( 6, change.getStorageType()==ValueMetaInterface.STORAGE_TYPE_NORMAL?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No")); //$NON-NLS-1$ //$NON-NLS-2$
 				item.setText( 7, Const.NVL(change.getConversionMask(), ""));
-				item.setText( 8, Const.NVL(change.getEncoding(), ""));
-				item.setText( 9, Const.NVL(change.getDecimalSymbol(), ""));
-				item.setText(10, Const.NVL(change.getGroupingSymbol(), ""));
-				item.setText(11, Const.NVL(change.getCurrencySymbol(), ""));
+				item.setText( 8, change.isDateFormatLenient()?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No")); //$NON-NLS-1$ //$NON-NLS-2$
+				item.setText( 9, Const.NVL(change.getEncoding(), ""));
+				item.setText( 10, Const.NVL(change.getDecimalSymbol(), ""));
+				item.setText( 11, Const.NVL(change.getGroupingSymbol(), ""));
+				item.setText( 12, Const.NVL(change.getCurrencySymbol(), ""));
 			}
 			wMeta.setRowNums();
 			wMeta.optWidth(true);
@@ -691,10 +693,12 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 			}
 			
 			change.setConversionMask(item.getText(7));
-			change.setEncoding(item.getText(8));
-			change.setDecimalSymbol(item.getText(9));
-			change.setGroupingSymbol(item.getText(10));
-			change.setCurrencySymbol(item.getText(11));
+			// If DateFormatLenient is anything but Yes (including blank) then it is false
+			change.setDateFormatLenient(item.getText(8).equalsIgnoreCase(BaseMessages.getString(PKG, "System.Combo.Yes"))?true:false);
+			change.setEncoding(item.getText(9));
+			change.setDecimalSymbol(item.getText(10));
+			change.setGroupingSymbol(item.getText(11));
+			change.setCurrencySymbol(item.getText(12));
 		}
 		dispose();
 	}

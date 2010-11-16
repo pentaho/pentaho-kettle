@@ -717,7 +717,14 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		fdAltStartDate.right = new FormAttachment(wUseAltStartDate, 200);
 		fdAltStartDate.bottom  = new FormAttachment(wTodate, -2 * margin);
 		wAltStartDate.setLayoutData(fdAltStartDate);
-		wAltStartDate.addModifyListener(new ModifyListener() { public void modifyText(ModifyEvent arg0) { setFlags(); } });
+		wAltStartDate.addModifyListener(
+        new ModifyListener() {
+          public void modifyText(ModifyEvent arg0) {
+            setFlags();
+            input.setChanged();
+          } 
+        }
+    );
 		wAltStartDateField=new CCombo(shell, SWT.SINGLE | SWT.BORDER);
  		props.setLook(wAltStartDateField);
 		wAltStartDateField.setToolTipText(BaseMessages.getString(PKG, "DimensionLookupDialog.AlternativeStartDateField.Tooltip",Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$		

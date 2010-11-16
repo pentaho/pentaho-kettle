@@ -27,8 +27,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 <!--===========================================================================
     == SUBFLOOR ==
     
-    $Rev$
-    $Date$
+    $Rev: 113 $
+    $Date: 2010-09-03 15:02:57 -0400 (Fri, 03 Sep 2010) $
     Project Home: http://code.google.com/p/subfloor/
     
     This file contains the default implementation of the ant tasks to 
@@ -158,26 +158,18 @@ TYPICAL TARGET SEQUENCE
             description="Indicates whether source should be compiled with deprecation information" />
   <property name="javac.source" value="1.5" description="Provide source compatibility with specified release" />
   <property name="javac.target" value="1.5" description="Generate class files for specific VM version" />
+  <property name="javac.maxmemory" value="256M" description="Max memory alloted to java compile" />
 
   <!-- Third party Ant tasks and tools properties -->
-  <property name="build.cache.dir"
-            value="${user.home}/.subfloor_build_cache"
+  <property name="subfloor.resources.dir"
+            value="${user.home}/.subfloor"
             description="Base dir for runtime jars that are required exclusively by the build process" />
-  <property name="tmp.build.cache.dir"
-            value="${build.cache.dir}/tmp"
-            description="Temporary directory where files are prepared for build cache" />
-  <property name="cobertura.build.cache.dir"
-            value="${build.cache.dir}/cobertura"
-            description="Directory where the Cobertura jar (and dependencies) is placed after it is auto-downloaded by the build" />
+  <property name="subfloor.tmp.dir"
+            value="${subfloor.resources.dir}/tmp"
+            description="Temporary space where files are prepared for installation" />
   <property name="antcontrib.build.cache.dir"
-            value="${build.cache.dir}/ant-contrib"
+            value="${subfloor.resources.dir}/ant-contrib"
             description="Directory where the Ant-Contrib jar (and dependencies) is placed after it is auto-downloaded by the build" />
-  <property name="pentaho.build.cache.dir"
-            value="${build.cache.dir}/pentaho"
-            description="Directory where the Pentaho ant tasks jar (and dependencies) is placed after it is auto-downloaded by the build" />
-  <property name="svnant.url"
-            value="http://subclipse.tigris.org/files/documents/906/46267/svnant-1.3.0.zip"
-            description="The URL to the current release of SVN Ant" />
   <property name="svnant.use-javahl"
             value="false"
             description="Prefer JNI JavaHL binding over the command line client for native svn support" />
@@ -336,26 +328,26 @@ TYPICAL TARGET SEQUENCE
   <!-- Setup the compile classpath -->
   <path id="classpath">
     <fileset dir="${devlib.dir}">
-      <include name="*.jar" />
+      <include name="**/*.jar" />
     </fileset>
     <fileset dir="${lib.dir}">
-      <include name="*.jar" />
+      <include name="**/*.jar" />
     </fileset>
   </path>
 
   <!-- Setup the classpath used for testing -->
   <path id="test.classpath">
     <fileset dir="${devlib.dir}">
-      <include name="*.jar" />
+      <include name="**/*.jar" />
     </fileset>
     <fileset dir="${lib.dir}">
-      <include name="*.jar" />
+      <include name="**/*.jar" />
     </fileset>
     <fileset dir="${testlib.dir}">
-      <include name="*.jar" />
+      <include name="**/*.jar" />
     </fileset>
-    <dirset dir="${classes.dir}" />
     <dirset dir="${testclasses.dir}" />
+    <dirset dir="${classes.dir}" />
   </path>
 
   <!--=======================================================================
@@ -410,17 +402,17 @@ TYPICAL TARGET SEQUENCE
       Fetches ant-contrib from sourceforge
       ====================================================================-->
   <target name="antcontrib.download" unless="antcontrib.available">
-    <mkdir dir="${tmp.build.cache.dir}" />
+    <mkdir dir="${subfloor.tmp.dir}" />
     <get src="http://downloads.sourceforge.net/ant-contrib/ant-contrib-1.0b3-bin.zip"
-         dest="${tmp.build.cache.dir}/antcontrib.zip"
+         dest="${subfloor.tmp.dir}/antcontrib.zip"
          usetimestamp="true" />
-    <unzip src="${tmp.build.cache.dir}/antcontrib.zip" dest="${tmp.build.cache.dir}">
+    <unzip src="${subfloor.tmp.dir}/antcontrib.zip" dest="${subfloor.tmp.dir}">
       <patternset>
         <include name="**/*.jar" />
       </patternset>
     </unzip>
     <copy todir="${antcontrib.build.cache.dir}">
-      <fileset dir="${tmp.build.cache.dir}/ant-contrib">
+      <fileset dir="${subfloor.tmp.dir}/ant-contrib">
         <include name="**/*.jar" />
       </fileset>
     </copy>
@@ -447,23 +439,18 @@ TYPICAL TARGET SEQUENCE
     
     (Fetches and) installs the SVN ANT for use by this ant script
     ====================================================================-->
-  <target name="install-svnant" depends="install-antcontrib">
+  <target name="install-svnant" depends="install-ivy">
     <if>
       <istrue value="${svnant.isinstalled}" />
       <then>
         <echo message="Skipping SVN ANT install.  SVN ANT has already been configured by the build" />
       </then>
       <else>
-        <echo message="Installing SVN ANT..." />
-        <download-antlib name="svnant"
-                         url="${svnant.url}"
-                         classname="org.tigris.subversion.svnant.SvnTask"
-                         extension="zip" />
-        <typedef resource="org/tigris/subversion/svnant/svnantlib.xml">
-          <classpath>
-            <fileset dir="${build.cache.dir}/svnant" includes="**/*.jar" />
-          </classpath>
-        </typedef>
+        <taskdef-with-ivy organisation="tigris"
+                          module="svnant"
+                          revision="1.3.0"
+                          resource="org/tigris/subversion/svnant/svnantlib.xml"
+                          classname="org.tigris.subversion.svnant.SvnTask" />
         <property name="svnant.isinstalled" value="true" />
       </else>
     </if>
@@ -557,7 +544,7 @@ TYPICAL TARGET SEQUENCE
         <download-antlib name="ivy" url="${ivy.url}" classname="org.apache.ivy.ant.IvyTask" extension="jar" />
         <taskdef resource="org/apache/ivy/ant/antlib.xml" uri="antlib:org.apache.ivy.ant">
           <classpath>
-            <fileset dir="${build.cache.dir}/ivy">
+            <fileset dir="${subfloor.resources.dir}/ivy">
               <include name="*.jar" />
             </fileset>
           </classpath>
@@ -610,7 +597,26 @@ TYPICAL TARGET SEQUENCE
     <property name="resolve-init.skip" value="" />
   </target>
 
-  <target name="resolve-default" depends="resolve-init">
+  <target name="resolve-default" depends="resolve-default.default,resolve-default.composite"/>
+
+  <!-- 
+  This target resolves the default IVY configuration as a composite of child configurations.
+  You should set ivy.default.sub-configs in your build.properties only if you want your default
+  configuration to be treated as a composite of two or more child configurations.
+  To turn this on, set ivy.default.sub-configs property in your build.properties, e.g.
+  ivy.default.sub-configs=external,internal
+  Note: the parent config "default" proper will not be resolved
+  -->
+  <target name="resolve-default.composite" depends="install-antcontrib,resolve-init" if="ivy.default.sub-configs">
+    <for list="${ivy.default.sub-configs}" param="conf">
+      <sequential>
+        <ivy:resolve file="${ivyfile}" conf="default_@{conf}" />
+        <ivy:retrieve conf="default_@{conf}" pattern="${lib.dir}/@{conf}/[module]-[revision](-[classifier]).[ext]" />
+      </sequential>
+    </for>
+  </target>
+
+  <target name="resolve-default.default" depends="resolve-init" unless="ivy.default.sub-configs">
     <ivy:resolve file="${ivyfile}" conf="default" />
     <ivy:retrieve conf="default" pattern="${lib.dir}/[module]-[revision](-[classifier]).[ext]" />
   </target>
@@ -657,9 +663,9 @@ TYPICAL TARGET SEQUENCE
 
 
   <!--=======================================================================
-      ivy-clean-pentaho
+      ivy-clean-by-name
       
-      Completely cleans your IVY cache and local repository of pentaho-specific files.
+      Cleans your IVY cache and local repository of specific files.
       WARNING: this is a global action and will affect other IVY projects
       currently referencing a locally published dependency
       ====================================================================-->
@@ -668,8 +674,8 @@ TYPICAL TARGET SEQUENCE
     <!-- just in case it doesn't exist -->
     <for param="dir">
       <path>
-        <dirset dir="${ivy.local.default.root}" includes="*pentaho*" />
-        <dirset dir="${ivy.default.ivy.user.dir}/cache" includes="*pentaho*" />
+        <dirset dir="${ivy.local.default.root}" includes="*${ivy.clean.pattern}*" />
+        <dirset dir="${ivy.default.ivy.user.dir}/cache" includes="*${ivy.clean.pattern}*" />
       </path>
       <sequential>
         <delete dir="@{dir}" includeemptydirs="true" />
@@ -677,8 +683,8 @@ TYPICAL TARGET SEQUENCE
     </for>
     <for param="file">
       <path>
-        <fileset dir="${ivy.local.default.root}" includes="*pentaho*" />
-        <fileset dir="${ivy.default.ivy.user.dir}/cache" includes="*pentaho*" />
+        <fileset dir="${ivy.local.default.root}" includes="*${ivy.clean.pattern}*" />
+        <fileset dir="${ivy.default.ivy.user.dir}/cache" includes="*${ivy.clean.pattern}*" />
       </path>
       <sequential>
         <delete file="@{file}" />
@@ -767,7 +773,7 @@ TYPICAL TARGET SEQUENCE
     
         Creates a publishable version of the ivy dependencies file, ivy.xml
         ====================================================================-->
-  <target name="ivy.deliver">
+  <target name="ivy.deliver" depends="resolve">
     <ivy:deliver conf="*(public)" deliverpattern="${dist.dir}/ivy.xml" />
   </target>
 
@@ -813,6 +819,7 @@ TYPICAL TARGET SEQUENCE
             <arg value="-Dversion=${publish.version}" />
             <arg value="-Dpackaging=ivy.xml" />
             <arg value="-Dfile=${publish.file}" />
+            <arg value="-e" />
           </exec>
         </else>
       </if>
@@ -1034,6 +1041,7 @@ TYPICAL TARGET SEQUENCE
            debug="${javac.debug}"
            deprecation="${javac.deprecation}"
            fork="true"
+           memorymaximumsize="${javac.maxmemory}"
            source="${javac.source}"
            target="${javac.target}">
       <classpath>
@@ -1244,7 +1252,8 @@ TYPICAL TARGET SEQUENCE
       <sysproperty key="java.awt.headless" value="${headless.unittest}" />
       <classpath refid="test.classpath" />
       <formatter type="xml" />
-      <batchtest fork="yes" todir="${testreports.xml.dir}">
+      <test name="${testcase}" todir="${testreports.xml.dir}" if="testcase" />
+      <batchtest fork="yes" todir="${testreports.xml.dir}" unless="testcase">
         <fileset dir="${testsrc.dir}" casesensitive="yes">
           <include name="**/*Test.java" />
         </fileset>
@@ -1287,6 +1296,26 @@ TYPICAL TARGET SEQUENCE
       Creates a distribution of this project
       ====================================================================-->
   <target name="dist" depends="jar" description="Creates a distribution" />
+
+
+  <!--=======================================================================
+      dist-full
+      
+      Creates a distribution of this project including all sources needed
+      to build as well as the resultant jar
+      ====================================================================-->
+  <target name="dist-full" depends="jar"
+          description="Creates all the distributable items for this project">
+    <!-- Create the required zip distribution which contains the entire project -->
+    <zip destfile="${dist.dir}/${ivy.artifact.id}-${project.revision}.zip">
+      <fileset dir="${basedir}">
+        <exclude name="bin/"/>
+        <exclude name="dist/"/>
+        <exclude name="eclipse-bin/"/>
+      </fileset>
+      <zipfileset dir="${dist.dir}" includes="**/*.jar"/>
+    </zip>
+  </target>
 
 
   <!--=======================================================================
@@ -1397,7 +1426,7 @@ TYPICAL TARGET SEQUENCE
       Runs tests in an instrumented environment and produces Cobertura test coverage reports
       ====================================================================-->
   <target name="cobertura"
-          depends="clean-cobertura,cobertura.install,compile,compile-tests,cobertura.instrument-classes,cobertura.test-instrumented,cobertura.xml-report,cobertura.html-report" />
+          depends="clean-cobertura,install-cobertura,compile,compile-tests,cobertura.instrument-classes,cobertura.test-instrumented,cobertura.xml-report,cobertura.html-report" />
 
 
   <!--=======================================================================
@@ -1405,7 +1434,7 @@ TYPICAL TARGET SEQUENCE
       
       Instruments the application classes used by Cobertura during cobertura.test-instrumented
       ====================================================================-->
-  <target name="cobertura.instrument-classes" depends="cobertura.clean-instrumented-classes,cobertura.install,compile">
+  <target name="cobertura.instrument-classes" depends="cobertura.clean-instrumented-classes,install-cobertura,compile">
     <cobertura-instrument todir="${instrumented.classes.dir}" datafile="${cobertura.data.dir}/cobertura.ser">
       <ignore regex="org.apache.log4j.*" />
       <fileset dir="${classes.dir}">
@@ -1421,53 +1450,14 @@ TYPICAL TARGET SEQUENCE
   </target>
 
 
+
   <!--=======================================================================
-      cobertura.install
+      install-cobertura
       
       Downloads and installs Cobertura ant tasks
       ====================================================================-->
-  <target name="cobertura.install" depends="cobertura.download">
-    <path id="cobertura.classpath">
-      <fileset dir="${cobertura.build.cache.dir}">
-        <include name="*.jar" />
-      </fileset>
-    </path>
-    <taskdef classpathref="cobertura.classpath" resource="tasks.properties" />
-  </target>
-
-
-  <!--=======================================================================
-      cobertura.download-check
-      
-      Fetches Cobertura from sourceforge if it is not already present
-      ====================================================================-->
-  <target name="cobertura.download-check">
-    <condition property="cobertura.available">
-      <and>
-        <available file="${cobertura.build.cache.dir}" />
-        <available classname="net.sourceforge.cobertura.ant.InstrumentTask">
-          <classpath>
-            <fileset dir="${cobertura.build.cache.dir}">
-              <include name="*.jar" />
-            </fileset>
-          </classpath>
-        </available>
-      </and>
-    </condition>
-    <antcall target="cobertura.download" />
-  </target>
-
-  <!--=======================================================================
-      cobertura.download
-      
-      Retrieves Cobertura jar via IVY
-      ====================================================================-->
-  <target name="cobertura.download" depends="install-ivy" unless="cobertura.available">
-    <ivy:retrieve inline="true"
-                  organisation="net.sourceforge.cobertura"
-                  module="cobertura"
-                  revision="1.9"
-                  pattern="${cobertura.build.cache.dir}/[module].[ext]" />
+  <target name="install-cobertura" depends="install-ivy">
+    <taskdef-with-ivy organisation="net.sourceforge.cobertura" module="cobertura" revision="1.9" resource="tasks.properties" classname="net.sourceforge.cobertura.ant.InstrumentTask"/>
   </target>
 
 
@@ -1509,8 +1499,13 @@ TYPICAL TARGET SEQUENCE
       Runs tests against instrumented classes and generates xml and html JUnit test reports
       ====================================================================-->
   <target name="cobertura.test-instrumented"
-          depends="init-test-reports,cobertura.install,compile,compile-tests,cobertura.instrument-classes">
+          depends="init-test-reports,install-cobertura,compile,compile-tests,cobertura.instrument-classes">
     <mkdir dir="${instrumented.classes.dir}" />
+    <path id="cobertura.classpath">
+      <fileset dir="${subfloor.resources.dir}/cobertura">
+        <include name="*.jar" />
+      </fileset>
+    </path>
     <junit fork="yes"
            maxmemory="${junit.maxmemory}"
            failureProperty="test.failed"
@@ -1583,21 +1578,7 @@ TYPICAL TARGET SEQUENCE
         Fetches and installs Pentaho Ant tasks
       ====================================================================-->
   <target name="install-pentaho-ant-tasks" depends="install-ivy">
-    <ivy:retrieve inline="true"
-                  organisation="pentaho"
-                  module="pentaho-ant-tasks"
-                  revision="1.1"
-                  pattern="${pentaho.build.cache.dir}/[module].[ext]" />
-    <path id="pentaho-ant-tasks.classpath">
-      <fileset dir="${pentaho.build.cache.dir}">
-        <include name="*.jar" />
-      </fileset>
-    </path>
-    <taskdef name="dot-classpath"
-             description="Builds Eclipse .classpath from ANT classpath"
-             classname="org.pentaho.anttasks.DotClasspath"
-             classpathref="pentaho-ant-tasks.classpath">
-    </taskdef>
+    <taskdef-with-ivy task-name="dot-classpath" classname="org.pentaho.anttasks.DotClasspath" organisation="pentaho" module="pentaho-ant-tasks" revision="1.1" />
   </target>
 
   <!--=======================================================================
@@ -1623,10 +1604,87 @@ TYPICAL TARGET SEQUENCE
     </dot-classpath>
   </target>
 
+
+  <!--=======================================================================
+        MACRO: taskdef-with-ivy
+        Downloads (using IVY) and defines new Ant tasks
+	    
+	    NOTE: any task using this macro must depend on "install-antcontrib"
+	    
+	    parameters:
+			task-name    - Name to give the new Ant task (only used if resource is not set)
+			organisation - Artifact organization (for artifact resolution with IVY)
+			module       - Artifact module (for artifact resolution with IVY)
+			revision     - Artifact revision (for artifact resolution with IVY)
+			classname    - Classname for the Ant task.  Used during taskdef and to check 
+			               if we already have the libraries
+			resource     - (optional) Resource defining the Ant task.  Used during taskdef
+	    ====================================================================-->
+  <macrodef name="taskdef-with-ivy">
+    <attribute name="task-name"
+               description="Name to give the new Ant task (only used if resource is not set)"
+               default="unset" />
+    <attribute name="organisation" description="Artifact organization" />
+    <attribute name="module" description="Artifact module" />
+    <attribute name="revision" description="Artifact revision" />
+    <attribute name="classname"
+               description="Classname for the Ant task.  Used during taskdef and to check if we already have the libraries." />
+    <attribute name="resource"
+               description="(optional) Resource defining the Ant task.  Used during taskdef"
+               default="unset" />
+    <sequential>
+      <mkdir dir="${subfloor.resources.dir}/@{module}/" />
+      <!-- if the library does not exist, we must download it -->
+      <if>
+        <not>
+          <and>
+            <available file="${subfloor.resources.dir}/@{module}" />
+            <available classname="@{classname}">
+              <classpath>
+                <fileset dir="${subfloor.resources.dir}/@{module}">
+                  <include name="*.jar" />
+                </fileset>
+              </classpath>
+            </available>
+          </and>
+        </not>
+        <then>
+          <ivy:retrieve inline="true"
+		  				conf="default"
+                        organisation="@{organisation}"
+                        module="@{module}"
+                        revision="@{revision}"
+                        pattern="${subfloor.resources.dir}/@{module}/[module]-__-[revision](-[classifier]).[ext]" />
+          <!-- in case the artifact pulls in an ant jar, remove it. they cause runtime conflicts -->
+          <delete>
+            <fileset dir="${subfloor.resources.dir}/@{module}">
+              <include name="ant-__-*.jar" />
+            </fileset>
+          </delete>
+        </then>
+      </if>
+      <path id="taskdef.classpath">
+        <fileset dir="${subfloor.resources.dir}/@{module}">
+          <include name="*.jar" />
+        </fileset>
+      </path>
+      <if>
+        <equals arg1="@{resource}" arg2="unset" />
+        <then>
+          <taskdef classpathref="taskdef.classpath" name="@{task-name}" classname="@{classname}" />
+        </then>
+        <else>
+          <taskdef classpathref="taskdef.classpath" resource="@{resource}" />
+        </else>
+      </if>
+    </sequential>
+  </macrodef>
+
+
   <!--=======================================================================
 	    Macro which will download the specified library. 
 	    
-	    NOTE: any task using this macro must depend on "load-antcontrib"
+	    NOTE: any task using this macro must depend on "install-antcontrib"
 	    
 	    parameters:
 			name      - The name of the library (the filename w/o extension)
@@ -1644,15 +1702,15 @@ TYPICAL TARGET SEQUENCE
     <attribute name="classname" />
     <attribute name="extension" default="zip" />
     <sequential>
-      <mkdir dir="${build.cache.dir}/@{name}/" />
+      <mkdir dir="${subfloor.resources.dir}/@{name}/" />
       <!-- if the library does not exist, we must download it -->
       <if>
         <not>
           <and>
-            <available file="${build.cache.dir}/@{name}" />
+            <available file="${subfloor.resources.dir}/@{name}" />
             <available classname="@{classname}">
               <classpath>
-                <fileset dir="${build.cache.dir}/@{name}">
+                <fileset dir="${subfloor.resources.dir}/@{name}">
                   <include name="**/*.jar" />
                 </fileset>
               </classpath>
@@ -1666,14 +1724,14 @@ TYPICAL TARGET SEQUENCE
             <then>
               <!-- download the source file to a temp directory -->
               <echo message="downloading library @{name} [@{name}.@{extension} from @{url}]" />
-              <mkdir dir="${tmp.build.cache.dir}" />
-              <get src="@{url}" dest="${tmp.build.cache.dir}/@{name}.@{extension}" usetimestamp="true" />
-              <unzip src="${tmp.build.cache.dir}/@{name}.@{extension}"
-                     dest="${build.cache.dir}/@{name}"
+              <mkdir dir="${subfloor.tmp.dir}" />
+              <get src="@{url}" dest="${subfloor.tmp.dir}/@{name}.@{extension}" usetimestamp="true" />
+              <unzip src="${subfloor.tmp.dir}/@{name}.@{extension}"
+                     dest="${subfloor.resources.dir}/@{name}"
                      overwrite="true" />
             </then>
             <else>
-              <get src="@{url}" dest="${build.cache.dir}/@{name}/@{name}.@{extension}" usetimestamp="true" />
+              <get src="@{url}" dest="${subfloor.resources.dir}/@{name}/@{name}.@{extension}" usetimestamp="true" />
             </else>
           </if>
         </then>

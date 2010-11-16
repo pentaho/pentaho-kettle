@@ -29,24 +29,25 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.w3c.dom.Element;
 
-import com.sforce.soap.partner.DeleteResult;
-import com.sforce.soap.partner.DeletedRecord;
-import com.sforce.soap.partner.DescribeGlobalResult;
-import com.sforce.soap.partner.DescribeSObjectResult;
-import com.sforce.soap.partner.Field;
-import com.sforce.soap.partner.GetDeletedResult;
-import com.sforce.soap.partner.GetUpdatedResult;
-import com.sforce.soap.partner.GetUserInfoResult;
-import com.sforce.soap.partner.LoginResult;
-import com.sforce.soap.partner.QueryResult;
-import com.sforce.soap.partner.SaveResult;
-import com.sforce.soap.partner.SessionHeader;
-import com.sforce.soap.partner.SforceServiceLocator;
-import com.sforce.soap.partner.SoapBindingStub;
-import com.sforce.soap.partner.UpsertResult;
-import com.sforce.soap.partner.fault.ExceptionCode;
-import com.sforce.soap.partner.fault.LoginFault;
-import com.sforce.soap.partner.sobject.SObject;
+import com.salesforce.soap.partner.DeleteResult;
+import com.salesforce.soap.partner.DeletedRecord;
+import com.salesforce.soap.partner.DescribeGlobalResult;
+import com.salesforce.soap.partner.DescribeGlobalSObjectResult;
+import com.salesforce.soap.partner.DescribeSObjectResult;
+import com.salesforce.soap.partner.Field;
+import com.salesforce.soap.partner.GetDeletedResult;
+import com.salesforce.soap.partner.GetUpdatedResult;
+import com.salesforce.soap.partner.GetUserInfoResult;
+import com.salesforce.soap.partner.LoginResult;
+import com.salesforce.soap.partner.QueryResult;
+import com.salesforce.soap.partner.SaveResult;
+import com.salesforce.soap.partner.SessionHeader;
+import com.salesforce.soap.partner.SforceServiceLocator;
+import com.salesforce.soap.partner.SoapBindingStub;
+import com.salesforce.soap.partner.UpsertResult;
+import com.salesforce.soap.partner.fault.ExceptionCode;
+import com.salesforce.soap.partner.fault.LoginFault;
+import com.salesforce.soap.partner.sobject.SObject;
 
 public class SalesforceConnection {
 	private static Class<?> PKG = SalesforceInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
@@ -72,10 +73,9 @@ public class SalesforceConnection {
 	private int queryResultSize;
 	private int recordsCount;
 	private boolean useCompression;
+
+	private List<String> getDeletedList;
 	
-
-
-
 	private LogChannelInterface	log;
 	
 	
@@ -287,28 +287,53 @@ public class SalesforceConnection {
 		  
 			switch (this.recordsFilter) {
 				case SalesforceConnectionUtils.RECORDS_FILTER_UPDATED:
-					// Updated records ...
+					// Updated records ...				   
 		 			GetUpdatedResult updatedRecords = getBinding().getUpdated(getModule(), this.startDate, this.endDate);
 						
-		 			if (updatedRecords.getIds() != null	&& updatedRecords.getIds().length > 0) {
-		 				this.sObjects = getBinding().retrieve(this.fieldsList,this.module, updatedRecords.getIds());
-		 				this.queryResultSize=this.sObjects.length;
+		 			if (updatedRecords.getIds() != null) {
+		 				int nr=updatedRecords.getIds().length;
+		 				if(nr>0) {
+		 					String[] ids=updatedRecords.getIds();
+	 						// We can pass a maximum of 2000 object IDs 
+		 					if(nr>SalesforceConnectionUtils.MAX_UPDATED_OBJECTS_IDS) {
+		 						this.sObjects= new SObject[nr];
+		 						List<String> list = new ArrayList<String>();
+		 						int desPos=0;
+		 						for (int i=0;i<nr;i++) {
+		 							list.add(updatedRecords.getIds(i));
+	
+		 							if(i%SalesforceConnectionUtils.MAX_UPDATED_OBJECTS_IDS ==0 || i==nr-1){
+		 								SObject[] s =getBinding().retrieve(this.fieldsList,getModule(), (String[]) list.toArray(new String[list.size()]));
+		 								System.arraycopy(s, 0, this.sObjects, desPos, s.length);
+		 								desPos+=s.length;
+		 								s=null;
+		 								list = new ArrayList<String>();
+		 							}
+		 					      }
+		 					}else {
+		 						this.sObjects = getBinding().retrieve(this.fieldsList,getModule(), ids);
+		 					}
+		 					if(this.sObjects!=null) this.queryResultSize=this.sObjects.length;
+		 				}
 		 			}
 				break;
 				case SalesforceConnectionUtils.RECORDS_FILTER_DELETED:
-					  // Deleted records ...
-			 		GetDeletedResult deletedRecordsResult = this.binding.getDeleted(this.module, this.startDate, this.endDate);
+					// Deleted records ...
+			 		GetDeletedResult deletedRecordsResult = getBinding().getDeleted(getModule(), this.startDate, this.endDate);
 					
 					DeletedRecord[] deletedRecords = deletedRecordsResult.getDeletedRecords();
-					List<String> idlist = new ArrayList<String>();
-					if (deletedRecords != null	&& deletedRecords.length > 0) {
-						for (DeletedRecord deletedRecord : deletedRecords) {
-							idlist.add(deletedRecord.getId());
+					
+					if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "SalesforceConnection.DeletedRecordsFound",String.valueOf(deletedRecords==null?0:deletedRecords.length)));
+					
+					if (deletedRecords != null	&& deletedRecords.length > 0) {	
+						getDeletedList = new ArrayList<String>();
+						
+						for (DeletedRecord dr : deletedRecords) {
+							getDeletedList.add(dr.getId());
 						}
-			 		
 						this.qr = getBinding().queryAll(getSQL());
 						this.sObjects = getQueryResult().getRecords();
-						this.queryResultSize=this.sObjects.length;
+						if(this.sObjects!=null) this.queryResultSize=this.sObjects.length;
 					}
 				break;
 				default:
@@ -334,7 +359,10 @@ public class SalesforceConnection {
 				if(this.binding!=null) this.binding=null;
 				if(this.loginResult!=null) this.loginResult=null;
 				if(this.userInfo!=null) this.userInfo=null;
-
+				if(this.getDeletedList!=null) {
+					getDeletedList.clear();
+					getDeletedList=null;
+				}
 				if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.ConnectionClosed"));
 			}catch(Exception e){
 				throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.Error.ClosingConnection"),e);
@@ -347,13 +375,55 @@ public class SalesforceConnection {
 		return this.recordsCount;
 	 }
 
-	 public String getRecordValue(int recordIndex, int valueIndex) {
-	 	SObject con=this.sObjects[recordIndex];
+	 public SalesforceRecordValue getRecord(int recordIndex) {
+		 int index=recordIndex;
+
+	 	SObject con=this.sObjects[index];
+	 	SalesforceRecordValue retval = new SalesforceRecordValue(index);
 	 	if(con==null) return null;
-	 	if(con.get_any()[valueIndex]!=null) 
-			 return con.get_any()[valueIndex].getValue();
-		 else
-			 return null;
+	 	if(this.recordsFilter==SalesforceConnectionUtils.RECORDS_FILTER_DELETED) {
+	 		// Special case from deleted records
+	 		// We need to compare each record with the deleted ids
+	 		// in getDeletedList
+	 		if(getDeletedList.contains(con.getId())) {
+	 			// this record was deleted in the specified range datetime
+	 			// We will return it
+	 			retval.setRecordValue(con);
+
+	 		}else if(index<getRecordsCount()-1) {
+	 			// this record was not deleted in the range datetime
+	 			// let's move forward and see if we find records that might interest us
+
+	 			while(con!=null && index<getRecordsCount()-1 && !getDeletedList.contains(con.getId())) {
+	 				// still not a record for us !!!
+	 				// let's continue ...
+	 				index++;
+	 				con=this.sObjects[index];
+	 			}
+	 			// if we are here, it means that 
+	 			// we found a record to take
+	 			// or we are fetched all available records
+ 				retval.setRecordIndexChanges(true);
+ 				retval.setRecordIndex(index);
+	 			if(con!=null && con.get_any()[index]!=null) {
+	 				retval.setRecordValue(con);
+	 			}
+	 		}
+			retval.setAllRecordsProcessed(index>=getRecordsCount()-1);
+	 	}else {
+	 		// Case for retrieving record also for updated records
+	 		retval.setRecordValue(con);
+	 	}
+	 	
+	 	return retval;
+	 }
+	 public String getRecordValue(SObject con, int valueIndex) {
+
+	 	if(con==null) return null;
+	 	if(con.get_any()[valueIndex]==null) return null;
+
+	 	// return value
+	 	return con.get_any()[valueIndex].getValue();
 	 }
 	 // Get SOQL meta data (not a Good way but i don't see any other way !)
 	 // TODO : Go back to this one
@@ -386,15 +456,28 @@ public class SalesforceConnection {
 	public String[] getModules() throws KettleException
 	{
 	  DescribeGlobalResult dgr=null;
+	  List<String> modules = null;
 	  try  {
 		  // Get object
 		  dgr = getBinding().describeGlobal();
 		  // let's get all objects
-	      return dgr.getTypes();
+	      int nrModules= dgr.getSobjects().length;
+	      modules = new ArrayList<String>();
+	      for(int i=0; i<nrModules; i++) {
+	    	  DescribeGlobalSObjectResult o= dgr.getSobjects(i);
+	    	  if(o.isQueryable()) {
+	    		  modules.add(dgr.getSobjects(i).getName());
+	    	  }
+	      }
+	      return  (String[]) modules.toArray(new String[modules.size()]);
 	   } catch(Exception e){
 		   throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.Error.GettingModules"),e);
 	   }finally  {
 		   if(dgr!=null) dgr=null;
+		   if(modules!=null) {
+			   modules.clear();
+			   modules=null;
+		   }
 	   }
 	}  
   public Field[] getModuleFields(String module) throws KettleException

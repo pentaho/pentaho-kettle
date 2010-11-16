@@ -502,11 +502,8 @@ public class SpoonJobDelegate extends SpoonDelegate
 			return; // Nothing to do here
 
 		final RipDatabaseWizardPage1 page1 = new RipDatabaseWizardPage1("1", databases); //$NON-NLS-1$
-		page1.createControl(spoon.getShell());
 		final RipDatabaseWizardPage2 page2 = new RipDatabaseWizardPage2("2"); //$NON-NLS-1$
-		page2.createControl(spoon.getShell());
 		final RipDatabaseWizardPage3 page3 = new RipDatabaseWizardPage3("3", spoon.getRepository()); //$NON-NLS-1$
-		page3.createControl(spoon.getShell());
 
 		Wizard wizard = new Wizard()
 		{

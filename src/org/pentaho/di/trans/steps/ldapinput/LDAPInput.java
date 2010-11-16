@@ -379,7 +379,7 @@ public class LDAPInput extends BaseStep implements StepInterface
 
         //Set the filter string.  The more exact of the search string
 		//Set the Search base.This is the place where the search will
-	    data.connection.search(searchBase, filter, meta.getRowLimit(), data.attrReturned);  
+	    data.connection.search(searchBase, filter, meta.getRowLimit(), data.attrReturned, meta.getSearchScope());  
 	 }
 	
 	/**

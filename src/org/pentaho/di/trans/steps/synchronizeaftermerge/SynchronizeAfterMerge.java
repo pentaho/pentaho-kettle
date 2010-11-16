@@ -20,6 +20,7 @@ import java.util.List;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.database.OracleDatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseBatchException;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
@@ -72,6 +73,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 		boolean performInsert=false;
 		boolean performUpdate=false;
 		boolean performDelete=false;
+		boolean lineSkipped=false;
         
 		try{
 			if(operation==null) throw new KettleException(BaseMessages.getString(PKG, "SynchronizeAfterMerge.Log.OperationFieldEmpty",meta.getOperationOrderField()));
@@ -83,8 +85,6 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 		       if (Const.isEmpty(data.realTableName))  throw new KettleStepException("The name of the table is not specified!");
 				data.realSchemaTable = data.db.getDatabaseMeta().getQuotedSchemaTableCombination(data.realSchemaName, data.realTableName);
 			}
-			
-			incrementLinesInput();
 			
 			if(operation.equals(data.insertValue))
 			{
@@ -176,7 +176,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 		    		data.db.setValues(data.lookupParameterRowMeta, lookupRow, data.lookupStatement);
 		    		if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "SynchronizeAfterMerge.Log.ValuesSetForLookup",data.lookupParameterRowMeta.getString(lookupRow))); //$NON-NLS-1$
 		    		Object[] add = data.db.getLookup(data.lookupStatement);
-		    		
+		            incrementLinesInput();
 		    		
 			        if (add==null) 
 					{
@@ -269,8 +269,10 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 					    
 						
 					} // end if operation update
-					else
+					else {
 						incrementLinesSkipped();
+						lineSkipped=true;
+					}
 				}
 				else if(operation.equals(data.deleteValue))
 				{
@@ -322,10 +324,14 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 				else
 				{
 					incrementLinesSkipped();
+					lineSkipped=true;
 				}
 			} // endif operation insert
 			
-			if(performInsert || performUpdate || performDelete)
+			// If we skip a line we need to empty the buffer and skip the line in question.
+			// The skipped line is never added to the buffer!
+			//
+			if(performInsert || performUpdate || performDelete || (data.batchBuffer.size()>0 && lineSkipped))
 			{
 				// Get a commit counter per prepared statement to keep track of separate tables, etc. 
 			    //
@@ -337,12 +343,14 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 				Integer commitCounter = data.commitCounterMap.get(tableName);
 			    if (commitCounter==null) commitCounter=Integer.valueOf(0);
 			    data.commitCounterMap.put(tableName, Integer.valueOf(commitCounter.intValue()+1));
-		
-			    // Release the savepoint if needed
-			    //
-				if (data.specialErrorHandling) {
-					data.db.releaseSavepoint(data.savepoint);
-				}
+
+	          // Release the savepoint if needed
+             //
+			    if (data.specialErrorHandling) {
+   				if (data.releaseSavepoint) {
+	     				data.db.releaseSavepoint(data.savepoint);
+			   	}
+			    }
 				
 				// Perform a commit if needed
 				//
@@ -451,7 +459,9 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
     			
             	if (data.specialErrorHandling) {
             		data.db.rollback(data.savepoint);
-            		data.db.releaseSavepoint(data.savepoint);
+            		if (data.releaseSavepoint) {
+               		data.db.releaseSavepoint(data.savepoint);
+            		}
             	}
                 sendToErrorRow = true;
                 errorMessage = dbe.toString();
@@ -481,7 +491,9 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
             }
             else
             {
-                data.batchBuffer.add(row);
+                if (!lineSkipped) {
+                  data.batchBuffer.add(row);
+                }
                 
                 if (rowIsSafe) // A commit was done and the rows are all safe (no error)
                 {
@@ -493,6 +505,12 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
                     }
                     // Clear the buffer
                     data.batchBuffer.clear();
+                }
+                
+                // Don't forget to pass this line to the following steps
+                //
+                if (lineSkipped) {
+                  putRow(data.outputRowMeta, row);
                 }
             }
         }
@@ -850,7 +868,9 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 		try
 		{
 			lookupValues(r); // add new values to the row in rowset[0].
-			putRow(data.outputRowMeta, r);       // copy row to output rowset(s);
+			if (!data.batchMode) {
+			  putRow(data.outputRowMeta, r);       // copy row to output rowset(s);
+			}
 			
 			if (checkFeedback(getLinesRead())) 
 			{
@@ -888,6 +908,12 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 		    	}
 				
 		    	data.databaseMeta = meta.getDatabaseMeta();
+		    	
+            //  if we are using Oracle then set releaseSavepoint to false
+            if (data.databaseMeta.getDatabaseInterface() instanceof OracleDatabaseMeta) {
+               data.releaseSavepoint = false;
+            }
+		    	
 		    	data.commitSize = Integer.parseInt(environmentSubstitute(""+meta.getCommitSize()));
 		    	data.batchMode = data.commitSize>0 && meta.useBatchUpdate();
                 

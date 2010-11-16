@@ -324,9 +324,7 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
 	
     public boolean supportsBatchUpdates()
     {
-    	// DB2 support batches but big decimals and binary data is
-    	// broken, so for the moment batches are not done in DB2.
-        return false;
+        return true;
     }
     
     /**

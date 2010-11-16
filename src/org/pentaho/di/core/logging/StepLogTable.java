@@ -128,12 +128,13 @@ public class StepLogTable extends BaseLogTable implements Cloneable, LogTableInt
 		table.fields.add( new LogTableField(ID.ERRORS.id, true, false, "ERRORS", BaseMessages.getString(PKG, "StepLogTable.FieldName.Errors"), BaseMessages.getString(PKG, "StepLogTable.FieldDescription.Errors"), ValueMetaInterface.TYPE_INTEGER, 18) );
 		table.fields.add( new LogTableField(ID.LOG_FIELD.id, false, false, "LOG_FIELD", BaseMessages.getString(PKG, "StepLogTable.FieldName.LogField"), BaseMessages.getString(PKG, "StepLogTable.FieldDescription.LogField"), ValueMetaInterface.TYPE_STRING, DatabaseMeta.CLOB_LENGTH) );
 		
+		table.findField(ID.TRANSNAME.id).setNameField(true);
 		table.findField(ID.LOG_DATE.id).setLogDateField(true);
-    table.findField(ID.ID_BATCH.id).setKey(true);
+        table.findField(ID.ID_BATCH.id).setKey(true);
 		table.findField(ID.CHANNEL_ID.id).setVisible(false);
 		table.findField(ID.LOG_FIELD.id).setLogField(true);
 		table.findField(ID.ERRORS.id).setErrorsField(true);
-
+        
 		return table;
 	}
 		
@@ -168,10 +169,9 @@ public class StepLogTable extends BaseLogTable implements Cloneable, LogTableInt
 						case LINES_OUTPUT : value = new Long(combi.step.getLinesOutput()); break;
 						case LINES_REJECTED : value = new Long(combi.step.getLinesRejected()); break;
 						case ERRORS : value = new Long(combi.step.getErrors()); break;
-						case LOG_FIELD : 
-							StringBuffer buffer = CentralLogStore.getAppender().getBuffer(combi.step.getLogChannel().getLogChannelId(), false);
-							value = buffer.toString();
-							break;
+                        case LOG_FIELD : 
+                          value = getLogBuffer(combi.step, combi.step.getLogChannel().getLogChannelId(), status, null);
+                          break;
 						}
 					}
 

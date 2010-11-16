@@ -48,8 +48,12 @@ import org.pentaho.di.i18n.BaseMessages;
 public class LDAPConnection {
 	private static Class<?> PKG = LDAPInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 	
+	public final static int SEARCH_SCOPE_OBJECT_SCOPE = 0;
+	public final static int SEARCH_SCOPE_ONELEVEL_SCOPE = 1;
+	public final static int SEARCH_SCOPE_SUBTREE_SCOPE = 2;
+	
 	public static final int DEFAULT_PORT = 389;
-	private static final String DEFAUL_FILTER_STRING="objectclass=*";
+	public static final String DEFAUL_FILTER_STRING="objectclass=*";
 	
 	public static final int STATUS_SKIPPED=  0;
 	public static final int STATUS_INSERTED= 1;
@@ -198,7 +202,8 @@ public class LDAPConnection {
 	public String getDerefAliases() {
 		return this.derefAliases;
 	}
-	public void search(String searchBase, String filter, int limitRows, String[] attributeReturned) throws KettleException {
+	public void search(String searchBase, String filter, int limitRows, String[] attributeReturned,
+			int searchScope) throws KettleException {
 		//Set the Search base.This is the place where the search will
 		setSearchBase(searchBase);
 		setFilter(Const.NVL(correctFilter(filter), DEFAUL_FILTER_STRING));
@@ -223,7 +228,17 @@ public class LDAPConnection {
 			 if(attributeReturned!=null) this.controls.setReturningAttributes(attributeReturned);
 
 		     //Specify the search scope
-		     this.controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+			 switch (searchScope) {
+				case SEARCH_SCOPE_OBJECT_SCOPE:
+					 this.controls.setSearchScope(SearchControls.OBJECT_SCOPE);
+				break;
+				case SEARCH_SCOPE_ONELEVEL_SCOPE:
+					this.controls.setSearchScope(SearchControls.ONELEVEL_SCOPE);
+				break;
+				default:
+				     this.controls.setSearchScope(SearchControls.SUBTREE_SCOPE);
+				break;
+			  }
 	         
 		     Control ctlp=null;
 		     Control ctlk=null;
@@ -663,7 +678,7 @@ public class LDAPConnection {
         RowMeta fields = new RowMeta();	
         List<String> fieldsl = new ArrayList<String>();
 		try {
-			search(searchBase, null, 0, null);
+			search(searchBase, null, 0, null, SEARCH_SCOPE_SUBTREE_SCOPE);
 			Attributes attributes =null;
 			fieldsl = new ArrayList<String>();
 			while(( attributes = getAttributes())!=null) {

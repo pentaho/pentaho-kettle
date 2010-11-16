@@ -723,8 +723,8 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
             	 RowMetaAndData jobRow =  getJob(new LongObjectId(id_job));
                  if (jobRow!=null)
                  {
-                     String jobName = jobRow.getString(quote(KettleDatabaseRepository.FIELD_JOB_NAME), "<name not found>");
-                     long id_directory = jobRow.getInteger(quote(KettleDatabaseRepository.FIELD_JOB_ID_DIRECTORY), -1L);
+                     String jobName = jobRow.getString(KettleDatabaseRepository.FIELD_JOB_NAME, "<name not found>");
+                     long id_directory = jobRow.getInteger(KettleDatabaseRepository.FIELD_JOB_ID_DIRECTORY, -1L);
                      RepositoryDirectoryInterface dir = repository.loadRepositoryDirectoryTree().findDirectory(new LongObjectId(id_directory)); // always reload the directory tree!
                      
                      jobList[i]=dir.getPathObjectCombination(jobName);

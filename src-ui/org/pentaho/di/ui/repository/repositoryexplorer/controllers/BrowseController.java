@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
 
+import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
@@ -591,12 +592,54 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
       }
 
       if (result == true) {
-        // Perform move
-        for (UIRepositoryObject o : moveList) {
-          o.move(targetDirectory);
+        List<UIRepositoryObject> collisionObjects = new ArrayList<UIRepositoryObject>();
+
+        // Check for overwriting
+        for (UIRepositoryObject newChild : moveList) {
+          for(UIRepositoryObject currChild : targetDirectory.getRepositoryObjects()) {
+            if((currChild instanceof UIRepositoryDirectory) && (newChild instanceof UIRepositoryDirectory) &&
+                (currChild.getName().equalsIgnoreCase(newChild.getName()))) {
+              messageBox.setTitle(messages.getString("Dialog.Error")); //$NON-NLS-1$
+              messageBox.setAcceptLabel(messages.getString("Dialog.Ok")); //$NON-NLS-1$
+              messageBox.setMessage(BaseMessages.getString(RepositoryExplorer.class, "BrowseController.UnableToMove.DirectoryAlreadyExists", currChild.getPath()));//$NON-NLS-1$
+              messageBox.open();
+              result = false;
+              break;
+            } else if(!(currChild instanceof UIRepositoryDirectory) &&
+                (currChild.getType().equalsIgnoreCase(newChild.getType())) &&
+               (currChild.getName().equalsIgnoreCase(newChild.getName()))) {
+              collisionObjects.add(currChild);
+            }
+          }
+          if(!result) {
+            break;
+          }
         }
-        // Set UI objects to appear in folder directory
-        event.getDataTransfer().setData(dirList);
+
+        // Prompt to overwrite
+        if(result && collisionObjects.size() > 0) {
+          FileOverwriteDialogController fileOverwriteDialog = FileOverwriteDialogController.getInstance(getXulDomContainer().getOuterContext() instanceof Shell ? (Shell)getXulDomContainer().getOuterContext() : null, collisionObjects);
+          fileOverwriteDialog.show();
+          if(fileOverwriteDialog.isOverwriteFiles()) {
+            // Delete the files before moving
+            for(UIRepositoryObject o : collisionObjects) {
+              o.delete();
+            }
+          } else {
+            // We are not moving the files
+            result = false;
+          }
+        }
+        
+        // Make sure we are still moving the files
+        if(result) {
+          // Perform move
+          for (UIRepositoryObject o : moveList) {
+            o.move(targetDirectory);
+          }
+          // Set UI objects to appear in folder directory
+          event.getDataTransfer().setData(dirList);
+        }
       }
     } catch (Exception e) {
       result = false;

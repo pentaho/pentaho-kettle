@@ -53,7 +53,8 @@ import org.xml.sax.InputSource;
 
 /**
  * This class contains a number of (static final) methods to facilitate 
- * the retreival of information from XML Node(s).
+ * the retrieval of information from XML Node(s).
+ * 
  * @author Matt
  * @since 04-04-2003
  *

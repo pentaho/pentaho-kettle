@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
@@ -55,6 +56,8 @@ public class ShowMessageDialog extends Dialog
 
     private Shell parent;
     
+    private boolean scroll;
+    
     /** Timeout of dialog in seconds */
     private int timeOut;
 
@@ -73,11 +76,27 @@ public class ShowMessageDialog extends Dialog
      */
     public ShowMessageDialog(Shell parent, int flags, String title, String message)
     {
+      this(parent, flags, title, message, false);
+    }
+    
+    /**
+     * Dialog to allow someone to show a text with an icon in front
+     * 
+     * @param parent The parent shell to use
+     * @param flags the icon to show using SWT flags: SWT.ICON_WARNING, SWT.ICON_ERROR, ... Also SWT.OK, SWT.CANCEL is allowed.
+     * @param title The dialog title
+     * @param message The message to display
+     * @param text The text to display or edit
+     * @param scroll Set the dialog to a default size and enable scrolling
+     */
+    public ShowMessageDialog(Shell parent, int flags, String title, String message, boolean scroll)
+    {
         super(parent, SWT.NONE);
         this.parent = parent;
         this.flags = flags;
         this.title = title;
         this.message = message;
+        this.scroll = scroll;
         
         props = PropsUI.getInstance();
     }
@@ -86,7 +105,8 @@ public class ShowMessageDialog extends Dialog
     {
         Display display = parent.getDisplay();
 
-        shell = new Shell(parent, SWT.DIALOG_TRIM);
+        shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE);
+        
         props.setLook(shell);
         shell.setImage(GUIResource.getInstance().getImageSpoon());
 
@@ -128,10 +148,22 @@ public class ShowMessageDialog extends Dialog
         }
         
         // The message
-        Label wlDesc = new Label(shell, SWT.NONE);
+        Text wlDesc;
+        FormData fdlDesc = new FormData();
+        
+        if(scroll) {
+          wlDesc = new Text(shell, SWT.MULTI | SWT.READ_ONLY | SWT.V_SCROLL | SWT.H_SCROLL);
+          shell.setSize(550, 350);
+          fdlDesc.bottom = new FormAttachment(100, -50);
+          fdlDesc.right = new FormAttachment(100, 0);
+        } else {
+          wlDesc = new Text(shell, SWT.MULTI | SWT.READ_ONLY);
+          fdlDesc.right = new FormAttachment(100, 0);
+        }
+
         wlDesc.setText(message);
         props.setLook(wlDesc);
-        FormData fdlDesc = new FormData();
+        
         if (hasIcon)
         {
             fdlDesc.left = new FormAttachment(wIcon, margin*2);
@@ -142,9 +174,8 @@ public class ShowMessageDialog extends Dialog
             fdlDesc.left = new FormAttachment(0, 0);
             fdlDesc.top = new FormAttachment(0, margin);
         }
-        fdlDesc.right = new FormAttachment(100, 0);
-        wlDesc.setLayoutData(fdlDesc);
         
+        wlDesc.setLayoutData(fdlDesc);
 
         buttons = new ArrayList<Button>();
         adapters = new ArrayList<SelectionAdapter>();
@@ -152,7 +183,7 @@ public class ShowMessageDialog extends Dialog
         if ( (flags & SWT.OK) !=0)
         {
             Button button = new Button(shell, SWT.PUSH);
-            final String ok = BaseMessages.getString(PKG, "System.Button.OK"); 
+            final String ok = BaseMessages.getString(PKG, "System.Button.OK");  //$NON-NLS-1$
             button.setText(ok);
             SelectionAdapter selectionAdapter = new SelectionAdapter() { public void widgetSelected(SelectionEvent event) { quit(SWT.OK); } }; 
             button.addSelectionListener(selectionAdapter);
@@ -162,7 +193,7 @@ public class ShowMessageDialog extends Dialog
         if ( (flags & SWT.CANCEL) !=0) 
         {
             Button button = new Button(shell, SWT.PUSH);
-            button.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
+            button.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
             SelectionAdapter selectionAdapter = new SelectionAdapter() { public void widgetSelected(SelectionEvent event) { quit(SWT.CANCEL); } };
             button.addSelectionListener(selectionAdapter);
             adapters.add(selectionAdapter);
@@ -171,7 +202,7 @@ public class ShowMessageDialog extends Dialog
         if ( (flags & SWT.YES) !=0)
         {
             Button button = new Button(shell, SWT.PUSH);
-            button.setText(BaseMessages.getString(PKG, "System.Button.Yes"));
+            button.setText(BaseMessages.getString(PKG, "System.Button.Yes")); //$NON-NLS-1$
             SelectionAdapter selectionAdapter = new SelectionAdapter() { public void widgetSelected(SelectionEvent event) { quit(SWT.YES); } };
             button.addSelectionListener(selectionAdapter);
             adapters.add(selectionAdapter);
@@ -180,7 +211,7 @@ public class ShowMessageDialog extends Dialog
         if ( (flags & SWT.NO) !=0) 
         {
             Button button = new Button(shell, SWT.PUSH);
-            button.setText(BaseMessages.getString(PKG, "System.Button.No"));
+            button.setText(BaseMessages.getString(PKG, "System.Button.No")); //$NON-NLS-1$
             SelectionAdapter selectionAdapter = new SelectionAdapter() { public void widgetSelected(SelectionEvent event) { quit(SWT.NO); } };
             button.addSelectionListener(selectionAdapter);
             adapters.add(selectionAdapter);
@@ -193,7 +224,9 @@ public class ShowMessageDialog extends Dialog
         shell.addShellListener( new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
 
         shell.layout();
-        shell.pack(true);
+        if(!scroll) {
+          shell.pack(true);
+        }
         
         final Button button = buttons.get(0);
         final SelectionAdapter selectionAdapter = adapters.get(0);
@@ -211,7 +244,7 @@ public class ShowMessageDialog extends Dialog
                 {
                     long time = new Date().getTime();
                     long diff = (time-startTime)/1000;
-                    button.setText(ok+" ("+(timeOut-diff)+")");
+                    button.setText(ok+" ("+(timeOut-diff)+")"); //$NON-NLS-1$ //$NON-NLS-2$
                     
                     if (diff>=timeOut)
                     {

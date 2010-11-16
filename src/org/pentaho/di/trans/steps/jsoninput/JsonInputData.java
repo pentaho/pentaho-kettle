@@ -17,7 +17,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.vfs.FileObject;
-import org.json.simple.JSONArray;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
@@ -71,7 +70,7 @@ public class JsonInputData extends BaseStepData implements StepDataInterface
 	public long size;
 	
 	public JsonReader jsonReader;	
-	public List<JSONArray> resultList;
+	public List<NJSONArray> resultList;
 	
 	public String stringToParse;
 	

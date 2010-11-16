@@ -405,7 +405,7 @@
   	        <!-- external libs (jdbc etc) -->
 	  		<mkdir dir="${distrib}/libext"/>
 	  		<copy todir="${distrib}/libext">
-	  			<fileset dir="${libext}" includes="**/*.jar **/*.zip" excludes="**/.vpn"/>
+	  			<fileset dir="${libext}" includes="**/*.jar **/*.zip **/*.properties" excludes="**/.vpn"/>
 	  			</copy>
 
 	        <!-- swt libs (jdbc etc) -->
@@ -469,6 +469,10 @@
 	  				     includes="**/*.*"
 	  				     excludes="**/.svn"/>
 	  			</copy>
+	  	
+	  	    <!-- make JavaApplicationStub executable for OSX -->
+	  	    <chmod file="${distrib}/Data Integration 32-bit.app/Contents/MacOS/JavaApplicationStub" perm="ugo+rx"/>
+  	        <chmod file="${distrib}/Data Integration 64-bit.app/Contents/MacOS/JavaApplicationStub" perm="ugo+rx"/>
 
 	  </target>
 
@@ -487,6 +491,28 @@
 	  		/>
 	  </target>
 
+	  <!--
+	       ==========================
+	             targz file
+	       ==========================
+	  -->
+		
+	  <target name="targz" depends="distrib" description="generate the ${impl.productID}-${version}-r${revision}.tar.gz file">
+	  	<echo>Generating the Kettle distribution package ${impl.productID}-${version}-r${revision}.tar.gz ...</echo>
+	    <tar destfile="${dist.dir}/${impl.productID}-${version}-r${revision}.tar.gz" longfile="gnu" compression="gzip">
+	      <tarfileset dir="${distrib}" mode="755" excludes="docs/api/** docs/api-core/** **/Thumbs.db">
+	        <include name="**/*.sh" />
+	      	<include name="**/JavaApplicationStub" />
+	      </tarfileset>
+	      <tarfileset dir="${distrib}" excludes="docs/api/** docs/api-core/** **/Thumbs.db">
+	        <exclude name="**/*.sh" />
+	      	<exclude name="**/JavaApplicationStub" />
+	      </tarfileset>
+	    	
+	    </tar>
+
+	  </target>
+	
 	  <!--
 	       ==========================
 	             Source zipfile
@@ -759,7 +785,9 @@
   			<test todir="${junit}" name="org.pentaho.di.trans.steps.excelinput.PoiWorkBookTest" haltonerror="false" />
   			<test todir="${junit}" name="org.pentaho.di.trans.steps.getxmldata.GetXMLDataTest" haltonerror="false" />
   			<test todir="${junit}" name="org.pentaho.di.trans.steps.injector.InjectorTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.insertupdate.InsertUpdateTest" haltonerror="false" />
   			<test todir="${junit}" name="org.pentaho.di.trans.steps.mapping.RunMapping" haltonerror="false" />
+        <test todir="${junit}" name="org.pentaho.di.trans.steps.mapping.MappingTest" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.trans.steps.metainject.MetaInjectTest" haltonerror="false" />
   			<test todir="${junit}" name="org.pentaho.di.trans.steps.nullif.NullIfTest" haltonerror="false" />
   			<test todir="${junit}" name="org.pentaho.di.trans.steps.numberrange.NumberRangeRuleTest" haltonerror="false" />
@@ -771,9 +799,10 @@
   			<test todir="${junit}" name="org.pentaho.di.trans.steps.sort.SortRowsTest" haltonerror="false" />
   			<test todir="${junit}" name="org.pentaho.di.trans.steps.tableoutput.TableOutputTest" haltonerror="false" />
   			<test todir="${junit}" name="org.pentaho.di.trans.steps.tableinput.TableInputTest" haltonerror="false" />
-        <test todir="${junit}" name="org.pentaho.di.trans.steps.textfileinput.TextFileInputTests" haltonerror="false" />
+        	<test todir="${junit}" name="org.pentaho.di.trans.steps.textfileinput.TextFileInputTests" haltonerror="false" />
 		  	<test todir="${junit}" name="org.pentaho.di.trans.steps.unique.UniqueRowsTest" haltonerror="false" />
-		  	<test todir="${junit}" name="org.pentaho.di.trans.steps.valuemapper.ValueMapperTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.update.UpdateTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.valuemapper.ValueMapperTest" haltonerror="false" />
 
 		</junit>
 	</target>

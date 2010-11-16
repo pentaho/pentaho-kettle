@@ -159,8 +159,8 @@ public class JobHopMeta implements Cloneable, XMLInterface
 
 	public void setEnabled(boolean en)
 	{
+	    if (enabled!=en) setChanged();
 		enabled=en;
-		setChanged();
 	}
 
 	public boolean isEnabled()
@@ -175,11 +175,13 @@ public class JobHopMeta implements Cloneable, XMLInterface
 
 	public void setEvaluation()
 	{
+	    if (!evaluation) setChanged();
 		setEvaluation(true);
 	}
 
 	public void setEvaluation(boolean e)
 	{
+	    if (evaluation!=e) setChanged();
 		evaluation=e;
 	}
 	
@@ -233,6 +235,7 @@ public class JobHopMeta implements Cloneable, XMLInterface
 	
 	public void setFromEntry(JobEntryCopy fromEntry) {
 		this.from_entry = fromEntry;
+		changed=true;
 	}
 	
 	public JobEntryCopy getToEntry() {
@@ -241,12 +244,14 @@ public class JobHopMeta implements Cloneable, XMLInterface
 	
 	public void setToEntry(JobEntryCopy toEntry) {
 		this.to_entry = toEntry;
+        changed=true;
 	}
 
 	/**
 	 * @param unconditional the unconditional to set
 	 */
 	public void setUnconditional(boolean unconditional) {
+	    if (this.unconditional!=unconditional) setChanged();
 		this.unconditional = unconditional;
 	}
 

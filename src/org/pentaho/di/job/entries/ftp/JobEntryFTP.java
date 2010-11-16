@@ -1092,11 +1092,11 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
 				
 					boolean getIt = true;
 					
-					String filename=ftpFile.getName();
+          String filename=ftpFile.getName();
 					if(isDebug()) logDebug(BaseMessages.getString(PKG, "JobEntryFTP.AnalysingFile",filename));
 					
 					// We get only files
-					if(ftpFile.isDir() || ftpFile.isLink())
+					if(ftpFile.isDir())
 					{
 						// not a file..so let's skip it!
 						getIt=false;

@@ -1,8 +1,12 @@
 package org.pentaho.di.core.util;
 
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import junit.framework.TestCase;
 
@@ -94,6 +98,32 @@ public class StringEvaluatorTest extends TestCase {
     assertEquals("Not a number detetected", ValueMetaInterface.TYPE_NUMBER, result.getConversionMeta().getType());
     assertEquals("Precision not correct", 2, result.getConversionMeta().getPrecision());
     assertEquals("Currency format mask is incorrect", "$#,##0.00;($#,##0.00)", result.getConversionMeta().getConversionMask());
+  }
+
+  public void testCurrencyData_UK() {
+    Locale orig = Locale.getDefault();
+    Locale.setDefault(Locale.UK);
+    StringEvaluator eval = new StringEvaluator(true);
+
+    DecimalFormat currencyFormat = ((DecimalFormat) NumberFormat.getCurrencyInstance());
+    System.out.println("UK Locale currency format: " + currencyFormat.toLocalizedPattern());
+    try {
+      Number n = currencyFormat.parse("-£400.059");
+    } catch (ParseException e) {
+      fail();
+    }
+    String[] values = new String[]{ "£400.019", "£3,400.029", "£23.00", "-£400.059" };
+    for (String value : values) {
+      eval.evaluateString(value);
+    }
+    assertEquals(values.length, eval.getCount());
+    StringEvaluationResult result = eval.getAdvicedResult();
+
+    Locale.setDefault(orig);
+
+    assertEquals("Not a number detetected", ValueMetaInterface.TYPE_NUMBER, result.getConversionMeta().getType());
+    assertEquals("Precision not correct", 2, result.getConversionMeta().getPrecision());
+    assertEquals("Currency format mask is incorrect", "£#,##0.00", result.getConversionMeta().getConversionMask());
   }
 
   public void testCustomDateFormats() {

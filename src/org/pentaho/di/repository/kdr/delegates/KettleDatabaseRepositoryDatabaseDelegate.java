@@ -128,7 +128,7 @@ public class KettleDatabaseRepositoryDatabaseDelegate extends KettleDatabaseRepo
 				databaseMeta.setIndexTablespace( r.getString(KettleDatabaseRepository.FIELD_DATABASE_INDEX_TBS, "") );
                 
                 // Also, load all the properties we can find...
-				final Collection<RowMetaAndData> attrs = getDatabaseAttributes(id_database);
+				final Collection<RowMetaAndData> attrs = repository.connectionDelegate.getDatabaseAttributes(id_database);
                 for (RowMetaAndData row : attrs)
                 {
                     String code = row.getString(KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_CODE, "");
@@ -419,21 +419,6 @@ public class KettleDatabaseRepositoryDatabaseDelegate extends KettleDatabaseRepo
         }
 
         return retval;
-    }
-    
-	public Collection<RowMetaAndData> getDatabaseAttributes(ObjectId id_database) throws KettleDatabaseException, KettleValueException
-    {
-    	List<RowMetaAndData> attrs = new ArrayList<RowMetaAndData>();
-    	List<Object[]> rows = repository.connectionDelegate.getRows("SELECT * FROM " + quoteTable(KettleDatabaseRepository.TABLE_R_DATABASE_ATTRIBUTE) + " WHERE "+quote(KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE) +" = "+id_database, 0);
-    	for (Object[] row : rows) 
-    	{
-    		RowMetaAndData rowWithMeta = new RowMetaAndData(repository.connectionDelegate.getReturnRowMeta(), row);
-    		long id = rowWithMeta.getInteger(quote(KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_ID_DATABASE_ATTRIBUTE), 0);
-    		if (id >0) {
-    			attrs.add(rowWithMeta);
-    		}
-    	}
-    	return attrs;
     }
     
     private synchronized ObjectId insertDatabaseAttribute(ObjectId id_database, String code, String value_str) throws KettleException

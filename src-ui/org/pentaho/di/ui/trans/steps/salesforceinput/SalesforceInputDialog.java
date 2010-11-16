@@ -82,7 +82,9 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import com.sforce.soap.partner.Field;
+
+import com.salesforce.soap.partner.Field;
+
 
 public class SalesforceInputDialog extends BaseStepDialog implements StepDialogInterface {
 	
@@ -1713,7 +1715,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 				  String[] modules = connection.getModules();
 				  if(modules!=null && modules.length>0) {
 					  // populate Combo
-					  wModule.setItems(connection.getModules());	
+					  wModule.setItems(modules);	
 				  }
 				  
 			      gotModule = true;

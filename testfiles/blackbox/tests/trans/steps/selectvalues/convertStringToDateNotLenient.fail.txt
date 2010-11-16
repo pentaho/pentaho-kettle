@@ -1,0 +1,10 @@
+ERROR 11-10 15:57:27,813 - String to Date - Unexpected error : 
+ERROR 11-10 15:57:27,813 - String to Date - org.pentaho.di.core.exception.KettleValueException: 
+date String : couldn't convert string [0953] to a date using format [yyww]
+Unparseable date: "0953"
+org.pentaho.di.core.row.ValueMeta.convertStringToDate(ValueMeta.java:609)
+org.pentaho.di.core.row.ValueMeta.getDate(ValueMeta.java:1652)
+org.pentaho.di.trans.steps.selectvalues.SelectValues.metadataValues(SelectValues.java:334)
+org.pentaho.di.trans.steps.selectvalues.SelectValues.processRow(SelectValues.java:376)
+org.pentaho.di.trans.step.RunThread.run(RunThread.java:40)
+java.lang.Thread.run(Unknown Source)

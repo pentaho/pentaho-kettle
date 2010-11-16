@@ -25,7 +25,8 @@ import org.pentaho.ui.xul.util.AbstractModelNode;
 
 public class UIRepositoryUsers extends AbstractModelNode<IUIUser>{
 
-    
+  private static final long serialVersionUID = -8505587648560630174L;
+
   public UIRepositoryUsers(){
   }
   

@@ -39,9 +39,27 @@ public interface LogTableInterface {
 	
 	public DatabaseMeta getDatabaseMeta();
 	public List<LogTableField> getFields();
-	public String getSchemaName();
-	public String getTableName();
 	
+	/**
+	 * @return The locally defined log schema name 
+	 */
+	public String getSchemaName();
+	
+	/**
+	 * @return The locally defined log table name
+	 */
+	public String getTableName();
+
+	/**
+	 * @return The actual schema name taking into account optionally defined KETTLE variables for global logging configuration
+	 */
+	public String getActualSchemaName();
+	
+	/**
+	 * @return The actual table name taking into account optionally defined KETTLE variabled for global logging configuration
+	 */
+	public String getActualTableName();
+
 	/**
 	 * Assemble the log record from the logging subject.
 	 * 

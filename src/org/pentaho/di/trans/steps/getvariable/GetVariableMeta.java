@@ -307,7 +307,7 @@ public class GetVariableMeta extends BaseStepMeta implements StepMetaInterface
 				{
 					rep.saveStepAttribute(id_transformation, id_step, i, "field_name",      fieldName[i]);
 					rep.saveStepAttribute(id_transformation, id_step, i, "field_variable",  variableString[i]);
-					rep.saveStepAttribute(id_transformation, id_step, i, "field_type",      fieldType[i]);
+					rep.saveStepAttribute(id_transformation, id_step, i, "field_type",      ValueMeta.getTypeDesc(fieldType[i]));
 					rep.saveStepAttribute(id_transformation, id_step, i, "field_format",    fieldFormat[i]);
 					rep.saveStepAttribute(id_transformation, id_step, i, "field_currency",  currency[i]);
 					rep.saveStepAttribute(id_transformation, id_step, i, "field_decimal",   decimal[i]);

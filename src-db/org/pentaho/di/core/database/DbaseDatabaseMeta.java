@@ -66,7 +66,7 @@ public class DbaseDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	 */
 	public String getSchemaTableCombination(String schema_name, String table_part)
 	{
-		return "\""+table_part+"\"";
+		return getBackwardsCompatibleTable(table_part);
 	}
 	
 	/**

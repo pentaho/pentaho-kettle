@@ -57,13 +57,13 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
     private String   errorCodesValuename;
     
     /** The maximum number of errors allowed before we stop processing with a hard error */
-    private long     maxErrors;
+    private String     maxErrors = "";
     
     /** The maximum percent of errors allowed before we stop processing with a hard error */
-    private int      maxPercentErrors;
+    private String      maxPercentErrors = "";
     
     /** The minimum number of rows to read before the percentage evaluation takes place */
-    private long     minPercentRows;
+    private String     minPercentRows = "";
     
     private VariableSpace variables;
 
@@ -155,9 +155,9 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
         errorDescriptionsValuename = XMLHandler.getTagValue(node, "descriptions_valuename");
         errorFieldsValuename = XMLHandler.getTagValue(node, "fields_valuename");
         errorCodesValuename = XMLHandler.getTagValue(node, "codes_valuename");
-        maxErrors = Const.toLong(XMLHandler.getTagValue(node, "max_errors"), -1L);
-        maxPercentErrors = Const.toInt(XMLHandler.getTagValue(node, "max_pct_errors"), -1);
-        minPercentRows = Const.toLong(XMLHandler.getTagValue(node, "min_pct_rows"), -1L);
+        maxErrors = XMLHandler.getTagValue(node, "max_errors");
+        maxPercentErrors = XMLHandler.getTagValue(node, "max_pct_errors");
+        minPercentRows = XMLHandler.getTagValue(node, "min_pct_rows");
     }
     
     /**
@@ -344,7 +344,7 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
     /**
      * @return the maxErrors
      */
-    public long getMaxErrors()
+    public String getMaxErrors()
     {
         return maxErrors;
     }
@@ -352,7 +352,7 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
     /**
      * @param maxErrors the maxErrors to set
      */
-    public void setMaxErrors(long maxErrors)
+    public void setMaxErrors(String maxErrors)
     {
         this.maxErrors = maxErrors;
     }
@@ -360,7 +360,7 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
     /**
      * @return the maxPercentErrors
      */
-    public int getMaxPercentErrors()
+    public String getMaxPercentErrors()
     {
         return maxPercentErrors;
     }
@@ -368,7 +368,7 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
     /**
      * @param maxPercentErrors the maxPercentErrors to set
      */
-    public void setMaxPercentErrors(int maxPercentErrors)
+    public void setMaxPercentErrors(String maxPercentErrors)
     {
         this.maxPercentErrors = maxPercentErrors;
     }
@@ -376,7 +376,7 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
     /**
      * @return the minRowsForPercent
      */
-    public long getMinPercentRows()
+    public String getMinPercentRows()
     {
         return minPercentRows;
     }
@@ -384,7 +384,7 @@ public class StepErrorMeta extends ChangedFlag implements XMLInterface, Cloneabl
     /**
      * @param minRowsForPercent the minRowsForPercent to set
      */
-    public void setMinPercentRows(long minRowsForPercent)
+    public void setMinPercentRows(String minRowsForPercent)
     {
         this.minPercentRows = minRowsForPercent;
     }

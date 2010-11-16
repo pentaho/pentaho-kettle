@@ -324,12 +324,23 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 			{
 				ValueMetaInterface v;
 				if (replace[i]) {
-					// Look up the field to replace...
+					// Look up the field to replace using the "name" field
 					v = row.searchValueMeta(fieldname[i]);
-					if (v==null && Const.isEmpty(rename[i])) {
-						throw new KettleStepException(BaseMessages.getString(PKG, "ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", fieldname[i]));
+					if (v==null) {
+					  // The field was not found using the "name" field
+					  if(Const.isEmpty(rename[i])) {
+					    // There is no "rename" field to try; Therefore we cannot find the field to replace 
+					    throw new KettleStepException(BaseMessages.getString(PKG, "ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", fieldname[i]));
+					  } else {
+					    // Lookup the field to replace using the "rename" field
+					    v = row.searchValueMeta(rename[i]);
+					    
+					    if(v == null) {
+					      // The field was not found using the "rename" field"; Therefore we cannot find the field to replace
+		            throw new KettleStepException(BaseMessages.getString(PKG, "ScriptValuesMetaMod.Exception.FieldToReplaceNotFound", rename[i]));
+		          }
+					  }
 					}
-					v= row.searchValueMeta(rename[i]);
 					
 					// Change the data type to match what's specified...
 					//

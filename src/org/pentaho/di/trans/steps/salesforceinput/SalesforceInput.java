@@ -33,7 +33,6 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
 
-
 /**
  * Read data from Salesforce module, convert them to rows and writes these to one or more output streams.
  * 
@@ -143,7 +142,7 @@ public class SalesforceInput extends BaseStep implements StepInterface
             	return null;
             }else {
 				if(data.rownr>=data.nrRecords) {
-					if(meta.getRecordsFilter()==SalesforceConnectionUtils.RECORDS_FILTER_ALL) {
+					if(meta.getRecordsFilter()!=SalesforceConnectionUtils.RECORDS_FILTER_UPDATED) {
 						// We retrieved all records available here
 						// maybe we need to query more again ...
 						if(log.isDetailed()) logDetailed(
@@ -164,9 +163,23 @@ public class SalesforceInput extends BaseStep implements StepInterface
 					}
 				}
             }
+            // Return a record
+			SalesforceRecordValue srvalue=data.connection.getRecord((int)data.recordIndex);
+			data.finishedRecord=srvalue.isAllRecordsProcessed();
+			
+			if(meta.getRecordsFilter()==SalesforceConnectionUtils.RECORDS_FILTER_DELETED) {
+				if(srvalue.isRecordIndexChanges()) {
+					// We have moved forward...
+					data.recordIndex= srvalue.getRecordIndex();
+				}
+				if(data.finishedRecord && srvalue.getRecordValue()==null) {
+					// We processed all records
+					return null;
+				}
+			}
 			
 			for (int i=0;i<data.nrfields;i++) {
-				String value=data.connection.getRecordValue((int)data.recordIndex, i);
+				String value=data.connection.getRecordValue(srvalue.getRecordValue(), i);
 				
 				// DO Trimming!
 				switch (meta.getInputFields()[i].getTrimType()) {
@@ -344,11 +357,10 @@ public class SalesforceInput extends BaseStep implements StepInterface
 						 try{
 							 SimpleDateFormat startDate=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 							 SimpleDateFormat endDate=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-							 startDate.parse(realFromDateString);
-							 endDate.parse(realToDateString);
-							 
-							 data.startCal = (GregorianCalendar) startDate.getCalendar();
-							 data.endCal = (GregorianCalendar)endDate.getCalendar(); 
+							 data.startCal = new GregorianCalendar();
+							 data.startCal.setTime(startDate.parse(realFromDateString));
+							 data.endCal = new GregorianCalendar();
+							 data.endCal.setTime(endDate.parse(realToDateString)); 
 						 }catch(Exception e) {
 							 log.logError(BaseMessages.getString(PKG, "SalesforceInput.ErrorParsingDate"),e);
 							 return false;
@@ -370,17 +382,24 @@ public class SalesforceInput extends BaseStep implements StepInterface
 			    	// Free hand SOQL Query
 			    	data.connection.setSQL(soSQL.replace("\n\r", " ").replace("\n", " "));
 			    } else {
-			    	// retrieve data from a module
+			     	// retrieve data from a module
 			    	// Set condition if needed
 			    	String realCondition=environmentSubstitute(meta.getCondition());
 			    	if(!Const.isEmpty(realCondition)) data.connection.setCondition(realCondition);
 			    	// Set module
 			    	data.connection.setModule(data.Module);
+			    	
 			    	// Set calendars for update or deleted records
 			    	if(meta.getRecordsFilter()!=SalesforceConnectionUtils.RECORDS_FILTER_ALL)
 			    		data.connection.setCalendar(meta.getRecordsFilter(), data.startCal, data.endCal);
-			    	// Build now SOQL
-			    	data.connection.setSQL(BuiltSOQl());
+
+			    	if (meta.getRecordsFilter() == SalesforceConnectionUtils.RECORDS_FILTER_UPDATED) {
+			    		// Return fields list
+			    		data.connection.setFieldsList(BuiltSOQl());
+			    	}else {
+				    	// Build now SOQL
+				    	data.connection.setSQL(BuiltSOQl());
+			    	}
 			    }
 			    
 			    // Now connect ...

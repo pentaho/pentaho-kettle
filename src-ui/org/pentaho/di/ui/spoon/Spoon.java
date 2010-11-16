@@ -1105,27 +1105,31 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         String name = variables.getValueMeta(i).getName();
         String value = variables.getString(i, "");
 
-        // We want to insert the variables into all loaded jobs and
-        // transformations
-        //
-        for (TransMeta transMeta : getLoadedTransformations()) {
-          transMeta.setVariable(name, Const.NVL(value, ""));
-        }
-        for (JobMeta jobMeta : getLoadedJobs()) {
-          jobMeta.setVariable(name, Const.NVL(value, ""));
-        }
-
-        // Not only that, we also want to set the variables in the
-        // execution configurations...
-        //
-        transExecutionConfiguration.getVariables().put(name, value);
-        jobExecutionConfiguration.getVariables().put(name, value);
-        transDebugExecutionConfiguration.getVariables().put(name, value);
+        applyVariableToAllLoadedObjects(name, value);
       } catch (KettleValueException e) {
         // Just eat the exception. getString() should never give an
         // exception.
       }
     }
+  }
+
+  public void applyVariableToAllLoadedObjects(String name, String value) {
+    // We want to insert the variables into all loaded jobs and
+    // transformations
+    //
+    for (TransMeta transMeta : getLoadedTransformations()) {
+      transMeta.setVariable(name, Const.NVL(value, ""));
+    }
+    for (JobMeta jobMeta : getLoadedJobs()) {
+      jobMeta.setVariable(name, Const.NVL(value, ""));
+    }
+
+    // Not only that, we also want to set the variables in the
+    // execution configurations...
+    //
+    transExecutionConfiguration.getVariables().put(name, value);
+    jobExecutionConfiguration.getVariables().put(name, value);
+    transDebugExecutionConfiguration.getVariables().put(name, value);
   }
 
   public void showVariables() {
@@ -2163,9 +2167,50 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     previousShowJob = showJob;
   }
 
-  protected void shareObject(SharedObjectInterface sharedObjectInterface) {
-    sharedObjectInterface.setShared(true);
+  protected void shareObject(SharedObjectInterface sharedObject) {
+    sharedObject.setShared(true);
+    EngineMetaInterface meta = getActiveMeta();
+    try {
+      if (meta!=null) {
+        SharedObjects sharedObjects = null;
+        if (meta instanceof TransMeta) sharedObjects=((TransMeta)meta).getSharedObjects();
+        if (meta instanceof JobMeta) sharedObjects=((JobMeta)meta).getSharedObjects();
+        if (sharedObjects!=null) {
+          sharedObjects.storeObject(sharedObject);
+          sharedObjects.saveToFile();
+        }
+      }
+    } catch(Exception e) {
+      new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.ErrorWritingSharedObjects.Title"),
+          BaseMessages.getString(PKG, "Spoon.Dialog.ErrorWritingSharedObjects.Message"), e);
+    }
     refreshTree();
+  }
+
+  protected void unShareObject(SharedObjectInterface sharedObject) {
+    MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_WARNING);
+    mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.StopSharing.Message"));// "Are you sure you want to stop sharing?"
+    mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.StopSharing.Title"));// Warning!
+    int answer = mb.open();
+    if (answer==SWT.YES) {
+      sharedObject.setShared(false);
+      EngineMetaInterface meta = getActiveMeta();
+      try {
+        if (meta!=null) {
+          SharedObjects sharedObjects = null;
+          if (meta instanceof TransMeta) sharedObjects=((TransMeta)meta).getSharedObjects();
+          if (meta instanceof JobMeta) sharedObjects=((JobMeta)meta).getSharedObjects();
+          if (sharedObjects!=null) {
+            sharedObjects.removeObject(sharedObject);
+            sharedObjects.saveToFile();
+          }
+        }
+      } catch(Exception e) {
+        new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.ErrorWritingSharedObjects.Title"),
+            BaseMessages.getString(PKG, "Spoon.Dialog.ErrorWritingSharedObjects.Message"), e);
+      }
+      refreshTree();
+    }
   }
 
   /**
@@ -2452,7 +2497,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   public void shareObject(String id) {
     if ("database-inst-share".equals(id)) {
       final DatabaseMeta databaseMeta = (DatabaseMeta) selectionObject;
-      shareObject(databaseMeta);
+      if (databaseMeta.isShared()) {
+        unShareObject(databaseMeta);
+      } else {
+        shareObject(databaseMeta);
+      }
     }
     if ("step-inst-share".equals(id)) {
       final StepMeta stepMeta = (StepMeta) selectionObject;
@@ -2604,6 +2653,16 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
           final DatabaseMeta databaseMeta = (DatabaseMeta) selectionObject;
           item.setLabel(BaseMessages.getString(PKG, "Spoon.Menu.Popup.CONNECTIONS.ClearDBCache")
               + databaseMeta.getName());// Clear
+        }
+
+        item = (XulMenuitem) mainSpoonContainer.getDocumentRoot().getElementById("database-inst-share");
+        if (item!=null) {
+          final DatabaseMeta databaseMeta = (DatabaseMeta) selection;
+          if (databaseMeta.isShared()) {
+            item.setLabel(BaseMessages.getString(PKG, "Spoon.Menu.Popup.CONNECTIONS.UnShare"));
+          } else {
+            item.setLabel(BaseMessages.getString(PKG, "Spoon.Menu.Popup.CONNECTIONS.Share"));
+          }
         }
       } else if (selection instanceof StepMeta) {
         spoonMenu = (XulMenupopup) menuMap.get("step-inst");
@@ -4894,7 +4953,17 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
   public void editKettlePropertiesFile() {
     KettlePropertiesFileDialog dialog = new KettlePropertiesFileDialog(shell, SWT.NONE);
-    dialog.open();
+    Map<String,String> newProperties = dialog.open();
+    if (newProperties!=null) {
+      for (String name : newProperties.keySet()) {
+        String value = newProperties.get(name);
+        applyVariableToAllLoadedObjects(name, value);
+        
+        // Also set as a JVM property
+        //
+        System.setProperty(name, value);
+      }
+    }
   }
 
   /**
@@ -5638,8 +5707,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         disableMenuItem(doc, UNDO_MENUITEM, disableTransMenu && disableJobMenu);
         disableMenuItem(doc, REDO_MENUITEM, disableTransMenu && disableJobMenu);
 
-        disableMenuItem(doc, "edit-clear-selection", disableTransMenu);
-        disableMenuItem(doc, "edit-select-all", disableTransMenu);
+        disableMenuItem(doc, "edit-clear-selection", disableTransMenu && disableJobMenu);
+        disableMenuItem(doc, "edit-select-all", disableTransMenu && disableJobMenu);
         updateSettingsMenu(doc, disableTransMenu, disableJobMenu);
         disableMenuItem(doc, "edit-settings" ,disableTransMenu && disableJobMenu && disableMetaMenu);
 
@@ -5681,9 +5750,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         // What steps & plugins to show?
         refreshCoreObjects();
 
-        for (ISpoonMenuController menuController : menuControllers) {
-          menuController.updateMenu(doc);
-        }
+        fireMenuControlers();
       }
     }
   }
@@ -7796,4 +7863,22 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 			new ErrorDialog(shell,"Error","Error getting dependancies! :",e);
 		}
 	}
+  
+    public void fireMenuControlers() { 
+    	if (!Display.getDefault().getThread().equals(Thread.currentThread()) ) {
+            display.syncExec(new Runnable() {
+                public void run() {
+                	fireMenuControlers();
+                }
+            });
+            return;
+    	}
+        org.pentaho.ui.xul.dom.Document doc = null;
+        if(mainSpoonContainer != null) {
+          doc = mainSpoonContainer.getDocumentRoot();    	
+	      for (ISpoonMenuController menuController : menuControllers) {
+	        menuController.updateMenu(doc);
+	      }
+        }
+    }
 }

@@ -26,6 +26,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.reporting.libraries.base.util.StringUtils;
 
 
 /**
@@ -49,11 +50,18 @@ public class GetTableSizeProgressDialog
 	/**
 	 * Creates a new dialog that will handle the wait while we're doing the hard work.
 	 */
-	public GetTableSizeProgressDialog(Shell shell, DatabaseMeta dbInfo, String tableName)
+  public GetTableSizeProgressDialog(Shell shell, DatabaseMeta dbInfo, String tableName) {
+    this(shell, dbInfo, tableName, null);
+  }
+	public GetTableSizeProgressDialog(Shell shell, DatabaseMeta dbInfo, String tableName, String schemaName)
 	{
 		this.shell = shell;
 		this.dbMeta = dbInfo;
-		this.tableName = tableName;
+		if (StringUtils.isEmpty(schemaName)) {
+      this.tableName = tableName;
+    } else {
+      this.tableName = dbInfo.getQuotedSchemaTableCombination(schemaName, tableName);
+    }
 	}
 	
 	public Long open()

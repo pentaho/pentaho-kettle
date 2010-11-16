@@ -86,6 +86,11 @@ public class GetXMLData extends BaseStep implements StepInterface
 				reader.setValidation(true);
 				reader.setFeature("http://apache.org/xml/features/validation/schema", true);
 			}
+			else
+			{
+				// Ignore DTD declarations
+				reader.setEntityResolver(new IgnoreDTDEntityResolver());	
+			}
 			
 			// Ignore comments?
 			if(meta.isIgnoreComments())	reader.setIgnoreComments(true);
@@ -298,6 +303,9 @@ public class GetXMLData extends BaseStep implements StepInterface
 			{
 			    first=false;
 			    
+			    if(data.readrow!=null) {
+			    	data.nrReadRow=data.readrow.length;
+			    }
 				data.inputRowMeta = getInputRowMeta();
 	            data.outputRowMeta = data.inputRowMeta.clone();
 	            meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
@@ -705,10 +713,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 				}
 			 }
 			 	
-			if(meta.isInFields())
-				r= processPutRow(data.readrow,(AbstractNode)data.an.get(data.nodenr));
-			else
-				r= processPutRow(null,(AbstractNode)data.an.get(data.nodenr));
+			 r= processPutRow((AbstractNode)data.an.get(data.nodenr));
 		 }
 		 catch (Exception e)
 		 {
@@ -719,17 +724,19 @@ public class GetXMLData extends BaseStep implements StepInterface
 	}
 
 		
-	private Object[] processPutRow(Object[] row,AbstractNode node) throws KettleException
+	private Object[] processPutRow(AbstractNode node) throws KettleException
 	{
 		// Create new row...
 		Object[] outputRowData = buildEmptyRow();
-
+		
+		 // Create new row	or clone
+		if(meta.isInFields()) {
+			 System.arraycopy(data.readrow, 0, outputRowData, 0, data.nrReadRow);
+		}
 		try
 		{
 			data.nodenr++; 
-			if(row!=null) { 
-			  outputRowData = row.clone();
-			}
+
 			// Read fields...
 			for (int i=0;i<data.nrInputFields;i++)
 			{	
@@ -745,7 +752,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 					// PDI will search for Fieldname value and replace it
 					// Fieldname must be defined before the current node
 					XPathValue=substituteToken(XPathValue, outputRowData);
-					if (isDetailed() ) 	logDetailed(XPathValue);
+					if (isDetailed()) 	logDetailed(XPathValue);
 				}
 				
 				// Get node value
@@ -778,11 +785,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 						break;
 				}
 				
-				if(meta.isInFields())
-				{
-					// Add result field to input stream
-	                outputRowData = RowDataUtil.addValueData(outputRowData,data.totalpreviousfields+i, nodevalue);
-				}
+	
 				// Do conversions
 				//
 				ValueMetaInterface targetValueMeta = data.outputRowMeta.getValueMeta(data.totalpreviousfields+i);
@@ -799,7 +802,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 				}
 			}// End of loop over fields...	
 			
-			int rowIndex = data.nrInputFields;
+			int rowIndex = data.totalpreviousfields+ data.nrInputFields;
 			
 			// See if we need to add the filename to the row...
 			if ( meta.includeFilename() && !Const.isEmpty(meta.getFilenameField()) ) {
@@ -933,11 +936,11 @@ public class GetXMLData extends BaseStep implements StepInterface
 			// do it once
 			for(int i=0; i<data.nrInputFields; i++) {
 				GetXMLDataField xmlDataField = meta.getInputFields()[i];
+				// Resolve variable substitution
+				String XPathValue=environmentSubstitute(xmlDataField.getXPath());
 				if (xmlDataField.getElementType() == GetXMLDataField.ELEMENT_TYPE_ATTRIBUT){
-					// We have an attribut
-					// do we need to add leading @
-					String XPathValue=environmentSubstitute(xmlDataField.getXPath());
-					
+					// We have an attribute
+					// do we need to add leading @?
 					//Only put @ to the last element in path, not in front at all
 					int last=XPathValue.lastIndexOf(GetXMLDataMeta.N0DE_SEPARATOR);
 					if(last>-1){
@@ -945,15 +948,14 @@ public class GetXMLData extends BaseStep implements StepInterface
 						String attribut=XPathValue.substring(last, XPathValue.length());
 						if(!attribut.startsWith(GetXMLDataMeta.AT)) {
 							XPathValue=XPathValue.substring(0, last)+GetXMLDataMeta.AT+attribut;
-							xmlDataField.setXPath(XPathValue);
 						}
 					}else{
 						if(!XPathValue.startsWith(GetXMLDataMeta.AT)) {
 							XPathValue=GetXMLDataMeta.AT+XPathValue; 
-							xmlDataField.setXPath(XPathValue);
 						}
 					}
 				}
+				xmlDataField.setXPath(XPathValue);
 			}
 			
 			data.PathValue=environmentSubstitute(meta.getLoopXPath());
@@ -991,6 +993,31 @@ public class GetXMLData extends BaseStep implements StepInterface
 			data.file.close();
 			}catch (Exception e){}
 		}
+		if(data.an!=null){
+			data.an.clear();
+			data.an=null;
+		}
+		if(data.NAMESPACE!=null) {
+			data.NAMESPACE.clear();
+			data.NAMESPACE=null;
+		}
+		if(data.NSPath!=null) {
+			data.NSPath.clear();
+			data.NSPath=null;
+		}
+		if(data.readrow!=null) {
+			data.readrow=null;
+		}
+		if(data.document!=null) {
+			data.document=null;
+		}
+	    if (data.fr != null) {
+	       BaseStep.closeQuietly(data.fr);
+	    }
+	    if (data.is != null) {
+		       BaseStep.closeQuietly(data.is);
+		    }
+	    if(data.files!=null) data.files=null;
 		super.dispose(smi, sdi);
 	}
 

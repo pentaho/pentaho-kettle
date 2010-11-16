@@ -383,10 +383,10 @@ public class StepErrorMetaDialog extends Dialog
         wErrDesc.setText( Const.NVL(stepErrorMeta.getErrorDescriptionsValuename(), "") );
         wErrFields.setText( Const.NVL(stepErrorMeta.getErrorFieldsValuename(), "") );
 		wErrCodes.setText( Const.NVL(stepErrorMeta.getErrorCodesValuename(), "") );
-        if (stepErrorMeta.getMaxErrors()>0) wMaxErrors.setText( Long.toString(stepErrorMeta.getMaxErrors()));
-        if (stepErrorMeta.getMaxPercentErrors()>0) wMaxPct.setText( Long.toString(stepErrorMeta.getMaxPercentErrors()));
-        if (stepErrorMeta.getMinPercentRows()>0) wMinPctRows.setText( Long.toString(stepErrorMeta.getMinPercentRows()));
-
+        wMaxErrors.setText(stepErrorMeta.getMaxErrors() != null ? stepErrorMeta.getMaxErrors(): "");
+        wMaxPct.setText(stepErrorMeta.getMaxPercentErrors() != null ? stepErrorMeta.getMaxPercentErrors() : "");
+        wMinPctRows.setText(stepErrorMeta.getMinPercentRows() != null ? stepErrorMeta.getMinPercentRows() : "");
+        
 		wSourceStep.setFocus();
 	}
     
@@ -425,8 +425,8 @@ public class StepErrorMetaDialog extends Dialog
         stepErrorMeta.setErrorDescriptionsValuename( wErrDesc.getText() );
         stepErrorMeta.setErrorFieldsValuename( wErrFields.getText() );
         stepErrorMeta.setErrorCodesValuename( wErrCodes.getText() );
-        stepErrorMeta.setMaxErrors( Const.toLong(wMaxErrors.getText(),-1L) );
-        stepErrorMeta.setMaxPercentErrors( Const.toInt( Const.replace(wMaxPct.getText(), "%", ""), -1) );
-        stepErrorMeta.setMinPercentRows( Const.toLong(wMinPctRows.getText(),-1L) );
+        stepErrorMeta.setMaxErrors(wMaxErrors.getText());
+        stepErrorMeta.setMaxPercentErrors(Const.replace(wMaxPct.getText(), "%", ""));
+        stepErrorMeta.setMinPercentRows(wMinPctRows.getText());
     }
 }

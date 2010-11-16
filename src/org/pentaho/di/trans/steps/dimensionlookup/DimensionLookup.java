@@ -1,4 +1,4 @@
- /* Copyright (c) 2007 Pentaho Corporation.  All rights reserved. 
+ /* Copyright (c) 2007 Pentaho Corporation.  All rights reserved.
  * This software was developed by Pentaho Corporation and is provided under the terms 
  * of the GNU Lesser General Public License, Version 2.1. You may not use 
  * this file except in compliance with the license. If you need a copy of the license, 
@@ -250,7 +250,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
     /**
      * Pre-load the cache by reading the whole dimension table from disk...
      * 
-     * @throws in case there is a database or cache problem.
+     * @throws KettleException in case there is a database or cache problem.
      */
 	private void preloadCache() throws KettleException{
 		try {
@@ -462,7 +462,17 @@ public class DimensionLookup extends BaseStep implements StepInterface
 
         // Date range: ]-oo,+oo[
         //
-        valueDateFrom = data.min_date;
+
+        if (data.startDateChoice == DimensionLookupMeta.START_DATE_ALTERNATIVE_SYSDATE) {
+          // use the time the step execution begins as the date from.
+          // before, the current system time was used.  this caused an exclusion of the row in the
+          // lookup portion of the step that uses this 'valueDate' and not the current time.
+          // the result was multiple inserts for what should have been 1 [PDI-4317]
+          valueDateFrom = valueDate;
+        } else {
+          valueDateFrom = data.min_date;
+        }
+
         valueDateTo = data.max_date;
         valueVersion = new Long(1L); // Versions always start at 1.
 
@@ -780,7 +790,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
         	// Null as a start date is possible...
         	//
 	        sql += " AND ( "+dateFromField+" IS NULL OR "+dateFromField+" <= ? )"+Const.CR;
-	        sql += " AND "+dateToField+" >= ?"+Const.CR;
+	        sql += " AND "+dateToField+" > ?"+Const.CR;
 	        
 	        data.lookupRowMeta.addValueMeta( new ValueMeta(meta.getDateFrom(), ValueMetaInterface.TYPE_DATE) );
 	        data.lookupRowMeta.addValueMeta( new ValueMeta(meta.getDateTo(), ValueMetaInterface.TYPE_DATE) );
@@ -1016,7 +1026,11 @@ public class DimensionLookup extends BaseStep implements StepInterface
       insertRow[insertIndex++] = dateFrom;
       break;
     case DimensionLookupMeta.START_DATE_ALTERNATIVE_SYSDATE:
-      insertRow[insertIndex++] = new Date();
+      // use the time the step execution begins as the date from (passed in as dateFrom).
+      // before, the current system time was used.  this caused an exclusion of the row in the
+      // lookup portion of the step that uses this 'valueDate' and not the current time.
+      // the result was multiple inserts for what should have been 1 [PDI-4317]
+      insertRow[insertIndex++] = dateFrom;
       break;
     case DimensionLookupMeta.START_DATE_ALTERNATIVE_START_OF_TRANS:
       insertRow[insertIndex++] = getTrans().getStartDate();
@@ -1424,8 +1438,11 @@ public class DimensionLookup extends BaseStep implements StepInterface
             // Take the second, not the fist in the list, otherwise we would be removing a single entry = not good.
             if (samples.size()>1) {
             	data.smallestCacheKey = samples.get(1);
-            } else { // except when there is only one sample
-            	data.smallestCacheKey = samples.get(0);
+            } else if (!samples.isEmpty()) { // except when there is only one sample
+               	data.smallestCacheKey = samples.get(0);
+            } else {
+            	// If no samples found nothing to remove, we're done
+            	return;
             }
             
             // Remove anything in the cache <= smallest.

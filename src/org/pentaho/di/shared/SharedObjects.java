@@ -223,6 +223,17 @@ public class SharedObjects
         SharedEntry key = new SharedEntry(sharedObject.getClass().getName(), sharedObject.getName());
         objectsMap.put(key, sharedObject);
     }
+    
+    /**
+     * Remove the sharedObject from the object map.
+     * 
+     * @param sharedObject
+     */
+    public void removeObject(SharedObjectInterface sharedObject)
+    {
+        SharedEntry key = new SharedEntry(sharedObject.getClass().getName(), sharedObject.getName());
+        objectsMap.remove(key);
+    }
 
     public void saveToFile() throws IOException, KettleException
     {

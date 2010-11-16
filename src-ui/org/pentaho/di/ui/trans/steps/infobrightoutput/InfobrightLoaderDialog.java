@@ -12,8 +12,10 @@
  */
 package org.pentaho.di.ui.trans.steps.infobrightoutput;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -44,10 +46,12 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.infobrightoutput.InfobrightLoaderMeta;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 import com.infobright.etl.model.DataFormat;
+import com.infobright.io.InfobrightNamedPipeLoader;
 
 /**
  * Dialog box for the Infobright loader.
@@ -55,8 +59,6 @@ import com.infobright.etl.model.DataFormat;
 public class InfobrightLoaderDialog extends BaseStepDialog implements StepDialogInterface {
   
   private static Class<?> PKG = InfobrightLoaderMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
-
-  private static final char PASSWD_ECHO_CHAR = '*';
   
   private int middle;
   
@@ -72,6 +74,12 @@ public class InfobrightLoaderDialog extends BaseStepDialog implements StepDialog
   private TextVar	targetSchemaText;
 
   private TextVar	targetTableText;
+  
+  private CCombo   charsetSelect;
+  
+  private TextVar   agentPortText;
+  
+  private TextVar   debugFileText;
 
   /**
    * @param parent
@@ -177,12 +185,19 @@ public class InfobrightLoaderDialog extends BaseStepDialog implements StepDialog
 	  dataformats[i++] = format.getDisplayText();
 	}
 
-	dataFormatSelect = addStandardSelect(BaseMessages.getString(PKG, "InfobrightLoaderDialog.Dataformat.Label"), prevControl, dataformats);
+	Map<String,Charset> availableCharsetsMap = Charset.availableCharsets();
+	String[] availableCharsets = new String[availableCharsetsMap.size()];
+	int j = 0;
+	for (String charsetName : availableCharsetsMap.keySet()) {
+	  availableCharsets[j++] = charsetName;
+	}
+    dataFormatSelect = addStandardSelect(BaseMessages.getString(PKG, "InfobrightLoaderDialog.Dataformat.Label"), prevControl, dataformats);
     targetSchemaText = addStandardTextVar(BaseMessages.getString(PKG, "InfobrightLoaderDialog.TargetSchema.Label"), dataFormatSelect);
     targetTableText = addStandardTextVar(BaseMessages.getString(PKG, "InfobrightLoaderDialog.TargetTable.Label"), targetSchemaText);
-    //rejectInvalidRowsButton = addStandardCheckBox(BaseMessages.getString(PKG, "InfobrightLoaderDialog.RejectErrors.Label"), targetTableText);
-    
-    return targetTableText;
+    charsetSelect = addStandardSelect(BaseMessages.getString(PKG, "InfobrightLoaderDialog.Charset.Label"), targetTableText, availableCharsets);
+    agentPortText = addStandardTextVar(BaseMessages.getString(PKG, "InfobrightLoaderDialog.AgentPort.Label"), charsetSelect);
+    debugFileText = addStandardTextVar(BaseMessages.getString(PKG, "InfobrightLoaderDialog.DebugFile.Label"), agentPortText);
+    return debugFileText;
   }
 
   protected CCombo addStandardSelect(String labelMessageKey, Control prevControl, String[] choices) {
@@ -204,12 +219,6 @@ public class InfobrightLoaderDialog extends BaseStepDialog implements StepDialog
     targetControl.addModifyListener(lsMod);
     targetControl.setLayoutData(standardInputSpacing(prevControl));
     return targetControl;
-  }
- 
-  protected TextVar addPasswordTextVar(String labelMessageKey, Control prevControl) {
-    TextVar textVar = addStandardTextVar(labelMessageKey, prevControl);
-    textVar.setEchoChar(PASSWD_ECHO_CHAR);
-    return textVar;
   }
   
   protected Button addStandardCheckBox(String labelMessageKey, Control prevControl) {
@@ -321,6 +330,9 @@ public class InfobrightLoaderDialog extends BaseStepDialog implements StepDialog
     dataFormatSelect.setText(meta.getInfobrightProductType());
     targetSchemaText.setText(Const.NVL(meta.getSchemaName(), ""));
     targetTableText.setText(Const.NVL(meta.getTablename(), ""));
+    charsetSelect.setText(meta.getCharset().name());
+    agentPortText.setText(Integer.toString(meta.getAgentPort()));
+    debugFileText.setText(Const.NVL(meta.getDebugFile(), ""));
   }
 
   protected void cancel() {
@@ -330,13 +342,30 @@ public class InfobrightLoaderDialog extends BaseStepDialog implements StepDialog
   }
 
   protected void ok() {
-    stepname = wStepname.getText(); // return value
-    meta.setDatabaseMeta( transMeta.findDatabase(serverConnection.getText()) );
-    meta.setSchemaName(targetSchemaText.getText());
-    meta.setTablename(targetTableText.getText());
-    meta.setDataFormat(DataFormat.valueForDisplayName(dataFormatSelect.getText()));
-    
-    dispose();
+    try {
+      stepname = wStepname.getText(); // return value
+      meta.setDatabaseMeta( transMeta.findDatabase(serverConnection.getText()) );
+      meta.setSchemaName(targetSchemaText.getText());
+      meta.setTablename(targetTableText.getText());
+      meta.setDataFormat(DataFormat.valueForDisplayName(dataFormatSelect.getText()));
+      String charsetName = charsetSelect.getText();
+      Charset charset2 = ("".equals(charsetName) ?
+          InfobrightNamedPipeLoader.DEFAULT_CHARSET :
+          Charset.forName(charsetName));
+      meta.setCharset(charset2);
+      String agentPortStr = agentPortText.getText().trim();
+      if ("".equals(agentPortStr)) {
+        meta.setAgentPort(InfobrightNamedPipeLoader.AGENT_DEFAULT_PORT);
+      } else {
+        meta.setAgentPort(Integer.parseInt(agentPortStr));
+      }
+      meta.setDebugFile(debugFileText.getText());
+      dispose();
+    } catch(Exception e) {
+        new ErrorDialog(shell, BaseMessages.getString(PKG,
+            "InfobrightLoaderDialog.Illegal.Dialog.Settings.Title"),
+          BaseMessages.getString(PKG, "InfobrightLoaderDialog.Illegal.Dialog.Settings.Message"), e);
+    }
   }
 
   public BaseStepMeta getInput() {

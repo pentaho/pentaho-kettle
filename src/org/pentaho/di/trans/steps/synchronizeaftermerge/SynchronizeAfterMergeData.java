@@ -84,6 +84,7 @@ public class SynchronizeAfterMergeData extends BaseStepData implements StepDataI
 	public DatabaseMeta databaseMeta;
 	public boolean specialErrorHandling;
 	public Savepoint savepoint;
+	public boolean releaseSavepoint;
 	
     public List<Object[]> batchBuffer;
 	
@@ -114,6 +115,7 @@ public class SynchronizeAfterMergeData extends BaseStepData implements StepDataI
 		realSchemaTable=null;
         commitCounterMap = new HashMap<String, Integer>();
         batchBuffer = new ArrayList<Object[]>();
+        releaseSavepoint = true;
 
 	}
 }

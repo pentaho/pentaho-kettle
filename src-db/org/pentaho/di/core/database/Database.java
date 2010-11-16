@@ -181,8 +181,11 @@ public class Database implements VariableSpace, LoggingObjectInterface
 	{
 		this.parentLoggingObject = parentObject;
 		this.databaseMeta = databaseMeta;
-		
+
 		shareVariablesWith(databaseMeta);
+		if (parentObject instanceof VariableSpace) {
+		  shareVariablesWith((VariableSpace)parentObject);
+		}
 		
 		log=new LogChannel(this, parentObject);
 		this.containerObjectId = log.getContainerObjectId();
@@ -631,7 +634,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
         }
         catch(Exception e)
         {
-            if (log.isDebug()) log.logDebug("Can't turn auto commit "+onOff);
+            if (log.isDebug()) log.logDebug("Can't turn auto commit "+onOff+Const.CR+Const.getStackTracker(e));
         }
 	}
 	
@@ -1654,26 +1657,32 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		int length = all.length();
 		int nrstats = 0;
 			
+		boolean isComment;
 		while (to<length)
 		{
+		  isComment = false;
 			char c = all.charAt(to);
 			if (c=='"')
 			{
 				c=' ';
-				while (to<length && c!='"') { to++; c=all.charAt(to); }
+				while (++to<length && ((c=all.charAt(to))!='"'));
 			}
 			else
 			if (c=='\'') // skip until next '
 			{
 				c=' ';
-				while (to<length && c!='\'') { to++; c=all.charAt(to); }
+				while (++to<length && ((c=all.charAt(to))!='\''));
 			}
 			else
 			if (all.substring(to).startsWith("--"))  // -- means: ignore comment until end of line...
 			{
-				while (to<length && c!='\n' && c!='\r') { to++; c=all.charAt(to); }
+			  isComment = true;
+			  do {
+			    c = all.charAt(to);
+			  } while(c!='\n' && c!='\r' && ++to<length);
+			  from=to;
 			}
-			if (c==';' || to>=length-1) // end of statement
+			if (!isComment && (c==';' || to>=length-1)) // end of statement
 			{
 				if (to>=length-1) to++; // grab last char also!
                 
@@ -1744,7 +1753,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 				to++;
 				from=to;
 			}
-			else
+			else if(!isComment)
 			{
 				to++;
 			}
@@ -3575,7 +3584,10 @@ public class Database implements VariableSpace, LoggingObjectInterface
 			if (logRecord==null) return;
 			
 			boolean update = (logTable.getKeyField()!=null) && !status.equals(LogStatus.START);
-			String schemaTable = databaseMeta.getSchemaTableCombination(logTable.getSchemaName(), logTable.getTableName());
+			String schemaTable = databaseMeta.getQuotedSchemaTableCombination(
+			    environmentSubstitute(logTable.getActualSchemaName()), 
+			    environmentSubstitute(logTable.getActualTableName())
+			    );
 			RowMetaInterface rowMeta = logRecord.getRowMeta();
 			Object[] rowData = logRecord.getData();
 			
@@ -3604,11 +3616,11 @@ public class Database implements VariableSpace, LoggingObjectInterface
 				
 			} else {
 				
-				insertRow(logTable.getSchemaName(), logTable.getTableName(), logRecord.getRowMeta(), logRecord.getData());
+				insertRow(environmentSubstitute(logTable.getActualSchemaName()), environmentSubstitute(logTable.getActualTableName()), logRecord.getRowMeta(), logRecord.getData());
 
 			}			
 		} catch(Exception e) {
-			throw new KettleDatabaseException("Unable to write log record to log table " + logTable.getTableName(), e);
+			throw new KettleDatabaseException("Unable to write log record to log table " + logTable.getActualTableName(), e);
 		}
 	}
 	
@@ -3618,7 +3630,10 @@ public class Database implements VariableSpace, LoggingObjectInterface
 			if (timeout>0.000001) { 
 				// The timeout has to be at least a few seconds, otherwise we don't bother
 				//
-				String schemaTable = databaseMeta.getSchemaTableCombination(logTable.getSchemaName(), logTable.getTableName());
+				String schemaTable = databaseMeta.getQuotedSchemaTableCombination(
+				    environmentSubstitute(logTable.getActualSchemaName()), 
+				    environmentSubstitute(logTable.getActualTableName())
+				    );
 				
 				// The log date field
 				//
@@ -3636,11 +3651,11 @@ public class Database implements VariableSpace, LoggingObjectInterface
 					execStatement(sql, row.getRowMeta(), row.getData());
 					
 				} else {
-					throw new KettleException(BaseMessages.getString(PKG, "Database.Exception.LogTimeoutDefinedOnTableWithoutLogField", logTable.getTableName()));
+					throw new KettleException(BaseMessages.getString(PKG, "Database.Exception.LogTimeoutDefinedOnTableWithoutLogField", logTable.getActualTableName()));
 				}
 			}
 		} catch(Exception e) {
-			throw new KettleDatabaseException(BaseMessages.getString(PKG, "Database.Exception.UnableToCleanUpOlderRecordsFromLogTable", logTable.getTableName()), e);
+			throw new KettleDatabaseException(BaseMessages.getString(PKG, "Database.Exception.UnableToCleanUpOlderRecordsFromLogTable", logTable.getActualTableName()), e);
 		}
 	}
 	

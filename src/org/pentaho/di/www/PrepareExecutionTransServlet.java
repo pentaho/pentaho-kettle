@@ -115,13 +115,13 @@ public class PrepareExecutionTransServlet extends BaseHttpServlet implements Car
 
           String logText = CentralLogStore.getAppender().getBuffer(trans.getLogChannel().getLogChannelId(), true).toString();
           if (useXML) {
-            out.println(new WebResult(WebResult.STRING_ERROR, BaseMessages.getString(PKG, "PrepareExecutionTransServlet.Error.TransInitFailed", Const.CR + logText + Const.CR + e.getLocalizedMessage())));
+            out.println(new WebResult(WebResult.STRING_ERROR, BaseMessages.getString(PKG, "PrepareExecutionTransServlet.Error.TransInitFailed", Const.CR + logText + Const.CR + Const.getStackTracker(e))));
           } else {
             out.println("<H1>" + BaseMessages.getString(PKG, "PrepareExecutionTransServlet.Log.TransNotInit", transName) + "</H1>");
 
             out.println("<pre>");
             out.println(logText);
-            out.println(e.getLocalizedMessage());
+            out.println(Const.getStackTracker(e));
             out.println("</pre>");
             out.println("<a href=\"" + convertContextPath(GetTransStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "&id="+id+"\">" + BaseMessages.getString(PKG, "TransStatusServlet.BackToTransStatusPage") + "</a><p>");
           }
