@@ -1304,7 +1304,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
      */
 	public boolean insertRow(PreparedStatement ps, boolean batch) throws KettleDatabaseException
 	{
-		return insertRow(ps, false, true);
+		return insertRow(ps, batch, true);
 	}
     /**
      * Insert a row into the database using a prepared statement that has all values set.
@@ -1807,15 +1807,12 @@ public class Database implements VariableSpace, LoggingObjectInterface
 					debug = "P Set fetchsize";
                     int fs = Const.FETCH_SIZE<=pstmt.getMaxRows()?pstmt.getMaxRows():Const.FETCH_SIZE;
                     
-                    // System.out.println("Setting pstmt fetchsize to : "+fs);
-                    {
-                        if (databaseMeta.getDatabaseInterface() instanceof MySQLDatabaseMeta && databaseMeta.isStreamingResults())
-                        {
-                            pstmt.setFetchSize(Integer.MIN_VALUE);
-                        }
-                        else
-                        pstmt.setFetchSize(fs);
+                    if (databaseMeta.isMySQLVariant() && databaseMeta.isStreamingResults()) {
+                        pstmt.setFetchSize(Integer.MIN_VALUE);
+                    } else { 
+                        pstmt.setFetchSize(fs); 
                     }
+
 					debug = "P Set fetch direction";
 					pstmt.setFetchDirection(fetch_mode);
 				} 
