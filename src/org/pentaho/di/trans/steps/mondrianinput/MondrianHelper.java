@@ -102,151 +102,156 @@ public class MondrianHelper {
 
     /**
      * Outputs one row per tuple on the rows axis.
-     * @throws KettleDatabaseException in case some or other error occurs 
-	 */
+     * 
+     * @throws KettleDatabaseException
+     *           in case some or other error occurs
+     */
     public void createRectangularOutput() throws KettleDatabaseException {
-    	
-        final Axis[] axes = result.getAxes();
-        if (axes.length != 2) {
-            throw new KettleDatabaseException("Tabular output only supported for 2-dimensional results");
-        }
-        headings = new ArrayList<String>();
-        rows = new ArrayList<List<Object>>();
-
-        final Axis rowsAxis = axes[1];
-        final Axis columnsAxis = axes[0];
-
-        int rowOrdinal = -1;
-        int[] coords = {0, 0};
-        for (Position rowPos : rowsAxis.getPositions()) {
-            ++rowOrdinal;
-            coords[1] = rowOrdinal;
-            if (rowOrdinal == 0) {
-                // Generate headings on the first row. Note that if there are
-                // zero rows, we don't have enough metadata to generate
-                // headings.
-
-                // First headings are for the members on the rows axis.
-                for (Member rowMember : rowPos) {
-                    headings.add(rowMember.getHierarchy().getUniqueName());
-                }
-
-                // Rest of the headings are for the members on the columns axis.
-                // If there are more than one member at each postition,
-                // concatenate the unique names.
-                for (Position columnPos : columnsAxis.getPositions()) {
-                    String heading = "";
-                    for (Member columnMember : columnPos) {
-                        if (!heading.equals("")) {
-                            heading += ", ";
-                        }
-                        heading += columnMember.getUniqueName();
-                    }
-                    headings.add(heading);
-                }
-            }
-
-            List<Object> rowValues = new ArrayList<Object>();
-
-            // The first row values describe the members on the rows axis.
-            for (Member rowMember : rowPos) {
-                rowValues.add(rowMember.getUniqueName());
-            }
-
-            // Rest of the row values are the raw cell values.
-            // NOTE: Could also/instead output formatted cell values here.
-            // NOTE: Could also output all properties of each cell.
-            for (int columnOrdinal = 0;
-                columnOrdinal < columnsAxis.getPositions().size();
-                ++columnOrdinal) {
-                coords[0] = columnOrdinal;
-                final Cell cell = result.getCell(coords);
-                rowValues.add(cell.getValue());
-            }
-
-            rows.add(rowValues);
-        }
-        
-        outputRowMeta = new RowMeta();
-
-        // Scan the rows for the data types. Important case: if we get null on a
-        // column, keep scanning until we find one line that has an actual value
-        if (rows.size() > 0) {
-          int columnCount = rows.get(0).size();
-          HashMap<Integer,ValueMetaInterface> valueMetaHash = new HashMap<Integer,ValueMetaInterface>();
   
-          for (int i=0 ; i<rows.size(); i++) {
-          	
-          	List<Object> rowValues = rows.get(i);
-          	
-              for (int c=0 ;c<rowValues.size();c++) {
+      final Axis[] axes = result.getAxes();
+      if (axes.length != 2) {
+        throw new KettleDatabaseException("Tabular output only supported for 2-dimensional results");
+      }
+      headings = new ArrayList<String>();
+      rows = new ArrayList<List<Object>>();
   
-                if (valueMetaHash.containsKey(new Integer(c))){
-                  continue; // we have this value already
-                }
-                
-                ValueMetaInterface valueMeta = new ValueMeta(headings.get(c));
-              	Object             valueData = rowValues.get(c);
+      final Axis rowsAxis = axes[1];
+      final Axis columnsAxis = axes[0];
   
-                if(valueData == null)
-                  continue; //skip this row and look for the metadata in a new one
+      int rowOrdinal = -1;
+      int[] coords = { 0, 0 };
+      for (Position rowPos : rowsAxis.getPositions()) {
+        ++rowOrdinal;
+        coords[1] = rowOrdinal;
+        if (rowOrdinal == 0) {
+          // Generate headings on the first row. Note that if there are
+          // zero rows, we don't have enough metadata to generate
+          // headings.
   
-              	if (valueData instanceof String) {
-              		valueMeta.setType(ValueMetaInterface.TYPE_STRING);
-              	}
-              	else if (valueData instanceof Date) {
-              		valueMeta.setType(ValueMetaInterface.TYPE_DATE);
-              	}
-              	else if (valueData instanceof Boolean) {
-              		valueMeta.setType(ValueMetaInterface.TYPE_BOOLEAN);
-              	}
-              	else if (valueData instanceof Long) {
-              		valueMeta.setType(ValueMetaInterface.TYPE_INTEGER);
-              	}
-              	else if (valueData instanceof Double) {
-              		valueMeta.setType(ValueMetaInterface.TYPE_NUMBER);
-              	}
-              	else if (valueData instanceof BigDecimal) {
-              		valueMeta.setType(ValueMetaInterface.TYPE_BIGNUMBER);
-              	}
-              	else {
-              		throw new KettleDatabaseException("Unhandled data type found '"+valueData.getClass().toString()+"'");
-              	}
+          // First headings are for the members on the rows axis.
+          for (Member rowMember : rowPos) {
+            headings.add(rowMember.getHierarchy().getUniqueName());
+          }
   
-                valueMetaHash.put(c, valueMeta);
-                
-              	
+          // Rest of the headings are for the members on the columns axis.
+          // If there are more than one member at each postition,
+          // concatenate the unique names.
+          for (Position columnPos : columnsAxis.getPositions()) {
+            String heading = "";
+            for (Member columnMember : columnPos) {
+              if (!heading.equals("")) {
+                heading += ", ";
               }
-  
-              if (valueMetaHash.size() == columnCount)
-                break; // we're done
-          }
-          
-  
-          // Build the list of valueMetas
-          List<ValueMetaInterface> valueMetaList = new ArrayList<ValueMetaInterface>();
-  
-          for (int c = 0; c < columnCount; c++) {
-            if(valueMetaHash.containsKey(new Integer(c))){
-              valueMetaList.add(valueMetaHash.get(new Integer(c)));
+              heading += columnMember.getUniqueName();
             }
-            else
-            {
-              // If the entire column is null, assume the missing data as String. Irrelevant, anyway
-              ValueMetaInterface valueMeta = new ValueMeta(headings.get(c),ValueMetaInterface.TYPE_STRING);
-              valueMetaList.add(valueMeta);
-            }
-  
+            headings.add(heading);
           }
-          
-          outputRowMeta.setValueMetaList(valueMetaList);
         }
-        // Now that we painstakingly found the meta data that comes out of the Mondrian database, cache it please...
-        //
-        DBCacheEntry cacheEntry = new DBCacheEntry(databaseMeta.getName(), queryString);
-        DBCache.getInstance().put(cacheEntry, outputRowMeta);
+  
+        List<Object> rowValues = new ArrayList<Object>();
+  
+        // The first row values describe the members on the rows axis.
+        for (Member rowMember : rowPos) {
+          rowValues.add(rowMember.getUniqueName());
+        }
+  
+        // Rest of the row values are the raw cell values.
+        // NOTE: Could also/instead output formatted cell values here.
+        // NOTE: Could also output all properties of each cell.
+        for (int columnOrdinal = 0; columnOrdinal < columnsAxis.getPositions().size(); ++columnOrdinal) {
+          coords[0] = columnOrdinal;
+          final Cell cell = result.getCell(coords);
+          rowValues.add(cell.getValue());
+        }
+  
+        rows.add(rowValues);
+      }
+  
+      outputRowMeta = new RowMeta();
+  
+      // Scan the rows for the data types. Important case: if we get null on a
+      // column, keep scanning until we find one line that has an actual value
+      if (rows.size() > 0) {
+        int columnCount = rows.get(0).size();
+        HashMap<Integer, ValueMetaInterface> valueMetaHash = new HashMap<Integer, ValueMetaInterface>();
+  
+        for (int i = 0; i < rows.size(); i++) {
+  
+          List<Object> rowValues = rows.get(i);
+  
+          for (int c = 0; c < rowValues.size(); c++) {
+  
+            if (valueMetaHash.containsKey(new Integer(c))) {
+              continue; // we have this value already
+            }
+  
+            ValueMetaInterface valueMeta = new ValueMeta(headings.get(c));
+            Object valueData = rowValues.get(c);
+  
+            if (valueData == null) {
+              continue; // skip this row and look for the metadata in a new one
+            }
+  
+            if (valueData instanceof String) {
+              valueMeta.setType(ValueMetaInterface.TYPE_STRING);
+            } else if (valueData instanceof Date) {
+              valueMeta.setType(ValueMetaInterface.TYPE_DATE);
+            } else if (valueData instanceof Boolean) {
+              valueMeta.setType(ValueMetaInterface.TYPE_BOOLEAN);
+            } else if (valueData instanceof Integer) {
+              valueMeta.setType(ValueMetaInterface.TYPE_INTEGER);
+              valueData = Long.valueOf(((Integer) valueData).longValue());
+            } else if (valueData instanceof Short) {
+              valueMeta.setType(ValueMetaInterface.TYPE_INTEGER);
+              valueData = Long.valueOf(((Short) valueData).longValue());
+            } else if (valueData instanceof Byte) {
+              valueMeta.setType(ValueMetaInterface.TYPE_INTEGER);
+              valueData = Long.valueOf(((Byte) valueData).longValue());
+            } else if (valueData instanceof Long) {
+              valueMeta.setType(ValueMetaInterface.TYPE_INTEGER);
+            } else if (valueData instanceof Double) {
+              valueMeta.setType(ValueMetaInterface.TYPE_NUMBER);
+            } else if (valueData instanceof Float) {
+              valueMeta.setType(ValueMetaInterface.TYPE_NUMBER);
+              valueData = Double.valueOf(((Float) valueData).doubleValue());
+            } else if (valueData instanceof BigDecimal) {
+              valueMeta.setType(ValueMetaInterface.TYPE_BIGNUMBER);
+            } else {
+              throw new KettleDatabaseException("Unhandled data type found '" + valueData.getClass().toString() + "'");
+            }
+  
+            valueMetaHash.put(c, valueMeta);
+          }
+  
+          if (valueMetaHash.size() == columnCount) {
+            break; // we're done
+          }
+        }
+  
+        // Build the list of valueMetas
+        List<ValueMetaInterface> valueMetaList = new ArrayList<ValueMetaInterface>();
+  
+        for (int c = 0; c < columnCount; c++) {
+          if (valueMetaHash.containsKey(new Integer(c))) {
+            valueMetaList.add(valueMetaHash.get(new Integer(c)));
+          } else {
+            // If the entire column is null, assume the missing data as String.
+            // Irrelevant, anyway
+            ValueMetaInterface valueMeta = new ValueMeta(headings.get(c), ValueMetaInterface.TYPE_STRING);
+            valueMetaList.add(valueMeta);
+          }
+  
+        }
+  
+        outputRowMeta.setValueMetaList(valueMetaList);
+      }
+      // Now that we painstakingly found the meta data that comes out of the
+      // Mondrian database, cache it please...
+      //
+      DBCacheEntry cacheEntry = new DBCacheEntry(databaseMeta.getName(), queryString);
+      DBCache.getInstance().put(cacheEntry, outputRowMeta);
     }
-    
+
     /**
      * Retrieve the rows from the opened query.
      * Also create a description of the flattened output of the query.
@@ -294,27 +299,33 @@ public class MondrianHelper {
         		ValueMetaInterface valueMeta = new ValueMeta(headings.get(c));
             	Object             valueData = rowValues.get(c);
 
-            	if (valueData instanceof String) {
-            		valueMeta.setType(ValueMetaInterface.TYPE_STRING);
-            	}
-            	else if (valueData instanceof Date) {
-            		valueMeta.setType(ValueMetaInterface.TYPE_DATE);
-            	}
-            	else if (valueData instanceof Boolean) {
-            		valueMeta.setType(ValueMetaInterface.TYPE_BOOLEAN);
-            	}
-            	else if (valueData instanceof Long) {
-            		valueMeta.setType(ValueMetaInterface.TYPE_INTEGER);
-            	}
-            	else if (valueData instanceof Double) {
-            		valueMeta.setType(ValueMetaInterface.TYPE_NUMBER);
-            	}
-            	else if (valueData instanceof BigDecimal) {
-            		valueMeta.setType(ValueMetaInterface.TYPE_BIGNUMBER);
-            	}
-            	else {
-            		throw new KettleDatabaseException("Unhandled data type found '"+valueData.getClass().toString()+"'");
-            	}
+                if (valueData instanceof String) {
+                  valueMeta.setType(ValueMetaInterface.TYPE_STRING);
+                } else if (valueData instanceof Date) {
+                  valueMeta.setType(ValueMetaInterface.TYPE_DATE);
+                } else if (valueData instanceof Boolean) {
+                  valueMeta.setType(ValueMetaInterface.TYPE_BOOLEAN);
+                } else if (valueData instanceof Integer) {
+                  valueMeta.setType(ValueMetaInterface.TYPE_INTEGER);
+                  valueData = Long.valueOf(((Integer) valueData).longValue());
+                } else if (valueData instanceof Short) {
+                  valueMeta.setType(ValueMetaInterface.TYPE_INTEGER);
+                  valueData = Long.valueOf(((Short) valueData).longValue());
+                } else if (valueData instanceof Byte) {
+                  valueMeta.setType(ValueMetaInterface.TYPE_INTEGER);
+                  valueData = Long.valueOf(((Byte) valueData).longValue());
+                } else if (valueData instanceof Long) {
+                  valueMeta.setType(ValueMetaInterface.TYPE_INTEGER);
+                } else if (valueData instanceof Double) {
+                  valueMeta.setType(ValueMetaInterface.TYPE_NUMBER);
+                } else if (valueData instanceof Float) {
+                  valueMeta.setType(ValueMetaInterface.TYPE_NUMBER);
+                  valueData = Double.valueOf(((Float) valueData).doubleValue());
+                } else if (valueData instanceof BigDecimal) {
+                  valueMeta.setType(ValueMetaInterface.TYPE_BIGNUMBER);
+                } else {
+                  throw new KettleDatabaseException("Unhandled data type found '" + valueData.getClass().toString() + "'");
+                }
             	
             	outputRowMeta.addValueMeta(valueMeta);
             }
