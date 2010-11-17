@@ -1656,4 +1656,11 @@ public abstract class BaseDatabaseMeta implements Cloneable
     }
     return true;
   }
+  
+  /**
+   * @return true if the database is a MySQL variant, like MySQL 5.1, InfiniDB, InfoBright, and so on.
+   */
+  public boolean isMySQLVariant() {
+    return false;
+  }
 }

@@ -413,6 +413,14 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
     string = string.replaceAll("\\r", "\\\\r");
     return "'"+string+"'";
   }
+  
+  /**
+   * @return true if the database is a MySQL variant, like MySQL 5.1, InfiniDB, InfoBright, and so on.
+   */
+  public boolean isMySQLVariant() {
+    return true;
+  }
+
 }
 
 

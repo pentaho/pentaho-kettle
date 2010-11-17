@@ -2579,4 +2579,8 @@ public class DatabaseMeta
   public String generateColumnAlias(int columnIndex, String suggestedName) {
     return databaseInterface.generateColumnAlias(columnIndex, suggestedName);
   }
+  
+  public boolean isMySQLVariant() {
+    return databaseInterface.isMySQLVariant();
+  }
 }

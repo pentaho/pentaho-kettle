@@ -866,4 +866,9 @@ public interface DatabaseInterface extends Cloneable
    * @return List of parsed SQL statements to be executed separately.
    */
   public List<String> parseStatements(String sqlScript);
+
+  /**
+   * @return true if the database is a MySQL variant, like MySQL 5.1, InfiniDB, InfoBright, and so on.
+   */
+  public boolean isMySQLVariant();  
 }
