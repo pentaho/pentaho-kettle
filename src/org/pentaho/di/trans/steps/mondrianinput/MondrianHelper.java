@@ -328,6 +328,7 @@ public class MondrianHelper {
                 }
             	
             	outputRowMeta.addValueMeta(valueMeta);
+            	rowValues.set(i, valueData);
             }
         }
         
