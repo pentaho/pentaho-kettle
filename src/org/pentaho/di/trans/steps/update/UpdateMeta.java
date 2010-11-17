@@ -93,6 +93,9 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
     /** adds a boolean field to skip lookup and directly update selected fields */
     private boolean  skipLookup;
 	
+    /** Flag to indicate the use of batch updates, enabled by default but disabled for backward compatibility */
+    private boolean      useBatchUpdate;
+
 	public UpdateMeta()
 	{
 		super(); // allocate BaseStepMeta
@@ -347,6 +350,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 			databaseMeta = DatabaseMeta.findDatabase(databases, con);
 			csize      = XMLHandler.getTagValue(stepnode, "commit"); //$NON-NLS-1$
 			commitSize=Const.toInt(csize, 0);
+            useBatchUpdate = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_batch")); 
 			skipLookup = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "skip_lookup")); 
             errorIgnored = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "error_ignored")); //$NON-NLS-1$ //$NON-NLS-2$
             ignoreFlagField = XMLHandler.getTagValue(stepnode, "ignore_flag_field"); //$NON-NLS-1$
@@ -422,6 +426,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("    "+XMLHandler.addTagValue("connection", databaseMeta==null?"":databaseMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		retval.append("    "+XMLHandler.addTagValue("skip_lookup", skipLookup));
 		retval.append("    "+XMLHandler.addTagValue("commit", commitSize)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    "+XMLHandler.addTagValue("use_batch",      useBatchUpdate));
         retval.append("    "+XMLHandler.addTagValue("error_ignored", errorIgnored)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    "+XMLHandler.addTagValue("ignore_flag_field", ignoreFlagField)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    <lookup>"+Const.CR); //$NON-NLS-1$
@@ -459,6 +464,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);  //$NON-NLS-1$
 			skipLookup =     rep.getStepAttributeBoolean (id_step, "skip_lookup");
 			commitSize     = (int)rep.getStepAttributeInteger(id_step, "commit"); //$NON-NLS-1$
+            useBatchUpdate   =      rep.getStepAttributeBoolean(id_step, "use_batch"); 
             schemaName     =      rep.getStepAttributeString(id_step, "schema"); //$NON-NLS-1$
 			tableName      =      rep.getStepAttributeString(id_step, "table"); //$NON-NLS-1$
             
@@ -498,6 +504,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveDatabaseMetaStepAttribute(id_transformation, id_step, "id_connection", databaseMeta);
 			rep.saveStepAttribute(id_transformation, id_step, "skip_lookup",    skipLookup);
 			rep.saveStepAttribute(id_transformation, id_step, "commit",        commitSize); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "use_batch",       useBatchUpdate);
             rep.saveStepAttribute(id_transformation, id_step, "schema",        schemaName); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "table",         tableName); //$NON-NLS-1$
 
@@ -901,4 +908,20 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
     {
         return true;
     }
+
+    /**
+     * @return the useBatchUpdate
+     */
+    public boolean useBatchUpdate() {
+      return useBatchUpdate;
+    }
+
+    /**
+     * @param useBatchUpdate the useBatchUpdate to set
+     */
+    public void setUseBatchUpdate(boolean useBatchUpdate) {
+      this.useBatchUpdate = useBatchUpdate;
+    }
+    
+    
 }

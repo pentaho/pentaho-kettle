@@ -98,6 +98,10 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 	private Text         wCommit;
 	private FormData     fdlCommit, fdCommit;
     
+    private Label        wlBatch;
+    private Button       wBatch;
+    private FormData     fdlBatch, fdBatch;
+
     private Label        wlErrorIgnored;
     private Button       wErrorIgnored;
     private FormData     fdlErrorIgnored, fdErrorIgnored;
@@ -273,13 +277,39 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		fdCommit.right = new FormAttachment(100, 0);
 		wCommit.setLayoutData(fdCommit);
         
+        // Batch update
+        wlBatch=new Label(shell, SWT.RIGHT);
+        wlBatch.setText(BaseMessages.getString(PKG, "UpdateDialog.Batch.Label"));
+        props.setLook(wlBatch);
+        fdlBatch=new FormData();
+        fdlBatch.left  = new FormAttachment(0, 0);
+        fdlBatch.top   = new FormAttachment(wCommit, margin);
+        fdlBatch.right = new FormAttachment(middle, -margin);
+        wlBatch.setLayoutData(fdlBatch);
+        wBatch=new Button(shell, SWT.CHECK);
+        props.setLook(wBatch);
+        fdBatch=new FormData();
+        fdBatch.left  = new FormAttachment(middle, 0);
+        fdBatch.top   = new FormAttachment(wCommit, margin);
+        fdBatch.right = new FormAttachment(100, 0);
+        wBatch.setLayoutData(fdBatch);
+        wBatch.addSelectionListener(
+            new SelectionAdapter()
+            {
+                public void widgetSelected(SelectionEvent arg0)
+                {
+                    setFlags();
+                }
+            }
+        );
+
 		// UsePart update
 		wlSkipLookup=new Label(shell, SWT.RIGHT);
 		wlSkipLookup.setText(BaseMessages.getString(PKG, "UpdateDialog.SkipLookup.Label"));
  		props.setLook(wlSkipLookup);
 		fdlSkipLookup=new FormData();
 		fdlSkipLookup.left  = new FormAttachment(0, 0);
-		fdlSkipLookup.top   = new FormAttachment(wCommit, margin);
+		fdlSkipLookup.top   = new FormAttachment(wBatch, margin);
 		fdlSkipLookup.right = new FormAttachment(middle, -margin);
 		wlSkipLookup.setLayoutData(fdlSkipLookup);
 		wSkipLookup=new Button(shell, SWT.CHECK);
@@ -287,18 +317,18 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
  		props.setLook(wSkipLookup);
 		fdSkipLookup=new FormData();
 		fdSkipLookup.left  = new FormAttachment(middle, 0);
-		fdSkipLookup.top   = new FormAttachment(wCommit, margin);
+		fdSkipLookup.top   = new FormAttachment(wBatch, margin);
 		fdSkipLookup.right = new FormAttachment(100, 0);
 		wSkipLookup.setLayoutData(fdSkipLookup);
 		wSkipLookup.addSelectionListener(new SelectionAdapter() 
-        {
-            public void widgetSelected(SelectionEvent e) 
             {
-                input.setChanged();
-                setActiveIgnoreLookup();
+                public void widgetSelected(SelectionEvent e) 
+                {
+                    input.setChanged();
+                    setActiveIgnoreLookup();
+                }
             }
-        }
-    );		
+        );		
 		
         wlErrorIgnored=new Label(shell, SWT.RIGHT);
         wlErrorIgnored.setText(BaseMessages.getString(PKG, "UpdateDialog.ErrorIgnored.Label")); //$NON-NLS-1$
@@ -562,6 +592,16 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
     {
         wlIgnoreFlagField.setEnabled(wErrorIgnored.getSelection());
         wIgnoreFlagField.setEnabled(wErrorIgnored.getSelection());
+        
+        DatabaseMeta databaseMeta = transMeta.findDatabase(wConnection.getText());
+        boolean hasErrorHandling = transMeta.findStep(stepname).isDoingErrorHandling();
+  
+        // Can't use batch yet when grabbing auto-generated keys...
+        // Only enable batch option when not returning keys.
+        // If we are on PostgreSQL (and look-a-likes), error handling is not supported. (PDI-366)
+        //
+        boolean enableBatch       = wBatch.getSelection() && !transMeta.isUsingUniqueConnections();
+        enableBatch = enableBatch && !( databaseMeta!=null && databaseMeta.supportsErrorHandlingOnBatchUpdates() && hasErrorHandling );        
     }
     private void setTableFieldCombo(){
 		Runnable fieldLoader = new Runnable() {
@@ -613,6 +653,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "UpdateDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 		
 		wCommit.setText(""+input.getCommitSize()); //$NON-NLS-1$
+		wBatch.setSelection(input.useBatchUpdate());
 		wSkipLookup.setSelection(input.isSkipLookup());
         wErrorIgnored.setSelection( input.isErrorIgnored() );
         if (input.getIgnoreFlagField()!=null) wIgnoreFlagField.setText( input.getIgnoreFlagField() );
@@ -668,6 +709,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		inf.allocate(nrkeys, nrfields);
 				
 		inf.setCommitSize( Const.toInt( wCommit.getText(), 0) );
+		inf.setUseBatchUpdate( wBatch.getSelection() );
 		inf.setSkipLookup(wSkipLookup.getSelection() );
 		
 		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "UpdateDialog.Log.FoundKeys",nrkeys+"")); //$NON-NLS-1$ //$NON-NLS-2$

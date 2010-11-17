@@ -181,7 +181,7 @@ public class Update extends BaseStep implements StepInterface
                 
 				if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "Update.Log.UpdateRow")+data.lookupParameterRowMeta.getString(lookupRow)); //$NON-NLS-1$
 				data.db.setValues(data.updateParameterRowMeta, updateRow, data.prepStatementUpdate);
-				data.db.insertRow(data.prepStatementUpdate);
+				data.db.insertRow(data.prepStatementUpdate, meta.useBatchUpdate(), true);
 				incrementLinesUpdated();
 			}
 			else
