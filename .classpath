@@ -112,7 +112,6 @@
 	<classpathentry exported="true" kind="lib" path="libext/livetribe-jsr223-2.0.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/log4j-1.2.14.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/xercesImpl-2.9.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/palo-core.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/feeds/rome-1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/webservices/xalan-2.4.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/JDBC/orai18n.jar"/>
