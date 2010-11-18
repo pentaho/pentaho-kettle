@@ -1249,15 +1249,17 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
     case REPOSITORY_BY_REFERENCE:
       referenceObjectId = jobEntry.getTransObjectId();
       wByReference.setText("");
-      try {
-        RepositoryObject transInf = rep.getObjectInformation(jobEntry.getTransObjectId(), RepositoryObjectType.TRANSFORMATION);
-        if (transInf != null) {
-          getByReferenceData(transInf);
+      if(rep != null) {
+        try {
+          RepositoryObject transInf = rep.getObjectInformation(jobEntry.getTransObjectId(), RepositoryObjectType.TRANSFORMATION);
+          if (transInf != null) {
+            getByReferenceData(transInf);
+          }
+        } catch (KettleException e) {
+          new ErrorDialog(shell, 
+              BaseMessages.getString(PKG, "JobEntryTransDialog.Exception.UnableToReferenceObjectId.Title"), 
+              BaseMessages.getString(PKG, "JobEntryTransDialog.Exception.UnableToReferenceObjectId.Message"), e);
         }
-      } catch (KettleException e) {
-        new ErrorDialog(shell, 
-            BaseMessages.getString(PKG, "JobEntryTransDialog.Exception.UnableToReferenceObjectId.Title"), 
-            BaseMessages.getString(PKG, "JobEntryTransDialog.Exception.UnableToReferenceObjectId.Message"), e);
       }
       break;   
     }
