@@ -2974,9 +2974,14 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		{
 			// Inject certain internal variables to make it more intuitive. 
 			// 
-			for (String var : Const.INTERNAL_TRANS_VARIABLES) executionConfiguration.getVariables().put(var, transMeta.getVariable(var));
-			for (String var : Const.INTERNAL_JOB_VARIABLES) executionConfiguration.getVariables().put(var, transMeta.getVariable(var));
-			
+		  Map <String, String> vars = new HashMap<String, String>();
+      
+      for (String var : Const.INTERNAL_TRANS_VARIABLES) vars.put(var, transMeta.getVariable(var));
+      for (String var : Const.INTERNAL_JOB_VARIABLES) vars.put(var, transMeta.getVariable(var));
+
+      executionConfiguration.getVariables().putAll(vars);
+      slaveServer.injectVariables(executionConfiguration.getVariables());
+
 			if (executionConfiguration.isPassingExport()) {
 				
 				// First export the job...
