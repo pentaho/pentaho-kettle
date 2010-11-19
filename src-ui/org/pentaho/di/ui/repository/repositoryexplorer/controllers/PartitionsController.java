@@ -18,9 +18,7 @@ package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.ResourceBundle;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
@@ -49,20 +47,6 @@ import org.pentaho.ui.xul.swt.SwtBindingFactory;
 import org.pentaho.ui.xul.swt.tags.SwtDialog;
 
 public class PartitionsController extends LazilyInitializedController implements IUISupportController {
-
-  protected ResourceBundle messages = new ResourceBundle() {
-
-    @Override
-    public Enumeration<String> getKeys() {
-      return null;
-    }
-
-    @Override
-    protected Object handleGetObject(String key) {
-      return BaseMessages.getString(RepositoryExplorer.class, key);
-    }
-
-  };
 
   private static Class<?> PKG = RepositoryExplorerDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 

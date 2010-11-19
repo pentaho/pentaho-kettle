@@ -261,9 +261,9 @@ public class BlockingStepDialog extends BaseStepDialog implements StepDialogInte
 
         // Some buttons
         wOK=new Button(shell, SWT.PUSH);
-        wOK.setText(BaseMessages.getString(getClass().getPackage().getName(), "System.Button.OK")); //$NON-NLS-1$
+        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
         wCancel=new Button(shell, SWT.PUSH);
-        wCancel.setText(BaseMessages.getString(getClass().getPackage().getName(), "System.Button.Cancel")); //$NON-NLS-1$
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
         
         setButtonPositions(new Button[] { wOK, wCancel }, margin, wCompress);        
 

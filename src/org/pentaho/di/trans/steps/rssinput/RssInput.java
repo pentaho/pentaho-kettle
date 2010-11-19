@@ -45,7 +45,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.ui.database.Messages;
 import org.xml.sax.SAXParseException;
 
 
@@ -409,12 +408,12 @@ public class RssInput extends BaseStep implements StepInterface
 		{
 			if (meta.includeRowNumber() && Const.isEmpty(meta.getRowNumberField()))
 		    {
-				logError(Messages.getString("RssInput.Error.RowNumberFieldMissing")); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "RssInput.Error.RowNumberFieldMissing")); //$NON-NLS-1$
 				return false;
 		    }
 			if (meta.includeUrl() && Const.isEmpty(meta.geturlField()))
 		    {
-				logError(Messages.getString("RssInput.Error.UrlFieldMissing")); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "RssInput.Error.UrlFieldMissing")); //$NON-NLS-1$
 				return false;
 		    }
 			

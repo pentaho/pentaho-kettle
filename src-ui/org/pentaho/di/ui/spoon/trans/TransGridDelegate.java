@@ -54,7 +54,6 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
 	private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	private static final String XUL_FILE_TRANS_GRID_TOOLBAR = "ui/trans-grid-toolbar.xul";
-	public static final String XUL_FILE_TRANS_GRID_TOOLBAR_PROPERTIES = "ui/trans-grid-toolbar.properties";
 
 	public static final long REFRESH_TIME = 100L;
     public static final long UPDATE_TIME_VIEW = 1000L;

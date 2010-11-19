@@ -469,19 +469,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   // Menu controllers to modify the main spoon menu
   private List<ISpoonMenuController> menuControllers = new ArrayList<ISpoonMenuController>();
 
-  // private XulMenubar menuBar;
-
   private XulToolbar mainToolbar;
-
-  // private XulVbox canvas;
 
   private SwtDeck deck;
 
-  public static final String XUL_FILE_MENUBAR = "ui/menubar.xul";
-
   public static final String XUL_FILE_MAIN = "ui/spoon.xul";
-
-  public static final String XUL_FILE_MENUS = "ui/menus.xul";
 
   private Map<String, XulComponent> menuMap = new HashMap<String, XulComponent>();
 
@@ -1358,7 +1350,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     } catch (Throwable t) {
       t.printStackTrace();
       new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Title"), //$NON-NLS-1$
-          BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_MENUS), //$NON-NLS-1$
+          BaseMessages.getString(PKG, "Spoon.Exception.ErrorReadingXULFile.Message", XUL_FILE_MAIN), //$NON-NLS-1$
           new Exception(t));
     }
 

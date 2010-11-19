@@ -74,8 +74,6 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
 
   private static final String XUL_FILE_TRANS_GRID_TOOLBAR = "ui/job-history-toolbar.xul"; //$NON-NLS-1$
 
-  public static final String XUL_FILE_TRANS_GRID_TOOLBAR_PROPERTIES = "ui/job-history-toolbar.properties"; //$NON-NLS-1$
-
   private JobGraph jobGraph;
 
   private CTabItem jobHistoryTab;

@@ -109,8 +109,8 @@ public class XulDatabaseDialog {
       }
       
     } catch (Exception e) {
-      new ErrorDialog(parentShell, BaseMessages.getString(PKG, "XulDatabaseDialog.Error.Titel"), //$NON-NLS-1$ 
-    		 BaseMessages.getString("XulDatabaseDialog.Error.Dialog"), e); //$NON-NLS-1$
+      new ErrorDialog(parentShell, BaseMessages.getString(PKG, "XulDatabaseDialog.Error.Title"), //$NON-NLS-1$ 
+    		 BaseMessages.getString(PKG, "XulDatabaseDialog.Error.Dialog"), e); //$NON-NLS-1$
       return null;
     }
     return databaseName;
@@ -134,7 +134,7 @@ public class XulDatabaseDialog {
       dataHandler.getControls();
 
     } catch (XulException e) {
-      new ErrorDialog(parentShell, BaseMessages.getString(PKG, "XulDatabaseDialog.Error.Titel"), //$NON-NLS-1$ 
+      new ErrorDialog(parentShell, BaseMessages.getString(PKG, "XulDatabaseDialog.Error.Title"), //$NON-NLS-1$ 
          BaseMessages.getString(PKG, "XulDatabaseDialog.Error.HandleXul"), e); //$NON-NLS-1$
       return;
     }
@@ -178,7 +178,7 @@ public class XulDatabaseDialog {
       parentElement.replaceChild(boxElement, newBox);
 
     } catch (Exception e) {
-      new ErrorDialog(parentShell, BaseMessages.getString(PKG, "XulDatabaseDialog.Error.Titel"), //$NON-NLS-1$ 
+      new ErrorDialog(parentShell, BaseMessages.getString(PKG, "XulDatabaseDialog.Error.Title"), //$NON-NLS-1$ 
           BaseMessages.getString(PKG, "XulDatabaseDialog.Error.HandleXul"), e); //$NON-NLS-1$
       return;
     }
@@ -196,8 +196,8 @@ public class XulDatabaseDialog {
       });
    
     } catch (Exception e) {
-      new ErrorDialog(parentShell, BaseMessages.getString(PKG, "XulDatabaseDialog.Error.Titel"), //$NON-NLS-1$ 
-         BaseMessages.getString("XulDatabaseDialog.Error.Dialog"), e); //$NON-NLS-1$
+      new ErrorDialog(parentShell, BaseMessages.getString(PKG, "XulDatabaseDialog.Error.Title"), //$NON-NLS-1$ 
+         BaseMessages.getString(PKG, "XulDatabaseDialog.Error.Dialog"), e); //$NON-NLS-1$
       return;
     }
   }

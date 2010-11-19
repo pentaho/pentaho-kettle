@@ -17,14 +17,11 @@
 package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
-import java.util.ResourceBundle;
 
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
-import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorer;
 import org.pentaho.di.ui.repository.repositoryexplorer.RepositoryExplorerCallback;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.ui.xul.binding.BindingFactory;
@@ -42,20 +39,6 @@ import org.pentaho.ui.xul.util.DialogController;
  * 
  */
 public class MainController extends AbstractXulEventHandler implements DialogController<Object>{
- 
-  protected ResourceBundle messages = new ResourceBundle() {
-
-    @Override
-    public Enumeration<String> getKeys() {
-      return null;
-    }
-
-    @Override
-    protected Object handleGetObject(String key) {
-      return BaseMessages.getString(RepositoryExplorer.class, key);
-    }
-    
-  };  
   
   private static Class<?> PKG = RepositoryExplorerDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
   private RepositoryExplorerCallback callback;

@@ -1,8 +1,5 @@
 package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
-import java.util.Enumeration;
-import java.util.ResourceBundle;
-
 import org.eclipse.swt.custom.BusyIndicator;
 import org.eclipse.swt.widgets.Display;
 import org.pentaho.di.i18n.BaseMessages;
@@ -14,23 +11,12 @@ import org.pentaho.ui.xul.components.XulMessageBox;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 
 public abstract class LazilyInitializedController extends AbstractXulEventHandler {
+  
+  private static Class<?> PKG = RepositoryExplorer.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
   protected Repository repository;
 
   protected boolean initialized;
-
-  private ResourceBundle messages = new ResourceBundle() {
-
-    @Override
-    public Enumeration<String> getKeys() {
-      return null;
-    }
-
-    @Override
-    protected Object handleGetObject(String key) {
-      return BaseMessages.getString(RepositoryExplorer.class, key);
-    }
-
-  };
 
   public void init(Repository repository) throws ControllerInitializationException {
     this.repository = repository;
@@ -59,13 +45,13 @@ public abstract class LazilyInitializedController extends AbstractXulEventHandle
     } catch (XulException xe) {
       throw new RuntimeException(xe);
     }
-    messageBox.setTitle(messages.getString("Dialog.Error"));//$NON-NLS-1$
-    messageBox.setAcceptLabel(messages.getString("Dialog.Ok"));//$NON-NLS-1$
+    messageBox.setTitle(BaseMessages.getString(PKG, "Dialog.Error"));//$NON-NLS-1$
+    messageBox.setAcceptLabel(BaseMessages.getString(PKG, "Dialog.Ok"));//$NON-NLS-1$
     if (e != null) {
-      messageBox.setMessage(BaseMessages.getString(RepositoryExplorer.class,
+      messageBox.setMessage(BaseMessages.getString(PKG,
           "LazilyInitializedController.Message.UnableToInitWithParam", e.getLocalizedMessage()));//$NON-NLS-1$
     } else {
-      messageBox.setMessage(BaseMessages.getString(RepositoryExplorer.class,
+      messageBox.setMessage(BaseMessages.getString(PKG,
           "LazilyInitializedController.Message.UnableToInit"));//$NON-NLS-1$
     }
     messageBox.open();

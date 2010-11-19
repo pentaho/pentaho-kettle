@@ -41,7 +41,7 @@ import org.pentaho.ui.xul.swt.SwtXulRunner;
  */
 public class FileOverwriteDialogController extends AbstractXulEventHandler {
   private static final String name = "fileOverwriteDialogController"; //$NON-NLS-1$
-  private static final Class<?> CLZ = RepositoryExplorer.class;
+  private static final Class<?> PKG = RepositoryExplorer.class;
   
   private static final ResourceBundle resourceBundle = new ResourceBundle() {
 
@@ -52,7 +52,7 @@ public class FileOverwriteDialogController extends AbstractXulEventHandler {
 
     @Override
     protected Object handleGetObject(String key) {
-      return BaseMessages.getString(CLZ, key);
+      return BaseMessages.getString(PKG, key);
     }
     
   };  
@@ -100,7 +100,7 @@ public class FileOverwriteDialogController extends AbstractXulEventHandler {
       bf.setBindingType(Binding.Type.ONE_WAY);
       bf.createBinding(objects, "children", "file-list", "elements").fireSourceChanged(); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     } catch (Exception e) {
-      new ErrorDialog((Shell)container.getOuterContext(), BaseMessages.getString(CLZ, "FileOverwriteDialog.ErrorDialog.Title"), BaseMessages.getString(CLZ, "FileOverwriteDialog.ErrorDialog.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+      new ErrorDialog((Shell)container.getOuterContext(), BaseMessages.getString(PKG, "FileOverwriteDialog.ErrorDialog.Title"), BaseMessages.getString(PKG, "FileOverwriteDialog.ErrorDialog.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
     }
   }
   

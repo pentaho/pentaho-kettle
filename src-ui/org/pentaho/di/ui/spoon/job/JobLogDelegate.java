@@ -52,8 +52,6 @@ public class JobLogDelegate extends SpoonDelegate implements XulEventHandler {
 
   private static final String XUL_FILE_TRANS_LOG_TOOLBAR = "ui/job-log-toolbar.xul"; //$NON-NLS-1$
 
-  public static final String XUL_FILE_TRANS_LOG_TOOLBAR_PROPERTIES = "ui/job-log-toolbar.properties"; //$NON-NLS-1$
-
   private JobGraph jobGraph;
 
   private CTabItem jobLogTab;

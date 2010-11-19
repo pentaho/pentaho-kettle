@@ -39,6 +39,9 @@ import org.pentaho.ui.xul.containers.XulListbox;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 
 public class RepositoriesController extends AbstractXulEventHandler {
+  
+  private static Class<?> PKG = RepositoryDialogInterface.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+  
   private ResourceBundle messages;
 
   private BindingFactory bf;
@@ -142,7 +145,7 @@ public class RepositoriesController extends AbstractXulEventHandler {
 
     final Shell loginShell = (Shell) loginDialog.getRootObject();
 
-    helper = new RepositoriesHelper(loginModel, document, getMessages(), loginShell);
+    helper = new RepositoriesHelper(loginModel, document, loginShell);
     helper.setPreferredRepositoryName(preferredRepositoryName);
     helper.getMetaData();
   }
@@ -177,8 +180,8 @@ public class RepositoriesController extends AbstractXulEventHandler {
       box = (XulWaitBox) document.createElement("waitbox");
       box.setIndeterminate(true);
       box.setCanCancel(false);
-      box.setTitle(BaseMessages.getString(RepositoryDialogInterface.class, "RepositoryExplorerDialog.Connection.Wait.Title"));
-      box.setMessage(BaseMessages.getString(RepositoryDialogInterface.class, "RepositoryExplorerDialog.Connection.Wait.Message"));
+      box.setTitle(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Wait.Title"));
+      box.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Wait.Message"));
       final Shell loginShell = (Shell) loginDialog.getRootObject();
       final Display display = loginShell.getDisplay();
       box.setDialogParent(loginShell);
@@ -196,7 +199,7 @@ public class RepositoriesController extends AbstractXulEventHandler {
                 cancelButton.setDisabled(false);
 
                 if (helper.getConnectedRepository().getConnectMessage() != null) {
-                  getMessageBox().setTitle(BaseMessages.getString(RepositoriesController.class, "ConnectMessageTitle")); //$NON-NLS-1$
+                  getMessageBox().setTitle(BaseMessages.getString(PKG, "ConnectMessageTitle")); //$NON-NLS-1$
                   getMessageBox().setMessage(helper.getConnectedRepository().getConnectMessage());
                   getMessageBox().open();
                 }
