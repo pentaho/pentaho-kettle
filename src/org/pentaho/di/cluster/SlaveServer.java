@@ -358,7 +358,7 @@ public class SlaveServer  extends ChangedFlag
     {
         String realHostname = environmentSubstitute(hostname);
         if (!StringUtils.isEmpty(webAppName)) {
-          serviceAndArguments = "/" + getWebAppName() + serviceAndArguments;
+          serviceAndArguments = "/" + environmentSubstitute(getWebAppName()) + serviceAndArguments;
         }
         String retval =  "http://"+realHostname+getPortSpecification()+serviceAndArguments; //$NON-NLS-1$ $NON-NLS-2$
         retval = Const.replace(retval, " ", "%20"); //$NON-NLS-1$  //$NON-NLS-2$
