@@ -101,7 +101,10 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   
   @Override
   public boolean equals(Object obj) {
-	  return name.equalsIgnoreCase(((JobEntryBase)obj).getName());
+    if (!(obj instanceof JobEntryBase)) return false;
+    if (this==obj) return true;
+    
+	return name.equalsIgnoreCase(((JobEntryBase)obj).getName());
   }
 
   public void clear()
