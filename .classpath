@@ -133,9 +133,11 @@
 	<classpathentry exported="true" kind="lib" path="libext/jsonpath.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/snakeyaml-1.7.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/odfdom.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/poi-3.6-20091214.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/poi-ooxml-3.6-20091214.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/poi-ooxml-schemas-3.6-20091214.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/poi/geronimo-stax-api_1.0_spec-1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/poi/poi-3.7-20101029.jar"/>
+    <classpathentry exported="true" kind="lib" path="libext/poi/poi-ooxml-3.7-20101029.jar"/>
+    <classpathentry exported="true" kind="lib" path="libext/poi/poi-ooxml-schemas-3.7-20101029.jar"/>
+    <classpathentry exported="true" kind="lib" path="libext/poi/xmlbeans-2.3.0.jar"/>   
 	<classpathentry exported="true" kind="lib" path="libext/xbean.jar"/>
 	<classpathentry exported="true" kind="lib" path="libswt/win32/swt.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/pentaho/hadoop-core-0.20.2.jar"/>
