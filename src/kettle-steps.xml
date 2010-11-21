@@ -1325,4 +1325,11 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.StepsMetrics</tooltip>
 		<iconfile>ui/images/SSTAS.png</iconfile>
 	</step>
+	<step id="TypeExitExcelWriterStep">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.TypeExitExcelWriterStep</description>
+		<classname>org.pentaho.di.trans.steps.excelwriter.ExcelWriterStepMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.TypeExitExcelWriterStep</tooltip>
+		<iconfile>ui/images/XWS.png</iconfile>
+	</step>
 </steps>
