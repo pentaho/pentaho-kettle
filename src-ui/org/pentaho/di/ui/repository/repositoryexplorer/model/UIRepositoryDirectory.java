@@ -93,23 +93,24 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
     for (UIRepositoryObject child : getChildren()) {
       kidElementCache.add(child);
     }
-    List<? extends RepositoryElementMetaInterface> transformations;
-    transformations = rep.getTransformationObjects(new StringObjectId(getId()), false);
-    for (RepositoryElementMetaInterface child : transformations) {
-      try {
-        kidElementCache.add(UIObjectRegistry.getInstance().constructUITransformation(child, this, rep));
-      } catch (UIObjectCreationException e) {
-        kidElementCache.add(new UITransformation(child, this, rep));
-      }
-    }
-    List<? extends RepositoryElementMetaInterface> jobs;
-    jobs = rep.getJobObjects(new StringObjectId(getId()), false);
-    for (RepositoryElementMetaInterface child : jobs) {
-      try {
-        kidElementCache.add(UIObjectRegistry.getInstance().constructUIJob(child, this, rep));
-      } catch (UIObjectCreationException e) {
-        kidElementCache.add(new UIJob(child, this, rep));
-      }      
+    List<? extends RepositoryElementMetaInterface> jobsAndTransformations = rep.getJobAndTransformationObjects(new StringObjectId(getId()), false);
+    System.out.println("jobsAndTransformations size: " + jobsAndTransformations.size());
+    for (RepositoryElementMetaInterface child : jobsAndTransformations) {
+      if (child.getObjectType().equals(RepositoryObjectType.TRANSFORMATION)) {
+        System.out.println("Adding transformation child: " + child);
+       	try {
+          kidElementCache.add(UIObjectRegistry.getInstance().constructUITransformation(child, this, rep));
+        } catch (UIObjectCreationException e) {
+          kidElementCache.add(new UITransformation(child, this, rep));
+        }
+    	} else {
+        System.out.println("Adding job child: " + child);
+        try {
+    	    kidElementCache.add(UIObjectRegistry.getInstance().constructUIJob(child, this, rep));
+    	  } catch (UIObjectCreationException e) {
+    	    kidElementCache.add(new UIJob(child, this, rep));
+    	  }      
+    	}
     }
     return kidElementCache;
   }

@@ -67,24 +67,19 @@ public class RepositoryDirectoryUI {
 		
 		try
 		{
-            List<RepositoryElementMetaInterface> repositoryObjects = new ArrayList<RepositoryElementMetaInterface>();
-            
 			// Then show the transformations & jobs in that directory...
-            if (getTransformations)
+            List<RepositoryElementMetaInterface> repositoryObjects = null;
+            
+            if (getTransformations && !getJobs)
             {
-                List<RepositoryElementMetaInterface> repositoryTransformations = rep.getTransformationObjects(dir.getObjectId(), includeDeleted);
-                if (repositoryTransformations!=null)
-                {
-                    repositoryObjects.addAll(repositoryTransformations);
-                }
+              repositoryObjects = rep.getTransformationObjects(dir.getObjectId(), includeDeleted);
             }
-            if (getJobs)
+            else if (getJobs && !getTransformations)
             {
-                List<RepositoryElementMetaInterface> repositoryJobs = rep.getJobObjects(dir.getObjectId(), includeDeleted);
-                if (repositoryJobs!=null)
-                {
-                    repositoryObjects.addAll(repositoryJobs);
-                }
+              repositoryObjects = rep.getJobObjects(dir.getObjectId(), includeDeleted);
+            }
+            else if (getJobs && getTransformations) {
+              repositoryObjects = rep.getJobAndTransformationObjects(dir.getObjectId(), includeDeleted);
             }
             
             // Sort the directory list appropriately...
