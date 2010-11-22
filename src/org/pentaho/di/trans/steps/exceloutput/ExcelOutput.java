@@ -496,9 +496,11 @@ public class ExcelOutput extends BaseStep implements StepInterface
 				// create the openFile from the template
 
 				Workbook tmpWorkbook=Workbook.getWorkbook(KettleVFS.getInputStream(fo), ws);
-				data.workbook = Workbook.createWorkbook(KettleVFS.getOutputStream(data.file,false), tmpWorkbook);
+				data.outputStream = KettleVFS.getOutputStream(data.file,false);
+				data.workbook = Workbook.createWorkbook(data.outputStream, tmpWorkbook);
 				
             	tmpWorkbook.close();
+            	fo.close();
             	// use only the first sheet as template
             	data.sheet = data.workbook.getSheet(0);
             	// save initial number of columns
