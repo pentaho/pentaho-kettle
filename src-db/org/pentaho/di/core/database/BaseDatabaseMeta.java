@@ -151,6 +151,13 @@ public abstract class BaseDatabaseMeta implements Cloneable
      * of rows from a table
      */
     public static final String SELECT_COUNT_STATEMENT = "select count(*) FROM";
+    
+    /**
+     * Boolean to indicate if savepoints can be released
+     * Most databases do, so we set it to true.  
+     * Child classes can overwrite with false if need be.
+     */
+    protected boolean releaseSavepoint = true;
         
     public static final DatabaseConnectionPoolParameter[] poolingParameters = new DatabaseConnectionPoolParameter[]
         {
@@ -1656,4 +1663,13 @@ public abstract class BaseDatabaseMeta implements Cloneable
     }
     return true;
   }
+  
+  /**
+   * Returns a true of savepoints can be released, false if not.
+   * @return
+   */
+  public boolean releaseSavepoint() {
+     return releaseSavepoint;
+  }
+  
 }

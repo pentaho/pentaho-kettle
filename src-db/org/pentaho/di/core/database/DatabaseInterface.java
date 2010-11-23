@@ -866,4 +866,10 @@ public interface DatabaseInterface extends Cloneable
    * @return List of parsed SQL statements to be executed separately.
    */
   public List<String> parseStatements(String sqlScript);
+  
+  /**
+   * Returns a true of savepoints can be released, false if not.
+   * @return
+   */
+  public boolean releaseSavepoint();
 }

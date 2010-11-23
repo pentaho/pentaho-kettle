@@ -547,10 +547,9 @@ public class TableOutput extends BaseStep implements StepInterface
 			{
 				data.databaseMeta = meta.getDatabaseMeta();
 				
-				//  if we are using Oracle then set releaseSavepoint to false
-				if (data.databaseMeta.getDatabaseInterface() instanceof OracleDatabaseMeta) {
-				   data.releaseSavepoint = false;
-				}
+            //  get the boolean that indicates whether or not we can release savepoints
+            //  and set in in data.  
+            data.releaseSavepoint = data.databaseMeta.getDatabaseInterface().releaseSavepoint();
 				
 				data.commitSize = Integer.parseInt(environmentSubstitute(meta.getCommitSize()));
 				

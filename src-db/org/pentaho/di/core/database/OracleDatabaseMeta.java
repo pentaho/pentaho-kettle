@@ -511,4 +511,12 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
     return "'"+string+"'";
   }
 
+  /**
+   * Returns a false as Oracle does not allow for the releasing of savepoints.
+   */
+  @Override
+  public boolean releaseSavepoint() {
+     return false;
+  }
+
 }

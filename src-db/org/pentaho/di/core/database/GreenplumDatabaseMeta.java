@@ -40,4 +40,12 @@ public class GreenplumDatabaseMeta extends PostgreSQLDatabaseMeta implements Dat
 		
 		return gpWords;
 	}
+	
+	/**
+	 * Returns a false as Greenplum does not allow for the releasing of savepoints.
+	 */
+	@Override
+	public boolean releaseSavepoint() {
+	   return false;
+	}
 }
