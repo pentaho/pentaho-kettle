@@ -871,4 +871,11 @@ public interface DatabaseInterface extends Cloneable
    * @return true if the database is a MySQL variant, like MySQL 5.1, InfiniDB, InfoBright, and so on.
    */
   public boolean isMySQLVariant();  
+  
+  /**
+   * Returns a true of savepoints can be release, false if not.
+   * @return
+   */
+  public boolean releaseSavepoint();
+  
 }

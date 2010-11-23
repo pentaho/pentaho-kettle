@@ -147,6 +147,13 @@ public abstract class BaseDatabaseMeta implements Cloneable
     public static final String ATTRIBUTE_SUPPORTS_BOOLEAN_DATA_TYPE = "SUPPORTS_BOOLEAN_DATA_TYPE";
     
     /**
+     * Boolean to indicate if savepoints can be released
+     * Most databases do, so we set it to true.  
+     * Child classes can overwrite with false if need be.
+     */
+    protected boolean releaseSavepoint = true;
+    
+    /**
      * The SQL, minus the table name, to select the number 
      * of rows from a table
      */
@@ -1662,5 +1669,13 @@ public abstract class BaseDatabaseMeta implements Cloneable
    */
   public boolean isMySQLVariant() {
     return false;
+  }
+  
+  /**
+   * Returns a true of savepoints can be released, false if not.
+   * @return
+   */
+  public boolean releaseSavepoint() {
+     return releaseSavepoint;
   }
 }
