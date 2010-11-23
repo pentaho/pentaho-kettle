@@ -93,7 +93,12 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
     for (UIRepositoryObject child : getChildren()) {
       kidElementCache.add(child);
     }
-    List<? extends RepositoryElementMetaInterface> jobsAndTransformations = rep.getJobAndTransformationObjects(new StringObjectId(getId()), false);
+    
+    List<? extends RepositoryElementMetaInterface> jobsAndTransformations = getDirectory().getRepositoryObjects();
+    
+    if (jobsAndTransformations == null || jobsAndTransformations.size() == 0) {
+      jobsAndTransformations = rep.getJobAndTransformationObjects(new StringObjectId(getId()), false);
+    }
     for (RepositoryElementMetaInterface child : jobsAndTransformations) {
       if (child.getObjectType().equals(RepositoryObjectType.TRANSFORMATION)) {
        	try {
@@ -101,7 +106,7 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
         } catch (UIObjectCreationException e) {
           kidElementCache.add(new UITransformation(child, this, rep));
         }
-    	} else {
+    	} else if (child.getObjectType().equals(RepositoryObjectType.JOB)){
         try {
     	    kidElementCache.add(UIObjectRegistry.getInstance().constructUIJob(child, this, rep));
     	  } catch (UIObjectCreationException e) {

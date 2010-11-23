@@ -35,6 +35,20 @@ public interface RepositoryDirectoryInterface extends RepositoryObjectInterface 
   public void setChildren(List<RepositoryDirectoryInterface> children);
   
   /**
+   * Returns a list of child files
+   * 
+   * @return list of child files
+   */
+  public List<RepositoryElementMetaInterface> getRepositoryObjects();
+
+  /**
+   * sets the list of child files
+   * 
+   * @param children list of child files
+   */
+  public void setRepositoryObjects(List<RepositoryElementMetaInterface> children);  
+  
+  /**
    * If true, this directory should be shown in UIs. Not necessarily persisted. Each repository implementation decides 
    * whether to mark each directory as visible.
    */

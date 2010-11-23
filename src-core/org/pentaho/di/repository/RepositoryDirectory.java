@@ -36,6 +36,7 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface
 
 	private RepositoryDirectoryInterface parent;
 	private List<RepositoryDirectoryInterface> children;
+  private List<RepositoryElementMetaInterface> repositoryObjects;
 	
 	private String directoryname;
 	
@@ -78,6 +79,15 @@ public class RepositoryDirectory implements RepositoryDirectoryInterface
     this.children = children;
   }
 
+  public List<RepositoryElementMetaInterface> getRepositoryObjects() {
+    return repositoryObjects;
+  }
+
+  public void setRepositoryObjects(List<RepositoryElementMetaInterface> repositoryObjects) {
+    this.repositoryObjects = repositoryObjects;
+  }
+  
+  
   public void clear()
 	{
 		this.parent        = null;
