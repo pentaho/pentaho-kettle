@@ -841,4 +841,10 @@ public interface DatabaseInterface extends Cloneable
 	 * @return A string that is properly quoted for use in a SQL statement (insert, update, delete, etc)
 	 */
   public String quoteSQLString(String string);
+
+  /**
+   * Returns a true of savepoints can be released, false if not.
+   * @return
+   */
+  public boolean releaseSavepoint();
 }
