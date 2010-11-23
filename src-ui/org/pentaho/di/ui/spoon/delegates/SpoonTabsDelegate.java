@@ -298,7 +298,7 @@ public class SpoonTabsDelegate extends SpoonDelegate
     // File for the transformation we're looking for.  It will be loaded upon first request.
     FileObject transFile = null;
     for (TabMapEntry entry : tabMap) {
-      if (entry.getTabItem().isDisposed()) {
+      if (entry == null || entry.getTabItem().isDisposed()) {
         continue;
       }
       if (trans.getFilename() != null && entry.getFilename() != null) {
@@ -310,9 +310,12 @@ public class SpoonTabsDelegate extends SpoonDelegate
         if (entryFile.equals(transFile)) {
           return entry;
         }
-      } else if (trans.getObjectId() != null && trans.getObjectId().equals(entry.getObject().getMeta().getObjectId())) {
-        // If the transformation has an object id and the entry shares the same id they are the same
-        return entry;
+      } else if (trans.getObjectId() != null && entry.getObject() != null) {
+        EngineMetaInterface meta = entry.getObject().getMeta();
+        if(meta != null && trans.getObjectId().equals(meta.getObjectId())) {
+          // If the transformation has an object id and the entry shares the same id they are the same
+          return entry;
+        }
       }
     }
     // No tabs for the transformation exist and are not disposed
