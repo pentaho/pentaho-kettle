@@ -20,8 +20,6 @@ package org.pentaho.di.ui.trans.steps.accessoutput;
 import java.io.File;
 import java.util.Set;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.vfs.FileObject;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -42,7 +40,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -460,8 +457,7 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
         try
         {
             String realFilename = transMeta.environmentSubstitute(meta.getFilename());
-            FileObject fileObject = KettleVFS.getFileObject(realFilename, transMeta);
-            File file = FileUtils.toFile(fileObject.getURL());
+            File file = new File(realFilename);
             
             if (!file.exists() || !file.isFile())
             {

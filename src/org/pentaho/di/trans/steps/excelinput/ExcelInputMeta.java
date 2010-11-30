@@ -1294,15 +1294,14 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 			  // 
 			  for (int i=0;i<fileName.length;i++) {
 			    FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(fileName[i]), space);
-			    String root = (fileObject!=null?fileObject.getName().getRoot().toString():"");
 			    String prefix;
 			    String path;
 			    if (Const.isEmpty(fileMask[i])) {
 			      prefix = fileObject.getName().getBaseName(); 
-			      path = root+fileObject.getParent().getName().getPath();
+			      path = fileObject.getParent().getName().getPath();
 			    } else {
 			      prefix = "";
-			      path = root+fileObject.getName().getPath();
+			      path = fileObject.getName().getPath();
 			    }
 			    
 			    fileName[i] = resourceNamingInterface.nameResource(

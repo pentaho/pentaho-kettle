@@ -18,7 +18,6 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.provider.local.LocalFile;
 import org.pentaho.di.core.Const;
@@ -300,7 +299,7 @@ public class CsvInput extends BaseStep implements StepInterface
 				data.binaryFilename=data.filenames[data.filenr].getBytes();
 			}
 			
-			data.fis = new FileInputStream(FileUtils.toFile(fileObject.getURL()));
+			data.fis = new FileInputStream(KettleVFS.getFilename(fileObject));
 			data.fc = data.fis.getChannel();
 			data.bb = ByteBuffer.allocateDirect( data.preferredBufferSize );
 
