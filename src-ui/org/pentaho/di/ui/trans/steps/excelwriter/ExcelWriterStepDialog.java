@@ -221,6 +221,10 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 	private TextVar wProtectedBy;
 
 	private Button wMakeActiveSheet;
+	private Label wlForceFormulaRecalculation;
+	private FormData fdlForceFormulaRecalculation;
+	private Button wForceFormulaRecalculation;
+	private FormData fdForceFormulaRecalculation;
 
 	public ExcelWriterStepDialog(Shell parent, Object in, TransMeta transMeta, String sname) {
 		super(parent, (BaseStepMeta) in, transMeta, sname);
@@ -349,7 +353,7 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 		wExtension.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				input.setChanged();
-				EnableExtension();
+				enableExtension();
 			}
 		});
 		
@@ -709,7 +713,7 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 		wProtectSheet.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				input.setChanged();
-				EnablePassword();
+				enablePassword();
 			}
 		});
 
@@ -793,7 +797,7 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 		wTemplate.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				input.setChanged();
-				EnableTemplate();
+				enableTemplate();
 			}
 		});
 		wTemplate.setToolTipText(BaseMessages.getString(PKG, "ExcelWriterDialog.Template.Tooltip"));
@@ -846,7 +850,7 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 		wTemplateSheet.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				input.setChanged();
-				EnableTemplateSheet();
+				enableTemplateSheet();
 			}
 		});
 
@@ -988,7 +992,7 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 		wHeader.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				input.setChanged();
-				EnableHeader();
+				enableHeader();
 			}
 		});
 
@@ -1036,6 +1040,30 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 				input.setChanged();
 			}
 		});
+		
+		// force formula recalculation?
+		wlForceFormulaRecalculation = new Label(wContentGroup, SWT.RIGHT);
+		wlForceFormulaRecalculation.setText(BaseMessages.getString(PKG, "ExcelWriterDialog.ForceFormulaRecalculation.Label"));
+		props.setLook(wlForceFormulaRecalculation);
+		fdlForceFormulaRecalculation = new FormData();
+		fdlForceFormulaRecalculation.left = new FormAttachment(0, 0);
+		fdlForceFormulaRecalculation.top = new FormAttachment(wAutoSize, margin);
+		fdlForceFormulaRecalculation.right = new FormAttachment(middle, -margin);
+		wlForceFormulaRecalculation.setLayoutData(fdlForceFormulaRecalculation);
+		wForceFormulaRecalculation = new Button(wContentGroup, SWT.CHECK);
+		props.setLook(wForceFormulaRecalculation);
+		wForceFormulaRecalculation.setToolTipText(BaseMessages.getString(PKG, "ExcelWriterDialog.ForceFormulaRecalculation.Tooltip"));
+		fdForceFormulaRecalculation = new FormData();
+		fdForceFormulaRecalculation.left = new FormAttachment(middle, 0);
+		fdForceFormulaRecalculation.top = new FormAttachment(wAutoSize, margin);
+		fdForceFormulaRecalculation.right = new FormAttachment(100, 0);
+		wForceFormulaRecalculation.setLayoutData(fdForceFormulaRecalculation);
+		wForceFormulaRecalculation.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				input.setChanged();
+			}
+		});		
+		
 		FormData fdContentGroup = new FormData();
 		fdContentGroup.left = new FormAttachment(0, margin);
 		fdContentGroup.top = new FormAttachment(0, margin);
@@ -1074,7 +1102,7 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 		wAppendLines.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent arg0) {
 				input.setChanged();
-				EnableAppend();
+				enableAppend();
 			}
 		});
 
@@ -1388,10 +1416,10 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 
 		getData();
 		setDateTimeFormat();
-		EnableExtension();
-		EnableAppend();
-		EnableHeader();
-		EnableTemplateSheet();
+		enableExtension();
+		enableAppend();
+		enableHeader();
+		enableTemplateSheet();
 		input.setChanged(changed);
 
 		shell.open();
@@ -1402,11 +1430,11 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 		return stepname;
 	}
 
-	private void EnableAppend() {
+	private void enableAppend() {
 		wSplitEvery.setEnabled(!wAppendLines.getSelection());
 	}
 
-	private void EnableHeader() {
+	private void enableHeader() {
 		wOmitHeader.setEnabled(wHeader.getSelection());
 	}
 	
@@ -1470,6 +1498,7 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 		wHeader.setSelection(input.isHeaderEnabled());
 		wFooter.setSelection(input.isFooterEnabled());
 		wOmitHeader.setSelection(input.isAppendOmitHeader());
+		wForceFormulaRecalculation.setSelection(input.isForceFormulaRecalculation());
 
 		if (input.getStartingCell() != null){
 			wStartingCell.setText(input.getStartingCell());	
@@ -1506,8 +1535,8 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 		}
 		wProtectSheet.setSelection(input.isSheetProtected());
 
-		EnablePassword();
-		EnableTemplate();
+		enablePassword();
+		enableTemplate();
 
 		if (input.getPassword() != null)
 			wPassword.setText(input.getPassword());
@@ -1578,6 +1607,7 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 		tfoi.setIfFileExists((String)wIfFileExists.getData(wIfFileExists.getText()));
 		tfoi.setIfSheetExists((String)wIfSheetExists.getData(wIfSheetExists.getText()));
 		tfoi.setRowWritingMethod((String)wRowWritingMethod.getData(wRowWritingMethod.getText()));
+		tfoi.setForceFormulaRecalculation(wForceFormulaRecalculation.getSelection());
 		
 		tfoi.setDateTimeFormat(wDateTimeFormat.getText());
 		tfoi.setSpecifyFormat(wSpecifyFormat.getSelection());
@@ -1635,21 +1665,21 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 		dispose();
 	}
 
-	private void EnablePassword() {
+	private void enablePassword() {
 		wPassword.setEnabled(wProtectSheet.getSelection());
 		wProtectedBy.setEnabled(wProtectSheet.getSelection());
 	}
 
-	private void EnableTemplate() {
+	private void enableTemplate() {
 		wbTemplateFilename.setEnabled(wTemplate.getSelection());
 		wTemplateFilename.setEnabled(wTemplate.getSelection());
 	}
 
-	private void EnableTemplateSheet() {
+	private void enableTemplateSheet() {
 		wTemplateSheetname.setEnabled(wTemplateSheet.getSelection());
 	}
 
-	private void EnableExtension() {
+	private void enableExtension() {
 		wProtectSheet.setEnabled(wExtension.getSelectionIndex() == 0);
 		if (wExtension.getSelectionIndex() == 0) {
 			wPassword.setEnabled(wProtectSheet.getSelection());

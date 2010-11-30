@@ -72,6 +72,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
 	private String ifSheetExists;
 	
 	private boolean makeSheetActive;
+	private boolean forceFormulaRecalculation = false;
 	
 	/** advanced line append options **/
 	private int appendOffset = 0;
@@ -506,6 +507,10 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
 		return appendLines;
 	}
 
+	/**
+	 * @param appendLines
+	 *            The appendLines to set.
+	 */
 	public void setAppendLines(boolean append) {
 		this.appendLines = append;
 	}
@@ -516,6 +521,14 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
 
 	public boolean isMakeSheetActive() {
 		return makeSheetActive;
+	}
+
+	public boolean isForceFormulaRecalculation() {
+		return forceFormulaRecalculation;
+	}
+
+	public void setForceFormulaRecalculation(boolean forceFormulaRecalculation) {
+		this.forceFormulaRecalculation = forceFormulaRecalculation;
 	}
 
 	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleXMLException {
@@ -552,6 +565,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
 			
 			startingCell = XMLHandler.getTagValue(stepnode, "startingCell");
 			rowWritingMethod = XMLHandler.getTagValue(stepnode, "rowWritingMethod");
+			forceFormulaRecalculation = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "forceFormulaRecalculation"));
 			
 			String addToResult = XMLHandler.getTagValue(stepnode, "add_to_result_filenames");
 			if (Const.isEmpty(addToResult))
@@ -625,6 +639,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
 	}
 
 	public void setDefault() {
+		
 		autosizecolums = false;
 		headerEnabled = true;
 		footerEnabled = false;
@@ -651,6 +666,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
 		appendOffset = 0;
 		appendOmitHeader = false;
 		makeSheetActive = true;
+		forceFormulaRecalculation = false;
 
 		allocate(0);
 
@@ -746,6 +762,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
 		retval.append("    ").append(XMLHandler.addTagValue("appendOffset", appendOffset));
 		retval.append("    ").append(XMLHandler.addTagValue("appendEmpty", appendEmpty));
 		retval.append("    ").append(XMLHandler.addTagValue("rowWritingMethod", rowWritingMethod));
+		retval.append("    ").append(XMLHandler.addTagValue("forceFormulaRecalculation", forceFormulaRecalculation));
 		retval.append("    " + XMLHandler.addTagValue("appendLines", appendLines));
 		retval.append("    " + XMLHandler.addTagValue("add_to_result_filenames", addToResultFilenames));
 
@@ -811,6 +828,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
 			appendOffset = (int)rep.getStepAttributeInteger(id_step, "appendOffset");
 			rowWritingMethod = rep.getStepAttributeString(id_step, "rowWritingMethod");
 			appendLines = rep.getStepAttributeBoolean(id_step, "appendLines");
+			forceFormulaRecalculation = rep.getStepAttributeBoolean(id_step, "forceFormulaRecalculation");
 
 			String addToResult = rep.getStepAttributeString(id_step, "add_to_result_filenames");
 			if (Const.isEmpty(addToResult))
@@ -882,6 +900,8 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
 			rep.saveStepAttribute(id_transformation, id_step, "add_to_result_filenames", addToResultFilenames);
 			rep.saveStepAttribute(id_transformation, id_step, "file_name", fileName);
 			rep.saveStepAttribute(id_transformation, id_step, "do_not_open_newfile_init", doNotOpenNewFileInit);
+			rep.saveStepAttribute(id_transformation, id_step, "forceFormulaRecalculation", forceFormulaRecalculation);
+			
 
 			rep.saveStepAttribute(id_transformation, id_step, "file_extention", extension);
 			rep.saveStepAttribute(id_transformation, id_step, "file_split", splitEvery);

@@ -26,6 +26,7 @@ import java.io.OutputStream;
 
 import org.apache.commons.vfs.FileObject;
 import org.apache.poi.ss.usermodel.Hyperlink;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.ClientAnchor;
@@ -34,6 +35,7 @@ import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.DataFormat;
 import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.IndexedColors;
 import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Row;
@@ -192,6 +194,11 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
 					}
 				}
 			}
+			
+			if (meta.isForceFormulaRecalculation()){
+				recalculateAllWorkbookFormulas();
+			}
+			
 
 			BufferedOutputStream out = new BufferedOutputStream(KettleVFS.getOutputStream(data.file, false));
 			data.wb.write(out);
@@ -199,6 +206,34 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
 		} catch (IOException e) {
 			throw new KettleException(e);
 		}
+	}
+	
+	// recalculates all formula fields for the entire workbook
+	private void recalculateAllWorkbookFormulas(){
+	
+		if (data.wb instanceof XSSFWorkbook){
+			// XLSX needs full reevaluation
+			FormulaEvaluator evaluator = data.wb.getCreationHelper().createFormulaEvaluator();
+			for(int sheetNum = 0; sheetNum < data.wb.getNumberOfSheets(); sheetNum++) {
+			    Sheet sheet = data.wb.getSheetAt(sheetNum);
+			    for(Row r : sheet) {
+			        for(Cell c : r) {
+			            if(c.getCellType() == Cell.CELL_TYPE_FORMULA) {
+			                evaluator.evaluateFormulaCell(c);
+			            }
+			        }
+			    }
+			}			
+		}
+		else if (data.wb instanceof HSSFWorkbook){
+			// XLS supports a "dirty" flag to have excel recalculate everything when a sheet is opened
+			for(int sheetNum = 0; sheetNum < data.wb.getNumberOfSheets(); sheetNum++) {
+			    HSSFSheet sheet = ((HSSFWorkbook)data.wb).getSheetAt(sheetNum);
+			    sheet.setForceFormulaRecalculation(true);
+			}			
+			
+		}
+		
 	}
 
 	public void writeNextLine(Object[] r) throws KettleException {
