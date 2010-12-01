@@ -10,14 +10,14 @@ public class ReleaseSavePointTest {
       try {
          DatabaseInterface databaseInterface;
          
-         //  test Oracle and Greenplum - they should not support releasing savepoints
+         //  test Oracle - it should not support releasing savepoints
          databaseInterface = new OracleDatabaseMeta();
          assertFalse(databaseInterface.releaseSavepoint());
 
-         databaseInterface = new GreenplumDatabaseMeta();
-         assertFalse(databaseInterface.releaseSavepoint());
-         
          //  the rest of these should assert to true
+         databaseInterface = new GreenplumDatabaseMeta();
+         assertTrue(databaseInterface.releaseSavepoint());
+         
          databaseInterface = new AS400DatabaseMeta();
          assertTrue(databaseInterface.releaseSavepoint());
          
