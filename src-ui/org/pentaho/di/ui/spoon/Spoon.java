@@ -6510,10 +6510,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                 "Spoon.Dialog.LoginFailed.Title"), t.getLocalizedMessage());
             dialog.open();
           } else {
-            MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-            mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Message", t.getLocalizedMessage()));
-            mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Title"));
-            mb.open();
+            new ErrorDialog(loginDialog.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Title"), BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Message", t), t);
           }
         }
 
