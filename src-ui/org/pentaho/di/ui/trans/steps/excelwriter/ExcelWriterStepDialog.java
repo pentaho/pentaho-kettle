@@ -225,6 +225,10 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 	private FormData fdlForceFormulaRecalculation;
 	private Button wForceFormulaRecalculation;
 	private FormData fdForceFormulaRecalculation;
+	private Label wlLeaveExistingStylesUnchanged;
+	private FormData fdlLeaveExistingStylesUnchanged;
+	private Button wLeaveExistingStylesUnchanged;
+	private FormData fdLeaveExistingStylesUnchanged;
 
 	public ExcelWriterStepDialog(Shell parent, Object in, TransMeta transMeta, String sname) {
 		super(parent, (BaseStepMeta) in, transMeta, sname);
@@ -1064,6 +1068,29 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 			}
 		});		
 		
+		// leave existing styles alone? 
+		wlLeaveExistingStylesUnchanged = new Label(wContentGroup, SWT.RIGHT);
+		wlLeaveExistingStylesUnchanged.setText(BaseMessages.getString(PKG, "ExcelWriterDialog.LeaveExistingStylesUnchanged.Label"));
+		props.setLook(wlLeaveExistingStylesUnchanged);
+		fdlLeaveExistingStylesUnchanged = new FormData();
+		fdlLeaveExistingStylesUnchanged.left = new FormAttachment(0, 0);
+		fdlLeaveExistingStylesUnchanged.top = new FormAttachment(wForceFormulaRecalculation, margin);
+		fdlLeaveExistingStylesUnchanged.right = new FormAttachment(middle, -margin);
+		wlLeaveExistingStylesUnchanged.setLayoutData(fdlLeaveExistingStylesUnchanged);
+		wLeaveExistingStylesUnchanged = new Button(wContentGroup, SWT.CHECK);
+		props.setLook(wLeaveExistingStylesUnchanged);
+		wLeaveExistingStylesUnchanged.setToolTipText(BaseMessages.getString(PKG, "ExcelWriterDialog.LeaveExistingStylesUnchanged.Tooltip"));
+		fdLeaveExistingStylesUnchanged = new FormData();
+		fdLeaveExistingStylesUnchanged.left = new FormAttachment(middle, 0);
+		fdLeaveExistingStylesUnchanged.top = new FormAttachment(wForceFormulaRecalculation, margin);
+		fdLeaveExistingStylesUnchanged.right = new FormAttachment(100, 0);
+		wLeaveExistingStylesUnchanged.setLayoutData(fdLeaveExistingStylesUnchanged);
+		wLeaveExistingStylesUnchanged.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				input.setChanged();
+			}
+		});				
+		
 		FormData fdContentGroup = new FormData();
 		fdContentGroup.left = new FormAttachment(0, margin);
 		fdContentGroup.top = new FormAttachment(0, margin);
@@ -1499,6 +1526,7 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 		wFooter.setSelection(input.isFooterEnabled());
 		wOmitHeader.setSelection(input.isAppendOmitHeader());
 		wForceFormulaRecalculation.setSelection(input.isForceFormulaRecalculation());
+		wLeaveExistingStylesUnchanged.setSelection(input.isLeaveExistingStylesUnchanged());
 
 		if (input.getStartingCell() != null){
 			wStartingCell.setText(input.getStartingCell());	
@@ -1608,6 +1636,7 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 		tfoi.setIfSheetExists((String)wIfSheetExists.getData(wIfSheetExists.getText()));
 		tfoi.setRowWritingMethod((String)wRowWritingMethod.getData(wRowWritingMethod.getText()));
 		tfoi.setForceFormulaRecalculation(wForceFormulaRecalculation.getSelection());
+		tfoi.setLeaveExistingStylesUnchanged(wLeaveExistingStylesUnchanged.getSelection());
 		
 		tfoi.setDateTimeFormat(wDateTimeFormat.getText());
 		tfoi.setSpecifyFormat(wSpecifyFormat.getSelection());

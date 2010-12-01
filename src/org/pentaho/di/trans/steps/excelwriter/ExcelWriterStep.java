@@ -194,7 +194,7 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
 					}
 				}
 			}
-			
+			// force recalculation of formulas if requested
 			if (meta.isForceFormulaRecalculation()){
 				recalculateAllWorkbookFormulas();
 			}
@@ -333,48 +333,54 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
 	private void writeField(Object v, ValueMetaInterface vMeta, ExcelWriterStepField excelField, Row xlsRow, int posX, Object[] row, int fieldNr, boolean isTitle) throws KettleException {
 
 		try {
-
+			
+			boolean cellExisted = true;
 			// get the cell
 			Cell cell = xlsRow.getCell(posX);
 			if (cell == null) {
+				cellExisted = false;
 				cell = xlsRow.createCell(posX);
 			}
+			
+			// if cell existed and existing cell's styles should not be changed, don't
+			if (!(cellExisted && meta.isLeaveExistingStylesUnchanged())){
+				
+				// if the style of this field is cached, reuse it
+				if (!isTitle && data.getCachedStyle(fieldNr) != null) {
+					cell.setCellStyle(data.getCachedStyle(fieldNr));
+				} else {
+					// apply style if requested
+					if (excelField != null) {
 
-			// if the style of this field is cached, reuse it
-			if (!isTitle && data.getCachedStyle(fieldNr) != null) {
-				cell.setCellStyle(data.getCachedStyle(fieldNr));
-			} else {
-				// apply style if requested
-				if (excelField != null) {
+						// determine correct cell for title or data rows
+						String styleRef = null;
+						if (!isTitle && !Const.isEmpty(excelField.getStyleCell())) {
 
-					// determine correct cell for title or data rows
-					String styleRef = null;
-					if (!isTitle && !Const.isEmpty(excelField.getStyleCell())) {
+							styleRef = excelField.getStyleCell();
+						} else if (isTitle && !Const.isEmpty(excelField.getTitleStyleCell())) {
+							styleRef = excelField.getTitleStyleCell();
+						}
 
-						styleRef = excelField.getStyleCell();
-					} else if (isTitle && !Const.isEmpty(excelField.getTitleStyleCell())) {
-						styleRef = excelField.getTitleStyleCell();
-					}
-
-					if (styleRef != null) {
-						Cell styleCell = getCellFromReference(styleRef);
-						if (styleCell != null && cell != styleCell) {
-							cell.setCellStyle(styleCell.getCellStyle());
+						if (styleRef != null) {
+							Cell styleCell = getCellFromReference(styleRef);
+							if (styleCell != null && cell != styleCell) {
+								cell.setCellStyle(styleCell.getCellStyle());
+							}
 						}
 					}
-				}
 
-				// set cell format as specified, specific format overrides cell specification
-				if (!isTitle && excelField != null && !Const.isEmpty(excelField.getFormat()) && !excelField.getFormat().startsWith("Image")) {
-					DataFormat format = data.wb.createDataFormat();
-					short formatIndex = format.getFormat(excelField.getFormat());
-					CellUtil.setCellStyleProperty(cell, data.wb, CellUtil.DATA_FORMAT, formatIndex);
-				}
+					// set cell format as specified, specific format overrides cell specification
+					if (!isTitle && excelField != null && !Const.isEmpty(excelField.getFormat()) && !excelField.getFormat().startsWith("Image")) {
+						DataFormat format = data.wb.createDataFormat();
+						short formatIndex = format.getFormat(excelField.getFormat());
+						CellUtil.setCellStyleProperty(cell, data.wb, CellUtil.DATA_FORMAT, formatIndex);
+					}
 
-				// cache it for later runs
-				if (!isTitle) {
-					data.cacheStyle(fieldNr, cell.getCellStyle());
-				}
+					// cache it for later runs
+					if (!isTitle) {
+						data.cacheStyle(fieldNr, cell.getCellStyle());
+					}
+				}				
 			}
 
 			// create link on cell if requested
@@ -402,27 +408,31 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
 
 					hyperLink.setAddress(link);
 					cell.setHyperlink(hyperLink);
-
-					if (data.getCachedLinkStyle(fieldNr) != null) {
-						cell.setCellStyle(data.getCachedLinkStyle(fieldNr));
-					} else {
-						//CellStyle style = cell.getCellStyle();
-						Font origFont = data.wb.getFontAt(cell.getCellStyle().getFontIndex());
-						Font hlink_font = data.wb.createFont();
-						// reporduce original font characteristics
-
-						hlink_font.setBoldweight(origFont.getBoldweight());
-						hlink_font.setCharSet(origFont.getCharSet());
-						hlink_font.setFontHeight(origFont.getFontHeight());
-						hlink_font.setFontName(origFont.getFontName());
-						hlink_font.setItalic(origFont.getItalic());
-						hlink_font.setStrikeout(origFont.getStrikeout());
-						hlink_font.setTypeOffset(origFont.getTypeOffset());
-						// make it blue and underlined
-						hlink_font.setUnderline(Font.U_SINGLE);
-						hlink_font.setColor(IndexedColors.BLUE.getIndex());
-						CellUtil.setCellStyleProperty(cell, data.wb, CellUtil.FONT, hlink_font.getIndex());
-						data.cacheLinkStyle(fieldNr, cell.getCellStyle());
+					
+					// if cell existed and existing cell's styles should not be changed, don't
+					if (!(cellExisted && meta.isLeaveExistingStylesUnchanged())){
+					
+						if (data.getCachedLinkStyle(fieldNr) != null) {
+							cell.setCellStyle(data.getCachedLinkStyle(fieldNr));
+						} else {
+							//CellStyle style = cell.getCellStyle();
+							Font origFont = data.wb.getFontAt(cell.getCellStyle().getFontIndex());
+							Font hlink_font = data.wb.createFont();
+							// reporduce original font characteristics
+	
+							hlink_font.setBoldweight(origFont.getBoldweight());
+							hlink_font.setCharSet(origFont.getCharSet());
+							hlink_font.setFontHeight(origFont.getFontHeight());
+							hlink_font.setFontName(origFont.getFontName());
+							hlink_font.setItalic(origFont.getItalic());
+							hlink_font.setStrikeout(origFont.getStrikeout());
+							hlink_font.setTypeOffset(origFont.getTypeOffset());
+							// make it blue and underlined
+							hlink_font.setUnderline(Font.U_SINGLE);
+							hlink_font.setColor(IndexedColors.BLUE.getIndex());
+							CellUtil.setCellStyleProperty(cell, data.wb, CellUtil.FONT, hlink_font.getIndex());
+							data.cacheLinkStyle(fieldNr, cell.getCellStyle());
+						}
 					}
 				}
 			}
