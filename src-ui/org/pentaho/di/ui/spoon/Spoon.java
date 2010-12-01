@@ -6425,10 +6425,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                 "Spoon.Dialog.LoginFailed.Title"), t.getLocalizedMessage());
             dialog.open();
           } else {
-            MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-            mb.setMessage(BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Message", t.getLocalizedMessage()));
-            mb.setText(BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Title"));
-            mb.open();
+            new ErrorDialog(loginDialog.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Title"), BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Message", t), t);
           }
         }
 
@@ -6453,6 +6450,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         } else {
           String msg = BaseMessages.getString(PKG, "Spoon.Log.NoRepositoriesDefined");
           log.logError(msg);// "No repositories defined on this system."
+          
           MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
           mb.setMessage(BaseMessages.getString(PKG, "Spoon.Error.Repository.NotFound", optionRepname.toString()));
           mb.setText(BaseMessages.getString(PKG, "Spoon.Error.Repository.NotFound.Title"));
