@@ -551,10 +551,10 @@ public class SlaveServer  extends ChangedFlag
         client.getState().setCredentials
               (
                 new AuthScope(environmentSubstitute(hostname), Const.toInt(environmentSubstitute(port), 80), "Kettle"), //$NON-NLS-1$
-                new UsernamePasswordCredentials(environmentSubstitute(username), environmentSubstitute(password))
+                new UsernamePasswordCredentials(environmentSubstitute(username), Encr.decryptPasswordOptionallyEncrypted(environmentSubstitute(password)))
               );
       } else {        
-        Credentials creds = new UsernamePasswordCredentials(environmentSubstitute(username), environmentSubstitute(password));
+        Credentials creds = new UsernamePasswordCredentials(environmentSubstitute(username), Encr.decryptPasswordOptionallyEncrypted(environmentSubstitute(password)));
         client.getState().setCredentials(AuthScope.ANY, creds);
         client.getParams().setAuthenticationPreemptive(true);      
       }
