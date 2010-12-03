@@ -701,9 +701,8 @@ public abstract class TransformClassBase
     		case In:
     			fh = inFieldHelpers.get(name);
     			if (fh == null) {
-    				RowMetaInterface rmi = getTransMeta().getPrevStepFields(getStepname());
     				try {
-						fh = new FieldHelper(rmi, name);
+						fh = new FieldHelper(data.inputRowMeta, name);
 					} catch (IllegalArgumentException e) {
 						throw new KettleStepException(BaseMessages.getString(PKG, "TransformClassBase.Exception.UnableToFindFieldHelper", type.name(), name));
 					}
@@ -713,9 +712,8 @@ public abstract class TransformClassBase
     		case Out:
     			fh = outFieldHelpers.get(name);
     			if (fh == null) {
-    				RowMetaInterface rmi = getTransMeta().getStepFields(getStepname());
     				try {
-						fh = new FieldHelper(rmi, name);
+						fh = new FieldHelper(data.outputRowMeta, name);
 					} catch (IllegalArgumentException e) {
 						throw new KettleStepException(BaseMessages.getString(PKG, "TransformClassBase.Exception.UnableToFindFieldHelper", type.name(), name));
 					}
@@ -744,6 +742,6 @@ public abstract class TransformClassBase
     	if (meta.isClearingResultFields()) 
     		return RowDataUtil.allocateRowData(outputRowSize);
     	else
-    		return RowDataUtil.resizeArray(inputRow, outputRowSize);
+    		return RowDataUtil.createResizedCopy(inputRow, outputRowSize);
     }
 }
