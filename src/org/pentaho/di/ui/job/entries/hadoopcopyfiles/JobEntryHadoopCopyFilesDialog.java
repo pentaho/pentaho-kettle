@@ -39,7 +39,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.HadoopSpoonPlugin;
+import org.pentaho.di.core.hadoop.HadoopSpoonPlugin;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.logging.LogChannel;
