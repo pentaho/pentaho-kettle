@@ -13,7 +13,7 @@
  * @author Michael D'Amour
  */
 
-package org.pentaho.di.core;
+package org.pentaho.di.core.hadoop;
 
 import java.util.Arrays;
 
