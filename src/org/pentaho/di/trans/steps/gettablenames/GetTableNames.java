@@ -128,12 +128,12 @@ public class GetTableNames extends BaseStep implements StepInterface
 			String ObjectType=BaseMessages.getString(PKG, "GetTableNames.ObjectType.Catalog");
 	        // Views
 			String catalogsNames[]= data.db.getCatalogs();
-
+			int nr=catalogsNames.length ;
 	        
-			for(int i=0; i<catalogsNames.length && !isStopped();i++) {
+			for(int i=0; i<nr && !isStopped();i++) {
 		        
         		// Clone current input row
-				Object[] outputRowCatalog = outputRow;
+				Object[] outputRowCatalog = outputRow.clone();
     			
 		    	int outputIndex = data.totalpreviousfields;
 		    	
@@ -169,11 +169,11 @@ public class GetTableNames extends BaseStep implements StepInterface
 				schemaNames = new String[]{data.realSchemaName};
 			else
 				schemaNames = data.db.getSchemas();
-	        
-			for(int i=0; i<schemaNames.length && !isStopped();i++) {
+	        int nr=schemaNames.length;
+			for(int i=0; i<nr && !isStopped();i++) {
 		        
         		// Clone current input row
-				Object[] outputRowSchema = outputRow;
+				Object[] outputRowSchema = outputRow.clone();
     			
 		    	int outputIndex = data.totalpreviousfields;
 		    	
@@ -205,9 +205,9 @@ public class GetTableNames extends BaseStep implements StepInterface
             String tableNames[] = data.db.getTablenames(data.realSchemaName, meta.isAddSchemaInOut());
            
 			String ObjectType=BaseMessages.getString(PKG, "GetTableNamesDialog.ObjectType.Table");
-			
-			for(int i=0; i<tableNames.length && !isStopped();i++) {
-		        Object[] outputRowTable = outputRow;
+			int nr=tableNames.length;
+			for(int i=0; i<nr && !isStopped();i++) {
+		        Object[] outputRowTable = outputRow.clone();
     			
 		    	int outputIndex = data.totalpreviousfields;
 		    	
@@ -266,9 +266,10 @@ public class GetTableNames extends BaseStep implements StepInterface
             try{
             	String viewNames[]=data.db.getViews(data.realSchemaName, meta.isAddSchemaInOut());
             	String ObjectType=BaseMessages.getString(PKG, "GetTableNamesDialog.ObjectType.View");
-    	        for(int i=0; i<viewNames.length && !isStopped();i++)
+            	int nr=viewNames.length;
+    	        for(int i=0; i<nr && !isStopped();i++)
     	        {
-    	            Object[] outputRowView = outputRow;
+    	            Object[] outputRowView = outputRow.clone();
     	        	int outputIndex = data.totalpreviousfields;
     	        	
     	        	String viewName=viewNames[i];
@@ -301,9 +302,10 @@ public class GetTableNames extends BaseStep implements StepInterface
          {
 	        String procNames[]=data.db.getProcedures();
 	        String ObjectType=BaseMessages.getString(PKG, "GetTableNamesDialog.ObjectType.Procedure");
-	        for(int i=0; i<procNames.length && !isStopped();i++)
+	        int nr=procNames.length ;
+	        for(int i=0; i<nr && !isStopped();i++)
 	        {
-	            Object[] outputRowProc = outputRow;
+	            Object[] outputRowProc = outputRow.clone();
 	        	int outputIndex = data.totalpreviousfields;
 	        	
 	        	String procName=procNames[i];
@@ -334,9 +336,11 @@ public class GetTableNames extends BaseStep implements StepInterface
         {
 	        String Synonyms[]=data.db.getSynonyms(data.realSchemaName, meta.isAddSchemaInOut());
 	        String ObjectType=BaseMessages.getString(PKG, "GetTableNamesDialog.ObjectType.Synonym");
-	        for(int i=0; i<Synonyms.length && !isStopped();i++)
+	        
+	        int nr=Synonyms.length ;
+	        for(int i=0; i<nr && !isStopped();i++)
 	        {
-	            Object[] outputRowSyn = outputRow;
+	            Object[] outputRowSyn = outputRow.clone();
 	        	int outputIndex = data.totalpreviousfields;
 	        	
 	        	String Synonym=Synonyms[i];
