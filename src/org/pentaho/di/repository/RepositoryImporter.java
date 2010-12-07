@@ -8,7 +8,6 @@ import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
-import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.SpoonFactory;
@@ -30,17 +29,14 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.xml.sax.SAXParseException;
 
-public class RepositoryImporter implements ProgressMonitorListener, RepositoryImportFeedbackInterface, RepositoryElementReadListener {
+public class RepositoryImporter implements IRepositoryImporter {
   private static Class<?>              PKG           = RepositoryImporter.class; 
 
   private Repository rep;
   private LogChannelInterface log;
 
   private SharedObjects sharedObjects;
-  private String[] filenames;
   private RepositoryDirectoryInterface baseDirectory;
-
-  private String fileDirectory;
   
   private boolean overwrite;
   private boolean askOverwrite  = true;
@@ -49,26 +45,17 @@ public class RepositoryImporter implements ProgressMonitorListener, RepositoryIm
 
   private boolean continueOnError;
 
-  public RepositoryImporter(Repository repository, String filename, RepositoryDirectoryInterface baseDirectory, boolean overwrite, boolean continueOnError, String versionComment) {
-    this(repository, null, new String[] { filename }, baseDirectory, overwrite, continueOnError, versionComment);
-  }
-
-  public RepositoryImporter(Repository repository, String fileDirectory, String[] filenames, RepositoryDirectoryInterface baseDirectory, boolean overwrite, boolean continueOnError, String versionComment) {
-      this.log = new LogChannel("Repository import");
+  public RepositoryImporter(Repository repository) {
+      this.log = new LogChannel("Repository import"); //$NON-NLS-1$
       this.rep = repository;
-      this.fileDirectory = fileDirectory;
-      this.filenames = filenames;
-      this.baseDirectory = baseDirectory;
-      this.overwrite = overwrite;
-      this.continueOnError = continueOnError;
-      this.versionComment = versionComment;
   }
   
-  public void importAll() {
-    importAll(this);
-  }
-  
-  public void importAll(RepositoryImportFeedbackInterface feedback) {
+  public synchronized void importAll(RepositoryImportFeedbackInterface feedback, String fileDirectory, String[] filenames, RepositoryDirectoryInterface baseDirectory, boolean overwrite, boolean continueOnError, String versionComment) {
+    this.baseDirectory = baseDirectory;
+    this.overwrite = overwrite;
+    this.continueOnError = continueOnError;
+    this.versionComment = versionComment;
+
     feedback.setLabel(BaseMessages.getString(PKG, "RepositoryImporter.ImportXML.Label"));
     try {
       

@@ -45,7 +45,6 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryImportFeedbackInterface;
-import org.pentaho.di.repository.RepositoryImporter;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -73,15 +72,23 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
 
   private boolean                      askOverwrite  = true;
 
-  private RepositoryImporter repositoryImporter;
+  private String fileDirectory;
+  private String[] filenames;
+  private RepositoryDirectoryInterface baseDirectory;
+  private Repository rep;
+  private String versionComment;
 
   public RepositoryImportProgressDialog(Shell parent, int style, Repository rep, String fileDirectory, String[] filenames, RepositoryDirectoryInterface baseDirectory, String versionComment) {
     super(parent, style);
 
     this.props = PropsUI.getInstance();
     this.parent = parent;
-    
-    this.repositoryImporter = new RepositoryImporter(rep, fileDirectory, filenames, baseDirectory, false, false, versionComment);
+
+    this.rep = rep;
+    this.fileDirectory = fileDirectory;
+    this.filenames = filenames;
+    this.baseDirectory = baseDirectory;
+    this.versionComment = versionComment;
   }
 
   public void open() {
@@ -158,7 +165,7 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
 
     display.asyncExec(new Runnable() {
       public void run() {
-        repositoryImporter.importAll(RepositoryImportProgressDialog.this);
+        rep.getImporter().importAll(RepositoryImportProgressDialog.this, fileDirectory, filenames, baseDirectory, false, false, versionComment);
       }
     });
 
