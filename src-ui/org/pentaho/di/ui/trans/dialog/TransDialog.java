@@ -2135,9 +2135,13 @@ public class TransDialog extends Dialog
 		try {
 			long stepPerformanceCapturingDelay = Long.parseLong(wStepPerfInterval.getText());
 			// values equal or less than zero cause problems during monitoring
-			if (stepPerformanceCapturingDelay <= 0) {
-				throw new KettleException();
+			if (stepPerformanceCapturingDelay <= 0 && transMeta.isCapturingStepPerformanceSnapShots()) {
+			    throw new KettleException();
 			} else {
+			  if(stepPerformanceCapturingDelay <= 0) {
+			    // PDI-4848: Default to 1 second if step performance monitoring is disabled
+			    stepPerformanceCapturingDelay = 1000;
+			  }
 				transMeta.setStepPerformanceCapturingDelay(stepPerformanceCapturingDelay);
 			}
 		} catch (Exception e) {
