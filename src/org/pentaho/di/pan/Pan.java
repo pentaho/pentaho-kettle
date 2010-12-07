@@ -255,7 +255,7 @@ public class Pan {
               if (!Const.isEmpty(optionExprep)) {
                 System.out.println(BaseMessages.getString(PKG, "Pan.Log.ExportingObjectsRepToFile", "" + optionExprep));
 
-                new RepositoryExporter(rep).exportAllObjects(null, optionExprep.toString(), directory, "all");
+                rep.getExporter().exportAllObjects(null, optionExprep.toString(), directory, "all");
                 System.out.println(BaseMessages.getString(PKG, "Pan.Log.FinishedExportObjectsRepToFile", "" + optionExprep));
               } else {
                 System.out.println(BaseMessages.getString(PKG, "Pan.Error.NoTransNameSupplied"));

@@ -36,7 +36,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.mapping.MappingMeta;
 
-public class RepositoryExporter {
+public class RepositoryExporter implements IRepositoryExporter {
 
 	private Repository repository;
 	private LogChannelInterface log;

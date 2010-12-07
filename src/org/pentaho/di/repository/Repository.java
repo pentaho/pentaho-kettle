@@ -510,4 +510,14 @@ public interface Repository {
   public String[] getJobsUsingDatabase(ObjectId id_database) throws KettleException;
   
   public String[] getTransformationsUsingDatabase(ObjectId id_database) throws KettleException;
+  
+  /**
+   * @return the importer that will handle imports into this repository
+   */
+  public IRepositoryImporter getImporter();
+  
+  /**
+   * @return the exporter that will handle exports from this repository
+   */
+  public IRepositoryExporter getExporter();
 }

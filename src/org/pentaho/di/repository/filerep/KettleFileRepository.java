@@ -41,6 +41,8 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.partition.PartitionSchema;
+import org.pentaho.di.repository.IRepositoryExporter;
+import org.pentaho.di.repository.IRepositoryImporter;
 import org.pentaho.di.repository.IRepositoryService;
 import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.ObjectId;
@@ -49,6 +51,8 @@ import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementInterface;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
+import org.pentaho.di.repository.RepositoryExporter;
+import org.pentaho.di.repository.RepositoryImporter;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
@@ -1153,5 +1157,13 @@ public class KettleFileRepository implements Repository {
 
   public String getConnectMessage() {
     return null;
+  }
+
+  public IRepositoryExporter getExporter() {
+    return new RepositoryExporter(this);
+  }
+
+  public IRepositoryImporter getImporter() {
+    return new RepositoryImporter(this);
   }
 }

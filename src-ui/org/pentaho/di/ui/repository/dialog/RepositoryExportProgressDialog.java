@@ -30,7 +30,6 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
-import org.pentaho.di.repository.RepositoryExporter;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 
 /**
@@ -70,7 +69,7 @@ public class RepositoryExportProgressDialog
             {
                 try
                 {
-                    new RepositoryExporter(rep).exportAllObjects(new ProgressMonitorAdapter(monitor), filename, dir,"all");
+                    rep.getExporter().exportAllObjects(new ProgressMonitorAdapter(monitor), filename, dir,"all");
                 }
                 catch (KettleException e)
                 {

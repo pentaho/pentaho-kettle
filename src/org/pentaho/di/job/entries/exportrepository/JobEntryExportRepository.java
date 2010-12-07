@@ -49,6 +49,7 @@ import org.pentaho.di.job.entries.sftp.JobEntrySFTP;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.job.entry.validator.ValidatorContext;
+import org.pentaho.di.repository.IRepositoryExporter;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
@@ -552,7 +553,7 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 			// connect to repository
 			connectRep(log,realrepName, realusername, realpassword);
 			
-			RepositoryExporter exporter = new RepositoryExporter(this.repository);
+			IRepositoryExporter exporter = repository.getExporter();
 			
 			if(export_type.equals(Export_All))
 			{
