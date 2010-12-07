@@ -2133,13 +2133,17 @@ public class TransDialog extends Dialog
 		transMeta.setStepPerformanceCapturingSizeLimit(wStepPerfMaxSize.getText());
 
 		try {
-			long stepPerformanceCapturingDelay = Long.parseLong(wStepPerfInterval.getText());
-			// values equal or less than zero cause problems during monitoring
-			if (stepPerformanceCapturingDelay <= 0) {
-				throw new KettleException();
-			} else {
-				transMeta.setStepPerformanceCapturingDelay(stepPerformanceCapturingDelay);
-			}
+		  long stepPerformanceCapturingDelay = Long.parseLong(wStepPerfInterval.getText());
+      // values equal or less than zero cause problems during monitoring
+      if (stepPerformanceCapturingDelay <= 0 && transMeta.isCapturingStepPerformanceSnapShots()) {
+          throw new KettleException();
+      } else {
+        if(stepPerformanceCapturingDelay <= 0) {
+          // PDI-4848: Default to 1 second if step performance monitoring is disabled
+          stepPerformanceCapturingDelay = 1000;
+        }
+        transMeta.setStepPerformanceCapturingDelay(stepPerformanceCapturingDelay);
+      }
 		} catch (Exception e) {
 			MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
 			mb.setText(BaseMessages.getString(PKG, "TransDialog.InvalidStepPerfIntervalNumber.DialogTitle")); //$NON-NLS-1$
