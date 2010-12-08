@@ -317,7 +317,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		{
 			if (rep!=null)
 			{
-			  RepositoryDirectoryInterface repdir = rep.loadRepositoryDirectoryTree().findDirectory(dirname);
+			  RepositoryDirectoryInterface repdir = rep.findDirectory(dirname);
 				if (repdir!=null)
 				{
 					this.transMeta = rep.loadTransformation(name, repdir, null, false, null); // reads last version
@@ -2981,7 +2981,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
       executionConfiguration.getVariables().putAll(vars);
       slaveServer.injectVariables(executionConfiguration.getVariables());
-
+      
 			if (executionConfiguration.isPassingExport()) {
 				
 				// First export the job...

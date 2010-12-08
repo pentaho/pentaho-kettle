@@ -109,6 +109,12 @@ public interface Repository {
     
     public RepositoryDirectoryInterface getUserHomeDirectory() throws KettleException;
   
+
+    /**
+     * Clear the shared object cache, if applicable.
+     */
+    public void clearSharedObjectCache();
+    
     // Transformations : Loading & saving objects...
   
   /**
@@ -276,6 +282,10 @@ public interface Repository {
   
   public RepositoryDirectoryInterface loadRepositoryDirectoryTree() throws KettleException;
 
+  public RepositoryDirectoryInterface findDirectory(String directory) throws KettleException;
+
+  public RepositoryDirectoryInterface findDirectory(ObjectId directory) throws KettleException;
+  
   public void saveRepositoryDirectory(RepositoryDirectoryInterface dir) throws KettleException;
 
   public void deleteRepositoryDirectory(RepositoryDirectoryInterface dir) throws KettleException;

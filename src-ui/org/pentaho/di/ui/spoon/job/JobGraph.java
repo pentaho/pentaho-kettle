@@ -2249,12 +2249,12 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
         
         // Open the transformation or create a new one...
         //
-        boolean exists = spoon.rep.getTransformationID(exactTransname, spoon.rep.loadRepositoryDirectoryTree().findDirectory(entry.getDirectory())) != null;
+        boolean exists = spoon.rep.getTransformationID(exactTransname, spoon.rep.findDirectory(entry.getDirectory())) != null;
         if (!exists) {
           launchTransMeta = new TransMeta(null, exactTransname, entry.arguments);
         } 
         else {
-          launchTransMeta = spoon.rep.loadTransformation(exactTransname, spoon.rep.loadRepositoryDirectoryTree().findDirectory(entry.getDirectory()), null, true, null); // reads last version
+          launchTransMeta = spoon.rep.loadTransformation(exactTransname, spoon.rep.findDirectory(entry.getDirectory()), null, true, null); // reads last version
         }
         break;
       case REPOSITORY_BY_REFERENCE:
@@ -2336,7 +2336,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
         
         // Open the job or create a new one...
         //
-        RepositoryDirectoryInterface repDir = spoon.rep.loadRepositoryDirectoryTree().findDirectory(entry.getDirectory()); 
+        RepositoryDirectoryInterface repDir = spoon.rep.findDirectory(entry.getDirectory()); 
         boolean exists = spoon.rep.exists(exactJobname, repDir, RepositoryObjectType.JOB);
         if (!exists) {
           launchJobMeta = new JobMeta();

@@ -93,23 +93,26 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
     for (UIRepositoryObject child : getChildren()) {
       kidElementCache.add(child);
     }
-    List<? extends RepositoryElementMetaInterface> transformations;
-    transformations = rep.getTransformationObjects(new StringObjectId(getId()), false);
-    for (RepositoryElementMetaInterface child : transformations) {
-      try {
-        kidElementCache.add(UIObjectRegistry.getInstance().constructUITransformation(child, this, rep));
-      } catch (UIObjectCreationException e) {
-        kidElementCache.add(new UITransformation(child, this, rep));
-      }
+    
+    List<? extends RepositoryElementMetaInterface> jobsAndTransformations = getDirectory().getRepositoryObjects();
+    
+    if (jobsAndTransformations == null || jobsAndTransformations.size() == 0) {
+      jobsAndTransformations = rep.getJobAndTransformationObjects(new StringObjectId(getId()), false);
     }
-    List<? extends RepositoryElementMetaInterface> jobs;
-    jobs = rep.getJobObjects(new StringObjectId(getId()), false);
-    for (RepositoryElementMetaInterface child : jobs) {
-      try {
-        kidElementCache.add(UIObjectRegistry.getInstance().constructUIJob(child, this, rep));
-      } catch (UIObjectCreationException e) {
-        kidElementCache.add(new UIJob(child, this, rep));
-      }      
+    for (RepositoryElementMetaInterface child : jobsAndTransformations) {
+      if (child.getObjectType().equals(RepositoryObjectType.TRANSFORMATION)) {
+       	try {
+          kidElementCache.add(UIObjectRegistry.getInstance().constructUITransformation(child, this, rep));
+        } catch (UIObjectCreationException e) {
+          kidElementCache.add(new UITransformation(child, this, rep));
+        }
+    	} else if (child.getObjectType().equals(RepositoryObjectType.JOB)){
+        try {
+    	    kidElementCache.add(UIObjectRegistry.getInstance().constructUIJob(child, this, rep));
+    	  } catch (UIObjectCreationException e) {
+    	    kidElementCache.add(new UIJob(child, this, rep));
+    	  }      
+    	}
     }
     return kidElementCache;
   }
@@ -242,7 +245,7 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
         kidDirectoryCache.clear();
       }
       if(this == getRootDirectory()) {
-        RepositoryDirectoryInterface localRoot = rep.loadRepositoryDirectoryTree().findDirectory(rd.getObjectId());
+        RepositoryDirectoryInterface localRoot = rep.findDirectory(rd.getObjectId());
         rd = localRoot;
         //Rebuild caches
         fireCollectionChanged();

@@ -515,7 +515,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface {
       String realDirectory = space.environmentSubstitute(mappingMeta.getDirectoryPath());
       
       if (!Const.isEmpty(realTransname) && !Const.isEmpty(realDirectory) && rep != null) {
-        RepositoryDirectoryInterface repdir = rep.loadRepositoryDirectoryTree().findDirectory(realDirectory);
+        RepositoryDirectoryInterface repdir = rep.findDirectory(realDirectory);
         if (repdir != null) {
           try {
             // reads the last revision in the repository...

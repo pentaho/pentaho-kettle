@@ -3166,16 +3166,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
           rep.disconnect();
           SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.REPOSITORY_DISCONNECTED);
         }
-        RepositoryDirectoryInterface directoryTree = null;
-        try {
-          setRepository(repository);
-          directoryTree = rep.loadRepositoryDirectoryTree();
-        } catch (KettleException ke) {
-          rep = null;
-          new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.ErrorConnectingRepository.Title"), //$NON-NLS-1$
-              BaseMessages.getString(PKG, "Spoon.Dialog.ErrorConnectingRepository.Message", //$NON-NLS-1$
-                  Const.CR), ke);
-        }
+        setRepository(repository);
 
         TransMeta transMetas[] = getLoadedTransformations();
         for (int t = 0; t < transMetas.length; t++) {
@@ -3238,16 +3229,21 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
             }
           }
 
-          // For the existing transformation, change the directory too:
-          // Try to find the same directory in the new repository...
-          RepositoryDirectoryInterface redi = directoryTree.findDirectory(transMeta.getRepositoryDirectory().getPath());
-          if (redi != null) {
-            transMeta.setRepositoryDirectory(redi);
-          } else {
-            transMeta.setRepositoryDirectory(directoryTree); // the root
-            // is
-            // the
-            // default!
+          try {
+            // For the existing transformation, change the directory too:
+            // Try to find the same directory in the new repository...
+            RepositoryDirectoryInterface redi = rep.findDirectory(transMeta.getRepositoryDirectory().getPath());
+            if (redi != null) {
+              transMeta.setRepositoryDirectory(redi);
+            } else {
+              // the root is the default!
+              transMeta.setRepositoryDirectory(rep.loadRepositoryDirectoryTree()); 
+            }
+          } catch (KettleException ke) {
+            rep = null;
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.ErrorConnectingRepository.Title"), //$NON-NLS-1$
+                BaseMessages.getString(PKG, "Spoon.Dialog.ErrorConnectingRepository.Message", //$NON-NLS-1$
+                    Const.CR), ke);
           }
         }
 
@@ -3292,6 +3288,20 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
    * } }
    */
 
+  public void clearSharedObjectCache() throws KettleException {
+    if (rep != null) {
+      rep.clearSharedObjectCache();
+      TransMeta transMeta = getActiveTransformation();
+      if (transMeta != null) {
+        rep.readTransSharedObjects(transMeta);
+      }
+      JobMeta jobMeta = getActiveJob();
+      if (jobMeta != null) {
+        rep.readJobMetaSharedObjects(jobMeta);
+      }
+    }
+  }
+  
   public void exploreRepository() {
     if (rep != null) {
       final RepositoryExplorerCallback cb = new RepositoryExplorerCallback() {
@@ -5733,6 +5743,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         disableMenuItem(doc, "repository-connect", isRepositoryRunning);
         disableMenuItem(doc, "repository-disconnect", !isRepositoryRunning);
         disableMenuItem(doc, "repository-explore", !isRepositoryRunning);
+        disableMenuItem(doc, "repository-clear-shared-object-cache", !isRepositoryRunning);
         disableMenuItem(doc, "toolbar-expore-repository", !isRepositoryRunning);
         disableMenuItem(doc, "repository-export-all", !isRepositoryRunning);
         disableMenuItem(doc, "repository-import-directory", !isRepositoryRunning);
@@ -6606,7 +6617,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                 // transformation, try to load it...
                 // If not, keep the repository logged
                 // in.
-                RepositoryDirectoryInterface repdir = rep.loadRepositoryDirectoryTree().findDirectory(optionDirname.toString());
+                RepositoryDirectoryInterface repdir = rep.findDirectory(optionDirname.toString());
                 if (repdir == null) {
                   log.logError(BaseMessages.getString(PKG, "Spoon.Log.UnableFindDirectory", optionDirname.toString())); // "Can't find directory ["+dirname+"] in the repository."
                 } else {
@@ -6822,7 +6833,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       if (rep != null) // load from this repository...
       {
         if (rep.getName().equalsIgnoreCase(lastUsedFile.getRepositoryName())) {
-          RepositoryDirectoryInterface repdir = rep.loadRepositoryDirectoryTree().findDirectory(lastUsedFile.getDirectory());
+          RepositoryDirectoryInterface repdir = rep.findDirectory(lastUsedFile.getDirectory());
           if (repdir != null) {
             // Are we loading a transformation or a job?
             if (lastUsedFile.isTransformation()) {

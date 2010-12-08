@@ -745,7 +745,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 	    if (Const.isEmpty(realDirectory) || Const.isEmpty(realTransname)) {
 	       throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.NoValidMappingDetailsFound"));
 	    }
-      RepositoryDirectoryInterface repdir = repository.loadRepositoryDirectoryTree().findDirectory(realDirectory);
+      RepositoryDirectoryInterface repdir = repository.findDirectory(realDirectory);
       if (repdir == null)
       {
         throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.UnableToFindRepositoryDirectory)"));

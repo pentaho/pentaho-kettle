@@ -67,24 +67,52 @@ public class RepositoryDirectoryUI {
 		
 		try
 		{
-            List<RepositoryElementMetaInterface> repositoryObjects = new ArrayList<RepositoryElementMetaInterface>();
-            
+		  
+		  
 			// Then show the transformations & jobs in that directory...
-            if (getTransformations)
-            {
-                List<RepositoryElementMetaInterface> repositoryTransformations = rep.getTransformationObjects(dir.getObjectId(), includeDeleted);
-                if (repositoryTransformations!=null)
-                {
-                    repositoryObjects.addAll(repositoryTransformations);
-                }
+            List<RepositoryElementMetaInterface> repositoryObjects = new ArrayList<RepositoryElementMetaInterface>();
+            if (dir.getRepositoryObjects() != null) {
+              repositoryObjects.addAll(dir.getRepositoryObjects());
             }
-            if (getJobs)
+            
+            if (getTransformations && !getJobs)
             {
-                List<RepositoryElementMetaInterface> repositoryJobs = rep.getJobObjects(dir.getObjectId(), includeDeleted);
-                if (repositoryJobs!=null)
-                {
-                    repositoryObjects.addAll(repositoryJobs);
+              if (repositoryObjects.size() == 0) {
+                repositoryObjects = rep.getTransformationObjects(dir.getObjectId(), includeDeleted);
+              } else {
+                // need to strip out all non transformation types
+                for (int i=repositoryObjects.size()-1;i>=0;i--) {
+                  if (!repositoryObjects.get(i).getObjectType().equals(RepositoryObjectType.TRANSFORMATION)) {
+                    repositoryObjects.remove(i);
+                  }
                 }
+              }
+            }
+            else if (getJobs && !getTransformations)
+            {
+              if (repositoryObjects.size() == 0) {
+                repositoryObjects = rep.getJobObjects(dir.getObjectId(), includeDeleted);
+              } else {
+                // need to strip out all non job types
+                for (int i=repositoryObjects.size()-1;i>=0;i--) {
+                  if (!repositoryObjects.get(i).getObjectType().equals(RepositoryObjectType.JOB)) {
+                    repositoryObjects.remove(i);
+                  }
+                }
+              }
+            }
+            else if (getJobs && getTransformations) {
+              if (repositoryObjects.size() == 0) {
+                repositoryObjects = rep.getJobAndTransformationObjects(dir.getObjectId(), includeDeleted);
+              } else {
+                // need to strip out all non trans/job types
+                for (int i=repositoryObjects.size()-1;i>=0;i--) {
+                  if (!repositoryObjects.get(i).getObjectType().equals(RepositoryObjectType.JOB) &&
+                      !repositoryObjects.get(i).getObjectType().equals(RepositoryObjectType.TRANSFORMATION)) {
+                    repositoryObjects.remove(i);
+                  }
+                }
+              }
             }
             
             // Sort the directory list appropriately...
