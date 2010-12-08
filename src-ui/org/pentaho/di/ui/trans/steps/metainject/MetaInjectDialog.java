@@ -550,7 +550,7 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
       if (Const.isEmpty(realDirectory) || Const.isEmpty(realTransname)) {
         throw new KettleException(BaseMessages.getString(PKG, "MetaInjectDialog.Exception.NoValidMappingDetailsFound"));
       }
-      RepositoryDirectoryInterface repdir = repository.loadRepositoryDirectoryTree().findDirectory(realDirectory);
+      RepositoryDirectoryInterface repdir = repository.findDirectory(realDirectory);
       if (repdir == null) {
         throw new KettleException(BaseMessages.getString(PKG, "MetaInjectDialog.Exception.UnableToFindRepositoryDirectory)"));
       }

@@ -1109,7 +1109,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
           // 
           // It reads last the last revision from the repository.
           //
-          RepositoryDirectoryInterface repositoryDirectory = rep.loadRepositoryDirectoryTree().findDirectory(realDirectory);
+          RepositoryDirectoryInterface repositoryDirectory = rep.findDirectory(realDirectory);
           transMeta = rep.loadTransformation(transname, repositoryDirectory, null, true, null); 
         } else {
           throw new KettleException(BaseMessages.getString(PKG, "JobTrans.Exception.NoRepDefined"));

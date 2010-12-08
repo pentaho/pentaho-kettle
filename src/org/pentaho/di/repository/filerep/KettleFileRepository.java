@@ -775,7 +775,14 @@ public class KettleFileRepository implements Repository {
 		}
 	}
 	
+	public RepositoryDirectoryInterface findDirectory(String directory) throws KettleException {
+	  return loadRepositoryDirectoryTree().findDirectory(directory);
+	}
 
+	public RepositoryDirectoryInterface findDirectory(ObjectId directory) throws KettleException {
+    return loadRepositoryDirectoryTree().findDirectory(directory);
+	}
+	
 	public List<RepositoryElementMetaInterface> getTransformationObjects(ObjectId idDirectory, boolean includeDeleted) throws KettleException {
 		
 		try {
@@ -896,6 +903,13 @@ public class KettleFileRepository implements Repository {
 		return list;
 	}
 
+  /**
+   * Clear the shared object cache, if applicable.
+   */
+  public void clearSharedObjectCache() {
+    // no op
+  }
+	
 	public SharedObjects readJobMetaSharedObjects(JobMeta jobMeta) throws KettleException {
 		
 		// First the normal shared objects...

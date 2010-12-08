@@ -778,7 +778,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			if (rep!=null) {
 				String directoryPath = XMLHandler.getTagValue(jobnode, "directory");
 				if (directoryPath!=null) {
-					directory = rep.loadRepositoryDirectoryTree().findDirectory(directoryPath);
+					directory = rep.findDirectory(directoryPath);
 					if (directory==null) { // not found
 						directory = new RepositoryDirectory(); // The root as default
 					}

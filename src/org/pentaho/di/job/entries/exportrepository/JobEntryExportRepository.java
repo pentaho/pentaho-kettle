@@ -582,7 +582,7 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 			else if(export_type.equals(Export_One_Folder))
 			{
 			  RepositoryDirectoryInterface directory= new RepositoryDirectory();
-				directory=repository.loadRepositoryDirectoryTree().findDirectory(realfoldername);
+				directory=repository.findDirectory(realfoldername);
 				if(directory!=null)
 				{
 					if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobExportRepository.Log.ExpAllFolderRep",directoryPath,realoutfilename));

@@ -447,6 +447,14 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 		return directoryDelegate.loadRepositoryDirectoryTree(root);
 	}
 
+	public RepositoryDirectoryInterface findDirectory(String directory) throws KettleException {
+	  return loadRepositoryDirectoryTree().findDirectory(directory);
+	}
+	
+  public RepositoryDirectoryInterface findDirectory(ObjectId directory) throws KettleException {
+    return loadRepositoryDirectoryTree().findDirectory(directory);
+  }
+	
 	public void saveRepositoryDirectory(RepositoryDirectoryInterface dir) throws KettleException {
     	securityProvider.validateAction(RepositoryOperation.CREATE_DIRECTORY);
 		directoryDelegate.saveRepositoryDirectory(dir);
@@ -1290,6 +1298,14 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 		return repositoryMeta.getName();
 	}
 
+  /**
+   * Clear the shared object cache, if applicable.
+   */
+  public void clearSharedObjectCache() {
+    // no op
+  }
+
+	
 	/**
 	 * @return Returns the database.
 	 */

@@ -245,7 +245,7 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
         kidDirectoryCache.clear();
       }
       if(this == getRootDirectory()) {
-        RepositoryDirectoryInterface localRoot = rep.loadRepositoryDirectoryTree().findDirectory(rd.getObjectId());
+        RepositoryDirectoryInterface localRoot = rep.findDirectory(rd.getObjectId());
         rd = localRoot;
         //Rebuild caches
         fireCollectionChanged();
