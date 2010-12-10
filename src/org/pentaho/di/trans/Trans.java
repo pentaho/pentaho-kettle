@@ -1345,8 +1345,13 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		DatabaseMeta logConnection = transLogTable.getDatabaseMeta();
 		String logTable = environmentSubstitute(transLogTable.getActualTableName());
 		String logSchema = environmentSubstitute(transLogTable.getActualSchemaName());
-		String logSchemaAndTable = logConnection.getQuotedSchemaTableCombination(logSchema, logTable);
-		  try
+		String logSchemaAndTable = null;
+		if (logConnection != null) 
+		{
+		  logSchemaAndTable = logConnection.getQuotedSchemaTableCombination(logSchema, logTable);
+		}
+
+		try
         {
         	boolean lockedTable = false;
 			if (logConnection!=null)
@@ -1572,7 +1577,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         }
 		catch(KettleException e)
 		{
-			throw new KettleTransException(BaseMessages.getString(PKG, "Trans.Exception.ErrorCalculatingDateRange", logSchemaAndTable), e); //$NON-NLS-1$ //$NON-NLS-2$
+			throw new KettleTransException(BaseMessages.getString(PKG, "Trans.Exception.ErrorCalculatingDateRange", logTable), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		finally
 		{
