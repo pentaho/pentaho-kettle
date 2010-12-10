@@ -293,13 +293,13 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 		}
 		try {
 			String schema = this.model.getSchema() != null ? this.model.getSchema().getName() : null;
-      GetTableSizeProgressDialog pd = new GetTableSizeProgressDialog(this.shell, this.model.getDatabaseMeta(), this.model.getTable().getName(), schema);
+			GetTableSizeProgressDialog pd = new GetTableSizeProgressDialog(this.shell, this.model.getDatabaseMeta(), this.model.getTable().getName(), schema);
 			Long theCount = pd.open();
 			if (theCount != null) {
 				XulMessageBox theMessageBox = (XulMessageBox) document.createElement("messagebox");
 				theMessageBox.setModalParent(this.dbExplorerDialog.getShell());
 				theMessageBox.setTitle(BaseMessages.getString(PKG,"DatabaseExplorerDialog.TableSize.Title"));
-				theMessageBox.setMessage(BaseMessages.getString(PKG,"DatabaseExplorerDialog.TableSize.Message", this.model.getTable(), theCount.toString()));
+				theMessageBox.setMessage(BaseMessages.getString(PKG,"DatabaseExplorerDialog.TableSize.Message", this.model.getTable().getName(), theCount.toString()));
 				theMessageBox.open();
 			}
 		} catch (XulException e) {
@@ -503,13 +503,12 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 		}
 		Database db = new Database(null, this.model.getDatabaseMeta());
 		try {
-			db.connect();
-      String tableName = getSchemaAndTable(this.model);
-
-			RowMetaInterface r = db.getTableFields(tableName);
-			String sql = db.getCreateTableStatement(tableName, r, null, false, null, true);
-			SQLEditor se = new SQLEditor(this.dbExplorerDialog.getShell(), SWT.NONE, this.model.getDatabaseMeta(), this.dbcache, sql);
-			se.open();
+		   db.connect();
+		   String tableName = getSchemaAndTable(this.model);
+		   RowMetaInterface r = db.getTableFields(tableName);
+		   String sql = db.getCreateTableStatement(tableName, r, null, false, null, true);
+		   SQLEditor se = new SQLEditor(this.dbExplorerDialog.getShell(), SWT.NONE, this.model.getDatabaseMeta(), this.dbcache, sql);
+		   se.open();
 		} catch (KettleDatabaseException dbe) {
 			new ErrorDialog(this.dbExplorerDialog.getShell(), BaseMessages.getString(PKG, "Dialog.Error.Header"), BaseMessages.getString(PKG,  "DatabaseExplorerDialog.Error.RetrieveLayout"), dbe);
 		} finally {
@@ -635,7 +634,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
     if (model.getSchema() != null) {
       return meta.getQuotedSchemaTableCombination(model.getSchema().getName(), model.getTable().getName());
     } else {
-      return model.getTable().getName();
+      return meta.getQuotedSchemaTableCombination(null, model.getTable().getName());
     }
   }
 
