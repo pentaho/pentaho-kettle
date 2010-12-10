@@ -761,6 +761,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       DatabaseMeta logcon = jobMeta.getJobLogTable().getDatabaseMeta();
       String schemaName = environmentSubstitute(jobMeta.getJobLogTable().getActualSchemaName());
       String tableName = environmentSubstitute(jobMeta.getJobLogTable().getActualTableName());
+      String schemaAndTable = jobMeta.getJobLogTable().getDatabaseMeta().getQuotedSchemaTableCombination(schemaName, tableName);
       Database ldb = new Database(this, logcon);
       ldb.shareVariablesWith(this);
       try {
@@ -776,13 +777,13 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         if (jobMeta.getJobLogTable().isBatchIdUsed()) {
           // Make sure we lock that table to avoid concurrency issues
           //
-          ldb.lockTables(new String[] { tableName, });
+          ldb.lockTables(new String[] { schemaAndTable, });
           lockedTable = true;
 
           // Now insert value -1 to create a real write lock blocking the other
           // requests.. FCFS
           //
-          String sql = "INSERT INTO " + logcon.quoteField(tableName) + "(" + logcon.quoteField(jobLogTable.getKeyField().getFieldName()) + ") values (-1)";
+          String sql = "INSERT INTO " +schemaAndTable + " (" + logcon.quoteField(jobLogTable.getKeyField().getFieldName()) + ") values (-1)";
           ldb.execStatement(sql);
 
           // Now this next lookup will stall on the other connections
@@ -795,7 +796,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
           }
         }
 
-        Object[] lastr = ldb.getLastLogDate(tableName, jobMeta.getName(), true, LogStatus.END); // $NON-NLS-1$
+        Object[] lastr = ldb.getLastLogDate(schemaAndTable, jobMeta.getName(), true, LogStatus.END); // $NON-NLS-1$
         if (!Const.isEmpty(lastr)) {
           Date last;
           try {
@@ -816,10 +817,10 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
           // Remove the -1 record again...
           //
-          String sql = "DELETE FROM " + logcon.quoteField(tableName) + " WHERE " + logcon.quoteField(jobLogTable.getKeyField().getFieldName()) + "= -1";
+          String sql = "DELETE FROM " + schemaAndTable + " WHERE " + logcon.quoteField(jobLogTable.getKeyField().getFieldName()) + "= -1";
           ldb.execStatement(sql);
 
-          ldb.unlockTables(new String[] { tableName, });
+          ldb.unlockTables(new String[] { schemaAndTable, });
         }
         ldb.disconnect();
 

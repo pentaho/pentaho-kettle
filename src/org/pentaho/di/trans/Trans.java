@@ -1345,7 +1345,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		DatabaseMeta logConnection = transLogTable.getDatabaseMeta();
 		String logTable = environmentSubstitute(transLogTable.getActualTableName());
 		String logSchema = environmentSubstitute(transLogTable.getActualSchemaName());
-
+		String logSchemaAndTable = logConnection.getQuotedSchemaTableCombination(logSchema, logTable);
 		  try
         {
         	boolean lockedTable = false;
@@ -1377,12 +1377,12 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 				{
 					// Make sure we lock the logging table!
 					//
-					transLogTableDatabaseConnection.lockTables( new String[] { logTable, } );
+					transLogTableDatabaseConnection.lockTables( new String[] { logSchemaAndTable, } );
 					lockedTable=true;
 					
 					// Now insert value -1 to create a real write lock blocking the other requests.. FCFS
 					//
-					String sql = "INSERT INTO "+logConnection.quoteField(logTable)+"("+logConnection.quoteField(transLogTable.getKeyField().getFieldName())+") values (-1)";
+					String sql = "INSERT INTO " + logSchemaAndTable + " ("+logConnection.quoteField(transLogTable.getKeyField().getFieldName())+") values (-1)";
 					transLogTableDatabaseConnection.execStatement(sql);
 					
 					
@@ -1395,7 +1395,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 				//
 				// Get the date range from the logging table: from the last end_date to now. (currentDate)
 				//
-                Object[] lastr= transLogTableDatabaseConnection.getLastLogDate(logTable, transMeta.getName(), false, LogStatus.END); //$NON-NLS-1$
+                Object[] lastr= transLogTableDatabaseConnection.getLastLogDate(logSchemaAndTable, transMeta.getName(), false, LogStatus.END); //$NON-NLS-1$
 				if (lastr!=null && lastr.length>0)
 				{
                     startDate = (Date) lastr[0]; 
@@ -1564,15 +1564,15 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             if (lockedTable) {
             	// Remove the -1 record again...
             	//
-				String sql = "DELETE FROM "+logConnection.quoteField(logTable)+" WHERE "+logConnection.quoteField(transLogTable.getKeyField().getFieldName())+"= -1";
+				String sql = "DELETE FROM " + logSchemaAndTable + " WHERE "+logConnection.quoteField(transLogTable.getKeyField().getFieldName())+"= -1";
 				transLogTableDatabaseConnection.execStatement(sql);
 				
-            	transLogTableDatabaseConnection.unlockTables( new String[] { logTable, } );
+            	transLogTableDatabaseConnection.unlockTables( new String[] { logSchemaAndTable, } );
             }
         }
 		catch(KettleException e)
 		{
-			throw new KettleTransException(BaseMessages.getString(PKG, "Trans.Exception.ErrorCalculatingDateRange", logTable), e); //$NON-NLS-1$ //$NON-NLS-2$
+			throw new KettleTransException(BaseMessages.getString(PKG, "Trans.Exception.ErrorCalculatingDateRange", logSchemaAndTable), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		finally
 		{
@@ -1893,7 +1893,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 			// Write to the step performance log table...
 			//
 			RowMetaInterface rowMeta = performanceLogTable.getLogRecord(LogStatus.START, null, null).getRowMeta();
-			ldb.prepareInsert(rowMeta, performanceLogTable.getActualTableName());
+			ldb.prepareInsert(rowMeta, performanceLogTable.getActualSchemaName(), performanceLogTable.getActualTableName());
 			
 			synchronized(stepPerformanceSnapShots) {
 				Iterator<List<StepPerformanceSnapShot>> iterator = stepPerformanceSnapShots.values().iterator();
