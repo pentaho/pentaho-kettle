@@ -57,11 +57,7 @@ public class GetTableSizeProgressDialog
 	{
 		this.shell = shell;
 		this.dbMeta = dbInfo;
-		if (StringUtils.isEmpty(schemaName)) {
-      this.tableName = tableName;
-    } else {
-      this.tableName = dbInfo.getQuotedSchemaTableCombination(schemaName, tableName);
-    }
+		this.tableName = dbInfo.getQuotedSchemaTableCombination(schemaName, tableName);
 	}
 	
 	public Long open()

@@ -37,7 +37,7 @@ public class XulStepFieldsController extends AbstractXulEventHandler {
 
 	private Shell shell;
 	private DatabaseMeta databaseMeta;
-	private String table;
+	private String schemaTableCombo;
 	private BindingFactory bf;
 	private Binding stepFieldsTreeBinding;
 	private Binding stepNameBinding;
@@ -49,10 +49,10 @@ public class XulStepFieldsController extends AbstractXulEventHandler {
 
 	private static Log logger = LogFactory.getLog(XulStepFieldsController.class);
 
-	public XulStepFieldsController(Shell aShell, DatabaseMeta aDatabaseMeta, String aTable, RowMetaInterface anInput) {
+	public XulStepFieldsController(Shell aShell, DatabaseMeta aDatabaseMeta, String schemaTableCombo, RowMetaInterface anInput) {
 		this.shell = aShell;
 		this.databaseMeta = aDatabaseMeta;
-		this.table = aTable;
+		this.schemaTableCombo = schemaTableCombo;
 		this.bf = new DefaultBindingFactory();
 		this.model = new XulStepFieldsModel();
 		this.rowMetaInterface = anInput;
@@ -102,12 +102,12 @@ public class XulStepFieldsController extends AbstractXulEventHandler {
 	private void createStepFieldNodes() {
 
 		if (this.rowMetaInterface == null) {
-			String theSql = this.databaseMeta.getSQLQueryFields(this.table);
+			String theSql = this.databaseMeta.getSQLQueryFields(this.schemaTableCombo);
 			GetQueryFieldsProgressDialog theProgressDialog = new GetQueryFieldsProgressDialog(this.shell, this.databaseMeta, theSql);
 			this.rowMetaInterface = theProgressDialog.open();
 		}
 
-		this.model.setStepName("Step name:" + this.table);
+		this.model.setStepName("Step name:" + this.schemaTableCombo);
 
 		if (this.rowMetaInterface != null) {
 			StepFieldNode theStep = null;
@@ -139,7 +139,7 @@ public class XulStepFieldsController extends AbstractXulEventHandler {
 	}
 
 	public String getSelectedStep() {
-		return this.table;
+		return this.schemaTableCombo;
 	}
 
 	public String getName() {

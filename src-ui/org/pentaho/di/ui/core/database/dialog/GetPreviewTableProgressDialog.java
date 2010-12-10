@@ -57,11 +57,7 @@ public class GetPreviewTableProgressDialog
 	{
 		this.shell = shell;
 		this.dbMeta = dbInfo;
-		if(schemaName != null) {
-		  this.tableName = dbInfo.getSchemaTableCombination(schemaName, tableName);
-		} else {
-		  this.tableName = tableName;
-		}
+		this.tableName = dbInfo.getQuotedSchemaTableCombination(schemaName, tableName);
 		this.limit = limit;
     }
 	
