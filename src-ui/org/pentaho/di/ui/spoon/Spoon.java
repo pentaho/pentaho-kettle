@@ -7140,6 +7140,19 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         transMeta);
     if (dialog.open()) {
       transMeta.getPartitionSchemas().add(partitionSchema);
+      
+      if (rep!=null) {
+        try {
+          if (!rep.getSecurityProvider().isReadOnly()) {
+            rep.save(partitionSchema, Const.VERSION_COMMENT_INITIAL_VERSION, null);
+          } else {
+            throw new KettleException(BaseMessages.getString(PKG, "Spoon.Dialog.Exception.ReadOnlyRepositoryUser"));
+          }
+        } catch (KettleException e) {
+          new ErrorDialog(getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorSavingPartition.Title"), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorSavingPartition.Message", partitionSchema.getName()), e);
+        }
+      }
+      
       refreshTree();
     }
   }
@@ -7179,6 +7192,19 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     ClusterSchemaDialog dialog = new ClusterSchemaDialog(shell, clusterSchema, transMeta.getSlaveServers());
     if (dialog.open()) {
       transMeta.getClusterSchemas().add(clusterSchema);
+      
+      if (rep!=null) {
+        try {
+          if (!rep.getSecurityProvider().isReadOnly()) {
+            rep.save(clusterSchema, Const.VERSION_COMMENT_INITIAL_VERSION, null);
+          } else {
+            throw new KettleException(BaseMessages.getString(PKG, "Spoon.Dialog.Exception.ReadOnlyRepositoryUser"));
+          }
+        } catch (KettleException e) {
+          new ErrorDialog(getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorSavingCluster.Title"), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorSavingCluster.Message", clusterSchema.getName()), e);
+        }
+      }
+      
       refreshTree();
     }
   }
