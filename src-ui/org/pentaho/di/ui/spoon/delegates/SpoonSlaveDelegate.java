@@ -14,10 +14,13 @@ package org.pentaho.di.ui.spoon.delegates;
 
 import org.eclipse.swt.SWT;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.HasSlaveServersInterface;
 import org.pentaho.di.ui.cluster.dialog.SlaveServerDialog;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.SpoonSlave;
 import org.pentaho.di.ui.spoon.TabMapEntry;
@@ -27,6 +30,8 @@ import org.pentaho.xul.swt.tab.TabSet;
 
 public class SpoonSlaveDelegate extends SpoonDelegate
 {
+  private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+  
 	public SpoonSlaveDelegate(Spoon spoon)
 	{
 		super(spoon);
@@ -79,6 +84,19 @@ public class SpoonSlaveDelegate extends SpoonDelegate
 		if (dialog.open())
 		{
 			hasSlaveServersInterface.getSlaveServers().add(slaveServer);
+			
+      if (spoon.rep!=null) {
+        try {
+          if (!spoon.rep.getSecurityProvider().isReadOnly()) {
+            spoon.rep.save(slaveServer, Const.VERSION_COMMENT_INITIAL_VERSION, null);
+          } else {
+            throw new KettleException(BaseMessages.getString(PKG, "Spoon.Dialog.Exception.ReadOnlyRepositoryUser"));
+          }
+        } catch (KettleException e) {
+          new ErrorDialog(spoon.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorSavingSlave.Title"), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorSavingSlave.Message", slaveServer.getName()), e);
+        }
+      }
+			
 			spoon.refreshTree();
 		}
 	}
