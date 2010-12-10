@@ -3587,7 +3587,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         public void run() {
           // Start/Run button...
           //
-          XulToolbarbutton runButton = (XulToolbarbutton) toolbar.getElementById("process-run"); //$NON-NLS-1$
+          XulToolbarbutton runButton = (XulToolbarbutton) toolbar.getElementById("trans-run"); //$NON-NLS-1$
           if (runButton != null && !controlDisposed(runButton)) {
         	runButton.setDisabled(running);
           }
@@ -3904,6 +3904,16 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   		initialized = trans.isInitializing();
   		running = trans.isRunning();
   		halted = trans.isStopped();
+
+  		if(running) {
+  		  trans.addTransListener(new TransListener() {
+
+          public void transFinished(Trans trans) {
+            checkTransEnded();
+            checkErrorVisuals();
+          }
+        });
+  		}
 		}
 	}
 	
