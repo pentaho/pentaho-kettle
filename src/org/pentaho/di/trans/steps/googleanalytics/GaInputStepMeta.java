@@ -24,7 +24,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.*;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
@@ -36,7 +35,6 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.*;
 import org.pentaho.di.trans.*;
 import org.pentaho.di.trans.step.*;
-import org.pentaho.di.ui.trans.steps.googleanalytics.GaInputStepDialog;
 import org.w3c.dom.Node;
 
 
@@ -516,10 +514,6 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
 		}
 		
 	}	
-
-	public StepDialogInterface getDialog(Shell shell, StepMetaInterface meta, TransMeta transMeta, String name) {
-		return new GaInputStepDialog(shell, meta, transMeta, name);
-	}
 
 	public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta, Trans disp) {
 		return new GaInputStep(stepMeta, stepDataInterface, cnr, transMeta, disp);
