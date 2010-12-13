@@ -731,99 +731,99 @@ public class TextFileInput extends BaseStep implements StepInterface
                 }
             }
 
-            // Support for trailing nullcols!
-            // Should be OK at allocation time, but it doesn't hurt :-)
-            if (fieldnr < nrfields)
-            {
-                for (int i = fieldnr; i < info.getInputFields().length; i++)
-                {
-                    r[shiftFields+i] = null;
-                }
-            }
-
-            // Add the error handling fields...
-            int index = shiftFields+nrfields;
-            if (errorCount != null) 
-            {
-                r[index]=errorCount;
-                index++;
-            }
-            if (errorFields != null)
-            {
-                r[index]=errorFields;
-                index++;
-            }
-            if (errorText != null)
-            {
-                r[index]=errorText;
-                index++;
-            }
-            
-            // Possibly add a filename...
-            if (info.includeFilename())
-            {
-                r[index]=fname;
-                index++;
-            }
-
-            // Possibly add a row number...
-            if (info.includeRowNumber())
-            {
-                r[index] = new Long(rowNr);
-                index++;
-            }
-            
-            // Possibly add short filename...
-    		if (addShortFilename)
-    		{
-                r[index] = shortFilename;
-                index++;
-    		}
-    		// Add Extension
-    		if (addExtension)
-    		{
-                r[index] = extension;
-                index++;
-    		}
-    		// add path
-    		if (addPath)
-    		{    			
-                r[index] = path;
-                index++;
-    		}
-    		// Add Size
-    		if (addSize)
-    		{
-                r[index] = new Long(size);
-                index++;
-    		}
-    		// add Hidden
-    		if (addIsHidden)
-    		{
-                r[index] = hidden;
-                index++;
-    		}
-    		// Add modification date
-    		if (addLastModificationDate)
-    		{
-                r[index] = modificationDateTime;
-                index++;
-    		}
-    		// Add Uri
-    		if (addUri)
-    		{
-                r[index] = uri;
-                index++;
-    		}
-    		// Add RootUri
-    		if (addRootUri)
-    		{
-                r[index] = rooturi;
-                index++;
-    		}
-
-            
-            
+            // none of this applies if we're skipping the row
+            if(r != null) {
+              // Support for trailing nullcols!
+              // Should be OK at allocation time, but it doesn't hurt :-)
+              if (fieldnr < nrfields)
+              {
+                  for (int i = fieldnr; i < info.getInputFields().length; i++)
+                  {
+                      r[shiftFields+i] = null;
+                  }
+              }
+  
+              // Add the error handling fields...
+              int index = shiftFields+nrfields;
+              if (errorCount != null) 
+              {
+                  r[index]=errorCount;
+                  index++;
+              }
+              if (errorFields != null)
+              {
+                  r[index]=errorFields;
+                  index++;
+              }
+              if (errorText != null)
+              {
+                  r[index]=errorText;
+                  index++;
+              }
+              
+              // Possibly add a filename...
+              if (info.includeFilename())
+              {
+                  r[index]=fname;
+                  index++;
+              }
+  
+              // Possibly add a row number...
+              if (info.includeRowNumber())
+              {
+                  r[index] = new Long(rowNr);
+                  index++;
+              }
+              
+              // Possibly add short filename...
+          		if (addShortFilename)
+          		{
+                      r[index] = shortFilename;
+                      index++;
+          		}
+          		// Add Extension
+          		if (addExtension)
+          		{
+                      r[index] = extension;
+                      index++;
+          		}
+          		// add path
+          		if (addPath)
+          		{    			
+                      r[index] = path;
+                      index++;
+          		}
+          		// Add Size
+          		if (addSize)
+          		{
+                      r[index] = new Long(size);
+                      index++;
+          		}
+          		// add Hidden
+          		if (addIsHidden)
+          		{
+                      r[index] = hidden;
+                      index++;
+          		}
+          		// Add modification date
+          		if (addLastModificationDate)
+          		{
+                      r[index] = modificationDateTime;
+                      index++;
+          		}
+          		// Add Uri
+          		if (addUri)
+          		{
+                      r[index] = uri;
+                      index++;
+          		}
+          		// Add RootUri
+          		if (addRootUri)
+          		{
+                      r[index] = rooturi;
+                      index++;
+          		}
+          } // End if r != null
         }
         catch (Exception e)
         {
