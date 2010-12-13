@@ -164,7 +164,10 @@ public class TransPerfDelegate extends SpoonDelegate {
 
     
     public void setupContent() {
-    	if (transGraph.trans==null || !transGraph.trans.getTransMeta().isCapturingStepPerformanceSnapShots()) {
+    	// there is a potential infinite loop below if this method
+    	// is called when the transgraph is not running, so we check
+    	// early to make sure it won't happen (see PDI-5009)
+    	if (!transGraph.isRunning() || transGraph.trans==null || !transGraph.trans.getTransMeta().isCapturingStepPerformanceSnapShots()) {
     		showEmptyGraph();
     		return; // TODO: display help text and rerty button
     	}
