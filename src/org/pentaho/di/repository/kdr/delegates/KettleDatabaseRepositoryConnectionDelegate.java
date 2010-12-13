@@ -1644,7 +1644,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
       RowMetaInterface parameterMeta = new RowMeta();
       
       parameterMeta.addValueMeta(new ValueMeta("id", ValueMetaInterface.TYPE_INTEGER));
-      Object[] parameterData = new Object[] { Long.parseLong(id.getId()), } ;
+      Object[] parameterData = new Object[] { id != null ? Long.parseLong(id.getId()) : null, } ;
       
       ResultSet resultSet = null;
       try {
