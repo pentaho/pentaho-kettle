@@ -46,6 +46,9 @@
     <filename>XulDatabaseExplorerDialog.java</filename>
     <filename>XulSpoonResourceBundle.java</filename>
     <filename>BasePluginType.java</filename>
+    <filename>BrowseController.java</filename>
+    <filename>FileOverwriteDialogController.java</filename>
+    <filename>BaseStepMeta.java</filename>
     
   </files-to-avoid>
   
