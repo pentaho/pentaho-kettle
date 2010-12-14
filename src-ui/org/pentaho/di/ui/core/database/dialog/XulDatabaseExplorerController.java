@@ -27,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -44,6 +45,7 @@ import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.reporting.libraries.base.util.StringUtils;
 import org.pentaho.ui.xul.XulComponent;
@@ -93,7 +95,8 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 	private static final String STRING_SCHEMAS = BaseMessages.getString(PKG, "DatabaseExplorerDialog.Schemas.Label");
 	private static final String STRING_TABLES = BaseMessages.getString(PKG, "DatabaseExplorerDialog.Tables.Label");
 	private static final String STRING_VIEWS = BaseMessages.getString(PKG, "DatabaseExplorerDialog.Views.Label");
-	
+  private static final String STRING_SYNONYMS = BaseMessages.getString(PKG, "DatabaseExplorerDialog.Synonyms.Label");
+
 	private static Log logger = LogFactory.getLog(XulDatabaseExplorerController.class);
 	
 	public XulDatabaseExplorerController(Shell aShell, DatabaseMeta aMeta, List<DatabaseMeta> aDataBases, boolean aLook) {
@@ -413,7 +416,13 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 			theViewsNode.setName(STRING_VIEWS);
 			theViewsNode.setImage(FOLDER_IMAGE);
 			theDatabaseNode.add(theViewsNode);
-			
+
+			// Adds the Views database node.
+			DatabaseExplorerNode theSynonymsNode = new DatabaseExplorerNode();
+			theSynonymsNode.setName(STRING_SYNONYMS);
+			theSynonymsNode.setImage(FOLDER_IMAGE);
+			theDatabaseNode.add(theSynonymsNode);
+
 			// Adds the database schemas.
 			Schema[] schemas = dmi.getSchemas();
 			if(schemas != null) {
@@ -467,6 +476,20 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
           theViewsNode.add(theViewNode);
         }
       }
+
+			// Adds the Synonyms.
+			String[] theSynonymsNames = dmi.getSynonyms();
+			DatabaseExplorerNode theSynonymNode = null;
+      if(theViewNames != null){
+        for (int i = 0; i < theViewNames.length; i++) {
+          theSynonymNode = new DatabaseExplorerNode();
+          theSynonymNode.setIsTable(true);
+          theSynonymNode.setName(theViewNames[i]);
+          theSynonymNode.setImage(TABLE_IMAGE);
+          theSynonymsNode.add(theViewNode);
+        }
+      }
+
 		} catch (Exception e) {
 			logger.info(e);
 			e.printStackTrace();
