@@ -86,7 +86,7 @@ public class CentralLogStore {
 	 */
 	public static void init(int maxSize, int maxLogTimeoutMinutes) {
 		if (maxSize>0 || maxLogTimeoutMinutes>0) {
-			store = new CentralLogStore(maxSize, maxLogTimeoutMinutes);
+		  init0(maxSize, maxLogTimeoutMinutes);
 		} else {
 			init();
 		}
@@ -95,7 +95,24 @@ public class CentralLogStore {
 	public static void init() {
 		int maxSize = Const.toInt(EnvUtil.getSystemProperty(Const.KETTLE_MAX_LOG_SIZE_IN_LINES), 0); 
 		int maxLogTimeoutMinutes = Const.toInt(EnvUtil.getSystemProperty(Const.KETTLE_MAX_LOG_TIMEOUT_IN_MINUTES), 0); 
-		store = new CentralLogStore(maxSize, maxLogTimeoutMinutes);
+		init0(maxSize, maxLogTimeoutMinutes);
+	}
+
+	/**
+	 * Initialize the central log store.  If it has already been initialized the configuration
+	 * will be updated.
+	 * 
+	 * @param maxSize the maximum size of the log buffer
+	 * @param maxLogTimeoutMinutes The maximum time that a log line times out in minutes
+	 */
+	private synchronized static void init0(int maxSize, int maxLogTimeoutMinutes) {
+    if (store != null) {
+      // CentralLogStore already initialized.  Just update the values.
+      store.appender.setMaxNrLines(maxSize);
+      store.replaceLogCleaner(maxLogTimeoutMinutes);
+    } else  {
+      store = new CentralLogStore(maxSize, maxLogTimeoutMinutes);
+    }
 	}
 	
 	private static CentralLogStore getInstance() {
