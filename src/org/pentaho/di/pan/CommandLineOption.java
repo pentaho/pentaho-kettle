@@ -72,7 +72,7 @@ public class CommandLineOption
 	{
 		return argument;
 	}
-
+	
 	/**
 	 * @param argument The argument to set.
 	 */
@@ -203,7 +203,7 @@ public class CommandLineOption
             optionDelim = " : ";
         }
 
-		return optionStart+Const.rightPad(option, 10)+optionDelim+description;
+		return optionStart+Const.rightPad(option, 14)+optionDelim+description;
 	}
 	
 	/**
