@@ -286,7 +286,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 
 	public void showLayout() {
     String schema = this.model.getSchema() != null ? this.model.getSchema().getName() : null;
-		XulStepFieldsDialog theStepFieldsDialog = new XulStepFieldsDialog(this.shell, SWT.NONE, this.model.getDatabaseMeta(), this.model.getTable().getName(), null, schema);
+		XulStepFieldsDialog theStepFieldsDialog = new XulStepFieldsDialog(this.dbExplorerDialog.getShell(), SWT.NONE, this.model.getDatabaseMeta(), this.model.getTable().getName(), null, schema);
 		theStepFieldsDialog.open(false);
 	}
 
@@ -296,7 +296,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 		}
 		try {
 			String schema = this.model.getSchema() != null ? this.model.getSchema().getName() : null;
-			GetTableSizeProgressDialog pd = new GetTableSizeProgressDialog(this.shell, this.model.getDatabaseMeta(), this.model.getTable().getName(), schema);
+			GetTableSizeProgressDialog pd = new GetTableSizeProgressDialog(this.dbExplorerDialog.getShell(), this.model.getDatabaseMeta(), this.model.getTable().getName(), schema);
 			Long theCount = pd.open();
 			if (theCount != null) {
 				XulMessageBox theMessageBox = (XulMessageBox) document.createElement("messagebox");
@@ -353,18 +353,18 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 			//				thePreviewRowsDialog.open();
 			//			}
 
-			GetPreviewTableProgressDialog pd = new GetPreviewTableProgressDialog(shell, this.model.getDatabaseMeta(), (model.getSchema() != null)? model.getSchema().getName():null, (model.getTable() != null)? model.getTable().getName():null, limit);
+			GetPreviewTableProgressDialog pd = new GetPreviewTableProgressDialog(this.dbExplorerDialog.getShell(), this.model.getDatabaseMeta(), (model.getSchema() != null)? model.getSchema().getName():null, (model.getTable() != null)? model.getTable().getName():null, limit);
 			List<Object[]> rows = pd.open();
 			if (rows!=null) // otherwise an already shown error...
 			{
 				if (rows.size()>0)
 				{
-					PreviewRowsDialog prd = new PreviewRowsDialog(shell, this.model.getDatabaseMeta(), SWT.None, this.model.getTable().getName(), pd.getRowMeta(), rows);
+					PreviewRowsDialog prd = new PreviewRowsDialog(this.dbExplorerDialog.getShell(), this.model.getDatabaseMeta(), SWT.None, this.model.getTable().getName(), pd.getRowMeta(), rows);
 					prd.open();
 				}
 				else
 				{
-					MessageBox mb = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK);
+					MessageBox mb = new MessageBox(this.dbExplorerDialog.getShell(), SWT.ICON_INFORMATION | SWT.OK);
 					mb.setMessage(BaseMessages.getString(PKG,"DatabaseExplorerDialog.NoRows.Message"));
 					mb.setText(BaseMessages.getString(PKG,"DatabaseExplorerDialog.NoRows.Title"));
 					mb.open();
@@ -621,7 +621,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 
 
 		} catch(Exception e) {
-			new ErrorDialog(shell, BaseMessages.getString(PKG,"DatabaseExplorerDialog.UnexpectedProfilingError.Title"),
+			new ErrorDialog(this.dbExplorerDialog.getShell(), BaseMessages.getString(PKG,"DatabaseExplorerDialog.UnexpectedProfilingError.Title"),
 							BaseMessages.getString(PKG,"DatabaseExplorerDialog.UnexpectedProfilingError.Message"), e);
 		}
 

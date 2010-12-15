@@ -13,7 +13,7 @@
  * See the GNU Lesser General Public License for more details.
  *
  * Copyright (c) 2009 Pentaho Corporation..  All rights reserved.
- * 
+ *
  * Author: Ezequiel Cuellar
  */
 package org.pentaho.di.ui.core.database.dialog;
@@ -29,6 +29,7 @@ import org.pentaho.ui.xul.XulRunner;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.swt.SwtXulLoader;
 import org.pentaho.ui.xul.swt.SwtXulRunner;
+import org.pentaho.ui.xul.swt.tags.SwtDialog;
 
 public class XulStepFieldsDialog {
 
@@ -66,6 +67,7 @@ public class XulStepFieldsDialog {
 
 			XulDialog thePreviewDialog = (XulDialog) this.container.getDocumentRoot().getElementById("stepFieldsDialog");
 			thePreviewDialog.show();
+      ((SwtDialog)thePreviewDialog).dispose();
 		} catch (Exception e) {
 			logger.info(e);
 		}
