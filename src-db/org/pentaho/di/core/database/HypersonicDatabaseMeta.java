@@ -263,5 +263,43 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
             "TEXT", "TODAY", "TOP", "TRIM", "VAR_POP", "VAR_SAMP", "VIEW", "WORK", "WRITE_DELAY",
         };
     }
+    /**
+     * @return true if the database supports sequences
+     */
+    public boolean supportsSequences()
+    {
+      return true;
+    }
+
+      /**
+       * Check if a sequence exists.
+       * @param sequenceName The sequence to check
+       * @return The SQL to get the name of the sequence back from the databases data dictionary
+       */
+      public String getSQLSequenceExists(String sequenceName)
+      {
+          return "SELECT * FROM INFORMATION_SCHEMA.SYSTEM_SEQUENCES WHERE SEQUENCE_NAME = '"+sequenceName.toUpperCase()+"'";
+      }
+      
+      /**
+       * Get the current value of a database sequence
+       * @param sequenceName The sequence to check
+       * @return The current value of a database sequence
+       */
+      public String getSQLCurrentSequenceValue(String sequenceName)
+      {
+        // Note - the following only works for 2.x and higher HSQLDB. But we don't really use it anywhere
+        return "SELECT "+sequenceName+".currval FROM INFORMATION_SCHEMA.SYSTEM_SEQUENCES WHERE SEQUENCE_NAME = '"+sequenceName.toUpperCase()+"'";
+      }
+
+      /**
+       * Get the SQL to get the next value of a sequence.  
+       * @param sequenceName The sequence name
+       * @return the SQL to get the next value of a sequence.
+       */
+      public String getSQLNextSequenceValue(String sequenceName)
+      {
+          return "SELECT NEXT VALUE FOR "+sequenceName+" FROM INFORMATION_SCHEMA.SYSTEM_SEQUENCES WHERE SEQUENCE_NAME = '"+sequenceName.toUpperCase()+"'";
+      }
 
 }

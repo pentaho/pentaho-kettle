@@ -764,32 +764,16 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       String schemaAndTable = jobMeta.getJobLogTable().getDatabaseMeta().getQuotedSchemaTableCombination(schemaName, tableName);
       Database ldb = new Database(this, logcon);
       ldb.shareVariablesWith(this);
-      try {
-        boolean lockedTable = false;
         ldb.connect();
-
         // Enable transactions to make table locking possible
         //
         ldb.setCommit(10);
 
+      try {
         // See if we have to add a batch id...
         Long id_batch = new Long(1);
         if (jobMeta.getJobLogTable().isBatchIdUsed()) {
-          // Make sure we lock that table to avoid concurrency issues
-          //
-          ldb.lockTables(new String[] { schemaAndTable, });
-          lockedTable = true;
-
-          // Now insert value -1 to create a real write lock blocking the other
-          // requests.. FCFS
-          //
-          String sql = "INSERT INTO " +schemaAndTable + " (" + logcon.quoteField(jobLogTable.getKeyField().getFieldName()) + ") values (-1)";
-          ldb.execStatement(sql);
-
-          // Now this next lookup will stall on the other connections
-          //
-          id_batch = ldb.getNextValue(null, schemaName, tableName, jobLogTable.getKeyField().getFieldName());
-
+          id_batch = logcon.getNextBatchId(ldb, schemaName, tableName, jobLogTable.getKeyField().getFieldName());
           setBatchId(id_batch.longValue());
           if (getPassedBatchId() <= 0) {
             setPassedBatchId(id_batch.longValue());
@@ -813,15 +797,6 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
         ldb.writeLogRecord(jobMeta.getJobLogTable(), LogStatus.START, this, null);
 
-        if (lockedTable) {
-
-          // Remove the -1 record again...
-          //
-          String sql = "DELETE FROM " + schemaAndTable + " WHERE " + logcon.quoteField(jobLogTable.getKeyField().getFieldName()) + "= -1";
-          ldb.execStatement(sql);
-
-          ldb.unlockTables(new String[] { schemaAndTable, });
-        }
         ldb.disconnect();
 
         // If we need to do periodic logging, make sure to install a timer for

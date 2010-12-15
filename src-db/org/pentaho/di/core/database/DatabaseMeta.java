@@ -2579,4 +2579,9 @@ public class DatabaseMeta
   public String generateColumnAlias(int columnIndex, String suggestedName) {
     return databaseInterface.generateColumnAlias(columnIndex, suggestedName);
   }
+  
+  public Long getNextBatchId(Database ldb, String schemaName, String tableName, String fieldName) throws KettleDatabaseException {
+    return databaseInterface.getNextBatchId(this, ldb, schemaName, tableName, fieldName);
+  }
+  
 }

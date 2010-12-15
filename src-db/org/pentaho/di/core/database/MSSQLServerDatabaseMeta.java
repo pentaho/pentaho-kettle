@@ -129,7 +129,7 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
         StringBuffer sql=new StringBuffer(128);
         for (int i=0;i<tableNames.length;i++)
         {
-            sql.append("SELECT top 0 * FROM ").append(tableNames[i]).append(" WITH (TABLOCKX, HOLDLOCK);").append(Const.CR);
+            sql.append("SELECT top 0 * FROM ").append(tableNames[i]).append(" WITH (UPDLOCK, HOLDLOCK);").append(Const.CR);
         }
         return sql.toString();
     }
@@ -465,4 +465,17 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
     string = string.replaceAll("\\r", "'+char(10)+'");
     return "'"+string+"'";
   }
+  
+  public Long getNextBatchIdUsingLockTables(DatabaseMeta dbm, Database ldb, String schemaName, String tableName, String fieldName) throws KettleDatabaseException {
+    Long rtn = null;
+    // Make sure we lock that table to avoid concurrency issues
+    ldb.lockTables(new String[] { tableName, });
+    try {
+      rtn = ldb.getNextValue(null, schemaName, tableName, fieldName);
+    } finally {
+      ldb.unlockTables(new String[] { tableName, });
+    }
+    return rtn;
+  }
+  
 }
