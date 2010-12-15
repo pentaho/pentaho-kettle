@@ -76,6 +76,9 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 	public  String SUCCESS_IF_ERRORS_LESS="success_if_errors_less";
 	public  String SUCCESS_IF_NO_ERRORS="success_if_no_errors";
 	private String success_condition;
+  private Pattern wildcardPattern;
+  private Pattern wildcardExcludePattern;
+  
 	
 	
 	private boolean add_date;
@@ -435,6 +438,12 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 		result.setNrErrors(1);
 		result.setResult(false);
 		String realdestinationFolder=environmentSubstitute(getDestinationFolder());
+    if (!Const.isEmpty(wildcard)){
+      wildcardPattern = Pattern.compile(environmentSubstitute(wildcard));
+    }
+    if (!Const.isEmpty(wildcardexclude)) {
+      wildcardExcludePattern = Pattern.compile(environmentSubstitute(wildcardexclude));
+    }
 		
 		if(!CreateDestinationFolder(realdestinationFolder))
 		{
@@ -474,8 +483,8 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 			          if (file != null && file.exists())
 			          {
 			           	if(!specifywildcard || 
-			           			(CheckFileWildcard(file.getName().getBaseName(), environmentSubstitute(wildcard),true) 
-			           			&& !CheckFileWildcard(file.getName().getBaseName(),  environmentSubstitute(wildcardexclude),false)
+			           			(CheckFileWildcard(file.getName().getBaseName(), wildcardPattern,true) 
+			           			&& !CheckFileWildcard(file.getName().getBaseName(),  wildcardExcludePattern,false)
 			           			&&specifywildcard))
 			  			{
 			        		// Copy or Move file
@@ -692,22 +701,13 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 	 * @param wildcard
 	 * @return True if the selectedfile matches the wildcard
 	 **********************************************************/
-	private boolean CheckFileWildcard(String selectedfile, String wildcard,boolean include)
+	private boolean CheckFileWildcard(String selectedfile, Pattern pattern, boolean include)
 	{
-		Pattern pattern = null;
 		boolean getIt=include;
-	
-        if (!Const.isEmpty(wildcard))
-        {
-        	 pattern = Pattern.compile(wildcard);
-			// First see if the file matches the regular expression!
-			if (pattern!=null)
-			{
+		if (pattern != null) {
 				Matcher matcher = pattern.matcher(selectedfile);
 				getIt = matcher.matches();
 			}
-        }
-		
 		return getIt;
 	}
 
