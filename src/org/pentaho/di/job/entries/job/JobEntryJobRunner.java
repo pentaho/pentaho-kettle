@@ -20,6 +20,7 @@ package org.pentaho.di.job.entries.job;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 
 /**
@@ -30,6 +31,8 @@ import org.pentaho.di.job.Job;
  */
 public class JobEntryJobRunner implements Runnable
 {
+    private static Class<?> PKG = Job.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+  
 	private Job       job;
 	private Result    result;
 	private LogChannelInterface log;
@@ -65,6 +68,16 @@ public class JobEntryJobRunner implements Runnable
 			result.setResult(false);
 			result.setNrErrors(1);
 		}
+		finally 
+		{
+            try {
+                job.fireJobListeners();
+            } catch(KettleException e) {
+                result.setNrErrors(1);
+                result.setResult(false);
+                log.logError(BaseMessages.getString(PKG, "Job.Log.ErrorExecJob", e.getMessage()), e);
+            }
+        }
 		finished=true;
 	}
 	
