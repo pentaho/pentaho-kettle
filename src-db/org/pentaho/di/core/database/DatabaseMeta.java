@@ -2583,4 +2583,9 @@ public class DatabaseMeta
   public boolean isMySQLVariant() {
     return databaseInterface.isMySQLVariant();
   }
+
+  public Long getNextBatchId(Database ldb, String schemaName, String tableName, String fieldName) throws KettleDatabaseException {
+    return databaseInterface.getNextBatchId(this, ldb, schemaName, tableName, fieldName);
+  }
+
 }

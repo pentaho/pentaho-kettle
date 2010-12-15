@@ -1345,30 +1345,23 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		DatabaseMeta logConnection = transLogTable.getDatabaseMeta();
 		String logTable = environmentSubstitute(transLogTable.getActualTableName());
 		String logSchema = environmentSubstitute(transLogTable.getActualSchemaName());
-		String logSchemaAndTable = null;
-		if (logConnection != null) 
-		{
-		  logSchemaAndTable = logConnection.getQuotedSchemaTableCombination(logSchema, logTable);
-		}
 
 		try
         {
-        	boolean lockedTable = false;
 			if (logConnection!=null)
 			{
 				
+	      String logSchemaAndTable = logConnection.getQuotedSchemaTableCombination(logSchema, logTable);
 				if ( Const.isEmpty(logTable) )
 				{
 				    // It doesn't make sense to start database logging without a table
 					// to log to.
 					throw new KettleTransException(BaseMessages.getString(PKG, "Trans.Exception.NoLogTableDefined")); //$NON-NLS-1$ //$NON-NLS-2$
 				}
-
 	            if (Const.isEmpty(transMeta.getName()) && logConnection!=null && logTable!=null)
 	            {
 	                throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.NoTransnameAvailableForLogging"));
 	            }
-	            
 			    transLogTableDatabaseConnection = new Database(this, logConnection);
 			    transLogTableDatabaseConnection.shareVariablesWith(this);
 			    if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.OpeningLogConnection",""+logConnection)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -1380,20 +1373,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 				//
 				if (transLogTable.isBatchIdUsed())
 				{
-					// Make sure we lock the logging table!
-					//
-					transLogTableDatabaseConnection.lockTables( new String[] { logSchemaAndTable, } );
-					lockedTable=true;
-					
-					// Now insert value -1 to create a real write lock blocking the other requests.. FCFS
-					//
-					String sql = "INSERT INTO " + logSchemaAndTable + " ("+logConnection.quoteField(transLogTable.getKeyField().getFieldName())+") values (-1)";
-					transLogTableDatabaseConnection.execStatement(sql);
-					
-					
-					// Now this next lookup will stall on the other connections
-					//
-					Long id_batch = transLogTableDatabaseConnection.getNextValue(transMeta.getCounters(), logSchema, logTable, transLogTable.getKeyField().getFieldName());
+					Long id_batch = logConnection.getNextBatchId(transLogTableDatabaseConnection, logSchema, logTable, transLogTable.getKeyField().getFieldName());
 					setBatchId( id_batch.longValue() );
 				}
 
@@ -1566,14 +1546,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                 if ( endDate.compareTo( maxdesired )>0) endDate = maxdesired;
             }
             
-            if (lockedTable) {
-            	// Remove the -1 record again...
-            	//
-				String sql = "DELETE FROM " + logSchemaAndTable + " WHERE "+logConnection.quoteField(transLogTable.getKeyField().getFieldName())+"= -1";
-				transLogTableDatabaseConnection.execStatement(sql);
 				
-            	transLogTableDatabaseConnection.unlockTables( new String[] { logSchemaAndTable, } );
-            }
         }
 		catch(KettleException e)
 		{

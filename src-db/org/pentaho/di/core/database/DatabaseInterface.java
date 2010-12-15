@@ -878,4 +878,17 @@ public interface DatabaseInterface extends Cloneable
    */
   public boolean releaseSavepoint();
   
+  /**
+   * Get the next Batch ID from the logging tables. 
+   * 
+   * @param dbm DatabaseMeta object
+   * @param ldb Database connection
+   * @param schemaName Logging Schema Name
+   * @param tableName Logging Table Name
+   * @param fieldName Batch Id Field name
+   * @return next batch ID
+   * @throws KettleDatabaseException
+   */
+  Long getNextBatchId(DatabaseMeta dbm, Database ldb, String schemaName, String tableName, String fieldName) throws KettleDatabaseException;
+
 }

@@ -13,7 +13,9 @@
 
 package org.pentaho.di.core.database;
 
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -23,9 +25,12 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.repository.ObjectId;
 
@@ -145,6 +150,10 @@ public abstract class BaseDatabaseMeta implements Cloneable
      * Defaults to "false" for backward compatibility! 
      */
     public static final String ATTRIBUTE_SUPPORTS_BOOLEAN_DATA_TYPE = "SUPPORTS_BOOLEAN_DATA_TYPE";
+    
+    public static final String SEQUENCE_FOR_BATCH_ID = "SEQUENCE_FOR_BATCH_ID";
+    public static final String AUTOINCREMENT_SQL_FOR_BATCH_ID = "AUTOINCREMENT_SQL_FOR_BATCH_ID";
+    
     
     /**
      * Boolean to indicate if savepoints can be released
@@ -1678,4 +1687,80 @@ public abstract class BaseDatabaseMeta implements Cloneable
   public boolean releaseSavepoint() {
      return releaseSavepoint;
   }
+  
+ public Long getNextBatchIdUsingSequence(String sequenceName, String schemaName, DatabaseMeta dbm, Database ldb) throws KettleDatabaseException {
+    return ldb.getNextSequenceValue(schemaName, sequenceName, null);
+  }
+  
+  public Long getNextBatchIdUsingAutoIncSQL(String autoIncSQL, DatabaseMeta dbm, Database ldb) throws KettleDatabaseException {
+    Long rtn = null;
+    PreparedStatement stmt = ldb.prepareSQL(autoIncSQL, true);
+    try {
+      stmt.executeUpdate();
+      RowMetaAndData rmad = ldb.getGeneratedKeys(stmt);
+      if (rmad.getRowMeta().size() > 0) {
+        rtn = rmad.getRowMeta().getInteger(rmad.getData(), 0);
+      } else {
+        throw new KettleDatabaseException("Unable to retrieve value of auto-generated technical key : no value found!");
+      }      
+    } catch (KettleValueException kve) {
+      throw new KettleDatabaseException(kve);
+    } catch (SQLException sqlex) {
+      throw new KettleDatabaseException(sqlex);
+    } finally {
+      try {
+        stmt.close();
+      } catch (SQLException ignored){};
+    }
+    return rtn;
+  }
+  
+  public Long getNextBatchIdUsingLockTables(DatabaseMeta dbm, Database ldb, String schemaName, String tableName, String fieldName) throws KettleDatabaseException {
+    // The old way of doing things...
+    Long rtn = null;
+    // Make sure we lock that table to avoid concurrency issues
+    String schemaAndTable = dbm.getQuotedSchemaTableCombination(schemaName, tableName);
+    ldb.lockTables(new String[] { schemaAndTable, });
+    try {
+
+      // Now insert value -1 to create a real write lock blocking the other
+      // requests.. FCFS
+      String sql = "INSERT INTO " + schemaAndTable + " (" + dbm.quoteField(fieldName) + ") values (-1)";
+      ldb.execStatement(sql);
+
+      // Now this next lookup will stall on the other connections
+      //
+      rtn = ldb.getNextValue(null, schemaName, tableName, fieldName);
+    } finally {
+      // Remove the -1 record again...
+      String sql = "DELETE FROM " + schemaAndTable + " WHERE " + dbm.quoteField(fieldName) + "= -1";
+      ldb.execStatement(sql);
+      ldb.unlockTables(new String[] { schemaAndTable, });
+    }
+    return rtn;
+  }
+  
+  public Long getNextBatchId(DatabaseMeta dbm, Database ldb, String schemaName, String tableName, String fieldName) throws KettleDatabaseException {
+    // Always take off autocommit.
+    ldb.setCommit(10);
+
+    //
+    // Temporary work-around to handle batch-id from extended options
+    // Eventually want this promoted to proper dialogs and such
+    //
+
+    Map<String, String> connectionExtraOptions = this.getExtraOptions();
+    String sequenceProp = this.getPluginId() + "." + SEQUENCE_FOR_BATCH_ID;
+    String autoIncSQLProp = this.getPluginId() + "." + AUTOINCREMENT_SQL_FOR_BATCH_ID;
+    if (connectionExtraOptions != null) {
+      if ( this.supportsSequences() && connectionExtraOptions.containsKey(sequenceProp) ) {
+        return getNextBatchIdUsingSequence(connectionExtraOptions.get(sequenceProp), schemaName, dbm, ldb);
+      } else if (this.supportsAutoInc() && connectionExtraOptions.containsKey(autoIncSQLProp) ) {
+        return getNextBatchIdUsingAutoIncSQL(connectionExtraOptions.get(autoIncSQLProp), dbm, ldb);
+      }
+    }
+    return getNextBatchIdUsingLockTables(dbm, ldb, schemaName, tableName, fieldName);
+  }
+  
+  
 }
