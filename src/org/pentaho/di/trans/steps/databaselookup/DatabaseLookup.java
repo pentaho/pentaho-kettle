@@ -666,6 +666,10 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 	    if (data.db!=null) {
         	data.db.disconnect();
 	    }
+	    
+        // Recover memory immediately, allow in-memory data to be garbage collected
+        //
+	    data.look = null;
 
 	    super.dispose(smi, sdi);
 	}

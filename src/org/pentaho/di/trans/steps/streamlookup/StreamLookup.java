@@ -503,6 +503,13 @@ public class StreamLookup extends BaseStep implements StepInterface
 
 	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
 	{
+	    // Recover memory immediately, allow in-memory data to be garbage collected
+	    //
+	    data.look = null; 
+	    data.list = null;
+	    data.hashIndex = null;
+	    data.longIndex = null;
+	    
 		super.dispose(smi, sdi);
 	}
 
