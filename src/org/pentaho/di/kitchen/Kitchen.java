@@ -26,6 +26,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.Log4jFileAppender;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -72,6 +73,9 @@ public class Kitchen
         StringBuffer optionLogfile, optionLogfileOld, optionListdir, optionListjobs, optionListrep, optionNorep, optionVersion, optionListParam, optionExport;
         NamedParams optionParams = new NamedParamsDefault();
 
+    CommandLineOption maxLogLinesOption = new CommandLineOption("maxloglines", BaseMessages.getString(PKG, "Kitchen.CmdLine.MaxLogLines"), new StringBuffer()); //$NON-NLS-1$ //$NON-NLS-2$
+    CommandLineOption maxLogTimeoutOption = new CommandLineOption("maxlogtimeout", BaseMessages.getString(PKG, "Kitchen.CmdLine.MaxLogTimeout"), new StringBuffer()); //$NON-NLS-1$ //$NON-NLS-2$
+        
 		CommandLineOption options[] = new CommandLineOption[] 
             {
 			    new CommandLineOption("rep", BaseMessages.getString(PKG, "Kitchen.CmdLine.RepName"), optionRepname=new StringBuffer()),
@@ -91,6 +95,8 @@ public class Kitchen
                 new CommandLineOption("param", BaseMessages.getString(PKG, "Kitchen.ComdLine.Param") , optionParams, false),
 		        new CommandLineOption("listparam", BaseMessages.getString(PKG, "Kitchen.ComdLine.ListParam"), optionListParam=new StringBuffer(), true, false),
 		        new CommandLineOption("export", BaseMessages.getString(PKG, "Kitchen.ComdLine.Export"), optionExport=new StringBuffer(), true, false),
+		        maxLogLinesOption,
+		        maxLogTimeoutOption,
             };
 
 		if (args.size()==0 ) 
@@ -102,6 +108,8 @@ public class Kitchen
         LogChannelInterface log = new LogChannel(STRING_KITCHEN);
         
         CommandLineOption.parseArguments(args, options, log);
+
+        configureLogging(maxLogLinesOption, maxLogTimeoutOption);
 
         String kettleRepname  = Const.getEnvironmentVariable("KETTLE_REPOSITORY", null);
         String kettleUsername = Const.getEnvironmentVariable("KETTLE_USER", null);
@@ -424,7 +432,40 @@ public class Kitchen
         exitJVM(returnCode);
 
 	}
-	
+
+	/**
+	 * Configure the central log store from the provided command line options
+	 * 
+	 * @param maxLogLinesOption Option for maximum log lines
+	 * @param maxLogTimeoutOption Option for log timeout
+	 * @throws KettleException Error parsing command line arguments
+	 */
+  public static void configureLogging(final CommandLineOption maxLogLinesOption, final CommandLineOption maxLogTimeoutOption)
+      throws KettleException {
+    int maxLogLines = parseIntArgument(maxLogLinesOption, 0);
+    int maxLogTimeout = parseIntArgument(maxLogTimeoutOption, 0);
+    CentralLogStore.init(maxLogLines, maxLogTimeout);
+  }
+
+  /**
+   * Parse an argument as an integer.
+   * 
+   * @param option Command Line Option to parse argument of 
+   * @param def Default if the argument is not set
+   * @return The parsed argument or the default if the argument was not specified
+   * @throws KettleException Error parsing provided argument as an integer
+   */
+  protected static int parseIntArgument(final CommandLineOption option, final int def) throws KettleException {
+    if (!Const.isEmpty(option.getArgument())) {
+      try {
+        return Integer.parseInt(option.getArgument().toString());
+      } catch (NumberFormatException ex) {
+        throw new KettleException(BaseMessages.getString(PKG, "Kitchen.Error.InvalidNumberArgument", option.getOption(), option.getArgument())); //$NON-NLS-1$
+      }
+    }
+    return def;
+  }
+
 	private static final void exitJVM(int status) {
 		// Close the open appenders...
 		//

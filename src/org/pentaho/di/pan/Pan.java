@@ -36,10 +36,10 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.kitchen.Kitchen;
 import org.pentaho.di.repository.RepositoriesMeta;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
-import org.pentaho.di.repository.RepositoryExporter;
 import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -68,6 +68,9 @@ public class Pan {
     StringBuffer optionRepname, optionUsername, optionPassword, optionTransname, optionDirname, optionFilename, optionLoglevel;
     StringBuffer optionLogfile, optionLogfileOld, optionListdir, optionListtrans, optionListrep, optionExprep, optionNorep, optionSafemode, optionVersion, optionJarFilename, optionListParam;
     NamedParams optionParams = new NamedParamsDefault();
+    
+    CommandLineOption maxLogLinesOption = new CommandLineOption("maxloglines", BaseMessages.getString(PKG, "Pan.CmdLine.MaxLogLines"), new StringBuffer()); //$NON-NLS-1$ //$NON-NLS-2$
+    CommandLineOption maxLogTimeoutOption = new CommandLineOption("maxlogtimeout", BaseMessages.getString(PKG, "Pan.CmdLine.MaxLogTimeout"), new StringBuffer()); //$NON-NLS-1$ //$NON-NLS-2$
 
     CommandLineOption options[] = new CommandLineOption[] { new CommandLineOption("rep", BaseMessages.getString(PKG, "Pan.ComdLine.RepName"), optionRepname = new StringBuffer()),
         new CommandLineOption("user", BaseMessages.getString(PKG, "Pan.ComdLine.RepUsername"), optionUsername = new StringBuffer()),
@@ -87,7 +90,9 @@ public class Pan {
         new CommandLineOption("version", BaseMessages.getString(PKG, "Pan.ComdLine.Version"), optionVersion = new StringBuffer(), true, false),
         new CommandLineOption("jarfile", BaseMessages.getString(PKG, "Pan.ComdLine.JarFile"), optionJarFilename = new StringBuffer(), false, true),
         new CommandLineOption("param", BaseMessages.getString(PKG, "Pan.ComdLine.Param"), optionParams, false),
-        new CommandLineOption("listparam", BaseMessages.getString(PKG, "Pan.ComdLine.ListParam"), optionListParam = new StringBuffer(), true, false), };
+        new CommandLineOption("listparam", BaseMessages.getString(PKG, "Pan.ComdLine.ListParam"), optionListParam = new StringBuffer(), true, false),
+        maxLogLinesOption,
+        maxLogTimeoutOption };
 
     if (args.size() == 0) {
       CommandLineOption.printUsage(options);
@@ -103,6 +108,8 @@ public class Pan {
       exitJVM(8);
     }
 
+    Kitchen.configureLogging(maxLogLinesOption, maxLogTimeoutOption);
+    
     String kettleRepname = Const.getEnvironmentVariable("KETTLE_REPOSITORY", null);
     String kettleUsername = Const.getEnvironmentVariable("KETTLE_USER", null);
     String kettlePassword = Const.getEnvironmentVariable("KETTLE_PASSWORD", null);

@@ -720,6 +720,32 @@
 
 	<!--
 	       ===========================================
+	          tests : junit kitchen tests
+	       ============================================
+	  -->
+	<target name="tests-kitchen" depends="compileTests" description="Execute the kitchen tests">
+
+		<junit printsummary="no" fork="yes" forkmode="perTest" jvm="java" maxmemory="512M" showoutput="yes">
+			<classpath>
+				<fileset dir="${lib}" includes="kettle-core.jar" />
+				<fileset dir="${lib}" includes="kettle-db.jar" />
+				<fileset dir="${lib}" includes="kettle-engine.jar" />
+				<fileset dir="test/libext/" includes="kettle.jar" />
+				<pathelement path="${testClasses}" />
+
+				<fileset dir="${libext}" includes="*.jar *.zip" />
+				<fileset dir="${libext}/" includes="**/*.jar *.zip" />
+				<fileset dir="${libswt}" includes="*.jar *.zip" />
+				<fileset dir="${libswt}/win32/" includes="*.jar *.zip" />
+			</classpath>
+
+			<formatter type="xml" />
+			<test todir="${junit}" name="org.pentaho.di.kitchen.KitchenTest" haltonerror="false" />
+		</junit>
+	</target>
+
+	<!--
+	       ===========================================
 	         	tests : junit resource tests
 	       ============================================
 	  -->
