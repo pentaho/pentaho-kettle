@@ -2714,6 +2714,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     
     Image img = (Image)gc.getImage();
 
+    gc.dispose();
     return img;
   }
 
