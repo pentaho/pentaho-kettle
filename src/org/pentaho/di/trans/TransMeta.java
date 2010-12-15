@@ -5447,9 +5447,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 				// Assume file
 				//
 				FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(getFilename()), space);
-				originalPath = fileObject.getParent().getName().getPath();
+				originalPath = fileObject.getParent().getURL().toString();
 				baseName = fileObject.getName().getBaseName();
-				fullname = fileObject.getName().getPath();
+				fullname = fileObject.getURL().toString();
 			}
 			
 			String exportFileName = resourceNamingInterface.nameResource(baseName, originalPath, extension, ResourceNamingInterface.FileNamingType.TRANSFORMATION);

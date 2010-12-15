@@ -15,6 +15,7 @@ package org.pentaho.di.trans.steps.accessoutput;
 import java.io.File;
 import java.io.IOException;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
@@ -214,7 +215,7 @@ public class AccessOutput extends BaseStep implements StepInterface
         if(log.isBasic())
         	logBasic(BaseMessages.getString(PKG, "AccessOutput.log.WritingToFile", realFilename));
         FileObject fileObject = KettleVFS.getFileObject(realFilename, getTransMeta());
-        File file = new File(KettleVFS.getFilename(fileObject));
+        File file = FileUtils.toFile(fileObject.getURL());
         
         // First open or create the access file
         if (!file.exists())

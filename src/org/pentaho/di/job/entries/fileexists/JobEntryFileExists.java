@@ -41,7 +41,6 @@ import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
-import org.pentaho.di.resource.ResourceNamingInterface.FileNamingType;
 import org.w3c.dom.Node;
 
 
@@ -221,7 +220,7 @@ public class JobEntryFileExists extends JobEntryBase implements Cloneable, JobEn
 				if (fileObject.exists()) {
 					// Convert to an absolute path...
 					// 
-					filename = resourceNamingInterface.nameResource(fileObject.getName().getBaseName(), fileObject.getParent().getName().getPath(), space.toString(), FileNamingType.DATA_FILE);
+					filename = resourceNamingInterface.nameResource(fileObject, space, true);
 					
 					return filename;
 				}

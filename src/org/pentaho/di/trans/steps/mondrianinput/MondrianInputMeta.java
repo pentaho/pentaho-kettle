@@ -30,11 +30,10 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
-import org.pentaho.di.resource.ResourceNamingInterface.FileNamingType;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.Trans;
@@ -316,7 +315,7 @@ public class MondrianInputMeta extends BaseStepMeta implements StepMetaInterface
 				if (fileObject.exists()) {
 					// Convert to an absolute path...
 					// 
-					catalog = resourceNamingInterface.nameResource(fileObject.getName().getBaseName(), fileObject.getParent().getName().getPath(), space.toString(), FileNamingType.DATA_FILE);
+					catalog = resourceNamingInterface.nameResource(fileObject, space, true);
 					
 					return catalog;
 				}
