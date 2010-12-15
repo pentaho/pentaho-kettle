@@ -59,7 +59,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
 	private static Class<?> PKG = CombinationLookupMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	private final static int CREATION_METHOD_AUTOINC  = 1;
-    private final static int CREATION_METHOD_SEQUENCE = 2;
+  private final static int CREATION_METHOD_SEQUENCE = 2;
 	private final static int CREATION_METHOD_TABLEMAX = 3;
 
 	private int techKeyCreation;
@@ -243,11 +243,19 @@ public class CombinationLookup extends BaseStep implements StepInterface
 
 		for (int i=0;i<meta.getKeyField().length;i++)
 		{
-			lookupRow[lookupIndex] = row[data.keynrs[i]]; // KEYi = ?
-            lookupIndex++;
+		  // Determine the index of this Key Field in the row meta/data
+		  int rowIndex = data.keynrs[i];
+		  lookupRow[lookupIndex] = row[rowIndex]; // KEYi = ?
+      lookupIndex++;
 
-            lookupRow[lookupIndex] = row[data.keynrs[i]]; // KEYi IS NULL or ? IS NULL
-            lookupIndex++;
+      
+      if(meta.getDatabaseMeta().requiresCastToVariousForIsNull() &&
+        rowMeta.getValueMeta(rowIndex).getType() == ValueMeta.TYPE_STRING) {
+        lookupRow[lookupIndex] = rowMeta.getValueMeta(rowIndex).isNull(row[rowIndex]) ? null : "NotNull"; // KEYi IS NULL or ? IS NULL 
+      } else {
+        lookupRow[lookupIndex] = row[data.keynrs[i]]; // KEYi IS NULL or ? IS NULL
+      }
+      lookupIndex++;
 		}
 
 		// Before doing the actual lookup in the database, see if it's not in the cache...
