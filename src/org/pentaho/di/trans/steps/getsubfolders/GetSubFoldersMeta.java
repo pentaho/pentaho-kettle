@@ -41,7 +41,6 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
-import org.pentaho.di.resource.ResourceNamingInterface.FileNamingType;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -519,11 +518,7 @@ public class GetSubFoldersMeta extends BaseStepMeta implements StepMetaInterface
 			if (!isFoldernameDynamic) {
 	            for (int i=0;i<folderName.length;i++) {
 	              FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(folderName[i]), space);
-	              String prefix = fileObject.getName().getBaseName(); 
-	              String path = fileObject.getParent().getName().getPath();
-	              folderName[i] = resourceNamingInterface.nameResource(
-	                  prefix, path, space.toString(), FileNamingType.DATA_FILE
-	                );
+	              folderName[i] = resourceNamingInterface.nameResource(fileObject, space, true);
 	            }
 			}
 			return null;

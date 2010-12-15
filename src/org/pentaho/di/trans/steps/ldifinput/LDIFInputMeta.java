@@ -39,7 +39,6 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
-import org.pentaho.di.resource.ResourceNamingInterface.FileNamingType;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -1047,19 +1046,7 @@ public class LDIFInputMeta extends BaseStepMeta implements StepMetaInterface
 			if (!filefield) {
 	            for (int i=0;i<fileName.length;i++) {
 	              FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(fileName[i]), space);
-	              String prefix;
-	              String path;
-	              if (Const.isEmpty(fileMask[i])) {
-	                prefix = fileObject.getName().getBaseName(); 
-	                path = fileObject.getParent().getName().getPath();
-	              } else {
-	                prefix = "";
-	                path = fileObject.getName().getPath();
-	              }
-	              
-	              fileName[i] = resourceNamingInterface.nameResource(
-	                  prefix, path, space.toString(), FileNamingType.DATA_FILE
-	                );
+	              fileName[i] = resourceNamingInterface.nameResource(fileObject, space, Const.isEmpty(fileMask[i]));
 	            }
 			}
 			return null;

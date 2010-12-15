@@ -39,11 +39,10 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceNamingInterface;
-import org.pentaho.di.resource.ResourceNamingInterface.FileNamingType;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -1007,11 +1006,11 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
 			// 
 			if (!Const.isEmpty(fileName)) {
 				FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(fileName), space);
-				fileName = resourceNamingInterface.nameResource(fileObject.getName().getBaseName(), fileObject.getParent().getName().getPath(), space.toString(), FileNamingType.DATA_FILE);
+				fileName = resourceNamingInterface.nameResource(fileObject, space, true);
 			}
 			if (!Const.isEmpty(templateFileName)) {
 				FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(templateFileName), space);
-				templateFileName = resourceNamingInterface.nameResource(fileObject.getName().getBaseName(), fileObject.getParent().getName().getPath(), space.toString(), FileNamingType.DATA_FILE);
+				templateFileName = resourceNamingInterface.nameResource(fileObject, space, true);
 			}
 
 			return null;

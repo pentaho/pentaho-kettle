@@ -49,7 +49,6 @@ import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
-import org.pentaho.di.resource.ResourceNamingInterface.FileNamingType;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -2039,19 +2038,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
               // 
               for (int i=0;i<fileName.length;i++) {
                 FileObject fileObject = KettleVFS.getFileObject(space.environmentSubstitute(fileName[i]), space);
-                String prefix;
-                String path;
-                if (Const.isEmpty(fileMask[i])) {
-                  prefix = fileObject.getName().getBaseName(); 
-                  path = fileObject.getParent().getName().getPath();
-                } else {
-                  prefix = "";
-                  path = fileObject.getName().getPath();
-                }
-                
-                fileName[i] = resourceNamingInterface.nameResource(
-                    prefix, path, space.toString(), FileNamingType.DATA_FILE
-                  );
+                fileName[i] = resourceNamingInterface.nameResource(fileObject, space, Const.isEmpty(fileMask[i]));
               }
 			}
 			return null;

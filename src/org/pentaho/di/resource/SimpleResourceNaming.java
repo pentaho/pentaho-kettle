@@ -15,6 +15,10 @@ package org.pentaho.di.resource;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSystemException;
+import org.pentaho.di.core.variables.VariableSpace;
+
 public class SimpleResourceNaming implements ResourceNamingInterface {
 
   private final Map<String,String> namedResources = new HashMap<String, String>();
@@ -44,6 +48,16 @@ public class SimpleResourceNaming implements ResourceNamingInterface {
   public SimpleResourceNaming(String fileSystemPrefix) {
     super();
     this.fileSystemPrefix = fileSystemPrefix;
+  }
+  
+  public String nameResource(FileObject fileObject, VariableSpace space, boolean includeFileName)
+      throws FileSystemException {
+      if (includeFileName) {
+          return handleDataFile(fileObject.getName().getBaseName(), fileObject.getParent().getURL().toString(), "");
+      }
+      else {
+          return handleDataFile("", fileObject.getURL().toString(), "");
+      }         
   }
   
   public String nameResource(String prefix, String originalFilePath, String extension, FileNamingType namingType) {
