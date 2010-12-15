@@ -398,7 +398,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 	 * 
 	 * @see JobListener#jobFinished(Job)
 	 */
-	private void fireJobListeners() throws KettleException {
+	public void fireJobListeners() throws KettleException {
 		for (JobListener jobListener : jobListeners) {
 			jobListener.jobFinished(this);
 		}
