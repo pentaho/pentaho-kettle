@@ -60,6 +60,7 @@ public class SWTGC implements GCInterface {
 	private Image	image;
 
 	private Point	area;
+  private Transform transform;
 	
 	public SWTGC(Device device, Point area, int iconsize) {
 		this.image = new Image(device, area.x, area.y);
@@ -87,6 +88,9 @@ public class SWTGC implements GCInterface {
 	
 	public void dispose() {
 		gc.dispose();
+    if(transform != null && transform.isDisposed() == false){
+      transform.dispose();
+    }
 		for (Color color : colors) {
 			color.dispose();
 		}
@@ -235,10 +239,13 @@ public class SWTGC implements GCInterface {
 	}
 
 	public void setTransform(float translationX, float translationY, int shadowsize, float magnification) {
-    	Transform transform = new Transform(gc.getDevice());
-    	transform.translate(translationX+shadowsize*magnification, translationY+shadowsize*magnification);
-    	transform.scale(magnification, magnification);
-    	gc.setTransform(transform);
+    if(transform != null){// dispose of previous to prevent leaking of handles
+      transform.dispose();
+    }
+    transform = new Transform(gc.getDevice());
+    transform.translate(translationX+shadowsize*magnification, translationY+shadowsize*magnification);
+    transform.scale(magnification, magnification);
+    gc.setTransform(transform);
 	}
 	
 	public Point textExtent(String text) {

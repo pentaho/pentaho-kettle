@@ -93,6 +93,8 @@ public class JobPainter extends BasePainter {
 		shadow = false;
 		drawJobElements();
 
+    gc.dispose();
+    
 	}
 
 	private void drawJobElements() {
