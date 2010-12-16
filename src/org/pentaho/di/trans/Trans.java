@@ -992,11 +992,13 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	            }
 	            // Make the difference...
 	            //
-	            snapShot.diff(previous, step.rowsetInputSize(), step.rowsetOutputSize());
-	            snapShotList.add(snapShot);
-	            
-	            if (stepPerformanceSnapshotSizeLimit>0 && snapShotList.size()>stepPerformanceSnapshotSizeLimit) {
-	              snapShotList.remove(0);
+  	            snapShot.diff(previous, step.rowsetInputSize(), step.rowsetOutputSize());
+                synchronized(stepPerformanceSnapShots) {
+    	            snapShotList.add(snapShot);
+
+    	            if (stepPerformanceSnapshotSizeLimit>0 && snapShotList.size()>stepPerformanceSnapshotSizeLimit) {
+    	              snapShotList.remove(0);
+    	            }
 	            }
 	        }
 	        
