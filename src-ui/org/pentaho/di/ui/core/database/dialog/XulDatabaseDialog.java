@@ -33,6 +33,7 @@ import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.containers.XulDialog;
+import org.pentaho.ui.xul.containers.XulTree;
 
 public class XulDatabaseDialog {
 
@@ -94,6 +95,11 @@ public class XulDatabaseDialog {
     }
 
     try {
+      
+      // PDI-5088 clear previous options selections since we are re-using the dialog
+      XulTree tree = (XulTree)xulDialogComponent.getDocument().getRootElement().getElementById("options-parameter-tree");
+      tree.getRootChildren().removeAll();
+      
       dataHandler.setData(databaseMeta);
       xulDialogComponent.show();    //Attention: onload: loadConnectionData() is called here the second time, see above for first time
                 // caught with a HACK in DataHandler.loadConnectionData()
