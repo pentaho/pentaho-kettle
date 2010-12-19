@@ -165,7 +165,10 @@ public class AddJobServlet extends HttpServlet
         	job.addJobListener(new JobListener() {
 				public void jobFinished(Job job) {
 					try {
-						job.endProcessing(Database.LOG_STATUS_END, job.getResult());
+					    if (job.isStopped())
+					        job.endProcessing(Database.LOG_STATUS_STOP, job.getResult());
+					    else
+					        job.endProcessing(Database.LOG_STATUS_END, job.getResult());
 					} catch(Exception e) {
 						log.logError(toString(), "There was an error while logging the job result to the logging table", e);
 					}
