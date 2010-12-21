@@ -993,7 +993,16 @@ public class SpoonTransformationDelegate extends SpoonDelegate
         }
       }
 
-      Trans.executeClustered(transSplitter, executionConfiguration);
+      try {
+        Trans.executeClustered(transSplitter, executionConfiguration);
+      } catch(Exception e) {
+        // Something happened posting the transformation to the cluster.
+        // We need to make sure to de-allocate ports and so on for the next try...
+        //
+        Trans.cleanupCluster(log, transSplitter);
+        
+        throw e;
+      }
       
       if (executionConfiguration.isClusterPosting()) {
         // Now add monitors for the master and all the slave servers
