@@ -202,7 +202,7 @@ public class DBProc extends BaseStep implements StepInterface
 
 		if (super.init(smi, sdi))
 		{
-			data.readsRows = false;
+			data.readsRows = getStepMeta().getRemoteInputSteps().size()>0;
 	        List<StepMeta> previous = getTransMeta().findPreviousSteps(getStepMeta());
 			if (previous!=null && previous.size()>0)
 			{
