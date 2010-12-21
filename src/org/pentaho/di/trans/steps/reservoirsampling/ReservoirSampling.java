@@ -164,8 +164,9 @@ public class ReservoirSampling extends BaseStep
 		
     if (super.init(smi, sdi)) {
       
+      boolean remoteInput = getStepMeta().getRemoteInputSteps().size()>0;
       List<StepMeta> previous = getTransMeta().findPreviousSteps(getStepMeta());
-      if (previous == null || previous.size() <= 0) {
+      if (!remoteInput && (previous == null || previous.size() <= 0)) {
         m_data.setProcessingMode(PROC_MODE.DISABLED);
       }      
       return true;

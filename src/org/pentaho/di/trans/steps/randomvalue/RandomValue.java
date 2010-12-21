@@ -189,8 +189,7 @@ public class RandomValue extends BaseStep implements StepInterface {
 		data = (RandomValueData) sdi;
 
 		if (super.init(smi, sdi)) {
-			// Add init code here.
-			data.readsRows = false;
+			data.readsRows = getStepMeta().getRemoteInputSteps().size()>0;
 	        List<StepMeta> previous = getTransMeta().findPreviousSteps(getStepMeta());
 			if (previous != null && previous.size() > 0) {
 				data.readsRows = true;
