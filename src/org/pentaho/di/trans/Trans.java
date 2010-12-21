@@ -2835,52 +2835,72 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         
         log.logBasic("All transformations in the cluster have finished.");
         
-        // All transformations have finished, with or without error.
-        // Now run a cleanup on all the transformation on the master and the slaves.
-        //
-        // Slaves first...
-        //
-        for (int s=0;s<slaveServers.length;s++)
-        {
-            try
-            {
-            	String carteObjectId = carteObjectMap.get(slaves[s]);
-                WebResult webResult = slaveServers[s].cleanupTransformation(slaves[s].getName(), carteObjectId);
-                if (!WebResult.STRING_OK.equals(webResult.getResult()))
-                {
-                    log.logError("Unable to run clean-up on slave transformation '"+slaves[s].getName()+"' : "+webResult.getMessage());
-                    errors+=1;
-                }
-            }
-            catch(Exception e)
-            {
-                errors+=1;
-                log.logError("Unable to contact slave server '"+slaveServers[s].getName()+"' to check slave transformation : "+e.toString());
-            }
-        }
-
-        // Clean up  the master too
-        //
-        if (masterTransMeta!=null && masterTransMeta.nrSteps()>0)
-        {
-            try
-            {
-            	String carteObjectId = carteObjectMap.get(masterTransMeta);
-            	WebResult webResult = masterServer.cleanupTransformation(masterTransMeta.getName(), carteObjectId);
-                if (!WebResult.STRING_OK.equals(webResult.getResult()))
-                {
-                    log.logError("Unable to run clean-up on master transformation '"+masterTransMeta.getName()+"' : "+webResult.getMessage());
-                    errors+=1;
-                }
-            }
-            catch(Exception e)
-            {
-                errors+=1;
-                log.logError("Unable to contact master server '"+masterServer.getName()+"' to clean up master transformation : "+e.toString());
-            }
-        }
+        errors+=cleanupCluster(log, transSplitter);
         
         return errors;
+    }
+    
+    public static int cleanupCluster(LogChannelInterface log, TransSplitter transSplitter) {
+      
+      SlaveServer[] slaveServers  = transSplitter.getSlaveTargets();
+      TransMeta[] slaves = transSplitter.getSlaves();
+      SlaveServer masterServer;
+      try {
+        masterServer = transSplitter.getMasterServer();
+      } catch (KettleException e) {
+        log.logError("Unable to obtain the master server from the cluster", e);
+        return 1;
+      }
+      TransMeta masterTransMeta = transSplitter.getMaster();
+      int errors = 0;
+      
+      // All transformations have finished, with or without error.
+      // Now run a cleanup on all the transformation on the master and the slaves.
+      //
+      // Slaves first...
+      //
+      for (int s=0;s<slaveServers.length;s++)
+      {
+          try
+          {
+            cleanupSlaveServer(transSplitter, slaveServers[s], slaves[s].getName());
+          }
+          catch(Exception e)
+          {
+              errors++;
+              log.logError("Unable to contact slave server '"+slaveServers[s].getName()+"' to clean up slave transformation", e);
+          }
+      }
+
+      // Clean up  the master too
+      //
+      if (masterTransMeta!=null && masterTransMeta.nrSteps()>0)
+      {
+          try
+          {
+            cleanupSlaveServer(transSplitter, masterServer, masterTransMeta.getName());
+          }
+          catch(Exception e)
+          {
+              errors++;
+              log.logError("Unable to contact master server '"+masterServer.getName()+"' to clean up master transformation", e);
+          }
+      }   
+      
+      return errors;
+    }
+
+    public static void cleanupSlaveServer(TransSplitter transSplitter, SlaveServer slaveServer, String transName) throws KettleException {
+      try {
+        String carteObjectId = transSplitter.getCarteObjectMap().get(slaveServer);
+        WebResult webResult = slaveServer.cleanupTransformation(transName, carteObjectId);
+        if (!WebResult.STRING_OK.equals(webResult.getResult()))
+        {
+            throw new KettleException("Unable to run clean-up on slave server '"+slaveServer+"' for transformation '"+transName+"' : "+webResult.getMessage());
+        }
+      } catch(Exception e) {
+        throw new KettleException("Unexpected error contacting slave server '"+slaveServer+"' to clear up transformation '"+transName+"'", e);
+      }
     }
     
     public static final Result getClusteredTransformationResult(LogChannelInterface log, TransSplitter transSplitter, Job parentJob)
