@@ -645,6 +645,13 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             if ( (!isThisPartitioned && isNextPartitioned ) || (isThisPartitioned && isNextPartitioned && !thisPartitionSchema.equals(nextPartitionSchema)) ) {
             	baseStep.setRepartitioning(nextStepPartitioningMeta.getMethodType());
             }
+            
+            // For partitioning to a set of remove steps (repartitioning from a master to a set or remote output steps)
+            //
+            StepPartitioningMeta targetStepPartitioningMeta = baseStep.getStepMeta().getTargetStepPartitioningMeta();
+            if (targetStepPartitioningMeta!=null) {
+              baseStep.setRepartitioning(targetStepPartitioningMeta.getMethodType());
+            }
         }
 
         preparing=false;
