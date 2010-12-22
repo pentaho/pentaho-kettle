@@ -151,7 +151,7 @@ public class EnterMappingDialog extends Dialog
         Shell parent = getParent();
         Display display = parent.getDisplay();
 
-        shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MIN | SWT.MAX);
+        shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MIN | SWT.MAX | SWT.APPLICATION_MODAL);
         props.setLook(shell);
         
         shell.setImage(GUIResource.getInstance().getImageSpoon());
