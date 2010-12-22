@@ -1165,7 +1165,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
             {
                 // Open the file (only first file)...
 
-            	Database d = Database.open(new File(AccessInputMeta.getFilename(inputList.getFile(0))));			
+            	Database d = Database.open(new File(AccessInputMeta.getFilename(inputList.getFile(0))), true);			
     			String realTableName=transMeta.environmentSubstitute(meta.getTableName());
     			
     			Table t=null;
@@ -1561,7 +1561,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 			     if (fileInputList.getFile(0).exists()) {
 					// Open the file (only first file) in readOnly ...
 					//
-					accessDatabase = Database.open(new File(AccessInputMeta.getFilename(fileInputList.getFile(0))));
+					accessDatabase = Database.open(new File(AccessInputMeta.getFilename(fileInputList.getFile(0))), true);
 
 					// Get user tables
 					//
