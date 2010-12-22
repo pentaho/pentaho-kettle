@@ -48,15 +48,37 @@ import org.pentaho.di.ui.util.ImageUtil;
  */
 public class Splash {
   private Shell splash;
+  
+  private Image kettle_image;
+  private Image kettle_icon;
+  private Image exclamation_image;
+  
+  private Font verFont;
+  private Font licFont;
+  private Font devWarningFont;
+
+  private Color versionWarningBackgroundColor;
+  private Color versionWarningForegroundColor;
+  
+  private int licFontSize = 8;
 
   private static Class<?> PKG = Splash.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   public Splash(Display display) throws KettleException {
     Rectangle displayBounds = display.getPrimaryMonitor().getBounds();
 
-    final Image kettle_image = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("splash_image")); // "kettle_splash.png" //$NON-NLS-1$
-    final Image kettle_icon = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("splash_icon")); // "spoon.ico" //$NON-NLS-1$
+    kettle_image = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("splash_image")); // "kettle_splash.png" //$NON-NLS-1$
+    kettle_icon = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("splash_icon")); // "spoon.ico" //$NON-NLS-1$
+    exclamation_image = ImageUtil.getImageAsResource(display, BasePropertyHandler
+        .getProperty("exclamation_image")); // "exclamation.png" //$NON-NLS-1$
 
+    verFont = new Font(display, "Helvetica", 11, SWT.BOLD); //$NON-NLS-1$
+    licFont = new Font(display, "Helvetica", licFontSize, SWT.NORMAL); //$NON-NLS-1$
+    devWarningFont = new Font(display, "Helvetica", 10, SWT.NORMAL); //$NON-NLS-1$
+    
+    versionWarningBackgroundColor = new Color(display, 255, 253, 213);
+    versionWarningForegroundColor = new Color(display, 220, 177, 20);
+    
     splash = new Shell(display, SWT.NONE /*SWT.ON_TOP*/);
     splash.setImage(kettle_icon);
 
@@ -73,7 +95,7 @@ public class Splash {
     fdCanvas.right = new FormAttachment(100, 0);
     fdCanvas.bottom = new FormAttachment(100, 0);
     canvas.setLayoutData(fdCanvas);
-
+    
     canvas.addPaintListener(new PaintListener() {
       public void paintControl(PaintEvent e) {
         String versionText = BaseMessages.getString(PKG, "SplashDialog.Version") + " " + Const.VERSION; //$NON-NLS-1$ //$NON-NLS-2$
@@ -108,20 +130,20 @@ public class Splash {
         else if (Const.RELEASE.equals(Const.ReleaseType.GA)) {
             versionText = BaseMessages.getString(PKG, "SplashDialog.GA") + " - " + versionText;  //$NON-NLS-1$//$NON-NLS-2$
           }
-
-        Font verFont = new Font(e.display, "Helvetica", 11, SWT.BOLD); //$NON-NLS-1$
+        
         e.gc.setFont(verFont);
         e.gc.drawText(versionText, 290, 205, true);
                 
         // try using the desired font size for the license text
-        int fontSize = 8;
-        Font licFont = new Font(e.display, "Helvetica", fontSize, SWT.NORMAL); //$NON-NLS-1$
         e.gc.setFont(licFont);
 
         // if the text will not fit the allowed space 
         while (!willLicenseTextFit(licenseText, e.gc)) {
-          fontSize--;
-          licFont = new Font(e.display, "Helvetica", fontSize, SWT.NORMAL); //$NON-NLS-1$
+          licFontSize--;
+          if (licFont != null) {
+            licFont.dispose();
+          }
+          licFont = new Font(e.display, "Helvetica", licFontSize, SWT.NORMAL); //$NON-NLS-1$
           e.gc.setFont(licFont);          
         }
         
@@ -132,6 +154,13 @@ public class Splash {
     splash.addDisposeListener(new DisposeListener() {
       public void widgetDisposed(DisposeEvent arg0) {
         kettle_image.dispose();
+        kettle_icon.dispose();
+        exclamation_image.dispose();
+        verFont.dispose();
+        licFont.dispose();
+        devWarningFont.dispose();
+        versionWarningForegroundColor.dispose();
+        versionWarningBackgroundColor.dispose();
       }
     });
     Rectangle bounds = kettle_image.getBounds();
@@ -165,18 +194,14 @@ public class Splash {
   }
   
   private void drawVersionWarning(GC gc, Display display) {
-    final Image exclamation_image = ImageUtil.getImageAsResource(display, BasePropertyHandler
-        .getProperty("exclamation_image")); // "exclamation.png" //$NON-NLS-1$
-    
-    gc.setBackground(new Color(gc.getDevice(), 255, 253, 213));
-    gc.setForeground(new Color(gc.getDevice(), 220, 177, 20));
+    gc.setBackground(versionWarningBackgroundColor);
+    gc.setForeground(versionWarningForegroundColor);
     gc.fillRectangle(290, 231, 367, 49);
     gc.drawRectangle(290, 231, 367, 49);
     gc.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
     gc.drawImage(exclamation_image, 304, 243);
 
-    Font font = new Font(display, "Helvetica", 10, SWT.NORMAL); //$NON-NLS-1$
-    gc.setFont(font);
+    gc.setFont(devWarningFont);
     gc.drawText(BaseMessages.getString(PKG, "SplashDialog.DevelopmentWarning"), 335, 241); //$NON-NLS-1$
   }
 
