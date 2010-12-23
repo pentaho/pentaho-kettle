@@ -1196,11 +1196,10 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
     					fieldtype = ValueMetaInterface.TYPE_BOOLEAN;
     				else if(DataType.BINARY.equals(c.getType()))
     					fieldtype = ValueMetaInterface.TYPE_BINARY;
-    				else if((DataType.DOUBLE.equals(c.getType())) || (DataType.LONG.equals(c.getType())) 
-    						|| (DataType.NUMERIC.equals(c.getType()) ) )
+    				else if((DataType.DOUBLE.equals(c.getType())) || (DataType.LONG.equals(c.getType()))
+    						|| (DataType.BYTE.equals(c.getType())) || (DataType.NUMERIC.equals(c.getType())))
     					fieldtype = ValueMetaInterface.TYPE_NUMBER;
-    				else if((DataType.FLOAT.equals(c.getType())) || (DataType.MONEY.equals(c.getType())) 
-    						|| (DataType.MEMO.equals(c.getType())) )
+    				else if((DataType.FLOAT.equals(c.getType())) || (DataType.MONEY.equals(c.getType())))
     					fieldtype = ValueMetaInterface.TYPE_BIGNUMBER;
     				else if((DataType.SHORT_DATE_TIME.equals(c.getType())))
     					fieldtype = ValueMetaInterface.TYPE_DATE;
