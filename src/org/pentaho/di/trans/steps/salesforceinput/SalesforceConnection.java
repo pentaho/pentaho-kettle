@@ -557,7 +557,7 @@ public class SalesforceConnection {
   public static MessageElement createMessageElement(String name, Object value, boolean useExternalKey) throws Exception {
 
 		MessageElement me =  new MessageElement(new QName(name),value); 
-		if(true) {
+		if(useExternalKey) {
 			// We use an external key
 			// the structure should be like this :
 			// object:externalId/lookupField
