@@ -14,17 +14,10 @@
 
 package org.pentaho.di.ui.trans.steps.getxmldata;
 
+import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 
-import org.dom4j.Attribute;
-import org.dom4j.Document;
-import org.dom4j.Element;
-import org.dom4j.Node;
-import org.dom4j.io.SAXReader;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
@@ -55,6 +48,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -68,7 +62,6 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.getxmldata.GetXMLDataField;
 import org.pentaho.di.trans.steps.getxmldata.GetXMLDataMeta;
-import org.pentaho.di.trans.steps.getxmldata.IgnoreDTDEntityResolver;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
@@ -246,15 +239,12 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 	
 	private boolean  gotEncodings = false;
 	
-	private     HashSet<String> list = new HashSet<String> ();
-	
 	public static final int dateLengths[] = new int[]
 		{
 			23, 19, 14, 10, 10, 10, 10, 8, 8, 8, 8, 6, 6
 		}
 		;
-	
-	ArrayList<String> listpath = new ArrayList<String>();
+
 	String precNodeName=null;
 
 	
@@ -1453,7 +1443,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		}
 		
 	}
-	@SuppressWarnings("unchecked")
+
 	private void getLoopPathList()
 	{
 		try
@@ -1468,40 +1458,13 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 	    		 
 				if (fileinputList.getFile(0).exists()) 
 				{
-					listpath.clear();
-           			// get encoding. By default UTF-8
-   					String encoding="UTF-8";
-   					if (!Const.isEmpty(meta.getEncoding())) encoding=meta.getEncoding();
-   					SAXReader reader = new SAXReader();
-   					// Validate XML against specified schema?
-   	    			if(meta.isValidating())
-   	    			{
-   	    				reader.setValidation(true);
-   	    				reader.setFeature("http://apache.org/xml/features/validation/schema", true);
-   	    			}
-   	    			else
-   	    			{
-   	    				// Ignore DTD
-   	    				reader.setEntityResolver(new IgnoreDTDEntityResolver());
-   	    			}
-   	    			Document document  = reader.read( KettleVFS.getInputStream(fileinputList.getFile(0)), encoding);	
-   	    			List<Node> nodes = document.selectNodes(document.getRootElement().getName());
-
-   	    			 for (Node node : nodes) 
-   	    			 {
-   	    				 if(!listpath.contains(node.getPath()))
-   	    				 {
-   	    					 listpath.add(node.getPath());
-   	    					 addLoopXPath(node);
-   	    				 }
-   	    			 }
-					String[] list_xpath = (String[]) listpath.toArray(new String[listpath.size()]);
-
-					EnterSelectionDialog dialog = new EnterSelectionDialog(shell, list_xpath, BaseMessages.getString(PKG, "GetXMLDataDialog.Dialog.SelectALoopPath.Title"), BaseMessages.getString(PKG, "GetXMLDataDialog.Dialog.SelectALoopPath.Message"));
-					String listxpaths = dialog.open();
-					
-					if (listxpaths != null) wLoopXPath.setText(listxpaths);
-
+   					LoopNodesImportProgressDialog pd = new LoopNodesImportProgressDialog(shell, meta, KettleVFS.getFilename(fileinputList.getFile(0)), meta.getEncoding()==null?"UTF-8":meta.getEncoding());
+   					String[] list_xpath= pd.open();
+   					if(list_xpath!=null) {
+   						EnterSelectionDialog dialog = new EnterSelectionDialog(shell, list_xpath, BaseMessages.getString(PKG, "GetXMLDataDialog.Dialog.SelectALoopPath.Title"), BaseMessages.getString(PKG, "GetXMLDataDialog.Dialog.SelectALoopPath.Message"));
+   						String listxpaths = dialog.open();
+   						if (listxpaths != null) wLoopXPath.setText(listxpaths);
+   					}
 				} else {
 					// The file not exists !
 					throw new KettleException(BaseMessages.getString(PKG, "GetXMLDataDialog.Exception.FileDoesNotExist", KettleVFS
@@ -1524,225 +1487,65 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 	    }
 	}
 	
-	@SuppressWarnings("unchecked")
 	private void get()
 	{
+		InputStream is=null;
         try
         {
-        	list.clear();
         	GetXMLDataMeta meta = new GetXMLDataMeta();
         	getInfo(meta);
         	
         	//	 check if the path is given 
     		if (!checkLoopXPath(meta)) return;    	       
-            
+    		int clearFields = SWT.YES;
+    		if (wFields.nrNonEmpty()>0)
+    		{
+    			MessageBox messageBox = new MessageBox(shell, SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_QUESTION );
+    			messageBox.setMessage(BaseMessages.getString(PKG, "GetXMLDataDialog.ClearFieldList.DialogMessage"));
+    			messageBox.setText(BaseMessages.getString(PKG, "GetXMLDataDialog.ClearFieldList.DialogTitle"));
+    			clearFields = messageBox.open();
+    			if (clearFields == SWT.CANCEL){
+    				return;
+    			}
+    		}
     		FileInputList inputList = meta.getFiles(transMeta);
     		
     		if (inputList.getFiles().size()>0)
             {    
-            	wFields.removeAll();
-            	// get encoding. By default UTF-8
-    			String encoding="UTF-8";
-    			if (!Const.isEmpty(meta.getEncoding()))
-    			{
-    				encoding=meta.getEncoding();
-    			}
-    			
-    			SAXReader reader = new SAXReader();
-    			// Validate XML against specified schema?
-    			if(meta.isValidating())
-    			{
-    				reader.setValidation(true);
-    				reader.setFeature("http://apache.org/xml/features/validation/schema", true);
-    			}
-    			else
-    			{
-    				reader.setEntityResolver(new IgnoreDTDEntityResolver());	
-    			}
-    			Document document  = reader.read( KettleVFS.getInputStream(inputList.getFile(0)),encoding );	
-    			String realXPath=transMeta.environmentSubstitute(meta.getLoopXPath());
-    			List<Node> nodes = document.selectNodes(realXPath);
-    			for (Node node : nodes) 
-    			{
-    			    setNodeField(node); 
-    			    ChildNode(node);
-    			}
-    			 
-                wFields.removeEmptyRows();
-                wFields.setRowNums();
-                wFields.optWidth(true);
+ 
+    			XMLInputFieldsImportProgressDialog prd= new XMLInputFieldsImportProgressDialog(shell, meta, KettleVFS.getFilename(inputList.getFile(0)),meta.getEncoding()==null?"UTF-8":meta.getEncoding(),  transMeta.environmentSubstitute(meta.getLoopXPath()));
+                RowMetaAndData[] fields = prd.open(); 
+                if(fields!=null) {
+                	if (clearFields==SWT.YES){
+        				wFields.clearAll(false);
+        			}
+                	int nr=fields.length;
+                	for(int i=0; i<nr; i++) {
+                		 RowMetaAndData row = fields[i];
+
+                		 TableItem item = new TableItem(wFields.table, SWT.NONE);
+                         item.setText(1, row.getString(0, ""));
+                         item.setText(2, row.getString(1, ""));
+                         item.setText(3, row.getString(2, GetXMLDataField.ElementTypeDesc[0]));   
+                         item.setText(4, row.getString(3, "String"));  
+                         item.setText(5, row.getString(4, ""));  
+                     }
+                	wFields.removeEmptyRows();
+                	wFields.setRowNums();
+                	wFields.optWidth(true);
+                }
             }
         }     
         catch(Exception e)
         {
             new ErrorDialog(shell, BaseMessages.getString(PKG, "GetXMLDataDialog.ErrorParsingData.DialogTitle"), BaseMessages.getString(PKG, "GetXMLDataDialog.ErrorParsingData.DialogMessage"), e);
+        }finally {
+        	try {
+        		if(is!=null) is.close();
+        	}catch(Exception e){};
         }
 	}
-	private boolean ChildNode(Node node)
-	{
-		 boolean rc=false; //true: we found child nodes
-		 Element ce = (Element) node;
-		 // List child 
-		 for(int j=0;j<ce.nodeCount();j++)
-		 {
-			 Node cnode=ce.node(j);
-			 if(!Const.isEmpty(cnode.getName()))
-			 {
-				 Element cce = (Element) cnode;
-				 if(cce.nodeCount()>1)
-				 {
-					 if(ChildNode(cnode)==false){
-						// We do not have child nodes ...
-						 setNodeField(cnode);
-						 rc=true;
-					 }
-				 }else
-				 {
-					 setNodeField(cnode);
-					 rc=true;
-				 }
-			 } 
-		 }
-		 return rc;
-	}
-	private void addLoopXPath(Node node)
-	{
-		 Element ce = (Element) node;
-
-		 // List child 
-		 for(int j=0;j<ce.nodeCount();j++)
-		 {
-			 Node cnode=ce.node(j);
-
-			 if(!Const.isEmpty(cnode.getName()))
-			 {
-				 Element cce = (Element) cnode;
-				 if(!listpath.contains(cnode.getPath())) listpath.add(cnode.getPath());
-				 // let's get child nodes
-				 if(cce.nodeCount()>1) addLoopXPath(cnode);
-			 }
-		 } 
-	}
-
-	private void setAttributeField(Attribute attribute)
-	{
-		// Get Attribute Name
-		String attributname=attribute.getName();
-		String attributnametxt=cleanString(attribute.getPath());
-		if(!Const.isEmpty(attributnametxt) && !list.contains(attribute.getPath()))
-		{
-            TableItem item = new TableItem(wFields.table, SWT.NONE);
-            item.setText(1, attributname);
-            item.setText(2, attributnametxt);
-            item.setText(3, GetXMLDataField.ElementTypeDesc[0]);
-            
-            // Get attribute value
-            String valueAttr =attribute.getText();
-            
-            // Try to get the Type
-            if(IsDate(valueAttr))
-            {
-    			item.setText(4, "Date");
-    			item.setText(5, "yyyy/MM/dd");
-    			
-            }
-            else if(IsInteger(valueAttr))
-    			item.setText(4, "Integer");
-            else if(IsNumber(valueAttr))
-    			item.setText(4, "Number");	    		          
-            else
-            	item.setText(4, "String");	    		            	
-            list.add(attribute.getPath());
-		}// end if
-	            
-	}
-	private String cleanString(String inputstring)
-	{
-		String retval=inputstring;
-		retval=retval.replace(wLoopXPath.getText(), "");
-		while(retval.startsWith(GetXMLDataMeta.N0DE_SEPARATOR))
-		{
-			retval=retval.substring(1, retval.length());
-		}
-		
-		return retval;
-	}
 	
-	@SuppressWarnings("unchecked")
-	private void setNodeField(Node node)
-	{
-		Element e = (Element) node; 
-		// get all attributes
-		List<Attribute> lista = e.attributes(); 
-		for(int i=0;i<lista.size();i++)
-		{
-			 setAttributeField(lista.get(i));
-		}
-
-		// Get Node Name
-		String nodename=node.getName();
-		String nodenametxt=cleanString(node.getPath());
-		
-		if(!Const.isEmpty(nodenametxt) && !list.contains(nodenametxt))
-		{	
-            TableItem item = new TableItem(wFields.table, SWT.NONE);
-            item.setText(1, nodename);
-            item.setText(2, nodenametxt);
-            item.setText(3, GetXMLDataField.ElementTypeDesc[0]);
-
-            // Get Node value
-            String valueNode=node.getText();
-            
-			// Try to get the Type
-            if(IsDate(valueNode))
-            {
-    			item.setText(4, "Date");
-    			item.setText(5, "yyyy/MM/dd");
-            }
-            else if(IsInteger(valueNode))
-    			item.setText(4, "Integer");
-            else if(IsNumber(valueNode))
-    			item.setText(4, "Number");	    		          
-            else
-            	item.setText(4, "String");
-            
-            list.add(nodenametxt);
-           
-		}// end if
-	}
-	
-	private boolean IsInteger(String str)
-	{
-		  try 
-		  {
-		     Integer.parseInt(str);
-		  }
-		  catch(NumberFormatException e)   {return false; }
-		  return true;
-	}
-
-	private boolean IsNumber(String str)
-	{
-		  try 
-		  {
-		     Float.parseFloat(str);
-		  }
-		  catch(Exception e)   {return false; }
-		  return true;
-	}
-
-	private boolean IsDate(String str)
-	{
-		  // TODO: What about other dates? Maybe something for a CRQ
-		  try 
-		  {
-		        SimpleDateFormat fdate = new SimpleDateFormat("yyyy/MM/dd");
-		        fdate.setLenient(false);
-		        fdate.parse(str);
-		  }
-		  catch(Exception e)   {return false; }
-		  return true;
-	}
 
 	private void setEncodings()
     {
