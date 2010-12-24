@@ -19,6 +19,7 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlank
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 import javax.xml.transform.Source;
@@ -353,6 +354,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 							
 					InputStream xslInputStream = KettleVFS.getInputStream(xslfile);
 					InputStream xmlInputStream = KettleVFS.getInputStream(xmlfile);
+					OutputStream os = null;
 					try {
   					// Use the factory to create a template containing the xsl file
     						Templates template = factory.newTemplates(new StreamSource(	xslInputStream )); 
@@ -364,8 +366,9 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
   										
   					
   					// Prepare the input and output files
-    						Source source = new StreamSource( xmlInputStream );
-  					StreamResult resultat = new StreamResult(KettleVFS.getOutputStream(outputfile, false));
+    				Source source = new StreamSource( xmlInputStream );
+    				os=KettleVFS.getOutputStream(outputfile, false);		
+  					StreamResult resultat = new StreamResult(os);
   
   					// Apply the xsl file to the source file and write the result to the output file
   					xformer.transform(source, resultat);
@@ -388,6 +391,11 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 					  }
 					  try {
 					    xmlInputStream.close();
+					  } catch (IOException ignored) {
+					    // ignore IO Exception on close
+					  }
+					  try {
+					    if(os!=null) os.close();
 					  } catch (IOException ignored) {
 					    // ignore IO Exception on close
 					  }
