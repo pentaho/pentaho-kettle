@@ -126,4 +126,8 @@ public interface RowSet {
 	 */
 	public abstract void setRemoteSlaveServerName(String remoteSlaveServerName);
 
+    /**
+     * @return true if this row set is blocking.
+     */
+    public abstract boolean isBlocking();
 }

@@ -348,4 +348,41 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface
 	 */
 	public void setRepartitioning(int partitioningMethod);
 
+    /**
+     * Indicates that this step is still waiting for more data to arrive.
+     * 
+     * @return True if more data is arriving into this step.
+     */
+    public boolean isWaitingForData();
+  
+    /**
+     * Specify that this step waits for more data or not
+     * 
+     * @param waitingForData
+     *          Set to true to indicate that this step is not idle but still
+     *          waiting for more data.
+     */
+    public void setWaitingForData(boolean waitingForData);
+
+    /**
+     * This method determines if a step is idle or not.
+     * A step is idle if it is not waiting for data and has no input data waiting.
+     * 
+     * @return true if the step is idle, false if it is not.
+     * 
+     */
+
+    public boolean isIdle();
+    /**
+     * Indicates that this step is passing data to next steps and/or listeners.
+     * @return True if data is being passed.
+     */
+    public boolean isPassingData();
+    
+    /**
+     * Indicate that this step is passing data to next steps and/or listeners.
+     * @param passingData True if data is being passed.
+     */
+    public void setPassingData(boolean passingData);
+
 }

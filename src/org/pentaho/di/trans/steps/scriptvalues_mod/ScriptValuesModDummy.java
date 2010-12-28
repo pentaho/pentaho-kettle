@@ -318,4 +318,28 @@ import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
 			// TODO Auto-generated method stub
 			return false;
 		}
+
+        public boolean isWaitingForData() {
+          // TODO Auto-generated method stub
+          return false;
+        }
+
+        public void setWaitingForData(boolean waitingForData) {
+          // TODO Auto-generated method stub
+        }
+
+        public boolean isIdle() {
+          // TODO Auto-generated method stub
+          return false;
+        }
+
+        public boolean isPassingData() {
+          // TODO Auto-generated method stub
+          return false;
+        }
+     
+        public void setPassingData(boolean passingData) {
+          // TODO Auto-generated method stub
+          
+        }
 	}

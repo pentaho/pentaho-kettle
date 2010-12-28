@@ -76,10 +76,10 @@ public class TextFileInput extends BaseStep implements StepInterface
         this.transmeta = transMeta;
 	}
 	
-  public static final String getLine(LogChannelInterface log, InputStreamReader reader, int formatNr, StringBuilder line) throws KettleFileException {
-    EncodingType type = EncodingType.guessEncodingType(reader.getEncoding());
-    return getLine(log, reader, type, formatNr, line);
-  }
+    public static final String getLine(LogChannelInterface log, InputStreamReader reader, int formatNr, StringBuilder line) throws KettleFileException {
+      EncodingType type = EncodingType.guessEncodingType(reader.getEncoding());
+      return getLine(log, reader, type, formatNr, line);
+    }
 
 	public static final String getLine(LogChannelInterface log, InputStreamReader reader, EncodingType encodingType, int formatNr, StringBuilder line) throws KettleFileException
 	{
@@ -1503,8 +1503,8 @@ public class TextFileInput extends BaseStep implements StepInterface
 		meta = (TextFileInputMeta) smi;
 		data = (TextFileInputData) sdi;
 
-		if (super.init(smi, sdi))
-		{
+		if (super.init(smi, sdi)) {
+		    setWaitingForData(true);
 			initErrorHandling();
 			initReplayFactory();
 				

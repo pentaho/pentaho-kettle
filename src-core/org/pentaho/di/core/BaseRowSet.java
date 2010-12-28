@@ -241,4 +241,13 @@ abstract class BaseRowSet implements Comparable<RowSet>, RowSet
 	public void setRemoteSlaveServerName(String remoteSlaveServerName) {
 		this.remoteSlaveServerName = remoteSlaveServerName;
 	}
+
+	/**
+	 * By default we don't report blocking, only for monitored transformations.
+	 * @return true if this row set is blocking on reading or writing.
+	 */
+    public boolean isBlocking() {
+      return false;
+    }
+
 }

@@ -31,6 +31,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.BlockingListeningRowSet;
 import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
@@ -78,7 +79,6 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
-import org.pentaho.di.trans.TransMeta.TransformationType;
 import org.pentaho.di.trans.cluster.TransSplitter;
 import org.pentaho.di.trans.performance.StepPerformanceSnapShot;
 import org.pentaho.di.trans.step.RunThread;
@@ -227,6 +227,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     private List<TransStoppedListener> transStoppedListeners;
     
     private int nrOfFinishedSteps;
+    private int nrOfActiveSteps;
     
     private NamedParams namedParams = new NamedParamsDefault();
 
@@ -473,11 +474,14 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     				for (int c=0;c<nrCopies;c++)
     				{
     					RowSet rowSet;
-    					if (transMeta.getTransformationType()==TransformationType.Normal) {
-    						rowSet = new BlockingRowSet(transMeta.getSizeRowset());
-    					} else {
-    						rowSet = new SingleRowRowSet();
+    					switch(transMeta.getTransformationType()) {
+    					case Normal: rowSet = new BlockingRowSet(transMeta.getSizeRowset()); break;
+    					case Monitored:  rowSet = new BlockingListeningRowSet(transMeta.getSizeRowset()); break;
+    					case SerialSingleThreaded: rowSet = new SingleRowRowSet(); break;
+    					default: 
+    					  throw new KettleException("Unhandled transformation type: "+transMeta.getTransformationType());
     					}
+    						
     					switch(dispatchType)
     					{
     					case TYPE_DISP_1_1: rowSet.setThreadNameFromToCopy(thisStep.getName(), 0, nextStep.getName(), 0); break;
@@ -761,6 +765,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         // Now prepare to start all the threads...
     	// 
     	nrOfFinishedSteps=0;
+    	nrOfActiveSteps=0;
     	
         for (int i=0;i<steps.size();i++)
         {
@@ -772,6 +777,28 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
             //
             StepListener stepListener = new StepListener() 
 	            {
+                    public void stepActive(Trans trans, StepMeta stepMeta, StepInterface step) {
+                      nrOfActiveSteps++;
+                      if (nrOfActiveSteps==1) {
+                        // Transformation goes from in-active to active...
+                        //
+                        for (TransListener listener : transListeners) {
+                          listener.transActive(Trans.this);
+                        }
+                      }
+                    }
+            
+                    public void stepIdle(Trans trans, StepMeta stepMeta, StepInterface step) {
+                      nrOfActiveSteps--;
+                      if (nrOfActiveSteps==0) {
+                        // Transformation goes from active to in-active...
+                        //
+                        for (TransListener listener : transListeners) {
+                          listener.transIdle(Trans.this);
+                        }                        
+                      }
+                    }
+
 					public void stepFinished(Trans trans, StepMeta stepMeta, StepInterface step) {
 						synchronized (Trans.this) {
 							nrOfFinishedSteps++;
@@ -846,7 +873,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         paused.set(false);
         stopped.set(false);
         
-		TransListener transListener = new TransListener() {
+		TransListener transListener = new TransAdapter() {
 				public void transFinished(Trans trans) {
 					
 					// First of all, stop the performance snapshot timer if there is is one...
@@ -866,6 +893,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         
         switch(transMeta.getTransformationType()) {
         case Normal:
+        case Monitored:
         	
 	        // Now start all the threads...
 	    	//
@@ -1610,7 +1638,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	                    };
 	                    timer.schedule(timerTask, intervalInSeconds*1000, intervalInSeconds*1000);
 	                    
-	                    addTransListener(new TransListener() {
+	                    addTransListener(new TransAdapter() {
 	    					public void transFinished(Trans trans) {
 	    						timer.cancel();						
 	    					}
@@ -1619,7 +1647,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                     
                     // Add a listener to make sure that the last record is also written when transformation finishes...
                     //
-                    addTransListener(new TransListener() {
+                    addTransListener(new TransAdapter() {
     					public void transFinished(Trans trans) throws KettleException {
     						try {
 	    						endProcessing();
@@ -1638,7 +1666,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                 //
                 StepLogTable stepLogTable = transMeta.getStepLogTable();
                 if (stepLogTable.isDefined()) {
-                    addTransListener(new TransListener() {
+                    addTransListener(new TransAdapter() {
     					public void transFinished(Trans trans) throws KettleException {
     						try {
     							writeStepLogInformation();
@@ -1653,7 +1681,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                 //
                 ChannelLogTable channelLogTable = transMeta.getChannelLogTable();
                 if (channelLogTable.isDefined()) {
-                    addTransListener(new TransListener() {
+                    addTransListener(new TransAdapter() {
     					public void transFinished(Trans trans) throws KettleException {
     						try {
     							writeLogChannelInformation();
@@ -1685,7 +1713,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                     };
                     timer.schedule(timerTask, perfLogInterval*1000, perfLogInterval*1000);
                     
-                    addTransListener(new TransListener() {
+                    addTransListener(new TransAdapter() {
     					public void transFinished(Trans trans) {
     						timer.cancel();						
     					}
@@ -2228,7 +2256,20 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         }
 
         // We are going to add an extra RowSet to this stepInterface.
-        BlockingRowSet rowSet = new BlockingRowSet(transMeta.getSizeRowset());
+        RowSet rowSet;
+        switch(transMeta.getTransformationType()) {
+        case Normal:
+          rowSet = new BlockingRowSet(transMeta.getSizeRowset());
+          break;
+        case Monitored: 
+           rowSet = new BlockingListeningRowSet(transMeta.getSizeRowset());
+           break;
+        case SerialSingleThreaded:
+          rowSet = new SingleRowRowSet();
+          break;
+        default:
+          throw new KettleException("Unhandled transformation type: "+transMeta.getTransformationType());
+        }
 
         // Add this rowset to the list of active rowsets for the selected step
         stepInterface.getInputRowSets().add(rowSet);
@@ -3519,6 +3560,21 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   public void setContainerObjectId(String containerObjectId) {
     this.containerObjectId = containerObjectId;
 
+  }
+  
+  /**
+   * Check if the transformation is idle.
+   * A transformation is idle if all the steps in the transformation are idle.
+   * 
+   * @return true if the transformation is idle, false if it is active.
+   */
+  public boolean isIdle() {
+    for (StepMetaDataCombi combi : steps) {
+      if (!combi.step.isIdle()) {
+        return false;
+      }
+    }
+    return true;
   }
 
 }

@@ -11,6 +11,8 @@
 
 package org.pentaho.di.trans;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -251,6 +253,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     
     public enum TransformationType {
     	Normal("Normal", BaseMessages.getString(PKG, "TransMeta.TransformationType.Normal")),
+        Monitored("Monitored", BaseMessages.getString(PKG, "TransMeta.TransformationType.Monotored")),
     	SerialSingleThreaded("SerialSingleThreaded", BaseMessages.getString(PKG, "TransMeta.TransformationType.SerialSingleThreaded")),
     	;
     	
@@ -5881,5 +5884,30 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    */
   public void setCarteObjectId(String containerObjectId) {
     this.containerObjectId = containerObjectId;
+  }
+  
+  /**
+   * Utility method to write the XML of this transformation to a file, mostly for testing purposes.
+   * 
+   * @param filename The filename to save to
+   * @throws KettleXMLException in case something goes wrong.
+   */
+  public void writeXML(String filename) throws KettleXMLException {
+    FileOutputStream fos = null;
+    try {
+      fos = new FileOutputStream(filename);
+      fos.write(XMLHandler.getXMLHeader().getBytes(Const.XML_ENCODING));
+      fos.write(getXML().getBytes(Const.XML_ENCODING));
+    } catch(Exception e) {
+      throw new KettleXMLException("Unable to save to XML file '"+filename+"'", e);
+    } finally {
+      if (fos!=null) {
+        try {
+          fos.close();
+        } catch (IOException e) {
+          throw new KettleXMLException("Unable to close file '"+filename+"'", e);
+        }
+      }
+    }
   }
 }

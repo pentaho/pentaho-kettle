@@ -92,7 +92,8 @@ public class Mapping extends BaseStep implements StepInterface
 	        // The transformation still runs in the background and might have some more work to do.
 	        // Since everything is running in the MappingThreads we don't have to do anything else here but wait...
 	        //
-	        if (getTransMeta().getTransformationType()==TransformationType.Normal) {
+	        if (getTransMeta().getTransformationType()==TransformationType.Normal ||
+	            getTransMeta().getTransformationType()==TransformationType.Monitored ) {
 		        data.mappingTrans.waitUntilFinished();
 		        
 		        // Set some statistics from the mapping...
@@ -215,7 +216,10 @@ public class Mapping extends BaseStep implements StepInterface
         		// That means that we're reading from all input steps that this mapping step has.
         		//
     	        List<StepMeta> prevSteps = getTransMeta().findPreviousSteps(getStepMeta());
-        		
+
+    	        // TODO: Handle remote steps from: getStepMeta().getRemoteInputSteps()
+    	        //
+    	        
     			// Let's read data from all the previous steps we find...
     			// The origin is the previous step
     			// The target is the Mapping Input step.

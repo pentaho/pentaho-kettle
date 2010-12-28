@@ -58,6 +58,7 @@ public class InjectorMeta extends BaseStepMeta implements StepMetaInterface
     private int    length[];
     private int    precision[];
     
+    
 	/**
      * @return Returns the length.
      */
@@ -125,6 +126,7 @@ public class InjectorMeta extends BaseStepMeta implements StepMetaInterface
     public InjectorMeta()
 	{
 		super(); // allocate BaseStepMeta
+		allocate(0);
 	}
 
 	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters)

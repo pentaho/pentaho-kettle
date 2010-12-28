@@ -16,6 +16,7 @@ package org.pentaho.di.core;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.pentaho.di.core.row.RowMetaInterface;
 
@@ -24,24 +25,29 @@ import org.pentaho.di.core.row.RowMetaInterface;
 /**
  * Contains a buffer of rows.  Getting rows from the buffer or putting rows in the buffer is synchronized to allow concurrent use of multiple Threads.
  * 
+ * This class also monitors the idle state of a RowSet
+ * 
  * @author Matt
- * @since 04-04-2003
+ * @since 23-12-2010
  *
  */
-public class BlockingRowSet extends BaseRowSet implements Comparable<RowSet>, RowSet
+public class BlockingListeningRowSet extends BaseRowSet implements Comparable<RowSet>, RowSet
 {
     private BlockingQueue<Object[]> queArray;
+    
+    private AtomicBoolean blocking;
     
     /**
      * Create new non-blocking-queue with maxSize capacity.
      * @param maxSize
      */
-    public BlockingRowSet(int maxSize)
+    public BlockingListeningRowSet(int maxSize)
     {
     	super();
 
     	// create an empty queue 
         queArray = new ArrayBlockingQueue<Object[]>(maxSize, false);
+        blocking = new AtomicBoolean(false);
     }
     
     /* (non-Javadoc)
@@ -49,7 +55,7 @@ public class BlockingRowSet extends BaseRowSet implements Comparable<RowSet>, Ro
 	 */
     public boolean putRow(RowMetaInterface rowMeta, Object[] rowData)
     {
-    	return putRowWait(rowMeta, rowData, Const.TIMEOUT_PUT_MILLIS, TimeUnit.MILLISECONDS);
+    	return putRowWait(rowMeta, rowData, 100, TimeUnit.NANOSECONDS);
     }
     
     /* (non-Javadoc)
@@ -58,15 +64,19 @@ public class BlockingRowSet extends BaseRowSet implements Comparable<RowSet>, Ro
     public boolean putRowWait(RowMetaInterface rowMeta, Object[] rowData, long time, TimeUnit tu) {
     	this.rowMeta = rowMeta;
     	try{
-    		
-    		return queArray.offer(rowData, time, tu);
+    		blocking.set(true);
+    		boolean b = queArray.offer(rowData, time, tu);
+            blocking.set(false);
+    		return b;
     	}
     	catch (InterruptedException e)
 	    {
+    	    blocking.set(false);
     		return false;
 	    }
     	catch (NullPointerException e)
 	    {
+    	    blocking.set(false);
     		return false;
 	    }    	
     	
@@ -78,7 +88,10 @@ public class BlockingRowSet extends BaseRowSet implements Comparable<RowSet>, Ro
 	 * @see org.pentaho.di.core.RowSetInterface#getRow()
 	 */
     public Object[] getRow(){
-    	return getRowWait(Const.TIMEOUT_GET_MILLIS, TimeUnit.MILLISECONDS);
+        blocking.set(true);
+    	Object[] row = getRowWait(100, TimeUnit.NANOSECONDS);
+        blocking.set(false);    	
+    	return row;
     }
     
     
@@ -87,7 +100,10 @@ public class BlockingRowSet extends BaseRowSet implements Comparable<RowSet>, Ro
 	 */       
     public Object[] getRowImmediate(){
 
-    	return queArray.poll();	    	
+        blocking.set(true);
+    	Object[] row = queArray.poll();
+        blocking.set(false);
+    	return row;
     }
     
     /* (non-Javadoc)
@@ -96,14 +112,26 @@ public class BlockingRowSet extends BaseRowSet implements Comparable<RowSet>, Ro
     public Object[] getRowWait(long timeout, TimeUnit tu){
 
     	try{
-    		return queArray.poll(timeout, tu);
+            blocking.set(true);
+    		Object[] row = queArray.poll(timeout, tu);
+            blocking.set(false);
+            return row;
     	}
     	catch(InterruptedException e){
+    	    blocking.set(false);
     		return null;
     	}
     }
     
+    @Override
     public int size() {
     	return queArray.size();
+    }
+    
+    /**
+     * @return true if this row set is blocking.
+     */
+    public boolean isBlocking() {
+      return blocking.get();
     }
 }

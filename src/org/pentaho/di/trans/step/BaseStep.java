@@ -154,6 +154,9 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     private AtomicBoolean                 stopped;
 
     private AtomicBoolean                 paused;
+    
+    private AtomicBoolean                 waitingForData;
+    private AtomicBoolean                 passingData;
 
     private boolean                       init;
 
@@ -306,9 +309,12 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
         first = true;
         clusteredPartitioningFirst=true;
         
-        running = new AtomicBoolean(false);;
-        stopped = new AtomicBoolean(false);;
-        paused = new AtomicBoolean(false);;
+        running = new AtomicBoolean(false);
+        stopped = new AtomicBoolean(false);
+        paused = new AtomicBoolean(false);
+        waitingForData = new AtomicBoolean(false);
+        passingData = new AtomicBoolean(false);
+        
         init = false;
 
         synchronized (statusCountersLock) {
@@ -380,7 +386,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     public boolean init(StepMetaInterface smi, StepDataInterface sdi)
     {
         sdi.setStatus(StepExecutionStatus.STATUS_INIT);
-
+        
         String slaveNr = transMeta.getVariable(Const.INTERNAL_VARIABLE_SLAVE_SERVER_NUMBER);
         String clusterSize = transMeta.getVariable(Const.INTERNAL_VARIABLE_CLUSTER_SIZE);
         boolean master = "Y".equalsIgnoreCase(transMeta.getVariable(Const.INTERNAL_VARIABLE_CLUSTER_MASTER));
@@ -999,70 +1005,70 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
      */
     public void putRow(RowMetaInterface rowMeta, Object[] row) throws KettleStepException
     {
-    	// Are we pausing the step? If so, stall forever...
-    	//
-    	while (paused.get() && !stopped.get()) {
-    		try {
-				Thread.sleep(1);
-			} catch (InterruptedException e) {
-				throw new KettleStepException(e);
-			}
-    	}
-    	
-    	// Right after the pause loop we have to check if this thread is stopped or not.
-    	//
-    	if (stopped.get())
-    	{
-    		if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "BaseStep.Log.StopPuttingARow")); //$NON-NLS-1$
-    		stopAll();
-    		return;
-    	}
-    	
-	    // Have all threads started?
-	    // Are we running yet?  If not, wait a bit until all threads have been started.
-    	//
-	    if(this.checkTransRunning == false){
-	    	while (!trans.isRunning() && !stopped.get())
-	        {
-	            try { Thread.sleep(1); } catch (InterruptedException e) { }
-	        }
-	    	this.checkTransRunning = true;
-	    }
-	    
-        // call all row listeners...
-        //
-	    synchronized (this) {
-	        for (int i = 0; i < rowListeners.size(); i++)
-	        {
-	            RowListener rowListener = (RowListener) rowListeners.get(i);
-	            rowListener.rowWrittenEvent(rowMeta, row);
-	        }
-		}
-
-        // Keep adding to terminator_rows buffer...
-        //
-        if (terminator && terminator_rows != null)
-        {
-            try
-            {
-                terminator_rows.add(rowMeta.cloneRow(row));
-            }
-            catch (KettleValueException e)
-            {
-                throw new KettleStepException("Unable to clone row while adding rows to the terminator rows.", e);
-            }
+      // Are we pausing the step? If so, stall forever...
+      //
+      while (paused.get() && !stopped.get()) {
+        try {
+          Thread.sleep(1);
+        } catch (InterruptedException e) {
+          throw new KettleStepException(e);
         }
-        
-	    if (outputRowSets.isEmpty())
-	    {
-	        // No more output rowsets!
-	    	// Still update the nr of lines written.
-	    	//
-	    	incrementLinesWritten();
-	    	
-	        return; // we're done here!
-	    }
+      }
+  
+      // Right after the pause loop we have to check if this thread is stopped or
+      // not.
+      //
+      if (stopped.get()) {
+        if (log.isDebug())
+          logDebug(BaseMessages.getString(PKG, "BaseStep.Log.StopPuttingARow")); //$NON-NLS-1$
+        stopAll();
+        return;
+      }
+  
+      // Have all threads started?
+      // Are we running yet? If not, wait a bit until all threads have been
+      // started.
+      //
+      if (this.checkTransRunning == false) {
+        while (!trans.isRunning() && !stopped.get()) {
+          try {
+            Thread.sleep(1);
+          } catch (InterruptedException e) {
+          }
+        }
+        this.checkTransRunning = true;
+      }
+  
+      // call all row listeners...
+      //
+      synchronized (this) {
+        for (int i = 0; i < rowListeners.size(); i++) {
+          RowListener rowListener = rowListeners.get(i);
+          rowListener.rowWrittenEvent(rowMeta, row);
+        }
+      }
+  
+      // Keep adding to terminator_rows buffer...
+      //
+      if (terminator && terminator_rows != null) {
+        try {
+          terminator_rows.add(rowMeta.cloneRow(row));
+        } catch (KettleValueException e) {
+          throw new KettleStepException("Unable to clone row while adding rows to the terminator rows.", e);
+        }
+      }
+  
+      if (outputRowSets.isEmpty()) {
+        // No more output rowsets!
+        // Still update the nr of lines written.
+        //
+        incrementLinesWritten();
+  
+        return; // we're done here!
+      }
 
+      setPassingData(true);
+      try {
 
         // Repartitioning happens when the current step is not partitioned, but the next one is.
         // That means we need to look up the partitioning information in the next step..
@@ -1270,105 +1276,119 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
         default:
         	throw new KettleStepException("Internal error: invalid repartitioning type: " + repartitioning);
         }
+      } finally {
+        setPassingData(false);
+      }
     }
 
-    /**
-     * putRowTo is used to put a row in a certain specific RowSet. 
-     * 
-     * @param rowMeta The row meta-data to put to the destination RowSet.
-     * @param row the data to put in the RowSet
-     * @param rowSet the RoWset to put the row into.
-     * @throws KettleStepException In case something unexpected goes wrong
-     */
-    public void putRowTo(RowMetaInterface rowMeta, Object[] row, RowSet rowSet) throws KettleStepException
-    {
-    	// Are we pausing the step? If so, stall forever...
-    	//
-    	while (paused.get() && !stopped.get()) {
-    		try {
-				Thread.sleep(1);
-			} catch (InterruptedException e) {
-				throw new KettleStepException(e);
-			}
-    	}
-    	
-        // call all row listeners...
-        //
-        for (int i = 0; i < rowListeners.size(); i++)
-        {
-            RowListener rowListener = rowListeners.get(i);
-            rowListener.rowWrittenEvent(rowMeta, row);
-        }
-
-        // Keep adding to terminator_rows buffer...
-        if (terminator && terminator_rows != null)
-        {
-            try
-            {
-                terminator_rows.add(rowMeta.cloneRow(row));
-            }
-            catch (KettleValueException e)
-            {
-                throw new KettleStepException("Unable to clone row while adding rows to the terminator buffer", e);
-            }
-        }
-
-        if (stopped.get())
-        {
-            if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "BaseStep.Log.StopPuttingARow")); //$NON-NLS-1$
-            stopAll();
-            return;
-        }
-
-        // Don't distribute or anything, only go to this rowset!
-        //
-        while (!rowSet.putRow(rowMeta, row) && !isStopped()) 
-        	;
-        incrementLinesWritten();
+  /**
+   * putRowTo is used to put a row in a certain specific RowSet.
+   * 
+   * @param rowMeta
+   *          The row meta-data to put to the destination RowSet.
+   * @param row
+   *          the data to put in the RowSet
+   * @param rowSet
+   *          the RoWset to put the row into.
+   * @throws KettleStepException
+   *           In case something unexpected goes wrong
+   */
+  public void putRowTo(RowMetaInterface rowMeta, Object[] row, RowSet rowSet) throws KettleStepException {
+    
+    // Are we pausing the step? If so, stall forever...
+    //
+    while (paused.get() && !stopped.get()) {
+      try {
+        Thread.sleep(1);
+      } catch (InterruptedException e) {
+        throw new KettleStepException(e);
+      }
     }
 
-    public void putError(RowMetaInterface rowMeta, Object[] row, long nrErrors, String errorDescriptions, String fieldNames, String errorCodes) throws KettleStepException
-    {
-    	if (trans.isSafeModeEnabled()) {
-    		if(rowMeta.size()>row.length) {
-    			throw new KettleStepException(BaseMessages.getString(PKG, "BaseStep.Exception.MetadataDoesntMatchDataRowSize", Integer.toString(rowMeta.size()), Integer.toString(row!=null?row.length:0)));
-    		}
-    	}
-
-        StepErrorMeta stepErrorMeta = stepMeta.getStepErrorMeta();
-
-        if (errorRowMeta==null)
-        {
-            errorRowMeta = rowMeta.clone();
-            
-            RowMetaInterface add = stepErrorMeta.getErrorRowMeta(nrErrors, errorDescriptions, fieldNames, errorCodes);
-            errorRowMeta.addRowMeta(add);
-        }
-        
-        Object[] errorRowData = RowDataUtil.allocateRowData(errorRowMeta.size());
-        if (row!=null) {
-        	System.arraycopy(row, 0, errorRowData, 0, rowMeta.size());
-        }
-        
-        // Also add the error fields...
-        stepErrorMeta.addErrorRowData(errorRowData, rowMeta.size(), nrErrors, errorDescriptions, fieldNames, errorCodes);
-        
-        // call all rowlisteners...
-        for (int i = 0; i < rowListeners.size(); i++)
-        {
-            RowListener rowListener = (RowListener) rowListeners.get(i);
-            rowListener.errorRowWrittenEvent(rowMeta, row);
-        }
-
-        if (errorRowSet!=null) 
-        {
-        	while (!errorRowSet.putRow(errorRowMeta, errorRowData) && !isStopped()) 
-        		;
-        	incrementLinesRejected();
-        }
-
-        verifyRejectionRates();
+    // call all row listeners...
+    //
+    synchronized (this) {
+      for (int i = 0; i < rowListeners.size(); i++) {
+        RowListener rowListener = rowListeners.get(i);
+        rowListener.rowWrittenEvent(rowMeta, row);
+      }
     }
+
+    // Keep adding to terminator_rows buffer...
+    if (terminator && terminator_rows != null) {
+      try {
+        terminator_rows.add(rowMeta.cloneRow(row));
+      } catch (KettleValueException e) {
+        throw new KettleStepException("Unable to clone row while adding rows to the terminator buffer", e);
+      }
+    }
+
+    if (stopped.get()) {
+      if (log.isDebug())
+        logDebug(BaseMessages.getString(PKG, "BaseStep.Log.StopPuttingARow")); //$NON-NLS-1$
+      stopAll();
+      return;
+    }
+
+    setPassingData(true);
+    try {
+
+      // Don't distribute or anything, only go to this rowset!
+      //
+      while (!rowSet.putRow(rowMeta, row) && !isStopped())
+        ;
+      incrementLinesWritten();
+    } finally {
+      setPassingData(false);
+    }
+  }
+
+  public void putError(RowMetaInterface rowMeta, Object[] row, long nrErrors, String errorDescriptions, String fieldNames, String errorCodes) throws KettleStepException {
+    if (trans.isSafeModeEnabled()) {
+      if (rowMeta.size() > row.length) {
+        throw new KettleStepException(BaseMessages.getString(PKG, "BaseStep.Exception.MetadataDoesntMatchDataRowSize", Integer.toString(rowMeta.size()), Integer.toString(row != null ? row.length : 0)));
+      }
+    }
+
+    StepErrorMeta stepErrorMeta = stepMeta.getStepErrorMeta();
+
+    if (errorRowMeta == null) {
+      errorRowMeta = rowMeta.clone();
+
+      RowMetaInterface add = stepErrorMeta.getErrorRowMeta(nrErrors, errorDescriptions, fieldNames, errorCodes);
+      errorRowMeta.addRowMeta(add);
+    }
+
+    Object[] errorRowData = RowDataUtil.allocateRowData(errorRowMeta.size());
+    if (row != null) {
+      System.arraycopy(row, 0, errorRowData, 0, rowMeta.size());
+    }
+
+    // Also add the error fields...
+    stepErrorMeta.addErrorRowData(errorRowData, rowMeta.size(), nrErrors, errorDescriptions, fieldNames, errorCodes);
+
+    // call all row listeners...
+    synchronized (this) {
+      for (int i = 0; i < rowListeners.size(); i++) {
+        RowListener rowListener = rowListeners.get(i);
+        rowListener.errorRowWrittenEvent(rowMeta, row);
+      }
+    }
+
+    setPassingData(true);
+    try {
+
+      if (errorRowSet != null) {
+        while (!errorRowSet.putRow(errorRowMeta, errorRowData) && !isStopped())
+          ;
+        incrementLinesRejected();
+      }
+
+      verifyRejectionRates();
+    } finally {
+      setPassingData(false);
+    }
+  }
 
     private void verifyRejectionRates()
     {
@@ -1425,162 +1445,183 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     	}
     }
 
-    /**
-     * In case of getRow, we receive data from previous steps through the input rowset. In case we split the stream, we
-     * have to copy the data to the alternate splits: rowsets 1 through n.
-     */
-    public Object[] getRow() throws KettleException
-    {
-    	// Are we pausing the step? If so, stall forever...
-    	//
-    	while (paused.get() && !stopped.get()) {
-    		try {
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				throw new KettleStepException(e);
-			}
-    	}
-    	
-	    if (stopped.get())
-	    {
-	        if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "BaseStep.Log.StopLookingForMoreRows")); //$NON-NLS-1$
-	        stopAll();
-	        return null;
-	    }
-	    
-	    // Have all threads started?
-	    // Are we running yet?  If not, wait a bit until all threads have been started.
-	    if (this.checkTransRunning == false) {
-	    	while (!trans.isRunning() && !stopped.get())
-	        {
-	            try { Thread.sleep(1); } catch (InterruptedException e) { }
-	        }
-	    	this.checkTransRunning = true;
-	    }
-	    
-	    // See if we need to open sockets to remote input steps...
-	    //
-	    openRemoteInputStepSocketsOnce();
-	    
-	    // If everything is finished, we can stop immediately!
-	    //
-	    if (inputRowSets.isEmpty())
-	    {
-	        return null;
-	    }
-	    
-	    RowSet inputRowSet = null;
-        Object[] row=null;
-        
-	    // Do we need to switch to the next input stream?
-    	if (blockPointer>=NR_OF_ROWS_IN_BLOCK) {
-    		
-    		// Take a peek at the next input stream.
-    		// If there is no data, process another NR_OF_ROWS_IN_BLOCK on the next input stream.
-    		//
-    		for (int r=0;r<inputRowSets.size() && row==null;r++) {
-    			nextInputStream();
-	    		inputRowSet = currentInputStream();
-	    		row = inputRowSet.getRowImmediate();
-    		}
-    		if (row!=null) incrementLinesRead();
-    	}
-    	else {
-    		// What's the current input stream?
-    		inputRowSet = currentInputStream();
-    	}
-        
-	    // To reduce stress on the locking system we are going to allow
-	    // The buffer to grow beyond "a few" entries.
-	    // We'll only do that if the previous step has not ended...
-	    //
-        if (isUsingThreadPriorityManagment() && !inputRowSet.isDone() && inputRowSet.size()<= lowerBufferBoundary && !isStopped())
-        {
-        	try { Thread.sleep(0,1); } catch (InterruptedException e) { }
-        }
-    
+  /**
+   * In case of getRow, we receive data from previous steps through the input
+   * rowset. In case we split the stream, we have to copy the data to the
+   * alternate splits: rowsets 1 through n.
+   */
+  public Object[] getRow() throws KettleException {
 
-        // See if this step is receiving partitioned data...
-        // In that case it might be the case that one input row set is receiving all data and
-        // the other rowsets nothing. (repartitioning on the same key would do that)
-        //
-        // We never guaranteed that the input rows would be read one by one alternatively.
-        // So in THIS particular case it is safe to just read 100 rows from one rowset, then switch to another etc.
-        // We can use timeouts to switch from one to another...
-        // 
-    	while (row==null && !isStopped()) {
-        	// Get a row from the input in row set ...
-    		// Timeout immediately if nothing is there to read.
-    		// We will then switch to the next row set to read from...
-    		//
-        	row = inputRowSet.getRowWait(1, TimeUnit.MILLISECONDS);
-        	if (row!=null) {
-        		incrementLinesRead();
-        		blockPointer++;
-        	}
-        	else {
-        		// Try once more...
-        		// If row is still empty and the row set is done, we remove the row set from
-        		// the input stream and move on to the next one...
-        		//
-        		if (inputRowSet.isDone()) {
-        			row = inputRowSet.getRowWait(1, TimeUnit.MILLISECONDS);
-        			if (row==null) {
-        				inputRowSets.remove(currentInputRowSetNr);
-        				if (inputRowSets.isEmpty()) return null; // We're completely done.
-        			}
-        			else {
-        				incrementLinesRead();
-        			}
-        		}
-        		nextInputStream();
-            	inputRowSet = currentInputStream();
-        	}
-    	}
-        
-         // This rowSet is perhaps no longer giving back rows?
-        //
-        while (row==null && !stopped.get()) {
-        	// Try the next input row set(s) until we find a row set that still has rows...
-        	// The getRowFrom() method removes row sets from the input row sets list.
-        	//
-            if (inputRowSets.isEmpty()) return null; // We're done.
-        	
-        	nextInputStream();
-            inputRowSet = currentInputStream();
-            row = getRowFrom(inputRowSet);
-        }
-        
-        // Also set the meta data on the first occurrence.
-        //
-        if (inputRowMeta==null) {
-        	inputRowMeta=inputRowSet.getRowMeta();
-        }
-        
-        if ( row != null )
-        {
-            // OK, before we return the row, let's see if we need to check on mixing row compositions...
-            // 
-            if (trans.isSafeModeEnabled())
-            {
-                safeModeChecking(inputRowSet.getRowMeta(), inputRowMeta); // Extra checking 
-                if (row.length<inputRowMeta.size()) {
-                	throw new KettleException("Safe mode check noticed that the length of the row data is smaller ("+row.length+") than the row metadata size ("+inputRowMeta.size()+")");
-                }
-            } 
-            
-            for (int i = 0; i < rowListeners.size(); i++)
-            {
-                RowListener rowListener = (RowListener) rowListeners.get(i);
-                rowListener.rowReadEvent(inputRowMeta, row);
-            }
-        }                
-
-        // Check the rejection rates etc. as well.
-        verifyRejectionRates();
-
-        return row;
+    // Are we pausing the step? If so, stall forever...
+    //
+    while (paused.get() && !stopped.get()) {
+      try {
+        Thread.sleep(100);
+      } catch (InterruptedException e) {
+        throw new KettleStepException(e);
+      }
     }
+
+    if (stopped.get()) {
+      if (log.isDebug())
+        logDebug(BaseMessages.getString(PKG, "BaseStep.Log.StopLookingForMoreRows")); //$NON-NLS-1$
+      stopAll();
+      return null;
+    }
+
+    // Have all threads started?
+    // Are we running yet? If not, wait a bit until all threads have been
+    // started.
+    if (this.checkTransRunning == false) {
+      while (!trans.isRunning() && !stopped.get()) {
+        try {
+          Thread.sleep(1);
+        } catch (InterruptedException e) {
+        }
+      }
+      this.checkTransRunning = true;
+    }
+
+    // See if we need to open sockets to remote input steps...
+    //
+    openRemoteInputStepSocketsOnce();
+
+    // If everything is finished, we can stop immediately!
+    //
+    if (inputRowSets.isEmpty()) {
+      return null;
+    }
+
+    RowSet inputRowSet = null;
+    Object[] row = null;
+
+    setPassingData(true);
+    try {
+
+      // Do we need to switch to the next input stream?
+      if (blockPointer >= NR_OF_ROWS_IN_BLOCK) {
+
+        // Take a peek at the next input stream.
+        // If there is no data, process another NR_OF_ROWS_IN_BLOCK on the next
+        // input stream.
+        //
+        for (int r = 0; r < inputRowSets.size() && row == null; r++) {
+          nextInputStream();
+          inputRowSet = currentInputStream();
+          row = inputRowSet.getRowImmediate();
+        }
+        if (row != null) {
+          incrementLinesRead();
+        }
+      } else {
+        // What's the current input stream?
+        inputRowSet = currentInputStream();
+      }
+
+      // To reduce stress on the locking system we are going to allow
+      // The buffer to grow beyond "a few" entries.
+      // We'll only do that if the previous step has not ended...
+      //
+      if (isUsingThreadPriorityManagment() && !inputRowSet.isDone() && inputRowSet.size() <= lowerBufferBoundary && !isStopped()) {
+        try {
+          Thread.sleep(0, 1);
+        } catch (InterruptedException e) {
+        }
+      }
+
+      // See if this step is receiving partitioned data...
+      // In that case it might be the case that one input row set is receiving
+      // all data and
+      // the other rowsets nothing. (repartitioning on the same key would do
+      // that)
+      //
+      // We never guaranteed that the input rows would be read one by one
+      // alternatively.
+      // So in THIS particular case it is safe to just read 100 rows from one
+      // rowset, then switch to another etc.
+      // We can use timeouts to switch from one to another...
+      // 
+      while (row == null && !isStopped()) {
+        // Get a row from the input in row set ...
+        // Timeout immediately if nothing is there to read.
+        // We will then switch to the next row set to read from...
+        //
+        row = inputRowSet.getRowWait(1, TimeUnit.MILLISECONDS);
+        if (row != null) {
+          incrementLinesRead();
+          blockPointer++;
+        } else {
+          // Try once more...
+          // If row is still empty and the row set is done, we remove the row
+          // set from
+          // the input stream and move on to the next one...
+          //
+          if (inputRowSet.isDone()) {
+            row = inputRowSet.getRowWait(1, TimeUnit.MILLISECONDS);
+            if (row == null) {
+              inputRowSets.remove(currentInputRowSetNr);
+              if (inputRowSets.isEmpty())
+                return null; // We're completely done.
+            } else {
+              incrementLinesRead();
+            }
+          }
+          nextInputStream();
+          inputRowSet = currentInputStream();
+        }
+      }
+
+      // This rowSet is perhaps no longer giving back rows?
+      //
+      while (row == null && !stopped.get()) {
+        // Try the next input row set(s) until we find a row set that still has
+        // rows...
+        // The getRowFrom() method removes row sets from the input row sets
+        // list.
+        //
+        if (inputRowSets.isEmpty())
+          return null; // We're done.
+
+        nextInputStream();
+        inputRowSet = currentInputStream();
+        row = getRowFrom(inputRowSet);
+      }
+
+      // Also set the meta data on the first occurrence.
+      //
+      if (inputRowMeta == null) {
+        inputRowMeta = inputRowSet.getRowMeta();
+      }
+
+    } finally {
+      setPassingData(false);
+    }
+
+    if (row != null) {
+      // OK, before we return the row, let's see if we need to check on mixing
+      // row compositions...
+      // 
+      if (trans.isSafeModeEnabled()) {
+        safeModeChecking(inputRowSet.getRowMeta(), inputRowMeta); // Extra
+        // checking
+        if (row.length < inputRowMeta.size()) {
+          throw new KettleException("Safe mode check noticed that the length of the row data is smaller (" + row.length + ") than the row metadata size (" + inputRowMeta.size() + ")");
+        }
+      }
+
+      synchronized (this) {
+        for (int i = 0; i < rowListeners.size(); i++) {
+          RowListener rowListener = rowListeners.get(i);
+          rowListener.rowReadEvent(inputRowMeta, row);
+        }
+      }
+    }
+
+    // Check the rejection rates etc. as well.
+    verifyRejectionRates();
+
+    return row;
+  }
 
     /**
      * Opens socket connections to the remote input steps of this step.
@@ -1728,83 +1769,94 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
         }
     }
     
-    public Object[] getRowFrom(RowSet rowSet) throws KettleStepException {
-        
-    	// Are we pausing the step? If so, stall forever...
-    	//
-    	while (paused.get() && !stopped.get()) {
-    		try {
-				Thread.sleep(10);
-			} catch (InterruptedException e) {
-				throw new KettleStepException(e);
-			}
-    	}
-    	
-	    // Have all threads started?
-	    // Are we running yet?  If not, wait a bit until all threads have been started.
-	    if (this.checkTransRunning == false) {
-	    	while (!trans.isRunning() && !stopped.get())
-	        {
-	            try { Thread.sleep(1); } catch (InterruptedException e) { }
-	        }
-	    	this.checkTransRunning = true;
-	    }
-    	
-	    // To reduce stress on the locking system we are going to allow
-	    // The buffer to grow beyond "a few" entries.
-	    // We'll only do that if the previous step has not ended...
-	    //
-        if (isUsingThreadPriorityManagment() && !rowSet.isDone() && rowSet.size()<= lowerBufferBoundary && !isStopped())
-        {
-        	try { Thread.sleep(0,1); } catch (InterruptedException e) { }
-        }
-    	
-        // Grab a row...  If nothing received after a timeout, try again.
-        //
-        Object[] rowData = rowSet.getRow();
-        while (rowData==null && !rowSet.isDone() && !stopped.get())
-        {
-        	rowData=rowSet.getRow();
-        }
-        
-        // Still nothing: no more rows to be had?
-        //
-        if (rowData==null && rowSet.isDone()) {
-        	// Try one more time to get a row to make sure we don't get a race-condition between the get and the isDone()
-        	//
-        	rowData = rowSet.getRow();
-        }
-        
-        if (stopped.get())
-        {
-            if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "BaseStep.Log.StopLookingForMoreRows")); //$NON-NLS-1$
-            stopAll();
-            return null;
-        }
+  public Object[] getRowFrom(RowSet rowSet) throws KettleStepException {
+    // Are we pausing the step? If so, stall forever...
+    //
+    while (paused.get() && !stopped.get()) {
+      try {
+        Thread.sleep(10);
+      } catch (InterruptedException e) {
+        throw new KettleStepException(e);
+      }
+    }
 
-        if (rowData==null && rowSet.isDone())
-        {
-        	// Try one more time...
-        	//
-        	rowData = rowSet.getRow();
-        	if (rowData==null) {
-	            inputRowSets.remove(rowSet);
-	            return null;
-        	}
+    // Have all threads started?
+    // Are we running yet? If not, wait a bit until all threads have been
+    // started.
+    if (this.checkTransRunning == false) {
+      while (!trans.isRunning() && !stopped.get()) {
+        try {
+          Thread.sleep(1);
+        } catch (InterruptedException e) {
         }
-		
-        incrementLinesRead();
+      }
+      this.checkTransRunning = true;
+    }
+    Object[] rowData = null;
 
-        // call all rowlisteners...
+    setPassingData(true);
+    try {
+
+      // To reduce stress on the locking system we are going to allow
+      // The buffer to grow beyond "a few" entries.
+      // We'll only do that if the previous step has not ended...
+      //
+      if (isUsingThreadPriorityManagment() && !rowSet.isDone() && rowSet.size() <= lowerBufferBoundary && !isStopped()) {
+        try {
+          Thread.sleep(0, 1);
+        } catch (InterruptedException e) {
+        }
+      }
+
+      // Grab a row... If nothing received after a timeout, try again.
+      //
+      rowData = rowSet.getRow();
+      while (rowData == null && !rowSet.isDone() && !stopped.get()) {
+        rowData = rowSet.getRow();
+      }
+
+      // Still nothing: no more rows to be had?
+      //
+      if (rowData == null && rowSet.isDone()) {
+        // Try one more time to get a row to make sure we don't get a
+        // race-condition between the get and the isDone()
         //
-        for (int i = 0; i < rowListeners.size(); i++)
-        {
-            RowListener rowListener = (RowListener) rowListeners.get(i);
-            rowListener.rowReadEvent(rowSet.getRowMeta(), rowData);
-        }
+        rowData = rowSet.getRow();
+      }
 
-        return rowData;
-	}
+      if (stopped.get()) {
+        if (log.isDebug())
+          logDebug(BaseMessages.getString(PKG, "BaseStep.Log.StopLookingForMoreRows")); //$NON-NLS-1$
+        stopAll();
+        return null;
+      }
+
+      if (rowData == null && rowSet.isDone()) {
+        // Try one more time...
+        //
+        rowData = rowSet.getRow();
+        if (rowData == null) {
+          inputRowSets.remove(rowSet);
+          return null;
+        }
+      }
+    } finally {
+      setPassingData(false);
+    }
+
+    incrementLinesRead();
+
+    // call all rowlisteners...
+    //
+    synchronized (this) {
+      for (int i = 0; i < rowListeners.size(); i++) {
+        RowListener rowListener = rowListeners.get(i);
+        rowListener.rowReadEvent(rowSet.getRowMeta(), rowData);
+      }
+    }
+
+    return rowData;
+  }
     
     public RowSet findInputRowSet(String sourceStep) throws KettleStepException {
     	// Check to see that "sourceStep" only runs in a single copy
@@ -1949,6 +2001,8 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
             }
             if (errorRowSet!=null) errorRowSet.setDone();
         }
+        
+        setWaitingForData(false);
     }
 
     /**
@@ -2996,5 +3050,72 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
   public void setCarteObjectId(String containerObjectId) {
     this.containerObjectId = containerObjectId;
   }
+  
+  /**
+   * This method determines if a step is idle or not.
+   * A step is idle if it is not waiting for data and has no input data waiting.
+   * 
+   * @return true if the step is idle, false if it is not.
+   * 
+   */
+  public boolean isIdle() {
+    // If the step is waiting for data from file, network or database, it's not idle
+    //
+    if (isWaitingForData()) return false;
+        
+    // If any of the input row sets contain data, the step is not idle.
+    //
+    for (RowSet rowSet : inputRowSets) {
+      if (rowSet.size()>0) {
+        return false;
+      }
+    }
+    
+    // If the buffers are all empty AND the step is 
+    // not passing data to another step or waiting for rows 
+    // from previous steps, it's not idle.
+    //
+    for (RowSet rowSet : inputRowSets) {
+      if (!isPassingData() || !rowSet.isBlocking()) {
+        return false;
+      }
+    }
+    
+    return true;
+  }
+
+  /**
+   * Indicates that this step is still waiting for more data to arrive.
+   * @return True if more data is arriving into this step.
+   */
+  public boolean isWaitingForData() {
+    return waitingForData.get();
+  }
+  
+  /**
+   * Specify that this step waits for more data or not
+   * @param waitingForData Set to true to indicate that this step is not idle but still waiting for more data.
+   */
+  public void setWaitingForData(boolean waitingForData) {
+    this.waitingForData.set(waitingForData);
+  }
+  
+
+  /**
+   * Indicates that this step is passing data to next steps and/or listeners.
+   * @return True if data is being passed.
+   */
+  public boolean isPassingData() {
+    return passingData.get();
+  }
+  
+  /**
+   * Indicate that this step is passing data to next steps and/or listeners.
+   * @param passingData True if data is being passed.
+   */
+  public void setPassingData(boolean passingData) {
+    this.passingData.set(passingData);
+  }
+  
 
 }
