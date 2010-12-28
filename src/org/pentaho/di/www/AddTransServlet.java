@@ -28,9 +28,9 @@ import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransAdapter;
 import org.pentaho.di.trans.TransConfiguration;
 import org.pentaho.di.trans.TransExecutionConfiguration;
-import org.pentaho.di.trans.TransListener;
 import org.pentaho.di.trans.TransMeta;
 
 public class AddTransServlet extends BaseHttpServlet implements CarteServletInterface {
@@ -123,7 +123,7 @@ public class AddTransServlet extends BaseHttpServlet implements CarteServletInte
         // The repository connection is open: make sure we disconnect from the repository once we
         // are done with this transformation.
         //
-        trans.addTransListener(new TransListener() {
+        trans.addTransListener(new TransAdapter() {
           public void transFinished(Trans trans) {
             repository.disconnect();
           }
