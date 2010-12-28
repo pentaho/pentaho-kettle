@@ -12,6 +12,7 @@
 package org.pentaho.di.trans.steps.mergejoin;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.pentaho.di.core.exception.KettleException;
@@ -248,14 +249,14 @@ public class MergeJoin extends BaseStep implements StepInterface
 	            	}
 	            	if (isStopped()) return false;
             	}
-            	for (Object[] one : data.ones)
-            	{
-            		for (Object[] two : data.twos)
-            		{
-            			Object[] oneBig = RowDataUtil.createResizedCopy(one, data.oneMeta.size() + data.twoMeta.size());
-            			Object[] combi = RowDataUtil.addRowData(oneBig, data.oneMeta.size(), two);
-            			putRow(data.outputRowMeta, combi);
-            		}
+            	for (Iterator<Object[]> oneIter = data.ones.iterator(); oneIter.hasNext() && !isStopped(); ) {
+            	  for (Iterator<Object[]> twoIter = data.twos.iterator(); twoIter.hasNext() && !isStopped(); ) {
+            	    Object[] one = oneIter.next();
+            	    Object[] two = twoIter.next();
+            	    Object[] oneBig = RowDataUtil.createResizedCopy(one, data.oneMeta.size() + data.twoMeta.size());
+                  Object[] combi = RowDataUtil.addRowData(oneBig, data.oneMeta.size(), two);
+                  putRow(data.outputRowMeta, combi);
+            	  }
             	}
             	data.ones.clear();
             	data.twos.clear();
