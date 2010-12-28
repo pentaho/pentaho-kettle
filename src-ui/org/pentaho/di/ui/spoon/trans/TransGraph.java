@@ -110,9 +110,9 @@ import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransAdapter;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransHopMeta;
-import org.pentaho.di.trans.TransListener;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPainter;
 import org.pentaho.di.trans.debug.BreakPointListener;
@@ -1750,6 +1750,11 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       
       if (e.character == 'E' && (e.stateMask & SWT.CTRL) != 0) {
       	checkErrorVisuals();
+      }
+
+      // Auto-layout
+      if (e.character == 'A') {
+        autoLayout();
       }
 
       // SPACE : over a step: show output fields...
@@ -3667,7 +3672,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       // Add a listener to the transformation.
       // If the transformation is done, we want to do the end processing, etc.
       //
-      trans.addTransListener(new TransListener() {
+      trans.addTransListener(new TransAdapter() {
 
         public void transFinished(Trans trans) {
           checkTransEnded();
@@ -3906,7 +3911,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   		halted = trans.isStopped();
 
   		if(running) {
-  		  trans.addTransListener(new TransListener() {
+  		  trans.addTransListener(new TransAdapter() {
 
           public void transFinished(Trans trans) {
             checkTransEnded();
@@ -4035,4 +4040,190 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   public int showChangedWarning() throws KettleException {
     return showChangedWarning(transMeta.getName());
   }
+  
+  private class StepVelocity {
+    public StepVelocity(double dx, double dy) {
+      this.dx = dx;
+      this.dy = dy;
+    }
+    public double dx, dy;
+  }
+
+  private class StepLocation {
+    public StepLocation(double x, double y) {
+      this.x=x;
+      this.y=y;
+    }
+    public double x, y;
+    
+    public void add(StepLocation loc) {
+      x+=loc.x;
+      y+=loc.y;
+    }
+  }
+
+  private class Force {
+    public Force (double fx, double fy) {
+      this.fx=fx;
+      this.fy=fy;
+    }
+    public double fx, fy;
+    
+    public void add(Force force) {
+      fx+=force.fx;
+      fy+=force.fy;
+    }
+  }
+
+  private static double dampningConstant = 0.5;
+  private static double springConstant = 1.0; 
+  private static double timeStep = 1.0; 
+  private static double nodeMass = 1.0; 
+  
+
+  /**
+   * Perform an automatic layout of a transformation based on "Force-based algorithms".
+   * Source: http://en.wikipedia.org/wiki/Force-based_algorithms_(graph_drawing)
+   * 
+     set up initial node velocities to (0,0)
+     set up initial node positions randomly // make sure no 2 nodes are in exactly the same position
+     loop
+         total_kinetic_energy := 0 // running sum of total kinetic energy over all particles
+         for each node
+             net-force := (0, 0) // running sum of total force on this particular node
+             
+             for each other node
+                 net-force := net-force + Coulomb_repulsion( this_node, other_node )
+             next node
+             
+             for each spring connected to this node
+                 net-force := net-force + Hooke_attraction( this_node, spring )
+             next spring
+             
+             // without damping, it moves forever
+             this_node.velocity := (this_node.velocity + timestep * net-force) * damping
+             this_node.position := this_node.position + timestep * this_node.velocity
+             total_kinetic_energy := total_kinetic_energy + this_node.mass * (this_node.velocity)^2
+         next node
+     until total_kinetic_energy is less than some small number  // the simulation has stopped moving
+
+   */
+  public void autoLayout() {
+    // Initialize...
+    //
+    Map<StepMeta, StepVelocity> speeds = new HashMap<StepMeta, StepVelocity>();
+    Map<StepMeta, StepLocation> locations = new HashMap<StepMeta, StepLocation>();
+    for (StepMeta stepMeta : transMeta.getSteps()) {
+      speeds.put(stepMeta, new StepVelocity(0,0));
+      StepLocation location = new StepLocation(stepMeta.getLocation().x, stepMeta.getLocation().y);
+      locations.put(stepMeta, location);
+    }
+    StepLocation center = calculateCenter(locations);
+    
+    // Layout loop!
+    //
+    double totalKineticEngergy=0;
+    do {
+      totalKineticEngergy = 0;
+      
+      for (StepMeta stepMeta : transMeta.getSteps()) {
+        Force netForce = new Force(0,0);
+        StepVelocity velocity = speeds.get(stepMeta);
+        StepLocation location = locations.get(stepMeta);
+        
+        for (StepMeta otherStep : transMeta.getSteps()) {
+          if (!stepMeta.equals(otherStep)) {
+            netForce.add( getCoulombRepulsion(stepMeta, otherStep, locations) );
+          }
+        }
+        
+        for (int i=0;i<transMeta.nrTransHops();i++) {
+          TransHopMeta hopMeta = transMeta.getTransHop(i);
+          if (hopMeta.getFromStep().equals(stepMeta) || hopMeta.getToStep().equals(stepMeta)) {
+            netForce.add( getHookeAttraction(hopMeta, locations) );
+          }
+        }
+        
+        adjustVelocity(velocity, netForce);
+        adjustLocation(location, velocity);
+        totalKineticEngergy += nodeMass * ( velocity.dx*velocity.dx + velocity.dy*velocity.dy ); 
+      }
+      
+      StepLocation newCenter = calculateCenter(locations);
+      StepLocation diff = new StepLocation(center.x - newCenter.x, center.y-newCenter.y);
+      for (StepMeta stepMeta : transMeta.getSteps()) {
+        StepLocation location = locations.get(stepMeta);
+        location.x+=diff.x;
+        location.y+=diff.y;
+        stepMeta.setLocation((int)Math.round(location.x), (int)Math.round(location.y));
+      }
+      
+      // redraw...
+      //
+      redraw();
+      
+    } while (totalKineticEngergy<0.01);
+  }
+
+  private StepLocation calculateCenter(Map<StepMeta, StepLocation> locations) {
+    StepLocation center = new StepLocation(0, 0);
+    for (StepLocation location : locations.values()) {
+     center.add(location);
+    }
+    center.x/=locations.size();
+    center.y/=locations.size();
+    return center;
+  }
+
+  /**
+   * http://en.wikipedia.org/wiki/Coulomb's_law
+   * 
+   * @param step1
+   * @param step2
+   * @param speeds
+   * @param locations
+   * @return
+   */
+  private Force getCoulombRepulsion(StepMeta step1, StepMeta step2, Map<StepMeta, StepLocation> locations) {
+    double q1 = 4.0; 
+    double q2 = 4.0;
+    double Ke = -3.0;
+    StepLocation loc1 = locations.get(step1);
+    StepLocation loc2 = locations.get(step2);
+    
+    double fx = Ke*q1*q2/Math.abs(loc1.x-loc2.x);
+    double fy = Ke*q1*q2/Math.abs(loc1.y-loc2.y);
+    
+    return new Force(fx, fy);
+  }
+  
+  /**
+   * The longer the hop, the higher the force 
+   * @param stepMeta
+   * @param hopMeta
+   * @return
+   */
+  private Force getHookeAttraction(TransHopMeta hopMeta, Map<StepMeta, StepLocation> locations) {
+    StepLocation loc1 = locations.get(hopMeta.getFromStep());
+    StepLocation loc2 = locations.get(hopMeta.getToStep());
+    double springConstant = 0.01;
+    
+    double fx = springConstant*Math.abs(loc1.x-loc2.x);
+    double fy = springConstant*Math.abs(loc1.y-loc2.y);  
+    
+    return new Force(fx*fx, fy*fy);
+  }
+
+  private void adjustVelocity(StepVelocity velocity, Force netForce) {
+    velocity.dx = ( velocity.dx + timeStep*netForce.fx ) * dampningConstant;
+    velocity.dy = ( velocity.dy + timeStep*netForce.fy ) * dampningConstant;
+  }
+
+  private void adjustLocation(StepLocation location, StepVelocity velocity) {
+    location.x = location.x + nodeMass*velocity.dx*velocity.dx;
+    location.y = location.y + nodeMass*velocity.dy*velocity.dy;
+  }
+
+
+
 }
