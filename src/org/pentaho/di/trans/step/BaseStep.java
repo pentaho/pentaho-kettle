@@ -3058,30 +3058,29 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    * @return true if the step is idle, false if it is not.
    * 
    */
-  public boolean isIdle() {
-    // If the step is waiting for data from file, network or database, it's not idle
-    //
-    if (isWaitingForData()) return false;
-        
-    // If any of the input row sets contain data, the step is not idle.
-    //
-    for (RowSet rowSet : inputRowSets) {
-      if (rowSet.size()>0) {
-        return false;
+  public synchronized boolean isIdle() {
+    synchronized(waitingForData) {
+      // If the step is waiting for data from file, network or database, it's not idle
+      //
+      if (isWaitingForData()) return false;
+          
+      // If the buffers are all empty AND the step is 
+      // not passing data to another step or waiting for rows 
+      // from previous steps, it's not idle.
+      //
+      for (RowSet rowSet : inputRowSets) {
+        synchronized(rowSet) {
+          if (rowSet.size()>0) {
+            return false;
+          }
+          if (!isPassingData() || !rowSet.isBlocking()) {
+            return false;
+          }
+        }
       }
+      
+      return true;
     }
-    
-    // If the buffers are all empty AND the step is 
-    // not passing data to another step or waiting for rows 
-    // from previous steps, it's not idle.
-    //
-    for (RowSet rowSet : inputRowSets) {
-      if (!isPassingData() || !rowSet.isBlocking()) {
-        return false;
-      }
-    }
-    
-    return true;
   }
 
   /**

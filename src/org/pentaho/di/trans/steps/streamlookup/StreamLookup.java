@@ -423,6 +423,8 @@ public class StreamLookup extends BaseStep implements StepInterface
 					valueMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
 				}
 			}
+			
+			return true;
 	    }
 	    
 		Object[] r=getRow();      // Get row from input rowset & set row busy!

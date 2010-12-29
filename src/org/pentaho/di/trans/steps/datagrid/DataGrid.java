@@ -100,5 +100,9 @@ public class DataGrid extends BaseStep implements StepInterface
 		
 		return true;
 	}
+	
+	public boolean isWaitingForData() {
+	  return true;
+	}
 		
 }

@@ -99,7 +99,7 @@ public class TransIdleTest extends TestCase {
       RowProducer rp = trans.addRowProducer(injectorStepname, 0);
       trans.startThreads();
       
-      int iterations=10000;
+      int iterations=2000000;
       long totalWait=0;
 
       for (int i=0;i<iterations;i++) {
@@ -125,12 +125,14 @@ public class TransIdleTest extends TestCase {
           }
           System.out.println("-----------------------");
           */
-          Thread.sleep(0,1);
+          Thread.sleep(0,10);
         }
         long end = System.currentTimeMillis();
         long delay = end-start;
         totalWait+=delay;
-        System.out.println("#"+i+" : detected idle transformation in "+delay+"ms, average is: "+Const.round(((double)totalWait/(i+1)), 1));
+        if ((i%1000)==0) {
+          System.out.println("#"+i+" : detected idle transformation in "+delay+"ms, average is: "+Const.round(((double)totalWait/(i+1)), 1));
+        }
         
         List<RowMetaAndData> resultRows = rc.getRowsWritten();
         assertEquals(inputList.size(), resultRows.size());

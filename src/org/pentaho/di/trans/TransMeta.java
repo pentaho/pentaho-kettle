@@ -255,6 +255,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     	Normal("Normal", BaseMessages.getString(PKG, "TransMeta.TransformationType.Normal")),
         Monitored("Monitored", BaseMessages.getString(PKG, "TransMeta.TransformationType.Monotored")),
     	SerialSingleThreaded("SerialSingleThreaded", BaseMessages.getString(PKG, "TransMeta.TransformationType.SerialSingleThreaded")),
+        SingleThreaded("SingleThreaded", BaseMessages.getString(PKG, "TransMeta.TransformationType.SingleThreaded")),
     	;
     	
     	private String	code;

@@ -152,7 +152,7 @@ public class Mapping extends BaseStep implements StepInterface
 		//
         data.mappingTrans = new Trans(data.mappingTransMeta, getTrans());
         
-        if (data.mappingTransMeta.getTransformationType()==TransformationType.SerialSingleThreaded) {
+        if (data.mappingTransMeta.getTransformationType()!=TransformationType.Normal) {
         	data.mappingTrans.getTransMeta().setUsingThreadPriorityManagment(false);
         }
         

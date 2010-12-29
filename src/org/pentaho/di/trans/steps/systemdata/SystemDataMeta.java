@@ -465,13 +465,13 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
 			case TYPE_SYSTEM_INFO_HOSTNAME:
 			case TYPE_SYSTEM_INFO_IP_ADDRESS:
             case TYPE_SYSTEM_INFO_KETTLE_VERSION:
+            case TYPE_SYSTEM_INFO_KETTLE_BUILD_VERSION:
             case TYPE_SYSTEM_INFO_PREVIOUS_RESULT_LOG_TEXT:	
 				v=new ValueMeta(fieldName[i], ValueMetaInterface.TYPE_STRING);
 				break;
 			case TYPE_SYSTEM_INFO_COPYNR:
 			case TYPE_SYSTEM_INFO_TRANS_BATCH_ID:
             case TYPE_SYSTEM_INFO_JOB_BATCH_ID:
-            case TYPE_SYSTEM_INFO_KETTLE_BUILD_VERSION:
             case TYPE_SYSTEM_INFO_CURRENT_PID:
 		    case TYPE_SYSTEM_INFO_JVM_TOTAL_MEMORY:
 		    case TYPE_SYSTEM_INFO_JVM_FREE_MEMORY:

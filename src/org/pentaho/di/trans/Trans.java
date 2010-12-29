@@ -34,6 +34,7 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.BlockingListeningRowSet;
 import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.QueueRowSet;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.RowSet;
@@ -478,6 +479,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     					case Normal: rowSet = new BlockingRowSet(transMeta.getSizeRowset()); break;
     					case Monitored:  rowSet = new BlockingListeningRowSet(transMeta.getSizeRowset()); break;
     					case SerialSingleThreaded: rowSet = new SingleRowRowSet(); break;
+                        case SingleThreaded: rowSet = new QueueRowSet(); break;
     					default: 
     					  throw new KettleException("Unhandled transformation type: "+transMeta.getTransformationType());
     					}
@@ -918,7 +920,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 						}
 						
 						//
-			        	// This is a single thread version...
+			        	// This is a single threaded version...
 			        	//
 						
 						// Sort the steps from start to finish...
@@ -963,9 +965,17 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 					}
 				}
 			}).start();
-        	break;
+			break;
+			
+        case SingleThreaded :
+          // Don't do anything, this needs to be handled by the transformation executor!
+          //
+          break;
+
         	
         }
+        
+        
         
         if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.TransformationHasAllocated",String.valueOf(steps.size()),String.valueOf(rowsets.size()))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
@@ -2266,6 +2276,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
            break;
         case SerialSingleThreaded:
           rowSet = new SingleRowRowSet();
+          break;
+        case SingleThreaded:
+          rowSet = new QueueRowSet();
           break;
         default:
           throw new KettleException("Unhandled transformation type: "+transMeta.getTransformationType());
