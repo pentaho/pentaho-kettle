@@ -389,7 +389,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
 
   private String newName = null;
 
-  private void deleteContent(UIRepositoryObject repoObject) throws Exception {
+  protected void deleteContent(UIRepositoryObject repoObject) throws Exception {
     repoObject.delete();
     if (repoObject instanceof UIRepositoryDirectory) {
       directoryBinding.fireSourceChanged();
@@ -619,10 +619,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
         
         // Make sure we are still moving the files
         if(result) {
-          // Perform move
-          for (UIRepositoryObject o : moveList) {
-            o.move(targetDirectory);
-          }
+          moveFiles(moveList, targetDirectory);
           // Set UI objects to appear in folder directory
           event.getDataTransfer().setData(dirList);
         }
@@ -639,6 +636,13 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     event.setAccepted(result);
   }
 
+  protected void moveFiles(List<UIRepositoryObject> objects, UIRepositoryDirectory targetDirectory) throws Exception {
+    // Perform move
+    for (UIRepositoryObject o : objects) {
+      o.move(targetDirectory);
+    }
+  }
+  
   public void onDoubleClick(Object[] selectedItems) {
     openContent(selectedItems);
   }
