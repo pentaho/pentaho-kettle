@@ -71,8 +71,8 @@
       <note>This sort works for each batch of rows
 provided to the transformation in the 
 &quot;Single Threaded&quot; execution engine.</note>
-      <xloc>132</xloc>
-      <yloc>111</yloc>
+      <xloc>123</xloc>
+      <yloc>143</yloc>
       <width>193</width>
       <heigth>49</heigth>
       <fontname>Microsoft Sans Serif</fontname>
@@ -180,7 +180,7 @@ provided to the transformation in the
     </attributes>
   </connection>
   <order>
-  <hop> <from>Data Grid</from><to>Stream lookup</to><enabled>Y</enabled> </hop>  <hop> <from>Stream lookup</from><to>OUTPUT</to><enabled>Y</enabled> </hop>  <hop> <from>filter step</from><to>Ignore</to><enabled>Y</enabled> </hop>  <hop> <from>filter step</from><to>Stream lookup</to><enabled>Y</enabled> </hop>  <hop> <from>INPUT</from><to>Sort rows</to><enabled>Y</enabled> </hop>  <hop> <from>Sort rows</from><to>filter step</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>Data Grid</from><to>Stream lookup</to><enabled>Y</enabled> </hop>  <hop> <from>Stream lookup</from><to>OUTPUT</to><enabled>Y</enabled> </hop>  <hop> <from>filter step</from><to>Ignore</to><enabled>Y</enabled> </hop>  <hop> <from>filter step</from><to>Stream lookup</to><enabled>Y</enabled> </hop>  <hop> <from>Sort rows</from><to>Switch &#47; Case</to><enabled>Y</enabled> </hop>  <hop> <from>Switch &#47; Case</from><to>One</to><enabled>Y</enabled> </hop>  <hop> <from>Switch &#47; Case</from><to>Two</to><enabled>Y</enabled> </hop>  <hop> <from>Switch &#47; Case</from><to>Three</to><enabled>Y</enabled> </hop>  <hop> <from>One</from><to>bottles</to><enabled>Y</enabled> </hop>  <hop> <from>Two</from><to>bottles</to><enabled>Y</enabled> </hop>  <hop> <from>Three</from><to>bottles</to><enabled>Y</enabled> </hop>  <hop> <from>bottles</from><to>filter step</to><enabled>Y</enabled> </hop>  <hop> <from>Switch &#47; Case</from><to>99</to><enabled>Y</enabled> </hop>  <hop> <from>99</from><to>bottles</to><enabled>Y</enabled> </hop>  <hop> <from>Data Grid 2</from><to>Sort rows</to><enabled>N</enabled> </hop>  <hop> <from>INPUT</from><to>Sort rows</to><enabled>Y</enabled> </hop>  </order>
   <step>
     <name>Data Grid</name>
     <type>DataGrid</type>
@@ -220,8 +220,8 @@ provided to the transformation in the
     </data>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>561</xloc>
-      <yloc>172</yloc>
+      <xloc>636</xloc>
+      <yloc>545</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -266,8 +266,8 @@ provided to the transformation in the
         <precision>-1</precision>
       </field>    </fields>     <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>50</xloc>
-      <yloc>50</yloc>
+      <xloc>40</xloc>
+      <yloc>87</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -284,8 +284,8 @@ provided to the transformation in the
            </partitioning>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>442</xloc>
-      <yloc>172</yloc>
+      <xloc>517</xloc>
+      <yloc>545</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -302,8 +302,40 @@ provided to the transformation in the
            </partitioning>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>680</xloc>
-      <yloc>50</yloc>
+      <xloc>755</xloc>
+      <yloc>424</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Sort rows</name>
+    <type>SortRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+      <directory>%%java.io.tmpdir%%</directory>
+      <prefix>out</prefix>
+      <sort_size>1000000</sort_size>
+      <free_memory/>
+      <compress>N</compress>
+      <compress_variable/>
+      <unique_rows>N</unique_rows>
+    <fields>
+      <field>
+        <name>field1</name>
+        <ascending>N</ascending>
+        <case_sensitive>N</case_sensitive>
+      </field>
+    </fields>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>181</xloc>
+      <yloc>87</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -337,8 +369,8 @@ provided to the transformation in the
     </lookup>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>561</xloc>
-      <yloc>50</yloc>
+      <xloc>636</xloc>
+      <yloc>424</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -365,15 +397,15 @@ provided to the transformation in the
     </compare>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>442</xloc>
-      <yloc>50</yloc>
+      <xloc>517</xloc>
+      <yloc>424</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
 
   <step>
-    <name>Sort rows</name>
-    <type>SortRows</type>
+    <name>Switch &#47; Case</name>
+    <type>SwitchCase</type>
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
@@ -381,24 +413,267 @@ provided to the transformation in the
            <method>none</method>
            <schema_name/>
            </partitioning>
-      <directory>%%java.io.tmpdir%%</directory>
-      <prefix>out</prefix>
-      <sort_size>1000000</sort_size>
-      <free_memory/>
-      <compress>N</compress>
-      <compress_variable/>
-      <unique_rows>N</unique_rows>
+<fieldname>field1</fieldname>
+<use_contains>N</use_contains>
+<case_value_type>String</case_value_type>
+<case_value_format/>
+<case_value_decimal/>
+<case_value_group/>
+<default_target_step>99</default_target_step>
+<cases><case><value>KETTLE1</value>
+<target_step>One</target_step>
+</case><case><value>KETTLE2</value>
+<target_step>Two</target_step>
+</case><case><value>KETTLE3</value>
+<target_step>Three</target_step>
+</case></cases>     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>403</xloc>
+      <yloc>87</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>One</name>
+    <type>Constant</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
     <fields>
       <field>
-        <name>field1</name>
-        <ascending>N</ascending>
-        <case_sensitive>N</case_sensitive>
+        <name>Constant</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>One</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
       </field>
     </fields>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>220</xloc>
-      <yloc>50</yloc>
+      <xloc>261</xloc>
+      <yloc>267</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Two</name>
+    <type>Constant</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <fields>
+      <field>
+        <name>Constant</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>Two</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+    </fields>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>353</xloc>
+      <yloc>269</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Three</name>
+    <type>Constant</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <fields>
+      <field>
+        <name>Constant</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>Three</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+    </fields>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>445</xloc>
+      <yloc>266</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>bottles</name>
+    <type>Janino</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+       <formula><field_name>bottles</field_name>
+<formula_string>Constant+&quot; bottles of beer on the wall&quot;</formula_string>
+<value_type>String</value_type>
+<value_length>-1</value_length>
+<value_precision>-1</value_precision>
+<replace_field/>
+</formula>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>395</xloc>
+      <yloc>424</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>99</name>
+    <type>Constant</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <fields>
+      <field>
+        <name>Constant</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>99</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+    </fields>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>537</xloc>
+      <yloc>266</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Data Grid 2</name>
+    <type>DataGrid</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <fields>
+      <field>
+        <name>field1</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+      <field>
+        <name>field2</name>
+        <type>Integer</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+      <field>
+        <name>field3</name>
+        <type>Number</type>
+        <format>#.#</format>
+        <currency/>
+        <decimal>,</decimal>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+      <field>
+        <name>field4</name>
+        <type>Date</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+      <field>
+        <name>field5</name>
+        <type>Boolean</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+      <field>
+        <name>field6</name>
+        <type>BigNumber</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+      <field>
+        <name>field7</name>
+        <type>BigNumber</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+    </fields>
+    <data>
+      <line> <item>KETTLE1</item><item>123</item><item>23,45</item><item/><item>true</item><item>12345678901234567890</item><item>12345678901234567890</item> </line>
+      <line> <item>KETTLE2</item><item>500</item><item>34,56</item><item/><item>false</item><item>12345678901234567890</item><item>12345678901234567890</item> </line>
+      <line> <item>KETTLE3</item><item>501</item><item>45,67</item><item/><item>true</item><item>12345678901234567890</item><item>12345678901234567890</item> </line>
+    </data>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>73</xloc>
+      <yloc>11</yloc>
       <draw>Y</draw>
       </GUI>
     </step>

@@ -88,7 +88,7 @@ public class SingleThreadedTransExecutor {
       if (!done[s]) {
         
         StepMetaDataCombi combi = steps.get(s);
-  
+
         // If this step is waiting for data (text, db, and so on), we simply read all the data
         // This means that it is impractical to use this transformation type to load large files.
         //
@@ -113,14 +113,22 @@ public class SingleThreadedTransExecutor {
             }
           }        
   
-          // Now go back to the regular program.
+          // Do normal processing of input rows...
           //
           List<RowSet> rowSets = combi.step.getInputRowSets();
+          
+          // Since we can't be sure that the step actually reads from the row sets where we measure rows, 
+          // we simply count the total nr of rows on input.  The steps will find the rows in either row set.
+          // 
+          int nrRows=0;
           for (RowSet rowSet : rowSets) {
-            int nrRows = rowSet.size();
-            for (int i=0;i<nrRows;i++) {
+            nrRows+=rowSet.size();
+          }
+          
+          // Now do the number of processRows() calls.
+          //
+          for (int i=0;i<nrRows;i++) {
               stepDone = !combi.step.processRow(combi.meta, combi.data);
-            }
           }
           
           // Signal the step that a batch of rows has passed for this iteration (sort rows and all)
