@@ -20,16 +20,17 @@ package org.pentaho.di.ui.core.database.dialog;
 
 import java.util.ListIterator;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.util.AbstractModelNode;
 
 public class XulDatabaseExplorerModel extends XulEventSourceAdapter {
 
+  // TODO can this be renamed?  it's actually just the root node
 	private XulDatabaseExplorerNode database;
 	private DatabaseMeta databaseMeta;
-	private DatabaseExplorerNode table;
-	private DatabaseExplorerNode schema;
+	private DatabaseExplorerNode selectedNode;
 
 	public XulDatabaseExplorerModel(DatabaseMeta aDatabaseMeta) {
 		this.database = new XulDatabaseExplorerNode();
@@ -48,37 +49,42 @@ public class XulDatabaseExplorerModel extends XulEventSourceAdapter {
 		this.database = aDatabase;
 	}
 
-	public void setTable(DatabaseExplorerNode aTable) {
-	  DatabaseExplorerNode prevVal = this.table;
-		this.table = aTable;
-		firePropertyChange("table", prevVal, this.table);
+	public String getTable() {
+	  if (selectedNode != null && selectedNode.isTable()) {
+	    return selectedNode.getName();
+	  }
+		return null;
 	}
 
-	public DatabaseExplorerNode getTable() {
-		return this.table;
+	public String getSchema() {
+		if (selectedNode != null) {
+		  return selectedNode.getSchema();
+		}
+    return null;
 	}
 
-	public void setSchema(DatabaseExplorerNode aSchema) {
-		this.schema = aSchema;
-	}
-
-	public DatabaseExplorerNode getSchema() {
-		return this.schema;
-	}
-
-	public DatabaseExplorerNode findBy(String aName) {
+	/**
+	 * Finds the node.
+	 * @param aSchema can be null
+	 * @param aName can be null
+	 * @return node
+	 */
+	public DatabaseExplorerNode findBy(String aSchema, String aTable) {
 		ListIterator<DatabaseExplorerNode> theNodes = this.database.listIterator();
-		return drillDown(theNodes, aName);
+		return drillDown(theNodes, aSchema, aTable);
 	}
 
-	private DatabaseExplorerNode drillDown(ListIterator<DatabaseExplorerNode> aNodes, String aName) {
+	private DatabaseExplorerNode drillDown(ListIterator<DatabaseExplorerNode> aNodes, String aSchema, String aTable) {
+	  boolean lookingForSchema = aTable == null || Const.isEmpty(aTable);
 		DatabaseExplorerNode theNode = null;
 		while (aNodes.hasNext()) {
 			theNode = aNodes.next();
-			if (theNode.getName().equals(aName)) {
+			if (lookingForSchema && theNode.isSchema() && theNode.getName().equals(aSchema)) {
+			  break;
+			} else if (!lookingForSchema && theNode.isTable() && theNode.getName().equals(aTable) && (theNode.getSchema() != null ? theNode.getSchema().equals(aSchema) : aSchema == null)) {
 				break;
 			} else {
-				theNode = drillDown(theNode.listIterator(), aName);
+				theNode = drillDown(theNode.listIterator(), aSchema, aTable);
 				if (theNode != null) {
 					break;
 				}
@@ -86,8 +92,18 @@ public class XulDatabaseExplorerModel extends XulEventSourceAdapter {
 		}
 		return theNode;
 	}
-
+  // TODO mlowery why is this subclass needed?
 	public static class XulDatabaseExplorerNode extends AbstractModelNode<DatabaseExplorerNode> {
 		private static final long	serialVersionUID	= 2466708563640027488L;
 	}
+
+  public DatabaseExplorerNode getSelectedNode() {
+    return selectedNode;
+  }
+
+  public void setSelectedNode(DatabaseExplorerNode selectedNode) {
+    DatabaseExplorerNode prevVal = this.selectedNode;
+    this.selectedNode = selectedNode;
+    firePropertyChange("selectedNode", prevVal, this.selectedNode);
+  }
 }

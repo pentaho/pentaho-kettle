@@ -51,7 +51,6 @@ public class XulDatabaseExplorerDialog {
 	private static Log logger = LogFactory.getLog(XulDatabaseExplorerDialog.class);
 	private static final String XUL = "org/pentaho/di/ui/core/database/dialog/database_explorer.xul";
 	private boolean look;
-	private boolean splitSchemaAndTable;
 	private String schemaName;
 	private String selectedTable;
 	
@@ -62,7 +61,7 @@ public class XulDatabaseExplorerDialog {
 		this.look = aLook;
 	}
 
-	public Object open() {
+	public boolean open() {
 		try {
 
 			SwtXulLoader theLoader = new SwtXulLoader();
@@ -86,9 +85,7 @@ public class XulDatabaseExplorerDialog {
 			this.runner.addContainer(this.container);
 			this.runner.initialize();
 			
-      this.controller.setSplitSchemaAndTable(splitSchemaAndTable);
-      this.controller.setSelectedSchema(schemaName);
-      this.controller.setSelectedTable(selectedTable);
+      this.controller.setSelectedSchemaAndTable(schemaName, selectedTable);
 
 			theExplorerDialog.show();
 
@@ -96,31 +93,20 @@ public class XulDatabaseExplorerDialog {
 			logger.info(e);
 			e.printStackTrace();
 		}
-		return this.controller.getSelectedTable();
+		return this.controller.getSelectedTable() != null;
 	}
 
-	public void setSelectedSchema(String aSchema) {
+	public void setSelectedSchemaAndTable(String aSchema, String aTable) {
 	  schemaName = aSchema;
+	  selectedTable = aTable;
 	}
 
 	public String getSchemaName() {
 	  return (this.controller != null) ? this.controller.getSelectedSchema() : schemaName;
 	}
 
-	public void setSelectedTable(String aTable) {
-	  this.selectedTable = aTable;
-	}
-
 	public String getTableName() {
 		return (this.controller != null) ? this.controller.getSelectedTable() : selectedTable;
-	}
-
-	public void setSplitSchemaAndTable(boolean aSplit) {
-	  splitSchemaAndTable = aSplit;
-	}
-
-	public boolean getSplitSchemaAndTable() {
-		return splitSchemaAndTable;
 	}
 
 	private static class XulDatabaseExplorerResourceBundle extends ResourceBundle {

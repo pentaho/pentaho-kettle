@@ -1349,10 +1349,8 @@ public class LucidDBStreamingLoaderDialog
                 SWT.NONE,
                 inf,
                 transMeta.getDatabases());
-            std.setSelectedSchema(wSchema.getText());
-            std.setSelectedTable(wTable.getText());
-            std.setSplitSchemaAndTable(true);
-            if (std.open() != null) {
+            std.setSelectedSchemaAndTable(wSchema.getText(), wTable.getText());
+            if (std.open()) {
                 wSchema.setText(Const.NVL(std.getSchemaName(), ""));
                 wTable.setText(Const.NVL(std.getTableName(), ""));
             }

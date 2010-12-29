@@ -1367,10 +1367,8 @@ public class JobEntryMssqlBulkLoadDialog extends JobEntryDialog implements JobEn
 			DatabaseMeta inf = jobMeta.getDatabase(connr);
                         
 			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, jobMeta.getDatabases());
-			std.setSelectedSchema(wSchemaname.getText());
-			std.setSelectedTable(wTablename.getText());
-			std.setSplitSchemaAndTable(true);
-			if (std.open() != null)
+			std.setSelectedSchemaAndTable(wSchemaname.getText(), wTablename.getText());
+			if (std.open())
 			{
 				wTablename.setText(Const.NVL(std.getTableName(), ""));
 			}

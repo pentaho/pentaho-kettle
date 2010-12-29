@@ -621,8 +621,7 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
 		if (inf!=null)
 		{	
 			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, jobMeta.getDatabases());
-            std.setSplitSchemaAndTable(true);
-			if (std.open()!= null)
+			if (std.open())
 			{
 				String sql = "SELECT *"+Const.CR+"FROM "+inf.getQuotedSchemaTableCombination(std.getSchemaName(), std.getTableName())+Const.CR; //$NON-NLS-1$ //$NON-NLS-2$
 				wSQL.setText(sql);
@@ -800,10 +799,8 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
 			DatabaseMeta inf = jobMeta.getDatabase(connr);
                         
 			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, jobMeta.getDatabases());
-			std.setSelectedSchema(wSchemaname.getText());
-			std.setSelectedTable(wTablename.getText());
-			std.setSplitSchemaAndTable(true);
-			if (std.open() != null)
+			std.setSelectedSchemaAndTable(wSchemaname.getText(), wTablename.getText());
+			if (std.open())
 			{
 				wTablename.setText(Const.NVL(std.getTableName(), ""));
 			}

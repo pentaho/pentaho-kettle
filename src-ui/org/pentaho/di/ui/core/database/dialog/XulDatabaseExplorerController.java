@@ -19,15 +19,16 @@
 package org.pentaho.di.ui.core.database.dialog;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.TreeItem;
 import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -40,23 +41,19 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransProfileFactory;
-import org.pentaho.di.ui.core.database.dialog.XulDatabaseExplorerModel.XulDatabaseExplorerNode;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
-import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
-import org.pentaho.reporting.libraries.base.util.StringUtils;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.Binding;
+import org.pentaho.ui.xul.binding.Binding.Type;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
-import org.pentaho.ui.xul.binding.Binding.Type;
 import org.pentaho.ui.xul.components.XulButton;
-import org.pentaho.ui.xul.components.XulLabel;
 import org.pentaho.ui.xul.components.XulMessageBox;
 import org.pentaho.ui.xul.components.XulPromptBox;
 import org.pentaho.ui.xul.containers.XulTree;
@@ -133,11 +130,11 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 		this.databaseTree = (XulTree) document.getElementById("databaseTree");
 		this.databaseTreeBinding = bf.createBinding(this.model, "database", this.databaseTree, "elements");
 
-		bf.createBinding(model, "table", theAcceptButton, "disabled", new BindingConvertor<DatabaseExplorerNode, Boolean>(){
+		bf.createBinding(model, "selectedNode", theAcceptButton, "disabled", new BindingConvertor<DatabaseExplorerNode, Boolean>(){
 
 			@Override
 			public Boolean sourceToTarget(DatabaseExplorerNode arg0) {
-				return (!isJustLook && arg0 == null);
+				return (!isJustLook && (arg0 == null || !arg0.isTable()));
 
 			}
 
@@ -168,18 +165,14 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 
 
 		bf.setBindingType(Binding.Type.BI_DIRECTIONAL);
-		this.bf.createBinding(this.databaseTree, "selectedItems", this.model, "table", new BindingConvertor<List<DatabaseExplorerNode>, DatabaseExplorerNode>(){
+		this.bf.createBinding(this.databaseTree, "selectedItems", this.model, "selectedNode", new BindingConvertor<List<DatabaseExplorerNode>, DatabaseExplorerNode>(){
 
 			@Override
 			public DatabaseExplorerNode sourceToTarget(List<DatabaseExplorerNode> arg0) {
 				if(arg0 == null || arg0.size() == 0){
 					return null;
 				}
-				DatabaseExplorerNode node = arg0.get(0);
-				if(node.isTable()){
-					return node;
-				}
-				return null;
+				return arg0.get(0);
 			}
 
 			@Override
@@ -188,31 +181,6 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 			}
 
 		});
-
-		this.bf.createBinding(this.databaseTree, "selectedItems", this.model, "schema", new BindingConvertor<List<DatabaseExplorerNode>, DatabaseExplorerNode>(){
-
-			@Override
-			public DatabaseExplorerNode sourceToTarget(List<DatabaseExplorerNode> arg0) {
-				if(arg0 == null || arg0.size() == 0){
-					return null;
-				}
-				DatabaseExplorerNode node = arg0.get(0);
-				if(node.isSchema()){
-					return node;
-				} else if(node.isTable()){
-					return (DatabaseExplorerNode) node.getParent();
-				}
-				return null;
-			}
-
-			@Override
-			public List<DatabaseExplorerNode> targetToSource(DatabaseExplorerNode arg0) {
-				return Collections.singletonList(arg0);
-			}
-
-		});
-		// this.selectedSchemaBinding = this.bf.createBinding(this.model, "schema",
-		// this.databaseTree, "selectedItems", theSelectedItemsConvertor);
 
 		BindingConvertor<DatabaseExplorerNode, Boolean> isDisabledConvertor = new BindingConvertor<DatabaseExplorerNode, Boolean>() {
 			public Boolean sourceToTarget(DatabaseExplorerNode value) {
@@ -229,32 +197,20 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 		fireBindings();
 	}
 
-	public void setSplitSchemaAndTable(boolean aSplit) {
-		this.isSplitSchemaAndTable = aSplit;
-	}
-
-	public boolean getSplitSchemaAndTable() {
-		return this.isSplitSchemaAndTable;
-	}
-
-	public void setSelectedTable(String aTable) {
-		this.model.setTable(model.findBy(aTable));
+	public void setSelectedSchemaAndTable(String aSchema, String aTable) {
+		this.model.setSelectedNode(model.findBy(aSchema, aTable));
 	}
 
 	public String getSelectedTable() {
-		return (model.getTable() == null)? null : model.getTable().getName();
+		return model.getTable();
 	}
 
 	public DatabaseMeta getDatabaseMeta() {
 		return this.model.getDatabaseMeta();
 	}
 
-	public void setSelectedSchema(String aSchema) {
-		this.model.setSchema(model.findBy(aSchema));
-	}
-
 	public String getSelectedSchema() {
-		return (model.getSchema() != null)? model.getSchema().getName() : null;
+		return model.getSchema();
 	}
 
 	public void accept() {
@@ -264,7 +220,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 	}
 
 	public void cancel() {
-		this.model.setTable(null);
+		this.model.setSelectedNode(null);
 		this.dbExplorerDialog.setVisible(false);
 	}
 
@@ -285,8 +241,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 	}
 
 	public void showLayout() {
-    String schema = this.model.getSchema() != null ? this.model.getSchema().getName() : null;
-		XulStepFieldsDialog theStepFieldsDialog = new XulStepFieldsDialog(this.dbExplorerDialog.getShell(), SWT.NONE, this.model.getDatabaseMeta(), this.model.getTable().getName(), null, schema);
+		XulStepFieldsDialog theStepFieldsDialog = new XulStepFieldsDialog(this.dbExplorerDialog.getShell(), SWT.NONE, this.model.getDatabaseMeta(), this.model.getTable(), null, model.getSchema());
 		theStepFieldsDialog.open(false);
 	}
 
@@ -295,14 +250,13 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 			return;
 		}
 		try {
-			String schema = this.model.getSchema() != null ? this.model.getSchema().getName() : null;
-			GetTableSizeProgressDialog pd = new GetTableSizeProgressDialog(this.dbExplorerDialog.getShell(), this.model.getDatabaseMeta(), this.model.getTable().getName(), schema);
+			GetTableSizeProgressDialog pd = new GetTableSizeProgressDialog(this.dbExplorerDialog.getShell(), this.model.getDatabaseMeta(), this.model.getTable(), model.getSchema());
 			Long theCount = pd.open();
 			if (theCount != null) {
 				XulMessageBox theMessageBox = (XulMessageBox) document.createElement("messagebox");
 				theMessageBox.setModalParent(this.dbExplorerDialog.getShell());
 				theMessageBox.setTitle(BaseMessages.getString(PKG,"DatabaseExplorerDialog.TableSize.Title"));
-				theMessageBox.setMessage(BaseMessages.getString(PKG,"DatabaseExplorerDialog.TableSize.Message", this.model.getTable().getName(), theCount.toString()));
+				theMessageBox.setMessage(BaseMessages.getString(PKG,"DatabaseExplorerDialog.TableSize.Message", this.model.getTable(), theCount.toString()));
 				theMessageBox.open();
 			}
 		} catch (XulException e) {
@@ -353,13 +307,13 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 			//				thePreviewRowsDialog.open();
 			//			}
 
-			GetPreviewTableProgressDialog pd = new GetPreviewTableProgressDialog(this.dbExplorerDialog.getShell(), this.model.getDatabaseMeta(), (model.getSchema() != null)? model.getSchema().getName():null, (model.getTable() != null)? model.getTable().getName():null, limit);
+			GetPreviewTableProgressDialog pd = new GetPreviewTableProgressDialog(this.dbExplorerDialog.getShell(), this.model.getDatabaseMeta(), model.getSchema(), model.getTable(), limit);
 			List<Object[]> rows = pd.open();
 			if (rows!=null) // otherwise an already shown error...
 			{
 				if (rows.size()>0)
 				{
-					PreviewRowsDialog prd = new PreviewRowsDialog(this.dbExplorerDialog.getShell(), this.model.getDatabaseMeta(), SWT.None, this.model.getTable().getName(), pd.getRowMeta(), rows);
+					PreviewRowsDialog prd = new PreviewRowsDialog(this.dbExplorerDialog.getShell(), this.model.getDatabaseMeta(), SWT.None, this.model.getTable(), pd.getRowMeta(), rows);
 					prd.open();
 				}
 				else
@@ -417,7 +371,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 			theViewsNode.setImage(FOLDER_IMAGE);
 			theDatabaseNode.add(theViewsNode);
 
-			// Adds the Views database node.
+			// Adds the Synonyms database node.
 			DatabaseExplorerNode theSynonymsNode = new DatabaseExplorerNode();
 			theSynonymsNode.setName(STRING_SYNONYMS);
 			theSynonymsNode.setImage(FOLDER_IMAGE);
@@ -452,41 +406,47 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 
 
 			// Adds the database tables.
-			String[] theTableNames = theDatabase.getTablenames(false);
- 			DatabaseExplorerNode theTableNode = null;
-      if(theTableNames != null){
-        for (int i = 0; i < theTableNames.length; i++) {
-          theTableNode = new DatabaseExplorerNode();
+			Map<String, Collection<String>> tableMap = dmi.getTableMap();
+			for (String schema : tableMap.keySet()) {
+			  Collection<String> tables = tableMap.get(schema);
+			  for (String table : tables) {
+     			DatabaseExplorerNode theTableNode = new DatabaseExplorerNode();
           theTableNode.setIsTable(true);
-          theTableNode.setName(theTableNames[i]);
+          theTableNode.setName(table);
+          theTableNode.setSchema(schema);
           theTableNode.setImage(TABLE_IMAGE);
+          theTableNode.setLabel(model.getDatabaseMeta().getQuotedSchemaTableCombination(schema, table));
           theTablesNode.add(theTableNode);
-        }
-      }
-
+			  }
+			}
+      
 			// Adds the database views.
-			String[] theViewNames = dmi.getViews();
-			DatabaseExplorerNode theViewNode = null;
-      if(theViewNames != null){
-        for (int i = 0; i < theViewNames.length; i++) {
-          theViewNode = new DatabaseExplorerNode();
+      Map<String, Collection<String>> viewMap = dmi.getViewMap();
+      for (String schema : viewMap.keySet()) {
+        Collection<String> views = viewMap.get(schema);
+        for (String view : views) {
+          DatabaseExplorerNode theViewNode = new DatabaseExplorerNode();
           theViewNode.setIsTable(true);
-          theViewNode.setName(theViewNames[i]);
+          theViewNode.setName(view);
+          theViewNode.setSchema(schema);
           theViewNode.setImage(TABLE_IMAGE);
+          theViewNode.setLabel(model.getDatabaseMeta().getQuotedSchemaTableCombination(schema, view));
           theViewsNode.add(theViewNode);
         }
       }
 
 			// Adds the Synonyms.
-			String[] theSynonymsNames = dmi.getSynonyms();
-			DatabaseExplorerNode theSynonymNode = null;
-      if(theViewNames != null){
-        for (int i = 0; i < theViewNames.length; i++) {
-          theSynonymNode = new DatabaseExplorerNode();
+      Map<String, Collection<String>> synonymMap = dmi.getViewMap();
+      for (String schema : synonymMap.keySet()) {
+        Collection<String> synonyms = synonymMap.get(schema);
+        for (String synonym : synonyms) {
+          DatabaseExplorerNode theSynonymNode = new DatabaseExplorerNode();
           theSynonymNode.setIsTable(true);
-          theSynonymNode.setName(theViewNames[i]);
+          theSynonymNode.setName(synonym);
+          theSynonymNode.setSchema(schema);
           theSynonymNode.setImage(TABLE_IMAGE);
-          theSynonymsNode.add(theViewNode);
+          theSynonymNode.setLabel(model.getDatabaseMeta().getQuotedSchemaTableCombination(schema, synonym));
+          theSynonymsNode.add(theSynonymNode);
         }
       }
 
@@ -655,25 +615,12 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 
   private String getSchemaAndTable(XulDatabaseExplorerModel model, DatabaseMeta meta) {
     if (model.getSchema() != null) {
-      return meta.getQuotedSchemaTableCombination(model.getSchema().getName(), model.getTable().getName());
+      return meta.getQuotedSchemaTableCombination(model.getSchema(), model.getTable());
     } else {
-      return meta.getQuotedSchemaTableCombination(null, model.getTable().getName());
+      return meta.getQuotedSchemaTableCombination(null, model.getTable());
+    }
     }
   }
 
-	class SelectedItemsConvertor extends BindingConvertor<String, List<DatabaseExplorerNode>> {
-
-		public String targetToSource(List<DatabaseExplorerNode> aValue) {
-			return null;
-		}
-
-		public List<DatabaseExplorerNode> sourceToTarget(String aValue) {
-			DatabaseExplorerNode theNode = XulDatabaseExplorerController.this.model.findBy(aValue);
-			List<DatabaseExplorerNode> theResult = new ArrayList<DatabaseExplorerNode>();
-			theResult.add(theNode);
-			return theResult;
-		}
-	}
 
 
-}

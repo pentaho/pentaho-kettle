@@ -43,6 +43,8 @@ import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Hashtable;
 import java.util.List;
@@ -84,6 +86,9 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.RepositoryDirectory;
+
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 
 
 /**
@@ -3905,13 +3910,39 @@ public class Database implements VariableSpace, LoggingObjectInterface
 	{
 		return getTablenames(null, includeSchema);
 	}
+	
 	public String[] getTablenames(String schemanamein, boolean includeSchema) throws KettleDatabaseException
+	{
+	  Map<String, Collection<String>> tableMap = getTableMap(schemanamein);
+    List<String> res = new ArrayList<String>();
+    for (String schema : tableMap.keySet())
+    {
+      Collection<String> tables = tableMap.get(schema);
+      for (String table : tables)
+      if (includeSchema)
+      {
+        res.add(databaseMeta.getQuotedSchemaTableCombination(schema, table));
+      }
+      else
+      {
+        res.add(table);
+      }
+    }
+    return res.toArray(new String[res.size()]);
+	}
+	
+	public Map<String, Collection<String>> getTableMap() throws KettleDatabaseException
+	{
+	  return getTableMap(null);
+	}
+	
+	public Map<String, Collection<String>> getTableMap(String schemanamein) throws KettleDatabaseException
 	{
 		String schemaname=schemanamein;
 		if(schemaname==null) {
 			if (databaseMeta.useSchemaNameForTableList()) schemaname = environmentSubstitute(databaseMeta.getUsername()).toUpperCase();
 		}
-		List<String> names = new ArrayList<String>();
+		Multimap<String, String> tableMap = HashMultimap.create();
 		ResultSet alltables=null;
 		try
 		{
@@ -3939,12 +3970,9 @@ public class Database implements VariableSpace, LoggingObjectInterface
 				
 				String table = alltables.getString("TABLE_NAME");
 				
-				String schemaTable;
-				if (includeSchema) schemaTable = databaseMeta.getQuotedSchemaTableCombination(schema, table);
-				else schemaTable = table;
 				
-                if (log.isRowLevel()) log.logRowlevel(toString(), "got table from meta-data: "+schemaTable);
-				names.add(schemaTable);
+                if (log.isRowLevel()) log.logRowlevel(toString(), "got table from meta-data: "+databaseMeta.getQuotedSchemaTableCombination(schema, table));
+        tableMap.put(schema, table);
 			}
 		}
 		catch(SQLException e)
@@ -3963,9 +3991,9 @@ public class Database implements VariableSpace, LoggingObjectInterface
 			}
 		}
 
-		if(log.isDetailed()) log.logDetailed("read :"+names.size()+" table names from db meta-data.");
+		if(log.isDetailed()) log.logDetailed("read :"+tableMap.values().size()+" table names from db meta-data.");
 
-		return names.toArray(new String[names.size()]);
+		return tableMap.asMap();
 	}
 	
 	public String[] getViews() throws KettleDatabaseException
@@ -3976,16 +4004,42 @@ public class Database implements VariableSpace, LoggingObjectInterface
 	{
 		return  getViews(null, includeSchema);
 	}
+	
 	public String[] getViews(String schemanamein, boolean includeSchema) throws KettleDatabaseException
 	{
-		if (!databaseMeta.supportsViews()) return new String[] {};
+	  Map<String, Collection<String>> viewMap = getViewMap(schemanamein);
+	  List<String> res = new ArrayList<String>();
+	  for (String schema : viewMap.keySet())
+	  {
+	    Collection<String> views = viewMap.get(schema);
+	    for (String view : views)
+	    if (includeSchema)
+	    {
+	      res.add(databaseMeta.getQuotedSchemaTableCombination(schema, view));
+	    }
+	    else
+	    {
+	      res.add(view);
+	    }
+	  }
+    return res.toArray(new String[res.size()]);
+	}
+	
+	public Map<String, Collection<String>> getViewMap() throws KettleDatabaseException
+	{
+	  return getViewMap(null);
+	}
+	
+	public Map<String, Collection<String>> getViewMap(String schemanamein) throws KettleDatabaseException
+	{
+		if (!databaseMeta.supportsViews()) return Collections.emptyMap();
 
 		String schemaname = schemanamein;
 		if(schemaname==null) {
 			if (databaseMeta.useSchemaNameForTableList()) schemaname = environmentSubstitute(databaseMeta.getUsername()).toUpperCase();
 		}
 		
-		ArrayList<String> names = new ArrayList<String>();
+		Multimap<String, String> viewMap = HashMultimap.create();
 		ResultSet alltables=null;
 		try
 		{
@@ -4013,12 +4067,8 @@ public class Database implements VariableSpace, LoggingObjectInterface
 				
 				String table = alltables.getString("TABLE_NAME");
 				
-				String schemaTable;
-				if (includeSchema) schemaTable = databaseMeta.getQuotedSchemaTableCombination(schema, table);
-				else schemaTable = table;
-				
-				if (log.isRowLevel()) log.logRowlevel(toString(), "got view from meta-data: "+schemaTable);
-				names.add(schemaTable);
+				if (log.isRowLevel()) log.logRowlevel(toString(), "got view from meta-data: "+databaseMeta.getQuotedSchemaTableCombination(schema, table));
+				viewMap.put(schema, table);
 			}
 		}
 		catch(SQLException e)
@@ -4037,9 +4087,9 @@ public class Database implements VariableSpace, LoggingObjectInterface
 			}
 		}
 
-		if(log.isDetailed()) log.logDetailed("read :"+names.size()+" views from db meta-data.");
+		if(log.isDetailed()) log.logDetailed("read :"+viewMap.values().size()+" views from db meta-data.");
 
-		return names.toArray(new String[names.size()]);
+		return viewMap.asMap();
 	}
 
 	public String[] getSynonyms() throws KettleDatabaseException
@@ -4050,15 +4100,41 @@ public class Database implements VariableSpace, LoggingObjectInterface
 	{
 		return getSynonyms(null,includeSchema);
 	}
+	
 	public String[] getSynonyms(String schemanamein, boolean includeSchema) throws KettleDatabaseException
 	{
-		if (!databaseMeta.supportsSynonyms()) return new String[] {};
+    Map<String, Collection<String>> synonymMap = getSynonymMap(schemanamein);
+    List<String> res = new ArrayList<String>();
+    for (String schema : synonymMap.keySet())
+    {
+      Collection<String> synonyms = synonymMap.get(schema);
+      for (String synonym : synonyms)
+      if (includeSchema)
+      {
+        res.add(databaseMeta.getQuotedSchemaTableCombination(schema, synonym));
+      }
+      else
+      {
+        res.add(synonym);
+      }
+    }
+    return res.toArray(new String[res.size()]);
+	}
+	
+	public Map<String, Collection<String>> getSynonymMap() throws KettleDatabaseException
+	{
+	  return getSynonymMap(null);
+	}
+	
+	public Map<String, Collection<String>> getSynonymMap(String schemanamein) throws KettleDatabaseException
+	{
+		if (!databaseMeta.supportsSynonyms()) return Collections.emptyMap();
 		
 		String schemaname = schemanamein;
 		if(schemaname==null) {
 			if (databaseMeta.useSchemaNameForTableList()) schemaname = environmentSubstitute(databaseMeta.getUsername()).toUpperCase();
 		}
-		
+		Multimap<String, String> synonymMap = HashMultimap.create();
 		ArrayList<String> names = new ArrayList<String>();
 		ResultSet alltables=null;
 		try
@@ -4087,12 +4163,8 @@ public class Database implements VariableSpace, LoggingObjectInterface
 				
 				String table = alltables.getString("TABLE_NAME");
 				
-				String schemaTable;
-				if (includeSchema) schemaTable = databaseMeta.getQuotedSchemaTableCombination(schema, table);
-				else schemaTable = table;
-				
-				if (log.isRowLevel()) log.logRowlevel(toString(), "got view from meta-data: "+schemaTable);
-				names.add(schemaTable);
+				if (log.isRowLevel()) log.logRowlevel(toString(), "got view from meta-data: "+databaseMeta.getQuotedSchemaTableCombination(schema, table));
+				synonymMap.put(schema, table);
 			}
 		}
 		catch(SQLException e)
@@ -4111,9 +4183,9 @@ public class Database implements VariableSpace, LoggingObjectInterface
 			}
 		}
 	
-		if(log.isDetailed()) log.logDetailed("read :"+names.size()+" views from db meta-data.");
+		if(log.isDetailed()) log.logDetailed("read :"+synonymMap.values().size()+" views from db meta-data.");
 	
-		return names.toArray(new String[names.size()]);
+		return synonymMap.asMap();
 	}
 	public String[] getSchemas() throws KettleDatabaseException
 	{

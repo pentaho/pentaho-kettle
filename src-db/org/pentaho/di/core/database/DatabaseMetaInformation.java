@@ -18,6 +18,7 @@ import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
@@ -38,8 +39,11 @@ public class DatabaseMetaInformation
 	private static Class<?> PKG = Database.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	private String[] tables;
+	private Map<String, Collection<String>> tableMap;
 	private String[] views;
+	private Map<String, Collection<String>> viewMap;
 	private String[] synonyms;
+	private Map<String, Collection<String>> synonymMap;
 	private Catalog[] catalogs;
 	private Schema[] schemas;
 	private String[] procedures;
@@ -356,14 +360,16 @@ public class DatabaseMetaInformation
 	
 			if (monitor!=null && monitor.isCanceled()) return;
 			if (monitor!=null) monitor.subTask(BaseMessages.getString(PKG, "DatabaseMeta.Info.GettingTables"));
-			setTables(db.getTablenames(databaseMeta.supportsSchemas()));
+			setTables(db.getTablenames(databaseMeta.supportsSchemas())); // legacy call
+			setTableMap(db.getTableMap());
 			if (monitor!=null) monitor.worked(1);
 	
 			if (monitor!=null && monitor.isCanceled()) return;
 			if (monitor!=null) monitor.subTask(BaseMessages.getString(PKG, "DatabaseMeta.Info.GettingViews"));
 			if (databaseMeta.supportsViews())
 			{
-				setViews(db.getViews(databaseMeta.supportsSchemas()));
+				setViews(db.getViews(databaseMeta.supportsSchemas())); // legacy call
+				setViewMap(db.getViewMap());
 			}
 			if (monitor!=null) monitor.worked(1);
 	
@@ -371,7 +377,8 @@ public class DatabaseMetaInformation
 			if (monitor!=null) monitor.subTask(BaseMessages.getString(PKG, "DatabaseMeta.Info.GettingSynonyms"));
 			if (databaseMeta.supportsSynonyms())
 			{
-				setSynonyms(db.getSynonyms(databaseMeta.supportsSchemas()));
+				setSynonyms(db.getSynonyms(databaseMeta.supportsSchemas())); // legacy call
+				setSynonymMap(db.getSynonymMap());
 			}
 			if (monitor!=null) monitor.worked(1);
 			
@@ -394,4 +401,29 @@ public class DatabaseMetaInformation
 		}
 		if (monitor!=null) monitor.done();
 	}
+
+  public Map<String, Collection<String>> getTableMap() {
+    return tableMap;
+  }
+
+  public void setTableMap(Map<String, Collection<String>> tableMap) {
+    this.tableMap = tableMap;
+  }
+
+  public Map<String, Collection<String>> getViewMap() {
+    return viewMap;
+  }
+
+  public void setViewMap(Map<String, Collection<String>> viewMap) {
+    this.viewMap = viewMap;
+  }
+
+  public Map<String, Collection<String>> getSynonymMap() {
+    return synonymMap;
+  }
+
+  public void setSynonymMap(Map<String, Collection<String>> synonymMap) {
+    this.synonymMap = synonymMap;
+  }
+	
 }
