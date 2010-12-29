@@ -250,15 +250,16 @@ public class MergeJoin extends BaseStep implements StepInterface
 	            	if (isStopped()) return false;
             	}
             	for (Iterator<Object[]> oneIter = data.ones.iterator(); oneIter.hasNext() && !isStopped(); ) {
+            	  Object[] one = oneIter.next();
             	  for (Iterator<Object[]> twoIter = data.twos.iterator(); twoIter.hasNext() && !isStopped(); ) {
-            	    Object[] one = oneIter.next();
             	    Object[] two = twoIter.next();
             	    Object[] oneBig = RowDataUtil.createResizedCopy(one, data.oneMeta.size() + data.twoMeta.size());
                   Object[] combi = RowDataUtil.addRowData(oneBig, data.oneMeta.size(), two);
                   putRow(data.outputRowMeta, combi);
             	  }
+                // Remove the rows as we merge them to keep the overall memory footprint minimal
+            	  oneIter.remove();
             	}
-            	data.ones.clear();
             	data.twos.clear();
         	}
         	else // No duplicates
