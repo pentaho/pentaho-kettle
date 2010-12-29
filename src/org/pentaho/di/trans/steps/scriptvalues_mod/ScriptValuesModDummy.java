@@ -342,4 +342,8 @@ import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
           // TODO Auto-generated method stub
           
         }
+
+        public void batchComplete() throws KettleException {
+          // TODO Auto-generated method stub
+        }
 	}

@@ -7,7 +7,6 @@ import java.util.List;
 
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 
@@ -123,6 +122,10 @@ public class SingleThreadedTransExecutor {
               stepDone = !combi.step.processRow(combi.meta, combi.data);
             }
           }
+          
+          // Signal the step that a batch of rows has passed for this iteration (sort rows and all)
+          //
+          combi.step.batchComplete();
         }
         if (stepDone) {
           nrDone++;

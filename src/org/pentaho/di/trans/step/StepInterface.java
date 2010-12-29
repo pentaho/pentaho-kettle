@@ -385,4 +385,10 @@ public interface StepInterface extends VariableSpace, HasLogChannelInterface
      */
     public void setPassingData(boolean passingData);
 
+    /**
+     * Calling this method will alert the step that we finished passing a batch of records to the step.
+     * Specifically for steps like "Sort Rows" it means that the buffered rows can be sorted and passed on. 
+     * @throws KettleException In case an error occurs during the processing of the batch of rows.
+     */
+    public void batchComplete() throws KettleException;
 }

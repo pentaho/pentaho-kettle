@@ -117,116 +117,104 @@ public class SortRows extends BaseStep implements StepInterface
 		//
 		if ( doSort )
 		{
-			// First sort the rows in buffer[]
-			quickSort(data.buffer);
-			
-			// Then write them to disk...
-			DataOutputStream dos;
-			GZIPOutputStream gzos;
-			int p;
-            Object[] previousRow = null;
-			
-			try
-			{
-				FileObject fileObject=KettleVFS.createTempFile(meta.getPrefix(), ".tmp", environmentSubstitute(meta.getDirectory()), getTransMeta());
-				
-				data.files.add(fileObject); // Remember the files!
-				OutputStream outputStream = KettleVFS.getOutputStream(fileObject,false);
-				if (data.compressFiles)
-				{
-					gzos = new GZIPOutputStream(new BufferedOutputStream(outputStream));
-					dos=new DataOutputStream(gzos);
-				}
-				else
-				{
-					dos = new DataOutputStream(new BufferedOutputStream(outputStream, 500000));
-					gzos = null;
-				}
-                
-                // Just write the data, nothing else
-                if (meta.isOnlyPassingUniqueRows())
-                {
-                    int index=0;
-                    while (index<data.buffer.size())
-                    {
-                        Object[] row = data.buffer.get(index);
-                        if (previousRow!=null)
-                        {
-                            int result = data.outputRowMeta.compare(row, previousRow, data.fieldnrs);
-                            if (result==0)
-                            {
-                                data.buffer.remove(index); // remove this duplicate element as requested
-                                if (log.isRowLevel()) logRowlevel("Duplicate row removed: "+data.outputRowMeta.getString(row));
-                            }
-                            else
-                            {
-                                index++;
-                            }
-                        }
-                        else
-                        {
-                            index++;
-                        }
-                        previousRow = row; 
-                    }
-                }
-			
-				// How many records do we have left?
-				data.bufferSizes.add( data.buffer.size() );
-                
-                for (p=0;p<data.buffer.size();p++)
-				{
-                    data.outputRowMeta.writeData(dos, data.buffer.get(p));
-				}
-                
-                if (data.sortSize<0)
-                {
-                	if (data.buffer.size()>data.minSortSize)
-                	{
-                		data.minSortSize=data.buffer.size(); // if we did it once, we can do it again.
-                		
-                		// Memory usage goes up over time, even with garbage collection
-                		// We need pointers, file handles, etc.
-                		// As such, we're going to lower the min sort size a bit
-                		//
-                		data.minSortSize = (int)Math.round((double)data.minSortSize * 0.90);
-                	}
-                }
-                
-                // Clear the list
-                data.buffer.clear();
-                
-				// Close temp-file
-				dos.close();  // close data stream
-				if (gzos != null)
-                {
-					gzos.close(); // close gzip stream
-                }
-                outputStream.close();  // close file stream
-                
-                // How much memory do we have left?
-                //
-                data.freeMemoryPct = Const.getPercentageFreeMemory();
-    			data.freeCounter=0;
-    			if (data.sortSize<=0)
-    			{
-    				if (log.isDetailed()) logDetailed("Available memory : "+data.freeMemoryPct+"%");
-    			}
-    			
-			}
-			catch(Exception e)
-			{
-				throw new KettleException("Error processing temp-file!", e);
-			}
-			
-            data.getBufferIndex=0;
+		  sortExternalRows();
 		}
-		
 		
 		return true; 
 	}
 	
-	private Object[] getBuffer() throws KettleValueException
+    private void sortExternalRows() throws KettleException {
+      // First sort the rows in buffer[]
+      quickSort(data.buffer);
+  
+      // Then write them to disk...
+      DataOutputStream dos;
+      GZIPOutputStream gzos;
+      int p;
+      Object[] previousRow = null;
+  
+      try {
+        FileObject fileObject = KettleVFS.createTempFile(meta.getPrefix(), ".tmp", environmentSubstitute(meta.getDirectory()), getTransMeta());
+  
+        data.files.add(fileObject); // Remember the files!
+        OutputStream outputStream = KettleVFS.getOutputStream(fileObject, false);
+        if (data.compressFiles) {
+          gzos = new GZIPOutputStream(new BufferedOutputStream(outputStream));
+          dos = new DataOutputStream(gzos);
+        } else {
+          dos = new DataOutputStream(new BufferedOutputStream(outputStream, 500000));
+          gzos = null;
+        }
+  
+        // Just write the data, nothing else
+        if (meta.isOnlyPassingUniqueRows()) {
+          int index = 0;
+          while (index < data.buffer.size()) {
+            Object[] row = data.buffer.get(index);
+            if (previousRow != null) {
+              int result = data.outputRowMeta.compare(row, previousRow, data.fieldnrs);
+              if (result == 0) {
+                data.buffer.remove(index); // remove this duplicate element as
+                                           // requested
+                if (log.isRowLevel())
+                  logRowlevel("Duplicate row removed: " + data.outputRowMeta.getString(row));
+              } else {
+                index++;
+              }
+            } else {
+              index++;
+            }
+            previousRow = row;
+          }
+        }
+  
+        // How many records do we have left?
+        data.bufferSizes.add(data.buffer.size());
+  
+        for (p = 0; p < data.buffer.size(); p++) {
+          data.outputRowMeta.writeData(dos, data.buffer.get(p));
+        }
+  
+        if (data.sortSize < 0) {
+          if (data.buffer.size() > data.minSortSize) {
+            data.minSortSize = data.buffer.size(); // if we did it once, we can do
+                                                   // it again.
+  
+            // Memory usage goes up over time, even with garbage collection
+            // We need pointers, file handles, etc.
+            // As such, we're going to lower the min sort size a bit
+            //
+            data.minSortSize = (int) Math.round((double) data.minSortSize * 0.90);
+          }
+        }
+  
+        // Clear the list
+        data.buffer.clear();
+  
+        // Close temp-file
+        dos.close(); // close data stream
+        if (gzos != null) {
+          gzos.close(); // close gzip stream
+        }
+        outputStream.close(); // close file stream
+  
+        // How much memory do we have left?
+        //
+        data.freeMemoryPct = Const.getPercentageFreeMemory();
+        data.freeCounter = 0;
+        if (data.sortSize <= 0) {
+          if (log.isDetailed())
+            logDetailed("Available memory : " + data.freeMemoryPct + "%");
+        }
+  
+      } catch (Exception e) {
+        throw new KettleException("Error processing temp-file!", e);
+      }
+  
+      data.getBufferIndex = 0;
+    }
+
+  private Object[] getBuffer() throws KettleValueException
 	{
 		Object[] retval;
 		
@@ -380,7 +368,6 @@ public class SortRows extends BaseStep implements StepInterface
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
 		boolean err=true;
-		int i;
 		
 		Object[] r=getRow();   // get row from rowset, wait for our turn, indicate busy!
 
@@ -390,7 +377,7 @@ public class SortRows extends BaseStep implements StepInterface
 			first=false;
 			data.convertKeysToNative = new boolean[meta.getFieldName().length];
 			data.fieldnrs=new int[meta.getFieldName().length];
-			for (i=0;i<meta.getFieldName().length;i++)
+			for (int i=0;i<meta.getFieldName().length;i++)
 			{
 				data.fieldnrs[i]=getInputRowMeta().indexOfValue( meta.getFieldName()[i] );
 				if (data.fieldnrs[i]<0)
@@ -414,43 +401,8 @@ public class SortRows extends BaseStep implements StepInterface
 		
 		if (r==null)  // no more input to be expected...
 		{
-			// Now we can start the output!
-			r=getBuffer();
-			Object[] previousRow = null;
-			while (r!=null  && !isStopped())
-			{
-				if (log.isRowLevel()) logRowlevel("Read row: "+getInputRowMeta().getString(r));
-				
-				// Do another verification pass for unique rows...
-				//
-				if (meta.isOnlyPassingUniqueRows())
-				{
-					if (previousRow!=null)
-					{
-						// See if this row is the same as the previous one as far as the keys are concerned.
-						// If so, we don't put forward this row.
-                        int result = data.outputRowMeta.compare(r, previousRow, data.fieldnrs);
-                        if (result!=0)
-                        {
-    						putRow(data.outputRowMeta, r); // copy row to possible alternate rowset(s).
-                        }
-					}
-					else
-					{
-						putRow(data.outputRowMeta, r); // copy row to possible alternate rowset(s).
-					}
-					previousRow = r;
-				}
-				else
-				{
-					putRow(data.outputRowMeta, r); // copy row to possible alternate rowset(s).
-				}
-
-				r=getBuffer();
-			}
-			
-			setOutputDone(); // signal receiver we're finished.
-			return false;
+		    passBuffer();
+		    return false;
 		}
 
         if (checkFeedback(getLinesRead())) 
@@ -461,8 +413,55 @@ public class SortRows extends BaseStep implements StepInterface
 		return true;
 	}
 	
-	
-	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
+	/**
+	 * This method passes all rows in the buffer to the next steps.
+	 * 
+	 */
+	private void passBuffer() throws KettleException {
+      // Now we can start the output!
+	  //
+      Object[] r=getBuffer();
+      Object[] previousRow = null;
+      while (r!=null  && !isStopped())
+      {
+          if (log.isRowLevel()) logRowlevel("Read row: "+getInputRowMeta().getString(r));
+          
+          // Do another verification pass for unique rows...
+          //
+          if (meta.isOnlyPassingUniqueRows())
+          {
+              if (previousRow!=null)
+              {
+                  // See if this row is the same as the previous one as far as the keys are concerned.
+                  // If so, we don't put forward this row.
+                  int result = data.outputRowMeta.compare(r, previousRow, data.fieldnrs);
+                  if (result!=0)
+                  {
+                      putRow(data.outputRowMeta, r); // copy row to possible alternate rowset(s).
+                  }
+              }
+              else
+              {
+                  putRow(data.outputRowMeta, r); // copy row to possible alternate rowset(s).
+              }
+              previousRow = r;
+          }
+          else
+          {
+              putRow(data.outputRowMeta, r); // copy row to possible alternate rowset(s).
+          }
+
+          r=getBuffer();
+      }
+      
+      // Clear out the buffer for the next batch
+      //
+      clearBuffers();
+      
+      setOutputDone(); // signal receiver we're finished.
+  }
+
+  public boolean init(StepMetaInterface smi, StepDataInterface sdi)
 	{
 		meta=(SortRowsMeta)smi;
 		data=(SortRowsData)sdi;
@@ -523,41 +522,45 @@ public class SortRows extends BaseStep implements StepInterface
 		return false;
 	}
 	
-	@Override
-	public void dispose(StepMetaInterface smi, StepDataInterface sdi) {
-		
-		// Clean out the sort buffer
-		//
-		data.buffer = null;
-		data.rowbuffer = null;
-    // close any open DataInputStream objects
-    if ( (data.dis != null) && (data.dis.size() > 0) ) {
-      for (DataInputStream dis : data.dis) {
-        BaseStep.closeQuietly(dis);
-      }
+    @Override
+    public void dispose(StepMetaInterface smi, StepDataInterface sdi) {
+      clearBuffers();
+      super.dispose(smi, sdi);
     }
-    // close any open InputStream objects
-    if ( (data.fis != null) && (data.fis.size() > 0) ) {
-      for (InputStream is : data.fis) {
-        BaseStep.closeQuietly(is);
-      }
-    }
-    // remove temp files
-    for (int f=0;f<data.files.size();f++)
-    {
-      FileObject fileToDelete = data.files.get(f);
-      try {
-        if (fileToDelete != null && fileToDelete.exists()) {
-          fileToDelete.delete();
-        }
-      } catch (FileSystemException e) {
-        logError(e.getLocalizedMessage(), e);
-      }
-    }
-		super.dispose(smi, sdi);
-	}
 
-	/** 
+	private void clearBuffers() {
+	  
+      // Clean out the sort buffer
+      //
+      data.buffer.clear();
+      data.getBufferIndex = 0;
+      data.rowbuffer.clear();
+      // close any open DataInputStream objects
+      if ((data.dis != null) && (data.dis.size() > 0)) {
+        for (DataInputStream dis : data.dis) {
+          BaseStep.closeQuietly(dis);
+        }
+      }
+      // close any open InputStream objects
+      if ((data.fis != null) && (data.fis.size() > 0)) {
+        for (InputStream is : data.fis) {
+          BaseStep.closeQuietly(is);
+        }
+      }
+      // remove temp files
+      for (int f = 0; f < data.files.size(); f++) {
+        FileObject fileToDelete = data.files.get(f);
+        try {
+          if (fileToDelete != null && fileToDelete.exists()) {
+            fileToDelete.delete();
+          }
+        } catch (FileSystemException e) {
+          logError(e.getLocalizedMessage(), e);
+        }
+      }
+    }
+
+  /** 
 	 * Sort the entire vector, if it is not empty.
 	 */
 	public void quickSort(List<Object[]> elements)
@@ -594,5 +597,17 @@ public class SortRows extends BaseStep implements StepInterface
 		}
 		if (log.isDetailed()) logDetailed("QuickSort algorithm has finished.");
 	}
-
+	  
+	  /**
+	   * Calling this method will alert the step that we finished passing records to the step.
+	   * Specifically for steps like "Sort Rows" it means that the buffered rows can be sorted and passed on. 
+	   */
+	  public void batchComplete() throws KettleException {
+	    if (data.files.size()>0) {
+	      sortExternalRows();
+	    } else {
+	      quickSort(data.buffer);
+	    }
+	    passBuffer();
+	  }
 }

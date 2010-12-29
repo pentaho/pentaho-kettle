@@ -1623,4 +1623,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 		super.dispose(smi, sdi);
 	}
 
+	public boolean isWaitingForData() {
+	  return true;
+	}
 }

@@ -1065,4 +1065,7 @@ public class CsvInput extends BaseStep implements StepInterface
     return strings.toArray(new String[strings.size()]);
   }
 
+  public boolean isWaitingForData() {
+	return true;
+  }
 }

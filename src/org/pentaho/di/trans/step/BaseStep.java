@@ -275,7 +275,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 	
 	/** minumum number of rows to process before using maxPercentErrors in calculation */
 	private long minRowsForMaxErrorPercent = -1L;
-
+	
 	/**
      * This is the base step that forms that basis for all steps. You can derive from this class to implement your own
      * steps.
@@ -3116,5 +3116,12 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     this.passingData.set(passingData);
   }
   
+  /**
+   * Calling this method will alert the step that we finished passing records to the step.
+   * Specifically for steps like "Sort Rows" it means that the buffered rows can be sorted and passed on. 
+   * @throws KettleException 
+   */
+  public void batchComplete() throws KettleException {
+  }
 
 }

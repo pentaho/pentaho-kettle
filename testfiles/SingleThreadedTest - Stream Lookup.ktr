@@ -67,6 +67,29 @@
   <modified_date>2010&#47;12&#47;29 19:49:07.287</modified_date>
   </info>
   <notepads>
+    <notepad>
+      <note>This sort works for each batch of rows
+provided to the transformation in the 
+&quot;Single Threaded&quot; execution engine.</note>
+      <xloc>132</xloc>
+      <yloc>111</yloc>
+      <width>193</width>
+      <heigth>49</heigth>
+      <fontname>Microsoft Sans Serif</fontname>
+      <fontsize>8</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>165</backgroundcolorgreen>
+      <backgroundcolorblue>0</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>Y</drawshadow>
+    </notepad>
   </notepads>
   <connection>
     <name>CMS</name>
@@ -157,10 +180,10 @@
     </attributes>
   </connection>
   <order>
-  <hop> <from>INPUT</from><to>filter step</to><enabled>Y</enabled> </hop>  <hop> <from>Data Grid</from><to>Stream lookup</to><enabled>Y</enabled> </hop>  <hop> <from>Stream lookup</from><to>OUTPUT</to><enabled>Y</enabled> </hop>  <hop> <from>filter step</from><to>Ignore</to><enabled>Y</enabled> </hop>  <hop> <from>filter step</from><to>Stream lookup</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>Data Grid</from><to>Stream lookup</to><enabled>Y</enabled> </hop>  <hop> <from>Stream lookup</from><to>OUTPUT</to><enabled>Y</enabled> </hop>  <hop> <from>filter step</from><to>Ignore</to><enabled>Y</enabled> </hop>  <hop> <from>filter step</from><to>Stream lookup</to><enabled>Y</enabled> </hop>  <hop> <from>INPUT</from><to>Sort rows</to><enabled>Y</enabled> </hop>  <hop> <from>Sort rows</from><to>filter step</to><enabled>Y</enabled> </hop>  </order>
   <step>
-    <name>OUTPUT</name>
-    <type>Dummy</type>
+    <name>Data Grid</name>
+    <type>DataGrid</type>
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
@@ -168,38 +191,37 @@
            <method>none</method>
            <schema_name/>
            </partitioning>
+    <fields>
+      <field>
+        <name>field1</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+      <field>
+        <name>description</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+    </fields>
+    <data>
+      <line> <item>KETTLE1</item><item>Description1</item> </line>
+      <line> <item>KETTLE2</item><item>Description2</item> </line>
+      <line> <item>KETTLE3</item><item>Description3</item> </line>
+    </data>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>407</xloc>
-      <yloc>49</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>filter step</name>
-    <type>FilterRows</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-<send_true_to>Stream lookup</send_true_to>
-<send_false_to>Ignore</send_false_to>
-    <compare>
-<condition>
- <negated>N</negated>
- <leftvalue>field2</leftvalue>
- <function>&gt;=</function>
- <rightvalue/>
- <value><name>constant</name><type>Integer</type><text>500</text><length>-1</length><precision>0</precision><isnull>N</isnull><mask>#;-#</mask></value> </condition>
-    </compare>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>169</xloc>
-      <yloc>49</yloc>
+      <xloc>561</xloc>
+      <yloc>172</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -251,8 +273,8 @@
     </step>
 
   <step>
-    <name>Data Grid</name>
-    <type>DataGrid</type>
+    <name>Ignore</name>
+    <type>Dummy</type>
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
@@ -260,37 +282,28 @@
            <method>none</method>
            <schema_name/>
            </partitioning>
-    <fields>
-      <field>
-        <name>field1</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <length>-1</length>
-        <precision>-1</precision>
-      </field>
-      <field>
-        <name>description</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <length>-1</length>
-        <precision>-1</precision>
-      </field>
-    </fields>
-    <data>
-      <line> <item>KETTLE1</item><item>Description1</item> </line>
-      <line> <item>KETTLE2</item><item>Description2</item> </line>
-      <line> <item>KETTLE3</item><item>Description3</item> </line>
-    </data>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>288</xloc>
-      <yloc>171</yloc>
+      <xloc>442</xloc>
+      <yloc>172</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>OUTPUT</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>680</xloc>
+      <yloc>50</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -324,15 +337,15 @@
     </lookup>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>288</xloc>
-      <yloc>49</yloc>
+      <xloc>561</xloc>
+      <yloc>50</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
 
   <step>
-    <name>Ignore</name>
-    <type>Dummy</type>
+    <name>filter step</name>
+    <type>FilterRows</type>
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
@@ -340,10 +353,52 @@
            <method>none</method>
            <schema_name/>
            </partitioning>
+<send_true_to>Stream lookup</send_true_to>
+<send_false_to>Ignore</send_false_to>
+    <compare>
+<condition>
+ <negated>N</negated>
+ <leftvalue>field2</leftvalue>
+ <function>&gt;=</function>
+ <rightvalue/>
+ <value><name>constant</name><type>Integer</type><text>500</text><length>-1</length><precision>0</precision><isnull>N</isnull><mask>#;-#</mask></value> </condition>
+    </compare>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>169</xloc>
-      <yloc>171</yloc>
+      <xloc>442</xloc>
+      <yloc>50</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Sort rows</name>
+    <type>SortRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+      <directory>%%java.io.tmpdir%%</directory>
+      <prefix>out</prefix>
+      <sort_size>1000000</sort_size>
+      <free_memory/>
+      <compress>N</compress>
+      <compress_variable/>
+      <unique_rows>N</unique_rows>
+    <fields>
+      <field>
+        <name>field1</name>
+        <ascending>N</ascending>
+        <case_sensitive>N</case_sensitive>
+      </field>
+    </fields>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>220</xloc>
+      <yloc>50</yloc>
       <draw>Y</draw>
       </GUI>
     </step>

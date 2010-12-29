@@ -354,4 +354,8 @@ public class TableInput extends BaseStep implements StepInterface
 		return false;
 	}
 
+  public boolean isWaitingForData() {
+    return true;
+  }
+
 }

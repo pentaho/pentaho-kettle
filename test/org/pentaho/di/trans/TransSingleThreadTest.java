@@ -56,7 +56,7 @@ public class TransSingleThreadTest extends TestCase {
     //
     executor.init();
 
-    int iterations = 10000000;
+    int iterations = 1000000;
     long totalWait = 0;
     List<RowMetaAndData> inputList = createData();
 
@@ -77,7 +77,7 @@ public class TransSingleThreadTest extends TestCase {
       long end = System.currentTimeMillis();
       long delay = end - start;
       totalWait += delay;
-      if (i > 0 && (i % 500000) == 0) {
+      if (i > 0 && (i % 5000) == 0) {
         double speed = Const.round(((double) i*inputList.size()) / ((double) (end - transStart) / 1000), 1);
         int totalRows = 0;
         for (StepMetaDataCombi combi : trans.getSteps()) {
