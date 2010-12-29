@@ -1438,10 +1438,8 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		logDebug(BaseMessages.getString(PKG, "DimensionLookupDialog.Log.LookingAtConnection")+inf.toString()); //$NON-NLS-1$
 
 		DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, transMeta.getDatabases());
-        std.setSelectedSchema(wSchema.getText());
-		std.setSelectedTable(wTable.getText());
-        std.setSplitSchemaAndTable(true);
-		if (std.open() != null)
+    std.setSelectedSchemaAndTable(wSchema.getText(), wTable.getText());
+		if (std.open())
 		{
             wSchema.setText(Const.NVL(std.getSchemaName(), ""));
 			wTable.setText(Const.NVL(std.getTableName(), ""));

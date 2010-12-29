@@ -447,10 +447,10 @@ public class ColumnExistsDialog extends BaseStepDialog implements StepDialogInte
 				DatabaseMeta inf = transMeta.getDatabase(connr);
 	                        
 				DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, transMeta.getDatabases());
-				std.setSelectedTable(wTablenameText.getText());
-				std.setSplitSchemaAndTable(true);
-				if (std.open() != null)
+				std.setSelectedSchemaAndTable(wSchemaname.getText(), wTablenameText.getText());
+				if (std.open())
 				{
+				  wSchemaname.setText(Const.NVL(std.getSchemaName(), ""));
 					wTablenameText.setText(Const.NVL(std.getTableName(), ""));
 				}
 			}

@@ -514,8 +514,7 @@ public void setPosition(){
 		if (inf!=null)
 		{	
 			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, transMeta.getDatabases());
-            std.setSplitSchemaAndTable(true);
-			if (std.open()!= null)
+			if (std.open())
 			{
 				String sql = "SELECT *"+Const.CR+"FROM "+inf.getQuotedSchemaTableCombination(std.getSchemaName(), std.getTableName())+Const.CR; //$NON-NLS-1$ //$NON-NLS-2$
 				wSQL.setText(sql);

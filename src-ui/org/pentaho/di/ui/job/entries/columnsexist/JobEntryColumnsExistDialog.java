@@ -378,10 +378,10 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
 			DatabaseMeta inf = jobMeta.getDatabase(connr);
                         
 			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, jobMeta.getDatabases());
-			std.setSelectedTable(wTablename.getText());
-			std.setSplitSchemaAndTable(true);
-			if (std.open() != null)
+			std.setSelectedSchemaAndTable(wSchemaname.getText(), wTablename.getText());
+			if (std.open())
 			{
+			  wSchemaname.setText(Const.NVL(std.getSchemaName(), ""));
 				wTablename.setText(Const.NVL(std.getTableName(), ""));
 			}
 		}

@@ -32,6 +32,9 @@ public class DatabaseExplorerNode extends AbstractModelNode<DatabaseExplorerNode
 	private boolean isTable;
 	private boolean isSchema;
 	
+	// possibly a combination of schema and table
+	private String label;
+	
 
 	public DatabaseExplorerNode() {
 		this.children = new ArrayList<DatabaseExplorerNode>();
@@ -80,4 +83,17 @@ public class DatabaseExplorerNode extends AbstractModelNode<DatabaseExplorerNode
   public String getSchema() {
     return schema;
   }
+
+  public String getLabel() {
+    if (label != null) {
+      return label;
+    } else {
+      return name;
+    }
+}
+
+  public void setLabel(String label) {
+    this.label = label;
+  }
+  
 }

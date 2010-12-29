@@ -171,7 +171,7 @@ public class SpoonDBDelegate extends SpoonDelegate
 		spoon.setShellText();
 	}
 
-	public String exploreDB(DatabaseMeta databaseMeta, boolean aLook)
+	public void exploreDB(DatabaseMeta databaseMeta, boolean aLook)
 	{
 		List<DatabaseMeta> databases = null;
 		HasDatabasesInterface activeHasDatabasesInterface = spoon.getActiveHasDatabasesInterface();
@@ -180,7 +180,7 @@ public class SpoonDBDelegate extends SpoonDelegate
 
 		DatabaseExplorerDialog std = new DatabaseExplorerDialog(spoon.getShell(), SWT.NONE, databaseMeta,
 				databases, aLook);
-		return (String) std.open();
+		std.open();
 	}
 
 	public void clearDBCache(DatabaseMeta databaseMeta)

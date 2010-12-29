@@ -17,7 +17,7 @@
 		
 		<tree id="databaseTree" flex="1" editable="false" expanded="false"  context="action_popup" command="dbexplorer.accept()">
 			<treecols>
-            		<treecol flex="1" label="" primary="true" editable="false" pen:binding="name" pen:childrenbinding="children" pen:imagebinding="image" />
+            		<treecol flex="1" label="" primary="true" editable="false" pen:binding="label" pen:childrenbinding="children" pen:imagebinding="image" />
           	</treecols>
 			 <treechildren>
 				<treeitem container="true" open="true">
