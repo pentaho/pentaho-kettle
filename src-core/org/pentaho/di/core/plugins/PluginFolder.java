@@ -80,7 +80,9 @@ public class PluginFolder implements PluginFolderInterface {
 			String folders[] = folderPaths.split(",");
 			// for each folder in the list of plugin base folders
 			// add an annotation and xml path for searching
+			// trim the folder - we don't need leading and trailing spaces
 			for (String folder : folders) {
+			   folder = folder.trim();
 				pluginFolders.add(new PluginFolder(folder, false, true));
 				if (!Const.isEmpty(xmlSubfolder)) {
 			      pluginFolders.add(new PluginFolder(folder + File.separator + xmlSubfolder, true, false));
