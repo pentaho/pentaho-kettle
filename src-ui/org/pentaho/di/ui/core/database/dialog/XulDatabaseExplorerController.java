@@ -194,6 +194,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
     bf.setBindingType(Binding.Type.ONE_WAY);
     this.bf.createBinding(this.databaseTree, "selectedItem", "buttonMenuPopUp", "disabled", isDisabledConvertor);
     this.bf.createBinding(this.databaseTree, "selectedItem", "buttonMenuPopUpImg", "disabled", isDisabledConvertor);
+    this.bf.createBinding(this.databaseTree, "selectedItem", "action_popup", "disabled", isDisabledConvertor);
     fireBindings();
   }
 
