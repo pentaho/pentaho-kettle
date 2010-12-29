@@ -4163,7 +4163,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 				
 				String table = alltables.getString("TABLE_NAME");
 				
-				if (log.isRowLevel()) log.logRowlevel(toString(), "got view from meta-data: "+databaseMeta.getQuotedSchemaTableCombination(schema, table));
+				if (log.isRowLevel()) log.logRowlevel(toString(), "got synonym from meta-data: "+databaseMeta.getQuotedSchemaTableCombination(schema, table));
 				synonymMap.put(schema, table);
 			}
 		}
@@ -4183,7 +4183,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 			}
 		}
 	
-		if(log.isDetailed()) log.logDetailed("read :"+synonymMap.values().size()+" views from db meta-data.");
+		if(log.isDetailed()) log.logDetailed("read :"+synonymMap.values().size()+" synonyms from db meta-data.");
 	
 		return synonymMap.asMap();
 	}
