@@ -150,7 +150,7 @@ public class Const
   /**
    * the default comma separated list of base plugin folders.
    */
-	public static final String DEFAULT_PLUGIN_BASE_FOLDERS = "plugins," + getKettleDirectory() + FILE_SEPARATOR + "plugins";
+	public static final String DEFAULT_PLUGIN_BASE_FOLDERS = "plugins," + (Const.isEmpty(getDIHomeDirectory())?"":getDIHomeDirectory() + FILE_SEPARATOR  + "plugins,") + getKettleDirectory() + FILE_SEPARATOR + "plugins";
 
 	/**
 	 * Default minimum date range...
@@ -1258,6 +1258,12 @@ public class Const
 		return USER_HOME_DIRECTORY + FILE_SEPARATOR + BasePropertyHandler.getProperty("userBaseDir", ".kettle");
 	}
 	
+	/** 
+	 * Returns the value of DI_HOME.
+	 */
+	public static final String getDIHomeDirectory() {
+	      return System.getProperty("DI_HOME");
+	}
     
     /**
      * Determines the location of the shared objects file
