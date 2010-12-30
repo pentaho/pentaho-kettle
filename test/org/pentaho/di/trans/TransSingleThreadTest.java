@@ -78,7 +78,8 @@ public class TransSingleThreadTest extends TestCase {
       long delay = end - start;
       totalWait += delay;
       if (i > 0 && (i % 100000) == 0) {
-        double speed = Const.round(((double) i*inputList.size()) / ((double) (end - transStart) / 1000), 1);
+        long rowsProcessed = trans.findRunThread("bottles").getLinesRead();
+        double speed = Const.round(((double)rowsProcessed) / ((double) (end - transStart) / 1000), 1);
         int totalRows = 0;
         for (StepMetaDataCombi combi : trans.getSteps()) {
           for (RowSet rowSet : combi.step.getInputRowSets())
@@ -92,8 +93,9 @@ public class TransSingleThreadTest extends TestCase {
       List<RowMetaAndData> resultRows = rc.getRowsWritten();
 
       // Result has one row less because we filter out one.
+      // We also join with 3 identical rows in a data grid, giving 9 rows of which 3 are filtered out
       //
-      assertEquals(inputList.size() - 1, resultRows.size());
+      assertEquals("Error found in iteration "+i, 6, resultRows.size());
       rc.clear();
     }
 
@@ -102,6 +104,8 @@ public class TransSingleThreadTest extends TestCase {
     // Dispose all steps.
     //
     executor.dispose();
+    
+    long rowsProcessed = trans.findRunThread("bottles").getLinesRead();
 
     long transEnd = System.currentTimeMillis();
     long transTime = transEnd - transStart;
@@ -110,7 +114,7 @@ public class TransSingleThreadTest extends TestCase {
     System.out.println("Total transformation runtime for " + iterations + " iterations :" + transTimeSeconds + " seconds");
     double transTimePerIteration = Const.round(((double) transTime / iterations), 2);
     System.out.println("Runtime per iteration: " + transTimePerIteration + " miliseconds");
-    double rowsPerSecond = Const.round(((double) iterations * inputList.size()) / ((double) transTime / 1000), 1);
+    double rowsPerSecond = Const.round(((double) rowsProcessed) / ((double) transTime / 1000), 1);
     System.out.println("Average speed: " + rowsPerSecond + " rows/second");
   }
 

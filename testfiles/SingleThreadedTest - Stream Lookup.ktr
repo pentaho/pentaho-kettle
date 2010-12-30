@@ -71,8 +71,8 @@
       <note>This sort works for each batch of rows
 provided to the transformation in the 
 &quot;Single Threaded&quot; execution engine.</note>
-      <xloc>123</xloc>
-      <yloc>143</yloc>
+      <xloc>321</xloc>
+      <yloc>15</yloc>
       <width>193</width>
       <heigth>49</heigth>
       <fontname>Microsoft Sans Serif</fontname>
@@ -180,7 +180,7 @@ provided to the transformation in the
     </attributes>
   </connection>
   <order>
-  <hop> <from>Data Grid</from><to>Stream lookup</to><enabled>Y</enabled> </hop>  <hop> <from>filter step</from><to>Ignore</to><enabled>Y</enabled> </hop>  <hop> <from>filter step</from><to>Stream lookup</to><enabled>Y</enabled> </hop>  <hop> <from>Sort rows</from><to>Switch &#47; Case</to><enabled>Y</enabled> </hop>  <hop> <from>Switch &#47; Case</from><to>One</to><enabled>Y</enabled> </hop>  <hop> <from>Switch &#47; Case</from><to>Two</to><enabled>Y</enabled> </hop>  <hop> <from>Switch &#47; Case</from><to>Three</to><enabled>Y</enabled> </hop>  <hop> <from>One</from><to>bottles</to><enabled>Y</enabled> </hop>  <hop> <from>Two</from><to>bottles</to><enabled>Y</enabled> </hop>  <hop> <from>Three</from><to>bottles</to><enabled>Y</enabled> </hop>  <hop> <from>bottles</from><to>filter step</to><enabled>Y</enabled> </hop>  <hop> <from>Switch &#47; Case</from><to>99</to><enabled>Y</enabled> </hop>  <hop> <from>99</from><to>bottles</to><enabled>Y</enabled> </hop>  <hop> <from>Data Grid 2</from><to>Sort rows</to><enabled>N</enabled> </hop>  <hop> <from>INPUT</from><to>Sort rows</to><enabled>Y</enabled> </hop>  <hop> <from>Stream lookup</from><to>String operations</to><enabled>Y</enabled> </hop>  <hop> <from>String operations</from><to>OUTPUT</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>Data Grid</from><to>Stream lookup</to><enabled>Y</enabled> </hop>  <hop> <from>filter step</from><to>Ignore</to><enabled>Y</enabled> </hop>  <hop> <from>filter step</from><to>Stream lookup</to><enabled>Y</enabled> </hop>  <hop> <from>Sort rows</from><to>Switch &#47; Case</to><enabled>Y</enabled> </hop>  <hop> <from>Switch &#47; Case</from><to>One</to><enabled>Y</enabled> </hop>  <hop> <from>Switch &#47; Case</from><to>Two</to><enabled>Y</enabled> </hop>  <hop> <from>Switch &#47; Case</from><to>Three</to><enabled>Y</enabled> </hop>  <hop> <from>One</from><to>bottles</to><enabled>Y</enabled> </hop>  <hop> <from>Two</from><to>bottles</to><enabled>Y</enabled> </hop>  <hop> <from>Three</from><to>bottles</to><enabled>Y</enabled> </hop>  <hop> <from>bottles</from><to>filter step</to><enabled>Y</enabled> </hop>  <hop> <from>Switch &#47; Case</from><to>99</to><enabled>Y</enabled> </hop>  <hop> <from>99</from><to>bottles</to><enabled>Y</enabled> </hop>  <hop> <from>Stream lookup</from><to>String operations</to><enabled>Y</enabled> </hop>  <hop> <from>String operations</from><to>OUTPUT</to><enabled>Y</enabled> </hop>  <hop> <from>Data Grid 2</from><to>Join Rows (cartesian product)</to><enabled>Y</enabled> </hop>  <hop> <from>INPUT</from><to>Join Rows (cartesian product)</to><enabled>Y</enabled> </hop>  <hop> <from>Join Rows (cartesian product)</from><to>Sort rows</to><enabled>Y</enabled> </hop>  </order>
   <step>
     <name>99</name>
     <type>Constant</type>
@@ -251,8 +251,8 @@ provided to the transformation in the
     </data>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>636</xloc>
-      <yloc>545</yloc>
+      <xloc>715</xloc>
+      <yloc>541</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -346,8 +346,8 @@ provided to the transformation in the
     </data>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>73</xloc>
-      <yloc>11</yloc>
+      <xloc>148</xloc>
+      <yloc>206</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -410,8 +410,8 @@ provided to the transformation in the
            </partitioning>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>517</xloc>
-      <yloc>545</yloc>
+      <xloc>596</xloc>
+      <yloc>541</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -428,8 +428,8 @@ provided to the transformation in the
            </partitioning>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>877</xloc>
-      <yloc>424</yloc>
+      <xloc>956</xloc>
+      <yloc>420</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -459,8 +459,8 @@ provided to the transformation in the
     </fields>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>261</xloc>
-      <yloc>267</yloc>
+      <xloc>403</xloc>
+      <yloc>268</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -491,8 +491,8 @@ provided to the transformation in the
     </fields>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>181</xloc>
-      <yloc>87</yloc>
+      <xloc>335</xloc>
+      <yloc>85</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -526,8 +526,8 @@ provided to the transformation in the
     </lookup>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>636</xloc>
-      <yloc>424</yloc>
+      <xloc>715</xloc>
+      <yloc>420</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -559,8 +559,8 @@ provided to the transformation in the
     </fields>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>747</xloc>
-      <yloc>424</yloc>
+      <xloc>826</xloc>
+      <yloc>420</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -590,8 +590,8 @@ provided to the transformation in the
 <target_step>Three</target_step>
 </case></cases>     <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>403</xloc>
-      <yloc>87</yloc>
+      <xloc>450</xloc>
+      <yloc>85</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -621,8 +621,8 @@ provided to the transformation in the
     </fields>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>445</xloc>
-      <yloc>266</yloc>
+      <xloc>491</xloc>
+      <yloc>267</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -652,8 +652,8 @@ provided to the transformation in the
     </fields>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>353</xloc>
-      <yloc>269</yloc>
+      <xloc>447</xloc>
+      <yloc>267</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -677,8 +677,8 @@ provided to the transformation in the
 </formula>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>395</xloc>
-      <yloc>424</yloc>
+      <xloc>474</xloc>
+      <yloc>420</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -705,8 +705,38 @@ provided to the transformation in the
     </compare>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>517</xloc>
-      <yloc>424</yloc>
+      <xloc>596</xloc>
+      <yloc>420</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Join Rows (cartesian product)</name>
+    <type>JoinRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+      <directory>%%java.io.tmpdir%%</directory>
+      <prefix>out</prefix>
+      <cache_size>500</cache_size>
+      <main>INPUT</main>
+    <compare>
+<condition>
+ <negated>N</negated>
+ <leftvalue/>
+ <function>=</function>
+ <rightvalue/>
+ </condition>
+    </compare>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>190</xloc>
+      <yloc>87</yloc>
       <draw>Y</draw>
       </GUI>
     </step>

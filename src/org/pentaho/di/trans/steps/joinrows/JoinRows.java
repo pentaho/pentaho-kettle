@@ -23,7 +23,6 @@ import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -80,13 +79,13 @@ public class JoinRows extends BaseStep implements StepInterface
 				// See if a main step is supplied: in that case move the corresponding rowset to position 0
 				for (int i=0;i<getInputRowSets().size();i++)
 				{
-				    BlockingRowSet rs = (BlockingRowSet) getInputRowSets().get(i);
+				    RowSet rs = getInputRowSets().get(i);
 				    if (rs.getOriginStepName().equalsIgnoreCase(meta.getMainStepname()))
 				    {
 				        // swap this one and position 0...
                         // That means, the main stream is always stream 0 --> easy!
                         //
-				        BlockingRowSet zero = (BlockingRowSet)getInputRowSets().get(0);
+				        RowSet zero = getInputRowSets().get(0);
 				        getInputRowSets().set(0, rs);
 				        getInputRowSets().set(i, zero);
 				    }
@@ -271,164 +270,179 @@ public class JoinRows extends BaseStep implements StepInterface
 
 		if (data.caching)
 		{
-			  ///////////////////////////////
-			 // Read from  input channels //
-			///////////////////////////////
-			
-			if (data.filenr>=data.file.length)
-			{
-				// Switch the mode to reading back from the data cache
-				data.caching=false;
-				
-				// Start back at filenr = 0
-				data.filenr=0;
-				
-				return true;
-			}
-			
-			// We need to open a new outputstream
-			if (data.dataOutputStream[data.filenr]==null)
-			{
-				try
-				{
-					// Open the temp file
-					data.fileOutputStream[data.filenr] = new FileOutputStream(data.file[data.filenr]);
-
-					// Open the data output stream...
-					data.dataOutputStream[data.filenr] = new DataOutputStream(data.fileOutputStream[data.filenr]);
-				}
-				catch(FileNotFoundException fnfe)
-				{
-					logError(BaseMessages.getString(PKG, "JoinRows.Log.UnableToOpenOutputstream")+data.file[data.filenr].toString()+"] : "+fnfe.toString()); //$NON-NLS-1$ //$NON-NLS-2$
-					stopAll();
-					setErrors(1);
-					return false;
-				}				
-			}
-
-	    	// Read a line from the appropriate rowset...
-			RowSet rowSet = data.rs[data.filenr];
-	    	Object[] rowData = getRowFrom(rowSet);
-	    	if (rowData!=null) // We read a row from one of the input streams...
-	    	{
-                if (data.fileRowMeta[data.filenr]==null)
-	    		{
-		    		// The first row is used as meta-data, clone it for safety
-                    data.fileRowMeta[data.filenr] = rowSet.getRowMeta().clone();
-	    		}
-
-                data.fileRowMeta[data.filenr].writeData(data.dataOutputStream[data.filenr], rowData);
-	    		data.size[data.filenr]++;
-
-	    		if (log.isRowLevel()) logRowlevel(rowData.toString());
-	    		
-	    		//
-	    		// Perhaps we want to cache this data??
-	    		//
-	    		if (data.size[data.filenr]<=meta.getCacheSize())
-	    		{
-	    			if (data.cache[data.filenr]==null) data.cache[data.filenr]=new ArrayList<Object[]>();
-	    			
-	    			// Add this row to the cache!
-	    			data.cache[data.filenr].add(rowData);
-	    		}
-	    		else
-	    		{
-	    			// we can't cope with this many rows: reset the cache...
-	    			if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JoinRows.Log.RowsFound",meta.getCacheSize()+"",data.rs[data.filenr].getOriginStepName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-	    			data.cache[data.filenr]=null;
-	    		}
-
-	    	}
-	    	else // No more rows found on rowset!!
-	    	{
-	    		// Close outputstream.
-	    		try
-				{
-	    			data.dataOutputStream[data.filenr].close();
-	    			data.fileOutputStream[data.filenr].close();
-	    			data.dataOutputStream[data.filenr]=null;
-	    			data.fileOutputStream[data.filenr]=null;
-	   			}
-	    		catch(IOException ioe)
-				{
-	    			logError(BaseMessages.getString(PKG, "JoinRows.Log.ErrorInClosingOutputStream")+data.filenr+" : ["+data.file[data.filenr].toString()+"] : "+ioe.toString()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				}
-	    		
-	    		// Advance to the next file/input-stream...
-	    		data.filenr++;
-	    	}
+		  if (!cacheInputRow()) {
+		    return false;
+		  }
 		}
 		else
 		{
-			  //////////////////////////
-			 // Write to the output! //
-			//////////////////////////
-			
-			// Read one row and store it in joinrow[]
-			//
-			data.joinrow[data.filenr] = getRowData(data.filenr);
-			if (data.joinrow[data.filenr]==null) // 100 x 0 = 0 : don't output when one of the input streams has no rows.
-			{                                    // If this is filenr #0, it's fine too!
-				setOutputDone();
-				return false;
-			}
-			
-			//
-			// OK, are we at the last file yet?
-			// If so, we can output one row in the cartesian product.
-			// Otherwise, go to the next file to get an extra row. 
-			//
-			if (data.filenr>=data.file.length-1)
-			{
-                if (data.outputRowMeta==null)
-                {
-                    data.outputRowMeta = createOutputRowMeta(data.fileRowMeta);
-                }
-                
-				// Stich the output row together
-				Object[] sum = new Object[data.outputRowMeta.size()];
-                int sumIndex=0;
-				for (int f=0;f<=data.filenr;f++)
-				{
-                    for (int c=0;c<data.fileRowMeta[f].size();c++)
-                    {
-                        sum[sumIndex] = data.joinrow[f][c];
-                        sumIndex++;
-                    }
-				}
-				
-				if (meta.getCondition()!=null && !meta.getCondition().isEmpty())
-				{
-				    // Test the specified condition...
-				    if (meta.getCondition().evaluate(data.outputRowMeta, sum)) 
-                    {
-                        putRow(data.outputRowMeta, sum);
-                    }
-				}
-				else
-				{
-					// Put it out where it belongs!
-				    putRow(data.outputRowMeta, sum);
-				}
-
-				// Did we reach the last position in the last file?
-				// This means that position[] is at 0!
-				// Possible we have to do this multiple times.
-				// 
-				while (data.restart[data.filenr])
-				{
-					// Get row from the previous file
-					data.filenr--;
-				}
-			}
-			else
-			{
-				data.filenr++;
-			}
+		  if (!outputRow()) {
+		    return false;
+		  }
 		}
 		return true;
 	}
+
+	/**
+	   Write to the output!
+	 */
+    private boolean outputRow() throws KettleException {
+     
+     // Read one row and store it in joinrow[]
+     //
+     data.joinrow[data.filenr] = getRowData(data.filenr);
+     if (data.joinrow[data.filenr]==null) // 100 x 0 = 0 : don't output when one of the input streams has no rows.
+     {                                    // If this is filenr #0, it's fine too!
+         setOutputDone();
+         return false;
+     }
+     
+     //
+     // OK, are we at the last file yet?
+     // If so, we can output one row in the cartesian product.
+     // Otherwise, go to the next file to get an extra row. 
+     //
+     if (data.filenr>=data.file.length-1)
+     {
+         if (data.outputRowMeta==null)
+         {
+             data.outputRowMeta = createOutputRowMeta(data.fileRowMeta);
+         }
+         
+         // Stich the output row together
+         Object[] sum = new Object[data.outputRowMeta.size()];
+         int sumIndex=0;
+         for (int f=0;f<=data.filenr;f++)
+         {
+             for (int c=0;c<data.fileRowMeta[f].size();c++)
+             {
+                 sum[sumIndex] = data.joinrow[f][c];
+                 sumIndex++;
+             }
+         }
+         
+         if (meta.getCondition()!=null && !meta.getCondition().isEmpty())
+         {
+             // Test the specified condition...
+             if (meta.getCondition().evaluate(data.outputRowMeta, sum)) 
+             {
+                 putRow(data.outputRowMeta, sum);
+             }
+         }
+         else
+         {
+             // Put it out where it belongs!
+             putRow(data.outputRowMeta, sum);
+         }
+
+         // Did we reach the last position in the last file?
+         // This means that position[] is at 0!
+         // Possible we have to do this multiple times.
+         // 
+         while (data.restart[data.filenr])
+         {
+             // Get row from the previous file
+             data.filenr--;
+         }
+     }
+     else
+     {
+         data.filenr++;
+     }
+     return true;
+  }
+
+    private boolean cacheInputRow() throws KettleException {
+      ///////////////////////////////
+      // Read from  input channels //
+     ///////////////////////////////
+     
+     if (data.filenr>=data.file.length)
+     {
+         // Switch the mode to reading back from the data cache
+         data.caching=false;
+         
+         // Start back at filenr = 0
+         data.filenr=0;
+         
+         return true;
+     }
+     
+     // We need to open a new outputstream
+     if (data.dataOutputStream[data.filenr]==null)
+     {
+         try
+         {
+             // Open the temp file
+             data.fileOutputStream[data.filenr] = new FileOutputStream(data.file[data.filenr]);
+
+             // Open the data output stream...
+             data.dataOutputStream[data.filenr] = new DataOutputStream(data.fileOutputStream[data.filenr]);
+         }
+         catch(FileNotFoundException fnfe)
+         {
+             logError(BaseMessages.getString(PKG, "JoinRows.Log.UnableToOpenOutputstream")+data.file[data.filenr].toString()+"] : "+fnfe.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+             stopAll();
+             setErrors(1);
+             return false;
+         }               
+     }
+
+     // Read a line from the appropriate rowset...
+     RowSet rowSet = data.rs[data.filenr];
+     Object[] rowData = getRowFrom(rowSet);
+     if (rowData!=null) // We read a row from one of the input streams...
+     {
+         if (data.fileRowMeta[data.filenr]==null)
+         {
+             // The first row is used as meta-data, clone it for safety
+             data.fileRowMeta[data.filenr] = rowSet.getRowMeta().clone();
+         }
+
+         data.fileRowMeta[data.filenr].writeData(data.dataOutputStream[data.filenr], rowData);
+         data.size[data.filenr]++;
+
+         if (log.isRowLevel()) logRowlevel(rowData.toString());
+         
+         //
+         // Perhaps we want to cache this data??
+         //
+         if (data.size[data.filenr]<=meta.getCacheSize())
+         {
+             if (data.cache[data.filenr]==null) data.cache[data.filenr]=new ArrayList<Object[]>();
+             
+             // Add this row to the cache!
+             data.cache[data.filenr].add(rowData);
+         }
+         else
+         {
+             // we can't cope with this many rows: reset the cache...
+             if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JoinRows.Log.RowsFound",meta.getCacheSize()+"",data.rs[data.filenr].getOriginStepName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+             data.cache[data.filenr]=null;
+         }
+
+     }
+     else // No more rows found on rowset!!
+     {
+         // Close outputstream.
+         try
+         {
+             data.dataOutputStream[data.filenr].close();
+             data.fileOutputStream[data.filenr].close();
+             data.dataOutputStream[data.filenr]=null;
+             data.fileOutputStream[data.filenr]=null;
+         }
+         catch(IOException ioe)
+         {
+             logError(BaseMessages.getString(PKG, "JoinRows.Log.ErrorInClosingOutputStream")+data.filenr+" : ["+data.file[data.filenr].toString()+"] : "+ioe.toString()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+         }
+         
+         // Advance to the next file/input-stream...
+         data.filenr++;
+     }
+     
+     return true;
+  }
 
     private RowMetaInterface createOutputRowMeta(RowMetaInterface[] fileRowMeta)
     {
@@ -453,5 +467,24 @@ public class JoinRows extends BaseStep implements StepInterface
 		
 		super.dispose(meta, data);
 	}
-			
+    
+    @Override
+    public void batchComplete() throws KettleException {
+      RowSet rowSet = getInputRowSets().get(0);
+      int repeats = 0;
+      for (int i=0;i<data.cache.length;i++) {
+        if (repeats==0) repeats=1;
+        if (data.cache[i]!=null) {
+          repeats *= data.cache[i].size();
+        }
+      }
+      while (rowSet.size()>0 && !isStopped()) {
+        processRow(meta, data);
+      }
+      // The last row needs to be written too to the account of the number of input rows.
+      //
+      for (int i=0;i<repeats;i++) {
+        processRow(meta, data);
+      }
+    }
 }

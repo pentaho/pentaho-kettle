@@ -82,7 +82,7 @@ public class SingleThreadedTransExecutor {
     // We should consider caching TransMeta.findPrevious() results in that case.
     //
     for (int x=0;x<steps.size();x++) {
-      for (int y=x;y<steps.size()-1;y++) {
+      for (int y=0;y<steps.size()-1;y++) {
         StepMetaDataCombi one = steps.get(y);
         StepMetaDataCombi two = steps.get(y+1);
         boolean before = trans.getTransMeta().findPrevious(one.stepMeta, two.stepMeta);
@@ -95,14 +95,14 @@ public class SingleThreadedTransExecutor {
       }
     }
     
-    /*
+    //
     System.out.println("-------------------------------------------------------");
     System.out.println("Steps after sort: ");
     for (StepMetaDataCombi combi : steps) {
       System.out.println(combi.step.toString());
     }
     System.out.println("-------------------------------------------------------");
-    */
+    //
   }
 
   public boolean init() throws KettleException {
