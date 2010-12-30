@@ -88,7 +88,22 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
     }
     
     if(kidElementCache == null){
-      kidElementCache = new UIRepositoryObjects();
+      kidElementCache = new UIRepositoryObjects()
+      {
+        public void onRemove(UIRepositoryObject child) {
+          List<? extends RepositoryElementMetaInterface> dirRepoObjects = getDirectory().getRepositoryObjects();
+          if (dirRepoObjects != null) {
+            Iterator<? extends RepositoryElementMetaInterface> iter = dirRepoObjects.iterator();
+            while (iter.hasNext()) {
+              RepositoryElementMetaInterface e = iter.next();
+              if (child.getObjectId().equals(e.getObjectId())) {
+                iter.remove();
+                return;
+              }
+            }
+          }
+        };
+      };
     }
     for (UIRepositoryObject child : getChildren()) {
       kidElementCache.add(child);
@@ -127,6 +142,8 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
     }
 
     rep.renameRepositoryDirectory(getDirectory().getObjectId(), null, name);
+    // Update the object reference so the new name is displayed
+    obj = rep.getObjectInformation(getObjectId(), getRepositoryElementType());
     refresh();
   }
   
@@ -212,7 +229,13 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
   public void move(UIRepositoryDirectory newParentDir) throws Exception {
     if(newParentDir != null) {
       rep.renameRepositoryDirectory(obj.getObjectId(), newParentDir.getDirectory(), null);
-      newParentDir.refresh();
+      // Try to make sure the directories are updated properly
+      if (!newParentDir.equals(getParent())) {
+        getParent().getChildren().remove(this);
+        newParentDir.getChildren().add(this);
+        getParent().refresh();
+        newParentDir.refresh();
+      }
     }
   }
   
