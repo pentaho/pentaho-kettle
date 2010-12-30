@@ -58,7 +58,20 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
       return kidDirectoryCache;
     }
     if(kidDirectoryCache == null){
-      kidDirectoryCache = new UIRepositoryDirectories();
+      kidDirectoryCache = new UIRepositoryDirectories() {
+        public void onRemove(UIRepositoryObject child) {
+          if (rd.getChildren() != null) {
+            Iterator<RepositoryDirectoryInterface> iter = rd.getChildren().iterator();
+            while (iter.hasNext()) {
+              RepositoryDirectoryInterface c = iter.next();
+              if (c.getObjectId().equals(child.getObjectId())) {
+                iter.remove();
+                return;
+              }
+            }
+          }
+        };
+      };
     }
     if (rd.getChildren()==null){
       return kidDirectoryCache;
