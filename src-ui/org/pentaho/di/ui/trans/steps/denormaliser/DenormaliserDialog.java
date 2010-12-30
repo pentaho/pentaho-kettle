@@ -489,8 +489,4 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 			}
 		 }
 		}
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 }

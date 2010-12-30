@@ -937,9 +937,4 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
       }
 
    }
-
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 }

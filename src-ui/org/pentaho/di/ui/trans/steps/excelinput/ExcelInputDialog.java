@@ -2101,11 +2101,6 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		}
 	}
 
-	@Override
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 	 private void addAdditionalFieldsTab()
 	    {
 	    	// ////////////////////////

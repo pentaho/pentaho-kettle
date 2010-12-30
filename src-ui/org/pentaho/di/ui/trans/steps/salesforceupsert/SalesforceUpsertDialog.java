@@ -931,10 +931,7 @@ public class SalesforceUpsertDialog extends BaseStepDialog implements StepDialog
         
         return true;
 	}
-	public String toString() {
-		return this.getClass().getName();
-	}
-	
+
 	private String[] getModuleFields() throws KettleException
 	{
 		  SalesforceUpsertMeta meta = new SalesforceUpsertMeta();

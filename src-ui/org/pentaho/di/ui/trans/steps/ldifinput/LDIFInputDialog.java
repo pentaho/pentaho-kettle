@@ -1553,9 +1553,6 @@ public class LDIFInputDialog extends BaseStepDialog implements
 		}
 	}
 
-	public String toString() {
-		return this.getClass().getName();
-	}
 	private void addAdditionalFieldsTab()
     {
     	// ////////////////////////

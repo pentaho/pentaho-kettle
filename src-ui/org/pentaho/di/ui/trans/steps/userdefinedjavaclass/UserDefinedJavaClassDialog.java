@@ -1333,10 +1333,6 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 
 	}
 
-	public String toString() {
-		return this.getClass().getName();
-	}
-
 	private void buildSnippitsTree() {
 
 		TreeItem item = new TreeItem(wTree, SWT.NULL);

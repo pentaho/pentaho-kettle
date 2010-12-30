@@ -632,9 +632,4 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 			new ErrorDialog(shell, BaseMessages.getString(PKG, "DeleteDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "DeleteDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
-
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 }

@@ -280,8 +280,4 @@ public class FileLockedDialog extends BaseStepDialog implements StepDialogInterf
 			gotPreviousFields=true;
 		}
 	}
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 }

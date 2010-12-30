@@ -364,8 +364,4 @@ public class FileExistsDialog extends BaseStepDialog implements StepDialogInterf
 			}
 		 }
 	 }
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 }

@@ -910,11 +910,5 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 			new ErrorDialog(shell, BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.CouldNotBuildSQL.DialogTitle"), //$NON-NLS-1$
 					BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.CouldNotBuildSQL.DialogMessage"), ke); //$NON-NLS-1$
 		}
-
-	}
-
-	public String toString()
-	{
-		return this.getClass().getName();
 	}
 }

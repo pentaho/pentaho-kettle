@@ -960,11 +960,5 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
 			new ErrorDialog(shell, BaseMessages.getString(PKG, "InsertUpdateDialog.CouldNotBuildSQL.DialogTitle"), //$NON-NLS-1$
 					BaseMessages.getString(PKG, "InsertUpdateDialog.CouldNotBuildSQL.DialogMessage"), ke); //$NON-NLS-1$
 		}
-
-	}
-
-	public String toString()
-	{
-		return this.getClass().getName();
 	}
 }

@@ -741,10 +741,5 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 	           logBasic("Deletion of files is not compatible with \'manual load method\'");	   
 	       }
 	    }
-	}
-
-	public String toString()
-	{
-		return this.getClass().getName();
 	}	
 }

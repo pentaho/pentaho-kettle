@@ -955,11 +955,6 @@ public class JobEntryXMLWellFormedDialog extends JobEntryDialog implements JobEn
 		dispose();
 	}
 
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
-
 	public boolean evaluates()
 	{
 		return true;

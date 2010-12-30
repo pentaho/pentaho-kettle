@@ -642,11 +642,5 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		{
 			new ErrorDialog(shell, BaseMessages.getString(PKG, "StreamLookupDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "StreamLookupDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
-
-	}
-	
-	public String toString()
-	{
-		return this.getClass().getName();
 	}
 }

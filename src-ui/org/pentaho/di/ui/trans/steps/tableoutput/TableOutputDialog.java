@@ -1466,9 +1466,4 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 			new ErrorDialog(shell, BaseMessages.getString(PKG, "TableOutputDialog.BuildSQLError.DialogTitle"), BaseMessages.getString(PKG, "TableOutputDialog.BuildSQLError.DialogMessage"), ke);
 		}
 	}
-
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 }

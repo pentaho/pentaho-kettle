@@ -231,9 +231,4 @@ public class JobEntrySuccessDialog extends JobEntryDialog implements JobEntryDia
         jobEntry.setName(wName.getText());
         dispose();
     }
-
-    public String toString()
-    {
-        return this.getClass().getName();
-    }
 }

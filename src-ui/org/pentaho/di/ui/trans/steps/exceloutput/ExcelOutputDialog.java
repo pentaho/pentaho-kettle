@@ -1456,9 +1456,4 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		}
 		wFields.optWidth(true);
 	}
-
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 }

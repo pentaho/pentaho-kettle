@@ -976,9 +976,4 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 		};
 		shell.getDisplay().asyncExec(fieldLoader);
 	}
-
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 }

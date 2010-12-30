@@ -1845,8 +1845,4 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 			}
 		}
 	}
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 }

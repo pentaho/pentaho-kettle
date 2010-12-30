@@ -312,8 +312,4 @@ public class TableExistsDialog extends BaseStepDialog implements StepDialogInter
 			}
 
 	 }
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 }

@@ -1763,7 +1763,4 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 			wCondition.setVisible(enableCondition);
 			wlPosition.setVisible(enableCondition);
 	 }
-	public String toString() {
-		return this.getClass().getName();
-	}
 }

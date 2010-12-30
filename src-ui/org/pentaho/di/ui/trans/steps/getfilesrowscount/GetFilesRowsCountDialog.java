@@ -1173,10 +1173,4 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
        }
 	}
 	
-	
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
-	
 }

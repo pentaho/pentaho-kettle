@@ -776,17 +776,7 @@ public class XsdValidatorDialog extends BaseStepDialog implements StepDialogInte
 		{
 			input.setXSDSource(input.NO_NEED);
 		}
-		
-	
 				
 		dispose();
-	}
-	
-	
-	
-		
-	public String toString()
-	{
-		return this.getClass().getName();
 	}
 }

@@ -1382,10 +1382,4 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 			 gotPreviousFields=true;
 		 }
 	 }
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
-	
-	
 }

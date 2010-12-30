@@ -1425,10 +1425,7 @@ public class JsonInputDialog extends BaseStepDialog implements StepDialogInterfa
             new ErrorDialog(shell, BaseMessages.getString(PKG, "JsonInputDialog.ErrorPreviewingData.DialogTitle"), BaseMessages.getString(PKG, "JsonInputDialog.ErrorPreviewingData.DialogMessage"), e);
         }
 	}
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
+
 	 private void addAdditionalFieldsTab()
 	    {
 	    	// ////////////////////////

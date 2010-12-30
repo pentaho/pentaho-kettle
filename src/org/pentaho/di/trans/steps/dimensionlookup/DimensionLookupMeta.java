@@ -169,6 +169,9 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 
     /** The number of rows between commits */
     private int                 commitSize;
+    
+    /** Flag to indicate the use of batch updates, default disabled for backward compatibility */
+    private boolean      useBatchUpdate;
 
     /** The year to use as minus infinity in the dimensions date range */
     private int                 minYear; 
@@ -1929,4 +1932,18 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 	public void setPreloadingCache(boolean preloadingCache) {
 		this.preloadingCache = preloadingCache;
 	}
+	
+    /**
+     * @return the useBatchUpdate
+     */
+    public boolean useBatchUpdate() {
+      return useBatchUpdate;
+    }
+
+    /**
+     * @param useBatchUpdate the useBatchUpdate to set
+     */
+    public void setUseBatchUpdate(boolean useBatchUpdate) {
+      this.useBatchUpdate = useBatchUpdate;
+    }
 }

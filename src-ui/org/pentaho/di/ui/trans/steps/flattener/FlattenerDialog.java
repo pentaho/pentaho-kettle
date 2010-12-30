@@ -285,9 +285,4 @@ public class FlattenerDialog extends BaseStepDialog implements StepDialogInterfa
 					
 		dispose();
 	}
-	
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 }

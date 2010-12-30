@@ -328,10 +328,4 @@ public class SelectDirectoryDialog extends Dialog
             dispose();
         }
     }
-
-    public String toString()
-    {
-        return this.getClass().getName();
-    }
-
 }

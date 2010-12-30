@@ -628,11 +628,6 @@ public class JobEntryFoldersCompareDialog extends JobEntryDialog implements JobE
 		dispose();
 	}
 
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
-
 	public boolean evaluates()
 	{
 		return true;

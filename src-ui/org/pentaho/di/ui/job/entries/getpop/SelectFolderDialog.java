@@ -223,10 +223,4 @@ public class SelectFolderDialog extends Dialog
           dispose();
       }
     }
-
-    public String toString()
-    {
-        return this.getClass().getName();
-    }
-
 }

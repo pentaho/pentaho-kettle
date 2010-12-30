@@ -964,8 +964,4 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 		};
 		shell.getDisplay().asyncExec(fieldLoader);
 	}
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 }

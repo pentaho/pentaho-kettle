@@ -432,9 +432,4 @@ public class AnalyticQueryDialog extends BaseStepDialog implements StepDialogInt
 			new ErrorDialog(shell, BaseMessages.getString(PKG, "AnalyticQueryDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "AnalyticQueryDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
-	
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 }

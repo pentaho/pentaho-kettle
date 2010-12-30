@@ -1218,11 +1218,7 @@ public class LDAPOutputDialog extends BaseStepDialog implements StepDialogInterf
 		wlDnField.setEnabled(!activateRename);
 		wDnField.setEnabled(!activateRename);
 	}
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
-	
+
 	public RowMetaInterface getLDAPFields() throws KettleException {
 		LDAPConnection connection=null;
 		try {

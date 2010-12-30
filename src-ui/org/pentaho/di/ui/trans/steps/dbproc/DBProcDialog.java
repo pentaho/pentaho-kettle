@@ -532,9 +532,4 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface
 		}
 
 	}
-
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 }

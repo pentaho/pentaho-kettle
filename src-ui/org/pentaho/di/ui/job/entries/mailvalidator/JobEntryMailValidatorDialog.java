@@ -395,10 +395,4 @@ public class JobEntryMailValidatorDialog extends JobEntryDialog implements JobEn
         jobEntry.setSMTPCheck(wSMTPCheck.getSelection());
         dispose();
     }
-
-    public String toString()
-    {
-        return this.getClass().getName();
-    }
-   
 }

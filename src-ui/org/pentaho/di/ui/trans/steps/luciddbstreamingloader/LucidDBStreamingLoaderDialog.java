@@ -1393,9 +1393,4 @@ public class LucidDBStreamingLoaderDialog
         }
 
     }
-
-    public String toString()
-    {
-        return this.getClass().getName();
-    }
 }

@@ -786,10 +786,6 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
         dispose();
     }
 
-    public String toString()
-    {
-        return this.getClass().getName();
-    }
     private void getTableName()
 	{
     	// New class: SelectTableDialog

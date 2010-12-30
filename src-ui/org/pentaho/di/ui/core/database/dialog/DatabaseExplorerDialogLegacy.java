@@ -949,11 +949,6 @@ public class DatabaseExplorerDialogLegacy extends Dialog
 			}
 		}
 	}
-	
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 
     /**
      * @return the schemaName

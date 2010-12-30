@@ -385,9 +385,4 @@ public class SQLEditor
             BaseMessages.getString(PKG, "SQLEditor.Result.Message"), message.toString(), true);
         dialog.open();
 	}
-	
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 }

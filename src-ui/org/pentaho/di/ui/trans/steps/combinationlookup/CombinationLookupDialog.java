@@ -1051,9 +1051,4 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 			new ErrorDialog(shell, BaseMessages.getString(PKG, "CombinationLookupDialog.UnableToCreateSQL.DialogTitle"), BaseMessages.getString(PKG, "CombinationLookupDialog.UnableToCreateSQL.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
-
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 }

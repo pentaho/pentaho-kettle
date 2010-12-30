@@ -347,8 +347,4 @@ public class GetPreviousRowFieldDialog extends BaseStepDialog implements StepDia
 					shell,BaseMessages.getString(PKG, "GetPreviousRowFieldDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "GetPreviousRowFieldDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
-
-	public String toString() {
-		return this.getClass().getName();
-	}
 }

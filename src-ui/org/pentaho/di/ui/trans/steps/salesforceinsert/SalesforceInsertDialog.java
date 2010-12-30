@@ -879,10 +879,7 @@ public class SalesforceInsertDialog extends BaseStepDialog implements StepDialog
         
         return true;
 	}
-	public String toString() {
-		return this.getClass().getName();
-	}
-	
+
 	private String[] getFields() throws KettleException
 	{
 		  SalesforceInsertMeta meta = new SalesforceInsertMeta();

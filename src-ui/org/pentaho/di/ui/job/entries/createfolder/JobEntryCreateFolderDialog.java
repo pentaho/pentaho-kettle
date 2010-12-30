@@ -286,11 +286,6 @@ public class JobEntryCreateFolderDialog extends JobEntryDialog implements JobEnt
 		dispose();
 	}
 
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
-
 	public boolean evaluates()
 	{
 		return true;

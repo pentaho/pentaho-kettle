@@ -1052,10 +1052,6 @@ public class JobEntryEvalFilesMetricsDialog extends JobEntryDialog implements Jo
 		 wlMaxValue.setVisible(!compareValue);
 		 wMaxValue.setVisible(!compareValue);
 	}
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 
 	public boolean evaluates()
 	{

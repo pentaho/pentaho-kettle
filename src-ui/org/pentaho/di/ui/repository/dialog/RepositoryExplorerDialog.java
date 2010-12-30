@@ -2707,11 +2707,6 @@ public class RepositoryExplorerDialog extends Dialog
 		
 		return cat;
 	}
-	
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 
     public void newSlaveServer()
     {

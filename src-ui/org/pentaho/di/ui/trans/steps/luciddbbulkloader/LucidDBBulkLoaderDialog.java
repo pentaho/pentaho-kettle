@@ -713,9 +713,4 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 		}
 
 	}
-
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 }

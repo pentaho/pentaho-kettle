@@ -432,9 +432,4 @@ public class MemoryGroupByDialog extends BaseStepDialog implements StepDialogInt
 			new ErrorDialog(shell, BaseMessages.getString(PKG, "MemoryGroupByDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "MemoryGroupByDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
-	
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 }

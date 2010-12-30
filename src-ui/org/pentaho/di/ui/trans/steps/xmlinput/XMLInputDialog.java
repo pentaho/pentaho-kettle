@@ -1403,10 +1403,4 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 					BaseMessages.getString(PKG, "XMLInputDialog.ErrorPreviewingData.DialogMessage"), e);
 		}
 	}
-
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
-
 }

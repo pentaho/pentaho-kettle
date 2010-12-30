@@ -1832,10 +1832,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
             new ErrorDialog(shell, BaseMessages.getString(PKG, "GetXMLDataDialog.ErrorPreviewingData.DialogTitle"), BaseMessages.getString(PKG, "GetXMLDataDialog.ErrorPreviewingData.DialogMessage"), e);
         }
 	}
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
+
 	 private void addAdditionalFieldsTab()
 	    {
 	    	// ////////////////////////

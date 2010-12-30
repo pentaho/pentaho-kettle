@@ -1577,9 +1577,4 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 				
 		wFields.optWidth(true);
 	}
-
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 }

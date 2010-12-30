@@ -993,11 +993,4 @@ public class RssInputDialog extends BaseStepDialog implements StepDialogInterfac
             new ErrorDialog(shell, BaseMessages.getString(PKG, "RssInputDialog.ErrorPreviewingData.DialogTitle"), BaseMessages.getString(PKG, "RssInputDialog.ErrorPreviewingData.DialogMessage"), e);
         }
 	}
-
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
-	
-	
 }

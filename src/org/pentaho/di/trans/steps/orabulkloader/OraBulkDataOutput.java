@@ -230,9 +230,4 @@ public class OraBulkDataOutput
 			throw new KettleException("IO exception occured: "  + e.getMessage(), e);
 		}
 	}
-	
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 }

@@ -1332,8 +1332,4 @@ public class YamlInputDialog extends BaseStepDialog implements StepDialogInterfa
             new ErrorDialog(shell, BaseMessages.getString(PKG, "YamlInputDialog.ErrorPreviewingData.DialogTitle"), BaseMessages.getString(PKG, "YamlInputDialog.ErrorPreviewingData.DialogMessage"), e);
         }
 	}
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 }

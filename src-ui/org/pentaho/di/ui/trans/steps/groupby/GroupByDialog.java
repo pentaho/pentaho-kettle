@@ -644,9 +644,4 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 			new ErrorDialog(shell, BaseMessages.getString(PKG, "GroupByDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "GroupByDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
-	
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 }

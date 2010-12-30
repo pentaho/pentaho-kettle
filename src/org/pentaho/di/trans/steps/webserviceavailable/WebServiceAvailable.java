@@ -171,8 +171,4 @@ public class WebServiceAvailable extends BaseStep implements StepInterface
 
         super.dispose(smi, sdi);
     }
-    public String toString()
-    {
-        return this.getClass().getName();
-    }
 }

@@ -292,10 +292,6 @@ public abstract class BaseStepXulDialog extends AbstractXulEventHandler {
     props.setScreen(new WindowProperty(dialogShell));
   }
 
-  public String toString() {
-    return this.getClass().getName();
-  }
-
   /**
    * @return Returns the repository.
    */

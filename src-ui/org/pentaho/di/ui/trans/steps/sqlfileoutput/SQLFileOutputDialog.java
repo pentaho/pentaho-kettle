@@ -1151,11 +1151,4 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 			new ErrorDialog(shell, BaseMessages.getString(PKG, "SQLFileOutputDialog.BuildSQLError.DialogTitle"), BaseMessages.getString(PKG, "SQLFileOutputDialog.BuildSQLError.DialogMessage"), ke);
 		}
 	}
-	
-
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
-
 }

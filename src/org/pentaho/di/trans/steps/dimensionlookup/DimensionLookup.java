@@ -837,11 +837,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
   public Long dimInsert(RowMetaInterface inputRowMeta, Object[] row, Long technicalKey, boolean newEntry, Long versionNr, Date dateFrom, Date dateTo) throws KettleException {
     DatabaseMeta databaseMeta = meta.getDatabaseMeta();
 
-    if (data.prepStatementInsert == null && data.prepStatementUpdate == null) // first
-                                                                              // time:
-                                                                              // construct
-                                                                              // prepared
-                                                                              // statement
+    if (data.prepStatementInsert == null && data.prepStatementUpdate == null) // first time: construct prepared statement
     {
       RowMetaInterface insertRowMeta = new RowMeta();
 
@@ -859,13 +855,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
       if (!isAutoIncrement()) {
         sql += databaseMeta.quoteField(meta.getKeyField()) + ", "; // NO
                                                                    // AUTOINCREMENT
-        insertRowMeta.addValueMeta(data.outputRowMeta.getValueMeta(inputRowMeta.size())); // the
-                                                                                          // first
-                                                                                          // return
-                                                                                          // value
-                                                                                          // after
-                                                                                          // the
-                                                                                          // input
+        insertRowMeta.addValueMeta(data.outputRowMeta.getValueMeta(inputRowMeta.size())); // the first return value after the input
       } else {
         if (databaseMeta.needsPlaceHolder()) {
           sql += "0, "; // placeholder on informix!
@@ -1082,7 +1072,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
       logDebug("Row inserted!");
     if (isAutoIncrement()) {
       try {
-        RowMetaAndData keys = data.db.getGeneratedKeys(data.prepStatementInsert);
+        RowMetaAndData keys= data.db.getGeneratedKeys(data.prepStatementInsert);
         if (keys.getRowMeta().size() > 0) {
           technicalKey = keys.getRowMeta().getInteger(keys.getData(), 0);
         } else {

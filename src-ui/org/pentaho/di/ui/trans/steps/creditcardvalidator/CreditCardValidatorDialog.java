@@ -358,8 +358,4 @@ public class CreditCardValidatorDialog extends BaseStepDialog implements StepDia
 			}
 		}
 	}
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 }

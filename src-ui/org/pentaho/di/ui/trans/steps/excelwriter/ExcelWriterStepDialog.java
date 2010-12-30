@@ -1785,8 +1785,4 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 		}
 		wFields.optWidth(true);
 	}
-
-	public String toString() {
-		return this.getClass().getName();
-	}
 }

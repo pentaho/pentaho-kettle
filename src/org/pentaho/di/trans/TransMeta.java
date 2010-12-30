@@ -3984,7 +3984,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 	                        db.connect();
 
 	    	                RowMetaInterface fields = logTable.getLogRecord(LogStatus.START, null, null).getRowMeta();
-	    	                String schemaTable = logTable.getDatabaseMeta().getSchemaTableCombination(logTable.getSchemaName(), logTable.getTableName());
+	    	                String schemaTable = logTable.getDatabaseMeta().getQuotedSchemaTableCombination(logTable.getSchemaName(), logTable.getTableName());
 	    	                String sql = db.getDDL(schemaTable, fields);
 	    	                if (!Const.isEmpty(sql)) 
 	    	                {

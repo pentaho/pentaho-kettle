@@ -247,11 +247,6 @@ public class JobEntryDelayDialog extends JobEntryDialog implements JobEntryDialo
 		dispose();
 	}
 
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
-
 	public boolean evaluates()
 	{
 		return true;

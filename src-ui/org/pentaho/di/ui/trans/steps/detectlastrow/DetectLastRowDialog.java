@@ -192,9 +192,4 @@ public class DetectLastRowDialog extends BaseStepDialog implements StepDialogInt
 		
 		dispose();
 	}
-
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 }

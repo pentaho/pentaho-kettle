@@ -1367,10 +1367,6 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 		return retval;
 	}
 		
-	public String toString(){
-		return this.getClass().getName();
-	}
-	
 	private void buildSpecialFunctionsTree(){
 
 		TreeItem item = new TreeItem(wTree, SWT.NULL);

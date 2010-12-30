@@ -648,8 +648,4 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 			}
 		}
 	}
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 }

@@ -534,9 +534,4 @@ public class JobEntrySQLDialog extends JobEntryDialog implements JobEntryDialogI
         jobEntry.setDatabase(jobMeta.findDatabase(wConnection.getText()));
         dispose();
     }
-
-    public String toString()
-    {
-        return this.getClass().getName();
-    }
 }

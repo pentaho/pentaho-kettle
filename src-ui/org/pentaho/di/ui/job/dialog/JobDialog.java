@@ -1524,11 +1524,6 @@ public class JobDialog extends Dialog
     {
         return sharedObjectsFileChanged;
     }
-
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
     
     public static final void setShellImage(Shell shell, JobEntryInterface jobEntryInterface)
     {

@@ -566,12 +566,4 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 						
 		dispose();
 	}
-	
-	
-	
-		
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 }

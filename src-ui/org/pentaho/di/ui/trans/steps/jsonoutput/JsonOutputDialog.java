@@ -1058,8 +1058,4 @@ public class JsonOutputDialog extends BaseStepDialog implements StepDialogInterf
     	wlOutputValue.setEnabled(activeOutputValue);
     	wOutputValue.setEnabled(activeOutputValue);
     }
-    public String toString()
-    {
-        return this.getClass().getName();
-    }
 }

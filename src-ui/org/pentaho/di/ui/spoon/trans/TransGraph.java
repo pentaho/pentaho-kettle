@@ -2898,10 +2898,6 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     iconsize = spoon.props.getIconSize();
   }
 
-  public String toString() {
-    return this.getClass().getName();
-  }
-
   public EngineMetaInterface getMeta() {
     return transMeta;
   }
@@ -4003,10 +3999,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 			runThread.addRowListener(rowListener);
 		}
 	}  
-	
-	/* (non-Javadoc)
-   * @see org.pentaho.ui.xul.impl.XulEventHandler#getName()
-   */
+
+  
   public String getName() {
     return "transgraph"; //$NON-NLS-1$
   }
@@ -4017,10 +4011,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   public XulDomContainer getXulDomContainer() {
     return xulDomContainer;
   }
-  
-  /* (non-Javadoc)
-   * @see org.pentaho.ui.xul.impl.XulEventHandler#setName(java.lang.String)
-   */
+
+  @Override
   public void setName(String arg0) {
     
   }
@@ -4076,7 +4068,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   }
 
   private static double dampningConstant = 0.5;
-  private static double springConstant = 1.0; 
+  // private static double springConstant = 1.0; 
   private static double timeStep = 1.0; 
   private static double nodeMass = 1.0; 
   

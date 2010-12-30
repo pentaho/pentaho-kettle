@@ -862,11 +862,6 @@ public class JobEntryMysqlBulkFileDialog extends JobEntryDialog implements JobEn
                     
     }
 
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
-    
     /**
      * Get a list of columns, comma separated, allow the user to select from it.
      *

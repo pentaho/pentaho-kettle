@@ -296,9 +296,4 @@ public class JobEntryMsgBoxInfoDialog extends JobEntryDialog implements JobEntry
         jobEntry.setBodyMessage(wBodyMessage.getText());
         dispose();
     }
-
-    public String toString()
-    {
-        return this.getClass().getName();
-    }
 }

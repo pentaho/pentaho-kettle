@@ -461,11 +461,6 @@ public class DynamicSQLRowDialog extends BaseStepDialog implements StepDialogInt
 		dispose();
 	}
 
-	
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 	   private void get()
 		{
 	    	if(!gotPreviousFields)

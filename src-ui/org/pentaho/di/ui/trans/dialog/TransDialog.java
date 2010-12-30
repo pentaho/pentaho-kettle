@@ -2242,7 +2242,7 @@ public class TransDialog extends Dialog
 						
 						RowMetaInterface fields = logTable.getLogRecord(LogStatus.START, null, null).getRowMeta();
 						String tableName = db.environmentSubstitute(logTable.getTableName());
-						String schemaTable = logTable.getDatabaseMeta().getSchemaTableCombination(db.environmentSubstitute(logTable.getSchemaName()), tableName);
+						String schemaTable = logTable.getDatabaseMeta().getQuotedSchemaTableCombination(db.environmentSubstitute(logTable.getSchemaName()), tableName);
 						String createTable = db.getDDL(schemaTable, fields);
 
 						if (!Const.isEmpty(createTable))
@@ -2295,12 +2295,6 @@ public class TransDialog extends Dialog
 		getChannelLogTableOptions();
 		getStepLogTableOptions();
 	}
-
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
-
 
     public boolean isSharedObjectsFileChanged()
     {

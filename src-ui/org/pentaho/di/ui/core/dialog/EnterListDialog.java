@@ -508,9 +508,4 @@ public class EnterListDialog extends Dialog
 		retval=wListDest.getItems();
 		dispose();
 	}
-	
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 }

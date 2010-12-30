@@ -1680,10 +1680,6 @@ public class JobEntryFTPDeleteDialog extends JobEntryDialog implements JobEntryD
 	        } catch (Exception e) {}
 	      }
 	}
-    public String toString()
-    {
-        return this.getClass().getName();
-    }
 
     public boolean evaluates()
     {

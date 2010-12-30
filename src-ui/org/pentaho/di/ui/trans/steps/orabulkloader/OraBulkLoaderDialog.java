@@ -1656,8 +1656,4 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 			wReturn.optWidth(true);
 		}
 	}
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 }

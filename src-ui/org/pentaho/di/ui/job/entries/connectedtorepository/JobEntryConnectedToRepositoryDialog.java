@@ -378,11 +378,6 @@ public class JobEntryConnectedToRepositoryDialog extends JobEntryDialog implemen
         dispose();
     }
 
-    public String toString()
-    {
-        return this.getClass().getName();
-    }
-    
 	private void displayMsg(String title, String message, boolean error)
 	{
 		if(error)

@@ -1137,10 +1137,6 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 		wlNewFolder.setEnabled(wExportType.getSelectionIndex()==3);
 		wNewFolder.setEnabled(wExportType.getSelectionIndex()==3);
 	}
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 
 	public boolean evaluates()
 	{

@@ -413,11 +413,6 @@ public class JobEntryWaitForFileDialog extends JobEntryDialog implements JobEntr
 		dispose();
 	}
 
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
-
 	public boolean evaluates()
 	{
 		return true;

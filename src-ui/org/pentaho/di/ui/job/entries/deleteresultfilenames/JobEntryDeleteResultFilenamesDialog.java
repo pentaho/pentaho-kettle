@@ -307,11 +307,6 @@ public class JobEntryDeleteResultFilenamesDialog extends JobEntryDialog implemen
 		dispose();
 	}
 
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
-
 	public boolean evaluates()
 	{
 		return true;

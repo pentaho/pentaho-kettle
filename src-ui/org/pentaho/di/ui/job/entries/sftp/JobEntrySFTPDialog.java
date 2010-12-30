@@ -1134,10 +1134,6 @@ public class JobEntrySFTPDialog extends JobEntryDialog implements JobEntryDialog
     	wbKeyFilename.setEnabled(wusePublicKey.getSelection());
     	wkeyfilePass.setEnabled(wusePublicKey.getSelection());
     }
-    public String toString()
-    {
-        return this.getClass().getName();
-    }
 
     public boolean evaluates()
     {

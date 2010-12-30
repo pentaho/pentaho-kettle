@@ -604,12 +604,6 @@ public class XMLJoinDialog extends BaseStepDialog implements StepDialogInterface
 
     }*/
     
-
-    public String toString()
-    {
-        return this.getClass().getName();
-    }
-    
     private void setEncodings()
     {
         // Encoding of the text file:

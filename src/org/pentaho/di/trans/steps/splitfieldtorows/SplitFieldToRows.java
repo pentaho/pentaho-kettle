@@ -98,7 +98,7 @@ public class SplitFieldToRows extends BaseStep implements StepInterface
 		
 		if(meta.includeRowNumber() && meta.resetRowNumber()) data.rownr=1L;
 		
-		SimpleTokenizer tokenizer = new SimpleTokenizer(originalString, data.realDelimiter);
+		SimpleTokenizer tokenizer = new SimpleTokenizer(originalString, data.realDelimiter, true);
 		while (tokenizer.hasMoreTokens()) {
 			Object[] outputRow = RowDataUtil.createResizedCopy(rowData, data.outputRowMeta.size());
 			outputRow[rowMeta.size()] = tokenizer.nextToken();

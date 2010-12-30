@@ -463,8 +463,4 @@ public class ColumnExistsDialog extends BaseStepDialog implements StepDialogInte
 			}
 	                    
 		}
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 }

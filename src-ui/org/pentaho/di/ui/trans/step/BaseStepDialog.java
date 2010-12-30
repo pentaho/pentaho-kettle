@@ -548,10 +548,6 @@ public class BaseStepDialog extends Dialog {
     props.setScreen(new WindowProperty(shell));
   }
 
-  public String toString() {
-    return this.getClass().getName();
-  }
-
   /**
    * @return Returns the repository.
    */

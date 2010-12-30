@@ -721,11 +721,6 @@ public class JobEntrySimpleEvalDialog extends JobEntryDialog implements JobEntry
 		dispose();
 	}
 
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
-
 	public boolean evaluates()
 	{
 		return true;

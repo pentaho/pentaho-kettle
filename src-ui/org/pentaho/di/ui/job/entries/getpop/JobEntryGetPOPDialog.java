@@ -2118,11 +2118,6 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 	        dispose();
 	    }
 
-	    public String toString()
-	    {
-	        return this.getClass().getName();
-	    }
-
 	    public boolean evaluates()
 	    {
 	        return true;

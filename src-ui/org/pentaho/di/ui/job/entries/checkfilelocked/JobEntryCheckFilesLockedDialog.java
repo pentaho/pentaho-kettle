@@ -597,11 +597,6 @@ public class JobEntryCheckFilesLockedDialog extends JobEntryDialog implements Jo
 		dispose();
 	}
 
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
-
 	public boolean evaluates()
 	{
 		return true;

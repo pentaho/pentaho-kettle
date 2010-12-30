@@ -315,9 +315,4 @@ public class JobEntryEvalDialog extends JobEntryDialog implements JobEntryDialog
         jobEntry.setScript(wScript.getText());
         dispose();
     }
-
-    public String toString()
-    {
-        return this.getClass().getName();
-    }
 }

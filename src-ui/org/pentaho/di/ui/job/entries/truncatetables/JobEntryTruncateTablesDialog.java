@@ -405,10 +405,6 @@ public class JobEntryTruncateTablesDialog extends JobEntryDialog implements JobE
         dispose();
     }
 
-    public String toString()
-    {
-        return this.getClass().getName();
-    }
     private void getTableName()
 	{
 		DatabaseMeta databaseMeta = jobMeta.findDatabase(wConnection.getText());

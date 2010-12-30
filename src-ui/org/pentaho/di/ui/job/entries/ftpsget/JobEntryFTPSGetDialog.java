@@ -1618,11 +1618,6 @@ public class JobEntryFTPSGetDialog extends JobEntryDialog implements JobEntryDia
 	      }
     }
 
-    public String toString()
-    {
-        return this.getClass().getName();
-    }
-
     public boolean evaluates()
     {
         return true;

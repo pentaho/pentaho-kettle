@@ -353,8 +353,4 @@ public class StringCutDialog extends BaseStepDialog implements StepDialogInterfa
 					shell,BaseMessages.getString(PKG, "StringCutDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "StringCutDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
-
-	public String toString() {
-		return this.getClass().getName();
-	}
 }

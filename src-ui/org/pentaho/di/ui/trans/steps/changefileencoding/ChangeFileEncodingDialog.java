@@ -496,9 +496,4 @@ public class ChangeFileEncodingDialog extends BaseStepDialog implements StepDial
         int idx = Const.indexOfString(encoding, var.getItems() );
         if (idx>=0) var.select( idx );
     }
-	    
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 }

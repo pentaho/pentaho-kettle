@@ -1535,11 +1535,7 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
         	return true;
         }
 	}
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
-	
+
 	private void getTableName()
 	{
 

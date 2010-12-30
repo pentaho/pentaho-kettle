@@ -897,8 +897,4 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 			}
 		}
 	}
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 }

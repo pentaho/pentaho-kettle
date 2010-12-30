@@ -653,8 +653,4 @@ public class MailValidatorDialog extends BaseStepDialog implements StepDialogInt
 			}
 		 }
 		}
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 }

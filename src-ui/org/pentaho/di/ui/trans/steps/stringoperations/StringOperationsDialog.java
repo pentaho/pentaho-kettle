@@ -411,8 +411,4 @@ public class StringOperationsDialog extends BaseStepDialog implements StepDialog
 					shell,BaseMessages.getString(PKG, "StringOperationsDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "StringOperationsDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
-
-	public String toString() {
-		return this.getClass().getName();
-	}
 }

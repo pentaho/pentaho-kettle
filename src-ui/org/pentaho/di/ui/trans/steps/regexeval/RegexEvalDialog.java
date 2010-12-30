@@ -769,14 +769,6 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 		dispose();
 	}
 	
-	
-	
-		
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
-
     private void setFieldsEnabledStatus()
     {
         wlFields.setEnabled(wAllowCaptureGroups.getSelection());

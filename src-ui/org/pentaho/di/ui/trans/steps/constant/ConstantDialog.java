@@ -278,10 +278,4 @@ public class ConstantDialog extends BaseStepDialog implements StepDialogInterfac
 		
 		dispose();
 	}
-	
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
-
 }

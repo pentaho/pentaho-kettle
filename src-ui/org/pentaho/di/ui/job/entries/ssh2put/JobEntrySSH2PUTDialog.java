@@ -1431,16 +1431,6 @@ public class JobEntrySSH2PUTDialog extends JobEntryDialog implements JobEntryDia
         dispose();
     }
 
-    public String toString()
-    {
-        return this.getClass().getName();
-    }
-
-    public boolean evaluates()
-    {
-        return true;
-    }
-
     public boolean isUnconditional()
     {
         return false;

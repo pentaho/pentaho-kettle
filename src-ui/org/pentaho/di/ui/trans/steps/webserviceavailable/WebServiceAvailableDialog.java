@@ -321,8 +321,4 @@ public class WebServiceAvailableDialog extends BaseStepDialog implements StepDia
 			gotPreviousFields=true;
 		}
 	}
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 }

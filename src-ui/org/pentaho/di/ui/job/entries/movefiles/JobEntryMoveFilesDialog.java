@@ -1940,11 +1940,6 @@ public class JobEntryMoveFilesDialog extends JobEntryDialog implements JobEntryD
 		dispose();
 	}
 
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
-
 	public boolean evaluates()
 	{
 		return true;

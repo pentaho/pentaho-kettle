@@ -1146,8 +1146,4 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
         Const.sortStrings(fieldNames);
         colinf[0].setComboValues(fieldNames);
     }
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 }

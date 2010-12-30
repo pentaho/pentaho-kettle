@@ -1429,11 +1429,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		}
 		return retval;
 	}
-		
-	public String toString(){
-		return this.getClass().getName();
-	}
-	
+
 	private void buildSpecialFunctionsTree(){
 
 		TreeItem item = new TreeItem(wTree, SWT.NULL);

@@ -3290,9 +3290,4 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 			
 	    	
 	    }
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
-
 }

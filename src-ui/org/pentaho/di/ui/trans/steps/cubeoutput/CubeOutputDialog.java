@@ -288,9 +288,4 @@ public class CubeOutputDialog extends BaseStepDialog implements StepDialogInterf
 
 		dispose();
 	}
-
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 }

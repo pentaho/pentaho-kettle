@@ -629,11 +629,6 @@ public class JobEntryAddResultFilenamesDialog extends JobEntryDialog implements 
 		dispose();
 	}
 
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
-
 	public boolean evaluates()
 	{
 		return true;

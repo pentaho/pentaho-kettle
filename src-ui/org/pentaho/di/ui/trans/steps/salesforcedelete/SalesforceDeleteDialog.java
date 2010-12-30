@@ -725,9 +725,4 @@ public class SalesforceDeleteDialog extends BaseStepDialog implements StepDialog
 		 	 }
 		  }
 	  }
-	public String toString() {
-		return this.getClass().getName();
-	}
-	
-	
 }

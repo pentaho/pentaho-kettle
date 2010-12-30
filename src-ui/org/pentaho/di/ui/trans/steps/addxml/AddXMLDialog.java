@@ -693,9 +693,4 @@ public class AddXMLDialog extends BaseStepDialog implements StepDialogInterface
         }
         wFields.optWidth(true);
     }
-
-    public String toString()
-    {
-        return this.getClass().getName();
-    }
 }

@@ -672,11 +672,6 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 		dispose();
 	}
 
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
-
 	public boolean evaluates()
 	{
 		return true;

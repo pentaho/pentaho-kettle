@@ -1625,12 +1625,6 @@ public class PropertyInputDialog extends BaseStepDialog implements StepDialogInt
        }
 	}
 
-		
-	
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 	private void getSections()
 	{
 		Wini wini=new Wini();

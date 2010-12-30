@@ -1353,11 +1353,6 @@ public class JobEntryMssqlBulkLoadDialog extends JobEntryDialog implements JobEn
 		dispose();
 	}
 
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
-	
 	private void getTableName()
 	{
 		// New class: SelectTableDialog

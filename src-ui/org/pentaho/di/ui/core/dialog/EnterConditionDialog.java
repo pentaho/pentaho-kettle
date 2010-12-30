@@ -157,10 +157,4 @@ public class EnterConditionDialog extends Dialog
 		if (wCond.getLevel()>0) wCond.goUp();
 		else dispose();
 	}
-	
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
-
 }

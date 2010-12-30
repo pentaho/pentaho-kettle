@@ -1127,10 +1127,4 @@ public class XMLInputSaxDialog extends BaseStepDialog implements StepDialogInter
 					BaseMessages.getString(PKG, "XMLInputSaxDialog.Dialog.ErrorDisplayingPreviewData.Title"), BaseMessages.getString(PKG, "XMLInputSaxDialog.Dialog.ErrorDisplayingPreviewData.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
-
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
-
 }

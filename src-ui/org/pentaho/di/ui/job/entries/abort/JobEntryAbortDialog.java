@@ -253,9 +253,4 @@ public class JobEntryAbortDialog extends JobEntryDialog implements JobEntryDialo
 		jobEntry.setMessageabort(wMessageAbort.getText());
         dispose();
     }
-
-    public String toString()
-    {
-        return this.getClass().getName();
-    }
 }

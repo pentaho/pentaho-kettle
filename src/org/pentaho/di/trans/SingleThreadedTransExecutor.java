@@ -1,8 +1,6 @@
 package org.pentaho.di.trans;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import org.pentaho.di.core.RowSet;
@@ -30,19 +28,7 @@ public class SingleThreadedTransExecutor {
         combi.step.setUsingThreadPriorityManagment(false);
     }
 
-    // Sort the steps from start to finish...
-    //
-    Collections.sort(steps, new Comparator<StepMetaDataCombi>() {
-        public int compare(StepMetaDataCombi c1, StepMetaDataCombi c2) {
-            
-            boolean c1BeforeC2 = trans.getTransMeta().findPrevious(c2.stepMeta, c1.stepMeta);
-            if (c1BeforeC2) {
-                return -1;
-            } else {
-                return 1;
-            }
-        }
-    });
+    sortSteps();
     
     done = new boolean[steps.size()];
     nrDone = 0;
@@ -64,6 +50,61 @@ public class SingleThreadedTransExecutor {
 
   }
   
+  private void sortSteps() {
+    // Sort the steps from start to finish...
+    //
+    /*
+    Collections.sort(steps, new Comparator<StepMetaDataCombi>() {
+      public int compare(StepMetaDataCombi c1, StepMetaDataCombi c2) {
+
+        boolean c1BeforeC2 = trans.getTransMeta().findPrevious(c2.stepMeta, c1.stepMeta);
+        boolean c2BeforeC1 = trans.getTransMeta().findPrevious(c1.stepMeta, c2.stepMeta);
+
+        if (!(c1BeforeC2 ^ c2BeforeC1)) {
+          // In this situation there is no path from c1 to c2
+          // This causes Collections.sort() great trouble.
+          //
+          return false; 
+        }
+        
+        if (c1BeforeC2) {
+          return -1;
+        } else {
+          return 1;
+        }
+      }
+    });
+    */
+    
+    // The bubble sort algorithm in contrast to the QuickSort or MergeSort algorithms 
+    // does indeed cover all possibilities.
+    // Sorting larger transformations with hundreds of steps might be too slow though.
+    // We should consider caching TransMeta.findPrevious() results in that case.
+    //
+    for (int x=0;x<steps.size();x++) {
+      for (int y=x;y<steps.size()-1;y++) {
+        StepMetaDataCombi one = steps.get(y);
+        StepMetaDataCombi two = steps.get(y+1);
+        boolean before = trans.getTransMeta().findPrevious(one.stepMeta, two.stepMeta);
+        if (before) {
+          // two was found to be positioned BEFORE one so we need to switch them...
+          //
+          steps.set(y, two);
+          steps.set(y+1, one);
+        }
+      }
+    }
+    
+    /*
+    System.out.println("-------------------------------------------------------");
+    System.out.println("Steps after sort: ");
+    for (StepMetaDataCombi combi : steps) {
+      System.out.println(combi.step.toString());
+    }
+    System.out.println("-------------------------------------------------------");
+    */
+  }
+
   public boolean init() throws KettleException {
     // Initialize all the steps...
     //
@@ -134,6 +175,8 @@ public class SingleThreadedTransExecutor {
           // Signal the step that a batch of rows has passed for this iteration (sort rows and all)
           //
           combi.step.batchComplete();
+          
+          // System.out.println(combi.step.toString()+" : input="+getTotalRows(combi.step.getInputRowSets())+", output="+getTotalRows(combi.step.getOutputRowSets()));
         }
         if (stepDone) {
           nrDone++;
@@ -146,6 +189,12 @@ public class SingleThreadedTransExecutor {
     return nrDone<steps.size() && !trans.isStopped();
   }
   
+  protected int getTotalRows(List<RowSet> rowSets) {
+    int total=0;
+    for (RowSet rowSet : rowSets) total+=rowSet.size();
+    return total;
+  }
+
   public void dispose() throws KettleException {
     // Finalize all the steps...
     //

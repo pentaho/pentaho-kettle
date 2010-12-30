@@ -520,8 +520,4 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
 			}
 		}
 	}	
-    public String toString()
-    {
-        return this.getClass().getName();
-    }
 }

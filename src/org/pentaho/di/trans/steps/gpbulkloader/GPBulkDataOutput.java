@@ -224,9 +224,4 @@ public class GPBulkDataOutput
 		}
 		output.print(Const.CR);
 	}
-	
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 }

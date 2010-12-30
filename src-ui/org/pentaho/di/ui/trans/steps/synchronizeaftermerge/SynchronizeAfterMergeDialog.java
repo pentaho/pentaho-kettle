@@ -1343,8 +1343,4 @@ public class SynchronizeAfterMergeDialog extends BaseStepDialog implements StepD
 			}
 		}
 	}
-	public String toString()
-	{
-		return this.getClass().getName();
-	}
 }
