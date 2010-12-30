@@ -622,6 +622,8 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
           moveFiles(moveList, targetDirectory);
           // Set UI objects to appear in folder directory
           event.getDataTransfer().setData(dirList);
+          // Resync the view so the table is refreshed
+          setSelectedFolderItems(getSelectedFolderItems());
         }
       }
     } catch (Exception e) {
