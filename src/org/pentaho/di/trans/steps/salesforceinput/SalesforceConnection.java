@@ -405,7 +405,7 @@ public class SalesforceConnection {
 	 			// or we are fetched all available records
  				retval.setRecordIndexChanges(true);
  				retval.setRecordIndex(index);
-	 			if(con!=null && con.get_any()[index]!=null) {
+ 	 			if(con!=null && con.get_any()[index]!=null && getDeletedList.contains(con.getId())) {
 	 				retval.setRecordValue(con);
 	 			}
 	 		}

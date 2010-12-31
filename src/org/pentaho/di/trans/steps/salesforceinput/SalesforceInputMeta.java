@@ -53,6 +53,8 @@ import org.w3c.dom.Node;
 
 public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterface
 {	
+	public static String DATE_TIME_FORMAT ="yyyy-MM-dd HH:mm:ss";
+	
 	private static Class<?> PKG = SalesforceInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	/** Flag indicating that we should include the generated SQL in the output */
