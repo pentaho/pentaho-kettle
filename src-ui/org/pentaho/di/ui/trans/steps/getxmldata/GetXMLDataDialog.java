@@ -64,6 +64,7 @@ import org.pentaho.di.trans.steps.getxmldata.GetXMLDataField;
 import org.pentaho.di.trans.steps.getxmldata.GetXMLDataMeta;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
+import org.pentaho.di.ui.core.dialog.EnterStringDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
@@ -73,9 +74,10 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
-
 public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private String XMLSource=null;
+	
 	private static Class<?> PKG = GetXMLDataMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	private CTabFolder   wTabFolder;
@@ -356,6 +358,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
         {
             public void widgetSelected(SelectionEvent arg0)
             {
+            	XMLSource=null;
             	ActiveXmlStreamField();
             	input.setChanged();
             }
@@ -385,6 +388,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
         {
             public void widgetSelected(SelectionEvent arg0)
             {
+            	XMLSource=null;
         		if(wXMLIsAFile.getSelection())
         			wreadUrl.setSelection(false);
             	input.setChanged();
@@ -412,6 +416,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
         {
             public void widgetSelected(SelectionEvent arg0)
             {
+            	XMLSource=null;
         		if(wreadUrl.getSelection())
         			wXMLIsAFile.setSelection(false);
             	input.setChanged();
@@ -1410,8 +1415,6 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		wLimit.setEnabled(!wXMLStreamField.getSelection());	
 		wlLimit.setEnabled(!wXMLStreamField.getSelection());
 		wPreview.setEnabled(!wXMLStreamField.getSelection());
-		wGet.setEnabled(!wXMLStreamField.getSelection());
-		wbbLoopPathList.setEnabled(!wXMLStreamField.getSelection());
 		wPrunePath.setEnabled(!wXMLStreamField.getSelection());
 		wlPrunePath.setEnabled(!wXMLStreamField.getSelection());
 		wlShortFileFieldName.setEnabled(!wXMLStreamField.getSelection());
@@ -1446,39 +1449,65 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 
 	private void getLoopPathList()
 	{
-		try
-		{	
+		try {	
 			GetXMLDataMeta meta = new GetXMLDataMeta ();
 			getInfo(meta);
-			FileInputList fileinputList = meta.getFiles(transMeta);
-    	
-	    	 if (fileinputList.nrOfFiles()>0)
-            { 
-				// Check the first file
-	    		 
-				if (fileinputList.getFile(0).exists()) 
-				{
-   					LoopNodesImportProgressDialog pd = new LoopNodesImportProgressDialog(shell, meta, KettleVFS.getFilename(fileinputList.getFile(0)), meta.getEncoding()==null?"UTF-8":meta.getEncoding());
-   					String[] list_xpath= pd.open();
-   					if(list_xpath!=null) {
-   						EnterSelectionDialog dialog = new EnterSelectionDialog(shell, list_xpath, BaseMessages.getString(PKG, "GetXMLDataDialog.Dialog.SelectALoopPath.Title"), BaseMessages.getString(PKG, "GetXMLDataDialog.Dialog.SelectALoopPath.Message"));
-   						String listxpaths = dialog.open();
-   						if (listxpaths != null) wLoopXPath.setText(listxpaths);
-   					}
-				} else {
-					// The file not exists !
-					throw new KettleException(BaseMessages.getString(PKG, "GetXMLDataDialog.Exception.FileDoesNotExist", KettleVFS
-							.getFilename(fileinputList.getFile(0))));
+			if(meta.isInFields()) {
+				if(meta.isReadUrl()) {
+					// Read URL
+					String url=XMLSource;
+					if(url==null) {
+						EnterStringDialog d= new EnterStringDialog(shell, "", BaseMessages.getString(PKG, "GetXMLDataDialog.AskURL.Title"), 
+								BaseMessages.getString(PKG, "GetXMLDataDialog.AskURL.Message"));
+					 	url=d.open();
+					 } 
+					 populateLoopPaths(meta, url, true, true);
+					
+				}else if(meta.getIsAFile()){
+					// Read file
+					String str=XMLSource;
+					if(str==null) {
+						FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+						dialog.setFilterExtensions(new String[] {"*.xml;*.XML", "*"});
+						dialog.setFilterNames(new String[] {BaseMessages.getString(PKG, "System.FileType.XMLFiles"), BaseMessages.getString(PKG, "System.FileType.AllFiles")});
+						
+						if (dialog.open()!=null) {
+							str = dialog.getFilterPath()+System.getProperty("file.separator")+dialog.getFileName();
+						}
+						populateLoopPaths(meta, str, false,false);
 					}
-           		}
-           
-			else
-			{
-				// No file specified
-				 MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-		            mb.setMessage(BaseMessages.getString(PKG, "GetXMLDataDialog.FilesMissing.DialogMessage"));
-		            mb.setText(BaseMessages.getString(PKG, "System.Dialog.Error.Title"));
-		            mb.open(); 
+				}else{
+					// Read xml
+					 String xml=XMLSource;
+					 if(xml==null) {
+						EnterTextDialog d= new EnterTextDialog(shell, BaseMessages.getString(PKG, "GetXMLDataDialog.AskXML.Title"), 
+								BaseMessages.getString(PKG, "GetXMLDataDialog.AskXML.Message"),  null);
+					 	xml=d.open();
+					 }
+					 populateLoopPaths(meta, xml, true,false);
+				}
+			}else {
+			
+				FileInputList fileinputList = meta.getFiles(transMeta);
+	    	
+		    	 if (fileinputList.nrOfFiles()>0)  { 
+					// Check the first file
+		    		 
+					if (fileinputList.getFile(0).exists())  {
+	   					populateLoopPaths(meta, KettleVFS.getFilename(fileinputList.getFile(0)), false,false);
+					} else {
+						// The file not exists !
+						throw new KettleException(BaseMessages.getString(PKG, "GetXMLDataDialog.Exception.FileDoesNotExist", 
+								KettleVFS.getFilename(fileinputList.getFile(0))));
+						}
+	           		}
+				else {
+					// No file specified
+					 MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+			            mb.setMessage(BaseMessages.getString(PKG, "GetXMLDataDialog.FilesMissing.DialogMessage"));
+			            mb.setText(BaseMessages.getString(PKG, "System.Dialog.Error.Title"));
+			            mb.open(); 
+				}
 			}
 		}
 		catch(Exception e)
@@ -1508,33 +1537,50 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
     				return;
     			}
     		}
-    		FileInputList inputList = meta.getFiles(transMeta);
     		
-    		if (inputList.getFiles().size()>0)
-            {    
- 
-    			XMLInputFieldsImportProgressDialog prd= new XMLInputFieldsImportProgressDialog(shell, meta, KettleVFS.getFilename(inputList.getFile(0)),meta.getEncoding()==null?"UTF-8":meta.getEncoding(),  transMeta.environmentSubstitute(meta.getLoopXPath()));
-                RowMetaAndData[] fields = prd.open(); 
-                if(fields!=null) {
-                	if (clearFields==SWT.YES){
-        				wFields.clearAll(false);
-        			}
-                	int nr=fields.length;
-                	for(int i=0; i<nr; i++) {
-                		 RowMetaAndData row = fields[i];
-
-                		 TableItem item = new TableItem(wFields.table, SWT.NONE);
-                         item.setText(1, row.getString(0, ""));
-                         item.setText(2, row.getString(1, ""));
-                         item.setText(3, row.getString(2, GetXMLDataField.ElementTypeDesc[0]));   
-                         item.setText(4, row.getString(3, "String"));  
-                         item.setText(5, row.getString(4, ""));  
-                     }
-                	wFields.removeEmptyRows();
-                	wFields.setRowNums();
-                	wFields.optWidth(true);
-                }
-            }
+    		if(meta.isInFields()){
+				if(meta.isReadUrl()) {
+					// Read URL
+					 String url=XMLSource;
+					 if(url==null) {
+						EnterStringDialog enterStringDialog = new EnterStringDialog(shell,"",
+								BaseMessages.getString(PKG, "GetXMLDataDialog.AskURL.Title"), 
+								BaseMessages.getString(PKG, "GetXMLDataDialog.AskURL.Title"));
+						url = enterStringDialog.open();
+					 }
+					 populateFields(meta, url, true, true, clearFields);
+					
+				}else if(meta.getIsAFile()){
+					// Read file
+					String str=XMLSource;
+					if(str==null) {
+						FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+						dialog.setFilterExtensions(new String[] {"*.xml;*.XML", "*"});
+						dialog.setFilterNames(new String[] {BaseMessages.getString(PKG, "System.FileType.XMLFiles"), BaseMessages.getString(PKG, "System.FileType.AllFiles")});
+						
+						if (dialog.open()!=null) {
+							str = dialog.getFilterPath()+System.getProperty("file.separator")+dialog.getFileName();
+						}
+					}
+					populateFields(meta, str, false,false, clearFields);
+				}else{
+					// Read xml
+					 String xml=XMLSource;
+					 if(xml==null) {
+						 EnterTextDialog d= new EnterTextDialog(shell,BaseMessages.getString(PKG, "GetXMLDataDialog.AskXML.Title"), 
+								 BaseMessages.getString(PKG, "GetXMLDataDialog.AskXML.Message"),  null);
+						 xml=d.open();
+					 }
+					 populateFields(meta, xml, true,false, clearFields);
+				}
+			}else {
+    		
+	    		FileInputList inputList = meta.getFiles(transMeta);
+	    		
+	    		if (inputList.getFiles().size()>0)  {   
+	    			populateFields(meta, KettleVFS.getFilename(inputList.getFile(0)), false, false, clearFields);
+	            }
+			}
         }     
         catch(Exception e)
         {
@@ -1689,7 +1735,11 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 		input.setChanged(changed);
 		dispose();
 	}
-	
+	public void dispose()
+	{
+		XMLSource=null;
+		super.dispose();
+	}
 	private void ok()
 	{
         try
@@ -2023,4 +2073,64 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 			
 	    	
 	    }
+	 private void populateLoopPaths(GetXMLDataMeta meta, String XMLSource,boolean dynamicXMLSource, 
+			 boolean useURL)
+	 {
+		 if(Const.isEmpty(XMLSource)) return;
+		 String[] list_xpath=null;
+		 LoopNodesImportProgressDialog pd=null;
+		 if(dynamicXMLSource) {
+			 pd = new LoopNodesImportProgressDialog(shell, meta, XMLSource, useURL);
+		 }else {
+			 pd = new LoopNodesImportProgressDialog(shell, meta, XMLSource, meta.getEncoding()==null?"UTF-8":meta.getEncoding());
+		 }
+		 if(pd!=null) {
+			 list_xpath= pd.open();
+			 if(list_xpath!=null) {
+				EnterSelectionDialog s = new EnterSelectionDialog(shell, list_xpath, BaseMessages.getString(PKG, "GetXMLDataDialog.Dialog.SelectALoopPath.Title"), BaseMessages.getString(PKG, "GetXMLDataDialog.Dialog.SelectALoopPath.Message"));
+				String listxpaths = s.open();
+				if (listxpaths != null) {
+					wLoopXPath.setText(listxpaths);
+				}
+			 }
+		 }
+		 this.XMLSource=XMLSource;
+	 }
+	 
+	 private void populateFields(GetXMLDataMeta meta, String XMLSource,boolean dynamicXMLSource, boolean useURL,
+			 int clearFields) throws KettleException
+	 {
+		 if(Const.isEmpty(XMLSource)) return;
+		 
+		 XMLInputFieldsImportProgressDialog prd=null;
+		 RowMetaAndData[] fields=null;
+		 
+		 if(dynamicXMLSource) {
+			 prd= new XMLInputFieldsImportProgressDialog(shell, meta, XMLSource, useURL, transMeta.environmentSubstitute(meta.getLoopXPath()));
+		 }else {
+			 prd= new XMLInputFieldsImportProgressDialog(shell, meta, XMLSource,meta.getEncoding()==null?"UTF-8":meta.getEncoding(),  transMeta.environmentSubstitute(meta.getLoopXPath())); 
+		 }
+		 if(prd!=null) {
+			 fields = prd.open(); 
+	         if(fields!=null) {
+	         	if (clearFields==SWT.YES){
+	 				wFields.clearAll(false);
+	 			}
+	         	int nr=fields.length;
+	         	for(int i=0; i<nr; i++) {
+	         		 RowMetaAndData row = fields[i];
+	
+	         		 TableItem item = new TableItem(wFields.table, SWT.NONE);
+	                  item.setText(1, row.getString(0, ""));
+	                  item.setText(2, row.getString(1, GetXMLDataField.ElementTypeDesc[0]));
+	                  item.setText(3, row.getString(2, ""));  
+	                  item.setText(4, row.getString(3, ""));
+	                  item.setText(5, row.getString(4, ""));
+	              }
+	         	wFields.removeEmptyRows();
+	         	wFields.setRowNums();
+	         	wFields.optWidth(true);
+	         }
+		 }
+	 }
 }

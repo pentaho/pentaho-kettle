@@ -18,7 +18,9 @@
 package org.pentaho.di.ui.trans.steps.getxmldata;
 
 import java.io.InputStream;
+import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,6 +58,8 @@ public class LoopNodesImportProgressDialog
     private String[]            Xpaths;
 	
 	private String filename;
+	private String xml;
+	private String url;
 	private String encoding;
 	
 	private ArrayList<String> listpath;
@@ -76,8 +80,27 @@ public class LoopNodesImportProgressDialog
         this.encoding=encoding;
         this.listpath = new ArrayList<String>();
         this.nr=0;
+        this.xml=null;
+        this.url=null;
     }
-
+    public LoopNodesImportProgressDialog(Shell shell, GetXMLDataMeta meta, String xmlSource, boolean useUrl)
+    {
+        this.shell       = shell;
+        this.meta        = meta;
+        this.Xpaths = null;
+        this.filename=null;
+        this.encoding=null;
+        this.listpath = new ArrayList<String>();
+        this.nr=0;
+        if(useUrl) {
+        	this.xml=null;
+        	this.url=xmlSource;
+        }else {
+        	this.xml=xmlSource;
+        	this.url=null;
+        }
+    }
+  
     public String[] open()
     {
         IRunnableWithProgress op = new IRunnableWithProgress()
@@ -137,9 +160,17 @@ public class LoopNodesImportProgressDialog
 	    if(monitor.isCanceled()) return null;
 		InputStream is= null;
 		try {
-			is=KettleVFS.getInputStream(filename);
-			Document document  = reader.read( is, encoding);	
-	
+			Document document=null;
+			if(!Const.isEmpty(filename)) {
+				is=KettleVFS.getInputStream(filename);
+				document  = reader.read( is, encoding);	
+			}else {
+				if(!Const.isEmpty(xml)) {
+					document  = reader.read(new StringReader(xml));
+				}else {
+					document  = reader.read(new URL(url));
+				}
+			} 
 			monitor.worked(1);
 		    monitor.beginTask(BaseMessages.getString(PKG, "GetXMLDateLoopNodesImportProgressDialog.Task.DocumentOpened"), 1);
 			monitor.worked(1);
@@ -157,7 +188,7 @@ public class LoopNodesImportProgressDialog
 				 if(!listpath.contains(node.getPath()))
 				 {
 					 nr++;
-					 monitor.subTask(BaseMessages.getString(PKG, "GetXMLDateLoopNodesImportProgressDialog.Task.FetchNodes", nr));
+					 monitor.subTask(BaseMessages.getString(PKG, "GetXMLDateLoopNodesImportProgressDialog.Task.FetchNodes", String.valueOf(nr)));
 					 monitor.subTask(BaseMessages.getString(PKG, "GetXMLDateLoopNodesImportProgressDialog.Task.AddingNode", node.getPath()));
 					 listpath.add(node.getPath());
 					 addLoopXPath(node, monitor);
@@ -193,7 +224,7 @@ public class LoopNodesImportProgressDialog
 				 Element cce = (Element) cnode;
 				 if(!listpath.contains(cnode.getPath())) {
 					 nr++;
-					 monitor.subTask(BaseMessages.getString(PKG, "GetXMLDateLoopNodesImportProgressDialog.Task.FetchNodes", nr));
+					 monitor.subTask(BaseMessages.getString(PKG, "GetXMLDateLoopNodesImportProgressDialog.Task.FetchNodes", String.valueOf(nr)));
 					 monitor.subTask(BaseMessages.getString(PKG, "GetXMLDateLoopNodesImportProgressDialog.Task.AddingNode", cnode.getPath()));
 					 listpath.add(cnode.getPath());
 				 }
