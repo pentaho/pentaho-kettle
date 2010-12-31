@@ -128,6 +128,9 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 	/** records filter */
 	private int recordsFilter;
 	
+	/** Query all records including deleted ones **/
+	private boolean queryAll;
+	
 	
 	public SalesforceInputMeta()
 	{
@@ -242,6 +245,23 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 	{
 		this.useCompression = useCompression;
 	}
+	/**
+	 * @return Returns the queryAll.
+	 */
+	public boolean isQueryAll()
+	{
+		return queryAll;
+	}
+    
+	/**
+	 * @param queryAll The queryAll to set.
+	 */
+	public void setQueryAll(boolean value)
+	{
+		this.queryAll = value;
+	}
+	
+	
 	/**
 	 * @return Returns the condition.
 	 */
@@ -556,7 +576,7 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 		retval.append("    "+XMLHandler.addTagValue("read_to",   readTo));
 		retval.append("    "+XMLHandler.addTagValue("records_filter",SalesforceConnectionUtils.getRecordsFilterCode(recordsFilter)));
 		retval.append("    "+XMLHandler.addTagValue("useCompression",   useCompression));
-		
+		retval.append("    "+XMLHandler.addTagValue("queryAll",   queryAll));
 		
 		retval.append("    <fields>"+Const.CR);
 		for (int i=0;i<inputFields.length;i++)
@@ -600,6 +620,7 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 			readTo     = XMLHandler.getTagValue(stepnode, "read_to");
 			recordsFilter = SalesforceConnectionUtils.getRecordsFilterByCode(Const.NVL(XMLHandler.getTagValue(stepnode,	"records_filter"), ""));
 			useCompression   = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "useCompression"));
+			queryAll   = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "queryAll"));
 			
 			
 			Node fields     = XMLHandler.getSubNode(stepnode,  "fields");
@@ -633,6 +654,7 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 	}
 	public void setDefault()
 	{
+		queryAll=false;
 		readFrom="";
 		readTo="";
 		nrFields=0;
@@ -764,6 +786,7 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 			readTo          =  rep.getStepAttributeString(id_step, "read_to");
 			recordsFilter = SalesforceConnectionUtils.getRecordsFilterByCode(Const.NVL(rep.getStepAttributeString(id_step, "records_filter"), ""));
 			useCompression   = rep.getStepAttributeBoolean(id_step, "useCompression"); 
+			queryAll   = rep.getStepAttributeBoolean(id_step, "queryAll"); 
 			
 			
 			int nrFields      = rep.countNrStepAttributes(id_step, "field_name");
@@ -833,6 +856,7 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 			rep.saveStepAttribute(id_transformation, id_step, "read_to",           readTo);
 			rep.saveStepAttribute(id_transformation, id_step, "records_filter", SalesforceConnectionUtils.getRecordsFilterCode(recordsFilter));
 			rep.saveStepAttribute(id_transformation, id_step, "useCompression",  useCompression);
+			rep.saveStepAttribute(id_transformation, id_step, "queryAll",  queryAll);
 			
 			
 			for (int i=0;i<inputFields.length;i++)

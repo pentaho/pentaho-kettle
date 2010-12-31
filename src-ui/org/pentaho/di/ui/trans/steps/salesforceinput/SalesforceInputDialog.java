@@ -107,9 +107,10 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 	
 	private FormData fdlTimeOut,fdTimeOut,fdFields,fdUserName,fdURL,fdPassword,fdCondition;
 	
-	private FormData fdlCondition,fdlInclRownum,fdRownum,fdInclRownumField, fdUseCompression, fdlUseCompression;
+	private FormData fdlCondition,fdlInclRownum,fdRownum,fdInclRownumField, fdUseCompression, fdlUseCompression,
+	fdQueryAll, fdlQueryAll;
 
-	private Button wInclURL,wInclModule,wInclRownum, wUseCompression;
+	private Button wInclURL,wInclModule,wInclRownum, wUseCompression, wQueryAll;
 	
 	private FormData fdInclSQLField;
 	
@@ -121,7 +122,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 	
 	private Group wConnectionGroup, wSettingsGroup;
 	
-	private Label wlInclTimestampField,wlInclTimestamp, wlUseCompression;
+	private Label wlInclTimestampField,wlInclTimestamp, wlUseCompression, wlQueryAll;
 	
 	private FormData fdlInclSQL,fdInclSQL,fdlInclSQLField;
 	
@@ -488,7 +489,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
  		props.setLook(wQuery, Props.WIDGET_STYLE_FIXED);
 		wQuery.addModifyListener(lsMod);
 		fdQuery=new FormData();
-		fdQuery.left  = new FormAttachment(middle, margin);
+		fdQuery.left  = new FormAttachment(middle, 0);
 		fdQuery.top   = new FormAttachment(wspecifyQuery, margin );
 		fdQuery.right = new FormAttachment(100, -margin);
 		fdQuery.bottom= new FormAttachment(wlPosition, -margin );
@@ -605,12 +606,31 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 				updateRecordsFilter();
 			}
 		});
+		
+		// Query All?
+		wlQueryAll=new Label(wAdvancedGroup, SWT.RIGHT);
+		wlQueryAll.setText(BaseMessages.getString(PKG, "SalesforceInputDialog.QueryAll.Label"));
+ 		props.setLook(wlQueryAll);
+		fdlQueryAll=new FormData();
+		fdlQueryAll.left = new FormAttachment(0, 0);
+		fdlQueryAll.top  = new FormAttachment(wRecordsFilter, margin);
+		fdlQueryAll.right= new FormAttachment(middle, -margin);
+		wlQueryAll.setLayoutData(fdlQueryAll);
+		wQueryAll=new Button(wAdvancedGroup, SWT.CHECK );
+ 		props.setLook(wQueryAll);
+		wQueryAll.setToolTipText(BaseMessages.getString(PKG, "SalesforceInputDialog.QueryAll.Tooltip"));
+		fdQueryAll=new FormData();
+		fdQueryAll.left = new FormAttachment(middle, 0);
+		fdQueryAll.top  = new FormAttachment(wRecordsFilter, margin);
+		wQueryAll.setLayoutData(fdQueryAll);
+
+		
 
 		open = new Button (wAdvancedGroup, SWT.PUSH);
 		open.setImage(GUIResource.getInstance().getImageCalendar());
 		open.setToolTipText (BaseMessages.getString(PKG, "SalesforceInputDialog.OpenCalendar"));
 	    FormData fdlButton=new FormData();
-	    fdlButton.top  = new FormAttachment(wRecordsFilter, margin);
+	    fdlButton.top  = new FormAttachment(wQueryAll, margin);
 	    fdlButton.right= new FormAttachment(100, 0);
 	    open.setLayoutData(fdlButton);
 	    open.addSelectionListener (new SelectionAdapter () {
@@ -652,7 +672,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
  		props.setLook(wlReadFrom);
 		fdlReadFrom=new FormData();
 		fdlReadFrom.left = new FormAttachment(0, 0);
-		fdlReadFrom.top  = new FormAttachment(wRecordsFilter, margin);
+		fdlReadFrom.top  = new FormAttachment(wQueryAll, margin);
 		fdlReadFrom.right= new FormAttachment(middle, -margin);
 		wlReadFrom.setLayoutData(fdlReadFrom);
 		wReadFrom=new TextVar(transMeta, wAdvancedGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -661,7 +681,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		wReadFrom.addModifyListener(lsMod);
 		fdReadFrom=new FormData();
 		fdReadFrom.left = new FormAttachment(middle, 0);
-		fdReadFrom.top  = new FormAttachment(wRecordsFilter, margin);
+		fdReadFrom.top  = new FormAttachment(wQueryAll, margin);
 		fdReadFrom.right= new FormAttachment(open, -margin);
 		wReadFrom.setLayoutData(fdReadFrom);
 
@@ -1466,6 +1486,8 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 	  wlReadTo.setEnabled(activeFilter);
 	  wReadTo.setEnabled(activeFilter);
 	  opento.setEnabled(activeFilter);
+	  wlQueryAll.setEnabled(!activeFilter);
+	  wQueryAll.setEnabled(!activeFilter);
 	  enableCondition();
   }
 
@@ -1505,6 +1527,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		
 		wTimeOut.setText(Const.NVL(in.getTimeOut(), SalesforceConnectionUtils.DEFAULT_TIMEOUT));
 		wUseCompression.setSelection(in.isUsingCompression());
+		wQueryAll.setSelection(in.isQueryAll());
 		wLimit.setText("" + in.getRowLimit());
 
 		wReadFrom.setText(Const.NVL(in.getReadFrom(),""));
@@ -1602,6 +1625,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		in.setSpecifyQuery(wspecifyQuery.getSelection());
 		in.setQuery(Const.NVL(wQuery.getText(),""));
 		in.setUseCompression(wUseCompression.getSelection());
+		in.setQueryAll(wQueryAll.getSelection());
 		in.setTimeOut(Const.NVL(wTimeOut.getText(),"0"));
 		in.setRowLimit(Const.NVL(wLimit.getText(),"0"));
 		in.setTargetURLField(Const.NVL(wInclURLField.getText(),""));

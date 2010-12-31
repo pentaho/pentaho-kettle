@@ -378,7 +378,9 @@ public class SalesforceInput extends BaseStep implements StepInterface
 				// set timeout
 				data.connection.setTimeOut(Const.toInt(environmentSubstitute(meta.getTimeOut()),0));
 				// Do we use compression?
-				if(meta.isUsingCompression()) data.connection.setUsingCompression(true);
+				data.connection.setUsingCompression(meta.isUsingCompression());
+				// Do we have to query for all records included deleted records
+				data.connection.queryAll(meta.isQueryAll());
 				
 			    // Build query if needed
 			    if(meta.isSpecifyQuery()) {

@@ -76,7 +76,7 @@ public class SalesforceConnection {
 	private int recordsCount;
 	private boolean useCompression;
 	private boolean rollbackAllChangesOnError;
-	
+	private boolean queryAll;
 	private List<String> getDeletedList;
 
 
@@ -111,7 +111,7 @@ public class SalesforceConnection {
 		rollbackAllChangesOnError(false);
 		
 		// check target URL
-		if(Const.isEmpty(this.url))	throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.TargetURLMissing.Error"));
+		if(Const.isEmpty(getURL()))	throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.TargetURLMissing.Error"));
 		
 		// check username
 		if(Const.isEmpty(getUsername())) throw new KettleException(BaseMessages.getString(PKG, "SalesforceInput.UsernameMissing.Error"));
@@ -123,6 +123,12 @@ public class SalesforceConnection {
     }
     public void rollbackAllChangesOnError(boolean value) {
     	this.rollbackAllChangesOnError=value;
+    }
+    public boolean isQueryAll() {
+    	return this.queryAll;
+    }
+    public void queryAll(boolean value) {
+    	this.queryAll=value;
     }
 	public void setCalendar(int recordsFilter,GregorianCalendar startDate, GregorianCalendar endDate) throws KettleException {
 		 this.startDate=startDate;
@@ -365,7 +371,7 @@ public class SalesforceConnection {
 				break;
 				default:
 					// return query result
-		 			this.qr = getBinding().query(getSQL());
+		 			this.qr = isQueryAll()?getBinding().queryAll(getSQL()):getBinding().query(getSQL());
 		 			this.sObjects=getQueryResult().getRecords();
 	 				this.queryResultSize= getQueryResult().getSize();
 				break;
