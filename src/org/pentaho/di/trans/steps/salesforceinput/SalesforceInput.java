@@ -287,6 +287,7 @@ public class SalesforceInput extends BaseStep implements StepInterface
 			}
 		break;
 	}
+
 	return sql;
   }
 	 
@@ -357,12 +358,12 @@ public class SalesforceInput extends BaseStep implements StepInterface
 							 return false;
 						 }
 						 try{
-							 SimpleDateFormat startDate=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-							 SimpleDateFormat endDate=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+							 SimpleDateFormat dateFormat=new SimpleDateFormat(SalesforceInputMeta.DATE_TIME_FORMAT);
 							 data.startCal = new GregorianCalendar();
-							 data.startCal.setTime(startDate.parse(realFromDateString));
+							 data.startCal.setTime(dateFormat.parse(realFromDateString));
 							 data.endCal = new GregorianCalendar();
-							 data.endCal.setTime(endDate.parse(realToDateString)); 
+							 data.endCal.setTime(dateFormat.parse(realToDateString)); 
+							 dateFormat=null;
 						 }catch(Exception e) {
 							 log.logError(BaseMessages.getString(PKG, "SalesforceInput.ErrorParsingDate"),e);
 							 return false;

@@ -372,6 +372,7 @@ public class SalesforceConnection {
 			}
 			if(this.sObjects!=null) this.recordsCount=this.sObjects.length;
 		}catch(Exception e){
+			log.logError(Const.getStackTracker(e));
 			throw new KettleException(BaseMessages.getString( PKG, "SalesforceConnection.Exception.Query"),e);
 		}
 	 }
@@ -416,7 +417,7 @@ public class SalesforceConnection {
 	 			// this record was deleted in the specified range datetime
 	 			// We will return it
 	 			retval.setRecordValue(con);
-
+				System.out.println("-----------"+con.getId());
 	 		}else if(index<getRecordsCount()-1) {
 	 			// this record was not deleted in the range datetime
 	 			// let's move forward and see if we find records that might interest us
@@ -426,13 +427,13 @@ public class SalesforceConnection {
 	 				// let's continue ...
 	 				index++;
 	 				con=this.sObjects[index];
-	 			}
+	 			} 
 	 			// if we are here, it means that 
 	 			// we found a record to take
-	 			// or we are fetched all available records
+	 			// or we have fetched all available records
  				retval.setRecordIndexChanges(true);
  				retval.setRecordIndex(index);
-	 			if(con!=null && con.get_any()[index]!=null) {
+	 			if(con!=null && con.get_any()[index]!=null && getDeletedList.contains(con.getId())) {
 	 				retval.setRecordValue(con);
 	 			}
 	 		}
