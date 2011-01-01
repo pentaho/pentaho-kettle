@@ -122,17 +122,17 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 	
 	private Group wConnectionGroup, wSettingsGroup;
 	
-	private Label wlInclTimestampField,wlInclTimestamp, wlUseCompression, wlQueryAll;
+	private Label wlInclTimestampField,wlInclTimestamp, wlUseCompression, wlQueryAll, wlInclDeletionDateField, wlInclDeletionDate;
 	
-	private FormData fdlInclSQL,fdInclSQL,fdlInclSQLField;
+	private FormData fdlInclSQL,fdInclSQL,fdlInclSQLField, fdlInclDeletionDateField, fdlInclDeletionDate;
 	
-	private FormData fdlInclTimestamp,fdInclTimestamp,fdlInclTimestampField;
+	private FormData fdlInclTimestamp,fdInclTimestamp,fdlInclTimestampField, fdInclDeletionDateField, fdDeletionDate;
 
 	private Button wInclSQL;
 	
-	private TextVar wInclURLField,wInclModuleField,wInclRownumField,wInclSQLField;
+	private TextVar wInclURLField,wInclModuleField,wInclRownumField,wInclSQLField, wInclDeletionDateField;
 	
-	private Button wInclTimestamp;
+	private Button wInclTimestamp, wInclDeletionDate;
 	
 	private TextVar wInclTimestampField;
 
@@ -979,6 +979,48 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		fdInclRownumField.right= new FormAttachment(100, 0);
 		wInclRownumField.setLayoutData(fdInclRownumField);
 
+		// Include DeletionDate in output stream?
+		wlInclDeletionDate=new Label(wAdditionalFields, SWT.RIGHT);
+		wlInclDeletionDate.setText(BaseMessages.getString(PKG, "SalesforceInputDialog.InclDeletionDate.Label"));
+ 		props.setLook(wlInclDeletionDate);
+		fdlInclDeletionDate=new FormData();
+		fdlInclDeletionDate.left = new FormAttachment(0, 0);
+		fdlInclDeletionDate.top  = new FormAttachment(wInclRownumField, margin);
+		fdlInclDeletionDate.right= new FormAttachment(middle, -margin);
+		wlInclDeletionDate.setLayoutData(fdlInclDeletionDate);
+		wInclDeletionDate=new Button(wAdditionalFields, SWT.CHECK );
+ 		props.setLook(wInclDeletionDate);
+		wInclDeletionDate.setToolTipText(BaseMessages.getString(PKG, "SalesforceInputDialog.InclDeletionDate.Tooltip"));
+		fdDeletionDate=new FormData();
+		fdDeletionDate.left = new FormAttachment(middle, 0);
+		fdDeletionDate.top  = new FormAttachment(wInclRownumField, margin);
+		wInclDeletionDate.setLayoutData(fdDeletionDate);
+
+		wInclDeletionDate.addSelectionListener(new SelectionAdapter() 
+		{
+			public void widgetSelected(SelectionEvent e) 
+			{
+				setEnableInclDeletionDate();
+			}
+		}
+	);
+		
+		wlInclDeletionDateField=new Label(wAdditionalFields, SWT.RIGHT);
+		wlInclDeletionDateField.setText(BaseMessages.getString(PKG, "SalesforceInputDialog.InclDeletionDateField.Label"));
+ 		props.setLook(wlInclDeletionDateField);
+		fdlInclDeletionDateField=new FormData();
+		fdlInclDeletionDateField.left = new FormAttachment(wInclDeletionDate, margin);
+		fdlInclDeletionDateField.top  = new FormAttachment(wInclRownumField, margin);
+		wlInclDeletionDateField.setLayoutData(fdlInclDeletionDateField);
+		wInclDeletionDateField=new TextVar(transMeta,wAdditionalFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wInclDeletionDateField);
+		wInclDeletionDateField.addModifyListener(lsMod);
+		fdInclDeletionDateField=new FormData();
+		fdInclDeletionDateField.left = new FormAttachment(wlInclDeletionDateField, margin);
+		fdInclDeletionDateField.top  = new FormAttachment(wInclRownumField, margin);
+		fdInclDeletionDateField.right= new FormAttachment(100, 0);
+		wInclDeletionDateField.setLayoutData(fdInclDeletionDateField);
+
 		
 		fdAdditionalFields = new FormData();
 		fdAdditionalFields.left = new FormAttachment(0, margin);
@@ -1237,6 +1279,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		setEnableInclTimestamp();
 		setEnableInclModule();
 		setEnableInclRownum();
+		setEnableInclDeletionDate();
 		setEnableQuery();
 	
 		input.setChanged(changed);
@@ -1305,6 +1348,12 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 	wInclRownumField.setEnabled(wInclRownum.getSelection());
 	wlInclRownumField.setEnabled(wInclRownum.getSelection());
  }
+ private void setEnableInclDeletionDate()
+ {
+	wInclDeletionDateField.setEnabled(wInclDeletionDate.getSelection());
+	wlInclDeletionDateField.setEnabled(wInclDeletionDate.getSelection());
+ }
+ 
  private void test(){
 	 
 	 boolean successConnection=true;
@@ -1489,6 +1538,14 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 	  wlQueryAll.setEnabled(!activeFilter);
 	  wQueryAll.setEnabled(!activeFilter);
 	  enableCondition();
+	  boolean activateDeletionDate=SalesforceConnectionUtils.getRecordsFilterByDesc(wRecordsFilter.getText())==SalesforceConnectionUtils.RECORDS_FILTER_DELETED;
+	  if(!activateDeletionDate) {
+		  wInclDeletionDate.setSelection(false);
+	  }
+	  wlInclDeletionDate.setEnabled(activateDeletionDate);
+	  wInclDeletionDate.setEnabled(activateDeletionDate);
+	  wlInclDeletionDateField.setEnabled(activateDeletionDate);
+	  wInclDeletionDateField.setEnabled(activateDeletionDate);
   }
 
 	/**
@@ -1517,6 +1574,8 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		
 		wInclTimestampField.setText(Const.NVL(in.getTimestampField(),""));
 		wInclTimestamp.setSelection(in.includeTimestamp());
+		wInclDeletionDateField.setText(Const.NVL(in.getDeletionDateField(),""));
+		wInclDeletionDate.setSelection(in.includeDeletionDate());
 		
 		
 		wInclModuleField.setText(Const.NVL(in.getModuleField(),""));
@@ -1641,6 +1700,8 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		in.setIncludeRowNumber(wInclRownum.getSelection());
 		in.setReadFrom(wReadFrom.getText());
 		in.setReadTo(wReadTo.getText());
+		in.setDeletionDateField(Const.NVL(wInclDeletionDateField.getText(),""));
+		in.setIncludeDeletionDate(wInclDeletionDate.getSelection());
 		int nrFields = wFields.nrNonEmpty();
 
 		in.allocate(nrFields);

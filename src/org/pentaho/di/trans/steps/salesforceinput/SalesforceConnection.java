@@ -17,6 +17,7 @@ package org.pentaho.di.trans.steps.salesforceinput;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.xml.namespace.QName;
@@ -77,7 +78,7 @@ public class SalesforceConnection {
 	private boolean useCompression;
 	private boolean rollbackAllChangesOnError;
 	private boolean queryAll;
-	private List<String> getDeletedList;
+	private HashMap<String, Date> getDeletedList;
 
 
 	private LogChannelInterface	log;
@@ -359,10 +360,10 @@ public class SalesforceConnection {
 					if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "SalesforceConnection.DeletedRecordsFound",String.valueOf(deletedRecords==null?0:deletedRecords.length)));
 					
 					if (deletedRecords != null	&& deletedRecords.length > 0) {	
-						getDeletedList = new ArrayList<String>();
+						getDeletedList = new HashMap<String, Date>();
 						
 						for (DeletedRecord dr : deletedRecords) {
-							getDeletedList.add(dr.getId());
+							getDeletedList.put(dr.getId(), dr.getDeletedDate().getTime());
 						}
 						this.qr = getBinding().queryAll(getSQL());
 						this.sObjects = getQueryResult().getRecords();
@@ -419,16 +420,16 @@ public class SalesforceConnection {
 	 		// Special case from deleted records
 	 		// We need to compare each record with the deleted ids
 	 		// in getDeletedList
-	 		if(getDeletedList.contains(con.getId())) {
+	 		if(getDeletedList.containsKey(con.getId())) {
 	 			// this record was deleted in the specified range datetime
 	 			// We will return it
 	 			retval.setRecordValue(con);
-				System.out.println("-----------"+con.getId());
+	 			retval.setDeletionDate(getDeletedList.get(con.getId()));
 	 		}else if(index<getRecordsCount()-1) {
 	 			// this record was not deleted in the range datetime
 	 			// let's move forward and see if we find records that might interest us
 
-	 			while(con!=null && index<getRecordsCount()-1 && !getDeletedList.contains(con.getId())) {
+	 			while(con!=null && index<getRecordsCount()-1 && !getDeletedList.containsKey(con.getId())) {
 	 				// still not a record for us !!!
 	 				// let's continue ...
 	 				index++;
@@ -439,8 +440,9 @@ public class SalesforceConnection {
 	 			// or we have fetched all available records
  				retval.setRecordIndexChanges(true);
  				retval.setRecordIndex(index);
-	 			if(con!=null && con.get_any()[index]!=null && getDeletedList.contains(con.getId())) {
+	 			if(con!=null && con.get_any()[index]!=null && getDeletedList.containsKey(con.getId())) {
 	 				retval.setRecordValue(con);
+	 				retval.setDeletionDate(getDeletedList.get(con.getId()));
 	 			}
 	 		}
 			retval.setAllRecordsProcessed(index>=getRecordsCount()-1);

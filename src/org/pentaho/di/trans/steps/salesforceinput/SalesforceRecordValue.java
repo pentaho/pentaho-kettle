@@ -14,6 +14,8 @@
  ***************************************************************************************/
 package org.pentaho.di.trans.steps.salesforceinput;
 
+import java.util.Date;
+
 import com.sforce.soap.partner.sobject.SObject;
 
 /**
@@ -28,12 +30,14 @@ public class SalesforceRecordValue {
 	private SObject record;
 	private boolean recordIndexChanged;
 	private boolean allRecordsProcessed;
+	private Date deletionDate;
 	
 	public SalesforceRecordValue(int index) {
 		this.recordIndex=index;
 		this.record=null;
 		this.recordIndexChanged=false;
 		this.allRecordsProcessed=false;
+		this.deletionDate=null;
 	}
 	public boolean isAllRecordsProcessed() {
 		return this.allRecordsProcessed;
@@ -59,5 +63,12 @@ public class SalesforceRecordValue {
 	
 	public void setRecordValue(SObject value) {
 		this.record=value;
+	}
+	
+	public void setDeletionDate(Date value) {
+		this.deletionDate=value;
+	}
+	public Date getDeletionDate() {
+		return this.deletionDate;
 	}
 }

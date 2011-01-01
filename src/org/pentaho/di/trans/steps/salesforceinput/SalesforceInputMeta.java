@@ -81,11 +81,18 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 	/** The name of the field in the output containing the module */
 	private  String  moduleField;
 	
+	/** Flag indicating that a deletion date field should be included in the output */
+	private boolean includeDeletionDate;
+	
+	/** The name of the field in the output containing the deletion Date */
+	private String deletionDateField;
+	
 	/** Flag indicating that a row number field should be included in the output */
 	private  boolean includeRowNumber;
 	
 	/** The name of the field in the output containing the row number*/
 	private  String  rowNumberField;
+
 	
 	/** The salesforce url*/
 	private String targeturl;
@@ -415,6 +422,22 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 	{
 		this.includeRowNumber = includeRowNumber;
 	}
+	
+	/**
+	 * @return Returns the includeDeletionDate.
+	 */
+	public boolean includeDeletionDate()
+	{
+		return includeDeletionDate;
+	}
+    
+	/**
+	 * @param includeDeletionDate The includeDeletionDate to set.
+	 */
+	public void setIncludeDeletionDate(boolean includeDeletionDate)
+	{
+		this.includeDeletionDate = includeDeletionDate;
+	}
     
 	/**
 	 * @return Returns the rowLimit.
@@ -456,7 +479,21 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 	{
 		return rowNumberField;
 	}
-    
+	
+	/**
+	 * @return Returns the deletionDateField.
+	 */
+	public String getDeletionDateField()
+	{
+		return deletionDateField;
+	}
+	/**
+	 * @param value the deletionDateField to set.
+	 */
+	public void setDeletionDateField(String value)
+	{
+		this.deletionDateField=value;
+	}
 	/**
 	 * @return Returns the targetURLField.
 	 */
@@ -567,6 +604,9 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 		retval.append("    "+XMLHandler.addTagValue("include_module",   includeModule));
 		retval.append("    "+XMLHandler.addTagValue("module_field",   moduleField));
 		retval.append("    "+XMLHandler.addTagValue("include_rownum",   includeRowNumber));
+		retval.append("    "+XMLHandler.addTagValue("include_deletion_date",   includeDeletionDate));
+		
+		retval.append("    "+XMLHandler.addTagValue("deletion_date_field",    deletionDateField));
 		retval.append("    "+XMLHandler.addTagValue("rownum_field",    rowNumberField));
 		retval.append("    "+XMLHandler.addTagValue("include_sql",includeSQL));
 		retval.append("    "+XMLHandler.addTagValue("sql_field",   sqlField));
@@ -611,7 +651,10 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 			includeModule   = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "include_module"));
 			moduleField     = XMLHandler.getTagValue(stepnode, "module_field");
 			includeRowNumber  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "include_rownum"));
+			includeDeletionDate  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "include_deletion_date"));
 			rowNumberField    = XMLHandler.getTagValue(stepnode, "rownum_field");
+			deletionDateField    = XMLHandler.getTagValue(stepnode, "deletion_date_field");
+			
 			includeSQL   = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "include_sql"));
 			sqlField     = XMLHandler.getTagValue(stepnode, "targetsql_field");
 			includeTimestamp   = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "include_Timestamp"));
@@ -654,6 +697,7 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 	}
 	public void setDefault()
 	{
+		includeDeletionDate=false;
 		queryAll=false;
 		readFrom="";
 		readTo="";
@@ -670,6 +714,7 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 		moduleField    = "";
 		includeRowNumber = false;
 		rowNumberField   = "";
+		deletionDateField="";
 		useCompression=false;
 		includeSQL=false;
 		sqlField    = "";
@@ -745,6 +790,13 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 			v.setOrigin(name);
 			r.addValueMeta(v);
 		}
+		if (includeDeletionDate && !Const.isEmpty(deletionDateField))
+		{
+			ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(deletionDateField), ValueMeta.TYPE_DATE);
+			v.setOrigin(name);
+			r.addValueMeta(v);
+		}
+		
 	}
 	
 	
@@ -775,7 +827,9 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 			includeModule   = rep.getStepAttributeBoolean(id_step, "include_module");  
 			moduleField     = rep.getStepAttributeString (id_step, "module_field");
 			includeRowNumber  = rep.getStepAttributeBoolean(id_step, "include_rownum");
+			includeDeletionDate = rep.getStepAttributeBoolean(id_step, "include_deletion_date");
 			rowNumberField    = rep.getStepAttributeString (id_step, "rownum_field");
+			deletionDateField    = rep.getStepAttributeString (id_step, "deletion_date_field");
 			includeSQL   = rep.getStepAttributeBoolean(id_step, "include_sql");  
 			sqlField     = rep.getStepAttributeString (id_step, "sql_field");
 			includeTimestamp   = rep.getStepAttributeBoolean(id_step, "include_Timestamp");  
@@ -845,11 +899,15 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 			rep.saveStepAttribute(id_transformation, id_step, "include_module",  includeModule);
 			rep.saveStepAttribute(id_transformation, id_step, "module_field",   moduleField);
 			rep.saveStepAttribute(id_transformation, id_step, "include_rownum",    includeRowNumber);
+			rep.saveStepAttribute(id_transformation, id_step, "include_deletion_date",    includeDeletionDate);
+			
 			rep.saveStepAttribute(id_transformation, id_step, "include_sql",  includeSQL);
 			rep.saveStepAttribute(id_transformation, id_step, "sql_field",   sqlField);
 			rep.saveStepAttribute(id_transformation, id_step, "include_Timestamp",  includeTimestamp);
 			rep.saveStepAttribute(id_transformation, id_step, "timestamp_field",   timestampField);
 			rep.saveStepAttribute(id_transformation, id_step, "rownum_field",    rowNumberField);
+			rep.saveStepAttribute(id_transformation, id_step, "deletion_date_field",    deletionDateField);
+			
 			rep.saveStepAttribute(id_transformation, id_step, "limit",           rowLimit);
 			rep.saveStepAttribute(id_transformation, id_step, "timeout",           timeout);
 			rep.saveStepAttribute(id_transformation, id_step, "read_from",           readFrom);
@@ -950,6 +1008,11 @@ public class SalesforceInputMeta extends BaseStepMeta implements StepMetaInterfa
 		if(includeRowNumber && Const.isEmpty(rowNumberField))
 		{
 			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SalesforceInputMeta.CheckResult.NoRowNumberField"), stepMeta);
+			remarks.add(cr);
+		}
+		if(includeDeletionDate && Const.isEmpty(deletionDateField))
+		{
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SalesforceInputMeta.CheckResult.NoDeletionDateField"), stepMeta);
 			remarks.add(cr);
 		}
 	}
