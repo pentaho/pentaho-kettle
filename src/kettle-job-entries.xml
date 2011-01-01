@@ -478,7 +478,7 @@
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.CheckDbConnections.TypeDesc</description>
 		<classname>org.pentaho.di.job.entries.checkdbconnection.JobEntryCheckDbConnections</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.Conditions</category>
-		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.CheckDbConnections.TypeDesc.Tooltip</tooltip>
+		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.CheckDbConnections.Tooltip</tooltip>
 		<iconfile>ui/images/CDBC.png</iconfile>
 	</job-entry>
 		<job-entry id="SYSLOG">
