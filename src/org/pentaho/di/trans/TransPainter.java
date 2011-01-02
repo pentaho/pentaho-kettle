@@ -29,9 +29,12 @@ import org.pentaho.di.core.gui.GCInterface.EFont;
 import org.pentaho.di.core.gui.GCInterface.EImage;
 import org.pentaho.di.core.gui.GCInterface.ELineStyle;
 import org.pentaho.di.partition.PartitionSchema;
+import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
 import org.pentaho.di.trans.step.StepIOMetaInterface;
+import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
+import org.pentaho.di.trans.step.StepStatus;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 
@@ -61,6 +64,8 @@ public class TransPainter extends BasePainter
 	private StreamType	candidateHopType;
 	private boolean 	startErrorHopStep;
 	private StepMeta showTargetStreamsStep;
+	private Trans trans;
+	private boolean slowStepIndicatorEnabled;
 
     public TransPainter(GCInterface gc, TransMeta transMeta, 
                         Point area, 
@@ -69,7 +74,7 @@ public class TransPainter extends BasePainter
                         List<AreaOwner> areaOwners, 
                         List<StepMeta> mouseOverSteps,     		
                         int iconsize, int linewidth, int gridsize, int shadowSize, boolean antiAliasing, 
-                		String noteFontName, int noteFontHeight
+                		String noteFontName, int noteFontHeight, Trans trans, boolean slowStepIndicatorEnabled
                         )
     {
     	super(gc, transMeta, area, hori, vert, drop_candidate, selrect, areaOwners,
@@ -81,9 +86,30 @@ public class TransPainter extends BasePainter
         this.candidate      = candidate;
         
         this.mouseOverSteps  = mouseOverSteps;
-                
+        
+        this.trans = trans;
+        this.slowStepIndicatorEnabled = slowStepIndicatorEnabled;        
+        
         stepLogMap = null;
     }
+    
+    private static String[] getPeekTitles(){
+		String[] titles = {
+				"Copynr",
+				"Read",
+				"Written", 
+				"Input",
+				"Output",
+				"Updated", 
+				"Rejected",
+				"Errors",
+				"Active",
+				"Time", 
+				"Speed (r/s)",
+				"input/output"							
+		};
+		return titles;
+    }    
 
     public void buildTransformationImage()
     {        
@@ -174,13 +200,39 @@ public class TransPainter extends BasePainter
 	        }
 
         }
-        
+
+        // Draw regular step appearance
         for (int i = 0; i < transMeta.nrSteps(); i++)
         {
             StepMeta stepMeta = transMeta.getStep(i);
             if (stepMeta.isDrawn()) drawStep(stepMeta);
         }
+        
+        if (slowStepIndicatorEnabled){
 
+            // Highlight possible bottlenecks
+            for (int i = 0; i < transMeta.nrSteps(); i++)
+            {
+                StepMeta stepMeta = transMeta.getStep(i);
+                if (stepMeta.isDrawn()) checkDrawSlowStepIndicator(stepMeta);
+            }
+        	
+        }
+        
+        // Draw step status indicators (running vs. done)
+        for (int i = 0; i < transMeta.nrSteps(); i++)
+        {
+            StepMeta stepMeta = transMeta.getStep(i);
+            if (stepMeta.isDrawn()) drawStepStatusIndicator(stepMeta);
+        }
+
+        // Draw performance table for selected step(s)
+        for (int i = 0; i < transMeta.nrSteps(); i++)
+        {
+            StepMeta stepMeta = transMeta.getStep(i);
+            if (stepMeta.isDrawn()) drawStepPerformanceTable(stepMeta);
+        }
+        
         // Display an icon on the indicated location signaling to the user that the step in question does not accept input 
         //
         if (noInputStep!=null) {
@@ -205,6 +257,230 @@ public class TransPainter extends BasePainter
 
     }
 
+	private void checkDrawSlowStepIndicator(StepMeta stepMeta) {
+		
+		if (stepMeta == null){
+			return;
+		}
+		
+		// draw optional performance indicator
+		if (trans != null) {
+			
+			Point pt = stepMeta.getLocation();
+			if (pt == null) {
+				pt = new Point(50, 50);
+			}
+
+			Point screen = real2screen(pt.x, pt.y);
+			int x = screen.x;
+			int y = screen.y;
+			
+			List<StepInterface> steps = trans.findBaseSteps(stepMeta.getName());
+			for (StepInterface step : steps) {
+				if (step.isRunning()) {
+
+					int inputRows = step.rowsetInputSize();
+					int outputRows = step.rowsetOutputSize();
+						
+					// if the step can't keep up with its input, mark it by drawing an animation
+					boolean isSlow = inputRows * 0.85 > outputRows;
+					if (isSlow) {
+						gc.setLineWidth(linewidth + 1);
+						if (System.currentTimeMillis() % 2000 > 1000){
+							gc.setForeground(EColor.BACKGROUND);
+							gc.setLineStyle(ELineStyle.SOLID);
+							gc.drawRectangle(x + 1, y + 1, iconsize -2, iconsize - 2);
+							
+							gc.setForeground(EColor.DARKGRAY);
+							gc.setLineStyle(ELineStyle.DOT);
+							gc.drawRectangle(x + 1, y + 1, iconsize -2, iconsize - 2);
+						}
+						else{
+							gc.setForeground(EColor.DARKGRAY);
+							gc.setLineStyle(ELineStyle.SOLID);
+							gc.drawRectangle(x + 1, y + 1, iconsize -2, iconsize - 2);
+							
+							gc.setForeground(EColor.BACKGROUND);
+							gc.setLineStyle(ELineStyle.DOT);
+							gc.drawRectangle(x + 1, y + 1, iconsize -2, iconsize - 2);
+						}
+						
+						
+					}
+					
+				}
+				gc.setLineStyle(ELineStyle.SOLID);
+			}
+		}
+	}
+    
+	private void drawStepPerformanceTable(StepMeta stepMeta) {
+		
+		if (stepMeta == null){
+			return;
+		}
+		
+		// draw optional performance indicator
+		if (trans != null) {
+			
+			Point pt = stepMeta.getLocation();
+			if (pt == null) {
+				pt = new Point(50, 50);
+			}
+
+			Point screen = real2screen(pt.x, pt.y);
+			int x = screen.x;
+			int y = screen.y;
+			
+			List<StepInterface> steps = trans.findBaseSteps(stepMeta.getName());
+
+			// draw mouse over performance indicator
+			if (trans.isRunning()) {
+
+				if (stepMeta.isSelected()) {
+									
+					// determine popup dimensions up front
+					int popupX = x;
+					int popupY = y;
+					
+					int popupWidth = 0;
+					int popupHeight = 1;
+
+					gc.setFont(EFont.SMALL);
+					Point p = gc.textExtent("0000000000");
+					int colWidth = p.x+MINI_ICON_MARGIN;
+					int rowHeight = p.y+MINI_ICON_MARGIN;
+					int titleWidth = 0;
+
+					// calculate max title width to get the colum with 
+					String[] titles = TransPainter.getPeekTitles();
+					
+					for(String title : titles){
+						Point titleExtent = gc.textExtent(title);
+						titleWidth = Math.max(titleExtent.x+MINI_ICON_MARGIN, titleWidth);
+						popupHeight += titleExtent.y + MINI_ICON_MARGIN;
+					}
+					
+					popupWidth = titleWidth + 2*MINI_ICON_MARGIN;
+					
+					// determine total popup width
+					popupWidth += steps.size() * colWidth;
+					
+					// determine popup position
+					popupX = popupX + (iconsize - popupWidth)/2;
+					popupY = popupY - popupHeight - MINI_ICON_MARGIN;
+					
+					// draw the frame
+					gc.setForeground(EColor.DARKGRAY);
+					gc.setBackground(EColor.LIGHTGRAY);
+					gc.setLineWidth(1);
+					gc.fillRoundRectangle(popupX, popupY, popupWidth, popupHeight, 7, 7);
+					// draw the title columns
+//					gc.setBackground(EColor.BACKGROUND);
+//					gc.fillRoundRectangle(popupX, popupY, titleWidth+MINI_ICON_MARGIN, popupHeight, 7, 7);
+					gc.setBackground(EColor.LIGHTGRAY);
+					gc.drawRoundRectangle(popupX, popupY, popupWidth, popupHeight, 7, 7);
+					
+					for (int i=0, barY=popupY;i<titles.length;i++){
+						// fill each line with a slightly different background color
+						
+						if(i%2 == 1){
+							gc.setBackground(EColor.BACKGROUND);
+						}
+						else{
+							gc.setBackground(EColor.LIGHTGRAY);	
+						}
+						gc.fillRoundRectangle(popupX+1, barY+1, popupWidth-2, rowHeight, 7, 7);
+						barY += rowHeight;
+						
+					}
+					
+					// draw the header column
+					int rowY = popupY+MINI_ICON_MARGIN;
+					int rowX = popupX+MINI_ICON_MARGIN;
+					
+					gc.setForeground(EColor.BLACK);
+					gc.setBackground(EColor.BACKGROUND);
+
+					for (int i=0;i<titles.length;i++){
+						if(i%2 == 1){
+							gc.setBackground(EColor.BACKGROUND);
+						}
+						else{
+							gc.setBackground(EColor.LIGHTGRAY);	
+						}						
+						gc.drawText(titles[i], rowX, rowY);
+						rowY += rowHeight;
+					}
+
+					// draw the values for each copy of the step
+					gc.setBackground(EColor.LIGHTGRAY);
+					rowX += titleWidth;
+
+					for(StepInterface step: steps){
+
+						rowX += colWidth;
+						rowY = popupY+MINI_ICON_MARGIN;
+
+						StepStatus stepStatus = new StepStatus(step);
+						String[] fields = stepStatus.getPeekFields();
+
+						for(int i=0;i<fields.length;i++){
+							if(i%2 == 1){
+								gc.setBackground(EColor.BACKGROUND);
+							}
+							else{
+								gc.setBackground(EColor.LIGHTGRAY);	
+							}							
+							drawTextRightAligned(fields[i], rowX, rowY);
+							rowY += rowHeight;
+						}
+						
+					}
+
+				}
+			}
+
+		}
+	}
+	
+	private void drawStepStatusIndicator(StepMeta stepMeta) {
+		
+		if (stepMeta == null){
+			return;
+		}
+		
+		// draw status indicator
+		if (trans != null) {
+			
+			Point pt = stepMeta.getLocation();
+			if (pt == null) {
+				pt = new Point(50, 50);
+			}
+
+			Point screen = real2screen(pt.x, pt.y);
+			int x = screen.x;
+			int y = screen.y;
+			
+			List<StepInterface> steps = trans.findBaseSteps(stepMeta.getName());
+
+			for(StepInterface step: steps){
+				if (step.getStatus().equals(StepExecutionStatus.STATUS_FINISHED)){
+					gc.drawImage(EImage.TRUE, x+iconsize-7, y-7);
+				}
+			}
+
+		}
+	}
+	
+
+	private void drawTextRightAligned(String txt, int x, int y){
+		int off = gc.textExtent(txt).x;
+		x -= off;
+		gc.drawText(txt, x, y);
+	}
+	
+	
 	private void drawHop(TransHopMeta hi)
     {
         drawHop(hi, false);

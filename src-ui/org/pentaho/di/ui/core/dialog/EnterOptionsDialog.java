@@ -199,6 +199,8 @@ public class EnterOptionsDialog extends Dialog
 
     private Button autoCollapseBtn;
 
+	private Button wIndicateSlowSteps;
+
 
 	/**
 	 * @deprecated Use CT without <i>props</i> parameter instead
@@ -892,13 +894,32 @@ public class EnterOptionsDialog extends Dialog
 		fdAntiAlias.right = new FormAttachment(100, 0);
 		wAntiAlias.setLayoutData(fdAntiAlias);
 
+		// Enable anti-aliasing
+		Label wlIndicateSlowSteps = new Label(wLookComp, SWT.RIGHT);
+		wlIndicateSlowSteps.setText(BaseMessages.getString(PKG, "EnterOptionsDialog.CanvasIndicateSlowSteps.Label"));
+		props.setLook(wlIndicateSlowSteps);
+		FormData fdlIndicateSlowSteps = new FormData();
+		fdlIndicateSlowSteps.left = new FormAttachment(0, 0);
+		fdlIndicateSlowSteps.top = new FormAttachment(wAntiAlias, margin);
+		fdlIndicateSlowSteps.right = new FormAttachment(middle, -margin);
+		wlIndicateSlowSteps.setLayoutData(fdlIndicateSlowSteps);
+		wIndicateSlowSteps = new Button(wLookComp, SWT.CHECK);
+		props.setLook(wIndicateSlowSteps);
+		wIndicateSlowSteps.setSelection(props.isIndicateSlowTransStepsEnabled());
+		wIndicateSlowSteps.setToolTipText(BaseMessages.getString(PKG, "EnterOptionsDialog.CanvasIndicateSlowSteps.Tooltip"));
+		FormData fdIndicateSlowSteps = new FormData();
+		fdIndicateSlowSteps.left = new FormAttachment(middle, 0);
+		fdIndicateSlowSteps.top = new FormAttachment(wAntiAlias, margin);
+		fdIndicateSlowSteps.right = new FormAttachment(100, 0);
+		wIndicateSlowSteps.setLayoutData(fdIndicateSlowSteps);		
+		
 		// Show original look
 		Label wlOriginalLook = new Label(wLookComp, SWT.RIGHT);
 		wlOriginalLook.setText(BaseMessages.getString(PKG, "EnterOptionsDialog.UseOSLook.Label"));
 		props.setLook(wlOriginalLook);
 		FormData fdlOriginalLook = new FormData();
 		fdlOriginalLook.left = new FormAttachment(0, 0);
-		fdlOriginalLook.top = new FormAttachment(wAntiAlias, margin);
+		fdlOriginalLook.top = new FormAttachment(wIndicateSlowSteps, margin);
 		fdlOriginalLook.right = new FormAttachment(middle, -margin);
 		wlOriginalLook.setLayoutData(fdlOriginalLook);
 		wOriginalLook = new Button(wLookComp, SWT.CHECK);
@@ -906,7 +927,7 @@ public class EnterOptionsDialog extends Dialog
 		wOriginalLook.setSelection(props.isOSLookShown());
 		FormData fdOriginalLook = new FormData();
 		fdOriginalLook.left = new FormAttachment(middle, 0);
-		fdOriginalLook.top = new FormAttachment(wAntiAlias, margin);
+		fdOriginalLook.top = new FormAttachment(wIndicateSlowSteps, margin);
 		fdOriginalLook.right = new FormAttachment(100, 0);
 		wOriginalLook.setLayoutData(fdOriginalLook);
 
@@ -1639,6 +1660,7 @@ public class EnterOptionsDialog extends Dialog
 		props.setOSLookShown(wOriginalLook.getSelection());
 		props.setBrandingActive(wBranding.getSelection());
 		props.setShowToolTips(tooltipBtn.getSelection());
+		props.setIndicateSlowTransStepsEnabled(wIndicateSlowSteps.getSelection());
     props.setAutoCollapseCoreObjectsTree(autoCollapseBtn.getSelection());
 		props.setShowingHelpToolTips(helptipBtn.getSelection());
 

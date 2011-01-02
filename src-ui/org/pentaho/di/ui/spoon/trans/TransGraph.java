@@ -323,6 +323,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   private StepMeta showTargetStreamsStep;
   
   private XulDomContainer xulDomContainer;
+  
+  Timer redrawTimer;
 
   public void setCurrentNote(NotePadMeta ni) {
     this.ni = ni;
@@ -2701,7 +2703,9 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 			PropsUI.getInstance().getShadowSize(), 
 			PropsUI.getInstance().isAntiAliasingEnabled(),
 			PropsUI.getInstance().getNoteFont().getName(),
-			PropsUI.getInstance().getNoteFont().getHeight()
+			PropsUI.getInstance().getNoteFont().getHeight(),
+			trans,
+			PropsUI.getInstance().isIndicateSlowTransStepsEnabled()
     	);
     
     transPainter.setMagnification(magnificationFactor);
@@ -3673,15 +3677,18 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         public void transFinished(Trans trans) {
           checkTransEnded();
           checkErrorVisuals();
+          stopRedrawTimer();
         }
       });
 
       trans.startThreads();
+      startRedrawTimer();
 
       setControlStates();
     } catch (KettleException e) {
       log.logError("Error starting step threads", e); //$NON-NLS-1$
   	  checkErrorVisuals();
+  	  stopRedrawTimer();
     }
 
     // See if we have to fire off the performance graph updater etc.
@@ -3696,6 +3703,36 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         }
       }
     });
+  }
+  
+  
+  private void startRedrawTimer() {
+	  
+	  
+	
+	redrawTimer = new Timer("TransGraph: redraw timer");
+    TimerTask timtask = new TimerTask(){
+      public void run(){
+        if (!spoon.getDisplay().isDisposed()){
+          spoon.getDisplay().asyncExec(new Runnable(){
+            public void run(){
+              TransGraph.this.canvas.redraw();
+            }});
+        }
+      }
+    };
+
+    redrawTimer.schedule(timtask, 0L, ConstUI.INTERVAL_MS_TRANS_CANVAS_REFRESH);
+
+  }
+
+  protected void stopRedrawTimer() {
+    if (redrawTimer != null){
+      redrawTimer.cancel();
+      redrawTimer.purge();
+      redrawTimer = null;
+    }
+		
   }
 
   private void checkTransEnded() {

@@ -30,6 +30,8 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.SortedFileOutputStream;
 import org.pentaho.di.i18n.BaseMessages;
 
+import com.ibm.db2.jcc.a.y;
+
 
 /**
  * We use Props to store all kinds of user interactive information such as the selected colors, fonts, positions of windows, etc.
@@ -84,6 +86,7 @@ public class Props implements Cloneable
 	public static final String STRING_LOG_LEVEL   = "LogLevel";	
 	public static final String STRING_LOG_FILTER  = "LogFilter";
 	public static final String STRING_MIDDLE_PCT  = "MiddlePct";
+	public static final String STRING_INDICATE_SLOW_TRANS_STEPS = "IndicateSlowTransSteps";	
 	
 	public static final String STRING_LAST_PREVIEW_TRANS = "LastPreviewTrans";
 	public static final String STRING_LAST_PREVIEW_STEP  = "LastPreviewStep";
@@ -686,5 +689,6 @@ public class Props implements Cloneable
     {
         properties.setProperty(STRING_MAX_LOG_LINE_TIMEOUT_MINUTES, Integer.toString(maxLogLineTimeoutMinutes));
     }
+    
 
 }

@@ -190,6 +190,27 @@ public class StepStatus
         return retval;
     }
     
+    public String[] getPeekFields(){
+        String fields[] = new String[] {
+
+        		Integer.toString(copy),
+    	        Long.toString(linesRead),
+    	        Long.toString(linesWritten),
+    	        Long.toString(linesInput),
+    	        Long.toString(linesOutput),
+    	        Long.toString(linesUpdated),
+    	        Long.toString(linesRejected),
+    	        Long.toString(errors),
+    	        statusDescription,
+    	        convertSeconds(seconds),
+    	        speed,
+    	        priority,
+            };
+            
+            return fields;
+    	
+    }
+    
     /**
      * @return the copy
      */

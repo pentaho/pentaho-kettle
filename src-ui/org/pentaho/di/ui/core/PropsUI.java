@@ -1234,5 +1234,15 @@ public class PropsUI extends Props
     	}
     }
     
+    public boolean isIndicateSlowTransStepsEnabled()
+    {
+        String indicate= properties.getProperty(STRING_INDICATE_SLOW_TRANS_STEPS, "Y");
+        return YES.equalsIgnoreCase(indicate);
+    }
+    
+    public void setIndicateSlowTransStepsEnabled(boolean indicate)
+    {
+        properties.setProperty(STRING_INDICATE_SLOW_TRANS_STEPS, indicate?YES:NO);
+    }    
 
 }

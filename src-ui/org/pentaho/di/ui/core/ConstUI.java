@@ -113,6 +113,12 @@ public class ConstUI
 	 */
 	public static final int COLOR_TAB_BLUE = 255;
 
+	
+	/**
+	 * the default canvas refresh interval for running transformations
+	 */
+	public static final int INTERVAL_MS_TRANS_CANVAS_REFRESH = 1000;
+	
 	/**
 	 * Determine the level of where the TreeItem is position in a tree.
 	 * @param ti The TreeItem
