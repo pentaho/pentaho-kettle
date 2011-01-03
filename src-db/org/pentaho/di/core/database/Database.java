@@ -1308,7 +1308,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
      */
 	public boolean insertRow(PreparedStatement ps, boolean batch) throws KettleDatabaseException
 	{
-		return insertRow(ps, false, true);
+		return insertRow(ps, batch, true);
 	}
     /**
      * Insert a row into the database using a prepared statement that has all values set.
