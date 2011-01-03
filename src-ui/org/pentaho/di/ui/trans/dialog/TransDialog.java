@@ -196,7 +196,7 @@ public class TransDialog extends Dialog
 
 	private Text wStepPerfInterval;
 
-	private Button	wSerialSingleThreaded;
+	private CCombo	wTransformationType;
 	
 	private Tabs currentTab = null;
 
@@ -1768,24 +1768,25 @@ public class TransDialog extends Dialog
         wManageThreads.setLayoutData(fdManageThreads);
 
 		// Single threaded option ...
-		Label wlSerialSingleThreaded = new Label(wMiscComp, SWT.RIGHT);
-		wlSerialSingleThreaded.setText(BaseMessages.getString(PKG, "TransDialog.SerialSingleThreaded.Label")); //$NON-NLS-1$
-		wlSerialSingleThreaded.setToolTipText(BaseMessages.getString(PKG, "TransDialog.SerialSingleThreaded.Tooltip", Const.CR)); //$NON-NLS-1$
-		props.setLook(wlSerialSingleThreaded);
-		FormData fdlSerialSingleThreaded = new FormData();
-		fdlSerialSingleThreaded.left = new FormAttachment(0, 0);
-		fdlSerialSingleThreaded.right = new FormAttachment(middle, -margin);
-		fdlSerialSingleThreaded.top = new FormAttachment(wManageThreads, margin);
-		wlSerialSingleThreaded.setLayoutData(fdlSerialSingleThreaded);
-		wSerialSingleThreaded = new Button(wMiscComp, SWT.CHECK);
-		wSerialSingleThreaded.setToolTipText(BaseMessages.getString(PKG, "TransDialog.SerialSingleThreaded.Tooltip", Const.CR)); //$NON-NLS-1$
-        wSerialSingleThreaded.addSelectionListener(lsModSel);
-		props.setLook(wSerialSingleThreaded);
-		FormData fdSerialSingleThreaded = new FormData();
-		fdSerialSingleThreaded.left = new FormAttachment(middle, 0);
-		fdSerialSingleThreaded.top = new FormAttachment(wManageThreads, margin);
-		fdSerialSingleThreaded.right = new FormAttachment(100, 0);
-		wSerialSingleThreaded.setLayoutData(fdSerialSingleThreaded);
+		Label wlTransformationType = new Label(wMiscComp, SWT.RIGHT);
+		wlTransformationType.setText(BaseMessages.getString(PKG, "TransDialog.TransformationType.Label")); //$NON-NLS-1$
+		wlTransformationType.setToolTipText(BaseMessages.getString(PKG, "TransDialog.TransformationType.Tooltip", Const.CR)); //$NON-NLS-1$
+		props.setLook(wlTransformationType);
+		FormData fdlTransformationType = new FormData();
+		fdlTransformationType.left = new FormAttachment(0, 0);
+		fdlTransformationType.right = new FormAttachment(middle, -margin);
+		fdlTransformationType.top = new FormAttachment(wManageThreads, margin);
+		wlTransformationType.setLayoutData(fdlTransformationType);
+		wTransformationType = new CCombo(wMiscComp, SWT.NORMAL);
+		wTransformationType.setToolTipText(BaseMessages.getString(PKG, "TransDialog.TransformationType.Tooltip", Const.CR)); //$NON-NLS-1$
+        wTransformationType.addSelectionListener(lsModSel);
+		props.setLook(wTransformationType);
+		FormData fdTransformationType = new FormData();
+		fdTransformationType.left = new FormAttachment(middle, 0);
+		fdTransformationType.top = new FormAttachment(wManageThreads, margin);
+		fdTransformationType.right = new FormAttachment(100, 0);
+		wTransformationType.setLayoutData(fdTransformationType);
+		wTransformationType.setItems(TransformationType.getTransformationTypesDescriptions());
 
 
         FormData fdMiscComp = new FormData();
@@ -1977,7 +1978,7 @@ public class TransDialog extends Dialog
         wFeedbackSize.setText(Integer.toString(transMeta.getFeedbackSize()));
         wSharedObjectsFile.setText(Const.NVL(transMeta.getSharedObjectsFile(), ""));
         wManageThreads.setSelection(transMeta.isUsingThreadPriorityManagment());
-		wSerialSingleThreaded.setSelection(transMeta.getTransformationType()==TransformationType.SerialSingleThreaded);
+		wTransformationType.setText(transMeta.getTransformationType().getDescription());
 
 		wFields.setRowNums();
 		wFields.optWidth(true);
@@ -2104,7 +2105,7 @@ public class TransDialog extends Dialog
 		transMeta.setFeedbackSize(Const.toInt(wFeedbackSize.getText(), Const.ROWS_UPDATE));
 		transMeta.setSharedObjectsFile(wSharedObjectsFile.getText());
 		transMeta.setUsingThreadPriorityManagment(wManageThreads.getSelection());
-		transMeta.setTransformationType(wSerialSingleThreaded.getSelection() ? TransformationType.SerialSingleThreaded : TransformationType.Normal);
+		transMeta.setTransformationType( TransformationType.values()[ Const.indexOfString(wTransformationType.getText(), TransformationType.getTransformationTypesDescriptions()) ] );
 
 		if (directoryChangeAllowed && transMeta.getObjectId()!=null) {
 			if (newDirectory != null) {

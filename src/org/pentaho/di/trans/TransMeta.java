@@ -283,6 +283,14 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 			}
 			return Normal;
 		}
+		
+		public static String[] getTransformationTypesDescriptions() {
+		  String[] desc = new String[values().length];
+		  for (int i=0;i<values().length;i++) {
+		    desc[i] = values()[i].getDescription();
+		  }
+		  return desc;
+		}
     }
     
     private TransformationType transformationType;
