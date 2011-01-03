@@ -299,7 +299,7 @@ public class TransPerfDelegate extends SpoonDelegate {
 		
 		// Refresh automatically every 5 seconds as well.
 		//
-		final Timer timer = new Timer();
+		final Timer timer = new Timer("TransPerfDelegate Timer");
 		timer.schedule(new TimerTask() {
 			public void run() {
 				updateGraph();

@@ -202,7 +202,7 @@ public class StepPerformanceSnapShotDialog extends Dialog {
 		
 		// Refresh automatically every 5 seconds as well.
 		//
-		Timer timer = new Timer();
+		Timer timer = new Timer("step performance snapshot dialog Timer");
 		timer.schedule(new TimerTask() {
 			public void run() {
 				updateGraph();

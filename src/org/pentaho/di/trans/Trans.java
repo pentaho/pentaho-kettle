@@ -858,7 +858,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         
     		// Set a timer to collect the performance data from the running threads...
     		//
-    		stepPerformanceSnapShotTimer = new Timer();
+    		stepPerformanceSnapShotTimer = new Timer("stepPerformanceSnapShot Timer: " + transMeta.getName());
     		TimerTask timerTask = new TimerTask() {
 				public void run() {
 				  if (!isFinished()) {

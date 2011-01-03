@@ -164,7 +164,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
     //
     refreshHistory();
 
-    Timer timer = new Timer();
+    Timer timer = new Timer("JobHistoryDelegate Timer");
     TimerTask timerTask = new TimerTask() {
       public void run() {
         if (displayRefreshNeeded) {

@@ -76,7 +76,7 @@ public class LogBrowser {
 		
 		// Refresh the log every second or so
 		//
-		final Timer logRefreshTimer = new Timer();
+		final Timer logRefreshTimer = new Timer("log sniffer Timer");
 		TimerTask timerTask = new TimerTask() {
 			public void run() {
 			  if (text.isDisposed()) return;
