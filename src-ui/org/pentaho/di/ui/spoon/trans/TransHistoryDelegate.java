@@ -162,7 +162,7 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
     //
     refreshHistory();
 
-    Timer timer = new Timer();
+    Timer timer = new Timer("TransHistoryDelegate Timer");
     TimerTask timerTask = new TimerTask() {
       public void run() {
         if (displayRefreshNeeded) {

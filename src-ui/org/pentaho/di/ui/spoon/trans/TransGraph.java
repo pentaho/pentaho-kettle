@@ -661,7 +661,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     
     // Add a timer to set correct the state of the run/stop buttons every 2 seconds...
     //
-    final Timer timer = new Timer();
+    final Timer timer = new Timer("TransGraph.setControlStates Timer: " + getMeta().getName());
     TimerTask timerTask = new TimerTask() {
 		
 			public void run() {
@@ -3624,8 +3624,6 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             previewButton.setDisabled(running);
           }
           
-          Spoon spoon = ((Spoon)SpoonFactory.getInstance());
-          spoon.fireMenuControlers();
         }
 
       });

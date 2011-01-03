@@ -551,7 +551,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
     
     // Add a timer to set correct the state of the run/stop buttons every 2 seconds...
     //
-    final Timer timer = new Timer();
+    final Timer timer = new Timer("JobGraph.setControlStates Timer: " + getMeta().getName());
     TimerTask timerTask = new TimerTask() {
 			public void run() {
 				setControlStates();
