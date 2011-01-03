@@ -46,6 +46,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -86,9 +88,6 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.RepositoryDirectory;
-
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.Multimap;
 
 
 /**
@@ -3945,7 +3944,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		if(schemaname==null) {
 			if (databaseMeta.useSchemaNameForTableList()) schemaname = environmentSubstitute(databaseMeta.getUsername()).toUpperCase();
 		}
-		Multimap<String, String> tableMap = HashMultimap.create();
+		Map<String, Collection<String>> tableMap = new HashMap<String, Collection<String>>();
 		ResultSet alltables=null;
 		try
 		{
@@ -3975,7 +3974,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 				
 				
                 if (log.isRowLevel()) log.logRowlevel(toString(), "got table from meta-data: "+databaseMeta.getQuotedSchemaTableCombination(schema, table));
-        tableMap.put(schema, table);
+        multimapPut(schema, table, tableMap);
 			}
 		}
 		catch(SQLException e)
@@ -3994,9 +3993,9 @@ public class Database implements VariableSpace, LoggingObjectInterface
 			}
 		}
 
-		if(log.isDetailed()) log.logDetailed("read :"+tableMap.values().size()+" table names from db meta-data.");
+		if(log.isDetailed()) log.logDetailed("read :"+multimapSize(tableMap)+" table names from db meta-data.");
 
-		return tableMap.asMap();
+		return tableMap;
 	}
 	
 	public String[] getViews() throws KettleDatabaseException
@@ -4042,7 +4041,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 			if (databaseMeta.useSchemaNameForTableList()) schemaname = environmentSubstitute(databaseMeta.getUsername()).toUpperCase();
 		}
 		
-		Multimap<String, String> viewMap = HashMultimap.create();
+		Map<String, Collection<String>> viewMap = new HashMap<String, Collection<String>>();
 		ResultSet alltables=null;
 		try
 		{
@@ -4071,7 +4070,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 				String table = alltables.getString("TABLE_NAME");
 				
 				if (log.isRowLevel()) log.logRowlevel(toString(), "got view from meta-data: "+databaseMeta.getQuotedSchemaTableCombination(schema, table));
-				viewMap.put(schema, table);
+				multimapPut(schema, table, viewMap);
 			}
 		}
 		catch(SQLException e)
@@ -4090,9 +4089,9 @@ public class Database implements VariableSpace, LoggingObjectInterface
 			}
 		}
 
-		if(log.isDetailed()) log.logDetailed("read :"+viewMap.values().size()+" views from db meta-data.");
+		if(log.isDetailed()) log.logDetailed("read :"+multimapSize(viewMap)+" views from db meta-data.");
 
-		return viewMap.asMap();
+		return viewMap;
 	}
 
 	public String[] getSynonyms() throws KettleDatabaseException
@@ -4137,7 +4136,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		if(schemaname==null) {
 			if (databaseMeta.useSchemaNameForTableList()) schemaname = environmentSubstitute(databaseMeta.getUsername()).toUpperCase();
 		}
-		Multimap<String, String> synonymMap = HashMultimap.create();
+		Map<String, Collection<String>> synonymMap = new HashMap<String, Collection<String>>();
 		ArrayList<String> names = new ArrayList<String>();
 		ResultSet alltables=null;
 		try
@@ -4167,7 +4166,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 				String table = alltables.getString("TABLE_NAME");
 				
 				if (log.isRowLevel()) log.logRowlevel(toString(), "got synonym from meta-data: "+databaseMeta.getQuotedSchemaTableCombination(schema, table));
-				synonymMap.put(schema, table);
+				multimapPut(schema, table, synonymMap);
 			}
 		}
 		catch(SQLException e)
@@ -4186,10 +4185,28 @@ public class Database implements VariableSpace, LoggingObjectInterface
 			}
 		}
 	
-		if(log.isDetailed()) log.logDetailed("read :"+synonymMap.values().size()+" synonyms from db meta-data.");
+		if(log.isDetailed()) log.logDetailed("read :"+multimapSize(synonymMap)+" synonyms from db meta-data.");
 	
-		return synonymMap.asMap();
+		return synonymMap;
 	}
+	
+	private <K, V> void multimapPut(final K key, final V value, final Map<K, Collection<V>> map) {
+	  Collection<V> valueCollection = map.get(key);
+	  if (valueCollection == null) {
+	    valueCollection = new HashSet<V>();
+	  }
+	  valueCollection.add(value);
+	  map.put(key, valueCollection);
+	}
+	
+	private <K, V> int multimapSize(final Map<K, Collection<V>> map) {
+	  int count = 0;
+	  for (Collection<V> valueCollection : map.values()) {
+	    count += valueCollection.size();
+	  }
+	  return count;
+	}
+	
 	public String[] getSchemas() throws KettleDatabaseException
 	{
 		ArrayList<String> catalogList = new ArrayList<String>();
