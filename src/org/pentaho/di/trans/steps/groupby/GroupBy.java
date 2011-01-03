@@ -172,55 +172,7 @@ public class GroupBy extends BaseStep implements StepInterface
         
 		if (r==null)  // no more input to be expected... (or none received in the first place)
 		{
-            if (meta.passAllRows())  // ALL ROWS
-            {
-                if (data.previous!=null)
-                {
-                    calcAggregate(data.previous);
-                    addToBuffer(data.previous);
-                }
-                data.groupResult = getAggregateResult();
-
-                Object[] row = getRowFromBuffer();
-                
-                
-                long lineNr=0;
-                while (row!=null)
-                {
-                	int size = data.inputRowMeta.size();
-                	row=RowDataUtil.addRowData(row, size, data.groupResult);
-                	size+=data.groupResult.length;
-                    lineNr++;
-                    
-                    if (meta.isAddingLineNrInGroup() && !Const.isEmpty(meta.getLineNrInGroupField()))
-                    {
-                    	Object lineNrValue= new Long(lineNr);
-                    	// ValueMetaInterface lineNrValueMeta = new ValueMeta(meta.getLineNrInGroupField(), ValueMetaInterface.TYPE_INTEGER);
-                    	// lineNrValueMeta.setLength(9);
-                    	row=RowDataUtil.addValueData(row, size, lineNrValue);
-                    	size++;
-                    }
-                    
-                    addCumulativeSums(row);
-                    addCumulativeAverages(row);
-                    
-                    putRow(data.outputRowMeta, row);
-                    row = getRowFromBuffer();
-                }
-                closeInput();
-            }
-            else   // JUST THE GROUP + AGGREGATE
-            {
-    			// Don't forget the last set of rows...
-    			if (data.previous!=null) 
-    			{
-    				calcAggregate(data.previous);
-    			} 
-				Object[] result = buildResult(data.previous);
-				if (result!=null) {
-					putRow(data.groupAggMeta, result);
-				}
-    		}
+		    handleLastOfGroup();
 			setOutputDone();
 			return false;
 		}
@@ -311,7 +263,59 @@ public class GroupBy extends BaseStep implements StepInterface
 		return true;
 	}
 	
-	private void addCumulativeSums(Object[] row) throws KettleValueException {
+	private void handleLastOfGroup() throws KettleException {
+      if (meta.passAllRows())  // ALL ROWS
+      {
+          if (data.previous!=null)
+          {
+              calcAggregate(data.previous);
+              addToBuffer(data.previous);
+          }
+          data.groupResult = getAggregateResult();
+
+          Object[] row = getRowFromBuffer();
+          
+          
+          long lineNr=0;
+          while (row!=null)
+          {
+              int size = data.inputRowMeta.size();
+              row=RowDataUtil.addRowData(row, size, data.groupResult);
+              size+=data.groupResult.length;
+              lineNr++;
+              
+              if (meta.isAddingLineNrInGroup() && !Const.isEmpty(meta.getLineNrInGroupField()))
+              {
+                  Object lineNrValue= new Long(lineNr);
+                  // ValueMetaInterface lineNrValueMeta = new ValueMeta(meta.getLineNrInGroupField(), ValueMetaInterface.TYPE_INTEGER);
+                  // lineNrValueMeta.setLength(9);
+                  row=RowDataUtil.addValueData(row, size, lineNrValue);
+                  size++;
+              }
+              
+              addCumulativeSums(row);
+              addCumulativeAverages(row);
+              
+              putRow(data.outputRowMeta, row);
+              row = getRowFromBuffer();
+          }
+          closeInput();
+      }
+      else   // JUST THE GROUP + AGGREGATE
+      {
+          // Don't forget the last set of rows...
+          if (data.previous!=null) 
+          {
+              calcAggregate(data.previous);
+          } 
+          Object[] result = buildResult(data.previous);
+          if (result!=null) {
+              putRow(data.groupAggMeta, result);
+          }
+      }
+	}
+
+  private void addCumulativeSums(Object[] row) throws KettleValueException {
 
 		// We need to adjust this row with cumulative averages?
         //
@@ -807,5 +811,8 @@ public class GroupBy extends BaseStep implements StepInterface
 		
 		super.dispose(smi, sdi);
 	}
-
+	
+	public void batchComplete() throws KettleException {
+	  handleLastOfGroup();
+	}
 }
