@@ -2124,10 +2124,11 @@ public class Database implements VariableSpace, LoggingObjectInterface
 	public String getCreateIndexStatement(String schemaname, String tablename, String indexname, String idx_fields[], boolean tk, boolean unique, boolean bitmap, boolean semi_colon)
 	{
 		String cr_index="";
+		DatabaseInterface databaseInterface = databaseMeta.getDatabaseInterface();
 		
 		cr_index += "CREATE ";
 	
-		if (unique || ( tk && databaseMeta.getDatabaseInterface() instanceof SybaseDatabaseMeta))
+		if (unique || ( tk && databaseInterface instanceof SybaseDatabaseMeta))
 			cr_index += "UNIQUE ";
 		
 		if (bitmap && databaseMeta.supportsBitmapIndex()) 
@@ -2145,12 +2146,8 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		}
 		cr_index+=")"+Const.CR;
 		
-		if (databaseMeta.getDatabaseInterface() instanceof OracleDatabaseMeta &&
-			databaseMeta.getIndexTablespace()!=null && databaseMeta.getIndexTablespace().length()>0)
-		{
-			cr_index+="TABLESPACE "+databaseMeta.quoteField(databaseMeta.getIndexTablespace());
-		}
-		
+      cr_index+=databaseInterface.getIndexTablespaceDDL(variables, databaseMeta);
+				
 		if (semi_colon)
 		{
 			cr_index+=";"+Const.CR;
@@ -3226,12 +3223,8 @@ public class Database implements VariableSpace, LoggingObjectInterface
 			}
 		}
 		retval.append(")").append(Const.CR);
-		
-		if (databaseMeta.getDatabaseInterface() instanceof OracleDatabaseMeta &&
-				databaseMeta.getIndexTablespace()!=null && databaseMeta.getIndexTablespace().length()>0)
-		{
-			retval.append("TABLESPACE ").append(databaseMeta.getDataTablespace());
-		}
+				
+		retval.append(databaseMeta.getDatabaseInterface().getDataTablespaceDDL(variables, databaseMeta));
 
 		if (pk==null && tk==null && databaseMeta.getDatabaseInterface() instanceof NeoviewDatabaseMeta)
 		{

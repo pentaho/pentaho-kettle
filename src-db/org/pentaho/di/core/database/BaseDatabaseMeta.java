@@ -30,8 +30,8 @@ import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.repository.ObjectId;
 
 
@@ -1762,5 +1762,48 @@ public abstract class BaseDatabaseMeta implements Cloneable
     return getNextBatchIdUsingLockTables(dbm, ldb, schemaName, tableName, fieldName);
   }
   
+  /**
+   * Returns the tablespace DDL fragment for a "Data" tablespace.  In most databases that use tablespaces this 
+   * is where the tables are to be created.
+   * 
+   * @param VariableSpace variables used for possible substitution
+   * @param DatabaseMeta databaseMeta the database meta used for possible string enclosure of the tablespace.  This
+   * method needs this as this is done after environmental substitution.
+   * 
+   * @return String the tablespace name for tables in the format "tablespace TABLESPACE_NAME".  The TABLESPACE_NAME and
+   * the passed DatabaseMata determines if TABLESPACE_NAME is to be enclosed in quotes.
+   */
+  public String getDataTablespaceDDL(VariableSpace variables, DatabaseMeta databaseMeta) {
+     return getTablespaceDDL(variables, databaseMeta, databaseMeta.getDatabaseInterface().getDataTablespace());
+  }
   
-}
+  /**
+   * Returns the tablespace DDL fragment for a "Index" tablespace.
+   * 
+   * @param VariableSpace variables used for possible substitution
+   * @param DatabaseMeta databaseMeta the database meta used for possible string enclosure of the tablespace.  This
+   * method needs this as this is done after environmental substitution.
+   * 
+   * @return String the tablespace name for indices in the format "tablespace TABLESPACE_NAME".  The TABLESPACE_NAME and
+   * the passed DatabaseMata determines if TABLESPACE_NAME is to be enclosed in quotes.
+   */
+  public String getIndexTablespaceDDL(VariableSpace variables, DatabaseMeta databaseMeta) {
+     return getTablespaceDDL(variables, databaseMeta, databaseMeta.getDatabaseInterface().getIndexTablespace());
+  }
+  
+  /**
+   * Returns an empty string as most databases do not support tablespaces.
+   * Subclasses can override this method to generate the DDL.
+   * 
+   * @param VariableSpace variables needed for variable substitution.
+   * @param DatabaseMeta databaseMeta needed for it's quoteField method.  Since we are doing variable 
+   * substitution we need to meta so that we can act on the variable substitution first and then the 
+   * creation of the entire string that will be retuned.
+   * @param String tablespaceName name of the tablespace.   
+   * 
+   * @return String an empty String as most databases do not use tablespaces.  
+   */
+  protected String getTablespaceDDL(VariableSpace variables, DatabaseMeta databaseMeta, String tablespaceName) {
+   return "";
+  }
+} 

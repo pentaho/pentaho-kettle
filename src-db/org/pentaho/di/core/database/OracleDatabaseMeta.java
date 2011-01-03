@@ -19,6 +19,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
 
 /**
  * Contains Oracle specific information through static final members 
@@ -518,5 +519,25 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
   public boolean releaseSavepoint() {
      return false;
   }
-
+  
+  /**
+   * Returns an empty string as most databases do not support tablespaces.
+   * Subclasses can override this method to generate the DDL.
+   * 
+   * @param VariableSpace variables needed for variable substitution.
+   * @param DatabaseMeta databaseMeta needed for it's quoteField method.  Since we are doing variable 
+   * substitution we need to meta so that we can act on the variable substitution first and then the 
+   * creation of the entire string that will be retuned.
+   * @param String tablespaceName name of the tablespace.   
+   * 
+   * @return String the TABLESPACE tablespaceName section of an Oracle CREATE DDL statement.  
+   */
+  @Override
+  protected String getTablespaceDDL(VariableSpace variables, DatabaseMeta databaseMeta, String tablespace) {
+     if (!Const.isEmpty(tablespace)) {
+        return "TABLESPACE "+databaseMeta.quoteField(variables.environmentSubstitute(tablespace));
+     } else {
+        return "";
+     }
+  }
 }

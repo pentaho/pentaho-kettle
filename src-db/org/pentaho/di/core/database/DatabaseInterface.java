@@ -18,6 +18,7 @@ import java.util.Properties;
 
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.repository.ObjectId;
 
 /**
@@ -891,4 +892,28 @@ public interface DatabaseInterface extends Cloneable
    */
   Long getNextBatchId(DatabaseMeta dbm, Database ldb, String schemaName, String tableName, String fieldName) throws KettleDatabaseException;
 
+  /**
+   * Returns the tablespace DDL fragment for a "Data" tablespace.  In most databases that use tablespaces this 
+   * is where the tables are to be created.
+   * 
+   * @param VariableSpace variables used for possible substitution
+   * @param DatabaseMeta databaseMeta the database meta used for possible string enclosure of the tablespace.  This
+   * method needs this as this is done after environmental substitution.
+   * 
+   * @return String the tablespace name for tables in the format "tablespace TABLESPACE_NAME".  The TABLESPACE_NAME and
+   * the passed DatabaseMata determines if TABLESPACE_NAME is to be enclosed in quotes.
+   */
+  public String getDataTablespaceDDL(VariableSpace variables, DatabaseMeta databaseMeta);
+  
+  /**
+   * Returns the tablespace DDL fragment for a "Index" tablespace.
+   * 
+   * @param VariableSpace variables used for possible substitution
+   * @param DatabaseMeta databaseMeta the database meta used for possible string enclosure of the tablespace.  This
+   * method needs this as this is done after environmental substitution.
+   * 
+   * @return String the tablespace name for indicis in the format "tablespace TABLESPACE_NAME".  The TABLESPACE_NAME and
+   * the passed DatabaseMata determines if TABLESPACE_NAME is to be enclosed in quotes.
+   */
+  public String getIndexTablespaceDDL(VariableSpace variables, DatabaseMeta databaseMeta);
 }
