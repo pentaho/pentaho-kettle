@@ -26,7 +26,6 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.spoon.Spoon;
-import org.pentaho.reporting.libraries.base.util.StringUtils;
 
 
 /**

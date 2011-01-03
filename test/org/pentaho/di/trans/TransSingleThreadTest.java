@@ -22,7 +22,7 @@ import org.pentaho.di.trans.step.StepMetaDataCombi;
 
 public class TransSingleThreadTest extends TestCase {
 
-  public static void main(String[] args) throws Exception {
+  public void testSingleThreadedTrans() throws Exception {
 
     KettleEnvironment.init();
 
@@ -118,7 +118,7 @@ public class TransSingleThreadTest extends TestCase {
     System.out.println("Average speed: " + rowsPerSecond + " rows/second");
   }
 
-  public static RowMetaInterface createRowMetaInterface() {
+  public RowMetaInterface createRowMetaInterface() {
     RowMetaInterface rm = new RowMeta();
 
     ValueMetaInterface valuesMeta[] = { 
@@ -138,7 +138,7 @@ public class TransSingleThreadTest extends TestCase {
     return rm;
   }
 
-  public static List<RowMetaAndData> createData() {
+  public List<RowMetaAndData> createData() {
     List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();
 
     RowMetaInterface rm = createRowMetaInterface();

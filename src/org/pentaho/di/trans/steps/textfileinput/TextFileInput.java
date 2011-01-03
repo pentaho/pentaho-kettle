@@ -1504,7 +1504,6 @@ public class TextFileInput extends BaseStep implements StepInterface
 		data = (TextFileInputData) sdi;
 
 		if (super.init(smi, sdi)) {
-		    setWaitingForData(true);
 			initErrorHandling();
 			initReplayFactory();
 				

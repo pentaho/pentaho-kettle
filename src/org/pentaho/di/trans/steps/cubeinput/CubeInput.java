@@ -161,11 +161,4 @@ public class CubeInput extends BaseStep implements StepInterface
 	    
 	    super.dispose(smi, sdi);
 	}
-	
-	@Override
-	public boolean isWaitingForData() {
-	// TODO Auto-generated method stub
-	return super.isWaitingForData();
-	}
-	
 }

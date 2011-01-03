@@ -296,5 +296,4 @@ public interface StepMetaInterface
 	 * @return The supported transformation types that this step supports.
 	 */
 	public TransformationType[] getSupportedTransformationTypes();
-	
 }

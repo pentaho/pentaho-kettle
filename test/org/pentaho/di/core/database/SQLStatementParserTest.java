@@ -10,17 +10,12 @@
  * the license for the specific language governing your rights and limitations.*/
 package org.pentaho.di.core.database;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.List;
 
 import junit.framework.TestCase;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleFileException;
-import org.pentaho.di.core.vfs.KettleVFS;
 
 /**
  * Verify the {@link BaseDatabaseMeta} can properly parse a script for individual statements

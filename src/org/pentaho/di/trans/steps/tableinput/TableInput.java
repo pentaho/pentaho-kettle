@@ -203,7 +203,6 @@ public class TableInput extends BaseStep implements StepInterface
     private void closePreviousQuery() throws KettleDatabaseException {
         if(data.db!=null) {
         	data.db.closeQuery(data.rs);
-        	setWaitingForData(false);
         }
     }
 
@@ -231,8 +230,6 @@ public class TableInput extends BaseStep implements StepInterface
         }
         else
         {
-            setWaitingForData(true);
-
             // Keep the metadata
             data.rowMeta = data.db.getReturnRowMeta();
             

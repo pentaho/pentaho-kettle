@@ -31,7 +31,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
-import org.pentaho.di.core.BlockingListeningRowSet;
 import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.QueueRowSet;
@@ -3574,20 +3573,4 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     this.containerObjectId = containerObjectId;
 
   }
-  
-  /**
-   * Check if the transformation is idle.
-   * A transformation is idle if all the steps in the transformation are idle.
-   * 
-   * @return true if the transformation is idle, false if it is active.
-   */
-  public boolean isIdle() {
-    for (StepMetaDataCombi combi : steps) {
-      if (!combi.step.isIdle()) {
-        return false;
-      }
-    }
-    return true;
-  }
-
 }

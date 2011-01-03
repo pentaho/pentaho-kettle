@@ -148,30 +148,34 @@ public class SingleThreadedTransExecutor {
         // This means that it is impractical to use this transformation type to load large files.
         //
         boolean stepDone = false;
-        if (combi.step.isWaitingForData()) {
-          
-          while (!trans.isStopped() && combi.step.processRow(combi.meta, combi.data));
-          stepDone = true;
-          
+        // For every input row we call the processRow() method of the step.
+        //
+        List<RowSet> infoRowSets = stepInfoRowSets.get(s);
+        
+        // Loop over info-rowsets FIRST to make sure we support the "Stream Lookup" step and so on.
+        //
+        for (RowSet rowSet : infoRowSets) {
+          boolean once = true;
+          while(once || (rowSet.size()>0 && !stepDone)) {
+            once=false;
+            stepDone = !combi.step.processRow(combi.meta, combi.data);
+          }
+        }        
+
+        // Do normal processing of input rows...
+        //
+        List<RowSet> rowSets = combi.step.getInputRowSets();
+        
+        // If there are no input row sets, we read all rows until finish.
+        // This applies to steps like "Table Input", "Text File Input" and so on.
+        // If they do have an input row set, to get filenames or other parameters, 
+        // we need to handle this in the batchComplete() methods.
+        //
+        if (rowSets.size()==0) {
+          while (!stepDone && !trans.isStopped()) {
+            stepDone = !combi.step.processRow(combi.meta, combi.data);
+          }
         } else {
-          // For every input row we call the processRow() method of the step.
-          //
-          List<RowSet> infoRowSets = stepInfoRowSets.get(s);
-          
-          // Loop over info-rowsets FIRST to make sure we support the "Stream Lookup" step and so on.
-          //
-          for (RowSet rowSet : infoRowSets) {
-            boolean once = true;
-            while(once || (rowSet.size()>0 && !stepDone)) {
-              once=false;
-              stepDone = !combi.step.processRow(combi.meta, combi.data);
-            }
-          }        
-  
-          // Do normal processing of input rows...
-          //
-          List<RowSet> rowSets = combi.step.getInputRowSets();
-          
           // Since we can't be sure that the step actually reads from the row sets where we measure rows, 
           // we simply count the total nr of rows on input.  The steps will find the rows in either row set.
           // 
@@ -185,13 +189,14 @@ public class SingleThreadedTransExecutor {
           for (int i=0;i<nrRows;i++) {
               stepDone = !combi.step.processRow(combi.meta, combi.data);
           }
-          
-          // Signal the step that a batch of rows has passed for this iteration (sort rows and all)
-          //
-          combi.step.batchComplete();
-          
-          // System.out.println(combi.step.toString()+" : input="+getTotalRows(combi.step.getInputRowSets())+", output="+getTotalRows(combi.step.getOutputRowSets()));
         }
+        
+        // Signal the step that a batch of rows has passed for this iteration (sort rows and all)
+        //
+        combi.step.batchComplete();
+        
+        // System.out.println(combi.step.toString()+" : input="+getTotalRows(combi.step.getInputRowSets())+", output="+getTotalRows(combi.step.getOutputRowSets()));
+
         if (stepDone) {
           nrDone++;
         }

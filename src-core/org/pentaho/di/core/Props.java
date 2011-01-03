@@ -30,8 +30,6 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.SortedFileOutputStream;
 import org.pentaho.di.i18n.BaseMessages;
 
-import com.ibm.db2.jcc.a.y;
-
 
 /**
  * We use Props to store all kinds of user interactive information such as the selected colors, fonts, positions of windows, etc.

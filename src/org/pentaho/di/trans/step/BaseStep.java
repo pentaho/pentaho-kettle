@@ -155,9 +155,6 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
     private AtomicBoolean                 paused;
     
-    private AtomicBoolean                 waitingForData;
-    private AtomicBoolean                 passingData;
-
     private boolean                       init;
 
     /** the copy number of this thread */
@@ -312,8 +309,6 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
         running = new AtomicBoolean(false);
         stopped = new AtomicBoolean(false);
         paused = new AtomicBoolean(false);
-        waitingForData = new AtomicBoolean(false);
-        passingData = new AtomicBoolean(false);
         
         init = false;
 
@@ -1067,134 +1062,131 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
         return; // we're done here!
       }
 
-      setPassingData(true);
-      try {
+      // Repartitioning happens when the current step is not partitioned, but the next one is.
+      // That means we need to look up the partitioning information in the next step..
+      // If there are multiple steps, we need to look at the first (they should be all the same)
+      // 
+      switch(repartitioning)
+      {
+      case StepPartitioningMeta.PARTITIONING_METHOD_NONE:
+      {
+          if (distributed)
+          {
+              // Copy the row to the "next" output rowset.
+              // We keep the next one in out_handling
+          	//
+              RowSet rs = outputRowSets.get(currentOutputRowSetNr);
+              
+      	    // To reduce stress on the locking system we are NOT going to allow
+      	    // the buffer to grow to its full capacity.
+      	    //
+              if (isUsingThreadPriorityManagment() && !rs.isDone() && rs.size()>= upperBufferBoundary && !isStopped())
+              {
+              	try { Thread.sleep(0,1); } catch (InterruptedException e) { }
+              }
+              
+              // Loop until we find room in the target rowset
+              //
+              while (!rs.putRow(rowMeta, row) && !isStopped()) 
+              	;
+              incrementLinesWritten();
 
-        // Repartitioning happens when the current step is not partitioned, but the next one is.
-        // That means we need to look up the partitioning information in the next step..
-        // If there are multiple steps, we need to look at the first (they should be all the same)
-        // 
-        switch(repartitioning)
-        {
-        case StepPartitioningMeta.PARTITIONING_METHOD_NONE:
-        {
-            if (distributed)
-            {
-                // Copy the row to the "next" output rowset.
-                // We keep the next one in out_handling
-            	//
-                RowSet rs = outputRowSets.get(currentOutputRowSetNr);
-                
-        	    // To reduce stress on the locking system we are NOT going to allow
-        	    // the buffer to grow to its full capacity.
-        	    //
-                if (isUsingThreadPriorityManagment() && !rs.isDone() && rs.size()>= upperBufferBoundary && !isStopped())
-                {
-                	try { Thread.sleep(0,1); } catch (InterruptedException e) { }
-                }
-                
-                // Loop until we find room in the target rowset
-                //
-                while (!rs.putRow(rowMeta, row) && !isStopped()) 
-                	;
-                incrementLinesWritten();
+              // Now determine the next output rowset!
+              // Only if we have more then one output...
+              //
+              if (outputRowSets.size() > 1)
+              {
+                  currentOutputRowSetNr++;
+                  if (currentOutputRowSetNr >= outputRowSets.size()) currentOutputRowSetNr = 0;
+              }
+          }
+          else
+          	
+          // Copy the row to all output rowsets
+          //
+          {
+              // Copy to the row in the other output rowsets...
+              for (int i = 1; i < outputRowSets.size(); i++) // start at 1
+              {
+                  RowSet rs = outputRowSets.get(i);
+                  
+          	    // To reduce stress on the locking system we are NOT going to allow
+          	    // the buffer to grow to its full capacity.
+          	    //
+                  if (isUsingThreadPriorityManagment() && !rs.isDone() && rs.size()>= upperBufferBoundary && !isStopped())
+                  {
+                  	try { Thread.sleep(0,1); } catch (InterruptedException e) { }
+                  }
 
-                // Now determine the next output rowset!
-                // Only if we have more then one output...
-                //
-                if (outputRowSets.size() > 1)
-                {
-                    currentOutputRowSetNr++;
-                    if (currentOutputRowSetNr >= outputRowSets.size()) currentOutputRowSetNr = 0;
-                }
-            }
-            else
-            	
-            // Copy the row to all output rowsets
-            //
-            {
-                // Copy to the row in the other output rowsets...
-                for (int i = 1; i < outputRowSets.size(); i++) // start at 1
-                {
-                    RowSet rs = outputRowSets.get(i);
-                    
-            	    // To reduce stress on the locking system we are NOT going to allow
-            	    // the buffer to grow to its full capacity.
-            	    //
-                    if (isUsingThreadPriorityManagment() && !rs.isDone() && rs.size()>= upperBufferBoundary && !isStopped())
-                    {
-                    	try { Thread.sleep(0,1); } catch (InterruptedException e) { }
-                    }
+                  try
+                  {
+                      // Loop until we find room in the target rowset
+                      //
+                      while (!rs.putRow(rowMeta, rowMeta.cloneRow(row)) && !isStopped()) 
+                      	;
+                      incrementLinesWritten();
+                  }
+                  catch (KettleValueException e)
+                  {
+                      throw new KettleStepException("Unable to clone row while copying rows to multiple target steps", e);
+                  }
+              }
 
-                    try
-                    {
-                        // Loop until we find room in the target rowset
-                        //
-                        while (!rs.putRow(rowMeta, rowMeta.cloneRow(row)) && !isStopped()) 
-                        	;
-                        incrementLinesWritten();
-                    }
-                    catch (KettleValueException e)
-                    {
-                        throw new KettleStepException("Unable to clone row while copying rows to multiple target steps", e);
-                    }
-                }
+              // set row in first output rowset
+              //
+              RowSet rs = outputRowSets.get(0);
+              while (!rs.putRow(rowMeta, row) && !isStopped()) 
+              	;
+              incrementLinesWritten();
+          }
+      }
+      break;
 
-                // set row in first output rowset
-                //
-                RowSet rs = outputRowSets.get(0);
-                while (!rs.putRow(rowMeta, row) && !isStopped()) 
-                	;
-                incrementLinesWritten();
-            }
-        }
-        break;
+      case StepPartitioningMeta.PARTITIONING_METHOD_SPECIAL:
+          {
+          	if( nextStepPartitioningMeta == null )
+          	{
+          		// Look up the partitioning of the next step.
+          		// This is the case for non-clustered partitioning...
+          		//
+          		List<StepMeta> nextSteps = transMeta.findNextSteps(stepMeta);
+                  if (nextSteps.size()>0) {
+                  	nextStepPartitioningMeta = nextSteps.get(0).getStepPartitioningMeta();
+                  }
+                  
+                  // TODO: throw exception if we're not partitioning yet. 
+                  // For now it throws a NP Exception.
+          	}
+          	
+              int partitionNr;
+              try
+              {
+              	partitionNr = nextStepPartitioningMeta.getPartition(rowMeta, row);
+              }
+              catch (KettleException e)
+              {
+                  throw new KettleStepException("Unable to convert a value to integer while calculating the partition number", e);
+              }
 
-        case StepPartitioningMeta.PARTITIONING_METHOD_SPECIAL:
-            {
-            	if( nextStepPartitioningMeta == null )
-            	{
-            		// Look up the partitioning of the next step.
-            		// This is the case for non-clustered partitioning...
-            		//
-            		List<StepMeta> nextSteps = transMeta.findNextSteps(stepMeta);
-                    if (nextSteps.size()>0) {
-                    	nextStepPartitioningMeta = nextSteps.get(0).getStepPartitioningMeta();
-                    }
-                    
-                    // TODO: throw exception if we're not partitioning yet. 
-                    // For now it throws a NP Exception.
-            	}
-            	
-                int partitionNr;
-                try
-                {
-                	partitionNr = nextStepPartitioningMeta.getPartition(rowMeta, row);
-                }
-                catch (KettleException e)
-                {
-                    throw new KettleStepException("Unable to convert a value to integer while calculating the partition number", e);
-                }
-
-                RowSet selectedRowSet = null;
-                
-                if (clusteredPartitioningFirst) {
-                	clusteredPartitioningFirst=false;
-                	
-                	// We are only running remotely if both the distribution is there AND if the distribution is actually contains something.
-                	//
-                	clusteredPartitioning = transMeta.getSlaveStepCopyPartitionDistribution()!=null && !transMeta.getSlaveStepCopyPartitionDistribution().getDistribution().isEmpty();
-                }
-                
-        		// OK, we have a SlaveStepCopyPartitionDistribution in the transformation...
-        		// We want to pre-calculate what rowset we're sending data to for which partition...
-                // It is only valid in clustering / partitioning situations.
-                // When doing a local partitioning, it is much simpler.
-        		//
-                if (clusteredPartitioning) {
-                	
-                	// This next block is only performed once for speed...
-                	//
+              RowSet selectedRowSet = null;
+              
+              if (clusteredPartitioningFirst) {
+              	clusteredPartitioningFirst=false;
+              	
+              	// We are only running remotely if both the distribution is there AND if the distribution is actually contains something.
+              	//
+              	clusteredPartitioning = transMeta.getSlaveStepCopyPartitionDistribution()!=null && !transMeta.getSlaveStepCopyPartitionDistribution().getDistribution().isEmpty();
+              }
+              
+      		// OK, we have a SlaveStepCopyPartitionDistribution in the transformation...
+      		// We want to pre-calculate what rowset we're sending data to for which partition...
+              // It is only valid in clustering / partitioning situations.
+              // When doing a local partitioning, it is much simpler.
+      		//
+              if (clusteredPartitioning) {
+              	
+              	// This next block is only performed once for speed...
+              	//
 	                if (partitionNrRowSetList==null) {
 	        			partitionNrRowSetList = new RowSet[outputRowSets.size()];
 	        			
@@ -1225,7 +1217,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
                 
 	                // OK, now get the target partition based on the partition nr...
 	                // This should be very fast
-                	//
+              	//
 	                if (partitionNr<partitionNrRowSetList.length) {
 	                	selectedRowSet = partitionNrRowSetList[partitionNr];
 	                } else {
@@ -1245,9 +1237,9 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
                 
                 if (selectedRowSet==null) {
                 	logBasic("Target rowset is not available for target partition, partitionNr="+partitionNr);
-                }
-                
-                // logBasic("Putting row to partition #"+partitionNr);
+              }
+              
+              // logBasic("Putting row to partition #"+partitionNr);
                 
                 while (!selectedRowSet.putRow(rowMeta, row) && !isStopped()) 
                 	;
@@ -1264,20 +1256,17 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
         case StepPartitioningMeta.PARTITIONING_METHOD_MIRROR:
             {
                 // Copy always to all target steps/copies.
-                // 
-                for (int r = 0; r < outputRowSets.size(); r++)
-                {
-                    RowSet rowSet = outputRowSets.get(r);
-                    while (!rowSet.putRow(rowMeta, row) && !isStopped()) 
-                    	;
-                }
-            }
-            break;
-        default:
-        	throw new KettleStepException("Internal error: invalid repartitioning type: " + repartitioning);
-        }
-      } finally {
-        setPassingData(false);
+              // 
+              for (int r = 0; r < outputRowSets.size(); r++)
+              {
+                  RowSet rowSet = outputRowSets.get(r);
+                  while (!rowSet.putRow(rowMeta, row) && !isStopped()) 
+                  	;
+              }
+          }
+          break;
+      default:
+      	throw new KettleStepException("Internal error: invalid repartitioning type: " + repartitioning);
       }
     }
 
@@ -1330,17 +1319,11 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
       return;
     }
 
-    setPassingData(true);
-    try {
-
-      // Don't distribute or anything, only go to this rowset!
-      //
-      while (!rowSet.putRow(rowMeta, row) && !isStopped())
-        ;
-      incrementLinesWritten();
-    } finally {
-      setPassingData(false);
-    }
+    // Don't distribute or anything, only go to this rowset!
+    //
+    while (!rowSet.putRow(rowMeta, row) && !isStopped())
+      ;
+    incrementLinesWritten();
   }
 
   public void putError(RowMetaInterface rowMeta, Object[] row, long nrErrors, String errorDescriptions, String fieldNames, String errorCodes) throws KettleStepException {
@@ -1375,19 +1358,13 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
       }
     }
 
-    setPassingData(true);
-    try {
-
-      if (errorRowSet != null) {
-        while (!errorRowSet.putRow(errorRowMeta, errorRowData) && !isStopped())
-          ;
-        incrementLinesRejected();
-      }
-
-      verifyRejectionRates();
-    } finally {
-      setPassingData(false);
+    if (errorRowSet != null) {
+      while (!errorRowSet.putRow(errorRowMeta, errorRowData) && !isStopped())
+        ;
+      incrementLinesRejected();
     }
+
+    verifyRejectionRates();
   }
 
     private void verifyRejectionRates()
@@ -1495,106 +1472,99 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     RowSet inputRowSet = null;
     Object[] row = null;
 
-    setPassingData(true);
-    try {
+    // Do we need to switch to the next input stream?
+    if (blockPointer >= NR_OF_ROWS_IN_BLOCK) {
 
-      // Do we need to switch to the next input stream?
-      if (blockPointer >= NR_OF_ROWS_IN_BLOCK) {
-
-        // Take a peek at the next input stream.
-        // If there is no data, process another NR_OF_ROWS_IN_BLOCK on the next
-        // input stream.
-        //
-        for (int r = 0; r < inputRowSets.size() && row == null; r++) {
-          nextInputStream();
-          inputRowSet = currentInputStream();
-          row = inputRowSet.getRowImmediate();
-        }
-        if (row != null) {
-          incrementLinesRead();
-        }
-      } else {
-        // What's the current input stream?
-        inputRowSet = currentInputStream();
-      }
-
-      // To reduce stress on the locking system we are going to allow
-      // The buffer to grow beyond "a few" entries.
-      // We'll only do that if the previous step has not ended...
+      // Take a peek at the next input stream.
+      // If there is no data, process another NR_OF_ROWS_IN_BLOCK on the next
+      // input stream.
       //
-      if (isUsingThreadPriorityManagment() && !inputRowSet.isDone() && inputRowSet.size() <= lowerBufferBoundary && !isStopped()) {
-        try {
-          Thread.sleep(0, 1);
-        } catch (InterruptedException e) {
-        }
-      }
-
-      // See if this step is receiving partitioned data...
-      // In that case it might be the case that one input row set is receiving
-      // all data and
-      // the other rowsets nothing. (repartitioning on the same key would do
-      // that)
-      //
-      // We never guaranteed that the input rows would be read one by one
-      // alternatively.
-      // So in THIS particular case it is safe to just read 100 rows from one
-      // rowset, then switch to another etc.
-      // We can use timeouts to switch from one to another...
-      // 
-      while (row == null && !isStopped()) {
-        // Get a row from the input in row set ...
-        // Timeout immediately if nothing is there to read.
-        // We will then switch to the next row set to read from...
-        //
-        row = inputRowSet.getRowWait(1, TimeUnit.MILLISECONDS);
-        if (row != null) {
-          incrementLinesRead();
-          blockPointer++;
-        } else {
-          // Try once more...
-          // If row is still empty and the row set is done, we remove the row
-          // set from
-          // the input stream and move on to the next one...
-          //
-          if (inputRowSet.isDone()) {
-            row = inputRowSet.getRowWait(1, TimeUnit.MILLISECONDS);
-            if (row == null) {
-              inputRowSets.remove(currentInputRowSetNr);
-              if (inputRowSets.isEmpty())
-                return null; // We're completely done.
-            } else {
-              incrementLinesRead();
-            }
-          }
-          nextInputStream();
-          inputRowSet = currentInputStream();
-        }
-      }
-
-      // This rowSet is perhaps no longer giving back rows?
-      //
-      while (row == null && !stopped.get()) {
-        // Try the next input row set(s) until we find a row set that still has
-        // rows...
-        // The getRowFrom() method removes row sets from the input row sets
-        // list.
-        //
-        if (inputRowSets.isEmpty())
-          return null; // We're done.
-
+      for (int r = 0; r < inputRowSets.size() && row == null; r++) {
         nextInputStream();
         inputRowSet = currentInputStream();
-        row = getRowFrom(inputRowSet);
+        row = inputRowSet.getRowImmediate();
       }
+      if (row != null) {
+        incrementLinesRead();
+      }
+    } else {
+      // What's the current input stream?
+      inputRowSet = currentInputStream();
+    }
 
-      // Also set the meta data on the first occurrence.
+    // To reduce stress on the locking system we are going to allow
+    // The buffer to grow beyond "a few" entries.
+    // We'll only do that if the previous step has not ended...
+    //
+    if (isUsingThreadPriorityManagment() && !inputRowSet.isDone() && inputRowSet.size() <= lowerBufferBoundary && !isStopped()) {
+      try {
+        Thread.sleep(0, 1);
+      } catch (InterruptedException e) {
+      }
+    }
+
+    // See if this step is receiving partitioned data...
+    // In that case it might be the case that one input row set is receiving
+    // all data and
+    // the other rowsets nothing. (repartitioning on the same key would do
+    // that)
+    //
+    // We never guaranteed that the input rows would be read one by one
+    // alternatively.
+    // So in THIS particular case it is safe to just read 100 rows from one
+    // rowset, then switch to another etc.
+    // We can use timeouts to switch from one to another...
+    // 
+    while (row == null && !isStopped()) {
+      // Get a row from the input in row set ...
+      // Timeout immediately if nothing is there to read.
+      // We will then switch to the next row set to read from...
       //
-      if (inputRowMeta == null) {
-        inputRowMeta = inputRowSet.getRowMeta();
+      row = inputRowSet.getRowWait(1, TimeUnit.MILLISECONDS);
+      if (row != null) {
+        incrementLinesRead();
+        blockPointer++;
+      } else {
+        // Try once more...
+        // If row is still empty and the row set is done, we remove the row
+        // set from
+        // the input stream and move on to the next one...
+        //
+        if (inputRowSet.isDone()) {
+          row = inputRowSet.getRowWait(1, TimeUnit.MILLISECONDS);
+          if (row == null) {
+            inputRowSets.remove(currentInputRowSetNr);
+            if (inputRowSets.isEmpty())
+              return null; // We're completely done.
+          } else {
+            incrementLinesRead();
+          }
+        }
+        nextInputStream();
+        inputRowSet = currentInputStream();
       }
+    }
 
-    } finally {
-      setPassingData(false);
+    // This rowSet is perhaps no longer giving back rows?
+    //
+    while (row == null && !stopped.get()) {
+      // Try the next input row set(s) until we find a row set that still has
+      // rows...
+      // The getRowFrom() method removes row sets from the input row sets
+      // list.
+      //
+      if (inputRowSets.isEmpty())
+        return null; // We're done.
+
+      nextInputStream();
+      inputRowSet = currentInputStream();
+      row = getRowFrom(inputRowSet);
+    }
+
+    // Also set the meta data on the first occurrence.
+    //
+    if (inputRowMeta == null) {
+      inputRowMeta = inputRowSet.getRowMeta();
     }
 
     if (row != null) {
@@ -1794,56 +1764,49 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     }
     Object[] rowData = null;
 
-    setPassingData(true);
-    try {
-
-      // To reduce stress on the locking system we are going to allow
-      // The buffer to grow beyond "a few" entries.
-      // We'll only do that if the previous step has not ended...
-      //
-      if (isUsingThreadPriorityManagment() && !rowSet.isDone() && rowSet.size() <= lowerBufferBoundary && !isStopped()) {
-        try {
-          Thread.sleep(0, 1);
-        } catch (InterruptedException e) {
-        }
+    // To reduce stress on the locking system we are going to allow
+    // The buffer to grow beyond "a few" entries.
+    // We'll only do that if the previous step has not ended...
+    //
+    if (isUsingThreadPriorityManagment() && !rowSet.isDone() && rowSet.size() <= lowerBufferBoundary && !isStopped()) {
+      try {
+        Thread.sleep(0, 1);
+      } catch (InterruptedException e) {
       }
-
-      // Grab a row... If nothing received after a timeout, try again.
-      //
-      rowData = rowSet.getRow();
-      while (rowData == null && !rowSet.isDone() && !stopped.get()) {
-        rowData = rowSet.getRow();
-      }
-
-      // Still nothing: no more rows to be had?
-      //
-      if (rowData == null && rowSet.isDone()) {
-        // Try one more time to get a row to make sure we don't get a
-        // race-condition between the get and the isDone()
-        //
-        rowData = rowSet.getRow();
-      }
-
-      if (stopped.get()) {
-        if (log.isDebug())
-          logDebug(BaseMessages.getString(PKG, "BaseStep.Log.StopLookingForMoreRows")); //$NON-NLS-1$
-        stopAll();
-        return null;
-      }
-
-      if (rowData == null && rowSet.isDone()) {
-        // Try one more time...
-        //
-        rowData = rowSet.getRow();
-        if (rowData == null) {
-          inputRowSets.remove(rowSet);
-          return null;
-        }
-      }
-    } finally {
-      setPassingData(false);
     }
 
+    // Grab a row... If nothing received after a timeout, try again.
+    //
+    rowData = rowSet.getRow();
+    while (rowData == null && !rowSet.isDone() && !stopped.get()) {
+      rowData = rowSet.getRow();
+    }
+
+    // Still nothing: no more rows to be had?
+    //
+    if (rowData == null && rowSet.isDone()) {
+      // Try one more time to get a row to make sure we don't get a
+      // race-condition between the get and the isDone()
+      //
+      rowData = rowSet.getRow();
+    }
+
+    if (stopped.get()) {
+      if (log.isDebug())
+        logDebug(BaseMessages.getString(PKG, "BaseStep.Log.StopLookingForMoreRows")); //$NON-NLS-1$
+      stopAll();
+      return null;
+    }
+
+    if (rowData == null && rowSet.isDone()) {
+      // Try one more time...
+      //
+      rowData = rowSet.getRow();
+      if (rowData == null) {
+        inputRowSets.remove(rowSet);
+        return null;
+      }
+    }
     incrementLinesRead();
 
     // call all rowlisteners...
@@ -2001,8 +1964,6 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
             }
             if (errorRowSet!=null) errorRowSet.setDone();
         }
-        
-        setWaitingForData(false);
     }
 
     /**
@@ -3051,77 +3012,8 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     this.containerObjectId = containerObjectId;
   }
   
-  /**
-   * This method determines if a step is idle or not.
-   * A step is idle if it is not waiting for data and has no input data waiting.
-   * 
-   * @return true if the step is idle, false if it is not.
-   * 
-   */
-  public synchronized boolean isIdle() {
-    synchronized(waitingForData) {
-      // If the step is waiting for data from file, network or database, it's not idle
-      //
-      if (isWaitingForData()) return false;
-          
-      // If the buffers are all empty AND the step is 
-      // not passing data to another step or waiting for rows 
-      // from previous steps, it's not idle.
-      //
-      for (RowSet rowSet : inputRowSets) {
-        synchronized(rowSet) {
-          if (rowSet.size()>0) {
-            return false;
-          }
-          if (!isPassingData() || !rowSet.isBlocking()) {
-            return false;
-          }
-        }
-      }
-      
-      return true;
-    }
-  }
-
-  /**
-   * Indicates that this step is still waiting for more data to arrive.
-   * @return True if more data is arriving into this step.
-   */
-  public boolean isWaitingForData() {
-    return waitingForData.get();
-  }
-  
-  /**
-   * Specify that this step waits for more data or not
-   * @param waitingForData Set to true to indicate that this step is not idle but still waiting for more data.
-   */
-  public void setWaitingForData(boolean waitingForData) {
-    this.waitingForData.set(waitingForData);
-  }
-  
-
-  /**
-   * Indicates that this step is passing data to next steps and/or listeners.
-   * @return True if data is being passed.
-   */
-  public boolean isPassingData() {
-    return passingData.get();
-  }
-  
-  /**
-   * Indicate that this step is passing data to next steps and/or listeners.
-   * @param passingData True if data is being passed.
-   */
-  public void setPassingData(boolean passingData) {
-    this.passingData.set(passingData);
-  }
-  
-  /**
-   * Calling this method will alert the step that we finished passing records to the step.
-   * Specifically for steps like "Sort Rows" it means that the buffered rows can be sorted and passed on. 
-   * @throws KettleException 
-   */
+  @Override
   public void batchComplete() throws KettleException {
   }
-
+  
 }
