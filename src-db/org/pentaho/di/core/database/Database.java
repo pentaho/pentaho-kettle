@@ -2151,7 +2151,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		if (databaseMeta.getDatabaseInterface() instanceof OracleDatabaseMeta &&
 			databaseMeta.getIndexTablespace()!=null && databaseMeta.getIndexTablespace().length()>0)
 		{
-			cr_index+="TABLESPACE "+databaseMeta.quoteField(databaseMeta.getIndexTablespace());
+			cr_index+="TABLESPACE "+databaseMeta.quoteField(variables.environmentSubstitute(databaseMeta.getIndexTablespace()));
 		}
 		
 		if (semi_colon)
@@ -3233,7 +3233,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		if (databaseMeta.getDatabaseInterface() instanceof OracleDatabaseMeta &&
 				databaseMeta.getIndexTablespace()!=null && databaseMeta.getIndexTablespace().length()>0)
 		{
-			retval.append("TABLESPACE ").append(databaseMeta.getDataTablespace());
+			retval.append("TABLESPACE ").append(variables.environmentSubstitute(databaseMeta.getDataTablespace()));
 		}
 
 		if (pk==null && tk==null && databaseMeta.getDatabaseInterface() instanceof NeoviewDatabaseMeta)
