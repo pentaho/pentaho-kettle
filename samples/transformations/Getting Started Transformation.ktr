@@ -7,7 +7,7 @@
     <trans_version/>
     <trans_type>Normal</trans_type>
     <trans_status>0</trans_status>
-    <directory>&#47;home&#47;joe</directory>
+    <directory>&#47;</directory>
     <parameters>
     </parameters>
     <log>
@@ -61,6 +61,8 @@
     </slaveservers>
     <clusterschemas>
     </clusterschemas>
+  <created_user/>
+  <created_date>2011&#47;01&#47;03 18:51:35.867</created_date>
   <modified_user>joe</modified_user>
   <modified_date>2010&#47;04&#47;21 14:58:09.203</modified_date>
   </info>
@@ -74,8 +76,8 @@ To test this transformation, you will need to:
   - Open the Table Output step and click the SQL button to create the target output table</note>
       <xloc>14</xloc>
       <yloc>263</yloc>
-      <width>698</width>
-      <heigth>98</heigth>
+      <width>767</width>
+      <heigth>100</heigth>
       <fontname>Microsoft Sans Serif</fontname>
       <fontsize>10</fontsize>
       <fontbold>N</fontbold>
@@ -92,6 +94,72 @@ To test this transformation, you will need to:
       <drawshadow>Y</drawshadow>
     </notepad>
   </notepads>
+  <connection>
+    <name>CMS</name>
+    <server>${CMS_HOSTNAME}</server>
+    <type>MYSQL</type>
+    <access>Native</access>
+    <database>${CMS_DATABASE}</database>
+    <port>${CMS_PORT}</port>
+    <username>${CMS_USERNAME}</username>
+    <password>${CMS_PASSWORD}</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>${CMS_PORT}</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>STREAM_RESULTS</code><attribute>Y</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>DWH</name>
+    <server>${DWH_HOSTNAME}</server>
+    <type>MYSQL</type>
+    <access>Native</access>
+    <database>${DWH_DATABASE}</database>
+    <port>${DWH_PORT}</port>
+    <username>${DWH_USERNAME}</username>
+    <password>${DWH_PASSWORD}</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>${DWH_PORT}</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>STREAM_RESULTS</code><attribute>Y</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>LOGGING</name>
+    <server>${LOGGING_HOSTNAME}</server>
+    <type>MYSQL</type>
+    <access>Native</access>
+    <database>${LOGGING_DATABASE}</database>
+    <port>${LOGGING_PORT}</port>
+    <username>${LOGGING_USERNAME}</username>
+    <password>${LOGGING_PASSWORD}</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>${LOGGING_PORT}</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>STREAM_RESULTS</code><attribute>Y</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
   <connection>
     <name>sampledata</name>
     <server>localhost</server>
@@ -114,8 +182,30 @@ To test this transformation, you will need to:
       <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
     </attributes>
   </connection>
+  <connection>
+    <name>STG</name>
+    <server>${STG_HOSTNAME}</server>
+    <type>MYSQL</type>
+    <access>Native</access>
+    <database>${STG_DATABASE}</database>
+    <port>${STG_PORT}</port>
+    <username>${STG_USERNAME}</username>
+    <password>${STG_PASSWORD}</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>${STG_PORT}</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>STREAM_RESULTS</code><attribute>Y</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
   <order>
-  <hop> <from>Read Sales Data</from><to>Filter rows</to><enabled>Y</enabled> </hop>  <hop> <from>Filter rows</from><to>Value Mapper</to><enabled>Y</enabled> </hop>  <hop> <from>Read Postal Codes</from><to>Lookup Missing Zips</to><enabled>Y</enabled> </hop>  <hop> <from>Filter rows</from><to>Lookup Missing Zips</to><enabled>Y</enabled> </hop>  <hop> <from>Lookup Missing Zips</from><to>Prepare Field Layout</to><enabled>Y</enabled> </hop>  <hop> <from>Prepare Field Layout</from><to>Value Mapper</to><enabled>Y</enabled> </hop>  <hop> <from>Number range</from><to>Write to Database</to><enabled>Y</enabled> </hop>  <hop> <from>Value Mapper</from><to>Number range</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>Read Sales Data</from><to>Filter rows</to><enabled>Y</enabled> </hop>  <hop> <from>Filter rows</from><to>Value Mapper</to><enabled>Y</enabled> </hop>  <hop> <from>Read Postal Codes</from><to>Lookup Missing Zips</to><enabled>Y</enabled> </hop>  <hop> <from>Filter rows</from><to>Lookup Missing Zips</to><enabled>Y</enabled> </hop>  <hop> <from>Lookup Missing Zips</from><to>Prepare Field Layout</to><enabled>Y</enabled> </hop>  <hop> <from>Prepare Field Layout</from><to>Value Mapper</to><enabled>Y</enabled> </hop>  <hop> <from>Number range</from><to>Write to Database</to><enabled>N</enabled> </hop>  <hop> <from>Value Mapper</from><to>Number range</to><enabled>Y</enabled> </hop>  </order>
   <step>
     <name>Filter rows</name>
     <type>FilterRows</type>
@@ -334,6 +424,8 @@ To test this transformation, you will need to:
         <length>9</length>
         <precision>-2</precision>
         <conversion_mask/>
+        <date_format_lenient>false</date_format_lenient>
+        <encoding/>
         <decimal_symbol/>
         <grouping_symbol/>
         <currency_symbol/>
@@ -385,6 +477,7 @@ To test this transformation, you will need to:
     <file>
       <name>${Internal.Transformation.Filename.Directory}\files\Zipssortedbycitystate.csv</name>
       <filemask/>
+      <exclude_filemask/>
       <file_required>N</file_required>
       <include_subfolders>N</include_subfolders>
       <type>CSV</type>
@@ -453,6 +546,14 @@ To test this transformation, you will need to:
     <line_number_files_extension>line</line_number_files_extension>
     <date_format_lenient>Y</date_format_lenient>
     <date_format_locale>en_US</date_format_locale>
+    <shortFileFieldName/>
+    <pathFieldName/>
+    <hiddenFieldName/>
+    <lastModificationTimeFieldName/>
+    <uriNameFieldName/>
+    <rootUriNameFieldName/>
+    <extensionFieldName/>
+    <sizeFieldName/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>43</xloc>
@@ -500,6 +601,7 @@ To test this transformation, you will need to:
     <file>
       <name>${Internal.Transformation.Filename.Directory}\files\sales_data.csv</name>
       <filemask/>
+      <exclude_filemask/>
       <file_required>N</file_required>
       <include_subfolders>N</include_subfolders>
       <type>CSV</type>
@@ -882,7 +984,15 @@ To test this transformation, you will need to:
     <line_number_files_destination_directory/>
     <line_number_files_extension>line</line_number_files_extension>
     <date_format_lenient>Y</date_format_lenient>
-    <date_format_locale>en_us</date_format_locale>
+    <date_format_locale>en_US</date_format_locale>
+    <shortFileFieldName/>
+    <pathFieldName/>
+    <hiddenFieldName/>
+    <lastModificationTimeFieldName/>
+    <uriNameFieldName/>
+    <rootUriNameFieldName/>
+    <extensionFieldName/>
+    <sizeFieldName/>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>43</xloc>

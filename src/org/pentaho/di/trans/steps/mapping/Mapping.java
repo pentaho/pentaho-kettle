@@ -92,8 +92,7 @@ public class Mapping extends BaseStep implements StepInterface
 	        // The transformation still runs in the background and might have some more work to do.
 	        // Since everything is running in the MappingThreads we don't have to do anything else here but wait...
 	        //
-	        if (getTransMeta().getTransformationType()==TransformationType.Normal ||
-	            getTransMeta().getTransformationType()==TransformationType.Monitored ) {
+	        if (getTransMeta().getTransformationType()==TransformationType.Normal) {
 		        data.mappingTrans.waitUntilFinished();
 		        
 		        // Set some statistics from the mapping...

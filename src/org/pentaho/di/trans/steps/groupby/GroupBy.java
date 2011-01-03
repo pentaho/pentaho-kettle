@@ -71,8 +71,7 @@ public class GroupBy extends BaseStep implements StepInterface
         
         Object[] r=getRow();    // get row!
         
-		
-        if (first)
+		if (first)
 		{
         	// What is the output looking like?
         	// 
@@ -158,17 +157,21 @@ public class GroupBy extends BaseStep implements StepInterface
 			// Initialize the group metadata
 			//
 			initGroupMeta(data.inputRowMeta);
-			
-			// Create a new group aggregate (init)
-			//
-			newAggregate(r);
-			
-			// for speed: groupMeta+aggMeta
-			//
-			data.groupAggMeta=new RowMeta();
-			data.groupAggMeta.addRowMeta(data.groupMeta);
-			data.groupAggMeta.addRowMeta(data.aggMeta);
 		}
+        
+        if (first || data.newBatch) {
+          // Create a new group aggregate (init)
+          //
+          newAggregate(r);
+        }
+        
+        if (first) {
+          // for speed: groupMeta+aggMeta
+          //
+          data.groupAggMeta = new RowMeta();
+          data.groupAggMeta.addRowMeta(data.groupMeta);
+          data.groupAggMeta.addRowMeta(data.aggMeta);
+        }
         
 		if (r==null)  // no more input to be expected... (or none received in the first place)
 		{
@@ -177,9 +180,10 @@ public class GroupBy extends BaseStep implements StepInterface
 			return false;
 		}
         
-        if (first)
+        if (first || data.newBatch)
         {
         	first=false;
+        	data.newBatch = false;
         	
         	data.previous = data.inputRowMeta.cloneRow(r); // copy the row to previous
 		}
@@ -814,5 +818,6 @@ public class GroupBy extends BaseStep implements StepInterface
 	
 	public void batchComplete() throws KettleException {
 	  handleLastOfGroup();
+	  data.newBatch=true;
 	}
 }

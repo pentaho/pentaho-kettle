@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.trans.TransMeta.TransformationType;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 
@@ -106,6 +107,19 @@ public class SingleThreadedTransExecutor {
   }
 
   public boolean init() throws KettleException {
+    
+    // See if the steps support the SingleThreaded transformation type...
+    //
+    for (StepMetaDataCombi combi : steps) {
+      TransformationType[] types = combi.stepMeta.getStepMetaInterface().getSupportedTransformationTypes();
+      boolean ok = false;
+      for (TransformationType type : types) {
+        if (type == TransformationType.SingleThreaded) ok = true; 
+      }
+      if (!ok) {
+        throw new KettleException("Step '"+combi.stepname+"' of type '"+combi.stepMeta.getStepID()+"' is not yet supported in a Single Threaded transformation engine.");
+      }
+    }    
     // Initialize all the steps...
     //
     for (StepMetaDataCombi combi : steps) {

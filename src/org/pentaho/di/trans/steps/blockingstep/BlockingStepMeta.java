@@ -31,6 +31,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.TransMeta.TransformationType;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
@@ -276,4 +277,8 @@ public class BlockingStepMeta  extends BaseStepMeta implements StepMetaInterface
 	{
 		this.directory = directory;
 	}
+	
+    public TransformationType[] getSupportedTransformationTypes() {
+      return new TransformationType[] { TransformationType.Normal, };
+    }
 }

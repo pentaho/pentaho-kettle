@@ -32,6 +32,7 @@ import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.TransMeta.TransformationType;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.w3c.dom.Node;
 
@@ -290,4 +291,10 @@ public interface StepMetaInterface
 	 * This method will return null if the interface is not available for this step.
 	 */
 	public StepMetaInjectionInterface getStepMetaInjectionInterface();
+	
+	/**
+	 * @return The supported transformation types that this step supports.
+	 */
+	public TransformationType[] getSupportedTransformationTypes();
+	
 }

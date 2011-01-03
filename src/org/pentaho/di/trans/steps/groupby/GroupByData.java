@@ -84,6 +84,8 @@ public class GroupByData extends BaseStepData implements StepDataInterface
 	public ValueMetaInterface valueMetaNumber;
 
 	public double[] mean;
+	
+	public boolean newBatch;
     
 	/**
 	 * 

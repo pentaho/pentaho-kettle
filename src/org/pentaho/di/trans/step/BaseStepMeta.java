@@ -46,6 +46,7 @@ import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.trans.DatabaseImpact;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.TransMeta.TransformationType;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -547,6 +548,13 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface
 
     public String getTooltip(String attributeKey) {
       return findAttribute(attributeKey).getTooltip();
+    }
+
+    /**
+     * @return The supported transformation types that this step supports.
+     */
+    public TransformationType[] getSupportedTransformationTypes() {
+      return new TransformationType[] { TransformationType.Normal, TransformationType.SingleThreaded, };
     }
 
 }

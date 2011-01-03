@@ -477,7 +477,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     					RowSet rowSet;
     					switch(transMeta.getTransformationType()) {
     					case Normal: rowSet = new BlockingRowSet(transMeta.getSizeRowset()); break;
-    					case Monitored:  rowSet = new BlockingListeningRowSet(transMeta.getSizeRowset()); break;
     					case SerialSingleThreaded: rowSet = new SingleRowRowSet(); break;
                         case SingleThreaded: rowSet = new QueueRowSet(); break;
     					default: 
@@ -895,7 +894,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         
         switch(transMeta.getTransformationType()) {
         case Normal:
-        case Monitored:
         	
 	        // Now start all the threads...
 	    	//
@@ -2276,9 +2274,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         case Normal:
           rowSet = new BlockingRowSet(transMeta.getSizeRowset());
           break;
-        case Monitored: 
-           rowSet = new BlockingListeningRowSet(transMeta.getSizeRowset());
-           break;
         case SerialSingleThreaded:
           rowSet = new SingleRowRowSet();
           break;

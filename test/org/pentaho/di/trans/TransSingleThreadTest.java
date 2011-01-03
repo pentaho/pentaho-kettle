@@ -56,7 +56,7 @@ public class TransSingleThreadTest extends TestCase {
     //
     executor.init();
 
-    int iterations = 10000000;
+    int iterations = 1000000;
     long totalWait = 0;
     List<RowMetaAndData> inputList = createData();
 

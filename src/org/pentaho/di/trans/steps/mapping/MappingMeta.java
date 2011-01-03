@@ -41,6 +41,7 @@ import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.TransMeta.TransformationType;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepIOMeta;
@@ -884,5 +885,9 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface {
         def.setInputStep(StepMeta.findStep(steps, def.getInputStepname()));
       }
     }
+  }
+  
+  public TransformationType[] getSupportedTransformationTypes() {
+    return new TransformationType[] { TransformationType.Normal, };
   }
 }

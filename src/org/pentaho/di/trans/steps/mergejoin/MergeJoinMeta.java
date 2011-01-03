@@ -30,6 +30,7 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.TransMeta.TransformationType;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepIOMeta;
@@ -332,5 +333,9 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface
     
     public void resetStepIoMeta() {
     	// Don't reset!
+    }
+    
+    public TransformationType[] getSupportedTransformationTypes() {
+      return new TransformationType[] { TransformationType.Normal, };
     }
 }
