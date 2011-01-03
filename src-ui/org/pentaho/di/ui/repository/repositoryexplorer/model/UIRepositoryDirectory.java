@@ -58,20 +58,7 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
       return kidDirectoryCache;
     }
     if(kidDirectoryCache == null){
-      kidDirectoryCache = new UIRepositoryDirectories() {
-        public void onRemove(UIRepositoryObject child) {
-          if (rd.getChildren() != null) {
-            Iterator<RepositoryDirectoryInterface> iter = rd.getChildren().iterator();
-            while (iter.hasNext()) {
-              RepositoryDirectoryInterface c = iter.next();
-              if (c.getObjectId().equals(child.getObjectId())) {
-                iter.remove();
-                return;
-              }
-            }
-          }
-        };
-      };
+      kidDirectoryCache = new UIRepositoryDirectories();
     }
     if (rd.getChildren()==null){
       return kidDirectoryCache;
@@ -210,6 +197,7 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
     uiParent.getChildren().remove(this);
     if(uiParent.getRepositoryObjects().contains(this))
       uiParent.getRepositoryObjects().remove(this);
+    uiParent.refresh();
   }
   
   public UIRepositoryDirectory createFolder(String name) throws Exception{
