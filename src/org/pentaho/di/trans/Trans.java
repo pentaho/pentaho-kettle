@@ -1762,12 +1762,13 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 			List<LoggingHierarchy> loggingHierarchyList = getLoggingHierarchy();
 			for (LoggingHierarchy loggingHierarchy : loggingHierarchyList) {
 				db.writeLogRecord(channelLogTable, LogStatus.START, loggingHierarchy, null);
+				db.commit();
 			}
 			
 			// Also time-out the log records in here...
 			//
 			db.cleanupLogRecords(channelLogTable);
-
+			db.commit();
 		} catch(Exception e) {
 			throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.UnableToWriteLogChannelInformationToLogTable"), e);
 		} finally {
@@ -1786,6 +1787,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 			
 			for (StepMetaDataCombi combi : steps) {
 				db.writeLogRecord(stepLogTable, LogStatus.START, combi, null);
+				db.commit();
 			}
 			
 		} catch(Exception e) {
@@ -1877,12 +1879,14 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 				//
 				if (!Const.isEmpty(logTable)) {
                 	ldb.writeLogRecord(transLogTable, status, this, null);
+                	ldb.commit();
 				}
 				
 				// Also time-out the log records in here...
 				//
 				if (status.equals(LogStatus.END) || status.equals(LogStatus.STOP)) {
 					ldb.cleanupLogRecords(transLogTable);
+					ldb.commit();
 				}
 			}
 			catch(Exception e)
@@ -1947,6 +1951,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 			//
 			if (status.equals(LogStatus.END)) {
 				ldb.cleanupLogRecords(performanceLogTable);
+				ldb.commit();
 			}
 
 		} catch(Exception e) {
