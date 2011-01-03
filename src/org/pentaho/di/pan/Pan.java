@@ -412,6 +412,22 @@ public class Pan {
 
       trans.waitUntilFinished();
 
+	    // Give the transformation up to 10 seconds to finish execution
+      for(int i = 0; i < 100; i++) {
+        if(!trans.isRunning()) {
+          break;
+        }
+        try{
+          Thread.sleep(100);
+        } catch (Exception e) {
+          break;
+        }
+      }
+      
+      if(trans.isRunning()) {
+        log.logError(BaseMessages.getString(PKG, "Pan.Log.NotStopping"));
+      }
+
       log.logMinimal(BaseMessages.getString(PKG, "Pan.Log.Finished"));
 
       cal = Calendar.getInstance();
