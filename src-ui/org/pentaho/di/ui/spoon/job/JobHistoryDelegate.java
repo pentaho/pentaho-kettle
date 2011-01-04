@@ -24,6 +24,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
@@ -164,7 +166,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
     //
     refreshHistory();
 
-    Timer timer = new Timer("JobHistoryDelegate Timer");
+    final Timer timer = new Timer("JobHistoryDelegate Timer");
     TimerTask timerTask = new TimerTask() {
       public void run() {
         if (displayRefreshNeeded) {
@@ -187,6 +189,14 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
     // Try to refresh every second or so...
     //
     timer.schedule(timerTask, 1000, 1000);
+    
+    // Make sure the timer stops when we close the tab...
+    //
+    jobHistoryTab.addDisposeListener(new DisposeListener() {
+      public void widgetDisposed(DisposeEvent arg0) {
+        timer.cancel();
+      }
+    });
   }
 
   private void addLogTableTabs() {
