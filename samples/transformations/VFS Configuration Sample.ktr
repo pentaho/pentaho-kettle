@@ -12,22 +12,22 @@
         <parameter>
             <name>sftp_authkey_host</name>
             <default_value>192.168.56.101</default_value>
-            <description/>
+            <description>Key Authentication example host</description>
         </parameter>
         <parameter>
             <name>sftp_authkey_path</name>
             <default_value>home</default_value>
-            <description/>
+            <description>Key Authentication example path on sftp server</description>
         </parameter>
         <parameter>
             <name>sftp_stdauth_host</name>
             <default_value/>
-            <description/>
+            <description>Username&#47;Password  example host</description>
         </parameter>
         <parameter>
             <name>sftp_stdauth_path</name>
             <default_value/>
-            <description/>
+            <description>Username&#47;Password Authentication example path on sftp server</description>
         </parameter>
         <parameter>
             <name>vfs.http.proxyHost</name>
@@ -52,12 +52,12 @@
         <parameter>
             <name>zip_file_path</name>
             <default_value>&#47;c:&#47;temp&#47;temp.zip</default_value>
-            <description/>
+            <description>Local path to a zip file</description>
         </parameter>
         <parameter>
             <name>zip_internal_path</name>
             <default_value/>
-            <description/>
+            <description>Path inside of zip file to extract</description>
         </parameter>
     </parameters>
     <log>
