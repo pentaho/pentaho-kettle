@@ -27,6 +27,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.HashMap;
 
+import javax.sql.DataSource;
+
 import mondrian.olap.Axis;
 import mondrian.olap.Cell;
 import mondrian.olap.Connection;
@@ -40,6 +42,7 @@ import mondrian.olap.Result;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.DBCache;
 import org.pentaho.di.core.DBCacheEntry;
+import org.pentaho.di.core.database.DataSourceProviderFactory;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.row.RowMeta;
@@ -78,18 +81,32 @@ public class MondrianHelper {
 	
     public void openQuery() throws KettleDatabaseException {
         
-    	String connectString = "Provider=mondrian;" +
+    	connection = null;
+    	
+		if (databaseMeta.getAccessType() == DatabaseMeta.TYPE_ACCESS_JNDI){
+			DataSource dataSource = DataSourceProviderFactory.getDataSourceProviderInterface().getNamedDataSource(databaseMeta.getDatabaseName());
+			mondrian.olap.Util.PropertyList propList = new mondrian.olap.Util.PropertyList();
+			propList.put("Provider", "mondrian");
+			propList.put("Catalog", space.environmentSubstitute(catalog));
+			connection = DriverManager.getConnection(propList, null, dataSource);
+		}
+		else{
+
+	    	String connectString = "Provider=mondrian;" +
             "Jdbc='"+space.environmentSubstitute(databaseMeta.getURL())+"';"+
     		"Catalog='"+space.environmentSubstitute(catalog)+"';"+
             "JdbcDrivers="+space.environmentSubstitute(databaseMeta.getDriverClass())+";";
-    	if (!Const.isEmpty(databaseMeta.getUsername())) {
-    		connectString+="JdbcUser="+space.environmentSubstitute(databaseMeta.getUsername())+";";
-    	}
-    	if (!Const.isEmpty(databaseMeta.getPassword())) {
-    		connectString+="JdbcPassword="+space.environmentSubstitute(databaseMeta.getPassword())+";";
-    	}
 
-    	connection = DriverManager.getConnection(connectString, null);
+	    	if (!Const.isEmpty(databaseMeta.getUsername())) {
+	    		connectString+="JdbcUser="+space.environmentSubstitute(databaseMeta.getUsername())+";";
+	    	}
+	    	if (!Const.isEmpty(databaseMeta.getPassword())) {
+	    		connectString+="JdbcPassword="+space.environmentSubstitute(databaseMeta.getPassword())+";";
+	    	}
+	    	connection = DriverManager.getConnection(connectString, null);
+			
+		}
+		
         query = connection.parseQuery(queryString);
         result = connection.execute(query);
     }
