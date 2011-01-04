@@ -482,7 +482,7 @@ public class TableOutput extends BaseStep implements StepInterface
             if (sendToErrorRow)
             {
                 putError(rowMeta, r, 1, errorMessage, null, "TOP001");
-                insertRowData=null;
+                outputRowData=null;
             }
         }
         
