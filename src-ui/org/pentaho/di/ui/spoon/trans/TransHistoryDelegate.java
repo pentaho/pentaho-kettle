@@ -19,6 +19,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
@@ -162,7 +164,7 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
     //
     refreshHistory();
 
-    Timer timer = new Timer("TransHistoryDelegate Timer");
+    final Timer timer = new Timer("TransHistoryDelegate Timer");
     TimerTask timerTask = new TimerTask() {
       public void run() {
         if (displayRefreshNeeded) {
@@ -188,6 +190,14 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
     //
     timer.schedule(timerTask, 1000, 1000);
 
+    // Make sure the timer stops when we close the tab...
+    //
+    transHistoryTab.addDisposeListener(new DisposeListener() {
+      public void widgetDisposed(DisposeEvent arg0) {
+        timer.cancel();
+      }
+    });
+    
   }
 
   private void addLogTableTabs() {
