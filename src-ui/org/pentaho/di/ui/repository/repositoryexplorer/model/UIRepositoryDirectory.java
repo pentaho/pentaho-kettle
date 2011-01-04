@@ -21,10 +21,11 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.StringObjectId;
 
@@ -339,4 +340,34 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
     return false;
   }
   // end PDI-3326 hack
+
+  // Must implement equals/hashcode to compare object ids since the cache of directories may be refreshed
+  // and therefore would not be the same instances
+  @Override
+  public int hashCode() {
+    final int prime = 31;
+    int result = 1;
+    ObjectId id = getObjectId();
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj)
+      return true;
+    if (obj == null)
+      return false;
+    if (getClass() != obj.getClass())
+      return false;
+    UIRepositoryDirectory other = (UIRepositoryDirectory) obj;
+    ObjectId id = getObjectId();
+    ObjectId otherId = other.getObjectId();
+    if (id == null) {
+      if (otherId != null)
+        return false;
+    } else if (!id.equals(otherId))
+      return false;
+    return true;
+  }
 }
