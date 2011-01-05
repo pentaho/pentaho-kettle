@@ -764,10 +764,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       String schemaAndTable = jobMeta.getJobLogTable().getDatabaseMeta().getQuotedSchemaTableCombination(schemaName, tableName);
       Database ldb = new Database(this, logcon);
       ldb.shareVariablesWith(this);
-        ldb.connect();
-        // Enable transactions to make table locking possible
-        //
-        ldb.setCommit(10);
+      ldb.connect();
 
       try {
         // See if we have to add a batch id...
@@ -796,7 +793,6 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         depDate = currentDate;
 
         ldb.writeLogRecord(jobMeta.getJobLogTable(), LogStatus.START, this, null);
-        ldb.commit();
         
         ldb.disconnect();
 
@@ -923,7 +919,6 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 				{
 					ldb.connect();
 					ldb.writeLogRecord(jobMeta.getJobLogTable(), status, this, null);
-					ldb.commit();
 				}
 				catch(KettleDatabaseException dbe)
 				{
@@ -955,13 +950,11 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 			List<LoggingHierarchy> loggingHierarchyList = getLoggingHierarchy();
 			for (LoggingHierarchy loggingHierarchy : loggingHierarchyList) {
 				db.writeLogRecord(channelLogTable, LogStatus.START, loggingHierarchy, null);
-				db.commit();
 			}
 			
 			// Also time-out the log records in here...
 			//
 			db.cleanupLogRecords(channelLogTable);
-			db.commit();
 
 		} catch(Exception e) {
 			throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.UnableToWriteLogChannelInformationToLogTable"), e);
@@ -980,7 +973,6 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         
         for (JobEntryCopy copy : jobMeta.getJobCopies()) {
           db.writeLogRecord(jobEntryLogTable, LogStatus.END, copy, this);
-          db.commit();
         }
   
       } catch (Exception e) {
