@@ -157,7 +157,6 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 
 	private UserDefinedJavaClassMeta			input;
 	private UserDefinedJavaClassCodeSnippits	snippitsHelper;
-	private UserDefinedJavaClassHighlight		lineStyler	= new UserDefinedJavaClassHighlight();
 
 	private static GUIResource					guiResource	= GUIResource.getInstance();
 
@@ -193,13 +192,13 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 			imageActiveScript = guiResource.getImage("ui/images/faScript.png");
 			imageInactiveScript = guiResource.getImage("ui/images/fScript.png");
 		} catch (Exception e) {
-			imageActiveScript = new Image(parent.getDisplay(), 16, 16);
-			imageInactiveScript = new Image(parent.getDisplay(), 16, 16);
-			imageInputFields = new Image(parent.getDisplay(), 16, 16);
-			imageOutputFields = new Image(parent.getDisplay(), 16, 16);
-			imageArrowOrange = new Image(parent.getDisplay(), 16, 16);
-			imageArrowGreen = new Image(parent.getDisplay(), 16, 16);
-			imageUnderGreen = new Image(parent.getDisplay(), 16, 16);
+			imageActiveScript = guiResource.getImageEmpty16x16();
+			imageInactiveScript = guiResource.getImageEmpty16x16();
+			imageInputFields = guiResource.getImageEmpty16x16();
+			imageOutputFields = guiResource.getImageEmpty16x16();
+			imageArrowOrange = guiResource.getImageEmpty16x16();
+			imageArrowGreen = guiResource.getImageEmpty16x16();
+			imageUnderGreen = guiResource.getImageEmpty16x16();
 		}
 
 		try {
@@ -839,8 +838,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 		wScript.addModifyListener(lsMod);
 
 		// Text Higlighting
-		lineStyler = new UserDefinedJavaClassHighlight();
-		wScript.addLineStyleListener(lineStyler);
+		wScript.addLineStyleListener(new UserDefinedJavaClassHighlight());
 		item.setControl(wScript);
 
 		// Adding new Item to Tree

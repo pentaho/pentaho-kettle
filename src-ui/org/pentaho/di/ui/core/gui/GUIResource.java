@@ -288,8 +288,14 @@ public class GUIResource
     private Image imageUnconditionalHop;
     private Image imageParallelHop;
     private Image imageBusy;
+    
+    /**
+     * Same result as <code>new Image(display, 16, 16)</code>.
+     */
+    private Image imageEmpty16x16;
 
     private Map<String,Image> imageMap;
+    private Map<RGB,Color> colorMap;
 
 	private ManagedFont fontBold;
 
@@ -339,6 +345,7 @@ public class GUIResource
 	{
 		PropsUI props = PropsUI.getInstance();
 		imageMap = new HashMap<String,Image>();
+		colorMap = new HashMap<RGB,Color>();
 
 		colorBackground = new ManagedColor(display, props.getBackgroundRGB());
 		colorGraph = new ManagedColor(display, props.getGraphColorRGB());
@@ -401,6 +408,8 @@ public class GUIResource
 		colorLightPentaho.dispose();
 		colorCreamPentaho.dispose();
 
+		disposeColors(colorMap.values());
+		
 		if (!reload) // display shutdown, clean up our mess
 		{
 			// Fonts
@@ -482,6 +491,7 @@ public class GUIResource
 		    imageParallelHop.dispose();
 		    imageUnconditionalHop.dispose();
 		    imageBusy.dispose();
+		    imageEmpty16x16.dispose();
 
 		    disposeImage(imageNoteSmall);
 		    disposeImage(imageColor);
@@ -524,6 +534,14 @@ public class GUIResource
 		}
 	}
 
+  private void disposeColors(Collection<Color> colors)
+  {
+    for (Color color : colors)
+    {
+      color.dispose();
+    }
+  }
+	
 	private void disposeImage(Image image)
 	{
 		if (image != null && !image.isDisposed())
@@ -711,6 +729,8 @@ public class GUIResource
     imageParallelHop = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ParallelHop_image")); // , "ui/images/parallel-hop.png
     imageUnconditionalHop = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("UnconditionalHop_image")); // , "ui/images/unconditional-hop.png
     imageBusy = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Busy_image")); // , "ui/images/busy.png
+    
+    imageEmpty16x16 = new Image(display, 16, 16);
     
     imageStartSmall = new Image(display, 16, 16);
 		GC gc = new GC(imageStartSmall);
@@ -1802,6 +1822,16 @@ public class GUIResource
 	  return image;
   }
   
+  public Color getColor(int red, int green, int blue) {
+    RGB rgb = new RGB(red, green, blue);
+    Color color = colorMap.get(rgb);
+    if (color==null) {
+      color = new Color(display, rgb);
+      colorMap.put(rgb, color);
+    }
+    return color;
+  }
+  
 	/**
 	 * @return The image map used to cache images loaded from certain location
 	 *         using getImage(String location);
@@ -1841,6 +1871,10 @@ public class GUIResource
 
 	public Image getImageBusy() {
 		return imageBusy;
+	}
+	
+	public Image getImageEmpty16x16() {
+	  return imageEmpty16x16;
 	}
 
 }

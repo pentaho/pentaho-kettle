@@ -192,8 +192,6 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
     
     private ColumnInfo[] colinf;
     
-	private SOQLValuesHighlight lineStyler = new SOQLValuesHighlight();
-    
 	public SalesforceInputDialog(Shell parent, Object in, TransMeta transMeta,
 			String sname) {
 		super(parent, (BaseStepMeta) in, transMeta, sname);
@@ -472,8 +470,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		
 		
 		// Text Higlighting
-		lineStyler = new SOQLValuesHighlight();
-		wCondition.addLineStyleListener(lineStyler);
+		wCondition.addLineStyleListener(new SOQLValuesHighlight());
 		
 	    // Query
         wlQuery = new Label(wSettingsGroup, SWT.RIGHT);
@@ -523,8 +520,7 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
 		
 		
 		// Text Higlighting
-		lineStyler = new SOQLValuesHighlight();
-		wQuery.addLineStyleListener(lineStyler);
+		wQuery.addLineStyleListener(new SOQLValuesHighlight());
 		
         FormData fdSettingsGroup= new FormData();
         fdSettingsGroup.left = new FormAttachment(0, 0);

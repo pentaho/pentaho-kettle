@@ -93,8 +93,6 @@ public class DynamicSQLRowDialog extends BaseStepDialog implements StepDialogInt
 
 	private DynamicSQLRowMeta input;
 	
-	private SQLValuesHighlight lineStyler = new SQLValuesHighlight();
-
 	
 	public DynamicSQLRowDialog(Shell parent, Object in, TransMeta tr, String sname)
 	{
@@ -344,8 +342,7 @@ public class DynamicSQLRowDialog extends BaseStepDialog implements StepDialogInt
 		wSQL.addModifyListener(lsMod);
 		
 		// Text Higlighting
-		lineStyler = new SQLValuesHighlight();;
-		wSQL.addLineStyleListener(lineStyler);
+		wSQL.addLineStyleListener(new SQLValuesHighlight());
 		
 		wlPosition=new Label(shell, SWT.NONE);
 		//wlPosition.setText(BaseMessages.getString(PKG, "DynamicSQLRowDialog.Position.Label")); 

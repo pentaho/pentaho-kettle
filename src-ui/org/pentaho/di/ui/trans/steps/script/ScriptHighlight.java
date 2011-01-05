@@ -35,6 +35,7 @@ import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
+import org.pentaho.di.ui.core.gui.GUIResource;
 
 class ScriptHighlight implements LineStyleListener {
 	JavaScanner scanner = new JavaScanner();
@@ -90,11 +91,11 @@ class ScriptHighlight implements LineStyleListener {
 	void initializeColors() {
 		Display display = Display.getDefault();
 		colors= new Color[] {
-				new Color(display, new RGB(0, 0, 0)),		// black
-				new Color(display, new RGB(63, 127, 95)),		// red
-				new Color(display, new RGB(0, 0, 192)),		// green
-				new Color(display, new RGB(127,   0, 85)),	// blue
-				new Color(display, new RGB(255,   102, 0))	// Kettle Functions / Orange
+		    GUIResource.getInstance().getColor(0, 0, 0),		// black
+		    GUIResource.getInstance().getColor(63, 127, 95),		// red
+		    GUIResource.getInstance().getColor(0, 0, 192),		// green
+		    GUIResource.getInstance().getColor(127,   0, 85),	// blue
+		    GUIResource.getInstance().getColor(255,   102, 0)	// Kettle Functions / Orange
 		};
 		tokenColors= new int[MAXIMUM_TOKEN];
 		tokenColors[WORD]=		0;
@@ -105,13 +106,6 @@ class ScriptHighlight implements LineStyleListener {
 		tokenColors[OTHER]=		0;
 		tokenColors[NUMBER]=	0;
 		tokenColors[FUNCTIONS]=	4;
-	}
-
-
-	void disposeColors() {
-		for (int i=0;i<colors.length;i++) {
-			colors[i].dispose();
-		}
 	}
 
 	/**

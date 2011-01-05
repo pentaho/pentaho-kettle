@@ -29,6 +29,7 @@ import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
+import org.pentaho.di.ui.core.gui.GUIResource;
 
 public class MDXValuesHighlight implements LineStyleListener {
 	JavaScanner scanner = new JavaScanner();
@@ -84,11 +85,11 @@ public class MDXValuesHighlight implements LineStyleListener {
 	void initializeColors() {
 		Display display = Display.getDefault();
 		colors= new Color[] {
-				new Color(display, new RGB(0, 0, 0)),		// black
-				new Color(display, new RGB(255,0,0)), 		// red 
-				new Color(display, new RGB(63, 127, 95)),	// green
-				new Color(display, new RGB(0, 0, 255)),	    // blue
-				new Color(display, new RGB(255, 0, 255))	// SQL Functions / Rose
+		    GUIResource.getInstance().getColor(0, 0, 0),		// black
+		    GUIResource.getInstance().getColor(255,0,0), 		// red 
+		    GUIResource.getInstance().getColor(63, 127, 95),	// green
+		    GUIResource.getInstance().getColor(0, 0, 255),	    // blue
+		    GUIResource.getInstance().getColor(255, 0, 255)	// SQL Functions / Rose
 				
 		};
 		tokenColors= new int[MAXIMUM_TOKEN];
@@ -100,13 +101,6 @@ public class MDXValuesHighlight implements LineStyleListener {
 		tokenColors[OTHER]=		0;
 		tokenColors[NUMBER]=	0;
 		tokenColors[FUNCTIONS]=	4;
-	}
-
-
-	void disposeColors() {
-		for (int i=0;i<colors.length;i++) {
-			colors[i].dispose();
-		}
 	}
 
 	/**

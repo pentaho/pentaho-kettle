@@ -262,18 +262,18 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 			imageAddScript = guiresource.getImage("ui/images/addSmall.png");
 			imageDuplicateScript = guiresource.getImage("ui/images/copySmall.png");
 		}catch(Exception e){
-			imageActiveScript = new Image(parent.getDisplay(), 16, 16);
-			imageInactiveScript = new Image(parent.getDisplay(), 16, 16);
-			imageActiveStartScript = new Image(parent.getDisplay(), 16, 16);
-			imageActiveEndScript = new Image(parent.getDisplay(), 16, 16);
-			imageInputFields = new Image(parent.getDisplay(), 16, 16);
-			imageOutputFields = new Image(parent.getDisplay(), 16, 16);
-			imageArrowOrange = new Image(parent.getDisplay(), 16, 16);
-			imageArrowGreen= new Image(parent.getDisplay(), 16, 16);
-			imageUnderGreen= new Image(parent.getDisplay(), 16, 16);
-			imageDeleteScript= new Image(parent.getDisplay(), 16, 16);
-			imageAddScript= new Image(parent.getDisplay(), 16, 16);
-			imageDuplicateScript= new Image(parent.getDisplay(), 16, 16);
+			imageActiveScript = guiresource.getImageEmpty16x16();
+			imageInactiveScript = guiresource.getImageEmpty16x16();
+			imageActiveStartScript = guiresource.getImageEmpty16x16();
+			imageActiveEndScript = guiresource.getImageEmpty16x16();
+			imageInputFields = guiresource.getImageEmpty16x16();
+			imageOutputFields = guiresource.getImageEmpty16x16();
+			imageArrowOrange = guiresource.getImageEmpty16x16();
+			imageArrowGreen= guiresource.getImageEmpty16x16();
+			imageUnderGreen= guiresource.getImageEmpty16x16();
+			imageDeleteScript= guiresource.getImageEmpty16x16();
+			imageAddScript= guiresource.getImageEmpty16x16();
+			imageDuplicateScript= guiresource.getImageEmpty16x16();
 		}
 		
         try

@@ -105,8 +105,6 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
 	private Label        wlPosition;
 	private FormData     fdlPosition;
 	
-	private SQLValuesHighlight lineStyler = new SQLValuesHighlight();
-	
 	private ColumnInfo[] ciKey;
 	
     private Map<String, Integer> inputFields;
@@ -219,8 +217,7 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
 		);
 		
 		// SQL Higlighting
-		lineStyler = new SQLValuesHighlight();;
-		wSQL.addLineStyleListener(lineStyler);
+		wSQL.addLineStyleListener(new SQLValuesHighlight());
 		
 		wlPosition=new Label(shell, SWT.NONE);
 		props.setLook(wlPosition);

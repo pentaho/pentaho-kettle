@@ -165,7 +165,6 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
     private Button wClearResultList;
     private FormData fdlClearResultList, fdClearResultList;
 
-	private SQLValuesHighlight lineStyler = new SQLValuesHighlight();
 	 
     public JobEntryWaitForSQLDialog(Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta)
     {
@@ -620,8 +619,7 @@ public class JobEntryWaitForSQLDialog extends JobEntryDialog implements JobEntry
     	
     	
     		// Text Higlighting
-    		lineStyler = new SQLValuesHighlight();
-    		wSQL.addLineStyleListener(lineStyler);
+    		wSQL.addLineStyleListener(new SQLValuesHighlight());
     		
 
         
