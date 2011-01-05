@@ -28,6 +28,7 @@ import org.pentaho.di.core.gui.GCInterface.EColor;
 import org.pentaho.di.core.gui.GCInterface.EFont;
 import org.pentaho.di.core.gui.GCInterface.EImage;
 import org.pentaho.di.core.gui.GCInterface.ELineStyle;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
 import org.pentaho.di.trans.step.StepIOMetaInterface;
@@ -37,10 +38,14 @@ import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.pentaho.di.trans.step.StepStatus;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
+import org.pentaho.di.ui.spoon.Spoon;
 
 
 public class TransPainter extends BasePainter
 {
+	
+	private static Class<?> PKG = TransPainter.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	
     public static final String STRING_PARTITIONING_CURRENT_STEP = "PartitioningCurrentStep"; // $NON-NLS-1$
 	public static final String STRING_REMOTE_INPUT_STEPS        = "RemoteInputSteps";        // $NON-NLS-1$
 	public static final String STRING_REMOTE_OUTPUT_STEPS       = "RemoteOutputSteps";       // $NON-NLS-1$
@@ -95,18 +100,19 @@ public class TransPainter extends BasePainter
     
     private static String[] getPeekTitles(){
 		String[] titles = {
-				"Copynr",
-				"Read",
-				"Written", 
-				"Input",
-				"Output",
-				"Updated", 
-				"Rejected",
-				"Errors",
-				"Active",
-				"Time", 
-				"Speed (r/s)",
-				"input/output"							
+				
+			BaseMessages.getString(PKG, "PeekMetric.Column.Copynr"),
+			BaseMessages.getString(PKG, "PeekMetric.Column.Read"),
+			BaseMessages.getString(PKG, "PeekMetric.Column.Written"),
+			BaseMessages.getString(PKG, "PeekMetric.Column.Input"),
+			BaseMessages.getString(PKG, "PeekMetric.Column.Output"),
+			BaseMessages.getString(PKG, "PeekMetric.Column.Updated"),
+			BaseMessages.getString(PKG, "PeekMetric.Column.Rejected"),
+			BaseMessages.getString(PKG, "PeekMetric.Column.Errors"),
+			BaseMessages.getString(PKG, "PeekMetric.Column.Active"),
+			BaseMessages.getString(PKG, "PeekMetric.Column.Time"),
+			BaseMessages.getString(PKG, "PeekMetric.Column.Speed"),
+			BaseMessages.getString(PKG, "PeekMetric.Column.PriorityBufferSizes")						
 		};
 		return titles;
     }    
