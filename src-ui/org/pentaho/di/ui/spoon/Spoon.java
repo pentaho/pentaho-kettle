@@ -71,6 +71,7 @@ import org.eclipse.swt.events.TreeAdapter;
 import org.eclipse.swt.events.TreeEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.graphics.DeviceData;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
@@ -491,11 +492,21 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     try {
       // Bootstrap Kettle
       //
+      //  We start Sleak if the VM argument RUN_SLEAK was provided
+      Display display = null;
+      if (System.getProperties().containsKey("SLEAK")) {
+         DeviceData data = new DeviceData();
+         data.tracking = true;
+         display = new Display(data);
+         Sleak sleak = new Sleak();
+         sleak.open();
+      }
+      else {
+         display = new Display();
+      }
 
       // The core plugin types don't know about UI classes. Add them in now
       // before the PluginRegistry inits.
-      Display display = new Display();
-
       Splash splash = new Splash(display);
 
       registerUIPluginObjectTypes();
