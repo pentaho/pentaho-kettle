@@ -223,9 +223,8 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 	
 	private ScriptMeta input;
 	private ScriptHelp scVHelp;
-	private ScriptHighlight lineStyler = new ScriptHighlight();
-	
-    private TreeItem iteminput;
+
+	  private TreeItem iteminput;
     
     private TreeItem itemoutput;
     
@@ -254,15 +253,15 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 			imageActiveStartScript = guiresource.getImage("ui/images/sScript.png");
 			imageActiveEndScript = guiresource.getImage("ui/images/eScript.png");
 		}catch(Exception e){
-			imageActiveScript = new Image(parent.getDisplay(), 16, 16);
-			imageInactiveScript = new Image(parent.getDisplay(), 16, 16);
-			imageActiveStartScript = new Image(parent.getDisplay(), 16, 16);
-			imageActiveEndScript = new Image(parent.getDisplay(), 16, 16);
-			imageInputFields = new Image(parent.getDisplay(), 16, 16);
-			imageOutputFields = new Image(parent.getDisplay(), 16, 16);
-			imageArrowOrange = new Image(parent.getDisplay(), 16, 16);
-			imageArrowGreen= new Image(parent.getDisplay(), 16, 16);
-			imageUnderGreen= new Image(parent.getDisplay(), 16, 16);
+			imageActiveScript = guiresource.getImageEmpty16x16();
+			imageInactiveScript = guiresource.getImageEmpty16x16();
+			imageActiveStartScript = guiresource.getImageEmpty16x16();
+			imageActiveEndScript = guiresource.getImageEmpty16x16();
+			imageInputFields = guiresource.getImageEmpty16x16();
+			imageOutputFields = guiresource.getImageEmpty16x16();
+			imageArrowOrange = guiresource.getImageEmpty16x16();
+			imageArrowGreen= guiresource.getImageEmpty16x16();
+			imageUnderGreen= guiresource.getImageEmpty16x16();
 		}
 		
         try
@@ -682,8 +681,7 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 		wScript.addModifyListener(lsMod);
 		
 		// Text Higlighting
-		lineStyler = new ScriptHighlight(ScriptAddedFunctions.jsFunctionList);
-		wScript.addLineStyleListener(lineStyler);
+		wScript.addLineStyleListener(new ScriptHighlight(ScriptAddedFunctions.jsFunctionList));
  		item.setControl(wScript);
  		
  		// Adding new Item to Tree

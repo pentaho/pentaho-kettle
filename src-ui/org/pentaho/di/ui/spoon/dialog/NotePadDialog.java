@@ -571,7 +571,7 @@ public class NotePadDialog extends Dialog {
 		bgColor.dispose();
 		borderColor.dispose();
 		if (font!=null && !font.isDisposed()) {
-			// font.dispose();
+			font.dispose();
 		}
 		shell.dispose();
 	}
@@ -658,9 +658,13 @@ public class NotePadDialog extends Dialog {
 	    int swt=SWT.NORMAL;
 	    if(wFontBold.getSelection()) swt=SWT.BOLD;
 	    if(wFontItalic.getSelection()) swt=swt | SWT.ITALIC;
-	    
+	    // dispose of old font only after setting it on wDesc
+	    Font oldFont = font;
 	    font = new Font(shell.getDisplay(), wFontName.getText(), wFontSize.getSelection(), swt);
-		wDesc.setFont(font);
+		  wDesc.setFont(font);
+      if (oldFont != null && !oldFont.isDisposed()) {
+        oldFont.dispose();
+      }
 		for (Control control : wDesc.getChildren()) {
 			control.setBackground(bgColor);
 		}

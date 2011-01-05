@@ -76,8 +76,6 @@ public class MondrianInputDialog extends BaseStepDialog implements StepDialogInt
  
 	private MondrianInputMeta input;
 	
-	private MDXValuesHighlight lineStyler = new MDXValuesHighlight();
-	
 	private Label        wlPosition;
 	private FormData     fdlPosition;
 
@@ -264,8 +262,7 @@ public class MondrianInputDialog extends BaseStepDialog implements StepDialogInt
 		
 		
 		// Text Higlighting
-		lineStyler = new MDXValuesHighlight();
-		wSQL.addLineStyleListener(lineStyler);
+		wSQL.addLineStyleListener(new MDXValuesHighlight());
 
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel();  } };

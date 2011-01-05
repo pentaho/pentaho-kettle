@@ -129,8 +129,6 @@ public class JobEntrySQLDialog extends JobEntryDialog implements JobEntryDialogI
 	private TextVar wFilename;
 	private FormData fdlFilename, fdbFilename, fdFilename;
 	
-	private SQLValuesHighlight lineStyler = new SQLValuesHighlight();
-
     public JobEntrySQLDialog(Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta)
     {
         super(parent, jobEntryInt, rep, jobMeta);
@@ -428,8 +426,7 @@ public class JobEntrySQLDialog extends JobEntryDialog implements JobEntryDialogI
 		
 		
 		// Text Higlighting
-		lineStyler = new SQLValuesHighlight();
-		wSQL.addLineStyleListener(lineStyler);
+		wSQL.addLineStyleListener(new SQLValuesHighlight());
 		
 
         getData();

@@ -121,8 +121,6 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 	private Label        wlPosition;
 	private FormData     fdlPosition;
 
-	private SQLValuesHighlight lineStyler = new SQLValuesHighlight();
-	
     private Map<String, Integer> inputFields;
     
     private ColumnInfo[] colinf;
@@ -237,9 +235,7 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 		});
 
 		// Text Higlighting
-		lineStyler = new SQLValuesHighlight();
-		;
-		wSQL.addLineStyleListener(lineStyler);
+		wSQL.addLineStyleListener(new SQLValuesHighlight());
 
 		
 		// Some buttons

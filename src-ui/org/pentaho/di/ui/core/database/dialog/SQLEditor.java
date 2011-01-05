@@ -87,7 +87,6 @@ public class SQLEditor
 	private DatabaseMeta     connection;
 	private Shell            shell;
 	private DBCache          dbcache;
-	private SQLValuesHighlight lineStyler = new SQLValuesHighlight();
 
 	private LogChannelInterface log;
 	private int style = SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN;
@@ -168,8 +167,7 @@ public class SQLEditor
 		
 		
 		// SQL Higlighting
-		lineStyler = new SQLValuesHighlight();;
-		wScript.addLineStyleListener(lineStyler);
+		wScript.addLineStyleListener(new SQLValuesHighlight());
 
 		wlPosition=new Label(shell, SWT.NONE);
 		wlPosition.setText(BaseMessages.getString(PKG, "SQLEditor.LineNr.Label", "0"));

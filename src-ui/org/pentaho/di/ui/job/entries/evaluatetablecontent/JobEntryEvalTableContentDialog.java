@@ -156,7 +156,6 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
 	private TextVar wLimit;
 	private FormData fdlLimit, fdLimit;
 
-	private SQLValuesHighlight lineStyler = new SQLValuesHighlight();
 
     public JobEntryEvalTableContentDialog(Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta)
     {
@@ -545,8 +544,7 @@ public class JobEntryEvalTableContentDialog extends JobEntryDialog implements Jo
     	
     	
     		// Text Higlighting
-    		lineStyler = new SQLValuesHighlight();
-    		wSQL.addLineStyleListener(lineStyler);
+    		wSQL.addLineStyleListener(new SQLValuesHighlight());
     		
 
         
