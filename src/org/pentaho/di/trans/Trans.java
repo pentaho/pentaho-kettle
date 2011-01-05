@@ -40,6 +40,7 @@ import org.pentaho.di.core.SingleRowRowSet;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.map.DatabaseConnectionMap;
+import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleTransException;
@@ -1919,6 +1920,28 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         	if (database.getConnectionGroup().equals(getThreadName())) {
         		try
         		{
+        		  // This database connection belongs to this transformation.
+              // Let's roll it back if there is an error...
+              //
+              if (result.getNrErrors()>0) {
+                try {
+                  database.rollback(true);
+                  log.logBasic(BaseMessages.getString(PKG, "Trans.Exception.TransactionsRolledBackOnConnection", database.toString()));
+                }
+                catch(Exception e) {
+                  throw new KettleDatabaseException(BaseMessages.getString(PKG, "Trans.Exception.ErrorRollingBackUniqueConnection", database.toString()), e);
+                }
+              }
+              else {
+                try {
+                  database.commit(true);
+                  log.logBasic(BaseMessages.getString(PKG, "Trans.Exception.TransactionsCommittedOnConnection", database.toString()));
+                }
+                catch(Exception e) {
+                  throw new KettleDatabaseException(BaseMessages.getString(PKG, "Trans.Exception.ErrorCommittingUniqueConnection", database.toString()), e);
+                }
+              }
+        		  
 	        		database.closeConnectionOnly();
 	        		
 	        		// Remove the database from the list...
