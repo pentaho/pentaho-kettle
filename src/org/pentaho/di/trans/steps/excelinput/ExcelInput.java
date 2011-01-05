@@ -87,6 +87,11 @@ public class ExcelInput extends BaseStep implements StepInterface
 			cell = excelInputRow.cells[i];
 
 			int rowcolumn = i - startcolumn;
+			
+			if(cell == null) {
+			  r[rowcolumn] = null;
+			  continue;
+			}
 
 			ValueMetaInterface targetMeta = data.outputRowMeta.getValueMeta(rowcolumn);
 			ValueMetaInterface sourceMeta = null;
