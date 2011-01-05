@@ -38,7 +38,6 @@ import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.pentaho.di.trans.step.StepStatus;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
-import org.pentaho.di.ui.spoon.Spoon;
 
 
 public class TransPainter extends BasePainter
