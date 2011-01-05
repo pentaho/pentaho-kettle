@@ -1955,6 +1955,28 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         	if (database.getConnectionGroup().equals(getThreadName())) {
         		try
         		{
+        		  // This database connection belongs to this transformation.
+              // Let's roll it back if there is an error...
+              //
+              if (result.getNrErrors()>0) {
+                try {
+                  database.rollback(true);
+                  log.logBasic(BaseMessages.getString(PKG, "Trans.Exception.TransactionsRolledBackOnConnection", database.toString()));
+                }
+                catch(Exception e) {
+                  throw new KettleDatabaseException(BaseMessages.getString(PKG, "Trans.Exception.ErrorRollingBackUniqueConnection", database.toString()), e);
+                }
+              }
+              else {
+                try {
+                  database.commit(true);
+                  log.logBasic(BaseMessages.getString(PKG, "Trans.Exception.TransactionsCommittedOnConnection", database.toString()));
+                }
+                catch(Exception e) {
+                  throw new KettleDatabaseException(BaseMessages.getString(PKG, "Trans.Exception.ErrorCommittingUniqueConnection", database.toString()), e);
+                }
+              }
+        		  
 	        		// This database connection belongs to this transformation.
 	        		database.closeConnectionOnly();
 	        		
