@@ -298,21 +298,26 @@ public class OlapInputMeta extends BaseStepMeta implements StepMetaInterface
     }
 
     public void initData(VariableSpace space) throws Exception {
-    		String driver = this.getOlap4jDriver();
-    		String url = space.environmentSubstitute(this.getOlap4jUrl());
-    		String username = space.environmentSubstitute(this.getUsername());
-    		String password = space.environmentSubstitute(this.getPassword());
-    		
-    		String mdx = this.getMdx();
-            if(this.isVariableReplacementActive()) mdx = space.environmentSubstitute(this.getMdx());
-            String catalog = space.environmentSubstitute(this.getCatalog());
+    	
+    	if (data == null){
+    		data = (OlapData)getStepData();
+    	}
+	
+		String driver = this.getOlap4jDriver();
+		String url = space.environmentSubstitute(this.getOlap4jUrl());
+		String username = space.environmentSubstitute(this.getUsername());
+		String password = space.environmentSubstitute(this.getPassword());
+		
+		String mdx = this.getMdx();
+        if(this.isVariableReplacementActive()) mdx = space.environmentSubstitute(this.getMdx());
+        String catalog = space.environmentSubstitute(this.getCatalog());
 
 //            mdx = "select NON EMPTY Hierarchize(Union(Crossjoin({[Measures].[Actual]}, Union(Crossjoin({[Region].[All Regions]},  {[Department].[All Departments]}), Crossjoin({[Region].[All Regions]}, [Department].[All Departments].Children))), Crossjoin({[Measures].[Actual]}, Union(Crossjoin([Region].[All Regions].Children, {[Department].[All Departments]}),  Crossjoin([Region].[All Regions].Children, [Department].[All Departments].Children))))) ON COLUMNS,NON EMPTY Hierarchize(Union({[Positions].[All Positions]}, [Positions].[All Positions].Children)) ON ROWS from [Quadrant Analysis]";
 //            data.olapHelper = new OlapHelper(driver,"http://localhost:8080/pentaho/Xmla", "joe", "password","SampleData",mdx, this);
-    		data.olapHelper = new OlapHelper(driver,url, username, password,catalog,mdx);
-    		data.olapHelper.openQuery();
-			data.olapHelper.createRectangularOutput();
-    		data.outputRowMeta = this.createRowMeta(data.olapHelper.getHeaderValues(), data.olapHelper.getCellValues()).clone(); 
+		data.olapHelper = new OlapHelper(driver,url, username, password,catalog,mdx);
+		data.olapHelper.openQuery();
+		data.olapHelper.createRectangularOutput();
+		data.outputRowMeta = this.createRowMeta(data.olapHelper.getHeaderValues(), data.olapHelper.getCellValues()).clone(); 
     		
     }
 }
