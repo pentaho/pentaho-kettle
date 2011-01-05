@@ -812,8 +812,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 								//
 								addStepPerformanceSnapShot();
 								
-                                // Commit or roll back the transaction in the unique database connections...
-                                // 
 						        if (transMeta.isUsingUniqueConnections()) {
 						            trans.closeUniqueDatabaseConnections(getResult());
 						        }
@@ -1410,7 +1408,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 			    transLogTableDatabaseConnection.shareVariablesWith(this);
 			    if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.OpeningLogConnection",""+logConnection)); //$NON-NLS-1$ //$NON-NLS-2$
 			    transLogTableDatabaseConnection.connect();
-			    transLogTableDatabaseConnection.setCommit(10);
 				
 				// See if we have to add a batch id...
 				// Do this first, before anything else to lock the complete table exclusively
@@ -1446,7 +1443,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 					{
 						Database maxdb = new Database(this, maxcon);
 						maxdb.shareVariablesWith(this);
-						maxdb.setCommit(10);
 						try
 						{
 							if(log.isDetailed())  log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.OpeningMaximumDateConnection")); //$NON-NLS-1$
@@ -1518,7 +1514,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 							try
 							{
 								depdb.connect();
-								depdb.setCommit(10);
 
 								String sql = "SELECT MAX("+td.getFieldname()+") FROM "+td.getTablename(); //$NON-NLS-1$ //$NON-NLS-2$
 								RowMetaAndData r1 = depdb.getOneRow(sql);
@@ -1623,7 +1618,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                 if (transLogTableDatabaseConnection!=null && !Const.isEmpty(logTable) && !Const.isEmpty(transMeta.getName()))
                 {
                 	transLogTableDatabaseConnection.writeLogRecord(transLogTable, LogStatus.START, this, null);
-                	transLogTableDatabaseConnection.commit();
                     
                     // If we need to do periodic logging, make sure to install a timer for this...
                     //
@@ -1633,7 +1627,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	            			public void run() {
 	            				try {
 	            					endProcessing();
-	            					transLogTableDatabaseConnection.commit();
 	            				} catch(Exception e) {
 	            					log.logError(BaseMessages.getString(PKG, "Trans.Exception.UnableToPerformIntervalLogging"), e);
 	            					// Also stop the show...
@@ -1754,18 +1747,15 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 			db = new Database(this, channelLogTable.getDatabaseMeta());
 			db.shareVariablesWith(this);
 			db.connect();
-			db.setCommit(10);
 			
 			List<LoggingHierarchy> loggingHierarchyList = getLoggingHierarchy();
 			for (LoggingHierarchy loggingHierarchy : loggingHierarchyList) {
 				db.writeLogRecord(channelLogTable, LogStatus.START, loggingHierarchy, null);
-				db.commit();
 			}
 			
 			// Also time-out the log records in here...
 			//
 			db.cleanupLogRecords(channelLogTable);
-			db.commit();
 		} catch(Exception e) {
 			throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.UnableToWriteLogChannelInformationToLogTable"), e);
 		} finally {
@@ -1780,11 +1770,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 			db = new Database(this, stepLogTable.getDatabaseMeta());
 			db.shareVariablesWith(this);
 			db.connect();
-			db.setCommit(10);
 			
 			for (StepMetaDataCombi combi : steps) {
 				db.writeLogRecord(stepLogTable, LogStatus.START, combi, null);
-				db.commit();
 			}
 			
 		} catch(Exception e) {
@@ -1866,7 +1854,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 					ldb = new Database(this, logcon);
 					ldb.shareVariablesWith(this);
 					ldb.connect();
-					ldb.setCommit(10);
 					transLogTableDatabaseConnection=ldb;
 				} else {
 					ldb = transLogTableDatabaseConnection;
@@ -1876,14 +1863,12 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 				//
 				if (!Const.isEmpty(logTable)) {
                 	ldb.writeLogRecord(transLogTable, status, this, null);
-                	ldb.commit();
 				}
 				
 				// Also time-out the log records in here...
 				//
 				if (status.equals(LogStatus.END) || status.equals(LogStatus.STOP)) {
 					ldb.cleanupLogRecords(transLogTable);
-					ldb.commit();
 				}
 			}
 			catch(Exception e)
@@ -1914,7 +1899,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 			ldb = new Database(this, performanceLogTable.getDatabaseMeta());
 			ldb.shareVariablesWith(this);
 			ldb.connect();
-			ldb.setCommit(10);
 			
 			// Write to the step performance log table...
 			//
@@ -1948,7 +1932,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 			//
 			if (status.equals(LogStatus.END)) {
 				ldb.cleanupLogRecords(performanceLogTable);
-				ldb.commit();
 			}
 
 		} catch(Exception e) {
@@ -1973,26 +1956,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         		try
         		{
 	        		// This database connection belongs to this transformation.
-	        		// Let's roll it back if there is an error...
-	        		//
-	        		if (result.getNrErrors()>0) {
-	        			try {
-	        				database.rollback(true);
-	        				log.logBasic(BaseMessages.getString(PKG, "Trans.Exception.TransactionsRolledBackOnConnection", database.toString()));
-	        			}
-	        			catch(Exception e) {
-	        				throw new KettleDatabaseException(BaseMessages.getString(PKG, "Trans.Exception.ErrorRollingBackUniqueConnection", database.toString()), e);
-	        			}
-	        		}
-	        		else {
-	        			try {
-	        				database.commit(true);
-	        				log.logBasic(BaseMessages.getString(PKG, "Trans.Exception.TransactionsCommittedOnConnection", database.toString()));
-	        			}
-	        			catch(Exception e) {
-	        				throw new KettleDatabaseException(BaseMessages.getString(PKG, "Trans.Exception.ErrorCommittingUniqueConnection", database.toString()), e);
-	        			}
-	        		}
 	        		database.closeConnectionOnly();
 	        		
 	        		// Remove the database from the list...
