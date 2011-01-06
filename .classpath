@@ -152,6 +152,6 @@
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-database-4.0.5.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-hdfs-vfs-1.0.0.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-s3-vfs-1.0.1.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/pentaho-vfs-browser-2.0.2.jar"/>
+	<classpathentry kind="lib" path="libext/pentaho/pentaho-vfs-browser.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
