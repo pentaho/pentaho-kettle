@@ -21,6 +21,12 @@
 
 package org.pentaho.di.ui.trans.steps.xslt;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
@@ -43,6 +49,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
@@ -52,9 +59,12 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.xslt.XsltMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
+import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
@@ -81,6 +91,10 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 	
 	private TextVar wXSLFilename;
 
+	private Label wlXSLFieldIsAFile;
+	private FormData fdlXSLFieldIsAFile;
+	private Button wXSLFieldIsAFile;
+	private FormData fdXSLFieldIsAFile;
 	
 	private CTabFolder   wTabFolder;
 	
@@ -88,14 +102,34 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 	private Composite    wGeneralComp;
 	private FormData     fdGeneralComp;
 	
+	private CTabItem     wAdditionalTab;
+
+	private Composite    wAdditionalComp;
+	private FormData     fdAdditionalComp;
+	
     private Label        wlXSLTFactory;
     private CCombo       wXSLTFactory;
     private FormData     fdlXSLTFactory, fdXSLTFactory;
+    
+	private Label        wlFields;
+	private TableView    wFields;
+	private FormData     fdlFields, fdFields;
+	
+	private Label wlOutputProperties;
+	private FormData fdlOutputProperties;
+	
+	private TableView wOutputProperties;
+	private FormData fdOutputProperties;
+	
+	private ColumnInfo[] colinf;
+    
+    private Map<String, Integer> inputFields;
 	
 	public XsltDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
 		super(parent, (BaseStepMeta)in, transMeta, sname);
 		input=(XsltMeta)in;
+        inputFields =new HashMap<String, Integer>();
 	}
 
 	public String open()
@@ -174,7 +208,7 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
         props.setLook(wlField);
         fdlField=new FormData();
         fdlField.left = new FormAttachment(0, 0);
-        fdlField.top  = new FormAttachment(wStepname, margin);
+        fdlField.top  = new FormAttachment(wStepname, 2*margin);
         fdlField.right= new FormAttachment(middle, -margin);
         wlField.setLayoutData(fdlField);
         wField=new CCombo(wGeneralComp, SWT.BORDER | SWT.READ_ONLY);
@@ -183,7 +217,7 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
         wField.addModifyListener(lsMod);
         fdField=new FormData();
         fdField.left = new FormAttachment(middle, margin);
-        fdField.top  = new FormAttachment(wStepname, margin);
+        fdField.top  = new FormAttachment(wStepname, 2*margin);
         fdField.right= new FormAttachment(100, -margin);
         wField.setLayoutData(fdField);
         wField.addFocusListener(new FocusListener()
@@ -256,7 +290,7 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 		wXSLFileGroup.setLayout(XSLFileGroupLayout);
 
 
-		// Is XSL filename defined in a Field?
+		// Is XSL source defined in a Field?
 		wlXSLFileField = new Label(wXSLFileGroup, SWT.RIGHT);
 		wlXSLFileField.setText(BaseMessages.getString(PKG, "XsltDialog.XSLFilenameFileField.Label"));
 		props.setLook(wlXSLFileField);
@@ -321,13 +355,39 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
         );
 		       
         
+    	// Is XSL field defined in a Field is a file?
+		wlXSLFieldIsAFile = new Label(wXSLFileGroup, SWT.RIGHT);
+		wlXSLFieldIsAFile.setText(BaseMessages.getString(PKG, "XsltDialog.XSLFieldIsAFile.Label"));
+		props.setLook(wlXSLFieldIsAFile);
+		fdlXSLFieldIsAFile = new FormData();
+		fdlXSLFieldIsAFile.left = new FormAttachment(0, 0);
+		fdlXSLFieldIsAFile.top = new FormAttachment(wXSLField, margin);
+		fdlXSLFieldIsAFile.right = new FormAttachment(middle, -margin);
+		wlXSLFieldIsAFile.setLayoutData(fdlXSLFieldIsAFile);
+		wXSLFieldIsAFile = new Button(wXSLFileGroup, SWT.CHECK);
+		props.setLook(wXSLFieldIsAFile);
+		wXSLFieldIsAFile.setToolTipText(BaseMessages.getString(PKG, "XsltDialog.XSLFieldIsAFile.Tooltip"));
+		fdXSLFieldIsAFile = new FormData();
+		fdXSLFieldIsAFile.left = new FormAttachment(middle, margin);
+		fdXSLFieldIsAFile.top = new FormAttachment(wXSLField, margin);
+		wXSLFieldIsAFile.setLayoutData(fdXSLFieldIsAFile);
+		wXSLFieldIsAFile.addSelectionListener(
+			 new SelectionAdapter()
+	        {
+	            public void widgetSelected(SelectionEvent arg0)
+	            {
+	            	input.setChanged();
+	            }
+	        }
+	    );
+        
 		// XSL Filename
 		wlFilename = new Label(wXSLFileGroup, SWT.RIGHT);
 		wlFilename.setText(BaseMessages.getString(PKG, "XsltDialog.XSLFilename.Label"));
 		props.setLook(wlFilename);
 		fdlXSLFilename = new FormData();
 		fdlXSLFilename.left = new FormAttachment(0, 0);
-		fdlXSLFilename.top = new FormAttachment(wXSLField, 2*margin);
+		fdlXSLFilename.top = new FormAttachment(wXSLFieldIsAFile, 2*margin);
 		fdlXSLFilename.right = new FormAttachment(middle, -margin);
 		wlFilename.setLayoutData(fdlXSLFilename);
 
@@ -337,7 +397,7 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 		wbbFilename.setToolTipText(BaseMessages.getString(PKG, "System.Tooltip.BrowseForFileOrDirAndAdd"));
 		fdbXSLFilename = new FormData();
 		fdbXSLFilename.right = new FormAttachment(100, 0);
-		fdbXSLFilename.top = new FormAttachment(wXSLField, 2*margin);
+		fdbXSLFilename.top = new FormAttachment(wXSLFieldIsAFile, 2*margin);
 		wbbFilename.setLayoutData(fdbXSLFilename);
 
 		wXSLFilename = new TextVar(transMeta,wXSLFileGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -346,7 +406,7 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 		fdXSLFilename = new FormData();
 		fdXSLFilename.left = new FormAttachment(middle, margin);
 		fdXSLFilename.right = new FormAttachment(wbbFilename, -margin);
-		fdXSLFilename.top = new FormAttachment(wXSLField, 2*margin);
+		fdXSLFilename.top = new FormAttachment(wXSLFieldIsAFile, 2*margin);
 		wXSLFilename.setLayoutData(fdXSLFilename);
 				
 		 // XSLTFactory
@@ -399,6 +459,135 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 		/// END OF GENERAL TAB
 		/////////////////////////////////////////////////////////////
  		
+ 		// Additional tab...
+		//
+		wAdditionalTab = new CTabItem(wTabFolder, SWT.NONE);
+		wAdditionalTab.setText(BaseMessages.getString(PKG, "XsltDialog.AdvancedTab.Title"));
+		
+		FormLayout addLayout = new FormLayout ();
+		addLayout.marginWidth  = Const.FORM_MARGIN;
+		addLayout.marginHeight = Const.FORM_MARGIN;
+		
+		wAdditionalComp = new Composite(wTabFolder, SWT.NONE);
+		wAdditionalComp.setLayout(addLayout);
+ 		props.setLook(wAdditionalComp);
+ 		
+ 		
+ 		 // Output properties
+		 wlOutputProperties=new Label(wAdditionalComp, SWT.NONE);
+	     wlOutputProperties.setText(BaseMessages.getString(PKG, "XsltDialog.OutputProperties.Label")); //$NON-NLS-1$
+	     props.setLook(wlOutputProperties);
+	     fdlOutputProperties=new FormData();
+	     fdlOutputProperties.left = new FormAttachment(0, 0);
+	     fdlOutputProperties.top  = new FormAttachment(0, margin);
+	     wlOutputProperties.setLayoutData(fdlOutputProperties);
+
+	     final int OutputPropertiesRows=input.getParameterField().length;
+		
+		 colinf=new ColumnInfo[] { 
+		  new ColumnInfo(BaseMessages.getString(PKG, "XsltDialog.ColumnInfo.OutputProperties.Name"),      ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
+		  new ColumnInfo(BaseMessages.getString(PKG, "XsltDialog.ColumnInfo.OutputProperties.Value"),  ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
+	       };
+		 colinf[0].setComboValues(XsltMeta.outputProperties);
+		 colinf[1].setUsingVariables(true);
+		
+		 wOutputProperties=new TableView(transMeta, wAdditionalComp, 
+							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
+							  colinf, 
+							  OutputPropertiesRows,  
+							  lsMod,
+							  props
+							  );
+		fdOutputProperties=new FormData();
+		fdOutputProperties.left  = new FormAttachment(0, 0);
+		fdOutputProperties.top   = new FormAttachment(wlOutputProperties, margin);
+		fdOutputProperties.right = new FormAttachment(100, -margin);
+		fdOutputProperties.bottom= new FormAttachment(wlOutputProperties, 200);
+		wOutputProperties.setLayoutData(fdOutputProperties);
+		
+		// Parameters
+ 		
+		 wlFields=new Label(wAdditionalComp, SWT.NONE);
+	     wlFields.setText(BaseMessages.getString(PKG, "XsltDialog.Parameters.Label")); //$NON-NLS-1$
+	     props.setLook(wlFields);
+	     fdlFields=new FormData();
+	     fdlFields.left = new FormAttachment(0, 0);
+	     fdlFields.top  = new FormAttachment(wOutputProperties, 2*margin);
+	     wlFields.setLayoutData(fdlFields);
+	       
+		wGet=new Button(wAdditionalComp, SWT.PUSH);
+		wGet.setText(BaseMessages.getString(PKG, "XsltDialog.GetFields.Button")); //$NON-NLS-1$
+		FormData fdGet = new FormData();
+		fdGet.top = new FormAttachment(wlFields, margin);
+		fdGet.right = new FormAttachment(100, 0);
+		wGet.setLayoutData(fdGet);
+			
+		final int FieldsRows=input.getParameterField().length;
+		
+		 colinf=new ColumnInfo[] { 
+		  new ColumnInfo(BaseMessages.getString(PKG, "XsltDialog.ColumnInfo.Name"),      ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
+		  new ColumnInfo(BaseMessages.getString(PKG, "XsltDialog.ColumnInfo.Parameter"),  ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
+	       };
+		colinf[1].setUsingVariables(true);
+		
+		wFields=new TableView(transMeta, wAdditionalComp, 
+							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
+							  colinf, 
+							  FieldsRows,  
+							  lsMod,
+							  props
+							  );
+		fdFields=new FormData();
+		fdFields.left  = new FormAttachment(0, 0);
+		fdFields.top   = new FormAttachment(wlFields, margin);
+		fdFields.right = new FormAttachment(wGet, -margin);
+		fdFields.bottom= new FormAttachment(100, -margin);
+		wFields.setLayoutData(fdFields);
+		
+		
+
+ 	        // Search the fields in the background
+ 			
+ 	        final Runnable runnable = new Runnable()
+ 	        {
+ 	            public void run()
+ 	            {
+ 	                StepMeta stepMeta = transMeta.findStep(stepname);
+ 	                if (stepMeta!=null)
+ 	                {
+ 	                    try
+ 	                    {
+ 	                    	RowMetaInterface row = transMeta.getPrevStepFields(stepMeta);
+ 	                       
+ 	                        // Remember these fields...
+ 	                        for (int i=0;i<row.size();i++)
+ 	                        {
+ 	                            inputFields.put(row.getValueMeta(i).getName(), Integer.valueOf(i));
+ 	                        }
+ 	                        setComboBoxes();
+ 	                    }
+ 	                    catch(KettleException e)
+ 	                    {
+ 	                    	logError(BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
+ 	                    }
+ 	                }
+ 	            }
+ 	        };
+ 	        new Thread(runnable).start();
+
+ 		
+ 		
+ 	    fdAdditionalComp=new FormData();
+ 		fdAdditionalComp.left  = new FormAttachment(0, 0);
+		fdAdditionalComp.top   = new FormAttachment(wStepname, margin);
+		fdAdditionalComp.right = new FormAttachment(100, 0);
+		fdAdditionalComp.bottom= new FormAttachment(100, 0);
+		wAdditionalComp.setLayoutData(fdAdditionalComp);
+		
+		wAdditionalComp.layout();
+		wAdditionalTab.setControl(wAdditionalComp);
+		//////// END of Additional Tab
+ 		
  		
 		fdTabFolder = new FormData();
 		fdTabFolder.left  = new FormAttachment(0, 0);
@@ -418,11 +607,11 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel();          } };
-		
+		lsGet      = new Listener() { public void handleEvent(Event e) { get();        } };
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();              } };
 		
 		wCancel.addListener(SWT.Selection, lsCancel);
-
+		wGet.addListener   (SWT.Selection, lsGet   );
 
 		wOK.addListener    (SWT.Selection, lsOK    );
 		
@@ -499,29 +688,28 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 		wXSLFilename.setEnabled(!wXSLFileField.getSelection());
 		wlFilename.setEnabled(!wXSLFileField.getSelection());
 		wbbFilename.setEnabled(!wXSLFileField.getSelection());
+		wlXSLFieldIsAFile.setEnabled(wXSLFileField.getSelection());
+		wXSLFieldIsAFile.setEnabled(wXSLFileField.getSelection());
+		if(!wXSLFileField.getSelection()) {
+			wXSLFieldIsAFile.setSelection(false);
+		}
 	
 	}
 	 private void PopulateFields(CCombo cc)
 	 {
+		 if(cc.isDisposed()) return;
 		 try{
-	           
-				cc.removeAll();
-				RowMetaInterface r = transMeta.getPrevStepFields(stepname);
-				if (r!=null)
-				{
-		             r.getFieldNames();
-		             
-		             for (int i=0;i<r.getFieldNames().length;i++)
-						{	
-							cc.add(r.getFieldNames()[i]);					
-							
-						}
-				}
-
+			String initValue=cc.getText();
+			cc.removeAll();
+			RowMetaInterface r = transMeta.getPrevStepFields(stepname);
+			if (r!=null) {
+	             cc.setItems(r.getFieldNames());
+			}
+			if(!Const.isEmpty(initValue)) cc.setText(initValue);
 		 }catch(KettleException ke){
 				new ErrorDialog(shell, BaseMessages.getString(PKG, "XsltDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "XsltDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 			}
-
+		 
 	 }
 	
 	/**
@@ -536,12 +724,33 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 
 		if (input.getXSLFileField() != null) wXSLField.setText( input.getXSLFileField() );
 		
-		wXSLFileField.setSelection(input.useXSLFileFieldUse());
+		wXSLFileField.setSelection(input.useXSLField());
+		wXSLFieldIsAFile.setSelection(input.isXSLFieldIsAFile());
+		
 		if (input.getXSLFactory() != null) 
 			wXSLTFactory.setText( input.getXSLFactory() );
 		else
 			wXSLTFactory.setText( "JAXP");
 		
+		
+		if (input.getParameterName()!=null) {
+			for (int i=0;i<input.getParameterName().length;i++)
+			{
+				TableItem item = wFields.table.getItem(i);
+				item.setText(1, Const.NVL(input.getParameterField()[i], ""));
+				item.setText(2, Const.NVL(input.getParameterName()[i], ""));
+			}
+		}
+		
+		
+		if (input.getOutputPropertyName()!=null) {
+			for (int i=0;i<input.getOutputPropertyName().length;i++)
+			{
+				TableItem item = wOutputProperties.table.getItem(i);
+				item.setText(1, Const.NVL(input.getOutputPropertyName()[i], ""));
+				item.setText(2, Const.NVL(input.getOutputPropertyValue()[i], ""));
+			}
+		}
 		wStepname.selectAll();
 	}
 	
@@ -562,8 +771,59 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 		input.setXSLFileField(wXSLField.getText() );
 		input.setXSLFactory(wXSLTFactory.getText() );
 		
-		input.setXSLFileFieldUse(wXSLFileField.getSelection());
-						
+		input.setXSLField(wXSLFileField.getSelection());
+		input.setXSLFieldIsAFile(wXSLFieldIsAFile.getSelection());
+		int nrparams = wFields.nrNonEmpty();
+		int nroutputprops = wOutputProperties.nrNonEmpty();
+		input.allocate(nrparams, nroutputprops);
+
+		if(isDebug()) logDebug(BaseMessages.getString(PKG, "HTTPDialog.Log.FoundArguments",String.valueOf(nrparams))); //$NON-NLS-1$ //$NON-NLS-2$
+		for (int i=0;i<nrparams;i++)
+		{
+			TableItem item = wFields.getNonEmpty(i);
+			input.getParameterField()[i]       = item.getText(1);
+			input.getParameterName()[i]    = item.getText(2);
+		}
+		for (int i=0;i<nroutputprops;i++)
+		{
+			TableItem item = wOutputProperties.getNonEmpty(i);
+			input.getOutputPropertyName()[i]       = item.getText(1);
+			input.getOutputPropertyValue()[i]    = item.getText(2);
+		}				
 		dispose();
+	}
+	protected void setComboBoxes()
+    {
+        // Something was changed in the row.
+        //
+        final Map<String, Integer> fields = new HashMap<String, Integer>();
+        
+        // Add the currentMeta fields...
+        fields.putAll(inputFields);
+        
+        Set<String> keySet = fields.keySet();
+        List<String> entries = new ArrayList<String>(keySet);
+
+        String fieldNames[] = (String[]) entries.toArray(new String[entries.size()]);
+
+        Const.sortStrings(fieldNames);
+        colinf[0].setComboValues(fieldNames);
+        //colinfHeaders[0].setComboValues(fieldNames);
+    }
+	private void get()
+	{
+		try
+		{
+			RowMetaInterface r = transMeta.getPrevStepFields(stepname);
+			if (r!=null && !r.isEmpty())
+			{
+                BaseStepDialog.getFieldsFromPrevious(r, wFields, 1, new int[] { 1, 2 }, new int[] { 3 }, -1, -1, null);
+			}
+		}
+		catch(KettleException ke)
+		{
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "XsltDialog.FailedToGetFields.DialogTitle"), 
+					BaseMessages.getString(PKG, "XsltDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+		}
 	}
 }

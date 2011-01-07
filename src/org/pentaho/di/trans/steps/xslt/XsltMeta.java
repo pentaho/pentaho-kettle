@@ -22,6 +22,7 @@ import java.util.Map;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -53,21 +54,75 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface
 {
 	private static Class<?> PKG = XsltMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
+	public static final String[] outputProperties= new String[]{
+		"method",
+  		"version",
+  		"encoding",  
+  		"standalone",
+  		"indent",
+  		"omit-xml-declaration",
+  		"doctype-public",
+  		"doctype-system",
+  		"media-type"
+	};
+	
 	private String  xslFilename;
 	private String  fieldName;
 	private String  resultFieldname;
 	private String  xslFileField;
 	private boolean xslFileFieldUse;
+	private boolean xslFieldIsAFile;
 	private String xslFactory;
 
+
+    /** output property name*/
+    private String  outputPropertyName[];
+
+    /** output property value */
+    private String  outputPropertyValue[];
+	
+    /** parameter name*/
+    private String  parameterName[];
+
+    /** parameter field */
+    private String  parameterField[];
 	
 	public XsltMeta()
 	{
 		super(); // allocate BaseStepMeta
 	}
 	
+	/**
+     * @return Returns the parameterName.
+     */
+    public String[] getParameterName()
+    {
+        return parameterName;
+    }
 
-    
+    /**
+     * @param argumentDirection The parameterName to set.
+     */
+    public void setParameterName(String[] argumentDirection)
+    {
+        this.parameterName = argumentDirection;
+    }
+
+	/**
+     * @return Returns the parameterField.
+     */
+    public String[] getParameterField()
+    {
+        return parameterField;
+    }
+
+    /**
+     * @param argumentDirection The parameterField to set.
+     */
+    public void setParameterField(String[] argumentDirection)
+    {
+        this.parameterField = argumentDirection;
+    }
     /**
      * @return Returns the XSL filename.
      */
@@ -75,7 +130,38 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface
     {
         return xslFilename;
     }
-  
+	
+	/**
+     * @return Returns the OutputPropertyName.
+     */
+    public String[] getOutputPropertyName()
+    {
+        return outputPropertyName;
+    }
+
+    /**
+     * @param argumentDirection The OutputPropertyName to set.
+     */
+    public void setOutputPropertyName(String[] argumentDirection)
+    {
+        this.outputPropertyName = argumentDirection;
+    }
+
+	/**
+     * @return Returns the OutputPropertyField.
+     */
+    public String[] getOutputPropertyValue()
+    {
+        return outputPropertyValue;
+    }
+
+    /**
+     * @param argumentDirection The outputPropertyValue to set.
+     */
+    public void setOutputPropertyValue(String[] argumentDirection)
+    {
+        this.outputPropertyValue = argumentDirection;
+    }
     public void setXSLFileField(String xslfilefieldin)
     {
     	xslFileField=xslfilefieldin;
@@ -137,32 +223,60 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface
 		readData(stepnode);
 	}
 
-	
+
+    public void allocate(int nrParameters, int outputProps)
+    {
+        parameterName = new String[nrParameters];
+        parameterField = new String[nrParameters];
+        
+        outputPropertyName = new String[outputProps];
+        outputPropertyValue = new String[outputProps];
+    }
 
 	public Object clone()
 	{
 		XsltMeta retval = (XsltMeta)super.clone();
-		
+		int nrparams = parameterName.length;
+		int nroutputprops = outputPropertyName.length;
+        retval.allocate(nrparams, nroutputprops);
+
+        for (int i = 0; i < nrparams; i++)
+        {
+            retval.parameterName[i] = parameterName[i];
+            retval.parameterField[i] = parameterField[i];
+        }
+        for (int i = 0; i < nroutputprops; i++)
+        {
+            retval.outputPropertyName[i] = outputPropertyName[i];
+            retval.outputPropertyValue[i] = outputPropertyValue[i];
+        }
 
 		return retval;
 	}
 	
     
     
-    public boolean useXSLFileFieldUse()
+    public boolean useXSLField()
     {
         return xslFileFieldUse;
     }
     
       
-    public void setXSLFileFieldUse(boolean xslfilefieldusein)
+    public void setXSLField(boolean value)
     {
-        this.xslFileFieldUse = xslfilefieldusein;
+        this.xslFileFieldUse = value;
     }
     
-  
+    public void setXSLFieldIsAFile(boolean xslFieldisAFile)
+    {
+        this.xslFieldIsAFile = xslFieldisAFile;
+    }
     
-   
+    public boolean isXSLFieldIsAFile()
+    {
+        return xslFieldIsAFile;
+    }
+     
     
 	private void readData(Node stepnode)
 		throws KettleXMLException
@@ -174,7 +288,35 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface
 			resultFieldname     = XMLHandler.getTagValue(stepnode, "resultfieldname"); //$NON-NLS-1$
 			xslFileField     = XMLHandler.getTagValue(stepnode, "xslfilefield");
 			xslFileFieldUse = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "xslfilefielduse"));
+			String isAFile=XMLHandler.getTagValue(stepnode, "xslfieldisafile");
+			if(xslFileFieldUse && Const.isEmpty(isAFile)) {
+				xslFieldIsAFile=true;
+			}else {
+				xslFieldIsAFile = "Y".equalsIgnoreCase(isAFile);
+			}
+			
 			xslFactory     = XMLHandler.getTagValue(stepnode, "xslfactory"); 
+			
+			Node parametersNode = XMLHandler.getSubNode(stepnode, "parameters"); //$NON-NLS-1$
+            int nrparams = XMLHandler.countNodes(parametersNode, "parameter"); //$NON-NLS-1$
+            
+    		Node parametersOutputProps = XMLHandler.getSubNode(stepnode, "outputproperties"); //$NON-NLS-1$
+            int nroutputprops = XMLHandler.countNodes(parametersOutputProps, "outputproperty");
+            allocate(nrparams, nroutputprops);
+
+            for (int i = 0; i < nrparams; i++)
+            {
+                Node anode = XMLHandler.getSubNodeByNr(parametersNode, "parameter", i); //$NON-NLS-1$
+                parameterField[i] = XMLHandler.getTagValue(anode, "field"); //$NON-NLS-1$
+                parameterName[i] = XMLHandler.getTagValue(anode, "name"); //$NON-NLS-1$
+            }
+            for (int i = 0; i < nroutputprops; i++)
+            {
+                Node anode = XMLHandler.getSubNodeByNr(parametersOutputProps, "outputproperty", i); //$NON-NLS-1$
+                outputPropertyName[i] = XMLHandler.getTagValue(anode, "name"); //$NON-NLS-1$
+                outputPropertyValue[i] = XMLHandler.getTagValue(anode, "value"); //$NON-NLS-1$
+            }
+
 			
 		}
 		catch(Exception e)
@@ -188,17 +330,33 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface
 		xslFilename = null; //$NON-NLS-1$
 		fieldName = null;
 		resultFieldname="result";
-		xslFactory="JAXP";
+		xslFactory="JAXP"; 
 		xslFileField=null;
-		xslFileFieldUse=false;		
+		xslFileFieldUse=false;
+		xslFieldIsAFile=true;
+		
+	    int nrparams = 0;
+	    int nroutputproperties = 0;
+        allocate(nrparams, nroutputproperties);
+
+        for (int i = 0; i < nrparams; i++)
+        {
+            parameterField[i] = "param" + i; //$NON-NLS-1$
+            parameterName[i] = "param"; //$NON-NLS-1$
+        }
+        for (int i = 0; i < nroutputproperties; i++)
+        {
+        	outputPropertyName[i] = "outputprop" + i; //$NON-NLS-1$
+        	outputPropertyValue[i] = "outputprop"; //$NON-NLS-1$
+        }
 	}
 	
 	public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{    	
         // Output field (String)	
         ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(getResultfieldname()), ValueMeta.TYPE_STRING);
+        v.setOrigin(name);
         inputRowMeta.addValueMeta(v);
-
     }
 
 	
@@ -211,8 +369,31 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("    "+XMLHandler.addTagValue("resultfieldname", resultFieldname)); //$NON-NLS-1$ //$NON-NLS-2$	
 		retval.append("    "+XMLHandler.addTagValue("xslfilefield", xslFileField));
 		retval.append("    "+XMLHandler.addTagValue("xslfilefielduse",  xslFileFieldUse));
-		retval.append("    "+XMLHandler.addTagValue("xslfactory", xslFactory)); 
+		retval.append("    "+XMLHandler.addTagValue("xslfieldisafile",  xslFieldIsAFile));
 		
+		retval.append("    "+XMLHandler.addTagValue("xslfactory", xslFactory)); 
+	    retval.append("    <parameters>").append(Const.CR); //$NON-NLS-1$
+
+	        for (int i = 0; i < parameterName.length; i++)
+	        {
+	            retval.append("      <parameter>").append(Const.CR); //$NON-NLS-1$
+	            retval.append("        ").append(XMLHandler.addTagValue("field", parameterField[i])); //$NON-NLS-1$ //$NON-NLS-2$
+	            retval.append("        ").append(XMLHandler.addTagValue("name", parameterName[i])); //$NON-NLS-1$ //$NON-NLS-2$
+	            retval.append("      </parameter>").append(Const.CR); //$NON-NLS-1$
+	        }
+
+	      retval.append("    </parameters>").append(Const.CR); //$NON-NLS-1$
+	      retval.append("    <outputproperties>").append(Const.CR); //$NON-NLS-1$
+
+	        for (int i = 0; i < outputPropertyName.length; i++)
+	        {
+	            retval.append("      <outputproperty>").append(Const.CR); //$NON-NLS-1$
+	            retval.append("        ").append(XMLHandler.addTagValue("name", outputPropertyName[i])); //$NON-NLS-1$ //$NON-NLS-2$
+	            retval.append("        ").append(XMLHandler.addTagValue("value", outputPropertyValue[i])); //$NON-NLS-1$ //$NON-NLS-2$
+	            retval.append("      </outputproperty>").append(Const.CR); //$NON-NLS-1$
+	        }
+
+	      retval.append("    </outputproperties>").append(Const.CR); //$NON-NLS-1$
 		return retval.toString();
 	}
 
@@ -225,9 +406,28 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface
 			resultFieldname     = rep.getStepAttributeString(id_step, "resultfieldname"); //$NON-NLS-1
 			xslFileField     = rep.getStepAttributeString(id_step, "xslfilefield");
 			xslFileFieldUse    =      rep.getStepAttributeBoolean(id_step, "xslfilefielduse"); 
+			String isAfile    =      rep.getStepAttributeString(id_step, "xslfieldisafile"); 
+			if(xslFileFieldUse && Const.isEmpty(isAfile)) {
+				xslFieldIsAFile= true;
+			}else {
+				xslFieldIsAFile= "Y".equalsIgnoreCase(isAfile);
+			}
 			xslFactory     = rep.getStepAttributeString(id_step, "xslfactory");
 			
+			 int nrparams = rep.countNrStepAttributes(id_step, "param_name"); //$NON-NLS-1$
+			 int nroutputprops = rep.countNrStepAttributes(id_step, "output_property_name"); //$NON-NLS-1$
+	         allocate(nrparams, nroutputprops);
 
+            for (int i = 0; i < nrparams; i++)
+            {
+                parameterField[i] = rep.getStepAttributeString(id_step, i, "param_field"); //$NON-NLS-1$
+                parameterName[i] = rep.getStepAttributeString(id_step, i, "param_name"); //$NON-NLS-1$
+            }
+            for (int i = 0; i < nroutputprops; i++)
+            {
+                outputPropertyName[i] = rep.getStepAttributeString(id_step, i, "output_property_name"); //$NON-NLS-1$
+                outputPropertyValue[i] = rep.getStepAttributeString(id_step, i, "output_property_value"); //$NON-NLS-1$
+            }
 		}
 		catch(Exception e)
 		{
@@ -247,8 +447,20 @@ public class XsltMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "xslfilefield", xslFileField);
 			
 			rep.saveStepAttribute(id_transformation, id_step, "xslfilefielduse",  xslFileFieldUse);
+			rep.saveStepAttribute(id_transformation, id_step, "xslfieldisafile",  xslFieldIsAFile);
+			
 			rep.saveStepAttribute(id_transformation, id_step, "xslfactory", xslFactory);
 
+			for (int i = 0; i < parameterName.length; i++)
+            {
+                rep.saveStepAttribute(id_transformation, id_step, i, "param_field", parameterField[i]); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, i, "param_name", parameterName[i]); //$NON-NLS-1$
+            }
+			for (int i = 0; i < outputPropertyName.length; i++)
+            {
+                rep.saveStepAttribute(id_transformation, id_step, i, "output_property_name", outputPropertyName[i]); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, i, "output_property_value", outputPropertyValue[i]); //$NON-NLS-1$
+            }
 		}
 		catch(Exception e)
 		{

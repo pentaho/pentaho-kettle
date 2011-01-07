@@ -16,21 +16,23 @@
 
 package org.pentaho.di.trans.steps.xslt;
 
-import java.io.FileInputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.Properties;
 
 import javax.xml.transform.Source;
-import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileType;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -107,7 +109,7 @@ public class Xslt extends BaseStep implements StepInterface
 			}
 				
 			// Check if the XSL Filename is contained in a column
-			if (meta.useXSLFileFieldUse())
+			if (meta.useXSLField())
 			{
 				if (Const.isEmpty(meta.getXSLFileField()))
 				{
@@ -128,94 +130,139 @@ public class Xslt extends BaseStep implements StepInterface
 					throw new KettleStepException(BaseMessages.getString(PKG, "Xslt.Exception.ErrorXSLFileFieldFinding",meta.getXSLFileField())); //$NON-NLS-1$ //$NON-NLS-2$
 				}	
 				
-			}else
-			{
-				if(Const.isEmpty(meta.getXslFilename()))
-				{
+			}else {
+				if(Const.isEmpty(meta.getXslFilename())) {
 					logError(BaseMessages.getString(PKG, "Xslt.Log.ErrorXSLFile")); 
 					throw new KettleStepException(BaseMessages.getString(PKG, "Xslt.Exception.ErrorXSLFile"));
 				}
 				
 				// Check if XSL File exists!
 				data.xslfilename = environmentSubstitute(meta.getXslFilename());
-				java.io.File file=new java.io.File(data.xslfilename);
-				if(!file.exists())
-				{
-					logError(BaseMessages.getString(PKG, "Xslt.Log.ErrorXSLFileNotExists",data.xslfilename)); //$NON-NLS-1$ //$NON-NLS-2$
-					throw new KettleStepException(BaseMessages.getString(PKG, "Xslt.Exception.ErrorXSLFileNotExists",data.xslfilename)); //$NON-NLS-1$ //$NON-NLS-2$
-				}
-				if(!file.isFile())
-				{
-					logError(BaseMessages.getString(PKG, "Xslt.Log.ErrorXSLNotAFile",data.xslfilename)); //$NON-NLS-1$ //$NON-NLS-2$
-					throw new KettleStepException(BaseMessages.getString(PKG, "Xslt.Exception.ErrorXSLNotAFile",data.xslfilename)); //$NON-NLS-1$ //$NON-NLS-2$
+				FileObject file=null;
+				try {
+					file=KettleVFS.getFileObject(data.xslfilename);
+					if(!file.exists())
+					{
+						logError(BaseMessages.getString(PKG, "Xslt.Log.ErrorXSLFileNotExists",data.xslfilename)); //$NON-NLS-1$ //$NON-NLS-2$
+						throw new KettleStepException(BaseMessages.getString(PKG, "Xslt.Exception.ErrorXSLFileNotExists",data.xslfilename)); //$NON-NLS-1$ //$NON-NLS-2$
+					}
+					if(file.getType()!=FileType.FILE)
+					{
+						logError(BaseMessages.getString(PKG, "Xslt.Log.ErrorXSLNotAFile",data.xslfilename)); //$NON-NLS-1$ //$NON-NLS-2$
+						throw new KettleStepException(BaseMessages.getString(PKG, "Xslt.Exception.ErrorXSLNotAFile",data.xslfilename)); //$NON-NLS-1$ //$NON-NLS-2$
+					}
+				}catch(Exception e) {
+					throw new KettleStepException(e);
+				} finally {
+					try {
+						if(file!=null) file.close();
+					}catch(Exception e){};
 				}
 			}
-		}	
+			
+			// Check output parameters
+			int nrOutputProps= meta.getOutputPropertyName()==null?0:meta.getOutputPropertyName().length;
+			if(nrOutputProps>0) {
+				data.outputProperties= new Properties();
+				for(int i=0; i<nrOutputProps; i++) {
+					data.outputProperties.put(meta.getOutputPropertyName()[i], environmentSubstitute(meta.getOutputPropertyValue()[i]));
+				}
+				data.setOutputProperties=true;
+			}
+			
+
+			// Check parameters
+			data.nrParams= meta.getParameterField()==null?0:meta.getParameterField().length;
+			if(data.nrParams>0) {
+				data.indexOfParams = new int[data.nrParams];
+				data.nameOfParams = new String[data.nrParams];
+				for(int i=0; i<data.nrParams; i++) {
+					String name = environmentSubstitute(meta.getParameterName()[i]);
+					String field =  environmentSubstitute(meta.getParameterField()[i]);
+					if(Const.isEmpty(field)) {
+						throw new KettleStepException(BaseMessages.getString(PKG, "Xslt.Exception.ParameterFieldMissing", name, i));
+					}
+					data.indexOfParams[i]=getInputRowMeta().indexOfValue(field);
+					if(data.indexOfParams[i]<0) {
+						throw new KettleStepException(BaseMessages.getString(PKG, "Xslt.Exception.ParameterFieldNotFound", name));
+					}
+					data.nameOfParams[i]=name;
+				}
+				data.useParameters=true;
+			}
+			
+			data.factory = TransformerFactory.newInstance();
+			
+			if (meta.getXSLFactory().equals("SAXON")){
+				// Set the TransformerFactory to the SAXON implementation.
+				data.factory = new net.sf.saxon.TransformerFactoryImpl(); 
+			}
+		}// end if first	
 		
 		// Get the field value
-		String Fieldvalue= getInputRowMeta().getString(row,data.fieldposition);	
-		
-		String xmlString=null;
+		String xmlValue= getInputRowMeta().getString(row,data.fieldposition);	
 
-		if (meta.useXSLFileFieldUse())
-		{
+		if (meta.useXSLField()) {
 			// Get the value	
 			data.xslfilename= getInputRowMeta().getString(row,data.fielxslfiledposition);	
 			if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "Xslt.Log.XslfileNameFromFied",data.xslfilename,meta.getXSLFileField()));			
 		}
 
-		boolean sendToErrorRow=false;
-	    String errorMessage = null;
-		try {			
-			if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "Xslt.Log.Filexsl") + data.xslfilename);
-			TransformerFactory factory = TransformerFactory.newInstance();
+
+		try {		
 			
-			if (meta.getXSLFactory().equals("SAXON"))
-			{
-				// Set the TransformerFactory to the SAXON implementation.
-				factory = new net.sf.saxon.TransformerFactoryImpl(); 
-				
+			if(log.isDetailed()) {
+				if(meta.isXSLFieldIsAFile()) logDetailed(BaseMessages.getString(PKG, "Xslt.Log.Filexsl") + data.xslfilename);
+				else logDetailed(BaseMessages.getString(PKG, "Xslt.Log.XslStream", data.xslfilename));
 			}
 			
-      FileInputStream xslInputStream = new FileInputStream(data.xslfilename);
-      try {
-  			// Use the factory to create a template containing the xsl file
-  			Templates template = factory.newTemplates(new StreamSource(	xslInputStream ) );
-  			// Use the template to create a transformer
-  			Transformer xformer = template.newTransformer();
-  			Source source = new StreamSource(new StringReader(Fieldvalue));			
-  		    StreamResult resultat = new StreamResult(new StringWriter());	   
-  			xformer.transform(source, resultat);
-  			xmlString = resultat.getWriter().toString();	
-  			if(log.isDetailed()) 
-  			{
-  				logDetailed(BaseMessages.getString(PKG, "Xslt.Log.FileResult"));
-  				logDetailed(xmlString);		
-  			}
-  			Object[] outputRowData =RowDataUtil.addValueData(row, getInputRowMeta().size(),xmlString);
-  			
-  			if (log.isRowLevel()) { logRowlevel(BaseMessages.getString(PKG, "Xslt.Log.ReadRow") + " " +  getInputRowMeta().getString(row)); } 
-  			//	add new values to the row.
-  	    putRow(data.outputRowMeta, outputRowData);  // copy row to output rowset(s);
-      } finally {
-        BaseStep.closeQuietly(xslInputStream);
-      }
-		} 
-		catch (Exception e) {
-			if (getStepMeta().isDoingErrorHandling())
-	        {
+			// Get the template from the cache
+	  		Transformer transformer = data.getTemplate(data.xslfilename, meta.isXSLFieldIsAFile());
+	  	
+	  		// Do we need to set output properties?
+	  	 	if(data.setOutputProperties) {
+	  	 		transformer.setOutputProperties(data.outputProperties);
+	  	 	}
+	  	
+	  		// Do we need to pass parameters?
+	  		if(data.useParameters) {
+	  			for(int i=0; i<data.nrParams; i++) {
+	  				transformer.setParameter(data.nameOfParams[i],  row[data.indexOfParams[i]]);	
+	  			}
+	  		}
+	  		
+	  		Source source = new StreamSource(new StringReader(xmlValue));	
+	  		// Prepare output stream
+	  	    StreamResult result = new StreamResult(new StringWriter());	
+	  	    // transform xml source
+	  	  transformer.transform(source, result);
+			
+			String xmlString = result.getWriter().toString();	
+	  		if(log.isDetailed()) {
+	  			logDetailed(BaseMessages.getString(PKG, "Xslt.Log.FileResult"));
+	  			logDetailed(xmlString);		
+	  		}
+	  		Object[] outputRowData =RowDataUtil.addValueData(row, getInputRowMeta().size(),xmlString);
+	  			
+	  		if (log.isRowLevel()) { logRowlevel(BaseMessages.getString(PKG, "Xslt.Log.ReadRow") + " " +  getInputRowMeta().getString(row)); } 
+	  		
+	  		//	add new values to the row.
+	  		putRow(data.outputRowMeta, outputRowData);  // copy row to output rowset(s);
+	  		
+		} catch (Exception e) {
+			
+			boolean sendToErrorRow=false;
+		    String errorMessage = null;
+		    
+			if (getStepMeta().isDoingErrorHandling()) {
 	           sendToErrorRow = true;
 	           errorMessage = e.getMessage();
 	        }
 	            
-			if (sendToErrorRow) 
-            {
+			if (sendToErrorRow)  {
                 // Simply add this row to the error row
                 putError(getInputRowMeta(), row, 1, errorMessage, meta.getResultfieldname(), "XSLT01");  
-           
-            }
-			else
-			{
+            } else {
 	            logError(BaseMessages.getString(PKG, "Xslt.ErrorProcesing" + " : "+ e.getMessage()));
 	            throw new KettleStepException(BaseMessages.getString(PKG, "Xslt.ErrorProcesing"), e);
 			}
@@ -235,5 +282,12 @@ public class Xslt extends BaseStep implements StepInterface
 		}
 		return false;
 	}
-
+    
+	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
+    {
+        meta = (XsltMeta)smi;
+        data = (XsltData)sdi;
+        data.dispose();
+        super.dispose(smi, sdi);
+    }
 }
