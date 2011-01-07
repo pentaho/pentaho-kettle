@@ -391,11 +391,10 @@ public class AccessInput extends BaseStep implements StepInterface
         	data.d = Database.open(new File(AccessInputMeta.getFilename(data.file)), true);	// Read-only
 
         	// Get table
-        	String realTableName=environmentSubstitute(meta.getTableName());
-        	if(realTableName.startsWith(AccessInputMeta.PREFIX_SYSTEM))
-        		data.t=data.d.getSystemTable(realTableName);
+        	if(data.isTableSystem)
+        		data.t=data.d.getSystemTable(data.tableName);
         	else
-        		data.t=data.d.getTable(realTableName);
+        		data.t=data.d.getTable(data.tableName);
 
 			if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "AccessInput.Log.FileOpened", data.file.toString()));
 		}
@@ -449,6 +448,15 @@ public class AccessInput extends BaseStep implements StepInterface
 		
 		if (super.init(smi, sdi))
 		{
+			// Get table
+        	data.tableName=environmentSubstitute(meta.getTableName());
+        	// Check tablename
+        	if(Const.isEmpty(data.tableName))
+        	{
+        		logError(BaseMessages.getString(PKG, "AccessInput.Error.TableNameMissing"));
+        		return false;
+        	}
+        	data.isTableSystem=(data.tableName.startsWith(AccessInputMeta.PREFIX_SYSTEM));
 			if(!meta.isFileField())
 			{
 				data.files = meta.getFiles(this);

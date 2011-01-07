@@ -65,6 +65,8 @@ public class AccessInputData extends BaseStepData implements StepDataInterface
 	public String uriName;	
 	public String rootUriName;	
 	public long size;
+	public String tableName;
+	public boolean isTableSystem;
 	
 
 	/**
@@ -73,6 +75,8 @@ public class AccessInputData extends BaseStepData implements StepDataInterface
 	public AccessInputData()
 	{
 		super();
+		isTableSystem=false;
+		tableName=null;
 		previousRow = null;
 		thisline=null;
 		daf = new SimpleDateFormat();
