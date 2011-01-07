@@ -101,22 +101,8 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
   /** It keep whether all components in tab is enable or not */
   private boolean tabIsEnable[];
 
-  /**
-   * if flag is true, check the target table in db, if not create it
-   * automatically
-   */
-  private boolean autoCreateTbFlag;
-
   /** for automatically create table */
   private String selectStmt;
-
-  public boolean isAutoCreateTbFlag() {
-    return autoCreateTbFlag;
-  }
-
-  public void setAutoCreateTbFlag(boolean autoCreateTbFlag) {
-    this.autoCreateTbFlag = autoCreateTbFlag;
-  }
 
   public boolean[] getTabIsEnable() {
     return tabIsEnable;
@@ -220,8 +206,6 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
       databaseMeta = DatabaseMeta.findDatabase(databases, con);
       schemaName = XMLHandler.getTagValue(stepnode, "schema"); //$NON-NLS-1$
       tableName = XMLHandler.getTagValue(stepnode, "table"); //$NON-NLS-1$
-      autoCreateTbFlag = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode,
-          "auto_create_table"));
       host = XMLHandler.getTagValue(stepnode, "host"); //$NON-NLS-1$
       port = XMLHandler.getTagValue(stepnode, "port"); //$NON-NLS-1$
       operation = XMLHandler.getTagValue(stepnode, "operation"); //$NON-NLS-1$
@@ -282,8 +266,8 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
     schemaName = ""; //$NON-NLS-1$
     tableName = BaseMessages.getString(PKG,
         "LucidDBStreamingLoaderMeta.DefaultTableName"); //$NON-NLS-1$      
-    host = "http://";
-    port = "0";
+    host = "localhost";
+    port = "9034";
     operation = "MERGE";
     allocate(0, 0, 0);
   }
@@ -295,8 +279,6 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
         .append("    ").append(XMLHandler.addTagValue("connection", databaseMeta == null ? "" : databaseMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     retval.append("    ").append(XMLHandler.addTagValue("schema", schemaName)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("    ").append(XMLHandler.addTagValue("table", tableName)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval
-        .append("    ").append(XMLHandler.addTagValue("auto_create_table", ((autoCreateTbFlag == true) ? "Y" : "N"))); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("    ").append(XMLHandler.addTagValue("host", host)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("    ").append(XMLHandler.addTagValue("port", port)); //$NON-NLS-1$ //$NON-NLS-2$
     retval
@@ -346,8 +328,6 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
           "id_connection", databases);
       schemaName = rep.getStepAttributeString(id_step, "schema"); //$NON-NLS-1$
       tableName = rep.getStepAttributeString(id_step, "table"); //$NON-NLS-1$
-      autoCreateTbFlag = "Y".equalsIgnoreCase(rep.getStepAttributeString(
-          id_step, "auto_create_table"));
       host = rep.getStepAttributeString(id_step, "host"); //$NON-NLS-1$
       port = rep.getStepAttributeString(id_step, "port"); //$NON-NLS-1$
       operation = rep.getStepAttributeString(id_step, "operation"); //$NON-NLS-1$
@@ -403,8 +383,6 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
           "id_connection", databaseMeta);
       rep.saveStepAttribute(id_transformation, id_step, "schema", schemaName); //$NON-NLS-1$
       rep.saveStepAttribute(id_transformation, id_step, "table", tableName); //$NON-NLS-1$  
-      rep.saveStepAttribute(id_transformation, id_step,
-          "auto_create_table", ((autoCreateTbFlag == true) ? "Y" : "N")); //$NON-NLS-1$  
       rep.saveStepAttribute(id_transformation, id_step, "host", host); //$NON-NLS-1
       rep.saveStepAttribute(id_transformation, id_step, "port", port); //$NON-NLS-1
       rep.saveStepAttribute(id_transformation, id_step, "operation", operation); //$NON-NLS-1$
@@ -671,18 +649,19 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
 
   }
 
-  private String getSQLDataType(ValueMetaInterface field) {
+  private String getSQLDataType(ValueMetaInterface field) throws KettleStepException {
 
     String dataType = "";
 
     int length = field.getLength();
-    // TODO: add more data type mapping java <==> SQL
+
     switch (field.getType()) {
+      case ValueMetaInterface.TYPE_NUMBER:
+        dataType = "DECIMAL(" + Integer.toString(length) + ", " +
+          Integer.toString(field.getPrecision()) + ")";
+        break;
       case ValueMetaInterface.TYPE_STRING:
         dataType = "VARCHAR(" + Integer.toString(length) + ")";
-        break;
-      case ValueMetaInterface.TYPE_INTEGER:
-        dataType = "INT";
         break;
       case ValueMetaInterface.TYPE_DATE:
         dataType = "DATE";
@@ -690,7 +669,15 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
       case ValueMetaInterface.TYPE_BOOLEAN:
         dataType = "BOOLEAN";
         break;
-
+      case ValueMetaInterface.TYPE_INTEGER:
+        dataType = "INT";
+        break;
+      case ValueMetaInterface.TYPE_BIGNUMBER:
+        dataType = "BIGINT";
+        break;
+      case ValueMetaInterface.TYPE_BINARY:
+        dataType = "BINARY";
+        break;
     }
     return dataType;
 

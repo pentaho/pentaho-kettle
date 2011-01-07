@@ -174,8 +174,6 @@ public class LucidDBStreamingLoaderDialog
 
     private Label lAutoCreateTable;
 
-    private Button bAutoCreateTable;
-
     private FormData fdlAutoCreateTable, fdbAutoCreateTable;
 
     public LucidDBStreamingLoaderDialog(
@@ -301,9 +299,6 @@ public class LucidDBStreamingLoaderDialog
 
         // Auto create table check.
         lAutoCreateTable = new Label(shell, SWT.RIGHT);
-        lAutoCreateTable.setText(BaseMessages.getString(
-            PKG,
-            "LucidDBStreamingLoaderDialog.AutoCreateTable.Label"));
         props.setLook(lAutoCreateTable);
         fdlAutoCreateTable = new FormData();
         fdlAutoCreateTable.left = new FormAttachment(0, 0);
@@ -311,13 +306,9 @@ public class LucidDBStreamingLoaderDialog
         fdlAutoCreateTable.right = new FormAttachment(middle, -margin);
         lAutoCreateTable.setLayoutData(fdlAutoCreateTable);
 
-        bAutoCreateTable = new Button(shell, SWT.CHECK);
-        props.setLook(bAutoCreateTable);
-
         fdbAutoCreateTable = new FormData();
         fdbAutoCreateTable.left = new FormAttachment(lAutoCreateTable, 10);
         fdbAutoCreateTable.top = new FormAttachment(wTable, margin);
-        bAutoCreateTable.setLayoutData(fdbAutoCreateTable);
 
         // Host
         wlHost = new Label(shell, SWT.RIGHT);
@@ -417,7 +408,6 @@ public class LucidDBStreamingLoaderDialog
                 // MERGE
                 if (operations[0].equals(mycc.getItem(mycc.getSelectionIndex())))
                 {
-                   bAutoCreateTable.setEnabled(true);
                     wKeysTb.table.removeAll();
                     wKeysTb.table.setItemCount(1);
                     wKeysTb.setRowNums();
@@ -434,7 +424,6 @@ public class LucidDBStreamingLoaderDialog
                     // INSERT
                 } else if (operations[1].equals(mycc.getItem(mycc.getSelectionIndex())))
                 {
-                    bAutoCreateTable.setEnabled(true);
                     wKeysTb.table.removeAll();
                     wKeysTb.table.setItemCount(1);
                     wKeysTb.setRowNums();
@@ -451,7 +440,6 @@ public class LucidDBStreamingLoaderDialog
                     // UPDATE
                 } else if (operations[2].equals(mycc.getItem(mycc.getSelectionIndex())))
                 {
-                    bAutoCreateTable.setEnabled(true);
                     wKeysTb.table.removeAll();
                     wKeysTb.table.setItemCount(1);
                     wKeysTb.setRowNums();
@@ -469,9 +457,6 @@ public class LucidDBStreamingLoaderDialog
                     // CUSTOM
                 } else if (operations[3].equals(mycc.getItem(mycc.getSelectionIndex())))
                 {
-
-                    bAutoCreateTable.setSelection(false);
-                    bAutoCreateTable.setEnabled(false);
                     wKeysTb.table.removeAll();
                     wKeysTb.table.setItemCount(1);
                     wKeysTb.setRowNums();
@@ -863,7 +848,6 @@ public class LucidDBStreamingLoaderDialog
             wSchema.setText(input.getSchemaName());
         if (input.getTableName() != null)
             wTable.setText(input.getTableName());
-        bAutoCreateTable.setSelection(input.isAutoCreateTbFlag());
         if (input.getHost() != null)
             wHost.setText("" + input.getHost());
         if (input.getPort() != null)
@@ -881,14 +865,6 @@ public class LucidDBStreamingLoaderDialog
             } else {
 
                 wTabFolder.setSelection(0);
-            }
-            if (BaseMessages.getString(
-                PKG,
-                "LucidDBStreamingLoaderDialog.Operation.CCombo.Item4").equals(
-                input.getOperation()))
-            {
-                bAutoCreateTable.setSelection(false);
-                bAutoCreateTable.setEnabled(false);
             }
         }
 
@@ -1146,7 +1122,6 @@ public class LucidDBStreamingLoaderDialog
         inf.setSchemaName(wSchema.getText());
         inf.setTableName(wTable.getText());
 
-        inf.setAutoCreateTbFlag(bAutoCreateTable.getSelection());
         inf.setHost(wHost.getText());
         inf.setPort(wPort.getText());
         inf.setOperation(wOperation.getItem(wOperation.getSelectionIndex()));
