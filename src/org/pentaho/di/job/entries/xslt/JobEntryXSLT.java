@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Properties;
 
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
@@ -39,6 +40,7 @@ import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -79,7 +81,29 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 	private boolean addfiletoresult;
 	private String xsltfactory;
 	private boolean filenamesfromprevious;
+	
 
+    /** output property name*/
+    private String  outputPropertyName[];
+
+    /** output property value */
+    private String  outputPropertyValue[];
+	
+    /** parameter name*/
+    private String  parameterName[];
+
+    /** parameter field */
+    private String  parameterField[];
+	
+    private int nrParams;
+    private String nameOfParams[];
+    private String valueOfParams[];
+    private boolean useParameters;
+	
+    private Properties outputProperties;
+    private boolean setOutputProperties;
+    
+    
 	public JobEntryXSLT(String n)
 	{
 		super(n, "");
@@ -90,20 +114,56 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 		addfiletoresult = false;
 		filenamesfromprevious=false;
 		xsltfactory=FACTORY_JAXP;
+		int nrparams = 0;
+	    int nroutputproperties = 0;
+        allocate(nrparams, nroutputproperties);
+
+        for (int i = 0; i < nrparams; i++)
+        {
+            parameterField[i] = "param" + i; //$NON-NLS-1$
+            parameterName[i] = "param"; //$NON-NLS-1$
+        }
+        for (int i = 0; i < nroutputproperties; i++)
+        {
+        	outputPropertyName[i] = "outputprop" + i; //$NON-NLS-1$
+        	outputPropertyValue[i] = "outputprop"; //$NON-NLS-1$
+        }
 		setID(-1L);
 	}
-
+	  public void allocate(int nrParameters, int outputProps)
+	    {
+	        parameterName = new String[nrParameters];
+	        parameterField = new String[nrParameters];
+	        
+	        outputPropertyName = new String[outputProps];
+	        outputPropertyValue = new String[outputProps];
+	    }
 	public JobEntryXSLT()
 	{
 		this("");
 	}
 
     public Object clone()
-    {
-        JobEntryXSLT je = (JobEntryXSLT)super.clone();
-        return je;
-    }
+	{
+    	 JobEntryXSLT je = (JobEntryXSLT)super.clone();
+		int nrparams = parameterName.length;
+		int nroutputprops = outputPropertyName.length;
+		je.allocate(nrparams, nroutputprops);
 
+        for (int i = 0; i < nrparams; i++)
+        {
+        	je.parameterName[i] = parameterName[i];
+            je.parameterField[i] = parameterField[i];
+        }
+        for (int i = 0; i < nroutputprops; i++)
+        {
+        	je.outputPropertyName[i] = outputPropertyName[i];
+            je.outputPropertyValue[i] = outputPropertyValue[i];
+        }
+
+		return je;
+	}
+	
 	public String getXML()
 	{
         StringBuffer retval = new StringBuffer(50);
@@ -117,6 +177,28 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 		retval.append("      ").append(XMLHandler.addTagValue("filenamesfromprevious",  filenamesfromprevious));
 		retval.append("      ").append(XMLHandler.addTagValue("xsltfactory", xsltfactory));
 		
+		retval.append("    <parameters>").append(Const.CR); //$NON-NLS-1$
+
+	        for (int i = 0; i < parameterName.length; i++)
+	        {
+	            retval.append("      <parameter>").append(Const.CR); //$NON-NLS-1$
+	            retval.append("        ").append(XMLHandler.addTagValue("field", parameterField[i])); //$NON-NLS-1$ //$NON-NLS-2$
+	            retval.append("        ").append(XMLHandler.addTagValue("name", parameterName[i])); //$NON-NLS-1$ //$NON-NLS-2$
+	            retval.append("      </parameter>").append(Const.CR); //$NON-NLS-1$
+	        }
+
+	      retval.append("    </parameters>").append(Const.CR); //$NON-NLS-1$
+	      retval.append("    <outputproperties>").append(Const.CR); //$NON-NLS-1$
+
+	        for (int i = 0; i < outputPropertyName.length; i++)
+	        {
+	            retval.append("      <outputproperty>").append(Const.CR); //$NON-NLS-1$
+	            retval.append("        ").append(XMLHandler.addTagValue("name", outputPropertyName[i])); //$NON-NLS-1$ //$NON-NLS-2$
+	            retval.append("        ").append(XMLHandler.addTagValue("value", outputPropertyValue[i])); //$NON-NLS-1$ //$NON-NLS-2$
+	            retval.append("      </outputproperty>").append(Const.CR); //$NON-NLS-1$
+	        }
+
+	      retval.append("    </outputproperties>").append(Const.CR); //$NON-NLS-1$
 		return retval.toString();
 	}
 
@@ -133,6 +215,26 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 			filenamesfromprevious = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "filenamesfromprevious"));
 			xsltfactory = XMLHandler.getTagValue(entrynode, "xsltfactory");
 			if(xsltfactory==null) xsltfactory=FACTORY_JAXP;
+			Node parametersNode = XMLHandler.getSubNode(entrynode, "parameters"); //$NON-NLS-1$
+            int nrparams = XMLHandler.countNodes(parametersNode, "parameter"); //$NON-NLS-1$
+            
+    		Node parametersOutputProps = XMLHandler.getSubNode(entrynode, "outputproperties"); //$NON-NLS-1$
+            int nroutputprops = XMLHandler.countNodes(parametersOutputProps, "outputproperty");
+            allocate(nrparams, nroutputprops);
+
+            for (int i = 0; i < nrparams; i++)
+            {
+                Node anode = XMLHandler.getSubNodeByNr(parametersNode, "parameter", i); //$NON-NLS-1$
+                parameterField[i] = XMLHandler.getTagValue(anode, "field"); //$NON-NLS-1$
+                parameterName[i] = XMLHandler.getTagValue(anode, "name"); //$NON-NLS-1$
+            }
+            for (int i = 0; i < nroutputprops; i++)
+            {
+                Node anode = XMLHandler.getSubNodeByNr(parametersOutputProps, "outputproperty", i); //$NON-NLS-1$
+                outputPropertyName[i] = XMLHandler.getTagValue(anode, "name"); //$NON-NLS-1$
+                outputPropertyValue[i] = XMLHandler.getTagValue(anode, "value"); //$NON-NLS-1$
+            }
+
 
 		}
 		catch(KettleXMLException xe)
@@ -153,6 +255,21 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 			filenamesfromprevious=rep.getJobEntryAttributeBoolean(id_jobentry, "filenamesfromprevious");
 			xsltfactory = rep.getJobEntryAttributeString(id_jobentry, "xsltfactory");
 			if(xsltfactory==null) xsltfactory=FACTORY_JAXP;
+			
+			 int nrparams = rep.countNrJobEntryAttributes(id_jobentry, "param_name"); //$NON-NLS-1$
+			 int nroutputprops = rep.countNrJobEntryAttributes(id_jobentry, "output_property_name"); //$NON-NLS-1$
+	         allocate(nrparams, nroutputprops);
+
+           for (int i = 0; i < nrparams; i++)
+           {
+               parameterField[i] = rep.getJobEntryAttributeString(id_jobentry, i, "param_field"); //$NON-NLS-1$
+               parameterName[i] = rep.getJobEntryAttributeString(id_jobentry, i, "param_name"); //$NON-NLS-1$
+           }
+           for (int i = 0; i < nroutputprops; i++)
+           {
+               outputPropertyName[i] = rep.getJobEntryAttributeString(id_jobentry, i, "output_property_name"); //$NON-NLS-1$
+               outputPropertyValue[i] = rep.getJobEntryAttributeString(id_jobentry, i, "output_property_value"); //$NON-NLS-1$
+           }
 		}
 		catch(KettleException dbe)
 		{
@@ -172,6 +289,17 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "addfiletoresult", addfiletoresult);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "filenamesfromprevious", filenamesfromprevious);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "xsltfactory", xsltfactory);
+
+			for (int i = 0; i < parameterName.length; i++)
+            {
+                rep.saveJobEntryAttribute(id_job, getObjectId(), i, "param_field", parameterField[i]); //$NON-NLS-1$
+                rep.saveJobEntryAttribute(id_job, getObjectId(), i, "param_name", parameterName[i]); //$NON-NLS-1$
+            }
+			for (int i = 0; i < outputPropertyName.length; i++)
+            {
+                rep.saveJobEntryAttribute(id_job, getObjectId(), i, "output_property_name", outputPropertyName[i]); //$NON-NLS-1$
+                rep.saveJobEntryAttribute(id_job, getObjectId(), i, "output_property_value", outputPropertyValue[i]); //$NON-NLS-1$
+            }
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -217,6 +345,33 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 		Result result = previousResult;
 		int NrErrors=0;
 		int NrSuccess=0;
+		
+		// Check output parameters
+		int nrOutputProps= getOutputPropertyName()==null?0:getOutputPropertyName().length;
+		if(nrOutputProps>0) {
+			outputProperties= new Properties();
+			for(int i=0; i<nrOutputProps; i++) {
+				outputProperties.put(getOutputPropertyName()[i], environmentSubstitute(getOutputPropertyValue()[i]));
+			}
+			setOutputProperties=true;
+		}
+		
+		// Check parameters
+		nrParams= getParameterField()==null?0:getParameterField().length;
+		if(nrParams>0) {
+			nameOfParams = new String[nrParams];
+			valueOfParams = new String[nrParams];
+			for(int i=0; i<nrParams; i++) {
+				String name = environmentSubstitute(getParameterName()[i]);
+				String value =  environmentSubstitute(getParameterField()[i]);
+				if(Const.isEmpty(value)) {
+					throw new KettleStepException(BaseMessages.getString(PKG, "Xslt.Exception.ParameterFieldMissing", name, i));
+				}
+				nameOfParams[i]=name;
+				valueOfParams[i]=value;
+			}
+			useParameters=true;
+		}
 		
 		List<RowMetaAndData> rows = result.getRows();
 		if (isFilenamesFromPrevious())
@@ -356,33 +511,44 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 					InputStream xmlInputStream = KettleVFS.getInputStream(xmlfile);
 					OutputStream os = null;
 					try {
-  					// Use the factory to create a template containing the xsl file
-    						Templates template = factory.newTemplates(new StreamSource(	xslInputStream )); 
+						// Use the factory to create a template containing the xsl file
+    					Templates template = factory.newTemplates(new StreamSource(	xslInputStream )); 
   
-  					// Use the template to create a transformer
-  					Transformer xformer = template.newTransformer();
-  					
-  					if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "JobEntryXSL.Log.TransformerClassInfos"),BaseMessages.getString(PKG, "JobEntryXSL.Log.TransformerClass",xformer.getClass().getName()));
-  										
-  					
-  					// Prepare the input and output files
-    				Source source = new StreamSource( xmlInputStream );
-    				os=KettleVFS.getOutputStream(outputfile, false);		
-  					StreamResult resultat = new StreamResult(os);
-  
-  					// Apply the xsl file to the source file and write the result to the output file
-  					xformer.transform(source, resultat);
-  					
-  					if (isAddFileToResult())
-  					{
-  						// Add output filename to output files
-  	                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(outputfilename, this), parentJob.getJobname(), toString());
-  	                    result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
-  					}
-  					
-  
-  					// Everything is OK
-  					retval=true;
+	  					// Use the template to create a transformer
+	  					Transformer xformer = template.newTransformer();
+	  					
+	  					if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "JobEntryXSL.Log.TransformerClassInfos"),BaseMessages.getString(PKG, "JobEntryXSL.Log.TransformerClass",xformer.getClass().getName()));
+	  										
+	  					
+	  					// Do we need to set output properties?
+	  			  	 	if(setOutputProperties) {
+	  			  	 		xformer.setOutputProperties(outputProperties);
+	  			  	 	}
+	  			  	
+	  			  		// Do we need to pass parameters?
+	  			  		if(useParameters) {
+	  			  			for(int i=0; i<nrParams; i++) {
+	  			  				xformer.setParameter(nameOfParams[i],  valueOfParams[i]);	
+	  			  			}
+	  			  		}
+	  					
+	  					// Prepare the input and output files
+	    				Source source = new StreamSource( xmlInputStream );
+	    				os=KettleVFS.getOutputStream(outputfile, false);		
+	  					StreamResult resultat = new StreamResult(os);
+	  
+	  					// Apply the xsl file to the source file and write the result to the output file
+	  					xformer.transform(source, resultat);
+	  					
+	  					if (isAddFileToResult()) {
+	  						// Add output filename to output files
+	  	                	ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(outputfilename, this), parentJob.getJobname(), toString());
+	  	                    result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
+	  					}
+	  					
+	  
+	  					// Everything is OK
+	  					retval=true;
 					} finally {
 					  try {
 					    xslInputStream.close();
@@ -513,5 +679,57 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 
     andValidator().validate(this, "outputFilename", remarks, putValidators(notBlankValidator()));//$NON-NLS-1$
   }
+  /**
+   * @return Returns the OutputPropertyName.
+   */
+  public String[] getOutputPropertyName()
+  {
+      return outputPropertyName;
+  }
 
+  /**
+   * @param argumentDirection The OutputPropertyName to set.
+   */
+  public void setOutputPropertyName(String[] argumentDirection)
+  {
+      this.outputPropertyName = argumentDirection;
+  }
+
+	/**
+   * @return Returns the OutputPropertyField.
+   */
+  public String[] getOutputPropertyValue()
+  {
+      return outputPropertyValue;
+  }
+
+  /**
+   * @param argumentDirection The outputPropertyValue to set.
+   */
+  public void setOutputPropertyValue(String[] argumentDirection)
+  {
+      this.outputPropertyValue = argumentDirection;
+  }
+	/**
+   * @return Returns the parameterName.
+   */
+  public String[] getParameterName()
+  {
+      return parameterName;
+  }
+
+  /**
+   * @param argumentDirection The parameterName to set.
+   */
+  public void setParameterName(String[] argumentDirection)
+  {
+      this.parameterName = argumentDirection;
+  }
+  /**
+   * @return Returns the parameterField.
+   */
+  public String[] getParameterField()
+  {
+      return parameterField;
+  }
 }

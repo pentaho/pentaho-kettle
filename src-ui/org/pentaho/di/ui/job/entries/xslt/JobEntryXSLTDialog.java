@@ -22,6 +22,8 @@ package org.pentaho.di.ui.job.entries.xslt;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -32,6 +34,7 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -41,15 +44,20 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.xslt.JobEntryXSLT;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.trans.steps.xslt.XsltMeta;
 import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
@@ -131,7 +139,26 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 	private Label        wlAddFileToResult;
 	private Button       wAddFileToResult;
 	private FormData     fdlAddFileToResult, fdAddFileToResult;
-
+	
+	private CTabFolder   wTabFolder;
+	private Composite    wAdvancedComp,wGeneralComp;	
+	private CTabItem     wAdvancedTab,wGeneralTab;
+	private FormData	 fdAdvancedComp,fdGeneralComp;
+	private FormData     fdTabFolder;
+	
+	private Label        wlFields;
+	private TableView    wFields;
+	private FormData     fdlFields, fdFields;
+	
+	private ColumnInfo[] colinf;
+    
+	
+	private Label wlOutputProperties;
+	private FormData fdlOutputProperties;
+	
+	private TableView wOutputProperties;
+	private FormData fdOutputProperties;
+	
     public JobEntryXSLTDialog(Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta)
     {
         super(parent, jobEntryInt, rep, jobMeta);
@@ -186,12 +213,30 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 		fdName.right= new FormAttachment(100, 0);
 		wName.setLayoutData(fdName);
 		
+		wTabFolder = new CTabFolder(shell, SWT.BORDER);
+ 		props.setLook(wTabFolder, Props.WIDGET_STYLE_TAB);
+		
+		  //////////////////////////
+		// START OF GENERAL TAB   ///
+		//////////////////////////
+
+		wGeneralTab=new CTabItem(wTabFolder, SWT.NONE);
+		wGeneralTab.setText(BaseMessages.getString(PKG, "JobEntryXSLT.Tab.General.Label"));
+		
+		wGeneralComp = new Composite(wTabFolder, SWT.NONE);
+ 		props.setLook(wGeneralComp);
+
+		FormLayout generalLayout = new FormLayout();
+		generalLayout.marginWidth  = 3;
+		generalLayout.marginHeight = 3;
+		wGeneralComp.setLayout(generalLayout);
+		
 
 		 // Files grouping?
 	     // ////////////////////////
 	     // START OF LOGGING GROUP///
 	     // /
-	    wFiles = new Group(shell, SWT.SHADOW_NONE);
+	    wFiles = new Group(wGeneralComp, SWT.SHADOW_NONE);
 	    props.setLook(wFiles);
 	    wFiles.setText(BaseMessages.getString(PKG, "JobEntryXSLT.Files.Group.Label"));
 
@@ -456,7 +501,7 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 	     // ////////////////////////
 	     // START OF FILE RESULT GROUP///
 	     // /
-	    wFileResult = new Group(shell, SWT.SHADOW_NONE);
+	    wFileResult = new Group(wGeneralComp, SWT.SHADOW_NONE);
 	    props.setLook(wFileResult);
 	    wFileResult.setText(BaseMessages.getString(PKG, "JobEntryXSLT.FileResult.Group.Settings.Label"));
 
@@ -556,12 +601,138 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 	     // ///////////////////////////////////////////////////////////
 
 
+		fdGeneralComp=new FormData();
+		fdGeneralComp.left  = new FormAttachment(0, 0);
+		fdGeneralComp.top   = new FormAttachment(0, 0);
+		fdGeneralComp.right = new FormAttachment(100, 0);
+		fdGeneralComp.bottom= new FormAttachment(500, -margin);
+		wGeneralComp.setLayoutData(fdGeneralComp);
+		
+		wGeneralComp.layout();
+		wGeneralTab.setControl(wGeneralComp);
+ 		props.setLook(wGeneralComp);
+ 		
+ 		
+ 		
+		/////////////////////////////////////////////////////////////
+		/// END OF GENERAL TAB
+		/////////////////////////////////////////////////////////////
+        
+ 	     
+        //////////////////////////
+		// START OF ADVANCED TAB   ///
+		//////////////////////////
+		
+		wAdvancedTab=new CTabItem(wTabFolder, SWT.NONE);
+		wAdvancedTab.setText(BaseMessages.getString(PKG, "JobEntryXSLT.Tab.Advanced.Label"));
+		
+		wAdvancedComp = new Composite(wTabFolder, SWT.NONE);
+ 		props.setLook(wAdvancedComp);
+
+		FormLayout advancedLayout = new FormLayout();
+		advancedLayout.marginWidth  = 3;
+		advancedLayout.marginHeight = 3;
+		wAdvancedComp.setLayout(advancedLayout);
+
+ 		
+		
+		 // Output properties
+		 wlOutputProperties=new Label(wAdvancedComp, SWT.NONE);
+	     wlOutputProperties.setText(BaseMessages.getString(PKG, "XsltDialog.OutputProperties.Label")); //$NON-NLS-1$
+	     props.setLook(wlOutputProperties);
+	     fdlOutputProperties=new FormData();
+	     fdlOutputProperties.left = new FormAttachment(0, 0);
+	     fdlOutputProperties.top  = new FormAttachment(0, margin);
+	     wlOutputProperties.setLayoutData(fdlOutputProperties);
+
+	    final int OutputPropertiesRows=0;//input.getParameterField().length;
+		
+		 colinf=new ColumnInfo[] { 
+		  new ColumnInfo(BaseMessages.getString(PKG, "XsltDialog.ColumnInfo.OutputProperties.Name"),      ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
+		  new ColumnInfo(BaseMessages.getString(PKG, "XsltDialog.ColumnInfo.OutputProperties.Value"),  ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
+	       };
+		 colinf[0].setComboValues(XsltMeta.outputProperties);
+		 colinf[1].setUsingVariables(true);
+		
+		 wOutputProperties=new TableView(jobMeta, wAdvancedComp, 
+							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
+							  colinf, 
+							  OutputPropertiesRows,  
+							  lsMod,
+							  props
+							  );
+		fdOutputProperties=new FormData();
+		fdOutputProperties.left  = new FormAttachment(0, 0);
+		fdOutputProperties.top   = new FormAttachment(wlOutputProperties, margin);
+		fdOutputProperties.right = new FormAttachment(100, -margin);
+		fdOutputProperties.bottom= new FormAttachment(wlOutputProperties, 200);
+		wOutputProperties.setLayoutData(fdOutputProperties);
+		
+		// Parameters
+		
+		 wlFields=new Label(wAdvancedComp, SWT.NONE);
+	     wlFields.setText(BaseMessages.getString(PKG, "XsltDialog.Parameters.Label")); //$NON-NLS-1$
+	     props.setLook(wlFields);
+	     fdlFields=new FormData();
+	     fdlFields.left = new FormAttachment(0, 0);
+	     fdlFields.top  = new FormAttachment(wOutputProperties, 2*margin);
+	     wlFields.setLayoutData(fdlFields);
+	       
+		
+			
+		final int FieldsRows=0;//input.getParameterField().length;
+		
+		 colinf=new ColumnInfo[] { 
+		  new ColumnInfo(BaseMessages.getString(PKG, "XsltDialog.ColumnInfo.Name"),   ColumnInfo.COLUMN_TYPE_TEXT,   false),
+		  new ColumnInfo(BaseMessages.getString(PKG, "XsltDialog.ColumnInfo.Parameter"),  ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
+	       };
+		colinf[1].setUsingVariables(true);
+		colinf[0].setUsingVariables(true);
+		
+		wFields=new TableView(jobMeta, wAdvancedComp, 
+							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
+							  colinf, 
+							  FieldsRows,  
+							  lsMod,
+							  props
+							  );
+		fdFields=new FormData();
+		fdFields.left  = new FormAttachment(0, 0);
+		fdFields.top   = new FormAttachment(wlFields, margin);
+		fdFields.right = new FormAttachment(100, -margin);
+		fdFields.bottom= new FormAttachment(100, -margin);
+		wFields.setLayoutData(fdFields);
+		
+ 		
+ 		fdAdvancedComp=new FormData();
+		fdAdvancedComp.left  = new FormAttachment(0, 0);
+		fdAdvancedComp.top   = new FormAttachment(0, 0);
+		fdAdvancedComp.right = new FormAttachment(100, 0);
+		fdAdvancedComp.bottom= new FormAttachment(500, -margin);
+		wAdvancedComp.setLayoutData(fdAdvancedComp);
+		
+		wAdvancedComp.layout();
+		wAdvancedTab.setControl(wAdvancedComp);
+ 		props.setLook(wAdvancedComp);
+ 		 		
+		/////////////////////////////////////////////////////////////
+		/// END OF Advanced TAB
+		/////////////////////////////////////////////////////////////
+
+
+		fdTabFolder = new FormData();
+		fdTabFolder.left  = new FormAttachment(0, 0);
+		fdTabFolder.top   = new FormAttachment(wName, margin);
+		fdTabFolder.right = new FormAttachment(100, 0);
+		fdTabFolder.bottom= new FormAttachment(100, -50);
+		wTabFolder.setLayoutData(fdTabFolder);
+	     
         wOK = new Button(shell, SWT.PUSH);
         wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
         wCancel = new Button(shell, SWT.PUSH);
         wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
-		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wFileResult);
+		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wTabFolder);
 
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
@@ -583,7 +754,7 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 		getData();
 		RefreshArgFromPrevious();
 		BaseStepDialog.setSize(shell);
-
+	    wTabFolder.setSelection(0);
 		shell.open();
 		while (!shell.isDisposed())
 		{
@@ -640,7 +811,22 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 		{
 			wXSLTFactory.setText("JAXP");
 		}
-
+		if (jobEntry.getParameterName()!=null) {
+			for (int i=0;i<jobEntry.getParameterName().length;i++)
+			{
+				TableItem item = wFields.table.getItem(i);
+				item.setText(1, Const.NVL(jobEntry.getParameterField()[i], ""));
+				item.setText(2, Const.NVL(jobEntry.getParameterName()[i], ""));
+			}
+		}
+		if (jobEntry.getOutputPropertyName()!=null) {
+			for (int i=0;i<jobEntry.getOutputPropertyName().length;i++)
+			{
+				TableItem item = wOutputProperties.table.getItem(i);
+				item.setText(1, Const.NVL(jobEntry.getOutputPropertyName()[i], ""));
+				item.setText(2, Const.NVL(jobEntry.getOutputPropertyValue()[i], ""));
+			}
+		}
 	}
 
 	private void cancel()
@@ -669,6 +855,23 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 		jobEntry.setAddFileToResult(wAddFileToResult.getSelection());
 		jobEntry.setXSLTFactory(wXSLTFactory.getText());
 
+		int nrparams = wFields.nrNonEmpty();
+		int nroutputprops = wOutputProperties.nrNonEmpty();
+		jobEntry.allocate(nrparams, nroutputprops);
+
+		for (int i=0;i<nrparams;i++)
+		{
+			TableItem item = wFields.getNonEmpty(i);
+			jobEntry.getParameterField()[i]       = item.getText(1);
+			jobEntry.getParameterName()[i]    = item.getText(2);
+		}
+		for (int i=0;i<nroutputprops;i++)
+		{
+			TableItem item = wOutputProperties.getNonEmpty(i);
+			jobEntry.getOutputPropertyName()[i]       = item.getText(1);
+			jobEntry.getOutputPropertyValue()[i]    = item.getText(2);
+		}	
+		
 		dispose();
 	}
 
