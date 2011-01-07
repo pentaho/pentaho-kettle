@@ -27,8 +27,6 @@ import org.eclipse.swt.custom.LineStyleListener;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.RGB;
-import org.eclipse.swt.widgets.Display;
 import org.pentaho.di.ui.core.gui.GUIResource;
 
 public class SOQLValuesHighlight implements LineStyleListener {
@@ -83,7 +81,6 @@ public class SOQLValuesHighlight implements LineStyleListener {
 }
 
 	void initializeColors() {
-		Display display = Display.getDefault();
 		colors= new Color[] {
 		    GUIResource.getInstance().getColor(0, 0, 0),		// black
 		    GUIResource.getInstance().getColor(255,0,0), 		// red 

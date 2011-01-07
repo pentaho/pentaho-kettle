@@ -275,7 +275,7 @@ public class SalesforceConnection {
 	        }
 	        
 	    	this.serverTimestamp= getBinding().getServerTimestamp().getTimestamp().getTime();
-	 		if(log.isDebug()) BaseMessages.getString(PKG, "SalesforceInput.Log.ServerTimestamp",""+this.serverTimestamp);
+	 		if(log.isDebug()) BaseMessages.getString(PKG, "SalesforceInput.Log.ServerTimestamp",getServerTimestamp());
 	 		
 	       if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "SalesforceInput.Log.Connected"));
 		
