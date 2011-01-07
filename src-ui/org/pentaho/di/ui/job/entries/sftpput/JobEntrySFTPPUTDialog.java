@@ -107,10 +107,6 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
 	private TextVar      wWildcard;
 	private FormData     fdlWildcard, fdWildcard;
 	
-	private Label        wlRemove;
-	private Button       wRemove;
-	private FormData     fdlRemove, fdRemove;
-	
 	private Button wOK, wCancel;
 	private Listener lsOK, lsCancel;
 
@@ -159,6 +155,12 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
     private Button wgetPrevious;
 
     private FormData fdlgetPrevious, fdgetPrevious;
+    
+    private Label wlSuccessWhenNoFile;
+
+    private Button wSuccessWhenNoFile;
+
+    private FormData fdlSuccessWhenNoFile, fdSuccessWhenNoFile;
     
 	
     private Label wlAddFilenameToResult;
@@ -210,8 +212,22 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
     private FormData     fdProxyUsername;
     private LabelTextVar wProxyPassword;
     private FormData     fdProxyPasswd;
+    
+	private Label wlAfterFTPPut;
+	private CCombo wAfterFTPPut;
+	private FormData fdlAfterFTPPut, fdAfterFTPPut;
+    
+    private Label wlCreateDestinationFolder;
+    private Button wCreateDestinationFolder;
+    private FormData fdlCreateDestinationFolder, fdCreateDestinationFolder;
 
+	private Label wlDestinationFolder;
+	private TextVar wDestinationFolder;
+	private FormData fdlDestinationFolder, fdDestinationFolder;
 	
+    private Button wbMovetoDirectory;
+    private FormData fdbMovetoDirectory;  
+    
 	private SFTPClient sftpclient = null;
 	
 
@@ -455,7 +471,7 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
         wkeyfilePass.setEchoChar('*');
         wkeyfilePass.addModifyListener(lsMod);
         fdkeyfilePass = new FormData();
-        fdkeyfilePass.left = new FormAttachment(0, -2*margin);
+        fdkeyfilePass.left = new FormAttachment(0, -margin);
         fdkeyfilePass.top = new FormAttachment(wKeyFilename, margin);
         fdkeyfilePass.right = new FormAttachment(100, 0);
         wkeyfilePass.setLayoutData(fdkeyfilePass);
@@ -712,7 +728,7 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
  		props.setLook(wlWildcard);
 		fdlWildcard=new FormData();
 		fdlWildcard.left = new FormAttachment(0, 0);
-		fdlWildcard.top  = new FormAttachment(wLocalDirectory, margin);
+		fdlWildcard.top  = new FormAttachment(wbLocalDirectory, margin);
 		fdlWildcard.right= new FormAttachment(middle, -margin);
 		wlWildcard.setLayoutData(fdlWildcard);
 		wWildcard=new TextVar(jobMeta, wSourceFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -721,35 +737,152 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
 		wWildcard.addModifyListener(lsMod);
 		fdWildcard=new FormData();
 		fdWildcard.left = new FormAttachment(middle, 0);
-		fdWildcard.top  = new FormAttachment(wLocalDirectory, margin);
+		fdWildcard.top  = new FormAttachment(wbLocalDirectory, margin);
 		fdWildcard.right= new FormAttachment(100, 0);
 		wWildcard.setLayoutData(fdWildcard);
-
-		// Remove files after retrieval...
-		wlRemove=new Label(wSourceFiles, SWT.RIGHT);
-		wlRemove.setText(BaseMessages.getString(PKG, "JobSFTPPUT.RemoveFiles.Label"));
- 		props.setLook(wlRemove);
-		fdlRemove=new FormData();
-		fdlRemove.left = new FormAttachment(0, 0);
-		fdlRemove.top  = new FormAttachment(wWildcard, margin);
-		fdlRemove.right= new FormAttachment(middle, -margin);
-		wlRemove.setLayoutData(fdlRemove);
-		wRemove=new Button(wSourceFiles, SWT.CHECK);
- 		props.setLook(wRemove);
-		fdRemove=new FormData();
-		wRemove.setToolTipText(BaseMessages.getString(PKG, "JobSFTPPUT.RemoveFiles.Tooltip"));
-		fdRemove.left = new FormAttachment(middle, 0);
-		fdRemove.top  = new FormAttachment(wWildcard, margin);
-		fdRemove.right= new FormAttachment(100, 0);
-		wRemove.setLayoutData(fdRemove);
-		wRemove.addSelectionListener(new SelectionAdapter()
+		
+		 // Success when there is no file...
+        wlSuccessWhenNoFile = new Label(wSourceFiles, SWT.RIGHT);
+        wlSuccessWhenNoFile.setText(BaseMessages.getString(PKG, "JobSFTPPUT.SuccessWhenNoFile.Label"));
+        props.setLook(wlSuccessWhenNoFile);
+        fdlSuccessWhenNoFile = new FormData();
+        fdlSuccessWhenNoFile.left = new FormAttachment(0, 0);
+        fdlSuccessWhenNoFile.top = new FormAttachment(wWildcard, margin);
+        fdlSuccessWhenNoFile.right = new FormAttachment(middle, -margin);
+        wlSuccessWhenNoFile.setLayoutData(fdlSuccessWhenNoFile);
+        wSuccessWhenNoFile = new Button(wSourceFiles, SWT.CHECK);
+        props.setLook(wSuccessWhenNoFile);
+        wSuccessWhenNoFile.setToolTipText(BaseMessages.getString(PKG, "JobSFTPPUT.SuccessWhenNoFile.Tooltip"));
+        fdSuccessWhenNoFile = new FormData();
+        fdSuccessWhenNoFile.left = new FormAttachment(middle, 0);
+        fdSuccessWhenNoFile.top = new FormAttachment(wWildcard, margin);
+        fdSuccessWhenNoFile.right = new FormAttachment(100, 0);
+        wSuccessWhenNoFile.setLayoutData(fdSuccessWhenNoFile);
+        wSuccessWhenNoFile.addSelectionListener(new SelectionAdapter()
 		{
 			public void widgetSelected(SelectionEvent e)
 			{
-				 activeRemoveFilename();
 				jobEntry.setChanged();
 			}
 		});
+
+		
+		//After FTP Put
+		wlAfterFTPPut = new Label(wSourceFiles, SWT.RIGHT);
+		wlAfterFTPPut.setText(BaseMessages.getString(PKG, "JobSFTPPUT.AfterFTPPut.Label"));
+		props.setLook(wlAfterFTPPut);
+		fdlAfterFTPPut = new FormData();
+		fdlAfterFTPPut.left = new FormAttachment(0, 0);
+		fdlAfterFTPPut.right = new FormAttachment(middle, -margin);
+		fdlAfterFTPPut.top = new FormAttachment(wSuccessWhenNoFile, 2*margin);
+		wlAfterFTPPut.setLayoutData(fdlAfterFTPPut);
+		wAfterFTPPut = new CCombo(wSourceFiles, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
+		wAfterFTPPut.add(BaseMessages.getString(PKG, "JobSFTPPUT.AfterSFTP.DoNothing.Label"));
+		wAfterFTPPut.add(BaseMessages.getString(PKG, "JobSFTPPUT.AfterSFTP.Delete.Label"));
+		wAfterFTPPut.add(BaseMessages.getString(PKG, "JobSFTPPUT.AfterSFTP.Move.Label"));
+		wAfterFTPPut.select(0); // +1: starts at -1
+		props.setLook(wAfterFTPPut);
+		fdAfterFTPPut= new FormData();
+		fdAfterFTPPut.left = new FormAttachment(middle, 0);
+		fdAfterFTPPut.top = new FormAttachment(wSuccessWhenNoFile, 2*margin);
+		fdAfterFTPPut.right = new FormAttachment(100, -margin);
+		wAfterFTPPut.setLayoutData(fdAfterFTPPut);
+		wAfterFTPPut.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				AfterFTPPutActivate();
+				
+			}
+		});
+
+		// moveTo Directory
+		wlDestinationFolder = new Label(wSourceFiles, SWT.RIGHT);
+		wlDestinationFolder.setText(BaseMessages.getString(PKG, "JobSFTPPUT.DestinationFolder.Label"));
+		props.setLook(wlDestinationFolder);
+		fdlDestinationFolder = new FormData();
+		fdlDestinationFolder.left = new FormAttachment(0, 0);
+		fdlDestinationFolder.top = new FormAttachment(wAfterFTPPut, margin);
+		fdlDestinationFolder.right = new FormAttachment(middle, -margin);
+		wlDestinationFolder.setLayoutData(fdlDestinationFolder);
+		
+        // Browse folders button ...
+		wbMovetoDirectory=new Button(wSourceFiles, SWT.PUSH| SWT.CENTER);
+		props.setLook(wbMovetoDirectory);
+		wbMovetoDirectory.setText(BaseMessages.getString(PKG, "JobSFTPPUT.BrowseFolders.Label"));
+		fdbMovetoDirectory=new FormData();
+		fdbMovetoDirectory.right= new FormAttachment(100, 0);
+		fdbMovetoDirectory.top  = new FormAttachment(wAfterFTPPut, margin);
+		wbMovetoDirectory.setLayoutData(fdbMovetoDirectory);
+		
+		wbMovetoDirectory.addSelectionListener
+		(
+			new SelectionAdapter()
+			{
+				public void widgetSelected(SelectionEvent e)
+				{
+					DirectoryDialog ddialog = new DirectoryDialog(shell, SWT.OPEN);
+					if (wDestinationFolder.getText()!=null)
+					{
+						ddialog.setFilterPath(jobMeta.environmentSubstitute(wDestinationFolder.getText()) );
+					}
+					
+					 // Calling open() will open and run the dialog.
+			        // It will return the selected directory, or
+			        // null if user cancels
+			        String dir = ddialog.open();
+			        if (dir != null) {
+			          // Set the text box to the new selection
+			        	wDestinationFolder.setText(dir);
+			        }
+					
+				}
+			}
+		);
+		
+		
+		wDestinationFolder = new TextVar(jobMeta,wSourceFiles, SWT.SINGLE | SWT.LEFT | SWT.BORDER, 
+				BaseMessages.getString(PKG, "JobSFTPPUT.DestinationFolder.Tooltip"));
+		props.setLook(wDestinationFolder);
+		wDestinationFolder.addModifyListener(lsMod);
+		fdDestinationFolder = new FormData();
+		fdDestinationFolder.left = new FormAttachment(middle, 0);
+		fdDestinationFolder.top = new FormAttachment(wAfterFTPPut, margin);
+		fdDestinationFolder.right = new FormAttachment(wbMovetoDirectory, -margin);
+		wDestinationFolder.setLayoutData(fdDestinationFolder);
+		
+		   // Whenever something changes, set the tooltip to the expanded version:
+		wDestinationFolder.addModifyListener(new ModifyListener()
+		{
+			public void modifyText(ModifyEvent e)
+			{
+				wDestinationFolder.setToolTipText(jobMeta.environmentSubstitute( wDestinationFolder.getText() ) );
+			}
+		}
+		);
+
+        
+        // Create destination folder if necessary ...
+        wlCreateDestinationFolder = new Label(wSourceFiles, SWT.RIGHT);
+        wlCreateDestinationFolder.setText(BaseMessages.getString(PKG, "JobSFTPPUT.CreateDestinationFolder.Label"));
+        props.setLook(wlCreateDestinationFolder);
+        fdlCreateDestinationFolder = new FormData();
+        fdlCreateDestinationFolder.left = new FormAttachment(0, 0);
+        fdlCreateDestinationFolder.top = new FormAttachment(wDestinationFolder, margin);
+        fdlCreateDestinationFolder.right = new FormAttachment(middle, -margin);
+        wlCreateDestinationFolder.setLayoutData(fdlCreateDestinationFolder);
+        wCreateDestinationFolder = new Button(wSourceFiles, SWT.CHECK);
+        wCreateDestinationFolder.setToolTipText(BaseMessages.getString(PKG, "JobSFTPPUT.CreateDestinationFolder.Tooltip"));
+        props.setLook(wCreateDestinationFolder);
+        fdCreateDestinationFolder = new FormData();
+        fdCreateDestinationFolder.left = new FormAttachment(middle, 0);
+        fdCreateDestinationFolder.top = new FormAttachment(wDestinationFolder, margin);
+        fdCreateDestinationFolder.right = new FormAttachment(100, 0);
+        wCreateDestinationFolder.setLayoutData(fdCreateDestinationFolder);
+        
+		
+		
+		
 		
 		// Add filenames to result filenames...
         wlAddFilenameToResult = new Label(wSourceFiles, SWT.RIGHT);
@@ -757,7 +890,7 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
         props.setLook(wlAddFilenameToResult);
         fdlAddFilenameToResult = new FormData();
         fdlAddFilenameToResult.left = new FormAttachment(0, 0);
-        fdlAddFilenameToResult.top = new FormAttachment(wRemove, margin);
+        fdlAddFilenameToResult.top = new FormAttachment(wCreateDestinationFolder, margin);
         fdlAddFilenameToResult.right = new FormAttachment(middle, -margin);
         wlAddFilenameToResult.setLayoutData(fdlAddFilenameToResult);
         wAddFilenameToResult = new Button(wSourceFiles, SWT.CHECK);
@@ -765,7 +898,7 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
         props.setLook(wAddFilenameToResult);
         fdAddFilenameToResult = new FormData();
         fdAddFilenameToResult.left = new FormAttachment(middle, 0);
-        fdAddFilenameToResult.top = new FormAttachment(wRemove, margin);
+        fdAddFilenameToResult.top = new FormAttachment(wCreateDestinationFolder, margin);
         fdAddFilenameToResult.right = new FormAttachment(100, 0);
         wAddFilenameToResult.setLayoutData(fdAddFilenameToResult);
 
@@ -923,8 +1056,8 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
 		
 	    getData();
 		activeCopyFromPrevious();
-		activeRemoveFilename();
 		activeUseKey();
+        AfterFTPPutActivate();
 		BaseStepDialog.setSize(shell);
 
 		shell.open();
@@ -934,12 +1067,7 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
 		}
 		return jobEntry;
 	}
-	private void activeRemoveFilename()
-	{
-		wAddFilenameToResult.setEnabled(!wRemove.getSelection());
-		wlAddFilenameToResult.setEnabled(!wRemove.getSelection());
-		if(wRemove.getSelection())	wAddFilenameToResult.setSelection(false);
-	}
+
     private void activeCopyFromPrevious()
     {
     	wLocalDirectory.setEnabled(!wgetPrevious.getSelection());
@@ -1063,7 +1191,6 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
 		wScpDirectory.setText(Const.NVL(jobEntry.getScpDirectory(), ""));
 		wLocalDirectory.setText(Const.NVL(jobEntry.getLocalDirectory(), ""));
 		wWildcard.setText(Const.NVL(jobEntry.getWildcard(), ""));
-		wRemove.setSelection(jobEntry.getRemove());
         wgetPrevious.setSelection(jobEntry.isCopyPrevious());
         wAddFilenameToResult.setSelection(jobEntry.isAddFilenameResut());
         wusePublicKey.setSelection(jobEntry.isUseKeyFile());
@@ -1077,6 +1204,11 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
         wProxyUsername.setText(Const.NVL(jobEntry.getProxyUsername(), ""));
         wProxyPassword.setText(Const.NVL(jobEntry.getProxyPassword(), ""));
         wCreateRemoteFolder.setSelection(jobEntry.isCreateRemoteFolder());
+        
+		wAfterFTPPut.setText(JobEntrySFTPPUT.getAfterSFTPPutDesc(jobEntry.getAfterFTPS()));
+		wDestinationFolder.setText(Const.NVL(jobEntry.getDestinationFolder(), ""));
+		wCreateDestinationFolder.setSelection(jobEntry.isCreateDestinationFolder());
+		wSuccessWhenNoFile.setSelection(jobEntry.isSuccessWhenNoFile());
 	}
 	
 	private void cancel()
@@ -1104,7 +1236,6 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
 		jobEntry.setScpDirectory(wScpDirectory.getText());
 		jobEntry.setLocalDirectory(wLocalDirectory.getText());
 		jobEntry.setWildcard(wWildcard.getText());
-		jobEntry.setRemove(wRemove.getSelection());
 	    jobEntry.setCopyPrevious(wgetPrevious.getSelection());
 	    jobEntry.setAddFilenameResut(wAddFilenameToResult.getSelection());
 	    jobEntry.setUseKeyFile(wusePublicKey.getSelection());
@@ -1118,6 +1249,10 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
 	    jobEntry.setProxyUsername(wProxyUsername.getText());
 	    jobEntry.setProxyPassword(wProxyPassword.getText());
 	    jobEntry.setCreateRemoteFolder(wCreateRemoteFolder.getSelection());
+		jobEntry.setAfterFTPS(JobEntrySFTPPUT.getAfterSFTPPutByDesc(wAfterFTPPut.getText()));
+		jobEntry.setCreateDestinationFolder(wCreateDestinationFolder.getSelection());
+		jobEntry.setDestinationFolder(wDestinationFolder.getText());
+		jobEntry.setSuccessWhenNoFile(wSuccessWhenNoFile.getSelection());
 		dispose();
 	}
 
@@ -1163,4 +1298,18 @@ public class JobEntrySFTPPUTDialog extends JobEntryDialog implements JobEntryDia
     	     } 
     	}
      }
+    private void AfterFTPPutActivate()
+    {
+    	boolean moveFile=JobEntrySFTPPUT.getAfterSFTPPutByDesc(wAfterFTPPut.getText())==JobEntrySFTPPUT.AFTER_FTPSPUT_MOVE;
+    	boolean doNothing=JobEntrySFTPPUT.getAfterSFTPPutByDesc(wAfterFTPPut.getText())==JobEntrySFTPPUT.AFTER_FTPSPUT_NOTHING;
+    	
+    	wlDestinationFolder.setEnabled(moveFile);
+    	wDestinationFolder.setEnabled(moveFile);
+    	wbMovetoDirectory.setEnabled(moveFile);
+    	wlCreateDestinationFolder.setEnabled(moveFile);
+    	wCreateDestinationFolder.setEnabled(moveFile);
+    	wlAddFilenameToResult.setEnabled(doNothing);
+    	wAddFilenameToResult.setEnabled(doNothing);
+    	
+    }
 }
