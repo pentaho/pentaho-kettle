@@ -4469,13 +4469,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       */
 
       // Show some information concerning all this work...
-      //
-      EnterTextDialog enterTextDialog = new EnterTextDialog(shell, "Resource serialized",
-          "This resource was serialized succesfully!", message);
+      
+      EnterTextDialog enterTextDialog = new EnterTextDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.ResourceSerialized"), BaseMessages.getString(PKG, "Spoon.Dialog.ResourceSerializedSuccesfully"), message);
       enterTextDialog.setReadOnly();
       enterTextDialog.open();
     } catch (Exception e) {
-      new ErrorDialog(shell, "Error", "Error exporting current file", e);
+      new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Error"), BaseMessages.getString(PKG, "Spoon.ErrorExportingFile"), e); 
     }
   }
 
@@ -4548,12 +4547,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
       // Show some information concerning all this work...
       //
-      EnterTextDialog enterTextDialog = new EnterTextDialog(shell, "Resource serialized",
-          "This resource was serialized succesfully!", message);
+      EnterTextDialog enterTextDialog = new EnterTextDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.ResourceSerialized"), BaseMessages.getString(PKG, "Spoon.Dialog.ResourceSerializedSuccesfully"), message);
       enterTextDialog.setReadOnly();
       enterTextDialog.open();
     } catch (Exception e) {
-      new ErrorDialog(shell, "Error", "Error exporting current file", e);
+	new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Error"), BaseMessages.getString(PKG, "Spoon.ErrorExportingFile"), e); 
     }
   }
 
@@ -4562,7 +4560,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     if (dialog.open() != null) {
       String filename = dialog.getFilterPath() + Const.FILE_SEPARATOR + dialog.getFileName();
       if (log.isBasic())
-        log.logBasic("Exporting All", "Export objects to file [" + filename + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        log.logBasic(BaseMessages.getString(PKG, "Spoon.Log.Exporting"), BaseMessages.getString(PKG, "Spoon.Log.ExportObjectsToFile", filename));
 
       RepositoryExportProgressDialog repd = new RepositoryExportProgressDialog(shell, rep, null, filename);
       repd.open();
