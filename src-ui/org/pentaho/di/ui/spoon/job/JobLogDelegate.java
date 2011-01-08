@@ -175,11 +175,14 @@ public class JobLogDelegate extends SpoonDelegate implements XulEventHandler {
     int startpos = 0;
     int crlen = Const.CR.length();
 
+    String line = null;
+    String lineUpper = null;
     while (i < all.length() - crlen) {
       if (all.substring(i, i + crlen).equalsIgnoreCase(Const.CR)) {
-        String line = all.substring(startpos, i);
-        if (line.toUpperCase().indexOf(BaseMessages.getString(PKG, "JobLog.System.ERROR")) >= 0 || //$NON-NLS-1$
-            line.toUpperCase().indexOf(BaseMessages.getString(PKG, "JobLog.System.EXCEPTION")) >= 0 //$NON-NLS-1$
+        line = all.substring(startpos, i);
+        lineUpper = line.toUpperCase();
+        if (lineUpper.indexOf(BaseMessages.getString(PKG, "JobLog.System.ERROR")) >= 0 || //$NON-NLS-1$
+            lineUpper.indexOf(BaseMessages.getString(PKG, "JobLog.System.EXCEPTION")) >= 0 //$NON-NLS-1$
         ) {
           err.add(line);
         }
@@ -189,9 +192,10 @@ public class JobLogDelegate extends SpoonDelegate implements XulEventHandler {
 
       i++;
     }
-    String line = all.substring(startpos);
-    if (line.toUpperCase().indexOf(BaseMessages.getString(PKG, "JobLog.System.ERROR")) >= 0 || //$NON-NLS-1$
-        line.toUpperCase().indexOf(BaseMessages.getString(PKG, "JobLog.System.EXCEPTION")) >= 0 //$NON-NLS-1$
+    line = all.substring(startpos);
+    lineUpper = line.toUpperCase();
+    if (lineUpper.indexOf(BaseMessages.getString(PKG, "JobLog.System.ERROR")) >= 0 || //$NON-NLS-1$
+        lineUpper.indexOf(BaseMessages.getString(PKG, "JobLog.System.EXCEPTION")) >= 0 //$NON-NLS-1$
     ) {
       err.add(line);
     }

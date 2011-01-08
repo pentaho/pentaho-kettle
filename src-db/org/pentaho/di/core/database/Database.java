@@ -1601,6 +1601,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
                 count = stmt.getUpdateCount();
 				stmt.close();
 			}
+      String upperSql = sql.toUpperCase();
             if (resultSet)
             {
                 // the result is a resultset, but we don't do anything with it!
@@ -1611,16 +1612,16 @@ public class Database implements VariableSpace, LoggingObjectInterface
             {
                 if (count > 0)
                 {
-                    if (sql.toUpperCase().startsWith("INSERT")) result.setNrLinesOutput(count);
-                    if (sql.toUpperCase().startsWith("UPDATE")) result.setNrLinesUpdated(count);
-                    if (sql.toUpperCase().startsWith("DELETE")) result.setNrLinesDeleted(count);
+                    if (upperSql.startsWith("INSERT")) result.setNrLinesOutput(count);
+                    else if (upperSql.startsWith("UPDATE")) result.setNrLinesUpdated(count);
+                    else if (upperSql.startsWith("DELETE")) result.setNrLinesDeleted(count);
                 }
             }
             
             // See if a cache needs to be cleared...
-            if (sql.toUpperCase().startsWith("ALTER TABLE") || 
-                sql.toUpperCase().startsWith("DROP TABLE") ||
-                sql.toUpperCase().startsWith("CREATE TABLE")
+            if (upperSql.startsWith("ALTER TABLE") || 
+                upperSql.startsWith("DROP TABLE") ||
+                upperSql.startsWith("CREATE TABLE")
                 )
             {
                 DBCache.getInstance().clear(databaseMeta.getName());
@@ -3590,23 +3591,39 @@ public class Database implements VariableSpace, LoggingObjectInterface
 				RowMetaInterface updateRowMeta = new RowMeta();
 				Object[] updateRowData = new Object[rowMeta.size()];
 				ValueMetaInterface keyValueMeta = rowMeta.getValueMeta(0);
-
-				String sql = "UPDATE " + schemaTable + " SET ";
+				VariableSpace subjectSpace = null;
+				StringBuffer sqlBuff = null;
+				String sql = null;
+        if (subject instanceof VariableSpace) {
+          subjectSpace = (VariableSpace)subject;
+          sql = subjectSpace.getVariable("LogRecordSQL", null);          
+        }
+        if (sql == null) {
+          sqlBuff = new StringBuffer(100);
+          sqlBuff.append("UPDATE ").append( schemaTable ).append(" SET ");
+        }
 				for (int i = 1; i < rowMeta.size() ; i++) // Without ID_JOB or ID_BATCH
 				{
 					ValueMetaInterface valueMeta = rowMeta.getValueMeta(i);
-					if (i > 1) {
-						sql += ", ";
+					if (sql == null && i > 1) {
+						sqlBuff.append(", ");
 					}
-					sql += databaseMeta.quoteField(valueMeta.getName()) + "=? ";
+					sqlBuff.append(databaseMeta.quoteField(valueMeta.getName())).append("=? ");
 					updateRowMeta.addValueMeta(valueMeta);
 					updateRowData[i-1] = rowData[i];
 				}
-				sql += "WHERE ";
-				sql += databaseMeta.quoteField(keyValueMeta.getName()) + "=? ";
+				if (sql == null) {
+				  sqlBuff.append("WHERE ").append(databaseMeta.quoteField(keyValueMeta.getName())).append("=? ");
+				}
 				updateRowMeta.addValueMeta(keyValueMeta);
 				updateRowData[rowMeta.size()-1] = rowData[0];
 				
+				if (sql == null) {
+				  sql = sqlBuff.toString();
+				  if (subjectSpace != null) {
+				    subjectSpace.setVariable("LogRecordSQL", sql);
+				  }
+				}
 				execStatement(sql, updateRowMeta, updateRowData);
 				
 			} else {
