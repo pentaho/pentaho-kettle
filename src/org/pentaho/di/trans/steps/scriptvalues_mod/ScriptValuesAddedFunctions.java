@@ -270,14 +270,14 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 			try{
 				Object scmO = actualObject.get("_step_", actualObject);
 				StepInterface scm = (StepInterface)Context.jsToJava(scmO, StepInterface.class);
-				String strType = Context.toString(ArgList[0]);
+				String strType = Context.toString(ArgList[0]).toLowerCase();
 				
-				if(strType.toLowerCase().equals("i")) return (double)scm.getLinesInput();
-				else if(strType.toLowerCase().equals("o")) return (double)scm.getLinesOutput();
-				else if(strType.toLowerCase().equals("r")) return (double)scm.getLinesRead();
-				else if(strType.toLowerCase().equals("u")) return (double)scm.getLinesUpdated();
-				else if(strType.toLowerCase().equals("w")) return (double)scm.getLinesWritten();
-                else if(strType.toLowerCase().equals("e")) return (double)scm.getLinesRejected();
+				if(strType.equals("i")) return (double)scm.getLinesInput();
+				else if(strType.equals("o")) return (double)scm.getLinesOutput();
+				else if(strType.equals("r")) return (double)scm.getLinesRead();
+				else if(strType.equals("u")) return (double)scm.getLinesUpdated();
+				else if(strType.equals("w")) return (double)scm.getLinesWritten();
+                else if(strType.equals("e")) return (double)scm.getLinesRejected();
 				else return 0;
 			}catch(Exception e){
 				//throw Context.reportRuntimeError(e.toString());
@@ -308,14 +308,14 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 						Object scmO = actualObject.get("_step_", actualObject);
 						ScriptValuesMod scm = (ScriptValuesMod)Context.jsToJava(scmO, ScriptValuesMod.class);
 			
-						String strType = Context.toString(ArgList[0]);
+						String strType = Context.toString(ArgList[0]).toLowerCase();
 						String strMessage = Context.toString(ArgList[1]);
-						if(strType.toLowerCase().equals("b")) scm.logBasic(strMessage);
-						else if(strType.toLowerCase().equals("d")) scm.logDebug(strMessage);
-						else if(strType.toLowerCase().equals("l")) scm.logDetailed(strMessage);
-						else if(strType.toLowerCase().equals("e")) scm.logError(strMessage);
-						else if(strType.toLowerCase().equals("m")) scm.logMinimal(strMessage);
-						else if(strType.toLowerCase().equals("r")) scm.logRowlevel(strMessage);
+						if(strType.equals("b")) scm.logBasic(strMessage);
+						else if(strType.equals("d")) scm.logDebug(strMessage);
+						else if(strType.equals("l")) scm.logDetailed(strMessage);
+						else if(strType.equals("e")) scm.logError(strMessage);
+						else if(strType.equals("m")) scm.logMinimal(strMessage);
+						else if(strType.equals("r")) scm.logRowlevel(strMessage);
 					}
 				}catch(Exception e){
 				}
@@ -405,13 +405,13 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				else if(isUndefined(ArgList[0])) return Context.getUndefinedValue();
 				else{
 					java.util.Date dIn = (java.util.Date)Context.jsToJava(ArgList[0], java.util.Date.class);
-					String strType = Context.toString(ArgList[1]);
+					String strType = Context.toString(ArgList[1]).toLowerCase();
 					Calendar startDate = Calendar.getInstance(); 
 					startDate.setTime(dIn);
-					if(strType.toLowerCase().equals("y")) return new Double(startDate.get(Calendar.DAY_OF_YEAR));
-					else if(strType.toLowerCase().equals("m")) return new Double(startDate.get(Calendar.DAY_OF_MONTH));
-					else if(strType.toLowerCase().equals("w")) return new Double(startDate.get(Calendar.DAY_OF_WEEK));
-					else if(strType.toLowerCase().equals("wm")) return new Double(startDate.get(Calendar.DAY_OF_WEEK_IN_MONTH));
+					if(strType.equals("y")) return new Double(startDate.get(Calendar.DAY_OF_YEAR));
+					else if(strType.equals("m")) return new Double(startDate.get(Calendar.DAY_OF_MONTH));
+					else if(strType.equals("w")) return new Double(startDate.get(Calendar.DAY_OF_WEEK));
+					else if(strType.equals("wm")) return new Double(startDate.get(Calendar.DAY_OF_WEEK_IN_MONTH));
 					return new Double(startDate.get(Calendar.DAY_OF_YEAR));
 				}
 			}catch(Exception e){
@@ -506,7 +506,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				else{
 					java.util.Date dIn1 = (java.util.Date)Context.jsToJava(ArgList[0], java.util.Date.class);
 					java.util.Date dIn2 = (java.util.Date)Context.jsToJava(ArgList[1], java.util.Date.class);
-					String strType = Context.toString(ArgList[2]);
+					String strType = Context.toString(ArgList[2]).toLowerCase();
 					int iRC=0;
 
 					Calendar startDate = Calendar.getInstance();
@@ -528,14 +528,14 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 					long endL = endDate.getTimeInMillis() + endDate.getTimeZone().getOffset( endDate.getTimeInMillis() );
 					long startL = startDate.getTimeInMillis() + startDate.getTimeZone().getOffset( startDate.getTimeInMillis() );
 
-					if(strType.toLowerCase().equals("y")){
+					if(strType.equals("y")){
 						return new Double(endDate.get(Calendar.YEAR) - startDate.get(Calendar.YEAR));
-					}else if(strType.toLowerCase().equals("m")){
+					}else if(strType.equals("m")){
 						int iMonthsToAdd = (int)(endDate.get(Calendar.YEAR) - startDate.get(Calendar.YEAR)) * 12;
 						return new Double((endDate.get(Calendar.MONTH) - startDate.get(Calendar.MONTH)) + iMonthsToAdd);
-					}else if(strType.toLowerCase().equals("d")){
+					}else if(strType.equals("d")){
 						return new Double(((endL - startL) / 86400000));
-					}else if(strType.toLowerCase().equals("wd")){
+					}else if(strType.equals("wd")){
 						int iOffset = -1;
 						if(endDate.before(startDate)) iOffset = 1;
 						while ((iOffset==1 && endL<startL) || (iOffset==-1 && endL>startL)) {
@@ -545,14 +545,14 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 							endL = endDate.getTimeInMillis() + endDate.getTimeZone().getOffset( endDate.getTimeInMillis() );
 						}
 						return new Double(iRC);
-					}else if(strType.toLowerCase().equals("w")){
+					}else if(strType.equals("w")){
 						int iDays = (int)((endL - startL) / 86400000);
 						return new Double(iDays/7);
-					}else if(strType.toLowerCase().equals("ss")){
+					}else if(strType.equals("ss")){
 						return new Double(((endL - startL) / 1000));
-					}else if(strType.toLowerCase().equals("mi")){
+					}else if(strType.equals("mi")){
 						return new Double(((endL - startL) / 60000));
-					}else if(strType.toLowerCase().equals("hh")){
+					}else if(strType.equals("hh")){
 						return new Double(((endL - startL) / 3600000));
 					}else{
 						return new Double(((endL - startL) / 86400000));
@@ -597,24 +597,24 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 				if(isNull(ArgList, new int[]{0,1,2})) return null;
 				else if(isUndefined(ArgList, new int[]{0,1,2})) return Context.getUndefinedValue();
 				java.util.Date dIn = (java.util.Date)Context.jsToJava(ArgList[0], java.util.Date.class);
-				String strType = Context.toString(ArgList[1]);
+				String strType = Context.toString(ArgList[1]).toLowerCase();
 				int iValue = (int)Context.toNumber(ArgList[2]);
 				Calendar cal = Calendar.getInstance(); 
 				cal.setTime(dIn);
-				if(strType.toLowerCase().equals("y")) cal.add(Calendar.YEAR, iValue);
-				else if(strType.toLowerCase().equals("m")) cal.add(Calendar.MONTH, iValue);
-				else if(strType.toLowerCase().equals("d")) cal.add(Calendar.DATE, iValue);
-				else if(strType.toLowerCase().equals("w")) cal.add(Calendar.WEEK_OF_YEAR, iValue);
-				else if(strType.toLowerCase().equals("wd")){
+				if(strType.equals("y")) cal.add(Calendar.YEAR, iValue);
+				else if(strType.equals("m")) cal.add(Calendar.MONTH, iValue);
+				else if(strType.equals("d")) cal.add(Calendar.DATE, iValue);
+				else if(strType.equals("w")) cal.add(Calendar.WEEK_OF_YEAR, iValue);
+				else if(strType.equals("wd")){
 					int iOffset=0;
 					while(iOffset < iValue) {
 						int day = cal.get(Calendar.DAY_OF_WEEK);
 						cal.add(Calendar.DATE, 1);
 						if ((day != Calendar.SATURDAY) && (day != Calendar.SUNDAY))iOffset++;
 					}
-				}else if(strType.toLowerCase().equals("hh")) cal.add(Calendar.HOUR, iValue);
-				else if(strType.toLowerCase().equals("mi")) cal.add(Calendar.MINUTE, iValue);
-				else if(strType.toLowerCase().equals("ss")) cal.add(Calendar.SECOND, iValue);
+				}else if(strType.equals("hh")) cal.add(Calendar.HOUR, iValue);
+				else if(strType.equals("mi")) cal.add(Calendar.MINUTE, iValue);
+				else if(strType.equals("ss")) cal.add(Calendar.SECOND, iValue);
 				return cal.getTime();
 			}catch(Exception e){
 				throw Context.reportRuntimeError(e.toString());
