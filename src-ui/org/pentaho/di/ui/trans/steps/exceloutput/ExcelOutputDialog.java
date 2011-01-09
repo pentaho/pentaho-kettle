@@ -75,6 +75,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
+
 public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInterface
 {
 	private static Class<?> PKG = ExcelOutputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
@@ -193,6 +194,12 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 	private Group wTemplateGroup;
 	private FormData fdTemplateGroup;
 	
+
+	private Label        wlCreateParentFolder;
+	private Button       wCreateParentFolder;
+	private FormData     fdlCreateParentFolder, fdCreateParentFolder;
+	
+	
 	private ColumnInfo[] colinf;
 	
     private Map<String, Integer> inputFields;
@@ -295,6 +302,34 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		fdFilename.right= new FormAttachment(wbFilename, -margin);
 		wFilename.setLayoutData(fdFilename);
 		
+
+		// Create Parent Folder
+		wlCreateParentFolder=new Label(wFileComp, SWT.RIGHT);
+		wlCreateParentFolder.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.CreateParentFolder.Label"));
+ 		props.setLook(wlCreateParentFolder);
+		fdlCreateParentFolder=new FormData();
+		fdlCreateParentFolder.left = new FormAttachment(0, 0);
+		fdlCreateParentFolder.top  = new FormAttachment(wFilename, margin);
+		fdlCreateParentFolder.right= new FormAttachment(middle, -margin);
+		wlCreateParentFolder.setLayoutData(fdlCreateParentFolder);
+		wCreateParentFolder=new Button(wFileComp, SWT.CHECK );
+		wCreateParentFolder.setToolTipText(BaseMessages.getString(PKG, "ExcelOutputDialog.CreateParentFolder.Tooltip"));
+ 		props.setLook(wCreateParentFolder);
+		fdCreateParentFolder=new FormData();
+		fdCreateParentFolder.left = new FormAttachment(middle, 0);
+		fdCreateParentFolder.top  = new FormAttachment(wFilename, margin);
+		fdCreateParentFolder.right= new FormAttachment(100, 0);
+		wCreateParentFolder.setLayoutData(fdCreateParentFolder);
+		wCreateParentFolder.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					input.setChanged();
+				}
+			}
+		);
+		
+		
 		
 		// Open new File at Init
 		wlDoNotOpenNewFileInit=new Label(wFileComp, SWT.RIGHT);
@@ -302,7 +337,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
  		props.setLook(wlDoNotOpenNewFileInit);
 		fdlDoNotOpenNewFileInit=new FormData();
 		fdlDoNotOpenNewFileInit.left = new FormAttachment(0, 0);
-		fdlDoNotOpenNewFileInit.top  = new FormAttachment(wFilename, margin);
+		fdlDoNotOpenNewFileInit.top  = new FormAttachment(wCreateParentFolder, margin);
 		fdlDoNotOpenNewFileInit.right= new FormAttachment(middle, -margin);
 		wlDoNotOpenNewFileInit.setLayoutData(fdlDoNotOpenNewFileInit);
 		wDoNotOpenNewFileInit=new Button(wFileComp, SWT.CHECK );
@@ -310,7 +345,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
  		props.setLook(wDoNotOpenNewFileInit);
 		fdDoNotOpenNewFileInit=new FormData();
 		fdDoNotOpenNewFileInit.left = new FormAttachment(middle, 0);
-		fdDoNotOpenNewFileInit.top  = new FormAttachment(wFilename, margin);
+		fdDoNotOpenNewFileInit.top  = new FormAttachment(wCreateParentFolder, margin);
 		fdDoNotOpenNewFileInit.right= new FormAttachment(100, 0);
 		wDoNotOpenNewFileInit.setLayoutData(fdDoNotOpenNewFileInit);
 		wDoNotOpenNewFileInit.addSelectionListener(new SelectionAdapter() 
@@ -1251,7 +1286,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		if (input.getDateTimeFormat()!= null) wDateTimeFormat.setText( input.getDateTimeFormat() );
 		wSpecifyFormat.setSelection(input.isSpecifyFormat());
 		
-		
+		wCreateParentFolder.setSelection(wCreateParentFolder.getSelection());
 		wAddToResult.setSelection(input.isAddToResultFiles());
 		wAutoSize.setSelection(input.isAutoSizeColums());
 		wNullIsBlank.setSelection(input.isNullBlank());
@@ -1273,7 +1308,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		EnableTemplate();
 
 		if (input.getPassword() != null) wPassword.setText(input.getPassword());
-		logDebug("getting fields info...");
+		if(isDebug()) logDebug("getting fields info...");
 		
 		for (int i=0;i<input.getOutputFields().length;i++)
 		{
@@ -1319,7 +1354,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		tfoi.setNullIsBlank(wNullIsBlank.getSelection());
         
 		tfoi.setAddToResultFiles( wAddToResult.getSelection() );
-		
+		tfoi.setCreateParentFolder(wCreateParentFolder.getSelection());
 		tfoi.setProtectSheet( wProtectSheet.getSelection() );
 		tfoi.setPassword(   wPassword.getText() );
 		tfoi.setTemplateEnabled( wTemplate.getSelection() );

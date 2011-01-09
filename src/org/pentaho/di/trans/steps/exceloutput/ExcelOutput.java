@@ -227,7 +227,42 @@ public class ExcelOutput extends BaseStep implements StepInterface
 		
 		return true;
 	}
-
+	private boolean createParentFolder(FileObject file)
+	{
+		boolean retval=true;
+		// Check for parent folder
+		FileObject parentfolder=null;
+		try
+		{
+			// Get parent folder
+    		parentfolder=file.getParent();	    		
+    		if(parentfolder.exists()){
+    			if (isDetailed()) logDetailed(BaseMessages.getString(PKG, "ExcelOutput.Log.ParentFolderExist",parentfolder.getName().toString()));
+    		}else{
+    			if (isDetailed()) logDetailed(BaseMessages.getString(PKG, "ExcelOutput.Log.ParentFolderNotExist",parentfolder.getName().toString()));
+    			if(meta.isCreateParentFolder()){
+    				parentfolder.createFolder();
+    				if (isDetailed()) logDetailed(BaseMessages.getString(PKG, "ExcelOutput.Log.ParentFolderCreated",parentfolder.getName().toString()));
+    			}else{
+    				retval=false;
+    				logError(BaseMessages.getString(PKG, "ExcelOutput.Error.CanNotFoundParentFolder", parentfolder.getName().toString(), file.getName().toString()));
+    			}
+    		}
+		}
+		catch (Exception e) {
+			retval=false;
+			logError(BaseMessages.getString(PKG, "ExcelOutput.Log.CouldNotCreateParentFolder",parentfolder.getName().toString()));
+		}
+		 finally {
+         	if ( parentfolder != null ){
+         		try  {
+         			parentfolder.close();
+         		}
+         		catch ( Exception ex ) {};
+         	}
+         }	
+		 return retval;
+	}
     /**
      * Write a value to Excel, increasing data.positionX with one afterwards.
      * @param v The value to write
@@ -432,6 +467,10 @@ public class ExcelOutput extends BaseStep implements StepInterface
 		
 		try
 		{
+		   if(meta.isCreateParentFolder()) {
+            	if(!createParentFolder(data.file)) return retval;
+            }
+		   
 			WorkbookSettings ws = new WorkbookSettings();
             ws.setLocale(Locale.getDefault());
             
@@ -445,14 +484,6 @@ public class ExcelOutput extends BaseStep implements StepInterface
             // Create the workbook
             if (!meta.isTemplateEnabled())
             {				
-            	/*if (file.exists())
-            	{
-            		// Attempts to load it from the local file failed in the past.
-            		// As such we will try to remove the file first...
-            		//
-            		file.delete();
-            	}*/
-
             	File fle = new File(KettleVFS.getFilename(data.file));
                	if(meta.isAppend() && fle.exists())
             	{ 
@@ -531,11 +562,6 @@ public class ExcelOutput extends BaseStep implements StepInterface
             	data.positionY = 0;
             }
             
-            // If we need to write a header, do so...
-            //
-           /* if (meta.isHeaderEnabled()) {
-            	writeHeader();
-            }*/
             data.headerWrote=false;
             
             if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "ExcelOutput.Log.FileOpened", data.file.toString()));

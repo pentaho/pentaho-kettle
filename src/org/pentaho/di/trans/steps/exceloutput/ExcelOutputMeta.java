@@ -119,6 +119,9 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
     /** Flag : Do not open new file when transformation start  */ 
     private boolean doNotOpenNewFileInit;
     
+    /** Flag: create parent folder when necessary */
+    private boolean createparentfolder;
+    
     private boolean SpecifyFormat;
     
     private String date_time_format;
@@ -133,7 +136,22 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 	{
 		super(); // allocate BaseStepMeta
 	}
-	
+	  /**
+     * @return Returns the createparentfolder.
+     */
+    public boolean isCreateParentFolder()
+    {
+        return createparentfolder;
+    }
+
+
+    /**
+     * @param createparentfolder The createparentfolder to set.
+     */
+    public void setCreateParentFolder(boolean createparentfolder)
+    {
+        this.createparentfolder = createparentfolder;
+    }
 	/**
      * @return Returns the dateInFilename.
      */
@@ -544,6 +562,8 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			extension            = XMLHandler.getTagValue(stepnode, "file", "extention");
 			
 			doNotOpenNewFileInit       = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "do_not_open_newfile_init"));
+			createparentfolder = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "create_parent_folder"));
+			
 			stepNrInFilename     = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "split"));
 			dateInFilename       = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_date"));
 			timeInFilename       = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_time"));
@@ -610,6 +630,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		fileName         = "file";
 		extension        = "xls";
 		doNotOpenNewFileInit=false;
+		createparentfolder = false;
 		stepNrInFilename = false;
 		dateInFilename   = false;
 		timeInFilename   = false;
@@ -743,6 +764,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		retval.append("      ").append(XMLHandler.addTagValue("name",       fileName));
 		retval.append("      ").append(XMLHandler.addTagValue("extention",  extension));
 		retval.append("      ").append(XMLHandler.addTagValue("do_not_open_newfile_init",   doNotOpenNewFileInit));
+		retval.append("      ").append(XMLHandler.addTagValue("create_parent_folder",   createparentfolder));
 		retval.append("      ").append(XMLHandler.addTagValue("split",      stepNrInFilename));
 		retval.append("      ").append(XMLHandler.addTagValue("add_date",   dateInFilename));
 		retval.append("      ").append(XMLHandler.addTagValue("add_time",   timeInFilename));
@@ -802,7 +824,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			extension        =      rep.getStepAttributeString (id_step, "file_extention");
 			
 			doNotOpenNewFileInit =      rep.getStepAttributeBoolean(id_step, "do_not_open_newfile_init");
-			
+			createparentfolder        =      rep.getStepAttributeBoolean(id_step, "create_parent_folder");
 			splitEvery       = (int)rep.getStepAttributeInteger(id_step, "file_split");
 			stepNrInFilename =      rep.getStepAttributeBoolean(id_step, "file_add_stepnr");
 			dateInFilename   =      rep.getStepAttributeBoolean(id_step, "file_add_date");
@@ -851,7 +873,7 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
             rep.saveStepAttribute(id_transformation, id_step, "add_to_result_filenames",    addToResultFilenames);
 			rep.saveStepAttribute(id_transformation, id_step, "file_name",        fileName);
 			rep.saveStepAttribute(id_transformation, id_step, "do_not_open_newfile_init",  doNotOpenNewFileInit);
-			
+			rep.saveStepAttribute(id_transformation, id_step, "create_parent_folder",    createparentfolder);
 			rep.saveStepAttribute(id_transformation, id_step, "file_extention",   extension);
 			rep.saveStepAttribute(id_transformation, id_step, "file_split",       splitEvery);
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_stepnr",  stepNrInFilename);
