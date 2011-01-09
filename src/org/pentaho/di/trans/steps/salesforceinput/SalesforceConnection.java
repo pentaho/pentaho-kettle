@@ -380,7 +380,7 @@ public class SalesforceConnection {
 			if(this.sObjects!=null) this.recordsCount=this.sObjects.length;
 		}catch(Exception e){
 			log.logError(Const.getStackTracker(e));
-			throw new KettleException(BaseMessages.getString( PKG, "SalesforceConnection.Exception.Query"),e);
+			throw new KettleException(BaseMessages.getString(PKG, "SalesforceConnection.Exception.Query"),e);
 		}
 	 }
 	 public void close() throws KettleException
