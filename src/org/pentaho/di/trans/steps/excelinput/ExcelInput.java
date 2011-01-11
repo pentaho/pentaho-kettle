@@ -288,49 +288,49 @@ public class ExcelInput extends BaseStep implements StepInterface
             rowIndex++;
 		}
 		// Possibly add short filename...
-		if (meta.getShortFileNameField()!=null && meta.getShortFileNameField().length()>0)
+		if (!Const.isEmpty(meta.getShortFileNameField()))
 		{
             r[rowIndex] = data.shortFilename;
             rowIndex++;
 		}
 		// Add Extension
-		if (meta.getExtensionField()!=null && meta.getExtensionField().length()>0)
+		if (!Const.isEmpty(meta.getExtensionField()))
 		{
             r[rowIndex] = data.extension;
             rowIndex++;
 		}
 		// add path
-		if (meta.getPathField()!=null && meta.getPathField().length()>0)
+		if (!Const.isEmpty(meta.getPathField()))
 		{
             r[rowIndex] = data.path;
             rowIndex++;
 		}
 		// Add Size
-		if (meta.getSizeField()!=null && meta.getSizeField().length()>0)
+		if (!Const.isEmpty(meta.getSizeField()))
 		{
             r[rowIndex] = new Long(data.size);
             rowIndex++;
 		}
 		// add Hidden
-		if (meta.isHiddenField()!=null && meta.isHiddenField().length()>0)
+		if (!Const.isEmpty(meta.isHiddenField()))
 		{
             r[rowIndex] = new Boolean(data.hidden);
             rowIndex++;
 		}
 		// Add modification date
-		if (meta.getLastModificationDateField()!=null && meta.getLastModificationDateField().length()>0)
+		if (!Const.isEmpty(meta.getLastModificationDateField()))
 		{
             r[rowIndex] = data.lastModificationDateTime;
             rowIndex++;
 		}
 		// Add Uri
-		if (meta.getUriField()!=null && meta.getUriField().length()>0)
+		if (!Const.isEmpty(meta.getUriField()))
 		{
             r[rowIndex] = data.uriName;
             rowIndex++;
 		}
 		// Add RootUri
-		if (meta.getRootUriField()!=null && meta.getRootUriField().length()>0)
+		if (!Const.isEmpty(meta.getRootUriField()))
 		{
             r[rowIndex] = data.rootUriName;
             rowIndex++;

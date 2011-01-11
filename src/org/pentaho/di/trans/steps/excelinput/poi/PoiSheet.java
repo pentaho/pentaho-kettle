@@ -18,8 +18,15 @@ public class PoiSheet implements KSheet {
   }
   
   public KCell[] getRow(int rownr) {
+    if (rownr < sheet.getFirstRowNum()) {
+      return new KCell[] {};
+    } else if (rownr > sheet.getLastRowNum()) {
+      throw new ArrayIndexOutOfBoundsException("Read beyond last row: "+rownr);
+    }
     Row row = sheet.getRow(rownr);
-    if (row==null) throw new ArrayIndexOutOfBoundsException("Read beyond last row: "+rownr);
+    if (row == null) { // read an empty row
+      return new KCell[] {};
+    }
     int cols = row.getLastCellNum();
     PoiCell[] xlsCells = new PoiCell[cols];
     for (int i=0;i<cols;i++) {
