@@ -148,7 +148,7 @@
 	<classpathentry kind="lib" path="libext/pentaho/libbase-1.2.1.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/libformula-1.2.1.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-core-3.2.1.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-swt-3.2.1.jar"/>
+	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-swt-3.2.2.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-database-4.0.5.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-hdfs-vfs-1.0.0.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-s3-vfs-1.0.1.jar"/>
