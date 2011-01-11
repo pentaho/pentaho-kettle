@@ -20,6 +20,7 @@ import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogTableField;
 import org.pentaho.di.core.logging.TransLogTable;
+import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -85,6 +86,9 @@ public class Mapping extends BaseStep implements StepInterface
 				}
 			}
 			
+			// repopulate with vars and params if necessary
+			setMappingParameters();
+			
 			// Start the mapping/sub-transformation threads
 	        //
 	        data.mappingTrans.startThreads();
@@ -140,8 +144,26 @@ public class Mapping extends BaseStep implements StepInterface
 				String name = mappingParameters.getVariable()[i];
 				String value = environmentSubstitute(mappingParameters.getInputField()[i]);
 				if (!Const.isEmpty(name) && !Const.isEmpty(value)) {
+
+					// if the parameters are defined as such in the subtrans, set them
+					try{
+						data.mappingTransMeta.setParameterValue(name, value);
+						if (data.mappingTrans != null){
+							data.mappingTrans.setParameterValue(name, value);
+						}
+						
+					}
+					catch(UnknownParamException e){
+						// eat up
+					}
+					
 					data.mappingTransMeta.setVariable(name, value);
-				}
+					if (data.mappingTrans != null){
+						data.mappingTrans.setVariable(name, value);
+					}
+					
+					
+				}				
 			}
 		}
 	}
@@ -177,7 +199,9 @@ public class Mapping extends BaseStep implements StepInterface
         catch(KettleException e) {
         	throw new KettleException(BaseMessages.getString(PKG, "Mapping.Exception.UnableToPrepareExecutionOfMapping"), e);
         }
-
+        
+        setMappingParameters();
+        
 		// If there is no read/write logging step set, we can insert the data from the first mapping input/output step...
 		//
 		MappingInput[] mappingInputs = data.mappingTrans.findMappingInput();
@@ -362,11 +386,12 @@ public class Mapping extends BaseStep implements StepInterface
                 data.mappingTransMeta = MappingMeta.loadMappingMeta(meta, meta.getRepository(), this);
                 if (data.mappingTransMeta!=null) // Do we have a mapping at all?
                 {
+            		
                 	// Set the parameters statically or dynamically
             		//
-            		setMappingParameters();
+                	setMappingParameters();
             		
-            		// OK, now prepare the execution of the mapping.
+                	// OK, now prepare the execution of the mapping.
             		// This includes the allocation of RowSet buffers, the creation of the sub-transformation threads, etc.
             		//
             		prepareMappingExecution();
