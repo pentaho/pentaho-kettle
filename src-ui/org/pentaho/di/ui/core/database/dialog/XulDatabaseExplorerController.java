@@ -417,9 +417,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
           DatabaseExplorerNode theTableNode = new DatabaseExplorerNode();
           theTableNode.setIsTable(true);
           theTableNode.setName(table);
-          theTableNode.setSchema(schema);
           theTableNode.setImage(TABLE_IMAGE);
-          theTableNode.setLabel(model.getDatabaseMeta().getQuotedSchemaTableCombination(schema, table));
           theTablesNode.add(theTableNode);
         }
       }
@@ -436,9 +434,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
             DatabaseExplorerNode theViewNode = new DatabaseExplorerNode();
             theViewNode.setIsTable(true);
             theViewNode.setName(view);
-            theViewNode.setSchema(schema);
             theViewNode.setImage(TABLE_IMAGE);
-            theViewNode.setLabel(model.getDatabaseMeta().getQuotedSchemaTableCombination(schema, view));
             theViewsNode.add(theViewNode);
           }
         }
@@ -456,9 +452,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
             DatabaseExplorerNode theSynonymNode = new DatabaseExplorerNode();
             theSynonymNode.setIsTable(true);
             theSynonymNode.setName(synonym);
-            theSynonymNode.setSchema(schema);
             theSynonymNode.setImage(TABLE_IMAGE);
-            theSynonymNode.setLabel(model.getDatabaseMeta().getQuotedSchemaTableCombination(schema, synonym));
             theSynonymsNode.add(theSynonymNode);
           }
         }
