@@ -12,6 +12,7 @@
 package org.pentaho.di.trans.steps.mapping;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +25,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -333,6 +335,38 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface {
       throw new KettleStepException(BaseMessages.getString(PKG, "MappingMeta.Exception.UnableToLoadMappingTransformation"), e);
     }
 
+    // The field structure may depend on the input parameters as well (think of parameter replacements in MDX queries for instance)
+	if (mappingParameters!=null) {
+		
+		// See if we need to pass all variables from the parent or not...
+		//
+		if (mappingParameters.isInheritingAllVariables()) {
+			mappingTransMeta.copyVariablesFrom(space);
+		}
+		
+		// Just set the variables in the transformation statically.
+		// This just means: set a number of variables or parameter values:
+		//
+		List<String> subParams = Arrays.asList(mappingTransMeta.listParameters());
+		
+		for (int i=0;i<mappingParameters.getVariable().length;i++) {
+			String name = mappingParameters.getVariable()[i];
+			String value = space.environmentSubstitute(mappingParameters.getInputField()[i]);
+			if (!Const.isEmpty(name) && !Const.isEmpty(value)) {
+				if (subParams.contains(name)){
+					try{
+						mappingTransMeta.setParameterValue(name, value);	
+					}
+					catch(UnknownParamException e){
+						// this is explicitly checked for up front
+					}
+				}
+				mappingTransMeta.setVariable(name, value);
+				
+			}
+		}
+	}    
+    
     // Keep track of all the fields that need renaming...
     //
     List<MappingValueRename> inputRenameList = new ArrayList<MappingValueRename>();
