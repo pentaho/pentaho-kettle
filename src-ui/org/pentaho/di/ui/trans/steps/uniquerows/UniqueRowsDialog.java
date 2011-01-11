@@ -163,7 +163,7 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
 		SettingsgroupLayout.marginHeight = 10;
 		wSettings.setLayout(SettingsgroupLayout);
 		
-		wlCount=new Label(shell, SWT.RIGHT);
+		wlCount=new Label(wSettings, SWT.RIGHT);
 		wlCount.setText(BaseMessages.getString(PKG, "UniqueRowsDialog.Count.Label")); //$NON-NLS-1$
  		props.setLook(wlCount);
 		fdlCount=new FormData();
@@ -172,7 +172,7 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
 		fdlCount.right= new FormAttachment(middle, -margin);
 		wlCount.setLayoutData(fdlCount);
 		
-		wCount=new Button(shell, SWT.CHECK );
+		wCount=new Button(wSettings, SWT.CHECK );
  		props.setLook(wCount);
 		wCount.setToolTipText(BaseMessages.getString(PKG, "UniqueRowsDialog.Count.ToolTip",Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
 		fdCount=new FormData();
@@ -189,14 +189,14 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
 			}
 		);
 
-		wlCountField=new Label(shell, SWT.LEFT);
+		wlCountField=new Label(wSettings, SWT.LEFT);
 		wlCountField.setText(BaseMessages.getString(PKG, "UniqueRowsDialog.CounterField.Label")); //$NON-NLS-1$
  		props.setLook(wlCountField);
 		fdlCountField=new FormData();
 		fdlCountField.left = new FormAttachment(wCount, margin);
 		fdlCountField.top  = new FormAttachment(wStepname, margin);
 		wlCountField.setLayoutData(fdlCountField);
-		wCountField=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wCountField=new Text(wSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wCountField);
 		wCountField.addModifyListener(lsMod);
 		fdCountField=new FormData();
@@ -218,7 +218,7 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
  		props.setLook(wRejectDuplicateRow);
 		wRejectDuplicateRow.setToolTipText(BaseMessages.getString(PKG, "UniqueRowsDialog.RejectDuplicateRow.ToolTip",Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
 		fdRejectDuplicateRow=new FormData();
-		fdRejectDuplicateRow.left = new FormAttachment(middle, 0);
+		fdRejectDuplicateRow.left = new FormAttachment(middle, margin);
 		fdRejectDuplicateRow.top  = new FormAttachment(wCountField, margin);
 		wRejectDuplicateRow.setLayoutData(fdRejectDuplicateRow);
 		wRejectDuplicateRow.addSelectionListener(new SelectionAdapter() 
