@@ -1106,7 +1106,9 @@ public class ValueDataUtil
 
         final char hexDigits[] =
         { '0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F' };
-        
+
+        // depending on the use case, this code might deliver the wrong values due to extra conversion with toCharArray
+        // see Checksum step and PDI-5190 "Add Checksum step gives incorrect results (MD5, CRC32, ADLER32, SHA-1 are affected)"
         String hex = metaA.getString(dataA);
         
         char[] s = hex.toCharArray();

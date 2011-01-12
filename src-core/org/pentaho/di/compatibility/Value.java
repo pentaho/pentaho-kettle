@@ -3397,7 +3397,9 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		}
 		
 		String hex = getString();
-		
+
+		// depending on the use case, this code might deliver the wrong values due to extra conversion with toCharArray
+        // see Checksum step and PDI-5190 "Add Checksum step gives incorrect results (MD5, CRC32, ADLER32, SHA-1 are affected)"
 		char[] s = hex.toCharArray();
 		StringBuffer hexString = new StringBuffer(2 * s.length);
 		
