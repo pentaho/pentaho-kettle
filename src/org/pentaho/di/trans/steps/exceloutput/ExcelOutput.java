@@ -12,12 +12,15 @@
 
 package org.pentaho.di.trans.steps.exceloutput;
 
+import java.awt.Dimension;
 import java.io.File;
 import java.util.Locale;
 
 import jxl.Workbook;
 import jxl.WorkbookSettings;
 import jxl.format.CellFormat;
+import jxl.format.Colour;
+import jxl.format.UnderlineStyle;
 import jxl.write.DateFormat;
 import jxl.write.DateFormats;
 import jxl.write.DateTime;
@@ -25,6 +28,8 @@ import jxl.write.Label;
 import jxl.write.NumberFormat;
 import jxl.write.WritableCellFormat;
 import jxl.write.WritableFont;
+import jxl.write.WritableImage;
+import jxl.write.WritableFont.FontName;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
@@ -84,8 +89,6 @@ public class ExcelOutput extends BaseStep implements StepInterface
 			if(meta.isDoNotOpenNewFileInit())
 			{
 				 data.oneFileOpened=true;
-			
-                 addFilenameToResult();
 
 		         if (!openNewFile())
 				 {
@@ -110,15 +113,15 @@ public class ExcelOutput extends BaseStep implements StepInterface
 				 }
 			}
 		}
-		
+
 		// If we split the data stream in small XLS files, we need to do this here...
 		//
-		if ( r!=null && getLinesOutput()>0 && meta.getSplitEvery()>0 && ((getLinesOutput()+1)%meta.getSplitEvery())==0)
+		if ((getLinesOutput()>0 && meta.getSplitEvery()>0 && ((getLinesOutput())%meta.getSplitEvery())==0))
 		{
 			// Not finished: open another file...
 			if (r!=null)
 			{
-				closeFile();
+				if(data.oneFileOpened) closeFile();
 				if (!openNewFile())
 				{
 					logError("Unable to open new file (split #"+data.splitnr+"...");
@@ -287,8 +290,6 @@ public class ExcelOutput extends BaseStep implements StepInterface
      */
 	private boolean writeField(Object v, ValueMetaInterface vMeta, ExcelField excelField, int column, boolean isHeader)
 	{
-
-		WritableFont writableFont = new WritableFont(WritableFont.ARIAL, 10, WritableFont.NO_BOLD);
 		try
 		{
             String hashName = vMeta.getName();
@@ -320,86 +321,118 @@ public class ExcelOutput extends BaseStep implements StepInterface
 	        	if(vlen>0 && vlen>data.fieldsWidth[column]) data.fieldsWidth[column]=vlen+1;
             }
             
-            switch(vMeta.getType())
+            // Do we need to use a specific format to header?
+            if(isHeader)// && cellFormat==null)  
             {
-            case ValueMetaInterface.TYPE_DATE:
-                {
-                    if (v!=null && vMeta.getDate(v)!=null)
-                    {
-                        if (cellFormat==null)
-                        {
-                            if (excelField!=null && excelField.getFormat()!=null)
-                            {
-                                DateFormat dateFormat = new DateFormat(excelField.getFormat());
-                                cellFormat=new WritableCellFormat(dateFormat);
-                            }
-                            else
-                            {
-                                cellFormat =  new WritableCellFormat(DateFormats.FORMAT9);
-                            }
-                            data.formats.put(hashName, cellFormat); // save for next time around...
-                        }
-                        DateTime dateTime = new DateTime(data.positionX, data.positionY, vMeta.getDate(v), cellFormat);
-                        data.sheet.addCell(dateTime);
-                    }
-                    else if (!meta.isNullBlank())
-                    {
-                        data.sheet.addCell(new Label(data.positionX, data.positionY, ""));
-                    }
-                }
-                break;
-            case ValueMetaInterface.TYPE_STRING:
-            case ValueMetaInterface.TYPE_BOOLEAN:
-            case ValueMetaInterface.TYPE_BINARY:
-                {
-                    if (v!=null)
-                    {
-                        if (cellFormat==null)
-                        {
-                            cellFormat = new WritableCellFormat(writableFont);
-                            data.formats.put(hashName, cellFormat);
-                        }
-                        Label label = new Label(data.positionX, data.positionY, vMeta.getString(v), cellFormat);
-                        data.sheet.addCell(label);
-                    }
-                    else if (!meta.isNullBlank())
-                    {
-                        data.sheet.addCell(new Label(data.positionX, data.positionY, ""));
-                    }
-                }
-                break;
-            case ValueMetaInterface.TYPE_NUMBER:
-            case ValueMetaInterface.TYPE_BIGNUMBER:
-            case ValueMetaInterface.TYPE_INTEGER:
-                {
-	                if (v!=null)
-	                {
-		            	if (cellFormat==null)
-	                    {
-	                        String format;
-	                        if (excelField!=null && excelField.getFormat()!=null)
-	                        {
-	                            format=excelField.getFormat();
-	                        }
-	                        else
-	                        {
-	                            format = "###,###.00";
-	                        }
-	                        NumberFormat numberFormat = new NumberFormat(format);
-	                        cellFormat = new WritableCellFormat(numberFormat);
-	                        data.formats.put(vMeta.getName(), cellFormat); // save for next time around...
-	                    }
-	                    jxl.write.Number number = new jxl.write.Number(data.positionX, data.positionY, vMeta.getNumber(v), cellFormat);
-	                    data.sheet.addCell(number);
-	                }
-	                else if (!meta.isNullBlank())
-	                {
-	                    data.sheet.addCell(new Label(data.positionX, data.positionY, ""));
-	                }
-                }
-                break;
-            default: break;
+            	// Set font for header and footer+
+            	data.sheet.addCell(new Label(data.positionX, data.positionY, vMeta.getName(),data.headerCellFormat));
+            	if(cellFormat==null) data.formats.put(hashName, data.headerCellFormat);  // save for next time around...
             }
+           else
+           {
+	            switch(vMeta.getType())
+	            {
+	            case ValueMetaInterface.TYPE_DATE:
+	                {
+	                    if (v!=null && vMeta.getDate(v)!=null)
+	                    {
+	                        if (cellFormat==null)
+	                        {
+	                            if (excelField!=null && excelField.getFormat()!=null)
+	                            {
+	                                DateFormat dateFormat = new DateFormat(excelField.getFormat());
+
+	                            	if(data.writableFont!=null)
+	                            	{
+	                            		cellFormat = new WritableCellFormat(data.writableFont,dateFormat);
+	                            		if(data.rowFontBackgoundColour!=null) cellFormat.setBackground(data.rowFontBackgoundColour);
+	                            	}
+	                            	else
+	                            		cellFormat=new WritableCellFormat(dateFormat);   
+	                            }
+	                            else
+	                            {
+	                                if(data.writableFont!=null)
+	                            	{
+	                            		cellFormat = new WritableCellFormat(data.writableFont,DateFormats.FORMAT9);
+	                            		if(data.rowFontBackgoundColour!=null) cellFormat.setBackground(data.rowFontBackgoundColour);
+	                            	}
+	                            	else
+	                            		cellFormat =  new WritableCellFormat(DateFormats.FORMAT9);
+	                            }
+	                            data.formats.put(hashName, cellFormat); // save for next time around...
+	                        }
+	                        DateTime dateTime = new DateTime(data.positionX, data.positionY, vMeta.getDate(v), cellFormat);
+	                        data.sheet.addCell(dateTime);
+	                    }
+	                    else if (!meta.isNullBlank())
+	                    {
+	                        data.sheet.addCell(new Label(data.positionX, data.positionY, ""));
+	                    }
+	                }
+	                break;
+	            case ValueMetaInterface.TYPE_STRING:
+	            case ValueMetaInterface.TYPE_BOOLEAN:
+	            case ValueMetaInterface.TYPE_BINARY:
+	                {
+                        if (cellFormat==null)
+                        {	                            
+                            cellFormat = new WritableCellFormat(data.writableFont);
+                            if(data.rowFontBackgoundColour!=null) cellFormat.setBackground(data.rowFontBackgoundColour);
+                            data.formats.put(hashName, cellFormat);  
+                        }
+	                    if (v!=null)
+	                    {
+	                        Label label = new Label(data.positionX, data.positionY, vMeta.getString(v), cellFormat);
+	                        data.sheet.addCell(label);
+	                    }
+	                    else if (!meta.isNullBlank())
+	                    {
+	                        data.sheet.addCell(new Label(data.positionX, data.positionY, ""));
+	                    }
+	                }
+	                break;
+	            case ValueMetaInterface.TYPE_NUMBER:
+	            case ValueMetaInterface.TYPE_BIGNUMBER:
+	            case ValueMetaInterface.TYPE_INTEGER:
+	                {
+		                if (v!=null)
+		                {
+			            	if (cellFormat==null)
+		                    {
+		                        String format;
+		                        if (excelField!=null && excelField.getFormat()!=null)
+		                        {
+		                            format=excelField.getFormat();
+		                        }
+		                        else
+		                        {
+		                            format = "###,###.00";
+		                        }
+		                        NumberFormat numberFormat = new NumberFormat(format);
+
+		                        if(data.writableFont!=null)
+		                        {
+		                        	cellFormat = new WritableCellFormat(data.writableFont,numberFormat);
+		                        	if(data.rowFontBackgoundColour!=null) cellFormat.setBackground(data.rowFontBackgoundColour);
+		                        }
+		                        else
+		                        	cellFormat = new WritableCellFormat(numberFormat);
+		                        
+		                        data.formats.put(vMeta.getName(), cellFormat); // save for next time around...
+		                    }
+		                    jxl.write.Number number = new jxl.write.Number(data.positionX, data.positionY, vMeta.getNumber(v), cellFormat);
+		                    data.sheet.addCell(number);
+		                }
+		                else if (!meta.isNullBlank())
+		                {
+		                    data.sheet.addCell(new Label(data.positionX, data.positionY, ""));
+		                }
+	                }
+	                break;
+	            default: break;
+	            }
+           }
 		}
 		catch(Exception e)
 		{
@@ -430,14 +463,15 @@ public class ExcelOutput extends BaseStep implements StepInterface
                     writeField(fieldName, vMeta, null, i, true);
 				}
 			}
-			else
-			if (data.previousMeta!=null)  // Just put all field names in the header/footer
-			{
-				for (int i=0;i<data.previousMeta.size();i++)
+			else {
+				if (data.previousMeta!=null)  // Just put all field names in the header/footer
 				{
-					String fieldName = data.previousMeta.getFieldNames()[i];
-					ValueMetaInterface vMeta=new ValueMeta(fieldName, ValueMetaInterface.TYPE_STRING);
-                    writeField(fieldName, vMeta, null, i, true);
+					for (int i=0;i<data.previousMeta.size();i++)
+					{
+						String fieldName = data.previousMeta.getFieldNames()[i];
+						ValueMetaInterface vMeta=new ValueMeta(fieldName, ValueMetaInterface.TYPE_STRING);
+	                    writeField(fieldName, vMeta, null, i, true);
+					}
 				}
 			}
 		}
@@ -452,7 +486,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
             data.positionX=0;
             data.positionY++;
         }
-        incrementLinesOutput();
+
 		return retval;
 	}
 
@@ -471,15 +505,18 @@ public class ExcelOutput extends BaseStep implements StepInterface
             	if(!createParentFolder(data.file)) return retval;
             }
 		   
-			WorkbookSettings ws = new WorkbookSettings();
-            ws.setLocale(Locale.getDefault());
             
-            if (!Const.isEmpty(meta.getEncoding()))
-            {
-                ws.setEncoding(meta.getEncoding());
-            }
+			// Static filename
+			data.realFilename=buildFilename();
+		    data.file = KettleVFS.getFileObject(data.realFilename, getTransMeta());
+			if(meta.isCreateParentFolder()) {
+	           	if(!createParentFolder(data.file)) return retval;
+	        }
+		    data.realFilename=KettleVFS.getFilename(data.file);
+			
+            addFilenameToResult();
             
-            if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "ExcelOutput.Log.OpeningFile", data.file.toString()));
+            if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "ExcelOutput.Log.OpeningFile", data.realFilename));
             
             // Create the workbook
             if (!meta.isTemplateEnabled())
@@ -511,7 +548,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
             	}else{
             		// Create a new Workbook
     				data.outputStream = KettleVFS.getOutputStream(data.file, false);
-					data.workbook = Workbook.createWorkbook(data.outputStream, ws);
+					data.workbook = Workbook.createWorkbook(data.outputStream, data.ws);
     				
     				// Create a sheet?
     				String sheetname = "Sheet1";
@@ -526,7 +563,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
             	FileObject fo = KettleVFS.getFileObject(environmentSubstitute(meta.getTemplateFileName()), getTransMeta());
 				// create the openFile from the template
 
-				Workbook tmpWorkbook=Workbook.getWorkbook(KettleVFS.getInputStream(fo), ws);
+				Workbook tmpWorkbook=Workbook.getWorkbook(KettleVFS.getInputStream(fo), data.ws);
 				data.outputStream = KettleVFS.getOutputStream(data.file,false);
 				data.workbook = Workbook.createWorkbook(data.outputStream, tmpWorkbook);
 				
@@ -555,15 +592,30 @@ public class ExcelOutput extends BaseStep implements StepInterface
             // Set the initial position...
             
             data.positionX = 0;
-            if (meta.isTemplateEnabled() && meta.isTemplateAppend())
-            {
+            if (meta.isTemplateEnabled() && meta.isTemplateAppend()) {
             	data.positionY = data.sheet.getRows();
             } else {
             	data.positionY = 0;
             }
             
-            data.headerWrote=false;
+
+            if(data.headerImage!=null) {
+	            // Put an image (LEFT TOP Corner)
+	            data.sheet.addImage(data.headerImage);
+	            data.positionY+=Math.round(data.headerImageHeight);
+            }
             
+            
+            // Sets the height of the specified row, as well as its collapse status
+            // height the row height in characters
+            if(data.Headerrowheight>0 && data.Headerrowheight!=ExcelOutputMeta.DEFAULT_ROW_HEIGHT) 
+            	data.sheet.setRowView(data.positionY,data.Headerrowheight);
+
+            
+            
+            data.headerWrote=false;
+    		data.splitnr++;
+    		data.oneFileOpened=true;
             if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "ExcelOutput.Log.FileOpened", data.file.toString()));
 			retval=true;
 		}
@@ -572,9 +624,6 @@ public class ExcelOutput extends BaseStep implements StepInterface
 			logError("Error opening new file", e);
 			setErrors(1);
 		}
-		// System.out.println("end of newFile(), splitnr="+splitnr);
-
-		data.splitnr++;
 
 		return retval;
 	}
@@ -629,6 +678,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
 			if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "ExcelOutput.Log.FileClosed",filename));
             
 			retval=true;
+			data.oneFileOpened=false;
 		}
 		catch(Exception e)
 		{
@@ -649,13 +699,19 @@ public class ExcelOutput extends BaseStep implements StepInterface
 			data.splitnr=0;
 			data.realSheetname=environmentSubstitute(meta.getSheetname());
 			
-			// See if we need to add the filename to the result.
-			// If the file doesn't exist we report the problem.
-			//
-			if (!addFilenameToResult()) {
-			  return false;
-			}
+	        data.ws = new WorkbookSettings();
+            data.ws.setLocale(Locale.getDefault());
+            data.Headerrowheight=Const.toInt(environmentSubstitute(meta.getHeaderRowHeight()),-1);
+            data.realHeaderImage=environmentSubstitute(meta.getHeaderImage());
+            if (!Const.isEmpty(meta.getEncoding()))  data.ws.setEncoding(meta.getEncoding());
 			
+            try {
+				 setFonts();
+	         } catch(Exception we) {
+	             logError("Erreur preparing fonts, colors for header and rows: "+we.toString());
+	             return false;
+	         }
+  
 			if(!meta.isDoNotOpenNewFileInit())
 			{
 				data.oneFileOpened=true;
@@ -683,18 +739,14 @@ public class ExcelOutput extends BaseStep implements StepInterface
 	
 	private boolean addFilenameToResult() {
 	  try {
-        String buildFilename=buildFilename();
-        data.file = KettleVFS.getFileObject(buildFilename, getTransMeta());
-
-        if(meta.isAddToResultFiles())
-        {
-            // Add this to the result file names...
-            ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname());
-            resultFile.setComment("This file was created with an Excel output step by Pentaho Data Integration");
-            addResultFile(resultFile);
-        }
+	        if(meta.isAddToResultFiles()) {
+	            // Add this to the result file names...
+	            ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname());
+	            resultFile.setComment("This file was created with an Excel output step by Pentaho Data Integration");
+	            addResultFile(resultFile);
+	        }
         
-        return true;
+	        return true;
 
 	  } catch(Exception e) {
 	    log.logError("Unable to add filename to the result", e);
@@ -715,7 +767,87 @@ public class ExcelOutput extends BaseStep implements StepInterface
         		data.file=null;
         	}catch(Exception e){}
         }
+        data.fieldsWidth=null;
+        data.headerImage=null;
+        data.writableFont=null;
+        data.ws=null;
         super.dispose(smi, sdi);
 	}
-	
+    private void setFonts() throws Exception
+	{
+        // --- Set Header font
+        int headerFontSize=Const.toInt(environmentSubstitute(meta.getHeaderFontSize()), ExcelOutputMeta.DEFAULT_FONT_SIZE);
+        // Set font name
+        FontName headerFontName=ExcelFontMap.getFontName(meta.getHeaderFontName());
+        //Set UnderlineStyle
+        UnderlineStyle underline= ExcelFontMap.getUnderlineStyle(meta.getHeaderFontUnderline());
+
+        WritableFont writableHeaderFont=null;
+        if(meta.isHeaderFontBold())
+            writableHeaderFont= new WritableFont(headerFontName, headerFontSize, WritableFont.BOLD, 
+            		meta.isHeaderFontItalic(), underline);  
+        else
+        	writableHeaderFont= new WritableFont(headerFontName, headerFontSize, WritableFont.NO_BOLD, 
+        			meta.isHeaderFontItalic(), underline);  
+        
+        // Header font color
+        Colour fontHeaderColour=ExcelFontMap.getColour(meta.getHeaderFontColor(), Colour.BLACK);
+        if(!fontHeaderColour.equals(Colour.BLACK)) writableHeaderFont.setColour(fontHeaderColour);  
+    	data.headerCellFormat=new WritableCellFormat(writableHeaderFont);
+    	
+    	// Header background color
+    	if(meta.getHeaderBackGroundColor()!=ExcelOutputMeta.FONT_COLOR_NONE)
+    	data.headerCellFormat.setBackground(ExcelFontMap.getColour(meta.getHeaderBackGroundColor(),null));
+    	
+    	// Set alignment
+    	data.headerCellFormat=ExcelFontMap.getAlignment(meta.getHeaderAlignment(), data.headerCellFormat);
+    	data.headerCellFormat=ExcelFontMap.getOrientation(meta.getHeaderFontOrientation(), data.headerCellFormat);
+    	
+        // Do we need to put a image on the header
+        if(!Const.isEmpty(data.realHeaderImage))
+        {
+        	FileObject imageFile=null;
+        	try{
+        		imageFile=KettleVFS.getFileObject(data.realHeaderImage);
+        		if(!imageFile.exists()) 
+        			throw new KettleException(BaseMessages.getString(PKG, "ExcelInputLog.ImageFileNotExists",data.realHeaderImage));
+        		data.realHeaderImage=KettleVFS.getFilename(imageFile);
+        		// Put an image
+                Dimension m=ExcelFontMap.getImageDimension(data.realHeaderImage);
+                data.headerImageWidth=m.getWidth()*0.016;
+                data.headerImageHeight=m.getHeight()*0.0625;
+
+  	            byte[] imageData = new byte[(int)imageFile.getContent().getSize()];
+	            KettleVFS.getInputStream(imageFile).read(imageData);
+
+               data.headerImage = new WritableImage(0, 0, data.headerImageWidth, data.headerImageHeight, imageData);//imageFile.g.new File(data.realHeaderImage));
+               imageData=null;
+        	}catch(Exception e)
+        	{
+        		throw new KettleException (e);
+        	}finally
+        	{
+        		if(imageFile!=null) {try {imageFile.close();imageFile=null;}catch(Exception e){};}
+        	}
+        }
+    	
+        
+        // --- Set rows font
+        // Set font size
+        int rowFontSize=Const.toInt(environmentSubstitute(meta.getRowFontSize()), ExcelOutputMeta.DEFAULT_FONT_SIZE);
+        // Set font name
+        FontName rowFontName=ExcelFontMap.getFontName(meta.getRowFontName());
+
+        data.writableFont = new WritableFont(rowFontName, rowFontSize, WritableFont.NO_BOLD, 
+        		false, UnderlineStyle.NO_UNDERLINE);
+        
+        // Row font color
+        Colour rowFontColour=ExcelFontMap.getColour(meta.getRowFontColor(), Colour.BLACK);
+        if(!fontHeaderColour.equals(Colour.BLACK)) data.writableFont.setColour(rowFontColour);
+        
+        // Set rows background color if needed
+		if(meta.getRowBackGroundColor()!=ExcelOutputMeta.FONT_COLOR_NONE)
+			data.rowFontBackgoundColour=ExcelFontMap.getColour(meta.getRowBackGroundColor(),null);
+		 
+	}
 }

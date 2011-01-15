@@ -83,9 +83,61 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
 	
-	private CTabItem     wFileTab, wContentTab, wFieldsTab;
+	
+	private Group wFontHeaderGroup;
+	private FormData fdFontHeaderGroup;
+	
+    private Label        wlHeaderFontName;
+    private CCombo       wHeaderFontName;
+    private FormData     fdlHeaderFontName, fdHeaderFontName;
+    
+	
+	private Label        wlHeaderFontSize;
+	private TextVar      wHeaderFontSize;
+	private FormData     fdlHeaderFontSize, fdHeaderFontSize;
 
-	private FormData     fdFileComp, fdContentComp, fdFieldsComp;
+	private Label        wlRowFontSize;
+	private TextVar      wRowFontSize;
+	private FormData     fdlRowFontSize, fdRowFontSize;
+	
+
+	private CCombo wRowFontColor;
+	private FormData fdRowFontColor;
+	private Label wlRowFontColor;
+	private FormData fdlRowFontColor;
+	
+	
+	private Label        wlImage;
+	private Button       wbImage;
+	private TextVar      wImage;
+	private FormData     fdlImage, fdbImage, fdImage;
+	
+	private Label        wlHeaderRowHeight;
+	private TextVar      wHeaderRowHeight;
+	private FormData     fdlHeaderRowHeight, fdHeaderRowHeight;
+    
+    private Label        wlRowFontName;
+    private CCombo       wRowFontName;
+    private FormData     fdlRowFontName, fdRowFontName;
+    
+    private Label        wlHeaderFontUnderline;
+    private CCombo       wHeaderFontUnderline;
+    private FormData     fdlHeaderFontUnderline, fdHeaderFontUnderline;
+    
+    private Label        wlHeaderFontOrientation;
+    private CCombo       wHeaderFontOrientation;
+    private FormData     fdlHeaderFontOrientation, fdHeaderFontOrientation;
+    
+    private Label        wlHeaderAlignment;
+    private CCombo       wHeaderAlignment;
+    private FormData     fdlHeaderAlignment, fdHeaderAlignment;
+
+	
+	private Group wFontRowGroup;
+	
+	private CTabItem     wFileTab, wContentTab, wCustomTab,wFieldsTab;
+
+	private FormData     fdFileComp, fdContentComp, fdFieldsComp,fdCustomComp;
 
 	private Label        wlFilename;
 	private Button       wbFilename;
@@ -103,6 +155,30 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 	private Label        wlAddDate;
 	private Button       wAddDate;
 	private FormData     fdlAddDate, fdAddDate;
+	
+	private Label        wlHeaderFontBold;
+	private Button       wHeaderFontBold;
+	private FormData     fdlHeaderFontBold, fdHeaderFontBold;
+	
+	private Label        wlHeaderFontItalic;
+	private Button       wHeaderFontItalic;
+	private FormData     fdlHeaderFontItalic, fdHeaderFontItalic;
+	
+	private CCombo wHeaderFontColor;
+	private FormData fdHeaderFontColor;
+	private Label wlHeaderFontColor;
+	private FormData fdlHeaderFontColor;
+	
+	private CCombo wHeaderBackGroundColor;
+	private FormData fdHeaderBackGroundColor;
+	private Label wlHeaderBackGroundColor;
+	private FormData fdlHeaderBackGroundColor;
+	
+	private CCombo wRowBackGroundColor;
+	private FormData fdFontRowGroup;
+	private FormData fdRowBackGroundColor;
+	private Label wlRowBackGroundColor;
+	private FormData fdlRowBackGroundColor;
 
 	private Label        wlAddTime;
 	private Button       wAddTime;
@@ -948,6 +1024,420 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		/// END OF CONTENT TAB
 		/////////////////////////////////////////////////////////////
 
+		
+		// Custom tab...
+		//
+		wCustomTab = new CTabItem(wTabFolder, SWT.NONE);
+		wCustomTab.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.CustomTab.TabTitle"));
+		
+		FormLayout CustomLayout = new FormLayout ();
+		CustomLayout.marginWidth  = Const.FORM_MARGIN;
+		CustomLayout.marginHeight = Const.FORM_MARGIN;
+		
+		Composite wCustomComp = new Composite(wTabFolder, SWT.NONE);
+		wCustomComp.setLayout(CustomLayout);
+ 		props.setLook(wCustomComp);
+ 		
+ 		
+ 	   // ///////////////////////////////
+		// START OF Header Font GROUP //
+		///////////////////////////////// 
+
+		wFontHeaderGroup= new Group(wCustomComp, SWT.SHADOW_NONE);
+		props.setLook(wFontHeaderGroup);
+		wFontHeaderGroup.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.FontHeaderGroup.Label"));
+
+		FormLayout FontHeadergroupLayout = new FormLayout();
+		FontHeadergroupLayout.marginWidth = 10;
+		FontHeadergroupLayout.marginHeight = 10;
+		wFontHeaderGroup.setLayout(FontHeadergroupLayout);
+		
+		// Header font name
+		wlHeaderFontName=new Label(wFontHeaderGroup, SWT.RIGHT);
+        wlHeaderFontName.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.HeaderFontName.Label"));
+        props.setLook(wlHeaderFontName);
+        fdlHeaderFontName=new FormData();
+        fdlHeaderFontName.left = new FormAttachment(0, 0);
+        fdlHeaderFontName.top  = new FormAttachment(0, margin);
+        fdlHeaderFontName.right= new FormAttachment(middle, -margin);
+        wlHeaderFontName.setLayoutData(fdlHeaderFontName);
+        wHeaderFontName=new CCombo(wFontHeaderGroup, SWT.BORDER | SWT.READ_ONLY);
+        wHeaderFontName.setItems(ExcelOutputMeta.font_name_desc);
+        props.setLook(wHeaderFontName);
+        wHeaderFontName.addModifyListener(lsMod);
+        fdHeaderFontName=new FormData();
+        fdHeaderFontName.left = new FormAttachment(middle, 0);
+        fdHeaderFontName.top  = new FormAttachment(0, margin);
+        fdHeaderFontName.right= new FormAttachment(100, 0);
+        wHeaderFontName.setLayoutData(fdHeaderFontName);
+        
+    	// Header font size
+		wlHeaderFontSize=new Label(wFontHeaderGroup, SWT.RIGHT);
+		wlHeaderFontSize.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.HeaderFontSize.Label"));
+		props.setLook(wlHeaderFontSize);
+		fdlHeaderFontSize=new FormData();
+		fdlHeaderFontSize.left = new FormAttachment(0, 0);
+		fdlHeaderFontSize.top  = new FormAttachment(wHeaderFontName, margin);
+		fdlHeaderFontSize.right= new FormAttachment(middle, -margin);
+		wlHeaderFontSize.setLayoutData(fdlHeaderFontSize);
+		wHeaderFontSize=new TextVar(transMeta, wFontHeaderGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wHeaderFontSize.setToolTipText(BaseMessages.getString(PKG, "ExcelOutputDialog.HeaderFontSize.Tooltip"));
+		props.setLook(wHeaderFontSize);
+		wHeaderFontSize.addModifyListener(lsMod);
+		fdHeaderFontSize=new FormData();
+		fdHeaderFontSize.left = new FormAttachment(middle, 0);
+		fdHeaderFontSize.top  = new FormAttachment(wHeaderFontName, margin);
+		fdHeaderFontSize.right= new FormAttachment(100, 0);
+		wHeaderFontSize.setLayoutData(fdHeaderFontSize);
+		
+		// Header font bold?
+		wlHeaderFontBold=new Label(wFontHeaderGroup, SWT.RIGHT);
+		wlHeaderFontBold.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.HeaderFontBold.Label"));
+ 		props.setLook(wlHeaderFontBold);
+		fdlHeaderFontBold=new FormData();
+		fdlHeaderFontBold.left = new FormAttachment(0, 0);
+		fdlHeaderFontBold.top  = new FormAttachment(wHeaderFontSize, margin);
+		fdlHeaderFontBold.right= new FormAttachment(middle, -margin);
+		wlHeaderFontBold.setLayoutData(fdlHeaderFontBold);
+		wHeaderFontBold=new Button(wFontHeaderGroup, SWT.CHECK);
+ 		props.setLook(wHeaderFontBold);
+		fdHeaderFontBold=new FormData();
+		fdHeaderFontBold.left = new FormAttachment(middle, 0);
+		fdHeaderFontBold.top  = new FormAttachment(wHeaderFontSize, margin);
+		fdHeaderFontBold.right= new FormAttachment(100, 0);
+		wHeaderFontBold.setLayoutData(fdHeaderFontBold);
+		wHeaderFontBold.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					input.setChanged();
+				}
+			}
+		);
+		
+		// Header font bold?
+		wlHeaderFontItalic=new Label(wFontHeaderGroup, SWT.RIGHT);
+		wlHeaderFontItalic.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.HeaderFontItalic.Label"));
+ 		props.setLook(wlHeaderFontItalic);
+		fdlHeaderFontItalic=new FormData();
+		fdlHeaderFontItalic.left = new FormAttachment(0, 0);
+		fdlHeaderFontItalic.top  = new FormAttachment(wHeaderFontBold, margin);
+		fdlHeaderFontItalic.right= new FormAttachment(middle, -margin);
+		wlHeaderFontItalic.setLayoutData(fdlHeaderFontItalic);
+		wHeaderFontItalic=new Button(wFontHeaderGroup, SWT.CHECK);
+ 		props.setLook(wHeaderFontItalic);
+		fdHeaderFontItalic=new FormData();
+		fdHeaderFontItalic.left = new FormAttachment(middle, 0);
+		fdHeaderFontItalic.top  = new FormAttachment(wHeaderFontBold, margin);
+		fdHeaderFontItalic.right= new FormAttachment(100, 0);
+		wHeaderFontItalic.setLayoutData(fdHeaderFontItalic);
+		wHeaderFontItalic.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					input.setChanged();
+				}
+			}
+		);
+		
+		
+		// Font header uderline?
+		wlHeaderFontUnderline=new Label(wFontHeaderGroup, SWT.RIGHT);
+        wlHeaderFontUnderline.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.HeaderFontUnderline.Label"));
+        props.setLook(wlHeaderFontUnderline);
+        fdlHeaderFontUnderline=new FormData();
+        fdlHeaderFontUnderline.left = new FormAttachment(0, 0);
+        fdlHeaderFontUnderline.top  = new FormAttachment(wHeaderFontItalic, margin);
+        fdlHeaderFontUnderline.right= new FormAttachment(middle, -margin);
+        wlHeaderFontUnderline.setLayoutData(fdlHeaderFontUnderline);
+        wHeaderFontUnderline=new CCombo(wFontHeaderGroup, SWT.BORDER | SWT.READ_ONLY);
+        wHeaderFontUnderline.setItems(ExcelOutputMeta.font_underline_desc);
+        props.setLook(wHeaderFontUnderline);
+        wHeaderFontUnderline.addModifyListener(lsMod);
+        fdHeaderFontUnderline=new FormData();
+        fdHeaderFontUnderline.left = new FormAttachment(middle, 0);
+        fdHeaderFontUnderline.top  = new FormAttachment(wHeaderFontItalic, margin);
+        fdHeaderFontUnderline.right= new FormAttachment(100, 0);
+        wHeaderFontUnderline.setLayoutData(fdHeaderFontUnderline);
+        
+		// Font header orientation
+		wlHeaderFontOrientation=new Label(wFontHeaderGroup, SWT.RIGHT);
+        wlHeaderFontOrientation.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.HeaderFontOrientation.Label"));
+        props.setLook(wlHeaderFontOrientation);
+        fdlHeaderFontOrientation=new FormData();
+        fdlHeaderFontOrientation.left = new FormAttachment(0, 0);
+        fdlHeaderFontOrientation.top  = new FormAttachment(wHeaderFontUnderline, margin);
+        fdlHeaderFontOrientation.right= new FormAttachment(middle, -margin);
+        wlHeaderFontOrientation.setLayoutData(fdlHeaderFontOrientation);
+        wHeaderFontOrientation=new CCombo(wFontHeaderGroup, SWT.BORDER | SWT.READ_ONLY);
+        wHeaderFontOrientation.setItems(ExcelOutputMeta.font_orientation_desc);
+        props.setLook(wHeaderFontOrientation);
+        wHeaderFontOrientation.addModifyListener(lsMod);
+        fdHeaderFontOrientation=new FormData();
+        fdHeaderFontOrientation.left = new FormAttachment(middle, 0);
+        fdHeaderFontOrientation.top  = new FormAttachment(wHeaderFontUnderline, margin);
+        fdHeaderFontOrientation.right= new FormAttachment(100, 0);
+        wHeaderFontOrientation.setLayoutData(fdHeaderFontOrientation);
+		
+		
+		// Font header color
+		wlHeaderFontColor=new Label(wFontHeaderGroup, SWT.RIGHT);
+        wlHeaderFontColor.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.HeaderFontColor.Label"));
+        props.setLook(wlHeaderFontColor);
+        fdlHeaderFontColor=new FormData();
+        fdlHeaderFontColor.left = new FormAttachment(0, 0);
+        fdlHeaderFontColor.top  = new FormAttachment(wHeaderFontOrientation, margin);
+        fdlHeaderFontColor.right= new FormAttachment(middle, -margin);
+        wlHeaderFontColor.setLayoutData(fdlHeaderFontColor);
+        
+		wHeaderFontColor=new CCombo(wFontHeaderGroup, SWT.BORDER | SWT.READ_ONLY);
+		props.setLook(wHeaderFontColor);
+		fdHeaderFontColor=new FormData();
+		fdHeaderFontColor.left = new FormAttachment(middle, 0);
+		fdHeaderFontColor.top  = new FormAttachment(wHeaderFontOrientation, margin);
+		fdHeaderFontColor.right= new FormAttachment(100, 0);
+		wHeaderFontColor.setLayoutData(fdHeaderFontColor);
+		wHeaderFontColor.setItems(ExcelOutputMeta.font_color_desc);
+		
+		// Font header background color
+		wlHeaderBackGroundColor=new Label(wFontHeaderGroup, SWT.RIGHT);
+        wlHeaderBackGroundColor.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.HeaderBackGroundColor.Label"));
+        props.setLook(wlHeaderBackGroundColor);
+        fdlHeaderBackGroundColor=new FormData();
+        fdlHeaderBackGroundColor.left = new FormAttachment(0, 0);
+        fdlHeaderBackGroundColor.top  = new FormAttachment(wHeaderFontColor, margin);
+        fdlHeaderBackGroundColor.right= new FormAttachment(middle, -margin);
+        wlHeaderBackGroundColor.setLayoutData(fdlHeaderBackGroundColor);
+        
+		wHeaderBackGroundColor=new CCombo(wFontHeaderGroup, SWT.BORDER | SWT.READ_ONLY);
+		props.setLook(wHeaderBackGroundColor);
+		fdHeaderBackGroundColor=new FormData();
+		fdHeaderBackGroundColor.left = new FormAttachment(middle, 0);
+		fdHeaderBackGroundColor.top  = new FormAttachment(wHeaderFontColor, margin);
+		fdHeaderBackGroundColor.right= new FormAttachment(100, 0);
+		wHeaderBackGroundColor.setLayoutData(fdHeaderBackGroundColor);
+		wHeaderBackGroundColor.setItems(ExcelOutputMeta.font_color_desc);
+
+        
+    	// Header font size
+		wlHeaderRowHeight=new Label(wFontHeaderGroup, SWT.RIGHT);
+		wlHeaderRowHeight.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.HeaderRowHeight.Label"));
+		props.setLook(wlHeaderRowHeight);
+		fdlHeaderRowHeight=new FormData();
+		fdlHeaderRowHeight.left = new FormAttachment(0, 0);
+		fdlHeaderRowHeight.top  = new FormAttachment(wHeaderBackGroundColor, margin);
+		fdlHeaderRowHeight.right= new FormAttachment(middle, -margin);
+		wlHeaderRowHeight.setLayoutData(fdlHeaderRowHeight);
+		wHeaderRowHeight=new TextVar(transMeta, wFontHeaderGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wHeaderRowHeight.setToolTipText(BaseMessages.getString(PKG, "ExcelOutputDialog.HeaderRowHeight.Tooltip"));
+		props.setLook(wHeaderRowHeight);
+		wHeaderRowHeight.addModifyListener(lsMod);
+		fdHeaderRowHeight=new FormData();
+		fdHeaderRowHeight.left = new FormAttachment(middle, 0);
+		fdHeaderRowHeight.top  = new FormAttachment(wHeaderBackGroundColor, margin);
+		fdHeaderRowHeight.right= new FormAttachment(100, 0);
+		wHeaderRowHeight.setLayoutData(fdHeaderRowHeight);
+		
+		// Header Alignment
+		wlHeaderAlignment=new Label(wFontHeaderGroup, SWT.RIGHT);
+        wlHeaderAlignment.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.HeaderAlignment.Label"));
+        props.setLook(wlHeaderAlignment);
+        fdlHeaderAlignment=new FormData();
+        fdlHeaderAlignment.left = new FormAttachment(0, 0);
+        fdlHeaderAlignment.top  = new FormAttachment(wHeaderRowHeight, margin);
+        fdlHeaderAlignment.right= new FormAttachment(middle, -margin);
+        wlHeaderAlignment.setLayoutData(fdlHeaderAlignment);
+        wHeaderAlignment=new CCombo(wFontHeaderGroup, SWT.BORDER | SWT.READ_ONLY);
+        wHeaderAlignment.setItems(ExcelOutputMeta.font_alignment_desc);
+        props.setLook(wHeaderAlignment);
+        wHeaderAlignment.addModifyListener(lsMod);
+        fdHeaderAlignment=new FormData();
+        fdHeaderAlignment.left = new FormAttachment(middle, 0);
+        fdHeaderAlignment.top  = new FormAttachment(wHeaderRowHeight, margin);
+        fdHeaderAlignment.right= new FormAttachment(100, 0);
+        wHeaderAlignment.setLayoutData(fdHeaderAlignment);
+		
+
+
+        // Select Image
+ 		wbImage=new Button(wFontHeaderGroup, SWT.PUSH| SWT.CENTER);
+  		props.setLook(wbImage);
+ 		wbImage.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.AddImage"));
+ 		fdbImage=new FormData();
+ 		fdbImage.right= new FormAttachment(100, 0);
+ 		fdbImage.top  = new FormAttachment(wHeaderAlignment, margin);
+ 		wbImage.setLayoutData(fdbImage);
+ 		wbImage.addSelectionListener
+		(
+			new SelectionAdapter()
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+					dialog.setFilterExtensions(new String[] {"*.png", "*.*"});
+					if (wImage.getText()!=null)
+					{
+						dialog.setFileName(transMeta.environmentSubstitute(wImage.getText()));
+					}
+					dialog.setFilterNames(new String[] {BaseMessages.getString(PKG, "ExcelOutputDialog.FileType.PNGFiles"), BaseMessages.getString(PKG, "System.FileType.AllFiles")});
+					if (dialog.open()!=null)
+					{
+						wImage.setText(dialog.getFilterPath()+System.getProperty("file.separator")+dialog.getFileName());
+					}
+				}
+			}
+		);
+		
+		// Image line
+		wlImage=new Label(wFontHeaderGroup, SWT.RIGHT);
+		wlImage.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.Image.Label"));
+ 		props.setLook(wlImage);
+		fdlImage=new FormData();
+		fdlImage.left = new FormAttachment(0, 0);
+		fdlImage.top  = new FormAttachment(wHeaderAlignment, margin);
+		fdlImage.right= new FormAttachment(middle, -margin);
+		wlImage.setLayoutData(fdlImage);
+ 		
+ 		
+ 		wImage=new TextVar(transMeta, wFontHeaderGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+  		props.setLook(wImage);
+ 		wImage.addModifyListener(lsMod);
+ 		fdImage=new FormData();
+ 		fdImage.left = new FormAttachment(middle, 0);
+ 		fdImage.top  = new FormAttachment(wHeaderAlignment, margin);
+ 		fdImage.right= new FormAttachment(wbImage, -margin);
+ 		wImage.setLayoutData(fdImage);
+		
+        fdFontHeaderGroup= new FormData();
+        fdFontHeaderGroup.left = new FormAttachment(0, margin);
+        fdFontHeaderGroup.top = new FormAttachment(0, margin);
+		fdFontHeaderGroup.right = new FormAttachment(100, -margin);
+		wFontHeaderGroup.setLayoutData(fdFontHeaderGroup);
+		
+		// ///////////////////////////////////////////////////////////
+		// / END OF Font Group GROUP
+		// ///////////////////////////////////////////////////////////		
+
+	 	 // ///////////////////////////////
+		// START OF Row Font GROUP //
+		///////////////////////////////// 
+
+		wFontRowGroup= new Group(wCustomComp, SWT.SHADOW_NONE);
+		props.setLook(wFontRowGroup);
+		wFontRowGroup.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.FontRowGroup.Label"));
+		FormLayout FontRowGroupLayout = new FormLayout();
+		FontRowGroupLayout.marginWidth = 10;
+		FontRowGroupLayout.marginHeight = 10;
+		wFontRowGroup.setLayout(FontRowGroupLayout);
+
+		// Font Row name
+		wlRowFontName=new Label(wFontRowGroup, SWT.RIGHT);
+        wlRowFontName.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.RowFontName.Label"));
+        props.setLook(wlRowFontName);
+        fdlRowFontName=new FormData();
+        fdlRowFontName.left = new FormAttachment(0, 0);
+        fdlRowFontName.top  = new FormAttachment(0, margin);
+        fdlRowFontName.right= new FormAttachment(middle, -margin);
+        wlRowFontName.setLayoutData(fdlRowFontName);
+        wRowFontName=new CCombo(wFontRowGroup, SWT.BORDER | SWT.READ_ONLY);
+        wRowFontName.setItems(ExcelOutputMeta.font_name_desc);
+        props.setLook(wRowFontName);
+        wRowFontName.addModifyListener(lsMod);
+        fdRowFontName=new FormData();
+        fdRowFontName.left = new FormAttachment(middle, 0);
+        fdRowFontName.top  = new FormAttachment(0, margin);
+        fdRowFontName.right= new FormAttachment(100, 0);
+        wRowFontName.setLayoutData(fdRowFontName);
+        
+
+        // Row font size
+		wlRowFontSize=new Label(wFontRowGroup, SWT.RIGHT);
+		wlRowFontSize.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.RowFontSize.Label"));
+		props.setLook(wlRowFontSize);
+		fdlRowFontSize=new FormData();
+		fdlRowFontSize.left = new FormAttachment(0, 0);
+		fdlRowFontSize.top  = new FormAttachment(wRowFontName, margin);
+		fdlRowFontSize.right= new FormAttachment(middle, -margin);
+		wlRowFontSize.setLayoutData(fdlRowFontSize);
+		wRowFontSize=new TextVar(transMeta, wFontRowGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wRowFontSize.setToolTipText(BaseMessages.getString(PKG, "ExcelOutputDialog.RowFontSize.Tooltip"));
+		props.setLook(wRowFontSize);
+		wRowFontSize.addModifyListener(lsMod);
+		fdRowFontSize=new FormData();
+		fdRowFontSize.left = new FormAttachment(middle, 0);
+		fdRowFontSize.top  = new FormAttachment(wRowFontName, margin);
+		fdRowFontSize.right= new FormAttachment(100, 0);
+		wRowFontSize.setLayoutData(fdRowFontSize);
+		
+		// Font Row color
+		wlRowFontColor=new Label(wFontRowGroup, SWT.RIGHT);
+        wlRowFontColor.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.RowFontColor.Label"));
+        props.setLook(wlRowFontColor);
+        fdlRowFontColor=new FormData();
+        fdlRowFontColor.left = new FormAttachment(0, 0);
+        fdlRowFontColor.top  = new FormAttachment(wRowFontSize, margin);
+        fdlRowFontColor.right= new FormAttachment(middle, -margin);
+        wlRowFontColor.setLayoutData(fdlRowFontColor);
+		wRowFontColor=new CCombo(wFontRowGroup, SWT.BORDER | SWT.READ_ONLY);
+		props.setLook(wRowFontColor);
+		fdRowFontColor=new FormData();
+		fdRowFontColor.left = new FormAttachment(middle, 0);
+		fdRowFontColor.top  = new FormAttachment(wRowFontSize, margin);
+		fdRowFontColor.right= new FormAttachment(100, 0);
+		wRowFontColor.setLayoutData(fdRowFontColor);
+		wRowFontColor.setItems(ExcelOutputMeta.font_color_desc);
+		
+		
+		// Font Row background color
+		wlRowBackGroundColor=new Label(wFontRowGroup, SWT.RIGHT);
+        wlRowBackGroundColor.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.RowBackGroundColor.Label"));
+        props.setLook(wlRowBackGroundColor);
+        fdlRowBackGroundColor=new FormData();
+        fdlRowBackGroundColor.left = new FormAttachment(0, 0);
+        fdlRowBackGroundColor.top  = new FormAttachment(wRowFontColor, margin);
+        fdlRowBackGroundColor.right= new FormAttachment(middle, -margin);
+        wlRowBackGroundColor.setLayoutData(fdlRowBackGroundColor);
+        
+		wRowBackGroundColor=new CCombo(wFontRowGroup, SWT.BORDER | SWT.READ_ONLY);
+		props.setLook(wRowBackGroundColor);
+		fdRowBackGroundColor=new FormData();
+		fdRowBackGroundColor.left = new FormAttachment(middle, 0);
+		fdRowBackGroundColor.top  = new FormAttachment(wRowFontColor, margin);
+		fdRowBackGroundColor.right= new FormAttachment(100, 0);
+		wRowBackGroundColor.setLayoutData(fdRowBackGroundColor);
+		wRowBackGroundColor.setItems(ExcelOutputMeta.font_color_desc);
+
+
+		
+        fdFontRowGroup= new FormData();
+        fdFontRowGroup.left = new FormAttachment(0, margin);
+        fdFontRowGroup.top = new FormAttachment(wFontHeaderGroup, margin);
+		fdFontRowGroup.right = new FormAttachment(100, -margin);
+		wFontRowGroup.setLayoutData(fdFontRowGroup);
+		
+		// ///////////////////////////////////////////////////////////
+		// / END OF Row Font Group
+		// ///////////////////////////////////////////////////////////		
+
+		
+		
+ 		
+ 		
+ 		fdCustomComp=new FormData();
+		fdCustomComp.left  = new FormAttachment(0, 0);
+		fdCustomComp.top   = new FormAttachment(0, 0);
+		fdCustomComp.right = new FormAttachment(100, 0);
+		fdCustomComp.bottom= new FormAttachment(100, 0);
+		wCustomComp.setLayoutData(fdCustomComp);
+
+		wCustomComp.layout();
+		wCustomTab.setControl(wCustomComp);
+		/////////////////////////////////////////////////////////////
+		/// END OF customer TAB
+		/////////////////////////////////////////////////////////////
+
+ 		
+		
 		// Fields tab...
 		//
 		wFieldsTab = new CTabItem(wTabFolder, SWT.NONE);
@@ -1321,6 +1811,27 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		}
 		
 		wFields.optWidth(true);
+		
+		// Header Font settings
+		wHeaderFontName.setText(ExcelOutputMeta.getFontNameDesc(input.getHeaderFontName()));
+		wHeaderFontSize.setText(input.getHeaderFontSize());
+		wHeaderFontBold.setSelection(input.isHeaderFontBold());
+		wHeaderFontItalic.setSelection(input.isHeaderFontItalic());
+		wHeaderFontUnderline.setText(ExcelOutputMeta.getFontUnderlineDesc(input.getHeaderFontUnderline()));
+		wHeaderFontOrientation.setText(ExcelOutputMeta.getFontOrientationDesc(input.getHeaderFontOrientation()));
+		wHeaderFontColor.setText(ExcelOutputMeta.getFontColorDesc(input.getHeaderFontColor()));
+		wHeaderBackGroundColor.setText(ExcelOutputMeta.getFontColorDesc(input.getHeaderBackGroundColor()));
+		wHeaderRowHeight.setText(Const.NVL(input.getHeaderRowHeight(),""+ExcelOutputMeta.DEFAULT_ROW_HEIGHT));
+		wHeaderAlignment.setText(ExcelOutputMeta.getFontAlignmentDesc(input.getHeaderAlignment()));
+		if(input.getHeaderImage()!=null) wImage.setText(input.getHeaderImage());
+		
+		// Row font settings
+		wRowFontName.setText(ExcelOutputMeta.getFontNameDesc(input.getRowFontName()));
+		wRowFontSize.setText(input.getRowFontSize());
+		wRowFontColor.setText(ExcelOutputMeta.getFontColorDesc(input.getRowFontColor()));
+		wRowBackGroundColor.setText(ExcelOutputMeta.getFontColorDesc(input.getRowBackGroundColor()));
+		
+		
 		wStepname.selectAll();
 	}
 	
@@ -1386,6 +1897,24 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 			
 			tfoi.getOutputFields()[i]  = field;
 		}
+		// Header font
+		tfoi.setHeaderFontName(ExcelOutputMeta.getFontNameByDesc(wHeaderFontName.getText()));
+		tfoi.setHeaderFontSize(wHeaderFontSize.getText());
+		tfoi.setHeaderFontBold(wHeaderFontBold.getSelection() );
+		tfoi.setHeaderFontItalic(wHeaderFontItalic.getSelection() );
+		tfoi.setHeaderFontUnderline(ExcelOutputMeta.getFontUnderlineByDesc(wHeaderFontUnderline.getText()));
+		tfoi.setHeaderFontOrientation(ExcelOutputMeta.getFontOrientationByDesc(wHeaderFontOrientation.getText()));
+		tfoi.setHeaderFontColor(ExcelOutputMeta.getFontColorByDesc(wHeaderFontColor.getText()));
+		tfoi.setHeaderBackGroundColor(ExcelOutputMeta.getFontColorByDesc(wHeaderBackGroundColor.getText()));
+		tfoi.setHeaderRowHeight(wHeaderRowHeight.getText());
+		tfoi.setHeaderAlignment(ExcelOutputMeta.getFontAlignmentByDesc(wHeaderAlignment.getText()));
+		tfoi.setHeaderImage(wImage.getText());	
+		
+		// Row font
+		tfoi.setRowFontName(ExcelOutputMeta.getFontNameByDesc(wRowFontName.getText()));
+		tfoi.setRowFontSize(wRowFontSize.getText());
+		tfoi.setRowFontColor(ExcelOutputMeta.getFontColorByDesc(wRowFontColor.getText()));
+		tfoi.setRowBackGroundColor(ExcelOutputMeta.getFontColorByDesc(wRowBackGroundColor.getText()));
 	}
 	
 	private void ok()
@@ -1411,9 +1940,11 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 	{
 		input.setChanged();
 	
+		wlTemplateFilename.setEnabled(wTemplate.getSelection());
 		wTemplateFilename.setEnabled(wTemplate.getSelection());
+		wbTemplateFilename.setEnabled(wTemplate.getSelection());
+		wlTemplateAppend.setEnabled(wTemplate.getSelection());
 		wTemplateAppend.setEnabled(wTemplate.getSelection());
-	
 	
 	}
 	private void get()

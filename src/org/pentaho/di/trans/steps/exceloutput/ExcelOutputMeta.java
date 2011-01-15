@@ -55,6 +55,211 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 {
 	private static Class<?> PKG = ExcelOutputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
+	  public final static int FONT_NAME_ARIAL = 0;
+	    public final static int FONT_NAME_COURIER = 1;
+	    public final static int FONT_NAME_TAHOMA = 2;
+	    public final static int FONT_NAME_TIMES = 3;
+
+	    public final static String font_name_code[] = { "arial", "courier", "tahoma", "times"};
+	    
+		public final static String font_name_desc[] = {
+	      BaseMessages.getString(PKG, "ExcelOutputMeta.font_name.Arial"),
+	      BaseMessages.getString(PKG, "ExcelOutputMeta.font_name.Courier"),
+	      BaseMessages.getString(PKG, "ExcelOutputMeta.font_name.Tahoma"),
+	      BaseMessages.getString(PKG, "ExcelOutputMeta.font_name.Times")
+	    };
+		
+	    public final static int FONT_UNDERLINE_NO = 0;
+	    public final static int FONT_UNDERLINE_SINGLE = 1;
+	    public final static int FONT_UNDERLINE_SINGLE_ACCOUNTING  = 2;
+	    public final static int FONT_UNDERLINE_DOUBLE = 3;
+	    public final static int FONT_UNDERLINE_DOUBLE_ACCOUNTING  = 4;
+
+	    public final static String font_underline_code[] = { "no", "single", "single_accounting", "double", "double_accounting"};
+	    
+		public final static String font_underline_desc[] = {
+	      BaseMessages.getString(PKG, "ExcelOutputMeta.font_underline.No"),
+	      BaseMessages.getString(PKG, "ExcelOutputMeta.font_underline.Single"),
+	      BaseMessages.getString(PKG, "ExcelOutputMeta.font_underline.SingleAccounting"),
+	      BaseMessages.getString(PKG, "ExcelOutputMeta.font_underline.Double"),
+	      BaseMessages.getString(PKG, "ExcelOutputMeta.font_underline.DoubleAccounting")
+		};
+		
+		 public final static int FONT_ORIENTATION_HORIZONTAL = 0;
+		 public final static int FONT_ORIENTATION_MINUS_45= 1;
+		 public final static int FONT_ORIENTATION_MINUS_90  = 2;
+		 public final static int FONT_ORIENTATION_PLUS_45 = 3;
+		 public final static int FONT_ORIENTATION_PLUS_90  = 4;
+		 public final static int FONT_ORIENTATION_STACKED  = 5;
+		 public final static int FONT_ORIENTATION_VERTICAL  = 6;
+
+
+		 public final static String font_orientation_code[] = { "horizontal", "minus_45", "minus_90", "plus_45", "plus_90",
+			 "stacked","vertical"};
+		    
+	     public final static String font_orientation_desc[] = {
+		    BaseMessages.getString(PKG, "ExcelOutputMeta.font_orientation.Horizontal"),
+		    BaseMessages.getString(PKG, "ExcelOutputMeta.font_orientation.Minus_45"),
+		    BaseMessages.getString(PKG, "ExcelOutputMeta.font_orientation.Minus_90"),
+		    BaseMessages.getString(PKG, "ExcelOutputMeta.font_orientation.Plus_45"),
+		    BaseMessages.getString(PKG, "ExcelOutputMeta.font_orientation.Plus_90"),
+		    BaseMessages.getString(PKG, "ExcelOutputMeta.font_orientation.Stacked"),
+		    BaseMessages.getString(PKG, "ExcelOutputMeta.font_orientation.Vertical")
+			};
+			
+	     
+	     public final static int FONT_COLOR_NONE= 0;
+	     public final static int FONT_COLOR_BLACK= 1;
+	     public final static int FONT_COLOR_WHITE= 2;
+	     public final static int FONT_COLOR_RED= 3;
+	     public final static int FONT_COLOR_BRIGHT_GREEN= 4;
+	     public final static int FONT_COLOR_BLUE= 5;
+	     public final static int FONT_COLOR_YELLOW= 6;
+	     public final static int FONT_COLOR_PINK= 7;
+	     public final static int FONT_COLOR_TURQUOISE= 8;
+	     public final static int FONT_COLOR_DARK_RED= 9;
+	     public final static int FONT_COLOR_GREEN= 10;
+	     public final static int FONT_COLOR_DARK_BLUE= 11;
+	     public final static int FONT_COLOR_DARK_YELLOW= 12;
+	     public final static int FONT_COLOR_VIOLET= 13;
+	     public final static int FONT_COLOR_TEAL= 14;
+	     public final static int FONT_COLOR_GREY_25pct= 15;
+	     public final static int FONT_COLOR_GREY_50pct= 16;
+	     public final static int FONT_COLOR_PERIWINKLEpct= 17;
+	     public final static int FONT_COLOR_PLUM= 18;
+	     public final static int FONT_COLOR_IVORY= 19;
+	     public final static int FONT_COLOR_LIGHT_TURQUOISE= 20;
+	     public final static int FONT_COLOR_DARK_PURPLE= 21;
+	     public final static int FONT_COLOR_CORAL= 22;
+	     public final static int FONT_COLOR_OCEAN_BLUE= 23;
+	     public final static int FONT_COLOR_ICE_BLUE= 24;
+	     public final static int FONT_COLOR_TURQOISE= 25;
+	     public final static int FONT_COLOR_SKY_BLUE= 26;
+	     public final static int FONT_COLOR_LIGHT_GREEN= 27;
+	     public final static int FONT_COLOR_VERY_LIGHT_YELLOW= 28;
+	     public final static int FONT_COLOR_PALE_BLUE= 29;
+	     public final static int FONT_COLOR_ROSE= 30;
+	     public final static int FONT_COLOR_LAVENDER= 31;
+	     public final static int FONT_COLOR_TAN= 32;
+	     public final static int FONT_COLOR_LIGHT_BLUE= 33;
+	     public final static int FONT_COLOR_AQUA= 34;
+	     public final static int FONT_COLOR_LIME= 35;
+	     public final static int FONT_COLOR_GOLD= 36;
+	     public final static int FONT_COLOR_LIGHT_ORANGE= 37;
+	     public final static int FONT_COLOR_ORANGE= 38;
+	     public final static int FONT_COLOR_BLUE_GREY= 39;
+	     public final static int FONT_COLOR_GREY_40pct= 40;
+	     public final static int FONT_COLOR_DARK_TEAL= 41;
+	     public final static int FONT_COLOR_SEA_GREEN= 42;
+	     public final static int FONT_COLOR_DARK_GREEN= 43;
+	     public final static int FONT_COLOR_OLIVE_GREEN= 44;
+	     public final static int FONT_COLOR_BROWN= 45;
+	     public final static int FONT_COLOR_GREY_80pct = 46;
+
+		 public final static String font_color_code[] = 	    
+		 {"none","black","white","red","bright_green","blue","yellow","pink","turquoise","dark_red","green",
+		 "dark_blue","dark_yellow","violet","teal","grey_25pct","grey_50pct","periwinklepct","plum",
+		 "ivory","light_turquoise","dark_purple","coral","ocean_blue","ice_blue","turqoise","sky_blue",
+		 "light_green","very_light_yellow","pale_blue","rose","lavender","tan","light_blue","aqua","lime",
+		 "gold","light_orange","orange","blue_grey","grey_40pct","dark_teal","sea_green","dark_green",
+		 "olive_green","brown","grey_80pct"};
+
+		 
+	     public final static String font_color_desc[] = {
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.None"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.BLACK"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.WHITE"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.RED"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.BRIGHT_GREEN"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.BLUE"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.YELLOW"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.PINK"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.TURQUOISE"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.DARK_RED"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.GREEN"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.DARK_BLUE"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.DARK_YELLOW"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.VIOLET"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.TEAL"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.GREY_25pct"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.GREY_50pct"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.PERIWINKLEpct"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.PLUM"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.IVORY"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.LIGHT_TURQUOISE"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.DARK_PURPLE"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.CORAL"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.OCEAN_BLUE"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.ICE_BLUE"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.TURQOISE"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.SKY_BLUE"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.LIGHT_GREEN"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.VERY_LIGHT_YELLOW"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.PALE_BLUE"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.ROSE"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.LAVENDER"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.TAN"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.LIGHT_BLUE"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.AQUA"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.LIME"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.GOLD"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.LIGHT_ORANGE"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.ORANGE"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.BLUE_GREY"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.GREY_40pct"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.DARK_TEAL"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.SEA_GREEN"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.DARK_GREEN"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.OLIVE_GREEN"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.BROWN"),
+	    	 BaseMessages.getString(PKG, "ExcelOutputMeta.font_color.GREY_80pct")
+			};
+	     
+
+	         public final static int FONT_ALIGNMENT_LEFT = 0;
+	     	 public final static int FONT_ALIGNMENT_RIGHT= 1;
+	     	 public final static int FONT_ALIGNMENT_CENTER  = 2;
+	     	 public final static int FONT_ALIGNMENT_FILL = 3;
+	     	 public final static int FONT_ALIGNMENT_GENERAL  = 4;
+	     	 public final static int FONT_ALIGNMENT_JUSTIFY = 5;
+
+
+
+	     	 public final static String font_alignment_code[] = { "left", "right", "center", "fill", "general", "justify"};
+	     	    
+	          public final static String font_alignment_desc[] = {
+	     	    BaseMessages.getString(PKG, "ExcelOutputMeta.font_alignment.Left"),
+	     	    BaseMessages.getString(PKG, "ExcelOutputMeta.font_alignment.Right"),
+	     	    BaseMessages.getString(PKG, "ExcelOutputMeta.font_alignment.Center"),
+	     	    BaseMessages.getString(PKG, "ExcelOutputMeta.font_alignment.Fill"),
+	     	    BaseMessages.getString(PKG, "ExcelOutputMeta.font_alignment.General"),
+	     	    BaseMessages.getString(PKG, "ExcelOutputMeta.font_alignment.Justify")
+	     		};
+	     		
+			
+		
+		public final static int DEFAULT_FONT_SIZE=10;
+		public final static int DEFAULT_ROW_HEIGHT=255;
+		public final static int DEFAULT_ROW_WIDTH=255;
+		
+		private int header_font_name;
+		private String header_font_size;
+		private boolean header_font_bold;
+		private boolean header_font_italic;
+		private int header_font_underline;
+		private int header_font_orientation;
+		private int header_font_color;
+		private int header_background_color;
+		private String header_row_height;
+		private int header_alignment;
+		private String header_image;
+		// Row font
+		private int row_font_name;
+		private String row_font_size;
+		private int row_font_color;
+		private int row_background_color;
+	
+	
     /** The base name of the output file */
 	private  String fileName;
 
@@ -594,7 +799,24 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 				outputFields[i].setType( XMLHandler.getTagValue(fnode, "type") );
 				outputFields[i].setFormat( XMLHandler.getTagValue(fnode, "format") );
 			}
-			
+			Node customnode = XMLHandler.getSubNode(stepnode, "custom");
+			header_font_name = getFontNameByCode(Const.NVL(XMLHandler.getTagValue(customnode,	"header_font_name"), ""));
+			header_font_size = Const.NVL(XMLHandler.getTagValue(customnode,"header_font_size"),""+DEFAULT_FONT_SIZE);
+			header_font_bold="Y".equalsIgnoreCase(XMLHandler.getTagValue(customnode, "header_font_bold"));
+			header_font_italic="Y".equalsIgnoreCase(XMLHandler.getTagValue(customnode, "header_font_italic"));
+			header_font_underline = getFontUnderlineByCode(Const.NVL(XMLHandler.getTagValue(customnode,	"header_font_underline"), ""));
+			header_font_orientation = getFontOrientationByCode(Const.NVL(XMLHandler.getTagValue(customnode,	"header_font_orientation"), ""));
+			header_font_color = getFontColorByCode(Const.NVL(XMLHandler.getTagValue(customnode,	"header_font_color"), ""+FONT_COLOR_BLACK));
+			header_background_color = getFontColorByCode(Const.NVL(XMLHandler.getTagValue(customnode,	"header_background_color"), ""+FONT_COLOR_NONE));
+			header_row_height= XMLHandler.getTagValue(customnode,"header_row_height");
+			header_alignment = getFontAlignmentByCode(Const.NVL(XMLHandler.getTagValue(customnode,	"header_alignment"), ""));
+			header_image = XMLHandler.getTagValue(customnode,"header_image");
+			// Row font
+		    row_font_name = getFontNameByCode(Const.NVL(XMLHandler.getTagValue(customnode,	"row_font_name"), ""));
+		    row_font_size = Const.NVL(XMLHandler.getTagValue(customnode,"row_font_size"),""+DEFAULT_FONT_SIZE);
+			row_font_color = getFontColorByCode(Const.NVL(XMLHandler.getTagValue(customnode,	"row_font_color"), ""+FONT_COLOR_BLACK));
+			row_background_color = getFontColorByCode(Const.NVL(XMLHandler.getTagValue(customnode,	"row_background_color"), ""+FONT_COLOR_NONE));
+		
 		}
 		catch(Exception e)
 		{
@@ -624,6 +846,23 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 
 	public void setDefault()
 	{
+		header_font_name=FONT_NAME_ARIAL;
+		header_font_size=""+DEFAULT_FONT_SIZE;
+		header_font_bold=false;
+		header_font_italic=false;
+		header_font_underline=FONT_UNDERLINE_NO;
+		header_font_orientation=FONT_ORIENTATION_HORIZONTAL;
+		header_font_color=FONT_COLOR_BLACK;
+		header_background_color=FONT_COLOR_NONE;
+		header_row_height=""+DEFAULT_ROW_HEIGHT;
+		header_alignment=FONT_ALIGNMENT_LEFT;
+		header_image=null;
+		
+		row_font_name=FONT_NAME_ARIAL;
+		row_font_size=""+DEFAULT_FONT_SIZE;
+		row_font_color=FONT_COLOR_BLACK;
+		row_background_color=FONT_COLOR_NONE;
+		
 		autosizecolums=false;
 		headerEnabled    = true;
 		footerEnabled    = false;
@@ -800,7 +1039,25 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			}
 		}
 		retval.append("    </fields>").append(Const.CR);
-
+		
+		retval.append("    <custom>"+Const.CR);
+		retval.append("    "+XMLHandler.addTagValue("header_font_name",getFontNameCode(header_font_name)));
+		retval.append("    "+XMLHandler.addTagValue("header_font_size",header_font_size));
+		retval.append("    "+XMLHandler.addTagValue("header_font_bold",   header_font_bold));
+		retval.append("    "+XMLHandler.addTagValue("header_font_italic",   header_font_italic));
+		retval.append("    "+XMLHandler.addTagValue("header_font_underline", getFontUnderlineCode(header_font_underline)));
+		retval.append("    "+XMLHandler.addTagValue("header_font_orientation", getFontOrientationCode(header_font_orientation)));
+		retval.append("    "+XMLHandler.addTagValue("header_font_color", getFontColorCode(header_font_color)));
+		retval.append("    "+XMLHandler.addTagValue("header_background_color", getFontColorCode(header_background_color)));
+		retval.append("    "+XMLHandler.addTagValue("header_row_height",header_row_height));
+		retval.append("    "+XMLHandler.addTagValue("header_alignment", getFontAlignmentCode(header_alignment)));
+		retval.append("    "+XMLHandler.addTagValue("header_image",header_image));
+		// row font
+		retval.append("    "+XMLHandler.addTagValue("row_font_name",getFontNameCode(row_font_name)));
+		retval.append("    "+XMLHandler.addTagValue("row_font_size",row_font_size));
+		retval.append("    "+XMLHandler.addTagValue("row_font_color", getFontColorCode(row_font_color)));
+		retval.append("    "+XMLHandler.addTagValue("row_background_color", getFontColorCode(row_background_color)));
+		retval.append("      </custom>"+Const.CR);
 		return retval.toString();
 	}
 	
@@ -853,6 +1110,23 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			    outputFields[i].setType( 			rep.getStepAttributeString (id_step, i, "field_type") );
 			    outputFields[i].setFormat(  		rep.getStepAttributeString (id_step, i, "field_format") );
 			}
+			// Header font
+			header_font_name = getFontNameByCode(Const.NVL(rep.getStepAttributeString(id_step, "header_font_name"), ""));
+			header_font_size = Const.NVL(rep.getStepAttributeString(id_step, "header_font_size"),""+DEFAULT_FONT_SIZE);
+			header_font_bold   =      rep.getStepAttributeBoolean(id_step, "header_font_bold");
+			header_font_italic   =      rep.getStepAttributeBoolean(id_step, "header_font_italic");
+			header_font_underline = getFontUnderlineByCode(Const.NVL(rep.getStepAttributeString(id_step, "header_font_underline"), ""));
+			header_font_orientation = getFontOrientationByCode(Const.NVL(rep.getStepAttributeString(id_step, "header_font_orientation"), ""));
+			header_font_color = getFontColorByCode(Const.NVL(rep.getStepAttributeString(id_step, "header_font_color"), ""+FONT_COLOR_BLACK));
+			header_background_color = getFontColorByCode(Const.NVL(rep.getStepAttributeString(id_step, "header_background_color"), ""+FONT_COLOR_NONE));
+			header_row_height = rep.getStepAttributeString(id_step, "header_row_height");
+			header_alignment=getFontAlignmentByCode(Const.NVL(rep.getStepAttributeString(id_step, "header_alignment"), ""));
+			header_image = rep.getStepAttributeString(id_step, "header_image");
+			// row font
+			row_font_name = getFontNameByCode(Const.NVL(rep.getStepAttributeString(id_step, "row_font_name"), ""));
+			row_font_size = Const.NVL(rep.getStepAttributeString(id_step, "row_font_size"),""+DEFAULT_FONT_SIZE);
+			row_font_color = getFontColorByCode(Const.NVL(rep.getStepAttributeString(id_step, "row_font_color"), ""+FONT_COLOR_BLACK));
+			row_background_color = getFontColorByCode(Const.NVL(rep.getStepAttributeString(id_step, "row_background_color"), ""+FONT_COLOR_NONE));
 			
 		}
 		catch(Exception e)
@@ -860,7 +1134,31 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			throw new KettleException("Unexpected error reading step information from the repository", e);
 		}
 	}
-
+	private static String getFontNameCode(int i) {
+		if (i < 0 || i >= font_name_code.length)
+			return font_name_code[0];
+		return font_name_code[i];
+	}
+	private static String getFontUnderlineCode(int i) {
+		if (i < 0 || i >= font_underline_code.length)
+			return font_underline_code[0];
+		return font_underline_code[i];
+	}
+	private static String getFontAlignmentCode(int i) {
+		if (i < 0 || i >= font_alignment_code.length)
+			return font_alignment_code[0];
+		return font_alignment_code[i];
+	}
+	private static String getFontOrientationCode(int i) {
+		if (i < 0 || i >= font_orientation_code.length)
+			return font_orientation_code[0];
+		return font_orientation_code[i];
+	}
+	private static String getFontColorCode(int i) {
+		if (i < 0 || i >= font_color_code.length)
+			return font_color_code[0];
+		return font_color_code[i];
+	}
 	public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step)
 		throws KettleException
 	{
@@ -898,6 +1196,23 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_type",      field.getTypeDesc());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_format",    field.getFormat());
 			}
+			 rep.saveStepAttribute(id_transformation, id_step, "header_font_name", getFontNameCode(header_font_name));
+			 rep.saveStepAttribute(id_transformation, id_step, "header_font_size", header_font_size);
+			 rep.saveStepAttribute(id_transformation, id_step, "header_font_bold",           header_font_bold);
+			 rep.saveStepAttribute(id_transformation, id_step, "header_font_italic",           header_font_italic);
+			 rep.saveStepAttribute(id_transformation, id_step, "header_font_underline",    getFontUnderlineCode(header_font_underline));
+			 rep.saveStepAttribute(id_transformation, id_step, "header_font_orientation",  getFontOrientationCode(header_font_orientation));
+			 rep.saveStepAttribute(id_transformation, id_step, "header_font_color", getFontColorCode(header_font_color));
+			 rep.saveStepAttribute(id_transformation, id_step, "header_background_color", getFontColorCode(header_background_color));
+			 rep.saveStepAttribute(id_transformation, id_step, "header_row_height", header_row_height);	
+			 rep.saveStepAttribute(id_transformation, id_step, "header_alignment",    getFontAlignmentCode(header_alignment));
+			 rep.saveStepAttribute(id_transformation, id_step, "header_image", header_image);
+			 // row font
+			 rep.saveStepAttribute(id_transformation, id_step, "row_font_name", getFontNameCode(row_font_name));
+			 rep.saveStepAttribute(id_transformation, id_step, "row_font_size", row_font_size);
+			 rep.saveStepAttribute(id_transformation, id_step, "row_font_color", getFontColorCode(row_font_color));
+			 rep.saveStepAttribute(id_transformation, id_step, "row_background_color", getFontColorCode(row_background_color));
+		
 		}
 		catch(Exception e)
 		{
@@ -993,4 +1308,234 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
     {
         return new String[] { "jxl.jar", };
     }
+    public static String getFontNameDesc(int i) {
+		if (i < 0 || i >= font_name_desc.length)
+			return font_name_desc[0];
+		return font_name_desc[i];
+	}
+	public static String getFontUnderlineDesc(int i) {
+		if (i < 0 || i >= font_underline_desc.length)
+			return font_underline_desc[0];
+		return font_underline_desc[i];
+	}
+	public static String getFontOrientationDesc(int i) {
+		if (i < 0 || i >= font_orientation_desc.length)
+			return font_orientation_desc[0];
+		return font_orientation_desc[i];
+	}
+	public static String getFontColorDesc(int i) {
+		if (i < 0 || i >= font_color_desc.length)
+			return font_color_desc[0];
+		return font_color_desc[i];
+	}
+	
+	public static String getFontAlignmentDesc(int i) {
+		if (i < 0 || i >= font_alignment_desc.length)
+			return font_alignment_desc[0];
+		return font_alignment_desc[i];
+	}
+	
+	
+    public int getHeaderFontName() {
+		return header_font_name;
+	}
+    public int getRowFontName() {
+		return row_font_name;
+	}
+    public int getHeaderFontUnderline() {
+		return header_font_underline;
+	}
+    public int getHeaderFontOrientation() {
+		return header_font_orientation;
+	}
+    public int getHeaderAlignment() {
+		return header_alignment;
+	}
+    public int getHeaderFontColor() {
+		return header_font_color;
+	}
+    public int getRowFontColor() {
+		return row_font_color;
+	}
+    public int getHeaderBackGroundColor() {
+		return header_background_color;
+	}
+    public int getRowBackGroundColor() {
+		return row_background_color;
+	}
+    public static int getFontNameByDesc(String tt) {
+		if (tt == null)
+			return 0;
+
+		for (int i = 0; i < font_name_desc.length; i++) {
+			if (font_name_desc[i].equalsIgnoreCase(tt))
+				return i;
+		}
+		// If this fails, try to match using the code.
+		return getFontNameByCode(tt);
+	}
+	   private static int getFontNameByCode(String tt) {
+			if (tt == null)
+				return 0;
+
+			for (int i = 0; i < font_name_code.length; i++) {
+				if (font_name_code[i].equalsIgnoreCase(tt))
+					return i;
+			}
+			return 0;
+		}
+    public static int getFontUnderlineByDesc(String tt) {
+		if (tt == null)
+			return 0;
+
+		for (int i = 0; i < font_underline_desc.length; i++) {
+			if (font_underline_desc[i].equalsIgnoreCase(tt))
+				return i;
+		}
+		// If this fails, try to match using the code.
+		return getFontUnderlineByCode(tt);
+	}
+    public static int getFontOrientationByDesc(String tt) {
+		if (tt == null)
+			return 0;
+
+		for (int i = 0; i < font_orientation_desc.length; i++) {
+			if (font_orientation_desc[i].equalsIgnoreCase(tt))
+				return i;
+		}
+		// If this fails, try to match using the code.
+		return getFontOrientationByCode(tt);
+	}
+    private static int getFontUnderlineByCode(String tt) {
+		if (tt == null)
+			return 0;
+
+		for (int i = 0; i < font_underline_code.length; i++) {
+			if (font_underline_code[i].equalsIgnoreCase(tt))
+				return i;
+		}
+		return 0;
+	}
+    private static int getFontOrientationByCode(String tt) {
+		if (tt == null)
+			return 0;
+
+		for (int i = 0; i < font_orientation_code.length; i++) {
+			if (font_orientation_code[i].equalsIgnoreCase(tt))
+				return i;
+		}
+		return 0;
+	}
+    public static int getFontColorByDesc(String tt) {
+		if (tt == null)
+			return 0;
+
+		for (int i = 0; i < font_color_desc.length; i++) {
+			if (font_color_desc[i].equalsIgnoreCase(tt))
+				return i;
+		}
+		// If this fails, try to match using the code.
+		return getFontColorByCode(tt);
+	}
+    public static int getFontAlignmentByDesc(String tt) {
+		if (tt == null)
+			return 0;
+
+		for (int i = 0; i < font_alignment_desc.length; i++) {
+			if (font_alignment_desc[i].equalsIgnoreCase(tt))
+				return i;
+		}
+		// If this fails, try to match using the code.
+		return getFontAlignmentByCode(tt);
+	}
+    private static int getFontAlignmentByCode(String tt) {
+		if (tt == null)
+			return 0;
+
+		for (int i = 0; i < font_alignment_code.length; i++) {
+			if (font_alignment_code[i].equalsIgnoreCase(tt))
+				return i;
+		}
+		return 0;
+	}
+    private static int getFontColorByCode(String tt) {
+		if (tt == null)
+			return 0;
+
+		for (int i = 0; i < font_color_code.length; i++) {
+			if (font_color_code[i].equalsIgnoreCase(tt))
+				return i;
+		}
+		return 0;
+	}
+    
+    
+	public void setHeaderFontName(int fontname) {
+		this.header_font_name = fontname;
+	}
+	public void setRowFontName(int fontname) {
+		this.row_font_name = fontname;
+	}
+	public void setHeaderFontUnderline(int fontunderline) {
+		this.header_font_underline = fontunderline;
+	}
+	public void setHeaderFontOrientation(int fontorientation) {
+		this.header_font_orientation = fontorientation;
+	}
+	public void setHeaderFontColor(int fontcolor) {
+		this.header_font_color = fontcolor;
+	}
+	public void setRowFontColor(int fontcolor) {
+		this.row_font_color = fontcolor;
+	}
+	public void setHeaderBackGroundColor(int fontcolor) {
+		this.header_background_color = fontcolor;
+	}
+	public void setRowBackGroundColor(int fontcolor) {
+		this.row_background_color = fontcolor;
+	}
+	public void setHeaderAlignment(int alignment) {
+		this.header_alignment = alignment;
+	}
+	
+	public void setHeaderFontSize(String fontsize) {
+		this.header_font_size = fontsize;
+	}
+	public void setRowFontSize(String fontsize) {
+		this.row_font_size = fontsize;
+	}
+	public String getHeaderFontSize() {
+		return this.header_font_size;
+	}
+	public String getRowFontSize() {
+		return this.row_font_size;
+	}
+	public void setHeaderImage(String image) {
+		this.header_image = image;
+	}
+	public String getHeaderImage() {
+		return this.header_image;
+	}
+	public void setHeaderRowHeight(String height) {
+		this.header_row_height = height;
+	}
+	public String getHeaderRowHeight() {
+		return this.header_row_height;
+	}
+	
+	
+	public boolean isHeaderFontBold()
+	{
+		return this.header_font_bold;
+	}
+	public void setHeaderFontItalic(boolean fontitalic) {
+		this.header_font_italic=fontitalic;
+	}
+	public boolean isHeaderFontItalic()
+	{
+		return this.header_font_italic;
+	}
+	public void setHeaderFontBold(boolean font_bold) {
+		this.header_font_bold = font_bold;
+	}
 }

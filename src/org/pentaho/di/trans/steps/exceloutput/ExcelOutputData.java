@@ -16,8 +16,11 @@ import java.io.OutputStream;
 import java.util.Hashtable;
 import java.util.Map;
 
+import jxl.WorkbookSettings;
+import jxl.format.Colour;
 import jxl.write.WritableCellFormat;
 import jxl.write.WritableFont;
+import jxl.write.WritableImage;
 import jxl.write.WritableSheet;
 import jxl.write.WritableWorkbook;
 
@@ -68,6 +71,23 @@ public class ExcelOutputData extends BaseStepData implements StepDataInterface
 	public boolean headerWrote;
 	
 
+	public int Headerrowheight;
+	
+	public String realHeaderImage;
+	
+    public Colour rowFontBackgoundColour;
+    
+    public WritableCellFormat headerCellFormat;
+    
+    public WritableImage headerImage;
+    
+    public double headerImageHeight;
+    public double headerImageWidth;
+    public WritableFont writableFont;
+    
+	public String realFilename;
+	
+	public WorkbookSettings ws;
 	/**
 	 * 
 	 */
