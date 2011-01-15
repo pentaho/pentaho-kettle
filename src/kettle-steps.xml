@@ -1339,4 +1339,11 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.TypeExitGoogleAnalyticsStep</tooltip>
 		<iconfile>ui/images/GAN.png</iconfile>
 	</step>	
+    <step id="PrioritizeStreams">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.PrioritizeStreams</description>
+		<classname>org.pentaho.di.trans.steps.prioritizestreams.PrioritizeStreamsMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.PrioritizeStreams</tooltip>
+		<iconfile>ui/images/PRS.png</iconfile>
+	</step>
 </steps>
