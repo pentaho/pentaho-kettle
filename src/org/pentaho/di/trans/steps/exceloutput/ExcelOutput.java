@@ -113,7 +113,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
 		
 		// If we split the data stream in small XLS files, we need to do this here...
 		//
-		if ( r!=null && getLinesOutput()>0 && meta.getSplitEvery()>0 && ((getLinesOutput()+1)%meta.getSplitEvery())==0)
+		if ((getLinesOutput()>0 && meta.getSplitEvery()>0 && ((getLinesOutput())%meta.getSplitEvery())==0))
 		{
 			// Not finished: open another file...
 			if (r!=null)
@@ -417,7 +417,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
             data.positionX=0;
             data.positionY++;
         }
-        incrementLinesOutput();
+ 
 		return retval;
 	}
 
@@ -432,6 +432,16 @@ public class ExcelOutput extends BaseStep implements StepInterface
 		
 		try
 		{
+	        String buildFilename=buildFilename();
+	        data.file = KettleVFS.getFileObject(buildFilename, getTransMeta());
+			
+	        // See if we need to add the filename to the result.
+			// If the file doesn't exist we report the problem.
+			//
+			if (!addFilenameToResult()) {
+			  return false;
+			}
+	        
 			WorkbookSettings ws = new WorkbookSettings();
             ws.setLocale(Locale.getDefault());
             
@@ -445,13 +455,6 @@ public class ExcelOutput extends BaseStep implements StepInterface
             // Create the workbook
             if (!meta.isTemplateEnabled())
             {				
-            	/*if (file.exists())
-            	{
-            		// Attempts to load it from the local file failed in the past.
-            		// As such we will try to remove the file first...
-            		//
-            		file.delete();
-            	}*/
 
             	File fle = new File(KettleVFS.getFilename(data.file));
                	if(meta.isAppend() && fle.exists())
@@ -622,14 +625,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
 		{
 			data.splitnr=0;
 			data.realSheetname=environmentSubstitute(meta.getSheetname());
-			
-			// See if we need to add the filename to the result.
-			// If the file doesn't exist we report the problem.
-			//
-			if (!addFilenameToResult()) {
-			  return false;
-			}
-			
+						
 			if(!meta.isDoNotOpenNewFileInit())
 			{
 				data.oneFileOpened=true;
@@ -657,9 +653,6 @@ public class ExcelOutput extends BaseStep implements StepInterface
 	
 	private boolean addFilenameToResult() {
 	  try {
-        String buildFilename=buildFilename();
-        data.file = KettleVFS.getFileObject(buildFilename, getTransMeta());
-
         if(meta.isAddToResultFiles())
         {
             // Add this to the result file names...
