@@ -495,6 +495,7 @@ public class ColumnExistsDialog extends BaseStepDialog implements StepDialogInte
 			if (databaseMeta!=null)
 			{
 				Database database = new Database(loggingObject, databaseMeta);
+				database.shareVariablesWith(transMeta);
 				try
 				{
 					database.connect();

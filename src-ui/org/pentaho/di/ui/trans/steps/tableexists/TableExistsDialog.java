@@ -344,6 +344,7 @@ public class TableExistsDialog extends BaseStepDialog implements StepDialogInter
 			if (databaseMeta!=null)
 			{
 				Database database = new Database(loggingObject, databaseMeta);
+				database.shareVariablesWith(transMeta);
 				try
 				{
 					database.connect();

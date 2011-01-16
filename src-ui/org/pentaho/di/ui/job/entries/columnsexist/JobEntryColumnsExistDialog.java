@@ -552,6 +552,7 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
 			if (databaseMeta!=null)
 			{
 				Database database = new Database(loggingObject, databaseMeta);
+				database.shareVariablesWith(jobMeta);
 				try
 				{
 					database.connect();
