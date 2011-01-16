@@ -36,12 +36,17 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.tableexists.JobEntryTableExists;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.core.database.dialog.DatabaseExplorerDialog;
+import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
@@ -71,6 +76,11 @@ public class JobEntryTableExistsDialog extends JobEntryDialog implements JobEntr
     private Label wlTablename;
 
     private TextVar wTablename;
+    
+	private Button wbTable;
+	
+    private FormData	fdbSchema;
+    private Button		wbSchema;
 
     private FormData fdlTablename, fdTablename;
     
@@ -159,16 +169,37 @@ public class JobEntryTableExistsDialog extends JobEntryDialog implements JobEntr
         fdlSchemaname = new FormData();
         fdlSchemaname.left = new FormAttachment(0, 0);
         fdlSchemaname.right = new FormAttachment(middle, -margin);
-        fdlSchemaname.top = new FormAttachment(wConnection, margin);
+        fdlSchemaname.top = new FormAttachment(wConnection, 2*margin);
         wlSchemaname.setLayoutData(fdlSchemaname);
+        
+		
+
+		wbSchema=new Button(shell, SWT.PUSH| SWT.CENTER);
+ 		props.setLook(wbSchema);
+ 		wbSchema.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
+ 		fdbSchema=new FormData();
+ 		fdbSchema.top  = new FormAttachment(wConnection, 2*margin);
+ 		fdbSchema.right= new FormAttachment(100, 0);
+		wbSchema.setLayoutData(fdbSchema);
+		wbSchema.addSelectionListener
+		(
+			new SelectionAdapter()
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					getSchemaNames();
+				}
+			}
+		);
+
 
         wSchemaname = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wSchemaname);
         wSchemaname.addModifyListener(lsMod);
         fdSchemaname = new FormData();
         fdSchemaname.left = new FormAttachment(middle, 0);
-        fdSchemaname.top = new FormAttachment(wConnection, margin);
-        fdSchemaname.right = new FormAttachment(100, 0);
+        fdSchemaname.top = new FormAttachment(wConnection, 2*margin);
+        fdSchemaname.right = new FormAttachment(wbSchema, -margin);
         wSchemaname.setLayoutData(fdSchemaname);
 		
         // Table name line
@@ -178,16 +209,26 @@ public class JobEntryTableExistsDialog extends JobEntryDialog implements JobEntr
         fdlTablename = new FormData();
         fdlTablename.left = new FormAttachment(0, 0);
         fdlTablename.right = new FormAttachment(middle, -margin);
-        fdlTablename.top = new FormAttachment(wSchemaname, margin);
+        fdlTablename.top = new FormAttachment(wbSchema, margin);
         wlTablename.setLayoutData(fdlTablename);
+        
+		wbTable=new Button(shell, SWT.PUSH| SWT.CENTER);
+		props.setLook(wbTable);
+		wbTable.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
+		FormData fdbTable = new FormData();
+		fdbTable.right= new FormAttachment(100, 0);
+		fdbTable.top  = new FormAttachment(wbSchema, margin);
+		wbTable.setLayoutData(fdbTable);
+		wbTable.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getTableName(); } } );
+
 
         wTablename = new TextVar(jobMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wTablename);
         wTablename.addModifyListener(lsMod);
         fdTablename = new FormData();
         fdTablename.left = new FormAttachment(middle, 0);
-        fdTablename.top = new FormAttachment(wSchemaname, margin);
-        fdTablename.right = new FormAttachment(100, 0);
+        fdTablename.top = new FormAttachment(wbSchema, margin);
+        fdTablename.right = new FormAttachment(wbTable, -margin);
         wTablename.setLayoutData(fdTablename);
 
         wOK = new Button(shell, SWT.PUSH);
@@ -310,4 +351,75 @@ public class JobEntryTableExistsDialog extends JobEntryDialog implements JobEntr
         
         dispose();
     }
+    private void getSchemaNames()
+	{
+		if(wSchemaname.isDisposed()) return; 
+		DatabaseMeta databaseMeta = jobMeta.findDatabase(wConnection.getText());
+		if (databaseMeta!=null)
+		{
+			Database database = new Database(loggingObject, databaseMeta);
+			try
+			{
+				database.connect();
+				String schemas[] = database.getSchemas();
+				
+				if (null != schemas && schemas.length>0) {
+					schemas=Const.sortStrings(schemas);	
+					EnterSelectionDialog dialog = new EnterSelectionDialog(shell, schemas, 
+							BaseMessages.getString(PKG, "System.Dialog.AvailableSchemas.Title", wConnection.getText()), 
+							BaseMessages.getString(PKG, "System.Dialog.AvailableSchemas.Message"));
+					String d=dialog.open();
+					if (d!=null) 
+					{
+						wSchemaname.setText(Const.NVL(d.toString(), ""));
+					}
+
+				}else
+				{
+					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+					mb.setMessage(BaseMessages.getString(PKG, "System.Dialog.AvailableSchemas.Empty.Message"));
+					mb.setText(BaseMessages.getString(PKG, "System.Dialog.AvailableSchemas.Empty.Title"));
+					mb.open(); 
+				}
+			}
+			catch(Exception e)
+			{
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "System.Dialog.Error.Title"), 
+						BaseMessages.getString(PKG, "System.Dialog.AvailableSchemas.ConnectionError"), e);
+			}
+			finally
+			{
+				if(database!=null) 
+				{
+					database.disconnect();
+					database=null;
+				}
+			}
+		}
+	}
+    private void getTableName()
+	{
+		// New class: SelectTableDialog
+		int connr = wConnection.getSelectionIndex();
+		if (connr>=0)
+		{
+			DatabaseMeta inf = jobMeta.getDatabase(connr);
+                        
+			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, jobMeta.getDatabases());
+			std.setSelectedSchemaAndTable(wSchemaname.getText(), wTablename.getText());
+			if (std.open())
+			{
+			    wSchemaname.setText(Const.NVL(std.getSchemaName(), ""));
+				wTablename.setText(Const.NVL(std.getTableName(), ""));
+			}
+		}
+		else
+		{
+			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+			mb.setMessage(BaseMessages.getString(PKG, "System.Dialog.ConnectionError.DialogMessage"));
+			mb.setText(BaseMessages.getString(PKG, "System.Dialog.Error.Title"));
+			mb.open(); 
+		}
+                    
+	}
 }

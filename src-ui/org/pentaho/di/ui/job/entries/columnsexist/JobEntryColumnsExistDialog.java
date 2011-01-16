@@ -43,6 +43,7 @@ import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.database.dialog.DatabaseExplorerDialog;
+import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
@@ -104,6 +105,9 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
 	
 	private Button   wbdFilename; // Delete
 	private FormData fdbdFilename;
+	
+    private FormData	fdbSchema;
+    private Button		wbSchema;
     
     public JobEntryColumnsExistDialog(Shell parent, JobEntryInterface jobEntryInt, Repository rep, JobMeta jobMeta)
     {
@@ -173,8 +177,29 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
 		fdlSchemaname = new FormData();
 		fdlSchemaname.left = new FormAttachment(0, 0);
 		fdlSchemaname.right = new FormAttachment(middle, -margin);
-		fdlSchemaname.top = new FormAttachment(wConnection, margin);
+		fdlSchemaname.top = new FormAttachment(wConnection, 2*margin);
 		wlSchemaname.setLayoutData(fdlSchemaname);
+		
+
+		wbSchema=new Button(shell, SWT.PUSH| SWT.CENTER);
+ 		props.setLook(wbSchema);
+ 		wbSchema.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
+ 		fdbSchema=new FormData();
+ 		fdbSchema.top  = new FormAttachment(wConnection, 2*margin);
+ 		fdbSchema.right= new FormAttachment(100, 0);
+		wbSchema.setLayoutData(fdbSchema);
+		wbSchema.addSelectionListener
+		(
+			new SelectionAdapter()
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					getSchemaNames();
+				}
+			}
+		);
+
+
 
 		wSchemaname = new TextVar(jobMeta,shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wSchemaname);
@@ -182,8 +207,8 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
 		wSchemaname.addModifyListener(lsMod);
 		fdSchemaname = new FormData();
 		fdSchemaname.left = new FormAttachment(middle, 0);
-		fdSchemaname.top = new FormAttachment(wConnection, margin);
-		fdSchemaname.right = new FormAttachment(100, 0);
+		fdSchemaname.top = new FormAttachment(wConnection, 2*margin);
+		fdSchemaname.right = new FormAttachment(wbSchema, -margin);
 		wSchemaname.setLayoutData(fdSchemaname);
 		
 
@@ -194,7 +219,7 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
         fdlTablename = new FormData();
         fdlTablename.left = new FormAttachment(0, 0);
         fdlTablename.right = new FormAttachment(middle, -margin);
-        fdlTablename.top = new FormAttachment(wSchemaname, margin);
+        fdlTablename.top = new FormAttachment(wbSchema, margin);
         wlTablename.setLayoutData(fdlTablename);
         
 
@@ -203,7 +228,7 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
 		wbTable.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
 		FormData fdbTable = new FormData();
 		fdbTable.right= new FormAttachment(100, 0);
-		fdbTable.top  = new FormAttachment(wSchemaname, margin);
+		fdbTable.top  = new FormAttachment(wbSchema, margin);
 		wbTable.setLayoutData(fdbTable);
 		wbTable.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getTableName(); } } );
 
@@ -213,7 +238,7 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
         wTablename.addModifyListener(lsMod);
         fdTablename = new FormData();
         fdTablename.left = new FormAttachment(middle, 0);
-        fdTablename.top = new FormAttachment(wSchemaname, margin);
+        fdTablename.top = new FormAttachment(wbSchema, margin);
         fdTablename.right = new FormAttachment(wbTable, -margin);
         wTablename.setLayoutData(fdTablename);
         
@@ -224,7 +249,7 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
 		wbGetColumns.setToolTipText(BaseMessages.getString(PKG, "JobEntryColumnsExist.GetColums.Tooltip"));
 		fdbGetColumns=new FormData();
 		fdbGetColumns.right = new FormAttachment(100, 0);
-		fdbGetColumns.top  = new FormAttachment (wTablename, margin);
+		fdbGetColumns.top  = new FormAttachment (wTablename, 38);
 		wbGetColumns.setLayoutData(fdbGetColumns);
 
     	// Buttons to the right of the screen...
@@ -234,7 +259,7 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
 		wbdFilename.setToolTipText(BaseMessages.getString(PKG, "JobEntryColumnsExist.FilenameDelete.Tooltip"));
 		fdbdFilename=new FormData();
 		fdbdFilename.right = new FormAttachment(100, 0);
-		fdbdFilename.top  = new FormAttachment (wbGetColumns, 40);
+		fdbdFilename.top  = new FormAttachment (wbGetColumns, margin);
 		wbdFilename.setLayoutData(fdbdFilename);
 
 		wlFields = new Label(shell, SWT.NONE);
@@ -269,7 +294,7 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
 		fdFields = new FormData();
 		fdFields.left = new FormAttachment(0, 0);
 		fdFields.top = new FormAttachment(wlFields, margin);
-		fdFields.right = new FormAttachment(wbdFilename, -margin);
+		fdFields.right = new FormAttachment(wbGetColumns, -margin);
 		fdFields.bottom = new FormAttachment(100, -50);
 		wFields.setLayoutData(fdFields);
       
@@ -520,4 +545,50 @@ public class JobEntryColumnsExistDialog extends JobEntryDialog implements JobEnt
 			}
 		}
 	}	
+	 private void getSchemaNames()
+		{
+			if(wSchemaname.isDisposed()) return; 
+			DatabaseMeta databaseMeta = jobMeta.findDatabase(wConnection.getText());
+			if (databaseMeta!=null)
+			{
+				Database database = new Database(loggingObject, databaseMeta);
+				try
+				{
+					database.connect();
+					String schemas[] = database.getSchemas();
+					
+					if (null != schemas && schemas.length>0) {
+						schemas=Const.sortStrings(schemas);	
+						EnterSelectionDialog dialog = new EnterSelectionDialog(shell, schemas, 
+								BaseMessages.getString(PKG, "System.Dialog.AvailableSchemas.Title", wConnection.getText()), 
+								BaseMessages.getString(PKG, "System.Dialog.AvailableSchemas.Message"));
+						String d=dialog.open();
+						if (d!=null) 
+						{
+							wSchemaname.setText(Const.NVL(d.toString(), ""));
+						}
+
+					}else
+					{
+						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+						mb.setMessage(BaseMessages.getString(PKG, "System.Dialog.AvailableSchemas.Empty.Message"));
+						mb.setText(BaseMessages.getString(PKG, "System.Dialog.AvailableSchemas.Empty.Title"));
+						mb.open(); 
+					}
+				}
+				catch(Exception e)
+				{
+					new ErrorDialog(shell, BaseMessages.getString(PKG, "System.Dialog.Error.Title"), 
+							BaseMessages.getString(PKG, "System.Dialog.AvailableSchemas.ConnectionError"), e);
+				}
+				finally
+				{
+					if(database!=null) 
+					{
+						database.disconnect();
+						database=null;
+					}
+				}
+			}
+		}
 }

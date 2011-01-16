@@ -38,6 +38,8 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
@@ -45,6 +47,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.tableexists.TableExistsMeta;
+import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
@@ -69,6 +72,9 @@ public class TableExistsDialog extends BaseStepDialog implements StepDialogInter
 	private FormData fdlSchemaname, fdSchemaname;
 
 	private TableExistsMeta input;
+	
+    private FormData	fdbSchema;
+    private Button		wbSchema;
 
 	public TableExistsDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
@@ -140,6 +146,25 @@ public class TableExistsDialog extends BaseStepDialog implements StepDialogInter
 		fdlSchemaname.right = new FormAttachment(middle, -margin);
 		fdlSchemaname.top = new FormAttachment(wConnection, 2*margin);
 		wlSchemaname.setLayoutData(fdlSchemaname);
+		
+
+		wbSchema=new Button(shell, SWT.PUSH| SWT.CENTER);
+ 		props.setLook(wbSchema);
+ 		wbSchema.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
+ 		fdbSchema=new FormData();
+ 		fdbSchema.top  = new FormAttachment(wConnection, 2*margin);
+ 		fdbSchema.right= new FormAttachment(100, 0);
+		wbSchema.setLayoutData(fdbSchema);
+		wbSchema.addSelectionListener
+		(
+			new SelectionAdapter()
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					getSchemaNames();
+				}
+			}
+		);
 
 		wSchemaname = new TextVar(transMeta,shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wSchemaname);
@@ -148,7 +173,7 @@ public class TableExistsDialog extends BaseStepDialog implements StepDialogInter
 		fdSchemaname = new FormData();
 		fdSchemaname.left = new FormAttachment(middle, 0);
 		fdSchemaname.top = new FormAttachment(wConnection, 2*margin);
-		fdSchemaname.right = new FormAttachment(100, 0);
+		fdSchemaname.right = new FormAttachment(wbSchema, -margin);
 		wSchemaname.setLayoutData(fdSchemaname);
 
 		wlTableName=new Label(shell, SWT.RIGHT);
@@ -157,7 +182,7 @@ public class TableExistsDialog extends BaseStepDialog implements StepDialogInter
 		fdlTableName=new FormData();
 		fdlTableName.left = new FormAttachment(0, 0);
 		fdlTableName.right= new FormAttachment(middle, -margin);
-		fdlTableName.top  = new FormAttachment(wSchemaname, margin);
+		fdlTableName.top  = new FormAttachment(wbSchema, margin);
 		wlTableName.setLayoutData(fdlTableName);
 		
 		
@@ -166,7 +191,7 @@ public class TableExistsDialog extends BaseStepDialog implements StepDialogInter
 		wTableName.addModifyListener(lsMod);
 		fdTableName=new FormData();
 		fdTableName.left = new FormAttachment(middle, 0);
-		fdTableName.top  = new FormAttachment(wSchemaname, margin);
+		fdTableName.top  = new FormAttachment(wbSchema, margin);
 		fdTableName.right= new FormAttachment(100, -margin);
 		wTableName.setLayoutData(fdTableName);
 		wTableName.addFocusListener(new FocusListener()
@@ -312,4 +337,50 @@ public class TableExistsDialog extends BaseStepDialog implements StepDialogInter
 			}
 
 	 }
+	 private void getSchemaNames()
+		{
+			if(wSchemaname.isDisposed()) return; 
+			DatabaseMeta databaseMeta = transMeta.findDatabase(wConnection.getText());
+			if (databaseMeta!=null)
+			{
+				Database database = new Database(loggingObject, databaseMeta);
+				try
+				{
+					database.connect();
+					String schemas[] = database.getSchemas();
+					
+					if (null != schemas && schemas.length>0) {
+						schemas=Const.sortStrings(schemas);	
+						EnterSelectionDialog dialog = new EnterSelectionDialog(shell, schemas, 
+								BaseMessages.getString(PKG, "System.Dialog.AvailableSchemas.Title", wConnection.getText()), 
+								BaseMessages.getString(PKG, "System.Dialog.AvailableSchemas.Message"));
+						String d=dialog.open();
+						if (d!=null) 
+						{
+							wSchemaname.setText(Const.NVL(d.toString(), ""));
+						}
+
+					}else
+					{
+						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+						mb.setMessage(BaseMessages.getString(PKG, "System.Dialog.AvailableSchemas.Empty.Message"));
+						mb.setText(BaseMessages.getString(PKG, "System.Dialog.AvailableSchemas.Empty.Title"));
+						mb.open(); 
+					}
+				}
+				catch(Exception e)
+				{
+					new ErrorDialog(shell, BaseMessages.getString(PKG, "System.Dialog.Error.Title"), 
+							BaseMessages.getString(PKG, "System.Dialog.AvailableSchemas.ConnectionError"), e);
+				}
+				finally
+				{
+					if(database!=null) 
+					{
+						database.disconnect();
+						database=null;
+					}
+				}
+			}
+		}
 }
