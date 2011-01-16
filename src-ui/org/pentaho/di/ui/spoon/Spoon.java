@@ -2399,6 +2399,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       return;
 
     final DatabaseMeta databaseMeta = (DatabaseMeta) selectionObject;
+	MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO| SWT.ICON_QUESTION);
+	mb.setMessage(BaseMessages.getString(PKG, "Spoon.ExploreDB.DeleteConnectionAsk.Message", databaseMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	mb.setText(BaseMessages.getString(PKG, "Spoon.ExploreDB.DeleteConnectionAsk.Title")); //$NON-NLS-1$
+	int response = mb.open();
+
+	if (response != SWT.YES)return;
+	
     final HasDatabasesInterface hasDatabasesInterface = (HasDatabasesInterface) selectionObjectParent;
     delegates.db.delConnection(hasDatabasesInterface, databaseMeta);
   }
