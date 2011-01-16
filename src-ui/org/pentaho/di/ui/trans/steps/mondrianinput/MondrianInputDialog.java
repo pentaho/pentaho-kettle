@@ -385,6 +385,7 @@ public class MondrianInputDialog extends BaseStepDialog implements StepDialogInt
 			mb.setMessage(BaseMessages.getString(PKG, "MondrianInputDialog.SelectValidConnection")); //$NON-NLS-1$
 			mb.setText(BaseMessages.getString(PKG, "MondrianInputDialog.DialogCaptionError")); //$NON-NLS-1$
 			mb.open();
+			return;
 		}
 		
 		dispose();

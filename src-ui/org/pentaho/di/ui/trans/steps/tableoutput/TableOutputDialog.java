@@ -1344,6 +1344,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 			mb.setMessage(BaseMessages.getString(PKG, "TableOutputDialog.ConnectionError.DialogMessage"));
 			mb.setText(BaseMessages.getString(PKG, "System.Dialog.Error.Title"));
 			mb.open();
+			return;
 		}
 		
 		dispose();

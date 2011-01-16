@@ -105,7 +105,10 @@ public class LucidDBBulkLoader extends BaseStep implements StepInterface
         	// 3) Make a connection to LucidDB for sending SQL commands
             // (Also, we need a clear cache for getting up-to-date target metadata)
             DBCache.getInstance().clear(meta.getDatabaseMeta().getName());
-
+            if(meta.getDatabaseMeta()==null) {
+        		logError(BaseMessages.getString(PKG, "LuciDBBulkLoader.Init.ConnectionMissing", getStepname()));
+        		return false;
+        	}
 			data.db = new Database(this, meta.getDatabaseMeta());
 			data.db.shareVariablesWith(this);
 			// Connect to the database

@@ -315,7 +315,10 @@ public class TableInput extends BaseStep implements StepInterface
 			if (!passed) return false;
 
 	        data.infoStream = meta.getStepIOMeta().getInfoStreams().get(0);
-			
+	        if(meta.getDatabaseMeta()==null) {
+        		logError(BaseMessages.getString(PKG, "TableInput.Init.ConnectionMissing", getStepname()));
+        		return false;
+        	}
 			data.db=new Database(this, meta.getDatabaseMeta());
 			data.db.shareVariablesWith(this);
 			

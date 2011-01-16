@@ -1577,7 +1577,10 @@ public class DimensionLookup extends BaseStep implements StepInterface
 			
 			data.startDateChoice = DimensionLookupMeta.START_DATE_ALTERNATIVE_NONE;
 			if (meta.isUsingStartDateAlternative()) data.startDateChoice = meta.getStartDateAlternative();
-			
+			if(meta.getDatabaseMeta()==null) {
+        		logError(BaseMessages.getString(PKG, "DimensionLookup.Init.ConnectionMissing", getStepname()));
+        		return false;
+        	}
 			data.db=new Database(this, meta.getDatabaseMeta());
 			data.db.shareVariablesWith(this);
 			try
@@ -1608,32 +1611,30 @@ public class DimensionLookup extends BaseStep implements StepInterface
 	{
 	    meta = (DimensionLookupMeta)smi;
 	    data = (DimensionLookupData)sdi;
-	    
-        try
-        {
-            if (!data.db.isAutoCommit())
-            {
-                if (getErrors()==0)
-                {
-                    data.db.commit();
-                }
-                else
-                {
-                    data.db.rollback();
-                }
-            }
-        }
-        catch(KettleDatabaseException e)
-        {
-            logError(BaseMessages.getString(PKG, "DimensionLookup.Log.ErrorOccurredInProcessing")+e.getMessage()); //$NON-NLS-1$
-        }
-        finally 
-        {        
-        	if (data.db!=null) {
-            	data.db.disconnect();
-        	}
-        }
-	    
+	    if(data.db!=null) {
+	        try
+	        {
+	            if (!data.db.isAutoCommit())
+	            {
+	                if (getErrors()==0)
+	                {
+	                    data.db.commit();
+	                }
+	                else
+	                {
+	                    data.db.rollback();
+	                }
+	            }
+	        }
+	        catch(KettleDatabaseException e)
+	        {
+	            logError(BaseMessages.getString(PKG, "DimensionLookup.Log.ErrorOccurredInProcessing")+e.getMessage()); //$NON-NLS-1$
+	        }
+	        finally 
+	        {        
+	            data.db.disconnect();
+	        }
+	    }
 	    super.dispose(smi, sdi);
 	}
 

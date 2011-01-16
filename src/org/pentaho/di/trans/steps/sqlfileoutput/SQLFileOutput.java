@@ -307,7 +307,10 @@ public class SQLFileOutput extends BaseStep implements StepInterface
 				{
 		            throw new KettleStepException("The connection is not defined (empty)");
 		        }	
-
+				if(meta.getDatabaseMeta()==null) {
+	        		logError(BaseMessages.getString(PKG, "SQLFileOutput.Init.ConnectionMissing", getStepname()));
+	        		return false;
+	        	}
 				data.db=new Database(this, meta.getDatabaseMeta());
 				data.db.shareVariablesWith(this);
                       

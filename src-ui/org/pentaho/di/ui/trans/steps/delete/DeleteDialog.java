@@ -528,6 +528,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 			mb.setMessage(BaseMessages.getString(PKG, "DeleteDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
 			mb.setText(BaseMessages.getString(PKG, "DeleteDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
 			mb.open();
+			return;
 		}
 		
 		dispose();

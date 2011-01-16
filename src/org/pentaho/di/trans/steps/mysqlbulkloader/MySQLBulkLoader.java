@@ -100,7 +100,10 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
         	// 2) Make a connection to MySQL for sending SQL commands
             // (Also, we need a clear cache for getting up-to-date target metadata)
             DBCache.getInstance().clear(meta.getDatabaseMeta().getName());
-
+            if(meta.getDatabaseMeta()==null) {
+        		logError(BaseMessages.getString(PKG, "MySQLBulkLoader.Init.ConnectionMissing", getStepname()));
+        		return false;
+        	}
 			data.db = new Database(this, meta.getDatabaseMeta());
 			data.db.shareVariablesWith(this);
 			// Connect to the database

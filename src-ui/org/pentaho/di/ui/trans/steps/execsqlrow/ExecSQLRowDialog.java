@@ -374,6 +374,7 @@ public class ExecSQLRowDialog extends BaseStepDialog implements StepDialogInterf
 			mb.setMessage(BaseMessages.getString(PKG, "ExecSQLRowDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
 			mb.setText(BaseMessages.getString(PKG, "ExecSQLRowDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
 			mb.open();
+			return;
 		}
 		
 		dispose();

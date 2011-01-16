@@ -222,6 +222,10 @@ public class Delete extends BaseStep implements StepInterface
 		
 		if (super.init(smi, sdi))
 		{
+	    	if(meta.getDatabaseMeta()==null) {
+        		logError(BaseMessages.getString(PKG, "Delete.Init.ConnectionMissing", getStepname()));
+        		return false;
+        	}
 			data.db=new Database(this, meta.getDatabaseMeta());
 			data.db.shareVariablesWith(this);
 			try 
@@ -256,33 +260,32 @@ public class Delete extends BaseStep implements StepInterface
 		meta=(DeleteMeta)smi;
 		data=(DeleteData)sdi;
 		
-        try
-        {
-            if (!data.db.isAutoCommit())
-            {
-                if (getErrors()==0) 
-                {
-                    data.db.commit();
-                }
-                else
-                {
-                    data.db.rollback();
-                }
-            }
-            data.db.closeUpdate();
-        }
-        catch(KettleDatabaseException e)
-        {
-            logError(BaseMessages.getString(PKG, "Delete.Log.UnableToCommitUpdateConnection")+data.db+"] :"+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
-            setErrors(1);
-        }
-        finally 
-        {
-        	if (data.db!=null) {
-            	data.db.disconnect();
-        	}
-        }
-
+    	if (data.db!=null) {
+	        try
+	        {
+	            if (!data.db.isAutoCommit())
+	            {
+	                if (getErrors()==0) 
+	                {
+	                    data.db.commit();
+	                }
+	                else
+	                {
+	                    data.db.rollback();
+	                }
+	            }
+	            data.db.closeUpdate();
+	        }
+	        catch(KettleDatabaseException e)
+	        {
+	            logError(BaseMessages.getString(PKG, "Delete.Log.UnableToCommitUpdateConnection")+data.db+"] :"+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+	            setErrors(1);
+	        }
+	        finally 
+	        {
+	            data.db.disconnect();
+	        }
+    	}
 		super.dispose(smi, sdi);
 	}
 	

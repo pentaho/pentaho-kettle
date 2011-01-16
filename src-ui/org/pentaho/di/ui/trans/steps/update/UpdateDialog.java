@@ -757,6 +757,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 			mb.setMessage(BaseMessages.getString(PKG, "UpdateDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
 			mb.setText(BaseMessages.getString(PKG, "UpdateDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
 			mb.open();
+			return;
 		}
 		
 		dispose();

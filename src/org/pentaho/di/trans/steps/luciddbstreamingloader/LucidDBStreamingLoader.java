@@ -265,7 +265,10 @@ public class LucidDBStreamingLoader extends BaseStep implements StepInterface {
         // 1. Initialize databases connection.
         if (log.isDebug())
           logDebug("Connecting to LucidDB...");
-
+        if(meta.getDatabaseMeta()==null) {
+    		logError(BaseMessages.getString(PKG, "Delete.Init.LuciDBStreamingLoader.Init.ConnectionMissing", getStepname()));
+    		return false;
+    	}
         data.db = new Database(this, meta.getDatabaseMeta());
         data.db.shareVariablesWith(this);
 

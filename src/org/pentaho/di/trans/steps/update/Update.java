@@ -498,6 +498,10 @@ public class Update extends BaseStep implements StepInterface
 		
 		if (super.init(smi, sdi))
 		{
+			if(meta.getDatabaseMeta()==null) {
+        		logError(BaseMessages.getString(PKG, "Update.Init.ConnectionMissing", getStepname()));
+        		return false;
+        	}
 			data.db=new Database(this, meta.getDatabaseMeta());
 			data.db.shareVariablesWith(this);
 			try 
@@ -535,34 +539,33 @@ public class Update extends BaseStep implements StepInterface
 		meta=(UpdateMeta)smi;
 		data=(UpdateData)sdi;
 		
-        try
-        {
-            if (!data.db.isAutoCommit())
-            {
-                if (getErrors()==0)
-                {
-                    data.db.commit();
-                }
-                else
-                {
-                    data.db.rollback();                    
-                }
-            }
-            data.db.closePreparedStatement(data.prepStatementUpdate);
-            data.db.closePreparedStatement(data.prepStatementLookup);
-        }
-        catch(KettleDatabaseException e)
-        {
-            logError(BaseMessages.getString(PKG, "Update.Log.UnableToCommitUpdateConnection")+data.db+"] :"+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
-            setErrors(1);
-        }
-        finally
-        {
-        	if (data.db!=null) {
-            	data.db.disconnect();
-        	}
-        }
-
+	    if(data.db!=null) {
+	        try
+	        {
+	            if (!data.db.isAutoCommit())
+	            {
+	                if (getErrors()==0)
+	                {
+	                    data.db.commit();
+	                }
+	                else
+	                {
+	                    data.db.rollback();                    
+	                }
+	            }
+	            data.db.closePreparedStatement(data.prepStatementUpdate);
+	            data.db.closePreparedStatement(data.prepStatementLookup);
+	        }
+	        catch(KettleDatabaseException e)
+	        {
+	            logError(BaseMessages.getString(PKG, "Update.Log.UnableToCommitUpdateConnection")+data.db+"] :"+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+	            setErrors(1);
+	        }
+	        finally
+	        {
+	            data.db.disconnect();
+	        }
+	    }
 		super.dispose(smi, sdi);
 	}
 

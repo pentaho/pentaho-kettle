@@ -1075,6 +1075,7 @@ public class SQLFileOutputDialog extends BaseStepDialog implements StepDialogInt
 			mb.setMessage(BaseMessages.getString(PKG, "SQLFileOutputDialog.ConnectionError.DialogMessage"));
 			mb.setText(BaseMessages.getString(PKG, "System.Dialog.Error.Title"));
 			mb.open();
+			return;
 		}
 		
 		dispose();

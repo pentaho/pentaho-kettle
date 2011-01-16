@@ -572,7 +572,10 @@ public class TableOutput extends BaseStep implements StepInterface
                 if (meta.getDatabaseMeta()==null) {
                   throw new KettleException(BaseMessages.getString(PKG, "TableOutput.Exception.DatabaseNeedsToBeSelected"));
                 }
-
+                if(meta.getDatabaseMeta()==null) {
+            		logError(BaseMessages.getString(PKG, "TableOutput.Init.ConnectionMissing", getStepname()));
+            		return false;
+            	}
                 data.db=new Database(this, meta.getDatabaseMeta());
                 data.db.shareVariablesWith(this);
 				
@@ -623,80 +626,80 @@ public class TableOutput extends BaseStep implements StepInterface
 		meta=(TableOutputMeta)smi;
 		data=(TableOutputData)sdi;
 
-		try
-		{
-            for (String schemaTable : data.preparedStatements.keySet())
-            {
-            	// Get a commit counter per prepared statement to keep track of separate tables, etc. 
-    		    //
-    			Integer batchCounter = data.commitCounterMap.get(schemaTable);
-    		    if (batchCounter==null) {
-    		    	batchCounter = 0;
-    		    }
-    		    
-    		    PreparedStatement insertStatement = data.preparedStatements.get(schemaTable);
-    		    
-                data.db.emptyAndCommit(insertStatement, data.batchMode, batchCounter);
-            }
-            for (int i=0;i<data.batchBuffer.size();i++)
-            {
-                Object[] row = (Object[]) data.batchBuffer.get(i);
-                putRow(data.outputRowMeta, row);
-                incrementLinesOutput();
-            }
-            // Clear the buffer
-            data.batchBuffer.clear();            
-		}
-		catch(KettleDatabaseBatchException be)
-		{
-            if (getStepMeta().isDoingErrorHandling())
-            {
-                // Right at the back we are experiencing a batch commit problem...
-                // OK, we have the numbers...
-                try
-                {
-                    processBatchException(be.toString(), be.getUpdateCounts(), be.getExceptionsList());
-                }
-                catch(KettleException e)
-                {
-                    logError("Unexpected error processing batch error", e);
-                    setErrors(1);
-                    stopAll();
-                }
-            }
-            else
-            {
-                logError("Unexpected batch update error committing the database connection.", be);
-    			setErrors(1);
-    			stopAll();
-            }
-		}
-		catch(Exception dbe)
-		{
-			logError("Unexpected error committing the database connection.", dbe);
-            logError(Const.getStackTracker(dbe));
-			setErrors(1);
-			stopAll();
-		}
-		finally
-        {
-            setOutputDone();
-
-            if (getErrors()>0)
-            {
-                try
-                {
-                    if (data.db!=null) data.db.rollback();
-                }
-                catch(KettleDatabaseException e)
-                {
-                    logError("Unexpected error rolling back the database connection.", e);
-                }
-            }
-            
-		    if (data.db!=null) {
-		    	data.db.disconnect();
-		    }
+	    if(data.db!=null) {
+			try
+			{
+	            for (String schemaTable : data.preparedStatements.keySet())
+	            {
+	            	// Get a commit counter per prepared statement to keep track of separate tables, etc. 
+	    		    //
+	    			Integer batchCounter = data.commitCounterMap.get(schemaTable);
+	    		    if (batchCounter==null) {
+	    		    	batchCounter = 0;
+	    		    }
+	    		    
+	    		    PreparedStatement insertStatement = data.preparedStatements.get(schemaTable);
+	    		    
+	                data.db.emptyAndCommit(insertStatement, data.batchMode, batchCounter);
+	            }
+	            for (int i=0;i<data.batchBuffer.size();i++)
+	            {
+	                Object[] row = (Object[]) data.batchBuffer.get(i);
+	                putRow(data.outputRowMeta, row);
+	                incrementLinesOutput();
+	            }
+	            // Clear the buffer
+	            data.batchBuffer.clear();            
+			}
+			catch(KettleDatabaseBatchException be)
+			{
+	            if (getStepMeta().isDoingErrorHandling())
+	            {
+	                // Right at the back we are experiencing a batch commit problem...
+	                // OK, we have the numbers...
+	                try
+	                {
+	                    processBatchException(be.toString(), be.getUpdateCounts(), be.getExceptionsList());
+	                }
+	                catch(KettleException e)
+	                {
+	                    logError("Unexpected error processing batch error", e);
+	                    setErrors(1);
+	                    stopAll();
+	                }
+	            }
+	            else
+	            {
+	                logError("Unexpected batch update error committing the database connection.", be);
+	    			setErrors(1);
+	    			stopAll();
+	            }
+			}
+			catch(Exception dbe)
+			{
+				logError("Unexpected error committing the database connection.", dbe);
+	            logError(Const.getStackTracker(dbe));
+				setErrors(1);
+				stopAll();
+			}
+			finally
+	        {
+	            setOutputDone();
+	
+	            if (getErrors()>0)
+	            {
+	                try
+	                {
+	                    data.db.rollback();
+	                }
+	                catch(KettleDatabaseException e)
+	                {
+	                    logError("Unexpected error rolling back the database connection.", e);
+	                }
+	            }
+	            
+			    data.db.disconnect();
+	        }
             super.dispose(smi, sdi);
         }        
 	}

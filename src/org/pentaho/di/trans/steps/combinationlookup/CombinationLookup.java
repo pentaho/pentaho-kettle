@@ -715,7 +715,10 @@ public class CombinationLookup extends BaseStep implements StepInterface
 			{
 				data.cache=new HashMap<RowMetaAndData, Long>();
 			}
-
+			if(meta.getDatabaseMeta()==null) {
+        		logError(BaseMessages.getString(PKG, "CombinationLookup.Init.ConnectionMissing", getStepname()));
+        		return false;
+        	}
 			data.db=new Database(this, meta.getDatabaseMeta());
 			data.db.shareVariablesWith(this);
 			try
@@ -747,30 +750,30 @@ public class CombinationLookup extends BaseStep implements StepInterface
 	    meta = (CombinationLookupMeta)smi;
 	    data = (CombinationLookupData)sdi;
 
-        try
-        {
-            if (!data.db.isAutoCommit())
-            {
-                if (getErrors()==0)
-                {
-                    data.db.commit();
-                }
-                else
-                {
-                    data.db.rollback();
-                }
-            }
-        }
-        catch(KettleDatabaseException e)
-        {
-            logError(BaseMessages.getString(PKG, "CombinationLookup.Log.UnexpectedError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
-        }
-        finally 
-        {
-        	if (data.db!=null) {
-            	data.db.disconnect();
-        	}
-        }
+	    if(data.db!=null) {
+	        try
+	        {
+	            if (!data.db.isAutoCommit())
+	            {
+	                if (getErrors()==0)
+	                {
+	                    data.db.commit();
+	                }
+	                else
+	                {
+	                    data.db.rollback();
+	                }
+	            }
+	        }
+	        catch(KettleDatabaseException e)
+	        {
+	            logError(BaseMessages.getString(PKG, "CombinationLookup.Log.UnexpectedError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+	        }
+	        finally 
+	        {
+	            data.db.disconnect();
+	        }
+	    }
 
 	    super.dispose(smi, sdi);
 	}

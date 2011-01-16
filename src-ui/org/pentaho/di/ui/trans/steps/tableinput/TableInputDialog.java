@@ -500,6 +500,7 @@ public void setPosition(){
 			mb.setMessage(BaseMessages.getString(PKG, "TableInputDialog.SelectValidConnection")); //$NON-NLS-1$
 			mb.setText(BaseMessages.getString(PKG, "TableInputDialog.DialogCaptionError")); //$NON-NLS-1$
 			mb.open();
+			return;
 		}
 		
 		dispose();

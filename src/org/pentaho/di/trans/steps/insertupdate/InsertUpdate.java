@@ -480,6 +480,10 @@ public class InsertUpdate extends BaseStep implements StepInterface
 		{
 		    try
 		    {
+		    	if(meta.getDatabaseMeta()==null) {
+	        		logError(BaseMessages.getString(PKG, "InsertUpdate.Init.ConnectionMissing", getStepname()));
+	        		return false;
+	        	}
 				data.db=new Database(this, meta.getDatabaseMeta());
 				data.db.shareVariablesWith(this);
                 if (getTransMeta().isUsingUniqueConnections())
@@ -507,34 +511,33 @@ public class InsertUpdate extends BaseStep implements StepInterface
 	    meta = (InsertUpdateMeta)smi;
 	    data = (InsertUpdateData)sdi;
 	
-        try
-        {
-            if (!data.db.isAutoCommit())
-            {
-                if (getErrors()==0)
-                {
-                    data.db.commit();
-                }
-                else
-                {
-                    data.db.rollback();
-                }
-            }
-            data.db.closeUpdate();
-            data.db.closeInsert();
-        }
-        catch(KettleDatabaseException e)
-        {
-            logError(BaseMessages.getString(PKG, "InsertUpdate.Log.UnableToCommitConnection")+e.toString()); //$NON-NLS-1$
-            setErrors(1);
-        }
-        finally 
-        {
-        	if (data.db!=null) {
-            	data.db.disconnect();
-        	}
-        }
-
+	    if(data.db!=null) {
+	        try
+	        {
+	            if (!data.db.isAutoCommit())
+	            {
+	                if (getErrors()==0)
+	                {
+	                    data.db.commit();
+	                }
+	                else
+	                {
+	                    data.db.rollback();
+	                }
+	            }
+	            data.db.closeUpdate();
+	            data.db.closeInsert();
+	        }
+	        catch(KettleDatabaseException e)
+	        {
+	            logError(BaseMessages.getString(PKG, "InsertUpdate.Log.UnableToCommitConnection")+e.toString()); //$NON-NLS-1$
+	            setErrors(1);
+	        }
+	        finally 
+	        {
+	            data.db.disconnect();
+	        }
+	    }
 	    super.dispose(smi, sdi);
 	}
 

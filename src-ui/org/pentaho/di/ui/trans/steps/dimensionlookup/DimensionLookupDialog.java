@@ -1344,6 +1344,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 			mb.setMessage(BaseMessages.getString(PKG, "DimensionLookupDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
 			mb.setText(BaseMessages.getString(PKG, "DimensionLookupDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
 			mb.open();
+			return;
 		}
 
 		dispose();

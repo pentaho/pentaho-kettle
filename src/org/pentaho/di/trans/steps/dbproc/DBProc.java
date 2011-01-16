@@ -247,31 +247,30 @@ public class DBProc extends BaseStep implements StepInterface
 	    meta = (DBProcMeta)smi;
 	    data = (DBProcData)sdi;
 	    
-		// CHE: Properly close the callable statement
-		try {
-			data.db.closeProcedureStatement();
-		} catch (KettleDatabaseException e) {
-			logError(BaseMessages.getString(PKG, "DBProc.Log.CloseProcedureError") + e.getMessage());
-		}
-
-        try
-        {
-            if (!meta.isAutoCommit())
-            {
-                data.db.commit();
-            }
-        }
-        catch(KettleDatabaseException e)
-        {
-            logError(BaseMessages.getString(PKG, "DBProc.Log.CommitError")+e.getMessage());
-        }
-        finally
-        {
-        	if (data.db!=null) {
-            	data.db.disconnect();
-        	}
-        }
-	    
+	    if(data.db!=null) {
+			// CHE: Properly close the callable statement
+			try {
+				data.db.closeProcedureStatement();
+			} catch (KettleDatabaseException e) {
+				logError(BaseMessages.getString(PKG, "DBProc.Log.CloseProcedureError") + e.getMessage());
+			}
+	
+	        try
+	        {
+	            if (!meta.isAutoCommit())
+	            {
+	                data.db.commit();
+	            }
+	        }
+	        catch(KettleDatabaseException e)
+	        {
+	            logError(BaseMessages.getString(PKG, "DBProc.Log.CommitError")+e.getMessage());
+	        }
+	        finally
+	        {
+	            data.db.disconnect();
+	        }
+	    }
 	    super.dispose(smi, sdi);
 	}
 
