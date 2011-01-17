@@ -125,7 +125,7 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 		try
 		{
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "logmessage", logmessage);
-			rep.saveJobEntryAttribute(id_job, getObjectId(), "loglevel", entryLogLevel.getCode());
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "loglevel", (entryLogLevel!=null ? entryLogLevel.getCode() : ""));
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "logsubject", logsubject);
 		}
 		catch(KettleDatabaseException dbe)
