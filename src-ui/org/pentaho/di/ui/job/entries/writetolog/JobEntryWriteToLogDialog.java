@@ -329,7 +329,9 @@ public class JobEntryWriteToLogDialog extends JobEntryDialog implements JobEntry
         jobEntry.setName(wName.getText());
         jobEntry.setLogMessage(wLogMessage.getText());
         jobEntry.setLogSubject(wLogSubject.getText());
-        jobEntry.entryLogLevel = LogLevel.values()[wLoglevel.getSelectionIndex()];
+        if (wLoglevel.getSelectionIndex() != -1) {
+           jobEntry.entryLogLevel = LogLevel.values()[wLoglevel.getSelectionIndex()];
+        }
         dispose();
     }
 }
