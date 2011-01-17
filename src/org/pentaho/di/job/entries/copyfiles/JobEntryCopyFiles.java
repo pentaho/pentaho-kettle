@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSelectInfo;
 import org.apache.commons.vfs.FileSelector;
+import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileType;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
@@ -472,8 +473,16 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
 				
 			}
 		}
+		catch (FileSystemException fse) {
+		   log.logError(BaseMessages.getString(PKG, "JobCopyFiles.Error.Exception.CopyProcessFileSystemException",  fse.getMessage()));
+		   Throwable throwable = fse.getCause();
+		   while (throwable != null) {
+		      log.logError(BaseMessages.getString(PKG, "JobCopyFiles.Log.CausedBy", throwable.getMessage()));
+		      throwable = throwable.getCause();
+		   }
+		}
 		catch (Exception e) 
-		{
+		{e.printStackTrace();
 			log.logError("Error", BaseMessages.getString(PKG, "JobCopyFiles.Error.Exception.CopyProcess",realSourceFilefoldername.toString(),destinationfilefolder.toString(), e.getMessage()), e);					
 		}
 		finally 
