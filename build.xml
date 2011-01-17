@@ -798,6 +798,7 @@
 			<formatter type="xml"/>
 			
 		  	<test todir="${junit}" name="org.pentaho.di.trans.HopTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.RowProducerTest" haltonerror="false" />
 		  	<test todir="${junit}" name="org.pentaho.di.trans.steps.addsequence.AddSequenceTest" haltonerror="false" />
 		  	<test todir="${junit}" name="org.pentaho.di.trans.steps.append.AppendTest" haltonerror="false" />
 		  	<test todir="${junit}" name="org.pentaho.di.trans.steps.blockingstep.BlockingStepTest" haltonerror="false" />
