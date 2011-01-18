@@ -3605,10 +3605,13 @@ public class Database implements VariableSpace, LoggingObjectInterface
 				for (int i = 1; i < rowMeta.size() ; i++) // Without ID_JOB or ID_BATCH
 				{
 					ValueMetaInterface valueMeta = rowMeta.getValueMeta(i);
-					if (sql == null && i > 1) {
-						sqlBuff.append(", ");
+					if (sql == null) {
+						if (i>1) {
+							sqlBuff.append(", ");	
+						}
+						sqlBuff.append(databaseMeta.quoteField(valueMeta.getName())).append("=? ");
 					}
-					sqlBuff.append(databaseMeta.quoteField(valueMeta.getName())).append("=? ");
+					
 					updateRowMeta.addValueMeta(valueMeta);
 					updateRowData[i-1] = rowData[i];
 				}
