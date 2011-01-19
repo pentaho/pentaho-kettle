@@ -42,7 +42,6 @@ public class JobFileListener implements FileListener {
             spoon.delegates.jobs.addJobGraph(jobMeta);
             
             spoon.refreshTree();
-            spoon.refreshHistory();
             SpoonPerspectiveManager.getInstance().activatePerspective(MainSpoonPerspective.class);
             return true;
             

@@ -8,6 +8,11 @@
     <toolbarseparator />
     <toolbarbutton id="clear-history" label="${TransHistory.Button.Clear}" image="images/clear-log.png"
       tooltiptext="${TransHistory.Button.Clear}" onclick="transhistory.clearLogTable()" />
+    <toolbarseparator />
+    <toolbarbutton id="fetch-next-batch-history" label="${TransHistory.Button.FetchNextBatch}" image="images/history_get_next.png"
+      tooltiptext="${TransHistory.Button.FetchNextBatch}" onclick="transhistory.fetchNextBatch()" />
+    <toolbarbutton id="fetch-all-history" label="${TransHistory.Button.FetchAll}" image="images/history_get_all.png"
+      tooltiptext="${TransHistory.Button.FetchAll}" onclick="transhistory.fetchAll()" />
   </toolbar>
 
 </window>
