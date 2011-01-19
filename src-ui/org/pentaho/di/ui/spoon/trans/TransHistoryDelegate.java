@@ -13,16 +13,18 @@
 package org.pentaho.di.ui.spoon.trans;
 
 import java.sql.ResultSet;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.ResourceBundle;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -33,15 +35,12 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.swt.widgets.ToolItem;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.logging.ChannelLogTable;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LogTableField;
@@ -77,31 +76,25 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
 
   private List<ColumnInfo[]> columns;
 
-  private List<List<LogTableField>> logTableFields;
-
   private List<Text> wText;
 
   private List<TableView> wFields;
-
-  private List<List<Object[]>> rowList;
-
-  private boolean displayRefreshNeeded = true;
-
-  private boolean refreshNeeded = true;
-
-  private Object refreshNeededLock = new Object();
 
   private XulToolbar toolbar;
 
   private Composite transHistoryComposite;
 
-  private List<LogTableInterface> logTables;
-
   private TransMeta transMeta;
 
   private CTabFolder tabFolder;
 
-  protected boolean gettingHistoryData;
+  private XulToolbarbutton refreshButton;
+  private XulToolbarbutton fetchNextBatchButton;
+  private XulToolbarbutton fetchAllButton;
+
+  private TransHistoryModel[] models;
+  
+  private enum Mode { INITIAL, NEXT_BATCH, ALL };
 
   /**
    * @param spoon
@@ -155,66 +148,46 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
     
     addLogTableTabs();
     tabFolder.setSelection(0);
+    
+    tabFolder.addSelectionListener(new SelectionListener() {
+      @Override
+      public void widgetSelected(SelectionEvent arg0) {
+        setMoreRows(true);
+      }
+      
+      @Override
+      public void widgetDefaultSelected(SelectionEvent arg0) {
+      }
+    });
 
     transHistoryComposite.pack();
     transHistoryTab.setControl(transHistoryComposite);
     transGraph.extraViewTabFolder.setSelection(transHistoryTab);
 
-    // Launch a refresh in the background...
-    //
-    refreshHistory();
-
-    final Timer timer = new Timer("TransHistoryDelegate Timer");
-    TimerTask timerTask = new TimerTask() {
-      public void run() {
-        if (displayRefreshNeeded) {
-          displayRefreshNeeded = false;
-          synchronized(rowList){
-            for (int i = 0; i < logTables.size(); i++) {
-              final int index = i;
-              spoon.getDisplay().syncExec(new Runnable() {
-
-                public void run() {
-                  if (!Const.isEmpty(rowList) && index < rowList.size()) {
-                   displayHistoryData(logTables.get(index), index, rowList.get(index));
-                  }
-                }
-              });
-            }
-          }
-        }
-      };
-    };
-
-    // Try to refresh every second or so...
-    //
-    timer.schedule(timerTask, 1000, 1000);
-
-    // Make sure the timer stops when we close the tab...
-    //
-    transHistoryTab.addDisposeListener(new DisposeListener() {
-      public void widgetDisposed(DisposeEvent arg0) {
-        timer.cancel();
-      }
-    });
+    if (!Props.getInstance().disableInitialExecutionHistory()) {
+      refreshAllHistory();
+    }
   }
 
   private void addLogTableTabs() {
 
-    logTables = transMeta.getLogTables();
+    models = new TransHistoryModel[transMeta.getLogTables().size()];
+    for (int i = 0; i < models.length; i++) {
+      models[i] = new TransHistoryModel();
+      models[i].logTable = transMeta.getLogTables().get(i);
+    }
 
-    columns = new ArrayList<ColumnInfo[]>();
-    rowList = new ArrayList<List<Object[]>>();
-    logTableFields = new ArrayList<List<LogTableField>>();
-    wFields = new ArrayList<TableView>();
-    wText = new ArrayList<Text>();
+    columns = new ArrayList<ColumnInfo[]>(models.length);
+    wFields = new ArrayList<TableView>(models.length);
+    wText = new ArrayList<Text>(models.length);
 
     // Create a nested tab folder in the tab item, on the history composite...
     //
     tabFolder = new CTabFolder(transHistoryComposite, SWT.MULTI);
     spoon.props.setLook(tabFolder, Props.WIDGET_STYLE_TAB);
 
-    for (LogTableInterface logTable : logTables) {
+    for (TransHistoryModel model : models) {
+      LogTableInterface logTable = model.logTable;
       CTabItem tabItem = new CTabItem(tabFolder, SWT.NONE);
       // tabItem.setImage(GUIResource.getInstance().getImageShowHistory());
       tabItem.setText(logTable.getLogTableType());
@@ -276,7 +249,7 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
           }
         }
       }
-      logTableFields.add(fields);
+      model.logTableFields = fields;
 
       final int FieldsRows = 1;
       ColumnInfo[] colinf = columnList.toArray(new ColumnInfo[columnList.size()]);
@@ -333,11 +306,10 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
       xulDomContainer.addEventHandler(this);
       toolbar = (XulToolbar) xulDomContainer.getDocumentRoot().getElementById("nav-toolbar"); //$NON-NLS-1$
 
-      XulToolbarbutton onlyActiveButton = (XulToolbarbutton) toolbar.getElementById("show-inactive"); //$NON-NLS-1$
-      if (onlyActiveButton != null) {
-        ((ToolItem) onlyActiveButton.getManagedObject()).setImage(GUIResource.getInstance().getImageHideInactive());
-      }
-
+      refreshButton = (XulToolbarbutton) xulDomContainer.getDocumentRoot().getElementById("refresh-history"); //$NON-NLS-1$
+      fetchNextBatchButton = (XulToolbarbutton) xulDomContainer.getDocumentRoot().getElementById("fetch-next-batch-history"); //$NON-NLS-1$
+      fetchAllButton = (XulToolbarbutton) xulDomContainer.getDocumentRoot().getElementById("fetch-all-history"); //$NON-NLS-1$
+      
       ToolBar swtToolBar = (ToolBar) toolbar.getManagedObject();
       swtToolBar.layout(true, true);
     } catch (Throwable t) {
@@ -346,6 +318,9 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
     }
   }
 
+  /**
+   * Public for XUL.
+   */
   public void clearLogTable() {
     clearLogTable(tabFolder.getSelectionIndex());
   }
@@ -354,9 +329,9 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
    * User requested to clear the log table.<br>
    * Better ask confirmation
    */
-  public void clearLogTable(int index) {
+  private void clearLogTable(int index) {
 
-    LogTableInterface logTable = logTables.get(index);
+    LogTableInterface logTable = models[index].logTable;
 
     if (logTable.isDefined()) {
       String schemaTable = logTable.getQuotedSchemaTableCombination();
@@ -387,17 +362,9 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
     }
   }
 
-  public void showHistoryView() {
-
-    if (transHistoryTab == null || transHistoryTab.isDisposed()) {
-      addTransHistory();
-    } else {
-      transHistoryTab.dispose();
-
-      transGraph.checkEmptyExtraView();
-    }
-  }
-
+  /**
+   * Public for XUL.
+   */
   public void replayHistory() {
     int tabIndex = tabFolder.getSelectionIndex();
     int idx = wFields.get(tabIndex).getSelectionIndex();
@@ -410,52 +377,100 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
   }
 
   /**
-   * Background threaded refresh of the history data...
-   * 
+   * Public for XUL. 
    */
   public void refreshHistory() {
+    int tabIndex = tabFolder.getSelectionIndex();
+    refreshHistory(tabIndex);
+  }
+  
+  private void refreshAllHistory() {
+    for (int i = 0; i < models.length; i++) {
+      refreshHistory(i);
+    }
+  }
+  
+  /**
+   * Background thread refreshes history data
+   */
+  private void refreshHistory(final int index) {
     new Thread(new Runnable() {
       public void run() {
-        if (!gettingHistoryData) {
-          gettingHistoryData = true;
-          synchronized(rowList){
-            rowList.clear();
-            for (int i = 0; i < logTables.size(); i++) {
-              List<Object[]> rows;
-              try {
-                rows = getHistoryData(logTables.get(i));
-              } catch (Exception e) {
-                LogChannel.GENERAL.logError("Unable to get rows of data from logging table "+logTables.get(i), e);
-                rows = new ArrayList<Object[]>();
-              }
-              rowList.add(rows);
-            }
-          }
 
-          // Signal the refresh timer that there is work...
-          //
-          displayRefreshNeeded = true;
-          gettingHistoryData = false;
-        }
+              // do gui stuff here
+              spoon.getDisplay().syncExec(new Runnable() {
+                public void run() {
+                  setQueryInProgress(true);
+                }
+               });
+
+              
+              final boolean moreRows = getHistoryData(index, Mode.INITIAL);
+              
+              
+           // do gui stuff here
+              spoon.getDisplay().syncExec(new Runnable() {
+                public void run() {
+                  displayHistoryData(index);
+                  setQueryInProgress(false);
+                  setMoreRows(moreRows);
+                }
+               });
+            
+          
+        
       }
     }).start();
   }
-
-  public List<Object[]> getHistoryData(LogTableInterface logTable) throws KettleException {
+  
+  private void setMoreRows(final boolean moreRows) {
+    fetchNextBatchButton.setDisabled(!moreRows);
+  }
+  
+  /**
+   * Don't allow more queries until this one finishes.
+   * @param inProgress
+   */
+  private void setQueryInProgress(final boolean inProgress) {
+    refreshButton.setDisabled(inProgress);
+    fetchNextBatchButton.setDisabled(inProgress);
+    fetchAllButton.setDisabled(inProgress);
+  }
+  
+  private boolean getHistoryData(final int index, final Mode mode) {
+    final int BATCH_SIZE = Props.getInstance().getLinesInHistoryFetchSize();
+    boolean moreRows = false;
+    LogTableInterface logTable = models[index].logTable;
     // See if there is a transformation loaded that has a connection table specified.
     // 
     if (transMeta != null && !Const.isEmpty(transMeta.getName()) && logTable.isDefined()) {
-      DatabaseMeta logConnection = logTable.getDatabaseMeta();
-
-      int maxLines = Props.getInstance().getMaxNrLinesInHistory();
-      
       Database database = null;
       try {
+        DatabaseMeta logConnection = logTable.getDatabaseMeta();
+        
         // open a connection
         database = new Database(loggingObject, logConnection);
         database.shareVariablesWith(transMeta);
         database.connect();
 
+        int queryLimit = 0;
+        
+        switch (mode) {
+          case ALL:
+            models[index].batchCount = 0;
+            queryLimit = Props.getInstance().getMaxNrLinesInHistory();
+            break;
+          case NEXT_BATCH:
+            models[index].batchCount++;
+            queryLimit = BATCH_SIZE * models[index].batchCount;
+            break;
+          case INITIAL:
+            models[index].batchCount = 1;
+            queryLimit = BATCH_SIZE;
+            break;
+        }
+        database.setQueryLimit(queryLimit);
+        
         // First, we get the information out of the database table...
         //
         String schemaTable = logTable.getQuotedSchemaTableCombination();
@@ -491,15 +506,8 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
             params.addValue(new ValueMeta("transname_literal", ValueMetaInterface.TYPE_STRING), transMeta.getName()); //$NON-NLS-1$
             
           }
-        } else if (logTable instanceof ChannelLogTable){
-
-          // Set a reasonable default on this until we find a more convenient way to limit this large block of data.
-          if (maxLines<=0) {
-            maxLines=250;
-          }
-          
         }
-
+        
         if (keyField != null && keyField.isEnabled()) {
           sql += " ORDER BY " + logConnection.quoteField(keyField.getFieldName()) + " DESC"; //$NON-NLS-1$//$NON-NLS-2$
         }
@@ -508,40 +516,48 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
 
         List<Object[]> rows = new ArrayList<Object[]>();
         Object[] rowData = database.getRow(resultSet);
+        int rowsFetched = 1;
         while (rowData != null) {
           rows.add(rowData);
-          if (rowList.size() < maxLines || maxLines <= 0) {
-            rowData = database.getRow(resultSet);
-          } else {
-            break;
-          }
+          rowData = database.getRow(resultSet);
+          rowsFetched++;
         }
+        
+        if (rowsFetched >= queryLimit) {
+          moreRows = true;
+        }
+        
         database.closeQuery(resultSet);
 
-        return rows;
+        models[index].rows = rows;
       } catch (Exception e) {
-        throw new KettleException("Error retrieveing log records for log table '" + logTable.getLogTableType(), e); //$NON-NLS-1$
+        LogChannel.GENERAL.logError("Unable to get rows of data from logging table "+models[index].logTable, e); //$NON-NLS-1$
+        models[index].rows = new ArrayList<Object[]>();
       } finally {
         if (database != null)
           database.disconnect();
       }
     } else {
-      return new ArrayList<Object[]>();
+      models[index].rows = new ArrayList<Object[]>();
     }
+    return moreRows;
   }
 
-  public void displayHistoryData(LogTableInterface logTable, int tabIndex, List<Object[]> rows) {
-    ColumnInfo[] colinf = columns.get(tabIndex);
+  private void displayHistoryData(final int index) {
+    LogTableInterface logTable = models[index].logTable;
+    List<Object[]> rows = models[index].rows;
+    
+    ColumnInfo[] colinf = columns.get(index);
 
     // Now, we're going to display the data in the table view
     //
-    if (tabIndex>=wFields.size() || wFields.get(tabIndex).isDisposed()) {
+    if (index>=wFields.size() || wFields.get(index).isDisposed()) {
       return;
     }
 
-    int selectionIndex = wFields.get(tabIndex).getSelectionIndex();
+    int selectionIndex = wFields.get(index).getSelectionIndex();
 
-    wFields.get(tabIndex).table.clearAll();
+    wFields.get(index).table.clearAll();
 
     if (rows != null && rows.size() > 0) {
       // OK, now that we have a series of rows, we can add them to the table view...
@@ -549,7 +565,7 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
       for (int i = 0; i < rows.size(); i++) {
         Object[] rowData = rows.get(i);
 
-        TableItem item = new TableItem(wFields.get(tabIndex).table, SWT.NONE);
+        TableItem item = new TableItem(wFields.get(index).table, SWT.NONE);
 
         for (int c = 0; c < colinf.length; c++) {
 
@@ -572,19 +588,19 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
 
         LogTableField errorsField = logTable.getErrorsField();
         if (errorsField != null) {
-          int index = logTableFields.get(tabIndex).indexOf(errorsField);
+          int index1 = models[index].logTableFields.indexOf(errorsField);
           try {
-            errors = colinf[index].getValueMeta().getInteger(rowData[index]);
+            errors = colinf[index1].getValueMeta().getInteger(rowData[index1]);
           } catch (KettleValueException e) {
             log.logError("history data conversion issue", e); //$NON-NLS-1$
           }
         }
         LogTableField statusField = logTable.getStatusField();
         if (statusField != null) {
-          int index = logTableFields.get(tabIndex).indexOf(statusField);
+          int index1 = models[index].logTableFields.indexOf(statusField);
           String statusString = null;
           try {
-            statusString = colinf[index].getValueMeta().getString(rowData[index]);
+            statusString = colinf[index1].getValueMeta().getString(rowData[index1]);
           } catch (KettleValueException e) {
             log.logError("history data conversion issue", e); //$NON-NLS-1$
           }
@@ -600,31 +616,31 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
         }
       }
 
-      wFields.get(tabIndex).removeEmptyRows();
-      wFields.get(tabIndex).setRowNums();
-      wFields.get(tabIndex).optWidth(true);
+      wFields.get(index).removeEmptyRows();
+      wFields.get(index).setRowNums();
+      wFields.get(index).optWidth(true);
     } else {
-      wFields.get(tabIndex).clearAll(false);
+      wFields.get(index).clearAll(false);
       // new TableItem(wFields.get(tabIndex).table, SWT.NONE); // Give it an item to prevent errors on various platforms.
     }
 
-    if (selectionIndex >= 0 && selectionIndex < wFields.get(tabIndex).getItemCount()) {
-      wFields.get(tabIndex).table.select(selectionIndex);
+    if (selectionIndex >= 0 && selectionIndex < wFields.get(index).getItemCount()) {
+      wFields.get(index).table.select(selectionIndex);
       showLogEntry();
     }
   }
 
-  public void showLogEntry() {
+  private void showLogEntry() {
     int tabIndex = tabFolder.getSelectionIndex();
-    LogTableInterface logTable = logTables.get(tabIndex);
-    List<LogTableField> fields = logTableFields.get(tabIndex);
+    LogTableInterface logTable = models[tabIndex].logTable;
+    List<LogTableField> fields = models[tabIndex].logTableFields;
 
     Text text = wText.get(tabIndex);
 
     if (text == null || text.isDisposed())
       return;
 
-    List<Object[]> list = rowList.get(tabIndex);
+    List<Object[]> list = models[tabIndex].rows;
 
     if (list == null || list.size() == 0) {
       String message;
@@ -645,7 +661,7 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
 
       // What is the name of the log field?
       //
-      LogTableField logField = logTables.get(tabIndex).getLogField();
+      LogTableField logField = models[tabIndex].logTable.getLogField();
       if (logField != null) {
         int index = fields.indexOf(logField);
         if (index>=0) {
@@ -656,27 +672,9 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
           text.setSelection(text.getText().length());
           text.showSelection();
         } else {
-          text.setText(BaseMessages.getString(PKG, "TransHistory.HistoryConfiguration.NoLoggingFieldDefined"));
+          text.setText(BaseMessages.getString(PKG, "TransHistory.HistoryConfiguration.NoLoggingFieldDefined")); //$NON-NLS-1$
         }
       }
-    }
-  }
-
-  public void refreshHistoryIfNeeded() {
-    boolean reallyRefresh = false;
-    synchronized (refreshNeededLock) {
-      reallyRefresh = refreshNeeded;
-      refreshNeeded = false;
-    }
-
-    if (reallyRefresh) {
-      refreshHistory();
-    }
-  }
-
-  public void markRefreshNeeded() {
-    synchronized (refreshNeededLock) {
-      refreshNeeded = true;
     }
   }
 
@@ -725,5 +723,92 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
    */
   public void setXulDomContainer(XulDomContainer xulDomContainer) {
   }
+  
+  /**
+   * XUL event: fetches next x records for current log table.
+   */
+  public void fetchNextBatch() {
+    int tabIndex = tabFolder.getSelectionIndex();
+    fetchNextBatch(tabIndex);
+  }
+  
+  private void fetchNextBatch(final int index) {
+    new Thread(new Runnable() {
+      public void run() {
 
+              // do gui stuff here
+              spoon.getDisplay().syncExec(new Runnable() {
+                public void run() {
+                  setQueryInProgress(true);
+                }
+               });
+
+              
+              final boolean moreRows = getHistoryData(index, Mode.NEXT_BATCH);
+              
+              
+           // do gui stuff here
+              spoon.getDisplay().syncExec(new Runnable() {
+                public void run() {
+                  displayHistoryData(index);
+                  setQueryInProgress(false);
+                  setMoreRows(moreRows);
+                }
+               });
+            
+          
+        
+      }
+    }).start();
+
+  }
+  
+  /**
+   * XUL event: loads all load records for current log table.
+   */
+  public void fetchAll() {
+    int tabIndex = tabFolder.getSelectionIndex();
+    fetchAll(tabIndex);
+  }
+  
+  private void fetchAll(final int index) {
+    new Thread(new Runnable() {
+      public void run() {
+
+              // do gui stuff here
+              spoon.getDisplay().syncExec(new Runnable() {
+                public void run() {
+                  setQueryInProgress(true);
+                }
+               });
+
+              
+              final boolean moreRows = getHistoryData(index, Mode.ALL);
+              
+              
+           // do gui stuff here
+              spoon.getDisplay().syncExec(new Runnable() {
+                public void run() {
+                  displayHistoryData(index);
+                  setQueryInProgress(false);
+                  setMoreRows(moreRows);
+                }
+               });
+            
+          
+        
+      }
+    }).start();
+  }
+  
+  private static class TransHistoryModel {
+    public List<LogTableField> logTableFields;
+    public List<Object[]> rows;
+    public LogTableInterface logTable;
+    /**
+     * Number of batches fetched so far. When the next batch is fetched, the number of rows displayed will be the max of
+     * batchCount * BATCH_SIZE and resultSet row count.
+     */
+    public int batchCount;
+  }
 }

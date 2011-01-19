@@ -135,6 +135,8 @@ public class Props implements Cloneable
 
     private static final String STRING_MAX_NR_LINES_IN_LOG = "MaxNrOfLinesInLog";
     private static final String STRING_MAX_NR_LINES_IN_HISTORY = "MaxNrOfLinesInHistory";
+    private static final String STRING_LINES_IN_HISTORY_FETCH_SIZE = "LinesInHistoryFetchSize";
+    public static final String STRING_DISABLE_INITIAL_EXECUTION_HISTORY             = "DisableInitialExecutionHistory";
     private static final String STRING_MAX_LOG_LINE_TIMEOUT_MINUTES = "MaxLogLineTimeOutMinutes";
 
     protected LogChannelInterface log;
@@ -201,6 +203,7 @@ public class Props implements Cloneable
             throw new RuntimeException("The properties systems settings are already initialised!");
         }
     }
+
 	
 	/**
 	 * Check to see whether the Kettle properties where loaded.
@@ -672,9 +675,30 @@ public class Props implements Cloneable
         return Const.toInt(lines, Const.MAX_NR_HISTORY_LINES);
     }
     
+    public int getLinesInHistoryFetchSize()
+    {
+      String fetchSize = properties.getProperty(STRING_LINES_IN_HISTORY_FETCH_SIZE);
+      return Const.toInt(fetchSize, Const.HISTORY_LINES_FETCH_SIZE);
+    }
+    
+    public boolean disableInitialExecutionHistory()
+    {
+        String disable = properties.getProperty(STRING_DISABLE_INITIAL_EXECUTION_HISTORY, "N");
+        return "Y".equalsIgnoreCase(disable);
+    }
+    
     public void setMaxNrLinesInHistory(int maxNrLinesInHistory)
     {
         properties.setProperty(STRING_MAX_NR_LINES_IN_HISTORY, Integer.toString(maxNrLinesInHistory));
+    }
+
+    public void setLinesInHistoryFetchSize(int linesInHistoryFetchSize)
+    {
+      properties.setProperty(STRING_LINES_IN_HISTORY_FETCH_SIZE, Integer.toString(linesInHistoryFetchSize));
+    }
+    
+    public void setDisableInitialExecutionHistory(boolean disable) {
+      properties.setProperty(STRING_DISABLE_INITIAL_EXECUTION_HISTORY, disable?"Y":"N");
     }
 
     public int getMaxLogLineTimeoutMinutes()

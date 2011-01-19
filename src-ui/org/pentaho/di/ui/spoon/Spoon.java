@@ -1581,7 +1581,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
           try {
             loadLastUsedFile(lastUsedFile, rep == null ? null : rep.getName());
             addMenuLast();
-            refreshHistory();
           } catch (KettleException ke) {
             // "Error loading transformation", "I was unable to load this
             // transformation from the
@@ -1611,7 +1610,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       try {
         loadLastUsedFile(lastUsedFile, rep == null ? null : rep.getName());
         addMenuLast();
-        refreshHistory();
       } catch (KettleException ke) {
         // "Error loading transformation", "I was unable to load this
         // transformation from the
@@ -3555,7 +3553,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
           }
           refreshGraph();
           refreshTree();
-          refreshHistory();
         } else
         // Load a job
         if (RepositoryObjectType.JOB.equals(type)) {
@@ -5450,13 +5447,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     }
 
     setShellText();
-  }
-
-  public void refreshHistory() {
-    final TransGraph transGraph = getActiveTransGraph();
-    if (transGraph != null) {
-      transGraph.transHistoryDelegate.markRefreshNeeded();
-    }
   }
 
   public StepMeta newStep(TransMeta transMeta) {

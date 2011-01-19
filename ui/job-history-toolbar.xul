@@ -8,6 +8,11 @@
     <toolbarseparator />
     <toolbarbutton id="clear-history" label="${JobHistory.Button.Clear}" image="images/clear-log.png"
       tooltiptext="${JobHistory.Button.Clear}" onclick="history.clearLogTable()" />
+    <toolbarseparator />
+    <toolbarbutton id="fetch-next-batch-history" label="${JobHistory.Button.FetchNextBatch}" image="images/history_get_next.png"
+      tooltiptext="${JobHistory.Button.FetchNextBatch}" onclick="history.fetchNextBatch()" />
+    <toolbarbutton id="fetch-all-history" label="${JobHistory.Button.FetchAll}" image="images/history_get_all.png"
+      tooltiptext="${JobHistory.Button.FetchAll}" onclick="history.fetchAll()" />
   </toolbar>
 
 </window>
