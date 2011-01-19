@@ -260,8 +260,6 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
    */
   private boolean impactFinished;
 
-  private TransHistoryRefresher spoonHistoryRefresher;
-
   private TransDebugMeta lastTransDebugMeta;
 
   private Map<String, XulMenupopup> menuMap = new HashMap<String, XulMenupopup>();
@@ -3705,9 +3703,6 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 				initialized = false;
 				halted = false;
 				halting = false;
-
-				if (spoonHistoryRefresher != null)
-					spoonHistoryRefresher.markRefreshNeeded();
 
 				setControlStates();
 

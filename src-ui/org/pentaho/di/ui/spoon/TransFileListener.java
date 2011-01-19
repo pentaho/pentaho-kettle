@@ -69,7 +69,6 @@ public class TransFileListener implements FileListener {
 
             SpoonPerspectiveManager.getInstance().activatePerspective(MainSpoonPerspective.class);
             spoon.refreshTree();
-            spoon.refreshHistory();
             return true;
             
         }
