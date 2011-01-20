@@ -17,15 +17,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -39,15 +35,12 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.ToolBar;
-import org.eclipse.swt.widgets.ToolItem;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.logging.ChannelLogTable;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LogTableField;
@@ -719,6 +712,45 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
    * @see org.pentaho.ui.xul.impl.XulEventHandler#setXulDomContainer(org.pentaho.ui.xul.XulDomContainer)
    */
   public void setXulDomContainer(XulDomContainer xulDomContainer) {
+  }
+  
+  /**
+   * XUL event: fetches next x records for current log table.
+   */
+  public void fetchNextBatch() {
+    int tabIndex = tabFolder.getSelectionIndex();
+    fetchNextBatch(tabIndex);
+  }
+  
+  private void fetchNextBatch(final int index) {
+    new Thread(new Runnable() {
+      public void run() {
+
+              // do gui stuff here
+              spoon.getDisplay().syncExec(new Runnable() {
+                public void run() {
+                  setQueryInProgress(true);
+                }
+               });
+
+              
+              final boolean moreRows = getHistoryData(index, Mode.NEXT_BATCH);
+              
+              
+           // do gui stuff here
+              spoon.getDisplay().syncExec(new Runnable() {
+                public void run() {
+                  displayHistoryData(index);
+                  setQueryInProgress(false);
+                  setMoreRows(moreRows);
+                }
+               });
+            
+          
+        
+      }
+    }).start();
+
   }
   
   /**
