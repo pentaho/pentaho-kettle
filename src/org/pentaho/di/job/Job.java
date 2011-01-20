@@ -972,7 +972,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         db.connect();
         
         for (JobEntryCopy copy : jobMeta.getJobCopies()) {
-          db.writeLogRecord(jobEntryLogTable, LogStatus.END, copy, this);
+          db.writeLogRecord(jobEntryLogTable, LogStatus.START, copy, this);
         }
   
       } catch (Exception e) {
