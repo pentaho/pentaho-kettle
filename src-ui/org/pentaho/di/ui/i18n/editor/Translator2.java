@@ -216,8 +216,11 @@ public class Translator2
         	for (int i=0;i<locales.length;i++) {
         	    double donePct = 100 * (double)keyCounts[i] / (double)nrKeys;
         	    int missingKeys = nrKeys - keyCounts[i];
-        	    String statusKeys = "# "+nrFormat.format(i+1)+" : "+locales[i]+" : "+pctFormat.format(donePct)+"% complete  ("+keyCounts[i]+")" +
-        	    	(missingKeys!=0 ? ("...missing " + missingKeys) : "");
+        	    String statusKeys = "# " + nrFormat.format(i+1) +
+        	    			" : " + locales[i] + 
+        	    			" : " + pctFormat.format(donePct) +
+        	                         "% " + BaseMessages.getString(PKG, "i18n.Log.CompleteKeys", keyCounts[i]) +
+        	    	(missingKeys!=0 ? BaseMessages.getString(PKG, "i18n.Log.MissingKeys", missingKeys) : "");
         	    System.out.println(statusKeys);
         	}
         }
@@ -317,7 +320,7 @@ public class Translator2
     				xmlFolders.add(xmlFolder);
     			}
 
-    			System.out.println(xmlFolders.size()+" XML folders to scan:");
+    			System.out.println(BaseMessages.getString(PKG, "i18n.Log.XMLFoldersToScan", xmlFolders.size()));
     			for (SourceCrawlerXMLFolder xmlFolder : xmlFolders) {
     				System.out.println("folder ["+xmlFolder.getFolder()+"] : wildcard ["+xmlFolder.getWildcard()+"] with "+xmlFolder.getElements().size()+" elements to scan for");
     			}
