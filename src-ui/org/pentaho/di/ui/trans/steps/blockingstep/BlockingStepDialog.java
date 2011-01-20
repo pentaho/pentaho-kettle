@@ -140,7 +140,6 @@ public class BlockingStepDialog extends BaseStepDialog implements StepDialogInte
             {
                 public void widgetSelected(SelectionEvent e)
                 {
-                    input.setPassAllRows(!input.isPassAllRows());
                     input.setChanged();
                     setEnableDialog();                
                 }
@@ -340,16 +339,14 @@ public class BlockingStepDialog extends BaseStepDialog implements StepDialogInte
      */
     private void setEnableDialog()
     {
-        boolean isPassRows = input.isPassAllRows();
-        
-    	wlSpoolDir.setEnabled(isPassRows);
-    	wbSpoolDir.setEnabled(isPassRows);
-    	wSpoolDir.setEnabled(isPassRows);
-  	    wlPrefix.setEnabled(isPassRows);
-    	wPrefix.setEnabled(isPassRows);
-        wlCacheSize.setEnabled(isPassRows);
-        wCacheSize.setEnabled(isPassRows);
-        wlCompress.setEnabled(isPassRows);
-        wCompress.setEnabled(isPassRows);
+    	wlSpoolDir.setEnabled(wPassAllRows.getSelection());
+    	wbSpoolDir.setEnabled(wPassAllRows.getSelection());
+    	wSpoolDir.setEnabled(wPassAllRows.getSelection());
+  	    wlPrefix.setEnabled(wPassAllRows.getSelection());
+    	wPrefix.setEnabled(wPassAllRows.getSelection());
+        wlCacheSize.setEnabled(wPassAllRows.getSelection());
+        wCacheSize.setEnabled(wPassAllRows.getSelection());
+        wlCompress.setEnabled(wPassAllRows.getSelection());
+        wCompress.setEnabled(wPassAllRows.getSelection());
     }
 }
