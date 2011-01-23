@@ -322,7 +322,7 @@ public class Translator2
 
     			System.out.println(BaseMessages.getString(PKG, "i18n.Log.XMLFoldersToScan", xmlFolders.size()));
     			for (SourceCrawlerXMLFolder xmlFolder : xmlFolders) {
-    				System.out.println("folder ["+xmlFolder.getFolder()+"] : wildcard ["+xmlFolder.getWildcard()+"] with "+xmlFolder.getElements().size()+" elements to scan for");
+    			    	System.out.println(BaseMessages.getString(PKG, "i18n.Log.Folder",xmlFolder.getFolder(), xmlFolder.getWildcard(), xmlFolder.getElements().size() ));
     			}
     		}
     		catch (Exception e) {
