@@ -33,7 +33,7 @@
   <files-to-avoid>
     <filename>MessagesSourceCrawler.java</filename>
     <filename>KeyOccurence.java</filename>
-    <filename>TransLator.java</filename>
+    <filename>Translator.java</filename>
     <filename>MenuHelper.java</filename>
     <filename>Messages.java</filename>
     <filename>XulMessages.java</filename>
