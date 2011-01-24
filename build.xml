@@ -802,6 +802,7 @@
 		  	<test todir="${junit}" name="org.pentaho.di.trans.steps.addsequence.AddSequenceTest" haltonerror="false" />
 		  	<test todir="${junit}" name="org.pentaho.di.trans.steps.append.AppendTest" haltonerror="false" />
 		  	<test todir="${junit}" name="org.pentaho.di.trans.steps.blockingstep.BlockingStepTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.checksum.CheckSumTest" haltonerror="false" />
   			<test todir="${junit}" name="org.pentaho.di.trans.steps.combinationlookup.CombinationLookupTest" haltonerror="false" />
   			<test todir="${junit}" name="org.pentaho.di.trans.steps.constant.ConstantTest" haltonerror="false" />
   			<test todir="${junit}" name="org.pentaho.di.trans.steps.csvinput.CsvInput1Test" haltonerror="false" />

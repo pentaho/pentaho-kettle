@@ -16,6 +16,7 @@ import java.security.MessageDigest;
 import java.util.zip.Adler32;
 import java.util.zip.CRC32;
 
+import org.apache.commons.codec.binary.Hex;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -106,7 +107,8 @@ public class CheckSum extends BaseStep implements StepInterface {
 						outputRowData = RowDataUtil.addValueData(r, getInputRowMeta().size(), o);
 						break;
 					case CheckSumMeta.result_TYPE_HEXADECIMAL : 
-						outputRowData = RowDataUtil.addValueData(r, getInputRowMeta().size(), byteToHexEncode(o));
+					  String hex = meta.isCompatibilityMode() ? byteToHexEncode_compatible(o) : new String(Hex.encodeHex(o));
+						outputRowData = RowDataUtil.addValueData(r, getInputRowMeta().size(), hex);
 						break;
 					default: 
 						outputRowData = RowDataUtil.addValueData(r, getInputRowMeta().size(), getStringFromBytes(o));
@@ -174,7 +176,7 @@ public class CheckSum extends BaseStep implements StepInterface {
 		}
 		return sb.toString();
 	}
-	 public String byteToHexEncode(byte[] in)
+	 public String byteToHexEncode_compatible(byte[] in)
 	 {
 		 	if(in==null) return null;
 	        final char hexDigits[] ={ '0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F' };
