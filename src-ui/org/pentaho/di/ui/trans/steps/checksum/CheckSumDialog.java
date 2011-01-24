@@ -78,6 +78,10 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
 	private Text         wResult;
 	private FormData     fdlResult, fdResult;
 	
+	private Label        wlCompatibility;
+	private Button       wCompatibility;
+	private FormData     fdlCompatibility, fdCompatibility;
+	
 	private ColumnInfo[] colinf;
 	
     private Map<String, Integer> inputFields;
@@ -217,14 +221,39 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
 
 		setButtonPositions(new Button[] { wOK, wGet, wCancel }, margin, null);
         
-	
+	   // Are we operating in compatibility mode?
+    wlCompatibility=new Label(shell, SWT.RIGHT);
+    wlCompatibility.setText(BaseMessages.getString(PKG, "CheckSumDialog.CompatibilityMode.Label")); //$NON-NLS-1$
+    props.setLook(wlCompatibility);
+    fdlCompatibility=new FormData();
+    fdlCompatibility.left  = new FormAttachment(0, 0);
+    fdlCompatibility.top   = new FormAttachment(wResult, margin);
+    fdlCompatibility.right = new FormAttachment(middle, -margin);
+    wlCompatibility.setLayoutData(fdlCompatibility);
+    wCompatibility=new Button(shell, SWT.CHECK);
+    wCompatibility.setToolTipText(BaseMessages.getString(PKG, "CheckSumDialog.CompatibilityMode.Tooltip")); //$NON-NLS-1$
+    props.setLook(wCompatibility);
+    fdCompatibility=new FormData();
+    fdCompatibility.left  = new FormAttachment(middle, 0);
+    fdCompatibility.top   = new FormAttachment(wResult, margin);
+    fdCompatibility.right = new FormAttachment(100, 0);
+    wCompatibility.setLayoutData(fdCompatibility);
+    SelectionAdapter lsSelR = new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent arg0)
+            {
+                input.setChanged();
+            }
+        };
+    wCompatibility.addSelectionListener(lsSelR);
+		
         // Table with fields
 		wlFields=new Label(shell, SWT.NONE);
 		wlFields.setText(BaseMessages.getString(PKG, "CheckSumDialog.Fields.Label"));
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
-		fdlFields.top  = new FormAttachment(wResult, margin);
+		fdlFields.top  = new FormAttachment(wCompatibility, margin);
 		wlFields.setLayoutData(fdlFields);
 		
 		final int FieldsCols=1;
@@ -367,7 +396,8 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
 		wType.select(input.getTypeByDesc());
 		if (input.getResultFieldName()!=null) wResult.setText(input.getResultFieldName());
 		wResultType.setText(CheckSumMeta.getResultTypeDesc(input.getResultType()));
-		
+		wCompatibility.setSelection(input.isCompatibilityMode());
+
 		Table table = wFields.table;
 		if (input.getFieldName().length>0) table.removeAll();
 		for (int i=0;i<input.getFieldName().length;i++)
@@ -402,6 +432,8 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
 		
 		input.setResultFieldName( wResult.getText() );
 		input.setResultType(CheckSumMeta.getResultTypeByDesc(wResultType.getText()));
+		
+		input.setCompatibilityMode(wCompatibility.getSelection());
 		
 		int nrfields = wFields.nrNonEmpty();
 		input.allocate(nrfields);
