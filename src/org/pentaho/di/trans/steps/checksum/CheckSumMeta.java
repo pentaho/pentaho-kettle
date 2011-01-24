@@ -221,7 +221,7 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
     if (compatibilityMode == null) {
       return true; // It was previously not saved
     } else {
-      return "Y".equalsIgnoreCase(compatibilityMode); //$NON-NLS-1$
+      return Boolean.parseBoolean(compatibilityMode) || "Y".equalsIgnoreCase(compatibilityMode); //$NON-NLS-1$
     }
   }
 	private static String getResultTypeCode(int i) {
