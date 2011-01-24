@@ -63,8 +63,8 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
 	
 	private String checksumtype;
 	
-
-    
+	private boolean compatibilityMode;
+	
 	/** result type */
 	private int resultType;
 	
@@ -201,6 +201,7 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
 			checksumtype = XMLHandler.getTagValue(stepnode, "checksumtype");
 			resultfieldName = XMLHandler.getTagValue(stepnode,"resultfieldName");
 			resultType = getResultTypeByCode(Const.NVL(XMLHandler.getTagValue(stepnode,"resultType"), ""));
+			compatibilityMode = parseCompatibilityMode(XMLHandler.getTagValue(stepnode, "compatibilityMode")); //$NON-NLS-1$
 
 			Node fields = XMLHandler.getSubNode(stepnode, "fields");
 			int nrfields = XMLHandler.countNodes(fields, "field");
@@ -215,6 +216,14 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
 			throw new KettleXMLException("Unable to load step info from XML", e);
 		}
 	}
+
+  private boolean parseCompatibilityMode(String compatibilityMode) {
+    if (compatibilityMode == null) {
+      return true; // It was previously not saved
+    } else {
+      return "Y".equalsIgnoreCase(compatibilityMode); //$NON-NLS-1$
+    }
+  }
 	private static String getResultTypeCode(int i) {
 		if (i < 0 || i >= resultTypeCode.length)
 			return resultTypeCode[0];
@@ -226,6 +235,7 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
 		retval.append("      ").append(XMLHandler.addTagValue("checksumtype", checksumtype));
 		retval.append("      ").append(XMLHandler.addTagValue("resultfieldName", resultfieldName));
 		retval.append("      ").append(XMLHandler.addTagValue("resultType",getResultTypeCode(resultType)));
+		retval.append("      ").append(XMLHandler.addTagValue("compatibilityMode", compatibilityMode)); //$NON-NLS-2$
 
 		retval.append("    <fields>").append(Const.CR);
 		for (int i = 0; i < fieldName.length; i++) {
@@ -259,7 +269,8 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
 
 			resultfieldName = rep.getStepAttributeString(id_step,"resultfieldName");
 			resultType = getResultTypeByCode(Const.NVL(rep.getStepAttributeString(id_step, "resultType"), ""));
-			
+			compatibilityMode = parseCompatibilityMode(rep.getStepAttributeString(id_step, "compatibilityMode")); //$NON-NLS-1$
+
 			int nrfields = rep.countNrStepAttributes(id_step, "field_name");
 
 			allocate(nrfields);
@@ -282,7 +293,8 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
 
 			rep.saveStepAttribute(id_transformation, id_step,"resultfieldName", resultfieldName);
 			rep.saveStepAttribute(id_transformation, id_step, "resultType", getResultTypeCode(resultType));
-			
+			rep.saveStepAttribute(id_transformation, id_step, "compatibilityMode", compatibilityMode); //$NON-NLS-1$
+
 			for (int i = 0; i < fieldName.length; i++) {
 				rep.saveStepAttribute(id_transformation, id_step, i,
 						"field_name", fieldName[i]);
@@ -402,4 +414,12 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
 	public boolean supportsErrorHandling() {
 		return true;
 	}
+
+  public boolean isCompatibilityMode() {
+    return compatibilityMode;
+  }
+
+  public void setCompatibilityMode(boolean compatibilityMode) {
+    this.compatibilityMode = compatibilityMode;
+  }
 }
