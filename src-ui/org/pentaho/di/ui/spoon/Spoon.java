@@ -4820,7 +4820,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
   public boolean saveMeta(EngineMetaInterface meta, String fname) {
     meta.setFilename(fname);
-    if (Const.isEmpty(meta.getName()) || delegates.jobs.isDefaultJobName(meta.getName())) {
+    if (Const.isEmpty(meta.getName()) || delegates.jobs.isDefaultJobName(meta.getName()) || delegates.trans.isDefaultTransformationName(meta.getName())) {
       meta.nameFromFilename();
     }
 
