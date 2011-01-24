@@ -134,7 +134,7 @@ public class CheckSumTest extends TestCase {
 
     trans.startThreads();
 
-    rp.putRow(inputRowMeta, new Object[] { input }); //$NON-NLS-1$
+    rp.putRow(inputRowMeta, new Object[] { input });
     rp.finished();
 
     trans.waitUntilFinished();
@@ -152,7 +152,7 @@ public class CheckSumTest extends TestCase {
   public void testHexOutput_md5_compatibilityMode() throws Exception {
     MockRowListener results = executeHexTest(2, true, "xyz"); //$NON-NLS-1$
     assertEquals(1, results.getWritten().size());
-    assertEquals("D16FB36F0911F878998C136191AF705E", results.getWritten().get(0)[1]); //$NON-NLS-1$
+    assertEquals("FD6FFD6F0911FD78FDFD1361FDFD705E", results.getWritten().get(0)[1]); //$NON-NLS-1$
   }
 
   public void testHexOutput_sha1()  throws Exception {
@@ -164,6 +164,6 @@ public class CheckSumTest extends TestCase {
   public void testHexOutput_sha1_compatibilityMode()  throws Exception {
     MockRowListener results = executeHexTest(3, true, "xyz"); //$NON-NLS-1$
     assertEquals(1, results.getWritten().size());
-    assertEquals("66B27417D37E024C46526C2F6D358A754FC552F3", results.getWritten().get(0)[1]); //$NON-NLS-1$
+    assertEquals("66FD7417FD7E024C46526C2F6D35FD754FFD52FD", results.getWritten().get(0)[1]); //$NON-NLS-1$
   }
 }

@@ -181,12 +181,15 @@ public class CheckSum extends BaseStep implements StepInterface {
 		 	if(in==null) return null;
 	        final char hexDigits[] ={ '0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F' };
 			
-			StringBuffer hexString = new StringBuffer(2 * in.length);
+			String hex = new String(in);
 			
-			for (int i = 0; i < in.length; i++)
+			char[] s = hex.toCharArray();
+			StringBuffer hexString = new StringBuffer(2 * s.length);
+			
+			for (int i = 0; i < s.length; i++)
 			{
-				hexString.append(hexDigits[(in[i] & 0x00F0) >> 4]); // high nibble
-				hexString.append(hexDigits[in[i] & 0x000F]);        // low nibble
+				hexString.append(hexDigits[(s[i] & 0x00F0) >> 4]); // hi nibble
+				hexString.append(hexDigits[s[i] & 0x000F]);        // lo nibble
 			}
 			
 			return hexString.toString();
