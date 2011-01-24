@@ -241,6 +241,7 @@ public class MessagesSourceCrawler {
 					// Scan for elements and tags in this file...
 					//
 					for (SourceCrawlerXMLElement xmlElement : xmlFolder.getElements()) {
+					
 						addLabelOccurrences(
 								fileObject, 
 								doc.getElementsByTagName(xmlElement.getSearchElement()), 
@@ -280,10 +281,16 @@ public class MessagesSourceCrawler {
 			} else if (!Const.isEmpty(tag)) {
 				labelString = XMLHandler.getTagValue(node, tag);
 			}
-
+		
+			// TODO : Set the prefix in the right place
+			keyPrefix="$";
+			
 			if (labelString != null && labelString.startsWith(keyPrefix)) {
 				String key = labelString.substring(1);
-
+				// TODO : maybe not the right place ...
+				// just removed ${} around the key
+				key=labelString.substring(2, labelString.length()-1).trim();
+				
 				String messagesPackage = defaultPackage;
 				for (SourceCrawlerPackageException packageException : packageExcpeptions) {
 					if (key.startsWith(packageException.getStartsWith()))
@@ -291,12 +298,10 @@ public class MessagesSourceCrawler {
 				}
 
 				StringWriter bodyXML = new StringWriter();
-				transformer.transform(new DOMSource(node), new StreamResult(
-						bodyXML));
+				transformer.transform(new DOMSource(node), new StreamResult(bodyXML));
 				String xml = bodyXML.getBuffer().toString();
 
-				KeyOccurrence keyOccurrence = new KeyOccurrence(fileObject,
-						messagesPackage, -1, -1, key, "?", xml);
+				KeyOccurrence keyOccurrence = new KeyOccurrence(fileObject,messagesPackage, -1, -1, key, "?", xml);
 				if (!occurrences.contains(keyOccurrence)) {
 					occurrences.add(keyOccurrence);
 				}
