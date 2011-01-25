@@ -788,6 +788,12 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
           jobExecutionConfiguration.setLogLevel(jobLogLevel);
           jobExecutionConfiguration.setPassingExport(passingExport);
 
+          Map<String, String> params = jobExecutionConfiguration.getParams();
+          for (String param : jobMeta.listParameters()) {
+              String value = Const.NVL(jobMeta.getParameterValue(param), Const.NVL(jobMeta.getParameterDefault(param), jobMeta.getVariable(param)));
+              params.put(param, value);
+          }
+
           // Send the XML over to the slave server
           // Also start the job over there...
           //
