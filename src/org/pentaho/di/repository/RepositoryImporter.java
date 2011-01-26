@@ -37,6 +37,7 @@ public class RepositoryImporter implements IRepositoryImporter {
 
   private SharedObjects sharedObjects;
   private RepositoryDirectoryInterface baseDirectory;
+  private RepositoryDirectoryInterface root;
   
   private boolean overwrite;
   private boolean askOverwrite  = true;
@@ -364,17 +365,16 @@ public class RepositoryImporter implements IRepositoryImporter {
 
     // What's the directory path?
     String directoryPath = XMLHandler.getTagValue(transnode, "info", "directory");
-    // remove the leading root, we don't need it.
-    directoryPath = directoryPath.substring(1);
-
-    RepositoryDirectoryInterface targetDirectory = baseDirectory.findDirectory(directoryPath);
-    if (targetDirectory == null) {
-        targetDirectory = baseDirectory.findDirectory(directoryPath);
-        if (targetDirectory==null) {
-          feedback.addLog(BaseMessages.getString(PKG, "RepositoryImporter.CreateDir.Log", directoryPath, baseDirectory.toString()));
-          targetDirectory = rep.createRepositoryDirectory(baseDirectory, directoryPath);
-        }
+    if (transDirOverride != null) {
+      directoryPath = transDirOverride;
     }
+    
+    if (directoryPath.startsWith("/")) {
+      // remove the leading root, we don't need it.
+      directoryPath = directoryPath.substring(1);
+    }
+
+    RepositoryDirectoryInterface targetDirectory = getTargetDirectory(directoryPath, transDirOverride, feedback);
 
     // OK, we loaded the transformation from XML and all went well...
     // See if the transformation already existed!
@@ -422,14 +422,16 @@ public class RepositoryImporter implements IRepositoryImporter {
     // What's the directory path?
     String directoryPath = Const.NVL(XMLHandler.getTagValue(jobnode, "directory"), Const.FILE_SEPARATOR);
 
-    RepositoryDirectoryInterface targetDirectory = baseDirectory.findDirectory(directoryPath);
-    if (targetDirectory == null) {
-      targetDirectory = baseDirectory.findDirectory(directoryPath);
-      if (targetDirectory==null) {
-        feedback.addLog(BaseMessages.getString(PKG, "RepositoryImporter.CreateDir.Log", directoryPath, baseDirectory.toString()));
-        targetDirectory = rep.createRepositoryDirectory(baseDirectory, directoryPath);
-      }
+    if (jobDirOverride != null) {
+      directoryPath = jobDirOverride;
     }
+    
+    if (directoryPath.startsWith("/")) {
+      // remove the leading root, we don't need it.
+      directoryPath = directoryPath.substring(1);
+    }
+
+    RepositoryDirectoryInterface targetDirectory = getTargetDirectory(directoryPath, jobDirOverride, feedback);
 
     // OK, we loaded the job from XML and all went well...
     // See if the job already exists!
@@ -503,6 +505,31 @@ public class RepositoryImporter implements IRepositoryImporter {
     return true;
   }
 
+  private RepositoryDirectoryInterface getTargetDirectory(String directoryPath, String dirOverride, RepositoryImportFeedbackInterface feedback) throws KettleException {
+    RepositoryDirectoryInterface targetDirectory = null;
+    if (dirOverride != null) {
+      targetDirectory = rep.findDirectory(directoryPath);
+      if (targetDirectory == null) {
+        feedback.addLog(BaseMessages.getString(PKG, "RepositoryImporter.CreateDir.Log", directoryPath, getRepositoryRoot().toString()));
+        targetDirectory = rep.createRepositoryDirectory(getRepositoryRoot(), directoryPath);
+      }
+    } else {
+      targetDirectory = baseDirectory.findDirectory(directoryPath);
+      if (targetDirectory == null) {
+        feedback.addLog(BaseMessages.getString(PKG, "RepositoryImporter.CreateDir.Log", directoryPath, baseDirectory.toString()));
+        targetDirectory = rep.createRepositoryDirectory(baseDirectory, directoryPath);
+      }
+    }
+    return targetDirectory;
+  }
+  
+  private RepositoryDirectoryInterface getRepositoryRoot() throws KettleException {
+    if (root == null) {
+      root = rep.loadRepositoryDirectoryTree();
+    }
+    return root;
+  }
+  
   public void fatalXmlErrorEncountered(SAXParseException e) {
     showError(
         BaseMessages.getString(PKG, "RepositoryImporter.ErrorInvalidXML.Message"),
