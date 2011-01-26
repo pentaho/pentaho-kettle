@@ -30,6 +30,7 @@ import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepositoryMeta;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -47,6 +48,8 @@ import org.w3c.dom.Node;
 
 public class RepositoriesMeta 
 {
+    private static Class<?> PKG = RepositoriesMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+    
 	private List<DatabaseMeta>   databases;    // Repository connections
 	private List<RepositoryMeta> repositories;   // List of repositories
 	private LogChannel	log;
@@ -164,7 +167,7 @@ public class RepositoriesMeta
 		File file = new File(Const.getKettleLocalRepositoriesFile());
 		if (!file.exists() || !file.isFile())
 		{
-			log.logDetailed("No repositories file found in the local directory: "+file.getAbsolutePath());
+			log.logDetailed( BaseMessages.getString(PKG, "RepositoryMeta.Log.NoRepositoryFileInLocalDirectory", file.getAbsolutePath() ));
 			file = new File(Const.getKettleUserRepositoriesFile());
 			if (!file.exists() || !file.isFile())
 			{
@@ -172,7 +175,7 @@ public class RepositoriesMeta
 			}
 		}
 		
-		log.logBasic("Reading repositories XML file: "+file.getAbsoluteFile());
+		log.logBasic( BaseMessages.getString(PKG, "RepositoryMeta.Log.ReadingXMLFile", file.getAbsoluteFile() ) ); 
 		
 		DocumentBuilderFactory dbf;
 		DocumentBuilder db;
@@ -196,7 +199,8 @@ public class RepositoriesMeta
 				}
 				else
 				{
-					throw new KettleException("Error opening file: "+file.getAbsoluteFile(), ef);
+					throw new KettleException(BaseMessages.getString(PKG, "RepositoryMeta.Error.OpeningFile", file.getAbsoluteFile()) , ef);
+					
 				}
 			}
 			
@@ -205,34 +209,36 @@ public class RepositoriesMeta
 		
 			// Handle connections
 			int nrconn = XMLHandler.countNodes(repsnode, "connection");
-			log.logDebug("We have "+nrconn+" connections...");
+			log.logDebug(BaseMessages.getString(PKG, "RepositoryMeta.Log.ConnectionNumber", nrconn));
+			
 			for (int i=0;i<nrconn;i++)
 			{
-				log.logDebug("Looking at connection #"+i);
+				log.logDebug( BaseMessages.getString(PKG, "RepositoryMeta.Log.LookingConnection", i) );
+				
 				Node dbnode = XMLHandler.getSubNodeByNr(repsnode, "connection", i);
             
 				DatabaseMeta dbcon = null;
 				try {
    				dbcon = new DatabaseMeta(dbnode);
 	     			addDatabase(dbcon);
-			   	log.logDebug("Read connection : "+dbcon.getName());
+			   	log.logDebug(BaseMessages.getString(PKG, "RepositoryMeta.Log.ReadConnection", dbcon.getName() ));
             }
             catch (Exception kpe) {
                
-               log.logError("Exception creating database meta for "+dbcon.getName());
+               log.logError(BaseMessages.getString(PKG, "RepositoryMeta.Error.CreatingDatabaseMeta", dbcon.getName() ));
+               
    			}
 			}
 
 			// Handle repositories...
 			int nrreps = XMLHandler.countNodes(repsnode, RepositoryMeta.XML_TAG);
-			log.logDebug("We have "+nrreps+" repositories...");
+			log.logDebug(BaseMessages.getString(PKG, "RepositoryMeta.Log.RepositoryNumber", nrreps ));
 			StringBuffer unableToReadIds = new StringBuffer();
 			KettleException kettleException = null;
 			for (int i=0;i<nrreps;i++)
 			{
 				Node repnode = XMLHandler.getSubNodeByNr(repsnode, RepositoryMeta.XML_TAG, i);
-				log.logDebug("Looking at repository #"+i);
-				
+				log.logDebug(BaseMessages.getString(PKG, "RepositoryMeta.Log.LookingRepository", i ));
 				String id = XMLHandler.getTagValue(repnode, "id");
 				if (Const.isEmpty(id)) {
 			    	// Backward compatibility : if the id is not defined, it's the database repository!
@@ -249,11 +255,11 @@ public class RepositoriesMeta
     				  repositoryMeta.setDescription(repositoryMeta.getName());
     				}
     				addRepository(repositoryMeta);
-    				log.logDebug("Read repository : "+repositoryMeta.getName()); //$NON-NLS-1$
+    				log.logDebug(BaseMessages.getString(PKG, "RepositoryMeta.Log.ReadRepository", repositoryMeta.getName() )); //$NON-NLS-1$
   				} else {
             unableToReadIds.append(id);
             unableToReadIds.append(",");
-            log.logDebug("Unable to read repository with id: "+id); //$NON-NLS-1$
+            log.logDebug(BaseMessages.getString(PKG, "RepositoryMeta.Error.ReadRepositoryId", id )); //$NON-NLS-1$
   				}
 				} catch (KettleException ex) {
 				  // Get to the root cause
@@ -265,12 +271,13 @@ public class RepositoriesMeta
 				  
 				  if(cause instanceof KettleRepositoryNotSupportedException) {
 				    // If the root cause is a KettleRepositoryNotSupportedException, do not fail
-				    log.logDebug("Repository type [" + id + "] is unrecognized");
+				    log.logDebug(BaseMessages.getString(PKG, "RepositoryMeta.Error.UnrecognizedRepositoryType", id ));
+				    
 				  }
 				}
 			}
 		  if(unableToReadIds != null && unableToReadIds.length() > 0) {
-		    errorMessage = "Unable to read repository with id [" + unableToReadIds.substring(0, unableToReadIds.lastIndexOf(",")-1) + "].  RepositoryMeta is not available";
+		    errorMessage = BaseMessages.getString(PKG, "RepositoryMeta.Error.ReadRepositoryIdNotAvailable", unableToReadIds.substring(0, unableToReadIds.lastIndexOf(",")-1) ); 
 		  }
 			if(kettleException != null) {
 			  throw kettleException;
@@ -278,7 +285,7 @@ public class RepositoriesMeta
 		}
 		catch(Exception e)
 		{
-			throw new KettleException("Error reading information from file : ", e);
+			throw new KettleException(BaseMessages.getString(PKG, "RepositoryMeta.Error.ReadingInfo"), e);
 		}
 		
 		return true;
@@ -317,7 +324,7 @@ public class RepositoriesMeta
 		}
 		catch(Exception e)
 		{
-			throw new KettleException("Error writing repositories metadata", e);
+			throw new KettleException(BaseMessages.getString(PKG, "RepositoryMeta.Error.WritingMetadata"), e);
 		}
 	}
 	
