@@ -45,6 +45,9 @@ public class RepositoryImporter implements IRepositoryImporter {
 
   private boolean continueOnError;
 
+  private String transDirOverride = null;
+  private String jobDirOverride = null;
+  
   public RepositoryImporter(Repository repository) {
       this.log = new LogChannel("Repository import"); //$NON-NLS-1$
       this.rep = repository;
@@ -239,6 +242,10 @@ public class RepositoryImporter implements IRepositoryImporter {
       if (stepMeta.isMapping()) {
         MappingMeta mappingMeta = (MappingMeta) stepMeta.getStepMetaInterface();
         if (mappingMeta.getSpecificationMethod() == ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME) {
+          if (transDirOverride != null) {
+            mappingMeta.setDirectoryPath(transDirOverride);
+            continue;
+          }
           String newPath = baseDirectory.getPath();
           String extraPath = mappingMeta.getDirectoryPath();
           if (newPath.endsWith("/") && extraPath.startsWith("/")) {
@@ -259,6 +266,10 @@ public class RepositoryImporter implements IRepositoryImporter {
       if (copy.isTransformation()) {
         JobEntryTrans entry = (JobEntryTrans) copy.getEntry();
         if (entry.getSpecificationMethod() == ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME) {
+          if (transDirOverride != null) {
+            entry.setDirectory(transDirOverride);
+            continue;
+          }
           String newPath = baseDirectory.getPath();
           String extraPath = Const.NVL(entry.getDirectory(), "/");
           if (newPath.endsWith("/") && extraPath.startsWith("/")) {
@@ -274,6 +285,10 @@ public class RepositoryImporter implements IRepositoryImporter {
       if (copy.isJob()) {
         JobEntryJob entry = (JobEntryJob) copy.getEntry();
         if (entry.getSpecificationMethod() == ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME) {
+          if (jobDirOverride != null) {
+            entry.setDirectory(jobDirOverride);
+            continue;
+          }
           String newPath = baseDirectory.getPath();
           String extraPath = Const.NVL(entry.getDirectory(), "/");
           if (newPath.endsWith("/") && extraPath.startsWith("/")) {
@@ -478,5 +493,21 @@ public class RepositoryImporter implements IRepositoryImporter {
   }
 
   public void worked(int nrWorks) {
+  }
+  
+  public String getTransDirOverride() {
+    return transDirOverride;
+  }
+
+  public void setTransDirOverride(String transDirOverride) {
+    this.transDirOverride = transDirOverride;
+  }
+
+  public String getJobDirOverride() {
+    return jobDirOverride;
+  }
+
+  public void setJobDirOverride(String jobDirOverride) {
+    this.jobDirOverride = jobDirOverride;
   }
 }
