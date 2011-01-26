@@ -110,10 +110,10 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
      *
      * @param transMeta the transformation metadata to store
      * @param monitor the way we report progress to the user, can be null if no UI is present
-     *  
-     * @throws KettleException if an error occurrs.
+     * @param overwrite Overwrite existing object(s)?
+     * @throws KettleException if an error occurs.
      */
-    public void saveTransformation(TransMeta transMeta, String versionComment, ProgressMonitorListener monitor) throws KettleException
+    public void saveTransformation(TransMeta transMeta, String versionComment, ProgressMonitorListener monitor, boolean overwriteAssociated) throws KettleException
     {
         try
         {
@@ -183,10 +183,10 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
 
                 // if (monitor != null) monitor.subTask(BaseMessages.getString(PKG, "TransMeta.Monitor.SavingDatabaseTask.Title") + (i + 1) + "/" + transMeta.nrDatabases()); //$NON-NLS-1$ //$NON-NLS-2$
                 DatabaseMeta databaseMeta = transMeta.getDatabase(i);
-                // ONLY save the database connection if it has changed and nothing was saved in the repository
-                if(databaseMeta.hasChanged() || databaseMeta.getObjectId()==null)
+                // Save the database connection if we're overwriting objects or (it has changed and nothing was saved in the repository)
+                if(overwriteAssociated || databaseMeta.hasChanged() || databaseMeta.getObjectId()==null)
                 {
-                	repository.save(databaseMeta, versionComment);
+                	repository.save(databaseMeta, versionComment, monitor, overwriteAssociated);
                 }
                 if (monitor != null) monitor.worked(1);
             }
@@ -241,7 +241,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
                 // It might be simply loaded as a shared object from the repository
                 //
                 boolean isUsedByTransformation = transMeta.isUsingPartitionSchema(partitionSchema);
-                repository.save(partitionSchema, versionComment, null, transMeta.getObjectId(), isUsedByTransformation);
+                repository.save(partitionSchema, versionComment, null, transMeta.getObjectId(), isUsedByTransformation, overwriteAssociated);
             }
             
             // Save the slaves
@@ -252,7 +252,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
 
                 SlaveServer slaveServer = transMeta.getSlaveServers().get(i);
                 boolean isUsedByTransformation = transMeta.isUsingSlaveServer(slaveServer);
-                repository.save(slaveServer, versionComment, null, transMeta.getObjectId(), isUsedByTransformation);
+                repository.save(slaveServer, versionComment, null, transMeta.getObjectId(), isUsedByTransformation, overwriteAssociated);
             }
             
             // Save the clustering schemas
@@ -262,7 +262,7 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
 
                 ClusterSchema clusterSchema = transMeta.getClusterSchemas().get(i);
                 boolean isUsedByTransformation = transMeta.isUsingClusterSchema(clusterSchema);
-                repository.save(clusterSchema, versionComment, null, transMeta.getObjectId(), isUsedByTransformation);
+                repository.save(clusterSchema, versionComment, null, transMeta.getObjectId(), isUsedByTransformation, overwriteAssociated);
             }
             
             if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.SavingDependencies")); //$NON-NLS-1$

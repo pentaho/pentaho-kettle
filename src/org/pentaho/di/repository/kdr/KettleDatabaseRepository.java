@@ -309,10 +309,14 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
     }
 
     public void save(RepositoryElementInterface repositoryElement, String versionComment, ProgressMonitorListener monitor) throws KettleException {
-    	save(repositoryElement, versionComment, monitor, null, false);
+    	save(repositoryElement, versionComment, monitor, null, false, false);
+    }
+    
+    public void save(RepositoryElementInterface repositoryElement, String versionComment, ProgressMonitorListener monitor, boolean overwrite) throws KettleException {
+      save(repositoryElement, versionComment, monitor, null, false, overwrite);
     }
     	 
-    public void save(RepositoryElementInterface repositoryElement, String versionComment, ProgressMonitorListener monitor, ObjectId parentId, boolean used) throws KettleException {
+    public void save(RepositoryElementInterface repositoryElement, String versionComment, ProgressMonitorListener monitor, ObjectId parentId, boolean used, boolean overwrite) throws KettleException {
     	
     	try {
     		lockRepository();
@@ -324,11 +328,11 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
     		switch(repositoryElement.getRepositoryElementType()) {
     		case JOB : 
 	        	securityProvider.validateAction(RepositoryOperation.MODIFY_JOB);
-	    		jobDelegate.saveJob((JobMeta)repositoryElement, versionComment, monitor);
+	    		jobDelegate.saveJob((JobMeta)repositoryElement, versionComment, monitor, overwrite);
     			break;
     		case TRANSFORMATION : 
 	        	securityProvider.validateAction(RepositoryOperation.MODIFY_TRANSFORMATION);
-	    		transDelegate.saveTransformation((TransMeta)repositoryElement, versionComment, monitor);
+	    		transDelegate.saveTransformation((TransMeta)repositoryElement, versionComment, monitor, overwrite);
     			break;
     		case DATABASE : 
 	        	securityProvider.validateAction(RepositoryOperation.MODIFY_DATABASE);
@@ -336,15 +340,15 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
     			break;
     		case SLAVE_SERVER :
 	        	securityProvider.validateAction(RepositoryOperation.MODIFY_SLAVE_SERVER);
-	    		slaveServerDelegate.saveSlaveServer((SlaveServer)repositoryElement, parentId, used);
+	    		slaveServerDelegate.saveSlaveServer((SlaveServer)repositoryElement, parentId, used, overwrite);
     			break;
     		case CLUSTER_SCHEMA :
 	        	securityProvider.validateAction(RepositoryOperation.MODIFY_CLUSTER_SCHEMA);
-	    		clusterSchemaDelegate.saveClusterSchema((ClusterSchema)repositoryElement, versionComment, parentId, used);
+	    		clusterSchemaDelegate.saveClusterSchema((ClusterSchema)repositoryElement, versionComment, parentId, used, overwrite);
     			break;
     		case PARTITION_SCHEMA :
 	        	securityProvider.validateAction(RepositoryOperation.MODIFY_PARTITION_SCHEMA);
-	    		partitionSchemaDelegate.savePartitionSchema((PartitionSchema)repositoryElement, parentId, used);
+	    		partitionSchemaDelegate.savePartitionSchema((PartitionSchema)repositoryElement, parentId, used, overwrite);
 	    		break;
 	    	default:
 	    		throw new KettleException("We can't save the element with type ["+repositoryElement.getRepositoryElementType()+"] in the repository");
