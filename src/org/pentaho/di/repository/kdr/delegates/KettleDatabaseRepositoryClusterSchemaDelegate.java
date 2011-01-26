@@ -118,7 +118,7 @@ public class KettleDatabaseRepositoryClusterSchemaDelegate extends KettleDatabas
           SlaveServer slaveServer = clusterSchema.getSlaveServers().get(i);
           if (slaveServer.getObjectId()==null) // oops, not yet saved!
           {
-          	repository.save(slaveServer, versionComment, null, id_transformation, isUsedByTransformation);
+          	repository.save(slaveServer, versionComment, null, id_transformation, isUsedByTransformation, overwrite);
           }
           repository.insertClusterSlave(clusterSchema, slaveServer);
       }

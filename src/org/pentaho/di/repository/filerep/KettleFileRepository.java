@@ -230,6 +230,11 @@ public class KettleFileRepository implements Repository {
 		save(repositoryElement, versionComment, monitor, null, false);
 	}
 
+	public void save(RepositoryElementInterface repositoryElement, String versionComment, ProgressMonitorListener monitor, boolean overwrite) throws KettleException {
+	  // We always overwrite so no further changes necessary
+	  save(repositoryElement, versionComment, monitor);
+	}
+	
 	public void save(RepositoryElementInterface repositoryElement, String versionComment, ProgressMonitorListener monitor, ObjectId parentId, boolean used) throws KettleException {
 		try {
 			if (!(repositoryElement instanceof XMLInterface) && !(repositoryElement instanceof SharedObjectInterface)) {
