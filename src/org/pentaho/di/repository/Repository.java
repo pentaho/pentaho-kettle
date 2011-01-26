@@ -104,6 +104,16 @@ public interface Repository {
     public ObjectId getJobId(String name, RepositoryDirectoryInterface repositoryDirectory) throws KettleException;
 
     public void save(RepositoryElementInterface repositoryElement, String versionComment, ProgressMonitorListener monitor) throws KettleException;
+    
+    /**
+     * Save an object to the repository optionally overwriting any associated objects. 
+     * @param repositoryElement Object to save
+     * @param versionComment Version comment for update
+     * @param monitor Progress Monitor to report feedback to
+     * @param overwrite Overwrite any existing objects involved in saving {@code repositoryElement}, e.g. repositoryElement, database connections, slave servers
+     * @throws KettleException Error saving the object to the repository
+     */
+    public void save(RepositoryElementInterface repositoryElement, String versionComment, ProgressMonitorListener monitor, boolean overwrite) throws KettleException;
   
     public RepositoryDirectoryInterface getDefaultSaveDirectory(RepositoryElementInterface repositoryElement) throws KettleException;
     

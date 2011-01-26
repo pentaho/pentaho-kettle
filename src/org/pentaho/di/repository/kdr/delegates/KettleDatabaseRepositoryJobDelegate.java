@@ -71,9 +71,10 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
      * Stored a job in the repository
      * @param jobMeta The job to store
      * @param monitor the (optional) UI progress monitor
+     * @param overwrite Overwrite existing object(s)?
      * @throws KettleException in case some IO error occurs.
      */
-    public void saveJob(JobMeta jobMeta, String versionComment, ProgressMonitorListener monitor) throws KettleException {
+    public void saveJob(JobMeta jobMeta, String versionComment, ProgressMonitorListener monitor, boolean overwrite) throws KettleException {
 		try {
 			
 			// Before saving the job, see if it's not locked by someone else...
@@ -116,10 +117,10 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 				if (monitor != null)
 					monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.SavingDatabaseTask.Title") + (i + 1) + "/" + jobMeta.nrDatabases()); //$NON-NLS-1$ //$NON-NLS-2$
 				DatabaseMeta databaseMeta = jobMeta.getDatabase(i);
-				// ONLY save the database connection if it has changed and
-				// nothing was saved in the repository
-				if (databaseMeta.hasChanged() || databaseMeta.getObjectId() == null) {
-					repository.save(databaseMeta, versionComment);
+				// Save the database connection if we're overwriting objects or (it has changed and
+				// nothing was saved in the repository)
+				if (overwrite || databaseMeta.hasChanged() || databaseMeta.getObjectId() == null) {
+					repository.save(databaseMeta, versionComment, monitor, overwrite);
 				}
 				if (monitor != null)
 					monitor.worked(1);
@@ -142,7 +143,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 			//
 			for (int i = 0; i < jobMeta.getSlaveServers().size(); i++) {
 				SlaveServer slaveServer = jobMeta.getSlaveServers().get(i);
-				repository.save(slaveServer, versionComment, null, jobMeta.getObjectId(), false);
+				repository.save(slaveServer, versionComment, null, jobMeta.getObjectId(), false, overwrite);
 			}
 
 			//

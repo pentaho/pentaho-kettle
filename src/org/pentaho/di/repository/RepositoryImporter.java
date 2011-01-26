@@ -149,9 +149,16 @@ public class RepositoryImporter implements IRepositoryImporter {
         if (index<0) {
           transMeta.addDatabase(databaseMeta);
         } else {
-          DatabaseMeta existing = transMeta.getDatabase(index);
-          existing.replaceMeta(databaseMeta);
-          existing.setObjectId(databaseMeta.getObjectId());
+          DatabaseMeta imported = transMeta.getDatabase(index);
+          if (overwrite) {
+            // Preserve the object id so we can update without having to look up the id
+            imported.setObjectId(databaseMeta.getObjectId());
+            imported.setChanged();
+          } else {
+            imported.replaceMeta(databaseMeta);
+            // We didn't actually change anything
+            imported.setChanged(false);
+          }
         }
       }
 
@@ -164,9 +171,16 @@ public class RepositoryImporter implements IRepositoryImporter {
         if (index<0) {
           transMeta.getSlaveServers().add(slaveServer);
         } else {
-          SlaveServer existing = transMeta.getSlaveServers().get(index);
-          existing.replaceMeta(slaveServer);
-          existing.setObjectId(slaveServer.getObjectId());
+          SlaveServer imported = transMeta.getSlaveServers().get(index);
+          if (overwrite) {
+            // Preserve the object id so we can update without having to look up the id
+            imported.setObjectId(slaveServer.getObjectId());
+            imported.setChanged();
+          } else {
+            imported.replaceMeta(slaveServer);
+            // We didn't actually change anything
+            imported.setChanged(false);
+          }
         }
       }
 
@@ -179,9 +193,16 @@ public class RepositoryImporter implements IRepositoryImporter {
         if (index<0) {
           transMeta.getClusterSchemas().add(clusterSchema);
         } else {
-          ClusterSchema existing = transMeta.getClusterSchemas().get(index);
-          existing.replaceMeta(clusterSchema);
-          existing.setObjectId(clusterSchema.getObjectId());
+          ClusterSchema imported = transMeta.getClusterSchemas().get(index);
+          if (overwrite) {
+            // Preserve the object id so we can update without having to look up the id
+            imported.setObjectId(clusterSchema.getObjectId());
+            imported.setChanged();
+          } else {
+            imported.replaceMeta(clusterSchema);
+            // We didn't actually change anything
+            imported.setChanged(false);
+          }
         }
       }
 
@@ -194,9 +215,16 @@ public class RepositoryImporter implements IRepositoryImporter {
         if (index<0) {
           transMeta.getPartitionSchemas().add(partitionSchema);
         } else {
-          PartitionSchema existing = transMeta.getPartitionSchemas().get(index);
-          existing.replaceMeta(partitionSchema);
-          existing.setObjectId(partitionSchema.getObjectId());
+          PartitionSchema imported = transMeta.getPartitionSchemas().get(index);
+          if (overwrite) {
+            // Preserve the object id so we can update without having to look up the id
+            imported.setObjectId(partitionSchema.getObjectId());
+            imported.setChanged();
+          } else {
+            imported.replaceMeta(partitionSchema);
+            // We didn't actually change anything
+            imported.setChanged(false);
+          }
         }
       }
 
@@ -213,9 +241,16 @@ public class RepositoryImporter implements IRepositoryImporter {
         if (index<0) {
           transMeta.addDatabase(databaseMeta);
         } else {
-          DatabaseMeta existing = transMeta.getDatabase(index);
-          existing.replaceMeta(databaseMeta);
-          existing.setObjectId(databaseMeta.getObjectId());
+          DatabaseMeta imported = transMeta.getDatabase(index);
+          if (overwrite) {
+            // Preserve the object id so we can update without having to look up the id
+            imported.setObjectId(databaseMeta.getObjectId());
+            imported.setChanged();
+          } else {
+            imported.replaceMeta(databaseMeta);
+            // We didn't actually change anything
+            imported.setChanged(false);
+          }
         }
       }
 
@@ -228,9 +263,16 @@ public class RepositoryImporter implements IRepositoryImporter {
         if (index<0) {
           transMeta.getSlaveServers().add(slaveServer);
         } else {
-          SlaveServer existing = transMeta.getSlaveServers().get(index);
-          existing.replaceMeta(slaveServer);
-          existing.setObjectId(slaveServer.getObjectId());
+          SlaveServer imported = transMeta.getSlaveServers().get(index);
+          if (overwrite) {
+            // Preserve the object id so we can update without having to look up the id
+            imported.setObjectId(slaveServer.getObjectId());
+            imported.setChanged();
+          } else {
+            imported.replaceMeta(slaveServer);
+            // We didn't actually change anything
+            imported.setChanged(false);
+          }
         }
       }
     }
@@ -358,7 +400,7 @@ public class RepositoryImporter implements IRepositoryImporter {
             transMeta.setCreatedUser(null);
           }
         }
-        rep.save(transMeta, versionComment, this);
+        rep.save(transMeta, versionComment, this, overwrite);
         feedback.addLog(BaseMessages.getString(PKG, "RepositoryImporter.TransSaved.Log", Integer.toString(transformationNumber), transMeta.getName()));
       } catch (Exception e) {
         feedback.addLog(BaseMessages.getString(PKG, "RepositoryImporter.ErrorSavingTrans.Log", Integer.toString(transformationNumber), transMeta.getName(), e.toString()));
@@ -402,7 +444,7 @@ public class RepositoryImporter implements IRepositoryImporter {
       jobMeta.setRepositoryDirectory(targetDirectory);
       jobMeta.setObjectId(existintId);
       patchJobEntries(jobMeta);
-      rep.save(jobMeta, versionComment, null);
+      rep.save(jobMeta, versionComment, null, overwrite);
       feedback.addLog(BaseMessages.getString(PKG, "RepositoryImporter.JobSaved.Log", Integer.toString(jobNumber), jobMeta.getName()));
     } else {
       feedback.addLog(BaseMessages.getString(PKG, "RepositoryImporter.ErrorSavingJob.Log", jobMeta.getName()));
