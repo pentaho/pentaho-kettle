@@ -4,7 +4,7 @@
     <toolbarbutton id="browse-back" label="${SpoonBrowser.Dialog.Back}" image="images/back.png"
       tooltiptext="${SpoonBrowser.Dialog.Back}" onclick="browser.browseBack()" />
     <toolbarbutton id="browse-forward" label="${SpoonBrowser.Dialog.Forward}" image="images/forward.png"
-      tooltiptext="${SpoonBrowser.Dialog.Forward" onclick="browser.browseForward()" />
+      tooltiptext="${SpoonBrowser.Dialog.Forward}" onclick="browser.browseForward()" />
     <toolbaritem flex="1">
       <textbox id="browser-address" value="http://" flex="1"/>
     </toolbaritem>
