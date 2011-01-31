@@ -18,7 +18,7 @@ import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
  * This defines the basic interface for the data used by a thread.
  * This will allow us to stop execution of threads and restart them later on 
  * without loosing track of the situation.
- * Typically the StepDataInterface implementing class will contain resultsets, 
+ * Typically the StepDataInterface implementing class will contain result sets, 
  * temporary data, caching indexes, etc.
  * 
  * @author Matt
