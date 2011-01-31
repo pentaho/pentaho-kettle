@@ -408,6 +408,7 @@ public class SlaveServer  extends ChangedFlag
         // 
         HttpClient client = new HttpClient();
         addCredentials(client);
+        addProxy(client);
         
         // Execute request
         // 
@@ -492,6 +493,7 @@ public class SlaveServer  extends ChangedFlag
           // 
           HttpClient client = new HttpClient();
           addCredentials(client);
+          addProxy(client);
           
           // Execute request
           // 
@@ -545,6 +547,27 @@ public class SlaveServer  extends ChangedFlag
         }
     }
 
+    public void addProxy(HttpClient client)
+    {
+        String host = environmentSubstitute(this.hostname);
+        String phost = environmentSubstitute(this.proxyHostname);
+        String pport = environmentSubstitute(this.proxyPort);
+        String nonprox = environmentSubstitute(this.nonProxyHosts);
+        
+        
+        /** added by shingo.yamagami@ksk-sol.jp **/
+        if (!Const.isEmpty(phost) && !Const.isEmpty(pport)) 
+        {
+            // skip applying proxy if non-proxy host matches
+            if (!Const.isEmpty(nonprox) && !Const.isEmpty(host) && host.matches(nonprox))
+            {
+                return;
+            }
+            client.getHostConfiguration().setProxy(phost, Integer.parseInt(pport));
+        }
+        /** added by shingo.yamagami@ksk-sol.jp **/  
+    }
+
     public void addCredentials(HttpClient client)
     {
       if (StringUtils.isEmpty(webAppName)) {
@@ -582,6 +605,7 @@ public class SlaveServer  extends ChangedFlag
         // 
         HttpClient client = new HttpClient();
         addCredentials(client);
+        addProxy(client);
         HttpMethod method = new GetMethod(constructUrl(service));
         
         // Execute request
