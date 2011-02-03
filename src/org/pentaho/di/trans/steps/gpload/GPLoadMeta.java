@@ -59,6 +59,9 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface
     /** what's the table for the target? */
 	private String tableName;
 	
+	/** what's the target of the error table? */
+	private String errorTableName;
+	
 	/** Path to the gpload utility */
 	private String gploadPath;
 	
@@ -100,6 +103,9 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface
 	
 	/** Database name override */
 	private String dbNameOverride;
+	
+	/** Boolean to indicate that numbers are to be enclosed*/
+	private boolean encloseNumbers;
 	
 	/*
 	 * Do not translate following values!!! They are will end up in the job export.
@@ -156,6 +162,22 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface
     public void setTableName(String tableName)
     {
         this.tableName = tableName;
+    }
+    
+    /**
+     * @return Returns the errorTableName.
+     */
+    public String getErrorTableName()
+    {
+        return errorTableName;
+    }
+
+    /**
+     * @param errorTableName The error table name to set.
+     */
+    public void setErrorTableName(String errorTableName)
+    {
+        this.errorTableName = errorTableName;
     }
 
 	public String getGploadPath() {
@@ -248,7 +270,8 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface
 
             schemaName     = XMLHandler.getTagValue(stepnode, "schema");       //$NON-NLS-1$
 			tableName      = XMLHandler.getTagValue(stepnode, "table");        //$NON-NLS-1$
-			
+			errorTableName      = XMLHandler.getTagValue(stepnode, "error_table");        //$NON-NLS-1$
+         
 			loadMethod     = XMLHandler.getTagValue(stepnode, "load_method");  //$NON-NLS-1$
 			loadAction     = XMLHandler.getTagValue(stepnode, "load_action");  //$NON-NLS-1$			
 			gploadPath     = XMLHandler.getTagValue(stepnode, "gpload_path");       //$NON-NLS-1$
@@ -298,18 +321,19 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface
 		fieldTable   = null;
 		databaseMeta = null;
 		maxErrors    = 50;
-        schemaName   = "";                //$NON-NLS-1$
+      schemaName   = "";                //$NON-NLS-1$
 		tableName    = BaseMessages.getString(PKG, "GPLoadMeta.DefaultTableName"); //$NON-NLS-1$
+		errorTableName = "err_"+tableName;
 		loadMethod   = METHOD_AUTO_END;
 		loadAction   = ACTION_INSERT;
 		gploadPath   = "/usr/local/greenplum-db/bin/gpload";                              //$NON-NLS-1$
 		controlFile  = "control${Internal.Step.CopyNr}.cfg";  //$NON-NLS-1$
 		dataFile     = "load${Internal.Step.CopyNr}.dat";     //$NON-NLS-1$
 		logFile      = "";                                    //$NON-NLS-1$
-        encoding     = "";                                    //$NON-NLS-1$
+      encoding     = "";                                    //$NON-NLS-1$
 		dbNameOverride = "";
-
-        eraseFiles   = true;
+		encloseNumbers = false;
+      eraseFiles   = true;
 
 		int nrvalues = 0;
 		allocate(nrvalues);
@@ -323,7 +347,8 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("    ").append(XMLHandler.addTagValue("errors",       maxErrors));     //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    ").append(XMLHandler.addTagValue("schema",       schemaName));    //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("table",        tableName));     //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("load_method",  loadMethod));    //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("error_table",  errorTableName));     //$NON-NLS-1$ //$NON-NLS-2$
+      retval.append("    ").append(XMLHandler.addTagValue("load_method",  loadMethod));    //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("load_action",  loadAction));    //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("gpload_path",  gploadPath));        //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("control_file", controlFile));   //$NON-NLS-1$ //$NON-NLS-2$
@@ -332,6 +357,7 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("    ").append(XMLHandler.addTagValue("erase_files",  eraseFiles));    //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("encoding",     encoding));      //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("dbname_override", dbNameOverride));      //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("enclose_numbers", (encloseNumbers?"Y":"N")));      //$NON-NLS-1$ //$NON-NLS-2$
 		
 		for (int i=0;i<fieldTable.length;i++)
 		{
@@ -352,18 +378,19 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);
      		maxErrors      = (int)rep.getStepAttributeInteger(id_step, "errors");         //$NON-NLS-1$
-            schemaName     =      rep.getStepAttributeString(id_step,  "schema");         //$NON-NLS-1$
+         schemaName     =      rep.getStepAttributeString(id_step,  "schema");         //$NON-NLS-1$
 			tableName      =      rep.getStepAttributeString(id_step,  "table");          //$NON-NLS-1$
+			errorTableName =      rep.getStepAttributeString(id_step,  "error_table");    //$NON-NLS-1$
 			loadMethod     =      rep.getStepAttributeString(id_step,  "load_method");    //$NON-NLS-1$
 			loadAction     =      rep.getStepAttributeString(id_step,  "load_action");    //$NON-NLS-1$
 			gploadPath     =      rep.getStepAttributeString(id_step,  "gpload_path");    //$NON-NLS-1$
 			controlFile    =      rep.getStepAttributeString(id_step,  "control_file");   //$NON-NLS-1$
 			dataFile       =      rep.getStepAttributeString(id_step,  "data_file");      //$NON-NLS-1$
 			logFile        =      rep.getStepAttributeString(id_step,  "log_file");       //$NON-NLS-1$
-
 			eraseFiles     =      rep.getStepAttributeBoolean(id_step, "erase_files");    //$NON-NLS-1$
 			encoding       =      rep.getStepAttributeString(id_step,  "encoding");       //$NON-NLS-1$
-			dbNameOverride =      rep.getStepAttributeString(id_step,  "dbname_override");//$NON-NLS-1$			
+			dbNameOverride =      rep.getStepAttributeString(id_step,  "dbname_override");//$NON-NLS-1$
+			encloseNumbers =      (rep.getStepAttributeString(id_step, "enclose_numbers").equalsIgnoreCase("Y")?true:false); //$NON-NLS-1$  
 			
 			int nrvalues = rep.countNrStepAttributes(id_step, "stream_name");             //$NON-NLS-1$
 
@@ -389,19 +416,19 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			rep.saveDatabaseMetaStepAttribute(id_transformation, id_step, "id_connection", databaseMeta);
 			rep.saveStepAttribute(id_transformation, id_step, "errors",          maxErrors);     //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, "schema",          schemaName);    //$NON-NLS-1$
+         rep.saveStepAttribute(id_transformation, id_step, "schema",          schemaName);    //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "table",           tableName);     //$NON-NLS-1$
-			
+			rep.saveStepAttribute(id_transformation, id_step, "errorTable",      errorTableName);     //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "load_method",     loadMethod);    //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "load_action",     loadAction);    //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "gpload_path",     gploadPath);        //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "control_file",    controlFile);   //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "data_file",       dataFile);      //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "log_file",        logFile);       //$NON-NLS-1$
-
 			rep.saveStepAttribute(id_transformation, id_step, "erase_files",     eraseFiles);    //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "encoding",        encoding);      //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "dbname_override", dbNameOverride);//$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "enclose_numbers", (encloseNumbers?"Y":"N"));//$NON-NLS-1$
 
 			for (int i=0;i<fieldTable.length;i++)
 			{
@@ -810,7 +837,7 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface
 	}
 
 	public String getEnclosure() {
-		return "\"";
+		return "";
 	}
 
 	public boolean isEraseFiles() {
@@ -835,5 +862,13 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void setDbNameOverride(String dbNameOverride) {
 		this.dbNameOverride = dbNameOverride;
-	}	
+	}
+	
+	public void setEncloseNumbers(boolean encloseNumbers) {
+	   this.encloseNumbers = encloseNumbers;
+	}
+	
+	public boolean getEncloseNumbers() {
+	   return this.encloseNumbers;
+	}
 }

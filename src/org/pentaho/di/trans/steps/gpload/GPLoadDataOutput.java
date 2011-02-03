@@ -23,6 +23,9 @@ import java.util.Date;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -30,7 +33,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 
 /**
  * Does the opening of the output "stream". It's either a file or inter process
- * communication which is transparant to users of this class.
+ * communication which is transparent to users of this class.
  *
  * Copied from Sven Boden's Oracle version
  *
@@ -39,6 +42,10 @@ import org.pentaho.di.core.variables.VariableSpace;
  */
 public class GPLoadDataOutput
 {
+   private static Class<?> PKG = GPLoadDataOutput.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+   
+   protected LogChannelInterface        log;
+   
 	private GPLoadMeta meta;
 	private PrintWriter       output = null;
 	private boolean           first = true;
@@ -51,6 +58,13 @@ public class GPLoadDataOutput
 	{
 		this.meta = meta;
 	}
+	
+	public GPLoadDataOutput(GPLoadMeta meta, LogLevel logLevel) 
+	{
+      this(meta);
+      log = new LogChannel(this);
+      log.setLogLevel(logLevel);
+   }
 	
 	public void open(VariableSpace space, Process sqlldrProcess) throws KettleException
 	{
@@ -70,25 +84,25 @@ public class GPLoadDataOutput
 		//	{
 				// Else open the data file filled in.
 				String dataFile = meta.getDataFile();
-				dataFile = space.environmentSubstitute(dataFile);
+				if (Const.isEmpty(dataFile)) {
+				   throw new KettleException("meta.getDataFile() returned a null or empty string.");
+				}
 				
-                os = new FileOutputStream(dataFile, false);
+				dataFile = space.environmentSubstitute(dataFile);
+            log.logDetailed("Creating temporary load file "+dataFile);
+	         os = new FileOutputStream(dataFile, false);
 		//	}	
 			
             String encoding = meta.getEncoding();
             if ( Const.isEmpty(encoding) )
             {
             	// Use the default encoding.
-			    output = new PrintWriter(
-  	                      	     new BufferedWriter(
-							      new OutputStreamWriter(os)));
+			    output = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os)));
             }
             else
             {
             	// Use the specified encoding
-			    output = new PrintWriter(
-  	                      	     new BufferedWriter(
-							      new OutputStreamWriter(os, encoding)));
+			    output = new PrintWriter(new BufferedWriter(new OutputStreamWriter(os, encoding)));
             }
 		}
 		catch ( IOException e )
@@ -171,21 +185,36 @@ public class GPLoadDataOutput
 					break;
 				case ValueMetaInterface.TYPE_INTEGER:
 					Long l = mi.getInteger(row, number);
-					output.print(enclosure);
-					output.print(l);
-					output.print(enclosure);
+					if (meta.getEncloseNumbers()) {
+					   output.print(enclosure);
+					   output.print(l);
+					   output.print(enclosure);
+					}
+					else {
+					   output.print(l);
+					}
 					break;
 				case ValueMetaInterface.TYPE_NUMBER:
 					Double d = mi.getNumber(row, number);
-					output.print(enclosure);
-					output.print(d);
-					output.print(enclosure);
+					if (meta.getEncloseNumbers()) {
+   					output.print(enclosure);
+	   				output.print(d);
+		   			output.print(enclosure);
+					}
+		   		else {
+		   		   output.print(d);
+		   			}
 					break;
 				case ValueMetaInterface.TYPE_BIGNUMBER:
 					BigDecimal bd = mi.getBigNumber(row, number);
-					output.print(enclosure);
-					output.print(bd);
-					output.print(enclosure);
+					if (meta.getEncloseNumbers()) {
+   					output.print(enclosure);
+	     				output.print(bd);
+			   		output.print(enclosure);
+					}
+					else {
+					   output.print(bd);
+					}
 					break;
 				case ValueMetaInterface.TYPE_DATE:
 					Date dt = mi.getDate(row, number);

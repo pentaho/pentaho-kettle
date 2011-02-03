@@ -142,7 +142,7 @@ public class GPLoad extends BaseStep implements StepInterface
         // TODO: allow LOCAL_HOSTNAME/PORT/PORT_RANGE to be specified
         //
         String inputName = "'" + environmentSubstitute(meta.getDataFile()) + "'";
-        contents.append("    - FILE: ").append(inputName).append(Const.CR);
+        contents.append("        FILE: ").append('[').append(inputName).append(']').append(Const.CR);
         
         
         // COLUMNS is optional, takes the existing fields in the table
@@ -158,15 +158,16 @@ public class GPLoad extends BaseStep implements StepInterface
         // contents.append("    - ESCAPE: '").append(environmentSubstitute(meta.getEscapeCharacter)).append("'").append(Const.CR);
         
         contents.append("    - QUOTE: '").append(environmentSubstitute(meta.getEnclosure())).append("'").append(Const.CR);
-        contents.append("    - HEADER: false").append(Const.CR);
+        contents.append("    - HEADER: FALSE").append(Const.CR);
         
         // TODO: implement database encoding support
         // contents.append("    - ENCODING: ").append(Const.CR);
         
         contents.append("    - ERROR_LIMIT: ").append(meta.getMaxErrors()).append(Const.CR);
         
-        // TODO: implement error table support
-        // contents.append("    - ERROR_TABLE: schema.table_name").append(Const.CR);
+        if (!Const.isEmpty(meta.getErrorTableName())) {
+           contents.append("    - ERROR_TABLE: ").append(meta.getErrorTableName()).append(Const.CR);
+        }
         
         contents.append("   OUTPUT:").append(Const.CR);
 
@@ -174,8 +175,8 @@ public class GPLoad extends BaseStep implements StepInterface
             environmentSubstitute(meta.getSchemaName()),
             environmentSubstitute(meta.getTableName()));
 
-        contents.append("    - TABLE:").append(tableName).append(Const.CR);
-        contents.append("    - MODE:").append(meta.getLoadAction()).append(Const.CR);
+        contents.append("    - TABLE: ").append(tableName).append(Const.CR);
+        contents.append("    - MODE: ").append(meta.getLoadAction()).append(Const.CR);
 
         // TODO: add support for MATCH_COLUMNS, UPDATE_COLUMN, UPDATE_CONDITION, MAPPING
         // TODO: add suport for BEFORE and AFTER SQL
@@ -252,7 +253,8 @@ public class GPLoad extends BaseStep implements StepInterface
 		   {
 	           FileObject fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getGploadPath()), getTransMeta());
   	      	   String psqlexec = KettleVFS.getFilename(fileObject);
-		       sb.append('\'').append(psqlexec).append('\'');
+		       //sb.append('\'').append(psqlexec).append('\'');
+  	      	   sb.append(psqlexec);
   	       }
 	       catch ( Exception ex )
 	       {
@@ -271,7 +273,8 @@ public class GPLoad extends BaseStep implements StepInterface
 	           FileObject fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getControlFile()), getTransMeta());   
 		   
 	           sb.append(" -f ");
-	           sb.append('\'').append(KettleVFS.getFilename(fileObject)).append('\'');
+	           //sb.append('\'').append(KettleVFS.getFilename(fileObject)).append('\'');
+	           sb.append(KettleVFS.getFilename(fileObject));
   	       }
 	       catch ( Exception ex )
 	       {
@@ -333,7 +336,7 @@ public class GPLoad extends BaseStep implements StepInterface
         catch ( Exception ex )
         {
         	// Don't throw the message upwards, the message contains the password.
-        	throw new KettleException("Error while executing psql \'" + createCommandLine(meta, false) + "\'");
+        	throw new KettleException("Error while executing \'" + createCommandLine(meta, false) + "\'");
         }
         
         return true;
@@ -401,7 +404,7 @@ public class GPLoad extends BaseStep implements StepInterface
 				{
 					first=false;
 					createControlFile(environmentSubstitute(meta.getControlFile()), r, meta);
-					output = new GPLoadDataOutput(meta);
+					output = new GPLoadDataOutput(meta, log.getLogLevel());
 
 				//	if ( GPLoadMeta.METHOD_AUTO_CONCURRENT.equals(meta.getLoadMethod()) )
 				//	{
@@ -459,7 +462,7 @@ public class GPLoad extends BaseStep implements StepInterface
 	       String method = meta.getLoadMethod();
 	       if (  // GPLoadMeta.METHOD_AUTO_CONCURRENT.equals(method) ||
 	    		 GPLoadMeta.METHOD_AUTO_END.equals(method))
-	       {
+	       { /*
 	 	       if ( meta.getControlFile() != null )
 		       {
 			       try
@@ -472,7 +475,7 @@ public class GPLoad extends BaseStep implements StepInterface
 		           {
 		               logError("Error deleting control file \'" + KettleVFS.getFilename(fileObject) + "\': " + ex.getMessage());
 		           }
-		       }
+		       }*/
 		   }
 
 	       if (  GPLoadMeta.METHOD_AUTO_END.equals(method) )

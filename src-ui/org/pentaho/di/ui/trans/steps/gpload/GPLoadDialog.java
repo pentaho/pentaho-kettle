@@ -90,6 +90,11 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface
 	private Button				wbTable;
 	private TextVar				wTable;
 	private FormData			fdlTable, fdbTable, fdTable;
+	
+   private Label           wlErrorTable;
+   private Button          wbErrorTable;
+   private TextVar         wErrorTable;
+   private FormData        fdlErrorTable, fdbErrorTable, fdErrorTable;
 
 	private Label				wlGploadPath;
 	private Button				wbGploadPath;
@@ -283,7 +288,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface
 		fdTable.right = new FormAttachment(wbTable, -margin);
 		wTable.setLayoutData(fdTable);
 
-		// PsqlPath line...
+		// GPLoad line...
 		wlGploadPath = new Label(shell, SWT.RIGHT);
 		wlGploadPath.setText(BaseMessages.getString(PKG, "GPLoadDialog.PsqlPath.Label")); //$NON-NLS-1$
  		props.setLook(wlGploadPath);
@@ -386,6 +391,34 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface
 		fdMaxErrors.right = new FormAttachment(100, 0);
 		wMaxErrors.setLayoutData(fdMaxErrors);						
 
+	    // Error Table line...
+      wlErrorTable = new Label(shell, SWT.RIGHT);
+      wlErrorTable.setText(BaseMessages.getString(PKG, "GPLoadDialog.ErrorTable.Label")); //$NON-NLS-1$
+      props.setLook(wlErrorTable);
+      fdlErrorTable = new FormData();
+      fdlErrorTable.left = new FormAttachment(0, 0);
+      fdlErrorTable.right = new FormAttachment(middle, -margin);
+      fdlErrorTable.top = new FormAttachment(wMaxErrors, margin);
+      wlErrorTable.setLayoutData(fdlErrorTable);
+      
+      wbErrorTable = new Button(shell, SWT.PUSH | SWT.CENTER);
+      props.setLook(wbErrorTable);
+      wbErrorTable.setText(BaseMessages.getString(PKG, "GPLoadDialog.Browse.Button")); //$NON-NLS-1$
+      fdbErrorTable = new FormData();
+      fdbErrorTable.right = new FormAttachment(100, 0);
+      fdbErrorTable.top = new FormAttachment(wMaxErrors, margin);
+      wbErrorTable.setLayoutData(fdbErrorTable);
+      wErrorTable = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+      props.setLook(wErrorTable);
+      wErrorTable.addModifyListener(lsMod);
+      wErrorTable.addFocusListener(lsFocusLost);
+      fdErrorTable = new FormData();
+      fdErrorTable.left = new FormAttachment(middle, 0);
+      fdErrorTable.top = new FormAttachment(wMaxErrors, margin);
+      fdErrorTable.right = new FormAttachment(wbErrorTable, -margin);
+      wErrorTable.setLayoutData(fdErrorTable);
+		
+		
 		// Db Name Override line
 		wlDbNameOverride = new Label(shell, SWT.RIGHT);
 		wlDbNameOverride.setText(BaseMessages.getString(PKG, "GPLoadDialog.DbNameOverride.Label")); //$NON-NLS-1$
@@ -756,9 +789,17 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface
 		{
 			public void widgetSelected(SelectionEvent e)
 			{
-				getTableName();
+				getTableName(wSchema, wTable);
 			}
 		});
+		
+	   wbErrorTable.addSelectionListener(new SelectionAdapter()
+	      {
+	         public void widgetSelected(SelectionEvent e)
+	         {
+	            getTableName(wSchema, wErrorTable);
+	         }
+	      });
 
 		// Set the shell size, based upon previous time...
 		setSize();
@@ -985,6 +1026,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface
 		}
         if (input.getSchemaName() != null) wSchema.setText(input.getSchemaName());
 		if (input.getTableName() != null) wTable.setText(input.getTableName());
+		if (input.getErrorTableName() != null) wErrorTable.setText(input.getErrorTableName());
 		if (input.getGploadPath() != null) wGploadPath.setText(input.getGploadPath());
 		if (input.getControlFile() != null) wControlFile.setText(input.getControlFile());
 		if (input.getDataFile() != null) wDataFile.setText(input.getDataFile());
@@ -1069,6 +1111,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface
 
         inf.setSchemaName( wSchema.getText() );
 		inf.setTableName( wTable.getText() );
+		inf.setErrorTableName(wErrorTable.getText());
 		inf.setDatabaseMeta(  transMeta.findDatabase(wConnection.getText()) );
 		inf.setGploadPath( wGploadPath.getText() );
 		inf.setControlFile( wControlFile.getText() );
@@ -1142,7 +1185,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface
 		dispose();
 	}
 
-	private void getTableName()
+	private void getTableName(TextVar schema, TextVar tableName)
 	{
 		DatabaseMeta inf = null;
 		// New class: SelectTableDialog
@@ -1158,8 +1201,8 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface
       std.setSelectedSchemaAndTable(wSchema.getText(), wTable.getText());
 			if (std.open())
 			{
-                wSchema.setText(Const.NVL(std.getSchemaName(), ""));
-                wTable.setText(Const.NVL(std.getTableName(), ""));
+                schema.setText(Const.NVL(std.getSchemaName(), ""));
+                tableName.setText(Const.NVL(std.getTableName(), ""));
 			}
 		}
 		else
@@ -1170,7 +1213,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface
 			mb.open();
 		}
 	}
-
+	
 	private void getUpdate()
 	{
 		try
