@@ -32,6 +32,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -279,8 +280,10 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 		fdStepname.top = new FormAttachment(0, margin);
 		fdStepname.right = new FormAttachment(100, 0);
 		wStepname.setLayoutData(fdStepname);
-
-		wTabFolder = new CTabFolder(shell, SWT.BORDER);
+		
+		ScrolledComposite sc = new ScrolledComposite(shell, SWT.H_SCROLL | SWT.V_SCROLL);
+		
+		wTabFolder = new CTabFolder(sc, SWT.BORDER);
 		props.setLook(wTabFolder, Props.WIDGET_STYLE_TAB);
 
 		// ////////////////////////
@@ -1303,10 +1306,23 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 
 		fdTabFolder = new FormData();
 		fdTabFolder.left = new FormAttachment(0, 0);
-		fdTabFolder.top = new FormAttachment(wStepname, margin);
+		fdTabFolder.top = new FormAttachment(0, 0);
 		fdTabFolder.right = new FormAttachment(100, 0);
-		fdTabFolder.bottom = new FormAttachment(100, -50);
+		fdTabFolder.bottom = new FormAttachment(100, 0);
 		wTabFolder.setLayoutData(fdTabFolder);
+		
+		FormData fdSc = new FormData();
+		fdSc.left = new FormAttachment(0, 0);
+		fdSc.top = new FormAttachment(wStepname, margin);
+		fdSc.right = new FormAttachment(100, 0);
+		fdSc.bottom = new FormAttachment(100, -50);
+		sc.setLayoutData(fdSc);
+		
+		sc.setContent(wTabFolder);
+		//wTabFolder.setSize();
+		sc.setMinSize(wTabFolder.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+		sc.setExpandHorizontal(true);
+		sc.setExpandVertical(true);
 
 		// ///////////////////////////////////////////////////////////
 		// / END OF CONTENT TAB
@@ -1318,7 +1334,7 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 		wCancel = new Button(shell, SWT.PUSH);
 		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
-		setButtonPositions(new Button[] { wOK, wCancel }, margin, wTabFolder);
+		setButtonPositions(new Button[] { wOK, wCancel }, margin, sc);
 
 		// Add listeners
 		lsOK = new Listener() {
