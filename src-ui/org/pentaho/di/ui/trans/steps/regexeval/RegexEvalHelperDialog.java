@@ -464,7 +464,12 @@ public class RegexEvalHelperDialog extends Dialog
 		    	int nr=0;
 		    	for(int i=1; i<=nrFields;i++)
 		    	{
-		    		wGroups.add(m.group(i));
+                                if ( m.group(i) == null ) 
+                                {
+                                        wGroups.add("");
+                                } else {
+                                        wGroups.add(m.group(i));
+                                }
 		    		nr++;
 		    	}
 		    	wlGroups.setText(BaseMessages.getString(PKG, "RegexEvalHelperDialog.FieldsGroup",nr));
