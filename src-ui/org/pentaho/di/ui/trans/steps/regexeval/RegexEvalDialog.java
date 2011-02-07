@@ -782,9 +782,26 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
         wlFields.setEnabled(wAllowCaptureGroups.getSelection());
         wFields.setEnabled(wAllowCaptureGroups.getSelection());
     }
+    private void setRegexOptions(RegexEvalMeta input)
+    {
+     		input.setScript( wScript.getText() );
+     		input.setResultFieldName(wResultField.getText() );
+     		input.setMatcher(wfieldevaluate.getText() );
+     		input.setMultilineFlag(wMultiline.getSelection());
+     		input.setUnicodeFlag(wUnicode.getSelection());
+     		input.setUnixLineEndingsFlag(wUnix.getSelection());
+    }
     private void testRegExScript()
-	{
-		RegexEvalHelperDialog d = new RegexEvalHelperDialog(shell,transMeta, wScript.getText());
-		wScript.setText(d.open());
-	}
+ 	{
+    	RegexEvalMeta meta = new RegexEvalMeta();
+	    setRegexOptions(meta);
+		RegexEvalHelperDialog d = new RegexEvalHelperDialog
+                (
+                        shell,
+                        transMeta,
+                        meta.getScript(),
+                        ""
+                );
+ 		wScript.setText(d.open());
+ 	}
 }
