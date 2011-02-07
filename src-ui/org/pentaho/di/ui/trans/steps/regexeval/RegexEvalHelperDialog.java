@@ -71,6 +71,7 @@ public class RegexEvalHelperDialog extends Dialog
     private Shell shell;
 	private PropsUI props;
     private String regexscript;
+    private String regexoptions;
     private TransMeta transmeta;
 
 	private CTabFolder   wNoteFolder;
@@ -127,12 +128,14 @@ public class RegexEvalHelperDialog extends Dialog
      * 
      * @param parent The parent shell to use
      * @param RegexScript The expression to test
+     * @param RegexOptions Any extended options for the regular expression
      */
-    public RegexEvalHelperDialog(Shell parent, TransMeta transmeta, String RegexScript)
+    public RegexEvalHelperDialog(Shell parent, TransMeta transmeta, String RegexScript, String RegexOptions)
     {
         super(parent, SWT.NONE);
         props = PropsUI.getInstance();
         this.regexscript=RegexScript;
+        this.regexoptions=RegexOptions;
         this.transmeta=transmeta;
         this.errorDisplayed=false;
     }
@@ -444,7 +447,7 @@ public class RegexEvalHelperDialog extends Dialog
 		}
     	try
     	{
-	    	Pattern p=Pattern.compile(realScript);
+	    	Pattern p=Pattern.compile(regexoptions+realScript);
 	    	Matcher m=p.matcher(realValue);
 	    	boolean ismatch=m.matches();
 	    	if(ismatch)
