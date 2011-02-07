@@ -328,12 +328,14 @@ public class RegexEvalHelperDialog extends Dialog
 		fdGroups.left = new FormAttachment(middle, margin);
 		fdGroups.top  = new FormAttachment(wValueGroup, margin);
 		fdGroups.right= new FormAttachment(100, -margin);
+                fdGroups.bottom=new FormAttachment(100, -margin);
 		wGroups.setLayoutData(fdGroups);
 
     	fdCaptureGroups = new FormData();
 		fdCaptureGroups.left = new FormAttachment(0, margin);
 		fdCaptureGroups.top = new FormAttachment(wValuesGroup, margin);
 		fdCaptureGroups.right = new FormAttachment(100, -margin);
+                fdCaptureGroups.bottom=new FormAttachment(100, -margin);
 		wCaptureGroups.setLayoutData(fdCaptureGroups);
 		
 		// ///////////////////////////////////////////////////////////
