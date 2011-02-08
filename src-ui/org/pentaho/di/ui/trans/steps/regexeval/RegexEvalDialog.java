@@ -800,7 +800,7 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
                         shell,
                         transMeta,
                         meta.getScript(),
-                        ""
+                        meta.getRegexOptions()
                 );
  		wScript.setText(d.open());
  	}

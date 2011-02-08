@@ -124,6 +124,37 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
         return script;
     }
 
+
+    public String getRegexOptions()
+    {
+        StringBuilder options = new StringBuilder();
+        
+        if (isCaseInsensitiveFlagSet())
+        {
+                options.append("(?i)");
+        }
+        if (isCommentFlagSet())
+        {
+                options.append("(?x)");
+        }
+        if (isDotAllFlagSet())
+        {
+                options.append("(?s)");
+        }
+        if (isMultilineFlagSet())
+        {
+                options.append("(?m)");
+        }
+        if (isUnicodeFlagSet())
+        {
+                options.append("(?u)");
+        }
+        if (isUnixLineEndingsFlagSet())
+        {
+                options.append("(?d)");
+        }
+        return options.toString();
+    }
     public void setScript(String script)
     {
         this.script = script;
