@@ -1501,7 +1501,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		}
 	}
 
-	private AtomicBoolean busyWithFields = new AtomicBoolean(true);
+	private AtomicBoolean busyWithFields = new AtomicBoolean(false);
 	
 	// Set table "dimension field" and "technical key" drop downs  
 	private void setTableFieldCombo(){
