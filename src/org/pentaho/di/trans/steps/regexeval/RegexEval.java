@@ -222,32 +222,7 @@ public class RegexEval extends BaseStep implements StepInterface
 		if (super.init(smi, sdi))
 		{
 			// Embedded options
-			StringBuilder options = new StringBuilder();
-			
-			if (meta.isCaseInsensitiveFlagSet())
-			{
-				options.append("(?i)");
-			}
-			if (meta.isCommentFlagSet())
-			{
-				options.append("(?x)");
-			}
-			if (meta.isDotAllFlagSet())
-			{
-				options.append("(?s)");
-			}
-			if (meta.isMultilineFlagSet())
-			{
-				options.append("(?m)");
-			}
-			if (meta.isUnicodeFlagSet())
-			{
-				options.append("(?u)");
-			}
-			if (meta.isUnixLineEndingsFlagSet())
-			{
-				options.append("(?d)");
-			}
+                        String options = meta.getRegexOptions();
 		
 			// Regular expression
 			String regularexpression= meta.getScript();
