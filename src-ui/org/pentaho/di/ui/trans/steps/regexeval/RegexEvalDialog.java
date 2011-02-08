@@ -50,6 +50,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.steps.accessoutput.AccessOutputMeta;
 import org.pentaho.di.trans.steps.regexeval.RegexEvalMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
@@ -774,9 +775,26 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
         wlFields.setEnabled(wAllowCaptureGroups.getSelection());
         wFields.setEnabled(wAllowCaptureGroups.getSelection());
     }
+    private void setRegexOptions(RegexEvalMeta input)
+    {
+     		input.setScript( wScript.getText() );
+     		input.setResultFieldName(wResultField.getText() );
+     		input.setMatcher(wfieldevaluate.getText() );
+     		input.setMultilineFlag(wMultiline.getSelection());
+     		input.setUnicodeFlag(wUnicode.getSelection());
+     		input.setUnixLineEndingsFlag(wUnix.getSelection());
+    }
     private void testRegExScript()
-	{
-		RegexEvalHelperDialog d = new RegexEvalHelperDialog(shell,transMeta, wScript.getText());
-		wScript.setText(d.open());
-	}
+ 	{
+    	RegexEvalMeta meta = new RegexEvalMeta();
+	    setRegexOptions(meta);
+		RegexEvalHelperDialog d = new RegexEvalHelperDialog
+                (
+                        shell,
+                        transMeta,
+                        meta.getScript(),
+                        ""
+                );
+ 		wScript.setText(d.open());
+ 	}
 }
