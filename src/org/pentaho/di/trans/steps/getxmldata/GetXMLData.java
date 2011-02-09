@@ -156,12 +156,12 @@ public class GetXMLData extends BaseStep implements StepInterface
 				// get encoding. By default UTF-8
 				String encoding="UTF-8";
 				if (!Const.isEmpty(meta.getEncoding())) encoding=meta.getEncoding();
-        InputStream is = KettleVFS.getInputStream(file);
-        try {
-          data.document = reader.read( is, encoding);
-        } finally {
-          BaseStep.closeQuietly(is);
-        }
+		        InputStream is = KettleVFS.getInputStream(file);
+		        try {
+		          data.document = reader.read( is, encoding);
+		        } finally {
+		          BaseStep.closeQuietly(is);
+		        }
 			}
 
 			if(meta.isNamespaceAware())	prepareNSMap(data.document.getRootElement());	    
@@ -763,10 +763,16 @@ public class GetXMLData extends BaseStep implements StepInterface
 				{
 					XPath xpathField = node.createXPath(addNSPrefix(XPathValue, data.PathValue));
 					xpathField.setNamespaceURIs(data.NAMESPACE);
-					nodevalue=xpathField.valueOf(node);
+					if(xmlDataField.getResultType()== GetXMLDataField.RESULT_TYPE_VALUE_OF)
+						nodevalue=xpathField.valueOf(node);
+					else
+						nodevalue=xpathField.selectSingleNode(node).asXML();
 				}else
 				{
-					nodevalue=node.valueOf(XPathValue);
+					if(xmlDataField.getResultType()== GetXMLDataField.RESULT_TYPE_VALUE_OF)
+						nodevalue=node.valueOf(XPathValue);
+					else
+						nodevalue=node.selectSingleNode(XPathValue).asXML();
 				}
 				
 				// Do trimming

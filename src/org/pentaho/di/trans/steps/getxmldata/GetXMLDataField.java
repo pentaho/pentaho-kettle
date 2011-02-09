@@ -22,6 +22,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.w3c.dom.Node;
 
+
 /**
  * Describes an XML field and the position in an XML field.
  * 
@@ -32,6 +33,18 @@ public class GetXMLDataField implements Cloneable
 {
 	private static Class<?> PKG = GetXMLDataMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
+    
+    public final static int RESULT_TYPE_VALUE_OF  = 0;
+    public final static int RESULT_TYPE_TYPE_SINGLE_NODE  = 1;
+    
+    public final static String ResultTypeCode[] = { "valueof", "singlenode" };
+    
+    public final static String ResultTypeDesc[] = {
+        BaseMessages.getString(PKG, "GetXMLDataField.ResultType.ValueOf"),
+        BaseMessages.getString(PKG, "GetXMLDataField.ResultType.SingleNode")
+      };
+    
+	
     public final static int TYPE_TRIM_NONE  = 0;
     public final static int TYPE_TRIM_LEFT  = 1;
     public final static int TYPE_TRIM_RIGHT = 2;
@@ -80,6 +93,7 @@ public class GetXMLDataField implements Cloneable
     private String    format;
     private int       trimtype;
     private int       elementtype;
+    private int       resulttype;
     private int       precision;
     private String 	  currencySymbol;
 	private String 	  decimalSymbol;
@@ -95,6 +109,7 @@ public class GetXMLDataField implements Cloneable
 		this.format         = "";
 		this.trimtype       = TYPE_TRIM_NONE;
 		this.elementtype    = ELEMENT_TYPE_NODE;
+		this.resulttype    = RESULT_TYPE_VALUE_OF;
 		this.groupSymbol    = "";
 		this.decimalSymbol  = "";
 		this.currencySymbol = "";
@@ -115,6 +130,7 @@ public class GetXMLDataField implements Cloneable
         retval.append("        ").append(XMLHandler.addTagValue("name",         getName()));
         retval.append("        ").append(XMLHandler.addTagValue("xpath",        getXPath()));
         retval.append("        ").append(XMLHandler.addTagValue("element_type", getElementTypeCode()));
+        retval.append("        ").append(XMLHandler.addTagValue("result_type", getResultTypeCode()));
         retval.append("        ").append(XMLHandler.addTagValue("type",         getTypeDesc()));
         retval.append("        ").append(XMLHandler.addTagValue("format",       getFormat()));
         retval.append("        ").append(XMLHandler.addTagValue("currency",     getCurrencySymbol()));
@@ -135,6 +151,7 @@ public class GetXMLDataField implements Cloneable
         setName( XMLHandler.getTagValue(fnode, "name") );
         setXPath( XMLHandler.getTagValue(fnode, "xpath") );
         setElementType( getElementTypeByCode(XMLHandler.getTagValue(fnode, "element_type")) );
+        setResultType( getResultTypeByCode(XMLHandler.getTagValue(fnode, "result_type")) );
         setType( ValueMeta.getType(XMLHandler.getTagValue(fnode, "type")) );
         setFormat( XMLHandler.getTagValue(fnode, "format") );
         setCurrencySymbol( XMLHandler.getTagValue(fnode, "currency") );
@@ -390,5 +407,52 @@ public class GetXMLDataField implements Cloneable
 	public void flipRepeated()
 	{
 		repeat = !repeat;		
+	}
+   public final static int getResultTypeByDesc(String tt)
+    {
+        if (tt==null) return 0;
+        
+        for (int i=0;i<ResultTypeDesc.length;i++)
+        {
+            if (ResultTypeDesc[i].equalsIgnoreCase(tt)) return i;
+        }
+        return 0;
+    }
+	public String getResultTypeDesc()
+	{
+		return getResultTypeDesc(resulttype);
+	}
+   public final static String getResultTypeDesc(int i)
+   {
+       if (i<0 || i>=ResultTypeDesc.length) return ResultTypeDesc[0];
+       return ResultTypeDesc[i]; 
+   }
+	public int getResultType()
+	{
+		return resulttype;
+	}
+   public void setResultType(int resulttype)
+	{
+		this.resulttype= resulttype;
+	}
+   public final static int getResultTypeByCode(String tt)
+   {
+       if (tt==null) return 0;    
+       
+       for (int i=0;i<ResultTypeCode.length;i++)
+       {
+           if (ResultTypeCode[i].equalsIgnoreCase(tt)) return i;
+       }
+
+       return 0;
+   }
+   public final static String getResultTypeCode(int i)
+   {
+       if (i<0 || i>=ResultTypeCode.length) return ResultTypeCode[0];
+       return ResultTypeCode[i]; 
+   }
+   public String getResultTypeCode()
+	{
+		return getResultTypeCode(resulttype);
 	}
  }

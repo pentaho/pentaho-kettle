@@ -74,6 +74,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
+
 public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterface
 {
 	private String XMLSource=null;
@@ -1054,6 +1055,11 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
     	         ColumnInfo.COLUMN_TYPE_CCOMBO,
     	         GetXMLDataField.ElementTypeDesc,
     	         true ),
+         new ColumnInfo(
+    	         BaseMessages.getString(PKG, "GetXMLDataDialog.FieldsTable.ResultType.Column"),
+    	         ColumnInfo.COLUMN_TYPE_CCOMBO,
+    	         GetXMLDataField.ResultTypeDesc,
+    	         true ),
 			 new ColumnInfo(
          BaseMessages.getString(PKG, "GetXMLDataDialog.FieldsTable.Type.Column"),
          ColumnInfo.COLUMN_TYPE_CCOMBO,
@@ -1686,6 +1692,7 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
     			String name     = field.getName();
     			String xpath	= field.getXPath();
     			String element  = field.getElementTypeDesc();
+    			String resulttype  = field.getResultTypeDesc();
     			String type     = field.getTypeDesc();
     			String format   = field.getFormat();
     			String length   = ""+field.getLength();
@@ -1699,15 +1706,16 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
                 if (name    !=null) item.setText( 1, name);
                 if (xpath   !=null) item.setText( 2, xpath);
                 if (element !=null) item.setText( 3, element);
-    			if (type    !=null) item.setText( 4, type    );
-    			if (format  !=null) item.setText( 5, format  );
-    			if (length  !=null && !"-1".equals(length  )) item.setText( 6, length  );
-    			if (prec    !=null && !"-1".equals(prec    )) item.setText( 7, prec    );
-    			if (curr    !=null) item.setText( 8, curr    );
-    			if (decim   !=null) item.setText( 9, decim   );
-    			if (group   !=null) item.setText( 10, group   );
-    			if (trim    !=null) item.setText( 11, trim    );
-    			if (rep     !=null) item.setText(12, rep     );
+                if (resulttype !=null) item.setText( 4, resulttype);
+    			if (type    !=null) item.setText( 5, type    );
+    			if (format  !=null) item.setText( 6, format  );
+    			if (length  !=null && !"-1".equals(length  )) item.setText( 7, length  );
+    			if (prec    !=null && !"-1".equals(prec    )) item.setText( 8, prec    );
+    			if (curr    !=null) item.setText( 9, curr    );
+    			if (decim   !=null) item.setText( 10, decim   );
+    			if (group   !=null) item.setText( 11, group   );
+    			if (trim    !=null) item.setText( 12, trim    );
+    			if (rep     !=null) item.setText(13, rep     );
                 
             }
 		}     
@@ -1798,15 +1806,16 @@ public class GetXMLDataDialog extends BaseStepDialog implements StepDialogInterf
 			field.setName( item.getText(1) );
 			field.setXPath( item.getText(2) );
 			field.setElementType( GetXMLDataField.getElementTypeByDesc(item.getText(3)) );
-			field.setType( ValueMeta.getType(item.getText(4)) );
-			field.setFormat( item.getText(5) );
-			field.setLength( Const.toInt(item.getText(6), -1) );
-			field.setPrecision( Const.toInt(item.getText(7), -1) );
-			field.setCurrencySymbol( item.getText(8) );
-			field.setDecimalSymbol( item.getText(9) );
-			field.setGroupSymbol( item.getText(10) );
-			field.setTrimType( GetXMLDataField.getTrimTypeByDesc(item.getText(11)) );
-			field.setRepeated( BaseMessages.getString(PKG, "System.Combo.Yes").equalsIgnoreCase(item.getText(12)) );		
+			field.setResultType( GetXMLDataField.getResultTypeByDesc(item.getText(4)) );
+			field.setType( ValueMeta.getType(item.getText(5)) );
+			field.setFormat( item.getText(6) );
+			field.setLength( Const.toInt(item.getText(7), -1) );
+			field.setPrecision( Const.toInt(item.getText(8), -1) );
+			field.setCurrencySymbol( item.getText(9) );
+			field.setDecimalSymbol( item.getText(10) );
+			field.setGroupSymbol( item.getText(11) );
+			field.setTrimType( GetXMLDataField.getTrimTypeByDesc(item.getText(12)) );
+			field.setRepeated( BaseMessages.getString(PKG, "System.Combo.Yes").equalsIgnoreCase(item.getText(13)) );		
             
 			in.getInputFields()[i] = field;
 		}		
