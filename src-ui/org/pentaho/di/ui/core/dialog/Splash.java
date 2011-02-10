@@ -15,6 +15,7 @@ package org.pentaho.di.ui.core.dialog;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.Calendar;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
@@ -113,8 +114,8 @@ public class Splash {
           sb.append(""); //$NON-NLS-1$
           Log.warn(BaseMessages.getString(PKG, "SplashDialog.LicenseTextNotFound")); //$NON-NLS-1$
         }
-        
-        String licenseText = sb.toString();
+        Calendar cal = Calendar.getInstance();
+        String licenseText = String.format(sb.toString(), cal);
         e.gc.drawImage(kettle_image, 0, 0);
 
         // If this is a Milestone or RC release, warn the user
