@@ -16,6 +16,7 @@ package org.pentaho.di.trans.steps.regexeval;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -68,26 +69,20 @@ public class RegexEval extends BaseStep implements StepInterface
 		{
 			first=false;
 			// get the RowMeta
-			data.previousRowMeta = getInputRowMeta().clone();
+			data.nrIncomingFields=getInputRowMeta().size();
 			data.outputRowMeta = getInputRowMeta().clone();
 			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 			
 			data.nrExtraFields = meta.isAllowCaptureGroupsFlagSet() ? meta.getFieldName().length : 0;
-			
+		
 			// Check if a Field (matcher) is given
 			if (meta.getMatcher()!=null)
 			{
 				 // Cache the position of the Field
 				if (data.indexOfFieldToEvaluate<0)
 				{
-					data.indexOfFieldToEvaluate = data.previousRowMeta.indexOfValue(meta.getMatcher());
-					data.indexOfMatchResultField = data.outputRowMeta.indexOfValue(meta.getResultFieldName());
-					
-					if (data.nrExtraFields > 0)
-					{
-						data.indexOfFirstCaptureGroupField = data.outputRowMeta.indexOfValue(meta.getFieldName()[0]);
-					}
-					
+					data.indexOfFieldToEvaluate = getInputRowMeta().indexOfValue(meta.getMatcher());
+	
 					if (data.indexOfFieldToEvaluate<0)
 		            {                    
 		                // The field is unreachable !
@@ -95,13 +90,14 @@ public class RegexEval extends BaseStep implements StepInterface
 						throw new KettleStepException(BaseMessages.getString(PKG, "RegexEval.Exception.CouldnotFindField",meta.getMatcher())); 
 					}		                
 		                
-					
 					// Let's check that Result Field is given
-					if (environmentSubstitute(meta.getResultFieldName()) == null )
-					{
+					if (Const.isEmpty(environmentSubstitute(meta.getResultFieldName()))) {
+						if(!meta.isAllowCaptureGroupsFlagSet()) {
 						//	Result field is missing !
-						logError(BaseMessages.getString(PKG, "RegexEval.Log.ErrorResultFieldMissing")); 
-						throw new KettleStepException(BaseMessages.getString(PKG, "RegexEval.Exception.ErrorResultFieldMissing"));
+							logError(BaseMessages.getString(PKG, "RegexEval.Log.ErrorResultFieldMissing")); 
+							throw new KettleStepException(BaseMessages.getString(PKG, "RegexEval.Exception.ErrorResultFieldMissing"));
+						}
+						data.addResultField=false;
 					}
 		                
 				}
@@ -124,25 +120,24 @@ public class RegexEval extends BaseStep implements StepInterface
 		// reserve room
 		Object[] outputRow = RowDataUtil.allocateRowData(data.outputRowMeta.size());
 				
-		for (int i = 0; i < data.previousRowMeta.size(); i++)
-		{
+		for (int i = 0; i < data.nrIncomingFields; i++) {
 			outputRow[i] = row[i];
 		}
-		boolean sendToErrorRow=false;
-		String errorMessage = null;
+
 		try{
 			// Get the Field value
 			String fieldValue= getInputRowMeta().getString(row,data.indexOfFieldToEvaluate);
 			
-			if (fieldValue == null)
-			{
-				outputRow[data.indexOfMatchResultField] = false;
-                for (int i = 0; i < data.nrExtraFields; i++)
-                {
-                    ValueMetaInterface valueMeta = data.outputRowMeta.getValueMeta(data.indexOfFirstCaptureGroupField+i); 
-                    ValueMetaInterface conversionValueMeta = data.conversionRowMeta.getValueMeta(data.indexOfFirstCaptureGroupField+i);
-                    Object convertedValue = valueMeta.convertDataFromString
-                    (
+			int index=data.nrIncomingFields;
+			if (fieldValue == null) {
+				if(data.addResultField) {
+					outputRow[index] = false;
+					index++;
+				}
+                for (int i = 0; i < data.nrExtraFields; i++) {
+                    ValueMetaInterface valueMeta = data.outputRowMeta.getValueMeta(index); 
+                    ValueMetaInterface conversionValueMeta = data.conversionRowMeta.getValueMeta(index);
+                    Object convertedValue = valueMeta.convertDataFromString (
                             null,
                             conversionValueMeta,
                             meta.getFieldNullIf()[i],
@@ -150,37 +145,38 @@ public class RegexEval extends BaseStep implements StepInterface
                             meta.getFieldTrimType()[i]
                     );
     
-                    outputRow[data.indexOfFirstCaptureGroupField+i] = convertedValue;
+                    outputRow[index] = convertedValue;
+                	index++;
                 }
-			}
-			else
-			{
+			} else {
 				// Search engine
 				Matcher m = data.pattern.matcher(fieldValue);
-	
+				boolean firstCheck=false;
 				// Start search
 				boolean isMatch = m.matches();
-				outputRow[data.indexOfMatchResultField] = isMatch;
-	
+
+				if(data.addResultField) {
+					outputRow[index] = isMatch;
+					index++;
+				}
 				String[] values = new String[data.nrExtraFields];
-	
-				for (int i = 0; i < data.nrExtraFields; i++)
-				{
-					if (isMatch)
-					{
-						if (data.nrExtraFields != m.groupCount())
-						{
-							// Runtime exception case. The number of capture groups in the regex doesn't match the number of fields.
-							logError(BaseMessages.getString(PKG, "RegexEval.Log.ErrorCaptureGroupFieldsMismatch", String.valueOf(m.groupCount()), String.valueOf(data.nrExtraFields)));
-							throw new KettleStepException(BaseMessages.getString(PKG, "RegexEval.Exception.ErrorCaptureGroupFieldsMismatch", String.valueOf(m.groupCount()), String.valueOf(data.nrExtraFields))); 
+
+				for (int i = 0; i < data.nrExtraFields; i++) {
+					if (isMatch) {
+						if(!firstCheck) {
+							firstCheck=true;
+							if (data.nrExtraFields != m.groupCount()) {
+								// Runtime exception case. The number of capture groups in the regex doesn't match the number of fields.
+								logError(BaseMessages.getString(PKG, "RegexEval.Log.ErrorCaptureGroupFieldsMismatch", String.valueOf(m.groupCount()), String.valueOf(data.nrExtraFields)));
+								throw new KettleStepException(BaseMessages.getString(PKG, "RegexEval.Exception.ErrorCaptureGroupFieldsMismatch", String.valueOf(m.groupCount()), String.valueOf(data.nrExtraFields))); 
+							}
 						}
 						values[i] = m.group(i+1);
 					}
-	
-					ValueMetaInterface valueMeta = data.outputRowMeta.getValueMeta(data.indexOfFirstCaptureGroupField+i); 
-					ValueMetaInterface conversionValueMeta = data.conversionRowMeta.getValueMeta(data.indexOfFirstCaptureGroupField+i);
-					Object convertedValue = valueMeta.convertDataFromString
-					(
+					
+					ValueMetaInterface valueMeta = data.outputRowMeta.getValueMeta(index); 
+					ValueMetaInterface conversionValueMeta = data.conversionRowMeta.getValueMeta(index);
+					Object convertedValue = valueMeta.convertDataFromString (
 							values[i],
 							conversionValueMeta,
 							meta.getFieldNullIf()[i],
@@ -188,25 +184,25 @@ public class RegexEval extends BaseStep implements StepInterface
 							meta.getFieldTrimType()[i]
 					);
 	
-					outputRow[data.indexOfFirstCaptureGroupField+i] = convertedValue;
+					outputRow[index] = convertedValue;
+					index++;
 				}
 			}
-			if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "RegexEval.Log.ReadRow") + " " +  getInputRowMeta().getString(row)); 
+			if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "RegexEval.Log.ReadRow") + getInputRowMeta().getString(row)); 
 			
 			putRow(data.outputRowMeta, outputRow);  // copy row to output rowset(s);
-		}catch(KettleException e)
-		{
-			if (getStepMeta().isDoingErrorHandling())
-	        {
+		} catch (KettleException e) {
+			boolean sendToErrorRow=false;
+			String errorMessage = null;
+			
+			if (getStepMeta().isDoingErrorHandling()) {
                 sendToErrorRow = true;
                 errorMessage = e.toString();
-	        }else
-	        {
+	        }else  {
 				throw new KettleStepException(BaseMessages.getString(PKG, "RegexEval.Log.ErrorInStep"), e); //$NON-NLS-1$
 	        }
 			 
-			 if (sendToErrorRow)
-	         {
+			 if (sendToErrorRow) {
 				 // Simply add this row to the error row
 	             putError(getInputRowMeta(), outputRow, 1, errorMessage, null, "REGEX001");
 	         }
@@ -244,5 +240,13 @@ public class RegexEval extends BaseStep implements StepInterface
 		}
 		return false;
 	}
-
+	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
+	{
+	    meta = (RegexEvalMeta)smi;
+	    data = (RegexEvalData)sdi;
+	    
+	    data.pattern=null;
+	    
+	    super.dispose(smi, sdi);
+	}
 }
