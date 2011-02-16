@@ -27,6 +27,7 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -125,6 +126,13 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 				input.setChanged();
 			}
 		};
+		SelectionListener lsSel = new SelectionAdapter() 
+		{
+			public void widgetSelected(SelectionEvent e) 
+			{
+				input.setChanged();
+			}
+		};
 		changed = input.hasChanged();
 
 		FormLayout formLayout = new FormLayout ();
@@ -212,6 +220,7 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
         fdfieldevaluate.top  = new FormAttachment(wStepname, margin);
         fdfieldevaluate.right= new FormAttachment(100, -margin);
         wfieldevaluate.setLayoutData(fdfieldevaluate);
+        wfieldevaluate.addSelectionListener(lsSel);
         wfieldevaluate.addFocusListener(new FocusListener()
             {
                 public void focusLost(org.eclipse.swt.events.FocusEvent e)
@@ -267,6 +276,7 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
             public void widgetSelected(SelectionEvent e)
             {
                 setFieldsEnabledStatus();
+                input.setChanged();
             }
         });
     	fdStepSettings = new FormData();
@@ -329,7 +339,7 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 		fdUseVar.left  = new FormAttachment(wlUseVar, margin);
 		fdUseVar.top   = new FormAttachment(wScript, margin);
 		wUseVar.setLayoutData(fdUseVar);
-
+		wUseVar.addSelectionListener(lsSel);
 		wBottom = new Composite(wSash, SWT.NONE);
  		props.setLook(wBottom);
 
@@ -451,6 +461,7 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 		fdCanonEq.top   = new FormAttachment(wStepSettings, margin);
 		fdCanonEq.right = new FormAttachment(100, 0);
 		wCanonEq.setLayoutData(fdCanonEq);
+		wCanonEq.addSelectionListener(lsSel);
 		
 		// CASE_INSENSITIVE?
 		wlCaseInsensitive=new Label(wRegexSettings, SWT.RIGHT);
@@ -469,6 +480,7 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 		fdCaseInsensitive.top   = new FormAttachment(wCanonEq, margin);
 		fdCaseInsensitive.right = new FormAttachment(100, 0);
 		wCaseInsensitive.setLayoutData(fdCaseInsensitive);
+		wCaseInsensitive.addSelectionListener(lsSel);
 		
 		// COMMENT?
 		wlComment=new Label(wRegexSettings, SWT.RIGHT);
@@ -487,6 +499,7 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 		fdComment.top   = new FormAttachment(wCaseInsensitive, margin);
 		fdComment.right = new FormAttachment(100, 0);
 		wComment.setLayoutData(fdComment);
+		wComment.addSelectionListener(lsSel);
 		
 		// DOTALL?
 		wlDotAll=new Label(wRegexSettings, SWT.RIGHT);
@@ -505,6 +518,7 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 		fdDotAll.top   = new FormAttachment(wComment, margin);
 		fdDotAll.right = new FormAttachment(100, 0);
 		wDotAll.setLayoutData(fdDotAll);
+		wDotAll.addSelectionListener(lsSel);
 		
 		// MULTILINE?
 		wlMultiline=new Label(wRegexSettings, SWT.RIGHT);
@@ -523,7 +537,8 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 		fdMultiline.top   = new FormAttachment(wDotAll, margin);
 		fdMultiline.right = new FormAttachment(100, 0);
 		wMultiline.setLayoutData(fdMultiline);
-
+		wMultiline.addSelectionListener(lsSel);
+		
 		// UNICODE?
 		wlUnicode=new Label(wRegexSettings, SWT.RIGHT);
 		wlUnicode.setText(BaseMessages.getString(PKG, "RegexEvalDialog.Unicode.Label"));
@@ -541,7 +556,8 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 		fdUnicode.top   = new FormAttachment(wMultiline, margin);
 		fdUnicode.right = new FormAttachment(100, 0);
 		wUnicode.setLayoutData(fdUnicode);
-
+		wUnicode.addSelectionListener(lsSel);
+		
 		// UNIX?
 		wlUnix=new Label(wRegexSettings, SWT.RIGHT);
 		wlUnix.setText(BaseMessages.getString(PKG, "RegexEvalDialog.Unix.Label"));
@@ -559,7 +575,7 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 		fdUnix.top   = new FormAttachment(wUnicode, margin);
 		fdUnix.right = new FormAttachment(100, 0);
 		wUnix.setLayoutData(fdUnix);
-
+		wUnix.addSelectionListener(lsSel);
 
 		
 	 	fdRegexSettings = new FormData();
@@ -734,13 +750,6 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 		stepname = wStepname.getText(); // return value
 
 		setRegexOptions(input);
-		input.setUseVariableInterpolationFlag(wUseVar.getSelection());
-		input.setAllowCaptureGroupsFlag(wAllowCaptureGroups.getSelection());
-		input.setCanonicalEqualityFlag(wCanonEq.getSelection());
-		input.setCaseInsensitiveFlag(wCaseInsensitive.getSelection());
-		input.setCommentFlag(wComment.getSelection());
-		input.setDotAllFlag(wDotAll.getSelection());
-
 
 		int nrfields = wFields.nrNonEmpty();
 		
@@ -772,12 +781,18 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
     }
     private void setRegexOptions(RegexEvalMeta input)
     {
-     		input.setScript( wScript.getText() );
-     		input.setResultFieldName(wResultField.getText() );
-     		input.setMatcher(wfieldevaluate.getText() );
-     		input.setMultilineFlag(wMultiline.getSelection());
-     		input.setUnicodeFlag(wUnicode.getSelection());
-     		input.setUnixLineEndingsFlag(wUnix.getSelection());
+    	input.setScript( wScript.getText() );
+    	input.setResultFieldName(wResultField.getText() );
+    	input.setMatcher(wfieldevaluate.getText() );
+    	input.setUseVariableInterpolationFlag(wUseVar.getSelection());
+    	input.setAllowCaptureGroupsFlag(wAllowCaptureGroups.getSelection());
+    	input.setCanonicalEqualityFlag(wCanonEq.getSelection());
+    	input.setCaseInsensitiveFlag(wCaseInsensitive.getSelection());
+    	input.setCommentFlag(wComment.getSelection());
+    	input.setDotAllFlag(wDotAll.getSelection());
+    	input.setMultilineFlag(wMultiline.getSelection());
+    	input.setUnicodeFlag(wUnicode.getSelection());
+    	input.setUnixLineEndingsFlag(wUnix.getSelection());
     }
     private void testRegExScript()
  	{
@@ -788,7 +803,8 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
                         shell,
                         transMeta,
                         meta.getScript(),
-                        meta.getRegexOptions()
+                        meta.getRegexOptions(),
+                        meta.isCanonicalEqualityFlagSet()
                 );
  		wScript.setText(d.open());
  	}
