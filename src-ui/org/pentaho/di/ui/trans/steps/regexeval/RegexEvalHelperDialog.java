@@ -71,6 +71,7 @@ public class RegexEvalHelperDialog extends Dialog
     private Shell shell;
 	private PropsUI props;
     private String regexscript;
+    private boolean canonicalEqualityFlagSet;
     private String regexoptions;
     private TransMeta transmeta;
 
@@ -129,8 +130,9 @@ public class RegexEvalHelperDialog extends Dialog
      * @param parent The parent shell to use
      * @param RegexScript The expression to test
      * @param RegexOptions Any extended options for the regular expression
+     * @param canonicalEqualityFlagSet 
      */
-    public RegexEvalHelperDialog(Shell parent, TransMeta transmeta, String RegexScript, String RegexOptions)
+    public RegexEvalHelperDialog(Shell parent, TransMeta transmeta, String RegexScript, String RegexOptions, boolean canonicalEqualityFlagSet)
     {
         super(parent, SWT.NONE);
         props = PropsUI.getInstance();
@@ -138,6 +140,7 @@ public class RegexEvalHelperDialog extends Dialog
         this.regexoptions=RegexOptions;
         this.transmeta=transmeta;
         this.errorDisplayed=false;
+        this.canonicalEqualityFlagSet=canonicalEqualityFlagSet;
     }
     
     public String open()
@@ -409,7 +412,9 @@ public class RegexEvalHelperDialog extends Dialog
     		testValue(i,false, realScript);
     	}
     }
-
+    private boolean isCanonicalEqualityFlagSet() {
+    	return this.canonicalEqualityFlagSet;
+    }
     private void testValue(int index, boolean testRegEx, String regExString)
     {
     	String realScript=regExString;
@@ -449,7 +454,15 @@ public class RegexEvalHelperDialog extends Dialog
 		}
     	try
     	{
-	    	Pattern p=Pattern.compile(regexoptions+realScript);
+    	 	Pattern p;
+	    	if(isCanonicalEqualityFlagSet())
+			{
+				p = Pattern.compile(regexoptions+realScript,Pattern.CANON_EQ);
+			}
+			else
+			{
+				p = Pattern.compile(regexoptions+realScript);	
+			}
 	    	Matcher m=p.matcher(realValue);
 	    	boolean ismatch=m.matches();
 	    	if(ismatch)
