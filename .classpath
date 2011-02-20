@@ -158,5 +158,8 @@
 	<classpathentry kind="lib" path="libext/saxon9-dom.jar"/>
 	<classpathentry kind="lib" path="libext/saxon9.jar"/>
 	<classpathentry kind="lib" path="libext/mondrian/saxon9-xom.jar"/>
+	<classpathentry kind="lib" path="libext/jersey/jersey-apache-client-1.5.jar"/>
+	<classpathentry kind="lib" path="libext/jersey/jersey-client-1.5.jar"/>
+	<classpathentry kind="lib" path="libext/jersey/jersey-core-1.5.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
