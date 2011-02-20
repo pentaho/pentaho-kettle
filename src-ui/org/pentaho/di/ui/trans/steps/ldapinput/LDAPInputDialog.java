@@ -35,6 +35,7 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
@@ -65,6 +66,7 @@ import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.ControlSpaceKeyAdapter;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
@@ -80,10 +82,10 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
 	
-	private CTabItem     wGeneralTab, wContentTab, wFieldsTab;
+	private CTabItem     wGeneralTab, wContentTab, wFieldsTab, wSearchTab;
 
-	private Composite    wGeneralComp, wContentComp, wFieldsComp;
-	private FormData     fdGeneralComp, fdContentComp, fdFieldsComp;
+	private Composite    wGeneralComp, wContentComp, wFieldsComp, wSearchComp;
+	private FormData     fdGeneralComp, fdContentComp, fdFieldsComp, fdSearchComp;
 
 	private Label        wlInclRownum;
 	private Button       wInclRownum;
@@ -99,7 +101,8 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 	
 	private Label        wlusingAuthentication;
 	private Button       wusingAuthentication;
-	private FormData     fdlusingAuthentication;
+	private FormData     fdlusingAuthentication;	
+
 
 	private Label        wlInclRownumField;
 	private TextVar      wInclRownumField;
@@ -125,8 +128,8 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 	private Group wAdditionalGroup;
 	private FormData fdAdditionalGroup;
     
-	private Group wConnectionGroup;
-	private FormData fdConnectionGroup;
+	private Group wHostGroup, wAuthenticationGroup, wCertificateGroup;
+	private FormData fdHostGroup, fdAuthenticationGroup, fdCertificateGroup;
 	
 	private Group wSearchGroup;
 	private FormData fdSearchGroup;
@@ -155,6 +158,24 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 	private Label        wlSearchBase;
 	private TextVar      wSearchBase;
 	private FormData     fdlSearchBase, fdSearchBase;
+	
+	private Label        wlTrustStorePath;
+	private TextVar      wTrustStorePath;
+	private FormData     fdlTrustStorePath, fdTrustStorePath;	
+
+	private Label        wlTrustStorePassword;
+	private TextVar      wTrustStorePassword;
+	private FormData     fdlTrustStorePassword, fdTrustStorePassword;
+	
+	private Label	wlsetTrustStore;
+	private FormData	fdlsetTrustStore;
+	private Button	wsetTrustStore;
+	private FormData	fdsetTrustStore;
+	
+	private Label	wlTrustAll;
+	private FormData	fdlTrustAll;
+	private Button	wTrustAll;
+	private FormData	fdTrustAll;
 	
     private Label wlFilterString;
     private Text wFilterString;
@@ -196,6 +217,13 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
     private ColumnInfo[] colinf;
 	private boolean gotPreviousFields=false;
 
+	private Label        wlProtocol;
+	private ComboVar     wProtocol;
+	private FormData     fdlProtocol, fdProtocol;
+	
+	private Button wbbFilename;
+	private FormData fdbFilename;
+	
 	public LDAPInputDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
 		super(parent, (BaseStepMeta)in, transMeta, sname);
@@ -267,20 +295,20 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		wGeneralComp.setLayout(fileLayout);
 		
 		// /////////////////////////////////
-		// START OF Connection GROUP
+		// START OF Host GROUP
 		// /////////////////////////////////
 
-		wConnectionGroup = new Group(wGeneralComp, SWT.SHADOW_NONE);
-		props.setLook(wConnectionGroup);
-		wConnectionGroup.setText(BaseMessages.getString(PKG, "LDAPInputDialog.Group.ConnectionGroup.Label"));
+		wHostGroup = new Group(wGeneralComp, SWT.SHADOW_NONE);
+		props.setLook(wHostGroup);
+		wHostGroup.setText(BaseMessages.getString(PKG, "LDAPInputDialog.Group.HostGroup.Label"));
 		
-		FormLayout connectiongroupLayout = new FormLayout();
-		connectiongroupLayout.marginWidth = 10;
-		connectiongroupLayout.marginHeight = 10;
-		wConnectionGroup.setLayout(connectiongroupLayout);
+		FormLayout HostGroupLayout = new FormLayout();
+		HostGroupLayout.marginWidth = 10;
+		HostGroupLayout.marginHeight = 10;
+		wHostGroup.setLayout(HostGroupLayout);
 
 		// Host line
-		wlHost=new Label(wConnectionGroup, SWT.RIGHT);
+		wlHost=new Label(wHostGroup, SWT.RIGHT);
 		wlHost.setText(BaseMessages.getString(PKG, "LDAPInputDialog.Host.Label"));
  		props.setLook(wlHost);
 		fdlHost=new FormData();
@@ -288,7 +316,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		fdlHost.top  = new FormAttachment(wStepname, margin);
 		fdlHost.right= new FormAttachment(middle, -margin);
 		wlHost.setLayoutData(fdlHost);
-		wHost=new TextVar(transMeta, wConnectionGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wHost=new TextVar(transMeta, wHostGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		wHost.setToolTipText(BaseMessages.getString(PKG, "LDAPInputDialog.Host.Tooltip"));
 		props.setLook(wHost);
 		wHost.addModifyListener(lsMod);
@@ -299,7 +327,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		wHost.setLayoutData(fdHost);
 		
 		// Port line
-		wlPort=new Label(wConnectionGroup, SWT.RIGHT);
+		wlPort=new Label(wHostGroup, SWT.RIGHT);
 		wlPort.setText(BaseMessages.getString(PKG, "LDAPInputDialog.Port.Label"));
  		props.setLook(wlPort);
 		fdlPort=new FormData();
@@ -307,7 +335,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		fdlPort.top  = new FormAttachment(wHost, margin);
 		fdlPort.right= new FormAttachment(middle, -margin);
 		wlPort.setLayoutData(fdlPort);
-		wPort=new TextVar(transMeta, wConnectionGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wPort=new TextVar(transMeta, wHostGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wPort);
 		wPort.setToolTipText(BaseMessages.getString(PKG, "LDAPInputDialog.Port.Tooltip"));
 		wPort.addModifyListener(lsMod);
@@ -317,22 +345,82 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		fdPort.right= new FormAttachment(100, 0);
 		wPort.setLayoutData(fdPort);
 		
+
+        // Protocol Line
+		wlProtocol=new Label(wHostGroup, SWT.RIGHT);
+		wlProtocol.setText(BaseMessages.getString(PKG, "LDAPInputDialog.Protocol.Label")); //$NON-NLS-1$
+ 		props.setLook(wlProtocol);
+		fdlProtocol=new FormData();
+		fdlProtocol.left = new FormAttachment(0, 0);
+		fdlProtocol.right= new FormAttachment(middle, -margin);
+		fdlProtocol.top  = new FormAttachment(wPort, margin);
+		wlProtocol.setLayoutData(fdlProtocol);
+		
+        wProtocol=new ComboVar(transMeta, wHostGroup, SWT.BORDER | SWT.READ_ONLY);
+        wProtocol.setEditable(true);
+        props.setLook(wProtocol);
+        wProtocol.addModifyListener(lsMod);
+        fdProtocol=new FormData();
+        fdProtocol.left = new FormAttachment(middle, 0);
+        fdProtocol.top  = new FormAttachment(wPort, margin);
+        fdProtocol.right= new FormAttachment(100, -margin);
+        wProtocol.setLayoutData(fdProtocol);
+        wProtocol.setItems(LDAPConnection.PROTOCOLS);
+        wProtocol.addSelectionListener(new SelectionAdapter()
+        {
+        
+            public void widgetSelected(SelectionEvent e)
+            {
+            	 setProtocol();
+            }
+        }
+        );     
+       
+
+		
+
+		
+		fdHostGroup = new FormData();
+		fdHostGroup.left = new FormAttachment(0, margin);
+		fdHostGroup.top = new FormAttachment(0, margin);
+		fdHostGroup.right = new FormAttachment(100, -margin);
+		wHostGroup.setLayoutData(fdHostGroup);
+		
+		// ///////////////////////////////////////////////////////////
+		// / END OF Host  GROUP
+		// ///////////////////////////////////////////////////////////
+		
+	
+		// /////////////////////////////////
+		// START OF Authentication GROUP
+		// /////////////////////////////////
+
+		wAuthenticationGroup = new Group(wGeneralComp, SWT.SHADOW_NONE);
+		props.setLook(wAuthenticationGroup);
+		wAuthenticationGroup.setText(BaseMessages.getString(PKG, "LDAPInputDialog.Group.AuthenticationGroup.Label"));
+		
+		FormLayout AuthenticationGroupLayout = new FormLayout();
+		AuthenticationGroupLayout.marginWidth = 10;
+		AuthenticationGroupLayout.marginHeight = 10;
+		wAuthenticationGroup.setLayout(AuthenticationGroupLayout);
+
+
 		// using authentication ?
-		wlusingAuthentication=new Label(wConnectionGroup, SWT.RIGHT);
+		wlusingAuthentication=new Label(wAuthenticationGroup, SWT.RIGHT);
 		wlusingAuthentication.setText(BaseMessages.getString(PKG, "LDAPInputDialog.usingAuthentication.Label"));
  		props.setLook(wlusingAuthentication);
 		fdlusingAuthentication=new FormData();
 		fdlusingAuthentication.left = new FormAttachment(0, 0);
-		fdlusingAuthentication.top  = new FormAttachment(wPort, margin);
+		fdlusingAuthentication.top  = new FormAttachment(wHostGroup, margin);
 		fdlusingAuthentication.right= new FormAttachment(middle, -margin);
 		wlusingAuthentication.setLayoutData(fdlusingAuthentication);
-		wusingAuthentication=new Button(wConnectionGroup, SWT.CHECK );
+		wusingAuthentication=new Button(wAuthenticationGroup, SWT.CHECK );
  		props.setLook(wusingAuthentication);
 		wusingAuthentication.setToolTipText(BaseMessages.getString(PKG, "LDAPInputDialog.usingAuthentication.Tooltip"));
-		fdRownum=new FormData();
-		fdRownum.left = new FormAttachment(middle, 0);
-		fdRownum.top  = new FormAttachment(wPort, margin);
-		wusingAuthentication.setLayoutData(fdRownum);
+		FormData fdusingAuthentication=new FormData();
+		fdusingAuthentication.left = new FormAttachment(middle, 0);
+		fdusingAuthentication.top  = new FormAttachment(wHostGroup, margin);
+		wusingAuthentication.setLayoutData(fdusingAuthentication);
 		
 		wusingAuthentication.addSelectionListener(new SelectionAdapter() 
 		{
@@ -344,7 +432,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 	);
 	
 		// UserName line
-		wlUserName=new Label(wConnectionGroup, SWT.RIGHT);
+		wlUserName=new Label(wAuthenticationGroup, SWT.RIGHT);
 		wlUserName.setText(BaseMessages.getString(PKG, "LDAPInputDialog.Username.Label"));
  		props.setLook(wlUserName);
 		fdlUserName=new FormData();
@@ -352,7 +440,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		fdlUserName.top  = new FormAttachment(wusingAuthentication, margin);
 		fdlUserName.right= new FormAttachment(middle, -margin);
 		wlUserName.setLayoutData(fdlUserName);
-		wUserName=new TextVar(transMeta, wConnectionGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wUserName=new TextVar(transMeta, wAuthenticationGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wUserName);
 		wUserName.setToolTipText(BaseMessages.getString(PKG, "LDAPInputDialog.Username.Tooltip"));
 		wUserName.addModifyListener(lsMod);
@@ -363,7 +451,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		wUserName.setLayoutData(fdUserName);
 
 		// Password line
-		wlPassword=new Label(wConnectionGroup, SWT.RIGHT);
+		wlPassword=new Label(wAuthenticationGroup, SWT.RIGHT);
 		wlPassword.setText(BaseMessages.getString(PKG, "LDAPInputDialog.Password.Label"));
  		props.setLook(wlPassword);
 		fdlPassword=new FormData();
@@ -371,7 +459,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		fdlPassword.top  = new FormAttachment(wUserName, margin);
 		fdlPassword.right= new FormAttachment(middle, -margin);
 		wlPassword.setLayoutData(fdlPassword);
-		wPassword=new TextVar(transMeta, wConnectionGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wPassword=new TextVar(transMeta, wAuthenticationGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		wPassword.setToolTipText(BaseMessages.getString(PKG, "LDAPInputDialog.Password.Tooltip"));
  		props.setLook(wPassword);
         wPassword.setEchoChar('*');
@@ -381,36 +469,217 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		fdPassword.top  = new FormAttachment(wUserName, margin);
 		fdPassword.right= new FormAttachment(100, 0);
 		wPassword.setLayoutData(fdPassword);
+	
+		fdAuthenticationGroup = new FormData();
+		fdAuthenticationGroup.left = new FormAttachment(0, margin);
+		fdAuthenticationGroup.top = new FormAttachment(wHostGroup, margin);
+		fdAuthenticationGroup.right = new FormAttachment(100, -margin);
+		wAuthenticationGroup.setLayoutData(fdAuthenticationGroup);
+		
+		// ///////////////////////////////////////////////////////////
+		// / END OF Authentication  GROUP
+		// ///////////////////////////////////////////////////////////
+		
+		// /////////////////////////////////
+		// START OF Certificate GROUP
+		// /////////////////////////////////
+
+		wCertificateGroup = new Group(wGeneralComp, SWT.SHADOW_NONE);
+		props.setLook(wCertificateGroup);
+		wCertificateGroup.setText(BaseMessages.getString(PKG, "LDAPInputDialog.Group.CertificateGroup.Label"));
+		
+		FormLayout CertificateGroupLayout = new FormLayout();
+		CertificateGroupLayout.marginWidth = 10;
+		CertificateGroupLayout.marginHeight = 10;
+		wCertificateGroup.setLayout(CertificateGroupLayout);
+
+		
+		 // set TrustStore?
+		wlsetTrustStore=new Label(wCertificateGroup, SWT.RIGHT);
+		wlsetTrustStore.setText(BaseMessages.getString(PKG, "LDAPInputDialog.setTrustStore.Label"));
+ 		props.setLook(wlsetTrustStore);
+		fdlsetTrustStore=new FormData();
+		fdlsetTrustStore.left = new FormAttachment(0, 0);
+		fdlsetTrustStore.top  = new FormAttachment(wAuthenticationGroup, margin);
+		fdlsetTrustStore.right= new FormAttachment(middle, -margin);
+		wlsetTrustStore.setLayoutData(fdlsetTrustStore);
+		wsetTrustStore=new Button(wCertificateGroup, SWT.CHECK );
+ 		props.setLook(wsetTrustStore);
+		wsetTrustStore.setToolTipText(BaseMessages.getString(PKG, "LDAPInputDialog.setTrustStore.Tooltip"));
+		fdsetTrustStore=new FormData();
+		fdsetTrustStore.left = new FormAttachment(middle, 0);
+		fdsetTrustStore.top  = new FormAttachment(wAuthenticationGroup, margin);
+		wsetTrustStore.setLayoutData(fdsetTrustStore);
+		
+		wsetTrustStore.addSelectionListener(new SelectionAdapter() 
+		{
+			public void widgetSelected(SelectionEvent e) 
+			{
+				input.setChanged();
+				setTrustStore();
+			}
+		}
+	);
+		
+		// TrustStorePath line
+		wlTrustStorePath=new Label(wCertificateGroup, SWT.RIGHT);
+		wlTrustStorePath.setText(BaseMessages.getString(PKG, "LDAPInputDialog.TrustStorePath.Label"));
+ 		props.setLook(wlTrustStorePath);
+		fdlTrustStorePath=new FormData();
+		fdlTrustStorePath.left = new FormAttachment(0, -margin);
+		fdlTrustStorePath.top  = new FormAttachment(wsetTrustStore, margin);
+		fdlTrustStorePath.right= new FormAttachment(middle, -margin);
+		wlTrustStorePath.setLayoutData(fdlTrustStorePath);
+		
+		
+        wbbFilename=new Button(wCertificateGroup, SWT.PUSH| SWT.CENTER);
+        props.setLook(wbbFilename);
+        wbbFilename.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
+        wbbFilename.setToolTipText(BaseMessages.getString(PKG, "System.Tooltip.BrowseForFileOrDirAndAdd"));
+        fdbFilename=new FormData();
+        fdbFilename.right= new FormAttachment(100, 0);
+        fdbFilename.top  = new FormAttachment(wsetTrustStore, margin);
+        wbbFilename.setLayoutData(fdbFilename);
+        // Listen to the Browse... button
+		wbbFilename.addSelectionListener
+		(
+			new SelectionAdapter()
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					DirectoryDialog dialog = new DirectoryDialog(shell, SWT.OPEN);
+					if (wTrustStorePath.getText()!=null)
+					{
+						String fpath = transMeta.environmentSubstitute(wTrustStorePath.getText());
+						dialog.setFilterPath( fpath );
+					}
+					
+					if (dialog.open()!=null)
+					{
+						String str= dialog.getFilterPath();
+						wTrustStorePath.setText(str);
+					}
+				}
+			}
+		);
+		
+        
+		wTrustStorePath=new TextVar(transMeta, wCertificateGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wTrustStorePath);
+		wTrustStorePath.setToolTipText(BaseMessages.getString(PKG, "LDAPInputDialog.TrustStorePath.Tooltip"));
+		wTrustStorePath.addModifyListener(lsMod);
+		fdTrustStorePath=new FormData();
+		fdTrustStorePath.left = new FormAttachment(middle, 0);
+		fdTrustStorePath.top  = new FormAttachment(wsetTrustStore, margin);
+		fdTrustStorePath.right= new FormAttachment(wbbFilename, -margin);
+		wTrustStorePath.setLayoutData(fdTrustStorePath);
+		
+		// TrustStorePassword line
+		wlTrustStorePassword=new Label(wCertificateGroup, SWT.RIGHT);
+		wlTrustStorePassword.setText(BaseMessages.getString(PKG, "LDAPInputDialog.TrustStorePassword.Label"));
+ 		props.setLook(wlTrustStorePassword);
+		fdlTrustStorePassword=new FormData();
+		fdlTrustStorePassword.left = new FormAttachment(0, -margin);
+		fdlTrustStorePassword.top  = new FormAttachment(wbbFilename, margin);
+		fdlTrustStorePassword.right= new FormAttachment(middle, -margin);
+		wlTrustStorePassword.setLayoutData(fdlTrustStorePassword);
+		wTrustStorePassword=new TextVar(transMeta, wCertificateGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wTrustStorePassword);
+		wTrustStorePassword.setToolTipText(BaseMessages.getString(PKG, "LDAPInputDialog.TrustStorePassword.Tooltip"));
+		wTrustStorePassword.addModifyListener(lsMod);
+		fdTrustStorePassword=new FormData();
+		fdTrustStorePassword.left = new FormAttachment(middle, 0);
+		fdTrustStorePassword.top  = new FormAttachment(wbbFilename, margin);
+		fdTrustStorePassword.right= new FormAttachment(100, -margin);
+		wTrustStorePassword.setLayoutData(fdTrustStorePassword);
+		
+	       // Trust all certificate?
+		wlTrustAll=new Label(wCertificateGroup, SWT.RIGHT);
+		wlTrustAll.setText(BaseMessages.getString(PKG, "LDAPInputDialog.TrustAll.Label"));
+ 		props.setLook(wlTrustAll);
+		fdlTrustAll=new FormData();
+		fdlTrustAll.left = new FormAttachment(0, 0);
+		fdlTrustAll.top  = new FormAttachment(wTrustStorePassword, margin);
+		fdlTrustAll.right= new FormAttachment(middle, -margin);
+		wlTrustAll.setLayoutData(fdlTrustAll);
+		wTrustAll=new Button(wCertificateGroup, SWT.CHECK );
+ 		props.setLook(wTrustAll);
+		wTrustAll.setToolTipText(BaseMessages.getString(PKG, "LDAPInputDialog.TrustAll.Tooltip"));
+		fdTrustAll=new FormData();
+		fdTrustAll.left = new FormAttachment(middle, 0);
+		fdTrustAll.top  = new FormAttachment(wTrustStorePassword, margin);
+		wTrustAll.setLayoutData(fdTrustAll);
+		
+		wTrustAll.addSelectionListener(new SelectionAdapter() 
+		{
+			public void widgetSelected(SelectionEvent e) 
+			{
+				input.setChanged();
+				trustAll();
+			}
+		}
+	);
 		
 
 		
+
+	
+		fdCertificateGroup = new FormData();
+		fdCertificateGroup.left = new FormAttachment(0, margin);
+		fdCertificateGroup.top = new FormAttachment(wAuthenticationGroup, margin);
+		fdCertificateGroup.right = new FormAttachment(100, -margin);
+		wCertificateGroup.setLayoutData(fdCertificateGroup);
+		
+		// ///////////////////////////////////////////////////////////
+		// / END OF Certificate  GROUP
+		// ///////////////////////////////////////////////////////////
+		
 		// Test LDAP connection button
-		wTest=new Button(wConnectionGroup,SWT.PUSH);
+		wTest=new Button(wGeneralComp,SWT.PUSH);
 		wTest.setText(BaseMessages.getString(PKG, "LDAPInputDialog.TestConnection.Label"));
  		props.setLook(wTest);
 		fdTest=new FormData();
 		wTest.setToolTipText(BaseMessages.getString(PKG, "LDAPInputDialog.TestConnection.Tooltip"));
 		//fdTest.left = new FormAttachment(middle, 0);
-		fdTest.top  = new FormAttachment(wPassword, margin);
+		fdTest.top  = new FormAttachment(wCertificateGroup, margin);
 		fdTest.right= new FormAttachment(100, 0);
 		wTest.setLayoutData(fdTest);
 		
 		
-		fdConnectionGroup = new FormData();
-		fdConnectionGroup.left = new FormAttachment(0, margin);
-		fdConnectionGroup.top = new FormAttachment(0, margin);
-		fdConnectionGroup.right = new FormAttachment(100, -margin);
-		wConnectionGroup.setLayoutData(fdConnectionGroup);
+		fdGeneralComp=new FormData();
+		fdGeneralComp.left  = new FormAttachment(0, 0);
+		fdGeneralComp.top   = new FormAttachment(0, 0);
+		fdGeneralComp.right = new FormAttachment(100, 0);
+		fdGeneralComp.bottom= new FormAttachment(100, 0);
+		wGeneralComp.setLayoutData(fdGeneralComp);
+	
+		wGeneralComp.layout();
+		wGeneralTab.setControl(wGeneralComp);
 		
-		// ///////////////////////////////////////////////////////////
-		// / END OF CONNECTION  GROUP
-		// ///////////////////////////////////////////////////////////
+		/////////////////////////////////////////////////////////////
+		/// END OF GENERAL TAB
+		/////////////////////////////////////////////////////////////
+
 		
+		//////////////////////////
+		// START OF Search TAB///
+		///
+		wSearchTab=new CTabItem(wTabFolder, SWT.NONE);
+		wSearchTab.setText(BaseMessages.getString(PKG, "LDAPInputDialog.Search.Tab"));
+
+		FormLayout SearchLayout = new FormLayout ();
+		SearchLayout.marginWidth  = 3;
+		SearchLayout.marginHeight = 3;
+		
+		wSearchComp = new Composite(wTabFolder, SWT.NONE);
+ 		props.setLook(wSearchComp);
+		wSearchComp.setLayout(SearchLayout);
+
 		// /////////////////////////////////
 		// START OF Search GROUP
 		// /////////////////////////////////
 
-		wSearchGroup = new Group(wGeneralComp, SWT.SHADOW_NONE);
+		wSearchGroup = new Group(wSearchComp, SWT.SHADOW_NONE);
 		props.setLook(wSearchGroup);
 		wSearchGroup.setText(BaseMessages.getString(PKG, "LDAPInputDialog.Group.SearchGroup.Label"));
 		
@@ -587,7 +856,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		
 		fdSearchGroup = new FormData();
 		fdSearchGroup.left = new FormAttachment(0, margin);
-		fdSearchGroup.top = new FormAttachment(wConnectionGroup, margin);
+		fdSearchGroup.top = new FormAttachment(wStepname, margin);
 		fdSearchGroup.right = new FormAttachment(100, -margin);
 		fdSearchGroup.bottom = new FormAttachment(100, -margin);
 		wSearchGroup.setLayoutData(fdSearchGroup);
@@ -596,21 +865,26 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		// / END OF Search  GROUP
 		// ///////////////////////////////////////////////////////////
 
-	
-		fdGeneralComp=new FormData();
-		fdGeneralComp.left  = new FormAttachment(0, 0);
-		fdGeneralComp.top   = new FormAttachment(0, 0);
-		fdGeneralComp.right = new FormAttachment(100, 0);
-		fdGeneralComp.bottom= new FormAttachment(100, 0);
-		wGeneralComp.setLayoutData(fdGeneralComp);
-	
-		wGeneralComp.layout();
-		wGeneralTab.setControl(wGeneralComp);
-		
-		/////////////////////////////////////////////////////////////
-		/// END OF GENERAL TAB
-		/////////////////////////////////////////////////////////////
 
+	
+		fdSearchComp = new FormData();
+		fdSearchComp.left  = new FormAttachment(0, 0);
+		fdSearchComp.top   = new FormAttachment(0, 0);
+		fdSearchComp.right = new FormAttachment(100, 0);
+		fdSearchComp.bottom= new FormAttachment(100, 0);
+		wSearchComp.setLayoutData(fdSearchComp);
+
+		wSearchComp.layout();
+		wSearchTab.setControl(wSearchComp);
+
+		// ///////////////////////////////////////////////////////////
+		// / END OF Search TAB
+		// ///////////////////////////////////////////////////////////
+
+
+		
+		
+		
 		//////////////////////////
 		// START OF CONTENT TAB///
 		///
@@ -986,6 +1260,8 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 		// Set the shell size, based upon previous time...
 		setSize();
 		getData(input);
+		setProtocol();
+		setTrustStore();
 		useAuthentication();
 		setPaging();
 		ActiveDynamicBase();
@@ -1127,6 +1403,11 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 	 */
 	public void getData(LDAPInputMeta in)
 	{
+		wProtocol.setText(Const.NVL(in.getProtocol(), LDAPConnection.getProtocolCode(LDAPConnection.PROTOCOL_LDAP)));
+		wsetTrustStore.setSelection(in.isUseCertificate());
+		if (in.getTrustStorePath()!=null) wTrustStorePath.setText(in.getTrustStorePath());
+		if (in.getTrustStorePassword()!=null) wTrustStorePassword.setText(in.getTrustStorePassword());
+		wTrustAll.setSelection(in.isTrustAllCertificates());
 		
 		wInclRownum.setSelection(in.includeRowNumber());
 		if (in.getRowNumberField()!=null) wInclRownumField.setText(in.getRowNumberField());
@@ -1227,7 +1508,12 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 	private void getInfo(LDAPInputMeta in) throws KettleException
 	{
 		stepname = wStepname.getText(); // return value
-
+		in.setProtocol(wProtocol.getText() );
+		in.setUseCertificate(wsetTrustStore.getSelection());
+		in.setTrustStorePath(wTrustStorePath.getText() );
+		in.setTrustStorePassword(wTrustStorePassword.getText() );
+		in.setTrustAllCertificates(wTrustAll.getSelection());
+		
 		// copy info to TextFileInputMeta class (input)
 		in.setRowLimit( Const.toInt(wLimit.getText(), 0) );
 		in.setTimeLimit( Const.toInt(wTimeLimit.getText(), 0) );
@@ -1381,5 +1667,31 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 			 }
 			 gotPreviousFields=true;
 		 }
+	 }
+	 
+	 private void setProtocol()
+	 {
+		 boolean enable = LDAPConnection.getProtocolFromCode(wProtocol.getText())!=LDAPConnection.PROTOCOL_LDAP;
+		 wlsetTrustStore.setEnabled(enable);
+		 wsetTrustStore.setEnabled(enable);
+		 setTrustStore();
+	 }
+	 
+	 private void setTrustStore() {
+		 boolean enable = wsetTrustStore.getSelection() 
+		 && LDAPConnection.getProtocolFromCode(wProtocol.getText())!=LDAPConnection.PROTOCOL_LDAP;
+		 wlTrustAll.setEnabled(enable);
+		 wTrustAll.setEnabled(enable);
+		 trustAll();
+	 }
+	 private void trustAll() {
+		 boolean enable = wsetTrustStore.getSelection() 
+		 && LDAPConnection.getProtocolFromCode(wProtocol.getText())!=LDAPConnection.PROTOCOL_LDAP
+		 && !wTrustAll.getSelection();
+		 wlTrustStorePath.setEnabled(enable);
+		 wTrustStorePath.setEnabled(enable);
+		 wlTrustStorePassword.setEnabled(enable);
+		 wTrustStorePassword.setEnabled(enable);
+		 wbbFilename.setEnabled(enable);
 	 }
 }

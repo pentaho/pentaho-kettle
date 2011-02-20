@@ -355,7 +355,13 @@ public class LDAPInput extends BaseStep implements StepInterface
         		data.connection.addSortingAttributes(name);
         	}
 		}
-	
+	    data.connection.setProtocol(LDAPConnection.getProtocolFromCode(meta.getProtocol()));
+	    if(meta.isUseCertificate()) {
+	    	data.connection.setTrustStorePath(meta.getTrustStorePath());
+	    	data.connection.setTrustStorePassword(meta.getTrustStorePassword());
+	    	data.connection.trustAllCertificates(meta.isTrustAllCertificates());
+	    }
+		
        if (meta.UseAuthentication()) {
    			String username=environmentSubstitute(meta.getUserName());
    			String password=Encr.decryptPasswordOptionallyEncrypted(environmentSubstitute(meta.getPassword()));

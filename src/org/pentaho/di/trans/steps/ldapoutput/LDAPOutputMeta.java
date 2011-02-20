@@ -38,6 +38,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.ldapinput.LDAPConnection;
 import org.w3c.dom.Node;
 
 public class LDAPOutputMeta extends BaseStepMeta implements StepMetaInterface
@@ -161,9 +162,100 @@ public class LDAPOutputMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public final static int DEREFALIASES_TYPE_FINDING = 3;
 	
+    /**    Protocol **/
+	private String protocol;
+
+	/**    Trust store **/
+	private boolean useCertificate;
+	private String trustStorePath;
+	private String trustStorePassword;
+	private boolean trustAllCertificates;
+	
+	
 	public LDAPOutputMeta()
 	{
 		super(); // allocate BaseStepMeta
+	}
+	/**
+     * @return Returns the input useCertificate.
+     */
+	public boolean isUseCertificate()
+	{
+		return useCertificate;
+	}
+	
+	/**
+     * @return Returns the useCertificate.
+     */
+	public void setUseCertificate(boolean value)
+	{
+		this.useCertificate=value;
+	}
+	/**
+     * @return Returns the input trustAllCertificates.
+     */
+	public boolean isTrustAllCertificates()
+	{
+		return trustAllCertificates;
+	}
+	
+	/**
+     * @return Returns the input trustAllCertificates.
+     */
+	public void setTrustAllCertificates(boolean value)
+	{
+		this.trustAllCertificates=value;
+	}
+	/**
+     * @return Returns the trustStorePath.
+     */
+	public String getTrustStorePassword()
+	{
+		return trustStorePassword;
+	}
+	
+
+	/**
+     * @param value the trustStorePassword to set.
+     */
+	public void setTrustStorePassword(String value)
+	{
+		this.trustStorePassword=value;
+	}
+	
+	/**
+     * @return Returns the trustStorePath.
+     */
+	public String getTrustStorePath()
+	{
+		return trustStorePath;
+	}
+	
+
+	/**
+     * @param value the trustStorePath to set.
+     */
+	public void setTrustStorePath(String value)
+	{
+		this.trustStorePath=value;
+	}
+	
+	
+	/**
+     * @return Returns the protocol.
+     */
+	public String getProtocol()
+	{
+		return protocol;
+	}
+	
+
+	/**
+     * @param value the protocol to set.
+     */
+	public void setProtocol(String value)
+	{
+		this.protocol=value;
 	}
 	public Boolean[] getUpdate() {
 		return update;
@@ -575,7 +667,13 @@ public class LDAPOutputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		
 		retval.append("      </fields>"+Const.CR);
-
+	    retval.append("    ").append(XMLHandler.addTagValue("protocol", protocol));
+        retval.append("    ").append(XMLHandler.addTagValue("trustStorePath", trustStorePath));
+        retval.append("    ").append(XMLHandler.addTagValue("trustStorePassword", Encr.encryptPasswordIfNotUsingVariables(trustStorePassword)));
+        retval.append("    ").append(XMLHandler.addTagValue("trustAllCertificates", trustAllCertificates));
+        retval.append("    ").append(XMLHandler.addTagValue("useCertificate", useCertificate));
+        
+        
         return retval.toString();
     }
 
@@ -628,6 +726,12 @@ public class LDAPOutputMeta extends BaseStepMeta implements StepMetaInterface
 				}
 			}
 			
+			protocol    = XMLHandler.getTagValue(stepnode, "protocol");
+			trustStorePath    = XMLHandler.getTagValue(stepnode, "trustStorePath");
+			trustStorePassword    = Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(stepnode, "trustStorePassword"));
+			trustAllCertificates  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "trustAllCertificates"));
+			useCertificate  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "useCertificate"));
+			
 		}
 		catch(Exception e)
 		{
@@ -662,6 +766,11 @@ public class LDAPOutputMeta extends BaseStepMeta implements StepMetaInterface
         operationType=OPERATION_TYPE_INSERT;
         referralType = REFERRAL_TYPE_FOLLOW;
         derefAliasesType= DEREFALIASES_TYPE_ALWAYS;
+		this.trustStorePath=null;
+		this.trustStorePassword=null;
+		this.trustAllCertificates=false;
+		this.protocol= LDAPConnection.PROTOCOLS[0];
+		this.useCertificate=false;
 	}
 
 	public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters)
@@ -697,6 +806,13 @@ public class LDAPOutputMeta extends BaseStepMeta implements StepMetaInterface
 				updateStream[i]  = rep.getStepAttributeString(id_step, i, "field_attribut"); //$NON-NLS-1$
 				update[i]        = Boolean.valueOf(rep.getStepAttributeBoolean(id_step, i, "value_update",true)); 
 			}
+			protocol              =  rep.getStepAttributeString (id_step, "protocol");
+			trustStorePath              =  rep.getStepAttributeString (id_step, "trustStorePath");	
+			trustStorePassword              = Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString (id_step, "trustStorePassword") );	
+			trustAllCertificates  = rep.getStepAttributeBoolean(id_step, "trustAllCertificates");
+			useCertificate  = rep.getStepAttributeBoolean(id_step, "useCertificate");
+			
+			
         }
 		catch(Exception e)
 		{
@@ -734,6 +850,12 @@ public class LDAPOutputMeta extends BaseStepMeta implements StepMetaInterface
 				rep.saveStepAttribute(id_transformation, id_step, i, "value_update",  update[i].booleanValue());
 
 			}
+			rep.saveStepAttribute(id_transformation, id_step, "protocol",    protocol);
+			rep.saveStepAttribute(id_transformation, id_step, "trustStorePath",    trustStorePath);
+			rep.saveStepAttribute(id_transformation, id_step, "trustStorePassword",    Encr.encryptPasswordIfNotUsingVariables(trustStorePassword));
+			rep.saveStepAttribute(id_transformation, id_step, "trustAllCertificates",    trustAllCertificates);
+			rep.saveStepAttribute(id_transformation, id_step, "useCertificate",    useCertificate);
+			
 		}
 		catch(Exception e)
 		{

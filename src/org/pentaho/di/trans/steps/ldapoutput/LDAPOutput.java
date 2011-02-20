@@ -296,6 +296,13 @@ public class LDAPOutput extends BaseStep implements StepInterface
 					data.connection.setReferral(LDAPOutputMeta.getReferralTypeCode(meta.getReferralType()));
 					data.connection.setDerefAliases(LDAPOutputMeta.getDerefAliasesCode(meta.getDerefAliasesType()));
 					
+					data.connection.setProtocol(LDAPConnection.getProtocolFromCode(meta.getProtocol()));
+				    if(meta.isUseCertificate()) {
+				    	data.connection.setTrustStorePath(meta.getTrustStorePath());
+				    	data.connection.setTrustStorePassword(meta.getTrustStorePassword());
+				    	data.connection.trustAllCertificates(meta.isTrustAllCertificates());
+				    }
+					
 					// connect
 			       if (meta.UseAuthentication()) {
 			   			String username=environmentSubstitute(meta.getUserName());

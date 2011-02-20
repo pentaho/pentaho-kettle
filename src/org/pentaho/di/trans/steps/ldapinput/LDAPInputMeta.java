@@ -124,10 +124,100 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 	 */
 	public final static String searchScopeCode[] = { "object", "onelevel", "subtree" };
 
-    
+    /**    Protocol **/
+	private String protocol;
+
+	/**    Trust store **/
+	private boolean useCertificate;
+	private String trustStorePath;
+	private String trustStorePassword;
+	private boolean trustAllCertificates;
+	
+	
 	public LDAPInputMeta()
 	{
 		super(); // allocate BaseStepMeta
+	}
+	/**
+     * @return Returns the input useCertificate.
+     */
+	public boolean isUseCertificate()
+	{
+		return useCertificate;
+	}
+	
+	/**
+     * @return Returns the useCertificate.
+     */
+	public void setUseCertificate(boolean value)
+	{
+		this.useCertificate=value;
+	}
+	/**
+     * @return Returns the input trustAllCertificates.
+     */
+	public boolean isTrustAllCertificates()
+	{
+		return trustAllCertificates;
+	}
+	
+	/**
+     * @return Returns the input trustAllCertificates.
+     */
+	public void setTrustAllCertificates(boolean value)
+	{
+		this.trustAllCertificates=value;
+	}
+	/**
+     * @return Returns the trustStorePath.
+     */
+	public String getTrustStorePassword()
+	{
+		return trustStorePassword;
+	}
+	
+
+	/**
+     * @param value the trustStorePassword to set.
+     */
+	public void setTrustStorePassword(String value)
+	{
+		this.trustStorePassword=value;
+	}
+	
+	/**
+     * @return Returns the trustStorePath.
+     */
+	public String getTrustStorePath()
+	{
+		return trustStorePath;
+	}
+	
+
+	/**
+     * @param value the trustStorePath to set.
+     */
+	public void setTrustStorePath(String value)
+	{
+		this.trustStorePath=value;
+	}
+	
+	
+	/**
+     * @return Returns the protocol.
+     */
+	public String getProtocol()
+	{
+		return protocol;
+	}
+	
+
+	/**
+     * @param value the protocol to set.
+     */
+	public void setProtocol(String value)
+	{
+		this.protocol=value;
 	}
 	/**
      * @return Returns the input dynamicSearch.
@@ -530,7 +620,13 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    ").append(XMLHandler.addTagValue("dynamicfilterfieldname",    dynamicFilterFieldName));
         retval.append("    ").append(XMLHandler.addTagValue("searchScope",getSearchScopeCode(searchScope)));
         
-
+        retval.append("    ").append(XMLHandler.addTagValue("protocol", protocol));
+        retval.append("    ").append(XMLHandler.addTagValue("trustStorePath", trustStorePath));
+        retval.append("    ").append(XMLHandler.addTagValue("trustStorePassword", Encr.encryptPasswordIfNotUsingVariables(trustStorePassword)));
+        retval.append("    ").append(XMLHandler.addTagValue("trustAllCertificates", trustAllCertificates));
+        retval.append("    ").append(XMLHandler.addTagValue("useCertificate", useCertificate));
+        
+        
         return retval.toString();
     }
 	private static String getSearchScopeCode(int i) {
@@ -598,6 +694,12 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 			dynamicFilterFieldName    = XMLHandler.getTagValue(stepnode, "dynamicfilterfieldname");
 			searchScope = getSearchScopeByCode(Const.NVL(XMLHandler.getTagValue(stepnode,	"searchScope"), getSearchScopeCode(LDAPConnection.SEARCH_SCOPE_SUBTREE_SCOPE)));
 			
+			protocol    = XMLHandler.getTagValue(stepnode, "protocol");
+			trustStorePath    = XMLHandler.getTagValue(stepnode, "trustStorePath");
+			trustStorePassword    = Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(stepnode, "trustStorePassword"));
+			trustAllCertificates  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "trustAllCertificates"));
+			useCertificate  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "useCertificate"));
+			
 		}
 		catch(Exception e)
 		{
@@ -622,34 +724,39 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public void setDefault()
 	{
-		usePaging=false;
-		pagesize="1000";
-		useAuthentication=false;
-		includeRowNumber = false;
-		rowNumberField   = "";
-		Host="";
-		userName="";
-		password="";
-		port="389";
-		filterString=LDAPConnection.DEFAUL_FILTER_STRING;
-		searchBase="";
-		multiValuedSeparator=";";
-		dynamicSearch=false;
-		dynamicSeachFieldName=null;
-		dynamicFilter=false;
-		dynamicFilterFieldName=null;
+		this.usePaging=false;
+		this.pagesize="1000";
+		this.useAuthentication=false;
+		this.includeRowNumber = false;
+		this.rowNumberField   = "";
+		this.Host="";
+		this.userName="";
+		this.password="";
+		this.port="389";
+		this.filterString=LDAPConnection.DEFAUL_FILTER_STRING;
+		this.searchBase="";
+		this.multiValuedSeparator=";";
+		this.dynamicSearch=false;
+		this.dynamicSeachFieldName=null;
+		this.dynamicFilter=false;
+		this.dynamicFilterFieldName=null;
 		int nrFields =0;
 
 		allocate(nrFields);	
 	
 		for (int i=0;i<nrFields;i++)
 		{
-		    inputFields[i] = new LDAPInputField("field"+(i+1));
+			this.inputFields[i] = new LDAPInputField("field"+(i+1));
 		}
 
-		rowLimit=0;
-		timeLimit=0;
-		searchScope= LDAPConnection.SEARCH_SCOPE_SUBTREE_SCOPE;
+		this.rowLimit=0;
+		this.timeLimit=0;
+		this.searchScope= LDAPConnection.SEARCH_SCOPE_SUBTREE_SCOPE;
+		this.trustStorePath=null;
+		this.trustStorePassword=null;
+		this.trustAllCertificates=false;
+		this.protocol= LDAPConnection.PROTOCOLS[0];
+		this.useCertificate=false;
 	}
 	public void getFields(RowMetaInterface r, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{
@@ -704,6 +811,13 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 			dynamicFilter  = rep.getStepAttributeBoolean(id_step, "dynamicfilter");
 			dynamicFilterFieldName    = rep.getStepAttributeString (id_step, "dynamicfilterfieldname");
 	
+			protocol              =  rep.getStepAttributeString (id_step, "protocol");
+			trustStorePath              =  rep.getStepAttributeString (id_step, "trustStorePath");	
+			trustStorePassword              = Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString (id_step, "trustStorePassword") );	
+			trustAllCertificates  = rep.getStepAttributeBoolean(id_step, "trustAllCertificates");
+			useCertificate  = rep.getStepAttributeBoolean(id_step, "useCertificate");
+			
+			
 			int nrFields      = rep.countNrStepAttributes(id_step, "field_name");
             
 			allocate(nrFields);
@@ -782,6 +896,13 @@ public class LDAPInputMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "dynamicseachfieldname",    dynamicSeachFieldName);
 			rep.saveStepAttribute(id_transformation, id_step, "dynamicfilter",          dynamicFilter);
 			rep.saveStepAttribute(id_transformation, id_step, "dynamicfilterfieldname",    dynamicFilterFieldName);
+			
+			rep.saveStepAttribute(id_transformation, id_step, "protocol",    protocol);
+			rep.saveStepAttribute(id_transformation, id_step, "trustStorePath",    trustStorePath);
+			rep.saveStepAttribute(id_transformation, id_step, "trustStorePassword",    Encr.encryptPasswordIfNotUsingVariables(trustStorePassword));
+			rep.saveStepAttribute(id_transformation, id_step, "trustAllCertificates",    trustAllCertificates);
+			rep.saveStepAttribute(id_transformation, id_step, "useCertificate",    useCertificate);
+			
 			
 			for (int i=0;i<inputFields.length;i++)
 			{

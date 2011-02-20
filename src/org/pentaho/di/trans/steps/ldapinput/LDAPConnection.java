@@ -36,6 +36,8 @@ import javax.naming.ldap.InitialLdapContext;
 import javax.naming.ldap.PagedResultsControl;
 import javax.naming.ldap.PagedResultsResponseControl;
 import javax.naming.ldap.SortControl;
+import javax.naming.ldap.StartTlsRequest;
+import javax.naming.ldap.StartTlsResponse;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
@@ -44,9 +46,15 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.steps.ldapinput.store.CustomdSocketFactory;
 
 public class LDAPConnection {
 	private static Class<?> PKG = LDAPInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	
+	public final static String[] PROTOCOLS = new String[]{"LDAP", "LDAP SSL", "LDAP TLS"};
+	public final static int PROTOCOL_LDAP = 0;
+	public final static int PROTOCOL_LDAP_SSL = 1;
+	public final static int PROTOCOL_LDAP_TLS = 2;
 	
 	public final static int SEARCH_SCOPE_OBJECT_SCOPE = 0;
 	public final static int SEARCH_SCOPE_ONELEVEL_SCOPE = 1;
@@ -63,6 +71,8 @@ public class LDAPConnection {
 	
 	private LogChannelInterface	log;
 	
+	
+	private int protocol;
 	private String hostName;
 	private int port;
 	private String username;
@@ -84,6 +94,11 @@ public class LDAPConnection {
     private String[] sortingAttributesKeys;
     
 
+    private  StartTlsResponse tls; 
+    
+    private String trustStorePath;
+    private String trustStorePassword;
+    private boolean trustAllCertificates;
 	
 	/**
 	 * Construct a new LDAP Connection
@@ -96,8 +111,37 @@ public class LDAPConnection {
 		this.referral="follow";
 		this.derefAliases="always";
 		this.sortingAttributes= new ArrayList<String>();
+		this.protocol= PROTOCOL_LDAP;
 	}
 	
+	
+	public void setTrustStorePath(String trustStorePath) {
+		this.trustStorePath = trustStorePath;
+	}
+	public String getTrustStorePath() {
+		return this.trustStorePath;
+	}
+	public void setTrustStorePassword(String password) {
+		this.trustStorePassword = password;
+	}
+	public String getTrustStorePassword() {
+		return this.trustStorePassword;
+	}
+	public void trustAllCertificates(boolean value) {
+		this.trustAllCertificates = value;
+	}
+	public boolean isTrustAllCertificates() {
+		return this.trustAllCertificates;
+	}
+	public int getProtocol() {
+		return this.protocol;
+	}
+	public void setProtocol(int protocol) {
+		this.protocol=protocol;
+	}
+	public void useTLS() {
+		this.protocol=PROTOCOL_LDAP_TLS;
+	}
 	/**
     *  Connect to LDAP server
     *  @throws KettleException
@@ -128,6 +172,24 @@ public class LDAPConnection {
         	getEnv().put(Context.PROVIDER_URL, "ldap://"+getHostName() + ":" + getPort());
 		getEnv().put(Context.SECURITY_AUTHENTICATION, "simple");
         
+		if(getProtocol()== PROTOCOL_LDAP_SSL) {
+			getEnv().put(javax.naming.Context.SECURITY_PROTOCOL,"ssl");
+		}
+		
+		if(getProtocol()!= PROTOCOL_LDAP) {
+			if(isTrustAllCertificates() || !Const.isEmpty(getTrustStorePath())) {
+				if(isTrustAllCertificates()) {
+					CustomdSocketFactory.alwaysTrust();
+				}else {
+					getEnv().put("java.naming.ldap.factory.socket", "org.pentaho.di.trans.steps.ldapinput.store.AdvancedSocketFactory");
+					CustomdSocketFactory.setCertStorePath(getTrustStorePath());
+					if(!Const.isEmpty(getTrustStorePassword())) {
+						CustomdSocketFactory.setCertStorePassword(getTrustStorePassword());
+					}
+				}
+			}
+		}
+			
         if (!Const.isEmpty(username)) {
     		this.username=username;
     		getEnv().put(Context.SECURITY_PRINCIPAL, username);
@@ -135,10 +197,20 @@ public class LDAPConnection {
         }
 
 	    try {
+	    	/* Establish LDAP association */
 	    	this.ctx=new InitialLdapContext(getEnv(), null);
 	        if (getInitialContext()==null) {
 			   throw new KettleException(BaseMessages.getString(PKG, "LDAPInput.Error.UnableToConnectToServer"));
 			}
+	        
+	        if(getProtocol()== PROTOCOL_LDAP_TLS) {
+	        	/* Requesting to start TLS on an LDAP association */
+		        StartTlsRequest tlsRequest  = new StartTlsRequest();
+				this.tls = (StartTlsResponse) getInitialContext().extendedOperation(tlsRequest );
+				/* Starting TLS */
+				this.tls.negotiate();
+	        }
+	        
 		    if(log.isBasic()) log.logBasic(BaseMessages.getString(PKG, "LDAPInput.Log.ConnectedToServer",getHostName(),Const.NVL(getUserName(), "")));
 			if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "LDAPInput.ClassUsed.Message",getInitialContext().getClass().getName()));
 			   
@@ -513,6 +585,9 @@ public class LDAPConnection {
 	public void close() throws KettleException {
 		if(getInitialContext()!=null) {
 			try {
+				if(this.tls!=null) {
+					tls.close();
+				}
 				this.ctx.close();
 				if(getSearchResult()!=null) this.results=null;
 				if(log.isBasic()) log.logBasic(BaseMessages.getString(PKG, "LDAPInput.log.Disconnection.Done"));
@@ -736,5 +811,27 @@ public class LDAPConnection {
 		    Integer.parseInt(str);
 		  } catch(NumberFormatException e)   {return false; }
 		  return true;
+	}
+	
+	public static int getProtocolFromCode(String protocol) {
+		if(Const.isEmpty(protocol)) return PROTOCOL_LDAP;
+		if(protocol.equals("LDAP SSL")) return PROTOCOL_LDAP_SSL;
+		if(protocol.equals("LDAP TLS")) return PROTOCOL_LDAP_TLS;
+		return PROTOCOL_LDAP;
+	}
+	public static String getProtocolCode(int protocol) {
+		String retval=PROTOCOLS[0];
+		 switch (protocol) {
+			case PROTOCOL_LDAP_SSL:
+				retval= PROTOCOLS[1];
+			break;
+			case PROTOCOL_LDAP_TLS:
+				retval= PROTOCOLS[2];
+			break;
+			default:
+				retval= PROTOCOLS[0];
+			break;
+		  }
+		 return retval;
 	}
 }
