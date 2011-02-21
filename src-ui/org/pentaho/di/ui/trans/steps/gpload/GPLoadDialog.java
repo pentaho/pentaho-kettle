@@ -290,7 +290,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface
 
 		// GPLoad line...
 		wlGploadPath = new Label(shell, SWT.RIGHT);
-		wlGploadPath.setText(BaseMessages.getString(PKG, "GPLoadDialog.PsqlPath.Label")); //$NON-NLS-1$
+		wlGploadPath.setText(BaseMessages.getString(PKG, "GPLoadDialog.GPLoadPath.Label")); //$NON-NLS-1$
  		props.setLook(wlGploadPath);
 		fdlGploadPath = new FormData();
 		fdlGploadPath.left = new FormAttachment(0, 0);
