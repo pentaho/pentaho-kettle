@@ -1307,7 +1307,10 @@ public class DatabaseMeta
 				tmpAllDatabaseInterfaces.put(plugin.getIds()[0], databaseInterface);
 			} catch (KettlePluginException cnfe) {
         System.out.println("Could not create connection entry for "+plugin.getName()+".  "+cnfe.getCause().getClass().getName());
-        LogChannel.GENERAL.logError("Could not create connection entry for "+plugin.getName()+".  "+cnfe.getCause().getClass().getName()); 
+        LogChannel.GENERAL.logError("Could not create connection entry for "+plugin.getName()+".  "+cnfe.getCause().getClass().getName());
+        if(logger.isDebugEnabled()) {
+          logger.debug("Debug-Error loading plugin: " + plugin, cnfe); //$NON-NLS-1$
+        }
       } catch(Exception e) {
 			  logger.error("Error loading plugin: " + plugin, e); //$NON-NLS-1$
 			}
