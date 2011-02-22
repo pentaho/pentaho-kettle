@@ -29,7 +29,9 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.plugins.DatabasePluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
@@ -1303,7 +1305,10 @@ public class DatabaseMeta
 				databaseInterface.setPluginId(plugin.getIds()[0]);
 				databaseInterface.setPluginName(plugin.getName());
 				tmpAllDatabaseInterfaces.put(plugin.getIds()[0], databaseInterface);
-			} catch(Exception e) {
+			} catch (KettlePluginException cnfe) {
+        System.out.println("Could not create connection entry for "+plugin.getName()+".  "+cnfe.getCause().getClass().getName());
+        LogChannel.GENERAL.logError("Could not create connection entry for "+plugin.getName()+".  "+cnfe.getCause().getClass().getName()); 
+      } catch(Exception e) {
 			  logger.error("Error loading plugin: " + plugin, e); //$NON-NLS-1$
 			}
 		}
