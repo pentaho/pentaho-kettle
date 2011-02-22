@@ -1030,17 +1030,17 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 				    		string = "test value test value";  //$NON-NLS-1$
 				    		break;
 				    	case ValueMetaInterface.TYPE_INTEGER :
-				    		genMeta.getFieldFormat()[i] = " #;-#";
+				    		genMeta.getFieldFormat()[i] = "#";
 					    	valueMeta.setConversionMask(genMeta.getFieldFormat()[i]);
 				    		string = valueMeta.getString(Long.valueOf(0L)); 
 				    		break;
 				    	case ValueMetaInterface.TYPE_NUMBER : 
-				    		genMeta.getFieldFormat()[i] = " #.#;-#.#";
+				    		genMeta.getFieldFormat()[i] = "#.#";
 					    	valueMeta.setConversionMask(genMeta.getFieldFormat()[i]);
 				    		string = valueMeta.getString(Double.valueOf(0.0D)); 
 				    		break;
 				    	case ValueMetaInterface.TYPE_BIGNUMBER : 
-				    		genMeta.getFieldFormat()[i] = " #.#;-#.#";
+				    		genMeta.getFieldFormat()[i] = "#.#";
 					    	valueMeta.setConversionMask(genMeta.getFieldFormat()[i]);
 				    		string = valueMeta.getString(BigDecimal.ZERO);
 				    		break;
