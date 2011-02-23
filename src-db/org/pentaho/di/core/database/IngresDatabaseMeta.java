@@ -173,7 +173,7 @@ public class IngresDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
                 {
                     if (length>9)
                     {
-                        retval+="FLOAT";
+                        retval+="BIGINT";
                     }
                     else
                     {
@@ -185,11 +185,11 @@ public class IngresDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
                         {
                             if (length>2)
                             {
-                                retval+="smallint";
+                                retval+="SMALLINT";
                             }
                             else
                             {
-                                retval+="integer1";
+                                retval+="INTEGER1";
                             }
                         }
                     }

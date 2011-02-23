@@ -392,7 +392,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
   private Label selectionLabel;
 
-  private Text selectionFilter;
+  public Text selectionFilter;
 
   private org.eclipse.swt.widgets.Menu fileMenus;
 

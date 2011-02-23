@@ -1354,7 +1354,13 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.PrioritizeStreams</tooltip>
 		<iconfile>ui/images/PRS.png</iconfile>
 	</step>
-	
+    <step id="VectorWiseBulkLoader">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.VectorWiseBulkLoader</description>
+		<classname>org.pentaho.di.trans.steps.ivwloader.IngresVectorwiseLoaderMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.VectorWiseBulkLoader</tooltip>
+		<iconfile>ui/images/BulkIn.png</iconfile>
+	</step>
 	<step id="Rest">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.Rest</description>
 		<classname>org.pentaho.di.trans.steps.rest.RestMeta</classname>
@@ -1362,4 +1368,5 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Rest</tooltip>
 		<iconfile>ui/images/REST.png</iconfile>
 	</step>
+
 </steps>

@@ -71,7 +71,8 @@
             deprecation="true"
             debug="${debug}"
             optimize="${optimize}"
-            memorymaximumsize="256m">
+            memorymaximumsize="256m"
+        	includeantruntime="false">
 	    	<src path="${src-core}"/>
 	    	
 	    	<classpath id="cp-kettle-core">
@@ -90,7 +91,8 @@
           deprecation="true"
           debug="${debug}"
           optimize="${optimize}"
-          memorymaximumsize="256m">
+          memorymaximumsize="256m"
+	      includeantruntime="false">
 	    	<src path="${src-db}"/>
 	    	
 	    	<classpath id="cp-kettle-db">
@@ -112,7 +114,8 @@
             deprecation="true"
             debug="${debug}"
             optimize="${optimize}"
-            memorymaximumsize="256m">
+            memorymaximumsize="256m"
+        	includeantruntime="false">
             <src path="${src}"/>
 
             <classpath id="cp-kettle">
@@ -136,6 +139,7 @@
 	    	   excludes="be/ibridge/kettle/schema/**/* be/ibridge/kettle/menu/**/*"
 	    	   memorymaximumsize="256M"
 	    	   fork="true"
+        	   includeantruntime="false"
 	    	>
 	    	<src path="${src-ui}"/>
 	    	
@@ -173,6 +177,7 @@
 		    	   source="5"
 		           deprecation="true"
 		    	   debug="true"
+	        	   includeantruntime="false"
 		    	>
 
 		    	<classpath id="cp-kettle-test">
