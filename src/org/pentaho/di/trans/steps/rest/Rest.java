@@ -206,16 +206,15 @@ public class Rest extends BaseStep implements StepInterface
 				if (!Const.isEmpty(data.realHttpLogin) && !Const.isEmpty(data.realHttpPassword)) {
 					data.config.getState().setProxyCredentials(AuthScope.ANY_REALM, data.realProxyHost, data.realProxyPort, data.realHttpLogin, data.realHttpPassword);
 	            } 
-			    if(meta.isPreemptive()) {
-			    	data.config.getProperties().put(ApacheHttpClientConfig.PROPERTY_PREEMPTIVE_AUTHENTICATION, true);
-			    }
 			}else {
 				if(!Const.isEmpty(data.realHttpLogin)) {
 					// Basic authentication
 					data.basicAuthentication = new HTTPBasicAuthFilter(data.realHttpLogin, data.realHttpPassword); 
 				}
 			}
-
+		    if(meta.isPreemptive()) {
+		    	data.config.getProperties().put(ApacheHttpClientConfig.PROPERTY_PREEMPTIVE_AUTHENTICATION, true);
+		    }
 			
 		   // SSL TRUST STORE CONFIGURATION	
 		   if(!Const.isEmpty(data.trustStoreFile)) {

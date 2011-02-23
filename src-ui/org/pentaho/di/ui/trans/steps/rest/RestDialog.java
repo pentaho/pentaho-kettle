@@ -1139,18 +1139,22 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
 		 {
 			 String urlfield=wUrlField.getText();
 			 String body=wBody.getText();
+			 String method=wMethodField.getText();
+			 
 			 wUrlField.removeAll();
 			 wBody.removeAll();
-			try
-			{
-				if (fieldNames!=null)
-				{
+			 wMethodField.removeAll();
+			 
+			try	{
+				if (fieldNames!=null) {
 					wUrlField.setItems(fieldNames);
 					wBody.setItems(fieldNames);
+					wMethodField.setItems(fieldNames);
 				}
 			}finally {
 				if(urlfield!=null) wUrlField.setText(urlfield);
 				if(body!=null) wBody.setText(body);
+				if(method!=null) wMethodField.setText(method);
 			}
 			 gotPreviousFields=true;
 		  }
@@ -1192,6 +1196,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
 
 		wMethod.setText(Const.NVL(input.getMethod(), RestMeta.HTTP_METHOD_GET));
 		wMethodInField.setSelection(input.isDynamicMethod());
+		if(input.getBodyField()!=null) wBody.setText(input.getBodyField());
 		if(input.getMethodFieldName()!=null) wMethodField.setText(input.getMethodFieldName());
 		if (input.getUrl() !=null)      wUrl.setText(input.getUrl());
         wUrlInField.setSelection(input.isUrlInField());
