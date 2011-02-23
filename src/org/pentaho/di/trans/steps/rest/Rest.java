@@ -30,6 +30,7 @@ import org.apache.commons.httpclient.auth.AuthScope;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import com.sun.jersey.client.apache.config.ApacheHttpClientConfig;
 import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
 import com.sun.jersey.client.urlconnection.HTTPSProperties;
@@ -101,7 +102,6 @@ public class Rest extends BaseStep implements StepInterface
             // used for calculating the responseTime
             long startTime = System.currentTimeMillis();
             
-			
 			if(data.useHeaders) {
 				// Add headers
 				for(int i=0; i<data.nrheader; i++) {
@@ -186,8 +186,11 @@ public class Rest extends BaseStep implements StepInterface
     }
 	private Client getClient() {
 
-		return Client.create(data.config);
-		
+		Client c= Client.create(data.config);
+		if(data.basicAuthentication!=null) {
+			c.addFilter(data.basicAuthentication); 
+		}
+		return c;
   		// create an instance of the com.sun.jersey.api.client.Client class
   		//return Client.create();
 	}
@@ -197,8 +200,8 @@ public class Rest extends BaseStep implements StepInterface
 			 //Use ApacheHttpClient for supporting proxy authentication.
 			data.config = new DefaultApacheHttpClientConfig();
 		
-			// PROXY CONFIGURATION
 			if(!Const.isEmpty(data.realProxyHost)) {
+				// PROXY CONFIGURATION
 				data.config.getProperties().put(DefaultApacheHttpClientConfig.PROPERTY_PROXY_URI, "http://" + data.realProxyHost + ":" + data.realProxyPort);
 				if (!Const.isEmpty(data.realHttpLogin) && !Const.isEmpty(data.realHttpPassword)) {
 					data.config.getState().setProxyCredentials(AuthScope.ANY_REALM, data.realProxyHost, data.realProxyPort, data.realHttpLogin, data.realHttpPassword);
@@ -206,7 +209,13 @@ public class Rest extends BaseStep implements StepInterface
 			    if(meta.isPreemptive()) {
 			    	data.config.getProperties().put(ApacheHttpClientConfig.PROPERTY_PREEMPTIVE_AUTHENTICATION, true);
 			    }
+			}else {
+				if(!Const.isEmpty(data.realHttpLogin)) {
+					// Basic authentication
+					data.basicAuthentication = new HTTPBasicAuthFilter(data.realHttpLogin, data.realHttpPassword); 
+				}
 			}
+
 			
 		   // SSL TRUST STORE CONFIGURATION	
 		   if(!Const.isEmpty(data.trustStoreFile)) {
@@ -445,4 +454,5 @@ public class Rest extends BaseStep implements StepInterface
 	 
 	    super.dispose(smi, sdi);
 	}
+
 }

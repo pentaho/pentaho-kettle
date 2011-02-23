@@ -46,7 +46,6 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
@@ -1224,13 +1223,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
 	
 	private void ok()
 	{
-		if(Const.isEmpty(wStepname.getText())) {
-	 		MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-	 		mb.setMessage("Veuillez svp donner un nom à cette étape!");
-	 		mb.setText("Etape non nommée");
-	 		mb.open(); 
-	 		return;
-	     }
+		if (Const.isEmpty(wStepname.getText())) return;
 
 		int nrheaders = wFields.nrNonEmpty();
 		int nrparams = wParameters.nrNonEmpty();

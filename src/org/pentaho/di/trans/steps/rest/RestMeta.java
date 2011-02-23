@@ -430,7 +430,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("      </headers>" + Const.CR); //$NON-NLS-1$
 
         retval.append("    <parameters>" + Const.CR); //$NON-NLS-1$
-        for (int i = 0; i < headerName.length; i++)
+        for (int i = 0; i < parameterName.length; i++)
         {
             retval.append("      <parameter>" + Const.CR); //$NON-NLS-1$
             retval.append("        " + XMLHandler.addTagValue("field", parameterField[i])); //$NON-NLS-1$ //$NON-NLS-2$
@@ -484,7 +484,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface
             }
             for (int i = 0; i < nrparameters; i++)
             {
-                Node anode = XMLHandler.getSubNodeByNr(headernode, "parameter", i); //$NON-NLS-1$
+                Node anode = XMLHandler.getSubNodeByNr(paramnode, "parameter", i); //$NON-NLS-1$
                 parameterField[i] = XMLHandler.getTagValue(anode, "field"); //$NON-NLS-1$
                 parameterName[i] = XMLHandler.getTagValue(anode, "name"); //$NON-NLS-1$              
             }
@@ -528,13 +528,13 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface
 
             for (int i = 0; i < nrheaders; i++)
             {
-            	headerField[i] = rep.getStepAttributeString(id_step, i, "field"); //$NON-NLS-1$      
-            	headerName[i] = rep.getStepAttributeString(id_step, i, "name"); //$NON-NLS-1$    
+            	headerField[i] = rep.getStepAttributeString(id_step, i, "header_field"); //$NON-NLS-1$      
+            	headerName[i] = rep.getStepAttributeString(id_step, i, "header_name"); //$NON-NLS-1$    
             }
             for (int i = 0; i < nrparams; i++)
             {
-            	parameterField[i] = rep.getStepAttributeString(id_step, i, "field"); //$NON-NLS-1$
-            	parameterName[i] = rep.getStepAttributeString(id_step, i, "name"); //$NON-NLS-1$          
+            	parameterField[i] = rep.getStepAttributeString(id_step, i, "parameter_field"); //$NON-NLS-1$
+            	parameterName[i] = rep.getStepAttributeString(id_step, i, "parameter_name"); //$NON-NLS-1$          
             }
             
             fieldName = rep.getStepAttributeString(id_step, "result_name"); //$NON-NLS-1$
@@ -571,13 +571,13 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "preemptive",   preemptive);
             for (int i = 0; i < headerName.length; i++)
             {
-                rep.saveStepAttribute(id_transformation, id_step, i, "field", headerField[i]); //$NON-NLS-1$   
-                rep.saveStepAttribute(id_transformation, id_step, i, "name", headerName[i]); //$NON-NLS-1$      
+                rep.saveStepAttribute(id_transformation, id_step, i, "header_field", headerField[i]); //$NON-NLS-1$   
+                rep.saveStepAttribute(id_transformation, id_step, i, "header_name", headerName[i]); //$NON-NLS-1$      
             }
             for (int i = 0; i < parameterField.length; i++)
             {
-                rep.saveStepAttribute(id_transformation, id_step, i, "field", parameterField[i]); //$NON-NLS-1$
-                rep.saveStepAttribute(id_transformation, id_step, i, "name", parameterName[i]); //$NON-NLS-1$         
+                rep.saveStepAttribute(id_transformation, id_step, i, "parameter_field", parameterField[i]); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, i, "parameter_name", parameterName[i]); //$NON-NLS-1$         
             }
             rep.saveStepAttribute(id_transformation, id_step, "result_name", fieldName); //$NON-NLS-1$
             rep.saveStepAttribute(id_transformation, id_step, "result_code", resultCodeFieldName); //$NON-NLS-1$            

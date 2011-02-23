@@ -15,6 +15,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
+import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
 import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
 
 
@@ -77,6 +78,8 @@ public class RestData extends BaseStepData implements StepDataInterface
 	
 	public DefaultApacheHttpClientConfig config;
 	
+	public HTTPBasicAuthFilter basicAuthentication;
+	
 	
 	/**
 	 * 
@@ -101,6 +104,7 @@ public class RestData extends BaseStepData implements StepDataInterface
 		this.config=null;
 		this.trustStoreFile=null;
 		this.trustStorePassword=null;
+		this.basicAuthentication=null;
 	}
 
 }
