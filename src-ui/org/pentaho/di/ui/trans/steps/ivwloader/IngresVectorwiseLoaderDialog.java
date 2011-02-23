@@ -51,8 +51,6 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
-import com.infobright.etl.model.DataFormat;
-
 /**
  * Dialog box for the VectorWise loader.
  */
@@ -238,12 +236,6 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
    * @return the last control
    */
   protected Control addCustomInputs(Control prevControl) {
-	String[] dataformats = new String[DataFormat.values().length];
-	int i = 0;
-	for (DataFormat format : DataFormat.values()) {
-	  dataformats[i++] = format.getDisplayText();
-	}
-
     wTable = addStandardTextVar(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.TargetTable.Label"), prevControl);
     wFifoFile = addStandardTextVar(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.FifoFile.Label"), wTable);
     wSqlPath = addStandardTextVar(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.SqlPath.Label"), wFifoFile);
