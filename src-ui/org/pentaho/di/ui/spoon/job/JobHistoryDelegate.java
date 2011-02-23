@@ -150,12 +150,10 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
     tabFolder.setSelection(0);
     
     tabFolder.addSelectionListener(new SelectionListener() {
-      @Override
       public void widgetSelected(SelectionEvent arg0) {
         setMoreRows(true);
       }
       
-      @Override
       public void widgetDefaultSelected(SelectionEvent arg0) {
       }
     });

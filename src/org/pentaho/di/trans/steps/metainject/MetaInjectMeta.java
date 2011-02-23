@@ -194,7 +194,6 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface
       this.targetSourceMapping = targetSourceMapping;
     }
 	
-	@Override
 	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info) {
 	  // TODO Auto-generated method stub
 	}

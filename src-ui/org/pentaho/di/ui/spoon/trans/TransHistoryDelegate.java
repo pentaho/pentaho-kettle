@@ -150,12 +150,10 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
     tabFolder.setSelection(0);
     
     tabFolder.addSelectionListener(new SelectionListener() {
-      @Override
       public void widgetSelected(SelectionEvent arg0) {
         setMoreRows(true);
       }
       
-      @Override
       public void widgetDefaultSelected(SelectionEvent arg0) {
       }
     });

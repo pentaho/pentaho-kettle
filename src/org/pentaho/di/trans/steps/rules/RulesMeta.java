@@ -50,7 +50,7 @@ import org.w3c.dom.Node;
  */
 
 public class RulesMeta extends BaseStepMeta implements StepMetaInterface {
-	private static Class<?> PKG = Rules.class; // for i18n purposes
+	// private static Class<?> PKG = Rules.class; // for i18n purposes
 	
 	// Contain storage keys in single location to cut down on save/load bugs
 	private static enum StorageKeys {
@@ -112,17 +112,14 @@ public class RulesMeta extends BaseStepMeta implements StepMetaInterface {
 		this.keepInputFields = keepInputFields;
 	}
 
-	@Override
 	public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans) {
 		return new Rules(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
 
-	@Override
 	public StepDataInterface getStepData() {
 		return new RulesData();
 	}
 
-	@Override
 	public void check(List<CheckResultInterface> remarks, TransMeta transMeta,
 			StepMeta stepMeta, RowMetaInterface prev, String[] input,
 			String[] output, RowMetaInterface info) {
@@ -130,7 +127,6 @@ public class RulesMeta extends BaseStepMeta implements StepMetaInterface {
 		
 	}
 
-	@Override
 	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters)
 	throws KettleXMLException
 	{
@@ -181,7 +177,6 @@ public class RulesMeta extends BaseStepMeta implements StepMetaInterface {
 		return retval.toString();
 	}
 
-	@Override
 	public void readRep(Repository rep, ObjectId idStep, List<DatabaseMeta> databases, Map<String, Counter> counters)
 			throws KettleException {
 		
@@ -202,7 +197,6 @@ public class RulesMeta extends BaseStepMeta implements StepMetaInterface {
 		setRuleDefinition(rep.getStepAttributeString(idStep, StorageKeys.RULE_DEFINITION.toString()));
 	}
 
-	@Override
 	public void saveRep(Repository rep, ObjectId idTransformation, ObjectId idStep) throws KettleException {
 
 		for (int i=0;i<ruleResultColumns.size();i++)
@@ -215,7 +209,6 @@ public class RulesMeta extends BaseStepMeta implements StepMetaInterface {
 		rep.saveStepAttribute(idTransformation, idStep, StorageKeys.RULE_DEFINITION.toString(), getRuleDefinition());
 	}
 
-	@Override
 	public void setDefault() {
 		// TODO Auto-generated method stub
 	}

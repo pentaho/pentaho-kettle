@@ -264,7 +264,6 @@ public class StringEvaluator {
       if (containsDate()) {
         // want the longest format for dates
         compare = new Comparator<StringEvaluationResult>() {
-          @Override
           public int compare(StringEvaluationResult r1, StringEvaluationResult r2) {
             Integer length1 = r1.getConversionMeta().getConversionMask() == null ? 0 : r1.getConversionMeta().getConversionMask().length();
             Integer length2 = r2.getConversionMeta().getConversionMask() == null ? 0 : r2.getConversionMeta().getConversionMask().length();
@@ -274,7 +273,6 @@ public class StringEvaluator {
       } else {
         // want the shortest format mask for numerics & integers
         compare = new Comparator<StringEvaluationResult>() {
-          @Override
           public int compare(StringEvaluationResult r1, StringEvaluationResult r2) {
             Integer length1 = r1.getConversionMeta().getConversionMask() == null ? 0 : r1.getConversionMeta().getConversionMask().length();
             Integer length2 = r2.getConversionMeta().getConversionMask() == null ? 0 : r2.getConversionMeta().getConversionMask().length();

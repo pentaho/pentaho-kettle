@@ -132,7 +132,6 @@ public class RulesData  extends BaseStepData implements StepDataInterface {
 		session.fireAllRules();
 		
 		Collection<Object> oList = session.getObjects(new ObjectFilter() {
-			@Override
 			public boolean accept(Object o) {
 				if(o instanceof Rules.Column && !((Rules.Column)o).isExternalSource()) {
 					return true;
