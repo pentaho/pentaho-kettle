@@ -60,10 +60,16 @@ public class KettleDatabaseRepositorySlaveServerDelegate extends KettleDatabaseR
       boolean overwrite) throws KettleException {
 
     if (slaveServer.getObjectId() == null) {
+      // See if the slave doesn't exist already (just for safety and PDI-5102
+      //
+      slaveServer.setObjectId(getSlaveID(slaveServer.getName()));
+    }
+    
+    if (slaveServer.getObjectId() == null) {
       // New Slave Server
       slaveServer.setObjectId(insertSlave(slaveServer));
     } else {
-      ObjectId existingSlaveId = getSlaveID(slaveServer.getName());
+      ObjectId existingSlaveId = slaveServer.getObjectId();
       if (existingSlaveId != null && slaveServer.getObjectId() != null
           && !slaveServer.getObjectId().equals(existingSlaveId)) {
         // A slave with this name already exists
