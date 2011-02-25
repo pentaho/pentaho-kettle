@@ -195,7 +195,7 @@ public class Xslt extends BaseStep implements StepInterface
 			
 			if (meta.getXSLFactory().equals("SAXON")){
 				// Set the TransformerFactory to the SAXON implementation.
-				data.factory = new net.sf.saxon.TransformerFactoryImpl(); 
+				data.factory = (TransformerFactory) new net.sf.saxon.TransformerFactoryImpl(); 
 			}
 		}// end if first	
 		

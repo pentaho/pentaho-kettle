@@ -501,7 +501,7 @@ public class JobEntryXSLT extends JobEntryBase implements Cloneable, JobEntryInt
 					if (xsltfactory.equals(FACTORY_SAXON))
 					{
 						// Set the TransformerFactory to the SAXON implementation.
-						factory = new net.sf.saxon.TransformerFactoryImpl(); 
+						factory = (TransformerFactory)new net.sf.saxon.TransformerFactoryImpl(); 
 					}
 					
 					if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "JobEntryXSL.Log.TransformerFactoryInfos"),BaseMessages.getString(PKG, "JobEntryXSL.Log.TransformerFactory",factory.getClass().getName()));
