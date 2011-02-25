@@ -1381,11 +1381,11 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
 			snaptogrid(ConstUI.GRID_SIZE);
 		}
 		// CTRL-W or CTRL-F4 : close tab
-		if ((e.character=='w' && (e.stateMask & SWT.CONTROL) != 0 ) ||
+		if ((e.keyCode=='w' && (e.stateMask & SWT.CONTROL) != 0 ) ||
 		    (e.keyCode==SWT.F4 && (e.stateMask & SWT.CONTROL) != 0 )
 			)
 		{
-			dispose();
+			spoon.closeFile();
 		}
 
 	}  

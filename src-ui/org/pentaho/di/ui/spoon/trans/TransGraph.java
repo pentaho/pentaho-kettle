@@ -1753,6 +1753,17 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       if (e.character == 'E' && (e.stateMask & SWT.CTRL) != 0) {
       	checkErrorVisuals();
       }
+      System.out.println("e.character="+e.character+", e.keyCode="+e.keyCode+", stateMask & SWT.CTRL = "+(e.stateMask & SWT.CTRL));
+      
+      // CTRL-W or CTRL-F4 : close tab
+      if ((e.keyCode=='w' && (e.stateMask & SWT.CONTROL) != 0 ) ||
+          (e.keyCode==SWT.F4 && (e.stateMask & SWT.CONTROL) != 0 )
+          )
+      {
+          spoon.closeFile();
+      }
+
+      
 
       // Auto-layout
       if (e.character == 'A') {

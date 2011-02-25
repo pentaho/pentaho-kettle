@@ -57,6 +57,8 @@ import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MenuDetectEvent;
 import org.eclipse.swt.events.MenuDetectListener;
 import org.eclipse.swt.events.ModifyEvent;
@@ -1808,6 +1810,24 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     coreStepToolTipMap = new Hashtable<String, String>();
     coreJobToolTipMap = new Hashtable<String, String>();
 
+    addDefaultKeyListeners(tabFolder);
+    addDefaultKeyListeners(mainComposite);
+  }
+  
+  public void addDefaultKeyListeners(Control control) {
+    control.addKeyListener(new KeyAdapter() {
+      @Override
+      public void keyPressed(KeyEvent e) {
+        // CTRL-W or CTRL-F4 : close tab
+        //
+        if ((e.keyCode=='w' && (e.stateMask & SWT.CONTROL) != 0 ) ||
+            (e.keyCode==SWT.F4 && (e.stateMask & SWT.CONTROL) != 0 )
+            )
+        {
+            closeFile();
+        }
+      }
+    });
   }
 
   public boolean setViewMode() {
@@ -1956,6 +1976,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     });
 
     addDragSourceToTree(coreObjectsTree);
+    addDefaultKeyListeners(coreObjectsTree);
 
     toolTip = new DefaultToolTip(variableComposite, ToolTip.RECREATE, true);
     toolTip.setRespectMonitorBounds(true);
@@ -5031,6 +5052,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       selectionTree = new Tree(variableComposite, SWT.SINGLE);
       props.setLook(selectionTree);
       selectionTree.setLayout(new FillLayout());
+      addDefaultKeyListeners(selectionTree);
 
       /*
        * ExpandItem treeItem = new ExpandItem(mainExpandBar, SWT.NONE);
