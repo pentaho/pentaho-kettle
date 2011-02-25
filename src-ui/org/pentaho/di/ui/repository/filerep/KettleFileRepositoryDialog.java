@@ -52,10 +52,12 @@ public class KettleFileRepositoryDialog implements RepositoryDialogInterface {
   private FormData fdlBaseDir, fdBaseDir, fdbBaseDir;
 
   private Label wlReadOnly;
-
   private Button wReadOnly;
-
   private FormData fdlReadOnly, fdReadOnly;
+
+  private Label wlHidesHiddenFiles;
+  private Button wHidesHiddenFiles;
+  private FormData fdlHidesHiddenFiles, fdHidesHiddenFiles;
 
   private Label wlId;
 
@@ -157,6 +159,23 @@ public class KettleFileRepositoryDialog implements RepositoryDialogInterface {
     fdReadOnly.right = new FormAttachment(100, 0);
     wReadOnly.setLayoutData(fdReadOnly);
 
+    // HidesHiddenFiles line
+    wlHidesHiddenFiles = new Label(shell, SWT.RIGHT);
+    wlHidesHiddenFiles.setText(BaseMessages.getString(PKG, "KettleFileRepositoryDialog.Label.HidesHiddenFiles")); //$NON-NLS-1$
+    props.setLook(wlHidesHiddenFiles);
+    fdlHidesHiddenFiles = new FormData();
+    fdlHidesHiddenFiles.left = new FormAttachment(0, 0);
+    fdlHidesHiddenFiles.top = new FormAttachment(wReadOnly, margin);
+    fdlHidesHiddenFiles.right = new FormAttachment(middle, -margin);
+    wlHidesHiddenFiles.setLayoutData(fdlHidesHiddenFiles);
+    wHidesHiddenFiles = new Button(shell, SWT.CHECK);
+    props.setLook(wHidesHiddenFiles);
+    fdHidesHiddenFiles = new FormData();
+    fdHidesHiddenFiles.left = new FormAttachment(middle, 0);
+    fdHidesHiddenFiles.top = new FormAttachment(wReadOnly, margin);
+    fdHidesHiddenFiles.right = new FormAttachment(100, 0);
+    wHidesHiddenFiles.setLayoutData(fdHidesHiddenFiles);
+
     // Add the listeners
     // New connection
     wbBaseDir.addSelectionListener(new SelectionAdapter() {
@@ -177,14 +196,14 @@ public class KettleFileRepositoryDialog implements RepositoryDialogInterface {
     props.setLook(wlId);
     fdlId = new FormData();
     fdlId.left = new FormAttachment(0, 0);
-    fdlId.top = new FormAttachment(wReadOnly, margin * 2);
+    fdlId.top = new FormAttachment(wHidesHiddenFiles, margin * 2);
     fdlId.right = new FormAttachment(middle, -margin);
     wlId.setLayoutData(fdlId);
     wId = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
     props.setLook(wId);
     fdId = new FormData();
     fdId.left = new FormAttachment(middle, 0);
-    fdId.top = new FormAttachment(wReadOnly, margin * 2);
+    fdId.top = new FormAttachment(wHidesHiddenFiles, margin * 2);
     fdId.right = new FormAttachment(100, 0);
     wId.setLayoutData(fdId);
 
@@ -256,6 +275,7 @@ public class KettleFileRepositoryDialog implements RepositoryDialogInterface {
     wName.setText(Const.NVL(input.getDescription(), ""));
     wBaseDir.setText(Const.NVL(input.getBaseDirectory(), ""));
     wReadOnly.setSelection(input.isReadOnly());
+    wHidesHiddenFiles.setSelection(input.isHidingHiddenFiles());
   }
 
   private void cancel() {
@@ -268,6 +288,7 @@ public class KettleFileRepositoryDialog implements RepositoryDialogInterface {
     info.setDescription(wName.getText());
     info.setBaseDirectory(wBaseDir.getText());
     info.setReadOnly(wReadOnly.getSelection());
+    info.setHidingHiddenFiles(wHidesHiddenFiles.getSelection());
   }
 
   private void ok() {

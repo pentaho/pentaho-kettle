@@ -28,6 +28,7 @@ public class KettleFileRepositoryMeta extends BaseRepositoryMeta implements Repo
 
 	private String baseDirectory;
 	private boolean readOnly;
+	private boolean hidingHiddenFiles;
 
 	public KettleFileRepositoryMeta() {
 		super(REPOSITORY_TYPE_ID);
@@ -59,6 +60,7 @@ public class KettleFileRepositoryMeta extends BaseRepositoryMeta implements Repo
 		retval.append(super.getXML());
 		retval.append("    ").append(XMLHandler.addTagValue("base_directory", baseDirectory));
 		retval.append("    ").append(XMLHandler.addTagValue("read_only", readOnly));
+        retval.append("    ").append(XMLHandler.addTagValue("hides_hidden_files", hidingHiddenFiles));
 		retval.append("  ").append(XMLHandler.closeTag(XML_TAG));
         
 		return retval.toString();
@@ -71,6 +73,7 @@ public class KettleFileRepositoryMeta extends BaseRepositoryMeta implements Repo
 		{
 			baseDirectory = XMLHandler.getTagValue(repnode, "base_directory") ;
 			readOnly = "Y".equalsIgnoreCase(XMLHandler.getTagValue(repnode, "read_only"));
+            hidingHiddenFiles = "Y".equalsIgnoreCase(XMLHandler.getTagValue(repnode, "hides_hidden_files"));
 		}
 		catch(Exception e)
 		{
@@ -105,8 +108,23 @@ public class KettleFileRepositoryMeta extends BaseRepositoryMeta implements Repo
 	public void setReadOnly(boolean readOnly) {
 		this.readOnly = readOnly;
 	}
+	
 
   public RepositoryMeta clone(){
     return  new KettleFileRepositoryMeta(REPOSITORY_TYPE_ID, getName(), getDescription(), getBaseDirectory());
+  }
+
+  /**
+   * @return the hidingHiddenFiles
+   */
+  public boolean isHidingHiddenFiles() {
+    return hidingHiddenFiles;
+  }
+
+  /**
+   * @param hidingHiddenFiles the hidingHiddenFiles to set
+   */
+  public void setHidingHiddenFiles(boolean hidingHiddenFiles) {
+    this.hidingHiddenFiles = hidingHiddenFiles;
   }
 }
