@@ -797,7 +797,6 @@ public class KettleFileRepository implements Repository {
 			RepositoryDirectoryInterface directory = tree.findDirectory(idDirectory);
 			
 			String folderName = calcDirectoryName(directory);
-			String relativeFolderName = calcRelativeElementDirectory(directory);
 			FileObject folder = KettleVFS.getFileObject(folderName);
 			
 			for (FileObject child : folder.getChildren()) {
@@ -808,7 +807,7 @@ public class KettleFileRepository implements Repository {
 						
 						String transName = name.substring(0, name.length()-4);
 						
-						ObjectId id = new StringObjectId(calcObjectId(directory, relativeFolderName+transName, EXT_TRANSFORMATION));
+						ObjectId id = new StringObjectId(calcObjectId(directory, transName, EXT_TRANSFORMATION));
 						Date date = new Date(child.getContent().getLastModifiedTime());
 						list.add( new RepositoryObject(id, transName, directory, "-", date, RepositoryObjectType.TRANSFORMATION, "", false) );
 					}
@@ -831,7 +830,6 @@ public class KettleFileRepository implements Repository {
 			RepositoryDirectoryInterface directory = tree.findDirectory(id_directory);
 			
 			String folderName = calcDirectoryName(directory);
-			String relativeFolderName = calcRelativeElementDirectory(directory);
 			FileObject folder = KettleVFS.getFileObject(folderName);
 			
 			for (FileObject child : folder.getChildren()) {
@@ -842,9 +840,9 @@ public class KettleFileRepository implements Repository {
 
 					  String jobName = name.substring(0, name.length()-4);
 
-					  ObjectId id = new StringObjectId(calcObjectId(directory, relativeFolderName+jobName, EXT_JOB));
-						Date date = new Date(child.getContent().getLastModifiedTime());
-						list.add( new RepositoryObject(id, jobName, directory, "-", date, RepositoryObjectType.JOB, "", false) );
+					  ObjectId id = new StringObjectId(calcObjectId(directory, jobName, EXT_JOB));
+					  Date date = new Date(child.getContent().getLastModifiedTime());
+					  list.add( new RepositoryObject(id, jobName, directory, "-", date, RepositoryObjectType.JOB, "", false) );
 					}
 				}
 			}
