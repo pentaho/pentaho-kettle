@@ -97,18 +97,25 @@ public class RepositoriesDialog {
     // Load previous size and location of this dialog...
     //
     final Shell shell = repositoriesController.getShell();
+    
     BaseStepDialog.setSize(shell);
-    shell.addDisposeListener(new DisposeListener() {
-      
-      public void widgetDisposed(DisposeEvent arg0) {
-        // Save size and location of this dialog...
-        //
-        WindowProperty winprop = new WindowProperty(shell);
-        PropsUI.getInstance().setScreen(winprop);
-      }
-    });
+    DisposeListener disposeListener = new DisposeListener() {
+        public void widgetDisposed(DisposeEvent event) {
+          // Save size and location of this dialog when it closes...
+          //
+          WindowProperty winprop = new WindowProperty(shell);
+          PropsUI.getInstance().setScreen(winprop);
+        }
+      };
+    shell.addDisposeListener(disposeListener);
     
     repositoriesController.show();    
+    
+    // Clean it up, just in case someone wants to re-use the dialog over and over again.
+    //
+    if (!shell.isDisposed()) {
+      shell.removeDisposeListener(disposeListener);
+    }
   }
 
   public ILoginCallback getCallback() {
