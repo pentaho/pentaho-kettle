@@ -47,6 +47,7 @@ import org.pentaho.di.trans.steps.getxmldata.IgnoreDTDEntityResolver;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 
 
+
 /**
  * Takes care of displaying a dialog that will handle the wait while we're finding out loop nodes
  * for an XML file
@@ -61,6 +62,7 @@ public class XMLInputFieldsImportProgressDialog
 	private static String VALUE_NAME= "Name";
 	private static String VALUE_PATH= "Path";
 	private static String VALUE_ELEMENT= "Element";
+	private static String VALUE_RESULT = "result";
 	private static String VALUE_TYPE= "Type";
 	private static String VALUE_FORMAT= "Format";
 	
@@ -255,6 +257,7 @@ public class XMLInputFieldsImportProgressDialog
 			 row.addValue(VALUE_NAME, Value.VALUE_TYPE_STRING, nodename);
 			 row.addValue(VALUE_PATH, Value.VALUE_TYPE_STRING, nodenametxt);
 			 row.addValue(VALUE_ELEMENT, Value.VALUE_TYPE_STRING, GetXMLDataField.ElementTypeDesc[0]);
+			 row.addValue(VALUE_RESULT, Value.VALUE_TYPE_STRING, GetXMLDataField.ResultTypeDesc[0]);
 
             // Get Node value
             String valueNode=node.getText();
@@ -294,7 +297,8 @@ public class XMLInputFieldsImportProgressDialog
 			row.addValue(VALUE_NAME, Value.VALUE_TYPE_STRING, attributname);
 			row.addValue(VALUE_PATH, Value.VALUE_TYPE_STRING, attributnametxt);
 			row.addValue(VALUE_ELEMENT, Value.VALUE_TYPE_STRING, GetXMLDataField.ElementTypeDesc[1]);
-			
+			row.addValue(VALUE_RESULT, Value.VALUE_TYPE_STRING, GetXMLDataField.ResultTypeDesc[0]);
+			 
             // Get attribute value
             String valueAttr =attribute.getText();
             
