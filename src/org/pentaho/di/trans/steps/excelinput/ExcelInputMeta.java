@@ -49,6 +49,7 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
 
@@ -1574,4 +1575,9 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 	public void setSpreadSheetType(SpreadSheetType spreadSheetType) {
       this.spreadSheetType = spreadSheetType;
     }
+
+    public StepMetaInjectionInterface getStepMetaInjectionInterface() {
+      return new ExcelInputMetaInjection(this);
+    }
+    	
 }

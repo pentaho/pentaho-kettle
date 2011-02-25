@@ -443,7 +443,10 @@ public class ExcelInput extends BaseStep implements StepInterface
 
 		// also handle the case if we have a startRow == 0 and no headers and a row limit > 0
 		// in this case we have to stop a row "earlier", since we start a row number 0 !!!
-		if ((meta.getRowLimit() > 0 && data.rownr > meta.getRowLimit()) || (meta.getRowLimit() > 0 && data.startRow[data.sheetnr] == 0 && data.rownr > meta.getRowLimit()-1))
+		if ((meta.getRowLimit() > 0 && data.rownr > meta.getRowLimit()) || 
+		    (meta.readAllSheets() && meta.getRowLimit()>0 && data.defaultStartRow==0 && data.rownr>meta.getRowLimit()-1) || 
+		    (!meta.readAllSheets() && meta.getRowLimit() > 0 && data.startRow[data.sheetnr] == 0 && data.rownr > meta.getRowLimit()-1)
+		    )
 		{
 			// The close of the openFile is in dispose()
 			if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "ExcelInput.Log.RowLimitReached",""+meta.getRowLimit()));
