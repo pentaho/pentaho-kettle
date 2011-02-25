@@ -22,8 +22,11 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.repository.controllers.RepositoriesController;
 import org.pentaho.di.ui.spoon.XulSpoonSettingsManager;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulRunner;
@@ -89,7 +92,17 @@ public class RepositoriesDialog {
   }
 
   public void show() {
+    // Load previous size and location of this dialog...
+    //
+    Shell shell = repositoriesController.getShell();
+    BaseStepDialog.setSize(shell);
+    
     repositoriesController.show();
+    
+    // Save size and location of this dialog...
+    //
+    WindowProperty winprop = new WindowProperty(shell);
+    PropsUI.getInstance().setScreen(winprop);
   }
 
   public ILoginCallback getCallback() {
