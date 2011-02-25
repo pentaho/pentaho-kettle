@@ -17,6 +17,8 @@ import java.util.ResourceBundle;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
@@ -94,15 +96,19 @@ public class RepositoriesDialog {
   public void show() {
     // Load previous size and location of this dialog...
     //
-    Shell shell = repositoriesController.getShell();
+    final Shell shell = repositoriesController.getShell();
     BaseStepDialog.setSize(shell);
+    shell.addDisposeListener(new DisposeListener() {
+      
+      public void widgetDisposed(DisposeEvent arg0) {
+        // Save size and location of this dialog...
+        //
+        WindowProperty winprop = new WindowProperty(shell);
+        PropsUI.getInstance().setScreen(winprop);
+      }
+    });
     
-    repositoriesController.show();
-    
-    // Save size and location of this dialog...
-    //
-    WindowProperty winprop = new WindowProperty(shell);
-    PropsUI.getInstance().setScreen(winprop);
+    repositoriesController.show();    
   }
 
   public ILoginCallback getCallback() {
