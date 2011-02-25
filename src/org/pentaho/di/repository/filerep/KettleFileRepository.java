@@ -461,6 +461,7 @@ public class KettleFileRepository implements Repository {
 			
 			for (FileObject child : folder.getChildren()) {
 				if (child.getType().equals(FileType.FILE)) {
+                  if (!child.isHidden() || !repositoryMeta.isHidingHiddenFiles()) {
 					String name = child.getName().getBaseName();
 					
 					if (name.endsWith(EXT_JOB)) {
@@ -468,6 +469,7 @@ public class KettleFileRepository implements Repository {
 						String jobName = name.substring(0, name.length()-4);
 						list.add( jobName );
 					}
+                  }
 				}
 			}
 			
@@ -522,11 +524,13 @@ public class KettleFileRepository implements Repository {
 			
 			for (FileObject child : folder.getChildren()) {
 				if (child.getType().equals(FileType.FILE)) {
+                  if (!child.isHidden() || !repositoryMeta.isHidingHiddenFiles()) {
 					String name = child.getName().getBaseName();
 					
 					if (name.endsWith(extension)) {
 						list.add(new StringObjectId(name));
 					}
+                  }
 				}
 			}
 			
@@ -606,6 +610,7 @@ public class KettleFileRepository implements Repository {
 			
 			for (FileObject child : folder.getChildren()) {
 				if (child.getType().equals(FileType.FILE)) {
+                  if (!child.isHidden() || !repositoryMeta.isHidingHiddenFiles()) {
 					String name = child.getName().getBaseName();
 					
 					if (name.endsWith(EXT_TRANSFORMATION)) {
@@ -613,6 +618,7 @@ public class KettleFileRepository implements Repository {
 						String transName = name.substring(0, name.length()-4);
 						list.add( transName );
 					}
+                  }
 				}
 			}
 			
@@ -765,11 +771,13 @@ public class KettleFileRepository implements Repository {
 			
 			for (FileObject child : folder.getChildren()) {
 				if (child.getType().equals(FileType.FOLDER)) {
+				  if (!child.isHidden() || !repositoryMeta.isHidingHiddenFiles()) {
 					RepositoryDirectory subDir = new RepositoryDirectory(dir, child.getName().getBaseName());
 					subDir.setObjectId(new StringObjectId(calcObjectId(subDir)));
 					dir.addSubdirectory(subDir);
 					
 					loadRepositoryDirectoryTree(subDir);
+				  }
 				}
 			}
 			
@@ -797,21 +805,23 @@ public class KettleFileRepository implements Repository {
 			RepositoryDirectoryInterface directory = tree.findDirectory(idDirectory);
 			
 			String folderName = calcDirectoryName(directory);
-			String relativeFolderName = calcRelativeElementDirectory(directory);
 			FileObject folder = KettleVFS.getFileObject(folderName);
 			
 			for (FileObject child : folder.getChildren()) {
 				if (child.getType().equals(FileType.FILE)) {
-					String name = child.getName().getBaseName();
-					
-					if (name.endsWith(EXT_TRANSFORMATION)) {
-						
-						String transName = name.substring(0, name.length()-4);
-						
-						ObjectId id = new StringObjectId(calcObjectId(directory, relativeFolderName+transName, EXT_TRANSFORMATION));
-						Date date = new Date(child.getContent().getLastModifiedTime());
-						list.add( new RepositoryObject(id, transName, directory, "-", date, RepositoryObjectType.TRANSFORMATION, "", false) );
-					}
+	              if (!child.isHidden() || !repositoryMeta.isHidingHiddenFiles()) {
+
+  					String name = child.getName().getBaseName();
+  					
+  					if (name.endsWith(EXT_TRANSFORMATION)) {
+  						
+  						String transName = name.substring(0, name.length()-4);
+  						
+  						ObjectId id = new StringObjectId(calcObjectId(directory, transName, EXT_TRANSFORMATION));
+  						Date date = new Date(child.getContent().getLastModifiedTime());
+  						list.add( new RepositoryObject(id, transName, directory, "-", date, RepositoryObjectType.TRANSFORMATION, "", false) );
+  					}
+	              }
 				}
 			}
 			
@@ -831,21 +841,22 @@ public class KettleFileRepository implements Repository {
 			RepositoryDirectoryInterface directory = tree.findDirectory(id_directory);
 			
 			String folderName = calcDirectoryName(directory);
-			String relativeFolderName = calcRelativeElementDirectory(directory);
 			FileObject folder = KettleVFS.getFileObject(folderName);
 			
 			for (FileObject child : folder.getChildren()) {
 				if (child.getType().equals(FileType.FILE)) {
+                  if (!child.isHidden() || !repositoryMeta.isHidingHiddenFiles()) {
 					String name = child.getName().getBaseName();
 					
 					if (name.endsWith(EXT_JOB)) {
 
 					  String jobName = name.substring(0, name.length()-4);
 
-					  ObjectId id = new StringObjectId(calcObjectId(directory, relativeFolderName+jobName, EXT_JOB));
-						Date date = new Date(child.getContent().getLastModifiedTime());
-						list.add( new RepositoryObject(id, jobName, directory, "-", date, RepositoryObjectType.JOB, "", false) );
+					  ObjectId id = new StringObjectId(calcObjectId(directory, jobName, EXT_JOB));
+					  Date date = new Date(child.getContent().getLastModifiedTime());
+					  list.add( new RepositoryObject(id, jobName, directory, "-", date, RepositoryObjectType.JOB, "", false) );
 					}
+                  }
 				}
 			}
 			
@@ -1170,6 +1181,7 @@ public class KettleFileRepository implements Repository {
   }
 
   public TransMeta loadTransformation(ObjectId idTransformation, String versionLabel) throws KettleException {
+    System.out.println("Loading transformation with ID : "+idTransformation);
     RepositoryObject jobInfo = getObjectInformation(idTransformation, RepositoryObjectType.TRANSFORMATION);
     return loadTransformation(jobInfo.getName(), jobInfo.getRepositoryDirectory(), null, true, versionLabel);
   }
