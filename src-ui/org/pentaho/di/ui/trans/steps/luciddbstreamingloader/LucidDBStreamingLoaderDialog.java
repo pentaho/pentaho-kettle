@@ -78,7 +78,7 @@ public class LucidDBStreamingLoaderDialog
     extends BaseStepDialog
     implements StepDialogInterface
 {
-    private static Class<?> PKG = LucidDBStreamingLoaderMeta.class;
+    protected static Class<?> PKG = LucidDBStreamingLoaderMeta.class;
 
     private CCombo wConnection;
 
@@ -170,7 +170,7 @@ public class LucidDBStreamingLoaderDialog
 
     private FormData fdDoMappingForFields;
 
-    private LucidDBStreamingLoaderMeta input;
+    public LucidDBStreamingLoaderMeta input;
 
     private Label lAutoCreateTable;
 
@@ -1266,30 +1266,7 @@ public class LucidDBStreamingLoaderDialog
         // Get the information for the dialog into the input structure.
         getInfo(input);
 
-        // String name = stepname; // new name might not yet be linked to other
-        // steps!
-        // StepMeta stepMeta = new StepMeta(BaseMessages.getString(
-        // PKG,
-        // "LucidDBStreamingLoaderDialog.StepMeta.Title"), name, input);
-        RowMetaInterface prev;
-        try {
-            prev = transMeta.getPrevStepFields(stepname);
 
-            if (BaseMessages.getString(
-                PKG,
-                "LucidDBStreamingLoaderDialog.Operation.CCombo.Item4").equals(
-                input.getOperation()))
-            {
-                input.setSql_statement(input.getCustom_sql());
-
-            } else {
-                input.setSql_statement(input.getSQLStatements(prev));
-            }
-            input.setSelectStmt(input.getselectStmtForCreateTb(prev));
-        } catch (KettleStepException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
 
         if (input.getDatabaseMeta() == null) {
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
@@ -1341,31 +1318,10 @@ public class LucidDBStreamingLoaderDialog
         }
     }
 
-    // Generate code for create table...
-    // Conversions done by Database
+    // Should do REAL SQL thing-eee
     private void create()
     {
-
-        LucidDBStreamingLoaderMeta info = new LucidDBStreamingLoaderMeta();
-        getInfo(info);
-
-        // String name = stepname; // new name might not yet be linked to other
-        // steps!
-        // StepMeta stepMeta = new StepMeta(BaseMessages.getString(
-        // PKG,
-        // "LucidDBStreamingLoaderDialog.StepMeta.Title"), name, info);
-        RowMetaInterface prev;
-        try {
-            prev = transMeta.getPrevStepFields(stepname);
-            info.setSql_statement(info.getSQLStatements(prev));
-            info.setSelectStmt(info.getselectStmtForCreateTb(prev));
-            info.setCustom_sql(info.getSql_statement());
-            wCustomTb.setText(info.getCustom_sql());
-            wTabFolder.setSelection(wCustomTab);
-            return;
-        } catch (KettleStepException e) {
-            e.printStackTrace();
-        }
-
+    	; 
+    	
     }
 }

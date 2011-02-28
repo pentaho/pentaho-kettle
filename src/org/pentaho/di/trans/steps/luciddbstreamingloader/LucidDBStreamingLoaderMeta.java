@@ -22,6 +22,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.database.LucidDBDatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -44,15 +45,27 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
 
 /**
- * Description: Hold data for Farrago Streaming loader dialog/UI
+ * Description: Hold data for LucidDB Streaming loader dialog/UI
  * 
- * @author Ray Zhang
- * @since Jan-05-2010
+ * @author ngoodman
  * 
  */
 public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
     StepMetaInterface {
   private static Class<?> PKG = LucidDBStreamingLoaderMeta.class; // for i18n
+  
+  public static String TARGET_TABLE_ALIAS = "TGT";
+  public static String SOURCE_TABLE_ALIAS = "SRC";
+  
+  public static String REMOTE_ROWS_UDX = "APPLIB.REMOTE_ROWS";
+  
+  public static String OPERATION_MERGE = "MERGE";
+  public static String OPERATION_INSERT = "INSERT";
+  public static String OPERATION_UPDATE = "UPDATE";
+  public static String OPERATION_CUSTOM = "CUSTOM";
+  
+
+  
 
   // purposes,
   // needed by
@@ -95,14 +108,8 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
   /** It holds custom sql statements in CUSTOM Tab */
   private String custom_sql;
 
-  /** DML sql_statment */
-  private String sql_statement;
-
   /** It keep whether all components in tab is enable or not */
   private boolean tabIsEnable[];
-
-  /** for automatically create table */
-  private String selectStmt;
 
   public boolean[] getTabIsEnable() {
     return tabIsEnable;
@@ -112,13 +119,6 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
     this.tabIsEnable = tabIsEnable;
   }
 
-  public String getSql_statement() {
-    return sql_statement;
-  }
-
-  public void setSql_statement(String sql_statement) {
-    this.sql_statement = sql_statement;
-  }
 
   public LucidDBStreamingLoaderMeta() {
     super();
@@ -210,8 +210,6 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
       port = XMLHandler.getTagValue(stepnode, "port"); //$NON-NLS-1$
       operation = XMLHandler.getTagValue(stepnode, "operation"); //$NON-NLS-1$
       custom_sql = XMLHandler.getTagValue(stepnode, "custom_sql"); //$NON-NLS-1$
-      sql_statement = XMLHandler.getTagValue(stepnode, "sql_statement"); //$NON-NLS-1$
-      selectStmt = XMLHandler.getTagValue(stepnode, "select_stmt"); //$NON-NLS-1$
       int nrKeyMapping = XMLHandler.countNodes(stepnode, "keys_mapping"); //$NON-NLS-1$
       int nrFieldMapping = XMLHandler.countNodes(stepnode, "fields_mapping"); //$NON-NLS-1$
       int nrTabIsEnable = XMLHandler.countNodes(stepnode,
@@ -285,10 +283,6 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
         .append("    ").append(XMLHandler.addTagValue("operation", operation)); //$NON-NLS-1$ //$NON-NLS-2$
     retval
         .append("    ").append(XMLHandler.addTagValue("custom_sql", custom_sql)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval
-        .append("    ").append(XMLHandler.addTagValue("sql_statement", sql_statement)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval
-        .append("    ").append(XMLHandler.addTagValue("select_stmt", selectStmt)); //$NON-NLS-1$ //$NON-NLS-2$
 
     for (int i = 0; i < fieldTableForKeys.length; i++) {
       retval.append("      <keys_mapping>").append(Const.CR); //$NON-NLS-1$
@@ -332,8 +326,6 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
       port = rep.getStepAttributeString(id_step, "port"); //$NON-NLS-1$
       operation = rep.getStepAttributeString(id_step, "operation"); //$NON-NLS-1$
       custom_sql = rep.getStepAttributeString(id_step, "custom_sql"); //$NON-NLS-1$
-      sql_statement = rep.getStepAttributeString(id_step, "sql_statement"); //$NON-NLS-1$
-      selectStmt = rep.getStepAttributeString(id_step, "select_stmt");
       int nrKeyMapping = rep.countNrStepAttributes(id_step, "keys_mapping"); //$NON-NLS-1$
       int nrFieldMapping = rep.countNrStepAttributes(id_step, "fields_mapping"); //$NON-NLS-1$
       int nrTabIsEnable = rep.countNrStepAttributes(id_step,
@@ -387,11 +379,7 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
       rep.saveStepAttribute(id_transformation, id_step, "port", port); //$NON-NLS-1
       rep.saveStepAttribute(id_transformation, id_step, "operation", operation); //$NON-NLS-1$
       rep.saveStepAttribute(id_transformation, id_step,
-          "custom_sql", custom_sql); //$NON-NLS-1$
-      rep.saveStepAttribute(id_transformation, id_step,
-          "sql_statement", sql_statement); //$NON-NLS-1$
-      rep.saveStepAttribute(id_transformation, id_step,
-          "select_stmt", selectStmt); //$NON-NLS-1$            
+          "custom_sql", custom_sql); //$NON-NLS-1$       
 
       for (int i = 0; i < fieldTableForKeys.length; i++) {
         rep.saveStepAttribute(id_transformation, id_step, i,
@@ -440,6 +428,284 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
       String output[], RowMetaInterface info) {
 
   }
+  
+  /**
+   * 
+   */
+  
+  public boolean isInKeys(String streamFieldName) {
+      
+      for (int i = 0 ; i < fieldStreamForKeys.length ; i ++ ){
+          if ( streamFieldName.equals(fieldStreamForKeys[i]))
+              return true;
+      }
+      return false;
+      
+  }
+  
+  
+  private String buildFakeCursorRowString( ValueMetaInterface v, String columnName ) throws KettleStepException{
+   
+         StringBuffer sb = new StringBuffer();
+         sb.append("CAST (null AS ");
+         sb.append(databaseMeta.getFieldDefinition(v,null, null, false, false, false));
+         sb.append(") AS " + databaseMeta.getStartQuote() + columnName + databaseMeta.getEndQuote());
+        
+         return sb.toString();
+  }
+  
+  private String buildRemoteRowsCursorFromInput(RowMetaInterface prev) throws KettleStepException {
+	  
+	  boolean suppress_comma = true;
+	  
+	  StringBuffer sb = new StringBuffer(300);
+	  // Iterate over fieldStreamForKeys[]
+	  
+	  for ( int i = 0 ; i < fieldStreamForKeys.length ; i++ ) {
+		
+		  // Add comma to all except the first row
+		if ( suppress_comma == true )
+			suppress_comma = false;
+		else
+			sb.append(",");
+		
+		sb.append(buildFakeCursorRowString(prev.searchValueMeta(fieldStreamForKeys[i]), fieldStreamForKeys[i]) + Const.CR);
+		
+	  }
+	  
+	  // Iterate over fieldStreamForFields[] (dedup)
+	  for ( int i = 0 ; i < fieldStreamForFields.length ; i++ ) {
+		  // Do not add if it's already in from keys
+		if ( !isInKeys(fieldStreamForFields[i])) {		
+			  // Add comma to all except the first row
+			if ( suppress_comma == true )
+				suppress_comma = false;
+			else
+				sb.append(",");
+			
+			sb.append(buildFakeCursorRowString(prev.searchValueMeta(fieldStreamForFields[i]), fieldStreamForFields[i]) + Const.CR);
+		}
+	  }
+	  
+	  return sb.toString();
+	  
+	  
+  }
+  /*
+   * Reviews the current keys, fields, and builds a select statement 
+   * suitable for remoting the rows
+   * ie, select * from table(remote_rows_udx( ..... ) as "SRC"
+   * 
+   */
+  private String buildRemoteRowsFragment (RowMetaInterface prev) throws KettleStepException {
+      
+      StringBuffer fragment = new StringBuffer();
+      
+      fragment.append("(");
+      fragment.append("SELECT * FROM TABLE ( " + REMOTE_ROWS_UDX + "(" + Const.CR);
+      // Param 1 is CURSOR format
+      fragment.append("CURSOR (SELECT ");
+      fragment.append(buildRemoteRowsCursorFromInput(prev));
+      fragment.append(" FROM (VALUES(0)))" + Const.CR);
+      // Param 2 is PORT
+      fragment.append(" , " + getPort() + Const.CR);
+      // Param 3 is IS_COMPRESSED
+      fragment.append(" , false" + Const.CR);
+      fragment.append(" ))");
+      fragment.append(")");
+      fragment.append(" AS " + databaseMeta.getStartQuote() + SOURCE_TABLE_ALIAS + databaseMeta.getEndQuote());
+      
+      
+      if ( isDebug() )
+      	logDebug("------buildRemoteRowsFragment------ " + fragment + "-----END buildRemoteRowsFragment------");
+      
+      return fragment.toString();
+  }
+  
+  /**
+   * Builds the target column list for use in the INSERT statement
+   * INSERT INTO T1 <<columns>>
+   * ie, ("Col1", "Col2")
+   * @return
+   */
+  private String buildTargetColumnsForInsert() {
+	  
+	  boolean suppress_comma = true;
+	  
+	  StringBuffer sb = new StringBuffer(300);
+	  sb.append("(");
+	  // Iterate over fieldTableForKeys[]
+	  
+	  for ( int i = 0 ; i < fieldTableForKeys.length ; i++ ) {
+		
+		  // Add comma to all except the first row
+		if ( suppress_comma == true )
+			suppress_comma = false;
+		else
+			sb.append(",");
+		
+		sb.append(databaseMeta.getStartQuote() + fieldTableForKeys[i] + databaseMeta.getEndQuote());
+		
+	  }
+	  
+	  // Iterate over fieldTableForFields[] (dedup)
+	  for ( int i = 0 ; i < fieldTableForFields.length ; i++ ) {
+		  // Do not add if it's already in from keys
+		if ( !isInKeys(fieldTableForFields[i])) {		
+			  // Add comma to all except the first row
+			if ( suppress_comma == true )
+				suppress_comma = false;
+			else
+				sb.append(",");
+			
+			sb.append(databaseMeta.getStartQuote() + fieldTableForFields[i] + databaseMeta.getEndQuote());
+		}
+	  }
+	  sb.append(")");
+	  
+	  return sb.toString();
+	  
+	  
+  }
+  
+  /**
+   * Builds the source column list for use in the MERGE statement
+   * WHEN NOT MATCHED THEN
+   * INSERT INTO T1 (tgt1, tg2)
+   * VALUES <<columnlist>>
+   * ie, ("SRC"."Field1", "SRC"."Field2")
+   * @return
+   */
+  private String buildSourceColumnsForInsert() {
+	  
+	  boolean suppress_comma = true;
+	  
+	  StringBuffer sb = new StringBuffer(300);
+	  sb.append("(");
+	  // Iterate over fieldStreamForKeys[]
+	  
+	  for ( int i = 0 ; i < fieldStreamForKeys.length ; i++ ) {
+		
+		  // Add comma to all except the first row
+		if ( suppress_comma == true )
+			suppress_comma = false;
+		else
+			sb.append(",");
+		
+		sb.append(databaseMeta.getStartQuote() + fieldStreamForKeys[i] + databaseMeta.getEndQuote());
+		
+	  }
+	  
+	  // Iterate over fieldStreamForFields[] (dedup)
+	  for ( int i = 0 ; i < fieldStreamForFields.length ; i++ ) {
+		  // Do not add if it's already in from keys
+		if ( !isInKeys(fieldStreamForFields[i])) {		
+			  // Add comma to all except the first row
+			if ( suppress_comma == true )
+				suppress_comma = false;
+			else
+				sb.append(",");
+			
+			sb.append(databaseMeta.getStartQuote() + fieldStreamForFields[i] + databaseMeta.getEndQuote());
+		}
+	  }
+	  sb.append(")");
+	  
+	  return sb.toString();
+	  
+	  
+  }
+  
+  /**
+   * Builds the match condition for MERGE stmt
+   * MERGE INTO T1 USING SRC 
+   * ON <<matchCondition>>
+   * ie, "SRC"."Field1" = "TGT"."Table1" AND "SRC"."Field2" = "SRC"."Table2"
+   * @return
+   */
+  
+  private String buildMatchCondition () {
+	  
+	  StringBuffer matchCondition = new StringBuffer(300);
+
+	  if (fieldStreamForKeys != null) {
+
+	    for (int i = 0; i < fieldStreamForKeys.length; i++) {
+	    	
+	      // Only add AND for all subsequent conditions, but not the first
+	      if ( i > 0 ) {
+	    	  matchCondition.append(Const.CR + "AND ");
+	      }
+
+	      // "SRC"."FieldStreamName"
+	      matchCondition.append(databaseMeta.getStartQuote() + SOURCE_TABLE_ALIAS + databaseMeta.getEndQuote());
+	      matchCondition.append(".");
+	      matchCondition.append(databaseMeta.getStartQuote() + fieldStreamForKeys[i] + databaseMeta.getEndQuote());
+	      matchCondition.append(" = ");
+	      // "TGT"."TableName"
+	      matchCondition.append(databaseMeta.getStartQuote() + TARGET_TABLE_ALIAS + databaseMeta.getEndQuote());
+	      matchCondition.append(".");
+	      matchCondition.append(databaseMeta.getStartQuote() + fieldTableForKeys[i] + databaseMeta.getEndQuote());
+	      matchCondition.append(Const.CR);
+	    }
+
+	  }
+	  
+	  return matchCondition.toString();
+
+	  
+  }
+  
+  /**
+   * Builds the set statement for MERGE stmt
+   * MERGE INTO T1 USING SRC 
+   * ON CONDITION
+   * WHEN MATCHED THEN UPDATE SET 
+   * << setstatement >>
+   * ie, "Col1" = "SRC"."Field1", "Col2" = "SRC"."Field2"
+   */
+  
+  private String buildMergeSetString () {
+  
+	  boolean suppress_comma = true;
+	  
+	  StringBuffer sb = new StringBuffer();
+	  
+  // Iterate over fieldStreamForFields[] 
+  for ( int i = 0 ; i < fieldStreamForFields.length ; i++ ) {
+	
+	  // Only added to this clause if Update Y/N is true
+	  if ( insOrUptFlag[i] ) {
+			  // Add comma to all except the first row
+			if ( suppress_comma == true )
+				suppress_comma = false;
+			else
+				sb.append(",");
+			
+			sb.append(databaseMeta.getStartQuote() + fieldTableForFields[i] + databaseMeta.getEndQuote());
+			sb.append(" = ");
+			sb.append(databaseMeta.getStartQuote() + SOURCE_TABLE_ALIAS + databaseMeta.getEndQuote() + ".");
+			sb.append(databaseMeta.getStartQuote() + fieldStreamForFields[i] + databaseMeta.getEndQuote());
+	  	}
+  }
+  
+  	return sb.toString();
+  
+  
+  }
+    
+  private String buildTargetTableString (){
+	  
+	  StringBuffer targetTable = new StringBuffer();
+	  
+	  targetTable.append(databaseMeta.getStartQuote() + getSchemaName() + databaseMeta.getEndQuote());
+	  targetTable.append(".");
+	  targetTable.append(databaseMeta.getStartQuote() + getTableName() + databaseMeta.getEndQuote());
+	  
+	  return targetTable.toString();
+	  
+	  
+  }
 
   /**
    * Create DML Sql Statements for remote_rows
@@ -448,240 +714,121 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
    * @return
    * @throws KettleStepException
    */
-  public String getSQLStatements(RowMetaInterface prev)
+  public String getDMLStatement(RowMetaInterface prev)
       throws KettleStepException {
-    String ret = "";
-
-    try {
-
-      StringBuffer myString = new StringBuffer(300);
-      StringBuffer myMatchCondtion = new StringBuffer(300);
-
-      if (fieldStreamForKeys != null) {
-
-        for (int i = 0; i < fieldStreamForKeys.length; i++) {
-
-          ValueMetaInterface fieldStream = prev
-              .searchValueMeta(fieldStreamForKeys[i]);
-          myString.append("cast(null as " + getSQLDataType(fieldStream)
-              + ") as \"" + fieldStreamForKeys[i] + "\"," + Const.CR);
-
-          if ((fieldStreamForKeys.length - 1) != i) {
-
-            myMatchCondtion.append("src." + fieldStreamForKeys[i] + " = tgt."
-                + fieldTableForKeys[i] + " AND" + Const.CR);
-
-          } else {
-
-            myMatchCondtion.append("src." + fieldStreamForKeys[i] + " = tgt."
-                + fieldTableForKeys[i] + Const.CR);
-          }
-        }
-
-      }
-
-      StringBuffer myUpdateStatement = new StringBuffer(300);
-
-      StringBuffer tgtColumns = new StringBuffer(300);
-      StringBuffer srcColumns = new StringBuffer(300);
-      if (fieldStreamForFields != null) {
-
-        for (int i = 0; i < fieldStreamForFields.length; i++) {
-
-          ValueMetaInterface fieldStream = prev
-              .searchValueMeta(fieldStreamForFields[i]);
-          if ((fieldStreamForFields.length - 1) != i) {
-
-            myString.append("cast(null as " + getSQLDataType(fieldStream)
-                + ") as \"" + fieldStreamForFields[i] + "\"," + Const.CR);
-
-            tgtColumns.append(fieldTableForFields[i] + ",");
-            srcColumns.append("src." + fieldStreamForFields[i] + ",");
-            if (insOrUptFlag[i]) {
-
-              myUpdateStatement.append(fieldTableForFields[i] + " = src."
-                  + fieldStreamForFields[i] + "," + Const.CR);
-            }
-
-          } else {
-
-            myString.append("cast(null as " + getSQLDataType(fieldStream)
-                + ") as \"" + fieldStreamForFields[i] + "\"" + Const.CR);
-            tgtColumns.append(fieldTableForFields[i]);
-            srcColumns.append("src." + fieldStreamForFields[i]);
-            if (insOrUptFlag[i]
-                && !(BaseMessages.getString(PKG,
-                    "LucidDBStreamingLoaderDialog.Operation.CCombo.Item2")
-                    .equals(operation))) {
-
-              myUpdateStatement.append(fieldTableForFields[i] + " = src."
-                  + fieldStreamForFields[i] + Const.CR);
-            }
-
-          }
-
-        }
-
-      }
-
-      StringBuffer cursor = new StringBuffer(300);
-      cursor.append("select * from table ( applib.remote_rows (" + Const.CR)
-          .append("cursor (" + Const.CR).append("select" + Const.CR).append(
-              myString.toString()).append("from" + Const.CR).append(
-              "(values(0))" + Const.CR).append(")," + Const.CR).append(
-              port + "," + Const.CR).append("false" + Const.CR).append(
-              ")" + Const.CR).append(")" + Const.CR);
-
-      StringBuffer mysql = new StringBuffer(300);
-      String qualifiedTableName = "\"" + schemaName + "\"" + ".\"" + tableName
-          + "\"";
-      ;
-
-      // for MERGE
-      if (BaseMessages.getString(PKG,
-          "LucidDBStreamingLoaderDialog.Operation.CCombo.Item1").equals(
-          operation)) {
-
-        mysql.append("MERGE INTO" + Const.CR).append(
-            qualifiedTableName + Const.CR).append("as tgt" + Const.CR).append(
-            "USING (" + Const.CR).append(cursor.toString()).append(
-            ") as src ON" + Const.CR).append(
-            myMatchCondtion.toString() + Const.CR).append(
-            "WHEN MATCHED THEN" + Const.CR);
-
-        if (myUpdateStatement.length() != 0) {
-
-          mysql.append("UPDATE SET ");
-
-        }
-
-        mysql.append(myUpdateStatement.toString() + Const.CR).append(
-            "WHEN NOT MATCHED THEN" + Const.CR).append(
-            "INSERT" + "(" + tgtColumns.toString() + ") values(" + srcColumns
-                + ")");
-        // for INSERT
-      } else if (BaseMessages.getString(PKG,
-          "LucidDBStreamingLoaderDialog.Operation.CCombo.Item2").equals(
-          operation)) {
-
-        mysql.append("INSERT INTO" + Const.CR).append(
-            qualifiedTableName + Const.CR).append(
-            "(" + tgtColumns.toString() + ")" + Const.CR).append(
-            cursor.toString());
-        // for UPDATE
-      } else if (BaseMessages.getString(PKG,
-          "LucidDBStreamingLoaderDialog.Operation.CCombo.Item3").equals(
-          operation)) {
-
-        mysql.append("MERGE INTO" + Const.CR).append(
-            qualifiedTableName + Const.CR).append("as tgt" + Const.CR).append(
-            "USING (" + Const.CR).append(cursor.toString()).append(
-            ") as src ON" + Const.CR).append(
-            myMatchCondtion.toString() + Const.CR).append(
-            "WHEN MATCHED THEN" + Const.CR);
-
-        if (myUpdateStatement.length() != 0) {
-
-          mysql.append("UPDATE SET ");
-
-        }
-
-        mysql.append(myUpdateStatement.toString() + Const.CR);
-      } else if (BaseMessages.getString(PKG,
-          "LucidDBStreamingLoaderDialog.Operation.CCombo.Item4").equals(
-          operation)) {
-        mysql.append(qualifiedTableName + Const.CR).append(cursor.toString());
-
-      }
-      // TODO: In future, we need to implement CUSTOM's logic here.
-      ret = mysql.toString();
-      return ret;
-
-    } catch (Exception ex) {
-
-      throw new KettleStepException(ex);
+    
+   
+	 if ( operation.equals(OPERATION_INSERT) ) {
+    	
+    	
+    	StringBuffer insert = new StringBuffer();
+    	
+    	insert.append("INSERT INTO " + Const.CR);
+    	insert.append(buildTargetTableString() + Const.CR);
+    	insert.append(buildTargetColumnsForInsert() + Const.CR);
+    	insert.append(buildRemoteRowsFragment(prev));
+    	
+    	if (isDebug())
+    		logDebug("-----INSERT----" + insert + "-----END INSERT-----");
+    	
+    	return insert.toString();
     }
-
+    
+    if ( operation.equals (OPERATION_MERGE) || operation.equals (OPERATION_UPDATE)  ) {
+    	
+    	StringBuffer merge = new StringBuffer();
+    	
+    	merge.append("MERGE INTO " + buildTargetTableString());
+    	merge.append(" as " + databaseMeta.getStartQuote() + TARGET_TABLE_ALIAS + databaseMeta.getEndQuote() + Const.CR);
+    	merge.append("USING " + buildRemoteRowsFragment(prev) + Const.CR);
+    	merge.append("ON " + buildMatchCondition() + Const.CR);
+    	merge.append("WHEN MATCHED THEN UPDATE SET " + Const.CR);
+    	merge.append(buildMergeSetString() + Const.CR);
+    	
+    	// If UPDATE we're done (no INSERT clause)
+    	// If we're actuall MERGEing we need to build WHEN NOT MATCHED THEN section
+    	if ( operation.equals(OPERATION_MERGE) ) {
+    		merge.append ("WHEN NOT MATCHED THEN " + Const.CR);
+    		merge.append ("INSERT " + buildTargetColumnsForInsert() + Const.CR);
+    		merge.append ("VALUES " + buildSourceColumnsForInsert() + Const.CR);
+    		
+    	}
+    	
+    	if (isDebug())
+    		logDebug("-----MERGE or UPDATE----" + merge + "-----END MERGE or UPDATE-----");
+    	
+    	return merge.toString(); 
+    }
+    
+    if ( operation.equals(OPERATION_CUSTOM) ) {
+    	String custom = getCustom_sql().replace(" ? ", buildRemoteRowsFragment(prev)); 
+    	
+    	if (isDebug())
+    		logDebug("-----CUSTOM----" + custom + "-----END CUSTOM-----");
+    	
+    }
+	return "ERRORSQLSTATEMENT";
+	
   }
 
-  public String getselectStmtForCreateTb(RowMetaInterface prev)
-      throws KettleStepException {
-    String ret = "";
 
-    try {
+  public String getCreateTableAsStatement ( RowMetaInterface prev ) throws KettleStepException {
+	  
+	  StringBuffer sb  = new StringBuffer() ;
+	  
+	  sb.append("CALL APPLIB.CREATE_TABLE_AS (" + Const.CR);
+	  // Schema Name
+	  sb.append("'" + getSchemaName() + "'" + Const.CR);
+	  // Table Name
+	  sb.append(",'" + getTableName() + "'" + Const.CR);
+	  // select statement
+	  sb.append(",'" + buildRemoteRowsFragment(prev) + "'" + Const.CR);
+	  // should load false
+	  sb.append(", false )");
+	  
 
-      StringBuffer myString = new StringBuffer(300);
-      if (fieldStreamForKeys != null) {
-
-        for (int i = 0; i < fieldStreamForKeys.length; i++) {
-
-          ValueMetaInterface fieldStream = prev
-              .searchValueMeta(fieldStreamForKeys[i]);
-          myString.append("cast(null as " + getSQLDataType(fieldStream)
-              + ") as \"" + fieldStreamForKeys[i] + "\"," + Const.CR);
-        }
-
-      }
-      if (fieldStreamForFields != null) {
-
-        for (int i = 0; i < fieldStreamForFields.length; i++) {
-          ValueMetaInterface fieldStream = prev
-              .searchValueMeta(fieldStreamForFields[i]);
-          if ((fieldStreamForFields.length - 1) != i) {
-            myString.append("cast(null as " + getSQLDataType(fieldStream)
-                + ") as \"" + fieldStreamForFields[i] + "\"," + Const.CR);
-          } else {
-            myString.append("cast(null as " + getSQLDataType(fieldStream)
-                + ") as \"" + fieldStreamForFields[i] + "\"" + Const.CR);
-          }
-        }
-      }
-      StringBuffer cursor = new StringBuffer(300);
-      cursor.append("select" + Const.CR).append(myString.toString()).append(
-          "from " + "(values(0))");
-      ret = cursor.toString();
-      return ret;
-
-    } catch (Exception ex) {
-
-      throw new KettleStepException(ex);
-    }
-
+	  return sb.toString();
+	  
+	  
+	  
+	  
   }
+  
 
-  private String getSQLDataType(ValueMetaInterface field) throws KettleStepException {
 
-    String dataType = "";
-
-    int length = field.getLength();
-
-    switch (field.getType()) {
-      case ValueMetaInterface.TYPE_NUMBER:
-        dataType = "DECIMAL(" + Integer.toString(length) + ", " +
-          Integer.toString(field.getPrecision()) + ")";
-        break;
-      case ValueMetaInterface.TYPE_STRING:
-        dataType = "VARCHAR(" + Integer.toString(length) + ")";
-        break;
-      case ValueMetaInterface.TYPE_DATE:
-        dataType = "DATE";
-        break;
-      case ValueMetaInterface.TYPE_BOOLEAN:
-        dataType = "BOOLEAN";
-        break;
-      case ValueMetaInterface.TYPE_INTEGER:
-        dataType = "INT";
-        break;
-      case ValueMetaInterface.TYPE_BIGNUMBER:
-        dataType = "BIGINT";
-        break;
-      case ValueMetaInterface.TYPE_BINARY:
-        dataType = "BINARY";
-        break;
-    }
-    return dataType;
-
-  }
+//  public String getSQLDataType(ValueMetaInterface field) throws KettleStepException {
+//
+//    String dataType = "";
+//
+//    int length = field.getLength();
+//
+//    switch (field.getType()) {
+//      case ValueMetaInterface.TYPE_NUMBER:
+//        dataType = "DECIMAL(" + Integer.toString(length) + ", " +
+//          Integer.toString(field.getPrecision()) + ")";
+//        break;
+//      case ValueMetaInterface.TYPE_STRING:
+//        dataType = "VARCHAR(" + Integer.toString(length) + ")";
+//        break;
+//      case ValueMetaInterface.TYPE_DATE:
+//        dataType = "DATE";
+//        break;
+//      case ValueMetaInterface.TYPE_BOOLEAN:
+//        dataType = "BOOLEAN";
+//        break;
+//      case ValueMetaInterface.TYPE_INTEGER:
+//        dataType = "INT";
+//        break;
+//      case ValueMetaInterface.TYPE_BIGNUMBER:
+//        dataType = "BIGINT";
+//        break;
+//      case ValueMetaInterface.TYPE_BINARY:
+//        dataType = "BINARY";
+//        break;
+//    }
+//    return dataType;
+//
+//  }
 
   // TODO: Not know the purpose of this method yet so far.
   public void analyseImpact(List<DatabaseImpact> impact, TransMeta transMeta,
@@ -834,12 +981,5 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
     this.host = host;
   }
 
-  public String getSelectStmt() {
-    return selectStmt;
-  }
-
-  public void setSelectStmt(String selectStmt) {
-    this.selectStmt = selectStmt;
-  }
 
 }

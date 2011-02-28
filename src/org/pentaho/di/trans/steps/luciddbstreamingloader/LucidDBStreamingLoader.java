@@ -93,7 +93,8 @@ public class LucidDBStreamingLoader extends BaseStep implements StepInterface {
       }
     }
     try {
-      data.sqlRunner.join();
+    	if ( data.sqlRunner != null )
+    		data.sqlRunner.join();
     } catch (InterruptedException e) {
       // TODO Auto-generated catch block
       e.printStackTrace();
@@ -129,30 +130,112 @@ public class LucidDBStreamingLoader extends BaseStep implements StepInterface {
       if (first) {
 
         first = false;
+        
+  
+        // data.db.setCommit(-1);
+        if (log.isDebug())
+          logDebug("Connected to LucidDB");
+        String qualifiedTableName = "\"" + meta.getSchemaName() + "\"" + ".\""
+            + meta.getTableName() + "\"";
 
-        data.keynrs = new int[meta.getFieldStreamForKeys().length
-            + meta.getFieldStreamForFields().length];
-        data.format = new String[data.keynrs.length];
+        // Always check and create table if it doesn't exist.
+        if (!data.db.checkTableExists(qualifiedTableName)) {
 
+        	throw new KettleException("Error: Table " + qualifiedTableName + " doesn't existing in LucidDB");
+
+        }
+
+   
+        String sql = meta.getDMLStatement(getInputRowMeta());
+        PreparedStatement ps = data.db.prepareSQL(sql);
+
+        if (log.isDebug())
+          logDebug("Executing sql statements...");
+
+        data.sqlRunner = new SqlRunner(data, ps);
+        data.sqlRunner.start();
+
+        if (log.isDebug())
+          logDebug("Remote rows is up now...");
+
+        if (log.isDebug())
+          logDebug("Sleeping for 1second");
+        Thread.sleep(1000);
+
+        if (log.isDebug())
+          logDebug("Initialize local socket connection...");
+        if (log.isDebug())
+          logDebug("Parameters for socket: Host: " + meta.getHost() + " Port: "
+              + meta.getPort());
+        int try_cnt = 0;
+        // Add a check whether remote rows is up.
+        // If it is not up, it will sleep 5 second and then try to
+        // connect.
+        // Totally, we will try 5 times.
+        while (true) {
+
+          try {
+
+            data.client = new Socket(meta.getHost(), Integer.valueOf(meta
+                .getPort()));
+            data.objOut = new ObjectOutputStream(data.client.getOutputStream());
+
+            if (log.isDebug())
+              logDebug("Local socket connection is ready");
+
+            break;
+
+          } catch (SocketException se) {
+
+            if (try_cnt < 5) {
+
+              logBasic("Local socket connection is not ready, so try to connect in 5 second");
+              Thread.sleep(5000);
+              data.client = null;
+              try_cnt++;
+            } else {
+
+              throw new KettleException(
+                  "Fatal Error: Remote_rows UDX can't be connected! Please check...");
+            }
+
+          } catch (Exception ex) {
+
+            throw ex;
+          }
+
+        }
+
+        // Get combined set of incoming fields, reducing duplicates
+        
+        ArrayList<String> combined = new ArrayList<String>();
+        // Add all keys
         for (int i = 0; i < meta.getFieldStreamForKeys().length; i++) {
-
-          data.keynrs[i] = getInputRowMeta().indexOfValue(
-              meta.getFieldStreamForKeys()[i]);
-
-          data.format[i] = getInputRowMeta().getValueMeta(data.keynrs[i])
-              .getTypeDesc().toUpperCase();
-
+            combined.add(meta.getFieldStreamForKeys()[i]);
         }
-        int tmp_cnt = meta.getFieldStreamForKeys().length;
+        // Add all fields that are NOT already in keys
         for (int i = 0; i < meta.getFieldStreamForFields().length; i++) {
-
-          data.keynrs[tmp_cnt + i] = getInputRowMeta().indexOfValue(
-              meta.getFieldStreamForFields()[i]);
-
-          data.format[tmp_cnt + i] = getInputRowMeta().getValueMeta(
-              data.keynrs[i]).getTypeDesc().toUpperCase();
-
+            if ( !meta.isInKeys(meta.getFieldStreamForFields()[i])) { 
+                combined.add(meta.getFieldStreamForFields()[i]);
+            }
         }
+        
+        // Get length and create two arrays (data.keynrs and data.format)
+        data.keynrs = new int[combined.size()];
+        data.format = new String[combined.size()];
+        
+        // Iterate over combined set
+        for (int i = 0; i < combined.size(); i++) {
+            data.keynrs[i] = getInputRowMeta().indexOfValue(
+                combined.get(i));
+
+            ValueMetaInterface v = getInputRowMeta().getValueMeta(data.keynrs[i]);
+
+            data.format[i] = meta.getDatabaseMeta().getFieldDefinition(v, null, null, false);
+            
+            //data.format[i] = meta.getSQLDataType(getInputRowMeta().getValueMeta(data.keynrs[i]));
+        }
+        
         if (isDetailed())
           logDetailed(data.format.toString());
 
@@ -250,6 +333,8 @@ public class LucidDBStreamingLoader extends BaseStep implements StepInterface {
       return false;
     }
   }
+  
+
 
   public boolean init(StepMetaInterface smi, StepDataInterface sdi) {
     meta = (LucidDBStreamingLoaderMeta) smi;
@@ -271,7 +356,7 @@ public class LucidDBStreamingLoader extends BaseStep implements StepInterface {
     	}
         data.db = new Database(this, meta.getDatabaseMeta());
         data.db.shareVariablesWith(this);
-
+        
         // Connect to the database
         if (getTransMeta().isUsingUniqueConnections()) {
           synchronized (getTrans()) {
@@ -282,118 +367,22 @@ public class LucidDBStreamingLoader extends BaseStep implements StepInterface {
         }
 
         data.db.setAutoCommit(true);
-        // data.db.setCommit(-1);
-        if (log.isDebug())
-          logDebug("Connected to LucidDB");
-        String qualifiedTableName = "\"" + meta.getSchemaName() + "\"" + ".\""
-            + meta.getTableName() + "\"";
 
-        // Always check and create table if it doesn't exist.
-        if (!data.db.checkTableExists(qualifiedTableName)) {
-
-          StringBuffer sql = new StringBuffer(300);
-          sql.append("call applib.create_table_as( ").append(
-                "'" + meta.getSchemaName() + "', ").append(
-                "'" + meta.getTableName() + "', ").append(
-                "'" + meta.getSelectStmt() + "', ").append("false)");
-          System.out.println(sql.toString());
-
-          PreparedStatement ps = data.db.prepareSQL(sql.toString());
-          ps.executeUpdate();
-
-        }
-
-        if (log.isDebug())
-          logDebug("Preparing sql statements: " + Const.CR
-              + meta.getSql_statement());
-
-        String sql = meta.getSql_statement();
-        PreparedStatement ps = data.db.prepareSQL(sql);
-
-        if (log.isDebug())
-          logDebug("Executing sql statements...");
-
-        data.sqlRunner = new SqlRunner(data, ps);
-        data.sqlRunner.start();
-
-        if (log.isDebug())
-          logDebug("Remote rows is up now...");
-
-        if (log.isDebug())
-          logDebug("Sleeping for 1second");
-        Thread.sleep(1000);
-
-        if (log.isDebug())
-          logDebug("Initialize local socket connection...");
-        if (log.isDebug())
-          logDebug("Parameters for socket: Host: " + meta.getHost() + " Port: "
-              + meta.getPort());
-        int try_cnt = 0;
-        // Add a check whether remote rows is up.
-        // If it is not up, it will sleep 5 second and then try to
-        // connect.
-        // Totally, we will try 5 times.
-        while (true) {
-
-          try {
-
-            data.client = new Socket(meta.getHost(), Integer.valueOf(meta
-                .getPort()));
-            data.objOut = new ObjectOutputStream(data.client.getOutputStream());
-
-            if (log.isDebug())
-              logDebug("Local socket connection is ready");
-
-            break;
-
-          } catch (SocketException se) {
-
-            if (try_cnt < 5) {
-
-              logBasic("Local socket connection is not ready, so try to connect in 5 second");
-              Thread.sleep(5000);
-              data.client = null;
-              try_cnt++;
-            } else {
-
-              throw new KettleException(
-                  "Fatal Error: Remote_rows UDX can't be connected! Please check...");
-            }
-
-          } catch (Exception ex) {
-
-            throw ex;
-          }
-
-        }
+       
 
       } catch (NumberFormatException e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
         logError(e.getMessage());
         return false;
-      } catch (UnknownHostException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-        logError(e.getMessage());
-        return false;
-      } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-        logError(e.getMessage());
-        return false;
+      
+      
       } catch (KettleDatabaseException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-        logError(e.getMessage());
-        return false;
-      } catch (Exception e) {
-
-        e.printStackTrace();
-        logError(e.getMessage());
-        return false;
-
-      }
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+		logError(e.getMessage());
+		return false;
+	}
 
       return true;
     }
