@@ -749,14 +749,18 @@ public class LucidDBStreamingLoaderDialog
         // THE BUTTONS
         wOK = new Button(shell, SWT.PUSH);
         wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
-        wSQL = new Button(shell, SWT.PUSH);
+       
+        wCancel = new Button(shell, SWT.PUSH);
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
+        
+       /* wSQL = new Button(shell, SWT.PUSH);
         wSQL.setText(BaseMessages.getString(
             PKG,
             "LucidDBStreamingLoaderDialog.SQL.Button"));
-        wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
-
         setButtonPositions(new Button[] { wOK, wCancel, wSQL }, margin, null);
+        */
+
+        setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 
         // Add listeners
         lsOK = new Listener()
@@ -783,7 +787,7 @@ public class LucidDBStreamingLoaderDialog
         };
 
         wOK.addListener(SWT.Selection, lsOK);
-        wSQL.addListener(SWT.Selection, lsSQL);
+        //wSQL.addListener(SWT.Selection, lsSQL);
         wCancel.addListener(SWT.Selection, lsCancel);
         lsDef = new SelectionAdapter()
         {

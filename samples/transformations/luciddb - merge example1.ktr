@@ -168,10 +168,10 @@
       <line> <item>1</item><item>A</item><item>100</item><item>03&#47;20&#47;1999</item> </line>
       <line> <item>2</item><item>B-DIFF</item><item>200</item><item>03&#47;21&#47;1999</item> </line>
       <line> <item>3</item><item>blah</item><item>300</item><item>03&#47;31&#47;1999</item> </line>
-      <line> <item>4</item><item>D-CHANGEME</item><item>400</item><item>03&#47;23&#47;1999</item> </line>
-      <line> <item>5</item><item>E</item><item>500</item><item>02&#47;01&#47;2011</item> </line>
+      <line> <item>4</item><item>D-CHANGEME</item><item/><item>03&#47;23&#47;1999</item> </line>
+      <line> <item>5</item><item/><item>500</item><item>02&#47;01&#47;2011</item> </line>
       <line> <item>6</item><item>F</item><item>600</item><item>01&#47;01&#47;2000</item> </line>
-      <line> <item>99</item><item>new</item><item>900</item><item>01&#47;01&#47;2000</item> </line>
+      <line> <item>99</item><item>new</item><item>900</item><item/> </line>
       <line> <item>100</item><item>blah</item><item>900</item><item>01&#47;01&#47;2010</item> </line>
     </data>
      <cluster_schema/>

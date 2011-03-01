@@ -276,63 +276,73 @@ public class LucidDBStreamingLoader extends BaseStep implements StepInterface {
         int index = data.keynrs[i];
         ValueMetaInterface valueMeta = getInputRowMeta().getValueMeta(index);
         Object valueData = r[index];
+        
+        // Support NULL values.
+        if ( r[i] == null ) {
+            entity.add(null);
+            
+        } else {
 
-        switch (valueMeta.getType()) {
-          case ValueMetaInterface.TYPE_NUMBER:
-            if (log.isRowLevel())
-              logRowlevel(valueMeta.getNumber(valueData) + ":"
-                  + valueMeta.getLength() + ":" + valueMeta.getTypeDesc());
-            entity.add(valueMeta.getNumber(valueData));
-
-            break;
-          case ValueMetaInterface.TYPE_STRING:
-            if (log.isRowLevel())
-              logRowlevel(valueMeta.getString(valueData) + ":"
-                  + valueMeta.getLength() + ":" + valueMeta.getTypeDesc());
-            entity.add(valueMeta.getString(valueData));
-
-            break;
-          case ValueMetaInterface.TYPE_DATE:
-
-            Date date = valueMeta.getDate(valueData);
-
-            if (log.isRowLevel())
-              logRowlevel(XMLHandler.date2string(date) + ":"
-                  + valueMeta.getLength());
-            java.sql.Date sqlDate = new java.sql.Date(date.getTime());
-            entity.add(sqlDate);
-
-            break;
-          case ValueMetaInterface.TYPE_BOOLEAN:
-            if (log.isRowLevel())
-              logRowlevel(Boolean.toString(valueMeta.getBoolean(valueData))
-                  + ":" + valueMeta.getLength());
-            entity.add(valueMeta.getBoolean(valueData));
-
-            break;
-          case ValueMetaInterface.TYPE_INTEGER:
-            if (log.isRowLevel())
-              logRowlevel(valueMeta.getInteger(valueData) + ":"
-                  + valueMeta.getLength() + ":" + valueMeta.getTypeDesc());
-            entity.add(valueMeta.getInteger(valueData));
-
-            break;
-          case ValueMetaInterface.TYPE_BIGNUMBER:
-            if (log.isRowLevel())
-              logRowlevel(valueMeta.getBigNumber(valueData) + ":"
-                  + valueMeta.getLength() + ":" + valueMeta.getTypeDesc());
-            entity.add(valueMeta.getBigNumber(valueData));
-
-            break;
-          case ValueMetaInterface.TYPE_BINARY:
-            if (log.isRowLevel())
-              logRowlevel(valueMeta.getBinary(valueData) + ":"
-                  + valueMeta.getLength() + ":" + valueMeta.getTypeDesc());
-            entity.add(valueMeta.getBinary(valueData));
-
-            break;
+            switch (valueMeta.getType()) {
+              case ValueMetaInterface.TYPE_NUMBER:
+                if (log.isRowLevel())
+                  logRowlevel(valueMeta.getNumber(valueData) + ":"
+                      + valueMeta.getLength() + ":" + valueMeta.getTypeDesc());
+                entity.add(valueMeta.getNumber(valueData));
+    
+                break;
+              case ValueMetaInterface.TYPE_STRING:
+                if (log.isRowLevel())
+                  logRowlevel(valueMeta.getString(valueData) + ":"
+                      + valueMeta.getLength() + ":" + valueMeta.getTypeDesc());
+                entity.add(valueMeta.getString(valueData));
+    
+                break;
+              case ValueMetaInterface.TYPE_DATE:
+    
+                Date date = valueMeta.getDate(valueData);
+    
+                if (log.isRowLevel())
+                  logRowlevel(XMLHandler.date2string(date) + ":"
+                      + valueMeta.getLength());
+                java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+                entity.add(sqlDate);
+    
+                break;
+              case ValueMetaInterface.TYPE_BOOLEAN:
+                if (log.isRowLevel())
+                  logRowlevel(Boolean.toString(valueMeta.getBoolean(valueData))
+                      + ":" + valueMeta.getLength());
+                entity.add(valueMeta.getBoolean(valueData));
+    
+                break;
+              case ValueMetaInterface.TYPE_INTEGER:
+                if (log.isRowLevel())
+                  logRowlevel(valueMeta.getInteger(valueData) + ":"
+                      + valueMeta.getLength() + ":" + valueMeta.getTypeDesc());
+                entity.add(valueMeta.getInteger(valueData));
+    
+                break;
+              case ValueMetaInterface.TYPE_BIGNUMBER:
+                if (log.isRowLevel())
+                  logRowlevel(valueMeta.getBigNumber(valueData) + ":"
+                      + valueMeta.getLength() + ":" + valueMeta.getTypeDesc());
+                entity.add(valueMeta.getBigNumber(valueData));
+    
+                break;
+              case ValueMetaInterface.TYPE_BINARY:
+                if (log.isRowLevel())
+                  logRowlevel(valueMeta.getBinary(valueData) + ":"
+                      + valueMeta.getLength() + ":" + valueMeta.getTypeDesc());
+                entity.add(valueMeta.getBinary(valueData));
+    
+                default:
+                    // Unknown datatype - it's worth a try?!? ;)
+                    entity.add(r[i]);
+                 
+            }
         }
-
+            
       }
 
       data.objOut.writeObject(entity);
