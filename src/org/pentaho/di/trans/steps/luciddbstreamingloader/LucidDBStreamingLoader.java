@@ -78,17 +78,18 @@ public class LucidDBStreamingLoader extends BaseStep implements StepInterface {
 
       try {
         data.objOut.close();
+        
       } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+          // Already closed or other issue... log silent error
+          logError("Error while closing Remote LucidDB connection - likely already closed by earlier exception");
       }
       if (data.client != null) {
 
         try {
           data.client.close();
         } catch (IOException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
+         // Already closed or other issue... log silent error
+         logError("Error while closing Remote client connection - likely already closed by earlier exception");
         }
       }
     }
@@ -96,8 +97,8 @@ public class LucidDBStreamingLoader extends BaseStep implements StepInterface {
     	if ( data.sqlRunner != null )
     		data.sqlRunner.join();
     } catch (InterruptedException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+     // Issue converging thread
+     logError("Error while trying to rejoin/end SQLRunner thread from LucidDB");
     }
 
   }
@@ -107,6 +108,9 @@ public class LucidDBStreamingLoader extends BaseStep implements StepInterface {
 
     meta = (LucidDBStreamingLoaderMeta) smi;
     data = (LucidDBStreamingLoaderData) sdi;
+    
+   
+
 
     try {
 
@@ -132,17 +136,18 @@ public class LucidDBStreamingLoader extends BaseStep implements StepInterface {
         first = false;
         
   
-        // data.db.setCommit(-1);
-        if (log.isDebug())
-          logDebug("Connected to LucidDB");
-        String qualifiedTableName = "\"" + meta.getSchemaName() + "\"" + ".\""
-            + meta.getTableName() + "\"";
-
-        // Always check and create table if it doesn't exist.
-        if (!data.db.checkTableExists(qualifiedTableName)) {
-
-        	throw new KettleException("Error: Table " + qualifiedTableName + " doesn't existing in LucidDB");
-
+        // For anything other than Custom operations, check to see if the table exists
+        if ( meta.getOperation() != LucidDBStreamingLoaderMeta.OPERATION_CUSTOM ) {
+            if (log.isDebug())
+              logDebug("Connected to LucidDB");
+            String qualifiedTableName = "\"" + meta.getSchemaName() + "\"" + ".\""
+                + meta.getTableName() + "\"";
+    
+            if (!data.db.checkTableExists(qualifiedTableName)) {
+    
+            	throw new KettleException("Error: Table " + qualifiedTableName + " doesn't existing in LucidDB");
+    
+            }
         }
 
    
@@ -233,6 +238,8 @@ public class LucidDBStreamingLoader extends BaseStep implements StepInterface {
 
             data.format[i] = meta.getDatabaseMeta().getFieldDefinition(v, null, null, false);
             
+            
+            
             //data.format[i] = meta.getSQLDataType(getInputRowMeta().getValueMeta(data.keynrs[i]));
         }
         
@@ -251,6 +258,16 @@ public class LucidDBStreamingLoader extends BaseStep implements StepInterface {
 
         data.objOut.writeObject(header);
       }
+      
+      // End if ( first )
+      
+      // If there's been errors in the DML thread (exception with headers, etc)
+      if ( data.sqlRunner.ex != null ) {
+          
+          throw new KettleException(data.sqlRunner.ex);
+
+      }
+      
 
       List<Object> entity = new ArrayList<Object>();
 
@@ -417,7 +434,7 @@ public class LucidDBStreamingLoader extends BaseStep implements StepInterface {
 
   static class SqlRunner extends Thread {
     private LucidDBStreamingLoaderData data;
-
+    
     private PreparedStatement ps;
 
     private SQLException ex;
@@ -428,6 +445,7 @@ public class LucidDBStreamingLoader extends BaseStep implements StepInterface {
       this.data = data;
       this.ps = ps;
       warnings = new ArrayList<String>();
+      ex = null;
     }
 
     public void run() {
@@ -448,6 +466,7 @@ public class LucidDBStreamingLoader extends BaseStep implements StepInterface {
       } finally {
         try {
           data.db.closePreparedStatement(ps);
+        
         } catch (KettleException ke) {
           // not much we can do with this
         } finally {

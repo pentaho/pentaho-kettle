@@ -491,17 +491,23 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
 	  
 	  
   }
+  
+  private String buildRemoteRowsFragment (RowMetaInterface prev) throws KettleStepException
+  {
+      
+      return buildRemoteRowsFragment(prev, false);
+  }
   /*
    * Reviews the current keys, fields, and builds a select statement 
    * suitable for remoting the rows
    * ie, select * from table(remote_rows_udx( ..... ) as "SRC"
    * 
    */
-  private String buildRemoteRowsFragment (RowMetaInterface prev) throws KettleStepException {
+  private String buildRemoteRowsFragment (RowMetaInterface prev, boolean statement_alone) throws KettleStepException {
       
       StringBuffer fragment = new StringBuffer();
       
-      fragment.append("(");
+      if ( !statement_alone) fragment.append("(");
       fragment.append("SELECT * FROM TABLE ( " + REMOTE_ROWS_UDX + "(" + Const.CR);
       // Param 1 is CURSOR format
       fragment.append("CURSOR (SELECT ");
@@ -512,8 +518,8 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
       // Param 3 is IS_COMPRESSED
       fragment.append(" , false" + Const.CR);
       fragment.append(" ))");
-      fragment.append(")");
-      fragment.append(" AS " + databaseMeta.getStartQuote() + SOURCE_TABLE_ALIAS + databaseMeta.getEndQuote());
+      if ( !statement_alone) fragment.append(")");
+      if ( !statement_alone) fragment.append(" AS " + databaseMeta.getStartQuote() + SOURCE_TABLE_ALIAS + databaseMeta.getEndQuote());
       
       
       if ( isDebug() )
@@ -726,7 +732,8 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
     	insert.append("INSERT INTO " + Const.CR);
     	insert.append(buildTargetTableString() + Const.CR);
     	insert.append(buildTargetColumnsForInsert() + Const.CR);
-    	insert.append(buildRemoteRowsFragment(prev));
+    	// Build statement ALONE! (no "as SRC"
+    	insert.append(buildRemoteRowsFragment(prev, true));
     	
     	if (isDebug())
     		logDebug("-----INSERT----" + insert + "-----END INSERT-----");
@@ -761,10 +768,12 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
     }
     
     if ( operation.equals(OPERATION_CUSTOM) ) {
-    	String custom = getCustom_sql().replace(" ? ", buildRemoteRowsFragment(prev)); 
+    	String custom = getCustom_sql().replace("?", buildRemoteRowsFragment(prev, true)); 
     	
     	if (isDebug())
     		logDebug("-----CUSTOM----" + custom + "-----END CUSTOM-----");
+    	
+    	return custom.toString();
     	
     }
 	return "ERRORSQLSTATEMENT";
