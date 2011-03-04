@@ -78,25 +78,27 @@ public class LucidDBStreamingLoader extends BaseStep implements StepInterface {
 
       try {
         data.objOut.close();
+        
       } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
+          // Already closed or other issue... log silent error
+          logError("Error while closing Remote LucidDB connection - likely already closed by earlier exception");
       }
       if (data.client != null) {
 
         try {
           data.client.close();
         } catch (IOException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
+         // Already closed or other issue... log silent error
+         logError("Error while closing Remote client connection - likely already closed by earlier exception");
         }
       }
     }
     try {
-      data.sqlRunner.join();
+    	if ( data.sqlRunner != null )
+    		data.sqlRunner.join();
     } catch (InterruptedException e) {
-      // TODO Auto-generated catch block
-      e.printStackTrace();
+     // Issue converging thread
+     logError("Error while trying to rejoin/end SQLRunner thread from LucidDB");
     }
 
   }
@@ -106,6 +108,9 @@ public class LucidDBStreamingLoader extends BaseStep implements StepInterface {
 
     meta = (LucidDBStreamingLoaderMeta) smi;
     data = (LucidDBStreamingLoaderData) sdi;
+    
+   
+
 
     try {
 
@@ -129,162 +134,24 @@ public class LucidDBStreamingLoader extends BaseStep implements StepInterface {
       if (first) {
 
         first = false;
-
-        data.keynrs = new int[meta.getFieldStreamForKeys().length
-            + meta.getFieldStreamForFields().length];
-        data.format = new String[data.keynrs.length];
-
-        for (int i = 0; i < meta.getFieldStreamForKeys().length; i++) {
-
-          data.keynrs[i] = getInputRowMeta().indexOfValue(
-              meta.getFieldStreamForKeys()[i]);
-
-          data.format[i] = getInputRowMeta().getValueMeta(data.keynrs[i])
-              .getTypeDesc().toUpperCase();
-
-        }
-        int tmp_cnt = meta.getFieldStreamForKeys().length;
-        for (int i = 0; i < meta.getFieldStreamForFields().length; i++) {
-
-          data.keynrs[tmp_cnt + i] = getInputRowMeta().indexOfValue(
-              meta.getFieldStreamForFields()[i]);
-
-          data.format[tmp_cnt + i] = getInputRowMeta().getValueMeta(
-              data.keynrs[i]).getTypeDesc().toUpperCase();
-
-        }
-        if (isDetailed())
-          logDetailed(data.format.toString());
-
-        // Create head format object.
-
-        List<Object> header = new ArrayList<Object>();
-        header.add("1"); // version
-        List<String> format = new ArrayList<String>();
-        for (int i = 0; i < data.format.length; i++) {
-          format.add(data.format[i]);
-        }
-        header.add(format);
-
-        data.objOut.writeObject(header);
-      }
-
-      List<Object> entity = new ArrayList<Object>();
-
-      for (int i = 0; i < data.keynrs.length; i++) {
-
-        int index = data.keynrs[i];
-        ValueMetaInterface valueMeta = getInputRowMeta().getValueMeta(index);
-        Object valueData = r[index];
-
-        switch (valueMeta.getType()) {
-          case ValueMetaInterface.TYPE_STRING:
-
-            if (log.isRowLevel())
-              logRowlevel(valueMeta.getString(valueData) + ":"
-                  + valueMeta.getLength() + ":" + valueMeta.getTypeDesc());
-            entity.add(valueMeta.getString(valueData));
-
-            break;
-          case ValueMetaInterface.TYPE_INTEGER:
-
-            if (log.isRowLevel())
-              logRowlevel(valueMeta.getInteger(valueData) + ":"
-                  + valueMeta.getLength() + ":" + valueMeta.getTypeDesc());
-            entity.add(valueMeta.getInteger(valueData));
-            break;
-          case ValueMetaInterface.TYPE_DATE:
-
-            Date date = valueMeta.getDate(valueData);
-
-            if (log.isRowLevel())
-              logRowlevel(XMLHandler.date2string(date) + ":"
-                  + valueMeta.getLength());
-            java.sql.Date sqlDate = new java.sql.Date(date.getTime());
-            entity.add(sqlDate);
-            break;
-          case ValueMetaInterface.TYPE_BOOLEAN:
-
-            if (log.isRowLevel())
-              logRowlevel(Boolean.toString(valueMeta.getBoolean(valueData))
-                  + ":" + valueMeta.getLength());
-            entity.add(valueMeta.getBoolean(valueData));
-            break;
+        
+  
+        // For anything other than Custom operations, check to see if the table exists
+        if ( meta.getOperation() != LucidDBStreamingLoaderMeta.OPERATION_CUSTOM ) {
+            if (log.isDebug())
+              logDebug("Connected to LucidDB");
+            String qualifiedTableName = "\"" + meta.getSchemaName() + "\"" + ".\""
+                + meta.getTableName() + "\"";
+    
+            if (!data.db.checkTableExists(qualifiedTableName)) {
+    
+            	throw new KettleException("Error: Table " + qualifiedTableName + " doesn't existing in LucidDB");
+    
+            }
         }
 
-      }
-
-      data.objOut.writeObject(entity);
-      // NG: Are these both necessary?
-      data.objOut.reset();
-      data.objOut.flush();
-
-      return true;
-    } catch (Exception e) {
-      logError(BaseMessages.getString(PKG,
-          "LucidDBStreamingLoader.Log.ErrorInStep"), e); //$NON-NLS-1$
-      setErrors(1);
-      stopAll();
-      setOutputDone(); // signal end to receiver(s)
-      return false;
-    }
-  }
-
-  public boolean init(StepMetaInterface smi, StepDataInterface sdi) {
-    meta = (LucidDBStreamingLoaderMeta) smi;
-    data = (LucidDBStreamingLoaderData) sdi;
-    // implementation for DDB28
-    // System.out.println("ZZZZZZZZZZZ" + getTransMeta().getName() + "
-    // "+getStepname() + " " + getTrans().getBatchId() + "" +
-    // System.getProperty("user.name"));
-    if (super.init(smi, sdi)) {
-
-      try {
-
-        // 1. Initialize databases connection.
-        if (log.isDebug())
-          logDebug("Connecting to LucidDB...");
-
-        data.db = new Database(this, meta.getDatabaseMeta());
-        data.db.shareVariablesWith(this);
-
-        // Connect to the database
-        if (getTransMeta().isUsingUniqueConnections()) {
-          synchronized (getTrans()) {
-            data.db.connect(getTrans().getThreadName(), getPartitionID());
-          }
-        } else {
-          data.db.connect(getPartitionID());
-        }
-
-        data.db.setAutoCommit(true);
-        // data.db.setCommit(-1);
-        if (log.isDebug())
-          logDebug("Connected to LucidDB");
-        String qualifiedTableName = "\"" + meta.getSchemaName() + "\"" + ".\""
-            + meta.getTableName() + "\"";
-        if (meta.isAutoCreateTbFlag()) {
-
-          if (!data.db.checkTableExists(qualifiedTableName)) {
-
-            StringBuffer sql = new StringBuffer(300);
-            sql.append("call applib.create_table_as( ").append(
-                "'" + meta.getSchemaName() + "', ").append(
-                "'" + meta.getTableName() + "', ").append(
-                "'" + meta.getSelectStmt() + "', ").append("false)");
-            System.out.println(sql.toString());
-
-            PreparedStatement ps = data.db.prepareSQL(sql.toString());
-            ps.executeUpdate();
-
-          }
-        }
-
-        if (log.isDebug())
-          logDebug("Preparing sql statements: " + Const.CR
-              + meta.getSql_statement());
-
-        String sql = meta.getSql_statement();
+   
+        String sql = meta.getDMLStatement(getInputRowMeta());
         PreparedStatement ps = data.db.prepareSQL(sql);
 
         if (log.isDebug())
@@ -344,33 +211,205 @@ public class LucidDBStreamingLoader extends BaseStep implements StepInterface {
 
         }
 
+        // Get combined set of incoming fields, reducing duplicates
+        
+        ArrayList<String> combined = new ArrayList<String>();
+        // Add all keys
+        for (int i = 0; i < meta.getFieldStreamForKeys().length; i++) {
+            combined.add(meta.getFieldStreamForKeys()[i]);
+        }
+        // Add all fields that are NOT already in keys
+        for (int i = 0; i < meta.getFieldStreamForFields().length; i++) {
+            if ( !meta.isInKeys(meta.getFieldStreamForFields()[i])) { 
+                combined.add(meta.getFieldStreamForFields()[i]);
+            }
+        }
+        
+        // Get length and create two arrays (data.keynrs and data.format)
+        data.keynrs = new int[combined.size()];
+        data.format = new String[combined.size()];
+        
+        // Iterate over combined set
+        for (int i = 0; i < combined.size(); i++) {
+            data.keynrs[i] = getInputRowMeta().indexOfValue(
+                combined.get(i));
+
+            ValueMetaInterface v = getInputRowMeta().getValueMeta(data.keynrs[i]);
+
+            data.format[i] = meta.getDatabaseMeta().getFieldDefinition(v, null, null, false);
+            
+            
+            
+            //data.format[i] = meta.getSQLDataType(getInputRowMeta().getValueMeta(data.keynrs[i]));
+        }
+        
+        if (isDetailed())
+          logDetailed(data.format.toString());
+
+        // Create head format object.
+
+        List<Object> header = new ArrayList<Object>();
+        header.add("1"); // version
+        List<String> format = new ArrayList<String>();
+        for (int i = 0; i < data.format.length; i++) {
+          format.add(data.format[i]);
+        }
+        header.add(format);
+
+        data.objOut.writeObject(header);
+      }
+      
+      // End if ( first )
+      
+      // If there's been errors in the DML thread (exception with headers, etc)
+      if ( data.sqlRunner.ex != null ) {
+          
+          throw new KettleException(data.sqlRunner.ex);
+
+      }
+      
+
+      List<Object> entity = new ArrayList<Object>();
+
+      for (int i = 0; i < data.keynrs.length; i++) {
+
+        int index = data.keynrs[i];
+        ValueMetaInterface valueMeta = getInputRowMeta().getValueMeta(index);
+        Object valueData = r[index];
+        
+        // Support NULL values.
+        if ( r[i] == null ) {
+            entity.add(null);
+            
+        } else {
+
+            switch (valueMeta.getType()) {
+              case ValueMetaInterface.TYPE_NUMBER:
+                if (log.isRowLevel())
+                  logRowlevel(valueMeta.getNumber(valueData) + ":"
+                      + valueMeta.getLength() + ":" + valueMeta.getTypeDesc());
+                entity.add(valueMeta.getNumber(valueData));
+    
+                break;
+              case ValueMetaInterface.TYPE_STRING:
+                if (log.isRowLevel())
+                  logRowlevel(valueMeta.getString(valueData) + ":"
+                      + valueMeta.getLength() + ":" + valueMeta.getTypeDesc());
+                entity.add(valueMeta.getString(valueData));
+    
+                break;
+              case ValueMetaInterface.TYPE_DATE:
+    
+                Date date = valueMeta.getDate(valueData);
+    
+                if (log.isRowLevel())
+                  logRowlevel(XMLHandler.date2string(date) + ":"
+                      + valueMeta.getLength());
+                java.sql.Date sqlDate = new java.sql.Date(date.getTime());
+                entity.add(sqlDate);
+    
+                break;
+              case ValueMetaInterface.TYPE_BOOLEAN:
+                if (log.isRowLevel())
+                  logRowlevel(Boolean.toString(valueMeta.getBoolean(valueData))
+                      + ":" + valueMeta.getLength());
+                entity.add(valueMeta.getBoolean(valueData));
+    
+                break;
+              case ValueMetaInterface.TYPE_INTEGER:
+                if (log.isRowLevel())
+                  logRowlevel(valueMeta.getInteger(valueData) + ":"
+                      + valueMeta.getLength() + ":" + valueMeta.getTypeDesc());
+                entity.add(valueMeta.getInteger(valueData));
+    
+                break;
+              case ValueMetaInterface.TYPE_BIGNUMBER:
+                if (log.isRowLevel())
+                  logRowlevel(valueMeta.getBigNumber(valueData) + ":"
+                      + valueMeta.getLength() + ":" + valueMeta.getTypeDesc());
+                entity.add(valueMeta.getBigNumber(valueData));
+    
+                break;
+              case ValueMetaInterface.TYPE_BINARY:
+                if (log.isRowLevel())
+                  logRowlevel(valueMeta.getBinary(valueData) + ":"
+                      + valueMeta.getLength() + ":" + valueMeta.getTypeDesc());
+                entity.add(valueMeta.getBinary(valueData));
+    
+                default:
+                    // Unknown datatype - it's worth a try?!? ;)
+                    entity.add(r[i]);
+                 
+            }
+        }
+            
+      }
+
+      data.objOut.writeObject(entity);
+      // NG: Are these both necessary?
+      data.objOut.reset();
+      data.objOut.flush();
+
+      return true;
+    } catch (Exception e) {
+      logError(BaseMessages.getString(PKG,
+          "LucidDBStreamingLoader.Log.ErrorInStep"), e); //$NON-NLS-1$
+      setErrors(1);
+      stopAll();
+      setOutputDone(); // signal end to receiver(s)
+      return false;
+    }
+  }
+  
+
+
+  public boolean init(StepMetaInterface smi, StepDataInterface sdi) {
+    meta = (LucidDBStreamingLoaderMeta) smi;
+    data = (LucidDBStreamingLoaderData) sdi;
+    // implementation for DDB28
+    // System.out.println("ZZZZZZZZZZZ" + getTransMeta().getName() + "
+    // "+getStepname() + " " + getTrans().getBatchId() + "" +
+    // System.getProperty("user.name"));
+    if (super.init(smi, sdi)) {
+
+      try {
+
+        // 1. Initialize databases connection.
+        if (log.isDebug())
+          logDebug("Connecting to LucidDB...");
+        if(meta.getDatabaseMeta()==null) {
+    		logError(BaseMessages.getString(PKG, "Delete.Init.LuciDBStreamingLoader.Init.ConnectionMissing", getStepname()));
+    		return false;
+    	}
+        data.db = new Database(this, meta.getDatabaseMeta());
+        data.db.shareVariablesWith(this);
+        
+        // Connect to the database
+        if (getTransMeta().isUsingUniqueConnections()) {
+          synchronized (getTrans()) {
+            data.db.connect(getTrans().getThreadName(), getPartitionID());
+          }
+        } else {
+          data.db.connect(getPartitionID());
+        }
+
+        data.db.setAutoCommit(true);
+
+       
+
       } catch (NumberFormatException e) {
         // TODO Auto-generated catch block
         e.printStackTrace();
         logError(e.getMessage());
         return false;
-      } catch (UnknownHostException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-        logError(e.getMessage());
-        return false;
-      } catch (IOException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-        logError(e.getMessage());
-        return false;
+      
+      
       } catch (KettleDatabaseException e) {
-        // TODO Auto-generated catch block
-        e.printStackTrace();
-        logError(e.getMessage());
-        return false;
-      } catch (Exception e) {
-
-        e.printStackTrace();
-        logError(e.getMessage());
-        return false;
-
-      }
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+		logError(e.getMessage());
+		return false;
+	}
 
       return true;
     }
@@ -405,7 +444,7 @@ public class LucidDBStreamingLoader extends BaseStep implements StepInterface {
 
   static class SqlRunner extends Thread {
     private LucidDBStreamingLoaderData data;
-
+    
     private PreparedStatement ps;
 
     private SQLException ex;
@@ -416,6 +455,7 @@ public class LucidDBStreamingLoader extends BaseStep implements StepInterface {
       this.data = data;
       this.ps = ps;
       warnings = new ArrayList<String>();
+      ex = null;
     }
 
     public void run() {
@@ -436,6 +476,7 @@ public class LucidDBStreamingLoader extends BaseStep implements StepInterface {
       } finally {
         try {
           data.db.closePreparedStatement(ps);
+        
         } catch (KettleException ke) {
           // not much we can do with this
         } finally {
