@@ -1164,7 +1164,7 @@ public class KettleFileRepository implements Repository {
       }
       
       String filePath = fileObject.getParent().getName().getPath();
-      String dirPath = filePath.substring(repositoryMeta.getBaseDirectory().length());
+      String dirPath = repositoryMeta.getBaseDirectory().length()<=filePath.length() ? filePath.substring(repositoryMeta.getBaseDirectory().length()) : "/";
       RepositoryDirectoryInterface directory = loadRepositoryDirectoryTree().findDirectory(dirPath);
       Date lastModified = new Date(fileObject.getContent().getLastModifiedTime());
           
