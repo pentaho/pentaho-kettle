@@ -41,6 +41,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
 
 
+
 /*
  * Created on 30-06-2008
  * 
@@ -312,15 +313,20 @@ public class CheckSumMeta extends BaseStepMeta implements StepMetaInterface {
 		// Output field (String)
 		if (!Const.isEmpty(resultfieldName)) {
 			ValueMetaInterface v = null;
-			if (checksumtype.equals(TYPE_CRC32) || checksumtype.equals(TYPE_ADLER32))
+			if (checksumtype.equals(TYPE_CRC32) || checksumtype.equals(TYPE_ADLER32)) {
 				v = new ValueMeta(space.environmentSubstitute(resultfieldName),
 						ValueMeta.TYPE_INTEGER);
-			else
-				v = new ValueMeta(space.environmentSubstitute(resultfieldName),
-						ValueMeta.TYPE_STRING);
+			} else {
+				switch(resultType) {
+					case result_TYPE_BINARY : 
+						v = new ValueMeta(space.environmentSubstitute(resultfieldName), 
+							ValueMeta.TYPE_BINARY); break;
+					default: v = new ValueMeta(space.environmentSubstitute(resultfieldName), 
+							ValueMeta.TYPE_STRING); break;
+				}
+			}
 			v.setOrigin(name);
 			inputRowMeta.addValueMeta(v);
-
 		}
 	}
 

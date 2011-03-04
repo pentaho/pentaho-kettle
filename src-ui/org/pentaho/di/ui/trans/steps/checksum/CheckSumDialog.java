@@ -193,6 +193,16 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
         fdResultType.top = new FormAttachment(wType, 2*margin);
         fdResultType.right = new FormAttachment(100, 0);
         wResultType.setLayoutData(fdResultType);
+        wResultType.addSelectionListener(new SelectionAdapter()
+        {
+        
+            public void widgetSelected(SelectionEvent e)
+            {
+            	input.setChanged();
+                activeHexa();
+            }
+        }
+        );  
         
         // Result line...
 		wlResult=new Label(shell, SWT.RIGHT);
@@ -330,6 +340,7 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
 		setSize();
 		
 		getData();
+		activeHexa();
 		activeResultType();
 		input.setChanged(changed);
 	
@@ -443,5 +454,10 @@ public class CheckSumDialog extends BaseStepDialog implements StepDialogInterfac
 			input.getFieldName()[i] = ti.getText(1);
 		}
 		dispose();
+	}
+	private void activeHexa() {
+		boolean activate = (CheckSumMeta.getResultTypeByDesc(wResultType.getText())==CheckSumMeta.result_TYPE_HEXADECIMAL);
+		wlCompatibility.setEnabled(activate);
+		wCompatibility.setEnabled(activate);
 	}
 }
