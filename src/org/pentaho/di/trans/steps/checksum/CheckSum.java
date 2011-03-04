@@ -64,6 +64,7 @@ public class CheckSum extends BaseStep implements StepInterface {
 			first = false;
 
 			data.outputRowMeta = getInputRowMeta().clone();
+			data.nrInfields = data.outputRowMeta.size();
 			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 
 			if (meta.getFieldName() == null || meta.getFieldName().length > 0) {
@@ -84,11 +85,19 @@ public class CheckSum extends BaseStep implements StepInterface {
 				}
 			}
 			data.fieldnr = data.fieldnrs.length;
+			
+			try {
+				if(meta.getCheckSumType().equals(CheckSumMeta.TYPE_MD5)
+						|| meta.getCheckSumType().equals(CheckSumMeta.TYPE_SHA1)) {
+					data.digest = MessageDigest.getInstance(meta.getCheckSumType());
+				}
+			}catch(Exception e) {
+				throw new KettleException(BaseMessages.getString(PKG, "CheckSum.Error.Digest"), e);
+			}
 
 		} // end if first
 
-		boolean sendToErrorRow = false;
-		String errorMessage = null;
+
 		Object[] outputRowData = null;
 
 		try {
@@ -96,22 +105,22 @@ public class CheckSum extends BaseStep implements StepInterface {
 					|| meta.getCheckSumType().equals(CheckSumMeta.TYPE_CRC32)) {
 				// get checksum
 				Long checksum=calculCheckSum(r);
-				outputRowData = RowDataUtil.addValueData(r, getInputRowMeta().size(), checksum);
+				outputRowData = RowDataUtil.addValueData(r, data.nrInfields, checksum);
 			} else {
 				// get checksum
 				
 				byte[] o= createCheckSum(r);
-				switch(meta.getResultType())
-				{
+	
+				switch(meta.getResultType()) {
 					case CheckSumMeta.result_TYPE_BINARY  : 
-						outputRowData = RowDataUtil.addValueData(r, getInputRowMeta().size(), o);
+						outputRowData = RowDataUtil.addValueData(r, data.nrInfields, o);
 						break;
 					case CheckSumMeta.result_TYPE_HEXADECIMAL : 
-					  String hex = meta.isCompatibilityMode() ? byteToHexEncode_compatible(o) : new String(Hex.encodeHex(o));
-						outputRowData = RowDataUtil.addValueData(r, getInputRowMeta().size(), hex);
+					    String hex = meta.isCompatibilityMode() ? byteToHexEncode_compatible(o) : new String(Hex.encodeHex(o));
+						outputRowData = RowDataUtil.addValueData(r, data.nrInfields, hex);
 						break;
 					default: 
-						outputRowData = RowDataUtil.addValueData(r, getInputRowMeta().size(), getStringFromBytes(o));
+						outputRowData = RowDataUtil.addValueData(r, data.nrInfields, getStringFromBytes(o));
 					break;
 				}
 			}
@@ -125,6 +134,9 @@ public class CheckSum extends BaseStep implements StepInterface {
 			putRow(data.outputRowMeta, outputRowData); // copy row to output
 														// rowset(s);
 		} catch (Exception e) {
+			boolean sendToErrorRow = false;
+			String errorMessage = null;
+			
 			if (getStepMeta().isDoingErrorHandling()) {
 				sendToErrorRow = true;
 				errorMessage = e.toString();
@@ -137,8 +149,7 @@ public class CheckSum extends BaseStep implements StepInterface {
 			}
 			if (sendToErrorRow) {
 				// Simply add this row to the error row
-				putError(getInputRowMeta(), r, 1, errorMessage, meta
-						.getResultFieldName(), "CheckSum001");
+				putError(getInputRowMeta(), r, 1, errorMessage, meta.getResultFieldName(), "CheckSum001");
 			}
 		}
 		return true;
@@ -149,19 +160,16 @@ public class CheckSum extends BaseStep implements StepInterface {
 
 		// Loop through fields
 		for (int i = 0; i < data.fieldnr; i++) {
-			String fieldvalue = getInputRowMeta()
-					.getString(r, data.fieldnrs[i]);
+			String fieldvalue = getInputRowMeta().getString(r, data.fieldnrs[i]);
 			Buff.append(fieldvalue);
 		}
-		MessageDigest digest;
-		if(meta.getCheckSumType().equals(CheckSumMeta.TYPE_MD5))
-			digest = MessageDigest.getInstance(CheckSumMeta.TYPE_MD5);
-		else
-			digest = MessageDigest.getInstance(CheckSumMeta.TYPE_SHA1);
-		
-		digest.update(Buff.toString().getBytes());
-		byte[] hash = digest.digest();
 
+		// Updates the digest using the specified array of bytes
+		data.digest.update(Buff.toString().getBytes());
+		// Completes the hash computation by performing final operations such as padding
+		byte[] hash = data.digest.digest();
+		// After digest has been called, the MessageDigest object is reset to its initialized state
+		
 		return hash;
 	}
 
@@ -200,12 +208,11 @@ public class CheckSum extends BaseStep implements StepInterface {
 
 		// Loop through fields
 		for (int i = 0; i < data.fieldnr; i++) {
-			String fieldvalue = getInputRowMeta()
-					.getString(r, data.fieldnrs[i]);
+			String fieldvalue = getInputRowMeta().getString(r, data.fieldnrs[i]);
 			Buff.append(fieldvalue);
 		}
 
-		if (meta.getCheckSumType().equals("CRC32")) {
+		if (meta.getCheckSumType().equals(CheckSumMeta.TYPE_CRC32)) {
 			CRC32 crc32 = new CRC32();
 			crc32.update(Buff.toString().getBytes());
 			retval = new Long(crc32.getValue());
