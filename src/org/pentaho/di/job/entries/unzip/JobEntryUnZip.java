@@ -299,7 +299,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 	{
 		Result result = previousResult;
 		result.setResult( false );
-		result.setEntryNr(1);
+		result.setNrErrors(1);
 
 		 List<RowMetaAndData> rows = result.getRows();
 		 RowMetaAndData resultRow = null;
@@ -344,9 +344,17 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 			
 			// Let's make some checks here, before running job entry ...	
 			
+			if(Const.isEmpty(realTargetdirectory)) {
+				logError(BaseMessages.getString(PKG, "JobUnZip.Error.TargetFolderMissing"));
+				return result;
+			}
+			
 			boolean exitjobentry=false;
+			
+			
 			// Target folder
 			targetdir = KettleVFS.getFileObject(realTargetdirectory, this);	
+			
 			if (!targetdir.exists())
 			{
 				if(createfolder)
@@ -397,7 +405,9 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 			}
 			
 			// We found errors...now exit
-			if(exitjobentry) return result;
+			if(exitjobentry) {
+				return result;
+			}
 			
 			if(isfromprevious)
 			{
@@ -410,7 +420,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 								logError(BaseMessages.getString(PKG, "JobUnZip.Error.SuccessConditionbroken",""+NrErrors));
 								successConditionBrokenExit=true;
 							}
-							result.setEntryNr(NrErrors);
+							result.setNrErrors(NrErrors);
 							return result;
 						}
 						
@@ -476,9 +486,9 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 				try{
 					movetodir.close();
 				}catch ( IOException ex ) {};
-			}
+			}	
 		}
-	
+		
 		result.setNrErrors(NrErrors);
 		result.setNrLinesWritten(NrSuccess);
 		if(getSuccessStatus())	result.setResult(true);
