@@ -383,9 +383,9 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface
                     byte[] value = valueMeta.getBinaryString(valueData);
                     data.fifoStream.write( value );
                   } else {
-                    Long integer = valueMeta.getInteger(valueData);
-                    if (integer!=null) {
-                      byte[] value = data.getBytes( valueMeta.getString(valueData) );
+                    String string = valueMeta.getString(valueData);
+                    if (string!=null) {
+                      byte[] value = data.getBytes( string );
                       data.fifoStream.write(value);
                     }
                   }
