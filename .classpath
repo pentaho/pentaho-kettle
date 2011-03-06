@@ -146,7 +146,6 @@
 	<classpathentry exported="true" kind="lib" path="libext/pentaho/olap4j-0.9.8.340.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/infobright-core-3.3.jar"/>
 	<classpathentry kind="lib" path="libext/edtftpj2.1.jar"/>
-	<classpathentry kind="lib" path="libext/salesforce/SFpartner20.0.jar"/>
 	<classpathentry kind="lib" path="libext/google/gdata-analytics-2.1.jar"/>
 	<classpathentry kind="lib" path="libext/google/gdata-analytics-meta-2.1.jar"/>
 	<classpathentry kind="lib" path="libext/google/gdata-client-1.0.jar"/>
@@ -161,5 +160,6 @@
 	<classpathentry kind="lib" path="libext/jersey/jersey-apache-client-1.5.jar"/>
 	<classpathentry kind="lib" path="libext/jersey/jersey-client-1.5.jar"/>
 	<classpathentry kind="lib" path="libext/jersey/jersey-core-1.5.jar"/>
+	<classpathentry kind="lib" path="libext/salesforce/SFpartner21.0.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
