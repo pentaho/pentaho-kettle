@@ -65,7 +65,8 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CarteServl
       response.setContentType("text/xml");
       response.setCharacterEncoding(Const.XML_ENCODING);
     } else {
-      response.setContentType("text/html");
+      response.setCharacterEncoding("UTF-8");
+      response.setContentType("text/html;charset=UTF-8");
     }
 
     PrintWriter out = response.getWriter();
@@ -140,12 +141,13 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CarteServl
           throw new ServletException("Unable to get the transformation status in XML format", e);
         }
       } else {
-        response.setContentType("text/html");
+        response.setContentType("text/html;charset=UTF-8");
 
         out.println("<HTML>");
         out.println("<HEAD>");
         out.println("<TITLE>" + BaseMessages.getString(PKG, "TransStatusServlet.KettleTransStatus") + "</TITLE>");
         out.println("<META http-equiv=\"Refresh\" content=\"10;url=" + convertContextPath(CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "\">");
+        out.println("<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">");
         out.println("</HEAD>");
         out.println("<BODY>");
         out.println("<H1>" + BaseMessages.getString(PKG, "TransStatusServlet.TopTransStatus", transName) + "</H1>");

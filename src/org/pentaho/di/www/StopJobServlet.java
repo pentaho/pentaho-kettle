@@ -57,12 +57,13 @@ public class StopJobServlet extends BaseHttpServlet implements CarteServletInter
         response.setCharacterEncoding(Const.XML_ENCODING);
         out.print(XMLHandler.getXMLHeader(Const.XML_ENCODING));
       } else {
-        response.setContentType("text/html");
+        response.setContentType("text/html;charset=UTF-8");
         out.println("<HTML>");
         out.println("<HEAD>");
         out.println("<TITLE>Stop job</TITLE>");
         out.println("<META http-equiv=\"Refresh\" content=\"2;url=" + convertContextPath(GetJobStatusServlet.CONTEXT_PATH) + "?name="
             + URLEncoder.encode(jobName, "UTF-8") + "\">");
+        out.println("<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">");
         out.println("</HEAD>");
         out.println("<BODY>");
       }

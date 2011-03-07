@@ -59,12 +59,15 @@ public class PrepareExecutionTransServlet extends BaseHttpServlet implements Car
       response.setContentType("text/xml");
       out.print(XMLHandler.getXMLHeader(Const.XML_ENCODING));
     } else {
-
-      response.setContentType("text/html");
+      
+      response.setCharacterEncoding("UTF-8");
+      response.setContentType("text/html;charset=UTF-8");
+      
       out.println("<HTML>");
       out.println("<HEAD>");
       out.println("<TITLE>" + BaseMessages.getString(PKG, "PrepareExecutionTransServlet.TransPrepareExecution") + "</TITLE>");
       out.println("<META http-equiv=\"Refresh\" content=\"2;url=" + convertContextPath(GetTransStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "\">");
+      out.println("<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">");
       out.println("</HEAD>");
       out.println("<BODY>");
     }

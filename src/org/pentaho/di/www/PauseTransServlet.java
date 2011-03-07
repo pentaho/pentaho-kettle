@@ -49,7 +49,9 @@ public class PauseTransServlet extends BaseHttpServlet implements CarteServletIn
     String transName = request.getParameter("name");
     String id = request.getParameter("id");
     boolean useXML = "Y".equalsIgnoreCase(request.getParameter("xml"));
-
+    
+    response.setCharacterEncoding("UTF-8");
+    
     PrintWriter out = response.getWriter();
     try {
       if (useXML) {
@@ -57,12 +59,14 @@ public class PauseTransServlet extends BaseHttpServlet implements CarteServletIn
         response.setCharacterEncoding(Const.XML_ENCODING);
         out.print(XMLHandler.getXMLHeader(Const.XML_ENCODING));
       } else {
-        response.setContentType("text/html");
+        
+        response.setContentType("text/html;charset=UTF-8");
         out.println("<HTML>");
         out.println("<HEAD>");
         out.println("<TITLE>" + BaseMessages.getString(PKG, "PauseTransServlet.PauseTrans") + "</TITLE>");
         out.println("<META http-equiv=\"Refresh\" content=\"2;url=" + convertContextPath(GetTransStatusServlet.CONTEXT_PATH) + "?name="
             + URLEncoder.encode(transName, "UTF-8") + "&id="+id+"\">");
+        out.println("<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">");
         out.println("</HEAD>");
         out.println("<BODY>");
       }

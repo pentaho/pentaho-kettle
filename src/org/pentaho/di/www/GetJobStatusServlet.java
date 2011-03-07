@@ -62,7 +62,7 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CarteServlet
       response.setContentType("text/xml");
       response.setCharacterEncoding(Const.XML_ENCODING);
     } else {
-      response.setContentType("text/html");
+      response.setContentType("text/html;charset=UTF-8");
     }
 
     PrintWriter out = response.getWriter();
@@ -130,6 +130,7 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CarteServlet
         out.println("<TITLE>" + BaseMessages.getString(PKG, "GetJobStatusServlet.KettleJobStatus") + "</TITLE>");
         out.println("<META http-equiv=\"Refresh\" content=\"10;url=" + convertContextPath(GetJobStatusServlet.CONTEXT_PATH) + "?name="
             + URLEncoder.encode(jobName, "UTF-8") + "&id="+id+"\">");
+        out.println("<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">");
         out.println("</HEAD>");
         out.println("<BODY>");
         out.println("<H1>" + BaseMessages.getString(PKG, "GetJobStatusServlet.JobStatus") + "</H1>");
