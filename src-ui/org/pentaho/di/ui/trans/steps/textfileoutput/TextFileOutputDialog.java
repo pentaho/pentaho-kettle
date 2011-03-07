@@ -874,8 +874,10 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		wFormat.setText(BaseMessages.getString(PKG, "TextFileOutputDialog.Format.Label"));
  		props.setLook(wFormat);
 
-		wFormat.add("DOS");
-		wFormat.add("Unix");
+		for (int i=0;i<TextFileOutputMeta.formatMapperLineTerminator.length;i++) {
+			// add e.g. TextFileOutputDialog.Format.DOS, .UNIX, .CR, .None
+			wFormat.add(BaseMessages.getString(PKG, "TextFileOutputDialog.Format."+TextFileOutputMeta.formatMapperLineTerminator[i])); //$NON-NLS-1$
+		}
 		wFormat.select(0);
 		wFormat.addModifyListener(lsMod);
 		fdFormat=new FormData();
@@ -1367,7 +1369,12 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		if (input.getExtension() != null) wExtension.setText(input.getExtension());
 		if (input.getSeparator() !=null) wSeparator.setText(input.getSeparator());
 		if (input.getEnclosure() !=null) wEnclosure.setText(input.getEnclosure());
-		if (input.getFileFormat()!=null) wFormat.setText(input.getFileFormat());
+		if (input.getFileFormat()!=null) {
+			wFormat.select(0); // default if not found: CR+LF
+			for (int i=0;i<TextFileOutputMeta.formatMapperLineTerminator.length;i++) {
+				if(input.getFileFormat().equals(TextFileOutputMeta.formatMapperLineTerminator[i])) wFormat.select(i);
+			}
+		}
 		if (input.getFileCompression()!=null) wCompression.setText(input.getFileCompression());
         if (input.getEncoding()  !=null) wEncoding.setText(input.getEncoding());
         if (input.getEndedLine() !=null) wEndedLine.setText(input.getEndedLine());
@@ -1433,7 +1440,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		tfoi.setFileName(   wFilename.getText() );
 		tfoi.setFileAsCommand( wFileIsCommand.getSelection() );
 		tfoi.setDoNotOpenNewFileInit(wDoNotOpenNewFileInit.getSelection() );
-		tfoi.setFileFormat( wFormat.getText() );
+		tfoi.setFileFormat( TextFileOutputMeta.formatMapperLineTerminator[wFormat.getSelectionIndex()] );
 		tfoi.setFileCompression( wCompression.getText() );
         tfoi.setEncoding( wEncoding.getText() );
 		tfoi.setSeparator(  wSeparator.getText() );

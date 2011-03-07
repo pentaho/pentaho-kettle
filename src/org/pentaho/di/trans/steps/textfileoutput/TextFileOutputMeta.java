@@ -59,6 +59,8 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 
     public static final String fileCompressionTypeCodes[] = new String[] { "None", "Zip", "GZip", }; // $NON-NLS-1$
     
+	public static final String formatMapperLineTerminator[] = new String[] { "DOS", "UNIX", "CR", "None" }; // $NON-NLS-1$
+    
     /** The base name of the output file */
 	private  String fileName;
 
@@ -725,23 +727,21 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 		}
 	}
 
-	public String getNewLine(String fformat)
-	{
-		String nl=System.getProperty("line.separator");
+	public String getNewLine(String fformat) {
+		String nl = System.getProperty("line.separator");
 
-		if (fformat!=null)
-		{
-			if (fformat.equalsIgnoreCase("DOS"))
-			{
-				nl="\r\n";
-			}
-			else
-			if (fformat.equalsIgnoreCase("UNIX"))
-			{
-				nl="\n";
+		if (fformat != null) {
+			if (fformat.equalsIgnoreCase("DOS")) { // $NON-NLS-1$
+				nl = "\r\n";
+			} else if (fformat.equalsIgnoreCase("UNIX")) { // $NON-NLS-1$
+				nl = "\n";
+			} else if (fformat.equalsIgnoreCase("CR")) { // $NON-NLS-1$
+				nl = "\r";
+			} else if (fformat.equalsIgnoreCase("None")) { // $NON-NLS-1$
+				nl = "";
 			}
 		}
-		
+
 		return nl;
 	}
 
