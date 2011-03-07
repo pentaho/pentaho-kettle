@@ -57,12 +57,13 @@ public class StopTransServlet extends BaseHttpServlet implements CarteServletInt
         response.setCharacterEncoding(Const.XML_ENCODING);
         out.print(XMLHandler.getXMLHeader(Const.XML_ENCODING));
       } else {
-        response.setContentType("text/html");
+        response.setContentType("text/html;charset=UTF-8");
         out.println("<HTML>");
         out.println("<HEAD>");
         out.println("<TITLE>" + BaseMessages.getString(PKG, "StopTransServlet.StopTrans") + "</TITLE>");
         out.println("<META http-equiv=\"Refresh\" content=\"2;url=" + convertContextPath(GetTransStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8")
             + "\">");
+        out.println("<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">");
         out.println("</HEAD>");
         out.println("<BODY>");
       }

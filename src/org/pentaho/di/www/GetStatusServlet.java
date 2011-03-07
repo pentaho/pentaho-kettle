@@ -58,7 +58,7 @@ public class GetStatusServlet extends BaseHttpServlet implements CarteServletInt
       response.setContentType("text/xml");
       response.setCharacterEncoding(Const.XML_ENCODING);
     } else {
-      response.setContentType("text/html");
+      response.setContentType("text/html;charset=UTF-8");
     }
 
     PrintStream out = new PrintStream(response.getOutputStream());
@@ -98,7 +98,9 @@ public class GetStatusServlet extends BaseHttpServlet implements CarteServletInt
       }
     } else {
       out.println("<HTML>");
-      out.println("<HEAD><TITLE>" + BaseMessages.getString(PKG, "GetStatusServlet.KettleSlaveServerStatus") + "</TITLE></HEAD>");
+      out.println("<HEAD><TITLE>" + BaseMessages.getString(PKG, "GetStatusServlet.KettleSlaveServerStatus") + "</TITLE>");
+      out.println("<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">");
+      out.println("</HEAD>");
       out.println("<BODY>");
       out.println("<H1>" + BaseMessages.getString(PKG, "GetStatusServlet.TopStatus") + "</H1>");
 

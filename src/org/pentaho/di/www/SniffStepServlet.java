@@ -78,7 +78,7 @@ public class SniffStepServlet extends BaseHttpServlet implements CarteServletInt
       response.setContentType("text/xml");
       response.setCharacterEncoding(Const.XML_ENCODING);
     } else {
-      response.setContentType("text/html");
+      response.setContentType("text/html;charset=UTF-8");
     }
 
     PrintWriter out = response.getWriter();
@@ -198,12 +198,13 @@ public class SniffStepServlet extends BaseHttpServlet implements CarteServletInt
 	        out.println(XMLHandler.closeTag(XML_TAG));
 
 	      } else {
-	        response.setContentType("text/html");
+	        response.setContentType("text/html;charset=UTF-8");
 	
 	        out.println("<HTML>");
 	        out.println("<HEAD>");
 	        out.println("<TITLE>" + BaseMessages.getString(PKG, "SniffStepServlet.SniffResults") + "</TITLE>");
 	        out.println("<META http-equiv=\"Refresh\" content=\"10;url=" + convertContextPath(CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "&id="+id+"\">");
+	        out.println("<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">");
 	        out.println("</HEAD>");
 	        out.println("<BODY>");
 	        out.println("<H1>" + BaseMessages.getString(PKG, "SniffStepServlet.SniffResultsForStep", stepName) + "</H1>");

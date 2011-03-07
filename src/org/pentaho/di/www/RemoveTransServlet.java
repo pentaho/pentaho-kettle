@@ -57,9 +57,11 @@ public class RemoveTransServlet extends BaseHttpServlet implements CarteServletI
       response.setContentType("text/xml");
       response.setCharacterEncoding(Const.XML_ENCODING);
     } else {
-      response.setContentType("text/html");
+      response.setContentType("text/html;charset=UTF-8");
     }
 
+    response.setCharacterEncoding("UTF-8");
+    
     PrintWriter out = response.getWriter();
 
     // ID is optional...
@@ -94,11 +96,12 @@ public class RemoveTransServlet extends BaseHttpServlet implements CarteServletI
         out.print(XMLHandler.getXMLHeader(Const.XML_ENCODING));
         out.print(WebResult.OK.getXML());
       } else {
-        response.setContentType("text/html");
+        response.setContentType("text/html;charset=UTF-8");
 
         out.println("<HTML>");
         out.println("<HEAD>");
         out.println("<TITLE>" + BaseMessages.getString(PKG, "RemoveTransServlet.TransRemoved") + "</TITLE>");
+        out.println("<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">");
         out.println("</HEAD>");
         out.println("<BODY>");
         out.println("<H3>" + BaseMessages.getString(PKG, "RemoveTransServlet.TheTransWasRemoved", transName, id) + "</H3>");
