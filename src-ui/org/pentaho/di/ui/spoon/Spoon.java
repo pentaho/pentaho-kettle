@@ -1739,12 +1739,19 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
           previousShowTrans = false;
           previousShowJob = false;
           refreshCoreObjects();
-          tidyBranches(coreObjectsTree.getItems(), true); // expand
-          // all
+          if(!Const.isEmpty(selectionFilter.getText())) {
+        	  tidyBranches(coreObjectsTree.getItems(), true); // expand all
+          } else { // no filter: collapse all
+        	  tidyBranches(coreObjectsTree.getItems(), false);
+          }
         }
         if (selectionTree != null && !selectionTree.isDisposed()) {
           refreshTree();
-          tidyBranches(selectionTree.getItems(), true); // expand all
+          if(!Const.isEmpty(selectionFilter.getText())) {
+        	  tidyBranches(selectionTree.getItems(), true); // expand all
+          } else { // no filter: collapse all
+        	  tidyBranches(selectionTree.getItems(), false);
+          }
           selectionFilter.setFocus();
         }
       }
@@ -1833,6 +1840,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   public boolean setViewMode() {
     if (viewSelected)
       return true;
+    selectionFilter.setText(""); //reset filter when switched to view
     disposeVariableComposite(true, false, false, false);
     refreshTree();
     return false;
@@ -1841,6 +1849,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   public boolean setDesignMode() {
     if (designSelected)
       return true;
+    selectionFilter.setText(""); //reset filter when switched to design
     disposeVariableComposite(false, false, true, false);
     refreshCoreObjects();
     return false;
