@@ -170,9 +170,18 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
     		  data.replaceIndex[i] = -1;
     	  }
       }
-
+      int optimizationLevel = 9;
+      String optLevel = getVariable("ScriptMod.Optimization.Level");
+      if (!Const.isEmpty(optLevel)) {
+    	  String adjustedOptLevel = environmentSubstitute(optLevel); // environment substitution
+    	  try {
+    		  optimizationLevel = Integer.parseInt(adjustedOptLevel);
+    	  } catch (Exception ex) {
+    		  throw new KettleStepException(ex);
+    	  }
+      }
       data.cx = ContextFactory.getGlobal().enterContext();
-      data.cx.setOptimizationLevel(9);
+      data.cx.setOptimizationLevel(optimizationLevel);
       data.scope = data.cx.initStandardObjects(null, false);
 
       bFirstRun = true;
