@@ -441,7 +441,7 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
 			data.bulkSize = Const.toLong(environmentSubstitute(meta.getBulkSize()), -1L);
 			
 			// Schema-table combination...
-			data.schemaTable = meta.getDatabaseMeta().getSchemaTableCombination(environmentSubstitute(meta.getSchemaName()), environmentSubstitute(meta.getTableName()));
+			data.schemaTable = meta.getDatabaseMeta().getQuotedSchemaTableCombination(environmentSubstitute(meta.getSchemaName()), environmentSubstitute(meta.getTableName()));
 			
 			return true;
 		}
