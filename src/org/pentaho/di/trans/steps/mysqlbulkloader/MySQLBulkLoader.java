@@ -161,6 +161,14 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
         	if (cnt < meta.getFieldTable().length - 1)
         		loadCommand += ",";
         }
+        
+        // Build list of column names to set
+        loadCommand += "(";
+        for (int cnt = 0; cnt < meta.getFieldTable().length; cnt++){
+          loadCommand += "`" + meta.getFieldTable()[cnt] + "`";
+          if (cnt < meta.getFieldTable().length - 1)
+            loadCommand += ",";
+        }
         loadCommand += ");"+Const.CR;
         
         logBasic("Starting the MySQL bulk Load in a separate thread : "+loadCommand);
@@ -444,7 +452,7 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
 			data.bulkSize = Const.toLong(environmentSubstitute(meta.getBulkSize()), -1L);
 			
 			// Schema-table combination...
-			data.schemaTable = meta.getDatabaseMeta().getSchemaTableCombination(environmentSubstitute(meta.getSchemaName()), environmentSubstitute(meta.getTableName()));
+			data.schemaTable = meta.getDatabaseMeta().getQuotedSchemaTableCombination(environmentSubstitute(meta.getSchemaName()), environmentSubstitute(meta.getTableName()));
 			
 			return true;
 		}
