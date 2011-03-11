@@ -464,7 +464,8 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
       try {
           sourceFields = transMeta.getPrevStepFields(stepMeta);
       } catch(KettleException e) {
-          new ErrorDialog(shell, BaseMessages.getString(PKG, "IngresVectorWiseLoaderDialog.DoMapping.UnableToFindSourceFields.Title"), BaseMessages.getString(PKG, "IngresVectorWiseLoaderDialog.DoMapping.UnableToFindSourceFields.Message"), e);
+          new ErrorDialog(shell, BaseMessages.getString(PKG, "IngresVectorWiseLoaderDialog.DoMapping.UnableToFindSourceFields.Title"), 
+        		  BaseMessages.getString(PKG, "IngresVectorWiseLoaderDialog.DoMapping.UnableToFindSourceFields.Message"), e);
           return;
       }
       
@@ -608,7 +609,8 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
       }
       catch(KettleException ke)
       {
-          new ErrorDialog(shell, BaseMessages.getString(PKG, "IngresVectorWiseLoaderDialog.BuildSQLError.DialogTitle"), BaseMessages.getString(PKG, "IngresVectorWiseLoaderDialog.BuildSQLError.DialogMessage"), ke);
+          new ErrorDialog(shell, BaseMessages.getString(PKG, "IngresVectorWiseLoaderDialog.BuildSQLError.DialogTitle"), 
+        		  BaseMessages.getString(PKG, "IngresVectorWiseLoaderDialog.BuildSQLError.DialogMessage"), ke);
       }
   }
 
