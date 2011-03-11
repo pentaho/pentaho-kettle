@@ -260,7 +260,7 @@ public class RandomCCNumberGeneratorMeta extends BaseStepMeta implements StepMet
 			List<DatabaseMeta> databases, Map<String, Counter> counters)
 			throws KettleException {
 		try {
-			int nrfields = rep.countNrStepAttributes(id_step, "field_name");
+			int nrfields = rep.countNrStepAttributes(id_step, "cctype");
 
 			allocate(nrfields);
 
