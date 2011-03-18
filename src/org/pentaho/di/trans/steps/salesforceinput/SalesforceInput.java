@@ -136,7 +136,7 @@ public class SalesforceInput extends BaseStep implements StepInterface
 		try{
 			
 			// check for limit rows
-            if (data.limit>0 && data.rownr>=data.limit-1) {
+            if (data.limit>0 && data.rownr>=data.limit) {
             	// User specified limit and we reached it 
             	// We end here 
             	data.limitReached = true;
@@ -435,15 +435,12 @@ public class SalesforceInput extends BaseStep implements StepInterface
 			if(data.convertRowMeta!=null) data.convertRowMeta=null;
 			if(data.previousRow!=null) data.previousRow=null;
 			if(data.startCal!=null) {
-				data.startCal.clear();
 				data.startCal=null;
 			}
 			if(data.endCal!=null) {
-				data.endCal.clear();
 				data.endCal=null;
 			}
 		}catch(Exception e){};
 		super.dispose(smi, sdi);
 	}
-
 }
