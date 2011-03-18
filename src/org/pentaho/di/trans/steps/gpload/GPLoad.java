@@ -138,12 +138,51 @@ public class GPLoad extends BaseStep implements StepInterface
         
         contents.append("    - SOURCE: ").append(Const.CR);
 
+        //  Add a LOCAL_HOSTS section
+        //  We first check to see if the array has any elements
+        //  if so we proceed with the string building - if not we do not add LOCAL_HOSTNAME section.
+        String[] localHosts = meta.getLocalHosts();
+        String stringLocalHosts = null;
+        if (localHosts.length > 0) {
+           StringBuilder sbLocalHosts = new StringBuilder();
+           String trimmedAndSubstitutedLocalHost;
+           for (String localHost: localHosts) {
+              trimmedAndSubstitutedLocalHost = environmentSubstitute(localHost.trim());
+              if (!Const.isEmpty(trimmedAndSubstitutedLocalHost)) {
+                 sbLocalHosts.append("          - ").append(trimmedAndSubstitutedLocalHost).append(Const.CR);
+              }
+           }
+           stringLocalHosts = sbLocalHosts.toString();
+           if (!Const.isEmpty(stringLocalHosts)) {
+              contents.append("      - LOCAL_HOSTNAME: ").append(Const.CR).append(stringLocalHosts);
+           }
+        }
+        
+        //  Add a PORT section if we have a port
+        if (!Const.isEmpty(meta.getMasterPort())) {
+           String substritutedAndTrimmedMasterPort = environmentSubstitute(meta.getMasterPort().trim());
+           if (!Const.isEmpty(substritutedAndTrimmedMasterPort)) {
+              contents.append("      - PORT: ").append(substritutedAndTrimmedMasterPort).append(Const.CR);
+           }
+        }
+        
         // TODO: Stream to a temporary file and then bulk load OR optionally stream to a named pipe (like MySQL bulk loader)
         // TODO: allow LOCAL_HOSTNAME/PORT/PORT_RANGE to be specified
         //
-        String inputName = "'" + environmentSubstitute(meta.getDataFile()) + "'";
-        contents.append("        FILE: ").append('[').append(inputName).append(']').append(Const.CR);
         
+        
+        //  If we don't have a local hosts list built
+        if (Const.isEmpty(stringLocalHosts)) {
+           
+           // then we surround the file name with brackets
+           String inputName = "'" + environmentSubstitute(meta.getDataFile()) + "'";
+           contents.append("        FILE: ").append('[').append(inputName).append(']').append(Const.CR);
+        }
+        else {
+           
+           // 
+           contents.append("        FILE: ").append(Const.CR).append("          - ").append(environmentSubstitute(meta.getDataFile())).append(Const.CR);
+        }
         
         // COLUMNS is optional, takes the existing fields in the table
         // contents.append("    - COLUMNS:").append(Const.CR);
@@ -216,7 +255,7 @@ public class GPLoad extends BaseStep implements StepInterface
 		{
 			controlFile.createNewFile();
 			fw = new FileWriter(controlFile);
- 	        fw.write(getControlFileContents(meta, getInputRowMeta(), row));	        
+ 	      fw.write(getControlFileContents(meta, getInputRowMeta(), row));	       
 		}
 		catch ( IOException ex )
 		{
@@ -462,7 +501,7 @@ public class GPLoad extends BaseStep implements StepInterface
 	       String method = meta.getLoadMethod();
 	       if (  // GPLoadMeta.METHOD_AUTO_CONCURRENT.equals(method) ||
 	    		 GPLoadMeta.METHOD_AUTO_END.equals(method))
-	       { /*
+	       { 
 	 	       if ( meta.getControlFile() != null )
 		       {
 			       try
@@ -475,8 +514,8 @@ public class GPLoad extends BaseStep implements StepInterface
 		           {
 		               logError("Error deleting control file \'" + KettleVFS.getFilename(fileObject) + "\': " + ex.getMessage());
 		           }
-		       }*/
-		   }
+		       }
+	      }
 
 	       if (  GPLoadMeta.METHOD_AUTO_END.equals(method) )
 	       {
