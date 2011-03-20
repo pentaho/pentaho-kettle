@@ -74,6 +74,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 
+
 public class TextFileOutputDialog extends BaseStepDialog implements StepDialogInterface
 {
 	private static Class<?> PKG = TextFileOutputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
@@ -209,6 +210,10 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 	private Button       wSpecifyFormat;
 	private FormData     fdlSpecifyFormat, fdSpecifyFormat;
 	
+	private Label        wlCreateParentFolder;
+	private Button       wCreateParentFolder;
+	private FormData     fdlCreateParentFolder, fdCreateParentFolder;
+	
 	private ColumnInfo[] colinf;
 
     private Map<String, Integer> inputFields;
@@ -336,10 +341,41 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 				public void widgetSelected(SelectionEvent e) 
 				{
 					input.setChanged();
+					enableParentFolder();
 				}
 			}
 		);
 		
+		
+
+		// Create Parent Folder
+		wlCreateParentFolder=new Label(wFileComp, SWT.RIGHT);
+		wlCreateParentFolder.setText(BaseMessages.getString(PKG, "TextFileOutputDialog.CreateParentFolder.Label"));
+ 		props.setLook(wlCreateParentFolder);
+		fdlCreateParentFolder=new FormData();
+		fdlCreateParentFolder.left = new FormAttachment(0, 0);
+		fdlCreateParentFolder.top  = new FormAttachment(wFileIsCommand, margin);
+		fdlCreateParentFolder.right= new FormAttachment(middle, -margin);
+		wlCreateParentFolder.setLayoutData(fdlCreateParentFolder);
+		wCreateParentFolder=new Button(wFileComp, SWT.CHECK );
+		wCreateParentFolder.setToolTipText(BaseMessages.getString(PKG, "TextFileOutputDialog.CreateParentFolder.Tooltip"));
+ 		props.setLook(wCreateParentFolder);
+		fdCreateParentFolder=new FormData();
+		fdCreateParentFolder.left = new FormAttachment(middle, 0);
+		fdCreateParentFolder.top  = new FormAttachment(wFileIsCommand, margin);
+		fdCreateParentFolder.right= new FormAttachment(100, 0);
+		wCreateParentFolder.setLayoutData(fdCreateParentFolder);
+		wCreateParentFolder.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					input.setChanged();
+				}
+			}
+		);
+		
+
+
 
 		// Open new File at Init
 		wlDoNotOpenNewFileInit=new Label(wFileComp, SWT.RIGHT);
@@ -347,7 +383,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
  		props.setLook(wlDoNotOpenNewFileInit);
 		fdlDoNotOpenNewFileInit=new FormData();
 		fdlDoNotOpenNewFileInit.left = new FormAttachment(0, 0);
-		fdlDoNotOpenNewFileInit.top  = new FormAttachment(wFileIsCommand, margin);
+		fdlDoNotOpenNewFileInit.top  = new FormAttachment(wCreateParentFolder, margin);
 		fdlDoNotOpenNewFileInit.right= new FormAttachment(middle, -margin);
 		wlDoNotOpenNewFileInit.setLayoutData(fdlDoNotOpenNewFileInit);
 		wDoNotOpenNewFileInit=new Button(wFileComp, SWT.CHECK );
@@ -355,7 +391,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
  		props.setLook(wDoNotOpenNewFileInit);
 		fdDoNotOpenNewFileInit=new FormData();
 		fdDoNotOpenNewFileInit.left = new FormAttachment(middle, 0);
-		fdDoNotOpenNewFileInit.top  = new FormAttachment(wFileIsCommand, margin);
+		fdDoNotOpenNewFileInit.top  = new FormAttachment(wCreateParentFolder, margin);
 		fdDoNotOpenNewFileInit.right= new FormAttachment(100, 0);
 		wDoNotOpenNewFileInit.setLayoutData(fdDoNotOpenNewFileInit);
 		wDoNotOpenNewFileInit.addSelectionListener(new SelectionAdapter() 
@@ -1238,6 +1274,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		
 		getData();
 		activeFileNameField();
+		enableParentFolder();
 		input.setChanged(changed);
 		
 		shell.open();
@@ -1366,6 +1403,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		if (input.getFileName()  != null) wFilename.setText(input.getFileName());
 		wFileIsCommand.setSelection(input.isFileAsCommand());
 		wDoNotOpenNewFileInit.setSelection(input.isDoNotOpenNewFileInit());
+		wCreateParentFolder.setSelection(input.isCreateParentFolder());
 		if (input.getExtension() != null) wExtension.setText(input.getExtension());
 		if (input.getSeparator() !=null) wSeparator.setText(input.getSeparator());
 		if (input.getEnclosure() !=null) wEnclosure.setText(input.getEnclosure());
@@ -1439,6 +1477,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 	{
 		tfoi.setFileName(   wFilename.getText() );
 		tfoi.setFileAsCommand( wFileIsCommand.getSelection() );
+		tfoi.setCreateParentFolder(wCreateParentFolder.getSelection() );
 		tfoi.setDoNotOpenNewFileInit(wDoNotOpenNewFileInit.getSelection() );
 		tfoi.setFileFormat( TextFileOutputMeta.formatMapperLineTerminator[wFormat.getSelectionIndex()] );
 		tfoi.setFileCompression( wCompression.getText() );
@@ -1583,5 +1622,10 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 			input.getOutputFields()[i].setTrimType(ValueMetaInterface.TRIM_TYPE_BOTH);
 				
 		wFields.optWidth(true);
+	}
+	private void enableParentFolder()
+	{
+		wlCreateParentFolder.setEnabled(!wFileIsCommand.getSelection());
+		wCreateParentFolder.setEnabled(!wFileIsCommand.getSelection());
 	}
 }

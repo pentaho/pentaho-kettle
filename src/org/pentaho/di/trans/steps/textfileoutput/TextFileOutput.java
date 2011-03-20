@@ -23,6 +23,7 @@ import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
@@ -590,7 +591,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
                         cmdstr = "cmd.exe /C " + cmdstr;
                     }
                 }
-            	if(log.isDetailed()) logDetailed("Starting: " + cmdstr);
+            	if(isDetailed()) logDetailed("Starting: " + cmdstr);
             	Runtime r = Runtime.getRuntime();
             	data.cmdProc = r.exec(cmdstr, EnvUtil.getEnvironmentVariablesForRuntimeExec());
             	data.writer = data.cmdProc.getOutputStream();
@@ -601,6 +602,10 @@ public class TextFileOutput extends BaseStep implements StepInterface
             }
             else
             {
+            	
+            	// Check for parent folder
+    			createParentFolder(filename);
+    			
             	// Add this to the result file names...
 				resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(filename, getTransMeta()), getTransMeta().getName(), getStepname());
 				resultFile.setComment("This file was created with a text file output step");
@@ -956,5 +961,32 @@ public class TextFileOutput extends BaseStep implements StepInterface
 //    }
 //    return result;
 //  }
-	
+	private void createParentFolder(String filename) throws Exception
+	{
+		// Check for parent folder
+		FileObject parentfolder=null;
+		try
+		{
+			// Get parent folder
+    		parentfolder=KettleVFS.getFileObject(filename).getParent();	    		
+    		if(parentfolder.exists()){
+    			if (isDetailed()) logDetailed(BaseMessages.getString(PKG, "TextFileOutput.Log.ParentFolderExist",parentfolder.getName()));
+    		}else{
+    			if (isDetailed()) logDetailed(BaseMessages.getString(PKG, "TextFileOutput.Log.ParentFolderNotExist",parentfolder.getName()));
+    			if(meta.isCreateParentFolder()){
+    				parentfolder.createFolder();
+    				if (isDetailed()) logDetailed(BaseMessages.getString(PKG, "TextFileOutput.Log.ParentFolderCreated",parentfolder.getName()));
+    			}else{
+        			throw new KettleException(BaseMessages.getString(PKG, "TextFileOutput.Log.ParentFolderNotExistCreateIt",parentfolder.getName(), filename));
+    			}
+    		}
+		} finally {
+         	if ( parentfolder != null ){
+         		try  {
+         			parentfolder.close();
+         		}
+         		catch ( Exception ex ) {};
+         	}
+         }	
+	}
 }

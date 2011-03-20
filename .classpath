@@ -161,5 +161,13 @@
 	<classpathentry kind="lib" path="libext/jersey/jersey-client-1.5.jar"/>
 	<classpathentry kind="lib" path="libext/jersey/jersey-core-1.5.jar"/>
 	<classpathentry kind="lib" path="libext/salesforce/SFpartner21.0.jar"/>
+	<classpathentry kind="lib" path="libext/elasticsearch/elasticsearch-0.15.2.jar"/>
+	<classpathentry kind="lib" path="libext/elasticsearch/lucene-analyzers-3.0.3.jar"/>
+	<classpathentry kind="lib" path="libext/elasticsearch/lucene-core-3.0.3.jar"/>
+	<classpathentry kind="lib" path="libext/elasticsearch/lucene-fast-vector-highlighter-3.0.3.jar"/>
+	<classpathentry kind="lib" path="libext/elasticsearch/lucene-highlighter-3.0.3.jar"/>
+	<classpathentry kind="lib" path="libext/elasticsearch/lucene-memory-3.0.3.jar"/>
+	<classpathentry kind="lib" path="libext/elasticsearch/lucene-queries-3.0.3.jar"/>
+	<classpathentry kind="lib" path="libext/elasticsearch/lucene-snowball-3.0.3.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

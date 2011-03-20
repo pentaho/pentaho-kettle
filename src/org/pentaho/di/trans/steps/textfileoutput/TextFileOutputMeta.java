@@ -66,6 +66,9 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 
     /** Whether to treat this as a command to be executed and piped into */
 	private  boolean fileAsCommand;
+	
+    /** Flag: create parent folder */
+    private boolean createparentfolder;
 
 	/** The file extention in case of a generated filename */
 	private  String  extension;
@@ -169,7 +172,21 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
     {
         this.fileAsCommand = fileAsCommand;
     }
+    /**
+     * @param createparentfolder The createparentfolder to set.
+     */
+    public void setCreateParentFolder(boolean createparentfolder)
+    {
+        this.createparentfolder = createparentfolder;
+    }
 
+    /**
+     * @return Returns the createparentfolder.
+     */
+    public boolean isCreateParentFolder()
+    {
+        return createparentfolder;
+    }
     /**
      * @return Returns the dateInFilename.
      */
@@ -651,7 +668,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
             } else {
             	disableEnclosureFix = "Y".equalsIgnoreCase(sDisableEnclosureFix);
             }
-
+            createparentfolder = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "create_parent_folder"));
 			headerEnabled    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "header"));
 			footerEnabled    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "footer"));
 			fileFormat       = XMLHandler.getTagValue(stepnode, "format");
@@ -747,6 +764,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 
 	public void setDefault()
 	{
+		createparentfolder=false;
 		separator  = ";";
 		enclosure  = "\"";
 		specifyingFormat=false;
@@ -968,7 +986,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
         retval.append("    ").append(XMLHandler.addTagValue("endedLine",  endedLine));
         retval.append("    "+XMLHandler.addTagValue("fileNameInField",  fileNameInField));
         retval.append("    "+XMLHandler.addTagValue("fileNameField",  fileNameField));        
-
+        retval.append("    "+XMLHandler.addTagValue("create_parent_folder", createparentfolder));
 		retval.append("    <file>").append(Const.CR);
 		retval.append("      ").append(XMLHandler.addTagValue("name",       fileName));
 		retval.append("      ").append(XMLHandler.addTagValue("is_command", fileAsCommand));
@@ -1024,6 +1042,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			enclosure           =  rep.getStepAttributeString (id_step, "enclosure");
             enclosureForced     =  rep.getStepAttributeBoolean(id_step, "enclosure_forced");
             disableEnclosureFix =  rep.getStepAttributeBoolean(id_step, 0, "enclosure_fix_disabled", true);
+            createparentfolder =      rep.getStepAttributeBoolean(id_step, "create_parent_folder");
 			headerEnabled       =  rep.getStepAttributeBoolean(id_step, "header");
 			footerEnabled       =  rep.getStepAttributeBoolean(id_step, "footer");   
 			fileFormat          =  rep.getStepAttributeString (id_step, "format");  
@@ -1121,7 +1140,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_partnr",  partNrInFilename);
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_date",    dateInFilename);
 			rep.saveStepAttribute(id_transformation, id_step, "date_time_format",   dateTimeFormat);
-			
+			rep.saveStepAttribute(id_transformation, id_step, "create_parent_folder", createparentfolder);  
 			rep.saveStepAttribute(id_transformation, id_step, "SpecifyFormat",    specifyingFormat);
 			
 			rep.saveStepAttribute(id_transformation, id_step, "add_to_result_filenames",    addToResultFilenames);
