@@ -24,7 +24,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -368,6 +371,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		startDate = null;
         running = false;
 
+        transListeners.clear();
+        
 		//
 		// Set the arguments on the transformation...
 		//
@@ -1072,22 +1077,21 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	//
 	public void waitUntilFinished()
 	{
-		// We do this the simple way: we attach a transformation listener to this transformation...
-		//
-		try
-		{
-			while (!finished.get())
-			{
-				Thread.sleep(0,1); // sleep a very short while
-			}
-		}
-		catch(Exception e)
-		{
-			log.logError(BaseMessages.getString(PKG, "Trans.Log.TransformationError")+e.toString()); //$NON-NLS-1$
-            log.logError(Const.getStackTracker(e)); //$NON-NLS-1$
-		}
+	    if (!finished.get()) {
+    	  try {
+        	  final BlockingQueue<Object> queue = new ArrayBlockingQueue<Object>(10);
+        	  addTransListener(new TransAdapter(){
+        	    public void transFinished(Trans trans) throws KettleException {
+        	      queue.add(new Object());
+        	    }
+        	  });
+        	  while (!finished.get() || queue.poll(1,TimeUnit.DAYS)==null);
+    	  } catch(InterruptedException e) {
+    	    throw new RuntimeException("Waiting for transformation to be finished interrupted!", e);
+    	  }
+	    }
 	}
-
+	
 	public int getErrors()
 	{
 		int nrErrors = errors.get();

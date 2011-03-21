@@ -5474,15 +5474,17 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       return;
 
     TabMapEntry tabMapEntry = delegates.tabs.getTab(tabItem);
-    if (tabMapEntry.getObject() instanceof TransGraph) {
-      TransGraph transGraph = (TransGraph) tabMapEntry.getObject();
-      transGraph.redraw();
+    if (tabMapEntry!=null) {
+      if (tabMapEntry.getObject() instanceof TransGraph) {
+        TransGraph transGraph = (TransGraph) tabMapEntry.getObject();
+        transGraph.redraw();
+      }
+      if (tabMapEntry.getObject() instanceof JobGraph) {
+        JobGraph jobGraph = (JobGraph) tabMapEntry.getObject();
+        jobGraph.redraw();
+      }
     }
-    if (tabMapEntry.getObject() instanceof JobGraph) {
-      JobGraph jobGraph = (JobGraph) tabMapEntry.getObject();
-      jobGraph.redraw();
-    }
-
+  
     setShellText();
   }
 

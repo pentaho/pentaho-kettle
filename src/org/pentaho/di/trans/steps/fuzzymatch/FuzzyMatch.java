@@ -196,7 +196,7 @@ public class FuzzyMatch extends BaseStep implements StepInterface
         return retval;
     }
   
-	private Object[] doDistance(Object[] row) {
+	private Object[] doDistance(Object[] row) throws KettleValueException {
     	// Reserve room
 		Object[] rowData = buildEmptyRow();
 		
@@ -204,8 +204,8 @@ public class FuzzyMatch extends BaseStep implements StepInterface
 		
 		long distance=-1;	
 		
-		Object o=row[data.indexOfMainField];
-		String lookupvalue = (o==null?"":(String) o);	
+		// Object o=row[data.indexOfMainField];
+		String lookupvalue = getInputRowMeta().getString(row, data.indexOfMainField);	
 		
 		while (it.hasNext()){
 			// Get cached row data

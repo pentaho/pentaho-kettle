@@ -14,7 +14,6 @@ package org.pentaho.di.ui.spoon.job;
 
 import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -41,15 +40,17 @@ import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.logging.JobEntryLogTable;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LogTableField;
 import org.pentaho.di.core.logging.LogTableInterface;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
@@ -360,6 +361,7 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
       }
     }
   }
+  
 
   /**
    * Public for XUL.
@@ -369,9 +371,106 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
     int idx = wFields.get(tabIndex).getSelectionIndex();
     if (idx >= 0) {
       String fields[] = wFields.get(tabIndex).getItem(idx);
-      String dateString = fields[13];
-      Date replayDate = XMLHandler.stringToDate(dateString);
-      spoon.executeJob(jobGraph.getManagedObject(), true, false, replayDate, false);
+      int batchId = Const.toInt(fields[0], -1); 
+      // String dateString = fields[13];
+      // Date replayDate = XMLHandler.stringToDate(dateString);
+    
+      List<JobEntryCopyResult> results = null;
+      boolean gotResults = false;
+      
+      // We check in the Job Entry Logging to see the results from all the various job entries that were executed.
+      //
+      JobEntryLogTable jeLogTable = jobMeta.getJobEntryLogTable();
+      if (jeLogTable.isDefined()) {
+        try {
+          
+          DatabaseMeta databaseMeta =  jobMeta.getJobEntryLogTable().getDatabaseMeta();
+          Database db = new Database(Spoon.loggingObject, databaseMeta);
+          try {
+            db.connect();
+            String schemaTable = databaseMeta.getQuotedSchemaTableCombination(jeLogTable.getActualSchemaName(), jeLogTable.getActualTableName());
+            String sql = "SELECT * FROM "+schemaTable+" WHERE "+databaseMeta.quoteField(jeLogTable.getKeyField().getFieldName())+" = "+batchId;
+            
+            List<Object[]> rows = db.getRows(sql, 0);
+            RowMetaInterface rowMeta = db.getReturnRowMeta();
+            results = new ArrayList<JobEntryCopyResult>();
+            
+            int jobEntryNameIndex = rowMeta.indexOfValue( jeLogTable.findField(JobEntryLogTable.ID.JOBENTRYNAME.toString()).getFieldName() );
+            int jobEntryResultIndex = rowMeta.indexOfValue( jeLogTable.findField(JobEntryLogTable.ID.RESULT.toString()).getFieldName() );
+            int jobEntryErrorsIndex = rowMeta.indexOfValue( jeLogTable.findField(JobEntryLogTable.ID.ERRORS.toString()).getFieldName() );
+            LogTableField copyNrField = jeLogTable.findField(JobEntryLogTable.ID.COPY_NR.toString());
+            int jobEntryCopyNrIndex = copyNrField==null ? -1 : ( copyNrField.isEnabled() ? rowMeta.indexOfValue( copyNrField.getFieldName() ) : -1 );
+            
+            for (Object[] row : rows) {
+              String jobEntryName = rowMeta.getString(row, jobEntryNameIndex);
+              boolean jobEntryResult = rowMeta.getBoolean(row, jobEntryResultIndex);
+              long errors = rowMeta.getInteger(row, jobEntryErrorsIndex);
+              long copyNr = jobEntryCopyNrIndex<0 ? 0 : rowMeta.getInteger(row, jobEntryCopyNrIndex);
+              JobEntryCopyResult result = new JobEntryCopyResult(jobEntryName, jobEntryResult, errors, (int)copyNr);
+              results.add(result);
+            }
+            
+          } finally {
+            db.disconnect();
+          }
+          
+          gotResults=true;
+        } catch(Exception e) {
+          new ErrorDialog(spoon.getShell(), BaseMessages.getString(PKG, "JobHistoryDelegate.ReplayHistory.UnexpectedErrorReadingJobEntryHistory.Text"),
+              BaseMessages.getString(PKG, "JobHistoryDelegate.ReplayHistory.UnexpectedErrorReadingJobEntryHistory.Message"),
+              e);
+          
+        }
+      } else {
+        MessageBox box = new MessageBox(spoon.getShell(), SWT.ICON_ERROR | SWT.OK);
+        box.setText(BaseMessages.getString(PKG, "JobHistoryDelegate.ReplayHistory.NoJobEntryTable.Text"));
+        box.setMessage(BaseMessages.getString(PKG, "JobHistoryDelegate.ReplayHistory.NoJobEntryTable.Message"));
+        box.open();
+      }
+        
+        // spoon.executeJob(jobGraph.getManagedObject(), true, false, replayDate, false);
+      if (!gotResults) {
+
+        // For some reason we have no execution results, simply list all the job entries so the user can choose...
+        //
+        results = new ArrayList<JobEntryCopyResult>();
+        for (JobEntryCopy copy : jobMeta.getJobCopies()) {
+          results.add(new JobEntryCopyResult(copy.getName(), null, null, copy.getNr()));
+        }
+      }
+      
+      // OK, now that we have our list of job entries, let's first try to find the first job-entry that had a false result or where errors>0
+      // If the error was handled, we look further for a more appropriate target.
+      //
+      JobEntryCopy selection = null;
+      boolean more = true;
+      JobEntryCopy start = jobMeta.findStart();
+      while (selection==null && more) {
+        int nrNext = jobMeta.findNrNextJobEntries(start);
+        more = nrNext>0;
+        for (int n=0;n<nrNext;n++) {
+          JobEntryCopy copy = jobMeta.findNextJobEntry(start, n);
+          
+          // See if we can find a result for this job entry...
+          //
+          JobEntryCopyResult result = JobEntryCopyResult.findResult(results, copy);
+          if (result!=null) {
+            
+          }
+        }
+      }
+      for (JobEntryCopyResult result : results) {
+        
+      }
+      
+      
+      // Present all job entries to the user.
+      //
+      for (JobEntryCopyResult result : results) {
+        System.out.println("Job entry copy result --  Name="+result.getJobEntryName()+", result="+result.getResult()+", errors="+result.getErrors()+", nr="+result.getCopyNr());
+      }
+      
+      
     }
   }
 

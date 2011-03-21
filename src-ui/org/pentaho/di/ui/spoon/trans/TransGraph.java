@@ -3725,7 +3725,9 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         if (!spoon.getDisplay().isDisposed()){
           spoon.getDisplay().asyncExec(new Runnable(){
             public void run(){
-              TransGraph.this.canvas.redraw();
+              if (!TransGraph.this.canvas.isDisposed()) {
+                TransGraph.this.canvas.redraw();
+              }
             }});
         }
       }

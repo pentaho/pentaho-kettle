@@ -573,7 +573,7 @@ public class GUIResource
 				Object object = registry.loadClass(steps.get(i));
 				image = ImageUtil.getImage(display, object.getClass(), filename);
 			} catch (Exception e) {
-				log.logError("Unable to find required step image file or image format not supported (e.g. interlaced) [" + filename + " : ", e);
+			    log.logError("Unable to find required step image file or image format not supported (e.g. interlaced) [" + filename + " : ", e);
 				image = new Image(display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
 				GC gc = new GC(image);
 				gc.drawRectangle(0, 0, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);

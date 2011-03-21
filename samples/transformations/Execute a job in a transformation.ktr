@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <transformation>
   <info>
-    <name>JsonInput - read a file</name>
+    <name>Execute a job in a transformation</name>
     <description/>
     <extended_description/>
     <trans_version/>
     <trans_type>Normal</trans_type>
-    <trans_status>0</trans_status>
     <directory>&#47;</directory>
     <parameters>
     </parameters>
@@ -62,42 +61,21 @@
     <clusterschemas>
     </clusterschemas>
   <created_user>-</created_user>
-  <created_date>2010&#47;08&#47;11 22:51:28.718</created_date>
+  <created_date>2011&#47;01&#47;26 14:21:05.493</created_date>
   <modified_user>-</modified_user>
-  <modified_date>2010&#47;08&#47;11 22:51:28.718</modified_date>
+  <modified_date>2011&#47;01&#47;26 14:21:05.493</modified_date>
   </info>
   <notepads>
-    <notepad>
-      <note>Read Json file and extract portions data out of structure.</note>
-      <xloc>128</xloc>
-      <yloc>224</yloc>
-      <width>285</width>
-      <heigth>23</heigth>
-      <fontname>Tahoma</fontname>
-      <fontsize>8</fontsize>
-      <fontbold>N</fontbold>
-      <fontitalic>N</fontitalic>
-      <fontcolorred>0</fontcolorred>
-      <fontcolorgreen>0</fontcolorgreen>
-      <fontcolorblue>0</fontcolorblue>
-      <backgroundcolorred>255</backgroundcolorred>
-      <backgroundcolorgreen>255</backgroundcolorgreen>
-      <backgroundcolorblue>0</backgroundcolorblue>
-      <bordercolorred>100</bordercolorred>
-      <bordercolorgreen>100</bordercolorgreen>
-      <bordercolorblue>100</bordercolorblue>
-      <drawshadow>Y</drawshadow>
-    </notepad>
   </notepads>
   <connection>
-    <name>Logging</name>
-    <server/>
-    <type>H2</type>
+    <name>CMS</name>
+    <server>${CMS_HOSTNAME}</server>
+    <type>MYSQL</type>
     <access>Native</access>
-    <database>LOGGING</database>
-    <port>-1</port>
-    <username/>
-    <password>Encrypted </password>
+    <database>${CMS_DATABASE}</database>
+    <port>${CMS_PORT}</port>
+    <username>${CMS_USERNAME}</username>
+    <password>${CMS_PASSWORD}</password>
     <servername/>
     <data_tablespace/>
     <index_tablespace/>
@@ -105,9 +83,53 @@
       <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
       <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
       <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
-      <attribute><code>PORT_NUMBER</code><attribute>-1</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>${CMS_PORT}</attribute></attribute>
       <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
-      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>N</attribute></attribute>
+      <attribute><code>STREAM_RESULTS</code><attribute>Y</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>DWH</name>
+    <server>${DWH_HOSTNAME}</server>
+    <type>MYSQL</type>
+    <access>Native</access>
+    <database>${DWH_DATABASE}</database>
+    <port>${DWH_PORT}</port>
+    <username>${DWH_USERNAME}</username>
+    <password>${DWH_PASSWORD}</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>${DWH_PORT}</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>STREAM_RESULTS</code><attribute>Y</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>LOGGING</name>
+    <server>${LOGGING_HOSTNAME}</server>
+    <type>MYSQL</type>
+    <access>Native</access>
+    <database>${LOGGING_DATABASE}</database>
+    <port>${LOGGING_PORT}</port>
+    <username>${LOGGING_USERNAME}</username>
+    <password>${LOGGING_PASSWORD}</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>${LOGGING_PORT}</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>STREAM_RESULTS</code><attribute>Y</attribute></attribute>
       <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
     </attributes>
   </connection>
@@ -126,7 +148,6 @@
     <attributes>
       <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
       <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
-      <attribute><code>EXTRA_OPTION_MYSQL.useServerPrepStmts</code><attribute>false</attribute></attribute>
       <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
       <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
       <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
@@ -138,13 +159,13 @@
     </attributes>
   </connection>
   <connection>
-    <name>VectorWise</name>
-    <server>localhost</server>
-    <type>INGRES</type>
+    <name>Oracle</name>
+    <server>192.168.1.13</server>
+    <type>ORACLE</type>
     <access>Native</access>
-    <database>test</database>
-    <port>VW7</port>
-    <username>ingres</username>
+    <database>intrepid</database>
+    <port>1521</port>
+    <username>matt</username>
     <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
     <servername/>
     <data_tablespace/>
@@ -153,17 +174,39 @@
       <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
       <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
       <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
-      <attribute><code>PORT_NUMBER</code><attribute>VW7</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>1521</attribute></attribute>
       <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
       <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>N</attribute></attribute>
       <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
     </attributes>
   </connection>
+  <connection>
+    <name>STG</name>
+    <server>${STG_HOSTNAME}</server>
+    <type>MYSQL</type>
+    <access>Native</access>
+    <database>${STG_DATABASE}</database>
+    <port>${STG_PORT}</port>
+    <username>${STG_USERNAME}</username>
+    <password>${STG_PASSWORD}</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>${STG_PORT}</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>STREAM_RESULTS</code><attribute>Y</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
   <order>
-  <hop> <from>Json input</from><to>Factice</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>Data Grid</from><to>User Defined Java Class</to><enabled>Y</enabled> </hop>  </order>
   <step>
-    <name>Factice</name>
-    <type>Dummy</type>
+    <name>Data Grid</name>
+    <type>DataGrid</type>
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
@@ -171,17 +214,32 @@
            <method>none</method>
            <schema_name/>
            </partitioning>
+    <fields>
+      <field>
+        <name>filename</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+      </field>
+    </fields>
+    <data>
+      <line> <item>&#47;home&#47;matt&#47;svn&#47;kettle&#47;trunk&#47;samples&#47;jobs&#47;evaluate-result-rows&#47;Evaluate result rows.kjb</item> </line>
+    </data>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>352</xloc>
-      <yloc>128</yloc>
+      <xloc>111</xloc>
+      <yloc>76</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
 
   <step>
-    <name>Json input</name>
-    <type>JsonInput</type>
+    <name>User Defined Java Class</name>
+    <type>UserDefinedJavaClass</type>
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
@@ -189,79 +247,79 @@
            <method>none</method>
            <schema_name/>
            </partitioning>
-    <include>N</include>
-    <include_field/>
-    <rownum>N</rownum>
-    <addresultfile>N</addresultfile>
-    <readurl>Y</readurl>
-    <IsIgnoreEmptyFile>N</IsIgnoreEmptyFile>
-    <doNotFailIfNoFile>N</doNotFailIfNoFile>
-    <ignoreMissingPath>N</ignoreMissingPath>
-    <rownum_field/>
-    <file>
-      <name>${Internal.Transformation.Filename.Directory}\files\jsonfile.js</name>
-      <filemask/>
-      <exclude_filemask/>
-      <file_required>N</file_required>
-      <include_subfolders>N</include_subfolders>
-    </file>
+
+    <definitions>
+        <definition>
+        <class_type>TRANSFORM_CLASS</class_type>
+
+        <class_name>Processor</class_name>
+
+        <class_source><![CDATA[import org.pentaho.di.job.*;
+import org.pentaho.di.core.*;
+
+public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
+{
+	Object[] r = getRow();
+	if (r == null) {
+		setOutputDone();
+		return false;
+	}
+
+    r = createOutputRow(r, data.outputRowMeta.size());
+	
+	// What is the job filename?
+ 	//
+    String jobFile = get(Fields.In, getParameter("FILENAME_FIELD")).getString(r);
+
+    // Execute the job
+    //
+	JobMeta jobMeta = new JobMeta(jobFile, null);
+	Job job = new Job(null, jobMeta, getTrans());
+    job.start();
+    job.waitUntilFinished();
+    Result result = job.getResult();    
+    
+    // Set a value in a new output field
+    get(Fields.Out, "result").setValue(r, Boolean.valueOf(result.getResult()));
+    get(Fields.Out, "errors").setValue(r, Long.valueOf(result.getNrErrors()));
+
+	// Send the row on to the next step.
+    putRow(data.outputRowMeta, r);
+
+	return true;
+}
+]]></class_source>
+        </definition>
+    </definitions>
     <fields>
-      <field>
-        <name>title</name>
-        <path>$..title</path>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <length>-1</length>
-        <precision>-1</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>category</name>
-        <path>$..category</path>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <length>-1</length>
-        <precision>-1</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-      <field>
-        <name>author</name>
-        <path>$..author</path>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <length>-1</length>
-        <precision>-1</precision>
-        <trim_type>none</trim_type>
-        <repeat>N</repeat>
-      </field>
-    </fields>
-    <limit>0</limit>
-    <IsInFields>N</IsInFields>
-    <IsAFile>N</IsAFile>
-    <valueField>filename</valueField>
-    <shortFileFieldName/>
-    <pathFieldName/>
-    <hiddenFieldName/>
-    <lastModificationTimeFieldName/>
-    <uriNameFieldName/>
-    <rootUriNameFieldName/>
-    <extensionFieldName/>
-    <sizeFieldName/>
-     <cluster_schema/>
+        <field>
+        <field_name>result</field_name>
+
+        <field_type>Boolean</field_type>
+
+        <field_length>-1</field_length>
+
+        <field_precision>-1</field_precision>
+
+        </field>
+        <field>
+        <field_name>errors</field_name>
+
+        <field_type>Integer</field_type>
+
+        <field_length>-1</field_length>
+
+        <field_precision>-1</field_precision>
+
+        </field>
+    </fields><clear_result_fields>N</clear_result_fields>
+<info_steps></info_steps><target_steps></target_steps><usage_parameters><usage_parameter><parameter_tag>FILENAME_FIELD</parameter_tag>
+<parameter_value>filename</parameter_value>
+<parameter_description>The name of the input field containing the job filename</parameter_description>
+</usage_parameter></usage_parameters>     <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>128</xloc>
-      <yloc>128</yloc>
+      <xloc>280</xloc>
+      <yloc>76</yloc>
       <draw>Y</draw>
       </GUI>
     </step>

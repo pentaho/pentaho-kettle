@@ -37,12 +37,14 @@ import org.w3c.dom.Node;
    ,"BaseStep.Category.DataWarehouse"
    ,"BaseStep.Category.Validation"
    ,"BaseStep.Category.Statistics"
+   ,"BaseStep.Category.Palo"
    ,"BaseStep.Category.Job"
    ,"BaseStep.Category.Mapping"
    ,"BaseStep.Category.Inline"
    ,"BaseStep.Category.Experimental"
    ,"BaseStep.Category.Deprecated"
-   ,"BaseStep.Category.Bulk"},
+   ,"BaseStep.Category.Bulk"
+   },
    i18nPackageClass = StepInterface.class)
 @PluginMainClassType(StepMetaInterface.class)
 @PluginAnnotationType(Step.class)

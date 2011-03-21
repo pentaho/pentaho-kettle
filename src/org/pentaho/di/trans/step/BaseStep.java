@@ -3015,5 +3015,12 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
   @Override
   public void batchComplete() throws KettleException {
   }
+ 
+  public List<RemoteStep> getRemoteInputSteps() {
+    return remoteInputSteps;
+  }
   
+  public List<RemoteStep> getRemoteOutputSteps() {
+    return remoteOutputSteps;
+  }
 }

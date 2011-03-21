@@ -809,6 +809,9 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
       referenceObjectId = mappingMeta.getTransObjectId();
       wByReference.setText("");
       try {
+        if (repository==null) {
+          throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.NotConnectedToRepository.Message"));
+        }
         RepositoryObject transInf = repository.getObjectInformation(mappingMeta.getTransObjectId(), RepositoryObjectType.TRANSFORMATION);
         if (transInf != null) {
           getByReferenceData(transInf);

@@ -26,6 +26,7 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransMeta.TransformationType;
 import org.pentaho.di.trans.step.BaseStep;
+import org.pentaho.di.trans.step.RemoteStep;
 import org.pentaho.di.trans.step.RowListener;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
@@ -66,27 +67,51 @@ public class Mapping extends BaseStep implements StepInterface
 			data=(MappingData)sdi;
 			
 			// Before we start, let's see if there are loose ends to tie up...
-			//
+			// 
+			MappingInput[] mappingInputs = data.mappingTrans.findMappingInput();
 			if (!getInputRowSets().isEmpty()) {
-				MappingInput[] mappingInputs = data.mappingTrans.findMappingInput();
 				for (RowSet rowSet : new ArrayList<RowSet>(getInputRowSets())) {
 					// Pass this rowset down to a mapping input step in the sub-transformation...
 					//
 					if (mappingInputs.length==1) {
 						// Simple case: only one input mapping.  Move the RowSet over
 						//
-						getInputRowSets().remove(rowSet);
 						mappingInputs[0].getInputRowSets().add(rowSet);
 					} else {
 						// Difficult to see what's going on here.
 						// TODO: figure out where this RowSet needs to go and where it comes from.
 						//
-						throw new KettleException("Unsupported situation detected.  To solve it, insert a dummy step.");
+						throw new KettleException("Unsupported situation detected where more than one Mapping Input step needs to be handled.  To solve it, insert a dummy step before the mapping step.");
 					}
 				}
+        getInputRowSets().clear();
 			}
 			
-			// repopulate with vars and params if necessary
+			// Do the same thing for remote input steps...
+			//
+			if (!getRemoteInputSteps().isEmpty()) {
+			  // The remote server is likely a master or a slave server sending data over remotely to this mapping.
+			  // However, the data needs to end up at a Mapping Input step of the sub-transformation, not in this step.
+			  // We can move over the remote steps to the Mapping Input step as long as the threads haven't started yet.
+			  //
+			  for (RemoteStep remoteStep : getRemoteInputSteps()) {
+	         // Pass this rowset down to a mapping input step in the sub-transformation...
+          //
+          if (mappingInputs.length==1) {
+            // Simple case: only one input mapping.  Move the remote step over
+            //
+            mappingInputs[0].getRemoteInputSteps().add(remoteStep);
+          } else {
+            // TODO: figure out where this remote step needs to go and where it comes from.
+            //
+            throw new KettleException("Unsupported situation detected where a remote input step is expecting data to end up in a particular Mapping Input step of a sub-transformation.  To solve it, insert a dummy step before the mapping.");
+          }
+			  }
+			  getRemoteInputSteps().clear();
+			}
+			
+      // Re-populate with variables and parameters if necessary
+      //
 			setMappingParameters();
 			
 			// Start the mapping/sub-transformation threads
@@ -102,14 +127,14 @@ public class Mapping extends BaseStep implements StepInterface
 		        // Set some statistics from the mapping...
 		        // This will show up in Spoon, etc.
 		        //
-		    	Result result = data.mappingTrans.getResult();
-		    	setErrors(result.getNrErrors());
-		    	setLinesRead( result.getNrLinesRead() );
-		    	setLinesWritten( result.getNrLinesWritten() );
-		    	setLinesInput( result.getNrLinesInput() );
-		    	setLinesOutput( result.getNrLinesOutput() );
-		    	setLinesUpdated( result.getNrLinesUpdated() );
-		    	setLinesRejected( result.getNrLinesRejected() );
+  		    	Result result = data.mappingTrans.getResult();
+  		    	setErrors(result.getNrErrors());
+  		    	setLinesRead( result.getNrLinesRead() );
+  		    	setLinesWritten( result.getNrLinesWritten() );
+  		    	setLinesInput( result.getNrLinesInput() );
+  		    	setLinesOutput( result.getNrLinesOutput() );
+  		    	setLinesUpdated( result.getNrLinesUpdated() );
+  		    	setLinesRejected( result.getNrLinesRejected() );
 	        }
 		    return false;
 		    	

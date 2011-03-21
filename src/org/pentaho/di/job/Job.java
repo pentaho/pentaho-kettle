@@ -283,8 +283,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 		}
 		catch(Throwable je)
 		{
-			log.logError(BaseMessages.getString(PKG, "Job.Log.ErrorExecJob", je.getMessage()));
-            log.logError(Const.getStackTracker(je));
+			log.logError(BaseMessages.getString(PKG, "Job.Log.ErrorExecJob", je));
+            // log.logError(Const.getStackTracker(je));
             //
             // we don't have result object because execute() threw a curve-ball.
             // So we create a new error object.

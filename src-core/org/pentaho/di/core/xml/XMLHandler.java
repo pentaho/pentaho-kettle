@@ -280,7 +280,7 @@ public class XMLHandler
 	 * @param tag The tag to look for
 	 * @param subtag The subtag to look for
 	 * @param subtagvalue The value the subtag should have
-	 * @param nr The nr of occurance of the value
+	 * @param copyNr The nr of occurance of the value
 	 * @return The node found or null if we couldn't find anything.
 	 */
 	public static final Node getNodeWithAttributeValue(Node n, String tag, String attributeName,String attributeValue)

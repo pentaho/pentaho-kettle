@@ -138,7 +138,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface
 
             // Open a new fifo output stream, buffered.
             //
-            executeLoadCommand();
+            openFifoFile();
 
             logDetailed("Fifo stream opened");
             
@@ -192,7 +192,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface
       return loadCommand;
 	}
 
-	private void executeLoadCommand() throws Exception {
+	private void openFifoFile() throws Exception {
 		
         // Ready to start writing rows to the FIFO file now...
         //
@@ -205,7 +205,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface
       // Wait for either the sql statement to throw an error or the
       // fifo writer to throw an error
       //
-      while (true){
+      while (!isStopped()){
           data.fifoOpener.join(1000);
           if (data.fifoOpener.getState() == Thread.State.TERMINATED)
               break;

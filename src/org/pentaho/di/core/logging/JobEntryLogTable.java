@@ -21,7 +21,9 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.gui.JobTracker;
+import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -62,7 +64,8 @@ public class JobEntryLogTable extends BaseLogTable implements Cloneable, LogTabl
 		RESULT("RESULT"),
 		NR_RESULT_ROWS("NR_RESULT_ROWS"),
 		NR_RESULT_FILES("NR_RESULT_FILES"),
-		LOG_FIELD("LOG_FIELD");
+		LOG_FIELD("LOG_FIELD"),
+    COPY_NR("COPY_NR"),
 		;
 		
 		private String id;
@@ -136,8 +139,9 @@ public class JobEntryLogTable extends BaseLogTable implements Cloneable, LogTabl
 		table.fields.add( new LogTableField(ID.NR_RESULT_ROWS.id, true, false, "NR_RESULT_ROWS", BaseMessages.getString(PKG, "JobEntryLogTable.FieldName.NrResultRows"), BaseMessages.getString(PKG, "JobEntryLogTable.FieldDescription.NrResultRows"), ValueMetaInterface.TYPE_INTEGER, 18) );
 		table.fields.add( new LogTableField(ID.NR_RESULT_FILES.id, true, false, "NR_RESULT_FILES", BaseMessages.getString(PKG, "JobEntryLogTable.FieldName.NrResultFiles"), BaseMessages.getString(PKG, "JobEntryLogTable.FieldDescription.NrResultFiles"), ValueMetaInterface.TYPE_INTEGER, 18) );
 		table.fields.add( new LogTableField(ID.LOG_FIELD.id, false, false, "LOG_FIELD", BaseMessages.getString(PKG, "JobEntryLogTable.FieldName.LogField"), BaseMessages.getString(PKG, "JobEntryLogTable.FieldDescription.LogField"), ValueMetaInterface.TYPE_STRING, DatabaseMeta.CLOB_LENGTH) );
+    table.fields.add( new LogTableField(ID.COPY_NR.id, false, false, "COPY_NR", BaseMessages.getString(PKG, "JobEntryLogTable.FieldName.CopyNr"), BaseMessages.getString(PKG, "JobEntryLogTable.FieldDescription.CopyNr"), ValueMetaInterface.TYPE_INTEGER, 8) );
 
-	    table.findField(ID.JOBNAME.id).setNameField(true);
+	  table.findField(ID.JOBNAME.id).setNameField(true);
 		table.findField(ID.LOG_DATE.id).setLogDateField(true);
 		table.findField(ID.ID_BATCH.id).setKey(true);
 		table.findField(ID.CHANNEL_ID.id).setVisible(false);
@@ -201,6 +205,7 @@ public class JobEntryLogTable extends BaseLogTable implements Cloneable, LogTabl
 							   value = result.getLogText();
 						    } 
 					        break;
+						case COPY_NR : value = new Long(jobEntryCopy.getNr()); break;
 						}
 					}
 
@@ -238,6 +243,18 @@ public class JobEntryLogTable extends BaseLogTable implements Cloneable, LogTabl
 	
 	public List<RowMetaInterface> getRecommendedIndexes() {
 	    List<RowMetaInterface> indexes = new ArrayList<RowMetaInterface>();
+	    LogTableField keyField = getKeyField();
+	    
+      if (keyField.isEnabled()) {
+        RowMetaInterface batchIndex = new RowMeta();
+        
+        ValueMetaInterface keyMeta = new ValueMeta(keyField.getFieldName(), keyField.getDataType());
+        keyMeta.setLength(keyField.getLength());
+        batchIndex.addValueMeta(keyMeta);
+        
+        indexes.add(batchIndex);
+      }
+      
 	    return indexes;
 	}
 }
