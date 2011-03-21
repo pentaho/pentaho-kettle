@@ -2997,4 +2997,11 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     this.containerObjectId = containerObjectId;
   }
 
+  public List<RemoteStep> getRemoteInputSteps() {
+    return remoteInputSteps;
+  }
+  
+  public List<RemoteStep> getRemoteOutputSteps() {
+    return remoteOutputSteps;
+  }
 }
