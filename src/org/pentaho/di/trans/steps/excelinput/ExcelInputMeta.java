@@ -496,7 +496,9 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 		for (int i=0;i<nrsheets;i++)
 		{
 			retval.sheetName[i] = sheetName[i];
-		}
+      retval.startColumn[i] = startColumn[i];
+      retval.startRow[i] = startRow[i];
+    }
 
 		return retval;
 	}
