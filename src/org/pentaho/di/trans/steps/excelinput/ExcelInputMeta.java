@@ -632,7 +632,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			retval.fileName[i]     = fileName[i];
 			retval.fileMask[i]     = fileMask[i];
-            retval.excludeFileMask[i] = excludeFileMask[i];
+      retval.excludeFileMask[i] = excludeFileMask[i];
 			retval.fileRequired[i] = fileRequired[i];
 			retval.includeSubFolders[i] = includeSubFolders[i];
 		}
@@ -640,6 +640,8 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 		for (int i=0;i<nrsheets;i++)
 		{
 			retval.sheetName[i] = sheetName[i];
+			retval.startColumn[i] = startColumn[i];
+			retval.startRow[i] = startRow[i];
 		}
 
 		return retval;
