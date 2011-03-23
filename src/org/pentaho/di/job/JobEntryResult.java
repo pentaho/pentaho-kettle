@@ -210,6 +210,13 @@ public class JobEntryResult implements Cloneable, Comparator<JobEntryResult>, Co
 	}
 
 	public int compare(JobEntryResult one, JobEntryResult two) {
+	  if (one==null && two!=null) return -1;
+    if (one!=null && two==null) return  1;
+	  if (one==null && two==null) return  0;
+	  if (one.getJobEntryName()==null && two.getJobEntryName()!=null) return -1;
+	  if (one.getJobEntryName()!=null && two.getJobEntryName()==null) return  1;
+	  if (one.getJobEntryName()==null && two.getJobEntryName()==null) return  0;
+    
 		int cmp = one.getJobEntryName().compareTo(two.getJobEntryName());
 		if (cmp!=0) return cmp;
 		return Integer.valueOf(one.getJobEntryNr()).compareTo(Integer.valueOf(two.getJobEntryNr()));

@@ -12,6 +12,7 @@
  */
 package org.pentaho.di.ui.spoon;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -572,7 +573,7 @@ public class JobPainter extends BasePainter {
 	 * @param jobEntryResults Sets AND sorts the job entry results by name and number
 	 */
 	public void setJobEntryResults(List<JobEntryResult> jobEntryResults) {
-		this.jobEntryResults = jobEntryResults;
+		this.jobEntryResults = new ArrayList<JobEntryResult>(jobEntryResults);
 		Collections.sort(this.jobEntryResults);
 	}
 
