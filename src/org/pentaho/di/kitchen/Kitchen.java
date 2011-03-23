@@ -36,6 +36,7 @@ import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
@@ -298,8 +299,7 @@ public class Kitchen
 			exitJVM(7);
 		}
 		
-		if (!Const.isEmpty(optionExport.toString())) {
-			
+		if (!Const.isEmpty(optionExport.toString())) {  
 
 			try {
 				// Export the resources linked to the currently loaded file...
@@ -353,30 +353,30 @@ public class Kitchen
 			//
 			job.activateParameters();
 			
-    		// List the parameters defined in this job 
-    		// Then simply exit...
-    		//
-    		if ("Y".equalsIgnoreCase(optionListParam.toString())) {
-    			for (String parameterName : job.listParameters()) {
-    				String value = job.getParameterValue(parameterName);
-    				String deflt = job.getParameterDefault(parameterName);
-    				String descr = job.getParameterDescription(parameterName);
-    				
-    				if ( deflt != null )  {
-    					System.out.println("Parameter: "+parameterName+"="+Const.NVL(value, "")+", default="+deflt+" : "+Const.NVL(descr, ""));
-    				} else {
-    					System.out.println("Parameter: "+parameterName+"="+Const.NVL(value, "")+" : "+Const.NVL(descr, ""));
-    				}
-    			}
-    			
-    			// stop right here...
-    			//
-    			exitJVM(7); // same as the other list options
-    		}
- 
-    		job.start();
-    		job.waitUntilFinished();
-			result = job.getResult(); // Execute the selected job.
+      // List the parameters defined in this job
+      // Then simply exit...
+      //
+      if ("Y".equalsIgnoreCase(optionListParam.toString())) {
+        for (String parameterName : job.listParameters()) {
+          String value = job.getParameterValue(parameterName);
+          String deflt = job.getParameterDefault(parameterName);
+          String descr = job.getParameterDescription(parameterName);
+
+          if (deflt != null) {
+            System.out.println("Parameter: " + parameterName + "=" + Const.NVL(value, "") + ", default=" + deflt + " : " + Const.NVL(descr, ""));
+          } else {
+            System.out.println("Parameter: " + parameterName + "=" + Const.NVL(value, "") + " : " + Const.NVL(descr, ""));
+          }
+        }
+
+        // stop right here...
+        //
+        exitJVM(7); // same as the other list options
+      }
+
+      job.start();
+      job.waitUntilFinished();
+      result = job.getResult(); // Execute the selected job.
 		}
 		finally
         {
@@ -443,7 +443,13 @@ public class Kitchen
   public static void configureLogging(final CommandLineOption maxLogLinesOption, final CommandLineOption maxLogTimeoutOption)
       throws KettleException {
     int maxLogLines = parseIntArgument(maxLogLinesOption, 0);
+    if (Const.isEmpty(maxLogLinesOption.getArgument())) {
+      maxLogLines = Const.toInt(EnvUtil.getSystemProperty(Const.KETTLE_MAX_LOG_SIZE_IN_LINES), 5000);
+    }
     int maxLogTimeout = parseIntArgument(maxLogTimeoutOption, 0);
+    if (Const.isEmpty(maxLogTimeoutOption.getArgument())) {
+      maxLogTimeout = Const.toInt(EnvUtil.getSystemProperty(Const.KETTLE_MAX_LOG_TIMEOUT_IN_MINUTES), 1440);
+    }
     CentralLogStore.init(maxLogLines, maxLogTimeout);
   }
 

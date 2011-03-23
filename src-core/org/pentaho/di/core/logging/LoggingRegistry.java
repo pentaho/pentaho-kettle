@@ -13,12 +13,17 @@
 package org.pentaho.di.core.logging;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.util.EnvUtil;
 
 /**
  * This singleton class contains the logging registry.
@@ -36,9 +41,12 @@ public class LoggingRegistry {
 	
 	private Date lastModificationTime;
 	
+	private int maxSize;
+	
 	private LoggingRegistry() {
 		map = new ConcurrentHashMap<String, LoggingObjectInterface>();	
 		lastModificationTime = new Date();
+		maxSize = Const.toInt(EnvUtil.getSystemProperty(Const.KETTLE_MAX_LOGGING_REGISTRY_SIZE), 1000);
 	}
 	
 	public static LoggingRegistry getInstance() {
@@ -79,10 +87,60 @@ public class LoggingRegistry {
 
 		map.put(logChannelId, loggingSource);
 		lastModificationTime = new Date();
+		loggingSource.setRegistrationDate(lastModificationTime);
+		
+		// Validate that we're not leaking references.  If the size of the map becomes too large we opt to remove the oldest...
+		//
+		if (maxSize>0 && map.size()>maxSize) {
+		  
+		  // First we'll try to find a similar entry.
+		  // For example we might be adding the same entries all the time to the registry when a job is in a loop.
+		  //
+		  LoggingObjectInterface similar = findFirstSimilarLoggingObject(loggingSource);
+		  if (similar!=null) {
+		    map.remove(similar.getLogChannelId());
+		  }
+		  
+		  // If this didn't work we retry when it gets out of hand...
+		  //
+		  if (map.size()>maxSize+250) {
+  		  // Remove 250 and trim it back to maxSize
+  		  //
+  		  List<LoggingObjectInterface> all = new ArrayList<LoggingObjectInterface>(map.values());
+  		  Collections.sort(all, new Comparator<LoggingObjectInterface>() {
+  		    @Override
+  		    public int compare(LoggingObjectInterface o1, LoggingObjectInterface o2) {
+  		      if (o1==null && o2!=null) return -1;
+            if (o1!=null && o2==null) return 1;
+            if (o1==null && o2==null) return 0;
+  		      return o1.getRegistrationDate().compareTo(o2.getRegistrationDate());
+  		    }
+        });
+  		  
+  		  // Remove 250 entries...
+  		  //
+  		  for (int i=0;i<250;i++) {
+  		    LoggingObjectInterface toRemove = all.get(i);
+  		    map.remove(toRemove.getLogChannelId());
+  		  }
+		  }
+		}
+		
 		return logChannelId;
 	}
 	
-	/**
+	private LoggingObjectInterface findFirstSimilarLoggingObject(LoggingObject src) {
+
+	  for (LoggingObjectInterface obj : map.values()) {
+	    boolean sameName =   obj.getObjectName()!=null && src.getObjectName()!=null && obj.getObjectName().equals( src.getObjectName() );
+	    if (sameName) {
+	      return obj;
+	    }
+	  }
+	  return null;
+  }
+
+  /**
 	 * See if the registry already contains the specified logging object.  If so, return the one in the registry.
 	 * You can use this to verify existence prior to assigning a new channel ID.
 	 * @param loggingObject The logging object to verify

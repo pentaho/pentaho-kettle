@@ -12,6 +12,7 @@
 package org.pentaho.di.job.entry;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -567,5 +568,12 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
    */
   public void setContainerObjectId(String containerObjectId) {
     this.containerObjectId = containerObjectId;
+  }
+  
+  /**
+   * Stub
+   */
+  public Date getRegistrationDate() {
+    return null;
   }
 }

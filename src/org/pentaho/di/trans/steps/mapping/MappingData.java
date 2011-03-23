@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.trans.SingleThreadedTransExecutor;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepData;
@@ -47,6 +48,7 @@ public class MappingData extends BaseStepData implements StepDataInterface
     protected int linesOutputStepNr = -1;
     protected int linesUpdatedStepNr = -1;
     protected int linesRejectedStepNr = -1;
+    public SingleThreadedTransExecutor singleThreadedTransExcecutor;
     
 	/**
 	 * 

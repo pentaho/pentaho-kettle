@@ -4147,7 +4147,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 			if (databaseMeta.useSchemaNameForTableList()) schemaname = environmentSubstitute(databaseMeta.getUsername()).toUpperCase();
 		}
 		Map<String, Collection<String>> synonymMap = new HashMap<String, Collection<String>>();
-		ArrayList<String> names = new ArrayList<String>();
+		// ArrayList<String> names = new ArrayList<String>();
 		ResultSet alltables=null;
 		try
 		{
@@ -4980,5 +4980,12 @@ public class Database implements VariableSpace, LoggingObjectInterface
    */
   public void setContainerObjectId(String containerObjectId) {
     this.containerObjectId = containerObjectId;
+  }
+  
+  /**
+   * Stub
+   */
+  public Date getRegistrationDate() {
+    return null;
   }
 }

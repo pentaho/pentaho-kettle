@@ -12,6 +12,7 @@
 package org.pentaho.di.job.entries.writetolog;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.addOkRemark;
 
+import java.util.Date;
 import java.util.List;
 
 import org.pentaho.di.cluster.SlaveServer;
@@ -201,6 +202,13 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
     public String getContainerObjectId() {
       return containerObjectId;
     }
+    
+    /**
+     * Stub
+     */
+    public Date getRegistrationDate() {
+      return null;
+    }
 	}
 
 	/**
@@ -317,4 +325,5 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 	    addOkRemark(this, "LogSubject", remarks); //$NON-NLS-1$
 	  }
 	
+	 
 }

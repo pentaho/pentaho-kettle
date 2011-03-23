@@ -12,6 +12,8 @@
  */
 package org.pentaho.di.core.logging;
 
+import java.util.Date;
+
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.RepositoryDirectory;
@@ -23,6 +25,7 @@ public class SimpleLoggingObject implements LoggingObjectInterface {
 	private LoggingObjectInterface	parent;
 	private LogLevel logLevel = DefaultLogLevel.getLogLevel();
 	private String containerObjectId;
+	private Date registrationDate;
 
 	/**
 	 * @param objectName
@@ -122,5 +125,19 @@ public class SimpleLoggingObject implements LoggingObjectInterface {
   
   public void setContainerObjectId(String containerObjectId) {
     this.containerObjectId = containerObjectId;
+  }
+
+  /**
+   * @return the registrationDate
+   */
+  public Date getRegistrationDate() {
+    return registrationDate;
+  }
+
+  /**
+   * @param registrationDate the registrationDate to set
+   */
+  public void setRegistrationDate(Date registrationDate) {
+    this.registrationDate = registrationDate;
   }
 }

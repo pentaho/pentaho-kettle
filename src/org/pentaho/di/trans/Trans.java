@@ -3560,6 +3560,12 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    */
   public void setContainerObjectId(String containerObjectId) {
     this.containerObjectId = containerObjectId;
-
+  }
+  
+  /**
+   * Stub
+   */
+  public Date getRegistrationDate() {
+    return null;
   }
 }

@@ -52,6 +52,7 @@ public class CentralLogStore {
 			public void run() {
 				if (!busy.get()) {
 					busy.set(true);
+          System.out.println("Rows in central log appender: "+appender.size()+"  ("+appender+"), Logging registry map size: "+LoggingRegistry.getInstance().getMap().size());
 					if (maxLogTimeoutMinutes>0) {
 						long minTimeBoundary = new Date().getTime() - maxLogTimeoutMinutes*60*1000;
 						synchronized(appender) {
@@ -93,8 +94,8 @@ public class CentralLogStore {
 	}
 	
 	public static void init() {
-		int maxSize = Const.toInt(EnvUtil.getSystemProperty(Const.KETTLE_MAX_LOG_SIZE_IN_LINES), 0); 
-		int maxLogTimeoutMinutes = Const.toInt(EnvUtil.getSystemProperty(Const.KETTLE_MAX_LOG_TIMEOUT_IN_MINUTES), 0); 
+		int maxSize = Const.toInt(EnvUtil.getSystemProperty(Const.KETTLE_MAX_LOG_SIZE_IN_LINES), 5000); 
+		int maxLogTimeoutMinutes = Const.toInt(EnvUtil.getSystemProperty(Const.KETTLE_MAX_LOG_TIMEOUT_IN_MINUTES), 1440); 
 		init0(maxSize, maxLogTimeoutMinutes);
 	}
 

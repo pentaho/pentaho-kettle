@@ -82,6 +82,8 @@ public class SingleThreadedTransExecutor {
     // Sorting larger transformations with hundreds of steps might be too slow though.
     // We should consider caching TransMeta.findPrevious() results in that case.
     //
+    trans.getTransMeta().clearCaches();
+    
     for (int x=0;x<steps.size();x++) {
       for (int y=0;y<steps.size()-1;y++) {
         StepMetaDataCombi one = steps.get(y);

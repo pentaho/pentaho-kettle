@@ -247,112 +247,100 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
 		}
 	}
 	
-	private void refreshView()
-	{
-		boolean insert = true;
+  private void refreshView() {
+    boolean insert = true;
 
-  		if (transGridView==null || transGridView.isDisposed()) return;
-		if (refresh_busy) return;
+    if (transGridView == null || transGridView.isDisposed())
+      return;
+    if (refresh_busy)
+      return;
 
-		int topIdx = transGridView.getTable().getTopIndex();
-		
-		refresh_busy = true;
+    int topIdx = transGridView.getTable().getTopIndex();
 
-		Table table = transGridView.table;
+    refresh_busy = true;
 
-		long time = new Date().getTime();
-		long msSinceLastUpdate = time - lastUpdateView;
-		if ( transGraph.trans != null  &&  msSinceLastUpdate > UPDATE_TIME_VIEW )
-		{
-            lastUpdateView = time;
-			int nrSteps = transGraph.trans.nrSteps();
-			if (hideInactiveSteps) nrSteps = transGraph.trans.nrActiveSteps();
-			
-			int sortColumn = transGridView.getSortField();
-			boolean sortDescending = transGridView.isSortingDescending();
-			int[] selectedItems=transGridView.getSelectionIndices();
-			
-			if (table.getItemCount() != nrSteps)
-            {
-				table.removeAll();
+    Table table = transGridView.table;
+
+    long time = new Date().getTime();
+    long msSinceLastUpdate = time - lastUpdateView;
+    if (transGraph.trans != null && msSinceLastUpdate > UPDATE_TIME_VIEW) {
+      lastUpdateView = time;
+      int nrSteps = transGraph.trans.nrSteps();
+      if (hideInactiveSteps)
+        nrSteps = transGraph.trans.nrActiveSteps();
+
+      int sortColumn = transGridView.getSortField();
+      boolean sortDescending = transGridView.isSortingDescending();
+      int[] selectedItems = transGridView.getSelectionIndices();
+
+      if (table.getItemCount() != nrSteps) {
+        table.removeAll();
+      } else {
+        insert = false;
+      }
+
+      if (nrSteps == 0) {
+        if (table.getItemCount() == 0) {
+          new TableItem(table, SWT.NONE);
+        }
+      }
+
+      int nr = 0;
+      for (int i = 0; i < transGraph.trans.nrSteps(); i++) {
+        StepInterface baseStep = transGraph.trans.getRunThread(i);
+        // when "Hide active" steps is enabled show only alive steps
+        // otherwise only those that have not STATUS_EMPTY
+        if ((hideInactiveSteps && baseStep.isRunning()) || (!hideInactiveSteps && baseStep.getStatus() != StepExecutionStatus.STATUS_EMPTY)) {
+          StepStatus stepStatus = new StepStatus(baseStep);
+          TableItem ti;
+          if (insert) {
+            ti = new TableItem(table, SWT.NONE);
+          } else {
+            ti = table.getItem(nr);
+          }
+
+          String fields[] = stepStatus.getTransLogFields();
+
+          // Anti-flicker: if nothing has changed, don't change it on the
+          // screen!
+          for (int f = 1; f < fields.length; f++) {
+            if (!fields[f].equalsIgnoreCase(ti.getText(f))) {
+              ti.setText(f, fields[f]);
             }
-			else
-            {
-				insert = false;
-            }
+          }
 
-			if (nrSteps == 0)
-			{
-				if (table.getItemCount() == 0) new TableItem(table, SWT.NONE);
-			}
+          // Error lines should appear in red:
+          if (baseStep.getErrors() > 0) {
+            ti.setBackground(GUIResource.getInstance().getColorRed());
+          } else {
+            if (i % 2 == 0)
+              ti.setBackground(GUIResource.getInstance().getColorWhite());
+            else
+              ti.setBackground(GUIResource.getInstance().getColorBlueCustomGrid());
+          }
 
-			int nr = 0;
-			for (int i = 0; i < transGraph.trans.nrSteps(); i++)
-			{
-				StepInterface baseStep = transGraph.trans.getRunThread(i);
-				//when "Hide active" steps is enabled show only alive steps
-				//otherwise only those that have not STATUS_EMPTY
-				if ( (hideInactiveSteps && baseStep.isRunning() ) || 
-				 		( !hideInactiveSteps && baseStep.getStatus()!=StepExecutionStatus.STATUS_EMPTY) ) 
-				{
-                    StepStatus stepStatus = new StepStatus(baseStep);
-                    TableItem ti;
-                    if (insert)
-                    {
-						ti = new TableItem(table, SWT.NONE);
-                    }
-					else
-                    {
-						ti = table.getItem(nr);
-                    }
+          nr++;
+        }
+      }
+      transGridView.setRowNums();
+      transGridView.optWidth(true);
+      // Only need to resort if the output has been sorted differently to the
+      // default
+      if (sortColumn != 0 || !sortDescending) {
+        transGridView.sortTable(sortColumn, sortDescending);
+      }
+      if (selectedItems != null && selectedItems.length > 0) {
+        transGridView.setSelection(selectedItems);
+      }
+      transGridView.getTable().setTopIndex(topIdx);
+    } else {
+      // We need at least one table-item in a table!
+      if (table.getItemCount() == 0)
+        new TableItem(table, SWT.NONE);
+    }
 
-					String fields[] = stepStatus.getTransLogFields();
-
-                    // Anti-flicker: if nothing has changed, don't change it on the screen!
-					for (int f = 1; f < fields.length; f++)
-					{
-						if (!fields[f].equalsIgnoreCase(ti.getText(f)))
-						{
-							ti.setText(f, fields[f]);
-						}
-					}
-
-					// Error lines should appear in red:
-					if (baseStep.getErrors() > 0)
-					{
-						ti.setBackground(GUIResource.getInstance().getColorRed());
-					}
-					else
-					{
-						if(i%2==0)
-							ti.setBackground(GUIResource.getInstance().getColorWhite());
-						else
-							ti.setBackground(GUIResource.getInstance().getColorBlueCustomGrid());
-					}
-
-					nr++;
-				}
-			}
-			transGridView.setRowNums();
-			transGridView.optWidth(true);
-			// Only need to resort if the output has been sorted differently to the default
-			if (sortColumn != 0 || !sortDescending) {
-				transGridView.sortTable(sortColumn, sortDescending);
-			}
-			if(selectedItems!=null && selectedItems.length>0) {
-				transGridView.setSelection(selectedItems);
-			}
-			transGridView.getTable().setTopIndex(topIdx);
-		}
-		else
-		{
-			// We need at least one table-item in a table!
-			if (table.getItemCount() == 0) new TableItem(table, SWT.NONE);
-		}
-
-		refresh_busy = false;
-	}
-
+    refresh_busy = false;
+  }
 
 	public CTabItem getTransGridTab() {
 		return transGridTab;

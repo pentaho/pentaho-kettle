@@ -3228,7 +3228,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      */
     public boolean hasLoop(StepMeta stepMeta)
     {
-    	clearLoopCachce();
+    	clearLoopCache();
         return hasLoop(stepMeta, null, true) || hasLoop(stepMeta, null, false);
     }
 
@@ -3681,15 +3681,28 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      */
     public boolean findPrevious(StepMeta startStep, StepMeta stepToFind)
     {
-        // Normal steps
+      String key = startStep.getName()+ " - " + stepToFind.getName();
+      Boolean result = loopCache.get(key);
+      if (result!=null) {
+        return result;
+      }
+      
+      // Normal steps
+      //
     	List<StepMeta> previousSteps = findPreviousSteps(startStep, false);
     	for (int i = 0; i < previousSteps.size(); i++)
         {
             StepMeta stepMeta = previousSteps.get(i);
-            if (stepMeta.equals(stepToFind)) return true;
+            if (stepMeta.equals(stepToFind)) {
+              loopCache.put(key, true);
+              return true;
+            }
 
             boolean found = findPrevious(stepMeta, stepToFind); // Look further back in the tree.
-            if (found) return true;
+            if (found) {
+              loopCache.put(key, true);
+              return true;
+            }
         }
 
         // Info steps
@@ -3697,12 +3710,19 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         for (int i = 0; i < infoSteps.size(); i++)
         {
             StepMeta stepMeta = infoSteps.get(i);
-            if (stepMeta.equals(stepToFind)) return true;
+            if (stepMeta.equals(stepToFind)) {
+              loopCache.put(key, true);
+              return true;
+            }
 
             boolean found = findPrevious(stepMeta, stepToFind); // Look further back in the tree.
-            if (found) return true;
+            if (found) {
+              loopCache.put(key, true);
+              return true;
+            }
         }
 
+        loopCache.put(key, false);
         return false;
     }
 
@@ -5625,12 +5645,17 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 	public void setSharedObjects(SharedObjects sharedObjects) {
 		this.sharedObjects = sharedObjects;
 	}
-	
+
+	public void clearCaches() {
+	  clearStepFieldsCachce();
+	  clearLoopCache();
+	}
+
 	private void clearStepFieldsCachce() {
 		stepsFieldsCache.clear();
 	}
 
-	private void clearLoopCachce() {
+	private void clearLoopCache() {
 		loopCache.clear();
 	}
 	
@@ -5918,5 +5943,12 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         }
       }
     }
+  }
+  
+  /**
+   * Stub
+   */
+  public Date getRegistrationDate() {
+    return null;
   }
 }

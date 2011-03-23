@@ -2773,4 +2773,10 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
     this.containerObjectId = containerObjectId;
   }
 
+  /**
+   * Stub
+   */
+  public Date getRegistrationDate() {
+    return null;
+  }
 }

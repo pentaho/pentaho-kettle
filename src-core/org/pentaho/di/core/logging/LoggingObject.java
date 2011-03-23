@@ -12,6 +12,8 @@
  */
 package org.pentaho.di.core.logging;
 
+import java.util.Date;
+
 import org.pentaho.di.core.Const;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
@@ -33,6 +35,8 @@ public class LoggingObject implements LoggingObjectInterface {
 	private String containerObjectId;
 	
 	private LoggingObjectInterface parent;
+	
+	private Date registrationDate;
 	
 	public LoggingObject(Object object) {
 		if (object instanceof LoggingObjectInterface) grabLoggingObjectInformation((LoggingObjectInterface)object);
@@ -290,5 +294,19 @@ public class LoggingObject implements LoggingObjectInterface {
    */
   public void setCarteObjectId(String carteObjectId) {
     this.containerObjectId = carteObjectId;
+  }
+
+  /**
+   * @return the registrationDate
+   */
+  public Date getRegistrationDate() {
+    return registrationDate;
+  }
+
+  /**
+   * @param registrationDate the registrationDate to set
+   */
+  public void setRegistrationDate(Date registrationDate) {
+    this.registrationDate = registrationDate;
   }
 }

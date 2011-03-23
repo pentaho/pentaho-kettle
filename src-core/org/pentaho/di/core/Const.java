@@ -479,7 +479,7 @@ public class Const
 	 * that don't have the "log size limit" property set in their respective properties.
 	 */
 	public static final String KETTLE_LOG_SIZE_LIMIT = "KETTLE_LOG_SIZE_LIMIT";
-
+	
 	/**
 	 * The name of the variable that defines the log database connection by default for all transformations
 	 */
@@ -599,6 +599,21 @@ public class Const
    */
   public static final String KETTLE_STEP_PERFORMANCE_SNAPSHOT_LIMIT = "KETTLE_STEP_PERFORMANCE_SNAPSHOT_LIMIT";
 
+  /**
+   * A variable to configure the maximum number of job trackers kept in memory.
+   */
+  public static final String KETTLE_MAX_JOB_TRACKER_SIZE = "KETTLE_MAX_JOB_TRACKER_SIZE";
+
+   /**
+   * A variable to configure the maximum number of job entry results kept in memory for logging purposes.
+   */
+  public static final String KETTLE_MAX_JOB_ENTRIES_LOGGED = "KETTLE_MAX_JOB_ENTRIES_LOGGED";
+
+  /**
+   * A variable to configure the maximum number of logging registry entries kept in memory for logging purposes.
+   */
+  public static final String KETTLE_MAX_LOGGING_REGISTRY_SIZE = "KETTLE_MAX_LOGGING_REGISTRY_SIZE";
+  
 	/**
 	 * The name of the system wide variable that can contain the name of the SAP Connection factory for the test button in the DB dialog.
 	 * This defaults to  

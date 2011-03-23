@@ -12,6 +12,8 @@
 */
 package org.pentaho.di.trans.step;
 
+import java.text.DecimalFormat;
+
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.w3c.dom.Document;
@@ -52,6 +54,9 @@ public class StepStatus
             in_speed = Math.floor(10 * (in_proc / lapsed)) / 10;
             out_speed = Math.floor(10 * (out_proc / lapsed)) / 10;
         }
+        
+        double speedNumber = (in_speed > out_speed ? in_speed : out_speed);
+        DecimalFormat speedDf = new DecimalFormat("#,###,###,###,##0"); 
 
         this.stepname = baseStep.getStepname();
         this.copy = baseStep.getCopy();
@@ -64,7 +69,7 @@ public class StepStatus
         this.errors = baseStep.getErrors();
         this.statusDescription = baseStep.getStatus().getDescription();
         this.seconds = Math.floor((lapsed * 10) + 0.5) / 10;
-        this.speed = lapsed == 0 ? "-" : "   " + (in_speed > out_speed ? in_speed : out_speed); //$NON-NLS-1$ //$NON-NLS-2$
+        this.speed = lapsed == 0 ? "-" : " " + speedDf.format(speedNumber); //$NON-NLS-1$ //$NON-NLS-2$
         this.priority = baseStep.isRunning() ? "   " + baseStep.rowsetInputSize() + "/" + baseStep.rowsetOutputSize() : "-"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
         this.stopped = baseStep.isStopped();
         this.paused = baseStep.isPaused();

@@ -3023,4 +3023,11 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
   public List<RemoteStep> getRemoteOutputSteps() {
     return remoteOutputSteps;
   }
+  
+  /**
+   * Stub
+   */
+  public Date getRegistrationDate() {
+    return null;
+  }
 }

@@ -55,6 +55,7 @@ import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -154,6 +155,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     private AtomicBoolean finished;
 	private SocketRepository	socketRepository;
 
+  private int maxJobEntriesLogged;
+
     public Job(String name, String file, String args[]) {
         this();
         jobMeta = new JobMeta();
@@ -183,6 +186,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     errors = new AtomicInteger(0);
     batchId = -1;
     passedBatchId = -1;
+    maxJobEntriesLogged = Const.toInt(EnvUtil.getSystemProperty(Const.KETTLE_MAX_JOB_ENTRIES_LOGGED), 1000);
 
     result = null;
   }
@@ -214,7 +218,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     {
       init();
     	this.log = new LogChannel(this);
-    	this.logLevel = log.getLogLevel();
+    	this.logLevel = log.getLogLevel();    	
     }
     
     @Override
@@ -338,10 +342,14 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         JobEntrySpecial jes = (JobEntrySpecial) startpoint.getEntry();
         Result res = null;
         boolean isFirst = true;
-        while ( (jes.isRepeat() || isFirst) && !isStopped())
-        {
+        long iteration=0;
+        while ( (jes.isRepeat() || isFirst) && !isStopped()) {
             isFirst = false;
             res = execute(0, null, startpoint, null, BaseMessages.getString(PKG, "Job.Reason.Started"));
+            if (iteration>0 && (iteration%500)==0) {
+              System.out.println("other 500 iterations: "+iteration);
+            }
+            iteration++;
         }
         // Save this result...
         JobEntryResult jerEnd = new JobEntryResult(res, jes.getLogChannelId(), BaseMessages.getString(PKG, "Job.Comment.JobFinished"), BaseMessages.getString(PKG, "Job.Reason.Finished"), null, 0, null);
@@ -499,24 +507,34 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 		StringBuffer logTextBuffer = appender.getBuffer(cloneJei.getLogChannel().getLogChannelId(), false);
 		result.setLogText( logTextBuffer.toString() );
 		
-        // Save this result as well...
-		//
-        JobEntryResult jerAfter = new JobEntryResult(result, cloneJei.getLogChannel().getLogChannelId(), BaseMessages.getString(PKG, "Job.Comment.JobFinished"), null, jobEntryCopy.getName(), jobEntryCopy.getNr(), environmentSubstitute(jobEntryCopy.getEntry().getFilename()));
-        jobTracker.addJobTracker(new JobTracker(jobMeta, jerAfter));
-        jobEntryResults.add(jerAfter);
+    // Save this result as well...
+    //
+    JobEntryResult jerAfter = new JobEntryResult(result, cloneJei.getLogChannel().getLogChannelId(), 
+        BaseMessages.getString(PKG, "Job.Comment.JobFinished"), null, jobEntryCopy.getName(), jobEntryCopy.getNr(), 
+        environmentSubstitute(jobEntryCopy.getEntry().getFilename())
+        );
+    jobTracker.addJobTracker(new JobTracker(jobMeta, jerAfter));
+    jobEntryResults.add(jerAfter);
+
+    // Only keep the last X job entry results in memory
+    //
+    if (maxJobEntriesLogged>0 && jobEntryResults.size()>maxJobEntriesLogged) {
+      jobEntryResults.remove(0); // Remove the oldest.
+    }
+    
 			
-		// Try all next job entries.
-        //
-        // Keep track of all the threads we fired in case of parallel execution...
-        // Keep track of the results of these executions too.
-        //
-        final List<Thread> threads = new ArrayList<Thread>();
-        final List<Result> threadResults = new ArrayList<Result>(); 
-        final List<KettleException> threadExceptions = new ArrayList<KettleException>(); 
-        final List<JobEntryCopy> threadEntries= new ArrayList<JobEntryCopy>(); 
-        
-		// Launch only those where the hop indicates true or false
-        //
+    // Try all next job entries.
+    //
+    // Keep track of all the threads we fired in case of parallel execution...
+    // Keep track of the results of these executions too.
+    //
+    final List<Thread> threads = new ArrayList<Thread>();
+    final List<Result> threadResults = new ArrayList<Result>();
+    final List<KettleException> threadExceptions = new ArrayList<KettleException>();
+    final List<JobEntryCopy> threadEntries = new ArrayList<JobEntryCopy>();
+
+    // Launch only those where the hop indicates true or false
+    //
 		int nrNext = jobMeta.findNrNextJobEntries(jobEntryCopy);
 		for (int i=0;i<nrNext && !isStopped();i++)
 		{
@@ -1617,5 +1635,12 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
   
   public LoggingObjectInterface getParentLoggingObject() {
     return parentLoggingObject;
+  }
+  
+  /**
+   * Stub
+   */
+  public Date getRegistrationDate() {
+    return null;
   }
 }

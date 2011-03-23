@@ -110,13 +110,31 @@
 	<kettle-variable>
 		<description>The maximum number of log lines that are kept internally by Kettle. Set to 0 to keep all rows (default)</description>
 		<variable>KETTLE_MAX_LOG_SIZE_IN_LINES</variable>
-		<default-value>0</default-value>
+		<default-value>5000</default-value>
 	</kettle-variable>
 
 	<kettle-variable>
 		<description>The maximum age (in minutes) of a log line while being kept internally by Kettle. Set to 0 to keep all rows indefinitely (default)</description>
 		<variable>KETTLE_MAX_LOG_TIMEOUT_IN_MINUTES</variable>
-		<default-value>0</default-value>
+		<default-value>1440</default-value>
+	</kettle-variable>
+
+	<kettle-variable>
+		<description>The maximum number of job trackers kept in memory</description>
+		<variable>KETTLE_MAX_JOB_TRACKER_SIZE</variable>
+		<default-value>1000</default-value>
+	</kettle-variable>
+
+	<kettle-variable>
+		<description>The maximum number of job entry results kept in memory for logging purposes. </description>
+		<variable>KETTLE_MAX_JOB_ENTRIES_LOGGED</variable>
+		<default-value>1000</default-value>
+	</kettle-variable>
+
+	<kettle-variable>
+		<description>The maximum number of logging registry entries kept in memory for logging purposes.</description>
+		<variable>KETTLE_MAX_LOGGING_REGISTRY_SIZE</variable>
+		<default-value>1000</default-value>
 	</kettle-variable>
 
 	<kettle-variable>

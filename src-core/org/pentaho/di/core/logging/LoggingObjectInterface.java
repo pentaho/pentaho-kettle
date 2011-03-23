@@ -12,6 +12,8 @@
  */
 package org.pentaho.di.core.logging;
 
+import java.util.Date;
+
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
@@ -74,4 +76,9 @@ public interface LoggingObjectInterface {
 	 * 
 	 */
 	public String getContainerObjectId();
+	
+	/**
+	 * @return The registration date of this logging object.  Null if it's not registered.
+	 */
+	public Date getRegistrationDate();
 }

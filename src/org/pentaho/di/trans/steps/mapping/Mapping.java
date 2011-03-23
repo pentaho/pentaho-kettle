@@ -22,6 +22,7 @@ import org.pentaho.di.core.logging.LogTableField;
 import org.pentaho.di.core.logging.TransLogTable;
 import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.SingleThreadedTransExecutor;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransMeta.TransformationType;
@@ -65,91 +66,142 @@ public class Mapping extends BaseStep implements StepInterface
 		{
 			meta=(MappingMeta)smi;
 			data=(MappingData)sdi;
-			
-			// Before we start, let's see if there are loose ends to tie up...
-			// 
+
 			MappingInput[] mappingInputs = data.mappingTrans.findMappingInput();
-			if (!getInputRowSets().isEmpty()) {
-				for (RowSet rowSet : new ArrayList<RowSet>(getInputRowSets())) {
-					// Pass this rowset down to a mapping input step in the sub-transformation...
-					//
-					if (mappingInputs.length==1) {
-						// Simple case: only one input mapping.  Move the RowSet over
-						//
-						mappingInputs[0].getInputRowSets().add(rowSet);
-					} else {
-						// Difficult to see what's going on here.
-						// TODO: figure out where this RowSet needs to go and where it comes from.
-						//
-						throw new KettleException("Unsupported situation detected where more than one Mapping Input step needs to be handled.  To solve it, insert a dummy step before the mapping step.");
-					}
-				}
-        getInputRowSets().clear();
-			}
+			MappingOutput[] mappingOutputs = data.mappingTrans.findMappingOutput();
+      
+			switch(data.mappingTransMeta.getTransformationType()) {
+			  case Normal:
+	      case SerialSingleThreaded:
 			
-			// Do the same thing for remote input steps...
-			//
-			if (!getRemoteInputSteps().isEmpty()) {
-			  // The remote server is likely a master or a slave server sending data over remotely to this mapping.
-			  // However, the data needs to end up at a Mapping Input step of the sub-transformation, not in this step.
-			  // We can move over the remote steps to the Mapping Input step as long as the threads haven't started yet.
-			  //
-			  for (RemoteStep remoteStep : getRemoteInputSteps()) {
-	         // Pass this rowset down to a mapping input step in the sub-transformation...
-          //
-          if (mappingInputs.length==1) {
-            // Simple case: only one input mapping.  Move the remote step over
+        // Before we start, let's see if there are loose ends to tie up...
+        //
+        if (!getInputRowSets().isEmpty()) {
+          for (RowSet rowSet : new ArrayList<RowSet>(getInputRowSets())) {
+            // Pass this rowset down to a mapping input step in the
+            // sub-transformation...
             //
-            mappingInputs[0].getRemoteInputSteps().add(remoteStep);
-          } else {
-            // TODO: figure out where this remote step needs to go and where it comes from.
-            //
-            throw new KettleException("Unsupported situation detected where a remote input step is expecting data to end up in a particular Mapping Input step of a sub-transformation.  To solve it, insert a dummy step before the mapping.");
+            if (mappingInputs.length == 1) {
+              // Simple case: only one input mapping. Move the RowSet over
+              //
+              mappingInputs[0].getInputRowSets().add(rowSet);
+            } else {
+              // Difficult to see what's going on here.
+              // TODO: figure out where this RowSet needs to go and where it
+              // comes from.
+              //
+              throw new KettleException("Unsupported situation detected where more than one Mapping Input step needs to be handled.  To solve it, insert a dummy step before the mapping step.");
+            }
           }
+          getInputRowSets().clear();
+        }
+
+        // Do the same thing for remote input steps...
+        //
+        if (!getRemoteInputSteps().isEmpty()) {
+          // The remote server is likely a master or a slave server sending data
+          // over remotely to this mapping.
+          // However, the data needs to end up at a Mapping Input step of the
+          // sub-transformation, not in this step.
+          // We can move over the remote steps to the Mapping Input step as long
+          // as the threads haven't started yet.
+          //
+          for (RemoteStep remoteStep : getRemoteInputSteps()) {
+            // Pass this rowset down to a mapping input step in the
+            // sub-transformation...
+            //
+            if (mappingInputs.length == 1) {
+              // Simple case: only one input mapping. Move the remote step over
+              //
+              mappingInputs[0].getRemoteInputSteps().add(remoteStep);
+            } else {
+              // TODO: figure out where this remote step needs to go and where
+              // it comes from.
+              //
+              throw new KettleException("Unsupported situation detected where a remote input step is expecting data to end up in a particular Mapping Input step of a sub-transformation.  To solve it, insert a dummy step before the mapping.");
+            }
+          }
+          getRemoteInputSteps().clear();
+        }
+
+        // Re-populate with variables and parameters if necessary
+        //
+        setMappingParameters();
+
+        // Start the mapping/sub-transformation threads
+        //
+        data.mappingTrans.startThreads();
+
+        // The transformation still runs in the background and might have some
+        // more work to do.
+        // Since everything is running in the MappingThreads we don't have to do
+        // anything else here but wait...
+        //
+        if (getTransMeta().getTransformationType() == TransformationType.Normal) {
+          data.mappingTrans.waitUntilFinished();
+
+          // Set some statistics from the mapping...
+          // This will show up in Spoon, etc.
+          //
+          Result result = data.mappingTrans.getResult();
+          setErrors(result.getNrErrors());
+          setLinesRead(result.getNrLinesRead());
+          setLinesWritten(result.getNrLinesWritten());
+          setLinesInput(result.getNrLinesInput());
+          setLinesOutput(result.getNrLinesOutput());
+          setLinesUpdated(result.getNrLinesUpdated());
+          setLinesRejected(result.getNrLinesRejected());
+        }
+        return false;    		    	
+    		
+			case SingleThreaded:
+			  
+			  if (mappingInputs.length>1 || mappingOutputs.length>1) {
+			    throw new KettleException("Multiple input or output steps are not supported for a single threaded mapping.");
 			  }
-			  getRemoteInputSteps().clear();
+			  
+			  // Object[] row = getRow();
+			  // RowMetaInterface rowMeta = getInputRowMeta();
+			  
+			  // for (int count=0;count<(data.mappingTransMeta.getSizeRowset()/2) && row!=null;count++) {
+			  //   // Pass each row over to the mapping input step, fill the buffer...
+			  //
+			  //  mappingInputs[0].getInputRowSets().get(0).putRow(rowMeta, row);
+			  //  
+	      //  row = getRow();
+			  // }
+			  
+			  
+			  System.out.println("# of input buffers: "+mappingInputs[0].getInputRowSets().size());
+        if (mappingInputs[0].getInputRowSets().size()>0) {
+          System.out.println("Input buffer 0 size: "+mappingInputs[0].getInputRowSets().get(0).size());
+        }
+        
+			  // Now execute one batch...
+			  //
+			  boolean result = data.singleThreadedTransExcecutor.oneIteration();
+			  if (!result) {
+			    data.singleThreadedTransExcecutor.dispose();
+			    setOutputDone();
+			    return false;
+			  }
+			  return true;
+			  
+			default:
+			  throw new KettleException("Transformation type '"+data.mappingTransMeta.getTransformationType().getDescription()+"' is an unsupported transformation type for a mapping");
 			}
-			
-      // Re-populate with variables and parameters if necessary
+    }
+    catch(Throwable t)
+    {
+      // Some unexpected situation occurred.
+      // Better to stop the mapping transformation.
       //
-			setMappingParameters();
-			
-			// Start the mapping/sub-transformation threads
-	        //
-	        data.mappingTrans.startThreads();
-	        
-	        // The transformation still runs in the background and might have some more work to do.
-	        // Since everything is running in the MappingThreads we don't have to do anything else here but wait...
-	        //
-	        if (getTransMeta().getTransformationType()==TransformationType.Normal) {
-		        data.mappingTrans.waitUntilFinished();
-		        
-		        // Set some statistics from the mapping...
-		        // This will show up in Spoon, etc.
-		        //
-  		    	Result result = data.mappingTrans.getResult();
-  		    	setErrors(result.getNrErrors());
-  		    	setLinesRead( result.getNrLinesRead() );
-  		    	setLinesWritten( result.getNrLinesWritten() );
-  		    	setLinesInput( result.getNrLinesInput() );
-  		    	setLinesOutput( result.getNrLinesOutput() );
-  		    	setLinesUpdated( result.getNrLinesUpdated() );
-  		    	setLinesRejected( result.getNrLinesRejected() );
-	        }
-		    return false;
-		    	
-		}
-		catch(Throwable t)
-		{
-			// Some unexpected situation occurred.
-			// Better to stop the mapping transformation.
-			//
-			if (data.mappingTrans!=null) data.mappingTrans.stopAll();
-			
-			// Forward the exception...
-			//
-			throw new KettleException(t);
-		}
+      if (data.mappingTrans!=null) data.mappingTrans.stopAll();
+      
+      // Forward the exception...
+      //
+      throw new KettleException(t);
+    }
 	}
 
 	private void setMappingParameters() throws KettleException {
@@ -173,22 +225,19 @@ public class Mapping extends BaseStep implements StepInterface
 					// if the parameters are defined as such in the subtrans, set them
 					try{
 						data.mappingTransMeta.setParameterValue(name, value);
-						if (data.mappingTrans != null){
+						if (data.mappingTrans != null) {
 							data.mappingTrans.setParameterValue(name, value);
 						}
-						
 					}
 					catch(UnknownParamException e){
 						// eat up
 					}
 					
 					data.mappingTransMeta.setVariable(name, value);
-					if (data.mappingTrans != null){
+					if (data.mappingTrans != null) {
 						data.mappingTrans.setVariable(name, value);
 					}
-					
-					
-				}				
+				}
 			}
 		}
 	}
@@ -213,16 +262,31 @@ public class Mapping extends BaseStep implements StepInterface
         // Also set the name of this step in the mapping transformation for logging purposes
         //
         data.mappingTrans.setMappingStepName(getStepname());
-        
+
         // We launch the transformation in the processRow when the first row is received.
         // This will allow the correct variables to be passed.
         // Otherwise the parent is the init() thread which will be gone once the init is done.
         //
         try {
-        	data.mappingTrans.prepareExecution(getTransMeta().getArguments());
+          data.mappingTrans.prepareExecution(getTransMeta().getArguments());
         }
         catch(KettleException e) {
-        	throw new KettleException(BaseMessages.getString(PKG, "Mapping.Exception.UnableToPrepareExecutionOfMapping"), e);
+          throw new KettleException(BaseMessages.getString(PKG, "Mapping.Exception.UnableToPrepareExecutionOfMapping"), e);
+        }
+
+        // Extra optional work to do for alternative execution engines...
+        //
+        switch (data.mappingTransMeta.getTransformationType()) {
+        case Normal:
+        case SerialSingleThreaded:
+          break;
+        
+        case SingleThreaded:
+          data.singleThreadedTransExcecutor = new SingleThreadedTransExecutor(data.mappingTrans);
+          if (!data.singleThreadedTransExcecutor.init()) {
+            throw new KettleException(BaseMessages.getString(PKG, "Mapping.Exception.UnableToInitSingleThreadedTransformation"));
+          }
+          break;
         }
         
         setMappingParameters();
@@ -394,52 +458,46 @@ public class Mapping extends BaseStep implements StepInterface
 		}
 	}
 
-	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
-	{
-		meta=(MappingMeta)smi;
-		data=(MappingData)sdi;
-		
-		if (super.init(smi, sdi))
-		{
-		    // First we need to load the mapping (transformation)
-            try
-            {
-            	// Pass the repository down to the metadata object...
-            	//
-            	meta.setRepository(getTransMeta().getRepository());
-            	
-                data.mappingTransMeta = MappingMeta.loadMappingMeta(meta, meta.getRepository(), this);
-                if (data.mappingTransMeta!=null) // Do we have a mapping at all?
-                {
-            		
-                	// Set the parameters statically or dynamically
-            		//
-                	setMappingParameters();
-            		
-                	// OK, now prepare the execution of the mapping.
-            		// This includes the allocation of RowSet buffers, the creation of the sub-transformation threads, etc.
-            		//
-            		prepareMappingExecution();
-            		
-            		lookupStatusStepNumbers();
-                	// That's all for now...
-                    return true;
-                }
-                else
-                {
-                    logError("No valid mapping was specified!");
-                    return false;
-                }
-            }
-            catch(Exception e)
-            {
-                logError("Unable to load the mapping transformation because of an error : "+e.toString());
-                logError(Const.getStackTracker(e));
-            }
-            
-		}
-		return false;
-	}
+  public boolean init(StepMetaInterface smi, StepDataInterface sdi) {
+    meta = (MappingMeta) smi;
+    data = (MappingData) sdi;
+
+    if (super.init(smi, sdi)) {
+      // First we need to load the mapping (transformation)
+      try {
+        // Pass the repository down to the metadata object...
+        //
+        meta.setRepository(getTransMeta().getRepository());
+
+        data.mappingTransMeta = MappingMeta.loadMappingMeta(meta, meta.getRepository(), this);
+        if (data.mappingTransMeta != null) // Do we have a mapping at all?
+        {
+
+          // Set the parameters statically or dynamically
+          //
+          setMappingParameters();
+
+          // OK, now prepare the execution of the mapping.
+          // This includes the allocation of RowSet buffers, the creation of the
+          // sub-transformation threads, etc.
+          //
+          prepareMappingExecution();
+          
+          lookupStatusStepNumbers();
+          // That's all for now...
+          return true;
+        } else {
+          logError("No valid mapping was specified!");
+          return false;
+        }
+      } catch (Exception e) {
+        logError("Unable to load the mapping transformation because of an error : " + e.toString());
+        logError(Const.getStackTracker(e));
+      }
+
+    }
+    return false;
+  }
     
     public void dispose(StepMetaInterface smi, StepDataInterface sdi)
     {
