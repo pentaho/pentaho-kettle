@@ -36,6 +36,7 @@ import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
@@ -443,7 +444,13 @@ public class Kitchen
   public static void configureLogging(final CommandLineOption maxLogLinesOption, final CommandLineOption maxLogTimeoutOption)
       throws KettleException {
     int maxLogLines = parseIntArgument(maxLogLinesOption, 0);
+    if (Const.isEmpty(maxLogLinesOption.getArgument())) {
+      maxLogLines = Const.toInt(EnvUtil.getSystemProperty(Const.KETTLE_MAX_LOG_SIZE_IN_LINES), 0);
+    }
     int maxLogTimeout = parseIntArgument(maxLogTimeoutOption, 0);
+    if (Const.isEmpty(maxLogTimeoutOption.getArgument())) {
+      maxLogTimeout = Const.toInt(EnvUtil.getSystemProperty(Const.KETTLE_MAX_LOG_TIMEOUT_IN_MINUTES), 0);
+    }
     CentralLogStore.init(maxLogLines, maxLogTimeout);
   }
 
