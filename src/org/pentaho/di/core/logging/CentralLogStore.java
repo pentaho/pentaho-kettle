@@ -52,7 +52,6 @@ public class CentralLogStore {
 			public void run() {
 				if (!busy.get()) {
 					busy.set(true);
-          System.out.println("Rows in central log appender: "+appender.size()+"  ("+appender+"), Logging registry map size: "+LoggingRegistry.getInstance().getMap().size());
 					if (maxLogTimeoutMinutes>0) {
 						long minTimeBoundary = new Date().getTime() - maxLogTimeoutMinutes*60*1000;
 						synchronized(appender) {
