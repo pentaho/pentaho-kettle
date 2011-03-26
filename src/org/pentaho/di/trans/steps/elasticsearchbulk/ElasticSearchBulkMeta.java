@@ -637,15 +637,13 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
     if(StringUtils.isBlank(value)){
       remarks.add(
           new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, 
-              BaseMessages.getString(PKG, "ElasticSearchBulkMeta.CheckResult.MissingRequired", 
-                  BaseMessages.getString(PKG, fieldNameKey)),
+              BaseMessages.getString(PKG, "ElasticSearchBulkMeta.CheckResult.MissingRequired", BaseMessages.getString(PKG, fieldNameKey)),
               stepMeta));  
     }
     else {
       remarks.add(
           new CheckResult(CheckResultInterface.TYPE_RESULT_OK,
-              BaseMessages.getString(PKG, "ElasticSearchBulkMeta.CheckResult.RequiredOK", 
-                  BaseMessages.getString(PKG, fieldNameKey),
+              BaseMessages.getString(PKG, "ElasticSearchBulkMeta.CheckResult.RequiredOK", BaseMessages.getString(PKG, fieldNameKey),
                   value),
               stepMeta));
     }
