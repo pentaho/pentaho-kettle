@@ -169,5 +169,6 @@
 	<classpathentry kind="lib" path="libext/elasticsearch/lucene-memory-3.0.3.jar"/>
 	<classpathentry kind="lib" path="libext/elasticsearch/lucene-queries-3.0.3.jar"/>
 	<classpathentry kind="lib" path="libext/elasticsearch/lucene-snowball-3.0.3.jar"/>
+	<classpathentry kind="lib" path="libext/jzlib-1.0.7.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
