@@ -87,7 +87,7 @@ public class ModPartitioner extends BasePartitioner {
 	        value = rowMeta.getInteger(row, partitionColumnIndex);
 	        */
             
-            int targetLocation = (int)(value % nrPartitions);
+            int targetLocation = (int)(Math.abs(value) % nrPartitions);
 
 			return targetLocation;
 		}
