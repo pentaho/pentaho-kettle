@@ -253,7 +253,11 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
 				/*
 				 * Write all values in stream to text file.
 				 */
-				for (int i = 0; i < data.inputRowMeta.size(); i++) {
+				int nr=data.inputRowMeta.size();
+				data.clearStyleCache(nr);
+				data.linkfieldnrs= new int[nr];
+				data.commentfieldnrs= new int[nr];
+				for (int i = 0; i < nr; i++) {
 					v = r[i];
 					writeField(v, data.inputRowMeta.getValueMeta(i), null, xlsRow, data.posX++, r, i, false);
 				}
