@@ -105,11 +105,9 @@ public class JobEntryExportRepositoryDialog extends JobEntryDialog implements Jo
 	private FormData fdlTargetFilename;
 	
     private LabelTextVar wUserName;
-
     private FormData fdUserName;
 
     private LabelTextVar wPassword;
-
     private FormData fdPassword;
     
     private TextVar wTargetFilename;

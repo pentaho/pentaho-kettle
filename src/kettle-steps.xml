@@ -1375,5 +1375,12 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Rest</tooltip>
 		<iconfile>ui/images/REST.png</iconfile>
 	</step>
+	<step id="GetRepositoryNames">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.GetRepositoryNames</description>
+		<classname>org.pentaho.di.trans.steps.getrepositorynames.GetRepositoryNamesMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.GetRepositoryNames</tooltip>
+		<iconfile>ui/images/GRN.png</iconfile>
+	</step>
 
 </steps>

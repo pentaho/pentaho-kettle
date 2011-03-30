@@ -1483,7 +1483,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         }
 
         public void changed(LocationEvent event) {
-          System.out.println("Changed to: " + event.location);
+          // System.out.println("Changed to: " + event.location);
         }
       };
 
@@ -2074,7 +2074,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
             stepItem.addListener(SWT.Selection, new Listener() {
 
               public void handleEvent(Event arg0) {
-                System.out.println("Tree item Listener fired");
+                // System.out.println("Tree item Listener fired");
               }
             });
 
@@ -2110,7 +2110,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
           stepItem.addListener(SWT.Selection, new Listener() {
 
             public void handleEvent(Event arg0) {
-              System.out.println("Tree item Listener fired");
+              // System.out.println("Tree item Listener fired");
             }
           });
 
@@ -2158,7 +2158,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
               stepItem.addListener(SWT.Selection, new Listener() {
 
                 public void handleEvent(Event arg0) {
-                  System.out.println("Tree item Listener fired");
+                  // System.out.println("Tree item Listener fired");
                 }
               });
               // if (isPlugin)
@@ -2189,7 +2189,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         specialItem.addListener(SWT.Selection, new Listener() {
 
           public void handleEvent(Event arg0) {
-            System.out.println("Tree item Listener fired");
+            // System.out.println("Tree item Listener fired");
           }
 
         });
