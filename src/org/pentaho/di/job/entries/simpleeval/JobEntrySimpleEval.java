@@ -74,8 +74,9 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
 		BaseMessages.getString(PKG, "JobSimpleEval.SuccessWhenNotStartWith.Label"),
 		BaseMessages.getString(PKG, "JobSimpleEval.SuccessWhenEndWith.Label"),
 		BaseMessages.getString(PKG, "JobSimpleEval.SuccessWhenNotEndWith.Label"),
-		BaseMessages.getString(PKG, "JobSimpleEval.SuccessWhenRegExp.Label")
-	
+		BaseMessages.getString(PKG, "JobSimpleEval.SuccessWhenRegExp.Label"),
+		BaseMessages.getString(PKG, "JobSimpleEval.SuccessWhenInList.Label"),
+		BaseMessages.getString(PKG, "JobSimpleEval.SuccessWhenNotInList.Label")
 	};
 	public static final String[] successConditionCode = new String[] { 
 		"equal", 
@@ -86,7 +87,9 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
 		"notstatwith",
 		"endswith",
 		"notendwith",
-		"regexp"
+		"regexp",
+		"inlist",
+		"notinlist"
 	};
 
 	public static final int SUCCESS_CONDITION_EQUAL=0;
@@ -98,6 +101,8 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
 	public static final int SUCCESS_CONDITION_END_WITH=6;
 	public static final int SUCCESS_CONDITION_NOT_END_WITH=7;
 	public static final int SUCCESS_CONDITION_REGEX=8;
+	public static final int SUCCESS_CONDITION_IN_LIST=9;
+	public static final int SUCCESS_CONDITION_NOT_IN_LIST=10;
 	
 	public int successcondition;
 
@@ -131,7 +136,8 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
 		BaseMessages.getString(PKG, "JobSimpleEval.SuccessWhenGreaterThan.Label"),
 		BaseMessages.getString(PKG, "JobSimpleEval.SuccessWhenGreaterOrEqualThan.Label"),
 		BaseMessages.getString(PKG, "JobSimpleEval.SuccessBetween.Label"),
-	
+		BaseMessages.getString(PKG, "JobSimpleEval.SuccessWhenInList.Label"),
+		BaseMessages.getString(PKG, "JobSimpleEval.SuccessWhenNotInList.Label"),
 	};
 	public static final String[] successNumberConditionCode = new String[] { 
 		"equal", 
@@ -140,7 +146,9 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
 		"smallequal",
 		"greater",
 		"greaterequal",
-		"between"
+		"between",
+		"inlist",
+		"notinlist"
 	};
 	public static final int SUCCESS_NUMBER_CONDITION_EQUAL=0;
 	public static final int SUCCESS_NUMBER_CONDITION_DIFFERENT=1;
@@ -149,6 +157,8 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
 	public static final int SUCCESS_NUMBER_CONDITION_GREATER=4;
 	public static final int SUCCESS_NUMBER_CONDITION_GREATER_EQUAL=5;
 	public static final int SUCCESS_NUMBER_CONDITION_BETWEEN=6;
+	public static final int SUCCESS_NUMBER_CONDITION_IN_LIST=7;
+	public static final int SUCCESS_NUMBER_CONDITION_NOT_IN_LIST=8;
 
 	public int successnumbercondition;
 	
@@ -534,6 +544,23 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
 					if(isDebug()) logDebug( BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
 					success=(Pattern.compile(realCompareValue).matcher(sourcevalue).matches());
 				break;
+				case SUCCESS_CONDITION_IN_LIST: // in list
+					if(isDebug()) logDebug(BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
+					realCompareValue=Const.NVL(realCompareValue, "");
+					String[] parts = realCompareValue.split(",");
+					for(int i=0; i<parts.length && !success; i++) {
+						success=(sourcevalue.equals(parts[i].trim()));
+					}
+				break;
+				case SUCCESS_CONDITION_NOT_IN_LIST: // not in list
+					if(isDebug()) logDebug(BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
+					realCompareValue=Const.NVL(realCompareValue, "");
+					parts = realCompareValue.split(",");
+					success=true;	
+					for(int i=0; i<parts.length && success; i++) {
+						success=!(sourcevalue.equals(parts[i].trim()));
+					}
+				break;
 				default:
 				break;
 				}
@@ -596,6 +623,28 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
 						return result;
 					}
 					success=(valuenumber>=valuemin && valuenumber<=valuemax);
+				break;
+				case SUCCESS_NUMBER_CONDITION_IN_LIST: // in list
+					if(isDebug()) logDebug(BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
+					String[] parts = realCompareValue.split(",");
+		
+					for(int i=0; i<parts.length && !success; i++) {
+						try{valuecompare=Double.parseDouble(parts[i]);
+						}catch(Exception e)	{logError(toString(),BaseMessages.getString(PKG, "JobEntrySimpleEval.Error.UnparsableNumber",parts[i],e.getMessage()));return result;}
+						success=(valuenumber==valuecompare);
+					}
+				break;
+				case SUCCESS_NUMBER_CONDITION_NOT_IN_LIST: // not in list
+					if(isDebug()) logDebug(BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
+					realCompareValue=Const.NVL(realCompareValue, "");
+					parts = realCompareValue.split(",");
+					success=true;	
+					for(int i=0; i<parts.length && success; i++) {
+						try{valuecompare=Double.parseDouble(parts[i]);
+						}catch(Exception e)	{logError(toString(),BaseMessages.getString(PKG, "JobEntrySimpleEval.Error.UnparsableNumber",parts[i],e.getMessage()));return result;}
+						
+						success=(valuenumber!=valuecompare);
+					}
 				break;
 				default:
 				break;
@@ -668,6 +717,27 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
 						
 						success=((datevalue.after(datemin)|| datevalue.equals(datemin))
 							&&  (datevalue.before(datemax)|| datevalue.equals(datemax)));
+					break;
+					case SUCCESS_NUMBER_CONDITION_IN_LIST: // in list
+						if(isDebug()) logDebug(BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
+						String[] parts = realCompareValue.split(",");
+			
+						for(int i=0; i<parts.length && !success; i++) {
+							try{datecompare=convertToDate(realCompareValue, realMask, df);
+							}catch(Exception e)	{logError(toString(),e.getMessage());return result;}
+							success=(datevalue.equals(datecompare));
+						}
+					break;
+					case SUCCESS_NUMBER_CONDITION_NOT_IN_LIST: // not in list
+						if(isDebug()) logDebug(BaseMessages.getString(PKG, "JobSimpleEval.Log.CompareWithValue",sourcevalue,realCompareValue));
+						realCompareValue=Const.NVL(realCompareValue, "");
+						parts = realCompareValue.split(",");
+						success=true;	
+						for(int i=0; i<parts.length && success; i++) {
+							try{datecompare=convertToDate(realCompareValue, realMask, df);
+							}catch(Exception e)	{logError(toString(),e.getMessage());return result;}
+							success=(!datevalue.equals(datecompare));
+						}
 					break;
 					default:
 					break;
