@@ -509,12 +509,20 @@
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.WebServiceAvailable.Tooltip</tooltip>
 		<iconfile>ui/images/WSA.png</iconfile>
 	</job-entry>
-			<job-entry id="WRITE_TO_FILE">
+	<job-entry id="WRITE_TO_FILE">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.WriteToFile.TypeDesc</description>
 		<classname>org.pentaho.di.job.entries.writetofile.JobEntryWriteToFile</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileManagement</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.WriteToFile.Tooltip</tooltip>
 		<iconfile>ui/images/TFO.png</iconfile>
 	</job-entry>
+	<job-entry id="DOS_UNIX_CONVERTER">
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.DosUnixConverter.TypeDesc</description>
+		<classname>org.pentaho.di.job.entries.dostounix.JobEntryDosToUnix</classname>
+		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileManagement</category>
+		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.DosUnixConverter.Tooltip</tooltip>
+		<iconfile>ui/images/DTU.png</iconfile>
+	</job-entry>
+	
 	
 </job-entries>
