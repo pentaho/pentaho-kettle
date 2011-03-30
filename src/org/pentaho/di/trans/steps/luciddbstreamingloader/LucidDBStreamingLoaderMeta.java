@@ -22,7 +22,6 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.database.LucidDBDatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -326,8 +325,8 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
       port = rep.getStepAttributeString(id_step, "port"); //$NON-NLS-1$
       operation = rep.getStepAttributeString(id_step, "operation"); //$NON-NLS-1$
       custom_sql = rep.getStepAttributeString(id_step, "custom_sql"); //$NON-NLS-1$
-      int nrKeyMapping = rep.countNrStepAttributes(id_step, "keys_mapping"); //$NON-NLS-1$
-      int nrFieldMapping = rep.countNrStepAttributes(id_step, "fields_mapping"); //$NON-NLS-1$
+      int nrKeyMapping = rep.countNrStepAttributes(id_step, "key_field_name"); //$NON-NLS-1$
+      int nrFieldMapping = rep.countNrStepAttributes(id_step, "field_field_name"); //$NON-NLS-1$
       int nrTabIsEnable = rep.countNrStepAttributes(id_step,
           "tab_is_enable_mapping"); //$NON-NLS-1$
 
