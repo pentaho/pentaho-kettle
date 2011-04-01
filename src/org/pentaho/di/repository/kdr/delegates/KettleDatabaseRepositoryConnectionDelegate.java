@@ -283,7 +283,13 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 		{
 			try
 			{
-				if (!database.isAutoCommit()) database.commit();
+			  closeJobAttributeInsertPreparedStatement();
+			  closeStepAttributeInsertPreparedStatement();
+			  closeTransAttributeInsertPreparedStatement();
+			  
+				if (!database.isAutoCommit()) {
+				  database.commit();
+				}
 				
 				// Also, clear the counters, reducing the risk of collisions!
 				//
@@ -546,7 +552,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 	    if (psStepAttributesInsert!=null)
 	    {
 		    database.emptyAndCommit(psStepAttributesInsert, useBatchProcessing, 1); // batch mode!
-			psStepAttributesInsert = null;
+		    psStepAttributesInsert = null;
 	    }
 	}
 
@@ -559,6 +565,14 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
         }
     }
 
+    public synchronized void closeJobAttributeInsertPreparedStatement() throws KettleException
+    {
+        if (psJobAttributesInsert!=null)
+        {
+            database.emptyAndCommit(psJobAttributesInsert, useBatchProcessing, 1); // batch mode!
+            psJobAttributesInsert = null;
+        }
+    }
 
 	private RowMetaAndData getStepAttributeRow(ObjectId id_step, int nr, String code) throws KettleException
 	{
