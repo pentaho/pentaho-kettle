@@ -516,6 +516,13 @@
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.WriteToFile.Tooltip</tooltip>
 		<iconfile>ui/images/TFO.png</iconfile>
 	</job-entry>
+	<job-entry id="TALEND_JOB_EXEC">
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.TalendJobExec.TypeDesc</description>
+		<classname>org.pentaho.di.job.entries.talendjobexec.JobEntryTalendJobExec</classname>
+		<category>i18n:org.pentaho.di.job:JobCategory.Category.Utility</category>
+		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.TalendJobExec.Tooltip</tooltip>
+		<iconfile>ui/images/TJE.png</iconfile>
+	</job-entry>
 	<job-entry id="DOS_UNIX_CONVERTER">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.DosUnixConverter.TypeDesc</description>
 		<classname>org.pentaho.di.job.entries.dostounix.JobEntryDosToUnix</classname>
@@ -523,6 +530,4 @@
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.DosUnixConverter.Tooltip</tooltip>
 		<iconfile>ui/images/DTU.png</iconfile>
 	</job-entry>
-	
-	
 </job-entries>

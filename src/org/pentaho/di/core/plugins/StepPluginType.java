@@ -40,10 +40,10 @@ import org.w3c.dom.Node;
    ,"BaseStep.Category.Palo"
    ,"BaseStep.Category.Job"
    ,"BaseStep.Category.Mapping"
+   ,"BaseStep.Category.Bulk"
    ,"BaseStep.Category.Inline"
    ,"BaseStep.Category.Experimental"
    ,"BaseStep.Category.Deprecated"
-   ,"BaseStep.Category.Bulk"
    },
    i18nPackageClass = StepInterface.class)
 @PluginMainClassType(StepMetaInterface.class)

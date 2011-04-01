@@ -36,9 +36,11 @@ import org.w3c.dom.Node;
     ,"JobCategory.Category.Scripting"
     ,"JobCategory.Category.BulkLoading"
     ,"JobCategory.Category.XML"
+    ,"JobCategory.Category.Utility"
     ,"JobCategory.Category.Repository"
     ,"JobCategory.Category.FileTransfer"
-    ,"JobCategory.Category.Experimental"},
+    ,"JobCategory.Category.Experimental"
+},
    i18nPackageClass = JobMeta.class)
 @PluginMainClassType(JobEntryInterface.class)
 @PluginAnnotationType(JobEntry.class)
