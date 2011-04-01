@@ -44,6 +44,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.SourceToTargetMapping;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -54,9 +55,11 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.luciddbstreamingloader.LucidDBStreamingLoaderMeta;
 import org.pentaho.di.ui.core.database.dialog.DatabaseExplorerDialog;
+import org.pentaho.di.ui.core.database.dialog.SQLEditor;
 import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -753,15 +756,11 @@ public class LucidDBStreamingLoaderDialog
         wCancel = new Button(shell, SWT.PUSH);
         wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
         
-       /* wSQL = new Button(shell, SWT.PUSH);
-        wSQL.setText(BaseMessages.getString(
-            PKG,
-            "LucidDBStreamingLoaderDialog.SQL.Button"));
-        setButtonPositions(new Button[] { wOK, wCancel, wSQL }, margin, null);
-        */
+        wSQL = new Button(shell, SWT.PUSH);
+        wSQL.setText(BaseMessages.getString(PKG, "LucidDBStreamingLoaderDialog.SQL.Button"));
 
-        setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
-
+        setButtonPositions(new Button[] { wOK, wSQL, wCancel, }, margin, null);
+        
         // Add listeners
         lsOK = new Listener()
         {
@@ -787,7 +786,7 @@ public class LucidDBStreamingLoaderDialog
         };
 
         wOK.addListener(SWT.Selection, lsOK);
-        //wSQL.addListener(SWT.Selection, lsSQL);
+        wSQL.addListener(SWT.Selection, lsSQL);
         wCancel.addListener(SWT.Selection, lsCancel);
         lsDef = new SelectionAdapter()
         {
@@ -1322,10 +1321,49 @@ public class LucidDBStreamingLoaderDialog
         }
     }
 
-    // Should do REAL SQL thing-eee
+    // Generate code for create table...
+    // Conversions done by Database
     private void create()
     {
-    	; 
-    	
+      try
+      {
+        LucidDBStreamingLoaderMeta info = new LucidDBStreamingLoaderMeta();
+        getInfo(info);
+
+        String name = stepname; // new name might not yet be linked to other steps!
+        StepMeta stepMeta = new StepMeta(BaseMessages.getString(PKG, "LucidDBStreamingLoaderDialog.StepMeta.Title"), name, info); //$NON-NLS-1$
+        RowMetaInterface prev = transMeta.getPrevStepFields(stepname);
+
+        SQLStatement sql = info.getSQLStatements(transMeta, stepMeta, prev);
+        if (!sql.hasError())
+        {
+          if (sql.hasSQL())
+          {
+            SQLEditor sqledit = new SQLEditor(shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(),
+                sql.getSQL());
+            sqledit.open();
+          }
+          else
+          {
+            MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
+            mb.setMessage(BaseMessages.getString(PKG, "LucidDBStreamingLoaderDialog.NoSQLNeeds.DialogMessage")); //$NON-NLS-1$
+            mb.setText(BaseMessages.getString(PKG, "LucidDBStreamingLoaderDialog.NoSQLNeeds.DialogTitle")); //$NON-NLS-1$
+            mb.open();
+          }
+        }
+        else
+        {
+          MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
+          mb.setMessage(sql.getError());
+          mb.setText(BaseMessages.getString(PKG, "LucidDBStreamingLoaderDialog.SQLError.DialogTitle")); //$NON-NLS-1$
+          mb.open();
+        }
+      }
+      catch (KettleException ke)
+      {
+        new ErrorDialog(shell, BaseMessages.getString(PKG, "LucidDBStreamingLoaderDialog.CouldNotBuildSQL.DialogTitle"), //$NON-NLS-1$
+            BaseMessages.getString(PKG, "LucidDBStreamingLoaderDialog.CouldNotBuildSQL.DialogMessage"), ke); //$NON-NLS-1$
+      }
+
     }
 }

@@ -1382,5 +1382,12 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.GetRepositoryNames</tooltip>
 		<iconfile>ui/images/GRN.png</iconfile>
 	</step>
+	<step id="PentahoReportingOutput">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.PentahoReportingOutput</description>
+		<classname>org.pentaho.di.trans.steps.pentahoreporting.PentahoReportingOutputMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.PentahoReportingOutput</tooltip>
+		<iconfile>ui/images/JFR.png</iconfile>
+	</step>
 
 </steps>

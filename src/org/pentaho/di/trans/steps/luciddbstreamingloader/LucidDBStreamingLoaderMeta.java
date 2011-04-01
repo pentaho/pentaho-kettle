@@ -20,8 +20,10 @@ import java.util.Map;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
+import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -989,5 +991,60 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
     this.host = host;
   }
 
+  @Override
+  public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev) throws KettleStepException {
+    
+    SQLStatement retval = super.getSQLStatements(transMeta, stepMeta, prev);
+    
+    if (databaseMeta!=null)
+    {
+      if (prev!=null && prev.size()>0)
+      {
+        String schemaTable = databaseMeta.getQuotedSchemaTableCombination(
+            transMeta.environmentSubstitute(schemaName), 
+            transMeta.environmentSubstitute(tableName)
+            );
+        
+        if (!Const.isEmpty(schemaTable))
+        {
+          Database db = new Database(loggingObject, databaseMeta);
+          db.shareVariablesWith(transMeta);
+          try
+          {
+            db.connect();
+            
+            String cr_table = db.getDDL(schemaTable, prev);
+            
+            // Empty string means: nothing to do: set it to null...
+            if (cr_table==null || cr_table.length()==0) cr_table=null;
+            
+            retval.setSQL(cr_table);
+          }
+          catch(KettleDatabaseException dbe)
+          {
+            retval.setError(BaseMessages.getString(PKG, "LucidDBStreamingLoaderMeta.Error.ErrorConnecting", dbe.getMessage()));
+          }
+          finally
+          {
+            db.disconnect();
+          }
+        }
+        else
+        {
+          retval.setError(BaseMessages.getString(PKG, "LucidDBStreamingLoaderMeta.Error.NoTable"));
+        }
+      }
+      else
+      {
+        retval.setError(BaseMessages.getString(PKG, "LucidDBStreamingLoaderMeta.Error.NoInput"));
+      }
+    }
+    else
+    {
+      retval.setError(BaseMessages.getString(PKG, "LucidDBStreamingLoaderMeta.Error.NoConnection"));
+    }
+
+    return retval;
+  }
 
 }

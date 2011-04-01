@@ -18,15 +18,14 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.SQLWarning;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
@@ -164,7 +163,7 @@ public class LucidDBStreamingLoader extends BaseStep implements StepInterface {
           logDebug("Remote rows is up now...");
 
         if (log.isDebug())
-          logDebug("Sleeping for 1second");
+          logDebug("Sleeping for 1 second");
         Thread.sleep(1000);
 
         if (log.isDebug())
@@ -244,7 +243,7 @@ public class LucidDBStreamingLoader extends BaseStep implements StepInterface {
         }
         
         if (isDetailed())
-          logDetailed(data.format.toString());
+          logDetailed(Arrays.toString(data.format));
 
         // Create head format object.
 
