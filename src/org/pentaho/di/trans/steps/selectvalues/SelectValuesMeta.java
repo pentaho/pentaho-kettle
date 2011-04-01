@@ -903,8 +903,10 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface,
                 if (fieldAttr.getKey().equals("META_GROUPING")) { metaChange.setGroupingSymbol(attributeValue); } else
                 if (fieldAttr.getKey().equals("META_STORAGE_TYPE")) { metaChange.setStorageType(ValueMeta.getStorageType(attributeValue)); } else
                 if (fieldAttr.getKey().equals("META_ENCODING")) { metaChange.setEncoding(attributeValue); } else
+                if (fieldAttr.getKey().equals("META_DATE_FORMAT_LENIENT")) { metaChange.setDateFormatLenient(ValueMeta.convertStringToBoolean(attributeValue)==null ? false : true); } else 
+                if (fieldAttr.getKey().equals("META_ENCODING")) { metaChange.setEncoding(attributeValue); } else 
                 {
-                  throw new RuntimeException("Unhandled metadata injection of attribute: "+fieldAttr.toString()+" - "+fieldAttr.getDescription());
+                  throw new RuntimeException("Unhandled metadata injection of attribute: "+fieldAttr.getKey()+" - "+fieldAttr.getDescription());
                 }
               }
               meta[row] = metaChange;
