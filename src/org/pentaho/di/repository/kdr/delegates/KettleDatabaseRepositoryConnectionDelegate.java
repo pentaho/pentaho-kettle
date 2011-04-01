@@ -48,7 +48,6 @@ import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryElementMetaInterface;
 import org.pentaho.di.repository.RepositoryObject;
 import org.pentaho.di.repository.RepositoryObjectType;
-import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 
 public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRepositoryBaseDelegate {
@@ -284,6 +283,10 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 		{
 			try
 			{
+	       closeJobAttributeInsertPreparedStatement();
+	       closeStepAttributeInsertPreparedStatement();
+	       closeTransAttributeInsertPreparedStatement();
+	        
 				if (!database.isAutoCommit()) database.commit();
 				
 				// Also, clear the counters, reducing the risk of collisions!
@@ -557,6 +560,15 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
         {
             database.emptyAndCommit(psTransAttributesInsert, useBatchProcessing, 1); // batch mode!
             psTransAttributesInsert = null;
+        }
+    }
+
+    public synchronized void closeJobAttributeInsertPreparedStatement() throws KettleException
+    {
+        if (psJobAttributesInsert!=null)
+        {
+            database.emptyAndCommit(psJobAttributesInsert, useBatchProcessing, 1); // batch mode!
+            psJobAttributesInsert = null;
         }
     }
 
