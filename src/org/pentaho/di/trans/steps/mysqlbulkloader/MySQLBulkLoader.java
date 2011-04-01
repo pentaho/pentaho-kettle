@@ -162,13 +162,6 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
         		loadCommand += ",";
         }
         
-        // Build list of column names to set
-        loadCommand += "(";
-        for (int cnt = 0; cnt < meta.getFieldTable().length; cnt++){
-          loadCommand += "`" + meta.getFieldTable()[cnt] + "`";
-          if (cnt < meta.getFieldTable().length - 1)
-            loadCommand += ",";
-        }
         loadCommand += ");"+Const.CR;
         
         logBasic("Starting the MySQL bulk Load in a separate thread : "+loadCommand);
@@ -521,7 +514,7 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
 		public void run()
 	    {
 			try{
-				fifoStream = new BufferedOutputStream( new FileOutputStream( this.fifoName ), this.size );
+				fifoStream = new BufferedOutputStream( new FileOutputStream( OpenFifo.this.fifoName ), this.size );
 			} catch (Exception ex) {
                 this.ex = ex;
             }
