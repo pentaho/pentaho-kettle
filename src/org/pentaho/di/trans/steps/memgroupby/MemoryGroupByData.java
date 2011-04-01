@@ -42,7 +42,7 @@ public class MemoryGroupByData extends BaseStepData implements StepDataInterface
 			HashEntry entry = (HashEntry) obj;
 			
 			try {
-				return entryMeta.compare(groupData, entry.groupData)==0;
+				return groupMeta.compare(groupData, entry.groupData)==0;
 			} catch(KettleValueException e) {
 				throw new RuntimeException(e);
 			}
