@@ -99,10 +99,10 @@ public class TransPainter extends BasePainter
     
   public TransPainter(GCInterface gc, TransMeta transMeta, Point area, ScrollBarInterface hori, ScrollBarInterface vert, 
       TransHopMeta candidate, Point drop_candidate, Rectangle selrect, List<AreaOwner> areaOwners, List<StepMeta> mouseOverSteps,
-      int iconsize, int linewidth, int gridsize, int shadowSize, boolean antiAliasing, String noteFontName, int noteFontHeight, Trans trans) {
+      int iconsize, int linewidth, int gridsize, int shadowSize, boolean antiAliasing, String noteFontName, int noteFontHeight) {
     
     this(gc, transMeta, area, hori, vert, candidate, drop_candidate, selrect, areaOwners, mouseOverSteps, iconsize, linewidth, gridsize, shadowSize, 
-        antiAliasing, noteFontName, noteFontHeight, trans, false);
+        antiAliasing, noteFontName, noteFontHeight, new Trans(transMeta), false);
   }
     
     private static String[] getPeekTitles(){
