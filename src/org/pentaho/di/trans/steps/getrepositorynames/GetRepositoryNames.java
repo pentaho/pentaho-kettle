@@ -91,7 +91,8 @@ public class GetRepositoryNames extends BaseStep implements StepInterface {
     outputRow[outputIndex++] = repositoryObject.getObjectId().toString();   // the object ID
     outputRow[outputIndex++] = repositoryObject.getModifiedUser();   // modified user
     outputRow[outputIndex++] = repositoryObject.getModifiedDate();   // modified date
-
+    outputRow[outputIndex++] = repositoryObject.getDescription(); // description
+    
     if (meta.isIncludeRowNumber()) {
       outputRow[outputIndex++] = Long.valueOf(data.rownr++);
     }

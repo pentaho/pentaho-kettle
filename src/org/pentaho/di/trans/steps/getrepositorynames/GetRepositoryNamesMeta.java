@@ -184,6 +184,14 @@ public class GetRepositoryNamesMeta extends BaseStepMeta implements StepMetaInte
     modifiedDate.setOrigin(origin);
     row.addValueMeta(modifiedDate);
     
+    // description
+    //
+    ValueMetaInterface description = new ValueMeta("description", ValueMeta.TYPE_STRING);
+    description.setLength(500);
+    description.setPrecision(-1);
+    description.setOrigin(origin);
+    row.addValueMeta(description);
+    
     if (includeRowNumber) {
       ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(rowNumberField), ValueMeta.TYPE_INTEGER);
       v.setLength(ValueMetaInterface.DEFAULT_INTEGER_LENGTH, 0);
@@ -241,7 +249,7 @@ public class GetRepositoryNamesMeta extends BaseStepMeta implements StepMetaInte
 
   public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException {
     try {
-      int nrfiles = rep.countNrStepAttributes(id_step, "file_name");
+      int nrfiles = rep.countNrStepAttributes(id_step, "directory");
       String objectTypeString = rep.getStepAttributeString(id_step, "object_type");
       if (objectTypeSelection!=null) {
         objectTypeSelection = ObjectTypeSelection.valueOf(objectTypeString);
