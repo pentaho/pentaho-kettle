@@ -160,8 +160,6 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface
 			dis = new DataInputStream(fis);
 	
 			RowMetaInterface add = new RowMeta(dis);		
-				
-			if (add==null) return;
 			for (int i=0;i<add.size();i++)
 			{
 				add.getValueMeta(i).setOrigin(name);
