@@ -229,7 +229,7 @@ public class MailInput extends BaseStep implements StepInterface
 						break;
 					case MailInputField.COLUMN_REPLY_TO:
 						String replyto=null;
-						if(data.mailConn.getMessage().getFrom()!=null) {
+						if(data.mailConn.getMessage().getReplyTo()!=null) {
 							for(int f=0; f<data.mailConn.getMessage().getReplyTo().length; f++) {
 								if(replyto==null)
 									replyto=data.mailConn.getMessage().getReplyTo()[f].toString();
