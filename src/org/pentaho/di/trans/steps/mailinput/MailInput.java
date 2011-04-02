@@ -15,6 +15,7 @@
 package org.pentaho.di.trans.steps.mailinput;
 
 import java.text.SimpleDateFormat;
+import java.lang.StringBuffer;
 import java.util.Date;
 
 import org.pentaho.di.core.Const;
@@ -288,7 +289,19 @@ public class MailInput extends BaseStep implements StepInterface
 					case MailInputField.COLUMN_ATTACHED_FILES_COUNT:
 						r[index]=new Long(data.mailConn.getAttachedFilesCount(null));
 						break;
+					case MailInputField.COLUMN_HEADER:
+                        String name = meta.getInputFields()[i].getName();
+                        String[] headerValues = data.mailConn.getMessage().getHeader(name);
+                        StringBuffer sb = new StringBuffer();
+                        if ( headerValues != null && headerValues.length > 0 ) {
+                            for ( int h = 0 ; h < headerValues.length; h++ ) {
+                                if ( h > 0 ) sb.append(";");
+                                sb.append(headerValues[h]);
+                            }
+                            r[index]=new String(sb.toString());
+                        }
 					default:
+
 						break;
 				}
 			}   // End of loop over fields...
