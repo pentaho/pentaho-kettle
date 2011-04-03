@@ -302,14 +302,14 @@ public class OlapInputDialog extends BaseStepDialog implements
 		fdlMDX.top = new FormAttachment(wPassword, 2 * margin);
 		wlMDX.setLayoutData(fdlMDX);
 
-		wMDX = new StyledTextComp(shell, SWT.MULTI | SWT.LEFT | SWT.BORDER
+		wMDX = new StyledTextComp(transMeta, shell, SWT.MULTI | SWT.LEFT | SWT.BORDER
 				| SWT.H_SCROLL | SWT.V_SCROLL, "");
 		props.setLook(wMDX, Props.WIDGET_STYLE_FIXED);
 		wMDX.addModifyListener(lsMod);
 		fdMDX = new FormData();
 		fdMDX.left = new FormAttachment(0, 0);
 		fdMDX.top = new FormAttachment(wlMDX, margin);
-		fdMDX.right = new FormAttachment(100, 0);
+		fdMDX.right = new FormAttachment(100, -2*margin);
 		fdMDX.bottom = new FormAttachment(this.wAscLink, -margin);
 		wMDX.setLayoutData(fdMDX);
 

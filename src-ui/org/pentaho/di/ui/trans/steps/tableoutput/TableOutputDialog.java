@@ -1443,7 +1443,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 			{
 				if (sql.hasSQL())
 				{
-					SQLEditor sqledit = new SQLEditor(shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(), sql.getSQL());
+					SQLEditor sqledit = new SQLEditor(transMeta, shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(), sql.getSQL());
 					sqledit.open();
 				}
 				else

@@ -744,7 +744,7 @@ public class DatabaseExplorerDialogLegacy extends Dialog
 			db.connect();
 			RowMetaInterface r = db.getTableFields(tableName);
 			String sql = db.getCreateTableStatement(tableName, r, null, false, null, true);
-			SQLEditor se = new SQLEditor(shell, SWT.NONE, dbMeta, dbcache, sql);
+			SQLEditor se = new SQLEditor(dbMeta, shell, SWT.NONE, dbMeta, dbcache, sql);
 			se.open();
 		}
 		catch(KettleDatabaseException dbe)
@@ -791,7 +791,7 @@ public class DatabaseExplorerDialogLegacy extends Dialog
     				Database targetdb = new Database(targetdbi);
     
     				String sql = targetdb.getCreateTableStatement(tableName, r, null, false, null, true);
-    				SQLEditor se = new SQLEditor(shell, SWT.NONE, dbMeta, dbcache, sql);
+    				SQLEditor se = new SQLEditor(dbMeta, shell, SWT.NONE, dbMeta, dbcache, sql);
     				se.open();
     			}
     		}
@@ -817,7 +817,7 @@ public class DatabaseExplorerDialogLegacy extends Dialog
 	
 	public void getSQL(String tableName)
 	{
-		SQLEditor sql = new SQLEditor(shell, SWT.NONE, dbMeta, dbcache, "SELECT * FROM "+tableName);
+		SQLEditor sql = new SQLEditor(dbMeta, shell, SWT.NONE, dbMeta, dbcache, "SELECT * FROM "+tableName);
 		sql.open();
 	}
 	
@@ -868,7 +868,7 @@ public class DatabaseExplorerDialogLegacy extends Dialog
     
     public void getTruncate(String activeSchemaTable)
     {
-        SQLEditor sql = new SQLEditor(shell, SWT.NONE, dbMeta, dbcache, "-- TRUNCATE TABLE "+activeSchemaTable);
+        SQLEditor sql = new SQLEditor(dbMeta, shell, SWT.NONE, dbMeta, dbcache, "-- TRUNCATE TABLE "+activeSchemaTable);
         sql.open();
     }
 

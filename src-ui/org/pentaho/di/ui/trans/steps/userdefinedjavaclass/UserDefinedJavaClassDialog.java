@@ -794,8 +794,8 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 				item.setText(getNextName(tabName));
 				break;
 		}
-		StyledTextComp wScript = new StyledTextComp(item.getParent(), SWT.MULTI | SWT.LEFT | SWT.H_SCROLL
-						| SWT.V_SCROLL, item.getText());
+		StyledTextComp wScript = new StyledTextComp(transMeta, item.getParent(), SWT.MULTI | SWT.LEFT | SWT.H_SCROLL
+						| SWT.V_SCROLL, item.getText(), false);
 		if ((tabCode != null) && tabCode.length() > 0)
 			wScript.setText(tabCode);
 		else

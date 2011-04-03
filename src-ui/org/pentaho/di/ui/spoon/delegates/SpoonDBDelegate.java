@@ -62,7 +62,7 @@ public class SpoonDBDelegate extends SpoonDelegate
 
 	public void sqlConnection(DatabaseMeta databaseMeta)
 	{
-		SQLEditor sql = new SQLEditor(spoon.getShell(), SWT.NONE, databaseMeta, DBCache.getInstance(), "");
+		SQLEditor sql = new SQLEditor(databaseMeta, spoon.getShell(), SWT.NONE, databaseMeta, DBCache.getInstance(), "");
 		sql.open();
 	}
 

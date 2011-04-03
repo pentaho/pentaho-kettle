@@ -55,6 +55,7 @@ import org.pentaho.di.trans.steps.regexeval.RegexEvalMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
+import org.pentaho.di.ui.core.widget.StyledTextComp;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
@@ -63,7 +64,7 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 	private static Class<?> PKG = RegexEvalMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	private Label        wlScript;
-	private Text         wScript;
+	private StyledTextComp         wScript;
 	private FormData     fdlScript, fdScript,fdResultField,fdlfieldevaluate, fdfieldevaluate;
 	
 	private LabelTextVar wResultField;
@@ -309,14 +310,14 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 		wbTestRegExScript.setLayoutData(fdbTestRegExScript);
 		
 		
-		wScript=new Text(wGeneralComp, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
+		wScript=new StyledTextComp(transMeta, wGeneralComp, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
 		wScript.setText(BaseMessages.getString(PKG, "RegexEvalDialog.Script.Label")); //$NON-NLS-1$
  		props.setLook(wScript, Props.WIDGET_STYLE_FIXED);
 		wScript.addModifyListener(lsMod);
 		fdScript=new FormData();
 		fdScript.left   = new FormAttachment(0, 0);
 		fdScript.top    = new FormAttachment(wbTestRegExScript, margin);
-		fdScript.right  = new FormAttachment(100, -5);
+		fdScript.right  = new FormAttachment(100, -10);
 		fdScript.bottom = new FormAttachment(100, -25);
 		wScript.setLayoutData(fdScript);
         //SelectionAdapter lsVar = VariableButtonListenerFactory.getSelectionAdapter(shell, wScript);

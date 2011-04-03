@@ -2533,7 +2533,7 @@ public static void copyInternalJobVariables(JobMeta sourceJobMeta, TransMeta tar
     NotePadMeta before = (NotePadMeta) ni.clone();
     String title = BaseMessages.getString(PKG, "JobGraph.Dialog.EditNote.Title");
     
-    NotePadDialog dd = new NotePadDialog(shell, title, ni);
+    NotePadDialog dd = new NotePadDialog(jobMeta, shell, title, ni);
     NotePadMeta n = dd.open();
     if (n != null)
     {

@@ -38,6 +38,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.NotePadMeta;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -134,6 +135,8 @@ public class NotePadDialog extends Dialog {
 
 	private Font	font;
 	
+	private VariableSpace variables;
+	
 	/**
 	 * Dialog to allow someone to show or enter a text in variable width font
 	 * 
@@ -146,17 +149,18 @@ public class NotePadDialog extends Dialog {
 	 * @param text
 	 *            The text to display or edit
 	 */
-	public NotePadDialog(Shell parent, String title, NotePadMeta nMeta) {
+	public NotePadDialog(VariableSpace space, Shell parent, String title, NotePadMeta nMeta) {
 		super(parent, SWT.NONE);
 		props = PropsUI.getInstance();
 		this.title = title;
 		if (nMeta != null) {
 			notePadMeta = nMeta;
 		}
+		this.variables=space;
 	}
 
-	public NotePadDialog(Shell parent, String title) {
-		this(parent, title, null);
+	public NotePadDialog(VariableSpace space, Shell parent, String title) {
+		this(space, parent, title, null);
 	}
 
 	public NotePadMeta open() {
@@ -202,7 +206,7 @@ public class NotePadDialog extends Dialog {
 		fdlDesc.left = new FormAttachment(0, 0);
 		fdlDesc.top = new FormAttachment(0, margin);
 		wlDesc.setLayoutData(fdlDesc);
-		wDesc = new StyledTextComp(wNoteContentComp, SWT.MULTI | SWT.LEFT
+		wDesc = new StyledTextComp(variables, wNoteContentComp, SWT.MULTI | SWT.LEFT
 				| SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
 
 		wDesc.setText("");
@@ -211,7 +215,7 @@ public class NotePadDialog extends Dialog {
 		fdDesc = new FormData();
 		fdDesc.left = new FormAttachment(0, 0);
 		fdDesc.top = new FormAttachment(wlDesc, margin);
-		fdDesc.right = new FormAttachment(100, 0);
+		fdDesc.right = new FormAttachment(100, -10);
 		fdDesc.bottom = new FormAttachment(100, -margin);
 		wDesc.setLayoutData(fdDesc);
 

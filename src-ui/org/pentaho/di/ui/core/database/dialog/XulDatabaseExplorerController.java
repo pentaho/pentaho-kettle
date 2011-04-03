@@ -62,7 +62,6 @@ import org.pentaho.ui.xul.swt.tags.SwtButton;
 import org.pentaho.ui.xul.swt.tags.SwtDialog;
 import org.pentaho.ui.xul.util.XulDialogCallback;
 
-@SuppressWarnings("unchecked")
 public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 
   private static final Class<?> PKG = XulDatabaseExplorerController.class;
@@ -79,7 +78,6 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
   private DBCache dbcache;
   private List<DatabaseMeta> databases;
   private boolean isExpanded;
-  private boolean isSplitSchemaAndTable;
   private boolean isJustLook;
 
   private static final String DATABASE_IMAGE = "ui/images/folder_connection.png";
@@ -229,7 +227,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
     if (this.model.getTable() == null) {
       return;
     }
-    SQLEditor theSqlEditor = new SQLEditor(this.dbExplorerDialog.getShell(), SWT.NONE, this.model.getDatabaseMeta(), this.dbcache, "-- TRUNCATE TABLE " + getSchemaAndTable(this.model));
+    SQLEditor theSqlEditor = new SQLEditor(this.getDatabaseMeta(), this.dbExplorerDialog.getShell(), SWT.NONE, this.model.getDatabaseMeta(), this.dbcache, "-- TRUNCATE TABLE " + getSchemaAndTable(this.model));
     theSqlEditor.open();
   }
 
@@ -237,7 +235,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
     if (this.model.getTable() == null) {
       return;
     }
-    SQLEditor theSqlEditor = new SQLEditor(this.dbExplorerDialog.getShell(), SWT.NONE, this.model.getDatabaseMeta(), this.dbcache, "SELECT * FROM " + getSchemaAndTable(this.model));
+    SQLEditor theSqlEditor = new SQLEditor(this.getDatabaseMeta(), this.dbExplorerDialog.getShell(), SWT.NONE, this.model.getDatabaseMeta(), this.dbcache, "SELECT * FROM " + getSchemaAndTable(this.model));
     theSqlEditor.open();
   }
 
@@ -498,7 +496,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
        String tableName = getSchemaAndTable(this.model);
        RowMetaInterface r = db.getTableFields(tableName);
        String sql = db.getCreateTableStatement(tableName, r, null, false, null, true);
-       SQLEditor se = new SQLEditor(this.dbExplorerDialog.getShell(), SWT.NONE, this.model.getDatabaseMeta(), this.dbcache, sql);
+       SQLEditor se = new SQLEditor(this.getDatabaseMeta(), this.dbExplorerDialog.getShell(), SWT.NONE, this.model.getDatabaseMeta(), this.dbcache, sql);
        se.open();
     } catch (KettleDatabaseException dbe) {
       new ErrorDialog(this.dbExplorerDialog.getShell(), BaseMessages.getString(PKG, "Dialog.Error.Header"), BaseMessages.getString(PKG,  "DatabaseExplorerDialog.Error.RetrieveLayout"), dbe);
@@ -539,7 +537,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
             RowMetaInterface r = targetdb.getTableFields(tableName);
 
             String sql = targetdb.getCreateTableStatement(tableName, r, null, false, null, true);
-            SQLEditor se = new SQLEditor(this.dbExplorerDialog.getShell(), SWT.NONE, this.model.getDatabaseMeta(), this.dbcache, sql);
+            SQLEditor se = new SQLEditor(this.getDatabaseMeta(), this.dbExplorerDialog.getShell(), SWT.NONE, this.model.getDatabaseMeta(), this.dbcache, sql);
             se.open();
           } finally {
             targetdb.disconnect();

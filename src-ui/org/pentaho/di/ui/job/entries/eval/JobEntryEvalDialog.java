@@ -169,14 +169,14 @@ public class JobEntryEvalDialog extends JobEntryDialog implements JobEntryDialog
         fdlScript.left = new FormAttachment(0, 0);
         fdlScript.top = new FormAttachment(wName, margin);
         wlScript.setLayoutData(fdlScript);
-        wScript=new StyledTextComp(shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
+        wScript=new StyledTextComp(jobEntry, shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
         wScript.setText(BaseMessages.getString(PKG, "JobEval.Script.Default"));
         props.setLook(wScript, Props.WIDGET_STYLE_FIXED);
         wScript.addModifyListener(lsMod);
         fdScript = new FormData();
         fdScript.left = new FormAttachment(0, 0);
         fdScript.top = new FormAttachment(wlScript, margin);
-        fdScript.right = new FormAttachment(100, -5);
+        fdScript.right = new FormAttachment(100, -10);
         fdScript.bottom = new FormAttachment(wlPosition, -margin);
         wScript.setLayoutData(fdScript);
         wScript.addModifyListener(new ModifyListener()

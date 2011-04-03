@@ -301,12 +301,12 @@ public class DynamicSQLRowDialog extends BaseStepDialog implements StepDialogInt
 		fdlSQL.top  = new FormAttachment(wqueryOnlyOnChange, margin);
 		wlSQL.setLayoutData(fdlSQL);
 
-		wSQL=new StyledTextComp(shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
+		wSQL=new StyledTextComp(transMeta, shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
  		props.setLook(wSQL, Props.WIDGET_STYLE_FIXED);
 		fdSQL=new FormData();
 		fdSQL.left  = new FormAttachment(0, 0);
 		fdSQL.top   = new FormAttachment(wlSQL, margin );
-		fdSQL.right = new FormAttachment(100, 0);
+		fdSQL.right = new FormAttachment(100, -2*margin);
 		fdSQL.bottom= new FormAttachment(wOK, -4*margin);
 		wSQL.setLayoutData(fdSQL);
 

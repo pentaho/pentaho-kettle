@@ -723,7 +723,7 @@ public class LucidDBStreamingLoaderDialog
         fdlCustomTb.right = new FormAttachment(100, 0);
         wlCustomTb.setLayoutData(fdlCustomTb);
 
-        wCustomTb = new StyledTextComp(wCustomComp, SWT.MULTI | SWT.LEFT
+        wCustomTb = new StyledTextComp(transMeta, wCustomComp, SWT.MULTI | SWT.LEFT
             | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
         props.setLook(wCustomTb, Props.WIDGET_STYLE_FIXED);
         wCustomTb.addModifyListener(lsMod);
@@ -731,7 +731,7 @@ public class LucidDBStreamingLoaderDialog
         fdCustomTb = new FormData();
         fdCustomTb.left = new FormAttachment(0, 0);
         fdCustomTb.top = new FormAttachment(wlCustomTb, margin);
-        fdCustomTb.right = new FormAttachment(100, -margin);
+        fdCustomTb.right = new FormAttachment(100, -2*margin);
         fdCustomTb.bottom = new FormAttachment(100, -margin);
         wCustomTb.setLayoutData(fdCustomTb);
 
@@ -1339,7 +1339,7 @@ public class LucidDBStreamingLoaderDialog
         {
           if (sql.hasSQL())
           {
-            SQLEditor sqledit = new SQLEditor(shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(),
+            SQLEditor sqledit = new SQLEditor(transMeta, shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(),
                 sql.getSQL());
             sqledit.open();
           }

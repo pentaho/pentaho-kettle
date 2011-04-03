@@ -448,13 +448,13 @@ public class JobEntrySyslogDialog extends JobEntryDialog implements JobEntryDial
         fdlMessage.right = new FormAttachment(middle, -margin);
         wlMessage.setLayoutData(fdlMessage);
         
-        wMessage=new StyledTextComp(wMessageGroup, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
+        wMessage=new StyledTextComp(jobEntry, wMessageGroup, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
         props.setLook(wMessage);
         wMessage.addModifyListener(lsMod);
         fdMessage = new FormData();
         fdMessage.left = new FormAttachment(middle, margin);
         fdMessage.top = new FormAttachment(wDatePattern, margin);
-        fdMessage.right = new FormAttachment(100, 0);
+        fdMessage.right = new FormAttachment(100, -2*margin);
         fdMessage.bottom = new FormAttachment(100, -margin);
         wMessage.setLayoutData(fdMessage);
 

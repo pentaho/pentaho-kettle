@@ -509,7 +509,7 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
                     sql.append(statement).append(";").append(Const.CR).append(Const.CR);
                   }
                 }
-                SQLEditor editor = new SQLEditor(shell, SWT.NONE, rep.getDatabaseMeta(), DBCache.getInstance(), sql
+                SQLEditor editor = new SQLEditor(rep.getDatabaseMeta(), shell, SWT.NONE, rep.getDatabaseMeta(), DBCache.getInstance(), sql
                     .toString());
                 editor.open();
 

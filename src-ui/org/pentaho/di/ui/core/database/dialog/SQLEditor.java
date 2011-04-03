@@ -47,6 +47,7 @@ import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
@@ -92,7 +93,9 @@ public class SQLEditor
 	private int style = SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN;
 	private Shell parentShell;
 	
-	public SQLEditor(Shell parent, int style, DatabaseMeta ci, DBCache dbc, String sql)
+	private VariableSpace variables;
+	
+	public SQLEditor(VariableSpace space, Shell parent, int style, DatabaseMeta ci, DBCache dbc, String sql)
 	{
 			props=PropsUI.getInstance();
 			log=new LogChannel(ci);
@@ -101,6 +104,7 @@ public class SQLEditor
 			dbcache=dbc;
 			this.parentShell = parent;
 			this.style = (style != SWT.None) ? style : this.style;
+			this.variables=space;
 	}
 
 	public void open()
@@ -127,13 +131,13 @@ public class SQLEditor
 		fdlScript.left = new FormAttachment(0, 0);
 		fdlScript.top  = new FormAttachment(0, 0);
 		wlScript.setLayoutData(fdlScript);
-		wScript=new StyledTextComp(shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
+		wScript=new StyledTextComp(this.variables, shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
 		wScript.setText("");
  		props.setLook(wScript, Props.WIDGET_STYLE_FIXED);
 		fdScript=new FormData();
 		fdScript.left   = new FormAttachment(0, 0);
 		fdScript.top    = new FormAttachment(wlScript, margin);
-		fdScript.right  = new FormAttachment(100, -5);
+		fdScript.right  = new FormAttachment(100, -10);
 		fdScript.bottom = new FormAttachment(100, -70);
 		wScript.setLayoutData(fdScript);
 		

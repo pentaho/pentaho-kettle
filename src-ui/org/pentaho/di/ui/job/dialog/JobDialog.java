@@ -1498,7 +1498,7 @@ public class JobDialog extends Dialog
 							String comments="-- "+logTable.getLogTableType()+Const.CR;
 							comments+="--"+Const.CR+Const.CR;
 							
-							SQLEditor sqledit = new SQLEditor(shell, SWT.NONE, logTable.getDatabaseMeta(), DBCache.getInstance(), comments+createTable);
+							SQLEditor sqledit = new SQLEditor(jobMeta, shell, SWT.NONE, logTable.getDatabaseMeta(), DBCache.getInstance(), comments+createTable);
 							sqledit.open();
 						}
 						else

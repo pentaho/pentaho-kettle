@@ -590,14 +590,14 @@ public class SSHDialog extends BaseStepDialog implements StepDialogInterface
         fdlCommand.right = new FormAttachment(middle, -2*margin);
         wlCommand.setLayoutData(fdlCommand);
 
-        wCommand=new StyledTextComp(wCommands, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
+        wCommand=new StyledTextComp(transMeta, wCommands, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
         wCommand.setToolTipText(BaseMessages.getString(PKG, "SSHDialog.Command.Tooltip"));
         props.setLook(wCommand);
         wCommand.addModifyListener(lsMod);
         fdCommand = new FormData();
         fdCommand.left = new FormAttachment(middle, margin);
         fdCommand.top = new FormAttachment(wCommandField,margin);
-        fdCommand.right = new FormAttachment(100, 0);
+        fdCommand.right = new FormAttachment(100, -2*margin);
         fdCommand.bottom = new FormAttachment(100, -margin);
         wCommand.setLayoutData(fdCommand);
 		

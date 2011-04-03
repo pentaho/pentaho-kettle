@@ -2267,7 +2267,7 @@ public class TransDialog extends Dialog
 						
 						if (ddl.length()>0) {
 						    allOK=false;
-							SQLEditor sqledit = new SQLEditor(shell, SWT.NONE, logTable.getDatabaseMeta(), transMeta.getDbCache(), ddl.toString());
+							SQLEditor sqledit = new SQLEditor(transMeta, shell, SWT.NONE, logTable.getDatabaseMeta(), transMeta.getDbCache(), ddl.toString());
 							sqledit.open();
 						} 
 					} finally { 

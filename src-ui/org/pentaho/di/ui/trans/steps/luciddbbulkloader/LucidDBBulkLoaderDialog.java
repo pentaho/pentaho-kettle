@@ -686,7 +686,7 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 			{
 				if (sql.hasSQL())
 				{
-					SQLEditor sqledit = new SQLEditor(shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(),
+					SQLEditor sqledit = new SQLEditor(transMeta, shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(),
 							sql.getSQL());
 					sqledit.open();
 				}

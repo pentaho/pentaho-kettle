@@ -68,6 +68,7 @@ import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.ControlSpaceKeyAdapter;
+import org.pentaho.di.ui.core.widget.StyledTextComp;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
@@ -178,7 +179,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 	private FormData	fdTrustAll;
 	
     private Label wlFilterString;
-    private Text wFilterString;
+    private StyledTextComp wFilterString;
     private FormData fdlFilterString, fdFilterString;
     
 	
@@ -840,14 +841,14 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
         fdlFilterString.right = new FormAttachment(middle, -2*margin);
         wlFilterString.setLayoutData(fdlFilterString);
 
-        wFilterString = new Text(wSearchGroup, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
-        wFilterString.setToolTipText(BaseMessages.getString(PKG, "LDAPInputDialog.FilterString.Tooltip"));
+        wFilterString=new StyledTextComp(transMeta, wSearchGroup, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
+ 		wFilterString.setToolTipText(BaseMessages.getString(PKG, "LDAPInputDialog.FilterString.Tooltip"));
         props.setLook(wFilterString);
         wFilterString.addModifyListener(lsMod);
         fdFilterString = new FormData();
         fdFilterString.left = new FormAttachment(middle, -margin);
         fdFilterString.top = new FormAttachment(wfilterField, margin);
-        fdFilterString.right = new FormAttachment(100, 0);
+        fdFilterString.right = new FormAttachment(100, -2*margin);
         fdFilterString.bottom = new FormAttachment(100, -margin);
         wFilterString.setLayoutData(fdFilterString);
         wFilterString.addKeyListener(new ControlSpaceKeyAdapter(transMeta, wFilterString));

@@ -177,13 +177,13 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
 		fdlSQL.top  = new FormAttachment(wConnection, margin*2);
 		wlSQL.setLayoutData(fdlSQL);
 
-		wSQL=new StyledTextComp(shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
+		wSQL=new StyledTextComp(transMeta, shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
  		props.setLook(wSQL, Props.WIDGET_STYLE_FIXED);
 		wSQL.addModifyListener(lsMod);
 		fdSQL=new FormData();
 		fdSQL.left  = new FormAttachment(0, 0);
 		fdSQL.top   = new FormAttachment(wlSQL, margin  );
-		fdSQL.right = new FormAttachment(100, 0);
+		fdSQL.right = new FormAttachment(100, -2*margin);
 		fdSQL.bottom= new FormAttachment(60, 0     );
 		wSQL.setLayoutData(fdSQL);
 		

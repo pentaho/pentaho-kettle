@@ -18,6 +18,7 @@ import org.eclipse.jface.window.DefaultToolTip;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyAdapter;
@@ -36,6 +37,7 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.GUIResource;
+
 
 public class ControlSpaceKeyAdapter extends KeyAdapter {
 
@@ -123,7 +125,7 @@ public class ControlSpaceKeyAdapter extends KeyAdapter {
       props.setLook(list);
       list.setItems(getVariableNames(variables));
       final DefaultToolTip toolTip = new DefaultToolTip(list, ToolTip.RECREATE, true);
-      toolTip.setImage(GUIResource.getInstance().getImageSpoon());
+      toolTip.setImage(GUIResource.getInstance().getImageVariable());
       toolTip.setHideOnMouseDown(true);
       toolTip.setRespectMonitorBounds(true);
       toolTip.setRespectDisplayBounds(true);
@@ -191,6 +193,11 @@ public class ControlSpaceKeyAdapter extends KeyAdapter {
       } else if (control instanceof CCombo) {
     	  CCombo combo = (CCombo)control;
     	  combo.setText(extra); // We can't know the location of the cursor yet. All we can do is overwrite.
+      } else if (control instanceof StyledTextComp) {
+    	  ((StyledTextComp)control).insert(extra);
+      } 
+      else if (control instanceof StyledText) {
+    	  ((StyledText)control).insert(extra);
       } 
     }
     if (!shell.isDisposed())

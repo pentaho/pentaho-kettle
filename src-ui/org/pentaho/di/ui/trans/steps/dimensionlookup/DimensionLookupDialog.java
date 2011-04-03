@@ -1697,7 +1697,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
         SQLStatement sql = info.getSQLStatements(transMeta, stepinfo, prev);
         if (!sql.hasError()) {
           if (sql.hasSQL()) {
-            SQLEditor sqledit = new SQLEditor(shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(), sql.getSQL());
+            SQLEditor sqledit = new SQLEditor(transMeta, shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(), sql.getSQL());
             sqledit.open();
           } else {
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);

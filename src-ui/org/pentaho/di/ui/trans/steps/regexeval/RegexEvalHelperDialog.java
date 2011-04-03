@@ -190,14 +190,14 @@ public class RegexEvalHelperDialog extends Dialog
 		fdlRegExScript.top  = new FormAttachment(0, 2*margin);
 		wlRegExScript.setLayoutData(fdlRegExScript);
 
-		wRegExScript=new StyledTextComp(wNoteContentComp, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
-		wRegExScript.setText("");
+		wRegExScript=new StyledTextComp(transmeta ,wNoteContentComp, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
+		wRegExScript.setText(""); 
         props.setLook(wRegExScript, Props.WIDGET_STYLE_FIXED);
         props.setLook(wRegExScript);
         fdRegExScript = new FormData();
         fdRegExScript.left = new FormAttachment(0, 0);
         fdRegExScript.top = new FormAttachment(wlRegExScript, 2*margin);
-        fdRegExScript.right = new FormAttachment(100, 0);
+        fdRegExScript.right = new FormAttachment(100, -2*margin);
         fdRegExScript.bottom = new FormAttachment(40, -margin);
         wRegExScript.setLayoutData(fdRegExScript);
 		

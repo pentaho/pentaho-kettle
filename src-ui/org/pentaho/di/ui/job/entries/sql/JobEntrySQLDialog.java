@@ -348,13 +348,13 @@ public class JobEntrySQLDialog extends JobEntryDialog implements JobEntryDialogI
         fdlSQL.top = new FormAttachment(wUseSubs, margin);
         wlSQL.setLayoutData(fdlSQL);
 
-        wSQL=new StyledTextComp(shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
+        wSQL=new StyledTextComp(jobEntry, shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
         props.setLook(wSQL, Props.WIDGET_STYLE_FIXED);
         wSQL.addModifyListener(lsMod);
         fdSQL = new FormData();
         fdSQL.left = new FormAttachment(0, 0);
         fdSQL.top = new FormAttachment(wlSQL, margin);
-        fdSQL.right = new FormAttachment(100, -5);
+        fdSQL.right = new FormAttachment(100, -10);
         fdSQL.bottom = new FormAttachment(wlPosition, -margin);
         wSQL.setLayoutData(fdSQL);
 

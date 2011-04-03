@@ -24,6 +24,7 @@ package org.pentaho.di.ui.core.widget;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.eclipse.jface.fieldassist.ControlDecoration;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.ExtendedModifyEvent;
 import org.eclipse.swt.custom.ExtendedModifyListener;
@@ -47,14 +48,19 @@ import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FillLayout;
+
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.gui.GUIResource;
 
 
 public class StyledTextComp extends Composite {
@@ -67,15 +73,21 @@ public class StyledTextComp extends Composite {
 	private boolean		bFullSelection=false;
 	private StyledText	styledText;
 	private Menu 		styledTextPopupmenu; 
-	//private Clipboard   clipboard;
-	//private Shell		sShell;
 	private String 		strTabName;
 	private Composite	xParent;
 	
 	private KeyListener kls;
+	private VariableSpace variables;
+	private boolean varsSensitive;
 	
-	public StyledTextComp(Composite parent, int args, String strTabName) {
+	public StyledTextComp(VariableSpace space, Composite parent, int args, String strTabName) {
+		this(space, parent, args, strTabName, true);
+	}
+	
+	public StyledTextComp(VariableSpace space, Composite parent, int args, String strTabName, boolean varsSensitive) {
 		super(parent, SWT.NONE);
+		this.varsSensitive=varsSensitive;
+	    this.variables = space;
 		undoStack = new LinkedList<UndoRedoStack>();
 		redoStack = new LinkedList<UndoRedoStack>();
 		styledText = new StyledText(this, args);
@@ -106,6 +118,16 @@ public class StyledTextComp extends Composite {
 		
 		styledText.addKeyListener(kls);
 		
+		if(this.varsSensitive){
+		    ControlDecoration controlDecoration = new ControlDecoration(styledText, SWT.TOP | SWT.RIGHT);
+		    Image image = GUIResource.getInstance().getImageVariable();
+		    controlDecoration.setImage(image);
+		    controlDecoration.setDescriptionText(BaseMessages.getString(PKG, "StyledTextComp.tooltip.InsertVariable"));
+		    PropsUI.getInstance().setLook(controlDecoration.getControl());
+	        styledText.addKeyListener(new ControlSpaceKeyAdapter(this.variables, styledText));
+		}
+		
+        
 		//Create the drop target on the StyledText
 	    DropTarget dt = new DropTarget(styledText, DND.DROP_MOVE);
 	    dt.setTransfer(new Transfer[] { TextTransfer.getInstance() });

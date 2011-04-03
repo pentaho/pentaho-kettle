@@ -223,7 +223,7 @@ public class JavaFilterDialog extends BaseStepDialog implements StepDialogInterf
 		fdlCondition.left = new FormAttachment(0, 0);
 		fdlCondition.right= new FormAttachment(middle, -margin);
 		wlCondition.setLayoutData(fdlCondition);
-		wCondition=new StyledTextComp(wSettingsGroup, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
+		wCondition=new StyledTextComp(transMeta, wSettingsGroup, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
 		props.setLook(wCondition);
 		wCondition.addModifyListener(lsMod);
 		FormData fdCondition = new FormData();

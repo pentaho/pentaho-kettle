@@ -1554,7 +1554,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 			{
 				if (sql.hasSQL())
 				{
-					SQLEditor sqledit = new SQLEditor(shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(),
+					SQLEditor sqledit = new SQLEditor(transMeta, shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(),
 							sql.getSQL());
 					sqledit.open();
 				}

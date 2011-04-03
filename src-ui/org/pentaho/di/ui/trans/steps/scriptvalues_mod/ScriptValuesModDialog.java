@@ -685,7 +685,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 				item.setText(getNextName(cScriptName));
 				break;
 		}
-		StyledTextComp wScript=new StyledTextComp(item.getParent(), SWT.MULTI | SWT.LEFT |  SWT.H_SCROLL | SWT.V_SCROLL, item.getText());
+		StyledTextComp wScript=new StyledTextComp(transMeta, item.getParent(), SWT.MULTI | SWT.LEFT |  SWT.H_SCROLL | SWT.V_SCROLL, item.getText(), false);
 		if((strScript !=null) && strScript.length()>0) wScript.setText(strScript);
 		else wScript.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.ScriptHere.Label")+Const.CR+Const.CR); 
 		item.setImage(imageInactiveScript);

@@ -2243,7 +2243,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   public void newNote() {
     selectionRegion = null;
     String title = BaseMessages.getString(PKG, "TransGraph.Dialog.NoteEditor.Title"); //$NON-NLS-1$
-    NotePadDialog dd = new NotePadDialog(shell, title); //$NON-NLS-1$
+    NotePadDialog dd = new NotePadDialog(transMeta, shell, title); //$NON-NLS-1$
     NotePadMeta n = dd.open();
     if (n != null)
     {
@@ -2753,7 +2753,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     NotePadMeta before = (NotePadMeta) ni.clone();
 
     String title = BaseMessages.getString(PKG, "TransGraph.Dialog.EditNote.Title"); //$NON-NLS-1$
-    NotePadDialog dd = new NotePadDialog(shell, title, ni);
+    NotePadDialog dd = new NotePadDialog(transMeta, shell, title, ni);
     NotePadMeta n = dd.open();
 
     if (n != null)

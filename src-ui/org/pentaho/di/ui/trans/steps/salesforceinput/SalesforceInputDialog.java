@@ -429,14 +429,14 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
         fdlCondition.right = new FormAttachment(middle, -margin);
         wlCondition.setLayoutData(fdlCondition);
 
-        wCondition=new StyledTextComp(wSettingsGroup, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
+        wCondition=new StyledTextComp(transMeta, wSettingsGroup, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
         wCondition.setToolTipText(BaseMessages.getString(PKG, "SalesforceInputDialog.Condition.Tooltip"));
         props.setLook(wCondition, Props.WIDGET_STYLE_FIXED);
         wCondition.addModifyListener(lsMod);
         fdCondition = new FormData();
         fdCondition.left = new FormAttachment(middle, margin);
         fdCondition.top = new FormAttachment(wModule, margin);
-        fdCondition.right = new FormAttachment(100, -margin);
+        fdCondition.right = new FormAttachment(100, -2*margin);
         fdCondition.bottom = new FormAttachment(wlPosition, -margin);
         wCondition.setLayoutData(fdCondition);
         wCondition.addModifyListener(new ModifyListener()
@@ -482,13 +482,13 @@ public class SalesforceInputDialog extends BaseStepDialog implements StepDialogI
         fdlQuery.right = new FormAttachment(middle, -margin);
         wlQuery.setLayoutData(fdlQuery);
         
-		wQuery=new StyledTextComp(wSettingsGroup, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
+		wQuery=new StyledTextComp(transMeta, wSettingsGroup, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
  		props.setLook(wQuery, Props.WIDGET_STYLE_FIXED);
 		wQuery.addModifyListener(lsMod);
 		fdQuery=new FormData();
 		fdQuery.left  = new FormAttachment(middle, 0);
 		fdQuery.top   = new FormAttachment(wspecifyQuery, margin );
-		fdQuery.right = new FormAttachment(100, -margin);
+		fdQuery.right = new FormAttachment(100, -2*margin);
 		fdQuery.bottom= new FormAttachment(wlPosition, -margin );
 		wQuery.setLayoutData(fdQuery);
 		wQuery.addModifyListener(new ModifyListener()
