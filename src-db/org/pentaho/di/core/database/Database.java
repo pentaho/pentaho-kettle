@@ -4048,7 +4048,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		ResultSet alltables=null;
 		try
 		{
-			alltables = dbmd.getTables(null, schemaname, null, databaseMeta.getViewTypes() );
+			alltables = getDatabaseMetaData().getTables(null, schemaname, null, databaseMeta.getViewTypes() );
 			while (alltables.next())
 			{
 				// due to PDI-743 with ODBC and MS SQL Server the order is changed and try/catch included for safety
