@@ -63,6 +63,8 @@ public class WriteToLogMeta extends BaseStepMeta implements StepMetaInterface
     
     private boolean displayHeader;
     
+    private String logmessage;
+    
     private String loglevel;
     
 	public WriteToLogMeta()
@@ -142,12 +144,28 @@ public class WriteToLogMeta extends BaseStepMeta implements StepMetaInterface
     	this.displayHeader=displayheader;
     }
     
+	public String getLogMessage()
+	{
+		if (logmessage == null)
+		{
+			logmessage="";
+		}
+		return logmessage;
+	}
+	public void setLogMessage(String s)
+	{
+		logmessage=s;
+	}
+
+    
 	private void readData(Node stepnode)  throws KettleXMLException
 	{
 	  try
 	    {
 		  loglevel = XMLHandler.getTagValue(stepnode, "loglevel");
 		  displayHeader = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "displayHeader"));
+		  
+		  logmessage = XMLHandler.getTagValue(stepnode, "logmessage");
 		  
 		  Node fields = XMLHandler.getSubNode(stepnode, "fields");
           int nrfields = XMLHandler.countNodes(fields, "field");
@@ -171,6 +189,8 @@ public class WriteToLogMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("      " + XMLHandler.addTagValue("loglevel", loglevel));
         retval.append("      " + XMLHandler.addTagValue("displayHeader", displayHeader));
         
+        retval.append("      " + XMLHandler.addTagValue("logmessage", logmessage));
+        
         retval.append("    <fields>" + Const.CR);
         for (int i = 0; i < fieldName.length; i++)
         {
@@ -186,6 +206,8 @@ public class WriteToLogMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		loglevel=logLevelCodes[3];
 		displayHeader=true;
+		logmessage = "";
+		
         int nrfields = 0;
 
         allocate(nrfields);
@@ -203,6 +225,8 @@ public class WriteToLogMeta extends BaseStepMeta implements StepMetaInterface
 	        {
 	        	loglevel = rep.getStepAttributeString(id_step, "loglevel");
 	        	displayHeader = rep.getStepAttributeBoolean(id_step, "displayHeader");
+	        	
+	        	logmessage = rep.getStepAttributeString(id_step, "logmessage");
 	        	
 	            int nrfields = rep.countNrStepAttributes(id_step, "field_name");
 
@@ -225,6 +249,8 @@ public class WriteToLogMeta extends BaseStepMeta implements StepMetaInterface
 	        {
 	        	rep.saveStepAttribute(id_transformation, id_step, "loglevel", loglevel);
 	        	rep.saveStepAttribute(id_transformation, id_step, "displayHeader", displayHeader);
+	        	
+	        	rep.saveStepAttribute(id_transformation, id_step, "logmessage", logmessage);
 	        	
 	            for (int i = 0; i < fieldName.length; i++)
 	            {

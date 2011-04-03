@@ -48,6 +48,7 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -60,6 +61,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.writetolog.WriteToLogMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
+import org.pentaho.di.ui.core.widget.StyledTextComp;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
@@ -80,6 +82,10 @@ public class WriteToLogDialog extends BaseStepDialog implements StepDialogInterf
     private Button wPrintHeader;
     private FormData fdlLoglevel, fdLoglevel;
 
+    private Label wlLogMessage;
+    private StyledTextComp wLogMessage;
+    private FormData fdlLogMessage, fdLogMessage;
+    
 	private Label        wlFields;
 	private TableView    wFields;
 	private FormData     fdlFields, fdFields;
@@ -179,7 +185,28 @@ public class WriteToLogDialog extends BaseStepDialog implements StepDialogInterf
 		fdPrintHeader.right = new FormAttachment(100, 0);
 		wPrintHeader.setLayoutData(fdPrintHeader);
 		
-        
+        // Log message to display
+		wlLogMessage = new Label(shell, SWT.RIGHT);
+        wlLogMessage.setText(BaseMessages.getString(PKG, "WriteToLogDialog.Shell.Title"));
+        props.setLook(wlLogMessage);
+        fdlLogMessage = new FormData();
+        fdlLogMessage.left = new FormAttachment(0, 0);
+        fdlLogMessage.top = new FormAttachment(wPrintHeader, margin);
+		fdlLogMessage.right = new FormAttachment(middle, -margin);
+        wlLogMessage.setLayoutData(fdlLogMessage);
+
+        wLogMessage=new StyledTextComp(transMeta, shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
+        props.setLook(wLogMessage,Props.WIDGET_STYLE_FIXED);
+        wLogMessage.addModifyListener(lsMod);
+        fdLogMessage = new FormData();
+        fdLogMessage.left = new FormAttachment(middle, 0);
+        fdLogMessage.top = new FormAttachment(wPrintHeader, margin);
+        fdLogMessage.right = new FormAttachment(100, -2*margin);
+        fdLogMessage.height = 125;
+        wLogMessage.setLayoutData(fdLogMessage);
+
+
+		
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
 		wGet=new Button(shell, SWT.PUSH);
@@ -195,7 +222,7 @@ public class WriteToLogDialog extends BaseStepDialog implements StepDialogInterf
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
-		fdlFields.top  = new FormAttachment(wPrintHeader, margin);
+		fdlFields.top  = new FormAttachment(wLogMessage, margin);
 		wlFields.setLayoutData(fdlFields);
 		
 		final int FieldsCols=1;
@@ -328,6 +355,10 @@ public class WriteToLogDialog extends BaseStepDialog implements StepDialogInterf
 		wLoglevel.select(input.getLogLevelByDesc().getLevel());
 
 		wPrintHeader.setSelection(input.isdisplayHeader());
+		
+        if (input.getLogMessage() != null)
+            wLogMessage.setText(input.getLogMessage());
+
 		Table table = wFields.table;
 		if (input.getFieldName().length>0) table.removeAll();
 		for (int i=0;i<input.getFieldName().length;i++)
@@ -361,6 +392,11 @@ public class WriteToLogDialog extends BaseStepDialog implements StepDialogInterf
 			input.setLogLevel(3); // Basic
 		else
 			input.setLogLevel(wLoglevel.getSelectionIndex());
+		
+		if (wLogMessage.getText() != null && wLogMessage.getText().length() > 0)
+			input.setLogMessage(wLogMessage.getText());
+		else
+			input.setLogMessage("");
 		
 		int nrfields = wFields.nrNonEmpty();
 		input.allocate(nrfields);

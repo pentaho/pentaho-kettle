@@ -29,6 +29,7 @@ public class WriteToLogData extends BaseStepData implements StepDataInterface
 	public int     fieldnrs[]; 
 	public int     fieldnr;
 	public LogLevel loglevel;
+	public String logmessage;
 	
 	public WriteToLogData()
 	{

@@ -81,6 +81,11 @@ public class WriteToLog extends BaseStep implements StepInterface
 			}
 			data.fieldnr=data.fieldnrs.length;
 			data.loglevel=meta.getLogLevelByDesc();
+			data.logmessage= Const.NVL( this.environmentSubstitute(meta.getLogMessage()), "");
+			if(!Const.isEmpty(data.logmessage)) {
+				data.logmessage+=Const.CR + Const.CR;
+			}
+			
 		} // end if first
 		
 		StringBuffer out=new StringBuffer();
@@ -90,6 +95,8 @@ public class WriteToLog extends BaseStep implements StepInterface
 				+ "------------------------------"
 				+ Const.CR);
 
+		out.append(getRealLogMessage());
+		
 		// Loop through fields
 		for(int i=0;i<data.fieldnr;i++)
 		{		
@@ -152,6 +159,12 @@ public class WriteToLog extends BaseStep implements StepInterface
       break;
     }
   }
+
+	public String getRealLogMessage()
+	{
+		return data.logmessage;
+	}
+	
 
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
 	{
