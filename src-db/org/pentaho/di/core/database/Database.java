@@ -4052,16 +4052,16 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		}
 		
 		Map<String, Collection<String>> viewMap = new HashMap<String, Collection<String>>();
-		ResultSet alltables=null;
+		ResultSet allviews=null;
 		try
 		{
-			alltables = dbmd.getTables(null, schemaname, null, databaseMeta.getViewTypes() );
-			while (alltables.next())
+			allviews = getDatabaseMetaData().getTables(null, schemaname, null, databaseMeta.getViewTypes() );
+			while (allviews.next())
 			{
 				// due to PDI-743 with ODBC and MS SQL Server the order is changed and try/catch included for safety
 				String cat = "";
 				try {
-					cat = alltables.getString("TABLE_CAT");
+					cat = allviews.getString("TABLE_CAT");
 				} catch (Exception e) {
 					// ignore
 					if(log.isDebug()) log.logDebug("Error getting views for field TABLE_CAT (ignored): "+e.toString());
@@ -4069,7 +4069,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 				
 				String schema = "";
 				try {
-					schema = alltables.getString("TABLE_SCHEM");
+					schema = allviews.getString("TABLE_SCHEM");
 				} catch (Exception e) {
 					// ignore
 					if(log.isDebug()) log.logDebug("Error getting views for field TABLE_SCHEM (ignored): "+e.toString());
@@ -4077,7 +4077,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 				
 				if (Const.isEmpty(schema)) schema = cat;
 				
-				String table = alltables.getString("TABLE_NAME");
+				String table = allviews.getString("TABLE_NAME");
 				
 				if (log.isRowLevel()) log.logRowlevel(toString(), "got view from meta-data: "+databaseMeta.getQuotedSchemaTableCombination(schema, table));
 				multimapPut(schema, table, viewMap);
@@ -4091,7 +4091,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		{
 			try
 			{
-				if (alltables!=null) alltables.close();
+				if (allviews!=null) allviews.close();
 			}
 			catch(SQLException e)
 			{
@@ -4151,7 +4151,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		ResultSet alltables=null;
 		try
 		{
-			alltables = dbmd.getTables(null, schemaname, null, databaseMeta.getSynonymTypes() );
+			alltables = getDatabaseMetaData().getTables(null, schemaname, null, databaseMeta.getSynonymTypes() );
 			while (alltables.next())
 			{
 				// due to PDI-743 with ODBC and MS SQL Server the order is changed and try/catch included for safety
