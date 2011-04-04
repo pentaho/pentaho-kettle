@@ -38,7 +38,6 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.autodoc.KettleReportBuilder.OutputType;
-import org.pentaho.di.ui.trans.steps.autodoc.AutoDocDialog;
 import org.w3c.dom.Node;
 
 
@@ -304,11 +303,6 @@ public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, Auto
 	public StepDataInterface getStepData()
 	{
 		return new AutoDocData();
-	}
-	
-	@Override
-	public String getDialogClassName() {
-		return AutoDocDialog.class.getName();
 	}
 
 	/**
