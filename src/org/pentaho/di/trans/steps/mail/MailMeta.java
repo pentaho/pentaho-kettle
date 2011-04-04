@@ -796,14 +796,14 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 		      
 		      
 		      // How many arguments?
-		      int imagesnr = rep.countNrJobEntryAttributes(id_step, "embeddedimage"); //$NON-NLS-1$
+		      int imagesnr = rep.countNrStepAttributes(id_step, "embeddedimage"); //$NON-NLS-1$
 		      
 		      allocate(imagesnr);
 
 		      // Read them all...
 		      for (int a = 0; a < imagesnr; a++) {
-		    	  embeddedimages[a] = rep.getJobEntryAttributeString(id_step, a, "embeddedimage"); //$NON-NLS-1$
-		    	  contentids[a] = rep.getJobEntryAttributeString(id_step, a, "contentid"); //$NON-NLS-1$
+		    	  embeddedimages[a] = rep.getStepAttributeString(id_step, a, "embeddedimage"); //$NON-NLS-1$
+		    	  contentids[a] = rep.getStepAttributeString(id_step, a, "contentid"); //$NON-NLS-1$
 		      }
 		      
 		    } catch (KettleDatabaseException dbe)
@@ -868,8 +868,8 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 	      // save the arguments...
 	      if (embeddedimages != null) {
 	        for (int i = 0; i < embeddedimages.length; i++) {
-	          rep.saveJobEntryAttribute(id_transformation, id_step, i, "embeddedimage", embeddedimages[i]); //$NON-NLS-1$
-	          rep.saveJobEntryAttribute(id_transformation, id_step, i, "contentid", contentids[i]); //$NON-NLS-1$
+	          rep.saveStepAttribute(id_transformation, id_step, i, "embeddedimage", embeddedimages[i]); //$NON-NLS-1$
+	          rep.saveStepAttribute(id_transformation, id_step, i, "contentid", contentids[i]); //$NON-NLS-1$
 	        }
 	      }
 	    } catch (KettleDatabaseException dbe)
