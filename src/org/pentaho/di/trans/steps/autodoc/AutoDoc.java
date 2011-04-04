@@ -77,12 +77,7 @@ public class AutoDoc extends BaseStep implements StepInterface
 			//
 			FileObject targetFile = KettleVFS.getFileObject( environmentSubstitute(meta.getTargetFilename()) );
 			String targetFilename = KettleVFS.getFilename(targetFile);
-			
-			// Initialize the repository information handlers (images, metadata, loading, etc)
-			//
-			TransformationInformation.init(getTrans().getRepository());
-			JobInformation.init(getTrans().getRepository());
-			
+						
 			// Create the report builder
 			//
 			KettleReportBuilder kettleReportBuilder = new KettleReportBuilder(this, data.filenames, KettleVFS.getFilename(targetFile), meta);
@@ -153,7 +148,10 @@ public class AutoDoc extends BaseStep implements StepInterface
         data.tree = data.repository.loadRepositoryDirectoryTree();
       }
       
-      TransformationInformation.init(data.repository);
+      // Initialize the repository information handlers (images, metadata, loading, etc)
+      //
+      TransformationInformation.init(getTrans().getRepository());
+      JobInformation.init(getTrans().getRepository());
 		}
 		
 		// One more transformation or job to place in the documentation.

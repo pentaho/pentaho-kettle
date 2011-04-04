@@ -212,7 +212,7 @@ public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, Auto
 		  
 		  // Add a bunch of metadata to the output for each input row
 		  //
-      ValueMetaInterface valueMeta = new ValueMeta("trans_meta", ValueMetaInterface.TYPE_SERIALIZABLE);
+      ValueMetaInterface valueMeta = new ValueMeta("meta", ValueMetaInterface.TYPE_SERIALIZABLE);
       valueMeta.setOrigin(origin);
       rowMeta.addValueMeta(valueMeta);
 		  

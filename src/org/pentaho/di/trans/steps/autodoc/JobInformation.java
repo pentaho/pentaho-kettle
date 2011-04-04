@@ -13,9 +13,9 @@ import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.ScrollBarInterface;
 import org.pentaho.di.core.gui.SwingGC;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.JobPainter;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.ui.spoon.JobPainter;
 
 public class JobInformation {
 
