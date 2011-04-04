@@ -661,6 +661,39 @@ public class ValueDataUtil
         default: throw new KettleValueException("The 'round' function only works on numeric data" );
         }
     }
+
+    public static Object ceil(ValueMetaInterface metaA, Object dataA) throws KettleValueException
+    {
+	if (dataA==null) return null;
+	switch(metaA.getType())
+	{
+	case ValueMetaInterface.TYPE_NUMBER   :
+	    return new Double( Math.ceil( metaA.getNumber(dataA).doubleValue()) );
+	case ValueMetaInterface.TYPE_INTEGER   :
+	    return metaA.getInteger(dataA);
+	case ValueMetaInterface.TYPE_BIGNUMBER :
+	    return new BigDecimal( Math.ceil( metaA.getNumber(dataA).doubleValue()) );
+	
+	default: throw new KettleValueException("The 'ceil' function only works on numeric data" );
+	}
+    }
+    
+    public static Object floor(ValueMetaInterface metaA, Object dataA) throws KettleValueException
+    {
+        if (dataA==null) return null;
+        switch(metaA.getType())
+	    {
+	    case ValueMetaInterface.TYPE_NUMBER   :
+		return new Double( Math.floor( metaA.getNumber(dataA).doubleValue()) );
+	    case ValueMetaInterface.TYPE_INTEGER   :
+		return metaA.getInteger(dataA);
+	    case ValueMetaInterface.TYPE_BIGNUMBER :
+		return new BigDecimal( Math.floor( metaA.getNumber(dataA).doubleValue()) );
+
+	    default: throw new KettleValueException("The 'floor' function only works on numeric data" );
+	    }
+    }
+
     public static Object abs(ValueMetaInterface metaA, Object dataA) throws KettleValueException
     {
         if (dataA==null) return null;

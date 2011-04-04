@@ -394,6 +394,12 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
             case CalculatorMetaFunction.CALC_REFINED_SOUNDEX     : 
             	defaultResultType=ValueMetaInterface.TYPE_STRING;
                 break;
+            case CalculatorMetaFunction.CALC_CEIL               :  // ROUND( A )
+                defaultResultType = ValueMetaInterface.TYPE_INTEGER;
+                break;
+            case CalculatorMetaFunction.CALC_FLOOR              :  // ROUND( A )
+                defaultResultType = ValueMetaInterface.TYPE_INTEGER;
+                break;
             default:
                 break;
             }
