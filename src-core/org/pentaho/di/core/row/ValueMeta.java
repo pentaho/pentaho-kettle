@@ -1183,6 +1183,11 @@ public class ValueMeta implements ValueMetaInterface
                 byte[] target = new byte[origin.length];
                 System.arraycopy(origin, 0, target, 0, origin.length);
                 return target;
+                
+            case ValueMeta.TYPE_SERIALIZABLE:
+              // Let's not create a copy but simply return the same value.
+              //
+              return object;
 
             default: throw new KettleValueException(toString()+": unable to make copy of value type: "+getType());
             }

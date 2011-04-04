@@ -1389,5 +1389,12 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.PentahoReportingOutput</tooltip>
 		<iconfile>ui/images/JFR.png</iconfile>
 	</step>
+	<step id="AutoDoc">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.AutoDoc</description>
+		<classname>org.pentaho.di.trans.steps.autodoc.AutoDocMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.AutoDoc</tooltip>
+		<iconfile>ui/images/autodoc.png</iconfile>
+	</step>
 
 </steps>
