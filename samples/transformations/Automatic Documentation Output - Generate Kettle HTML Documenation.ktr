@@ -92,8 +92,8 @@
       <note>Don&apos;t preview this one if you include 
 an image in the output as the Image
  doesn&apos;t convert to String.</note>
-      <xloc>637</xloc>
-      <yloc>39</yloc>
+      <xloc>580</xloc>
+      <yloc>273</yloc>
       <width>188</width>
       <heigth>52</heigth>
       <fontname>Arial</fontname>
@@ -230,9 +230,9 @@ an image in the output as the Image
     </attributes>
   </connection>
   <order>
-  <hop> <from>Get transformation filenames</from><to>deterime file type</to><enabled>Y</enabled> </hop>  <hop> <from>deterime file type</from><to>File name &amp; type only</to><enabled>Y</enabled> </hop>  <hop> <from>File name &amp; type only</from><to>Automatic Documentation Output</to><enabled>Y</enabled> </hop>  <hop> <from>Automatic Documentation Output</from><to>Modified Java Script Value</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>Get transformation filenames</from><to>deterime file type</to><enabled>Y</enabled> </hop>  <hop> <from>deterime file type</from><to>File name &amp; type only</to><enabled>Y</enabled> </hop>  <hop> <from>File name &amp; type only</from><to>Automatic Documentation Output: METADATA</to><enabled>Y</enabled> </hop>  <hop> <from>Automatic Documentation Output: METADATA</from><to>Modified Java Script Value</to><enabled>Y</enabled> </hop>  <hop> <from>File name &amp; type only</from><to>Automatic Documentation Output: HTML</to><enabled>Y</enabled> </hop>  </order>
   <step>
-    <name>Automatic Documentation Output</name>
+    <name>Automatic Documentation Output: METADATA</name>
     <type>AutoDoc</type>
     <description/>
     <distribute>Y</distribute>
@@ -255,8 +255,8 @@ an image in the output as the Image
     <include_last_exec_result>N</include_last_exec_result>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>676</xloc>
-      <yloc>108</yloc>
+      <xloc>654</xloc>
+      <yloc>214</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -265,7 +265,7 @@ an image in the output as the Image
     <name>File name &amp; type only</name>
     <type>SelectValues</type>
     <description/>
-    <distribute>Y</distribute>
+    <distribute>N</distribute>
     <copies>1</copies>
          <partitioning>
            <method>none</method>
@@ -395,8 +395,8 @@ if (FileType.equalsIgnoreCase(&quot;Transformation&quot;)) {
         <replace>N</replace>
       </field>    </fields>     <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>676</xloc>
-      <yloc>215</yloc>
+      <xloc>884</xloc>
+      <yloc>214</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -427,6 +427,36 @@ if (FileType.equalsIgnoreCase(&quot;Transformation&quot;)) {
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>299</xloc>
+      <yloc>108</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Automatic Documentation Output: HTML</name>
+    <type>AutoDoc</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+    <filename_field>filename</filename_field>
+    <file_type_field>FileType</file_type_field>
+    <target_file>${Internal.Transformation.Filename.Directory}&#47;output&#47;ETL Documenation.html</target_file>
+    <output_type>HTML</output_type>
+    <include_name>Y</include_name>
+    <include_description>Y</include_description>
+    <include_extended_description>N</include_extended_description>
+    <include_creation>N</include_creation>
+    <include_modification>Y</include_modification>
+    <include_image>Y</include_image>
+    <include_logging_config>N</include_logging_config>
+    <include_last_exec_result>N</include_last_exec_result>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>654</xloc>
       <yloc>108</yloc>
       <draw>Y</draw>
       </GUI>
