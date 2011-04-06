@@ -95,6 +95,11 @@ public class SQLEditor
 	
 	private VariableSpace variables;
 	
+    public SQLEditor(Shell parent, int style, DatabaseMeta ci, DBCache dbc, String sql)
+    {
+           this(null, parent, style, ci, dbc, sql);
+	}
+    
 	public SQLEditor(VariableSpace space, Shell parent, int style, DatabaseMeta ci, DBCache dbc, String sql)
 	{
 			props=PropsUI.getInstance();
