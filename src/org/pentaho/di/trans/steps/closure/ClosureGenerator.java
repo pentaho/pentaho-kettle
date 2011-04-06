@@ -111,7 +111,7 @@ public class ClosureGenerator extends BaseStep implements StepInterface
 	
     private void recurseParents(Object key, long distance) {
 		// catch infinite loop - change at will
-		if (distance > 20) {
+		if (distance > 50) {
 			throw new RuntimeException("infinite loop detected:" + key);
 		}
 		Object parent = data.map.get(key);
