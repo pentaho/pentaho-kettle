@@ -103,6 +103,8 @@ public class KettleReportBuilder {
 		Float fontHeight = 12f;
 		int pagePosition = 0;
 		int labelWidth = 120;
+		int textWidth = 630;
+		
 		boolean labelUnderline=false;
 		boolean labelBold=false;
 		boolean labelItalic=true;
@@ -126,7 +128,7 @@ public class KettleReportBuilder {
 		TextFieldElementFactory textFactory = new TextFieldElementFactory();
 		textFactory.setFieldname("filename");
 		textFactory.setAbsolutePosition(new Point(labelWidth, pagePosition));
-		textFactory.setMinimumWidth(500f);
+		textFactory.setMinimumWidth((float)textWidth);
 		textFactory.setMinimumHeight(fontHeight);
 		Element filenameElement = textFactory.createElement();
 		itemBand.addElement(filenameElement);
@@ -150,7 +152,7 @@ public class KettleReportBuilder {
 			textFactory = new TextFieldElementFactory();
 			textFactory.setFieldname("name");
 			textFactory.setAbsolutePosition(new Point(labelWidth, pagePosition));
-			textFactory.setMinimumWidth(250f);
+			textFactory.setMinimumWidth((float)textWidth);
 			textFactory.setMinimumHeight(fontHeight);
 			Element nameElement = textFactory.createElement();
 			itemBand.addElement(nameElement);
@@ -174,7 +176,7 @@ public class KettleReportBuilder {
 			textFactory = new TextFieldElementFactory();
 			textFactory.setFieldname("description");
 			textFactory.setAbsolutePosition(new Point(labelWidth, pagePosition));
-			textFactory.setMinimumWidth(500f);
+			textFactory.setMinimumWidth((float)textWidth);
 			textFactory.setMinimumHeight(fontHeight);
 			Element descriptionElement = textFactory.createElement();
 			itemBand.addElement(descriptionElement);
@@ -198,7 +200,7 @@ public class KettleReportBuilder {
 			textFactory = new TextFieldElementFactory();
 			textFactory.setFieldname("extended_description");
 			textFactory.setAbsolutePosition(new Point(labelWidth, pagePosition));
-			textFactory.setMinimumWidth(500f);
+			textFactory.setMinimumWidth((float)textWidth);
 			textFactory.setMinimumHeight(fontHeight);
 			Element descriptionElement = textFactory.createElement();
 			itemBand.addElement(descriptionElement);
@@ -222,7 +224,7 @@ public class KettleReportBuilder {
 			textFactory = new TextFieldElementFactory();
 			textFactory.setFieldname("logging");
 			textFactory.setAbsolutePosition(new Point(labelWidth, pagePosition));
-			textFactory.setMinimumWidth(500f);
+			textFactory.setMinimumWidth((float)textWidth);
 			textFactory.setMinimumHeight(fontHeight);
 			Element loggingElement = textFactory.createElement();
 			itemBand.addElement(loggingElement);
@@ -246,7 +248,7 @@ public class KettleReportBuilder {
 			textFactory = new TextFieldElementFactory();
 			textFactory.setFieldname("creation");
 			textFactory.setAbsolutePosition(new Point(labelWidth, pagePosition));
-			textFactory.setMinimumWidth(500f);
+			textFactory.setMinimumWidth((float)textWidth);
 			textFactory.setMinimumHeight(fontHeight);
 			Element loggingElement = textFactory.createElement();
 			itemBand.addElement(loggingElement);
@@ -270,7 +272,7 @@ public class KettleReportBuilder {
 			textFactory = new TextFieldElementFactory();
 			textFactory.setFieldname("modification");
 			textFactory.setAbsolutePosition(new Point(labelWidth, pagePosition));
-			textFactory.setMinimumWidth(500f);
+			textFactory.setMinimumWidth((float)textWidth);
 			textFactory.setMinimumHeight(fontHeight);
 			Element loggingElement = textFactory.createElement();
 			itemBand.addElement(loggingElement);
@@ -294,7 +296,7 @@ public class KettleReportBuilder {
 			textFactory = new TextFieldElementFactory();
 			textFactory.setFieldname("last_exec_result");
 			textFactory.setAbsolutePosition(new Point(labelWidth, pagePosition));
-			textFactory.setMinimumWidth(500f);
+			textFactory.setMinimumWidth((float)textWidth);
 			textFactory.setMinimumHeight(fontHeight);
 			Element loggingElement = textFactory.createElement();
 			itemBand.addElement(loggingElement);

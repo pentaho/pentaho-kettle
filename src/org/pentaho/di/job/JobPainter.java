@@ -10,7 +10,7 @@
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
  * the license for the specific language governing your rights and limitations.
  */
-package org.pentaho.di.ui.spoon;
+package org.pentaho.di.job;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,9 +30,6 @@ import org.pentaho.di.core.gui.GCInterface.EColor;
 import org.pentaho.di.core.gui.GCInterface.EFont;
 import org.pentaho.di.core.gui.GCInterface.EImage;
 import org.pentaho.di.core.gui.GCInterface.ELineStyle;
-import org.pentaho.di.job.JobEntryResult;
-import org.pentaho.di.job.JobHopMeta;
-import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryCopy;
 
 public class JobPainter extends BasePainter {

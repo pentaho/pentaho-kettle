@@ -51,7 +51,6 @@
 	<classpathentry exported="true" kind="lib" path="libext/ognl-2.6.9.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/commons/commons-validator-1.3.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/JDBC/sqlitejdbc-v037-nested.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/JDBC/postgresql-8.3-603.jdbc3.jar"/>
 	<classpathentry exported="true" kind="lib" path="test/libext/junit.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/dom4j-1.6.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/jaxen-1.1.1.jar"/>
@@ -258,5 +257,6 @@
 	<classpathentry kind="lib" path="libext/hive/libfb303.jar"/>
 	<classpathentry kind="lib" path="libext/hive/libthrift.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/hive-jdbc-0.5.0-pentaho-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libext/JDBC/postgresql-8.4-702.jdbc3.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
