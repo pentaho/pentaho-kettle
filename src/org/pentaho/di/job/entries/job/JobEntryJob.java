@@ -883,9 +883,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       }
 
     } catch (KettleException ke) {
-      logError("Error running job entry 'job' : " + ke.toString());
-      logError(Const.getStackTracker(ke));
-
+      logError("Error running job entry 'job' : ", ke);
+      
       result.setResult(false);
       result.setNrErrors(1L);
     }

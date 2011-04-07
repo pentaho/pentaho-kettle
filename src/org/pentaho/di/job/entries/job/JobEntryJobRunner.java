@@ -64,7 +64,8 @@ public class JobEntryJobRunner implements Runnable
 		}
 		catch(KettleException e)
 		{
-			log.logError("An error occurred executing this job entry : "+e.getMessage());
+		  e.printStackTrace();
+			log.logError("An error occurred executing this job entry : ", e);
 			result.setResult(false);
 			result.setNrErrors(1);
 		}

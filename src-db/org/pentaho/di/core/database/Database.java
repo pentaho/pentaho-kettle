@@ -3590,42 +3590,26 @@ public class Database implements VariableSpace, LoggingObjectInterface
 				RowMetaInterface updateRowMeta = new RowMeta();
 				Object[] updateRowData = new Object[rowMeta.size()];
 				ValueMetaInterface keyValueMeta = rowMeta.getValueMeta(0);
-				VariableSpace subjectSpace = null;
-				StringBuffer sqlBuff = null;
-				String sql = null;
-        if (subject instanceof VariableSpace) {
-          subjectSpace = (VariableSpace)subject;
-          sql = subjectSpace.getVariable("LogRecordSQL", null);          
-        }
-        if (sql == null) {
-          sqlBuff = new StringBuffer(100);
-          sqlBuff.append("UPDATE ").append( schemaTable ).append(" SET ");
-        }
-				for (int i = 1; i < rowMeta.size() ; i++) // Without ID_JOB or ID_BATCH
+				StringBuffer sqlBuff = new StringBuffer(250);
+        sqlBuff.append("UPDATE ").append( schemaTable ).append(" SET ");
+				
+        for (int i = 1; i < rowMeta.size() ; i++) // Without ID_JOB or ID_BATCH
 				{
 					ValueMetaInterface valueMeta = rowMeta.getValueMeta(i);
-					if (sql == null) {
-						if (i>1) {
-							sqlBuff.append(", ");	
-						}
-						sqlBuff.append(databaseMeta.quoteField(valueMeta.getName())).append("=? ");
+					if (i>1) {
+					  sqlBuff.append(", ");
 					}
+					sqlBuff.append(databaseMeta.quoteField(valueMeta.getName())).append("=? ");
 					
 					updateRowMeta.addValueMeta(valueMeta);
 					updateRowData[i-1] = rowData[i];
 				}
-				if (sql == null) {
-				  sqlBuff.append("WHERE ").append(databaseMeta.quoteField(keyValueMeta.getName())).append("=? ");
-				}
+				sqlBuff.append("WHERE ").append(databaseMeta.quoteField(keyValueMeta.getName())).append("=? ");
+				
 				updateRowMeta.addValueMeta(keyValueMeta);
 				updateRowData[rowMeta.size()-1] = rowData[0];
 				
-				if (sql == null) {
-				  sql = sqlBuff.toString();
-				  if (subjectSpace != null) {
-				    subjectSpace.setVariable("LogRecordSQL", sql);
-				  }
-				}
+				String sql = sqlBuff.toString();
 				execStatement(sql, updateRowMeta, updateRowData);
 				
 			} else {

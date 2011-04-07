@@ -3454,6 +3454,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         trans.setSafeModeEnabled(executionConfiguration.isSafeModeEnabled());
         trans.setPreview(true);
         trans.prepareExecution(args);
+        trans.setRepository(spoon.rep);
 
         // Add the row listeners to the allocated threads
         //

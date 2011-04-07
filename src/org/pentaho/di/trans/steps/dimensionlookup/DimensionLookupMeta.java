@@ -1753,9 +1753,9 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
                             tableName, 
                             keyLookup[i],
                             keyStream[i],
-                            v!=null?v.getOrigin():"?", //$NON-NLS-1$
+                            v!=null ? v.getOrigin() : "?", //$NON-NLS-1$
                             "", //$NON-NLS-1$
-                            "Type = "+v.toStringMeta() //$NON-NLS-1$
+                            v==null ? "" : "Type = "+v.toStringMeta() //$NON-NLS-1$
                             );
                     impact.add(ii);
                 }
@@ -1772,9 +1772,9 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
                             tableName,
                             fieldLookup[i],
                             fieldLookup[i],
-                            v!=null?v.getOrigin():"?", //$NON-NLS-1$
+                            v==null ? "" : v!=null?v.getOrigin():"?", //$NON-NLS-1$
                             "", //$NON-NLS-1$
-                            "Type = "+v.toStringMeta() //$NON-NLS-1$
+                            v==null ? "" : "Type = "+v.toStringMeta() //$NON-NLS-1$
                             );
                     impact.add(ii);
                 }
@@ -1794,9 +1794,9 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
                             tableName, 
                             keyLookup[i],
                             keyStream[i],
-                            v.getOrigin(),
+                            v==null ? "" : v.getOrigin(),
                             "", //$NON-NLS-1$
-                            "Type = "+v.toStringMeta() //$NON-NLS-1$
+                            v==null ? "" : "Type = "+v.toStringMeta() //$NON-NLS-1$
                             );
                     impact.add(ii);
                 }
@@ -1813,9 +1813,9 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
                             tableName,
                             fieldLookup[i],
                             fieldLookup[i],
-                            v.getOrigin(),
+                            v==null ? "" : v.getOrigin(),
                             "", //$NON-NLS-1$
-                            "Type = "+v.toStringMeta() //$NON-NLS-1$
+                            v==null ? "" : "Type = "+v.toStringMeta() //$NON-NLS-1$
                             );
                     impact.add(ii);
                 }

@@ -650,6 +650,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 				wFilename.setText("");
 				radioByName.setSelection(true);
 				radioFilename.setSelection(false);
+				specificationMethod=ObjectLocationSpecificationMethod.REPOSITORY_BY_NAME;
+				setRadioButtons();
 			}
 		} catch (KettleException ke)
 		{

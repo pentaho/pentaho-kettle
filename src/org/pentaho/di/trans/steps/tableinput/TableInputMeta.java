@@ -457,8 +457,13 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 		return new TableInputData();
 	}
 
-	public void analyseImpact(List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info) throws KettleStepException
-	{
+	@Override
+  public void analyseImpact(List<DatabaseImpact> impact, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info) throws KettleStepException {
+  
+	  if (stepMeta.getName().equalsIgnoreCase("cdc_cust")) {
+	    System.out.println("HERE!");
+	  }
+	  
 		// Find the lookupfields...
         RowMetaInterface out = new RowMeta(); 
         // TODO: this builds, but does it work in all cases.
@@ -485,7 +490,8 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 			}
 		}
 	}
-    
+	
+	  
     public DatabaseMeta[] getUsedDatabaseConnections()
     {
         if (databaseMeta!=null) 
