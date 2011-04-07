@@ -1396,5 +1396,12 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.AutoDoc</tooltip>
 		<iconfile>ui/images/autodoc.png</iconfile>
 	</step>
+	<step id="HL7Input">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.HL7Input</description>
+		<classname>org.pentaho.di.trans.steps.hl7input.HL7InputMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.HL7Input</tooltip>
+		<iconfile>ui/images/hl7-input.png</iconfile>
+	</step>
 
 </steps>

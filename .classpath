@@ -258,5 +258,15 @@
 	<classpathentry kind="lib" path="libext/hive/libthrift.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/hive-jdbc-0.5.0-pentaho-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/postgresql-8.4-702.jdbc3.jar"/>
+	<classpathentry kind="lib" path="libext/hl7/hapi-base-1.1.jar"/>
+	<classpathentry kind="lib" path="libext/hl7/hapi-examples-1.1.jar"/>
+	<classpathentry kind="lib" path="libext/hl7/hapi-structures-v21-1.1.jar"/>
+	<classpathentry kind="lib" path="libext/hl7/hapi-structures-v22-1.1.jar"/>
+	<classpathentry kind="lib" path="libext/hl7/hapi-structures-v23-1.1.jar"/>
+	<classpathentry kind="lib" path="libext/hl7/hapi-structures-v231-1.1.jar"/>
+	<classpathentry kind="lib" path="libext/hl7/hapi-structures-v24-1.1.jar"/>
+	<classpathentry kind="lib" path="libext/hl7/hapi-structures-v25-1.1.jar"/>
+	<classpathentry kind="lib" path="libext/hl7/hapi-structures-v251-1.1.jar"/>
+	<classpathentry kind="lib" path="libext/hl7/hapi-structures-v26-1.1.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
