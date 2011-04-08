@@ -413,7 +413,6 @@ public class ConditionEditor extends Composite
 			//
 			// set the pop-up menu
 			//
-			@Override
 			public void menuDetected(MenuDetectEvent e) {
 				
 				Point screen = new Point(e.x, e.y);
