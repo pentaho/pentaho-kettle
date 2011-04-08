@@ -77,11 +77,9 @@ import org.pentaho.di.ui.trans.steps.tableinput.SQLValuesHighlight;
  * @since Jan-05-2010
  * 
  */
-public class LucidDBStreamingLoaderDialog
-    extends BaseStepDialog
-    implements StepDialogInterface
-{
-    protected static Class<?> PKG = LucidDBStreamingLoaderMeta.class;
+public class LucidDBStreamingLoaderDialog extends BaseStepDialog implements StepDialogInterface {
+
+    private static Class<?> PKG = LucidDBStreamingLoaderMeta.class;
 
     private CCombo wConnection;
 
@@ -751,13 +749,13 @@ public class LucidDBStreamingLoaderDialog
 
         // THE BUTTONS
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
+        wOK.setText(BaseMessages.getString("System.Button.OK"));
        
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
+        wCancel.setText(BaseMessages.getString("System.Button.Cancel"));
         
         wSQL = new Button(shell, SWT.PUSH);
-        wSQL.setText(BaseMessages.getString(PKG, "LucidDBStreamingLoaderDialog.SQL.Button"));
+        wSQL.setText(BaseMessages.getString("System.Button.SQL"));
 
         setButtonPositions(new Button[] { wOK, wSQL, wCancel, }, margin, null);
         

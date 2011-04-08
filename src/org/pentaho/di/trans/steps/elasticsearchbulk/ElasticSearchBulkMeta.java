@@ -628,23 +628,22 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
   }
   
   private void checkBasicRequiredFields(List<CheckResultInterface> remarks, StepMeta stepMeta) {
-    checkRequiredString(remarks, stepMeta, getIndex(), "ElasticSearchBulkDialog.Index.Label");
-    checkRequiredString(remarks, stepMeta, getType(), "ElasticSearchBulkDialog.Type.Label");
-    checkRequiredString(remarks, stepMeta, getBatchSize(), "ElasticSearchBulkDialog.BatchSize.Label");
+    checkRequiredString(remarks, stepMeta, getIndex(), BaseMessages.getString(PKG, "ElasticSearchBulkDialog.Index.Label"));
+    checkRequiredString(remarks, stepMeta, getType(), BaseMessages.getString(PKG, "ElasticSearchBulkDialog.Type.Label"));
+    checkRequiredString(remarks, stepMeta, getBatchSize(), BaseMessages.getString(PKG, "ElasticSearchBulkDialog.BatchSize.Label"));
   }
   
-  private void checkRequiredString(List<CheckResultInterface> remarks, StepMeta stepMeta, String value, String fieldNameKey){
+  private void checkRequiredString(List<CheckResultInterface> remarks, StepMeta stepMeta, String value, String fieldName){
     if(StringUtils.isBlank(value)){
       remarks.add(
           new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, 
-              BaseMessages.getString(PKG, "ElasticSearchBulkMeta.CheckResult.MissingRequired", BaseMessages.getString(PKG, fieldNameKey)),
+              BaseMessages.getString(PKG, "ElasticSearchBulkMeta.CheckResult.MissingRequired", fieldName),
               stepMeta));  
     }
     else {
       remarks.add(
           new CheckResult(CheckResultInterface.TYPE_RESULT_OK,
-              BaseMessages.getString(PKG, "ElasticSearchBulkMeta.CheckResult.RequiredOK", BaseMessages.getString(PKG, fieldNameKey),
-                  value),
+              BaseMessages.getString(PKG, "ElasticSearchBulkMeta.CheckResult.RequiredOK", fieldName, value),
               stepMeta));
     }
   }
@@ -654,12 +653,11 @@ public class ElasticSearchBulkMeta extends BaseStepMeta implements StepMetaInter
     if (prev != null && prev.size() > 0) {
       if (isJsonInsert()) {//JSON
         if (StringUtils.isBlank(getJsonField())) {//jsonField not set
+          String jsonFieldLabel = BaseMessages.getString(PKG,"ElasticSearchBulkDialog.JsonField.Label");
+          String isJsonLabel = BaseMessages.getString(PKG, "ElasticSearchBulkDialog.IsJson.Label"); 
           remarks.add(
             new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, 
-                BaseMessages.getString(PKG, "ElasticSearchBulkMeta.CheckResult.MissingRequiredDependent", 
-                  BaseMessages.getString(PKG,"ElasticSearchBulkDialog.JsonField.Label"), 
-                  BaseMessages.getString(PKG, "ElasticSearchBulkDialog.IsJson.Label")), 
-                stepMeta));
+                BaseMessages.getString(PKG, "ElasticSearchBulkMeta.CheckResult.MissingRequiredDependent", jsonFieldLabel, isJsonLabel), stepMeta));
         }
         else if (prev.indexOfValue(getJsonField()) < 0){//jsonField not in input
           remarks.add(

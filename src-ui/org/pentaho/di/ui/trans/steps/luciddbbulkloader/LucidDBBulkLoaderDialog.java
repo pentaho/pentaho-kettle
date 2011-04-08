@@ -67,7 +67,7 @@ import org.pentaho.di.ui.trans.step.TableItemInsertListener;
  */
 public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialogInterface
 {
-	private static Class<?> PKG = LucidDBBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	private static Class<?> PKG = LucidDBBulkLoaderMeta.class; // for i18n purposes
 
 	private CCombo				wConnection;
 
@@ -283,11 +283,11 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 
 		// THE BUTTONS
 		wOK = new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+		wOK.setText(BaseMessages.getString("System.Button.OK")); //$NON-NLS-1$
 		wSQL = new Button(shell, SWT.PUSH);
-		wSQL.setText(BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.SQL.Button")); //$NON-NLS-1$
+		wSQL.setText(BaseMessages.getString("System.Button.SQL")); //$NON-NLS-1$
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+		wCancel.setText(BaseMessages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wSQL, wCancel }, margin, null);
 
