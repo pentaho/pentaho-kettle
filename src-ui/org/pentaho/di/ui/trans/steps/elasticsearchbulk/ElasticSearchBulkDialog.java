@@ -58,23 +58,22 @@ import org.elasticsearch.discovery.MasterNotDiscoveredException;
 import org.elasticsearch.indices.IndexMissingException;
 import org.elasticsearch.node.Node;
 import org.elasticsearch.node.NodeBuilder;
-
-import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.Const;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.elasticsearchbulk.ElasticSearchBulkMeta;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.LabelComboVar;
+import org.pentaho.di.ui.core.widget.LabelTextVar;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
-import org.pentaho.di.ui.core.widget.LabelTextVar;
-import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialogInterface
 {
@@ -348,11 +347,11 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
     wIndexGroup.setLayout(indexGroupLayout);
     
     //Index
-    wIndex = new LabelTextVar(transMeta, wIndexGroup, getString("ElasticSearchBulkDialog.Index.Label"), getString("ElasticSearchBulkDialog.Index.Tooltip"));
+    wIndex = new LabelTextVar(transMeta, wIndexGroup, BaseMessages.getString(PKG, "ElasticSearchBulkDialog.Index.Label"), BaseMessages.getString(PKG, "ElasticSearchBulkDialog.Index.Tooltip"));
     wIndex.addModifyListener(lsMod);
     
     //Type
-    wType = new LabelTextVar(transMeta, wIndexGroup, getString("ElasticSearchBulkDialog.Type.Label"), getString("ElasticSearchBulkDialog.Type.Tooltip"));
+    wType = new LabelTextVar(transMeta, wIndexGroup, BaseMessages.getString(PKG, "ElasticSearchBulkDialog.Type.Label"), BaseMessages.getString(PKG, "ElasticSearchBulkDialog.Type.Tooltip"));
     wType.addModifyListener(lsMod);
     
     //Test button
@@ -547,8 +546,8 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
 
     // Timeout
     wTimeOut = new LabelTimeComposite( wSettingsGroup, 
-        getString("ElasticSearchBulkDialog.TimeOut.Label"), 
-        getString("ElasticSearchBulkDialog.TimeOut.Tooltip"));
+        BaseMessages.getString(PKG, "ElasticSearchBulkDialog.TimeOut.Label"), 
+        BaseMessages.getString(PKG, "ElasticSearchBulkDialog.TimeOut.Tooltip"));
     props.setLook(wTimeOut);
     wTimeOut.addModifyListener(lsMod);
     
@@ -564,15 +563,15 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
     
     //Stop on error
     wlStopOnError = new Label(wSettingsGroup, SWT.RIGHT);
-    wlStopOnError.setText( getString("ElasticSearchBulkDialog.StopOnError.Label"));
+    wlStopOnError.setText( BaseMessages.getString(PKG, "ElasticSearchBulkDialog.StopOnError.Label"));
     
     wStopOnError = new Button(wSettingsGroup, SWT.CHECK | SWT.RIGHT);
-    wStopOnError.setToolTipText( getString("ElasticSearchBulkDialog.StopOnError.Tooltip"));
+    wStopOnError.setToolTipText( BaseMessages.getString(PKG, "ElasticSearchBulkDialog.StopOnError.Tooltip"));
     
     //ID input
     wIdInField = new LabelComboVar(transMeta, wSettingsGroup, 
-        getString("ElasticSearchBulkDialog.IdField.Label"), 
-        getString("ElasticSearchBulkDialog.IdField.Tooltip"));
+        BaseMessages.getString(PKG, "ElasticSearchBulkDialog.IdField.Label"), 
+        BaseMessages.getString(PKG, "ElasticSearchBulkDialog.IdField.Tooltip"));
     props.setLook(wIdInField);
     wIdInField.getComboWidget().setEditable(true);
     wIdInField.addModifyListener(lsMod);
@@ -587,17 +586,17 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
     
     
     wlIsOverwrite = new Label(wSettingsGroup, SWT.RIGHT);
-    wlIsOverwrite.setText(getString("ElasticSearchBulkDialog.Overwrite.Label"));
+    wlIsOverwrite.setText(BaseMessages.getString(PKG, "ElasticSearchBulkDialog.Overwrite.Label"));
     
     wIsOverwrite = new Button(wSettingsGroup, SWT.CHECK | SWT.RIGHT);
-    wIsOverwrite.setToolTipText(getString("ElasticSearchBulkDialog.Overwrite.Tooltip"));
+    wIsOverwrite.setToolTipText(BaseMessages.getString(PKG, "ElasticSearchBulkDialog.Overwrite.Tooltip"));
     
     //Output rows
     wlUseOutput = new Label(wSettingsGroup, SWT.RIGHT);
-    wlUseOutput.setText( getString("ElasticSearchBulkDialog.UseOutput.Label") );
+    wlUseOutput.setText( BaseMessages.getString(PKG, "ElasticSearchBulkDialog.UseOutput.Label") );
     
     wUseOutput = new Button(wSettingsGroup, SWT.CHECK | SWT.RIGHT);
-    wUseOutput.setToolTipText(getString("ElasticSearchBulkDialog.UseOutput.Tooltip"));
+    wUseOutput.setToolTipText(BaseMessages.getString(PKG, "ElasticSearchBulkDialog.UseOutput.Tooltip"));
     
     wUseOutput.addSelectionListener(new SelectionListener(){
       
@@ -710,10 +709,6 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
     } catch (KettleException ke) {
       new ErrorDialog(shell, BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Title"), BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"), ke);
     }
-  }
-  
-  private String getString(String key, Object...args){
-    return BaseMessages.getString(PKG, key, args);
   }
   
   private void placeControls(Group group, Control[] controls ){
@@ -926,7 +921,7 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
       switch(testType){
         case INDEX:
           if(StringUtils.isBlank(tempMeta.getIndex())){
-            showError(getString("ElasticSearchBulk.Error.NoIndex"));
+            showError(BaseMessages.getString(PKG, "ElasticSearchBulk.Error.NoIndex"));
             break;
           }
           IndicesStatusRequestBuilder indicesBld = admin.indices().prepareStatus(tempMeta.getIndex());
@@ -934,7 +929,7 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
           //IndicesStatusResponse isr = 
           lafInd.actionGet();
           String shards = "" + lafInd.get().getSuccessfulShards() + "/" + lafInd.get().getTotalShards();
-          showMessage(getString("ElasticSearchBulkDialog.TestIndex.TestOK", shards));
+          showMessage(BaseMessages.getString(PKG, "ElasticSearchBulkDialog.TestIndex.TestOK", shards));
           break;
         case CLUSTER:
           ClusterStateRequestBuilder clusterBld = admin.cluster().prepareState();
@@ -943,17 +938,17 @@ public class ElasticSearchBulkDialog extends BaseStepDialog implements StepDialo
           String name = cluResp.getClusterName().value();
           ClusterState cluState = cluResp.getState();
           int numNodes = cluState.getNodes().size();
-          showMessage(getString("ElasticSearchBulkDialog.TestCluster.TestOK", name, numNodes));
+          showMessage(BaseMessages.getString(PKG, "ElasticSearchBulkDialog.TestCluster.TestOK", name, numNodes));
           break;
       }
     } catch (NoNodeAvailableException e){
-      showError(getString("ElasticSearchBulkDialog.Error.NoNodesFound"));
+      showError(BaseMessages.getString(PKG, "ElasticSearchBulkDialog.Error.NoNodesFound"));
     } catch(MasterNotDiscoveredException e){
-      showError(getString("ElasticSearchBulkDialog.Error.NoNodesFound"));
+      showError(BaseMessages.getString(PKG, "ElasticSearchBulkDialog.Error.NoNodesFound"));
     }
     catch (Exception e){
       if(e.getCause() instanceof IndexMissingException){
-        showError(getString("ElasticSearchBulkDialog.Error.NoIndex"));
+        showError(BaseMessages.getString(PKG, "ElasticSearchBulkDialog.Error.NoIndex"));
       }
       else showError(e.getLocalizedMessage());
     }
