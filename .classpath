@@ -268,5 +268,6 @@
 	<classpathentry kind="lib" path="libext/hl7/hapi-structures-v25-1.1.jar"/>
 	<classpathentry kind="lib" path="libext/hl7/hapi-structures-v251-1.1.jar"/>
 	<classpathentry kind="lib" path="libext/hl7/hapi-structures-v26-1.1.jar"/>
+	<classpathentry kind="lib" path="libext/mongo-2.5.3.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
