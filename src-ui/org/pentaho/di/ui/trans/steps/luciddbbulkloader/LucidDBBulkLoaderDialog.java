@@ -106,11 +106,6 @@ public class LucidDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 
 	private LucidDBBulkLoaderMeta	input;
 	
-	/*
-    private static final String[] ALL_FILETYPES = new String[] {
-        	BaseMessages.getString(PKG, "LucidDBBulkLoaderDialog.Filetype.All") };
-	*
-	*/
 
 	public LucidDBBulkLoaderDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
