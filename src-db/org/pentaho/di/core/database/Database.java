@@ -405,7 +405,9 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		
 		try 
 		{
-			Class.forName(classname);
+		  synchronized(java.sql.DriverManager.class) {
+		       Class.forName(classname);
+		  }		
 		}
 		catch(NoClassDefFoundError e)
 		{ 
