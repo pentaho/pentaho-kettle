@@ -412,7 +412,9 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		
 		try 
 		{
-			Class.forName(classname);
+      synchronized(java.sql.DriverManager.class) {
+        Class.forName(classname);
+      }   
 		}
 		catch(NoClassDefFoundError e)
 		{ 
@@ -3600,9 +3602,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 				RowMetaInterface updateRowMeta = new RowMeta();
 				Object[] updateRowData = new Object[rowMeta.size()];
 				ValueMetaInterface keyValueMeta = rowMeta.getValueMeta(0);
-				// TODO: Store the created SQL in the subject (cast as VariableSpace)
-				// The insert SQL doesn't change between iterations on the job/jobentry/etc
-				// Saves a bunch of temporary string handling.
+
 				StringBuffer sqlBuff = new StringBuffer(100);
 				sqlBuff.append("UPDATE ").append( schemaTable ).append(" SET ");
 				for (int i = 1; i < rowMeta.size() ; i++) // Without ID_JOB or ID_BATCH
@@ -4140,7 +4140,6 @@ public class Database implements VariableSpace, LoggingObjectInterface
 			if (databaseMeta.useSchemaNameForTableList()) schemaname = environmentSubstitute(databaseMeta.getUsername()).toUpperCase();
 		}
 		Map<String, Collection<String>> synonymMap = new HashMap<String, Collection<String>>();
-		ArrayList<String> names = new ArrayList<String>();
 		ResultSet alltables=null;
 		try
 		{
