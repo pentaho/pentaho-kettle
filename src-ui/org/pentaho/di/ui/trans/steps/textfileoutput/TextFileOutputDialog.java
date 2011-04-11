@@ -1271,10 +1271,10 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
     	wlAddStepnr.setEnabled(!wFileNameInField.getSelection());
     	wAddPartnr.setEnabled(!wFileNameInField.getSelection());
     	wlAddPartnr.setEnabled(!wFileNameInField.getSelection());
-    	wSplitEvery.setText("0");
+    	if (wFileNameInField.getSelection()) wSplitEvery.setText("0");
     	wSplitEvery.setEnabled(!wFileNameInField.getSelection());
     	wlSplitEvery.setEnabled(!wFileNameInField.getSelection());
-    	wEndedLine.setText("");
+    	if (wFileNameInField.getSelection()) wEndedLine.setText("");
       	wEndedLine.setEnabled(!wFileNameInField.getSelection());
       	wbShowFiles.setEnabled(!wFileNameInField.getSelection());
       	wbFilename.setEnabled(!wFileNameInField.getSelection());
