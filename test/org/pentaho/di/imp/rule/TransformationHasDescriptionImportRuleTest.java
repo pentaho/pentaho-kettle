@@ -18,7 +18,7 @@ public class TransformationHasDescriptionImportRuleTest extends TestCase {
     KettleEnvironment.init();
   }
   
-  public void testDescription() throws Exception {
+  public void testRule() throws Exception {
     
     TransMeta transMeta = new TransMeta();
     transMeta.setDescription("This transformation is used for testing an import rule");

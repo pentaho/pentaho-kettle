@@ -22,10 +22,10 @@
     <tooltip>i18n:org.pentaho.di.imp.rules:ImportRule.Tooltip.TransformationHasTransLogConfigured</tooltip>
   </rule>
 
-  <rule id="JobHasTransLogConfigured">
-    <classname>org.pentaho.di.imp.rules.JobHasTransLogConfiguredImportRule</classname>
-    <description>i18n:org.pentaho.di.imp.rules:ImportRule.Description.JobHasTransLogConfigured</description>
-    <tooltip>i18n:org.pentaho.di.imp.rules:ImportRule.Tooltip.JobHasTransLogConfigured</tooltip>
+  <rule id="JobHasJobLogConfigured">
+    <classname>org.pentaho.di.imp.rules.JobHasJobLogConfiguredImportRule</classname>
+    <description>i18n:org.pentaho.di.imp.rules:ImportRule.Description.JobHasJobLogConfigured</description>
+    <tooltip>i18n:org.pentaho.di.imp.rules:ImportRule.Tooltip.JobHasJobLogConfigured</tooltip>
   </rule>
 
   <rule id="DatabaseConfiguration">

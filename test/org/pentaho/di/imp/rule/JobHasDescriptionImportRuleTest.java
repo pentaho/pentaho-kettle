@@ -18,7 +18,7 @@ public class JobHasDescriptionImportRuleTest extends TestCase {
     KettleEnvironment.init();
   }
   
-  public void testDescription() throws Exception {
+  public void testRule() throws Exception {
     
     JobMeta jobMeta = new JobMeta();
     jobMeta.setDescription("This job is used for testing an import rule");

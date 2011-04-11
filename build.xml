@@ -719,7 +719,12 @@
 		  	<test todir="${junit}" name="org.pentaho.di.core.CountersTest" haltonerror="false" />
 		  	<test todir="${junit}" name="org.pentaho.di.core.CounterTest" haltonerror="false" />
 		  	<test todir="${junit}" name="org.pentaho.di.core.RowSetTest" haltonerror="false" />
-			
+		  	<test todir="${junit}" name="org.pentaho.di.imp.rule.DatabaseConfigurationImportRuleTest" haltonerror="false" />
+		  	<test todir="${junit}" name="org.pentaho.di.imp.rule.JobHasDescriptionImportRuleTest" haltonerror="false" />
+		  	<test todir="${junit}" name="org.pentaho.di.imp.rule.TransformationHasDescriptionImportRuleTest" haltonerror="false" />
+		  	<test todir="${junit}" name="org.pentaho.di.imp.rule.JobHasJobLogConfiguredImportRuleTest" haltonerror="false" />
+		  	<test todir="${junit}" name="org.pentaho.di.imp.rule.TransformationHasTransLogConfiguredImportRuleTest" haltonerror="false" />
+
 		</junit>
 	</target>
 
@@ -820,7 +825,7 @@
   			<test todir="${junit}" name="org.pentaho.di.trans.steps.injector.InjectorTest" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.trans.steps.insertupdate.InsertUpdateTest" haltonerror="false" />
   			<test todir="${junit}" name="org.pentaho.di.trans.steps.mapping.RunMapping" haltonerror="false" />
-        <test todir="${junit}" name="org.pentaho.di.trans.steps.mapping.MappingTest" haltonerror="false" />
+        	<test todir="${junit}" name="org.pentaho.di.trans.steps.mapping.MappingTest" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.trans.steps.metainject.MetaInjectTest" haltonerror="false" />
   			<test todir="${junit}" name="org.pentaho.di.trans.steps.nullif.NullIfTest" haltonerror="false" />
   			<test todir="${junit}" name="org.pentaho.di.trans.steps.numberrange.NumberRangeRuleTest" haltonerror="false" />

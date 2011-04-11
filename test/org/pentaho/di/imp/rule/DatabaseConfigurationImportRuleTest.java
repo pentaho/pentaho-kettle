@@ -19,7 +19,7 @@ public class DatabaseConfigurationImportRuleTest extends TestCase {
     KettleEnvironment.init();
   }
   
-  public void testDescription() throws Exception {
+  public void testRule() throws Exception {
 
     // Assemble a new database.
     //

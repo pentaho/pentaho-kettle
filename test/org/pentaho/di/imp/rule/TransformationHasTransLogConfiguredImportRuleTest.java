@@ -20,7 +20,7 @@ public class TransformationHasTransLogConfiguredImportRuleTest extends TestCase 
     KettleEnvironment.init();
   }
   
-  public void testDescription() throws Exception {
+  public void testRule() throws Exception {
     
     TransMeta transMeta = new TransMeta();
     DatabaseMeta logDbMeta = new DatabaseMeta("LOGDB", "MYSQL", "JDBC", "localhost", "test", "3306", "foo", "bar");

@@ -10,7 +10,7 @@ import org.pentaho.di.core.logging.JobLogTable;
 import org.pentaho.di.core.plugins.ImportRulePluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
-import org.pentaho.di.imp.rules.TransformationHasTransLogConfiguredImportRule;
+import org.pentaho.di.imp.rules.JobHasJobLogConfiguredImportRule;
 import org.pentaho.di.job.JobMeta;
 
 public class JobHasJobLogConfiguredImportRuleTest extends TestCase {
@@ -20,7 +20,7 @@ public class JobHasJobLogConfiguredImportRuleTest extends TestCase {
     KettleEnvironment.init();
   }
   
-  public void testDescription() throws Exception {
+  public void testRule() throws Exception {
     
     JobMeta jobMeta = new JobMeta();
     DatabaseMeta logDbMeta = new DatabaseMeta("LOGDB", "MYSQL", "JDBC", "localhost", "test", "3306", "foo", "bar");
@@ -32,7 +32,7 @@ public class JobHasJobLogConfiguredImportRuleTest extends TestCase {
     PluginInterface plugin = registry.findPluginWithId(ImportRulePluginType.class, "JobHasJobLogConfigured");
     assertNotNull("The 'job has job log table configured' rule could not be found in the plugin registry!", plugin);
     
-    TransformationHasTransLogConfiguredImportRule rule = (TransformationHasTransLogConfiguredImportRule) registry.loadClass(plugin);
+    JobHasJobLogConfiguredImportRule rule = (JobHasJobLogConfiguredImportRule) registry.loadClass(plugin);
     assertNotNull("The 'job has job log table configured' class could not be loaded by the plugin registry!", plugin);
 
     rule.setEnabled(true);
