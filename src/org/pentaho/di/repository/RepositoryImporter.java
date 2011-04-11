@@ -15,6 +15,8 @@ import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.imp.ImportRules;
+import org.pentaho.di.imp.rule.ImportValidationFeedback;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.job.JobEntryJob;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
@@ -48,10 +50,17 @@ public class RepositoryImporter implements IRepositoryImporter {
 
   private String transDirOverride = null;
   private String jobDirOverride = null;
-  
+
+  private ImportRules importRules;
+
   public RepositoryImporter(Repository repository) {
+    this(repository, new ImportRules());
+  }
+  
+  public RepositoryImporter(Repository repository, ImportRules importRules) {
       this.log = new LogChannel("Repository import"); //$NON-NLS-1$
       this.rep = repository;
+      this.importRules = importRules;
   }
   
   public synchronized void importAll(RepositoryImportFeedbackInterface feedback, String fileDirectory, String[] filenames, RepositoryDirectoryInterface baseDirectory, boolean overwrite, boolean continueOnError, String versionComment) {
@@ -106,15 +115,48 @@ public class RepositoryImporter implements IRepositoryImporter {
   private void loadSharedObjects() throws KettleException {
     sharedObjects = new SharedObjects();
     
-    for (ObjectId id : rep.getDatabaseIDs(false)) sharedObjects.storeObject(rep.loadDatabaseMeta(id, null));
+    for (ObjectId id : rep.getDatabaseIDs(false)) {
+      DatabaseMeta databaseMeta = rep.loadDatabaseMeta(id, null);
+      validateImportedElement(databaseMeta);
+      sharedObjects.storeObject(databaseMeta);
+    }
     List<SlaveServer> slaveServers = new ArrayList<SlaveServer>();
     for (ObjectId id : rep.getSlaveIDs(false)) {
       SlaveServer slaveServer = rep.loadSlaveServer(id, null);
+      validateImportedElement(slaveServer);
       sharedObjects.storeObject(slaveServer);
       slaveServers.add(slaveServer);
     }
-    for (ObjectId id : rep.getClusterIDs(false)) sharedObjects.storeObject(rep.loadClusterSchema(id, slaveServers, null));
-    for (ObjectId id : rep.getPartitionSchemaIDs(false)) sharedObjects.storeObject(rep.loadPartitionSchema(id, null));
+    for (ObjectId id : rep.getClusterIDs(false)) {
+      ClusterSchema clusterSchema = rep.loadClusterSchema(id, slaveServers, null);
+      validateImportedElement(clusterSchema);
+      sharedObjects.storeObject(clusterSchema);
+    }
+    for (ObjectId id : rep.getPartitionSchemaIDs(false)) {
+      PartitionSchema partitionSchema = rep.loadPartitionSchema(id, null);
+      validateImportedElement(partitionSchema);
+      sharedObjects.storeObject(partitionSchema);
+    }
+  }
+
+  /**
+   * Validates the repository element that is about to get imported against the list of import rules.
+   * @param subject
+   * @throws KettleException
+   */
+  private void validateImportedElement(Object subject) throws KettleException {
+    List<ImportValidationFeedback> feedback = importRules.verifyRules(subject);
+    List<ImportValidationFeedback> errors = ImportValidationFeedback.getErrors(feedback);
+    if (!errors.isEmpty()) {
+      StringBuffer message = new StringBuffer("The repository import of object ["+subject.toString()+"] failed because the following validations failed: ");
+      message.append(Const.CR);
+      for (ImportValidationFeedback error: errors) {
+        message.append(" - ");
+        message.append(error.toString());
+        message.append(Const.CR);
+      }
+      throw new KettleException(message.toString());
+    }
   }
 
   public void addLog(String line) {
@@ -363,6 +405,8 @@ public class RepositoryImporter implements IRepositoryImporter {
     replaceSharedObjects(transMeta);
     feedback.setLabel(BaseMessages.getString(PKG, "RepositoryImporter.ImportTrans.Label", Integer.toString(transformationNumber), transMeta.getName()));
 
+    validateImportedElement(transMeta);
+
     // What's the directory path?
     String directoryPath = XMLHandler.getTagValue(transnode, "info", "directory");
     if (transDirOverride != null) {
@@ -403,11 +447,16 @@ public class RepositoryImporter implements IRepositoryImporter {
         rep.save(transMeta, versionComment, this, overwrite);
         feedback.addLog(BaseMessages.getString(PKG, "RepositoryImporter.TransSaved.Log", Integer.toString(transformationNumber), transMeta.getName()));
       } catch (Exception e) {
-        feedback.addLog(BaseMessages.getString(PKG, "RepositoryImporter.ErrorSavingTrans.Log", Integer.toString(transformationNumber), transMeta.getName(), e.toString()));
-        feedback.addLog(Const.getStackTracker(e));
+        feedback.addLog(BaseMessages.getString(PKG, "RepositoryImporter.ErrorSavingTrans.Log", Integer.toString(transformationNumber), transMeta.getName(), Const.getStackTracker(e)));
+
+        if (!feedback.askContinueOnErrorQuestion(
+            BaseMessages.getString(PKG, "RepositoryImporter.DoYouWantToContinue.Title"), 
+            BaseMessages.getString(PKG, "RepositoryImporter.DoYouWantToContinue.Message"))) {
+          return false;
+        }
       }
     } else {
-      feedback.addLog(BaseMessages.getString(PKG, "RepositoryImporter.ErrorSavingTrans2.Log", transMeta.getName()));
+      feedback.addLog(BaseMessages.getString(PKG, "RepositoryImporter.SkippedExistingTransformation.Log", transMeta.getName()));
     }
     return true;
   }
@@ -418,7 +467,8 @@ public class RepositoryImporter implements IRepositoryImporter {
     JobMeta jobMeta = new JobMeta(jobnode, rep, false, SpoonFactory.getInstance());
     replaceSharedObjects(jobMeta);
     feedback.setLabel(BaseMessages.getString(PKG, "RepositoryImporter.ImportJob.Label", Integer.toString(jobNumber), jobMeta.getName()));
-
+    validateImportedElement(jobMeta);
+    
     // What's the directory path?
     String directoryPath = Const.NVL(XMLHandler.getTagValue(jobnode, "directory"), Const.FILE_SEPARATOR);
 
@@ -446,10 +496,31 @@ public class RepositoryImporter implements IRepositoryImporter {
       jobMeta.setRepositoryDirectory(targetDirectory);
       jobMeta.setObjectId(existintId);
       patchJobEntries(jobMeta);
-      rep.save(jobMeta, versionComment, null, overwrite);
-      feedback.addLog(BaseMessages.getString(PKG, "RepositoryImporter.JobSaved.Log", Integer.toString(jobNumber), jobMeta.getName()));
+
+      try {
+        // Keep info on who & when this transformation was created...
+        if (jobMeta.getCreatedUser() == null || jobMeta.getCreatedUser().equals("-")) {
+          jobMeta.setCreatedDate(new Date());
+          if (rep.getUserInfo() != null) {
+            jobMeta.setCreatedUser(rep.getUserInfo().getLogin());
+          } else {
+            jobMeta.setCreatedUser(null);
+          }
+        }
+
+        rep.save(jobMeta, versionComment, null, overwrite);
+        feedback.addLog(BaseMessages.getString(PKG, "RepositoryImporter.JobSaved.Log", Integer.toString(jobNumber), jobMeta.getName()));
+      } catch(Exception e) {
+        feedback.addLog(BaseMessages.getString(PKG, "RepositoryImporter.ErrorSavingJob.Log", Integer.toString(jobNumber), jobMeta.getName(), Const.getStackTracker(e)));
+
+        if (!feedback.askContinueOnErrorQuestion(
+            BaseMessages.getString(PKG, "RepositoryImporter.DoYouWantToContinue.Title"), 
+            BaseMessages.getString(PKG, "RepositoryImporter.DoYouWantToContinue.Message"))) {
+          return false;
+        }
+      }
     } else {
-      feedback.addLog(BaseMessages.getString(PKG, "RepositoryImporter.ErrorSavingJob.Log", jobMeta.getName()));
+      feedback.addLog(BaseMessages.getString(PKG, "RepositoryImporter.SkippedExistingJob.Log", jobMeta.getName()));
     }
     return true;
   }

@@ -672,6 +672,10 @@ public class Const
 	 */
 	public static final String	XML_FILE_KETTLE_DATABASE_TYPES = "kettle-database-types.xml";
 
+  /**
+   * The XML file that contains the list of native import rules
+   */
+  public static final String  XML_FILE_KETTLE_IMPORT_RULES = "kettle-import-rules.xml";
 
     private static String[] emptyPaddedSpacesStrings;
 

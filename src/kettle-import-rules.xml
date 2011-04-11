@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rules>
+
+    <!-- NOTE i18n arguments are : i18n package and key separated by colon (:)
+    --> 
+
+  <rule id="TransformationHasDescription">
+    <classname>org.pentaho.di.imp.rules.TransformationHasDescriptionImportRule</classname>
+    <description>i18n:org.pentaho.di.imp.rules:ImportRule.Description.TransformationHasDescription</description>
+    <tooltip>i18n:org.pentaho.di.imp.rules:ImportRule.Tooltip.TransformationHasDescription</tooltip>
+  </rule>
+
+  <rule id="JobHasDescription">
+    <classname>org.pentaho.di.imp.rules.JobHasDescriptionImportRule</classname>
+    <description>i18n:org.pentaho.di.imp.rules:ImportRule.Description.JobHasDescription</description>
+    <tooltip>i18n:org.pentaho.di.imp.rules:ImportRule.Tooltip.JobHasDescription</tooltip>
+  </rule>
+
+  <rule id="TransformationHasTransLogConfigured">
+    <classname>org.pentaho.di.imp.rules.TransformationHasTransLogConfiguredImportRule</classname>
+    <description>i18n:org.pentaho.di.imp.rules:ImportRule.Description.TransformationHasTransLogConfigured</description>
+    <tooltip>i18n:org.pentaho.di.imp.rules:ImportRule.Tooltip.TransformationHasTransLogConfigured</tooltip>
+  </rule>
+
+  <rule id="JobHasTransLogConfigured">
+    <classname>org.pentaho.di.imp.rules.JobHasTransLogConfiguredImportRule</classname>
+    <description>i18n:org.pentaho.di.imp.rules:ImportRule.Description.JobHasTransLogConfigured</description>
+    <tooltip>i18n:org.pentaho.di.imp.rules:ImportRule.Tooltip.JobHasTransLogConfigured</tooltip>
+  </rule>
+
+  <rule id="DatabaseConfiguration">
+    <classname>org.pentaho.di.imp.rules.DatabaseConfigurationImportRule</classname>
+    <description>i18n:org.pentaho.di.imp.rules:ImportRule.Description.DatabaseConfiguration</description>
+    <tooltip>i18n:org.pentaho.di.imp.rules:ImportRule.Tooltip.DatabaseConfiguration</tooltip>
+  </rule>
+  
+</rules>

@@ -23,6 +23,7 @@ import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.plugins.DatabasePluginType;
+import org.pentaho.di.core.plugins.ImportRulePluginType;
 import org.pentaho.di.core.plugins.JobEntryPluginType;
 import org.pentaho.di.core.plugins.LifecyclePluginType;
 import org.pentaho.di.core.plugins.PartitionerPluginType;
@@ -75,6 +76,7 @@ public class KettleEnvironment {
 			PluginRegistry.addPluginType(RepositoryPluginType.getInstance());
 			PluginRegistry.addPluginType(DatabasePluginType.getInstance());
 			PluginRegistry.addPluginType(LifecyclePluginType.getInstance());
+      PluginRegistry.addPluginType(ImportRulePluginType.getInstance());
 			PluginRegistry.init();
 			
 			// Also read the list of variables.

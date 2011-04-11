@@ -22,6 +22,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -906,7 +907,6 @@ public class DatabaseMeta
     }
   }
 	
-	@SuppressWarnings("unchecked")
 	public String getXML()
 	{
         StringBuffer retval = new StringBuffer(250);
@@ -926,12 +926,16 @@ public class DatabaseMeta
         
         retval.append("    <attributes>").append(Const.CR);
        
-        List list = new ArrayList( getAttributes().keySet() );
+        List<String> list = new ArrayList<String>();
+        Set<Object> keySet = getAttributes().keySet();
+        for (Object object : keySet) {
+          list.add((String)object);
+        }
         Collections.sort(list);  // Sort the entry-sets to make sure we can compare XML strings: if the order is different, the XML is different.  
         
-        for (Iterator iter = list.iterator(); iter.hasNext();)
+        for (Iterator<String> iter = list.iterator(); iter.hasNext();)
         {
-            String code = (String) iter.next();
+            String code = iter.next();
             String attribute = getAttributes().getProperty(code);
             if (!Const.isEmpty(attribute))
             {
@@ -1848,7 +1852,6 @@ public class DatabaseMeta
      * @return a feature list for the chosen database type.
      * 
      */
-    @SuppressWarnings("unchecked")
 	public List<RowMetaAndData> getFeatureSummary()
     {
     	List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();
@@ -1862,7 +1865,7 @@ public class DatabaseMeta
         if (databaseInterface!=null)
         {
             // Type of database
-            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "Database type"); r.addValue(val, ValueMetaInterface.TYPE_STRING, getDatabaseTypeDesc()); list.add(r);
+            r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "Database type"); r.addValue(val, ValueMetaInterface.TYPE_STRING, getPluginId()); list.add(r);
             // Type of access
             r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "Access type"); r.addValue(val, ValueMetaInterface.TYPE_STRING, getAccessTypeDesc()); list.add(r);
             // Name of database
@@ -1876,7 +1879,7 @@ public class DatabaseMeta
             // Informix server
             r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "Informix server name"); r.addValue(val, ValueMetaInterface.TYPE_STRING, getServername()); list.add(r);
             // Other properties...
-            Enumeration keys = getAttributes().keys();
+            Enumeration<Object> keys = getAttributes().keys();
             while (keys.hasMoreElements())
             {
                 String key = (String) keys.nextElement();
