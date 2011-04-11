@@ -148,7 +148,7 @@ public class RepositoryImporter implements IRepositoryImporter {
     List<ImportValidationFeedback> feedback = importRules.verifyRules(subject);
     List<ImportValidationFeedback> errors = ImportValidationFeedback.getErrors(feedback);
     if (!errors.isEmpty()) {
-      StringBuffer message = new StringBuffer("The repository import of object ["+subject.toString()+"] failed because the following validations failed: ");
+      StringBuffer message = new StringBuffer(BaseMessages.getString(PKG, "RepositoryImporter.ValidationFailed.Message", subject.toString()));
       message.append(Const.CR);
       for (ImportValidationFeedback error: errors) {
         message.append(" - ");

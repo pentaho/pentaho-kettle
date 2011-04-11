@@ -724,7 +724,9 @@
 		  	<test todir="${junit}" name="org.pentaho.di.imp.rule.TransformationHasDescriptionImportRuleTest" haltonerror="false" />
 		  	<test todir="${junit}" name="org.pentaho.di.imp.rule.JobHasJobLogConfiguredImportRuleTest" haltonerror="false" />
 		  	<test todir="${junit}" name="org.pentaho.di.imp.rule.TransformationHasTransLogConfiguredImportRuleTest" haltonerror="false" />
-
+			<test todir="${junit}" name="org.pentaho.di.imp.rule.TransformationHasNoDisabledHopsImportRuleTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.imp.rule.JobHasNoDisabledHopsImportRuleTest" haltonerror="false" />
+			
 		</junit>
 	</target>
 

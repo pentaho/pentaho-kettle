@@ -122,7 +122,12 @@ public class Import {
       log.logError(BaseMessages.getString(PKG, "Import.Error.NoRepositoryDirectoryProvided"));
       exitJVM(1);
     }
-    
+
+    if (Const.isEmpty(optionRules)) {
+      log.logError(BaseMessages.getString(PKG, "Import.Error.NoRulesFileProvided"));
+      exitJVM(1);
+    }
+
 
     // Load the rules file!
     //

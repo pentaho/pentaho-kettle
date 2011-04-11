@@ -1,0 +1,74 @@
+<rules>
+
+ <!-- All imported transformations need a description of at least 20 long -->
+ <rule>
+ 	<id>TransformationHasDescription</id>
+ 	<enabled>true</enabled>
+ 	<min_length>20</min_length>
+ </rule>
+
+ <!-- All imported job need a description of at least 20 long -->
+ <rule>
+ 	<id>JobHasDescription</id>
+ 	<enabled>true</enabled>
+ 	<min_length>20</min_length>
+ </rule>
+
+ <!-- Verify the main settings in the database connection with name "MySQL".
+      With this rule we make sure that no test or acceptance configuration slips into production ...
+      or even worse: the other way around.
+  -->
+ <rule>
+ 	<id>DatabaseConfiguration</id>
+ 	<enabled>true</enabled>
+    <connection>
+      <name>MySQL</name>
+      <server>localhost</server>
+      <type>MYSQL</type>
+      <access>Native</access>
+      <database>test</database>
+      <username>matt</username>
+      <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
+      <attributes>
+        <attribute><code>PORT_NUMBER</code><attribute>3306</attribute></attribute>
+      </attributes>
+    </connection>
+ </rule>
+ 
+ <!-- Verify that all transformations contain a configured transformation log table.
+      By optionally specifying a schema, table or connection name you validate those settings too. 
+  -->
+ <rule>
+   <id>TransformationHasTransLogConfigured</id>
+   <enabled>true</enabled>
+   <schema_name/>
+   <table_name/>
+   <connection_name/>
+ </rule>
+
+ <!-- Verify that all jobs contain a configured job log table.
+      By optionally specifying a schema, table or connection name you validate those settings too. 
+  -->
+ <rule>
+   <id>JobHasJobLogConfigured</id>
+   <enabled>true</enabled>
+   <schema_name/>
+   <table_name/>
+   <connection_name/>
+ </rule>
+
+ <!-- Verify that transformations contain no disabled hops.
+  -->
+ <rule>
+   <id>TransformationHasNoDisabledHops</id>
+   <enabled>true</enabled>
+ </rule>
+ 
+ <!-- Verify that jobs contain no disabled hops.
+  -->
+ <rule>
+   <id>JobHasNoDisabledHops</id>
+   <enabled>true</enabled>
+ </rule>
+ 
+</rules>

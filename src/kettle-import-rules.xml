@@ -33,5 +33,17 @@
     <description>i18n:org.pentaho.di.imp.rules:ImportRule.Description.DatabaseConfiguration</description>
     <tooltip>i18n:org.pentaho.di.imp.rules:ImportRule.Tooltip.DatabaseConfiguration</tooltip>
   </rule>
+
+  <rule id="JobHasNoDisabledHops">
+    <classname>org.pentaho.di.imp.rules.JobHasNoDisabledHopsImportRule</classname>
+    <description>i18n:org.pentaho.di.imp.rules:ImportRule.Description.JobHasNoDisabledHops</description>
+    <tooltip>i18n:org.pentaho.di.imp.rules:ImportRule.Tooltip.JobHasNoDisabledHops</tooltip>
+  </rule>
+
+  <rule id="TransformationHasNoDisabledHops">
+    <classname>org.pentaho.di.imp.rules.TransformationHasNoDisabledHopsImportRule</classname>
+    <description>i18n:org.pentaho.di.imp.rules:ImportRule.Description.TransformationHasNoDisabledHops</description>
+    <tooltip>i18n:org.pentaho.di.imp.rules:ImportRule.Tooltip.TransformationHasNoDisabledHops</tooltip>
+  </rule>
   
 </rules>
