@@ -21,6 +21,8 @@
 			<menuitem id="folder-context-open" label="${RepositoryExplorerDialog.ContextMenu.Open}" command="browseController.openContent()"/>
 			<menuitem id="folder-context-rename" label="${RepositoryExplorerDialog.ContextMenu.Rename}" command="browseController.renameFolder()"/>
 			<menuitem id="folder-context-delete" label="${RepositoryExplorerDialog.ContextMenu.Delete}" command="browseController.deleteFolder()"/>
+			<menuseparator/>
+			<menuitem id="folder-context-export" label="${RepositoryExplorerDialog.ContextMenu.Export}" command="browseController.exportFolder()"/>
 		</menupopup>
 
 		<menupopup id="fileContextMenu">

@@ -44,6 +44,7 @@ import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryContent
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryDirectory;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObject;
 import org.pentaho.di.ui.repository.repositoryexplorer.model.UIRepositoryObjects;
+import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.Binding;
@@ -435,6 +436,21 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
 
     }
     newName = null;
+  }
+  
+  public void exportFolder() throws Exception {
+    for (Object object : folderTree.getSelectedItems()) {
+      
+      if (object instanceof UIRepositoryDirectory) {
+        repoDir = (UIRepositoryDirectory) object;
+
+        // Export the directories one by one...
+        //
+        if (Spoon.getInstance().exportRepositoryDirectory(repoDir.getDirectory())) {
+          return;
+        }
+      }
+    }
   }
 
   public void deleteFolder() throws Exception {

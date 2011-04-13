@@ -4598,9 +4598,27 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   }
 
   public void exportRepositoryAll() {
+    exportRepositoryDirectory(null);
+  }
+
+  /**
+   * @param directoryToExport set to null to export the complete repository
+   * @return false if we want to stop processing. true if we need to continue.
+   */
+  public boolean exportRepositoryDirectory(RepositoryDirectory directoryToExport) {
+    
+    if (directoryToExport!=null) {
+      MessageBox box = new MessageBox(shell, SWT.ICON_QUESTION | SWT.APPLICATION_MODAL | SWT.YES | SWT.NO | SWT.CANCEL);
+      box.setText(BaseMessages.getString(PKG, "Spoon.QuestionExportDirectory.Title"));
+      box.setMessage(BaseMessages.getString(PKG, "Spoon.QuestionExportFolder.Message", Const.CR, directoryToExport.getPath()));
+      int answer = box.open();
+      if (answer==SWT.NO) return true;
+      if (answer==SWT.CANCEL) return false;
+    }
+    
     FileDialog dialog = new FileDialog(shell, SWT.SAVE | SWT.SINGLE);
     dialog.setText(BaseMessages.getString(PKG, "Spoon.SelectAnXMLFileToExportTo.Message"));
-    if (dialog.open() == null) return;
+    if (dialog.open() == null) return false;
     
     String filename = dialog.getFilterPath() + Const.FILE_SEPARATOR + dialog.getFileName();
     log.logBasic(BaseMessages.getString(PKG, "Spoon.Log.Exporting"), BaseMessages.getString(PKG, "Spoon.Log.ExportObjectsToFile", filename));
@@ -4609,19 +4627,20 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     box.setText(BaseMessages.getString(PKG, "Spoon.QuestionApplyImportRulesToExport.Title"));
     box.setMessage(BaseMessages.getString(PKG, "Spoon.QuestionApplyImportRulesToExport.Message"));
     int answer = box.open();
-    if (answer==SWT.CANCEL) return;
+    if (answer==SWT.CANCEL) return false;
     
     // Get the import rules
     //
     ImportRules importRules = new ImportRules();
     if (answer==SWT.YES){
       ImportRulesDialog importRulesDialog = new ImportRulesDialog(shell, importRules);
-      if (!importRulesDialog.open()) return;
+      if (!importRulesDialog.open()) return false;
     }
 
-    RepositoryExportProgressDialog repd = new RepositoryExportProgressDialog(shell, rep, null, filename, importRules);
+    RepositoryExportProgressDialog repd = new RepositoryExportProgressDialog(shell, rep, directoryToExport, filename, importRules);
     repd.open();
     
+    return true;
   }
 
   public void importDirectoryToRepository() {

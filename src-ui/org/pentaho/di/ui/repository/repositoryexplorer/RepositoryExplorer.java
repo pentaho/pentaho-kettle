@@ -50,8 +50,7 @@ public class RepositoryExplorer {
 
   private static Log log = LogFactory.getLog(RepositoryExplorer.class);
 
-  @SuppressWarnings("unchecked")
-  private static final Class CLZ = RepositoryExplorer.class;
+  private static final Class<?> CLZ = RepositoryExplorer.class;
 
   private MainController mainController = new MainController();
 
