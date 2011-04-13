@@ -1301,7 +1301,7 @@
   <step id="MetaInject">
     <description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.MetaInject</description>
     <classname>org.pentaho.di.trans.steps.metainject.MetaInjectMeta</classname>
-    <category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
+    <category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Flow</category>
     <tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.MetaInject</tooltip>
     <iconfile>ui/images/GenericTransform.png</iconfile>
   </step>
@@ -1378,7 +1378,7 @@
 	<step id="GetRepositoryNames">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.GetRepositoryNames</description>
 		<classname>org.pentaho.di.trans.steps.getrepositorynames.GetRepositoryNamesMeta</classname>
-		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.GetRepositoryNames</tooltip>
 		<iconfile>ui/images/GRN.png</iconfile>
 	</step>
