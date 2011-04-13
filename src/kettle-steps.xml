@@ -624,7 +624,7 @@
   <step id="GPBulkLoader">
     <description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.GPBulkLoader</description>
     <classname>org.pentaho.di.trans.steps.gpbulkloader.GPBulkLoaderMeta</classname>
-    <category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
+    <category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk</category>
     <tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.GPBulkLoader</tooltip>
     <iconfile>ui/images/GBL.png</iconfile>
   </step>
@@ -632,7 +632,7 @@
 	<step id="GPLoad">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.GPLoad</description>
 		<classname>org.pentaho.di.trans.steps.gpload.GPLoadMeta</classname>
-		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.GPLoad</tooltip>
 		<iconfile>ui/images/GBL.png</iconfile>
 	</step>
@@ -640,7 +640,7 @@
   <step id="PGBulkLoader">
     <description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.PGBulkLoader</description>
     <classname>org.pentaho.di.trans.steps.pgbulkloader.PGBulkLoaderMeta</classname>
-    <category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
+    <category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk</category>
     <tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.PGBulkLoader</tooltip>
     <iconfile>ui/images/PGBL.png</iconfile>
   </step>
@@ -872,7 +872,7 @@
   <step id="MySQLBulkLoader">
     <description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.MySQLBulkLoader</description>
     <classname>org.pentaho.di.trans.steps.mysqlbulkloader.MySQLBulkLoaderMeta</classname>
-    <category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
+    <category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk</category>
     <tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.MySQLBulkLoader</tooltip>
     <iconfile>ui/images/OBL.png</iconfile>
   </step>
@@ -1016,7 +1016,7 @@
   <step id="ParallelGzipCsvInput">
     <description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.ParallelGzipCsvInput</description>
     <classname>org.pentaho.di.trans.steps.parallelgzipcsv.ParGzipCsvInputMeta</classname>
-    <category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
+    <category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
     <tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.ParallelGzipCsvInput</tooltip>
     <iconfile>ui/images/TFI.png</iconfile>
   </step>
@@ -1343,21 +1343,21 @@
 	<step id="TypeExitExcelWriterStep">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.TypeExitExcelWriterStep</description>
 		<classname>org.pentaho.di.trans.steps.excelwriter.ExcelWriterStepMeta</classname>
-		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Output</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.TypeExitExcelWriterStep</tooltip>
 		<iconfile>ui/images/XWS.png</iconfile>
 	</step>
 	<step id="TypeExitGoogleAnalyticsInputStep">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.TypeExitGoogleAnalyticsStep</description>
 		<classname>org.pentaho.di.trans.steps.googleanalytics.GaInputStepMeta</classname>
-		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.TypeExitGoogleAnalyticsStep</tooltip>
 		<iconfile>ui/images/GAN.png</iconfile>
 	</step>	
     <step id="PrioritizeStreams">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.PrioritizeStreams</description>
 		<classname>org.pentaho.di.trans.steps.prioritizestreams.PrioritizeStreamsMeta</classname>
-		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Flow</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.PrioritizeStreams</tooltip>
 		<iconfile>ui/images/PRS.png</iconfile>
 	</step>
@@ -1371,7 +1371,7 @@
 	<step id="Rest">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.Rest</description>
 		<classname>org.pentaho.di.trans.steps.rest.RestMeta</classname>
-		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Lookup</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Rest</tooltip>
 		<iconfile>ui/images/REST.png</iconfile>
 	</step>
