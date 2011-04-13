@@ -1,6 +1,7 @@
 package org.pentaho.di.repository;
 
 import org.pentaho.di.core.ProgressMonitorListener;
+import org.pentaho.di.imp.ImportRules;
 
 /**
  * Handles importing a repository.
@@ -23,4 +24,11 @@ public interface IRepositoryImporter extends ProgressMonitorListener, Repository
    */
   public void importAll(RepositoryImportFeedbackInterface feedback, String fileDirectory, String[] filenames,
       RepositoryDirectoryInterface baseDirectory, boolean overwrite, boolean continueOnError, String versionComment);
+  
+  /**
+   * Set the list of rules that need to be applied to every imported object.
+   * 
+   * @param importRules The rules to use during import into the repository
+   */
+  public void setImportRules(ImportRules importRules);
 }

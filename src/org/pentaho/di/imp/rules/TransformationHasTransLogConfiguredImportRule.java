@@ -9,7 +9,7 @@ import org.pentaho.di.core.logging.TransLogTable;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.imp.rule.ImportValidationFeedback;
 import org.pentaho.di.imp.rule.ImportValidationResultType;
-import org.pentaho.di.imp.rule.ImporterRuleInterface;
+import org.pentaho.di.imp.rule.ImportRuleInterface;
 import org.pentaho.di.trans.TransMeta;
 import org.w3c.dom.Node;
 
@@ -19,7 +19,7 @@ import org.w3c.dom.Node;
  * @author matt
  *
  */
-public class TransformationHasTransLogConfiguredImportRule extends BaseImportRule implements ImporterRuleInterface {
+public class TransformationHasTransLogConfiguredImportRule extends BaseImportRule implements ImportRuleInterface {
 
   private String schemaName;
   private String tableName;

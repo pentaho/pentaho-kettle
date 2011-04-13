@@ -13,7 +13,7 @@ import org.pentaho.di.core.annotations.ImportRulePlugin;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.imp.rule.ImporterRuleInterface;
+import org.pentaho.di.imp.rule.ImportRuleInterface;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -23,7 +23,7 @@ import org.w3c.dom.Node;
  * @author matt
  *
  */
-@PluginMainClassType(ImporterRuleInterface.class)
+@PluginMainClassType(ImportRuleInterface.class)
 @PluginAnnotationType(ImportRulePlugin.class)
 public class ImportRulePluginType extends BasePluginType implements PluginTypeInterface {
 	

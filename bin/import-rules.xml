@@ -71,4 +71,18 @@
    <enabled>true</enabled>
  </rule>
  
+  <!-- Verify that transformations contains at least one note documenting the transformation.
+  -->
+ <rule>
+   <id>TransformationHasANote</id>
+   <enabled>true</enabled>
+ </rule>
+ 
+ <!-- Verify that jobs contains at least one note documenting the job.
+  -->
+ <rule>
+   <id>JobHasANote</id>
+   <enabled>true</enabled>
+ </rule>
+ 
 </rules>

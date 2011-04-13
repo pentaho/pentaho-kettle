@@ -28,6 +28,8 @@ import org.pentaho.di.core.ProgressMonitorAdapter;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.imp.ImportRules;
+import org.pentaho.di.repository.IRepositoryExporter;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -47,15 +49,22 @@ public class RepositoryExportProgressDialog
     private Repository rep;
     private RepositoryDirectoryInterface dir;
     private String filename;
+    private ImportRules importRules;
 
 	private LogChannelInterface	log;
 
-    public RepositoryExportProgressDialog(Shell shell, Repository rep, RepositoryDirectoryInterface dir, String filename)
+  public RepositoryExportProgressDialog(Shell shell, Repository rep, RepositoryDirectoryInterface dir, String filename)
+  {
+    this(shell, rep, dir, filename, new ImportRules());
+  }
+
+    public RepositoryExportProgressDialog(Shell shell, Repository rep, RepositoryDirectoryInterface dir, String filename, ImportRules importRules)
     {
         this.shell = shell;
         this.rep = rep;
         this.dir = dir;        
         this.filename = filename;
+        this.importRules = importRules;
         this.log = rep.getLog();
     }
 
@@ -69,12 +78,14 @@ public class RepositoryExportProgressDialog
             {
                 try
                 {
-                    rep.getExporter().exportAllObjects(new ProgressMonitorAdapter(monitor), filename, dir,"all");
+                    IRepositoryExporter exporter = rep.getExporter();
+                    exporter.setImportRulesToValidate(importRules);
+                    
+                    exporter.exportAllObjects(new ProgressMonitorAdapter(monitor), filename, dir, "all");
                 }
                 catch (KettleException e)
                 {
-                    log.logError(Const.getStackTracker(e));
-                    throw new InvocationTargetException(e, BaseMessages.getString(PKG, "RepositoryExportDialog.Error.CreateUpdate", e.getMessage()));
+                    throw new InvocationTargetException(e, BaseMessages.getString(PKG, "RepositoryExportDialog.Error.CreateUpdate", Const.getStackTracker(e)));
                 }
             }
         };

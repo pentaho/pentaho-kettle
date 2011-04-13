@@ -26,6 +26,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.imp.ImportRules;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.job.JobEntryJob;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
@@ -40,6 +41,7 @@ public class RepositoryExporter implements IRepositoryExporter {
 
 	private Repository repository;
 	private LogChannelInterface log;
+	private ImportRules importRules;
 
 	/**
 	 * @param repository
@@ -47,7 +49,14 @@ public class RepositoryExporter implements IRepositoryExporter {
 	public RepositoryExporter(Repository repository) {
 		this.log = repository.getLog();
 		this.repository = repository;
+		this.importRules = new ImportRules();
 	}
+	
+	@Override
+	public void setImportRulesToValidate(ImportRules importRules) {
+	  this.importRules = importRules;
+	}
+	
 	
     public synchronized void exportAllObjects(ProgressMonitorListener monitor, String xmlFilename, RepositoryDirectoryInterface root, String exportType) throws KettleException
     {
@@ -114,9 +123,9 @@ public class RepositoryExporter implements IRepositoryExporter {
 	        // Loop over all the directory id's
 	        ObjectId dirids[] = dirTree.getDirectoryIDs();
 	        System.out.println("Going through "+dirids.length+" directories in directory ["+dirTree.getPath()+"]");
-	 
-	        if (monitor!=null) monitor.subTask("Exporting the jobs...");
 	        
+	        if (monitor!=null) monitor.subTask("Exporting the jobs...");
+	        boolean continueOnError=true;
 	        for (int d=0;d<dirids.length && (monitor==null || (monitor!=null && !monitor.isCanceled()));d++)
 	        {
 	          RepositoryDirectoryInterface repdir = dirTree.findDirectory(dirids[d]);
@@ -134,12 +143,22 @@ public class RepositoryExporter implements IRepositoryExporter {
 	                    //
 	                    convertFromFileRepository(jobMeta);
 	                    
+                      try {
+                        RepositoryImporter.validateImportedElement(importRules, jobMeta);
+                      } catch(KettleException ve) {
+                        continueOnError=false;
+                        throw(ve);
+                      }
+
 	                    writer.write(jobMeta.getXML()+Const.CR);
 	                }
 	                catch(KettleException ke)
 	                {
-	                    log.logError("An error occurred reading job ["+jobs[i]+"] from directory ["+repdir+"] : "+ke.getMessage());
-	                    log.logError("Job ["+jobs[i]+"] from directory ["+repdir+"] was not exported because of a loading error!");
+	                  if (continueOnError) {
+	                    log.logError("An error occurred reading job ["+jobs[i]+"] from directory ["+repdir+"] : ", ke);
+	                  } else {
+	                    throw ke;
+	                  }
 	                }
 	            }
 	        }
@@ -260,7 +279,7 @@ public class RepositoryExporter implements IRepositoryExporter {
 	        // Loop over all the directory id's
 	        ObjectId dirids[] = dirTree.getDirectoryIDs();
 	        System.out.println("Going through "+dirids.length+" directories in directory ["+dirTree.getPath()+"]");
-	        
+	        boolean continueOnError=true;
 	        for (int d=0;d<dirids.length && (monitor==null || (monitor!=null && !monitor.isCanceled()) );d++)
 	        {
 	          RepositoryDirectoryInterface repdir = dirTree.findDirectory(dirids[d]);
@@ -277,13 +296,26 @@ public class RepositoryExporter implements IRepositoryExporter {
 	                    if (monitor!=null) monitor.subTask("Exporting transformation ["+trans[i]+"]");
 	                    
 	                    convertFromFileRepository(transMeta);
+
+	                    try {
+	                      RepositoryImporter.validateImportedElement(importRules, transMeta);
+	                    } catch(KettleException ve) {
+	                      continueOnError=false;
+	                      throw(ve);
+	                    }
 	                    
 	                    writer.write(transMeta.getXML()+Const.CR);
 	                }
 	                catch(KettleException ke)
 	                {
-	                    log.logError("An error occurred reading transformation ["+trans[i]+"] from directory ["+repdir+"] : "+ke.getMessage());
-	                    log.logError("Transformation ["+trans[i]+"] from directory ["+repdir+"] was not exported because of a loading error!");
+	                  // In case of a loading error of some kind, simply continue.
+	                  // In case of a validation error against the rules, bail out.
+	                  //
+	                  if (continueOnError) {
+	                    log.logError("An error occurred reading transformation ["+trans[i]+"] from directory ["+repdir+"] : ", ke);
+	                  } else {
+	                    throw ke;
+	                  }
 	                }
 	            }
 	        }

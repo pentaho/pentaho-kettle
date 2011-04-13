@@ -7,12 +7,12 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.imp.rule.ImportValidationFeedback;
 import org.pentaho.di.imp.rule.ImportValidationResultType;
-import org.pentaho.di.imp.rule.ImporterRuleInterface;
+import org.pentaho.di.imp.rule.ImportRuleInterface;
 import org.pentaho.di.job.JobHopMeta;
 import org.pentaho.di.job.JobMeta;
 import org.w3c.dom.Node;
 
-public class JobHasNoDisabledHopsImportRule extends BaseImportRule implements ImporterRuleInterface {
+public class JobHasNoDisabledHopsImportRule extends BaseImportRule implements ImportRuleInterface {
 
   public JobHasNoDisabledHopsImportRule() {
     super();

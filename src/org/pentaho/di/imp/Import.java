@@ -32,7 +32,7 @@ import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.imp.rule.ImporterRuleInterface;
+import org.pentaho.di.imp.rule.ImportRuleInterface;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.pan.CommandLineOption;
 import org.pentaho.di.repository.RepositoriesMeta;
@@ -60,7 +60,7 @@ public class Import {
         args.add(a[i]);
     }
 
-    StringBuffer optionRepname, optionUsername, optionPassword, optionDirname, optionFilename, optionRules, optionComment;
+    StringBuffer optionRepname, optionUsername, optionPassword, optionDirname, optionLimitDir, optionFilename, optionRules, optionComment;
     StringBuffer optionReplace, optionContinueOnError, optionVersion;
 
     CommandLineOption options[] = new CommandLineOption[] {
@@ -70,6 +70,7 @@ public class Import {
         new CommandLineOption("user", BaseMessages.getString(PKG, "Import.CmdLine.RepUsername"), optionUsername = new StringBuffer()),
         new CommandLineOption("pass", BaseMessages.getString(PKG, "Import.CmdLine.RepPassword"), optionPassword = new StringBuffer()),
         new CommandLineOption("dir", BaseMessages.getString(PKG, "Import.CmdLine.RepDir"), optionDirname = new StringBuffer()), 
+        new CommandLineOption("limitdir", BaseMessages.getString(PKG, "Import.CmdLine.LimitDir"), optionLimitDir = new StringBuffer()), 
         new CommandLineOption("file", BaseMessages.getString(PKG, "Import.CmdLine.File"), optionFilename = new StringBuffer()),
         new CommandLineOption("rules", BaseMessages.getString(PKG, "Import.CmdLine.RulesFile"), optionRules = new StringBuffer()),
         new CommandLineOption("comment", BaseMessages.getString(PKG, "Import.CmdLine.Comment"), optionComment = new StringBuffer(), true, false),
@@ -140,7 +141,7 @@ public class Import {
         Node rulesNode = XMLHandler.getSubNode(document, ImportRules.XML_TAG);
         importRules.loadXML(rulesNode);
         log.logMinimal(BaseMessages.getString(PKG, "Import.Log.RulesLoaded", rulesFile, ""+importRules.getRules().size()));
-        for (ImporterRuleInterface rule : importRules.getRules()) {
+        for (ImportRuleInterface rule : importRules.getRules()) {
           log.logBasic(" - "+rule.toString());
         }
       } catch (KettleException e) {
@@ -148,7 +149,17 @@ public class Import {
         exitJVM(7);
       }
     }
-
+    
+    // Get the list of limiting source directories
+    //
+    List<String> limitDirs = new ArrayList<String>();
+    if (!Const.isEmpty(optionLimitDir)) {
+      String[] directories = optionLimitDir.toString().split(",");
+      for (String directory : directories) {
+        limitDirs.add(directory);
+      }
+    }
+    
     // Find the repository metadata...
     //
     RepositoriesMeta repsinfo = new RepositoriesMeta();
@@ -212,7 +223,7 @@ public class Import {
 
       // Perform the actual import
       //
-      RepositoryImporter importer = new RepositoryImporter(repository, importRules);
+      RepositoryImporter importer = new RepositoryImporter(repository, importRules, limitDirs);
       RepositoryImportFeedbackInterface feedbackInterface = new RepositoryImportFeedbackInterface() {
 
         @Override

@@ -8,13 +8,12 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.imp.rule.ImportValidationFeedback;
 import org.pentaho.di.imp.rule.ImportValidationResultType;
 import org.pentaho.di.imp.rule.ImportRuleInterface;
-import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.w3c.dom.Node;
 
-public class TransformationHasNoDisabledHopsImportRule extends BaseImportRule implements ImportRuleInterface {
+public class TransformationHasANoteImportRule extends BaseImportRule implements ImportRuleInterface {
 
-  public TransformationHasNoDisabledHopsImportRule() {
+  public TransformationHasANoteImportRule() {
     super();
   }
   
@@ -28,15 +27,10 @@ public class TransformationHasNoDisabledHopsImportRule extends BaseImportRule im
     
     TransMeta transMeta = (TransMeta)subject;
 
-    for (int i=0;i<transMeta.nrTransHops();i++) {
-      TransHopMeta hop = transMeta.getTransHop(i);
-      if (!hop.isEnabled()) {
-        feedback.add( new ImportValidationFeedback(this, ImportValidationResultType.ERROR, "There is a disabled hop in the transformation.") );
-      }
-    }
-
-    if (feedback.isEmpty()) {
-      feedback.add( new ImportValidationFeedback(this, ImportValidationResultType.APPROVAL, "All hops are enabled in this transformation.") );
+    if (transMeta.nrNotes() == 0) {
+      feedback.add(new ImportValidationFeedback(this, ImportValidationResultType.ERROR, "There is not even a single note in the transformation."));
+    } else {
+      feedback.add(new ImportValidationFeedback(this, ImportValidationResultType.APPROVAL, "At least one not is present in the transformation."));
     }
     
     return feedback;

@@ -9,11 +9,11 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.imp.rule.ImportValidationFeedback;
 import org.pentaho.di.imp.rule.ImportValidationResultType;
-import org.pentaho.di.imp.rule.ImporterRuleInterface;
+import org.pentaho.di.imp.rule.ImportRuleInterface;
 import org.pentaho.di.trans.HasDatabasesInterface;
 import org.w3c.dom.Node;
 
-public class DatabaseConfigurationImportRule extends BaseImportRule implements ImporterRuleInterface {
+public class DatabaseConfigurationImportRule extends BaseImportRule implements ImportRuleInterface {
 
   private DatabaseMeta databaseMeta;
   
@@ -22,6 +22,21 @@ public class DatabaseConfigurationImportRule extends BaseImportRule implements I
     databaseMeta=null; // not configured.
   }
 
+  public boolean isUnique() {
+    return false;
+  }
+  
+  @Override
+  public ImportRuleInterface clone() {
+    DatabaseConfigurationImportRule rule = new DatabaseConfigurationImportRule();
+    rule.setId(getId());
+    rule.setEnabled(isEnabled());
+    if (databaseMeta!=null) {
+      rule.setDatabaseMeta((DatabaseMeta) databaseMeta.clone());
+    }
+    return rule;
+  }
+  
   @Override
   public List<ImportValidationFeedback> verifyRule(Object subject) {
     

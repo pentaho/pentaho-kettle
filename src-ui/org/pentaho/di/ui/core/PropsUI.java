@@ -1037,12 +1037,7 @@ public class PropsUI extends Props
     {
         if (!Const.getOS().startsWith("Windows")) return;
         
-        Font gridFont    = null; // GUIResource.getInstance().getFontGrid();
         Color background = GUIResource.getInstance().getColorBackground();
-        if (gridFont!=null)
-        {
-            item.setFont(gridFont);
-        }
         if (background!=null)
         {
             item.setBackground(background);

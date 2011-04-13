@@ -41,7 +41,9 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.imp.ImportRules;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.repository.IRepositoryImporter;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.RepositoryImportFeedbackInterface;
@@ -78,7 +80,13 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
   private Repository rep;
   private String versionComment;
 
+  private ImportRules importRules;
+
   public RepositoryImportProgressDialog(Shell parent, int style, Repository rep, String fileDirectory, String[] filenames, RepositoryDirectoryInterface baseDirectory, String versionComment) {
+    this(parent, style, rep, fileDirectory, filenames, baseDirectory, versionComment, new ImportRules());
+  }
+
+  public RepositoryImportProgressDialog(Shell parent, int style, Repository rep, String fileDirectory, String[] filenames, RepositoryDirectoryInterface baseDirectory, String versionComment, ImportRules importRules) {
     super(parent, style);
 
     this.props = PropsUI.getInstance();
@@ -89,6 +97,7 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
     this.filenames = filenames;
     this.baseDirectory = baseDirectory;
     this.versionComment = versionComment;
+    this.importRules = importRules;
   }
 
   public void open() {
@@ -165,7 +174,9 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
 
     display.asyncExec(new Runnable() {
       public void run() {
-        rep.getImporter().importAll(RepositoryImportProgressDialog.this, fileDirectory, filenames, baseDirectory, false, false, versionComment);
+        IRepositoryImporter importer = rep.getImporter();
+        importer.setImportRules(importRules);
+        importer.importAll(RepositoryImportProgressDialog.this, fileDirectory, filenames, baseDirectory, false, false, versionComment);
       }
     });
 

@@ -46,4 +46,16 @@
     <tooltip>i18n:org.pentaho.di.imp.rules:ImportRule.Tooltip.TransformationHasNoDisabledHops</tooltip>
   </rule>
   
+    <rule id="JobHasANote">
+    <classname>org.pentaho.di.imp.rules.JobHasANoteImportRule</classname>
+    <description>i18n:org.pentaho.di.imp.rules:ImportRule.Description.JobHasANote</description>
+    <tooltip>i18n:org.pentaho.di.imp.rules:ImportRule.Tooltip.JobHasANote</tooltip>
+  </rule>
+
+  <rule id="TransformationHasANote">
+    <classname>org.pentaho.di.imp.rules.TransformationHasANoteImportRule</classname>
+    <description>i18n:org.pentaho.di.imp.rules:ImportRule.Description.TransformationHasANote</description>
+    <tooltip>i18n:org.pentaho.di.imp.rules:ImportRule.Tooltip.TransformationHasANote</tooltip>
+  </rule>
+  
 </rules>

@@ -164,6 +164,7 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.LanguageChoice;
+import org.pentaho.di.imp.ImportRules;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobMeta;
@@ -227,6 +228,7 @@ import org.pentaho.di.ui.core.dialog.Splash;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.TreeMemory;
+import org.pentaho.di.ui.imp.ImportRulesDialog;
 import org.pentaho.di.ui.job.dialog.JobLoadProgressDialog;
 import org.pentaho.di.ui.partition.dialog.PartitionSchemaDialog;
 import org.pentaho.di.ui.repository.ILoginCallback;
@@ -4597,58 +4599,89 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
   public void exportRepositoryAll() {
     FileDialog dialog = new FileDialog(shell, SWT.SAVE | SWT.SINGLE);
-    if (dialog.open() != null) {
-      String filename = dialog.getFilterPath() + Const.FILE_SEPARATOR + dialog.getFileName();
-      if (log.isBasic())
-        log.logBasic(BaseMessages.getString(PKG, "Spoon.Log.Exporting"), BaseMessages.getString(PKG, "Spoon.Log.ExportObjectsToFile", filename));
-
-      RepositoryExportProgressDialog repd = new RepositoryExportProgressDialog(shell, rep, null, filename);
-      repd.open();
+    dialog.setText(BaseMessages.getString(PKG, "Spoon.SelectAnXMLFileToExportTo.Message"));
+    if (dialog.open() == null) return;
+    
+    String filename = dialog.getFilterPath() + Const.FILE_SEPARATOR + dialog.getFileName();
+    log.logBasic(BaseMessages.getString(PKG, "Spoon.Log.Exporting"), BaseMessages.getString(PKG, "Spoon.Log.ExportObjectsToFile", filename));
+    
+    MessageBox box = new MessageBox(shell, SWT.ICON_QUESTION | SWT.APPLICATION_MODAL | SWT.YES | SWT.NO | SWT.CANCEL);
+    box.setText(BaseMessages.getString(PKG, "Spoon.QuestionApplyImportRulesToExport.Title"));
+    box.setMessage(BaseMessages.getString(PKG, "Spoon.QuestionApplyImportRulesToExport.Message"));
+    int answer = box.open();
+    if (answer==SWT.CANCEL) return;
+    
+    // Get the import rules
+    //
+    ImportRules importRules = new ImportRules();
+    if (answer==SWT.YES){
+      ImportRulesDialog importRulesDialog = new ImportRulesDialog(shell, importRules);
+      if (!importRulesDialog.open()) return;
     }
+
+    RepositoryExportProgressDialog repd = new RepositoryExportProgressDialog(shell, rep, null, filename, importRules);
+    repd.open();
+    
   }
 
   public void importDirectoryToRepository() {
     FileDialog dialog = new FileDialog(shell, SWT.OPEN | SWT.MULTI);
-    if (dialog.open() != null) {
-      // Ask for a destination in the repository...
-      //
-      SelectDirectoryDialog sdd = new SelectDirectoryDialog(shell, SWT.NONE, rep);
-      RepositoryDirectoryInterface baseDirectory = sdd.open();
-      if (baseDirectory != null) {
-        // Finally before importing, ask for a version comment (if applicable)
-        //
-        String versionComment = null;
-        boolean versionOk = false;
-        while (!versionOk) {
-          versionComment = RepositorySecurityUI.getVersionComment(shell, rep, "Import of files into ["
-              + baseDirectory.getPath() + "]");
-          // if the version comment is null, the user hit cancel, exit.
-          if (rep != null && rep.getSecurityProvider() != null && 
-              rep.getSecurityProvider().allowsVersionComments() && 
-              versionComment == null) 
-          {
-            return;
-          }
+    dialog.setText(BaseMessages.getString(PKG, "Spoon.SelectAnXMLFileToImportFrom.Message"));
+    if (dialog.open() == null) return;
+    
+    // Ask for a set of import rules
+    //
+    MessageBox box = new MessageBox(shell, SWT.ICON_QUESTION | SWT.APPLICATION_MODAL | SWT.YES | SWT.NO | SWT.CANCEL);
+    box.setText(BaseMessages.getString(PKG, "Spoon.QuestionApplyImportRules.Title"));
+    box.setMessage(BaseMessages.getString(PKG, "Spoon.QuestionApplyImportRules.Message"));
+    int answer = box.open();
+    if (answer==SWT.CANCEL) return;
+    
+    // Get the import rules
+    //
+    ImportRules importRules = new ImportRules();
+    if (answer==SWT.YES){
+      ImportRulesDialog importRulesDialog = new ImportRulesDialog(shell, importRules);
+      if (!importRulesDialog.open()) return;
+    }
 
-          if (Const.isEmpty(versionComment) && rep.getSecurityProvider().isVersionCommentMandatory()) {
-            if (!RepositorySecurityUI.showVersionCommentMandatoryDialog(shell)) {
-              versionOk = true;
-            }
-          } else {
-            versionOk = true;
-          }
-        }
-
-        String[] filenames = dialog.getFileNames();
-        if (filenames.length > 0) {
-          RepositoryImportProgressDialog ripd = new RepositoryImportProgressDialog(shell, SWT.NONE, rep, dialog
-              .getFilterPath(), filenames, baseDirectory, versionComment);
-          ripd.open();
-
-          refreshTree();
-        }
-
+    // Ask for a destination in the repository...
+    //
+    SelectDirectoryDialog sdd = new SelectDirectoryDialog(shell, SWT.NONE, rep);
+    RepositoryDirectoryInterface baseDirectory = sdd.open();
+    if (baseDirectory == null) return;
+    
+    // Finally before importing, ask for a version comment (if applicable)
+    //
+    String versionComment = null;
+    boolean versionOk = false;
+    while (!versionOk) {
+      versionComment = RepositorySecurityUI.getVersionComment(shell, rep, "Import of files into ["
+          + baseDirectory.getPath() + "]");
+      // if the version comment is null, the user hit cancel, exit.
+      if (rep != null && rep.getSecurityProvider() != null && 
+          rep.getSecurityProvider().allowsVersionComments() && 
+          versionComment == null) 
+      {
+        return;
       }
+
+      if (Const.isEmpty(versionComment) && rep.getSecurityProvider().isVersionCommentMandatory()) {
+        if (!RepositorySecurityUI.showVersionCommentMandatoryDialog(shell)) {
+          versionOk = true;
+        }
+      } else {
+        versionOk = true;
+      }
+    }
+
+    String[] filenames = dialog.getFileNames();
+    if (filenames.length > 0) {
+      RepositoryImportProgressDialog ripd = new RepositoryImportProgressDialog(shell, SWT.NONE, rep, 
+          dialog.getFilterPath(), filenames, baseDirectory, versionComment, importRules);
+      ripd.open();
+
+      refreshTree();
     }
   }
 

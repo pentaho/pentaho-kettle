@@ -8,7 +8,7 @@ import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 
 public class ImportValidationFeedback {
-  private ImporterRuleInterface      importRule;
+  private ImportRuleInterface      importRule;
   private ImportValidationResultType resultType;
   private String                     comment;
 
@@ -16,7 +16,7 @@ public class ImportValidationFeedback {
    * @param resultType
    * @param comment
    */
-  public ImportValidationFeedback(ImporterRuleInterface importRule, ImportValidationResultType resultType, String comment) {
+  public ImportValidationFeedback(ImportRuleInterface importRule, ImportValidationResultType resultType, String comment) {
     this.importRule = importRule;
     this.resultType = resultType;
     this.comment = comment;
@@ -86,14 +86,14 @@ public class ImportValidationFeedback {
   /**
    * @return the importRule
    */
-  public ImporterRuleInterface getImportRule() {
+  public ImportRuleInterface getImportRule() {
     return importRule;
   }
 
   /**
    * @param importRule the importRule to set
    */
-  public void setImportRule(ImporterRuleInterface importRule) {
+  public void setImportRule(ImportRuleInterface importRule) {
     this.importRule = importRule;
   }
 

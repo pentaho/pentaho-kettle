@@ -53,14 +53,17 @@ public class RepositoryImporter implements IRepositoryImporter {
 
   private ImportRules importRules;
 
+  private List<String> limitDirs;
+
   public RepositoryImporter(Repository repository) {
-    this(repository, new ImportRules());
+    this(repository, new ImportRules(), new ArrayList<String>());
   }
   
-  public RepositoryImporter(Repository repository, ImportRules importRules) {
+  public RepositoryImporter(Repository repository, ImportRules importRules, List<String> limitDirs) {
       this.log = new LogChannel("Repository import"); //$NON-NLS-1$
       this.rep = repository;
       this.importRules = importRules;
+      this.limitDirs = limitDirs;
   }
   
   public synchronized void importAll(RepositoryImportFeedbackInterface feedback, String fileDirectory, String[] filenames, RepositoryDirectoryInterface baseDirectory, boolean overwrite, boolean continueOnError, String versionComment) {
@@ -117,34 +120,35 @@ public class RepositoryImporter implements IRepositoryImporter {
     
     for (ObjectId id : rep.getDatabaseIDs(false)) {
       DatabaseMeta databaseMeta = rep.loadDatabaseMeta(id, null);
-      validateImportedElement(databaseMeta);
+      validateImportedElement(importRules, databaseMeta);
       sharedObjects.storeObject(databaseMeta);
     }
     List<SlaveServer> slaveServers = new ArrayList<SlaveServer>();
     for (ObjectId id : rep.getSlaveIDs(false)) {
       SlaveServer slaveServer = rep.loadSlaveServer(id, null);
-      validateImportedElement(slaveServer);
+      validateImportedElement(importRules, slaveServer);
       sharedObjects.storeObject(slaveServer);
       slaveServers.add(slaveServer);
     }
     for (ObjectId id : rep.getClusterIDs(false)) {
       ClusterSchema clusterSchema = rep.loadClusterSchema(id, slaveServers, null);
-      validateImportedElement(clusterSchema);
+      validateImportedElement(importRules, clusterSchema);
       sharedObjects.storeObject(clusterSchema);
     }
     for (ObjectId id : rep.getPartitionSchemaIDs(false)) {
       PartitionSchema partitionSchema = rep.loadPartitionSchema(id, null);
-      validateImportedElement(partitionSchema);
+      validateImportedElement(importRules, partitionSchema);
       sharedObjects.storeObject(partitionSchema);
     }
   }
 
   /**
    * Validates the repository element that is about to get imported against the list of import rules.
+   * @param the import rules to validate against.
    * @param subject
    * @throws KettleException
    */
-  private void validateImportedElement(Object subject) throws KettleException {
+  public static void validateImportedElement(ImportRules importRules, Object subject) throws KettleException {
     List<ImportValidationFeedback> feedback = importRules.verifyRules(subject);
     List<ImportValidationFeedback> errors = ImportValidationFeedback.getErrors(feedback);
     if (!errors.isEmpty()) {
@@ -405,7 +409,7 @@ public class RepositoryImporter implements IRepositoryImporter {
     replaceSharedObjects(transMeta);
     feedback.setLabel(BaseMessages.getString(PKG, "RepositoryImporter.ImportTrans.Label", Integer.toString(transformationNumber), transMeta.getName()));
 
-    validateImportedElement(transMeta);
+    validateImportedElement(importRules, transMeta);
 
     // What's the directory path?
     String directoryPath = XMLHandler.getTagValue(transnode, "info", "directory");
@@ -418,6 +422,15 @@ public class RepositoryImporter implements IRepositoryImporter {
       directoryPath = directoryPath.substring(1);
     }
 
+    // If we have a set of source directories to limit ourselves to, consider this.
+    //
+    if (limitDirs.size()>0 && Const.indexOfString(directoryPath, limitDirs)<0) {
+      // Not in the limiting set of source directories, skip the import of this transformation...
+      //
+      feedback.addLog(BaseMessages.getString(PKG, "RepositoryImporter.SkippedTransformationNotPartOfLimitingDirectories.Log", transMeta.getName()));
+      return true;
+    }
+    
     RepositoryDirectoryInterface targetDirectory = getTargetDirectory(directoryPath, transDirOverride, feedback);
 
     // OK, we loaded the transformation from XML and all went well...
@@ -467,7 +480,7 @@ public class RepositoryImporter implements IRepositoryImporter {
     JobMeta jobMeta = new JobMeta(jobnode, rep, false, SpoonFactory.getInstance());
     replaceSharedObjects(jobMeta);
     feedback.setLabel(BaseMessages.getString(PKG, "RepositoryImporter.ImportJob.Label", Integer.toString(jobNumber), jobMeta.getName()));
-    validateImportedElement(jobMeta);
+    validateImportedElement(importRules, jobMeta);
     
     // What's the directory path?
     String directoryPath = Const.NVL(XMLHandler.getTagValue(jobnode, "directory"), Const.FILE_SEPARATOR);
@@ -479,6 +492,15 @@ public class RepositoryImporter implements IRepositoryImporter {
     if (directoryPath.startsWith("/")) {
       // remove the leading root, we don't need it.
       directoryPath = directoryPath.substring(1);
+    }
+    
+    // If we have a set of source directories to limit ourselves to, consider this.
+    //
+    if (limitDirs.size()>0 && Const.indexOfString(directoryPath, limitDirs)<0) {
+      // Not in the limiting set of source directories, skip the import of this transformation...
+      //
+      feedback.addLog(BaseMessages.getString(PKG, "RepositoryImporter.SkippedJobNotPartOfLimitingDirectories.Log", jobMeta.getName()));
+      return true;
     }
 
     RepositoryDirectoryInterface targetDirectory = getTargetDirectory(directoryPath, jobDirOverride, feedback);
@@ -649,5 +671,14 @@ public class RepositoryImporter implements IRepositoryImporter {
 
   public void setJobDirOverride(String jobDirOverride) {
     this.jobDirOverride = jobDirOverride;
+  }
+  
+  @Override
+  public void setImportRules(ImportRules importRules) {
+    this.importRules = importRules;
+  }
+  
+  public ImportRules getImportRules() {
+    return importRules;
   }
 }

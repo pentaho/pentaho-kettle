@@ -1,0 +1,11 @@
+<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" align="vertical">
+  <toolbar id="import-rules-toolbar" mode="full">
+
+    <toolbarbutton id="add-rule" label="${ImportRulesDialog.ToolItem.AddRule.Label}" image="images/addSmall.png"
+      tooltiptext="${ImportRulesDialog.ToolItem.AddRule.Tooltip}" onclick="importRules.addRule()" />
+
+    <toolbarbutton id="remove-rule" label="${ImportRulesDialog.ToolItem.RemoveRule.Label}" image="images/deleteSmall.png"
+      tooltiptext="${ImportRulesDialog.ToolItem.RemoveRule.Tooltip}" onclick="importRules.removeRule()" />
+
+  </toolbar>
+</window>
