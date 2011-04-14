@@ -402,8 +402,8 @@ public class DatabaseMeta
 	 */
 	public DatabaseMeta()
 	{
- 		setDefault();
-        addOptions();
+// 		setDefault();
+//        	addOptions();
 	}
 	
 	/**
