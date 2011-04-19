@@ -10,3 +10,6 @@ line arguments can be passed in to override the defaults.
                               e.g.- localhost:9000
 --jobTrackerHost=HOST         The host<:port> of the job tracker service
                               e.g.- localhost:9001
+                              
+To use this code build and jar it manually. Do NOT include this code in the
+project as no other code is expecting it and the results are undetermined.
