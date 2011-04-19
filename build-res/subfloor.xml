@@ -896,7 +896,7 @@ TYPICAL TARGET SEQUENCE
             <arg value="-DgroupId=${publish.groupId}" />
             <arg value="-DartifactId=${publish.artifactId}" />
             <arg value="-Dversion=${publish.version}" />
-            <arg value="-DgeneratePom=false" />
+            <arg value="-DgeneratePom=true" />
             <arg value="-Dpackaging=java-source" />
             <arg value="-Dfile=${publish.file}" />
           </exec>
@@ -1457,7 +1457,7 @@ TYPICAL TARGET SEQUENCE
       Downloads and installs Cobertura ant tasks
       ====================================================================-->
   <target name="install-cobertura" depends="install-ivy">
-    <taskdef-with-ivy organisation="net.sourceforge.cobertura" module="cobertura" revision="1.9" resource="tasks.properties" classname="net.sourceforge.cobertura.ant.InstrumentTask"/>
+    <taskdef-with-ivy organisation="net.sourceforge.cobertura" module="cobertura" revision="1.9.4.1" resource="tasks.properties" classname="net.sourceforge.cobertura.ant.InstrumentTask"/>
   </target>
 
 
