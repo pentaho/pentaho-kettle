@@ -64,7 +64,7 @@ public class SetValueConstant extends BaseStep implements StepInterface
 			data.outputRowMeta = getInputRowMeta().clone();
 			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 			// Create convert meta-data objects that will contain Date & Number formatters
-            data.convertRowMeta = data.outputRowMeta.clone();
+            //data.convertRowMeta = data.outputRowMeta.clone();
             
             // For String to <type> conversions, we allocate a conversion meta data row as well...
 			//
@@ -146,7 +146,7 @@ public class SetValueConstant extends BaseStep implements StepInterface
 		{		
 			// DO CONVERSION OF THE DEFAULT VALUE ...
 			// Entered by user
-			ValueMetaInterface targetValueMeta = data.outputRowMeta.getValueMeta(i);
+			ValueMetaInterface targetValueMeta = data.outputRowMeta.getValueMeta(data.fieldnrs[i]);
 			ValueMetaInterface sourceValueMeta = data.convertRowMeta.getValueMeta(i);
 			if(!Const.isEmpty(meta.getReplaceMask()[i])) sourceValueMeta.setConversionMask(meta.getReplaceMask()[i]);
 			r[data.fieldnrs[i]] = targetValueMeta.convertData(sourceValueMeta, data.realReplaceByvalues[i]);
