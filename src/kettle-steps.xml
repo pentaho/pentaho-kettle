@@ -976,7 +976,7 @@
   <step id="SetValueConstant">
     <description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SetValueConstant</description>
     <classname>org.pentaho.di.trans.steps.setvalueconstant.SetValueConstantMeta</classname>
-    <category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
+    <category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
     <tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SetValueConstant</tooltip>
     <iconfile>ui/images/SVC.png</iconfile>
   </step>
@@ -984,7 +984,7 @@
   <step id="SetValueField">
     <description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SetValueField</description>
     <classname>org.pentaho.di.trans.steps.setvaluefield.SetValueFieldMeta</classname>
-    <category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
+    <category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
     <tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SetValueField</tooltip>
     <iconfile>ui/images/SVF.png</iconfile>
   </step>
