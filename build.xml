@@ -123,6 +123,8 @@
 	          <pathelement path="${classes-dbdialog}"/>
 			  <fileset dir="${libext}" 		includes="*.jar *.zip"/>
 			  <fileset dir="${libext}/"	    includes="**/*.jar *.zip"/>
+			  <fileset dir="${libswt}" 		includes="*.jar *.zip"/>
+	    	  <fileset dir="${libswt}/win32/" includes="*.jar *.zip"/>
 		  	</classpath>
 	    </javac>
 	  </target>
