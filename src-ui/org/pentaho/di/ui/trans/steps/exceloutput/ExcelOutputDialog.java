@@ -83,6 +83,12 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
 	
+	private Label        wlTempDirectory;
+	private TextVar      wTempDirectory;
+	private FormData     fdlTempDirectory, fdTempDirectory;
+	
+	private Button wbTempDir;
+	private FormData fdbTempDir;
 	
 	private Group wFontHeaderGroup;
 	private FormData fdFontHeaderGroup;
@@ -270,7 +276,11 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 	private Group wTemplateGroup;
 	private FormData fdTemplateGroup;
 	
-
+	private Label        wluseTempFiles;
+	private Button       wuseTempFiles;
+	private FormData     fdluseTempFiles, fduseTempFiles;
+	
+	
 	private Label        wlCreateParentFolder;
 	private Button       wCreateParentFolder;
 	private FormData     fdlCreateParentFolder, fdCreateParentFolder;
@@ -908,6 +918,71 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
         fdNullIsBlank.right= new FormAttachment(100, 0);
         wNullIsBlank.setLayoutData(fdNullIsBlank);		
 		
+        // use temporary files?
+		wluseTempFiles=new Label(wContentComp, SWT.RIGHT);
+		wluseTempFiles.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.useTempFile.Label"));
+		props.setLook(wluseTempFiles);
+		fdluseTempFiles=new FormData();
+		fdluseTempFiles.left = new FormAttachment(0, 0);
+		fdluseTempFiles.top  = new FormAttachment(wNullIsBlank, margin);
+		fdluseTempFiles.right= new FormAttachment(middle, -margin);
+		wluseTempFiles.setLayoutData(fdluseTempFiles);
+		wuseTempFiles=new Button(wContentComp, SWT.CHECK);
+		props.setLook(wuseTempFiles);
+		wuseTempFiles.setToolTipText(BaseMessages.getString(PKG, "ExcelOutputDialog.useTempFile.Tooltip"));
+	    fduseTempFiles=new FormData();
+		fduseTempFiles.left = new FormAttachment(middle, 0);
+		fduseTempFiles.top  = new FormAttachment(wNullIsBlank, margin);
+		fduseTempFiles.right= new FormAttachment(100, 0);
+		wuseTempFiles.setLayoutData(fduseTempFiles);
+		wuseTempFiles.addSelectionListener(new SelectionAdapter() 
+		{
+			public void widgetSelected(SelectionEvent e) 
+			{
+				input.setChanged();
+				useTempFile();
+			}
+		}
+	);
+		
+		
+
+		// TempDirectory line
+		wlTempDirectory=new Label(wContentComp, SWT.RIGHT);
+		wlTempDirectory.setText(BaseMessages.getString(PKG, "ExcelOutputDialog.TempDirectory.Label"));
+		props.setLook(wlTempDirectory);
+		fdlTempDirectory=new FormData();
+		fdlTempDirectory.left = new FormAttachment(0, 0);
+		fdlTempDirectory.top  = new FormAttachment(wuseTempFiles, margin);
+		fdlTempDirectory.right= new FormAttachment(middle, -margin);
+		wlTempDirectory.setLayoutData(fdlTempDirectory);
+		
+		// Select TempDir
+		wbTempDir=new Button(wContentComp, SWT.PUSH| SWT.CENTER);
+ 		props.setLook(wbTempDir);
+		wbTempDir.setText(BaseMessages.getString(PKG, "System.Button.Browse"));
+		fdbTempDir=new FormData();
+		fdbTempDir.right= new FormAttachment(100, -margin);
+		fdbTempDir.top  = new FormAttachment(wuseTempFiles, margin);
+		wbTempDir.setLayoutData(fdbTempDir);
+		
+		wTempDirectory=new TextVar(transMeta, wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wTempDirectory.setToolTipText(BaseMessages.getString(PKG, "ExcelOutputDialog.TempDirectory.Tooltip"));
+		props.setLook(wTempDirectory);
+		wTempDirectory.addModifyListener(lsMod);
+		fdTempDirectory=new FormData();
+		fdTempDirectory.left = new FormAttachment(middle, 0);
+		fdTempDirectory.top  = new FormAttachment(wuseTempFiles, margin);
+		fdTempDirectory.right= new FormAttachment(wbTempDir, -margin);
+		wTempDirectory.setLayoutData(fdTempDirectory);
+		wTempDirectory.addModifyListener(
+				 new ModifyListener() 
+					{
+						public void modifyText(ModifyEvent e) 
+						{
+							input.setChanged();
+						}
+			});
 		
 		// ///////////////////////////////
 		// START OF Template Group GROUP //
@@ -928,14 +1003,14 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
  		props.setLook(wlTemplate);
 		fdlTemplate=new FormData();
 		fdlTemplate.left = new FormAttachment(0, 0);
-		fdlTemplate.top  = new FormAttachment(wNullIsBlank, margin);
+		fdlTemplate.top  = new FormAttachment(wTempDirectory, margin);
 		fdlTemplate.right= new FormAttachment(middle, -margin);
 		wlTemplate.setLayoutData(fdlTemplate);
 		wTemplate=new Button(wTemplateGroup, SWT.CHECK );
  		props.setLook(wTemplate);
 		fdTemplate=new FormData();
 		fdTemplate.left = new FormAttachment(middle, 0);
-		fdTemplate.top  = new FormAttachment(wNullIsBlank, margin);
+		fdTemplate.top  = new FormAttachment(wTempDirectory, margin);
 		fdTemplate.right= new FormAttachment(100, 0);
 		wTemplate.setLayoutData(fdTemplate);
 		wTemplate.addSelectionListener(new SelectionAdapter() 
@@ -1001,7 +1076,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 
 		fdTemplateGroup= new FormData();
 		fdTemplateGroup.left = new FormAttachment(0, margin);
-		fdTemplateGroup.top = new FormAttachment(wNullIsBlank, margin);
+		fdTemplateGroup.top = new FormAttachment(wTempDirectory, margin);
 		fdTemplateGroup.right = new FormAttachment(100, -margin);
 		wTemplateGroup.setLayoutData(fdTemplateGroup);
 		
@@ -1686,6 +1761,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		getData();
 		setDateTimeFormat();
 		EnableAutoSize();
+		useTempFile();
 		input.setChanged(changed);
 		
 		shell.open();
@@ -1765,7 +1841,8 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		if (input.getExtension() != null) wExtension.setText(input.getExtension());
         if (input.getEncoding()  !=null) wEncoding.setText(input.getEncoding());
 		if (input.getTemplateFileName()  != null) wTemplateFilename.setText(input.getTemplateFileName());
-		
+		wuseTempFiles.setSelection(input.isUseTempFiles());
+		if (input.getTempDirectory()!= null) wTempDirectory.setText(input.getTempDirectory());
 		wSplitEvery.setText(""+input.getSplitEvery());
 		wAppend.setSelection(input.isAppend());
 		wHeader.setSelection(input.isHeaderEnabled());
@@ -1858,7 +1935,8 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		tfoi.setStepNrInFilename( wAddStepnr.getSelection() );
 		tfoi.setDateInFilename( wAddDate.getSelection() );
 		tfoi.setTimeInFilename( wAddTime.getSelection() );
-		
+		tfoi.setUseTempFiles(wuseTempFiles.getSelection());
+		tfoi.setTempDirectory(wTempDirectory.getText());
 		tfoi.setDateTimeFormat(wDateTimeFormat.getText());
 		tfoi.setSpecifyFormat(wSpecifyFormat.getSelection());
 		tfoi.setAutoSizeColums(wAutoSize.getSelection());
@@ -2021,5 +2099,11 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 			}
 		}
 		wFields.optWidth(true);
+	}
+	private void useTempFile()
+	{
+		wTempDirectory.setEnabled(wuseTempFiles.getSelection());
+		wlTempDirectory.setEnabled(wuseTempFiles.getSelection());
+		wbTempDir.setEnabled(wuseTempFiles.getSelection());
 	}
 }

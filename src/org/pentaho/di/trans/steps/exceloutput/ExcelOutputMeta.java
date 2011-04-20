@@ -307,6 +307,12 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 	/** the excel sheet name */
 	private  String sheetname;
     
+    /** Flag : use temporary files while writing? */
+    private boolean usetempfiles;
+    
+    /** Temporary directory **/
+    private String tempdirectory;
+	
 	/* THE FIELD SPECIFICATIONS ... */
 	
 	/** The output fields */
@@ -467,7 +473,14 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
     {
         this.autosizecolums = autosizecolums;
     }
-
+    public void setTempDirectory(String directory)
+    {
+    	this.tempdirectory=directory;
+    }
+    public String getTempDirectory()
+ 	{
+ 		return tempdirectory;
+ 	}
     /**
      * @return Returns whether or not null values are written as blank cells.
      */
@@ -614,7 +627,21 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 	{
 		this.protectsheet = protectsheet;
 	}
-
+    /**
+     * @return Returns the usetempfile.
+     */
+    public boolean isUseTempFiles()
+    {
+        return usetempfiles;
+    }  
+    
+    /**
+     * @param usetempfiles The usetempfiles to set.
+     */
+    public void setUseTempFiles(boolean usetempfiles)
+    {
+        this.usetempfiles = usetempfiles;
+    }
     /**
      * @return Returns the outputFields.
      */
@@ -774,7 +801,9 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			timeInFilename       = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_time"));
 			SpecifyFormat       = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "SpecifyFormat"));
 			date_time_format         = XMLHandler.getTagValue(stepnode, "file","date_time_format");
+			usetempfiles = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "usetempfiles"));
 			
+			tempdirectory = XMLHandler.getTagValue(stepnode, "file", "tempdirectory");
 			autosizecolums = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "autosizecolums"));
 			nullIsBlank = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "nullisblank"));
             protectsheet = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "protect_sheet"));
@@ -846,6 +875,8 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 
 	public void setDefault()
 	{
+		usetempfiles=false;
+		tempdirectory=null;
 		header_font_name=FONT_NAME_ARIAL;
 		header_font_size=""+DEFAULT_FONT_SIZE;
 		header_font_bold=false;
@@ -1015,7 +1046,8 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
         retval.append("      ").append(XMLHandler.addTagValue("protect_sheet",   protectsheet));
 		retval.append("      ").append(XMLHandler.addTagValue("password",  Encr.encryptPasswordIfNotUsingVariables(password)));
 		retval.append("      ").append(XMLHandler.addTagValue("splitevery", splitEvery));
-		
+		retval.append("      ").append(XMLHandler.addTagValue("usetempfiles",   usetempfiles));
+		retval.append("      ").append(XMLHandler.addTagValue("tempdirectory",   tempdirectory));
 		retval.append("      </file>").append(Const.CR);
 		
 		retval.append("    <template>").append(Const.CR);
@@ -1079,7 +1111,8 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
             
 			fileName         =      rep.getStepAttributeString (id_step, "file_name");  
 			extension        =      rep.getStepAttributeString (id_step, "file_extention");
-			
+			usetempfiles      =      rep.getStepAttributeBoolean(id_step, "usetempfiles");
+			tempdirectory = rep.getStepAttributeString (id_step, "tempdirectory");
 			doNotOpenNewFileInit =      rep.getStepAttributeBoolean(id_step, "do_not_open_newfile_init");
 			createparentfolder        =      rep.getStepAttributeBoolean(id_step, "create_parent_folder");
 			splitEvery       = (int)rep.getStepAttributeInteger(id_step, "file_split");
@@ -1179,7 +1212,8 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_time",    timeInFilename);
 			rep.saveStepAttribute(id_transformation, id_step, "SpecifyFormat",    SpecifyFormat);
 			rep.saveStepAttribute(id_transformation, id_step, "date_time_format",   date_time_format);
-			
+			rep.saveStepAttribute(id_transformation, id_step, "tempdirectory",   tempdirectory);
+			rep.saveStepAttribute(id_transformation, id_step, "usetempfiles",    usetempfiles);
 			rep.saveStepAttribute(id_transformation, id_step, "autosizecolums",    autosizecolums);
 			rep.saveStepAttribute(id_transformation, id_step, "nullisblank",    nullIsBlank);
             rep.saveStepAttribute(id_transformation, id_step, "protect_sheet",    protectsheet);

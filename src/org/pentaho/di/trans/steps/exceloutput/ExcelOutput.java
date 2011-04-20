@@ -700,6 +700,19 @@ public class ExcelOutput extends BaseStep implements StepInterface
 			data.realSheetname=environmentSubstitute(meta.getSheetname());
 			
 	        data.ws = new WorkbookSettings();
+	        if(meta.isUseTempFiles()) {
+				data.ws.setUseTemporaryFileDuringWrite(true);
+				String realdir= environmentSubstitute(meta.getTempDirectory());
+				if(!Const.isEmpty(realdir)) {
+					File file = new File(realdir);
+					if(!file.exists()) {
+						 logError(BaseMessages.getString(PKG, "ExcelInputLog.TempDirectoryNotExist", realdir));
+				         return false;
+					}
+					data.ws.setTemporaryFileDuringWriteDirectory(file);
+				}
+				
+			}
             data.ws.setLocale(Locale.getDefault());
             data.Headerrowheight=Const.toInt(environmentSubstitute(meta.getHeaderRowHeight()),-1);
             data.realHeaderImage=environmentSubstitute(meta.getHeaderImage());
