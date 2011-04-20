@@ -1,0 +1,13 @@
+				<groupbox id="database-options-box" orient="vertical" flex="1"
+					xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+					xmlns:pen="http://www.pentaho.org/2008/xul" >
+					<caption label="${DatabaseDialog.USER_SETTINGS}" />
+					<label id="custom-url-label" value="${DatabaseDialog.USER_Custom_URL}" />
+					<textbox pen:customclass="variabletextbox" id="custom-url-text" />
+					<label id="custom-driver-class-label" value="${DatabaseDialog.USER_Custom_Class}" />
+					<textbox pen:customclass="variabletextbox" id="custom-driver-class-text" />
+					<label id="username-label" value="${DatabaseDialog.label.Username}" />
+					<textbox pen:customclass="variabletextbox" id="username-text" />
+					<label id="password-label" value="${DatabaseDialog.label.Password}" />
+					<textbox pen:customclass="variabletextbox" id="password-text" type="password"/>
+				</groupbox>

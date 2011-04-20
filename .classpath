@@ -5,6 +5,7 @@
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="src" output="classes-core" path="src-core"/>
 	<classpathentry kind="src" output="classes-db" path="src-db"/>
+	<classpathentry kind="src" output="classes-dbdialog" path="src-dbdialog"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="lib" path="libext/js.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/mail.jar"/>
@@ -92,6 +93,7 @@
 	<classpathentry exported="true" kind="lib" path="libext/junit-4.7.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/commons/commons-io-1.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="test/libext/jetty-servlet-tester-6.1.21.jar"/>
+    <classpathentry exported="true" kind="lib" path="test/libext/pentaho-xul-swing-TRUNK-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/javassist.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/spring/spring-core-2.5.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/scannotation-1.0.2.jar"/>
@@ -114,7 +116,6 @@
 	<classpathentry exported="true" kind="lib" path="libext/rules/drools-core-5.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/rules/mvel2-2.0.10.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/rules/core-3.4.2.v_883_R34x.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/pentaho/pentaho-database-TRUNK-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/json_simple-1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/slf4j-api-1.5.8.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/slf4j-jcl-1.5.8.jar"/>

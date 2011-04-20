@@ -1,0 +1,242 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<dialog id="general-datasource-window"
+	title="${DatabaseDialog.Shell.title}" 
+  height="650" width="700"
+	orient="vertical"
+	onload="dataHandler.loadConnectionData()"
+	buttons="accept, cancel"
+    buttonalign="end"
+	buttonlabelaccept="${DatabaseDialog.USER_OK}"
+	buttonlabelcancel="${DatabaseDialog.USER_CANCEL}"
+	ondialogaccept="dataHandler.onOK()"
+	ondialogcancel="dataHandler.onCancel()"
+	xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+	xmlns:pen="http://www.pentaho.org/2008/xul">
+	
+	<!--  ###############################################################################  -->
+	<!--     Scripts for event handling                                                    -->
+	<!--  ###############################################################################  -->
+	<script id="fragmentHandler" src="org.pentaho.ui.database.event.FragmentHandler" />
+	<script id="dataHandler" src="org.pentaho.ui.database.event.DataHandler" />
+	
+	<vbox flex="1">
+	<hbox id="all-box" flex="1">
+
+	<!--  ###############################################################################  -->
+	<!--     DECK OPTIONS LIST: List that allows the selections and switching of the 
+			 database attributes panels - General, Advanced, Options, etc.                 -->
+	<!--  ###############################################################################  -->
+
+		<listbox id="deck-options-list" flex="1" onselect="dataHandler.setDeckChildIndex()" >
+			<listitem id="general-item" label="${DatabaseDialog.DbTab.title}" />
+			<listitem id="advanced-item" label="${DatabaseDialog.AdvancedTab.title}" />
+			<listitem id="options-item" label="${DatabaseDialog.label.Options}" />
+			<listitem id="pooling-item" label="${DatabaseDialog.PoolTab.title}" />
+			<listitem id="cluster-item" label="${DatabaseDialog.ClusterTab.title}" />
+		</listbox>
+
+	<!--  ###############################################################################  -->
+	<!--     START - DIALOG PANEL DECK: The layers of panels that hold the different 
+			 database attributes.                                                          -->
+	<!--  ###############################################################################  -->
+		<deck id="dialog-panel-deck" selectedIndex="3" flex="5">
+		
+	<!--  ###############################################################################  -->
+	<!--     START - GENERAL SETTINGS BOX: The General panel on the deck; the general 
+			 database attribute settings.                                                  -->
+	<!--  ###############################################################################  -->
+			<groupbox id="general-settings-box" orient="vertical">
+
+				<label id="connection-name-label"
+					value="${DatabaseDialog.label.ConnectionName}" />
+				<textbox id="connection-name-text" />
+
+	<!--  ###############################################################################  -->
+	<!--     CONNECTION ACCESS LIST BOX: The box that contains the connection type list
+			 and the access method list.                                                   -->
+	<!--  ###############################################################################  -->
+				<hbox id="connection-access-list-box" flex="1">
+					<vbox id="type-box" flex="1">
+						<label id="connection-type-label" value="${DatabaseDialog.label.ConnectionType}" />
+						<listbox id="connection-type-list" flex="4" rows="11" onselect="dataHandler.loadAccessData()">
+						</listbox>
+						<label id="access-type-label" value="${DatabaseDialog.label.AccessMethod}" />
+						<listbox id="access-type-list" flex="2" rows="5" onselect="fragmentHandler.refreshOptions()">
+						</listbox>
+					</vbox>
+
+	<!--  ###############################################################################  -->
+	<!--     DATABASE OPTIONS BOX: The box that contains database specific attributes
+			 necessary to connect to the database. This is the container that will be 
+			 replaced on change of the access method or connection type.                   -->
+	<!--  ###############################################################################  -->
+	<!--  This is the container that will be replaced on change of the access method  -->
+					<groupbox id="database-options-box" orient="vertical" flex="1">
+						<caption label="${DatabaseDialog.USER_SETTINGS}" />
+					</groupbox>
+				</hbox>
+				
+			</groupbox>
+	<!--  ###############################################################################  -->
+	<!--     END - GENERAL SETTINGS BOX                                                    -->
+	<!--  ###############################################################################  -->
+			
+	<!--  ###############################################################################  -->
+	<!--     START - ADVANCED SETTINGS BOX: The panel that holds the advanced database
+	         attribute settings.                                                           -->
+	<!--  ###############################################################################  -->
+			<groupbox id="advanced-group-box" orient="vertical">
+				<groupbox id="identifier-group-box" orient="vertical">
+					<caption label="${DatabaseDialog.USER_IDENTIFIERS}" />
+					<checkbox id="supports-boolean-data-type" label="${DatabaseDialog.label.SupportsBooleanDataType}" checked="false" />
+					<checkbox id="quote-identifiers-check" label="${DatabaseDialog.label.AdvancedQuoteAllFields}" checked="false" />
+					<checkbox id="force-lower-case-check" label="${DatabaseDialog.label.AdvancedForceIdentifiersLowerCase}" checked="false" />
+					<checkbox id="force-upper-case-check" label="${DatabaseDialog.label.AdvancedForceIdentifiersUpperCase}" checked="false" />
+                    <label id="preferred-schema-name" value="${DatabaseDialog.label.PreferredSchemaName}" />
+                        <textbox id="preferred-schema-name-text" pen:customclass="variabletextbox" />
+
+				</groupbox>
+				<label id="spacer-label" value="" />
+				<label id="sql-label" value="${DatabaseDialog.label.Statements}" />
+				<textbox id="sql-text" multiline="true" flex="1" />
+			</groupbox>
+	<!--  ###############################################################################  -->
+	<!--     END - ADVANCED SETTINGS BOX                                                   -->
+	<!--  ###############################################################################  -->
+			
+	<!--  ###############################################################################  -->
+	<!--     START - OPTIONS SETTINGS BOX: The panel that holds the options for the
+			 database.                                                                     -->
+	<!--  ###############################################################################  -->
+			<groupbox id="options-group-box" orient="vertical" flex="1">
+
+				<label id="parameter-description-label" value="${DatabaseDialog.USER_PARAMETERS}"/>
+				<label id="spacer" />
+
+				<tree id="options-parameter-tree" flex="1" editable="true" onedit="dataHandler.editOptions()" seltype="cell">
+
+					<treecols id="option-column-list">
+					  	<treecol id="parameter-col" label="${DatabaseDialog.column.Parameter}" flex="1" editable="true" />  
+						<treecol id="param-value-col" label="${DatabaseDialog.column.Value}" pen:customeditor="variabletextbox" flex="2" editable="true" />
+					</treecols>
+					<treechildren>
+					
+					</treechildren>
+
+				</tree>
+				
+				<hbox id="help-button-box">
+					<label id="spacer-label" flex="10" />
+					<button id="help-button" label="${DatabaseDialog.button.ShowHelp}" flex="1" onclick="dataHandler.getOptionHelp()" />
+				</hbox>
+				
+			</groupbox>				
+	<!--  ###############################################################################  -->
+	<!--     END - OPTIONS SETTINGS BOX                                                    -->
+	<!--  ###############################################################################  -->
+			
+	<!--  ###############################################################################  -->
+	<!--     START - POOLING SETTINGS BOX: The panel that holds the pooling options for 
+			 the database.                                                                 -->
+	<!--  ###############################################################################  -->
+			<vbox>
+				
+				<groupbox id="pooling-group" orient="vertical" flex="1">
+
+					<checkbox id="use-pool-check" label="${DatabaseDialog.label.UseConnectionPool}" checked="false" 
+						command="dataHandler.onPoolingCheck()"/>
+
+					<groupbox id="pooling-size-group" orient="horizontal" flex="1" height="80">
+						<caption label="${DatabaseDialog.USER_POOL_SIZE}" />
+						<vbox flex="1">
+							<label id="pool-size-label" value="${DatabaseDialog.label.InitialPoolSize}" disabled="true"/>
+							<textbox pen:customclass="variabletextbox" id="pool-size-text" disabled="true"/>
+						</vbox>
+						<vbox flex="1">
+							<label id="max-pool-size-label" value="${DatabaseDialog.label.MaximumPoolSize}" disabled="true"/>
+							<textbox  pen:customclass="variabletextbox" id="max-pool-size-text" disabled="true"/>
+						</vbox>
+					</groupbox>				
+
+				 	<label id="spacer" /> 
+					<label id="pool-parameter-description-label" flex="1" value="${DatabaseDialog.USER_PARAMETERS}" disabled="true"/>
+
+					<tree id="pool-parameter-tree" flex="3" rows="5" editable="false" seltype="single" disabled="true" onselect="dataHandler.poolingRowChange()">
+						<treecols id="column-list">
+						  	<treecol id="select-col"  fixed="true" type="checkbox" flex="1" editable="true" />  
+							<treecol id="parameter-col" fixed="true" label="${DatabaseDialog.column.PoolParameter}" flex="7" editable="false" />
+							<treecol id="value-col" fixed="true" label="${DatabaseDialog.column.PoolValue}" flex="7" pen:customeditor="variabletextbox" editable="true" />
+						</treecols>
+	
+						<treechildren id="main-treechildren">
+						</treechildren>
+					</tree>
+					
+					<hbox id="help-button-box">
+						<label id="spacer-label" flex="5" />
+						<button id="restore-defaults-button" label="${DatabaseDialog.button.RestoreDefaults}" flex="1" onclick="dataHandler.restoreDefaults()" />
+					</hbox>
+					
+					<!-- <label id="spacer" />  -->
+					<label id="pooling-description-label" flex="1" value="${DatabaseDialog.column.PoolDescription}" disabled="true"/>
+					<textbox id="pooling-description" flex="8" readonly="true" multiline="true" disabled="true"/>
+					<label id="spacer" />
+					
+				</groupbox>
+
+			</vbox>
+	<!--  ###############################################################################  -->
+	<!--     END - POOLING SETTINGS BOX                                                    -->
+	<!--  ###############################################################################  -->
+			
+	<!--  ###############################################################################  -->
+	<!--     START - CLUSTER SETTINGS BOX: The panel that holds the clustering options 
+			 for the database.                                                             -->
+	<!--  ###############################################################################  -->
+			<groupbox id="place-holder-box-2" orient="vertical" flex="1">
+				<checkbox id="use-cluster-check" label="${DatabaseDialog.label.UseClustering}" checked="false" 
+				command="dataHandler.onClusterCheck()"/>
+				<label id="spacer" />
+				<label id="cluster-parameter-description-label" value="${DatabaseDialog.USER_PARAMETERS}" disabled="true"/>
+				<label id="spacer" />
+
+				<tree id="cluster-parameter-tree" flex="1" editable="true" seltype="cell" disabled="true">
+
+					<treecols id="cluster-column-list">
+					  	<treecol id="partition-col" label="${DatabaseDialog.column.PartitionId}" flex="2" editable="true" />  
+						<treecol id="host-col" label="${DatabaseDialog.column.Hostname}" flex="2" editable="true" />
+						<treecol id="port-col" label="${DatabaseDialog.column.Port}" flex="2" editable="true" />
+						<treecol id="database-col" label="${DatabaseDialog.column.DatabaseName}" flex="2" editable="true" />
+						<treecol id="user-col" label="${DatabaseDialog.column.Username}" flex="2" editable="true" />
+						<treecol id="password-col" label="${DatabaseDialog.column.Password}" flex="2" editable="true" />
+					</treecols>
+					
+					<treechildren>
+					</treechildren>
+				</tree>
+
+			</groupbox>				
+	<!--  ###############################################################################  -->
+	<!--     END - CLUSTER SETTINGS BOX                                                    -->
+	<!--  ###############################################################################  -->
+			
+		</deck>
+	<!--  ###############################################################################  -->
+	<!--     END - DECK                                                                    -->
+	<!--  ###############################################################################  -->
+	
+	</hbox>
+	
+	<!--  ###############################################################################  -->
+	<!--     TEST BUTTON BOX: A box for the test button.                                   -->
+	<!--  ###############################################################################  -->
+	<hbox id="test-button-box">
+		<label id="spacer-label" flex="10" />
+		<button id="test-button" label="${DatabaseDialog.button.Test}" flex="1" onclick="dataHandler.testDatabaseConnection()" />
+		<label id="spacer-label" flex="10" />
+		
+	</hbox>
+	</vbox>
+
+</dialog>

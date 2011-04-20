@@ -1,0 +1,18 @@
+				<groupbox id="database-options-box" orient="vertical" flex="1"
+					xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+					xmlns:pen="http://www.pentaho.org/2008/xul" >
+					<caption label="${DatabaseDialog.USER_SETTINGS}" />
+					<label id="server-host-name-label" value="${DatabaseDialog.label.ServerHostname}" />
+					<textbox pen:customclass="variabletextbox" id="server-host-name-text" />
+					<label id="database-name-label" value="${DatabaseDialog.label.DatabaseName}" />
+					<textbox pen:customclass="variabletextbox" id="database-name-text" />
+					<label id="instance-label" value="${DatabaseDialog.label.SQLServerInstance}" />
+					<textbox id="instance-text" />
+					<label id="port-number-label" value="${DatabaseDialog.label.PortNumber}" />
+					<textbox pen:customclass="variabletextbox" id="port-number-text" />
+					<label id="username-label" value="${DatabaseDialog.label.Username}" />
+					<textbox pen:customclass="variabletextbox" id="username-text" />
+					<label id="password-label" value="${DatabaseDialog.label.Password}" />
+					<textbox pen:customclass="variabletextbox" id="password-text" type="password"/>
+					<checkbox id="decimal-separator-check" label="${DatabaseDialog.label.UseDoubleDecimalSeparator}" checked="false"/>
+				</groupbox>

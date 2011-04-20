@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="${ivy.artifact.group}" module="${ivy.artifact.id}" revision="${project.revision}" />
+  <info organisation="pentaho.kettle" module="kettle-test" revision="TRUNK-SNAPSHOT" status="integration" publication="20110420011323"/>
   <publications>
-    <artifact name="${ivy.artifact.id}" type="jar" conf="default"/>
+    <artifact name="kettle-test" type="jar" conf="default"/>
   </publications>  
   
   <dependencies defaultconf="default->default">

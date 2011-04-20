@@ -29,7 +29,7 @@
 
 	
   <property name="kettle.module.list"
-            value="kettle-core, kettle-db, kettle-engine, kettle-ui-swt, kettle-test"
+            value="kettle-core, kettle-db, kettle-engine, kettle-dbdialog, kettle-ui-swt, kettle-test"
             description="The list of kettle modules" />
 
   <!-- Import the common_build.xml file which contains all the default tasks -->  
@@ -59,14 +59,15 @@
       <sequential>
         <antcall target="publish-local-task">
           <param name="ivy.artifact.id" value="@{module}" />
+          <param name="ivyfilename" value="ivy-@{module}.xml"/>
         </antcall>
       </sequential>
     </for>
   </target>
   	
   <target name="publish-local-task" depends="install-ivy">
-    <ivy:resolve file="${ivy.artifact.ivyfilename}" />
-    <ivy:publish resolver="local" pubrevision="${project.revision}" overwrite="true" forcedeliver="true">
+    <ivy:resolve file="${ivyfilename}" />
+    <ivy:publish resolver="local" srcivypattern="${ivyfilename}" pubrevision="${project.revision}" overwrite="true" forcedeliver="true">
       <artifacts pattern="${kettle.libdist.dir}/[artifact].[ext]" />
     </ivy:publish>
   </target>
@@ -81,14 +82,15 @@
       <sequential>
         <antcall target="publish-task">
           <param name="ivy.artifact.id" value="@{module}" />
+          <param name="ivyfilename" value="ivy-@{module}.xml"/>
         </antcall>
       </sequential>
     </for>
   </target>
 	
   <target name="publish-task" depends="install-ivy">
-    <ivy:resolve file="${ivy.artifact.ivyfilename}" />
-    <ivy:makepom ivyfile="${ivy.artifact.ivyfilename}" pomfile="${kettle.ivydist.dir}/pom-${ivy.artifact.id}.xml">
+    <ivy:resolve file="${ivyfilename}" />
+    <ivy:makepom ivyfile="${ivyfilename}" pomfile="${kettle.ivydist.dir}/pom-${ivy.artifact.id}.xml">
       <mapping conf="default" scope="compile" />
       <mapping conf="runtime" scope="runtime" />
     </ivy:makepom>

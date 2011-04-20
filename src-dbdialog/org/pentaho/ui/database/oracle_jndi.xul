@@ -1,0 +1,11 @@
+				<groupbox id="database-options-box" orient="vertical" flex="1"
+					xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+					xmlns:pen="http://www.pentaho.org/2008/xul" >
+					<caption label="${DatabaseDialog.USER_SETTINGS}" />
+					<label id="database-name-label" value="${DatabaseDialog.USER_JNDI_NAME}" />
+					<textbox pen:customclass="variabletextbox" id="database-name-text" />
+					<label id="data-tablespace-label" value="${DatabaseDialog.label.TablespaceForData}" />
+					<textbox pen:customclass="variabletextbox" id="data-tablespace-text" />
+					<label id="index-tablespace-label" value="${DatabaseDialog.label.TablespaceForIndexes}" />
+					<textbox pen:customclass="variabletextbox" id="index-tablespace-text" />
+				</groupbox>

@@ -1,0 +1,17 @@
+				<groupbox id="database-options-box" orient="vertical" flex="1"
+					xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+					xmlns:pen="http://www.pentaho.org/2008/xul" >
+					<caption label="${DatabaseDialog.USER_SETTINGS}" />
+					<label id="server-host-name-label" value="${DatabaseDialog.label.ServerHostname}" />
+					<textbox pen:customclass="variabletextbox" id="server-host-name-text" />
+					<label id="system-number-label" value="${DatabaseDialog.label.SystemNumber}" />
+					<textbox pen:customclass="variabletextbox" id="system-number-text" />
+					<label id="client-label" value="${DatabaseDialog.label.SapClient}" />
+					<textbox pen:customclass="variabletextbox" id="client-text" />
+					<label id="language-label" value="${DatabaseDialog.label.Language}" />
+					<textbox pen:customclass="variabletextbox" id="language-text" />
+					<label id="username-label" value="${DatabaseDialog.label.Username}" />
+					<textbox pen:customclass="variabletextbox" id="username-text" />
+					<label id="password-label" value="${DatabaseDialog.label.Password}" />
+					<textbox pen:customclass="variabletextbox" id="password-text" type="password"/>
+				</groupbox>
