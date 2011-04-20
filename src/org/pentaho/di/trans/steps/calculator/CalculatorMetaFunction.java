@@ -104,6 +104,8 @@ public class CalculatorMetaFunction implements Cloneable
   public static final int    CALC_JARO_WINKLER               = 71;
   public static final int    CALC_SOUNDEX                    = 72;
   public static final int    CALC_REFINED_SOUNDEX            = 73;
+  public static final int    CALC_ADD_HOURS                  = 74;
+  public static final int    CALC_ADD_MINUTES                = 75;
    
     public static final String calc_desc[] = 
         { 
@@ -180,7 +182,9 @@ public class CalculatorMetaFunction implements Cloneable
         	"JARO",
         	"JARO_WINKLER",
         	"SOUNDEX",
-        	"REFINED_SOUNDEX"
+        	"REFINED_SOUNDEX",
+        	"ADD_HOURS",
+        	"ADD_MINUTES"
         };
     
     public static final String calcLongDesc[] = 
@@ -259,6 +263,8 @@ public class CalculatorMetaFunction implements Cloneable
             BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.JaroWinkler"),
             BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.SoundEx"),
             BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.RefinedSoundEx"),
+            BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.DatePlusHours"),
+            BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.DatePlusMinutes")
         };
    
     private String fieldName;

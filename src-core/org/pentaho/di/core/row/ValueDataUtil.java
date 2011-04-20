@@ -804,7 +804,33 @@ public class ValueDataUtil
 
         throw new KettleValueException("The 'addDays' function only works with a date and an integer");
     }
+    public static Object addHours(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB) throws KettleValueException
+    {
+        if (metaA.isDate() && metaB.isInteger())
+        {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(metaA.getDate(dataA));
+            cal.add(Calendar.HOUR_OF_DAY, metaB.getInteger(dataB).intValue());
+            
+            return cal.getTime();
+        }
 
+        throw new KettleValueException("The 'addHours' function only works with a date and an integer");
+    }
+    public static Object addMinutes(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB) throws KettleValueException
+    {
+        if (metaA.isDate() && metaB.isInteger())
+        {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(metaA.getDate(dataA));
+            cal.add(Calendar.MINUTE, metaB.getInteger(dataB).intValue());
+            
+            return cal.getTime();
+        }
+
+        throw new KettleValueException("The 'addMinutes' function only works with a date and an integer");
+    }
+    
     public static Object addMonths(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB) throws KettleValueException
     {
     	if (metaA.isDate() && metaB.isInteger())

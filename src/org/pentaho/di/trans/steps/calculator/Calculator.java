@@ -364,6 +364,16 @@ public class Calculator extends BaseStep implements StepInterface
                         calcData[index] = ValueDataUtil.addDays(metaA, dataA, metaB, dataB);
                     }
                     break;
+                case CalculatorMetaFunction.CALC_ADD_HOURS           : // Add B hours to date field A
+                {
+                    calcData[index] = ValueDataUtil.addHours(metaA, dataA, metaB, dataB);
+                }
+                	break;
+                case CalculatorMetaFunction.CALC_ADD_MINUTES           : // Add B minutes to date field A
+                {
+                    calcData[index] = ValueDataUtil.addMinutes(metaA, dataA, metaB, dataB);
+                }
+                	break;
                case CalculatorMetaFunction.CALC_YEAR_OF_DATE           : // What is the year (Integer) of a date?
                     {
                         calcData[index] = ValueDataUtil.yearOfDate(metaA, dataA);
