@@ -38,6 +38,11 @@
     
     <dependency org="org.apache.hadoop" name="hadoop-core" rev="${dependency.pentaho-hadoop.revision}" transitive="false" conf="default->default"
       changing="false" />
+    <dependency org="org.apache.hbase" name="hbase" rev="${dependency.pentaho-hbase.revision}" transitive="false" conf="default->default"
+      changing="false" />
+    <dependency org="org.apache.zookeeper" name="zookeeper" rev="${dependency.pentaho-zookeeper.revision}" transitive="false" conf="default->default"
+      changing="false" />
+
       
     <dependency org="pentaho" name="pentaho-vfs-browser" rev="${dependency.vfs-browser.revision}" transitive="false" conf="default->default"
       changing="true" />
@@ -47,6 +52,7 @@
 	</dependency>
       
     <dependency org="log4j" name="log4j" rev="1.2.14" />
+    <dependency org="commons-logging"       name="commons-logging"    rev="1.1.1"/>
     <dependency org="junit" name="junit" rev="4.4" conf="test->default" />
     <dependency org="commons-io" name="commons-io" rev="1.4" transitive="false" conf="test->default" />
     <dependency org="commons-logging"       name="commons-logging"    rev="1.1"   transitive="false" conf="test->default" />

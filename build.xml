@@ -92,6 +92,8 @@
 			<exclude name="jface*.jar" />
 			<exclude name="jets3t-*.jar" />
 			<exclude name="hadoop-*.jar" />
+			<exclude name="hbase-*.jar" />
+			<exclude name="zookeeper-*.jar" />
 			<exclude name="jug-*.jar" />
 			<exclude name="commons-codec*.jar" />
 			<exclude name="commons-io*.jar" />
