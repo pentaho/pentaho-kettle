@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipInputStream;
 
@@ -125,6 +126,8 @@ public class TextFileInputData extends BaseStepData implements
 
     public EncodingType encodingType;
     
+    public Map<String, Boolean> rejectedFiles;
+    
 	/**
 	 * 
 	 */
@@ -145,5 +148,6 @@ public class TextFileInputData extends BaseStepData implements
 		filterProcessor = null;
         lineStringBuilder = new StringBuilder(256);
         
+        rejectedFiles = new HashMap<String, Boolean>();
 	}
 }

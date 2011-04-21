@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.ZipInputStream;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
@@ -32,6 +33,7 @@ import org.pentaho.di.core.playlist.FilePlayListReplay;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
@@ -881,7 +883,7 @@ public class TextFileInput extends BaseStep implements StepInterface
                         if (idx<0)
                         {
                             logError(BaseMessages.getString(PKG, "TextFileInput.Log.Error.UnableToFindFilenameField", meta.getAcceptingField()));
-                            setErrors(1);
+                            setErrors(getErrors() +1);
                             stopAll();
                             return false;
                         }
@@ -921,12 +923,14 @@ public class TextFileInput extends BaseStep implements StepInterface
             handleMissingFiles();
             
 			// Open the first file & read the required rows in the buffer, stop
-			// if it fails...
+			// if it fails and not set to skip bad files...
 			if (!openNextFile())
 			{
-				closeLastFile();
-				setOutputDone();
-				return false;
+				if (failAfterBadFile(null)){
+				  closeLastFile();
+				  setOutputDone();
+				  return false;
+				}
 			}
 
 			// Count the number of repeat fields...
@@ -942,10 +946,10 @@ public class TextFileInput extends BaseStep implements StepInterface
 				int repeats = 1;
 				if (meta.isLineWrapped()) repeats = meta.getNrWraps() > 0 ? meta.getNrWraps() : repeats;
 
-        if (!data.doneWithHeader && data.headerLinesRead == 0) { 
-          // We are just starting to read header lines, read them all
-          repeats += meta.getNrHeaderLines() + 1;
-        }
+                if (!data.doneWithHeader && data.headerLinesRead == 0) { 
+                  // We are just starting to read header lines, read them all
+                  repeats += meta.getNrHeaderLines() + 1;
+                }
 
 				// Read a number of lines...
 				for (int i = 0; i < repeats && !data.doneReading; i++)
@@ -983,11 +987,13 @@ public class TextFileInput extends BaseStep implements StepInterface
 		 */
 		while (data.lineBuffer.size() == 0)
 		{
-			if (!openNextFile()) // Open fails: done processing!
+			if (!openNextFile()) // Open fails: done processing unless set to skip bad files
 			{
-				closeLastFile();
-				setOutputDone(); // signal end to receiver(s)
-				return false;
+				if (failAfterBadFile(null)){
+				    closeLastFile();
+				    setOutputDone(); // signal end to receiver(s)
+				    return false;
+				}//else will continue until can open
 			}
 		}
 
@@ -1193,6 +1199,76 @@ public class TextFileInput extends BaseStep implements StepInterface
 		return retval;
 	}
 
+	/**
+	 * 
+	 * @param errorMsg Message to send to rejected row if enabled
+	 * @return If should stop processing after having problems with a file
+	 */
+	private boolean failAfterBadFile(String errorMsg){
+
+	  if(getStepMeta().isDoingErrorHandling() 
+	      && data.filename!=null 
+	      && !data.rejectedFiles.containsKey(data.filename))
+	  {
+	    data.rejectedFiles.put(data.filename, true);
+	    rejectCurrentFile(errorMsg);
+	  }
+	  
+	  return !meta.isErrorIgnored() || !meta.isSkipBadFiles() || data.isLastFile;
+	}
+	
+	/**
+	 * Send file name and/or error message to error output
+	 * @param errorMsg Message to send to rejected row if enabled
+	 */
+	private void rejectCurrentFile(String errorMsg) {
+	  if(StringUtils.isNotBlank(meta.getFileErrorField()) || StringUtils.isNotBlank(meta.getFileErrorMessageField()) ){
+	    RowMetaInterface rowMeta = getInputRowMeta();
+	    if(rowMeta == null) rowMeta = new RowMeta();
+
+	    int errorFileIndex = (StringUtils.isBlank(meta.getFileErrorField()))? 
+	        -1: 
+	          addValueMeta(rowMeta, this.environmentSubstitute(meta.getFileErrorField()));
+	    
+	    int errorMessageIndex = StringUtils.isBlank(meta.getFileErrorMessageField()) ?
+	        -1 :
+	          addValueMeta(rowMeta, this.environmentSubstitute(meta.getFileErrorMessageField()));
+
+	    try {
+	      Object[] rowData = getRow();
+	      if(rowData == null) rowData = RowDataUtil.allocateRowData(rowMeta.size());
+	      
+	      if(errorFileIndex >= 0) rowData[errorFileIndex] = data.filename;
+	      if(errorMessageIndex >= 0) rowData[errorMessageIndex] = errorMsg;
+	      
+	      putError(rowMeta, rowData, getErrors(), data.filename, null, "ERROR_CODE");
+	    } catch (Exception e) {
+	      logError("Error sending error row", e);
+	    }
+	  }
+	}
+
+	/**
+	 * Adds <code>String</code> value meta with given name if not present and returns index 
+	 * @param rowMeta
+	 * @param fieldName
+	 * @return Index in row meta of value meta with <code>fieldName</code>
+	 */
+	private int addValueMeta(RowMetaInterface rowMeta, String fieldName) {
+	  ValueMetaInterface valueMeta = new ValueMeta(fieldName, ValueMetaInterface.TYPE_STRING);
+	  valueMeta.setOrigin(getStepname());
+	  //add if doesn't exist
+	  int index = -1;
+	  if(!rowMeta.exists(valueMeta)){
+	    index = rowMeta.size();
+	    rowMeta.addValueMeta(valueMeta);  
+	  }
+	  else{
+	    index = rowMeta.indexOfValue(fieldName);
+	  }
+	  return index;
+	}
+
     /**
 	 * Check if the line should be taken.
 	 * @param line
@@ -1264,13 +1340,13 @@ public class TextFileInput extends BaseStep implements StepInterface
 				// Increment the lines updated to reflect another file has been finished.
 				// This allows us to give a state of progress in the run time metrics
 				incrementLinesUpdated();
-                String sFileCompression = meta.getFileCompression();
-				if (sFileCompression != null && sFileCompression.equals("Zip"))
+				String sFileCompression = meta.getFileCompression();
+				if (sFileCompression != null && sFileCompression.equals("Zip") && data.zi != null)
 				{
 					data.zi.closeEntry();
 					data.zi.close();
 				}
-				else if (sFileCompression != null && sFileCompression.equals("GZip"))
+				else if (sFileCompression != null && sFileCompression.equals("GZip") && data.gzi != null)
 				{
 					data.gzi.close();
 				}
@@ -1287,9 +1363,12 @@ public class TextFileInput extends BaseStep implements StepInterface
 		}
 		catch (Exception e)
 		{
-			logError("Couldn't close file : " + data.filename + " --> " + e.toString());
+		  String errorMsg = "Couldn't close file : " + data.filename + " --> " + e.toString(); 
+			logError(errorMsg);
+			if(failAfterBadFile(errorMsg)){//( !meta.isSkipBadFiles() || data.isLastFile  ){
 			stopAll();
-			setErrors(1);
+			}
+			setErrors(getErrors() +1);
 			return false;
 		}
 		finally
@@ -1306,10 +1385,11 @@ public class TextFileInput extends BaseStep implements StepInterface
 
 	private boolean openNextFile()
 	{
+	  
 		try
-		{
+		{	    
 			lineNumberInFile = 0;
-			if (!closeLastFile()) return false;
+			if (!closeLastFile() && failAfterBadFile(null) ) return false; //(!meta.isSkipBadFiles() || data.isLastFile) ) return false;
 
 			if (data.files.nrOfFiles() == 0) return false;
 
@@ -1318,6 +1398,9 @@ public class TextFileInput extends BaseStep implements StepInterface
 			data.file = data.files.getFile(data.filenr);
 			data.filename = KettleVFS.getFilename( data.file );
 
+			// Move file pointer ahead!
+			data.filenr++;
+			
 			// Add additional fields?
 			if (data.addShortFilename)
 			{
@@ -1368,7 +1451,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 			data.fr = KettleVFS.getInputStream(data.file);
 			data.dataErrorLineHandler.handleFile(data.file);
 
-            String sFileCompression = meta.getFileCompression();
+			String sFileCompression = meta.getFileCompression();
 			if (sFileCompression != null && sFileCompression.equals("Zip"))
 			{
 			    if (log.isDetailed()) logDetailed("This is a zipped file");
@@ -1412,9 +1495,6 @@ public class TextFileInput extends BaseStep implements StepInterface
 			
 	        String encoding = data.isr.getEncoding();
 	        data.encodingType = EncodingType.guessEncodingType(encoding);
-
-			// Move file pointer ahead!
-			data.filenr++;
 
 			// /////////////////////////////////////////////////////////////////////////////
 			// Read the first lines...
@@ -1490,9 +1570,12 @@ public class TextFileInput extends BaseStep implements StepInterface
 		}
 		catch (Exception e)
 		{
-			logError("Couldn't open file #" + data.filenr + " : " + data.filename + " --> " + e.toString());
-			stopAll();
-			setErrors(1);
+		    String errorMsg = "Couldn't open file #" + data.filenr + " : " + data.filename + " --> " + e.toString(); 
+			logError(errorMsg);
+			if(failAfterBadFile(errorMsg)){ //!meta.isSkipBadFiles()) stopAll();
+			  stopAll();
+			}
+			setErrors(getErrors() +1);
 			return false;
 		}
 		return true;

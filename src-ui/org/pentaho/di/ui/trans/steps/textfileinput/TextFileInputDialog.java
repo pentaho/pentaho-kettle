@@ -306,6 +306,10 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     private Button       wErrorIgnored;
     private FormData     fdlErrorIgnored, fdErrorIgnored;
     
+    private Label        wlSkipBadFiles;
+    private Button       wSkipBadFiles;
+    private FormData     fdlSkipBadFiles, fdSkipBadFiles;
+    
     private Label        wlSkipErrorLines;
     private Button       wSkipErrorLines;
     private FormData     fdlSkipErrorLines, fdSkipErrorLines;
@@ -424,6 +428,22 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     private FormData	fdlSizeFieldName;
     private TextVar		wSizeFieldName;
     private FormData    fdSizeFieldName;
+
+    private Label wlBadFileField;
+
+    private FormData fdlBadFileField;
+
+    private Text wBadFileField;
+
+    private FormData fdBadFileField;
+
+    private Label wlBadFileMessageField;
+
+    private FormData fdlBadFileMessageField;
+
+    private Text wBadFileMessageField;
+
+    private FormData fdBadFileMessageField;
 
 
 	public TextFileInputDialog(Shell parent, Object in, TransMeta transMeta, String sname)
@@ -626,6 +646,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wInclRownum.addSelectionListener( lsFlags );
         wRownumByFile.addSelectionListener( lsFlags );
         wErrorIgnored.addSelectionListener(lsFlags);
+        wSkipBadFiles.addSelectionListener(lsFlags);
         wHeader.addSelectionListener(lsFlags);
         wFooter.addSelectionListener(lsFlags);
         wWraps.addSelectionListener(lsFlags);
@@ -1663,13 +1684,66 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fdErrorIgnored.top = new FormAttachment(0, margin);
         wErrorIgnored.setLayoutData(fdErrorIgnored);
         
+        // Skip bad files?
+        wlSkipBadFiles = new Label(wErrorComp, SWT.RIGHT);
+        wlSkipBadFiles.setText(BaseMessages.getString(PKG, "TextFileInputDialog.SkipBadFiles.Label"));
+        props.setLook(wlSkipBadFiles);
+        fdlSkipBadFiles = new FormData();
+        fdlSkipBadFiles.left = new FormAttachment(0, 0);
+        fdlSkipBadFiles.top = new FormAttachment(wErrorIgnored, margin);
+        fdlSkipBadFiles.right = new FormAttachment(middle, -margin);
+        wlSkipBadFiles.setLayoutData(fdlSkipBadFiles);
+        wSkipBadFiles = new Button(wErrorComp, SWT.CHECK);
+        props.setLook(wSkipBadFiles);
+        wSkipBadFiles.setToolTipText(BaseMessages.getString(PKG, "TextFileInputDialog.SkipBadFiles.Tooltip"));
+        fdSkipBadFiles = new FormData();
+        fdSkipBadFiles.left = new FormAttachment(middle, 0);
+        fdSkipBadFiles.top = new FormAttachment(wErrorIgnored, margin);
+        wSkipBadFiles.setLayoutData(fdSkipBadFiles);
+        
+        //field for rejected file
+        wlBadFileField=new Label(wErrorComp, SWT.RIGHT);
+        wlBadFileField.setText(BaseMessages.getString(PKG, "TextFileInputDialog.BadFileField.Label"));
+        props.setLook(wlBadFileField);
+        fdlBadFileField=new FormData();
+        fdlBadFileField.left = new FormAttachment(0, 0);
+        fdlBadFileField.top  = new FormAttachment(wSkipBadFiles, margin);
+        fdlBadFileField.right= new FormAttachment(middle, -margin);
+        wlBadFileField.setLayoutData(fdlBadFileField);
+        wBadFileField=new Text(wErrorComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wBadFileField);
+        wBadFileField.addModifyListener(lsMod);
+        fdBadFileField = new FormData();
+        fdBadFileField.left = new FormAttachment(middle, 0);
+        fdBadFileField.top  = new FormAttachment(wSkipBadFiles, margin);
+        fdBadFileField.right= new FormAttachment(100, 0);
+        wBadFileField.setLayoutData(fdBadFileField);
+        
+        //field for file error messsage
+        wlBadFileMessageField=new Label(wErrorComp, SWT.RIGHT);
+        wlBadFileMessageField.setText(BaseMessages.getString(PKG, "TextFileInputDialog.BadFileMessageField.Label"));
+        props.setLook(wlBadFileMessageField);
+        fdlBadFileMessageField=new FormData();
+        fdlBadFileMessageField.left = new FormAttachment(0, 0);
+        fdlBadFileMessageField.top  = new FormAttachment(wBadFileField, margin);
+        fdlBadFileMessageField.right= new FormAttachment(middle, -margin);
+        wlBadFileMessageField.setLayoutData(fdlBadFileMessageField);
+        wBadFileMessageField = new Text(wErrorComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wBadFileMessageField);
+        wBadFileMessageField.addModifyListener(lsMod);
+        fdBadFileMessageField=new FormData();
+        fdBadFileMessageField.left = new FormAttachment(middle, 0);
+        fdBadFileMessageField.top  = new FormAttachment(wBadFileField, margin);
+        fdBadFileMessageField.right= new FormAttachment(100, 0);
+        wBadFileMessageField.setLayoutData(fdBadFileMessageField);
+        
         // Skip error lines?
         wlSkipErrorLines = new Label(wErrorComp, SWT.RIGHT);
         wlSkipErrorLines.setText(BaseMessages.getString(PKG, "TextFileInputDialog.SkipErrorLines.Label"));
         props.setLook(wlSkipErrorLines);
         fdlSkipErrorLines = new FormData();
         fdlSkipErrorLines.left = new FormAttachment(0, 0);
-        fdlSkipErrorLines.top = new FormAttachment(wErrorIgnored, margin);
+        fdlSkipErrorLines.top = new FormAttachment(wBadFileMessageField, margin);
         fdlSkipErrorLines.right = new FormAttachment(middle, -margin);
         wlSkipErrorLines.setLayoutData(fdlSkipErrorLines);
         wSkipErrorLines = new Button(wErrorComp, SWT.CHECK);
@@ -1677,7 +1751,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wSkipErrorLines.setToolTipText(BaseMessages.getString(PKG, "TextFileInputDialog.SkipErrorLines.Tooltip"));
         fdSkipErrorLines = new FormData();
         fdSkipErrorLines.left = new FormAttachment(middle, 0);
-        fdSkipErrorLines.top = new FormAttachment(wErrorIgnored, margin);
+        fdSkipErrorLines.top = new FormAttachment(wBadFileMessageField, margin);
         wSkipErrorLines.setLayoutData(fdSkipErrorLines);
 
         wlErrorCount=new Label(wErrorComp, SWT.RIGHT);
@@ -1696,7 +1770,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fdErrorCount.top  = new FormAttachment(wSkipErrorLines, margin);
         fdErrorCount.right= new FormAttachment(100, 0);
         wErrorCount.setLayoutData(fdErrorCount);
-
+ 
         wlErrorFields=new Label(wErrorComp, SWT.RIGHT);
         wlErrorFields.setText(BaseMessages.getString(PKG, "TextFileInputDialog.ErrorFields.Label"));
         props.setLook(wlErrorFields);
@@ -2121,6 +2195,9 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         
         // Error handling tab...
         wlSkipErrorLines.setEnabled( wErrorIgnored.getSelection() );
+        wSkipBadFiles.setEnabled( wErrorIgnored.getSelection() );
+        wBadFileField.setEnabled( wErrorIgnored.getSelection() && wSkipBadFiles.getSelection() );
+        wBadFileMessageField.setEnabled( wErrorIgnored.getSelection() && wSkipBadFiles.getSelection() );
         wSkipErrorLines.setEnabled( wErrorIgnored.getSelection() );
         wlErrorCount.setEnabled( wErrorIgnored.getSelection() );
         wErrorCount.setEnabled( wErrorIgnored.getSelection() );
@@ -2224,7 +2301,12 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         
         // Error handling fields...
         wErrorIgnored.setSelection( in.isErrorIgnored() );
+        wSkipBadFiles.setSelection(in.isSkipBadFiles());
         wSkipErrorLines.setSelection( in.isErrorLineSkipped() );
+        
+        if(in.getFileErrorField() != null) wBadFileField.setText(in.getFileErrorField());
+        if(in.getFileErrorMessageField() != null) wBadFileMessageField.setText(in.getFileErrorMessageField());
+        
         if (in.getErrorCountField()!=null) wErrorCount.setText( in.getErrorCountField() );
         if (in.getErrorFieldsField()!=null) wErrorFields.setText( in.getErrorFieldsField() );
         if (in.getErrorTextField()!=null) wErrorText.setText( in.getErrorTextField() );
@@ -2447,6 +2529,9 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         }
         // Error handling fields...
         meta.setErrorIgnored( wErrorIgnored.getSelection() );
+        meta.setSkipBadFiles(wSkipBadFiles.getSelection());
+        meta.setFileErrorField(wBadFileField.getText());
+        meta.setFileErrorMessageField(wBadFileMessageField.getText());
         meta.setErrorLineSkipped( wSkipErrorLines.getSelection() );
         meta.setErrorCountField( wErrorCount.getText() );
         meta.setErrorFieldsField( wErrorFields.getText() );

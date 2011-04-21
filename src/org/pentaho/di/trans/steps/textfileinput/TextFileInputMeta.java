@@ -241,8 +241,10 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
     private String extensionFieldName;
     private String sizeFieldName;
 
+    private boolean skipBadFiles;
+    private String fileErrorField;
+    private String fileErrorMessageField;
     
-
 	/**
 	 * @return Returns the shortFileFieldName.
 	 */
@@ -356,7 +358,38 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
     {
     	sizeFieldName=field;
     }
+    
+    /**
+     * 
+     * @return If should continue processing after failing to open a file
+     */
+    public boolean isSkipBadFiles(){
+      return skipBadFiles;
+    }
 
+    /**
+     * 
+     * @param value If should continue processing after failing to open a file
+     */
+    public void setSkipBadFiles(boolean value){
+      skipBadFiles = value;
+    }
+    
+    public String getFileErrorField(){
+      return fileErrorField;
+    }
+    
+    public void setFileErrorField(String field){
+      fileErrorField = field;
+    }
+    
+    public String getFileErrorMessageField(){
+      return fileErrorMessageField;
+    }
+    
+    public void setFileErrorMessageField (String field){
+      fileErrorMessageField = field;
+    }
 	
 	/**
 	 * @return Returns the encoding.
@@ -816,6 +849,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 		includeRowNumber = false;
 		rowNumberField = "";
 		errorIgnored = false;
+		skipBadFiles = false;
 		errorLineSkipped = false;
 		warningFilesDestinationDirectory = null;
 		warningFilesExtension = "warning";
@@ -1086,6 +1120,9 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
 		// ERROR HANDLING
 		retval.append("    ").append(XMLHandler.addTagValue("error_ignored", errorIgnored));
+		retval.append("    ").append(XMLHandler.addTagValue("skip_bad_files", skipBadFiles));
+		retval.append("    ").append(XMLHandler.addTagValue("file_error_field", fileErrorField));
+		retval.append("    ").append(XMLHandler.addTagValue("file_error_message_field", fileErrorMessageField));
 		retval.append("    ").append(XMLHandler.addTagValue("error_line_skipped", errorLineSkipped));
 		retval.append("    ").append(XMLHandler.addTagValue("error_count_field", errorCountField));
 		retval.append("    ").append(XMLHandler.addTagValue("error_fields_field", errorFieldsField));
@@ -1245,6 +1282,9 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 			rowLimit = Const.toLong(XMLHandler.getTagValue(stepnode, "limit"), 0L);
 
 			errorIgnored = YES.equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "error_ignored"));
+			skipBadFiles = YES.equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "skip_bad_files"));
+			fileErrorField = XMLHandler.getTagValue(stepnode, "file_error_field");
+			fileErrorMessageField = XMLHandler.getTagValue(stepnode, "file_error_message_field");
 			errorLineSkipped = YES.equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "error_line_skipped"));
 			errorCountField = XMLHandler.getTagValue(stepnode, "error_count_field");
 			errorFieldsField = XMLHandler.getTagValue(stepnode, "error_fields_field");
@@ -1406,6 +1446,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 			}
 
 			errorIgnored = rep.getStepAttributeBoolean(id_step, "error_ignored");
+			skipBadFiles = rep.getStepAttributeBoolean(id_step, "skip_bad_files");
 			errorLineSkipped = rep.getStepAttributeBoolean(id_step, "error_line_skipped");
 			errorCountField = rep.getStepAttributeString(id_step, "error_count_field");
 			errorFieldsField = rep.getStepAttributeString(id_step, "error_fields_field");
@@ -1519,6 +1560,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 			}
 
 			rep.saveStepAttribute(id_transformation, id_step, "error_ignored", errorIgnored);
+			rep.saveStepAttribute(id_transformation, id_step, "skip_bad_files", skipBadFiles);
 			rep.saveStepAttribute(id_transformation, id_step, "error_line_skipped", errorLineSkipped);
 			rep.saveStepAttribute(id_transformation, id_step, "error_count_field", errorCountField);
 			rep.saveStepAttribute(id_transformation, id_step, "error_fields_field", errorFieldsField);
@@ -2045,5 +2087,10 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 		} catch (Exception e) {
 			throw new KettleException(e); //$NON-NLS-1$
 		}
+	}
+	
+	@Override
+	public boolean supportsErrorHandling() {
+	  return isErrorIgnored() && isSkipBadFiles();
 	}
 }
