@@ -158,12 +158,14 @@ public class HBaseInput extends BaseStep implements StepInterface {
         s = new Scan(); // scan all rows
       } else {        
         byte[] keyLowerBound = HBaseValueMeta.
-          encodeKeyValue(m_meta.getKeyStartValue(), m_tableMapping.getKeyType());
+          encodeKeyValue(m_transMeta.environmentSubstitute(m_meta.getKeyStartValue()), 
+              m_tableMapping.getKeyType());
         if (Const.isEmpty(m_meta.getKeyStopValue())) {
           s = new Scan(keyLowerBound);
         } else {
           byte[] keyUpperBound = HBaseValueMeta.
-            encodeKeyValue(m_meta.getKeyStopValue(), m_tableMapping.getKeyType());
+            encodeKeyValue(m_transMeta.environmentSubstitute(m_meta.getKeyStopValue())
+                , m_tableMapping.getKeyType());
           s = new Scan(keyLowerBound, keyUpperBound);
         }        
       }

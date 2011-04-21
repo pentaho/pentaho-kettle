@@ -719,7 +719,30 @@ public class HBaseInputDialog extends BaseStepDialog implements
     m_wConfigTab.setControl(wConfigComp);
     
     
+    // --- mapping editor tab    
+    m_editorTab = new CTabItem(m_wTabFolder, SWT.NONE);
+    m_editorTab.
+      setText(Messages.getString("HBaseInputDialog.MappingEditorTab.TabTitle"));
     
+    
+    m_mappingEditor = new MappingEditor(shell, m_wTabFolder, this,
+        SWT.FULL_SELECTION | SWT.MULTI, false, props, transMeta);
+    
+    fd = new FormData();
+    fd.top = new FormAttachment(0, 0);
+    fd.left = new FormAttachment(0, 0);
+    m_mappingEditor.setLayoutData(fd);
+    
+    
+    fd = new FormData();
+    fd.left = new FormAttachment(0, 0);
+    fd.top = new FormAttachment(0, 0);
+    fd.bottom= new FormAttachment(100, -margin*2);    
+    fd.right = new FormAttachment(100, 0);    
+    m_mappingEditor.setLayoutData(fd);
+    
+    m_mappingEditor.layout();
+    m_editorTab.setControl(m_mappingEditor);
     
     
     
@@ -811,6 +834,10 @@ public class HBaseInputDialog extends BaseStepDialog implements
           } else {
             comboValues = new String[1]; comboValues[0] = "";
           }
+        } else {
+          // if we've not got a connection, or there is no user-specified
+          // columns saved in the meta class, then just get all the operators
+          comboValues = ColumnFilter.getAllOperators();
         }
 
         return comboValues;
@@ -834,6 +861,9 @@ public class HBaseInputDialog extends BaseStepDialog implements
         case ValueMetaInterface.TYPE_BIGNUMBER:
         case ValueMetaInterface.TYPE_NUMBER: comboValues = Const.getNumberFormats(); break;
         default: break;
+        // if there is not type information available (no connection and no user-specified
+        // columns in the meta class) then the user will just have to type in their own
+        // formatting string (if necessary)
         }
         return comboValues;
       }
@@ -862,34 +892,7 @@ public class HBaseInputDialog extends BaseStepDialog implements
     wFilterComp.setLayoutData(fd);
     
     wFilterComp.layout();
-    m_wFilterTab.setControl(wFilterComp);
-    
-    
-    
-    // --- mapping editor tab    
-    m_editorTab = new CTabItem(m_wTabFolder, SWT.NONE);
-    m_editorTab.
-      setText(Messages.getString("HBaseInputDialog.MappingEditorTab.TabTitle"));
-    
-    
-    m_mappingEditor = new MappingEditor(shell, m_wTabFolder, this,
-        SWT.FULL_SELECTION | SWT.MULTI, false, props, transMeta);
-    
-    fd = new FormData();
-    fd.top = new FormAttachment(0, 0);
-    fd.left = new FormAttachment(0, 0);
-    m_mappingEditor.setLayoutData(fd);
-    
-    
-    fd = new FormData();
-    fd.left = new FormAttachment(0, 0);
-    fd.top = new FormAttachment(0, 0);
-    fd.bottom= new FormAttachment(100, -margin*2);    
-    fd.right = new FormAttachment(100, 0);    
-    m_mappingEditor.setLayoutData(fd);
-    
-    m_mappingEditor.layout();
-    m_editorTab.setControl(m_mappingEditor);
+    m_wFilterTab.setControl(wFilterComp);            
     // -----
     
     
