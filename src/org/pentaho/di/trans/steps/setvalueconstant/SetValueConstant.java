@@ -147,7 +147,7 @@ public class SetValueConstant extends BaseStep implements StepInterface
 			// DO CONVERSION OF THE DEFAULT VALUE ...
 			// Entered by user
 			ValueMetaInterface targetValueMeta = data.outputRowMeta.getValueMeta(data.fieldnrs[i]);
-			ValueMetaInterface sourceValueMeta = data.convertRowMeta.getValueMeta(i);
+			ValueMetaInterface sourceValueMeta = data.convertRowMeta.getValueMeta(data.fieldnrs[i]);
 			if(!Const.isEmpty(meta.getReplaceMask()[i])) sourceValueMeta.setConversionMask(meta.getReplaceMask()[i]);
 			r[data.fieldnrs[i]] = targetValueMeta.convertData(sourceValueMeta, data.realReplaceByvalues[i]);
 		}
