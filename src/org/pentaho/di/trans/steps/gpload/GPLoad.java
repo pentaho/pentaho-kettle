@@ -58,6 +58,15 @@ public class GPLoad extends BaseStep implements StepInterface
 {
 	private static Class<?> PKG = GPLoadMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
+	private static String INDENT = "    ";
+	private static String GPLOAD_YAML_VERSION = "VERSION: 1.0.0.1";
+	private static String SINGLE_QUOTE = "'";
+	private static String OPEN_BRACKET = "[";
+	private static String CLOSE_BRACKET = "]";
+	private static String SPACE_PADDED_DASH = " - ";
+	private static String COLON = ":";
+	private static int GPLOAD_MAX_ERRORS_DEFAULT = 0;
+			
 	Process gploadProcess = null;
 	
 	private GPLoadMeta meta;
@@ -120,122 +129,223 @@ public class GPLoad extends BaseStep implements StepInterface
 	 * 
 	 * @return a string containing the control file contents
 	 */
-	public String getControlFileContents(GPLoadMeta meta, RowMetaInterface rm, Object[] r) throws KettleException
-	{
-		DatabaseMeta dm = meta.getDatabaseMeta();
+	public String getControlFileContents(GPLoadMeta meta, RowMetaInterface rm, Object[] r) throws KettleException	{
 
-		StringBuffer contents = new StringBuffer(500);
+      String tableFields[] = meta.getFieldTable();
+      boolean matchColumn[] = meta.getMatchColumn();
+      boolean updateColumn[] = meta.getUpdateColumn();
+      
+      //  TODO:  All this validation could be placed in it's own method,
+      
+      //  table name validation 
+      DatabaseMeta databaseMeta = meta.getDatabaseMeta();
+      String schemaName = meta.getSchemaName();
+      String targetTablename = meta.getTableName();
+      
+      //  TODO:  What is schema name to a GreenPlum database?
+      //  Testing has been with an empty schema name
+      //  We will set it to an empty string if it is null
+      //  If it is not null then we will process what it is
+      if (schemaName == null) {
+         schemaName = "";
+      }
+      
+      if (targetTablename == null) {
+         throw new KettleException(BaseMessages.getString(PKG, "GPLoad.Exception.TargetTableNameMissing"));
+      }
+      targetTablename = environmentSubstitute(targetTablename).trim();
+      if (Const.isEmpty(targetTablename)) {
+         throw new KettleException(BaseMessages.getString(PKG, "GPLoad.Exception.TargetTableNameMissing"));
+      }
+      
+      targetTablename = databaseMeta.getQuotedSchemaTableCombination(
+          environmentSubstitute(meta.getSchemaName()),
+          environmentSubstitute(meta.getTableName()));
+      
+      String loadAction = meta.getLoadAction();
+	         
+      //  match and update column verification
+      if (loadAction.equalsIgnoreCase(GPLoadMeta.ACTION_MERGE) || loadAction.equalsIgnoreCase(GPLoadMeta.ACTION_UPDATE)) {
+         
+         //  throw an exception if we don't have match columns
+         if (matchColumn == null) {
+            throw new KettleException(BaseMessages.getString(PKG, "GPLoad.Exception.MatchColumnsNeeded"));
+         }
+         
+         if (!meta.hasMatchColumn()) {
+            throw new KettleException(BaseMessages.getString(PKG, "GPLoad.Exception.MatchColumnsNeeded"));
+         }
+         
+         //  throw an exception if we don't have any update columns
+         if (updateColumn == null) {
+            throw new KettleException(BaseMessages.getString(PKG, "GPLoad.Exception.UpdateColumnsNeeded"));
+         }
+         
+         if (!meta.hasUpdateColumn()) {
+            throw new KettleException(BaseMessages.getString(PKG, "GPLoad.Exception.UpdateColumnsNeeded"));
+         }    
+      }
+
+      //  data file validation
+      String dataFilename = meta.getDataFile();
+      if (!Const.isEmpty(dataFilename)) {
+         dataFilename = environmentSubstitute(dataFilename).trim();
+      }
+      if (Const.isEmpty(dataFilename)) {
+         throw new KettleException(BaseMessages.getString(PKG, "GPload.Exception.DataFileMissing"));
+      }
+
+      //  delimiter validation
+      String delimiter = meta.getDelimiter();
+      if (!Const.isEmpty(delimiter)) {
+         delimiter = environmentSubstitute(delimiter).trim();
+      }
+      if (Const.isEmpty(delimiter)) {
+         throw new KettleException(BaseMessages.getString(PKG, "GPload.Exception.DelimiterMissing"));
+      }
+      
+      //  Now we start building the contents
+		StringBuffer contents = new StringBuffer(1000);
 		
 		// Source: GP Admin Guide 3.3.6, page 635:
-		//
-		contents.append("VERSION: 1.0.0.1").append(Const.CR);
-        contents.append("DATABASE: ").append(environmentSubstitute(dm.getDatabaseName())).append(Const.CR);
-        contents.append("USER: ").append(environmentSubstitute(dm.getUsername())).append(Const.CR);
-        contents.append("HOST: ").append(environmentSubstitute(dm.getHostname())).append(Const.CR);
-        contents.append("PORT: ").append(environmentSubstitute(dm.getDatabasePortNumberString())).append(Const.CR);
-        contents.append("GPLOAD:").append(Const.CR);
-        contents.append("   INPUT:").append(Const.CR);
-        
-        contents.append("    - SOURCE: ").append(Const.CR);
+		contents.append(GPLoad.GPLOAD_YAML_VERSION).append(Const.CR);
+      contents.append("DATABASE: ").append(environmentSubstitute(databaseMeta.getDatabaseName())).append(Const.CR);
+      contents.append("USER: ").append(environmentSubstitute(databaseMeta.getUsername())).append(Const.CR);
+      contents.append("HOST: ").append(environmentSubstitute(databaseMeta.getHostname())).append(Const.CR);
+      contents.append("PORT: ").append(environmentSubstitute(databaseMeta.getDatabasePortNumberString())).append(Const.CR);
+      contents.append("GPLOAD:").append(Const.CR);
+      contents.append(GPLoad.INDENT).append("INPUT: ").append(Const.CR);
+      contents.append(GPLoad.INDENT).append("- SOURCE: ").append(Const.CR);
 
-        //  Add a LOCAL_HOSTS section
-        //  We first check to see if the array has any elements
-        //  if so we proceed with the string building - if not we do not add LOCAL_HOSTNAME section.
-        String[] localHosts = meta.getLocalHosts();
-        String stringLocalHosts = null;
-        if (localHosts.length > 0) {
-           StringBuilder sbLocalHosts = new StringBuilder();
-           String trimmedAndSubstitutedLocalHost;
-           for (String localHost: localHosts) {
-              trimmedAndSubstitutedLocalHost = environmentSubstitute(localHost.trim());
-              if (!Const.isEmpty(trimmedAndSubstitutedLocalHost)) {
-                 sbLocalHosts.append("          - ").append(trimmedAndSubstitutedLocalHost).append(Const.CR);
-              }
-           }
-           stringLocalHosts = sbLocalHosts.toString();
-           if (!Const.isEmpty(stringLocalHosts)) {
-              contents.append("      - LOCAL_HOSTNAME: ").append(Const.CR).append(stringLocalHosts);
-           }
-        }
-        
-        //  Add a PORT section if we have a port
-        if (!Const.isEmpty(meta.getMasterPort())) {
-           String substritutedAndTrimmedMasterPort = environmentSubstitute(meta.getMasterPort().trim());
-           if (!Const.isEmpty(substritutedAndTrimmedMasterPort)) {
-              contents.append("      - PORT: ").append(substritutedAndTrimmedMasterPort).append(Const.CR);
-           }
-        }
-        
-        // TODO: Stream to a temporary file and then bulk load OR optionally stream to a named pipe (like MySQL bulk loader)
-        // TODO: allow LOCAL_HOSTNAME/PORT/PORT_RANGE to be specified
-        //
-        
-        
-        //  If we don't have a local hosts list built
-        if (Const.isEmpty(stringLocalHosts)) {
-           
-           // then we surround the file name with brackets
-           String inputName = "'" + environmentSubstitute(meta.getDataFile()) + "'";
-           contents.append("        FILE: ").append('[').append(inputName).append(']').append(Const.CR);
-        }
-        else {
-           
-           // 
-           contents.append("        FILE: ").append(Const.CR).append("          - ").append(environmentSubstitute(meta.getDataFile())).append(Const.CR);
-        }
-        
-        // COLUMNS is optional, takes the existing fields in the table
-        // contents.append("    - COLUMNS:").append(Const.CR);
-        
-        // See also page 155 for formatting information & escaping
-        //
-        contents.append("    - FORMAT: TEXT").append(Const.CR);
-        contents.append("    - DELIMITER: '").append(environmentSubstitute(meta.getDelimiter())).append("'").append(Const.CR);
-        
-        // TODO: implement escape character, null_as
-        //
-        // contents.append("    - ESCAPE: '").append(environmentSubstitute(meta.getEscapeCharacter)).append("'").append(Const.CR);
-        
-        contents.append("    - QUOTE: '").append(environmentSubstitute(meta.getEnclosure())).append("'").append(Const.CR);
-        contents.append("    - HEADER: FALSE").append(Const.CR);
-        
-        // TODO: implement database encoding support
-        // contents.append("    - ENCODING: ").append(Const.CR);
-        
-        contents.append("    - ERROR_LIMIT: ").append(meta.getMaxErrors()).append(Const.CR);
-        
-        if (!Const.isEmpty(meta.getErrorTableName())) {
-           contents.append("    - ERROR_TABLE: ").append(meta.getErrorTableName()).append(Const.CR);
-        }
-        
-        contents.append("   OUTPUT:").append(Const.CR);
-
-        String tableName = dm.getQuotedSchemaTableCombination(
-            environmentSubstitute(meta.getSchemaName()),
-            environmentSubstitute(meta.getTableName()));
-
-        contents.append("    - TABLE: ").append(tableName).append(Const.CR);
-        contents.append("    - MODE: ").append(meta.getLoadAction()).append(Const.CR);
-
-        // TODO: add support for MATCH_COLUMNS, UPDATE_COLUMN, UPDATE_CONDITION, MAPPING
-        // TODO: add suport for BEFORE and AFTER SQL
-
-        /*
-           String streamFields[] = meta.getFieldStream();
-    		String tableFields[] = meta.getFieldTable();
-    
-    		if ( streamFields == null || streamFields.length == 0 )
-    		{
-    			throw new KettleException("No fields defined to load to database");
-    		}
-    
-    		for (int i = 0; i < streamFields.length; i++)
-    		{
-    			if ( i!=0 ) contents.append(", ");
-    			contents.append(dm.quoteField(tableFields[i]));
+      //  Add a LOCAL_HOSTS section
+      //  We first check to see if the array has any elements
+      //  if so we proceed with the string building - if not we do not add LOCAL_HOSTNAME section.
+      String[] localHosts = meta.getLocalHosts();
+      String stringLocalHosts = null;
+      if (!Const.isEmpty(localHosts)) {
+         StringBuilder sbLocalHosts = new StringBuilder();
+         String trimmedAndSubstitutedLocalHost;
+         for (String localHost: localHosts) {
+            trimmedAndSubstitutedLocalHost = environmentSubstitute(localHost.trim());
+            if (!Const.isEmpty(trimmedAndSubstitutedLocalHost)) {
+                sbLocalHosts.append(GPLoad.INDENT).append(GPLoad.INDENT).append(GPLoad.SPACE_PADDED_DASH).append(trimmedAndSubstitutedLocalHost).append(Const.CR);
             }
-        */
+         }
+         stringLocalHosts = sbLocalHosts.toString();
+         if (!Const.isEmpty(stringLocalHosts)) {
+            contents.append(GPLoad.INDENT).append("- LOCAL_HOSTNAME: ").append(Const.CR).append(stringLocalHosts);
+         }
+      }
+        
+      //  Add a PORT section if we have a port
+      String masterPort = meta.getMasterPort();
+      if (!Const.isEmpty(masterPort)) {
+         masterPort = environmentSubstitute(meta.getMasterPort().trim());
+         if (!Const.isEmpty(masterPort)) {
+            contents.append(GPLoad.INDENT).append("- PORT: ").append(masterPort).append(Const.CR);
+         }
+      }
+        
+      // TODO: Stream to a temporary file and then bulk load OR optionally stream to a named pipe (like MySQL bulk loader)
+      dataFilename = GPLoad.SINGLE_QUOTE + environmentSubstitute(dataFilename) + GPLoad.SINGLE_QUOTE;
+      contents.append(GPLoad.INDENT).append(GPLoad.INDENT).append("FILE: ").append(GPLoad.OPEN_BRACKET).append(dataFilename).append(GPLoad.CLOSE_BRACKET).append(Const.CR);
+       
+      //  columns
+      if (tableFields.length > 0) {
+         contents.append(GPLoad.INDENT).append("- COLUMNS: ").append(Const.CR);
+         
+         for (String columnName: tableFields) {     
+            contents.append(GPLoad.INDENT).append(GPLoad.INDENT).append(GPLoad.SPACE_PADDED_DASH).append(databaseMeta.quoteField(columnName)).append(GPLoad.COLON).append(Const.CR);
+         }
+      }
+      
+      // See also page 155 for formatting information & escaping
+      // delimiter validation should have been perfomed
+      contents.append(GPLoad.INDENT).append("- FORMAT: TEXT").append(Const.CR);
+      contents.append(GPLoad.INDENT).append("- DELIMITER: ").append(GPLoad.SINGLE_QUOTE).append(delimiter).append(GPLoad.SINGLE_QUOTE).append(Const.CR);
+        
+      // TODO: implement escape character, null_as
+      // TODO: test what happens when a single quote is specified- can we specify a single quiote within doubole quotes then?
+      String enclosure = meta.getEnclosure();
+      
+      //  For enclosure we do a null check.  !Const.isEmpty will be true if the string is empty.
+      //  it is ok to have an empty string
+      if (enclosure != null) {
+         enclosure = environmentSubstitute(meta.getEnclosure());
+      }
+      else {
+         enclosure = "";
+      }
+      contents.append(GPLoad.INDENT).append("- QUOTE: ").append(GPLoad.SINGLE_QUOTE).append(enclosure).append(GPLoad.SINGLE_QUOTE).append(Const.CR);
+      contents.append(GPLoad.INDENT).append("- HEADER: FALSE").append(Const.CR);
+        
+      // TODO: implement database encoding support
+      // contents.append("    - ENCODING: ").append(Const.CR);
+      
+      //  Max errors
+      String maxErrors = meta.getMaxErrors();
+      if (maxErrors == null) {
+         maxErrors = GPLoadMeta.MAX_ERRORS_DEFAULT;
+      }
+      else {
+         maxErrors = environmentSubstitute(maxErrors);
+         try {
+            if (Integer.valueOf(maxErrors) < 0) {
+               throw new KettleException(BaseMessages.getString(PKG, "GPLoad.Exception.MaxErrorsInvalid"));
+            }
+         }
+         catch (NumberFormatException nfe) {
+            throw new KettleException(BaseMessages.getString(PKG, "GPLoad.Exception.MaxErrorsInvalid"));
+         }
+      }
 
+      contents.append(GPLoad.INDENT).append("- ERROR_LIMIT: ").append(meta.getMaxErrors()).append(Const.CR);
+        
+      String errorTableName = meta.getErrorTableName(); 
+      if (!Const.isEmpty(errorTableName)) {
+         errorTableName = environmentSubstitute(errorTableName).trim();
+         if (!Const.isEmpty(errorTableName)) {
+            contents.append(GPLoad.INDENT).append("- ERROR_TABLE: ").append(meta.getErrorTableName()).append(Const.CR);
+         }
+      }
+        
+      //--------------  OUTPUT section
+      
+      contents.append(GPLoad.INDENT).append("OUTPUT:").append(Const.CR);
+
+      //  TODO: not too sure this has to be done
+      String tableName = databaseMeta.getQuotedSchemaTableCombination(
+          environmentSubstitute(meta.getSchemaName()),
+          environmentSubstitute(meta.getTableName()));
+
+      contents.append(GPLoad.INDENT).append("- TABLE: ").append(tableName).append(Const.CR);
+      contents.append(GPLoad.INDENT).append("- MODE: ").append(meta.getLoadAction()).append(Const.CR);
+      
+      // TODO: add support for MATCH_COLUMNS, UPDATE_COLUMN, UPDATE_CONDITION, MAPPING
+      // TODO: add support for BEFORE and AFTER SQL
+
+      //  if we have match columns then add the specification
+    	if (meta.hasMatchColumn()) {
+    	   contents.append(GPLoad.INDENT).append("- MATCH_COLUMNS: ").append(Const.CR);
+    	
+    	   for (int i=0; i < matchColumn.length; i++) {
+    	      if (matchColumn[i]) {
+       		   contents.append(GPLoad.INDENT).append(GPLoad.INDENT).append(GPLoad.SPACE_PADDED_DASH).append(databaseMeta.quoteField(tableFields[i])).append(Const.CR);
+       	   }
+    	   }
+    	}
+    	
+    	//  if we have update columns then add the specification
+    	if (meta.hasUpdateColumn()) {
+         contents.append(GPLoad.INDENT).append("- UPDATE_COLUMNS: ").append(Const.CR);
+         
+         for (int i=0; i < updateColumn.length; i++) {
+            if (updateColumn[i]) {
+               contents.append(GPLoad.INDENT).append(GPLoad.INDENT).append(GPLoad.SPACE_PADDED_DASH).append(databaseMeta.quoteField(tableFields[i])).append(Const.CR);
+            }
+         }
+    	}
+    	
 		return contents.toString();
 	}
 	

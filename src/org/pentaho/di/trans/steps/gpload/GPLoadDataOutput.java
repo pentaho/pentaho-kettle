@@ -51,6 +51,7 @@ public class GPLoadDataOutput
 	private boolean           first = true;
 	private int               fieldNumbers[] = null;
 	private String            enclosure = null;
+	private String            delimiter = null;
 	private SimpleDateFormat  sdfDate = null;
 	private SimpleDateFormat  sdfDateTime = null;
 
@@ -139,6 +140,7 @@ public class GPLoadDataOutput
             first = false;
      
             enclosure = meta.getEnclosure();
+            delimiter = meta.getDelimiter();
             
             // Setup up the fields we need to take for each of the rows
             // as this speeds up processing.
@@ -160,9 +162,11 @@ public class GPLoadDataOutput
         // Write the data to the output
         ValueMetaInterface v = null;
         int number = 0;
+        
 		for (int i=0;i<fieldNumbers.length;i++) 
 		{
-			if ( i!=0 ) output.print(",");
+		   //  TODO:  variable substitution
+			if ( i!=0 ) output.print(delimiter);
 			number = fieldNumbers[i];
 			v = mi.getValueMeta(number);
 			if ( row[number] == null)

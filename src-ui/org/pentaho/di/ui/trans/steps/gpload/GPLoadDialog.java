@@ -85,9 +85,6 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
                                                    // $NON-NLS-1$
 
    private CTabFolder wTabFolder;
-   private CTabItem wFieldsTab, wLocalHostsTab;
-   private Composite wFieldsComp, wLocalHostsComp;
-   private FormData fdFieldsComp, fdLocalHostsComp;
 
    private CCombo wConnection;
 
@@ -118,7 +115,6 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
    private CCombo wLoadMethod;
    private FormData fdlLoadMethod, fdLoadMethod;
 
-   private Label wlLoadAction;
    private CCombo wLoadAction;
    private FormData fdlLoadAction, fdLoadAction;
 
@@ -128,9 +124,8 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
 
    // private FormData fdReadSize;
 
-   private Label wlReturn;
    private TableView wReturn;
-   private FormData fdlReturn, fdReturn;
+   private FormData fdReturn;
 
    private Label wlLocalHosts;
    private TableView wLocalHosts;
@@ -151,10 +146,6 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
    private TextVar wLogFile;
    private FormData fdlLogFile, fdbLogFile, fdLogFile;
 
-   private Label wlDbNameOverride;
-   private TextVar wDbNameOverride;
-   private FormData fdlDbNameOverride, fdDbNameOverride;
-
    private Label wlEncoding;
    private Combo wEncoding;
    private FormData fdlEncoding, fdEncoding;
@@ -167,10 +158,8 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
    private FormData fdGetLU;
    private Listener lsGetLU;
 
-   private Button wDoMapping;
-   private FormData fdDoMapping;
-
    private GPLoadMeta input;
+   private TextVar wDelimiter;
 
    /**
     * List of ColumnInfo that should have the field names of the selected
@@ -242,14 +231,14 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
 
       // Stepname line
       wlStepname = new Label(shell, SWT.RIGHT);
-      wlStepname.setText(BaseMessages.getString(PKG,
-            "GPLoadDialog.Stepname.Label")); //$NON-NLS-1$
+      wlStepname.setText(BaseMessages.getString(PKG, "GPLoadDialog.Stepname.Label")); //$NON-NLS-1$
       props.setLook(wlStepname);
       fdlStepname = new FormData();
       fdlStepname.left = new FormAttachment(0, 0);
       fdlStepname.right = new FormAttachment(middle, -margin);
       fdlStepname.top = new FormAttachment(0, margin);
       wlStepname.setLayoutData(fdlStepname);
+      
       wStepname = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
       wStepname.setText(stepname);
       props.setLook(wStepname);
@@ -268,8 +257,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
 
       // Schema line...
       wlSchema = new Label(shell, SWT.RIGHT);
-      wlSchema.setText(BaseMessages.getString(PKG,
-            "GPLoadDialog.TargetSchema.Label")); //$NON-NLS-1$
+      wlSchema.setText(BaseMessages.getString(PKG, "GPLoadDialog.TargetSchema.Label")); //$NON-NLS-1$
       props.setLook(wlSchema);
       fdlSchema = new FormData();
       fdlSchema.left = new FormAttachment(0, 0);
@@ -277,8 +265,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       fdlSchema.top = new FormAttachment(wConnection, margin * 2);
       wlSchema.setLayoutData(fdlSchema);
 
-      wSchema = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT
-            | SWT.BORDER);
+      wSchema = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
       props.setLook(wSchema);
       wSchema.addModifyListener(lsMod);
       wSchema.addFocusListener(lsFocusLost);
@@ -290,8 +277,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
 
       // Table line...
       wlTable = new Label(shell, SWT.RIGHT);
-      wlTable.setText(BaseMessages.getString(PKG,
-            "GPLoadDialog.TargetTable.Label")); //$NON-NLS-1$
+      wlTable.setText(BaseMessages.getString(PKG, "GPLoadDialog.TargetTable.Label")); //$NON-NLS-1$
       props.setLook(wlTable);
       fdlTable = new FormData();
       fdlTable.left = new FormAttachment(0, 0);
@@ -301,12 +287,12 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
 
       wbTable = new Button(shell, SWT.PUSH | SWT.CENTER);
       props.setLook(wbTable);
-      wbTable
-            .setText(BaseMessages.getString(PKG, "GPLoadDialog.Browse.Button")); //$NON-NLS-1$
+      wbTable.setText(BaseMessages.getString(PKG, "GPLoadDialog.Browse.Button")); //$NON-NLS-1$
       fdbTable = new FormData();
       fdbTable.right = new FormAttachment(100, 0);
       fdbTable.top = new FormAttachment(wSchema, margin);
       wbTable.setLayoutData(fdbTable);
+      
       wTable = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
       props.setLook(wTable);
       wTable.addModifyListener(lsMod);
@@ -317,299 +303,50 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       fdTable.right = new FormAttachment(wbTable, -margin);
       wTable.setLayoutData(fdTable);
 
-      // GPLoad line...
-      wlGploadPath = new Label(shell, SWT.RIGHT);
-      wlGploadPath.setText(BaseMessages.getString(PKG,
-            "GPLoadDialog.GPLoadPath.Label")); //$NON-NLS-1$
-      props.setLook(wlGploadPath);
-      fdlGploadPath = new FormData();
-      fdlGploadPath.left = new FormAttachment(0, 0);
-      fdlGploadPath.right = new FormAttachment(middle, -margin);
-      fdlGploadPath.top = new FormAttachment(wTable, margin);
-      wlGploadPath.setLayoutData(fdlGploadPath);
-
-      wbGploadPath = new Button(shell, SWT.PUSH | SWT.CENTER);
-      props.setLook(wbGploadPath);
-      wbGploadPath.setText(BaseMessages.getString(PKG,
-            "GPLoadDialog.Browse.Button")); //$NON-NLS-1$
-      fdbGploadPath = new FormData();
-      fdbGploadPath.right = new FormAttachment(100, 0);
-      fdbGploadPath.top = new FormAttachment(wTable, margin);
-      wbGploadPath.setLayoutData(fdbGploadPath);
-      wGploadPath = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT
-            | SWT.BORDER);
-      props.setLook(wGploadPath);
-      wGploadPath.addModifyListener(lsMod);
-      fdGploadPath = new FormData();
-      fdGploadPath.left = new FormAttachment(middle, 0);
-      fdGploadPath.top = new FormAttachment(wTable, margin);
-      fdGploadPath.right = new FormAttachment(wbGploadPath, -margin);
-      wGploadPath.setLayoutData(fdGploadPath);
-
       // Load Method line
       wlLoadMethod = new Label(shell, SWT.RIGHT);
-      wlLoadMethod.setText(BaseMessages.getString(PKG,
-            "GPLoadDialog.LoadMethod.Label"));
+      wlLoadMethod.setText(BaseMessages.getString(PKG, "GPLoadDialog.LoadMethod.Label"));
       props.setLook(wlLoadMethod);
       fdlLoadMethod = new FormData();
       fdlLoadMethod.left = new FormAttachment(0, 0);
       fdlLoadMethod.right = new FormAttachment(middle, -margin);
-      fdlLoadMethod.top = new FormAttachment(wGploadPath, margin);
+      fdlLoadMethod.top = new FormAttachment(wTable, margin);
       wlLoadMethod.setLayoutData(fdlLoadMethod);
       wLoadMethod = new CCombo(shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
       // wLoadMethod.add(BaseMessages.getString(PKG,
       // "GPLoadDialog.AutoConcLoadMethod.Label"));
-      wLoadMethod.add(BaseMessages.getString(PKG,
-            "GPLoadDialog.AutoEndLoadMethod.Label"));
-      wLoadMethod.add(BaseMessages.getString(PKG,
-            "GPLoadDialog.ManualLoadMethod.Label"));
+      wLoadMethod.add(BaseMessages.getString(PKG, "GPLoadDialog.AutoEndLoadMethod.Label"));
+      wLoadMethod.add(BaseMessages.getString(PKG, "GPLoadDialog.ManualLoadMethod.Label"));
       wLoadMethod.select(0); // +1: starts at -1
       wLoadMethod.addModifyListener(lsMod);
 
       props.setLook(wLoadMethod);
       fdLoadMethod = new FormData();
       fdLoadMethod.left = new FormAttachment(middle, 0);
-      fdLoadMethod.top = new FormAttachment(wGploadPath, margin);
+      fdLoadMethod.top = new FormAttachment(wTable, margin);
       fdLoadMethod.right = new FormAttachment(100, 0);
       wLoadMethod.setLayoutData(fdLoadMethod);
 
-      fdLoadMethod = new FormData();
-      fdLoadMethod.left = new FormAttachment(middle, 0);
-      fdLoadMethod.top = new FormAttachment(wGploadPath, margin);
-      fdLoadMethod.right = new FormAttachment(100, 0);
-      wLoadMethod.setLayoutData(fdLoadMethod);
-
-      // Load Action line
-      wlLoadAction = new Label(shell, SWT.RIGHT);
-      wlLoadAction.setText(BaseMessages.getString(PKG,
-            "GPLoadDialog.LoadAction.Label"));
-      props.setLook(wlLoadAction);
-      fdlLoadAction = new FormData();
-      fdlLoadAction.left = new FormAttachment(0, 0);
-      fdlLoadAction.right = new FormAttachment(middle, -margin);
-      fdlLoadAction.top = new FormAttachment(wLoadMethod, margin);
-      wlLoadAction.setLayoutData(fdlLoadAction);
-      wLoadAction = new CCombo(shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-      wLoadAction.add(BaseMessages.getString(PKG,
-            "GPLoadDialog.InsertLoadAction.Label"));
-      // wLoadAction.add(BaseMessages.getString(PKG,
-      // "GPLoadDialog.UpdateLoadAction.Label"));
-      // wLoadAction.add(BaseMessages.getString(PKG,
-      // "GPLoadDialog.MergeLoadAction.Label"));
-
-      wLoadAction.select(0); // +1: starts at -1
-      wLoadAction.addModifyListener(lsMod);
-
-      props.setLook(wLoadAction);
-      fdLoadAction = new FormData();
-      fdLoadAction.left = new FormAttachment(middle, 0);
-      fdLoadAction.top = new FormAttachment(wLoadMethod, margin);
-      fdLoadAction.right = new FormAttachment(100, 0);
-      wLoadAction.setLayoutData(fdLoadAction);
-
-      fdLoadAction = new FormData();
-      fdLoadAction.left = new FormAttachment(middle, 0);
-      fdLoadAction.top = new FormAttachment(wLoadMethod, margin);
-      fdLoadAction.right = new FormAttachment(100, 0);
-      wLoadAction.setLayoutData(fdLoadAction);
-
-      // MaxErrors file line
-      wlMaxErrors = new Label(shell, SWT.RIGHT);
-      wlMaxErrors.setText(BaseMessages.getString(PKG,
-            "GPLoadDialog.MaxErrors.Label")); //$NON-NLS-1$
-      props.setLook(wlMaxErrors);
-      fdlMaxErrors = new FormData();
-      fdlMaxErrors.left = new FormAttachment(0, 0);
-      fdlMaxErrors.top = new FormAttachment(wLoadAction, margin);
-      fdlMaxErrors.right = new FormAttachment(middle, -margin);
-      wlMaxErrors.setLayoutData(fdlMaxErrors);
-      wMaxErrors = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT
-            | SWT.BORDER);
-      props.setLook(wMaxErrors);
-      wMaxErrors.addModifyListener(lsMod);
-      fdMaxErrors = new FormData();
-      fdMaxErrors.left = new FormAttachment(middle, 0);
-      fdMaxErrors.top = new FormAttachment(wLoadAction, margin);
-      fdMaxErrors.right = new FormAttachment(100, 0);
-      wMaxErrors.setLayoutData(fdMaxErrors);
-
-      // Error Table line...
-      wlErrorTable = new Label(shell, SWT.RIGHT);
-      wlErrorTable.setText(BaseMessages.getString(PKG,
-            "GPLoadDialog.ErrorTable.Label")); //$NON-NLS-1$
-      props.setLook(wlErrorTable);
-      fdlErrorTable = new FormData();
-      fdlErrorTable.left = new FormAttachment(0, 0);
-      fdlErrorTable.right = new FormAttachment(middle, -margin);
-      fdlErrorTable.top = new FormAttachment(wMaxErrors, margin);
-      wlErrorTable.setLayoutData(fdlErrorTable);
-
-      wbErrorTable = new Button(shell, SWT.PUSH | SWT.CENTER);
-      props.setLook(wbErrorTable);
-      wbErrorTable.setText(BaseMessages.getString(PKG,
-            "GPLoadDialog.Browse.Button")); //$NON-NLS-1$
-      fdbErrorTable = new FormData();
-      fdbErrorTable.right = new FormAttachment(100, 0);
-      fdbErrorTable.top = new FormAttachment(wMaxErrors, margin);
-      wbErrorTable.setLayoutData(fdbErrorTable);
-      wErrorTable = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT
-            | SWT.BORDER);
-      props.setLook(wErrorTable);
-      wErrorTable.addModifyListener(lsMod);
-      wErrorTable.addFocusListener(lsFocusLost);
-      fdErrorTable = new FormData();
-      fdErrorTable.left = new FormAttachment(middle, 0);
-      fdErrorTable.top = new FormAttachment(wMaxErrors, margin);
-      fdErrorTable.right = new FormAttachment(wbErrorTable, -margin);
-      wErrorTable.setLayoutData(fdErrorTable);
-
-      // Db Name Override line
-      wlDbNameOverride = new Label(shell, SWT.RIGHT);
-      wlDbNameOverride.setText(BaseMessages.getString(PKG,
-            "GPLoadDialog.DbNameOverride.Label")); //$NON-NLS-1$
-      props.setLook(wlDbNameOverride);
-      fdlDbNameOverride = new FormData();
-      fdlDbNameOverride.left = new FormAttachment(0, 0);
-      fdlDbNameOverride.top = new FormAttachment(wMaxErrors, margin);
-      fdlDbNameOverride.right = new FormAttachment(middle, -margin);
-      wlDbNameOverride.setLayoutData(fdlDbNameOverride);
-      wDbNameOverride = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT
-            | SWT.BORDER);
-      props.setLook(wDbNameOverride);
-      wDbNameOverride.addModifyListener(lsMod);
-      fdDbNameOverride = new FormData();
-      fdDbNameOverride.left = new FormAttachment(middle, 0);
-      fdDbNameOverride.top = new FormAttachment(wMaxErrors, margin);
-      fdDbNameOverride.right = new FormAttachment(100, 0);
-      wDbNameOverride.setLayoutData(fdDbNameOverride);
-
-      // Control file line
-      wlControlFile = new Label(shell, SWT.RIGHT);
-      wlControlFile.setText(BaseMessages.getString(PKG,
-            "GPLoadDialog.ControlFile.Label")); //$NON-NLS-1$
-      props.setLook(wlControlFile);
-      fdlControlFile = new FormData();
-      fdlControlFile.left = new FormAttachment(0, 0);
-      fdlControlFile.top = new FormAttachment(wDbNameOverride, margin);
-      fdlControlFile.right = new FormAttachment(middle, -margin);
-      wlControlFile.setLayoutData(fdlControlFile);
-      wbControlFile = new Button(shell, SWT.PUSH | SWT.CENTER);
-      props.setLook(wbControlFile);
-      wbControlFile.setText(BaseMessages.getString(PKG,
-            "GPLoadDialog.Browse.Button")); //$NON-NLS-1$
-      fdbControlFile = new FormData();
-      fdbControlFile.right = new FormAttachment(100, 0);
-      fdbControlFile.top = new FormAttachment(wDbNameOverride, margin);
-      wbControlFile.setLayoutData(fdbControlFile);
-      wControlFile = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT
-            | SWT.BORDER);
-      props.setLook(wControlFile);
-      wControlFile.addModifyListener(lsMod);
-      fdControlFile = new FormData();
-      fdControlFile.left = new FormAttachment(middle, 0);
-      fdControlFile.top = new FormAttachment(wDbNameOverride, margin);
-      fdControlFile.right = new FormAttachment(wbControlFile, -margin);
-      wControlFile.setLayoutData(fdControlFile);
-
-      // Data file line
-      wlDataFile = new Label(shell, SWT.RIGHT);
-      wlDataFile.setText(BaseMessages.getString(PKG,
-            "GPLoadDialog.DataFile.Label")); //$NON-NLS-1$
-      props.setLook(wlDataFile);
-      fdlDataFile = new FormData();
-      fdlDataFile.left = new FormAttachment(0, 0);
-      fdlDataFile.top = new FormAttachment(wControlFile, margin);
-      fdlDataFile.right = new FormAttachment(middle, -margin);
-      wlDataFile.setLayoutData(fdlDataFile);
-      wbDataFile = new Button(shell, SWT.PUSH | SWT.CENTER);
-      props.setLook(wbDataFile);
-      wbDataFile.setText(BaseMessages.getString(PKG,
-            "GPLoadDialog.Browse.Button")); //$NON-NLS-1$
-      fdbDataFile = new FormData();
-      fdbDataFile.right = new FormAttachment(100, 0);
-      fdbDataFile.top = new FormAttachment(wControlFile, margin);
-      wbDataFile.setLayoutData(fdbDataFile);
-      wDataFile = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT
-            | SWT.BORDER);
-      props.setLook(wDataFile);
-      wDataFile.addModifyListener(lsMod);
-      fdDataFile = new FormData();
-      fdDataFile.left = new FormAttachment(middle, 0);
-      fdDataFile.top = new FormAttachment(wControlFile, margin);
-      fdDataFile.right = new FormAttachment(wbDataFile, -margin);
-      wDataFile.setLayoutData(fdDataFile);
-
-      // Log file line
-      wlLogFile = new Label(shell, SWT.RIGHT);
-      wlLogFile.setText(BaseMessages.getString(PKG,
-            "GPLoadDialog.LogFile.Label")); //$NON-NLS-1$
-      props.setLook(wlLogFile);
-      fdlLogFile = new FormData();
-      fdlLogFile.left = new FormAttachment(0, 0);
-      fdlLogFile.top = new FormAttachment(wDataFile, margin);
-      fdlLogFile.right = new FormAttachment(middle, -margin);
-      wlLogFile.setLayoutData(fdlLogFile);
-      wbLogFile = new Button(shell, SWT.PUSH | SWT.CENTER);
-      props.setLook(wbLogFile);
-      wbLogFile.setText(BaseMessages.getString(PKG,
-            "GPLoadDialog.Browse.Button")); //$NON-NLS-1$
-      fdbLogFile = new FormData();
-      fdbLogFile.right = new FormAttachment(100, 0);
-      fdbLogFile.top = new FormAttachment(wDataFile, margin);
-      wbLogFile.setLayoutData(fdbLogFile);
-      wLogFile = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT
-            | SWT.BORDER);
-      props.setLook(wLogFile);
-      wLogFile.addModifyListener(lsMod);
-      fdLogFile = new FormData();
-      fdLogFile.left = new FormAttachment(middle, 0);
-      fdLogFile.top = new FormAttachment(wDataFile, margin);
-      fdLogFile.right = new FormAttachment(wbLogFile, -margin);
-      wLogFile.setLayoutData(fdLogFile);
-
-      //
-      // Control encoding line
-      //
-      // The drop down is editable as it may happen an encoding may not be
-      // present
-      // on one machine, but you may want to use it on your execution server
-      //
-      wlEncoding = new Label(shell, SWT.RIGHT);
-      wlEncoding.setText(BaseMessages.getString(PKG,
-            "GPLoadDialog.Encoding.Label"));
-      props.setLook(wlEncoding);
-      fdlEncoding = new FormData();
-      fdlEncoding.left = new FormAttachment(0, 0);
-      fdlEncoding.top = new FormAttachment(wLogFile, margin);
-      fdlEncoding.right = new FormAttachment(middle, -margin);
-      wlEncoding.setLayoutData(fdlEncoding);
-      wEncoding = new Combo(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-      wEncoding.setToolTipText(BaseMessages.getString(PKG,
-            "GPLoadDialog.Encoding.Tooltip"));
-      wEncoding.setItems(encodings);
-      props.setLook(wEncoding);
-      fdEncoding = new FormData();
-      fdEncoding.left = new FormAttachment(middle, 0);
-      fdEncoding.top = new FormAttachment(wlLogFile, margin);
-      fdEncoding.right = new FormAttachment(100, 0);
-      wEncoding.setLayoutData(fdEncoding);
-      wEncoding.addModifyListener(lsMod);
-
+      // fdLoadMethod = new FormData();
+      // fdLoadMethod.left = new FormAttachment(middle, 0);
+      // fdLoadMethod.top = new FormAttachment(wGploadPath, margin);
+      // fdLoadMethod.right = new FormAttachment(100, 0);
+      // wLoadMethod.setLayoutData(fdLoadMethod);
+      
       // Erase files line
       wlEraseFiles = new Label(shell, SWT.RIGHT);
-      wlEraseFiles.setText(BaseMessages.getString(PKG,
-            "GPLoadDialog.EraseFiles.Label")); //$NON-NLS-1$
+      wlEraseFiles.setText(BaseMessages.getString(PKG, "GPLoadDialog.EraseFiles.Label")); //$NON-NLS-1$
       props.setLook(wlEraseFiles);
       fdlEraseFiles = new FormData();
       fdlEraseFiles.left = new FormAttachment(0, 0);
-      fdlEraseFiles.top = new FormAttachment(wEncoding, margin);
+      fdlEraseFiles.top = new FormAttachment(wLoadMethod, margin);
       fdlEraseFiles.right = new FormAttachment(middle, -margin);
       wlEraseFiles.setLayoutData(fdlEraseFiles);
       wEraseFiles = new Button(shell, SWT.CHECK);
       props.setLook(wEraseFiles);
       fdEraseFiles = new FormData();
       fdEraseFiles.left = new FormAttachment(middle, 0);
-      fdEraseFiles.top = new FormAttachment(wEncoding, margin);
+      fdEraseFiles.top = new FormAttachment(wLoadMethod, margin);
       fdEraseFiles.right = new FormAttachment(100, 0);
       wEraseFiles.setLayoutData(fdEraseFiles);
       wEraseFiles.addSelectionListener(new SelectionAdapter() {
@@ -618,166 +355,15 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
          }
       });
 
-      // The Tab folder for Fields and Servers.
+      // The Tab folder for field/columns, localhosts and Greenplum configuration
       wTabFolder = new CTabFolder(shell, SWT.BORDER);
       props.setLook(wTabFolder, PropsUI.WIDGET_STYLE_TAB);
 
-      // ////////////////////////
-      // Start of the Fields tab
-      // ////////////////////////
-      wFieldsTab = new CTabItem(wTabFolder, SWT.NONE);
-      wFieldsTab.setText(BaseMessages.getString(PKG,
-            "GPLoadDialog.FieldsTab.Title"));
-
-      wFieldsComp = new Composite(wTabFolder, SWT.NONE);
-      props.setLook(wFieldsComp);
-
-      FormLayout tabFieldLayout = new FormLayout();
-      tabFieldLayout.marginWidth = 3;
-      tabFieldLayout.marginHeight = 3;
-      wFieldsComp.setLayout(tabFieldLayout);
-
-      // The field Label
-      wlReturn = new Label(wFieldsComp, SWT.NONE);
-      wlReturn.setText(BaseMessages.getString(PKG, "GPLoadDialog.Fields.Label")); //$NON-NLS-1$
-      props.setLook(wlReturn);
-      fdlReturn = new FormData();
-      fdlReturn.left = new FormAttachment(0, 0);
-      fdlReturn.top = new FormAttachment(0, margin);
-      wlReturn.setLayoutData(fdlReturn);
-
-      //  The Field Table
-      int UpInsCols = 3;
-      int UpInsRows = (input.getFieldTable() != null ? input.getFieldTable().length
-            : 1);
-
-      ciReturn = new ColumnInfo[UpInsCols];
-
-      ciReturn[0] = new ColumnInfo(
-            BaseMessages.getString(PKG, "GPLoadDialog.ColumnInfo.TableField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
-      ciReturn[1] = new ColumnInfo(
-            BaseMessages.getString(PKG, "GPLoadDialog.ColumnInfo.StreamField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
-      ciReturn[2] = new ColumnInfo(BaseMessages.getString(PKG,
-            "GPLoadDialog.ColumnInfo.DateMask"), ColumnInfo.COLUMN_TYPE_CCOMBO,
-            new String[] {
-                  "", //$NON-NLS-1$
-                  BaseMessages.getString(PKG, "GPLoadDialog.DateMask.Label"),
-                  BaseMessages
-                        .getString(PKG, "GPLoadDialog.DateTimeMask.Label") },
-            true);
-      tableFieldColumns.add(ciReturn[0]);
-      wReturn = new TableView(transMeta, wFieldsComp, SWT.BORDER
-            | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciReturn, UpInsRows, lsMod, props);
-
-      wGetLU = new Button(wFieldsComp, SWT.PUSH);
-      wGetLU.setText(BaseMessages
-            .getString(PKG, "GPLoadDialog.GetFields.Label")); //$NON-NLS-1$
-      fdGetLU = new FormData();
-      fdGetLU.top = new FormAttachment(0, margin);
-      fdGetLU.right = new FormAttachment(100, 0);
-      wGetLU.setLayoutData(fdGetLU);
-
-      wDoMapping = new Button(wFieldsComp, SWT.PUSH);
-      wDoMapping.setText(BaseMessages.getString(PKG,
-            "GPLoadDialog.EditMapping.Label")); //$NON-NLS-1$
-      fdDoMapping = new FormData();
-      fdDoMapping.top = new FormAttachment(wGetLU, margin);
-      fdDoMapping.right = new FormAttachment(100, 0);
-      wDoMapping.setLayoutData(fdDoMapping);
-
-      wDoMapping.addListener(SWT.Selection, new Listener() {
-         public void handleEvent(Event arg0) {
-            generateMappings();
-         }
-      });
-
-      fdReturn = new FormData();
-      fdReturn.left = new FormAttachment(0, 0);
-      fdReturn.top = new FormAttachment(wlReturn, margin);
-      fdReturn.right = new FormAttachment(wGetLU, -margin*2);
-      fdReturn.bottom = new FormAttachment(100, -2 * margin);
-      wReturn.setLayoutData(fdReturn);
-
-      fdFieldsComp = new FormData();
-      fdFieldsComp.left = new FormAttachment(0, 0);
-      fdFieldsComp.top = new FormAttachment(0, margin);
-      fdFieldsComp.right = new FormAttachment(100, 0);
-      fdFieldsComp.bottom = new FormAttachment(100, 0);
-      wFieldsComp.setLayoutData(fdFieldsComp);
-
-      wFieldsComp.layout();
-      wFieldsTab.setControl(wFieldsComp);
-
-      // ///////////////////////////////////////////////////////////
-      // / End of Fields tab
-      // ///////////////////////////////////////////////////////////
-
-      // ////////////////////////
-      // Start of the Local Hosts tab
-      // ////////////////////////
-      wLocalHostsTab = new CTabItem(wTabFolder, SWT.NONE);
-      wLocalHostsTab.setText(BaseMessages.getString(PKG, "GPLoadDialog.LocalHostsTab.Title"));
-
-      wLocalHostsComp = new Composite(wTabFolder, SWT.NONE);
-      props.setLook(wLocalHostsComp);
-
-      FormLayout tabLocalHostsLayout = new FormLayout();
-      tabLocalHostsLayout.marginWidth = 3;
-      tabLocalHostsLayout.marginHeight = 3;
-      wLocalHostsComp.setLayout(tabLocalHostsLayout);
-
-      // Master Port line...
-      wlMasterPort = new Label(wLocalHostsComp, SWT.NONE);
-      wlMasterPort.setText(BaseMessages.getString(PKG, "GPLoadDialog.MasterPort.Label")); //$NON-NLS-1$
-      props.setLook(wlMasterPort);
-      fdlMasterPort = new FormData();
-      fdlMasterPort.left = new FormAttachment(0, 0);
-      fdlMasterPort.right = new FormAttachment(middle, -margin);
-      fdlMasterPort.top = new FormAttachment(0, margin * 2);
-      wlMasterPort.setLayoutData(fdlMasterPort);
-
-      wMasterPort = new TextVar(transMeta, wLocalHostsComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-      props.setLook(wMasterPort);
-      wMasterPort.addModifyListener(lsMod);
-      wMasterPort.addFocusListener(lsFocusLost);
-      fdMasterPort = new FormData();
-      fdMasterPort.left = new FormAttachment(wlMasterPort, 0);
-      fdMasterPort.top = new FormAttachment(0, margin * 2);
-      fdMasterPort.right = new FormAttachment(100, 0);
-      wMasterPort.setLayoutData(fdMasterPort);
-      wMasterPort.addModifyListener(lsMod);
-
-      // Local Hosts Label
-      wlLocalHosts = new Label(wLocalHostsComp, SWT.NONE);
-      wlLocalHosts.setText(BaseMessages.getString(PKG, "GPLoadDialog.LocalHosts.Label")); //$NON-NLS-1$
-      props.setLook(wlLocalHosts);
-      fdlLocalHosts = new FormData();
-      fdlLocalHosts.left = new FormAttachment(0, 0);
-      fdlLocalHosts.top = new FormAttachment(wMasterPort, margin);
-      wlLocalHosts.setLayoutData(fdlLocalHosts);
-
-      // Local Hosts Table
-      int LocalHostsColumns = 1;
-      int LocalHostsRows = (input.getLocalHosts() != null ? input.getLocalHosts().length : 1);
-      ciLocalHosts = new ColumnInfo[LocalHostsColumns];
-      ciLocalHosts[0] = new ColumnInfo(
-            BaseMessages.getString(PKG, "GPLoadDialog.ColumnInfo.LocalHosts"), ColumnInfo.COLUMN_TYPE_TEXT, new String[] { "" }, false); //$NON-NLS-1$
-
-      localHostsColumns.add(ciReturn[0]);
-      wLocalHosts = new TableView(transMeta, wLocalHostsComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
-            ciLocalHosts, LocalHostsRows, lsMod, props);
-
-      fdLocalHostsComp = new FormData();
-      fdLocalHostsComp.left = new FormAttachment(0, 0);
-      fdLocalHostsComp.top = new FormAttachment(wlLocalHosts, 0);
-      fdLocalHostsComp.right = new FormAttachment(100, 0);
-      fdLocalHostsComp.bottom = new FormAttachment(100, 0);
-      wLocalHosts.setLayoutData(fdLocalHostsComp);
-
-      wLocalHostsComp.layout();
-      wLocalHostsTab.setControl(wLocalHostsComp);
-
+      // we have a method to add each tab
+      addFieldTabItem(wTabFolder, margin, lsMod);
+      addLocalHostsTabItem(wTabFolder, margin, lsMod, lsFocusLost);
+      addGPConfigTabItem(wTabFolder, margin, lsMod, lsFocusLost);
+        
       // ///////////////////////////////////////////////////////////
       // End of Tab Folder
       // ///////////////////////////////////////////////////////////
@@ -787,10 +373,10 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       fdTabFolder.right = new FormAttachment(100, 0);
       fdTabFolder.bottom = new FormAttachment(100, -50);
       wTabFolder.setLayoutData(fdTabFolder);
-
+      
       // set the selection to the first tab
       wTabFolder.setSelection(0);
-
+      
       // THE BUTTONS
       wOK = new Button(shell, SWT.PUSH);
       wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
@@ -799,7 +385,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       wCancel = new Button(shell, SWT.PUSH);
       wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
-      setButtonPositions(new Button[] { wOK, wSQL, wCancel }, margin, null);
+      setButtonPositions(new Button[] { wOK, wSQL, wCancel }, margin, wTabFolder);
 
       //
       // Search the fields in the background
@@ -925,7 +511,6 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       wSchema.addSelectionListener(lsDef);
       wTable.addSelectionListener(lsDef);
       wMaxErrors.addSelectionListener(lsDef);
-      wDbNameOverride.addSelectionListener(lsDef);
       wControlFile.addSelectionListener(lsDef);
       wDataFile.addSelectionListener(lsDef);
       wLogFile.addSelectionListener(lsDef);
@@ -1173,10 +758,13 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
          logDebug(BaseMessages
                .getString(PKG, "GPLoadDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
-      wMaxErrors.setText("" + input.getMaxErrors()); //$NON-NLS-1$
-
+      if (input.getMaxErrors() != null) {
+         wMaxErrors.setText(input.getMaxErrors()); //$NON-NLS-1$
+      }
+      
       if (input.getFieldTable() != null)
          for (i = 0; i < input.getFieldTable().length; i++) {
+            
             TableItem item = wReturn.table.getItem(i);
             if (input.getFieldTable()[i] != null)
                item.setText(1, input.getFieldTable()[i]);
@@ -1196,6 +784,8 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
             } else {
                item.setText(3, "");
             }
+            item.setText(4, (input.getMatchColumn()[i]?"Y":"N"));
+            item.setText(5, (input.getUpdateColumn()[i]?"Y":"N"));
          }
 
       if (input.getLocalHosts() != null) {
@@ -1227,12 +817,12 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
          wControlFile.setText(input.getControlFile());
       if (input.getDataFile() != null)
          wDataFile.setText(input.getDataFile());
+      if (input.getDelimiter() != null) 
+         wDelimiter.setText(input.getDelimiter());
       if (input.getLogFile() != null)
          wLogFile.setText(input.getLogFile());
       if (input.getEncoding() != null)
          wEncoding.setText(input.getEncoding());
-      if (input.getDbNameOverride() != null)
-         wDbNameOverride.setText(input.getDbNameOverride());
       if (input.getMasterPort() != null)
          wMasterPort.setText(input.getMasterPort());
       wEraseFiles.setSelection(input.isEraseFiles());
@@ -1280,18 +870,18 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       int nrfields = wReturn.nrNonEmpty();
 
       inf.allocate(nrfields);
+      inf.setMaxErrors(wMaxErrors.getText());
 
-      inf.setMaxErrors(Const.toInt(wMaxErrors.getText(), 0));
-
-      inf.setDbNameOverride(wDbNameOverride.getText());
-
-      if (log.isDebug())
-         logDebug(BaseMessages.getString(PKG,
-               "GPLoadDialog.Log.FoundFields", "" + nrfields)); //$NON-NLS-1$ //$NON-NLS-2$
+      if (log.isDebug()) {
+         logDebug(BaseMessages.getString(PKG, "GPLoadDialog.Log.FoundFields", "" + nrfields)); //$NON-NLS-1$ //$NON-NLS-2$
+      }
+      
       for (int i = 0; i < nrfields; i++) {
+      
          TableItem item = wReturn.getNonEmpty(i);
          inf.getFieldTable()[i] = item.getText(1);
          inf.getFieldStream()[i] = item.getText(2);
+         
          if (BaseMessages.getString(PKG, "GPLoadDialog.DateMask.Label").equals(
                item.getText(3)))
             inf.getDateMask()[i] = GPLoadMeta.DATE_MASK_DATE;
@@ -1301,6 +891,9 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
             inf.getDateMask()[i] = GPLoadMeta.DATE_MASK_DATETIME;
          else
             inf.getDateMask()[i] = "";
+         
+         inf.getMatchColumn()[i] = "Y".equalsIgnoreCase(item.getText(4));
+         inf.getUpdateColumn()[i] = "Y".equalsIgnoreCase(item.getText(5));
       }
 
       int numberOfLocalHosts = wLocalHosts.nrNonEmpty();
@@ -1322,6 +915,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       inf.setEncoding(wEncoding.getText());
       inf.setEraseFiles(wEraseFiles.getSelection());
       inf.setMasterPort(wMasterPort.getText());
+      inf.setDelimiter(wDelimiter.getText());
 
       /*
        * Set the loadmethod
@@ -1375,10 +969,8 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
 
       if (input.getDatabaseMeta() == null) {
          MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-         mb.setMessage(BaseMessages.getString(PKG,
-               "GPLoadDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
-         mb.setText(BaseMessages.getString(PKG,
-               "GPLoadDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
+         mb.setMessage(BaseMessages.getString(PKG, "GPLoadDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
+         mb.setText(BaseMessages.getString(PKG, "GPLoadDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
          mb.open();
       }
 
@@ -1485,5 +1077,405 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
                      "GPLoadDialog.CouldNotBuildSQL.DialogMessage"), ke); //$NON-NLS-1$
       }
 
+   }
+   
+   private void addFieldTabItem(CTabFolder tabFolder, int margin, ModifyListener lsMod) {
+      
+      Label wlLoadAction;
+      FormData fdFieldsComp;
+      Button wDoMapping;
+      FormData fdDoMapping;
+
+      //  create the fields tab item     
+      CTabItem tabItem = new CTabItem(tabFolder, SWT.NONE);
+      tabItem.setText(BaseMessages.getString(PKG, "GPLoadDialog.FieldsTab.Title"));
+      
+      //  Create the composite that the individual controls will be placed in
+      Composite wFieldsComp = new Composite(tabFolder, SWT.NONE);
+      props.setLook(wFieldsComp);
+      int middle = props.getMiddlePct();
+
+      FormLayout tabFieldLayout = new FormLayout();
+      tabFieldLayout.marginWidth = 3;
+      tabFieldLayout.marginHeight = 3;
+      wFieldsComp.setLayout(tabFieldLayout);
+      
+      // Load Action line
+      wlLoadAction = new Label(wFieldsComp, 0);
+      wlLoadAction.setText(BaseMessages.getString(PKG, "GPLoadDialog.LoadAction.Label"));
+      props.setLook(wlLoadAction);
+      
+      fdlLoadAction = new FormData();
+      fdlLoadAction.left = new FormAttachment(0, 0);
+      //fdlLoadAction.right = new FormAttachment(0, 0);
+      fdlLoadAction.top = new FormAttachment(0, margin);
+      wlLoadAction.setLayoutData(fdlLoadAction);
+      
+      wLoadAction = new CCombo(wFieldsComp, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
+      wLoadAction.add(BaseMessages.getString(PKG, "GPLoadDialog.InsertLoadAction.Label"));
+      wLoadAction.add(BaseMessages.getString(PKG, "GPLoadDialog.UpdateLoadAction.Label"));
+      wLoadAction.add(BaseMessages.getString(PKG, "GPLoadDialog.MergeLoadAction.Label"));
+
+      wLoadAction.select(0); // +1: starts at -1
+      wLoadAction.addModifyListener(lsMod);
+
+      props.setLook(wLoadAction);
+      fdLoadAction = new FormData();
+      fdLoadAction.left = new FormAttachment(wlLoadAction, margin);
+      fdLoadAction.top = new FormAttachment(0, margin);
+      wLoadAction.setLayoutData(fdLoadAction); 
+
+      wDoMapping = new Button(wFieldsComp, SWT.PUSH);
+      wDoMapping.setText(BaseMessages.getString(PKG, "GPLoadDialog.EditMapping.Label")); //$NON-NLS-1$
+      fdDoMapping = new FormData();
+      fdDoMapping.top = new FormAttachment(0, margin);;
+      fdDoMapping.right = new FormAttachment(75, 0);
+      wDoMapping.setLayoutData(fdDoMapping);
+      
+      wGetLU = new Button(wFieldsComp, SWT.PUSH);
+      wGetLU.setText(BaseMessages.getString(PKG, "GPLoadDialog.GetFields.Label")); //$NON-NLS-1$
+      fdGetLU = new FormData();
+      fdGetLU.top = new FormAttachment(0, margin);
+      fdGetLU.right = new FormAttachment(wDoMapping, margin);
+      wGetLU.setLayoutData(fdGetLU);
+
+
+
+      wDoMapping.addListener(SWT.Selection, new Listener() {
+         public void handleEvent(Event arg0) {
+            generateMappings();
+         }
+      });
+
+      //  The Field Table
+      int numberOfColumns = 5;
+      int UpInsRows = (input.getFieldTable() != null ? input.getFieldTable().length
+            : 1);
+
+      ciReturn = new ColumnInfo[numberOfColumns];
+
+      ciReturn[0] = new ColumnInfo(
+            BaseMessages.getString(PKG, "GPLoadDialog.ColumnInfo.TableField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
+      
+      ciReturn[1] = new ColumnInfo(
+            BaseMessages.getString(PKG, "GPLoadDialog.ColumnInfo.StreamField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false); //$NON-NLS-1$
+      
+      ciReturn[2] = new ColumnInfo(BaseMessages.getString(PKG,
+            "GPLoadDialog.ColumnInfo.DateMask"), ColumnInfo.COLUMN_TYPE_CCOMBO,
+            new String[] {
+                  "", //$NON-NLS-1$
+                  BaseMessages.getString(PKG, "GPLoadDialog.DateMask.Label"),
+                  BaseMessages.getString(PKG, "GPLoadDialog.DateTimeMask.Label") },
+            true);
+      
+      ciReturn[3] = new ColumnInfo (
+            BaseMessages.getString(PKG, "GPLoadDialog.ColumnInfo.ColumnMatch"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString(PKG, "System.Combo.Yes"), BaseMessages.getString(PKG, "System.Combo.No") }, true );
+      
+      ciReturn[4] = new ColumnInfo (
+            BaseMessages.getString(PKG, "GPLoadDialog.ColumnInfo.ColumnUpdate"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString(PKG, "System.Combo.Yes"), BaseMessages.getString(PKG, "System.Combo.No") }, true );
+      
+      tableFieldColumns.add(ciReturn[0]);
+     
+      wReturn = new TableView(transMeta, wFieldsComp, SWT.BORDER
+            | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
+            ciReturn, UpInsRows, lsMod, props);
+
+      fdReturn = new FormData();
+      fdReturn.left = new FormAttachment(0, 0);
+      fdReturn.top = new FormAttachment(wLoadAction, margin);
+      fdReturn.right = new FormAttachment(75, 0); //(wGetLU, 100);
+      fdReturn.bottom = new FormAttachment(100, -2 * margin);
+      wReturn.setLayoutData(fdReturn);
+
+      fdFieldsComp = new FormData();
+      fdFieldsComp.left = new FormAttachment(0, 0);
+      fdFieldsComp.top = new FormAttachment(0, margin);
+      fdFieldsComp.right = new FormAttachment(100, 0);
+      fdFieldsComp.bottom = new FormAttachment(100, 0);
+      wFieldsComp.setLayoutData(fdFieldsComp);
+
+      wFieldsComp.layout();
+      tabItem.setControl(wFieldsComp);
+   }
+   
+   private void addLocalHostsTabItem(CTabFolder tabFolder, int margin, ModifyListener lsMod, FocusListener lsFocusLost) {
+
+      CTabItem  tabItem = new CTabItem(tabFolder, SWT.NONE);
+      tabItem.setText(BaseMessages.getString(PKG, "GPLoadDialog.LocalHostsTab.Title"));
+
+      Composite wLocalHostsComp = new Composite(tabFolder, SWT.NONE);
+      props.setLook(wLocalHostsComp);
+      int middle = props.getMiddlePct();
+
+      FormLayout formLayout = new FormLayout();
+      formLayout.marginWidth = 3;
+      formLayout.marginHeight = 3;
+      wLocalHostsComp.setLayout(formLayout);
+
+      // Master Port line...
+      wlMasterPort = new Label(wLocalHostsComp, SWT.NONE);
+      wlMasterPort.setText(BaseMessages.getString(PKG, "GPLoadDialog.MasterPort.Label")); //$NON-NLS-1$
+      props.setLook(wlMasterPort);
+      fdlMasterPort = new FormData();
+      fdlMasterPort.left = new FormAttachment(0, 0);
+      //fdlMasterPort.right = new FormAttachment(middle, -margin);
+      fdlMasterPort.top = new FormAttachment(0, margin * 2);
+      wlMasterPort.setLayoutData(fdlMasterPort);
+
+      wMasterPort = new TextVar(transMeta, wLocalHostsComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+      props.setLook(wMasterPort);
+      wMasterPort.addModifyListener(lsMod);
+      wMasterPort.addFocusListener(lsFocusLost);
+      fdMasterPort = new FormData();
+      fdMasterPort.left = new FormAttachment(wlMasterPort, 0);
+      fdMasterPort.top = new FormAttachment(0, margin * 2);
+      fdMasterPort.right = new FormAttachment(middle, 0);
+      wMasterPort.setLayoutData(fdMasterPort);
+      wMasterPort.addModifyListener(lsMod);
+
+      // Local Hosts Label
+      wlLocalHosts = new Label(wLocalHostsComp, SWT.NONE);
+      wlLocalHosts.setText(BaseMessages.getString(PKG, "GPLoadDialog.LocalHosts.Label")); //$NON-NLS-1$
+      props.setLook(wlLocalHosts);
+      fdlLocalHosts = new FormData();
+      fdlLocalHosts.left = new FormAttachment(0, 0);
+      fdlLocalHosts.top = new FormAttachment(wMasterPort, margin);
+      wlLocalHosts.setLayoutData(fdlLocalHosts);
+
+      // Local Hosts Table
+      int LocalHostsColumns = 1;
+      int LocalHostsRows = (input.getLocalHosts() != null ? input.getLocalHosts().length : 1);
+      ciLocalHosts = new ColumnInfo[LocalHostsColumns];
+      ciLocalHosts[0] = new ColumnInfo(
+            BaseMessages.getString(PKG, "GPLoadDialog.ColumnInfo.LocalHosts"), ColumnInfo.COLUMN_TYPE_TEXT, new String[] { "" }, false); //$NON-NLS-1$
+
+      localHostsColumns.add(ciReturn[0]);
+      wLocalHosts = new TableView(transMeta, wLocalHostsComp, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
+            ciLocalHosts, LocalHostsRows, lsMod, props);
+
+      FormData fdLocalHostsComp = new FormData();
+      fdLocalHostsComp.left = new FormAttachment(0, 0);
+      fdLocalHostsComp.top = new FormAttachment(wlLocalHosts, 0);
+      fdLocalHostsComp.right = new FormAttachment(75, 0);
+      fdLocalHostsComp.bottom = new FormAttachment(100, 0);
+      wLocalHosts.setLayoutData(fdLocalHostsComp);
+
+      wLocalHostsComp.layout();
+      tabItem.setControl(wLocalHostsComp);
+
+   }
+   
+   private void addGPConfigTabItem(CTabFolder tabFolder, int margin, ModifyListener lsMod, FocusListener lsFocusLost) {
+   
+      Composite wGPConfigTabComp;
+      
+      CTabItem tabItem = new CTabItem(tabFolder, SWT.NONE);
+      tabItem.setText(BaseMessages.getString(PKG, "GPLoadDialog.GPConfiguratonTab.Title"));
+
+      wGPConfigTabComp = new Composite(tabFolder, SWT.NONE);
+      props.setLook(wGPConfigTabComp);
+      int middle = props.getMiddlePct();
+
+      FormLayout formlayout = new FormLayout();
+      formlayout.marginWidth = 3;
+      formlayout.marginHeight = 3;
+      wGPConfigTabComp.setLayout(formlayout);
+      
+      // GPLoad line...
+      wlGploadPath = new Label(wGPConfigTabComp, SWT.RIGHT);
+      wlGploadPath.setText(BaseMessages.getString(PKG, "GPLoadDialog.GPLoadPath.Label")); //$NON-NLS-1$
+      props.setLook(wlGploadPath);
+      fdlGploadPath = new FormData();
+      fdlGploadPath.left = new FormAttachment(0, 0);
+      fdlGploadPath.right = new FormAttachment(middle, -margin);
+      fdlGploadPath.top = new FormAttachment(0, margin);
+      wlGploadPath.setLayoutData(fdlGploadPath);
+
+      wbGploadPath = new Button(wGPConfigTabComp, SWT.PUSH | SWT.CENTER);
+      props.setLook(wbGploadPath);
+      wbGploadPath.setText(BaseMessages.getString(PKG, "GPLoadDialog.Browse.Button")); //$NON-NLS-1$
+      fdbGploadPath = new FormData();
+      fdbGploadPath.right = new FormAttachment(75, 0);
+      fdbGploadPath.top = new FormAttachment(0, margin);
+      wbGploadPath.setLayoutData(fdbGploadPath);
+      
+      wGploadPath = new TextVar(transMeta, wGPConfigTabComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+      props.setLook(wGploadPath);
+      wGploadPath.addModifyListener(lsMod);
+      fdGploadPath = new FormData();
+      fdGploadPath.left = new FormAttachment(middle, 0);
+      fdGploadPath.top = new FormAttachment(0, margin);
+      fdGploadPath.right = new FormAttachment(wbGploadPath, -margin);
+      wGploadPath.setLayoutData(fdGploadPath);
+
+      // Control file line
+      wlControlFile = new Label(wGPConfigTabComp, SWT.RIGHT);
+      wlControlFile.setText(BaseMessages.getString(PKG, "GPLoadDialog.ControlFile.Label")); //$NON-NLS-1$
+      props.setLook(wlControlFile);
+      fdlControlFile = new FormData();
+      fdlControlFile.left = new FormAttachment(0, 0);
+      fdlControlFile.top = new FormAttachment(wGploadPath, margin);
+      fdlControlFile.right = new FormAttachment(middle, -margin);
+      wlControlFile.setLayoutData(fdlControlFile);
+      wbControlFile = new Button(wGPConfigTabComp, SWT.PUSH | SWT.CENTER);
+      props.setLook(wbControlFile);
+      wbControlFile.setText(BaseMessages.getString(PKG, "GPLoadDialog.Browse.Button")); //$NON-NLS-1$
+      fdbControlFile = new FormData();
+      fdbControlFile.right = new FormAttachment(75, 0);
+      fdbControlFile.top = new FormAttachment(wGploadPath, margin);
+      wbControlFile.setLayoutData(fdbControlFile);
+      wControlFile = new TextVar(transMeta, wGPConfigTabComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+      props.setLook(wControlFile);
+      wControlFile.addModifyListener(lsMod);
+      fdControlFile = new FormData();
+      fdControlFile.left = new FormAttachment(middle, 0);
+      fdControlFile.top = new FormAttachment(wGploadPath, margin);
+      fdControlFile.right = new FormAttachment(wbControlFile, -margin);
+      wControlFile.setLayoutData(fdControlFile);
+      
+      // Error Table line...
+      wlErrorTable = new Label(wGPConfigTabComp, SWT.RIGHT);
+      wlErrorTable.setText(BaseMessages.getString(PKG, "GPLoadDialog.ErrorTable.Label")); //$NON-NLS-1$
+      props.setLook(wlErrorTable);
+      fdlErrorTable = new FormData();
+      fdlErrorTable.left = new FormAttachment(0, 0);
+      fdlErrorTable.top = new FormAttachment(wControlFile, margin);
+      fdlErrorTable.right = new FormAttachment(middle, -margin);
+      wlErrorTable.setLayoutData(fdlErrorTable);
+
+      wbErrorTable = new Button(wGPConfigTabComp, SWT.PUSH | SWT.CENTER);
+      props.setLook(wbErrorTable);
+      wbErrorTable.setText(BaseMessages.getString(PKG, "GPLoadDialog.Browse.Button")); //$NON-NLS-1$
+      fdbErrorTable = new FormData();
+      fdbErrorTable.right = new FormAttachment(75, 0);
+      fdbErrorTable.top = new FormAttachment(wControlFile, margin);
+      wbErrorTable.setLayoutData(fdbErrorTable);
+      wErrorTable = new TextVar(transMeta, wGPConfigTabComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+      props.setLook(wErrorTable);
+      wErrorTable.addModifyListener(lsMod);
+      wErrorTable.addFocusListener(lsFocusLost);
+      fdErrorTable = new FormData();
+      fdErrorTable.left = new FormAttachment(middle, 0);
+      fdErrorTable.top = new FormAttachment(wControlFile, margin);
+      fdErrorTable.right = new FormAttachment(wbErrorTable, -margin);
+      wErrorTable.setLayoutData(fdErrorTable);
+      
+      // MaxErrors 
+      wlMaxErrors = new Label(wGPConfigTabComp, SWT.RIGHT);
+      wlMaxErrors.setText(BaseMessages.getString(PKG, "GPLoadDialog.MaxErrors.Label")); //$NON-NLS-1$
+      props.setLook(wlMaxErrors);
+      fdlMaxErrors = new FormData();
+      fdlMaxErrors.left = new FormAttachment(wbErrorTable, 0);
+      fdlMaxErrors.top = new FormAttachment(wControlFile, margin);
+      //fdlMaxErrors.right = new FormAttachment(100, -margin);
+      wlMaxErrors.setLayoutData(fdlMaxErrors);
+      
+      wMaxErrors = new TextVar(transMeta, wGPConfigTabComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+      props.setLook(wMaxErrors);
+      wMaxErrors.addModifyListener(lsMod);
+      fdMaxErrors = new FormData();
+      fdMaxErrors.left = new FormAttachment(wlMaxErrors, 0);
+      fdMaxErrors.top = new FormAttachment(wControlFile, margin);
+      fdMaxErrors.right = new FormAttachment(100, 0);
+      wMaxErrors.setLayoutData(fdMaxErrors);
+
+      // Log file line
+      wlLogFile = new Label(wGPConfigTabComp, SWT.RIGHT);
+      wlLogFile.setText(BaseMessages.getString(PKG, "GPLoadDialog.LogFile.Label")); //$NON-NLS-1$ 
+      props.setLook(wlLogFile);
+      fdlLogFile = new FormData();
+      fdlLogFile.left = new FormAttachment(0, 0);
+      fdlLogFile.top = new FormAttachment(wErrorTable, margin);
+      fdlLogFile.right = new FormAttachment(middle, -margin);
+      wlLogFile.setLayoutData(fdlLogFile);
+      
+      wbLogFile = new Button(wGPConfigTabComp, SWT.PUSH | SWT.CENTER);
+      props.setLook(wbLogFile);
+      wbLogFile.setText(BaseMessages.getString(PKG, "GPLoadDialog.Browse.Button")); //$NON-NLS-1$
+      fdbLogFile = new FormData();
+      fdbLogFile.right = new FormAttachment(75, 0);
+      fdbLogFile.top = new FormAttachment(wErrorTable, margin);
+      wbLogFile.setLayoutData(fdbLogFile);
+      wLogFile = new TextVar(transMeta, wGPConfigTabComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+      props.setLook(wLogFile);
+      wLogFile.addModifyListener(lsMod);
+      fdLogFile = new FormData();
+      fdLogFile.left = new FormAttachment(middle, 0);
+      fdLogFile.top = new FormAttachment(wErrorTable, margin);
+      fdLogFile.right = new FormAttachment(wbLogFile, -margin);
+      wLogFile.setLayoutData(fdLogFile);
+      
+      // Data file line
+      wlDataFile = new Label(wGPConfigTabComp, SWT.RIGHT);
+      wlDataFile.setText(BaseMessages.getString(PKG, "GPLoadDialog.DataFile.Label")); //$NON-NLS-1$
+      props.setLook(wlDataFile);
+      fdlDataFile = new FormData();
+      fdlDataFile.left = new FormAttachment(0, 0);
+      fdlDataFile.top = new FormAttachment(wLogFile, margin);
+      fdlDataFile.right = new FormAttachment(middle, -margin);
+      wlDataFile.setLayoutData(fdlDataFile);
+      
+      wbDataFile = new Button(wGPConfigTabComp, SWT.PUSH | SWT.CENTER);
+      props.setLook(wbDataFile);
+      wbDataFile.setText(BaseMessages.getString(PKG, "GPLoadDialog.Browse.Button")); //$NON-NLS-1$
+      fdbDataFile = new FormData();
+      //fdbDataFile.left = new FormAttachment(middle, 0);
+      fdbDataFile.right = new FormAttachment(75, 0);
+      fdbDataFile.top = new FormAttachment(wLogFile, margin);
+      wbDataFile.setLayoutData(fdbDataFile);
+      wDataFile = new TextVar(transMeta, wGPConfigTabComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+      props.setLook(wDataFile);
+      
+      wDataFile.addModifyListener(lsMod);
+      fdDataFile = new FormData();
+      fdDataFile.left = new FormAttachment(middle, 0);
+      fdDataFile.top = new FormAttachment(wLogFile, margin);
+      fdDataFile.right = new FormAttachment(wbDataFile, -margin);
+      wDataFile.setLayoutData(fdDataFile);
+      
+      // MaxErrors 
+      Label wlDelimiter = new Label(wGPConfigTabComp, SWT.RIGHT);
+      wlDelimiter.setText(BaseMessages.getString(PKG, "GPLoadDialog.Delimiter.Label")); //$NON-NLS-1$
+      props.setLook(wlDelimiter);
+      FormData fdlDelimiter = new FormData();
+      fdlDelimiter.left = new FormAttachment(wbDataFile, 0);
+      fdlDelimiter.top = new FormAttachment(wLogFile, margin);
+      wlDelimiter.setLayoutData(fdlDelimiter);
+      
+      wDelimiter = new TextVar(transMeta, wGPConfigTabComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+      props.setLook(wMaxErrors);
+      wDelimiter.addModifyListener(lsMod);
+      FormData fdDelimiter = new FormData();
+      fdDelimiter.left = new FormAttachment(wlDelimiter, 0);
+      fdDelimiter.top = new FormAttachment(wLogFile, margin);
+      fdDelimiter.right = new FormAttachment(100, 0);
+      wDelimiter.setLayoutData(fdDelimiter);
+
+      // Control encoding line
+      //
+      // The drop down is editable as it may happen an encoding may not be
+      // present on one machine, but you may want to use it on your execution server
+      //
+      wlEncoding = new Label(wGPConfigTabComp, SWT.RIGHT);
+      wlEncoding.setText(BaseMessages.getString(PKG, "GPLoadDialog.Encoding.Label"));
+      props.setLook(wlEncoding);
+      fdlEncoding = new FormData();
+      fdlEncoding.left = new FormAttachment(0, 0);
+      fdlEncoding.top = new FormAttachment(wDataFile, margin);
+      fdlEncoding.right = new FormAttachment(middle, -margin);
+      wlEncoding.setLayoutData(fdlEncoding);
+      wEncoding = new Combo(wGPConfigTabComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+      wEncoding.setToolTipText(BaseMessages.getString(PKG, "GPLoadDialog.Encoding.Tooltip"));
+      wEncoding.setItems(encodings);
+      props.setLook(wEncoding);
+      fdEncoding = new FormData();
+      fdEncoding.left = new FormAttachment(middle, 0);
+      fdEncoding.top = new FormAttachment(wDataFile, margin);
+      fdEncoding.right = new FormAttachment(75, 0);
+      wEncoding.setLayoutData(fdEncoding);
+      wEncoding.addModifyListener(lsMod); 
+      
+      wGPConfigTabComp.layout();
+      tabItem.setControl(wGPConfigTabComp);
    }
 }
