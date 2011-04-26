@@ -672,13 +672,13 @@ public class JobEntryEvalFilesMetrics extends JobEntryBase implements Cloneable,
                              if (!CurrentFile.getParent().toString().equals(sourcefilefolder.toString())){
                             	// Not in the Base Folder..Only if include sub folders  
                 				 if (include_subfolders) {
-                					if(GetFileWildcard(CurrentFile.toString(),realWildcard)) {
+                					if(GetFileWildcard(CurrentFile.getName().getBaseName(),realWildcard)) {
                 						getFileSize(CurrentFile,result,parentJob);
                 					}
                 				 }
                 			 }else  {
                 				 // In the base folder
-                				if (GetFileWildcard(CurrentFile.toString(),realWildcard)){	
+                				if (GetFileWildcard(CurrentFile.getName().getBaseName(),realWildcard)){	
                 					getFileSize(CurrentFile,result,parentJob);
           						}
                 			 }        
