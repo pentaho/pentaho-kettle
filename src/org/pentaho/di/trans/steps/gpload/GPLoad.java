@@ -32,6 +32,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSystemException;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -65,7 +66,6 @@ public class GPLoad extends BaseStep implements StepInterface
 	private static String CLOSE_BRACKET = "]";
 	private static String SPACE_PADDED_DASH = " - ";
 	private static String COLON = ":";
-	private static int GPLOAD_MAX_ERRORS_DEFAULT = 0;
 			
 	Process gploadProcess = null;
 	
@@ -233,16 +233,16 @@ public class GPLoad extends BaseStep implements StepInterface
          }
          stringLocalHosts = sbLocalHosts.toString();
          if (!Const.isEmpty(stringLocalHosts)) {
-            contents.append(GPLoad.INDENT).append("- LOCAL_HOSTNAME: ").append(Const.CR).append(stringLocalHosts);
+            contents.append(GPLoad.INDENT).append(GPLoad.INDENT).append("LOCAL_HOSTNAME: ").append(Const.CR).append(stringLocalHosts);
          }
       }
         
       //  Add a PORT section if we have a port
-      String masterPort = meta.getMasterPort();
-      if (!Const.isEmpty(masterPort)) {
-         masterPort = environmentSubstitute(meta.getMasterPort().trim());
-         if (!Const.isEmpty(masterPort)) {
-            contents.append(GPLoad.INDENT).append("- PORT: ").append(masterPort).append(Const.CR);
+      String localhostPort = meta.getLocalhostPort();
+      if (!Const.isEmpty(localhostPort)) {
+         localhostPort = environmentSubstitute(localhostPort).trim();
+         if (!Const.isEmpty(localhostPort)) {
+            contents.append(GPLoad.INDENT).append(GPLoad.INDENT).append("PORT: ").append(localhostPort).append(Const.CR);
          }
       }
         
@@ -299,13 +299,13 @@ public class GPLoad extends BaseStep implements StepInterface
          }
       }
 
-      contents.append(GPLoad.INDENT).append("- ERROR_LIMIT: ").append(meta.getMaxErrors()).append(Const.CR);
+      contents.append(GPLoad.INDENT).append("- ERROR_LIMIT: ").append(maxErrors).append(Const.CR);
         
       String errorTableName = meta.getErrorTableName(); 
       if (!Const.isEmpty(errorTableName)) {
          errorTableName = environmentSubstitute(errorTableName).trim();
          if (!Const.isEmpty(errorTableName)) {
-            contents.append(GPLoad.INDENT).append("- ERROR_TABLE: ").append(meta.getErrorTableName()).append(Const.CR);
+            contents.append(GPLoad.INDENT).append("- ERROR_TABLE: ").append(errorTableName).append(Const.CR);
          }
       }
         
@@ -356,8 +356,19 @@ public class GPLoad extends BaseStep implements StepInterface
 	 * @param meta
 	 * @throws KettleException
 	 */
-	public void createControlFile(String filename, Object[] row, GPLoadMeta meta) throws KettleException
+	public void createControlFile(Object[] row, GPLoadMeta meta) throws KettleException
 	{
+	   String filename = meta.getControlFile();
+	   if (Const.isEmpty(filename)) {
+	      throw new KettleException(BaseMessages.getString(PKG, ""));
+	   }
+	   else {
+	      filename = environmentSubstitute(filename).trim();
+	      if (Const.isEmpty(filename)) {
+	         throw new KettleException(BaseMessages.getString(PKG, ""));
+	      }
+	   }
+	   
 		File controlFile = new File(filename);
 		FileWriter fw = null;
 		
@@ -380,9 +391,65 @@ public class GPLoad extends BaseStep implements StepInterface
 			catch ( Exception ex ) {}
 		}
 	}
+
+	/**
+	 * Returns the path to the pathToFile.  It should be the same as what was 
+	 * passed but this method will check the file system to see if the path
+	 * is valid.
+	 * 
+	 * @param pathToFile Path to the file to verify.
+	 * @param exceptionMessageKey The key of the message in the properties bundle to use when the path is not provided.
+	 * @param checkExistence When true the path's existence will be verified.
+	 * @return
+	 * @throws KettleException
+	 */
+	private String getPath(String pathToFile, String exceptionMessageKey, boolean checkExistenceOfFile)
+	        throws KettleException {
+	   
+	     	//  Make sure the path is not empty
+	      if (Const.isEmpty(pathToFile)) 
+	      {
+	         throw new KettleException(BaseMessages.getString(PKG, exceptionMessageKey));  
+	      }
+	      
+	      //  make sure the variable substitution is not empty
+	      pathToFile = environmentSubstitute(pathToFile).trim();
+	      if (Const.isEmpty(pathToFile)) 
+	      {
+	         throw new KettleException(BaseMessages.getString(PKG, exceptionMessageKey));  
+	      }
+	      
+	      FileObject fileObject = KettleVFS.getFileObject(pathToFile, getTransMeta());
+	      try 
+	      {
+	         //  we either check the existence of the file
+	         if (checkExistenceOfFile) 
+	         {
+	            if (!fileObject.exists()) {
+   	            throw new KettleException(BaseMessages.getString(PKG, "GPLoad.Execption.FileDoesNotExist", pathToFile));
+	           }
+	         }
+	         else {  // if the file does not have to exist, the parent, or source folder, does. 
+	            FileObject parentFolder = fileObject.getParent();
+	            if (parentFolder.exists()) {
+	               return KettleVFS.getFilename(fileObject); 
+	            }
+	            else {
+	               throw new KettleException(BaseMessages.getString(PKG, "GPLoad.Exception.DirectoryDoesNotExist", parentFolder.getURL().getPath()));
+	            }
+	            
+	         }
+	         return KettleVFS.getFilename(fileObject);
+	      }
+	      catch (FileSystemException fsex) 
+	      {
+	         throw new KettleException(BaseMessages.getString(PKG, "GPLoad.Exception.GPLoadCommandBuild", fsex.getMessage()));
+	      }
+	}
+	
 	
 	/**
-	 * Create the command line for a psql process depending on the meta
+	 * Create the command line for GPLoad depending on the meta
 	 * information supplied.
 	 * 
 	 * @param meta The meta data to create the command line from
@@ -394,66 +461,22 @@ public class GPLoad extends BaseStep implements StepInterface
 	 */
 	public String createCommandLine(GPLoadMeta meta, boolean password) throws KettleException
 	{
-	   StringBuffer sb = new StringBuffer(300);
+	   StringBuffer sbCommandLine = new StringBuffer(300);
 	   
-	   if ( meta.getGploadPath() != null )
-	   {
-		   try
-		   {
-	           FileObject fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getGploadPath()), getTransMeta());
-  	      	   String psqlexec = KettleVFS.getFilename(fileObject);
-		       //sb.append('\'').append(psqlexec).append('\'');
-  	      	   sb.append(psqlexec);
-  	       }
-	       catch ( Exception ex )
-	       {
-	           throw new KettleException("Error retrieving sqlldr string", ex);
-	       }		       
-	   }
-	   else
-	   {
-		   throw new KettleException("No psql application specified");
-	   }
-
-	   if ( meta.getControlFile() != null )
-	   {
-		   try
-		   {
-	           FileObject fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getControlFile()), getTransMeta());   
-		   
-	           sb.append(" -f ");
-	           //sb.append('\'').append(KettleVFS.getFilename(fileObject)).append('\'');
-	           sb.append(KettleVFS.getFilename(fileObject));
-  	       }
-	       catch ( Exception ex )
-	       {
-	           throw new KettleException("Error retrieving controlfile string", ex);
-	       }		   
-	   }
-	   else
-	   {
-		   throw new KettleException("No control file specified");
-	   }
-	   	   
-	   if ( meta.getLogFile() != null )
-	   {
-		   try 
-		   {
-		       FileObject fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getLogFile()), getTransMeta());   
+	   //  get path to the executable
+	   sbCommandLine.append(getPath(meta.getGploadPath(), "GPLoad.Exception.GPLoadPathMisssing", true));
 	   
-		       sb.append(" -l ");
-		       sb.append('\'').append(KettleVFS.getFilename(fileObject)).append('\'');
-		   }
-		   catch ( Exception ex )
-		   {
-		       throw new KettleException("Error retrieving logfile string", ex);
-		   }
-	   }
-
-	   // hostname, port and so on are passed through the control file
-	   //
-
-	   return sb.toString(); 
+	   //  get the path to the control file
+	   sbCommandLine.append(" -f ");
+	   sbCommandLine.append(getPath(meta.getControlFile(), "GPLoad.Exception.ControlFilePathMissing", false));
+	   
+	   //  get the path to the log file, if specified
+	   String logfile = meta.getLogFile();
+	   if (!Const.isEmpty(logfile)) {
+   	  sbCommandLine.append(" -l ");
+	     sbCommandLine.append(getPath(meta.getLogFile(), "GPLoad.Exception.LogFilePathMissing", false));
+	   } 
+	   return sbCommandLine.toString(); 
 	}
 	
 	public boolean execute(GPLoadMeta meta, boolean wait) throws KettleException
@@ -552,8 +575,8 @@ public class GPLoad extends BaseStep implements StepInterface
 				if (first)
 				{
 					first=false;
-					createControlFile(environmentSubstitute(meta.getControlFile()), r, meta);
-					output = new GPLoadDataOutput(meta, log.getLogLevel());
+					createControlFile(r, meta);
+					output = new GPLoadDataOutput(this, meta, log.getLogLevel());
 
 				//	if ( GPLoadMeta.METHOD_AUTO_CONCURRENT.equals(meta.getLoadMethod()) )
 				//	{

@@ -57,7 +57,7 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface
 	private String localHosts[];
 	
 	/** MasterPort **/
-	private String masterPort;
+	private String localhostPort;
 	
     /** what's the schema for the target? */
     private String schemaName;
@@ -309,7 +309,7 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface
 			   Node localHostNode = XMLHandler.getSubNodeByNr(localHostsNode, "local_host", i);    //$NON-NLS-1$
 			   localHosts[i]      = XMLHandler.getNodeValue(localHostNode); //$NON-NLS-1$
 			}
-			masterPort = XMLHandler.getTagValue(stepnode, "master_port");        //$NON-NLS-1$
+			localhostPort = XMLHandler.getTagValue(stepnode, "localhost_port");        //$NON-NLS-1$
 			
 			int nrvalues = XMLHandler.countNodes(stepnode, "mapping");      //$NON-NLS-1$
 			allocate(nrvalues);
@@ -354,23 +354,23 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface
 	   
 	   //  TODO: Make non empty defaults public static Strings
 	   
-		fieldTable   = null;
-		databaseMeta = null;
-		maxErrors    = GPLoadMeta.MAX_ERRORS_DEFAULT;
-      schemaName   = "";                //$NON-NLS-1$
-      masterPort   = "";
-		tableName    = BaseMessages.getString(PKG, "GPLoadMeta.DefaultTableName"); //$NON-NLS-1$
+		fieldTable     = null;
+		databaseMeta   = null;
+		maxErrors      = GPLoadMeta.MAX_ERRORS_DEFAULT;
+      schemaName     = "";                //$NON-NLS-1$
+      localhostPort  = "";
+		tableName      = BaseMessages.getString(PKG, "GPLoadMeta.DefaultTableName"); //$NON-NLS-1$
 		errorTableName = ""; //BaseMessages.getString(PKG, "GPLocal.ErrorTable.Prefix")+tableName;
-		loadMethod   = METHOD_AUTO_END;
-		loadAction   = ACTION_INSERT;
-		gploadPath   = "/usr/local/greenplum-db/bin/gpload";                              //$NON-NLS-1$
-		controlFile  = "control${Internal.Step.CopyNr}.cfg";  //$NON-NLS-1$
-		dataFile     = "load${Internal.Step.CopyNr}.dat";     //$NON-NLS-1$
-		logFile      = "";                                    //$NON-NLS-1$
-      encoding     = "";                                    //$NON-NLS-1$
-		delimiter = ",";
+		loadMethod     = METHOD_AUTO_END;
+		loadAction     = ACTION_INSERT;
+		gploadPath     = "/usr/local/greenplum-db/bin/gpload";                              //$NON-NLS-1$
+		controlFile    = "control${Internal.Step.CopyNr}.cfg";  //$NON-NLS-1$
+		dataFile       = "load${Internal.Step.CopyNr}.dat";     //$NON-NLS-1$
+		logFile        = "";                                    //$NON-NLS-1$
+      encoding       = "";                                    //$NON-NLS-1$
+		delimiter      = ",";
 		encloseNumbers = false;
-      eraseFiles   = true;
+      eraseFiles     = true;
 
 		allocate(0);	
 		allocateLocalHosts(0);
@@ -395,7 +395,7 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("    ").append(XMLHandler.addTagValue("erase_files",  eraseFiles));    //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("encoding",     encoding));      //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("enclose_numbers", (encloseNumbers?"Y":"N")));      //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("master_port",     masterPort));       //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("localhost_port",  localhostPort));       //$NON-NLS-1$ //$NON-NLS-2$
 		
 		for (int i=0;i<fieldTable.length;i++)
 		{
@@ -436,7 +436,7 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface
          logFile        =      rep.getStepAttributeString(id_step,  "log_file");       //$NON-NLS-1$
 			eraseFiles     =      rep.getStepAttributeBoolean(id_step, "erase_files");    //$NON-NLS-1$
 			encoding       =      rep.getStepAttributeString(id_step,  "encoding");       //$NON-NLS-1$
-			masterPort     =      rep.getStepAttributeString(id_step, "master_port");    //$NON-NLS-1$
+			localhostPort  =      rep.getStepAttributeString(id_step, "localhost_port");    //$NON-NLS-1$
 			encloseNumbers =      (rep.getStepAttributeString(id_step, "enclose_numbers").equalsIgnoreCase("Y")?true:false); //$NON-NLS-1$  
 	
 			int numberOfLocalHosts = rep.countNrStepAttributes(id_step, "local_hosts");
@@ -483,7 +483,7 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "erase_files",     eraseFiles);    //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "encoding",        encoding);      //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "enclose_numbers", (encloseNumbers?"Y":"N"));//$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "master_port", masterPort);//$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "master_port", localhostPort);//$NON-NLS-1$
 
 			for (int i=0;i <localHosts.length; i++) {
 			   rep.saveStepAttribute(id_transformation, id_step, i, "local_host", fieldTable[i]);  //$NON-NLS-1$
@@ -937,12 +937,12 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface
 	   return localHosts;
 	}
 
-	public void setMasterPort(String masterPort) {
-	  this.masterPort = masterPort;
+	public void setLocalhostPort(String localhostPort) {
+	  this.localhostPort = localhostPort;
    }
 	   
-	public String getMasterPort() {
-	  return masterPort;
+	public String getLocalhostPort() {
+	  return localhostPort;
 	}
 	
 	public void setMatchColumns(boolean[] matchColumn) {

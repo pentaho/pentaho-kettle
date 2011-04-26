@@ -92,9 +92,9 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
    private TextVar wSchema;
    private FormData fdlSchema, fdSchema;
 
-   private Label wlMasterPort;
-   private TextVar wMasterPort;
-   private FormData fdlMasterPort, fdMasterPort;
+   private Label wlLocalhostPort;
+   private TextVar wLocalhostPort;
+   private FormData fdlLocalhostPort, fdLocalhostPort;
 
    private Label wlTable;
    private Button wbTable;
@@ -823,8 +823,8 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
          wLogFile.setText(input.getLogFile());
       if (input.getEncoding() != null)
          wEncoding.setText(input.getEncoding());
-      if (input.getMasterPort() != null)
-         wMasterPort.setText(input.getMasterPort());
+      if (input.getLocalhostPort() != null)
+         wLocalhostPort.setText(input.getLocalhostPort());
       wEraseFiles.setSelection(input.isEraseFiles());
 
       String method = input.getLoadMethod();
@@ -914,7 +914,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       inf.setLogFile(wLogFile.getText());
       inf.setEncoding(wEncoding.getText());
       inf.setEraseFiles(wEraseFiles.getSelection());
-      inf.setMasterPort(wMasterPort.getText());
+      inf.setLocalhostPort(wLocalhostPort.getText());
       inf.setDelimiter(wDelimiter.getText());
 
       /*
@@ -1213,25 +1213,25 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       wLocalHostsComp.setLayout(formLayout);
 
       // Master Port line...
-      wlMasterPort = new Label(wLocalHostsComp, SWT.NONE);
-      wlMasterPort.setText(BaseMessages.getString(PKG, "GPLoadDialog.MasterPort.Label")); //$NON-NLS-1$
-      props.setLook(wlMasterPort);
-      fdlMasterPort = new FormData();
-      fdlMasterPort.left = new FormAttachment(0, 0);
-      //fdlMasterPort.right = new FormAttachment(middle, -margin);
-      fdlMasterPort.top = new FormAttachment(0, margin * 2);
-      wlMasterPort.setLayoutData(fdlMasterPort);
+      wlLocalhostPort = new Label(wLocalHostsComp, SWT.NONE);
+      wlLocalhostPort.setText(BaseMessages.getString(PKG, "GPLoadDialog.Port.Label")); //$NON-NLS-1$
+      props.setLook(wlLocalhostPort);
+      fdlLocalhostPort = new FormData();
+      fdlLocalhostPort.left = new FormAttachment(0, 0);
+      //fdlLocalhostPort.right = new FormAttachment(middle, -margin);
+      fdlLocalhostPort.top = new FormAttachment(0, margin * 2);
+      wlLocalhostPort.setLayoutData(fdlLocalhostPort);
 
-      wMasterPort = new TextVar(transMeta, wLocalHostsComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-      props.setLook(wMasterPort);
-      wMasterPort.addModifyListener(lsMod);
-      wMasterPort.addFocusListener(lsFocusLost);
-      fdMasterPort = new FormData();
-      fdMasterPort.left = new FormAttachment(wlMasterPort, 0);
-      fdMasterPort.top = new FormAttachment(0, margin * 2);
-      fdMasterPort.right = new FormAttachment(middle, 0);
-      wMasterPort.setLayoutData(fdMasterPort);
-      wMasterPort.addModifyListener(lsMod);
+      wLocalhostPort = new TextVar(transMeta, wLocalHostsComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+      props.setLook(wLocalhostPort);
+      wLocalhostPort.addModifyListener(lsMod);
+      wLocalhostPort.addFocusListener(lsFocusLost);
+      fdLocalhostPort = new FormData();
+      fdLocalhostPort.left = new FormAttachment(wlLocalhostPort, 0);
+      fdLocalhostPort.top = new FormAttachment(0, margin * 2);
+      fdLocalhostPort.right = new FormAttachment(middle, 0);
+      wLocalhostPort.setLayoutData(fdLocalhostPort);
+      wLocalhostPort.addModifyListener(lsMod);
 
       // Local Hosts Label
       wlLocalHosts = new Label(wLocalHostsComp, SWT.NONE);
@@ -1239,7 +1239,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       props.setLook(wlLocalHosts);
       fdlLocalHosts = new FormData();
       fdlLocalHosts.left = new FormAttachment(0, 0);
-      fdlLocalHosts.top = new FormAttachment(wMasterPort, margin);
+      fdlLocalHosts.top = new FormAttachment(wLocalhostPort, margin);
       wlLocalHosts.setLayoutData(fdlLocalHosts);
 
       // Local Hosts Table

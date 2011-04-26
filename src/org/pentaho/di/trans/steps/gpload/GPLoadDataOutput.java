@@ -29,6 +29,7 @@ import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.i18n.BaseMessages;
 
 
 /**
@@ -46,7 +47,8 @@ public class GPLoadDataOutput
    
    protected LogChannelInterface        log;
    
-	private GPLoadMeta meta;
+   private GPLoad            gpLoad = null;
+	private GPLoadMeta        meta;
 	private PrintWriter       output = null;
 	private boolean           first = true;
 	private int               fieldNumbers[] = null;
@@ -55,14 +57,15 @@ public class GPLoadDataOutput
 	private SimpleDateFormat  sdfDate = null;
 	private SimpleDateFormat  sdfDateTime = null;
 
-	public GPLoadDataOutput(GPLoadMeta meta)
+	public GPLoadDataOutput(GPLoad gpLoad, GPLoadMeta meta)
 	{
 		this.meta = meta;
+		this.gpLoad = gpLoad;
 	}
 	
-	public GPLoadDataOutput(GPLoadMeta meta, LogLevel logLevel) 
+	public GPLoadDataOutput(GPLoad gpLoad, GPLoadMeta meta, LogLevel logLevel) 
 	{
-      this(meta);
+      this(gpLoad, meta);
       log = new LogChannel(this);
       log.setLogLevel(logLevel);
    }
@@ -86,11 +89,15 @@ public class GPLoadDataOutput
 				// Else open the data file filled in.
 				String dataFile = meta.getDataFile();
 				if (Const.isEmpty(dataFile)) {
-				   throw new KettleException("meta.getDataFile() returned a null or empty string.");
+				   throw new KettleException(BaseMessages.getString(PKG, "GPload.Exception.DataFileMissing"));
 				}
 				
 				dataFile = space.environmentSubstitute(dataFile);
-            log.logDetailed("Creating temporary load file "+dataFile);
+				if (Const.isEmpty(dataFile)) {
+				   throw new KettleException(BaseMessages.getString(PKG, "GPload.Exception.DataFileMissing"));
+				}
+				
+            log.logDetailed("Creating temporary load file "+dataFile);  //$NON-NLS-1$
 	         os = new FileOutputStream(dataFile, false);
 		//	}	
 			
@@ -108,7 +115,7 @@ public class GPLoadDataOutput
 		}
 		catch ( IOException e )
 		{
-			throw new KettleException("IO exception occured: "  + e.getMessage(), e);
+			throw new KettleException("GPLoadDataOutput.Exception"+e.getMessage(), e);
 		}
 	}
 	
@@ -140,24 +147,39 @@ public class GPLoadDataOutput
             first = false;
      
             enclosure = meta.getEnclosure();
+            if (enclosure == null) {
+               enclosure = "";
+            }
+            else {
+               enclosure = gpLoad.environmentSubstitute(enclosure);
+            }
+            
             delimiter = meta.getDelimiter();
+            if (delimiter == null) {
+               throw new KettleException(BaseMessages.getString(PKG, "GPload.Exception.DelimiterMissing"));
+            }
+            else {
+               delimiter = gpLoad.environmentSubstitute(delimiter);
+               if (Const.isEmpty(delimiter)) {
+                  throw new KettleException(BaseMessages.getString(PKG, "GPload.Exception.DelimiterMissing"));
+               }
+            }
             
             // Setup up the fields we need to take for each of the rows
             // as this speeds up processing.
             fieldNumbers=new int[meta.getFieldStream().length];
-			for (int i=0;i<fieldNumbers.length;i++) 
-			{
-				fieldNumbers[i]=mi.indexOfValue(meta.getFieldStream()[i]);
-				if (fieldNumbers[i]<0)
-				{
-					throw new KettleException("Could not find field " + 
-							                  meta.getFieldStream()[i] + " in stream");
-				}
-			}
+			   for (int i=0;i<fieldNumbers.length;i++) 
+			   {
+				   fieldNumbers[i]=mi.indexOfValue(meta.getFieldStream()[i]);
+			   	if (fieldNumbers[i]<0)
+				   {
+					    throw new KettleException(BaseMessages.getString(PKG, "GPLoadDataOutput.Exception.FieldNotFound",  meta.getFieldStream()[i]));
+				   }
+			   }
 			
-			sdfDate = new SimpleDateFormat("yyyy-MM-dd");
-			sdfDateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-        }
+			   sdfDate = new SimpleDateFormat("yyyy-MM-dd");
+			   sdfDateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
+         }
         
         // Write the data to the output
         ValueMetaInterface v = null;
@@ -251,7 +273,7 @@ public class GPLoadDataOutput
 					output.print("<endlob>");
 					break;			    
 				default:
-					throw new KettleException("Unsupported type");
+					throw new KettleException(BaseMessages.getString(PKG, "GPLoadDataOutput.Exception.TypeNotSupported", v.getType()));
 				}
 			}
 		}
