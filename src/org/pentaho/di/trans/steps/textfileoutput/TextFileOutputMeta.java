@@ -66,7 +66,10 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 
     /** Whether to treat this as a command to be executed and piped into */
 	private  boolean fileAsCommand;
-	
+
+  /** Whether to push the output into the output of a servlet with the executeTrans Carte/DI-Server servlet */
+  private  boolean servletOutput;
+
     /** Flag: create parent folder */
     private boolean createparentfolder;
 
@@ -172,6 +175,15 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
     {
         this.fileAsCommand = fileAsCommand;
     }
+    
+    public boolean isServletOutput() {
+      return servletOutput;
+    }
+    
+    public void setServletOutput(boolean servletOutput) {
+      this.servletOutput = servletOutput;
+    }
+    
     /**
      * @param createparentfolder The createparentfolder to set.
      */
@@ -691,6 +703,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 
 			fileName              = XMLHandler.getTagValue(stepnode, "file", "name");
 			fileAsCommand         = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "is_command"));
+      servletOutput         = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "servlet_output"));
 			doNotOpenNewFileInit  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "do_not_open_new_file_init"));
 			extension             = XMLHandler.getTagValue(stepnode, "file", "extention");
 			fileAppended          = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "append"));
@@ -777,6 +790,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 		fileCompression  = fileCompressionTypeCodes[FILE_COMPRESSION_TYPE_NONE];
 		fileName         = "file";
 		fileAsCommand    = false;
+    servletOutput    = false;
 		doNotOpenNewFileInit =false;
 		extension        = "txt";
 		stepNrInFilename = false;
@@ -990,6 +1004,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 		retval.append("    <file>").append(Const.CR);
 		retval.append("      ").append(XMLHandler.addTagValue("name",       fileName));
 		retval.append("      ").append(XMLHandler.addTagValue("is_command", fileAsCommand));
+    retval.append("      ").append(XMLHandler.addTagValue("servlet_output", servletOutput));
 		retval.append("      ").append(XMLHandler.addTagValue("do_not_open_new_file_init", doNotOpenNewFileInit));
 		retval.append("      ").append(XMLHandler.addTagValue("extention",  extension));
 		retval.append("      ").append(XMLHandler.addTagValue("append",     fileAppended));
@@ -1064,6 +1079,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
             
 			fileName        =      rep.getStepAttributeString (id_step, "file_name");  
 			fileAsCommand        =      rep.getStepAttributeBoolean (id_step, "file_is_command");  
+      servletOutput =      rep.getStepAttributeBoolean (id_step, "file_servlet_output");  
 			doNotOpenNewFileInit =      rep.getStepAttributeBoolean(id_step, "do_not_open_new_file_init");
 			extension       =      rep.getStepAttributeString (id_step, "file_extention");
 			fileAppended          =      rep.getStepAttributeBoolean(id_step, "file_append");
@@ -1132,6 +1148,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
             rep.saveStepAttribute(id_transformation, id_step, "encoding",         encoding);
 			rep.saveStepAttribute(id_transformation, id_step, "file_name",        fileName);
 			rep.saveStepAttribute(id_transformation, id_step, "file_is_command",  fileAsCommand);
+      rep.saveStepAttribute(id_transformation, id_step, "file_servlet_output",  servletOutput);
 			rep.saveStepAttribute(id_transformation, id_step, "do_not_open_new_file_init", doNotOpenNewFileInit);  
 			rep.saveStepAttribute(id_transformation, id_step, "file_extention",   extension);
 			rep.saveStepAttribute(id_transformation, id_step, "file_append",      fileAppended);

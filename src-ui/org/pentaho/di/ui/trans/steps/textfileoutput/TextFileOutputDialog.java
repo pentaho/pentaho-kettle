@@ -95,6 +95,11 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 	private Button       wFileIsCommand;
 	private FormData     fdlFileIsCommand, fdFileIsCommand;
 
+	private Label        wlServletOutput;
+	private Button       wServletOutput;
+	private FormData     fdlServletOutput, fdServletOutput;
+
+	
 	private Label        wlExtension;
 	private TextVar         wExtension;
 	private FormData     fdlExtension, fdExtension;
@@ -345,7 +350,34 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 				}
 			}
 		);
-		
+
+    // Run this as a command instead?
+    wlServletOutput=new Label(wFileComp, SWT.RIGHT);
+    wlServletOutput.setText(BaseMessages.getString(PKG, "TextFileOutputDialog.ServletOutput.Label"));
+    props.setLook(wlServletOutput);
+    fdlServletOutput=new FormData();
+    fdlServletOutput.left = new FormAttachment(0, 0);
+    fdlServletOutput.top  = new FormAttachment(wFileIsCommand, margin);
+    fdlServletOutput.right= new FormAttachment(middle, -margin);
+    wlServletOutput.setLayoutData(fdlServletOutput);
+    wServletOutput=new Button(wFileComp, SWT.CHECK);
+    wServletOutput.setToolTipText(BaseMessages.getString(PKG, "TextFileOutputDialog.ServletOutput.Tooltip"));
+    props.setLook(wServletOutput);
+    fdServletOutput=new FormData();
+    fdServletOutput.left = new FormAttachment(middle, 0);
+    fdServletOutput.top  = new FormAttachment(wFileIsCommand, margin);
+    fdServletOutput.right= new FormAttachment(100, 0);
+    wServletOutput.setLayoutData(fdServletOutput);
+    wServletOutput.addSelectionListener(new SelectionAdapter() 
+      {
+        public void widgetSelected(SelectionEvent e) 
+        {
+          input.setChanged();
+          setFlagsServletOption();
+        }
+      }
+    );
+
 		
 
 		// Create Parent Folder
@@ -354,7 +386,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
  		props.setLook(wlCreateParentFolder);
 		fdlCreateParentFolder=new FormData();
 		fdlCreateParentFolder.left = new FormAttachment(0, 0);
-		fdlCreateParentFolder.top  = new FormAttachment(wFileIsCommand, margin);
+		fdlCreateParentFolder.top  = new FormAttachment(wServletOutput, margin);
 		fdlCreateParentFolder.right= new FormAttachment(middle, -margin);
 		wlCreateParentFolder.setLayoutData(fdlCreateParentFolder);
 		wCreateParentFolder=new Button(wFileComp, SWT.CHECK );
@@ -362,7 +394,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
  		props.setLook(wCreateParentFolder);
 		fdCreateParentFolder=new FormData();
 		fdCreateParentFolder.left = new FormAttachment(middle, 0);
-		fdCreateParentFolder.top  = new FormAttachment(wFileIsCommand, margin);
+		fdCreateParentFolder.top  = new FormAttachment(wServletOutput, margin);
 		fdCreateParentFolder.right= new FormAttachment(100, 0);
 		wCreateParentFolder.setLayoutData(fdCreateParentFolder);
 		wCreateParentFolder.addSelectionListener(new SelectionAdapter() 
@@ -1284,7 +1316,41 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		}
 		return stepname;
 	}
-	private void activeFileNameField()
+	
+	protected void setFlagsServletOption() {
+    boolean enableFilename = !wServletOutput.getSelection();
+    wlFilename.setEnabled(enableFilename);
+    wFilename.setEnabled(enableFilename);
+    wlFileIsCommand.setEnabled(enableFilename);
+    wFileIsCommand.setEnabled(enableFilename);
+    wlDoNotOpenNewFileInit.setEnabled(enableFilename);
+    wDoNotOpenNewFileInit.setEnabled(enableFilename);
+    wlCreateParentFolder.setEnabled(enableFilename);
+    wCreateParentFolder.setEnabled(enableFilename);
+    wlExtension.setEnabled(enableFilename);
+    wExtension.setEnabled(enableFilename);
+    wlSplitEvery.setEnabled(enableFilename);
+    wSplitEvery.setEnabled(enableFilename);
+    wlAddDate.setEnabled(enableFilename);
+    wAddDate.setEnabled(enableFilename);
+    wlAddTime.setEnabled(enableFilename);
+    wAddTime.setEnabled(enableFilename);
+    wlDateTimeFormat.setEnabled(enableFilename);
+    wDateTimeFormat.setEnabled(enableFilename);
+    wlSpecifyFormat.setEnabled(enableFilename);
+    wSpecifyFormat.setEnabled(enableFilename);
+    wlAppend.setEnabled(enableFilename);
+    wAppend.setEnabled(enableFilename);
+    wlAddStepnr.setEnabled(enableFilename);
+    wAddStepnr.setEnabled(enableFilename);
+    wlAddPartnr.setEnabled(enableFilename);
+    wAddPartnr.setEnabled(enableFilename);
+    wbShowFiles.setEnabled(enableFilename);
+    wlAddToResult.setEnabled(enableFilename);
+    wAddToResult.setEnabled(enableFilename);
+  }
+
+  private void activeFileNameField()
 	{
 	   	wlFileNameField.setEnabled(wFileNameInField.getSelection());
 	   	wFileNameField.setEnabled(wFileNameInField.getSelection());
@@ -1402,11 +1468,14 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 	{
 		if (input.getFileName()  != null) wFilename.setText(input.getFileName());
 		wFileIsCommand.setSelection(input.isFileAsCommand());
+		wServletOutput.setSelection(input.isServletOutput());
+		setFlagsServletOption();
 		wDoNotOpenNewFileInit.setSelection(input.isDoNotOpenNewFileInit());
 		wCreateParentFolder.setSelection(input.isCreateParentFolder());
-		if (input.getExtension() != null) wExtension.setText(input.getExtension());
-		if (input.getSeparator() !=null) wSeparator.setText(input.getSeparator());
-		if (input.getEnclosure() !=null) wEnclosure.setText(input.getEnclosure());
+		wExtension.setText(Const.NVL(input.getExtension(), ""));
+		wSeparator.setText(Const.NVL(input.getSeparator(), ""));
+		wEnclosure.setText(Const.NVL(input.getEnclosure(), ""));
+		
 		if (input.getFileFormat()!=null) {
 			wFormat.select(0); // default if not found: CR+LF
 			for (int i=0;i<TextFileOutputMeta.formatMapperLineTerminator.length;i++) {
@@ -1422,15 +1491,15 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
  
 		wSplitEvery.setText(""+input.getSplitEvery());
 
-        wEnclForced.setSelection(input.isEnclosureForced());
-        wDisableEnclosureFix.setSelection(input.isEnclosureFixDisabled());
+    wEnclForced.setSelection(input.isEnclosureForced());
+    wDisableEnclosureFix.setSelection(input.isEnclosureFixDisabled());
 		wHeader.setSelection(input.isHeaderEnabled());
 		wFooter.setSelection(input.isFooterEnabled());
 		wAddDate.setSelection(input.isDateInFilename());
 		wAddTime.setSelection(input.isTimeInFilename());
-		if (input.getDateTimeFormat()!= null) wDateTimeFormat.setText( input.getDateTimeFormat() );
+		wDateTimeFormat.setText(Const.NVL(input.getDateTimeFormat(), ""));
 		wSpecifyFormat.setSelection(input.isSpecifyingFormat());
-		
+
 		wAppend.setSelection(input.isFileAppended());
 		wAddStepnr.setSelection(input.isStepNrInFilename());
 		wAddPartnr.setSelection(input.isPartNrInFilename());
@@ -1456,8 +1525,6 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 			String trim = field.getTrimTypeDesc();
 			if (trim != null) item.setText(9, trim);
 			if (field.getNullString()!=null) item.setText(10, field.getNullString());
-			
-			
 		}
 		
 		wFields.optWidth(true);
@@ -1477,6 +1544,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 	{
 		tfoi.setFileName(   wFilename.getText() );
 		tfoi.setFileAsCommand( wFileIsCommand.getSelection() );
+		tfoi.setServletOutput(wServletOutput.getSelection() );
 		tfoi.setCreateParentFolder(wCreateParentFolder.getSelection() );
 		tfoi.setDoNotOpenNewFileInit(wDoNotOpenNewFileInit.getSelection() );
 		tfoi.setFileFormat( TextFileOutputMeta.formatMapperLineTerminator[wFormat.getSelectionIndex()] );

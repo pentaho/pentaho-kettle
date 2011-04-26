@@ -12,6 +12,7 @@
 
 package org.pentaho.di.trans;
 
+import java.io.PrintWriter;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -247,6 +248,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	private Map<String, Trans> activeSubtransformations;
 
   private int stepPerformanceSnapshotSizeLimit;
+
+  private PrintWriter servletPrintWriter;
 	
 	public Trans() {
 		finished = new AtomicBoolean(false);
@@ -3567,5 +3570,13 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    */
   public Date getRegistrationDate() {
     return null;
+  }
+
+  public void setServletPrintWriter(PrintWriter servletPrintWriter) {
+    this.servletPrintWriter  = servletPrintWriter;
+  }
+  
+  public PrintWriter getServletPrintWriter() {
+    return servletPrintWriter;
   }
 }

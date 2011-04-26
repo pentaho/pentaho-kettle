@@ -61,6 +61,9 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
   /** The file extention in case of a generated filename */
   private String extension;
 
+  /** Whether to push the output into the output of a servlet with the executeTrans Carte/DI-Server servlet */
+  private  boolean servletOutput;
+
   /**
    * if this value is larger then 0, the text file is split up into parts of
    * this number of lines
@@ -314,6 +317,7 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
 
       fileName = XMLHandler.getTagValue(stepnode, "file", "name");
       extension = XMLHandler.getTagValue(stepnode, "file", "extention");
+      servletOutput         = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "servlet_output"));
 
       doNotOpenNewFileInit = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "do_not_open_newfile_init"));
       stepNrInFilename = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "split"));
@@ -526,6 +530,7 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append("    <file>").append(Const.CR);
     retval.append("      ").append(XMLHandler.addTagValue("name", fileName));
     retval.append("      ").append(XMLHandler.addTagValue("extention", extension));
+    retval.append("      ").append(XMLHandler.addTagValue("servlet_output", servletOutput));
 
     retval.append("      ").append(XMLHandler.addTagValue("do_not_open_newfile_init", doNotOpenNewFileInit));
     retval.append("      ").append(XMLHandler.addTagValue("split", stepNrInFilename));
@@ -572,6 +577,7 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
 
       fileName = rep.getStepAttributeString(id_step, "file_name");
       extension = rep.getStepAttributeString(id_step, "file_extention");
+      servletOutput =      rep.getStepAttributeBoolean (id_step, "file_servlet_output");  
 
       doNotOpenNewFileInit = rep.getStepAttributeBoolean(id_step, "do_not_open_newfile_init");
       splitEvery = (int) rep.getStepAttributeInteger(id_step, "file_split");
@@ -616,6 +622,7 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute(id_transformation, id_step, "xml_repeat_element", repeatElement);
       rep.saveStepAttribute(id_transformation, id_step, "file_name", fileName);
       rep.saveStepAttribute(id_transformation, id_step, "file_extention", extension);
+      rep.saveStepAttribute(id_transformation, id_step, "file_servlet_output",  servletOutput);
 
       rep.saveStepAttribute(id_transformation, id_step, "do_not_open_newfile_init", doNotOpenNewFileInit);
       rep.saveStepAttribute(id_transformation, id_step, "file_split", splitEvery);
@@ -763,6 +770,14 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
 
     return omitNullValues;
 
+  }
+  
+  public boolean isServletOutput() {
+    return servletOutput;
+  }
+  
+  public void setServletOutput(boolean servletOutput) {
+    this.servletOutput = servletOutput;
   }
 
   /**

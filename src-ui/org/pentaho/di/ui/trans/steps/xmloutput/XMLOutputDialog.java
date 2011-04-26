@@ -93,6 +93,10 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 	private TextVar         wExtension;
 	private FormData     fdlExtension, fdExtension;
 
+	 private Label        wlServletOutput;
+	  private Button       wServletOutput;
+	  private FormData     fdlServletOutput, fdServletOutput;
+
 	private Label        wlAddStepnr;
 	private Button       wAddStepnr;
 	private FormData     fdlAddStepnr, fdAddStepnr;
@@ -289,6 +293,34 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 			}
 		);
 		
+    // Run this as a command instead?
+    wlServletOutput=new Label(wFileComp, SWT.RIGHT);
+    wlServletOutput.setText(BaseMessages.getString(PKG, "XMLOutputDialog.ServletOutput.Label"));
+    props.setLook(wlServletOutput);
+    fdlServletOutput=new FormData();
+    fdlServletOutput.left = new FormAttachment(0, 0);
+    fdlServletOutput.top  = new FormAttachment(wDoNotOpenNewFileInit, margin);
+    fdlServletOutput.right= new FormAttachment(middle, -margin);
+    wlServletOutput.setLayoutData(fdlServletOutput);
+    wServletOutput=new Button(wFileComp, SWT.CHECK);
+    wServletOutput.setToolTipText(BaseMessages.getString(PKG, "XMLOutputDialog.ServletOutput.Tooltip"));
+    props.setLook(wServletOutput);
+    fdServletOutput=new FormData();
+    fdServletOutput.left = new FormAttachment(middle, 0);
+    fdServletOutput.top  = new FormAttachment(wDoNotOpenNewFileInit, margin);
+    fdServletOutput.right= new FormAttachment(100, 0);
+    wServletOutput.setLayoutData(fdServletOutput);
+    wServletOutput.addSelectionListener(new SelectionAdapter() 
+      {
+        public void widgetSelected(SelectionEvent e) 
+        {
+          input.setChanged();
+          setFlagsServletOption();
+        }
+      }
+    );
+
+		
 		
 		// Extension line
 		wlExtension=new Label(wFileComp, SWT.RIGHT);
@@ -296,7 +328,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
  		props.setLook(wlExtension);
 		fdlExtension=new FormData();
 		fdlExtension.left = new FormAttachment(0, 0);
-		fdlExtension.top  = new FormAttachment(wDoNotOpenNewFileInit, margin);
+		fdlExtension.top  = new FormAttachment(wServletOutput, margin);
 		fdlExtension.right= new FormAttachment(middle, -margin);
 		wlExtension.setLayoutData(fdlExtension);
 		wExtension=new TextVar(transMeta,wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -305,7 +337,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		wExtension.addModifyListener(lsMod);
 		fdExtension=new FormData();
 		fdExtension.left = new FormAttachment(middle, 0);
-		fdExtension.top  = new FormAttachment(wDoNotOpenNewFileInit, margin);
+		fdExtension.top  = new FormAttachment(wServletOutput, margin);
 		fdExtension.right= new FormAttachment(100, 0);
 		wExtension.setLayoutData(fdExtension);
 
@@ -884,6 +916,33 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		}
 		return stepname;
 	}
+	
+	 protected void setFlagsServletOption() {
+	    boolean enableFilename = !wServletOutput.getSelection();
+	    wlFilename.setEnabled(enableFilename);
+	    wFilename.setEnabled(enableFilename);
+	    wlDoNotOpenNewFileInit.setEnabled(enableFilename);
+	    wDoNotOpenNewFileInit.setEnabled(enableFilename);
+	    
+	    wlExtension.setEnabled(enableFilename);
+	    wExtension.setEnabled(enableFilename);
+	    wlSplitEvery.setEnabled(enableFilename);
+	    wSplitEvery.setEnabled(enableFilename);
+	    wlAddDate.setEnabled(enableFilename);
+	    wAddDate.setEnabled(enableFilename);
+	    wlAddTime.setEnabled(enableFilename);
+	    wAddTime.setEnabled(enableFilename);
+	    wlDateTimeFormat.setEnabled(enableFilename);
+	    wDateTimeFormat.setEnabled(enableFilename);
+	    wlSpecifyFormat.setEnabled(enableFilename);
+	    wSpecifyFormat.setEnabled(enableFilename);
+	    wlAddStepnr.setEnabled(enableFilename);
+	    wAddStepnr.setEnabled(enableFilename);
+	    wbShowFiles.setEnabled(enableFilename);
+	    wlAddToResult.setEnabled(enableFilename);
+	    wAddToResult.setEnabled(enableFilename);
+	  }
+	
 	private void setDateTimeFormat()
 	{
 		if(wSpecifyFormat.getSelection())
@@ -894,10 +953,10 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		
 		wDateTimeFormat.setEnabled(wSpecifyFormat.getSelection());
 		wlDateTimeFormat.setEnabled(wSpecifyFormat.getSelection());
-		wAddDate.setEnabled(!wSpecifyFormat.getSelection());
-		wlAddDate.setEnabled(!wSpecifyFormat.getSelection());
-		wAddTime.setEnabled(!wSpecifyFormat.getSelection());
-		wlAddTime.setEnabled(!wSpecifyFormat.getSelection());
+		wAddDate.setEnabled(!wSpecifyFormat.getSelection() && !wServletOutput.getSelection());
+		wlAddDate.setEnabled(!wSpecifyFormat.getSelection() && !wServletOutput.getSelection());
+		wAddTime.setEnabled(!wSpecifyFormat.getSelection()  && !wServletOutput.getSelection());
+		wlAddTime.setEnabled(!wSpecifyFormat.getSelection() && !wServletOutput.getSelection());
 		
 	}
     private void setEncodings()
@@ -931,6 +990,9 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		if (input.getFileName()      != null) wFilename.setText(input.getFileName());
 		if (input.getExtension()     != null) wExtension.setText(input.getExtension());
 		wDoNotOpenNewFileInit.setSelection(input.isDoNotOpenNewFileInit());
+		wServletOutput.setSelection( input.isServletOutput() );
+		setFlagsServletOption();
+		
         if (input.getEncoding()      != null) wEncoding.setText(input.getEncoding());
         if (input.getNameSpace()     != null) wNameSpace.setText(input.getNameSpace());
         if (input.getMainElement()   != null) wMainElement.setText(input.getMainElement());
@@ -993,32 +1055,33 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		dispose();
 	}
 	
-	private void getInfo(XMLOutputMeta tfoi)
+	private void getInfo(XMLOutputMeta xmlOutputMeta)
 	{
-		tfoi.setFileName(   wFilename.getText() );
-        tfoi.setEncoding( wEncoding.getText() );
-        tfoi.setNameSpace( wNameSpace.getText() );
-        tfoi.setMainElement( wMainElement.getText() );
-        tfoi.setRepeatElement( wRepeatElement.getText() );
-		tfoi.setExtension(  wExtension.getText() );
-		tfoi.setDoNotOpenNewFileInit(wDoNotOpenNewFileInit.getSelection() );
-		tfoi.setSplitEvery( Const.toInt(wSplitEvery.getText(), 0) );
+		xmlOutputMeta.setFileName(   wFilename.getText() );
+        xmlOutputMeta.setEncoding( wEncoding.getText() );
+        xmlOutputMeta.setNameSpace( wNameSpace.getText() );
+        xmlOutputMeta.setMainElement( wMainElement.getText() );
+        xmlOutputMeta.setRepeatElement( wRepeatElement.getText() );
+		xmlOutputMeta.setExtension(  wExtension.getText() );
+		xmlOutputMeta.setDoNotOpenNewFileInit(wDoNotOpenNewFileInit.getSelection() );
+		xmlOutputMeta.setServletOutput( wServletOutput.getSelection() );
+		xmlOutputMeta.setSplitEvery( Const.toInt(wSplitEvery.getText(), 0) );
 
-		tfoi.setDateTimeFormat(wDateTimeFormat.getText());
-		tfoi.setSpecifyFormat(wSpecifyFormat.getSelection());
+		xmlOutputMeta.setDateTimeFormat(wDateTimeFormat.getText());
+		xmlOutputMeta.setSpecifyFormat(wSpecifyFormat.getSelection());
 		
-		tfoi.setStepNrInFilename( wAddStepnr.getSelection() );
-		tfoi.setDateInFilename( wAddDate.getSelection() );
-		tfoi.setTimeInFilename( wAddTime.getSelection() );
-		tfoi.setAddToResultFiles( wAddToResult.getSelection() );
-		tfoi.setZipped( wZipped.getSelection() );
-		tfoi.setOmitNullValues(wOmitNullValues.getSelection());
+		xmlOutputMeta.setStepNrInFilename( wAddStepnr.getSelection() );
+		xmlOutputMeta.setDateInFilename( wAddDate.getSelection() );
+		xmlOutputMeta.setTimeInFilename( wAddTime.getSelection() );
+		xmlOutputMeta.setAddToResultFiles( wAddToResult.getSelection() );
+		xmlOutputMeta.setZipped( wZipped.getSelection() );
+		xmlOutputMeta.setOmitNullValues(wOmitNullValues.getSelection());
 
 		//Table table = wFields.table;
 		
 		int nrfields = wFields.nrNonEmpty();
 
-		tfoi.allocate(nrfields);
+		xmlOutputMeta.allocate(nrfields);
 		
 		for (int i=0;i<nrfields;i++)
 		{
@@ -1039,7 +1102,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 			field.setGroupingSymbol( item.getText(9) );
 			field.setNullString( item.getText(10) );
 			
-			tfoi.getOutputFields()[i]  = field;
+			xmlOutputMeta.getOutputFields()[i]  = field;
 		}
 	}
 	

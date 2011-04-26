@@ -11,7 +11,7 @@
 
 package org.pentaho.di.trans.steps.xmloutput;
 
-import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -50,7 +50,7 @@ public class XMLOutputData extends BaseStepData implements StepDataInterface {
 
   public ZipOutputStream zip;
 
-  public OutputStreamWriter writer;
+  public Writer writer;
 
   public DecimalFormat defaultDecimalFormat;
 

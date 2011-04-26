@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.GZIPOutputStream;
@@ -24,6 +25,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import org.apache.commons.vfs.FileObject;
+import org.mortbay.io.WriterOutputStream;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;
@@ -557,136 +559,128 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		return meta.buildFilename(filename, meta.getExtension(), this, getCopy(), getPartitionID(), data.splitnr, ziparchive, meta);
 	}
 	
-	public void openNewFile(String baseFilename) throws KettleException
-	{
-	  if(baseFilename == null) {
-	    throw new KettleFileException(BaseMessages.getString(PKG, "TextFileOutput.Exception.FileNameNotSet")); //$NON-NLS-1$
-	  }
+  public void openNewFile(String baseFilename) throws KettleException {
+    if (baseFilename == null) {
+      throw new KettleFileException(BaseMessages.getString(PKG, "TextFileOutput.Exception.FileNameNotSet")); //$NON-NLS-1$
+    }
 
-	  data.writer=null;
-		
-		ResultFile resultFile = null;
-		
-		String filename = buildFilename(environmentSubstitute(baseFilename), true);
-		
-		try
-		{
-            if (meta.isFileAsCommand())
-            {
-            	if(log.isDebug()) logDebug("Spawning external process");
-            	if (data.cmdProc != null)
-            	{
-            		logError("Previous command not correctly terminated");
-            		setErrors(1);
-            	}
-            	String cmdstr = environmentSubstitute(meta.getFileName());
-            	if (Const.getOS().equals("Windows 95"))
-                {
-            		cmdstr = "command.com /C " + cmdstr;
-                }
-            	else
-                {
-                    if (Const.getOS().startsWith("Windows"))
-                    {
-                        cmdstr = "cmd.exe /C " + cmdstr;
-                    }
-                }
-            	if(isDetailed()) logDetailed("Starting: " + cmdstr);
-            	Runtime r = Runtime.getRuntime();
-            	data.cmdProc = r.exec(cmdstr, EnvUtil.getEnvironmentVariablesForRuntimeExec());
-            	data.writer = data.cmdProc.getOutputStream();
-            	StreamLogger stdoutLogger = new StreamLogger(log, data.cmdProc.getInputStream(), "(stdout)" );
-            	StreamLogger stderrLogger = new StreamLogger(log, data.cmdProc.getErrorStream(), "(stderr)" );
-            	new Thread(stdoutLogger).start();
-            	new Thread(stderrLogger).start();
-            }
-            else
-            {
-            	
-            	// Check for parent folder
-    			createParentFolder(filename);
-    			
-            	// Add this to the result file names...
-				resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(filename, getTransMeta()), getTransMeta().getName(), getStepname());
-				resultFile.setComment("This file was created with a text file output step");
-	            addResultFile(resultFile);
+    data.writer = null;
 
-	            OutputStream outputStream;
-                
-                if (!Const.isEmpty(meta.getFileCompression()) && !meta.getFileCompression().equals(FILE_COMPRESSION_TYPE_NONE))
-                {
-    				if (meta.getFileCompression().equals(FILE_COMPRESSION_TYPE_ZIP))
-    				{
-    					if(log.isDetailed()) logDetailed("Opening output stream in zipped mode");
-                        
-    		            if(checkPreviouslyOpened(filename)){
-    		            	data.fos = KettleVFS.getOutputStream(filename, getTransMeta(), true);
-    		            }else{
-    		            	data.fos = KettleVFS.getOutputStream(filename, getTransMeta(), meta.isFileAppended());
-    		            }
-                        data.zip = new ZipOutputStream(data.fos);
-    					File entry = new File( filename );
-    					ZipEntry zipentry = new ZipEntry(entry.getName());
-    					zipentry.setComment("Compressed by Kettle");
-    					data.zip.putNextEntry(zipentry);
-    					outputStream=data.zip;
-    				}
-    				else if (meta.getFileCompression().equals(FILE_COMPRESSION_TYPE_GZIP))
-    				{
-    					if(log.isDetailed()) logDetailed("Opening output stream in gzipped mode");
-    		            if(checkPreviouslyOpened(filename)){
-    		            	data.fos = KettleVFS.getOutputStream(filename, getTransMeta(), true);
-    		            }else{
-    		            	data.fos = KettleVFS.getOutputStream(filename, getTransMeta(), meta.isFileAppended());
-    		            }
-                        data.gzip = new GZIPOutputStream(data.fos);
-    					outputStream=data.gzip;
-    				}
-                    else
-                    {
-                        throw new KettleFileException("No compression method specified!");
-                    }
-                }
-				else
-				{
-					if(log.isDetailed()) logDetailed("Opening output stream in nocompress mode");
-                    if(checkPreviouslyOpened(filename)){
-    		            	data.fos = KettleVFS.getOutputStream(filename, getTransMeta(), true);
-    		            }else{
-    		            	data.fos = KettleVFS.getOutputStream(filename, getTransMeta(), meta.isFileAppended());
-    		            }
-                    outputStream=data.fos;
-				}
-                
-	            if (!Const.isEmpty(meta.getEncoding()))
-	            {
-	                if(log.isDetailed()) logDetailed("Opening output stream in encoding: "+meta.getEncoding());
-	                data.writer = new BufferedOutputStream(outputStream, 5000);
-	            }
-	            else
-	            {
-	                if(log.isDetailed()) logDetailed("Opening output stream in default encoding");
-	                data.writer = new BufferedOutputStream(outputStream, 5000);
-	            }
-	
-	            if(log.isDetailed()) logDetailed("Opened new file with name ["+filename+"]");
-            }
-		}
-		catch(Exception e)
-		{
-			throw new KettleException("Error opening new file : "+e.toString());
-		}
-		// System.out.println("end of newFile(), splitnr="+splitnr);
+    ResultFile resultFile = null;
 
-		data.splitnr++;
+    String filename = buildFilename(environmentSubstitute(baseFilename), true);
 
-        if(resultFile!=null && meta.isAddToResultFiles())
-        {
-			// Add this to the result file names...
-            addResultFile(resultFile);
+    try {
+      if (meta.isServletOutput()) {
+        Writer writer = getTrans().getServletPrintWriter();
+        if (Const.isEmpty(meta.getEncoding())) {
+          data.writer = new WriterOutputStream(writer);
+        } else {
+          data.writer = new WriterOutputStream(writer, meta.getEncoding());
         }
-	}
-	
+        
+      } else if (meta.isFileAsCommand()) {
+        if (log.isDebug())
+          logDebug("Spawning external process");
+        if (data.cmdProc != null) {
+          logError("Previous command not correctly terminated");
+          setErrors(1);
+        }
+        String cmdstr = environmentSubstitute(meta.getFileName());
+        if (Const.getOS().equals("Windows 95")) {
+          cmdstr = "command.com /C " + cmdstr;
+        } else {
+          if (Const.getOS().startsWith("Windows")) {
+            cmdstr = "cmd.exe /C " + cmdstr;
+          }
+        }
+        if (isDetailed())
+          logDetailed("Starting: " + cmdstr);
+        Runtime r = Runtime.getRuntime();
+        data.cmdProc = r.exec(cmdstr, EnvUtil.getEnvironmentVariablesForRuntimeExec());
+        data.writer = data.cmdProc.getOutputStream();
+        StreamLogger stdoutLogger = new StreamLogger(log, data.cmdProc.getInputStream(), "(stdout)");
+        StreamLogger stderrLogger = new StreamLogger(log, data.cmdProc.getErrorStream(), "(stderr)");
+        new Thread(stdoutLogger).start();
+        new Thread(stderrLogger).start();
+      } else {
+
+        // Check for parent folder
+        createParentFolder(filename);
+
+        // Add this to the result file names...
+        resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(filename, getTransMeta()), getTransMeta().getName(), getStepname());
+        resultFile.setComment("This file was created with a text file output step");
+        addResultFile(resultFile);
+
+        OutputStream outputStream;
+
+        if (!Const.isEmpty(meta.getFileCompression()) && !meta.getFileCompression().equals(FILE_COMPRESSION_TYPE_NONE)) {
+          if (meta.getFileCompression().equals(FILE_COMPRESSION_TYPE_ZIP)) {
+            if (log.isDetailed())
+              logDetailed("Opening output stream in zipped mode");
+
+            if (checkPreviouslyOpened(filename)) {
+              data.fos = KettleVFS.getOutputStream(filename, getTransMeta(), true);
+            } else {
+              data.fos = KettleVFS.getOutputStream(filename, getTransMeta(), meta.isFileAppended());
+            }
+            data.zip = new ZipOutputStream(data.fos);
+            File entry = new File(filename);
+            ZipEntry zipentry = new ZipEntry(entry.getName());
+            zipentry.setComment("Compressed by Kettle");
+            data.zip.putNextEntry(zipentry);
+            outputStream = data.zip;
+          } else if (meta.getFileCompression().equals(FILE_COMPRESSION_TYPE_GZIP)) {
+            if (log.isDetailed())
+              logDetailed("Opening output stream in gzipped mode");
+            if (checkPreviouslyOpened(filename)) {
+              data.fos = KettleVFS.getOutputStream(filename, getTransMeta(), true);
+            } else {
+              data.fos = KettleVFS.getOutputStream(filename, getTransMeta(), meta.isFileAppended());
+            }
+            data.gzip = new GZIPOutputStream(data.fos);
+            outputStream = data.gzip;
+          } else {
+            throw new KettleFileException("No compression method specified!");
+          }
+        } else {
+          if (log.isDetailed())
+            logDetailed("Opening output stream in nocompress mode");
+          if (checkPreviouslyOpened(filename)) {
+            data.fos = KettleVFS.getOutputStream(filename, getTransMeta(), true);
+          } else {
+            data.fos = KettleVFS.getOutputStream(filename, getTransMeta(), meta.isFileAppended());
+          }
+          outputStream = data.fos;
+        }
+
+        if (!Const.isEmpty(meta.getEncoding())) {
+          if (log.isDetailed())
+            logDetailed("Opening output stream in encoding: " + meta.getEncoding());
+          data.writer = new BufferedOutputStream(outputStream, 5000);
+        } else {
+          if (log.isDetailed())
+            logDetailed("Opening output stream in default encoding");
+          data.writer = new BufferedOutputStream(outputStream, 5000);
+        }
+
+        if (log.isDetailed())
+          logDetailed("Opened new file with name [" + filename + "]");
+      }
+    } catch (Exception e) {
+      throw new KettleException("Error opening new file : " + e.toString());
+    }
+    // System.out.println("end of newFile(), splitnr="+splitnr);
+
+    data.splitnr++;
+
+    if (resultFile != null && meta.isAddToResultFiles()) {
+      // Add this to the result file names...
+      addResultFile(resultFile);
+    }
+  }
+
 	private boolean closeFile()
 	{
 		boolean retval=false;

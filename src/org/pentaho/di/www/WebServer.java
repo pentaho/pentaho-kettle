@@ -191,6 +191,11 @@ public class WebServer
         Context sniffStep = new Context(contexts, SniffStepServlet.CONTEXT_PATH, Context.SESSIONS);
         sniffStep.addServlet(new ServletHolder(new SniffStepServlet(transformationMap)), "/*");
 
+        // execute transformation
+        //
+        Context executeTrans = new Context(contexts, ExecuteTransServlet.CONTEXT_PATH, Context.SESSIONS);
+        executeTrans .addServlet(new ServletHolder(new ExecuteTransServlet(transformationMap)), "/*");
+
         ///////////////////////////////////////////////////////////////////////////////////////////////////////
         //
         // The job handlers...

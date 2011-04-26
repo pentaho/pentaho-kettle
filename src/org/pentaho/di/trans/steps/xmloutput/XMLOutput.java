@@ -238,44 +238,55 @@ public class XMLOutput extends BaseStep implements StepInterface
 
 		try
 		{
-			
-			FileObject file = KettleVFS.getFileObject(buildFilename(true), getTransMeta());
-			
-
-		    if(meta.isAddToResultFiles())
-            {
-				// Add this to the result file names...
-				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, file, getTransMeta().getName(), getStepname());
-				resultFile.setComment("This file was created with a xml output step"); //$NON-NLS-1$
-	            addResultFile(resultFile);
-            }
-
-			OutputStream outputStream;
-			if (meta.isZipped())
-			{
-				OutputStream fos = KettleVFS.getOutputStream(file, false);
-				data.zip = new ZipOutputStream(fos);
-				File entry = new File(buildFilename(false));
-				ZipEntry zipentry = new ZipEntry(entry.getName());
-				zipentry.setComment("Compressed by Kettle"); //$NON-NLS-1$
-				data.zip.putNextEntry(zipentry);
-				outputStream = data.zip;
-			} else
-			{
-				OutputStream fos = KettleVFS.getOutputStream(file, false);
-				outputStream = fos;
-			}
-			if (meta.getEncoding() != null && meta.getEncoding().length() > 0)
-			{
-				logBasic("Opening output stream in encoding: " + meta.getEncoding()); //$NON-NLS-1$
-				data.writer = new OutputStreamWriter(outputStream, meta.getEncoding());
-				data.writer.write(XMLHandler.getXMLHeader(meta.getEncoding()).toCharArray());
-			} else
-			{
-				logBasic("Opening output stream in default encoding : " + Const.XML_ENCODING); //$NON-NLS-1$
-				data.writer = new OutputStreamWriter(outputStream);
-				data.writer.write(XMLHandler.getXMLHeader(Const.XML_ENCODING).toCharArray());
-			}
+		  if (meta.isServletOutput()) {
+		    data.writer = getTrans().getServletPrintWriter();
+        if (meta.getEncoding() != null && meta.getEncoding().length() > 0)
+        {
+          data.writer.write(XMLHandler.getXMLHeader(meta.getEncoding()).toCharArray());
+        } else
+        {
+          data.writer.write(XMLHandler.getXMLHeader(Const.XML_ENCODING).toCharArray());
+        }
+		  } else {
+  			
+  			FileObject file = KettleVFS.getFileObject(buildFilename(true), getTransMeta());
+  			
+  
+  		    if(meta.isAddToResultFiles())
+              {
+  				// Add this to the result file names...
+  				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, file, getTransMeta().getName(), getStepname());
+  				resultFile.setComment("This file was created with a xml output step"); //$NON-NLS-1$
+  	            addResultFile(resultFile);
+              }
+  
+  			OutputStream outputStream;
+  			if (meta.isZipped())
+  			{
+  				OutputStream fos = KettleVFS.getOutputStream(file, false);
+  				data.zip = new ZipOutputStream(fos);
+  				File entry = new File(buildFilename(false));
+  				ZipEntry zipentry = new ZipEntry(entry.getName());
+  				zipentry.setComment("Compressed by Kettle"); //$NON-NLS-1$
+  				data.zip.putNextEntry(zipentry);
+  				outputStream = data.zip;
+  			} else
+  			{
+  				OutputStream fos = KettleVFS.getOutputStream(file, false);
+  				outputStream = fos;
+  			}
+  			if (meta.getEncoding() != null && meta.getEncoding().length() > 0)
+  			{
+  				logBasic("Opening output stream in encoding: " + meta.getEncoding()); //$NON-NLS-1$
+  				data.writer = new OutputStreamWriter(outputStream, meta.getEncoding());
+  				data.writer.write(XMLHandler.getXMLHeader(meta.getEncoding()).toCharArray());
+  			} else
+  			{
+  				logBasic("Opening output stream in default encoding : " + Const.XML_ENCODING); //$NON-NLS-1$
+  				data.writer = new OutputStreamWriter(outputStream);
+  				data.writer.write(XMLHandler.getXMLHeader(Const.XML_ENCODING).toCharArray());
+  			}
+		  }
 
 			// Add the name space if defined
 			StringBuffer nameSpace = new StringBuffer();
