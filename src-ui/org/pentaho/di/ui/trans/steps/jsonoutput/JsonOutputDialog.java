@@ -129,6 +129,10 @@ public class JsonOutputDialog extends BaseStepDialog implements StepDialogInterf
 	private TextVar      wExtension;
 	private FormData     fdlExtension, fdExtension;
 	
+	private Label        wlServletOutput;
+  private Button       wServletOutput;
+  private FormData     fdlServletOutput, fdServletOutput;
+
 	private Label        wlCreateParentFolder;
 	private Button       wCreateParentFolder;
 	private FormData     fdlCreateParentFolder, fdCreateParentFolder;
@@ -556,21 +560,50 @@ public class JsonOutputDialog extends BaseStepDialog implements StepDialogInterf
                 }
             }
         );
-	
+
+    // Output to servlet (browser, ws)
+    //
+    wlServletOutput=new Label(wFileName, SWT.RIGHT);
+    wlServletOutput.setText(BaseMessages.getString(PKG, "JsonOutputDialog.ServletOutput.Label"));
+    props.setLook(wlServletOutput);
+    fdlServletOutput=new FormData();
+    fdlServletOutput.left = new FormAttachment(0, 0);
+    fdlServletOutput.top  = new FormAttachment(wEncoding, margin);
+    fdlServletOutput.right= new FormAttachment(middle, -margin);
+    wlServletOutput.setLayoutData(fdlServletOutput);
+    wServletOutput=new Button(wFileName, SWT.CHECK);
+    wServletOutput.setToolTipText(BaseMessages.getString(PKG, "JsonOutputDialog.ServletOutput.Tooltip"));
+    props.setLook(wServletOutput);
+    fdServletOutput=new FormData();
+    fdServletOutput.left = new FormAttachment(middle, 0);
+    fdServletOutput.top  = new FormAttachment(wEncoding, margin);
+    fdServletOutput.right= new FormAttachment(100, 0);
+    wServletOutput.setLayoutData(fdServletOutput);
+    wServletOutput.addSelectionListener(new SelectionAdapter() 
+      {
+        public void widgetSelected(SelectionEvent e) 
+        {
+          input.setChanged();
+          setFlagsServletOption();
+        }
+      }
+    );
+
+        
 		// Create multi-part file?
 		wlAddDate=new Label(wFileName, SWT.RIGHT);
 		wlAddDate.setText(BaseMessages.getString(PKG, "JsonOutputDialog.AddDate.Label"));
  		props.setLook(wlAddDate);
 		fdlAddDate=new FormData();
 		fdlAddDate.left = new FormAttachment(0, 0);
-		fdlAddDate.top  = new FormAttachment(wEncoding, margin);
+		fdlAddDate.top  = new FormAttachment(wServletOutput, margin);
 		fdlAddDate.right= new FormAttachment(middle, -margin);
 		wlAddDate.setLayoutData(fdlAddDate);
 		wAddDate=new Button(wFileName, SWT.CHECK);
  		props.setLook(wAddDate);
 		fdAddDate=new FormData();
 		fdAddDate.left = new FormAttachment(middle, 0);
-		fdAddDate.top  = new FormAttachment(wEncoding, margin);
+		fdAddDate.top  = new FormAttachment(wServletOutput, margin);
 		fdAddDate.right= new FormAttachment(100, 0);
 		wAddDate.setLayoutData(fdAddDate);
 		wAddDate.addSelectionListener(new SelectionAdapter() 
@@ -840,6 +873,28 @@ public class JsonOutputDialog extends BaseStepDialog implements StepDialogInterf
         }
         return stepname;
     }
+    
+    protected void setFlagsServletOption() {
+      boolean enableFilename = !wServletOutput.getSelection();
+      wlFilename.setEnabled(enableFilename);
+      wFilename.setEnabled(enableFilename);
+      wlDoNotOpenNewFileInit.setEnabled(enableFilename);
+      wDoNotOpenNewFileInit.setEnabled(enableFilename);
+      wlCreateParentFolder.setEnabled(enableFilename);
+      wCreateParentFolder.setEnabled(enableFilename);
+      wlExtension.setEnabled(enableFilename);
+      wExtension.setEnabled(enableFilename);
+      wlAddDate.setEnabled(enableFilename);
+      wAddDate.setEnabled(enableFilename);
+      wlAddTime.setEnabled(enableFilename);
+      wAddTime.setEnabled(enableFilename);
+      wlAppend.setEnabled(enableFilename);
+      wAppend.setEnabled(enableFilename);
+      wbShowFiles.setEnabled(enableFilename);
+      wlAddToResult.setEnabled(enableFilename);
+      wAddToResult.setEnabled(enableFilename);
+    }
+    
     protected void setComboBoxes()
     {
         // Something was changed in the row.
@@ -882,50 +937,43 @@ public class JsonOutputDialog extends BaseStepDialog implements StepDialogInterf
     }
 
 
-    /**
-     * Copy information from the meta-data input to the dialog fields.
-     */ 
-    public void getData()
-    {
-        if (input.getJsonBloc()      != null) wBlocName.setText(input.getJsonBloc());
-        if (input.getNrRowsInBloc()      != null) wNrRowsInBloc.setText(input.getNrRowsInBloc());
-        if (input.getEncoding()      != null) wEncoding.setText(input.getEncoding());
-        if (input.getOutputValue()     != null) wOutputValue.setText(input.getOutputValue());
-		wOperation.setText(JsonOutputMeta.getOperationTypeDesc(input.getOperationType()));
-		if (input.getFileName()  != null) wFilename.setText(input.getFileName());
-		wCreateParentFolder.setSelection(input.isCreateParentFolder());
-		if (input.getExtension() != null) 
-		{
-			wExtension.setText(input.getExtension());
-		}
-		else
-		{
-			wExtension.setText("js");
-		}
-		
-		wAddDate.setSelection(input.isDateInFilename());
-		wAddTime.setSelection(input.isTimeInFilename());
-		wAppend.setSelection(input.isFileAppended());
-        
-        if (input.getEncoding()  !=null) wEncoding.setText(input.getEncoding());
-        wAddToResult.setSelection( input.AddToResult() );
-        wDoNotOpenNewFileInit.setSelection( input.isDoNotOpenNewFileInit() );
-        
-        
-        if(isDebug()) logDebug(BaseMessages.getString(PKG, "JsonOutputDialog.Log.GettingFieldsInfo"));
-        
-        for (int i=0;i<input.getOutputFields().length;i++)
-        {
-            JsonOutputField field = input.getOutputFields()[i];
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    wBlocName.setText(Const.NVL(input.getJsonBloc(), ""));
+    wNrRowsInBloc.setText(Const.NVL(input.getNrRowsInBloc(), ""));
+    wEncoding.setText(Const.NVL(input.getEncoding(), ""));
+    wOutputValue.setText(Const.NVL(input.getOutputValue(), ""));
+    wOperation.setText(JsonOutputMeta.getOperationTypeDesc(input.getOperationType()));
+    wFilename.setText(Const.NVL(input.getFileName(), ""));
+    wCreateParentFolder.setSelection(input.isCreateParentFolder());
+    wExtension.setText(Const.NVL(input.getExtension(), "js"));
+    wServletOutput.setSelection(input.isServletOutput());
+    setFlagsServletOption();
 
-            TableItem item = wFields.table.getItem(i);
-            if (field.getFieldName()!=null) item.setText(1, field.getFieldName());
-            if (field.getElementName()!=null) item.setText(2, field.getElementName());
-        }
-        
-        wFields.optWidth(true);
-        wStepname.selectAll();
+    wAddDate.setSelection(input.isDateInFilename());
+    wAddTime.setSelection(input.isTimeInFilename());
+    wAppend.setSelection(input.isFileAppended());
+
+    wEncoding.setText(Const.NVL(input.getEncoding(), ""));
+    wAddToResult.setSelection(input.AddToResult());
+    wDoNotOpenNewFileInit.setSelection(input.isDoNotOpenNewFileInit());
+
+    if (isDebug())
+      logDebug(BaseMessages.getString(PKG, "JsonOutputDialog.Log.GettingFieldsInfo"));
+
+    for (int i = 0; i < input.getOutputFields().length; i++) {
+      JsonOutputField field = input.getOutputFields()[i];
+
+      TableItem item = wFields.table.getItem(i);
+      item.setText(1, Const.NVL(field.getFieldName(), ""));
+      item.setText(2, Const.NVL(field.getElementName(), ""));
     }
+
+    wFields.optWidth(true);
+    wStepname.selectAll();
+  }
     
     private void cancel()
     {
@@ -936,37 +984,37 @@ public class JsonOutputDialog extends BaseStepDialog implements StepDialogInterf
         dispose();
     }
     
-    private void getInfo(JsonOutputMeta tfoi)
-    {
-    	tfoi.setJsonBloc(wBlocName.getText() );
-    	tfoi.setNrRowsInBloc(wNrRowsInBloc.getText() );
-        tfoi.setEncoding( wEncoding.getText() );
-        tfoi.setOutputValue(wOutputValue.getText() );
-        tfoi.setOperationType(JsonOutputMeta.getOperationTypeByDesc(wOperation.getText()));
-        tfoi.setCreateParentFolder(wCreateParentFolder.getSelection() );
-        tfoi.setFileName( wFilename.getText() );
-        tfoi.setExtension(wExtension.getText() );
-		tfoi.setFileAppended(wAppend.getSelection() );;
-		tfoi.setDateInFilename( wAddDate.getSelection() );
-		tfoi.setTimeInFilename( wAddTime.getSelection() );
-		
-		tfoi.setEncoding( wEncoding.getText() );
-		tfoi.setAddToResult( wAddToResult.getSelection() );
-		tfoi.setDoNotOpenNewFileInit( wDoNotOpenNewFileInit.getSelection() );
-		
-        int nrfields = wFields.nrNonEmpty();
+    private void getInfo(JsonOutputMeta jsometa) {
+      jsometa.setJsonBloc(wBlocName.getText());
+      jsometa.setNrRowsInBloc(wNrRowsInBloc.getText());
+      jsometa.setEncoding(wEncoding.getText());
+      jsometa.setOutputValue(wOutputValue.getText());
+      jsometa.setOperationType(JsonOutputMeta.getOperationTypeByDesc(wOperation.getText()));
+      jsometa.setCreateParentFolder(wCreateParentFolder.getSelection());
+      jsometa.setFileName(wFilename.getText());
+      jsometa.setExtension(wExtension.getText());
+      jsometa.setServletOutput(wServletOutput.getSelection());
+      jsometa.setFileAppended(wAppend.getSelection());
 
-        tfoi.allocate(nrfields);
-        
-        for (int i=0;i<nrfields;i++)
-        {
-            JsonOutputField field = new JsonOutputField();
-            
-            TableItem item = wFields.getNonEmpty(i);
-            field.setFieldName( item.getText(1) );
-            field.setElementName( item.getText(2) );
-            tfoi.getOutputFields()[i]  = field;
-        }
+      jsometa.setDateInFilename(wAddDate.getSelection());
+      jsometa.setTimeInFilename(wAddTime.getSelection());
+  
+      jsometa.setEncoding(wEncoding.getText());
+      jsometa.setAddToResult(wAddToResult.getSelection());
+      jsometa.setDoNotOpenNewFileInit(wDoNotOpenNewFileInit.getSelection());
+  
+      int nrfields = wFields.nrNonEmpty();
+  
+      jsometa.allocate(nrfields);
+  
+      for (int i = 0; i < nrfields; i++) {
+        JsonOutputField field = new JsonOutputField();
+  
+        TableItem item = wFields.getNonEmpty(i);
+        field.setFieldName(item.getText(1));
+        field.setElementName(item.getText(2));
+        jsometa.getOutputFields()[i] = field;
+      }
     }
     
     private void ok()
@@ -1031,7 +1079,9 @@ public class JsonOutputDialog extends BaseStepDialog implements StepDialogInterf
     
     private void updateOperation()
     {
-    	boolean activeFile= JsonOutputMeta.getOperationTypeByDesc(wOperation.getText())!=JsonOutputMeta.OPERATION_TYPE_OUTPUT_VALUE;
+      int opType = JsonOutputMeta.getOperationTypeByDesc(wOperation.getText());
+    	boolean activeFile= opType!=JsonOutputMeta.OPERATION_TYPE_OUTPUT_VALUE;
+    	
     	wlFilename.setEnabled(activeFile);
     	wFilename.setEnabled(activeFile);
     	wbFilename.setEnabled(activeFile);
@@ -1052,10 +1102,15 @@ public class JsonOutputDialog extends BaseStepDialog implements StepDialogInterf
     	wlAddToResult.setEnabled(activeFile);
     	wAddToResult.setEnabled(activeFile);
     	wbShowFiles.setEnabled(activeFile);
-
+    	
+    	wlServletOutput.setEnabled(opType==JsonOutputMeta.OPERATION_TYPE_WRITE_TO_FILE || opType==JsonOutputMeta.OPERATION_TYPE_BOTH);
+      wServletOutput.setEnabled(opType==JsonOutputMeta.OPERATION_TYPE_WRITE_TO_FILE || opType==JsonOutputMeta.OPERATION_TYPE_BOTH);
+    	
     	boolean activeOutputValue= JsonOutputMeta.getOperationTypeByDesc(wOperation.getText())!=JsonOutputMeta.OPERATION_TYPE_WRITE_TO_FILE;
     	
     	wlOutputValue.setEnabled(activeOutputValue);
     	wOutputValue.setEnabled(activeOutputValue);
+    	
+    	setFlagsServletOption();
     }
 }

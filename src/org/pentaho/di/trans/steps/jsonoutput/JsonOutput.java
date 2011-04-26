@@ -198,7 +198,7 @@ public class JsonOutput extends BaseStep implements StepInterface
         	}
         	if(data.writeToFile) {
         		// We need to have output field name
-        		if(Const.isEmpty(meta.getFileName())) {
+        		if(!meta.isServletOutput() && Const.isEmpty(meta.getFileName())) {
         			logError(BaseMessages.getString(PKG, "JsonOutput.Error.MissingTargetFilename"));
     				stopAll();
     				setErrors(1);
@@ -262,28 +262,32 @@ public class JsonOutput extends BaseStep implements StepInterface
 		
 		try {
          
-			String filename = buildFilename();
-			createParentFolder(filename);
-			if (meta.AddToResult()) {
-				// Add this to the result file names...
-				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(filename, getTransMeta()), getTransMeta().getName(), getStepname());
-				resultFile.setComment(BaseMessages.getString(PKG, "JsonOutput.ResultFilenames.Comment"));
-	            addResultFile(resultFile);
-			}
-
-            OutputStream outputStream;
-            OutputStream fos = KettleVFS.getOutputStream(filename, getTransMeta(), meta.isFileAppended());
-            outputStream=fos;
-
-            if (!Const.isEmpty(meta.getEncoding())) {
-                data.writer = new OutputStreamWriter(new BufferedOutputStream(outputStream, 5000), environmentSubstitute(meta.getEncoding()));
-            } else {
-                data.writer = new OutputStreamWriter(new BufferedOutputStream(outputStream, 5000));
-            }
-            
-            if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JsonOutput.FileOpened", filename));
-            
-            data.splitnr++;
+		  if (meta.isServletOutput()) {
+		    data.writer = getTrans().getServletPrintWriter();
+		  } else {
+  			String filename = buildFilename();
+  			createParentFolder(filename);
+  			if (meta.AddToResult()) {
+  				// Add this to the result file names...
+  				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(filename, getTransMeta()), getTransMeta().getName(), getStepname());
+  				resultFile.setComment(BaseMessages.getString(PKG, "JsonOutput.ResultFilenames.Comment"));
+  	            addResultFile(resultFile);
+  			}
+  
+              OutputStream outputStream;
+              OutputStream fos = KettleVFS.getOutputStream(filename, getTransMeta(), meta.isFileAppended());
+              outputStream=fos;
+  
+              if (!Const.isEmpty(meta.getEncoding())) {
+                  data.writer = new OutputStreamWriter(new BufferedOutputStream(outputStream, 5000), environmentSubstitute(meta.getEncoding()));
+              } else {
+                  data.writer = new OutputStreamWriter(new BufferedOutputStream(outputStream, 5000));
+              }
+              
+              if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JsonOutput.FileOpened", filename));
+              
+              data.splitnr++;
+		  }
 			
 			retval=true;
             

@@ -351,7 +351,8 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 			}
 		);
 
-    // Run this as a command instead?
+    // Output to servlet (browser, ws)
+		//
     wlServletOutput=new Label(wFileComp, SWT.RIGHT);
     wlServletOutput.setText(BaseMessages.getString(PKG, "TextFileOutputDialog.ServletOutput.Label"));
     props.setLook(wlServletOutput);

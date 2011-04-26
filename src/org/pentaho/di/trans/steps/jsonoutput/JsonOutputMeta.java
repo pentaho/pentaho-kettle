@@ -94,6 +94,9 @@ public class JsonOutputMeta extends BaseStepMeta  implements StepMetaInterface
     private  JsonOutputField outputFields[];
 
     private boolean	AddToResult;
+    
+    /** Whether to push the output into the output of a servlet with the executeTrans Carte/DI-Server servlet */
+    private  boolean servletOutput;
  
     /** The base name of the output file */
 	private  String fileName;
@@ -338,7 +341,7 @@ public class JsonOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			dateInFilename  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_date"));
 			timeInFilename  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_time"));
 			DoNotOpenNewFileInit    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "DoNotOpenNewFileInit"));
-			
+      servletOutput         = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "servlet_output"));
 			
 			Node fields = XMLHandler.getSubNode(stepnode, "fields"); //$NON-NLS-1$
             int nrfields= XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
@@ -409,6 +412,7 @@ public class JsonOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		retval.append("      ").append(XMLHandler.addTagValue("add_time",   timeInFilename));
 		retval.append("      ").append(XMLHandler.addTagValue("create_parent_folder",   createparentfolder));
 		retval.append("      ").append(XMLHandler.addTagValue("DoNotOpenNewFileInit",     DoNotOpenNewFileInit));
+    retval.append("      ").append(XMLHandler.addTagValue("servlet_output", servletOutput));
 		retval.append("      </file>"+Const.CR);
         
         retval.append("    <fields>").append(Const.CR); //$NON-NLS-1$
@@ -448,7 +452,8 @@ public class JsonOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			timeInFilename        =      rep.getStepAttributeBoolean(id_step, "file_add_time");
 			createparentfolder        =      rep.getStepAttributeBoolean(id_step, "create_parent_folder");
 			DoNotOpenNewFileInit          =      rep.getStepAttributeBoolean(id_step, "DoNotOpenNewFileInit");
-			
+      servletOutput =      rep.getStepAttributeBoolean (id_step, "file_servlet_output");  
+
 			
 			
             int nrfields = rep.countNrStepAttributes(id_step, "field_name"); //$NON-NLS-1$
@@ -494,7 +499,8 @@ public class JsonOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_time",    timeInFilename);
 			rep.saveStepAttribute(id_transformation, id_step, "create_parent_folder",    createparentfolder);
 			rep.saveStepAttribute(id_transformation, id_step, "DoNotOpenNewFileInit",      DoNotOpenNewFileInit);
-			
+      rep.saveStepAttribute(id_transformation, id_step, "file_servlet_output",  servletOutput);
+
             for (int i=0;i<outputFields.length;i++)
             {
                 JsonOutputField field = outputFields[i];
@@ -708,5 +714,12 @@ public class JsonOutputMeta extends BaseStepMeta  implements StepMetaInterface
     public void setOutputValue(String outputValue) {
         this.outputValue = outputValue;
     }
+
+    public boolean isServletOutput() {
+      return servletOutput;
+    }
     
+    public void setServletOutput(boolean servletOutput) {
+      this.servletOutput = servletOutput;
+    }
 }

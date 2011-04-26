@@ -12,7 +12,7 @@
 
 package org.pentaho.di.trans.steps.jsonoutput;
 
-import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -60,7 +60,7 @@ public class JsonOutputData extends BaseStepData implements StepDataInterface
     
 	public String realBlocName;
 	public int splitnr;
-    public OutputStreamWriter writer;
+    public Writer writer;
     public int nrRowsInBloc;
 
     /**
