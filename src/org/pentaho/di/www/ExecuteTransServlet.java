@@ -99,9 +99,9 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CarteServlet
           // If it's a trans parameter, set it, otherwise simply set the variable
           //
           if (Const.indexOfString(parameter, parameters)<0) {
-            transMeta.setParameterValue(parameter, values[0]);
-          } else {
             transMeta.setVariable(parameter, values[0]);
+          } else {
+            transMeta.setParameterValue(parameter, values[0]);
           }
         }
       }
