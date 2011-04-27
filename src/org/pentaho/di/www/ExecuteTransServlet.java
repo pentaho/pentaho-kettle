@@ -14,6 +14,7 @@ package org.pentaho.di.www;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Enumeration;
 import java.util.UUID;
 
 import javax.servlet.ServletException;
@@ -67,6 +68,8 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CarteServlet
 
     // Options taken from PAN
     //
+    String[] knownOptions = new String[] { "rep", "user", "pass", "trans", "level", };
+    
     String repOption = request.getParameter("rep");
     String userOption = request.getParameter("user");
     String passOption = Encr.decryptPasswordOptionallyEncrypted( request.getParameter("pass") );
@@ -82,6 +85,27 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CarteServlet
       final Repository repository = openRepository(repOption, userOption, passOption);
       final TransMeta transMeta = loadTransformation(repository, transOption);
 
+      // Set the servlet parameters as variables in the transformation
+      //
+      String[] parameters = transMeta.listParameters();
+      Enumeration<?> parameterNames = request.getParameterNames();
+      while (parameterNames.hasMoreElements()) {
+        String parameter = (String) parameterNames.nextElement();
+        String[] values = request.getParameterValues(parameter);
+        
+        // Ignore the known options. set the rest as variables
+        //
+        if (Const.indexOfString(parameter, knownOptions)<0) {
+          // If it's a trans parameter, set it, otherwise simply set the variable
+          //
+          if (Const.indexOfString(parameter, parameters)<0) {
+            transMeta.setParameterValue(parameter, values[0]);
+          } else {
+            transMeta.setVariable(parameter, values[0]);
+          }
+        }
+      }
+      
       TransExecutionConfiguration transExecutionConfiguration = new TransExecutionConfiguration();
       LogLevel logLevel = LogLevel.getLogLevelForCode(levelOption);
       transExecutionConfiguration.setLogLevel(logLevel);
