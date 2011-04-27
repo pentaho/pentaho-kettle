@@ -170,7 +170,7 @@ public class ExecSQL extends BaseStep implements StepInterface
 		else  {
 			sql = data.sql;
 		}
-		if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "ExecSQL.Log.ExecutingSQLScript") + Const.CR + data.sql); //$NON-NLS-1$
+		if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "ExecSQL.Log.ExecutingSQLScript") + Const.CR + sql); //$NON-NLS-1$
 		
 		boolean sendToErrorRow=false;
 		String errorMessage = null;

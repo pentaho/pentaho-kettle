@@ -103,13 +103,16 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 	private FormData	 fdlAddResult;
 	private TableView    wFields;
 	private Label wlAddResult;
-    private Button wAddResult;
+  private Button wAddResult;
 	private boolean isReceivingInput;
 	private Button wRunningInParallel;
+  private Button wNewlinePossible;
 	private ComboVar     wEncoding;
 
 	private boolean gotEncodings = false;
 
+  private Label wlRunningInParallel;
+	
 	public CsvInputDialog(Shell parent, Object in, TransMeta tr, String sname)
 	{
 		super(parent, (BaseStepMeta)in, tr, sname);
@@ -398,7 +401,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 
 		// running in parallel?
 		//
-		Label wlRunningInParallel = new Label(shell, SWT.RIGHT);
+		wlRunningInParallel = new Label(shell, SWT.RIGHT);
 		wlRunningInParallel.setText(BaseMessages.getString(PKG, inputMeta.getDescription("PARALLEL"))); //$NON-NLS-1$
  		props.setLook(wlRunningInParallel);
 		FormData fdlRunningInParallel = new FormData();
@@ -413,7 +416,30 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 		fdRunningInParallel.left = new FormAttachment(middle, 0);
 		wRunningInParallel.setLayoutData(fdRunningInParallel);
 		lastControl=wRunningInParallel;
-		
+
+    // Is a new line possible in a field?
+    //
+    Label wlNewlinePossible = new Label(shell, SWT.RIGHT);
+    wlNewlinePossible.setText(BaseMessages.getString(PKG, inputMeta.getDescription("NEWLINE_POSSIBLE"))); //$NON-NLS-1$
+    props.setLook(wlNewlinePossible);
+    FormData fdlNewlinePossible = new FormData();
+    fdlNewlinePossible.top  = new FormAttachment(lastControl, margin);
+    fdlNewlinePossible.left = new FormAttachment(0, 0);
+    fdlNewlinePossible.right= new FormAttachment(middle, -margin);
+    wlNewlinePossible.setLayoutData(fdlNewlinePossible);
+    wNewlinePossible = new Button(shell, SWT.CHECK);
+    props.setLook(wNewlinePossible);
+    FormData fdNewlinePossible = new FormData();
+    fdNewlinePossible.top  = new FormAttachment(lastControl, margin);
+    fdNewlinePossible.left = new FormAttachment(middle, 0);
+    wNewlinePossible.setLayoutData(fdNewlinePossible);
+    wNewlinePossible.addSelectionListener(new SelectionAdapter() {
+      public void widgetSelected(SelectionEvent event) {
+        setFlags();
+      }
+    });
+    lastControl=wNewlinePossible;
+
 		// Encoding
 		Label wlEncoding = new Label(shell, SWT.RIGHT);
 		wlEncoding.setText(BaseMessages.getString(PKG, inputMeta.getDescription("ENCODING"))); //$NON-NLS-1$
@@ -593,7 +619,16 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 		return stepname;
 	}
 	
-	private void setEncodings()
+	protected void setFlags() {
+	// In case there are newlines in fields, we can't load data in parallel
+    //
+    boolean parallelPossible=!wNewlinePossible.getSelection();
+    wlRunningInParallel.setEnabled(parallelPossible);
+    wRunningInParallel.setEnabled(parallelPossible);
+    if (!parallelPossible) wRunningInParallel.setSelection(false);
+  }
+
+  private void setEncodings()
     {
         // Encoding of the text file:
         if (!gotEncodings)
@@ -637,6 +672,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wLazyConversion.setSelection(inputMeta.isLazyConversionActive());
 		wHeaderPresent.setSelection(inputMeta.isHeaderPresent());
 		wRunningInParallel.setSelection(inputMeta.isRunningInParallel());
+    wNewlinePossible.setSelection(inputMeta.isNewlinePossibleInFields());
 		wRowNumField.setText(Const.NVL(inputMeta.getRowNumField(), ""));
 		wAddResult.setSelection(inputMeta.isAddResultFile());
 		wEncoding.setText(Const.NVL(inputMeta.getEncoding(), ""));
@@ -659,6 +695,8 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wFields.removeEmptyRows();
 		wFields.setRowNums();
 		wFields.optWidth(true);
+		
+		setFlags();
 		
 		wStepname.selectAll();
 	}
@@ -687,6 +725,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 		inputMeta.setRowNumField(wRowNumField.getText());
 		inputMeta.setAddResultFile( wAddResult.getSelection() );
 		inputMeta.setRunningInParallel(wRunningInParallel.getSelection());
+    inputMeta.setNewlinePossibleInFields(wNewlinePossible.getSelection());
 		inputMeta.setEncoding(wEncoding.getText());
 		
     	int nrNonEmptyFields = wFields.nrNonEmpty(); 

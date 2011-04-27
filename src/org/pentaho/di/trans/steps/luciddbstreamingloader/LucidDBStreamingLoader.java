@@ -76,11 +76,14 @@ public class LucidDBStreamingLoader extends BaseStep implements StepInterface {
     if (data.objOut != null) {
 
       try {
+        data.objOut.flush();
         data.objOut.close();
         
       } catch (IOException e) {
           // Already closed or other issue... log silent error
           logError("Error while closing Remote LucidDB connection - likely already closed by earlier exception");
+      } finally {
+        data.objOut = null;
       }
       if (data.client != null) {
 
@@ -89,6 +92,8 @@ public class LucidDBStreamingLoader extends BaseStep implements StepInterface {
         } catch (IOException e) {
          // Already closed or other issue... log silent error
          logError("Error while closing Remote client connection - likely already closed by earlier exception");
+        } finally {
+          data.client = null;
         }
       }
     }
@@ -98,8 +103,7 @@ public class LucidDBStreamingLoader extends BaseStep implements StepInterface {
     } catch (InterruptedException e) {
      // Issue converging thread
      logError("Error while trying to rejoin/end SQLRunner thread from LucidDB");
-    }
-
+    } 
   }
 
   public boolean processRow(StepMetaInterface smi, StepDataInterface sdi)
@@ -108,10 +112,7 @@ public class LucidDBStreamingLoader extends BaseStep implements StepInterface {
     meta = (LucidDBStreamingLoaderMeta) smi;
     data = (LucidDBStreamingLoaderData) sdi;
     
-   
-
-
-    try {
+   try {
 
       Object[] r = getRow(); // Get row from input rowset & set row
       // busy!
@@ -120,6 +121,7 @@ public class LucidDBStreamingLoader extends BaseStep implements StepInterface {
       {
         if (data.objOut != null) {
 
+          data.objOut.flush();
           data.objOut.close();
           if (data.client != null) {
 
@@ -345,9 +347,12 @@ public class LucidDBStreamingLoader extends BaseStep implements StepInterface {
       }
 
       data.objOut.writeObject(entity);
+      
+      incrementLinesOutput();
+      
       // NG: Are these both necessary?
-      data.objOut.reset();
-      data.objOut.flush();
+      // data.objOut.reset();
+      // data.objOut.flush();
 
       return true;
     } catch (Exception e) {

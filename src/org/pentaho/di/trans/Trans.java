@@ -12,6 +12,7 @@
 
 package org.pentaho.di.trans;
 
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
@@ -85,6 +86,7 @@ import org.pentaho.di.resource.ResourceUtil;
 import org.pentaho.di.resource.TopLevelResource;
 import org.pentaho.di.trans.cluster.TransSplitter;
 import org.pentaho.di.trans.performance.StepPerformanceSnapShot;
+import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
 import org.pentaho.di.trans.step.RunThread;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInitThread;
@@ -93,7 +95,6 @@ import org.pentaho.di.trans.step.StepListener;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
-import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
 import org.pentaho.di.trans.steps.mappinginput.MappingInput;
 import org.pentaho.di.trans.steps.mappingoutput.MappingOutput;
 import org.pentaho.di.www.AddExportServlet;
@@ -415,6 +416,12 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		}
 
 		// setInternalKettleVariables(this);  --> Let's not do this, when running without file, for example remote, it spoils the fun
+
+    // extra check to see if the servlet print writer has some value in case folks want to test it locally...
+    //
+    if (servletPrintWriter==null) {
+      servletPrintWriter = new PrintWriter(new OutputStreamWriter(System.out));
+    }
 		
 		// Keep track of all the row sets and allocated steps
 		//
@@ -770,7 +777,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
      */
     public void startThreads() throws KettleException
     {
-        // Now prepare to start all the threads...
+      // Now prepare to start all the threads...
     	// 
     	nrOfFinishedSteps=0;
     	nrOfActiveSteps=0;

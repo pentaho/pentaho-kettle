@@ -2375,7 +2375,12 @@ public class Database implements VariableSpace, LoggingObjectInterface
 			int nrcols=rm.getColumnCount();	
 			for (int i=1;i<=nrcols;i++)
 			{
-				String name=new String(rm.getColumnName(i));
+				String name;
+				if (databaseMeta.isMySQLVariant() && getDatabaseMetaData().getDriverMajorVersion()>3) {
+				  name = new String(rm.getColumnLabel(i));
+				} else {
+				  name = new String(rm.getColumnName(i));
+				}
                 
                 // Check the name, sometimes it's empty.
                 //
@@ -2402,7 +2407,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
         int precision=-1;
         int valtype=ValueMetaInterface.TYPE_NONE;
         boolean isClob = false;
-
+        
         int type = rm.getColumnType(index);
         boolean signed = rm.isSigned(index);
         switch(type)

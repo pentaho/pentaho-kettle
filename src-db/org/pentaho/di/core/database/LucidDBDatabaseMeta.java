@@ -25,8 +25,6 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class LucidDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
-    private static final String UNUSED_DB_NAME = "LOCAL_DB";
-    
 	public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_JNDI };
@@ -166,7 +164,7 @@ public class LucidDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
                     }
                     else
                     {
-                        if (length>9)
+                        if (length>=9)
                         {
                             retval+="BIGINT";
                         }
@@ -286,6 +284,11 @@ public class LucidDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
         // which is good, otherwise when it generates SQL to select from them,
         // there is no schema qualifier, resulting in an error.
 		return true;
+	}
+	
+	@Override
+	public boolean requiresCastToVariousForIsNull() {
+	  return true;
 	}
 
 }

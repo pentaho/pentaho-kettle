@@ -479,9 +479,12 @@ public class TransExecutionConfigurationDialog extends Dialog
         	String variableName = variableNames.get(i);
         	String variableValue = configuration.getVariables().get(variableName);
         	
+        	if (Const.indexOfString(variableName, transMeta.listParameters())<0) {
+        	
             TableItem tableItem = new TableItem(wVariables.table, SWT.NONE);
             tableItem.setText(1, variableName);
             tableItem.setText(2, Const.NVL(variableValue, ""));
+        	}
         }
         wVariables.removeEmptyRows();
         wVariables.setRowNums();

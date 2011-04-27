@@ -11,6 +11,7 @@
   <attribute id="BUFFERSIZE"> <xmlcode>buffer_size</xmlcode>  <repcode/> <description>CsvInputDialog.BufferSize.Label</description> <tooltip/> <valuetype>String</valuetype> <parentid/></attribute>
   <attribute id="LAZY_CONVERSION"> <xmlcode>lazy_conversion</xmlcode>  <repcode/> <description>CsvInputDialog.LazyConversion.Label</description> <tooltip/> <valuetype>Boolean</valuetype> <parentid/></attribute>
   <attribute id="PARALLEL"> <xmlcode>parallel</xmlcode>  <repcode/> <description>CsvInputDialog.RunningInParallel.Label</description> <tooltip/> <valuetype>Boolean</valuetype> <parentid/></attribute>
+  <attribute id="NEWLINE_POSSIBLE"> <xmlcode>newline_possible</xmlcode>  <repcode/> <description>CsvInputDialog.NewlinePossible.Label</description> <tooltip/> <valuetype>Boolean</valuetype> <parentid/></attribute>
   <attribute id="ADD_FILENAME_RESULT"> <xmlcode>add_filename_result</xmlcode>  <repcode/> <description>CsvInputDialog.AddResult.Label</description> <tooltip>CsvInputDialog.AddResult.Tooltip</tooltip> <valuetype>Boolean</valuetype> <parentid/></attribute>
   <attribute id="ENCODING"> <xmlcode>encoding</xmlcode>  <repcode/> <description>CsvInputDialog.Encoding.Label</description> <tooltip/> <valuetype>String</valuetype> <parentid/> </attribute>
 

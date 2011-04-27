@@ -273,7 +273,7 @@ public class JsonOutput extends BaseStep implements StepInterface
   				resultFile.setComment(BaseMessages.getString(PKG, "JsonOutput.ResultFilenames.Comment"));
   	            addResultFile(resultFile);
   			}
-  
+  			    
               OutputStream outputStream;
               OutputStream fos = KettleVFS.getOutputStream(filename, getTransMeta(), meta.isFileAppended());
               outputStream=fos;

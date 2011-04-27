@@ -457,6 +457,7 @@ public class CsvInput extends BaseStep implements StepInterface
 			List<Exception> conversionExceptions = null;
 			List<ValueMetaInterface> exceptionFields = null;
 			
+			
 			// The strategy is as follows...
 			// We read a block of byte[] from the file.
 			// We scan for the separators in the file (NOT for line feeds etc)
@@ -468,6 +469,12 @@ public class CsvInput extends BaseStep implements StepInterface
 			//
 			while (!newLineFound && outputIndex<meta.getInputFields().length) {
 				
+			  /*
+			  if (getLinesInput()==5445) {
+			    System.out.println("Break!");
+			  }
+			  */
+			  
 				if (checkBufferSize()) {
 					// Last row was being discarded if the last item is null and
 					// there is no end of line delimiter
@@ -498,11 +505,16 @@ public class CsvInput extends BaseStep implements StepInterface
 					if (data.delimiterMatcher.matchesPattern(data.byteBuffer, data.endBuffer, data.delimiter)) {
 						delimiterFound = true;
 					}
-					// Perhaps we found a new line?
+					// Perhaps we found a (pre-mature) new line?
 					// 
-					//
-					else if (data.crLfMatcher.isReturn(data.byteBuffer, data.endBuffer) || 
-					    data.crLfMatcher.isLineFeed(data.byteBuffer, data.endBuffer)) {
+					else if ( 
+					    // In case we are not using an enclosure and in case fields contain new lines
+					    // we need to make sure that we check the newlines possible flag.
+					    // If the flag is enable we skip newline checking except for the last field in the row.
+					    // In that one we can't support newlines without enclosure (handled below).
+					    //
+					    (!meta.isNewlinePossibleInFields() || outputIndex==meta.getInputFields().length-1) && 
+					    (data.crLfMatcher.isReturn(data.byteBuffer, data.endBuffer) || data.crLfMatcher.isLineFeed(data.byteBuffer, data.endBuffer))) {
 						
 						if(data.encodingType.equals(EncodingType.DOUBLE_LITTLE_ENDIAN) || data.encodingType.equals(EncodingType.DOUBLE_BIG_ENDIAN)) {
 							data.endBuffer += 2;

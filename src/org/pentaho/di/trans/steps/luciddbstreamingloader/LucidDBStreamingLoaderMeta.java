@@ -470,7 +470,14 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
 		else
 			sb.append(",");
 		
-		sb.append(buildFakeCursorRowString(prev.searchValueMeta(fieldStreamForKeys[i]), fieldStreamForKeys[i]) + Const.CR);
+		String keyStreamFieldName = fieldStreamForKeys[i];
+		ValueMetaInterface keyStreamField = prev.searchValueMeta(fieldStreamForKeys[i]);
+		
+		if (keyStreamField==null) {
+		  throw new KettleStepException("Unable to find key field '"+keyStreamFieldName+"' in the input fields");
+		}
+		
+		sb.append(buildFakeCursorRowString(keyStreamField, keyStreamFieldName)).append(Const.CR);
 		
 	  }
 	  
@@ -558,7 +565,7 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
 	  // Iterate over fieldTableForFields[] (dedup)
 	  for ( int i = 0 ; i < fieldTableForFields.length ; i++ ) {
 		  // Do not add if it's already in from keys
-		if ( !isInKeys(fieldTableForFields[i])) {		
+		if ( Const.indexOfString(fieldTableForFields[i], fieldTableForKeys)<0) {		
 			  // Add comma to all except the first row
 			if ( suppress_comma == true )
 				suppress_comma = false;

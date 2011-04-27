@@ -89,6 +89,8 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 	
 	private String encoding;
 	
+	private boolean newlinePossibleInFields;
+	
 	public CsvInputMeta()
 	{
 		super(); // allocate BaseStepMeta
@@ -131,6 +133,16 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 			lazyConversionActive= "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, getXmlCode("LAZY_CONVERSION")));
 			isaddresult= "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, getXmlCode("ADD_FILENAME_RESULT")));
 			runningInParallel = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, getXmlCode("PARALLEL")));
+			String nlp = XMLHandler.getTagValue(stepnode, getXmlCode("NEWLINE_POSSIBLE"));
+			if (Const.isEmpty(nlp)) {
+			  if (runningInParallel) {
+			    newlinePossibleInFields=false;
+			  } else {
+			    newlinePossibleInFields=true;
+			  }
+			} else {
+			  newlinePossibleInFields = "Y".equalsIgnoreCase(nlp);
+			}
 			encoding = XMLHandler.getTagValue(stepnode, getXmlCode("ENCODING"));
 			
 			Node fields = XMLHandler.getSubNode(stepnode, getXmlCode("FIELDS"));
@@ -180,6 +192,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 		retval.append("    ").append(XMLHandler.addTagValue(getXmlCode("LAZY_CONVERSION"), lazyConversionActive));
 		retval.append("    ").append(XMLHandler.addTagValue(getXmlCode("ADD_FILENAME_RESULT"), isaddresult));
 		retval.append("    ").append(XMLHandler.addTagValue(getXmlCode("PARALLEL"), runningInParallel));
+    retval.append("    ").append(XMLHandler.addTagValue(getXmlCode("NEWLINE_POSSIBLE"), newlinePossibleInFields));
 		retval.append("    ").append(XMLHandler.addTagValue(getXmlCode("ENCODING"), encoding));
 
 		retval.append("    ").append(XMLHandler.openTag(getXmlCode("FIELDS"))).append(Const.CR);
@@ -220,6 +233,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 			lazyConversionActive = rep.getStepAttributeBoolean(id_step, getRepCode("LAZY_CONVERSION"));
 			isaddresult = rep.getStepAttributeBoolean(id_step, getRepCode("ADD_FILENAME_RESULT"));
 			runningInParallel = rep.getStepAttributeBoolean(id_step, getRepCode("PARALLEL"));
+      newlinePossibleInFields = rep.getStepAttributeBoolean(id_step, 0, getRepCode("NEWLINE_POSSIBLE"), !runningInParallel);
 			encoding = rep.getStepAttributeString(id_step, getRepCode("ENCODING"));
 			
 			int nrfields = rep.countNrStepAttributes(id_step, getRepCode("FIELD_NAME"));
@@ -262,6 +276,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 			rep.saveStepAttribute(id_transformation, id_step, getRepCode("LAZY_CONVERSION"), lazyConversionActive);
 			rep.saveStepAttribute(id_transformation, id_step, getRepCode("ADD_FILENAME_RESULT"), isaddresult);
 			rep.saveStepAttribute(id_transformation, id_step, getRepCode("PARALLEL"), runningInParallel);
+      rep.saveStepAttribute(id_transformation, id_step, getRepCode("NEWLINE_POSSIBLE"), newlinePossibleInFields);
 			rep.saveStepAttribute(id_transformation, id_step, getRepCode("ENCODING"), encoding);
 
 			for (int i = 0; i < inputFields.length; i++)
@@ -693,6 +708,7 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
           if (attr.getKey().equals("BUFFERSIZE")) { bufferSize = (String) entry.getValue(); } else
           if (attr.getKey().equals("LAZY_CONVERSION")) { lazyConversionActive = (Boolean) entry.getValue(); } else
           if (attr.getKey().equals("PARALLEL")) { runningInParallel = (Boolean) entry.getValue(); } else
+          if (attr.getKey().equals("NEWLINE_POSSIBLE")) { newlinePossibleInFields = (Boolean) entry.getValue(); } else
           if (attr.getKey().equals("ADD_FILENAME_RESULT")) { isaddresult = (Boolean) entry.getValue(); } else
           if (attr.getKey().equals("ENCODING")) { encoding = (String) entry.getValue(); } else
           { 
@@ -742,6 +758,20 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
      */
     public List<StepInjectionMetaEntry> getStepInjectionMetadataEntries() throws KettleException {
       return getStepInjectionMetadataEntries(PKG);
+    }
+
+    /**
+     * @return the newlinePossibleInFields
+     */
+    public boolean isNewlinePossibleInFields() {
+      return newlinePossibleInFields;
+    }
+
+    /**
+     * @param newlinePossibleInFields the newlinePossibleInFields to set
+     */
+    public void setNewlinePossibleInFields(boolean newlinePossibleInFields) {
+      this.newlinePossibleInFields = newlinePossibleInFields;
     }
 
 
