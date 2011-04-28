@@ -351,8 +351,8 @@ public class LucidDBStreamingLoader extends BaseStep implements StepInterface {
       incrementLinesOutput();
       
       // NG: Are these both necessary?
-      // data.objOut.reset();
-      // data.objOut.flush();
+      data.objOut.reset();
+      data.objOut.flush();
 
       return true;
     } catch (Exception e) {
