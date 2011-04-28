@@ -26,11 +26,24 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta;
 
+/* Copyright (c) 2007 Pentaho Corporation.  All rights reserved. 
+ * This software was developed by Pentaho Corporation and is provided under the terms 
+ * of the GNU Lesser General Public License, Version 2.1. You may not use 
+ * this file except in compliance with the license. If you need a copy of the license, 
+ * please go to http://www.gnu.org/licenses/lgpl-2.1.txt. The Original Code is Pentaho 
+ * Data Integration.  The Initial Developer is Pentaho Corporation.
+ *
+ * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
+ * the license for the specific language governing your rights and limitations.*/
+
 /**
  * JUnit test for GPLoad step.
  * 
  * These test will verify that correct YAML is being generated. 
  * YAML contains the specifics of a GPLoad job.
+ * 
+ * There are also tests for the gpload command line generation.
  * 
  * @author sflatley
  * 
@@ -51,14 +64,10 @@ public class GPLoadTests {
    private final static String UPDATE_DATA_FILE = "customers-update.txt";
    private final static String MERGE_DATA_FILE = "customers-merge.txt";
    
+   //  Paths to files
    private String pathToGPLoadExecutable = null;
    private String pathToControlFile = null;
    private String pathToLogfile = null;
-   
-   //  For internationalization
-   private static Class<?> PKG = GPLoadMeta.class; // for i18n purposes, needed
-                                                   // by Translator2!!
-                                                   // $NON-NLS-1$
 
    public static final String GREENPLUM_DATABASE_CONNECTION = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>"
          + "<connection>"
@@ -84,7 +93,7 @@ public class GPLoadTests {
       }
       
       //  Get the path a valid configuratiomn file.
-      //  We wil use this path as the path top the mock
+      //  We will use this path as the path top the mock
       //  GPLoad executable and the log file. 
       File file = new File(testDirectory.getAbsolutePath() + "/GPLoad-update1.cfg");
       if (file.exists()) {
@@ -159,57 +168,12 @@ public class GPLoadTests {
          throw new Exception("Plugin registry is null.  Make sure that the Kettle environment was initialized.");
       }
 
-      // create a row generator step...
-      //
-      // TODO: Either remove the row generator step if it is not used 
-      //       or, if it is to be used,  change it's field data to that 
-      //       of the customers-100.txt file.
-      //       The rowGenerator is not used since the transformaton is not run.
-      
-      String rowGeneratorStepname = "row generator step";
-      RowGeneratorMeta rowGeneratorMeta = new RowGeneratorMeta();
-
-      // set the information of the row generator.
-      String rowGeneratorPid = registry.getPluginId(StepPluginType.class,
-            rowGeneratorMeta);
-      StepMeta rowGeneratorStep = new StepMeta(rowGeneratorPid,
-            rowGeneratorStepname, (StepMetaInterface) rowGeneratorMeta);
-      transMeta.addStep(rowGeneratorStep);
-
-      // add three fields and related information to arrays
-      String fieldName[] = { "string", "boolean", "integer" };
-      String type[] = { "String", "Boolean", "Integer" };
-      String value[] = { "string_value", "true", "20" };
-      String fieldFormat[] = { "", "", "" };
-      String group[] = { "", "", "" };
-      String decimal[] = { "", "", "" };
-      int intDummies[] = { -1, -1, -1 };
-
-      // set row generator meta properties
-      rowGeneratorMeta.setDefault();
-      rowGeneratorMeta.setFieldName(fieldName);
-      rowGeneratorMeta.setFieldType(type);
-      rowGeneratorMeta.setValue(value);
-      rowGeneratorMeta.setFieldLength(intDummies);
-      rowGeneratorMeta.setFieldPrecision(intDummies);
-      rowGeneratorMeta.setRowLimit("3");
-      rowGeneratorMeta.setFieldFormat(fieldFormat);
-      rowGeneratorMeta.setGroup(group);
-      rowGeneratorMeta.setDecimal(decimal);
-
       // create the GPLoad step
       GPLoadMeta gpLoadMeta = new GPLoadMeta();
       String dummyPid = registry.getPluginId(StepPluginType.class, gpLoadMeta);
       StepMeta gpLoadStepMeta = new StepMeta(dummyPid, gpLoadStepname, (StepMetaInterface) gpLoadMeta);
       transMeta.addStep(gpLoadStepMeta);
 
-      // hop the row generator to the GPLoad step
-      TransHopMeta rowGeneratorGPLoadHop = new TransHopMeta(rowGeneratorStep, gpLoadStepMeta);
-      transMeta.addTransHop(rowGeneratorGPLoadHop);
-
-      // We now have a transformation meta that had a
-      // RowGenerator generating three rows and three fields
-      // hopped to a GPLoad step.
       return transMeta;
 
    }
@@ -283,7 +247,7 @@ public class GPLoadTests {
       TransMeta transMeta = createTransformationMeta(gpLoadStepname);
 
       // get a reference to the GPLoad step meta and then it's
-      StepMeta gpLoadStepMeta = transMeta.getStep(1);
+      StepMeta gpLoadStepMeta = transMeta.getStep(0);
       GPLoadMeta gpLoadMeta = (GPLoadMeta) gpLoadStepMeta.getStepMetaInterface();
 
       // setDefault is called from Spoon.newStep if we were creating a new step using the interface.
@@ -307,8 +271,7 @@ public class GPLoadTests {
       
       return gpLoadMeta;
    }
-   
-   
+    
    /**
     * Tests the YAML contents generated by the GPLoad step in the transformation.
     * 
@@ -327,22 +290,20 @@ public class GPLoadTests {
       trans.prepareExecution(null);
       
       //  get the step meta from step 1- the only step in the trans
-      StepMeta gpLoadStepMeta = transMeta.getStep(1);
+      StepMeta gpLoadStepMeta = transMeta.getStep(0);
       
       // create a GPLoad using the transformation
       GPLoad gpLoad = new GPLoad(gpLoadStepMeta, new GPLoadData(), 0, transMeta, trans);
 
-      // create an empty row- we do not need data as the creation of 
-      // a control file happens before rows are proceed by the GPLoad step
-      Object[] row = { new Object() };
-      RowMetaInterface rowMetaInterface = gpLoad.getPreviewRowMeta();
-
       // get the YAML file contents that we expect
       String expectedContents = getYamlFileContents(expectedYAMLFileName);
 
+      // we need to the row meta interface to create the control file
+      RowMetaInterface rowMetaInterface = gpLoad.getPreviewRowMeta();
+
       // get the file contents from the GPLoad object
       String actualContents = null;
-      actualContents = gpLoad.getControlFileContents(gpLoadMeta, rowMetaInterface, row);
+      actualContents = gpLoad.getControlFileContents(gpLoadMeta, rowMetaInterface);
 
       // test that the built YAML contest are expected
       assertEquals(expectedContents, actualContents);      
@@ -368,7 +329,7 @@ public class GPLoadTests {
       trans.prepareExecution(null);
       
       //  get the step meta from step 1- the only step in the trans
-      StepMeta gpLoadStepMeta = transMeta.getStep(1);
+      StepMeta gpLoadStepMeta = transMeta.getStep(0);
       
       // create a GPLoad using the transformation
       GPLoad gpLoad = new GPLoad(gpLoadStepMeta, new GPLoadData(), 0, transMeta, trans);
@@ -414,7 +375,6 @@ public class GPLoadTests {
             
       
       testYAMLContents(gpLoadMeta, transMeta, "GPLoad-insert1.cfg");
-
    }
 
    /**
@@ -445,7 +405,6 @@ public class GPLoadTests {
             "8000", new String[] { "localhost" } ); 
             
       testYAMLContents(gpLoadMeta, transMeta, "GPLoad-insert2.cfg");
-
    }
    
    /**
@@ -659,7 +618,6 @@ public class GPLoadTests {
    
    @Test
    public void testMerge1() throws Exception {
-      
       
       String gpLoadStepname = "GPLoad: test merge 1";
 
@@ -913,5 +871,4 @@ public class GPLoadTests {
          assertTrue(ke.getMessage().contains("The file /invalid path does not exist"));
       }
    }
-
 }

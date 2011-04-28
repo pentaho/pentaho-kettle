@@ -1136,10 +1136,8 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       wGetLU.setText(BaseMessages.getString(PKG, "GPLoadDialog.GetFields.Label")); //$NON-NLS-1$
       fdGetLU = new FormData();
       fdGetLU.top = new FormAttachment(0, margin);
-      fdGetLU.right = new FormAttachment(wDoMapping, margin);
+      fdGetLU.right = new FormAttachment(wDoMapping, -margin);
       wGetLU.setLayoutData(fdGetLU);
-
-
 
       wDoMapping.addListener(SWT.Selection, new Listener() {
          public void handleEvent(Event arg0) {

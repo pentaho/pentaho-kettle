@@ -129,7 +129,7 @@ public class GPLoad extends BaseStep implements StepInterface
 	 * 
 	 * @return a string containing the control file contents
 	 */
-	public String getControlFileContents(GPLoadMeta meta, RowMetaInterface rm, Object[] r) throws KettleException	{
+	public String getControlFileContents(GPLoadMeta meta, RowMetaInterface rm) throws KettleException	{
 
       String tableFields[] = meta.getFieldTable();
       boolean matchColumn[] = meta.getMatchColumn();
@@ -356,7 +356,7 @@ public class GPLoad extends BaseStep implements StepInterface
 	 * @param meta
 	 * @throws KettleException
 	 */
-	public void createControlFile(Object[] row, GPLoadMeta meta) throws KettleException
+	public void createControlFile(GPLoadMeta meta) throws KettleException
 	{
 	   String filename = meta.getControlFile();
 	   if (Const.isEmpty(filename)) {
@@ -376,7 +376,7 @@ public class GPLoad extends BaseStep implements StepInterface
 		{
 			controlFile.createNewFile();
 			fw = new FileWriter(controlFile);
- 	      fw.write(getControlFileContents(meta, getInputRowMeta(), row));	       
+ 	      fw.write(getControlFileContents(meta, getInputRowMeta()));	       
 		}
 		catch ( IOException ex )
 		{
@@ -543,29 +543,31 @@ public class GPLoad extends BaseStep implements StepInterface
 					}
 
 					String loadMethod = meta.getLoadMethod();
-					if ( GPLoadMeta.METHOD_AUTO_END.equals(loadMethod))
-					{
-						execute(meta, true);
+					
+					//  if it specified that we are to load at the end of processing  
+					if (GPLoadMeta.METHOD_AUTO_END.equals(loadMethod)) {
+					   
+					   //  if we actually wrote at least one row
+					   if (getLinesOutput() > 0 ) {
+					      
+					      //  we do this
+   					   createControlFile(meta);
+	     					execute(meta, true);
+			     		}
+					   else {
+					      //  we don't create a control file and execute
+					      logBasic(BaseMessages.getString(PKG, "GPLoad.Info.NoRowsWritten"));
+					   }
 					}
-				//	else if ( GPLoadMeta.METHOD_AUTO_CONCURRENT.equals(meta.getLoadMethod()) )
-				//	{
-				//		try 
-				//		{
-				//			if ( psqlProcess != null )
-				//			{
-				//				int exitVal = psqlProcess.waitFor();
-				//				logBasic(BaseMessages.getString(PKG, "GPLoad.Log.ExitValueSqlldr", "" + exitVal)); //$NON-NLS-1$
-				//			}
-				//			else
-				//			{
-				//				throw new KettleException("Internal error: no sqlldr process running");
-				//			}
-				//		}
-				//		catch ( Exception ex )
-				//		{
-				//			throw new KettleException("Error while executing sqlldr", ex);
-				//		}
-				//	}
+					else if (GPLoadMeta.METHOD_MANUAL.equals(loadMethod)) {
+					   
+					   //  we create the control file but do not execute
+					   createControlFile(meta);
+					   logBasic(BaseMessages.getString(PKG, "GPLoad.Info.MethodManual"));
+					}
+					else {
+					   throw new KettleException(BaseMessages.getString(PKG, "GPload.Execption.UnhandledLoadMethod", loadMethod));
+					}
 				}			
 				return false;
 			}
@@ -575,7 +577,6 @@ public class GPLoad extends BaseStep implements StepInterface
 				if (first)
 				{
 					first=false;
-					createControlFile(r, meta);
 					output = new GPLoadDataOutput(this, meta, log.getLogLevel());
 
 				//	if ( GPLoadMeta.METHOD_AUTO_CONCURRENT.equals(meta.getLoadMethod()) )
