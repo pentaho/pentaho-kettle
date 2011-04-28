@@ -1447,6 +1447,9 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
 			errorIgnored = rep.getStepAttributeBoolean(id_step, "error_ignored");
 			skipBadFiles = rep.getStepAttributeBoolean(id_step, "skip_bad_files");
+			fileErrorField = rep.getStepAttributeString(id_step, "file_error_field");
+			fileErrorMessageField = rep.getStepAttributeString(id_step, "file_error_message_field");
+			
 			errorLineSkipped = rep.getStepAttributeBoolean(id_step, "error_line_skipped");
 			errorCountField = rep.getStepAttributeString(id_step, "error_count_field");
 			errorFieldsField = rep.getStepAttributeString(id_step, "error_fields_field");
@@ -1561,6 +1564,8 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
 			rep.saveStepAttribute(id_transformation, id_step, "error_ignored", errorIgnored);
 			rep.saveStepAttribute(id_transformation, id_step, "skip_bad_files", skipBadFiles);
+			rep.saveStepAttribute(id_transformation, id_step, "file_error_field", fileErrorField);
+			rep.saveStepAttribute(id_transformation, id_step, "file_error_message_field", fileErrorMessageField);
 			rep.saveStepAttribute(id_transformation, id_step, "error_line_skipped", errorLineSkipped);
 			rep.saveStepAttribute(id_transformation, id_step, "error_count_field", errorCountField);
 			rep.saveStepAttribute(id_transformation, id_step, "error_fields_field", errorFieldsField);
