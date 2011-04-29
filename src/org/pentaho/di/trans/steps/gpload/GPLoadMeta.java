@@ -56,7 +56,7 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface
 	/** Collection of Local hosts **/
 	private String localHosts[];
 	
-	/** MasterPort **/
+	/** LocalHostPort **/
 	private String localhostPort;
 	
     /** what's the schema for the target? */
@@ -490,7 +490,7 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "erase_files",     eraseFiles);    //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "encoding",        encoding);      //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "enclose_numbers", (encloseNumbers?"Y":"N"));//$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "master_port", localhostPort);//$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "localhost_port", localhostPort);//$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "update_condition", updateCondition);//$NON-NLS-1$
 
 			for (int i=0;i <localHosts.length; i++) {
