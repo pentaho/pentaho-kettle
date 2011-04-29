@@ -160,6 +160,8 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
 
    private GPLoadMeta input;
    private TextVar wDelimiter;
+   
+   private Text wUpdateCondition;
 
    /**
     * List of ColumnInfo that should have the field names of the selected
@@ -805,28 +807,39 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
             wConnection.setText(transMeta.getDatabase(0).getName());
          }
       }
-      if (input.getSchemaName() != null)
+      if (input.getSchemaName() != null) {
          wSchema.setText(input.getSchemaName());
-      if (input.getTableName() != null)
+      }
+      if (input.getTableName() != null) {
          wTable.setText(input.getTableName());
-      if (input.getErrorTableName() != null)
+      }
+      if (input.getErrorTableName() != null) {
          wErrorTable.setText(input.getErrorTableName());
-      if (input.getGploadPath() != null)
+      }
+      if (input.getGploadPath() != null) {
          wGploadPath.setText(input.getGploadPath());
-      if (input.getControlFile() != null)
-         wControlFile.setText(input.getControlFile());
-      if (input.getDataFile() != null)
+      }
+      if (input.getControlFile() != null) {
+         wControlFile.setText(input.getControlFile()); 
+      }
+      if (input.getDataFile() != null) {
          wDataFile.setText(input.getDataFile());
-      if (input.getDelimiter() != null) 
+      }
+      if (input.getDelimiter() != null) {
          wDelimiter.setText(input.getDelimiter());
-      if (input.getLogFile() != null)
+      }
+      if (input.getLogFile() != null) {
          wLogFile.setText(input.getLogFile());
-      if (input.getEncoding() != null)
+      }
+      if (input.getEncoding() != null) {
          wEncoding.setText(input.getEncoding());
-      if (input.getLocalhostPort() != null)
+      }
+      if (input.getLocalhostPort() != null) {
          wLocalhostPort.setText(input.getLocalhostPort());
-      wEraseFiles.setSelection(input.isEraseFiles());
-
+      }
+      if (input.getUpdateCondition() != null) {
+          wUpdateCondition.setText(input.getUpdateCondition());
+      }
       String method = input.getLoadMethod();
       // if ( GPLoadMeta.METHOD_AUTO_CONCURRENT.equals(method) )
       // {
@@ -916,6 +929,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       inf.setEraseFiles(wEraseFiles.getSelection());
       inf.setLocalhostPort(wLocalhostPort.getText());
       inf.setDelimiter(wDelimiter.getText());
+      inf.setUpdateCondition(wUpdateCondition.getText());
 
       /*
        * Set the loadmethod
@@ -1093,7 +1107,6 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       //  Create the composite that the individual controls will be placed in
       Composite wFieldsComp = new Composite(tabFolder, SWT.NONE);
       props.setLook(wFieldsComp);
-      int middle = props.getMiddlePct();
 
       FormLayout tabFieldLayout = new FormLayout();
       tabFieldLayout.marginWidth = 3;
@@ -1104,10 +1117,8 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       wlLoadAction = new Label(wFieldsComp, 0);
       wlLoadAction.setText(BaseMessages.getString(PKG, "GPLoadDialog.LoadAction.Label"));
       props.setLook(wlLoadAction);
-      
       fdlLoadAction = new FormData();
       fdlLoadAction.left = new FormAttachment(0, 0);
-      //fdlLoadAction.right = new FormAttachment(0, 0);
       fdlLoadAction.top = new FormAttachment(0, margin);
       wlLoadAction.setLayoutData(fdlLoadAction);
       
@@ -1144,7 +1155,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
             generateMappings();
          }
       });
-
+            
       //  The Field Table
       int numberOfColumns = 5;
       int UpInsRows = (input.getFieldTable() != null ? input.getFieldTable().length
@@ -1192,6 +1203,25 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       fdFieldsComp.bottom = new FormAttachment(100, 0);
       wFieldsComp.setLayoutData(fdFieldsComp);
 
+      //  update condition
+      Label wlUpdateCondition = new Label(wFieldsComp, 0);
+      wlUpdateCondition.setText(BaseMessages.getString(PKG, "GPLoadDialog.UpdateCondition.Label"));
+      props.setLook(wlUpdateCondition);
+      FormData fdlUpdateCondition = new FormData();
+      fdlUpdateCondition.top = new FormAttachment(wDoMapping, margin);
+      fdlUpdateCondition.left = new FormAttachment(wReturn, margin);
+      wlUpdateCondition.setLayoutData(fdlUpdateCondition);
+      
+      wUpdateCondition = new Text(wFieldsComp, SWT.MULTI | SWT.WRAP | SWT.LEFT | SWT.BORDER);
+      props.setLook(wUpdateCondition);
+      wUpdateCondition.addModifyListener(lsMod);
+      FormData fdUpdateCondition = new FormData();
+      fdUpdateCondition.top = new FormAttachment(wlUpdateCondition, margin);
+      fdUpdateCondition.left = new FormAttachment(wReturn, margin);
+      fdUpdateCondition.right = new FormAttachment(100, margin);
+      fdUpdateCondition.bottom = new FormAttachment(50, 0);
+      wUpdateCondition.setLayoutData(fdUpdateCondition);
+      
       wFieldsComp.layout();
       tabItem.setControl(wFieldsComp);
    }

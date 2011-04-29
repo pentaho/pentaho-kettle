@@ -175,7 +175,6 @@ public class GPLoadTests {
       transMeta.addStep(gpLoadStepMeta);
 
       return transMeta;
-
    }
    
    /**
@@ -205,12 +204,14 @@ public class GPLoadTests {
                                        boolean[] matchColumn, 
                                        boolean[] updateColumn,
                                        String localhostPort,
-                                       String[] localHosts) throws Exception {
+                                       String[] localHosts,
+                                       String updateCondition) throws Exception {
    
       
       return createGPLoadMeta(gpLoadStepname, action, targetTableName, errorTableName, 
                               dataFilename, delimiter, null, null, null, tableColumn, 
-                              matchColumn, updateColumn, localhostPort, localHosts);
+                              matchColumn, updateColumn, localhostPort, localHosts,
+                              updateCondition);
    }
    
    /**
@@ -240,7 +241,8 @@ public class GPLoadTests {
                                        boolean[] matchColumn, 
                                        boolean[] updateColumn,
                                        String localhostPort,
-                                       String[] localHosts)
+                                       String[] localHosts,
+                                       String updateCondition)
                throws Exception {
       
       // create the trans meta
@@ -254,7 +256,7 @@ public class GPLoadTests {
       gpLoadMeta.setDefault();
       
       // set properties
-      gpLoadMeta.setTableName(GPLoadTests.TARGET_TABLE);
+      gpLoadMeta.setTableName(targetTableName);
       gpLoadMeta.setErrorTableName(GPLoadTests.GPLOAD_ERROR_TABLE);
       gpLoadMeta.setLoadAction(action);
       gpLoadMeta.setDataFile(dataFilename);
@@ -268,6 +270,7 @@ public class GPLoadTests {
       gpLoadMeta.setDatabaseMeta(transMeta.getDatabase(0));
       gpLoadMeta.setLocalhostPort(localhostPort);
       gpLoadMeta.setLocalHosts(localHosts);
+      gpLoadMeta.setUpdateCondition(updateCondition);
       
       return gpLoadMeta;
    }
@@ -371,8 +374,8 @@ public class GPLoadTests {
             new String[0],
             new boolean[0], 
             new boolean[0],
-            null, null); //  no local host port or localhosts
-            
+            null, null, //  no local host port or localhosts
+            null);
       
       testYAMLContents(gpLoadMeta, transMeta, "GPLoad-insert1.cfg");
    }
@@ -402,7 +405,8 @@ public class GPLoadTests {
             new String[0],
             new boolean[0], 
             new boolean[0],
-            "8000", new String[] { "localhost" } ); 
+            "8000", new String[] { "localhost" },
+            null); 
             
       testYAMLContents(gpLoadMeta, transMeta, "GPLoad-insert2.cfg");
    }
@@ -432,10 +436,10 @@ public class GPLoadTests {
             new String[0],
             new boolean[0], 
             new boolean[0],
-            "8000", new String[] { "etl-host1", "etl-host2" } ); 
+            "8000", new String[] { "etl-host1", "etl-host2" },
+            null); 
             
       testYAMLContents(gpLoadMeta, transMeta, "GPLoad-insert3.cfg");
-
    }
    
    ////////////////////////////////
@@ -473,7 +477,8 @@ public class GPLoadTests {
             tableField,
             matchColumn, 
             updateColumn,
-            null, null); //  no local host port or localhosts);
+            null, null, //  no local host port or localhosts);
+            null);
       
       testYAMLContents(gpLoadMeta, transMeta, "GPLoad-update1.cfg");
    }
@@ -509,7 +514,8 @@ public class GPLoadTests {
             tableField,
             null, 
             updateColumn,
-            null, null); //  no local host port or localhosts);
+            null, null, //  no local host port or localhosts);
+            null); 
       
       try {
          testYAMLContents(gpLoadMeta, transMeta, "GPLoad-update1.cfg");
@@ -550,7 +556,8 @@ public class GPLoadTests {
             tableField,
             matchColumn, 
             null,
-            null, null); //  no local host port or localhosts);
+            null, null, //  no local host port or localhosts);
+            null);
       
       try {
          testYAMLContents(gpLoadMeta, transMeta, "GPLoad-update1.cfg");
@@ -589,7 +596,8 @@ public class GPLoadTests {
             tableField,
             null, 
             null,
-            null, null); //  no local host port or localhosts);
+            null, null, //  no local host port or localhosts);
+            null);
       
       try {
          testYAMLContents(gpLoadMeta, transMeta, "GPLoad-update1.cfg");
@@ -601,14 +609,121 @@ public class GPLoadTests {
    
    
    @Test
-   public void testUpdateMultiKeys() {
+   public void testUpdate5() throws Exception {
+      
+      String gpLoadStepname = "GPLoad: test update 5";
 
+      //  create the trans meta
+      TransMeta transMeta = createTransformationMeta(gpLoadStepname);
+      
+      //  create an array of column names
+      String tableField[] = new String[] {"id", "name", "firstname", "zip", "city", "birthdate", "street", "housenr", "statecode", "state"};
+      
+      //  create an array of boolean that indicates the columns to match
+      boolean[] matchColumn = new boolean[] { true, true, true, false, false, false, false, false, false, false };
+      
+      //  create array of boolean to 
+      boolean[] updateColumn = new boolean[] { false, true, true, false, false, false, false, false, false, false };
+      
+      //  create GPLoadMeta to do an insert
+      //  and specifying to columns
+      GPLoadMeta gpLoadMeta = createGPLoadMeta(
+            gpLoadStepname,
+            GPLoadMeta.ACTION_UPDATE,
+            GPLoadTests.TARGET_TABLE,
+            GPLoadTests.GPLOAD_ERROR_TABLE,
+            GPLoadTests.UPDATE_DATA_FILE,
+            ";",
+            tableField,
+            matchColumn, 
+            updateColumn,
+            null, null,  //  no local host port or localhosts);
+            null);
+      
+      testYAMLContents(gpLoadMeta, transMeta, "GPLoad-update5.cfg");
+   }
+   
+   /**
+    * Tests exception handling when the target table is not provided.
+    */
+   @Test
+   public void testUpdate6() throws Exception {
+      
+      String gpLoadStepname = "GPLoad: test update 6";
+
+      //  create the trans meta
+      TransMeta transMeta = createTransformationMeta(gpLoadStepname);
+      
+      //  create an array of column names
+      String tableField[] = new String[] {"id", "name", "firstname", "zip", "city", "birthdate", "street", "housenr", "statecode", "state"};
+      
+      //  create an array of boolean that indicates the columns to match
+      boolean[] matchColumn = new boolean[] { true, false, false, false, false, false, false, false, false, false };
+      
+      //  create array of boolean to 
+      boolean[] updateColumn = new boolean[] { false, true, true, false, false, false, false, false, false, false };
+      
+      //  create GPLoadMeta to do an insert
+      //  and specifying to columns
+      GPLoadMeta gpLoadMeta = createGPLoadMeta(
+            gpLoadStepname,
+            GPLoadMeta.ACTION_UPDATE,
+            null,
+            GPLoadTests.GPLOAD_ERROR_TABLE,
+            GPLoadTests.UPDATE_DATA_FILE,
+            ";",
+            tableField,
+            matchColumn, 
+            updateColumn,
+            null, null, //  no local host port or localhosts);
+            null);
+      
+      try {
+         testYAMLContents(gpLoadMeta, transMeta, "GPLoad-update1.cfg");
+      }
+      catch (KettleException ke) {
+         assertTrue(ke.getMessage().contains("table must be specified"));
+      }
    }
    
    @Test
-   public void testUpdateNoTargetTable() {
+   public void testUpdate7() throws Exception {
+   
+      String gpLoadStepname = "GPLoad: test update 7";
 
+      //  create the trans meta
+      TransMeta transMeta = createTransformationMeta(gpLoadStepname);
+      
+      //  create an array of column names
+      String tableField[] = new String[] {"id", "name", "firstname", "zip", "city", "birthdate", "street", "housenr", "statecode", "state"};
+      
+      //  create an array of boolean that indicates the columns to match
+      boolean[] matchColumn = new boolean[] { true, false, false, false, false, false, false, false, false, false };
+      
+      //  create array of boolean to 
+      boolean[] updateColumn = new boolean[] { false, true, true, false, false, false, false, false, false, false };
+      
+      //  create an update condition 
+      String updateCondition = "id > 0";
+      
+      //  create GPLoadMeta to do an insert
+      //  and specifying to columns
+      GPLoadMeta gpLoadMeta = createGPLoadMeta(
+            gpLoadStepname,
+            GPLoadMeta.ACTION_UPDATE,
+            GPLoadTests.TARGET_TABLE,
+            GPLoadTests.GPLOAD_ERROR_TABLE,
+            GPLoadTests.UPDATE_DATA_FILE,
+            ";",
+            tableField,
+            matchColumn, 
+            updateColumn,
+            null, null, //  no local host port or localhosts);
+            updateCondition);
+      
+      testYAMLContents(gpLoadMeta, transMeta, "GPLoad-update7.cfg");
    }
+   
    
    ////////////////////////////////
    //  
@@ -645,20 +760,10 @@ public class GPLoadTests {
             tableField,
             matchColumn, 
             updateColumn,
-            null, null); //  no local host port or localhosts);
+            null, null,  //  no local host port or localhosts);
+            null);
       
       testYAMLContents(gpLoadMeta, transMeta, "GPLoad-merge1.cfg");
-
-   }
-
-   @Test
-   public void testMergeMultiKeys() {
-
-   }
-
-   @Test
-   public void testMergeNoTargetTable() {
-
    }
    
    ////////////////////////////////
@@ -694,7 +799,8 @@ public class GPLoadTests {
             new String[0],
             new boolean[0], 
             new boolean[0],
-            null, null); //  no local host port or localhosts);
+            null, null,  //  no local host port or localhosts);
+            null);// no update condition
       
       //  get the path to the control file
       File controlFile = new File(gpLoadMeta.getControlFile());
@@ -731,7 +837,8 @@ public class GPLoadTests {
             new String[0],
             new boolean[0], 
             new boolean[0],
-            null, null); //  no local host port or localhosts);
+            null, null, //  no local host port or localhosts);
+            null);
       
       //  get the path to the control file
       File controlFile = new File(gpLoadMeta.getControlFile());
@@ -771,7 +878,8 @@ public class GPLoadTests {
             new String[0],
             new boolean[0], 
             new boolean[0],
-            null, null); //  no local host port or localhosts);
+            null, null, //  no local host port or localhosts);
+            null);
       
       String expectedCommandLine=("/invalid path"+" -f "+invalidPath);
       try {
@@ -813,7 +921,8 @@ public class GPLoadTests {
             new String[0],
             new boolean[0], 
             new boolean[0],
-            null, null); //  no local host port or localhosts);
+            null, null,  //  no local host port or localhosts);
+            null);
       
       //  get the path to the control file
       File controlFile = new File(gpLoadMeta.getControlFile());
@@ -857,7 +966,8 @@ public class GPLoadTests {
             new String[0],
             new boolean[0], 
             new boolean[0],
-            null, null); //  no local host port or localhosts);
+            null, null,  //  no local host port or localhosts);
+            null);
       
       //  get the path to the control file
       File controlFile = new File(gpLoadMeta.getControlFile());

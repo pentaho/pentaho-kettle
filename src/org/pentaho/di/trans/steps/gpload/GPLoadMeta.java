@@ -122,6 +122,9 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface
 	/** Default number of maximum errors allowed on a load */
 	public static String MAX_ERRORS_DEFAULT = "50";
 	
+	/** Update condition **/
+	private String updateCondition;
+	
 	/*
 	 * Do not translate following values!!! They are will end up in the job export.
 	 */
@@ -301,7 +304,8 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface
 			logFile        = XMLHandler.getTagValue(stepnode, "log_file");     //$NON-NLS-1$
 			eraseFiles     = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "erase_files")); //$NON-NLS-1$
 			encoding       = XMLHandler.getTagValue(stepnode, "encoding");         //$NON-NLS-1$
-
+         updateCondition = XMLHandler.getTagValue(stepnode, "update_condition");         //$NON-NLS-1$;
+			
 			Node localHostsNode = XMLHandler.getSubNode(stepnode, "local_hosts");
 			int nLocalHosts = XMLHandler.countNodes(localHostsNode, "local_host");//$NON-NLS-1$
 			allocateLocalHosts(nLocalHosts);
@@ -339,7 +343,7 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface
 				}
 				                  
 				
-				matchColumn[i] = ("Y".equalsIgnoreCase(XMLHandler.getTagValue(vnode, "match_column"))); 
+				matchColumn[i] = ("Y".equalsIgnoreCase(XMLHandler.getTagValue(vnode, "match_column"))); //$NON-NLS-1$
 				updateColumn[i] = ("Y".equalsIgnoreCase(XMLHandler.getTagValue(vnode, "update_column")));  //$NON-NLS-1$
 			}
 		}
@@ -371,6 +375,7 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface
 		delimiter      = ",";
 		encloseNumbers = false;
       eraseFiles     = true;
+      updateCondition = "";
 
 		allocate(0);	
 		allocateLocalHosts(0);
@@ -396,6 +401,7 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("    ").append(XMLHandler.addTagValue("encoding",     encoding));      //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("enclose_numbers", (encloseNumbers?"Y":"N")));      //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("localhost_port",  localhostPort));       //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("update_condition",  updateCondition));       //$NON-NLS-1$ //$NON-NLS-2$
 		
 		for (int i=0;i<fieldTable.length;i++)
 		{
@@ -438,6 +444,7 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface
 			encoding       =      rep.getStepAttributeString(id_step,  "encoding");       //$NON-NLS-1$
 			localhostPort  =      rep.getStepAttributeString(id_step, "localhost_port");    //$NON-NLS-1$
 			encloseNumbers =      (rep.getStepAttributeString(id_step, "enclose_numbers").equalsIgnoreCase("Y")?true:false); //$NON-NLS-1$  
+			updateCondition =   rep.getStepAttributeString(id_step, "update_condition");    //$NON-NLS-1$
 	
 			int numberOfLocalHosts = rep.countNrStepAttributes(id_step, "local_hosts");
 			allocateLocalHosts(numberOfLocalHosts);
@@ -484,6 +491,7 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "encoding",        encoding);      //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "enclose_numbers", (encloseNumbers?"Y":"N"));//$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "master_port", localhostPort);//$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "update_condition", updateCondition);//$NON-NLS-1$
 
 			for (int i=0;i <localHosts.length; i++) {
 			   rep.saveStepAttribute(id_transformation, id_step, i, "local_host", fieldTable[i]);  //$NON-NLS-1$
@@ -982,4 +990,11 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface
 	   return false;
 	}
 	
+	public void setUpdateCondition(String updateCondition) {
+	   this.updateCondition = updateCondition;
+	}
+	
+	public String getUpdateCondition() {
+	   return updateCondition;
+	}
 }

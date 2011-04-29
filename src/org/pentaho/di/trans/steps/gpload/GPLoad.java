@@ -66,6 +66,7 @@ public class GPLoad extends BaseStep implements StepInterface
 	private static String CLOSE_BRACKET = "]";
 	private static String SPACE_PADDED_DASH = " - ";
 	private static String COLON = ":";
+	private static char DOUBLE_QUOTE = '"';
 			
 	Process gploadProcess = null;
 	
@@ -319,32 +320,52 @@ public class GPLoad extends BaseStep implements StepInterface
           environmentSubstitute(meta.getTableName()));
 
       contents.append(GPLoad.INDENT).append("- TABLE: ").append(tableName).append(Const.CR);
-      contents.append(GPLoad.INDENT).append("- MODE: ").append(meta.getLoadAction()).append(Const.CR);
+      contents.append(GPLoad.INDENT).append("- MODE: ").append(loadAction).append(Const.CR);
       
-      // TODO: add support for MATCH_COLUMNS, UPDATE_COLUMN, UPDATE_CONDITION, MAPPING
+      // TODO: MAPPING
       // TODO: add support for BEFORE and AFTER SQL
 
-      //  if we have match columns then add the specification
-    	if (meta.hasMatchColumn()) {
-    	   contents.append(GPLoad.INDENT).append("- MATCH_COLUMNS: ").append(Const.CR);
-    	
-    	   for (int i=0; i < matchColumn.length; i++) {
-    	      if (matchColumn[i]) {
-       		   contents.append(GPLoad.INDENT).append(GPLoad.INDENT).append(GPLoad.SPACE_PADDED_DASH).append(databaseMeta.quoteField(tableFields[i])).append(Const.CR);
+      //  do the following block if the load action is an update or merge
+      if (loadAction.equals(GPLoadMeta.ACTION_UPDATE) || loadAction.equals(GPLoadMeta.ACTION_MERGE)) {
+      
+         //  if we have match columns then add the specification
+       	if (meta.hasMatchColumn()) {
+       	   contents.append(GPLoad.INDENT).append("- MATCH_COLUMNS: ").append(Const.CR);
+       	
+       	   for (int i=0; i < matchColumn.length; i++) {
+       	      if (matchColumn[i]) {
+          		   contents.append(GPLoad.INDENT).append(GPLoad.INDENT).append(GPLoad.SPACE_PADDED_DASH).append(databaseMeta.quoteField(tableFields[i])).append(Const.CR);
+          	   }
        	   }
-    	   }
-    	}
-    	
-    	//  if we have update columns then add the specification
-    	if (meta.hasUpdateColumn()) {
-         contents.append(GPLoad.INDENT).append("- UPDATE_COLUMNS: ").append(Const.CR);
-         
-         for (int i=0; i < updateColumn.length; i++) {
-            if (updateColumn[i]) {
-               contents.append(GPLoad.INDENT).append(GPLoad.INDENT).append(GPLoad.SPACE_PADDED_DASH).append(databaseMeta.quoteField(tableFields[i])).append(Const.CR);
+       	}
+       	
+       	//  if we have update columns then add the specification
+       	if (meta.hasUpdateColumn()) {
+            contents.append(GPLoad.INDENT).append("- UPDATE_COLUMNS: ").append(Const.CR);
+            
+            for (int i=0; i < updateColumn.length; i++) {
+               if (updateColumn[i]) {
+                  contents.append(GPLoad.INDENT).append(GPLoad.INDENT).append(GPLoad.SPACE_PADDED_DASH).append(databaseMeta.quoteField(tableFields[i])).append(Const.CR);
+               }
             }
-         }
-    	}
+       	}
+       	
+       	//  if we have an update condition
+       	String updateCondition = meta.getUpdateCondition();
+       	if (!Const.isEmpty(updateCondition)) {
+       	  
+       	  //  replace carriage returns with spaces and trim the whole thing
+       	  updateCondition = updateCondition.replaceAll("[\r\n]", " ").trim();
+       	  
+       	  //  test the contents once again
+       	  //  the original contents may have just been linefeed/carriage returns
+       	  if (!Const.isEmpty(updateCondition)) {
+       	     
+       	     // we'll write out what we have
+          	  contents.append(GPLoad.INDENT).append("- UPDATE_CONDITION: ").append(GPLoad.DOUBLE_QUOTE).append(updateCondition).append(GPLoad.DOUBLE_QUOTE).append(Const.CR);
+           }
+       	}
+      }
     	
 		return contents.toString();
 	}
