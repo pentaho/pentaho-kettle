@@ -35,6 +35,8 @@ public class ReplaceStringData extends BaseStepData implements StepDataInterface
 	
 	public String replaceByString[];
 	
+	public int replaceFieldIndex[];
+	
 	public int wholeWord[];
 	
 	public int caseSensitive[];
@@ -50,6 +52,8 @@ public class ReplaceStringData extends BaseStepData implements StepDataInterface
 	public int inputFieldsNr;
 
     public Pattern[] patterns;
+    
+    public int numFields;
 	
 	
 	/**

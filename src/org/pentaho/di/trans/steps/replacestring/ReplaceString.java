@@ -86,17 +86,26 @@ public class ReplaceString extends BaseStep implements StepInterface {
         return Pattern.compile(patternString, flags);
     }
 
+    private String getResolvedReplaceByString(int index, Object[] row)  throws KettleException {
+    	
+    	//if there is something in the original replaceByString, then use it.
+    	if (data.replaceFieldIndex[index] == -1) {
+    		return data.replaceByString[index];
+    	}
+    	
+		return getInputRowMeta().getString(row, data.replaceFieldIndex[index]);
+    }
+    
     private synchronized Object[] getOneRow(RowMetaInterface rowMeta,Object[] row) throws KettleException {
 
     	Object[] rowData = RowDataUtil.resizeArray(row, data.outputRowMeta.size());
         
-        int length = meta.getFieldInStream().length;
 
-        for (int i = 0; i < length; i++) {
+        for (int i = 0; i < data.numFields; i++) {
             String value = replaceString(
                     getInputRowMeta().getString(row, data.inStreamNrs[i]),	
                     data.patterns[i],
-                    data.replaceByString[i]);
+                    getResolvedReplaceByString(i, row));
 
             if(Const.isEmpty(data.outStreamNrs[i])) 
                 rowData[data.inStreamNrs[i]] = value;
@@ -126,13 +135,14 @@ public class ReplaceString extends BaseStep implements StepInterface {
             data.inputFieldsNr=data.outputRowMeta.size();
             meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 
-            final int numFields = meta.getFieldInStream().length;
-            data.inStreamNrs = new int[numFields];
-            data.outStreamNrs = new String[numFields];
-            data.patterns = new Pattern[numFields];
-            data.replaceByString = new String[numFields];
+            data.numFields = meta.getFieldInStream().length;
+            data.inStreamNrs = new int[data.numFields];
+            data.outStreamNrs = new String[data.numFields];
+            data.patterns = new Pattern[data.numFields];
+            data.replaceByString = new String[data.numFields];
+            data.replaceFieldIndex = new int[data.numFields];
             
-            for (int i = 0; i < numFields; i++) {
+            for (int i = 0; i < data.numFields; i++) {
                 data.inStreamNrs[i] = getInputRowMeta().indexOfValue(meta.getFieldInStream()[i]);
                 if (data.inStreamNrs[i] < 0) // couldn't find field!
                     throw new KettleStepException(BaseMessages.getString(PKG, "ReplaceString.Exception.FieldRequired", meta.getFieldInStream()[i])); //$NON-NLS-1$ //$NON-NLS-2$
@@ -149,7 +159,16 @@ public class ReplaceString extends BaseStep implements StepInterface {
                         meta.getWholeWord()[i] == ReplaceStringMeta.WHOLE_WORD_YES,
                         environmentSubstitute(meta.getReplaceString()[i]));
 
-                data.replaceByString[i] = environmentSubstitute(meta.getReplaceByString()[i]);
+                String field=meta.getFieldReplaceByString()[i];
+                if(!Const.isEmpty(field)) {
+                	data.replaceFieldIndex[i]=getInputRowMeta().indexOfValue(field);
+                	if (data.replaceFieldIndex[i] < 0) // couldn't find field!
+                          throw new KettleStepException(BaseMessages.getString(PKG, "ReplaceString.Exception.FieldRequired", field)); //$NON-NLS-1$ //$NON-NLS-2$
+                }else {
+                	data.replaceFieldIndex[i]=-1;
+                	data.replaceByString[i] = environmentSubstitute(meta.getReplaceByString()[i]);
+                }
+
             }
         } // end if first
 
@@ -206,6 +225,11 @@ public class ReplaceString extends BaseStep implements StepInterface {
         meta = (ReplaceStringMeta) smi;
         data = (ReplaceStringData) sdi;
 
+        data.outStreamNrs=null;
+        data.patterns=null;
+        data.replaceByString=null;
+        data.replaceString=null;
+        data.valueChange=null;
         super.dispose(smi, sdi);
     }
 

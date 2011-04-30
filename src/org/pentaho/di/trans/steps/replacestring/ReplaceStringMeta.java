@@ -56,6 +56,8 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
 	
 	private String replaceByString[];
 	
+	private String replaceFieldByString[];
+	
 	private int[] wholeWord;
 	
 	private int[] caseSensitive;
@@ -147,6 +149,10 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
 		return replaceByString;
 	}
 	
+	public String[] getFieldReplaceByString() {
+		return replaceFieldByString;
+	}
+
 	
 	public void setCaseSensitive(int[] caseSensitive) {
 		this.caseSensitive = caseSensitive;
@@ -163,6 +169,7 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
 		useRegEx= new int[nrkeys];
 		replaceString = new String[nrkeys];
 		replaceByString = new String[nrkeys];
+		replaceFieldByString = new String[nrkeys];
 		wholeWord= new int[nrkeys];
 		caseSensitive= new int[nrkeys];
 	}
@@ -179,6 +186,7 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
 			retval.useRegEx[i] = useRegEx[i];
 			retval.replaceString[i] = replaceString[i];
 			retval.replaceByString[i] = replaceByString[i];
+			retval.replaceFieldByString[i] = replaceFieldByString[i];
 			retval.wholeWord[i] = wholeWord[i];
 			retval.caseSensitive[i] = caseSensitive[i];
 		}
@@ -205,6 +213,7 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
 				useRegEx[i] = getCaseSensitiveByCode(Const.NVL(XMLHandler.getTagValue(fnode,"use_regex"), ""));
 				replaceString[i] = Const.NVL(XMLHandler.getTagValue(fnode, "replace_string"), ""); //$NON-NLS-1$
 				replaceByString[i] = Const.NVL(XMLHandler.getTagValue(fnode, "replace_by_string"), ""); //$NON-NLS-1$
+				replaceFieldByString[i] = Const.NVL(XMLHandler.getTagValue(fnode, "replace_field_by_string"), ""); //$NON-NLS-1$
 				wholeWord[i] = getWholeWordByCode(Const.NVL(XMLHandler.getTagValue(fnode,"whole_word"), ""));
 				caseSensitive[i] = getCaseSensitiveByCode(Const.NVL(XMLHandler.getTagValue(fnode,"case_sensitive"), ""));
 				
@@ -235,6 +244,7 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
 			retval.append("        ").append(XMLHandler.addTagValue("use_regex",getUseRegExCode(useRegEx[i])));
 			retval.append("        ").append(XMLHandler.addTagValue("replace_string", replaceString[i])); //$NON-NLS-1$ //$NON-NLS-2$
 			retval.append("        ").append(XMLHandler.addTagValue("replace_by_string", replaceByString[i])); 
+			retval.append("        ").append(XMLHandler.addTagValue("replace_field_by_string", replaceFieldByString[i])); 
 			retval.append("        ").append(XMLHandler.addTagValue("whole_word",getWholeWordCode(wholeWord[i])));
 			retval.append("        ").append(XMLHandler.addTagValue("case_sensitive",getCaseSensitiveCode(caseSensitive[i])));
 			retval.append("      </field>").append(Const.CR); //$NON-NLS-1$
@@ -258,6 +268,7 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
 				useRegEx[i] = getCaseSensitiveByCode(Const.NVL(rep.getStepAttributeString(id_step, i, "use_regex"), ""));
 				replaceString[i] = Const.NVL(rep.getStepAttributeString(id_step, i,	"replace_string"), "");
 				replaceByString[i] = Const.NVL(rep.getStepAttributeString(id_step, i,	"replace_by_string"), "");
+				replaceFieldByString[i] = Const.NVL(rep.getStepAttributeString(id_step, i,	"replace_field_by_string"), "");
 				wholeWord[i] = getWholeWordByCode(Const.NVL(rep.getStepAttributeString(id_step, i, "whole_world"), ""));
 				caseSensitive[i] = getCaseSensitiveByCode(Const.NVL(rep.getStepAttributeString(id_step, i, "case_sensitive"), ""));
 				
@@ -277,6 +288,7 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
 				rep.saveStepAttribute(id_transformation, id_step, i,"use_regex", getUseRegExCode(useRegEx[i]));
 				rep.saveStepAttribute(id_transformation, id_step, i,"replace_string", replaceString[i]); //$NON-NLS-1$
 				rep.saveStepAttribute(id_transformation, id_step, i,"replace_by_string", replaceByString[i]); 
+				rep.saveStepAttribute(id_transformation, id_step, i,"replace_field_by_string", replaceFieldByString[i]); 
 				rep.saveStepAttribute(id_transformation, id_step, i,"whole_world", getWholeWordCode(wholeWord[i]));
 				rep.saveStepAttribute(id_transformation, id_step, i,"case_sensitive", getCaseSensitiveCode(caseSensitive[i]));
 				
