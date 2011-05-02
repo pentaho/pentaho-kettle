@@ -19,6 +19,7 @@ import java.io.File;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -59,9 +60,8 @@ import org.w3c.dom.Node;
  */
 public class JobEntryTalendJobExec extends JobEntryBase implements Cloneable, JobEntryInterface {
   private static Class<?> PKG = JobEntryTalendJobExec.class; // for i18n
-                                                             // purposes, needed
-                                                             // by Translator2!!
-                                                             // $NON-NLS-1$
+                                                             
+  private static Map<String,ClassLoader> classLoaderCache = new HashMap<String, ClassLoader>();
 
   private String          filename;
   private String          className;
@@ -159,19 +159,36 @@ public class JobEntryTalendJobExec extends JobEntryBase implements Cloneable, Jo
 
   private Result executeTalenJob(FileObject file, Result result, int nr) throws Exception {
 
-    URL[] jarFiles = null;
-
+    ClassLoader classLoader = null;
     try {
-      // Find the jar files in the ZIP file...
-      //
-      jarFiles = prepareJarFiles(file);
 
-      // Create a new class loader with the extracted jar files.
-      //
-      KettleURLClassLoader classLoader = new KettleURLClassLoader(jarFiles, getClass().getClassLoader());
+      classLoader = classLoaderCache.get(file.toString());
+      if (classLoader==null) {
+        // Find the jar files in the ZIP file...
+        //
+        final URL[] jarFiles = prepareJarFiles(file);
+
+        // Create a new class loader with the extracted jar files.
+        //
+        classLoader = new KettleURLClassLoader(jarFiles, getClass().getClassLoader());
+
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+          
+          @Override
+          public void run() {
+            try {
+              cleanupJarFiles(jarFiles);
+            } catch(Exception e) {
+              System.err.println("Error cleaning up temporary Talend jar file extracts: "+Const.getStackTracker(e));
+            }
+          }
+        });
+        
+        classLoaderCache.put(file.toString(), classLoader);
+      }
+
       Class<?> clazz = classLoader.loadClass(environmentSubstitute(getClassName()));
       Object jobObject = clazz.newInstance();
-
       Method runJob = clazz.getMethod("runJobInTOS", String[].class);
 
       // TODO: consider passing something of some sort in this next method:
@@ -185,8 +202,6 @@ public class JobEntryTalendJobExec extends JobEntryBase implements Cloneable, Jo
 
     } catch (Exception e) {
       throw new KettleException(BaseMessages.getString(PKG, "JobEntryTalendJobExec.ERROR_0006_ExceptionExecutingTalenJob"), e);
-    } finally {
-      cleanupJarFiles(jarFiles);
     }
 
     return result;
