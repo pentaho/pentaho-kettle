@@ -479,7 +479,7 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "errors",          maxErrors);     //$NON-NLS-1$
          rep.saveStepAttribute(id_transformation, id_step, "schema",          schemaName);    //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "table",           tableName);     //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "errorTable",      errorTableName);     //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "error_table",      errorTableName);     //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "load_method",     loadMethod);    //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "load_action",     loadAction);    //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "gpload_path",     gploadPath);        //$NON-NLS-1$

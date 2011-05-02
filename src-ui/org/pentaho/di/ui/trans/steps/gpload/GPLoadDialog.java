@@ -708,6 +708,8 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       if (input.getUpdateCondition() != null) {
           wUpdateCondition.setText(input.getUpdateCondition());
       }
+      this.wEraseFiles.setSelection(input.isEraseFiles());
+      
       String method = input.getLoadMethod();
       // if ( GPLoadMeta.METHOD_AUTO_CONCURRENT.equals(method) )
       // {
