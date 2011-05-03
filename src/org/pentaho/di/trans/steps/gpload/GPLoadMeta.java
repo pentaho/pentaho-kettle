@@ -446,7 +446,7 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface
 			encloseNumbers =      (rep.getStepAttributeString(id_step, "enclose_numbers").equalsIgnoreCase("Y")?true:false); //$NON-NLS-1$  
 			updateCondition =   rep.getStepAttributeString(id_step, "update_condition");    //$NON-NLS-1$
 	
-			int numberOfLocalHosts = rep.countNrStepAttributes(id_step, "local_hosts");
+			int numberOfLocalHosts = rep.countNrStepAttributes(id_step, "local_host");
 			allocateLocalHosts(numberOfLocalHosts);
          for (int i=0; i< numberOfLocalHosts; i++) {
             localHosts[i] = rep.getStepAttributeString(id_step, i, "local_host");   //$NON-NLS-1$
