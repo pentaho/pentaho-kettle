@@ -25,6 +25,7 @@ import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.KeyValue;
+import org.apache.hadoop.hbase.client.HBaseAdmin;
 import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.client.ResultScanner;
@@ -122,6 +123,29 @@ public class HBaseInput extends BaseStep implements StepInterface {
         m_mappingAdmin = new MappingAdmin(m_connection);
       } catch (Exception ex) {
         throw new KettleException("Unable to create a MappingAdmin connection");
+      }
+      
+      // check on the existence and readiness of the target table
+      HBaseAdmin admin = null;
+      try {
+        admin = new HBaseAdmin(m_connection);
+      } catch (Exception ex) {
+        throw new KettleException("Unable to obtain a connection to HBase.");
+      }
+
+      String sourceName = m_transMeta.environmentSubstitute(m_meta.getSourceTableName());
+      try {
+        if (!admin.tableExists(sourceName)) {          
+          throw new KettleException("Source table \"" + sourceName + "\" does not exist!");
+        }
+      
+        if (admin.isTableDisabled(sourceName) || !admin.isTableAvailable(sourceName)) {
+          throw new KettleException("Source table \"" + sourceName + "\" is not available!");          
+        }
+      } catch (IOException ex) {
+        throw new KettleException("A problem occurred when trying to check " +
+                        "availablility/readyness of source table \"" 
+            + sourceName + "\"");
       }
       
       // Get mapping details for the source table
@@ -362,7 +386,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
                 continue;
               }
             
-              System.err.println("::::::::::::: Here " + decodedB);
+              // System.err.println("::::::::::::: Here " + decodedB);
               DeserializedBooleanComparator comparator = 
                 new DeserializedBooleanComparator(decodedB.booleanValue());
               SingleColumnValueFilter scf = 
