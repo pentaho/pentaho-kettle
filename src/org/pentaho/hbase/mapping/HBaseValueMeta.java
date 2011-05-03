@@ -289,6 +289,10 @@ public class HBaseValueMeta extends ValueMeta {
   public static byte[] encodeKeyValue(Object keyValue, Mapping.KeyType keyType) 
     throws KettleException {
     
+    if (keyType == Mapping.KeyType.STRING) {
+      return encodeKeyValue((String)keyValue, keyType);
+    }
+    
     if (keyType == Mapping.KeyType.UNSIGNED_LONG || 
         keyType == Mapping.KeyType.UNSIGNED_DATE) {
       if (keyValue == null) {
