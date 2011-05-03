@@ -51,21 +51,33 @@ import org.pentaho.hbase.mapping.Mapping;
 import org.pentaho.hbase.mapping.MappingAdmin;
 import org.w3c.dom.Node;
 
+/**
+ * Class providing an input step for reading data from an HBase table
+ * according to meta data mapping info stored in a separate HBase table
+ * called "pentaho_mappings". See org.pentaho.hbase.mapping.Mapping for
+ * details on the meta data format.
+ * 
+ * @author Mark Hall (mhall{[at]}pentaho{[dot]}com)
+ * @version $Revision$
+ *
+ */
 @Step(id = "HBaseInput", image = "HB.png", name = "HBase Input", description="Reads data from a HBase table according to a mapping", categoryDescription="Hadoop")
 public class HBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
   
+  /** comma separated list of hosts that the zookeeper quorum is running on */
   protected String m_zookeeperHosts;
-  
+
+  /** path/url to hbase-site.xml */
   protected String m_coreConfigURL;
   
+  /** path/url to hbase-default.xml */
   protected String m_defaultConfigURL;
   
+  /** the name of the HBase table to read from */
   protected String m_sourceTableName;
   
-  protected String m_sourceMappingName;
-  
-  /** Whether to output the key as a field */
-//  protected boolean m_outputKeyAsField = true;
+  /** the name of the mapping for columns/types for the source table */
+  protected String m_sourceMappingName;  
   
   /** Start key value for range scans */
   protected String m_keyStart;
@@ -90,28 +102,64 @@ public class HBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
    */
   protected boolean m_matchAnyFilter;
   
+  /**
+   * Set the list of hosts that the zookeeper quorum is running on.
+   * Either this OR the hbase-site.xml (and optionally hbase-default.xml)
+   * can be used to establish a connection.
+   * 
+   * @param z a comma-separated list of host names
+   */
   public void setZookeeperHosts(String z) {
     m_zookeeperHosts = z;
   }
   
+  /**
+   * Get the list of hosts that the zookeeper quorum is running on
+   * 
+   * @return a comma-separated list of hosts
+   */
   public String getZookeeperHosts() {
     return m_zookeeperHosts;
   }
   
+  /**
+   * Set the URL to the hbase-site.xml. Either this OR the zookeeper
+   * host list can be used to establish a connection.
+   * 
+   * @param coreConfig
+   */
   public void setCoreConfigURL(String coreConfig) {
     m_coreConfigURL = coreConfig;
     m_cachedMapping = null;
   }
   
+  /**
+   * Get the URL to the hbase-site.xml file.
+   * 
+   * @return the URL to the hbase-site.xml file or null if not set.
+   */
   public String getCoreConfigURL() {
     return m_coreConfigURL;
   }
   
+  /**
+   * Set the URL to the hbase-default.xml file. This can be
+   * optionally supplied in conjuction with hbase-site.xml. If
+   * not supplied, then the default hbase-default.xml included
+   * in the main hbase jar file is used.
+   * 
+   * @param defaultConfig URL to the hbase-default.xml file.
+   */
   public void setDefaulConfigURL(String defaultConfig) {
     m_defaultConfigURL = defaultConfig;
     m_cachedMapping = null;
   }
   
+  /**
+   * Get the URL to hbase-default.xml
+   * 
+   * @return the URL to hbase-default.xml or null if not set.
+   */
   public String getDefaultConfigURL() {
     return m_defaultConfigURL;
   }
@@ -121,71 +169,155 @@ public class HBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
     m_cachedMapping = null;
   }
   
+  /**
+   * Get the name of the HBase table to read from.
+   * 
+   * @return the name of the source HBase table.
+   */
   public String getSourceTableName() {
     return m_sourceTableName;
   }
   
+  /**
+   * Set the name of the mapping to use that defines column names and
+   * types for the source table.
+   * 
+   * @param sourceMapping the name of the mapping to use.
+   */
   public void setSourceMappingName(String sourceMapping) {
     m_sourceMappingName = sourceMapping;
     m_cachedMapping = null;
   }
   
+  /**
+   * Get the name of the mapping to use for reading and decoding
+   * column values for the source table.
+   * 
+   * @return the name of the mapping to use.
+   */
   public String getSourceMappingName() {
     return m_sourceMappingName;
   }
   
+  /**
+   * Set whether a given row needs to match at least one of the
+   * user specified column filters.
+   * 
+   * @param a true if at least one filter needs to match before a
+   * given row is returned. If false then *all* filters must match. 
+   */
   public void setMatchAnyFilter(boolean a) {
     m_matchAnyFilter = a;
   }
   
+  /**
+   * Get whether a given row needs to match at least one of the
+   * user-specified column filters.
+   * 
+   * @return true if a given row needs to match at least one of
+   * the user specified column filters. Returns false if *all* column
+   * filters need to match
+   */
   public boolean getMatchAnyFilter() {
     return m_matchAnyFilter;
-  }
+  }  
   
-/*  public void setOutputKeyAsField(boolean k) {
-    m_outputKeyAsField = k;
-  }
-  
-  public boolean getOutputKeyAsField() {
-    return m_outputKeyAsField;
-  } */
-  
+  /**
+   * Set the starting value (inclusive) of the key for range scans
+   * 
+   * @param start the starting value of the key to use in range scans.
+   */
   public void setKeyStartValue(String start) {
     m_keyStart = start;
   }
   
+  /**
+   * Get the starting value of the key to use in range scans
+   * 
+   * @return the starting value of the key
+   */
   public String getKeyStartValue() {
     return m_keyStart;
   }
   
+  /**
+   * Set the stop value (exclusive) of the key to use in range scans. May be
+   * null to indicate scan to the end of the table
+   * 
+   * @param stop the stop value of the key to use in range scans
+   */
   public void setKeyStopValue(String stop) {
     m_keyStop = stop;
   }
   
+  /**
+   * Get the stop value of the key to use in range scans
+   * 
+   * @return the stop value of the key
+   */
   public String getKeyStopValue() {
     return m_keyStop;
   }
   
+  /**
+   * Set the number of rows to cache for scans. Higher values result in
+   * improved performance since there will be fewer requests to HBase but
+   * at the expense of increased memory consumption.
+   * 
+   * @param s the number of rows to cache for scans.
+   */
   public void setScannerCacheSize(String s) {
     m_scannerCacheSize = s;
   }
   
+  /**
+   * The number of rows to cache for scans.
+   * 
+   * @return the number of rows to cache for scans.
+   */
   public String getScannerCacheSize() {
     return m_scannerCacheSize;
   }
   
+  /**
+   * Set a list of fields to emit from this steo. If not specified,
+   * then all fields defined in the mapping for the source table
+   * will be emitted.
+   * 
+   * @param fields a list of fields to emit from this step.
+   */
   public void setOutputFields(List<HBaseValueMeta> fields) {
     m_outputFields = fields;
   }
   
+  /**
+   * Get the list of fields to emit from this step. May return null, 
+   * which indicates that *all* fields defined in the mapping for
+   * the source table will be emitted.
+   * 
+   * @return the fields that will be output or null (indicating
+   * all fields defined in the mapping will be output).
+   */
   public List<HBaseValueMeta> getOutputFields() {
     return m_outputFields;
   }
   
+  /**
+   * Set a list of column filters to use to refine the query
+   * 
+   * @param list a list of column filters to refine the query
+   */
   public void setColumnFilters(List<ColumnFilter> list) {
     m_filters = list;
   }
   
+  /**
+   * Get the list of column filters to use for refining the results
+   * of a scan. May return null if no filters are in use.
+   * 
+   * @return a list of columm filters by which to refine the results
+   * of a query scan.
+   */
   public List<ColumnFilter> getColumnFilters() {
     return m_filters;
   }

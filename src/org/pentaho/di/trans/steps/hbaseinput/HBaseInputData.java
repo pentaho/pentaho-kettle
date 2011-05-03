@@ -22,19 +22,51 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
+/**
+ * Class providing an input step for reading data from an HBase table
+ * according to meta data mapping info stored in a separate HBase table
+ * called "pentaho_mappings". See org.pentaho.hbase.mapping.Mapping for
+ * details on the meta data format.
+ * 
+ * @author Mark Hall (mhall{[at]}pentaho{[dot]}com)
+ * @version $Revision$
+ *
+ */
 public class HBaseInputData extends BaseStepData implements StepDataInterface {
   
   /** The output data format */
   protected RowMetaInterface m_outputRowMeta;
     
+  /**
+   * Get the output row format
+   * 
+   * @return the output row format
+   */
   public RowMetaInterface getOutputRowMeta() {
     return m_outputRowMeta;
   }
   
+  /**
+   * Set the output row format
+   * 
+   * @param rmi the output row format
+   */
   public void setOutputRowMeta(RowMetaInterface rmi) {
     m_outputRowMeta = rmi;
   }
   
+  /**
+   * Get a configured connection to HBase. A connection can be obtained via
+   * a list of host(s) that zookeeper is running on or via the hbase-site.xml
+   * (and optionally hbase-default.xml) file.
+   * 
+   * @param zookeeperHosts a comma separated list of hosts that zookeeper is
+   * running on
+   * @param coreConfig URL to the hbase-site.xml (may be null)
+   * @param defaultConfig URL to the hbase-default.xml (may be null)
+   * @return a Configuration object that can be used ot access HBase.
+   * @throws IOException if a problem occurs.
+   */
   public static Configuration getHBaseConnection(String zookeeperHosts, 
       URL coreConfig, URL defaultConfig) 
     throws IOException {
@@ -64,6 +96,13 @@ public class HBaseInputData extends BaseStepData implements StepDataInterface {
     return con;    
   }
   
+  /**
+   * Utility method to covert a string to a URL object.
+   * 
+   * @param pathOrURL file or http URL as a string
+   * @return a URL
+   * @throws MalformedURLException if there is a problem with the URL.
+   */
   public static URL stringToURL(String pathOrURL) throws MalformedURLException {
     URL result = null;
     
