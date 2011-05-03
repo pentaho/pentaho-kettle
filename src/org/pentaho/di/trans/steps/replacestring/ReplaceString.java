@@ -72,7 +72,7 @@ public class ReplaceString extends BaseStep implements StepInterface {
 
     private Pattern buildPattern(boolean literalParsing, boolean caseSensitive, boolean wholeWord, String patternString) {
         int flags = 0;
-        if (literalParsing) flags |= Pattern.LITERAL;
+        if (literalParsing && !wholeWord) flags |= Pattern.LITERAL;
         if (!caseSensitive) flags |= Pattern.CASE_INSENSITIVE;
 
         /* XXX: I don't like this parameter.
