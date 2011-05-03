@@ -494,7 +494,7 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "update_condition", updateCondition);//$NON-NLS-1$
 
 			for (int i=0;i <localHosts.length; i++) {
-			   rep.saveStepAttribute(id_transformation, id_step, i, "local_host", fieldTable[i]);  //$NON-NLS-1$
+			   rep.saveStepAttribute(id_transformation, id_step, i, "local_host", localHosts[i]);  //$NON-NLS-1$
 			}
 			
 			for (int i=0;i<fieldTable.length;i++)
