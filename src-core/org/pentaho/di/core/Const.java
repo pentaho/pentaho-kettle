@@ -58,25 +58,37 @@ public class Const
 {
 	private static Class<?> PKG = Const.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-    /**
-     *  Version number
-     */
-    public static final String VERSION = "4.2.0-M1";
-    
-    /**
-     *  Release Type 
-     */ 
-    public enum ReleaseType {RELEASE_CANDIDATE, MILESTONE, PREVIEW, GA}
+  /**
+   * Version number
+   */
+  public static final String VERSION = "4.2.0-M2";
+
+  /**
+   * Release Type
+   */
+  public enum ReleaseType {RELEASE_CANDIDATE, MILESTONE, PREVIEW, GA}
+
+  /**
+   * The name of the variable that optionally contains an alternative rowset get timeout (in ms).
+   * This only makes a difference for extremely short lived transformations.
+   */
+  public static final String KETTLE_ROWSET_GET_TIMEOUT = "KETTLE_ROWSET_GET_TIMEOUT";
+
+  /**
+   * The name of the variable that optionally contains an alternative rowset put timeout (in ms).
+   * This only makes a difference for extremely short lived transformations.
+   */
+  public static final String KETTLE_ROWSET_PUT_TIMEOUT = "KETTLE_ROWSET_PUT_TIMEOUT";
 
 	/**
-	 * Sleep time waiting when buffer is empty
+	 * Sleep time waiting when buffer is empty (the default)
 	 */
 	public static final int TIMEOUT_GET_MILLIS = 50;
 
 	/**
-	 * Sleep time waiting when buffer is full
+	 * Sleep time waiting when buffer is full (the default)
 	 */
-	public static final int TIMEOUT_PUT_MILLIS = 50; // luxury problem!
+	public static final int TIMEOUT_PUT_MILLIS = 50;
 
 	/**
 	 * print update every ... lines
@@ -630,13 +642,13 @@ public class Const
 	 */
 	public static final String KETTLE_PLUGIN_CLASSES = "KETTLE_PLUGIN_CLASSES";
 
-    /**
-     * Name of the environment variable that contains the size of the transformation rowset size.
-     * This overwrites values that you set transformation settings.
-     */
-    public static final String KETTLE_TRANS_ROWSET_SIZE = "KETTLE_TRANS_ROWSET_SIZE";
-	
-	
+  /**
+   * Name of the environment variable that contains the size of the
+   * transformation rowset size. This overwrites values that you set
+   * transformation settings.
+   */
+  public static final String KETTLE_TRANS_ROWSET_SIZE = "KETTLE_TRANS_ROWSET_SIZE";
+
 	/**
 	 * A general initial version comment 
 	 */
