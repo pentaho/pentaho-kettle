@@ -227,7 +227,7 @@ public class HBaseValueMeta extends ValueMeta {
    * 
    * @return the type of this field as a string
    */
-  public String getHBaseTypeAsString() {
+  public String getHBaseTypeDesc() {
     if (isInteger()) {
       return (getIsLongOrDouble() ? "Long" : "Integer");
     }
@@ -279,7 +279,64 @@ public class HBaseValueMeta extends ValueMeta {
   }
   
   /**
-   * Encode a key value (object) to an array of bytes.
+   * Encode a keyValue (with associated meta data) to an array of bytes with respect
+   * to the key type specified in a mapping.
+   * 
+   * @param keyValue the key value (object) to encode
+   * @param keyMeta meta data about the key value
+   * @param keyType the target type of the encoded key value
+   * @return the key encoded as an array of bytes
+   * @throws KettleException if something goes wrong
+   */
+  public static byte[] encodeKeyValue(Object keyValue, ValueMetaInterface keyMeta, 
+      Mapping.KeyType keyType) throws KettleException {
+    
+    byte[] result = null;
+    
+    switch (keyType) {
+    case STRING:
+      String stringKey = keyMeta.getString(keyValue);
+      result = encodeKeyValue(stringKey, keyType);
+      break;
+    case DATE:
+    case UNSIGNED_DATE:
+      Date dateKey = keyMeta.getDate(keyValue);
+      if (keyType == Mapping.KeyType.UNSIGNED_DATE && dateKey.getTime() < 0) {
+        throw new KettleException("Key for mapping is UNSIGNED_DATE, but incoming " +
+        		"date value is negative (i.e. < 1st Jan 1970)");
+      }
+      result = encodeKeyValue(new Long(dateKey.getTime()), keyType);
+      break;
+    case INTEGER:
+    case UNSIGNED_INTEGER:
+      int keyInt = keyMeta.getInteger(keyValue).intValue();
+      if (keyType == Mapping.KeyType.UNSIGNED_INTEGER && keyInt < 0) {
+        throw new KettleException("Key for mapping is UNSIGNED_INTEGER, but incoming " +
+        		"integer value is negative.");
+      }
+      result = encodeKeyValue(new Integer(keyInt), keyType);
+      break;
+    case LONG:
+    case UNSIGNED_LONG:
+      long keyLong = keyMeta.getInteger(keyValue).longValue();
+      if (keyType == Mapping.KeyType.UNSIGNED_LONG && keyLong < 0) {
+        throw new KettleException("Key for mapping is UNSIGNED_LONG, but incoming " +
+        "long value is negative.");
+      }
+      result = encodeKeyValue(new Long(keyLong), keyType);
+      break;      
+    }
+    
+    if (result == null) {
+      throw new KettleException("Unknown type for table key!");    
+    }
+    
+    return result;
+  }
+  
+  /**
+   * Encode a key value (object) to an array of bytes with respect to the key type
+   * specified in a mapping.
    * 
    * @param keyValue the key value (object) to encode
    * @param keyType the type of the key to encode
@@ -453,6 +510,65 @@ public class HBaseValueMeta extends ValueMeta {
     }
 
     throw new KettleException("Unknown type for table key!");
+  }
+  
+  public static byte[] encodeColumnValue(Object columnValue, ValueMetaInterface colMeta, 
+      HBaseValueMeta mappingColMeta) throws KettleException {
+    
+    byte[] encoded = null;
+    switch (mappingColMeta.getType()) {
+    case TYPE_STRING:
+      String toEncode = colMeta.getString(columnValue);
+      encoded = Bytes.toBytes(toEncode);
+      break;
+    case TYPE_INTEGER:
+      Long l = colMeta.getInteger(columnValue);
+      if (mappingColMeta.getIsLongOrDouble()) {
+        encoded = Bytes.toBytes(l.longValue());
+      } else {
+        encoded = Bytes.toBytes(l.intValue());
+      }
+      break;
+    case TYPE_NUMBER:
+      Double d = colMeta.getNumber(columnValue);
+      if (mappingColMeta.getIsLongOrDouble()) {
+        encoded = Bytes.toBytes(d.doubleValue());
+      } else {
+        encoded = Bytes.toBytes(d.floatValue());
+      }
+      break;
+    case TYPE_DATE:
+      Date date = colMeta.getDate(columnValue);
+      encoded = Bytes.toBytes(date.getTime());
+      break;      
+    case TYPE_BOOLEAN:
+      Boolean b = colMeta.getBoolean(columnValue);
+      String boolString = (b.booleanValue()) ? "Y" : "N";
+      encoded = Bytes.toBytes(boolString);
+      break;
+    case TYPE_BIGNUMBER:
+      BigDecimal bd = colMeta.getBigNumber(columnValue);
+      String bds = bd.toString();
+      encoded = Bytes.toBytes(bds);
+      break;
+    case TYPE_SERIALIZABLE:
+      try {
+        encoded = encodeObject(columnValue);
+      } catch (IOException e) {
+        throw new KettleException("Unable to serialize serializable type \""
+            + colMeta.getName() + "\"");
+      }
+      break;
+    case TYPE_BINARY:
+      encoded = colMeta.getBinary(columnValue);
+      break;      
+    }
+    
+    if (encoded == null) {
+      throw new KettleException("Unknown type for column!");
+    }
+    
+    return encoded;
   }
 
   /**
