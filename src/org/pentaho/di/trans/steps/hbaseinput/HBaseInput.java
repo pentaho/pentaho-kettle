@@ -244,12 +244,12 @@ public class HBaseInput extends BaseStep implements StepInterface {
           // check the type (if set in the ColumnFilter) against the type
           // of this field in the mapping
           if (!Const.isEmpty(cf.getFieldType())) {
-            if (!mappedCol.getTypeDesc().equalsIgnoreCase(cf.getFieldType())) {
+            if (!mappedCol.getHBaseTypeDesc().equalsIgnoreCase(cf.getFieldType())) {
               throw new KettleException("Type (" + cf.getFieldType() 
                   + ") of column filter for \""
                   + cf.getFieldAlias() + "\" does not match type specified " 
                   + "for this field in the mapping (" 
-                  + mappedCol.getTypeDesc() + ")");
+                  + mappedCol.getHBaseTypeDesc() + ")");
             }
           }
           

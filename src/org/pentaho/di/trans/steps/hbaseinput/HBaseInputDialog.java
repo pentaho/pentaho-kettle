@@ -803,7 +803,7 @@ public class HBaseInputDialog extends BaseStepDialog implements
     colinf2[0].setReadOnly(false);
 /*    colinf2[1].setReadOnly(true);
     colinf2[2].setReadOnly(true); */
-    colinf2[1].setReadOnly(true);
+    colinf2[1].setReadOnly(false);
     colinf2[2].setReadOnly(true);
     colinf2[3].setReadOnly(false);
     colinf2[4].setReadOnly(false);
@@ -975,6 +975,21 @@ public class HBaseInputDialog extends BaseStepDialog implements
         HBaseValueMeta vm = m_mappedColumns.get(transMeta.environmentSubstitute(alias));
         if (vm != null) {
           String type = ValueMeta.getTypeDesc(vm.getType());
+          if (vm.getType() == ValueMetaInterface.TYPE_INTEGER) {
+            if (vm.getIsLongOrDouble()) {
+              type = "Long";
+            } else {
+              type = "Integer";
+            }
+          }
+          if (vm.getType() == ValueMetaInterface.TYPE_NUMBER) {
+            if (vm.getIsLongOrDouble()) {
+              type = "Double";
+            } else {
+              type = "Float";
+            }
+          }
+          
           tableItem.setText(2, type);
           return vm;
         }
