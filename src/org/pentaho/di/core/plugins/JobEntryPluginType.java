@@ -80,7 +80,11 @@ public class JobEntryPluginType extends BasePluginType implements PluginTypeInte
 		// Scan the native steps...
 		//
 		String kettleJobEntriesXmlFile = Const.XML_FILE_KETTLE_JOB_ENTRIES;
-		
+    String alternative = System.getProperty(Const.KETTLE_CORE_JOBENTRIES_FILE, null);
+    if (!Const.isEmpty(alternative)) {
+      kettleJobEntriesXmlFile = alternative;
+    }
+
 		// Load the plugins for this file...
 		//
 		try {

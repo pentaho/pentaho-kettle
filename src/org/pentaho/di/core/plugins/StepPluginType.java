@@ -71,6 +71,10 @@ public class StepPluginType extends BasePluginType implements PluginTypeInterfac
 		// Scan the native steps...
 		//
 		String kettleStepsXmlFile = Const.XML_FILE_KETTLE_STEPS;
+		String alternative = System.getProperty(Const.KETTLE_CORE_STEPS_FILE, null);
+		if (!Const.isEmpty(alternative)) {
+		  kettleStepsXmlFile = alternative;
+		}
 		
 		// Load the plugins for this file...
 		//

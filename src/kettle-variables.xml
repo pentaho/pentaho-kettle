@@ -161,5 +161,17 @@
 		<default-value>50</default-value>
 	</kettle-variable>
 	
+	<kettle-variable>
+		<description>The name of the environment variable that will contain the alternative location of the kettle-steps.xml file.  You can use this to customize the list of available internal steps outside of the codebase.</description>
+		<variable>KETTLE_CORE_STEPS_FILE</variable>
+		<default-value></default-value>
+	</kettle-variable>
+	
+	<kettle-variable>
+		<description>The name of the environment variable that will contain the alternative location of the kettle-job-entries.xml file.</description>
+		<variable>KETTLE_CORE_JOBENTRIES_FILE</variable>
+		<default-value></default-value>
+	</kettle-variable>
+	
 
 </kettle-variables>

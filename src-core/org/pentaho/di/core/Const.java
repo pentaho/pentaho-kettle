@@ -664,10 +664,20 @@ public class Const
 	 */
 	public static final String	XML_FILE_KETTLE_STEPS	= "kettle-steps.xml";
 
+	 /**
+   * The name of the environment variable that will contain the alternative location of the kettle-steps.xml file
+   */
+  public static final String   KETTLE_CORE_STEPS_FILE = "KETTLE_CORE_STEPS_FILE";
+
 	/**
 	 * The XML file that contains the list of native partition plugins
 	 */
 	public static final String	XML_FILE_KETTLE_PARTITION_PLUGINS	= "kettle-partition-plugins.xml";
+
+  /**
+   * The name of the environment variable that will contain the alternative location of the kettle-job-entries.xml file
+   */
+  public static final String   KETTLE_CORE_JOBENTRIES_FILE = "KETTLE_CORE_JOBENTRIES_FILE";
 
 	/**
 	 * The XML file that contains the list of native Kettle job entries
