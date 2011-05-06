@@ -817,7 +817,7 @@ public class ConditionEditor extends Composite
 			}
 		}
 		
-		gc.drawImage(imageAdd, size_add.x-X_PADDING, size_add.y);
+		gc.drawImage(imageAdd, size_add.x, size_add.y);
 		
 		/*
 		 * Draw the up-symbol if needed...
@@ -876,8 +876,7 @@ public class ConditionEditor extends Composite
 	{
 	    Rectangle is = imageAdd.getBounds();  // image size
 	    Rectangle cs = getBounds();           // Canvas size
-	    
-	    return new Rectangle(cs.width-is.width-5, 5, is.width, is.height);
+	    return new Rectangle(cs.width-is.width-5-X_PADDING, 5, is.width, is.height);
 	}
 
 	private void drawNegated(GC gc, int x, int y, Condition condition)
