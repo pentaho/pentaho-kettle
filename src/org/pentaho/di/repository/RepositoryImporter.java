@@ -49,9 +49,31 @@ public class RepositoryImporter implements IRepositoryImporter {
   private String transDirOverride = null;
   private String jobDirOverride = null;
   
+  private String fileDirectory = null;
+  private String filenames[] = null;
+  
+  public RepositoryImporter(Repository repository, String filename, RepositoryDirectoryInterface baseDirectory, boolean overwrite, boolean continueOnError, String versionComment) {
+    this(repository, null, new String[] { filename }, baseDirectory, overwrite, continueOnError, versionComment);
+    }
+
+  public RepositoryImporter(Repository repository, String fileDirectory, String[] filenames, RepositoryDirectoryInterface baseDirectory, boolean overwrite, boolean continueOnError, String versionComment) {
+    this.log = new LogChannel("Repository import");
+    this.rep = repository;
+    this.fileDirectory = fileDirectory;
+    this.filenames = filenames;
+    this.baseDirectory = baseDirectory;
+    this.overwrite = overwrite;
+    this.continueOnError = continueOnError;
+    this.versionComment = versionComment;
+    } 
+  
   public RepositoryImporter(Repository repository) {
       this.log = new LogChannel("Repository import"); //$NON-NLS-1$
       this.rep = repository;
+  }
+  
+  public synchronized void importAll() {
+    importAll(this, fileDirectory, filenames, baseDirectory, overwrite, continueOnError, versionComment); 
   }
   
   public synchronized void importAll(RepositoryImportFeedbackInterface feedback, String fileDirectory, String[] filenames, RepositoryDirectoryInterface baseDirectory, boolean overwrite, boolean continueOnError, String versionComment) {
@@ -59,6 +81,8 @@ public class RepositoryImporter implements IRepositoryImporter {
     this.overwrite = overwrite;
     this.continueOnError = continueOnError;
     this.versionComment = versionComment;
+    this.fileDirectory = fileDirectory;
+    this.filenames = filenames;
 
     feedback.setLabel(BaseMessages.getString(PKG, "RepositoryImporter.ImportXML.Label"));
     try {
