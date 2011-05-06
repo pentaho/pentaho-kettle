@@ -3,6 +3,7 @@
  */
 package org.pentaho.di.core.plugins;
 
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
 import java.util.List;
@@ -81,7 +82,15 @@ public class StepPluginType extends BasePluginType implements PluginTypeInterfac
 		try {
 			InputStream inputStream = getClass().getResourceAsStream(kettleStepsXmlFile);
 			if (inputStream==null) {
-				inputStream =  getClass().getResourceAsStream("/"+kettleStepsXmlFile);
+			  inputStream =  getClass().getResourceAsStream("/"+kettleStepsXmlFile);
+			}
+			// Retry to load a regular file...
+			if (inputStream==null && !Const.isEmpty(alternative)) {
+			  try {
+			    inputStream = new FileInputStream(kettleStepsXmlFile);
+			  } catch(Exception e) {
+			    throw new KettlePluginException("Unable to load native step plugins '"+kettleStepsXmlFile+"'", e);
+			  }
 			}
 			if (inputStream==null) {
 				throw new KettlePluginException("Unable to find native step definition file: "+Const.XML_FILE_KETTLE_STEPS);
