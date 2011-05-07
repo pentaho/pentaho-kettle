@@ -229,7 +229,7 @@ public class OlapInputMeta extends BaseStepMeta implements StepMetaInterface
 	public RowMeta createRowMeta(String[] headerValues, String[][] cellValues) {
 		RowMeta outputRowMeta = new RowMeta();
 
-        for (int i=0;i<cellValues[0].length;i++)
+        for (int i=0;cellValues != null && cellValues.length > 0 && i<cellValues[0].length;i++)
         {
             String name ="";
             if (Const.isEmpty(headerValues)) {
@@ -302,7 +302,7 @@ public class OlapInputMeta extends BaseStepMeta implements StepMetaInterface
     	if (data == null){
     		data = (OlapData)getStepData();
     	}
-    	
+	
 		String driver = this.getOlap4jDriver();
 		String url = space.environmentSubstitute(this.getOlap4jUrl());
 		String username = space.environmentSubstitute(this.getUsername());
