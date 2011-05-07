@@ -1,0 +1,449 @@
+/* Copyright (c) 2007 Pentaho Corporation.  All rights reserved. 
+ * This software was developed by Pentaho Corporation and is provided under the terms 
+ * of the GNU Lesser General Public License, Version 2.1. You may not use 
+ * this file except in compliance with the license. If you need a copy of the license, 
+ * please go to http://www.gnu.org/licenses/lgpl-2.1.txt. The Original Code is Pentaho 
+ * Data Integration.  The Initial Developer is Pentaho Corporation.
+ *
+ * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
+ * the license for the specific language governing your rights and limitations.*/
+
+package org.pentaho.di.trans.steps.singlethreader;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Counter;
+import org.pentaho.di.core.ObjectLocationSpecificationMethod;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryDirectory;
+import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.repository.StringObjectId;
+import org.pentaho.di.resource.ResourceDefinition;
+import org.pentaho.di.resource.ResourceEntry;
+import org.pentaho.di.resource.ResourceEntry.ResourceType;
+import org.pentaho.di.resource.ResourceNamingInterface;
+import org.pentaho.di.resource.ResourceReference;
+import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.TransMeta.TransformationType;
+import org.pentaho.di.trans.step.BaseStepMeta;
+import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepInterface;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
+import org.w3c.dom.Node;
+
+/**
+ * Meta-data for the Mapping step: contains name of the (sub-)transformation to
+ * execute
+ * 
+ * @since 22-nov-2005
+ * @author Matt
+ * 
+ */
+
+public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterface {
+  private static Class<?>                   PKG = SingleThreaderMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+  
+  private String                            transName;
+  private String                            fileName;
+  private String                            directoryPath;
+  private ObjectId                          transObjectId;
+  private ObjectLocationSpecificationMethod specificationMethod;
+
+  private String                            batchSize;
+  
+  private String                            injectStep;
+  private String                            retrieveStep;
+
+  public SingleThreaderMeta() {
+    super(); // allocate BaseStepMeta
+
+    batchSize = "100";
+  }
+
+  public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleXMLException {
+    try {
+      String method = XMLHandler.getTagValue(stepnode, "specification_method");
+      specificationMethod = ObjectLocationSpecificationMethod.getSpecificationMethodByCode(method);
+      String transId = XMLHandler.getTagValue(stepnode, "trans_object_id");
+      transObjectId = Const.isEmpty(transId) ? null : new StringObjectId(transId);
+
+      transName = XMLHandler.getTagValue(stepnode, "trans_name"); //$NON-NLS-1$
+      fileName = XMLHandler.getTagValue(stepnode, "filename"); //$NON-NLS-1$
+      directoryPath = XMLHandler.getTagValue(stepnode, "directory_path"); //$NON-NLS-1$
+
+      batchSize = XMLHandler.getTagValue(stepnode, "batch_size"); //$NON-NLS-1$
+      injectStep = XMLHandler.getTagValue(stepnode, "inject_step"); //$NON-NLS-1$
+      retrieveStep = XMLHandler.getTagValue(stepnode, "retrieve_step"); //$NON-NLS-1$
+      
+    } catch (Exception e) {
+      throw new KettleXMLException(BaseMessages.getString(PKG, "SingleThreaderMeta.Exception.ErrorLoadingTransformationStepFromXML"), e); //$NON-NLS-1$
+    }
+  }
+
+  public Object clone() {
+    Object retval = super.clone();
+    return retval;
+  }
+
+  public String getXML() {
+    StringBuffer retval = new StringBuffer(300);
+
+    retval.append("    ").append(XMLHandler.addTagValue("specification_method", specificationMethod == null ? null : specificationMethod.getCode()));
+    retval.append("    ").append(XMLHandler.addTagValue("trans_object_id", transObjectId == null ? null : transObjectId.toString()));
+    retval.append("    ").append(XMLHandler.addTagValue("trans_name", transName)); //$NON-NLS-1$
+    retval.append("    ").append(XMLHandler.addTagValue("filename", fileName)); //$NON-NLS-1$
+    retval.append("    ").append(XMLHandler.addTagValue("directory_path", directoryPath)); //$NON-NLS-1$
+
+    retval.append("    ").append(XMLHandler.addTagValue("batch_size", batchSize)); //$NON-NLS-1$
+    retval.append("    ").append(XMLHandler.addTagValue("inject_step", injectStep)); //$NON-NLS-1$
+    retval.append("    ").append(XMLHandler.addTagValue("retrieve_step", retrieveStep)); //$NON-NLS-1$
+
+    return retval.toString();
+  }
+
+  public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleException {
+    String method = rep.getStepAttributeString(id_step, "specification_method");
+    specificationMethod = ObjectLocationSpecificationMethod.getSpecificationMethodByCode(method);
+    String transId = rep.getStepAttributeString(id_step, "trans_object_id");
+    transObjectId = Const.isEmpty(transId) ? null : new StringObjectId(transId);
+    transName = rep.getStepAttributeString(id_step, "trans_name"); //$NON-NLS-1$
+    fileName = rep.getStepAttributeString(id_step, "filename"); //$NON-NLS-1$
+    directoryPath = rep.getStepAttributeString(id_step, "directory_path"); //$NON-NLS-1$
+
+    batchSize = rep.getStepAttributeString(id_step, "batch_size"); //$NON-NLS-1$
+    injectStep = rep.getStepAttributeString(id_step, "inject_step"); //$NON-NLS-1$
+    retrieveStep = rep.getStepAttributeString(id_step, "retrieve_step"); //$NON-NLS-1$
+
+  }
+
+  public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step) throws KettleException {
+    rep.saveStepAttribute(id_transformation, id_step, "specification_method", specificationMethod==null ? null : specificationMethod.getCode());
+    rep.saveStepAttribute(id_transformation, id_step, "trans_object_id", transObjectId==null ? null : transObjectId.toString());
+    rep.saveStepAttribute(id_transformation, id_step, "filename", fileName); //$NON-NLS-1$
+    rep.saveStepAttribute(id_transformation, id_step, "trans_name", transName); //$NON-NLS-1$
+    rep.saveStepAttribute(id_transformation, id_step, "directory_path", directoryPath); //$NON-NLS-1$
+
+    rep.saveStepAttribute(id_transformation, id_step, "batch_size", batchSize); //$NON-NLS-1$
+    rep.saveStepAttribute(id_transformation, id_step, "inject_step", injectStep); //$NON-NLS-1$
+    rep.saveStepAttribute(id_transformation, id_step, "retrieve_step", retrieveStep); //$NON-NLS-1$
+  }
+
+  public void setDefault() {
+    specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
+  }
+
+  public void getFields(RowMetaInterface row, String origin, RowMetaInterface info[], StepMeta nextStep, VariableSpace space) throws KettleStepException {
+
+    // First load some interesting data...
+    //
+    // Then see which fields get added to the row.
+    //
+    TransMeta mappingTransMeta = null;
+    try {
+      mappingTransMeta = loadSingleThreadedTransMeta(this, repository, space);
+    } catch (KettleException e) {
+      throw new KettleStepException(BaseMessages.getString(PKG, "SingleThreaderMeta.Exception.UnableToLoadMappingTransformation"), e);
+    }
+
+    // Let's keep it simple!
+    //
+    RowMetaInterface stepFields = mappingTransMeta.getStepFields(retrieveStep);
+    row.clear();
+    row.addRowMeta(stepFields);
+  }
+
+  public synchronized static final TransMeta loadSingleThreadedTransMeta(SingleThreaderMeta mappingMeta, Repository rep, VariableSpace space) throws KettleException {
+    TransMeta mappingTransMeta = null;
+    
+    switch(mappingMeta.getSpecificationMethod()) {
+    case FILENAME:
+      String realFilename = space.environmentSubstitute(mappingMeta.getFileName());
+      try {
+        // OK, load the meta-data from file...
+        //
+        // Don't set internal variables: they belong to the parent thread!
+        //
+        mappingTransMeta = new TransMeta(realFilename, false); 
+        mappingTransMeta.getLogChannel().logDetailed("Loading Mapping from repository", "Mapping transformation was loaded from XML file [" + realFilename + "]");
+      } catch (Exception e) {
+        throw new KettleException(BaseMessages.getString(PKG, "SingleThreaderMeta.Exception.UnableToLoadMapping"), e);
+      }
+      break;
+      
+    case REPOSITORY_BY_NAME:
+      String realTransname = space.environmentSubstitute(mappingMeta.getTransName());
+      String realDirectory = space.environmentSubstitute(mappingMeta.getDirectoryPath());
+      
+      if (!Const.isEmpty(realTransname) && !Const.isEmpty(realDirectory) && rep != null) {
+        RepositoryDirectoryInterface repdir = rep.findDirectory(realDirectory);
+        if (repdir != null) {
+          try {
+            // reads the last revision in the repository...
+            //
+            mappingTransMeta = rep.loadTransformation(realTransname, repdir, null, true, null); 
+            mappingTransMeta.getLogChannel().logDetailed("Loading Mapping from repository", "Mapping transformation [" + realTransname + "] was loaded from the repository");
+          } catch (Exception e) {
+            throw new KettleException("Unable to load transformation [" + realTransname + "]", e);
+          }
+        } else {
+          throw new KettleException(BaseMessages.getString(PKG, "SingleThreaderMeta.Exception.UnableToLoadTransformation", realTransname) + realDirectory); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+      }
+      break;
+      
+    case REPOSITORY_BY_REFERENCE:
+      // Read the last revision by reference...
+      mappingTransMeta = rep.loadTransformation(mappingMeta.getTransObjectId(), null);
+      break;
+    }
+    return mappingTransMeta;
+  }
+
+  public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info) {
+    CheckResult cr;
+    if (prev == null || prev.size() == 0) {
+      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "SingleThreaderMeta.CheckResult.NotReceivingAnyFields"), stepinfo); //$NON-NLS-1$
+      remarks.add(cr);
+    } else {
+      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SingleThreaderMeta.CheckResult.StepReceivingFields", prev.size() + ""), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
+      remarks.add(cr);
+    }
+
+    // See if we have input streams leading to this step!
+    if (input.length > 0) {
+      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "SingleThreaderMeta.CheckResult.StepReceivingFieldsFromOtherSteps"), stepinfo); //$NON-NLS-1$
+      remarks.add(cr);
+    } else {
+      cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "SingleThreaderMeta.CheckResult.NoInputReceived"), stepinfo); //$NON-NLS-1$
+      remarks.add(cr);
+    }
+
+
+  }
+
+  public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr, Trans trans) {
+    return new SingleThreader(stepMeta, stepDataInterface, cnr, tr, trans);
+  }
+
+  public StepDataInterface getStepData() {
+    return new SingleThreaderData();
+  }
+
+  /**
+   * @return the directoryPath
+   */
+  public String getDirectoryPath() {
+    return directoryPath;
+  }
+
+  /**
+   * @param directoryPath
+   *          the directoryPath to set
+   */
+  public void setDirectoryPath(String directoryPath) {
+    this.directoryPath = directoryPath;
+  }
+
+  /**
+   * @return the fileName
+   */
+  public String getFileName() {
+    return fileName;
+  }
+
+  /**
+   * @param fileName
+   *          the fileName to set
+   */
+  public void setFileName(String fileName) {
+    this.fileName = fileName;
+  }
+
+  /**
+   * @return the transName
+   */
+  public String getTransName() {
+    return transName;
+  }
+
+  /**
+   * @param transName
+   *          the transName to set
+   */
+  public void setTransName(String transName) {
+    this.transName = transName;
+  }
+
+  @Override
+  public List<ResourceReference> getResourceDependencies(TransMeta transMeta, StepMeta stepInfo) {
+    List<ResourceReference> references = new ArrayList<ResourceReference>(5);
+    String realFilename = transMeta.environmentSubstitute(fileName);
+    String realTransname = transMeta.environmentSubstitute(transName);
+    ResourceReference reference = new ResourceReference(stepInfo);
+    references.add(reference);
+
+    if (!Const.isEmpty(realFilename)) {
+      // Add the filename to the references, including a reference to this step
+      // meta data.
+      //
+      reference.getEntries().add(new ResourceEntry(realFilename, ResourceType.ACTIONFILE));
+    } else if (!Const.isEmpty(realTransname)) {
+      // Add the filename to the references, including a reference to this step
+      // meta data.
+      //
+      reference.getEntries().add(new ResourceEntry(realTransname, ResourceType.ACTIONFILE));
+      references.add(reference);
+    }
+    return references;
+  }
+
+  @Override
+  public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository) throws KettleException {
+    try {
+      // Try to load the transformation from repository or file.
+      // Modify this recursively too...
+      // 
+      // NOTE: there is no need to clone this step because the caller is
+      // responsible for this.
+      //
+      // First load the mapping metadata...
+      //
+      TransMeta mappingTransMeta = loadSingleThreadedTransMeta(this, repository, space);
+
+      // Also go down into the mapping transformation and export the files
+      // there. (mapping recursively down)
+      //
+      String proposedNewFilename = mappingTransMeta.exportResources(mappingTransMeta, definitions, resourceNamingInterface, repository);
+
+      // To get a relative path to it, we inject
+      // ${Internal.Job.Filename.Directory}
+      //
+      String newFilename = "${" + Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY + "}/" + proposedNewFilename;
+
+      // Set the correct filename inside the XML.
+      //
+      mappingTransMeta.setFilename(newFilename);
+
+      // exports always reside in the root directory, in case we want to turn
+      // this into a file repository...
+      //
+      mappingTransMeta.setRepositoryDirectory(new RepositoryDirectory());
+
+      // change it in the job entry
+      //
+      fileName = newFilename;
+
+      return proposedNewFilename;
+    } catch (Exception e) {
+      throw new KettleException(BaseMessages.getString(PKG, "SingleThreaderMeta.Exception.UnableToLoadTransformation", fileName)); //$NON-NLS-1$
+    }
+  }
+
+  /**
+   * @return the repository
+   */
+  public Repository getRepository() {
+    return repository;
+  }
+
+  /**
+   * @param repository
+   *          the repository to set
+   */
+  public void setRepository(Repository repository) {
+    this.repository = repository;
+  }
+
+  /**
+   * @return the transObjectId
+   */
+  public ObjectId getTransObjectId() {
+    return transObjectId;
+  }
+
+  /**
+   * @param transObjectId
+   *          the transObjectId to set
+   */
+  public void setTransObjectId(ObjectId transObjectId) {
+    this.transObjectId = transObjectId;
+  }
+
+  /**
+   * @return the specificationMethod
+   */
+  public ObjectLocationSpecificationMethod getSpecificationMethod() {
+    return specificationMethod;
+  }
+
+  /**
+   * @param specificationMethod
+   *          the specificationMethod to set
+   */
+  public void setSpecificationMethod(ObjectLocationSpecificationMethod specificationMethod) {
+    this.specificationMethod = specificationMethod;
+  }
+  
+  public TransformationType[] getSupportedTransformationTypes() {
+    return new TransformationType[] { TransformationType.Normal, };
+  }
+
+  /**
+   * @return the batchSize
+   */
+  public String getBatchSize() {
+    return batchSize;
+  }
+
+  /**
+   * @param batchSize the batchSize to set
+   */
+  public void setBatchSize(String batchSize) {
+    this.batchSize = batchSize;
+  }
+
+  /**
+   * @return the injectStep
+   */
+  public String getInjectStep() {
+    return injectStep;
+  }
+
+  /**
+   * @param injectStep the injectStep to set
+   */
+  public void setInjectStep(String injectStep) {
+    this.injectStep = injectStep;
+  }
+
+  /**
+   * @return the retrieveStep
+   */
+  public String getRetrieveStep() {
+    return retrieveStep;
+  }
+
+  /**
+   * @param retrieveStep the retrieveStep to set
+   */
+  public void setRetrieveStep(String retrieveStep) {
+    this.retrieveStep = retrieveStep;
+  }
+}
