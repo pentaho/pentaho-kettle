@@ -1410,5 +1410,12 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.MongoDbInput</tooltip>
 		<iconfile>ui/images/mongodb-input.png</iconfile>
 	</step>
+	<step id="SingleThreader">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SingleThreader</description>
+		<classname>org.pentaho.di.trans.steps.singlethreader.SingleThreaderMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SingleThreader</tooltip>
+		<iconfile>ui/images/MAP.png</iconfile>
+	</step>
 
 </steps>
