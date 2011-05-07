@@ -58,7 +58,6 @@ public class OlapHelper {
 	
     public void openQuery() throws Exception {
         
-        try {
         Class.forName(olap4jDriver);
         OlapConnection connection= null;
         
@@ -83,15 +82,11 @@ public class OlapHelper {
         OlapStatement stmt = olapConnection.createStatement();
 
         if (!Const.isEmpty(mdx)) {
-            result = stmt.executeOlapQuery(mdx);
+            CellSet tmp = stmt.executeOlapQuery(mdx);
+            result = tmp;
         }
         else {
             throw new Exception("Error executing empty MDX query");
-        }
-        }
-        catch(Exception e)
-        {
-            throw e;
         }
 
     }
@@ -116,9 +111,7 @@ public class OlapHelper {
             AbstractBaseCell[][] headers = cs.getCellSetHeaders();
             headerValues = concatHeader(headers);
             cellValues = castResult(cs.getCellSetBody());
-
         }
-        
     }
     
 

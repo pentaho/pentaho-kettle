@@ -66,7 +66,7 @@ public class OlapInput extends BaseStep implements StepInterface
         
 		}
 	    catch (Exception e) {
-	        logError("An error occurred, processing will be stopped: "+e.fillInStackTrace());
+	        logError("An error occurred, processing will be stopped",e);
             setErrors(1);
             stopAll();
             return false;
