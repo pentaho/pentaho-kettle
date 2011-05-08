@@ -240,7 +240,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
       // Set the initial selected directory as the users home directory
       RepositoryDirectoryInterface homeDir = repository.getUserHomeDirectory();
       int currentDir = 0;
-      String[] homePath = homeDir.getPathArray();
+      String[] homePath = homeDir == null ? null : homeDir.getPathArray();
       if (homePath != null) {
         UIRepositoryDirectory tempRoot = repositoryDirectory;
 
