@@ -442,7 +442,7 @@ public class Mail extends BaseStep implements StepInterface
 	    	}
 	      }
 	      data.props.put("mail." + protocol + ".host", server);
-	      if (port!=-1) data.props.put("mail." + protocol + ".port", port);
+	      if (port!=-1) data.props.put("mail." + protocol + ".port", ""+port); //needs to be supplied as a string, not as an integer
 	      
 	      if (isDebug()) data.props.put("mail.debug", "true");
 
