@@ -405,7 +405,10 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 			data.bufferIndex = 0;
 			
 			// Schema-table combination...
-			data.schemaTable = meta.getDatabaseMeta().getSchemaTableCombination(environmentSubstitute(meta.getSchemaName()), environmentSubstitute(meta.getTableName()));
+			data.schemaTable = meta.getDatabaseMeta().getQuotedSchemaTableCombination(
+			    environmentSubstitute(meta.getSchemaName()), 
+			    environmentSubstitute(meta.getTableName())
+			  );
 			
 			return true;
 		}
