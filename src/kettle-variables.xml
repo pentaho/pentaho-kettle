@@ -173,5 +173,11 @@
 		<default-value></default-value>
 	</kettle-variable>
 	
+	<kettle-variable>
+		<description>Experimental! Set this variable to Y if you want to test a more efficient batching row set. Use at your own risk.</description>
+		<variable>KETTLE_BATCHING_ROWSET</variable>
+		<default-value>N</default-value>
+	</kettle-variable>
+	
 
 </kettle-variables>

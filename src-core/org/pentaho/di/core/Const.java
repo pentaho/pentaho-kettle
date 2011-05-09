@@ -68,18 +68,6 @@ public class Const
    */
   public enum ReleaseType {RELEASE_CANDIDATE, MILESTONE, PREVIEW, GA}
 
-  /**
-   * The name of the variable that optionally contains an alternative rowset get timeout (in ms).
-   * This only makes a difference for extremely short lived transformations.
-   */
-  public static final String KETTLE_ROWSET_GET_TIMEOUT = "KETTLE_ROWSET_GET_TIMEOUT";
-
-  /**
-   * The name of the variable that optionally contains an alternative rowset put timeout (in ms).
-   * This only makes a difference for extremely short lived transformations.
-   */
-  public static final String KETTLE_ROWSET_PUT_TIMEOUT = "KETTLE_ROWSET_PUT_TIMEOUT";
-
 	/**
 	 * Sleep time waiting when buffer is empty (the default)
 	 */
@@ -678,6 +666,23 @@ public class Const
    * The name of the environment variable that will contain the alternative location of the kettle-job-entries.xml file
    */
   public static final String   KETTLE_CORE_JOBENTRIES_FILE = "KETTLE_CORE_JOBENTRIES_FILE";
+
+  /**
+   * The name of the variable that optionally contains an alternative rowset get timeout (in ms).
+   * This only makes a difference for extremely short lived transformations.
+   */
+  public static final String KETTLE_ROWSET_GET_TIMEOUT = "KETTLE_ROWSET_GET_TIMEOUT";
+
+  /**
+   * The name of the variable that optionally contains an alternative rowset put timeout (in ms).
+   * This only makes a difference for extremely short lived transformations.
+   */
+  public static final String KETTLE_ROWSET_PUT_TIMEOUT = "KETTLE_ROWSET_PUT_TIMEOUT";
+
+  /**
+   * Set this variable to Y if you want to test a more efficient batching row set. (default = N)
+   */
+  public static final String KETTLE_BATCHING_ROWSET = "KETTLE_BATCHING_ROWSET";
 
 	/**
 	 * The XML file that contains the list of native Kettle job entries

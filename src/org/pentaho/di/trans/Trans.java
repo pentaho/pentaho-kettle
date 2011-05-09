@@ -36,6 +36,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.BlockingBatchingRowSet;
 import org.pentaho.di.core.BlockingRowSet;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.QueueRowSet;
@@ -490,7 +491,13 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     				{
     					RowSet rowSet;
     					switch(transMeta.getTransformationType()) {
-    					case Normal: rowSet = new BlockingRowSet(transMeta.getSizeRowset()); break;
+    					case Normal:
+    					  boolean batchingRowSet = ValueMeta.convertStringToBoolean(getVariable(Const.KETTLE_BATCHING_ROWSET));
+    					  if (batchingRowSet) {
+    					    rowSet = new BlockingBatchingRowSet(transMeta.getSizeRowset()); break;    					    
+    					  } else {
+    					    rowSet = new BlockingRowSet(transMeta.getSizeRowset()); break;
+    					  }
     					case SerialSingleThreaded: rowSet = new SingleRowRowSet(); break;
                         case SingleThreaded: rowSet = new QueueRowSet(); break;
     					default: 
