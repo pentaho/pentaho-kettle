@@ -135,54 +135,7 @@ public class HBaseInputDialog extends BaseStepDialog implements
   private Map<String, HBaseValueMeta> m_mappedColumns;
   
   // lookup map for indexed columns
-  private Map<String, String> m_indexedLookup = new HashMap<String, String>();
-  
-  protected class TableItemHB extends TableItem {
-    protected String m_indexedItems;
-    protected String m_tableName;
-    protected String m_mappingName;
-    protected boolean m_isKey;
-    
-    public TableItemHB(org.eclipse.swt.widgets.Table table, int mask) {
-      super (table, mask);
-    }
-
-    protected void checkSubclass() { 
-      //   Disable the check that prevents subclassing of SWT components 
-    } 
-
-    public void setKey(boolean key) {
-      m_isKey = key;
-    }
-    
-    public boolean isKey() {
-      return m_isKey;
-    }
-    
-    public void setIndexedItems(String s) {
-      m_indexedItems = s;
-    }
-    
-    public String getIndexedItems() {
-      return m_indexedItems;
-    }
-    
-    public void setTableName(String t) {
-      m_tableName = t;
-    }
-    
-    public String getTableName() {
-      return m_tableName;
-    }
-    
-    public void setMappingName(String m) {
-      m_mappingName = m;
-    }
-    
-    public String getMappingName() {
-      return m_mappingName;
-    }
-  }
+  private Map<String, String> m_indexedLookup = new HashMap<String, String>();  
   
   public HBaseInputDialog(Shell parent, Object in,
       TransMeta tr, String name) {
@@ -725,7 +678,7 @@ public class HBaseInputDialog extends BaseStepDialog implements
       setText(Messages.getString("HBaseInputDialog.MappingEditorTab.TabTitle"));
     
     
-    m_mappingEditor = new MappingEditor(shell, m_wTabFolder, this,
+    m_mappingEditor = new MappingEditor(shell, m_wTabFolder, this, null,
         SWT.FULL_SELECTION | SWT.MULTI, false, props, transMeta);
     
     fd = new FormData();
@@ -1326,6 +1279,11 @@ public class HBaseInputDialog extends BaseStepDialog implements
   //            item.setKey(true);
               item.setText(2, "Y");
               item.setText(7, "N");
+              
+              if (!Const.isEmpty(column.getConversionMask())) {
+                item.setText(6, column.getConversionMask());
+              }
+              
               continue; // skip the rest
             }
             

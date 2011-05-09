@@ -158,6 +158,12 @@ public class HBaseInput extends BaseStep implements StepInterface {
         throw new KettleException(ex.getMessage());
       }
       
+      // conversion mask to use for user specified key values in range scan.
+      // This can come from user-specified field information OR it can be
+      // provied in the keyStart/keyStop values by suffixing the value with
+      // "@converionMask"
+      String dateOrNumberConversionMaskForKey = null;
+      
       // if there are any user-chosen output fields in the meta data then
       // check them against table mapping. All selected fields must be present
       // in the mapping
@@ -171,6 +177,8 @@ public class HBaseInput extends BaseStep implements StepInterface {
                   + m_tableMapping.getTableName() + HBaseValueMeta.SEPARATOR 
                   + m_tableMapping.getMappingName() + "\"");
             }
+          } else {
+            dateOrNumberConversionMaskForKey = vm.getConversionMask();
           }
         }
       }
@@ -180,18 +188,106 @@ public class HBaseInput extends BaseStep implements StepInterface {
       if (Const.isEmpty(m_meta.getKeyStartValue()) && 
           Const.isEmpty(m_meta.getKeyStopValue())) {
         s = new Scan(); // scan all rows
-      } else {        
-        byte[] keyLowerBound = HBaseValueMeta.
-          encodeKeyValue(m_transMeta.environmentSubstitute(m_meta.getKeyStartValue()), 
-              m_tableMapping.getKeyType());
+      } else {
+        byte[] keyLowerBound = null;
+        String keyStartS = m_transMeta.environmentSubstitute(m_meta.getKeyStartValue());
+        String convM = dateOrNumberConversionMaskForKey;
+        if (m_tableMapping.getKeyType() != Mapping.KeyType.STRING) {
+          String[] parts = keyStartS.split("@");
+          if (parts.length == 2) {
+            keyStartS = parts[0];
+            convM = parts[1];
+          }
+          
+          if (!Const.isEmpty(convM) && convM.length() > 0) {
+            
+            if (m_tableMapping.getKeyType() == Mapping.KeyType.DATE ||
+                m_tableMapping.getKeyType() == Mapping.KeyType.UNSIGNED_DATE) {
+              SimpleDateFormat sdf = new SimpleDateFormat();
+              sdf.applyPattern(convM);
+              try {
+                Date d = sdf.parse(keyStartS);
+                keyLowerBound = HBaseValueMeta.encodeKeyValue(d, m_tableMapping.getKeyType());
+              } catch (ParseException e) {
+                throw new KettleException("Unable to parse lower bound key value \""
+                    + keyStartS + "\"");
+              }
+            } else {
+              // Number type
+              // Double/Float or Long/Integer              
+              DecimalFormat df = new DecimalFormat();
+              df.applyPattern(convM);
+              Number num = null;
+              try {
+                num = df.parse(keyStartS);
+                keyLowerBound = HBaseValueMeta.encodeKeyValue(num, m_tableMapping.getKeyType());
+              } catch (ParseException e) {
+                throw new KettleException("Unable to parse lower bound key value \""
+                    + keyStartS + "\"");
+              }
+            }
+          } else {
+            // just try it as a string
+            keyLowerBound = HBaseValueMeta.
+              encodeKeyValue(keyStartS, m_tableMapping.getKeyType());
+          }
+        } else {          
+          // it is a string
+          keyLowerBound = HBaseValueMeta.
+            encodeKeyValue(keyStartS, m_tableMapping.getKeyType());
+        }
+        
         if (Const.isEmpty(m_meta.getKeyStopValue())) {
           s = new Scan(keyLowerBound);
         } else {
-          byte[] keyUpperBound = HBaseValueMeta.
-            encodeKeyValue(m_transMeta.environmentSubstitute(m_meta.getKeyStopValue())
-                , m_tableMapping.getKeyType());
+          byte[] keyUpperBound = null;
+          String keyStopS = m_transMeta.environmentSubstitute(m_meta.getKeyStopValue());
+          convM = dateOrNumberConversionMaskForKey;
+          if (m_tableMapping.getKeyType() != Mapping.KeyType.STRING) {
+            String[] parts = keyStopS.split("@");
+            if (parts.length == 2) {
+              keyStopS = parts[0];
+              convM = parts[1];
+            }
+              
+            if (!Const.isEmpty(convM) && convM.length() > 0) {
+              if (m_tableMapping.getKeyType() == Mapping.KeyType.DATE ||
+                  m_tableMapping.getKeyType() == Mapping.KeyType.UNSIGNED_DATE) {
+                SimpleDateFormat sdf = new SimpleDateFormat();
+                sdf.applyPattern(convM);
+                try {
+                  Date d = sdf.parse(keyStopS);
+                  keyUpperBound = HBaseValueMeta.encodeKeyValue(d, m_tableMapping.getKeyType());
+                } catch (ParseException e) {
+                  throw new KettleException("Unable to parse upper bound key value \""
+                      + keyStopS + "\"");
+                }
+              } else {
+                // Number type
+                // Double/Float or Long/Integer              
+                DecimalFormat df = new DecimalFormat();
+                df.applyPattern(convM);
+                Number num = null;
+                try {
+                  num = df.parse(keyStopS);
+                  keyUpperBound = HBaseValueMeta.encodeKeyValue(num, m_tableMapping.getKeyType());
+                } catch (ParseException e) {
+                  throw new KettleException("Unable to parse upper bound key value \""
+                      + keyStopS + "\"");
+                }
+              }              
+            } else {
+              // just try it as a string
+              keyUpperBound = HBaseValueMeta.
+                encodeKeyValue(keyStopS, m_tableMapping.getKeyType());
+            }
+          } else {
+            // it is a string
+            keyUpperBound = HBaseValueMeta.
+              encodeKeyValue(keyStartS, m_tableMapping.getKeyType());
+          }
           s = new Scan(keyLowerBound, keyUpperBound);
-        }        
+        }  
       }
       
       // set any user-specified scanner caching
