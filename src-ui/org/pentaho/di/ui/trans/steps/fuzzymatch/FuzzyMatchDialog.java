@@ -264,9 +264,8 @@ public class FuzzyMatchDialog extends BaseStepDialog implements StepDialogInterf
 		wStep=new CCombo(wLookupGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wStep);
  		
-		for (int i=0;i<transMeta.findNrPrevSteps(stepname, true);i++)
-		{
-			StepMeta stepMeta = transMeta.findPrevStep(stepname, i, true);
+ 		List<StepMeta> steps = transMeta.findPreviousSteps(transMeta.findStep(stepname), true);
+		for (StepMeta stepMeta : steps) {
 			wStep.add(stepMeta.getName());
 		}
 		
