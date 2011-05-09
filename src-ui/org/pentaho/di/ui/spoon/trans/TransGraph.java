@@ -3608,38 +3608,48 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           //
           XulToolbarbutton runButton = (XulToolbarbutton) toolbar.getElementById("trans-run"); //$NON-NLS-1$
           if (runButton != null && !controlDisposed(runButton)) {
-        	runButton.setDisabled(running);
+            if (runButton.isDisabled()^running) {
+              runButton.setDisabled(running);
+            }
           }
 
           // Pause button...
           //
           XulToolbarbutton pauseButton = (XulToolbarbutton) toolbar.getElementById("trans-pause"); //$NON-NLS-1$
           if (pauseButton != null && !controlDisposed(pauseButton)) {
-            pauseButton.setDisabled(!running);
-            pauseButton.setLabel(pausing ? RESUME_TEXT : PAUSE_TEXT);
-            pauseButton.setTooltiptext(pausing ? BaseMessages.getString(PKG, "Spoon.Tooltip.ResumeTranformation") : BaseMessages  //$NON-NLS-1$
-                .getString(PKG, "Spoon.Tooltip.PauseTranformation")); //$NON-NLS-1$
+            if (pauseButton.isDisabled()^!running) {
+              pauseButton.setDisabled(!running);
+              pauseButton.setLabel(pausing ? RESUME_TEXT : PAUSE_TEXT);
+              pauseButton.setTooltiptext(pausing ? BaseMessages.getString(PKG, "Spoon.Tooltip.ResumeTranformation") : BaseMessages  //$NON-NLS-1$
+                  .getString(PKG, "Spoon.Tooltip.PauseTranformation")); //$NON-NLS-1$
+            }
           }
 
           // Stop button...
           //
           XulToolbarbutton stopButton = (XulToolbarbutton) toolbar.getElementById("trans-stop"); //$NON-NLS-1$
           if (stopButton != null && !controlDisposed(stopButton)) {
-            stopButton.setDisabled(!running);
+            if (stopButton.isDisabled()^!running) {
+              stopButton.setDisabled(!running);
+            }
           }
 
           // Debug button...
           //
           XulToolbarbutton debugButton = (XulToolbarbutton) toolbar.getElementById("trans-debug"); //$NON-NLS-1$
           if (debugButton != null && !controlDisposed(debugButton)) {
-            debugButton.setDisabled(running);
+            if (debugButton.isDisabled()^running) {
+              debugButton.setDisabled(running);
+            }
           }
 
           // Preview button...
           //
           XulToolbarbutton previewButton = (XulToolbarbutton) toolbar.getElementById("trans-preview"); //$NON-NLS-1$
           if (previewButton != null && !controlDisposed(previewButton)) {
-            previewButton.setDisabled(running);
+            if (previewButton.isDisabled()^running) {
+              previewButton.setDisabled(running);
+            }
           }
           
         }

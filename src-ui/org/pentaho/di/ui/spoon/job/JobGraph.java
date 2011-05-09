@@ -3222,26 +3222,18 @@ public static void copyInternalJobVariables(JobMeta sourceJobMeta, TransMeta tar
     	boolean running = job!=null && job.isActive();
         XulToolbarbutton runButton = (XulToolbarbutton) toolbar.getElementById("job-run");
         if (runButton != null && !controlDisposed(runButton)) {
-          runButton.setDisabled(running);
+          if (runButton.isDisabled()^running) {
+            runButton.setDisabled(running);
+          }
         }
 
-        /* TODO add pause button
-         *
-        // Pause button...
-        //
-        XulToolbarButton pauseButton = toolbar.getButtonById("trans-pause");
-        if (pauseButton!=null && !controlDisposed(pauseButton))
-        {
-        	pauseButton.setEnable(running);
-        	pauseButton.setText( pausing ? RESUME_TEXT : PAUSE_TEXT );
-        	pauseButton.setHint( pausing ? BaseMessages.getString(PKG, "Spoon.Tooltip.ResumeTranformation") : BaseMessages.getString(PKG, "Spoon.Tooltip.PauseTranformation"));
-        }
-        */
         // Stop button...
         //
         XulToolbarbutton stopButton = (XulToolbarbutton) toolbar.getElementById("job-stop");
         if (stopButton != null && !controlDisposed(stopButton)) {
-          stopButton.setDisabled(!running);
+          if (stopButton.isDisabled()^!running) {
+            stopButton.setDisabled(!running);
+          }
         }
 
         // version browser button...
@@ -3250,7 +3242,9 @@ public static void copyInternalJobVariables(JobMeta sourceJobMeta, TransMeta tar
         if (versionsButton != null && !controlDisposed(versionsButton)) {
           boolean hasRepository = spoon.rep!=null;
           boolean enabled = hasRepository && spoon.rep.getRepositoryMeta().getRepositoryCapabilities().supportsRevisions(); 
-          versionsButton.setDisabled(!enabled);
+          if (versionsButton.isDisabled()^!enabled) {
+            versionsButton.setDisabled(!enabled);
+          }
         }
       }
 
