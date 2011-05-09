@@ -395,6 +395,13 @@ abstract class BaseLogTable {
     protected String getLogBuffer(VariableSpace space, String logChannelId, LogStatus status, String limit) {
 
       StringBuffer buffer = CentralLogStore.getAppender().getBuffer(logChannelId, true);
+      
+      if (Const.isEmpty(limit)) {
+        String defaultLimit = space.getVariable(Const.KETTLE_LOG_SIZE_LIMIT, null);
+        if (!Const.isEmpty(defaultLimit)) {
+          limit = defaultLimit;
+        }
+      }
 
       // See if we need to limit the amount of rows
       //
