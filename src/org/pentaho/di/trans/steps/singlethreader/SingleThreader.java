@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
-import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.SingleThreadedTransExecutor;
@@ -71,19 +70,6 @@ public class SingleThreader extends BaseStep implements StepInterface
 		if (first) {
 		  first=false;
 		  
-		  data.fieldIndexes = new int[meta.getParameters().length];
-		  for (int i=0;i<data.fieldIndexes.length;i++) {
-		    data.fieldIndexes[i]=-1;
-		    if (!Const.isEmpty(meta.getParameterFieldNames()[i])) {
-		      data.fieldIndexes[i] = getInputRowMeta().indexOfValue(meta.getParameterFieldNames()[i]);
-		      if (data.fieldIndexes[i]<0) {
-		        throw new KettleException(BaseMessages.getString(PKG, "SingleThreader.Exception.ParameterFieldNotFound", meta.getParameterFieldNames()[i]));
-		      }
-		    }
-		  }
-		  
-		  passParameters(getInputRowMeta(), row);
-		  
       data.startTime = System.currentTimeMillis();
 		}
 
@@ -97,10 +83,7 @@ public class SingleThreader extends BaseStep implements StepInterface
 		
 		if (countWindow || timeWindow) {
 		  data.batchCount=0;
-		  if (meta.isPassingParametersEachBatch()) {
-		    passParameters(getInputRowMeta(), row);
-		  }
-		  
+
 		  boolean more = data.executor.oneIteration();
 		  if (!more) {
 		    setOutputDone();
@@ -111,7 +94,7 @@ public class SingleThreader extends BaseStep implements StepInterface
 		return true;
 	}
 
-	private void passParameters(RowMetaInterface rowMeta, Object[] rowData) throws KettleValueException {
+	private void passParameters() throws KettleException {
 	  
 	  String[] parameters;
 	  String[] parameterValues;
@@ -130,16 +113,14 @@ public class SingleThreader extends BaseStep implements StepInterface
 	    parameters = meta.getParameters();
 	    parameterValues = new String[parameters.length];
       for (int i=0;i<parameters.length;i++) {
-        if (data.fieldIndexes[i]<0) {
-          // The the value from the input dialog
-          //
-          parameterValues[i] = environmentSubstitute(meta.getParameterValues()[i]);
-        } else {
-          // Take the value from the input field from the current row...
-          //
-          parameterValues[i] = rowMeta.getString(rowData, data.fieldIndexes[i]);
-        }
+        parameterValues[i] = environmentSubstitute(meta.getParameterValues()[i]);
       }
+	  }
+	  
+	  for (int i=0;i<parameters.length;i++) {
+	    String value = Const.NVL(parameterValues[i], "");
+	    
+      data.mappingTransMeta.setParameterValue(parameters[i], value);
 	  }
   }
 
@@ -148,6 +129,10 @@ public class SingleThreader extends BaseStep implements StepInterface
 	      //
 	      data.mappingTransMeta.setTransformationType(TransformationType.SingleThreaded);
 	  
+	      // Pass the parameters down to the sub-transformation.
+	      //
+	      passParameters();
+	      
         // Create the transformation from meta-data...
 		    //
         data.mappingTrans = new Trans(data.mappingTransMeta, getTrans());
@@ -265,6 +250,7 @@ public class SingleThreader extends BaseStep implements StepInterface
           // sub-transformation threads, etc.
           //
           prepareMappingExecution();
+          //
           
           // That's all for now...
           //

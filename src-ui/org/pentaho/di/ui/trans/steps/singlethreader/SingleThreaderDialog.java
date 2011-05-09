@@ -126,8 +126,6 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
 
   private Button wbGetParams;
 
-  private Button wPassEachBatch;
-
   private LabelTextVar wBatchTime;
 
 	public SingleThreaderDialog(Shell parent, Object in, TransMeta tr, String sname)
@@ -504,26 +502,10 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
     fdPassParams.right = new FormAttachment(100, 0);
     wPassParams.setLayoutData(fdPassParams);
 
-    Label wlPassEachBatch = new Label(gParametersGroup, SWT.RIGHT);
-    wlPassEachBatch.setText(BaseMessages.getString(PKG, "SingleThreaderDialog.PassParametersEachBatch.Label"));
-    props.setLook(wlPassEachBatch);
-    FormData fdlPassEachBatch = new FormData();
-    fdlPassEachBatch.left = new FormAttachment(0, 0);
-    fdlPassEachBatch.top = new FormAttachment(wPassParams, margin);
-    fdlPassEachBatch.right = new FormAttachment(middle, -margin);
-    wlPassEachBatch.setLayoutData(fdlPassEachBatch);
-    wPassEachBatch = new Button(gParametersGroup, SWT.CHECK);
-    props.setLook(wPassEachBatch);
-    FormData fdPassEachBatch = new FormData();
-    fdPassEachBatch.left = new FormAttachment(middle, 0);
-    fdPassEachBatch.top = new FormAttachment(wPassParams, margin);
-    fdPassEachBatch.right = new FormAttachment(100, 0);
-    wPassEachBatch.setLayoutData(fdPassEachBatch);
-
     wbGetParams = new Button(gParametersGroup, SWT.PUSH);
     wbGetParams.setText(BaseMessages.getString(PKG, "SingleThreaderDialog.GetParameters.Button.Label"));
     FormData fdGetParams = new FormData();
-    fdGetParams.top = new FormAttachment(wPassEachBatch, margin);
+    fdGetParams.top = new FormAttachment(wPassParams, margin);
     fdGetParams.right = new FormAttachment(100, 0);
     wbGetParams.setLayoutData(fdGetParams);
     wbGetParams.addSelectionListener(new SelectionAdapter(){ @Override
@@ -535,16 +517,15 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
 
     ColumnInfo[] colinf = new ColumnInfo[] { 
         new ColumnInfo(BaseMessages.getString(PKG, "SingleThreaderDialog.Parameters.Parameter.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false),
-        new ColumnInfo(BaseMessages.getString(PKG, "SingleThreaderDialog.Parameters.ColumnName.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {}, false), 
         new ColumnInfo(BaseMessages.getString(PKG, "SingleThreaderDialog.Parameters.Value.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false), 
       };
-    colinf[2].setUsingVariables(true);
+    colinf[1].setUsingVariables(true);
 
     wParameters = new TableView(transMeta, gParametersGroup, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, parameterRows, lsMod, props);
 
     FormData fdParameters = new FormData();
     fdParameters.left = new FormAttachment(0, 0);
-    fdParameters.top = new FormAttachment(wPassEachBatch, margin);
+    fdParameters.top = new FormAttachment(wPassParams, margin);
     fdParameters.right = new FormAttachment(wbGetParams, -margin);
     fdParameters.bottom = new FormAttachment(100, 0);
     wParameters.setLayoutData(fdParameters);
@@ -843,8 +824,7 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
         TableItem ti = wParameters.table.getItem(i);
         if (!Const.isEmpty(singleThreaderMeta.getParameters()[i])) {
           ti.setText(1, Const.NVL(singleThreaderMeta.getParameters()[i], ""));
-          ti.setText(2, Const.NVL(singleThreaderMeta.getParameterFieldNames()[i], ""));
-          ti.setText(3, Const.NVL(singleThreaderMeta.getParameterValues()[i], ""));
+          ti.setText(2, Const.NVL(singleThreaderMeta.getParameterValues()[i], ""));
         }
       }
       wParameters.removeEmptyRows();
@@ -853,7 +833,6 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
     }
 
     wPassParams.setSelection(singleThreaderMeta.isPassingAllParameters());
-    wPassEachBatch.setSelection(singleThreaderMeta.isPassingParametersEachBatch());
 
 		try {
 			loadTransformation();
@@ -915,38 +894,24 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
     int nr = 0;
     for (int i = 0; i < nritems; i++) {
       String param = wParameters.getNonEmpty(i).getText(1);
-      if (param != null && param.length() != 0) {
+      if (!Const.isEmpty(param)) {
         nr++;
       }
     }
     meta.setParameters(new String[nr]);
-    meta.setParameterFieldNames(new String[nr]);
     meta.setParameterValues(new String[nr]);
     nr = 0;
     for (int i = 0; i < nritems; i++) {
       String param = wParameters.getNonEmpty(i).getText(1);
-      String fieldName = wParameters.getNonEmpty(i).getText(2);
-      String value = wParameters.getNonEmpty(i).getText(3);
+      String value = wParameters.getNonEmpty(i).getText(2);
 
       meta.getParameters()[nr] = param;
-
-      if (!Const.isEmpty(Const.trim(fieldName))) {
-        meta.getParameterFieldNames()[nr] = fieldName;
-      } else {
-        meta.getParameterFieldNames()[nr] = "";
-      }
-
-      if (!Const.isEmpty(Const.trim(value))) {
-        meta.getParameterValues()[nr] = value;
-      } else {
-        meta.getParameterValues()[nr] = "";
-      }
+      meta.getParameterValues()[nr] = Const.NVL(value, "");
 
       nr++;
     }
 
     meta.setPassingAllParameters(wPassParams.getSelection());
-    meta.setPassingParametersEachBatch(wPassEachBatch.getSelection());
 	}
 
 	private void ok()

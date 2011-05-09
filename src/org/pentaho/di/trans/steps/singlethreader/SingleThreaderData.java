@@ -39,7 +39,6 @@ public class SingleThreaderData extends BaseStepData implements StepDataInterfac
   public int batchCount;
   public int batchTime;
   public long startTime;
-  public int[] fieldIndexes;
   public StepMeta injectStepMeta;
   public StepMeta retrieveStepMeta;
 

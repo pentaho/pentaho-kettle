@@ -73,10 +73,8 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
   private String                            retrieveStep;
 
   private boolean passingAllParameters;
-  private boolean passingParametersEachBatch;
   
   private String                             parameters[];
-  private String                             parameterFieldNames[];
   private String                             parameterValues[];
 
   public SingleThreaderMeta() {
@@ -105,19 +103,16 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
 
       String passAll = XMLHandler.getTagValue(parametersNode, "pass_all_parameters");
       passingAllParameters = Const.isEmpty(passAll) || "Y".equalsIgnoreCase(passAll);
-      passingParametersEachBatch = "Y".equalsIgnoreCase(XMLHandler.getTagValue(parametersNode, "pass_each_batch"));
-
+      
       int nrParameters = XMLHandler.countNodes(parametersNode, "parameter"); //$NON-NLS-1$
 
       parameters = new String[nrParameters];
-      parameterFieldNames = new String[nrParameters];
       parameterValues = new String[nrParameters];
 
       for (int i = 0; i < nrParameters; i++) {
         Node knode = XMLHandler.getSubNodeByNr(parametersNode, "parameter", i); //$NON-NLS-1$
 
         parameters[i] = XMLHandler.getTagValue(knode, "name"); //$NON-NLS-1$
-        parameterFieldNames[i] = XMLHandler.getTagValue(knode, "stream_name"); //$NON-NLS-1$
         parameterValues[i] = XMLHandler.getTagValue(knode, "value"); //$NON-NLS-1$
       }
     } catch (Exception e) {
@@ -148,14 +143,12 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
       retval.append("      ").append(XMLHandler.openTag("parameters"));
 
       retval.append("        ").append(XMLHandler.addTagValue("pass_all_parameters", passingAllParameters));
-      retval.append("        ").append(XMLHandler.addTagValue("pass_each_batch", passingParametersEachBatch));
 
       for (int i = 0; i < parameters.length; i++) {
         // This is a better way of making the XML file than the arguments.
         retval.append("            ").append(XMLHandler.openTag("parameter"));
 
         retval.append("            ").append(XMLHandler.addTagValue("name", parameters[i]));
-        retval.append("            ").append(XMLHandler.addTagValue("stream_name", parameterFieldNames[i]));
         retval.append("            ").append(XMLHandler.addTagValue("value", parameterValues[i]));
 
         retval.append("            ").append(XMLHandler.closeTag("parameter"));
@@ -183,18 +176,15 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
     //
     int parameternr = rep.countNrStepAttributes(id_step, "parameter_name");
     parameters = new String[parameternr];
-    parameterFieldNames = new String[parameternr];
     parameterValues = new String[parameternr];
 
     // Read all parameters ...
     for (int a = 0; a < parameternr; a++) {
       parameters[a] = rep.getStepAttributeString(id_step, a, "parameter_name");
-      parameterFieldNames[a] = rep.getStepAttributeString(id_step, a, "parameter_stream_name");
       parameterValues[a] = rep.getStepAttributeString(id_step, a, "parameter_value");
     }
 
     passingAllParameters = rep.getStepAttributeBoolean(id_step, 0, "pass_all_parameters", true);
-    passingParametersEachBatch = rep.getStepAttributeBoolean(id_step, 0, "pass_each_batch", false);
   }
 
   public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step) throws KettleException {
@@ -217,13 +207,11 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
       for (int i=0;i<parameters.length;i++)
       {
         rep.saveStepAttribute(id_transformation, getObjectId(), i, "parameter_name", parameters[i]);
-        rep.saveStepAttribute(id_transformation, getObjectId(), i, "parameter_stream_name", Const.NVL(parameterFieldNames[i], ""));
         rep.saveStepAttribute(id_transformation, getObjectId(), i, "parameter_value", Const.NVL(parameterValues[i], ""));
       }
     }     
     
     rep.saveStepAttribute(id_transformation, getObjectId(), "pass_all_parameters", passingAllParameters);
-    rep.saveStepAttribute(id_transformation, getObjectId(), "pass_each_batch", passingParametersEachBatch);
   }
 
   public void setDefault() {
@@ -232,10 +220,8 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
     batchTime = "";
     
     passingAllParameters = true;
-    passingParametersEachBatch = false;
     
     parameters = new String[0];
-    parameterFieldNames = new String[0];
     parameterValues = new String[0];
   }
 
@@ -569,20 +555,6 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
   }
 
   /**
-   * @return the parameterFieldNames
-   */
-  public String[] getParameterFieldNames() {
-    return parameterFieldNames;
-  }
-
-  /**
-   * @param parameterFieldNames the parameterFieldNames to set
-   */
-  public void setParameterFieldNames(String[] parameterFieldNames) {
-    this.parameterFieldNames = parameterFieldNames;
-  }
-
-  /**
    * @return the parameterValues
    */
   public String[] getParameterValues() {
@@ -594,20 +566,6 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
    */
   public void setParameterValues(String[] parameterValues) {
     this.parameterValues = parameterValues;
-  }
-
-  /**
-   * @return the passingParametersEachBatch
-   */
-  public boolean isPassingParametersEachBatch() {
-    return passingParametersEachBatch;
-  }
-
-  /**
-   * @param passingParametersEachBatch the passingParametersEachBatch to set
-   */
-  public void setPassingParametersEachBatch(boolean passingParametersEachBatch) {
-    this.passingParametersEachBatch = passingParametersEachBatch;
   }
 
   /**
