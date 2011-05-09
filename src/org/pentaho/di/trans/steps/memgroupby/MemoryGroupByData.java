@@ -82,7 +82,7 @@ public class MemoryGroupByData extends BaseStepData implements StepDataInterface
 	public ValueMetaInterface valueMetaInteger;
 	public ValueMetaInterface valueMetaNumber;
 
-    
+  public boolean newBatch;    
 	/**
 	 * 
 	 */

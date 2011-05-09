@@ -67,14 +67,22 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
   private ObjectLocationSpecificationMethod specificationMethod;
 
   private String                            batchSize;
+  private String                            batchTime;
   
   private String                            injectStep;
   private String                            retrieveStep;
 
+  private boolean passingAllParameters;
+  private boolean passingParametersEachBatch;
+  
+  private String                             parameters[];
+  private String                             parameterFieldNames[];
+  private String                             parameterValues[];
+
   public SingleThreaderMeta() {
     super(); // allocate BaseStepMeta
 
-    batchSize = "100";
+    setDefault();
   }
 
   public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleXMLException {
@@ -89,9 +97,29 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
       directoryPath = XMLHandler.getTagValue(stepnode, "directory_path"); //$NON-NLS-1$
 
       batchSize = XMLHandler.getTagValue(stepnode, "batch_size"); //$NON-NLS-1$
+      batchTime = XMLHandler.getTagValue(stepnode, "batch_time"); //$NON-NLS-1$
       injectStep = XMLHandler.getTagValue(stepnode, "inject_step"); //$NON-NLS-1$
       retrieveStep = XMLHandler.getTagValue(stepnode, "retrieve_step"); //$NON-NLS-1$
       
+      Node parametersNode = XMLHandler.getSubNode(stepnode, "parameters"); //$NON-NLS-1$
+
+      String passAll = XMLHandler.getTagValue(parametersNode, "pass_all_parameters");
+      passingAllParameters = Const.isEmpty(passAll) || "Y".equalsIgnoreCase(passAll);
+      passingParametersEachBatch = "Y".equalsIgnoreCase(XMLHandler.getTagValue(parametersNode, "pass_each_batch"));
+
+      int nrParameters = XMLHandler.countNodes(parametersNode, "parameter"); //$NON-NLS-1$
+
+      parameters = new String[nrParameters];
+      parameterFieldNames = new String[nrParameters];
+      parameterValues = new String[nrParameters];
+
+      for (int i = 0; i < nrParameters; i++) {
+        Node knode = XMLHandler.getSubNodeByNr(parametersNode, "parameter", i); //$NON-NLS-1$
+
+        parameters[i] = XMLHandler.getTagValue(knode, "name"); //$NON-NLS-1$
+        parameterFieldNames[i] = XMLHandler.getTagValue(knode, "stream_name"); //$NON-NLS-1$
+        parameterValues[i] = XMLHandler.getTagValue(knode, "value"); //$NON-NLS-1$
+      }
     } catch (Exception e) {
       throw new KettleXMLException(BaseMessages.getString(PKG, "SingleThreaderMeta.Exception.ErrorLoadingTransformationStepFromXML"), e); //$NON-NLS-1$
     }
@@ -112,9 +140,28 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
     retval.append("    ").append(XMLHandler.addTagValue("directory_path", directoryPath)); //$NON-NLS-1$
 
     retval.append("    ").append(XMLHandler.addTagValue("batch_size", batchSize)); //$NON-NLS-1$
+    retval.append("    ").append(XMLHandler.addTagValue("batch_time", batchTime)); //$NON-NLS-1$
     retval.append("    ").append(XMLHandler.addTagValue("inject_step", injectStep)); //$NON-NLS-1$
     retval.append("    ").append(XMLHandler.addTagValue("retrieve_step", retrieveStep)); //$NON-NLS-1$
 
+    if (parameters != null) {
+      retval.append("      ").append(XMLHandler.openTag("parameters"));
+
+      retval.append("        ").append(XMLHandler.addTagValue("pass_all_parameters", passingAllParameters));
+      retval.append("        ").append(XMLHandler.addTagValue("pass_each_batch", passingParametersEachBatch));
+
+      for (int i = 0; i < parameters.length; i++) {
+        // This is a better way of making the XML file than the arguments.
+        retval.append("            ").append(XMLHandler.openTag("parameter"));
+
+        retval.append("            ").append(XMLHandler.addTagValue("name", parameters[i]));
+        retval.append("            ").append(XMLHandler.addTagValue("stream_name", parameterFieldNames[i]));
+        retval.append("            ").append(XMLHandler.addTagValue("value", parameterValues[i]));
+
+        retval.append("            ").append(XMLHandler.closeTag("parameter"));
+      }
+      retval.append("      ").append(XMLHandler.closeTag("parameters"));
+    }
     return retval.toString();
   }
 
@@ -128,9 +175,26 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
     directoryPath = rep.getStepAttributeString(id_step, "directory_path"); //$NON-NLS-1$
 
     batchSize = rep.getStepAttributeString(id_step, "batch_size"); //$NON-NLS-1$
+    batchTime = rep.getStepAttributeString(id_step, "batch_time"); //$NON-NLS-1$
     injectStep = rep.getStepAttributeString(id_step, "inject_step"); //$NON-NLS-1$
     retrieveStep = rep.getStepAttributeString(id_step, "retrieve_step"); //$NON-NLS-1$
 
+    // The parameters...
+    //
+    int parameternr = rep.countNrStepAttributes(id_step, "parameter_name");
+    parameters = new String[parameternr];
+    parameterFieldNames = new String[parameternr];
+    parameterValues = new String[parameternr];
+
+    // Read all parameters ...
+    for (int a = 0; a < parameternr; a++) {
+      parameters[a] = rep.getStepAttributeString(id_step, a, "parameter_name");
+      parameterFieldNames[a] = rep.getStepAttributeString(id_step, a, "parameter_stream_name");
+      parameterValues[a] = rep.getStepAttributeString(id_step, a, "parameter_value");
+    }
+
+    passingAllParameters = rep.getStepAttributeBoolean(id_step, 0, "pass_all_parameters", true);
+    passingParametersEachBatch = rep.getStepAttributeBoolean(id_step, 0, "pass_each_batch", false);
   }
 
   public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step) throws KettleException {
@@ -141,12 +205,38 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
     rep.saveStepAttribute(id_transformation, id_step, "directory_path", directoryPath); //$NON-NLS-1$
 
     rep.saveStepAttribute(id_transformation, id_step, "batch_size", batchSize); //$NON-NLS-1$
+    rep.saveStepAttribute(id_transformation, id_step, "batch_time", batchTime); //$NON-NLS-1$
     rep.saveStepAttribute(id_transformation, id_step, "inject_step", injectStep); //$NON-NLS-1$
     rep.saveStepAttribute(id_transformation, id_step, "retrieve_step", retrieveStep); //$NON-NLS-1$
+    
+    // The parameters...
+    //
+    // Save the parameters...
+    if (parameters!=null)
+    {
+      for (int i=0;i<parameters.length;i++)
+      {
+        rep.saveStepAttribute(id_transformation, getObjectId(), i, "parameter_name", parameters[i]);
+        rep.saveStepAttribute(id_transformation, getObjectId(), i, "parameter_stream_name", Const.NVL(parameterFieldNames[i], ""));
+        rep.saveStepAttribute(id_transformation, getObjectId(), i, "parameter_value", Const.NVL(parameterValues[i], ""));
+      }
+    }     
+    
+    rep.saveStepAttribute(id_transformation, getObjectId(), "pass_all_parameters", passingAllParameters);
+    rep.saveStepAttribute(id_transformation, getObjectId(), "pass_each_batch", passingParametersEachBatch);
   }
 
   public void setDefault() {
     specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
+    batchSize = "100";
+    batchTime = "";
+    
+    passingAllParameters = true;
+    passingParametersEachBatch = false;
+    
+    parameters = new String[0];
+    parameterFieldNames = new String[0];
+    parameterValues = new String[0];
   }
 
   public void getFields(RowMetaInterface row, String origin, RowMetaInterface info[], StepMeta nextStep, VariableSpace space) throws KettleStepException {
@@ -162,11 +252,14 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
       throw new KettleStepException(BaseMessages.getString(PKG, "SingleThreaderMeta.Exception.UnableToLoadMappingTransformation"), e);
     }
 
+    row.clear();
+
     // Let's keep it simple!
     //
-    RowMetaInterface stepFields = mappingTransMeta.getStepFields(retrieveStep);
-    row.clear();
-    row.addRowMeta(stepFields);
+    if (!Const.isEmpty(space.environmentSubstitute(retrieveStep))) {
+      RowMetaInterface stepFields = mappingTransMeta.getStepFields(retrieveStep);
+      row.addRowMeta(stepFields);
+    }
   }
 
   public synchronized static final TransMeta loadSingleThreadedTransMeta(SingleThreaderMeta mappingMeta, Repository rep, VariableSpace space) throws KettleException {
@@ -445,5 +538,89 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
    */
   public void setRetrieveStep(String retrieveStep) {
     this.retrieveStep = retrieveStep;
+  }
+
+  /**
+   * @return the passingAllParameters
+   */
+  public boolean isPassingAllParameters() {
+    return passingAllParameters;
+  }
+
+  /**
+   * @param passingAllParameters the passingAllParameters to set
+   */
+  public void setPassingAllParameters(boolean passingAllParameters) {
+    this.passingAllParameters = passingAllParameters;
+  }
+
+  /**
+   * @return the parameters
+   */
+  public String[] getParameters() {
+    return parameters;
+  }
+
+  /**
+   * @param parameters the parameters to set
+   */
+  public void setParameters(String[] parameters) {
+    this.parameters = parameters;
+  }
+
+  /**
+   * @return the parameterFieldNames
+   */
+  public String[] getParameterFieldNames() {
+    return parameterFieldNames;
+  }
+
+  /**
+   * @param parameterFieldNames the parameterFieldNames to set
+   */
+  public void setParameterFieldNames(String[] parameterFieldNames) {
+    this.parameterFieldNames = parameterFieldNames;
+  }
+
+  /**
+   * @return the parameterValues
+   */
+  public String[] getParameterValues() {
+    return parameterValues;
+  }
+
+  /**
+   * @param parameterValues the parameterValues to set
+   */
+  public void setParameterValues(String[] parameterValues) {
+    this.parameterValues = parameterValues;
+  }
+
+  /**
+   * @return the passingParametersEachBatch
+   */
+  public boolean isPassingParametersEachBatch() {
+    return passingParametersEachBatch;
+  }
+
+  /**
+   * @param passingParametersEachBatch the passingParametersEachBatch to set
+   */
+  public void setPassingParametersEachBatch(boolean passingParametersEachBatch) {
+    this.passingParametersEachBatch = passingParametersEachBatch;
+  }
+
+  /**
+   * @return the batchTime
+   */
+  public String getBatchTime() {
+    return batchTime;
+  }
+
+  /**
+   * @param batchTime the batchTime to set
+   */
+  public void setBatchTime(String batchTime) {
+    this.batchTime = batchTime;
   }
 }

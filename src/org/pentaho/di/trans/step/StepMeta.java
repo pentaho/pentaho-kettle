@@ -63,9 +63,10 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 
 	public static final String XML_TAG = "step";
 
-	public static final Object STRING_ID_MAPPING        = "Mapping";
-	public static final Object STRING_ID_MAPPING_INPUT  = "MappingInput";
-	public static final Object STRING_ID_MAPPING_OUTPUT = "MappingOutput";
+  public static final String STRING_ID_MAPPING         = "Mapping";
+	public static final String STRING_ID_SINGLE_THREADER = "SingleThreader";
+	public static final String STRING_ID_MAPPING_INPUT   = "MappingInput";
+	public static final String STRING_ID_MAPPING_OUTPUT  = "MappingOutput";
     
     private String        stepid;   // --> StepPlugin.id
 	private String        stepname;
@@ -777,6 +778,12 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
     public boolean isMapping() {
     	return STRING_ID_MAPPING.equals(stepid);
     }
+    
+    public boolean isSingleThreader() {
+      return STRING_ID_SINGLE_THREADER.equals(stepid);
+    }
+    
+    
 
     public boolean isMappingInput() {
     	return STRING_ID_MAPPING_INPUT.equals(stepid);

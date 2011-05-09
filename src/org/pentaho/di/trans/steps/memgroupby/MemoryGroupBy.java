@@ -62,9 +62,7 @@ public class MemoryGroupBy extends BaseStep implements StepInterface
         data=(MemoryGroupByData)sdi;
         
         Object[] r=getRow();  // get row!
-        if (first)
-		{
-			first=false;
+        if (first || data.newBatch) {
 
         	// What is the output looking like?
         	// 
@@ -121,43 +119,38 @@ public class MemoryGroupBy extends BaseStep implements StepInterface
 			//
 			initGroupMeta(data.inputRowMeta);
 			
+			
+    }
+        
+    if (first || data.newBatch) {
 			// Only calculate data.aggMeta here, not for every new aggregate.
 			//
 			newAggregate(r, null);
+    }
 			
+		if (first) {
 			// for speed: groupMeta+aggMeta
 			//
 			data.groupAggMeta=new RowMeta();
 			data.groupAggMeta.addRowMeta(data.groupMeta);
 			data.groupAggMeta.addRowMeta(data.aggMeta);
 		}
-        
-        
-        // Here is where we start to do the real work...
-        //
-        if (r==null)  // no more input to be expected... (or none received in the first place)
+		    
+    // Here is where we start to do the real work...
+    //
+    if (r==null)  // no more input to be expected... (or none received in the first place)
 		{
-        	// Dump the content of the map...
-        	//
-			for (HashEntry entry : data.map.keySet()) {
-				Aggregate aggregate = data.map.get(entry);
-				Object[] aggregateResult = getAggregateResult(aggregate);
-				
-				Object[] outputRowData = RowDataUtil.allocateRowData(data.outputRowMeta.size());
-				int index=0;
-				for (int i=0;i<data.groupMeta.size();i++) {
-					outputRowData[index++] = entry.getGroupData()[i];
-				}
-				for (int i=0;i<data.aggMeta.size();i++) {
-					outputRowData[index++] = aggregateResult[i];
-				}
-				putRow(data.outputRowMeta, outputRowData);
-			}
+      handleLastOfGroup();
 			
 			setOutputDone();
 			return false;
 		}
-        
+    
+    if (first || data.newBatch) {
+      first = false;
+      data.newBatch = false;
+    }
+    
 		addToAggregate(r);
 
 		if (checkFeedback(getLinesRead())) 
@@ -169,7 +162,27 @@ public class MemoryGroupBy extends BaseStep implements StepInterface
 	}
 
 	
-	// Calculate the aggregates in the row...
+  private void handleLastOfGroup() throws KettleException {
+    // Dump the content of the map...
+    //
+    for (HashEntry entry : data.map.keySet()) {
+      Aggregate aggregate = data.map.get(entry);
+      Object[] aggregateResult = getAggregateResult(aggregate);
+
+      Object[] outputRowData = RowDataUtil.allocateRowData(data.outputRowMeta.size());
+      int index = 0;
+      for (int i = 0; i < data.groupMeta.size(); i++) {
+        outputRowData[index++] = entry.getGroupData()[i];
+      }
+      for (int i = 0; i < data.aggMeta.size(); i++) {
+        outputRowData[index++] = aggregateResult[i];
+      }
+      putRow(data.outputRowMeta, outputRowData);
+    }
+
+  }
+
+  // Calculate the aggregates in the row...
 	@SuppressWarnings("unchecked")
 	private void addToAggregate(Object[] r) throws KettleException
 	{
@@ -441,4 +454,8 @@ public class MemoryGroupBy extends BaseStep implements StepInterface
 		return false;
 	}
 
+	 public void batchComplete() throws KettleException {
+	    handleLastOfGroup();
+	    data.newBatch=true;
+	  }
 }

@@ -11,9 +11,12 @@
  
 package org.pentaho.di.trans.steps.singlethreader;
 
+import java.util.ArrayList;
+
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.SingleThreadedTransExecutor;
@@ -26,6 +29,8 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.mapping.MappingValueRename;
+import org.pentaho.di.trans.steps.mappinginput.MappingInputData;
 
 /**
  * Execute a mapping: a re-usuable transformation
@@ -66,7 +71,20 @@ public class SingleThreader extends BaseStep implements StepInterface
 		if (first) {
 		  first=false;
 		  
-      
+		  data.fieldIndexes = new int[meta.getParameters().length];
+		  for (int i=0;i<data.fieldIndexes.length;i++) {
+		    data.fieldIndexes[i]=-1;
+		    if (!Const.isEmpty(meta.getParameterFieldNames()[i])) {
+		      data.fieldIndexes[i] = getInputRowMeta().indexOfValue(meta.getParameterFieldNames()[i]);
+		      if (data.fieldIndexes[i]<0) {
+		        throw new KettleException(BaseMessages.getString(PKG, "SingleThreader.Exception.ParameterFieldNotFound", meta.getParameterFieldNames()[i]));
+		      }
+		    }
+		  }
+		  
+		  passParameters(getInputRowMeta(), row);
+		  
+      data.startTime = System.currentTimeMillis();
 		}
 
 		// Add the row to the producer...
@@ -74,18 +92,58 @@ public class SingleThreader extends BaseStep implements StepInterface
 		data.rowProducer.putRow(getInputRowMeta(), row);
 		data.batchCount++;
 		
-		if (data.batchCount>data.batchSize) {
+		boolean countWindow = data.batchSize>0 && data.batchCount>data.batchSize;
+		boolean timeWindow = data.batchTime>0 && (System.currentTimeMillis()-data.startTime)>data.batchTime;
+		
+		if (countWindow || timeWindow) {
 		  data.batchCount=0;
+		  if (meta.isPassingParametersEachBatch()) {
+		    passParameters(getInputRowMeta(), row);
+		  }
+		  
 		  boolean more = data.executor.oneIteration();
 		  if (!more) {
 		    setOutputDone();
 		    return false;
 		  }
+		  data.startTime=System.currentTimeMillis();
 		}
 		return true;
 	}
 
-	public void prepareMappingExecution() throws KettleException {
+	private void passParameters(RowMetaInterface rowMeta, Object[] rowData) throws KettleValueException {
+	  
+	  String[] parameters;
+	  String[] parameterValues;
+	  
+	  if (meta.isPassingAllParameters()) {
+	    // We pass the values for all the parameters from the parent transformation
+	    //
+	    parameters = data.mappingTransMeta.listParameters();
+	    parameterValues = new String[parameters.length];
+	    for (int i=0;i<parameters.length;i++) {
+	      parameterValues[i] = environmentSubstitute(parameters[i]);
+	    }
+	  } else {
+	    // We pass down the listed variables with the specified values...
+	    //
+	    parameters = meta.getParameters();
+	    parameterValues = new String[parameters.length];
+      for (int i=0;i<parameters.length;i++) {
+        if (data.fieldIndexes[i]<0) {
+          // The the value from the input dialog
+          //
+          parameterValues[i] = environmentSubstitute(meta.getParameterValues()[i]);
+        } else {
+          // Take the value from the input field from the current row...
+          //
+          parameterValues[i] = rowMeta.getString(rowData, data.fieldIndexes[i]);
+        }
+      }
+	  }
+  }
+
+  public void prepareMappingExecution() throws KettleException {
 	      // Set the type to single threaded in case the user forgot...
 	      //
 	      data.mappingTransMeta.setTransformationType(TransformationType.SingleThreaded);
@@ -118,6 +176,14 @@ public class SingleThreader extends BaseStep implements StepInterface
         // prepare the execution 
         //
         data.mappingTrans.prepareExecution(null);
+        
+        // If the inject step is a mapping input step, tell it all is OK...
+        //
+        if (data.injectStepMeta.isMappingInput()) {
+          MappingInputData mappingInputData = (MappingInputData) data.mappingTrans.findDataInterface(data.injectStepMeta.getName());
+          mappingInputData.sourceSteps=new StepInterface[0];
+          mappingInputData.valueRenames = new ArrayList<MappingValueRename>();
+        }
         
         // Add row producer & row listener
         //
@@ -168,7 +234,8 @@ public class SingleThreader extends BaseStep implements StepInterface
       try {
         // The batch size...
         //
-        data.batchSize = Const.toInt(environmentSubstitute(meta.getBatchSize()), 100);
+        data.batchSize = Const.toInt(environmentSubstitute(meta.getBatchSize()), 0);
+        data.batchTime = Const.toInt(environmentSubstitute(meta.getBatchTime()), 0);
         
         // Pass the repository down to the metadata object...
         //
@@ -180,15 +247,17 @@ public class SingleThreader extends BaseStep implements StepInterface
           // Validate the inject and retrieve step names
           //
           String injectStepName = environmentSubstitute(meta.getInjectStep());
-          StepMeta injectStepMeta = data.mappingTransMeta.findStep(injectStepName);
-          if (injectStepMeta==null) {
+          data.injectStepMeta = data.mappingTransMeta.findStep(injectStepName);
+          if (data.injectStepMeta==null) {
             logError("The inject step with name '"+injectStepName+"' couldn't be found in the sub-transformation");
           }
 
           String retrieveStepName = environmentSubstitute(meta.getRetrieveStep());
-          StepMeta retrieveStepMeta = data.mappingTransMeta.findStep(retrieveStepName);
-          if (retrieveStepMeta==null) {
-            logError("The retrieve step with name '"+retrieveStepName+"' couldn't be found in the sub-transformation");
+          if (!Const.isEmpty(retrieveStepName)) {
+            data.retrieveStepMeta = data.mappingTransMeta.findStep(retrieveStepName);
+            if (data.retrieveStepMeta==null) {
+              logError("The retrieve step with name '"+retrieveStepName+"' couldn't be found in the sub-transformation");
+            }
           }
 
           // OK, now prepare the execution of the mapping.

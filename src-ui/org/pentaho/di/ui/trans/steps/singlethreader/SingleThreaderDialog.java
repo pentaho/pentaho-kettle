@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ObjectLocationSpecificationMethod;
@@ -57,7 +58,9 @@ import org.pentaho.di.trans.steps.singlethreader.SingleThreaderMeta;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.LabelTextVar;
+import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
 import org.pentaho.di.ui.spoon.Spoon;
@@ -101,6 +104,7 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
 	private LabelTextVar wRetrieveStep;
 	private Button wGetRetrieveStep;
 	
+	private TableView wParameters;
 	
 	private TransMeta mappingTransMeta = null;
 
@@ -115,6 +119,16 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
 
   private ObjectId         referenceObjectId;
   private ObjectLocationSpecificationMethod specificationMethod;
+
+  private Group gParametersGroup;
+
+  private Button wPassParams;
+
+  private Button wbGetParams;
+
+  private Button wPassEachBatch;
+
+  private LabelTextVar wBatchTime;
 
 	public SingleThreaderDialog(Shell parent, Object in, TransMeta tr, String sname)
 	{
@@ -175,7 +189,7 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
 		//
 
 		// //////////////////////////////////////////////////
-		// The key creation box
+		// The sub-transformation definition box
 		// //////////////////////////////////////////////////
 		//
 		gTransGroup = new Group(shell, SWT.SHADOW_ETCHED_IN);
@@ -452,6 +466,96 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
     fdBatchSize.right = new FormAttachment(wGetRetrieveStep, -margin);
     wBatchSize.setLayoutData(fdBatchSize);
 
+    wBatchTime = new LabelTextVar(transMeta, shell, 
+        BaseMessages.getString(PKG, "SingleThreaderDialog.BatchTime.Label"), 
+        BaseMessages.getString(PKG, "SingleThreaderDialog.BatchTime.Tooltip") 
+      );
+    FormData fdBatchTime = new FormData();
+    fdBatchTime.left = new FormAttachment(0, 0);
+    fdBatchTime.top = new FormAttachment(wBatchSize, margin);
+    fdBatchTime.right = new FormAttachment(wGetRetrieveStep, -margin);
+    wBatchTime.setLayoutData(fdBatchTime);
+    
+    gParametersGroup = new Group(shell, SWT.SHADOW_ETCHED_IN);
+    gParametersGroup.setText(BaseMessages.getString(PKG, "SingleThreaderDialog.ParamGroup.Label")); //$NON-NLS-1$;
+    gParametersGroup.setBackground(shell.getBackground()); // the default looks ugly
+    FormLayout paramGroupLayout = new FormLayout();
+    paramGroupLayout.marginLeft = margin * 2;
+    paramGroupLayout.marginTop = margin * 2;
+    paramGroupLayout.marginRight = margin * 2;
+    paramGroupLayout.marginBottom = margin * 2;
+    gParametersGroup.setLayout(paramGroupLayout);
+
+    // Pass all parameters down
+    //
+    Label wlPassParams = new Label(gParametersGroup, SWT.RIGHT);
+    wlPassParams.setText(BaseMessages.getString(PKG, "SingleThreaderDialog.PassAllParameters.Label"));
+    props.setLook(wlPassParams);
+    FormData fdlPassParams = new FormData();
+    fdlPassParams.left = new FormAttachment(0, 0);
+    fdlPassParams.top = new FormAttachment(0, 0);
+    fdlPassParams.right = new FormAttachment(middle, -margin);
+    wlPassParams.setLayoutData(fdlPassParams);
+    wPassParams = new Button(gParametersGroup, SWT.CHECK);
+    props.setLook(wPassParams);
+    FormData fdPassParams = new FormData();
+    fdPassParams.left = new FormAttachment(middle, 0);
+    fdPassParams.top = new FormAttachment(0, 0);
+    fdPassParams.right = new FormAttachment(100, 0);
+    wPassParams.setLayoutData(fdPassParams);
+
+    Label wlPassEachBatch = new Label(gParametersGroup, SWT.RIGHT);
+    wlPassEachBatch.setText(BaseMessages.getString(PKG, "SingleThreaderDialog.PassParametersEachBatch.Label"));
+    props.setLook(wlPassEachBatch);
+    FormData fdlPassEachBatch = new FormData();
+    fdlPassEachBatch.left = new FormAttachment(0, 0);
+    fdlPassEachBatch.top = new FormAttachment(wPassParams, margin);
+    fdlPassEachBatch.right = new FormAttachment(middle, -margin);
+    wlPassEachBatch.setLayoutData(fdlPassEachBatch);
+    wPassEachBatch = new Button(gParametersGroup, SWT.CHECK);
+    props.setLook(wPassEachBatch);
+    FormData fdPassEachBatch = new FormData();
+    fdPassEachBatch.left = new FormAttachment(middle, 0);
+    fdPassEachBatch.top = new FormAttachment(wPassParams, margin);
+    fdPassEachBatch.right = new FormAttachment(100, 0);
+    wPassEachBatch.setLayoutData(fdPassEachBatch);
+
+    wbGetParams = new Button(gParametersGroup, SWT.PUSH);
+    wbGetParams.setText(BaseMessages.getString(PKG, "SingleThreaderDialog.GetParameters.Button.Label"));
+    FormData fdGetParams = new FormData();
+    fdGetParams.top = new FormAttachment(wPassEachBatch, margin);
+    fdGetParams.right = new FormAttachment(100, 0);
+    wbGetParams.setLayoutData(fdGetParams);
+    wbGetParams.addSelectionListener(new SelectionAdapter(){ @Override
+    public void widgetSelected(SelectionEvent arg0) {
+      getParameters();
+    } });
+    
+    final int parameterRows = singleThreaderMeta.getParameters()!=null ? singleThreaderMeta.getParameters().length : 0;
+
+    ColumnInfo[] colinf = new ColumnInfo[] { 
+        new ColumnInfo(BaseMessages.getString(PKG, "SingleThreaderDialog.Parameters.Parameter.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false),
+        new ColumnInfo(BaseMessages.getString(PKG, "SingleThreaderDialog.Parameters.ColumnName.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {}, false), 
+        new ColumnInfo(BaseMessages.getString(PKG, "SingleThreaderDialog.Parameters.Value.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false), 
+      };
+    colinf[2].setUsingVariables(true);
+
+    wParameters = new TableView(transMeta, gParametersGroup, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, parameterRows, lsMod, props);
+
+    FormData fdParameters = new FormData();
+    fdParameters.left = new FormAttachment(0, 0);
+    fdParameters.top = new FormAttachment(wPassEachBatch, margin);
+    fdParameters.right = new FormAttachment(wbGetParams, -margin);
+    fdParameters.bottom = new FormAttachment(100, 0);
+    wParameters.setLayoutData(fdParameters);
+
+    FormData fdParametersComp = new FormData();
+    fdParametersComp.left = new FormAttachment(0, 0);
+    fdParametersComp.top = new FormAttachment(wBatchTime, 0);
+    fdParametersComp.right = new FormAttachment(100, 0);
+    fdParametersComp.bottom = new FormAttachment(100, -50);
+    gParametersGroup.setLayoutData(fdParametersComp);
+
     
 		// Some buttons
 		wOK = new Button(shell, SWT.PUSH);
@@ -459,7 +563,7 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
 		wCancel = new Button(shell, SWT.PUSH);
 		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
-		setButtonPositions(new Button[] { wOK, wCancel }, margin, wBatchSize);
+		setButtonPositions(new Button[] { wOK, wCancel }, margin, gParametersGroup);
 
 		// Add listeners
 		lsCancel = new Listener()
@@ -492,6 +596,7 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
 		wFilename.addSelectionListener(lsDef);
 		wTransname.addSelectionListener(lsDef);
 		wBatchSize.addSelectionListener(lsDef);
+    wBatchTime.addSelectionListener(lsDef);
 		wInjectStep.addSelectionListener(lsDef);
 
 		// Detect X or ALT-F4 or something that kills this window...
@@ -727,8 +832,28 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
     setRadioButtons();
 
 		wBatchSize.setText(Const.NVL(singleThreaderMeta.getBatchSize(), ""));
+    wBatchTime.setText(Const.NVL(singleThreaderMeta.getBatchTime(), ""));
     wInjectStep.setText(Const.NVL(singleThreaderMeta.getInjectStep(), ""));
     wRetrieveStep.setText(Const.NVL(singleThreaderMeta.getRetrieveStep(), ""));
+
+    // Parameters
+    //
+    if (singleThreaderMeta.getParameters() != null) {
+      for (int i = 0; i < singleThreaderMeta.getParameters().length; i++) {
+        TableItem ti = wParameters.table.getItem(i);
+        if (!Const.isEmpty(singleThreaderMeta.getParameters()[i])) {
+          ti.setText(1, Const.NVL(singleThreaderMeta.getParameters()[i], ""));
+          ti.setText(2, Const.NVL(singleThreaderMeta.getParameterFieldNames()[i], ""));
+          ti.setText(3, Const.NVL(singleThreaderMeta.getParameterValues()[i], ""));
+        }
+      }
+      wParameters.removeEmptyRows();
+      wParameters.setRowNums();
+      wParameters.optWidth(true);
+    }
+
+    wPassParams.setSelection(singleThreaderMeta.isPassingAllParameters());
+    wPassEachBatch.setSelection(singleThreaderMeta.isPassingParametersEachBatch());
 
 		try {
 			loadTransformation();
@@ -737,24 +862,91 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
 		}
 	}
 
-	public static String getInjectorStep(TransMeta mappingTransMeta)
-	{
-		for (StepMeta stepMeta : mappingTransMeta.getSteps())
-		{
-			if (stepMeta.getStepID().equals("Injector"))
-			{
-				return stepMeta.getName();
-			}
-		}
-		return null;
-	}
-
+  public static String getInjectorStep(TransMeta mappingTransMeta) {
+    for (StepMeta stepMeta : mappingTransMeta.getSteps()) {
+      if (stepMeta.getStepID().equals("Injector") || stepMeta.getStepID().equals("MappingInput")) {
+        return stepMeta.getName();
+      }
+    }
+    return "";
+  }
 
 	private void cancel()
 	{
 		stepname = null;
 		singleThreaderMeta.setChanged(changed);
 		dispose();
+	}
+	
+	private void getInfo(SingleThreaderMeta meta) throws KettleException {
+
+    loadTransformation();
+
+    meta.setSpecificationMethod(specificationMethod);
+    switch(specificationMethod) {
+    case FILENAME:
+      meta.setFileName(wFilename.getText());
+      meta.setDirectoryPath(null);
+      meta.setTransName(null);
+      meta.setTransObjectId(null);
+      break;
+    case REPOSITORY_BY_NAME:
+      meta.setDirectoryPath(wDirectory.getText());
+      meta.setTransName(wTransname.getText());
+      meta.setFileName(null);
+      meta.setTransObjectId(null);
+      break;
+    case REPOSITORY_BY_REFERENCE:
+      meta.setFileName(null);
+      meta.setDirectoryPath(null);
+      meta.setTransName(null);
+      meta.setTransObjectId(referenceObjectId);
+      break;
+    }
+
+    meta.setBatchSize(wBatchSize.getText());
+    meta.setBatchTime(wBatchTime.getText());
+    meta.setInjectStep(wInjectStep.getText());
+    meta.setRetrieveStep(wRetrieveStep.getText());
+
+    // The parameters...
+    //
+    int nritems = wParameters.nrNonEmpty();
+    int nr = 0;
+    for (int i = 0; i < nritems; i++) {
+      String param = wParameters.getNonEmpty(i).getText(1);
+      if (param != null && param.length() != 0) {
+        nr++;
+      }
+    }
+    meta.setParameters(new String[nr]);
+    meta.setParameterFieldNames(new String[nr]);
+    meta.setParameterValues(new String[nr]);
+    nr = 0;
+    for (int i = 0; i < nritems; i++) {
+      String param = wParameters.getNonEmpty(i).getText(1);
+      String fieldName = wParameters.getNonEmpty(i).getText(2);
+      String value = wParameters.getNonEmpty(i).getText(3);
+
+      meta.getParameters()[nr] = param;
+
+      if (!Const.isEmpty(Const.trim(fieldName))) {
+        meta.getParameterFieldNames()[nr] = fieldName;
+      } else {
+        meta.getParameterFieldNames()[nr] = "";
+      }
+
+      if (!Const.isEmpty(Const.trim(value))) {
+        meta.getParameterValues()[nr] = value;
+      } else {
+        meta.getParameterValues()[nr] = "";
+      }
+
+      nr++;
+    }
+
+    meta.setPassingAllParameters(wPassParams.getSelection());
+    meta.setPassingParametersEachBatch(wPassEachBatch.getSelection());
 	}
 
 	private void ok()
@@ -765,38 +957,40 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
 
 		try
 		{
+		  getInfo(singleThreaderMeta);
 			loadTransformation();
 		} catch (KettleException e)
 		{
 			new ErrorDialog(shell, BaseMessages.getString(PKG, "SingleThreaderDialog.ErrorLoadingSpecifiedTransformation.Title"), BaseMessages.getString(PKG, "SingleThreaderDialog.ErrorLoadingSpecifiedTransformation.Message"), e);
 		}
-		
-    singleThreaderMeta.setSpecificationMethod(specificationMethod);
-    switch(specificationMethod) {
-    case FILENAME:
-      singleThreaderMeta.setFileName(wFilename.getText());
-      singleThreaderMeta.setDirectoryPath(null);
-      singleThreaderMeta.setTransName(null);
-      singleThreaderMeta.setTransObjectId(null);
-      break;
-    case REPOSITORY_BY_NAME:
-      singleThreaderMeta.setDirectoryPath(wDirectory.getText());
-      singleThreaderMeta.setTransName(wTransname.getText());
-      singleThreaderMeta.setFileName(null);
-      singleThreaderMeta.setTransObjectId(null);
-      break;
-    case REPOSITORY_BY_REFERENCE:
-      singleThreaderMeta.setFileName(null);
-      singleThreaderMeta.setDirectoryPath(null);
-      singleThreaderMeta.setTransName(null);
-      singleThreaderMeta.setTransObjectId(referenceObjectId);
-      break;
-    }
-
-    singleThreaderMeta.setBatchSize(wBatchSize.getText());
-    singleThreaderMeta.setInjectStep(wInjectStep.getText());
-    singleThreaderMeta.setRetrieveStep(wRetrieveStep.getText());
 
 		dispose();
 	}
+
+  protected void getParameters() {
+    try {
+      SingleThreaderMeta jet = new SingleThreaderMeta();
+      getInfo(jet);
+      TransMeta mappingTransMeta = SingleThreaderMeta.loadSingleThreadedTransMeta(jet, repository, transMeta);
+      String[] parameters = mappingTransMeta.listParameters();
+      
+      String[] existing = wParameters.getItems(1);
+      
+      for (int i=0;i<parameters.length;i++) {
+        if (Const.indexOfString(parameters[i], existing)<0) {
+          TableItem item = new TableItem(wParameters.table, SWT.NONE);
+          item.setText(1, parameters[i]);
+        }
+      }
+      wParameters.removeEmptyRows();
+      wParameters.setRowNums();
+      wParameters.optWidth(true);
+    } catch(Exception e) {
+      new ErrorDialog(shell, 
+          BaseMessages.getString(PKG, "SingleThreaderDialog.Exception.UnableToLoadTransformation.Title"), 
+          BaseMessages.getString(PKG, "SingleThreaderDialog.Exception.UnableToLoadTransformation.Message"), e);
+    }
+    
+  }
+
 }

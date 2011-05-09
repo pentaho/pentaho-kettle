@@ -18,6 +18,7 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
+import org.pentaho.di.trans.step.StepMeta;
 
 /**
  * @author Matt
@@ -36,6 +37,11 @@ public class SingleThreaderData extends BaseStepData implements StepDataInterfac
   public RowProducer rowProducer;
   
   public int batchCount;
+  public int batchTime;
+  public long startTime;
+  public int[] fieldIndexes;
+  public StepMeta injectStepMeta;
+  public StepMeta retrieveStepMeta;
 
   /**
 	 * 

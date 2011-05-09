@@ -129,6 +129,7 @@ import org.pentaho.di.trans.step.errorhandling.StreamIcon;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.pentaho.di.trans.steps.mapping.MappingMeta;
+import org.pentaho.di.trans.steps.singlethreader.SingleThreaderMeta;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
@@ -2303,7 +2304,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             item.setDisabled(sels != 2);
 
             item = (XulMenuitem) doc.getElementById("trans-graph-entry-open-mapping"); //$NON-NLS-1$
-            item.setDisabled(!stepMeta.isMapping());
+            item.setDisabled(!stepMeta.isMapping() && !stepMeta.isSingleThreader());
 
             item = (XulMenuitem) doc.getElementById("trans-graph-entry-align-snap"); //$NON-NLS-1$
             item.setLabel(BaseMessages.getString(PKG, "TransGraph.PopupMenu.SnapToGrid") + ConstUI.GRID_SIZE + ")\tALT-HOME"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -3853,12 +3854,23 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
    */
   public void openMapping() {
 	  try {
-		  MappingMeta meta = (MappingMeta) this.currentStep.getStepMetaInterface();
-		  TransMeta mappingMeta = MappingMeta.loadMappingMeta(meta, spoon.rep, transMeta);
-		  mappingMeta.clearChanged();
-		  spoon.addTransGraph(mappingMeta);
-		  TransGraph subTransGraph = spoon.getActiveTransGraph();
-		  attachActiveTrans(subTransGraph, this.currentStep);
+	    TransMeta mappingMeta = null;
+	    if (this.currentStep.getStepMetaInterface() instanceof MappingMeta) {
+  		  MappingMeta meta = (MappingMeta) this.currentStep.getStepMetaInterface();
+  		  mappingMeta = MappingMeta.loadMappingMeta(meta, spoon.rep, transMeta);
+	    }
+	    if (this.currentStep.getStepMetaInterface() instanceof SingleThreaderMeta) {
+	      SingleThreaderMeta meta = (SingleThreaderMeta) this.currentStep.getStepMetaInterface();
+        mappingMeta = SingleThreaderMeta.loadSingleThreadedTransMeta(meta, spoon.rep, transMeta);
+      }
+      
+	    if (mappingMeta!=null) {
+  		  mappingMeta.clearChanged();
+  		  spoon.addTransGraph(mappingMeta);
+  		  TransGraph subTransGraph = spoon.getActiveTransGraph();
+  		  attachActiveTrans(subTransGraph, this.currentStep);
+	    }
+	    
 	  } catch(Exception e) {
 		  new ErrorDialog(shell, BaseMessages.getString(PKG, "TransGraph.Exception.UnableToLoadMapping.Title"), BaseMessages.getString(PKG, "TransGraph.Exception.UnableToLoadMapping.Message"), e);  //$NON-NLS-1$//$NON-NLS-2$
 	  }

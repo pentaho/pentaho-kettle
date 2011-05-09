@@ -180,23 +180,19 @@ public class GroupBy extends BaseStep implements StepInterface
 			return false;
 		}
         
-        if (first || data.newBatch)
-        {
-        	first=false;
-        	data.newBatch = false;
-        	
-        	data.previous = data.inputRowMeta.cloneRow(r); // copy the row to previous
-		}
-		else
-		{
-			calcAggregate(data.previous);
-			//System.out.println("After calc, agg="+agg);
+    if (first || data.newBatch) {
+      first = false;
+      data.newBatch = false;
 
-			if (meta.passAllRows())
-			{
-                addToBuffer(data.previous);
-			}
-		}
+      data.previous = data.inputRowMeta.cloneRow(r); // copy the row to previous
+    } else {
+      calcAggregate(data.previous);
+      // System.out.println("After calc, agg="+agg);
+
+      if (meta.passAllRows()) {
+        addToBuffer(data.previous);
+      }
+    }
 				
 		// System.out.println("Check for same group...");
         
