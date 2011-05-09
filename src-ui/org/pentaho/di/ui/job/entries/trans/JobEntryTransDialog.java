@@ -187,6 +187,8 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
   private Label            wlPassParams;
   private Button           wPassParams;
 
+  private Button           wbGetParams;
+
   private Display          display;
 
   private Button           radioFilename;
@@ -939,6 +941,17 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
     fdPassParams.right = new FormAttachment(100, 0);
     wPassParams.setLayoutData(fdPassParams);
 
+    wbGetParams = new Button(wParameterComp, SWT.PUSH);
+    wbGetParams.setText(BaseMessages.getString(PKG, "JobTrans.GetParameters.Button.Label"));
+    FormData fdGetParams = new FormData();
+    fdGetParams.top = new FormAttachment(wPassParams, margin);
+    fdGetParams.right = new FormAttachment(100, 0);
+    wbGetParams.setLayoutData(fdGetParams);
+    wbGetParams.addSelectionListener(new SelectionAdapter(){ @Override
+    public void widgetSelected(SelectionEvent arg0) {
+      getParameters();
+    } });
+    
     final int parameterRows = jobEntry.parameters != null ? jobEntry.parameters.length : 0;
 
     colinf = new ColumnInfo[] { new ColumnInfo(BaseMessages.getString(PKG, "JobTrans.Parameters.Parameter.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false),
@@ -950,7 +963,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
     FormData fdParameters = new FormData();
     fdParameters.left = new FormAttachment(0, 0);
     fdParameters.top = new FormAttachment(wPassParams, margin);
-    fdParameters.right = new FormAttachment(100, 0);
+    fdParameters.right = new FormAttachment(wbGetParams, -margin);
     fdParameters.bottom = new FormAttachment(100, 0);
     wParameters.setLayoutData(fdParameters);
 
@@ -1076,6 +1089,32 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
         display.sleep();
     }
     return jobEntry;
+  }
+
+  protected void getParameters() {
+    try {
+      JobEntryTrans jet = new JobEntryTrans();
+      getInfo(jet);
+      TransMeta transMeta = jet.getTransMeta(rep, jobMeta);
+      String[] parameters = transMeta.listParameters();
+      
+      String[] existing = wParameters.getItems(1);
+      
+      for (int i=0;i<parameters.length;i++) {
+        if (Const.indexOfString(parameters[i], existing)<0) {
+          TableItem item = new TableItem(wParameters.table, SWT.NONE);
+          item.setText(1, parameters[i]);
+        }
+      }
+      wParameters.removeEmptyRows();
+      wParameters.setRowNums();
+      wParameters.optWidth(true);
+    } catch(Exception e) {
+      new ErrorDialog(shell, 
+          BaseMessages.getString(PKG, "JobEntryTransDialog.Exception.UnableToLoadTransformation.Title"), 
+          BaseMessages.getString(PKG, "JobEntryTransDialog.Exception.UnableToLoadTransformation.Message"), e);
+    }
+    
   }
 
   protected void setRadioButtons() {
@@ -1334,35 +1373,28 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
     dispose();
   }
 
-  private void ok() {
-    if (Const.isEmpty(wName.getText())) {
-      MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-      mb.setText(BaseMessages.getString(PKG, "System.StepJobEntryNameMissing.Title"));
-      mb.setMessage(BaseMessages.getString(PKG, "System.JobEntryNameMissing.Msg"));
-      mb.open();
-      return;
-    }
-    jobEntry.setName(wName.getText());
+  private void getInfo(JobEntryTrans jet) {
+    jet.setName(wName.getText());
     
-    jobEntry.setSpecificationMethod(specificationMethod);
+    jet.setSpecificationMethod(specificationMethod);
     switch(specificationMethod) {
     case FILENAME:
-      jobEntry.setFileName(wFilename.getText());
-      jobEntry.setDirectory(null);
-      jobEntry.setTransname(null);
-      jobEntry.setTransObjectId(null);
+      jet.setFileName(wFilename.getText());
+      jet.setDirectory(null);
+      jet.setTransname(null);
+      jet.setTransObjectId(null);
       break;
     case REPOSITORY_BY_NAME:
-      jobEntry.setDirectory(wDirectory.getText());
-      jobEntry.setTransname(wTransname.getText());
-      jobEntry.setFileName(null);
-      jobEntry.setTransObjectId(null);
+      jet.setDirectory(wDirectory.getText());
+      jet.setTransname(wTransname.getText());
+      jet.setFileName(null);
+      jet.setTransObjectId(null);
       break;
     case REPOSITORY_BY_REFERENCE:
-      jobEntry.setFileName(null);
-      jobEntry.setDirectory(null);
-      jobEntry.setTransname(null);
-      jobEntry.setTransObjectId(referenceObjectId);
+      jet.setFileName(null);
+      jet.setDirectory(null);
+      jet.setTransname(null);
+      jet.setTransObjectId(referenceObjectId);
       break;
     }
 
@@ -1374,12 +1406,12 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
         nr++;
       }
     }
-    jobEntry.arguments = new String[nr];
+    jet.arguments = new String[nr];
     nr = 0;
     for (int i = 0; i < nritems; i++) {
       String arg = wFields.getNonEmpty(i).getText(1);
       if (arg != null && arg.length() != 0) {
-        jobEntry.arguments[nr] = arg;
+        jet.arguments[nr] = arg;
         nr++;
       }
     }
@@ -1393,58 +1425,71 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
         nr++;
       }
     }
-    jobEntry.parameters = new String[nr];
-    jobEntry.parameterFieldNames = new String[nr];
-    jobEntry.parameterValues = new String[nr];
+    jet.parameters = new String[nr];
+    jet.parameterFieldNames = new String[nr];
+    jet.parameterValues = new String[nr];
     nr = 0;
     for (int i = 0; i < nritems; i++) {
       String param = wParameters.getNonEmpty(i).getText(1);
       String fieldName = wParameters.getNonEmpty(i).getText(2);
       String value = wParameters.getNonEmpty(i).getText(3);
 
-      jobEntry.parameters[nr] = param;
+      jet.parameters[nr] = param;
 
       if (!Const.isEmpty(Const.trim(fieldName))) {
-        jobEntry.parameterFieldNames[nr] = fieldName;
+        jet.parameterFieldNames[nr] = fieldName;
       } else {
-        jobEntry.parameterFieldNames[nr] = "";
+        jet.parameterFieldNames[nr] = "";
       }
 
       if (!Const.isEmpty(Const.trim(value))) {
-        jobEntry.parameterValues[nr] = value;
+        jet.parameterValues[nr] = value;
       } else {
-        jobEntry.parameterValues[nr] = "";
+        jet.parameterValues[nr] = "";
       }
 
       nr++;
     }
 
-    jobEntry.setPassingAllParameters(wPassParams.getSelection());
+    jet.setPassingAllParameters(wPassParams.getSelection());
 
-    jobEntry.logfile = wLogfile.getText();
-    jobEntry.logext = wLogext.getText();
+    jet.logfile = wLogfile.getText();
+    jet.logext = wLogext.getText();
     
     if (wLoglevel.getSelectionIndex()>=0) {
-      jobEntry.logFileLevel = LogLevel.values()[wLoglevel.getSelectionIndex()];
+      jet.logFileLevel = LogLevel.values()[wLoglevel.getSelectionIndex()];
     } else {
-      jobEntry.logFileLevel = LogLevel.BASIC;
+      jet.logFileLevel = LogLevel.BASIC;
     }
 
-    jobEntry.argFromPrevious = wPrevious.getSelection();
-    jobEntry.paramsFromPrevious = wPrevToParams.getSelection();
-    jobEntry.execPerRow = wEveryRow.getSelection();
-    jobEntry.setLogfile = wSetLogfile.getSelection();
-    jobEntry.addDate = wAddDate.getSelection();
-    jobEntry.addTime = wAddTime.getSelection();
-    jobEntry.clearResultRows = wClearRows.getSelection();
-    jobEntry.clearResultFiles = wClearFiles.getSelection();
-    jobEntry.setClustering(wCluster.getSelection());
-    jobEntry.createParentFolder = wCreateParentFolder.getSelection();
+    jet.argFromPrevious = wPrevious.getSelection();
+    jet.paramsFromPrevious = wPrevToParams.getSelection();
+    jet.execPerRow = wEveryRow.getSelection();
+    jet.setLogfile = wSetLogfile.getSelection();
+    jet.addDate = wAddDate.getSelection();
+    jet.addTime = wAddTime.getSelection();
+    jet.clearResultRows = wClearRows.getSelection();
+    jet.clearResultFiles = wClearFiles.getSelection();
+    jet.setClustering(wCluster.getSelection());
+    jet.createParentFolder = wCreateParentFolder.getSelection();
 
-    jobEntry.setRemoteSlaveServerName(wSlaveServer.getText());
-    jobEntry.setAppendLogfile = wAppendLogfile.getSelection();
-    jobEntry.setWaitingToFinish(wWaitingToFinish.getSelection());
-    jobEntry.setFollowingAbortRemotely(wFollowingAbortRemotely.getSelection());
+    jet.setRemoteSlaveServerName(wSlaveServer.getText());
+    jet.setAppendLogfile = wAppendLogfile.getSelection();
+    jet.setWaitingToFinish(wWaitingToFinish.getSelection());
+    jet.setFollowingAbortRemotely(wFollowingAbortRemotely.getSelection());
+    
+  }
+  private void ok() {
+    if (Const.isEmpty(wName.getText())) {
+      MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
+      mb.setText(BaseMessages.getString(PKG, "System.StepJobEntryNameMissing.Title"));
+      mb.setMessage(BaseMessages.getString(PKG, "System.JobEntryNameMissing.Msg"));
+      mb.open();
+      return;
+    }
+    jobEntry.setName(wName.getText());
+    
+    getInfo(jobEntry);
 
     jobEntry.setChanged();
 

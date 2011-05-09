@@ -561,42 +561,51 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         }
       }
 
-      NamedParams namedParam = new NamedParamsDefault();
-      if (parameters != null) {
-        for (int idx = 0; idx < parameters.length; idx++) {
-          if (!Const.isEmpty(parameters[idx])) {
-
-            // We have a parameter
-            try {
-              namedParam.addParameterDefinition(parameters[idx], "", "Job entry runtime");
-            } catch (DuplicateParamException e) {
-              logError("Duplicate parameter definition for " + parameters[idx]);
-            }
-
-            if (Const.isEmpty(Const.trim(parameterFieldNames[idx]))) {
-              namedParam.setParameterValue(parameters[idx], Const.NVL(environmentSubstitute(parameterValues[idx]), ""));
-            } else {
-              // something filled in, in the field column but we have no
-              // incoming stream. yet.
-              namedParam.setParameterValue(parameters[idx], "");
-            }
-          }
-        }
-      }
-
       RowMetaAndData resultRow = null;
       boolean first = true;
       List<RowMetaAndData> rows = new ArrayList<RowMetaAndData>(result.getRows());
 
       while ((first && !execPerRow) || (execPerRow && rows != null && iteration < rows.size() && result.getNrErrors() == 0)) {
+        first = false;
+
+        // Clear the result rows of the result
+        // Otherwise we double the amount of rows every iteration in the simple cases.
+        //
         if (execPerRow) {
           result.getRows().clear();
         }
-        first = false;
+        
         if (rows != null && execPerRow) {
           resultRow = (RowMetaAndData) rows.get(iteration);
         } else {
           resultRow = null;
+        }
+        
+        NamedParams namedParam = new NamedParamsDefault();
+        if (parameters != null) {
+          for (int idx = 0; idx < parameters.length; idx++) {
+            if (!Const.isEmpty(parameters[idx])) {
+
+              // We have a parameter
+              try {
+                namedParam.addParameterDefinition(parameters[idx], "", "Job entry runtime");
+              } catch (DuplicateParamException e) {
+                logError("Duplicate parameter definition for " + parameters[idx]);
+              }
+
+              if (Const.isEmpty(Const.trim(parameterFieldNames[idx]))) {
+                namedParam.setParameterValue(parameters[idx], Const.NVL(environmentSubstitute(parameterValues[idx]), ""));
+              } else {
+                // something filled in, in the field column...
+                //
+                String value = "";
+                if (resultRow != null) {
+                  value = resultRow.getString(parameterFieldNames[idx], "");
+                }
+                namedParam.setParameterValue(parameters[idx], value);
+              }
+            }
+          }
         }
 
         Result oneResult = new Result();
