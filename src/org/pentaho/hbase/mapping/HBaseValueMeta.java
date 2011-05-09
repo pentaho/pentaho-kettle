@@ -305,7 +305,7 @@ public class HBaseValueMeta extends ValueMeta {
         throw new KettleException("Key for mapping is UNSIGNED_DATE, but incoming " +
         		"date value is negative (i.e. < 1st Jan 1970)");
       }
-      result = encodeKeyValue(new Long(dateKey.getTime()), keyType);
+      result = encodeKeyValue(dateKey, keyType);
       break;
     case INTEGER:
     case UNSIGNED_INTEGER:
@@ -355,7 +355,18 @@ public class HBaseValueMeta extends ValueMeta {
       if (keyValue == null) {
         return Bytes.toBytes(0L); // minimum positive long
       } else {
-        return Bytes.toBytes(((Long)keyValue).longValue());
+        long longVal;
+        if (keyType == Mapping.KeyType.UNSIGNED_LONG) {
+          longVal = ((Number)keyValue).longValue();
+        } else {
+          longVal = ((Date)keyValue).getTime();
+        }
+        if (longVal < 0) {
+          throw new KettleException("Key for mapping is UNSIGNED_LONG/UNSIGNED_DATE" +
+          		", but incoming long/date value is negative.");
+        }
+        
+        return Bytes.toBytes(longVal);
       }
     }
     
@@ -363,6 +374,10 @@ public class HBaseValueMeta extends ValueMeta {
       if (keyValue == null) {
         return Bytes.toBytes(0);
       } else {
+        if (((Number)keyValue).intValue() < 0) {
+          throw new KettleException("Key for mapping is UNSIGNED_INTEGER, but incoming " +
+                        "integer value is negative.");
+        }
         return Bytes.toBytes(((Number)keyValue).intValue());
       }
     }
@@ -425,6 +440,11 @@ public class HBaseValueMeta extends ValueMeta {
       if (Const.isEmpty(keyValue)) {
         return Bytes.toBytes(0L); // minimum positive long
       } else {
+        if (keyType == Mapping.KeyType.UNSIGNED_DATE) {
+          throw new KettleException("Can't parse a date from a string if there is " +
+          		"no format available");
+        }
+        
         return Bytes.toBytes(Long.parseLong(keyValue));
       }
     }
@@ -453,6 +473,11 @@ public class HBaseValueMeta extends ValueMeta {
       if (Const.isEmpty(keyValue)) {
         return Bytes.toBytes(0L);
       } else {
+        if (keyType == Mapping.KeyType.DATE) {
+          throw new KettleException("Can't parse a date from a string if there is " +
+                        "no format available");
+        }
+        
         long bound = Long.parseLong(keyValue);
         // to ensure correct sort order we need to flip the sign bit
         bound ^= (1L << 63);
@@ -487,6 +512,9 @@ public class HBaseValueMeta extends ValueMeta {
 
     if (keyType == Mapping.KeyType.UNSIGNED_LONG ||
         keyType == Mapping.KeyType.UNSIGNED_DATE) {
+      if (keyType == Mapping.KeyType.UNSIGNED_DATE) {
+        return new Date(Bytes.toLong(rawKey));
+      }
       return new Long(Bytes.toLong(rawKey));
     }
     
@@ -506,6 +534,11 @@ public class HBaseValueMeta extends ValueMeta {
       long tempLong = Bytes.toLong(rawKey);
       // flip the sign bit
       tempLong ^= (1L << 63);
+      
+      if (keyType == Mapping.KeyType.DATE) {
+        return new Date(tempLong);
+      }
+      
       return new Long(tempLong);
     }
 

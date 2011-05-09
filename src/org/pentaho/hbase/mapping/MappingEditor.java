@@ -15,8 +15,11 @@ package org.pentaho.hbase.mapping;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
@@ -39,13 +42,17 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.steps.hbaseinput.Messages;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.ComboValuesSelectionListener;
 import org.pentaho.di.ui.core.widget.TableView;
@@ -72,19 +79,23 @@ public class MappingEditor extends Composite {
   
   protected Button m_saveBut;
   
+  protected Button m_getFieldsBut;
+  
   protected MappingAdmin m_admin;
   
-  protected ConfigurationProducer m_producer;
+  protected ConfigurationProducer m_configProducer;
+  protected FieldProducer m_incomingFieldsProducer;
   
-  public MappingEditor(Shell shell, Composite parent, ConfigurationProducer producer, 
-      int tableViewStyle, boolean allowTableCreate, 
+  public MappingEditor(Shell shell, Composite parent, ConfigurationProducer configProducer, 
+      FieldProducer fieldProducer, int tableViewStyle, boolean allowTableCreate, 
       PropsUI props, TransMeta transMeta) {
 //    super(parent, SWT.NO_BACKGROUND | SWT.NO_FOCUS | SWT.NO_MERGE_PAINTS);
     super(parent, SWT.NONE);
     
     m_shell = shell;
     m_parent = parent;
-    m_producer = producer;
+    m_configProducer = configProducer;
+    m_incomingFieldsProducer = fieldProducer;
     
     m_allowTableCreate = allowTableCreate;
     int middle = props.getMiddlePct();
@@ -178,7 +189,7 @@ public class MappingEditor extends Composite {
     
     m_existingTableNamesCombo.addFocusListener(new FocusListener() {      
       public void focusGained(FocusEvent e) {
-        populateTableCombo();
+        populateTableCombo(false);
       }
       
       public void focusLost(FocusEvent e) {
@@ -215,6 +226,14 @@ public class MappingEditor extends Composite {
     m_typeCI.setComboValues(new String[] {"String", "Integer", "Long", "Float", 
         "Double", "Date", "BigNumber", "Serializable", "Binary"});
     
+    m_keyCI.setComboValuesSelectionListener(new ComboValuesSelectionListener() {
+      public String[] getComboValues(TableItem tableItem, int rowNr, int colNr) {
+        
+        tableItem.setText(5, "");
+        return m_keyCI.getComboValues();
+      }
+    });
+    
     m_typeCI.setComboValuesSelectionListener(new ComboValuesSelectionListener() {
       public String[] getComboValues(TableItem tableItem, int rowNr, int colNr) {
         String[] comboValues = null;
@@ -234,7 +253,7 @@ public class MappingEditor extends Composite {
     
     m_saveBut = new Button(this, SWT.PUSH | SWT.CENTER);
     props.setLook(m_saveBut);
-    m_saveBut.setText("Save mapping");
+    m_saveBut.setText(Messages.getString("MappingDialog.SaveMapping"));
     fd = new FormData();
     fd.left = new FormAttachment(0, margin);
     fd.bottom = new FormAttachment(100, -margin*2);
@@ -245,6 +264,25 @@ public class MappingEditor extends Composite {
         saveMapping();
       }
     });
+    
+    if (m_allowTableCreate) {
+      m_getFieldsBut = new Button(this, SWT.PUSH | SWT.CENTER);
+      props.setLook(m_getFieldsBut);
+      m_getFieldsBut.setText(Messages.getString("MappingDialog.GetIncomingFields"));
+      fd = new FormData();
+      //fd.left = new FormAttachment(0, margin);
+      fd.right = new FormAttachment(100, 0);
+      fd.bottom = new FormAttachment(100, -margin*2);
+      m_getFieldsBut.setLayoutData(fd);
+      
+      m_getFieldsBut.addSelectionListener(new SelectionAdapter() {
+        public void widgetSelected(SelectionEvent e) {
+          populateTableWithIncomingFields();
+        }
+      });
+    }
+    
+    
     
     m_fieldsView = new TableView(transMeta, this, 
         tableViewStyle,
@@ -257,32 +295,103 @@ public class MappingEditor extends Composite {
     fd.right = new FormAttachment(100, 0);
     m_fieldsView.setLayoutData(fd);
     
+    
     // --
     //layout();
     //pack();    
   }
   
-  /*public void setMappingAdmin(MappingAdmin admin) {
-    m_admin = admin;
-    
-    try {
-      populateTableCombo(m_admin.getConnection(), false);
-    } catch (Exception ex) {
-      // TODO
-    }
-  }*/
-  
-  private void populateTableCombo() {
+  private void populateTableWithIncomingFields() {
+    if (m_incomingFieldsProducer != null) {
+      RowMetaInterface incomingRowMeta = m_incomingFieldsProducer.getIncomingFields();
+      
+      Table table = m_fieldsView.table;
+      if (incomingRowMeta != null) {
+        Set<String> existingRowAliases = new HashSet<String>();
+        for (int i = 0; i < table.getItemCount(); i++) {
+          TableItem tableItem = table.getItem(i);
+          String alias = tableItem.getText(1);
+          if (!Const.isEmpty(alias)) {
+            existingRowAliases.add(alias);
+          }
+        }
+        
+        int choice = 0;
+        if (existingRowAliases.size() > 0) {
+          // Ask what we should do with existing mapping data
+          MessageDialog md = new MessageDialog(m_shell, 
+              Messages.getString("MappingDialog.GetFieldsChoice.Title"),
+              null, Messages.getString("MappingDialog.GetFieldsChoice.Message", 
+                  "" + existingRowAliases.size(), 
+                  "" + incomingRowMeta.size()),
+              MessageDialog.WARNING, 
+              new String[] { Messages.getString("MappingDialog.AddNew"),
+                  Messages.getString("MappingOutputDialog.Add"), 
+                  Messages.getString("MappingOutputDialog.ClearAndAdd"),
+                  Messages.getString("MappingOutputDialog.Cancel"), }, 
+                  0);
+          MessageDialog.setDefaultImage(GUIResource.getInstance().getImageSpoon());
+          int idx = md.open();
+          choice = idx & 0xFF;
+        }
+        
+        if (choice == 3 || choice == 255 /* 255 = escape pressed */) {
+          return; // Cancel
+        }
+        
+        if (choice == 2) {
+          m_fieldsView.clearAll();
+        }
+        
+        for (int i = 0; i < incomingRowMeta.size(); i++) {
+          ValueMetaInterface vm = incomingRowMeta.getValueMeta(i);
+          boolean addIt = true;
+          
+          if (choice == 0) {
+            // only add if its not already in the table
+            if (existingRowAliases.contains(vm.getName())) {
+              addIt = false;
+            }
+          }
+          
+          if (addIt) {
+            TableItem item = new TableItem(m_fieldsView.table, SWT.NONE);
+            item.setText(1, vm.getName());
+            item.setText(2, "N");
+            item.setText(4, vm.getName());
+            item.setText(5, vm.getTypeDesc());
+            if (vm.getType() == ValueMetaInterface.TYPE_INTEGER) {
+              item.setText(5, "Long");
+            }
+            if (vm.getType() == ValueMetaInterface.TYPE_NUMBER) {
+              item.setText(5, "Double");
+            }
+            if (vm.getStorageType() == ValueMetaInterface.STORAGE_TYPE_INDEXED) {
+              Object[] indexValus = vm.getIndex();
+              String indexValsS = HBaseValueMeta.objectIndexValuesToString(indexValus);
+              item.setText(6, indexValsS);
+            }
+          }
+        }
 
-    if (m_producer == null) {
+        m_fieldsView.removeEmptyRows();
+        m_fieldsView.setRowNums();
+        m_fieldsView.optWidth(true);
+      }
+    }
+  }
+  
+  private void populateTableCombo(boolean force) {
+
+    if (m_configProducer == null) {
       return;
     }
 
-    if (m_existingTableNamesCombo.getItemCount() == 0) {
+    if (m_existingTableNamesCombo.getItemCount() == 0 || force) {
       m_existingTableNamesCombo.removeAll();
       //m_existingMappingNamesCombo.removeAll();
       try  {
-        Configuration conf = m_producer.getHBaseConnection();
+        Configuration conf = m_configProducer.getHBaseConnection();
         m_admin = new MappingAdmin();
         m_admin.setConnection(conf);
 
@@ -379,12 +488,20 @@ public class MappingEditor extends Composite {
       // only add if we have all data and its all correct
       if (isKey && !moreThanOneKey) {
         if (Const.isEmpty(alias)) {
-          // TODO pop up an error dialog - key must have an alias because it does not
+          // pop up an error dialog - key must have an alias because it does not
           // belong to a column family or have a column name
+          MessageDialog.openError(m_shell, 
+              Messages.getString("MappingDialog.Error.Title.NoAliasForKey"),
+              Messages.getString("MappingDialog.Error.Message.NoAliasForKey"));
+          return;
         }
         
         if (Const.isEmpty(type)) {
-          // TODO pop up an error dialog - must have a type for the key
+          // pop up an error dialog - must have a type for the key
+          MessageDialog.openError(m_shell, 
+              Messages.getString("MappingDialog.Error.Title.NoTypeForKey"),
+              Messages.getString("MappingDialog.Error.Message.NoTypeForKey"));
+          return;
         }
         
         if (moreThanOneKey) {
@@ -473,8 +590,54 @@ public class MappingEditor extends Composite {
     
     
     if (m_allowTableCreate) {
-      // TODO check for existence of table. If table doesn't exist
+      // check for existence of the table. If table doesn't exist
       // prompt for creation
+      Configuration conf = m_admin.getConnection();
+
+      try {
+        HBaseAdmin admin = new HBaseAdmin(conf);
+        String tableName = m_existingTableNamesCombo.getText().trim();
+        if (!admin.tableExists(tableName)) {
+          boolean result = MessageDialog.openConfirm(m_shell, "Create table", 
+              "Table \"" + tableName + "\" does not exist. Create it?");
+          
+          if (!result) {
+            return;
+          }
+          
+          if (theMapping.getMappedColumns().size() == 0) {
+            MessageDialog.openError(m_shell, "No columns defined", 
+                "A HBase table requires at least one column family to be defined.");
+            return;
+          }
+          
+          // collect up all the column families so that we can create the table
+          Set<String> cols = theMapping.getMappedColumns().keySet();
+          Set<String> families = new TreeSet<String>();
+          for (String col : cols) {
+            String family = theMapping.getMappedColumns().get(col).getColumnFamily();
+            families.add(family);
+          }
+          
+          HTableDescriptor tableDescription = new HTableDescriptor(tableName);
+          for (String familyName : families) {
+            HColumnDescriptor colDescriptor = new HColumnDescriptor(familyName);
+            tableDescription.addFamily(colDescriptor);
+          }
+          
+          // create the table
+          admin.createTable(tableDescription);
+          
+          // refresh the table combo
+          populateTableCombo(true);
+        }
+      } catch (IOException ex) {
+        new ErrorDialog(m_shell, 
+            Messages.getString("MappingDialog.Error.Title.ErrorCreatingTable"), 
+            Messages.getString("MappingDialog.Error.Message.ErrorCreatingTable")
+            + " \"" + m_existingTableNamesCombo.getText().trim() + "\"", ex);
+        return;
+      }
     }
 
     try {
