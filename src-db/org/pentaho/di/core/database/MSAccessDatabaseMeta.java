@@ -73,7 +73,8 @@ public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	/**
 	 * @see org.pentaho.di.core.database.DatabaseInterface#getSchemaTableCombination(java.lang.String, java.lang.String)
 	 */
-	public String getSchemaTableCombination(String schema_name, String table_part)
+	@SuppressWarnings("deprecation")
+  public String getSchemaTableCombination(String schema_name, String table_part)
 	{
 		return getBackwardsCompatibleSchemaTableCombination(schema_name, table_part);
 	}	
