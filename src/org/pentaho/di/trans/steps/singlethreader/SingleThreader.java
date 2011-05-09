@@ -105,7 +105,7 @@ public class SingleThreader extends BaseStep implements StepInterface
 	    parameters = data.mappingTransMeta.listParameters();
 	    parameterValues = new String[parameters.length];
 	    for (int i=0;i<parameters.length;i++) {
-	      parameterValues[i] = environmentSubstitute(parameters[i]);
+	      parameterValues[i] = getVariable(parameters[i]);
 	    }
 	  } else {
 	    // We pass down the listed variables with the specified values...
@@ -120,8 +120,10 @@ public class SingleThreader extends BaseStep implements StepInterface
 	  for (int i=0;i<parameters.length;i++) {
 	    String value = Const.NVL(parameterValues[i], "");
 	    
-      data.mappingTransMeta.setParameterValue(parameters[i], value);
+      data.mappingTrans.setParameterValue(parameters[i], value);
 	  }
+	  
+	  data.mappingTrans.activateParameters();
   }
 
   public void prepareMappingExecution() throws KettleException {
@@ -129,13 +131,13 @@ public class SingleThreader extends BaseStep implements StepInterface
 	      //
 	      data.mappingTransMeta.setTransformationType(TransformationType.SingleThreaded);
 	  
-	      // Pass the parameters down to the sub-transformation.
-	      //
-	      passParameters();
-	      
         // Create the transformation from meta-data...
 		    //
         data.mappingTrans = new Trans(data.mappingTransMeta, getTrans());
+        
+        // Pass the parameters down to the sub-transformation.
+        //
+        passParameters();
         
         // Disable thread priority managment as it will slow things down needlessly.
         // The single threaded engine doesn't use threads and doesn't need row locking.

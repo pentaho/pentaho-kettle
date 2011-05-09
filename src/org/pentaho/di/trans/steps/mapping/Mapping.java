@@ -20,7 +20,6 @@ import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogTableField;
 import org.pentaho.di.core.logging.TransLogTable;
-import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.SingleThreadedTransExecutor;
 import org.pentaho.di.trans.Trans;
@@ -124,10 +123,6 @@ public class Mapping extends BaseStep implements StepInterface
           getRemoteInputSteps().clear();
         }
 
-        // Re-populate with variables and parameters if necessary
-        //
-        setMappingParameters();
-
         // Start the mapping/sub-transformation threads
         //
         data.mappingTrans.startThreads();
@@ -208,247 +203,259 @@ public class Mapping extends BaseStep implements StepInterface
 		MappingParameters mappingParameters = meta.getMappingParameters();
 		if (mappingParameters!=null) {
 			
-			// See if we need to pass all variables from the parent or not...
-			//
-			if (mappingParameters.isInheritingAllVariables()) {
-				data.mappingTransMeta.copyVariablesFrom(getTransMeta());
-			}
-			
-			// Just set the variables in the transformation statically.
-			// This just means: set a number of variables:
-			//
-			for (int i=0;i<mappingParameters.getVariable().length;i++) {
-				String name = mappingParameters.getVariable()[i];
-				String value = environmentSubstitute(mappingParameters.getInputField()[i]);
-				if (!Const.isEmpty(name) && !Const.isEmpty(value)) {
-
-					// if the parameters are defined as such in the subtrans, set them
-					try{
-						data.mappingTransMeta.setParameterValue(name, value);
-						if (data.mappingTrans != null) {
-							data.mappingTrans.setParameterValue(name, value);
-						}
-					}
-					catch(UnknownParamException e){
-						// eat up
-					}
-					
-					data.mappingTransMeta.setVariable(name, value);
-					if (data.mappingTrans != null) {
-						data.mappingTrans.setVariable(name, value);
-					}
-				}
-			}
+	    String[] parameters;
+	    String[] parameterValues;
+	    
+	    if (mappingParameters.isInheritingAllVariables()) {
+	      // We pass the values for all the parameters from the parent transformation
+	      //
+	      parameters = data.mappingTransMeta.listParameters();
+	      parameterValues = new String[parameters.length];
+	      for (int i=0;i<parameters.length;i++) {
+	        parameterValues[i] = getVariable(parameters[i]);
+	      }
+	    } else {
+	      // We pass down the listed variables with the specified values...
+	      //
+	      parameters = mappingParameters.getVariable();
+	      parameterValues = new String[parameters.length];
+	      for (int i=0;i<parameters.length;i++) {
+	        parameterValues[i] = environmentSubstitute(mappingParameters.getInputField()[i]);
+	      }
+	    }
+	    
+	    for (int i=0;i<parameters.length;i++) {
+	      String value = Const.NVL(parameterValues[i], "");
+	      
+	      data.mappingTrans.setParameterValue(parameters[i], value);
+	    }
+	    
+	    data.mappingTrans.activateParameters();
 		}
 	}
 
-	public void prepareMappingExecution() throws KettleException {
-        // Create the transformation from meta-data...
-		//
-        data.mappingTrans = new Trans(data.mappingTransMeta, getTrans());
-        
-        if (data.mappingTransMeta.getTransformationType()!=TransformationType.Normal) {
-        	data.mappingTrans.getTransMeta().setUsingThreadPriorityManagment(false);
-        }
-        
-        // Leave a path up so that we can set variables in sub-transformations...
-        //
-        data.mappingTrans.setParentTrans(getTrans());
-        
-        // Pass down the safe mode flag to the mapping...
-        //
-        data.mappingTrans.setSafeModeEnabled(getTrans().isSafeModeEnabled());
-        
-        // Also set the name of this step in the mapping transformation for logging purposes
-        //
-        data.mappingTrans.setMappingStepName(getStepname());
+  public void prepareMappingExecution() throws KettleException {
+    // Create the transformation from meta-data...
+    //
+    data.mappingTrans = new Trans(data.mappingTransMeta, getTrans());
 
-        // We launch the transformation in the processRow when the first row is received.
-        // This will allow the correct variables to be passed.
-        // Otherwise the parent is the init() thread which will be gone once the init is done.
-        //
-        try {
-          data.mappingTrans.prepareExecution(getTransMeta().getArguments());
+    // Set the parameters values in the mapping.
+    //
+    setMappingParameters();
+
+    if (data.mappingTransMeta.getTransformationType() != TransformationType.Normal) {
+      data.mappingTrans.getTransMeta().setUsingThreadPriorityManagment(false);
+    }
+
+    // Leave a path up so that we can set variables in sub-transformations...
+    //
+    data.mappingTrans.setParentTrans(getTrans());
+
+    // Pass down the safe mode flag to the mapping...
+    //
+    data.mappingTrans.setSafeModeEnabled(getTrans().isSafeModeEnabled());
+
+    // Also set the name of this step in the mapping transformation for logging
+    // purposes
+    //
+    data.mappingTrans.setMappingStepName(getStepname());
+
+    // We launch the transformation in the processRow when the first row is
+    // received.
+    // This will allow the correct variables to be passed.
+    // Otherwise the parent is the init() thread which will be gone once the
+    // init is done.
+    //
+    try {
+      data.mappingTrans.prepareExecution(getTransMeta().getArguments());
+    } catch (KettleException e) {
+      throw new KettleException(BaseMessages.getString(PKG, "Mapping.Exception.UnableToPrepareExecutionOfMapping"), e);
+    }
+
+    // Extra optional work to do for alternative execution engines...
+    //
+    switch (data.mappingTransMeta.getTransformationType()) {
+    case Normal:
+    case SerialSingleThreaded:
+      break;
+
+    case SingleThreaded:
+      data.singleThreadedTransExcecutor = new SingleThreadedTransExecutor(data.mappingTrans);
+      if (!data.singleThreadedTransExcecutor.init()) {
+        throw new KettleException(BaseMessages.getString(PKG, "Mapping.Exception.UnableToInitSingleThreadedTransformation"));
+      }
+      break;
+    }
+
+    // If there is no read/write logging step set, we can insert the data from
+    // the first mapping input/output step...
+    //
+    MappingInput[] mappingInputs = data.mappingTrans.findMappingInput();
+    LogTableField readField = data.mappingTransMeta.getTransLogTable().findField(TransLogTable.ID.LINES_READ);
+    if (readField.getSubject() == null && mappingInputs != null && mappingInputs.length >= 1) {
+      readField.setSubject(mappingInputs[0].getStepMeta());
+    }
+    MappingOutput[] mappingOutputs = data.mappingTrans.findMappingOutput();
+    LogTableField writeField = data.mappingTransMeta.getTransLogTable().findField(TransLogTable.ID.LINES_WRITTEN);
+    if (writeField.getSubject() == null && mappingOutputs != null && mappingOutputs.length >= 1) {
+      writeField.setSubject(mappingOutputs[0].getStepMeta());
+    }
+
+    // Before we add rowsets and all, we should note that the mapping step did
+    // not receive ANY input and output rowsets.
+    // This is an exception to the general rule, built into
+    // Trans.prepareExecution()
+    //
+    // A Mapping Input step is supposed to read directly from the previous
+    // steps.
+    // A Mapping Output step is supposed to write directly to the next steps.
+
+    // OK, check the input mapping definitions and look up the steps to read
+    // from.
+    //
+    StepInterface[] sourceSteps;
+    for (MappingIODefinition inputDefinition : meta.getInputMappings()) {
+      // If we have a single step to read from, we use this
+      //
+      if (!Const.isEmpty(inputDefinition.getInputStepname())) {
+        StepInterface sourceStep = (StepInterface) getTrans().findRunThread(inputDefinition.getInputStepname());
+        if (sourceStep == null) {
+          throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.StepNameNotFound", inputDefinition.getInputStepname()));
         }
-        catch(KettleException e) {
-          throw new KettleException(BaseMessages.getString(PKG, "Mapping.Exception.UnableToPrepareExecutionOfMapping"), e);
+        sourceSteps = new StepInterface[] { sourceStep, };
+      } else {
+        // We have no defined source step.
+        // That means that we're reading from all input steps that this mapping
+        // step has.
+        //
+        List<StepMeta> prevSteps = getTransMeta().findPreviousSteps(getStepMeta());
+
+        // TODO: Handle remote steps from: getStepMeta().getRemoteInputSteps()
+        //
+
+        // Let's read data from all the previous steps we find...
+        // The origin is the previous step
+        // The target is the Mapping Input step.
+        //
+        sourceSteps = new StepInterface[prevSteps.size()];
+        for (int s = 0; s < sourceSteps.length; s++) {
+          sourceSteps[s] = (StepInterface) getTrans().findRunThread(prevSteps.get(s).getName());
+        }
+      }
+
+      // What step are we writing to?
+      MappingInput mappingInputTarget = null;
+      MappingInput[] mappingInputSteps = data.mappingTrans.findMappingInput();
+      if (Const.isEmpty(inputDefinition.getOutputStepname())) {
+        // No target was specifically specified.
+        // That means we only expect one "mapping input" step in the mapping...
+
+        if (mappingInputSteps.length == 0) {
+          throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.OneMappingInputStepRequired"));
+        }
+        if (mappingInputSteps.length > 1) {
+          throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.OnlyOneMappingInputStepAllowed", "" + mappingInputSteps.length));
         }
 
-        // Extra optional work to do for alternative execution engines...
-        //
-        switch (data.mappingTransMeta.getTransformationType()) {
-        case Normal:
-        case SerialSingleThreaded:
-          break;
-        
-        case SingleThreaded:
-          data.singleThreadedTransExcecutor = new SingleThreadedTransExecutor(data.mappingTrans);
-          if (!data.singleThreadedTransExcecutor.init()) {
-            throw new KettleException(BaseMessages.getString(PKG, "Mapping.Exception.UnableToInitSingleThreadedTransformation"));
+        mappingInputTarget = mappingInputSteps[0];
+      } else {
+        // A target step was specified. See if we can find it...
+        for (int s = 0; s < mappingInputSteps.length && mappingInputTarget == null; s++) {
+          if (mappingInputSteps[s].getStepname().equals(inputDefinition.getOutputStepname())) {
+            mappingInputTarget = mappingInputSteps[s];
           }
-          break;
         }
-        
-        setMappingParameters();
-        
-		// If there is no read/write logging step set, we can insert the data from the first mapping input/output step...
-		//
-		MappingInput[] mappingInputs = data.mappingTrans.findMappingInput();
-		LogTableField readField = data.mappingTransMeta.getTransLogTable().findField(TransLogTable.ID.LINES_READ);
-		if (readField.getSubject()==null && mappingInputs!=null && mappingInputs.length>=1) {
-			readField.setSubject(mappingInputs[0].getStepMeta());
-		}
-		MappingOutput[] mappingOutputs = data.mappingTrans.findMappingOutput();
-		LogTableField writeField = data.mappingTransMeta.getTransLogTable().findField(TransLogTable.ID.LINES_WRITTEN);
-		if (writeField.getSubject()==null && mappingOutputs!=null && mappingOutputs.length>=1) {
-			writeField.setSubject(mappingOutputs[0].getStepMeta());
-		}
-        
-        // Before we add rowsets and all, we should note that the mapping step did not receive ANY input and output rowsets.
-        // This is an exception to the general rule, built into Trans.prepareExecution()
-        //
-        // A Mapping Input step is supposed to read directly from the previous steps.
-        // A Mapping Output step is supposed to write directly to the next steps.
-        
-        // OK, check the input mapping definitions and look up the steps to read from.
-        // 
-        StepInterface[] sourceSteps;
-        for (MappingIODefinition inputDefinition : meta.getInputMappings()) {
-        	// If we have a single step to read from, we use this
-        	//
-        	if (!Const.isEmpty(inputDefinition.getInputStepname())) {
-        		StepInterface sourceStep = (StepInterface) getTrans().findRunThread(inputDefinition.getInputStepname());
-            	if (sourceStep==null) {
-            		throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.StepNameNotFound", inputDefinition.getInputStepname()));
-            	}
-            	sourceSteps = new StepInterface[] { sourceStep, };
-        	} 
-        	else {
-        		// We have no defined source step.
-        		// That means that we're reading from all input steps that this mapping step has.
-        		//
-    	        List<StepMeta> prevSteps = getTransMeta().findPreviousSteps(getStepMeta());
+        // If we still didn't find it it's a drag.
+        if (mappingInputTarget == null) {
+          throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.StepNameNotFound", inputDefinition.getOutputStepname()));
+        }
+      }
 
-    	        // TODO: Handle remote steps from: getStepMeta().getRemoteInputSteps()
-    	        //
-    	        
-    			// Let's read data from all the previous steps we find...
-    			// The origin is the previous step
-    			// The target is the Mapping Input step.
-    			//
-    			sourceSteps=new StepInterface[prevSteps.size()];
-    			for (int s=0;s<sourceSteps.length;s++) {
-    				sourceSteps[s] = (StepInterface) getTrans().findRunThread(prevSteps.get(s).getName());
-    			}
-        	}
-        	
-        	// What step are we writing to?
-        	MappingInput mappingInputTarget=null;
-    		MappingInput[] mappingInputSteps = data.mappingTrans.findMappingInput();
-        	if (Const.isEmpty(inputDefinition.getOutputStepname())) {
-        		// No target was specifically specified.
-        		// That means we only expect one "mapping input" step in the mapping...
-        		
-        		if (mappingInputSteps.length==0) {
-        			throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.OneMappingInputStepRequired"));
-        		}
-        		if (mappingInputSteps.length>1) {
-        			throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.OnlyOneMappingInputStepAllowed", ""+mappingInputSteps.length));
-        		}
-        		
-        		mappingInputTarget = mappingInputSteps[0];
-        	}
-        	else {
-        		// A target step was specified.  See if we can find it...
-        		for (int s=0;s<mappingInputSteps.length && mappingInputTarget==null;s++) {
-        			if (mappingInputSteps[s].getStepname().equals(inputDefinition.getOutputStepname())) {
-        				mappingInputTarget = mappingInputSteps[s];
-        			}
-        		}
-        		// If we still didn't find it it's a drag.
-        		if (mappingInputTarget==null) {
-            		throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.StepNameNotFound", inputDefinition.getOutputStepname()));
-        		}
-        	}
-        	
-        	// Before we pass the field renames to the mapping input step, let's add functionality to rename it back on ALL
-        	// mapping output steps.
-        	// To do this, we need a list of values that changed so we can revert that in the metadata before the rows come back.
-        	// 
-        	if (inputDefinition.isRenamingOnOutput()) addInputRenames(data.inputRenameList, inputDefinition.getValueRenames());
-        	
-        	mappingInputTarget.setConnectorSteps(sourceSteps, inputDefinition.getValueRenames(), getStepname());
-        }
-        
-        // Now we have a List of connector threads.
-        // If we start all these we'll be starting to pump data into the mapping
-        // If we don't have any threads to start, nothings going in there...
-        // However, before we send anything over, let's first explain to the mapping output steps where the data needs to go...
+      // Before we pass the field renames to the mapping input step, let's add
+      // functionality to rename it back on ALL
+      // mapping output steps.
+      // To do this, we need a list of values that changed so we can revert that
+      // in the metadata before the rows come back.
+      //
+      if (inputDefinition.isRenamingOnOutput())
+        addInputRenames(data.inputRenameList, inputDefinition.getValueRenames());
+
+      mappingInputTarget.setConnectorSteps(sourceSteps, inputDefinition.getValueRenames(), getStepname());
+    }
+
+    // Now we have a List of connector threads.
+    // If we start all these we'll be starting to pump data into the mapping
+    // If we don't have any threads to start, nothings going in there...
+    // However, before we send anything over, let's first explain to the mapping
+    // output steps where the data needs to go...
+    //
+    for (MappingIODefinition outputDefinition : meta.getOutputMappings()) {
+      // OK, what is the source (input) step in the mapping: it's the mapping
+      // output step...
+      // What step are we reading from here?
+      //
+      MappingOutput mappingOutputSource = (MappingOutput) data.mappingTrans.findRunThread(outputDefinition.getInputStepname());
+      if (mappingOutputSource == null) {
+        // No source step was specified: we're reading from a single Mapping
+        // Output step.
+        // We should verify this if this is really the case...
         //
-        for (MappingIODefinition outputDefinition : meta.getOutputMappings()) {
-        	// OK, what is the source (input) step in the mapping: it's the mapping output step...
-        	// What step are we reading from here?
-        	//
-        	MappingOutput mappingOutputSource = (MappingOutput) data.mappingTrans.findRunThread(outputDefinition.getInputStepname());
-        	if (mappingOutputSource==null) {
-        		// No source step was specified: we're reading from a single Mapping Output step.
-        		// We should verify this if this is really the case...
-        		//
-        		MappingOutput[] mappingOutputSteps = data.mappingTrans.findMappingOutput();
-        		
-        		if (mappingOutputSteps.length==0) {
-        			throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.OneMappingOutputStepRequired"));
-        		}
-        		if (mappingOutputSteps.length>1) {
-        			throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.OnlyOneMappingOutputStepAllowed", ""+mappingOutputSteps.length));
-        		}
-        		
-        		mappingOutputSource = mappingOutputSteps[0];
-        	}
-        	
-        	// To what step in this transformation are we writing to?
-        	//
-        	StepInterface[] targetSteps;
-        	if (!Const.isEmpty(outputDefinition.getOutputStepname())) {
-        		// If we have a target step specification for the output of the mapping, we need to send it over there...
-        		//
-            	StepInterface target = (StepInterface) getTrans().findRunThread(outputDefinition.getOutputStepname());
-            	if (target==null) {
-            		throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.StepNameNotFound", outputDefinition.getOutputStepname()));
-            	}
-            	targetSteps = new StepInterface[] { target, };
-        	}
-        	else {
-        		// No target step is specified.
-        		// See if we can find the next steps in the transformation..
-        		// 
-        		List<StepMeta> nextSteps = getTransMeta().findNextSteps(getStepMeta());
-        		
-    			// Let's send the data to all the next steps we find...
-    			// The origin is the mapping output step
-    			// The target is all the next steps after this mapping step.
-    			//
-    			targetSteps=new StepInterface[nextSteps.size()];
-    			for (int s=0;s<targetSteps.length;s++) {
-    				targetSteps[s] = (StepInterface) getTrans().findRunThread(nextSteps.get(s).getName());
-    			}
-        	}
-        	
-        	// Now tell the mapping output step where to look...
-        	// Also explain the mapping output steps how to rename the values back...
-        	//
-        	mappingOutputSource.setConnectorSteps(targetSteps, data.inputRenameList, outputDefinition.getValueRenames());
-        	
-        	// Is this mapping copying or distributing?
-        	// Make sure the mapping output step mimics this behavior:
-        	//
-        	mappingOutputSource.setDistributed(isDistributed());        	
+        MappingOutput[] mappingOutputSteps = data.mappingTrans.findMappingOutput();
+
+        if (mappingOutputSteps.length == 0) {
+          throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.OneMappingOutputStepRequired"));
         }
-        
-        // Finally, add the mapping transformation to the active sub-transformations map in the parent transformation
+        if (mappingOutputSteps.length > 1) {
+          throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.OnlyOneMappingOutputStepAllowed", "" + mappingOutputSteps.length));
+        }
+
+        mappingOutputSource = mappingOutputSteps[0];
+      }
+
+      // To what step in this transformation are we writing to?
+      //
+      StepInterface[] targetSteps;
+      if (!Const.isEmpty(outputDefinition.getOutputStepname())) {
+        // If we have a target step specification for the output of the mapping,
+        // we need to send it over there...
         //
-        getTrans().getActiveSubtransformations().put(getStepname(), data.mappingTrans);
-	}
+        StepInterface target = (StepInterface) getTrans().findRunThread(outputDefinition.getOutputStepname());
+        if (target == null) {
+          throw new KettleException(BaseMessages.getString(PKG, "MappingDialog.Exception.StepNameNotFound", outputDefinition.getOutputStepname()));
+        }
+        targetSteps = new StepInterface[] { target, };
+      } else {
+        // No target step is specified.
+        // See if we can find the next steps in the transformation..
+        //
+        List<StepMeta> nextSteps = getTransMeta().findNextSteps(getStepMeta());
+
+        // Let's send the data to all the next steps we find...
+        // The origin is the mapping output step
+        // The target is all the next steps after this mapping step.
+        //
+        targetSteps = new StepInterface[nextSteps.size()];
+        for (int s = 0; s < targetSteps.length; s++) {
+          targetSteps[s] = (StepInterface) getTrans().findRunThread(nextSteps.get(s).getName());
+        }
+      }
+
+      // Now tell the mapping output step where to look...
+      // Also explain the mapping output steps how to rename the values back...
+      //
+      mappingOutputSource.setConnectorSteps(targetSteps, data.inputRenameList, outputDefinition.getValueRenames());
+
+      // Is this mapping copying or distributing?
+      // Make sure the mapping output step mimics this behavior:
+      //
+      mappingOutputSource.setDistributed(isDistributed());
+    }
+
+    // Finally, add the mapping transformation to the active sub-transformations
+    // map in the parent transformation
+    //
+    getTrans().getActiveSubtransformations().put(getStepname(), data.mappingTrans);
+  }
 
 	public static void addInputRenames(List<MappingValueRename> renameList, List<MappingValueRename> addRenameList) {
 		for (MappingValueRename rename : addRenameList) {
@@ -472,10 +479,6 @@ public class Mapping extends BaseStep implements StepInterface
         data.mappingTransMeta = MappingMeta.loadMappingMeta(meta, meta.getRepository(), this);
         if (data.mappingTransMeta != null) // Do we have a mapping at all?
         {
-
-          // Set the parameters statically or dynamically
-          //
-          setMappingParameters();
 
           // OK, now prepare the execution of the mapping.
           // This includes the allocation of RowSet buffers, the creation of the
