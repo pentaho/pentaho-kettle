@@ -495,7 +495,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     					  // This is a temporary patch until the batching rowset has proven to be working in all situations.
     					  // Currently there are stalling problems when dealing with small amounts of rows.
     					  //
-    					  boolean batchingRowSet = ValueMeta.convertStringToBoolean(getVariable(Const.KETTLE_BATCHING_ROWSET));
+    					  String batchingRowSetVariable = getVariable(Const.KETTLE_BATCHING_ROWSET);
+    					  boolean batchingRowSet = ValueMeta.convertStringToBoolean(batchingRowSetVariable);
     					  if (batchingRowSet) {
     					    rowSet = new BlockingBatchingRowSet(transMeta.getSizeRowset());    					    
     					  } else {
