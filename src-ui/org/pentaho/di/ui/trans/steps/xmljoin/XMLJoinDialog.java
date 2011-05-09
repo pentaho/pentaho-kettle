@@ -509,12 +509,11 @@ public class XMLJoinDialog extends BaseStepDialog implements StepDialogInterface
         getData();
         input.setChanged(changed);
         
-        for (int i=0;i<transMeta.findNrPrevSteps(stepname, true);i++)
-		{
-			StepMeta stepMeta = transMeta.findPrevStep(stepname, i, true);
-			wTargetXMLstep.add(stepMeta.getName());
-			wSourceXMLstep.add(stepMeta.getName());
-		}
+        List<StepMeta> steps = transMeta.findPreviousSteps(transMeta.findStep(stepname), true);
+        for (StepMeta stepMeta : steps) {
+    			wTargetXMLstep.add(stepMeta.getName());
+    			wSourceXMLstep.add(stepMeta.getName());
+    		}
         
         shell.open();
         while (!shell.isDisposed())
