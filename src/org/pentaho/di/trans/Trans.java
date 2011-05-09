@@ -494,12 +494,20 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     					case Normal:
     					  boolean batchingRowSet = ValueMeta.convertStringToBoolean(getVariable(Const.KETTLE_BATCHING_ROWSET));
     					  if (batchingRowSet) {
-    					    rowSet = new BlockingBatchingRowSet(transMeta.getSizeRowset()); break;    					    
+    					    rowSet = new BlockingBatchingRowSet(transMeta.getSizeRowset());    					    
     					  } else {
-    					    rowSet = new BlockingRowSet(transMeta.getSizeRowset()); break;
+    					    rowSet = new BlockingRowSet(transMeta.getSizeRowset());
     					  }
-    					case SerialSingleThreaded: rowSet = new SingleRowRowSet(); break;
-                        case SingleThreaded: rowSet = new QueueRowSet(); break;
+    					  break;
+    					  
+    					case SerialSingleThreaded: 
+    					  rowSet = new SingleRowRowSet(); 
+    					  break;
+    					  
+              case SingleThreaded: 
+                rowSet = new QueueRowSet(); 
+                break;
+                
     					default: 
     					  throw new KettleException("Unhandled transformation type: "+transMeta.getTransformationType());
     					}
