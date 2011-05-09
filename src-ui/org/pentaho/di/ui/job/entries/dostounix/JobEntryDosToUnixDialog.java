@@ -893,8 +893,8 @@ public class JobEntryDosToUnixDialog extends JobEntryDialog implements JobEntryD
 	       if(Const.isEmpty(wName.getText())) 
 	        {
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-				mb.setMessage("Veuillez svp donner un nom à cette entrée tâche!");
-				mb.setText("Entrée tâche non nommée");
+				mb.setMessage("Please give this job entry a name!");
+				mb.setText("No name");
 				mb.open(); 
 				return;
 	        }
