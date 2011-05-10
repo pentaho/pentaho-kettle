@@ -44,7 +44,8 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 /**
  * Class for managing a mapping table in HBase. Has routines for creating the mapping
  * table, writing and reading mappings to/from the table and creating a test table
- * for debugging purposes. Also has a rough and ready command line interface.
+ * for debugging purposes. Also has a rough and ready command line interface. For more
+ * information on the structure of a table mapping see org.pentaho.hbase.mapping.Mapping.
  * 
  * @author Mark Hall (mhall[{at]}pentaho{[dot]}com)
  * @version $Revision$
@@ -69,13 +70,28 @@ public class MappingAdmin {
    */
   public static final String KEY_FAMILY_NAME = "key";
   
+  /**
+   * Constructor. No conneciton information configured.
+   */
   public MappingAdmin() {
   }
   
+  /**
+   * Constructor
+   * 
+   * @param conf a configuration object containing connection information
+   * @throws Exception if a problem occurs
+   */
   public MappingAdmin(Configuration conf) throws Exception {
     setConnection(conf);
   }
   
+  /**
+   * Set the connection to use
+   * 
+   * @param con a configuration object containing connection information.
+   * @throws Exception if a problem occurs
+   */
   public void setConnection(Configuration con) throws Exception {
     m_connection = con;
     m_admin = new HBaseAdmin(m_connection);
@@ -91,14 +107,29 @@ public class MappingAdmin {
     m_admin = new HBaseAdmin(m_connection);    
   }
   
+  /**
+   * Get the configuration being used for the connection
+   * 
+   * @return the configuration encapsulating connection information
+   */
   public Configuration getConnection() {
     return m_connection;
   }
   
+  /**
+   * Set the name of the mapping table.
+   * 
+   * @param tableName the name to use for the mapping table.
+   */
   public void setMappingTableName(String tableName) {
     m_mappingTableName = tableName;
   }
   
+  /**
+   * Get the name of the mapping table
+   * 
+   * @return the name of the mapping table
+   */
   public String getMappingTableName() {
     return m_mappingTableName;
   }
@@ -269,6 +300,12 @@ public class MappingAdmin {
     testTable.put(p); */
   }
   
+  /**
+   * Create the mapping table
+   * 
+   * @throws IOException if there is no connection specified or the mapping
+   * table already exists.
+   */
   public void createMappingTable() throws IOException {
     if (m_connection == null) {
       throw new IOException("No connection exists yet!");
@@ -291,6 +328,14 @@ public class MappingAdmin {
     m_admin.createTable(tableDescription);
   }
   
+  /**
+   * Check to see if the specified mapping name exists for the specified table
+   * 
+   * @param tableName the name of the table
+   * @param mappingName the name of the mapping
+   * @return true if the specified mapping exists for the specified table
+   * @throws IOException if a problem occurs
+   */
   public boolean mappingExists(String tableName, String mappingName) throws IOException {
     if (m_connection == null) {
       throw new IOException("No connection exists yet!");
@@ -401,6 +446,58 @@ public class MappingAdmin {
     }
     
     return mappingsForTable;
+  }
+  
+  /**
+   * Delete a mapping from the mapping table
+   * 
+   * @param tableName name of the table in question
+   * @param mappingName name of the mapping in question
+   * @return true if the named mapping for the named table was deleted
+   * successfully; false if the mapping table does not exist or the named 
+   * mapping for the named table does not exist in the mapping table
+   * @throws IOException if a problem occurs during deletion
+   */
+  public boolean deleteMapping(String tableName, String mappingName) throws IOException {
+    String compoundKey = tableName + HBaseValueMeta.SEPARATOR + mappingName;
+    
+    if (!m_admin.tableExists(m_mappingTableName)) {      
+      // create the mapping table
+      createMappingTable();         
+      return false; // no mapping table so nothing to delete!
+    }
+    
+    HTable mappingTable = new HTable(m_connection, m_mappingTableName);
+    
+    if (m_admin.isTableDisabled(m_mappingTableName)) {
+      m_admin.enableTable(m_mappingTableName);
+    }
+    
+    boolean mappingExists = mappingExists(tableName, mappingName); 
+    if (!mappingExists) {
+      return false; // mapping doesn't seem to exist
+    }
+    
+    Delete d = new Delete(Bytes.toBytes(compoundKey));
+    mappingTable.delete(d);
+    
+    return true;
+  }
+  
+  /**
+   * Delete a mapping from the mapping table
+   * 
+   * @param theMapping the mapping to delete
+   * @return true if the mapping was deleted successfully; false if the mapping
+   * table does not exist or the suppied mapping does not exist in the mapping
+   * table
+   * @throws IOException if a problem occurs during deletion
+   */
+  public boolean deleteMapping(Mapping theMapping) throws IOException {
+    String tableName = theMapping.getTableName();
+    String mappingName = theMapping.getMappingName();
+    
+    return deleteMapping(tableName, mappingName);
   }
   
   /**
@@ -522,18 +619,42 @@ public class MappingAdmin {
     mappingTable.close();
   }
   
+  /**
+   * Returns a textual description of a mapping
+   * 
+   * @param tableName the table name
+   * @param mappingName the mapping name
+   * @return a string describing the specified mapping on the specified table
+   * @throws IOException if a problem occurs
+   */
   public String describeMapping(String tableName, String mappingName)
     throws IOException {    
     
     return describeMapping(getMapping(tableName, mappingName));
   }
   
+  /**
+   * Returns a textual description of a mapping
+   * 
+   * @param aMapping the mapping
+   * @return a textual description of the supplied mapping object
+   * @throws IOException if a problem occurs
+   */
   public String describeMapping(Mapping aMapping)
     throws IOException {
     
     return aMapping.toString();    
   }
   
+  /**
+   * Get a mapping for the specified table under the specified mapping name
+   * 
+   * @param tableName the name of the table
+   * @param mappingName the name of the mapping to get for the table
+   * @return a mapping for the supplied table
+   * @throws IOException if a mapping by the given name does not exist for
+   * the given table
+   */
   public Mapping getMapping(String tableName, String mappingName) 
     throws IOException {
     
@@ -746,6 +867,12 @@ public class MappingAdmin {
     return temp.toString();
   }
   
+  /**
+   * Main method for testing this class. Provides a very simple command-line
+   * interface
+   * 
+   * @param args command line arguments
+   */
   public static void main(String[] args) {
     try {
       String tableName = "MarksTestTable";
