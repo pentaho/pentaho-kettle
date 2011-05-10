@@ -296,4 +296,15 @@ public interface StepMetaInterface
 	 * @return The supported transformation types that this step supports.
 	 */
 	public TransformationType[] getSupportedTransformationTypes();
+	
+	 /**
+   * @return True if the job entry defines one or more references to a repository object.
+   */
+  public boolean hasRepositoryReferences();
+
+  /**
+   * Look up the references after import
+   * @param repository the repository to reference.
+   */
+  public void lookupRepositoryReferences(Repository repository) throws KettleException;
 }

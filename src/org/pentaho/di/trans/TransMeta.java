@@ -87,6 +87,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.partition.PartitionSchema;
+import org.pentaho.di.repository.HasRepositoryInterface;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
@@ -2221,6 +2222,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 	        for (int i = 0; i < nrSteps(); i++)
 	        {
 	            StepMeta stepMeta = getStep(i);
+	            if (stepMeta.getStepMetaInterface() instanceof HasRepositoryInterface) {
+	              ((HasRepositoryInterface)stepMeta.getStepMetaInterface()).setRepository(repository);
+	            }
 	            retval.append(stepMeta.getXML());
 	        }
         
@@ -5950,5 +5954,22 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    */
   public Date getRegistrationDate() {
     return null;
+  }
+  
+  public boolean hasRepositoryReferences() {
+    for (StepMeta stepMeta : steps) {
+      if (stepMeta.getStepMetaInterface().hasRepositoryReferences()) return true;
+    }
+    return false;
+  }
+  
+  /**
+   * Look up the references after import
+   * @param repository the repository to reference.
+   */
+  public void lookupRepositoryReferences(Repository repository) throws KettleException {
+    for (StepMeta stepMeta : steps) {
+      stepMeta.getStepMetaInterface().lookupRepositoryReferences(repository);
+    }
   }
 }

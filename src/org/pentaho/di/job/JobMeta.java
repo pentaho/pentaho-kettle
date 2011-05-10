@@ -70,6 +70,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.entries.special.JobEntrySpecial;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.HasRepositoryInterface;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
@@ -97,7 +98,7 @@ import org.w3c.dom.Node;
  */
 public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMeta>, XMLInterface, UndoInterface,
 		HasDatabasesInterface, VariableSpace, EngineMetaInterface, ResourceExportInterface, HasSlaveServersInterface, NamedParams, 
-		RepositoryElementInterface, LoggingObjectInterface {
+		RepositoryElementInterface, LoggingObjectInterface, HasRepositoryInterface {
 	
 	private static Class<?> PKG = JobMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
@@ -197,6 +198,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
     
     private static final String XML_TAG_PARAMETERS = "parameters";
     
+  /** The repository to reference in the one-off case that it is needed */
+  private Repository repository;
     
 	private ObjectRevision objectRevision;
 	public JobMeta() {
@@ -633,6 +636,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		retval.append("  <entries>").append(Const.CR); //$NON-NLS-1$
 		for (int i = 0; i < nrJobEntries(); i++) {
 			JobEntryCopy jge = getJobEntry(i);
+			jge.getEntry().setRepository(repository);
 			retval.append(jge.getXML());
 		}
 		retval.append("  </entries>").append(Const.CR); //$NON-NLS-1$
@@ -2778,5 +2782,38 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
    */
   public Date getRegistrationDate() {
     return null;
+  }
+  
+  public boolean hasRepositoryReferences() {
+    for (JobEntryCopy copy : jobcopies) {
+      if (copy.getEntry().hasRepositoryReferences()) return true;
+    }
+    return false;
+  }
+  
+  /**
+   * Look up the references after import
+   * @param repository the repository to reference.
+   */
+  public void lookupRepositoryReferences(Repository repository) throws KettleException {
+    for (JobEntryCopy copy : jobcopies) {
+      if (copy.getEntry().hasRepositoryReferences()) {
+        copy.getEntry().lookupRepositoryReferences(repository);
+      }
+    }
+  }
+
+  /**
+   * @return the repository
+   */
+  public Repository getRepository() {
+    return repository;
+  }
+
+  /**
+   * @param repository the repository to set
+   */
+  public void setRepository(Repository repository) {
+    this.repository = repository;
   }
 }

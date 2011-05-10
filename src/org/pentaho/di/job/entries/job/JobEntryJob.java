@@ -54,12 +54,15 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.repository.RepositoryImportLocation;
+import org.pentaho.di.repository.RepositoryObject;
+import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceEntry;
+import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
-import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.pentaho.di.www.SlaveServerJobStatus;
 import org.w3c.dom.Node;
 
@@ -199,6 +202,19 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     //
     retval.append("      ").append(XMLHandler.addTagValue("specification_method", specificationMethod == null ? null : specificationMethod.getCode()));
     retval.append("      ").append(XMLHandler.addTagValue("job_object_id", jobObjectId == null ? null : jobObjectId.toString()));
+    // Export a little bit of extra information regarding the reference since it doesn't really matter outside the same repository.
+    //
+    if (rep!=null && jobObjectId!=null) {
+      try {
+        RepositoryObject objectInformation = rep.getObjectInformation(jobObjectId, RepositoryObjectType.JOB);
+        if (objectInformation!=null) {
+          jobname = objectInformation.getName();
+          directory = objectInformation.getRepositoryDirectory().getPath();
+        }
+      } catch(KettleException e) {
+        // Ignore object reference problems.  It simply means that the reference is no longer valid.
+      }
+    }
     retval.append("      ").append(XMLHandler.addTagValue("filename", filename));
     retval.append("      ").append(XMLHandler.addTagValue("jobname", jobname));
     
@@ -1260,4 +1276,19 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     this.specificationMethod = specificationMethod;
   }
 
+  @Override
+  public boolean hasRepositoryReferences() {
+    return specificationMethod==ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE;
+  }
+  
+  /**
+   * Look up the references after import
+   * @param repository the repository to reference.
+   */
+  public void lookupRepositoryReferences(Repository repository) throws KettleException {
+    // The correct reference is stored in the job name and directory attributes...
+    //
+    RepositoryDirectoryInterface repositoryDirectoryInterface = RepositoryImportLocation.getRepositoryImportLocation().findDirectory(directory);
+    jobObjectId = repository.getJobId(jobname, repositoryDirectoryInterface);
+  }
 }

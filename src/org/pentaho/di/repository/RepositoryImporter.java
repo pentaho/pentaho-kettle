@@ -54,6 +54,8 @@ public class RepositoryImporter implements IRepositoryImporter {
   private ImportRules importRules;
 
   private List<String> limitDirs;
+  
+  private List<RepositoryObject> referencingObjects;
 
   public RepositoryImporter(Repository repository) {
     this(repository, new ImportRules(), new ArrayList<String>());
@@ -71,6 +73,8 @@ public class RepositoryImporter implements IRepositoryImporter {
     this.overwrite = overwrite;
     this.continueOnError = continueOnError;
     this.versionComment = versionComment;
+    
+    referencingObjects=new ArrayList<RepositoryObject>();
 
     feedback.setLabel(BaseMessages.getString(PKG, "RepositoryImporter.ImportXML.Label"));
     try {
@@ -99,13 +103,29 @@ public class RepositoryImporter implements IRepositoryImporter {
               BaseMessages.getString(PKG, "RepositoryImporter.ErrorGeneral.Message"), e);
         }        
       }
+      
+      // Correct those jobs and transformations that contain references to other objects.
+      //
+      for (RepositoryObject ro : referencingObjects) {
+        if (ro.getObjectType()==RepositoryObjectType.TRANSFORMATION) {
+          TransMeta transMeta = rep.loadTransformation(ro.getObjectId(), null);
+          transMeta.lookupRepositoryReferences(rep);
+          rep.save(transMeta, "import object reference specification", null);
+        }
+        if (ro.getObjectType()==RepositoryObjectType.JOB) {
+          JobMeta jobMeta = rep.loadJob(ro.getObjectId(), null);
+          jobMeta.lookupRepositoryReferences(rep);
+          rep.save(jobMeta, "import object reference specification", null);
+        }
+      }
+      
       feedback.addLog(BaseMessages.getString(PKG, "RepositoryImporter.ImportFinished.Log"));
     } catch (KettleException e) {
       feedback.showError(BaseMessages.getString(PKG, "RepositoryImporter.ErrorGeneral.Title"), 
           BaseMessages.getString(PKG, "RepositoryImporter.ErrorGeneral.Message"), e);
     } finally {
-      RepositoryImportLocation.setRepositoryImportLocation(null); // set to null
-                                                                  // when done!
+      // set the repository import location to null when done!
+      RepositoryImportLocation.setRepositoryImportLocation(null); 
     }
   }
 
@@ -459,6 +479,11 @@ public class RepositoryImporter implements IRepositoryImporter {
         }
         rep.save(transMeta, versionComment, this, overwrite);
         feedback.addLog(BaseMessages.getString(PKG, "RepositoryImporter.TransSaved.Log", Integer.toString(transformationNumber), transMeta.getName()));
+
+        if (transMeta.hasRepositoryReferences()) {
+          referencingObjects.add(new RepositoryObject(transMeta.getObjectId(), transMeta.getName(), transMeta.getRepositoryDirectory(), null, null, RepositoryObjectType.TRANSFORMATION, null, false));
+        }
+
       } catch (Exception e) {
         feedback.addLog(BaseMessages.getString(PKG, "RepositoryImporter.ErrorSavingTrans.Log", Integer.toString(transformationNumber), transMeta.getName(), Const.getStackTracker(e)));
 
@@ -518,7 +543,6 @@ public class RepositoryImporter implements IRepositoryImporter {
       jobMeta.setRepositoryDirectory(targetDirectory);
       jobMeta.setObjectId(existintId);
       patchJobEntries(jobMeta);
-
       try {
         // Keep info on who & when this transformation was created...
         if (jobMeta.getCreatedUser() == null || jobMeta.getCreatedUser().equals("-")) {
@@ -531,6 +555,11 @@ public class RepositoryImporter implements IRepositoryImporter {
         }
 
         rep.save(jobMeta, versionComment, null, overwrite);
+        
+        if (jobMeta.hasRepositoryReferences()) {
+          referencingObjects.add(new RepositoryObject(jobMeta.getObjectId(), jobMeta.getName(), jobMeta.getRepositoryDirectory(), null, null, RepositoryObjectType.JOB, null, false));
+        }
+
         feedback.addLog(BaseMessages.getString(PKG, "RepositoryImporter.JobSaved.Log", Integer.toString(jobNumber), jobMeta.getName()));
       } catch(Exception e) {
         feedback.addLog(BaseMessages.getString(PKG, "RepositoryImporter.ErrorSavingJob.Log", Integer.toString(jobNumber), jobMeta.getName(), Const.getStackTracker(e)));

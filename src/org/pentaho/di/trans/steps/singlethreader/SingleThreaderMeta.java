@@ -28,10 +28,14 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.HasRepositoryInterface;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.repository.RepositoryImportLocation;
+import org.pentaho.di.repository.RepositoryObject;
+import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceEntry;
@@ -57,7 +61,7 @@ import org.w3c.dom.Node;
  * 
  */
 
-public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterface {
+public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterface, HasRepositoryInterface {
   private static Class<?>                   PKG = SingleThreaderMeta.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
   
   private String                            transName;
@@ -130,6 +134,19 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
 
     retval.append("    ").append(XMLHandler.addTagValue("specification_method", specificationMethod == null ? null : specificationMethod.getCode()));
     retval.append("    ").append(XMLHandler.addTagValue("trans_object_id", transObjectId == null ? null : transObjectId.toString()));
+    // Export a little bit of extra information regarding the reference since it doesn't really matter outside the same repository.
+    //
+    if (repository!=null && transObjectId!=null) {
+      try {
+        RepositoryObject objectInformation = repository.getObjectInformation(transObjectId, RepositoryObjectType.TRANSFORMATION);
+        if (objectInformation!=null) {
+          transName = objectInformation.getName();
+          directoryPath = objectInformation.getRepositoryDirectory().getPath();
+        }
+      } catch(KettleException e) {
+        // Ignore object reference problems.  It simply means that the reference is no longer valid.
+      }
+    }
     retval.append("    ").append(XMLHandler.addTagValue("trans_name", transName)); //$NON-NLS-1$
     retval.append("    ").append(XMLHandler.addTagValue("filename", fileName)); //$NON-NLS-1$
     retval.append("    ").append(XMLHandler.addTagValue("directory_path", directoryPath)); //$NON-NLS-1$
@@ -580,5 +597,18 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
    */
   public void setBatchTime(String batchTime) {
     this.batchTime = batchTime;
+  }
+  
+  @Override
+  public boolean hasRepositoryReferences() {
+    return specificationMethod==ObjectLocationSpecificationMethod.REPOSITORY_BY_REFERENCE;
+  }
+  
+  @Override
+  public void lookupRepositoryReferences(Repository repository) throws KettleException {
+    // The correct reference is stored in the trans name and directory attributes...
+    //
+    RepositoryDirectoryInterface repositoryDirectoryInterface = RepositoryImportLocation.getRepositoryImportLocation().findDirectory(directoryPath);
+    transObjectId = repository.getTransformationID(transName, repositoryDirectoryInterface);
   }
 }
