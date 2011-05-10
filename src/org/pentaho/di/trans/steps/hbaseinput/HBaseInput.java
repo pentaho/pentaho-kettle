@@ -160,7 +160,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
       
       // conversion mask to use for user specified key values in range scan.
       // This can come from user-specified field information OR it can be
-      // provied in the keyStart/keyStop values by suffixing the value with
+      // provided in the keyStart/keyStop values by suffixing the value with
       // "@converionMask"
       String dateOrNumberConversionMaskForKey = null;
       
@@ -193,6 +193,8 @@ public class HBaseInput extends BaseStep implements StepInterface {
         String keyStartS = m_transMeta.environmentSubstitute(m_meta.getKeyStartValue());
         String convM = dateOrNumberConversionMaskForKey;
         if (m_tableMapping.getKeyType() != Mapping.KeyType.STRING) {
+          // allow a conversion mask in the start key field to override any specified for
+          // the key in the user specified fields
           String[] parts = keyStartS.split("@");
           if (parts.length == 2) {
             keyStartS = parts[0];
@@ -244,6 +246,9 @@ public class HBaseInput extends BaseStep implements StepInterface {
           String keyStopS = m_transMeta.environmentSubstitute(m_meta.getKeyStopValue());
           convM = dateOrNumberConversionMaskForKey;
           if (m_tableMapping.getKeyType() != Mapping.KeyType.STRING) {
+            
+            // allow a conversion mask in the stop key field to override any specified for
+            // the key in the user specified fields
             String[] parts = keyStopS.split("@");
             if (parts.length == 2) {
               keyStopS = parts[0];
