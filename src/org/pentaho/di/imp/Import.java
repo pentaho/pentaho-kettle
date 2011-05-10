@@ -259,6 +259,11 @@ public class Import {
         public void addLog(String line) {
           log.logBasic(line);
         }
+        
+        @Override
+        public boolean isAskingOverwriteConfirmation() {
+          return false;
+        }
       };
 
       importer.importAll(feedbackInterface, null, new String[] { optionFilename.toString() }, targetDirectory, replace, continueOnError, optionComment.toString());

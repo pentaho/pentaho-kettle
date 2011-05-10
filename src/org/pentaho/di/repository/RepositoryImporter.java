@@ -457,7 +457,8 @@ public class RepositoryImporter implements IRepositoryImporter {
     // See if the transformation already existed!
     ObjectId existingId = rep.getTransformationID(transMeta.getName(), targetDirectory);
     if (existingId!=null && askOverwrite) {
-      overwrite = transOverwritePrompt(transMeta);
+      overwrite = feedback.transOverwritePrompt(transMeta);
+      askOverwrite = feedback.isAskingOverwriteConfirmation();
     } else {
       updateDisplay();
     }
@@ -535,6 +536,7 @@ public class RepositoryImporter implements IRepositoryImporter {
     ObjectId existintId = rep.getJobId(jobMeta.getName(), targetDirectory);
     if (existintId != null && askOverwrite) {
       overwrite = feedback.jobOverwritePrompt(jobMeta);
+      askOverwrite = feedback.isAskingOverwriteConfirmation();
     } else {
       updateDisplay();
     }
@@ -709,5 +711,10 @@ public class RepositoryImporter implements IRepositoryImporter {
   
   public ImportRules getImportRules() {
     return importRules;
+  }
+  
+  @Override
+  public boolean isAskingOverwriteConfirmation() {
+    return askOverwrite;
   }
 }
