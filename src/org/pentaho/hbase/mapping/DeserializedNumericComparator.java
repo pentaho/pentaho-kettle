@@ -19,6 +19,17 @@ import java.io.IOException;
 import org.apache.hadoop.hbase.filter.WritableByteArrayComparable;
 import org.apache.hadoop.hbase.util.Bytes;
 
+/**
+ * Comparator for use in HBase column filtering that deserializes a numeric
+ * column value before performing a comparison. Comparators built-in to HBase
+ * only perform comparisons based on the lexicographical ordering of the bytes
+ * in values. This works ok for positive numbers but does not work when there
+ * are negative numbers involved in the comparison.
+ * 
+ * @author Mark Hall (mhall{[at]}pentaho{[dot]}com)
+ * @version $Revision$
+ *
+ */
 public class DeserializedNumericComparator extends WritableByteArrayComparable {
   
   protected long m_longValue;

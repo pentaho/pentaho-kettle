@@ -19,6 +19,19 @@ import java.io.IOException;
 import org.apache.hadoop.hbase.filter.WritableByteArrayComparable;
 import org.apache.hadoop.hbase.util.Bytes;
 
+/**
+ * Comparator for use in HBase column filtering that deserializes a boolean
+ * column value before performing a comparison. Various string and numeric
+ * deserializations are tried. All representations of "false" (for a given
+ * encoding type) sort before "true" - e.g. "false" < "true"; 0 < 1; "F" < "T";
+ * "N" < "Y" etc. Thus < or > comparisons (excluding < false and > true) are
+ * equivalent to !=.
+ * 
+ * 
+ * @author Mark Hall (mhall{[at]}pentaho{[dot]}com)
+ * @version $Revision$
+ *
+ */
 public class DeserializedBooleanComparator extends WritableByteArrayComparable {
   
   protected Boolean m_value;  
