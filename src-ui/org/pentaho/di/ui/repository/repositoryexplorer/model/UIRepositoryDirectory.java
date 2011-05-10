@@ -55,7 +55,7 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
   
   public UIRepositoryDirectories getChildren(){
     // We've been here before.. use the cache
-    if (kidDirectoryCache != null && kidDirectoryCache.isEmpty() == false){
+    if (kidDirectoryCache != null){
       return kidDirectoryCache;
     }
     if(kidDirectoryCache == null){
@@ -84,7 +84,7 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
   public UIRepositoryObjects getRepositoryObjects() throws KettleException {
     // We've been here before.. use the cache
     
-    if (kidElementCache != null && !kidElementCache.isEmpty() ){
+    if (kidElementCache != null){
       return kidElementCache;
     }
     
@@ -213,7 +213,7 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
     if(!contains(directories, newDir)) {
       directories.add(newDir);
     }
-    kidElementCache.clear(); // rebuild the element cache for correct positioning.
+    kidElementCache = null; // rebuild the element cache for correct positioning.
     return newDir;
   }
 
@@ -221,10 +221,13 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
     
     firePropertyChange("children", null, getChildren());
 
-    if (kidDirectoryCache != null)
-      kidDirectoryCache.fireCollectionChanged();
-    if (kidElementCache != null)
+    getChildren(); // prime cache before firing event (already primed from above getChildren call but to be consistent)
+    kidDirectoryCache.fireCollectionChanged();
+    try {
+      getRepositoryObjects(); // prime cache before firing event
       kidElementCache.fireCollectionChanged();
+    } catch (KettleException ignored) {
+    }
   }
 
   @Override
@@ -263,12 +266,8 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
    */
   public void refresh() {
     try {
-      if(kidElementCache != null){
-        kidElementCache.clear();
-      }
-      if(kidDirectoryCache != null){
-        kidDirectoryCache.clear();
-      }
+      kidElementCache = null;
+      kidDirectoryCache = null;
       if(this == getRootDirectory()) {
         RepositoryDirectoryInterface localRoot = rep.findDirectory(rd.getObjectId());
         rd = localRoot;

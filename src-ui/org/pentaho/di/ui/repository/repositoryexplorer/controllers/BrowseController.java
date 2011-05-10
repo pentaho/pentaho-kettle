@@ -452,12 +452,14 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   }
 
   public void deleteFolder() throws Exception {
+    UIRepositoryDirectory newSelectedItem = null;
     try {
       for (Object object : folderTree.getSelectedItems()) {
         
         if (object instanceof UIRepositoryDirectory) {
           repoDir = (UIRepositoryDirectory) object;
           if (repoDir != null) {
+            newSelectedItem = repoDir.getParent();
             // If content to be deleted is a folder and they have either sub folder or jobs or transformation in it,
             // We will display a warning message that folder is not empty. If you choose to delete this folder, all its item(s)
             // will be lost. If the user accept this, then we will delete that folder otherwise we will end this method call
@@ -499,6 +501,11 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
       messageBox.setAcceptLabel(messages.getString("Dialog.Ok")); //$NON-NLS-1$
       messageBox.setMessage(messages.getString(ke.getLocalizedMessage()));
       messageBox.open();
+    }
+    
+    // since old selected item is the now deleted one, set the parent as the selected item
+    if (newSelectedItem != null) {
+      folderTree.setSelectedItems(Arrays.asList(newSelectedItem));
     }
   }
   private void deleteFolder(UIRepositoryDirectory repoDir) throws Exception{
