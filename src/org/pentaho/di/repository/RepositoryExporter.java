@@ -127,6 +127,11 @@ public class RepositoryExporter implements IRepositoryExporter {
 	                try
 	                {
 	                    JobMeta jobMeta = repository.loadJob(jobs[i], repdir, null, null); // reads last version
+	                    
+	                     // Pass the repository along in order for us to do correct exports to XML of object references
+                      //
+                      jobMeta.setRepository(repository);
+
 	                    System.out.println("Loading/Exporting job ["+repdir.getPath()+" : "+jobs[i]+"]");
 	                    if (monitor!=null) monitor.subTask("Exporting job ["+jobs[i]+"]");
 	                    

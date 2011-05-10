@@ -1710,7 +1710,7 @@ public class Const
      */
     public static final String getStackTracker(Throwable e)
     {
-    	return getCustomStackTrace(e);
+    	return getClassicStackTrace(e);
     }
 
     public static final String getClassicStackTrace(Throwable e)

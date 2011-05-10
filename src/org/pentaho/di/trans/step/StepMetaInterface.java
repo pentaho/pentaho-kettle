@@ -290,4 +290,15 @@ public interface StepMetaInterface
 	 * This method will return null if the interface is not available for this step.
 	 */
 	public StepMetaInjectionInterface getStepMetaInjectionInterface();
+	
+	 /**
+   * @return True if the job entry defines one or more references to a repository object.
+   */
+  public boolean hasRepositoryReferences();
+
+  /**
+   * Look up the references after import
+   * @param repository the repository to reference.
+   */
+  public void lookupRepositoryReferences(Repository repository) throws KettleException;
 }

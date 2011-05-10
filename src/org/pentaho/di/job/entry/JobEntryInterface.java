@@ -140,4 +140,14 @@ public interface JobEntryInterface
 	 */
 	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface, Repository repository) throws KettleException;
 
+	 /**
+   * @return True if the job entry defines one or more references to a repository object.
+   */
+  public boolean hasRepositoryReferences();
+  
+  /**
+   * Look up the references after import
+   * @param repository the repository to reference.
+   */
+  public void lookupRepositoryReferences(Repository repository) throws KettleException;
 }

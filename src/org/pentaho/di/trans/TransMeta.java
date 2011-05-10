@@ -85,6 +85,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.partition.PartitionSchema;
+import org.pentaho.di.repository.HasRepositoryInterface;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
@@ -2210,6 +2211,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 	        for (int i = 0; i < nrSteps(); i++)
 	        {
 	            StepMeta stepMeta = getStep(i);
+              if (stepMeta.getStepMetaInterface() instanceof HasRepositoryInterface) {
+                ((HasRepositoryInterface)stepMeta.getStepMetaInterface()).setRepository(repository);
+              }
 	            retval.append(stepMeta.getXML());
 	        }
         
@@ -3980,7 +3984,10 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 	                        db.connect();
 
 	    	                RowMetaInterface fields = logTable.getLogRecord(LogStatus.START, null, null).getRowMeta();
-	    	                String schemaTable = logTable.getDatabaseMeta().getSchemaTableCombination(logTable.getSchemaName(), logTable.getTableName());
+	    	                String schemaTable = logTable.getDatabaseMeta().getQuotedSchemaTableCombination(
+	    	                    environmentSubstitute(logTable.getSchemaName()), 
+	    	                    environmentSubstitute(logTable.getTableName())
+	    	                   );
 	    	                String sql = db.getDDL(schemaTable, fields);
 	    	                if (!Const.isEmpty(sql)) 
 	    	                {
@@ -5881,5 +5888,22 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
    */
   public void setCarteObjectId(String containerObjectId) {
     this.containerObjectId = containerObjectId;
+  }
+
+  public boolean hasRepositoryReferences() {
+    for (StepMeta stepMeta : steps) {
+      if (stepMeta.getStepMetaInterface().hasRepositoryReferences()) return true;
+    }
+    return false;
+  }
+  
+  /**
+   * Look up the references after import
+   * @param repository the repository to reference.
+   */
+  public void lookupRepositoryReferences(Repository repository) throws KettleException {
+    for (StepMeta stepMeta : steps) {
+      stepMeta.getStepMetaInterface().lookupRepositoryReferences(repository);
+    }
   }
 }

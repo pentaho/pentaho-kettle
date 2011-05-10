@@ -49,6 +49,9 @@ public class RepositoryImporter implements IRepositoryImporter {
   private String transDirOverride = null;
   private String jobDirOverride = null;
   
+
+  private List<RepositoryObject> referencingObjects;
+
   private String fileDirectory = null;
   private String filenames[] = null;
   
@@ -84,6 +87,8 @@ public class RepositoryImporter implements IRepositoryImporter {
     this.fileDirectory = fileDirectory;
     this.filenames = filenames;
 
+    referencingObjects=new ArrayList<RepositoryObject>();
+    
     feedback.setLabel(BaseMessages.getString(PKG, "RepositoryImporter.ImportXML.Label"));
     try {
       
@@ -111,6 +116,22 @@ public class RepositoryImporter implements IRepositoryImporter {
               BaseMessages.getString(PKG, "RepositoryImporter.ErrorGeneral.Message"), e);
         }        
       }
+      
+      // Correct those jobs and transformations that contain references to other objects.
+      //
+      for (RepositoryObject ro : referencingObjects) {
+        if (ro.getObjectType()==RepositoryObjectType.TRANSFORMATION) {
+          TransMeta transMeta = rep.loadTransformation(ro.getObjectId(), null);
+          transMeta.lookupRepositoryReferences(rep);
+          rep.save(transMeta, "import object reference specification", null);
+        }
+        if (ro.getObjectType()==RepositoryObjectType.JOB) {
+          JobMeta jobMeta = rep.loadJob(ro.getObjectId(), null);
+          jobMeta.lookupRepositoryReferences(rep);
+          rep.save(jobMeta, "import object reference specification", null);
+        }
+      }
+      
       feedback.addLog(BaseMessages.getString(PKG, "RepositoryImporter.ImportFinished.Log"));
     } catch (KettleException e) {
       feedback.showError(BaseMessages.getString(PKG, "RepositoryImporter.ErrorGeneral.Title"), 
@@ -426,6 +447,10 @@ public class RepositoryImporter implements IRepositoryImporter {
         }
         rep.save(transMeta, versionComment, this, overwrite);
         feedback.addLog(BaseMessages.getString(PKG, "RepositoryImporter.TransSaved.Log", Integer.toString(transformationNumber), transMeta.getName()));
+        
+        if (transMeta.hasRepositoryReferences()) {
+          referencingObjects.add(new RepositoryObject(transMeta.getObjectId(), transMeta.getName(), transMeta.getRepositoryDirectory(), null, null, RepositoryObjectType.TRANSFORMATION, null, false));
+        }
       } catch (Exception e) {
         feedback.addLog(BaseMessages.getString(PKG, "RepositoryImporter.ErrorSavingTrans.Log", Integer.toString(transformationNumber), transMeta.getName(), e.toString()));
         feedback.addLog(Const.getStackTracker(e));
@@ -472,6 +497,11 @@ public class RepositoryImporter implements IRepositoryImporter {
       patchJobEntries(jobMeta);
       rep.save(jobMeta, versionComment, null, overwrite);
       feedback.addLog(BaseMessages.getString(PKG, "RepositoryImporter.JobSaved.Log", Integer.toString(jobNumber), jobMeta.getName()));
+      
+      if (jobMeta.hasRepositoryReferences()) {
+        referencingObjects.add(new RepositoryObject(jobMeta.getObjectId(), jobMeta.getName(), jobMeta.getRepositoryDirectory(), null, null, RepositoryObjectType.JOB, null, false));
+      }
+
     } else {
       feedback.addLog(BaseMessages.getString(PKG, "RepositoryImporter.ErrorSavingJob.Log", jobMeta.getName()));
     }

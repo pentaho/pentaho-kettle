@@ -568,4 +568,15 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   public void setContainerObjectId(String containerObjectId) {
     this.containerObjectId = containerObjectId;
   }
+  
+  public boolean hasRepositoryReferences() {
+    return false;
+  }
+  
+  /**
+   * Look up the references after import
+   * @param repository the repository to reference.
+   */
+  public void lookupRepositoryReferences(Repository repository) throws KettleException {
+  }
 }

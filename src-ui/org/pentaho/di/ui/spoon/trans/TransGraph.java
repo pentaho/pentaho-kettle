@@ -90,7 +90,6 @@ import org.pentaho.di.core.gui.GCInterface;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.Redrawable;
 import org.pentaho.di.core.gui.SnapAllignDistribute;
-import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
@@ -145,7 +144,6 @@ import org.pentaho.di.ui.core.widget.CheckBoxToolTipListener;
 import org.pentaho.di.ui.repository.dialog.RepositoryExplorerDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryRevisionBrowserDialogInterface;
 import org.pentaho.di.ui.spoon.AbstractGraph;
-import org.pentaho.di.ui.spoon.ISpoonMenuController;
 import org.pentaho.di.ui.spoon.SWTGC;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.SpoonPluginManager;
@@ -3436,6 +3434,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         trans.setSafeModeEnabled(executionConfiguration.isSafeModeEnabled());
         trans.setPreview(true);
         trans.prepareExecution(args);
+        trans.setRepository(spoon.rep);
 
         // Add the row listeners to the allocated threads
         //

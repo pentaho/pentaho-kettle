@@ -549,4 +549,18 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface
       return findAttribute(attributeKey).getTooltip();
     }
 
+    
+    /**
+     * @return True if the job entry defines one or more references to a repository object.
+     */
+    public boolean hasRepositoryReferences() {
+      return false;
+    }
+
+    /**
+     * Look up the references after import
+     * @param repository the repository to reference.
+     */
+    public void lookupRepositoryReferences(Repository repository) throws KettleException {    
+    }
 }
