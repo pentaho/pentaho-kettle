@@ -217,10 +217,20 @@ public class SingleThreadedTransExecutor {
   }
 
   public void dispose() throws KettleException {
+    
+    // Call output done.
+    //
+    for (StepMetaDataCombi combi : trans.getSteps()) {
+      combi.step.setOutputDone();
+    }
+    
     // Finalize all the steps...
     //
     for (StepMetaDataCombi combi : steps) {
         combi.step.dispose(combi.meta, combi.data);
+        combi.step.markStop();
     }
+    
+    
   }
 }
