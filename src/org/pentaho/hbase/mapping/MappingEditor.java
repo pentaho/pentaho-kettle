@@ -78,6 +78,7 @@ public class MappingEditor extends Composite {
   protected ColumnInfo m_typeCI;
   
   protected Button m_saveBut;
+  protected Button m_deleteBut;
   
   protected Button m_getFieldsBut;
   
@@ -85,6 +86,9 @@ public class MappingEditor extends Composite {
   
   protected ConfigurationProducer m_configProducer;
   protected FieldProducer m_incomingFieldsProducer;
+  
+  /** default family name to use when creating a new table using incoming fields */
+  protected static final String DEFAULT_FAMILY = "Family1";
   
   public MappingEditor(Shell shell, Composite parent, ConfigurationProducer configProducer, 
       FieldProducer fieldProducer, int tableViewStyle, boolean allowTableCreate, 
@@ -265,6 +269,19 @@ public class MappingEditor extends Composite {
       }
     });
     
+    m_deleteBut = new Button(this, SWT.PUSH | SWT.CENTER);
+    props.setLook(m_deleteBut);
+    m_deleteBut.setText(Messages.getString("MappingDialog.DeleteMapping"));
+    fd = new FormData();
+    fd.left = new FormAttachment(m_saveBut, margin);
+    fd.bottom = new FormAttachment(100, -margin*2);
+    m_deleteBut.setLayoutData(fd);
+    m_deleteBut.addSelectionListener(new SelectionAdapter() {
+      public void widgetSelected(SelectionEvent e) {
+        deleteMapping();
+      }
+    });
+    
     if (m_allowTableCreate) {
       m_getFieldsBut = new Button(this, SWT.PUSH | SWT.CENTER);
       props.setLook(m_getFieldsBut);
@@ -358,6 +375,15 @@ public class MappingEditor extends Composite {
             TableItem item = new TableItem(m_fieldsView.table, SWT.NONE);
             item.setText(1, vm.getName());
             item.setText(2, "N");
+            
+            if (m_familyCI.getComboValues()[0].length() > 0) {
+              // use existing first column family name as the default
+              item.setText(3, m_familyCI.getComboValues()[0]);
+            } else {
+              // default
+              item.setText(3, DEFAULT_FAMILY);
+            }
+            
             item.setText(4, vm.getName());
             item.setText(5, vm.getTypeDesc());
             if (vm.getType() == ValueMetaInterface.TYPE_INTEGER) {
@@ -388,6 +414,7 @@ public class MappingEditor extends Composite {
     }
 
     if (m_existingTableNamesCombo.getItemCount() == 0 || force) {
+      String existingName = m_existingTableNamesCombo.getText();
       m_existingTableNamesCombo.removeAll();
       //m_existingMappingNamesCombo.removeAll();
       try  {
@@ -401,10 +428,60 @@ public class MappingEditor extends Composite {
         for (int i = 0; i < tables.length; i++) {
           String currentTableName = tables[i].getNameAsString();
           m_existingTableNamesCombo.add(currentTableName);
-        }    
+        }
+        // restore any previous value
+        if (!Const.isEmpty(existingName)) {
+          m_existingTableNamesCombo.setText(existingName);
+        }
       } catch (Exception ex) {
         // ignore quietly
       }
+    }
+  }
+  
+  private void deleteMapping() {
+    if (Const.isEmpty(m_existingTableNamesCombo.getText().trim()) ||
+        Const.isEmpty(m_existingMappingNamesCombo.getText().trim())) {
+      MessageDialog.openError(m_shell, 
+          Messages.getString("MappingDialog.Error.Title.MissingTableMappingName"),
+          Messages.getString("MappingDialog.Error.Message.MissingTableMappingName"));
+      return;
+    }
+    
+    try {
+      boolean ok = MessageDialog.openConfirm(m_shell, 
+          Messages.getString("MappingDialog.Info.Title.ConfirmDelete"), 
+          Messages.getString("MappingDialog.Info.Message.ConfirmDelete",
+              m_existingMappingNamesCombo.getText().trim(), 
+              m_existingTableNamesCombo.getText().trim()));
+      
+      if (ok) {
+        boolean result = m_admin.deleteMapping(m_existingTableNamesCombo.getText().trim(), 
+            m_existingMappingNamesCombo.getText().trim());
+        if (result) {
+          MessageDialog.openConfirm(m_shell,
+              Messages.getString("MappingDialog.Info.Title.MappingDeleted"),
+              Messages.getString("MappingDialog.Info.Message.MappingDeleted",
+                  m_existingMappingNamesCombo.getText().trim(), 
+                  m_existingTableNamesCombo.getText().trim()));
+
+          // make sure that the list of mappings for the selected table gets updated.
+          populateMappingComboAndFamilyStuff();
+        } else {
+          MessageDialog.openError(m_shell, 
+              Messages.getString("MappingDialog.Error.Title.DeleteMapping"),
+              Messages.getString("MappingDialog.Error.Message.DeleteMapping", 
+                  m_existingMappingNamesCombo.getText().trim(), 
+                  m_existingTableNamesCombo.getText().trim()));
+        }
+      }
+      return;
+    } catch (IOException ex) {
+      MessageDialog.openError(m_shell, 
+          Messages.getString("MappingDialog.Error.Title.DeleteMapping"),
+          Messages.getString("MappingDialog.Error.Message.DeleteMappingIO", 
+              m_existingMappingNamesCombo.getText().trim(), 
+              m_existingTableNamesCombo.getText().trim(), ex.getMessage()));
     }
   }
   
