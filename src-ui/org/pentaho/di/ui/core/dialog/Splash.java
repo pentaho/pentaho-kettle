@@ -70,8 +70,7 @@ public class Splash {
 
     kettle_image = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("splash_image")); // "kettle_splash.png" //$NON-NLS-1$
     kettle_icon = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("splash_icon")); // "spoon.ico" //$NON-NLS-1$
-    exclamation_image = ImageUtil.getImageAsResource(display, BasePropertyHandler
-        .getProperty("exclamation_image")); // "exclamation.png" //$NON-NLS-1$
+    exclamation_image = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("exclamation_image")); // "exclamation.png" //$NON-NLS-1$
 
     verFont = new Font(display, "Helvetica", 11, SWT.BOLD); //$NON-NLS-1$
     licFont = new Font(display, "Helvetica", licFontSize, SWT.NORMAL); //$NON-NLS-1$
@@ -88,7 +87,7 @@ public class Splash {
     FormLayout splashLayout = new FormLayout();
     splash.setLayout(splashLayout);
 
-    Canvas canvas = new Canvas(splash, SWT.NO_BACKGROUND);
+    Canvas canvas = new Canvas(splash, SWT.ON_TOP);
 
     FormData fdCanvas = new FormData();
     fdCanvas.left = new FormAttachment(0, 0);
