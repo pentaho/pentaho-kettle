@@ -314,7 +314,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
           }
         }
       } else {
-        // all the columns in the mapping
+/*        // all the columns in the mapping
         Set<String> aliasSet = m_columnsMappedByAlias.keySet();
 
         for (String name : aliasSet) {
@@ -322,7 +322,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
           String colFamilyName = currentCol.getColumnFamily();
           String qualifier = currentCol.getColumnName();
           s.addColumn(Bytes.toBytes(colFamilyName), Bytes.toBytes(qualifier));
-        }
+        } */
       }
       
                   
@@ -620,5 +620,23 @@ public class HBaseInput extends BaseStep implements StepInterface {
   public boolean isWaitingForData() {
     return true;
   } */
+  
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.BaseStep#setStopped(boolean)
+   */
+  public void setStopped(boolean stopped) {
+    super.setStopped(stopped);
+
+    if (m_resultSet != null) {
+      logBasic("Closing connection...");
+      m_resultSet.close();
+      try {
+        m_sourceTable.close();
+      } catch (IOException e) {
+        logError("A problem occurred while closing connection to HBase: " 
+            + e.getMessage());
+      }
+    }
+  }
   
 }

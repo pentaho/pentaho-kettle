@@ -297,5 +297,30 @@ public class HBaseOutput extends BaseStep implements StepInterface {
    
     return true;
   }
+  
+  public void setStopped(boolean stopped) {
+    super.setStopped(stopped);
 
+    if (m_targetTable != null) {
+      if (!m_targetTable.isAutoFlush()) {
+        try {
+          logBasic("Flushing write buffer...");
+          m_targetTable.flushCommits();
+        } catch (IOException e) {        
+          e.printStackTrace();
+          logError("A problem occurred whilst flushing buffered " +
+              "data: " + e.getMessage());
+        }
+      }
+
+      try {
+        logBasic("Closing connection to target table.");
+        m_targetTable.close();
+      } catch (IOException e) {
+        e.printStackTrace();
+        logError("A problem occurred when closing the connection " +
+            "the target table: " + e.getMessage());
+      }
+    }
+  }
 }
