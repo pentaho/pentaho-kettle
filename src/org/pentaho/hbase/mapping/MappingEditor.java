@@ -25,6 +25,7 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
+import org.apache.hadoop.hbase.io.hfile.Compression;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -47,7 +48,6 @@ import org.eclipse.swt.widgets.TableItem;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.steps.hbaseinput.Messages;
 import org.pentaho.di.ui.core.PropsUI;
@@ -57,6 +57,22 @@ import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.ComboValuesSelectionListener;
 import org.pentaho.di.ui.core.widget.TableView;
 
+/**
+ * A re-usable composite for creating and editing table mappings for
+ * HBase. Also has the (optional) ability to create the table if the
+ * table for which the mapping is being created does not exist. When creating
+ * a new table, the name supplied may be optionally suffixed with some
+ * parameters for compression and bloom filter type. If no parameters are
+ * supplied then the HBase defaults of no compression and no bloom filter(s)
+ * are used. The table name may be suffixed with 
+ * @[NONE | GZ | LZO][@[NONE | ROW | ROWCOL]] for compression and bloom
+ * filter type respectively. Note that LZO compression requires LZO libraries
+ * to be installed on the HBase nodes. 
+ * 
+ * @author Mark Hall (mhall{[at]}pentaho{[dot]}com)
+ * @version $Revision$
+ *
+ */
 public class MappingEditor extends Composite {
   
   protected Shell m_shell;
@@ -440,7 +456,15 @@ public class MappingEditor extends Composite {
   }
   
   private void deleteMapping() {
-    if (Const.isEmpty(m_existingTableNamesCombo.getText().trim()) ||
+    String tableName = "";
+    if (!Const.isEmpty(m_existingTableNamesCombo.getText().trim())) {
+      tableName = m_existingTableNamesCombo.getText().trim();
+
+      if (tableName.indexOf('@') > 0) {
+        tableName = tableName.substring(0, tableName.indexOf('@'));
+      }
+    }
+    if (Const.isEmpty(tableName) ||
         Const.isEmpty(m_existingMappingNamesCombo.getText().trim())) {
       MessageDialog.openError(m_shell, 
           Messages.getString("MappingDialog.Error.Title.MissingTableMappingName"),
@@ -453,7 +477,7 @@ public class MappingEditor extends Composite {
           Messages.getString("MappingDialog.Info.Title.ConfirmDelete"), 
           Messages.getString("MappingDialog.Info.Message.ConfirmDelete",
               m_existingMappingNamesCombo.getText().trim(), 
-              m_existingTableNamesCombo.getText().trim()));
+              tableName));
       
       if (ok) {
         boolean result = m_admin.deleteMapping(m_existingTableNamesCombo.getText().trim(), 
@@ -463,7 +487,7 @@ public class MappingEditor extends Composite {
               Messages.getString("MappingDialog.Info.Title.MappingDeleted"),
               Messages.getString("MappingDialog.Info.Message.MappingDeleted",
                   m_existingMappingNamesCombo.getText().trim(), 
-                  m_existingTableNamesCombo.getText().trim()));
+                  tableName));
 
           // make sure that the list of mappings for the selected table gets updated.
           populateMappingComboAndFamilyStuff();
@@ -472,7 +496,7 @@ public class MappingEditor extends Composite {
               Messages.getString("MappingDialog.Error.Title.DeleteMapping"),
               Messages.getString("MappingDialog.Error.Message.DeleteMapping", 
                   m_existingMappingNamesCombo.getText().trim(), 
-                  m_existingTableNamesCombo.getText().trim()));
+                  tableName));
         }
       }
       return;
@@ -481,14 +505,22 @@ public class MappingEditor extends Composite {
           Messages.getString("MappingDialog.Error.Title.DeleteMapping"),
           Messages.getString("MappingDialog.Error.Message.DeleteMappingIO", 
               m_existingMappingNamesCombo.getText().trim(), 
-              m_existingTableNamesCombo.getText().trim(), ex.getMessage()));
+              tableName, ex.getMessage()));
     }
   }
   
   private void saveMapping() {
+    String tableName = "";
+    if (!Const.isEmpty(m_existingTableNamesCombo.getText().trim())) {
+      tableName = m_existingTableNamesCombo.getText().trim();
+
+      if (tableName.indexOf('@') > 0) {
+        tableName = tableName.substring(0, tableName.indexOf('@'));
+      }
+    }
     
     if (Const.isEmpty(m_existingTableNamesCombo.getText().trim()) ||
-        Const.isEmpty(m_existingMappingNamesCombo.getText().trim())) {
+        Const.isEmpty(tableName)) {
       MessageDialog.openError(m_shell, 
           Messages.getString("MappingDialog.Error.Title.MissingTableMappingName"),
           Messages.getString("MappingDialog.Error.Message.MissingTableMappingName"));
@@ -673,7 +705,7 @@ public class MappingEditor extends Composite {
 
       try {
         HBaseAdmin admin = new HBaseAdmin(conf);
-        String tableName = m_existingTableNamesCombo.getText().trim();
+        //String tableName = m_existingTableNamesCombo.getText().trim();
         if (!admin.tableExists(tableName)) {
           boolean result = MessageDialog.openConfirm(m_shell, "Create table", 
               "Table \"" + tableName + "\" does not exist. Create it?");
@@ -696,9 +728,25 @@ public class MappingEditor extends Composite {
             families.add(family);
           }
           
+          // do we have additional parameters supplied in the table name field
+          String compression = Compression.Algorithm.NONE.getName();
+          String bloomFilter = "NONE";
+          String[] opts = m_existingTableNamesCombo.getText().trim().split("@");
+          if (opts.length > 1) {
+            compression = opts[1];
+            if (opts.length == 3) {
+              bloomFilter = opts[2];
+            }
+          }
+          
           HTableDescriptor tableDescription = new HTableDescriptor(tableName);
           for (String familyName : families) {
-            HColumnDescriptor colDescriptor = new HColumnDescriptor(familyName);
+            //HColumnDescriptor colDescriptor = new HColumnDescriptor(familyName);
+            HColumnDescriptor colDescriptor = new HColumnDescriptor(Bytes.toBytes(familyName),
+                HColumnDescriptor.DEFAULT_VERSIONS, compression, 
+                HColumnDescriptor.DEFAULT_IN_MEMORY,
+                HColumnDescriptor.DEFAULT_BLOCKCACHE, HColumnDescriptor.DEFAULT_TTL,
+                bloomFilter);
             tableDescription.addFamily(colDescriptor);
           }
           
@@ -719,7 +767,7 @@ public class MappingEditor extends Composite {
 
     try {
       // now check to see if the mapping exists
-      if (m_admin.mappingExists(m_existingTableNamesCombo.getText().trim(), 
+      if (m_admin.mappingExists(tableName, 
           m_existingMappingNamesCombo.getText().trim())) {
         // prompt for overwrite
         boolean result = 
@@ -728,7 +776,7 @@ public class MappingEditor extends Composite {
               Messages.getString("MappingDialog.Info.Message1.MappingExists") 
             + m_existingMappingNamesCombo.getText().trim() + 
             Messages.getString("MappingDialog.Info.Message2.MappingExists")
-            + m_existingTableNamesCombo.getText().trim() 
+            + tableName 
             + Messages.getString("MappingDialog.Info.Message3.MappingExists"));
         if (!result) {
           return;
@@ -745,7 +793,7 @@ public class MappingEditor extends Composite {
           Messages.getString("MappingDialog.Info.Message1.MappingSaved")
           + m_existingMappingNamesCombo.getText().trim() 
           + Messages.getString("MappingDialog.Info.Message2.MappingSaved")
-          + m_existingTableNamesCombo.getText().trim() 
+          + tableName 
           + Messages.getString("MappingDialog.Info.Message3.MappingSaved"));
     } catch (IOException ex) {
       // inform the user via popup
@@ -757,13 +805,21 @@ public class MappingEditor extends Composite {
   }
   
   private void loadTableViewFromMapping() {
+    String tableName = "";
+    if (!Const.isEmpty(m_existingTableNamesCombo.getText().trim())) {
+      tableName = m_existingTableNamesCombo.getText().trim();
+
+      if (tableName.indexOf('@') > 0) {
+        tableName = tableName.substring(0, tableName.indexOf('@'));
+      }
+    }
     
     try {
-      if (m_admin.mappingExists(m_existingTableNamesCombo.getText().trim(), 
+      if (m_admin.mappingExists(tableName, 
           m_existingMappingNamesCombo.getText().trim())) {
 
         Mapping mapping = 
-          m_admin.getMapping(m_existingTableNamesCombo.getText().trim(), 
+          m_admin.getMapping(tableName, 
               m_existingMappingNamesCombo.getText().trim());
         m_fieldsView.clearAll();
         
@@ -819,17 +875,25 @@ public class MappingEditor extends Composite {
   }
   
   private void populateMappingComboAndFamilyStuff() {
+    String tableName = "";
+    if (!Const.isEmpty(m_existingTableNamesCombo.getText().trim())) {
+      tableName = m_existingTableNamesCombo.getText().trim();
+
+      if (tableName.indexOf('@') > 0) {
+        tableName = tableName.substring(0, tableName.indexOf('@'));
+      }
+    }
     
     // defaults if we fail to connect, table doesn't exist etc..
     m_familyCI.setComboValues(new String[] {""});
     m_existingMappingNamesCombo.removeAll();
     
-    if (m_admin != null && !Const.isEmpty(m_existingTableNamesCombo.getText())) {
+    if (m_admin != null && !Const.isEmpty(tableName)) {
       try {
         
         // first get the existing mapping names (if any)
         List<String> mappingNames = 
-          m_admin.getMappingNames(m_existingTableNamesCombo.getText().trim());
+          m_admin.getMappingNames(tableName);
         for (String m : mappingNames) {
           m_existingMappingNamesCombo.add(m);
         }
@@ -838,9 +902,9 @@ public class MappingEditor extends Composite {
         Configuration conf = m_admin.getConnection();
         HBaseAdmin admin = new HBaseAdmin(conf);
         
-        if (admin.tableExists(m_existingTableNamesCombo.getText())) {
+        if (admin.tableExists(tableName)) {
           HTableDescriptor descriptor = 
-            admin.getTableDescriptor(Bytes.toBytes(m_existingTableNamesCombo.getText().trim()));
+            admin.getTableDescriptor(Bytes.toBytes(tableName));
           
           Collection<HColumnDescriptor> families = descriptor.getFamilies();
           String[] familyNames = new String[families.size()];
