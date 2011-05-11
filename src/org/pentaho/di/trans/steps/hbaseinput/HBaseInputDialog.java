@@ -1239,9 +1239,7 @@ public class HBaseInputDialog extends BaseStepDialog implements
         // Fields information
         m_fieldsView.clearAll(false);
 //        boolean keyDone = false;
-        if (current != null && 
-            (readFieldsFromMapping || m_currentMeta.getOutputFields() == null || 
-                m_currentMeta.getOutputFields().size() == 0)) {
+        if (current != null &&  readFieldsFromMapping) {
           TableItem item = new TableItem(m_fieldsView.table, SWT.NONE);
 //          item.setTableName(current.getTableName());
 //          item.setMappingName(current.getMappingName());
@@ -1258,6 +1256,37 @@ public class HBaseInputDialog extends BaseStepDialog implements
             item.setText(5, ValueMeta.getTypeDesc(ValueMetaInterface.TYPE_INTEGER));
           }
   //        keyDone = true;
+          // get all the fields from the mapping
+          
+          for (String alias : mappedColumns.keySet()) {
+            HBaseValueMeta column = mappedColumns.get(alias);
+            String aliasS = column.getAlias();
+            String family = column.getColumnFamily();
+            String name = column.getColumnName();
+            String type = column.getTypeDesc();
+            String format = column.getConversionMask();
+
+            item = new TableItem(m_fieldsView.table, SWT.NONE);
+//            item.setTableName(column.getTableName());
+//            item.setMappingName(column.getMappingName());
+            if (column.getStorageType() == ValueMetaInterface.STORAGE_TYPE_INDEXED) {
+              String valuesString = HBaseValueMeta.objectIndexValuesToString(column.getIndex());
+              //                item.setIndexedItems(valuesString);
+              m_indexedLookup.put(aliasS, valuesString);
+              item.setText(7, "Y");
+            } else {
+              item.setText(7, "N");
+            }
+
+            item.setText(1, aliasS);
+            item.setText(2, "N");
+            item.setText(3, family);
+            item.setText(4, name);
+            item.setText(5, type);
+            if (!Const.isEmpty(format)) {
+              item.setText(6, format);   
+            }
+          }
         }
         
         if (!readFieldsFromMapping && m_currentMeta.getOutputFields() != null && 
@@ -1321,39 +1350,8 @@ public class HBaseInputDialog extends BaseStepDialog implements
             m_filterAliasCI.setComboValues(filterAliasNamesA);
             filterAliasesDone = true;
           }
-        } else if (current != null) {
-          // get all the fields from the mapping
-          
-          for (String alias : mappedColumns.keySet()) {
-            HBaseValueMeta column = mappedColumns.get(alias);
-            String aliasS = column.getAlias();
-            String family = column.getColumnFamily();
-            String name = column.getColumnName();
-            String type = column.getTypeDesc();
-            String format = column.getConversionMask();
-
-            TableItem item = new TableItem(m_fieldsView.table, SWT.NONE);
-//            item.setTableName(column.getTableName());
-//            item.setMappingName(column.getMappingName());
-            if (column.getStorageType() == ValueMetaInterface.STORAGE_TYPE_INDEXED) {
-              String valuesString = HBaseValueMeta.objectIndexValuesToString(column.getIndex());
-              //                item.setIndexedItems(valuesString);
-              m_indexedLookup.put(aliasS, valuesString);
-              item.setText(7, "Y");
-            } else {
-              item.setText(7, "N");
-            }
-
-            item.setText(1, aliasS);
-            item.setText(2, "N");
-            item.setText(3, family);
-            item.setText(4, name);
-            item.setText(5, type);
-            if (!Const.isEmpty(format)) {
-              item.setText(6, format);   
-            }
-          }
         }
+        
         m_fieldsView.removeEmptyRows();
         m_fieldsView.setRowNums();
         m_fieldsView.optWidth(true);
