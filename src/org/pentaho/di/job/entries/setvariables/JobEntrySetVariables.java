@@ -18,7 +18,9 @@ import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValid
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.fileExistsValidator;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notNullValidator;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
@@ -29,6 +31,7 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleJobException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
@@ -39,8 +42,8 @@ import org.pentaho.di.job.entry.validator.ValidatorContext;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
-import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
+import org.pentaho.di.resource.ResourceReference;
 import org.w3c.dom.Node;
 
 
@@ -62,24 +65,27 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
   public String variableValue[];
   
   public int variableType[];
+  
+  public String filename;
+  public int fileVariableType;
 
   public static final int VARIABLE_TYPE_JVM             = 0;
   public static final int VARIABLE_TYPE_CURRENT_JOB     = 1;
-  public static final int VARIABLE_TYPE_PARENT_JOB 		= 2;
+  public static final int VARIABLE_TYPE_PARENT_JOB    = 2;
   public static final int VARIABLE_TYPE_ROOT_JOB        = 3;
   
   private static final String variableTypeCode[] = { "JVM", "CURRENT_JOB","PARENT_JOB", "ROOT_JOB" };
   private static final String variableTypeDesc[] = 
       { 
-	  	BaseMessages.getString(PKG, "JobEntrySetVariables.VariableType.JVM"),
-	  	BaseMessages.getString(PKG, "JobEntrySetVariables.VariableType.CurrentJob"),
-	  	BaseMessages.getString(PKG, "JobEntrySetVariables.VariableType.ParentJob"),
-	  	BaseMessages.getString(PKG, "JobEntrySetVariables.VariableType.RootJob"),
+      BaseMessages.getString(PKG, "JobEntrySetVariables.VariableType.JVM"),
+      BaseMessages.getString(PKG, "JobEntrySetVariables.VariableType.CurrentJob"),
+      BaseMessages.getString(PKG, "JobEntrySetVariables.VariableType.ParentJob"),
+      BaseMessages.getString(PKG, "JobEntrySetVariables.VariableType.RootJob"),
       };
   
   public JobEntrySetVariables(String n) {
     super(n, ""); //$NON-NLS-1$
-    replaceVars = false;
+    replaceVars = true;
     variableName = null;
     variableValue=null;
 
@@ -99,6 +105,10 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
     StringBuffer retval = new StringBuffer(300);
     retval.append(super.getXML());
     retval.append("      ").append(XMLHandler.addTagValue("replacevars", replaceVars));
+    
+    retval.append("      ").append(XMLHandler.addTagValue("filename", filename));
+    retval.append("      ").append(XMLHandler.addTagValue("file_variable_type", getVariableTypeCode(fileVariableType)));
+
     retval.append("      <fields>").append(Const.CR);
     if (variableName != null) {
       for (int i = 0; i < variableName.length; i++) {
@@ -114,13 +124,16 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
     return retval.toString();
   }
 
-	public void loadXML(Node entrynode, List<DatabaseMeta>  databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException
-	{
-	 try
-	 {
-	   super.loadXML(entrynode, databases, slaveServers);
-       replaceVars = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "replacevars")); 
-      
+  public void loadXML(Node entrynode, List<DatabaseMeta>  databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException
+  {
+   try
+   {
+      super.loadXML(entrynode, databases, slaveServers);
+      replaceVars = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "replacevars")); 
+
+      filename = XMLHandler.getTagValue(entrynode, "filename"); 
+      fileVariableType = getVariableType(XMLHandler.getTagValue(entrynode, "file_variable_type")); 
+
       Node fields = XMLHandler.getSubNode(entrynode, "fields"); 
       // How many field variableName?
       int nrFields = XMLHandler.countNodes(fields, "field"); 
@@ -144,9 +157,12 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
 
   public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException
   {
-	  try
-	  {
+    try
+    {
         replaceVars = rep.getJobEntryAttributeBoolean(id_jobentry, "replacevars"); //$NON-NLS-1$
+ 
+        filename = rep.getJobEntryAttributeString(id_jobentry, "filename"); //$NON-NLS-1$
+        fileVariableType = getVariableType(rep.getJobEntryAttributeString(id_jobentry, "file_variable_type")); //$NON-NLS-1$
 
         // How many variableName?
         int argnr = rep.countNrJobEntryAttributes(id_jobentry, "variable_name"); //$NON-NLS-1$
@@ -156,7 +172,7 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
   
         // Read them all...
         for (int a = 0; a < argnr; a++) {
-    	  variableName[a] = rep.getJobEntryAttributeString(id_jobentry, a, "variable_name"); //$NON-NLS-1$
+        variableName[a] = rep.getJobEntryAttributeString(id_jobentry, a, "variable_name"); //$NON-NLS-1$
           variableValue[a] = rep.getJobEntryAttributeString(id_jobentry, a, "variable_value"); //$NON-NLS-1$
           variableType[a] = getVariableType(rep.getJobEntryAttributeString(id_jobentry, a, "variable_type")); 
         }
@@ -168,7 +184,10 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
   public void saveRep(Repository rep, ObjectId id_job) throws KettleException {
     try {
       rep.saveJobEntryAttribute(id_job, getObjectId(), "replacevars", replaceVars); //$NON-NLS-1$
-      
+
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "filename", filename); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "file_variable_type", getVariableTypeCode(fileVariableType)); //$NON-NLS-1$
+
       // save the variableName...
       if (variableName != null) {
         for (int i = 0; i < variableName.length; i++) {
@@ -184,79 +203,103 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
   }
 
   public Result execute(Result result, int nr) throws KettleException {
-    result.setResult(false);
-    result.setNrErrors(1);
+    result.setResult(true);
+    result.setNrErrors(0);
     try{
-	    if (variableName != null) {
-	
-	      for (int i = 0; i < variableName.length && !parentJob.isStopped(); i++) {
-	        String varname=variableName[i];
-	        String value=variableValue[i];
-	        if(replaceVars){
-	        	varname=environmentSubstitute(varname);
-	        	value=environmentSubstitute(value);
-	        }
-	
-	    	  // OK, where do we set this value...
-	          switch(getVariableType()[i]) {
-		          case VARIABLE_TYPE_JVM:  {
-		              System.setProperty(varname, value); 
-		              setVariable(varname, value);
-                  Job parentJobTraverse = parentJob;
-                  while (parentJobTraverse!=null) {                           
-                    parentJobTraverse.setVariable(varname, value);
-                    parentJobTraverse = parentJobTraverse.getParentJob();
-                  }
-		          }
-		          break;
-		          case VARIABLE_TYPE_ROOT_JOB: {
-		        	  // set variable in this job entry
-		              setVariable(varname, value);
-		              Job rootJob = parentJob;
-		              while (rootJob!=null)
-		              {                           
-		                  rootJob.setVariable(varname, value);
-		                  rootJob = rootJob.getParentJob();
-		              }
-		            }
-		           break;
-		           case VARIABLE_TYPE_CURRENT_JOB: {
-		        	   setVariable(varname, value);
-		               if (parentJob!=null)
-		            	   parentJob.setVariable(varname, value);
-		               else
-		                  throw new KettleJobException(BaseMessages.getString(PKG, "JobEntrySetVariables.Error.UnableSetVariableCurrentJob",varname));
-		           }
-		          break;
-		          case VARIABLE_TYPE_PARENT_JOB: {
-		            	  setVariable(varname, value);
-		
-		                  if (parentJob!=null) {
-		                      parentJob.setVariable(varname, value);
-		                      Job gpJob = parentJob.getParentJob();
-		                      if (gpJob!=null)
-		                          gpJob.setVariable(varname, value);
-		                      else
-		                          throw new KettleJobException(BaseMessages.getString(PKG, "JobEntrySetVariables.Error.UnableSetVariableParentJob",varname));
-		                  }
-		                  else {
-		                	  throw new KettleJobException(BaseMessages.getString(PKG, "JobEntrySetVariables.Error.UnableSetVariableCurrentJob",varname));
-		                  }  
-		              }
-		              break;
-		       }
-	          
-	          result.setResult(true);
-	          result.setNrErrors(0);
-	          
-	          // ok we can process this line
-	    	  if(log.isDetailed()) 
-	    		  logDetailed(BaseMessages.getString(PKG, "JobEntrySetVariables.Log.SetVariableToValue", varname, value)); //$NON-NLS-1$
-	      }
-	    }
-    }catch(Exception e)
-    {
-    	logError(BaseMessages.getString(PKG, "JobEntrySetVariables.UnExcpectedError",e.getMessage()));
+      
+      List<String> variables = new ArrayList<String>();
+      List<String> variableValues = new ArrayList<String>();
+      List<Integer> variableTypes = new ArrayList<Integer>();
+      
+      String realFilename = environmentSubstitute(filename); 
+      try {
+        if (!Const.isEmpty(realFilename)) {
+          Properties properties = new Properties();
+          properties.load(KettleVFS.getInputStream(realFilename));
+          for (Object key : properties.keySet()) {
+            variables.add( (String)key );
+            variableValues.add( (String) properties.get(key) );
+            variableTypes.add( fileVariableType );
+          }
+        }
+      } catch(Exception e) {
+        throw new KettleException(BaseMessages.getString(PKG, "JobEntrySetVariables.Error.UnableReadPropertiesFile",realFilename));
+      }
+      
+      for (int i = 0; i < variableName.length ; i++) {
+        variables.add( variableName[i] );
+        variableValues.add( variableValue[i] );
+        variableTypes.add( variableType[i] );
+      }
+      
+      for (int i=0;i<variables.size();i++) {
+        String varname=variables.get(i);
+        String value=variableValues.get(i);
+        int type = variableTypes.get(i);
+        
+        if(replaceVars){
+          varname=environmentSubstitute(varname);
+          value=environmentSubstitute(value);
+        }
+
+        // OK, where do we set this value...
+          switch(type) {
+            case VARIABLE_TYPE_JVM:  {
+                System.setProperty(varname, value); 
+                setVariable(varname, value);
+                Job parentJobTraverse = parentJob;
+                while (parentJobTraverse!=null) {                           
+                  parentJobTraverse.setVariable(varname, value);
+                  parentJobTraverse = parentJobTraverse.getParentJob();
+                }
+            }
+            break;
+            case VARIABLE_TYPE_ROOT_JOB: {
+              // set variable in this job entry
+                setVariable(varname, value);
+                Job rootJob = parentJob;
+                while (rootJob!=null)
+                {                           
+                    rootJob.setVariable(varname, value);
+                    rootJob = rootJob.getParentJob();
+                }
+              }
+             break;
+             case VARIABLE_TYPE_CURRENT_JOB: {
+               setVariable(varname, value);
+                 if (parentJob!=null)
+                   parentJob.setVariable(varname, value);
+                 else
+                    throw new KettleJobException(BaseMessages.getString(PKG, "JobEntrySetVariables.Error.UnableSetVariableCurrentJob",varname));
+             }
+            break;
+            case VARIABLE_TYPE_PARENT_JOB: {
+                  setVariable(varname, value);
+  
+                    if (parentJob!=null) {
+                        parentJob.setVariable(varname, value);
+                        Job gpJob = parentJob.getParentJob();
+                        if (gpJob!=null)
+                            gpJob.setVariable(varname, value);
+                        else
+                            throw new KettleJobException(BaseMessages.getString(PKG, "JobEntrySetVariables.Error.UnableSetVariableParentJob",varname));
+                    }
+                    else {
+                      throw new KettleJobException(BaseMessages.getString(PKG, "JobEntrySetVariables.Error.UnableSetVariableCurrentJob",varname));
+                    }  
+                }
+                break;
+         }
+          
+          // ok we can process this line
+        if(log.isDetailed()) 
+          logDetailed(BaseMessages.getString(PKG, "JobEntrySetVariables.Log.SetVariableToValue", varname, value)); //$NON-NLS-1$
+      }
+    } catch(Exception e) {
+      result.setResult(false);
+      result.setNrErrors(1);
+
+      logError(BaseMessages.getString(PKG, "JobEntrySetVariables.UnExcpectedError",e.getMessage()));
     }
 
     return result;
@@ -381,5 +424,33 @@ public class JobEntrySetVariables extends JobEntryBase implements Cloneable, Job
        }
       }
       return references;
+    }
+
+    /**
+     * @return the filename
+     */
+    public String getFilename() {
+      return filename;
+    }
+
+    /**
+     * @param filename the filename to set
+     */
+    public void setFilename(String filename) {
+      this.filename = filename;
+    }
+
+    /**
+     * @return the fileVariableType
+     */
+    public int getFileVariableType() {
+      return fileVariableType;
+    }
+
+    /**
+     * @param fileVariableType the fileVariableType to set
+     */
+    public void setFileVariableType(int fileVariableType) {
+      this.fileVariableType = fileVariableType;
     }
 }
