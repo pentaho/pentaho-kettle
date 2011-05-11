@@ -535,7 +535,7 @@ public class MappingEditor extends Composite {
       return;
     }
     // do we have a key defined in the table?
-    Mapping theMapping = new Mapping(m_existingTableNamesCombo.getText().trim(),
+    Mapping theMapping = new Mapping(tableName,
         m_existingMappingNamesCombo.getText().trim());
     boolean keyDefined = false;
     boolean moreThanOneKey = false;
