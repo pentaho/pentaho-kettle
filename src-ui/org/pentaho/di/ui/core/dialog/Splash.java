@@ -70,8 +70,7 @@ public class Splash {
 
     kettle_image = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("splash_image")); // "kettle_splash.png" //$NON-NLS-1$
     kettle_icon = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("splash_icon")); // "spoon.ico" //$NON-NLS-1$
-    exclamation_image = ImageUtil.getImageAsResource(display, BasePropertyHandler
-        .getProperty("exclamation_image")); // "exclamation.png" //$NON-NLS-1$
+    exclamation_image = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("exclamation_image")); // "exclamation.png" //$NON-NLS-1$
 
     verFont = new Font(display, "Helvetica", 11, SWT.BOLD); //$NON-NLS-1$
     licFont = new Font(display, "Helvetica", licFontSize, SWT.NORMAL); //$NON-NLS-1$
@@ -80,7 +79,7 @@ public class Splash {
     versionWarningBackgroundColor = new Color(display, 255, 253, 213);
     versionWarningForegroundColor = new Color(display, 220, 177, 20);
     
-    splash = new Shell(display, SWT.NONE /*SWT.ON_TOP*/);
+    splash = new Shell(display, SWT.ON_TOP);
     splash.setImage(kettle_icon);
 
     splash.setText(BaseMessages.getString(PKG, "SplashDialog.Title")); // "Pentaho Data Integration" //$NON-NLS-1$
