@@ -501,11 +501,11 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
         
         //  if we have HTTP headers, add them
         if (!Const.isEmpty(headerName)) {
-            log.logDebug(BaseMessages.getString(PKG, "JobHTTP.Log.HeadersProvided"));
+            if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "JobHTTP.Log.HeadersProvided"));
             for (int j = 0; j < headerName.length; j++) {
                 if (!Const.isEmpty(headerValue[j])) {
-                    connection.setRequestProperty(environmentSubstitute(headerName[j]), headerValue[j]);
-                    log.logDebug(BaseMessages.getString(PKG, "JobHTTP.Log.HeaderSet", environmentSubstitute(headerName[j]), environmentSubstitute(headerValue[j])));
+                    connection.setRequestProperty(environmentSubstitute(headerName[j]), environmentSubstitute(headerValue[j]));
+                    if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "JobHTTP.Log.HeaderSet", environmentSubstitute(headerName[j]), environmentSubstitute(headerValue[j])));
                 }
             }
         }
