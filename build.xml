@@ -170,5 +170,14 @@
 	<target name="package" depends="subfloor-pkg.package">
 		<zip destfile="${dist.dir}/${ivy.artifact.id}-samples-${project.revision}.zip" basedir="${samples.dir}" />
 	</target>
+
+        <target name="hbase-custom-comparators-jar" 
+                depends="compile" 
+                description="Jars up the custom comparators for use in filtering signed and boolean column values in HBase">
+          <jar destfile="${dist.dir}/hbase-comparators-${project.revision}.jar">
+            <fileset dir="${classes.dir}" includes="**/*Comparator*"/>
+          </jar>
+        </target>
+
 	
 </project>
