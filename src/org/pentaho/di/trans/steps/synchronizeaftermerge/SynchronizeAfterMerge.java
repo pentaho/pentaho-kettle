@@ -335,7 +335,7 @@ public class SynchronizeAfterMerge extends BaseStep implements StepInterface
 			{
 				// Get a commit counter per prepared statement to keep track of separate tables, etc. 
 			    //
-				String tableName=data.realTableName;
+				String tableName=data.realSchemaTable;
 				if(performInsert) tableName+="insert";
 				else if(performUpdate) tableName+="update";
 				if(performDelete) tableName+="delete";
