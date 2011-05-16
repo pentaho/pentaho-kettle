@@ -280,8 +280,11 @@ public class GPLoad extends BaseStep implements StepInterface
       contents.append(GPLoad.INDENT).append("- QUOTE: ").append(GPLoad.SINGLE_QUOTE).append(enclosure).append(GPLoad.SINGLE_QUOTE).append(Const.CR);
       contents.append(GPLoad.INDENT).append("- HEADER: FALSE").append(Const.CR);
         
-      // TODO: implement database encoding support
-      // contents.append("    - ENCODING: ").append(Const.CR);
+      // ENCODING
+      String encoding = meta.getEncoding();
+      if (!Const.isEmpty(encoding)) {
+         contents.append(GPLoad.INDENT).append("- ENCODING: ").append(encoding).append(Const.CR);
+      }
       
       //  Max errors
       String maxErrors = meta.getMaxErrors();

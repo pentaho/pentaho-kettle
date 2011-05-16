@@ -126,6 +126,12 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface
 	private String updateCondition;
 	
 	/*
+	 * Encodings supported by GPLoad.
+	 */
+	public final static String[] SUPPORTED_ENCODINGS = { "", "US-ASCII", "ISO-8859-1", "UTF-8", 
+	                                                    "UTF-16BE", "UTF-16LE", "UTF-16" }; //$NON-NLS-1$
+	
+	/*
 	 * Do not translate following values!!! They are will end up in the job export.
 	 */
 	final static public String ACTION_INSERT   = "insert";

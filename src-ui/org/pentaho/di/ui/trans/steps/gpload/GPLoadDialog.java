@@ -123,16 +123,6 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
 
    private ColumnInfo[] ciLocalHosts;
 
-   // These should not be translated, they are required to exist on all
-   // platforms according to the documentation of "Charset".
-   private static String[] encodings = { "", //$NON-NLS-1$
-         "US-ASCII", //$NON-NLS-1$
-         "ISO-8859-1", //$NON-NLS-1$
-         "UTF-8", //$NON-NLS-1$
-         "UTF-16BE", //$NON-NLS-1$
-         "UTF-16LE", //$NON-NLS-1$
-         "UTF-16" }; //$NON-NLS-1$
-
    private static final String[] ALL_FILETYPES = new String[] { BaseMessages
          .getString(PKG, "GPLoadDialog.Filetype.All") };
 
@@ -1371,7 +1361,7 @@ public class GPLoadDialog extends BaseStepDialog implements StepDialogInterface 
       
       wEncoding = new Combo(wGPConfigTabComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
       wEncoding.setToolTipText(BaseMessages.getString(PKG, "GPLoadDialog.Encoding.Tooltip"));
-      wEncoding.setItems(encodings);
+      wEncoding.setItems(GPLoadMeta.SUPPORTED_ENCODINGS);
       props.setLook(wEncoding);
       FormData fdEncoding = new FormData();
       fdEncoding.left = new FormAttachment(middle, 0);
