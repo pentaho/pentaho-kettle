@@ -843,7 +843,12 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
-	public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev)
+	 public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev) {
+	   return getSQLStatements(transMeta, stepMeta, prev, null, false, null);
+	 }
+	
+
+	public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String tk, boolean use_autoinc, String pk)
 	{
 		SQLStatement retval = new SQLStatement(stepMeta.getName(), databaseMeta, null); // default: nothing to do!
 	
@@ -860,7 +865,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 						db.connect();
 						
                         String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tablename);
-                        String cr_table = db.getDDL(schemaTable, prev);
+                        String cr_table = db.getDDL(schemaTable, prev, tk, use_autoinc, pk);
 						
 						// Empty string means: nothing to do: set it to null...
 						if (cr_table==null || cr_table.length()==0) cr_table=null;
