@@ -60,6 +60,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
@@ -1436,8 +1437,21 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         	    prev = prevNew;
 			}
 						
-			SQLStatement sql = info.getSQLStatements(transMeta, stepMeta, prev);
-			if (!sql.hasError())
+      boolean autoInc=false;
+      String pk = null;
+      
+      // Add the auto-increment field too if any is present.
+      //
+      if (info.isReturningGeneratedKeys() && !Const.isEmpty(info.getGeneratedKeyField())) {
+        ValueMetaInterface valueMeta = new ValueMeta(info.getGeneratedKeyField(), ValueMeta.TYPE_INTEGER);
+        valueMeta.setLength(15);
+        prev.addValueMeta(0, valueMeta);
+        autoInc = true;
+        pk = info.getGeneratedKeyField();
+      }
+            
+      SQLStatement sql = info.getSQLStatements(transMeta, stepMeta, prev, pk, autoInc, pk);
+      if (!sql.hasError())
 			{
 				if (sql.hasSQL())
 				{
