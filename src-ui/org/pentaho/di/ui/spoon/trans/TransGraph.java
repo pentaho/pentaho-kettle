@@ -2135,11 +2135,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   public void deleteHop() {
     selectionRegion = null;
     TransHopMeta hi = getCurrentHop();
-    int idx = transMeta.indexOfTransHop(hi);
-    spoon.addUndoDelete(transMeta, new TransHopMeta[] { (TransHopMeta) hi.clone() }, new int[] { idx });
-    transMeta.removeTransHop(idx);
-    spoon.refreshTree();
-    spoon.refreshGraph();
+    spoon.delHop(transMeta, hi);
   }
 
   public void enableHopsBetweenSelectedSteps() {
