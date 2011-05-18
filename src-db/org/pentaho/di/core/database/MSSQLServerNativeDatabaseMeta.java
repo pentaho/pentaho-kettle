@@ -1,5 +1,7 @@
 package org.pentaho.di.core.database;
 
+import org.pentaho.di.core.Const;
+
 
 public class MSSQLServerNativeDatabaseMeta extends MSSQLServerDatabaseMeta{
   public static final String ATTRIBUTE_USE_INTEGRATED_SECURITY = "MSSQLUseIntegratedSecurity"; //$NON-NLS-1$
@@ -34,7 +36,15 @@ public class MSSQLServerNativeDatabaseMeta extends MSSQLServerDatabaseMeta{
           useIntegratedSecurity = "false";//$NON-NLS-1$
         }
       }
-      return "jdbc:sqlserver://"+hostname+":"+port+";databaseName="+databaseName+";integratedSecurity=" + useIntegratedSecurity;//$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+      
+      String url = "jdbc:sqlserver://"+hostname;
+      
+      if (!Const.isEmpty(port) && Const.toInt(port, -1)>0) {
+        url += ":"+port;
+      }
+      url+=";databaseName="+databaseName+";integratedSecurity=" + useIntegratedSecurity;
+      
+      return url;
     }
   }
 

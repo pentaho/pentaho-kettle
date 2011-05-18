@@ -477,5 +477,14 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
     }
     return rtn;
   }
+
+  @Override
+  public boolean useSafePoints() {
+    return false;
+  }
   
+  @Override
+  public boolean supportsErrorHandlingOnBatchUpdates() {
+    return true;
+  }
 }

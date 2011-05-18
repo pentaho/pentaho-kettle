@@ -533,11 +533,16 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
    * @return String the TABLESPACE tablespaceName section of an Oracle CREATE DDL statement.  
    */
   @Override
-  protected String getTablespaceDDL(VariableSpace variables, DatabaseMeta databaseMeta, String tablespace) {
+  public String getTablespaceDDL(VariableSpace variables, DatabaseMeta databaseMeta, String tablespace) {
      if (!Const.isEmpty(tablespace)) {
         return "TABLESPACE "+databaseMeta.quoteField(variables.environmentSubstitute(tablespace));
      } else {
         return "";
      }
   }
+  
+  @Override
+  public boolean supportsErrorHandlingOnBatchUpdates() {
+    return false;
+  }  
 }

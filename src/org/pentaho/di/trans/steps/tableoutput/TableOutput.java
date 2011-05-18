@@ -22,6 +22,7 @@ import java.util.List;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.exception.KettleDatabaseBatchException;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
@@ -265,7 +266,7 @@ public class TableOutput extends BaseStep implements StepInterface
 			// For PG & GP, we add a savepoint before the row.
 			// Then revert to the savepoint afterwards... (not a transaction, so hopefully still fast)
 			//
-			if (data.specialErrorHandling) {
+			if (data.useSafePoints) {
 				data.savepoint = data.db.setSavepoint();
 			}
 			data.db.setValues(data.insertRowMeta, insertRowData, insertStatement);
@@ -286,7 +287,7 @@ public class TableOutput extends BaseStep implements StepInterface
 
 		    // Release the savepoint if needed
 		    //	    
-			if (data.specialErrorHandling) {
+			if (data.useSafePoints) {
 	          if (data.releaseSavepoint) {
 	             data.db.releaseSavepoint(data.savepoint);
 	          }
@@ -400,7 +401,7 @@ public class TableOutput extends BaseStep implements StepInterface
     				logRowlevel("Written row to error handling : "+getInputRowMeta().getString(r));
     			}
     			
-            	if (data.specialErrorHandling) {
+            	if (data.useSafePoints) {
             		data.db.rollback(data.savepoint);
             		if (data.releaseSavepoint) {
                		data.db.releaseSavepoint(data.savepoint);
@@ -535,91 +536,91 @@ public class TableOutput extends BaseStep implements StepInterface
         data.batchBuffer.clear();
     }
 
-    public boolean init(StepMetaInterface smi, StepDataInterface sdi)
-	{
-		meta=(TableOutputMeta)smi;
-		data=(TableOutputData)sdi;
+    public boolean init(StepMetaInterface smi, StepDataInterface sdi) {
+      meta = (TableOutputMeta) smi;
+      data = (TableOutputData) sdi;
+  
+      if (super.init(smi, sdi)) {
+        try {
+          data.commitSize = Integer.parseInt(environmentSubstitute(meta.getCommitSize()));
 
-		if (super.init(smi, sdi))
-		{
-			try
-			{
-				data.databaseMeta = meta.getDatabaseMeta();
-				
-				//  get the boolean that indicates whether or not we can release savepoints
-				//  and set in in data.  
-				data.releaseSavepoint = data.databaseMeta.getDatabaseInterface().releaseSavepoint();
-				
-				data.commitSize = Integer.parseInt(environmentSubstitute(meta.getCommitSize()));
-				
-                data.batchMode = data.commitSize>0 && meta.useBatchUpdate();
-                
-                // Batch updates are not supported on PostgreSQL (and look-a-likes) together with error handling (PDI-366)
-                //
-                data.specialErrorHandling = getStepMeta().isDoingErrorHandling() && meta.getDatabaseMeta().supportsErrorHandlingOnBatchUpdates();
-                
-                // Batch updates are not supported in case we are running with transactions in the transformation.
-                // It is also disabled when we return keys...
-                //
-                data.specialErrorHandling |= meta.isReturningGeneratedKeys() || getTransMeta().isUsingUniqueConnections();
-                
-                if (data.batchMode && data.specialErrorHandling )
-                {
-                	data.batchMode = false;
-                	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "TableOutput.Log.BatchModeDisabled"));
-                }
-                
-                if (meta.getDatabaseMeta()==null) {
-                  throw new KettleException(BaseMessages.getString(PKG, "TableOutput.Exception.DatabaseNeedsToBeSelected"));
-                }
-                if(meta.getDatabaseMeta()==null) {
-            		logError(BaseMessages.getString(PKG, "TableOutput.Init.ConnectionMissing", getStepname()));
-            		return false;
-            	}
-                data.db=new Database(this, meta.getDatabaseMeta());
-                data.db.shareVariablesWith(this);
-				
-                if (getTransMeta().isUsingUniqueConnections())
-                {
-                    synchronized (getTrans()) { data.db.connect(getTrans().getThreadName(), getPartitionID()); }
-                }
-                else
-                {
-                    data.db.connect(getPartitionID());
-                }
-                
-                if(log.isBasic()) logBasic("Connected to database ["+meta.getDatabaseMeta()+"] (commit="+data.commitSize+")");
+          data.databaseMeta = meta.getDatabaseMeta();
+          DatabaseInterface dbInterface = data.databaseMeta.getDatabaseInterface();
 
-                // Postpone commit as long as possible.  PDI-2091
-                //
-                if (data.commitSize==0) {
-                  data.commitSize = Integer.MAX_VALUE;
-                }
-                data.db.setCommit(data.commitSize); 
-				
-                if (!meta.isPartitioningEnabled() && !meta.isTableNameInField())
-                {    
-                	data.tableName = environmentSubstitute(meta.getTablename());                
-                	
-                    // Only the first one truncates in a non-partitioned step copy
-                    //
-                    if (meta.truncateTable() && ( ( getCopy()==0 && getUniqueStepNrAcrossSlaves()==0 ) || !Const.isEmpty(getPartitionID())) )
-    				{                	
-    					data.db.truncateTable(environmentSubstitute(meta.getSchemaName()), environmentSubstitute(meta.getTablename()));
-    				}
-                }
-                                
-				return true;
-			}
-			catch(KettleException e)
-			{
-				logError("An error occurred intialising this step: "+e.getMessage());
-				stopAll();
-				setErrors(1);
-			}
-		}
-		return false;
-	}
+          // Batch updates are not supported on PostgreSQL (and look-a-likes)
+          // together with error handling (PDI-366).
+          // For these situations we can use savepoints to help out.
+          //
+          data.useSafePoints = data.databaseMeta.getDatabaseInterface().useSafePoints() && getStepMeta().isDoingErrorHandling();
+  
+          // Get the boolean that indicates whether or not we can/should release
+          // savepoints during data load.
+          //
+          data.releaseSavepoint = dbInterface.releaseSavepoint();
+  
+
+          // Disable batch mode in case 
+          // - we use an unlimited commit size
+          // - in case we're doing error handling when batch updates don't support this
+          // - if we need to pick up auto-generated keys
+          // - if you are running the transformation as a single database transaction (unique connections)
+          // - if we are reverting to save-points
+          //
+          data.batchMode = meta.useBatchUpdate() && 
+                            data.commitSize > 0 && 
+                            (!getStepMeta().isDoingErrorHandling() || dbInterface.supportsErrorHandlingOnBatchUpdates()) &&
+                            !meta.isReturningGeneratedKeys() &&
+                            !getTransMeta().isUsingUniqueConnections() &&
+                            !data.useSafePoints
+                            ;
+  
+          if (meta.getDatabaseMeta() == null) {
+            throw new KettleException(BaseMessages.getString(PKG, "TableOutput.Exception.DatabaseNeedsToBeSelected"));
+          }
+          if (meta.getDatabaseMeta() == null) {
+            logError(BaseMessages.getString(PKG, "TableOutput.Init.ConnectionMissing", getStepname()));
+            return false;
+          }
+          data.db = new Database(this, meta.getDatabaseMeta());
+          data.db.shareVariablesWith(this);
+  
+          if (getTransMeta().isUsingUniqueConnections()) {
+            synchronized (getTrans()) {
+              data.db.connect(getTrans().getThreadName(), getPartitionID());
+            }
+          } else {
+            data.db.connect(getPartitionID());
+          }
+  
+          if (log.isBasic())
+            logBasic("Connected to database [" + meta.getDatabaseMeta() + "] (commit=" + data.commitSize + ")");
+  
+          // Postpone commit as long as possible. PDI-2091
+          //
+          if (data.commitSize == 0) {
+            data.commitSize = Integer.MAX_VALUE;
+          }
+          data.db.setCommit(data.commitSize);
+  
+          if (!meta.isPartitioningEnabled() && !meta.isTableNameInField()) {
+            data.tableName = environmentSubstitute(meta.getTablename());
+  
+            // Only the first one truncates in a non-partitioned step copy
+            //
+            if (meta.truncateTable() && ((getCopy() == 0 && getUniqueStepNrAcrossSlaves() == 0) || !Const.isEmpty(getPartitionID()))) {
+              data.db.truncateTable(environmentSubstitute(meta.getSchemaName()), environmentSubstitute(meta.getTablename()));
+            }
+          }
+  
+          return true;
+        } catch (KettleException e) {
+          logError("An error occurred intialising this step: " + e.getMessage());
+          stopAll();
+          setErrors(1);
+        }
+      }
+      return false;
+    }
 		
 	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
 	{

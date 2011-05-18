@@ -13,6 +13,7 @@
 
 package org.pentaho.di.core.database;
 
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -2597,6 +2598,10 @@ public class DatabaseMeta
 
   public Long getNextBatchId(Database ldb, String schemaName, String tableName, String fieldName) throws KettleDatabaseException {
     return databaseInterface.getNextBatchId(this, ldb, schemaName, tableName, fieldName);
+  }
+
+  public Object getValueFromResultSet(ResultSet rs, ValueMetaInterface val, int i) throws KettleDatabaseException {
+    return databaseInterface.getValueFromResultSet(rs, val, i);
   }
 
 }

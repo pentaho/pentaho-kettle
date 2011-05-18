@@ -25,6 +25,7 @@ import java.util.StringTokenizer;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.version.BuildVersion;
 
 public class EnvUtil
@@ -72,20 +73,28 @@ public class EnvUtil
 	 * Adds the kettle properties the the global system properties.
 	 * @throws KettleException in case the properties file can't be read.
 	 */
-	@SuppressWarnings({"unchecked"})
-    public static void environmentInit() throws KettleException
-	{
+  public static void environmentInit() throws KettleException {
         // Workaround for a Mac OS/X Leopard issue where getContextClassLoader() is returning 
         // null when run from the eclipse IDE
 	    // http://lists.apple.com/archives/java-dev/2007/Nov/msg00385.html - DM
 	    // Moving this hack to the first place where the NPE is triggered so all entrypoints can be debugged in Mac Eclipse
-        if ( Thread.currentThread().getContextClassLoader() == null ) 
-        {
+        if ( Thread.currentThread().getContextClassLoader() == null ) {
           Thread.currentThread ().setContextClassLoader(ClassLoader.getSystemClassLoader());
         }
 
-		Map kettleProperties = EnvUtil.readProperties(Const.KETTLE_PROPERTIES);
-        System.getProperties().putAll(kettleProperties);
+        Map<?,?> kettleProperties = EnvUtil.readProperties(Const.KETTLE_PROPERTIES);
+        Variables variables = new Variables();
+        for(Object key : kettleProperties.keySet()) {
+          String variable = (String)key;
+          String value = variables.environmentSubstitute( (String) kettleProperties.get(key) );
+          variables.setVariable(variable, value);
+        }
+        
+        // Copy the data over to the system properties...
+        //
+        for (String variable : variables.listVariables()) {
+          System.setProperty(variable, variables.getVariable(variable));
+        }
         
         // Also put some default values for obscure environment variables in there...
         // Place-holders if you will.
@@ -167,7 +176,6 @@ public class EnvUtil
      * @return an array of strings, made up of all the environment variables available in the VM, format var=value.
      * To be used for Runtime.exec(cmd, envp)
      */
-    @SuppressWarnings({"unchecked"})
     public static final String[] getEnvironmentVariablesForRuntimeExec()
     {
         Properties sysprops = new Properties();
@@ -176,10 +184,10 @@ public class EnvUtil
         addInternalVariables(sysprops);
         
         String[] envp = new String[sysprops.size()];
-        List<String> list = new ArrayList(sysprops.keySet());
+        List<Object> list = new ArrayList<Object>(sysprops.keySet());
         for (int i=0;i<list.size();i++)
         {
-            String var = list.get(i);
+            String var = (String)list.get(i);
             String val = sysprops.getProperty(var);
             
             envp[i] = var+"="+val;

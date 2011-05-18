@@ -1171,20 +1171,19 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
     public void setFlags()
     {
     	DatabaseMeta databaseMeta = transMeta.findDatabase(wConnection.getText());
+    	boolean supportsBatchErrorHandling = databaseMeta!=null && databaseMeta.supportsErrorHandlingOnBatchUpdates();
+    	
     	boolean hasErrorHandling = transMeta.findStep(stepname).isDoingErrorHandling();
   
     	// Do we want to return keys?
     	boolean returnKeys        = wReturnKeys.getSelection();
     	
-    	// Can't use batch yet when grabbing auto-generated keys...
-    	boolean useBatch          = wBatch.getSelection() && !returnKeys;
-    	
-    	// Only enable batch option when not returning keys.
-    	boolean enableBatch       = !returnKeys && !transMeta.isUsingUniqueConnections();
-    	
-    	// If we are on PostgreSQL (and look-a-likes), error handling is not supported. (PDI-366)
-    	enableBatch = enableBatch && !( databaseMeta!=null && databaseMeta.supportsErrorHandlingOnBatchUpdates() && hasErrorHandling );
+      // Can't use batch yet when grabbing auto-generated keys or sometimes when we use error handling 
+      boolean useBatch          = wBatch.getSelection() && !transMeta.isUsingUniqueConnections() && !returnKeys && ( !hasErrorHandling || supportsBatchErrorHandling );
 
+      // Only enable batch option when not returning keys.
+      boolean enableBatch       = !returnKeys && !transMeta.isUsingUniqueConnections() && ( !hasErrorHandling || supportsBatchErrorHandling );
+    	
     	// Can't ignore errors when using batch inserts.
         boolean useIgnore          = !useBatch; 
         
@@ -1257,7 +1256,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		
         wTruncate.setSelection( input.truncateTable() );
         wIgnore.setSelection(input.ignoreErrors());
-		wBatch.setSelection(input.useBatchUpdate());
+        wBatch.setSelection(input.useBatchUpdate());
 
         wCommit.setText(input.getCommitSize());
 

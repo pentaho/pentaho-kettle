@@ -472,8 +472,19 @@ public class Database implements VariableSpace, LoggingObjectInterface
             {
                 if (!Const.isEmpty(username) || !Const.isEmpty(password))
                 {
-                	// also allow for empty username with given password, in this case username must be given with one space 
+                  if (databaseMeta.getDatabaseInterface() instanceof MSSQLServerNativeDatabaseMeta) {
+                    // Needs user & password in the URL
+                    //
+                    String instance = environmentSubstitute(databaseMeta.getSQLServerInstance());
+                    if (Const.isEmpty(instance)) {
+                      connection = DriverManager.getConnection(url+";user="+username+";password="+password);
+                    } else {
+                      connection = DriverManager.getConnection(url+";user="+username+";password="+password+";instanceName="+instance);
+                    }
+                  } else {
+                    // also allow for empty username with given password, in this case username must be given with one space 
                     connection = DriverManager.getConnection(url, Const.NVL(username, " "), Const.NVL(password, ""));
+                  }
                 }
                 else
                 {
@@ -1460,6 +1471,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 						//
 						ps.executeBatch();
 						commit();
+						ps.clearBatch();
 					}
 					else
 					{
@@ -2723,93 +2735,37 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		return getRow(rs, null, rowMeta);
 	}
 
-	/**
-	 * Get a row from the resultset.
-	 * @param rs The resultset to get the row from
-	 * @return one row or null if no row was found on the resultset or if an error occurred.
-	 */
-	public Object[] getRow(ResultSet rs, ResultSetMetaData dummy, RowMetaInterface rowInfo) throws KettleDatabaseException
-	{
-		try
-		{
-			int nrcols=rowInfo.size();
-			Object[] data = RowDataUtil.allocateRowData(nrcols);
-            
-			if (rs.next())
-			{
-				for (int i=0;i<nrcols;i++)
-				{
-                    ValueMetaInterface val = rowInfo.getValueMeta(i);
-                    
-					switch(val.getType())
-					{
-					case ValueMetaInterface.TYPE_BOOLEAN   : data[i] = Boolean.valueOf( rs.getBoolean(i+1) ); break;
-					case ValueMetaInterface.TYPE_NUMBER    : data[i] = new Double( rs.getDouble(i+1) ); break;
-                    case ValueMetaInterface.TYPE_BIGNUMBER : data[i] = rs.getBigDecimal(i+1); break;
-					case ValueMetaInterface.TYPE_INTEGER   : data[i] = Long.valueOf( rs.getLong(i+1) ); break;
-					case ValueMetaInterface.TYPE_STRING    : 
-						{
-							if (val.isStorageBinaryString()) {
-								data[i] = rs.getBytes(i+1);
-							}
-							else {
-								data[i] = rs.getString(i+1);
-							}
-						}
-						break;
-					case ValueMetaInterface.TYPE_BINARY    : 
-                        {
-                            if (databaseMeta.supportsGetBlob())
-                            {
-                                Blob blob = rs.getBlob(i+1);
-                                if (blob!=null)
-                                {
-                                    data[i] = blob.getBytes(1L, (int)blob.length());
-                                }
-                                else
-                                {
-                                    data[i] = null;
-                                }
-                            }
-                            else
-                            {
-                                data[i] = rs.getBytes(i+1);
-                            }
-                        }
-                        break;
-					case ValueMetaInterface.TYPE_DATE      :
-						if (databaseMeta.getDatabaseInterface() instanceof NeoviewDatabaseMeta && val.getOriginalColumnType()==java.sql.Types.TIME)
-						{
-							// Neoview can not handle getDate / getTimestamp for a Time column
-							data[i] = rs.getTime(i+1); break;  // Time is a subclass of java.util.Date, the default date will be 1970-01-01
-						}
-						else if (val.getPrecision()!=1 && databaseMeta.supportsTimeStampToDateConversion())
-                        {
-                            data[i] = rs.getTimestamp(i+1); break; // Timestamp extends java.util.Date
-                        }
-                        else 
-                        {
-                            data[i] = rs.getDate(i+1); break;
-                        }
-					default: break;
-					}
-					if (rs.wasNull()) data[i] = null; // null value, it's the default but we want it just to make sure we handle this case too.
-				}
-			}
-			else
-			{
-                data=null;
-			}
-			
-			return data;
-		}
-		catch(SQLException ex)
-		{
-			throw new KettleDatabaseException("Couldn't get row from result set", ex);
-		}
-	}
+  /**
+   * Get a row from the resultset.
+   * 
+   * @param rs
+   *          The resultset to get the row from
+   * @return one row or null if no row was found on the resultset or if an error
+   *         occurred.
+   */
+  public Object[] getRow(ResultSet rs, ResultSetMetaData dummy, RowMetaInterface rowInfo) throws KettleDatabaseException {
+    try {
+      int nrcols = rowInfo.size();
+      Object[] data = RowDataUtil.allocateRowData(nrcols);
 
-	public void printSQLException(SQLException ex)
+      if (rs.next()) {
+        for (int i = 0; i < nrcols; i++) {
+          ValueMetaInterface val = rowInfo.getValueMeta(i);
+
+          data[i] = databaseMeta.getValueFromResultSet(rs, val, i);
+        }
+      } else {
+        data = null;
+      }
+
+      return data;
+    } catch (Exception ex) {
+      throw new KettleDatabaseException("Couldn't get row from result set", ex);
+    }
+  }
+
+
+  public void printSQLException(SQLException ex)
 	{
 		log.logError("==> SQLException: ");
 		while (ex != null) 

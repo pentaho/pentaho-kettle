@@ -420,7 +420,19 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
   public boolean isMySQLVariant() {
     return true;
   }
-
+  
+  /**
+   * Returns a false as Oracle does not allow for the releasing of savepoints.
+   */
+  @Override
+  public boolean releaseSavepoint() {
+     return false;
+  }
+  
+  @Override
+  public boolean supportsErrorHandlingOnBatchUpdates() {
+    return true;
+  }
 }
 
 

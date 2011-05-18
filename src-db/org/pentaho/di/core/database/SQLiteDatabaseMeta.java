@@ -203,7 +203,15 @@ public class SQLiteDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 
     public String[] getUsedLibraries()
     {
-        return new String[] { "sqlitejdbc-v037-nested.jar" };
+        return new String[] { "sqlite-jdbc-3.7.2.jar" };
+    }
+
+    /**
+     * @return true if the database supports error handling (the default). 
+     *         Returns false for certain databases (SQLite) that invalidate a prepared statement or even the complete connection when an error occurs. 
+     */
+    public boolean supportsErrorHandling() {
+      return false;
     }
 
 }

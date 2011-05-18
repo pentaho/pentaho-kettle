@@ -12,6 +12,7 @@
 
 package org.pentaho.di.core.database;
 
+import java.sql.ResultSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -916,4 +917,26 @@ public interface DatabaseInterface extends Cloneable
    * the passed DatabaseMata determines if TABLESPACE_NAME is to be enclosed in quotes.
    */
   public String getIndexTablespaceDDL(VariableSpace variables, DatabaseMeta databaseMeta);
+
+  /**
+   * This method allows a database dialect to convert database specific data types to Kettle data types.
+   * 
+   * @param resultSet The result set to use
+   * @param valueMeta The description of the value to retrieve
+   * @param index the index on which we need to retrieve the value, 0-based.
+   * @return The correctly converted Kettle data type corresponding to the valueMeta description.
+   * @throws KettleDatabaseException
+   */
+  public Object getValueFromResultSet(ResultSet resultSet, ValueMetaInterface valueMeta, int index) throws KettleDatabaseException;
+  
+  /**
+   * @return true if the database supports the use of safe-points and if it is appropriate to ever use it (default to false)
+   */
+  public boolean useSafePoints();
+  
+  /**
+   * @return true if the database supports error handling (the default). 
+   *         Returns false for certain databases (SQLite) that invalidate a prepared statement or even the complete connection when an error occurs. 
+   */
+  public boolean supportsErrorHandling();
 }

@@ -13,6 +13,7 @@
 
 package org.pentaho.di.core.database;
 
+import java.sql.Blob;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -1803,7 +1804,88 @@ public abstract class BaseDatabaseMeta implements Cloneable
    * 
    * @return String an empty String as most databases do not use tablespaces.  
    */
-  protected String getTablespaceDDL(VariableSpace variables, DatabaseMeta databaseMeta, String tablespaceName) {
+  public String getTablespaceDDL(VariableSpace variables, DatabaseMeta databaseMeta, String tablespaceName) {
    return "";
+  }
+  
+  /**
+   * This method allows a database dialect to convert database specific data types to Kettle data types.
+   * 
+   * @param resultSet The result set to use
+   * @param valueMeta The description of the value to retrieve
+   * @param index the index on which we need to retrieve the value, 0-based.
+   * @return The correctly converted Kettle data type corresponding to the valueMeta description.
+   * @throws KettleDatabaseException
+   */
+  public Object getValueFromResultSet(ResultSet rs, ValueMetaInterface val, int i) throws KettleDatabaseException {
+    Object data = null;
+    
+    try {
+      switch (val.getType()) {
+      case ValueMetaInterface.TYPE_BOOLEAN:
+        data = Boolean.valueOf(rs.getBoolean(i + 1));
+        break;
+      case ValueMetaInterface.TYPE_NUMBER:
+        data = new Double(rs.getDouble(i + 1));
+        break;
+      case ValueMetaInterface.TYPE_BIGNUMBER:
+        data = rs.getBigDecimal(i + 1);
+        break;
+      case ValueMetaInterface.TYPE_INTEGER:
+        data = Long.valueOf(rs.getLong(i + 1));
+        break;
+      case ValueMetaInterface.TYPE_STRING: 
+        if (val.isStorageBinaryString()) {
+          data = rs.getBytes(i + 1);
+        } else {
+          data = rs.getString(i + 1);
+        }
+        break;
+      case ValueMetaInterface.TYPE_BINARY:
+        if (supportsGetBlob()) {
+          Blob blob = rs.getBlob(i + 1);
+          if (blob != null) {
+            data = blob.getBytes(1L, (int) blob.length());
+          } else {
+            data = null;
+          }
+        } else {
+          data = rs.getBytes(i + 1);
+        }
+        break;
+      case ValueMetaInterface.TYPE_DATE:
+        if (val.getPrecision() != 1 && supportsTimeStampToDateConversion()) {
+          data = rs.getTimestamp(i + 1);
+          break; // Timestamp extends java.util.Date
+        } else {
+          data = rs.getDate(i + 1);
+          break;
+        }
+      default:
+        break;
+      }
+      if (rs.wasNull()) {
+        data = null; 
+      }
+    } catch(SQLException e) {
+      throw new KettleDatabaseException("Unable to get value '"+val.toStringMeta()+"' from database resultset, index "+i, e);
+    }
+
+    return data;
+  }
+
+  /**
+   * @return true if the database supports the use of safe-points and if it is appropriate to ever use it (default to false)
+   */
+  public boolean useSafePoints() {
+    return false;
+  }
+
+  /**
+   * @return true if the database supports error handling (the default). 
+   *         Returns false for certain databases (SQLite) that invalidate a prepared statement or even the complete connection when an error occurs. 
+   */
+  public boolean supportsErrorHandling() {
+    return true;
   }
 } 
