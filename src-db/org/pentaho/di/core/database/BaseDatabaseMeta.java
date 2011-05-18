@@ -30,7 +30,6 @@ import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.repository.ObjectId;
 
@@ -1754,6 +1753,19 @@ public abstract class BaseDatabaseMeta implements Cloneable
     }
     return getNextBatchIdUsingLockTables(dbm, ldb, schemaName, tableName, fieldName);
   }
-  
-  
+ 
+  /**
+   * @return true if the database supports the use of safe-points and if it is appropriate to ever use it (default to false)
+   */
+  public boolean useSafePoints() {
+    return false;
+  }  
+
+  /**
+   * @return true if the database supports error handling (the default). 
+   *         Returns false for certain databases (SQLite) that invalidate a prepared statement or even the complete connection when an error occurs. 
+   */
+  public boolean supportsErrorHandling() {
+    return true;
+  }
 }

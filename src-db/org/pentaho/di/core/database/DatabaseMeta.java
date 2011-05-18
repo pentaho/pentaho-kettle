@@ -906,7 +906,6 @@ public class DatabaseMeta
     }
   }
 	
-	@SuppressWarnings("unchecked")
 	public String getXML()
 	{
         StringBuffer retval = new StringBuffer(250);
@@ -926,12 +925,17 @@ public class DatabaseMeta
         
         retval.append("    <attributes>").append(Const.CR);
        
-        List list = new ArrayList( getAttributes().keySet() );
-        Collections.sort(list);  // Sort the entry-sets to make sure we can compare XML strings: if the order is different, the XML is different.  
+        List<Object> objectList = new ArrayList<Object>( getAttributes().keySet() );
+        List<String> list = new ArrayList<String>();
+        for (Object object : objectList) list.add((String)object);
         
-        for (Iterator iter = list.iterator(); iter.hasNext();)
+        // Sort the entry-sets to make sure we can compare XML strings: if the order is different, the XML is different.
+        //
+        Collections.sort(list);    
+        
+        for (Iterator<String> iter = list.iterator(); iter.hasNext();)
         {
-            String code = (String) iter.next();
+            String code = iter.next();
             String attribute = getAttributes().getProperty(code);
             if (!Const.isEmpty(attribute))
             {
@@ -1848,7 +1852,6 @@ public class DatabaseMeta
      * @return a feature list for the chosen database type.
      * 
      */
-    @SuppressWarnings("unchecked")
 	public List<RowMetaAndData> getFeatureSummary()
     {
     	List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();
@@ -1875,8 +1878,9 @@ public class DatabaseMeta
             r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "Username"); r.addValue(val, ValueMetaInterface.TYPE_STRING, getUsername()); list.add(r);
             // Informix server
             r = new RowMetaAndData(); r.addValue(par, ValueMetaInterface.TYPE_STRING, "Informix server name"); r.addValue(val, ValueMetaInterface.TYPE_STRING, getServername()); list.add(r);
+            
             // Other properties...
-            Enumeration keys = getAttributes().keys();
+            Enumeration<Object> keys = getAttributes().keys();
             while (keys.hasMoreElements())
             {
                 String key = (String) keys.nextElement();

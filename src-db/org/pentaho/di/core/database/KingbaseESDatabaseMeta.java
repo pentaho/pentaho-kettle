@@ -431,4 +431,8 @@ public class KingbaseESDatabaseMeta extends BaseDatabaseMeta implements Database
         return new String[] { "kingbasejdbc.jar" };
     }
 
+    @Override
+    public boolean useSafePoints() {
+      return true; // This is a PostgreSQL clone
+    }
 }

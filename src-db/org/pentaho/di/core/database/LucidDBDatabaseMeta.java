@@ -25,8 +25,6 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class LucidDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
-    private static final String UNUSED_DB_NAME = "LOCAL_DB";
-    
 	public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_JNDI };

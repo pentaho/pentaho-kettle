@@ -886,4 +886,14 @@ public interface DatabaseInterface extends Cloneable
    */
   Long getNextBatchId(DatabaseMeta dbm, Database ldb, String schemaName, String tableName, String fieldName) throws KettleDatabaseException;
 
+  /**
+   * @return true if the database supports the use of safe-points and if it is appropriate to ever use it (default to false)
+   */
+  public boolean useSafePoints();
+
+  /**
+   * @return true if the database supports error handling (the default). 
+   *         Returns false for certain databases (SQLite) that invalidate a prepared statement or even the complete connection when an error occurs. 
+   */
+  public boolean supportsErrorHandling();
 }

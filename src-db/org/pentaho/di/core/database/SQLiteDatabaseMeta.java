@@ -79,7 +79,8 @@ public class SQLiteDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	/**
 	 * @see org.pentaho.di.core.database.DatabaseInterface#getSchemaTableCombination(java.lang.String, java.lang.String)
 	 */
-	public String getSchemaTableCombination(String schema_name, String table_part)
+	@SuppressWarnings("deprecation")
+  public String getSchemaTableCombination(String schema_name, String table_part)
 	{
 		return getBackwardsCompatibleSchemaTableCombination(schema_name, table_part);
 	}	
@@ -202,7 +203,14 @@ public class SQLiteDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 
     public String[] getUsedLibraries()
     {
-        return new String[] { "sqlitejdbc-v037-nested.jar" };
+        return new String[] { "sqlite-jdbc-3.7.2.jar" };
     }
 
+    /**
+     * @return true if the database supports error handling (the default). 
+     *         Returns false for certain databases (SQLite) that invalidate a prepared statement or even the complete connection when an error occurs. 
+     */
+    public boolean supportsErrorHandling() {
+      return false;
+    }
 }

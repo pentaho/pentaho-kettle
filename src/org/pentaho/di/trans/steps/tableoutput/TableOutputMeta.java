@@ -1003,6 +1003,10 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
     
     public boolean supportsErrorHandling()
     {
+      if (databaseMeta!=null) {
+        return databaseMeta.getDatabaseInterface().supportsErrorHandling();
+      } else {
         return true;
+      }
     }      
 }

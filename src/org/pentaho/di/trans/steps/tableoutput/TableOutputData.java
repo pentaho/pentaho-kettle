@@ -58,7 +58,7 @@ public class TableOutputData extends BaseStepData implements StepDataInterface
     public boolean sendToErrorRow;
     public RowMetaInterface outputRowMeta;
     public RowMetaInterface insertRowMeta;
-	public boolean specialErrorHandling;
+	public boolean useSafePoints;
 	public Savepoint savepoint;
 	public boolean releaseSavepoint;
 

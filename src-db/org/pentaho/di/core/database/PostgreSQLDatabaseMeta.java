@@ -506,4 +506,11 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
   public boolean supportsGetBlob() {
 	  return false;
   }
+  
+  /**
+   * @return true if the database supports the use of safe-points and if it is appropriate to ever use it (default to false)
+   */
+  public boolean useSafePoints() {
+    return true;
+  }
 }
