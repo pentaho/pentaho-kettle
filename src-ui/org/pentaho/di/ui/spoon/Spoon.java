@@ -3041,10 +3041,21 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   }
 
   public void delHop(TransMeta transMeta, TransHopMeta transHopMeta) {
-    int i = transMeta.indexOfTransHop(transHopMeta);
-    addUndoDelete(transMeta, new Object[] { (TransHopMeta) transHopMeta.clone() }, new int[] { transMeta
-        .indexOfTransHop(transHopMeta) });
-    transMeta.removeTransHop(i);
+    int index = transMeta.indexOfTransHop(transHopMeta);
+    addUndoDelete(transMeta, new Object[] { (TransHopMeta) transHopMeta.clone() }, new int[] { index });
+    transMeta.removeTransHop(index);
+    
+    // If this is an error handling hop, disable it
+    // 
+    if (transHopMeta.getFromStep().isDoingErrorHandling()) {
+      StepMeta stepMeta = transHopMeta.getFromStep();
+      StepMeta before = (StepMeta)stepMeta.clone();
+      transHopMeta.getFromStep().getStepErrorMeta().setEnabled(false);
+
+      index = transMeta.indexOfStep(stepMeta);
+      addUndoChange(transMeta, new Object[] { before }, new Object[]{ stepMeta}, new int[] { index });
+    }
+    
     refreshTree();
     refreshGraph();
   }
