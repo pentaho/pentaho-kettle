@@ -199,6 +199,7 @@ import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.step.StepErrorMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
@@ -3048,12 +3049,21 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     // If this is an error handling hop, disable it
     // 
     if (transHopMeta.getFromStep().isDoingErrorHandling()) {
-      StepMeta stepMeta = transHopMeta.getFromStep();
-      StepMeta before = (StepMeta)stepMeta.clone();
-      transHopMeta.getFromStep().getStepErrorMeta().setEnabled(false);
+      StepErrorMeta stepErrorMeta = transHopMeta.getFromStep().getStepErrorMeta();
 
-      index = transMeta.indexOfStep(stepMeta);
-      addUndoChange(transMeta, new Object[] { before }, new Object[]{ stepMeta}, new int[] { index });
+      // We can only disable error handling if the target of the hop is the same as the target of the error handling.
+      //
+      if (stepErrorMeta.getTargetStep()!=null && stepErrorMeta.getTargetStep().equals(transHopMeta.getToStep())) {
+        StepMeta stepMeta = transHopMeta.getFromStep();
+        // Only if the target step is where the error handling is going to...
+        //
+  
+        StepMeta before = (StepMeta)stepMeta.clone();
+        stepErrorMeta.setEnabled(false);
+  
+        index = transMeta.indexOfStep(stepMeta);
+        addUndoChange(transMeta, new Object[] { before }, new Object[]{ stepMeta}, new int[] { index });
+      }
     }
     
     refreshTree();
