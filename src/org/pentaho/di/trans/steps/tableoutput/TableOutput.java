@@ -558,22 +558,25 @@ public class TableOutput extends BaseStep implements StepInterface
           //
           data.releaseSavepoint = dbInterface.releaseSavepoint();
   
-
           // Disable batch mode in case 
           // - we use an unlimited commit size
-          // - in case we're doing error handling when batch updates don't support this
           // - if we need to pick up auto-generated keys
           // - if you are running the transformation as a single database transaction (unique connections)
           // - if we are reverting to save-points
           //
           data.batchMode = meta.useBatchUpdate() && 
                             data.commitSize > 0 && 
-                            (!getStepMeta().isDoingErrorHandling() || dbInterface.supportsErrorHandlingOnBatchUpdates()) &&
                             !meta.isReturningGeneratedKeys() &&
                             !getTransMeta().isUsingUniqueConnections() &&
                             !data.useSafePoints
                             ;
-  
+
+          // Per PDI-6211 : give a warning that batch mode operation in combination with step error handling can lead to incorrectly processed rows.
+          //
+          if (getStepMeta().isDoingErrorHandling() && !dbInterface.supportsErrorHandlingOnBatchUpdates()) {
+            log.logMinimal(BaseMessages.getString(PKG, "TableOutput.Warning.ErrorHandlingIsNotFullySupportedWithBatchProcessing"));
+          }
+                            
           if (meta.getDatabaseMeta() == null) {
             throw new KettleException(BaseMessages.getString(PKG, "TableOutput.Exception.DatabaseNeedsToBeSelected"));
           }

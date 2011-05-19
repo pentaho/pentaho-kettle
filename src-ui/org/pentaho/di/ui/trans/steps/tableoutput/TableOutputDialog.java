@@ -1170,20 +1170,15 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
     }
 	
     public void setFlags()
-    {
-    	DatabaseMeta databaseMeta = transMeta.findDatabase(wConnection.getText());
-    	boolean supportsBatchErrorHandling = databaseMeta!=null && databaseMeta.supportsErrorHandlingOnBatchUpdates();
-    	
-    	boolean hasErrorHandling = transMeta.findStep(stepname).isDoingErrorHandling();
-  
+    {  
     	// Do we want to return keys?
     	boolean returnKeys        = wReturnKeys.getSelection();
     	
       // Can't use batch yet when grabbing auto-generated keys or sometimes when we use error handling 
-      boolean useBatch          = wBatch.getSelection() && !transMeta.isUsingUniqueConnections() && !returnKeys && ( !hasErrorHandling || supportsBatchErrorHandling );
+      boolean useBatch          = wBatch.getSelection() && !transMeta.isUsingUniqueConnections() && !returnKeys;
 
       // Only enable batch option when not returning keys.
-      boolean enableBatch       = !returnKeys && !transMeta.isUsingUniqueConnections() && ( !hasErrorHandling || supportsBatchErrorHandling );
+      boolean enableBatch       = !returnKeys && !transMeta.isUsingUniqueConnections();
     	
     	// Can't ignore errors when using batch inserts.
         boolean useIgnore          = !useBatch; 
@@ -1346,6 +1341,20 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 			mb.open();
 			return;
 		}
+		
+		// PDI-6211 : Show a warning in case batch processing is not truly supported in combination
+		// with error handling...
+		// Show it *every* time the user OK's the dialog.
+		//
+    DatabaseMeta databaseMeta = input.getDatabaseMeta();
+    boolean supportsBatchErrorHandling = databaseMeta!=null && databaseMeta.supportsErrorHandlingOnBatchUpdates();
+    boolean hasErrorHandling = stepMeta.isDoingErrorHandling();
+    if (!supportsBatchErrorHandling && hasErrorHandling) {
+      MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
+      mb.setMessage(BaseMessages.getString(PKG, "TableOutput.Warning.ErrorHandlingIsNotFullySupportedWithBatchProcessing"));
+      mb.setText(BaseMessages.getString(PKG, "TableOutput.Warning"));
+      mb.open();
+    }
 		
 		dispose();
 	}
