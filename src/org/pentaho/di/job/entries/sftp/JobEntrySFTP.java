@@ -533,7 +533,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
         String realServerName      = environmentSubstitute(serverName);
         String realServerPort      = environmentSubstitute(serverPort);
         String realUsername        = environmentSubstitute(userName);
-        String realPassword        = environmentSubstitute(password);
+        String realPassword        = Encr.decryptPasswordOptionallyEncrypted(environmentSubstitute(password));
         String realSftpDirString   = environmentSubstitute(sftpDirectory);
         String realWildcard        = environmentSubstitute(wildcard);
         String realTargetDirectory = environmentSubstitute(targetDirectory);
