@@ -469,7 +469,7 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
   public Long getNextBatchIdUsingLockTables(DatabaseMeta dbm, Database ldb, String schemaName, String tableName, String fieldName) throws KettleDatabaseException {
     Long rtn = null;
     // Make sure we lock that table to avoid concurrency issues
-    ldb.lockTables(new String[] { tableName, });
+    ldb.lockTables(new String[] { dbm.getQuotedSchemaTableCombination(schemaName, tableName), });
     try {
       rtn = ldb.getNextValue(null, schemaName, tableName, fieldName);
     } finally {
