@@ -18,6 +18,7 @@ import java.util.Map;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -52,6 +53,10 @@ public class MongoDbInputMeta extends BaseStepMeta implements StepMetaInterface
   private String dbName;
   private String collection;
   private String jsonFieldName;
+  
+  private String authenticationUser;
+  private String authenticationPassword;
+
 
 	public MongoDbInputMeta()
 	{
@@ -113,6 +118,8 @@ public class MongoDbInputMeta extends BaseStepMeta implements StepMetaInterface
     retval.append("    ").append(XMLHandler.addTagValue("db_name", dbName)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("    ").append(XMLHandler.addTagValue("collection", collection)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("    ").append(XMLHandler.addTagValue("json_field_name", jsonFieldName)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("    ").append(XMLHandler.addTagValue("auth_user", authenticationUser));
+    retval.append("    ").append(XMLHandler.addTagValue("auth_password", Encr.encryptPasswordIfNotUsingVariables(authenticationPassword)));
 
 		return retval.toString();
 	}
@@ -128,6 +135,8 @@ public class MongoDbInputMeta extends BaseStepMeta implements StepMetaInterface
       collection    = rep.getStepAttributeString (id_step, "collection"); //$NON-NLS-1$
       jsonFieldName = rep.getStepAttributeString (id_step, "json_field_name"); //$NON-NLS-1$
 			
+      authenticationUser = rep.getStepAttributeString(id_step, "auth_user");
+      authenticationPassword = Encr.decryptPasswordOptionallyEncrypted(rep.getStepAttributeString(id_step, "auth_password"));
 		}
 		catch(Exception e)
 		{
@@ -145,6 +154,9 @@ public class MongoDbInputMeta extends BaseStepMeta implements StepMetaInterface
       rep.saveStepAttribute(id_transformation, id_step, "db_name", dbName); //$NON-NLS-1$
       rep.saveStepAttribute(id_transformation, id_step, "collection", collection); //$NON-NLS-1$
       rep.saveStepAttribute(id_transformation, id_step, "json_field_name", jsonFieldName); //$NON-NLS-1$
+
+      rep.saveStepAttribute(id_transformation, id_step, "auth_user", authenticationUser);
+      rep.saveStepAttribute(id_transformation, id_step, "auth_password", Encr.encryptPasswordIfNotUsingVariables(authenticationPassword));
 		}
 		catch(KettleException e)
 		{
@@ -235,5 +247,33 @@ public class MongoDbInputMeta extends BaseStepMeta implements StepMetaInterface
    */
   public void setJsonFieldName(String jsonFieldName) {
     this.jsonFieldName = jsonFieldName;
+  }
+
+  /**
+   * @return the authenticationUser
+   */
+  public String getAuthenticationUser() {
+    return authenticationUser;
+  }
+
+  /**
+   * @param authenticationUser the authenticationUser to set
+   */
+  public void setAuthenticationUser(String authenticationUser) {
+    this.authenticationUser = authenticationUser;
+  }
+
+  /**
+   * @return the authenticationPassword
+   */
+  public String getAuthenticationPassword() {
+    return authenticationPassword;
+  }
+
+  /**
+   * @param authenticationPassword the authenticationPassword to set
+   */
+  public void setAuthenticationPassword(String authenticationPassword) {
+    this.authenticationPassword = authenticationPassword;
   }
 }

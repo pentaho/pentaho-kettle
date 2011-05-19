@@ -61,7 +61,9 @@ public class MongoDbInputDialog extends BaseStepDialog implements StepDialogInte
   private TextVar      wCollection;
   private TextVar      wJsonField;
 	
-	
+  private TextVar wAuthUser;
+  private TextVar wAuthPass;
+
 	private MongoDbInputMeta input;
 
 	public MongoDbInputDialog(Shell parent,  Object in, TransMeta tr, String sname)
@@ -218,6 +220,51 @@ public class MongoDbInputDialog extends BaseStepDialog implements StepDialogInte
     wJsonField.setLayoutData(fdJsonField);
     lastControl = wJsonField;
 
+    // Authentication...
+    //
+    // AuthUser line
+    Label wlAuthUser = new Label(shell, SWT.RIGHT);
+    wlAuthUser.setText(BaseMessages.getString(PKG, "MongoDbInputDialog.AuthenticationUser.Label"));
+    props.setLook(wlAuthUser);
+    FormData fdlAuthUser = new FormData();
+    fdlAuthUser.left = new FormAttachment(0, -margin);
+    fdlAuthUser.top = new FormAttachment(lastControl, margin);
+    fdlAuthUser.right = new FormAttachment(middle, -margin);
+    wlAuthUser.setLayoutData(fdlAuthUser);
+
+    wAuthUser = new TextVar(transMeta, shell, SWT.BORDER | SWT.READ_ONLY);
+    wAuthUser.setEditable(true);
+    props.setLook(wAuthUser);
+    wAuthUser.addModifyListener(lsMod);
+    FormData fdAuthUser = new FormData();
+    fdAuthUser.left = new FormAttachment(middle, 0);
+    fdAuthUser.top = new FormAttachment(lastControl, margin);
+    fdAuthUser.right = new FormAttachment(100, 0);
+    wAuthUser.setLayoutData(fdAuthUser);
+    lastControl = wAuthUser;
+
+    // AuthPass line
+    Label wlAuthPass = new Label(shell, SWT.RIGHT);
+    wlAuthPass.setText(BaseMessages.getString(PKG, "MongoDbInputDialog.AuthenticationPassword.Label"));
+    props.setLook(wlAuthPass);
+    FormData fdlAuthPass = new FormData();
+    fdlAuthPass.left = new FormAttachment(0, -margin);
+    fdlAuthPass.top = new FormAttachment(lastControl, margin);
+    fdlAuthPass.right = new FormAttachment(middle, -margin);
+    wlAuthPass.setLayoutData(fdlAuthPass);
+        
+    wAuthPass = new TextVar(transMeta, shell, SWT.BORDER | SWT.READ_ONLY);
+    wAuthPass.setEditable(true);
+    wAuthPass.setEchoChar('*');
+    props.setLook(wAuthPass);
+    wAuthPass.addModifyListener(lsMod);
+    FormData fdAuthPass = new FormData();
+    fdAuthPass.left = new FormAttachment(middle, 0);
+    fdAuthPass.top = new FormAttachment(wAuthUser, margin);
+    fdAuthPass.right = new FormAttachment(100, 0);
+    wAuthPass.setLayoutData(fdAuthPass);
+    lastControl = wAuthPass;
+    
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
@@ -272,7 +319,10 @@ public class MongoDbInputDialog extends BaseStepDialog implements StepDialogInte
     wCollection.setText(Const.NVL(input.getCollection(), "")); //$NON-NLS-1$
     wJsonField.setText(Const.NVL(input.getJsonFieldName(), "")); //$NON-NLS-1$
     
-		wStepname.selectAll();
+    wAuthUser.setText(Const.NVL(input.getAuthenticationUser(), "")); // $NON-NLS-1$
+    wAuthPass.setText(Const.NVL(input.getAuthenticationPassword(), "")); // $NON-NLS-1$
+
+    wStepname.selectAll();
 	}
 	
 	private void cancel()
@@ -289,6 +339,9 @@ public class MongoDbInputDialog extends BaseStepDialog implements StepDialogInte
     meta.setDbName(wDbName.getText());
     meta.setCollection(wCollection.getText());
     meta.setJsonFieldName(wJsonField.getText());
+    
+    meta.setAuthenticationUser(wAuthUser.getText());
+    meta.setAuthenticationPassword(wAuthPass.getText());
   }
 
 	private void ok()

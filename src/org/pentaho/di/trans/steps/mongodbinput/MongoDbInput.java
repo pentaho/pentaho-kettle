@@ -20,6 +20,7 @@
 package org.pentaho.di.trans.steps.mongodbinput;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
@@ -92,6 +93,15 @@ public class MongoDbInput extends BaseStep implements StepInterface
   
         data.mongo = new Mongo(hostname, port);
         data.db = data.mongo.getDB(db);
+        
+        String realUser = environmentSubstitute(meta.getAuthenticationUser());
+        String realPass = Encr.decryptPasswordOptionallyEncrypted(environmentSubstitute(meta.getAuthenticationPassword()));
+        
+        if (!Const.isEmpty(realUser) || !Const.isEmpty(realPass)) {
+          if (!data.db.authenticate(realUser, realPass.toCharArray())) {
+            throw new KettleException(BaseMessages.getString(PKG, "MongoDbInput.ErrorAuthenticating.Exception"));
+          }
+        }
         data.collection = data.db.getCollection(collection);
   
         return true;
