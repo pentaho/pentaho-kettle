@@ -1527,16 +1527,23 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
         return ids;
     }
 
+    private String[] getQuotedSchemaTablenames(String[] tables) {
+      String quoted[] = new String[tables.length];
+      for (int i=0;i<quoted.length;i++) {
+        quoted[i] = database.getDatabaseMeta().getQuotedSchemaTableCombination(null, tables[i]); 
+      }
+      return quoted;
+    }
 
     public synchronized void lockRepository() throws KettleException
     {
         if (database.getDatabaseMeta().needsToLockAllTables())
         {
-            database.lockTables(KettleDatabaseRepository.repositoryTableNames);
+            database.lockTables(getQuotedSchemaTablenames(KettleDatabaseRepository.repositoryTableNames));
         }
         else
         {
-            database.lockTables( new String[] { KettleDatabaseRepository.TABLE_R_REPOSITORY_LOG, } );
+            database.lockTables( getQuotedSchemaTablenames( new String[] { KettleDatabaseRepository.TABLE_R_REPOSITORY_LOG, }  ));
         }
     }
     

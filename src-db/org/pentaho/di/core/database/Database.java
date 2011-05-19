@@ -4342,25 +4342,20 @@ public class Database implements VariableSpace, LoggingObjectInterface
 
     /**
      * Lock a tables in the database for write operations
-     * @param tableNames The tables to lock
+     * @param tableNames The tables to lock.  These need to be the appropriately quoted fully qualified (schema+table) names.
      * @throws KettleDatabaseException
      */
     public void lockTables(String tableNames[]) throws KettleDatabaseException
     {
     	if (Const.isEmpty(tableNames)) return;
     	
-    	// Quote table names too...
-    	//
-    	String[] quotedTableNames = new String[tableNames.length];
-    	for (int i=0;i<tableNames.length;i++) quotedTableNames[i] = databaseMeta.getQuotedSchemaTableCombination(null, tableNames[i]);
-    	
     	// Get the SQL to lock the (quoted) tables
     	//
-        String sql = databaseMeta.getSQLLockTables(quotedTableNames);
-        if (sql!=null)
-        {
-            execStatements(sql);
-        }
+      String sql = databaseMeta.getSQLLockTables(tableNames);
+      if (sql!=null)
+      {
+        execStatements(sql);
+      }
     }
 	
     /**
