@@ -689,6 +689,13 @@ public class DimensionLookup extends BaseStep implements StepInterface
 
     // Then the technical key...
     //
+    if (data.returnRowMeta.getValueMeta(0).isBigNumber() && returnRow[0] instanceof Long) {
+       if (log.isDebug()){ 
+          log.logDebug("Changing the type of the technical key from TYPE_BIGNUMBER to an TYPE_INTEGER");
+       }
+       data.returnRowMeta.getValueMeta(0).setType(ValueMetaInterface.TYPE_INTEGER);
+    }
+    
     outputRow[outputIndex++] = data.returnRowMeta.getInteger(returnRow, inputIndex++);
 
     // skip the version in the input
