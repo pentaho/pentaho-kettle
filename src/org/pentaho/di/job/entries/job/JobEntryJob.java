@@ -623,6 +623,20 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             }
           }
         }
+        if (paramsFromPrevious) {
+          String[] parentParameters = parentJob.listParameters();
+          for (int idx = 0; idx < parentParameters.length; idx++) {
+            String par = parentParameters[idx];
+            String def = parentJob.getParameterDefault(par);
+            String val = parentJob.getParameterValue(par);
+            if (Const.indexOfString(par, namedParam.listParameters())<0) {
+              namedParam.addParameterDefinition(par, def, "Copied");
+              namedParam.setParameterValue(par, val);
+            } else {
+              namedParam.setParameterValue(par, val);
+            }
+          }
+        }
 
         Result oneResult = new Result();
 
@@ -812,11 +826,11 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
           jobExecutionConfiguration.setRepository(rep);
           jobExecutionConfiguration.setLogLevel(jobLogLevel);
           jobExecutionConfiguration.setPassingExport(passingExport);
-
-          Map<String, String> params = jobExecutionConfiguration.getParams();
-          for (String param : jobMeta.listParameters()) {
-              String value = Const.NVL(jobMeta.getParameterValue(param), Const.NVL(jobMeta.getParameterDefault(param), jobMeta.getVariable(param)));
-              params.put(param, value);
+          
+          for (String param : namedParam.listParameters()) {
+            String defValue = namedParam.getParameterDefault(param);
+            String value = namedParam.getParameterValue(param);
+            jobExecutionConfiguration.getParams().put(param, Const.NVL(value,defValue));
           }
           
           // Send the XML over to the slave server

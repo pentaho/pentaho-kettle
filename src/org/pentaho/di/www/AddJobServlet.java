@@ -92,14 +92,6 @@ public class AddJobServlet extends BaseHttpServlet implements CarteServletInterf
       jobMeta.setArguments(jobExecutionConfiguration.getArgumentStrings());
       jobMeta.injectVariables(jobExecutionConfiguration.getVariables());
 
-      // Also copy the parameters over...
-      //
-      Map<String, String> params = jobExecutionConfiguration.getParams();
-      for (String param : params.keySet()) {
-        String value = params.get(param);
-        jobMeta.setParameterValue(param, value);
-      }
-
       // If there was a repository, we know about it at this point in time.
       //
       final Repository repository = jobConfiguration.getJobExecutionConfiguration().getRepository();
@@ -112,16 +104,33 @@ public class AddJobServlet extends BaseHttpServlet implements CarteServletInterf
       // Create the transformation and store in the list...
       //
       final Job job = new Job(repository, jobMeta, servletLoggingObject);
-
-      job.setSocketRepository(getSocketRepository());
       
-      getJobMap().addJob(job.getJobname(), carteObjectId, job, jobConfiguration);
-
       // Setting variables
       //
       job.initializeVariablesFrom(null);
       job.getJobMeta().setInternalKettleVariables(job);
       job.injectVariables(jobConfiguration.getJobExecutionConfiguration().getVariables());
+      
+      // Also copy the parameters over...
+      //
+      job.copyParametersFrom(jobMeta);
+      job.clearParameters();
+      String[] parameterNames = job.listParameters();
+      for (int idx = 0; idx < parameterNames.length; idx++) {
+        // Grab the parameter value set in the job entry
+        //
+        String thisValue = jobExecutionConfiguration.getParams().get(parameterNames[idx]);
+        if (!Const.isEmpty(thisValue)) {
+          // Set the value as specified by the user in the job entry
+          //
+          jobMeta.setParameterValue(parameterNames[idx], thisValue);
+        }      
+      }
+      jobMeta.activateParameters();
+
+      job.setSocketRepository(getSocketRepository());
+      
+      getJobMap().addJob(job.getJobname(), carteObjectId, job, jobConfiguration);
 
       // Make sure to disconnect from the repository when the job finishes.
       // 
