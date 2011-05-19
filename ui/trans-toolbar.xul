@@ -129,10 +129,6 @@
 
   <menupopup id="trans-graph-background">
     <menuitem id="trans-graph-background-new-note" label="${TransGraph.PopupMenu.NewNote}" command="transgraph.newNote()" />
-    <menu id="trans-graph-background-new-step" label="${TransGraph.PopupMenu.NewStep}">
-      <menupopup>
-      </menupopup>
-    </menu>
 
     <menuitem id="trans-graph-background-paste" label="${TransGraph.PopupMenu.PasteStepFromClipboard}" command="transgraph.paste()" />
     <menuseparator />
