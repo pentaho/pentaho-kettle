@@ -1020,7 +1020,10 @@ public class ValueMeta implements ValueMetaInterface
         // This obviously only applies to numeric data and dates.
         // We verify if this is true or false in advance for performance reasons
         //
-    	if (binary==null || binary.length==0) return null;
+    	//if (binary==null || binary.length==0) return null;
+      if (binary==null || binary.length==0) {
+        return (EMPTY_STRING_AND_NULL_ARE_DIFFERENT && binary != null) ? "" : null;
+      }
     	
     	String encoding;
     	if (identicalFormat) encoding = getStringEncoding();
