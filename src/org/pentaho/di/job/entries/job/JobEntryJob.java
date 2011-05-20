@@ -598,15 +598,39 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         }
         
         NamedParams namedParam = new NamedParamsDefault();
+
+        // First (optionally) copy all the parameter values from the parent job
+        //
+        if (paramsFromPrevious) {
+          String[] parentParameters = parentJob.listParameters();
+          for (int idx = 0; idx < parentParameters.length; idx++) {
+            String par = parentParameters[idx];
+            String def = parentJob.getParameterDefault(par);
+            String val = parentJob.getParameterValue(par);
+            String des = parentJob.getParameterDescription(par);
+
+            namedParam.addParameterDefinition(par, def, des);
+            namedParam.setParameterValue(par, val);
+          }
+        }
+
+        // Now add those parameter values specified by the user in the job entry
+        //
         if (parameters != null) {
           for (int idx = 0; idx < parameters.length; idx++) {
             if (!Const.isEmpty(parameters[idx])) {
 
-              // We have a parameter
-              try {
-                namedParam.addParameterDefinition(parameters[idx], "", "Job entry runtime");
-              } catch (DuplicateParamException e) {
-                logError("Duplicate parameter definition for " + parameters[idx]);
+              // If it's not yet present in the parent job, add it...
+              //
+              if (Const.indexOfString(parameters[idx], namedParam.listParameters())<0) {
+                // We have a parameter
+                try {
+                  namedParam.addParameterDefinition(parameters[idx], "", "Job entry runtime");
+                } catch (DuplicateParamException e) {
+                  // Should never happen
+                  //
+                  logError("Duplicate parameter definition for " + parameters[idx]);
+                }
               }
 
               if (Const.isEmpty(Const.trim(parameterFieldNames[idx]))) {
@@ -620,20 +644,6 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 }
                 namedParam.setParameterValue(parameters[idx], value);
               }
-            }
-          }
-        }
-        if (paramsFromPrevious) {
-          String[] parentParameters = parentJob.listParameters();
-          for (int idx = 0; idx < parentParameters.length; idx++) {
-            String par = parentParameters[idx];
-            String def = parentJob.getParameterDefault(par);
-            String val = parentJob.getParameterValue(par);
-            if (Const.indexOfString(par, namedParam.listParameters())<0) {
-              namedParam.addParameterDefinition(par, def, "Copied");
-              namedParam.setParameterValue(par, val);
-            } else {
-              namedParam.setParameterValue(par, val);
             }
           }
         }
