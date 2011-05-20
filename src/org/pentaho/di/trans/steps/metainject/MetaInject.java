@@ -56,15 +56,13 @@ public class MetaInject extends BaseStep implements StepInterface {
     meta = (MetaInjectMeta) smi;
     data = (MetaInjectData) sdi;
 
-    
-    
     // Read the data from all input steps and keep it in memory...
     //
     data.rowMap = new HashMap<String, List<RowMetaAndData>>();
     for (String prevStepName : getTransMeta().getPrevStepNames(getStepMeta())) {
       List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();
       RowSet rowSet = findInputRowSet(prevStepName);
-      Object[] row = rowSet.getRow();
+      Object[] row = getRowFrom(rowSet);
       while (row!=null) {
         RowMetaAndData rd = new RowMetaAndData();
         rd.setRowMeta(rowSet.getRowMeta());
@@ -80,7 +78,7 @@ public class MetaInject extends BaseStep implements StepInterface {
     
     for (String targetStep : data.stepInjectionMap.keySet()) {
       
-      System.out.println("Handing step "+targetStep+" injection!");
+      System.out.println("Handing step '"+targetStep+"' injection!");
       
       // This is the injection interface:
       //
