@@ -1417,5 +1417,12 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SingleThreader</tooltip>
 		<iconfile>ui/images/MAP.png</iconfile>
 	</step>
+	<step id="XMLInputStream">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.XMLInputStreamStAX</description>
+		<classname>org.pentaho.di.trans.steps.xmlinputstream.XMLInputStreamMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.XMLInputStreamStAX</tooltip>
+		<iconfile>ui/images/xml_input_stream.png</iconfile>
+	</step> 	
 
 </steps>
