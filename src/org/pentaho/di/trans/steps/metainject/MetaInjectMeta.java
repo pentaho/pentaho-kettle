@@ -359,4 +359,18 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface
   public boolean excludeFromRowLayoutVerification() {
     return true;
   }
+
+  /**
+   * @return the sourceStepName
+   */
+  public String getSourceStepName() {
+    return sourceStepName;
+  }
+
+  /**
+   * @param sourceStepName the sourceStepName to set
+   */
+  public void setSourceStepName(String sourceStepName) {
+    this.sourceStepName = sourceStepName;
+  }
 }

@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.apache.commons.vfs.FileObject;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -81,7 +82,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
 public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterface {
-  private static final String STRING_TREE_NAME = "META_INJECT_TREE";
+  //  private static final String STRING_TREE_NAME = "META_INJECT_TREE";
 
   private static Class<?> PKG = MetaInjectMeta.class; // for i18n purposes, needed by Translator2!!
 
@@ -106,7 +107,7 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
   private Button                            radioByReference;
   private Button                            wbByReference;
   private TextVar                           wByReference;
-
+  
   // Edit the mapping transformation in Spoon
   //
   private Button                            wEditTrans;
@@ -124,6 +125,9 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
   private ObjectId                          referenceObjectId;
   private ObjectLocationSpecificationMethod specificationMethod;
   
+  // the source step
+  //
+  private CCombo wSourceStep;
   
   // The tree object to show the options...
   //
@@ -384,6 +388,23 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     fdTransGroup.right = new FormAttachment(100, 0);
     // fdTransGroup.bottom = new FormAttachment(wStepname, 350);
     gTransGroup.setLayoutData(fdTransGroup);
+    
+    Label wlSourceStep = new Label(shell, SWT.LEFT);
+    wlSourceStep.setText(BaseMessages.getString(PKG, "MetaInjectDialog.SourceStep.Label")); //$NON-NLS-1$
+    props.setLook(wlSourceStep);
+    FormData fdlSourceStep = new FormData();
+    fdlSourceStep.left = new FormAttachment(0, 0);
+    fdlSourceStep.top = new FormAttachment(gTransGroup, 2*margin);
+    wlSourceStep.setLayoutData(fdlSourceStep);
+    wSourceStep = new CCombo(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+    wSourceStep.setText(stepname);
+    props.setLook(wSourceStep);
+    wSourceStep.addModifyListener(lsMod);
+    FormData fdSourceStep = new FormData();
+    fdSourceStep.left = new FormAttachment(wlSourceStep, 2*margin);
+    fdSourceStep.top = new FormAttachment(gTransGroup, margin);
+    fdSourceStep.right = new FormAttachment(100, 0);
+    wSourceStep.setLayoutData(fdSourceStep);
 
     // Some buttons
     wOK = new Button(shell, SWT.PUSH);
@@ -621,8 +642,11 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
       }
       break;
     }
+    
+    wSourceStep.setText(Const.NVL(metaInjectMeta.getSourceStepName(), ""));
+    
     setRadioButtons();
-
+    
     refreshTree();
   }
 
@@ -632,7 +656,7 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     FormData fdTree = new FormData();
     fdTree.left = new FormAttachment(0,0);
     fdTree.right = new FormAttachment(100,0);
-    fdTree.top = new FormAttachment(gTransGroup, 2*margin);
+    fdTree.top = new FormAttachment(wSourceStep, 2*margin);
     fdTree.bottom = new FormAttachment(wOK, -2*margin);
     wTree.setLayoutData(fdTree);
     
@@ -787,6 +811,12 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     for (TreeItem item : wTree.getItems()) {
       expandItemAndChildren(item);
     }
+    
+    // Also set the source step combo values
+    //
+    String[] sourceSteps = injectTransMeta.getStepNames();
+    Arrays.sort(sourceSteps);
+    wSourceStep.setItems(sourceSteps);
   }
 
   private void expandItemAndChildren(TreeItem item) {
@@ -837,6 +867,8 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
       metaInjectMeta.setTransObjectId(referenceObjectId);
       break;
     }
+    
+    metaInjectMeta.setSourceStepName(wSourceStep.getText());
     
     metaInjectMeta.setTargetSourceMapping(targetSourceMapping);
     metaInjectMeta.setChanged(true);

@@ -16,17 +16,21 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransStoppedListener;
 import org.pentaho.di.trans.step.BaseStep;
+import org.pentaho.di.trans.step.RowAdapter;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInjectionMetaEntry;
 import org.pentaho.di.trans.step.StepInterface;
@@ -78,7 +82,7 @@ public class MetaInject extends BaseStep implements StepInterface {
     
     for (String targetStep : data.stepInjectionMap.keySet()) {
       
-      System.out.println("Handing step '"+targetStep+"' injection!");
+      if (log.isDetailed()) logDetailed("Handing step '"+targetStep+"' injection!");
       
       // This is the injection interface:
       //
@@ -160,22 +164,22 @@ public class MetaInject extends BaseStep implements StepInterface {
                       if (detailSource!=null) {
                         setEntryValue(rowEntry, row, detailSource);
                       } else {
-                        System.out.println("No detail source found for key: "+rowEntry.getKey()+" and target step: "+targetStep);
+                        if (log.isDetailed()) logDetailed("No detail source found for key: "+rowEntry.getKey()+" and target step: "+targetStep);
                       }
                     }
                   } catch(Exception e) {
-                    e.printStackTrace();
+                    throw new KettleException("Unexpected error occurred while injecting metadata", e);
                   }
                 }
                 
-                System.out.println("injected entry: "+entry);
+                if (log.isDetailed()) logDetailed("injected entry: "+entry);
               }
               // End of TopLevel/Detail if block
             } else {
-              System.out.println("entry not found: "+target.getAttributeKey());
+              if (log.isDetailed()) logDetailed("entry not found: "+target.getAttributeKey());
             }
           } else {
-            System.out.println("No rows found for source step: "+source.getStepname());
+            if (log.isDetailed()) logDetailed("No rows found for source step: "+source.getStepname());
           }
         }
       }
@@ -185,7 +189,7 @@ public class MetaInject extends BaseStep implements StepInterface {
       injectionInterface.injectStepMetadataEntries(inject);
     }
     
-    System.out.println(data.transMeta.getXML());
+    if (log.isDetailed()) logDetailed("XML of transformation after injection: "+data.transMeta.getXML());
     
     // Now we can execute this modified transformation metadata.
     //
@@ -195,8 +199,24 @@ public class MetaInject extends BaseStep implements StepInterface {
         injectTrans.stopAll();
       }
     });
-    injectTrans.execute(null);
+    injectTrans.prepareExecution(null);
     
+    if (!Const.isEmpty(meta.getSourceStepName())) {
+      StepInterface stepInterface = injectTrans.getStepInterface(meta.getSourceStepName(), 0);
+      if (stepInterface==null) {
+        throw new KettleException("Unable to find step '"+meta.getSourceStepName()+"' to read from.");
+      }
+      stepInterface.addRowListener(new RowAdapter() {
+        @Override
+        public void rowWrittenEvent(RowMetaInterface rowMeta, Object[] row) throws KettleStepException {
+          // Just pass along the data as output of this step...
+          //
+          MetaInject.this.putRow(rowMeta, row);
+        }
+      });
+    }
+    
+    injectTrans.startThreads();
     while (!injectTrans.isFinished() && !injectTrans.isStopped()) {
       copyResult(injectTrans);
       
