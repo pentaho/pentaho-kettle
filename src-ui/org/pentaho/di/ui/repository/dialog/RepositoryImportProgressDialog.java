@@ -250,4 +250,8 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
 
   public void worked(int nrWorks) {
   }
+  
+  public boolean isAskingOverwriteConfirmation() {
+    return askOverwrite;
+  }
 }
