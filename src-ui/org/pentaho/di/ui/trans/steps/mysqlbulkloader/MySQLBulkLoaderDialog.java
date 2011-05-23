@@ -99,6 +99,10 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 	private Button				wIgnore;
 	private FormData			fdlIgnore, fdIgnore;
 
+  private Label                wlLocal;
+  private Button               wLocal;
+  private FormData             fdlLocal, fdLocal;
+
 	private Label				wlDelimiter;
 	private Button       		wbDelimiter;
 	private TextVar				wDelimiter;
@@ -141,12 +145,7 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 	 * List of ColumnInfo that should have the field names of the selected database table
 	 */
 	private List<ColumnInfo> tableFieldColumns = new ArrayList<ColumnInfo>();
-	
-	/*
-    private static final String[] ALL_FILETYPES = new String[] {
-        	BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.Filetype.All") };
-	*
-	*/
+
 
 	public MySQLBulkLoaderDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
@@ -410,7 +409,7 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 			}
 		});
 		
-        // Ignore line...
+    // Ignore line...
 		wlIgnore = new Label(shell, SWT.RIGHT);
 		wlIgnore.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.Ignore.Label")); //$NON-NLS-1$
 		props.setLook(wlIgnore);
@@ -434,6 +433,25 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 			}
 		});
 
+    // Local line...
+    wlLocal = new Label(shell, SWT.RIGHT);
+    wlLocal.setText(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.Local.Label")); //$NON-NLS-1$
+    props.setLook(wlLocal);
+    fdlLocal = new FormData();
+    fdlLocal.left = new FormAttachment(0, 0);
+    fdlLocal.right = new FormAttachment(middle, -margin);
+    fdlLocal.top = new FormAttachment(wIgnore, margin * 2);
+    wlLocal.setLayoutData(fdlLocal);
+
+    wLocal = new Button(shell, SWT.CHECK | SWT.LEFT );
+    props.setLook(wLocal);
+    fdLocal = new FormData();
+    fdLocal.left = new FormAttachment(middle, 0);
+    fdLocal.top = new FormAttachment(wIgnore, margin * 2);
+    fdLocal.right = new FormAttachment(100, 0);
+    wLocal.setLayoutData(fdLocal);
+
+
         
 		// THE BUTTONS
 		wOK = new Button(shell, SWT.PUSH);
@@ -451,7 +469,7 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
  		props.setLook(wlReturn);
 		fdlReturn = new FormData();
 		fdlReturn.left = new FormAttachment(0, 0);
-		fdlReturn.top = new FormAttachment(wIgnore, margin);
+		fdlReturn.top = new FormAttachment(wLocal, margin);
 		wlReturn.setLayoutData(fdlReturn);
 
 		int UpInsCols = 3;
@@ -723,6 +741,7 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 		wCharSet.setText(Const.NVL(input.getEncoding(), ""));   //$NON-NLS-1$
 		wReplace.setSelection(input.isReplacingData());
 		wIgnore.setSelection(input.isIgnoringErrors());
+		wLocal.setSelection(input.isLocalFile());
 		wBulkSize.setText(Const.NVL(input.getBulkSize(), ""));
 
 		if (input.getFieldTable() != null) {
@@ -790,6 +809,7 @@ public class MySQLBulkLoaderDialog extends BaseStepDialog implements StepDialogI
 		inf.setEncoding( wCharSet.getText() );
 		inf.setReplacingData( wReplace.getSelection() );
 		inf.setIgnoringErrors( wIgnore.getSelection() );
+		inf.setLocalFile( wLocal.getSelection() );
 		inf.setBulkSize( wBulkSize.getText() );
 
 		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "MySQLBulkLoaderDialog.Log.FoundFields", "" + nrfields)); //$NON-NLS-1$ //$NON-NLS-2$

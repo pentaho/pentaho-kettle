@@ -135,13 +135,13 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
 	private void executeLoadCommand() throws Exception {
 		
         String loadCommand = "";
-        loadCommand += "LOAD DATA INFILE '"+environmentSubstitute(meta.getFifoFileName())+"' ";
-        loadCommand += "INTO TABLE `"+data.schemaTable+"` ";
+        loadCommand += "LOAD DATA "+(meta.isLocalFile()?"LOCAL":"")+" INFILE '"+environmentSubstitute(meta.getFifoFileName())+"' ";
         if (meta.isReplacingData()) {
         	loadCommand += "REPLACE ";
         } else if (meta.isIgnoringErrors()) {
         	loadCommand += "IGNORE ";
         }
+        loadCommand += "INTO TABLE `"+data.schemaTable+"` ";
         if (!Const.isEmpty(meta.getEncoding())) {
         	loadCommand += "CHARACTER SET "+meta.getEncoding()+" ";
         }
@@ -392,6 +392,10 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
 			// finally write a newline
 			//
     		data.fifoStream.write(data.newline);
+    		
+    		if ((getLinesOutput()%5000)==0) {
+    		  data.fifoStream.flush();
+    		}
     	}
     	catch(Exception e)
     	{

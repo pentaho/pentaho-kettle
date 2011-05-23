@@ -110,6 +110,9 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 	/** IGNORE clause flag */
 	private boolean ignoringErrors;
 	
+	/** allows specification of the LOCAL clause */
+	private boolean localFile;
+	
 	/** The delimiter to use */
 	private String delimiter;
 	
@@ -241,6 +244,7 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 			
 			replacingData  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "replace"));         //$NON-NLS-1$
 			ignoringErrors = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "ignore"));         //$NON-NLS-1$
+      localFile      = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "local"));         //$NON-NLS-1$
 
 			int nrvalues = XMLHandler.countNodes(stepnode, "mapping");      //$NON-NLS-1$
 			allocate(nrvalues);
@@ -274,6 +278,7 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
         escapeChar   = "\\";
         replacingData = false;
         ignoringErrors = false;
+        localFile = true;
         bulkSize = null;
         
 		allocate(0);
@@ -292,6 +297,7 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 		retval.append("    ").append(XMLHandler.addTagValue("escape_char",    escapeChar));      //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("replace",        replacingData));      //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("ignore",         ignoringErrors));      //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("    ").append(XMLHandler.addTagValue("local",          localFile));      //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("fifo_file_name", fifoFileName));      //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("bulk_size",      bulkSize));      //$NON-NLS-1$ //$NON-NLS-2$
 
@@ -322,6 +328,7 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 			fifoFileName   =      rep.getStepAttributeString(id_step,  "fifo_file_name");       //$NON-NLS-1$
 			replacingData  =      rep.getStepAttributeBoolean(id_step, "replace");       //$NON-NLS-1$
 			ignoringErrors =      rep.getStepAttributeBoolean(id_step, "ignore");       //$NON-NLS-1$
+      localFile      =      rep.getStepAttributeBoolean(id_step, "local");       //$NON-NLS-1$
 			bulkSize       =      rep.getStepAttributeString(id_step,  "bulk_size");       //$NON-NLS-1$
 			
 			int nrvalues = rep.countNrStepAttributes(id_step, "stream_name");             //$NON-NLS-1$
@@ -357,6 +364,7 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 			rep.saveStepAttribute(id_transformation, id_step, "fifo_file_name",   fifoFileName);      //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "replace",          replacingData);      //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "ignore",           ignoringErrors);      //$NON-NLS-1$
+      rep.saveStepAttribute(id_transformation, id_step, "local",            localFile);      //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "bulk_size",        bulkSize);      //$NON-NLS-1$
 
 			for (int i=0;i<fieldTable.length;i++)
@@ -827,5 +835,19 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
 	public void setBulkSize(String bulkSize) {
 		this.bulkSize = bulkSize;
 	}
+
+  /**
+   * @return the localFile
+   */
+  public boolean isLocalFile() {
+    return localFile;
+  }
+
+  /**
+   * @param localFile the localFile to set
+   */
+  public void setLocalFile(boolean localFile) {
+    this.localFile = localFile;
+  }
 
 }
