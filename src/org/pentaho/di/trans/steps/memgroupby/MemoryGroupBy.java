@@ -62,7 +62,7 @@ public class MemoryGroupBy extends BaseStep implements StepInterface
         data=(MemoryGroupByData)sdi;
         
         Object[] r=getRow();  // get row!
-        if (first || data.newBatch) {
+        if (first) {
 
         	// What is the output looking like?
         	// 
@@ -122,13 +122,11 @@ public class MemoryGroupBy extends BaseStep implements StepInterface
 			
     }
         
-    if (first || data.newBatch) {
+    if (first) {
 			// Only calculate data.aggMeta here, not for every new aggregate.
 			//
 			newAggregate(r, null);
-    }
-			
-		if (first) {
+
 			// for speed: groupMeta+aggMeta
 			//
 			data.groupAggMeta=new RowMeta();
@@ -455,7 +453,14 @@ public class MemoryGroupBy extends BaseStep implements StepInterface
 	}
 
 	 public void batchComplete() throws KettleException {
-	    handleLastOfGroup();
-	    data.newBatch=true;
-	  }
+	   // Empty the hash table
+	   //
+	   handleLastOfGroup();
+	    
+	   // Clear the complete cache...
+	   //
+	   data.map.clear();
+	    
+	   data.newBatch=true;
+	 }
 }
