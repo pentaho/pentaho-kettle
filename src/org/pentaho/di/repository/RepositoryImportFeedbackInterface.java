@@ -15,4 +15,5 @@ public interface RepositoryImportFeedbackInterface {
   public void showError(String title, String message, Exception e);
   public boolean askContinueOnErrorQuestion(String title, String message);
   
+  public boolean isAskingOverwriteConfirmation();
 }
