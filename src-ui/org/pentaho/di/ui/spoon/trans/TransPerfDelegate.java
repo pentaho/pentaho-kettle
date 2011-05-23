@@ -136,7 +136,7 @@ public class TransPerfDelegate extends SpoonDelegate {
 		// Create a composite, slam everything on there like it was in the history tab.
 		//
 		perfComposite = new Composite(transGraph.extraViewTabFolder, SWT.NONE);
-		perfComposite.setBackground(GUIResource.getInstance().getColorRed());
+		perfComposite.setBackground(GUIResource.getInstance().getColorBackground());
 		perfComposite.setLayout(new FormLayout());
 		
         spoon.props.setLook(perfComposite);
