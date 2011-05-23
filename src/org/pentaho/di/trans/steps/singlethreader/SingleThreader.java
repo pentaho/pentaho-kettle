@@ -78,7 +78,7 @@ public class SingleThreader extends BaseStep implements StepInterface
 		data.rowProducer.putRow(getInputRowMeta(), row);
 		data.batchCount++;
 		
-		boolean countWindow = data.batchSize>0 && data.batchCount>data.batchSize;
+		boolean countWindow = data.batchSize>0 && data.batchCount>=data.batchSize;
 		boolean timeWindow = data.batchTime>0 && (System.currentTimeMillis()-data.startTime)>data.batchTime;
 		
 		if (countWindow || timeWindow) {
