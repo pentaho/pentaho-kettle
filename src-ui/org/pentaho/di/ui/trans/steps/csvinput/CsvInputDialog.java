@@ -652,14 +652,16 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
 	
 	public void getData()
 	{
-		getData(inputMeta);
+		getData(inputMeta, true);
 	}
 	/**
 	 * Copy information from the meta-data input to the dialog fields.
 	 */ 
-	public void getData(CsvInputMeta inputMeta)
+	public void getData(CsvInputMeta inputMeta, boolean copyStepname)
 	{
+	  if (copyStepname) {
 		wStepname.setText(stepname);
+	  }
 		if (isReceivingInput) {
 			wFilenameField.setText(Const.NVL(inputMeta.getFilenameField(), ""));
 			wIncludeFilename.setSelection(inputMeta.isIncludingFilename());
@@ -855,7 +857,7 @@ public class CsvInputDialog extends BaseStepDialog implements StepDialogInterfac
                 	wFields.removeAll();
                 	
                     // OK, what's the result of our search?
-                    getData(meta);
+                    getData(meta, false);
                     wFields.removeEmptyRows();
                     wFields.setRowNums();
                     wFields.optWidth(true);
