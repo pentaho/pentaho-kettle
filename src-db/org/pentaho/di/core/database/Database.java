@@ -2585,7 +2585,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
                 length = rm.getPrecision(index);
             }
             else
-            if (databaseMeta.getDatabaseInterface() instanceof OracleDatabaseMeta &&
+            if ( (databaseMeta.getDatabaseInterface() instanceof OracleDatabaseMeta || databaseMeta.isMySQLVariant()) &&
                 ( type==java.sql.Types.VARBINARY || type==java.sql.Types.LONGVARBINARY )
                )
             {
