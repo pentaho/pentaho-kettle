@@ -402,11 +402,15 @@ public class CombinationLookup extends BaseStep implements StepInterface
 		}
 		catch(KettleException e)
 		{
-			logError(BaseMessages.getString(PKG, "CombinationLookup.Log.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
-			setErrors(1);
-			stopAll();
-			setOutputDone();  // signal end to receiver(s)
-			return false;
+		  if (getStepMeta().isDoingErrorHandling()) {
+		    putError(getInputRowMeta(), r, 1L, Const.getStackTracker(e), null, "CBL001");
+		  } else {
+  			logError(BaseMessages.getString(PKG, "CombinationLookup.Log.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
+  			setErrors(1);
+  			stopAll();
+  			setOutputDone();  // signal end to receiver(s)
+  			return false;
+		  }
 		}
 
 		return true;

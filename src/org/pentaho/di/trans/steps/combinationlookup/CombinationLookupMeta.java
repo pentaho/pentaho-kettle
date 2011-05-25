@@ -1143,4 +1143,9 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 	public void setLastUpdateField(String lastUpdateField) {
 		this.lastUpdateField = lastUpdateField;
 	}
+	
+	@Override
+	public boolean supportsErrorHandling() {
+	  return true;
+	}
 }
