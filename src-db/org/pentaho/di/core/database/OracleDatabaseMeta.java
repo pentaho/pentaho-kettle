@@ -256,11 +256,29 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	 */
 	public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
-        ValueMetaInterface tmpColumn = v.clone(); 
-        int threeoh = v.getName().length()>=30 ? 30 : v.getName().length();
+        ValueMetaInterface tmpColumn = v.clone();
+        String tmpName = v.getName();
+        boolean isQuoted = tmpName.startsWith("\"") && tmpName.endsWith("\"");
+        if (isQuoted) {
+          // remove the quotes first.
+          //
+          tmpName = tmpName.substring(1, tmpName.length()-1);
+        }
         
-        tmpColumn.setName(v.getName().substring(0,threeoh)+"_KTL"); // should always be less then 35
+        int threeoh = tmpName.length()>=30 ? 30 : tmpName.length();
+        tmpName = tmpName.substring(0,threeoh);
         
+        tmpName+="_KTL"; // should always be shorter than 35 positions
+        
+        // put the quotes back if needed.
+        //
+        if (isQuoted) {
+          tmpName="\""+tmpName+"\"";
+        }
+        tmpColumn.setName(tmpName);
+
+        // Read to go.
+        //
         String sql="";
         
         // Create a new tmp column
