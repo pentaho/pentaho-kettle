@@ -963,6 +963,12 @@ public class KettleDatabaseRepositoryTransDelegate extends KettleDatabaseReposit
         StepMeta stepMeta = repository.stepDelegate.loadStepMeta(new LongObjectId(id_step_to), new ArrayList<DatabaseMeta>(), new Hashtable<String, Counter>(), new ArrayList<PartitionSchema>());
         hopTransMeta.setToStep(StepMeta.findStep(steps, stepMeta.getName()));
       }
+      
+      if (hopTransMeta.getFromStep()==null || hopTransMeta.getFromStep()==null) {
+        // This not a valid hop.  Skipping it is better than refusing to load the transformation.  PDI-5519 
+        //
+        return null;
+      }
       hopTransMeta.getToStep().setDraw(true);
 
       return hopTransMeta;
