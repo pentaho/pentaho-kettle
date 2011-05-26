@@ -23,6 +23,7 @@ import org.apache.log4j.Appender;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
 import org.apache.log4j.Logger;
 import org.apache.log4j.PatternLayout;
 import org.pentaho.di.core.Const;
@@ -106,6 +107,9 @@ public class LogWriter
         	pentahoLogger.addAppender(consoleAppender);
         }
         
+        // Get rid of the VFS info messages...
+        //
+        LogManager.getLogger("org.apache.commons.vfs").setLevel(Level.WARN);
     }
 
 	/**
