@@ -217,24 +217,38 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to modify a column in the specified table
 	 */
-	public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
-	{
-		String retval="";
+  public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon) {
+    String retval = "";
 
-		ValueMetaInterface tmpColumn = v.clone(); 
-        
-        tmpColumn.setName(v.getName()+"_KTL");
-        
-       // Create a new tmp column
-        retval+=getAddColumnStatement(tablename, tmpColumn, tk, use_autoinc, pk, semicolon)+";"+Const.CR;
-        // copy the old data over to the tmp column
-        retval+="UPDATE "+tablename+" SET "+tmpColumn.getName()+"="+v.getName()+";"+Const.CR;
-        // drop the old column
-        retval+=getDropColumnStatement(tablename, v, tk, use_autoinc, pk, semicolon)+";"+Const.CR;
-        // rename the temp column to replace the removed column
-        retval+="ALTER TABLE "+tablename+" RENAME "+tmpColumn.getName()+" TO "+v.getName()+";"+Const.CR;
-		return retval;
-	}
+    ValueMetaInterface tmpColumn = v.clone();
+
+    String tmpName = v.getName();
+    boolean isQuoted = tmpName.startsWith(getStartQuote()) && tmpName.endsWith(getEndQuote());
+    if (isQuoted) {
+      // remove the quotes first.
+      //
+      tmpName = tmpName.substring(1, tmpName.length() - 1);
+    }
+
+    tmpName += "_KTL";
+
+    // put the quotes back if needed.
+    //
+    if (isQuoted) {
+      tmpName = getStartQuote() + tmpName + getEndQuote();
+    }
+    tmpColumn.setName(tmpName);
+
+    // Create a new tmp column
+    retval += getAddColumnStatement(tablename, tmpColumn, tk, use_autoinc, pk, semicolon) + ";" + Const.CR;
+    // copy the old data over to the tmp column
+    retval += "UPDATE " + tablename + " SET " + tmpColumn.getName() + "=" + v.getName() + ";" + Const.CR;
+    // drop the old column
+    retval += getDropColumnStatement(tablename, v, tk, use_autoinc, pk, semicolon) + ";" + Const.CR;
+    // rename the temp column to replace the removed column
+    retval += "ALTER TABLE " + tablename + " RENAME " + tmpColumn.getName() + " TO " + v.getName() + ";" + Const.CR;
+    return retval;
+  }
 
 	public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
 	{
