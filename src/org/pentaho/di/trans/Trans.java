@@ -1643,7 +1643,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 			String logTable = transLogTable.getActualTableName();
 
 			SimpleDateFormat df = new SimpleDateFormat(REPLAY_DATE_FORMAT);
-			log.logBasic(BaseMessages.getString(PKG, "Trans.Log.TransformationCanBeReplayed") + df.format(currentDate)); //$NON-NLS-1$
+			log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.TransformationCanBeReplayed") + df.format(currentDate)); //$NON-NLS-1$
 
             try
             {
