@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.trans.TransMeta.TransformationType;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
@@ -17,9 +18,11 @@ public class SingleThreadedTransExecutor {
   private int nrDone;
   private List<List<StreamInterface>> stepInfoStreams;
   private List<List<RowSet>> stepInfoRowSets;
+  private LogChannelInterface log;
   
   public SingleThreadedTransExecutor(final Trans trans) {
     this.trans = trans;
+    this.log = trans.getLogChannel();
 
     steps = trans.getSteps();
 
@@ -50,62 +53,194 @@ public class SingleThreadedTransExecutor {
     }
 
   }
-  
+
+  /**
+   * Sort the steps from start to finish...
+   */
   private void sortSteps() {
-    // Sort the steps from start to finish...
-    //
-    /*
-    Collections.sort(steps, new Comparator<StepMetaDataCombi>() {
-      public int compare(StepMetaDataCombi c1, StepMetaDataCombi c2) {
 
-        boolean c1BeforeC2 = trans.getTransMeta().findPrevious(c2.stepMeta, c1.stepMeta);
-        boolean c2BeforeC1 = trans.getTransMeta().findPrevious(c1.stepMeta, c2.stepMeta);
-
-        if (!(c1BeforeC2 ^ c2BeforeC1)) {
-          // In this situation there is no path from c1 to c2
-          // This causes Collections.sort() great trouble.
-          //
-          return false; 
-        }
-        
-        if (c1BeforeC2) {
-          return -1;
-        } else {
-          return 1;
-        }
-      }
-    });
-    */
-    
-    // The bubble sort algorithm in contrast to the QuickSort or MergeSort algorithms 
+    // The bubble sort algorithm in contrast to the QuickSort or MergeSort
+    // algorithms
     // does indeed cover all possibilities.
-    // Sorting larger transformations with hundreds of steps might be too slow though.
+    // Sorting larger transformations with hundreds of steps might be too slow
+    // though.
     // We should consider caching TransMeta.findPrevious() results in that case.
     //
     trans.getTransMeta().clearCaches();
-    
-    for (int x=0;x<steps.size();x++) {
-      for (int y=0;y<steps.size()-1;y++) {
-        StepMetaDataCombi one = steps.get(y);
-        StepMetaDataCombi two = steps.get(y+1);
-        boolean before = trans.getTransMeta().findPrevious(one.stepMeta, two.stepMeta);
-        if (before) {
-          // two was found to be positioned BEFORE one so we need to switch them...
-          //
-          steps.set(y, two);
-          steps.set(y+1, one);
+
+    //
+    // Cocktail sort (bi-directional bubble sort)
+    //
+    // Original sort was taking 3ms for 30 steps
+    // cocktail sort takes about 8ms for the same 30, but it works :)
+
+    // set these to true if you are working on this algorithm and don't like
+    // flying blind.
+    //
+    boolean testing = true; // log sort details
+
+    int stepsMinSize = 0;
+    int stepsSize = steps.size();
+
+    // Noticed a problem with an immediate shrinking iteration window
+    // trapping rows that need to be sorted.
+    // This threshold buys us some time to get the sorting close before
+    // starting to decrease the window size.
+    //
+    // TODO: this could become much smarter by tracking row movement
+    // and reacting to that each outer iteration verses
+    // using a threshold.
+    //
+    int windowShrinkThreshold = (int) Math.round(stepsSize * 0.75);// after this
+                                                                   // many
+                                                                   // iterations
+                                                                   // enable
+                                                                   // trimming
+                                                                   // inner
+                                                                   // iteration
+                                                                   // window on
+                                                                   // no change
+                                                                   // being
+                                                                   // detected.
+
+    // give ourselves some room to sort big lists. the window threshold should
+    // stop us before reaching this anyway.
+    //
+    int totalIterations = stepsSize * 2;
+    int actualIterations = 0;
+
+    boolean isBefore = false;
+    boolean forwardChange = false;
+    boolean backwardChange = false;
+
+    boolean lastForwardChange = true;
+    boolean keepSortingForward = true;
+
+    StepMetaDataCombi one = null;
+    StepMetaDataCombi two = null;
+
+    StringBuilder tLogString = new StringBuilder();// this helps group our
+                                                   // output so other threads
+                                                   // don't get logs in our
+                                                   // output.
+    tLogString.append("-------------------------------------------------------").append("\n");
+    tLogString.append("--SingleThreadedTransExecutor.sortSteps(cocktail)").append("\n");
+    tLogString.append("--Trans: ").append(trans.getName()).append("\n");
+    tLogString.append("-").append("\n");
+
+    long startTime = System.currentTimeMillis();
+
+    for (int x = 0; x < totalIterations; x++) {
+
+      // Go forward through the list
+      //
+      if (keepSortingForward) {
+        for (int y = stepsMinSize; y < stepsSize - 1; y++) {
+          one = steps.get(y);
+          two = steps.get(y + 1);
+          isBefore = trans.getTransMeta().findPrevious(one.stepMeta, two.stepMeta);
+          if (isBefore) {
+            // two was found to be positioned BEFORE one so we need to
+            // switch them...
+            //
+            steps.set(y, two);
+            steps.set(y + 1, one);
+            forwardChange = true;
+
+          }
         }
       }
-    }
-    
-    //
-    System.out.println("-------------------------------------------------------");
-    System.out.println("Steps after sort: ");
+
+      // Go backward through the list
+      //
+      for (int z = stepsSize - 1; z > stepsMinSize; z--) {
+        one = steps.get(z);
+        two = steps.get(z - 1);
+
+        isBefore = trans.getTransMeta().findPrevious(one.stepMeta, two.stepMeta);
+        if (!isBefore) {
+          // two was found NOT to be positioned BEFORE one so we need to
+          // switch them...
+          //
+          steps.set(z, two);
+          steps.set(z - 1, one);
+          backwardChange = true;
+        }
+      }
+
+      // Shrink stepsSize(max) if there was no forward change
+      //
+      if (x > windowShrinkThreshold && !forwardChange) {
+
+        // should we keep going? check the window size
+        //
+        stepsSize--;
+        if (stepsSize <= stepsMinSize) {
+          if (testing) {
+            tLogString.append(String.format("stepsMinSize:%s  stepsSize:%s", stepsMinSize, stepsSize));
+            tLogString.append("stepsSize is <= stepsMinSize.. exiting outer sort loop. index:" + x).append("\n");
+          }
+          break;
+        }
+      }
+
+      // shrink stepsMinSize(min) if there was no backward change
+      //
+      if (x > windowShrinkThreshold && !backwardChange) {
+
+        // should we keep going? check the window size
+        //
+        stepsMinSize++;
+        if (stepsMinSize >= stepsSize) {
+          if (testing) {
+            tLogString.append(String.format("stepsMinSize:%s  stepsSize:%s", stepsMinSize, stepsSize)).append("\n");
+            tLogString.append("stepsMinSize is >= stepsSize.. exiting outer sort loop. index:" + x).append("\n");
+          }
+          break;
+        }
+      }
+
+      // End of both forward and backward traversal.
+      // Time to see if we should keep going.
+      //
+      actualIterations++;
+
+      if (!forwardChange && !backwardChange) {
+        if (testing) {
+          tLogString.append(String.format("existing outer loop because no change was detected going forward or backward. index:%s  min:%s  max:%s", x, stepsMinSize, stepsSize)).append("\n");
+        }
+        break;
+      }
+
+      //
+      // if we are past the first iteration and there has been no change twice,
+      // quit doing it!
+      //
+      if (keepSortingForward && x > 0 && !lastForwardChange && !forwardChange) {
+        keepSortingForward = false;
+      }
+      lastForwardChange = forwardChange;
+      forwardChange = false;
+      backwardChange = false;
+
+    }// finished sorting
+
+    long endTime = System.currentTimeMillis();
+    long totalTime = (endTime - startTime);
+
+    tLogString.append("-------------------------------------------------------").append("\n");
+    tLogString.append("Steps sort time: " + totalTime + "ms").append("\n");
+    tLogString.append("Total iterations: " + actualIterations).append("\n");
+    tLogString.append("Step count: " + steps.size()).append("\n");
+    tLogString.append("Steps after sort: ").append("\n");
     for (StepMetaDataCombi combi : steps) {
-      System.out.println(combi.step.toString());
+      tLogString.append(combi.step.getStepname()).append("\n");
     }
-    System.out.println("-------------------------------------------------------");
-    //
+    tLogString.append("-------------------------------------------------------").append("\n");
+
+    if (log.isDetailed()) {
+      log.logDetailed(tLogString.toString());
+    }
   }
 
   public boolean init() throws KettleException {

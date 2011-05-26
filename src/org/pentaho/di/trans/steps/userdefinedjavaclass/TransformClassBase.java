@@ -628,7 +628,7 @@ public abstract class TransformClassBase
     }
     
     @SuppressWarnings("unchecked")
-    public static void getFields(boolean clearResultFields, RowMetaInterface row, String originStepname, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, List fields)
+    public static void getFields(boolean clearResultFields, RowMetaInterface row, String originStepname, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space, List<?> fields)
     throws KettleStepException
     {
     	if (clearResultFields) {

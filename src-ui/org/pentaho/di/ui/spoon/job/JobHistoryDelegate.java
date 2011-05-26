@@ -459,10 +459,6 @@ public class JobHistoryDelegate extends SpoonDelegate implements XulEventHandler
           }
         }
       }
-      for (JobEntryCopyResult result : results) {
-        
-      }
-      
       
       // Present all job entries to the user.
       //

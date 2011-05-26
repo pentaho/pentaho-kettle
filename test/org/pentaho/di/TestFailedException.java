@@ -1,10 +1,10 @@
 package org.pentaho.di;
 
-public class TestFailedException 
-       extends Exception{
+public class TestFailedException extends Exception {
 
-    
-    TestFailedException(String message) {
-        super(message);
-    }
+  private static final long serialVersionUID = 8585395841938180974L;
+
+  TestFailedException(String message) {
+    super(message);
+  }
 }

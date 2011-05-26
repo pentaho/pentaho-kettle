@@ -637,13 +637,8 @@ public class DatabaseExplorerDialogLegacy extends Dialog
         final String table = getSchemaTable();
         if (table!=null)
         {
-            Menu mTree = null;
-		
-            if (mTree!=null && !mTree.isDisposed())
-            {
-                mTree.dispose();
-            }
-            mTree = new Menu(shell, SWT.POP_UP);
+            Menu mTree = new Menu(shell, SWT.POP_UP);
+            
 			MenuItem miPrev  = new MenuItem(mTree, SWT.PUSH); miPrev.setText(BaseMessages.getString(PKG,"DatabaseExplorerDialog.Menu.Preview100", table));
 			miPrev.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { previewTable(table, false); }});
 			MenuItem miPrevN  = new MenuItem(mTree, SWT.PUSH); miPrevN.setText(BaseMessages.getString(PKG,"DatabaseExplorerDialog.Menu.PreviewN", table));

@@ -127,7 +127,6 @@ public class StringSearcher
         }        
     }
 
-    @SuppressWarnings("unchecked")
 	private static void stringSearchInObject(Object obj, int level, List<StringSearchResult> stringList, Object parentObject, Object grandParentObject, Field field) {
         if (obj instanceof String)
         {
@@ -169,7 +168,7 @@ public class StringSearcher
         else
         if (obj instanceof Map)
         {
-        	findMapMetaData((Map)obj, level, stringList, parentObject, grandParentObject, field);
+        	findMapMetaData((Map<?,?>)obj, level, stringList, parentObject, grandParentObject, field);
         }
         else
         if (obj instanceof Object[])
@@ -182,8 +181,7 @@ public class StringSearcher
         }
 	}
 
-    @SuppressWarnings("unchecked")
-	private static void findMapMetaData(Map map, int level, List<StringSearchResult> stringList, Object parentObject, Object grandParentObject, Field field) {
+	private static void findMapMetaData(Map<?,?> map, int level, List<StringSearchResult> stringList, Object parentObject, Object grandParentObject, Field field) {
 		
     	for (Object key : map.keySet())
     	{

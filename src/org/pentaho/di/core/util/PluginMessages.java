@@ -61,8 +61,7 @@ public final class PluginMessages {
      * @throws IllegalArgumentException
      *             if class is null
      */
-    @SuppressWarnings("unchecked")
-    public static PluginMessages getMessages(final Class someClassInPackage) throws IllegalArgumentException {
+    public static PluginMessages getMessages(final Class<?> someClassInPackage) throws IllegalArgumentException {
         Assert.assertNotNull(someClassInPackage, "Class cannot be null");
         return getMessages(someClassInPackage.getPackage().getName());
     }

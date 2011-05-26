@@ -72,13 +72,10 @@ public class OverlayPropertyHandler implements PropertyHandler {
 	public boolean loadProps(String filename) {
 		try {
 			OverlayProperties ph = new OverlayProperties(filename);
-			if (ph != null) {
-				propList.addFirst(ph);
-				return true;
-			}
-			return false;
+			propList.addFirst(ph);
+			return true;
 		} catch (IOException e) {
-			//TODO: log exception
+			e.printStackTrace();
 			return false;
 		}		
 	}

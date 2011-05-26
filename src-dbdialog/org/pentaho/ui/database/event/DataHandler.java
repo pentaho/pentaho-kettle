@@ -139,7 +139,7 @@ public class DataHandler extends AbstractXulEventHandler {
 
   // MS SQL Server specific
   private XulCheckbox doubleDecimalSeparatorCheck;
-  private XulCheckbox mssqlIntegratedSecurity;
+  // private XulCheckbox mssqlIntegratedSecurity;
   
   // MySQL specific
   private XulCheckbox resultStreamingCursorCheck;

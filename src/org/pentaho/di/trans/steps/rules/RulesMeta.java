@@ -50,7 +50,7 @@ import org.w3c.dom.Node;
  */
 
 public class RulesMeta extends BaseStepMeta implements StepMetaInterface {
-	private static Class<?> PKG = Rules.class; // for i18n purposes
+	// private static Class<?> PKG = Rules.class; // for i18n purposes
 	
 	// Contain storage keys in single location to cut down on save/load bugs
 	private static enum StorageKeys {

@@ -554,7 +554,7 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 
                         String schemaTable = databaseMeta.getQuotedSchemaTableCombination(transMeta.environmentSubstitute(schemaName), 
                         		                                                          transMeta.environmentSubstitute(tableName));                        
-						String cr_table = db.getDDL(schemaTable,
+						String sql = db.getDDL(schemaTable,
 													tableFields,
 													null,
 													false,
@@ -562,20 +562,6 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 													true
 													);
 
-						String cr_index = ""; //$NON-NLS-1$
-						String idx_fields[] = null;
-
-						// Key lookup dimensions...
-						if (idx_fields!=null && idx_fields.length>0 &&  
-								!db.checkIndexExists(transMeta.environmentSubstitute(schemaName), 
-										             transMeta.environmentSubstitute(tableName), idx_fields)
-						   )
-						{
-							String indexname = "idx_"+tableName+"_lookup"; //$NON-NLS-1$ //$NON-NLS-2$
-							cr_index = db.getCreateIndexStatement(schemaTable, indexname, idx_fields, false, false, false, true);
-						}
-
-						String sql = cr_table+cr_index;
 						if (sql.length()==0) retval.setSQL(null); else retval.setSQL(sql);
 					}
 					catch(KettleException e)

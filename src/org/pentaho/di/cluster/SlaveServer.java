@@ -607,6 +607,7 @@ public class SlaveServer  extends ChangedFlag
         addCredentials(client);
         addProxy(client);
         HttpMethod method = new GetMethod(constructUrl(service));
+        method.getParams().setSoTimeout(1000); // TEST
         
         // Execute request
         // 
@@ -627,7 +628,7 @@ public class SlaveServer  extends ChangedFlag
         finally
         {
             // Release current connection to the connection pool once you are done
-            method.releaseConnection();
+            method.releaseConnection();            
             log.logDetailed(BaseMessages.getString(PKG, "SlaveServer.DETAILED_ExecutedService", service, hostname) ); //$NON-NLS-1$
         }
 

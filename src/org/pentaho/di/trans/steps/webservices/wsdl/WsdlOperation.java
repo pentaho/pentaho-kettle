@@ -224,7 +224,7 @@ public final class WsdlOperation implements java.io.Serializable {
         Input input = op.getInput();
         if (input != null) {
             Message in = input.getMessage();
-            List paramOrdering = op.getParameterOrdering();
+            List<Object> paramOrdering = op.getParameterOrdering();
             List<Part> inParts = in.getOrderedParts(paramOrdering);
 
             for (Part part : inParts) {

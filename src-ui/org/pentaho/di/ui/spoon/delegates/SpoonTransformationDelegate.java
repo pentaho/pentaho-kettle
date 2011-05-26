@@ -939,11 +939,14 @@ public class SpoonTransformationDelegate extends SpoonDelegate
       // There is a transformation running in the background.  When it finishes, clean it up and log the result on the console.
       // Launch in a separate thread to prevent GUI blocking...
       //
-      new Thread(new Runnable() {
+      Thread thread = new Thread(new Runnable() {
 				public void run() {
 					Trans.monitorRemoteTransformation(spoon.getLog(), carteObjectId, transMeta.toString(), remoteSlaveServer);
 				}
-			}).start();
+			});
+      
+      thread.setName("Monitor remote transformation '"+transMeta.getName()+"', carte object id="+carteObjectId+", slave server: "+remoteSlaveServer.getName());
+      thread.start();
 	
     } 
 

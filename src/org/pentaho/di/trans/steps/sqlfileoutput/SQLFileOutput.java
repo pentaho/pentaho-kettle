@@ -114,12 +114,6 @@ public class SQLFileOutput extends BaseStep implements StepInterface
 		
 		}
 		
-		if (r==null)  // no more input to be expected...
-		{
-			setOutputDone();
-			return false;
-		}
-
 		try
 		{
 	        if (getLinesOutput()==0)

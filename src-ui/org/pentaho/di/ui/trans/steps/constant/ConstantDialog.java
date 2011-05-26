@@ -209,24 +209,26 @@ public class ConstantDialog extends BaseStepDialog implements StepDialogInterfac
 			if (input.getFieldName()[i]!=null)
 			{
 				TableItem item = wFields.table.getItem(i);
-				item.setText(1, input.getFieldName()[i]);
-				logDebug("field #"+i+" --> fieldType[i]="+input.getFieldType()[i]);
+				int col=1;
+				item.setText(col++, input.getFieldName()[i]);
+				
 				String type   = input.getFieldType()[i];
 				String format = input.getFieldFormat()[i];
-                String length = input.getFieldLength()[i]<0?"":(""+input.getFieldLength()[i]);
-                String prec   = input.getFieldPrecision()[i]<0?"":(""+input.getFieldPrecision()[i]);;
+        String length = input.getFieldLength()[i]<0?"":(""+input.getFieldLength()[i]);
+        String prec   = input.getFieldPrecision()[i]<0?"":(""+input.getFieldPrecision()[i]);;
 				String curr   = input.getCurrency()[i];
 				String group  = input.getGroup()[i];
 				String decim  = input.getDecimal()[i];
 				String def    = input.getValue()[i];
-				if (type  !=null) item.setText(2, type  ); else item.setText(2, "");
-				if (format!=null) item.setText(3, format); else item.setText(3, "");
-				if (length!=null) item.setText(4, length); else item.setText(4, "");
-				if (prec  !=null) item.setText(5, prec  ); else item.setText(5, "");
-				if (curr  !=null) item.setText(6, curr  ); else item.setText(6, "");
-				if (decim !=null) item.setText(7, decim ); else item.setText(7, "");
-				if (group !=null) item.setText(8, group ); else item.setText(8, "");
-				if (def   !=null) item.setText(9, def   ); else item.setText(9, "");
+				
+				item.setText(col++, Const.NVL(type, ""));
+				item.setText(col++, Const.NVL(format, ""));
+				item.setText(col++, Const.NVL(length, ""));
+				item.setText(col++, Const.NVL(prec, ""));
+				item.setText(col++, Const.NVL(curr, ""));
+				item.setText(col++, Const.NVL(decim, ""));
+				item.setText(col++, Const.NVL(group, ""));
+				item.setText(col++, Const.NVL(def, ""));
 			}
 		}
         

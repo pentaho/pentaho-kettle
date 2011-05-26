@@ -194,10 +194,9 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
      * @param textVar
      *            text varibale.
      */
-    @SuppressWarnings("unchecked")
     public static void setTextIfPropertyValue(final PluginProperty property, final TextVar textVar) {
         if (property.evaluate()) {
-            textVar.setText(((KeyValue) property).stringValue());
+            textVar.setText(((KeyValue<?>) property).stringValue());
         }
     }
 
@@ -205,12 +204,11 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
      * @param property
      *            property.
      * @param combo
-     *            text varibale.
+     *            text variable.
      */
-    @SuppressWarnings("unchecked")
     public static void setTextIfPropertyValue(final PluginProperty property, final CCombo combo) {
         if (property.evaluate()) {
-            combo.setText(((KeyValue) property).stringValue());
+            combo.setText(((KeyValue<?>) property).stringValue());
         }
     }
 

@@ -124,10 +124,9 @@ public final class Wsdl implements java.io.Serializable {
      * @param portCollection
      * @return
      */
-     @SuppressWarnings("unchecked")
-     private Port getSoapPort(Collection portCollection) {
+     private Port getSoapPort(Collection<?> portCollection) {
          Port soapPort       = null;
-         Iterator iterator   = portCollection.iterator();
+         Iterator<?> iterator   = portCollection.iterator();
          while (iterator.hasNext()) {
              Port port = (Port) iterator.next();    
              if (WsdlUtils.isSoapPort(port)) {

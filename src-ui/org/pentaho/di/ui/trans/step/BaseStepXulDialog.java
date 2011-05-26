@@ -265,10 +265,11 @@ public abstract class BaseStepXulDialog extends AbstractXulEventHandler {
   }
 
 
-  public void addDatabases( XulMenuList wConnection ) {
+  public void addDatabases( XulMenuList<?> wConnection ) {
     addDatabases(wConnection, null);
   }
 
+  @SuppressWarnings({ "rawtypes", "unchecked" })
   public void addDatabases( XulMenuList wConnection, Class<? extends DatabaseInterface> databaseType ) {
     List<String> databases = new ArrayList<String>();
     for (int i = 0; i < transMeta.nrDatabases(); i++) {
@@ -280,6 +281,7 @@ public abstract class BaseStepXulDialog extends AbstractXulEventHandler {
     wConnection.setElements(databases);
   }
 
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public void selectDatabase( XulMenuList wConnection, String name ) {
     wConnection.setSelectedItem(wConnection);
   }
@@ -453,7 +455,6 @@ public abstract class BaseStepXulDialog extends AbstractXulEventHandler {
    * @param TransMeta the source transformation
    * @param StepMeta  the source step
    */
-  @SuppressWarnings({"JavadocReference"})
   public static final void getFieldsFromPrevious( ComboVar comboVar, TransMeta transMeta, StepMeta stepMeta ) {
     String selectedField = null;
     int indexField = -1;
@@ -581,7 +582,7 @@ public abstract class BaseStepXulDialog extends AbstractXulEventHandler {
   }
 
 
-  public static void getFieldsFromPrevious( RowMetaInterface row, XulTree tableView, List fields,
+  public static void getFieldsFromPrevious( RowMetaInterface row, XulTree tableView, List<Object> fields,
                                             StepTableDataObject field, TableItemInsertXulListener listener ) {
     if (row == null || row.size() == 0)
         return; // nothing to do

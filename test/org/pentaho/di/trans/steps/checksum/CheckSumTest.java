@@ -86,14 +86,6 @@ public class CheckSumTest extends TestCase {
       return written;
     }
 
-    public List<Object[]> getRead() {
-      return read;
-    }
-
-    public List<Object[]> getError() {
-      return error;
-    }
-
     @Override
     public void rowWrittenEvent(RowMetaInterface rowMeta, Object[] row) throws KettleStepException {
       written.add(row);

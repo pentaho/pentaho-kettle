@@ -430,8 +430,11 @@ public class Translator
                         if (getPath(filename).equals(dir)) // yep, add this one
                         {
                             Properties properties = files.get(filename);
-                            @SuppressWarnings("unchecked")
-                            ArrayList<String> entries = new ArrayList(properties.keySet()); // TODO how can we fix this warning?
+                            ArrayList<Object> entryObjects = new ArrayList<Object>(properties.keySet());
+                            ArrayList<String> entries = new ArrayList<String>();
+                            for (Object object : entryObjects) {
+                              entries.add((String)object);
+                            }
                             Collections.sort(entries);
                             
                             for (int e=0;e<entries.size();e++)

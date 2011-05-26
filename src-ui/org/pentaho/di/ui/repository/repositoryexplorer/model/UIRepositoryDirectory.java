@@ -91,6 +91,8 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
     if(kidElementCache == null){
       kidElementCache = new UIRepositoryObjects()
       {
+        private static final long serialVersionUID = 6901479331535375165L;
+
         public void onRemove(UIRepositoryObject child) {
           List<? extends RepositoryElementMetaInterface> dirRepoObjects = getDirectory().getRepositoryObjects();
           if (dirRepoObjects != null) {

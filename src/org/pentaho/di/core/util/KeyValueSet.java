@@ -27,15 +27,14 @@ import org.apache.commons.lang.builder.ToStringStyle;
  * @author <a href="mailto:thomas.hoedl@aschauer-edv.at">Thomas Hoedl(asc042)</a>
  * 
  */
-@SuppressWarnings("unchecked")
-public class KeyValueSet implements Iterable<KeyValue>, Serializable {
+public class KeyValueSet implements Iterable<KeyValue<?>>, Serializable {
 
     /**
      * Serial version UID.
      */
     private static final long serialVersionUID = 925133158112717153L;
 
-    private final Map<String, KeyValue> entries = new TreeMap<String, KeyValue>();
+    private final Map<String, KeyValue<?>> entries = new TreeMap<String, KeyValue<?>>();
 
     /**
      * Add key value(s).
@@ -44,8 +43,8 @@ public class KeyValueSet implements Iterable<KeyValue>, Serializable {
      *            key values to add.
      * @return this.
      */
-    public KeyValueSet add(final KeyValue... keyValues) {
-        for (KeyValue keyValue : keyValues) {
+    public KeyValueSet add(final KeyValue<?>... keyValues) {
+        for (KeyValue<?> keyValue : keyValues) {
             if (this.entries.containsKey(keyValue.getKey())) {
                 throw new IllegalArgumentException("Key already added [key=" + keyValue.getKey() + "]");
             }
@@ -59,7 +58,7 @@ public class KeyValueSet implements Iterable<KeyValue>, Serializable {
      * 
      * @see java.lang.Iterable#iterator()
      */
-    public Iterator<KeyValue> iterator() {
+    public Iterator<KeyValue<?>> iterator() {
         return this.keyValues().iterator();
     }
 
@@ -68,7 +67,7 @@ public class KeyValueSet implements Iterable<KeyValue>, Serializable {
      *            the key.
      * @return key value or null.
      */
-    public KeyValue get(final String key) {
+    public KeyValue<?> get(final String key) {
         if (key == null) {
             return null;
         }
@@ -82,8 +81,8 @@ public class KeyValueSet implements Iterable<KeyValue>, Serializable {
      * @throws IllegalArgumentException
      *             if filter is null.
      */
-    public List<KeyValue> get(final Predicate filter) throws IllegalArgumentException {
-        final AddClosureArrayList<KeyValue> result = new AddClosureArrayList<KeyValue>();
+    public List<KeyValue<?>> get(final Predicate filter) throws IllegalArgumentException {
+        final AddClosureArrayList<KeyValue<?>> result = new AddClosureArrayList<KeyValue<?>>();
         this.walk(result, filter);
         return result;
     }
@@ -93,8 +92,8 @@ public class KeyValueSet implements Iterable<KeyValue>, Serializable {
      *            the key.
      * @return key value, never null.
      */
-    public KeyValue getRequired(final String key) {
-        final KeyValue keyValue = this.get(key);
+    public KeyValue<?> getRequired(final String key) {
+        final KeyValue<?> keyValue = this.get(key);
         if (keyValue == null) {
             throw new IllegalArgumentException("Entry not found [key=" + key + "]");
         }
@@ -111,8 +110,8 @@ public class KeyValueSet implements Iterable<KeyValue>, Serializable {
     /**
      * @return key values/entries.
      */
-    public List<KeyValue> keyValues() {
-        return new ArrayList<KeyValue>(this.entries.values());
+    public List<KeyValue<?>> keyValues() {
+        return new ArrayList<KeyValue<?>>(this.entries.values());
     }
 
     /**
@@ -120,7 +119,7 @@ public class KeyValueSet implements Iterable<KeyValue>, Serializable {
      */
     public List<Object> values() {
         final List<Object> result = new ArrayList<Object>();
-        for (KeyValue keyValue : this.entries.values()) {
+        for (KeyValue<?> keyValue : this.entries.values()) {
             result.add(keyValue.getValue());
         }
         return result;
@@ -131,7 +130,7 @@ public class KeyValueSet implements Iterable<KeyValue>, Serializable {
      */
     public Map<String, Object> toMap() {
         final Map<String, Object> map = new TreeMap<String, Object>();
-        for (KeyValue keyValue : this.entries.values()) {
+        for (KeyValue<?> keyValue : this.entries.values()) {
             map.put(keyValue.getKey(), keyValue.getValue());
         }
         return map;
@@ -150,7 +149,7 @@ public class KeyValueSet implements Iterable<KeyValue>, Serializable {
     public void walk(final Closure handler, final Predicate filter) throws IllegalArgumentException {
         Assert.assertNotNull(handler, "Handler cannot be null");
         Assert.assertNotNull(filter, "Filter cannot be null");
-        for (KeyValue keyValue : this.entries.values()) {
+        for (KeyValue<?> keyValue : this.entries.values()) {
             if (filter.evaluate(keyValue)) {
                 handler.execute(keyValue);
             }
@@ -174,7 +173,7 @@ public class KeyValueSet implements Iterable<KeyValue>, Serializable {
      *            the key.
      * @return previous or null.
      */
-    public KeyValue remove(final String key) {
+    public KeyValue<?> remove(final String key) {
         if (key == null) {
             return null;
         }
@@ -222,7 +221,7 @@ public class KeyValueSet implements Iterable<KeyValue>, Serializable {
      */
     public String toMultiLineString() {
         final ToStringBuilder builder = new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE);
-        for (KeyValue keyValue : this.entries.values()) {
+        for (KeyValue<?> keyValue : this.entries.values()) {
             builder.append(keyValue.getKey(), keyValue.getValue());
         }
         return builder.toString();

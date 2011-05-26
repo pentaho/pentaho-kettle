@@ -143,8 +143,7 @@ public final class Assert { //NOPMD
      * @throws IllegalArgumentException
      *             if collection is null or empty.
      */
-    @SuppressWarnings("unchecked") //NOPMD
-    public static void assertNotNullOrEmpty(final Collection collection) throws IllegalArgumentException {
+    public static void assertNotNullOrEmpty(final Collection<?> collection) throws IllegalArgumentException {
         if (collection == null || collection.isEmpty()) {
             throw new IllegalArgumentException("Collection cannot be null or empty");
         }
@@ -158,8 +157,7 @@ public final class Assert { //NOPMD
      * @throws IllegalArgumentException
      *             if collection is null or empty.
      */
-    @SuppressWarnings("unchecked")
-    public static void assertNotNullOrEmpty(final Collection collection, final String message)
+    public static void assertNotNullOrEmpty(final Collection<?> collection, final String message)
             throws IllegalArgumentException {
         if (collection == null || collection.isEmpty()) {
             throw new IllegalArgumentException(message);
@@ -199,8 +197,7 @@ public final class Assert { //NOPMD
      * @throws IllegalArgumentException
      *             if collection is null or empty.
      */
-    @SuppressWarnings("unchecked")
-    public static void assertNotNullOrEmpty(final Map map) throws IllegalArgumentException {
+    public static void assertNotNullOrEmpty(final Map<?,?> map) throws IllegalArgumentException {
         if (map == null || map.isEmpty()) {
             throw new IllegalArgumentException("Map cannot be null or empty");
         }
@@ -214,8 +211,7 @@ public final class Assert { //NOPMD
      * @throws IllegalArgumentException
      *             if collection is null or empty.
      */
-    @SuppressWarnings("unchecked")
-    public static void assertNotNullOrEmpty(final Map map, final String message) throws IllegalArgumentException {
+    public static void assertNotNullOrEmpty(final Map<?,?> map, final String message) throws IllegalArgumentException {
         if (map == null || map.isEmpty()) {
             throw new IllegalArgumentException(message);
         }

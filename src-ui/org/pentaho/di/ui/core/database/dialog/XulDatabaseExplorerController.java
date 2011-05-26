@@ -73,7 +73,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
   private XulTree databaseTree;
   private XulButton expandCollapseButton;
   private BindingFactory bf;
-  private Shell shell;
+  protected Shell shell;
   private SwtDialog dbExplorerDialog;
   private DBCache dbcache;
   private List<DatabaseMeta> databases;
@@ -143,24 +143,6 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
       }
 
     });
-
-
-    BindingConvertor<DatabaseExplorerNode, String> theTableNameConvertor = new BindingConvertor<DatabaseExplorerNode, String>() {
-
-      public String sourceToTarget(DatabaseExplorerNode aValue) {
-        String theTable = null;
-        if (aValue != null && aValue.isTable()) {
-          theTable = aValue.getName();
-        }
-        return theTable;
-      }
-
-      public DatabaseExplorerNode targetToSource(String aValue) {
-        return null;
-      }
-    };
-
-
 
     bf.setBindingType(Binding.Type.BI_DIRECTIONAL);
     this.bf.createBinding(this.databaseTree, "selectedItems", this.model, "selectedNode", new BindingConvertor<List<DatabaseExplorerNode>, DatabaseExplorerNode>(){
@@ -593,7 +575,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
 
   }
 
-  class PromptCallback implements XulDialogCallback {
+  class PromptCallback implements XulDialogCallback<Object> {
 
     private int limit = -1;
 

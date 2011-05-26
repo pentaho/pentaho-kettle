@@ -1911,31 +1911,22 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 	                                // System.out.println("Fieldname = "+fieldname);
 	
 									KCell below = sheet.getCell(colnr, rownr+1);
-									if (below.getType() == KCellType.BOOLEAN)
-									{
-										fieldtype = ValueMetaInterface.TYPE_BOOLEAN;
-									}
-									else
-									if (below.getType() == KCellType.DATE)
-									{
-										fieldtype = ValueMetaInterface.TYPE_DATE;
-									}
-									else
-									if (below.getType() == KCellType.LABEL)
-									{
-										fieldtype = ValueMetaInterface.TYPE_STRING;
-									}
-									else
-									if (below.getType() == KCellType.NUMBER)
-									{
-										fieldtype = ValueMetaInterface.TYPE_NUMBER;
-									}
-	
-	                                if (fieldname!=null && fieldtype==ValueMetaInterface.TYPE_NONE)
-	                                {
-	                                    fieldtype = ValueMetaInterface.TYPE_STRING;
-	                                }
-	
+                  if (below != null) {
+                    if (below.getType() == KCellType.BOOLEAN) {
+                      fieldtype = ValueMetaInterface.TYPE_BOOLEAN;
+                    } else if (below.getType() == KCellType.DATE) {
+                      fieldtype = ValueMetaInterface.TYPE_DATE;
+                    } else if (below.getType() == KCellType.LABEL) {
+                      fieldtype = ValueMetaInterface.TYPE_STRING;
+                    } else if (below.getType() == KCellType.NUMBER) {
+                      fieldtype = ValueMetaInterface.TYPE_NUMBER;
+                    }
+
+                    if (fieldname != null && fieldtype == ValueMetaInterface.TYPE_NONE) {
+                      fieldtype = ValueMetaInterface.TYPE_STRING;
+                    }
+                  }
+  	
 									if (fieldname!=null && fieldtype!=ValueMetaInterface.TYPE_NONE)
 									{
 										ValueMetaInterface field = new ValueMeta(fieldname, fieldtype);

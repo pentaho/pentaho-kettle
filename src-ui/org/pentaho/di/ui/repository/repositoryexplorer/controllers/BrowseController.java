@@ -172,15 +172,15 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     } else {
       folderTree.setHiddenrootnode(false);
     }
-    BindingConvertor<List, Boolean> checkIfMultipleItemsAreSelected = new BindingConvertor<List, Boolean>() {
+    BindingConvertor<List<?>, Boolean> checkIfMultipleItemsAreSelected = new BindingConvertor<List<?>, Boolean>() {
 
       @Override
-      public Boolean sourceToTarget(List value) {
+      public Boolean sourceToTarget(List<?> value) {
         return value != null && value.size() == 1 && value.get(0) != null;
       }
 
       @Override
-      public List targetToSource(Boolean value) {
+      public List<?> targetToSource(Boolean value) {
         return null;
       }
     };
@@ -353,7 +353,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
               confirmBox.setMessage(BaseMessages.getString(PKG, "BrowseController.DeleteNonEmptyFolderWarningMessage")); //$NON-NLS-1$
               confirmBox.setAcceptLabel(BaseMessages.getString(PKG, "Dialog.Ok")); //$NON-NLS-1$
               confirmBox.setCancelLabel(BaseMessages.getString(PKG, "Dialog.Cancel")); //$NON-NLS-1$
-              confirmBox.addDialogCallback(new XulDialogCallback() {
+              confirmBox.addDialogCallback(new XulDialogCallback<Object>() {
 
                 public void onClose(XulComponent sender, Status returnCode, Object retVal) {
                   if (returnCode == Status.ACCEPT) {
@@ -427,7 +427,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
       if (selectedFolder == null) {
         selectedFolder = repositoryDirectory;
       }
-      UIRepositoryDirectory newDirectory = selectedFolder.createFolder(newName);
+      selectedFolder.createFolder(newName);
 
       directoryBinding.fireSourceChanged();
       selectedItemsBinding.fireSourceChanged();
@@ -471,7 +471,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
               confirmBox.setMessage(BaseMessages.getString(PKG, "BrowseController.DeleteNonEmptyFolderWarningMessage")); //$NON-NLS-1$
               confirmBox.setAcceptLabel(BaseMessages.getString(PKG, "Dialog.Ok")); //$NON-NLS-1$
               confirmBox.setCancelLabel(BaseMessages.getString(PKG, "Dialog.Cancel")); //$NON-NLS-1$
-              confirmBox.addDialogCallback(new XulDialogCallback() {
+              confirmBox.addDialogCallback(new XulDialogCallback<Object>() {
 
                 public void onClose(XulComponent sender, Status returnCode, Object retVal) {
                   if (returnCode == Status.ACCEPT) {

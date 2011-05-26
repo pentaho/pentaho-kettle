@@ -34,9 +34,8 @@ public final class CollectionPredicates { //NOPMD
          * 
          * @see org.apache.commons.collections.Predicate#evaluate(java.lang.Object)
          */
-        @SuppressWarnings("unchecked") // NOPMD
         public boolean evaluate(final Object object) {
-            return ((Collection) object).isEmpty();
+            return ((Collection<?>) object).isEmpty();
         }
 
         /**
@@ -136,9 +135,8 @@ public final class CollectionPredicates { //NOPMD
          * 
          * @see org.apache.commons.collections.Predicate#evaluate(java.lang.Object)
          */
-        @SuppressWarnings("unchecked")
         public boolean evaluate(final Object object) {
-            return ((Map) object).isEmpty();
+            return ((Map<?,?>) object).isEmpty();
         }
 
         /**
@@ -337,8 +335,7 @@ public final class CollectionPredicates { //NOPMD
      *            the subject.
      * @return true if null or empty.
      */
-    @SuppressWarnings("unchecked")
-    public static boolean isNullOrEmpty(final Collection subject) {
+    public static boolean isNullOrEmpty(final Collection<?> subject) {
         return NULL_OR_EMPTY_COLLECTION.evaluate(subject);
     }
 
@@ -347,8 +344,7 @@ public final class CollectionPredicates { //NOPMD
      *            the subject.
      * @return true if not null or empty.
      */
-    @SuppressWarnings("unchecked")
-    public static boolean isNotNullOrEmpty(final Collection subject) {
+    public static boolean isNotNullOrEmpty(final Collection<?> subject) {
         return NOT_NULL_OR_EMPTY_COLLECTION.evaluate(subject);
     }
 
@@ -378,8 +374,7 @@ public final class CollectionPredicates { //NOPMD
      * @return true if null or empty.
      * 
      */
-    @SuppressWarnings("unchecked")
-    public static boolean isNullOrEmpty(final Map subject) {
+    public static boolean isNullOrEmpty(final Map<?,?> subject) {
         return NULL_OR_EMPTY_MAP.evaluate(subject);
     }
 
@@ -389,8 +384,7 @@ public final class CollectionPredicates { //NOPMD
      * @return true if not null or empty.
      * 
      */
-    @SuppressWarnings("unchecked")
-    public static boolean isNotNullOrEmpty(final Map subject) {
+    public static boolean isNotNullOrEmpty(final Map<?,?> subject) {
         return NOT_NULL_OR_EMPTY_MAP.evaluate(subject);
     }
 

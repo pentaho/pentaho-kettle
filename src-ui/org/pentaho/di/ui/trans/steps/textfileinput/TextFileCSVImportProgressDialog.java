@@ -323,9 +323,6 @@ public class TextFileCSVImportProgressDialog
             if (r!=null) {
                 linenr++;
             }
-            else {
-                rownumber--;
-            }
 
             // Grab another line...
             //

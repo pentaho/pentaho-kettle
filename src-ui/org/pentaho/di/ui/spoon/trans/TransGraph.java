@@ -129,6 +129,7 @@ import org.pentaho.di.trans.step.errorhandling.StreamIcon;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.pentaho.di.trans.steps.mapping.MappingMeta;
+import org.pentaho.di.trans.steps.metainject.MetaInjectMeta;
 import org.pentaho.di.trans.steps.singlethreader.SingleThreaderMeta;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 import org.pentaho.di.ui.core.ConstUI;
@@ -2300,7 +2301,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             item.setDisabled(sels != 2);
 
             item = (XulMenuitem) doc.getElementById("trans-graph-entry-open-mapping"); //$NON-NLS-1$
-            item.setDisabled(!stepMeta.isMapping() && !stepMeta.isSingleThreader());
+            item.setDisabled(!stepMeta.isMapping() && !stepMeta.isSingleThreader() && !stepMeta.isEtlMetaInject());
 
             item = (XulMenuitem) doc.getElementById("trans-graph-entry-align-snap"); //$NON-NLS-1$
             item.setLabel(BaseMessages.getString(PKG, "TransGraph.PopupMenu.SnapToGrid") + ConstUI.GRID_SIZE + ")\tALT-HOME"); //$NON-NLS-1$ //$NON-NLS-2$
@@ -3868,6 +3869,10 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 	    if (this.currentStep.getStepMetaInterface() instanceof SingleThreaderMeta) {
 	      SingleThreaderMeta meta = (SingleThreaderMeta) this.currentStep.getStepMetaInterface();
         mappingMeta = SingleThreaderMeta.loadSingleThreadedTransMeta(meta, spoon.rep, transMeta);
+      }
+      if (this.currentStep.getStepMetaInterface() instanceof MetaInjectMeta) {
+        MetaInjectMeta meta = (MetaInjectMeta) this.currentStep.getStepMetaInterface();
+        mappingMeta = MetaInjectMeta.loadTransformationMeta(meta, spoon.rep, transMeta);
       }
       
 	    if (mappingMeta!=null) {

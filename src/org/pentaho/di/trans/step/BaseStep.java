@@ -1421,6 +1421,25 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 	        if (currentInputRowSetNr >= inputRowSets.size()) currentInputRowSetNr = 0;
     	}
     }
+    
+  /**
+   * Wait until the transformation is completely running and all threads have been started.
+   */
+  protected void waitUntilTransformationIsStarted() {
+    // Have all threads started?
+    // Are we running yet? If not, wait a bit until all threads have been
+    // started.
+    //
+    if (this.checkTransRunning == false) {
+      while (!trans.isRunning() && !stopped.get()) {
+        try {
+          Thread.sleep(1);
+        } catch (InterruptedException e) {
+        }
+      }
+      this.checkTransRunning = true;
+    }
+  }
 
   /**
    * In case of getRow, we receive data from previous steps through the input
@@ -1446,18 +1465,9 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
       return null;
     }
 
-    // Have all threads started?
-    // Are we running yet? If not, wait a bit until all threads have been
-    // started.
-    if (this.checkTransRunning == false) {
-      while (!trans.isRunning() && !stopped.get()) {
-        try {
-          Thread.sleep(1);
-        } catch (InterruptedException e) {
-        }
-      }
-      this.checkTransRunning = true;
-    }
+    // Small startup check
+    //
+    waitUntilTransformationIsStarted();
 
     // See if we need to open sockets to remote input steps...
     //

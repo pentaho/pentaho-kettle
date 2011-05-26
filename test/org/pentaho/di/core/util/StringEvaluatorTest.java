@@ -108,7 +108,7 @@ public class StringEvaluatorTest extends TestCase {
     DecimalFormat currencyFormat = ((DecimalFormat) NumberFormat.getCurrencyInstance());
     System.out.println("UK Locale currency format: " + currencyFormat.toLocalizedPattern());
     try {
-      Number n = currencyFormat.parse("-£400.059");
+      currencyFormat.parse("-£400.059");
     } catch (ParseException e) {
       fail();
     }

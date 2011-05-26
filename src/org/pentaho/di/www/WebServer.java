@@ -317,8 +317,8 @@ public class WebServer
 	 * This method registers a timer to check up on all the registered slave servers every X seconds.<br>
 	 */
     private void startSlaveMonitoring() {
-		Timer timer = new Timer("WebServer Timer");
-		TimerTask timerTask = new TimerTask() {
+  		Timer timer = new Timer("WebServer Timer");
+  		TimerTask timerTask = new TimerTask() {
 		
 			public void run() {
 				for (SlaveServerDetection slaveServerDetection : detections) {

@@ -3,10 +3,6 @@ package org.pentaho.di.imp.rule;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.pentaho.di.core.plugins.ImportRulePluginType;
-import org.pentaho.di.core.plugins.PluginInterface;
-import org.pentaho.di.core.plugins.PluginRegistry;
-
 public class ImportValidationFeedback {
   private ImportRuleInterface      importRule;
   private ImportValidationResultType resultType;

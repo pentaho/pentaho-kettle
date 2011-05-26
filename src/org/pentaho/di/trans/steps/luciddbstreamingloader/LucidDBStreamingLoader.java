@@ -141,8 +141,10 @@ public class LucidDBStreamingLoader extends BaseStep implements StepInterface {
         if ( meta.getOperation() != LucidDBStreamingLoaderMeta.OPERATION_CUSTOM ) {
             if (log.isDebug())
               logDebug("Connected to LucidDB");
-            String qualifiedTableName = "\"" + meta.getSchemaName() + "\"" + ".\""
-                + meta.getTableName() + "\"";
+            String qualifiedTableName = meta.getDatabaseMeta().getQuotedSchemaTableCombination(
+                environmentSubstitute(meta.getSchemaName()), 
+                environmentSubstitute(meta.getTableName())
+               );
     
             if (!data.db.checkTableExists(qualifiedTableName)) {
     
@@ -152,7 +154,7 @@ public class LucidDBStreamingLoader extends BaseStep implements StepInterface {
         }
 
    
-        String sql = meta.getDMLStatement(getInputRowMeta());
+        String sql = meta.getDMLStatement(this, getInputRowMeta());
         PreparedStatement ps = data.db.prepareSQL(sql);
 
         if (log.isDebug())

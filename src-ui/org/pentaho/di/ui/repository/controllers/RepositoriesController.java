@@ -68,7 +68,7 @@ public class RepositoriesController extends AbstractXulEventHandler {
   
   private XulMessageBox messageBox;
 
-  private XulConfirmBox confirmBox;
+  protected XulConfirmBox confirmBox;
 
   private RepositoriesHelper helper;
   private String preferredRepositoryName;

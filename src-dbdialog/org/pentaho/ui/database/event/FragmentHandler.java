@@ -53,12 +53,7 @@ public class FragmentHandler extends AbstractXulEventHandler {
     } catch (XulException e) {
       e.printStackTrace();
       throw e;
-    }
-    
-    if (fragmentContainer == null){
-      return;
-    }
-    
+    } 
   }
   
   /**

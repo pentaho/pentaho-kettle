@@ -414,16 +414,6 @@ public class BlackBoxTests {
 			fail(message);
 			return result;
 		}
-
-		if (trans==null)
-		{
-			String message = "Can't continue because the transformation couldn't be loaded." + getPath(fileName);
-			addFailure(message);
-            log.logError(message);
-            fail(message);
-            return result;
-            
-		}
 		
 		try
 		{

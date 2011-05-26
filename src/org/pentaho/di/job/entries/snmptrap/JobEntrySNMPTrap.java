@@ -469,12 +469,6 @@ public class JobEntrySNMPTrap extends JobEntryBase implements Cloneable, JobEntr
 						AuthMD5.ID, new OctetString(passPhrase), 
 						PrivDES.ID, new OctetString(passPhrase));
 
-				if (uu == null) {
-					throw new KettleException("Null UsmUser");
-				 } else {
-					if(log.isDebug()) logDebug("Valid UsmUser");
-				}
-
 				USM usm = snmp.getUSM();
 
 				  if (usm == null) 

@@ -24,7 +24,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  */
 
 public class Rules extends BaseStep implements StepInterface {
-	private static Class<?> PKG = Rules.class; // for i18n purposes
+	// private static Class<?> PKG = Rules.class; // for i18n purposes
 	
 	private RulesMeta meta;
 	private RulesData data;

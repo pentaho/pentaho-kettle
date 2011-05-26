@@ -281,6 +281,7 @@ public class PreviewRowsDialog {
       }
     }
 
+    // ColumnInfo[] colinf = new ColumnInfo[rowMeta==null ? 0 : rowMeta.size()];
     ColumnInfo[] colinf = new ColumnInfo[rowMeta.size()];
     for (int i = 0; i < rowMeta.size(); i++) {
       ValueMetaInterface v = rowMeta.getValueMeta(i);

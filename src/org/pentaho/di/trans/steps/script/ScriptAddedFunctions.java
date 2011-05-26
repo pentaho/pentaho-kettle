@@ -423,7 +423,8 @@ public class ScriptAddedFunctions {
 		}
 	}
 	
-	public static Object fireToDB(ScriptEngine actualContext, Bindings actualObject, Object[] ArgList, Object FunctionContext){
+	@SuppressWarnings("unused")
+  public static Object fireToDB(ScriptEngine actualContext, Bindings actualObject, Object[] ArgList, Object FunctionContext){
 		
 		Object oRC = new Object();
 		if(ArgList.length==2){

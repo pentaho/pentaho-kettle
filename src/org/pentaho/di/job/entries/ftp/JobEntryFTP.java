@@ -1430,7 +1430,7 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
           if (log.isDebug()) {logDebug(BaseMessages.getString(PKG, "JobEntryFTP.DEBUG.Creating.Parsers"));}
           String[] parserClasses = otherParserNames.split("|");
           String cName = null;
-          Class clazz = null;
+          Class<?> clazz = null;
           Object parserInstance = null;
           for (int i=0; i<parserClasses.length; i++) {
             cName = parserClasses[i].trim();

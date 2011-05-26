@@ -558,7 +558,7 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
 		else
 			sb.append(",");
 		
-		sb.append(databaseMeta.getStartQuote() + fieldTableForKeys[i] + databaseMeta.getEndQuote());
+		sb.append(databaseMeta.quoteField(fieldTableForKeys[i]));
 		
 	  }
 	  
@@ -572,7 +572,7 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
 			else
 				sb.append(",");
 			
-			sb.append(databaseMeta.getStartQuote() + fieldTableForFields[i] + databaseMeta.getEndQuote());
+			sb.append(databaseMeta.quoteField(fieldTableForFields[i]));
 		}
 	  }
 	  sb.append(")");
@@ -606,7 +606,7 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
 		else
 			sb.append(",");
 		
-		sb.append(databaseMeta.getStartQuote() + fieldStreamForKeys[i] + databaseMeta.getEndQuote());
+		sb.append(databaseMeta.quoteField(fieldStreamForKeys[i]));
 		
 	  }
 	  
@@ -620,7 +620,7 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
 			else
 				sb.append(",");
 			
-			sb.append(databaseMeta.getStartQuote() + fieldStreamForFields[i] + databaseMeta.getEndQuote());
+			sb.append(databaseMeta.quoteField(fieldStreamForFields[i]));
 		}
 	  }
 	  sb.append(")");
@@ -652,14 +652,14 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
 	      }
 
 	      // "SRC"."FieldStreamName"
-	      matchCondition.append(databaseMeta.getStartQuote() + SOURCE_TABLE_ALIAS + databaseMeta.getEndQuote());
+	      matchCondition.append(databaseMeta.quoteField(SOURCE_TABLE_ALIAS));
 	      matchCondition.append(".");
-	      matchCondition.append(databaseMeta.getStartQuote() + fieldStreamForKeys[i] + databaseMeta.getEndQuote());
+	      matchCondition.append(databaseMeta.quoteField(fieldStreamForKeys[i]));
 	      matchCondition.append(" = ");
 	      // "TGT"."TableName"
-	      matchCondition.append(databaseMeta.getStartQuote() + TARGET_TABLE_ALIAS + databaseMeta.getEndQuote());
+	      matchCondition.append(databaseMeta.quoteField(TARGET_TABLE_ALIAS));
 	      matchCondition.append(".");
-	      matchCondition.append(databaseMeta.getStartQuote() + fieldTableForKeys[i] + databaseMeta.getEndQuote());
+	      matchCondition.append(databaseMeta.quoteField(fieldTableForKeys[i]));
 	      matchCondition.append(Const.CR);
 	    }
 
@@ -696,10 +696,10 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
 			else
 				sb.append(",");
 			
-			sb.append(databaseMeta.getStartQuote() + fieldTableForFields[i] + databaseMeta.getEndQuote());
+			sb.append(databaseMeta.quoteField(fieldTableForFields[i]));
 			sb.append(" = ");
-			sb.append(databaseMeta.getStartQuote() + SOURCE_TABLE_ALIAS + databaseMeta.getEndQuote() + ".");
-			sb.append(databaseMeta.getStartQuote() + fieldStreamForFields[i] + databaseMeta.getEndQuote());
+			sb.append(databaseMeta.quoteField(SOURCE_TABLE_ALIAS)).append(".");
+			sb.append(databaseMeta.quoteField(fieldStreamForFields[i]));
 	  	}
   }
   
@@ -708,17 +708,12 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
   
   }
     
-  private String buildTargetTableString (){
+  private String buildTargetTableString (VariableSpace space) {
 	  
-	  StringBuffer targetTable = new StringBuffer();
-	  
-	  targetTable.append(databaseMeta.getStartQuote() + getSchemaName() + databaseMeta.getEndQuote());
-	  targetTable.append(".");
-	  targetTable.append(databaseMeta.getStartQuote() + getTableName() + databaseMeta.getEndQuote());
-	  
-	  return targetTable.toString();
-	  
-	  
+    return databaseMeta.getQuotedSchemaTableCombination(
+        space.environmentSubstitute(getSchemaName()), 
+        space.environmentSubstitute(getTableName())
+       );
   }
 
   /**
@@ -728,7 +723,7 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
    * @return
    * @throws KettleStepException
    */
-  public String getDMLStatement(RowMetaInterface prev)
+  public String getDMLStatement(VariableSpace space, RowMetaInterface prev)
       throws KettleStepException {
     
    
@@ -738,7 +733,7 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
     	StringBuffer insert = new StringBuffer();
     	
     	insert.append("INSERT INTO " + Const.CR);
-    	insert.append(buildTargetTableString() + Const.CR);
+    	insert.append(buildTargetTableString(space) + Const.CR);
     	insert.append(buildTargetColumnsForInsert() + Const.CR);
     	// Build statement ALONE! (no "as SRC"
     	insert.append(buildRemoteRowsFragment(prev, true));
@@ -753,8 +748,8 @@ public class LucidDBStreamingLoaderMeta extends BaseStepMeta implements
     	
     	StringBuffer merge = new StringBuffer();
     	
-    	merge.append("MERGE INTO " + buildTargetTableString());
-    	merge.append(" as " + databaseMeta.getStartQuote() + TARGET_TABLE_ALIAS + databaseMeta.getEndQuote() + Const.CR);
+    	merge.append("MERGE INTO " + buildTargetTableString(space));
+    	merge.append(" as " + databaseMeta.quoteField(TARGET_TABLE_ALIAS) + Const.CR);
     	merge.append("USING " + buildRemoteRowsFragment(prev) + Const.CR);
     	merge.append("ON " + buildMatchCondition() + Const.CR);
     	merge.append("WHEN MATCHED THEN UPDATE SET " + Const.CR);

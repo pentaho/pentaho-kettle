@@ -1158,7 +1158,6 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 	 * @return the number of files successfully copied
 	 * @throws Exception
 	 */
-	@SuppressWarnings("unchecked")
   	private void copyRecursive(String sourceLocation, String targetLocation,
 		SFTPv3Client sftpClient,Pattern pattern,Job parentJob) throws Exception 
 	{
@@ -1166,8 +1165,8 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 		if (sourceLocation!=null) sourceFolder=sourceLocation;
 			
 		if (this.isDirectory(sftpClient, sourceFolder)) {	
-	        Vector filelist = sftpClient.ls(sourceFolder);
-	        Iterator iterator = filelist.iterator();
+	        Vector<?> filelist = sftpClient.ls(sourceFolder);
+	        Iterator<?> iterator = filelist.iterator();
 	
 	        while (iterator.hasNext()) {
 	

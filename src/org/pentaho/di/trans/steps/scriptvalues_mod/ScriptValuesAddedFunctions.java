@@ -443,7 +443,8 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 		}
 	}
 	
-	public static Object fireToDB(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
+	@SuppressWarnings("unused")
+  public static Object fireToDB(Context actualContext, Scriptable actualObject, Object[] ArgList, Function FunctionContext){
 		
 		Object oRC = new Object();
 		if(ArgList.length==2){
