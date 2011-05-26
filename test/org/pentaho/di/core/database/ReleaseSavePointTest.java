@@ -10,9 +10,21 @@ public class ReleaseSavePointTest {
       try {
          DatabaseInterface databaseInterface;
          
-         //  test Oracle - it should not support releasing savepoints
+         // Test Oracle - it should not support releasing savepoints
+         // Neither does MySQL for that matter.
+         //
          databaseInterface = new OracleDatabaseMeta();
          assertFalse(databaseInterface.releaseSavepoint());
+
+         databaseInterface = new MySQLDatabaseMeta();
+         assertFalse(databaseInterface.releaseSavepoint());
+
+         databaseInterface = new InfiniDbDatabaseMeta();
+         assertFalse(databaseInterface.releaseSavepoint());
+         
+         databaseInterface = new InfobrightDatabaseMeta();
+         assertFalse(databaseInterface.releaseSavepoint());
+         
 
          //  the rest of these should assert to true
          
@@ -49,12 +61,6 @@ public class ReleaseSavePointTest {
          databaseInterface = new HypersonicDatabaseMeta();
          assertTrue(databaseInterface.releaseSavepoint());
          
-         databaseInterface = new InfiniDbDatabaseMeta();
-         assertTrue(databaseInterface.releaseSavepoint());
-         
-         databaseInterface = new InfobrightDatabaseMeta();
-         assertTrue(databaseInterface.releaseSavepoint());
-         
          databaseInterface = new InformixDatabaseMeta();
          assertTrue(databaseInterface.releaseSavepoint());
          
@@ -81,10 +87,7 @@ public class ReleaseSavePointTest {
          
          databaseInterface = new MSSQLServerNativeDatabaseMeta();
          assertTrue(databaseInterface.releaseSavepoint());
-         
-         databaseInterface = new MySQLDatabaseMeta();
-         assertTrue(databaseInterface.releaseSavepoint());
-         
+                  
          databaseInterface = new NeoviewDatabaseMeta();
          assertTrue(databaseInterface.releaseSavepoint());
 
@@ -123,8 +126,6 @@ public class ReleaseSavePointTest {
          
          databaseInterface = new VerticaDatabaseMeta();
          assertTrue(databaseInterface.releaseSavepoint());
-         
-         
       }
       catch (Exception e) {
          e.printStackTrace();
