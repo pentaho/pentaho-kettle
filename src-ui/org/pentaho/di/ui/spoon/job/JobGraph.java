@@ -854,13 +854,13 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
                 	  newhop1.setUnconditional();
                   }
                   jobMeta.addJobHop(newhop1);
-                  spoon.addUndoNew(jobMeta, new JobHopMeta[] { newhop1 }, new int[] { jobMeta.indexOfJobHop(newhop1) }, true);
                   JobHopMeta newhop2 = new JobHopMeta(selectedEntry, hi.getToEntry());
                   if (selectedEntry.getEntry().isUnconditional()) {
-                	  newhop2.setUnconditional();
+                    newhop2.setUnconditional();
                   }
                   jobMeta.addJobHop(newhop2);
-                  spoon.addUndoNew(jobMeta, new JobHopMeta[] { newhop2 }, new int[] { jobMeta.indexOfJobHop(newhop2) }, true);
+                  spoon.addUndoNew(jobMeta, new JobHopMeta[] { newhop1, newhop2, }, new int[] { jobMeta.indexOfJobHop(newhop1), jobMeta.indexOfJobHop(newhop2), }, true);
+                  
                   int idx = jobMeta.indexOfJobHop(hi);
                   spoon.addUndoDelete(jobMeta, new JobHopMeta[] { hi }, new int[] { idx }, true);
                   jobMeta.removeJobHop(idx);

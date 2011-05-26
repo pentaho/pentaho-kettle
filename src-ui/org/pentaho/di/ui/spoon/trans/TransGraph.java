@@ -1080,7 +1080,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           transMeta.addTransHop(newhop1);
           TransHopMeta newhop2 = new TransHopMeta(selectedStep, hi.getToStep());
           transMeta.addTransHop(newhop2);
-          spoon.addUndoNew(transMeta, new TransHopMeta[] { newhop2 }, new int[] { transMeta.indexOfTransHop(newhop2) }, true);
+          spoon.addUndoNew(transMeta, new TransHopMeta[] { newhop1, newhop2 }, new int[] { transMeta.indexOfTransHop(newhop1), transMeta.indexOfTransHop(newhop2) }, true);
           int idx = transMeta.indexOfTransHop(hi);
           spoon.addUndoDelete(transMeta, new TransHopMeta[] { hi }, new int[] { idx }, true);
           transMeta.removeTransHop(idx);
