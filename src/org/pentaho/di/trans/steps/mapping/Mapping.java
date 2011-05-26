@@ -235,6 +235,7 @@ public class Mapping extends BaseStep implements StepInterface
 	}
 
   public void prepareMappingExecution() throws KettleException {
+        
     // Create the transformation from meta-data...
     //
     data.mappingTrans = new Trans(data.mappingTransMeta, getTrans());

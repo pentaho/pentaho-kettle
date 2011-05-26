@@ -39,6 +39,7 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
@@ -115,7 +116,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
 	private CTabFolder wTabFolder;
 
-	TransMeta mappingTransMeta = null;
+	private TransMeta mappingTransMeta = null;
 
 	protected boolean transModified;
 
@@ -137,6 +138,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
   private ObjectId         referenceObjectId;
   private ObjectLocationSpecificationMethod specificationMethod;
+  
+  private Button wMultiInput, wMultiOutput;
 
 	private interface ApplyChanges
 	{
@@ -495,6 +498,37 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		fdTransGroup.right = new FormAttachment(100, 0);
 		// fdTransGroup.bottom = new FormAttachment(wStepname, 350);
 		gTransGroup.setLayoutData(fdTransGroup);
+		Control lastControl = gTransGroup;
+		
+		wMultiInput = new Button(shell, SWT.CHECK);
+		props.setLook(wMultiInput);
+		wMultiInput.setText(BaseMessages.getString(PKG, "MappingDialog.AllowMultipleInputs.Label"));
+		FormData fdMultiInput = new FormData();
+		fdMultiInput.left = new FormAttachment(0,0);
+    fdMultiInput.right = new FormAttachment(100,0);
+    fdMultiInput.top = new FormAttachment(lastControl, margin*2);
+    wMultiInput.setLayoutData(fdMultiInput);
+    wMultiInput.addSelectionListener(new SelectionAdapter() {
+      public void widgetSelected(SelectionEvent event) {
+        setFlags();
+      }
+    });
+    lastControl = wMultiInput;
+    
+    wMultiOutput = new Button(shell, SWT.CHECK);
+    props.setLook(wMultiOutput);
+    wMultiOutput.setText(BaseMessages.getString(PKG, "MappingDialog.AllowMultipleOutputs.Label"));
+    FormData fdMultiOutput = new FormData();
+    fdMultiOutput.left = new FormAttachment(0,0);
+    fdMultiOutput.right = new FormAttachment(100,0);
+    fdMultiOutput.top = new FormAttachment(lastControl, margin);
+    wMultiOutput.setLayoutData(fdMultiOutput);
+    wMultiOutput.addSelectionListener(new SelectionAdapter() {
+      public void widgetSelected(SelectionEvent event) {
+        setFlags();
+      }
+    });
+    lastControl = wMultiOutput;
 
 		// 
 		// Add a tab folder for the parameters and various input and output
@@ -508,7 +542,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		FormData fdTabFolder = new FormData();
 		fdTabFolder.left = new FormAttachment(0, 0);
 		fdTabFolder.right = new FormAttachment(100, 0);
-		fdTabFolder.top = new FormAttachment(gTransGroup, margin * 2);
+		fdTabFolder.top = new FormAttachment(lastControl, margin * 2);
 		fdTabFolder.bottom = new FormAttachment(100, -75);
 		wTabFolder.setLayoutData(fdTabFolder);
 
@@ -527,9 +561,12 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 				// Simply add a new MappingIODefinition object to the
 				// inputMappings
 				MappingIODefinition definition = new MappingIODefinition();
+				definition.setRenamingOnOutput(true);
 				inputMappings.add(definition);
 				int index = inputMappings.size() - 1;
 				addInputMappingDefinitionTab(definition, index);
+				
+				setFlags();
 			}
 
 		});
@@ -551,6 +588,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 				outputMappings.add(definition);
 				int index = outputMappings.size() - 1;
 				addOutputMappingDefinitionTab(definition, index);
+
+        setFlags();
 			}
 
 		});
@@ -850,6 +889,11 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		{
 
 		}
+		
+		wMultiInput.setSelection(mappingMeta.isAllowingMultipleInputs());
+    wMultiOutput.setSelection(mappingMeta.isAllowingMultipleOutputs());
+    
+    setFlags();
 	}
 
 	private void addOutputMappingDefinitionTab(MappingIODefinition definition, int index)
@@ -1086,7 +1130,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
 		// What's the stepname to read from? (empty is OK too)
 		//
-		Button wbInputStep = new Button(wInputComposite, SWT.PUSH);
+		final Button wbInputStep = new Button(wInputComposite, SWT.PUSH);
 		props.setLook(wbInputStep);
 		wbInputStep.setText(BaseMessages.getString(PKG, "MappingDialog.button.SourceStepName"));
 		FormData fdbInputStep = new FormData();
@@ -1095,7 +1139,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		// left top corner
 		wbInputStep.setLayoutData(fdbInputStep);
 
-		Label wlInputStep = new Label(wInputComposite, SWT.RIGHT);
+		final Label wlInputStep = new Label(wInputComposite, SWT.RIGHT);
 		props.setLook(wlInputStep);
 		wlInputStep.setText(inputStepLabel); //$NON-NLS-1$
 		FormData fdlInputStep = new FormData();
@@ -1141,7 +1185,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
 		// What's the step name to read from? (empty is OK too)
 		//
-		Button wbOutputStep = new Button(wInputComposite, SWT.PUSH);
+		final Button wbOutputStep = new Button(wInputComposite, SWT.PUSH);
 		props.setLook(wbOutputStep);
 		wbOutputStep.setText(BaseMessages.getString(PKG, "MappingDialog.button.SourceStepName"));
 		FormData fdbOutputStep = new FormData();
@@ -1149,7 +1193,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		fdbOutputStep.right = new FormAttachment(100, 0);
 		wbOutputStep.setLayoutData(fdbOutputStep);
 
-		Label wlOutputStep = new Label(wInputComposite, SWT.RIGHT);
+		final Label wlOutputStep = new Label(wInputComposite, SWT.RIGHT);
 		props.setLook(wlOutputStep);
 		wlOutputStep.setText(outputStepLabel); //$NON-NLS-1$
 		FormData fdlOutputStep = new FormData();
@@ -1172,7 +1216,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		// Add a checkbox to indicate the main step to read from, the main data
 		// path...
 		//
-		Label wlMainPath = new Label(wInputComposite, SWT.RIGHT);
+		final Label wlMainPath = new Label(wInputComposite, SWT.RIGHT);
 		props.setLook(wlMainPath);
 		wlMainPath.setText(BaseMessages.getString(PKG, "MappingDialog.input.MainDataPath")); //$NON-NLS-1$
 		FormData fdlMainPath = new FormData();
@@ -1181,7 +1225,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		fdlMainPath.right = new FormAttachment(middle, -margin);
 		wlMainPath.setLayoutData(fdlMainPath);
 
-		Button wMainPath = new Button(wInputComposite, SWT.CHECK);
+		final Button wMainPath = new Button(wInputComposite, SWT.CHECK);
 		props.setLook(wMainPath);
 		FormData fdMainPath = new FormData();
 		fdMainPath.top = new FormAttachment(wbOutputStep, margin);
@@ -1203,41 +1247,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 			}
 
 		});
-
-		// Add a checkbox to indicate that all output mappings need to rename
-		// the values back...
-		//
-		Label wlRenameOutput = new Label(wInputComposite, SWT.RIGHT);
-		props.setLook(wlRenameOutput);
-		wlRenameOutput.setText(BaseMessages.getString(PKG, "MappingDialog.input.RenamingOnOutput")); //$NON-NLS-1$
-		FormData fdlRenameOutput = new FormData();
-		fdlRenameOutput.top = new FormAttachment(wMainPath, margin);
-		fdlRenameOutput.left = new FormAttachment(0, 0);
-		fdlRenameOutput.right = new FormAttachment(middle, -margin);
-		wlRenameOutput.setLayoutData(fdlRenameOutput);
-
-		Button wRenameOutput = new Button(wInputComposite, SWT.CHECK);
-		props.setLook(wRenameOutput);
-		FormData fdRenameOutput = new FormData();
-		fdRenameOutput.top = new FormAttachment(wMainPath, margin);
-		fdRenameOutput.left = new FormAttachment(middle, 0);
-		// fdRenameOutput.right = new FormAttachment(100, 0); // who cares, it's
-		// a check box
-		wRenameOutput.setLayoutData(fdRenameOutput);
-
-		wRenameOutput.setSelection(definition.isRenamingOnOutput());
-		wRenameOutput.addSelectionListener(new SelectionAdapter()
-		{
-
-			@Override
-			public void widgetSelected(SelectionEvent event)
-			{
-				definition.setRenamingOnOutput(!definition.isRenamingOnOutput()); // flip
-				// the
-				// switch
-			}
-
-		});
+		Control lastControl = wMainPath;
 
 		// Allow for a small description
 		//
@@ -1245,7 +1255,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		props.setLook(wlDescription);
 		wlDescription.setText(descriptionLabel); //$NON-NLS-1$
 		FormData fdlDescription = new FormData();
-		fdlDescription.top = new FormAttachment(wRenameOutput, margin);
+		fdlDescription.top = new FormAttachment(lastControl, margin);
 		fdlDescription.left = new FormAttachment(0, 0); // First one in the left
 		// top corner
 		fdlDescription.right = new FormAttachment(middle, -margin);
@@ -1257,8 +1267,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		wDescription.setText(Const.NVL(definition.getDescription(), ""));
 		wDescription.addModifyListener(lsMod);
 		FormData fdDescription = new FormData();
-		fdDescription.top = new FormAttachment(wRenameOutput, margin);
-		fdDescription.bottom = new FormAttachment(wRenameOutput, 100 + margin);
+		fdDescription.top = new FormAttachment(lastControl, margin);
+		fdDescription.bottom = new FormAttachment(lastControl, 100 + margin);
 		fdDescription.left = new FormAttachment(middle, 0); // To the right of
 		// the label
 		fdDescription.right = new FormAttachment(wbOutputStep, -margin);
@@ -1271,6 +1281,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 				definition.setDescription(wDescription.getText());
 			}
 		});
+		lastControl=wDescription;
+		
 
 		// Now add a table view with the 2 columns to specify: input and output
 		// fields for the source and target steps.
@@ -1279,10 +1291,11 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		props.setLook(wbEnterMapping);
 		wbEnterMapping.setText(BaseMessages.getString(PKG, "MappingDialog.button.EnterMapping"));
 		FormData fdbEnterMapping = new FormData();
-		fdbEnterMapping.top = new FormAttachment(wDescription, margin * 2);
+		fdbEnterMapping.top = new FormAttachment(lastControl, margin * 2);
 		fdbEnterMapping.right = new FormAttachment(100, 0); // First one in the
 		// left top corner
 		wbEnterMapping.setLayoutData(fdbEnterMapping);
+		wbEnterMapping.setEnabled(input);
 
 		ColumnInfo[] colinfo = new ColumnInfo[] {
 				new ColumnInfo(sourceColumnLabel, ColumnInfo.COLUMN_TYPE_TEXT, false, false), //$NON-NLS-1$
@@ -1294,9 +1307,10 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		FormData fdMappings = new FormData();
 		fdMappings.left = new FormAttachment(0, 0);
 		fdMappings.right = new FormAttachment(wbEnterMapping, -margin);
-		fdMappings.top = new FormAttachment(wDescription, margin * 2);
-		fdMappings.bottom = new FormAttachment(100, -20);
+		fdMappings.top = new FormAttachment(lastControl, margin * 2);
+		fdMappings.bottom = new FormAttachment(100, -50);
 		wFieldMappings.setLayoutData(fdMappings);
+		lastControl = wFieldMappings;
 
 		for (MappingValueRename valueRename : definition.getValueRenames())
 		{
@@ -1394,6 +1408,46 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 				}
 			}
 		});
+		
+    if (input) {
+      // Add a checkbox to indicate that all output mappings need to rename
+      // the values back...
+      //
+      Label wlRenameOutput = new Label(wInputComposite, SWT.RIGHT);
+      props.setLook(wlRenameOutput);
+      wlRenameOutput.setText(BaseMessages.getString(PKG, "MappingDialog.input.RenamingOnOutput")); //$NON-NLS-1$
+      FormData fdlRenameOutput = new FormData();
+      fdlRenameOutput.top = new FormAttachment(lastControl, margin);
+      fdlRenameOutput.left = new FormAttachment(0, 0);
+      fdlRenameOutput.right = new FormAttachment(middle, -margin);
+      wlRenameOutput.setLayoutData(fdlRenameOutput);
+  
+      Button wRenameOutput = new Button(wInputComposite, SWT.CHECK);
+      props.setLook(wRenameOutput);
+      FormData fdRenameOutput = new FormData();
+      fdRenameOutput.top = new FormAttachment(lastControl, margin);
+      fdRenameOutput.left = new FormAttachment(middle, 0);
+      // fdRenameOutput.right = new FormAttachment(100, 0); // who cares, it's
+      // a check box
+      wRenameOutput.setLayoutData(fdRenameOutput);
+  
+      wRenameOutput.setSelection(definition.isRenamingOnOutput());
+      wRenameOutput.addSelectionListener(new SelectionAdapter()
+      {
+  
+        @Override
+        public void widgetSelected(SelectionEvent event)
+        {
+          definition.setRenamingOnOutput(!definition.isRenamingOnOutput()); // flip
+          // the
+          // switch
+        }
+  
+      });
+      
+      lastControl=wRenameOutput;
+    }
+
 
 		FormData fdParametersComposite = new FormData();
 		fdParametersComposite.left = new FormAttachment(0, 0);
@@ -1442,16 +1496,69 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 						// 
 						changeList.remove(applyChanges);
 					}
+					
+					setFlags();
 				}
 			}
 
 		});
-
+		
+		wMultiInput.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) {
+		  setTabFlags(input, wlMainPath, wMainPath, wlInputStep, wInputStep, wbInputStep, wlOutputStep, wOutputStep, wbOutputStep);
+		}});
+    wMultiOutput.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) {
+      setTabFlags(input, wlMainPath, wMainPath, wlInputStep, wInputStep, wbInputStep, wlOutputStep, wOutputStep, wbOutputStep);
+    }});
+		
+		setTabFlags(input, wlMainPath, wMainPath, wlInputStep, wInputStep, wbInputStep, wlOutputStep, wOutputStep, wbOutputStep);
+				
 		wTabFolder.setSelection(wTab);
 
 	}
 
-	/**
+	private void setTabFlags(boolean input, Label wlMainPath, Button wMainPath, Label wlInputStep, Text wInputStep, Button wbInputStep, Label wlOutputStep, Text wOutputStep, Button wbOutputStep) {
+	  
+	  boolean multiInput = wMultiInput.getSelection(); 
+    boolean multiOutput = wMultiOutput.getSelection();
+    
+	  if (multiInput) {
+      wlMainPath.setEnabled(true);
+      wMainPath.setEnabled(true);
+	  } else {
+      wMainPath.setSelection(true);
+      wMainPath.setEnabled(false);
+      wlMainPath.setEnabled(false);
+	  }
+	  
+	  boolean mainPath = wMainPath.getSelection();
+    if (input) {
+      wlInputStep.setEnabled(!mainPath);
+      wInputStep.setEnabled(!mainPath);
+      wbInputStep.setEnabled(!mainPath);
+      wlOutputStep.setEnabled(multiInput);
+      wOutputStep.setEnabled(multiInput);
+      wbOutputStep.setEnabled(multiInput);
+    } else {
+      wlInputStep.setEnabled(multiOutput);
+      wInputStep.setEnabled(multiOutput);
+      wbInputStep.setEnabled(multiOutput);
+      wlOutputStep.setEnabled(!mainPath);
+      wOutputStep.setEnabled(!mainPath);
+      wbOutputStep.setEnabled(!mainPath);
+    }
+  }
+
+  private void setFlags() {
+	   // Enable/disable fields...
+    //
+    boolean allowMultiInput = wMultiInput.getSelection();
+    boolean allowMultiOutput = wMultiOutput.getSelection();
+    
+    wAddInput.setEnabled(allowMultiInput || inputMappings.size()==0);
+    wAddOutput.setEnabled(allowMultiOutput || outputMappings.size()==0);
+  }
+
+  /**
 	 * Enables or disables the mapping button. We can only enable it if the
 	 * target steps allows a mapping to be made against it.
 	 * 
@@ -1579,6 +1686,9 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		mappingMeta.searchInfoAndTargetSteps(transMeta.getSteps());
 		mappingMeta.setOutputMappings(outputMappings);
 
+		mappingMeta.setAllowingMultipleInputs(wMultiInput.getSelection());
+    mappingMeta.setAllowingMultipleOutputs(wMultiOutput.getSelection());
+		
 		mappingMeta.setChanged(true);
 
 		dispose();

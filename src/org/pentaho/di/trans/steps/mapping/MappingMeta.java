@@ -82,6 +82,10 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface, HasR
   private List<MappingIODefinition>         inputMappings;
   private List<MappingIODefinition>         outputMappings;
   private MappingParameters                 mappingParameters;
+  
+  private boolean allowingMultipleInputs;
+  private boolean allowingMultipleOutputs;
+  
 
   /*
    * This repository object is injected from the outside at runtime or at design
@@ -131,7 +135,9 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface, HasR
       checkObjectLocationSpecificationMethod();
 
       Node mappingsNode = XMLHandler.getSubNode(stepnode, "mappings"); //$NON-NLS-1$
-
+      inputMappings.clear();
+      outputMappings.clear();
+      
       if (mappingsNode != null) {
         // Read all the input mapping definitions...
         //
@@ -197,6 +203,11 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface, HasR
         // exist before.
         //
         mappingParameters = new MappingParameters();
+        
+        String multiInput = XMLHandler.getTagAttribute(stepnode, "allow_multiple_input");
+        allowingMultipleInputs = Const.isEmpty(multiInput) ? inputMappings.size()>1 : "Y".equalsIgnoreCase(multiInput);
+        String multiOutput = XMLHandler.getTagAttribute(stepnode, "allow_multiple_output");
+        allowingMultipleOutputs = Const.isEmpty(multiOutput) ? outputMappings.size()>1 : "Y".equalsIgnoreCase(multiOutput);
       }
     } catch (Exception e) {
       throw new KettleXMLException(BaseMessages.getString(PKG, "MappingMeta.Exception.ErrorLoadingTransformationStepFromXML"), e); //$NON-NLS-1$
@@ -250,6 +261,9 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface, HasR
 
     retval.append("    ").append(XMLHandler.closeTag("mappings")).append(Const.CR); //$NON-NLS-1$ $NON-NLS-2$
 
+    retval.append("    ").append(XMLHandler.addTagValue("allow_multiple_input", allowingMultipleInputs)); //$NON-NLS-1$
+    retval.append("    ").append(XMLHandler.addTagValue("allow_multiple_output", allowingMultipleOutputs)); //$NON-NLS-1$
+
     return retval.toString();
   }
 
@@ -265,6 +279,8 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface, HasR
     // Backward compatibility check for object specification
     //
     checkObjectLocationSpecificationMethod();
+    inputMappings.clear();
+    outputMappings.clear();
 
     int nrInput = rep.countNrStepAttributes(id_step, "input_field"); //$NON-NLS-1$
     int nrOutput = rep.countNrStepAttributes(id_step, "output_field"); //$NON-NLS-1$
@@ -314,6 +330,8 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface, HasR
       mappingParameters = new MappingParameters(rep, id_step);
     }
 
+    allowingMultipleInputs = rep.getStepAttributeBoolean(id_step, 0, "allow_multiple_input", inputMappings.size()>1);
+    allowingMultipleOutputs = rep.getStepAttributeBoolean(id_step, 0, "allow_multiple_output", outputMappings.size()>1);    
   }
 
   public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step) throws KettleException {
@@ -335,10 +353,23 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface, HasR
     //
     mappingParameters.saveRep(rep, id_transformation, id_step);
 
+    rep.saveStepAttribute(id_transformation, id_step, 0, "allow_multiple_input", allowingMultipleInputs);
+    rep.saveStepAttribute(id_transformation, id_step, 0, "allow_multiple_output", allowingMultipleOutputs);
   }
 
   public void setDefault() {
     specificationMethod = ObjectLocationSpecificationMethod.FILENAME;
+    
+    MappingIODefinition inputDefinition = new MappingIODefinition(null, null);
+    inputDefinition.setMainDataPath(true);
+    inputDefinition.setRenamingOnOutput(true);
+    inputMappings.add(inputDefinition);
+    MappingIODefinition outputDefinition = new MappingIODefinition(null, null);
+    outputDefinition.setMainDataPath(true);
+    outputMappings.add(outputDefinition);
+    
+    allowingMultipleInputs=false;
+    allowingMultipleOutputs=false;
   }
 
   public void getFields(RowMetaInterface row, String origin, RowMetaInterface info[], StepMeta nextStep, VariableSpace space) throws KettleStepException {
@@ -555,7 +586,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface, HasR
         //
         // Don't set internal variables: they belong to the parent thread!
         //
-        mappingTransMeta = new TransMeta(realFilename, false); 
+        mappingTransMeta = new TransMeta(realFilename, space); 
         mappingTransMeta.getLogChannel().logDetailed("Loading Mapping from repository", "Mapping transformation was loaded from XML file [" + realFilename + "]");
       } catch (Exception e) {
         throw new KettleException(BaseMessages.getString(PKG, "MappingMeta.Exception.UnableToLoadMapping"), e);
@@ -588,6 +619,9 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface, HasR
       mappingTransMeta = rep.loadTransformation(mappingMeta.getTransObjectId(), null);
       break;
     }
+    
+    mappingTransMeta.copyVariablesFrom(space);
+    
     return mappingTransMeta;
   }
 
@@ -953,5 +987,33 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface, HasR
     //
     RepositoryDirectoryInterface repositoryDirectoryInterface = RepositoryImportLocation.getRepositoryImportLocation().findDirectory(directoryPath);
     transObjectId = repository.getTransformationID(transName, repositoryDirectoryInterface);
+  }
+
+  /**
+   * @return the allowingMultipleInputs
+   */
+  public boolean isAllowingMultipleInputs() {
+    return allowingMultipleInputs;
+  }
+
+  /**
+   * @param allowingMultipleInputs the allowingMultipleInputs to set
+   */
+  public void setAllowingMultipleInputs(boolean allowingMultipleInputs) {
+    this.allowingMultipleInputs = allowingMultipleInputs;
+  }
+
+  /**
+   * @return the allowingMultipleOutputs
+   */
+  public boolean isAllowingMultipleOutputs() {
+    return allowingMultipleOutputs;
+  }
+
+  /**
+   * @param allowingMultipleOutputs the allowingMultipleOutputs to set
+   */
+  public void setAllowingMultipleOutputs(boolean allowingMultipleOutputs) {
+    this.allowingMultipleOutputs = allowingMultipleOutputs;
   }
 }
