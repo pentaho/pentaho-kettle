@@ -2483,12 +2483,8 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
             long lo = getLinesOutput();
             long lr = getLinesRead();
             long lw = getLinesWritten();
-            long lu = getLinesUpdated();
             long lj = getLinesRejected();
-            if (li > 0 || lo > 0 || lr > 0 || lw > 0 || lu > 0 || lj > 0 || errors > 0)
-                logBasic(BaseMessages.getString(PKG, "BaseStep.Log.SummaryInfo", String.valueOf(li), String.valueOf(lo), String.valueOf(lr), String.valueOf(lw), String.valueOf(lw), String.valueOf(errors+lj)));
-            else
-                logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.SummaryInfo", String.valueOf(li), String.valueOf(lo), String.valueOf(lr), String.valueOf(lw), String.valueOf(lw), String.valueOf(errors+lj)));
+            logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.SummaryInfo", String.valueOf(li), String.valueOf(lo), String.valueOf(lr), String.valueOf(lw), String.valueOf(lw), String.valueOf(errors+lj)));
         }
     }
 
