@@ -62,6 +62,9 @@ public class JobExecutionConfiguration implements Cloneable
     
     private boolean passingExport;
     
+    private String startCopyName;
+    private int startCopyNr;
+    
     public JobExecutionConfiguration()
     {
     	executingLocally = true;
@@ -366,6 +369,9 @@ public class JobExecutionConfiguration implements Cloneable
         xml.append("    ").append(XMLHandler.addTagValue("log_level", logLevel.getCode()));
         xml.append("    ").append(XMLHandler.addTagValue("clear_log", clearingLog));
 
+        xml.append("    ").append(XMLHandler.addTagValue("start_copy_name", startCopyName));
+        xml.append("    ").append(XMLHandler.addTagValue("start_copy_nr", startCopyNr));
+
         // The source rows...
         //
         if (previousResult!=null)
@@ -446,6 +452,9 @@ public class JobExecutionConfiguration implements Cloneable
         logLevel = LogLevel.getLogLevelForCode( XMLHandler.getTagValue(trecNode, "log_level") );
         clearingLog = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "clear_log"));
 
+        startCopyName = XMLHandler.getTagValue(trecNode, "start_copy_name");
+        startCopyNr = Const.toInt(XMLHandler.getTagValue(trecNode, "start_copy_nr"), 0);
+        
         Node resultNode = XMLHandler.getSubNode(trecNode, Result.XML_TAG);
         if (resultNode!=null)
         {
@@ -568,5 +577,33 @@ public class JobExecutionConfiguration implements Cloneable
 	public void setPassingExport(boolean passingExport) {
 		this.passingExport = passingExport;
 	}
+
+  /**
+   * @return the startCopyName
+   */
+  public String getStartCopyName() {
+    return startCopyName;
+  }
+
+  /**
+   * @param startCopyName the startCopyName to set
+   */
+  public void setStartCopyName(String startCopyName) {
+    this.startCopyName = startCopyName;
+  }
+
+  /**
+   * @return the startCopyNr
+   */
+  public int getStartCopyNr() {
+    return startCopyNr;
+  }
+
+  /**
+   * @param startCopyNr the startCopyNr to set
+   */
+  public void setStartCopyNr(int startCopyNr) {
+    this.startCopyNr = startCopyNr;
+  }
 
 }

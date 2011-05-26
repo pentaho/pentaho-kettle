@@ -156,6 +156,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 	private SocketRepository	socketRepository;
 
   private int maxJobEntriesLogged;
+  
+  private JobEntryCopy startJobEntryCopy;
 
     public Job(String name, String file, String args[]) {
         this();
@@ -337,22 +339,36 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         // Where do we start?
         JobEntryCopy startpoint;
         beginProcessing();
-        startpoint = jobMeta.findJobEntry(JobMeta.STRING_SPECIAL_START, 0, false);
+        if (startJobEntryCopy==null) {
+          startpoint = jobMeta.findJobEntry(JobMeta.STRING_SPECIAL_START, 0, false);
+        } else {
+          startpoint = startJobEntryCopy;
+        }
         if (startpoint == null) { throw new KettleJobException(BaseMessages.getString(PKG, "Job.Log.CounldNotFindStartingPoint")); }
-        JobEntrySpecial jes = (JobEntrySpecial) startpoint.getEntry();
+        
         Result res = null;
-        boolean isFirst = true;
-        long iteration=0;
-        while ( (jes.isRepeat() || isFirst) && !isStopped()) {
-            isFirst = false;
-            res = execute(0, null, startpoint, null, BaseMessages.getString(PKG, "Job.Reason.Started"));
-            if (iteration>0 && (iteration%500)==0) {
-              System.out.println("other 500 iterations: "+iteration);
-            }
-            iteration++;
+        JobEntryResult jerEnd = null;
+        
+        if (startpoint.isStart()) {
+          // Perform optional looping in the special Start job entry...
+          //
+          long iteration=0;
+          boolean isFirst = true;
+          JobEntrySpecial jes = (JobEntrySpecial) startpoint.getEntry();
+          while ( (jes.isRepeat() || isFirst) && !isStopped()) {
+              isFirst = false;
+              res = execute(0, null, startpoint, null, BaseMessages.getString(PKG, "Job.Reason.Started"));
+              if (iteration>0 && (iteration%500)==0) {
+                System.out.println("other 500 iterations: "+iteration);
+              }
+              iteration++;
+          }
+          jerEnd = new JobEntryResult(res, jes.getLogChannelId(), BaseMessages.getString(PKG, "Job.Comment.JobFinished"), BaseMessages.getString(PKG, "Job.Reason.Finished"), null, 0, null);
+        } else {
+          res = execute(0, null, startpoint, null, BaseMessages.getString(PKG, "Job.Reason.Started"));
+          jerEnd = new JobEntryResult(res, startpoint.getEntry().getLogChannel().getLogChannelId(), BaseMessages.getString(PKG, "Job.Comment.JobFinished"), BaseMessages.getString(PKG, "Job.Reason.Finished"), null, 0, null);
         }
         // Save this result...
-        JobEntryResult jerEnd = new JobEntryResult(res, jes.getLogChannelId(), BaseMessages.getString(PKG, "Job.Comment.JobFinished"), BaseMessages.getString(PKG, "Job.Reason.Finished"), null, 0, null);
         jobTracker.addJobTracker(new JobTracker(jobMeta, jerEnd));
         log.logMinimal(BaseMessages.getString(PKG, "Job.Comment.JobFinished"));
         
@@ -1632,5 +1648,19 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    */
   public Date getRegistrationDate() {
     return null;
+  }
+
+  /**
+   * @return the startJobEntryCopy
+   */
+  public JobEntryCopy getStartJobEntryCopy() {
+    return startJobEntryCopy;
+  }
+
+  /**
+   * @param startJobEntryCopy the startJobEntryCopy to set
+   */
+  public void setStartJobEntryCopy(JobEntryCopy startJobEntryCopy) {
+    this.startJobEntryCopy = startJobEntryCopy;
   }
 }

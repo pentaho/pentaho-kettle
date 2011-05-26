@@ -1446,7 +1446,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   }
 
   public void executeJob() {
-    executeJob(getActiveJob(), true, false, null, false);
+    executeJob(getActiveJob(), true, false, null, false, null, 0);
   }
 
   public void copyJob() {
@@ -7401,7 +7401,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
     JobMeta jobMeta = getActiveJob();
     if (jobMeta != null)
-      executeJob(jobMeta, local, remote, replayDate, safe);
+      executeJob(jobMeta, local, remote, replayDate, safe, null, 0);
 
   }
 
@@ -7423,13 +7423,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     }.start();
   }
 
-  public void executeJob(JobMeta jobMeta, boolean local, boolean remote, Date replayDate, boolean safe) {
+  public void executeJob(JobMeta jobMeta, boolean local, boolean remote, Date replayDate, boolean safe, String startCopyName, int startCopyNr) {
     // delegates.jobs.addJobLog(jobMeta);
     // JobLog jobLog = getActiveJobLog();
     // jobLog.startJob(replayDate);
 
     try {
-      delegates.jobs.executeJob(jobMeta, local, remote, replayDate, safe);
+      delegates.jobs.executeJob(jobMeta, local, remote, replayDate, safe, startCopyName, startCopyNr);
     } catch (Exception e) {
       new ErrorDialog(shell, "Execute job", "There was an error during job execution", e);
     }

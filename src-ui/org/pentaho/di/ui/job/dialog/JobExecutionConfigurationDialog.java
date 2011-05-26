@@ -43,6 +43,7 @@ import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -93,6 +94,8 @@ public class JobExecutionConfigurationDialog extends Dialog
 
     private Label wlReplayDate;
     private Text wReplayDate;
+    
+    private CCombo wStartCopy;
 
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
@@ -130,17 +133,7 @@ public class JobExecutionConfigurationDialog extends Dialog
 
         int margin = Const.MARGIN;
         int tabsize = 5*margin;
-        
-        wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.Button.Launch"));
-        wOK.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { ok(); }});
-        wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
-        wCancel.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { cancel(); }});
-        
-        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, null);
-        
-        
+                
         gLocal = new Group(shell, SWT.SHADOW_ETCHED_IN);
         gLocal.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.LocalGroup.Label")); //$NON-NLS-1$;
         // The layout
@@ -254,7 +247,7 @@ public class JobExecutionConfigurationDialog extends Dialog
         fdClearLog.top   = new FormAttachment(wSafeMode, margin);
         wClearLog.setLayoutData(fdClearLog);
         wClearLog.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { enableFields(); }});
-
+        
         wlLogLevel = new Label(gDetails, SWT.LEFT);
         props.setLook(wlLogLevel);
         wlLogLevel.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.LogLevel.Label")); //$NON-NLS-1$
@@ -295,6 +288,33 @@ public class JobExecutionConfigurationDialog extends Dialog
         fdReplayDate.top    = new FormAttachment(wLogLevel, margin);
         wReplayDate.setLayoutData(fdReplayDate);
 
+        Label wlStartCopy = new Label(gDetails, SWT.LEFT);
+        props.setLook(wlStartCopy);
+        wlStartCopy.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.StartCopy.Label")); //$NON-NLS-1$
+        wlStartCopy.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.StartCopy.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
+        FormData fdlStartCopy = new FormData();
+        fdlStartCopy.left  = new FormAttachment(0, 0);
+        fdlStartCopy.right = new FormAttachment(50, 0);
+        fdlStartCopy.top   = new FormAttachment(wReplayDate, margin);
+        wlStartCopy.setLayoutData(fdlStartCopy);
+
+        wStartCopy = new CCombo(gDetails, SWT.READ_ONLY | SWT.BORDER);
+        wStartCopy.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.StartCopy.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
+        props.setLook(wStartCopy);
+        FormData fdStartCopy = new FormData();
+        fdStartCopy.left  = new FormAttachment(50, margin);
+        fdStartCopy.right = new FormAttachment(100, 0);
+        fdStartCopy.top   = new FormAttachment(wReplayDate, margin);
+        wStartCopy.setLayoutData(fdStartCopy);
+        
+        String[] names = new String[jobMeta.getJobCopies().size()];
+        for (int i=0;i<names.length;i++) {
+          JobEntryCopy copy = jobMeta.getJobCopies().get(i);
+          names[i] = getJobEntryCopyName(copy);
+        }
+        wStartCopy.setItems(names);
+        
+        
         // Variables
         wlVariables = new Label(shell, SWT.LEFT);
         props.setLook(wlVariables);
@@ -317,35 +337,9 @@ public class JobExecutionConfigurationDialog extends Dialog
         fdVariables.left   = new FormAttachment(50, margin);
         fdVariables.right  = new FormAttachment(100, 0);
         fdVariables.top    = new FormAttachment(wlVariables, margin);
-        fdVariables.bottom = new FormAttachment(wOK, -margin*2);
+        fdVariables.bottom = new FormAttachment(wlVariables, 300);
         wVariables.setLayoutData(fdVariables);        
 
-        // Arguments
-        wlArguments = new Label(shell, SWT.LEFT);
-        props.setLook(wlArguments);
-        wlArguments.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.Arguments.Label")); //$NON-NLS-1$
-        wlArguments.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.Arguments.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
-        FormData fdlArguments = new FormData();
-        fdlArguments.left   = new FormAttachment(0, 0);
-        fdlArguments.right  = new FormAttachment(50, -margin);
-        fdlArguments.top    = new FormAttachment(wVariables, 0, SWT.CENTER);
-        wlArguments.setLayoutData(fdlArguments);
-
-        ColumnInfo[] cArguments = {
-            new ColumnInfo( BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.ArgumentsColumn.Argument"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ), //Stepname
-            new ColumnInfo( BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.ArgumentsColumn.Value"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //Preview size
-          };
-              
-        int nrArguments = configuration.getArguments() !=null ? configuration.getArguments().size() : 10; 
-        wArguments = new TableView(jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cArguments, nrArguments, false, null, props);
-        FormData fdArguments = new FormData();
-        fdArguments.left   = new FormAttachment(0, 0);
-        fdArguments.right  = new FormAttachment(50, -margin);
-        fdArguments.top    = new FormAttachment(wlArguments, margin);
-        fdArguments.bottom = new FormAttachment(wOK, -margin*2);
-        wArguments.setLayoutData(fdArguments);
-        
-        
         // Named parameters
         wlParams = new Label(shell, SWT.LEFT);
         props.setLook(wlParams);
@@ -370,8 +364,44 @@ public class JobExecutionConfigurationDialog extends Dialog
         fdParams.left   = new FormAttachment(0, 0);
         fdParams.right  = new FormAttachment(50, -margin);
         fdParams.top    = new FormAttachment(wlParams, margin);        
-        fdParams.bottom = new FormAttachment(wlArguments, -margin * 2);
+        fdParams.bottom = new FormAttachment(wlParams, 150);
         wParams.setLayoutData(fdParams);                        
+
+        // Arguments
+        wlArguments = new Label(shell, SWT.LEFT);
+        props.setLook(wlArguments);
+        wlArguments.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.Arguments.Label")); //$NON-NLS-1$
+        wlArguments.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.Arguments.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
+        FormData fdlArguments = new FormData();
+        fdlArguments.left   = new FormAttachment(0, 0);
+        fdlArguments.right  = new FormAttachment(50, -margin);
+        fdlArguments.top    = new FormAttachment(wParams, 2*margin);
+        wlArguments.setLayoutData(fdlArguments);
+
+        ColumnInfo[] cArguments = {
+            new ColumnInfo( BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.ArgumentsColumn.Argument"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ), //Stepname
+            new ColumnInfo( BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.ArgumentsColumn.Value"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //Preview size
+          };
+              
+        int nrArguments = configuration.getArguments() !=null ? configuration.getArguments().size() : 10; 
+        wArguments = new TableView(jobMeta, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cArguments, nrArguments, false, null, props);
+        FormData fdArguments = new FormData();
+        fdArguments.left   = new FormAttachment(0, 0);
+        fdArguments.right  = new FormAttachment(50, -margin);
+        fdArguments.top    = new FormAttachment(wlArguments, margin);
+        fdArguments.bottom = new FormAttachment(wlArguments, 150);
+        wArguments.setLayoutData(fdArguments);
+        
+        wOK = new Button(shell, SWT.PUSH);
+        wOK.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.Button.Launch"));
+        wOK.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { ok(); }});
+        wCancel = new Button(shell, SWT.PUSH);
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
+        wCancel.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { cancel(); }});
+        
+        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wArguments);
+        
+
 
         getData();
         
@@ -387,6 +417,10 @@ public class JobExecutionConfigurationDialog extends Dialog
         }
         
         return retval;
+    }
+
+    private String getJobEntryCopyName(JobEntryCopy copy) {
+      return copy.getName()+(copy.getNr()>0 ? copy.getNr() : "");
     }
 
     private void getParamsData()
@@ -504,6 +538,15 @@ public class JobExecutionConfigurationDialog extends Dialog
         wLogLevel.select( DefaultLogLevel.getLogLevel().getLevel() );
         if (configuration.getReplayDate()!=null) wReplayDate.setText(simpleDateFormat.format(configuration.getReplayDate()));
 
+        String startCopy = "";
+        if (!Const.isEmpty(configuration.getStartCopyName())) {
+          JobEntryCopy copy = jobMeta.findJobEntry(configuration.getStartCopyName(), configuration.getStartCopyNr(), false);
+          if (copy!=null) {
+            startCopy = getJobEntryCopyName(copy);
+          }
+        }
+        wStartCopy.setText(startCopy);
+        
         getParamsData();
         getArgumentsData();
         getVariablesData();
@@ -540,6 +583,18 @@ public class JobExecutionConfigurationDialog extends Dialog
             configuration.setSafeModeEnabled(wSafeMode.getSelection() );
             configuration.setClearingLog(wClearLog.getSelection());
             configuration.setLogLevel( LogLevel.values()[wLogLevel.getSelectionIndex()] );
+            
+            String startCopyName = null;
+            int startCopyNr = 0;
+            if (!Const.isEmpty(wStartCopy.getText())) {
+              if (wStartCopy.getSelectionIndex()>=0) {
+                JobEntryCopy copy = jobMeta.getJobCopies().get(wStartCopy.getSelectionIndex());
+                startCopyName = copy.getName();
+                startCopyNr = copy.getNr();
+              } 
+            }
+            configuration.setStartCopyName(startCopyName);
+            configuration.setStartCopyNr(startCopyNr);
             
             // The lower part of the dialog...
             getInfoParameters();

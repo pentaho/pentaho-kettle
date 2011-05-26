@@ -3106,7 +3106,17 @@ public static void copyInternalJobVariables(JobMeta sourceJobMeta, TransMeta tar
             // Add job entry listeners
             //
             job.addJobEntryListener(createRefreshJobEntryListener());
-                        
+              
+            // If there is an alternative start job entry, pass it to the job
+            //
+            if (!Const.isEmpty(executionConfiguration.getStartCopyName())) {
+              JobEntryCopy startJobEntryCopy = runJobMeta.findJobEntry(
+                  executionConfiguration.getStartCopyName(), 
+                  executionConfiguration.getStartCopyNr(), 
+                  false
+                 );
+              job.setStartJobEntryCopy(startJobEntryCopy);
+            }
             
             // Set the named parameters
             Map<String, String> paramMap = executionConfiguration.getParams();
@@ -3322,4 +3332,19 @@ public static void copyInternalJobVariables(JobMeta sourceJobMeta, TransMeta tar
 	    return showChangedWarning(jobMeta.getName());
 	  }
 
+	  
+	  public void replayJob() {
+	    List<JobEntryCopy> selectedEntries = jobMeta.getSelectedEntries();
+	    if (selectedEntries.size()!=1) {
+	      MessageBox box = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.CLOSE);
+	      box.setText(BaseMessages.getString(PKG, "JobGraph.ReplayJob.SelectOneEntryToStartFrom.Title"));
+        box.setMessage(BaseMessages.getString(PKG, "JobGraph.ReplayJob.SelectOneEntryToStartFrom.Message"));
+        box.open();
+        return;
+	    }
+	    
+	    JobEntryCopy copy = selectedEntries.get(0);
+	    
+	    spoon.executeJob(jobMeta, true, false, null, false, copy.getName(), copy.getNr());
+	  }
 }

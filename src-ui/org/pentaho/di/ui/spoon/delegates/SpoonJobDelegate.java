@@ -1389,7 +1389,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 		}
 	}
 	
-	public void executeJob(JobMeta jobMeta, boolean local, boolean remote, Date replayDate, boolean safe) throws KettleException {
+	public void executeJob(JobMeta jobMeta, boolean local, boolean remote, Date replayDate, boolean safe, String startCopyName, int startCopyNr) throws KettleException {
 		
 		if (jobMeta == null) {
 			return;
@@ -1411,7 +1411,9 @@ public class SpoonJobDelegate extends SpoonDelegate
 		executionConfiguration.setReplayDate(replayDate);
 		executionConfiguration.setRepository(spoon.rep);
 		executionConfiguration.setSafeModeEnabled(safe);
-
+		executionConfiguration.setStartCopyName(startCopyName);
+		executionConfiguration.setStartCopyNr(startCopyNr);
+    
 		executionConfiguration.setLogLevel(DefaultLogLevel.getLogLevel());
 
 		JobExecutionConfigurationDialog dialog = new JobExecutionConfigurationDialog(spoon.getShell(), executionConfiguration, jobMeta);

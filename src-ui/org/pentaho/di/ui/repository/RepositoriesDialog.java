@@ -17,18 +17,13 @@ import java.util.ResourceBundle;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.ui.core.PropsUI;
-import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.repository.controllers.RepositoriesController;
 import org.pentaho.di.ui.spoon.XulSpoonSettingsManager;
-import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulRunner;
@@ -94,28 +89,7 @@ public class RepositoriesDialog {
   }
   
   public void show() {
-    // Load previous size and location of this dialog...
-    //
-    final Shell shell = repositoriesController.getShell();
-    
-    BaseStepDialog.setSize(shell);
-    DisposeListener disposeListener = new DisposeListener() {
-        public void widgetDisposed(DisposeEvent event) {
-          // Save size and location of this dialog when it closes...
-          //
-          WindowProperty winprop = new WindowProperty(shell);
-          PropsUI.getInstance().setScreen(winprop);
-        }
-      };
-    shell.addDisposeListener(disposeListener);
-    
     repositoriesController.show();    
-    
-    // Clean it up, just in case someone wants to re-use the dialog over and over again.
-    //
-    if (!shell.isDisposed()) {
-      shell.removeDisposeListener(disposeListener);
-    }
   }
 
   public ILoginCallback getCallback() {

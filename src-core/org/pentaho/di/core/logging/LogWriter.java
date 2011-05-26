@@ -110,6 +110,13 @@ public class LogWriter
         // Get rid of the VFS info messages...
         //
         LogManager.getLogger("org.apache.commons.vfs").setLevel(Level.WARN);
+        
+        // Hide info messages from Jetty too...
+        //
+        LogManager.getLogger("org.mortbay.log").setLevel(Level.WARN);
+        LogManager.getLogger("org.slf4j").setLevel(Level.WARN);
+        
+        
     }
 
 	/**
