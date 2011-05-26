@@ -14,6 +14,7 @@ package org.pentaho.di.trans.steps.orabulkloader;
 import java.util.List;
 import java.util.Map;
 
+import org.drools.util.StringUtils;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -52,6 +53,11 @@ import org.w3c.dom.Node;
 public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 {
 	private static Class<?> PKG = OraBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	
+	private static int DEFAULT_COMMIT_SIZE = 100000; // The bigger the better for Oracle
+	private static int DEFAULT_BIND_SIZE = 0;
+	private static int DEFAULT_READ_SIZE = 0;
+	private static int DEFAULT_MAX_ERRORS = 50;
 
     /** what's the schema for the target? */
     private String schemaName;
@@ -90,16 +96,16 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 	private String dateMask[];
 
 	/** Commit size (ROWS) */
-	private int    commitSize;
+	private String commitSize;
 
 	/** bindsize */
-	private int    bindSize;
+	private String bindSize;
 
 	/** readsize */
-	private int    readSize;	
+	private String readSize;	
 
 	/** maximum errors */
-	private int    maxErrors;		
+	private String maxErrors;		
 	
 	/** Load method */
 	private String loadMethod;
@@ -156,11 +162,19 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		super();
 	}
+	
+	public int getCommitSizeAsInt(VariableSpace varSpace) {
+    try {
+      return Integer.valueOf(varSpace.environmentSubstitute(getCommitSize()));
+    } catch (NumberFormatException ex) {
+      return DEFAULT_COMMIT_SIZE;
+    }
+  }	
 
     /**
      * @return Returns the commitSize.
      */
-    public int getCommitSize()
+    public String getCommitSize()
     {
         return commitSize;
     }
@@ -168,7 +182,7 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
     /**
      * @param commitSize The commitSize to set.
      */
-    public void setCommitSize(int commitSize)
+    public void setCommitSize(String commitSize)
     {
         this.commitSize = commitSize;
     }
@@ -325,14 +339,25 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 			String con     = XMLHandler.getTagValue(stepnode, "connection");   //$NON-NLS-1$
 			databaseMeta   = DatabaseMeta.findDatabase(databases, con);
 			
-			csize          = XMLHandler.getTagValue(stepnode, "commit");       //$NON-NLS-1$
-			commitSize     = Const.toInt(csize, 0);
-			bsize          = XMLHandler.getTagValue(stepnode, "bind_size");    //$NON-NLS-1$
-			bindSize       = Const.toInt(bsize, 0);
-			rsize          = XMLHandler.getTagValue(stepnode, "read_size");    //$NON-NLS-1$
-			readSize       = Const.toInt(rsize, 0);
-			serror         = XMLHandler.getTagValue(stepnode, "errors");       //$NON-NLS-1$
-			maxErrors      = Const.toInt(serror, 50);      // default to 50.               
+			commitSize          = XMLHandler.getTagValue(stepnode, "commit");       //$NON-NLS-1$
+			if(StringUtils.isEmpty(commitSize)) {
+			  commitSize = Integer.toString(DEFAULT_COMMIT_SIZE);
+			}
+
+			bindSize          = XMLHandler.getTagValue(stepnode, "bind_size");    //$NON-NLS-1$
+			if(StringUtils.isEmpty(bindSize)) {
+        bindSize = Integer.toString(DEFAULT_BIND_SIZE);
+      }
+			
+			readSize       = XMLHandler.getTagValue(stepnode, "read_size");    //$NON-NLS-1$
+			if(StringUtils.isEmpty(readSize)) {
+        readSize = Integer.toString(DEFAULT_READ_SIZE);
+      }
+
+			maxErrors         = XMLHandler.getTagValue(stepnode, "errors");       //$NON-NLS-1$
+			if(StringUtils.isEmpty(maxErrors)) {
+        maxErrors = Integer.toString(DEFAULT_MAX_ERRORS);
+      }
 
             schemaName     = XMLHandler.getTagValue(stepnode, "schema");       //$NON-NLS-1$
 			tableName      = XMLHandler.getTagValue(stepnode, "table");        //$NON-NLS-1$
@@ -392,10 +417,10 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		fieldTable   = null;
 		databaseMeta = null;
-		commitSize   = 100000;            // The bigger the better for Oracle 
-		bindSize     = 0;                 // Use platform default         
-		readSize     = 0;                 // Use platform default
-		maxErrors    = 50;
+		commitSize   = Integer.toString(DEFAULT_COMMIT_SIZE);
+		bindSize     = Integer.toString(DEFAULT_BIND_SIZE);                 // Use platform default         
+		readSize     = Integer.toString(DEFAULT_READ_SIZE);                 // Use platform default
+		maxErrors    = Integer.toString(DEFAULT_MAX_ERRORS);
         schemaName   = "";                //$NON-NLS-1$
 		tableName    = BaseMessages.getString(PKG, "OraBulkLoaderMeta.DefaultTableName"); //$NON-NLS-1$
 		loadMethod   = METHOD_AUTO_END;
@@ -470,10 +495,10 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);  //$NON-NLS-1$
 
-			commitSize     = (int)rep.getStepAttributeInteger(id_step, "commit");         //$NON-NLS-1$
-			bindSize       = (int)rep.getStepAttributeInteger(id_step, "bind_size");      //$NON-NLS-1$
-			readSize       = (int)rep.getStepAttributeInteger(id_step, "read_size");      //$NON-NLS-1$
-			maxErrors      = (int)rep.getStepAttributeInteger(id_step, "errors");         //$NON-NLS-1$
+			commitSize     =      rep.getStepAttributeString(id_step, "commit");         //$NON-NLS-1$
+			bindSize       =      rep.getStepAttributeString(id_step, "bind_size");      //$NON-NLS-1$
+			readSize       =      rep.getStepAttributeString(id_step, "read_size");      //$NON-NLS-1$
+			maxErrors      =      rep.getStepAttributeString(id_step, "errors");         //$NON-NLS-1$
             schemaName     =      rep.getStepAttributeString(id_step,  "schema");         //$NON-NLS-1$
 			tableName      =      rep.getStepAttributeString(id_step,  "table");          //$NON-NLS-1$
 			loadMethod     =      rep.getStepAttributeString(id_step,  "load_method");    //$NON-NLS-1$
@@ -977,28 +1002,52 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 	public void setEraseFiles(boolean eraseFiles) {
 		this.eraseFiles = eraseFiles;
 	}
+	
+	public int getBindSizeAsInt(VariableSpace varSpace) {
+    try {
+      return Integer.valueOf(varSpace.environmentSubstitute(getBindSize()));
+    } catch (NumberFormatException ex) {
+      return DEFAULT_BIND_SIZE;
+    }
+  }
 
-	public int getBindSize() {
+	public String getBindSize() {
 		return bindSize;
 	}
 
-	public void setBindSize(int bindSize) {
+	public void setBindSize(String bindSize) {
 		this.bindSize = bindSize;
 	}
+	
+	public int getMaxErrorsAsInt(VariableSpace varSpace) {
+    try {
+      return Integer.valueOf(varSpace.environmentSubstitute(getMaxErrors()));
+    } catch (NumberFormatException ex) {
+      return DEFAULT_MAX_ERRORS;
+    }
+  }
 
-	public int getMaxErrors() {
+	public String getMaxErrors() {
 		return maxErrors;
 	}
 
-	public void setMaxErrors(int maxErrors) {
+	public void setMaxErrors(String maxErrors) {
 		this.maxErrors = maxErrors;
 	}
+	
+	public int getReadSizeAsInt(VariableSpace varSpace) {
+	  try {
+	    return Integer.valueOf(varSpace.environmentSubstitute(getReadSize()));
+	  } catch (NumberFormatException ex) {
+	    return DEFAULT_READ_SIZE;
+	  }
+	}
 
-	public int getReadSize() {
+	public String getReadSize() {
 		return readSize;
 	}
 
-	public void setReadSize(int readSize) {
+	public void setReadSize(String readSize) {
 		this.readSize = readSize;
 	}
 

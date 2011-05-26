@@ -1156,12 +1156,18 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 	private void setTableFieldCombo(){
 		Runnable fieldLoader = new Runnable() {
 			public void run() {
+			  if(wTable == null || wTable.isDisposed()) {
+          return;
+        }
+        String table = wTable.getText();
+			  
 				//clear
 				for (int i = 0; i < tableFieldColumns.size(); i++) {
 					ColumnInfo colInfo = (ColumnInfo) tableFieldColumns.get(i);
 					colInfo.setComboValues(new String[] {});
 				}
-				if (!Const.isEmpty(wTable.getText())) {
+				
+				if (!Const.isEmpty(table)) {
 					DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
 					if (ci != null) {
 						Database db = new Database(loggingObject, ci);
@@ -1169,7 +1175,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 							db.connect();
 
 							String schemaTable = ci	.getQuotedSchemaTableCombination(transMeta.environmentSubstitute(wSchema
-											.getText()), transMeta.environmentSubstitute(wTable.getText()));
+											.getText()), transMeta.environmentSubstitute(table));
 							RowMetaInterface r = db.getTableFields(schemaTable);
 							if (null != r) {
 								String[] fieldNames = r.getFieldNames();
@@ -1190,7 +1196,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 						}
 					}
 				}
-			}
+		  }
 		};
 		shell.getDisplay().asyncExec(fieldLoader);
 	}
@@ -1322,10 +1328,10 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 
 		inf.allocate(nrfields);
 
-		inf.setMaxErrors( Const.toInt(wMaxErrors.getText(), 0) );
-		inf.setCommitSize( Const.toInt(wCommit.getText(), 0) );
-		inf.setBindSize( Const.toInt(wBindSize.getText(), 0) );
-		inf.setReadSize( Const.toInt(wReadSize.getText(), 0) );
+		inf.setMaxErrors( wMaxErrors.getText());
+		inf.setCommitSize( wCommit.getText());
+		inf.setBindSize( wBindSize.getText());
+		inf.setReadSize( wReadSize.getText());
 		inf.setDbNameOverride(wDbNameOverride.getText());
 
 		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "OraBulkLoaderDialog.Log.FoundFields", "" + nrfields)); //$NON-NLS-1$ //$NON-NLS-2$

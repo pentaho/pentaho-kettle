@@ -202,7 +202,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 		contents.append("OPTIONS(").append(Const.CR);
 		contents.append("  ERRORS=\'").append(meta.getMaxErrors()).append("\'").append(Const.CR);
 
- 	    if ( meta.getCommitSize() != 0 && 
+ 	    if ( meta.getCommitSizeAsInt(this) != 0 && 
  	    		! (meta.isDirectPath() && getStepMeta().getCopies() > 1 ))
 		{
  	       // For the second part of the above expressions: ROWS is not supported
@@ -210,12 +210,12 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 		   contents.append("  , ROWS=\'").append(meta.getCommitSize()).append("\'").append(Const.CR);
 		}
  	    
-   	    if ( meta.getBindSize() != 0 )
+   	    if ( meta.getBindSizeAsInt(this) != 0 )
    	    {
 		   contents.append("  , BINDSIZE=\'").append(meta.getBindSize()).append("\'").append(Const.CR);
 		}
 	
-	    if ( meta.getReadSize() != 0 )
+	    if ( meta.getReadSizeAsInt(this) != 0 )
 	    {
 		   contents.append("  , READSIZE=\'").append(meta.getReadSize()).append("\'").append(Const.CR);
 		}
