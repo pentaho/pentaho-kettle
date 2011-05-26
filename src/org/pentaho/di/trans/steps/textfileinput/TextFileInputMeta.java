@@ -1361,6 +1361,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				fileName[i] = rep.getStepAttributeString(id_step, i, "file_name");
 				fileMask[i] = rep.getStepAttributeString(id_step, i, "file_mask");
+				excludeFileMask[i] = rep.getStepAttributeString(id_step, i, "exclude_file_mask");
 				fileRequired[i] = rep.getStepAttributeString(id_step, i, "file_required");
 				if (!YES.equalsIgnoreCase(fileRequired[i])) fileRequired[i] = NO;
                 includeSubFolders[i] = rep.getStepAttributeString(id_step, i, "include_subfolders");
