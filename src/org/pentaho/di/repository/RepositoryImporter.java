@@ -488,6 +488,7 @@ public class RepositoryImporter implements IRepositoryImporter {
     ObjectId existintId = rep.getJobId(jobMeta.getName(), targetDirectory);
     if (existintId != null && askOverwrite) {
       overwrite = feedback.jobOverwritePrompt(jobMeta);
+      askOverwrite = feedback.isAskingOverwriteConfirmation();
     } else {
       updateDisplay();
     }
