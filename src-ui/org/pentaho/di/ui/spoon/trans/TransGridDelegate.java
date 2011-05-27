@@ -12,7 +12,10 @@
  */
 package org.pentaho.di.ui.spoon.trans;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -246,10 +249,12 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
 			}
 		}
 	}
-	
+  
   private void refreshView() {
     boolean insert = true;
-
+    int nrSteps = -1;
+    int totalSteps = -1;
+    
     if (transGridView == null || transGridView.isDisposed())
       return;
     if (refresh_busy)
@@ -265,9 +270,14 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
     long msSinceLastUpdate = time - lastUpdateView;
     if (transGraph.trans != null && msSinceLastUpdate > UPDATE_TIME_VIEW) {
       lastUpdateView = time;
-      int nrSteps = transGraph.trans.nrSteps();
+      
+      nrSteps = transGraph.trans.nrSteps();
+      totalSteps = nrSteps;
       if (hideInactiveSteps)
         nrSteps = transGraph.trans.nrActiveSteps();
+      
+      StepExecutionStatus[] stepStatusLookup = transGraph.trans.getTransStepExecutionStatusLookup();
+      boolean[] isRunningLookup = transGraph.trans.getTransStepIsRunningLookup();
 
       int sortColumn = transGridView.getSortField();
       boolean sortDescending = transGridView.isSortingDescending();
@@ -279,25 +289,44 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
         insert = false;
       }
 
-      if (nrSteps == 0) {
-        if (table.getItemCount() == 0) {
-          new TableItem(table, SWT.NONE);
-        }
+      if (nrSteps == 0 && table.getItemCount() == 0) {
+        new TableItem(table, SWT.NONE);
+        refresh_busy = false;
+        return;
       }
 
       int nr = 0;
-      for (int i = 0; i < transGraph.trans.nrSteps(); i++) {
-        StepInterface baseStep = transGraph.trans.getRunThread(i);
+      StepInterface baseStep;
+      
+      for (int i = 0; i < totalSteps; i++) {
+    	baseStep = null;
         // when "Hide active" steps is enabled show only alive steps
         // otherwise only those that have not STATUS_EMPTY
-        if ((hideInactiveSteps && baseStep.isRunning()) || (!hideInactiveSteps && baseStep.getStatus() != StepExecutionStatus.STATUS_EMPTY)) {
-          StepStatus stepStatus = new StepStatus(baseStep);
-          TableItem ti;
+        if ((hideInactiveSteps && (isRunningLookup[i] || stepStatusLookup[i] != StepExecutionStatus.STATUS_FINISHED)) || (!hideInactiveSteps && stepStatusLookup[i] != StepExecutionStatus.STATUS_EMPTY)) {
+          TableItem ti = null;
           if (insert) {
             ti = new TableItem(table, SWT.NONE);
           } else {
             ti = table.getItem(nr);
           }
+          
+          if (ti == null) { continue; }
+          
+		  String num=""+(i+1);
+		  if (ti.getText(0).length() < 1) {
+			ti.setText(0, num);
+		  }
+		  
+          if (ti.getText(0).length() > 0) {
+        	  Integer tIndex = Integer.parseInt(ti.getText(0));
+        	  tIndex--;
+        	  baseStep = transGraph.trans.getRunThread(tIndex);
+          }
+          if (baseStep == null) {
+        	  baseStep = transGraph.trans.getRunThread(i);
+          }
+          
+          StepStatus stepStatus = new StepStatus(baseStep);
 
           String fields[] = stepStatus.getTransLogFields();
 
@@ -313,26 +342,31 @@ public class TransGridDelegate extends SpoonDelegate implements XulEventHandler 
           if (baseStep.getErrors() > 0) {
             ti.setBackground(GUIResource.getInstance().getColorRed());
           } else {
-            if (i % 2 == 0)
+            if (nr % 2 == 0)
               ti.setBackground(GUIResource.getInstance().getColorWhite());
             else
               ti.setBackground(GUIResource.getInstance().getColorBlueCustomGrid());
           }
-
           nr++;
         }
       }
-      transGridView.setRowNums();
-      transGridView.optWidth(true);
+      
       // Only need to resort if the output has been sorted differently to the
       // default
-      if (sortColumn != 0 || !sortDescending) {
+      if (table.getItemCount() > 0 && (sortColumn != 0 || !sortDescending)) {
         transGridView.sortTable(sortColumn, sortDescending);
       }
+
+      //if (updateRowNumbers) { transGridView.setRowNums(); }
+      transGridView.optWidth(true);
+
       if (selectedItems != null && selectedItems.length > 0) {
         transGridView.setSelection(selectedItems);
       }
-      transGridView.getTable().setTopIndex(topIdx);
+      //transGridView.getTable().setTopIndex(topIdx);
+      if (transGridView.getTable().getTopIndex() != topIdx) {
+    	  transGridView.getTable().setTopIndex(topIdx);
+      }
     } else {
       // We need at least one table-item in a table!
       if (table.getItemCount() == 0)

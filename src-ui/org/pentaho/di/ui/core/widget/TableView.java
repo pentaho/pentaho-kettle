@@ -132,9 +132,11 @@ public class TableView extends Composite
 	private TraverseListener  lsTraverse;
 	
 	private int sortfield;
+	private int sortfield_last;
 	private boolean sortingDescending;
+	private Boolean sortingDescending_last;
     private boolean sortable;
-	
+	private int lastRowCount;
 	private boolean field_changed; 
 	
 	private Menu mRow;
@@ -182,7 +184,10 @@ public class TableView extends Composite
 		this.variables=space;
 				
 		sortfield = 0;
+		sortfield_last = -1;
 		sortingDescending = false;
+		sortingDescending_last = null;
+		
         sortable  = true;
         		
 		selectionStart = -1;
@@ -1082,16 +1087,37 @@ public class TableView extends Composite
 	{
 		table.select(selectedItems);
 	}
+	
     public void sortTable(int sortField, boolean sortingDescending)
     {
-        this.sortfield = sortField;
-        this.sortingDescending = sortingDescending;
-        
-        try
-        {
-            table.setSortColumn(table.getColumn(sortfield));
-            table.setSortDirection( sortingDescending ? SWT.DOWN : SWT.UP );
+    	boolean shouldRefresh = false;
+    	if (this.sortfield_last == -1 && this.sortingDescending_last == null) {
+    		//first time through, so update
+    		shouldRefresh = true;
+    		this.sortfield_last = this.sortfield;
+    		this.sortingDescending_last = new Boolean(this.sortingDescending);
+    		
+    		this.sortfield = sortField;
+    		this.sortingDescending = sortingDescending;
+    	}
 
+    	if (sortfield_last != this.sortfield) {
+    		this.sortfield_last = this.sortfield;
+    		this.sortfield = sortField;
+    		shouldRefresh = true;
+    		
+    	}
+    	
+    	if (sortingDescending_last != this.sortingDescending) {
+    		this.sortingDescending_last = this.sortingDescending;
+    		this.sortingDescending = sortingDescending;
+        	shouldRefresh = true;
+    	}
+    	
+    	if (!shouldRefresh && table.getItemCount() == lastRowCount) { return; }
+
+        try
+        {        	
             // First, get all info and put it in a Vector of Rows...
             TableItem[] items = table.getItems();
             List<Object[]> v = new ArrayList<Object[]>();
@@ -1207,6 +1233,10 @@ public class TableView extends Composite
                     if (string!=null) item.setText(j-2, string);
                 }
             }
+        	table.setSortColumn(table.getColumn(sortfield));
+        	table.setSortDirection( sortingDescending ? SWT.DOWN : SWT.UP );
+
+            lastRowCount = table.getItemCount();
         }
         catch(Exception e)
         {
@@ -2204,7 +2234,9 @@ public class TableView extends Composite
             {
     			String num=""+(i+1);
     			// for(int j=num.length();j<3;j++) num="0"+num;
-    			item.setText(0, num);
+    			if (!item.getText(0).equals(num)) {
+    				item.setText(0, num);
+    			}
             }
 		}
 	}
@@ -2281,7 +2313,7 @@ public class TableView extends Composite
 			{
                 int extra = 25;
                 if (Const.isOSX() || Const.isLinux()) max*=1.25;
-                tc.setWidth(max+extra);
+                if (tc.getWidth() != max+extra) { tc.setWidth(max+extra);}
 			}
 			catch(Exception e) {}
 		}
