@@ -142,7 +142,7 @@ abstract class BaseLogTable {
 	 * @return the schemaName
 	 */
 	public String getActualSchemaName() {
-	  if (!Const.isEmpty(schemaName)) return schemaName;
+	  if (!Const.isEmpty(schemaName)) return space.environmentSubstitute(schemaName);
 	  
 	  String name = space.getVariable(getSchemaNameVariable());
       if (Const.isEmpty(name)) {
@@ -167,7 +167,7 @@ abstract class BaseLogTable {
 	 * @return the tableName
 	 */
 	public String getActualTableName() {
-      if (!Const.isEmpty(tableName)) return tableName;
+      if (!Const.isEmpty(tableName)) return space.environmentSubstitute(tableName);
       
       String name = space.getVariable(getTableNameVariable());
       if (Const.isEmpty(name)) {
