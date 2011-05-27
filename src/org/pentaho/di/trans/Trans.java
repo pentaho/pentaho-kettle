@@ -1379,11 +1379,45 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		for (int i=0;i<steps.size();i++)
 		{
 			StepMetaDataCombi sid = steps.get(i);
-			if ( sid.step.isRunning() ) nr++;
+			//without also considering a step status of not finished,
+			//	the step execution results grid shows empty while
+			//  the transformation has steps still running.
+			//if ( sid.step.isRunning() ) nr++;
+			if ( sid.step.isRunning() ||
+					sid.step.getStatus() != StepExecutionStatus.STATUS_FINISHED ) {
+				nr++;
+			}
 		}
 		return nr;
 	}
 
+	public boolean[] getTransStepIsRunningLookup() {
+		if (steps==null) return null;
+		
+		boolean[] tResult = new boolean[steps.size()];
+		for (int i = 0; i < steps.size(); i++)
+		{
+			StepMetaDataCombi sid = steps.get(i);
+			tResult[i] = (sid.step.isRunning() || sid.step.getStatus() != StepExecutionStatus.STATUS_FINISHED);
+		}
+		return tResult;
+	}
+	
+	public StepExecutionStatus[] getTransStepExecutionStatusLookup() {
+		if (steps==null) return null;
+
+		//we need this snapshot for the TransGridDelegate refresh method to handle the
+		//	difference between a timed refresh and continual step status updates
+		int totalSteps = steps.size();
+		StepExecutionStatus[] tList = new StepExecutionStatus[totalSteps];
+		for (int i = 0; i < totalSteps; i++)
+		{
+			StepMetaDataCombi sid = steps.get(i);
+			tList[i] = sid.step.getStatus();
+		}
+		return tList;
+	}
+	
 	public StepInterface getRunThread(int i)
 	{
 		if (steps==null) return null;
