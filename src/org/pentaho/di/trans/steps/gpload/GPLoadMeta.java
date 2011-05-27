@@ -127,10 +127,20 @@ public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface
 	
 	/*
 	 * Encodings supported by GPLoad.
+	 * This list was obtained from the GPAAdminGuide.
 	 */
-	public final static String[] SUPPORTED_ENCODINGS = { "", "US-ASCII", "ISO-8859-1", "UTF-8", 
-	                                                    "UTF-16BE", "UTF-16LE", "UTF-16" }; //$NON-NLS-1$
-	
+	public final static String[] SUPPORTED_ENCODINGS = { 
+	   "", "BIG5", 
+	   "EUC_CN", "EUC_JP", "EUC_KR", "EUC_TW", 
+	   "GB18030", "GBK", 
+	   "ISO-8859-1", "ISO_8859_5", "ISO_8859_6", "ISO_8859_7", "ISO_8859_8", 
+      "JOHAB", "KOI8", 
+      "LATIN1", "LATIN2", "LATIN3", "LATIN4", "LATIN5", 
+      "LATIN6", "LATIN7", "LATIN8", "LATIN9", "LATIN10", 
+      "MULE_INTERNAL", "SJIS", "SQL_ASCII", "UHC", "UTF8", 
+      "WIN866", "WIN874", "WIN1250", "WIN1251", "WIN1252", 
+      "WIN1253", "WIN1254", "WIN1255", "WIN1256", "WIN1257", "WIN1258" }; //$NON-NLS-1$
+
 	/*
 	 * Do not translate following values!!! They are will end up in the job export.
 	 */
