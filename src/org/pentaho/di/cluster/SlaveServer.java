@@ -607,7 +607,7 @@ public class SlaveServer  extends ChangedFlag
         addCredentials(client);
         addProxy(client);
         HttpMethod method = new GetMethod(constructUrl(service));
-        method.getParams().setSoTimeout(1000); // TEST
+        method.getParams().setSoTimeout(120000); // 2 min timeout
         
         // Execute request
         // 
