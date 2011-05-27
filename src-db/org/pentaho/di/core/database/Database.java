@@ -2491,7 +2491,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
                 }
                 
                 // If we're dealing with PostgreSQL and double precision types 
-                if (databaseMeta.getDatabaseInterface() instanceof PostgreSQLDatabaseMeta && type==java.sql.Types.DOUBLE && precision==16 && length==16)
+                if (databaseMeta.getDatabaseInterface() instanceof PostgreSQLDatabaseMeta && type==java.sql.Types.DOUBLE && precision>=16 && length>=16)
                 {
                     precision=-1;
                     length=-1;
@@ -2506,6 +2506,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
                         length=-1;
                   	}
                 }
+                
                 // if the length or precision needs a BIGNUMBER
                 if (length>15 || precision>15) valtype=ValueMetaInterface.TYPE_BIGNUMBER;
             }
