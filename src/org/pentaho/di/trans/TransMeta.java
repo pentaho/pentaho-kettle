@@ -2356,6 +2356,10 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
             // Root node:
             Node transnode = XMLHandler.getSubNode(doc, XML_TAG); //$NON-NLS-1$
+            
+            if (transnode==null) {
+              throw new KettleXMLException(BaseMessages.getString(PKG, "TransMeta.Exception.NotValidTransformationXML", fname));
+            }
 
             // Load from this node...
             loadXML(transnode, rep, setInternalVariables, parentVariableSpace, prompter);
