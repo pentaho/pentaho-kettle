@@ -39,6 +39,7 @@ public class BlockingBatchingRowSet extends BaseRowSet implements Comparable<Row
   
   private int size; 
   
+  private final int BATCHSIZE = 2;
   // private long inputTID = -1, outputTID = -1;
 
   /**
@@ -51,14 +52,14 @@ public class BlockingBatchingRowSet extends BaseRowSet implements Comparable<Row
 
     // create a fixed sized queue for max performance
     //
-    putArray = new ArrayBlockingQueue<Object[][]>(100, false);
-    getArray = new ArrayBlockingQueue<Object[][]>(100, false);
+    putArray = new ArrayBlockingQueue<Object[][]>(BATCHSIZE, true);
+    getArray = new ArrayBlockingQueue<Object[][]>(BATCHSIZE, true);
 
-    size = maxSize / 100; // each buffer's size
+    size = maxSize / BATCHSIZE; // each buffer's size
     Object[][] buffer;
-    for (int i = 0; i < 100; i++) {
+    for (int i = 0; i < BATCHSIZE; i++) {
         buffer = new Object[size][];
-        getArray.offer(buffer);    
+        putArray.offer(buffer);    
     }
     outputBuffer = null;
     putIndex = getIndex = size;
