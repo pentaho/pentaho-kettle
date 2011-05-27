@@ -18,10 +18,10 @@ public class ClusterGenerator {
 	 * We use one master and 3 slaves
 	 */
 	public static final SlaveServer[] LOCAL_TEST_SLAVES = new SlaveServer[] {
-		new SlaveServer("test-localhost-8585-master", "localhost", "8585", "cluster", "cluster", null, null, null, true),
-		new SlaveServer("test-localhost-8586-slave", "localhost", "8586", "cluster", "cluster", null, null, null, false),
-		new SlaveServer("test-localhost-8587-slave", "localhost", "8587", "cluster", "cluster", null, null, null, false),
-		new SlaveServer("test-localhost-8588-slave", "localhost", "8588", "cluster", "cluster", null, null, null, false),
+		new SlaveServer("test-localhost-8585-master", "127.0.0.1", "8585", "cluster", "cluster", null, null, null, true),
+		new SlaveServer("test-localhost-8586-slave", "127.0.0.1", "8586", "cluster", "cluster", null, null, null, false),
+		new SlaveServer("test-localhost-8587-slave", "127.0.0.1", "8587", "cluster", "cluster", null, null, null, false),
+		new SlaveServer("test-localhost-8588-slave", "127.0.0.1", "8588", "cluster", "cluster", null, null, null, false),
 	};
 	
 	private ClusterSchema clusterSchema;
