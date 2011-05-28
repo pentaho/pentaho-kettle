@@ -133,7 +133,18 @@ public class JobExecutionConfigurationDialog extends Dialog
 
         int margin = Const.MARGIN;
         int tabsize = 5*margin;
-                
+              
+        wOK = new Button(shell, SWT.PUSH);
+        wOK.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.Button.Launch"));
+        wOK.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { ok(); }});
+        wCancel = new Button(shell, SWT.PUSH);
+        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
+        wCancel.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { cancel(); }});
+        
+        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, null);
+        
+
+        
         gLocal = new Group(shell, SWT.SHADOW_ETCHED_IN);
         gLocal.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.LocalGroup.Label")); //$NON-NLS-1$;
         // The layout
@@ -337,7 +348,7 @@ public class JobExecutionConfigurationDialog extends Dialog
         fdVariables.left   = new FormAttachment(50, margin);
         fdVariables.right  = new FormAttachment(100, 0);
         fdVariables.top    = new FormAttachment(wlVariables, margin);
-        fdVariables.bottom = new FormAttachment(wlVariables, 300);
+        fdVariables.bottom = new FormAttachment(wOK, -margin*2);
         wVariables.setLayoutData(fdVariables);        
 
         // Named parameters
@@ -389,17 +400,8 @@ public class JobExecutionConfigurationDialog extends Dialog
         fdArguments.left   = new FormAttachment(0, 0);
         fdArguments.right  = new FormAttachment(50, -margin);
         fdArguments.top    = new FormAttachment(wlArguments, margin);
-        fdArguments.bottom = new FormAttachment(wlArguments, 150);
+        fdArguments.bottom = new FormAttachment(wOK, -margin*2);
         wArguments.setLayoutData(fdArguments);
-        
-        wOK = new Button(shell, SWT.PUSH);
-        wOK.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.Button.Launch"));
-        wOK.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { ok(); }});
-        wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
-        wCancel.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { cancel(); }});
-        
-        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wArguments);
         
 
 
