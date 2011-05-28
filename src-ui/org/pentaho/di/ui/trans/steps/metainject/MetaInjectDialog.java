@@ -814,9 +814,11 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     
     // Also set the source step combo values
     //
-    String[] sourceSteps = injectTransMeta.getStepNames();
-    Arrays.sort(sourceSteps);
-    wSourceStep.setItems(sourceSteps);
+    if (injectTransMeta!=null) {
+      String[] sourceSteps = injectTransMeta.getStepNames();
+      Arrays.sort(sourceSteps);
+      wSourceStep.setItems(sourceSteps);
+    }
   }
 
   private void expandItemAndChildren(TreeItem item) {
