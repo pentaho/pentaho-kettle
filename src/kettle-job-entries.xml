@@ -544,5 +544,25 @@
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.HL7MLLPAcknowledge.Tooltip</tooltip>
 		<iconfile>ui/images/mllp-ack.png</iconfile>
 	</job-entry>
-
+	<job-entry id="PGP_DECRYPT_FILES">
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.PGPDecryptFiles.TypeDesc</description>
+		<classname>org.pentaho.di.job.entries.pgpdecryptfiles.JobEntryPGPDecryptFiles</classname>
+		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileEncryption</category>
+		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.PGPDecryptFiles.Tooltip</tooltip>
+		<iconfile>ui/images/GPGDecrypt.png</iconfile>
+	</job-entry>
+	<job-entry id="PGP_ENCRYPT_FILES">
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.PGPEncryptFiles.TypeDesc</description>
+		<classname>org.pentaho.di.job.entries.pgpencryptfiles.JobEntryPGPEncryptFiles</classname>
+		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileEncryption</category>
+		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.PGPEncryptFiles.Tooltip</tooltip>
+		<iconfile>ui/images/GPGEncrypt.png</iconfile>
+	</job-entry>
+	<job-entry id="PGP_VERIFY_FILES">
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.PGPVerify.TypeDesc</description>
+		<classname>org.pentaho.di.job.entries.pgpverify.JobEntryPGPVerify</classname>
+		<category>i18n:org.pentaho.di.job:JobCategory.Category.FileEncryption</category>
+		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.PGPVerify.Tooltip</tooltip>
+		<iconfile>ui/images/PGPVerif.png</iconfile>
+	</job-entry>
 </job-entries>
