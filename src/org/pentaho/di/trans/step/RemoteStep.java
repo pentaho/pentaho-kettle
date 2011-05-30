@@ -25,8 +25,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.BlockingRowSet;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleEOFException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -90,6 +90,12 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 	private GZIPOutputStream gzipOutputStream;
 
 	private String	sourceSlaveServerName;
+
+  private GZIPInputStream gzipInputStream;
+
+  private BufferedInputStream bufferedInputStream;
+
+  protected BufferedOutputStream bufferedOutputStream;
 
 	/**
 	 * @param hostname
@@ -266,7 +272,7 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 		//
 		Runnable runnable = new Runnable() {
 		
-			public void run() {
+      public void run() {
 				try {
 					// Accept the socket, create a connection
 					// This blocks until something comes through...
@@ -274,13 +280,13 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 					socket = serverSocket.accept();
 					
 					// Create the output stream...
-					if (compressingStreams) {
-						gzipOutputStream = new GZIPOutputStream(socket.getOutputStream(), 50000);
-				        outputStream = new DataOutputStream(new BufferedOutputStream(gzipOutputStream, bufferSize));
-					}
-					else {
-				        outputStream = new DataOutputStream(new BufferedOutputStream(socket.getOutputStream(), bufferSize));
-					}
+          if (compressingStreams) {
+            gzipOutputStream = new GZIPOutputStream(socket.getOutputStream(), 50000);
+            bufferedOutputStream = new BufferedOutputStream(gzipOutputStream, bufferSize);
+          } else {
+            bufferedOutputStream = new BufferedOutputStream(socket.getOutputStream(), bufferSize);
+          }
+          outputStream = new DataOutputStream(bufferedOutputStream);
 					
 					baseStep.logBasic("Server socket accepted for port ["+ port +"], reading from server "+targetSlaveServerName);
 
@@ -321,21 +327,30 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 					baseStep.stopAll();
 				}
 				finally {
-
-					// shut down the output stream, we've sent everything...
-					//
-					try {
-						if (socket!=null) {
-							socket.shutdownInput();
-							socket.shutdownOutput();
-							socket.close();
-						}
-					} catch (IOException e) {
-						baseStep.logError("Error closing output socket to remote step", e);
-						baseStep.setErrors(1);
-						baseStep.stopAll();
-					}
-					
+				  try {
+				    socket.shutdownOutput();
+				  } catch(Exception e) {
+				    baseStep.logError("Error shutting down output channel on the server socket of remote step", e);
+				    baseStep.setErrors(1L);
+				    baseStep.stopAll();
+				  }
+				  try {
+  				  outputStream.flush();
+  				  outputStream.close();
+  				  bufferedOutputStream.close();
+  				  if (gzipOutputStream!=null) {
+  				    gzipOutputStream.close();
+  				  }
+				  } catch(Exception e) {
+				    baseStep.logError("Error shutting down output streams on the server socket of remote step", e);
+            baseStep.setErrors(1L);
+            baseStep.stopAll();
+				  }
+          outputStream=null;
+          bufferedOutputStream=null;
+          gzipOutputStream=null;
+          
+				  //
 					// Now we can't close the server socket.
 					// This would immediately kill all the remaining data on the client side.
 					// The close of the server socket will happen when all the transformation in the cluster have finished.
@@ -351,6 +366,52 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 		// Return the rowSet to be added to the output row set of baseStep 
 		//
 		return rowSet;
+	}
+	
+	/**
+	 * Close left-over sockets, streams and so on.
+	 */
+	public void cleanup() {
+	  if (socket!=null && !socket.isClosed()) {
+  	  try {
+        if (socket!=null && !socket.isOutputShutdown()) {
+          socket.shutdownOutput();
+        }
+        if (socket!=null && !socket.isInputShutdown()) {
+          socket.shutdownInput();
+        }
+        if (socket!=null && !socket.isClosed()) {
+          socket.close();
+        }
+        
+        if (bufferedInputStream!=null) {
+          bufferedInputStream.close();
+          bufferedInputStream=null;
+        }
+        if (gzipInputStream!=null) {
+          gzipInputStream.close();
+          gzipInputStream=null;
+        }
+        if (inputStream!=null) {
+          inputStream.close();
+          inputStream=null;
+        }
+        if (gzipOutputStream!=null) {
+          gzipOutputStream.close();
+          gzipOutputStream=null;
+        }
+        if (bufferedOutputStream!=null) {
+          bufferedOutputStream.close();
+          bufferedOutputStream=null;
+        }
+        if (outputStream!=null) {
+          outputStream.close();
+          outputStream=null;
+        }
+  	  } catch(Exception e) {
+  	    baseStep.logError("Error closing socket", e);
+  	  }
+	  }
 	}
 		
 	private Object[] getRowOfData(RowMetaInterface rowMeta) throws KettleFileException
@@ -370,169 +431,200 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 		return rowData;
 	}
 	
-	public synchronized BlockingRowSet openReaderSocket(final BaseStep baseStep) throws IOException, KettleException {
-		this.baseStep = baseStep;
-		
-		final BlockingRowSet rowSet = new BlockingRowSet(baseStep.getTransMeta().getSizeRowset());
-		
-		// Make sure we handle the case with multiple step copies running on a slave...
-		//
-		rowSet.setThreadNameFromToCopy(sourceStep, sourceStepCopyNr, targetStep, targetStepCopyNr);
-		rowSet.setRemoteSlaveServerName(targetSlaveServerName);
-		
-		final int portNumber = Integer.parseInt( baseStep.environmentSubstitute(port) );
-		final String realHostname = baseStep.environmentSubstitute(hostname);
+  public synchronized BlockingRowSet openReaderSocket(final BaseStep baseStep) throws IOException, KettleException {
+    this.baseStep = baseStep;
 
-		// Connect to the server socket (started during BaseStep.init())
-        // Because the accept() call on the server socket can be called after we reached this code
-        // it is best to build in a retry loop with a time-out here.
-        // 
-        long startTime = System.currentTimeMillis();
-        boolean connected=false;
-        KettleException lastException=null;
-		
-        //// timeout with retry until connected
-        while ( !connected && (TIMEOUT_IN_SECONDS > (System.currentTimeMillis()-startTime)/1000) && !baseStep.isStopped())
-        {
-        	try {
-				socket = new Socket();
-				socket.setReuseAddress(true);
-				
-				baseStep.logDetailed("Step variable MASTER_HOST : ["+baseStep.getVariable("MASTER_HOST")+"]");
-				baseStep.logDetailed("Opening client (reader) socket to server ["+Const.NVL(realHostname, "")+":"+port+"]");
-				socket.connect(new InetSocketAddress(realHostname, portNumber), 5000);
-				
-				connected=true;
-				
-                if (compressingStreams)
-                {
-                    inputStream  = new DataInputStream(new BufferedInputStream(new GZIPInputStream(socket.getInputStream()), bufferSize));
-                }
-                else
-                {
-                    inputStream  = new DataInputStream(new BufferedInputStream(socket.getInputStream(), bufferSize));
-                }
-                		
-		        lastException=null;
-        	}
-        	catch(Exception e) {
-                lastException=new KettleException("Unable to open socket to server "+realHostname+" port "+portNumber, e);
-        	}
-	        if (lastException!=null) // Sleep for a while
-	        {
-	            try {
-					Thread.sleep(250);
-				} catch (InterruptedException e) {
-					if (socket!=null) {
-						socket.shutdownInput();
-						socket.shutdownOutput();
-						socket.close();
-						baseStep.logDetailed("Closed connection to server socket to read rows from remote step on server "+realHostname+" port "+portNumber+" - Local port="+socket.getLocalPort());
-					}
+    final BlockingRowSet rowSet = new BlockingRowSet(baseStep.getTransMeta().getSizeRowset());
 
-					throw new KettleException("Interrupted while trying to connect to server socket: "+e.toString());
-				}
-	        }
+    // Make sure we handle the case with multiple step copies running on a
+    // slave...
+    //
+    rowSet.setThreadNameFromToCopy(sourceStep, sourceStepCopyNr, targetStep, targetStepCopyNr);
+    rowSet.setRemoteSlaveServerName(targetSlaveServerName);
+
+    final int portNumber = Integer.parseInt(baseStep.environmentSubstitute(port));
+    final String realHostname = baseStep.environmentSubstitute(hostname);
+
+    // Connect to the server socket (started during BaseStep.init())
+    // Because the accept() call on the server socket can be called after we
+    // reached this code
+    // it is best to build in a retry loop with a time-out here.
+    //
+    long startTime = System.currentTimeMillis();
+    boolean connected = false;
+    KettleException lastException = null;
+
+    // // timeout with retry until connected
+    while (!connected && (TIMEOUT_IN_SECONDS > (System.currentTimeMillis() - startTime) / 1000) && !baseStep.isStopped()) {
+      try {
+        socket = new Socket();
+        socket.setReuseAddress(true);
+
+        baseStep.logDetailed("Step variable MASTER_HOST : [" + baseStep.getVariable("MASTER_HOST") + "]");
+        baseStep.logDetailed("Opening client (reader) socket to server [" + Const.NVL(realHostname, "") + ":" + port + "]");
+        socket.connect(new InetSocketAddress(realHostname, portNumber), 5000);
+
+        connected = true;
+
+        if (compressingStreams) {
+          gzipInputStream = new GZIPInputStream(socket.getInputStream());
+          bufferedInputStream = new BufferedInputStream(gzipInputStream, bufferSize);
+        } else {
+          bufferedInputStream = new BufferedInputStream(socket.getInputStream(), bufferSize);
+        }
+        inputStream = new DataInputStream(bufferedInputStream);
+
+        lastException = null;
+      } catch (Exception e) {
+        lastException = new KettleException("Unable to open socket to server " + realHostname + " port " + portNumber, e);
+      }
+      if (lastException != null) 
+      {
+        // Sleep for a while
+        try {
+          Thread.sleep(250);
+        } catch (InterruptedException e) {
+          if (socket != null) {
+            socket.shutdownInput();
+            socket.shutdownOutput();
+            socket.close();
+            baseStep.logDetailed("Closed connection to server socket to read rows from remote step on server " + realHostname + " port " + portNumber + " - Local port=" + socket.getLocalPort());
+          }
+
+          throw new KettleException("Interrupted while trying to connect to server socket: " + e.toString());
+        }
+      }
+    }
+
+    // See if all was OK...
+    if (lastException != null) {
+
+      baseStep.logError("Error initialising step: " + lastException.toString());
+      if (socket != null) {
+        socket.shutdownInput();
+        socket.shutdownOutput();
+        socket.close();
+        baseStep.logDetailed("Closed connection to server socket to read rows from remote step on server " + realHostname + " port " + portNumber + " - Local port=" + socket.getLocalPort());
+      }
+      throw lastException;
+    } else {
+      if (inputStream == null)
+        throw new KettleException("Unable to connect to the SocketWriter in the " + TIMEOUT_IN_SECONDS + "s timeout period.");
+    }
+
+    baseStep.logDetailed("Opened connection to server socket to read rows from remote step on server " + realHostname + " port " + portNumber + " - Local port=" + socket.getLocalPort());
+
+    // Create a thread to take care of the reading from the client socket.
+    // The rows read will be put in a RowSet buffer.
+    // That buffer will hand over the rows to the step that has this RemoteStep
+    // object defined
+    // as a remote input step.
+    //
+    Runnable runnable = new Runnable() {
+      public void run() {
+        try {
+
+          // First read the row meta data from the socket...
+          //
+          RowMetaInterface rowMeta = null;
+          while (!baseStep.isStopped() && rowMeta == null) {
+            try {
+              rowMeta = new RowMeta(inputStream);
+            } catch (SocketTimeoutException e) {
+              rowMeta = null;
+            }
+          }
+
+          if (rowMeta == null) {
+            throw new KettleEOFException(); // leave now.
+          }
+
+          // And a first row of data...
+          //
+          Object[] rowData = getRowOfData(rowMeta);
+
+          // Now get the data itself, row by row...
+          //
+          while (rowData != null && !baseStep.isStopped()) {
+            baseStep.incrementLinesInput();
+            baseStep.decrementLinesRead();
+
+            if (baseStep.log.isDebug())
+              baseStep.logDebug("Received row from remote step: " + rowMeta.getString(rowData));
+
+            baseStep.putRowTo(rowMeta, rowData, rowSet);
+            baseStep.decrementLinesWritten();
+            rowData = getRowOfData(rowMeta);
+          }
+        } catch (KettleEOFException e) {
+          // Nothing, we're simply done reading...
+          //
+          if (baseStep.log.isDebug())
+            baseStep.logDebug("Finished reading from remote step on server " + hostname + " port " + portNumber);
+
+        } catch (Exception e) {
+          baseStep.logError("Error reading from client socket to remote step", e);
+          baseStep.setErrors(1);
+          baseStep.stopAll();
+        } finally {
+          // Close the input socket
+          if (socket != null && !socket.isClosed() && !socket.isInputShutdown()) {
+            try {
+              socket.shutdownInput();
+            } catch (Exception e) {
+              baseStep.logError("Error shutting down input channel on client socket connection to remote step", e);
+            }
+          }
+          if (socket!=null && !socket.isClosed() && !socket.isOutputShutdown()) {
+            try {
+              socket.shutdownOutput();
+            } catch (Exception e) {
+              baseStep.logError("Error shutting down output channel on client socket connection to remote step", e);
+            }
+          }
+          if (socket!=null && !socket.isClosed()) {
+            try {
+              socket.close();
+            } catch (Exception e) {
+              baseStep.logError("Error shutting down client socket connection to remote step", e);
+            }
+          }
+          if (inputStream!=null) {
+            try {
+              inputStream.close();
+            } catch (Exception e) {
+              baseStep.logError("Error closing input stream on socket connection to remote step", e);
+            }
+            inputStream=null;
+          }
+          if (bufferedInputStream!=null) {
+            try {
+              bufferedInputStream.close();
+            } catch (Exception e) {
+              baseStep.logError("Error closing input stream on socket connection to remote step", e);
+            }
+          }
+          bufferedInputStream=null;
+          if (gzipInputStream!=null) {
+            try {
+              gzipInputStream.close();
+            } catch (Exception e) {
+              baseStep.logError("Error closing input stream on socket connection to remote step", e);
+            }
+          }
+          gzipInputStream=null;
+          baseStep.logDetailed("Closed connection to server socket to read rows from remote step on server " + realHostname + " port " + portNumber + " - Local port=" + socket.getLocalPort());
         }
 
-        // See if all was OK...
-        if (lastException!=null)
-        {
-
-        	baseStep.logError("Error initialising step: "+lastException.toString());
-			if (socket!=null) {
-				socket.shutdownInput();
-				socket.shutdownOutput();
-				socket.close();
-				baseStep.logDetailed("Closed connection to server socket to read rows from remote step on server "+realHostname+" port "+portNumber+" - Local port="+socket.getLocalPort());
-			}
-            throw lastException;
-        }
-        else
-        {
-            if (inputStream==null) throw new KettleException("Unable to connect to the SocketWriter in the "+TIMEOUT_IN_SECONDS+"s timeout period.");
-        }
-        
-        baseStep.logDetailed("Opened connection to server socket to read rows from remote step on server "+realHostname+" port "+portNumber+" - Local port="+socket.getLocalPort());
-
-        // Create a thread to take care of the reading from the client socket.
-        // The rows read will be put in a RowSet buffer.
-        // That buffer will hand over the rows to the step that has this RemoteStep object defined 
-        // as a remote input step.
+        // signal baseStep that nothing else comes from this step.
         //
-        Runnable runnable = new Runnable() {
-			public void run() {
-				try {
-					
-					// First read the row meta data from the socket...
-					//
-					RowMetaInterface rowMeta=null;
-					while (!baseStep.isStopped() && rowMeta==null) {
-						try {
-							rowMeta = new RowMeta(inputStream);
-						}
-						catch(SocketTimeoutException e) {
-							rowMeta=null;
-						}
-					}
-					
-					if (rowMeta==null) {
-						throw new KettleEOFException(); // leave now.
-					}
-					
-					// And a first row of data...
-					//
-					Object[] rowData = getRowOfData(rowMeta);
-					
-					// Now get the data itself, row by row...
-					//
-					while (rowData!=null && !baseStep.isStopped()) {
-						baseStep.incrementLinesInput();
-						baseStep.decrementLinesRead();
+        rowSet.setDone();
+      }
+    };
+    new Thread(runnable).start();
 
-						if (baseStep.log.isDebug()) baseStep.logDebug("Received row from remote step: "+rowMeta.getString(rowData));
-
-						baseStep.putRowTo(rowMeta, rowData, rowSet);
-						baseStep.decrementLinesWritten();
-						rowData = getRowOfData(rowMeta);
-					}
-				}
-				catch(KettleEOFException e) {
-					// Nothing, we're simply done reading...
-					//
-					if (baseStep.log.isDebug()) baseStep.logDebug("Finished reading from remote step on server "+hostname+" port "+portNumber);
-
-				} catch (Exception e) {
-					baseStep.logError("Error reading from client socket to remote step", e);
-					baseStep.setErrors(1);
-					baseStep.stopAll();
-				}
-				finally {
-					// Close the socket
-					try {
-						if (socket!=null) {
-							socket.shutdownInput();
-							socket.shutdownOutput();
-							socket.close();
-							baseStep.logDetailed("Closed connection to server socket to read rows from remote step on server "+realHostname+" port "+portNumber+" - Local port="+socket.getLocalPort());
-						}
-					} catch (IOException e) {
-						baseStep.logError("Error closing client socket connection to remote step", e);
-						baseStep.setErrors(1);
-						baseStep.stopAll();
-					}
-
-				}
-				
-				// signal baseStep that nothing else comes from this step.
-				//
-				rowSet.setDone(); 
-			}
-		};
-		new Thread(runnable).start();
-		
-		return rowSet;
-	}
+    return rowSet;
+  }
 
 	/**
 	 * @return the sourceStep
