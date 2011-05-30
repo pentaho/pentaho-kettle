@@ -93,14 +93,6 @@ public class LoggingRegistry {
 		//
 		if (maxSize>0 && map.size()>maxSize) {
 		  
-		  // First we'll try to find a similar entry.
-		  // For example we might be adding the same entries all the time to the registry when a job is in a loop.
-		  //
-		  LoggingObjectInterface similar = findFirstSimilarLoggingObject(loggingSource);
-		  if (similar!=null) {
-		    map.remove(similar.getLogChannelId());
-		  }
-		  
 		  // If this didn't work we retry when it gets out of hand...
 		  //
 		  if (map.size()>maxSize+250) {
@@ -128,17 +120,6 @@ public class LoggingRegistry {
 		
 		return logChannelId;
 	}
-	
-	private LoggingObjectInterface findFirstSimilarLoggingObject(LoggingObject src) {
-
-	  for (LoggingObjectInterface obj : map.values()) {
-	    boolean sameName =   obj.getObjectName()!=null && src.getObjectName()!=null && obj.getObjectName().equals( src.getObjectName() );
-	    if (sameName) {
-	      return obj;
-	    }
-	  }
-	  return null;
-  }
 
   /**
 	 * See if the registry already contains the specified logging object.  If so, return the one in the registry.
