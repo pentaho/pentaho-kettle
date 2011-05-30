@@ -122,6 +122,7 @@
         <antcall target="publish-plugin-task">
           <param name="ivy.artifact.id" value="@{plugin}" />
           <param name="pluginfolder" value="../src-plugins/@{plugin}"/>
+      	  <param name="artifact.type" value="zip"/>
         </antcall>
       </sequential>
     </for>
@@ -150,25 +151,31 @@
   </target>
 	
   <target name="publish-plugin-task" depends="install-ivy">
-  	<copy overwrite="true" file="${pluginfolder}/ivy.xml" tofile="${pluginfolder}/dist/ivy-jar.xml"/>
-  	<ivy:resolve file="${pluginfolder}/dist/ivy-jar.xml" />
-    <ivy:makepom ivyfile="${pluginfolder}/dist/ivy-jar.xml" pomfile="${pluginfolder}/dist/pom.xml">
+  	<copy overwrite="true" file="${pluginfolder}/ivy.xml" tofile="${pluginfolder}/dist/ivy-zip.xml"/>
+  	<ivy:resolve file="${pluginfolder}/dist/ivy-zip.xml" />
+    <ivy:makepom ivyfile="${pluginfolder}/dist/ivy-zip.xml" pomfile="${pluginfolder}/dist/pom.xml">
       <mapping conf="default" scope="compile" />
       <mapping conf="runtime" scope="runtime" />
     </ivy:makepom>
-  	<ivy:deliver conf="*(public)" deliverpattern="${pluginfolder}/dist/ivy-jar.xml" />
+  	<ivy:deliver conf="*(public)" deliverpattern="${pluginfolder}/dist/ivy-zip.xml" />
   	
     <antcall target="maven-publish-dependencies">
       <param name="publish.groupId" value="${ivy.artifact.group}" />
       <param name="publish.artifactId" value="${ivy.artifact.id}" />
       <param name="publish.version" value="${project.revision}" />
-      <param name="publish.file" value="${pluginfolder}/dist/ivy-jar.xml" />
+      <param name="publish.file" value="${pluginfolder}/dist/ivy-zip.xml" />
     </antcall>
   	
     <antcall target="maven-publish-artifact">
       <param name="publish.pomFile" value="${pluginfolder}/dist/pom.xml" />
       <param name="publish.file" value="${pluginfolder}/dist/${ivy.artifact.id}.jar" />
     </antcall>
+
+    <antcall target="maven-publish-artifact">
+      <param name="publish.pomFile" value="${pluginfolder}/dist/pom.xml" />
+      <param name="publish.file" value="${pluginfolder}/dist/${ivy.artifact.id}.zip" />
+    </antcall>
+
   </target>
 	
   <target name="clean">

@@ -8,6 +8,7 @@
 	<classpathentry kind="src" output="classes-dbdialog" path="src-dbdialog"/>
 	<classpathentry kind="src" output="src-plugins/kettle-gpload-plugin/bin/classes-eclipse" path="src-plugins/kettle-gpload-plugin/src"/>
 	<classpathentry kind="src" output="src-plugins/kettle-gpload-plugin/bin/classes-eclipse" path="src-plugins/kettle-gpload-plugin/test"/>
+	<classpathentry kind="src" output="src-plugins/kettle-palo-plugin/bin/classes-eclipse" path="src-plugins/kettle-palo-plugin/src"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="lib" path="libext/js.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/mail.jar"/>
@@ -272,5 +273,6 @@
 	<classpathentry kind="lib" path="libext/JDBC/infobright-core-3.4.jar"/>
 	<classpathentry kind="lib" path="libext/jsch-0.1.44.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/sqlite-jdbc-3.7.2.jar"/>
+	<classpathentry kind="lib" path="src-plugins/kettle-palo-plugin/lib/palo-core.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
