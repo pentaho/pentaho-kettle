@@ -917,7 +917,7 @@
 	       ============================================
 	  -->
 	
-	<target name="tests-all" depends="tests-core, tests-trans, tests-run, tests-resource, tests-blackbox, tests-plugins"/>
+	<target name="tests-all" depends="tests-core, tests-kitchen, tests-trans, tests-run, tests-resource, tests-blackbox, tests-plugins"/>
 	
 	<target name="tests-blackbox" depends="compileTests" description="Execute the black box transformation tests">
 		
