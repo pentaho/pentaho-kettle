@@ -316,4 +316,18 @@ public class TransformationMap {
   public void setSlaveServerConfig(SlaveServerConfig slaveServerConfig) {
     this.slaveServerConfig = slaveServerConfig;
   }
+
+  /**
+   * @return the hostServerSocketPortsMap
+   */
+  public Map<String, List<SocketPortAllocation>> getHostServerSocketPortsMap() {
+    return hostServerSocketPortsMap;
+  }
+
+  /**
+   * @param hostServerSocketPortsMap the hostServerSocketPortsMap to set
+   */
+  public void setHostServerSocketPortsMap(Map<String, List<SocketPortAllocation>> hostServerSocketPortsMap) {
+    this.hostServerSocketPortsMap = hostServerSocketPortsMap;
+  }
 }
