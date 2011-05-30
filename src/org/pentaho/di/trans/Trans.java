@@ -2593,7 +2593,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                     // Prepare the master...
                     if (masterSteps.size()>0) // If there is something that needs to be done on the master...
                     {
-                        String masterReply = masterServer.execService(PrepareExecutionTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(master.getName(), "UTF-8")+"&xml=Y");
+                        String carteObjectId = carteObjectMap.get(master);
+                        String masterReply = masterServer.execService(PrepareExecutionTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(master.getName(), "UTF-8")+"&id="+URLEncoder.encode(carteObjectId, "UTF-8")+"&xml=Y");
                         WebResult webResult = WebResult.fromXMLString(masterReply);
                         if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
                         {
@@ -2606,7 +2607,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                     for (int i=0;i<slaves.length;i++)
                     {
                         TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
-                        String slaveReply = slaves[i].execService(PrepareExecutionTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(slaveTrans.getName(), "UTF-8")+"&xml=Y");
+                        String carteObjectId = carteObjectMap.get(slaveTrans);
+                        String slaveReply = slaves[i].execService(PrepareExecutionTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(slaveTrans.getName(), "UTF-8")+"&id="+URLEncoder.encode(carteObjectId, "UTF-8")+"&xml=Y");
                         WebResult webResult = WebResult.fromXMLString(slaveReply);
                         if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
                         {
@@ -2620,7 +2622,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                     // Start the master...
                     if (masterSteps.size()>0) // If there is something that needs to be done on the master...
                     {
-                        String masterReply = masterServer.execService(StartExecutionTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(master.getName(), "UTF-8")+"&xml=Y");
+                        String carteObjectId = carteObjectMap.get(master);
+                        String masterReply = masterServer.execService(StartExecutionTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(master.getName(), "UTF-8")+"&id="+URLEncoder.encode(carteObjectId, "UTF-8")+"&xml=Y");
                         WebResult webResult = WebResult.fromXMLString(masterReply);
                         if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
                         {
@@ -2633,7 +2636,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                     for (int i=0;i<slaves.length;i++)
                     {
                         TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
-                        String slaveReply = slaves[i].execService(StartExecutionTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(slaveTrans.getName(), "UTF-8")+"&xml=Y");
+                        String carteObjectId = carteObjectMap.get(slaveTrans);
+                        String slaveReply = slaves[i].execService(StartExecutionTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(slaveTrans.getName(), "UTF-8")+"&id="+URLEncoder.encode(carteObjectId, "UTF-8")+"&xml=Y");
                         WebResult webResult = WebResult.fromXMLString(slaveReply);
                         if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
                         {
@@ -2669,155 +2673,149 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		return monitorClusteredTransformation(log, transSplitter, parentJob, 1); // monitor every 1 seconds
 	}
 	
-    /** Consider that all the transformations in a cluster schema are running now...<br>
-        Now we should verify that they are all running as they should.<br>
-        If a transformation has an error, we should kill them all..<br>
-        This should happen in a separate thread to prevent blocking of the UI.<br>
-        <br>
-        When the master and slave transformations have all finished, we should also run<br>
-        a cleanup on those transformations to release sockets, etc.<br>
-        <br>
-        
-       @param logSubject the subject to use for logging
-       @param transSplitter the transformation splitter object
-       @param parentJob the parent job when executed in a job, otherwise just set to null
-       @param sleepTimeSeconds the sleep time in seconds in between slave transformation status polling
-       @return the number of errors encountered
-	*/
-    public static final long monitorClusteredTransformation(LogChannelInterface log, TransSplitter transSplitter, Job parentJob, int sleepTimeSeconds)
-    {
-        long errors = 0L;
+  /**
+   * Consider that all the transformations in a cluster schema are running
+   * now...<br>
+   * Now we should verify that they are all running as they should.<br>
+   * If a transformation has an error, we should kill them all..<br>
+   * This should happen in a separate thread to prevent blocking of the UI.<br>
+   * <br>
+   * When the master and slave transformations have all finished, we should also
+   * run<br>
+   * a cleanup on those transformations to release sockets, etc.<br>
+   * <br>
+   * 
+   * @param logSubject
+   *          the subject to use for logging
+   * @param transSplitter
+   *          the transformation splitter object
+   * @param parentJob
+   *          the parent job when executed in a job, otherwise just set to null
+   * @param sleepTimeSeconds
+   *          the sleep time in seconds in between slave transformation status
+   *          polling
+   * @return the number of errors encountered
+   */
+  public static final long monitorClusteredTransformation(LogChannelInterface log, TransSplitter transSplitter, Job parentJob, int sleepTimeSeconds) {
+    long errors = 0L;
 
-        //
-        // See if the remote transformations have finished.
-        // We could just look at the master, but I doubt that that is enough in all situations.
-        //
-        SlaveServer[] slaveServers = transSplitter.getSlaveTargets(); // <-- ask these guys
-        TransMeta[] slaves = transSplitter.getSlaves();
-        Map<TransMeta, String> carteObjectMap = transSplitter.getCarteObjectMap();
+    //
+    // See if the remote transformations have finished.
+    // We could just look at the master, but I doubt that that is enough in all
+    // situations.
+    //
+    SlaveServer[] slaveServers = transSplitter.getSlaveTargets(); // <-- ask
+                                                                  // these guys
+    TransMeta[] slaves = transSplitter.getSlaves();
+    Map<TransMeta, String> carteObjectMap = transSplitter.getCarteObjectMap();
 
-        SlaveServer masterServer;
-		try {
-			masterServer = transSplitter.getMasterServer();
-		} catch (KettleException e) {
-			log.logError("Error getting the master server", e);
-			masterServer = null;
-			errors++;
-		}
-        TransMeta masterTransMeta = transSplitter.getMaster();
-        // TransMeta transMeta = transSplitter.getOriginalTransformation();
-
-        boolean allFinished = false;
-        while (!allFinished && errors==0 && ( parentJob==null || !parentJob.isStopped()) )
-        {
-            allFinished = true;
-            errors=0L;
-
-            // Slaves first...
-            //
-            for (int s=0;s<slaveServers.length && allFinished && errors==0;s++)
-            {
-                try
-                {
-                	String carteObjectId = carteObjectMap.get(slaves[s]);
-                    SlaveServerTransStatus transStatus = slaveServers[s].getTransStatus(slaves[s].getName(), carteObjectId, 0); 
-                    if (transStatus.isRunning()) {
-                    	if(log.isDetailed()) log.logDetailed("Slave transformation on '"+slaveServers[s]+"' is still running.");
-                    	allFinished = false;
-                    }
-                    else {
-                    	if(log.isDetailed()) log.logDetailed("Slave transformation on '"+slaveServers[s]+"' has finished.");
-                    }
-                    errors+=transStatus.getNrStepErrors();
-                }
-                catch(Exception e)
-                {
-                    errors+=1;
-                    log.logError("Unable to contact slave server '"+slaveServers[s].getName()+"' to check slave transformation : "+e.toString());
-                }
-            }
-
-            // Check the master too
-            if (allFinished && errors==0 && masterTransMeta!=null && masterTransMeta.nrSteps()>0)
-            {
-                try
-                {
-                	String carteObjectId = carteObjectMap.get(masterTransMeta);
-                    SlaveServerTransStatus transStatus = masterServer.getTransStatus(masterTransMeta.getName(), carteObjectId, 0);
-                    if (transStatus.isRunning()) {
-                    	if(log.isDetailed()) log.logDetailed("Master transformation is still running.");
-                    	allFinished = false;
-                    }
-                    else {
-                    	if(log.isDetailed()) log.logDetailed("Master transformation has finished.");
-                    }
-                    Result result = transStatus.getResult(transSplitter.getOriginalTransformation());
-                    errors+=result.getNrErrors();
-                }
-                catch(Exception e)
-                {
-                    errors+=1;
-                    log.logError("Unable to contact master server '"+masterServer.getName()+"' to check master transformation : "+e.toString());
-                }
-            }
-
-            if ((parentJob!=null && parentJob.isStopped()) || errors != 0)
-            {
-                //
-                // Stop all slaves and the master on the slave servers
-                //
-                for (int s=0;s<slaveServers.length && allFinished && errors==0;s++)
-                {
-                    try
-                    {
-                    	String carteObjectId = carteObjectMap.get(slaves[s]);
-                    	WebResult webResult = slaveServers[s].stopTransformation(slaves[s].getName(), carteObjectId);
-                        if (!WebResult.STRING_OK.equals(webResult.getResult()))
-                        {
-                            log.logError("Unable to stop slave transformation '"+slaves[s].getName()+"' : "+webResult.getMessage());
-                        }
-                    }
-                    catch(Exception e)
-                    {
-                        errors+=1;
-                        log.logError("Unable to contact slave server '"+slaveServers[s].getName()+"' to stop transformation : "+e.toString());
-                    }
-                }
-
-                try
-                {
-                	String carteObjectId = carteObjectMap.get(masterTransMeta);
-                	WebResult webResult = masterServer.stopTransformation(masterTransMeta.getName(), carteObjectId);
-                    if (!WebResult.STRING_OK.equals(webResult.getResult()))
-                    {
-                        log.logError("Unable to stop master transformation '"+masterServer.getName()+"' : "+webResult.getMessage());
-                    }
-                }
-                catch(Exception e)
-                {
-                    errors+=1;
-                    log.logError("Unable to contact master server '"+masterServer.getName()+"' to stop the master : "+e.toString());
-                }
-            }
-
-            //
-            // Keep waiting until all transformations have finished
-            // If needed, we stop them again and again until they yield.
-            //
-            if (!allFinished)
-            {
-                // Not finished or error: wait a bit longer
-            	if(log.isDetailed()) log.logDetailed("Clustered transformation is still running, waiting a few seconds...");
-                try { Thread.sleep(sleepTimeSeconds*2000); } catch(Exception e) {} // Check all slaves every x seconds. 
-            }
-        }
-        
-        log.logBasic("All transformations in the cluster have finished.");
-        
-        errors+=cleanupCluster(log, transSplitter);
-        
-        return errors;
+    SlaveServer masterServer;
+    try {
+      masterServer = transSplitter.getMasterServer();
+    } catch (KettleException e) {
+      log.logError("Error getting the master server", e);
+      masterServer = null;
+      errors++;
     }
+    TransMeta masterTransMeta = transSplitter.getMaster();
+
+    boolean allFinished = false;
+    while (!allFinished && errors == 0 && (parentJob == null || !parentJob.isStopped())) {
+      allFinished = true;
+      errors = 0L;
+
+      // Slaves first...
+      //
+      for (int s = 0; s < slaveServers.length && allFinished && errors == 0; s++) {
+        try {
+          String carteObjectId = carteObjectMap.get(slaves[s]);
+          SlaveServerTransStatus transStatus = slaveServers[s].getTransStatus(slaves[s].getName(), carteObjectId, 0);
+          if (transStatus.isRunning()) {
+            if (log.isDetailed())
+              log.logDetailed("Slave transformation on '" + slaveServers[s] + "' is still running.");
+            allFinished = false;
+          } else {
+            if (log.isDetailed())
+              log.logDetailed("Slave transformation on '" + slaveServers[s] + "' has finished.");
+          }
+          errors += transStatus.getNrStepErrors();
+        } catch (Exception e) {
+          errors += 1;
+          log.logError("Unable to contact slave server '" + slaveServers[s].getName() + "' to check slave transformation : " + e.toString());
+        }
+      }
+
+      // Check the master too
+      if (allFinished && errors == 0 && masterTransMeta != null && masterTransMeta.nrSteps() > 0) {
+        try {
+          String carteObjectId = carteObjectMap.get(masterTransMeta);
+          SlaveServerTransStatus transStatus = masterServer.getTransStatus(masterTransMeta.getName(), carteObjectId, 0);
+          if (transStatus.isRunning()) {
+            if (log.isDetailed())
+              log.logDetailed("Master transformation is still running.");
+            allFinished = false;
+          } else {
+            if (log.isDetailed())
+              log.logDetailed("Master transformation has finished.");
+          }
+          Result result = transStatus.getResult(transSplitter.getOriginalTransformation());
+          errors += result.getNrErrors();
+        } catch (Exception e) {
+          errors += 1;
+          log.logError("Unable to contact master server '" + masterServer.getName() + "' to check master transformation : " + e.toString());
+        }
+      }
+
+      if ((parentJob != null && parentJob.isStopped()) || errors != 0) {
+        //
+        // Stop all slaves and the master on the slave servers
+        //
+        for (int s = 0; s < slaveServers.length && allFinished && errors == 0; s++) {
+          try {
+            String carteObjectId = carteObjectMap.get(slaves[s]);
+            WebResult webResult = slaveServers[s].stopTransformation(slaves[s].getName(), carteObjectId);
+            if (!WebResult.STRING_OK.equals(webResult.getResult())) {
+              log.logError("Unable to stop slave transformation '" + slaves[s].getName() + "' : " + webResult.getMessage());
+            }
+          } catch (Exception e) {
+            errors += 1;
+            log.logError("Unable to contact slave server '" + slaveServers[s].getName() + "' to stop transformation : " + e.toString());
+          }
+        }
+
+        try {
+          String carteObjectId = carteObjectMap.get(masterTransMeta);
+          WebResult webResult = masterServer.stopTransformation(masterTransMeta.getName(), carteObjectId);
+          if (!WebResult.STRING_OK.equals(webResult.getResult())) {
+            log.logError("Unable to stop master transformation '" + masterServer.getName() + "' : " + webResult.getMessage());
+          }
+        } catch (Exception e) {
+          errors += 1;
+          log.logError("Unable to contact master server '" + masterServer.getName() + "' to stop the master : " + e.toString());
+        }
+      }
+
+      //
+      // Keep waiting until all transformations have finished
+      // If needed, we stop them again and again until they yield.
+      //
+      if (!allFinished) {
+        // Not finished or error: wait a bit longer
+        if (log.isDetailed())
+          log.logDetailed("Clustered transformation is still running, waiting a few seconds...");
+        try {
+          Thread.sleep(sleepTimeSeconds * 2000);
+        } catch (Exception e) {
+        } // Check all slaves every x seconds.
+      }
+    }
+
+    log.logBasic("All transformations in the cluster have finished.");
+
+    errors += cleanupCluster(log, transSplitter);
+
+    return errors;
+  }
     
     public static int cleanupCluster(LogChannelInterface log, TransSplitter transSplitter) {
       
@@ -2863,6 +2861,18 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
           {
               errors++;
               log.logError("Unable to contact master server '"+masterServer.getName()+"' to clean up master transformation", e);
+          }
+          
+          // Also de-allocate all ports used for this clustered transformation on the master.
+          //
+          try
+          {
+            masterServer.deAllocateServerSockets(transSplitter.getOriginalTransformation().getName(), null); // all ports
+          }
+          catch(Exception e)
+          {
+              errors++;
+              log.logError("Unable to contact master server '"+masterServer.getName()+"' to clean up port sockets for transformation'"+transSplitter.getOriginalTransformation().getName()+"'", e);
           }
       }   
       
