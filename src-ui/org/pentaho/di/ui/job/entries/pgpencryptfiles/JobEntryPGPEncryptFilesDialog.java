@@ -1866,8 +1866,8 @@ public class JobEntryPGPEncryptFilesDialog extends JobEntryDialog implements Job
        if(Const.isEmpty(wName.getText())) 
         {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage("Veuillez svp donner un nom à cette entrée tâche!");
-			mb.setText("Entrée tâche non nommée");
+      mb.setMessage("Please give this job entry a name!");
+      mb.setText("Enter a name");
 			mb.open(); 
 			return;
         }
