@@ -1179,7 +1179,8 @@
     <tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SyslogMessage</tooltip>
     <iconfile>ui/images/SYL.png</iconfile>
   </step>
-	
+
+<!-- 	
   <step id="PaloCellInput">
     <classname>org.pentaho.di.trans.steps.palo.cellinput.PaloCellInputMeta</classname>
     <category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
@@ -1211,6 +1212,9 @@
     <description>i18n:org.pentaho.di.trans.steps.palo.dimoutput:PaloDimOutput.Description</description>
     <iconfile>ui/images/PaloDimOutput.png</iconfile>
   </step>
+
+ -->
+ 
   <step id="FileLocked">
     <description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.FileLocked</description>
     <classname>org.pentaho.di.trans.steps.filelocked.FileLockedMeta</classname>
