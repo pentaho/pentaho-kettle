@@ -80,12 +80,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 public class SlaveServer  extends ChangedFlag 
-	implements Cloneable, SharedObjectInterface, VariableSpace, RepositoryElementInterface, XMLInterface
+  implements Cloneable, SharedObjectInterface, VariableSpace, RepositoryElementInterface, XMLInterface
 {
-	private static Class<?> PKG = SlaveServer.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+  private static Class<?> PKG = SlaveServer.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	public static final String STRING_SLAVESERVER = "Slave Server"; //$NON-NLS-1$
-	
+  public static final String STRING_SLAVESERVER = "Slave Server"; //$NON-NLS-1$
+  
     public static final String XML_TAG = "slaveserver"; //$NON-NLS-1$
 
     public static final RepositoryObjectType REPOSITORY_ELEMENT_TYPE = RepositoryObjectType.SLAVE_SERVER;
@@ -110,13 +110,13 @@ public class SlaveServer  extends ChangedFlag
     
     private VariableSpace variables = new Variables();
 
-	private ObjectRevision objectRevision;
-	
-	private Date changedDate;
+  private ObjectRevision objectRevision;
+  
+  private Date changedDate;
     
     public SlaveServer()
     {
-    	initializeVariablesFrom(null);
+      initializeVariablesFrom(null);
         id=null;
         this.log = new LogChannel(STRING_SLAVESERVER);
         this.changedDate = new Date();
@@ -401,16 +401,20 @@ public class SlaveServer  extends ChangedFlag
 
     public String sendXML(String xml, String service) throws Exception
     {
-    	byte[] content = xml.getBytes(Const.XML_ENCODING);
-    	PostMethod post = getSendByteArrayMethod(content, service);
-    	
+      byte[] content = xml.getBytes(Const.XML_ENCODING);
+      PostMethod post = getSendByteArrayMethod(content, service);
+      
         // Get HTTP client
         // 
-        HttpClient client = new HttpClient();
+        HttpClient client = SlaveConnectionManager.getInstance().createHttpClient();
         addCredentials(client);
+        addProxy(client);
         
         // Execute request
         // 
+        InputStream inputStream=null;
+        BufferedInputStream bufferedInputStream=null;
+        
         try
         {
             int result = client.executeMethod(post);
@@ -419,12 +423,14 @@ public class SlaveServer  extends ChangedFlag
             log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseStatus", Integer.toString(result))); //$NON-NLS-1$
             
             // the response
-            InputStream inputStream = new BufferedInputStream(post.getResponseBodyAsStream(), 1000);
+            //
+            inputStream = post.getResponseBodyAsStream();
+            bufferedInputStream = new BufferedInputStream(inputStream, 1000);
             
             StringBuffer bodyBuffer = new StringBuffer();
             int c;
-            while ( (c=inputStream.read())!=-1) bodyBuffer.append((char)c);
-            inputStream.close();
+            while ( (c=bufferedInputStream.read())!=-1) bodyBuffer.append((char)c);
+
             String bodyTmp = bodyBuffer.toString();
             
             switch(result)
@@ -439,18 +445,24 @@ public class SlaveServer  extends ChangedFlag
             }
 
             String body = bodyBuffer.toString();
-            
 
             // String body = post.getResponseBodyAsString(); 
             log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseBody",body)); //$NON-NLS-1$
             
             return body;
         } catch (Exception e) {
-        	log.logError(toString(), String.format("Exception sending message to service %s", service), e);
-        	throw e;
-        }
-        finally
+          log.logError(toString(), String.format("Exception sending message to service %s", service), e);
+          throw e;
+        } finally
         {
+          
+            if (bufferedInputStream!=null) {
+              bufferedInputStream.close();
+            }
+            if (inputStream!=null) {
+              inputStream.close();
+            }
+            
             // Release current connection to the connection pool once you are done
             post.releaseConnection();
             log.logDetailed(BaseMessages.getString(PKG, "SlaveServer.DETAILED_SentXmlToService", service, environmentSubstitute(hostname))); //$NON-NLS-1$
@@ -467,10 +479,10 @@ public class SlaveServer  extends ChangedFlag
      */
     public String sendExport(String filename, String type, String load) throws Exception
     {
-    	String serviceUrl=AddExportServlet.CONTEXT_PATH;
-    	if (type!=null && load!=null) {
-    		serviceUrl = serviceUrl+= "/?"+AddExportServlet.PARAMETER_TYPE+"="+type+"&"+AddExportServlet.PARAMETER_LOAD+"="+URLEncoder.encode(load, "UTF-8");
-    	}
+      String serviceUrl=AddExportServlet.CONTEXT_PATH;
+      if (type!=null && load!=null) {
+        serviceUrl = serviceUrl+= "/?"+AddExportServlet.PARAMETER_TYPE+"="+type+"&"+AddExportServlet.PARAMETER_LOAD+"="+URLEncoder.encode(load, "UTF-8");
+      }
 
         String urlString = constructUrl(serviceUrl);
         log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ConnectingTo", urlString)); //$NON-NLS-1$
@@ -487,14 +499,18 @@ public class SlaveServer  extends ChangedFlag
           putMethod.setRequestEntity(entity);
           putMethod.setDoAuthentication(true);
           putMethod.addRequestHeader(new Header("Content-Type", "binary/zip"));
-      	
+        
           // Get HTTP client
           // 
-          HttpClient client = new HttpClient();
+          HttpClient client = SlaveConnectionManager.getInstance().createHttpClient();
           addCredentials(client);
+          addProxy(client);
           
           // Execute request
           // 
+          InputStream inputStream=null;
+          BufferedInputStream bufferedInputStream=null;          
+
           try
           {
               int result = client.executeMethod(putMethod);
@@ -503,12 +519,12 @@ public class SlaveServer  extends ChangedFlag
               log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseStatus", Integer.toString(result))); //$NON-NLS-1$
               
               // the response
-              InputStream inputStream = new BufferedInputStream(putMethod.getResponseBodyAsStream(), 1000);
+              inputStream = putMethod.getResponseBodyAsStream();
+              bufferedInputStream = new BufferedInputStream(inputStream, 1000);
               
               StringBuffer bodyBuffer = new StringBuffer();
               int c;
-              while ( (c=inputStream.read())!=-1) bodyBuffer.append((char)c);
-              inputStream.close();
+              while ( (c=bufferedInputStream.read())!=-1) bodyBuffer.append((char)c);
               String bodyTmp = bodyBuffer.toString();
               
               switch(result)
@@ -532,6 +548,13 @@ public class SlaveServer  extends ChangedFlag
           }
           finally
           {
+            if (bufferedInputStream!=null) {
+              bufferedInputStream.close();
+            }
+            if (inputStream!=null) {
+              inputStream.close();
+            }
+
               // Release current connection to the connection pool once you are done
               putMethod.releaseConnection();
               log.logDetailed(BaseMessages.getString(PKG, "SlaveServer.DETAILED_SentExportToService", AddExportServlet.CONTEXT_PATH, environmentSubstitute(hostname))); //$NON-NLS-1$
@@ -543,6 +566,27 @@ public class SlaveServer  extends ChangedFlag
             // nothing to do here...
           }
         }
+    }
+
+    public void addProxy(HttpClient client)
+    {
+        String host = environmentSubstitute(this.hostname);
+        String phost = environmentSubstitute(this.proxyHostname);
+        String pport = environmentSubstitute(this.proxyPort);
+        String nonprox = environmentSubstitute(this.nonProxyHosts);
+        
+        
+        /** added by shingo.yamagami@ksk-sol.jp **/
+        if (!Const.isEmpty(phost) && !Const.isEmpty(pport)) 
+        {
+            // skip applying proxy if non-proxy host matches
+            if (!Const.isEmpty(nonprox) && !Const.isEmpty(host) && host.matches(nonprox))
+            {
+                return;
+            }
+            client.getHostConfiguration().setProxy(phost, Integer.parseInt(pport));
+        }
+        /** added by shingo.yamagami@ksk-sol.jp **/  
     }
 
     public void addCredentials(HttpClient client)
@@ -580,20 +624,33 @@ public class SlaveServer  extends ChangedFlag
     {
         // Prepare HTTP get
         // 
-        HttpClient client = new HttpClient();
+        HttpClient client = SlaveConnectionManager.getInstance().createHttpClient();
         addCredentials(client);
+        addProxy(client);
         HttpMethod method = new GetMethod(constructUrl(service));
         
         // Execute request
         // 
+        InputStream inputStream=null;
+        BufferedInputStream bufferedInputStream=null;
+
         try
         {
             int result = client.executeMethod(method);
             
             // The status code
             log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseStatus", Integer.toString(result))); //$NON-NLS-1$
+
+            // the response
+            //
+            inputStream = method.getResponseBodyAsStream();
+            bufferedInputStream = new BufferedInputStream(inputStream, 1000);
             
-            String body = method.getResponseBodyAsString();
+            StringBuffer bodyBuffer = new StringBuffer();
+            int c;
+            while ( (c=bufferedInputStream.read())!=-1) bodyBuffer.append((char)c);
+
+            String body = bodyBuffer.toString();
             
             log.logDetailed(BaseMessages.getString(PKG, "SlaveServer.DETAILED_FinishedReading", Integer.toString(body.getBytes().length))); //$NON-NLS-1$
             log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseBody",body)); //$NON-NLS-1$
@@ -602,8 +659,15 @@ public class SlaveServer  extends ChangedFlag
         }
         finally
         {
+          if (bufferedInputStream!=null) {
+            bufferedInputStream.close();
+          }
+          if (inputStream!=null) {
+            inputStream.close();
+          }
+
             // Release current connection to the connection pool once you are done
-            method.releaseConnection();
+            method.releaseConnection();            
             log.logDetailed(BaseMessages.getString(PKG, "SlaveServer.DETAILED_ExecutedService", service, hostname) ); //$NON-NLS-1$
         }
 
@@ -624,9 +688,9 @@ public class SlaveServer  extends ChangedFlag
         
         List<SlaveServerDetection> detections = new ArrayList<SlaveServerDetection>();
         for (int i=0;i<nrDetections;i++) {
-        	Node detectionNode = XMLHandler.getSubNodeByNr(detectionsNode, SlaveServerDetection.XML_TAG, i);
-        	SlaveServerDetection detection = new SlaveServerDetection(detectionNode);
-        	detections.add(detection);
+          Node detectionNode = XMLHandler.getSubNodeByNr(detectionsNode, SlaveServerDetection.XML_TAG, i);
+          SlaveServerDetection detection = new SlaveServerDetection(detectionNode);
+          detections.add(detection);
         }
         return detections;
     }
@@ -728,33 +792,33 @@ public class SlaveServer  extends ChangedFlag
     
     public int allocateServerSocket(int portRangeStart, String hostname, String transformationName, String sourceSlaveName, String sourceStepName, String sourceStepCopy, String targetSlaveName, String targetStepName, String targetStepCopy) throws Exception {
 
-    	// Look up the IP address of the given hostname
-    	// Only this way we'll be to allocate on the correct host.
-    	//
-    	InetAddress inetAddress = InetAddress.getByName(hostname);
-    	String address = inetAddress.getHostAddress();
-    	
-    	String service=AllocateServerSocketServlet.CONTEXT_PATH+"/?";
-    	service += AllocateServerSocketServlet.PARAM_RANGE_START+"="+Integer.toString(portRangeStart);
-    	service += "&" + AllocateServerSocketServlet.PARAM_HOSTNAME+"="+address;
-    	service += "&" + AllocateServerSocketServlet.PARAM_TRANSFORMATION_NAME+"="+URLEncoder.encode(transformationName, "UTF-8");
-    	service += "&" + AllocateServerSocketServlet.PARAM_SOURCE_SLAVE+"="+URLEncoder.encode(sourceSlaveName, "UTF-8");
-    	service += "&" + AllocateServerSocketServlet.PARAM_SOURCE_STEPNAME+"="+URLEncoder.encode(sourceStepName, "UTF-8");
-    	service += "&" + AllocateServerSocketServlet.PARAM_SOURCE_STEPCOPY+"="+URLEncoder.encode(sourceStepCopy, "UTF-8");
-    	service += "&" + AllocateServerSocketServlet.PARAM_TARGET_SLAVE+"="+URLEncoder.encode(targetSlaveName, "UTF-8");
-    	service += "&" + AllocateServerSocketServlet.PARAM_TARGET_STEPNAME+"="+URLEncoder.encode(targetStepName, "UTF-8");
-    	service += "&" + AllocateServerSocketServlet.PARAM_TARGET_STEPCOPY+"="+URLEncoder.encode(targetStepCopy, "UTF-8");
-    	service += "&xml=Y";
-    	String xml = execService(service);
-    	Document doc = XMLHandler.loadXMLString(xml);
-    	String portString = XMLHandler.getTagValue(doc, AllocateServerSocketServlet.XML_TAG_PORT);
-    	
-    	int port = Const.toInt(portString, -1);
-    	if (port<0) {
-    		throw new Exception("Unable to retrieve port from service : "+service+", received : \n"+xml);
-    	}
+      // Look up the IP address of the given hostname
+      // Only this way we'll be to allocate on the correct host.
+      //
+      InetAddress inetAddress = InetAddress.getByName(hostname);
+      String address = inetAddress.getHostAddress();
+      
+      String service=AllocateServerSocketServlet.CONTEXT_PATH+"/?";
+      service += AllocateServerSocketServlet.PARAM_RANGE_START+"="+Integer.toString(portRangeStart);
+      service += "&" + AllocateServerSocketServlet.PARAM_HOSTNAME+"="+address;
+      service += "&" + AllocateServerSocketServlet.PARAM_TRANSFORMATION_NAME+"="+URLEncoder.encode(transformationName, "UTF-8");
+      service += "&" + AllocateServerSocketServlet.PARAM_SOURCE_SLAVE+"="+URLEncoder.encode(sourceSlaveName, "UTF-8");
+      service += "&" + AllocateServerSocketServlet.PARAM_SOURCE_STEPNAME+"="+URLEncoder.encode(sourceStepName, "UTF-8");
+      service += "&" + AllocateServerSocketServlet.PARAM_SOURCE_STEPCOPY+"="+URLEncoder.encode(sourceStepCopy, "UTF-8");
+      service += "&" + AllocateServerSocketServlet.PARAM_TARGET_SLAVE+"="+URLEncoder.encode(targetSlaveName, "UTF-8");
+      service += "&" + AllocateServerSocketServlet.PARAM_TARGET_STEPNAME+"="+URLEncoder.encode(targetStepName, "UTF-8");
+      service += "&" + AllocateServerSocketServlet.PARAM_TARGET_STEPCOPY+"="+URLEncoder.encode(targetStepCopy, "UTF-8");
+      service += "&xml=Y";
+      String xml = execService(service);
+      Document doc = XMLHandler.loadXMLString(xml);
+      String portString = XMLHandler.getTagValue(doc, AllocateServerSocketServlet.XML_TAG_PORT);
+      
+      int port = Const.toInt(portString, -1);
+      if (port<0) {
+        throw new Exception("Unable to retrieve port from service : "+service+", received : \n"+xml);
+      }
 
-    	return port;
+      return port;
     }
 
     public String getName()
@@ -777,149 +841,149 @@ public class SlaveServer  extends ChangedFlag
         this.shared = shared;
     }
 
-	public void copyVariablesFrom(VariableSpace space) 
-	{
-		variables.copyVariablesFrom(space);		
-	}
+  public void copyVariablesFrom(VariableSpace space) 
+  {
+    variables.copyVariablesFrom(space);   
+  }
 
-	public String environmentSubstitute(String aString) 
-	{
-		return variables.environmentSubstitute(aString);
-	}
+  public String environmentSubstitute(String aString) 
+  {
+    return variables.environmentSubstitute(aString);
+  }
 
-	public String[] environmentSubstitute(String aString[]) 
-	{
-		return variables.environmentSubstitute(aString);
-	}		
+  public String[] environmentSubstitute(String aString[]) 
+  {
+    return variables.environmentSubstitute(aString);
+  }   
 
-	public VariableSpace getParentVariableSpace() 
-	{
-		return variables.getParentVariableSpace();
-	}
+  public VariableSpace getParentVariableSpace() 
+  {
+    return variables.getParentVariableSpace();
+  }
 
-	public void setParentVariableSpace(VariableSpace parent) 
-	{
-		variables.setParentVariableSpace(parent);
-	}
+  public void setParentVariableSpace(VariableSpace parent) 
+  {
+    variables.setParentVariableSpace(parent);
+  }
 
-	public String getVariable(String variableName, String defaultValue) 
-	{
-		return variables.getVariable(variableName, defaultValue);
-	}
+  public String getVariable(String variableName, String defaultValue) 
+  {
+    return variables.getVariable(variableName, defaultValue);
+  }
 
-	public String getVariable(String variableName) 
-	{
-		return variables.getVariable(variableName);
-	}
-	
-	public boolean getBooleanValueOfVariable(String variableName, boolean defaultValue) {
-		if (!Const.isEmpty(variableName))
-		{
-			String value = environmentSubstitute(variableName);
-			if (!Const.isEmpty(value))
-			{
-				return ValueMeta.convertStringToBoolean(value);
-			}
-		}
-		return defaultValue;
-	}
+  public String getVariable(String variableName) 
+  {
+    return variables.getVariable(variableName);
+  }
+  
+  public boolean getBooleanValueOfVariable(String variableName, boolean defaultValue) {
+    if (!Const.isEmpty(variableName))
+    {
+      String value = environmentSubstitute(variableName);
+      if (!Const.isEmpty(value))
+      {
+        return ValueMeta.convertStringToBoolean(value);
+      }
+    }
+    return defaultValue;
+  }
 
-	public void initializeVariablesFrom(VariableSpace parent) 
-	{
-		variables.initializeVariablesFrom(parent);	
-	}
+  public void initializeVariablesFrom(VariableSpace parent) 
+  {
+    variables.initializeVariablesFrom(parent);  
+  }
 
-	public String[] listVariables() 
-	{
-		return variables.listVariables();
-	}
+  public String[] listVariables() 
+  {
+    return variables.listVariables();
+  }
 
-	public void setVariable(String variableName, String variableValue) 
-	{
-		variables.setVariable(variableName, variableValue);		
-	}
+  public void setVariable(String variableName, String variableValue) 
+  {
+    variables.setVariable(variableName, variableValue);   
+  }
 
-	public void shareVariablesWith(VariableSpace space) 
-	{
-		variables = space;		
-	}
+  public void shareVariablesWith(VariableSpace space) 
+  {
+    variables = space;    
+  }
 
-	public void injectVariables(Map<String,String> prop) 
-	{
-		variables.injectVariables(prop);		
-	}
+  public void injectVariables(Map<String,String> prop) 
+  {
+    variables.injectVariables(prop);    
+  }
 
-	public ObjectId getObjectId() {
-		return id;
-	}
-	
-	public void setObjectId(ObjectId id) {
-		this.id = id;
-	}
+  public ObjectId getObjectId() {
+    return id;
+  }
+  
+  public void setObjectId(ObjectId id) {
+    this.id = id;
+  }
 
-	/**
-	 * Not used in this case, simply return root /
-	 */
-	public RepositoryDirectoryInterface getRepositoryDirectory() {
-		return new RepositoryDirectory();
-	}
-	
-	public void setRepositoryDirectory(RepositoryDirectoryInterface repositoryDirectory) {
-		throw new RuntimeException("Setting a directory on a database connection is not supported");
-	}
-	
-	public RepositoryObjectType getRepositoryElementType() {
-		return REPOSITORY_ELEMENT_TYPE;
-	}
-	
-	public ObjectRevision getObjectRevision() {
-		return objectRevision;
-	}
+  /**
+   * Not used in this case, simply return root /
+   */
+  public RepositoryDirectoryInterface getRepositoryDirectory() {
+    return new RepositoryDirectory();
+  }
+  
+  public void setRepositoryDirectory(RepositoryDirectoryInterface repositoryDirectory) {
+    throw new RuntimeException("Setting a directory on a database connection is not supported");
+  }
+  
+  public RepositoryObjectType getRepositoryElementType() {
+    return REPOSITORY_ELEMENT_TYPE;
+  }
+  
+  public ObjectRevision getObjectRevision() {
+    return objectRevision;
+  }
 
-	public void setObjectRevision(ObjectRevision objectRevision) {
-		this.objectRevision = objectRevision;
-	}
-	public String getDescription() {
-		// NOT USED
-		return null;
-	}
-	
-	public void setDescription(String description) {
-		// NOT USED
-	}
+  public void setObjectRevision(ObjectRevision objectRevision) {
+    this.objectRevision = objectRevision;
+  }
+  public String getDescription() {
+    // NOT USED
+    return null;
+  }
+  
+  public void setDescription(String description) {
+    // NOT USED
+  }
 
-	/**
-	 * Sniff rows on a the slave server, return xml containing the row metadata and data.
-	 * 
-	 * @param transName
-	 * @param stepName
-	 * @param copyNr
-	 * @param lines
-	 * @return
-	 * @throws Exception
-	 */
-	public String sniffStep(String transName, String stepName, String copyNr, int lines, String type) throws Exception {
-		String xml = execService(
-				SniffStepServlet.CONTEXT_PATH+"/?trans="+URLEncoder.encode(transName, "UTF-8")+
-				"&step="+URLEncoder.encode(stepName, "UTF-8")+
-				"&copynr="+copyNr+
-				"&type="+type+
-				"&lines="+lines+
-				"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
-		return xml;
-	}
+  /**
+   * Sniff rows on a the slave server, return xml containing the row metadata and data.
+   * 
+   * @param transName
+   * @param stepName
+   * @param copyNr
+   * @param lines
+   * @return
+   * @throws Exception
+   */
+  public String sniffStep(String transName, String stepName, String copyNr, int lines, String type) throws Exception {
+    String xml = execService(
+        SniffStepServlet.CONTEXT_PATH+"/?trans="+URLEncoder.encode(transName, "UTF-8")+
+        "&step="+URLEncoder.encode(stepName, "UTF-8")+
+        "&copynr="+copyNr+
+        "&type="+type+
+        "&lines="+lines+
+        "&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
+    return xml;
+  }
 
-	/**
-	 * @return the changedDate
-	 */
-	public Date getChangedDate() {
-		return changedDate;
-	}
+  /**
+   * @return the changedDate
+   */
+  public Date getChangedDate() {
+    return changedDate;
+  }
 
-	/**
-	 * @param changedDate the changedDate to set
-	 */
-	public void setChangedDate(Date changedDate) {
-		this.changedDate = changedDate;
-	}
+  /**
+   * @param changedDate the changedDate to set
+   */
+  public void setChangedDate(Date changedDate) {
+    this.changedDate = changedDate;
+  }
 }
