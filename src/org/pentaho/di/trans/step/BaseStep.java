@@ -607,20 +607,26 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
         sdi.setStatus(StepExecutionStatus.STATUS_DISPOSED);
     }
 
-    public void cleanup()
-    {
-		for (ServerSocket serverSocket : serverSockets)
-		{
-	    	try {
-	    		
-	    		socketRepository.releaseSocket(serverSocket.getLocalPort());
-	    		
-	    		logDetailed("Released server socket on port "+serverSocket.getLocalPort());
-	    	} catch (IOException e) {
-	    		logError("Cleanup: Unable to release server socket ("+serverSocket.getLocalPort()+")", e);
-	    	}
-		}
+    public void cleanup() {
+      for (ServerSocket serverSocket : serverSockets) {
+        try {
+  
+          socketRepository.releaseSocket(serverSocket.getLocalPort());
+  
+          logDetailed("Released server socket on port " + serverSocket.getLocalPort());
+        } catch (IOException e) {
+          logError("Cleanup: Unable to release server socket (" + serverSocket.getLocalPort() + ")", e);
+        }
+      }
+      
+      for (RemoteStep remoteStep : getRemoteInputSteps()) {
+        remoteStep.cleanup();
+      }
+      for (RemoteStep remoteStep : getRemoteOutputSteps()) {
+        remoteStep.cleanup();
+      }
     }
+
 
     public long getProcessed()
     {
