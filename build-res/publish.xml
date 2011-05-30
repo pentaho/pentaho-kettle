@@ -72,6 +72,34 @@
     </ivy:publish>
   </target>
 	
+  <target name="publish-local-plugins" depends="install-antcontrib">
+    <for list="${kettle.plugin.list}" param="module" trim="true">
+      <sequential>
+      	<!-- publish jar -->
+        <antcall target="publish-local-plugin-task">
+          <param name="ivy.artifact.id" value="@{module}" />
+          <param name="pluginfolder" value="../src-plugins/@{module}"/>
+          <param name="artifact.type" value="jar"/>
+        </antcall>
+      	<!-- publish zip -->
+        <antcall target="publish-local-plugin-task">
+          <param name="ivy.artifact.id" value="@{module}" />
+          <param name="pluginfolder" value="../src-plugins/@{module}"/>
+          <param name="artifact.type" value="zip"/>
+        </antcall>
+      </sequential>
+    </for>
+  	
+  </target>
+	
+  <target name="publish-local-plugin-task" depends="install-ivy">
+  	<copy overwrite="true" file="${pluginfolder}/ivy.xml" tofile="${pluginfolder}/dist/ivy-${artifact.type}.xml"/>
+  	<ivy:resolve file="${pluginfolder}/dist/ivy-${artifact.type}.xml" />
+    <ivy:publish resolver="local" srcivypattern="${pluginfolder}/dist/ivy-${artifact.type}.xml" pubrevision="${project.revision}" overwrite="true" forcedeliver="true">
+      <artifacts pattern="${pluginfolder}/dist/[artifact].[ext]" />
+    </ivy:publish>
+  </target>
+	
     <!--=======================================================================
       publish
   
@@ -86,6 +114,18 @@
         </antcall>
       </sequential>
     </for>
+  </target>
+	
+  <target name="publish-plugins" depends="install-antcontrib">
+    <for list="${kettle.plugins.list}" param="plugin" trim="true">
+      <sequential>
+        <antcall target="publish-task">
+          <param name="ivy.artifact.id" value="@{plugin}" />
+          <param name="pluginfolder" value="../src-plugins/@{plugin}"/>
+        </antcall>
+      </sequential>
+    </for>
+
   </target>
 	
   <target name="publish-task" depends="install-ivy">
@@ -106,6 +146,28 @@
     <antcall target="maven-publish-artifact">
       <param name="publish.pomFile" value="${kettle.ivydist.dir}/pom-${ivy.artifact.id}.xml" />
       <param name="publish.file" value="${kettle.libdist.dir}/${ivy.artifact.id}.jar" />
+    </antcall>
+  </target>
+	
+  <target name="publish-plugin-task" depends="install-ivy">
+  	<copy overwrite="true" file="${pluginfolder}/ivy.xml" tofile="${pluginfolder}/dist/ivy-jar.xml"/>
+  	<ivy:resolve file="${pluginfolder}/dist/ivy-jar.xml" />
+    <ivy:makepom ivyfile="${pluginfolder}/dist/ivy-jar.xml" pomfile="${pluginfolder}/dist/pom.xml">
+      <mapping conf="default" scope="compile" />
+      <mapping conf="runtime" scope="runtime" />
+    </ivy:makepom>
+  	<ivy:deliver conf="*(public)" deliverpattern="${pluginfolder}/dist/ivy-jar.xml" />
+  	
+    <antcall target="maven-publish-dependencies">
+      <param name="publish.groupId" value="${ivy.artifact.group}" />
+      <param name="publish.artifactId" value="${ivy.artifact.id}" />
+      <param name="publish.version" value="${project.revision}" />
+      <param name="publish.file" value="${pluginfolder}/dist/ivy-jar.xml" />
+    </antcall>
+  	
+    <antcall target="maven-publish-artifact">
+      <param name="publish.pomFile" value="${pluginfolder}/dist/pom.xml" />
+      <param name="publish.file" value="${pluginfolder}/dist/${ivy.artifact.id}.jar" />
     </antcall>
   </target>
 	

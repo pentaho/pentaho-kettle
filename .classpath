@@ -6,6 +6,8 @@
 	<classpathentry kind="src" output="classes-core" path="src-core"/>
 	<classpathentry kind="src" output="classes-db" path="src-db"/>
 	<classpathentry kind="src" output="classes-dbdialog" path="src-dbdialog"/>
+	<classpathentry kind="src" output="src-plugins/kettle-gpload-plugin/bin/classes-eclipse" path="src-plugins/kettle-gpload-plugin/src"/>
+	<classpathentry kind="src" output="src-plugins/kettle-gpload-plugin/bin/classes-eclipse" path="src-plugins/kettle-gpload-plugin/test"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="lib" path="libext/js.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/mail.jar"/>

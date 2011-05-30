@@ -1,9 +1,9 @@
-<project name="Kettle" default="default" basedir=".">
+<project name="Kettle" default="default" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
 
 	  <description>
 	      Kettle build file
 	  </description>
-
+	
 	  <tstamp prefix="start"/>
 	
         <tstamp>
@@ -445,7 +445,7 @@
 	        Distribution jar package
 	       ==========================
 	  -->
-	  <target name="distrib" depends="kettle-core, kettle-db, kettle, kettle-dbdialog, kettle-ui, kettle-test" description="copy jar file to distribution directory" >
+	  <target name="distrib" depends="kettle-core, kettle-db, kettle, kettle-dbdialog, kettle-ui, kettle-plugins, kettle-test" description="copy jar file to distribution directory" >
 	  	<echo>Construct the distribution package...</echo>
 	  	
 	        <!-- root directory -->
@@ -479,7 +479,15 @@
 	  		<mkdir dir="${distrib}/plugins"/>
 	  		<copy todir="${distrib}/plugins">
 	  			<fileset dir="${plugins}" includes="**/*" excludes="**/.vpn **/sapjco.jar **/VTVLInput **/VTVLInput/*"/>
-	  			</copy>
+	  		</copy>
+	  	
+	  		<for list="${plugin-ids}" param="plugin" trim="true">
+  		  		<sequential>
+  		  			<copy todir="${distrib}/plugins">
+  		  				<fileset dir="src-plugins/@{plugin}/bin/stage" includes="**/*" />
+  		  			</copy>
+	  			</sequential>
+	  		</for>	
 
         		<!-- ui -->
   			<mkdir dir="${distrib}/ui"/>
@@ -536,7 +544,7 @@
   	        <chmod file="${distrib}/Data Integration 64-bit.app/Contents/MacOS/JavaApplicationStub" perm="ugo+rx"/>
 
 	  </target>
-
+	
 	  <!--
 	       ==========================
 	             zipfile
@@ -909,7 +917,7 @@
 	       ============================================
 	  -->
 	
-	<target name="tests-all" depends="tests-core, tests-trans, tests-run, tests-resource, tests-blackbox"/>
+	<target name="tests-all" depends="tests-core, tests-trans, tests-run, tests-resource, tests-blackbox, tests-plugins"/>
 	
 	<target name="tests-blackbox" depends="compileTests" description="Execute the black box transformation tests">
 		
@@ -1001,7 +1009,7 @@
 	    <delete dir="${macdistrib}"/>
 	  </target>
 
-	  <target name="clean" depends="cleandirs"/>
+	  <target name="clean" depends="cleandirs, clean-plugins"/>
 	
 	 <target name="coverage" depends="clean, compileTests" > <!-- , tests-core, tests-resource, tests-trans, tests-run -->
 	 	<ant antfile="build_coverage.xml" dir="." target="coverage" />
@@ -1073,5 +1081,241 @@
 	  		    </exec>
 	  	    </target>
 	
+
+
+	  <!--=======================================================================
+	      install-antcontrib (borrowed from subfloor.xml)
+	      
+	      (Fetches and) installs ant-contrib tasks.
+	      ====================================================================-->
+	  <target name="install-antcontrib" depends="antcontrib.download-check">
+	    <taskdef resource="net/sf/antcontrib/antlib.xml">
+	      <classpath>
+	        <fileset dir="${user.home}/.subfloor/ant-contrib">
+	          <include name="*.jar" />
+	        </fileset>
+	      </classpath>
+	    </taskdef>
+	  </target>
+	
+	  <!--=======================================================================
+	      antcontrib.download-check (borrowed from subfloor.xml)
+	      
+	      Fetches ant-contrib from sourceforge if it is not already present
+	      ====================================================================-->
+	  <target name="antcontrib.download-check">
+	    <condition property="antcontrib.available">
+	      <and>
+	        <available file="${user.home}/.subfloor/ant-contrib" />
+	        <available classname="net.sf.antcontrib.logic.IfTask">
+	          <classpath>
+	            <fileset dir="${user.home}/.subfloor/ant-contrib">
+	              <include name="*.jar" />
+	            </fileset>
+	          </classpath>
+	        </available>
+	      </and>
+	    </condition>
+	    <antcall target="antcontrib.download" />
+	  </target>
+	
+	
+	  <!--=======================================================================
+	      antcontrib.download (borrowed from subfloor.xml)
+	      
+	      Fetches ant-contrib from sourceforge
+	      ====================================================================-->
+	  <target name="antcontrib.download" unless="antcontrib.available">
+	    <mkdir dir="${user.home}/.subfloor/tmp" />
+	    <get src="http://downloads.sourceforge.net/ant-contrib/ant-contrib-1.0b3-bin.zip"
+	         dest="${user.home}/.subfloor/tmp/antcontrib.zip"
+	         usetimestamp="true" />
+	    <unzip src="${user.home}/.subfloor/tmp/antcontrib.zip" dest="${user.home}/.subfloor/tmp">
+	      <patternset>
+	        <include name="**/*.jar" />
+	      </patternset>
+	    </unzip>
+	    <copy todir="${user.home}/.subfloor/ant-contrib">
+	      <fileset dir="${user.home}/.subfloor/tmp/ant-contrib">
+	        <include name="**/*.jar" />
+	      </fileset>
+	    </copy>
+	  </target>
+
+	<!-- 
+	     the following set of ant tasks allow for the building of core kettle plugins
+
+		 all core plugins get built as part of the core dist, also you can build the plugins standalone by using 
+	     the "-standalone" ant targets related to the plugins.  If you'd like to just build a single plugin, 
+	     you can do that by overriding the plugins property to just reference your plugin.
+	     
+	     Please see src-plugins/readme.txt for more details.
+	-->
+
+	<target name="clean-plugins" depends="install-antcontrib">
+	    <for list="${plugin-ids}" param="plugin" trim="true">
+	      <sequential>
+	      	<delete dir="src-plugins/@{plugin}/bin"/>
+	      	<delete dir="src-plugins/@{plugin}/dist"/>
+		  </sequential>
+		</for>
+	</target>
+	
+	<target name="compile-plugins-standalone" depends="install-antcontrib">
+	    <for list="${plugin-ids}" param="plugin" trim="true">
+	      <sequential>		
+	  			<echo>Compiling Kettle Plugin @{plugin}...</echo>
+	      		<mkdir dir="src-plugins/@{plugin}/bin/classes"/>
+			    <javac 
+			    	   destdir="src-plugins/@{plugin}/bin/classes"
+			    	   target="5"
+			    	   source="5"
+			           deprecation="true"
+			    	   debug="${debug}"
+			    	   memorymaximumsize="256M"
+			    	   fork="true"
+		        	   includeantruntime="false"
+			    	>
+			    	<src path="src-plugins/@{plugin}/src"/>
+			    	
+			    	<classpath>
+						<fileset dir="${lib}" 			includes="**/*.jar"/>
+						<fileset dir="${libext}"	    includes="**/*.jar **/*.zip"/>
+						<fileset dir="${libswt}" 		includes="*.jar *.zip"/>
+						<fileset dir="${libswt}/win32/" includes="*.jar *.zip"/>
+			    		<fileset dir="src-plugins/@{plugin}/lib" includes="*.jar *.zip"/>
+			  		</classpath>
+			    </javac>
+			    <copy todir="src-plugins/@{plugin}/bin/classes">
+			    	<fileset dir="src-plugins/@{plugin}/src" includes="**/*.png **/*.xml **/*.xul **/*txt **/*properties"/>
+		  	    </copy>
+	      	</sequential>
+      	</for>
+	</target>
+	
+	<target name="compile-plugins" depends="compile-ui, compile-plugins-standalone"  description="compile the core plugins"/>
+	
+	<target name="kettle-plugins-jar-standalone" depends="compile-plugins-standalone" description="generate all the kettle plugin jars">
+	  	<for list="${plugin-ids}" param="plugin" trim="true">
+	  		<sequential>	
+			  	<echo>Generating the Kettle Plugin Jar ${plugin} ...</echo>
+	  			<mkdir dir="src-plugins/@{plugin}/dist"/>
+			  	<jar jarfile="src-plugins/@{plugin}/dist/@{plugin}.jar" 
+			    	 basedir="src-plugins/@{plugin}/bin/classes" 
+			    	 includes="**/*" 
+			  	     excludes="**/Thumbs.db">
+		              <manifest>
+		                  <attribute name="Implementation-Title" value="@{plugin}" />
+		                  <attribute name="Implementation-Version" value="${impl.version}" />
+		                  <attribute name="Specification-Version" value="${revision}" />
+		                  <attribute name="Implementation-Vendor" value="${impl.vendor}" />
+		  				  <attribute name="Implementation-ProductID" value="${impl.productID}" />
+		                  <attribute name="Compile-Timestamp" value="${compile.timestamp}" />
+		                  <attribute name="Compile-User" value="${user.name}" />
+		              </manifest>
+			  	</jar>
+			</sequential>
+	  	</for>
+	</target>
+	  	
+	<target name="kettle-plugins-jar" depends="compile-plugins, kettle-plugins-jar-standalone" description="generate all the kettle plugin jars"/>
+	
+	<target name="kettle-plugins-standalone" depends="kettle-plugins-jar-standalone" description="generate all the kettle plugin jars">
+	  	<for list="${plugin-ids}" param="plugin" trim="true">
+	  		<sequential>	
+			  	<echo>Staging the Kettle plugin @{plugin} ...</echo>
+	  			<!-- copy plugin jar -->
+	  			<mkdir dir="src-plugins/@{plugin}/bin/stage/@{plugin}"/>
+		  		<copy todir="src-plugins/@{plugin}/bin/stage/@{plugin}"  file="src-plugins/@{plugin}/dist/@{plugin}.jar"/>
+
+	  	        <!-- external libs (jdbc etc) -->
+		  		<mkdir dir="src-plugins/@{plugin}/bin/stage/@{plugin}/lib"/>
+		  		<copy todir="src-plugins/@{plugin}/bin/stage/@{plugin}/lib">
+		  			<fileset dir="src-plugins/@{plugin}/lib" includes="**/*.jar **/*.zip" excludes="**/.vpn"/>
+	  			</copy>
+
+	  			<!-- any other res files -->
+		  		<copy todir="src-plugins/@{plugin}/bin/stage/@{plugin}">
+		  			<fileset dir="src-plugins/@{plugin}/res" includes="**/*" excludes="**/.vpn"/>
+	  			</copy>
+			</sequential>
+	  	</for>
+	</target>
+
+	<target name="kettle-plugins" depends="kettle-plugins-jar, kettle-plugins-standalone" description="generate all the kettle plugin jars"/>
+		
+  	<target name="kettle-plugins-dist-standalone" depends="kettle-plugins-standalone" description="generate all the kettle plugin jars">
+	  	<for list="${plugin-ids}" param="plugin" trim="true">
+	  		<sequential>
+			  	<echo>Creating the Kettle plugin zip for @{plugin} ...</echo>
+	  		  	<zip destfile="src-plugins/@{plugin}/dist/@{plugin}.zip" 
+	  		  		 basedir="src-plugins/@{plugin}/bin/stage"
+	  		    	 includes="**/*"/>
+			</sequential>
+	  	</for>
+	</target>
+
+	<!-- builds distributions of the core kettle plugins, after building the core of kettle --> 
+	<target name="kettle-plugins-dist" depends="kettle-plugins, kettle-plugins-dist-standalone" description="generate all the kettle plugin jars"/>
+
+	<target name="compile-plugins-test" depends="compile-plugins">
+	    <for list="${plugin-ids}" param="plugin" trim="true">
+	      <sequential>		
+	  			<echo>Compiling Kettle Plugin @{plugin}...</echo>
+	      		<mkdir dir="src-plugins/@{plugin}/bin/test-classes"/>
+			    <javac 
+			    	   destdir="src-plugins/@{plugin}/bin/test-classes"
+			    	   target="5"
+			    	   source="5"
+			           deprecation="true"
+			    	   debug="${debug}"
+			    	   memorymaximumsize="256M"
+			    	   fork="true"
+		        	   includeantruntime="false"
+			    	>
+			    	<src path="src-plugins/@{plugin}/test"/>
+			    	
+			    	<classpath>
+						<fileset dir="${lib}" 			includes="**/*.jar"/>
+						<fileset dir="${libext}"	    includes="**/*.jar **/*.zip"/>
+						<fileset dir="${libswt}" 		includes="*.jar *.zip"/>
+						<fileset dir="${libswt}/win32/" includes="*.jar *.zip"/>
+			    		<fileset dir="src-plugins/@{plugin}/lib" includes="*.jar *.zip"/>
+			    		<pathelement path="src-plugins/@{plugin}/bin/classes"/>
+			  		</classpath>
+			    </javac>
+			    <copy todir="src-plugins/@{plugin}/bin/testclasses">
+			    	<fileset dir="src-plugins/@{plugin}/test" includes="**/*.png **/*.xml **/*.xul **/*txt **/*properties"/>
+		  	    </copy>
+	      	</sequential>
+      	</for>
+	</target>
+	
+	<target name="tests-plugins" depends="compile-plugins-test">
+	  	<for list="${plugin-ids}" param="plugin" trim="true">
+	  		<sequential>
+				<junit printsummary="no" fork="yes" forkmode="perTest" jvm="java" maxmemory="512M" showoutput="yes">
+			    	<classpath>
+						<fileset dir="${lib}" includes="**/*.jar"/>
+						<fileset dir="test/libext/" includes="jetty-servlet-tester-*.jar"/>
+			    		<pathelement path="src-plugins/@{plugin}/bin/test-classes"/>
+			    		<pathelement path="src-plugins/@{plugin}/bin/classes"/>
+			    		<fileset dir="src-plugins/@{plugin}/lib" includes="*.jar *.zip"/>
+						<fileset dir="${libext}" 		includes="**/*.jar **/*.zip"/>
+						<fileset dir="${libswt}" 		includes="*.jar *.zip"/>
+						<fileset dir="${libswt}/win32/" includes="*.jar *.zip"/>
+					</classpath>
+					
+					<formatter type="xml"/>
+		
+				  	<batchtest todir="${junit}" haltonerror="false">
+				  		<fileset dir="src-plugins/@{plugin}/test">
+				  		      <include name="**/*Test*.java"/>
+			  		    </fileset>
+			  		</batchtest>
+				</junit>
+			</sequential>
+		</for>
+	</target>
 
 </project>

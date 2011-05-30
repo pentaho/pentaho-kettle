@@ -1,4 +1,4 @@
- /* Copyright (c) 2007 Pentaho Corporation.  All rights reserved. 
+ /* Copyright (c) 2011 Pentaho Corporation.  All rights reserved. 
  * This software was developed by Pentaho Corporation and is provided under the terms 
  * of the GNU Lesser General Public License, Version 2.1. You may not use 
  * this file except in compliance with the license. If you need a copy of the license, 
@@ -19,6 +19,7 @@ import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.SQLStatement;
+import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -43,12 +44,12 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
 
-
 /**
- * Created on 20-feb-2007
+ * GPLoad Bulk Loader Step Meta
  * 
- * @author Sven Boden
+ * @author Matt Casters, Sean Flatley
  */
+@Step(id = "GPLoad", image = "GBL.png", i18nPackageName="org.pentaho.di.trans.steps.gpload", name="GPLoad.TypeLongDesc", description = "GPLoad.TypeLongDesc", categoryDescription="i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk")
 public class GPLoadMeta extends BaseStepMeta implements StepMetaInterface
 {
 	private static Class<?> PKG = GPLoadMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$

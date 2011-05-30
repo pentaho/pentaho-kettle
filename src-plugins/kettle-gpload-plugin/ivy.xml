@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
+  <info organisation="${pentaho.group}" module="${ivy.artifact.id}" revision="${project.revision}" />
+
+  <configurations>
+    <conf name="default" />
+    <conf name="test" visibility="private" />
+    <conf name="source" />
+  </configurations>
+
+  <publications>
+    <artifact name="${ivy.artifact.id}" type="${artifact.type}" conf="default" />
+  </publications>
+
+  <dependencies defaultconf="default->default">
+  </dependencies>
+</ivy-module>

@@ -629,14 +629,6 @@
     <iconfile>ui/images/GBL.png</iconfile>
   </step>
 	
-	<step id="GPLoad">
-		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.GPLoad</description>
-		<classname>org.pentaho.di.trans.steps.gpload.GPLoadMeta</classname>
-		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Bulk</category>
-		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.GPLoad</tooltip>
-		<iconfile>ui/images/GBL.png</iconfile>
-	</step>
-
   <step id="PGBulkLoader">
     <description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.PGBulkLoader</description>
     <classname>org.pentaho.di.trans.steps.pgbulkloader.PGBulkLoaderMeta</classname>
