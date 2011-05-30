@@ -119,7 +119,7 @@
   <target name="publish-plugins" depends="install-antcontrib">
     <for list="${kettle.plugins.list}" param="plugin" trim="true">
       <sequential>
-        <antcall target="publish-task">
+        <antcall target="publish-plugin-task">
           <param name="ivy.artifact.id" value="@{plugin}" />
           <param name="pluginfolder" value="../src-plugins/@{plugin}"/>
         </antcall>
