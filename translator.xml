@@ -8,6 +8,9 @@
     <root>src-core</root>
     <root>src-ui</root>
     <root>src-db</root>
+    <root>src-dbdialog</root>
+    <root>src-plugins/kettle-gpload-plugin/src</root>
+    <root>src-plugins/kettle-palo-plugin/src</root>
   </source-directories>
   
   <scan-phrases>
@@ -49,6 +52,9 @@
     <filename>BrowseController.java</filename>
     <filename>FileOverwriteDialogController.java</filename>
     <filename>BaseStepMeta.java</filename>
+    <filename>DataHandler.java</filename>
+    <filename>FragmentHandler.java</filename>
+    <filename>Launch.java</filename>
     
   </files-to-avoid>
   
