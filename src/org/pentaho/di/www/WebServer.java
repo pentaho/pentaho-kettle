@@ -55,6 +55,8 @@ public class WebServer
     private String hostname;
     private int port;
 
+    private Timer slaveMonitoringTimer;
+
     public WebServer(LogChannelInterface log, TransformationMap transformationMap, JobMap jobMap, SocketRepository socketRepository, List<SlaveServerDetection> detections, String hostname, int port, boolean join) throws Exception
     {
     	this.log = log;
@@ -261,6 +263,14 @@ public class WebServer
     public void stopServer() {
 		try {
 			if (server != null) {
+			  
+	      // Stop the monitoring timer
+        //
+        if (slaveMonitoringTimer!=null) {
+          slaveMonitoringTimer.cancel();
+          slaveMonitoringTimer = null;
+        }
+
 				// Clean up all the server sockets...
 				//
 				socketRepository.closeAll();
@@ -312,7 +322,7 @@ public class WebServer
 	 * This method registers a timer to check up on all the registered slave servers every X seconds.<br>
 	 */
     private void startSlaveMonitoring() {
-		Timer timer = new Timer("WebServer Timer");
+		slaveMonitoringTimer = new Timer("WebServer Timer");
 		TimerTask timerTask = new TimerTask() {
 		
 			public void run() {
@@ -335,7 +345,7 @@ public class WebServer
 				}
 			}
 		};
-		timer.schedule(timerTask, 20000, 20000);
+		slaveMonitoringTimer.schedule(timerTask, 20000, 20000);
 		
 	}
 
