@@ -406,12 +406,15 @@ public class SlaveServer  extends ChangedFlag
     	
         // Get HTTP client
         // 
-        HttpClient client = new HttpClient();
+        HttpClient client = SlaveConnectionManager.getInstance().createHttpClient();
         addCredentials(client);
         addProxy(client);
         
         // Execute request
         // 
+        InputStream inputStream=null;
+        BufferedInputStream bufferedInputStream=null;
+        
         try
         {
             int result = client.executeMethod(post);
@@ -420,12 +423,14 @@ public class SlaveServer  extends ChangedFlag
             log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseStatus", Integer.toString(result))); //$NON-NLS-1$
             
             // the response
-            InputStream inputStream = new BufferedInputStream(post.getResponseBodyAsStream(), 1000);
+            //
+            inputStream = post.getResponseBodyAsStream();
+            bufferedInputStream = new BufferedInputStream(inputStream, 1000);
             
             StringBuffer bodyBuffer = new StringBuffer();
             int c;
-            while ( (c=inputStream.read())!=-1) bodyBuffer.append((char)c);
-            inputStream.close();
+            while ( (c=bufferedInputStream.read())!=-1) bodyBuffer.append((char)c);
+
             String bodyTmp = bodyBuffer.toString();
             
             switch(result)
@@ -440,7 +445,6 @@ public class SlaveServer  extends ChangedFlag
             }
 
             String body = bodyBuffer.toString();
-            
 
             // String body = post.getResponseBodyAsString(); 
             log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseBody",body)); //$NON-NLS-1$
@@ -449,9 +453,16 @@ public class SlaveServer  extends ChangedFlag
         } catch (Exception e) {
         	log.logError(toString(), String.format("Exception sending message to service %s", service), e);
         	throw e;
-        }
-        finally
+        } finally
         {
+          
+            if (bufferedInputStream!=null) {
+              bufferedInputStream.close();
+            }
+            if (inputStream!=null) {
+              inputStream.close();
+            }
+            
             // Release current connection to the connection pool once you are done
             post.releaseConnection();
             log.logDetailed(BaseMessages.getString(PKG, "SlaveServer.DETAILED_SentXmlToService", service, environmentSubstitute(hostname))); //$NON-NLS-1$
@@ -491,12 +502,15 @@ public class SlaveServer  extends ChangedFlag
       	
           // Get HTTP client
           // 
-          HttpClient client = new HttpClient();
+          HttpClient client = SlaveConnectionManager.getInstance().createHttpClient();
           addCredentials(client);
           addProxy(client);
           
           // Execute request
           // 
+          InputStream inputStream=null;
+          BufferedInputStream bufferedInputStream=null;          
+
           try
           {
               int result = client.executeMethod(putMethod);
@@ -505,12 +519,12 @@ public class SlaveServer  extends ChangedFlag
               log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseStatus", Integer.toString(result))); //$NON-NLS-1$
               
               // the response
-              InputStream inputStream = new BufferedInputStream(putMethod.getResponseBodyAsStream(), 1000);
+              inputStream = putMethod.getResponseBodyAsStream();
+              bufferedInputStream = new BufferedInputStream(inputStream, 1000);
               
               StringBuffer bodyBuffer = new StringBuffer();
               int c;
-              while ( (c=inputStream.read())!=-1) bodyBuffer.append((char)c);
-              inputStream.close();
+              while ( (c=bufferedInputStream.read())!=-1) bodyBuffer.append((char)c);
               String bodyTmp = bodyBuffer.toString();
               
               switch(result)
@@ -534,6 +548,13 @@ public class SlaveServer  extends ChangedFlag
           }
           finally
           {
+            if (bufferedInputStream!=null) {
+              bufferedInputStream.close();
+            }
+            if (inputStream!=null) {
+              inputStream.close();
+            }
+
               // Release current connection to the connection pool once you are done
               putMethod.releaseConnection();
               log.logDetailed(BaseMessages.getString(PKG, "SlaveServer.DETAILED_SentExportToService", AddExportServlet.CONTEXT_PATH, environmentSubstitute(hostname))); //$NON-NLS-1$
@@ -603,22 +624,33 @@ public class SlaveServer  extends ChangedFlag
     {
         // Prepare HTTP get
         // 
-        HttpClient client = new HttpClient();
+        HttpClient client = SlaveConnectionManager.getInstance().createHttpClient();
         addCredentials(client);
         addProxy(client);
         HttpMethod method = new GetMethod(constructUrl(service));
-        method.getParams().setSoTimeout(120000); // 2 min timeout
         
         // Execute request
         // 
+        InputStream inputStream=null;
+        BufferedInputStream bufferedInputStream=null;
+
         try
         {
             int result = client.executeMethod(method);
             
             // The status code
             log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseStatus", Integer.toString(result))); //$NON-NLS-1$
+
+            // the response
+            //
+            inputStream = method.getResponseBodyAsStream();
+            bufferedInputStream = new BufferedInputStream(inputStream, 1000);
             
-            String body = method.getResponseBodyAsString();
+            StringBuffer bodyBuffer = new StringBuffer();
+            int c;
+            while ( (c=bufferedInputStream.read())!=-1) bodyBuffer.append((char)c);
+
+            String body = bodyBuffer.toString();
             
             log.logDetailed(BaseMessages.getString(PKG, "SlaveServer.DETAILED_FinishedReading", Integer.toString(body.getBytes().length))); //$NON-NLS-1$
             log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseBody",body)); //$NON-NLS-1$
@@ -627,6 +659,13 @@ public class SlaveServer  extends ChangedFlag
         }
         finally
         {
+          if (bufferedInputStream!=null) {
+            bufferedInputStream.close();
+          }
+          if (inputStream!=null) {
+            inputStream.close();
+          }
+
             // Release current connection to the connection pool once you are done
             method.releaseConnection();            
             log.logDetailed(BaseMessages.getString(PKG, "SlaveServer.DETAILED_ExecutedService", service, hostname) ); //$NON-NLS-1$
