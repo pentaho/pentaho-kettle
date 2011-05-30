@@ -384,12 +384,12 @@ public class GPLoad extends BaseStep implements StepInterface
 	{
 	   String filename = meta.getControlFile();
 	   if (Const.isEmpty(filename)) {
-	      throw new KettleException(BaseMessages.getString(PKG, ""));
+	      throw new KettleException(BaseMessages.getString(PKG, "GPLoad.Exception.NoControlFileSpecified"));
 	   }
 	   else {
 	      filename = environmentSubstitute(filename).trim();
 	      if (Const.isEmpty(filename)) {
-	         throw new KettleException(BaseMessages.getString(PKG, ""));
+	         throw new KettleException(BaseMessages.getString(PKG, "GPLoad.Exception.NoControlFileSpecified"));
 	      }
 	   }
 	   
@@ -422,25 +422,25 @@ public class GPLoad extends BaseStep implements StepInterface
 	 * is valid.
 	 * 
 	 * @param pathToFile Path to the file to verify.
-	 * @param exceptionMessageKey The key of the message in the properties bundle to use when the path is not provided.
+	 * @param exceptionMessage The message to use when the path is not provided.
 	 * @param checkExistence When true the path's existence will be verified.
 	 * @return
 	 * @throws KettleException
 	 */
-	private String getPath(String pathToFile, String exceptionMessageKey, boolean checkExistenceOfFile)
+	private String getPath(String pathToFile, String exceptionMessage, boolean checkExistenceOfFile)
 	        throws KettleException {
 	   
 	     	//  Make sure the path is not empty
 	      if (Const.isEmpty(pathToFile)) 
 	      {
-	         throw new KettleException(BaseMessages.getString(PKG, exceptionMessageKey));  
+	         throw new KettleException(exceptionMessage);  
 	      }
 	      
 	      //  make sure the variable substitution is not empty
 	      pathToFile = environmentSubstitute(pathToFile).trim();
 	      if (Const.isEmpty(pathToFile)) 
 	      {
-	         throw new KettleException(BaseMessages.getString(PKG, exceptionMessageKey));  
+	         throw new KettleException(exceptionMessage);  
 	      }
 	      
 	      FileObject fileObject = KettleVFS.getFileObject(pathToFile, getTransMeta());
@@ -488,17 +488,17 @@ public class GPLoad extends BaseStep implements StepInterface
 	   StringBuffer sbCommandLine = new StringBuffer(300);
 	   
 	   //  get path to the executable
-	   sbCommandLine.append(getPath(meta.getGploadPath(), "GPLoad.Exception.GPLoadPathMisssing", true));
+	   sbCommandLine.append(getPath(meta.getGploadPath(), BaseMessages.getString(PKG, "GPLoad.Exception.GPLoadPathMisssing"), true));
 	   
 	   //  get the path to the control file
 	   sbCommandLine.append(" -f ");
-	   sbCommandLine.append(getPath(meta.getControlFile(), "GPLoad.Exception.ControlFilePathMissing", false));
+	   sbCommandLine.append(getPath(meta.getControlFile(), BaseMessages.getString(PKG, "GPLoad.Exception.ControlFilePathMissing"), false));
 	   
 	   //  get the path to the log file, if specified
 	   String logfile = meta.getLogFile();
 	   if (!Const.isEmpty(logfile)) {
    	  sbCommandLine.append(" -l ");
-	     sbCommandLine.append(getPath(meta.getLogFile(), "GPLoad.Exception.LogFilePathMissing", false));
+	     sbCommandLine.append(getPath(meta.getLogFile(), BaseMessages.getString(PKG, "GPLoad.Exception.LogFilePathMissing"), false));
 	   } 
 	   return sbCommandLine.toString(); 
 	}
