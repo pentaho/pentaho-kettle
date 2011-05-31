@@ -231,4 +231,19 @@ public class LoggingRegistry {
 	public Date getLastModificationTime() {
 		return lastModificationTime;
 	}
+
+	/**
+	 * Removes the logging registry entry and all its children from the registry.
+	 * 
+	 * @param logChannelId
+	 */
+  public void removeIncludingChildren(String logChannelId) {
+    synchronized(map) {
+      List<String> children = getLogChannelChildren(logChannelId);
+      for (String child : children) {
+        map.remove(child);
+      }
+      map.remove(logChannelId);
+    }
+  }
 }
