@@ -596,6 +596,12 @@ public class Const
 	 */
 	public static final String KETTLE_MAX_LOG_TIMEOUT_IN_MINUTES = "KETTLE_MAX_LOG_TIMEOUT_IN_MINUTES";
 
+	/**
+	 * This environment variable will set a time-out after which waiting, completed or stopped transformations and jobs will be automatically cleaned up.
+	 * The default value is 1440 (one day).
+	 */
+  public static final String KETTLE_CARTE_OBJECT_TIMEOUT_MINUTES = "KETTLE_CARTE_OBJECT_TIMEOUT_MINUTES";
+
 	 /**
    * System wide parameter: the maximum number of step performance snapshots to keep in memory. 
    * Set to 0 to keep all snapshots indefinitely (default)

@@ -179,5 +179,10 @@
 		<default-value>N</default-value>
 	</kettle-variable>
 	
+	<kettle-variable>
+		<description>This environment variable will set a time-out after which waiting, completed or stopped transformations and jobs will be automatically cleaned up.  The default value is 1440 (one day).</description>
+		<variable>KETTLE_CARTE_OBJECT_TIMEOUT_MINUTES</variable>
+		<default-value>1440</default-value>
+	</kettle-variable>
 
 </kettle-variables>

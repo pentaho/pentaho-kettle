@@ -53,7 +53,6 @@ public class ClusterGenerator {
 		public void run() {
 			try {
 				SlaveServerConfig config = new SlaveServerConfig(hostname, port, false);
-				config.setObjectTimeoutMinutes(1);
 				carte = new Carte(config);
 			} catch (Exception e) {
 				this.exception = e;

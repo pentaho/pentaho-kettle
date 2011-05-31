@@ -29,6 +29,7 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.trans.Trans;
@@ -103,13 +104,27 @@ public class CarteSingleton {
     }
   }
 
-  public static void installPurgeTimer(final SlaveServerConfig config, final LogChannelInterface log, final TransformationMap transformationMap,
-      final JobMap jobMap) {
-    // If we need to time out finished or idle objects, we should create a timer in the background to clean
+  public static void installPurgeTimer(final SlaveServerConfig config, final LogChannelInterface log, final TransformationMap transformationMap, final JobMap jobMap) {
+
+    final int objectTimeout;
+    String systemTimeout = EnvUtil.getSystemProperty(Const.KETTLE_CARTE_OBJECT_TIMEOUT_MINUTES, null);
+    
+    // The value specified in XML takes precedence over the environment variable!
     //
     if (config.getObjectTimeoutMinutes() > 0) {
+      objectTimeout = config.getObjectTimeoutMinutes();
+    } else if(!Const.isEmpty(systemTimeout)) {
+      objectTimeout = Const.toInt(systemTimeout, 1440);
+    } else {
+      objectTimeout = 24*60; // 1440 : default is a one day time-out
+    }
+    
+    // If we need to time out finished or idle objects, we should create a timer
+    // in the background to clean
+    //
+    if (objectTimeout > 0) {
 
-      log.logBasic("Installing timer to purge stale objects after " + config.getObjectTimeoutMinutes() + " minutes.");
+      log.logBasic("Installing timer to purge stale objects after " + objectTimeout + " minutes.");
 
       Timer timer = new Timer(true);
 
@@ -166,9 +181,9 @@ public class CarteSingleton {
         }
       };
 
-      // Search for stale objects every minute:
+      // Search for stale objects every 20 seconds:
       //
-      timer.schedule(timerTask, 60000, 60000);
+      timer.schedule(timerTask, 20000, 20000);
     }
   }
 
@@ -190,8 +205,7 @@ public class CarteSingleton {
         servletLoggingObject.setContainerObjectId(carteObjectId);
         servletLoggingObject.setLogLevel(LogLevel.BASIC);
 
-        carte.getTransformationMap().addTransformation(trans.getName(), carteObjectId, trans,
-            new TransConfiguration(trans.getTransMeta(), new TransExecutionConfiguration()));
+        carte.getTransformationMap().addTransformation(trans.getName(), carteObjectId, trans, new TransConfiguration(trans.getTransMeta(), new TransExecutionConfiguration()));
 
         return carte;
       } else {

@@ -359,6 +359,7 @@ public class MasterSlaveTest extends BaseCluster {
     
     public static void main(String[] args) throws Exception {
 
+      System.setProperty(Const.KETTLE_CARTE_OBJECT_TIMEOUT_MINUTES, "1");
       KettleEnvironment.init();
       CentralLogStore.init(1000, 5);
       
