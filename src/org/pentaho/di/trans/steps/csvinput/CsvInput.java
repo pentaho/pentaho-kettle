@@ -273,6 +273,29 @@ public class CsvInput extends BaseStep implements StepInterface
 		
 		logBasic(BaseMessages.getString(PKG, "CsvInput.Log.ReadingFromNrFiles", Integer.toString(data.filenames.length))); //$NON-NLS-1$
 	}
+	
+	@Override
+	public void dispose(StepMetaInterface smi, StepDataInterface sdi) {
+	  try {
+  	  // Close the previous file...
+      //
+      if (data.fc!=null) {
+        data.fc.close();
+      }
+	  } catch(Exception e) {
+	    logError("Error closing file channel", e);
+	  }
+
+	  try {
+      if (data.fis!=null) {
+        data.fis.close();
+      }
+	  } catch(Exception e) {
+	    logError("Error closing file input stream", e);
+	  }
+
+    super.dispose(smi, sdi);
+	}
 
 	private boolean openNextFile() throws KettleException {
 		try {
