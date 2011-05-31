@@ -94,7 +94,7 @@ public class PrepareExecutionTransServlet extends BaseHttpServlet implements Car
         trans = getTransformationMap().getTransformation(entry);
       }
 
-      TransConfiguration transConfiguration = getTransformationMap().getConfiguration(transName);
+      TransConfiguration transConfiguration = getTransformationMap().getConfiguration(entry);
       if (trans != null && transConfiguration != null) {
         TransExecutionConfiguration executionConfiguration = transConfiguration.getTransExecutionConfiguration();
         // Set the appropriate logging, variables, arguments, replay date, ...
