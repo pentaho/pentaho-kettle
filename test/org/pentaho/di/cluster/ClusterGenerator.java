@@ -53,6 +53,7 @@ public class ClusterGenerator {
 		public void run() {
 			try {
 				SlaveServerConfig config = new SlaveServerConfig(hostname, port, false);
+				config.setObjectTimeoutMinutes(1);
 				carte = new Carte(config);
 			} catch (Exception e) {
 				this.exception = e;
@@ -70,6 +71,7 @@ public class ClusterGenerator {
 			final int port = Const.toInt(slaveServer.getPort(), WebServer.PORT);
 			CarteLauncher launcher = new CarteLauncher(hostname, port);
 			Thread thread = new Thread(launcher);
+			thread.setName("Carte Launcher"+thread.getName());
 			thread.start();
 			// Wait until the carte object is available...
 			while (launcher.carte==null && !launcher.failure) {

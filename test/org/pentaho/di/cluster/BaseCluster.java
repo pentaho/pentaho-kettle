@@ -34,7 +34,7 @@ public class BaseCluster extends TestCase {
 		config.setClusterPosting(true);
 		config.setClusterPreparing(true);
 		config.setClusterStarting(true);
-		config.setLogLevel(LogLevel.BASIC);
+		config.setLogLevel(LogLevel.MINIMAL);
 		
 		// LogWriter.getInstance().setFilter(" server socket ");
 		
@@ -69,10 +69,10 @@ public class BaseCluster extends TestCase {
     	// Bootstrap the Kettle API...
     	//
     	KettleEnvironment.init();
-    	CentralLogStore.init(0, 60); // Keep all log rows for at least 60 minutes
+    	CentralLogStore.init(5000, 60); // Keep 5000 log rows for at least 60 minutes
 	}
 
-	protected String loadFileContent(VariableSpace space, String filename) throws Exception {
+	public static String loadFileContent(VariableSpace space, String filename) throws Exception {
 		String realFilename = space.environmentSubstitute(filename);
 		return KettleVFS.getTextFileContent(realFilename, Charset.defaultCharset().name());
 	}
