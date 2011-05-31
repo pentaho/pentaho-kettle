@@ -260,9 +260,16 @@ public class TextFileOutput extends BaseStep implements StepInterface
     private byte[] formatField(ValueMetaInterface v, Object valueData) throws KettleValueException
     {
     	if( v.isString() )
-    	{    	
-    		String svalue = (valueData instanceof String)?(String)valueData:v.getString(valueData);
-    		return convertStringToBinaryString(v,Const.trimToType(svalue, v.getTrimType()));
+    	{
+    	  if (v.isStorageBinaryString()) {
+    	    return (byte[])valueData;
+    	  } else {
+      		String svalue = (valueData instanceof String)?(String)valueData:v.getString(valueData);
+
+      		// trim or cut to size if needed.
+      		//
+      		return convertStringToBinaryString(v,Const.trimToType(svalue, v.getTrimType()));
+    	  }
     	} 
     	else 
     	{
