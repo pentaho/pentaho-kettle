@@ -111,9 +111,7 @@ public class Carte
         
         // If we need to time out finished or idle objects, we should create a timer in the background to clean
         //
-        if (config.getObjectTimeoutMinutes()>0) {
-          CarteSingleton.installPurgeTimer(config, log, transformationMap, jobMap);
-    		}
+        CarteSingleton.installPurgeTimer(config, log, transformationMap, jobMap);
 
         if (allOK) {
         	this.webServer = new WebServer(log, transformationMap, jobMap, socketRepository, detections, hostname, port, config.isJoining());
