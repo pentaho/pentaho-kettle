@@ -261,7 +261,11 @@ public class TextFileOutput extends BaseStep implements StepInterface
     {
     	if( v.isString() )
     	{
-    	  if (v.isStorageBinaryString() && v.getTrimType()==ValueMetaInterface.TRIM_TYPE_NONE) {
+    	  if (v.isStorageBinaryString() 
+    	      && v.getTrimType()==ValueMetaInterface.TRIM_TYPE_NONE
+    	      && v.getLength()<0
+    	      && Const.isEmpty(v.getStringEncoding())
+    	     ) {
     	    return (byte[])valueData;
     	  } else {
       		String svalue = (valueData instanceof String)?(String)valueData:v.getString(valueData);
