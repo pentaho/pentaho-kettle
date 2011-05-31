@@ -43,6 +43,7 @@ public class SocketRepository {
 	}
 	
 	public synchronized ServerSocket openServerSocket(int port, String user) throws IOException {
+	  
 		SocketRepositoryEntry entry = socketMap.get(port);
 		if (entry==null) {
 			
@@ -88,6 +89,8 @@ public class SocketRepository {
 	        // Store the entry in the map too!
 	        //
 	        socketMap.put(port, entry);
+
+	        // System.out.println("!!!!!!!!! Server socket opened, "+socketMap.size()+" currently in use.");
 		} else {
 			// Verify that the socket is not in use...
 			//
@@ -96,6 +99,7 @@ public class SocketRepository {
 			}
 			entry.setInUse(true);
 		}
+		
 		return entry.getServerSocket();
 	}
 	
@@ -106,6 +110,11 @@ public class SocketRepository {
 	 * @throws IOException
 	 */
 	public synchronized void releaseSocket(int port) throws IOException {
+	  
+	   if (port==40001) {
+	      System.out.println(port);
+	    }
+	  
 		SocketRepositoryEntry entry = socketMap.get(port);
 		if (entry==null) {
 			throw new IOException("Port to close was not found in the Carte socket repository!");

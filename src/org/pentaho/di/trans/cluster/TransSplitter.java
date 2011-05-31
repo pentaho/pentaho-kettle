@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
+import java.util.UUID;
 
 import org.pentaho.di.cluster.ClusterSchema;
 import org.pentaho.di.cluster.SlaveServer;
@@ -66,6 +67,8 @@ public class TransSplitter
     private Map<String, Integer> portCache;
     
     private Map<TransMeta, String> carteObjectMap;
+    
+    private String clusteredRunId;
 
     public TransSplitter()
     {
@@ -77,6 +80,8 @@ public class TransSplitter
         slaveStepPartitionFlag = new Hashtable<TransMeta,Map<StepMeta,String>>();
         portCache = new Hashtable<String, Integer>();
         carteObjectMap = new Hashtable<TransMeta, String>();
+        
+        clusteredRunId = UUID.randomUUID().toString();
     }
 
 
@@ -203,6 +208,7 @@ public class TransSplitter
       String realHostname = sourceSlave.environmentSubstitute(sourceSlave.getHostname());
       
       int port = masterSlave.allocateServerSocket(
+          clusteredRunId,
           Const.toInt(clusterSchema.getBasePort(), 40000), 
           realHostname, 
           originalTransformation.getName(), 
@@ -215,7 +221,7 @@ public class TransSplitter
     }
     
     public String createPortCacheKey(SlaveServer sourceSlave, String sourceStepName, int sourceStepCopy, SlaveServer targetSlave, String targetStepName, int targetStepCopy) {
-      return sourceSlave.getHostname()+sourceSlave.getName()+"/"+sourceStepName+"."+sourceStepCopy+" - "+targetSlave.getName()+"/"+targetStepName+"."+targetStepCopy;
+      return clusteredRunId+"/"+sourceSlave.getHostname()+sourceSlave.getName()+"/"+sourceStepName+"."+sourceStepCopy+" - "+targetSlave.getName()+"/"+targetStepName+"."+targetStepCopy;
     }
             
     /**
@@ -1418,5 +1424,9 @@ public class TransSplitter
 
     public Map<TransMeta, String> getCarteObjectMap() {
     return carteObjectMap;
+  }
+    
+  public String getClusteredRunId() {
+    return clusteredRunId;
   }
 }

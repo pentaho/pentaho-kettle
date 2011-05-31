@@ -429,6 +429,9 @@ public class Const
     /** Is this transformation running clustered, on the master? */
     public static final String INTERNAL_VARIABLE_CLUSTER_MASTER = INTERNAL_VARIABLE_PREFIX+".Cluster.Master";
 
+    /** The internal clustered run ID, unique across a clustered execution, important while doing parallel clustered runs */
+    public static final String INTERNAL_VARIABLE_CLUSTER_RUN_ID = INTERNAL_VARIABLE_PREFIX+".Cluster.Run.ID";
+    
     /** The size of the cluster : number of slaves */
     public static final String INTERNAL_VARIABLE_STEP_UNIQUE_COUNT = INTERNAL_VARIABLE_PREFIX+".Step.Unique.Count";
     

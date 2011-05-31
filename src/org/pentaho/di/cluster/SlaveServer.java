@@ -399,7 +399,7 @@ public class SlaveServer  extends ChangedFlag
         return postMethod;
     }
 
-    public String sendXML(String xml, String service) throws Exception
+    public synchronized String sendXML(String xml, String service) throws Exception
     {
     	byte[] content = xml.getBytes(Const.XML_ENCODING);
     	PostMethod post = getSendByteArrayMethod(content, service);
@@ -620,7 +620,7 @@ public class SlaveServer  extends ChangedFlag
         this.master = master;
     }
 
-    public String execService(String service) throws Exception
+    public synchronized String execService(String service) throws Exception
     {
         // Prepare HTTP get
         // 
@@ -755,9 +755,9 @@ public class SlaveServer  extends ChangedFlag
         return WebResult.fromXMLString(xml);
     }
 
-    public WebResult deAllocateServerSockets(String transName, String carteObjectId) throws Exception
+    public synchronized WebResult deAllocateServerSockets(String transName, String clusteredRunId) throws Exception
     {
-        String xml = execService(CleanupTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(transName, "UTF-8")+"&id="+Const.NVL(carteObjectId, "")+"&xml=Y&sockets=Y"); //$NON-NLS-1$  //$NON-NLS-2$
+        String xml = execService(CleanupTransServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(transName, "UTF-8")+"&id="+Const.NVL(clusteredRunId, "")+"&xml=Y&sockets=Y"); //$NON-NLS-1$  //$NON-NLS-2$
         return WebResult.fromXMLString(xml);
     }
 
@@ -790,7 +790,7 @@ public class SlaveServer  extends ChangedFlag
         return names;
     }
     
-    public int allocateServerSocket(int portRangeStart, String hostname, String transformationName, String sourceSlaveName, String sourceStepName, String sourceStepCopy, String targetSlaveName, String targetStepName, String targetStepCopy) throws Exception {
+    public synchronized int allocateServerSocket(String runId, int portRangeStart, String hostname, String transformationName, String sourceSlaveName, String sourceStepName, String sourceStepCopy, String targetSlaveName, String targetStepName, String targetStepCopy) throws Exception {
 
     	// Look up the IP address of the given hostname
     	// Only this way we'll be to allocate on the correct host.
@@ -800,6 +800,7 @@ public class SlaveServer  extends ChangedFlag
     	
     	String service=AllocateServerSocketServlet.CONTEXT_PATH+"/?";
     	service += AllocateServerSocketServlet.PARAM_RANGE_START+"="+Integer.toString(portRangeStart);
+      service += "&" + AllocateServerSocketServlet.PARAM_ID+"="+URLEncoder.encode(runId, "UTF-8");
     	service += "&" + AllocateServerSocketServlet.PARAM_HOSTNAME+"="+address;
     	service += "&" + AllocateServerSocketServlet.PARAM_TRANSFORMATION_NAME+"="+URLEncoder.encode(transformationName, "UTF-8");
     	service += "&" + AllocateServerSocketServlet.PARAM_SOURCE_SLAVE+"="+URLEncoder.encode(sourceSlaveName, "UTF-8");

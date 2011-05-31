@@ -335,11 +335,12 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 				    baseStep.stopAll();
 				  }
 				  try {
-  				  outputStream.flush();
-  				  outputStream.close();
-  				  bufferedOutputStream.close();
-  				  if (gzipOutputStream!=null) {
-  				    gzipOutputStream.close();
+  				  if (outputStream!=null) {outputStream.flush();
+    				  outputStream.close();
+    				  bufferedOutputStream.close();
+    				  if (gzipOutputStream!=null) {
+    				    gzipOutputStream.close();
+    				  }
   				  }
 				  } catch(Exception e) {
 				    baseStep.logError("Error shutting down output streams on the server socket of remote step", e);

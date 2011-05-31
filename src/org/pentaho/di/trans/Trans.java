@@ -2568,6 +2568,11 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   
         TransSplitter transSplitter = new TransSplitter(transMeta);
         transSplitter.splitOriginalTransformation();
+        
+        // Pass the clustered run ID to allow for parallel execution of clustered transformations
+        //
+        executionConfiguration.getVariables().put(Const.INTERNAL_VARIABLE_CLUSTER_RUN_ID, transSplitter.getClusteredRunId());
+        
         executeClustered(transSplitter, executionConfiguration);
         return transSplitter;
     }
@@ -2656,7 +2661,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                               variables.put(Const.INTERNAL_VARIABLE_SLAVE_SERVER_NAME, slaves[index].getName());
                               variables.put(Const.INTERNAL_VARIABLE_CLUSTER_SIZE, Integer.toString(slaves.length));
                               variables.put(Const.INTERNAL_VARIABLE_CLUSTER_MASTER, "N");
-                              
+
                               // Parameters override the variables but they need to pass over the configuration too...
                               //
                               Map<String, String> params = slaveTransExecutionConfiguration.getParams();
@@ -2955,7 +2960,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       {
           try
           {
-            cleanupSlaveServer(transSplitter, slaveServers[s], slaves[s].getName());
+            cleanupSlaveServer(transSplitter, slaveServers[s], slaves[s]);
           }
           catch(Exception e)
           {
@@ -2970,7 +2975,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       {
           try
           {
-            cleanupSlaveServer(transSplitter, masterServer, masterTransMeta.getName());
+            cleanupSlaveServer(transSplitter, masterServer, masterTransMeta);
           }
           catch(Exception e)
           {
@@ -2982,7 +2987,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
           //
           try
           {
-            masterServer.deAllocateServerSockets(transSplitter.getOriginalTransformation().getName(), null); // all ports
+            // Deallocate all ports belonging to this clustered run, not anything else
+            //
+            masterServer.deAllocateServerSockets(transSplitter.getOriginalTransformation().getName(), transSplitter.getClusteredRunId()); 
           }
           catch(Exception e)
           {
@@ -2994,9 +3001,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       return errors;
     }
 
-    public static void cleanupSlaveServer(TransSplitter transSplitter, SlaveServer slaveServer, String transName) throws KettleException {
+    public static void cleanupSlaveServer(TransSplitter transSplitter, SlaveServer slaveServer, TransMeta slaveTransMeta) throws KettleException {
+      String transName = slaveTransMeta.getName();
       try {
-        String carteObjectId = transSplitter.getCarteObjectMap().get(slaveServer);
+        String carteObjectId = transSplitter.getCarteObjectMap().get(slaveTransMeta);
         WebResult webResult = slaveServer.cleanupTransformation(transName, carteObjectId);
         if (!WebResult.STRING_OK.equals(webResult.getResult()))
         {

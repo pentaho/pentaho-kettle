@@ -26,13 +26,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 
 public class CleanupTransServlet extends BaseHttpServlet implements CarteServletInterface {
-	private static Class<?>		PKG					= CleanupTransServlet.class;	// for
-																					// i18n
-																					// purposes,
-																					// needed
-																					// by
-																					// Translator2!!
-																					// $NON-NLS-1$
+	private static Class<?>		PKG					= CleanupTransServlet.class;	// i18n
 
 	private static final long	serialVersionUID	= -5879200987669847357L;
 

@@ -65,6 +65,7 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.cluster.TransSplitter;
+import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.www.SlaveServerTransStatus;
 import org.w3c.dom.Node;
 
@@ -846,20 +847,52 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                     //
                     executionConfiguration.setArgumentStrings(args);
                     
-                    TransSplitter transSplitter = Trans.executeClustered(transMeta, executionConfiguration );
+                    TransSplitter transSplitter=null;
+                    long errors=0;
+                    try {
+                      transSplitter = Trans.executeClustered(transMeta, executionConfiguration );
+                      
+                      // Monitor the running transformations, wait until they are done.
+                      // Also kill them all if anything goes bad
+                      // Also clean up afterwards...
+                      //
+                      errors+= Trans.monitorClusteredTransformation(log, transSplitter, parentJob);
+                      
+                    } catch(Exception e) {
+                      logError("Error during clustered execution. Cleaning up clustered execution.", e);
+                      // In case something goes wrong, make sure to clean up afterwards!
+                      //
+                      errors++;
+                      if (transSplitter!=null) {
+                        Trans.cleanupCluster(log, transSplitter);
+                      } else {
+                        // Try to clean anyway...
+                        //
+                        SlaveServer master = null;
+                        for (StepMeta stepMeta : transMeta.getSteps()) {
+                          if (stepMeta.isClustered()) {
+                            for (SlaveServer slaveServer : stepMeta.getClusterSchema().getSlaveServers()) {
+                              if (slaveServer.isMaster()) {
+                                master = slaveServer;
+                                break;
+                              }
+                            }
+                          }
+                        }
+                        if (master!=null) {
+                          master.deAllocateServerSockets(transMeta.getName(), null);
+                        }
+                      }
+                    }
                     
-                    // Monitor the running transformations, wait until they are done.
-                    // Also kill them all if anything goes bad
-                    // Also clean up afterwards...
-                    //
-                    long errors = Trans.monitorClusteredTransformation(log, transSplitter, parentJob);
-                    
-                    Result clusterResult = Trans.getClusteredTransformationResult(log, transSplitter, parentJob); 
                     result.clear();
-                    result.add(clusterResult);
+
+                    if (transSplitter!=null) {
+                      Result clusterResult = Trans.getClusteredTransformationResult(log, transSplitter, parentJob); 
+                      result.add(clusterResult);
+                    }
                     
                     result.setNrErrors(result.getNrErrors()+errors);
-
                 }
                 // Execute this transformation remotely
                 //

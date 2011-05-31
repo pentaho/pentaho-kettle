@@ -14,6 +14,7 @@ package org.pentaho.di.www;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -73,13 +74,15 @@ public class ListServerSocketServlet extends BaseHttpServlet implements CarteSer
 
     out.println("Found "+allocations.size()+" ports for host '"+hostname+"'<p>");
     
-    for (SocketPortAllocation allocation : allocations) {
+    Iterator<SocketPortAllocation> iterator = allocations.iterator();
+    while (iterator.hasNext()) {
+      SocketPortAllocation allocation = iterator.next();
       
       if (!onlyOpen || (onlyOpen && allocation.isAllocated())) {
         
         out.println(allocation.getPort()+" : Transformation="+allocation.getTransformationName()+", "+allocation.getSourceSlaveName()+"/"+allocation.getSourceStepName()+"."+allocation.getSourceStepCopy());
         out.println(" --> "+allocation.getTargetSlaveName()+"/"+allocation.getTargetStepName()+"."+allocation.getTargetStepCopy());
-        out.println(" id="+allocation.getCarteObjectId()+", allocated="+allocation.isAllocated());
+        out.println(" id="+allocation.getRunId()+", allocated="+allocation.isAllocated());
         out.println(" time="+allocation.getLastRequested());
         
         out.println("<br>");

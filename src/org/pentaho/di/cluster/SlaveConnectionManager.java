@@ -32,4 +32,8 @@ public class SlaveConnectionManager {
   public HttpClient createHttpClient() {
     return new HttpClient(manager);
   }
+  
+  public void shutdown() {
+    manager.shutdown();
+  }
 }

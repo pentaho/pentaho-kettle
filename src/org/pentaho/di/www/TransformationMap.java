@@ -147,13 +147,13 @@ public class TransformationMap {
    *          schema
    * @param hostname
    *          the host name to allocate this address for
-   * @param carteObjectId
+   * @param clusteredRunId A unique id, created for each new clustered run during transformation split.
    * @param transformationName
    * @param sourceStepName
    * @param sourceStepCopy
    * @return
    */
-  public synchronized SocketPortAllocation allocateServerSocketPort(int portRangeStart, String hostname, String carteObjectId, String transformationName, String sourceSlaveName, String sourceStepName, String sourceStepCopy, String targetSlaveName,
+  public synchronized SocketPortAllocation allocateServerSocketPort(int portRangeStart, String hostname, String clusteredRunId, String transformationName, String sourceSlaveName, String sourceStepName, String sourceStepCopy, String targetSlaveName,
       String targetStepName, String targetStepCopy) {
 
     synchronized (hostServerSocketPortsMap) {
@@ -175,7 +175,7 @@ public class TransformationMap {
           maxPort = spa.getPort();
         }
 
-        if (spa.getSourceSlaveName().equalsIgnoreCase(sourceSlaveName) && spa.getTargetSlaveName().equalsIgnoreCase(targetSlaveName) && spa.getTransformationName().equalsIgnoreCase(transformationName)
+        if (spa.getRunId().equalsIgnoreCase(clusteredRunId) && spa.getSourceSlaveName().equalsIgnoreCase(sourceSlaveName) && spa.getTargetSlaveName().equalsIgnoreCase(targetSlaveName) && spa.getTransformationName().equalsIgnoreCase(transformationName)
             && spa.getSourceStepName().equalsIgnoreCase(sourceStepName) && spa.getSourceStepCopy().equalsIgnoreCase(sourceStepCopy) && spa.getTargetStepName().equalsIgnoreCase(targetStepName)
             && spa.getTargetStepCopy().equalsIgnoreCase(targetStepCopy)) {
           // This is the port we want, return it. Make sure it's allocated.
@@ -196,7 +196,7 @@ public class TransformationMap {
             // Otherwise, we keep on searching.
             //
             if (spa.getSourceSlaveName().equalsIgnoreCase(sourceSlaveName) && spa.getTargetSlaveName().equalsIgnoreCase(targetSlaveName)) {
-              socketPortAllocation = new SocketPortAllocation(spa.getPort(), new Date(), carteObjectId, transformationName, sourceSlaveName, sourceStepName, sourceStepCopy, targetSlaveName, targetStepName, targetStepCopy);
+              socketPortAllocation = new SocketPortAllocation(spa.getPort(), new Date(), clusteredRunId, transformationName, sourceSlaveName, sourceStepName, sourceStepCopy, targetSlaveName, targetStepName, targetStepCopy);
               serverSocketPortsMap.set(index, socketPortAllocation);
               break;
             }
@@ -208,7 +208,7 @@ public class TransformationMap {
         // Allocate a new port and add it to the back of the list
         // Normally this list should stay sorted on port number this way
         //
-        socketPortAllocation = new SocketPortAllocation(maxPort + 1, new Date(), carteObjectId, transformationName, sourceSlaveName, sourceStepName, sourceStepCopy, targetSlaveName, targetStepName, targetStepCopy);
+        socketPortAllocation = new SocketPortAllocation(maxPort + 1, new Date(), clusteredRunId, transformationName, sourceSlaveName, sourceStepName, sourceStepCopy, targetSlaveName, targetStepName, targetStepCopy);
         serverSocketPortsMap.add(socketPortAllocation);
       }
 
@@ -245,7 +245,7 @@ public class TransformationMap {
   public void deallocateServerSocketPorts(String transName, String carteObjectId) {
     for (String hostname : hostServerSocketPortsMap.keySet()) {
       for (SocketPortAllocation spa : hostServerSocketPortsMap.get(hostname)) {
-        if (spa.getTransformationName().equalsIgnoreCase(transName) && (Const.isEmpty(carteObjectId) || spa.getCarteObjectId().equals(carteObjectId))) {
+        if (spa.getTransformationName().equalsIgnoreCase(transName) && (Const.isEmpty(carteObjectId) || spa.getRunId().equals(carteObjectId))) {
           spa.setAllocated(false);
         }
       }
