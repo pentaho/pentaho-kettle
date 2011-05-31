@@ -257,20 +257,23 @@ public class AddSequence extends BaseStep implements StepInterface
 	
 	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
 	{
-		if (meta.isCounterUsed())
-		{
-			getTransMeta().getCounters().remove(data.getLookup());
-			data.counter=null;
-		}
-	    meta = (AddSequenceMeta)smi;
-	    data = (AddSequenceData)sdi;
-	    
-	    if (meta.isDatabaseUsed())
-	    {
-	        if(data.getDb()!=null) data.getDb().disconnect();
-	    }
-	    
-	    super.dispose(smi, sdi);
-	}
+    meta = (AddSequenceMeta) smi;
+    data = (AddSequenceData) sdi;
+
+    if (meta.isCounterUsed()) {
+      if (data.getLookup() != null) {
+        getTransMeta().getCounters().remove(data.getLookup());
+      }
+      data.counter = null;
+    }
+
+    if (meta.isDatabaseUsed()) {
+      if (data.getDb() != null) {
+        data.getDb().disconnect();
+      }
+    }
+
+    super.dispose(smi, sdi);
+  }
 	
 }
