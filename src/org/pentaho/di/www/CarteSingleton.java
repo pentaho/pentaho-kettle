@@ -28,6 +28,7 @@ import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.logging.LoggingRegistry;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.i18n.BaseMessages;
@@ -61,9 +62,7 @@ public class CarteSingleton {
     detections = new ArrayList<SlaveServerDetection>();
     socketRepository = new SocketRepository(log);
 
-    if (config.getObjectTimeoutMinutes() > 0) {
-      installPurgeTimer(config, log, transformationMap, jobMap);
-    }
+    installPurgeTimer(config, log, transformationMap, jobMap);
 
     SlaveServer slaveServer = config.getSlaveServer();
     if (slaveServer != null) {
@@ -146,11 +145,19 @@ public class CarteSingleton {
                   // check the last log time
                   //
                   int diffInMinutes = (int) Math.floor((System.currentTimeMillis() - trans.getLogDate().getTime()) / 60000);
-                  if (diffInMinutes >= config.getObjectTimeoutMinutes()) {
+                  if (diffInMinutes >= objectTimeout) {
                     // Let's remove this from the transformation map...
                     //
                     transformationMap.removeTransformation(entry);
-                    transformationMap.deallocateServerSocketPorts(entry);
+                    
+                    // Remove the logging information from the log registry & central log store
+                    //
+                    LoggingRegistry.getInstance().removeIncludingChildren(trans.getLogChannelId());
+                    CentralLogStore.discardLines(trans.getLogChannelId(), false);
+                    
+                    // transformationMap.deallocateServerSocketPorts(entry);
+                    
+                    log.logMinimal("Cleaned up transformation "+entry.getName()+" with id "+entry.getId()+" from "+trans.getLogDate()+", diff="+diffInMinutes);
                   }
                 }
               }
@@ -166,10 +173,11 @@ public class CarteSingleton {
                   // check the last log time
                   //
                   int diffInMinutes = (int) Math.floor((System.currentTimeMillis() - job.getLogDate().getTime()) / 60000);
-                  if (diffInMinutes >= config.getObjectTimeoutMinutes()) {
+                  if (diffInMinutes >= objectTimeout) {
                     // Let's remove this from the job map...
                     //
                     jobMap.removeJob(entry);
+                    log.logMinimal("Cleaned up job "+entry.getName()+" with id "+entry.getId()+" from "+job.getLogDate());
                   }
                 }
               }

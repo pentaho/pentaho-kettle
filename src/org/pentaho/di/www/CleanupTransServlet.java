@@ -106,7 +106,7 @@ public class CleanupTransServlet extends BaseHttpServlet implements CarteServlet
   				message += Const.CR+BaseMessages.getString(PKG, "TransStatusServlet.Log.TransCleanednup", transName);
   			} else {
   			  error=true;
-  				message = "The specified transformation [" + transName + "] could not be found";
+  				message = "The specified transformation [" + transName + "] with id ["+Const.NVL(id, "")+"] could not be found";
   				if (useXML) {
   					out.println(new WebResult(WebResult.STRING_ERROR, message));
   				} else {
