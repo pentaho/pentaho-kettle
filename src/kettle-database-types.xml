@@ -80,6 +80,11 @@
     <classname>org.pentaho.di.core.database.IngresDatabaseMeta</classname>
   </database-type>                                                        
 
+  <database-type id="VECTORWISE">
+    <description>Ingres VectorWise</description>
+    <classname>org.pentaho.di.core.database.VectorWiseDatabaseMeta</classname>
+  </database-type>                                                        
+
   <database-type id="INTERBASE">
     <description>Borland Interbase</description>
     <classname>org.pentaho.di.core.database.InterbaseDatabaseMeta</classname>
