@@ -251,8 +251,6 @@
 	<classpathentry kind="lib" path="libext/mondrian/olap4j-0.9.8.340.jar"/>
 	<classpathentry kind="lib" path="libext/commons/commons-beanutils-1.8.0-BETA.jar"/>
 	<classpathentry kind="lib" path="libext/commons/commons-discovery-0.2.jar"/>
-	<classpathentry kind="lib" path="libext/hive/libfb303.jar"/>
-	<classpathentry kind="lib" path="libext/hive/libthrift.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/postgresql-8.4-702.jdbc3.jar"/>
 	<classpathentry kind="lib" path="libext/hl7/hapi-base-1.1.jar"/>
 	<classpathentry kind="lib" path="libext/hl7/hapi-examples-1.1.jar"/>
@@ -269,12 +267,14 @@
 	<classpathentry kind="lib" path="libext/jsch-0.1.44.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/sqlite-jdbc-3.7.2.jar"/>
 	<classpathentry kind="lib" path="src-plugins/kettle-palo-plugin/lib/palo-core.jar"/>
-	<classpathentry kind="lib" path="libext/hive/hive-exec-0.7.0-cdh3u0.jar"/>
-	<classpathentry kind="lib" path="libext/hive/hive-metastore-0.7.0-cdh3u0.jar"/>
-	<classpathentry kind="lib" path="libext/hive/hive-service-0.7.0-cdh3u0.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/hive-jdbc-0.7.0-cdh3u0.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/hadoop-core-0.20.2-cdh3u0.jar"/>
 	<classpathentry kind="lib" path="libext/jackson-core-asl-1.5.2.jar"/>
 	<classpathentry kind="lib" path="libext/jackson-mapper-asl-1.5.2.jar"/>
+	<classpathentry kind="lib" path="libext/hive/hive-exec-0.7.0-pentaho-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libext/hive/hive-metastore-0.7.0-pentaho-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libext/hive/hive-service-0.7.0-pentaho-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libext/hive/libfb303-0.5.0.jar"/>
+	<classpathentry kind="lib" path="libext/hive/libthrift-0.5.0.jar"/>
+	<classpathentry kind="lib" path="libext/JDBC/hive-jdbc-0.7.0-pentaho-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
