@@ -79,13 +79,10 @@
 	<classpathentry exported="true" kind="lib" path="libext/pentaho/pentaho-formula-editor-0.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/commons/commons-lang-2.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/ini4j-0.5.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/pentaho/pentaho-xul-core-TRUNK-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/pentaho/pentaho-xul-swt-TRUNK-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/JDBC/vertica_3.5_jdk_5.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/spring/spring-beans-2.5.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/spring/spring-context-2.5.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/spring/spring-context-support-2.5.6.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/pentaho/libbase-TRUNK-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/pentaho/sqleonardo-swt-wrapper.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/pentaho/sqleonardo.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/web/jetty-6.1.21.jar"/>
@@ -131,8 +128,6 @@
 	<classpathentry exported="true" kind="lib" path="libext/xbean.jar"/>
 	<classpathentry exported="true" kind="lib" path="libswt/win32/swt.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/pentaho/jets3t-0.7.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/pentaho/pentaho-hdfs-vfs-TRUNK-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/pentaho/pentaho-s3-vfs-TRUNK-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/pentaho/kettle-vfs-20100924.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/edtftpj2.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/google/gdata-analytics-2.1.jar"/>
@@ -197,7 +192,6 @@
 	<classpathentry exported="true" kind="lib" path="libext/reporting/libbase-1.2.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/libdocbundle-1.2.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/libfonts-1.2.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/libformat-1.2.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/libformula-1.2.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/libformula-ui-1.2.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/libloader-1.2.2.jar"/>
@@ -270,11 +264,17 @@
 	<classpathentry kind="lib" path="libext/pentaho/hadoop-core-0.20.2-cdh3u0.jar"/>
 	<classpathentry kind="lib" path="libext/jackson-core-asl-1.5.2.jar"/>
 	<classpathentry kind="lib" path="libext/jackson-mapper-asl-1.5.2.jar"/>
-	<classpathentry kind="lib" path="libext/hive/hive-exec-0.7.0-pentaho-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="libext/hive/hive-metastore-0.7.0-pentaho-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="libext/hive/hive-service-0.7.0-pentaho-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/hive/libfb303-0.5.0.jar"/>
 	<classpathentry kind="lib" path="libext/hive/libthrift-0.5.0.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/hive-jdbc-0.7.0-pentaho-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libext/hive/hive-exec-0.7.0-pentaho-1.0.0.jar"/>
+	<classpathentry kind="lib" path="libext/hive/hive-metastore-0.7.0-pentaho-1.0.0.jar"/>
+	<classpathentry kind="lib" path="libext/hive/hive-service-0.7.0-pentaho-1.0.0.jar"/>
+	<classpathentry kind="lib" path="libext/JDBC/hive-jdbc-0.7.0-pentaho-1.0.0.jar"/>
+	<classpathentry kind="lib" path="libext/pentaho/libbase-1.2.2.jar"/>
+	<classpathentry kind="lib" path="libext/pentaho/pentaho-hdfs-vfs-1.0.0.jar"/>
+	<classpathentry kind="lib" path="libext/pentaho/pentaho-s3-vfs-1.0.1.jar"/>
+	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-core-3.3.0.jar"/>
+	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-swt-3.3.0.jar"/>
+	<classpathentry kind="lib" path="libext/reporting/libformat-1.2.4.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
