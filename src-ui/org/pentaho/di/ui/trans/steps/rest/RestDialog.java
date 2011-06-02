@@ -1131,7 +1131,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
 
         Const.sortStrings(fieldNames);
         colinfoparams[0].setComboValues(fieldNames);
-        
+        colinf[0].setComboValues(fieldNames);
     }
 	 private void setStreamFields()
 		{ 
@@ -1172,7 +1172,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
 	public void getData()
 	{
 		int i;
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "RestDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
+		if(isDebug()) logDebug(BaseMessages.getString(PKG, "RestDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 		
 		if (input.getHeaderName()!=null)
 		{
@@ -1234,7 +1234,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
 		int nrparams = wParameters.nrNonEmpty();
 		input.allocate(nrheaders, nrparams);
 
-		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "RestDialog.Log.FoundArguments",String.valueOf(nrheaders))); //$NON-NLS-1$ //$NON-NLS-2$
+		if(isDebug()) logDebug(BaseMessages.getString(PKG, "RestDialog.Log.FoundArguments",String.valueOf(nrheaders))); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i=0;i<nrheaders;i++)
 		{
 			TableItem item = wFields.getNonEmpty(i);

@@ -92,7 +92,7 @@ public class Rest extends BaseStep implements StepInterface
 	    if(rowData!=null) newRow=rowData.clone();
 
       	try {
-      		if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "Rest.Log.ConnectingToURL",data.realUrl));
+      		if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "Rest.Log.ConnectingToURL",data.realUrl));
       		
       		// create an instance of the com.sun.jersey.api.client.Client class
       		client = getClient();
@@ -107,7 +107,7 @@ public class Rest extends BaseStep implements StepInterface
 				for(int i=0; i<data.nrheader; i++) {
 					String value = data.inputRowMeta.getString(rowData, data.indexOfHeaderFields[i]);
 					webResource.header(data.headerNames[i], value);
-	        		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "Rest.Log.HeaderValue",data.headerNames[i],value));
+	        		if(isDebug()) logDebug(BaseMessages.getString(PKG, "Rest.Log.HeaderValue",data.headerNames[i],value));
 				}
 			}
 			
@@ -117,7 +117,7 @@ public class Rest extends BaseStep implements StepInterface
 					MultivaluedMapImpl queryParams = new MultivaluedMapImpl();
 					String value = data.inputRowMeta.getString(rowData, data.indexOfParamFields[i]);
 					queryParams.add(data.paramNames[i], value);
-	        		if(log.isDebug()) log.logDebug(toString(), BaseMessages.getString(PKG, "Rest.Log.BodyValue",data.paramNames[i],value));
+	        		if(isDebug()) logDebug(BaseMessages.getString(PKG, "Rest.Log.BodyValue",data.paramNames[i],value));
 					webResource.queryParams(queryParams);
 				}
 			}
@@ -141,7 +141,7 @@ public class Rest extends BaseStep implements StepInterface
             
 			// Get response time
 			long responseTime = System.currentTimeMillis() - startTime;
-            if (log.isDetailed()) log.logDetailed(toString(), BaseMessages.getString(PKG, "Rest.Log.ResponseTime", String.valueOf(responseTime),data.realUrl));
+            if (isDetailed()) logDetailed(BaseMessages.getString(PKG, "Rest.Log.ResponseTime", String.valueOf(responseTime),data.realUrl));
 			
             // Get Response
             String body = response.getEntity(String.class);
@@ -149,7 +149,7 @@ public class Rest extends BaseStep implements StepInterface
 			// Get status
             int status = response.getStatus();
 		    // Display status code
-            if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "Rest.Log.ResponseCode",""+status));
+            if(isDebug()) logDebug(BaseMessages.getString(PKG, "Rest.Log.ResponseCode",""+status));
 
 			
 			// for output
@@ -371,7 +371,7 @@ public class Rest extends BaseStep implements StepInterface
 	    	putRow(data.outputRowMeta, outputRowData);  // copy row to output rowset(s);
 			
             if (checkFeedback(getLinesRead()))   {
-            	if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "Rest.LineNumber")+getLinesRead()); //$NON-NLS-1$
+            	if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "Rest.LineNumber")+getLinesRead()); //$NON-NLS-1$
             }
 		} catch(KettleException e) {
 			 boolean sendToErrorRow=false;
