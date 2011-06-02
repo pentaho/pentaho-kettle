@@ -251,17 +251,19 @@ public class TransformationMap {
         // DEBUG : Do a verification on the content of the list.
         // If we find a port twice in the list, complain!
         //
+        /*
         for (int i = 0; i < serverSocketPortsMap.size(); i++) {
           for (int j = 0; j < serverSocketPortsMap.size(); j++) {
             if (i != j) {
               SocketPortAllocation one = serverSocketPortsMap.get(i);
               SocketPortAllocation two = serverSocketPortsMap.get(j);
               if (one.getPort() == two.getPort()) {
-                System.out.println("!! Error detected !! Identical ports discovered in the ports list.");
+                throw new RuntimeException("Error detected !! Identical ports discovered in the ports list.");
               }
             }
           }
         }
+        */
   
         // give back the good news too...
         //
