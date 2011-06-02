@@ -82,7 +82,7 @@ public class ListServerSocketServlet extends BaseHttpServlet implements CarteSer
         
         out.println(allocation.getPort()+" : Transformation="+allocation.getTransformationName()+", "+allocation.getSourceSlaveName()+"/"+allocation.getSourceStepName()+"."+allocation.getSourceStepCopy());
         out.println(" --> "+allocation.getTargetSlaveName()+"/"+allocation.getTargetStepName()+"."+allocation.getTargetStepCopy());
-        out.println(" id="+allocation.getRunId()+", allocated="+allocation.isAllocated());
+        out.println(" id="+allocation.getClusterRunId()+", allocated="+allocation.isAllocated());
         out.println(" time="+allocation.getLastRequested());
         
         out.println("<br>");

@@ -90,7 +90,6 @@ public class SocketRepository {
 	        //
 	        socketMap.put(port, entry);
 
-	        // System.out.println("!!!!!!!!! Server socket opened, "+socketMap.size()+" currently in use.");
 		} else {
 			// Verify that the socket is not in use...
 			//
@@ -110,10 +109,6 @@ public class SocketRepository {
 	 * @throws IOException
 	 */
 	public synchronized void releaseSocket(int port) throws IOException {
-	  
-	   if (port==40001) {
-	      System.out.println(port);
-	    }
 	  
 		SocketRepositoryEntry entry = socketMap.get(port);
 		if (entry==null) {

@@ -104,7 +104,7 @@ public class MasterSlaveTest extends BaseCluster {
 	}
 
 	private static LogChannel createLogChannel(String string) {
-	  LogChannel logChannel = new LogChannel("cluster unit test <testParallelFileReadOnMaster>");
+	  LogChannel logChannel = new LogChannel(string);
 	  logChannel.setLogLevel(LogLevel.BASIC);
 	  return logChannel;
   }
@@ -117,7 +117,7 @@ public class MasterSlaveTest extends BaseCluster {
 		TransMeta transMeta = generateParallelFileReadOnMasterWithCopiesTransMeta(clusterGenerator);
 		TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
 		TransSplitter transSplitter = Trans.executeClustered(transMeta, config);
-		LogChannel logChannel = createLogChannel("cluster unit test <testParallelFileReadOnMasterWithCopies>");
+		LogChannel logChannel = createLogChannel("cluster unit test <runParallelFileReadOnMasterWithCopies>");
 		long nrErrors = Trans.monitorClusteredTransformation(logChannel, transSplitter, null, 1);
 		assertEquals(0L, nrErrors);
 		String result = loadFileContent(transMeta, "${java.io.tmpdir}/test-parallel-file-read-on-master-result-with-copies.txt");
@@ -133,7 +133,7 @@ public class MasterSlaveTest extends BaseCluster {
 		TransMeta transMeta = generateParallelFileReadOnSlavesTransMeta(clusterGenerator);
 		TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
 		TransSplitter transSplitter = Trans.executeClustered(transMeta, config);
-		LogChannel logChannel = createLogChannel("cluster unit test <testParallelFileReadOnSlaves>");
+		LogChannel logChannel = createLogChannel("cluster unit test <runParallelFileReadOnSlaves>");
 		long nrErrors = Trans.monitorClusteredTransformation(logChannel, transSplitter, null, 1);
 		assertEquals(0L, nrErrors);
 		String result = loadFileContent(transMeta, "${java.io.tmpdir}/test-parallel-file-read-on-slaves.txt");
@@ -148,7 +148,7 @@ public class MasterSlaveTest extends BaseCluster {
 		TransMeta transMeta = generateParallelFileReadOnSlavesWithPartitioningTransMeta(clusterGenerator);
 		TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
 		TransSplitter transSplitter = Trans.executeClustered(transMeta, config);
-		LogChannel logChannel = createLogChannel("cluster unit test <testParallelFileReadOnSlavesWithPartitioning>");
+		LogChannel logChannel = createLogChannel("cluster unit test <runParallelFileReadOnSlavesWithPartitioning>");
 		long nrErrors = Trans.monitorClusteredTransformation(logChannel, transSplitter, null, 1);
 		assertEquals(0L, nrErrors);
 		String result = loadFileContent(transMeta, "${java.io.tmpdir}/test-parallel-file-read-on-slaves-with-partitioning.txt");
@@ -164,7 +164,7 @@ public class MasterSlaveTest extends BaseCluster {
 		TransMeta transMeta = generateParallelFileReadOnSlavesWithPartitioning2TransMeta(clusterGenerator);
 		TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
 		TransSplitter transSplitter = Trans.executeClustered(transMeta, config);
-		LogChannel logChannel = createLogChannel("cluster unit test <testParallelFileReadOnSlavesWithPartitioning2>");
+		LogChannel logChannel = createLogChannel("cluster unit test <runParallelFileReadOnSlavesWithPartitioning2>");
 		long nrErrors = Trans.monitorClusteredTransformation(logChannel, transSplitter, null, 1);
 		assertEquals(0L, nrErrors);
 		String result = loadFileContent(transMeta, "${java.io.tmpdir}/test-parallel-file-read-on-slaves-with-partitioning2.txt");
@@ -178,7 +178,7 @@ public class MasterSlaveTest extends BaseCluster {
   		TransMeta transMeta = generateMultipleCopiesOnMultipleSlaves2(clusterGenerator);
   		TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
   		TransSplitter transSplitter = Trans.executeClustered(transMeta, config);
-  		LogChannel logChannel = createLogChannel("cluster unit test <testMultipleCopiesOnMultipleSlaves2>");
+  		LogChannel logChannel = createLogChannel("cluster unit test <runMultipleCopiesOnMultipleSlaves2>");
   		long nrErrors = Trans.monitorClusteredTransformation(logChannel, transSplitter, null, 1);
   		assertEquals(0L, nrErrors);
   		String result = loadFileContent(transMeta, "${java.io.tmpdir}/test-multiple-copies-on-multiple-slaves2.txt");

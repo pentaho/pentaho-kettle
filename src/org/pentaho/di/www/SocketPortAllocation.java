@@ -20,7 +20,7 @@ public class SocketPortAllocation {
 	private Date	lastRequested;
 	
 	private String  transformationName;
-	private String  carteObjectId;
+	private String  clusterRunId;
 	private String  sourceSlaveName;
 	private String  sourceStepName;
 	private String  sourceStepCopy;
@@ -36,10 +36,10 @@ public class SocketPortAllocation {
 	 * @param sourceStepName
 	 * @param sourceStepCopy
 	 */
-	public SocketPortAllocation(int port, Date lastRequested, String carteObjectId, String transformationName, String sourceSlaveName, String sourceStepName, String sourceStepCopy, String targetSlaveName, String targetStepName, String targetStepCopy) {
+	public SocketPortAllocation(int port, Date lastRequested, String clusterRunId, String transformationName, String sourceSlaveName, String sourceStepName, String sourceStepCopy, String targetSlaveName, String targetStepName, String targetStepCopy) {
 		this.port = port;
 		this.lastRequested = lastRequested;
-		this.carteObjectId = carteObjectId;
+		this.clusterRunId = clusterRunId;
 		this.transformationName = transformationName;
 		this.sourceSlaveName = sourceSlaveName;
 		this.sourceStepName = sourceStepName;
@@ -209,15 +209,15 @@ public class SocketPortAllocation {
 	/**
 	 * @return the carteObjectId
 	 */
-	public String getRunId() {
-		return carteObjectId;
+	public String getClusterRunId() {
+		return clusterRunId;
 	}
 
 	/**
-	 * @param carteObjectId the carteObjectId to set
+	 * @param clusterRunId the carteObjectId to set
 	 */
-	public void setCarteObjectId(String carteObjectId) {
-		this.carteObjectId = carteObjectId;
+	public void setClusterRunId(String clusterRunId) {
+		this.clusterRunId = clusterRunId;
 	}
 
 }

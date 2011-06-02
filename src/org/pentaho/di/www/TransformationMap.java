@@ -153,9 +153,44 @@ public class TransformationMap {
    * @param sourceStepCopy
    * @return
    */
-  public synchronized SocketPortAllocation allocateServerSocketPort(int portRangeStart, String hostname, String clusteredRunId, String transformationName, String sourceSlaveName, String sourceStepName, String sourceStepCopy, String targetSlaveName,
-      String targetStepName, String targetStepCopy) {
+  public synchronized SocketPortAllocation allocateServerSocketPort(
+      int portRangeStart, String hostname, String clusteredRunId, String transformationName, 
+      String sourceSlaveName, String sourceStepName, String sourceStepCopy, 
+      String targetSlaveName, String targetStepName, String targetStepCopy) {
 
+    // Do some validations first...
+    //
+    if (Const.isEmpty(clusteredRunId)) {
+      throw new RuntimeException("A server socket allocation always has to accompanied by a cluster run ID but it was empty");
+    }
+    if (portRangeStart<=0) {
+      throw new RuntimeException("A server socket allocation always has to accompanied by port range start > 0 but it was "+portRangeStart);
+    }
+    if (Const.isEmpty(hostname)) {
+      throw new RuntimeException("A server socket allocation always has to accompanied by a hostname but it was empty");
+    }
+    if (Const.isEmpty(transformationName)) {
+      throw new RuntimeException("A server socket allocation always has to accompanied by a transformation name but it was empty");
+    }
+    if (Const.isEmpty(sourceSlaveName)) {
+      throw new RuntimeException("A server socket allocation always has to accompanied by a source slave server name but it was empty");
+    }
+    if (Const.isEmpty(targetSlaveName)) {
+      throw new RuntimeException("A server socket allocation always has to accompanied by a target slave server name but it was empty");
+    }
+    if (Const.isEmpty(sourceStepName)) {
+      throw new RuntimeException("A server socket allocation always has to accompanied by a source step name but it was empty");
+    }
+    if (Const.isEmpty(targetStepName)) {
+      throw new RuntimeException("A server socket allocation always has to accompanied by a target step name but it was empty");
+    }
+    if (Const.isEmpty(sourceStepCopy)) {
+      throw new RuntimeException("A server socket allocation always has to accompanied by a source step copy but it was empty");
+    }
+    if (Const.isEmpty(targetStepCopy)) {
+      throw new RuntimeException("A server socket allocation always has to accompanied by a target step copy but it was empty");
+    }
+    
     synchronized (hostServerSocketPortsMap) {
       // Look up the sockets list for the given host
       //
@@ -175,7 +210,7 @@ public class TransformationMap {
           maxPort = spa.getPort();
         }
 
-        if (spa.getRunId().equalsIgnoreCase(clusteredRunId) && spa.getSourceSlaveName().equalsIgnoreCase(sourceSlaveName) && spa.getTargetSlaveName().equalsIgnoreCase(targetSlaveName) && spa.getTransformationName().equalsIgnoreCase(transformationName)
+        if (spa.getClusterRunId().equalsIgnoreCase(clusteredRunId) && spa.getSourceSlaveName().equalsIgnoreCase(sourceSlaveName) && spa.getTargetSlaveName().equalsIgnoreCase(targetSlaveName) && spa.getTransformationName().equalsIgnoreCase(transformationName)
             && spa.getSourceStepName().equalsIgnoreCase(sourceStepName) && spa.getSourceStepCopy().equalsIgnoreCase(sourceStepCopy) && spa.getTargetStepName().equalsIgnoreCase(targetStepName)
             && spa.getTargetStepCopy().equalsIgnoreCase(targetStepCopy)) {
           // This is the port we want, return it. Make sure it's allocated.
@@ -245,7 +280,7 @@ public class TransformationMap {
   public void deallocateServerSocketPorts(String transName, String carteObjectId) {
     for (String hostname : hostServerSocketPortsMap.keySet()) {
       for (SocketPortAllocation spa : hostServerSocketPortsMap.get(hostname)) {
-        if (spa.getTransformationName().equalsIgnoreCase(transName) && (Const.isEmpty(carteObjectId) || spa.getRunId().equals(carteObjectId))) {
+        if (spa.getTransformationName().equalsIgnoreCase(transName) && (Const.isEmpty(carteObjectId) || spa.getClusterRunId().equals(carteObjectId))) {
           spa.setAllocated(false);
         }
       }
@@ -262,13 +297,7 @@ public class TransformationMap {
   public void deallocateServerSocketPorts(CarteObjectEntry entry) {
     for (String hostname : hostServerSocketPortsMap.keySet()) {
       for (SocketPortAllocation spa : hostServerSocketPortsMap.get(hostname)) {
-        if (spa.getTransformationName().equalsIgnoreCase(entry.getName())) { // TODO:
-                                                                             // also
-                                                                             // include
-                                                                             // the
-                                                                             // carte
-                                                                             // object
-                                                                             // ID?
+        if (spa.getTransformationName().equalsIgnoreCase(entry.getName())) { 
           spa.setAllocated(false);
         }
       }
