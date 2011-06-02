@@ -61,8 +61,8 @@
 	          depends="resolve-default, resolve-test, ivy.check-releasable"
 	          description="Retrieves all the dependent libraries" />
 
-	<target name="dist-noresolve" depends="jar,package" description="Builds and packages the application" />
-	<target name="dist" depends="resolve,jar,package" description="Builds and packages the application" />
+	<target name="dist-noresolve" depends="jar,hbase-custom-comparators-jar,package" description="Builds and packages the application" />
+	<target name="dist" depends="resolve,jar,hbase-custom-comparators-jar,package" description="Builds and packages the application" />
 	
 	<target name="clean-dist">
 		<delete dir="${dist.dir}" />
@@ -92,7 +92,7 @@
 			<exclude name="jface*.jar" />
 			<exclude name="jets3t-*.jar" />
 			<exclude name="hadoop-*.jar" />
-			<exclude name="hbase-*.jar" />
+			<exclude name="hbase-${dependency.pentaho-hbase.revision}.jar" />
 			<exclude name="zookeeper-*.jar" />
 			<exclude name="jug-*.jar" />
 			<exclude name="commons-codec*.jar" />
@@ -174,7 +174,7 @@
         <target name="hbase-custom-comparators-jar" 
                 depends="compile" 
                 description="Jars up the custom comparators for use in filtering signed and boolean column values in HBase">
-          <jar destfile="${dist.dir}/hbase-comparators-${project.revision}.jar">
+          <jar destfile="${lib.dir}/hbase-comparators-${project.revision}.jar">
             <fileset dir="${classes.dir}" includes="**/*Comparator*"/>
           </jar>
         </target>
