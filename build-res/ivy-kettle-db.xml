@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="pentaho.kettle" module="kettle-db" revision="TRUNK-SNAPSHOT" status="integration" publication="20110420011319"/>
+  <info organisation="pentaho.kettle" module="kettle-db" revision="${project.revision}" status="integration" publication="20110420011319"/>
   <publications>
     <artifact name="kettle-db" type="jar" conf="default"/>
   </publications>  

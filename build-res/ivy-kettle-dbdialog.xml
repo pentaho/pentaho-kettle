@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-    <info organisation="pentaho.kettle" module="kettle-dbdialog" revision="TRUNK-SNAPSHOT" status="integration" publication="20110420011321"/>
+    <info organisation="pentaho.kettle" module="kettle-dbdialog" revision="${project.revision}" status="integration" publication="20110420011321"/>
     
     <configurations>
     	<conf name="default"/>
@@ -15,9 +15,9 @@
     
     <dependencies defaultconf="default->default">
     	
-    	<dependency org="pentaho" name="pentaho-xul-core" rev="TRUNK-SNAPSHOT" transitive="true" changing="true"/>
-      <dependency org="pentaho" name="pentaho-xul-swing" rev="TRUNK-SNAPSHOT" transitive="true" changing="true"/>
-      <dependency org="pentaho" name="pentaho-xul-swt" rev="TRUNK-SNAPSHOT" transitive="true" changing="true"/>
+    	<dependency org="pentaho" name="pentaho-xul-core" rev="${dependency.pentaho-xul.revision}" transitive="true" changing="true"/>
+      <dependency org="pentaho" name="pentaho-xul-swing" rev="${dependency.pentaho-xul.revision}" transitive="true" changing="true"/>
+      <dependency org="pentaho" name="pentaho-xul-swt" rev="${dependency.pentaho-xul.revision}" transitive="true" changing="true"/>
     
     	<dependency org="org.eclipse" name="jface" rev="3.3.0-I20070606-0010" transitive="false"/>
     	<dependency org="org.eclipse.core" name="runtime" rev="3.3.100-v20070530" transitive="false"/>
@@ -25,9 +25,9 @@
     	<dependency org="org.eclipse.core" name="commands" rev="3.3.0-I20070605-0010" transitive="false"/>
 		<dependency org="jaxen" name="jaxen" rev="1.1.1" transitive="false"/>
 		<dependency org="log4j" name="log4j" rev="1.2.8" transitive="false"/>
-        <dependency org="pentaho.kettle" name="kettle-engine" rev="TRUNK-SNAPSHOT" transitive="false"/>
-        <dependency org="pentaho.kettle" name="kettle-core" rev="TRUNK-SNAPSHOT" transitive="false"/>
-        <dependency org="pentaho.kettle" name="kettle-db" rev="TRUNK-SNAPSHOT" transitive="false"/>
+        <dependency org="pentaho.kettle" name="kettle-engine" rev="${dependency.kettle.revision}" transitive="false"/>
+        <dependency org="pentaho.kettle" name="kettle-core" rev="${dependency.kettle.revision}" transitive="false"/>
+        <dependency org="pentaho.kettle" name="kettle-db" rev="${dependency.kettle.revision}" transitive="false"/>
         <dependency org="commons-pool" name="commons-pool" rev="1.3" transitive="false"/>
         <dependency org="commons-dbcp" name="commons-dbcp" rev="1.2.1" transitive="false"/>
         <dependency org="commons-beanutils" name="commons-beanutils" rev="1.8.0-BETA" transitive="false"/>
