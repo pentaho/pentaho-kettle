@@ -211,9 +211,14 @@ public class TransformationMap {
             maxPort = spa.getPort();
           }
   
-          if (spa.getClusterRunId().equalsIgnoreCase(clusteredRunId) && spa.getSourceSlaveName().equalsIgnoreCase(sourceSlaveName) && spa.getTargetSlaveName().equalsIgnoreCase(targetSlaveName) && spa.getTransformationName().equalsIgnoreCase(transformationName)
-              && spa.getSourceStepName().equalsIgnoreCase(sourceStepName) && spa.getSourceStepCopy().equalsIgnoreCase(sourceStepCopy) && spa.getTargetStepName().equalsIgnoreCase(targetStepName)
-              && spa.getTargetStepCopy().equalsIgnoreCase(targetStepCopy)) {
+          if (spa.getClusterRunId().equalsIgnoreCase(clusteredRunId) && 
+              spa.getSourceSlaveName().equalsIgnoreCase(sourceSlaveName) && 
+              spa.getTargetSlaveName().equalsIgnoreCase(targetSlaveName) && 
+              spa.getTransformationName().equalsIgnoreCase(transformationName) && 
+              spa.getSourceStepName().equalsIgnoreCase(sourceStepName) && 
+              spa.getSourceStepCopy().equalsIgnoreCase(sourceStepCopy) && 
+              spa.getTargetStepName().equalsIgnoreCase(targetStepName) && 
+              spa.getTargetStepCopy().equalsIgnoreCase(targetStepCopy)) {
             // This is the port we want, return it. Make sure it's allocated.
             //
             spa.setAllocated(true);
