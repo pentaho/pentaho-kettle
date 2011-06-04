@@ -207,8 +207,6 @@ public class Rest extends BaseStep implements StepInterface
 			c.addFilter(data.basicAuthentication); 
 		}
 		return c;
-  		// create an instance of the com.sun.jersey.api.client.Client class
-  		//return Client.create();
 	}
 	private void setConfig() throws KettleException  {
 		
@@ -457,6 +455,12 @@ public class Rest extends BaseStep implements StepInterface
                 data.mediaType =MediaType.APPLICATION_OCTET_STREAM_TYPE;
             } else if(applicationType.equals(RestMeta.APPLICATION_TYPE_XHTML)) {
                 data.mediaType =MediaType.APPLICATION_XHTML_XML_TYPE;
+            } else if(applicationType.equals(RestMeta.APPLICATION_TYPE_FORM_URLENCODED)) {
+                data.mediaType =MediaType.APPLICATION_FORM_URLENCODED_TYPE;
+            } else if(applicationType.equals(RestMeta.APPLICATION_TYPE_ATOM_XML)) {
+                data.mediaType =MediaType.APPLICATION_ATOM_XML_TYPE;
+            } else if(applicationType.equals(RestMeta.APPLICATION_TYPE_SVG_XML)) {
+            	data.mediaType =MediaType.APPLICATION_SVG_XML_TYPE;
             } else {
                 data.mediaType =MediaType.TEXT_PLAIN_TYPE;
             }
