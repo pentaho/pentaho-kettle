@@ -142,7 +142,6 @@
 	<classpathentry exported="true" kind="lib" path="libext/google/gdata-core-1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/google/google-collect-1.0-rc1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/google/jsr305.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/jackcess-1.2.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/saxon9-dom.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/saxon9.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/mondrian/saxon9-xom.jar"/>
@@ -277,5 +276,6 @@
 	<classpathentry kind="lib" path="libext/jersey/jersey-apache-client-1.7.jar"/>
 	<classpathentry kind="lib" path="libext/jersey/jersey-client-1.7.jar"/>
 	<classpathentry kind="lib" path="libext/jersey/jersey-core-1.7.jar"/>
+	<classpathentry kind="lib" path="libext/jackcess-1.2.4.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
