@@ -52,6 +52,17 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface
 {
 	private static Class<?> PKG = RestMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
+	public static final String[] APPLICATION_TYPES = new String []{
+		"TEXT PLAIN", "XML", "JSON", "OCTET STREAM", "XHTML", 
+	};
+	public static final String APPLICATION_TYPE_TEXT_PLAIN = "TEXT PLAIN";
+	public static final String APPLICATION_TYPE_XML = "XML";
+	public static final String APPLICATION_TYPE_JSON = "JSON";
+	public static final String APPLICATION_TYPE_OCTET_STREAM = "OCTET STREAM";
+	public static final String APPLICATION_TYPE_XHTML = "XHTML";
+	
+	private String applicationType;
+	
 	public static final String[] HTTP_METHODS = new String []{
 		"GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS",
 	};
@@ -371,6 +382,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface
         this.preemptive=false;
         this.trustStoreFile=null;
         this.trustStorePassword=null; 
+        this.applicationType = APPLICATION_TYPE_TEXT_PLAIN;
 
     }
     public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException    
@@ -400,6 +412,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface
     public String getXML()
     {
         StringBuffer retval = new StringBuffer();
+        retval.append("    " + XMLHandler.addTagValue("applicationType", applicationType)); 
         retval.append("    " + XMLHandler.addTagValue("method", method)); 
         retval.append("    " + XMLHandler.addTagValue("url", url)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    " + XMLHandler.addTagValue("urlInField",  urlInField));
@@ -451,7 +464,8 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface
     private void readData(Node stepnode, List<? extends SharedObjectInterface> databases) throws KettleXMLException
     {
         try
-        {
+        { 	
+        	applicationType = XMLHandler.getTagValue(stepnode, "applicationType");
         	method = XMLHandler.getTagValue(stepnode, "method"); //$NON-NLS-1$
             url = XMLHandler.getTagValue(stepnode, "url"); //$NON-NLS-1$
             urlInField="Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "urlInField"));
@@ -504,6 +518,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface
     {
         try
         {
+        	applicationType = rep.getStepAttributeString(id_step, "applicationType");
             method = rep.getStepAttributeString(id_step, "method"); //$NON-NLS-1$
             url = rep.getStepAttributeString(id_step, "url"); //$NON-NLS-1$
             urlInField =      rep.getStepAttributeBoolean (id_step, "urlInField");
@@ -551,6 +566,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface
     {
         try
         {
+        	rep.saveStepAttribute(id_transformation, id_step, "applicationType", applicationType); 
         	rep.saveStepAttribute(id_transformation, id_step, "method", method); 
             rep.saveStepAttribute(id_transformation, id_step, "url", url); //$NON-NLS-1$
         	rep.saveStepAttribute(id_transformation, id_step, "methodFieldName", methodFieldName); 
@@ -699,6 +715,21 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface
      * Setter
      * @param httpLogin
      */
+    public void setApplicationType(String applicationType) {
+        this.applicationType = applicationType;
+    }
+    
+    /**
+     * Getter
+     * @return
+     */
+    public String getApplicationType() {
+        return applicationType;
+    }
+    /**
+     * Setter
+     * @param httpLogin
+     */
     public void setHttpLogin(String httpLogin) {
         this.httpLogin = httpLogin;
     }
@@ -768,11 +799,11 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface
     public static boolean isActiveBody(String method)
     {
     	if(Const.isEmpty(method)) return false;
-    	return (method.equals(HTTP_METHOD_POST) || method.equals(HTTP_METHOD_PUT));
+    	return (method.equals(HTTP_METHOD_POST) || method.equals(HTTP_METHOD_PUT)) || method.equals(HTTP_METHOD_DELETE);
     }
     public static boolean isActiveParameters(String method)
     {
     	if(Const.isEmpty(method)) return false;
-    	return (method.equals(HTTP_METHOD_POST) || method.equals(HTTP_METHOD_PUT));
+    	return (method.equals(HTTP_METHOD_POST) || method.equals(HTTP_METHOD_PUT) || method.equals(HTTP_METHOD_DELETE));
     }
 }

@@ -11,6 +11,8 @@
  
 package org.pentaho.di.trans.steps.rest;
 
+import javax.ws.rs.core.MediaType;
+
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -70,7 +72,7 @@ public class RestData extends BaseStepData implements StepDataInterface
 	public boolean useBody;
 	
 	/** Index of body field **/
-	public int indexOfField;
+	public int indexOfBodyField;
 	
 	/** trust store **/
 	public String trustStoreFile;
@@ -80,6 +82,7 @@ public class RestData extends BaseStepData implements StepDataInterface
 	
 	public HTTPBasicAuthFilter basicAuthentication;
 	
+	public MediaType mediaType;
 	
 	/**
 	 * 
@@ -99,7 +102,7 @@ public class RestData extends BaseStepData implements StepDataInterface
 		this.nrheader=0;
 		this.nrParams=0;
 		this.method=null;
-		this.indexOfField=-1;
+		this.indexOfBodyField=-1;
 		this.indexOfMethod=-1;
 		this.config=null;
 		this.trustStoreFile=null;

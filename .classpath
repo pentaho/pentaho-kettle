@@ -146,9 +146,6 @@
 	<classpathentry exported="true" kind="lib" path="libext/saxon9-dom.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/saxon9.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/mondrian/saxon9-xom.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/jersey/jersey-apache-client-1.5.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/jersey/jersey-client-1.5.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/jersey/jersey-core-1.5.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/salesforce/SFpartner21.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/elasticsearch/elasticsearch-0.15.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/elasticsearch/lucene-analyzers-3.0.3.jar"/>
@@ -276,5 +273,9 @@
 	<classpathentry kind="lib" path="libext/hive/libfb303-0.5.0.jar"/>
 	<classpathentry kind="lib" path="libext/hive/libthrift-0.5.0.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/hive-jdbc-0.7.0-pentaho-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libext/jersey/mimepull-1.5.jar"/>
+	<classpathentry kind="lib" path="libext/jersey/jersey-apache-client-1.7.jar"/>
+	<classpathentry kind="lib" path="libext/jersey/jersey-client-1.7.jar"/>
+	<classpathentry kind="lib" path="libext/jersey/jersey-core-1.7.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

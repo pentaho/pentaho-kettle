@@ -11,6 +11,7 @@
  
 package org.pentaho.di.trans.steps.rest;
 
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -24,13 +25,17 @@ import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManagerFactory;
+import javax.ws.rs.core.MediaType;
 
 import org.apache.commons.httpclient.auth.AuthScope;
 
+
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.UniformInterfaceException;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.client.filter.HTTPBasicAuthFilter;
+import com.sun.jersey.client.apache.ApacheHttpClient;
 import com.sun.jersey.client.apache.config.ApacheHttpClientConfig;
 import com.sun.jersey.client.apache.config.DefaultApacheHttpClientConfig;
 import com.sun.jersey.client.urlconnection.HTTPSProperties;
@@ -87,6 +92,7 @@ public class Rest extends BaseStep implements StepInterface
 		
 		
 		WebResource webResource =null;
+
 		Client client=null;
 		Object[] newRow = null;
 	    if(rowData!=null) newRow=rowData.clone();
@@ -98,7 +104,7 @@ public class Rest extends BaseStep implements StepInterface
       		client = getClient();
       		// create a WebResource object, which encapsulates a web resource for the client
       		webResource  = client.resource(data.realUrl);     			
-
+    		
             // used for calculating the responseTime
             long startTime = System.currentTimeMillis();
             
@@ -106,52 +112,62 @@ public class Rest extends BaseStep implements StepInterface
 				// Add headers
 				for(int i=0; i<data.nrheader; i++) {
 					String value = data.inputRowMeta.getString(rowData, data.indexOfHeaderFields[i]);
+
 					webResource.header(data.headerNames[i], value);
 	        		if(isDebug()) logDebug(BaseMessages.getString(PKG, "Rest.Log.HeaderValue",data.headerNames[i],value));
 				}
 			}
-			
+		
 			if(data.useParams) {
 				// Add parameters
 				for(int i=0; i<data.nrParams; i++) {
 					MultivaluedMapImpl queryParams = new MultivaluedMapImpl();
 					String value = data.inputRowMeta.getString(rowData, data.indexOfParamFields[i]);
 					queryParams.add(data.paramNames[i], value);
-	        		if(isDebug()) logDebug(BaseMessages.getString(PKG, "Rest.Log.BodyValue",data.paramNames[i],value));
+	        		if(isDebug()) logDebug(BaseMessages.getString(PKG, "Rest.Log.parameterValue",data.paramNames[i],value));
 					webResource.queryParams(queryParams);
 				}
 			}
 
 			ClientResponse response=null;
-			if(data.method.equals(RestMeta.HTTP_METHOD_GET)) {
-				response = webResource.get(ClientResponse.class);
-			}else if (data.method.equals(RestMeta.HTTP_METHOD_POST)) {
-				response = webResource.post(ClientResponse.class);
-			}else if (data.method.equals(RestMeta.HTTP_METHOD_PUT)) {
-				response = webResource.put(ClientResponse.class);
-			}else if (data.method.equals(RestMeta.HTTP_METHOD_DELETE)) {
-				response = webResource.delete(ClientResponse.class);
-			}else if (data.method.equals(RestMeta.HTTP_METHOD_HEAD)) {
-				response = webResource.head();
-			}else if (data.method.equals(RestMeta.HTTP_METHOD_OPTIONS)) {
-				response = webResource.options(ClientResponse.class);
-			}else {
-				throw new KettleException(BaseMessages.getString(PKG, "Rest.Error.UnknownMethod", data.method));
+			String entityString="";
+			if(data.useBody) {
+				// Set Http request entity
+				entityString=Const.NVL(data.inputRowMeta.getString(rowData, data.indexOfBodyField), "");
+        		if(isDebug()) logDebug(BaseMessages.getString(PKG, "Rest.Log.BodyValue", entityString));
+			}
+			try {
+				if(data.method.equals(RestMeta.HTTP_METHOD_GET)) {
+					response = webResource.get(ClientResponse.class);
+				}else if (data.method.equals(RestMeta.HTTP_METHOD_POST)) {
+	        		response = webResource.type(data.mediaType).post(ClientResponse.class, entityString);
+				}else if (data.method.equals(RestMeta.HTTP_METHOD_PUT)) {
+	        		response = webResource.type(data.mediaType).put(ClientResponse.class, entityString);
+				}else if (data.method.equals(RestMeta.HTTP_METHOD_DELETE)) {
+	        		response = webResource.type(data.mediaType).delete(ClientResponse.class, entityString);
+				}else if (data.method.equals(RestMeta.HTTP_METHOD_HEAD)) {
+					response = webResource.head();
+				}else if (data.method.equals(RestMeta.HTTP_METHOD_OPTIONS)) {
+					response = webResource.options(ClientResponse.class);
+				}else {
+					throw new KettleException(BaseMessages.getString(PKG, "Rest.Error.UnknownMethod", data.method));
+				}
+			}catch(UniformInterfaceException u) {
+				response= u.getResponse();
 			}
             
 			// Get response time
 			long responseTime = System.currentTimeMillis() - startTime;
             if (isDetailed()) logDetailed(BaseMessages.getString(PKG, "Rest.Log.ResponseTime", String.valueOf(responseTime),data.realUrl));
 			
-            // Get Response
-            String body = response.getEntity(String.class);
-
 			// Get status
             int status = response.getStatus();
 		    // Display status code
             if(isDebug()) logDebug(BaseMessages.getString(PKG, "Rest.Log.ResponseCode",""+status));
 
-			
+            // Get Response
+            String body = response.getEntity(String.class);
+            
 			// for output
             int returnFieldsOffset=data.inputRowMeta.size();
 		    // add response to output
@@ -186,7 +202,7 @@ public class Rest extends BaseStep implements StepInterface
     }
 	private Client getClient() {
 
-		Client c= Client.create(data.config);
+		Client c= ApacheHttpClient.create(data.config);
 		if(data.basicAuthentication!=null) {
 			c.addFilter(data.basicAuthentication); 
 		}
@@ -318,6 +334,7 @@ public class Rest extends BaseStep implements StepInterface
 					// split into body / header
 					data.headerNames[i]=environmentSubstitute(meta.getHeaderName()[i]);
 					String field =environmentSubstitute(meta.getHeaderField()[i]);
+	
 					if(Const.isEmpty(field)) {
 						throw new KettleException(BaseMessages.getString(PKG, "Rest.Exception.HeaderFieldEmpty")); 
 					}
@@ -326,6 +343,7 @@ public class Rest extends BaseStep implements StepInterface
 						throw new KettleException(BaseMessages.getString(PKG, "Rest.Exception.ErrorFindingField",field));
 					}
 				}
+
 				data.useHeaders=true;
 			}
 			
@@ -354,8 +372,8 @@ public class Rest extends BaseStep implements StepInterface
 			if(RestMeta.isActiveBody(meta.getMethod())) {
 				String field= environmentSubstitute(meta.getBodyField());
 				if(!Const.isEmpty(field)) {
-					data.indexOfField= data.inputRowMeta.indexOfValue(field);
-					if(data.indexOfField<0) {
+					data.indexOfBodyField= data.inputRowMeta.indexOfValue(field);
+					if(data.indexOfBodyField<0) {
 						throw new KettleException(BaseMessages.getString(PKG, "Rest.Exception.ErrorFindingField",field));
 					}
 					data.useBody=true;
@@ -429,6 +447,20 @@ public class Rest extends BaseStep implements StepInterface
 			
 			data.trustStoreFile= environmentSubstitute(meta.getTrustStoreFile());
 			data.trustStorePassword= environmentSubstitute(meta.getTrustStorePassword());
+			
+			String applicationType= Const.NVL(meta.getApplicationType(), "");
+            if(applicationType.equals(RestMeta.APPLICATION_TYPE_XML)) {
+                data.mediaType =MediaType.APPLICATION_XML_TYPE;
+            } else if(applicationType.equals(RestMeta.APPLICATION_TYPE_JSON)) {
+                data.mediaType =MediaType.APPLICATION_JSON_TYPE;
+            } else if(applicationType.equals(RestMeta.APPLICATION_TYPE_OCTET_STREAM)) {
+                data.mediaType =MediaType.APPLICATION_OCTET_STREAM_TYPE;
+            } else if(applicationType.equals(RestMeta.APPLICATION_TYPE_XHTML)) {
+                data.mediaType =MediaType.APPLICATION_XHTML_XML_TYPE;
+            } else {
+                data.mediaType =MediaType.TEXT_PLAIN_TYPE;
+            }
+	           
 			try {
 				setConfig();
 			}catch(Exception e){

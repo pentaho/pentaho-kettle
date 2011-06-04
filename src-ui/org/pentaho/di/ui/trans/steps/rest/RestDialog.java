@@ -74,6 +74,11 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
 {
 	private static Class<?> PKG = RestMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
+	private Label        wlApplicationType;
+	private ComboVar     wApplicationType;
+	private FormData     fdlApplicationType, fdApplicationType;
+
+	
 	private Label        wlMethod;
 	private ComboVar     wMethod;
 	private FormData     fdlMethod, fdMethod;
@@ -482,6 +487,36 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
      ); 
        
 
+         // ApplicationType Line
+ 		wlApplicationType=new Label(gSettings, SWT.RIGHT);
+ 		wlApplicationType.setText(BaseMessages.getString(PKG, "RestDialog.ApplicationType.Label")); //$NON-NLS-1$
+  		props.setLook(wlApplicationType);
+ 		fdlApplicationType=new FormData();
+ 		fdlApplicationType.left = new FormAttachment(0, 0);
+ 		fdlApplicationType.right= new FormAttachment(middle, -margin);
+ 		fdlApplicationType.top  = new FormAttachment(wBody, 2*margin);
+ 		wlApplicationType.setLayoutData(fdlApplicationType);
+ 		
+         wApplicationType=new ComboVar(transMeta, gSettings, SWT.BORDER | SWT.READ_ONLY);
+         wApplicationType.setEditable(true);
+         props.setLook(wApplicationType);
+         wApplicationType.addModifyListener(lsMod);
+         fdApplicationType=new FormData();
+         fdApplicationType.left = new FormAttachment(middle, 0);
+         fdApplicationType.top  = new FormAttachment(wBody, 2*margin);
+         fdApplicationType.right= new FormAttachment(100, -margin);
+         wApplicationType.setLayoutData(fdApplicationType);
+         wApplicationType.setItems(RestMeta.APPLICATION_TYPES);
+         wApplicationType.addSelectionListener(new SelectionAdapter()
+         {
+         
+             public void widgetSelected(SelectionEvent e)
+             {
+             	 input.setChanged();
+             }
+         }
+         );           	
+         
         FormData fdSettings = new FormData();
         fdSettings.left = new FormAttachment(0, 0);
         fdSettings.right = new FormAttachment(100, 0);
@@ -1179,8 +1214,8 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
 			for (i=0;i<input.getHeaderName().length;i++)
 			{
 				TableItem item = wFields.table.getItem(i);
-				if (input.getHeaderField()[i]  !=null) item.setText(2, input.getHeaderField()[i]);
-				if (input.getHeaderName()[i]      !=null) item.setText(1, input.getHeaderName()[i]);
+				if (input.getHeaderField()[i]  !=null) item.setText(1, input.getHeaderField()[i]);
+				if (input.getHeaderName()[i]      !=null) item.setText(2, input.getHeaderName()[i]);
 			}
 		}
 
@@ -1213,6 +1248,8 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
 		
 	    if(input.getTrustStoreFile() != null) wTrustStoreFile.setText(input.getTrustStoreFile());
 	    if(input.getTrustStorePassword() != null) wTrustStorePassword.setText(input.getTrustStorePassword());
+	    
+	    wApplicationType.setText(Const.NVL(input.getApplicationType(), ""));
 	    
 		wFields.setRowNums();
 		wFields.optWidth(true);
@@ -1268,7 +1305,7 @@ public class RestDialog extends BaseStepDialog implements StepDialogInterface
 		
 		input.setTrustStoreFile(wTrustStoreFile.getText());
 		input.setTrustStorePassword(wTrustStorePassword.getText());
-		
+		input.setApplicationType(wApplicationType.getText());
 		stepname = wStepname.getText(); // return value
 
 		dispose();
