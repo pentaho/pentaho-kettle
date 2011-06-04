@@ -157,7 +157,7 @@ public class HTTPPOST extends BaseStep implements StepInterface
             	if(meta.isPostAFile())
             	{
      		       File input = new File(tmp);
-               fis = new FileInputStream(input);
+     		       fis = new FileInputStream(input);
      		       post.setRequestEntity(new InputStreamRequestEntity(fis, input.length()));
             	}
             	else
@@ -182,7 +182,7 @@ public class HTTPPOST extends BaseStep implements StepInterface
                 // calculate the responseTime
                 long responseTime = System.currentTimeMillis() - startTime;
                 
-                if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "HTTPPOST.Log.ResponseTime", responseTime,data.realUrl));
+                if (isDetailed()) logDetailed(BaseMessages.getString(PKG, "HTTPPOST.Log.ResponseTime", responseTime,data.realUrl));
                 
                 // Display status code
                 if(isDebug()) logDebug(BaseMessages.getString(PKG, "HTTPPOST.Log.ResponseCode", String.valueOf(statusCode)));

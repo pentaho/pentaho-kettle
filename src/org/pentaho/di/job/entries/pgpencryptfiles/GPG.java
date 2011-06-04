@@ -3,6 +3,8 @@ package org.pentaho.di.job.entries.pgpencryptfiles;
 
 import java.io.BufferedWriter;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -14,6 +16,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
+
+
 
 /**
  * This defines a GnuPG wrapper class.
@@ -34,6 +38,10 @@ public class GPG {
 	/** gpg program location **/
 	private String	gpgexe="/usr/local/bin/gpg";
 	
+	
+	/** temporary file create when running command **/
+	private File	tmpFile;
+
 	
 	/**
 	 * Reads an output stream from an external process.
@@ -299,7 +307,8 @@ public class GPG {
 	public void signFile (String filename, String userID, String signedFilename, boolean asciiMode) 
 	throws KettleException {
 		try {
-			execGnuPG ("--batch --yes" +  (asciiMode?" -a":"") + (Const.isEmpty(userID)?"": " -r " + "\"" + userID + "\"") + " " 
+			execGnuPG ("--batch --yes" +  (asciiMode?" -a":"") 
+					+ (Const.isEmpty(userID)?"": " -r " + "\"" + userID + "\"") + " " 
 					+ "--output " + "\"" + signedFilename + "\" " 
 					+ (asciiMode?"--clearsign ":"--sign ") + "\"" + filename + "\"", 
 					 null, true);
@@ -375,6 +384,140 @@ public class GPG {
 	public void verifyDetachedSignature (FileObject signatureFile, FileObject originalFile) 
 	throws KettleException {
 		verifyDetachedSignature(KettleVFS.getFilename(signatureFile), KettleVFS.getFilename(originalFile));
+	}
+	
+	
+	
+	
+	/**
+	 * Encrypt a string
+	 *
+	 * @param	plainText		input string to encrypt
+	 * @param	keyID		key ID of the key in GnuPG's key database to encrypt with
+	 * @return	encrypted string
+	 * @throws KettleException
+	 */
+	public String encrypt (String plainText, String keyID) 
+	throws KettleException {
+		return execGnuPG ("-r " + keyID + " --encrypt", plainText, false);
+
+	}
+	
+	/**
+	 * Signs and encrypts a string
+	 *
+	 * @param	plainText		input string to encrypt
+	 * @param	userID		key ID of the key in GnuPG's key database to encrypt with
+	 * @param	passPhrase	passphrase for the personal private key to sign with
+	 * @return	encrypted string
+	 * @throws KettleException
+	 */
+	public String signAndEncrypt (String plainText, String userID, String passPhrase) 
+	throws KettleException {
+		try {
+			createTempFile (plainText);
+			
+			return execGnuPG ("-r " + userID + " --passphrase-fd 0 -se " + getTempFileName(), passPhrase, false);
+		}finally {
+			
+			deleteTempFile();
+		}
+
+	}
+	
+	/**
+	 * Sign
+	 *
+	 * @param	stringToSign		input string to sign
+	 * @param	passPhrase	passphrase for the personal private key to sign with
+	 * @throws KettleException
+	 */
+	public String sign (String stringToSign, String passPhrase) 
+	throws KettleException {
+		String retval;
+		try {
+			
+			createTempFile (stringToSign);
+		
+			retval= execGnuPG ("--passphrase-fd 0 --sign " + getTempFileName(), passPhrase, false);
+
+		} finally {
+			deleteTempFile();
+		}
+		return retval;
+	}
+	
+	/**
+	 * Decrypt a string
+	 *
+	 * @param	cryptedText		input string to decrypt
+	 * @param	passPhrase	passphrase for the personal private key to sign with
+	 * @return	plain text
+	 * @throws KettleException
+	 */
+	public String decrypt (String cryptedText, String passPhrase) 
+	throws KettleException {
+		try {
+			createTempFile (cryptedText);
+		
+			return execGnuPG ("--passphrase-fd 0 --decrypt " + getTempFileName(), passPhrase, false);
+		}finally {
+			deleteTempFile();
+		}
+	}
+	
+	/**
+	 * Create a unique temporary file when needed by one of the main methods.
+	 * The file handle is store in tmpFile object var.
+	 *
+	 * @param	content	data to write into the file
+	 * @throws KettleException
+	 */
+	private void createTempFile (String content) 
+	throws KettleException {
+		this.tmpFile = null;
+		FileWriter	fw;
+		
+		try {
+			this.tmpFile = File.createTempFile ("GnuPG", null);
+			if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "GPG.TempFileCreated", getTempFileName()));
+		} catch (Exception e) {
+			throw new KettleException(BaseMessages.getString(PKG, "GPG.ErrorCreatingTempFile"), e);
+		}
+		
+		try {
+			fw = new FileWriter (this.tmpFile);
+			fw.write (content);
+			fw.flush ();
+			fw.close ();
+		}catch (Exception e){
+			// delete our file:
+			deleteTempFile();
+			
+			throw new KettleException(BaseMessages.getString(PKG, "GPG.ErrorWritingTempFile"), e);
+		}
+	}
+	
+	/**
+	 * Delete temporary file.
+	 *
+	 * @throws KettleException
+	 */
+	private void deleteTempFile() {
+		if(this.tmpFile!=null) {
+			if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "GPG.DeletingTempFile", getTempFileName()));
+			this.tmpFile.delete ();
+		}
+	}
+	
+	
+	/**
+	 * Returns temporary filename.
+	 *
+	 * @return temporary filename
+	 */
+	private String getTempFileName() {
+		return this.tmpFile.getAbsolutePath();
 	}
 	
 	public String toString() {
