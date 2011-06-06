@@ -223,12 +223,12 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
     {
       for (int i=0;i<parameters.length;i++)
       {
-        rep.saveStepAttribute(id_transformation, getObjectId(), i, "parameter_name", parameters[i]);
-        rep.saveStepAttribute(id_transformation, getObjectId(), i, "parameter_value", Const.NVL(parameterValues[i], ""));
+        rep.saveStepAttribute(id_transformation, id_step, i, "parameter_name", parameters[i]);
+        rep.saveStepAttribute(id_transformation, id_step, i, "parameter_value", Const.NVL(parameterValues[i], ""));
       }
     }     
     
-    rep.saveStepAttribute(id_transformation, getObjectId(), "pass_all_parameters", passingAllParameters);
+    rep.saveStepAttribute(id_transformation, id_step, "pass_all_parameters", passingAllParameters);
   }
 
   public void setDefault() {
