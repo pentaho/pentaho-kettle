@@ -136,7 +136,8 @@ public class BlockingBatchingRowSet extends BaseRowSet implements Comparable<Row
         getIndex = 0;
     }
     
-    Object[] row = outputBuffer[getIndex++];
+    Object[] row = outputBuffer[getIndex];
+    outputBuffer[getIndex++] = null; // prevent any hold-up to GC
     if (getIndex == size) {
         putArray.offer(outputBuffer);
         outputBuffer = null;
