@@ -1688,7 +1688,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                   
                   // Pass in a commit to release transaction locks and to allow a user to actually see the log record.
                   //
-                	transLogTableDatabaseConnection.commit(true);
+                	if (!transLogTableDatabaseConnection.isAutoCommit()) transLogTableDatabaseConnection.commit(true);
                   
                     // If we need to do periodic logging, make sure to install a timer for this...
                     //
@@ -1830,7 +1830,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		} catch(Exception e) {
 			throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.UnableToWriteLogChannelInformationToLogTable"), e);
 		} finally {
-		  db.commit(true);
+		  if (!db.isAutoCommit()) db.commit(true);
 			db.disconnect();
 		}
 	}
@@ -1850,7 +1850,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		} catch(Exception e) {
 			throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.UnableToWriteStepInformationToLogTable"), e);
 		} finally {
-		  db.commit(true);
+		  if (!db.isAutoCommit()) db.commit(true);
 			db.disconnect();
 		}
 		
@@ -1946,7 +1946,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 				
 				// Commit the operations to prevent locking issues
 				//
-				ldb.commit(true);
+				if (!ldb.isAutoCommit()) ldb.commit(true);
 			}
 			catch(Exception e)
 			{

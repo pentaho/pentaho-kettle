@@ -817,7 +817,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         depDate = currentDate;
 
         ldb.writeLogRecord(jobMeta.getJobLogTable(), LogStatus.START, this, null);
-        ldb.commit(true);
+        if (!ldb.isAutoCommit()) ldb.commit(true);
         ldb.disconnect();
 
         // If we need to do periodic logging, make sure to install a timer for
@@ -951,7 +951,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 				}
 				finally
 				{
-				  ldb.commit(true);
+				  if (!ldb.isAutoCommit()) ldb.commit(true);
 					ldb.disconnect();
 				}
 			}
@@ -984,7 +984,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 		} catch(Exception e) {
 			throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.UnableToWriteLogChannelInformationToLogTable"), e);
 		} finally {
-		  db.commit(true);
+		  if (!db.isAutoCommit()) db.commit(true);
 			db.disconnect();
 		}
 	}
@@ -1004,7 +1004,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       } catch (Exception e) {
         throw new KettleException(BaseMessages.getString(PKG, "Job.Exception.UnableToJobEntryInformationToLogTable"), e);
       } finally {
-        db.commit(true);
+        if (!db.isAutoCommit()) db.commit(true);
         db.disconnect();
       }
     }
