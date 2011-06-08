@@ -1684,7 +1684,12 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                 if (transLogTableDatabaseConnection!=null && !Const.isEmpty(logTable) && !Const.isEmpty(transMeta.getName()))
                 {
                 	transLogTableDatabaseConnection.writeLogRecord(transLogTable, LogStatus.START, this, null);
-                    
+                  
+                  
+                  // Pass in a commit to release transaction locks and to allow a user to actually see the log record.
+                  //
+                	transLogTableDatabaseConnection.commit(true);
+                  
                     // If we need to do periodic logging, make sure to install a timer for this...
                     //
                     if (intervalInSeconds>0) {
@@ -1825,6 +1830,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		} catch(Exception e) {
 			throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.UnableToWriteLogChannelInformationToLogTable"), e);
 		} finally {
+		  db.commit(true);
 			db.disconnect();
 		}
 	}
@@ -1844,6 +1850,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		} catch(Exception e) {
 			throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.UnableToWriteStepInformationToLogTable"), e);
 		} finally {
+		  db.commit(true);
 			db.disconnect();
 		}
 		
@@ -1936,6 +1943,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 				if (status.equals(LogStatus.END) || status.equals(LogStatus.STOP)) {
 					ldb.cleanupLogRecords(transLogTable);
 				}
+				
+				// Commit the operations to prevent locking issues
+				//
+				ldb.commit(true);
 			}
 			catch(Exception e)
 			{
@@ -1946,7 +1957,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 				if (intervalInSeconds<=0 || (status.equals(LogStatus.END) || status.equals(LogStatus.STOP)) ) {
 					ldb.disconnect();
 					transLogTableDatabaseConnection = null; // disconnected
-				}
+				} 
 			}
 		}
 		return true;
