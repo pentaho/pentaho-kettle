@@ -2498,8 +2498,12 @@ public static void copyInternalJobVariables(JobMeta sourceJobMeta, TransMeta tar
 	    
 	    List<JobEntryCopy> activeJobEntries = new ArrayList<JobEntryCopy>();
 	    if (job!=null) {
-	    	activeJobEntries.addAll( job.getActiveJobEntryJobs().keySet() );
-	    	activeJobEntries.addAll( job.getActiveJobEntryTransformations().keySet() );
+	    	if (job.getActiveJobEntryJobs().size()>0) {
+	    	  activeJobEntries.addAll( job.getActiveJobEntryJobs().keySet() );
+	    	}
+	    	if (job.getActiveJobEntryTransformations().size()>0) {
+	    	  activeJobEntries.addAll( job.getActiveJobEntryTransformations().keySet() );
+	    	}
 	    }
 	    jobPainter.setActiveJobEntries(activeJobEntries);
 	    
