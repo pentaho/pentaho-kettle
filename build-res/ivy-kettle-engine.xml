@@ -7,5 +7,15 @@
   
   <dependencies defaultconf="default->default">
     <dependency org="xerces" name="xercesImpl" rev="2.9.1"/>
+    <dependency org="ca.uhn.hapi" name="hapi-base" rev="1.1"/>
+    <dependency org="ca.uhn.hapi" name="hapi-base" rev="1.1"/>
+    <dependency org="ca.uhn.hapi" name="hapi-structures-v21" rev="1.1"/>
+    <dependency org="ca.uhn.hapi" name="hapi-structures-v22" rev="1.1"/>
+    <dependency org="ca.uhn.hapi" name="hapi-structures-v23" rev="1.1"/>
+    <dependency org="ca.uhn.hapi" name="hapi-structures-v231" rev="1.1"/>
+    <dependency org="ca.uhn.hapi" name="hapi-structures-v24" rev="1.1"/>
+    <dependency org="ca.uhn.hapi" name="hapi-structures-v25" rev="1.1"/>
+    <dependency org="ca.uhn.hapi" name="hapi-structures-v251" rev="1.1"/>
+    <dependency org="ca.uhn.hapi" name="hapi-structures-v26" rev="1.1"/>
   </dependencies>
 </ivy-module>
