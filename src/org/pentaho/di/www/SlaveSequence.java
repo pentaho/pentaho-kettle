@@ -96,18 +96,20 @@ public class SlaveSequence {
         if (longValue==null) {
           value = startValue;
         } else {
-          value = longValue.longValue() + incrementValue;
+          value = longValue.longValue();
         }
       } else {
         value = startValue;
       }
       
+      long maximum = value + incrementValue;
+      
       // Update the value in the table...
       //
       if (update) {
-        sql = "UPDATE "+schemaTable+" SET "+valField+"="+value+" WHERE "+seqField+"='"+name+"'";
+        sql = "UPDATE "+schemaTable+" SET "+valField+"="+maximum+" WHERE "+seqField+"='"+name+"'";
       } else {
-        sql = "INSERT INTO "+schemaTable+"("+seqField+", "+valField+") VALUES('"+name+"', "+value+")";
+        sql = "INSERT INTO "+schemaTable+"("+seqField+", "+maximum+") VALUES('"+name+"', "+value+")";
       }
       db.execStatement(sql);
       
@@ -122,7 +124,7 @@ public class SlaveSequence {
 
   public SlaveSequence(Node node, List<DatabaseMeta> databases) throws KettleXMLException {
     name = XMLHandler.getTagValue(node, "name");
-    startValue = Const.toInt(XMLHandler.getTagValue(node, "start"), 1);
+    startValue = Const.toInt(XMLHandler.getTagValue(node, "start"), 0);
     databaseMeta = DatabaseMeta.findDatabase(databases, XMLHandler.getTagValue(node, "connection"));
     schemaName = XMLHandler.getTagValue(node, "schema");
     tableName = XMLHandler.getTagValue(node, "table");
