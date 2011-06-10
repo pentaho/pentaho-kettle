@@ -373,4 +373,8 @@ public class TransformationMap {
   public void setHostServerSocketPortsMap(Map<String, List<SocketPortAllocation>> hostServerSocketPortsMap) {
     this.hostServerSocketPortsMap = hostServerSocketPortsMap;
   }
+
+  public SlaveSequence getSlaveSequence(String name) {
+    return SlaveSequence.findSlaveSequence(name, slaveServerConfig.getSlaveSequences());
+  }
 }

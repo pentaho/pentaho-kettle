@@ -120,6 +120,8 @@ public class Carte
 	
     public static void main(String[] args) throws Exception
     {
+      KettleEnvironment.init();
+      
     	// Load from an xml file that describes the complete configuration...
     	//
     	SlaveServerConfig config = null;
@@ -159,7 +161,6 @@ public class Carte
     }
 
     public static void runCarte(SlaveServerConfig config) throws Exception {
-    	init();
     	       
     	CentralLogStore.init(config.getMaxLogLines(), config.getMaxLogTimeoutMinutes());
 
@@ -170,10 +171,6 @@ public class Carte
         new Carte(config);
 	}
 
-	private static void init() throws Exception
-    {
-	    KettleEnvironment.init();
-	}
     
     public static Trans generateTestTransformation()
     {

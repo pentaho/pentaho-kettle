@@ -259,9 +259,13 @@ public class WebServer
         //
         Context addExport = new Context(contexts, AddExportServlet.CONTEXT_PATH, Context.SESSIONS);
         addExport.addServlet(new ServletHolder(new AddExportServlet(jobMap, transformationMap)), "/*");
-        
-        
 
+        // Get next value from a slave sequence
+        //
+        Context nextSequence = new Context(contexts, NextSequenceValueServlet.CONTEXT_PATH, Context.SESSIONS);
+        nextSequence.addServlet(new ServletHolder(new NextSequenceValueServlet(transformationMap)), "/*");
+        
+        
         server.setHandlers(new Handler[] { securityHandler, contexts });
 
         // Start execution

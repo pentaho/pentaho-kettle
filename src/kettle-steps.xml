@@ -93,6 +93,14 @@
     <iconfile>ui/images/SEQ.png</iconfile>
   </step>
 
+  <step id="GetSlaveSequence">
+    <description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.GetSlaveSequence</description>
+    <classname>org.pentaho.di.trans.steps.getslavesequence.GetSlaveSequenceMeta</classname>
+    <category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
+    <tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.GetSlavesequence</tooltip>
+    <iconfile>ui/images/SEQ.png</iconfile>
+  </step>
+
   <step id="TableOutput">
     <description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.Output</description>
     <classname>org.pentaho.di.trans.steps.tableoutput.TableOutputMeta</classname>

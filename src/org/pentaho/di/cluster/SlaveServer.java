@@ -40,6 +40,7 @@ import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.changed.ChangedFlag;
 import org.pentaho.di.core.encryption.Encr;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -63,9 +64,11 @@ import org.pentaho.di.www.GetJobStatusServlet;
 import org.pentaho.di.www.GetSlavesServlet;
 import org.pentaho.di.www.GetStatusServlet;
 import org.pentaho.di.www.GetTransStatusServlet;
+import org.pentaho.di.www.NextSequenceValueServlet;
 import org.pentaho.di.www.PauseTransServlet;
 import org.pentaho.di.www.RemoveJobServlet;
 import org.pentaho.di.www.RemoveTransServlet;
+import org.pentaho.di.www.SlaveSequenceValueRange;
 import org.pentaho.di.www.SlaveServerDetection;
 import org.pentaho.di.www.SlaveServerJobStatus;
 import org.pentaho.di.www.SlaveServerStatus;
@@ -973,6 +976,38 @@ public class SlaveServer  extends ChangedFlag
 				"&xml=Y"); //$NON-NLS-1$  //$NON-NLS-2$
 		return xml;
 	}
+
+	 public SlaveSequenceValueRange getNextSlaveSequenceValue(String slaveSequenceName) throws KettleException {
+	   try {
+	    String xml = execService(NextSequenceValueServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(slaveSequenceName, "UTF-8")); //$NON-NLS-1$  //$NON-NLS-2$
+	    
+	    Document doc = XMLHandler.loadXMLString(xml);
+	    Node seqNode = XMLHandler.getSubNode(doc, NextSequenceValueServlet.XML_TAG);
+	    String nextValueString = XMLHandler.getTagValue(seqNode, NextSequenceValueServlet.XML_TAG_VALUE);
+	    String incrementString = XMLHandler.getTagValue(seqNode, NextSequenceValueServlet.XML_TAG_INCREMENT);
+      String errorString = XMLHandler.getTagValue(seqNode, NextSequenceValueServlet.XML_TAG_ERROR);
+      
+	    if (!Const.isEmpty(errorString)) {
+	      throw new KettleException(errorString);
+	    }
+	    if (Const.isEmpty(nextValueString)) {
+	      throw new KettleException("No value retrieved from slave sequence '"+slaveSequenceName+"' on slave "+toString());
+	    }
+	    long nextValue = Const.toLong(nextValueString, Long.MIN_VALUE);
+	    if (nextValue==Long.MIN_VALUE) {
+	      throw new KettleException("Incorrect value '"+nextValueString+"' retrieved from slave sequence '"+slaveSequenceName+"' on slave "+toString());
+	    }
+	    
+	    long increment = Const.toLong(incrementString, Long.MIN_VALUE);
+      if (increment==Long.MIN_VALUE) {
+        throw new KettleException("Incorrect increment '"+incrementString+"' retrieved from slave sequence '"+slaveSequenceName+"' on slave "+toString());
+      }
+	    
+	    return new SlaveSequenceValueRange(nextValue, increment);
+	   } catch(Exception e) {
+       throw new KettleException("There was a problem retrieving a next sequence value from slave sequence '"+slaveSequenceName+"' on slave "+toString(), e);
+	   }
+	  }
 
 	/**
 	 * @return the changedDate

@@ -18,6 +18,8 @@ import java.util.List;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.w3c.dom.Node;
@@ -42,8 +44,13 @@ public class SlaveServerConfig {
 	
 	private String filename;
 	
+	private List<DatabaseMeta> databases;
+	private List<SlaveSequence> slaveSequences;
+	
 	public SlaveServerConfig() {
 		masters=new ArrayList<SlaveServer>();
+		databases=new ArrayList<DatabaseMeta>();
+		slaveSequences=new ArrayList<SlaveSequence>();
 	}
 	
 	public SlaveServerConfig(SlaveServer slaveServer) {
@@ -77,13 +84,13 @@ public class SlaveServerConfig {
         XMLHandler.addTagValue("max_log_lines", maxLogLines);
         XMLHandler.addTagValue("max_log_timeout_minutes", maxLogTimeoutMinutes);
         XMLHandler.addTagValue("object_timeout_minutes", objectTimeoutMinutes);
-
+        
         xml.append(XMLHandler.closeTag(XML_TAG));
 
         return xml.toString();
 	}
 	
-	public SlaveServerConfig(LogChannelInterface log, Node node) {
+	public SlaveServerConfig(LogChannelInterface log, Node node) throws KettleXMLException {
 		this();
 		Node mastersNode = XMLHandler.getSubNode(node, XML_TAG_MASTERS);
 		int nrMasters = XMLHandler.countNodes(mastersNode, SlaveServer.XML_TAG);
@@ -103,6 +110,19 @@ public class SlaveServerConfig {
 		maxLogLines = Const.toInt(XMLHandler.getTagValue(node, "max_log_lines"), 0);
 		maxLogTimeoutMinutes = Const.toInt(XMLHandler.getTagValue(node, "max_log_timeout_minutes"), 0);
 		objectTimeoutMinutes = Const.toInt(XMLHandler.getTagValue(node, "object_timeout_minutes"), 0);
+		
+		// Read sequence information
+		//
+    List<Node> dbNodes = XMLHandler.getNodes(node, DatabaseMeta.XML_TAG);
+    for (Node dbNode : dbNodes) {
+      databases.add(new DatabaseMeta(dbNode));
+    }
+
+    Node sequencesNode = XMLHandler.getSubNode(node, "sequences");
+    List<Node> seqNodes = XMLHandler.getNodes(sequencesNode, SlaveSequence.XML_TAG);
+    for (Node seqNode : seqNodes) {
+      slaveSequences.add(new SlaveSequence(seqNode, databases));
+    }
 	}
 
 	private void checkNetworkInterfaceSetting(LogChannelInterface log, Node slaveNode, SlaveServer slaveServer) {
@@ -249,4 +269,31 @@ public class SlaveServerConfig {
     this.filename = filename;
   }
 
+  /**
+   * @return the databases
+   */
+  public List<DatabaseMeta> getDatabases() {
+    return databases;
+  }
+
+  /**
+   * @param databases the databases to set
+   */
+  public void setDatabases(List<DatabaseMeta> databases) {
+    this.databases = databases;
+  }
+
+  /**
+   * @return the slaveSequences
+   */
+  public List<SlaveSequence> getSlaveSequences() {
+    return slaveSequences;
+  }
+
+  /**
+   * @param slaveSequences the slaveSequences to set
+   */
+  public void setSlaveSequences(List<SlaveSequence> slaveSequences) {
+    this.slaveSequences = slaveSequences;
+  }
 }
