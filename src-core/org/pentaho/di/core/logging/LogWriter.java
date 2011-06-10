@@ -113,8 +113,8 @@ public class LogWriter
         
         // Hide info messages from Jetty too...
         //
-        LogManager.getLogger("org.mortbay.log").setLevel(Level.WARN);
-        LogManager.getLogger("org.slf4j").setLevel(Level.WARN);
+        // LogManager.getLogger("org.mortbay.log").setLevel(Level.WARN);
+        // LogManager.getLogger("org.slf4j").setLevel(Level.WARN);
         
         
     }
