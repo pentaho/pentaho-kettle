@@ -663,15 +663,15 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 	
 		} catch (IOException ioe)
 		{
-			logError(BaseMessages.getString(PKG, "JobShell.ErrorRunningShell",environmentSubstitute(getFilename()),ioe.toString()));
+			logError(BaseMessages.getString(PKG, "JobShell.ErrorRunningShell",environmentSubstitute(getFilename()),ioe.toString()), ioe);
 			result.setNrErrors(1);
 		} catch (InterruptedException ie)
 		{
-			logError(BaseMessages.getString(PKG, "JobShell.Shellinterupted",environmentSubstitute(getFilename()),ie.toString()));
+			logError(BaseMessages.getString(PKG, "JobShell.Shellinterupted",environmentSubstitute(getFilename()),ie.toString()), ie);
 			result.setNrErrors(1);
 		} catch (Exception e)
 		{
-			logError(BaseMessages.getString(PKG, "JobShell.UnexpectedError",environmentSubstitute(getFilename()),e.toString()));
+			logError(BaseMessages.getString(PKG, "JobShell.UnexpectedError",environmentSubstitute(getFilename()),e.toString()), e);
 			result.setNrErrors(1);
 		}
 		finally {
