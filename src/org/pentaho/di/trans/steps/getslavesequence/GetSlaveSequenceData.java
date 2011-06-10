@@ -16,7 +16,6 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.www.SlaveSequenceValueRange;
 
 /**
  * @author Matt
@@ -27,7 +26,8 @@ public class GetSlaveSequenceData extends BaseStepData implements StepDataInterf
 	public RowMetaInterface outputRowMeta;
 	public SlaveServer slaveServer;
 	public long value;
-  public SlaveSequenceValueRange sequence;
+  public long startValue;
+  public long increment;
 	
 	/**
 	 * 

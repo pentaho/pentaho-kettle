@@ -26,11 +26,6 @@ public class SlaveSequence {
   private long startValue;
   
   /**
-   * The block size or increment
-   */
-  private long incrementValue;
-  
-  /**
    * The database to use
    */
   private DatabaseMeta databaseMeta;
@@ -57,7 +52,6 @@ public class SlaveSequence {
 
   public SlaveSequence() {  
     startValue=1;
-    incrementValue=10000;
   }
   
   /**
@@ -73,7 +67,6 @@ public class SlaveSequence {
   public SlaveSequence(String name, long startValue, long incrementValue, DatabaseMeta databaseMeta, String schemaName, String tableName, String sequenceNameField, String valueField) {
     this.name = name;
     this.startValue = startValue;
-    this.incrementValue = incrementValue;
     this.databaseMeta = databaseMeta;
     this.schemaName = schemaName;
     this.tableName = tableName;
@@ -81,7 +74,7 @@ public class SlaveSequence {
     this.valueField = valueField;
   }
   
-  public synchronized long getNextValue(LoggingObjectInterface log) throws KettleException {
+  public synchronized long getNextValue(LoggingObjectInterface log, long incrementValue) throws KettleException {
     
     Database db = null;
     try {
@@ -130,8 +123,6 @@ public class SlaveSequence {
   public SlaveSequence(Node node, List<DatabaseMeta> databases) throws KettleXMLException {
     name = XMLHandler.getTagValue(node, "name");
     startValue = Const.toInt(XMLHandler.getTagValue(node, "start"), 1);
-    incrementValue = Const.toInt(XMLHandler.getTagValue(node, "increment"), 10000);
-    
     databaseMeta = DatabaseMeta.findDatabase(databases, XMLHandler.getTagValue(node, "connection"));
     schemaName = XMLHandler.getTagValue(node, "schema");
     tableName = XMLHandler.getTagValue(node, "table");
@@ -167,20 +158,6 @@ public class SlaveSequence {
    */
   public void setStartValue(long startValue) {
     this.startValue = startValue;
-  }
-
-  /**
-   * @return the incrementValue
-   */
-  public long getIncrementValue() {
-    return incrementValue;
-  }
-
-  /**
-   * @param incrementValue the incrementValue to set
-   */
-  public void setIncrementValue(long incrementValue) {
-    this.incrementValue = incrementValue;
   }
 
   /**

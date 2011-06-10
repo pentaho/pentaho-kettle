@@ -11,6 +11,7 @@
 
 package org.pentaho.di.trans.steps.getslavesequence;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -48,11 +49,11 @@ public class GetSlaveSequence extends BaseStep implements StepInterface {
     
     // Are we still in the sequence range?
     //
-    if (data.value>=data.sequence.getMaximum()) {
+    if (data.value>=(data.startValue+data.increment)) {
       // Get a new value from the service...
       //
-      data.sequence = data.slaveServer.getNextSlaveSequenceValue(meta.getSequenceName());
-      data.value = data.sequence.getValue();
+      data.startValue = data.slaveServer.getNextSlaveSequenceValue(meta.getSequenceName(), data.increment);
+      data.value = data.startValue;
     }
     
     next = Long.valueOf(data.value);
@@ -87,8 +88,8 @@ public class GetSlaveSequence extends BaseStep implements StepInterface {
       data.outputRowMeta = getInputRowMeta().clone();
       meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 
-      data.sequence = data.slaveServer.getNextSlaveSequenceValue(meta.getSequenceName());
-      data.value = data.sequence.getValue();
+      data.startValue = data.slaveServer.getNextSlaveSequenceValue(meta.getSequenceName(), data.increment);
+      data.value = data.startValue;
     }
 
     if (log.isRowLevel())
@@ -119,6 +120,7 @@ public class GetSlaveSequence extends BaseStep implements StepInterface {
     data = (GetSlaveSequenceData) sdi;
 
     if (super.init(smi, sdi)) {
+      data.increment = Const.toLong(meta.getIncrement(), 1000);
       data.slaveServer = getTransMeta().findSlaveServer(environmentSubstitute(meta.getSlaveServerName()));
       data.value = -1;
 

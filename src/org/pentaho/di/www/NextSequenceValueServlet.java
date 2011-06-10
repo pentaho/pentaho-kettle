@@ -39,6 +39,7 @@ public class NextSequenceValueServlet extends BaseHttpServlet implements CarteSe
   public static final String CONTEXT_PATH = "/kettle/nextSequence";
 
   public static final String PARAM_NAME = "name";
+  public static final String PARAM_INCREMENT = "increment";
 
   public static final String XML_TAG = "seq";
   public static final String XML_TAG_VALUE = "value";
@@ -59,7 +60,8 @@ public class NextSequenceValueServlet extends BaseHttpServlet implements CarteSe
     if (log.isDebug()) logDebug(toString());
     
     String name = request.getParameter(PARAM_NAME);
-      
+    long increment = Const.toLong(request.getParameter(PARAM_INCREMENT), 10000);
+    
     response.setStatus(HttpServletResponse.SC_OK);
     response.setContentType("text/xml");
     response.setCharacterEncoding(Const.XML_ENCODING);
@@ -75,9 +77,9 @@ public class NextSequenceValueServlet extends BaseHttpServlet implements CarteSe
     } else {
       try {
         LoggingObjectInterface loggingObject = new SimpleLoggingObject("Carte", LoggingObjectType.CARTE, null);
-        long nextValue = slaveSequence.getNextValue(loggingObject);
+        long nextValue = slaveSequence.getNextValue(loggingObject, increment);
         out.println(XMLHandler.addTagValue(XML_TAG_VALUE, nextValue));
-        out.println(XMLHandler.addTagValue(XML_TAG_INCREMENT, slaveSequence.getIncrementValue()));
+        out.println(XMLHandler.addTagValue(XML_TAG_INCREMENT, increment));
       } catch(Exception e) {
         response.setStatus(HttpServletResponse.SC_NOT_FOUND);
         out.println(XMLHandler.addTagValue(XML_TAG_ERROR, "Error retrieving next value from slave sequence: "+Const.getStackTracker(e)));

@@ -68,7 +68,6 @@ import org.pentaho.di.www.NextSequenceValueServlet;
 import org.pentaho.di.www.PauseTransServlet;
 import org.pentaho.di.www.RemoveJobServlet;
 import org.pentaho.di.www.RemoveTransServlet;
-import org.pentaho.di.www.SlaveSequenceValueRange;
 import org.pentaho.di.www.SlaveServerDetection;
 import org.pentaho.di.www.SlaveServerJobStatus;
 import org.pentaho.di.www.SlaveServerStatus;
@@ -977,14 +976,16 @@ public class SlaveServer  extends ChangedFlag
 		return xml;
 	}
 
-	 public SlaveSequenceValueRange getNextSlaveSequenceValue(String slaveSequenceName) throws KettleException {
+	 public long getNextSlaveSequenceValue(String slaveSequenceName, long incrementValue) throws KettleException {
 	   try {
-	    String xml = execService(NextSequenceValueServlet.CONTEXT_PATH+"/?name="+URLEncoder.encode(slaveSequenceName, "UTF-8")); //$NON-NLS-1$  //$NON-NLS-2$
+	    String xml = execService(NextSequenceValueServlet.CONTEXT_PATH+"/"+
+	     "?"+NextSequenceValueServlet.PARAM_NAME+"="+URLEncoder.encode(slaveSequenceName, "UTF-8")+
+	     "&"+NextSequenceValueServlet.PARAM_INCREMENT+"="+Long.toString(incrementValue)   
+	    ); //$NON-NLS-1$  //$NON-NLS-2$
 	    
 	    Document doc = XMLHandler.loadXMLString(xml);
 	    Node seqNode = XMLHandler.getSubNode(doc, NextSequenceValueServlet.XML_TAG);
 	    String nextValueString = XMLHandler.getTagValue(seqNode, NextSequenceValueServlet.XML_TAG_VALUE);
-	    String incrementString = XMLHandler.getTagValue(seqNode, NextSequenceValueServlet.XML_TAG_INCREMENT);
       String errorString = XMLHandler.getTagValue(seqNode, NextSequenceValueServlet.XML_TAG_ERROR);
       
 	    if (!Const.isEmpty(errorString)) {
@@ -998,12 +999,7 @@ public class SlaveServer  extends ChangedFlag
 	      throw new KettleException("Incorrect value '"+nextValueString+"' retrieved from slave sequence '"+slaveSequenceName+"' on slave "+toString());
 	    }
 	    
-	    long increment = Const.toLong(incrementString, Long.MIN_VALUE);
-      if (increment==Long.MIN_VALUE) {
-        throw new KettleException("Incorrect increment '"+incrementString+"' retrieved from slave sequence '"+slaveSequenceName+"' on slave "+toString());
-      }
-	    
-	    return new SlaveSequenceValueRange(nextValue, increment);
+	    return nextValue;
 	   } catch(Exception e) {
        throw new KettleException("There was a problem retrieving a next sequence value from slave sequence '"+slaveSequenceName+"' on slave "+toString(), e);
 	   }

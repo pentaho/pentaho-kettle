@@ -52,6 +52,7 @@ public class GetSlaveSequenceMeta extends BaseStepMeta implements StepMetaInterf
 	private String       valuename;	
 	private String       slaveServerName;
   private String       sequenceName;
+  private String       increment;
     
 	
 	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleXMLException {
@@ -70,6 +71,7 @@ public class GetSlaveSequenceMeta extends BaseStepMeta implements StepMetaInterf
 			valuename    = XMLHandler.getTagValue(stepnode, "valuename"); //$NON-NLS-1$
       slaveServerName = XMLHandler.getTagValue(stepnode, "slave"); //$NON-NLS-1$
 			sequenceName = XMLHandler.getTagValue(stepnode, "seqname"); //$NON-NLS-1$
+			increment = XMLHandler.getTagValue(stepnode, "increment"); //$NON-NLS-1$
 		}
 		catch(Exception e)
 		{
@@ -81,6 +83,7 @@ public class GetSlaveSequenceMeta extends BaseStepMeta implements StepMetaInterf
 		valuename = "id"; //$NON-NLS-1$
     slaveServerName = "slave server name"; //$NON-NLS-1$
     sequenceName = "Slave Sequence Name -- To be configured"; //$NON-NLS-1$
+    increment = "10000"; //$NON-NLS-1$
 	}
 
 	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
@@ -97,6 +100,7 @@ public class GetSlaveSequenceMeta extends BaseStepMeta implements StepMetaInterf
 		retval.append("      ").append(XMLHandler.addTagValue("valuename", valuename)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("      ").append(XMLHandler.addTagValue("slave", slaveServerName)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("      ").append(XMLHandler.addTagValue("seqname", sequenceName)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    retval.append("      ").append(XMLHandler.addTagValue("increment", increment)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 		return retval.toString();
 	}
@@ -108,6 +112,7 @@ public class GetSlaveSequenceMeta extends BaseStepMeta implements StepMetaInterf
 			valuename       =   rep.getStepAttributeString (id_step, "valuename"); //$NON-NLS-1$
       slaveServerName =   rep.getStepAttributeString (id_step, "slave"); //$NON-NLS-1$
       sequenceName    =   rep.getStepAttributeString (id_step, "seqname"); //$NON-NLS-1$
+      increment       =   rep.getStepAttributeString (id_step, "increment"); //$NON-NLS-1$
 		}
 		catch(Exception e)
 		{
@@ -123,6 +128,7 @@ public class GetSlaveSequenceMeta extends BaseStepMeta implements StepMetaInterf
 			rep.saveStepAttribute(id_transformation, id_step, "valuename", valuename); //$NON-NLS-1$
       rep.saveStepAttribute(id_transformation, id_step, "slave", slaveServerName); //$NON-NLS-1$
       rep.saveStepAttribute(id_transformation, id_step, "seqname", sequenceName); //$NON-NLS-1$
+      rep.saveStepAttribute(id_transformation, id_step, "increment", increment); //$NON-NLS-1$
 		}
 		catch(Exception e)
 		{
@@ -197,6 +203,20 @@ public class GetSlaveSequenceMeta extends BaseStepMeta implements StepMetaInterf
    */
   public void setSequenceName(String sequenceName) {
     this.sequenceName = sequenceName;
+  }
+
+  /**
+   * @return the increment
+   */
+  public String getIncrement() {
+    return increment;
+  }
+
+  /**
+   * @param increment the increment to set
+   */
+  public void setIncrement(String increment) {
+    this.increment = increment;
   }
 
 	
