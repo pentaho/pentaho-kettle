@@ -32,10 +32,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  * @since 13-may-2003
  */
 public class GetSlaveSequence extends BaseStep implements StepInterface {
-  private static Class<?>      PKG = GetSlaveSequence.class; // for i18n
-                                                             // purposes, needed
-                                                             // by Translator2!!
-                                                             // $NON-NLS-1$
+  private static Class<?>      PKG = GetSlaveSequence.class; // i18n
 
   private GetSlaveSequenceMeta meta;
   private GetSlaveSequenceData data;
@@ -52,7 +49,7 @@ public class GetSlaveSequence extends BaseStep implements StepInterface {
     if (data.value>=(data.startValue+data.increment)) {
       // Get a new value from the service...
       //
-      data.startValue = data.slaveServer.getNextSlaveSequenceValue(meta.getSequenceName(), data.increment);
+      data.startValue = data.slaveServer.getNextSlaveSequenceValue(data.sequenceName, data.increment);
       data.value = data.startValue;
     }
     
@@ -88,7 +85,7 @@ public class GetSlaveSequence extends BaseStep implements StepInterface {
       data.outputRowMeta = getInputRowMeta().clone();
       meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 
-      data.startValue = data.slaveServer.getNextSlaveSequenceValue(meta.getSequenceName(), data.increment);
+      data.startValue = data.slaveServer.getNextSlaveSequenceValue(data.sequenceName, data.increment);
       data.value = data.startValue;
     }
 
@@ -120,8 +117,9 @@ public class GetSlaveSequence extends BaseStep implements StepInterface {
     data = (GetSlaveSequenceData) sdi;
 
     if (super.init(smi, sdi)) {
-      data.increment = Const.toLong(meta.getIncrement(), 1000);
+      data.increment = Const.toLong(environmentSubstitute(meta.getIncrement()), 1000);
       data.slaveServer = getTransMeta().findSlaveServer(environmentSubstitute(meta.getSlaveServerName()));
+      data.sequenceName = environmentSubstitute(meta.getSequenceName());
       data.value = -1;
 
       return true;

@@ -69,22 +69,28 @@ public class NextSequenceValueServlet extends BaseHttpServlet implements CarteSe
     PrintStream out = new PrintStream(response.getOutputStream());
     out.println(XMLHandler.getXMLHeader(Const.XML_ENCODING));
     out.println(XMLHandler.openTag(XML_TAG));
+
+    try {
     
-    SlaveSequence slaveSequence = getTransformationMap().getSlaveSequence(name);
-    if (slaveSequence==null) {
-      response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-      out.println(XMLHandler.addTagValue(XML_TAG_ERROR, "Slave sequence '"+name+"' could not be found."));
-    } else {
-      try {
-        LoggingObjectInterface loggingObject = new SimpleLoggingObject("Carte", LoggingObjectType.CARTE, null);
-        long nextValue = slaveSequence.getNextValue(loggingObject, increment);
-        out.println(XMLHandler.addTagValue(XML_TAG_VALUE, nextValue));
-        out.println(XMLHandler.addTagValue(XML_TAG_INCREMENT, increment));
-      } catch(Exception e) {
-        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-        out.println(XMLHandler.addTagValue(XML_TAG_ERROR, "Error retrieving next value from slave sequence: "+Const.getStackTracker(e)));
+      SlaveSequence slaveSequence = getTransformationMap().getSlaveSequence(name);
+      if (slaveSequence==null && getTransformationMap().isAutomaticSlaveSequenceCreationAllowed()) {
+        slaveSequence = getTransformationMap().createSlaveSequence(name);
       }
+      if (slaveSequence==null) {
+        response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+        out.println(XMLHandler.addTagValue(XML_TAG_ERROR, "Slave sequence '"+name+"' could not be found."));
+      } else {
+          LoggingObjectInterface loggingObject = new SimpleLoggingObject("Carte", LoggingObjectType.CARTE, null);
+          long nextValue = slaveSequence.getNextValue(loggingObject, increment);
+          out.println(XMLHandler.addTagValue(XML_TAG_VALUE, nextValue));
+          out.println(XMLHandler.addTagValue(XML_TAG_INCREMENT, increment));
+      }
+
+    } catch(Exception e) {
+      response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+      out.println(XMLHandler.addTagValue(XML_TAG_ERROR, "Error retrieving next value from slave sequence: "+Const.getStackTracker(e)));
     }
+
 
     out.println(XMLHandler.closeTag(XML_TAG));
   }

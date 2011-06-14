@@ -130,6 +130,9 @@ public class Carte
     		Document document = XMLHandler.loadXMLFile(file);
     		Node configNode = XMLHandler.getSubNode(document, SlaveServerConfig.XML_TAG); 
     		config = new SlaveServerConfig(new LogChannel("Slave server config"), configNode);
+    		if (config.getAutoSequence()!=null) {
+    		  config.readAutoSequences();
+    		}
     		config.setFilename(args[0]);
     	}
     	if (args.length==2  && !Const.isEmpty(args[0])  && !Const.isEmpty(args[1])) {

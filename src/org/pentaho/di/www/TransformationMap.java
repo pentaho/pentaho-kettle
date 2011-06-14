@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransConfiguration;
 
@@ -376,5 +377,25 @@ public class TransformationMap {
 
   public SlaveSequence getSlaveSequence(String name) {
     return SlaveSequence.findSlaveSequence(name, slaveServerConfig.getSlaveSequences());
+  }
+
+  public boolean isAutomaticSlaveSequenceCreationAllowed() {
+    return slaveServerConfig.isAutomaticCreationAllowed();
+  }
+
+  public SlaveSequence createSlaveSequence(String name) throws KettleException {
+    SlaveSequence auto = slaveServerConfig.getAutoSequence();
+    if (auto==null) {
+      throw new KettleException("No auto-sequence information found in the slave server config.  Slave sequence could not be created automatically.");
+    }
+    
+    SlaveSequence slaveSequence = new SlaveSequence(
+        name, auto.getStartValue(), auto.getDatabaseMeta(), 
+        auto.getSchemaName(), auto.getTableName(), 
+        auto.getSequenceNameField(), auto.getValueField());
+    
+    slaveServerConfig.getSlaveSequences().add(slaveSequence);
+    
+    return slaveSequence;
   }
 }

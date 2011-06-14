@@ -9,6 +9,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.w3c.dom.Node;
 
@@ -64,7 +65,7 @@ public class SlaveSequence {
    * @param sequenceNameField
    * @param valueField
    */
-  public SlaveSequence(String name, long startValue, long incrementValue, DatabaseMeta databaseMeta, String schemaName, String tableName, String sequenceNameField, String valueField) {
+  public SlaveSequence(String name, long startValue, DatabaseMeta databaseMeta, String schemaName, String tableName, String sequenceNameField, String valueField) {
     this.name = name;
     this.startValue = startValue;
     this.databaseMeta = databaseMeta;
@@ -87,8 +88,10 @@ public class SlaveSequence {
       
       boolean update=false;
       
-      String sql = "SELECT "+valField+" FROM "+schemaTable+" WHERE "+seqField+" = '"+name+"'";
-      RowMetaAndData row = db.getOneRow(sql);
+      String sql = "SELECT "+valField+" FROM "+schemaTable+" WHERE "+seqField+" = ?";
+      RowMetaAndData param = new RowMetaAndData();
+      param.addValue(seqField, ValueMetaInterface.TYPE_STRING, name);
+      RowMetaAndData row = db.getOneRow(sql, param.getRowMeta(), param.getData());
       long value;
       if (row!=null && row.getData()!=null) {
         update=true;
@@ -107,11 +110,18 @@ public class SlaveSequence {
       // Update the value in the table...
       //
       if (update) {
-        sql = "UPDATE "+schemaTable+" SET "+valField+"="+maximum+" WHERE "+seqField+"='"+name+"'";
+        sql = "UPDATE "+schemaTable+" SET "+valField+"= ? WHERE "+seqField+"= ? ";
+        param = new RowMetaAndData();
+        param.addValue(valField, ValueMetaInterface.TYPE_INTEGER, Long.valueOf(maximum));
+        param.addValue(seqField, ValueMetaInterface.TYPE_STRING, name);
+
       } else {
-        sql = "INSERT INTO "+schemaTable+"("+seqField+", "+maximum+") VALUES('"+name+"', "+value+")";
+        sql = "INSERT INTO "+schemaTable+"("+seqField+", "+valField+") VALUES( ? , ? )";
+        param = new RowMetaAndData();
+        param.addValue(seqField, ValueMetaInterface.TYPE_STRING, name);
+        param.addValue(valField, ValueMetaInterface.TYPE_INTEGER, Long.valueOf(maximum));
       }
-      db.execStatement(sql);
+      db.execStatement(sql, param.getRowMeta(), param.getData());
       
       return value;
       
@@ -132,6 +142,19 @@ public class SlaveSequence {
     valueField = XMLHandler.getTagValue(node, "value_field");    
   }
 
+  public String getXML() {
+    StringBuilder xml = new StringBuilder(100);
+
+    xml.append(XMLHandler.addTagValue("name", name));
+    xml.append(XMLHandler.addTagValue("start", startValue));
+    xml.append(XMLHandler.addTagValue("connection", databaseMeta==null?"":databaseMeta.getName()));
+    xml.append(XMLHandler.addTagValue("schema", schemaName));
+    xml.append(XMLHandler.addTagValue("table", tableName));
+    xml.append(XMLHandler.addTagValue("sequence_field", sequenceNameField));
+    xml.append(XMLHandler.addTagValue("value_field", valueField));
+    
+    return xml.toString();
+  }
 
   
   /**

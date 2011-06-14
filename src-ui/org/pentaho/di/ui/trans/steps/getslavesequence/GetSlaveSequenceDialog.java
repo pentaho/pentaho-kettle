@@ -41,6 +41,7 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.steps.getslavesequence.GetSlaveSequenceMeta;
 import org.pentaho.di.ui.core.widget.ComboVar;
+import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
@@ -55,10 +56,10 @@ public class GetSlaveSequenceDialog extends BaseStepDialog implements StepDialog
   private ComboVar     wSlaveServer;
 
   private Label        wlSeqname;
-  private Text         wSeqname;
+  private TextVar      wSeqname;
 
   private Label        wlIncrement;
-  private Text         wIncrement;
+  private TextVar      wIncrement;
 
 	private GetSlaveSequenceMeta input;
 	
@@ -75,7 +76,7 @@ public class GetSlaveSequenceDialog extends BaseStepDialog implements StepDialog
 
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
  		props.setLook(shell);
-        setShellImage(shell, input);
+    setShellImage(shell, input);
 
 		ModifyListener lsMod = new ModifyListener() 
 		{
@@ -162,7 +163,7 @@ public class GetSlaveSequenceDialog extends BaseStepDialog implements StepDialog
 		fdlSeqname.top  = new FormAttachment(wSlaveServer, margin);
 		wlSeqname.setLayoutData(fdlSeqname);
 		
-		wSeqname=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wSeqname=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		wSeqname.setText(""); //$NON-NLS-1$
  		props.setLook(wSeqname);
 		wSeqname.addModifyListener(lsMod);
@@ -182,7 +183,7 @@ public class GetSlaveSequenceDialog extends BaseStepDialog implements StepDialog
     fdlIncrement.top  = new FormAttachment(wSeqname, margin);
     wlIncrement.setLayoutData(fdlIncrement);
     
-    wIncrement=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+    wIncrement=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
     wIncrement.setText(""); //$NON-NLS-1$
     props.setLook(wIncrement);
     wIncrement.addModifyListener(lsMod);

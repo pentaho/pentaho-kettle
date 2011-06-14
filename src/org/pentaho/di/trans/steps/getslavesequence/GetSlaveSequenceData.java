@@ -28,6 +28,7 @@ public class GetSlaveSequenceData extends BaseStepData implements StepDataInterf
 	public long value;
   public long startValue;
   public long increment;
+  public String sequenceName;
 	
 	/**
 	 * 

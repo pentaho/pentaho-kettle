@@ -18,9 +18,16 @@ import java.util.List;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.logging.SimpleLoggingObject;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.w3c.dom.Node;
 
@@ -28,6 +35,11 @@ public class SlaveServerConfig {
 	public static final String XML_TAG = "slave_config"; //$NON-NLS-1$
 	public static final String XML_TAG_MASTERS = "masters"; //$NON-NLS-1$
 
+  public static final String XML_TAG_SEQUENCES = "sequences"; //$NON-NLS-1$
+	public static final String XML_TAG_AUTOSEQUENCE = "autosequence"; //$NON-NLS-1$
+  public static final String XML_TAG_AUTO_CREATE= "autocreate"; //$NON-NLS-1$
+
+	
 	private List<SlaveServer> masters;
 	
 	private SlaveServer slaveServer;
@@ -47,10 +59,15 @@ public class SlaveServerConfig {
 	private List<DatabaseMeta> databases;
 	private List<SlaveSequence> slaveSequences;
 	
+	private SlaveSequence autoSequence;
+	
+	private boolean automaticCreationAllowed;
+	
 	public SlaveServerConfig() {
 		masters=new ArrayList<SlaveServer>();
 		databases=new ArrayList<DatabaseMeta>();
 		slaveSequences=new ArrayList<SlaveSequence>();
+		automaticCreationAllowed=false;
 	}
 	
 	public SlaveServerConfig(SlaveServer slaveServer) {
@@ -85,8 +102,23 @@ public class SlaveServerConfig {
         XMLHandler.addTagValue("max_log_timeout_minutes", maxLogTimeoutMinutes);
         XMLHandler.addTagValue("object_timeout_minutes", objectTimeoutMinutes);
         
+        xml.append(XMLHandler.openTag(XML_TAG_SEQUENCES));
+        for (SlaveSequence slaveSequence : slaveSequences) {
+          xml.append(XMLHandler.openTag(SlaveSequence.XML_TAG));
+          xml.append(slaveSequence.getXML());
+          xml.append(XMLHandler.closeTag(SlaveSequence.XML_TAG));
+        }
+        xml.append(XMLHandler.closeTag(XML_TAG_SEQUENCES));
+        
+        if (autoSequence!=null) {
+          xml.append(XMLHandler.openTag(XML_TAG_AUTOSEQUENCE));
+          xml.append(autoSequence.getXML());
+          xml.append(XMLHandler.addTagValue(XML_TAG_AUTO_CREATE, automaticCreationAllowed));
+          xml.append(XMLHandler.closeTag(XML_TAG_AUTOSEQUENCE));
+        }
+        
         xml.append(XMLHandler.closeTag(XML_TAG));
-
+        
         return xml.toString();
 	}
 	
@@ -123,6 +155,56 @@ public class SlaveServerConfig {
     for (Node seqNode : seqNodes) {
       slaveSequences.add(new SlaveSequence(seqNode, databases));
     }
+    
+    Node autoSequenceNode = XMLHandler.getSubNode(node, XML_TAG_AUTOSEQUENCE);
+    if (autoSequenceNode!=null) {
+      autoSequence = new SlaveSequence(autoSequenceNode, databases);
+      automaticCreationAllowed="Y".equalsIgnoreCase(XMLHandler.getTagValue(autoSequenceNode, XML_TAG_AUTO_CREATE));
+    }
+	}
+	
+	public void readAutoSequences() throws KettleException {
+	  if (autoSequence==null) return;
+	  
+	  Database database = null;
+	  
+	  try {
+	    DatabaseMeta databaseMeta = autoSequence.getDatabaseMeta();
+	    LoggingObjectInterface loggingInterface = new SimpleLoggingObject("auto-sequence", LoggingObjectType.GENERAL, null);
+	    database = new Database(loggingInterface, databaseMeta);
+	    database.connect();
+	    String schemaTable = databaseMeta.getQuotedSchemaTableCombination(autoSequence.getSchemaName(), autoSequence.getTableName());
+	    String seqField = databaseMeta.quoteField(autoSequence.getSequenceNameField());
+	    String valueField = databaseMeta.quoteField(autoSequence.getValueField());
+      
+	    String sql = "SELECT "+seqField+", "+valueField+" FROM "+schemaTable;
+	    List<Object[]> rows = database.getRows(sql, 0);
+	    RowMetaInterface rowMeta = database.getReturnRowMeta();
+	    for (Object[] row : rows) {
+	      // Automatically create a new sequence for each sequence found...
+	      //
+	      String sequenceName = rowMeta.getString(row, seqField, null);
+	      if (!Const.isEmpty(sequenceName)) {
+	        Long value = rowMeta.getInteger(row, valueField, null);
+	        if (value!=null) {
+            SlaveSequence slaveSequence = new SlaveSequence(sequenceName, value, databaseMeta, 
+                autoSequence.getSchemaName(), autoSequence.getTableName(), 
+                autoSequence.getSequenceNameField(), autoSequence.getValueField()
+            );
+
+	          slaveSequences.add( slaveSequence );
+	          
+	          LogChannel.GENERAL.logBasic("Automatically created slave sequence '"+slaveSequence.getName()+"' with start value "+slaveSequence.getStartValue());
+	        }
+	      }
+	    } 
+	  } catch(Exception e) {
+	    throw new KettleException("Unable to automatically configure slave sequences", e);
+	  } finally {
+	    if (database!=null) {
+	      database.disconnect();
+	    }
+	  }
 	}
 
 	private void checkNetworkInterfaceSetting(LogChannelInterface log, Node slaveNode, SlaveServer slaveServer) {
@@ -296,4 +378,34 @@ public class SlaveServerConfig {
   public void setSlaveSequences(List<SlaveSequence> slaveSequences) {
     this.slaveSequences = slaveSequences;
   }
+
+  /**
+   * @return the autoSequence
+   */
+  public SlaveSequence getAutoSequence() {
+    return autoSequence;
+  }
+
+  /**
+   * @param autoSequence the autoSequence to set
+   */
+  public void setAutoSequence(SlaveSequence autoSequence) {
+    this.autoSequence = autoSequence;
+  }
+
+  /**
+   * @return the automaticCreationAllowed
+   */
+  public boolean isAutomaticCreationAllowed() {
+    return automaticCreationAllowed;
+  }
+
+  /**
+   * @param automaticCreationAllowed the automaticCreationAllowed to set
+   */
+  public void setAutomaticCreationAllowed(boolean automaticCreationAllowed) {
+    this.automaticCreationAllowed = automaticCreationAllowed;
+  }
+  
+  
 }
