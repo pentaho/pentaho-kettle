@@ -91,7 +91,6 @@
 	<classpathentry exported="true" kind="lib" path="libext/junit-4.7.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/commons/commons-io-1.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="test/libext/jetty-servlet-tester-6.1.21.jar"/>
-	<classpathentry exported="true" kind="lib" path="test/libext/pentaho-xul-swing-TRUNK-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/javassist.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/spring/spring-core-2.5.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/scannotation-1.0.2.jar"/>
@@ -207,7 +206,6 @@
 	<classpathentry exported="true" kind="lib" path="libext/reporting/openide-util-200507110943.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/oro-2.0.8.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/pentaho-connections-2.2.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/pentaho-database-4.0.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-core-3.8.0-GA.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-3.8.0-GA.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-drill-down-3.8.0-GA.jar"/>
@@ -233,9 +231,7 @@
 	<classpathentry kind="lib" path="libext/reporting/logkit-1.0.1.jar"/>
 	<classpathentry kind="lib" path="libext/reporting/mof-200507110943.jar"/>
 	<classpathentry kind="lib" path="libext/reporting/pentaho-cwm-1.5.4.jar"/>
-	<classpathentry kind="lib" path="libext/reporting/pentaho-metadata-3.3.2.jar"/>
 	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-olap4j-3.8.0-GA.jar"/>
-	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-pmd-3.8.0-GA.jar"/>
 	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-wizard-core-3.8.0-GA.jar"/>
 	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-wizard-xul-3.8.0-GA.jar"/>
 	<classpathentry kind="lib" path="libext/reporting/stax-1.2.0.jar"/>
@@ -276,5 +272,6 @@
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-core-3.3.0.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-swt-3.3.0.jar"/>
 	<classpathentry kind="lib" path="libext/reporting/libformat-1.2.4.jar"/>
+	<classpathentry kind="lib" path="test/libext/pentaho-xul-swing-3.3.0.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
