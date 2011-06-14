@@ -233,5 +233,4 @@ public class Carte
 	public void setConfig(SlaveServerConfig config) {
 		this.config = config;
 	}
-
 }

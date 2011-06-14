@@ -7,7 +7,6 @@ import java.util.List;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.www.Carte;
-import org.pentaho.di.www.SlaveServerConfig;
 import org.pentaho.di.www.WebServer;
 
 public class ClusterGenerator {
@@ -39,27 +38,6 @@ public class ClusterGenerator {
 		this.carteList = new ArrayList<Carte>();
 	}
 	
-	private class CarteLauncher implements Runnable {
-		private Carte carte;
-		private String hostname;
-		private int port;
-		private Exception exception;
-		private boolean failure;
-		public CarteLauncher(String hostname, int port) {
-			this.carte=null;
-			this.hostname = hostname;
-			this.port = port;
-		}
-		public void run() {
-			try {
-				SlaveServerConfig config = new SlaveServerConfig(hostname, port, false);
-				carte = new Carte(config);
-			} catch (Exception e) {
-				this.exception = e;
-				failure=true;
-			}
-		}
-	}
 	
 	public void launchSlaveServers() throws Exception {
 		
@@ -73,17 +51,17 @@ public class ClusterGenerator {
 			thread.setName("Carte Launcher"+thread.getName());
 			thread.start();
 			// Wait until the carte object is available...
-			while (launcher.carte==null && !launcher.failure) {
+			while (launcher.getCarte()==null && !launcher.isFailure()) {
 				Thread.sleep(100);
 			}
 			// Keep a list of launched servers
-			if (launcher.carte!=null) {
-				carteList.add(launcher.carte);
+			if (launcher.getCarte()!=null) {
+				carteList.add(launcher.getCarte());
 			}
 			// If there is a failure, stop the servers already launched and throw the exception
-			if (launcher.failure) {
+			if (launcher.isFailure()) {
 				stopSlaveServers();
-				throw launcher.exception; // throw the exception for good measure.
+				throw launcher.getException(); // throw the exception for good measure.
 			}
 		}
 	}

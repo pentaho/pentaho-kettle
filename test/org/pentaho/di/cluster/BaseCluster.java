@@ -15,15 +15,7 @@ import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
 
 public class BaseCluster extends TestCase {
-	
-	/*
-	public void testIgnoreWhiteSpaces() {
-		assertEqualsIgnoreWhitespaces("a  b   c", "a b c");
-		assertEqualsIgnoreWhitespaces("a, b, c", "a,b,c   ");
-		assertEqualsIgnoreWhitespacesAndCase("A  B   C", "a b c");
-		assertEqualsIgnoreWhitespacesAndCase("a, b, c", "A,B,C  ");
-	}
-	*/
+
 	
 	public static TransExecutionConfiguration createClusteredTransExecutionConfiguration() {
 		
@@ -40,8 +32,6 @@ public class BaseCluster extends TestCase {
 		
 		return config;
 	}
-
-	
 	
 	public TransMeta loadAndModifyTestTransformation(ClusterGenerator clusterGenerator, String filename) throws KettleException {
 		TransMeta transMeta = new TransMeta(filename);
