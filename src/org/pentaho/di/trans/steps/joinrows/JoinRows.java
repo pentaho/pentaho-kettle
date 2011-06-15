@@ -290,8 +290,15 @@ public class JoinRows extends BaseStep implements StepInterface
      // Read one row and store it in joinrow[]
      //
      data.joinrow[data.filenr] = getRowData(data.filenr);
-     if (data.joinrow[data.filenr]==null) // 100 x 0 = 0 : don't output when one of the input streams has no rows.
-     {                                    // If this is filenr #0, it's fine too!
+     if (data.joinrow[data.filenr]==null) 
+     {   
+         // 100 x 0 = 0 : don't output when one of the input streams has no rows.
+         // If this is filenr #0, it's fine too!
+         //
+         // Before we exit we need to make sure the 100 rows in the other streams are consumed though...
+         //
+         while (!isStopped() && getRow()!=null);
+       
          setOutputDone();
          return false;
      }
@@ -453,19 +460,17 @@ public class JoinRows extends BaseStep implements StepInterface
         return outputRowMeta;
     }
 
-    public void dispose(StepMetaInterface smi, StepDataInterface sdi)
-	{
-		meta=(JoinRowsMeta)smi;
-		data=(JoinRowsData)sdi;
-
-		// Remove the temporary files...
-		for (int i=1;i<data.file.length;i++)
-		{
-			data.file[i].delete();
-		}
-		
-		super.dispose(meta, data);
-	}
+    public void dispose(StepMetaInterface smi, StepDataInterface sdi) {
+      meta = (JoinRowsMeta) smi;
+      data = (JoinRowsData) sdi;
+  
+      // Remove the temporary files...
+      for (int i = 1; i < data.file.length; i++) {
+        data.file[i].delete();
+      }
+  
+      super.dispose(meta, data);
+    }
     
     @Override
     public void batchComplete() throws KettleException {
