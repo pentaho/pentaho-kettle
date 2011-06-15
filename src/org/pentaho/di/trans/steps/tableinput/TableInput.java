@@ -100,6 +100,9 @@ public class TableInput extends BaseStep implements StepInterface
                 {
                 	if (log.isDetailed()) logDetailed("Reading single row from stream [" + data.infoStream.getStepname() + "]");
                 	data.rowSet = findInputRowSet(data.infoStream.getStepname());
+                	if (data.rowSet==null) {
+                    throw new KettleException("Unable to find rowset to read from, perhaps step ["+data.infoStream.getStepname()+"] doesn't exist. (or perhaps you are trying a preview?)");
+                	}
                     parameters = getRowFrom(data.rowSet);
                     parametersMeta = data.rowSet.getRowMeta();
                 }
