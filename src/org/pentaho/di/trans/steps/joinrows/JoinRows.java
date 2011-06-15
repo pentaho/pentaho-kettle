@@ -364,15 +364,22 @@ public class JoinRows extends BaseStep implements StepInterface
 			 // Write to the output! //
 			//////////////////////////
 			
-			// Read one row and store it in joinrow[]
-			//
-			data.joinrow[data.filenr] = getRowData(data.filenr);
-			if (data.joinrow[data.filenr]==null) // 100 x 0 = 0 : don't output when one of the input streams has no rows.
-			{                                    // If this is filenr #0, it's fine too!
-				setOutputDone();
-				return false;
-			}
-			
+	    // Read one row and store it in joinrow[]
+	    //
+	    data.joinrow[data.filenr] = getRowData(data.filenr);
+	    if (data.joinrow[data.filenr]==null) 
+      {   
+	      // 100 x 0 = 0 : don't output when one of the input streams has no rows.
+	      // If this is filenr #0, it's fine too!
+	      //
+	      // Before we exit we need to make sure the 100 rows in the other streams are consumed though...
+	      //
+	      while (!isStopped() && getRow()!=null);
+	       
+	      setOutputDone();
+	      return false;
+	    }
+	     
 			//
 			// OK, are we at the last file yet?
 			// If so, we can output one row in the cartesian product.
