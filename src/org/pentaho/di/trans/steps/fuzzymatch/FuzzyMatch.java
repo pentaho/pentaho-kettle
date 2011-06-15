@@ -149,7 +149,7 @@ public class FuzzyMatch extends BaseStep implements StepInterface
 		}
         Object[] add = null;
 		try {
-			add=getFromCache(row);
+			add=getFromCache(rowMeta, row);
 		} catch(Exception e) {
 			throw new KettleStepException(e);
 		}
@@ -167,7 +167,7 @@ public class FuzzyMatch extends BaseStep implements StepInterface
 		}
     }
     
-	private Object[] getFromCache(Object[] keyRow) throws KettleValueException
+	private Object[] getFromCache(RowMetaInterface rowMeta, Object[] keyRow) throws KettleValueException
     {
     	if(isDebug()) logDebug(BaseMessages.getString(PKG, "FuzzyMatch.Log.ReadingMainStreamRow", getInputRowMeta().getString(keyRow)));
 		Object[] retval=null;
@@ -175,18 +175,18 @@ public class FuzzyMatch extends BaseStep implements StepInterface
     		case FuzzyMatchMeta.OPERATION_TYPE_LEVENSHTEIN:
     		case FuzzyMatchMeta.OPERATION_TYPE_DAMERAU_LEVENSHTEIN:
     		case FuzzyMatchMeta.OPERATION_TYPE_NEEDLEMAN_WUNSH:
-    			retval=doDistance(keyRow);
+    			retval=doDistance(rowMeta, keyRow);
     			break;
     		case FuzzyMatchMeta.OPERATION_TYPE_DOUBLE_METAPHONE:
     		case FuzzyMatchMeta.OPERATION_TYPE_METAPHONE:
     		case FuzzyMatchMeta.OPERATION_TYPE_SOUNDEX:
     		case FuzzyMatchMeta.OPERATION_TYPE_REFINED_SOUNDEX:
-    			retval=doPhonetic(keyRow);
+    			retval=doPhonetic(rowMeta, keyRow);
     			break;
     		case FuzzyMatchMeta.OPERATION_TYPE_JARO:
     		case FuzzyMatchMeta.OPERATION_TYPE_JARO_WINKLER:
     		case FuzzyMatchMeta.OPERATION_TYPE_PAIR_SIMILARITY:
-    			retval=doSimilarity(keyRow);
+    			retval=doSimilarity(rowMeta, keyRow);
     			break;
     		default:
 
@@ -196,7 +196,7 @@ public class FuzzyMatch extends BaseStep implements StepInterface
         return retval;
     }
   
-	private Object[] doDistance(Object[] row) {
+	private Object[] doDistance(RowMetaInterface rowMeta, Object[] row) throws KettleValueException {
     	// Reserve room
 		Object[] rowData = buildEmptyRow();
 		
@@ -204,8 +204,7 @@ public class FuzzyMatch extends BaseStep implements StepInterface
 		
 		long distance=-1;	
 		
-		Object o=row[data.indexOfMainField];
-		String lookupvalue = (o==null?"":(String) o);	
+		String lookupvalue = Const.NVL(rowMeta.getString(row, data.indexOfMainField), "");	
 		
 		while (it.hasNext()){
 			// Get cached row data
@@ -265,7 +264,7 @@ public class FuzzyMatch extends BaseStep implements StepInterface
 		return rowData;
     }
     
-    private Object[] doPhonetic(Object[] row) {
+    private Object[] doPhonetic(RowMetaInterface rowMeta, Object[] row) throws KettleValueException {
     	// Reserve room
 		Object[] rowData = buildEmptyRow();
 		
@@ -273,9 +272,8 @@ public class FuzzyMatch extends BaseStep implements StepInterface
 		
 		String lookupValueMF=null;
 		
-		Object o=row[data.indexOfMainField];
-		String lookupvalue=(String) o;	
-		
+		String lookupvalue = rowMeta.getString(row, data.indexOfMainField);  
+    
 		lookupValueMF=(new Metaphone()).metaphone(lookupvalue);
 		
 		while (it.hasNext()){
@@ -326,7 +324,7 @@ public class FuzzyMatch extends BaseStep implements StepInterface
 		return rowData;
     }
 
-    private Object[] doSimilarity(Object[] row) {
+    private Object[] doSimilarity(RowMetaInterface rowMeta, Object[] row) throws KettleValueException {
 		
     	// Reserve room
 		Object[] rowData = buildEmptyRow();
@@ -335,9 +333,8 @@ public class FuzzyMatch extends BaseStep implements StepInterface
 		double similarity=0;
 		
 		// get current value from main stream
-		Object o = row[data.indexOfMainField];
-	
-		String lookupvalue= o==null?"":(String) o;	
+		//
+    String lookupvalue = Const.NVL(rowMeta.getString(row, data.indexOfMainField), "");  
 		
 		while (it.hasNext()){
 			// Get cached row data
