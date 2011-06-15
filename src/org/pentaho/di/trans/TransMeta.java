@@ -2372,9 +2372,10 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         }
     }
         
-    public TransMeta(InputStream xmlStream, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace, OverwritePrompter prompter ) throws KettleXMLException
-    {
-    	loadXML( XMLHandler.loadXMLFile(xmlStream, null, false, false), rep, setInternalVariables, parentVariableSpace, prompter);
+    public TransMeta(InputStream xmlStream, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace, OverwritePrompter prompter) throws KettleXMLException {
+      Document doc = XMLHandler.loadXMLFile(xmlStream, null, false, false);
+      Node transnode = XMLHandler.getSubNode(doc, XML_TAG); //$NON-NLS-1$
+      loadXML(transnode, rep, setInternalVariables, parentVariableSpace, prompter);
     }
     	
     /**
