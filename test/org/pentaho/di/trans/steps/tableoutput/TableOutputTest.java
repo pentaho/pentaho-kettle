@@ -563,7 +563,7 @@ public class TableOutputTest extends TestCase
 	 */
     public void testTableOutputJIRA2733() throws Exception
     {
-    	int dataDelay = 100;  	// Delay in milliseconds between issuing records to output rows  
+    	int dataDelay = 10;  	// Delay in milliseconds between issuing records to output rows  
     	
         KettleEnvironment.init();
 
@@ -663,9 +663,10 @@ public class TableOutputTest extends TestCase
 
 	            	// WARNING: This comparison is "fuzzy".  The "ts" value DEFAULT NOW() may be slightly 
 	            	// different during the commit, which is why it is not a straight comparison, but
-	            	// the ts timestamps between two records must not be more than half of the record delay.
+	            	// the ts timestamps difference between two records must not be more than a quarter of the record delay.
+	            	//
 	            	if (last_ts == null || 
-	            		(!ts.equals(last_ts) && (ts.getTime() - last_ts.getTime() > dataDelay / 2))) {
+	            		(!ts.equals(last_ts) && (ts.getTime() - last_ts.getTime() > dataDelay / 4))) {
 	            		
 	            		actual_commits++;
 	            		last_ts = ts;
