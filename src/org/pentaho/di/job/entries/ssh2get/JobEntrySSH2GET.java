@@ -705,12 +705,12 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 		String realServerName=environmentSubstitute(serverName);
 		int realServerPort=Const.toInt(environmentSubstitute(serverPort),22);
 		String realUserName=environmentSubstitute(userName);
-		String realServerPassword=environmentSubstitute(password);
+		String realServerPassword=Encr.decryptPasswordOptionallyEncrypted(environmentSubstitute(password));
 		// Proxy Host
 		String realProxyHost=environmentSubstitute(httpProxyHost);
 		int realProxyPort=Const.toInt(environmentSubstitute(httpproxyport),22);
 		String realproxyUserName=environmentSubstitute(httpproxyusername);
-		String realProxyPassword=environmentSubstitute(httpProxyPassword);
+		String realProxyPassword=Encr.decryptPasswordOptionallyEncrypted(environmentSubstitute(httpProxyPassword));
 		// Key file
 		String realKeyFilename=environmentSubstitute(keyFilename);
 		String relKeyFilepass=environmentSubstitute(keyFilePass);

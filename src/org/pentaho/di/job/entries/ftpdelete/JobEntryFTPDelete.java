@@ -643,12 +643,12 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 
 		
 		String realservername=environmentSubstitute(serverName);
-		String realserverpassword=environmentSubstitute(password);
+		String realserverpassword=Encr.decryptPasswordOptionallyEncrypted(environmentSubstitute(password));
 		String realFtpDirectory=environmentSubstitute(ftpDirectory);
 			
 		int realserverport=Const.toInt(environmentSubstitute(port), 0);
 		String realUsername=environmentSubstitute(userName);
-		String realPassword=environmentSubstitute(password);
+		String realPassword=Encr.decryptPasswordOptionallyEncrypted(environmentSubstitute(password));
 		String realproxyhost=environmentSubstitute(proxyHost);
 		String realproxyusername=environmentSubstitute(proxyUsername);
 		String realproxypassword=environmentSubstitute(proxyPassword);

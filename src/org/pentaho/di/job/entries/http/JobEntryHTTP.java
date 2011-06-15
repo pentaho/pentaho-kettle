@@ -467,7 +467,7 @@ public class JobEntryHTTP extends JobEntryBase implements Cloneable, JobEntryInt
           {
             protected PasswordAuthentication getPasswordAuthentication()
             {
-              String realPassword = environmentSubstitute(password);
+              String realPassword = Encr.decryptPasswordOptionallyEncrypted(environmentSubstitute(password));
               return new PasswordAuthentication(environmentSubstitute(username), realPassword != null ? realPassword
                   .toCharArray() : new char[]
               {});

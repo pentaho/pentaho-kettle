@@ -471,7 +471,7 @@ public class JobEntryExportRepository extends JobEntryBase implements Cloneable,
 		
 		String realrepName=environmentSubstitute(repositoryname);
 		String realusername=environmentSubstitute(username);
-		String realpassword=environmentSubstitute(password);
+		String realpassword=Encr.decryptPasswordOptionallyEncrypted(environmentSubstitute(password));
 		String realfoldername=environmentSubstitute(directoryPath);
 		
 		String realoutfilename=environmentSubstitute(targetfilename);

@@ -780,8 +780,8 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
 			// Create FTPS client to host:port ...
 
             String realServername = environmentSubstitute(serverName);
-            String realUsername =environmentSubstitute(userName); 
-            String realPassword =environmentSubstitute(password); 
+            String realUsername = environmentSubstitute(userName); 
+            String realPassword = Encr.decryptPasswordOptionallyEncrypted(environmentSubstitute(password)); 
             int realPort = Const.toInt(environmentSubstitute(this.port), 0);
             
             connection = new FTPSConnection(getConnectionType(), realServername,realPort, realUsername, realPassword); 
@@ -789,7 +789,7 @@ public class JobEntryFTPSGet extends JobEntryBase implements Cloneable, JobEntry
             if (!Const.isEmpty(proxyHost))  {
           	  String realProxy_host = environmentSubstitute(proxyHost);
         	  String realProxy_username = environmentSubstitute(proxyUsername);
-        	  String realProxy_password = environmentSubstitute(proxyPassword);
+        	  String realProxy_password = Encr.decryptPasswordOptionallyEncrypted(environmentSubstitute(proxyPassword));
         	  
           	  connection.setProxyHost(realProxy_host);
            	  if(!Const.isEmpty(realProxy_username)) {

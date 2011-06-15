@@ -981,8 +981,8 @@ public class JobEntryFTP extends JobEntryBase implements Cloneable, JobEntryInte
             (!Const.isEmpty(proxyUsername) ? " " + environmentSubstitute(proxyUsername) 
         		                           : ""); 
 	            
-            String realPassword = environmentSubstitute(password) + 
-            (!Const.isEmpty(proxyPassword) ? " " + environmentSubstitute(proxyPassword) : "" );
+            String realPassword = Encr.decryptPasswordOptionallyEncrypted(environmentSubstitute(password)) + 
+            (!Const.isEmpty(proxyPassword) ? " " + Encr.decryptPasswordOptionallyEncrypted(environmentSubstitute(proxyPassword)) : "" );
             
             
             ftpclient.login(realUsername, realPassword);

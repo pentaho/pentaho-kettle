@@ -498,7 +498,7 @@ public class JobEntryFTPSPUT extends JobEntryBase implements Cloneable, JobEntry
         String realServerName      = environmentSubstitute(serverName);
         String realServerPort      = environmentSubstitute(serverPort);
         String realUsername        = environmentSubstitute(userName);
-        String realPassword        = environmentSubstitute(password);
+        String realPassword        = Encr.decryptPasswordOptionallyEncrypted(environmentSubstitute(password));
         String realRemoteDirectory = environmentSubstitute(remoteDirectory);
         String realWildcard        = environmentSubstitute(wildcard);
         String realLocalDirectory  = environmentSubstitute(localDirectory);
