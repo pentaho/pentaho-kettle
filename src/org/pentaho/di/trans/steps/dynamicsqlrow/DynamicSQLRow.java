@@ -20,6 +20,7 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -112,6 +113,31 @@ public class DynamicSQLRow extends BaseStep implements StepInterface
 			Object[] add = data.db.getRow(rs);
 			RowMetaInterface addMeta = data.db.getReturnRowMeta();
 			
+      
+      // Also validate the data types to make sure we've not place an incorrect template in the dialog...
+      //
+			if (add!=null) {
+			  int nrTemplateFields = data.outputRowMeta.size()-getInputRowMeta().size();
+			  if (addMeta.size() != nrTemplateFields) {
+			    throw new KettleException(BaseMessages.getString(PKG, "DynamicSQLRow.Exception.IncorrectNrTemplateFields", nrTemplateFields, addMeta.size(), sql));
+			  }
+			  StringBuilder typeErrors = new StringBuilder();
+        for (int i=0;i<addMeta.size();i++) {
+          ValueMetaInterface templateValueMeta = addMeta.getValueMeta(i);
+          ValueMetaInterface outputValueMeta = data.outputRowMeta.getValueMeta(getInputRowMeta().size()+i);
+          
+          if (templateValueMeta.getType()!=outputValueMeta.getType()) {
+            if (typeErrors.length()>0) {
+              typeErrors.append(Const.CR);
+            }
+            typeErrors.append(BaseMessages.getString(PKG, "DynamicSQLRow.Exception.TemplateReturnDataTypeError", templateValueMeta.toString(), outputValueMeta.toString()));
+          }
+        }
+        if (typeErrors.length()>0) {
+          throw new KettleException(typeErrors.toString());
+        }
+			}
+			
 			incrementLinesInput();
 			
 			int counter = 0;
@@ -122,8 +148,10 @@ public class DynamicSQLRow extends BaseStep implements StepInterface
 				Object[] newRow = RowDataUtil.resizeArray(rowData, data.outputRowMeta.size());
 				int newIndex = rowMeta.size();
 				for (int i=0;i<addMeta.size();i++) {
-					newRow[newIndex++] = add[i];
+					newRow[newIndex++] = add[i];					
 				}
+
+				
 				// we have to clone, otherwise we only get the last new value
 				putRow(data.outputRowMeta, data.outputRowMeta.cloneRow(newRow));
 				
