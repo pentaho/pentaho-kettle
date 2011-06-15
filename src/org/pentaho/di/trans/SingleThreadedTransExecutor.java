@@ -91,17 +91,10 @@ public class SingleThreadedTransExecutor {
     // and reacting to that each outer iteration verses
     // using a threshold.
     //
-    int windowShrinkThreshold = (int) Math.round(stepsSize * 0.75);// after this
-                                                                   // many
-                                                                   // iterations
-                                                                   // enable
-                                                                   // trimming
-                                                                   // inner
-                                                                   // iteration
-                                                                   // window on
-                                                                   // no change
-                                                                   // being
-                                                                   // detected.
+    // After this many iterations enable trimming inner iteration
+    // window on no change being detected.
+    //
+    int windowShrinkThreshold = (int) Math.round(stepsSize * 0.75);
 
     // give ourselves some room to sort big lists. the window threshold should
     // stop us before reaching this anyway.
