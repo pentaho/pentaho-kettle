@@ -2402,7 +2402,7 @@ public static void moveFile(Context actualContext, Scriptable actualObject, Obje
 					if(ArgList[0].equals(null)) return null;
 		    		else if(isUndefined(ArgList[0])) return Context.getUndefinedValue();
 					String encoding= null;
-					if(!isUndefined(ArgList[1]) && !ArgList[1].equals(null)) encoding=Context.toString(ArgList[0]);
+					if(!isUndefined(ArgList[1]) && !ArgList[1].equals(null)) encoding=Context.toString(ArgList[1]);
 					// Returns file content
 					oRC=LoadFileInput.getTextFileContent(Context.toString(ArgList[0]), encoding);
 				}catch(Exception e){
