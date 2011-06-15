@@ -501,14 +501,9 @@ public class ExcelOutput extends BaseStep implements StepInterface
 		
 		try
 		{
-		   if(meta.isCreateParentFolder()) {
-            	if(!createParentFolder(data.file)) return retval;
-            }
-		   
-            
 			// Static filename
 			data.realFilename=buildFilename();
-		    data.file = KettleVFS.getFileObject(data.realFilename, getTransMeta());
+		  data.file = KettleVFS.getFileObject(data.realFilename, getTransMeta());
 			if(meta.isCreateParentFolder()) {
 	           	if(!createParentFolder(data.file)) return retval;
 	        }
@@ -721,15 +716,13 @@ public class ExcelOutput extends BaseStep implements StepInterface
             try {
 				 setFonts();
 	         } catch(Exception we) {
-	             logError("Erreur preparing fonts, colors for header and rows: "+we.toString());
+	             logError("Error preparing fonts, colors for header and rows: "+we.toString());
 	             return false;
 	         }
   
 			if(!meta.isDoNotOpenNewFileInit())
 			{
 				data.oneFileOpened=true;
-				
-				addFilenameToResult();
 				
 				if (openNewFile())
 				{
@@ -750,22 +743,18 @@ public class ExcelOutput extends BaseStep implements StepInterface
 		return false;
 	}
 	
-	private boolean addFilenameToResult() {
-	  try {
-	        if(meta.isAddToResultFiles()) {
-	            // Add this to the result file names...
-	            ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname());
-	            resultFile.setComment("This file was created with an Excel output step by Pentaho Data Integration");
-	            addResultFile(resultFile);
-	        }
-        
-	        return true;
-
-	  } catch(Exception e) {
-	    log.logError("Unable to add filename to the result", e);
-	    return false;
-	  }
+  private void addFilenameToResult() throws KettleException {
+    try {
+      if (meta.isAddToResultFiles()) {
+        // Add this to the result file names...
+        ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname());
+        resultFile.setComment("This file was created with an Excel output step by Pentaho Data Integration");
+        addResultFile(resultFile);
+      }
+    } catch (Exception e) {
+      throw new KettleException("Unable to add filename to the result", e);
     }
+  }
 
     public void dispose(StepMetaInterface smi, StepDataInterface sdi)
 	{
