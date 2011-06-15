@@ -64,6 +64,11 @@ public class CommandLineOption
 	 * The value of an array parameter.
 	 */
 	private NamedParams arrayParams;
+	
+	/**
+	 * An extra command line parameter after the options
+	 */
+	private boolean extraParameter;
 
 	/**
 	 * @return Returns the argument.
@@ -81,6 +86,19 @@ public class CommandLineOption
 		this.argument = argument;
 	}
 
+	 /**
+   * Creates a new command line option.
+   *  
+   * @param option The option string
+   * @param description the description of the option
+   * @param argument the StringBuffer that will contain the argument later
+   * @param yesNo true if this is a Yes/No flag
+   * @param hiddenOption true if this option should not be shown in the usage list. 
+   */
+  public CommandLineOption(String option, String description, StringBuffer argument, boolean yesNo, boolean hiddenOption) {
+    this(option, description, argument, yesNo, hiddenOption, false);
+  }
+  
 	/**
 	 * Creates a new command line option.
 	 *  
@@ -89,9 +107,9 @@ public class CommandLineOption
 	 * @param argument the StringBuffer that will contain the argument later
 	 * @param yesNo true if this is a Yes/No flag
 	 * @param hiddenOption true if this option should not be shown in the usage list. 
+	 * @param extraParameter true if this is an extra parameter after the regular options (filenames and so on)
 	 */
-	public CommandLineOption(String option, String description, StringBuffer argument, boolean yesNo, boolean hiddenOption)
-	{
+	public CommandLineOption(String option, String description, StringBuffer argument, boolean yesNo, boolean hiddenOption, boolean extraParameter)	{
 		this.option = option;
 		this.description = description;
 		this.arrayParams = null;
@@ -99,6 +117,7 @@ public class CommandLineOption
 		this.yesNo = yesNo;
 		this.array = false;
 		this.hiddenOption = hiddenOption;
+		this.extraParameter = extraParameter;
 	}
 	
 	/**
@@ -437,6 +456,14 @@ public class CommandLineOption
 		return true;
     }
 
+	public boolean isExtraParameter() {
+    return extraParameter;
+  }
+	
+	public void setExtraParameter(boolean extraParameter) {
+    this.extraParameter = extraParameter;
+  }
+	
 	/**
 	 * Print the usage of an application using the command line options.
 	 * @param options the options to use
@@ -446,7 +473,14 @@ public class CommandLineOption
 	    System.out.println("Options:");
 	    for (int i=0;i<options.length;i++) 
 	    {
-	    	if (!options[i].isHiddenOption()) System.out.println(options[i].getUsageDescription());
+	      CommandLineOption option = options[i];
+	    	if (!option.isHiddenOption()) {
+	    	  System.out.println(option.getUsageDescription());
+	    	} else {
+	    	  if (option.isExtraParameter()) {
+	    	    System.out.println("["+option.getDescription()+"]");
+	    	  }
+	    	}
 	    }
 	    System.out.println("");
 	}

@@ -61,7 +61,7 @@ public class Import {
     }
 
     StringBuffer optionRepname, optionUsername, optionPassword, optionDirname, optionLimitDir, optionFilename, optionRules, optionComment;
-    StringBuffer optionReplace, optionContinueOnError, optionVersion;
+    StringBuffer optionReplace, optionContinueOnError, optionVersion, optionFileDir, optionNoRules;
 
     CommandLineOption options[] = new CommandLineOption[] {
         // Basic options
@@ -72,13 +72,16 @@ public class Import {
         new CommandLineOption("dir", BaseMessages.getString(PKG, "Import.CmdLine.RepDir"), optionDirname = new StringBuffer()), 
         new CommandLineOption("limitdir", BaseMessages.getString(PKG, "Import.CmdLine.LimitDir"), optionLimitDir = new StringBuffer()), 
         new CommandLineOption("file", BaseMessages.getString(PKG, "Import.CmdLine.File"), optionFilename = new StringBuffer()),
+        new CommandLineOption("filedir", BaseMessages.getString(PKG, "Import.CmdLine.FileDir"), optionFileDir = new StringBuffer()),
         new CommandLineOption("rules", BaseMessages.getString(PKG, "Import.CmdLine.RulesFile"), optionRules = new StringBuffer()),
+        new CommandLineOption("norules", BaseMessages.getString(PKG, "Import.CmdLine.NoRules"), optionNoRules = new StringBuffer(), true, false),
         new CommandLineOption("comment", BaseMessages.getString(PKG, "Import.CmdLine.Comment"), optionComment = new StringBuffer(), true, false),
-
         new CommandLineOption("replace", BaseMessages.getString(PKG, "Import.CmdLine.Replace"), optionReplace = new StringBuffer(), true, false),
         new CommandLineOption("coe", BaseMessages.getString(PKG, "Import.CmdLine.ContinueOnError"), optionContinueOnError = new StringBuffer(), true, false),
-
-        new CommandLineOption("version", BaseMessages.getString(PKG, "Import.CmdLine.Version"), optionVersion = new StringBuffer(), true, false), };
+        new CommandLineOption("version", BaseMessages.getString(PKG, "Import.CmdLine.Version"), optionVersion = new StringBuffer(), true, false), 
+        
+        new CommandLineOption("", BaseMessages.getString(PKG, "Import.CmdLine.ExtraFiles"), new StringBuffer(), false, true, true), 
+      };
 
     if (args.size() == 0) {
       CommandLineOption.printUsage(options);
@@ -88,6 +91,15 @@ public class Import {
     final LogChannelInterface log = new LogChannel(STRING_IMPORT);
 
     CommandLineOption.parseArguments(args, options, log);
+    
+    // The arguments that are still left in args are in fact filenames that need to be imported.
+    // This list is otherwise empty.
+    // To that we add the normal filename option
+    //
+    List<String> filenames = new ArrayList<String>(args);
+    if (!Const.isEmpty(optionFilename)) {
+      filenames.add(optionFilename.toString());
+    }
 
     String kettleRepname = Const.getEnvironmentVariable("KETTLE_REPOSITORY", null);
     String kettleUsername = Const.getEnvironmentVariable("KETTLE_USER", null);
@@ -114,7 +126,7 @@ public class Import {
       exitJVM(1);
     }
 
-    if (Const.isEmpty(optionFilename)) {
+    if (Const.isEmpty(filenames)) {
       log.logError(BaseMessages.getString(PKG, "Import.Error.NoExportFileProvided"));
       exitJVM(1);
     }
@@ -124,7 +136,7 @@ public class Import {
       exitJVM(1);
     }
 
-    if (Const.isEmpty(optionRules)) {
+    if (Const.isEmpty(optionRules) && Const.isEmpty(optionNoRules) && !"Y".equalsIgnoreCase(optionNoRules.toString())) {
       log.logError(BaseMessages.getString(PKG, "Import.Error.NoRulesFileProvided"));
       exitJVM(1);
     }
@@ -265,8 +277,13 @@ public class Import {
           return false;
         }
       };
-
-      importer.importAll(feedbackInterface, null, new String[] { optionFilename.toString() }, targetDirectory, replace, continueOnError, optionComment.toString());
+      
+      // Import files in a certain directory
+      //
+      importer.importAll(feedbackInterface, optionFileDir.toString(), 
+          filenames.toArray(new String[filenames.size()]), 
+          targetDirectory, replace, continueOnError, optionComment.toString()
+         );
 
     } catch (Exception e) {
       log.logError(BaseMessages.getString(PKG, "Import.Error.UnexpectedErrorDuringImport"), e);

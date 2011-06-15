@@ -85,7 +85,7 @@ public class RepositoryImporter implements IRepositoryImporter {
 
       for (int ii = 0; ii < filenames.length; ++ii) {
 
-        final String filename = ((fileDirectory != null) && (fileDirectory.length() > 0)) ? fileDirectory + Const.FILE_SEPARATOR + filenames[ii] : filenames[ii];
+        final String filename = (!Const.isEmpty(fileDirectory)) ? fileDirectory + Const.FILE_SEPARATOR + filenames[ii] : filenames[ii];
         if (log.isBasic())
           log.logBasic("Import objects from XML file [" + filename + "]"); //$NON-NLS-1$ //$NON-NLS-2$
         feedback.addLog(BaseMessages.getString(PKG, "RepositoryImporter.WhichFile.Log", filename));
