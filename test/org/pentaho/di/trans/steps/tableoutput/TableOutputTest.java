@@ -16,13 +16,13 @@
 package org.pentaho.di.trans.steps.tableoutput;
 
 import java.sql.ResultSet;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
@@ -576,7 +576,7 @@ public class TableOutputTest extends TestCase
 	/**
 	 * Test case for commitSize see PDI2733 in JIRA.
 	 */
-    public void disabledTestTableOutputJIRA2733() throws Exception
+    public void testTableOutputJIRA2733() throws Exception
     {
     	int dataDelay = 10;  	// Delay in milliseconds between issuing records to output rows  
     	
@@ -638,8 +638,8 @@ public class TableOutputTest extends TestCase
             transMeta.addTransHop(hi);
             
             // With seven rows these are the number of commits that need to made 
-            // for "commitSize"s ranging between 0 and 8. 
-            long goldRowCounts[] = { 7, 7, 4, 3, 2, 2, 2, 1, 1 }; 
+            // for "commitSize"s ranging between 0 and 8. (0=auto-commit=no commits) 
+            int goldRowCounts[] = { 1, 8, 4, 3, 2, 2, 2, 2, 1 }; 
             
             for (int commitSize=0; commitSize<=8; commitSize++) {
             	
@@ -668,33 +668,20 @@ public class TableOutputTest extends TestCase
 	
 	            trans.waitUntilFinished();
 	            
-	            String query = "SELECT ts FROM " + target_table3 + " ORDER BY ts";
-	            ResultSet rs = database.openQuery(query);
-	            Timestamp last_ts = null;
-	            int actual_commits = 0;
-	            while (rs.next() )
-	            {
-	            	Timestamp ts = rs.getTimestamp("ts");
-
-	            	// WARNING: This comparison is "fuzzy".  The "ts" value DEFAULT NOW() may be slightly 
-	            	// different during the commit, which is why it is not a straight comparison, but
-	            	// the ts timestamps difference between two records must not be more than 5ms.
-	            	//
-	            	if (last_ts == null || 
-	            		(!ts.equals(last_ts) && (ts.getTime() - last_ts.getTime() > 5))) {
-	            		
-	            		actual_commits++;
-	            		last_ts = ts;
-	            	}
-	            	//System.out.println("commitSize=<" + commitSize + "> ts=<" + ts.toString() + "> actual_commits=<" + actual_commits + ">");
-	            }
-	           
-	            long expected_commits = goldRowCounts[commitSize];
+	            // Get the number of commits from the DB connection
+	            // in the table output step...
+	            //
+	            TableOutputData data = (TableOutputData)trans.findDataInterface(outputname);
 	            
-	            if ( expected_commits != actual_commits) {
-	            	fail("With commitSize=" + commitSize + " expected " + expected_commits + 
-	            			" commits but actually got " + actual_commits);;
-	            }
+	            int exp = goldRowCounts[commitSize];
+	            
+	            // remove 1 commit too many in the dispose method.
+	            //
+	            int act = data.db.getNrExecutedCommits() - 1;
+	            assertEquals("Incorrect number of commits with commitSize=" + commitSize+Const.CR, 
+	                exp, 
+	                act
+	              );
             }
             
             dropTable(database, target_table3);
@@ -706,7 +693,7 @@ public class TableOutputTest extends TestCase
     public static void main(String[] args) throws Exception {
       TableOutputTest test = new TableOutputTest();
       for (int i=0;i<100;i++) {
-        test.disabledTestTableOutputJIRA2733();
+        test.testTableOutputJIRA2733();
       }
     }
 }

@@ -147,6 +147,8 @@ public class Database implements VariableSpace, LoggingObjectInterface
     
     private String containerObjectId;
     
+    private int nrExecutedCommits;
+    
 	/**
 	 * Construct a new Database Connection
 	 * @param databaseMeta The Database Connection Info to construct the connection with.
@@ -694,6 +696,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 			{
 				if (log.isDebug()) log.logDebug("Commit on database connection ["+toString()+"]");
 				connection.commit();
+				nrExecutedCommits++;
 			}
 			else
 			{
@@ -3580,7 +3583,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 				
 				insertRow(environmentSubstitute(logTable.getActualSchemaName()), environmentSubstitute(logTable.getActualTableName()), logRecord.getRowMeta(), logRecord.getData());
 
-			}			
+			}
 		} catch(Exception e) {
 			throw new KettleDatabaseException("Unable to write log record to log table " + logTable.getActualTableName(), e);
 		}
@@ -4929,5 +4932,19 @@ public class Database implements VariableSpace, LoggingObjectInterface
    */
   public Date getRegistrationDate() {
     return null;
+  }
+
+  /**
+   * @return the nrExecutedCommits
+   */
+  public int getNrExecutedCommits() {
+    return nrExecutedCommits;
+  }
+
+  /**
+   * @param nrExecutedCommits the nrExecutedCommits to set
+   */
+  public void setNrExecutedCommits(int nrExecutedCommits) {
+    this.nrExecutedCommits = nrExecutedCommits;
   }
 }
