@@ -3383,7 +3383,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	} 
 	
 	public void addTransListener(TransListener transListener) {
-		transListeners.add(transListener);
+	  synchronized(transListeners) {
+	    transListeners.add(transListener);
+	  }
 	}
 	
 	public void setTransStoppedListeners(List<TransStoppedListener> transStoppedListeners) {
