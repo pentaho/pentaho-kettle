@@ -1429,4 +1429,13 @@
 		<iconfile>ui/images/xml_input_stream.png</iconfile>
 	</step> 	
 
+	<step id="MultiwayMergeJoin">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.MultiwayMergeJoin</description>
+		<classname>org.pentaho.di.trans.steps.multimerge.MultiMergeJoinMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.MultiwayMergeJoin</tooltip>
+		<iconfile>ui/images/MultiMergeJoin.png</iconfile>
+	</step> 	
+
+
 </steps>

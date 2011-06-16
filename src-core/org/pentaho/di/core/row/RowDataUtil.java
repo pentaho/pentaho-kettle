@@ -69,6 +69,33 @@ public class RowDataUtil {
 	}
 
 	/**
+	 * This method concatenates data from an array of rows, each with their own specific length.
+	 *  
+	 * @param objects
+	 * @param lengths
+	 * @return The concatenated array of objects.
+	 */
+  public static Object[] createResizedCopy(Object[][] objects, int[] lengths) {
+    int size = 0;
+    if (objects!=null) {
+      for (int i = 0; i < objects.length; i++) {
+        size += lengths[i];
+      }
+    }
+    Object[] newObjects = allocateRowData(size);
+
+    if (objects != null) {
+      size = 0;
+      for (int i = 0; i < lengths.length; i++) {
+        System.arraycopy(objects[i], 0, newObjects, size, lengths[i]);
+        size += lengths[i];
+      }
+    }
+
+    return newObjects;
+  }
+	
+	/**
 	 * Remove an item from an Object array.  This is a slow operation, later we want to just flag this object and discard it at the next resize.
 	 * The question is of-course if it makes that much of a difference in the end.
 	 * 
