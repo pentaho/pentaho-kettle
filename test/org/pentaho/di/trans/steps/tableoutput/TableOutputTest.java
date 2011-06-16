@@ -88,6 +88,21 @@ public class TableOutputTest extends TestCase
 			fail("failure while creating table " + tableName + ": " + ex.getMessage());	
 		}						
 	}
+	
+	/**
+   * Drop table
+   */
+  public void dropTable(Database db, String tableName) throws Exception
+  {   
+    String source = "DROP TABLE "+tableName+";";
+    try  {
+        db.execStatement(source);
+    }
+    catch ( KettleException ex ) 
+    {
+      fail("failure while dropping table " + tableName + ": " + ex.getMessage()); 
+    }           
+  }
 
     
 	public RowMetaInterface createSourceRowMetaInterface1()
@@ -663,10 +678,10 @@ public class TableOutputTest extends TestCase
 
 	            	// WARNING: This comparison is "fuzzy".  The "ts" value DEFAULT NOW() may be slightly 
 	            	// different during the commit, which is why it is not a straight comparison, but
-	            	// the ts timestamps difference between two records must not be more than a quarter of the record delay.
+	            	// the ts timestamps difference between two records must not be more than 5ms.
 	            	//
 	            	if (last_ts == null || 
-	            		(!ts.equals(last_ts) && (ts.getTime() - last_ts.getTime() > dataDelay / 4))) {
+	            		(!ts.equals(last_ts) && (ts.getTime() - last_ts.getTime() > 5))) {
 	            		
 	            		actual_commits++;
 	            		last_ts = ts;
@@ -681,9 +696,18 @@ public class TableOutputTest extends TestCase
 	            			" commits but actually got " + actual_commits);;
 	            }
             }
-
+            
+            dropTable(database, target_table3);
         }    	
-        finally {}    
+        finally {
+        }    
+    }
+    
+    public static void main(String[] args) throws Exception {
+      TableOutputTest test = new TableOutputTest();
+      for (int i=0;i<100;i++) {
+        test.testTableOutputJIRA2733();
+      }
     }
 }
 
