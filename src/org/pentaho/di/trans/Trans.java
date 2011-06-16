@@ -1113,7 +1113,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         	      queue.add(new Object());
         	    }
         	  });
-        	  while (!finished.get() || queue.poll(1,TimeUnit.DAYS)==null);
+        	  while (!finished.get() || queue.poll(1,TimeUnit.MINUTES)==null);
     	  } catch(InterruptedException e) {
     	    throw new RuntimeException("Waiting for transformation to be finished interrupted!", e);
     	  }
