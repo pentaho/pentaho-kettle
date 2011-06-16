@@ -168,9 +168,23 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
 				closeOutputFile();
 			}
 			setOutputDone();
+			
+			clearWorkbookMem();
+
+			
 			return false;
 		}
 
+	}
+
+	// clears all memory that POI may hold
+	private void clearWorkbookMem() {
+
+		data.file = null;
+		data.sheet = null;
+		data.wb = null;
+		data.clearStyleCache(0);
+		
 	}
 
 	private void closeOutputFile() throws KettleException {
@@ -870,7 +884,9 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
 	public void dispose(StepMetaInterface smi, StepDataInterface sdi) {
 		meta = (ExcelWriterStepMeta) smi;
 		data = (ExcelWriterStepData) sdi;
-
+		
+		clearWorkbookMem();
+		
 		super.dispose(smi, sdi);
 	}
 
