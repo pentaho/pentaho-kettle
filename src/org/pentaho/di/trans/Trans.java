@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -252,6 +251,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   private int stepPerformanceSnapshotSizeLimit;
 
   private PrintWriter servletPrintWriter;
+
+  private ArrayBlockingQueue<Object> transFinishedBlockingQueue;
 	
 	public Trans() {
 		finished = new AtomicBoolean(false);
@@ -903,7 +904,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         finished.set(false);
         paused.set(false);
         stopped.set(false);
-        
+
+        transFinishedBlockingQueue = new ArrayBlockingQueue<Object>(10);
+
 		TransListener transListener = new TransAdapter() {
 				public void transFinished(Trans trans) {
 					
@@ -916,6 +919,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 					
 					finished.set(true);
 					running=false; // no longer running
+
+			    // Signal for the the waitUntilFinished blocker...
+			    //
+					transFinishedBlockingQueue.add(new Object());
 				}
 			};
 		addTransListener(transListener);
@@ -1105,19 +1112,11 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	//
 	public void waitUntilFinished()
 	{
-	    if (!finished.get()) {
-    	  try {
-        	  final BlockingQueue<Object> queue = new ArrayBlockingQueue<Object>(10);
-        	  addTransListener(new TransAdapter(){
-        	    public void transFinished(Trans trans) throws KettleException {
-        	      queue.add(new Object());
-        	    }
-        	  });
-        	  while (!finished.get() || queue.poll(1,TimeUnit.SECONDS)==null);
-    	  } catch(InterruptedException e) {
-    	    throw new RuntimeException("Waiting for transformation to be finished interrupted!", e);
-    	  }
-	    }
+  	  try {
+      	  while (transFinishedBlockingQueue.poll(1,TimeUnit.DAYS)==null);
+  	  } catch(InterruptedException e) {
+  	    throw new RuntimeException("Waiting for transformation to be finished interrupted!", e);
+  	  }	    
 	}
 	
 	public int getErrors()
