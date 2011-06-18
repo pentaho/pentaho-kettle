@@ -17,7 +17,11 @@
 
 package org.pentaho.di.ui.trans.steps.multimerge;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
@@ -53,7 +57,6 @@ import org.pentaho.di.trans.step.errorhandling.StreamIcon;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
 import org.pentaho.di.trans.steps.multimerge.MultiMergeJoinMeta;
-import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
@@ -66,9 +69,14 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
 
 	public static final String STRING_SORT_WARNING_PARAMETER = "MergeJoinSortWarning"; //$NON-NLS-1$
     
-    CCombo[]  wInputStepArray;
-    CCombo joinTypeCombo;
-    Text[] keyValTextBox;
+	private CCombo[]  wInputStepArray;
+    private CCombo joinTypeCombo;
+    private Text[] keyValTextBox;
+    
+    private Map<String, Integer> inputFields;
+    private  RowMetaInterface prev ;
+    private ColumnInfo[] ciKeys;
+	
     
     private static final int margin = Const.MARGIN;
 
@@ -325,6 +333,8 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
 	 */
 	private void configureKeys(final Text keyValTextBox,final int inputStreamIndex, ModifyListener lsMod)
 	{
+        inputFields =new HashMap<String, Integer>();
+        
  		final Shell subShell = new Shell(shell, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MIN | SWT.MAX );
         final FormLayout formLayout = new FormLayout();		
 		formLayout.marginWidth  = 5;
@@ -332,7 +342,7 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
 		subShell.setLayout(formLayout);
 		subShell.setSize(200, 150);	
         subShell.setText(BaseMessages.getString(PKG, "MultiMergeJoinMeta.JoinKeys"));   
-        
+        subShell.setImage(GUIResource.getInstance().getImageTransGraph());
         Label wlKeys = new Label(subShell, SWT.NONE);
         wlKeys.setText(BaseMessages.getString(PKG, "MultiMergeJoinDialog.Keys")); 
         FormData fdlKeys = new FormData();
@@ -344,8 +354,8 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
         String[] keys = keyValTextBox.getText().split(",");
         int nrKeyRows = (keys!=null?keys.length:1);
         
-        ColumnInfo[] ciKeys=new ColumnInfo[] {
-            new ColumnInfo(BaseMessages.getString(PKG, "MultiMergeJoinDialog.ColumnInfo.KeyField"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+        ciKeys=new ColumnInfo[] {
+            new ColumnInfo(BaseMessages.getString(PKG, "MultiMergeJoinDialog.ColumnInfo.KeyField"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false), //$NON-NLS-1$
         };
             
         final TableView wKeys=new TableView(transMeta, subShell, 
@@ -360,22 +370,53 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
         fdKeys.top    = new FormAttachment(wlKeys, margin);
         fdKeys.left   = new FormAttachment(0,   0);
         fdKeys.bottom = new FormAttachment(100, -70);
-        fdKeys.right  = new FormAttachment(50, -margin);
+        fdKeys.right  = new FormAttachment(100, -margin);
         wKeys.setLayoutData(fdKeys);
+        
+        // 
+        // Search the fields in the background
+		
+        final Runnable runnable = new Runnable()
+        {
+            public void run()
+            {
+            	StepMeta stepMeta = transMeta.getStep(inputStreamIndex);
+                try
+                {
+
+                    if (stepMeta!=null)
+                    {
+                        prev = transMeta.getStepFields(stepMeta);
+                        if (prev!=null) {
+                
+	                        // Remember these fields...
+	                        for (int i=0;i<prev.size();i++) {
+	                            inputFields.put(prev.getValueMeta(i).getName(), Integer.valueOf(i));
+	                        }
+	                        setComboBoxes();
+                    	}
+                    }
+                } catch(KettleException e){
+                	logError(BaseMessages.getString(PKG, "System.Dialog.GetFieldsFailed.Message"));
+                }
+            }
+        };
+        new Thread(runnable).start();
+
 
         Button getKeyButton=new Button(subShell, SWT.PUSH);
         getKeyButton.setText(BaseMessages.getString(PKG, "MultiMergeJoinDialog.KeyFields.Button")); //$NON-NLS-1$
         FormData fdbKeys = new FormData();
         fdbKeys.top   = new FormAttachment(wKeys, margin);
         fdbKeys.left  = new FormAttachment(0, 0);
-        fdbKeys.right = new FormAttachment(50, -margin);
+        fdbKeys.right = new FormAttachment(100, -margin);
         getKeyButton.setLayoutData(fdbKeys);
         getKeyButton.addSelectionListener(new SelectionAdapter()
             {
             
                 public void widgetSelected(SelectionEvent e)
                 {
-                    getKeys(wKeys,inputStreamIndex);
+                    BaseStepDialog.getFieldsFromPrevious(prev, wKeys, 1, new int[] { 1 }, new int[] {}, -1, -1, null);
                 }
             }
         );
@@ -426,6 +467,23 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
         subShell.open();
 		
 	}
+	protected void setComboBoxes()
+    {
+        // Something was changed in the row.
+        //
+        final Map<String, Integer> fields = new HashMap<String, Integer>();
+        
+        // Add the currentMeta fields...
+        fields.putAll(inputFields);
+        
+        Set<String> keySet = fields.keySet();
+        List<String> entries = new ArrayList<String>(keySet);
+
+        String fieldNames[] = (String[]) entries.toArray(new String[entries.size()]);
+
+        Const.sortStrings(fieldNames);
+        ciKeys[0].setComboValues(fieldNames);
+    }
 	/**
 	 * Copy information from the meta-data input to the dialog fields.
 	 */ 
@@ -446,7 +504,7 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
 		String[] keyFields = joinMeta.getKeyFields();
         for (int i=0;i<keyFields.length;i++)
         {
-        	keyValTextBox[i].setText(keyFields[i]);
+        	keyValTextBox[i].setText(Const.NVL(keyFields[i], ""));
         }        
         wStepname.selectAll();
 	}
@@ -524,34 +582,7 @@ public class MultiMergeJoinDialog extends BaseStepDialog implements StepDialogIn
         stepname = wStepname.getText(); // return value
 		dispose();
 	}
-    
-	/**
-	 * Get the input keys 
-	 * @param wKeys
-	 */
-    private void getKeys(TableView wKeys,int inputStreamIndex)
-    {
-        MultiMergeJoinMeta joinMeta = new MultiMergeJoinMeta();
-        getMeta(joinMeta);
-        try
-        {
-            List<StreamInterface> infoStreams = joinMeta.getStepIOMeta().getInfoStreams();
 
-            StepMeta stepMeta = infoStreams.get(inputStreamIndex).getStepMeta();
-            if (stepMeta!=null)
-            {
-                RowMetaInterface prev = transMeta.getStepFields(stepMeta);
-                if (prev!=null)
-                {
-                    BaseStepDialog.getFieldsFromPrevious(prev, wKeys, 1, new int[] { 1 }, new int[] {}, -1, -1, null);
-                }
-            }
-        }
-        catch(KettleException e)
-        {
-            new ErrorDialog(shell, BaseMessages.getString(PKG, "MultiMergeJoinDialog.ErrorGettingFields.DialogTitle"), BaseMessages.getString(PKG, "MultiMergeJoinDialog.ErrorGettingFields.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
-        }
-    }
     
     /**
      * Listener for Configure Keys button
