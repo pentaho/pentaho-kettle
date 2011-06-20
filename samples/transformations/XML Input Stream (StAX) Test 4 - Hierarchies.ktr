@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <transformation>
   <info>
-    <name>XML Input Stream StAX Test 3 - Attribute Groups</name>
+    <name>XML Input Stream StAX Test 4 - Hierarchies</name>
     <description/>
     <extended_description/>
     <trans_version/>
@@ -11,7 +11,7 @@
     <parameters>
         <parameter>
             <name>FILENAME</name>
-            <default_value>C:\Pentaho\_external\CE\data\attributes\german_AttributeGroupDefinitions_FTP.xml</default_value>
+            <default_value>C:\Pentaho\_external\CE\data\shops\D-Brutto-ONLINESHOPS-incr_PRODUCTS.xml</default_value>
             <description/>
         </parameter>
     </parameters>
@@ -91,32 +91,11 @@
   </info>
   <notepads>
     <notepad>
-      <note>Name Elements are one level below the ID Element</note>
-      <xloc>514</xloc>
-      <yloc>140</yloc>
-      <width>261</width>
-      <heigth>22</heigth>
-      <fontname>Microsoft Sans Serif</fontname>
-      <fontsize>8</fontsize>
-      <fontbold>N</fontbold>
-      <fontitalic>N</fontitalic>
-      <fontcolorred>0</fontcolorred>
-      <fontcolorgreen>0</fontcolorgreen>
-      <fontcolorblue>0</fontcolorblue>
-      <backgroundcolorred>255</backgroundcolorred>
-      <backgroundcolorgreen>165</backgroundcolorgreen>
-      <backgroundcolorblue>0</backgroundcolorblue>
-      <bordercolorred>100</bordercolorred>
-      <bordercolorgreen>100</bordercolorgreen>
-      <bordercolorblue>100</bordercolorblue>
-      <drawshadow>Y</drawshadow>
-    </notepad>
-    <notepad>
-      <note>This example parses the XML Input Stream (StAX) Test 3 - Attribute Groups.xml
-and returns ID and name pairs. When multiple names are given for one ID they are listed and separated by comma.</note>
-      <xloc>20</xloc>
-      <yloc>24</yloc>
-      <width>570</width>
+      <note>Revision notes:
+2011-05-29 Jens Bleuel: created</note>
+      <xloc>19</xloc>
+      <yloc>575</yloc>
+      <width>169</width>
       <heigth>35</heigth>
       <fontname>Microsoft Sans Serif</fontname>
       <fontsize>8</fontsize>
@@ -134,9 +113,52 @@ and returns ID and name pairs. When multiple names are given for one ID they are
       <drawshadow>Y</drawshadow>
     </notepad>
     <notepad>
-      <note>ID and Name pairs</note>
-      <xloc>684</xloc>
-      <yloc>351</yloc>
+      <note>This example parses the XML Input Stream (StAX) Test 4 - Hierarchies.xml
+and builds a product hierarchy table.</note>
+      <xloc>14</xloc>
+      <yloc>15</yloc>
+      <width>381</width>
+      <heigth>35</heigth>
+      <fontname>Microsoft Sans Serif</fontname>
+      <fontsize>8</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>165</backgroundcolorgreen>
+      <backgroundcolorblue>0</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>Y</drawshadow>
+    </notepad>
+    <notepad>
+      <note>Processing example</note>
+      <xloc>499</xloc>
+      <yloc>98</yloc>
+      <width>109</width>
+      <heigth>22</heigth>
+      <fontname>Microsoft Sans Serif</fontname>
+      <fontsize>8</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>165</backgroundcolorgreen>
+      <backgroundcolorblue>0</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>Y</drawshadow>
+    </notepad>
+    <notepad>
+      <note>Build the hierarchy</note>
+      <xloc>351</xloc>
+      <yloc>98</yloc>
       <width>101</width>
       <heigth>22</heigth>
       <fontname>Microsoft Sans Serif</fontname>
@@ -154,71 +176,9 @@ and returns ID and name pairs. When multiple names are given for one ID they are
       <bordercolorblue>100</bordercolorblue>
       <drawshadow>Y</drawshadow>
     </notepad>
-    <notepad>
-      <note>Document Details</note>
-      <xloc>255</xloc>
-      <yloc>355</yloc>
-      <width>97</width>
-      <heigth>22</heigth>
-      <fontname>Microsoft Sans Serif</fontname>
-      <fontsize>8</fontsize>
-      <fontbold>N</fontbold>
-      <fontitalic>N</fontitalic>
-      <fontcolorred>0</fontcolorred>
-      <fontcolorgreen>0</fontcolorgreen>
-      <fontcolorblue>0</fontcolorblue>
-      <backgroundcolorred>255</backgroundcolorred>
-      <backgroundcolorgreen>165</backgroundcolorgreen>
-      <backgroundcolorblue>0</backgroundcolorblue>
-      <bordercolorred>100</bordercolorred>
-      <bordercolorgreen>100</bordercolorgreen>
-      <bordercolorblue>100</bordercolorblue>
-      <drawshadow>Y</drawshadow>
-    </notepad>
-    <notepad>
-      <note>Revision notes:
-2011-06-20 Jens Bleuel: created
-</note>
-      <xloc>14</xloc>
-      <yloc>564</yloc>
-      <width>175</width>
-      <heigth>35</heigth>
-      <fontname>Microsoft Sans Serif</fontname>
-      <fontsize>8</fontsize>
-      <fontbold>N</fontbold>
-      <fontitalic>N</fontitalic>
-      <fontcolorred>0</fontcolorred>
-      <fontcolorgreen>0</fontcolorgreen>
-      <fontcolorblue>0</fontcolorblue>
-      <backgroundcolorred>255</backgroundcolorred>
-      <backgroundcolorgreen>165</backgroundcolorgreen>
-      <backgroundcolorblue>0</backgroundcolorblue>
-      <bordercolorred>100</bordercolorred>
-      <bordercolorgreen>100</bordercolorgreen>
-      <bordercolorblue>100</bordercolorblue>
-      <drawshadow>Y</drawshadow>
-    </notepad>
   </notepads>
   <order>
-  <hop> <from>Filter AttributeGroupList</from><to>AttributeGroupList</to><enabled>Y</enabled> </hop>  <hop> <from>Filter AttributeGroupList</from><to>Document Details</to><enabled>Y</enabled> </hop>  <hop> <from>AttributeGroupList</from><to>User Defined Java Expression</to><enabled>Y</enabled> </hop>  <hop> <from>User Defined Java Expression</from><to>Sort rows</to><enabled>Y</enabled> </hop>  <hop> <from>Sort rows</from><to>Row denormaliser</to><enabled>Y</enabled> </hop>  <hop> <from>Filter START&#47;END ELEMENTS</from><to>Filter AttributeGroupList</to><enabled>Y</enabled> </hop>  <hop> <from>XML Input Stream (StAX)</from><to>Filter START&#47;END ELEMENTS</to><enabled>Y</enabled> </hop>  <hop> <from>Row denormaliser</from><to>Select ID, Name</to><enabled>Y</enabled> </hop>  </order>
-  <step>
-    <name>AttributeGroupList</name>
-    <type>Dummy</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>480</xloc>
-      <yloc>200</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
+  <hop> <from>Filter Products</from><to>Document Details</to><enabled>Y</enabled> </hop>  <hop> <from>XML Input Stream (StAX)</from><to>Filter Products</to><enabled>Y</enabled> </hop>  <hop> <from>Filter Products</from><to>ProductHierarchy</to><enabled>Y</enabled> </hop>  <hop> <from>ProductHierarchy</from><to>Filter name</to><enabled>Y</enabled> </hop>  <hop> <from>Filter name</from><to>Select values</to><enabled>Y</enabled> </hop>  </order>
   <step>
     <name>Document Details</name>
     <type>Dummy</type>
@@ -231,14 +191,14 @@ and returns ID and name pairs. When multiple names are given for one ID they are
            </partitioning>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>280</xloc>
-      <yloc>300</yloc>
+      <xloc>240</xloc>
+      <yloc>260</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
 
   <step>
-    <name>Filter AttributeGroupList</name>
+    <name>Filter Products</name>
     <type>FilterRows</type>
     <description/>
     <distribute>Y</distribute>
@@ -247,7 +207,7 @@ and returns ID and name pairs. When multiple names are given for one ID they are
            <method>none</method>
            <schema_name/>
            </partitioning>
-<send_true_to>AttributeGroupList</send_true_to>
+<send_true_to>ProductHierarchy</send_true_to>
 <send_false_to>Document Details</send_false_to>
     <compare>
 <condition>
@@ -255,19 +215,19 @@ and returns ID and name pairs. When multiple names are given for one ID they are
  <leftvalue>xml_path</leftvalue>
  <function>STARTS WITH</function>
  <rightvalue/>
- <value><name>constant</name><type>String</type><text>&#47;ProductInformation&#47;AttributeGroupList</text><length>-1</length><precision>-1</precision><isnull>N</isnull><mask/></value> </condition>
+ <value><name>constant</name><type>String</type><text>&#47;ProductInformation&#47;Products&#47;Product</text><length>-1</length><precision>-1</precision><isnull>N</isnull><mask/></value> </condition>
     </compare>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>280</xloc>
-      <yloc>200</yloc>
+      <xloc>240</xloc>
+      <yloc>140</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
 
   <step>
-    <name>Filter START&#47;END ELEMENTS</name>
-    <type>FilterRows</type>
+    <name>ProductHierarchy</name>
+    <type>UserDefinedJavaClass</type>
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
@@ -275,143 +235,139 @@ and returns ID and name pairs. When multiple names are given for one ID they are
            <method>none</method>
            <schema_name/>
            </partitioning>
-<send_true_to/>
-<send_false_to/>
-    <compare>
-<condition>
- <negated>Y</negated>
- <conditions>
-  <condition>
-   <negated>N</negated>
-   <leftvalue>xml_data_type_description</leftvalue>
-   <function>=</function>
-   <rightvalue/>
-   <value><name>constant</name><type>String</type><text>START_ELEMENT</text><length>-1</length><precision>-1</precision><isnull>N</isnull><mask>#;-#</mask></value>   </condition>
-  <condition>
-   <negated>N</negated>
-   <operator>OR</operator>
-   <leftvalue>xml_data_type_description</leftvalue>
-   <function>=</function>
-   <rightvalue/>
-   <value><name>constant</name><type>String</type><text>END_ELEMENT</text><length>-1</length><precision>-1</precision><isnull>N</isnull><mask>#;-#</mask></value>   </condition>
-  </conditions>
- </condition>
-    </compare>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>280</xloc>
-      <yloc>120</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
 
-  <step>
-    <name>Row denormaliser</name>
-    <type>Denormaliser</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-      <key_field>xml_data_name</key_field>
-      <group>
-        <field>
-          <name>group_element_id</name>
-          </field>
-        </group>
-      <fields>
-        <field>
-          <field_name>xml_data_value</field_name>
-          <key_value>ID</key_value>
-          <target_name>ID</target_name>
-          <target_type>String</target_type>
-          <target_format/>
-          <target_length>-1</target_length>
-          <target_precision>-1</target_precision>
-          <target_decimal_symbol/>
-          <target_grouping_symbol/>
-          <target_currency_symbol/>
-          <target_null_string/>
-          <target_aggregation_type>CONCAT_COMMA</target_aggregation_type>
-          </field>
-        <field>
-          <field_name>xml_data_value</field_name>
-          <key_value>Name</key_value>
-          <target_name>Name</target_name>
-          <target_type>String</target_type>
-          <target_format/>
-          <target_length>-1</target_length>
-          <target_precision>-1</target_precision>
-          <target_decimal_symbol/>
-          <target_grouping_symbol/>
-          <target_currency_symbol/>
-          <target_null_string/>
-          <target_aggregation_type>CONCAT_COMMA</target_aggregation_type>
-          </field>
-        </fields>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>620</xloc>
-      <yloc>360</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
+    <definitions>
+        <definition>
+        <class_type>TRANSFORM_CLASS</class_type>
 
-  <step>
-    <name>Sort rows</name>
-    <type>SortRows</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-      <directory>%%java.io.tmpdir%%</directory>
-      <prefix>out</prefix>
-      <sort_size>1000000</sort_size>
-      <free_memory/>
-      <compress>N</compress>
-      <compress_variable/>
-      <unique_rows>N</unique_rows>
+        <class_name>Processor</class_name>
+
+        <class_source><![CDATA[private int pos_xml_data_type_numeric;
+private int pos_xml_data_name;
+private int pos_xml_data_value;
+private int pos_xml_path;
+private int pos_ProductParentID;
+private int pos_ProductID;
+private int pos_ProductLevel;
+
+private int productLevel=0;
+private String productID[]=new String[1000];
+
+private final static Long START_ELEMENT=new Long(1);
+private final static Long END_ELEMENT=new Long(2);
+private final static Long ATTRIBUTE=new Long(10);
+
+private final static String ELEMENT_PRODUCT="Product";
+private final static String ATTR_ID="id";
+
+public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException 
+{
+  Object[] r=getRow();
+
+  if (r==null)
+  {
+    setOutputDone();
+	return false;
+  }
+
+  if (first) {
+	 // get field positions (input)
+     pos_xml_data_type_numeric = getInputRowMeta().indexOfValue("xml_data_type_numeric");
+     pos_xml_data_name = getInputRowMeta().indexOfValue("xml_data_name");
+	 pos_xml_data_value = getInputRowMeta().indexOfValue("xml_data_value");
+     pos_xml_path = getInputRowMeta().indexOfValue("xml_path");
+
+	 // get field positions (output)
+     pos_ProductID = data.outputRowMeta.indexOfValue("ProductID");
+     pos_ProductParentID = data.outputRowMeta.indexOfValue("ProductParentID");
+     pos_ProductLevel = data.outputRowMeta.indexOfValue("ProductLevel");
+
+     if (pos_xml_data_type_numeric<0 || pos_xml_data_name<0 || pos_xml_data_value<0 || pos_xml_path<0 || pos_ProductID<0 || pos_ProductParentID<0 || pos_ProductLevel<0 ) {
+         throw new KettleException("One of the xml_ fields or output fields was not found.");
+     }
+	 
+     first=false;
+  }
+
+  boolean ignoreLine=false;
+
+   // START_ELEMENT: increment productLevel
+  if(r[pos_xml_data_type_numeric].equals(START_ELEMENT)) {
+      ignoreLine=true;
+      if(r[pos_xml_data_name].equals(ELEMENT_PRODUCT)) {
+		productLevel++;
+      }
+  }
+
+ // END_ELEMENT: decrement productLevel
+  if(r[pos_xml_data_type_numeric].equals(END_ELEMENT)) {
+      ignoreLine=true;
+      if(r[pos_xml_data_name].equals(ELEMENT_PRODUCT)) {
+		productLevel--;
+      }
+  }
+
+  // productID
+  if(r[pos_xml_data_type_numeric].equals(ATTRIBUTE)) {
+      if(r[pos_xml_data_name].equals(ATTR_ID)) {
+		productID[productLevel]=new String((String)r[pos_xml_data_value]);
+        ignoreLine=true;
+      }
+  }
+
+  if(!ignoreLine) {
+    Object[] outputRowData = createOutputRow(r, data.outputRowMeta.size());
+    outputRowData[pos_ProductID]=new String(Const.NVL((String)productID[productLevel],""));
+    if(productLevel>0) {
+      outputRowData[pos_ProductParentID]=new String(Const.NVL((String)productID[productLevel-1],""));
+    } else {
+       outputRowData[pos_ProductParentID]=null;
+    }
+    outputRowData[pos_ProductLevel]=new Long(productLevel);
+
+    putRow(data.outputRowMeta, outputRowData);
+  }
+
+  return true;
+}]]></class_source>
+        </definition>
+    </definitions>
     <fields>
-      <field>
-        <name>group_element_id</name>
-        <ascending>Y</ascending>
-        <case_sensitive>N</case_sensitive>
-      </field>
-    </fields>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>620</xloc>
-      <yloc>280</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
+        <field>
+        <field_name>ProductID</field_name>
 
-  <step>
-    <name>User Defined Java Expression</name>
-    <type>Janino</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-       <formula><field_name>group_element_id</field_name>
-<formula_string>(xml_data_name.equals(&quot;ID&quot;)) ? xml_element_id : xml_parent_element_id</formula_string>
-<value_type>Integer</value_type>
-<value_length>-1</value_length>
-<value_precision>-1</value_precision>
-<replace_field/>
-</formula>
-     <cluster_schema/>
+        <field_type>String</field_type>
+
+        <field_length>-1</field_length>
+
+        <field_precision>-1</field_precision>
+
+        </field>
+        <field>
+        <field_name>ProductParentID</field_name>
+
+        <field_type>String</field_type>
+
+        <field_length>-1</field_length>
+
+        <field_precision>-1</field_precision>
+
+        </field>
+        <field>
+        <field_name>ProductLevel</field_name>
+
+        <field_type>Integer</field_type>
+
+        <field_length>-1</field_length>
+
+        <field_precision>-1</field_precision>
+
+        </field>
+    </fields><clear_result_fields>N</clear_result_fields>
+<info_steps></info_steps><target_steps></target_steps><usage_parameters></usage_parameters>     <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>620</xloc>
-      <yloc>200</yloc>
+      <xloc>380</xloc>
+      <yloc>140</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -426,19 +382,18 @@ and returns ID and name pairs. When multiple names are given for one ID they are
            <method>none</method>
            <schema_name/>
            </partitioning>
-    <filename>${Internal.Transformation.Filename.Directory}&#47;files&#47;XML Input Stream (StAX) Test 3 - Attribute Groups.xml</filename>
+    <filename>${Internal.Transformation.Filename.Directory}&#47;files&#47;XML Input Stream (StAX) Test 4 - Hierarchies.xml</filename>
     <addResultFile>N</addResultFile>
     <nrRowsToSkip>0</nrRowsToSkip>
     <rowLimit>0</rowLimit>
     <defaultStringLen>1024</defaultStringLen>
     <encoding>UTF-8</encoding>
-    <enableNamespaces>N</enableNamespaces>
     <enableTrim>Y</enableTrim>
     <includeFilenameField>N</includeFilenameField>
     <filenameField>xml_filename</filenameField>
     <includeRowNumberField>N</includeRowNumberField>
     <rowNumberField>xml_row_number</rowNumberField>
-    <includeDataTypeNumericField>N</includeDataTypeNumericField>
+    <includeDataTypeNumericField>Y</includeDataTypeNumericField>
     <dataTypeNumericField>xml_data_type_numeric</dataTypeNumericField>
     <includeDataTypeDescriptionField>Y</includeDataTypeDescriptionField>
     <dataTypeDescriptionField>xml_data_type_description</dataTypeDescriptionField>
@@ -450,11 +405,11 @@ and returns ID and name pairs. When multiple names are given for one ID they are
     <xmlElementIDField>xml_element_id</xmlElementIDField>
     <includeXmlParentElementIDField>Y</includeXmlParentElementIDField>
     <xmlParentElementIDField>xml_parent_element_id</xmlParentElementIDField>
-    <includeXmlElementLevelField>N</includeXmlElementLevelField>
+    <includeXmlElementLevelField>Y</includeXmlElementLevelField>
     <xmlElementLevelField>xml_element_level</xmlElementLevelField>
     <includeXmlPathField>Y</includeXmlPathField>
     <xmlPathField>xml_path</xmlPathField>
-    <includeXmlParentPathField>N</includeXmlParentPathField>
+    <includeXmlParentPathField>Y</includeXmlParentPathField>
     <xmlParentPathField>xml_parent_path</xmlParentPathField>
     <includeXmlDataNameField>Y</includeXmlDataNameField>
     <xmlDataNameField>xml_data_name</xmlDataNameField>
@@ -463,13 +418,41 @@ and returns ID and name pairs. When multiple names are given for one ID they are
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
       <xloc>80</xloc>
-      <yloc>120</yloc>
+      <yloc>140</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
 
   <step>
-    <name>Select ID, Name</name>
+    <name>Filter name</name>
+    <type>FilterRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+<send_true_to/>
+<send_false_to/>
+    <compare>
+<condition>
+ <negated>N</negated>
+ <leftvalue>xml_data_name</leftvalue>
+ <function>=</function>
+ <rightvalue/>
+ <value><name>constant</name><type>String</type><text>name</text><length>-1</length><precision>-1</precision><isnull>N</isnull><mask/></value> </condition>
+    </compare>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>500</xloc>
+      <yloc>140</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Select values</name>
     <type>SelectValues</type>
     <description/>
     <distribute>Y</distribute>
@@ -478,19 +461,27 @@ and returns ID and name pairs. When multiple names are given for one ID they are
            <method>none</method>
            <schema_name/>
            </partitioning>
-    <fields>      <field>        <name>ID</name>
+    <fields>      <field>        <name>ProductID</name>
         <rename/>
         <length>-2</length>
         <precision>-2</precision>
-      </field>      <field>        <name>Name</name>
+      </field>      <field>        <name>ProductParentID</name>
         <rename/>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>      <field>        <name>ProductLevel</name>
+        <rename/>
+        <length>-2</length>
+        <precision>-2</precision>
+      </field>      <field>        <name>xml_data_value</name>
+        <rename>ProductName</rename>
         <length>-2</length>
         <precision>-2</precision>
       </field>        <select_unspecified>N</select_unspecified>
     </fields>     <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>620</xloc>
-      <yloc>440</yloc>
+      <xloc>600</xloc>
+      <yloc>140</yloc>
       <draw>Y</draw>
       </GUI>
     </step>

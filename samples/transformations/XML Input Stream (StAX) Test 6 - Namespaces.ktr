@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <transformation>
   <info>
-    <name>XML Input Stream StAX Test 3 - Attribute Groups</name>
+    <name>XML Input Stream StAX Test 6 - Namespaces</name>
     <description/>
     <extended_description/>
     <trans_version/>
@@ -9,24 +9,19 @@
     <trans_status>0</trans_status>
     <directory>&#47;</directory>
     <parameters>
-        <parameter>
-            <name>FILENAME</name>
-            <default_value>C:\Pentaho\_external\CE\data\attributes\german_AttributeGroupDefinitions_FTP.xml</default_value>
-            <description/>
-        </parameter>
     </parameters>
     <log>
-<trans-log-table><connection/>
-<schema/>
-<table/>
+<trans-log-table><connection>dev_daily_tgt</connection>
+<schema>dm</schema>
+<table>log</table>
 <size_limit_lines/>
-<interval/>
+<interval>60</interval>
 <timeout_days/>
 <field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STATUS</id><enabled>Y</enabled><name>STATUS</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name><subject/></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name><subject/></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name><subject/></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name><subject/></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name><subject/></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name><subject/></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>STARTDATE</id><enabled>Y</enabled><name>STARTDATE</name></field><field><id>ENDDATE</id><enabled>Y</enabled><name>ENDDATE</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>LOGDATE</name></field><field><id>DEPDATE</id><enabled>Y</enabled><name>DEPDATE</name></field><field><id>REPLAYDATE</id><enabled>Y</enabled><name>REPLAYDATE</name></field><field><id>LOG_FIELD</id><enabled>Y</enabled><name>LOG_FIELD</name></field></trans-log-table>
-<perf-log-table><connection/>
-<schema/>
-<table/>
-<interval/>
+<perf-log-table><connection>dev_daily_tgt</connection>
+<schema>dm</schema>
+<table>perf</table>
+<interval>60</interval>
 <timeout_days/>
 <field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>SEQ_NR</id><enabled>Y</enabled><name>SEQ_NR</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>LOGDATE</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STEPNAME</id><enabled>Y</enabled><name>STEPNAME</name></field><field><id>STEP_COPY</id><enabled>Y</enabled><name>STEP_COPY</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>INPUT_BUFFER_ROWS</id><enabled>Y</enabled><name>INPUT_BUFFER_ROWS</name></field><field><id>OUTPUT_BUFFER_ROWS</id><enabled>Y</enabled><name>OUTPUT_BUFFER_ROWS</name></field></perf-log-table>
 <channel-log-table><connection/>
@@ -34,9 +29,9 @@
 <table/>
 <timeout_days/>
 <field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>LOGGING_OBJECT_TYPE</id><enabled>Y</enabled><name>LOGGING_OBJECT_TYPE</name></field><field><id>OBJECT_NAME</id><enabled>Y</enabled><name>OBJECT_NAME</name></field><field><id>OBJECT_COPY</id><enabled>Y</enabled><name>OBJECT_COPY</name></field><field><id>REPOSITORY_DIRECTORY</id><enabled>Y</enabled><name>REPOSITORY_DIRECTORY</name></field><field><id>FILENAME</id><enabled>Y</enabled><name>FILENAME</name></field><field><id>OBJECT_ID</id><enabled>Y</enabled><name>OBJECT_ID</name></field><field><id>OBJECT_REVISION</id><enabled>Y</enabled><name>OBJECT_REVISION</name></field><field><id>PARENT_CHANNEL_ID</id><enabled>Y</enabled><name>PARENT_CHANNEL_ID</name></field><field><id>ROOT_CHANNEL_ID</id><enabled>Y</enabled><name>ROOT_CHANNEL_ID</name></field></channel-log-table>
-<step-log-table><connection/>
-<schema/>
-<table/>
+<step-log-table><connection>dev_daily_tgt</connection>
+<schema>dm</schema>
+<table>step</table>
 <timeout_days/>
 <field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>TRANSNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>STEPNAME</id><enabled>Y</enabled><name>STEPNAME</name></field><field><id>STEP_COPY</id><enabled>Y</enabled><name>STEP_COPY</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>LOG_FIELD</id><enabled>N</enabled><name>LOG_FIELD</name></field></step-log-table>
     </log>
@@ -85,38 +80,17 @@
         </clusterschema>
     </clusterschemas>
   <created_user>-</created_user>
-  <created_date>2011&#47;01&#47;14 13:37:59.729</created_date>
+  <created_date>2011&#47;04&#47;08 16:06:02.212</created_date>
   <modified_user>-</modified_user>
-  <modified_date>2011&#47;01&#47;14 13:37:59.729</modified_date>
+  <modified_date>2011&#47;04&#47;08 16:06:02.212</modified_date>
   </info>
   <notepads>
     <notepad>
-      <note>Name Elements are one level below the ID Element</note>
-      <xloc>514</xloc>
-      <yloc>140</yloc>
-      <width>261</width>
-      <heigth>22</heigth>
-      <fontname>Microsoft Sans Serif</fontname>
-      <fontsize>8</fontsize>
-      <fontbold>N</fontbold>
-      <fontitalic>N</fontitalic>
-      <fontcolorred>0</fontcolorred>
-      <fontcolorgreen>0</fontcolorgreen>
-      <fontcolorblue>0</fontcolorblue>
-      <backgroundcolorred>255</backgroundcolorred>
-      <backgroundcolorgreen>165</backgroundcolorgreen>
-      <backgroundcolorblue>0</backgroundcolorblue>
-      <bordercolorred>100</bordercolorred>
-      <bordercolorgreen>100</bordercolorgreen>
-      <bordercolorblue>100</bordercolorblue>
-      <drawshadow>Y</drawshadow>
-    </notepad>
-    <notepad>
-      <note>This example parses the XML Input Stream (StAX) Test 3 - Attribute Groups.xml
-and returns ID and name pairs. When multiple names are given for one ID they are listed and separated by comma.</note>
-      <xloc>20</xloc>
-      <yloc>24</yloc>
-      <width>570</width>
+      <note>Put a &apos;1&apos; or &apos;-1&apos; to the group field that alternates on each Level 2 element.
+(The JavaScript on the right is easier but slower.)</note>
+      <xloc>227</xloc>
+      <yloc>310</yloc>
+      <width>367</width>
       <heigth>35</heigth>
       <fontname>Microsoft Sans Serif</fontname>
       <fontsize>8</fontsize>
@@ -134,32 +108,12 @@ and returns ID and name pairs. When multiple names are given for one ID they are
       <drawshadow>Y</drawshadow>
     </notepad>
     <notepad>
-      <note>ID and Name pairs</note>
-      <xloc>684</xloc>
-      <yloc>351</yloc>
-      <width>101</width>
-      <heigth>22</heigth>
-      <fontname>Microsoft Sans Serif</fontname>
-      <fontsize>8</fontsize>
-      <fontbold>N</fontbold>
-      <fontitalic>N</fontitalic>
-      <fontcolorred>0</fontcolorred>
-      <fontcolorgreen>0</fontcolorgreen>
-      <fontcolorblue>0</fontcolorblue>
-      <backgroundcolorred>255</backgroundcolorred>
-      <backgroundcolorgreen>165</backgroundcolorgreen>
-      <backgroundcolorblue>0</backgroundcolorblue>
-      <bordercolorred>100</bordercolorred>
-      <bordercolorgreen>100</bordercolorgreen>
-      <bordercolorblue>100</bordercolorblue>
-      <drawshadow>Y</drawshadow>
-    </notepad>
-    <notepad>
-      <note>Document Details</note>
-      <xloc>255</xloc>
-      <yloc>355</yloc>
-      <width>97</width>
-      <heigth>22</heigth>
+      <note>This example parses the XML Input Stream (StAX) Test 6 - Namespaces.xml
+and parses different fields.</note>
+      <xloc>8</xloc>
+      <yloc>11</yloc>
+      <width>389</width>
+      <heigth>35</heigth>
       <fontname>Microsoft Sans Serif</fontname>
       <fontsize>8</fontsize>
       <fontbold>N</fontbold>
@@ -177,12 +131,116 @@ and returns ID and name pairs. When multiple names are given for one ID they are
     </notepad>
     <notepad>
       <note>Revision notes:
-2011-06-20 Jens Bleuel: created
-</note>
-      <xloc>14</xloc>
-      <yloc>564</yloc>
-      <width>175</width>
+2011-05-29 Jens Bleuel: created</note>
+      <xloc>7</xloc>
+      <yloc>587</yloc>
+      <width>169</width>
       <heigth>35</heigth>
+      <fontname>Microsoft Sans Serif</fontname>
+      <fontsize>8</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>165</backgroundcolorgreen>
+      <backgroundcolorblue>0</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>Y</drawshadow>
+    </notepad>
+    <notepad>
+      <note>&quot;Add namespace information&quot; is checked</note>
+      <xloc>190</xloc>
+      <yloc>81</yloc>
+      <width>209</width>
+      <heigth>22</heigth>
+      <fontname>Microsoft Sans Serif</fontname>
+      <fontsize>8</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>165</backgroundcolorgreen>
+      <backgroundcolorblue>0</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>Y</drawshadow>
+    </notepad>
+    <notepad>
+      <note>Move the rows to the columns</note>
+      <xloc>223</xloc>
+      <yloc>446</yloc>
+      <width>156</width>
+      <heigth>22</heigth>
+      <fontname>Microsoft Sans Serif</fontname>
+      <fontsize>8</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>165</backgroundcolorgreen>
+      <backgroundcolorblue>0</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>Y</drawshadow>
+    </notepad>
+    <notepad>
+      <note>Remove not needed fields</note>
+      <xloc>223</xloc>
+      <yloc>510</yloc>
+      <width>138</width>
+      <heigth>22</heigth>
+      <fontname>Microsoft Sans Serif</fontname>
+      <fontsize>8</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>165</backgroundcolorgreen>
+      <backgroundcolorblue>0</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>Y</drawshadow>
+    </notepad>
+    <notepad>
+      <note>These namespace information could be used for later reference.</note>
+      <xloc>321</xloc>
+      <yloc>225</yloc>
+      <width>322</width>
+      <heigth>22</heigth>
+      <fontname>Microsoft Sans Serif</fontname>
+      <fontsize>8</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>165</backgroundcolorgreen>
+      <backgroundcolorblue>0</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>Y</drawshadow>
+    </notepad>
+    <notepad>
+      <note>Further processing the data...</note>
+      <xloc>2</xloc>
+      <yloc>281</yloc>
+      <width>153</width>
+      <heigth>22</heigth>
       <fontname>Microsoft Sans Serif</fontname>
       <fontsize>8</fontsize>
       <fontbold>N</fontbold>
@@ -200,10 +258,10 @@ and returns ID and name pairs. When multiple names are given for one ID they are
     </notepad>
   </notepads>
   <order>
-  <hop> <from>Filter AttributeGroupList</from><to>AttributeGroupList</to><enabled>Y</enabled> </hop>  <hop> <from>Filter AttributeGroupList</from><to>Document Details</to><enabled>Y</enabled> </hop>  <hop> <from>AttributeGroupList</from><to>User Defined Java Expression</to><enabled>Y</enabled> </hop>  <hop> <from>User Defined Java Expression</from><to>Sort rows</to><enabled>Y</enabled> </hop>  <hop> <from>Sort rows</from><to>Row denormaliser</to><enabled>Y</enabled> </hop>  <hop> <from>Filter START&#47;END ELEMENTS</from><to>Filter AttributeGroupList</to><enabled>Y</enabled> </hop>  <hop> <from>XML Input Stream (StAX)</from><to>Filter START&#47;END ELEMENTS</to><enabled>Y</enabled> </hop>  <hop> <from>Row denormaliser</from><to>Select ID, Name</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>Only CHARACTERS</from><to>Row denormaliser</to><enabled>Y</enabled> </hop>  <hop> <from>XML Input Stream (StAX) Test 6 - Namespaces.xml</from><to>No END_ELEMENT</to><enabled>Y</enabled> </hop>  <hop> <from>Row denormaliser</from><to>Select values</to><enabled>Y</enabled> </hop>  <hop> <from>Alternate group on Level 2</from><to>Only CHARACTERS</to><enabled>Y</enabled> </hop>  <hop> <from>No END_ELEMENT</from><to>Filter on NAMESPACE</to><enabled>Y</enabled> </hop>  <hop> <from>Filter on NAMESPACE</from><to>Alternate group on Level 2</to><enabled>Y</enabled> </hop>  <hop> <from>Filter on NAMESPACE</from><to>NAMESPACES</to><enabled>Y</enabled> </hop>  </order>
   <step>
-    <name>AttributeGroupList</name>
-    <type>Dummy</type>
+    <name>Alternate group on Level 2</name>
+    <type>UserDefinedJavaClass</type>
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
@@ -211,17 +269,80 @@ and returns ID and name pairs. When multiple names are given for one ID they are
            <method>none</method>
            <schema_name/>
            </partitioning>
-     <cluster_schema/>
+
+    <definitions>
+        <definition>
+        <class_type>TRANSFORM_CLASS</class_type>
+
+        <class_name>Processor</class_name>
+
+        <class_source><![CDATA[private int pos_xml_element_level;
+
+private int pos_group;
+
+private int group=1;
+
+private static final int LEVEL_CHECK=2;
+
+public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException 
+{
+  Object[] r=getRow();
+
+  if (r==null)
+  {
+    setOutputDone();
+	return false;
+  }
+
+  if (first) {
+	 // get field positions (input)
+     pos_xml_element_level = getInputRowMeta().indexOfValue("xml_element_level");
+
+	 // get field positions (output)
+     pos_group = data.outputRowMeta.indexOfValue("group");
+
+     if (pos_xml_element_level<0 || pos_group<0 ) {
+         throw new KettleException("One of the xml_ fields or output fields was not found.");
+     }
+	 
+     first=false;
+  }
+
+  if ((Long)r[pos_xml_element_level]==LEVEL_CHECK) {
+    group=group*(-1);
+  }
+
+  Object[] outputRowData = createOutputRow(r, data.outputRowMeta.size());
+  outputRowData[pos_group]=new Long(group);
+  putRow(data.outputRowMeta, outputRowData);
+
+  return true;
+}]]></class_source>
+        </definition>
+    </definitions>
+    <fields>
+        <field>
+        <field_name>group</field_name>
+
+        <field_type>Integer</field_type>
+
+        <field_length>-1</field_length>
+
+        <field_precision>-1</field_precision>
+
+        </field>
+    </fields><clear_result_fields>N</clear_result_fields>
+<info_steps></info_steps><target_steps></target_steps><usage_parameters></usage_parameters>     <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>480</xloc>
-      <yloc>200</yloc>
+      <xloc>140</xloc>
+      <yloc>320</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
 
   <step>
-    <name>Document Details</name>
-    <type>Dummy</type>
+    <name>Alternate group on Level 2 - JavaScript sample</name>
+    <type>ScriptValueMod</type>
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
@@ -229,44 +350,35 @@ and returns ID and name pairs. When multiple names are given for one ID they are
            <method>none</method>
            <schema_name/>
            </partitioning>
-     <cluster_schema/>
+    <compatible>N</compatible>
+    <jsScripts>      <jsScript>        <jsScript_type>0</jsScript_type>
+        <jsScript_name>Script 1</jsScript_name>
+        <jsScript_script>&#47;&#47;Script here
+
+if (xml_element_level==2) {
+	group=group*(-1);
+}</jsScript_script>
+      </jsScript>      <jsScript>        <jsScript_type>1</jsScript_type>
+        <jsScript_name>Start Script</jsScript_name>
+        <jsScript_script>&#47;&#47;Script here
+
+var group=1;</jsScript_script>
+      </jsScript>    </jsScripts>    <fields>      <field>        <name>group</name>
+        <rename>group</rename>
+        <type>Integer</type>
+        <length>-1</length>
+        <precision>-1</precision>
+        <replace>N</replace>
+      </field>    </fields>     <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>280</xloc>
-      <yloc>300</yloc>
+      <xloc>720</xloc>
+      <yloc>320</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
 
   <step>
-    <name>Filter AttributeGroupList</name>
-    <type>FilterRows</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-<send_true_to>AttributeGroupList</send_true_to>
-<send_false_to>Document Details</send_false_to>
-    <compare>
-<condition>
- <negated>N</negated>
- <leftvalue>xml_path</leftvalue>
- <function>STARTS WITH</function>
- <rightvalue/>
- <value><name>constant</name><type>String</type><text>&#47;ProductInformation&#47;AttributeGroupList</text><length>-1</length><precision>-1</precision><isnull>N</isnull><mask/></value> </condition>
-    </compare>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>280</xloc>
-      <yloc>200</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Filter START&#47;END ELEMENTS</name>
+    <name>No END_ELEMENT</name>
     <type>FilterRows</type>
     <description/>
     <distribute>Y</distribute>
@@ -279,28 +391,54 @@ and returns ID and name pairs. When multiple names are given for one ID they are
 <send_false_to/>
     <compare>
 <condition>
- <negated>Y</negated>
+ <negated>N</negated>
+ <conditions>
+  <condition>
+   <negated>Y</negated>
+   <leftvalue>xml_data_type_description</leftvalue>
+   <function>=</function>
+   <rightvalue/>
+   <value><name>constant</name><type>String</type><text>END_ELEMENT</text><length>-1</length><precision>-1</precision><isnull>N</isnull><mask/></value>   </condition>
+  </conditions>
+ </condition>
+    </compare>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>140</xloc>
+      <yloc>140</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Only CHARACTERS</name>
+    <type>FilterRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+<send_true_to/>
+<send_false_to/>
+    <compare>
+<condition>
+ <negated>N</negated>
  <conditions>
   <condition>
    <negated>N</negated>
    <leftvalue>xml_data_type_description</leftvalue>
    <function>=</function>
    <rightvalue/>
-   <value><name>constant</name><type>String</type><text>START_ELEMENT</text><length>-1</length><precision>-1</precision><isnull>N</isnull><mask>#;-#</mask></value>   </condition>
-  <condition>
-   <negated>N</negated>
-   <operator>OR</operator>
-   <leftvalue>xml_data_type_description</leftvalue>
-   <function>=</function>
-   <rightvalue/>
-   <value><name>constant</name><type>String</type><text>END_ELEMENT</text><length>-1</length><precision>-1</precision><isnull>N</isnull><mask>#;-#</mask></value>   </condition>
+   <value><name>constant</name><type>String</type><text>CHARACTERS</text><length>-1</length><precision>-1</precision><isnull>N</isnull><mask/></value>   </condition>
   </conditions>
  </condition>
     </compare>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>280</xloc>
-      <yloc>120</yloc>
+      <xloc>140</xloc>
+      <yloc>380</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -315,20 +453,20 @@ and returns ID and name pairs. When multiple names are given for one ID they are
            <method>none</method>
            <schema_name/>
            </partitioning>
-      <key_field>xml_data_name</key_field>
+      <key_field>xml_path</key_field>
       <group>
         <field>
-          <name>group_element_id</name>
+          <name>group</name>
           </field>
         </group>
       <fields>
         <field>
           <field_name>xml_data_value</field_name>
-          <key_value>ID</key_value>
-          <target_name>ID</target_name>
+          <key_value>&#47;ProductInfoResults&#47;ProductInfoResult&#47;IsSuccessful</key_value>
+          <target_name>IsSuccessful</target_name>
           <target_type>String</target_type>
           <target_format/>
-          <target_length>-1</target_length>
+          <target_length>256</target_length>
           <target_precision>-1</target_precision>
           <target_decimal_symbol/>
           <target_grouping_symbol/>
@@ -338,11 +476,109 @@ and returns ID and name pairs. When multiple names are given for one ID they are
           </field>
         <field>
           <field_name>xml_data_value</field_name>
-          <key_value>Name</key_value>
-          <target_name>Name</target_name>
+          <key_value>&#47;ProductInfoResults&#47;ProductInfoResult&#47;Message</key_value>
+          <target_name>Message</target_name>
           <target_type>String</target_type>
           <target_format/>
-          <target_length>-1</target_length>
+          <target_length>256</target_length>
+          <target_precision>-1</target_precision>
+          <target_decimal_symbol/>
+          <target_grouping_symbol/>
+          <target_currency_symbol/>
+          <target_null_string/>
+          <target_aggregation_type>CONCAT_COMMA</target_aggregation_type>
+          </field>
+        <field>
+          <field_name>xml_data_value</field_name>
+          <key_value>&#47;ProductInfoResults&#47;ProductInfoResult&#47;ProductInfo&#47;Id</key_value>
+          <target_name>ProductInfo_Id</target_name>
+          <target_type>String</target_type>
+          <target_format/>
+          <target_length>256</target_length>
+          <target_precision>-1</target_precision>
+          <target_decimal_symbol/>
+          <target_grouping_symbol/>
+          <target_currency_symbol/>
+          <target_null_string/>
+          <target_aggregation_type>CONCAT_COMMA</target_aggregation_type>
+          </field>
+        <field>
+          <field_name>xml_data_value</field_name>
+          <key_value>&#47;ProductInfoResults&#47;ProductInfoResult&#47;ProductInfo&#47;Name</key_value>
+          <target_name>ProductInfo_Name</target_name>
+          <target_type>String</target_type>
+          <target_format/>
+          <target_length>256</target_length>
+          <target_precision>-1</target_precision>
+          <target_decimal_symbol/>
+          <target_grouping_symbol/>
+          <target_currency_symbol/>
+          <target_null_string/>
+          <target_aggregation_type>CONCAT_COMMA</target_aggregation_type>
+          </field>
+        <field>
+          <field_name>xml_data_value</field_name>
+          <key_value>&#47;ProductInfoResults&#47;ProductInfoResult&#47;ProductInfo&#47;Fruits:ProductGroup</key_value>
+          <target_name>ProductInfo_PG_Fruits</target_name>
+          <target_type>String</target_type>
+          <target_format/>
+          <target_length>256</target_length>
+          <target_precision>-1</target_precision>
+          <target_decimal_symbol/>
+          <target_grouping_symbol/>
+          <target_currency_symbol/>
+          <target_null_string/>
+          <target_aggregation_type>-</target_aggregation_type>
+          </field>
+        <field>
+          <field_name>xml_data_value</field_name>
+          <key_value>&#47;ProductInfoResults&#47;ProductInfoResult&#47;ProductInfo&#47;Fish:ProductGroup</key_value>
+          <target_name>ProductInfo_PG_Fish</target_name>
+          <target_type>String</target_type>
+          <target_format/>
+          <target_length>256</target_length>
+          <target_precision>-1</target_precision>
+          <target_decimal_symbol/>
+          <target_grouping_symbol/>
+          <target_currency_symbol/>
+          <target_null_string/>
+          <target_aggregation_type>-</target_aggregation_type>
+          </field>
+        <field>
+          <field_name>xml_data_value</field_name>
+          <key_value>&#47;ProductInfoResults&#47;ProductInfoResult&#47;ProducerInfo&#47;Id</key_value>
+          <target_name>ProducerInfo_Id</target_name>
+          <target_type>String</target_type>
+          <target_format/>
+          <target_length>256</target_length>
+          <target_precision>-1</target_precision>
+          <target_decimal_symbol/>
+          <target_grouping_symbol/>
+          <target_currency_symbol/>
+          <target_null_string/>
+          <target_aggregation_type>CONCAT_COMMA</target_aggregation_type>
+          </field>
+        <field>
+          <field_name>xml_data_value</field_name>
+          <key_value>&#47;ProductInfoResults&#47;ProductInfoResult&#47;ProducerInfo&#47;Name</key_value>
+          <target_name>ProducerInfo_Name</target_name>
+          <target_type>String</target_type>
+          <target_format/>
+          <target_length>256</target_length>
+          <target_precision>-1</target_precision>
+          <target_decimal_symbol/>
+          <target_grouping_symbol/>
+          <target_currency_symbol/>
+          <target_null_string/>
+          <target_aggregation_type>CONCAT_COMMA</target_aggregation_type>
+          </field>
+        <field>
+          <field_name>xml_data_value</field_name>
+          <key_value>&#47;ProductInfoResults&#47;ProductInfoResult&#47;ExtraInfoAvail</key_value>
+          <target_name>ExtraInfoAvail</target_name>
+          <target_type>String</target_type>
+          <target_format/>
+          <target_length>256</target_length>
           <target_precision>-1</target_precision>
           <target_decimal_symbol/>
           <target_grouping_symbol/>
@@ -353,15 +589,15 @@ and returns ID and name pairs. When multiple names are given for one ID they are
         </fields>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>620</xloc>
-      <yloc>360</yloc>
+      <xloc>140</xloc>
+      <yloc>440</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
 
   <step>
-    <name>Sort rows</name>
-    <type>SortRows</type>
+    <name>Select values</name>
+    <type>SelectValues</type>
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
@@ -369,55 +605,21 @@ and returns ID and name pairs. When multiple names are given for one ID they are
            <method>none</method>
            <schema_name/>
            </partitioning>
-      <directory>%%java.io.tmpdir%%</directory>
-      <prefix>out</prefix>
-      <sort_size>1000000</sort_size>
-      <free_memory/>
-      <compress>N</compress>
-      <compress_variable/>
-      <unique_rows>N</unique_rows>
-    <fields>
-      <field>
-        <name>group_element_id</name>
-        <ascending>Y</ascending>
-        <case_sensitive>N</case_sensitive>
-      </field>
-    </fields>
-     <cluster_schema/>
+    <fields>        <select_unspecified>N</select_unspecified>
+      <remove>        <name>xml_data_type_description</name>
+      </remove>      <remove>        <name>xml_element_level</name>
+      </remove>      <remove>        <name>xml_data_name</name>
+      </remove>      <remove>        <name>group</name>
+      </remove>    </fields>     <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>620</xloc>
-      <yloc>280</yloc>
+      <xloc>140</xloc>
+      <yloc>500</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
 
   <step>
-    <name>User Defined Java Expression</name>
-    <type>Janino</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-       <formula><field_name>group_element_id</field_name>
-<formula_string>(xml_data_name.equals(&quot;ID&quot;)) ? xml_element_id : xml_parent_element_id</formula_string>
-<value_type>Integer</value_type>
-<value_length>-1</value_length>
-<value_precision>-1</value_precision>
-<replace_field/>
-</formula>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>620</xloc>
-      <yloc>200</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>XML Input Stream (StAX)</name>
+    <name>XML Input Stream (StAX) Test 6 - Namespaces.xml</name>
     <type>XMLInputStream</type>
     <description/>
     <distribute>Y</distribute>
@@ -426,13 +628,13 @@ and returns ID and name pairs. When multiple names are given for one ID they are
            <method>none</method>
            <schema_name/>
            </partitioning>
-    <filename>${Internal.Transformation.Filename.Directory}&#47;files&#47;XML Input Stream (StAX) Test 3 - Attribute Groups.xml</filename>
+    <filename>${Internal.Transformation.Filename.Directory}&#47;files&#47;XML Input Stream (StAX) Test 6 - Namespaces.xml</filename>
     <addResultFile>N</addResultFile>
     <nrRowsToSkip>0</nrRowsToSkip>
     <rowLimit>0</rowLimit>
     <defaultStringLen>1024</defaultStringLen>
     <encoding>UTF-8</encoding>
-    <enableNamespaces>N</enableNamespaces>
+    <enableNamespaces>Y</enableNamespaces>
     <enableTrim>Y</enableTrim>
     <includeFilenameField>N</includeFilenameField>
     <filenameField>xml_filename</filenameField>
@@ -446,11 +648,11 @@ and returns ID and name pairs. When multiple names are given for one ID they are
     <xmlLocationLineField>xml_location_line</xmlLocationLineField>
     <includeXmlLocationColumnField>N</includeXmlLocationColumnField>
     <xmlLocationColumnField>xml_location_column</xmlLocationColumnField>
-    <includeXmlElementIDField>Y</includeXmlElementIDField>
+    <includeXmlElementIDField>N</includeXmlElementIDField>
     <xmlElementIDField>xml_element_id</xmlElementIDField>
-    <includeXmlParentElementIDField>Y</includeXmlParentElementIDField>
+    <includeXmlParentElementIDField>N</includeXmlParentElementIDField>
     <xmlParentElementIDField>xml_parent_element_id</xmlParentElementIDField>
-    <includeXmlElementLevelField>N</includeXmlElementLevelField>
+    <includeXmlElementLevelField>Y</includeXmlElementLevelField>
     <xmlElementLevelField>xml_element_level</xmlElementLevelField>
     <includeXmlPathField>Y</includeXmlPathField>
     <xmlPathField>xml_path</xmlPathField>
@@ -462,14 +664,42 @@ and returns ID and name pairs. When multiple names are given for one ID they are
     <xmlDataValueField>xml_data_value</xmlDataValueField>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>80</xloc>
-      <yloc>120</yloc>
+      <xloc>140</xloc>
+      <yloc>80</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
 
   <step>
-    <name>Select ID, Name</name>
+    <name>Filter on NAMESPACE</name>
+    <type>FilterRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <schema_name/>
+           </partitioning>
+<send_true_to>NAMESPACES</send_true_to>
+<send_false_to>Alternate group on Level 2</send_false_to>
+    <compare>
+<condition>
+ <negated>N</negated>
+ <leftvalue>xml_data_type_description</leftvalue>
+ <function>=</function>
+ <rightvalue/>
+ <value><name>constant</name><type>String</type><text>NAMESPACE</text><length>-1</length><precision>-1</precision><isnull>N</isnull><mask/></value> </condition>
+    </compare>
+     <cluster_schema/>
+ <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
+      <xloc>140</xloc>
+      <yloc>220</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>NAMESPACES</name>
     <type>SelectValues</type>
     <description/>
     <distribute>Y</distribute>
@@ -478,19 +708,19 @@ and returns ID and name pairs. When multiple names are given for one ID they are
            <method>none</method>
            <schema_name/>
            </partitioning>
-    <fields>      <field>        <name>ID</name>
-        <rename/>
+    <fields>      <field>        <name>xml_data_name</name>
+        <rename>Namespace_Prefix</rename>
         <length>-2</length>
         <precision>-2</precision>
-      </field>      <field>        <name>Name</name>
-        <rename/>
+      </field>      <field>        <name>xml_data_value</name>
+        <rename>Namespace_URI</rename>
         <length>-2</length>
         <precision>-2</precision>
       </field>        <select_unspecified>N</select_unspecified>
     </fields>     <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>620</xloc>
-      <yloc>440</yloc>
+      <xloc>260</xloc>
+      <yloc>220</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
