@@ -75,6 +75,8 @@ public class XMLInputStreamDialog extends BaseStepDialog implements StepDialogIn
 	private TextVar wDefaultStringLen;
 	
 	private TextVar wEncoding;
+
+	private Button wEnableNamespaces;
 	
 	private Button wEnableTrim;
 
@@ -324,6 +326,25 @@ public class XMLInputStreamDialog extends BaseStepDialog implements StepDialogIn
 		fdEncoding.right = new FormAttachment(100, 0);
 		wEncoding.setLayoutData(fdEncoding);
 		lastControl = wEncoding;
+		
+		// EnableNamespaces?
+		//
+		Label wlEnableNamespaces = new Label(shell, SWT.RIGHT);
+		wlEnableNamespaces.setText(BaseMessages.getString(PKG, "XMLInputStreamDialog.EnableNamespaces.Label"));
+		props.setLook(wlEnableNamespaces);
+		FormData fdlEnableNamespaces = new FormData();
+		fdlEnableNamespaces.left = new FormAttachment(0, 0);
+		fdlEnableNamespaces.top = new FormAttachment(lastControl, margin);
+		fdlEnableNamespaces.right = new FormAttachment(middle, -margin);
+		wlEnableNamespaces.setLayoutData(fdlEnableNamespaces);
+		wEnableNamespaces = new Button(shell, SWT.CHECK);
+		props.setLook(wEnableNamespaces);
+		wEnableNamespaces.setToolTipText(BaseMessages.getString(PKG, "XMLInputStreamDialog.EnableNamespaces.Tooltip"));
+		FormData fdEnableNamespaces = new FormData();
+		fdEnableNamespaces.left = new FormAttachment(middle, 0);
+		fdEnableNamespaces.top = new FormAttachment(lastControl, margin);
+		wEnableNamespaces.setLayoutData(fdEnableNamespaces);
+		lastControl = wEnableNamespaces;		
 		
 		// EnableTrim?
 		//
@@ -996,6 +1017,7 @@ public class XMLInputStreamDialog extends BaseStepDialog implements StepDialogIn
 		wLimit.setText(Const.NVL(inputMeta.getRowLimit(),"0"));
 		wDefaultStringLen.setText(Const.NVL(inputMeta.getDefaultStringLen(),XMLInputStreamMeta.DEFAULT_STRING_LEN));
 		wEncoding.setText(Const.NVL(inputMeta.getEncoding(),XMLInputStreamMeta.DEFAULT_ENCODING));
+		wEnableNamespaces.setSelection(inputMeta.isEnableNamespaces());
 		wEnableTrim.setSelection(inputMeta.isEnableTrim());
 		
 		wIncludeFilename.setSelection(inputMeta.isIncludeFilenameField());
@@ -1065,6 +1087,7 @@ public class XMLInputStreamDialog extends BaseStepDialog implements StepDialogIn
 		xmlInputMeta.setRowLimit(Const.NVL(wLimit.getText(), "0"));
 		xmlInputMeta.setDefaultStringLen(Const.NVL(wDefaultStringLen.getText(), XMLInputStreamMeta.DEFAULT_STRING_LEN));
 		xmlInputMeta.setEncoding(Const.NVL(wEncoding.getText(), XMLInputStreamMeta.DEFAULT_ENCODING));
+		xmlInputMeta.setEnableNamespaces(wEnableNamespaces.getSelection());
 		xmlInputMeta.setEnableTrim(wEnableTrim.getSelection());
 
 		xmlInputMeta.setIncludeFilenameField(wIncludeFilename.getSelection());
