@@ -1,0 +1,66 @@
+<ProductInfoResults xmlns:Fruits="http://dummy.example/fruits" xmlns:Fish="http://dummy.example/fish"  xmlns="http://dummy.example/default">
+	<ProductInfoResult>
+		<IsSuccessful>true</IsSuccessful>
+		<Message>Valid code</Message>
+		<ProductInfo> 
+			<Id>1287</Id>
+			<Name>Watermelon</Name>
+			<Fruits:ProductGroup>G</Fruits:ProductGroup>
+		</ProductInfo>
+		<ProducerInfo> 
+			<Id>28</Id>
+			<Name>Sun</Name>
+		</ProducerInfo>
+		<ExtraInfoAvail> 
+			false
+		</ExtraInfoAvail>
+	</ProductInfoResult>
+	<ProductInfoResult>
+		<IsSuccessful>true</IsSuccessful>
+		<Message>Valid code</Message>
+		<ProductInfo> 
+			<Id>1288</Id>
+			<Name>Banana</Name>
+			<Fruits:ProductGroup>J</Fruits:ProductGroup>
+		</ProductInfo>
+		<ProducerInfo> 
+			<Id>28</Id>
+			<Name>Sun</Name>
+		</ProducerInfo>
+		<ExtraInfoAvail>
+			false
+		</ExtraInfoAvail>
+	</ProductInfoResult>
+	<ProductInfoResult>
+		<IsSuccessful>true</IsSuccessful>
+		<Message>Valid code</Message>
+		<ProductInfo>
+			<Id>1289</Id>
+			<Name>Carp</Name>
+			<Fish:ProductGroup>S</Fish:ProductGroup>
+		</ProductInfo>
+		<ProducerInfo>
+			<Id>29</Id>
+			<Name>Water</Name>
+		</ProducerInfo>
+		<ExtraInfoAvail>
+			false
+		</ExtraInfoAvail>
+	</ProductInfoResult>
+	<ProductInfoResult>
+		<IsSuccessful>true</IsSuccessful>
+		<Message>Valid code</Message>
+		<ProductInfo>
+			<Id>1290</Id>
+			<Name>Trout</Name>
+			<Fish:ProductGroup>Q</Fish:ProductGroup>
+		</ProductInfo>
+		<ProducerInfo>
+			<Id>29</Id>
+			<Name>Water</Name>
+		</ProducerInfo>
+		<ExtraInfoAvail>
+			false
+		</ExtraInfoAvail>
+	</ProductInfoResult>
+</ProductInfoResults>

@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ProductInformation ExportTime="2010-11-23 23:56:40"
+	ExportContext="german" ContextID="german" WorkspaceID="Test" id="1"
+	parent="0">
+	<AnalyzerResult>
+		<AnalyzerLists>
+			<AnalyzerList name="items.added">
+				<AnalyzerElement ItemID="product?id=123456"
+					ProductID="123456" />
+				<AnalyzerElement ItemID="product?id=789"
+					ProductID="789" />
+			</AnalyzerList>
+			<AnalyzerList name="items.deleted">
+				<AnalyzerElement ItemID="product?id=111111"
+					ProductID="111111" />
+				<AnalyzerElement ItemID="product?id=222222"
+					ProductID="222222" />
+			</AnalyzerList>
+			<AnalyzerList name="items.dummy_test">
+				<AnalyzerElement ItemID="product?id=test1"
+					ProductID="test1" />
+				<AnalyzerElement ItemID="product?id=test2"
+					ProductID="test2" />
+			</AnalyzerList>
+		</AnalyzerLists>
+		<AnalyzerDummyTest>
+			<AnalyzerDummyTest name="Dummy not processed" />
+		</AnalyzerDummyTest>
+	</AnalyzerResult>
+	<Products>
+		<Product id="123456" name="Product A">
+			<MetaData>
+				<Value AttributeID="AttrA">false</Value>
+				<Value AttributeID="AttrB">true</Value>
+				<Value AttributeID="AttrShortName">
+					Product A Short Name
+				</Value>
+				<Value AttributeID="AttrLongName">
+					Product A Long Name
+				</Value>
+			</MetaData>
+		</Product>
+		<Product id="789" name="Product B">
+			<MetaData>
+				<Value AttributeID="AttrA">true</Value>
+				<Value AttributeID="AttrB">false</Value>
+				<Value AttributeID="AttrShortName">
+					Product B Short Name
+				</Value>
+				<Value AttributeID="AttrLongName">
+					Product B Long Name
+				</Value>
+			</MetaData>
+		</Product>
+	</Products>
+</ProductInformation>
