@@ -1853,7 +1853,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		if (input.getDateTimeFormat()!= null) wDateTimeFormat.setText( input.getDateTimeFormat() );
 		wSpecifyFormat.setSelection(input.isSpecifyFormat());
 		
-		wCreateParentFolder.setSelection(wCreateParentFolder.getSelection());
+		wCreateParentFolder.setSelection(input.isCreateParentFolder());
 		wAddToResult.setSelection(input.isAddToResultFiles());
 		wAutoSize.setSelection(input.isAutoSizeColums());
 		wNullIsBlank.setSelection(input.isNullBlank());
