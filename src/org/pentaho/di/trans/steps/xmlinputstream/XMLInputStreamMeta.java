@@ -63,6 +63,9 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
 	/** Encoding to be used */
 	private String encoding; // default set to DEFAULT_ENCODING
 
+	/** Enable Namespaces in the output? (will be slower) */
+	private boolean enableNamespaces;
+	
 	/** Trim all name/value elements & attributes? */
 	private boolean enableTrim;  // trim is also eliminating white spaces, tab, cr, lf at the beginning and end of the string
 	
@@ -219,6 +222,7 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
 			rowLimit     = Const.NVL(XMLHandler.getTagValue(stepnode, "rowLimit"), "0");
 			defaultStringLen     = Const.NVL(XMLHandler.getTagValue(stepnode, "defaultStringLen"), DEFAULT_STRING_LEN);
 			encoding     = Const.NVL(XMLHandler.getTagValue(stepnode, "encoding"), DEFAULT_ENCODING);
+			enableNamespaces = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "enableNamespaces"));
 			enableTrim   = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "enableTrim"));
 
 			// The fields in the output stream
@@ -288,6 +292,7 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
 		retval.append("    "+XMLHandler.addTagValue("rowLimit", rowLimit));
 		retval.append("    "+XMLHandler.addTagValue("defaultStringLen", defaultStringLen));
 		retval.append("    "+XMLHandler.addTagValue("encoding", encoding));
+		retval.append("    "+XMLHandler.addTagValue("enableNamespaces", enableNamespaces));
 		retval.append("    "+XMLHandler.addTagValue("enableTrim", enableTrim));
 
 		// The fields in the output stream
@@ -342,6 +347,7 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
 		rowLimit="0";
 		defaultStringLen=DEFAULT_STRING_LEN;
 		encoding=DEFAULT_ENCODING;
+		enableNamespaces=false;
 		enableTrim=true;
 		
 		// The fields in the output stream
@@ -399,6 +405,7 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
 			rowLimit          		=	Const.NVL(rep.getStepAttributeString(id_step, "rowLimit"), "0");
 			defaultStringLen		=	Const.NVL(rep.getStepAttributeString(id_step, "defaultStringLen"), DEFAULT_STRING_LEN);
 			encoding				=	Const.NVL(rep.getStepAttributeString(id_step, "encoding"),DEFAULT_ENCODING);
+			enableNamespaces		=	rep.getStepAttributeBoolean (id_step, "enableNamespaces");
 			enableTrim				=	rep.getStepAttributeBoolean (id_step, "enableTrim");
 
 			// The fields in the output stream
@@ -461,6 +468,7 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
 			rep.saveStepAttribute(id_transformation, id_step, "rowLimit",				rowLimit);
 			rep.saveStepAttribute(id_transformation, id_step, "defaultStringLen",		defaultStringLen);
 			rep.saveStepAttribute(id_transformation, id_step, "encoding",				encoding);
+			rep.saveStepAttribute(id_transformation, id_step, "enableNamespaces",		enableNamespaces);
 			rep.saveStepAttribute(id_transformation, id_step, "enableTrim",				enableTrim);
 			
 			// The fields in the output stream
@@ -595,6 +603,14 @@ public class XMLInputStreamMeta extends BaseStepMeta implements StepMetaInterfac
 		this.encoding = encoding;
 	}
 
+	public boolean isEnableNamespaces() {
+		return enableNamespaces;
+	}
+
+	public void setEnableNamespaces(boolean enableNamespaces) {
+		this.enableNamespaces = enableNamespaces;
+	}
+	
 	public boolean isEnableTrim() {
 		return enableTrim;
 	}

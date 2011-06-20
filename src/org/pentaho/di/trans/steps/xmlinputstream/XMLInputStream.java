@@ -39,6 +39,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.events.Attribute;
+import javax.xml.stream.events.Namespace;
 import javax.xml.stream.events.XMLEvent;
 
 /**
@@ -212,14 +213,28 @@ public class XMLInputStream extends BaseStep implements StepInterface
 			data.elementID++;
 			data.elementLevelID[data.elementLevel]=data.elementID;
 
-			outputRowData[data.pos_xml_data_name]=e.asStartElement().getName().getLocalPart();
+			if (meta.isEnableNamespaces()) {
+				String prefix=e.asStartElement().getName().getPrefix();
+				if (Const.isEmpty(prefix)) {
+					outputRowData[data.pos_xml_data_name]=e.asStartElement().getName().getLocalPart();
+				} else { // add namespace prefix:
+					outputRowData[data.pos_xml_data_name]=prefix+":"+e.asStartElement().getName().getLocalPart();
+				}
+			} else {
+				outputRowData[data.pos_xml_data_name]=e.asStartElement().getName().getLocalPart();
+			}
+			
 			//store the name
 			data.elementName[data.elementLevel]=new String((String)outputRowData[data.pos_xml_data_name]);
 			//store simple path
 			data.elementPath[data.elementLevel]=data.elementPath[data.elementLevel-1]+"/"+outputRowData[data.pos_xml_data_name];
 
+			// write Namespaces out
+			if (meta.isEnableNamespaces()) outputRowData = parseNamespaces(outputRowData, e);
+			
+			// write Attributes out
 			outputRowData = parseAttributes(outputRowData, e);
-			//TODO printNamespaces(xmlr);###
+
 			break;
 
 		case XMLStreamConstants.END_ELEMENT:
@@ -275,19 +290,48 @@ public class XMLInputStream extends BaseStep implements StepInterface
 			break;			
 
 		default:
+			logBasic("Event:"+eventType);
 			outputRowData=null; // ignore & continue
 		}
 
 		return outputRowData;
 	}
 
+	// Namespaces: put an extra row out for each namespace
+	@SuppressWarnings("unchecked")
+	private Object[] parseNamespaces(Object[] outputRowData, XMLEvent e) throws KettleValueException, KettleStepException {
+		Iterator<Namespace> iter = e.asStartElement().getNamespaces();
+		if (iter.hasNext()) {
+			Object[] outputRowDataNamespace=data.outputRowMeta.cloneRow(outputRowData);	    		 
+			putRowOut(outputRowDataNamespace);	// first put the element name info out 
+			// change data_type to ATTRIBUTE
+			if (data.pos_xml_data_type_numeric!=-1) outputRowData[data.pos_xml_data_type_numeric]=new Long(XMLStreamConstants.NAMESPACE);
+			if (data.pos_xml_data_type_description!=-1) outputRowData[data.pos_xml_data_type_description]=eventDescription[XMLStreamConstants.NAMESPACE];
+		}
+		while( iter.hasNext() ) {
+			Object[] outputRowDataNamespace=data.outputRowMeta.cloneRow(outputRowData);	    		 
+			Namespace n = iter.next();
+			outputRowDataNamespace[data.pos_xml_data_name]=n.getPrefix();
+			outputRowDataNamespace[data.pos_xml_data_value]=n.getNamespaceURI();
+			if(iter.hasNext()) {
+				// send out the Namespace row
+				putRowOut(outputRowDataNamespace);
+			} else {
+				// last row: this will be sent out by the outer loop
+				outputRowData=outputRowDataNamespace;
+			}
+		}
+
+		return outputRowData;
+	}
+	
 	// Attributes: put an extra row out for each attribute
 	@SuppressWarnings("unchecked")
 	private Object[] parseAttributes(Object[] outputRowData, XMLEvent e) throws KettleValueException, KettleStepException {
 		Iterator<Attribute> iter = e.asStartElement().getAttributes();
 		if (iter.hasNext()) {
 			Object[] outputRowDataAttribute=data.outputRowMeta.cloneRow(outputRowData);	    		 
-			putRowOut(outputRowDataAttribute);	// first put the element name info out 
+			putRowOut(outputRowDataAttribute);	// first put the element name (or namespace) info out 
 			// change data_type to ATTRIBUTE
 			if (data.pos_xml_data_type_numeric!=-1) outputRowData[data.pos_xml_data_type_numeric]=new Long(XMLStreamConstants.ATTRIBUTE);
 			if (data.pos_xml_data_type_description!=-1) outputRowData[data.pos_xml_data_type_description]=eventDescription[XMLStreamConstants.ATTRIBUTE];
