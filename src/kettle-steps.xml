@@ -1434,7 +1434,7 @@
 		<classname>org.pentaho.di.trans.steps.multimerge.MultiMergeJoinMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.MultiwayMergeJoin</tooltip>
-		<iconfile>ui/images/MultiMergeJoin.png</iconfile>
+		<iconfile>ui/images/MJOINS.png</iconfile>
 	</step> 	
 
 
