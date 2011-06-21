@@ -3235,6 +3235,82 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         }
         setRepository(repository);
 
+        JobMeta jobMetas[] = getLoadedJobs();
+        for (int t = 0; t < jobMetas.length; t++) {
+          JobMeta jobMeta = jobMetas[t];
+
+          for (int i = 0; i < jobMeta.nrDatabases(); i++) {
+            jobMeta.getDatabase(i).setObjectId(null);
+          }
+
+          // Set for the existing job the ID at -1!
+          jobMeta.setObjectId(null);
+
+          // Keep track of the old databases for now.
+          List<DatabaseMeta> oldDatabases = jobMeta.getDatabases();
+
+          // In order to re-match the databases on name (not content), we
+          // need to load the databases from the new repository.
+          // NOTE: for purposes such as DEVELOP - TEST - PRODUCTION
+          // sycles.
+
+          // first clear the list of databases and slave servers
+          jobMeta.setDatabases(new ArrayList<DatabaseMeta>());
+          jobMeta.setSlaveServers(new ArrayList<SlaveServer>());
+
+          // Read them from the new repository.
+          try {
+            SharedObjects sharedObjects = rep.readJobMetaSharedObjects(jobMeta);
+            sharedObjectsFileMap.put(sharedObjects.getFilename(), sharedObjects);
+          } catch (KettleException e) {
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Title"),
+                BaseMessages.getString(PKG, "Spoon.Dialog.ErrorReadingSharedObjects.Message", makeTabName(jobMeta,
+                    true)), e);
+          }
+
+          // Then we need to re-match the databases at save time...
+          for (int i = 0; i < oldDatabases.size(); i++) {
+            DatabaseMeta oldDatabase = oldDatabases.get(i);
+            DatabaseMeta newDatabase = DatabaseMeta.findDatabase(jobMeta.getDatabases(), oldDatabase.getName());
+
+            // If it exists, change the settings...
+            if (newDatabase != null) {
+              // 
+              // A database connection with the same name exists in
+              // the new repository.
+              // Change the old connections to reflect the settings in
+              // the new repository
+              //
+              oldDatabase.setDatabaseInterface(newDatabase.getDatabaseInterface());
+            } else {
+              // 
+              // The old database is not present in the new
+              // repository: simply add it to the list.
+              // When the job gets saved, it will be added
+              // to the repository.
+              //
+              jobMeta.addDatabase(oldDatabase);
+            }
+          }
+
+          try {
+            // For the existing job, change the directory too:
+            // Try to find the same directory in the new repository...
+            RepositoryDirectoryInterface redi = rep.findDirectory(jobMeta.getRepositoryDirectory().getPath());
+            if (redi != null) {
+              jobMeta.setRepositoryDirectory(redi);
+            } else {
+              // the root is the default!
+              jobMeta.setRepositoryDirectory(rep.loadRepositoryDirectoryTree()); 
+            }
+          } catch (KettleException ke) {
+            rep = null;
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.Dialog.ErrorConnectingRepository.Title"), //$NON-NLS-1$
+                BaseMessages.getString(PKG, "Spoon.Dialog.ErrorConnectingRepository.Message", //$NON-NLS-1$
+                    Const.CR), ke);
+          }
+        }
+        
         TransMeta transMetas[] = getLoadedTransformations();
         for (int t = 0; t < transMetas.length; t++) {
           TransMeta transMeta = transMetas[t];
@@ -7639,7 +7715,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     delegates.steps.delStep(transMeta, stepMeta);
   }
 
-  public String makeTabName(TransMeta transMeta, boolean showingLocation) {
+  public String makeTabName(EngineMetaInterface transMeta, boolean showingLocation) {
     return delegates.tabs.makeTabName(transMeta, showingLocation);
   }
 

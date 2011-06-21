@@ -65,7 +65,7 @@ public class SpoonDelegateRegistry {
         throw new InstanceCreationException("Unable to get the constructor for " + jobDelegateClass);
       }
     } catch (Exception e) {
-      throw new InstanceCreationException("Unable to instantiate object for " + jobDelegateClass);
+      throw new InstanceCreationException("Unable to instantiate object for " + jobDelegateClass, e);
     }
   }
   
@@ -86,7 +86,7 @@ public class SpoonDelegateRegistry {
         throw new InstanceCreationException("Unable to get the constructor for " + transDelegateClass);
       }
     } catch (Exception e) {
-      throw new InstanceCreationException("Unable to instantiate object for " + transDelegateClass);
+        throw new InstanceCreationException("Unable to instantiate object for " + transDelegateClass, e);
     }
   }
 }

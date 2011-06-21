@@ -12,6 +12,8 @@
 */
 package org.pentaho.di.ui.spoon.delegates;
 
+import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.spoon.InstanceCreationException;
 import org.pentaho.di.ui.spoon.Spoon;
 
@@ -42,15 +44,29 @@ public class SpoonDelegates
 	}
 
 	public void update(Spoon spoon) {
+	  SpoonJobDelegate origJobs = jobs;
     try {
       jobs = (SpoonJobDelegate)SpoonDelegateRegistry.getInstance().constructSpoonJobDelegate(spoon);
     } catch (InstanceCreationException e) {
       jobs = new SpoonJobDelegate(spoon);
     }
+    if (origJobs != null) {
+      // preserve open jobs
+      for (JobMeta jobMeta : origJobs.getLoadedJobs()) {
+        jobs.addJob(jobMeta);
+      }
+    }
+    SpoonTransformationDelegate origTrans = trans;
     try {
       trans = (SpoonTransformationDelegate)SpoonDelegateRegistry.getInstance().constructSpoonTransDelegate(spoon);
     } catch (InstanceCreationException e) {
       trans = new SpoonTransformationDelegate(spoon);
     }  
+    if (origTrans != null) {
+      // preseve open trans
+      for (TransMeta transMeta : origTrans.getLoadedTransformations()) {
+        trans.addTransformation(transMeta);
+      }
+    }
 	}
 }
