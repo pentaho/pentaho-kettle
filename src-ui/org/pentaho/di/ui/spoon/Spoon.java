@@ -7635,7 +7635,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     delegates.steps.delStep(transMeta, stepMeta);
   }
 
-  public String makeTabName(TransMeta transMeta, boolean showingLocation) {
+  public String makeTabName(EngineMetaInterface transMeta, boolean showingLocation) {
     return delegates.tabs.makeTabName(transMeta, showingLocation);
   }
 
