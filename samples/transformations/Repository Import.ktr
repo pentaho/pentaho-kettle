@@ -109,7 +109,7 @@ JOBDIROVERRIDE: Directory to import jobs into.</note>
       <yloc>24</yloc>
       <width>772</width>
       <heigth>214</heigth>
-      <fontname>Ariel</fontname>
+      <fontname>Arial</fontname>
       <fontsize>10</fontsize>
       <fontbold>N</fontbold>
       <fontitalic>N</fontitalic>
@@ -130,7 +130,7 @@ JOBDIROVERRIDE: Directory to import jobs into.</note>
       <yloc>380</yloc>
       <width>635</width>
       <heigth>27</heigth>
-      <fontname>Ariel</fontname>
+      <fontname>Arial</fontname>
       <fontsize>10</fontsize>
       <fontbold>N</fontbold>
       <fontitalic>N</fontitalic>

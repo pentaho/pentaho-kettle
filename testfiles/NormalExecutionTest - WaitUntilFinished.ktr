@@ -83,7 +83,7 @@ Trans.waitUntilFinished() returns.  Used in NormalExecutionTest.</note>
       <yloc>148</yloc>
       <width>414</width>
       <heigth>44</heigth>
-      <fontname>Ariel</fontname>
+      <fontname>Arial</fontname>
       <fontsize>10</fontsize>
       <fontbold>N</fontbold>
       <fontitalic>N</fontitalic>
