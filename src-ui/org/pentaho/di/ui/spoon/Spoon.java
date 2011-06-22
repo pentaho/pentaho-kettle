@@ -4961,31 +4961,16 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   }
 
   public boolean save(EngineMetaInterface meta, String fname, boolean export) {
-      boolean saved = false;
+    boolean saved = false;
+
+    // the only file types that are subject to ascii-only rule are those that are not trans and not job 
+    boolean isNotTransOrJob = !LastUsedFile.FILE_TYPE_TRANSFORMATION.equals(meta.getFileType())
+        && !LastUsedFile.FILE_TYPE_JOB.equals(meta.getFileType());
+
+    if (isNotTransOrJob) {
       Pattern pattern = Pattern.compile("\\p{ASCII}+");
       Matcher matcher = pattern.matcher(fname);
-      if(matcher.matches()) {
-        FileListener listener = null;
-        // match by extension first
-        int idx = fname.lastIndexOf('.');
-        if (idx != -1) {
-          String extension = fname.substring(idx + 1);
-          listener = fileExtensionMap.get(extension);
-        }
-        if (listener == null) {
-          String xt = meta.getDefaultExtension();
-          listener = fileExtensionMap.get(xt);
-        }
-    
-        if (listener != null) {
-          String sync = BasePropertyHandler.getProperty(SYNC_TRANS);
-          if (Boolean.parseBoolean(sync)) {
-            listener.syncMetaName(meta, Const.createName(fname));
-            delegates.tabs.renameTabs();
-          }
-          saved = listener.save(meta, fname, export);
-        }
-      } else {
+      if (!matcher.matches()) {
         /*
          * Temporary fix for AGILEBI-405 Don't allow saving of files that contain special characters until AGILEBI-394 is resolved.
          * AGILEBI-394 Naming an analyzer report with spanish accents gives error when publishing.
@@ -4994,7 +4979,31 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         box.setMessage("Special characters are not allowed in the filename. Please use ASCII characters only");
         box.setText(BaseMessages.getString(PKG, "Spoon.Dialog.ErrorSavingConnection.Title"));
         box.open();
+        return false;
       }
+    }
+
+    FileListener listener = null;
+    // match by extension first
+    int idx = fname.lastIndexOf('.');
+    if (idx != -1) {
+      String extension = fname.substring(idx + 1);
+      listener = fileExtensionMap.get(extension);
+    }
+    if (listener == null) {
+      String xt = meta.getDefaultExtension();
+      listener = fileExtensionMap.get(xt);
+    }
+
+    if (listener != null) {
+      String sync = BasePropertyHandler.getProperty(SYNC_TRANS);
+      if (Boolean.parseBoolean(sync)) {
+        listener.syncMetaName(meta, Const.createName(fname));
+        delegates.tabs.renameTabs();
+      }
+      saved = listener.save(meta, fname, export);
+    }
+
     return saved;
   }
 
