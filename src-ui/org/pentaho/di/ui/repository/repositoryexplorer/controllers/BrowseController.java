@@ -70,8 +70,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
 
   private static Class<?> PKG = RepositoryExplorer.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-  private UIRepositoryObject repoObject;
-  private UIRepositoryDirectory repoDir;
+  protected UIRepositoryDirectory repoDir;
 
   protected XulTree folderTree;
 
@@ -99,9 +98,9 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
 
   private MainController mainController;
 
-  private XulMessageBox messageBox;
+  protected XulMessageBox messageBox;
 
-  private XulConfirmBox confirmBox;
+  protected XulConfirmBox confirmBox;
 
   private List<UIRepositoryObject> currentSelectedFileList;
   
@@ -341,7 +340,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     try {
       for (Object object : fileTable.getSelectedItems()) {
         if (object instanceof UIRepositoryObject) {
-          repoObject = (UIRepositoryObject) object;
+          final UIRepositoryObject repoObject = (UIRepositoryObject) object;
           if (repoObject != null) {
             // If content to be deleted is a folder and they have either subfolder or jobs or transformation in it,
             // We will display a warning message that folder is not empty. If you choose to delete this folder, all its item(s)
@@ -510,7 +509,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
       folderTree.setSelectedItems(Arrays.asList(newSelectedItem));
     }
   }
-  private void deleteFolder(UIRepositoryDirectory repoDir) throws Exception{
+  protected void deleteFolder(UIRepositoryDirectory repoDir) throws Exception{
     repoDir.delete();
     directoryBinding.fireSourceChanged();
     selectedItemsBinding.fireSourceChanged();
@@ -531,7 +530,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     }
   }
 
-  private void renameRepositoryObject(final UIRepositoryObject object) throws XulException {
+  protected void renameRepositoryObject(final UIRepositoryObject object) throws XulException {
     XulPromptBox prompt = promptForName(object);
     prompt.addDialogCallback(new XulDialogCallback<String>() {
       public void onClose(XulComponent component, Status status, String value) {
@@ -553,7 +552,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
     prompt.open();
   }
 
-  private XulPromptBox promptForName(final UIRepositoryObject object) throws XulException {
+  protected XulPromptBox promptForName(final UIRepositoryObject object) throws XulException {
     XulPromptBox prompt = (XulPromptBox) document.createElement("promptbox"); //$NON-NLS-1$
     String currentName = (object == null) ? BaseMessages.getString(PKG, "BrowserController.NewFolder") //$NON-NLS-1$
         : object.getName();
