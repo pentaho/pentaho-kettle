@@ -146,7 +146,7 @@ public class UIRepositoryDirectory extends UIRepositoryObject {
 
     rep.renameRepositoryDirectory(getDirectory().getObjectId(), null, name);
     // Update the object reference so the new name is displayed
-    obj = rep.getObjectInformation(getObjectId(), getRepositoryElementType());
+    obj = rep.findDirectory(getObjectId());
     refresh();
   }
   
