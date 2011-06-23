@@ -748,6 +748,8 @@ public class Mail extends BaseStep implements StepInterface
           files.setDataHandler(new DataHandler(fds));
           // include the file in the data source
           files.setFileName(file.getName().getBaseName());
+          // insist on base64 to preserve line endings
+          files.addHeader("Content-Transfer-Encoding", "base64");
           // add the part with the file in the BodyPart();
           data.parts.addBodyPart(files);
           if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "Mail.Log.AttachedFile",fds.getName()));
