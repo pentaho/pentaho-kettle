@@ -1044,6 +1044,10 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
                   files.setDataHandler(new DataHandler(fds));
                   // include the file in the data source
                   files.setFileName(file.getName().getBaseName());
+                  
+                  // insist on base64 to preserve line endings
+                  files.addHeader("Content-Transfer-Encoding", "base64");
+                  
                   // add the part with the file in the BodyPart();
                   parts.addBodyPart(files);
                   nrattachedFiles++;
