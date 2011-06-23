@@ -1,6 +1,8 @@
 @echo off
 setlocal
 
+
+set CWD=%CD%
 cd /D %~dp0
 
 REM **************************************************
@@ -18,4 +20,5 @@ REM ***************
 REM ** Run...    **
 REM ***************
 
-"%_PENTAHO_JAVA%" -jar launcher\launcher.jar -main org.pentaho.di.core.encryption.Encr %*
+cd /D %CWD%
+"%_PENTAHO_JAVA%" -jar %KETTLE_DIR%\launcher\launcher.jar -main org.pentaho.di.core.encryption.Encr %*

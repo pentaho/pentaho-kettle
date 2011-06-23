@@ -1,6 +1,7 @@
 @echo off
 setlocal
 
+set CWD=%CD%
 cd /D %~dp0
 
 REM **************************************************
@@ -28,4 +29,5 @@ REM ***************
 REM ** Run...    **
 REM ***************
 
-"%_PENTAHO_JAVA%" %OPT% -jar launcher\launcher.jar -main org.pentaho.di.kitchen.Kitchen %*
+cd /D %CWD%
+"%_PENTAHO_JAVA%" %OPT% -jar %KETTLE_DIR%\launcher\launcher.jar -main org.pentaho.di.kitchen.Kitchen %*
