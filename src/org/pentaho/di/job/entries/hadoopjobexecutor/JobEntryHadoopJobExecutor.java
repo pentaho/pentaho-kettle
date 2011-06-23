@@ -312,9 +312,15 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
           Runnable r = new Runnable() {
             public void run() {
               try {
-                Method mainMethod = clazz.getMethod("main", new Class[] { String[].class });
-                Object[] args = (cmdLineArgs != null) ? new Object[] { cmdLineArgs.split(" ") } : new Object[0];
-                mainMethod.invoke(null, args);
+                final ClassLoader cl = Thread.currentThread().getContextClassLoader();
+                try {
+                  Thread.currentThread().setContextClassLoader(clazz.getClassLoader());
+                  Method mainMethod = clazz.getMethod("main", new Class[] { String[].class });
+                  Object[] args = (cmdLineArgs != null) ? new Object[] { cmdLineArgs.split(" ") } : new Object[0];
+                  mainMethod.invoke(null, args);
+                } finally {
+                  Thread.currentThread().setContextClassLoader(cl);
+                }
               } catch (Throwable ignored) {
                 // skip, try the next one
               }
