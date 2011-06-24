@@ -431,9 +431,10 @@ public class Database implements VariableSpace, LoggingObjectInterface
 			throw new KettleDatabaseException("Exception while loading class", e);
 		}
 
+		String url = null;
 		try 
 		{
-            String url;
+            
             
             if (databaseMeta.isPartitioned() && !Const.isEmpty(partitionId))
             {
@@ -505,12 +506,14 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		} 
 		catch(SQLException e) 
 		{
-			throw new KettleDatabaseException("Error connecting to database: (using class "+classname+")", e);
+		  Throwable cause = e.getCause();
+		  throw new KettleDatabaseException("Error connecting to database: "+url+" (using class "+classname+")"+(cause == null ? "" : " ==> "+cause.getClass().getName()+": "+cause.getMessage()), e);
 		}
-        catch(Throwable e)
-        {
-            throw new KettleDatabaseException("Error connecting to database: (using class "+classname+")", e);
-        }
+    catch(Throwable e)
+    {
+      Throwable cause = e.getCause();
+      throw new KettleDatabaseException("Error connecting to database: "+url+" (using class "+classname+")"+(cause == null ? "" : " ==> "+cause.getClass().getName()+": "+cause.getMessage()), e);
+    }
 	}
 
 	/**
