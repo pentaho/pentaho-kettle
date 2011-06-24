@@ -67,7 +67,7 @@
   	
   <target name="publish-local-task" depends="install-ivy">
     <ivy:resolve file="${ivyfilename}" />
-    <ivy:publish resolver="local" srcivypattern="${ivyfilename}" pubrevision="${project.revision}" overwrite="true" forcedeliver="true">
+    <ivy:publish resolver="local" srcivypattern="${kettle.ivydist.dir}/ivy-${ivy.artifact.id}.xml" pubrevision="${project.revision}" overwrite="true" forcedeliver="true">
       <artifacts pattern="${kettle.libdist.dir}/[artifact].[ext]" />
     </ivy:publish>
   </target>
