@@ -4,10 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.trans.Trans;
@@ -44,6 +41,7 @@ public class MasterSlaveTest extends BaseCluster {
       runParallelFileReadOnSlavesWithPartitioning2();
       runMultipleCopiesOnMultipleSlaves();
       runMultipleCopiesOnMultipleSlaves2();
+      runOneStepClustered();
     }
   }
 	
@@ -93,7 +91,8 @@ public class MasterSlaveTest extends BaseCluster {
 	 * We want to make sure that only 1 copy is considered.<br>
 	 */
 	public void runParallelFileReadOnMaster() throws Exception {
-		TransMeta transMeta = generateParallelFileReadOnMasterTransMeta(clusterGenerator);
+		TransMeta transMeta = loadTransMetaReplaceSlavesInCluster(clusterGenerator, 
+		    "test/org/pentaho/di/cluster/test-parallel-file-read-on-master.ktr");
 		TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
 		TransSplitter transSplitter = Trans.executeClustered(transMeta, config);
 		LogChannel logChannel = createLogChannel("cluster unit test <testParallelFileReadOnMaster>");
@@ -114,7 +113,8 @@ public class MasterSlaveTest extends BaseCluster {
 	 * It then passes the data over to a dummy step on the slaves.<br>
 	 */
 	public void runParallelFileReadOnMasterWithCopies() throws Exception {
-		TransMeta transMeta = generateParallelFileReadOnMasterWithCopiesTransMeta(clusterGenerator);
+		TransMeta transMeta = loadTransMetaReplaceSlavesInCluster(clusterGenerator, 
+		    "test/org/pentaho/di/cluster/test-parallel-file-read-on-master-with-copies.ktr");
 		TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
 		TransSplitter transSplitter = Trans.executeClustered(transMeta, config);
 		LogChannel logChannel = createLogChannel("cluster unit test <runParallelFileReadOnMasterWithCopies>");
@@ -130,7 +130,8 @@ public class MasterSlaveTest extends BaseCluster {
 	 * It then passes the data over to a dummy step on the slaves.<br>
 	 */
 	public void runParallelFileReadOnSlaves() throws Exception {
-		TransMeta transMeta = generateParallelFileReadOnSlavesTransMeta(clusterGenerator);
+		TransMeta transMeta = loadTransMetaReplaceSlavesInCluster(clusterGenerator, 
+		    "test/org/pentaho/di/cluster/test-parallel-file-read-on-slaves.ktr");
 		TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
 		TransSplitter transSplitter = Trans.executeClustered(transMeta, config);
 		LogChannel logChannel = createLogChannel("cluster unit test <runParallelFileReadOnSlaves>");
@@ -145,7 +146,8 @@ public class MasterSlaveTest extends BaseCluster {
 	 * It then passes the data over to a dummy step on the slaves.<br>
 	 */
 	public void runParallelFileReadOnSlavesWithPartitioning() throws Exception {
-		TransMeta transMeta = generateParallelFileReadOnSlavesWithPartitioningTransMeta(clusterGenerator);
+		TransMeta transMeta = loadTransMetaReplaceSlavesInCluster(clusterGenerator, 
+		    "test/org/pentaho/di/cluster/test-parallel-file-read-on-slaves-with-partitioning.ktr");
 		TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
 		TransSplitter transSplitter = Trans.executeClustered(transMeta, config);
 		LogChannel logChannel = createLogChannel("cluster unit test <runParallelFileReadOnSlavesWithPartitioning>");
@@ -161,7 +163,8 @@ public class MasterSlaveTest extends BaseCluster {
 	 * It then passes the data over to a dummy step on the slaves.<br>
 	 */
 	public void runParallelFileReadOnSlavesWithPartitioning2() throws Exception {
-		TransMeta transMeta = generateParallelFileReadOnSlavesWithPartitioning2TransMeta(clusterGenerator);
+		TransMeta transMeta = loadTransMetaReplaceSlavesInCluster(clusterGenerator, 
+		    "test/org/pentaho/di/cluster/test-parallel-file-read-on-slaves-with-partitioning2.ktr");
 		TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
 		TransSplitter transSplitter = Trans.executeClustered(transMeta, config);
 		LogChannel logChannel = createLogChannel("cluster unit test <runParallelFileReadOnSlavesWithPartitioning2>");
@@ -175,7 +178,8 @@ public class MasterSlaveTest extends BaseCluster {
      * This test reads a CSV file and sends the data to 3 copies on 3 slave servers.<br>
      */
     public void runMultipleCopiesOnMultipleSlaves2() throws Exception {
-  		TransMeta transMeta = generateMultipleCopiesOnMultipleSlaves2(clusterGenerator);
+  		TransMeta transMeta = loadTransMetaReplaceSlavesInCluster(clusterGenerator, 
+  		    "test/org/pentaho/di/cluster/test-hops-between-multiple-copies-steps-on-cluster.ktr");
   		TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
   		TransSplitter transSplitter = Trans.executeClustered(transMeta, config);
   		LogChannel logChannel = createLogChannel("cluster unit test <runMultipleCopiesOnMultipleSlaves2>");
@@ -190,7 +194,8 @@ public class MasterSlaveTest extends BaseCluster {
 	 * This test reads a CSV file and sends the data to 3 copies on 3 slave servers.<br>
 	 */
 	public void runMultipleCopiesOnMultipleSlaves() throws Exception {
-		TransMeta transMeta = generateMultipleCopiesOnMultipleSlaves(clusterGenerator);
+		TransMeta transMeta = loadTransMetaReplaceSlavesInCluster(clusterGenerator, 
+		    "test/org/pentaho/di/cluster/test-multiple-copies-on-multiple-slaves.ktr");
 		TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
 		TransSplitter transSplitter = Trans.executeClustered(transMeta, config);
 		LogChannel logChannel = createLogChannel("cluster unit test <testMultipleCopiesOnMultipleSlaves>");
@@ -200,6 +205,21 @@ public class MasterSlaveTest extends BaseCluster {
 		assertEqualsIgnoreWhitespacesAndCase("100", result);
 	}
 
+  /**
+   * This test generates rows on the master, generates random values clustered and brings them back the master.<br>
+   * See also: PDI-6324 : Generate Rows to a clustered step ceases to work
+   */
+  public void runOneStepClustered() throws Exception {
+    TransMeta transMeta = loadTransMetaReplaceSlavesInCluster(clusterGenerator, 
+        "test/org/pentaho/di/cluster/one-step-clustered.ktr");
+    TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
+    TransSplitter transSplitter = Trans.executeClustered(transMeta, config);
+    LogChannel logChannel = createLogChannel("cluster unit test <runOneStepClustered>");
+    long nrErrors = Trans.monitorClusteredTransformation(logChannel, transSplitter, null, 1);
+    assertEquals(0L, nrErrors);
+    String result = loadFileContent(transMeta, "${java.io.tmpdir}/one-step-clustered.txt");
+    assertEqualsIgnoreWhitespacesAndCase("10000", result);
+  }
 	
 	
 	
@@ -212,178 +232,26 @@ public class MasterSlaveTest extends BaseCluster {
 	
 	
 	
-	
-
-	private static TransMeta generateParallelFileReadOnMasterTransMeta(ClusterGenerator clusterGenerator) throws KettleException {
-		TransMeta transMeta = new TransMeta("test/org/pentaho/di/cluster/test-parallel-file-read-on-master.ktr");
-		
-		// Add the slave servers
-		//
-		for (SlaveServer slaveServer : ClusterGenerator.LOCAL_TEST_SLAVES) {
-			transMeta.getSlaveServers().add(slaveServer);
-		}
-		
-		// Replace the slave servers in the specified cluster schema...
-		//
-		ClusterSchema clusterSchema = transMeta.findClusterSchema(ClusterGenerator.TEST_CLUSTER_NAME);
-		assertNotNull("Cluster schema '"+ClusterGenerator.TEST_CLUSTER_NAME+"' couldn't be found", clusterSchema);
-		clusterSchema.getSlaveServers().clear();
-		clusterSchema.getSlaveServers().addAll(Arrays.asList(ClusterGenerator.LOCAL_TEST_SLAVES));
-
-		return transMeta;
-	}
-
-	private static TransMeta generateParallelFileReadOnMasterWithCopiesTransMeta(ClusterGenerator clusterGenerator) throws KettleException {
-		TransMeta transMeta = new TransMeta("test/org/pentaho/di/cluster/test-parallel-file-read-on-master-with-copies.ktr");
-		
-		// Add the slave servers
-		//
-		for (SlaveServer slaveServer : ClusterGenerator.LOCAL_TEST_SLAVES) {
-			transMeta.getSlaveServers().add(slaveServer);
-		}
-		
-		// Replace the slave servers in the specified cluster schema...
-		//
-		ClusterSchema clusterSchema = transMeta.findClusterSchema(ClusterGenerator.TEST_CLUSTER_NAME);
-		assertNotNull("Cluster schema '"+ClusterGenerator.TEST_CLUSTER_NAME+"' couldn't be found", clusterSchema);
-		clusterSchema.getSlaveServers().clear();
-		clusterSchema.getSlaveServers().addAll(Arrays.asList(ClusterGenerator.LOCAL_TEST_SLAVES));
-
-		return transMeta;
-	}
-	
-
-	private static TransMeta generateParallelFileReadOnSlavesTransMeta(ClusterGenerator clusterGenerator) throws KettleException {
-		TransMeta transMeta = new TransMeta("test/org/pentaho/di/cluster/test-parallel-file-read-on-slaves.ktr");
-		
-		// Add the slave servers
-		//
-		for (SlaveServer slaveServer : ClusterGenerator.LOCAL_TEST_SLAVES) {
-			transMeta.getSlaveServers().add(slaveServer);
-		}
-		
-		// Replace the slave servers in the specified cluster schema...
-		//
-		ClusterSchema clusterSchema = transMeta.findClusterSchema(ClusterGenerator.TEST_CLUSTER_NAME);
-		assertNotNull("Cluster schema '"+ClusterGenerator.TEST_CLUSTER_NAME+"' couldn't be found", clusterSchema);
-		clusterSchema.getSlaveServers().clear();
-		clusterSchema.getSlaveServers().addAll(Arrays.asList(ClusterGenerator.LOCAL_TEST_SLAVES));
-
-		return transMeta;
-	}
 	
 	
 
-	private static TransMeta generateParallelFileReadOnSlavesWithPartitioningTransMeta(ClusterGenerator clusterGenerator) throws KettleException {
-		TransMeta transMeta = new TransMeta("test/org/pentaho/di/cluster/test-parallel-file-read-on-slaves-with-partitioning.ktr");
-		
-		// Add the slave servers
-		//
-		for (SlaveServer slaveServer : ClusterGenerator.LOCAL_TEST_SLAVES) {
-			transMeta.getSlaveServers().add(slaveServer);
-		}
-		
-		// Replace the slave servers in the specified cluster schema...
-		//
-		ClusterSchema clusterSchema = transMeta.findClusterSchema(ClusterGenerator.TEST_CLUSTER_NAME);
-		assertNotNull("Cluster schema '"+ClusterGenerator.TEST_CLUSTER_NAME+"' couldn't be found", clusterSchema);
-		clusterSchema.getSlaveServers().clear();
-		clusterSchema.getSlaveServers().addAll(Arrays.asList(ClusterGenerator.LOCAL_TEST_SLAVES));
-
-		return transMeta;
-	}
-	
-	
-
-	private static TransMeta generateParallelFileReadOnSlavesWithPartitioning2TransMeta(ClusterGenerator clusterGenerator) throws KettleException {
-		TransMeta transMeta = new TransMeta("test/org/pentaho/di/cluster/test-parallel-file-read-on-slaves-with-partitioning2.ktr");
-		
-		// Add the slave servers
-		//
-		for (SlaveServer slaveServer : ClusterGenerator.LOCAL_TEST_SLAVES) {
-			transMeta.getSlaveServers().add(slaveServer);
-		}
-		
-		// Replace the slave servers in the specified cluster schema...
-		//
-		ClusterSchema clusterSchema = transMeta.findClusterSchema(ClusterGenerator.TEST_CLUSTER_NAME);
-		assertNotNull("Cluster schema '"+ClusterGenerator.TEST_CLUSTER_NAME+"' couldn't be found", clusterSchema);
-		clusterSchema.getSlaveServers().clear();
-		clusterSchema.getSlaveServers().addAll(Arrays.asList(ClusterGenerator.LOCAL_TEST_SLAVES));
-
-		return transMeta;
-	}
-	
-	private static TransMeta generateMultipleCopiesOnMultipleSlaves2(ClusterGenerator clusterGenerator) throws KettleException {
-		TransMeta transMeta = new TransMeta("test/org/pentaho/di/cluster/test-hops-between-multiple-copies-steps-on-cluster.ktr");
-		
-		// Add the slave servers
-		//
-		for (SlaveServer slaveServer : ClusterGenerator.LOCAL_TEST_SLAVES) {
-			transMeta.getSlaveServers().add(slaveServer);
-		}
-		
-		// Replace the slave servers in the specified cluster schema...
-		//
-		ClusterSchema clusterSchema = transMeta.findClusterSchema(ClusterGenerator.TEST_CLUSTER_NAME);
-		assertNotNull("Cluster schema '"+ClusterGenerator.TEST_CLUSTER_NAME+"' couldn't be found", clusterSchema);
-		clusterSchema.getSlaveServers().clear();
-		clusterSchema.getSlaveServers().addAll(Arrays.asList(ClusterGenerator.LOCAL_TEST_SLAVES));
-
-		return transMeta;
-	}
-
-
-    private static TransMeta generateMultipleCopiesOnMultipleSlaves(ClusterGenerator clusterGenerator) throws KettleException {
-    	TransMeta transMeta = new TransMeta("test/org/pentaho/di/cluster/test-multiple-copies-on-multiple-slaves.ktr");
-    	
-    	// Add the slave servers
-    	//
-    	for (SlaveServer slaveServer : ClusterGenerator.LOCAL_TEST_SLAVES) {
-    		transMeta.getSlaveServers().add(slaveServer);
-    	}
-    	
-    	// Replace the slave servers in the specified cluster schema...
-    	//
-    	ClusterSchema clusterSchema = transMeta.findClusterSchema(ClusterGenerator.TEST_CLUSTER_NAME);
-    	assertNotNull("Cluster schema '"+ClusterGenerator.TEST_CLUSTER_NAME+"' couldn't be found", clusterSchema);
-    	clusterSchema.getSlaveServers().clear();
-    	clusterSchema.getSlaveServers().addAll(Arrays.asList(ClusterGenerator.LOCAL_TEST_SLAVES));
+  private static TransMeta loadTransMetaReplaceSlavesInCluster(ClusterGenerator clusterGenerator, String testFilename) throws KettleException {
+    TransMeta transMeta = new TransMeta(testFilename);
     
-    	return transMeta;
+    // Add the slave servers
+    //
+    for (SlaveServer slaveServer : ClusterGenerator.LOCAL_TEST_SLAVES) {
+      transMeta.getSlaveServers().add(slaveServer);
     }
     
+    // Replace the slave servers in the specified cluster schema...
+    //
+    ClusterSchema clusterSchema = transMeta.findClusterSchema(ClusterGenerator.TEST_CLUSTER_NAME);
+    assertNotNull("Cluster schema '"+ClusterGenerator.TEST_CLUSTER_NAME+"' couldn't be found", clusterSchema);
+    clusterSchema.getSlaveServers().clear();
+    clusterSchema.getSlaveServers().addAll(Arrays.asList(ClusterGenerator.LOCAL_TEST_SLAVES));
     
+    return transMeta;
+  }
     
-    
-    
-    public static void main(String[] args) throws Exception {
-
-      System.setProperty(Const.KETTLE_CARTE_OBJECT_TIMEOUT_MINUTES, "1");
-      KettleEnvironment.init();
-      CentralLogStore.init(1000, 5);
-      
-      ClusterGenerator clusterGenerator = new ClusterGenerator();
-      try {
-        clusterGenerator.launchSlaveServers();
-
-        for (int i=0;i<10000;i++) {
-          TransMeta transMeta = generateParallelFileReadOnMasterTransMeta(clusterGenerator);
-          TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
-          TransSplitter transSplitter = Trans.executeClustered(transMeta, config);
-          LogChannel logChannel = createLogChannel("cluster unit test <testParallelFileReadOnMaster>");
-          long nrErrors = Trans.monitorClusteredTransformation(logChannel, transSplitter, null, 1);
-          assert(nrErrors == 0);        
-          String result = loadFileContent(transMeta, "${java.io.tmpdir}/test-parallel-file-read-on-master-result.txt");
-          assert("100".equals(Const.trim(result)));
-          
-          System.out.println("Finished iteration #"+(i+1));
-        }
-        
-      } finally {
-        clusterGenerator.stopSlaveServers();
-        SlaveConnectionManager.getInstance().shutdown();
-      }
-      
-    }
 }
