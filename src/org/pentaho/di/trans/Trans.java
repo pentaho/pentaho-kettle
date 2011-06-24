@@ -634,8 +634,15 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         }
 
 		// Now (optionally) write start log record!
-        calculateBatchIdAndDateRange();
-		beginProcessing();
+    // Make sure we synchronize appropriately to avoid duplicate batch IDs.
+    //
+    Object syncObject=this;
+    if (parentJob!=null) syncObject=parentJob; // parallel execution in a job
+    if (parentTrans!=null)  syncObject=parentTrans; // multiple sub-transformations
+    synchronized(syncObject) {
+      calculateBatchIdAndDateRange();
+      beginProcessing();
+    }
 
         // Set the partition-to-rowset mapping
         //

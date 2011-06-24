@@ -338,7 +338,15 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
         // Where do we start?
         JobEntryCopy startpoint;
-        beginProcessing();
+        
+        // synchronize this to a parent job if needed.
+        //
+        Object syncObject=this;
+        if (parentJob!=null) syncObject=parentJob; // parallel execution in a job
+        synchronized(syncObject) {
+          beginProcessing();
+        }
+
         if (startJobEntryCopy==null) {
           startpoint = jobMeta.findJobEntry(JobMeta.STRING_SPECIAL_START, 0, false);
         } else {
@@ -769,7 +777,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 	 * 
 	 * @throws KettleException
 	 */
-  public synchronized boolean beginProcessing() throws KettleException {
+  public boolean beginProcessing() throws KettleException {
     currentDate = new Date();
     logDate = new Date();
     startDate = Const.MIN_DATE;
