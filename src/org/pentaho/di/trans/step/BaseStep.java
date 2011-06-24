@@ -312,7 +312,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
         
         init = false;
 
-        synchronized (statusCountersLock) {
+        synchronized(statusCountersLock) {
             linesRead = 0L; // new AtomicLong(0L); // Keep some statistics!
             linesWritten = 0L; // new AtomicLong(0L);
             linesUpdated = 0L; // new AtomicLong(0L);
@@ -667,7 +667,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
      */
     public long getLinesRead()
     {
-        synchronized (statusCountersLock) {
+        synchronized(statusCountersLock) {
             return linesRead;
         }
     }
@@ -678,7 +678,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
      */
     public long incrementLinesRead()
     {
-        synchronized (statusCountersLock) {
+        synchronized(statusCountersLock) {
             return ++linesRead;
         }
     }
@@ -690,7 +690,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
      */
     public long decrementLinesRead()
     {
-        synchronized (statusCountersLock) {
+        synchronized(statusCountersLock) {
             return --linesRead;
         }
     }
@@ -700,7 +700,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
      */
     public void setLinesRead(long newLinesReadValue)
     {
-        synchronized (statusCountersLock) {
+        synchronized(statusCountersLock) {
             linesRead = newLinesReadValue;
         }
     }
@@ -710,7 +710,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
      */
     public long getLinesInput()
     {
-        synchronized (statusCountersLock) {
+        synchronized(statusCountersLock) {
             return linesInput;
         }
     }
@@ -721,7 +721,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
      */
     public long incrementLinesInput()
     {
-        synchronized (statusCountersLock) {
+        synchronized(statusCountersLock) {
             return ++linesInput;
         }
     }
@@ -731,7 +731,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
      */
     public void setLinesInput(long newLinesInputValue)
     {
-        synchronized (statusCountersLock) {
+        synchronized(statusCountersLock) {
             linesInput = newLinesInputValue;
         }
     }
@@ -741,7 +741,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
      */
     public long getLinesOutput()
     {
-        synchronized (statusCountersLock) {
+        synchronized(statusCountersLock) {
             return linesOutput;
         }
     }
@@ -752,7 +752,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
      */
     public long incrementLinesOutput()
     {
-        synchronized (statusCountersLock) {
+        synchronized(statusCountersLock) {
             return ++linesOutput;
         }
     }
@@ -762,7 +762,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
      */
     public void setLinesOutput(long newLinesOutputValue)
     {
-        synchronized (statusCountersLock) {
+        synchronized(statusCountersLock) {
             linesOutput = newLinesOutputValue;
         }
     }
@@ -772,7 +772,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
      */
     public long getLinesWritten()
     {
-        synchronized (statusCountersLock) {
+        synchronized(statusCountersLock) {
             return linesWritten;
         }
     }
@@ -783,7 +783,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
      */
     public long incrementLinesWritten()
     {
-        synchronized (statusCountersLock) {
+        synchronized(statusCountersLock) {
             return ++linesWritten;
         }
     }
@@ -794,7 +794,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
      */
     public long decrementLinesWritten()
     {
-        synchronized (statusCountersLock) {
+        synchronized(statusCountersLock) {
             return --linesWritten;
         }
     }
@@ -804,7 +804,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
      */
     public void setLinesWritten(long newLinesWrittenValue)
     {
-        synchronized (statusCountersLock) {
+        synchronized(statusCountersLock) {
             linesWritten = newLinesWrittenValue;
         }
     }
@@ -814,7 +814,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
      */
     public long getLinesUpdated()
     {
-        synchronized (statusCountersLock) {
+        synchronized(statusCountersLock) {
             return linesUpdated;
         }
     }
@@ -825,7 +825,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
      */
     public long incrementLinesUpdated()
     {
-        synchronized (statusCountersLock) {
+        synchronized(statusCountersLock) {
             return ++linesUpdated;
         }
     }
@@ -835,7 +835,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
      */
     public void setLinesUpdated(long newLinesUpdatedValue)
     {
-        synchronized (statusCountersLock) {
+        synchronized(statusCountersLock) {
             linesUpdated = newLinesUpdatedValue;
         }
     }
@@ -845,7 +845,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
      */
     public long getLinesRejected()
     {
-        synchronized (statusCountersLock) {
+        synchronized(statusCountersLock) {
             return linesRejected;
         }
     }
@@ -856,7 +856,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
      */
     public long incrementLinesRejected()
     {
-        synchronized (statusCountersLock) {
+        synchronized(statusCountersLock) {
             return ++linesRejected;
         }
     }
@@ -866,7 +866,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
      */
     public void setLinesRejected(long newLinesRejectedValue)
     {
-        synchronized (statusCountersLock) {
+        synchronized(statusCountersLock) {
             linesRejected = newLinesRejectedValue;
         }
     }
@@ -876,7 +876,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
      */
     public long getLinesSkipped()
     {
-        synchronized (statusCountersLock) {
+        synchronized(statusCountersLock) {
             return linesSkipped;
         }
     }
@@ -887,7 +887,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
      */
     public long incrementLinesSkipped()
     {
-        synchronized (statusCountersLock) {
+        synchronized(statusCountersLock) {
             return ++linesSkipped;
         }
     }
@@ -897,7 +897,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
      */
     public void setLinesSkipped(long newLinesSkippedValue)
     {
-        synchronized (statusCountersLock) {
+        synchronized(statusCountersLock) {
             linesSkipped = newLinesSkippedValue;
         }
     }
@@ -1041,7 +1041,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
   
       // call all row listeners...
       //
-      synchronized (this) {
+      synchronized(rowListeners) {
         for (int i = 0; i < rowListeners.size(); i++) {
           RowListener rowListener = rowListeners.get(i);
           rowListener.rowWrittenEvent(rowMeta, row);
@@ -1301,7 +1301,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
     // call all row listeners...
     //
-    synchronized (this) {
+    synchronized(rowListeners) {
       for (int i = 0; i < rowListeners.size(); i++) {
         RowListener rowListener = rowListeners.get(i);
         rowListener.rowWrittenEvent(rowMeta, row);
@@ -1356,7 +1356,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     stepErrorMeta.addErrorRowData(errorRowData, rowMeta.size(), nrErrors, errorDescriptions, fieldNames, errorCodes);
 
     // call all row listeners...
-    synchronized (this) {
+    synchronized(rowListeners) {
       for (int i = 0; i < rowListeners.size(); i++) {
         RowListener rowListener = rowListeners.get(i);
         rowListener.errorRowWrittenEvent(rowMeta, row);
@@ -1594,7 +1594,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
         }
       }
 
-      synchronized (this) {
+      synchronized(rowListeners) {
         for (int i = 0; i < rowListeners.size(); i++) {
           RowListener rowListener = rowListeners.get(i);
           rowListener.rowReadEvent(inputRowMeta, row);
@@ -1826,7 +1826,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
     // call all rowlisteners...
     //
-    synchronized (this) {
+    synchronized(rowListeners) {
       for (int i = 0; i < rowListeners.size(); i++) {
         RowListener rowListener = rowListeners.get(i);
         rowListener.rowReadEvent(rowSet.getRowMeta(), rowData);
@@ -2483,7 +2483,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
     public void logSummary()
     {
-        synchronized (statusCountersLock) {
+        synchronized(statusCountersLock) {
             long li = getLinesInput();
             long lo = getLinesOutput();
             long lr = getLinesRead();
