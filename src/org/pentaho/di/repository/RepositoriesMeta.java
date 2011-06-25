@@ -203,7 +203,41 @@ public class RepositoriesMeta
 					
 				}
 			}
-			
+			parseRepositoriesDoc(doc);
+		}
+        catch(Exception e)
+        {
+            throw new KettleException(BaseMessages.getString(PKG, "RepositoryMeta.Error.ReadingInfo"), e);
+        }
+        
+        return true;
+	}
+	
+	public void readDataFromInputStream(InputStream is) throws KettleException {
+	  // Clear the information
+      //
+      clear();
+
+      log.logBasic( BaseMessages.getString(PKG, "RepositoryMeta.Log.ReadingXMLFile", "FromInputStream" ) ); 
+      
+      DocumentBuilderFactory dbf;
+      DocumentBuilder db;
+      Document doc;
+      try
+      {           
+          // Check and open XML document
+          dbf  = DocumentBuilderFactory.newInstance();
+          db   = dbf.newDocumentBuilder();
+          doc  = db.parse(is);
+          parseRepositoriesDoc(doc);
+      }
+      catch(Exception e)
+      {
+          throw new KettleException(BaseMessages.getString(PKG, "RepositoryMeta.Error.ReadingInfo"), e);
+      }
+	}
+	
+	protected void parseRepositoriesDoc(Document doc) throws Exception { 
 			// Get the <repositories> node:
 			Node repsnode = XMLHandler.getSubNode(doc, "repositories");
 		
@@ -282,13 +316,6 @@ public class RepositoriesMeta
 			if(kettleException != null) {
 			  throw kettleException;
 			}
-		}
-		catch(Exception e)
-		{
-			throw new KettleException(BaseMessages.getString(PKG, "RepositoryMeta.Error.ReadingInfo"), e);
-		}
-		
-		return true;
 	}
 	
 	public String getXML()
