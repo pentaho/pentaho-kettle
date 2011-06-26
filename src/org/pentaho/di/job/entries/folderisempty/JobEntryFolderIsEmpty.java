@@ -238,7 +238,7 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 					if(log.isBasic()) logBasic("we can not find ["+realFoldername+"] !");
 				}
 			} catch (Exception e) {
-				logError("Could not create Folder ["+realFoldername+"]", e);
+				logError("Error checking folder ["+realFoldername+"]", e);
 				result.setResult( false );
 				result.setNrErrors(1);					
 			}
