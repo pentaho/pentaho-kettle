@@ -31,4 +31,14 @@ public interface IRepositoryImporter extends ProgressMonitorListener, Repository
    * @param importRules The rules to use during import into the repository
    */
   public void setImportRules(ImportRules importRules);
+  
+  /**
+   * Overrides repository directory for all imported transformations.
+   */
+  public void setTransDirOverride(String transDirOverride);
+  
+  /**
+   * Overrides repository directory for all imported jobs.
+   */
+  public void setJobDirOverride(String jobDirOverride);
 }
