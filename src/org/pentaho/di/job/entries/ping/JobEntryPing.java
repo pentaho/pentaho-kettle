@@ -356,6 +356,11 @@ public class JobEntryPing extends JobEntryBase implements Cloneable, JobEntryInt
         		  logDetailed(BaseMessages.getString(PKG, "JobPing.ExecClassicPing.Label", CmdPing));
         	  }
         	  Process processPing = Runtime.getRuntime().exec(CmdPing);
+            try {
+              processPing.waitFor();
+            } catch (InterruptedException e) {
+              logDetailed(BaseMessages.getString(PKG, "JobPing.ClassicPingInterrupted"));
+            }
         	  if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobPing.Gettingresponse.Label",hostname));
         	  // Get ping response
               BufferedReader br = new BufferedReader(new InputStreamReader(processPing.getInputStream()));
