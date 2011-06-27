@@ -4,6 +4,11 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
 
+/**
+ * This class provides a simple wrapper to disguise a Writer as an OutputStream.
+ * 
+ * @author matt
+ */
 public class WriterOutputStream extends OutputStream {
   private Writer writer;
   private String encoding;
