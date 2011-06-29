@@ -637,9 +637,6 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             spoon.addUndoChange(transMeta, new StepMeta[] { before }, new StepMeta[] { (StepMeta) stepMeta.clone() }, new int[] { transMeta.indexOfStep(stepMeta) });
           }
 
-          spoon.selectionFilter.setText("");
-          spoon.refreshTree();
-          
           canvas.forceFocus();
           redraw();
 
