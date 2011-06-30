@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="src-plugins/kettle-hl7-plugin/src"/>
 	<classpathentry kind="src" output="classes-ui" path="src-ui"/>
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="src" output="classes-core" path="src-core"/>
@@ -248,16 +249,16 @@
 	<classpathentry kind="lib" path="libext/commons/commons-beanutils-1.8.0-BETA.jar"/>
 	<classpathentry kind="lib" path="libext/commons/commons-discovery-0.2.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/postgresql-8.4-702.jdbc3.jar"/>
-	<classpathentry kind="lib" path="libext/hl7/hapi-base-1.1.jar"/>
-	<classpathentry kind="lib" path="libext/hl7/hapi-examples-1.1.jar"/>
-	<classpathentry kind="lib" path="libext/hl7/hapi-structures-v21-1.1.jar"/>
-	<classpathentry kind="lib" path="libext/hl7/hapi-structures-v22-1.1.jar"/>
-	<classpathentry kind="lib" path="libext/hl7/hapi-structures-v23-1.1.jar"/>
-	<classpathentry kind="lib" path="libext/hl7/hapi-structures-v231-1.1.jar"/>
-	<classpathentry kind="lib" path="libext/hl7/hapi-structures-v24-1.1.jar"/>
-	<classpathentry kind="lib" path="libext/hl7/hapi-structures-v25-1.1.jar"/>
-	<classpathentry kind="lib" path="libext/hl7/hapi-structures-v251-1.1.jar"/>
-	<classpathentry kind="lib" path="libext/hl7/hapi-structures-v26-1.1.jar"/>
+	<classpathentry kind="lib" path="src-plugins/kettle-hl7-plugin/lib/hapi-base-1.1.jar"/>
+	<classpathentry kind="lib" path="src-plugins/kettle-hl7-plugin/lib/hapi-examples-1.1.jar"/>
+	<classpathentry kind="lib" path="src-plugins/kettle-hl7-plugin/lib/hapi-structures-v21-1.1.jar"/>
+	<classpathentry kind="lib" path="src-plugins/kettle-hl7-plugin/lib/hapi-structures-v22-1.1.jar"/>
+	<classpathentry kind="lib" path="src-plugins/kettle-hl7-plugin/lib/hapi-structures-v23-1.1.jar"/>
+	<classpathentry kind="lib" path="src-plugins/kettle-hl7-plugin/lib/hapi-structures-v231-1.1.jar"/>
+	<classpathentry kind="lib" path="src-plugins/kettle-hl7-plugin/lib/hapi-structures-v24-1.1.jar"/>
+	<classpathentry kind="lib" path="src-plugins/kettle-hl7-plugin/lib/hapi-structures-v25-1.1.jar"/>
+	<classpathentry kind="lib" path="src-plugins/kettle-hl7-plugin/lib/hapi-structures-v251-1.1.jar"/>
+	<classpathentry kind="lib" path="src-plugins/kettle-hl7-plugin/lib/hapi-structures-v26-1.1.jar"/>
 	<classpathentry kind="lib" path="libext/mongo-2.5.3.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/infobright-core-3.4.jar"/>
 	<classpathentry kind="lib" path="libext/jsch-0.1.44.jar"/>

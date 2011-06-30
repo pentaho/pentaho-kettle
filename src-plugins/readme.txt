@@ -21,4 +21,4 @@ Core Kettle Plugin Documentation
  
  Here is the current core kettle plugins eclipse flag:
  
- -DKETTLE_PLUGIN_CLASSES=org.pentaho.di.trans.steps.gpload.GPLoadMeta,org.pentaho.di.core.database.PALODatabaseMeta,org.pentaho.di.trans.steps.palo.cellinput.PaloCellInputMeta,org.pentaho.di.trans.steps.palo.celloutput.PaloCellOutputMeta,org.pentaho.di.trans.steps.palo.diminput.PaloDimInputMeta,org.pentaho.di.trans.steps.palo.dimoutput.PaloDimOutputMeta
+ -DKETTLE_PLUGIN_CLASSES=org.pentaho.di.trans.steps.gpload.GPLoadMeta,org.pentaho.di.core.database.PALODatabaseMeta,org.pentaho.di.trans.steps.palo.cellinput.PaloCellInputMeta,org.pentaho.di.trans.steps.palo.celloutput.PaloCellOutputMeta,org.pentaho.di.trans.steps.palo.diminput.PaloDimInputMeta,org.pentaho.di.trans.steps.palo.dimoutput.PaloDimOutputMeta,org.pentaho.di.trans.steps.hl7input.HL7InputMeta,org.pentaho.di.job.entries.hl7mllpack.HL7MLLPAcknowledge,org.pentaho.di.job.entries.hl7mllpin.HL7MLLPInput

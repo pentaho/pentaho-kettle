@@ -37,11 +37,11 @@ import ca.uhn.hl7v2.validation.impl.NoValidation;
 
 @org.pentaho.di.core.annotations.JobEntry(
 		id="HL7MLLPInput",
-		categoryDescription="HL7Input.JobEntry.Category",
-		i18nPackageName="org.pentaho.di.trans.hl7",
-		image="org/pentaho/di/trans/hl7/images/mllp-in.png", 
-		name="HL7MLLPInput.JobEntry.Name",
-		description="org.pentaho.di.trans.hl7"
+		categoryDescription="i18n:org.pentaho.di.job:JobCategory.Category.Utility",
+		i18nPackageName="org.pentaho.di.job.entries.hl7mllpin",
+		image="mllp-in.png", 
+		name="HL7MLLPInput.Name",
+		description="HL7MLLPInput.TooltipDesc"
 	)
 public class HL7MLLPInput extends JobEntryBase implements Cloneable, JobEntryInterface
 {

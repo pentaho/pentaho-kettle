@@ -6,6 +6,7 @@ import java.util.Map;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Counter;
+import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -27,7 +28,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
 
-
+@Step(id = "HL7Input", image = "hl7-input.png", i18nPackageName="org.pentaho.di.trans.steps.hl7input", name="HL7Input.Name", description = "HL7Input.TooltipDesc", categoryDescription="i18n:org.pentaho.di.trans.step:BaseStep.Category.Input")
 public class HL7InputMeta extends BaseStepMeta implements StepMetaInterface
 {
 	private static Class<?> PKG = HL7InputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$

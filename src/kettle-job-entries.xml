@@ -530,20 +530,6 @@
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.DosUnixConverter.Tooltip</tooltip>
 		<iconfile>ui/images/DTU.png</iconfile>
 	</job-entry>
-	<job-entry id="HL7MLLPInput">
-		<description>i18n:org.pentaho.di.job.entry:JobEntry.HL7MLLPInput.TypeDesc</description>
-		<classname>org.pentaho.di.job.entries.hl7mllpin.HL7MLLPInput</classname>
-		<category>i18n:org.pentaho.di.job:JobCategory.Category.Utility</category>
-		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.HL7MLLPInput.Tooltip</tooltip>
-		<iconfile>ui/images/mllp-in.png</iconfile>
-	</job-entry>
-	<job-entry id="HL7MLLPAcknowledge">
-		<description>i18n:org.pentaho.di.job.entry:JobEntry.HL7MLLPAcknowledge.TypeDesc</description>
-		<classname>org.pentaho.di.job.entries.hl7mllpack.HL7MLLPAcknowledge</classname>
-		<category>i18n:org.pentaho.di.job:JobCategory.Category.Utility</category>
-		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.HL7MLLPAcknowledge.Tooltip</tooltip>
-		<iconfile>ui/images/mllp-ack.png</iconfile>
-	</job-entry>
 	<job-entry id="PGP_DECRYPT_FILES">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.PGPDecryptFiles.TypeDesc</description>
 		<classname>org.pentaho.di.job.entries.pgpdecryptfiles.JobEntryPGPDecryptFiles</classname>
