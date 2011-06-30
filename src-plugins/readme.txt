@@ -6,11 +6,18 @@ Core Kettle Plugin Documentation
  dependency reasons.
  
  to add a core plugin:
+  
   - create a folder under src-plugins with the name of the plugin
+  
   - create src, test, lib, and res subfolders for the various files that will be included in your plugin
+  
   - add your plugin folder name to the plugins property in build.properties
+  
   - if you would like your plugin's jar and zip to get published to artifactory, update the
-    build-res/publish.properties with your plugin folder  
+    build-res/publish.properties with your plugin folder.
+    
+    An ivy.xml file must be located with in the plugin's root folder.  When creating a new plugin
+    the ivy.xml file from an existing plugin can be copied.  No editing is needed.
   
  all core plugins get built as part of the core dist, also you can build the plugins standalone by using 
  the "-standalone" ant targets related to the plugins.  If you'd like to just build a single plugin, 
