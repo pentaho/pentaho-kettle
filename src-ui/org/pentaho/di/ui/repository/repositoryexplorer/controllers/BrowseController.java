@@ -426,7 +426,8 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
       if (selectedFolder == null) {
         selectedFolder = repositoryDirectory;
       }
-      selectedFolder.createFolder(newName);
+      UIRepositoryDirectory newDir = selectedFolder.createFolder(newName);
+      dirMap.put(newDir.getObjectId(), newDir);
 
       directoryBinding.fireSourceChanged();
       selectedItemsBinding.fireSourceChanged();
