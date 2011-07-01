@@ -165,7 +165,7 @@ public class AutoDoc extends BaseStep implements StepInterface
     } else if ("Job".equalsIgnoreCase(fileType)) {
       objectType = RepositoryObjectType.JOB;
     } else {
-      throw new KettleException(BaseMessages.getString(PKG, "AutoDoc.Exception.UnknownFileTypeValue"));
+      throw new KettleException(BaseMessages.getString(PKG, "AutoDoc.Exception.UnknownFileTypeValue", fileType));
     }
 		
 		ReportSubjectLocation location = null;

@@ -188,7 +188,7 @@ public class AutoDocMeta extends BaseStepMeta implements StepMetaInterface, Auto
 		try
 		{
 			rep.saveStepAttribute(id_transformation, id_step, "filename_field", filenameField);
-      rep.saveStepAttribute(id_transformation, id_step, "file_type_field", filenameField);
+      rep.saveStepAttribute(id_transformation, id_step, "file_type_field", fileTypeField);
 			rep.saveStepAttribute(id_transformation, id_step, "target_file", targetFilename);
 			rep.saveStepAttribute(id_transformation, id_step, "output_type", outputType.name());
 			rep.saveStepAttribute(id_transformation, id_step, "include_name", includingName);
