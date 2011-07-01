@@ -19,6 +19,7 @@ if %KETTLE_DIR:~-1%==\ set KETTLE_DIR=%KETTLE_DIR:~0,-1%
 cd %KETTLE_DIR%
 
 set PENTAHO_JAVA=javaw
+set IS64BITJAVA=0
 call "%~dp0set-pentaho-env.bat"
 
 REM **************************************************
