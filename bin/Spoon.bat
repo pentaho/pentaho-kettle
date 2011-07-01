@@ -37,6 +37,7 @@ REM java version "1.6.0_17"
 REM Java(TM) SE Runtime Environment (build 1.6.0_17-b04)
 REM Java HotSpot(TM) 64-Bit Server VM (build 14.3-b01, mixed mode)
 REM
+set IS64BITJAVA=0
 FOR /F %%a IN ('java -version 2^>^&1^|find /C "64-Bit"') DO (SET /a IS64BITJAVA=%%a)
 IF %IS64BITJAVA% == 1 GOTO :USE64
 :USE32
