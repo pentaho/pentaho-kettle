@@ -21,7 +21,8 @@ import org.apache.commons.vfs.provider.FileNameParser;
 import org.apache.commons.vfs.provider.URLFileName;
 import org.apache.commons.vfs.provider.sftp.SftpFileNameParser;
 import org.apache.commons.vfs.provider.sftp.SftpFileSystem;
-import org.jfree.util.Log;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 
 import com.jcraft.jsch.UserInfo;
 
@@ -42,7 +43,8 @@ import com.jcraft.jsch.UserInfo;
 public class KettleSftpFileSystemConfigBuilder extends KettleGenericFileSystemConfigBuilder {
 
   private final static KettleSftpFileSystemConfigBuilder builder = new KettleSftpFileSystemConfigBuilder();
-  
+  private final static LogChannelInterface log = new LogChannel("cfgbuilder");
+
   public static KettleSftpFileSystemConfigBuilder getInstance() {
     return builder;
   }
@@ -95,10 +97,10 @@ public class KettleSftpFileSystemConfigBuilder extends KettleGenericFileSystemCo
           }
         } else {
           // No host match found
-          Log.debug("No host match found for: " + fullParameterName); //$NON-NLS-1$
+          log.logDebug("No host match found for: " + fullParameterName); //$NON-NLS-1$
         }
       } catch (FileSystemException e) {
-        Log.error("Failed to set VFS parameter: [" + fullParameterName + "] " + value, e); //$NON-NLS-1$ //$NON-NLS-2$
+        log.logError("Failed to set VFS parameter: [" + fullParameterName + "] " + value, e); //$NON-NLS-1$ //$NON-NLS-2$
       }
     }
   }
