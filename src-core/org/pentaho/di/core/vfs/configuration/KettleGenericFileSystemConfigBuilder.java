@@ -18,7 +18,8 @@ import org.apache.commons.vfs.FileSystemConfigBuilder;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemOptions;
 import org.apache.commons.vfs.util.DelegatingFileSystemOptionsBuilder;
-import org.mortbay.log.Log;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 
 /**
@@ -35,7 +36,8 @@ import org.pentaho.di.core.vfs.KettleVFS;
 public class KettleGenericFileSystemConfigBuilder extends FileSystemConfigBuilder implements IKettleFileSystemConfigBuilder {
 
   private final static KettleGenericFileSystemConfigBuilder builder = new KettleGenericFileSystemConfigBuilder();
-
+  private final static LogChannelInterface log = new LogChannel("cfgbuilder");
+  
   public String parseParameterName(String parameter, String scheme) {
     String result = null;
     
@@ -100,12 +102,12 @@ public class KettleGenericFileSystemConfigBuilder extends FileSystemConfigBuilde
       if(scheme != null) {
         delegateFSOptionsBuilder.setConfigString(opts, scheme, name, value);
       } else {
-        Log.warn("Cannot process VFS parameters if no scheme is specified: " + vfsUrl); //$NON-NLS-1$
+    	  log.logMinimal("Warning: Cannot process VFS parameters if no scheme is specified: " + vfsUrl); //$NON-NLS-1$
       }
     } catch (FileSystemException e) {
       if(e.getCode().equalsIgnoreCase("vfs.provider/config-key-invalid.error")) { //$NON-NLS-1$
         // This key is not supported by the default scheme config builder. This may be a custom key of another config builder
-        Log.warn("The configuration parameter [" + name + "] is not supported by the default configuration builder for scheme: " + scheme);  //$NON-NLS-1$//$NON-NLS-2$
+        log.logMinimal("Warning: The configuration parameter [" + name + "] is not supported by the default configuration builder for scheme: " + scheme);  //$NON-NLS-1$//$NON-NLS-2$
       } else {
         // An unexpected error has occurred loading in parameters
         throw new IOException(e.getLocalizedMessage());
