@@ -1,5 +1,8 @@
 package org.pentaho.di.trans.steps.autodoc;
 
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -112,4 +115,31 @@ public class JobInformation {
 	    
 		return values;
 	}
+
+  public void drawImage(final Graphics2D g2d, final Rectangle2D rectangle2d, ReportSubjectLocation location, boolean pixelateImages) throws KettleException {
+    
+    // Load the job
+    //
+    JobMeta jobMeta = loadJob(location);
+    
+    Point area = jobMeta.getMaximum();
+    int iconsize = 32;
+    
+    ScrollBarInterface bar = new ScrollBarInterface() {
+      public void setThumb(int thumb) {}
+      public int getSelection() { return 0; }
+    };
+    
+    // Paint the transformation...
+    //
+    Rectangle rect = new java.awt.Rectangle(0,0,area.x, area.y);
+    double magnification = rectangle2d.getWidth()/rect.getWidth();
+    
+    SwingGC gc = new SwingGC(g2d, rect, iconsize, 0, 0);
+    gc.setDrawingPixelatedImages(pixelateImages);
+    JobPainter painter = new JobPainter(gc, jobMeta, area, bar, bar, null, null, null, new ArrayList<AreaOwner>(), new ArrayList<JobEntryCopy>(), iconsize, 1, 0, 0, true, "FreeSans", 10);
+    painter.setMagnification((float)magnification);
+    painter.drawJob();
+  }
+
 }

@@ -12,8 +12,8 @@
  */
 package org.pentaho.di.core.gui;
 
-import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -21,19 +21,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.plugins.JobEntryPluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
+import org.pentaho.reporting.libraries.base.util.WaitingImageObserver;
 
 public class SwingGUIResource {
 	private static SwingGUIResource instance;
 	
-	private Map<String, Image>	stepImages;
-	private Map<String, Image>	entryImages;
+	private Map<String, BufferedImage>	stepImages;
+	private Map<String, BufferedImage>	entryImages;
 	
 	private SwingGUIResource() throws KettleException {
 		this.stepImages = loadStepImages();
@@ -47,11 +47,11 @@ public class SwingGUIResource {
 		return instance;
 	}
 	
-	private Map<String, Image> loadStepImages() throws KettleException {
-		Map<String, Image> map = new HashMap<String, Image>();
+	private Map<String, BufferedImage> loadStepImages() throws KettleException {
+		Map<String, BufferedImage> map = new HashMap<String, BufferedImage>();
 		
 		for (PluginInterface plugin: PluginRegistry.getInstance().getPlugins(StepPluginType.class)) {
-			Image image = getImageIcon(plugin);
+		  BufferedImage image = getImageIcon(plugin);
 			for (String id : plugin.getIds()) {
 				map.put(id, image);
 			}
@@ -60,8 +60,8 @@ public class SwingGUIResource {
 		return map;
 	}
 	
-	private Map<String, Image> loadEntryImages() throws KettleException {
-		Map<String, Image> map = new HashMap<String, Image>();
+	private Map<String, BufferedImage> loadEntryImages() throws KettleException {
+		Map<String, BufferedImage> map = new HashMap<String, BufferedImage>();
 		
 		for (PluginInterface plugin : PluginRegistry.getInstance().getPlugins(JobEntryPluginType.class)) {
 			if ("SPECIAL".equals(plugin.getIds()[0])) {
@@ -72,7 +72,7 @@ public class SwingGUIResource {
 			if (imageFile==null) {
 				throw new KettleException("No image file (icon) specified for plugin: "+plugin);
 			}
-			Image image = getImageIcon(imageFile);
+			BufferedImage image = getImageIcon(imageFile);
 			if (image==null) {
 				throw new KettleException("Unable to find image file: "+plugin.getImageFile()+" for plugin: "+plugin);
 			}
@@ -89,16 +89,16 @@ public class SwingGUIResource {
 		return map;
 	}
 	
-	private Image getImageIcon(String fileName) throws KettleException {
+	private BufferedImage getImageIcon(String fileName) throws KettleException {
 		try {
-			ImageIcon imageIcon = new javax.swing.ImageIcon("/"+fileName);
-			return imageIcon.getImage();
+			BufferedImage image = ImageIO.read(new File(fileName));
+			return image;
 		} catch(Throwable e) {
 			throw new KettleException("Unable to load image from file : '"+fileName+"'", e);
 		}
 	}
 
-	private Image getImageIcon(PluginInterface plugin) throws KettleException {
+	private BufferedImage getImageIcon(PluginInterface plugin) throws KettleException {
 		try {
 			PluginRegistry registry = PluginRegistry.getInstance();
 			Object object = registry.loadClass(plugin);
@@ -123,17 +123,21 @@ public class SwingGUIResource {
 			}
 			BufferedImage image = ImageIO.read(inputStream);
 			inputStream.close();
+			
+			WaitingImageObserver wia = new WaitingImageObserver(image);
+			wia.waitImageLoaded();
+			
 			return image;
 		} catch(Throwable e) {
 			throw new KettleException("Unable to load image from file : '"+plugin.getImageFile()+"' for plugin: "+plugin, e);
 		}
 	}
 	
-	public Map<String, Image> getEntryImages() {
+	public Map<String, BufferedImage> getEntryImages() {
 		return entryImages;
 	}
 	
-	public Map<String, Image> getStepImages() {
+	public Map<String, BufferedImage> getStepImages() {
 		return stepImages;
 	}
 }

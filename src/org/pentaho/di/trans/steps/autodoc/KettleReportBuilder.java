@@ -302,21 +302,13 @@ public class KettleReportBuilder {
 			itemBand.addElement(loggingElement);
 			pagePosition+=fontHeight;
 		}
-
+		
 		// Optionally include an image of the transformation...
 		//
 		String packName = KettleReportBuilder.class.getPackage().getName();
 		if (options.isIncludingImage()) {
-			String bshCode = "Object getValue() "+Const.CR+
-				"{ " + Const.CR +
-				"  "+packName+".ReportSubjectLocation location = dataRow.get(\"location\");" + Const.CR +
-				"  if (location.isTransformation()) { " + Const.CR +
-				"    "+packName+".TransformationInformation ti = "+packName+".TransformationInformation.getInstance();" + Const.CR +
-				"    return ti.getImage(location);"+Const.CR+
-				"  } else { " + Const.CR +
-				"    "+packName+".JobInformation ji = "+packName+".JobInformation.getInstance();" + Const.CR +
-				"    return ji.getImage(location);"+Const.CR+
-				"  } " + Const.CR +
+			String bshCode = "Object getValue() { "+Const.CR+
+        "  return new "+packName+".TransJobDrawable(dataRow, "+(options.getOutputType()==OutputType.PDF ? "true" : "false")+");" + Const.CR +
 				"}";
 			BSHExpression bshExpression = new BSHExpression();
 			bshExpression.setExpression(bshCode);
@@ -328,8 +320,10 @@ public class KettleReportBuilder {
 			contentElementFactory.setAbsolutePosition(new Point(0, pagePosition));
 			contentElementFactory.setMinimumWidth(750f);
 			contentElementFactory.setMaximumWidth(750f);
-			contentElementFactory.setScale(true);
-			contentElementFactory.setDynamicHeight(true);
+			contentElementFactory.setMinimumHeight(400f);
+			// contentElementFactory.setMaximumHeight(750f);
+		  contentElementFactory.setScale(true);
+      contentElementFactory.setDynamicHeight(true);
 			// contentElementFactory.setAvoidPagebreaks(true);
 			Element imageElement = contentElementFactory.createElement();
 			
@@ -341,12 +335,12 @@ public class KettleReportBuilder {
 		
 		PageFormat pageFormat = new PageFormat();
 		pageFormat.setOrientation(PageFormat.LANDSCAPE);
-		Paper paper = new Paper();
-		
+
 		// A4
 		//
+		Paper paper = new Paper();
 		paper.setSize(595, 842);
-	    paper.setImageableArea(43, 43, 509, 756);
+	  paper.setImageableArea(43, 43, 509, 756);
 		pageFormat.setPaper(paper);
 		
 		SimplePageDefinition pageDefinition = new SimplePageDefinition(pageFormat);
