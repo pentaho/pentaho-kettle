@@ -27,6 +27,7 @@ import org.pentaho.reporting.engine.classic.core.modules.output.table.html.HtmlR
 import org.pentaho.reporting.engine.classic.core.modules.output.table.rtf.RTFReportUtil;
 import org.pentaho.reporting.engine.classic.core.modules.output.table.xls.ExcelReportUtil;
 import org.pentaho.reporting.engine.classic.core.style.TextStyleKeys;
+import org.pentaho.reporting.engine.classic.core.style.TextWrap;
 
 public class KettleReportBuilder {
 	
@@ -180,12 +181,14 @@ public class KettleReportBuilder {
 			textFactory.setMinimumHeight(fontHeight);
 			Element descriptionElement = textFactory.createElement();
 			itemBand.addElement(descriptionElement);
+			descriptionElement.setDynamicContent(true);
+      
 			pagePosition+=fontHeight;
 		}
 
 		// The description of the transformation...
 		//
-		if (options.isIncludingDescription()) {
+		if (options.isIncludingExtendedDescription()) {
 			labelElementFactory = new LabelElementFactory();
 			labelElementFactory.setText("Long description: ");
 			labelElementFactory.setAbsolutePosition(new Point(0, pagePosition));
@@ -202,6 +205,8 @@ public class KettleReportBuilder {
 			textFactory.setAbsolutePosition(new Point(labelWidth, pagePosition));
 			textFactory.setMinimumWidth((float)textWidth);
 			textFactory.setMinimumHeight(fontHeight);
+	    textFactory.setDynamicHeight(true);
+	    textFactory.setWrap(TextWrap.WRAP);
 			Element descriptionElement = textFactory.createElement();
 			itemBand.addElement(descriptionElement);
 			pagePosition+=fontHeight;
