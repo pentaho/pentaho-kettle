@@ -14,6 +14,7 @@ package org.pentaho.di.job;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -329,8 +330,12 @@ public class JobPainter extends BasePainter {
 
 	private JobEntryResult findJobEntryResult(JobEntryCopy jobEntryCopy) {
 		if (jobEntryResults==null) return null;
-		for (JobEntryResult jobEntryResult : jobEntryResults) {
-			if (jobEntryResult.getJobEntryName().equals(jobEntryCopy.getName()) && 
+		
+		Iterator<JobEntryResult> iterator = jobEntryResults.iterator();
+		while (iterator.hasNext()) {
+		  JobEntryResult jobEntryResult = iterator.next();
+		
+		  if (jobEntryResult.getJobEntryName().equals(jobEntryCopy.getName()) && 
 				jobEntryResult.getJobEntryNr() == jobEntryCopy.getNr()
 			   )  {
 				return jobEntryResult;
