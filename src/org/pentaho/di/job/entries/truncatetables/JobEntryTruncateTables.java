@@ -259,21 +259,26 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 			    if (argFromPrevious && rows != null) // Copy the input row to the (command line) arguments
 			    {
 
-			      for (int iteration = 0; iteration < rows.size() && !parentJob.isStopped() && continueProcess; iteration++) {  
-			    		resultRow = rows.get(iteration);
-
-			    		// Get values from previous result 
-			    		String tablename_previous = resultRow.getString(0, null);
-			    		String schemaname_previous = resultRow.getString(1, null);
-			        
-				        if(!Const.isEmpty(tablename_previous))
-				        {
-				            if(log.isDetailed()) 
-				          	  logDetailed(BaseMessages.getString(PKG, "JobEntryTruncateTables.ProcessingRow", tablename_previous, schemaname_previous)); //$NON-NLS-1$
-				        }else{
-				      	  logError(BaseMessages.getString(PKG, "JobEntryTruncateTables.RowEmpty")); //$NON-NLS-1$ 
-				        }
-			      }
+				      for (int iteration = 0; iteration < rows.size() && !parentJob.isStopped() && continueProcess; iteration++) {  
+				    		resultRow = rows.get(iteration);
+	
+				    		// Get values from previous result 
+				    		String tablename_previous = resultRow.getString(0, null);
+				    		String schemaname_previous = resultRow.getString(1, null);
+				        
+					        if(!Const.isEmpty(tablename_previous))  {
+					            if(log.isDetailed()) 
+					          	  logDetailed(BaseMessages.getString(PKG, "JobEntryTruncateTables.ProcessingRow", tablename_previous, schemaname_previous)); //$NON-NLS-1$
+					        
+					            // let's truncate table
+					            if(truncateTables(tablename_previous, schemaname_previous, db)) 
+					            	updateSuccess();
+					            else
+					            	updateErrors();
+					        }else{
+					      	  logError(BaseMessages.getString(PKG, "JobEntryTruncateTables.RowEmpty")); //$NON-NLS-1$ 
+					        }
+				      }
 			        
 			      }else if (arguments!=null) {
 	        		 for (int i = 0; i < arguments.length && !parentJob.isStopped() && continueProcess; i++) {
