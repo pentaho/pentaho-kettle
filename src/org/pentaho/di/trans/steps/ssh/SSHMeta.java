@@ -419,23 +419,23 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface
     	
         try
         {
-        	dynamicCommandField=rep.getJobEntryAttributeBoolean(id_step, "dynamicCommandField");
-			command       = rep.getJobEntryAttributeString(id_step, "command");
+        	dynamicCommandField=rep.getStepAttributeBoolean(id_step, "dynamicCommandField");
+			command       = rep.getStepAttributeString(id_step, "command");
         	commandfieldname = rep.getStepAttributeString(id_step, "commandfieldname"); //$NON-NLS-1$
-			serverName    = rep.getJobEntryAttributeString(id_step, "servername");
-        	port          = rep.getJobEntryAttributeString(id_step, "port");
-			userName      = rep.getJobEntryAttributeString(id_step, "userName");
+			serverName    = rep.getStepAttributeString(id_step, "servername");
+        	port          = rep.getStepAttributeString(id_step, "port");
+			userName      = rep.getStepAttributeString(id_step, "userName");
 			password              = Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString (id_step, "password") );	
 			
-			usePrivateKey=rep.getJobEntryAttributeBoolean(id_step, "usePrivateKey");
-			keyFileName=rep.getJobEntryAttributeString(id_step, "keyFileName");
-			passPhrase=rep.getJobEntryAttributeString(id_step, "passPhrase");
-			stdOutFieldName=rep.getJobEntryAttributeString(id_step, "stdOutFieldName");
-			stdErrFieldName=rep.getJobEntryAttributeString(id_step, "stdErrFieldName");
-			timeOut=rep.getJobEntryAttributeString(id_step, "timeOut");
-			proxyHost=rep.getJobEntryAttributeString(id_step, "proxyHost");
-			proxyPort=rep.getJobEntryAttributeString(id_step, "proxyPort");
-			proxyUsername=rep.getJobEntryAttributeString(id_step, "proxyUsername");
+			usePrivateKey=rep.getStepAttributeBoolean(id_step, "usePrivateKey");
+			keyFileName=rep.getStepAttributeString(id_step, "keyFileName");
+			passPhrase=rep.getStepAttributeString(id_step, "passPhrase");
+			stdOutFieldName=rep.getStepAttributeString(id_step, "stdOutFieldName");
+			stdErrFieldName=rep.getStepAttributeString(id_step, "stdErrFieldName");
+			timeOut=rep.getStepAttributeString(id_step, "timeOut");
+			proxyHost=rep.getStepAttributeString(id_step, "proxyHost");
+			proxyPort=rep.getStepAttributeString(id_step, "proxyPort");
+			proxyUsername=rep.getStepAttributeString(id_step, "proxyUsername");
 			proxyPassword              = Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString (id_step, "proxyPassword") );	
 			
         }
@@ -449,23 +449,23 @@ public class SSHMeta extends BaseStepMeta implements StepMetaInterface
 	{
         try
         {
-        	rep.saveJobEntryAttribute(id_transformation, id_step, "dynamicCommandField", dynamicCommandField);
-			rep.saveJobEntryAttribute(id_transformation, id_step, "command",      command);
+        	rep.saveStepAttribute(id_transformation, id_step, "dynamicCommandField", dynamicCommandField);
+			rep.saveStepAttribute(id_transformation, id_step, "command",      command);
             rep.saveStepAttribute(id_transformation, id_step, "commandfieldname", commandfieldname); //$NON-NLS-1$
-			rep.saveJobEntryAttribute(id_transformation, id_step, "port",      port);
-			rep.saveJobEntryAttribute(id_transformation, id_step, "servername",      serverName);
-			rep.saveJobEntryAttribute(id_transformation, id_step, "userName",      userName);
+			rep.saveStepAttribute(id_transformation, id_step, "port",      port);
+			rep.saveStepAttribute(id_transformation, id_step, "servername",      serverName);
+			rep.saveStepAttribute(id_transformation, id_step, "userName",      userName);
 			rep.saveStepAttribute(id_transformation, id_step, "password", Encr.encryptPasswordIfNotUsingVariables(password));
 
-			rep.saveJobEntryAttribute(id_transformation, id_step, "usePrivateKey", usePrivateKey);
-			rep.saveJobEntryAttribute(id_transformation, id_step, "keyFileName", keyFileName);
-			rep.saveJobEntryAttribute(id_transformation, id_step, "passPhrase", passPhrase);
-			rep.saveJobEntryAttribute(id_transformation, id_step, "stdOutFieldName", stdOutFieldName);
-			rep.saveJobEntryAttribute(id_transformation, id_step, "stdErrFieldName", stdErrFieldName);
-			rep.saveJobEntryAttribute(id_transformation, id_step, "timeOut", timeOut);
-			rep.saveJobEntryAttribute(id_transformation, id_step, "proxyHost", proxyHost);
-			rep.saveJobEntryAttribute(id_transformation, id_step, "proxyPort", proxyPort);
-			rep.saveJobEntryAttribute(id_transformation, id_step, "proxyUsername", proxyUsername);
+			rep.saveStepAttribute(id_transformation, id_step, "usePrivateKey", usePrivateKey);
+			rep.saveStepAttribute(id_transformation, id_step, "keyFileName", keyFileName);
+			rep.saveStepAttribute(id_transformation, id_step, "passPhrase", passPhrase);
+			rep.saveStepAttribute(id_transformation, id_step, "stdOutFieldName", stdOutFieldName);
+			rep.saveStepAttribute(id_transformation, id_step, "stdErrFieldName", stdErrFieldName);
+			rep.saveStepAttribute(id_transformation, id_step, "timeOut", timeOut);
+			rep.saveStepAttribute(id_transformation, id_step, "proxyHost", proxyHost);
+			rep.saveStepAttribute(id_transformation, id_step, "proxyPort", proxyPort);
+			rep.saveStepAttribute(id_transformation, id_step, "proxyUsername", proxyUsername);
 			rep.saveStepAttribute(id_transformation, id_step, "proxyPassword", Encr.encryptPasswordIfNotUsingVariables(proxyPassword));
 
         }
