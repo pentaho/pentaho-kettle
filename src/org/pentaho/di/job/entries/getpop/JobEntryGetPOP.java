@@ -1031,10 +1031,13 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 	
 							if (okPOP3 || okIMAP) {
 								// display some infos on the current message
-								if(isDebug())  {
+							  //
+								if(isDebug() && mailConn.getMessage()!=null) {
 									logDebug( "--------------------------------------------------");
 									logDebug( BaseMessages.getString(PKG, "JobGetMailsFromPOP.MessageNumber.Label",""+messagenumber));
-									logDebug( BaseMessages.getString(PKG, "JobGetMailsFromPOP.ReceivedDate.Label",df.format(mailConn.getMessage().getReceivedDate())));
+									if (mailConn.getMessage().getReceivedDate()!=null) {
+									  logDebug( BaseMessages.getString(PKG, "JobGetMailsFromPOP.ReceivedDate.Label",df.format(mailConn.getMessage().getReceivedDate())));
+									}
 									logDebug( BaseMessages.getString(PKG, "JobGetMailsFromPOP.ContentType.Label",mailConn.getMessage().getContentType()));
 									logDebug( BaseMessages.getString(PKG, "JobGetMailsFromPOP.EmailFrom.Label", Const.NVL(mailConn.getMessage().getFrom()[0].toString(),"")));
 									logDebug( BaseMessages.getString(PKG, "JobGetMailsFromPOP.EmailSubject.Label",Const.NVL(mailConn.getMessage().getSubject(),"")));
