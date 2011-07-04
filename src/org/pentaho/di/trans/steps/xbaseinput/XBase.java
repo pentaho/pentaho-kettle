@@ -48,6 +48,8 @@ public class XBase
     private boolean     error;
     private byte        datatype[];
     
+    private static final byte FIELD_TYPE_I = 73;
+
     public XBase(LogChannelInterface log, String file_dbf)
     {
         this.log      = log;
@@ -114,6 +116,7 @@ public class XBase
                   value = new ValueMeta(field.getName(), ValueMetaInterface.TYPE_STRING);
               	  value.setLength(field.getFieldLength());
               	  break;
+              case FIELD_TYPE_I: // Integer              
               case DBFField.FIELD_TYPE_N: // Numeric
               case DBFField.FIELD_TYPE_F: // Float
                   debug="Number field";
@@ -130,7 +133,8 @@ public class XBase
                   value = new ValueMeta(field.getName(), ValueMetaInterface.TYPE_DATE);
               	  value.setLength(-1, -1);
           	  	  break;
-          	  default: break;
+          	  default: 
+          	    System.out.println("Unknown Datatype"+ datatype[i]);
               }
               
               if (value!=null)
@@ -178,6 +182,15 @@ public class XBase
 				case DBFField.FIELD_TYPE_C: // Character
 					r[i] = Const.rtrim( (String)rowobj[i] ); 
 					break; 
+				case FIELD_TYPE_I: // Numeric
+          try {
+            if (rowobj[i] != null) {
+              r[i] = ((Integer) rowobj[i]).doubleValue();
+            }
+          } catch (NumberFormatException e) {
+            throw new KettleException("Error parsing field #" + (i + 1) + " : " + reader.getField(i).getName(), e);
+          }
+					break;
 				case DBFField.FIELD_TYPE_N: // Numeric
 			    	// Convert to Double!!
 			    	try
