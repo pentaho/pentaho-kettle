@@ -498,7 +498,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 		extended_description=null;
         setFilename(null);
         
-        transLogTable = TransLogTable.getDefault(this, this);
+        transLogTable = TransLogTable.getDefault(this, this, steps);
         performanceLogTable = PerformanceLogTable.getDefault(this, this);
         channelLogTable = ChannelLogTable.getDefault(this, this);
         stepLogTable = StepLogTable.getDefault(this, this);

@@ -78,9 +78,12 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
 	private String logInterval;
 	
 	private String logSizeLimit;
+
+  private List<StepMeta> steps;
 	
-	public TransLogTable(VariableSpace space, HasDatabasesInterface databasesInterface) {
+	public TransLogTable(VariableSpace space, HasDatabasesInterface databasesInterface, List<StepMeta> steps) {
 		super(space, databasesInterface, null, null, null);
+		this.steps = steps;
 	}
 	
 	@Override
@@ -150,10 +153,27 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
 		
 		logInterval = attributeInterface.getAttributeString(getLogTableCode()+PROP_LOG_TABLE_INTERVAL);
 		logSizeLimit = attributeInterface.getAttributeString(getLogTableCode()+PROP_LOG_TABLE_SIZE_LIMIT);
+		
+		for (int i=0;i<getFields().size();i++) {
+      String id = attributeInterface.getAttributeString(getLogTableCode()+PROP_LOG_TABLE_FIELD_ID+i);
+      // Only read further if the ID is available.
+      // For backward compatibility, this might not be provided yet!
+      //
+      if (id!=null) {
+        LogTableField field = findField(id);
+        if (field.isSubjectAllowed()) {
+          String stepname = (String) field.getSubject();
+          if (Const.isEmpty(stepname)) {
+            field.setSubject( StepMeta.findStep(steps, stepname) );
+          }
+        }
+      }
+		}
+  
 	}
 	
-	public static TransLogTable getDefault(VariableSpace space, HasDatabasesInterface databasesInterface) {
-		TransLogTable table = new TransLogTable(space, databasesInterface);
+	public static TransLogTable getDefault(VariableSpace space, HasDatabasesInterface databasesInterface, List<StepMeta> steps) {
+		TransLogTable table = new TransLogTable(space, databasesInterface, steps);
 		
 		table.fields.add( new LogTableField(ID.ID_BATCH.id, true, false, "ID_BATCH", BaseMessages.getString(PKG, "TransLogTable.FieldName.BatchID"), BaseMessages.getString(PKG, "TransLogTable.FieldDescription.BatchID"), ValueMetaInterface.TYPE_INTEGER, 8) );
 		table.fields.add( new LogTableField(ID.CHANNEL_ID.id, true, false, "CHANNEL_ID", BaseMessages.getString(PKG, "TransLogTable.FieldName.ChannelID"), BaseMessages.getString(PKG, "TransLogTable.FieldDescription.ChannelID"), ValueMetaInterface.TYPE_STRING, 255) );

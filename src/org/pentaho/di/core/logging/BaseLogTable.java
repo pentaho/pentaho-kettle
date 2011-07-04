@@ -34,6 +34,7 @@ abstract class BaseLogTable {
 	public static String	PROP_LOG_TABLE_FIELD_ID	= "_LOG_TABLE_FIELD_ID";
 	public static String	PROP_LOG_TABLE_FIELD_NAME	= "_LOG_TABLE_FIELD_NAME";
 	public static String	PROP_LOG_TABLE_FIELD_ENABLED	= "_LOG_TABLE_FIELD_ENABLED";
+  public static String  PROP_LOG_TABLE_FIELD_SUBJECT = "_LOG_TABLE_FIELD_SUBJECT";
 
 	public static String	PROP_LOG_TABLE_INTERVAL	= "LOG_TABLE_INTERVAL";
 	public static String	PROP_LOG_TABLE_SIZE_LIMIT	= "LOG_TABLE_SIZE_LIMIT";
@@ -85,6 +86,10 @@ abstract class BaseLogTable {
 			attributeInterface.setAttribute(getLogTableCode()+PROP_LOG_TABLE_FIELD_ID+i, field.getId());
 			attributeInterface.setAttribute(getLogTableCode()+PROP_LOG_TABLE_FIELD_NAME+i, field.getFieldName());
 			attributeInterface.setAttribute(getLogTableCode()+PROP_LOG_TABLE_FIELD_ENABLED+i, field.isEnabled());
+			
+      if (field.isSubjectAllowed()) {
+        attributeInterface.setAttribute(getLogTableCode()+PROP_LOG_TABLE_FIELD_SUBJECT+i, field.getSubject()==null?null:field.getSubject().toString()); //$NON-NLS-1$ 
+      }
 		}
 	}
 	
@@ -111,6 +116,9 @@ abstract class BaseLogTable {
   			LogTableField field = findField(id);
   			field.setFieldName(attributeInterface.getAttributeString(getLogTableCode()+PROP_LOG_TABLE_FIELD_NAME+i));
   			field.setEnabled(attributeInterface.getAttributeBoolean(getLogTableCode()+PROP_LOG_TABLE_FIELD_ENABLED+i));
+        if (field.isSubjectAllowed()) {
+          field.setSubject(attributeInterface.getAttributeString(getLogTableCode()+PROP_LOG_TABLE_FIELD_SUBJECT+i)); 
+        }
 			}
 		}
 	}
