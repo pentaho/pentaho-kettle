@@ -61,8 +61,10 @@ public class GetSlavesServlet extends BaseHttpServlet implements
     out.print(XMLHandler.getXMLHeader(Const.XML_ENCODING));
     out.println(XMLHandler.openTag(XML_TAG_SLAVESERVER_DETECTIONS));
 
-    for (SlaveServerDetection slaveServer : getDetections()) {
-      out.println(slaveServer.getXML());
+    if(getDetections() != null) {
+      for (SlaveServerDetection slaveServer : getDetections()) {
+        out.println(slaveServer.getXML());
+      }
     }
 
     out.println(XMLHandler.closeTag(XML_TAG_SLAVESERVER_DETECTIONS));

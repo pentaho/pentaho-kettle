@@ -27,6 +27,8 @@ public class CarteServlet extends HttpServlet {
   private AddJobServlet addJobServlet = new AddJobServlet();
   private AddTransServlet addTransServlet = new AddTransServlet();
   private AllocateServerSocketServlet allocateServerSocketServlet = new AllocateServerSocketServlet();
+  private ListServerSocketServlet listServerSocketServlet = new ListServerSocketServlet();
+  private NextSequenceValueServlet nextSequenceValueServlet = new NextSequenceValueServlet();
   private CleanupTransServlet cleanupTransServlet = new CleanupTransServlet();
   private GetJobStatusServlet getJobStatusServlet = new GetJobStatusServlet();
   private GetSlavesServlet getSlavesServlet = new GetSlavesServlet();
@@ -63,6 +65,10 @@ public class CarteServlet extends HttpServlet {
       addTransServlet.doGet(req, resp);
     } else if (uri.contains(AllocateServerSocketServlet.CONTEXT_PATH)) {
       allocateServerSocketServlet.doGet(req, resp);
+    } else if (uri.contains(ListServerSocketServlet.CONTEXT_PATH)) {
+      listServerSocketServlet.doGet(req, resp);
+    } else if (uri.contains(NextSequenceValueServlet.CONTEXT_PATH)) {
+      nextSequenceValueServlet.doGet(req, resp);
     } else if (uri.contains(CleanupTransServlet.CONTEXT_PATH)) {
       cleanupTransServlet.doGet(req, resp);
     } else if (uri.contains(GetJobStatusServlet.CONTEXT_PATH)) {
