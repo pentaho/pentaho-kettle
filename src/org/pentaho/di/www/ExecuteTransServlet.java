@@ -206,7 +206,7 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CarteServlet
            Repository.class
       );
     repository.init(repositoryMeta);
-    
+    repository.connect(user, pass);
     return repository;
   }
 
