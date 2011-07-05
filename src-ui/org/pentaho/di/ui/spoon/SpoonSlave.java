@@ -406,8 +406,21 @@ public class SpoonSlave extends Composite implements TabItemInterface {
         } else {
           logging = new StringBuffer(logging).append(ts.getLoggingString()).toString();
         }
-        loggingMap.put(transStatus.getId(), logging);
 
+        String[] lines = logging.split("\r\n|\r|\n"); //$NON-NLS-1$
+        if(lines.length > PropsUI.getInstance().getMaxNrLinesInLog()) {
+          // Trim to view the last x lines
+          int offset = lines.length - PropsUI.getInstance().getMaxNrLinesInLog();
+          StringBuffer trimmedLog = new StringBuffer();
+          // Keep only the text from offset to the end of the log
+          while(offset != lines.length) {
+            trimmedLog.append(lines[offset++] + '\n');
+          }
+          logging = trimmedLog.toString();
+        }
+        
+        loggingMap.put(transStatus.getId(), logging);
+        
         item.removeAll();
         for (int s = 0; s < stepStatusList.size(); s++) {
           StepStatus stepStatus = stepStatusList.get(s);
@@ -436,6 +449,19 @@ public class SpoonSlave extends Composite implements TabItemInterface {
         } else {
           logging = new StringBuffer(logging).append(ts.getLoggingString()).toString();
         }
+        
+        String[] lines = logging.split("\r\n|\r|\n"); //$NON-NLS-1$
+        if(lines.length > PropsUI.getInstance().getMaxNrLinesInLog()) {
+          // Trim to view the last x lines
+          int offset = lines.length - PropsUI.getInstance().getMaxNrLinesInLog();
+          StringBuffer trimmedLog = new StringBuffer();
+          // Keep only the text from offset to the end of the log
+          while(offset != lines.length) {
+            trimmedLog.append(lines[offset++] + '\n');
+          }
+          logging = trimmedLog.toString();
+        }
+        
         loggingMap.put(jobStatus.getId(), logging);
 
         Result result = ts.getResult();
