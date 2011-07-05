@@ -2668,7 +2668,8 @@ public class RepositoryExplorerDialog extends Dialog
 			long idProfile = rep.getProfileID(profilename);
 			if (idProfile>0)
 			{
-				rep.delProfile(idProfile);
+			    rep.delProfilePermissions(idProfile);
+			    rep.delProfile(idProfile);
 			}
 	
 			refreshTree();
