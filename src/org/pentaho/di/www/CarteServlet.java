@@ -41,6 +41,7 @@ public class CarteServlet extends HttpServlet {
   private RemoveJobServlet removeJobServlet = new RemoveJobServlet();
   private SniffStepServlet sniffStepServlet = new SniffStepServlet();
   private StartExecutionTransServlet startExecutionTransServlet = new StartExecutionTransServlet();
+  private ExecuteTransServlet executeTransServlet = new ExecuteTransServlet();
   private StartJobServlet startJobServlet = new StartJobServlet();
   private StartTransServlet startTransServlet = new StartTransServlet();
   private StopJobServlet stopJobServlet = new StopJobServlet();
@@ -87,6 +88,8 @@ public class CarteServlet extends HttpServlet {
       registerSlaveServlet.doGet(req, resp);
     } else if (uri.contains(StartExecutionTransServlet.CONTEXT_PATH)) {
       startExecutionTransServlet.doGet(req, resp);
+    } else if (uri.contains(ExecuteTransServlet.CONTEXT_PATH)) {
+      executeTransServlet.doGet(req, resp);
     } else if (uri.contains(StartJobServlet.CONTEXT_PATH)) {
       startJobServlet.doGet(req, resp);
     } else if (uri.contains(StartTransServlet.CONTEXT_PATH)) {
