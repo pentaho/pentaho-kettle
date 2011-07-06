@@ -145,7 +145,7 @@ public class StepsMetrics extends BaseStep implements StepInterface
 	    			  if(!Const.isEmpty(data.realsteplinesreadfield)) rowData[index++]= (long) step.getLinesRead();
 	    			  if(!Const.isEmpty(data.realsteplinesupdatedfield)) rowData[index++]= (long) step.getLinesUpdated();
 	    			  if(!Const.isEmpty(data.realsteplineswrittentfield)) rowData[index++]= (long) step.getLinesWritten();
-	    			  if(!Const.isEmpty(data.realsteplineserrorsfield)) rowData[index++]= (long) step.getErrors();  
+	    			  if(!Const.isEmpty(data.realsteplineserrorsfield)) rowData[index++]= (long) step.getLinesRejected();  
 	      			  if(!Const.isEmpty(data.realstepsecondsfield)) rowData[index++]= (long) step.getRuntime();  
 
 	    			  // Send row to the buffer
