@@ -415,6 +415,7 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
 				trimType[i] = getTrimTypeByCode(Const.NVL(rep.getStepAttributeString(id_step, i, "trim_type"), ""));
 				lowerUpper[i] = getLowerUpperByCode(Const.NVL(rep.getStepAttributeString(id_step, i, "lower_upper"), ""));
 				padding_type[i] = getPaddingByCode(Const.NVL(rep.getStepAttributeString(id_step, i, "padding_type"), ""));
+				padChar[i] = Const.NVL(rep.getStepAttributeString(id_step, i, "pad_char"), "");	
 				padLen[i] = Const.NVL(rep.getStepAttributeString(id_step, i, "pad_len"), "");	
 				initCap[i] = getInitCapByCode(Const.NVL(rep.getStepAttributeString(id_step, i, "init_cap"), ""));
 				maskXML[i] = getMaskXMLByCode(Const.NVL(rep.getStepAttributeString(id_step, i, "mask_xml"), ""));
@@ -438,7 +439,7 @@ public class StringOperationsMeta extends BaseStepMeta implements StepMetaInterf
 				rep.saveStepAttribute(id_transformation, id_step, i,"trim_type", getTrimTypeCode(trimType[i]));
 				rep.saveStepAttribute(id_transformation, id_step, i,"lower_upper", getLowerUpperCode(lowerUpper[i]));
 				rep.saveStepAttribute(id_transformation, id_step, i,"padding_type", getPaddingCode(padding_type[i]));
-				rep.saveStepAttribute(id_transformation, id_step, i,"padchar", padChar[i]);
+				rep.saveStepAttribute(id_transformation, id_step, i,"pad_char", padChar[i]);
 				rep.saveStepAttribute(id_transformation, id_step, i,"pad_len", padLen[i]);
 				rep.saveStepAttribute(id_transformation, id_step, i,"init_cap", getInitCapCode(initCap[i]));
 				rep.saveStepAttribute(id_transformation, id_step, i,"mask_xml", getMaskXMLCode(maskXML[i]));
