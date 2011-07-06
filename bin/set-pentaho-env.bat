@@ -11,16 +11,16 @@ rem * _PENTAHO_JAVA - absolute path to Java launcher (e.g. java.exe)
 rem 
 rem The order of the search is as follows:
 rem 
-rem 1. environment variable PENTAHO_JAVA_HOME - path to Java home
-rem 2. jre folder at current folder level
-rem 3. java folder at current folder level
-rem 4. jre folder one level up
-rem 5. java folder one level up
-rem 6. jre folder two levels up
-rem 7. java folder two levels up
-rem 8. environment variable JAVA_HOME - path to Java home
-rem 9. environment variable JRE_HOME - path to Java home
-rem 10. argument #1 - path to Java home
+rem 1. argument #1 - path to Java home
+rem 2. environment variable PENTAHO_JAVA_HOME - path to Java home
+rem 3. jre folder at current folder level
+rem 4. java folder at current folder level
+rem 5. jre folder one level up
+rem 6 java folder one level up
+rem 7. jre folder two levels up
+rem 8. java folder two levels up
+rem 9. environment variable JAVA_HOME - path to Java home
+rem 10. environment variable JRE_HOME - path to Java home
 rem 
 rem If a suitable Java is found at one of these locations, then 
 rem _PENTAHO_JAVA_HOME is set to that location and _PENTAHO_JAVA is set to the 
@@ -42,16 +42,16 @@ set __LAUNCHER=%PENTAHO_JAVA%
 goto checkPentahoJavaHome
 
 :checkPentahoJavaHome
+if exist "%~1\bin\%__LAUNCHER%" goto gotValueFromCaller
 if not "%PENTAHO_JAVA_HOME%" == "" goto gotPentahoJavaHome
-if exist "%~dp0jre" goto gotJreCurrentFolder
-if exist "%~dp0java" goto gotJavaCurrentFolder
-if exist "%~dp0..\jre" goto gotJreOneFolderUp
-if exist "%~dp0..\java" goto gotJavaOneFolderUp
-if exist "%~dp0..\..\jre" goto gotJreTwoFolderUp
-if exist "%~dp0..\..\java" goto gotJavaTwoFolderUp
+if exist "%~dp0jre\bin\%__LAUNCHER%" goto gotJreCurrentFolder
+if exist "%~dp0java\bin\%__LAUNCHER%" goto gotJavaCurrentFolder
+if exist "%~dp0..\jre\bin\%__LAUNCHER%" goto gotJreOneFolderUp
+if exist "%~dp0..\java\bin\%__LAUNCHER%" goto gotJavaOneFolderUp
+if exist "%~dp0..\..\jre\bin\%__LAUNCHER%" goto gotJreTwoFolderUp
+if exist "%~dp0..\..\java\bin\%__LAUNCHER%" goto gotJavaTwoFolderUp
 if not "%JAVA_HOME%" == "" goto gotJdkHome
 if not "%JRE_HOME%" == "" goto gotJreHome
-if exist "%~1" goto gotValueFromCaller
 goto gotPath
 
 :gotPentahoJavaHome
