@@ -76,8 +76,12 @@ public class BaseHttpServlet extends HttpServlet {
   }
 
   public BaseHttpServlet(List<SlaveServerDetection> detections) {
+    this(detections, true);
+  }
+  
+  public BaseHttpServlet(List<SlaveServerDetection> detections, boolean isJetty) {
     this.detections = detections;
-    this.jettyMode = true;
+    this.jettyMode = isJetty;
   }
 
   protected void doPut(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
