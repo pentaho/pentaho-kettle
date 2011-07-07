@@ -42,6 +42,10 @@ public class GetSlavesServlet extends BaseHttpServlet implements
   public GetSlavesServlet(List<SlaveServerDetection> slaveServers) {
     super(slaveServers);
   }
+  
+  public GetSlavesServlet(List<SlaveServerDetection> slaveServers, boolean isJetty) {
+    super(slaveServers, isJetty);
+  }
 
   protected void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {

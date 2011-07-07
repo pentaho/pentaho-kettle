@@ -38,6 +38,10 @@ public class RegisterSlaveServlet extends BaseHttpServlet implements
   public RegisterSlaveServlet(List<SlaveServerDetection> detections) {
     super(detections);
   }
+  
+  public RegisterSlaveServlet(List<SlaveServerDetection> detections, boolean isJetty) {
+    super(detections, isJetty);
+  }
 
   public void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {

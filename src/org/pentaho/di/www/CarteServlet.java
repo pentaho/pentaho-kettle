@@ -13,6 +13,9 @@
 package org.pentaho.di.www;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -22,6 +25,8 @@ import javax.servlet.http.HttpServletResponse;
 public class CarteServlet extends HttpServlet {
 
   private static final long serialVersionUID = 2434694833497859776L;
+  
+  private final List<SlaveServerDetection> detections = Collections.synchronizedList(new ArrayList<SlaveServerDetection>());
 
   private AddExportServlet addExportServlet = new AddExportServlet();
   private AddJobServlet addJobServlet = new AddJobServlet();
@@ -31,12 +36,12 @@ public class CarteServlet extends HttpServlet {
   private NextSequenceValueServlet nextSequenceValueServlet = new NextSequenceValueServlet();
   private CleanupTransServlet cleanupTransServlet = new CleanupTransServlet();
   private GetJobStatusServlet getJobStatusServlet = new GetJobStatusServlet();
-  private GetSlavesServlet getSlavesServlet = new GetSlavesServlet();
+  private GetSlavesServlet getSlavesServlet = new GetSlavesServlet(detections, false);
   private GetStatusServlet getStatusServlet = new GetStatusServlet();
   private GetTransStatusServlet getTransStatusServlet = new GetTransStatusServlet();
   private PauseTransServlet pauseTransServlet = new PauseTransServlet();
   private PrepareExecutionTransServlet prepareExecutionTransServlet = new PrepareExecutionTransServlet();
-  private RegisterSlaveServlet registerSlaveServlet = new RegisterSlaveServlet();
+  private RegisterSlaveServlet registerSlaveServlet = new RegisterSlaveServlet(detections, false);
   private RemoveTransServlet removeTransServlet = new RemoveTransServlet();
   private RemoveJobServlet removeJobServlet = new RemoveJobServlet();
   private SniffStepServlet sniffStepServlet = new SniffStepServlet();
