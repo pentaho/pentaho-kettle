@@ -25,6 +25,7 @@ import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -279,8 +280,7 @@ public class SymmetricCryptoTransMeta extends BaseStepMeta implements StepMetaIn
 			messageField     = XMLHandler.getTagValue(stepnode, "messageField"); //$NON-NLS-1$
 			resultfieldname     = XMLHandler.getTagValue(stepnode, "resultfieldname"); //$NON-NLS-1$
 			
-			secretKey     = XMLHandler.getTagValue(stepnode, "secretKey");
-			
+			setSecretKey(Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(stepnode, "secretKey")));
 			secretKeyInField = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "secretKeyInField"));	
 			readKeyAsBinary = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "readKeyAsBinary"));	
 			outputResultAsBinary = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "outputResultAsBinary"));	
@@ -328,8 +328,8 @@ public class SymmetricCryptoTransMeta extends BaseStepMeta implements StepMetaIn
 		retval.append("    "+XMLHandler.addTagValue("secretKeyField", secretKeyField)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    "+XMLHandler.addTagValue("messageField", messageField)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    "+XMLHandler.addTagValue("resultfieldname", resultfieldname)); //$NON-NLS-1$ //$NON-NLS-2$
-		
-		retval.append("    "+XMLHandler.addTagValue("secretKey", secretKey));
+
+		retval.append("    ").append(XMLHandler.addTagValue("secretKey", Encr.encryptPasswordIfNotUsingVariables(secretKey)));
 		
 		retval.append("    "+XMLHandler.addTagValue("secretKeyInField",  secretKeyInField));
 		retval.append("    "+XMLHandler.addTagValue("readKeyAsBinary",  readKeyAsBinary));
@@ -351,7 +351,7 @@ public class SymmetricCryptoTransMeta extends BaseStepMeta implements StepMetaIn
 			messageField     = rep.getStepAttributeString(id_step, "messageField"); //$NON-NLS-1$
 			resultfieldname     = rep.getStepAttributeString(id_step, "resultfieldname"); //$NON-NLS-1$
 			
-			secretKey     = rep.getStepAttributeString(id_step, "secretKey");
+			secretKey              = Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString (id_step, "secretKey") );	
 			secretKeyInField    =      rep.getStepAttributeBoolean(id_step, "secretKeyInField"); 
 			readKeyAsBinary    =      rep.getStepAttributeBoolean(id_step, "readKeyAsBinary"); 
 			outputResultAsBinary  =      rep.getStepAttributeBoolean(id_step, "outputResultAsBinary"); 
@@ -380,8 +380,7 @@ public class SymmetricCryptoTransMeta extends BaseStepMeta implements StepMetaIn
 			rep.saveStepAttribute(id_transformation, id_step, "messageField", messageField); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "resultfieldname", resultfieldname); //$NON-NLS-1$
 			
-			rep.saveStepAttribute(id_transformation, id_step, "secretKey", secretKey);
-			
+			rep.saveStepAttribute(id_transformation, id_step, "secretKey", Encr.encryptPasswordIfNotUsingVariables(secretKey));
 			rep.saveStepAttribute(id_transformation, id_step, "secretKeyInField",  secretKeyInField);
 			rep.saveStepAttribute(id_transformation, id_step, "readKeyAsBinary",  readKeyAsBinary);
 			rep.saveStepAttribute(id_transformation, id_step, "outputResultAsBinary",  outputResultAsBinary);

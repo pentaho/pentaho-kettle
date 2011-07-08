@@ -18,6 +18,7 @@ package org.pentaho.di.trans.steps.symmetriccrypto.symmetriccryptotrans;
 
 import org.apache.commons.codec.binary.Hex;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -95,8 +96,7 @@ public class SymmetricCryptoTrans extends BaseStep implements StepInterface
 			
 			
 			if(!meta.isSecretKeyInField()) {
-				String realSecretKey=environmentSubstitute(meta.getSecretKey());
-				
+	   			String realSecretKey=Encr.decryptPasswordOptionallyEncrypted(environmentSubstitute(meta.getSecretKey()));
 				if(Const.isEmpty(realSecretKey)) {
 					throw new KettleStepException(BaseMessages.getString(PKG, "SymmetricCryptoTrans.Exception.SecretKeyMissing"));	
 				}
@@ -133,7 +133,7 @@ public class SymmetricCryptoTrans extends BaseStep implements StepInterface
 						throw new KettleStepException(BaseMessages.getString(PKG, "SymmetricCryptoTrans.Exception.SecretKeyMissing"));	
 					}
 				}else {
-					realSecretKey = getInputRowMeta().getString(r, data.indexOfSecretkeyField);
+					realSecretKey=Encr.decryptPasswordOptionallyEncrypted(environmentSubstitute((String)getInputRowMeta().getString(r, data.indexOfSecretkeyField)));
 					if(Const.isEmpty((String) realSecretKey)) {
 						throw new KettleStepException(BaseMessages.getString(PKG, "SymmetricCryptoTrans.Exception.SecretKeyMissing"));	
 					}
