@@ -1430,7 +1430,7 @@
 		<iconfile>ui/images/MJOINS.png</iconfile>
 	</step> 	
 
-	<step id="SymmetricCrytoTrans">
+	<step id="SymmetricCryptoTrans">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SymmetricCryptography</description>
 		<classname>org.pentaho.di.trans.steps.symmetriccrypto.symmetriccryptotrans.SymmetricCryptoTransMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
