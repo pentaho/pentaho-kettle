@@ -301,6 +301,8 @@ public class SymmetricCryptoTransDialog extends BaseStepDialog implements StepDi
 
 		wSecretKey = new TextVar(transMeta, wCryptoSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		props.setLook(wSecretKey);
+		wSecretKey.setEchoChar('*');
+		wSecretKey.setToolTipText(BaseMessages.getString(PKG, "SymmetricCryptoTransDialog.SecretKey.Tooltip"));
 		wSecretKey.addModifyListener(lsMod);
 		fdSecretKey = new FormData();
 		fdSecretKey.left = new FormAttachment(middle, margin);
