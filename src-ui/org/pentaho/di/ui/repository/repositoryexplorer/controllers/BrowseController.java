@@ -402,6 +402,8 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
 
   public void createFolder() throws Exception {
 
+    try {
+      
     Collection<UIRepositoryDirectory> directories = folderTree.getSelectedItems();
     if (directories == null || directories.size() == 0) {
       return;
@@ -436,6 +438,12 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
 
     }
     newName = null;
+    } catch (Exception e) {
+      messageBox.setTitle(BaseMessages.getString(PKG, "Dialog.Error")); //$NON-NLS-1$
+      messageBox.setAcceptLabel(BaseMessages.getString(PKG, "Dialog.Ok")); //$NON-NLS-1$
+      messageBox.setMessage(BaseMessages.getString(PKG, e.getLocalizedMessage()));
+      messageBox.open();
+    }
   }
   
   public void exportFolder() throws Exception {
