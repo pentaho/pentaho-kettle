@@ -320,7 +320,11 @@ public class XMLOutput extends BaseStep implements StepInterface
 			{
 				// Close the parent element
 				data.writer.write(("</" + meta.getMainElement() + ">" + Const.CR).toCharArray()); //$NON-NLS-1$ //$NON-NLS-2$
-	
+
+				// System.out.println("Closed xml file...");
+
+				data.writer.close();
+
 				if (meta.isZipped())
 				{
 					// System.out.println("close zip entry ");
@@ -328,12 +332,7 @@ public class XMLOutput extends BaseStep implements StepInterface
 					// System.out.println("finish file...");
 					data.zip.finish();
 					data.zip.close();
-				} else
-				{
-					data.writer.close();
 				}
-	
-				// System.out.println("Closed file...");
 	
 				retval = true;
 			} catch (Exception e)
