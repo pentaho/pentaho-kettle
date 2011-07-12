@@ -34,11 +34,13 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
-import org.mortbay.log.Log;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.laf.BasePropertyHandler;
+import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.util.ImageUtil;
 
 /**
@@ -64,8 +66,12 @@ public class Splash {
   private int licFontSize = 8;
 
   private static Class<?> PKG = Splash.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+  
+  private static LogChannelInterface log;
 
   public Splash(Display display) throws KettleException {
+    log = new LogChannel(Spoon.APP_NAME);
+    
     Rectangle displayBounds = display.getPrimaryMonitor().getBounds();
 
     kettle_image = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("splash_image")); // "kettle_splash.png" //$NON-NLS-1$
@@ -111,7 +117,7 @@ public class Splash {
           }
         } catch (Exception ex) {
           sb.append(""); //$NON-NLS-1$
-          Log.warn(BaseMessages.getString(PKG, "SplashDialog.LicenseTextNotFound")); //$NON-NLS-1$
+          log.logError(BaseMessages.getString(PKG, "SplashDialog.LicenseTextNotFound"), ex); //$NON-NLS-1$
         }
         Calendar cal = Calendar.getInstance();
         String licenseText = String.format(sb.toString(), cal);
