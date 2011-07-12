@@ -2395,6 +2395,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     return false;
   }
 
+  public void editJobPropertiesPopup() {
+    JobGraph.editProperties((JobMeta) selectionObject, this, rep, true);
+  }
+  
   public void addJobLog() {
     JobGraph activeJobGraph = getActiveJobGraph();
     if (activeJobGraph != null) {
