@@ -227,7 +227,7 @@
   </menupopup>
 
   <menupopup id="job-inst">
-    <menuitem id="job-inst-settings" label="${Spoon.Menu.Job.Settings}" command="jobgraph.editJobProperties()" />
+    <menuitem id="job-inst-settings" label="${Spoon.Menu.Job.Settings}" command="spoon.editJobPropertiesPopup()" />
     <menuitem id="job-inst-logging" label="${Spoon.Menu.Popup.BASE.LogWindow}" command="spoon.addJobLog()" />
     <menuitem id="job-inst-history" label="${Spoon.Menu.Popup.BASE.HistoryWindow}" command="spoon.addJobHistory()" />
   </menupopup>
