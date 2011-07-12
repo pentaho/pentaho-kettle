@@ -102,9 +102,6 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
 
   protected XulConfirmBox confirmBox;
 
-  private List<UIRepositoryObject> currentSelectedFileList;
-  
-  private List<UIRepositoryDirectory>  currentSelectedFolderList;
   /**
    * Allows for lookup of a UIRepositoryDirectory by ObjectId. This allows the reuse of instances that are inside a UI
    * tree.
@@ -683,7 +680,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   }
 
   public void setSelectedFolderItems(List<UIRepositoryDirectory> selectedFolderItems) {
-    if (!compareFolderList(selectedFolderItems, this.selectedFolderItems) && !compareFolderList(selectedFolderItems, currentSelectedFolderList)) {
+    if (!compareFolderList(selectedFolderItems, this.selectedFolderItems)) {
       List<TYPE> pollResults = pollContextChangeVetoResults();
       if (!contains(TYPE.CANCEL, pollResults)) {
         this.selectedFolderItems = selectedFolderItems;
@@ -691,15 +688,9 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
       } else if (contains(TYPE.CANCEL, pollResults)) {
         folderTree.setSelectedItems(this.selectedFolderItems);
         fileTable.setSelectedItems(this.selectedFileItems);
-        currentSelectedFolderList = new ArrayList<UIRepositoryDirectory>();
-        currentSelectedFolderList.addAll(selectedFolderItems);
       }
-    } else if (compareFolderList(selectedFolderItems, this.selectedFolderItems) && !compareFolderList(selectedFolderItems, currentSelectedFolderList)) {
-        setRepositoryDirectories(selectedFolderItems);
     } else {
-      if(currentSelectedFolderList.size() > 0) {
-        currentSelectedFolderList.clear();
-      }
+        setRepositoryDirectories(selectedFolderItems);
     }
   }
 
@@ -708,7 +699,7 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
   }
 
   public void setSelectedFileItems(List<UIRepositoryObject> selectedFileItems) {
-    if (!compareFileList(selectedFileItems, this.selectedFileItems) && !compareFileList(selectedFileItems,currentSelectedFileList)) {
+    if (!compareFileList(selectedFileItems, this.selectedFileItems)) {
       List<TYPE> pollResults = pollContextChangeVetoResults();
       if (!contains(TYPE.CANCEL, pollResults)) {
         this.selectedFileItems = selectedFileItems;
@@ -716,15 +707,9 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
         setRepositoryItems(selectedFileItems);
       } else if (contains(TYPE.CANCEL, pollResults)) {
         fileTable.setSelectedItems(this.selectedFileItems);
-        currentSelectedFileList = new ArrayList<UIRepositoryObject>();
-        currentSelectedFileList.addAll(selectedFileItems);
       }
-    } else if (compareFileList(selectedFileItems, this.selectedFileItems) && !compareFileList(selectedFileItems,currentSelectedFileList)) {
+    } else {
       setRepositoryItems(selectedFileItems);        
-    } else { 
-      if(currentSelectedFileList.size() > 0) {
-        currentSelectedFileList.clear();
-      }
     }
   }
 
