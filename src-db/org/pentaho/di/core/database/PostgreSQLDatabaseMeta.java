@@ -286,7 +286,8 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 				{
 					if (precision>0 || length>18)
 					{
-						retval+="NUMERIC("+length+", "+precision+")";
+					  // Numeric(Precision, Scale): Precision = total length; Scale = decimal places
+						retval+="NUMERIC("+(length + precision)+", "+precision+")";
 					}
 					else
 					{
