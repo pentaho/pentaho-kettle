@@ -147,14 +147,6 @@
 	<classpathentry exported="true" kind="lib" path="libext/saxon9.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/mondrian/saxon9-xom.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/salesforce/SFpartner21.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/elasticsearch/elasticsearch-0.15.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/elasticsearch/lucene-analyzers-3.0.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/elasticsearch/lucene-core-3.0.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/elasticsearch/lucene-fast-vector-highlighter-3.0.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/elasticsearch/lucene-highlighter-3.0.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/elasticsearch/lucene-memory-3.0.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/elasticsearch/lucene-queries-3.0.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/elasticsearch/lucene-snowball-3.0.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/jzlib-1.0.7.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/asm-1.5.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/asm-attrs-1.5.3.jar"/>
@@ -277,5 +269,11 @@
 	<classpathentry kind="lib" path="libext/jersey/jersey-client-1.7.jar"/>
 	<classpathentry kind="lib" path="libext/jersey/jersey-core-1.7.jar"/>
 	<classpathentry kind="lib" path="libext/jackcess-1.2.4.jar"/>
+	<classpathentry kind="lib" path="libext/elasticsearch/elasticsearch-0.16.3.jar"/>
+	<classpathentry kind="lib" path="libext/elasticsearch/lucene-analyzers-3.1.0.jar"/>
+	<classpathentry kind="lib" path="libext/elasticsearch/lucene-core-3.1.0.jar"/>
+	<classpathentry kind="lib" path="libext/elasticsearch/lucene-highlighter-3.1.0.jar"/>
+	<classpathentry kind="lib" path="libext/elasticsearch/lucene-memory-3.1.0.jar"/>
+	<classpathentry kind="lib" path="libext/elasticsearch/lucene-queries-3.1.0.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
