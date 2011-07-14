@@ -38,6 +38,7 @@ import org.pentaho.di.trans.HasDatabasesInterface;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.steps.selectvalues.SelectMetadataChange;
 import org.pentaho.di.trans.steps.selectvalues.SelectValuesMeta;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 import org.pentaho.di.trans.steps.tableoutput.TableOutputMeta;
@@ -341,6 +342,9 @@ public class SpoonDBDelegate extends SpoonDelegate
           ValueMetaInterface v = fields.getValueMeta(i);
           if (targetDBInfo.isReservedWord(v.getName()))
           {
+            if(svi.getMeta()[nr] == null) {
+              svi.getMeta()[nr] = new SelectMetadataChange(svi);
+            }
             svi.getMeta()[nr].setName(v.getName());
             svi.getMeta()[nr].setRename(targetDBInfo.quoteField(v.getName()));
             nr++;
