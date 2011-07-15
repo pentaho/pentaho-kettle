@@ -191,7 +191,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
       isfromprevious = rep.getJobEntryAttributeBoolean(id_jobentry, "isfromprevious");
       createparentfolder = rep.getJobEntryAttributeBoolean(id_jobentry, "createparentfolder");
       adddate = rep.getJobEntryAttributeBoolean(id_jobentry, "adddate");
-      addtime = rep.getJobEntryAttributeBoolean(id_jobentry, "adddate");
+      addtime = rep.getJobEntryAttributeBoolean(id_jobentry, "addtime");
       SpecifyFormat = rep.getJobEntryAttributeBoolean(id_jobentry, "SpecifyFormat");
       date_time_format = rep.getJobEntryAttributeString(id_jobentry, "date_time_format");
       createMoveToDirectory = rep.getJobEntryAttributeBoolean(id_jobentry, "createMoveToDirectory");
