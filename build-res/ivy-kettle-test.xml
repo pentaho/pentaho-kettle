@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
-  <info organisation="pentaho.kettle" module="kettle-test" revision="${project.revision}"/>
+  <info organisation="pentaho-kettle" module="kettle-test" revision="${project.revision}"/>
   <publications>
     <artifact name="kettle-test" type="jar" conf="default"/>
   </publications>  
