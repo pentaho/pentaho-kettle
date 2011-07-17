@@ -176,7 +176,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		
 		written=0;
 				
-		if(log.isDetailed()) log.logDetailed("New database connection defined");
+		if(log.isDetailed()) log.logDetailed( BaseMessages.getString(PKG, "DatabaseMeta.Info.NewConnectionDefined") );
 	}
 	
 	/**
@@ -205,7 +205,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		
 		written=0;
 				
-		if(log.isDetailed()) log.logDetailed("New database connection defined");
+		if(log.isDetailed()) log.logDetailed( BaseMessages.getString(PKG, "DatabaseMeta.Info.NewConnectionDefined") );
 	}
 
     
@@ -354,7 +354,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
             else
             {
     			connectUsingClass(databaseMeta.getDriverClass(), partitionId );
-    			if(log.isDetailed()) log.logDetailed("Connected to database.");
+    			if(log.isDetailed()) log.logDetailed( BaseMessages.getString(PKG, "DatabaseMeta.Info.ConnectedDatabase") );
                 
                 // See if we need to execute extra SQL statemtent...
                 String sql = environmentSubstitute( databaseMeta.getConnectSQL() ); 
