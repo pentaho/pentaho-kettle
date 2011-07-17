@@ -16,16 +16,16 @@
 
     <dependency org="commons-vfs" name="commons-vfs" rev="20091118-pentaho" transitive="false" />
 
-    <dependency org="pentaho.kettle" name="kettle-engine" rev="${dependency.kettle.revision}" transitive="false" conf="default->default"
+    <dependency org="pentaho-kettle" name="kettle-engine" rev="${dependency.kettle.revision}" transitive="false" conf="default->default"
       changing="true" />
-    <dependency org="pentaho.kettle" name="kettle-core" rev="${dependency.kettle.revision}" transitive="false" conf="default->default"
+    <dependency org="pentaho-kettle" name="kettle-core" rev="${dependency.kettle.revision}" transitive="false" conf="default->default"
       changing="true" />
-    <dependency org="pentaho.kettle" name="kettle-db" rev="${dependency.kettle.revision}" transitive="false" conf="default->default"
+    <dependency org="pentaho-kettle" name="kettle-db" rev="${dependency.kettle.revision}" transitive="false" conf="default->default"
       changing="true" />
-    <dependency org="pentaho.kettle" name="kettle-ui-swt" rev="${dependency.kettle.revision}" transitive="false" conf="default->default"
+    <dependency org="pentaho-kettle" name="kettle-ui-swt" rev="${dependency.kettle.revision}" transitive="false" conf="default->default"
       changing="true" />
 
-    <!-- pentaho-database and pentaho-xul-framework must match JARs required by kettle-ui-swt -->
+    <!-- pentaho-xul-framework must match JARs required by kettle-ui-swt -->
     <!-- this manual sync should go away once this project is propertly ivy-ized -->
 
     <dependency org="pentaho" name="pentaho-xul-core" rev="${dependency.pentaho-xul.revision}" transitive="false" conf="default->default"
