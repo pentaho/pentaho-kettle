@@ -441,7 +441,7 @@ public class MailInput extends BaseStep implements StepInterface
 			}
 			Date beginDate=null;
 			Date endDate=null;
-			SimpleDateFormat df  = new SimpleDateFormat();
+			SimpleDateFormat df  = new SimpleDateFormat(MailInputMeta.DATE_PATTERN);
 			
 			// check search terms
 			// Received Date

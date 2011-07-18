@@ -51,6 +51,8 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface
 {
 	private static Class<?> PKG = MailInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 	
+	public static final String DATE_PATTERN = "yyyy-MM-dd HH:mm:ss";
+	
 	public int conditionReceivedDate;
 	
 	public int valueimaplist;

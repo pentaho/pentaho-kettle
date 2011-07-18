@@ -15,7 +15,9 @@
 
 package org.pentaho.di.ui.trans.steps.mailinput;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import javax.mail.Folder;
 
@@ -1035,14 +1037,17 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
 					ok.setLayoutData(new GridData (SWT.FILL, SWT.CENTER, false, false));
 					ok.addSelectionListener (new SelectionAdapter () {
 						public void widgetSelected (SelectionEvent e) {
-							wReadFrom.setText(calendar.getYear()+"-"+
-									((calendar.getMonth () + 1)<10 ? "0"+(calendar.getMonth () + 1) : (calendar.getMonth () + 1)) 
-											+"-"+(calendar.getDay ()<10 ? "0"+calendar.getDay () : calendar.getDay ())
-											+" "+(time.getHours()<10 ? "0"+time.getHours() : time.getHours())
-											+":"+(time.getMinutes()<10 ? "0"+time.getMinutes() : time.getMinutes())
-											+":"+(time.getMinutes()<10 ? "0"+time.getMinutes() : time.getMinutes())					
-							); 
-					          
+							Calendar cal = Calendar.getInstance();
+							cal.set(Calendar.YEAR, calendar.getYear());
+							cal.set(Calendar.MONTH, calendar.getMonth());
+							cal.set(Calendar.DAY_OF_MONTH, calendar.getDay());
+							
+							cal.set(Calendar.HOUR_OF_DAY, time.getHours());
+							cal.set(Calendar.MINUTE, time.getMinutes());
+							cal.set(Calendar.SECOND, time.getSeconds());
+							
+							wReadFrom.setText(new SimpleDateFormat(MailInputMeta.DATE_PATTERN).format(cal.getTime()));
+
 							dialog.close ();
 						}
 					});
@@ -1094,13 +1099,17 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
 					okto.setLayoutData(new GridData (SWT.FILL, SWT.CENTER, false, false));
 					okto.addSelectionListener (new SelectionAdapter () {
 						public void widgetSelected (SelectionEvent e) {
-							wReadTo.setText(calendarto.getYear()+"-"+
-									((calendarto.getMonth() + 1)<10 ? "0"+(calendarto.getMonth () + 1) : (calendarto.getMonth () + 1)) 
-									+"-"+(calendarto.getDay ()<10 ? "0"+calendarto.getDay () : calendarto.getDay())
-									+" "+(timeto.getHours()<10 ? "0"+timeto.getHours() : timeto.getHours())
-									+":"+(timeto.getMinutes()<10 ? "0"+timeto.getMinutes() : timeto.getMinutes())
-									+":"+(timeto.getSeconds()<10 ? "0"+timeto.getSeconds() : timeto.getSeconds())
-							); 
+	            Calendar cal = Calendar.getInstance();
+	            cal.set(Calendar.YEAR, calendarto.getYear());
+	            cal.set(Calendar.MONTH, calendarto.getMonth());
+	            cal.set(Calendar.DAY_OF_MONTH, calendarto.getDay());
+	              
+	            cal.set(Calendar.HOUR_OF_DAY, timeto.getHours());
+	            cal.set(Calendar.MINUTE, timeto.getMinutes());
+	            cal.set(Calendar.SECOND, timeto.getSeconds());
+	              
+	            wReadTo.setText(new SimpleDateFormat().format(cal.getTime()));
+	              
 							dialogto.close ();
 						}
 					});
