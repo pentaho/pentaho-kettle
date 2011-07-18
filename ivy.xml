@@ -42,6 +42,10 @@
       changing="false" />
     <dependency org="org.apache.zookeeper" name="zookeeper" rev="${dependency.pentaho-zookeeper.revision}" transitive="false" conf="default->default"
       changing="false" />
+    <dependency org="org.apache.pig" name="pig" rev="${dependency.pig.revision}" transitive="false" conf="default->default"
+      changing="false"/>
+    <dependency org="jline" name="jline" rev="${dependency.jline.revision}" transitive="false" conf="default->default"
+      changing="false"/>
 
       
     <dependency org="pentaho" name="pentaho-vfs-browser" rev="${dependency.vfs-browser.revision}" transitive="false" conf="default->default"
