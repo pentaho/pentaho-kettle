@@ -37,7 +37,6 @@
 	<classpathentry exported="true" kind="lib" path="libext/JDBC/interclient.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/JDBC/jaybird-full-2.1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/JDBC/jt400.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/JDBC/mysql-connector-java-3.1.14-bin.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/JDBC/ojdbc14.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/JDBC/rdbthin.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/JDBC/sapdbc.jar"/>
@@ -275,5 +274,6 @@
 	<classpathentry kind="lib" path="libext/elasticsearch/lucene-highlighter-3.1.0.jar"/>
 	<classpathentry kind="lib" path="libext/elasticsearch/lucene-memory-3.1.0.jar"/>
 	<classpathentry kind="lib" path="libext/elasticsearch/lucene-queries-3.1.0.jar"/>
+	<classpathentry kind="lib" path="libext/JDBC/mysql-connector-java-5.1.17.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
