@@ -32,7 +32,7 @@
        <dependency org="commons-dbcp" name="commons-dbcp" rev="1.2.1" transitive="false"/>
        <dependency org="commons-beanutils" name="commons-beanutils" rev="1.8.0-BETA" transitive="false"/>
        <dependency org="hsqldb" name="hsqldb" rev="1.8.0.1" transitive="false"/>
-       <dependency org="mysql" name="mysql-connector-java" rev="5.1.10" transitive="false"/>
+       <dependency org="mysql" name="mysql-connector-java" rev="5.1.17" transitive="false"/>
        <dependency org="dom4j" name="dom4j" rev="1.6.1" transitive="false"/>
        <dependency org="commons-lang" name="commons-lang" rev="2.2" transitive="false"/>
        <dependency org="commons-logging" name="commons-logging-api" rev="1.1" transitive="false"/>
