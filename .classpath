@@ -201,7 +201,6 @@
 	<classpathentry exported="true" kind="lib" path="libext/reporting/openide-util-200507110943.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/oro-2.0.8.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/pentaho-connections-2.2.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/pentaho-database-4.0.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-core-3.8.0-GA.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-3.8.0-GA.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-drill-down-3.8.0-GA.jar"/>
