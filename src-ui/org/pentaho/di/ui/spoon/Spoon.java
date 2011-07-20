@@ -4300,6 +4300,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     // have changed.
     refreshTree();
 
+    // Update menu status for the newly saved object
+    enableMenus();
+    
     return saved;
   }
 
@@ -4535,6 +4538,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         tabItem.setImage(GUIResource.getInstance().getImageJobGraph());
       }
     }
+    
+    // Update menu status for the newly saved object
+    enableMenus();
     return saved;
   }
 
