@@ -219,6 +219,7 @@ public class PentahoReportingOutput extends BaseStep implements StepInterface
         case PDF: PdfReportUtil.createPDF(report, targetFilename); break;
         case CSV: CSVReportUtil.createCSV(report, targetFilename); break;
         case Excel: ExcelReportUtil.createXLS(report, targetFilename); break;
+        case Excel_2007: ExcelReportUtil.createXLSX(report, targetFilename); break;
         case StreamingHTML: 
           HtmlReportUtil.createStreamHTML(report, targetFilename);
           break;

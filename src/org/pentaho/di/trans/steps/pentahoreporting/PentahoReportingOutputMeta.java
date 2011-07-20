@@ -68,6 +68,7 @@ public class PentahoReportingOutputMeta extends BaseStepMeta implements StepMeta
     StreamingHTML("StreamingHtml", "Streaming HTML"), 
     CSV("CSV", "CSV"), 
     Excel("Excel", "Excel"),
+    Excel_2007("Excel 2007", "Excel 2007"),
     RTF("RTF", "RTF"),
     ;
 
