@@ -500,7 +500,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
 			{
 				public void widgetSelected(SelectionEvent e)
 				{
-					refreshProtocal(true);
+					refreshProtocol(true);
 					
 				}
 			});
@@ -1108,7 +1108,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
 	            cal.set(Calendar.MINUTE, timeto.getMinutes());
 	            cal.set(Calendar.SECOND, timeto.getSeconds());
 	              
-	            wReadTo.setText(new SimpleDateFormat().format(cal.getTime()));
+	            wReadTo.setText(new SimpleDateFormat(MailInputMeta.DATE_PATTERN).format(cal.getTime()));
 	              
 							dialogto.close ();
 						}
@@ -1312,7 +1312,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
 	        getData();
 	        setUserProxy();
 			chooseListMails();
-			refreshProtocal(false);
+			refreshProtocol(false);
 			conditionReceivedDate();
 			wTabFolder.setSelection(0);
 	        BaseStepDialog.setSize(shell);
@@ -1506,17 +1506,22 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
 	    		}
 			}catch(Exception e){};
 	    }
-	    private void conditionReceivedDate()
-	    {
-	    	boolean activeReceivedDate=!(MailConnectionMeta.getConditionDateByDesc(wConditionOnReceivedDate.getText())==MailConnectionMeta.CONDITION_DATE_IGNORE);
-	    	boolean useBetween=(MailConnectionMeta.getConditionDateByDesc(wConditionOnReceivedDate.getText())==MailConnectionMeta.CONDITION_DATE_BETWEEN);
-			wlReadFrom.setVisible(activeReceivedDate);
-			wReadFrom.setVisible(activeReceivedDate);
-			open.setVisible(activeReceivedDate);
-	    	wlReadTo.setVisible(activeReceivedDate && useBetween);
-			wReadTo.setVisible(activeReceivedDate && useBetween);
-			opento.setVisible(activeReceivedDate && useBetween);
-	    }
+   private void conditionReceivedDate()
+   {
+     boolean activeReceivedDate=!(MailConnectionMeta.getConditionDateByDesc(wConditionOnReceivedDate.getText())==MailConnectionMeta.CONDITION_DATE_IGNORE);
+     boolean useBetween=(MailConnectionMeta.getConditionDateByDesc(wConditionOnReceivedDate.getText())==MailConnectionMeta.CONDITION_DATE_BETWEEN);
+     wlReadFrom.setVisible(activeReceivedDate);
+     wReadFrom.setVisible(activeReceivedDate);
+     open.setVisible(activeReceivedDate);
+     wlReadTo.setVisible(activeReceivedDate && useBetween);
+     wReadTo.setVisible(activeReceivedDate && useBetween);
+     opento.setVisible(activeReceivedDate && useBetween);
+     if (!activeReceivedDate) {
+       wReadFrom.setText("");
+       wReadTo.setText("");
+       wNegateReceivedDate.setSelection(false);
+     }
+   }
 
 	    private void refreshPort(boolean refreshport)
 	    {
@@ -1550,7 +1555,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
 
 	    	}
 	    }
-	    private void refreshProtocal(boolean refreshport)
+	    private void refreshProtocol(boolean refreshport)
 	    {
 	    	boolean activePOP3=wProtocol.getText().equals(MailConnectionMeta.PROTOCOL_STRING_POP3);
 	    	wlPOP3Message.setEnabled(activePOP3);
@@ -1569,6 +1574,18 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
 	    		wdynamicFolder.setSelection(false);
 	    	wldynamicFolder.setEnabled(!activePOP3);
 	     	wdynamicFolder.setEnabled(!activePOP3);
+	     	
+        if (activePOP3) {
+          // clear out selections
+          wConditionOnReceivedDate.select(0);
+          conditionReceivedDate();
+        }
+        // POP3 protocol does not provide information about when a message was received
+        wConditionOnReceivedDate.setEnabled(!activePOP3);
+        wNegateReceivedDate.setEnabled(!activePOP3);
+        wlConditionOnReceivedDate.setEnabled(!activePOP3);
+
+	     	
 	    	activedynamicFolder();
 	    	chooseListMails();
 	    	refreshPort(refreshport);

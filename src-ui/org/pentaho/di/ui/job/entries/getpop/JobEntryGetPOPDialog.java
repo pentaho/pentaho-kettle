@@ -16,7 +16,9 @@
 
 package org.pentaho.di.ui.job.entries.getpop;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import javax.mail.Folder;
 
@@ -60,6 +62,7 @@ import org.pentaho.di.job.entries.getpop.MailConnectionMeta;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.trans.steps.mailinput.MailInputMeta;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.TextVar;
@@ -572,7 +575,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 			{
 				public void widgetSelected(SelectionEvent e)
 				{
-					refreshProtocal(true);
+					refreshProtocol(true);
 					
 				}
 			});
@@ -1521,13 +1524,16 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 					ok.setLayoutData(new GridData (SWT.FILL, SWT.CENTER, false, false));
 					ok.addSelectionListener (new SelectionAdapter () {
 						public void widgetSelected (SelectionEvent e) {
-							wReadFrom.setText(calendar.getYear()+"-"+
-									((calendar.getMonth () + 1)<10 ? "0"+(calendar.getMonth () + 1) : (calendar.getMonth () + 1)) 
-											+"-"+(calendar.getDay ()<10 ? "0"+calendar.getDay () : calendar.getDay ())
-											+" "+(time.getHours()<10 ? "0"+time.getHours() : time.getHours())
-											+":"+(time.getMinutes()<10 ? "0"+time.getMinutes() : time.getMinutes())
-											+":"+(time.getMinutes()<10 ? "0"+time.getMinutes() : time.getMinutes())					
-							); 
+              Calendar cal = Calendar.getInstance();
+              cal.set(Calendar.YEAR, calendar.getYear());
+              cal.set(Calendar.MONTH, calendar.getMonth());
+              cal.set(Calendar.DAY_OF_MONTH, calendar.getDay());
+              
+              cal.set(Calendar.HOUR_OF_DAY, time.getHours());
+              cal.set(Calendar.MINUTE, time.getMinutes());
+              cal.set(Calendar.SECOND, time.getSeconds());
+						  
+              wReadFrom.setText(new SimpleDateFormat(JobEntryGetPOP.DATE_PATTERN).format(cal.getTime()));
 					          
 							dialog.close ();
 						}
@@ -1580,13 +1586,16 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 					okto.setLayoutData(new GridData (SWT.FILL, SWT.CENTER, false, false));
 					okto.addSelectionListener (new SelectionAdapter () {
 						public void widgetSelected (SelectionEvent e) {
-							wReadTo.setText(calendarto.getYear()+"-"+
-									((calendarto.getMonth() + 1)<10 ? "0"+(calendarto.getMonth () + 1) : (calendarto.getMonth () + 1)) 
-									+"-"+(calendarto.getDay ()<10 ? "0"+calendarto.getDay () : calendarto.getDay())
-									+" "+(timeto.getHours()<10 ? "0"+timeto.getHours() : timeto.getHours())
-									+":"+(timeto.getMinutes()<10 ? "0"+timeto.getMinutes() : timeto.getMinutes())
-									+":"+(timeto.getSeconds()<10 ? "0"+timeto.getSeconds() : timeto.getSeconds())
-							); 
+              Calendar cal = Calendar.getInstance();
+              cal.set(Calendar.YEAR, calendarto.getYear());
+              cal.set(Calendar.MONTH, calendarto.getMonth());
+              cal.set(Calendar.DAY_OF_MONTH, calendarto.getDay());
+                
+              cal.set(Calendar.HOUR_OF_DAY, timeto.getHours());
+              cal.set(Calendar.MINUTE, timeto.getMinutes());
+              cal.set(Calendar.SECOND, timeto.getSeconds());
+                
+              wReadTo.setText(new SimpleDateFormat(JobEntryGetPOP.DATE_PATTERN).format(cal.getTime()));
 							dialogto.close ();
 						}
 					});
@@ -1714,7 +1723,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 	        setUserProxy();
 			chooseListMails();
 			activeAttachmentFolder();
-			refreshProtocal(false);
+			refreshProtocol(false);
 			conditionReceivedDate();
 			wTabFolder.setSelection(0);
 	        BaseStepDialog.setSize(shell);
@@ -1822,13 +1831,19 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 	    {
 	    	boolean activeReceivedDate=!(MailConnectionMeta.getConditionDateByDesc(wConditionOnReceivedDate.getText())==MailConnectionMeta.CONDITION_DATE_IGNORE);
 	    	boolean useBetween=(MailConnectionMeta.getConditionDateByDesc(wConditionOnReceivedDate.getText())==MailConnectionMeta.CONDITION_DATE_BETWEEN);
-			wlReadFrom.setVisible(activeReceivedDate);
-			wReadFrom.setVisible(activeReceivedDate);
-			open.setVisible(activeReceivedDate);
+	    	wlReadFrom.setVisible(activeReceivedDate);
+	    	wReadFrom.setVisible(activeReceivedDate);
+	    	open.setVisible(activeReceivedDate);
 	    	wlReadTo.setVisible(activeReceivedDate && useBetween);
-			wReadTo.setVisible(activeReceivedDate && useBetween);
-			opento.setVisible(activeReceivedDate && useBetween);
+	    	wReadTo.setVisible(activeReceivedDate && useBetween);
+	    	opento.setVisible(activeReceivedDate && useBetween);
+        if (!activeReceivedDate) {
+          wReadFrom.setText("");
+	        wReadTo.setText("");
+          wNegateReceivedDate.setSelection(false);
+	      }
 	    }
+	    
 	    private void activeAttachmentFolder()
 	    {
 	    	boolean getmessages=MailConnectionMeta.getActionTypeByDesc(wActionType.getText())==MailConnectionMeta.ACTION_TYPE_GET;
@@ -1873,7 +1888,7 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 
 	    	}
 	    }
-	    private void refreshProtocal(boolean refreshport)
+	    private void refreshProtocol(boolean refreshport)
 	    {
 	    	checkUnavailableMode();
 	    	boolean activePOP3=wProtocol.getText().equals(MailConnectionMeta.PROTOCOL_STRING_POP3);
@@ -1896,6 +1911,17 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 	    	wSelectFolder.setEnabled(!activePOP3);
 	    	wlAfterGetIMAP.setEnabled(!activePOP3);
 	    	wAfterGetIMAP.setEnabled(!activePOP3);
+	    	
+	    	if (activePOP3) {
+          // clear out selections
+          wConditionOnReceivedDate.select(0);
+          conditionReceivedDate();
+	    	}
+        // POP3 protocol does not provide information about when a message was received
+        wConditionOnReceivedDate.setEnabled(!activePOP3);
+        wNegateReceivedDate.setEnabled(!activePOP3);
+        wlConditionOnReceivedDate.setEnabled(!activePOP3);
+	    	
 	    	chooseListMails();
 	    	refreshPort(refreshport);
 	    	setActionType();
