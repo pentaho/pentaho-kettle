@@ -35,6 +35,7 @@
 		<mkdir dir="${api}"/>
 		<mkdir dir="${webstart}"/>
 		<mkdir dir="${junit}"/>
+	  	<mkdir dir="${pdice.package.basedir}"/>
 	  	
 	  	<!-- used by the nightly build. we can build zips directly to this location -->
 	  	<mkdir dir="${dist.dir}"/>
@@ -542,13 +543,170 @@
 	  	    <!-- make JavaApplicationStub executable for OSX -->
 	  	    <chmod file="${distrib}/Data Integration 32-bit.app/Contents/MacOS/JavaApplicationStub" perm="ugo+rx"/>
   	        <chmod file="${distrib}/Data Integration 64-bit.app/Contents/MacOS/JavaApplicationStub" perm="ugo+rx"/>
-
+	  		  		
 	  </target>
 	
 	  <!--
 	       ==========================
-	             zipfile
+	        PDI-CE Distribution jar package
 	       ==========================
+	  -->
+	  <target name="pdice-distrib" depends="kettle-core, kettle-db, kettle, kettle-dbdialog, kettle-ui, kettle-plugins, kettle-test" description="copy jar file to PDI-CE distribution directory" >
+	  	<echo>Construct the PDI-CE distribution package...</echo>
+	  	
+	        <!-- root directory -->
+	  		<mkdir dir="${pdice.distrib}"/>
+	  		<copy todir="${pdice.distrib}">
+	  			<fileset dir="${bin}" includes="**/*" excludes="**/.vpn .project .classpath"/>
+	  			</copy>
+
+	  		<!-- base lib -->
+	  		<mkdir dir="${pdice.distrib}/lib"/>
+			<copy todir="${pdice.distrib}/lib"  file="${lib}/kettle-core.jar"/>
+		    <copy todir="${pdice.distrib}/lib"  file="${lib}/kettle-db.jar"/>
+  			<copy todir="${pdice.distrib}/lib"  file="${lib}/kettle-engine.jar"/>
+		    <copy todir="${pdice.distrib}/lib"  file="${lib}/kettle-dbdialog.jar"/>
+  			<copy todir="${pdice.distrib}/lib"  file="${lib}/kettle-ui-swt.jar"/>
+	  		<copy todir="${pdice.distrib}/lib"  file="${lib}/kettle-test.jar"/>
+
+  	        <!-- external libs (jdbc etc) -->
+	  		<mkdir dir="${pdice.distrib}/libext"/>
+	  		<copy todir="${pdice.distrib}/libext">
+	  			<fileset dir="${libext}" includes="**/*.jar **/*.zip **/*.properties" excludes="**/.vpn"/>
+	  			</copy>
+
+	        <!-- swt libs (jdbc etc) -->
+	  		<mkdir dir="${pdice.distrib}/libswt"/>
+	  		<copy todir="${pdice.distrib}/libswt">
+	  			<fileset dir="${libswt}" includes="**/*" excludes="**/.vpn **/sapjco*.dll"/>
+	  			</copy>
+
+	        <!-- plugins -->
+	  		<mkdir dir="${pdice.distrib}/plugins"/>
+	  		<copy todir="${pdice.distrib}/plugins">
+	  			<fileset dir="${plugins}" includes="**/*" excludes="**/.vpn **/sapjco.jar **/VTVLInput **/VTVLInput/*"/>
+	  		</copy>
+	  	
+	  		<for list="${plugin-ids}" param="plugin" trim="true">
+  		  		<sequential>
+  		  			<copy todir="${pdice.distrib}/plugins">
+  		  				<fileset dir="src-plugins/@{plugin}/bin/stage" includes="**/*" />
+  		  			</copy>
+	  			</sequential>
+	  		</for>	
+
+        		<!-- ui -->
+  			<mkdir dir="${pdice.distrib}/ui"/>
+  			<copy todir="${pdice.distrib}/ui">
+  				<fileset dir="${ui}" includes="**/*" excludes="**/.vpn"/>
+  				</copy>
+
+	        <!-- documentation -->
+	  		<mkdir dir="${pdice.distrib}/docs"/>
+	  		<copy todir="${pdice.distrib}/docs">
+	  			<fileset dir="${docs}" 
+	  				     includes="**/*.pdf **/*.htm **/*.html **/*.png **/*.PNG **/*.swf **/cn_ZN.zip **/*.css **/*.gif **/*.jpg"
+	  			         excludes="**/*.dot **/*.doc **/*.sxw **/*.odt **/*.vpn **/*feature list*" />
+	  			</copy>
+
+	        <!-- pwd -->
+	  		<mkdir dir="${pdice.distrib}/pwd"/>
+	  		<copy todir="${pdice.distrib}/pwd">
+	  			<fileset dir="${pwd}" 
+	  				     includes="**/*.pwd **/*.xml"
+	  			         excludes="**/*.vpn" />
+	  			</copy>
+
+	        <!-- launcher -->
+	  		<mkdir dir="${pdice.distrib}/launcher"/>
+	  		<copy todir="${pdice.distrib}/launcher">
+	  			<fileset dir="launcher" 
+	  				     includes="**/*.*"
+	  			         excludes="**/*.vpn" />
+	  			</copy>
+
+	        <!-- simple-jndi -->
+	  		<mkdir dir="${pdice.distrib}/simple-jndi"/>
+	  		<copy todir="${pdice.distrib}/simple-jndi">
+	  			<fileset dir="${simple-jndi}" 
+	  				     includes="**/*.properties"
+	  			         excludes="**/*.vpn" />
+	  			</copy>
+
+	        <!-- samples -->
+	  		<mkdir dir="${pdice.distrib}/samples"/>
+	  		<mkdir dir="${pdice.distrib}/samples/transformations"/>
+	  		<mkdir dir="${pdice.distrib}/samples/jobs"/>
+	  		<mkdir dir="${pdice.distrib}/samples/transformations/output"/>
+	  		<mkdir dir="${pdice.distrib}/samples/jobs/output"/>
+	  		<copy todir="${pdice.distrib}/samples">
+	  			<fileset dir="${samples}" 
+	  				     includes="**/*.*"
+	  				     excludes="**/.svn"/>
+	  			</copy>
+	  	
+	  	    <!-- make JavaApplicationStub executable for OSX -->
+	  	    <chmod file="${pdice.distrib}/Data Integration 32-bit.app/Contents/MacOS/JavaApplicationStub" perm="ugo+rx"/>
+  	        <chmod file="${pdice.distrib}/Data Integration 64-bit.app/Contents/MacOS/JavaApplicationStub" perm="ugo+rx"/>
+	  	
+	</target>
+	
+	<!--
+			   ==========================
+			         pdice-package
+			   ==========================
+			   pdice-package target, which produces a zip and targz file in the naming convention and structure used by the PDI-CE release artifacts
+	-->
+	  <target name="pdice-package" depends="pdice-zip, pdice-targz" description="create packages for PDI-CE distribution" />
+
+		
+	<!--
+			   ==========================
+			         kettle-package
+			   ==========================
+			   kettle-package target, which produces a zip and targz file in the naming convention and structure used by the kettle community
+	-->
+		
+	  <target name="kettle-package" depends="kettle-zip, kettle-targz" description="create packages for kettle community distribution" />
+
+	<!--
+		   ==========================
+		         pdice-zip file
+		   ==========================
+		   pdice-zip target, which produces a zip file in the naming convention used by the PDI-CE release artifacts
+	-->
+			
+	  <target name="pdice-zip" description="generate the ${impl.productID}-${pdice.package.version}.zip file">
+	  	<echo>Generating the PDI-CE distribution package ${impl.productID}-${pdice.package.version}.zip ...</echo>
+	  	<zip destfile="${dist.dir}/${impl.productID}-${pdice.package.version}.zip" 
+	    	 basedir="${pdice.package.basedir}" 
+	    	 includes="**/*"
+	  	     excludes="docs/api/** docs/api-core/** **/Thumbs.db"
+	  		/>
+	  </target>	
+	  
+	<!--
+	       ==========================
+	             kettle-zip file
+	       ==========================
+	       New zip target, which produces a zip file in the naming convention desired by the Kettle community, but does not call distrib
+    -->
+		
+	  <target name="kettle-zip" description="generate the ${impl.productID}-${version}-r${revision}.zip file">
+	  	<echo>Generating the Kettle distribution package ${impl.productID}-${version}-r${revision}.zip ...</echo>
+	  	<zip destfile="${dist.dir}/${impl.productID}-${version}-r${revision}.zip" 
+	    	 basedir="${distrib}" 
+	    	 includes="**/*"
+	  	     excludes="docs/api/** docs/api-core/** **/Thumbs.db"
+	  		/>
+	  </target>
+
+		
+	  <!--
+	       ==========================
+	             zip file
+	       ==========================
+	       Original zip target, which produces a zip file in the naming convention desired by the Kettle community
 	  -->
 		
 	  <target name="zip" depends="distrib" description="generate the ${impl.productID}-${version}-r${revision}.zip file">
@@ -559,12 +717,57 @@
 	  	     excludes="docs/api/** docs/api-core/** **/Thumbs.db"
 	  		/>
 	  </target>
+	  			
+	<!--
+	       ==========================
+	             pdice-targz file
+	       ==========================
+	       pdice-targz target, which produces a targz file in the naming convention used by the PDI-CE release artifacts
+	       
+  	-->
+		
+	  <target name="pdice-targz"  description="generate the ${impl.productID}-${pdice.package.version}.tar.gz file">
+	  	<echo>Generating the PDI-CE distribution package ${impl.productID}-${pdice.package.version}.tar.gz ...</echo>
+	    <tar destfile="${dist.dir}/${impl.productID}-${pdice.package.version}.tar.gz" longfile="gnu" compression="gzip">
+	      <tarfileset dir="${pdice.package.basedir}" mode="755" excludes="docs/api/** docs/api-core/** **/Thumbs.db">
+	        <include name="**/*.sh" />
+	      	<include name="**/JavaApplicationStub" />
+	      </tarfileset>
+	      <tarfileset dir="${pdice.package.basedir}" excludes="docs/api/** docs/api-core/** **/Thumbs.db">
+	        <exclude name="**/*.sh" />
+	      	<exclude name="**/JavaApplicationStub" />
+	      </tarfileset>
+	    </tar>
+	  </target>
 
-	  <!--
+	<!--
+	       ==========================
+	             kettle-targz file
+	       ==========================
+	       kettle-targz target, which produces a targz file in the naming convention desired by the Kettle community, but does not call distrib
+  	-->
+		
+	  <target name="kettle-targz"  description="generate the ${impl.productID}-${version}-r${revision}.tar.gz file">
+	  	<echo>Generating the Kettle distribution package ${impl.productID}-${version}-r${revision}.tar.gz ...</echo>
+	    <tar destfile="${dist.dir}/${impl.productID}-${version}-r${revision}.tar.gz" longfile="gnu" compression="gzip">
+	      <tarfileset dir="${distrib}" mode="755" excludes="docs/api/** docs/api-core/** **/Thumbs.db">
+	        <include name="**/*.sh" />
+	      	<include name="**/JavaApplicationStub" />
+	      </tarfileset>
+	      <tarfileset dir="${distrib}" excludes="docs/api/** docs/api-core/** **/Thumbs.db">
+	        <exclude name="**/*.sh" />
+	      	<exclude name="**/JavaApplicationStub" />
+	      </tarfileset>
+	    </tar>
+	  </target>
+
+
+	<!--
 	       ==========================
 	             targz file
 	       ==========================
-	  -->
+	       Original targz target, which produces a targz file in the naming convention desired by the Kettle community
+  	-->
 		
 	  <target name="targz" depends="distrib" description="generate the ${impl.productID}-${version}-r${revision}.tar.gz file">
 	  	<echo>Generating the Kettle distribution package ${impl.productID}-${version}-r${revision}.tar.gz ...</echo>
@@ -1008,6 +1211,7 @@
 	    	</fileset>
 	  	</delete>
 	    <delete dir="${macdistrib}"/>
+	  	<delete dir="${pdice.package.basedir}"/>
 	  </target>
 
 	  <target name="clean" depends="cleandirs, clean-plugins"/>
