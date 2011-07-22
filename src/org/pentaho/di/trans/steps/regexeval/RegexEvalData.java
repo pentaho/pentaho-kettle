@@ -32,18 +32,17 @@ public class RegexEvalData extends BaseStepData implements StepDataInterface
 	public RowMetaInterface outputRowMeta;
 	public RowMetaInterface conversionRowMeta;
 	public int              indexOfFieldToEvaluate;
+	public int              indexOfResultField;
 
 	public Pattern          pattern;
 	
-	public int nrExtraFields;
-	public int nrIncomingFields;
-	public boolean addResultField;
+	public int positions[];
 	
 	public RegexEvalData()
 	{
 		super();
 
 		indexOfFieldToEvaluate = -1;
-		addResultField=true;
+		indexOfResultField = -1;
 	}
 }

@@ -78,11 +78,11 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 	private Group wStepSettings,wRegexSettings;
 	private FormData fdStepSettings,fdRegexSettings;
 	
-	private Label        wlCanonEq,wlCaseInsensitive, wlComment,wlDotAll,wlMultiline,wlUnicode,wlUnix,wlUseVar,wlAllowCaptureGroups;
-	private Button       wCanonEq,wCaseInsensitive, wComment,wDotAll,wMultiline,wUnicode,wUnix,wUseVar,wAllowCaptureGroups;
+	private Label        wlCanonEq,wlCaseInsensitive, wlComment,wlDotAll,wlMultiline,wlUnicode,wlUnix,wlUseVar,wlAllowCaptureGroups,wlReplaceFields;
+	private Button       wCanonEq,wCaseInsensitive, wComment,wDotAll,wMultiline,wUnicode,wUnix,wUseVar,wAllowCaptureGroups,wReplaceFields;
 	private FormData     fdlCanonEq, fdCanonEq,fdlCaseInsensitive,fdCaseInsensitive,fdComment,
 							fdlComment,fdDotAll,fdlDotAll,fdMultiline,fdlMultiline,fdUnicode,
-							fdlUnicode,fdUnix,fdlUnix,fdUseVar,fdlUseVar,fdAllowCaptureGroups,fdlAllowCaptureGroups;
+							fdlUnicode,fdUnix,fdlUnix,fdUseVar,fdlUseVar,fdAllowCaptureGroups,fdlAllowCaptureGroups,fdReplaceFields,fdlReplaceFields;
 	
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
@@ -280,6 +280,33 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
                 input.setChanged();
             }
         });
+        
+        // Replace fields?
+        wlReplaceFields=new Label(wStepSettings, SWT.RIGHT);
+        wlReplaceFields.setText(BaseMessages.getString(PKG, "RegexEvalDialog.ReplaceFields.Label"));
+        props.setLook(wlReplaceFields);
+        fdlReplaceFields=new FormData();
+        fdlReplaceFields.left  = new FormAttachment(0, 0);
+        fdlReplaceFields.top   = new FormAttachment(wAllowCaptureGroups, margin);
+        fdlReplaceFields.right = new FormAttachment(middle, -margin);
+        wlReplaceFields.setLayoutData(fdlReplaceFields);
+        wReplaceFields=new Button(wStepSettings, SWT.CHECK);
+        wReplaceFields.setToolTipText(BaseMessages.getString(PKG, "RegexEvalDialog.ReplaceFields.Tooltip"));
+        props.setLook(wReplaceFields);
+        fdReplaceFields=new FormData();
+        fdReplaceFields.left  = new FormAttachment(middle, margin);
+        fdReplaceFields.top   = new FormAttachment(wAllowCaptureGroups, margin);
+        fdReplaceFields.right = new FormAttachment(100,0);
+        wReplaceFields.setLayoutData(fdReplaceFields);
+        
+        wReplaceFields.addSelectionListener(new SelectionAdapter() {
+            public void widgetSelected(SelectionEvent e)
+            {
+                input.setChanged();
+            }
+        });
+        
+        //settings layout
     	fdStepSettings = new FormData();
 		fdStepSettings.left = new FormAttachment(0, margin);
 		fdStepSettings.top = new FormAttachment(wStepname, margin);
@@ -708,6 +735,7 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
 		if (input.getMatcher() != null) wfieldevaluate.setText( input.getMatcher() );
 
 		wUseVar.setSelection(input.isUseVariableInterpolationFlagSet());
+		wReplaceFields.setSelection(input.isReplacefields());
 		wAllowCaptureGroups.setSelection(input.isAllowCaptureGroupsFlagSet());
 		wCanonEq.setSelection(input.isCanonicalEqualityFlagSet());
 		wCaseInsensitive.setSelection(input.isCaseInsensitiveFlagSet());
@@ -779,6 +807,8 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
     {
         wlFields.setEnabled(wAllowCaptureGroups.getSelection());
         wFields.setEnabled(wAllowCaptureGroups.getSelection());
+        wlReplaceFields.setEnabled(wAllowCaptureGroups.getSelection());
+        wReplaceFields.setEnabled(wAllowCaptureGroups.getSelection());
     }
     private void setRegexOptions(RegexEvalMeta input)
     {
@@ -787,6 +817,7 @@ public class RegexEvalDialog extends BaseStepDialog implements StepDialogInterfa
     	input.setMatcher(wfieldevaluate.getText() );
     	input.setUseVariableInterpolationFlag(wUseVar.getSelection());
     	input.setAllowCaptureGroupsFlag(wAllowCaptureGroups.getSelection());
+    	input.setReplacefields(wReplaceFields.getSelection());
     	input.setCanonicalEqualityFlag(wCanonEq.getSelection());
     	input.setCaseInsensitiveFlag(wCaseInsensitive.getSelection());
     	input.setCommentFlag(wComment.getSelection());
