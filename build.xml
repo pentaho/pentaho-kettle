@@ -653,7 +653,7 @@
 
 	<target name="pdice-jar" depends="kettle-core, kettle-db, kettle, kettle-dbdialog, kettle-ui, kettle-plugins, kettle-test" description="creates PDI-CE jar files" />
 	
-    <target name="pdice-assemble" description="copy jars created by pdice-jar to PDI-CE distribution directory" >
+    <target name="pdice-assemble" depends="install-antcontrib" description="copy jars created by pdice-jar to PDI-CE distribution directory" >
 		  	<echo>Construct the PDI-CE distribution package...</echo>
 		  	
 		        <!-- root directory -->
