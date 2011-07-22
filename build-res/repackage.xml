@@ -1,0 +1,103 @@
+<!--===========================================================================
+  This build file handles repackaging the PDI CE artifacts to add in necessary 
+  plugins.
+  
+  This build file uses subfloor.xml file as the default build
+  process and should only override the tasks that need to differ from
+  the common build file.
+  
+  See subfloor.xml for more details
+============================================================================-->
+<project name="Repackage Kettle Artifacts" basedir="." default="help" 
+  xmlns:ivy="antlib:org.apache.ivy.ant" >
+  
+  <description>
+    This build file is used to repackage the PDI CE artifacts
+    and works with the subfloor.xml file.
+  </description>
+
+  <property file="repackage.properties"
+            description="Properties customized for your particular project belong in this file." />
+	
+    <!-- Import the common_build.xml file which contains all the default tasks -->  
+  <import file="subfloor.xml"/>
+
+  <target name="help">
+    <echo>
+      To repackage you will need to have already built and packaged the base PDI CE
+      artifacts, as well as the agile-bi and pdi-hadoop plugins.  
+    </echo>
+  </target>
+  
+  
+    <!--
+		   ==========================
+      			pdice-repackage
+		   ==========================
+    		Reassembles the pdi-ce package, then recreates the zip and targz archives.
+    -->
+		<target name="pdice-repackage" depends="pdice-reassemble, pdice-zip, pdice-targz" />
+  
+	<!--
+		   ==========================
+      			pdice-reassemble
+		   ==========================
+            Unzips the pdi-ce package, then unzips the agile-bi and pdi-hadoop plugins into the appropriate directories.  
+    -->  
+  
+  	<target name="pdice-reassemble" depends="install-antcontrib">
+  		<!-- unzip pdi-ce -->
+		<unzip src="${pdice.dist.dir}/${impl.productID}-${project.revision}.zip" dest="${pdice.repackage.basedir}" overwrite="true" />
+				
+		<!-- unzip agile-bi -->
+		<unzip src="${agilebi.dist.dir}/agile-bi-${agilebi.version}.zip" dest="${pdice.repackage.basedir}/data-integration/plugins/spoon" overwrite="true"/>
+		
+		<!-- unzip hadoop-plugin -->
+		<unzip src="${hadoop-ce.dist.dir}/pdi-hadoop-plugin-${hadoop-ce.version}.zip" dest="${pdice.repackage.basedir}/data-integration/plugins" overwrite="true"/>
+			
+  	</target>	
+
+	<!--
+		   ==========================
+		         pdice-zip file
+		   ==========================
+		   pdice-zip target, which produces a zip file in the naming convention used by the PDI-CE release artifacts
+	-->
+			
+	  <target name="pdice-zip" description="generate the ${impl.productID}-${project.revision}.zip file">
+	  	<echo>Generating the PDI-CE distribution package ${impl.productID}-${project.revision}.zip ...</echo>
+	  	<zip destfile="${dist.dir}/${impl.productID}-${project.revision}.zip" 
+	    	 basedir="${pdice.repackage.basedir}" 
+	    	 includes="**/*"
+	  		/>
+	  </target>	
+
+
+	<!--
+	       ==========================
+	             pdice-targz file
+	       ==========================
+	       pdice-targz target, which produces a targz file in the naming convention used by the PDI-CE release artifacts
+	       
+  	-->
+		
+	  <target name="pdice-targz"  description="generate the ${impl.productID}-${project.revision}.tar.gz file">
+	  	<echo>Generating the PDI-CE distribution package ${impl.productID}-${project.revision}.tar.gz ...</echo>
+	    <tar destfile="${dist.dir}/${impl.productID}-${project.revision}.tar.gz" longfile="gnu" compression="gzip">
+	      <tarfileset dir="${pdice.repackage.basedir}" mode="755" >
+	        <include name="**/*.sh" />
+	      	<include name="**/JavaApplicationStub" />
+	      </tarfileset>
+	      <tarfileset dir="${pdice.repackage.basedir}" >
+	        <exclude name="**/*.sh" />
+	      	<exclude name="**/JavaApplicationStub" />
+	      </tarfileset>
+	    </tar>
+	  </target>
+
+	
+  <target name="clean">
+  	<delete dir="${pdice.repackage.basedir}"/>
+  	<mkdir dir="${pdice.repackage.basedir}"/>
+  </target>
+</project>
