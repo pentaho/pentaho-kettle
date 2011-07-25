@@ -271,7 +271,7 @@ public class MergeJoin extends BaseStep implements StepInterface
         	data.two = data.two_next;
         	break;
         case 1:
-        	if (log.isDebug()) logDebug("First stream has missing key");
+        	//if (log.isDebug()) logDebug("First stream has missing key");
         	/*
         	 * First stream is greater than the second stream. This means:
         	 *   a) This key is missing in the first stream
@@ -340,7 +340,7 @@ public class MergeJoin extends BaseStep implements StepInterface
         	}
         	break;
         case -1:
-        	if (log.isDebug()) logDebug("Second stream has missing key");
+        	//if (log.isDebug()) logDebug("Second stream has missing key");
         	/*
         	 * Second stream is greater than the first stream. This means:
         	 *   a) This key is missing in the second stream
