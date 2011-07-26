@@ -1310,6 +1310,7 @@
 	  	<delete>
 	        <fileset dir=".">
 			  <include name="*.zip"/>
+			  <include name="*.gz"/>
 	    	</fileset>
 	  	</delete>
 	    <delete dir="${macdistrib}"/>
