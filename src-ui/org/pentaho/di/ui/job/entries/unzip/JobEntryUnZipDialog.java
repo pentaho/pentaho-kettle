@@ -342,9 +342,9 @@ public class JobEntryUnZipDialog extends JobEntryDialog implements JobEntryDialo
 				public void widgetSelected(SelectionEvent e)
 				{
 					DirectoryDialog ddialog = new DirectoryDialog(shell, SWT.OPEN);
-					if (wlZipFilename.getText()!=null)
+					if (wZipFilename.getText()!=null)
 					{
-						ddialog.setFilterPath(jobMeta.environmentSubstitute(wlZipFilename.getText()) );
+						ddialog.setFilterPath(jobMeta.environmentSubstitute(wZipFilename.getText()) );
 					}
 					
 					 // Calling open() will open and run the dialog.
@@ -353,7 +353,7 @@ public class JobEntryUnZipDialog extends JobEntryDialog implements JobEntryDialo
 			        String dir = ddialog.open();
 			        if (dir != null) {
 			          // Set the text box to the new selection
-			        	wlZipFilename.setText(dir);
+			        	wZipFilename.setText(dir);
 			        }
 					
 				}
