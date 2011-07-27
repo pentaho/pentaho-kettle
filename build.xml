@@ -446,7 +446,9 @@
 	        Distribution jar package
 	       ==========================
 	  -->
-	  <target name="distrib" depends="kettle-core, kettle-db, kettle, kettle-dbdialog, kettle-ui, kettle-plugins, kettle-test" description="copy jar file to distribution directory" >
+	<target name="distrib" depends="kettle-core, kettle-db, kettle, kettle-dbdialog, kettle-ui, kettle-plugins, kettle-test, distrib-nodeps" description="compile and copy jar files to distribution directory" />
+
+	<target name="distrib-nodeps" description="copy jar files to distribution directory" >
 	  	<echo>Construct the distribution package...</echo>
 	  	
 	        <!-- root directory -->
@@ -551,7 +553,7 @@
 	        PDI-CE Distribution jar package
 	       ==========================
 	  -->
-	<target name="pdice-distrib" depends="kettle-core, kettle-db, kettle, kettle-dbdialog, kettle-ui, kettle-plugins, kettle-test, pdice-assemble" description="copy jar file to PDI-CE distribution directory" />
+	<target name="pdice-distrib" depends="kettle-core, kettle-db, kettle, kettle-dbdialog, kettle-ui, kettle-plugins, kettle-test, pdice-assemble" description="create and copy jar files to PDI-CE distribution directory" />
 
 	  <!--
 	       ==========================
@@ -569,103 +571,10 @@
 
     <target name="pdice-assemble" depends="install-antcontrib" description="copy jars created by pdice-jar to PDI-CE distribution directory" >
 		  	<echo>Construct the PDI-CE distribution package...</echo>
-		  	
-		        <!-- root directory -->
-		  		<mkdir dir="${pdice.distrib}"/>
-		  		<copy todir="${pdice.distrib}">
-		  			<fileset dir="${bin}" includes="**/*" excludes="**/.vpn .project .classpath"/>
-		  			</copy>
-
-		  		<!-- base lib -->
-		  		<mkdir dir="${pdice.distrib}/lib"/>
-				<copy todir="${pdice.distrib}/lib"  file="${lib}/kettle-core.jar"/>
-			    <copy todir="${pdice.distrib}/lib"  file="${lib}/kettle-db.jar"/>
-	  			<copy todir="${pdice.distrib}/lib"  file="${lib}/kettle-engine.jar"/>
-			    <copy todir="${pdice.distrib}/lib"  file="${lib}/kettle-dbdialog.jar"/>
-	  			<copy todir="${pdice.distrib}/lib"  file="${lib}/kettle-ui-swt.jar"/>
-		  		<copy todir="${pdice.distrib}/lib"  file="${lib}/kettle-test.jar"/>
-
-	  	        <!-- external libs (jdbc etc) -->
-		  		<mkdir dir="${pdice.distrib}/libext"/>
-		  		<copy todir="${pdice.distrib}/libext">
-		  			<fileset dir="${libext}" includes="**/*.jar **/*.zip **/*.properties" excludes="**/.vpn"/>
-		  			</copy>
-
-		        <!-- swt libs (jdbc etc) -->
-		  		<mkdir dir="${pdice.distrib}/libswt"/>
-		  		<copy todir="${pdice.distrib}/libswt">
-		  			<fileset dir="${libswt}" includes="**/*" excludes="**/.vpn **/sapjco*.dll"/>
-		  			</copy>
-
-		        <!-- plugins -->
-		  		<mkdir dir="${pdice.distrib}/plugins"/>
-		  		<copy todir="${pdice.distrib}/plugins">
-		  			<fileset dir="${plugins}" includes="**/*" excludes="**/.vpn **/sapjco.jar **/VTVLInput **/VTVLInput/*"/>
-		  		</copy>
-		  	
-		  		<for list="${plugin-ids}" param="plugin" trim="true">
-	  		  		<sequential>
-	  		  			<copy todir="${pdice.distrib}/plugins">
-	  		  				<fileset dir="src-plugins/@{plugin}/bin/stage" includes="**/*" />
-	  		  			</copy>
-		  			</sequential>
-		  		</for>	
-
-	        		<!-- ui -->
-	  			<mkdir dir="${pdice.distrib}/ui"/>
-	  			<copy todir="${pdice.distrib}/ui">
-	  				<fileset dir="${ui}" includes="**/*" excludes="**/.vpn"/>
-	  				</copy>
-
-		        <!-- documentation -->
-		  		<mkdir dir="${pdice.distrib}/docs"/>
-		  		<copy todir="${pdice.distrib}/docs">
-		  			<fileset dir="${docs}" 
-		  				     includes="**/*.pdf **/*.htm **/*.html **/*.png **/*.PNG **/*.swf **/cn_ZN.zip **/*.css **/*.gif **/*.jpg"
-		  			         excludes="**/*.dot **/*.doc **/*.sxw **/*.odt **/*.vpn **/*feature list*" />
-		  			</copy>
-
-		        <!-- pwd -->
-		  		<mkdir dir="${pdice.distrib}/pwd"/>
-		  		<copy todir="${pdice.distrib}/pwd">
-		  			<fileset dir="${pwd}" 
-		  				     includes="**/*.pwd **/*.xml"
-		  			         excludes="**/*.vpn" />
-		  			</copy>
-
-		        <!-- launcher -->
-		  		<mkdir dir="${pdice.distrib}/launcher"/>
-		  		<copy todir="${pdice.distrib}/launcher">
-		  			<fileset dir="launcher" 
-		  				     includes="**/*.*"
-		  			         excludes="**/*.vpn" />
-		  			</copy>
-
-		        <!-- simple-jndi -->
-		  		<mkdir dir="${pdice.distrib}/simple-jndi"/>
-		  		<copy todir="${pdice.distrib}/simple-jndi">
-		  			<fileset dir="${simple-jndi}" 
-		  				     includes="**/*.properties"
-		  			         excludes="**/*.vpn" />
-		  			</copy>
-
-		        <!-- samples -->
-		  		<mkdir dir="${pdice.distrib}/samples"/>
-		  		<mkdir dir="${pdice.distrib}/samples/transformations"/>
-		  		<mkdir dir="${pdice.distrib}/samples/jobs"/>
-		  		<mkdir dir="${pdice.distrib}/samples/transformations/output"/>
-		  		<mkdir dir="${pdice.distrib}/samples/jobs/output"/>
-		  		<copy todir="${pdice.distrib}/samples">
-		  			<fileset dir="${samples}" 
-		  				     includes="**/*.*"
-		  				     excludes="**/.svn"/>
-		  			</copy>
-		  	
-		  	    <!-- make JavaApplicationStub executable for OSX -->
-		  	    <chmod file="${pdice.distrib}/Data Integration 32-bit.app/Contents/MacOS/JavaApplicationStub" perm="ugo+rx"/>
-	  	        <chmod file="${pdice.distrib}/Data Integration 64-bit.app/Contents/MacOS/JavaApplicationStub" perm="ugo+rx"/>
-		  	
-		</target>	
+    	<antcall target="distrib-nodeps">
+            <param name="distrib" value="${pdice.distrib}" />
+        </antcall>
+	</target>	
 	
 	<!--
 			   ==========================
