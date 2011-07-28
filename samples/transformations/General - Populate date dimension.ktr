@@ -51,6 +51,7 @@
     <shared_objects_file/>
     <capture_step_performance>N</capture_step_performance>
     <step_performance_capturing_delay>1000</step_performance_capturing_delay>
+    <step_performance_capturing_size_limit/>
     <dependencies>
     </dependencies>
     <partitionschemas>
@@ -59,6 +60,8 @@
     </slaveservers>
     <clusterschemas>
     </clusterschemas>
+  <created_user/>
+  <created_date>2011&#47;04&#47;19 20:41:51.868</created_date>
   <modified_user/>
   <modified_date>2007&#47;04&#47;04 14:37:34.671</modified_date>
   </info>
@@ -70,7 +73,7 @@ If you want these descriptions in your local language, just change the Row Gener
       <xloc>200</xloc>
       <yloc>29</yloc>
       <width>715</width>
-      <heigth>64</heigth>
+      <heigth>67</heigth>
       <fontname/>
       <fontsize>-1</fontsize>
       <fontbold>N</fontbold>
@@ -88,9 +91,9 @@ If you want these descriptions in your local language, just change the Row Gener
     </notepad>
   </notepads>
   <order>
-  <hop> <from>10000 days: 25 years</from><to>Days_since</to><enabled>Y</enabled> </hop>  <hop> <from>Days_since</from><to>Calc Date</to><enabled>Y</enabled> </hop>  <hop> <from>DayOfWeekDesc</from><to>MonthDesc</to><enabled>Y</enabled> </hop>  <hop> <from>MonthDesc</from><to>Select values</to><enabled>Y</enabled> </hop>  <hop> <from>Select values</from><to>Table output</to><enabled>N</enabled> </hop>  <hop> <from>Calc Date</from><to>Quarter</to><enabled>Y</enabled> </hop>  <hop> <from>Quarter</from><to>DayOfWeekDesc</to><enabled>Y</enabled> </hop>  <hop> <from>Days of week</from><to>DayOfWeekDesc</to><enabled>Y</enabled> </hop>  <hop> <from>Months</from><to>MonthDesc</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>120 days</from><to>Days_since</to><enabled>Y</enabled> </hop>  <hop> <from>Days_since</from><to>Calc Date</to><enabled>Y</enabled> </hop>  <hop> <from>Calc Date</from><to>Select values</to><enabled>Y</enabled> </hop>  </order>
   <step>
-    <name>10000 days: 25 years</name>
+    <name>120 days</name>
     <type>RowGenerator</type>
     <description/>
     <distribute>Y</distribute>
@@ -107,16 +110,16 @@ If you want these descriptions in your local language, just change the Row Gener
         <currency/>
         <decimal/>
         <group/>
-        <nullif>19900101</nullif>
+        <nullif>20110101</nullif>
         <length>-1</length>
         <precision>-1</precision>
       </field>
     </fields>
-    <limit>10000</limit>
+    <limit>120</limit>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>126</xloc>
-      <yloc>131</yloc>
+      <xloc>92</xloc>
+      <yloc>351</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -273,49 +276,8 @@ If you want these descriptions in your local language, just change the Row Gener
 </calculation>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>412</xloc>
-      <yloc>131</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>DayOfWeekDesc</name>
-    <type>StreamLookup</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-    <from>Days of week</from>
-    <input_sorted>N</input_sorted>
-    <preserve_memory>N</preserve_memory>
-    <sorted_list>N</sorted_list>
-    <integer_pair>N</integer_pair>
-    <lookup>
-      <key>
-        <name>DayOfWeek</name>
-        <field>DayOfWeek</field>
-      </key>
-      <value>
-        <name>DayOfWeekDesc</name>
-        <rename>DayOfWeekDesc</rename>
-        <default/>
-        <type>String</type>
-      </value>
-      <value>
-        <name>DayOfWeekShortDesc</name>
-        <rename>DayOfWeekShortDesc</rename>
-        <default/>
-        <type>String</type>
-      </value>
-    </lookup>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>698</xloc>
-      <yloc>131</yloc>
+      <xloc>378</xloc>
+      <yloc>351</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -342,120 +304,8 @@ If you want these descriptions in your local language, just change the Row Gener
       <max_value>10000000</max_value>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>269</xloc>
-      <yloc>131</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>MonthDesc</name>
-    <type>StreamLookup</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-    <from>Months</from>
-    <input_sorted>N</input_sorted>
-    <preserve_memory>N</preserve_memory>
-    <sorted_list>N</sorted_list>
-    <integer_pair>N</integer_pair>
-    <lookup>
-      <key>
-        <name>Month</name>
-        <field>Month</field>
-      </key>
-      <value>
-        <name>MonthDesc</name>
-        <rename>MonthDesc</rename>
-        <default/>
-        <type>String</type>
-      </value>
-      <value>
-        <name>MonthShortDesc</name>
-        <rename>MonthShortDesc</rename>
-        <default/>
-        <type>String</type>
-      </value>
-    </lookup>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>841</xloc>
-      <yloc>131</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Quarter</name>
-    <type>ValueMapper</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-    <field_to_use>month</field_to_use>
-    <target_field>quarter</target_field>
-    <non_match_default/>
-    <fields>
-      <field>
-        <source_value>1</source_value>
-        <target_value>1</target_value>
-      </field>
-      <field>
-        <source_value>2</source_value>
-        <target_value>1</target_value>
-      </field>
-      <field>
-        <source_value>3</source_value>
-        <target_value>1</target_value>
-      </field>
-      <field>
-        <source_value>4</source_value>
-        <target_value>2</target_value>
-      </field>
-      <field>
-        <source_value>5</source_value>
-        <target_value>2</target_value>
-      </field>
-      <field>
-        <source_value>6</source_value>
-        <target_value>2</target_value>
-      </field>
-      <field>
-        <source_value>7</source_value>
-        <target_value>3</target_value>
-      </field>
-      <field>
-        <source_value>8</source_value>
-        <target_value>3</target_value>
-      </field>
-      <field>
-        <source_value>9</source_value>
-        <target_value>3</target_value>
-      </field>
-      <field>
-        <source_value>10</source_value>
-        <target_value>4</target_value>
-      </field>
-      <field>
-        <source_value>11</source_value>
-        <target_value>4</target_value>
-      </field>
-      <field>
-        <source_value>12</source_value>
-        <target_value>4</target_value>
-      </field>
-    </fields>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>555</xloc>
-      <yloc>131</yloc>
+      <xloc>235</xloc>
+      <yloc>351</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -470,223 +320,27 @@ If you want these descriptions in your local language, just change the Row Gener
            <method>none</method>
            <schema_name/>
            </partitioning>
-    <fields>      <field>        <name>date_tk</name>
+    <fields>      <field>        <name>Date</name>
         <rename/>
         <length>-2</length>
         <precision>-2</precision>
-      </field>      <field>        <name>Date</name>
-        <rename>date_field</rename>
-        <length>-2</length>
-        <precision>-2</precision>
-      </field>      <field>        <name>Year</name>
-        <rename>year</rename>
-        <length>-2</length>
-        <precision>-2</precision>
-      </field>      <field>        <name>Month</name>
-        <rename>month</rename>
-        <length>-2</length>
-        <precision>-2</precision>
-      </field>      <field>        <name>DayOfYear</name>
-        <rename>day_of_year</rename>
-        <length>-2</length>
-        <precision>-2</precision>
-      </field>      <field>        <name>DayOfMonth</name>
-        <rename>day_of_month</rename>
-        <length>-2</length>
-        <precision>-2</precision>
-      </field>      <field>        <name>DayOfWeek</name>
-        <rename>day_of_week</rename>
-        <length>-2</length>
-        <precision>-2</precision>
-      </field>      <field>        <name>WeekOfYear</name>
-        <rename>week_of_year</rename>
-        <length>-2</length>
-        <precision>-2</precision>
-      </field>      <field>        <name>DayOfWeekDesc</name>
-        <rename>day_of_week_desc</rename>
-        <length>-2</length>
-        <precision>-2</precision>
-      </field>      <field>        <name>DayOfWeekShortDesc</name>
-        <rename>day_of_week_short_desc</rename>
-        <length>-2</length>
-        <precision>-2</precision>
-      </field>      <field>        <name>MonthDesc</name>
-        <rename>month_desc</rename>
-        <length>-2</length>
-        <precision>-2</precision>
-      </field>      <field>        <name>MonthShortDesc</name>
-        <rename>month_short_desc</rename>
-        <length>-2</length>
-        <precision>-2</precision>
-      </field>      <field>        <name>Quarter</name>
-        <rename>quarter</rename>
-        <length>-2</length>
-        <precision>-2</precision>
       </field>        <select_unspecified>N</select_unspecified>
-    </fields>     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>984</xloc>
-      <yloc>131</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Table output</name>
-    <type>TableOutput</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-    <connection/>
-    <schema/>
-    <table>D_DATE</table>
-    <commit>100</commit>
-    <truncate>Y</truncate>
-    <ignore_errors>N</ignore_errors>
-    <use_batch>Y</use_batch>
-    <specify_fields>N</specify_fields>
-    <partitioning_enabled>N</partitioning_enabled>
-    <partitioning_field/>
-    <partitioning_daily>N</partitioning_daily>
-    <partitioning_monthly>Y</partitioning_monthly>
-    <tablename_in_field>N</tablename_in_field>
-    <tablename_field/>
-    <tablename_in_table>Y</tablename_in_table>
-    <return_keys>N</return_keys>
-    <return_field/>
-    <fields>
-    </fields>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>1127</xloc>
-      <yloc>131</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Days of week</name>
-    <type>DataGrid</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-    <fields>
-      <field>
-        <name>DayOfWeek</name>
-        <type>Integer</type>
-        <format>0</format>
-        <currency/>
-        <decimal/>
-        <group/>
-        <length>1</length>
-        <precision>-1</precision>
-      </field>
-      <field>
-        <name>DayOfWeekDesc</name>
+      <meta>        <name>Date</name>
+        <rename>Date</rename>
         <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <length>30</length>
-        <precision>-1</precision>
-      </field>
-      <field>
-        <name>DayOfWeekShortDesc</name>
-        <type/>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <length>3</length>
-        <precision>-1</precision>
-      </field>
-    </fields>
-    <data>
-      <line> <item>1</item><item>Monday</item><item>MON</item> </line>
-      <line> <item>2</item><item>Tuesday</item><item>TUE</item> </line>
-      <line> <item>3</item><item>Wednesday</item><item>WED</item> </line>
-      <line> <item>4</item><item>Thursday</item><item>THU</item> </line>
-      <line> <item>5</item><item>Friday</item><item>FRI</item> </line>
-      <line> <item>6</item><item>Saturday</item><item>SAT</item> </line>
-      <line> <item>7</item><item>Sunday</item><item>SUN</item> </line>
-    </data>
-     <cluster_schema/>
+        <length>-2</length>
+        <precision>-2</precision>
+        <conversion_mask>yyyyMMdd</conversion_mask>
+        <date_format_lenient>false</date_format_lenient>
+        <encoding/>
+        <decimal_symbol/>
+        <grouping_symbol/>
+        <currency_symbol/>
+        <storage_type/>
+      </meta>    </fields>     <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>640</xloc>
-      <yloc>272</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Months</name>
-    <type>DataGrid</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <schema_name/>
-           </partitioning>
-    <fields>
-      <field>
-        <name>Month</name>
-        <type>Integer</type>
-        <format>0</format>
-        <currency/>
-        <decimal/>
-        <group/>
-        <length>1</length>
-        <precision>-1</precision>
-      </field>
-      <field>
-        <name>MonthDesc</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <length>30</length>
-        <precision>-1</precision>
-      </field>
-      <field>
-        <name>MonthShortDesc</name>
-        <type>String</type>
-        <format/>
-        <currency/>
-        <decimal/>
-        <group/>
-        <length>3</length>
-        <precision>-1</precision>
-      </field>
-    </fields>
-    <data>
-      <line> <item>1</item><item>January</item><item>JAN</item> </line>
-      <line> <item>2</item><item>February</item><item>FEB</item> </line>
-      <line> <item>3</item><item>March</item><item>MAR</item> </line>
-      <line> <item>4</item><item>April</item><item>APR</item> </line>
-      <line> <item>5</item><item>May</item><item>MAY</item> </line>
-      <line> <item>6</item><item>June</item><item>JUN</item> </line>
-      <line> <item>7</item><item>July</item><item>JUL</item> </line>
-      <line> <item>8</item><item>August</item><item>AUG</item> </line>
-      <line> <item>9</item><item>September</item><item>SEP</item> </line>
-      <line> <item>10</item><item>October</item><item>OCT</item> </line>
-      <line> <item>11</item><item>November</item><item>NOV</item> </line>
-      <line> <item>12</item><item>December</item><item>DEC</item> </line>
-    </data>
-     <cluster_schema/>
- <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>800</xloc>
-      <yloc>272</yloc>
+      <xloc>548</xloc>
+      <yloc>351</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
