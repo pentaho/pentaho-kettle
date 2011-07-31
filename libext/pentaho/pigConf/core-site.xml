@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<!-- Put site-specific property overrides in this file. -->
+
+<!-- Dummy config. Pig's connection class packs a sad if
+     it can't find core-site.xml and mapred-site.xml in
+     the classpath - even if client code sets necessary
+     connection details programatically... -->
+<configuration>
+<property>
+    <name>fs.default.name</name>
+    <value>hdfs://bogus:9000</value>
+</property>
+</configuration>
