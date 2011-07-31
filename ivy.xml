@@ -62,6 +62,7 @@
     <dependency org="commons-logging"       name="commons-logging"    rev="1.1"   transitive="false" conf="test->default" />
     <dependency org="org.apache.hadoop" name="hadoop-test" rev="${dependency.pentaho-hadoop.revision}" transitive="false" conf="test->default" changing="false" />
     <dependency org="org.apache.hadoop" name="hadoop-examples" rev="${dependency.pentaho-hadoop.revision}" transitive="false" conf="test->default" changing="false" />
+    <dependency org="commons-httpclient" name="commons-httpclient" rev="3.0.1" conf="test->default"/>
 
   </dependencies>
 </ivy-module>
