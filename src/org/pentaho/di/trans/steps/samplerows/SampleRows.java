@@ -58,6 +58,8 @@ public class SampleRows extends BaseStep implements StepInterface
 		{
 			first=false;
 			
+      data.considerRow = true;
+			
 			String realRange=environmentSubstitute(meta.getLinesRange());
 			data.addlineField=(!Const.isEmpty(environmentSubstitute(meta.getLineNumberField())));
 			
@@ -93,27 +95,35 @@ public class SampleRows extends BaseStep implements StepInterface
 			}
 		}// end if first
 		
-		if(data.addlineField)
-		{
-			data.outputRow = RowDataUtil.allocateRowData(data.outputRowMeta.size());
-			for (int i = 0; i < data.NrPrevFields; i++)
-			{
-				data.outputRow[i] = r[i];
-			}
-		}else data.outputRow =r;
-		
-		if(data.range.contains((int)getLinesRead()))
-		{
-			if(data.addlineField)	data.outputRow[data.NrPrevFields]=getLinesRead();
-			putRow(data.outputRowMeta, data.outputRow);      // copy row to possible alternate rowset(s).
-
-			if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "SampleRows.Log.LineNumber",getLinesRead()+" : "+getInputRowMeta().getString(r)));
-		}
-			
-		if(data.maxLine>0 && getLinesRead()>=data.maxLine)
-		{
-			setOutputDone();
-			return false;
+		if (data.considerRow) {
+		  
+      if (data.addlineField) {
+        data.outputRow = RowDataUtil.allocateRowData(data.outputRowMeta.size());
+        for (int i = 0; i < data.NrPrevFields; i++) {
+          data.outputRow[i] = r[i];
+        }
+      } else {
+        data.outputRow = r;
+      }
+  
+      if (data.range.contains((int) getLinesRead())) {
+        if (data.addlineField) {
+          data.outputRow[data.NrPrevFields] = getLinesRead();
+        }
+        
+        // copy row to possible alternate rowset(s).
+        //
+        putRow(data.outputRowMeta, data.outputRow);
+        
+        if (log.isRowLevel()) {
+          logRowlevel(BaseMessages.getString(PKG, "SampleRows.Log.LineNumber", getLinesRead() + " : " + getInputRowMeta().getString(r)));
+        }
+      }
+  			
+  		if(data.maxLine>0 && getLinesRead()>=data.maxLine)
+  		{
+  			data.considerRow = false;
+  		}
 		}
 		
 		return true;

@@ -34,6 +34,7 @@ public class SampleRowsData extends BaseStepData implements StepDataInterface
 	public RowMetaInterface outputRowMeta;
 	public Object[] outputRow;
 	public int NrPrevFields;
+  public boolean considerRow;
 	
 	/**
 	 * 
