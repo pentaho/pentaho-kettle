@@ -63,6 +63,8 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 {
 	private static Class<?> PKG = JobEntrySFTP.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
+	private static final int DEFAULT_PORT= 22;
+	
 	private String serverName;
 	private String serverPort;
 	private String userName;
@@ -158,9 +160,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 		try
 		{
 			serverName      = rep.getJobEntryAttributeString(id_jobentry, "servername");
-			int intServerPort = (int)rep.getJobEntryAttributeInteger(id_jobentry, "serverport");
-            serverPort = rep.getJobEntryAttributeString(id_jobentry, "serverport"); // backward compatible.
-            if (intServerPort>0 && Const.isEmpty(serverPort)) serverPort = Integer.toString(intServerPort);
+            serverPort = rep.getJobEntryAttributeString(id_jobentry, "serverport"); 
 
 			userName        = rep.getJobEntryAttributeString(id_jobentry, "username");
 		    password        = Encr.decryptPasswordOptionallyEncrypted(rep.getJobEntryAttributeString(id_jobentry, "password"));
@@ -448,7 +448,7 @@ public class JobEntrySFTP extends JobEntryBase implements Cloneable, JobEntryInt
 			
 			
 			// Create sftp client to host ...
-			sftpclient = new SFTPClient(InetAddress.getByName(realServerName), Const.toInt(realServerPort, 22), realUsername);
+			sftpclient = new SFTPClient(InetAddress.getByName(realServerName), Const.toInt(realServerPort, DEFAULT_PORT), realUsername);
 			if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobSFTP.Log.OpenedConnection",realServerName,realServerPort,realUsername));
 
 			// login to ftp host ...
