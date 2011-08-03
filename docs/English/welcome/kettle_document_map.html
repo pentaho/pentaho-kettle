@@ -23,6 +23,31 @@ body {
 	text-align: left;
 	width: 468px;
 }
+.title {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 1.5em;
+	color: #5c5c5c;
+	margin:0 0 20px 0; 
+	padding: 0;
+}
+a.btn {
+	Display: block;
+	float:right;
+	background-image:url(images/bg_btn.png);
+	background-repeat: no-repeat;
+	height: 32px;
+	width: 120px;
+	text-align:center;
+	padding: 6px 0 0 0;
+	margin: 0 12px 0 0;
+	font-size: .85em;
+	text-decoration: none;
+	color:#000000;
+	cursor:pointer;
+}
+a:hover.btn{
+background-image:url(images/bg_btn_hover.png);
+}
 h1 {
 	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
 	font-size: 1.5em;
@@ -458,6 +483,7 @@ function MM_callJS(jsStr) { //v2.0
 </head>
 <body onLoad="MM_preloadImages('images/btn_doc_on.png','images/btn_community_on.png','images/btn_blog_on.png','images/samples_folder_on.png')">
 <div id="container">
+
   <table width="468" border="0" cellspacing="0" cellpadding="0">
     <tr>
       <td><table width="144" border="0" cellspacing="0" cellpadding="0">
@@ -486,10 +512,32 @@ function MM_callJS(jsStr) { //v2.0
       <td>&nbsp;</td>
       <td>&nbsp;</td>
     </tr>
+      <tr>
+      <td colspan="5"><div id="sc4" class="switchcontent2" style="margin:0px; height: 180px; padding:6px; background-image:url(images/bg_support.png);background-repeat:no-repeat; width: 468px;">
+          <table width="100%" border="0" cellspacing="0" cellpadding="4">
+            <tr>
+              <td colspan="2" style="padding: 6px 6px 10px 6px;"><span class="title">Need Support?</span></td>
+            </tr>
+            <tr>
+            	<td valign="top"><img src="images/support.png" /></td>
+              <td valign="top" style="padding: 0 18px 0 0;">
+Pentaho offers a variety of professional support plans designed to help you to overcome all product-related issues when designing, developing, deploying, and delivering solutions using Pentaho Data Integration.</td>
+            </tr>
+            <!--<tr><td colspan="2">&nbsp;</td></tr> -->
+            <tr><td colspan="2" style="padding: 18px 10px 0 0;"><a href="http://www.pentaho.com/services/support/pdi" title="http://www.pentaho.com/services/support/pdi" target="_blank" class="btn">Learn More</a></tr>
+          </table>
+        </div>
+    </tr>
+      <tr>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+    </tr>
     <tr>
       <td colspan="5"><a onClick="expandcontent(this, 'sc1')" style="cursor:hand; cursor:pointer" class="docsbutton">Documents</a><a  onClick="expandcontent(this, 'sc2')" style="cursor:hand; cursor:pointer" class="communitybutton">Community</a><a onClick="expandcontent(this, 'sc3')" style="cursor:hand; cursor:pointer" class="blogbutton">Blogs</a></td>
     </tr>
-    <tr>
     <tr>
       <td colspan="5"><div id="sc1" class="switchcontent" style="margin:0px 0 0 6px; padding:6px 6px 12px 6px; background-image:url(images/bg_open_panel.png); background-position:bottom; background-repeat:no-repeat; width: 444px;">
           <table width="100%" border="0" cellspacing="0" cellpadding="4">
@@ -624,7 +672,7 @@ document.all.hideshow.style.visibility = 'visible';
     </div>
   </div>
 </div>
-<div id="logo"><a href="http://www.pentaho.com" target="_Pentaho" border="0"><img src="images/pentaho_logo_rgb_sm.png" border="0"></a></div>
+<div id="logo"></div>
 <script language=javascript type='text/javascript'> 
 function hideDiv2() { 
   if (document.getElementById) { // DOM3 = IE5, NS6 
