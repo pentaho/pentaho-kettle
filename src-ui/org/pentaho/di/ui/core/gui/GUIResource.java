@@ -570,8 +570,8 @@ public class GUIResource
 
 			String filename = steps.get(i).getImageFile();
 			try {
-				Object object = registry.loadClass(steps.get(i));
-				image = ImageUtil.getImage(display, object.getClass(), filename);
+			  ClassLoader classLoader = registry.getClassLoader(steps.get(i));
+			  image = ImageUtil.getImage(display, classLoader, filename);
 			} catch (Exception e) {
 			    log.logError("Unable to find required step image file or image format not supported (e.g. interlaced) [" + filename + " : ", e);
 				image = new Image(display, ConstUI.ICON_SIZE, ConstUI.ICON_SIZE);
@@ -818,8 +818,8 @@ public class GUIResource
 			String filename = plugin.getImageFile();
 			try
 			{
-				Object object = registry.loadClass(plugin);
-				image = ImageUtil.getImage(display, object.getClass(), filename);
+			  ClassLoader classLoader = registry.getClassLoader(plugin);
+				image = ImageUtil.getImage(display, classLoader, filename);
 			} catch (Exception e)
 			{
 				log.logError("Unable to find required job entry image file [" + filename + "] for id ["+plugin.getIds()[0]+"] : " + e.toString());
