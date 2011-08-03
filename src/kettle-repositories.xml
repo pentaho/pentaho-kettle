@@ -11,11 +11,6 @@
 		<meta-classname>org.pentaho.di.repository.kdr.KettleDatabaseRepositoryMeta</meta-classname>
 		<version-browser-classname/>
 	</repository>
-	
-	<!--
-  
-      Disabled KettleFileRepository for preview release due to PDI-3428 and PDI-3467
-	 -->
    
 	<repository id="KettleFileRepository">
 		<description>i18n:org.pentaho.di.repository:RepositoryType.Name.KettleFileRepository</description>
