@@ -139,7 +139,7 @@
 	<classpathentry exported="true" kind="lib" path="libext/google/gdata-client-1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/google/gdata-client-meta-1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/google/gdata-core-1.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/google/google-collections-1.0-rc5.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/google/google-collect-1.0-rc1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/google/jsr305.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/saxon9-dom.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/saxon9.jar"/>
