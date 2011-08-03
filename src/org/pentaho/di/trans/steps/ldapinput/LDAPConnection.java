@@ -181,7 +181,7 @@ public class LDAPConnection {
 				if(isTrustAllCertificates()) {
 					CustomdSocketFactory.alwaysTrust();
 				}else {
-					getEnv().put("java.naming.ldap.factory.socket", "org.pentaho.di.trans.steps.ldapinput.store.AdvancedSocketFactory");
+					getEnv().put("java.naming.ldap.factory.socket", "org.pentaho.di.trans.steps.ldapinput.store.CustomdSocketFactory");
 					CustomdSocketFactory.setCertStorePath(getTrustStorePath());
 					if(!Const.isEmpty(getTrustStorePassword())) {
 						CustomdSocketFactory.setCertStorePassword(getTrustStorePassword());
