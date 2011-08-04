@@ -31,7 +31,7 @@ public class MailInputData extends BaseStepData implements StepDataInterface
 {
     public RowMetaInterface inputRowMeta;
     public int totalpreviousfields;
-    
+    public int nrFields;
 	public RowMetaInterface outputRowMeta;
 	public MailConnection mailConn;
 	public int messagesCount;

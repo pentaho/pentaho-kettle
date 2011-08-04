@@ -43,7 +43,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.steps.propertyinput.PropertyInputField;
 import org.w3c.dom.Node;
 
 
@@ -250,7 +249,7 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface
 			    MailInputField field = new MailInputField();
 			    
 				field.setName( rep.getStepAttributeString (id_step, i, "field_name") );
-				field.setColumn(PropertyInputField.getColumnByCode(rep.getStepAttributeString (id_step, i, "field_column") ) );
+				field.setColumn(MailInputField.getColumnByCode(rep.getStepAttributeString (id_step, i, "field_column") ) );
 
 				inputFields[i] = field;
 			}
@@ -307,7 +306,7 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface
 			}
 		}
 		catch(KettleDatabaseException dbe) {
-			throw new KettleException("Unable to save step of type 'get pop' to the repository for id_step="+id_step, dbe);
+			throw new KettleException("Unable to save step of type 'Mail input' to the repository for id_step="+id_step, dbe);
 		}
 	}
 	public String getXML()
