@@ -43,7 +43,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.steps.propertyinput.PropertyInputField;
+
 import org.w3c.dom.Node;
 
 
@@ -252,7 +252,7 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface
 			    MailInputField field = new MailInputField();
 			    
 				field.setName( rep.getStepAttributeString (id_step, i, "field_name") );
-				field.setColumn(PropertyInputField.getColumnByCode(rep.getStepAttributeString (id_step, i, "field_column") ) );
+				field.setColumn(MailInputField.getColumnByCode(rep.getStepAttributeString (id_step, i, "field_column") ) );
 
 				inputFields[i] = field;
 			}

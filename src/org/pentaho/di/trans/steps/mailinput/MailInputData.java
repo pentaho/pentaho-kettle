@@ -43,6 +43,7 @@ public class MailInputData extends BaseStepData implements StepDataInterface
     public int indexOfFolderField;
 	public Object[] readrow;
 	public int rowlimit;
+	public int nrFields;
 	
 	/**
 	 * 
