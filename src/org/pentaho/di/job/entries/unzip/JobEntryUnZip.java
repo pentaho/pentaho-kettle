@@ -244,7 +244,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 			addfiletoresult=rep.getJobEntryAttributeBoolean(id_jobentry, "addfiletoresult");
 			isfromprevious=rep.getJobEntryAttributeBoolean(id_jobentry, "isfromprevious");
 			adddate=rep.getJobEntryAttributeBoolean(id_jobentry, "adddate");
-			addtime=rep.getJobEntryAttributeBoolean(id_jobentry, "adddate");
+			addtime=rep.getJobEntryAttributeBoolean(id_jobentry, "addtime");
 			SpecifyFormat=rep.getJobEntryAttributeBoolean(id_jobentry, "SpecifyFormat");
 			date_time_format = rep.getJobEntryAttributeString(id_jobentry, "date_time_format");
 			rootzip=rep.getJobEntryAttributeBoolean(id_jobentry, "rootzip");
