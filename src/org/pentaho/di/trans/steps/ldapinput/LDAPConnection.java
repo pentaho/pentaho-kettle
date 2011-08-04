@@ -38,6 +38,7 @@ import javax.naming.ldap.PagedResultsResponseControl;
 import javax.naming.ldap.SortControl;
 import javax.naming.ldap.StartTlsRequest;
 import javax.naming.ldap.StartTlsResponse;
+import javax.net.ssl.SSLSocketFactory;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
@@ -199,31 +200,30 @@ public class LDAPConnection {
       getEnv().put(Context.PROVIDER_URL, getHostName() + ":" + getPort());
     else
       getEnv().put(Context.PROVIDER_URL, "ldap://" + getHostName() + ":" + getPort());
-    getEnv().put(Context.SECURITY_AUTHENTICATION, "simple");
 
     if (getProtocol() == PROTOCOL_LDAP_SSL) {
       getEnv().put(javax.naming.Context.SECURITY_PROTOCOL, "ssl");
+      
+      // setup factory for SSL; for TLS, we specify this factory in the StartTlsResponse.negotiate(factory) call
+      getEnv().put("java.naming.ldap.factory.socket",
+          "org.pentaho.di.trans.steps.ldapinput.store.CustomdSocketFactory");
     }
 
-    if (getProtocol() != PROTOCOL_LDAP) {
-      if (isTrustAllCertificates() || !Const.isEmpty(getTrustStorePath())) {
+    if (getProtocol() != PROTOCOL_LDAP) { // if SSL or TLS
         if (isTrustAllCertificates()) {
-          CustomdSocketFactory.alwaysTrust();
+          CustomdSocketFactory.configure();
         } else {
-          getEnv().put("java.naming.ldap.factory.socket",
-              "org.pentaho.di.trans.steps.ldapinput.store.CustomdSocketFactory");
-          CustomdSocketFactory.setCertStorePath(getTrustStorePath());
-          if (!Const.isEmpty(getTrustStorePassword())) {
-            CustomdSocketFactory.setCertStorePassword(getTrustStorePassword());
-          }
+          CustomdSocketFactory.configure(getTrustStorePath(), getTrustStorePassword());
         }
-      }
     }
 
     if (!Const.isEmpty(username)) {
       this.username = username;
       getEnv().put(Context.SECURITY_PRINCIPAL, username);
       getEnv().put(Context.SECURITY_CREDENTIALS, password);
+      getEnv().put(Context.SECURITY_AUTHENTICATION, "simple");
+    } else {
+      getEnv().put(Context.SECURITY_AUTHENTICATION, "none");
     }
 
     try {
@@ -238,7 +238,7 @@ public class LDAPConnection {
         StartTlsRequest tlsRequest = new StartTlsRequest();
         this.tls = (StartTlsResponse) getInitialContext().extendedOperation(tlsRequest);
         /* Starting TLS */
-        this.tls.negotiate();
+        this.tls.negotiate((SSLSocketFactory) CustomdSocketFactory.getDefault());
       }
 
       if (log.isBasic())
@@ -249,7 +249,7 @@ public class LDAPConnection {
             .getName()));
 
     } catch (Exception e) {
-      throw new KettleException(BaseMessages.getString(PKG, "LDAPinput.Exception.ErrorConnecting", e.getMessage()));
+      throw new KettleException(BaseMessages.getString(PKG, "LDAPinput.Exception.ErrorConnecting", e.getMessage()), e);
     }
   }
 

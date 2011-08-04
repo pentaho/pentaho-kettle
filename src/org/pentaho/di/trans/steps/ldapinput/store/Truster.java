@@ -92,6 +92,7 @@ public class Truster implements X509TrustManager {
             try {
                 in = new FileInputStream(certStore);
             } catch (FileNotFoundException _ex) {
+              throw new KettleException("Failed to create cert store : ", _ex);
             }
         else
             try {
@@ -101,6 +102,7 @@ public class Truster implements X509TrustManager {
             } catch (MalformedURLException e) {
             	 throw new KettleException("The location of the cert store file is invalid: ", e);
             } catch (IOException _ex) {
+              throw new KettleException("Failed to create cert store : ", _ex);
             }
         try {
             ks.load(in, certStorePwd);
