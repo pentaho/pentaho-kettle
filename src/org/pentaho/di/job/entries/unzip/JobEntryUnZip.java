@@ -89,6 +89,9 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 	private int     iffileexist;
 	private boolean createMoveToDirectory;
 	
+	private boolean addOriginalTimestamp;
+	private boolean setOriginalModificationDate;
+	
 	public  String SUCCESS_IF_AT_LEAST_X_FILES_UN_ZIPPED="success_when_at_least";
 	public  String SUCCESS_IF_ERRORS_LESS="success_if_errors_less";
 	public  String SUCCESS_IF_NO_ERRORS="success_if_no_errors";
@@ -133,6 +136,9 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 	boolean successConditionBrokenExit=false;
 	int limitFiles=0;
 	
+	private static SimpleDateFormat daf;
+	private boolean dateFormatSet=false;
+	
 	public JobEntryUnZip(String n)
 	{
 		super(n, "");
@@ -154,6 +160,10 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 		iffileexist=IF_FILE_EXISTS_SKIP;
 		success_condition=SUCCESS_IF_NO_ERRORS;
 		createMoveToDirectory=false;
+		
+		addOriginalTimestamp=false;
+		setOriginalModificationDate=false;
+		
 		setID(-1L);
 	}
 
@@ -183,6 +193,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 		retval.append("      ").append(XMLHandler.addTagValue("isfromprevious",  isfromprevious));
 		retval.append("      ").append(XMLHandler.addTagValue("adddate",  adddate));
 		retval.append("      ").append(XMLHandler.addTagValue("addtime",  addtime));
+		retval.append("      ").append(XMLHandler.addTagValue("addOriginalTimestamp",  addOriginalTimestamp));
 		retval.append("      ").append(XMLHandler.addTagValue("SpecifyFormat",  SpecifyFormat));
 		retval.append("      ").append(XMLHandler.addTagValue("date_time_format",  date_time_format));
 		retval.append("      ").append(XMLHandler.addTagValue("rootzip",  rootzip));
@@ -192,7 +203,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 		retval.append("      ").append(XMLHandler.addTagValue("success_condition", success_condition));
 		retval.append("      ").append(XMLHandler.addTagValue("iffileexists", getIfFileExistsCode(iffileexist))); 
 		retval.append("      ").append(XMLHandler.addTagValue("create_move_to_directory",  createMoveToDirectory));
-		
+		retval.append("      ").append(XMLHandler.addTagValue("setOriginalModificationDate",  setOriginalModificationDate));
 		return retval.toString();
 	}
 	
@@ -213,6 +224,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 			isfromprevious = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "isfromprevious"));	
 			adddate = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "adddate"));	
 			addtime = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "addtime"));	
+			addOriginalTimestamp = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "addOriginalTimestamp"));
 			SpecifyFormat = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "SpecifyFormat"));	
 			date_time_format = XMLHandler.getTagValue(entrynode, "date_time_format");
 			rootzip = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "rootzip"));
@@ -223,7 +235,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 			if(Const.isEmpty(success_condition)) success_condition=SUCCESS_IF_NO_ERRORS;
 			iffileexist   = getIfFileExistsInt(XMLHandler.getTagValue(entrynode, "iffileexists"));	
 			createMoveToDirectory = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "create_move_to_directory"));
-			
+			setOriginalModificationDate = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "setOriginalModificationDate"));
 		}
 		catch(KettleXMLException xe)
 		{
@@ -244,7 +256,8 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 			addfiletoresult=rep.getJobEntryAttributeBoolean(id_jobentry, "addfiletoresult");
 			isfromprevious=rep.getJobEntryAttributeBoolean(id_jobentry, "isfromprevious");
 			adddate=rep.getJobEntryAttributeBoolean(id_jobentry, "adddate");
-			addtime=rep.getJobEntryAttributeBoolean(id_jobentry, "adddate");
+			addtime=rep.getJobEntryAttributeBoolean(id_jobentry, "addtime");
+			addOriginalTimestamp=rep.getJobEntryAttributeBoolean(id_jobentry, "addOriginalTimestamp");
 			SpecifyFormat=rep.getJobEntryAttributeBoolean(id_jobentry, "SpecifyFormat");
 			date_time_format = rep.getJobEntryAttributeString(id_jobentry, "date_time_format");
 			rootzip=rep.getJobEntryAttributeBoolean(id_jobentry, "rootzip");
@@ -255,6 +268,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 			if(Const.isEmpty(success_condition)) success_condition=SUCCESS_IF_NO_ERRORS;
 			iffileexist    = getIfFileExistsInt(rep.getJobEntryAttributeString(id_jobentry,"iffileexists") );
 			createMoveToDirectory=rep.getJobEntryAttributeBoolean(id_jobentry, "create_move_to_directory");
+			setOriginalModificationDate=rep.getJobEntryAttributeBoolean(id_jobentry, "setOriginalModificationDate");
 		}
 
 		catch(KettleException dbe)
@@ -278,6 +292,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "isfromprevious", isfromprevious);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "addtime", addtime);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "adddate", adddate);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "addOriginalTimestamp", addOriginalTimestamp);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "SpecifyFormat", SpecifyFormat);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "date_time_format", date_time_format);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "rootzip", rootzip);
@@ -287,6 +302,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "success_condition",    success_condition);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "iffileexists", getIfFileExistsCode(iffileexist));
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "create_move_to_directory", createMoveToDirectory);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "setOriginalModificationDate", setOriginalModificationDate);
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -668,9 +684,9 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 						
 					  // get real destination filename
 					  //
-					  String newFileName = unzipToFolder + Const.FILE_SEPARATOR + getTargetFilename(item.getName().getPath());
+					  String newFileName = unzipToFolder + Const.FILE_SEPARATOR + getTargetFilename(item);
 					  newFileObject = KettleVFS.getFileObject(newFileName, this);
-						
+		
 					  if( item.getType().equals(FileType.FOLDER))
 					  {
 						 // Directory 
@@ -762,7 +778,12 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 				  finally {
 					  if(newFileObject!=null) {
 						  try {
-							  newFileObject.close(); }catch(Exception e){};// ignore this
+							  newFileObject.close();
+							  if(setOriginalModificationDate) {
+								  // Change last modification date
+								  newFileObject.getContent().setLastModifiedTime(item.getContent().getLastModifiedTime());
+							  }
+						 }catch(Exception e){};// ignore this
 					  }
 					  // Close file object
 					  // close() does not release resources!
@@ -1124,7 +1145,22 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 	{
 		this.adddate= adddate;
 	}
-	
+	public void setAddOriginalTimestamp(boolean addOriginalTimestamp) 
+	{
+		this.addOriginalTimestamp= addOriginalTimestamp;
+	}
+	public boolean isOriginalTimestamp() 
+	{
+		return addOriginalTimestamp;
+	}
+	public void setOriginalModificationDate(boolean setOriginalModificationDate) 
+	{
+		this.setOriginalModificationDate= setOriginalModificationDate;
+	}
+	public boolean isOriginalModificationDate() 
+	{
+		return setOriginalModificationDate;
+	}
 	public boolean isDateInFilename() 
 	{
 		return adddate;
@@ -1201,48 +1237,51 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 	
 	
     /**
-     * @param string the filename from the FTP server
+     * @param string the filename from
      * 
      * @return the calculated target filename
      */
-	protected String getTargetFilename(String filename)
+	protected String getTargetFilename(FileObject file) throws FileSystemException
     {
 		
         String retval="";
+        String filename=file.getName().getPath();
 		// Replace possible environment variables...
 		if(filename!=null) retval=filename;
+		if(file.getType()!= FileType.FILE) return retval;
 		
 		int lenstring=retval.length();
 		int lastindexOfDot=retval.lastIndexOf('.');
 		if(lastindexOfDot==-1) lastindexOfDot=lenstring;
 		
 		retval=retval.substring(0, lastindexOfDot);
+		if(!SpecifyFormat && !adddate && !addtime) return retval;
 		
-		SimpleDateFormat daf     = new SimpleDateFormat();
-		Date now = new Date();
 		
-		if(SpecifyFormat && !Const.isEmpty(date_time_format))
-		{
-			daf.applyPattern(date_time_format);
-			String dt = daf.format(now);
+		if(daf==null) daf  = new SimpleDateFormat();
+		
+		Date timestamp = new Date();
+		if(addOriginalTimestamp) timestamp=new Date(file.getContent().getLastModifiedTime());
+		
+		if(SpecifyFormat && !Const.isEmpty(date_time_format)){
+			if(!dateFormatSet) daf.applyPattern(date_time_format);
+			String dt = daf.format(timestamp);
 			retval+=dt;
-		}else
-		{
+		}else {
 		
-			if (adddate)
-			{
-				daf.applyPattern("yyyyMMdd");
-				String d = daf.format(now);
+			if (adddate) {
+				if(!dateFormatSet) daf.applyPattern("yyyyMMdd");
+				String d = daf.format(timestamp);
 				retval+="_"+d;
 			}
-			if (addtime)
-			{
-				daf.applyPattern("HHmmssSSS");
-				String t = daf.format(now);
+			if (addtime) {
+				if(!dateFormatSet) daf.applyPattern("HHmmssSSS");
+				String t = daf.format(timestamp);
 				retval+="_"+t;
 			}
 		}
 		
+		if(daf!=null) dateFormatSet=true;
 		retval+=filename.substring(lastindexOfDot, lenstring);
 
 		return retval;
