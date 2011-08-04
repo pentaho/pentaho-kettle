@@ -11,6 +11,7 @@
  
 package org.pentaho.di.trans.steps.metainject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,6 +59,8 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface
     private String                            directoryPath;
     private ObjectId                          transObjectId;
     private ObjectLocationSpecificationMethod specificationMethod;
+    
+    private String                            sourceStepName;
 
     private Map<TargetStepAttribute, SourceStepField> targetSourceMapping;
 	
@@ -87,6 +90,8 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface
 	    retval.append("    ").append(XMLHandler.addTagValue("filename", fileName)); //$NON-NLS-1$
 	    retval.append("    ").append(XMLHandler.addTagValue("directory_path", directoryPath)); //$NON-NLS-1$
 
+	    retval.append("    ").append(XMLHandler.addTagValue("source_step", sourceStepName)); //$NON-NLS-1$
+
 	    retval.append("    ").append(XMLHandler.openTag("mappings"));
 	    for (TargetStepAttribute target : targetSourceMapping.keySet()) {
 	      retval.append("      ").append(XMLHandler.openTag("mapping"));
@@ -115,7 +120,9 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface
         transName = XMLHandler.getTagValue(stepnode, "trans_name"); //$NON-NLS-1$
         fileName = XMLHandler.getTagValue(stepnode, "filename"); //$NON-NLS-1$
         directoryPath = XMLHandler.getTagValue(stepnode, "directory_path"); //$NON-NLS-1$
-        
+
+        sourceStepName = XMLHandler.getTagValue(stepnode, "source_step"); //$NON-NLS-1$
+
         Node mappingsNode = XMLHandler.getSubNode(stepnode, "mappings");
         int nrMappings = XMLHandler.countNodes(mappingsNode, "mapping");
         for (int i=0;i<nrMappings;i++) {
@@ -147,7 +154,20 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface
 		    fileName = rep.getStepAttributeString(id_step, "filename"); //$NON-NLS-1$
 		    directoryPath = rep.getStepAttributeString(id_step, "directory_path"); //$NON-NLS-1$
 
-		  // TODO		
+        sourceStepName = rep.getStepAttributeString(id_step, "source_step"); //$NON-NLS-1$
+
+        int nrMappings = rep.countNrStepAttributes(id_step, "mapping_target_step_name");
+        for (int i=0;i<nrMappings;i++) {
+          String targetStepname = rep.getStepAttributeString(id_step, i, "mapping_target_step_name");
+          String targetAttributeKey = rep.getStepAttributeString(id_step, i, "mapping_target_attribute_key");
+          boolean targetDetail = rep.getStepAttributeBoolean(id_step, i, "mapping_target_detail");
+          String sourceStepname = rep.getStepAttributeString(id_step, i, "mapping_source_step");
+          String sourceField = rep.getStepAttributeString(id_step, i, "mapping_source_field");
+          
+          TargetStepAttribute target = new TargetStepAttribute(targetStepname, targetAttributeKey, targetDetail);
+          SourceStepField source = new SourceStepField(sourceStepname, sourceField);
+          targetSourceMapping.put(target, source);
+        }
 		}
 		catch (Exception e)
 		{
@@ -163,6 +183,20 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface
 		    rep.saveStepAttribute(id_transformation, id_step, "filename", fileName); //$NON-NLS-1$
 		    rep.saveStepAttribute(id_transformation, id_step, "trans_name", transName); //$NON-NLS-1$
 		    rep.saveStepAttribute(id_transformation, id_step, "directory_path", directoryPath); //$NON-NLS-1$
+
+        rep.saveStepAttribute(id_transformation, id_step, "source_step", sourceStepName); //$NON-NLS-1$
+
+        List<TargetStepAttribute> keySet = new ArrayList<TargetStepAttribute>(targetSourceMapping.keySet());
+        for (int i=0;i<keySet.size();i++) {
+          TargetStepAttribute target = keySet.get(i);
+          SourceStepField source = targetSourceMapping.get(target);
+          
+          rep.saveStepAttribute(id_transformation, id_step, i, "mapping_target_step_name", target.getStepname());
+          rep.saveStepAttribute(id_transformation, id_step, i, "mapping_target_attribute_key", target.getAttributeKey());
+          rep.saveStepAttribute(id_transformation, id_step, i, "mapping_target_detail", target.isDetail());
+          rep.saveStepAttribute(id_transformation, id_step, i, "mapping_source_step", source.getStepname());
+          rep.saveStepAttribute(id_transformation, id_step, i, "mapping_source_field", source.getField());
+        }
 		}
 		catch (Exception e)
 		{
@@ -172,7 +206,7 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public void getFields(RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{
-		rowMeta.clear(); // No output is expected from this step.
+		rowMeta.clear(); // No defined output is expected from this step.
 	}
 	
 	
@@ -323,5 +357,19 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface
   @Override
   public boolean excludeFromRowLayoutVerification() {
     return true;
+  }
+
+  /**
+   * @return the sourceStepName
+   */
+  public String getSourceStepName() {
+    return sourceStepName;
+  }
+
+  /**
+   * @param sourceStepName the sourceStepName to set
+   */
+  public void setSourceStepName(String sourceStepName) {
+    this.sourceStepName = sourceStepName;
   }
 }
