@@ -44,6 +44,7 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
 
@@ -573,5 +574,10 @@ public class FixedInputMeta extends BaseStepMeta implements StepMetaInterface
 		} catch (Exception e) {
 			throw new KettleException(e); //$NON-NLS-1$
 		}
+	}
+	
+	@Override
+	public StepMetaInjectionInterface getStepMetaInjectionInterface() {
+	  return new FixedInputMetaInjection(this);
 	}
 }
