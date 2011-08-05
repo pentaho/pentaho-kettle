@@ -127,7 +127,7 @@
       <fields>
         <field>
           <source_filefolder>${Internal.Job.Filename.Directory}&#47;excite.log.bz2</source_filefolder>
-          <destination_filefolder>hdfs:&#47;&#47;hadoop-server:9000&#47;script1-hadoop-results</destination_filefolder>
+          <destination_filefolder>hdfs:&#47;&#47;hadoop-server:9000&#47;.</destination_filefolder>
           <wildcard/>
         </field>
       </fields>
