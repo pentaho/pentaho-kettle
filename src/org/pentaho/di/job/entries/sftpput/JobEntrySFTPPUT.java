@@ -186,9 +186,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 		try
 		{
 			serverName      = rep.getJobEntryAttributeString(id_jobentry, "servername");
-			int intServerPort = (int)rep.getJobEntryAttributeInteger(id_jobentry, "serverport");
-            serverPort = rep.getJobEntryAttributeString(id_jobentry, "serverport"); // backward compatible.
-            if (intServerPort>0 && Const.isEmpty(serverPort)) serverPort = Integer.toString(intServerPort);
+			serverPort = rep.getJobEntryAttributeString(id_jobentry, "serverport");
 
 			userName        = rep.getJobEntryAttributeString(id_jobentry, "username");
 			password        = Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString(id_jobentry, "password") );
