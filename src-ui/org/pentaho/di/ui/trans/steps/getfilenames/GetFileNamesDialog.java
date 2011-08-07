@@ -72,6 +72,10 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 
 	private static final String[] YES_NO_COMBO = new String[] {BaseMessages.getString(PKG, "System.Combo.No"), BaseMessages.getString(PKG, "System.Combo.Yes") };
 	
+	 // do not fail if no files?
+	private Label        wldoNotFailIfNoFile;
+	private Button       wdoNotFailIfNoFile;
+	private FormData     fdldoNotFailIfNoFile, fddoNotFailIfNoFile;
 	
 	private CTabFolder wTabFolder;
 
@@ -635,6 +639,24 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		// / END OF DESTINATION ADDRESS  GROUP
 		// ///////////////////////////////////////////////////////////
 		
+
+		 // do not fail if no files?
+		wldoNotFailIfNoFile=new Label(wFilterComp, SWT.RIGHT);
+		wldoNotFailIfNoFile.setText(BaseMessages.getString(PKG, "GetFileNamesDialog.doNotFailIfNoFile.Label"));
+		props.setLook(wldoNotFailIfNoFile);
+		fdldoNotFailIfNoFile=new FormData();
+		fdldoNotFailIfNoFile.left = new FormAttachment(0, 0);
+		fdldoNotFailIfNoFile.top  = new FormAttachment(wAdditionalGroup, 2*margin);
+		fdldoNotFailIfNoFile.right= new FormAttachment(middle, -margin);
+		wldoNotFailIfNoFile.setLayoutData(fdldoNotFailIfNoFile);
+		wdoNotFailIfNoFile=new Button(wFilterComp, SWT.CHECK );
+		props.setLook(wdoNotFailIfNoFile);
+		wdoNotFailIfNoFile.setToolTipText(BaseMessages.getString(PKG, "GetFileNamesDialog.doNotFailIfNoFile.Tooltip"));
+		fddoNotFailIfNoFile=new FormData();
+		fddoNotFailIfNoFile.left = new FormAttachment(middle, 0);
+		fddoNotFailIfNoFile.top  = new FormAttachment(wAdditionalGroup, 2*margin);
+		wdoNotFailIfNoFile.setLayoutData(fddoNotFailIfNoFile);
+
 		
 		
 		wlLimit=new Label(wFilterComp, SWT.RIGHT);
@@ -642,7 +664,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
  		props.setLook(wlLimit);
 		fdlLimit=new FormData();
 		fdlLimit.left = new FormAttachment(0, 0);
-		fdlLimit.top  = new FormAttachment(wAdditionalGroup, 2*margin);
+		fdlLimit.top  = new FormAttachment(wdoNotFailIfNoFile, margin);
 		fdlLimit.right= new FormAttachment(middle, -margin);
 		wlLimit.setLayoutData(fdlLimit);
 		wLimit=new Text(wFilterComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -650,7 +672,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		wLimit.addModifyListener(lsMod);
 		fdLimit=new FormData();
 		fdLimit.left = new FormAttachment(middle, 0);
-		fdLimit.top  = new FormAttachment(wAdditionalGroup, 2*margin);
+		fdLimit.top  = new FormAttachment(wdoNotFailIfNoFile, margin);
 		fdLimit.right= new FormAttachment(100, 0);
 		wLimit.setLayoutData(fdLimit);
 		
@@ -980,7 +1002,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 						in.getRequiredFilesDesc(in.getIncludeSubFolders()[i])} );
 			}	
 			
-			
+			wdoNotFailIfNoFile.setSelection(in.isdoNotFailIfNoFile());
 			wFilenameList.removeEmptyRows();
 			wFilenameList.setRowNums();
 			wFilenameList.optWidth(true);
@@ -1043,7 +1065,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		in.setRowNumberField( wInclRownumField.getText() );
 		in.setRowLimit( Const.toLong(wLimit.getText(), 0L) );
 		in.setDynamicIncludeSubFolders(wIncludeSubFolder.getSelection());
-
+		in.setdoNotFailIfNoFile(wdoNotFailIfNoFile.getSelection());
 	}
 
 	// Preview the data
