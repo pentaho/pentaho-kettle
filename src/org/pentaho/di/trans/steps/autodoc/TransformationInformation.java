@@ -102,21 +102,24 @@ public class TransformationInformation {
 		GCInterface gc = new SwingGC(null, area, iconsize, 50, 20);
 		TransPainter painter = new TransPainter(gc, transMeta, area, bar, bar, null, null, null, new ArrayList<AreaOwner>(), new ArrayList<StepMeta>(), 
 		    iconsize, 1, 0, 0, true, "FreeSans", 10);
-	    painter.buildTransformationImage();
-	    BufferedImage bufferedImage = (BufferedImage)gc.getImage();
-	    int newWidth=bufferedImage.getWidth()-min.x-50;
-	    int newHeigth=bufferedImage.getHeight()-min.y-50;
-	    BufferedImage image = new BufferedImage(newWidth, newHeigth, bufferedImage.getType());
-	    image.getGraphics().drawImage(
+    painter.setMagnification(0.5f);
+    painter.setTranslationX(min.x);
+    painter.setTranslationX(min.y);
+	  painter.buildTransformationImage();
+	  BufferedImage bufferedImage = (BufferedImage)gc.getImage();
+	  int newWidth=bufferedImage.getWidth()-min.x;
+	  int newHeigth=bufferedImage.getHeight()-min.y;
+	  BufferedImage image = new BufferedImage(newWidth, newHeigth, bufferedImage.getType());
+	  image.getGraphics().drawImage(
 	    		bufferedImage, 
 	    		0, 0, newWidth, newHeigth, 
 	    		min.x, min.y, min.x+newWidth, min.y+newHeigth, 
 	    		null
 	    	);
 
-	    TransformationInformationValues values = new TransformationInformationValues();
-	    values.transMeta = transMeta;
-	    values.image = image;
+	  TransformationInformationValues values = new TransformationInformationValues();
+	  values.transMeta = transMeta;
+	  values.image = image;
 	    
 		return values;
 	}
@@ -139,16 +142,20 @@ public class TransformationInformation {
 	    // Paint the transformation...
 	    //
 	    Rectangle rect = new java.awt.Rectangle(0,0,area.x, area.y);
-	    double magnification = rectangle2d.getWidth()/rect.getWidth();
-	    
+	    double magnificationX = rectangle2d.getWidth()/rect.getWidth();
+	    double magnificationY = rectangle2d.getHeight()/rect.getHeight();
+	    double magnification = Math.min(magnificationX, magnificationY);
+
 	    SwingGC gc = new SwingGC(g2d, rect, iconsize, 0, 0);
 	    gc.setDrawingPixelatedImages(pixelateImages);
 	    
 	    TransPainter painter = new TransPainter(gc, transMeta, area, bar, bar, null, null, null, new ArrayList<AreaOwner>(), new ArrayList<StepMeta>(), 
 	        iconsize, 1, 0, 0, true, "FreeSans", 10);
-	    painter.setMagnification((float)magnification);
-	    painter.setTranslationX(100+min.x);
-      painter.setTranslationY(100+min.y);
+	    painter.setMagnification((float)Math.min(magnification, 1));
+	    if (pixelateImages) {
+  	    painter.setTranslationX(100+min.x);
+        painter.setTranslationY(100+min.y);
+	    }
 	    painter.buildTransformationImage();
 	  }
 

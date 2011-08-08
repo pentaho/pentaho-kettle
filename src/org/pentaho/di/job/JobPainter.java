@@ -579,4 +579,32 @@ public class JobPainter extends BasePainter {
 		Collections.sort(this.jobEntryResults);
 	}
 
+	 /**
+   * @return the translationX
+   */
+  public float getTranslationX() {
+    return translationX;
+  }
+
+  /**
+   * @param translationX the translationX to set
+   */
+  public void setTranslationX(float translationX) {
+    this.translationX = translationX;
+  }
+
+  /**
+   * @return the translationY
+   */
+  public float getTranslationY() {
+    return translationY;
+  }
+
+  /**
+   * @param translationY the translationY to set
+   */
+  public void setTranslationY(float translationY) {
+    this.translationY = translationY;
+  }
+
 }
