@@ -1376,6 +1376,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
 
 			wProtocol.setText(input.getProtocol());
 			wIMAPListmails.setText(MailConnectionMeta.getValueImapListDesc(input.getValueImapList()));
+			if (input.getFirstIMAPMails()!= null) wIMAPFirstmails.setText(input.getFirstIMAPMails());
 			if(input.getIMAPFolder()!=null) wIMAPFolder.setText(input.getIMAPFolder());
 			// search term
 			if(input.getSenderSearchTerm()!=null) wSender.setText(input.getSenderSearchTerm());
