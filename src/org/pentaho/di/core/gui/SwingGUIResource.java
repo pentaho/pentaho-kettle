@@ -23,6 +23,8 @@ import java.util.Map;
 import javax.imageio.ImageIO;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.plugins.JobEntryPluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
@@ -30,6 +32,8 @@ import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.reporting.libraries.base.util.WaitingImageObserver;
 
 public class SwingGUIResource {
+  private static LogChannelInterface log = new LogChannel("SwingGUIResource");
+
 	private static SwingGUIResource instance;
 	
 	private Map<String, BufferedImage>	stepImages;
@@ -51,10 +55,14 @@ public class SwingGUIResource {
 		Map<String, BufferedImage> map = new HashMap<String, BufferedImage>();
 		
 		for (PluginInterface plugin: PluginRegistry.getInstance().getPlugins(StepPluginType.class)) {
-		  BufferedImage image = getImageIcon(plugin);
-			for (String id : plugin.getIds()) {
-				map.put(id, image);
-			}
+		  try {
+  		  BufferedImage image = getImageIcon(plugin);
+  			for (String id : plugin.getIds()) {
+  				map.put(id, image);
+  			}
+		  } catch(Exception e) {
+		    log.logError("Unable to load step icon image for plugin: "+plugin.getName()+" (id="+plugin.getIds()[0], e);
+		  }
 		}
 		
 		return map;
@@ -64,26 +72,30 @@ public class SwingGUIResource {
 		Map<String, BufferedImage> map = new HashMap<String, BufferedImage>();
 		
 		for (PluginInterface plugin : PluginRegistry.getInstance().getPlugins(JobEntryPluginType.class)) {
-			if ("SPECIAL".equals(plugin.getIds()[0])) {
-				continue;
-			}
-			
-			String imageFile = plugin.getImageFile();
-			if (imageFile==null) {
-				throw new KettleException("No image file (icon) specified for plugin: "+plugin);
-			}
-			BufferedImage image = getImageIcon(imageFile);
-			if (image==null) {
-				throw new KettleException("Unable to find image file: "+plugin.getImageFile()+" for plugin: "+plugin);
-			}
-			if (image.getHeight(null)<0) {
-				image = getImageIcon(plugin);
-				if (image==null || image.getHeight(null)<0) {
-					throw new KettleException("Unable to load image file: "+plugin.getImageFile()+" for plugin: "+plugin);
-				}
-			}
-			
-			map.put(plugin.getIds()[0], image);
+		  try {
+  			if ("SPECIAL".equals(plugin.getIds()[0])) {
+  				continue;
+  			}
+  			
+  			String imageFile = plugin.getImageFile();
+  			if (imageFile==null) {
+  				throw new KettleException("No image file (icon) specified for plugin: "+plugin);
+  			}
+  			BufferedImage image = getImageIcon(imageFile);
+  			if (image==null) {
+  				throw new KettleException("Unable to find image file: "+plugin.getImageFile()+" for plugin: "+plugin);
+  			}
+  			if (image.getHeight(null)<0) {
+  				image = getImageIcon(plugin);
+  				if (image==null || image.getHeight(null)<0) {
+  					throw new KettleException("Unable to load image file: "+plugin.getImageFile()+" for plugin: "+plugin);
+  				}
+  			}
+  			
+  			map.put(plugin.getIds()[0], image);
+      } catch(Exception e) {
+        log.logError("Unable to load job entry icon image for plugin: "+plugin.getName()+" (id="+plugin.getIds()[0], e);
+      }
 		}
 		
 		return map;
