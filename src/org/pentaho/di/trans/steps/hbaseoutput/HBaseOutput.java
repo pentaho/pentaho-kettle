@@ -148,6 +148,9 @@ public class HBaseOutput extends BaseStep implements StepInterface {
       }
 
       String targetName = m_transMeta.environmentSubstitute(m_meta.getTargetTableName());
+      if (Const.isEmpty(targetName)) {
+        throw new KettleException("No target table specified!");
+      }
       try {
         if (!admin.tableExists(targetName)) {          
           throw new KettleException("Target table \"" + targetName + "\" does not exist!");
