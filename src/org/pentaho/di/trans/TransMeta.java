@@ -3825,7 +3825,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 		});
     	
     	long endTime = System.currentTimeMillis();
-    	log.logBasic(BaseMessages.getString(PKG, "TransMeta.Log.TimeExecutionStepSort"), (endTime-startTime), prevCount);
+    	log.logBasic(BaseMessages.getString(PKG, "TransMeta.Log.TimeExecutionStepSort", (endTime-startTime), prevCount));
     	
 
         return stepMap;
