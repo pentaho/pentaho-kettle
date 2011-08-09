@@ -67,13 +67,13 @@
     <hdfs_port>9000</hdfs_port>
     <jobtracker_hostname>hadoop-server</jobtracker_hostname>
     <jobtracker_port>9001</jobtracker_port>
-    <script_file>${Internal.Job.Filename.Directory}&#47;script1-hadoop-mod.pig</script_file>
+    <script_file>.&#47;samples&#47;jobs&#47;hadoop&#47;script1-hadoop-mod.pig</script_file>
     <enable_blocking>Y</enable_blocking>
     <local_execution>N</local_execution>
     <script_parameters>
       <parameter>
         <name>udf_jar</name>
-        <value>${Internal.Job.Filename.Directory}&#47;tutorial.jar</value>
+        <value>.&#47;samples&#47;jobs&#47;hadoop&#47;tutorial.jar</value>
       </parameter>
     </script_parameters>
       <parallel>N</parallel>
@@ -126,7 +126,7 @@
       <create_destination_folder>N</create_destination_folder>
       <fields>
         <field>
-          <source_filefolder>${Internal.Job.Filename.Directory}&#47;excite.log.bz2</source_filefolder>
+          <source_filefolder>.&#47;samples&#47;jobs&#47;hadoop&#47;excite.log.bz2</source_filefolder>
           <destination_filefolder>hdfs:&#47;&#47;hadoop-server:9000&#47;.</destination_filefolder>
           <wildcard/>
         </field>
