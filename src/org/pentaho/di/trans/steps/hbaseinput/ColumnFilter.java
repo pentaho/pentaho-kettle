@@ -156,31 +156,31 @@ public class ColumnFilter {
       return;
     }
     
-    rep.saveStepAttribute(id_transformation, id_step, filterNum, "alias", m_fieldAlias);
-    rep.saveStepAttribute(id_transformation, id_step, filterNum, "type", m_fieldType);
-    rep.saveStepAttribute(id_transformation, id_step, filterNum, "comparison_opp", 
+    rep.saveStepAttribute(id_transformation, id_step, filterNum, "cf_alias", m_fieldAlias);
+    rep.saveStepAttribute(id_transformation, id_step, filterNum, "cf_type", m_fieldType);
+    rep.saveStepAttribute(id_transformation, id_step, filterNum, "cf_comparison_opp", 
         m_comparison.toString());
-    rep.saveStepAttribute(id_transformation, id_step, filterNum, "signed_comp", 
+    rep.saveStepAttribute(id_transformation, id_step, filterNum, "cf_signed_comp", 
         m_signedComparison);
-    rep.saveStepAttribute(id_transformation, id_step, filterNum, "constant", m_constant);
+    rep.saveStepAttribute(id_transformation, id_step, filterNum, "cf_constant", m_constant);
     if (!Const.isEmpty(m_format)) {
-      rep.saveStepAttribute(id_transformation, id_step, filterNum, "format", m_format.trim());
+      rep.saveStepAttribute(id_transformation, id_step, filterNum, "cf_format", m_format.trim());
     }
   }
   
   public static ColumnFilter getFilter(Repository rep, int nodeNum, ObjectId id_step)
     throws KettleException {
-    String alias = rep.getStepAttributeString(id_step, nodeNum, "alias");
+    String alias = rep.getStepAttributeString(id_step, nodeNum, "cf_alias");
     
     ColumnFilter returnVal = new ColumnFilter(alias);
-    String type = rep.getStepAttributeString(id_step, nodeNum, "type");
+    String type = rep.getStepAttributeString(id_step, nodeNum, "cf_type");
     returnVal.setFieldType(type);
-    String comp = rep.getStepAttributeString(id_step, nodeNum, "comparison_opp");
+    String comp = rep.getStepAttributeString(id_step, nodeNum, "cf_comparison_opp");
     returnVal.setComparisonOperator(stringToOpp(comp));
-    returnVal.setSignedComparison(rep.getStepAttributeBoolean(id_step, nodeNum, "signed_comp"));
-    String constant = rep.getStepAttributeString(id_step, nodeNum, "constant");
+    returnVal.setSignedComparison(rep.getStepAttributeBoolean(id_step, nodeNum, "cf_signed_comp"));
+    String constant = rep.getStepAttributeString(id_step, nodeNum, "cf_constant");
     returnVal.setConstant(constant);
-    String format = rep.getStepAttributeString(id_step, nodeNum, "format");
+    String format = rep.getStepAttributeString(id_step, nodeNum, "cf_format");
     returnVal.setFormat(format);
     
     return returnVal;

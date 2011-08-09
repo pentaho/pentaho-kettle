@@ -583,7 +583,7 @@ public class HBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
     m_matchAnyFilter = rep.getStepAttributeBoolean(id_step, 0, "match_any_filter");
     m_scannerCacheSize = rep.getStepAttributeString(id_step, 0, "scanner_cache_size");
     
-    int nrfields = rep.countNrStepAttributes(id_step, "field");
+    int nrfields = rep.countNrStepAttributes(id_step, "table_name");
     
     if (nrfields > 0) {
       m_outputFields = new ArrayList<HBaseValueMeta>();
@@ -629,7 +629,7 @@ public class HBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
       }
     }
     
-    int nrFilters = rep.countNrStepAttributes(id_step, "filter");
+    int nrFilters = rep.countNrStepAttributes(id_step, "cf_comparison_opp");
     if (nrFilters > 0) {
       m_filters = new ArrayList<ColumnFilter>();
       
