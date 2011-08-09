@@ -457,22 +457,24 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 								// Check Specific Code page
 								if(codepage.equals("Specific"))
 								{
+									String realCodePage= environmentSubstitute(codepage);
 									if(specificcodepage.length()<0)
 									{
 										logError(BaseMessages.getString(PKG, "JobMssqlBulkLoad.Error.SpecificCodePageMissing"));
 										return result;
 					
 									}else
-										UseCodepage="CODEPAGE = '" + specificcodepage + "'";
+										UseCodepage="CODEPAGE = '" + realCodePage + "'";
 								}else
 								{
 									UseCodepage="CODEPAGE = '" + codepage + "'";
 								}
 								
 								// Check Error file
-								if(errorfilename!=null)
+								String realErrorFile=environmentSubstitute(errorfilename);
+								if(realErrorFile!=null)
 								{
-									File errorfile = new File(errorfilename);
+									File errorfile = new File(realErrorFile);
 									if(errorfile.exists() && !adddatetime)
 									{
 										// The error file is created when the command is executed. An error occurs if the file already exists.
@@ -487,9 +489,9 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 										daf.applyPattern("yyyMMdd_HHmmss");
 										String d = daf.format(now);
 	
-										ErrorfileName="ERRORFILE ='"+ errorfilename+"_"+d +"'";
+										ErrorfileName="ERRORFILE ='"+ realErrorFile+"_"+d +"'";
 									}else
-										ErrorfileName="ERRORFILE ='"+ errorfilename+"'";
+										ErrorfileName="ERRORFILE ='"+ realErrorFile+"'";
 								}
 								
 								
@@ -518,7 +520,8 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 								if(LineTerminatedby.length()>0) SQLBULKLOAD=SQLBULKLOAD+","+LineTerminatedby;
 								if(TakeFirstNbrLines.length()>0) SQLBULKLOAD=SQLBULKLOAD+","+TakeFirstNbrLines;
 								if(UseCodepage.length()>0) SQLBULKLOAD=SQLBULKLOAD+"," + UseCodepage;
-								if(formatfilename!=null) SQLBULKLOAD=SQLBULKLOAD+", FORMATFILE='" + formatfilename + "'";
+								String realFormatFile=environmentSubstitute(formatfilename);
+								if(realFormatFile!=null) SQLBULKLOAD=SQLBULKLOAD+", FORMATFILE='" + realFormatFile + "'";
 								if(firetriggers) SQLBULKLOAD=SQLBULKLOAD + ",FIRE_TRIGGERS";
 								if(keepnulls) SQLBULKLOAD=SQLBULKLOAD + ",KEEPNULLS";
 								if(keepidentity) SQLBULKLOAD=SQLBULKLOAD + ",KEEPIDENTITY";
