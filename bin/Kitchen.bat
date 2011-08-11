@@ -30,4 +30,4 @@ REM ** Run...    **
 REM ***************
 
 cd /D %CWD%
-"%_PENTAHO_JAVA%" %OPT% -jar %KETTLE_DIR%\launcher\launcher.jar -main org.pentaho.di.kitchen.Kitchen %*
+"%_PENTAHO_JAVA%" %OPT% -jar "%KETTLE_DIR%\launcher\launcher.jar" -main org.pentaho.di.kitchen.Kitchen %*
