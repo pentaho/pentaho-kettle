@@ -13,7 +13,6 @@
 package org.pentaho.di.core.gui;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -62,6 +61,11 @@ public class SwingGUIResource {
   			}
 		  } catch(Exception e) {
 		    log.logError("Unable to load step icon image for plugin: "+plugin.getName()+" (id="+plugin.getIds()[0], e);
+		    try { 
+		      getImageIcon(plugin); 
+		    } catch(Exception ex) {
+		      // 
+		    }
 		  }
 		}
 		
@@ -81,7 +85,8 @@ public class SwingGUIResource {
   			if (imageFile==null) {
   				throw new KettleException("No image file (icon) specified for plugin: "+plugin);
   			}
-  			BufferedImage image = getImageIcon(imageFile);
+
+  			BufferedImage image = getImageIcon(plugin);
   			if (image==null) {
   				throw new KettleException("Unable to find image file: "+plugin.getImageFile()+" for plugin: "+plugin);
   			}
@@ -100,21 +105,13 @@ public class SwingGUIResource {
 		
 		return map;
 	}
-	
-	private BufferedImage getImageIcon(String fileName) throws KettleException {
-		try {
-			BufferedImage image = ImageIO.read(new File(fileName));
-			return image;
-		} catch(Throwable e) {
-			throw new KettleException("Unable to load image from file : '"+fileName+"'", e);
-		}
-	}
 
 	private BufferedImage getImageIcon(PluginInterface plugin) throws KettleException {
 		try {
 		  PluginRegistry registry = PluginRegistry.getInstance();
-		  ClassLoader classLoader = registry.getClassLoader(plugin);
 		  String filename = plugin.getImageFile();
+
+		  ClassLoader classLoader = registry.getClassLoader(plugin);
 		  
 		  // Try to use the plugin class loader to get access to the icon
 		  //
