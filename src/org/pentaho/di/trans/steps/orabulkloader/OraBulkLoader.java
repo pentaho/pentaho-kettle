@@ -384,7 +384,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 		   
 	           sb.append(" control=\'");
 	           sb.append(KettleVFS.getFilename(fileObject));
-		       sb.append("\'");
+		         sb.append("\'");
   	       }
 	       catch ( KettleFileException ex )
 	       {
@@ -480,7 +480,7 @@ public class OraBulkLoader extends BaseStep implements StepInterface
 	   {
            sb.append(" DIRECT=TRUE");
            
-           if ( getStepMeta().getCopies() > 1 )
+           if ( getStepMeta().getCopies() > 1 || meta.isParallel() )
            {
         	   sb.append(" PARALLEL=TRUE");
            }

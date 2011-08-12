@@ -108,9 +108,28 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 	/** The maximum number or lines to read */
 	private  long  rowLimit;
 	
+	/** Flag : do not fail if no file */
+	private boolean doNotFailIfNoFile;
+	
 	public GetFileNamesMeta()
 	{
 		super(); // allocate BaseStepMeta
+	}
+	
+	/** 
+	 * @return the doNotFailIfNoFile flag
+	 */
+	public boolean isdoNotFailIfNoFile()
+	{
+		return doNotFailIfNoFile;
+	}
+	
+	/** 
+	 * @param doNotFailIfNoFile the doNotFailIfNoFile to set
+	 */
+	public void setdoNotFailIfNoFile(boolean doNotFailIfNoFile)
+	{
+		this.doNotFailIfNoFile= doNotFailIfNoFile;
 	}
 	/**
      * @return Returns the filenameField.
@@ -377,6 +396,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 	public void setDefault()
 	{
 		int nrfiles = 0;
+		doNotFailIfNoFile=false;
 		fileTypeFilter=FileInputList.FileTypeFilter.FILES_AND_FOLDERS;
 		isaddresult=true;
 		filefield=false;
@@ -493,7 +513,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("    <filter>").append(Const.CR);
 		retval.append("      ").append(XMLHandler.addTagValue("filterfiletype",  fileTypeFilter.toString()));
 		retval.append("    </filter>").append(Const.CR);
-		
+        retval.append("    ").append(XMLHandler.addTagValue("doNotFailIfNoFile",   doNotFailIfNoFile));
 		retval.append("    ").append(XMLHandler.addTagValue("rownum",          includeRowNumber));
 	    retval.append("    ").append(XMLHandler.addTagValue("isaddresult",     isaddresult));
 	    retval.append("    ").append(XMLHandler.addTagValue("filefield",       filefield));
@@ -526,7 +546,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 			Node filternode         = XMLHandler.getSubNode(stepnode, "filter");
 			Node filterfiletypenode = XMLHandler.getSubNode(filternode, "filterfiletype");
 			fileTypeFilter          = FileInputList.FileTypeFilter.getByName(XMLHandler.getNodeValue(filterfiletypenode));
-			
+			doNotFailIfNoFile  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "doNotFailIfNoFile"));
 			includeRowNumber  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "rownum"));
 			isaddresult  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "isaddresult"));
 			filefield  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "filefield"));
@@ -570,7 +590,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			int nrfiles = rep.countNrStepAttributes(id_step, "file_name");
 			fileTypeFilter=FileInputList.FileTypeFilter.getByName(rep.getStepAttributeString(id_step, "filterfiletype"));
-			
+			doNotFailIfNoFile  =      rep.getStepAttributeBoolean(id_step, "doNotFailIfNoFile");
 			dynamicFilenameField  = rep.getStepAttributeString(id_step, "filename_Field");
 			dynamicWildcardField  = rep.getStepAttributeString(id_step, "wildcard_Field");
 			dynamicExcludeWildcardField  = rep.getStepAttributeString(id_step, "exclude_wildcard_Field");
@@ -606,7 +626,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{			
 			rep.saveStepAttribute(id_transformation, id_step, "filterfiletype", fileTypeFilter.toString());
-			
+			rep.saveStepAttribute(id_transformation, id_step, "doNotFailIfNoFile",   doNotFailIfNoFile);
 			rep.saveStepAttribute(id_transformation, id_step, "rownum",          includeRowNumber);
 			rep.saveStepAttribute(id_transformation, id_step, "isaddresult",     isaddresult);
 			rep.saveStepAttribute(id_transformation, id_step, "filefield",          filefield);

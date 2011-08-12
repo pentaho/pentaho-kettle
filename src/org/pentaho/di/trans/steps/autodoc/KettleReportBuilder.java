@@ -326,9 +326,9 @@ public class KettleReportBuilder {
 			contentElementFactory.setMinimumWidth(750f);
 			contentElementFactory.setMaximumWidth(750f);
 			contentElementFactory.setMinimumHeight(400f);
-			// contentElementFactory.setMaximumHeight(750f);
+			contentElementFactory.setMaximumHeight(750f);
 		  contentElementFactory.setScale(true);
-      contentElementFactory.setDynamicHeight(true);
+      contentElementFactory.setDynamicHeight(false);
 			// contentElementFactory.setAvoidPagebreaks(true);
 			Element imageElement = contentElementFactory.createElement();
 			
@@ -338,15 +338,30 @@ public class KettleReportBuilder {
 			itemBand.addElement(imageElement);
 		}
 		
-		PageFormat pageFormat = new PageFormat();
-		pageFormat.setOrientation(PageFormat.LANDSCAPE);
+		Paper a4Paper = new Paper ();
+		
+		double paperWidth = 8.26;
+		double paperHeight = 11.69;
+		a4Paper.setSize(paperWidth * 72.0, paperHeight * 72.0);
 
-		// A4
-		//
-		Paper paper = new Paper();
-		paper.setSize(595, 842);
-	  paper.setImageableArea(43, 43, 509, 756);
-		pageFormat.setPaper(paper);
+		/*
+		* set the margins respectively the imageable area
+		*/
+		double leftMargin = 0.78; /* should be about 2cm */
+		double rightMargin = 0.78;
+		double topMargin = 0.08; // this is a very small topMargin
+		double bottomMargin = 0.78;
+
+		a4Paper.setImageableArea(leftMargin * 72.0, topMargin * 72.0,
+		(paperWidth - leftMargin - rightMargin)*72.0,
+		(paperHeight - topMargin - bottomMargin)*72.0);
+
+		/*
+		* create a PageFormat and associate the Paper with it.
+		*/
+    PageFormat pageFormat = new PageFormat();
+    pageFormat.setOrientation (PageFormat.LANDSCAPE);
+		pageFormat.setPaper(a4Paper);
 		
 		SimplePageDefinition pageDefinition = new SimplePageDefinition(pageFormat);
 		report.setPageDefinition(pageDefinition);

@@ -61,13 +61,12 @@ public class JoinRows extends BaseStep implements StepInterface
 	 * 
 	 */
 	@SuppressWarnings("unchecked")
-	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
+  public void initialize() throws KettleException
 	{
-		meta=(JoinRowsMeta)smi;
-		data=(JoinRowsData)sdi;
-
-		if (super.init(smi, sdi))
-		{
+	    // Since we haven't called getRow() yet we need to wait until we have all input row sets available to us.
+	    //
+      openRemoteInputStepSocketsOnce();
+    
 			try
 			{
 				// Start with the caching of the data, write later...
@@ -107,7 +106,7 @@ public class JoinRows extends BaseStep implements StepInterface
 				
 				for (int i=1;i<getInputRowSets().size();i++)
 				{
-                    String directoryName = environmentSubstitute(meta.getDirectory());
+          String directoryName = environmentSubstitute(meta.getDirectory());
 					data.file[i]=File.createTempFile(meta.getPrefix(), ".tmp", new File(directoryName)); //$NON-NLS-1$
 					
 					data.size[i]     = 0;
@@ -122,17 +121,12 @@ public class JoinRows extends BaseStep implements StepInterface
 					data.joinrow[i] = null;
 					data.restart[i] = false;
 				}
-				
-				return true;
 			}
-			catch(IOException e)
+			catch(Exception e)
 			{
-				logError(BaseMessages.getString(PKG, "JoinRows.Log.ErrorCreatingTemporaryFiles")+e.toString()); //$NON-NLS-1$
+				throw new KettleException(BaseMessages.getString(PKG, "JoinRows.Log.ErrorCreatingTemporaryFiles"), e); //$NON-NLS-1$
 			}
 		}
-				
-		return false;
-	}
     
     /**
      * Get a row of data from the indicated rowset or buffer (memory/disk) 
@@ -266,6 +260,11 @@ public class JoinRows extends BaseStep implements StepInterface
 	{
 		meta=(JoinRowsMeta)smi;
 		data=(JoinRowsData)sdi;
+		
+		if (first) {
+		  first = false;
+		  initialize();
+		}
 
 		if (data.caching)
 		{

@@ -401,40 +401,40 @@ public class BrowseController extends AbstractXulEventHandler implements IUISupp
 
     try {
       
-    Collection<UIRepositoryDirectory> directories = folderTree.getSelectedItems();
-    if (directories == null || directories.size() == 0) {
-      return;
-    }
-    UIRepositoryDirectory selectedFolder = directories.iterator().next();
-
-    // First, ask for a name for the folder
-    XulPromptBox prompt = promptForName(null);
-    prompt.addDialogCallback(new XulDialogCallback<String>() {
-      public void onClose(XulComponent component, Status status, String value) {
-        newName = value;
+      Collection<UIRepositoryDirectory> directories = folderTree.getSelectedItems();
+      if (directories == null || directories.size() == 0) {
+        return;
       }
-
-      public void onError(XulComponent component, Throwable err) {
-        throw new RuntimeException(err);
+      UIRepositoryDirectory selectedFolder = directories.iterator().next();
+  
+      // First, ask for a name for the folder
+      XulPromptBox prompt = promptForName(null);
+      prompt.addDialogCallback(new XulDialogCallback<String>() {
+        public void onClose(XulComponent component, Status status, String value) {
+          newName = value;
+        }
+  
+        public void onError(XulComponent component, Throwable err) {
+          throw new RuntimeException(err);
+        }
+      });
+  
+      prompt.open();
+  
+      if (newName != null) {
+        if (selectedFolder == null) {
+          selectedFolder = repositoryDirectory;
+        }
+        UIRepositoryDirectory newDir = selectedFolder.createFolder(newName);
+        dirMap.put(newDir.getObjectId(), newDir);
+  
+        directoryBinding.fireSourceChanged();
+        selectedItemsBinding.fireSourceChanged();
+  
+        this.folderTree.setSelectedItems(Collections.singletonList(selectedFolder));
+  
       }
-    });
-
-    prompt.open();
-
-    if (newName != null) {
-      if (selectedFolder == null) {
-        selectedFolder = repositoryDirectory;
-      }
-      UIRepositoryDirectory newDir = selectedFolder.createFolder(newName);
-      dirMap.put(newDir.getObjectId(), newDir);
-
-      directoryBinding.fireSourceChanged();
-      selectedItemsBinding.fireSourceChanged();
-
-      this.folderTree.setSelectedItems(Collections.singletonList(selectedFolder));
-
-    }
-    newName = null;
+      newName = null;
     } catch (Exception e) {
       messageBox.setTitle(BaseMessages.getString(PKG, "Dialog.Error")); //$NON-NLS-1$
       messageBox.setAcceptLabel(BaseMessages.getString(PKG, "Dialog.Ok")); //$NON-NLS-1$

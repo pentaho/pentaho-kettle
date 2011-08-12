@@ -48,7 +48,7 @@ public class JobTracker {
   private int              maxChildren;
 
   /**
-  * @param jobMeta the job metadata to keep track of (with maximum 1000 children)
+  * @param jobMeta the job metadata to keep track of (with maximum 5000 children)
   */
   public JobTracker(JobMeta jobMeta) {
     if (jobMeta != null) {
@@ -57,7 +57,7 @@ public class JobTracker {
     }
 
     jobTrackers = new ArrayList<JobTracker>();
-    maxChildren = Const.toInt(EnvUtil.getSystemProperty(Const.KETTLE_MAX_JOB_TRACKER_SIZE), 1000);
+    maxChildren = Const.toInt(EnvUtil.getSystemProperty(Const.KETTLE_MAX_JOB_TRACKER_SIZE), 5000);
   }
 
   /**

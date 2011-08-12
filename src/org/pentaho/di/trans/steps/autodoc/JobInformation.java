@@ -97,10 +97,11 @@ public class JobInformation {
 		//
 		GCInterface gc = new SwingGC(null, area, iconsize, 50, 20);
 		JobPainter painter = new JobPainter(gc, jobMeta, area, bar, bar, null, null, null, new ArrayList<AreaOwner>(), new ArrayList<JobEntryCopy>(), iconsize, 1, 0, 0, true, "FreeSans", 10);
+		painter.setMagnification(0.25f);
 		painter.drawJob();
 	    BufferedImage bufferedImage = (BufferedImage)gc.getImage();
-	    int newWidth=bufferedImage.getWidth()-min.x-50;
-	    int newHeigth=bufferedImage.getHeight()-min.y-50;
+	    int newWidth=bufferedImage.getWidth()-min.x;
+	    int newHeigth=bufferedImage.getHeight()-min.y;
 	    BufferedImage image = new BufferedImage(newWidth, newHeigth, bufferedImage.getType());
 	    image.getGraphics().drawImage(
 	    		bufferedImage, 
@@ -122,6 +123,7 @@ public class JobInformation {
     //
     JobMeta jobMeta = loadJob(location);
     
+    Point min = jobMeta.getMinimum();
     Point area = jobMeta.getMaximum();
     int iconsize = 32;
     
@@ -133,12 +135,18 @@ public class JobInformation {
     // Paint the transformation...
     //
     Rectangle rect = new java.awt.Rectangle(0,0,area.x, area.y);
-    double magnification = rectangle2d.getWidth()/rect.getWidth();
+    double magnificationX = rectangle2d.getWidth()/rect.getWidth();
+    double magnificationY = rectangle2d.getHeight()/rect.getHeight();
+    double magnification = Math.min(magnificationX, magnificationY);
     
     SwingGC gc = new SwingGC(g2d, rect, iconsize, 0, 0);
     gc.setDrawingPixelatedImages(pixelateImages);
     JobPainter painter = new JobPainter(gc, jobMeta, area, bar, bar, null, null, null, new ArrayList<AreaOwner>(), new ArrayList<JobEntryCopy>(), iconsize, 1, 0, 0, true, "FreeSans", 10);
-    painter.setMagnification((float)magnification);
+    painter.setMagnification((float)Math.min(magnification, 1));
+    if (pixelateImages) {
+      painter.setTranslationX(100+min.x);
+      painter.setTranslationY(100+min.y);
+    }
     painter.drawJob();
   }
 

@@ -1,54 +1,803 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>Kettle文档地图</title>
-<link href="images/styles-new.css" rel="stylesheet" type="text/css" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>Pentaho Data Integration - Welcome</title>
+<style type="text/css">
+<!--
+body {
+	background-color: #c9dbe9;
+	background-image: url(images/bg_quicklaunch.jpg);
+	background-repeat:no-repeat;
+	margin-left: 0px;
+	margin-top: 140px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+	font-size: 14px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+#container {
+	height: auto;
+	margin: 0 auto;
+	padding: 0;
+	text-align: left;
+	width: 468px;
+}
+.title {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 1.5em;
+	color: #5c5c5c;
+	margin:0 0 20px 0; 
+	padding: 0;
+}
+a.btn {
+	Display: block;
+	float:right;
+	background-image:url(images/bg_btn.png);
+	background-repeat: no-repeat;
+	height: 32px;
+	width: 120px;
+	text-align:center;
+	padding: 6px 0 0 0;
+	margin: 0 12px 0 0;
+	font-size: .85em;
+	text-decoration: none;
+	color:#000000;
+	cursor:pointer;
+}
+a:hover.btn{
+background-image:url(images/bg_btn_hover.png);
+}
+h1 {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 1.5em;
+	color: #5c5c5c;
+	margin: 0;
+	padding: 0;
+	line-height: 1.25em;
+}
+h1 a {
+	text-decoration:none;
+	color:#5c5c5c;
+}
+h2 {
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 1em;
+	color: #5c5c5c;
+	margin: 0px 0 0px 4px;
+	padding: 0;
+}
+ul {
+	display:block;
+	list-style:none;
+	margin:0;
+	padding: 2px 0 0 6px;
+}
+ul li {
+	display:block;
+	list-style:none;
+	margin:0px 0 0 0;
+	padding: 0px 0 4px 0;
+}
+.filetype {
+	float: left;
+	margin: 0;
+	padding: 2px 4px 0 0;
+}
+ul li a {
+	color: #000;
+	margin:0 0 0px 0px;
+	padding: 0px 0 0px 0px;
+	font-size: .85em;
+	width: auto;
+}
+a:hover {
+	text-decoration: none;
+}
+.button {
+	display:block;
+	background-image:url(images/button_bg.png);
+	background-repeat:no-repeat;
+	background-position:center top;
+	height: 32px;
+	text-align:center;
+	padding: 4px 0 0 0;
+	margin: 0;
+	font-size: .85em;
+	line-height: 20px;
+	text-decoration: none;
+	color:#000000;
+	cursor:pointer;
+}
+.button:hover {
+	background-image: url(images/button_bg_over.png);
+}
+#gettingstarted a {
+	background-image: url(images/getting_started.png);
+	background-repeat:no-repeat;
+	display: block;
+	margin:0px;
+	padding:100px 6px 20px 6px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 1.5em;
+	color: #5c5c5c;
+	line-height: 1em;
+	text-align:center;
+	text-decoration:none;
+}
+#gettingstarted a:hover {
+	background-image: url(images/getting_started_on.png);
+}
+#samples a {
+	background-image: url(images/samples.png);
+	background-repeat:no-repeat;
+	display: block;
+	margin:0px;
+	padding:110px 6px 36px 6px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 1.5em;
+	color: #5c5c5c;
+	line-height: .85em;
+	text-align:center;
+	text-decoration:none;
+}
+#samples a:hover {
+	background-image: url(images/samples_on.png);
+}
+#whatsnew a {
+	background-image: url(images/whats_new.png);
+	background-repeat:no-repeat;
+	display: block;
+	margin:0px;
+	padding:100px 6px 20px 6px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 1.5em;
+	color: #5c5c5c;
+	line-height: 1em;
+	text-align:center;
+	text-decoration:none;
+}
+#whatsnew a:hover {
+	background-image: url(images/whats_new_on.png);
+}
+a.docsbutton {
+	background-image: url(images/btn_doc_off.png);
+	background-repeat:no-repeat;
+	display: block;
+	float: left;
+	width: 100px;
+	height: 28px;
+	margin:0px;
+	padding:15px 5px 2px 48px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 1em;
+	color: #333333;
+	text-decoration:none;
+}
+a:hover.docsbutton {
+	background-image: url(images/btn_doc_on.png);
+}
+a.communitybutton {
+	background-image: url(images/btn_community_off.png);
+	background-repeat:no-repeat;
+	display: block;
+	float: left;
+	width: 100px;
+	height: 28px;
+	margin:0px;
+	padding:15px 7px 2px 55px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 1em;
+	color: #333333;
+	text-decoration:none;
+}
+a:hover.communitybutton {
+	background-image: url(images/btn_community_on.png);
+}
+a.blogbutton {
+	background-image: url(images/btn_blog_off.png);
+	background-repeat:no-repeat;
+	display: block;
+	float: left;
+	width: 80px;
+	height: 28px;
+	margin:0px;
+	padding:15px 8px 2px 65px;
+	font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+	font-size: 1em;
+	color: #333333;
+	text-decoration:none;
+}
+a:hover.blogbutton {
+	background-image: url(images/btn_blog_on.png);
+}
+#logo {
+	position: absolute;
+	bottom: 20px;
+	right: 20px;
+	display: block;
+}
+p {
+	margin: 0px 0 0 0;
+	padding: 2px 0 0 0;
+	line-height: 1.5em;
+}
+#hideshow {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	min-height: 100%;
+}
+#hideshow2, #hideshow3 {
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	min-height: 100%;
+}
+#fade, #fade2, #fade3 {
+	background: #000;
+	position: absolute;
+	width: 100%;
+	height: 100%;
+	filter:alpha(opacity=80);
+	opacity: .80;
+	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)"; /*--IE 8 Transparency--*/
+	left: 0px;
+	top: 0px;
+	z-index: 10;
+	min-height: 100%;
+}
+html, body #fade, body #fade2, body #fade3 {
+	height: 100%;
+	min-height: 100%;
+}
+.popup_block {
+	background: #ddd;
+	padding: 10px 20px;
+	border: 10px solid #fff;
+	float: left;
+	width: 600px;
+	position: fixed;
+	top: 15%;
+	left: 40%;
+	margin: 0 0 0 -250px;
+	z-index: 100;
+}
+.popup {
+	float: left;
+	width: 100%;
+	background: #fff;
+	margin: 10px 0;
+	padding: 6px 0 4px 0;
+	border: 1px solid #848484;
+}
+.popup h3 {
+	margin: 0 0 10px;
+	padding: 5px 6px;
+	border-bottom: 1px solid #bbb;
+	font-size: 1.5em;
+	font-weight: normal;
+}
+.popup p {
+	padding: 2px 10px;
+	margin: 2px 0;
+}
+.popup img.cntrl {
+	position: absolute;
+	right: -20px;
+	top: -20px;
+}
+/*--Making IE6 Understand Fixed Positioning--*/
+
+*html #fade, *html #fade2, *html #fade3 {
+	position: absolute;
+ top:expression(eval(document.compatMode && document.compatMode=='CSS1Compat') ? documentElement.scrollTop : document.body.scrollTop);
+}
+*html .popup_block {
+	position: absolute;
+ top:expression(eval(document.compatMode && document.compatMode=='CSS1Compat') ? documentElement.scrollTop +((documentElement.clientHeight-this.clientHeight)/2) : document.body.scrollTop +((document.body.clientHeight-this.clientHeight)/2));
+ left:expression(eval(document.compatMode && document.compatMode=='CSS1Compat') ? documentElement.scrollLeft + (document.body.clientWidth /2 ) : document.body.scrollLeft + (document.body.offsetWidth /2 ));
+}
+/*--IE 6 PNG Fix--*/
+
+img {
+	behavior: url(iepngfix.htc)
+}
+-->
+</style>
+<script type="text/javascript">
+/***********************************************
+* Switch Content script- © Dynamic Drive (www.dynamicdrive.com)
+* This notice must stay intact for legal use. Last updated April 2nd, 2005.
+* Visit http://www.dynamicdrive.com/ for full source code
+***********************************************/
+
+var enablepersist="off" //Enable saving state of content structure using session cookies? (on/off)
+var collapseprevious="yes" //Collapse previously open content when opening present? (yes/no)
+
+var contractsymbol='' //HTML for contract symbol. For image, use: <img src="whatever.gif">
+var expandsymbol='' //HTML for expand symbol.
+
+
+if (document.getElementById){
+document.write('<style type="text/css">')
+document.write('.switchcontent{display:none;}')
+document.write('</style>')
+}
+
+function getElementbyClass(rootobj, classname){
+var temparray=new Array()
+var inc=0
+var rootlength=rootobj.length
+for (i=0; i<rootlength; i++){
+if (rootobj[i].className==classname)
+temparray[inc++]=rootobj[i]
+}
+return temparray
+}
+
+function sweeptoggle(ec){
+var thestate=(ec=="expand")? "block" : "none"
+var inc=0
+while (ccollect[inc]){
+ccollect[inc].style.display=thestate
+inc++
+}
+revivestatus()
+}
+
+
+function contractcontent(omit){
+var inc=0
+while (ccollect[inc]){
+if (ccollect[inc].id!=omit)
+ccollect[inc].style.display="none"
+inc++
+}
+}
+
+function expandcontent(curobj, cid){
+var spantags=curobj.getElementsByTagName("SPAN")
+var showstateobj=getElementbyClass(spantags, "showstate")
+if (ccollect.length>0){
+if (collapseprevious=="yes")
+contractcontent(cid)
+document.getElementById(cid).style.display=(document.getElementById(cid).style.display!="block")? "block" : "none"
+if (showstateobj.length>0){ //if "showstate" span exists in header
+if (collapseprevious=="no")
+showstateobj[0].innerHTML=(document.getElementById(cid).style.display=="block")? contractsymbol : expandsymbol
+else
+revivestatus()
+}
+}
+}
+
+function revivecontent(){
+contractcontent("omitnothing")
+selectedItem=getselectedItem()
+selectedComponents=selectedItem.split("|")
+for (i=0; i<selectedComponents.length-1; i++)
+document.getElementById(selectedComponents[i]).style.display="block"
+}
+
+function revivestatus(){
+var inc=0
+while (statecollect[inc]){
+if (ccollect[inc].style.display=="block")
+statecollect[inc].innerHTML=contractsymbol
+else
+statecollect[inc].innerHTML=expandsymbol
+inc++
+}
+}
+
+function get_cookie(Name) { 
+var search = Name + "="
+var returnvalue = "";
+if (document.cookie.length > 0) {
+offset = document.cookie.indexOf(search)
+if (offset != -1) { 
+offset += search.length
+end = document.cookie.indexOf(";", offset);
+if (end == -1) end = document.cookie.length;
+returnvalue=unescape(document.cookie.substring(offset, end))
+}
+}
+return returnvalue;
+}
+
+function getselectedItem(){
+if (get_cookie(window.location.pathname) != ""){
+selectedItem=get_cookie(window.location.pathname)
+return selectedItem
+}
+else
+return ""
+}
+
+function saveswitchstate(){
+var inc=0, selectedItem=""
+while (ccollect[inc]){
+if (ccollect[inc].style.display=="block")
+selectedItem+=ccollect[inc].id+"|"
+inc++
+}
+
+document.cookie=window.location.pathname+"="+selectedItem
+}
+
+function do_onload(){
+uniqueidn=window.location.pathname+"firsttimeload"
+var alltags=document.all? document.all : document.getElementsByTagName("*")
+ccollect=getElementbyClass(alltags, "switchcontent")
+statecollect=getElementbyClass(alltags, "showstate")
+if (enablepersist=="on" && ccollect.length>0){
+document.cookie=(get_cookie(uniqueidn)=="")? uniqueidn+"=1" : uniqueidn+"=0" 
+firsttimeload=(get_cookie(uniqueidn)==1)? 1 : 0 //check if this is 1st page load
+if (!firsttimeload)
+revivecontent()
+}
+if (ccollect.length>0 && statecollect.length>0)
+revivestatus()
+}
+
+if (window.addEventListener)
+window.addEventListener("load", do_onload, false)
+else if (window.attachEvent)
+window.attachEvent("onload", do_onload)
+else if (document.getElementById)
+window.onload=do_onload
+
+if (enablepersist=="on" && document.getElementById)
+window.onunload=saveswitchstate
+function MM_preloadImages() { //v3.0
+  var d=document; if(d.images){ if(!d.MM_p) d.MM_p=new Array();
+    var i,j=d.MM_p.length,a=MM_preloadImages.arguments; for(i=0; i<a.length; i++)
+    if (a[i].indexOf("#")!=0){ d.MM_p[j]=new Image; d.MM_p[j++].src=a[i];}}
+}
+
+function MM_swapImgRestore() { //v3.0
+  var i,x,a=document.MM_sr; for(i=0;a&&i<a.length&&(x=a[i])&&x.oSrc;i++) x.src=x.oSrc;
+}
+
+function MM_findObj(n, d) { //v4.01
+  var p,i,x;  if(!d) d=document; if((p=n.indexOf("?"))>0&&parent.frames.length) {
+    d=parent.frames[n.substring(p+1)].document; n=n.substring(0,p);}
+  if(!(x=d[n])&&d.all) x=d.all[n]; for (i=0;!x&&i<d.forms.length;i++) x=d.forms[i][n];
+  for(i=0;!x&&d.layers&&i<d.layers.length;i++) x=MM_findObj(n,d.layers[i].document);
+  if(!x && d.getElementById) x=d.getElementById(n); return x;
+}
+
+function MM_swapImage() { //v3.0
+  var i,j=0,x,a=MM_swapImage.arguments; document.MM_sr=new Array; for(i=0;i<(a.length-2);i+=3)
+   if ((x=MM_findObj(a[i]))!=null){document.MM_sr[j++]=x; if(!x.oSrc) x.oSrc=x.src; x.src=a[i+2];}
+}
+function MM_callJS(jsStr) { //v2.0
+  return eval(jsStr)
+}
+</script>
 </head>
+<body onLoad="MM_preloadImages('images/btn_doc_on.png','images/btn_community_on.png','images/btn_blog_on.png','images/samples_folder_on.png')">
+<div id="container">
 
-<body class="body_doc">
-<div class="logo"><a href="http://www.pentaho.org" target="_blank"><img src="images/pentaho_logo.png" alt="Pentaho - Open Source Business Intelligence" width="220" height="65" border="0"></a></div>
-<h1>欢迎使用Pentaho Data Integration: Kettle Project</h1>
-Spoon v4.0
-<p>Pentaho Data Integration 以元数据驱动的方式提供强大的抽取、转换和加载(ETL) 能力.  你当前正在使用Spoon, 这个图形化的设计工具是针对Pentaho数据集成任务和转换的. 如果你对于Pentaho Data Integration不熟悉的话, 请使用下面的链接来学习更多的内容，并且在团体里变得更加活跃.</p>
+  <table width="468" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td><table width="144" border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td><div id="gettingstarted"><span title="Getting started with Pentaho Data Integration"><a href="javascript:showDiv2()">Getting Started</a></span></div></td>
+          </tr>
+        </table></td>
+      <td><img src="images/clr.gif" width="18" height="10"></td>
+      <td><table width="144" border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td><div id="samples"><span title="View sample Jobs, Mappings, and Transformations"><a href="javascript:showDiv()">Samples</a></span></div></td>
+          </tr>
+        </table></td>
+      <td><img src="images/clr.gif" width="18" height="10"></td>
+      <td><table width="144" border="0" cellspacing="0" cellpadding="0">
+          <tr>
+            <td><div id="whatsnew"><span title="What's new in Pentaho Data Integration 4.1"><a href="javascript:showDiv3()">What's <br />
+                New</a></span></div></td>
+          </tr>
+        </table></td>
+    </tr>
+    <tr>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+    </tr>
+      <tr>
+      <td colspan="5"><div id="sc4" class="switchcontent2" style="margin:0px; height: 180px; padding:6px; background-image:url(images/bg_support.png);background-repeat:no-repeat; width: 468px;">
+          <table width="100%" border="0" cellspacing="0" cellpadding="4">
+            <tr>
+              <td colspan="2" style="padding: 6px 6px 10px 6px;"><span class="title">Need Support?</span></td>
+            </tr>
+            <tr>
+            	<td valign="top"><img src="images/support.png" /></td>
+              <td valign="top" style="padding: 0 18px 0 0;">
+Pentaho offers a variety of professional support plans designed to help you to overcome all product-related issues when designing, developing, deploying, and delivering solutions using Pentaho Data Integration.</td>
+            </tr>
+            <!--<tr><td colspan="2">&nbsp;</td></tr> -->
+            <tr><td colspan="2" style="padding: 18px 10px 0 0;"><a href="http://www.pentaho.com/services/support/pdi" title="http://www.pentaho.com/services/support/pdi" target="_blank" class="btn">Learn More</a></tr>
+          </table>
+        </div>
+    </tr>
+      <tr>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td colspan="5"><a onClick="expandcontent(this, 'sc1')" style="cursor:hand; cursor:pointer" class="docsbutton">Documents</a><a  onClick="expandcontent(this, 'sc2')" style="cursor:hand; cursor:pointer" class="communitybutton">Community</a><a onClick="expandcontent(this, 'sc3')" style="cursor:hand; cursor:pointer" class="blogbutton">Blogs</a></td>
+    </tr>
+    <tr>
+      <td colspan="5"><div id="sc1" class="switchcontent" style="margin:0px 0 0 6px; padding:6px 6px 12px 6px; background-image:url(images/bg_open_panel.png); background-position:bottom; background-repeat:no-repeat; width: 444px;">
+          <table width="100%" border="0" cellspacing="0" cellpadding="4">
+            <tr>
+              <td colspan="2"><h2>Documents</h2></td>
+            </tr>
+            <tr>
+              <td valign="top"><ul>
+                  <li><a href="http://wiki.pentaho.com/display/EAI/Spoon+User+Guide" class="external" rel="external">Spoon User Guide</a></li>
+                  <li><a href="http://wiki.pentaho.com/display/EAI/Pentaho+Data+Integration+v3.2.+Steps" rel="external">Steps Documentation</a></li>
+                  <li><a href="http://wiki.pentaho.com/display/EAI/Pentaho+Data+Integration+v3.2.+Job+Entries" class="external" rel="external">Job Entry Documentation</a></li>
+                  <li><a href="http://wiki.pentaho.com/display/EAI/Pan+User+Documentation" class="external" rel="external">Pan User Guide</a></li>
+                </ul></td>
+              <td valign="top"><ul>
+                  <li><a href="http://wiki.pentaho.com/display/EAI/Kitchen+User+Documentation" class="external" rel="external">Kitchen User Guide</a></li>
+                  <li><a href="http://wiki.pentaho.com/display/EAI/Carte+User+Documentation" class="external" rel="external">Carte User Guide</a></li>
+                  <li><a href="http://wiki.pentaho.com/display/EAI/List+of+Available+Pentaho+Data+Integration+Plug-Ins" class="external" rel="external">Community plug-ins Page</a></li>
+                  <li><a href="http://wiki.pentaho.com/display/EAI/Frequently+Asked+Questions" class="external" rel="external">Frequently Asked Questions</a></li>
+                </ul></td>
+            </tr>
+          </table>
+        </div>
+        <div id="sc2" class="switchcontent" style="margin:0px 0 0 6px; padding:6px 6px 12px 6px; background-image:url(images/bg_open_panel.png); background-position:bottom; background-repeat:no-repeat; width: 444px;">
+          <table width="100%" border="0" cellspacing="0" cellpadding="4">
+            <tr>
+              <td colspan="2"><h2>Community</h2></td>
+            </tr>
+            <tr>
+              <td valign="top"><ul>
+                  <li><a href="http://forums.pentaho.org/forumdisplay.php?f=69" class="external" rel="external">Community Forum</a></li>
+                  <li><a href="http://kettle.pentaho.org/" class="external" rel="external">Pentaho Data Integration Home Page</a></li>
+                  <li><a href="http://www.pentaho.org/download/" class="external" rel="external">Downloads</a></li>
+                  <li><a href="http://jira.pentaho.org/browse/PDI" class="external" rel="external">Pentaho Data Integration Jira</a></li>
+                  <li><a href="http://wiki.pentaho.org/display/EAI/Latest+Pentaho+Data+Integration+%28aka+Kettle%29+Documentation" class="external" rel="external">Wiki – Pentaho Data Integration</a></li>
+                </ul></td>
+            </tr>
+          </table>
+        </div>
+        <div id="sc3" class="switchcontent" style="margin:0px 0 0 6px; padding:6px 6px 12px 6px; background-image:url(images/bg_open_panel.png); background-position:bottom; background-repeat:no-repeat; width: 444px;">
+          <table width="100%" border="0" cellspacing="0" cellpadding="4">
+            <tr>
+              <td colspan="2"><h2>Blogs</h2></td>
+            </tr>
+            <tr>
+              <td valign="top"><ul>
+                  <li><a href="http://blog.pentaho.com/" class="external" rel="external">Richard Daley</a></li>
+                  <li><a href="http://www.ibridge.be/" class="external" rel="external">Matt Casters</a></li>
+                  <li><a href="http://julianhyde.blogspot.com/" class="external" rel="external">Julian Hyde</a></li>
+                  <li><a href="http://jamesdixon.wordpress.com/" class="external" rel="external">James Dixon</a></li>
+                  <li><a href="http://michaeltarallo.blogspot.com/" class="external" rel="external">Mike Tarallo</a></li>
+                  <li><a href="http://arubawayne.blogspot.com/" class="external" rel="external">Wayne Johnson</a></li>
+                  <li><a href="http://www.willgorman.com/" class="external" rel="external">Will Gorman</a></li>
+                  <li><a href="http://rpbouman.blogspot.com/" class="external" rel="external">Roland Bouman</a></li>
+                </ul></td>
+              <td valign="top"><ul>
+                  <li><a href="http://www.sherito.org/" class="external" rel="external">Thomas Morgner</a></li>
+                  <li><a href="http://www.prashantraju.com/" class="external" rel="external">Prashant Raju</a></li>
+                  <li><a href="http://www.nicholasgoodman.com/bt/blog/" class="external" rel="external">Nicholas Goodman</a></li>
+                  <li><a href="http://aboutosi.wordpress.com/" class="external" rel="external">Samatar Hassan</a></li>
+                  <li><a href="http://anchavesb.blogspot.com/" class="external" rel="external">Andres Chaves</a></li>
+                  <li><a href="http://pentahomusings.blogspot.com/" class="external" rel="external">Tom Barber</a></li>
+                  <li><a href="http://blog.devdonkey.org/" class="external" rel="external">Luc Boudreau</a></li>
+                  <li><a href="http://pedroalves-bi.blogspot.com/" class="external" rel="external">Pedro Alves</a></li>
+                </ul></td>
+            </tr>
+          </table>
+        </div></td>
+    </tr>
+  </table>
+</div>
+<div id="hideshow" style="visibility:hidden;">
+  <div id="fade"></div>
+  <div class="popup_block">
+    <div class="popup"> <a href="javascript:hideDiv()"><img src="images/icon_close.png" alt="Close" class="cntrl" border="0" width="28" height="31"/></a>
+      <h3>Samples</h3>
+      <div style="float:right; margin: 0 0 0 30px;"><img src="images/sample_file_import.png"></div>
+      <p>Sample Job, Mapping, and Tranformation files are available in the Pentaho Data Integration installation directory.</p>
+      <p>To view the samples, use the File/Import from an XML File and navigate to <br>
+        ...data-integration\samples.</p>
+    </div>
+  </div>
+</div>
+<div id="logo"><a href="http://www.pentaho.com" target="_Pentaho" border="0"><img src="images/pentaho_logo_rgb_sm.png" border="0"></a></div>
+<script language=javascript type='text/javascript'> 
+function hideDiv() { 
+if (document.getElementById) { // DOM3 = IE5, NS6 
+document.getElementById('hideshow').style.visibility = 'hidden'; 
+} 
+else { 
+if (document.layers) { // Netscape 4 
+document.hideshow.visibility = 'hidden'; 
+} 
+else { // IE 4 
+document.all.hideshow.style.visibility = 'hidden'; 
+} 
+} 
+}
 
-<div align="center"><h1><b><em><u><a href="http://wiki.pentaho.com/display/EAI/Getting+started">Get started</a>!</u></em></b></h1></div>
+function showDiv() { 
+if (document.getElementById) { // DOM3 = IE5, NS6 
+document.getElementById('hideshow').style.visibility = 'visible'; 
+} 
+else { 
+if (document.layers) { // Netscape 4 
+document.hideshow.visibility = 'visible'; 
+} 
+else { // IE 4 
+document.all.hideshow.style.visibility = 'visible'; 
+} 
+} 
+} 
+</script>
+<div id="hideshow2" style="visibility:hidden;">
+  <div id="fade2"></div>
+  <div class="popup_block">
+    <div class="popup"> <a href="javascript:hideDiv2()"><img src="images/icon_close.png" alt="Close" class="cntrl" border="0" width="28" height="31"/></a>
+      <h3>Getting Started</h3>
+      <div style="float:right; margin: 0 0 0 30px;"><img src="images/getting_started_file.png"></div>
+      <p>To view the Getting Started Guide, open the PDF document found in<br>
+        ...pdi-ee/getting_started_with_pdi.pdf</p>
+    </div>
+  </div>
+</div>
+<div id="hideshow3" style="visibility:hidden;">
+  <div id="fade3"></div>
+  <div class="popup_block">
+    <div class="popup"> <a href="javascript:hideDiv3()"><img src="images/icon_close.png" alt="Close" class="cntrl" border="0" width="28" height="31"/></a>
+      <h3>What's New</h3>
+      <div style="float:right; margin: 0 0 0 30px;"><img src="images/whats_new_file.png"></div>
+      <p>To view the What's new in Pentaho Data Integration Enterprise Edition 4.1, open the PDF document found in<br>
+        \data-integration\docs\English\whats_new_in_pdi_41.pdf</p>
+    </div>
+  </div>
+</div>
+<div id="logo"></div>
+<script language=javascript type='text/javascript'> 
+function hideDiv2() { 
+  if (document.getElementById) { // DOM3 = IE5, NS6 
+    document.getElementById('hideshow2').style.visibility = 'hidden'; 
+  } 
+  else { 
+    if (document.layers) { // Netscape 4 
+      document.hideshow2.visibility = 'hidden'; 
+    } 
+    else { // IE 4 
+      document.all.hideshow2.style.visibility = 'hidden'; 
+    } 
+  } 
+}
 
-<h2>文档链接</h2>
-<ul>
-<li><a href="http://wiki.pentaho.com/display/EAI/What%27s+new+in+PDI+version+3.2">What's new in Pentaho Data Integration 3.2?</a></li>
-<li><a href="http://wiki.pentaho.com/display/EAI/Spoon+User+Guide">Spoon User Guide</a></li>
-<li><a href="http://wiki.pentaho.com/display/EAI/Pentaho+Data+Integration+v3.2.+Steps">Steps documentation</a></li>
-<li><a href="http://wiki.pentaho.com/display/EAI/Pentaho+Data+Integration+v3.2.+Job+Entries">Job entries documentation</a></li>
-<li><a href="http://wiki.pentaho.com/display/EAI/Pan+User+Documentation">Pan User Guide</a></li>
-<li><a href="http://wiki.pentaho.com/display/EAI/Kitchen+User+Documentation">Kitchen User Guide</a></li>
-<li><a href="http://wiki.pentaho.com/display/EAI/Carte+User+Documentation">Carte User Guide</a></li>
-<li><a href="http://wiki.pentaho.com/display/EAI/Frequently+Asked+Questions">Frequently Asked Questions</a></li>
-<li><a href="http://wiki.pentaho.com/display/EAI/List+of+Available+Pentaho+Data+Integration+Plug-Ins">The community plugins page</a></li>
-</ul>
-<h2>团体链接</h2>
-<ul>
-<li><a href="http://forums.pentaho.org/forumdisplay.php?f=69">Community forum</a> - Live discussion on design, features, configuration, and issues</li>
-<li><a href="http://kettle.pentaho.org/">Pentaho Data Integration Home Page</a> - News, case studies, weekly tips and more</li>
-<li><a href="http://www.pentaho.org/download/">Downloads</a> - Download the latest product releases and documentation</li>
-<li><a href="http://jira.pentaho.org/browse/PDI">Pentaho Data Integration JIRA tracking</a> - Pass along defects and enhancement requests to the developers</li>
-<li><a href="http://wiki.pentaho.org/display/EAI/Latest+Pentaho+Data+Integration+%28aka+Kettle%29+Documentation">Wiki - Pentaho Data Integration</a> - Latest documentation updates on Pentaho Data Integration</li>
-</ul>
-<h2>Pentaho相关的Blogs</h2>
-<ul>
-<li><a href="http://www.ibridge.be/">Matt Casters on Data Integration</a> - Pentaho Chief of Data Integration and founder of the Kettle project</li>
-<li><a href="http://julianhyde.blogspot.com/">Julian Hyde's blog</a> - Julian is Lead developer of the Mondrian open-source OLAP engine for Pentaho</li>
-<li><a href="http://jamesdixon.wordpress.com//">James Dixon</a> - The Pentaho Chief Geek On open source BI</li>
-<li><a href="http://michaeltarallo.blogspot.com/">Mike Tarallo</a> - Pentaho's open source BI Guru - BI in the heads of people</li>
-<li><a href="http://arubawayne.blogspot.com/">Wayne Johnson</a> - Business Intelligence in Real Life (Pentaho)</li>
-<li><a href="http://www.willgorman.com/">Will Gorman</a> - Pentaho developer / superstar</li>
-<li><a href="http://www.sherito.org/">Thomas Morgner</a> - Reporting tales from the Pentaho Reporting Wizard</li>
-<li><a href="http://gretchenmoran.blogspot.com/">Gretchen Moran</a> and the Pentaho nation</li>
-<br/>
-<li><a href="http://www.nicholasgoodman.com/bt/blog/">Nicholas Goodman on Business Intelligence</a> - Musings on reporting, OLAP, ETL, and more</li>
-<li><a href="http://aboutosi.wordpress.com/">Samatar Hassan</a> - Let’s talk about Open Source (Français)</a></li>
-<li><a href="http://anchavesb.blogspot.com/">Andrés Chaves</a> - BI/DWH architect and open source fan</li>
-<li><a href="http://blog.devdonkey.org/">Luc Boudreau</a> - The Dev Donkey blog - Random thoughts between two carrots</li>
-</ul>
+function showDiv2() {
+  if (navigator.platform != null && navigator.platform.indexOf("Win") >= 0) {
+    window.open('../getting_started_with_pdi.pdf');
+    return;
+  }
+  if (document.getElementById) { // DOM3 = IE5, NS6 
+    document.getElementById('hideshow2').style.visibility = 'visible'; 
+  }
+  else { 
+    if (document.layers) { // Netscape 4 
+      document.hideshow2.visibility = 'visible'; 
+    }
+    else { // IE 4 
+      document.all.hideshow2.style.visibility = 'visible'; 
+    } 
+  } 
+} 
+</script>
+<script language=javascript type='text/javascript'> 
+function hideDiv3() { 
+  if (document.getElementById) { // DOM3 = IE5, NS6 
+    document.getElementById('hideshow3').style.visibility = 'hidden'; 
+  } 
+  else { 
+    if (document.layers) { // Netscape 4 
+      document.hideshow2.visibility = 'hidden'; 
+    } 
+    else { // IE 4 
+      document.all.hideshow3.style.visibility = 'hidden'; 
+    } 
+  } 
+}
+
+function showDiv3() {
+  if (navigator.platform != null && navigator.platform.indexOf("Win") >= 0) {
+    window.open('../whats_new_in_pdi_41.pdf');
+    return;
+  }
+  if (document.getElementById) { // DOM3 = IE5, NS6 
+    document.getElementById('hideshow3').style.visibility = 'visible'; 
+  }
+  else { 
+    if (document.layers) { // Netscape 4 
+      document.hideshow2.visibility = 'visible'; 
+    }
+    else { // IE 4 
+      document.all.hideshow3.style.visibility = 'visible'; 
+    } 
+  } 
+} 
+</script>
+
+
+
+<script>
+if (navigator.appVersion.indexOf("Win")!=-1);
+/*
+JSTarget function by Roger Johansson, www.456bereastreet.com
+*/
+var JSTarget = {
+	init: function(att,val,warning) {
+		if (document.getElementById && document.createElement && document.appendChild) {
+			var strAtt = ((typeof att == 'undefined') || (att == null)) ? 'class' : att;
+			var strVal = ((typeof val == 'undefined') || (val == null)) ? 'non-html' : val;
+			var strWarning = ((typeof warning == 'undefined') || (warning == null)) ? ' (opens in a new window)' : warning;
+			var oWarning;
+			var arrLinks = document.getElementsByTagName('a');
+			var oLink;
+			var oRegExp = new RegExp("(^|\\s)" + strVal + "(\\s|$)");
+			for (var i = 0; i < arrLinks.length; i++) {
+				oLink = arrLinks[i];
+				if ((strAtt == 'class') && (oRegExp.test(oLink.className)) || (oRegExp.test(oLink.getAttribute(strAtt)))) {
+					oWarning = document.createElement("em");
+					//oWarning.appendChild(document.createTextNode(strWarning));
+					//oLink.appendChild(oWarning);
+					oLink.onclick = JSTarget.openWin;
+				}
+			}
+			oWarning = null;
+		}
+	},
+
+	openWin: function(e) {
+		var event = (!e) ? window.event : e;
+		if (event.shiftKey || event.altKey || event.ctrlKey || event.metaKey) return true;
+		else {
+		    var oWin = window.open(this.getAttribute('href'), '_PDIresource');
+			if (oWin) {
+				if (oWin.focus) oWin.focus();
+				return false;
+			}
+			oWin = null;
+			return true;
+		}
+	},
+	/*
+	addEvent function from http://www.quirksmode.org/blog/archives/2005/10/_and_the_winner_1.html
+	*/
+	addEvent: function(obj, type, fn) {
+		if (obj.addEventListener)
+			obj.addEventListener(type, fn, false);
+		else if (obj.attachEvent) {
+			obj["e"+type+fn] = fn;
+			obj[type+fn] = function() {obj["e"+type+fn]( window.event );}
+			obj.attachEvent("on"+type, obj[type+fn]);
+		}
+	}
+};
+JSTarget.addEvent(window, 'load', function(){JSTarget.init("rel","external"," (opens in a new window)");});
+
+</script>
 </body>
 </html>

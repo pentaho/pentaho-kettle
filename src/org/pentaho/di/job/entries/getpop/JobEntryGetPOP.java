@@ -110,7 +110,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 	  
 	private static final String DEFAULT_FILE_NAME_PATTERN="name_{SYS|hhmmss_MMddyyyy|}_#IdFile#.mail";
 	  
-	private static final String DEFAULT_DATE_PATTERN = "yyyy-MM-dd HH:mm:ss";
+	public static final String DATE_PATTERN = "yyyy-MM-dd HH:mm:ss";
 	private static final String FILENAME_ID_PATTERN = "#IdFile#";
 	private static final String FILENAME_SYS_DATE_OPEN= "{SYS|";
 	private static final String FILENAME_SYS_DATE_CLOSE= "|}";
@@ -717,8 +717,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 		Date beginDate=null;
 		Date endDate=null;
 		
-		SimpleDateFormat df  = new SimpleDateFormat();
-		df.applyPattern(DEFAULT_DATE_PATTERN);
+		SimpleDateFormat df  = new SimpleDateFormat(DATE_PATTERN);
 		
 		try	{
 

@@ -456,7 +456,11 @@ public class MailConnection {
 	 * @param notTerm negate condition
 	 */
     public void setReceivedDateTermEQ(Date receiveddate) {
-    	addSearchTerm(new ReceivedDateTerm(ComparisonTerm.EQ, receiveddate));
+      if (this.protocol == MailConnectionMeta.PROTOCOL_POP3) {
+        log.logError(BaseMessages.getString(PKG, "MailConnection.Error.ReceivedDatePOP3Unsupported"));
+      } else {
+    	  addSearchTerm(new ReceivedDateTerm(ComparisonTerm.EQ, receiveddate));
+      }
     }
     /**
 	 * Set filter on message received date.
@@ -464,7 +468,11 @@ public class MailConnection {
 	 * @param notTerm negate condition
 	 */
     public void setReceivedDateTermLT(Date futureDate) {
-    	addSearchTerm(new ReceivedDateTerm(ComparisonTerm.LT, futureDate));
+      if (this.protocol == MailConnectionMeta.PROTOCOL_POP3) {
+        log.logError(BaseMessages.getString(PKG, "MailConnection.Error.ReceivedDatePOP3Unsupported"));
+      } else {
+    	  addSearchTerm(new ReceivedDateTerm(ComparisonTerm.LT, futureDate));
+      }
     }
     /**
 	 * Set filter on message received date.
@@ -472,13 +480,23 @@ public class MailConnection {
 	 * @param notTerm negate condition
 	 */
     public void setReceivedDateTermGT(Date pastDate) {
-    	addSearchTerm(new ReceivedDateTerm(ComparisonTerm.GT, pastDate));
+      if (this.protocol == MailConnectionMeta.PROTOCOL_POP3) {
+        log.logError(BaseMessages.getString(PKG, "MailConnection.Error.ReceivedDatePOP3Unsupported"));
+      } else {
+    	  addSearchTerm(new ReceivedDateTerm(ComparisonTerm.GT, pastDate));
+      }
     }
+    
     public void setReceivedDateTermBetween(Date beginDate, Date endDate) {
-    	addSearchTerm(
+      if (this.protocol == MailConnectionMeta.PROTOCOL_POP3) {
+        log.logError(BaseMessages.getString(PKG, "MailConnection.Error.ReceivedDatePOP3Unsupported"));
+      } else {
+        addSearchTerm(
     			new AndTerm(new ReceivedDateTerm(ComparisonTerm.LT, endDate),
     			new ReceivedDateTerm(ComparisonTerm.GT, beginDate)));
+      }
     }
+    
     public void setFlagTermNew() {
     	addSearchTerm(new FlagTerm(new Flags(Flags.Flag.RECENT), true));
     }

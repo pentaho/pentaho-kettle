@@ -136,6 +136,11 @@ public class JobEntryUnZipDialog extends JobEntryDialog implements JobEntryDialo
     private Button wbMovetoDirectory;
     private FormData fdbMovetoDirectory;
     
+	private Label        wlSetModificationDateToOriginal;
+	private Button       wSetModificationDateToOriginal;
+	private FormData     fdlSetModificationDateToOriginal, fdSetModificationDateToOriginal;
+
+    
 	private Label wlWildcardSource;
 	private TextVar wWildcardSource;
 	private FormData fdlWildcardSource, fdWildcardSource;
@@ -169,6 +174,10 @@ public class JobEntryUnZipDialog extends JobEntryDialog implements JobEntryDialo
 	private Label        wlAddDate;
 	private Button       wAddDate;
 	private FormData     fdlAddDate, fdAddDate;
+	
+	private Label        wlAddOriginalTimestamp;
+	private Button       wAddOriginalTimestamp;
+	private FormData     fdlAddOriginalTimestamp, fdAddOriginalTimestamp;
 
 	private Label        wlAddTime;
 	private Button       wAddTime;
@@ -342,9 +351,9 @@ public class JobEntryUnZipDialog extends JobEntryDialog implements JobEntryDialo
 				public void widgetSelected(SelectionEvent e)
 				{
 					DirectoryDialog ddialog = new DirectoryDialog(shell, SWT.OPEN);
-					if (wlZipFilename.getText()!=null)
+					if (wZipFilename.getText()!=null)
 					{
-						ddialog.setFilterPath(jobMeta.environmentSubstitute(wlZipFilename.getText()) );
+						ddialog.setFilterPath(jobMeta.environmentSubstitute(wZipFilename.getText()) );
 					}
 					
 					 // Calling open() will open and run the dialog.
@@ -353,7 +362,7 @@ public class JobEntryUnZipDialog extends JobEntryDialog implements JobEntryDialo
 			        String dir = ddialog.open();
 			        if (dir != null) {
 			          // Set the text box to the new selection
-			        	wlZipFilename.setText(dir);
+			        	wZipFilename.setText(dir);
 			        }
 					
 				}
@@ -595,6 +604,7 @@ public class JobEntryUnZipDialog extends JobEntryDialog implements JobEntryDialo
 				public void widgetSelected(SelectionEvent e) 
 				{
 					jobEntry.setChanged();
+					setDateTime();
 				}
 			}
 		);
@@ -620,6 +630,7 @@ public class JobEntryUnZipDialog extends JobEntryDialog implements JobEntryDialo
 				public void widgetSelected(SelectionEvent e) 
 				{
 					jobEntry.setChanged();
+					setDateTime();
 				}
 			}
 		);
@@ -650,8 +661,7 @@ public class JobEntryUnZipDialog extends JobEntryDialog implements JobEntryDialo
 				}
 			}
 		);
-
-		
+	
 		//	Prepare a list of possible DateTimeFormats...
 		String dats[] = Const.getDateFormats();
 		
@@ -675,7 +685,59 @@ public class JobEntryUnZipDialog extends JobEntryDialog implements JobEntryDialo
         wDateTimeFormat.setLayoutData(fdDateTimeFormat);
         for (int x=0;x<dats.length;x++) wDateTimeFormat.add(dats[x]);
         
+
+		wlAddOriginalTimestamp=new Label(wUnzippedFiles, SWT.RIGHT);
+		wlAddOriginalTimestamp.setText(BaseMessages.getString(PKG, "JobUnZip.AddOriginalTimestamp.Label"));
+ 		props.setLook(wlAddOriginalTimestamp);
+		fdlAddOriginalTimestamp=new FormData();
+		fdlAddOriginalTimestamp.left = new FormAttachment(0, 0);
+		fdlAddOriginalTimestamp.top  = new FormAttachment(wDateTimeFormat, margin);
+		fdlAddOriginalTimestamp.right= new FormAttachment(middle, -margin);
+		wlAddOriginalTimestamp.setLayoutData(fdlAddOriginalTimestamp);
+		wAddOriginalTimestamp=new Button(wUnzippedFiles, SWT.CHECK);
+ 		props.setLook(wAddOriginalTimestamp);
+ 		wAddOriginalTimestamp.setToolTipText(BaseMessages.getString(PKG, "JobUnZip.AddOriginalTimestamp.Tooltip"));
+		fdAddOriginalTimestamp=new FormData();
+		fdAddOriginalTimestamp.left = new FormAttachment(middle, 0);
+		fdAddOriginalTimestamp.top  = new FormAttachment(wDateTimeFormat, margin);
+		fdAddOriginalTimestamp.right= new FormAttachment(100, 0);
+		wAddOriginalTimestamp.setLayoutData(fdAddOriginalTimestamp);
+		wAddOriginalTimestamp.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					jobEntry.setChanged();
+				}
+			}
+		);
 		
+        
+		
+		// Create multi-part file?
+		wlSetModificationDateToOriginal=new Label(wUnzippedFiles, SWT.RIGHT);
+		wlSetModificationDateToOriginal.setText(BaseMessages.getString(PKG, "JobUnZip.SetModificationDateToOriginal.Label"));
+ 		props.setLook(wlSetModificationDateToOriginal);
+		fdlSetModificationDateToOriginal=new FormData();
+		fdlSetModificationDateToOriginal.left = new FormAttachment(0, 0);
+		fdlSetModificationDateToOriginal.top  = new FormAttachment(wAddOriginalTimestamp, margin);
+		fdlSetModificationDateToOriginal.right= new FormAttachment(middle, -margin);
+		wlSetModificationDateToOriginal.setLayoutData(fdlSetModificationDateToOriginal);
+		wSetModificationDateToOriginal=new Button(wUnzippedFiles, SWT.CHECK);
+ 		props.setLook(wSetModificationDateToOriginal);
+ 		wSetModificationDateToOriginal.setToolTipText(BaseMessages.getString(PKG, "JobUnZip.SetModificationDateToOriginal.Tooltip"));
+		fdSetModificationDateToOriginal=new FormData();
+		fdSetModificationDateToOriginal.left = new FormAttachment(middle, 0);
+		fdSetModificationDateToOriginal.top  = new FormAttachment(wAddOriginalTimestamp, margin);
+		fdSetModificationDateToOriginal.right= new FormAttachment(100, 0);
+		wSetModificationDateToOriginal.setLayoutData(fdSetModificationDateToOriginal);
+		wSetModificationDateToOriginal.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					jobEntry.setChanged();
+				}
+			}
+		);
 		 // If File Exists
 		wlIfFileExists = new Label(wUnzippedFiles, SWT.RIGHT);
 		wlIfFileExists.setText(BaseMessages.getString(PKG, "JobUnZip.IfFileExists.Label"));
@@ -683,7 +745,7 @@ public class JobEntryUnZipDialog extends JobEntryDialog implements JobEntryDialo
 		fdlIfFileExists = new FormData();
 		fdlIfFileExists.left = new FormAttachment(0, 0);
 		fdlIfFileExists.right = new FormAttachment(middle, -margin);
-		fdlIfFileExists.top = new FormAttachment(wDateTimeFormat, margin);
+		fdlIfFileExists.top = new FormAttachment(wSetModificationDateToOriginal, margin);
 		wlIfFileExists.setLayoutData(fdlIfFileExists);
 		wIfFileExists = new CCombo(wUnzippedFiles, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
 		wIfFileExists.setItems(JobEntryUnZip.typeIfFileExistsDesc);
@@ -692,7 +754,7 @@ public class JobEntryUnZipDialog extends JobEntryDialog implements JobEntryDialo
 
 		fdIfFileExists = new FormData();
 		fdIfFileExists.left = new FormAttachment(middle, 0);
-		fdIfFileExists.top = new FormAttachment(wDateTimeFormat, margin);
+		fdIfFileExists.top = new FormAttachment(wSetModificationDateToOriginal, margin);
 		fdIfFileExists.right = new FormAttachment(100, 0);
 		wIfFileExists.setLayoutData(fdIfFileExists);
 		
@@ -792,6 +854,8 @@ public class JobEntryUnZipDialog extends JobEntryDialog implements JobEntryDialo
 				jobEntry.setChanged();
 			}
 		});
+		
+		
 		
 		
 		fdUnzippedFiles = new FormData();
@@ -1086,7 +1150,13 @@ public class JobEntryUnZipDialog extends JobEntryDialog implements JobEntryDialo
 		wlAddDate.setEnabled(!wSpecifyFormat.getSelection());
 		wAddTime.setEnabled(!wSpecifyFormat.getSelection());
 		wlAddTime.setEnabled(!wSpecifyFormat.getSelection());
-		
+		setDateTime();
+	}
+	private void setDateTime()
+	{
+		boolean enable=wAddDate.getSelection() || wAddTime.getSelection() || wSpecifyFormat.getSelection();
+		wlAddOriginalTimestamp.setEnabled(enable);
+		wAddOriginalTimestamp.setEnabled(enable);
 	}
 	public void AfterUnZipActivate()
 	{
@@ -1182,6 +1252,8 @@ public class JobEntryUnZipDialog extends JobEntryDialog implements JobEntryDialo
 				wSuccessCondition.select(0);	
 		}else wSuccessCondition.select(0);
 		
+		wAddOriginalTimestamp.setSelection(jobEntry.isOriginalTimestamp());
+		wSetModificationDateToOriginal.setSelection(jobEntry.isOriginalModificationDate());
 		wIfFileExists.select(jobEntry.getIfFileExist());
 		wcreateMoveToDirectory.setSelection(jobEntry.isCreateMoveToDirectory());
 	}
@@ -1237,6 +1309,8 @@ public class JobEntryUnZipDialog extends JobEntryDialog implements JobEntryDialo
 		
 		jobEntry.setIfFileExists(wIfFileExists.getSelectionIndex());	
 		jobEntry.setCreateMoveToDirectory(wcreateMoveToDirectory.getSelection());
+		jobEntry.setAddOriginalTimestamp(wAddOriginalTimestamp.getSelection());
+		jobEntry.setOriginalModificationDate(wSetModificationDateToOriginal.getSelection());
 		dispose();
 	}
 

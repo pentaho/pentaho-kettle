@@ -181,7 +181,11 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 	private Label				wlFailOnError;
 	private Button				wFailOnError;
 	private FormData			fdlFailOnError, fdFailOnError;
-	
+
+	private Label       wlParallel;
+	private Button        wParallel;
+	private FormData      fdlParallel, fdParallel;
+
 	private Label				wlAltRecordTerm;
 	private TextVar				wAltRecordTerm;
 	private FormData			fdlAltRecordTerm, fdAltRecordTerm;
@@ -742,6 +746,9 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 			    public void widgetSelected(SelectionEvent e) 
 			    {
   				    input.setChanged();
+              // Parallel loading is only possible with a direct path option...
+              //
+              if (!wDirectPath.getSelection()) wParallel.setSelection(false);
   		    	}
 		    }
 	    );
@@ -820,6 +827,35 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		    	}
 	        }
         );
+
+    // Fail on error line
+    wlParallel = new Label(comp, SWT.RIGHT);
+    wlParallel.setText(BaseMessages.getString(PKG, "OraBulkLoaderDialog.Parallel.Label")); //$NON-NLS-1$
+    props.setLook(wlParallel);
+    fdlParallel = new FormData();
+    fdlParallel.left = new FormAttachment(0, 0);
+    fdlParallel.top = new FormAttachment(wFailOnError, margin);
+    fdlParallel.right = new FormAttachment(middle, -margin);
+    wlParallel.setLayoutData(fdlParallel);
+    wParallel = new Button(comp, SWT.CHECK);
+    props.setLook(wParallel);
+    fdParallel = new FormData();
+    fdParallel.left = new FormAttachment(middle, 0);
+    fdParallel.top = new FormAttachment(wFailOnError, margin);
+    fdParallel.right = new FormAttachment(100, 0);
+    wParallel.setLayoutData(fdParallel);        
+    wParallel.addSelectionListener(new SelectionAdapter() 
+          {
+            public void widgetSelected(SelectionEvent e) 
+            {
+              input.setChanged();
+              // Parallel loading is only possible with a direct path option...
+              //
+              if (wParallel.getSelection()) wDirectPath.setSelection(true);
+            }
+          }
+        );
+
 		
 		// THE BUTTONS
 		wOK = new Button(comp, SWT.PUSH);
@@ -837,7 +873,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
  		props.setLook(wlReturn);
 		fdlReturn = new FormData();
 		fdlReturn.left = new FormAttachment(0, 0);
-		fdlReturn.top = new FormAttachment(wFailOnError, margin);
+		fdlReturn.top = new FormAttachment(wParallel, margin);
 		wlReturn.setLayoutData(fdlReturn);
 
 		int UpInsCols = 3;
@@ -1265,6 +1301,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		wDirectPath.setSelection(input.isDirectPath());
 		wEraseFiles.setSelection(input.isEraseFiles());
 		wFailOnError.setSelection(input.isFailOnError());
+    wParallel.setSelection(input.isParallel());
 		wFailOnWarning.setSelection(input.isFailOnWarning());
 		
 		String method = input.getLoadMethod();		
@@ -1362,6 +1399,7 @@ public class OraBulkLoaderDialog extends BaseStepDialog implements StepDialogInt
 		inf.setDirectPath( wDirectPath.getSelection() );
 		inf.setEraseFiles( wEraseFiles.getSelection() );
 		inf.setFailOnError( wFailOnError.getSelection() );
+    inf.setParallel( wParallel.getSelection() );
 		inf.setFailOnWarning( wFailOnWarning.getSelection() );
 
 		/*

@@ -103,7 +103,8 @@ public class KettleFileTableModel implements TableModel {
 				throw new RuntimeException("Unhandled field type: "+field+" in function getValueAt()");
 			}
 		} catch(Exception e) {
-			throw new RuntimeException("Unable to get data for field "+field, e);
+			log.logError("Unable to get data for field: "+field+" : "+e.getMessage());
+			return null;
 		}
 	}
 
@@ -238,7 +239,7 @@ public class KettleFileTableModel implements TableModel {
 				return evaluation+" at "+XMLHandler.date2string(date);
 				
 			} catch(Exception e) {
-				log.logError("Unable to get logging information from log table"+logTable, e);
+				log.logBasic("Unable to get logging information from log table"+logTable);
 			} finally {
 				database.disconnect();
 			}

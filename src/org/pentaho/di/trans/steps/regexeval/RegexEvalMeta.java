@@ -52,6 +52,7 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
     private boolean usevar;
 
     private boolean allowcapturegroups;
+    private boolean replacefields;
     
     private boolean canoneq;
     private boolean caseinsensitive;
@@ -200,6 +201,14 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
         this.allowcapturegroups = allowcapturegroups;
     }
     
+	public boolean isReplacefields() {
+		return replacefields;
+	}
+
+    public void setReplacefields(boolean replacefields) {
+		this.replacefields = replacefields;
+	}
+
     public boolean isCanonicalEqualityFlagSet()
     {
         return canoneq;
@@ -384,6 +393,7 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
             resultfieldname = XMLHandler.getTagValue(stepnode, "resultfieldname"); //$NON-NLS-1$
             usevar = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "usevar"));
             allowcapturegroups = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "allowcapturegroups"));
+            replacefields = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "replacefields"));
             canoneq = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "canoneq"));
             caseinsensitive = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "caseinsensitive"));
             comment = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "comment"));
@@ -432,6 +442,7 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
         resultfieldname = "result";
         usevar = false;
         allowcapturegroups = false;
+        replacefields = true;
         canoneq = false;
         caseinsensitive = false;
         comment = false;
@@ -448,20 +459,49 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
     {
         if (!Const.isEmpty(resultfieldname))
         {
-            ValueMetaInterface v = new ValueMeta(space.environmentSubstitute(resultfieldname), ValueMeta.TYPE_BOOLEAN);
+            ValueMetaInterface v = null;
+          
+        	if (replacefields){
+        		v = inputRowMeta.searchValueMeta(resultfieldname);
+        	}
+        	
+        	if ( v != null ) {
             v.setOrigin(name);
+        		v.setType(ValueMeta.TYPE_BOOLEAN);
+        	} else {
+            	v = new ValueMeta(space.environmentSubstitute(resultfieldname), ValueMeta.TYPE_BOOLEAN);
+                v.setOrigin(name);
             inputRowMeta.addValueMeta(v);
+        }
         }
         
         if (allowcapturegroups == true)
         {
             for (int i = 0; i < fieldName.length; i++)
             {
-                if (fieldName[i] != null && fieldName[i].length() != 0)
-                {
+            	if ( fieldName[i] == null || fieldName[i].length() == 0)
+            		continue;
+            	
+        		ValueMetaInterface v = null;
+
+            	if (replacefields){
+            		v = inputRowMeta.searchValueMeta(fieldName[i]);
+            	}
+        		if ( v != null ){
+                   	setValueMeta(v, i, name);
+        		} else {
+                    v = new ValueMeta(fieldName[i]);
+                	setValueMeta(v, i, name);
+                    inputRowMeta.addValueMeta(v);
+                }
+            }
+        }
+    }
+    
+    private void setValueMeta(ValueMetaInterface v, int i, String name){
                     int type = fieldType[i];
                     if (type == ValueMetaInterface.TYPE_NONE) type = ValueMetaInterface.TYPE_STRING;
-                    ValueMetaInterface v = new ValueMeta(fieldName[i], type);
+        v.setType(type);
                     v.setLength(fieldLength[i]);
                     v.setPrecision(fieldPrecision[i]);
                     v.setOrigin(name);
@@ -470,11 +510,7 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
                     v.setGroupingSymbol(fieldGroup[i]);
                     v.setCurrencySymbol(fieldCurrency[i]);
                     v.setTrimType(fieldTrimType[i]);
-                    inputRowMeta.addValueMeta(v);
                 }
-            }
-        }
-    }
 
     public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters)
             throws KettleXMLException
@@ -491,6 +527,7 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    " + XMLHandler.addTagValue("resultfieldname", resultfieldname)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    " + XMLHandler.addTagValue("usevar", usevar));
         retval.append("    " + XMLHandler.addTagValue("allowcapturegroups", allowcapturegroups));
+        retval.append("    " + XMLHandler.addTagValue("replacefields", replacefields));
         retval.append("    " + XMLHandler.addTagValue("canoneq", canoneq));
         retval.append("    " + XMLHandler.addTagValue("caseinsensitive", caseinsensitive));
         retval.append("    " + XMLHandler.addTagValue("comment", comment));
@@ -535,6 +572,7 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
             resultfieldname = rep.getStepAttributeString(id_step, "resultfieldname"); //$NON-NLS-1$
             usevar = rep.getStepAttributeBoolean(id_step, "usevar");
             allowcapturegroups = rep.getStepAttributeBoolean(id_step, "allowcapturegroups");
+            replacefields = rep.getStepAttributeBoolean(id_step, "replacefields");
             canoneq = rep.getStepAttributeBoolean(id_step, "canoneq");
             caseinsensitive = rep.getStepAttributeBoolean(id_step, "caseinsensitive");
             comment = rep.getStepAttributeBoolean(id_step, "comment");
@@ -596,6 +634,7 @@ public class RegexEvalMeta extends BaseStepMeta implements StepMetaInterface
             rep.saveStepAttribute(id_transformation, id_step, "resultfieldname", resultfieldname); //$NON-NLS-1$
             rep.saveStepAttribute(id_transformation, id_step, "usevar", usevar);
             rep.saveStepAttribute(id_transformation, id_step, "allowcapturegroups", allowcapturegroups);
+            rep.saveStepAttribute(id_transformation, id_step, "replacefields", replacefields);
             rep.saveStepAttribute(id_transformation, id_step, "canoneq", canoneq);
             rep.saveStepAttribute(id_transformation, id_step, "caseinsensitive", caseinsensitive);
             rep.saveStepAttribute(id_transformation, id_step, "comment", comment);

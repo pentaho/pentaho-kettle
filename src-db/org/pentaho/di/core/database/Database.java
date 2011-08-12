@@ -28,6 +28,8 @@
 
 package org.pentaho.di.core.database;
 
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.StringReader;
 import java.sql.BatchUpdateException;
 import java.sql.Blob;
@@ -431,10 +433,9 @@ public class Database implements VariableSpace, LoggingObjectInterface
 			throw new KettleDatabaseException("Exception while loading class", e);
 		}
 
-		String url = null;
 		try 
 		{
-            
+            String url;
             
             if (databaseMeta.isPartitioned() && !Const.isEmpty(partitionId))
             {
@@ -506,14 +507,12 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		} 
 		catch(SQLException e) 
 		{
-		  Throwable cause = e.getCause();
-		  throw new KettleDatabaseException("Error connecting to database: "+url+" (using class "+classname+")"+(cause == null ? "" : " ==> "+cause.getClass().getName()+": "+cause.getMessage()), e);
+			throw new KettleDatabaseException("Error connecting to database: (using class "+classname+")", e);
 		}
-    catch(Throwable e)
-    {
-      Throwable cause = e.getCause();
-      throw new KettleDatabaseException("Error connecting to database: "+url+" (using class "+classname+")"+(cause == null ? "" : " ==> "+cause.getClass().getName()+": "+cause.getMessage()), e);
-    }
+        catch(Throwable e)
+        {
+            throw new KettleDatabaseException("Error connecting to database: (using class "+classname+")", e);
+        }
 	}
 
 	/**
@@ -1657,137 +1656,164 @@ public class Database implements VariableSpace, LoggingObjectInterface
         
         return result;
 	}
-
-    /**
-     * Execute a series of SQL statements, separated by ;
-     * 
-     * We are already connected...
-     
-     * Multiple statements have to be split into parts
-     * We use the ";" to separate statements...
-     *
-     * We keep the results in Result object from Jobs
-     *
-     * @param script The SQL script to be execute
-     * @throws KettleDatabaseException In case an error occurs
-     * @return A result with counts of the number or records updates, inserted, deleted or read.
-     */
-	public Result execStatements(String script) throws KettleDatabaseException
-	{
-        Result result = new Result();
-        
-		String all = script;
-		int from=0;
-		int to=0;
-		int length = all.length();
-		int nrstats = 0;
-			
-		boolean isComment;
-		while (to<length)
-		{
-		  isComment = false;
-			char c = all.charAt(to);
-			if (c=='"')
-			{
-				c=' ';
-				while (++to<length && ((c=all.charAt(to))!='"'));
-			}
-			else
-			if (c=='\'') // skip until next '
-			{
-				c=' ';
-				while (++to<length && ((c=all.charAt(to))!='\''));
-			}
-			else
-			if (all.substring(to).startsWith("--"))  // -- means: ignore comment until end of line...
-			{
-			  isComment = true;
-			  do {
-			    c = all.charAt(to);
-			  } while(c!='\n' && c!='\r' && ++to<length);
-			  from=to;
-			}
-			if (!isComment && (c==';' || to>=length-1)) // end of statement
-			{
-				if (to>=length-1) to++; // grab last char also!
-                
-                String stat;
-                if (to<=length) stat = all.substring(from, to);
-                else stat = all.substring(from);
-                
-                // If it ends with a ; remove that ;
-                // Oracle for example can't stand it when this happens...
-                if (stat.length()>0 && stat.charAt(stat.length()-1)==';')
-                {
-                    stat = stat.substring(0,stat.length()-1);
-                }
-                
-				if (!Const.onlySpaces(stat))
-				{
-					String sql=Const.trim(stat);
-					if (sql.toUpperCase().startsWith("SELECT"))
-					{
-						// A Query
-						if(log.isDetailed()) log.logDetailed("launch SELECT statement: "+Const.CR+sql);
-						
-						nrstats++;
-						ResultSet rs = null;
-						try 
-						{
-							rs = openQuery(sql);
-							if (rs!=null)
-							{
-                                Object[] row = getRow(rs);
-								while (row!=null)
-								{
-									result.setNrLinesRead(result.getNrLinesRead()+1);
-									if (log.isDetailed()) log.logDetailed(rowMeta.getString(row));
-                                    row = getRow(rs);
-								}
-								
-							}
-							else
-							{
-                                if (log.isDebug()) log.logDebug("Error executing query: "+Const.CR+sql);
-							}
-						} catch (KettleValueException e) {
-							throw new KettleDatabaseException(e); // just pass the error upwards.
-						}
-						finally 
-						{
-							try 
-							{
-							   if ( rs != null ) rs.close();
-							}
-							catch (SQLException ex )
-							{
-                                if (log.isDebug()) log.logDebug("Error closing query: "+Const.CR+sql);
-							}
-						}						
-					}
-                    else // any kind of statement
-                    {
-                    	if(log.isDetailed()) log.logDetailed("launch DDL statement: "+Const.CR+sql);
-
-                        // A DDL statement
-                        nrstats++;
-                        Result res = execStatement(sql);
-                        result.add(res);
-                    }
-				}
-				to++;
-				from=to;
-			}
-			else if(!isComment)
-			{
-				to++;
-			}
-		}
-		
-		if(log.isDetailed()) log.logDetailed(nrstats+" statement"+(nrstats==1?"":"s")+" executed");
-        
-        return result;
+	
+/**
+ * scrubDoubleHyphenComments remove the comment from the sql string. The reason for this operation is not every database support the -- comments
+ * You can now use -- ant any position in the line and it will comment everything in the line after that point	
+ * @param scripts
+ * @return scrubed sql string 
+ */
+	private String scrubDoubleHyphenComments(String scripts) {
+	  final String DOUBLE_HYPHEN = "--";
+	  boolean done = false;
+	  int start = 0;
+	  BufferedReader reader = new BufferedReader(new StringReader(scripts));
+	  StringBuffer returnBuffer = new StringBuffer();
+	  while(!done) {
+	    try {
+        String line = reader.readLine();
+        if(line != null) {
+          if(line.length() > 0) {
+            int index = line.indexOf(DOUBLE_HYPHEN);
+            if( index >= 0) {
+              returnBuffer.append(line.substring(0, index));
+            } else {
+              returnBuffer.append(line);
+            }
+          }
+        } else {
+          done = true;
+        }
+      } catch (IOException e) {
+          return scripts;
+      }
+	  }
+	  return returnBuffer.toString();
 	}
+
+	
+   /**
+    * Execute a series of SQL statements, separated by ;
+    * 
+    * We are already connected...
+    
+    * Multiple statements have to be split into parts
+    * We use the ";" to separate statements...
+    *
+    * We keep the results in Result object from Jobs
+    *
+    * @param script The SQL script to be execute
+    * @throws KettleDatabaseException In case an error occurs
+    * @return A result with counts of the number or records updates, inserted, deleted or read.
+    */
+ public Result execStatements(String script) throws KettleDatabaseException
+ {
+       Result result = new Result();
+       
+   // Deleting all the -- comment from the string
+   String all = scrubDoubleHyphenComments(script);
+   
+   int from=0;
+   int to=0;
+   int length = all.length();
+   int nrstats = 0;
+     
+   while (to<length)
+   {
+     char c = all.charAt(to);
+     if (c=='"')
+     {
+       c=' ';
+       while (++to<length && ((c=all.charAt(to))!='"'));
+     }
+     else
+     if (c=='\'') // skip until next '
+     {
+       c=' ';
+       while (++to<length && ((c=all.charAt(to))!='\''));
+     }
+
+     if (c==';' || to>=length-1) // end of statement
+     {
+       if (to>=length-1) to++; // grab last char also!
+               
+               String stat;
+               if (to<=length) stat = all.substring(from, to);
+               else stat = all.substring(from);
+               
+               // If it ends with a ; remove that ;
+               // Oracle for example can't stand it when this happens...
+               if (stat.length()>0 && stat.charAt(stat.length()-1)==';')
+               {
+                   stat = stat.substring(0,stat.length()-1);
+               }
+               
+       if (!Const.onlySpaces(stat))
+       {
+         String sql=Const.trim(stat);
+         if (sql.toUpperCase().startsWith("SELECT"))
+         {
+           // A Query
+           if(log.isDetailed()) log.logDetailed("launch SELECT statement: "+Const.CR+sql);
+           
+           nrstats++;
+           ResultSet rs = null;
+           try 
+           {
+             rs = openQuery(sql);
+             if (rs!=null)
+             {
+                               Object[] row = getRow(rs);
+               while (row!=null)
+               {
+                 result.setNrLinesRead(result.getNrLinesRead()+1);
+                 if (log.isDetailed()) log.logDetailed(rowMeta.getString(row));
+                                   row = getRow(rs);
+               }
+               
+             }
+             else
+             {
+                               if (log.isDebug()) log.logDebug("Error executing query: "+Const.CR+sql);
+             }
+           } catch (KettleValueException e) {
+             throw new KettleDatabaseException(e); // just pass the error upwards.
+           }
+           finally 
+           {
+             try 
+             {
+                if ( rs != null ) rs.close();
+             }
+             catch (SQLException ex )
+             {
+                               if (log.isDebug()) log.logDebug("Error closing query: "+Const.CR+sql);
+             }
+           }           
+         }
+                   else // any kind of statement
+                   {
+                     if(log.isDetailed()) log.logDetailed("launch DDL statement: "+Const.CR+sql);
+
+                       // A DDL statement
+                       nrstats++;
+                       Result res = execStatement(sql);
+                       result.add(res);
+                   }
+       }
+       to++;
+       from=to;
+     }
+     else 
+     {
+       to++;
+     }
+   }
+   
+   if(log.isDetailed()) log.logDetailed(nrstats+" statement"+(nrstats==1?"":"s")+" executed");
+       
+       return result;
+ }
 
 
 	public ResultSet openQuery(String sql) throws KettleDatabaseException

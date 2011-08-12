@@ -373,7 +373,7 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 	 * Close left-over sockets, streams and so on.
 	 */
 	public void cleanup() {
-	  if (socket!=null && !socket.isClosed()) {
+	  if (socket!=null && socket.isConnected() && !socket.isClosed()) {
   	  try {
         if (socket!=null && !socket.isOutputShutdown()) {
           socket.shutdownOutput();

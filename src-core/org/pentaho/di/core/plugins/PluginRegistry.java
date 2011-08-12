@@ -654,8 +654,99 @@ public class PluginRegistry {
 	 * @throws KettlePluginException In case there is something wrong
 	 */
 	@SuppressWarnings("unchecked")
-    public <T> T getClass(PluginInterface plugin, T classType) throws KettlePluginException {
+  public <T> T getClass(PluginInterface plugin, T classType) throws KettlePluginException {
 		String className = plugin.getClassMap().get(classType);
 		return (T) getClass(plugin, className);
 	}
+
+  
+  /**
+   * Create or retrieve the class loader for the specified plugin
+   * 
+   * @param plugin
+   *          the plugin to use
+   * @return The class loader
+   * 
+   * @throws KettlePluginException
+   *           In case there was a problem
+   *           
+   * TODO: remove the similar code in the loadClass() method above with a call to getClassLoader(); 
+   */
+  public ClassLoader getClassLoader(PluginInterface plugin) throws KettlePluginException {
+
+    if (plugin == null) {
+      throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.NoValidStepOrPlugin.PLUGINREGISTRY001")); //$NON-NLS-1$
+    }
+
+    try {
+      if (plugin.isNativePlugin()) {
+        return this.getClass().getClassLoader();
+      } else {
+        List<String> jarfiles = plugin.getLibraries();
+        URL urls[] = new URL[jarfiles.size()];
+        for (int i = 0; i < jarfiles.size(); i++) {
+          File jarfile = new File(jarfiles.get(i));
+          urls[i] = new URL(URLDecoder.decode(jarfile.toURI().toURL().toString(), "UTF-8"));
+        }
+
+        // Load the class!!
+        //
+        // First get the class loader: get the one that's the webstart
+        // classloader, not the thread classloader
+        //
+        ClassLoader classLoader = getClass().getClassLoader();
+
+        URLClassLoader ucl = null;
+
+        // If the plugin needs to have a separate class loader for each instance
+        // of the plugin.
+        // This is not the default. By default we cache the class loader for
+        // each plugin ID.
+        //
+        if (plugin.isSeparateClassLoaderNeeded()) {
+
+          // Create a new one each time
+          //
+          ucl = new KettleURLClassLoader(urls, classLoader, plugin.getDescription());
+
+        } else {
+
+          // See if we can find a class loader to re-use.
+          //
+
+          Map<PluginInterface, URLClassLoader> classLoaders = classLoaderMap.get(plugin.getPluginType());
+          if (classLoaders == null) {
+            classLoaders = new HashMap<PluginInterface, URLClassLoader>();
+            classLoaderMap.put(plugin.getPluginType(), classLoaders);
+          } else {
+            ucl = classLoaders.get(plugin);
+          }
+          if (ucl == null) {
+            if (plugin.getPluginDirectory() != null) {
+              ucl = folderBasedClassLoaderMap.get(plugin.getPluginDirectory().toString());
+              if (ucl == null) {
+                ucl = new KettleURLClassLoader(urls, classLoader, plugin.getDescription());
+                classLoaders.put(plugin, ucl); // save for later use...
+                folderBasedClassLoaderMap.put(plugin.getPluginDirectory().toString(), ucl);
+              }
+            } else {
+              ucl = classLoaders.get(plugin);
+              if (ucl == null) {
+                ucl = new KettleURLClassLoader(urls, classLoader, plugin.getDescription());
+                classLoaders.put(plugin, ucl); // save for later use...
+              }
+            }
+          }
+        }
+
+        // Load the class.
+        return ucl;
+      }
+    } catch (MalformedURLException e) {
+      throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.MalformedURL.PLUGINREGISTRY006"), e); //$NON-NLS-1$
+    } catch (Throwable e) {
+      e.printStackTrace();
+      throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.UnExpectedCreatingClassLoader.PLUGINREGISTRY008"), e); //$NON-NLS-1$
+    }
+  }
 }

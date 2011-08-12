@@ -40,4 +40,9 @@ public class GreenplumDatabaseMeta extends PostgreSQLDatabaseMeta implements Dat
 		
 		return gpWords;
 	}
+	
+  @Override
+  public boolean supportsErrorHandlingOnBatchUpdates() {
+    return false;
+  }
 }

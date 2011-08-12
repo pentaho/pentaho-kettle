@@ -35,9 +35,9 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -47,6 +47,7 @@ import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -73,7 +74,6 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.core.encryption.Encr;
 
 
 public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterface
@@ -548,16 +548,16 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 			{
 				public void widgetSelected(SelectionEvent e) 
 				{
-					DirectoryDialog dialog = new DirectoryDialog(shell, SWT.OPEN);
+					FileDialog dialog = new FileDialog(shell, SWT.OPEN);
 					if (wTrustStorePath.getText()!=null)
 					{
 						String fpath = transMeta.environmentSubstitute(wTrustStorePath.getText());
-						dialog.setFilterPath( fpath );
+						dialog.setFileName(fpath);
 					}
 					
 					if (dialog.open()!=null)
 					{
-						String str= dialog.getFilterPath();
+					  String str = dialog.getFilterPath()+System.getProperty("file.separator")+dialog.getFileName();
 						wTrustStorePath.setText(str);
 					}
 				}
@@ -1290,6 +1290,14 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 			connection= new LDAPConnection(log, transMeta.environmentSubstitute(meta.getHost()), 
 					Const.toInt(transMeta.environmentSubstitute(meta.getPort()), LDAPConnection.DEFAULT_PORT));
 			
+			
+	    connection.setProtocol(LDAPConnection.getProtocolFromCode(meta.getProtocol()));
+	    if(meta.isUseCertificate()) {
+	      connection.setTrustStorePath(meta.getTrustStorePath());
+	      connection.setTrustStorePassword(meta.getTrustStorePassword());
+	      connection.trustAllCertificates(meta.isTrustAllCertificates());
+	    }
+			
 			// connect...
 			if(wusingAuthentication.getSelection()) {
 				connection.connect(transMeta.environmentSubstitute(meta.getUserName()), 
@@ -1305,10 +1313,7 @@ public class LDAPInputDialog extends BaseStepDialog implements StepDialogInterfa
 			mb.open();
 			
 		} catch(Exception e){
-			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(BaseMessages.getString(PKG, "LDAPInputDialog.Connected.NOK",e.getMessage()));
-			mb.setText(BaseMessages.getString(PKG, "LDAPInputDialog.Connected.Title.Error")); //$NON-NLS-1$
-			mb.open(); 
+		  new ErrorDialog(shell, BaseMessages.getString(PKG, "LDAPInputDialog.Connected.Title.Error"), BaseMessages.getString(PKG, "LDAPInputDialog.Connected.NOK"), e);
 		} finally {
 			if(connection!=null) {
 				// Disconnect ...

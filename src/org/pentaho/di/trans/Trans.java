@@ -2059,17 +2059,23 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                   throw new KettleDatabaseException(BaseMessages.getString(PKG, "Trans.Exception.ErrorCommittingUniqueConnection", database.toString()), e);
                 }
               }
-        		  
-	        		// This database connection belongs to this transformation.
-	        		database.closeConnectionOnly();
-	        		
-	        		// Remove the database from the list...
-	        		//
-	        		map.removeConnection(database.getConnectionGroup(), database.getPartitionId(), database);
         		}
         		catch(Exception e) {
         			log.logError(BaseMessages.getString(PKG, "Trans.Exception.ErrorHandlingTransformationTransaction", database.toString()), e);
         			result.setNrErrors(result.getNrErrors()+1);
+        		}
+        		finally {
+        		  try {
+        		    // This database connection belongs to this transformation.
+                database.closeConnectionOnly();
+        		  } catch(Exception e) {
+                log.logError(BaseMessages.getString(PKG, "Trans.Exception.ErrorHandlingTransformationTransaction", database.toString()), e);
+                result.setNrErrors(result.getNrErrors()+1);
+        		  } finally {
+                // Remove the database from the list...
+                //
+                map.removeConnection(database.getConnectionGroup(), database.getPartitionId(), database);
+        		  }
         		}
         	}
         }

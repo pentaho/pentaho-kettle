@@ -283,6 +283,10 @@ public class GetFileNames extends BaseStep implements StepInterface
 
     private void handleMissingFiles() throws KettleException
     {
+    	if(meta.isdoNotFailIfNoFile() && data.files.nrOfFiles()==0) {
+    		logBasic(BaseMessages.getString(PKG, "GetFileNames.Log.NoFile"));
+    		return;
+    	}
         List<FileObject> nonExistantFiles = data.files.getNonExistantFiles();
 
         if (nonExistantFiles.size() != 0)

@@ -43,13 +43,15 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.steps.propertyinput.PropertyInputField;
+
 import org.w3c.dom.Node;
 
 
 public class MailInputMeta extends BaseStepMeta implements StepMetaInterface
 {
 	private static Class<?> PKG = MailInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	
+	public static final String DATE_PATTERN = "yyyy-MM-dd HH:mm:ss";
 	
 	public int conditionReceivedDate;
 	
@@ -250,7 +252,7 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface
 			    MailInputField field = new MailInputField();
 			    
 				field.setName( rep.getStepAttributeString (id_step, i, "field_name") );
-				field.setColumn(PropertyInputField.getColumnByCode(rep.getStepAttributeString (id_step, i, "field_column") ) );
+				field.setColumn(MailInputField.getColumnByCode(rep.getStepAttributeString (id_step, i, "field_column") ) );
 
 				inputFields[i] = field;
 			}

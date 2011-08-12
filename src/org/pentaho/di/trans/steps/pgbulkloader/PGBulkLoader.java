@@ -329,14 +329,13 @@ public class PGBulkLoader extends BaseStep implements StepInterface
 		    		switch(valueMeta.getType()) {
 		    		case ValueMetaInterface.TYPE_STRING :
 		    			data.pgOutputStream.write(data.quote);
-		    			if (valueMeta.isStorageBinaryString()) {
-		    				// lazy conversion.  For this test, just dump the data to the output stream.
-		    				//
-		    				
-		    				data.pgOutputStream.write((byte[])valueData);
-		    			} else {
-		    				data.pgOutputStream.write(valueMeta.getString(valueData).getBytes());
-		    			}
+
+		    			// No longer dump the bytes for a Lazy Conversion;
+		    			// We need to escape the quote characters in every string
+		    			String quoteStr = new String(data.quote); 
+		    			String escapedString = valueMeta.getString(valueData).replace(quoteStr,quoteStr+quoteStr); 
+		    			data.pgOutputStream.write(escapedString.getBytes());
+
 		    			data.pgOutputStream.write(data.quote);
 		    			break;
 		    		case ValueMetaInterface.TYPE_INTEGER:

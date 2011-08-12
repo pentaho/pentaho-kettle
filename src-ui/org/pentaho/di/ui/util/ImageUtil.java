@@ -88,6 +88,18 @@ public class ImageUtil
 			}
 		}
 	}
+	
+	 public static Image getImage(Display display, ClassLoader classLoader, String filename) {
+	    try {
+	      return new Image(display, classLoader.getResourceAsStream(filename));
+	    } catch(Exception e) {
+	      try {
+	        return new Image(display, classLoader.getResourceAsStream("/"+filename));
+	      } catch(Exception e2) {
+	        return getImage(display, filename);
+	      }
+	    }
+	  }
 
     public static Image getImage(Display display,String location)
     {	

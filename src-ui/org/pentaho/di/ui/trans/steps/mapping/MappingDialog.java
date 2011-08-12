@@ -1104,7 +1104,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 			}
 		}
 	}
-
+	
 	private void addMappingDefinitionTab(final MappingIODefinition definition, int index,
 			final String tabTitle, final String tabTooltip, String inputStepLabel, String outputStepLabel,
 			String descriptionLabel, String sourceColumnLabel, String targetColumnLabel, final boolean input)
@@ -1507,6 +1507,9 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		  setTabFlags(input, wlMainPath, wMainPath, wlInputStep, wInputStep, wbInputStep, wlOutputStep, wOutputStep, wbOutputStep);
 		}});
     wMultiOutput.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) {
+      setTabFlags(input, wlMainPath, wMainPath, wlInputStep, wInputStep, wbInputStep, wlOutputStep, wOutputStep, wbOutputStep);
+    }});
+    wMainPath.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) {
       setTabFlags(input, wlMainPath, wMainPath, wlInputStep, wInputStep, wbInputStep, wlOutputStep, wOutputStep, wbOutputStep);
     }});
 		

@@ -205,7 +205,7 @@ public class MailInput extends BaseStep implements StepInterface
 			if(isDebug()) logDebug(BaseMessages.getString(PKG, "MailInput.Log.FetchingMessage",data.mailConn.getMessage().getMessageNumber()));
 			
 			// Execute for each Input field...
-			for (int i=0;i<meta.getInputFields().length;i++)
+			for (int i=0;i<data.nrFields;i++)
 			{
 				int index=data.totalpreviousfields+i;
 				switch (meta.getInputFields()[i].getColumn())
@@ -441,7 +441,7 @@ public class MailInput extends BaseStep implements StepInterface
 			}
 			Date beginDate=null;
 			Date endDate=null;
-			SimpleDateFormat df  = new SimpleDateFormat();
+			SimpleDateFormat df  = new SimpleDateFormat(MailInputMeta.DATE_PATTERN);
 			
 			// check search terms
 			// Received Date
@@ -493,7 +493,9 @@ public class MailInput extends BaseStep implements StepInterface
 					logError(BaseMessages.getString(PKG, "MailInput.Error.OpeningConnection",e.getMessage()));
 					setErrors(1);
 					stopAll();
-				}
+			}
+			data.nrFields=meta.getInputFields()!=null?meta.getInputFields().length:0;
+			
 		    return true;
 		}
 		return false;

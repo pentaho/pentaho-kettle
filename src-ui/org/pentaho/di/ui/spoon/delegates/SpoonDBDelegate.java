@@ -173,9 +173,13 @@ public class SpoonDBDelegate extends SpoonDelegate
 	}
 
 	/**
-	 * TODO mlowery this method only returns a table name and not the schema to which it belongs; might be a problem
+	 * return a schema, table combination from the explorer
+	 * 
+	 * @param databaseMeta
+	 * @param aLook
+	 * @return schema [0] and table [1]
 	 */
-	public String exploreDB(DatabaseMeta databaseMeta, boolean aLook)
+	public String[] exploreDB(DatabaseMeta databaseMeta, boolean aLook)
 	{
 		List<DatabaseMeta> databases = null;
 		HasDatabasesInterface activeHasDatabasesInterface = spoon.getActiveHasDatabasesInterface();
@@ -185,7 +189,7 @@ public class SpoonDBDelegate extends SpoonDelegate
 		DatabaseExplorerDialog std = new DatabaseExplorerDialog(spoon.getShell(), SWT.NONE, databaseMeta,
 				databases, aLook);
 		std.open();
-		return std.getTableName();
+		return new String[] {std.getSchemaName(), std.getTableName()};
 	}
 
 	public void clearDBCache(DatabaseMeta databaseMeta)
