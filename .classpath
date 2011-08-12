@@ -57,13 +57,12 @@
 	<classpathentry exported="true" kind="lib" path="test/libext/junit.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/dom4j-1.6.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/jaxen-1.1.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/jfree/jfreechart-1.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/jfree/jfreechart-1.0.9.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/JDBC/kingbasejdbc.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/JDBC/monetdb-1.7-jdbc.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/jxl.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/web/servlet-api-2.5-6.1.9.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/trilead-ssh2-build213.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/web/activation.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/feeds/georss-rome-0.9.8.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/feeds/jdom.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/feeds/feed4j.jar"/>
