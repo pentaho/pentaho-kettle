@@ -248,12 +248,8 @@
 	<classpathentry kind="lib" path="libext/pentaho/hadoop-core-0.20.2-cdh3u0.jar"/>
 	<classpathentry kind="lib" path="libext/jackson-core-asl-1.5.2.jar"/>
 	<classpathentry kind="lib" path="libext/jackson-mapper-asl-1.5.2.jar"/>
-	<classpathentry kind="lib" path="libext/hive/hive-exec-0.7.0-pentaho-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="libext/hive/hive-metastore-0.7.0-pentaho-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="libext/hive/hive-service-0.7.0-pentaho-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/hive/libfb303-0.5.0.jar"/>
 	<classpathentry kind="lib" path="libext/hive/libthrift-0.5.0.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/hive-jdbc-0.7.0-pentaho-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/jersey/jersey-apache-client-1.7.jar"/>
 	<classpathentry kind="lib" path="libext/jersey/jersey-client-1.7.jar"/>
 	<classpathentry kind="lib" path="libext/jersey/jersey-core-1.7.jar"/>
@@ -265,5 +261,16 @@
 	<classpathentry kind="lib" path="libext/elasticsearch/lucene-memory-3.1.0.jar"/>
 	<classpathentry kind="lib" path="libext/elasticsearch/lucene-queries-3.1.0.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/mysql-connector-java-5.1.17.jar"/>
+	<classpathentry kind="lib" path="libext/JDBC/hive-jdbc-0.7.0-pentaho-1.0.0.jar"/>
+	<classpathentry kind="lib" path="libext/hive/hive-exec-0.7.0-pentaho-1.0.0.jar"/>
+	<classpathentry kind="lib" path="libext/hive/hive-metastore-0.7.0-pentaho-1.0.0.jar"/>
+	<classpathentry kind="lib" path="libext/hive/hive-service-0.7.0-pentaho-1.0.0.jar"/>
+	<classpathentry kind="lib" path="libext/pentaho/libbase-1.2.2.jar"/>
+	<classpathentry kind="lib" path="libext/pentaho/pentaho-hdfs-vfs-1.0.0.jar"/>
+	<classpathentry kind="lib" path="libext/pentaho/pentaho-s3-vfs-1.0.1.jar"/>
+	<classpathentry kind="lib" path="libext/pentaho/pentaho-vfs-browser-2.0.3.jar"/>
+	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-core-3.3.1.jar"/>
+	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-swt-3.3.1.jar"/>
+	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-core-3.8.1-GA.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
