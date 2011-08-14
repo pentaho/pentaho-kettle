@@ -184,18 +184,6 @@
 	<classpathentry exported="true" kind="lib" path="libext/reporting/nbmdr-200507110943-custom.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/openide-util-200507110943.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/oro-2.0.8.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-3.8.0-GA.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-drill-down-3.8.0-GA.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-hibernate-3.8.0-GA.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-kettle-3.8.0-GA.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-mondrian-3.8.0-GA.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-reportdesigner-parser-3.8.0-GA.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-sampledata-3.8.0-GA.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-scripting-3.8.0-GA.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-toc-3.8.0-GA.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-xpath-3.8.0-GA.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/pentaho-reporting-engine-legacy-charts-3.8.0-GA.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/pentaho-reporting-engine-legacy-functions-3.8.0-GA.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/wsdl4j-qname-1.6.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/xpp3_min-1.1.4c.jar"/>
 	<classpathentry kind="lib" path="libext/mondrian/eigenbase-properties-1.1.0.10924.jar"/>
@@ -206,10 +194,6 @@
 	<classpathentry kind="lib" path="libext/reporting/avalon-framework-4.1.3.jar"/>
 	<classpathentry kind="lib" path="libext/reporting/mof-200507110943.jar"/>
 	<classpathentry kind="lib" path="libext/reporting/pentaho-cwm-1.5.4.jar"/>
-	<classpathentry kind="lib" path="libext/reporting/pentaho-metadata-3.3.2.jar"/>
-	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-olap4j-3.8.0-GA.jar"/>
-	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-pmd-3.8.0-GA.jar"/>
-	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-wizard-core-3.8.0-GA.jar"/>
 	<classpathentry kind="lib" path="libext/reporting/xstream-1.3.1.jar"/>
 	<classpathentry kind="lib" path="libext/commons/commons-math-1.1.jar"/>
 	<classpathentry kind="lib" path="libext/mondrian/mondrian-3.2.1.13885.jar"/>
@@ -264,5 +248,21 @@
 	<classpathentry kind="lib" path="libext/reporting/librepository-1.2.3.jar"/>
 	<classpathentry kind="lib" path="libext/reporting/libswing-1.2.4.jar"/>
 	<classpathentry kind="lib" path="libext/reporting/pentaho-connections-2.2.3.jar"/>
+	<classpathentry kind="lib" path="libext/reporting/pentaho-metadata-3.4.2.jar"/>
+	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-3.8.1-GA.jar"/>
+	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-drill-down-3.8.1-GA.jar"/>
+	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-hibernate-3.8.1-GA.jar"/>
+	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-kettle-3.8.1-GA.jar"/>
+	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-mondrian-3.8.1-GA.jar"/>
+	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-olap4j-3.8.1-GA.jar"/>
+	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-pmd-3.8.1-GA.jar"/>
+	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-reportdesigner-parser-3.8.1-GA.jar"/>
+	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-sampledata-3.8.1-GA.jar"/>
+	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-scripting-3.8.1-GA.jar"/>
+	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-toc-3.8.1-GA.jar"/>
+	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-xpath-3.8.1-GA.jar"/>
+	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-legacy-charts-3.8.1-GA.jar"/>
+	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-legacy-functions-3.8.1-GA.jar"/>
+	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-wizard-core-3.8.1-GA.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
