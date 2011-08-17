@@ -63,7 +63,12 @@ import org.w3c.dom.Node;
 /**
  *
  */
-@Step(id = "PaloDimOutput", image = "PaloDimOutput.png", name = "Palo Dim Output", description="", categoryDescription="Palo")
+@Step(id = "PaloDimOutput", 
+		image = "PaloDimOutput.png", 
+		i18nPackageName="org.pentaho.di.trans.steps.palo.dimoutput",
+		name = "PaloDimOutput.TransName", 
+		description="PaloDimOutput.TransDescription", 
+		categoryDescription="i18n:org.pentaho.di.trans.step:BaseStep.Category.Palo")
 public class PaloDimOutputMeta extends BaseStepMeta 
     implements StepMetaInterface {
     
@@ -73,6 +78,10 @@ public class PaloDimOutputMeta extends BaseStepMeta
     private boolean createNewDimension;
     private boolean clearConsolidations;
     private boolean clearDimension;
+    private boolean recreateDimension;
+    private boolean enableElementCache = true;
+    private boolean preloadElementCache = true;
+    
     private List < PaloDimensionLevel > levels = new ArrayList < PaloDimensionLevel >();
     
     public PaloDimOutputMeta() {
@@ -115,6 +124,13 @@ public class PaloDimOutputMeta extends BaseStepMeta
             clearDimension = XMLHandler.getTagValue(stepnode, "cleardimension").equals("Y") ? true : false;
             clearConsolidations = (XMLHandler.getTagValue(stepnode, "clearconsolidations") == null ? false :
             			XMLHandler.getTagValue(stepnode, "clearconsolidations").equals("Y") ? true : false);
+            recreateDimension = (XMLHandler.getTagValue(stepnode, "recreatedimension") == null ? false :
+    			XMLHandler.getTagValue(stepnode, "recreatedimension").equals("Y") ? true : false);
+            enableElementCache = (XMLHandler.getTagValue(stepnode, "enableElementCache") == null ? false :
+    			XMLHandler.getTagValue(stepnode, "enableElementCache").equals("Y") ? true : false);
+            preloadElementCache = (XMLHandler.getTagValue(stepnode, "enableElementCache") == null ? false :
+    			XMLHandler.getTagValue(stepnode, "enableElementCache").equals("Y") ? true : false);
+            
             Node levels = XMLHandler.getSubNode(stepnode,"levels");
             int nrLevels = XMLHandler.countNodes(levels,"level");
 
@@ -125,7 +141,8 @@ public class PaloDimOutputMeta extends BaseStepMeta
                 String levelNumber = XMLHandler.getTagValue(fnode, "levelnumber");
                 String fieldName = XMLHandler.getTagValue(fnode, "fieldname");
                 String fieldType = XMLHandler.getTagValue(fnode, "fieldtype");
-                this.levels.add(new PaloDimensionLevel(levelName,Integer.parseInt(levelNumber),fieldName,fieldType));
+                String consolidationField = XMLHandler.getTagValue(fnode, "consolidationfieldname");
+                this.levels.add(new PaloDimensionLevel(levelName,Integer.parseInt(levelNumber),fieldName,fieldType, consolidationField));
             }
         } catch (Exception e) {
             throw new KettleXMLException("Unable to load step info from XML", e);
@@ -177,6 +194,16 @@ public class PaloDimOutputMeta extends BaseStepMeta
         
          retval.append("    ")
          .append(XMLHandler.addTagValue("clearconsolidations", clearConsolidations));
+         
+         retval.append("    ")
+         .append(XMLHandler.addTagValue("recreatedimension", recreateDimension));
+         
+         retval.append("    ")
+         .append(XMLHandler.addTagValue("enableElementCache", enableElementCache));
+         
+         retval.append("    ")
+         .append(XMLHandler.addTagValue("preloadElementCache", preloadElementCache));
+         
         
         retval.append("    <levels>").append(Const.CR);
         for (PaloDimensionLevel level : levels) {
@@ -184,6 +211,7 @@ public class PaloDimOutputMeta extends BaseStepMeta
             retval.append("        ").append(XMLHandler.addTagValue("levelname",level.getLevelName()));
             retval.append("        ").append(XMLHandler.addTagValue("levelnumber",level.getLevelNumber()));
             retval.append("        ").append(XMLHandler.addTagValue("fieldname",level.getFieldName()));
+            retval.append("        ").append(XMLHandler.addTagValue("consolidationfieldname",level.getConsolidationFieldName()));
             retval.append("      </level>").append(Const.CR);
         }
         retval.append("    </levels>").append(Const.CR);
@@ -199,6 +227,9 @@ public class PaloDimOutputMeta extends BaseStepMeta
             this.createNewDimension = rep.getStepAttributeBoolean(idStep, "createdimension");
             this.clearDimension = rep.getStepAttributeBoolean(idStep, "cleardimension");
             this.clearConsolidations = rep.getStepAttributeBoolean(idStep, "clearconsolidations");
+            this.recreateDimension = rep.getStepAttributeBoolean(idStep, "recreatedimension");
+            this.enableElementCache = rep.getStepAttributeBoolean(idStep, "enableElementCache");
+            this.preloadElementCache = rep.getStepAttributeBoolean(idStep, "preloadElementCache");
             
             int nrLevels = rep.countNrStepAttributes(idStep, "levelname");
             
@@ -207,7 +238,8 @@ public class PaloDimOutputMeta extends BaseStepMeta
                 int levelNumber = (int)rep.getStepAttributeInteger(idStep, i, "levelnumber");
                 String fieldName = rep.getStepAttributeString (idStep, i, "fieldname");
                 String fieldType = rep.getStepAttributeString (idStep, i, "fieldtype");
-                this.levels.add(new PaloDimensionLevel(levelName,levelNumber,fieldName,fieldType));
+                String consolidationField = rep.getStepAttributeString (idStep, i, "consolidationfieldname");
+                this.levels.add(new PaloDimensionLevel(levelName,levelNumber,fieldName,fieldType,consolidationField));
             }
         } catch (Exception e) {
             throw new KettleException("Unexpected error reading step information from the repository", e);
@@ -222,12 +254,16 @@ public class PaloDimOutputMeta extends BaseStepMeta
             rep.saveStepAttribute(idTransformation, idStep, "createdimension", this.createNewDimension);
             rep.saveStepAttribute(idTransformation, idStep, "cleardimension", this.clearDimension);
             rep.saveStepAttribute(idTransformation, idStep, "clearconsolidations", this.clearConsolidations);
-
+            rep.saveStepAttribute(idTransformation, idStep, "recreatedimension", this.recreateDimension);
+            rep.saveStepAttribute(idTransformation, idStep, "enableElementCache", this.enableElementCache);
+            rep.saveStepAttribute(idTransformation, idStep, "preloadElementCache", this.preloadElementCache);
+            
             for (int i=0;i<levels.size();i++) {
                 rep.saveStepAttribute(idTransformation, idStep, i, "levelname", this.levels.get(i).getLevelName());
                 rep.saveStepAttribute(idTransformation, idStep, i, "levelnumber", this.levels.get(i).getLevelNumber());
                 rep.saveStepAttribute(idTransformation, idStep, i, "fieldname", this.levels.get(i).getFieldName());
                 rep.saveStepAttribute(idTransformation, idStep, i, "fieldtype", this.levels.get(i).getFieldType());
+                rep.saveStepAttribute(idTransformation, idStep, i, "consolidationfieldname", this.levels.get(i).getConsolidationFieldName());
             }
             
         } catch (Exception e) {
@@ -367,4 +403,22 @@ public class PaloDimOutputMeta extends BaseStepMeta
     public boolean getClearConsolidations(){
     	return this.clearConsolidations;
     }
+	public void setRecreateDimension(boolean recreateDimension) {
+		this.recreateDimension = recreateDimension;
+	}
+	public boolean getRecreateDimension() {
+		return recreateDimension;
+	}
+	public void setEnableElementCache(boolean enableElementCache) {
+		this.enableElementCache = enableElementCache;
+	}
+	public boolean getEnableElementCache() {
+		return enableElementCache;
+	}
+	public void setPreloadElementCache(boolean preloadElementCache) {
+		this.preloadElementCache = preloadElementCache;
+	}
+	public boolean getPreloadElementCache() {
+		return preloadElementCache;
+	}
 }

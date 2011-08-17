@@ -58,10 +58,10 @@ public class PaloDimInput extends BaseStep implements StepInterface {
   public boolean processRow(final StepMetaInterface smi, final StepDataInterface sdi) throws KettleException {
     this.logBasic("Getting Dimension Row Meta.");
 
-    final RowMetaInterface rowMeta = data.helper.getDimensionRowMeta(meta.getDimension(), meta.getLevels());
+    final RowMetaInterface rowMeta = data.helper.getDimensionRowMeta(meta.getDimension(), meta.getLevels(), meta.getBaseElementsOnly());
 
     this.logBasic("Getting Dimension Rows.");
-    final List<Object[]> rows = data.helper.getDimensionRows(meta.getDimension(), rowMeta, new PaloHelper.Listener() {
+    final List<Object[]> rows = data.helper.getDimensionRows(meta.getDimension(), rowMeta, meta.getBaseElementsOnly(), new PaloHelper.Listener() {
       public void resume() {
 
       }

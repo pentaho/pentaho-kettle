@@ -97,8 +97,14 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
   private Button             buttonGetFields;
   private Button             buttonOk;
   private Button             buttonCancel;
-  private Button             buttonClearCube;
   private Label              labelClearCube;
+  private Button             buttonClearCube;
+  private Label              labelCommitSize;
+  private Text               textCommitSize;
+  private Label              labelPreloadDimensionCache;
+  private Button             buttonPreloadDimensionCache;
+  private Label              labelEnableDimensionCache;
+  private Button             buttonEnableDimensionCache;
   private CCombo             addConnectionLine;
   private ColumnInfo[]       colinf;
 
@@ -139,32 +145,18 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
 
     addConnectionLine = addConnectionLine(shell, textStepName, Const.MIDDLE_PCT, margin);
 
-    labelClearCube = new Label(shell, SWT.RIGHT);
-    fd = new FormData();
-    fd.left = new FormAttachment(0, 0);
-    fd.right = new FormAttachment(middle, -margin);
-    fd.top = new FormAttachment(addConnectionLine, margin);
-    labelClearCube.setLayoutData(fd);
-
-    buttonClearCube = new Button(shell, SWT.CHECK);
-    fd = new FormData();
-    fd.left = new FormAttachment(middle, 0);
-    fd.right = new FormAttachment(100, 0);
-    fd.top = new FormAttachment(addConnectionLine, margin);
-    buttonClearCube.setLayoutData(fd);
-
     labelCube = new Label(shell, SWT.RIGHT);
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
     fd.right = new FormAttachment(middle, -margin);
-    fd.top = new FormAttachment(buttonClearCube, margin);
+    fd.top = new FormAttachment(addConnectionLine, margin);
     labelCube.setLayoutData(fd);
 
     comboCube = new Combo(shell, SWT.READ_ONLY);
     fd = new FormData();
     fd.left = new FormAttachment(middle, 0);
     fd.right = new FormAttachment(100, 0);
-    fd.top = new FormAttachment(buttonClearCube, margin);
+    fd.top = new FormAttachment(addConnectionLine, margin);
     comboCube.setLayoutData(fd);
 
     labelMeasureType = new Label(shell, SWT.RIGHT);
@@ -180,6 +172,62 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
     fd.right = new FormAttachment(100, 0);
     fd.top = new FormAttachment(comboCube, margin);
     comboMeasureType.setLayoutData(fd);
+    
+    labelCommitSize = new Label(shell, SWT.RIGHT);
+    fd = new FormData();
+    fd.left = new FormAttachment(0, 0);
+    fd.right = new FormAttachment(middle, -margin);
+    fd.top = new FormAttachment(comboMeasureType, margin);
+    labelCommitSize.setLayoutData(fd);
+
+    textCommitSize = new Text(shell, SWT.BORDER);
+    fd = new FormData();
+    fd.left = new FormAttachment(middle, 0);
+    fd.right = new FormAttachment(100, 0);
+    fd.top = new FormAttachment(comboMeasureType, margin);
+    textCommitSize.setLayoutData(fd);
+
+    labelClearCube = new Label(shell, SWT.RIGHT);
+    fd = new FormData();
+    fd.left = new FormAttachment(0, 0);
+    fd.right = new FormAttachment(middle, -margin);
+    fd.top = new FormAttachment(textCommitSize, margin);
+    labelClearCube.setLayoutData(fd);
+
+    buttonClearCube = new Button(shell, SWT.CHECK);
+    fd = new FormData();
+    fd.left = new FormAttachment(middle, 0);
+    fd.right = new FormAttachment(100, 0);
+    fd.top = new FormAttachment(textCommitSize, margin);
+    buttonClearCube.setLayoutData(fd);
+    
+    labelEnableDimensionCache = new Label(shell, SWT.RIGHT);
+    fd = new FormData();
+    fd.left = new FormAttachment(0, 0);
+    fd.right = new FormAttachment(middle, -margin);
+    fd.top = new FormAttachment(buttonClearCube, margin);
+    labelEnableDimensionCache.setLayoutData(fd);
+
+    buttonEnableDimensionCache = new Button(shell, SWT.CHECK);
+    fd = new FormData();
+    fd.left = new FormAttachment(middle, 0);
+    fd.right = new FormAttachment(100, 0);
+    fd.top = new FormAttachment(buttonClearCube, margin);
+    buttonEnableDimensionCache.setLayoutData(fd);
+    
+    labelPreloadDimensionCache = new Label(shell, SWT.RIGHT);
+    fd = new FormData();
+    fd.left = new FormAttachment(0, 0);
+    fd.right = new FormAttachment(middle, -margin);
+    fd.top = new FormAttachment(buttonEnableDimensionCache, margin);
+    labelPreloadDimensionCache.setLayoutData(fd);
+
+    buttonPreloadDimensionCache = new Button(shell, SWT.CHECK);
+    fd = new FormData();
+    fd.left = new FormAttachment(middle, 0);
+    fd.right = new FormAttachment(100, 0);
+    fd.top = new FormAttachment(buttonEnableDimensionCache, margin);
+    buttonPreloadDimensionCache.setLayoutData(fd);
 
     ModifyListener lsMod = new ModifyListener() {
       public void modifyText(ModifyEvent e) {
@@ -201,7 +249,7 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
     tableViewFields.table.removeAll();
     fd = new FormData();
     fd.left = new FormAttachment(0, margin);
-    fd.top = new FormAttachment(comboMeasureType, 3 * margin);
+    fd.top = new FormAttachment(buttonPreloadDimensionCache, 3 * margin);
     fd.right = new FormAttachment(100, -150);
     fd.bottom = new FormAttachment(100, -50);
     tableViewFields.setLayoutData(fd);
@@ -209,7 +257,7 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
     buttonGetFields = new Button(shell, SWT.NONE);
     fd = new FormData();
     fd.left = new FormAttachment(tableViewFields, margin);
-    fd.top = new FormAttachment(comboMeasureType, 3 * margin);
+    fd.top = new FormAttachment(buttonPreloadDimensionCache, 3 * margin);
     fd.right = new FormAttachment(100, 0);
     buttonGetFields.setLayoutData(fd);
 
@@ -257,6 +305,11 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
         doSelectCube();
       }
     });
+    buttonEnableDimensionCache.addSelectionListener(new SelectionAdapter() {
+		public void widgetSelected(SelectionEvent arg0) {
+			buttonPreloadDimensionCache.setEnabled(buttonEnableDimensionCache.getSelection());
+		}
+	});
 
     this.fillLocalizedData();
     this.fillStoredData();
@@ -276,7 +329,13 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
     props.setLook(addConnectionLine);
     props.setLook(buttonClearCube);
     props.setLook(labelClearCube);
-
+    props.setLook(textCommitSize);
+    props.setLook(labelCommitSize);
+    props.setLook(labelPreloadDimensionCache);
+    props.setLook(buttonPreloadDimensionCache);
+    props.setLook(labelEnableDimensionCache);
+    props.setLook(buttonEnableDimensionCache);
+    
     shell.addShellListener(new ShellAdapter() {
       public void shellClosed(ShellEvent e) {
         cancel();
@@ -316,6 +375,9 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
     labelCube.setText(BaseMessages.getString(PKG, "PaloCellOutputDialog.SelectCube"));
     labelMeasureType.setText(BaseMessages.getString(PKG, "PaloCellOutputDialog.SelectMeasureType"));
     labelClearCube.setText(BaseMessages.getString(PKG, "PaloCellOutputDialog.ClearCube"));
+    labelCommitSize.setText(BaseMessages.getString(PKG, "PaloCellOutputDialog.CommitSize"));
+    labelPreloadDimensionCache.setText(BaseMessages.getString(PKG, "PaloCellOutputDialog.PreloadDimensionCache"));
+    labelEnableDimensionCache.setText(BaseMessages.getString(PKG, "PaloCellOutputDialog.EnableDimensionCache"));
   }
 
   private void fillStoredData() {
@@ -335,6 +397,11 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
       comboMeasureType.add(meta.getMeasureType());
       comboMeasureType.select(0);
     }
+    
+    textCommitSize.setText(String.valueOf(meta.getCommitSize()));
+    buttonEnableDimensionCache.setSelection(meta.getEnableDimensionCache());
+    buttonPreloadDimensionCache.setSelection(meta.getPreloadDimensionCache());
+	buttonPreloadDimensionCache.setEnabled(buttonEnableDimensionCache.getSelection());
 
     comboMeasureType.setItems(new String[] { "Numeric", "String" });
     comboMeasureType.select(0);
@@ -476,6 +543,14 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
     stepname = textStepName.getText();
     List<DimensionField> fields = new ArrayList<DimensionField>();
 
+    try{
+    	Integer.parseInt(this.textCommitSize.getText());
+    }
+    catch (Exception e){
+    	throw new KettleException(BaseMessages.getString(PKG, "PaloCellOutputDialog.CommitSizeErrorMessage"));
+    }
+
+
     for (int i = 0; i < tableViewFields.table.getItemCount(); i++) {
 
       DimensionField field = new DimensionField(tableViewFields.table.getItem(i).getText(1), tableViewFields.table.getItem(i).getText(2), ""// tableViewFields.table.getItem(i).getText(3)
@@ -489,11 +564,19 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
       } else
         myMeta.setMeasureField(field);
     }
+    
+    
     myMeta.setCube(this.comboCube.getText());
     myMeta.setMeasureType(this.comboMeasureType.getText());
     myMeta.setLevels(fields);
     myMeta.setClearCube(this.buttonClearCube.getSelection());
     myMeta.setDatabaseMeta(transMeta.findDatabase(addConnectionLine.getText()));
+    myMeta.setCommitSize(Integer.parseInt(this.textCommitSize.getText()));
+    myMeta.setEnableDimensionCache(this.buttonEnableDimensionCache.getSelection());
+    if (this.buttonEnableDimensionCache.getSelection())
+    	myMeta.setPreloadDimensionCache(this.buttonPreloadDimensionCache.getSelection());
+    else
+    	myMeta.setPreloadDimensionCache(false);
     myMeta.setChanged(true);
 
   }

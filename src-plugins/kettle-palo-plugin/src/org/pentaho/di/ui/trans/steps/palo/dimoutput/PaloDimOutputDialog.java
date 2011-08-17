@@ -40,7 +40,6 @@ import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.layout.FormAttachment;
@@ -98,12 +97,19 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
   private Label                   labelClearDimension;
   private Button                  buttonClearConsolidations;
   private Label                   labelClearConsolidations;
+  private Button                  buttonEnableElementCache;
+  private Label                   labelEnableElementCache;
+  private Button                  buttonPreloadElementCache;
+  private Label                   labelPreloadElementCache;
+  private Button                  buttonRecreateDimension;
+  private Label                   labelRecreateDimension;
   private Label                   labelDimension;
   private Label                   labelElementType;
   private Button                  buttonClearLevels;
   private Button                  buttonGetLevels;
   private Label                   labelStepName;
   private CCombo                  addConnectionLine;
+  
 
   public PaloDimOutputDialog(Shell parent, Object in, TransMeta transMeta, String sname) {
     super(parent, (BaseStepMeta) in, transMeta, sname);
@@ -165,20 +171,34 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
     fd.top = new FormAttachment(addConnectionLine, margin);
     buttonCreateDimension.setLayoutData(fd);
 
+    labelRecreateDimension = new Label(shell, SWT.RIGHT);
+    fd = new FormData();
+    fd.left = new FormAttachment(0, 0);
+    fd.right= new FormAttachment(middle, -margin);
+    fd.top  = new FormAttachment(buttonCreateDimension, margin);
+    labelRecreateDimension.setLayoutData(fd);
+    
+    buttonRecreateDimension = new Button(shell, SWT.CHECK);
+    fd = new FormData();
+    fd.left = new FormAttachment(middle, 0);
+    fd.right= new FormAttachment(100, 0);
+    fd.top  = new FormAttachment(buttonCreateDimension, margin);
+    buttonRecreateDimension.setLayoutData(fd);
+    
     labelClearDimension = new Label(shell, SWT.RIGHT);
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
     fd.right = new FormAttachment(middle, -margin);
-    fd.top = new FormAttachment(buttonCreateDimension, margin);
+    fd.top = new FormAttachment(buttonRecreateDimension, margin);
     labelClearDimension.setLayoutData(fd);
 
     buttonClearDimension = new Button(shell, SWT.CHECK);
     fd = new FormData();
     fd.left = new FormAttachment(middle, 0);
     fd.right = new FormAttachment(100, 0);
-    fd.top = new FormAttachment(buttonCreateDimension, margin);
+    fd.top = new FormAttachment(buttonRecreateDimension, margin);
     buttonClearDimension.setLayoutData(fd);
-
+    
     labelClearConsolidations = new Label(shell, SWT.RIGHT);
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
@@ -192,19 +212,47 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
     fd.right = new FormAttachment(100, 0);
     fd.top = new FormAttachment(buttonClearDimension, margin);
     buttonClearConsolidations.setLayoutData(fd);
-
-    labelDimension = new Label(shell, SWT.RIGHT);
+    
+    labelEnableElementCache = new Label(shell, SWT.RIGHT);
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
     fd.right = new FormAttachment(middle, -margin);
     fd.top = new FormAttachment(buttonClearConsolidations, margin);
+    labelEnableElementCache.setLayoutData(fd);
+
+    buttonEnableElementCache = new Button(shell, SWT.CHECK);
+    fd = new FormData();
+    fd.left = new FormAttachment(middle, 0);
+    fd.right = new FormAttachment(100, 0);
+    fd.top = new FormAttachment(buttonClearConsolidations, margin);
+    buttonEnableElementCache.setLayoutData(fd);
+    
+    labelPreloadElementCache = new Label(shell, SWT.RIGHT);
+    fd = new FormData();
+    fd.left = new FormAttachment(0, 0);
+    fd.right = new FormAttachment(middle, -margin);
+    fd.top = new FormAttachment(buttonEnableElementCache, margin);
+    labelPreloadElementCache.setLayoutData(fd);
+
+    buttonPreloadElementCache = new Button(shell, SWT.CHECK);
+    fd = new FormData();
+    fd.left = new FormAttachment(middle, 0);
+    fd.right = new FormAttachment(100, 0);
+    fd.top = new FormAttachment(buttonEnableElementCache, margin);
+    buttonPreloadElementCache.setLayoutData(fd);
+    
+    labelDimension = new Label(shell, SWT.RIGHT);
+    fd = new FormData();
+    fd.left = new FormAttachment(0, 0);
+    fd.right = new FormAttachment(middle, -margin);
+    fd.top = new FormAttachment(buttonPreloadElementCache, margin);
     labelDimension.setLayoutData(fd);
 
     comboDimension = new Combo(shell, SWT.SIMPLE | SWT.DROP_DOWN);
     fd = new FormData();
     fd.left = new FormAttachment(middle, 0);
     fd.right = new FormAttachment(100, 0);
-    fd.top = new FormAttachment(buttonClearConsolidations, margin);
+    fd.top = new FormAttachment(buttonPreloadElementCache, margin);
     comboDimension.setLayoutData(fd);
 
     labelElementType = new Label(shell, SWT.RIGHT);
@@ -221,8 +269,10 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
     fd.top = new FormAttachment(comboDimension, margin);
     comboElementType.setLayoutData(fd);
 
-    colinf = new ColumnInfo[] { new ColumnInfo(getLocalizedColumn(0), ColumnInfo.COLUMN_TYPE_TEXT, false, true), new ColumnInfo(getLocalizedColumn(1), ColumnInfo.COLUMN_TYPE_TEXT, false, false),
-        new ColumnInfo(getLocalizedColumn(2), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {}, true),
+    colinf = new ColumnInfo[] { new ColumnInfo(getLocalizedColumn(0), ColumnInfo.COLUMN_TYPE_TEXT, false, true), 
+    		new ColumnInfo(getLocalizedColumn(1), ColumnInfo.COLUMN_TYPE_TEXT, false, false),
+    		new ColumnInfo(getLocalizedColumn(2), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {}, true),
+    		new ColumnInfo(getLocalizedColumn(3), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {}, true),
 
     };
 
@@ -292,9 +342,21 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
         doSelectDimension();
       }
     });
+    buttonRecreateDimension.addSelectionListener(new SelectionAdapter() {
+		public void widgetSelected(SelectionEvent arg0) {
+			buttonClearDimension.setEnabled(!buttonRecreateDimension.getSelection());
+			buttonClearConsolidations.setEnabled(!buttonRecreateDimension.getSelection());
+		}
+	});
     buttonClearDimension.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent arg0) {
 			buttonClearConsolidations.setEnabled(!buttonClearDimension.getSelection());
+		}
+	});
+    
+    buttonEnableElementCache.addSelectionListener(new SelectionAdapter() {
+		public void widgetSelected(SelectionEvent arg0) {
+			buttonPreloadElementCache.setEnabled(buttonEnableElementCache.getSelection());
 		}
 	});
 
@@ -306,7 +368,7 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
     } catch (Exception e) {
 
     }
-
+    
     props.setLook(textStepName);
     props.setLook(comboDimension);
     props.setLook(comboElementType);
@@ -325,13 +387,18 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
     props.setLook(labelClearDimension);
     props.setLook(buttonClearConsolidations);
     props.setLook(labelClearConsolidations);
-
+    props.setLook(buttonRecreateDimension);
+    props.setLook(labelRecreateDimension);
+    props.setLook(buttonEnableElementCache);
+    props.setLook(labelEnableElementCache);
+    props.setLook(buttonPreloadElementCache);
+    props.setLook(labelPreloadElementCache);
+    
     shell.addShellListener(new ShellAdapter() {
       public void shellClosed(ShellEvent e) {
         cancel();
       }
     });
-    buttonClearConsolidations.setEnabled(!buttonClearDimension.getSelection());
     
     meta.setChanged(changed);
     setSize();
@@ -380,6 +447,17 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
     if (r != null) {
       String[] fieldNames = r.getFieldNames();
       colinf[2] = new ColumnInfo(getLocalizedColumn(2), ColumnInfo.COLUMN_TYPE_CCOMBO, fieldNames, true);
+
+      /* Get all number fields to include in the consolidation factor column */
+      String [] fieldTypes = r.getFieldNamesAndTypes(0);
+      ArrayList<String> intFields = new ArrayList<String>();
+      intFields.add(BaseMessages.getString(PKG, "PaloDimOutputDialog.ConsolidationFactorDefault"));
+      for (int i = 0; i < fieldNames.length; i++)
+    	  if (fieldTypes[i].toLowerCase().indexOf("integer") >= 0 || fieldTypes[i].toLowerCase().indexOf("number") > 0)
+    		  intFields.add(fieldNames[i]);
+      
+      String [] fieldNamesDefault = intFields.toArray(new String [intFields.size()]);
+      colinf[3] = new ColumnInfo(getLocalizedColumn(3), ColumnInfo.COLUMN_TYPE_CCOMBO, fieldNamesDefault, true);
     }
   }
 
@@ -394,7 +472,7 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
             data.helper.connect();
             List<PaloDimensionLevel> levels = data.helper.getDimensionLevels(comboDimension.getText());
             for (PaloDimensionLevel level : levels) {
-              tableViewFields.add(String.valueOf(level.getLevelNumber()), level.getLevelName(), level.getFieldName());// ,level.getFieldType());
+              tableViewFields.add(String.valueOf(level.getLevelNumber()), level.getLevelName(), level.getFieldName());
             }
             tableViewFields.removeEmptyRows();
             tableViewFields.setRowNums();
@@ -430,7 +508,7 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
     case 2:
       return BaseMessages.getString(PKG, "PaloDimOutputDialog.ColumnField");
     case 3:
-      return BaseMessages.getString(PKG, "PaloDimOutputDialog.ColumnType");
+      return BaseMessages.getString(PKG, "PaloDimOutputDialog.ColumnConsolidationFactor");
     default:
       return "";
     }
@@ -447,7 +525,11 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
     tableViewFields.table.removeAll();
     if (meta.getLevels().size() > 0) {
       for (PaloDimensionLevel level : meta.getLevels()) {
-        tableViewFields.add(String.valueOf(level.getLevelNumber()), level.getLevelName(), level.getFieldName());
+    	String consolidationFactor = level.getConsolidationFieldName();
+        if (consolidationFactor == null)
+        	consolidationFactor = BaseMessages.getString(PKG, "PaloDimOutputDialog.ConsolidationFactorDefault");
+        	
+        tableViewFields.add(String.valueOf(level.getLevelNumber()), level.getLevelName(), level.getFieldName(), consolidationFactor);
       }
       tableViewFields.setRowNums();
       tableViewFields.optWidth(true);
@@ -472,6 +554,17 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
     buttonCreateDimension.setSelection(meta.getCreateNewDimension());
     buttonClearDimension.setSelection(meta.getClearDimension());
     buttonClearConsolidations.setSelection(meta.getClearConsolidations());
+    buttonEnableElementCache.setSelection(meta.getEnableElementCache());
+    buttonPreloadElementCache.setSelection(meta.getPreloadElementCache());
+    buttonRecreateDimension.setSelection(meta.getRecreateDimension());
+    
+    buttonClearDimension.setEnabled(!buttonRecreateDimension.getSelection());
+	buttonClearConsolidations.setEnabled(!buttonRecreateDimension.getSelection());
+	buttonPreloadElementCache.setEnabled(buttonEnableElementCache.getSelection());
+	
+	if (buttonClearDimension.getEnabled())
+		buttonClearConsolidations.setEnabled(!buttonClearDimension.getSelection());
+	
 
   }
 
@@ -485,6 +578,9 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
     labelCreateDimension.setText(BaseMessages.getString(PKG, "PaloDimOutputDialog.CreateNewDimension"));
     labelClearDimension.setText(BaseMessages.getString(PKG, "PaloDimOutputDialog.ClearDimension"));
     labelClearConsolidations.setText(BaseMessages.getString(PKG, "PaloDimOutputDialog.ClearConsolidations"));
+    labelRecreateDimension.setText(BaseMessages.getString(PKG, "PaloDimOutputDialog.RecreateDimension"));
+    labelEnableElementCache.setText(BaseMessages.getString(PKG, "PaloDimOutputDialog.EnableElementCache"));
+    labelPreloadElementCache.setText(BaseMessages.getString(PKG, "PaloDimOutputDialog.PreloadElementCache"));
   }
 
   private void cancel() {
@@ -508,8 +604,11 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
 
     tableViewFields.removeEmptyRows();
     for (int i = 0; i < tableViewFields.table.getItemCount(); i++) {
-      PaloDimensionLevel level = new PaloDimensionLevel(tableViewFields.table.getItem(i).getText(2), i, tableViewFields.table.getItem(i).getText(3), "String"// tableViewFields.table.getItem(i).getText(4)
-      );
+      String consolidationFactor = tableViewFields.table.getItem(i).getText(4);
+      if (consolidationFactor.equals(BaseMessages.getString(PKG, "PaloDimOutputDialog.ConsolidationFactorDefault")))
+    		consolidationFactor = null;
+    	
+      PaloDimensionLevel level = new PaloDimensionLevel(tableViewFields.table.getItem(i).getText(2), i, tableViewFields.table.getItem(i).getText(3), "String",consolidationFactor);
       levels.add(level);
     }
     myMeta.setDatabaseMeta(transMeta.findDatabase(addConnectionLine.getText()));
@@ -521,6 +620,13 @@ public class PaloDimOutputDialog extends BaseStepDialog implements StepDialogInt
     	myMeta.setClearConsolidations(false);
     else myMeta.setClearConsolidations(buttonClearConsolidations.getSelection());
     
+    myMeta.setEnableElementCache(buttonEnableElementCache.getSelection());
+    
+    if (!this.buttonEnableElementCache.getSelection())
+    	myMeta.setPreloadElementCache(false);
+    else myMeta.setPreloadElementCache(buttonPreloadElementCache.getSelection());
+    
+    myMeta.setRecreateDimension(this.buttonRecreateDimension.getSelection());
     myMeta.setDimension(this.comboDimension.getText());
     myMeta.setElementType(this.comboElementType.getText());
     myMeta.setChanged(true);

@@ -31,6 +31,9 @@ package org.pentaho.di.trans.steps.palo.celloutput;
  */
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.PALODatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -42,6 +45,7 @@ public class PaloCellOutputData extends BaseStepData
 implements StepDataInterface {
     public PaloHelper helper;
     public int[] indexes;
+    public List<Object[]> batchCache = new ArrayList<Object[]>();
 	
     public PaloCellOutputData(DatabaseMeta databaseMeta) throws KettleException {
         super();

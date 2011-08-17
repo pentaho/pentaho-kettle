@@ -61,7 +61,12 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
 
-@Step(id = "PaloCellInput", image = "PaloCellInput.png", name = "Palo Cell Input", description="", categoryDescription="Palo")
+@Step(id = "PaloCellInput", 
+		image = "PaloCellInput.png", 
+		i18nPackageName="org.pentaho.di.trans.steps.palo.cellinput",
+		name = "PaloCellInput.TransName", 
+		description="PaloCellInput.TransDescription", 
+		categoryDescription="i18n:org.pentaho.di.trans.step:BaseStep.Category.Palo")
 public class PaloCellInputMeta extends BaseStepMeta 
 implements StepMetaInterface {
     private DatabaseMeta databaseMeta = null;

@@ -92,6 +92,8 @@ public class PaloDimInputDialog extends BaseStepDialog implements StepDialogInte
   private Button                 buttonCancel;
   private Button                 buttonPreview;
   private CCombo                 addConnectionLine;
+  private Label                  labelBaseElementsOnly;
+  private Button                 buttonBaseElementsOnly;
 
   public PaloDimInputDialog(Shell parent, Object in, TransMeta transMeta, String sname) {
     super(parent, (BaseStepMeta) in, transMeta, sname);
@@ -143,6 +145,20 @@ public class PaloDimInputDialog extends BaseStepDialog implements StepDialogInte
     fd.right = new FormAttachment(100, 0);
     fd.top = new FormAttachment(addConnectionLine, margin);
     comboDimension.setLayoutData(fd);
+    
+    labelBaseElementsOnly = new Label(shell, SWT.RIGHT);
+    fd = new FormData();
+    fd.left = new FormAttachment(0, 0);
+    fd.right = new FormAttachment(middle, -margin);
+    fd.top = new FormAttachment(comboDimension, margin);
+    labelBaseElementsOnly.setLayoutData(fd);
+
+    buttonBaseElementsOnly = new Button(shell, SWT.CHECK);
+    fd = new FormData();
+    fd.left = new FormAttachment(middle, 0);
+    fd.right = new FormAttachment(100, 0);
+    fd.top = new FormAttachment(comboDimension, margin);
+    buttonBaseElementsOnly.setLayoutData(fd);
 
     ModifyListener lsMod = new ModifyListener() {
       public void modifyText(ModifyEvent e) {
@@ -160,7 +176,7 @@ public class PaloDimInputDialog extends BaseStepDialog implements StepDialogInte
     tableViewFields.setSortable(false);
     fd = new FormData();
     fd.left = new FormAttachment(0, margin);
-    fd.top = new FormAttachment(comboDimension, 3 * margin);
+    fd.top = new FormAttachment(buttonBaseElementsOnly, 3 * margin);
     fd.right = new FormAttachment(100, -150);
     fd.bottom = new FormAttachment(100, -50);
     tableViewFields.setLayoutData(fd);
@@ -168,7 +184,7 @@ public class PaloDimInputDialog extends BaseStepDialog implements StepDialogInte
     buttonGetLevels = new Button(shell, SWT.NONE);
     fd = new FormData();
     fd.left = new FormAttachment(tableViewFields, margin);
-    fd.top = new FormAttachment(comboDimension, 3 * margin);
+    fd.top = new FormAttachment(buttonBaseElementsOnly, 3 * margin);
     fd.right = new FormAttachment(100, 0);
     buttonGetLevels.setLayoutData(fd);
 
@@ -238,6 +254,9 @@ public class PaloDimInputDialog extends BaseStepDialog implements StepDialogInte
     props.setLook(buttonCancel);
     props.setLook(buttonPreview);
     props.setLook(addConnectionLine);
+    props.setLook(labelBaseElementsOnly);
+    props.setLook(buttonBaseElementsOnly);
+    
 
     shell.addShellListener(new ShellAdapter() {
       public void shellClosed(ShellEvent e) {
@@ -278,6 +297,7 @@ public class PaloDimInputDialog extends BaseStepDialog implements StepDialogInte
     shell.setText(BaseMessages.getString(PKG, "PaloDimInputDialog.PaloDimInput"));
     buttonGetLevels.setText(BaseMessages.getString(PKG, "PaloDimInputDialog.GetLevels"));
     buttonClearLevels.setText(BaseMessages.getString(PKG, "PaloDimInputDialog.ClearLevels"));
+    labelBaseElementsOnly.setText(BaseMessages.getString(PKG, "PaloDimInputDialog.BaseElementsOnly"));
   }
 
   private void fillStoredData() {
@@ -293,7 +313,9 @@ public class PaloDimInputDialog extends BaseStepDialog implements StepDialogInte
       comboDimension.add(meta.getDimension());
       comboDimension.select(0);
     }
-
+    
+    buttonBaseElementsOnly.setSelection(meta.getBaseElementsOnly());
+    
     tableViewFields.table.removeAll();
     if (meta.getLevels().size() > 0) {
       for (PaloDimensionLevel level : meta.getLevels()) {
@@ -338,29 +360,37 @@ public class PaloDimInputDialog extends BaseStepDialog implements StepDialogInte
   }
 
   private void doGetLevels() {
-    if (comboDimension.getText() != null && comboDimension.getText() != "") {
-      try {
-        if (addConnectionLine.getText() != null) {
-          DatabaseMeta dbMeta = transMeta.findDatabase(addConnectionLine.getText());
-          if (dbMeta != null) {
-            PaloDimInputData data = new PaloDimInputData(dbMeta);
-            tableViewFields.table.removeAll();
-            data.helper.connect();
-            List<PaloDimensionLevel> levels = data.helper.getDimensionLevels(comboDimension.getText());
-            for (PaloDimensionLevel level : levels) {
-              tableViewFields.add(level.getLevelName(), String.valueOf(level.getLevelNumber()), level.getFieldName());
-            }
-            tableViewFields.setRowNums();
-            tableViewFields.optWidth(true);
-            data.helper.disconnect();
-          }
-        }
-      } catch (Exception ex) {
-        new ErrorDialog(shell, BaseMessages.getString("System.Dialog.GetFieldsFailed.Title"), BaseMessages.getString("System.Dialog.GetFieldsFailed.Message"), ex);
-      }
-    } else {
-      new ErrorDialog(shell, BaseMessages.getString("System.Dialog.GetFieldsFailed.Title"), BaseMessages.getString("System.Dialog.GetFieldsFailed.Message"), new Exception(BaseMessages.getString(PKG, "PaloDimInputDialog.SelectDimensionFirstError")));
-    }
+	  if (buttonBaseElementsOnly.getSelection()){
+		  tableViewFields.table.removeAll();
+		  tableViewFields.add(BaseMessages.getString(PKG, "PaloDimInputDialog.BaseElementName"), "0", comboDimension.getText(),"String");
+	  }
+	  else if (comboDimension.getText() != null && comboDimension.getText() != "") {
+		  try {
+			  if (addConnectionLine.getText() != null) {
+				  DatabaseMeta dbMeta = transMeta.findDatabase(addConnectionLine.getText());
+				  if (dbMeta != null) {
+					  PaloDimInputData data = new PaloDimInputData(dbMeta);
+					  tableViewFields.table.removeAll();
+					  data.helper.connect();
+					  List<PaloDimensionLevel> levels = data.helper.getDimensionLevels(comboDimension.getText());
+					  for (int i = 0; i < levels.size(); i++){
+						  PaloDimensionLevel level = levels.get(i);
+						  if (i < levels.size() - 1)
+							  tableViewFields.add(level.getLevelName(), String.valueOf(level.getLevelNumber()), level.getFieldName());
+						  else 
+							  tableViewFields.add(BaseMessages.getString(PKG, "PaloDimInputDialog.BaseElementName"), String.valueOf(level.getLevelNumber()), level.getFieldName());
+					  }
+					  tableViewFields.setRowNums();
+					  tableViewFields.optWidth(true);
+					  data.helper.disconnect();
+				  }
+			  }
+		  } catch (Exception ex) {
+			  new ErrorDialog(shell, BaseMessages.getString("System.Dialog.GetFieldsFailed.Title"), BaseMessages.getString("System.Dialog.GetFieldsFailed.Message"), ex);
+		  }
+	  } else {
+		  new ErrorDialog(shell, BaseMessages.getString("System.Dialog.GetFieldsFailed.Title"), BaseMessages.getString("System.Dialog.GetFieldsFailed.Message"), new Exception(BaseMessages.getString(PKG, "PaloDimInputDialog.SelectDimensionFirstError")));
+	  }
 
   }
 
@@ -384,13 +414,17 @@ public class PaloDimInputDialog extends BaseStepDialog implements StepDialogInte
     List<PaloDimensionLevel> levels = new ArrayList<PaloDimensionLevel>();
 
     for (int i = 0; i < tableViewFields.table.getItemCount(); i++) {
-      PaloDimensionLevel level = new PaloDimensionLevel(tableViewFields.table.getItem(i).getText(1), Integer.parseInt(tableViewFields.table.getItem(i).getText(2)), tableViewFields.table.getItem(i).getText(3), tableViewFields.table.getItem(i)
-          .getText(4));
+      PaloDimensionLevel level = new PaloDimensionLevel(
+    		  tableViewFields.table.getItem(i).getText(1), 
+    		  Integer.parseInt(tableViewFields.table.getItem(i).getText(2)), 
+    		  tableViewFields.table.getItem(i).getText(3), 
+    		  tableViewFields.table.getItem(i).getText(4));
       levels.add(level);
     }
     myMeta.setDatabaseMeta(transMeta.findDatabase(addConnectionLine.getText()));
     myMeta.setLevels(levels);
     myMeta.setDimension(comboDimension.getText());
+    myMeta.setBaseElementsOnly(buttonBaseElementsOnly.getSelection());
     myMeta.setChanged(true);
 
   }

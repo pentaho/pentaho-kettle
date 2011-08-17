@@ -70,14 +70,32 @@ public class PaloDimOutput extends BaseStep implements StepInterface {
       if (meta.getLevels().size() == 0)
         throw new KettleException("Number of levels must be greater that 0 to process the rows");
       this.logBasic("Number of defined levels: " + meta.getLevels().size());
-      data.indexes = new int[meta.getLevels().size()];
-      for (int i = 0; i < data.indexes.length; i++) {
-        String fieldName = meta.getLevels().get(i).getFieldName();
-        int numRow = getInputRowMeta().indexOfValue(fieldName);
+      
+      /* Indexes will follow [data index],[consolidation index],[data index],[consolidation index] .... */ 
+      data.indexes = new int[meta.getLevels().size() * 2];
+      for (int i = 0; i < meta.getLevels().size(); i++) {
+    
+    	/* Get data field index */
+    	String dataFieldName = meta.getLevels().get(i).getFieldName();
+        int numRow = getInputRowMeta().indexOfValue(dataFieldName);
         if (numRow < 0)
           throw new KettleException("DimOutput: failed to find input row meta for ".concat(meta.getLevels().get(i).getLevelName()));
-        data.indexes[i] = numRow;
+        data.indexes[i * 2] = numRow;
         this.logDebug(meta.getLevels().get(i).getLevelName() + " has index: " + numRow);
+        
+        /* Get consolidation field index */
+        String consolidationFieldName = meta.getLevels().get(i).getConsolidationFieldName();
+        if (consolidationFieldName == null){
+        	numRow = -1;
+	        this.logDebug("Consolidation factor was left to the default");
+        }
+        else{
+	        numRow = getInputRowMeta().indexOfValue(consolidationFieldName);
+	        if (numRow < 0)
+	          throw new KettleException("DimOutput: failed to find input row meta for ".concat(meta.getLevels().get(i).getConsolidationFieldName()));
+	        this.logDebug(meta.getLevels().get(i).getConsolidationFieldName() + " has index: " + numRow);
+        }
+        data.indexes[(i * 2) + 1] = numRow;
       }
     }
 
@@ -91,7 +109,7 @@ public class PaloDimOutput extends BaseStep implements StepInterface {
         this.logBasic("Consolidations got.");
         this.logBasic(newDimension == null ? "Null Consolidations" : " Consolidations Ok");
         this.logBasic("Add Dimension " + meta.getDimension());
-        data.helper.addDimension(meta.getDimension(), newDimension, meta.getCreateNewDimension(), meta.getClearDimension(), meta.getClearConsolidations(), meta.getElementType());
+        data.helper.addDimension(meta.getDimension(), newDimension, meta.getCreateNewDimension(), meta.getClearDimension(), meta.getClearConsolidations(), meta.getRecreateDimension(),meta.getEnableElementCache(), meta.getPreloadElementCache(),  meta.getElementType());
         this.logBasic("Dimension Added.");
         setOutputDone();
         return false;
@@ -102,9 +120,13 @@ public class PaloDimOutput extends BaseStep implements StepInterface {
 
     try {
 
-      String[] newRow = new String[meta.getLevels().size()];
+      String[] newRow = new String[data.indexes.length];
       for (int i = 0; i < data.indexes.length; i++) {
-        newRow[i] = r[data.indexes[i]].toString();
+    	/* Default weight to 1 if it was left to default */
+        if (i % 2 == 1 && data.indexes[i] < 0)
+    		newRow[i] = "1";
+    	else
+    		newRow[i] = r[data.indexes[i]].toString();
       }
       incrementLinesOutput();
       this.currentTransformationRows.add(newRow);

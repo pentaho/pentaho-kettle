@@ -60,7 +60,12 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
 
-@Step(id = "PaloCellOutput", image = "PaloCellOutput.png", name = "Palo Cell Output", description="", categoryDescription="Palo")
+@Step(id = "PaloCellOutput", 
+		image = "PaloCellOutput.png", 
+		i18nPackageName="org.pentaho.di.trans.steps.palo.celloutput",
+		name = "PaloCellOutput.TransName", 
+		description="PaloCellOutput.TransDescription", 
+		categoryDescription="i18n:org.pentaho.di.trans.step:BaseStep.Category.Palo")
 public class PaloCellOutputMeta extends BaseStepMeta 
     implements StepMetaInterface {
     
@@ -70,7 +75,9 @@ public class PaloCellOutputMeta extends BaseStepMeta
     private boolean clearCube;
     private List< DimensionField > fields = new ArrayList < DimensionField >();
     private DimensionField measureField = new DimensionField("","",""); 
-    
+    private int commitSize = 1000;
+    private boolean enableDimensionCache = true;
+    private boolean preloadDimensionCache = true;
     
     public PaloCellOutputMeta() {
         super();
@@ -109,6 +116,20 @@ public class PaloCellOutputMeta extends BaseStepMeta
             this.cube = XMLHandler.getTagValue(stepnode, "cube");
             measureType = XMLHandler.getTagValue(stepnode, "measuretype"); 
             clearCube = XMLHandler.getTagValue(stepnode, "clearcube").equals("Y") ? true : false; 
+            
+            /* For backwards compatibility */
+            try{
+            	enableDimensionCache = XMLHandler.getTagValue(stepnode, "enableDimensionCache").equals("Y") ? true : false;
+            	preloadDimensionCache = XMLHandler.getTagValue(stepnode, "preloadDimensionCache").equals("Y") ? true : false;
+            	commitSize = Integer.parseInt(XMLHandler.getTagValue(stepnode, "commitSize"));
+            	
+            }
+            catch (Exception e){
+            	enableDimensionCache = false;
+            	preloadDimensionCache = false;
+            	commitSize = 1000;
+            }
+            
             this.fields = new ArrayList < DimensionField >();
             
             Node fields = XMLHandler.getSubNode(stepnode,"fields");
@@ -173,11 +194,12 @@ public class PaloCellOutputMeta extends BaseStepMeta
         
         retval.append("    ").append(XMLHandler.addTagValue("connection", databaseMeta == null ? "" : databaseMeta.getName()));
         retval.append("    ").append(XMLHandler.addTagValue("cube", this.cube));
-        retval.append("    ")
-            .append(XMLHandler.addTagValue("measuretype", measureType));
-        retval.append("    ")
-        .append(XMLHandler.addTagValue("clearcube", clearCube)); 
-    
+        retval.append("    ").append(XMLHandler.addTagValue("measuretype", measureType));
+        retval.append("    ").append(XMLHandler.addTagValue("clearcube", clearCube));
+        retval.append("    ").append(XMLHandler.addTagValue("enableDimensionCache", enableDimensionCache));
+        retval.append("    ").append(XMLHandler.addTagValue("preloadDimensionCache", preloadDimensionCache)); 
+        retval.append("    ").append(XMLHandler.addTagValue("commitSize", commitSize));
+        
         retval.append("    <fields>").append(Const.CR);
         for (DimensionField field : this.fields) {
             retval.append("      <field>").append(Const.CR);
@@ -213,7 +235,21 @@ public class PaloCellOutputMeta extends BaseStepMeta
             this.cube = rep.getStepAttributeString(idStep, "cube");
             this.measureType = rep.getStepAttributeString(idStep, "measuretype"); 
             this.clearCube = rep.getStepAttributeBoolean(idStep, "clearcube");
-            
+
+            /* For backwards compatibility */
+            try{
+            	this.enableDimensionCache = rep.getStepAttributeBoolean(idStep, "enableDimensionCache");
+            	this.preloadDimensionCache = rep.getStepAttributeBoolean(idStep, "preloadDimensionCache");
+            	this.commitSize = (int) rep.getStepAttributeInteger(idStep, "commitSize");
+            	if (this.commitSize <= 0)
+            		this.setCommitSize(1000);
+            }
+            catch (Exception e){
+            	enableDimensionCache = false;
+            	preloadDimensionCache = false;
+            	commitSize = 1000;
+            }
+        	
             int nrFields = rep.countNrStepAttributes(idStep, "dimensionname");
             
             for (int i=0;i<nrFields;i++) {
@@ -238,6 +274,10 @@ public class PaloCellOutputMeta extends BaseStepMeta
             rep.saveStepAttribute(idTransformation, idStep, "cube", this.cube);
             rep.saveStepAttribute(idTransformation, idStep, "measuretype", this.measureType);
             rep.saveStepAttribute(idTransformation, idStep, "clearcube", this.clearCube); 
+            rep.saveStepAttribute(idTransformation, idStep, "preloadDimensionCache", this.preloadDimensionCache); 
+            rep.saveStepAttribute(idTransformation, idStep, "enableDimensionCache", this.enableDimensionCache);
+            rep.saveStepAttribute(idTransformation, idStep, "commitSize", this.commitSize); 
+            
             rep.saveStepAttribute(idTransformation, idStep, "measurename", this.measureField.getDimensionName());
             rep.saveStepAttribute(idTransformation, idStep, "measurefieldname", this.measureField.getFieldName());
             rep.saveStepAttribute(idTransformation, idStep, "measurefieldtype", this.measureField.getFieldType());
@@ -376,5 +416,25 @@ public class PaloCellOutputMeta extends BaseStepMeta
     public boolean getClearCube() {
         return this.clearCube;
     }
+
+    public void setCommitSize(int commitSize) {
+		this.commitSize = commitSize;
+	}
+
+	public int getCommitSize() {
+		return commitSize;
+	}
+	public void setEnableDimensionCache(boolean enableDimensionCache) {
+		this.enableDimensionCache = enableDimensionCache;
+	}
+	public boolean getEnableDimensionCache() {
+		return enableDimensionCache;
+	}
+	public void setPreloadDimensionCache(boolean preloadDimensionCache) {
+		this.preloadDimensionCache = preloadDimensionCache;
+	}
+	public boolean getPreloadDimensionCache() {
+		return preloadDimensionCache;
+	}
 
 }

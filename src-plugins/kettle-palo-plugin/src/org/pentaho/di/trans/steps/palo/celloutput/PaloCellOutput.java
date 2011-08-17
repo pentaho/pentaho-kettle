@@ -31,9 +31,6 @@ package org.pentaho.di.trans.steps.palo.celloutput;
  *   Copyright 2008 Stratebi Business Solutions, S.L.
  */
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.palo.core.PaloHelper;
 import org.pentaho.di.trans.Trans;
@@ -51,7 +48,7 @@ public class PaloCellOutput extends BaseStep implements StepInterface {
 
   private PaloCellOutputMeta meta;
   private PaloCellOutputData data;
-
+  
   public PaloCellOutput(final StepMeta stepMeta, final StepDataInterface stepDataInterface, final int copyNr, final TransMeta transMeta, final Trans trans) {
     super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
   }
@@ -99,19 +96,21 @@ public class PaloCellOutput extends BaseStep implements StepInterface {
         else
           newRow[i] = getInputRowMeta().getString(r, data.indexes[i]);
       }
-      List<Object[]> rows = new ArrayList<Object[]>();
-      rows.add(newRow);
-      try {
-        data.helper.addCells(meta.getCube(), rows);
-        incrementLinesOutput();
-      } catch (Exception ex) {
-        for (int k = 0; k < newRow.length; k++)
-          row += " " + getInputRowMeta().getString(r, k);
-        throw ex;
+      data.batchCache.add(newRow);
+      if (data.batchCache.size() == meta.getCommitSize()){
+    	  try {
+    		  data.helper.addCells(data.batchCache);
+    		  for (int i = 0; i < data.batchCache.size(); i++)
+    			  incrementLinesOutput();
+    	  }
+    	  finally{
+    		  data.batchCache.clear();
+    	  }
       }
     } catch (Exception e) {
       throw new KettleException("Failed to add Cell Row: " + row, e);
     }
+    
     return true;
   }
 
@@ -124,6 +123,8 @@ public class PaloCellOutput extends BaseStep implements StepInterface {
         this.logDebug("Meta Fields: " + meta.getFields().size());
         data.helper = new PaloHelper(meta.getDatabaseMeta());
         data.helper.connect();
+        data.helper.loadCubeCache(meta.getCube(), meta.getEnableDimensionCache(), meta.getPreloadDimensionCache());
+        data.batchCache.clear();
         return true;
       } catch (Exception e) {
         logError("An error occurred, processing will be stopped: " + e.getMessage());
@@ -135,7 +136,23 @@ public class PaloCellOutput extends BaseStep implements StepInterface {
   }
 
   public void dispose(StepMetaInterface smi, StepDataInterface sdi) {
-    data.helper.disconnect();
+	  try {
+		  if (getErrors() == 0 && data.batchCache.size() > 0){
+			  data.helper.addCells(data.batchCache);
+			  for (int i = 0; i < data.batchCache.size(); i++)
+				  incrementLinesOutput();
+		  }
+	  } catch (Exception ex) {
+		  logError("Unexpected error processing batch error", ex);
+          setErrors(1);
+          stopAll();
+	  }
+	  finally{
+		  data.batchCache.clear();
+		  data.helper.clearCubeCache();
+		  data.helper.disconnect();
+	  }
+    
     super.dispose(smi, sdi);
   }
 }

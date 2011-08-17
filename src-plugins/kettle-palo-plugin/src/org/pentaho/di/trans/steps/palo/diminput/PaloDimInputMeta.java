@@ -63,11 +63,17 @@ import org.w3c.dom.Node;
 /**
  *
  */
-@Step(id = "PaloDimInput", image = "PaloDimInput.png", name = "Palo Dim Input", description="", categoryDescription="Palo")
+@Step(id = "PaloDimInput", 
+		image = "PaloDimInput.png", 
+		i18nPackageName="org.pentaho.di.trans.steps.palo.diminput",
+		name = "PaloDimInput.TransName", 
+		description="PaloDimInput.TransDescription", 
+		categoryDescription="i18n:org.pentaho.di.trans.step:BaseStep.Category.Palo")
 public class PaloDimInputMeta extends BaseStepMeta 
 implements StepMetaInterface {
     private DatabaseMeta databaseMeta;
     private String dimension = "";
+    private boolean baseElementsOnly;
     private List < PaloDimensionLevel > levels = new ArrayList < PaloDimensionLevel > ();
     public PaloDimInputMeta() {
         super();
@@ -105,6 +111,9 @@ implements StepMetaInterface {
             this.databaseMeta = DatabaseMeta.findDatabase(
                     databases, XMLHandler.getTagValue(stepnode, "connection"));
             this.dimension = XMLHandler.getTagValue(stepnode, "dimension");
+            baseElementsOnly = (XMLHandler.getTagValue(stepnode, "baseElementsOnly") == null ? false :
+    			XMLHandler.getTagValue(stepnode, "baseElementsOnly").equals("Y") ? true : false);
+            
             this.levels = new ArrayList < PaloDimensionLevel >();
             
             Node levels = XMLHandler.getSubNode(stepnode,"levels");
@@ -139,7 +148,7 @@ implements StepMetaInterface {
         try {
             helper.connect();
             try {
-                final RowMetaInterface rowMeta = helper.getDimensionRowMeta(this.getDimension(),this.getLevels());
+                final RowMetaInterface rowMeta = helper.getDimensionRowMeta(this.getDimension(),this.getLevels(), this.getBaseElementsOnly());
                 row.addRowMeta(rowMeta);
             } finally {
                 helper.disconnect();
@@ -154,6 +163,7 @@ implements StepMetaInterface {
         
         retval.append("    ").append(XMLHandler.addTagValue("connection", databaseMeta == null ? "": databaseMeta.getName()));
         retval.append("    ").append(XMLHandler.addTagValue("dimension", dimension));
+        retval.append("    ").append(XMLHandler.addTagValue("baseElementsOnly", baseElementsOnly));
         
         retval.append("    <levels>").append(Const.CR);
         for (PaloDimensionLevel level : levels) {
@@ -172,6 +182,7 @@ implements StepMetaInterface {
         try {
             this.databaseMeta = rep.loadDatabaseMetaFromStepAttribute(idStep, "connection", databases);
             this.dimension = rep.getStepAttributeString(idStep, "dimension");
+            this.baseElementsOnly = rep.getStepAttributeBoolean(idStep, "baseElementsOnly");
             
             int nrLevels = rep.countNrStepAttributes(idStep, "levelname");
             
@@ -191,6 +202,7 @@ implements StepMetaInterface {
         try {
             rep.saveDatabaseMetaStepAttribute(idTransformation, idStep, "connection", databaseMeta);
             rep.saveStepAttribute(idTransformation, idStep, "dimension", this.dimension);
+            rep.saveStepAttribute(idTransformation, idStep, "baseElementsOnly", this.baseElementsOnly);
 
             for (int i=0;i<levels.size();i++) {
                 rep.saveStepAttribute(idTransformation, idStep, i, "levelname", this.levels.get(i).getLevelName());
@@ -305,4 +317,10 @@ implements StepMetaInterface {
     public void setLevels(List < PaloDimensionLevel > levels) {
         this.levels = levels; 
     }
+    public void setBaseElementsOnly(boolean baseElementsOnly) {
+		this.baseElementsOnly = baseElementsOnly;
+	}
+    public boolean getBaseElementsOnly() {
+		return baseElementsOnly;
+	}
 }
