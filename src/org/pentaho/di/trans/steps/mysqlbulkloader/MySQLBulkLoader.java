@@ -16,6 +16,7 @@ import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -51,6 +52,8 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
 
 	private MySQLBulkLoaderMeta meta;
 	private MySQLBulkLoaderData data;
+	private final long threadWaitTime = 300000;
+	private final String threadWaitTimeText = "5min";
     
 	public MySQLBulkLoader(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
 	{
@@ -287,9 +290,9 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
 		data.fifoStream.close();
 		data.fifoStream=null;
 
-        // wait for the INSERT statement to finish and check for any
-        // error and/or warning...
-        data.sqlRunner.join();
+        // wait for the INSERT statement to finish and check for any error and/or warning...
+		logDebug("Waiting up to " + this.threadWaitTimeText + " for the MySQL load command thread to finish processing.");
+        data.sqlRunner.join(this.threadWaitTime);
         SqlRunner sqlRunner = data.sqlRunner;
         data.sqlRunner = null;
         sqlRunner.checkExcn();
@@ -397,20 +400,27 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
     		  data.fifoStream.flush();
     		}
     	}
-    	catch(Exception e)
+    	catch(IOException e)
     	{
-    		// If something went wrong with the import,  
-    		// rather return that error, in stead of "Pipe Broken"
+    		// If something went wrong with writing to the fifo, get the underlying error from MySQL  
     		try{
+    			logError("IOException writing to fifo.  Waiting up to " + this.threadWaitTimeText + " for the MySQL load command thread to return with the error.");
+    			try{ data.sqlRunner.join(this.threadWaitTime); }
+    			catch (InterruptedException ex){}
     			data.sqlRunner.checkExcn();
     		}
     		catch (Exception loadEx){
     			throw new KettleException("Error serializing rows of data to the fifo file", loadEx);
     		}
     		
-    		throw new KettleException("Error serializing rows of data to the fifo file", e);
+			// MySQL didn't finish, throw the generic "Pipe" exception.
+			throw new KettleException("Error serializing rows of data to the fifo file", e);
+
     	}
-		
+    	catch (Exception e2){ 
+    		// Null pointer exceptions etc.
+    		throw new KettleException("Error serializing rows of data to the fifo file", e2);
+    	}
 	}
 
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
