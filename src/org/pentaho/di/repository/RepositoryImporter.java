@@ -109,12 +109,22 @@ public class RepositoryImporter implements IRepositoryImporter {
       for (RepositoryObject ro : referencingObjects) {
         if (ro.getObjectType()==RepositoryObjectType.TRANSFORMATION) {
           TransMeta transMeta = rep.loadTransformation(ro.getObjectId(), null);
-          transMeta.lookupRepositoryReferences(rep);
+          try {
+            transMeta.lookupRepositoryReferences(rep);
+          } catch (KettleException e) {
+           // log and continue; might fail from exports performed before PDI-5294
+            feedback.addLog(BaseMessages.getString(PKG, "RepositoryImporter.LookupRepoRefsError.Log", transMeta.getName()));
+          }
           rep.save(transMeta, "import object reference specification", null);
         }
         if (ro.getObjectType()==RepositoryObjectType.JOB) {
           JobMeta jobMeta = rep.loadJob(ro.getObjectId(), null);
-          jobMeta.lookupRepositoryReferences(rep);
+          try {
+            jobMeta.lookupRepositoryReferences(rep);
+          } catch (KettleException e) {
+            // log and continue; might fail from exports performed before PDI-5294
+            feedback.addLog(BaseMessages.getString(PKG, "RepositoryImporter.LookupRepoRefsError.Log", jobMeta.getName()));
+          }
           rep.save(jobMeta, "import object reference specification", null);
         }
       }
