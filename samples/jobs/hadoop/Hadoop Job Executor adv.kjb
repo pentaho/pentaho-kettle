@@ -70,7 +70,7 @@
 <schema/>
 <table/>
 <timeout_days/>
-<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>JOBNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>JOBENTRYNAME</id><enabled>Y</enabled><name>STEPNAME</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>RESULT</id><enabled>Y</enabled><name>RESULT</name></field><field><id>NR_RESULT_ROWS</id><enabled>Y</enabled><name>NR_RESULT_ROWS</name></field><field><id>NR_RESULT_FILES</id><enabled>Y</enabled><name>NR_RESULT_FILES</name></field><field><id>LOG_FIELD</id><enabled>N</enabled><name>LOG_FIELD</name></field></jobentry-log-table>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>JOBNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>JOBENTRYNAME</id><enabled>Y</enabled><name>STEPNAME</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>RESULT</id><enabled>Y</enabled><name>RESULT</name></field><field><id>NR_RESULT_ROWS</id><enabled>Y</enabled><name>NR_RESULT_ROWS</name></field><field><id>NR_RESULT_FILES</id><enabled>Y</enabled><name>NR_RESULT_FILES</name></field><field><id>LOG_FIELD</id><enabled>N</enabled><name>LOG_FIELD</name></field><field><id>COPY_NR</id><enabled>N</enabled><name>COPY_NR</name></field></jobentry-log-table>
 <channel-log-table><connection/>
 <schema/>
 <table/>
@@ -86,13 +86,13 @@
       <hadoop_job_name>hadoopjob - wordcount</hadoop_job_name>
       <simple>N</simple>
       <jar_url>.&#47;samples&#47;jobs&#47;hadoop&#47;pentaho-mapreduce-sample.jar</jar_url>
-      <command_line_args>-inputpath=&#47;home&#47;mdamour&#47;input -outputpath=&#47;tmp&#47;output</command_line_args>
+      <command_line_args>--input=&#47;wordcount&#47;input --output=&#47;wordcount&#47;output --hdfsHost=hadoop-server:8020 --jobTrackerHost=hadoop-server:8021</command_line_args>
       <blocking>Y</blocking>
       <logging_interval>5</logging_interval>
       <hadoop_job_name>hadoopjob - wordcount</hadoop_job_name>
-      <mapper_class>org.pentaho.hadoop.mapreduce.sample.SimpleWordCount$Map</mapper_class>
-      <combiner_class>org.pentaho.hadoop.mapreduce.sample.SimpleWordCount$Reduce</combiner_class>
-      <reducer_class>org.pentaho.hadoop.mapreduce.sample.SimpleWordCount$Reduce</reducer_class>
+      <mapper_class>org.pentaho.hadoop.sample.wordcount.WordCountMapper</mapper_class>
+      <combiner_class>org.pentaho.hadoop.sample.wordcount.WordCountReducer</combiner_class>
+      <reducer_class>org.pentaho.hadoop.sample.wordcount.WordCountReducer</reducer_class>
       <input_path>&#47;wordcount&#47;input</input_path>
       <input_format_class>org.apache.hadoop.mapred.TextInputFormat</input_format_class>
       <output_path>&#47;wordcount&#47;output</output_path>
@@ -100,9 +100,9 @@
       <output_value_class>org.apache.hadoop.io.IntWritable</output_value_class>
       <output_format_class>org.apache.hadoop.mapred.TextOutputFormat</output_format_class>
       <hdfs_hostname>hadoop-server</hdfs_hostname>
-      <hdfs_port>9000</hdfs_port>
+      <hdfs_port>8020</hdfs_port>
       <job_tracker_hostname>hadoop-server</job_tracker_hostname>
-      <job_tracker_port>9001</job_tracker_port>
+      <job_tracker_port>8021</job_tracker_port>
       <num_map_tasks>2</num_map_tasks>
       <num_reduce_tasks>1</num_reduce_tasks>
       <working_dir>&#47;tmp&#47;pdiwordcount</working_dir>
@@ -151,7 +151,7 @@
       <limit_folders>10</limit_folders>
       <fields>
         <field>
-          <name>hdfs:&#47;&#47;hadoop-server:9000&#47;wordcount&#47;output</name>
+          <name>hdfs:&#47;&#47;hadoop-server:8020&#47;wordcount&#47;output</name>
         </field>
       </fields>
       <parallel>N</parallel>
@@ -277,11 +277,13 @@
     - Input Path - the path in HDFS from which to read files for counting
     - Output Path - where the processed count of words will be placed
     - HDFS Hostname
-    - Job Tracker Hostname</note>
+    - Job Tracker Hostname
+
+*Note: Source code for the sample jar can be found alongside this sample in your samples directory.</note>
       <xloc>15</xloc>
       <yloc>26</yloc>
-      <width>847</width>
-      <heigth>110</heigth>
+      <width>578</width>
+      <heigth>100</heigth>
       <fontname>Microsoft Sans Serif</fontname>
       <fontsize>8</fontsize>
       <fontbold>N</fontbold>

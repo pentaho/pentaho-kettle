@@ -1,6 +1,6 @@
 The sample-src contains code that can be built and jar'd for use by the Hadoop 
-Job Executor - Simple Mode. The sample is a WordCount example where 4 command
-line arguments can be passed in to override the defaults.
+Job Executor. The sample is a WordCount example where 4 command ine arguments
+can be passed in to override the defaults.
 
 --input=DIR                   The directory containing the input files for the
                               WordCount Hadoop job
@@ -10,6 +10,3 @@ line arguments can be passed in to override the defaults.
                               e.g.- localhost:9000
 --jobTrackerHost=HOST         The host<:port> of the job tracker service
                               e.g.- localhost:9001
-                              
-To use this code build and jar it manually. Do NOT include this code in the
-project as no other code is expecting it and the results are undetermined.
