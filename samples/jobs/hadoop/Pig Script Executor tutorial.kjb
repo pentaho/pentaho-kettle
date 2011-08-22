@@ -64,9 +64,9 @@
       <description/>
       <type>HadoopPigScriptExecutorPlugin</type>
     <hdfs_hostname>hadoop-server</hdfs_hostname>
-    <hdfs_port>9000</hdfs_port>
+    <hdfs_port>8020</hdfs_port>
     <jobtracker_hostname>hadoop-server</jobtracker_hostname>
-    <jobtracker_port>9001</jobtracker_port>
+    <jobtracker_port>8021</jobtracker_port>
     <script_file>.&#47;samples&#47;jobs&#47;hadoop&#47;script1-hadoop-mod.pig</script_file>
     <enable_blocking>Y</enable_blocking>
     <local_execution>N</local_execution>
@@ -127,7 +127,7 @@
       <fields>
         <field>
           <source_filefolder>.&#47;samples&#47;jobs&#47;hadoop&#47;excite.log.bz2</source_filefolder>
-          <destination_filefolder>hdfs:&#47;&#47;hadoop-server:9000&#47;.</destination_filefolder>
+          <destination_filefolder>hdfs:&#47;&#47;hadoop-server:8020&#47;.</destination_filefolder>
           <wildcard/>
         </field>
       </fields>
@@ -146,7 +146,7 @@
       <limit_folders>10</limit_folders>
       <fields>
         <field>
-          <name>hdfs:&#47;&#47;hadoop-server:9000&#47;script1-hadoop-results</name>
+          <name>hdfs:&#47;&#47;hadoop-server:8020&#47;script1-hadoop-results</name>
         </field>
       </fields>
       <parallel>N</parallel>

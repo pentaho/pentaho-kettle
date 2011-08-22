@@ -64,9 +64,9 @@
       <description/>
       <type>HadoopPigScriptExecutorPlugin</type>
     <hdfs_hostname>localhost</hdfs_hostname>
-    <hdfs_port>9000</hdfs_port>
+    <hdfs_port>8020</hdfs_port>
     <jobtracker_hostname>localhost</jobtracker_hostname>
-    <jobtracker_port>9001</jobtracker_port>
+    <jobtracker_port>8021</jobtracker_port>
     <script_file>.&#47;samples&#47;jobs&#47;hadoop&#47;script1-local-mod.pig</script_file>
     <enable_blocking>Y</enable_blocking>
     <local_execution>Y</local_execution>
