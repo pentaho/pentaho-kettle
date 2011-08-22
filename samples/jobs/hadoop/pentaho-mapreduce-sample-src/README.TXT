@@ -1,6 +1,6 @@
-The sample-src contains code that can be built and jar'd for use by the Hadoop 
-Job Executor. The sample is a WordCount example where 4 command ine arguments
-can be passed in to override the defaults.
+The pentaho-mapreduce-sample-src contains code that can be built and jar'd for
+use by the Hadoop Job Executor. The sample is a WordCount example where 4 
+command line arguments can be passed in to override the defaults.
 
 --input=DIR                   The directory containing the input files for the
                               WordCount Hadoop job
