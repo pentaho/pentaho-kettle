@@ -870,6 +870,9 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		addParametersTab(mappingParameters);
 		wTabFolder.setSelection(0);
 
+		wMultiInput.setSelection(mappingMeta.isAllowingMultipleInputs());
+		wMultiOutput.setSelection(mappingMeta.isAllowingMultipleOutputs());
+
 		// Now add the input stream tabs: where is our data coming from?
 		for (int i = 0; i < inputMappings.size(); i++)
 		{
@@ -889,9 +892,6 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		{
 
 		}
-		
-		wMultiInput.setSelection(mappingMeta.isAllowingMultipleInputs());
-    wMultiOutput.setSelection(mappingMeta.isAllowingMultipleOutputs());
     
     setFlags();
 	}
