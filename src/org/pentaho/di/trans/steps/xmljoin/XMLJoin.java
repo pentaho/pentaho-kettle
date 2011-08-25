@@ -116,7 +116,7 @@ public class XMLJoin extends BaseStep implements StepInterface
             	if(! meta.isComplexJoin()){
             		data.targetNode = (Node) xpath.evaluate(data.XPathStatement, data.targetDOM, XPathConstants.NODE);
             		if(data.targetNode == null){
-            			throw new KettleXMLException("XPath statement returned no reuslt [" + data.XPathStatement +"]"); //$NON-NLS-1$ //$NON-NLS-2$
+            			throw new KettleXMLException("XPath statement returned no result [" + data.XPathStatement +"]"); //$NON-NLS-1$ //$NON-NLS-2$
             		}
             	}
         	}
