@@ -210,7 +210,7 @@ public class XMLJoin extends BaseStep implements StepInterface
 	    		try{
 	    			data.targetNode = (Node) xpath.evaluate(strXPathStatement, data.targetDOM, XPathConstants.NODE);
 	    			if(data.targetNode == null){
-            			throw new KettleXMLException("XPath statement returned no reuslt [" + strXPathStatement +"]"); //$NON-NLS-1$ //$NON-NLS-2$
+            			throw new KettleXMLException("XPath statement returned no result [" + strXPathStatement +"]"); //$NON-NLS-1$ //$NON-NLS-2$
             		}else{
             			data.targetNode.appendChild(node);
             		}
