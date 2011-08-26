@@ -1254,9 +1254,9 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 		int lastindexOfDot=retval.lastIndexOf('.');
 		if(lastindexOfDot==-1) lastindexOfDot=lenstring;
 		
-		retval=retval.substring(0, lastindexOfDot);
 		if(!SpecifyFormat && !adddate && !addtime) return retval;
 		
+		retval=retval.substring(0, lastindexOfDot);		
 		
 		if(daf==null) daf  = new SimpleDateFormat();
 		
