@@ -1243,18 +1243,19 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
      */
 	protected String getTargetFilename(FileObject file) throws FileSystemException
     {
-		
+
         String retval="";
         String filename=file.getName().getPath();
 		// Replace possible environment variables...
 		if(filename!=null) retval=filename;
 		if(file.getType()!= FileType.FILE) return retval;
 		
+		if(!SpecifyFormat && !adddate && !addtime) return retval;
+		
 		int lenstring=retval.length();
 		int lastindexOfDot=retval.lastIndexOf('.');
 		if(lastindexOfDot==-1) lastindexOfDot=lenstring;
 		
-		if(!SpecifyFormat && !adddate && !addtime) return retval;
 		
 		retval=retval.substring(0, lastindexOfDot);		
 		
@@ -1282,8 +1283,9 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 		}
 		
 		if(daf!=null) dateFormatSet=true;
-		retval+=filename.substring(lastindexOfDot, lenstring);
 
+		retval+=filename.substring(lastindexOfDot, lenstring);
+	
 		return retval;
 
         
