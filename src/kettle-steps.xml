@@ -1261,11 +1261,19 @@
 	
   <step id="RuleExecutor">
     <description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.RuleExecutor</description>
-    <classname>org.pentaho.di.trans.steps.rules.RulesMeta</classname>
+    <classname>org.pentaho.di.trans.steps.rules.RulesExecutorMeta</classname>
     <category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
     <tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.RuleExecutor</tooltip>
     <iconfile>ui/images/SCR_mod.png</iconfile>
   </step>
+  <step id="RuleAccumulator">
+    <description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.RuleAccumulator</description>
+    <classname>org.pentaho.di.trans.steps.rules.RulesAccumulatorMeta</classname>
+    <category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
+    <tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.RuleAccumulator</tooltip>
+    <iconfile>ui/images/SCR_mod.png</iconfile>
+  </step>  
+  
   <step id="SSH">
     <description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SSH</description>
     <classname>org.pentaho.di.trans.steps.ssh.SSHMeta</classname>

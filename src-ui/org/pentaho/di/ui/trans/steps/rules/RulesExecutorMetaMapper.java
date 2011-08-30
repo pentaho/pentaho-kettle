@@ -22,11 +22,11 @@ import java.util.Vector;
 
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.trans.steps.rules.RulesMeta;
+import org.pentaho.di.trans.steps.rules.RulesExecutorMeta;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.util.AbstractModelList;
 
-public class RulesMetaMapper extends XulEventSourceAdapter {
+public class RulesExecutorMetaMapper extends XulEventSourceAdapter {
 	// Setup properties for holding dialog data
 	protected String ruleFile;
 	protected String ruleDefinition;
@@ -100,7 +100,7 @@ public class RulesMetaMapper extends XulEventSourceAdapter {
 	 * Load data into the MetaMapper from the RulesMeta
 	 * @param meta
 	 */
-	public void loadMeta(RulesMeta meta) {
+	public void loadMeta(RulesExecutorMeta meta) {
 		setRuleFile(meta.getRuleFile());
 		setRuleDefinition(meta.getRuleDefinition());
 		setKeepInputFields(Boolean.toString(meta.isKeepInputFields()));
@@ -118,7 +118,7 @@ public class RulesMetaMapper extends XulEventSourceAdapter {
 	 * Save data from the MetaMapper into the RulesMeta
 	 * @param meta
 	 */
-	public void saveMeta(RulesMeta meta) {
+	public void saveMeta(RulesExecutorMeta meta) {
 		if(ruleSource != null && ruleSource.equalsIgnoreCase("file")) {
 			if(meta.getRuleFile() != null && !meta.getRuleFile().equals(getRuleFile())
 					|| (meta.getRuleFile() != getRuleFile())

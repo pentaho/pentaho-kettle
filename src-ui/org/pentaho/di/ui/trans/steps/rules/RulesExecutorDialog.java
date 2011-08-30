@@ -20,33 +20,33 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.trans.steps.rules.Rules;
-import org.pentaho.di.trans.steps.rules.RulesMeta;
+import org.pentaho.di.trans.steps.rules.RulesExecutor;
+import org.pentaho.di.trans.steps.rules.RulesExecutorMeta;
 import org.pentaho.di.ui.trans.step.BaseStepXulDialog;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.components.XulRadio;
 import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulTree;
 
-public class RulesDialog extends BaseStepXulDialog implements StepDialogInterface {
-	private RulesMetaMapper metaMapper;
+public class RulesExecutorDialog extends BaseStepXulDialog implements StepDialogInterface {
+	private RulesExecutorMetaMapper metaMapper;
 	private String workingStepname;
 	
-	public RulesDialog( Shell parent, Object in, TransMeta tr, String sname ) {
-	    super("org/pentaho/di/ui/trans/steps/rules/dialog.xul", parent, (BaseStepMeta) in, tr, sname);
+	public RulesExecutorDialog( Shell parent, Object in, TransMeta tr, String sname ) {
+	    super("org/pentaho/di/ui/trans/steps/rules/executorDialog.xul", parent, (BaseStepMeta) in, tr, sname);
 	    init();
 	}
 
 	@Override
 	protected final Class<?> getClassForMessages() {
-		return Rules.class; // for i18n purposes
+		return RulesExecutor.class; // for i18n purposes
 	}
 
 	public void init() {
 		workingStepname = stepname;
 		
-		metaMapper = new RulesMetaMapper();
-		metaMapper.loadMeta((RulesMeta)baseStepMeta);
+		metaMapper = new RulesExecutorMetaMapper();
+		metaMapper.loadMeta((RulesExecutorMeta)baseStepMeta);
 		
 		// Set dialog values
 		((XulTextbox)document.getElementById("step-name")).setValue(getStepName());
@@ -104,7 +104,7 @@ public class RulesDialog extends BaseStepXulDialog implements StepDialogInterfac
 			baseStepMeta.setChanged();
 		}
 		
-		metaMapper.saveMeta((RulesMeta)baseStepMeta);
+		metaMapper.saveMeta((RulesExecutorMeta)baseStepMeta);
 		dispose();
 	}
 

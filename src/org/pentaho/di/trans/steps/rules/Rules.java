@@ -1,156 +1,115 @@
+/*
+ * This program is free software; you can redistribute it and/or modify it under the
+ * terms of the GNU Lesser General Public License, version 2.1 as published by the Free Software
+ * Foundation.
+ *
+ * You should have received a copy of the GNU Lesser General Public License along with this
+ * program; if not, you can obtain a copy at http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html
+ * or from the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+ * without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See the GNU Lesser General Public License for more details.
+ *
+ * Copyright (c) 2010 Pentaho Corporation.  All rights reserved.
+ */
+
 package org.pentaho.di.trans.steps.rules;
 
-import java.util.Arrays;
-
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleStepException;
-import org.pentaho.di.trans.Trans;
-import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.BaseStep;
-import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepInterface;
-import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
+import java.util.Hashtable;
+import java.util.Map;
 
 /**
- * This Transformation Step allows a user to execute a rule set against
- * an individual rule or a collection of rules.
- * 
- * Additional columns can be added to the output from the rules and these
- * (of course) can be used for routing if desired.
  * 
  * @author cboyden
  *
  */
 
-public class Rules extends BaseStep implements StepInterface {
-	// private static Class<?> PKG = Rules.class; // for i18n purposes
-	
-	private RulesMeta meta;
-	private RulesData data;
-	
-	public static class Column {
-		private String          name;
-	    private String          type;
-	    private Object          payload;
-	    private Boolean			external;
-	    
-	    public Column() {
-	    	this.external = false;
-	    }
-	    
-	    public Column(Boolean external) {
-	    	this.external = external;
-	    }
-		
-	    public String getName() {
-			return name;
-		}
-		public void setName(String name) {
-			this.name = name;
-		}
-		public String getType() {
-			return type;
-		}
-		public void setType(String type) {
-			this.type = type;
-		}
-		public Object getPayload() {
-			return payload;
-		}
-		public void setPayload(Object payload) {
-			this.payload = payload;
-		}
-		public void setExternalSource(Boolean external) {
-			this.external = external;
-		}
-		public Boolean isExternalSource() {
-			return external;
-		}
-	}
+public class Rules {
 
-	public Rules(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans) {
-		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
-	}
-	
-	
-	public boolean init(StepMetaInterface smi, StepDataInterface sdi) {
+  public static class Row {
+    private Map<String, Object> row;
 
-        meta = (RulesMeta) smi;
-        data = (RulesData) sdi;
+    private Boolean external;
 
-        if (super.init(smi, sdi)) {
-            return true;
-        }
-        return false;
-    }
-	
-	public boolean runtimeInit() throws KettleStepException {
-    	data.setOutputRowMeta(getInputRowMeta().clone()); 
-        meta.getFields(data.getOutputRowMeta(), getStepname(), null, null, this);
-		
-		data.setRuleFilePath(meta.getRuleFile());
-		data.setRuleString(meta.getRuleDefinition());
-		
-		data.initializeRules();
-		data.initializeColumns(getInputRowMeta());
-		
-		return true;
+    public Row() {
+      this(new Hashtable<String, Object>(), false);
     }
 
-    public void dispose(StepMetaInterface smi, StepDataInterface sdi) {
-        meta = (RulesMeta) smi;
-        data = (RulesData) sdi;
-
-        super.dispose(smi, sdi);
+    public Row(Map<String, Object> row) {
+      this(row, false);
     }
-    
-    public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException {
-        meta = (RulesMeta) smi;
-        data = (RulesData) sdi;
-        
-        Object[] r=getRow();    // get row, set busy!
-		if (r==null)  // no more input to be expected...
-		{
-			data.shutdown();
-			setOutputDone();
-			return false;
-		}
-		
-		if(first) {
-			if(!runtimeInit()) {
-				return false;
-			}
-			
-			first = false;
-		}
-		
-		// Load the column objects
-		data.loadRow(r);
-		
-		data.execute();
 
-		Object[] outputRow;
-		int beginOutputRowFill = 0;
-		
-		String[] expectedResults = meta.getExpectedResultList();
-
-		if(meta.isKeepInputFields()) {
-			int inputRowSize = getInputRowMeta().size();
-			outputRow = Arrays.copyOf(r,  inputRowSize + expectedResults.length);
-			beginOutputRowFill = inputRowSize;
-		} else {
-			outputRow = new Object[expectedResults.length];
-		}
-		
-		Rules.Column result = null;
-		for(int i = 0; i < expectedResults.length; i++) {
-			result = (Rules.Column)data.fetchResult(expectedResults[i]);
-			outputRow[i + beginOutputRowFill] = result == null ? null : result.getPayload();
-		}
-		
-		putRow(data.getOutputRowMeta(), outputRow);
-        
-        return true;
+    public Row(boolean external) {
+      this(new Hashtable<String, Object>(), external);
     }
+
+    public Row(Map<String, Object> row, boolean external) {
+      this.row = row;
+      this.external = external;
+    }
+
+    public Map<String, Object> getColumn() {
+      return row;
+    }
+
+    public boolean isExternalSource() {
+      return external;
+    }
+
+    public void addColumn(String columnName, Object value) {
+      row.put(columnName, value);
+    }
+  }
+
+  public static class Column {
+    private String name;
+
+    private String type;
+
+    private Object payload;
+
+    private Boolean external;
+
+    public Column() {
+      this.external = false;
+    }
+
+    public Column(Boolean external) {
+      this.external = external;
+    }
+
+    public String getName() {
+      return name;
+    }
+
+    public void setName(String name) {
+      this.name = name;
+    }
+
+    public String getType() {
+      return type;
+    }
+
+    public void setType(String type) {
+      this.type = type;
+    }
+
+    public Object getPayload() {
+      return payload;
+    }
+
+    public void setPayload(Object payload) {
+      this.payload = payload;
+    }
+
+    public void setExternalSource(Boolean external) {
+      this.external = external;
+    }
+
+    public Boolean isExternalSource() {
+      return external;
+    }
+  }
 }
