@@ -10,6 +10,7 @@
 	<classpathentry kind="src" output="src-plugins/kettle-gpload-plugin/bin/classes-eclipse" path="src-plugins/kettle-gpload-plugin/src"/>
 	<classpathentry kind="src" output="src-plugins/kettle-gpload-plugin/bin/classes-eclipse" path="src-plugins/kettle-gpload-plugin/test"/>
 	<classpathentry kind="src" output="src-plugins/kettle-palo-plugin/bin/classes-eclipse" path="src-plugins/kettle-palo-plugin/src"/>
+	<classpathentry kind="src" path="src-plugins/kettle-openerp-plugin/src"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="lib" path="libext/js.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/mail.jar"/>
@@ -265,5 +266,9 @@
 	<classpathentry kind="lib" path="libext/elasticsearch/lucene-memory-3.1.0.jar"/>
 	<classpathentry kind="lib" path="libext/elasticsearch/lucene-queries-3.1.0.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/mysql-connector-java-5.1.17.jar"/>
+	<classpathentry kind="lib" path="libext/webservices/openerp-java-api.jar"/>
+	<classpathentry kind="lib" path="libext/webservices/xmlrpc-client-3.1.3.jar"/>
+	<classpathentry kind="lib" path="libext/webservices/xmlrpc-common-3.1.3.jar"/>
+	<classpathentry kind="lib" path="libext/webservices/ws-commons-util-1.0.2.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
