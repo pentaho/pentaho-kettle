@@ -9,6 +9,8 @@
  * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
  * the license for the specific language governing your rights and limitations.
+ * 
+ * Copyright 2011 De Bortoli Wines Pty Limited (Australia)
 */
 
 package org.pentaho.di.core.database;

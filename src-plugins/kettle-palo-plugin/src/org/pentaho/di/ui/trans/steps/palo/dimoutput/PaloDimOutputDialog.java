@@ -29,6 +29,7 @@ package org.pentaho.di.ui.trans.steps.palo.dimoutput;
  *   along with PaloKettlePlugin.  If not, see <http://www.gnu.org/licenses/>.
  *   
  *   Copyright 2008 Stratebi Business Solutions, S.L.
+ *   Copyright 2011 De Bortoli Wines Pty Limited (Australia)
  */
 
 import java.util.ArrayList;

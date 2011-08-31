@@ -14,7 +14,7 @@
  *   You should have received a copy of the GNU Lesser General Public License
  *   along with PaloKettlePlugin.  If not, see <http://www.gnu.org/licenses/>.
  *   
- *   Copyright 2011 De Bortoli Wines
+ *   Copyright 2011 De Bortoli Wines Pty Limited (Australia)
  */
 
 package org.pentaho.di.job.entries.palo.cubedelete;
