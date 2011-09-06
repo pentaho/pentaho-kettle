@@ -5068,6 +5068,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       releaseText = BaseMessages.getString(PKG, "Spoon.Milestone.HelpAboutText");
     } else if (Const.RELEASE.equals(Const.ReleaseType.GA)) {
       releaseText = BaseMessages.getString(PKG, "Spoon.GA.HelpAboutText");
+    } else if (Const.RELEASE.equals(Const.ReleaseType.STABLE)) {
+        releaseText = BaseMessages.getString(PKG, "Spoon.Stable.HelpAboutText");  
     }
 
     //  build a message
