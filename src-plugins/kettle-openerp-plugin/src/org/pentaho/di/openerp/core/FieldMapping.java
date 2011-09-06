@@ -23,21 +23,21 @@ package org.pentaho.di.openerp.core;
  */
 public class FieldMapping {
 	
-	public String source_object;
+	public String source_model;
 	public String source_field;
 	public int source_index;
-	public String target_object_name;
-	public String target_field_name;
+	public String target_model;
+	public String target_field;
 	public String target_field_label;
 	public int target_field_type;  // org.pentaho.di.core.row.ValueMetaInterface
 	
 	public FieldMapping Clone(){
 		FieldMapping copy = new FieldMapping();
-		copy.source_object = this.source_object;
+		copy.source_model = this.source_model;
 		copy.source_field = this.source_field;
 		copy.source_index = this.source_index;
-		copy.target_object_name = this.target_object_name;
-		copy.target_field_name = this.target_field_name;
+		copy.target_model = this.target_model;
+		copy.target_field = this.target_field;
 		copy.target_field_label = this.target_field_label;
 		copy.target_field_type = this.target_field_type ;
 		return copy;

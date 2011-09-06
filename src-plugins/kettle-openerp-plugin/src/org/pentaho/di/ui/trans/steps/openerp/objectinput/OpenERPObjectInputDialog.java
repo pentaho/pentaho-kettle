@@ -75,8 +75,8 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 	private Label                  labelStepName;
 	private Text                   textStepName;
 	private CCombo                 addConnectionLine;
-	private Label                  labelObjectName;
-	private CCombo                 comboObjectName;
+	private Label                  labelModelName;
+	private CCombo                 comboModelName;
 	private Label                  labelReadBatchSize;
 	private Text                   textReadBatchSize;
 	private Label                  labelFilter;
@@ -132,32 +132,32 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 
 		addConnectionLine = addConnectionLine(shell, textStepName, Const.MIDDLE_PCT, margin);
 
-		labelObjectName = new Label(shell, SWT.RIGHT);
+		labelModelName = new Label(shell, SWT.RIGHT);
 		fd = new FormData();
 		fd.left = new FormAttachment(0, 0);
 		fd.right = new FormAttachment(middle, -margin);
 		fd.top = new FormAttachment(addConnectionLine, margin);
-		labelObjectName.setLayoutData(fd);
+		labelModelName.setLayoutData(fd);
 
-		comboObjectName = new CCombo(shell, SWT.BORDER);
+		comboModelName = new CCombo(shell, SWT.BORDER);
 		fd = new FormData();
 		fd.left = new FormAttachment(middle, 0);
 		fd.right = new FormAttachment(100, 0);
 		fd.top = new FormAttachment(addConnectionLine, margin);
-		comboObjectName.setLayoutData(fd);
+		comboModelName.setLayoutData(fd);
 
 		labelReadBatchSize = new Label(shell, SWT.RIGHT);
 		fd = new FormData();
 		fd.left = new FormAttachment(0, 0);
 		fd.right = new FormAttachment(middle, -margin);
-		fd.top = new FormAttachment(comboObjectName, margin);
+		fd.top = new FormAttachment(comboModelName, margin);
 		labelReadBatchSize.setLayoutData(fd);
 
 		textReadBatchSize = new Text(shell, SWT.BORDER);
 		fd = new FormData();
 		fd.left = new FormAttachment(middle, 0);
 		fd.right = new FormAttachment(100, 0);
-		fd.top = new FormAttachment(comboObjectName, margin);
+		fd.top = new FormAttachment(comboModelName, margin);
 		textReadBatchSize.setLayoutData(fd);
 		
 		labelFilter = new Label(shell, SWT.NONE);
@@ -221,15 +221,15 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 
 		addConnectionLine.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				fillObjectCombo();
+				fillModelCombo();
 			}
 		});
-		comboObjectName.addSelectionListener(new SelectionAdapter() {
+		comboModelName.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				fillFilterCombos();
 			}
 		});
-		comboObjectName.addFocusListener(new FocusListener() {
+		comboModelName.addFocusListener(new FocusListener() {
 			
 			@Override
 			public void focusLost(FocusEvent arg0) {
@@ -241,7 +241,7 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 			}
 		});
 		
-		comboObjectName.addSelectionListener(new SelectionAdapter() {
+		comboModelName.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				fillFilterCombos();
 			}
@@ -266,16 +266,27 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 				ok();
 			}
 		});
+		
+		// 
+		// Search the fields in the background
+		//
+		final Runnable runnable = new Runnable()
+		{
+			public void run()
+			{
+				fillModelCombo();
+			}
+		};
+		display.asyncExec(runnable);
 
 		this.fillLocalizationData();
 		this.fillStoredData();
-		this.fillObjectCombo();
 
 		props.setLook(labelStepName);
 		props.setLook(textStepName);
 		props.setLook(addConnectionLine);
-		props.setLook(labelObjectName);
-		props.setLook(comboObjectName);
+		props.setLook(labelModelName);
+		props.setLook(comboModelName);
 		props.setLook(labelReadBatchSize);
 		props.setLook(textReadBatchSize);
 		props.setLook(labelFilter);
@@ -300,7 +311,7 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 		case 0:
 			return BaseMessages.getString(PKG, "OpenERPObjectInputDialog.TableViewLabel");
 		case 1:
-			return BaseMessages.getString(PKG, "OpenERPObjectInputDialog.TableViewObjectName");
+			return BaseMessages.getString(PKG, "OpenERPObjectInputDialog.TableViewModelName");
 		case 2:
 			return BaseMessages.getString(PKG, "OpenERPObjectInputDialog.TableViewFieldName");  
 		default:
@@ -323,11 +334,37 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 
 	private void getFields(){
 		ArrayList<FieldMapping> mappings = getFieldMappings();
+		
 		if (mappings != null)
 			populateFielsTable(mappings);
+		else {
+			// See if the model exists in the database
+			String [] modelList = getModelList();
+			
+			// Server connect problem
+			if (modelList == null){
+				getFieldMappings(true);
+				return;
+			}
+			
+			boolean found = false;
+			for (String model : modelList)
+				if (model.equals(comboModelName.getText())){
+					found = true;
+					break;
+				}
+			
+			if (!found){
+				new ErrorDialog(shell, BaseMessages.getString(PKG, "OpenERPObjectInputDialog.ConnectionErrorTitle"), 
+						BaseMessages.getString(PKG, "OpenERPObjectInputDialog.ConnectionErrorString"), 
+						new Exception(BaseMessages.getString(PKG, "OpenERPObjectInputDialog.ModelNotFoundError", comboModelName.getText())));
+				return;
+			}
+		}
 	}
 
 	private void populateFielsTable(ArrayList<FieldMapping> mappings){
+		
 		int choice = 0;
 		
 		if (tableViewFields.table.getItemCount() > 0) {
@@ -359,13 +396,13 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 		for (FieldMapping map : mappings)
 			// Only add new elements
 			if (!currentMaps.containsKey(map.target_field_label
-					+ map.target_object_name
-					+ map.target_field_name))
+					+ map.target_model
+					+ map.target_field))
 				tableViewFields.add(
 						map.target_field_label, 
-						map.target_object_name,
-						map.target_field_name, 
-						map.source_object,
+						map.target_model,
+						map.target_field, 
+						map.source_model,
 						map.source_field,
 						String.valueOf(map.source_index),
 						String.valueOf(map.target_field_type));
@@ -389,8 +426,20 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 		tableViewFilter.optWidth(true);		
 	}
 
-	private void fillObjectCombo(){
+	private void fillModelCombo(){
 
+		String [] modelList = getModelList();
+		
+		if (modelList != null)
+			for(String modelName : modelList){
+				if (comboModelName.indexOf(modelName) == -1)
+					comboModelName.add(modelName);
+			}
+	}
+	
+	private String [] getModelList(){
+		String [] modelList = null;
+		
 		if (addConnectionLine.getText() != null) {
 			DatabaseMeta dbMeta = transMeta.findDatabase(addConnectionLine.getText());
 
@@ -400,17 +449,14 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 				try{
 					data = new OpenERPObjectInputData(dbMeta);
 					data.helper.StartSession();
-					String [] objectList = data.helper.getObjectList();
-					for(String objectName : objectList){
-						if (comboObjectName.indexOf(objectName) == -1)
-							comboObjectName.add(objectName);
-					}
+					modelList = data.helper.getModelList();
 				}
 				catch (Exception e){
-					return;
+					return null;
 				}
 			}
 		}
+		return modelList; 
 	}
 	
 	private void fillFilterCombos(ArrayList<FieldMapping> mappings){
@@ -432,10 +478,13 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 		ArrayList<FieldMapping> mappings = getFieldMappings();
 		if (mappings != null)
 			fillFilterCombos(mappings);
-		
 	}
 
 	private ArrayList<FieldMapping> getFieldMappings(){
+		return getFieldMappings(false);
+	}
+	
+	private ArrayList<FieldMapping> getFieldMappings(boolean showError){
 		if (addConnectionLine.getText() != null) {
 
 			DatabaseMeta dbMeta = transMeta.findDatabase(addConnectionLine.getText());
@@ -444,10 +493,11 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 				try {
 					OpenERPObjectInputData data = new OpenERPObjectInputData(dbMeta);
 					data.helper.StartSession();
-					ArrayList<FieldMapping> mappings = data.helper.getDefaultFieldMappings(comboObjectName.getText());
+					ArrayList<FieldMapping> mappings = data.helper.getDefaultFieldMappings(comboModelName.getText());
 					return mappings;
 				} catch (Exception e) {
-					new ErrorDialog(shell, BaseMessages.getString(PKG, "OpenERPObjectInputDialog.ConnectionErrorTitle"), BaseMessages.getString(PKG, "OpenERPObjectInputDialog.ConnectionErrorString"), e);
+					if (showError)
+						new ErrorDialog(shell, BaseMessages.getString(PKG, "OpenERPObjectInputDialog.ConnectionErrorTitle"), BaseMessages.getString(PKG, "OpenERPObjectInputDialog.ConnectionErrorString"), e);
 					return null;
 				}
 			}
@@ -464,9 +514,9 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 		if (index >= 0)
 			addConnectionLine.select(index);
 
-		if (meta.getObjectName() != null){
-			comboObjectName.add(meta.getObjectName());
-			comboObjectName.select(0);
+		if (meta.getModelName() != null){
+			comboModelName.add(meta.getModelName());
+			comboModelName.select(0);
 		}
 
 		textReadBatchSize.setText(String.valueOf(meta.getReadBatchSize()));
@@ -482,7 +532,7 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 	private void fillLocalizationData() {
 		shell.setText(BaseMessages.getString(PKG, "OpenERPObjectInputDialog.Title"));
 		labelStepName.setText(BaseMessages.getString(PKG, "OpenERPObjectInputDialog.StepName"));
-		labelObjectName.setText(BaseMessages.getString(PKG, "OpenERPObjectInputDialog.ObjectName"));
+		labelModelName.setText(BaseMessages.getString(PKG, "OpenERPObjectInputDialog.ModelName"));
 		labelReadBatchSize.setText(BaseMessages.getString(PKG, "OpenERPObjectInputDialog.ReadBatchSize"));
 		labelFilter.setText(BaseMessages.getString(PKG, "OpenERPObjectInputDialog.LabelFilterSpecify"));
 		labelFields.setText(BaseMessages.getString(PKG, "OpenERPObjectInputDialog.LabelSpecifyFields"));
@@ -530,8 +580,8 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 			
 			for (FieldMapping sourceMap : sourceListMapping){
 				if (sourceMap.target_field_label.equals(tableViewFields.table.getItem(i).getText(1))
-						&&sourceMap.target_object_name.equals(tableViewFields.table.getItem(i).getText(2))
-						&& sourceMap.target_field_name.equals(tableViewFields.table.getItem(i).getText(3)))
+						&&sourceMap.target_model.equals(tableViewFields.table.getItem(i).getText(2))
+						&& sourceMap.target_field.equals(tableViewFields.table.getItem(i).getText(3)))
 					map = sourceMap.Clone();
 			}
 			
@@ -557,7 +607,7 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 		}
 
 		targetMeta.setDatabaseMeta(transMeta.findDatabase(addConnectionLine.getText()));
-		targetMeta.setObjectName(comboObjectName.getText());
+		targetMeta.setModelName(comboModelName.getText());
 		targetMeta.setReadBatchSize(readBatchSize);
 		targetMeta.setMappings(mappings);
 		targetMeta.setFilterList(filters);

@@ -56,7 +56,7 @@ import org.w3c.dom.Node;
 public class OpenERPObjectInputMeta extends BaseStepMeta implements StepMetaInterface{
 
 	private DatabaseMeta databaseMeta;
-	private String objectName;
+	private String modelName;
 	private int readBatchSize = 1000;
 	private ArrayList<ReadFilter> filterList = new ArrayList<ReadFilter>();
 	private ArrayList<FieldMapping> mappings = new ArrayList<FieldMapping>();
@@ -106,17 +106,17 @@ public class OpenERPObjectInputMeta extends BaseStepMeta implements StepMetaInte
 		StringBuffer retval = new StringBuffer();
 
 		retval.append("    ").append(XMLHandler.addTagValue("connection", this.databaseMeta == null ? "": this.databaseMeta.getName()));
-		retval.append("    ").append(XMLHandler.addTagValue("objectName", this.objectName));
+		retval.append("    ").append(XMLHandler.addTagValue("modelName", this.modelName));
 		retval.append("    ").append(XMLHandler.addTagValue("readBatchSize", this.readBatchSize));
 		
 		retval.append("    <mappings>").append(Const.CR);
         for (FieldMapping map : this.getMappings()) {
             retval.append("      <mapping>").append(Const.CR);
-            retval.append("        ").append(XMLHandler.addTagValue("source_object",map.source_object));
+            retval.append("        ").append(XMLHandler.addTagValue("source_model",map.source_model));
             retval.append("        ").append(XMLHandler.addTagValue("source_field",map.source_field));
             retval.append("        ").append(XMLHandler.addTagValue("source_index",map.source_index));
-            retval.append("        ").append(XMLHandler.addTagValue("target_object_name",map.target_object_name));
-            retval.append("        ").append(XMLHandler.addTagValue("target_field_name",map.target_field_name));
+            retval.append("        ").append(XMLHandler.addTagValue("target_model",map.target_model));
+            retval.append("        ").append(XMLHandler.addTagValue("target_field",map.target_field));
             retval.append("        ").append(XMLHandler.addTagValue("target_field_label",map.target_field_label));
             retval.append("        ").append(XMLHandler.addTagValue("target_field_type",map.target_field_type));
             retval.append("      </mapping>").append(Const.CR);
@@ -148,19 +148,19 @@ public class OpenERPObjectInputMeta extends BaseStepMeta implements StepMetaInte
 	throws KettleException {
 		try {
 			this.databaseMeta = rep.loadDatabaseMetaFromStepAttribute(idStep, "connection", databases);
-			this.objectName = rep.getStepAttributeString(idStep, "objectName");
+			this.modelName = rep.getStepAttributeString(idStep, "modelName");
 			this.readBatchSize = Integer.parseInt(rep.getStepAttributeString(idStep, "readBatchSize"));
 			
-			int nrMappings = rep.countNrStepAttributes(idStep, "source_object");
+			int nrMappings = rep.countNrStepAttributes(idStep, "source_model");
             
             for (int i=0;i<nrMappings;i++) {
             	FieldMapping map = new FieldMapping();
             	
-            	map.source_object = rep.getStepAttributeString (idStep, i, "source_object");
+            	map.source_model = rep.getStepAttributeString (idStep, i, "source_model");
             	map.source_field = rep.getStepAttributeString (idStep, i, "source_field");
             	map.source_index = Integer.valueOf(rep.getStepAttributeString (idStep, i, "source_index"));
-            	map.target_object_name = rep.getStepAttributeString (idStep, i, "target_object_name");
-            	map.target_field_name = rep.getStepAttributeString (idStep, i, "target_field_name");
+            	map.target_model = rep.getStepAttributeString (idStep, i, "target_model");
+            	map.target_field = rep.getStepAttributeString (idStep, i, "target_field");
             	map.target_field_label = rep.getStepAttributeString (idStep, i, "target_field_label");
             	map.target_field_type = Integer.valueOf(rep.getStepAttributeString (idStep, i, "target_field_type")); 
             	
@@ -188,16 +188,16 @@ public class OpenERPObjectInputMeta extends BaseStepMeta implements StepMetaInte
 			ObjectId idStep) throws KettleException {
 		try {
 			rep.saveDatabaseMetaStepAttribute(idTransformation, idStep, "connection", this.databaseMeta);
-			rep.saveStepAttribute(idTransformation, idStep, "objectName", this.objectName);
+			rep.saveStepAttribute(idTransformation, idStep, "modelName", this.modelName);
 			rep.saveStepAttribute(idTransformation, idStep, "readBatchSize", this.readBatchSize);
 			
 			for (int i=0;i<getMappings().size();i++) {
 				FieldMapping map = this.getMappings().get(i);
-                rep.saveStepAttribute(idTransformation, idStep, i, "source_object", map.source_object);
+                rep.saveStepAttribute(idTransformation, idStep, i, "source_model", map.source_model);
                 rep.saveStepAttribute(idTransformation, idStep, i, "source_field", map.source_field);
                 rep.saveStepAttribute(idTransformation, idStep, i, "source_index", map.source_index);
-                rep.saveStepAttribute(idTransformation, idStep, i, "target_object_name", map.target_object_name);
-                rep.saveStepAttribute(idTransformation, idStep, i, "target_field_name", map.target_field_name);
+                rep.saveStepAttribute(idTransformation, idStep, i, "target_model", map.target_model);
+                rep.saveStepAttribute(idTransformation, idStep, i, "target_field", map.target_field);
                 rep.saveStepAttribute(idTransformation, idStep, i, "target_field_label", map.target_field_label);
                 rep.saveStepAttribute(idTransformation, idStep, i, "target_field_type", map.target_field_type);
             }
@@ -224,7 +224,7 @@ public class OpenERPObjectInputMeta extends BaseStepMeta implements StepMetaInte
 	throws KettleXMLException {
 		try {
 			this.databaseMeta = DatabaseMeta.findDatabase(databases, XMLHandler.getTagValue(stepnode, "connection"));
-			this.objectName = XMLHandler.getTagValue(stepnode, "objectName");
+			this.modelName = XMLHandler.getTagValue(stepnode, "modelName");
 			this.readBatchSize = Integer.parseInt(XMLHandler.getTagValue(stepnode, "readBatchSize"));
 			
 			this.setMappings(new ArrayList <FieldMapping>());
@@ -237,11 +237,11 @@ public class OpenERPObjectInputMeta extends BaseStepMeta implements StepMetaInte
             	
             	Node fnode = XMLHandler.getSubNodeByNr(mappings, "mapping", i);
             	
-            	map.source_object = XMLHandler.getTagValue(fnode, "source_object");
+            	map.source_model = XMLHandler.getTagValue(fnode, "source_model");
             	map.source_field = XMLHandler.getTagValue(fnode, "source_field");
             	map.source_index = Integer.parseInt(XMLHandler.getTagValue(fnode, "source_index"));
-            	map.target_object_name = XMLHandler.getTagValue(fnode, "target_object_name");
-            	map.target_field_name = XMLHandler.getTagValue(fnode, "target_field_name");
+            	map.target_model = XMLHandler.getTagValue(fnode, "target_model");
+            	map.target_field = XMLHandler.getTagValue(fnode, "target_field");
             	map.target_field_label = XMLHandler.getTagValue(fnode, "target_field_label");
             	map.target_field_type = Integer.parseInt(XMLHandler.getTagValue(fnode, "target_field_type")); 
 
@@ -275,12 +275,12 @@ public class OpenERPObjectInputMeta extends BaseStepMeta implements StepMetaInte
 		return databaseMeta;
 	}
 
-	public void setObjectName(String objectName) {
-		this.objectName = objectName;
+	public void setModelName(String modelName) {
+		this.modelName = modelName;
 	}
 
-	public String getObjectName() {
-		return objectName;
+	public String getModelName() {
+		return modelName;
 	}
 
 	public void setReadBatchSize(int readBatchSize) {

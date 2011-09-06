@@ -91,7 +91,7 @@ public class OpenERPObjectInput extends BaseStep implements StepInterface{
 			try {
 				final RowMetaInterface rowMeta = data.helper.getFieldRowMeta(meta.getMappings());
 				
-				ArrayList<FieldMapping> allFields = data.helper.getDefaultFieldMappings(meta.getObjectName());
+				ArrayList<FieldMapping> allFields = data.helper.getDefaultFieldMappings(meta.getModelName());
 				
 				Object [][] filter = new Object[meta.getFilterList().size()][3];
 				for(int i = 0; i < meta.getFilterList().size(); i++){
@@ -126,7 +126,7 @@ public class OpenERPObjectInput extends BaseStep implements StepInterface{
 					this.logBasic("Setting filter: [" + filter[i][0].toString() + "," + filter[i][1].toString() + "," + filter[i][2].toString() + "]");
 				}
 				
-				data.helper.getObjectData(meta.getObjectName(), filter, meta.getReadBatchSize(), meta.getMappings(), new RowsReadListener() {
+				data.helper.getModelData(meta.getModelName(), filter, meta.getReadBatchSize(), meta.getMappings(), new RowsReadListener() {
 
 					@Override
 					public void rowsRead(RowCollection rows) {
