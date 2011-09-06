@@ -76,7 +76,7 @@
         <menuitem id="edit-set-env-vars" acceltext="CTRL-ALT-J" accesskey="ctrl-alt-j" label="${Spoon.Menu.Edit.Variables}"
           command="spoon.setVariables()" />
         <menuitem id="edit-show-env-vars" acceltext="CTRL-L" accesskey="ctrl-l" label="${Spoon.Menu.Edit.ShowVariables}"
-          command="spoon.showArguments()" />
+          command="spoon.showVariables()" />
         <menuitem id="edit-kettle-properties" acceltext="CTRL-ALT-P" accesskey="ctrl-alt-p" label="${Spoon.Menu.Edit.EditKettleProperties}"
           command="spoon.editKettlePropertiesFile()" />
         <menuitem id="edit-show-arguments" acceltext="CTRL-ALT-U" accesskey="ctrl-alt-u" label="${Spoon.Menu.Edit.ShowArguments}"
