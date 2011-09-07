@@ -79,6 +79,8 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 	private static final String JSSCRIPT_TAG_NAME = "jsScript_name";
 	private static final String JSSCRIPT_TAG_SCRIPT= "jsScript_script";
 	
+	public static final String OPTIMIZATION_LEVEL_DEFAULT = "9";  //$NON-NLS-1$
+	
 	private ScriptValuesAddClasses[] additionalClasses;
 	private ScriptValuesScript[]	jsScripts;
 	
@@ -90,6 +92,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 	private boolean replace[]; // Replace the specified field.
 	
 	private boolean compatible;
+	private String optimizationLevel;
 	
 	public ScriptValuesMetaMod(){
 		super(); // allocate BaseStepMeta
@@ -235,6 +238,8 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 		try	{
 			String script = XMLHandler.getTagValue(stepnode, "script"); 
 			String strCompatible = XMLHandler.getTagValue(stepnode, "compatible");
+			optimizationLevel = XMLHandler.getTagValue(stepnode, "optimizationLevel");
+			
 			if (strCompatible==null) {
 				compatible=true;
 			}
@@ -314,6 +319,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 		}
 		
 		compatible=false;
+		optimizationLevel = OPTIMIZATION_LEVEL_DEFAULT;
 	}
 	
 	public void getFields(RowMetaInterface row, String originStepname, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
@@ -370,6 +376,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
         StringBuffer retval = new StringBuffer(300);
 		
 		retval.append("    ").append(XMLHandler.addTagValue("compatible", compatible)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("optimizationLevel", optimizationLevel));  //$NON-NLS-1$ //$NON-NLS-2$
 
 		retval.append("    <jsScripts>"); 
 		for (int i=0;i<jsScripts.length;i++){
@@ -404,6 +411,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 		{
 			String script = rep.getStepAttributeString(id_step, "script"); //$NON-NLS-1$
 			compatible = rep.getStepAttributeBoolean(id_step, 0, "compatible", true); //$NON-NLS-1$
+			optimizationLevel = rep.getStepAttributeString(id_step, 0, "optimizationLevel"); //$NON-NLS-1$
 
 			// When in compatibility mode, we load the script, not the other tabs...
 			//
@@ -450,6 +458,7 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
         try
         {
             rep.saveStepAttribute(id_transformation, id_step, 0, "compatible", compatible); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, 0, "optimizationLevel", optimizationLevel); //$NON-NLS-1$
 
             for (int i = 0; i < jsScripts.length; i++)
             {
@@ -487,9 +496,19 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 
 		jscx = ContextFactory.getGlobal().enterContext();
 		jsscope = jscx.initStandardObjects(null, false);
-		jscx.setOptimizationLevel(-1);
-			
-		// String strActiveScriptName="";
+		try {
+   		jscx.setOptimizationLevel(Integer.valueOf(transMeta.environmentSubstitute(optimizationLevel)));
+		}
+		catch (NumberFormatException nfe) {
+         error_message="Error with optimization level.  Could not convert the value of "+transMeta.environmentSubstitute(optimizationLevel) +" to an integer."; //$NON-NLS-1$
+         cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
+         remarks.add(cr);
+		}
+		catch (IllegalArgumentException iae) {
+         cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, iae.getMessage(), stepinfo);
+         remarks.add(cr);
+		}
+		
 		String strActiveStartScriptName="";
 		String strActiveEndScriptName="";
 		
@@ -948,4 +967,11 @@ public class ScriptValuesMetaMod extends BaseStepMeta implements StepMetaInterfa
 		this.replace = replace;
 	}
     
+	public void setOptimizationLevel(String optimizationLevel) {
+	   this.optimizationLevel = optimizationLevel;
+	}
+	
+	public String getOptimizationLevel() {
+	  return this.optimizationLevel;
+	}
 }

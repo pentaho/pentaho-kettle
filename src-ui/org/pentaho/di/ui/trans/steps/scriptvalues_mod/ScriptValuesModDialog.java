@@ -133,6 +133,7 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.StyledTextComp;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
@@ -229,6 +230,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 	private ScriptValuesHelp scVHelp;
 	private ScriptValuesHighlight lineStyler = new ScriptValuesHighlight();
 	private Button wCompatible;
+	private TextVar wOptimizationLevel;
 	
     private TreeItem iteminput;
     
@@ -402,6 +404,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		fdlCompatible.right = new FormAttachment(middle, 0);
 		fdlCompatible.top   = new FormAttachment(wlPosition, margin);
 		wlCompatible.setLayoutData(fdlCompatible);
+
 		wCompatible = new Button(wTop, SWT.CHECK);
 		wCompatible.setToolTipText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.Compatible.Tooltip")); 
 		props.setLook(wCompatible);
@@ -409,8 +412,25 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 		fdCompatible.left  = new FormAttachment(wlCompatible, margin);
 		fdCompatible.top   = new FormAttachment(wlPosition, margin);
 		wCompatible.setLayoutData(fdCompatible);
-		wCompatible.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { setInputOutputFields();} });
-		
+		wCompatible.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { setInputOutputFields(); input.setChanged(true);} });
+
+      Label wlOptimizationLevel = new Label(wTop, SWT.NONE);
+      wlOptimizationLevel.setText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.OptimizationLevel.Label")); //$NON-NLS-1$
+      props.setLook(wlOptimizationLevel);
+      FormData fdlOptimizationLevel = new FormData();
+      fdlOptimizationLevel.left  = new FormAttachment(wCompatible, margin*2);
+      fdlOptimizationLevel.top   = new FormAttachment(wlPosition, margin);
+      wlOptimizationLevel.setLayoutData(fdlOptimizationLevel);
+      
+      wOptimizationLevel = new TextVar(transMeta, wTop, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+      wOptimizationLevel.setToolTipText(BaseMessages.getString(PKG, "ScriptValuesDialogMod.OptimizationLevel.Tooltip")); 
+      props.setLook(wOptimizationLevel);
+      FormData fdOptimizationLevel = new FormData();
+      fdOptimizationLevel.left  = new FormAttachment(wlOptimizationLevel, margin);
+      fdOptimizationLevel.top   = new FormAttachment(wlPosition, margin);
+      fdOptimizationLevel.right = new FormAttachment(100, margin);
+      wOptimizationLevel.setLayoutData(fdOptimizationLevel);
+      wOptimizationLevel.addModifyListener(lsMod);
 		
 		wlHelpLabel = new Text(wTop, SWT.V_SCROLL |   SWT.LEFT);
 		wlHelpLabel.setEditable(false);
@@ -868,7 +888,13 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 	public void getData()
 	{
 		wCompatible.setSelection(input.isCompatible());
-		
+		if (!Const.isEmpty(input.getOptimizationLevel().trim())) {
+   		wOptimizationLevel.setText(input.getOptimizationLevel().trim());
+	   }
+		else {
+		   wOptimizationLevel.setText(ScriptValuesMetaMod.OPTIMIZATION_LEVEL_DEFAULT);
+		}
+	
 		for (int i=0;i<input.getFieldname().length;i++)
 		{
 			if (input.getFieldname()[i]!=null && input.getFieldname()[i].length()>0)
@@ -944,6 +970,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 	
 	private void getInfo(ScriptValuesMetaMod meta) {
 		meta.setCompatible( wCompatible.getSelection() );
+		meta.setOptimizationLevel(wOptimizationLevel.getText());
 		int nrfields = wFields.nrNonEmpty();
 		meta.allocate(nrfields);
 		for (int i=0;i<nrfields;i++){
