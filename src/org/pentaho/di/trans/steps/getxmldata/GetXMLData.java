@@ -567,7 +567,7 @@ public class GetXMLData extends BaseStep implements StepInterface
 			// Move file pointer ahead!
 			data.filenr++;
             
-			if(meta.isIgnoreEmptyFile() && data.size==0)
+			if(meta.isIgnoreEmptyFile() && fileSize==0)
 			{
 				// log only basic as a warning (was before logError)
 				logBasic(BaseMessages.getString(PKG, "GetXMLData.Error.FileSizeZero", ""+data.file.getName()));
