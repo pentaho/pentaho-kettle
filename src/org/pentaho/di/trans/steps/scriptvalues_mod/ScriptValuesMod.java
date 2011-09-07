@@ -171,8 +171,24 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
     	  }
       }
 
+      // set the optimization level
       data.cx = ContextFactory.getGlobal().enterContext();
-      data.cx.setOptimizationLevel(9);
+      
+      try {
+         String optimizationLevelAsString = environmentSubstitute(meta.getOptimizationLevel());
+         if (!Const.isEmpty(optimizationLevelAsString)) {
+            data.cx.setOptimizationLevel(Integer.parseInt(optimizationLevelAsString.trim()));
+         }
+         else {
+            data.cx.setOptimizationLevel(Integer.parseInt(ScriptValuesMetaMod.OPTIMIZATION_LEVEL_DEFAULT));
+         }
+      } catch (NumberFormatException nfe) {
+        throw new KettleStepException(BaseMessages.getString(PKG, "ScriptValuesMetaMod.Exception.NumberFormatException",environmentSubstitute(meta.getOptimizationLevel())));
+      }
+      catch (IllegalArgumentException iae) {
+         throw new KettleException(iae.getMessage());
+      }
+      
       data.scope = data.cx.initStandardObjects(null, false);
 
       bFirstRun = true;
@@ -710,6 +726,8 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
             break;
         }
       }
+      
+      logBasic(BaseMessages.getString(PKG, "ScriptValuesMod.Optimization.Level", environmentSubstitute(meta.getOptimizationLevel())));
       return true;
     }
     return false;
