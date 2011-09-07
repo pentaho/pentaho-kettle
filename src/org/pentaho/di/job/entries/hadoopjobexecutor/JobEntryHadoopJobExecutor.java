@@ -293,12 +293,13 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
     
     try {
       URL resolvedJarUrl = null;
-      if (jarUrl.indexOf("://") == -1) {
+      String jarUrlS = environmentSubstitute(jarUrl);
+      if (jarUrlS.indexOf("://") == -1) {
         // default to file://
-        File jarFile = new File(jarUrl);
+        File jarFile = new File(jarUrlS);
         resolvedJarUrl = jarFile.toURI().toURL();
       } else {
-        resolvedJarUrl = new URL(jarUrl);
+        resolvedJarUrl = new URL(jarUrlS);
       }
 
       if (log.isDetailed())
@@ -338,49 +339,69 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
         URLClassLoader loader = new URLClassLoader(urls, getClass().getClassLoader());
 
         JobConf conf = new JobConf();
-        conf.setJobName(hadoopJobName);
+        String hadoopJobNameS = environmentSubstitute(hadoopJobName);
+        conf.setJobName(hadoopJobNameS);
 
-        conf.setOutputKeyClass(loader.loadClass(outputKeyClass));
-        conf.setOutputValueClass(loader.loadClass(outputValueClass));
+        String outputKeyClassS = environmentSubstitute(outputKeyClass);
+        conf.setOutputKeyClass(loader.loadClass(outputKeyClassS));
+        String outputValueClassS = environmentSubstitute(outputValueClass);
+        conf.setOutputValueClass(loader.loadClass(outputValueClassS));
 
         if(mapperClass != null) {
-          Class<? extends Mapper> mapper = (Class<? extends Mapper>) loader.loadClass(mapperClass);
+          String mapperClassS = environmentSubstitute(mapperClass);
+          Class<? extends Mapper> mapper = (Class<? extends Mapper>) loader.loadClass(mapperClassS);
           conf.setMapperClass(mapper);
         }
         if(combinerClass != null) {
-          Class<? extends Reducer> combiner = (Class<? extends Reducer>) loader.loadClass(combinerClass);
+          String combinerClassS = environmentSubstitute(combinerClass);
+          Class<? extends Reducer> combiner = (Class<? extends Reducer>) loader.loadClass(combinerClassS);
           conf.setCombinerClass(combiner);
         }
         if(reducerClass != null) {
-          Class<? extends Reducer> reducer = (Class<? extends Reducer>) loader.loadClass(reducerClass);
+          String reducerClassS = environmentSubstitute(reducerClass);
+          Class<? extends Reducer> reducer = (Class<? extends Reducer>) loader.loadClass(reducerClassS);
           conf.setReducerClass(reducer);
         }
 
         if(inputFormatClass != null) {
-          Class<? extends InputFormat> inputFormat = (Class<? extends InputFormat>) loader.loadClass(inputFormatClass);
+          String inputFormatClassS = environmentSubstitute(inputFormatClass);
+          Class<? extends InputFormat> inputFormat = (Class<? extends InputFormat>) loader.loadClass(inputFormatClassS);
           conf.setInputFormat(inputFormat);
         }
         if(outputFormatClass != null) {
-          Class<? extends OutputFormat> outputFormat = (Class<? extends OutputFormat>) loader.loadClass(outputFormatClass);
+          String outputFormatClassS = environmentSubstitute(outputFormatClass);
+          Class<? extends OutputFormat> outputFormat = (Class<? extends OutputFormat>) loader.loadClass(outputFormatClassS);
           conf.setOutputFormat(outputFormat);
         }
 
-        String hdfsBaseUrl = "hdfs://" + hdfsHostname + ":" + hdfsPort;
-        conf.set("fs.default.name", hdfsBaseUrl);
-        conf.set("mapred.job.tracker", jobTrackerHostname + ":" + jobTrackerPort);
+        String hdfsHostnameS = environmentSubstitute(hdfsHostname);
+        String hdfsPortS = environmentSubstitute(hdfsPort);
+        String hdfsBaseUrl = "hdfs://" + hdfsHostnameS + ":" + hdfsPortS;
+        
+        String hdfsBaseUrlS = environmentSubstitute(hdfsBaseUrl);
+        conf.set("fs.default.name", hdfsBaseUrlS);
+        
+        String jobTrackerHostnameS = environmentSubstitute(jobTrackerHostname);
+        String jobTrackerPortS = environmentSubstitute(jobTrackerPort);
+        conf.set("mapred.job.tracker", jobTrackerHostnameS + ":" + jobTrackerPortS);
 
         // TODO: this could be a list of input paths apparently
-        FileInputFormat.setInputPaths(conf, new Path(hdfsBaseUrl + inputPath));
-        FileOutputFormat.setOutputPath(conf, new Path(hdfsBaseUrl + outputPath));
+        String inputPathS = environmentSubstitute(inputPath);
+        FileInputFormat.setInputPaths(conf, new Path(hdfsBaseUrl + inputPathS));
+        String outputPathS = environmentSubstitute(outputPath);
+        FileOutputFormat.setOutputPath(conf, new Path(hdfsBaseUrl + outputPathS));
 
         // process user defined values
         for (UserDefinedItem item : userDefined) {
           if (item.getName() != null && !"".equals(item.getName()) && item.getValue() != null && !"".equals(item.getValue())) {
-            conf.set(item.getName(), item.getValue());
+            String nameS = environmentSubstitute(item.getName());
+            String valueS = environmentSubstitute(item.getValue());
+            conf.set(nameS, valueS);
           }
         }
 
-        conf.setWorkingDirectory(new Path(hdfsBaseUrl + workingDirectory));
+        String workingDirectoryS = environmentSubstitute(workingDirectory);
+        conf.setWorkingDirectory(new Path(hdfsBaseUrl + workingDirectoryS));
         conf.setJar(jarUrl);
 
         conf.setNumMapTasks(numMapTasks);
