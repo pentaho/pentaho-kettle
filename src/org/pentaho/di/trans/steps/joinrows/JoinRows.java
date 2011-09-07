@@ -110,7 +110,6 @@ public class JoinRows extends BaseStep implements StepInterface
 				{
                     String directoryName = environmentSubstitute(meta.getDirectory());
 					data.file[i]=File.createTempFile(meta.getPrefix(), ".tmp", new File(directoryName)); //$NON-NLS-1$
-					data.file[i].deleteOnExit();
 					
 					data.size[i]     = 0;
 					data.rs[i]       = getInputRowSets().get(i);
