@@ -1666,7 +1666,6 @@ public class Database implements VariableSpace, LoggingObjectInterface
 	private String scrubDoubleHyphenComments(String scripts) {
 	  final String DOUBLE_HYPHEN = "--";
 	  boolean done = false;
-	  int start = 0;
 	  BufferedReader reader = new BufferedReader(new StringReader(scripts));
 	  StringBuffer returnBuffer = new StringBuffer();
 	  while(!done) {
@@ -1674,6 +1673,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
         String line = reader.readLine();
         if(line != null) {
           if(line.length() > 0) {
+            if(returnBuffer.length()>0) returnBuffer.append(" "); // add a space between appended lines
             int index = line.indexOf(DOUBLE_HYPHEN);
             if( index >= 0) {
               returnBuffer.append(line.substring(0, index));
