@@ -66,6 +66,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
   public static final String STRING_ID_MAPPING         = "Mapping";
 	public static final String STRING_ID_SINGLE_THREADER = "SingleThreader";
   public static final String STRING_ID_ETL_META_INJECT = "MetaInject";
+  public static final String STRING_ID_JOB_EXECUTOR    = "JobExecutor";
 	public static final String STRING_ID_MAPPING_INPUT   = "MappingInput";
 	public static final String STRING_ID_MAPPING_OUTPUT  = "MappingOutput";
     
@@ -788,6 +789,10 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
       return STRING_ID_ETL_META_INJECT.equals(stepid);
     }
     
+    public boolean isJobExecutor() {
+      return STRING_ID_JOB_EXECUTOR.equals(stepid);
+    }
+
 
     public boolean isMappingInput() {
     	return STRING_ID_MAPPING_INPUT.equals(stepid);
