@@ -1451,5 +1451,13 @@
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SecretKeyGenerator</tooltip>
 		<iconfile>ui/images/SCG.png</iconfile>
+	</step>
+	<step id="JobExecutor">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.JobExecutor</description>
+		<classname>org.pentaho.di.trans.steps.jobexecutor.JobExecutorMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Flow</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.JobExecutor</tooltip>
+		<iconfile>ui/images/JOB.png</iconfile>
 	</step> 
+	 
 </steps>

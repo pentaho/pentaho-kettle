@@ -103,6 +103,8 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.job.Job;
+import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.lineage.TransDataLineage;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryObjectType;
@@ -128,6 +130,7 @@ import org.pentaho.di.trans.step.errorhandling.Stream;
 import org.pentaho.di.trans.step.errorhandling.StreamIcon;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
+import org.pentaho.di.trans.steps.jobexecutor.JobExecutorMeta;
 import org.pentaho.di.trans.steps.mapping.MappingMeta;
 import org.pentaho.di.trans.steps.metainject.MetaInjectMeta;
 import org.pentaho.di.trans.steps.singlethreader.SingleThreaderMeta;
@@ -157,6 +160,7 @@ import org.pentaho.di.ui.spoon.dialog.DeleteMessageBox;
 import org.pentaho.di.ui.spoon.dialog.EnterPreviewRowsDialog;
 import org.pentaho.di.ui.spoon.dialog.NotePadDialog;
 import org.pentaho.di.ui.spoon.dialog.SearchFieldsProgressDialog;
+import org.pentaho.di.ui.spoon.job.JobGraph;
 import org.pentaho.di.ui.trans.dialog.TransDialog;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
@@ -2298,11 +2302,18 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             item.setDisabled(sels != 2);
 
             item = (XulMenuitem) doc.getElementById("trans-graph-entry-open-mapping"); //$NON-NLS-1$
-            item.setDisabled(!stepMeta.isMapping() && !stepMeta.isSingleThreader() && !stepMeta.isEtlMetaInject());
+            item.setDisabled(!stepMeta.isMapping() && !stepMeta.isSingleThreader() && !stepMeta.isEtlMetaInject() && !stepMeta.isJobExecutor());
+            if (stepMeta.isJobExecutor()) {
+              item.setLabel(BaseMessages.getString(PKG, "TransGraph.PopupMenu.OpenJob")); //$NON-NLS-1$
+            } else {
+              item.setLabel(BaseMessages.getString(PKG, "TransGraph.PopupMenu.OpenMapping")); //$NON-NLS-1$
+            }
 
             item = (XulMenuitem) doc.getElementById("trans-graph-entry-align-snap"); //$NON-NLS-1$
             item.setLabel(BaseMessages.getString(PKG, "TransGraph.PopupMenu.SnapToGrid") + ConstUI.GRID_SIZE + ")\tALT-HOME"); //$NON-NLS-1$ //$NON-NLS-2$
 
+            item = (XulMenuitem) doc.getElementById("trans-graph-entry-open-mapping"); // $NON-NLS-1$
+            
             XulMenu men = (XulMenu) doc.getElementById("trans-graph-entry-sniff");
             men.setDisabled(trans==null || trans.isRunning() == false); //$NON-NLS-1$
             item = (XulMenuitem) doc.getElementById("trans-graph-entry-sniff-input"); //$NON-NLS-1$
@@ -3879,6 +3890,15 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   		  attachActiveTrans(subTransGraph, this.currentStep);
 	    }
 	    
+      if (this.currentStep.getStepMetaInterface() instanceof JobExecutorMeta) {
+        JobExecutorMeta meta = (JobExecutorMeta) this.currentStep.getStepMetaInterface();
+        JobMeta jobMeta = JobExecutorMeta.loadMappingMeta(meta, spoon.rep, transMeta);
+        jobMeta.clearChanged();
+        spoon.addJobGraph(jobMeta);
+        JobGraph jobGraph = spoon.getActiveJobGraph();
+        attachActiveJob(jobGraph, this.currentStep);
+      }
+	    
 	  } catch(Exception e) {
 		  new ErrorDialog(shell, BaseMessages.getString(PKG, "TransGraph.Exception.UnableToLoadMapping.Title"), BaseMessages.getString(PKG, "TransGraph.Exception.UnableToLoadMapping.Message"), e);  //$NON-NLS-1$//$NON-NLS-2$
 	  }
@@ -3899,6 +3919,23 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 		  }
 		  transGraph.setControlStates();
 	  }
+  }
+  
+  /**
+   * Finds the last active job in the running transformation to the opened jobMeta
+   * 
+   * @param jobGraph
+   * @param stepMeta
+   */
+  private void attachActiveJob(JobGraph jobGraph, StepMeta stepMeta) {
+    if (trans!=null && jobGraph!=null) {
+      Job subJob = trans.getActiveSubjobs().get(stepMeta.getName());
+      jobGraph.setJob(subJob);
+      if (!jobGraph.isExecutionResultsPaneVisible()) {
+        jobGraph.showExecutionResults();
+      }
+      jobGraph.setControlStates();
+    }
   }
 
   /**

@@ -12,6 +12,7 @@
 */
 package org.pentaho.di.core.gui;
 
+import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.trans.TransMeta;
 
 public interface SpoonInterface extends OverwritePrompter {
@@ -29,6 +30,8 @@ public interface SpoonInterface extends OverwritePrompter {
     public boolean addSpoonBrowser(String name, String urlString);
 
     public void addTransGraph(TransMeta transMeta);
+    
+    public void addJobGraph(JobMeta jobMeta);
 
     public Object[] messageDialogWithToggle( String dialogTitle, Object image, String message, int dialogImageType, String buttonLabels[], int defaultIndex, String toggleMessage, boolean toggleState );
 

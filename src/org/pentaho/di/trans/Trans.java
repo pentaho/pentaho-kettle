@@ -247,6 +247,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	private int	lastStepPerformanceSnapshotSeqNrAdded;
 
 	private Map<String, Trans> activeSubtransformations;
+  private Map<String, Job> activeSubjobs;
 
   private int stepPerformanceSnapshotSizeLimit;
 
@@ -270,6 +271,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         lastWrittenStepPerformanceSequenceNr = 0;
         
         activeSubtransformations = new HashMap<String, Trans>();
+        activeSubjobs = new HashMap<String, Job>();
 	}
 
 	/**
@@ -3652,6 +3654,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	public Map<String, Trans> getActiveSubtransformations() {
 		return activeSubtransformations;
 	}
+	
+	public Map<String, Job> getActiveSubjobs() {
+    return activeSubjobs;
+  }
 
   /**
    * @return the carteObjectId

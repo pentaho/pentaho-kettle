@@ -12,10 +12,7 @@
  */
 package org.pentaho.di.ui.spoon.trans;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -36,9 +33,9 @@ import org.eclipse.swt.widgets.ToolBar;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.i18n.GlobalMessages;
+import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepStatus;
-import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;

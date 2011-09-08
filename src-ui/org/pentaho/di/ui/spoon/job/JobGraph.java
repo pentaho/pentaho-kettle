@@ -128,9 +128,9 @@ import org.pentaho.di.ui.spoon.SpoonPluginManager;
 import org.pentaho.di.ui.spoon.SwtScrollBar;
 import org.pentaho.di.ui.spoon.TabItemInterface;
 import org.pentaho.di.ui.spoon.TabMapEntry;
+import org.pentaho.di.ui.spoon.TabMapEntry.ObjectType;
 import org.pentaho.di.ui.spoon.XulSpoonResourceBundle;
 import org.pentaho.di.ui.spoon.XulSpoonSettingsManager;
-import org.pentaho.di.ui.spoon.TabMapEntry.ObjectType;
 import org.pentaho.di.ui.spoon.dialog.DeleteMessageBox;
 import org.pentaho.di.ui.spoon.dialog.NotePadDialog;
 import org.pentaho.di.ui.spoon.trans.DelayListener;
@@ -2430,18 +2430,11 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
   }
 
 
-  private synchronized void setJob(Job job) {
+  public synchronized void setJob(Job job) {
 	  this.job = job;
+	}  
 
-	  /*
-	  pausing = job.isPaused();
-		initialized = trans.isInitializing();
-		running = trans.isRunning();
-		halted = trans.isStopped();
-	*/
-  }
-
-public static void copyInternalJobVariables(JobMeta sourceJobMeta, TransMeta targetTransMeta) {
+  public static void copyInternalJobVariables(JobMeta sourceJobMeta, TransMeta targetTransMeta) {
     // Also set some internal JOB variables...
     //
     String[] internalVariables = Const.INTERNAL_JOB_VARIABLES;
