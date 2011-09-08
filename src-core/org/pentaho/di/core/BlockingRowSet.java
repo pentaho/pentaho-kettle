@@ -22,7 +22,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 
 
 /**
- * Contains a buffer of rows.  Getting rows from the buffer or putting rows in the buffer is synchronised to allow concurrent use of multiple Threads.
+ * Contains a buffer of rows.  Getting rows from the buffer or putting rows in the buffer is synchronized to allow concurrent use of multiple Threads.
  * 
  * @author Matt
  * @since 04-04-2003
@@ -31,6 +31,9 @@ import org.pentaho.di.core.row.RowMetaInterface;
 public class BlockingRowSet extends BaseRowSet implements Comparable<RowSet>, RowSet
 {
     private BlockingQueue<Object[]> queArray;
+    
+    private int timeoutPut;
+    private int timeoutGet;
     
     /**
      * Create new non-blocking-queue with maxSize capacity.
@@ -42,6 +45,9 @@ public class BlockingRowSet extends BaseRowSet implements Comparable<RowSet>, Ro
 
     	// create an empty queue 
         queArray = new ArrayBlockingQueue<Object[]>(maxSize, false);
+        
+        timeoutGet = Const.toInt(System.getProperty(Const.KETTLE_ROWSET_GET_TIMEOUT), Const.TIMEOUT_GET_MILLIS);
+        timeoutPut = Const.toInt(System.getProperty(Const.KETTLE_ROWSET_PUT_TIMEOUT), Const.TIMEOUT_PUT_MILLIS);
     }
     
     /* (non-Javadoc)
@@ -49,7 +55,7 @@ public class BlockingRowSet extends BaseRowSet implements Comparable<RowSet>, Ro
 	 */
     public boolean putRow(RowMetaInterface rowMeta, Object[] rowData)
     {
-    	return putRowWait(rowMeta, rowData, Const.TIMEOUT_PUT_MILLIS, TimeUnit.MILLISECONDS);
+    	return putRowWait(rowMeta, rowData, timeoutPut, TimeUnit.MILLISECONDS);
     }
     
     /* (non-Javadoc)
@@ -74,11 +80,11 @@ public class BlockingRowSet extends BaseRowSet implements Comparable<RowSet>, Ro
     
     // default getRow with wait time = 100ms
     //
-    /* (non-Javadoc)
+    /* (non-Javadoc)  System.getProperty("KETTLE_ROWSET_PUT_TIMEOUT")
 	 * @see org.pentaho.di.core.RowSetInterface#getRow()
 	 */
     public Object[] getRow(){
-    	return getRowWait(Const.TIMEOUT_GET_MILLIS, TimeUnit.MILLISECONDS);
+    	return getRowWait(timeoutGet, TimeUnit.MILLISECONDS);
     }
     
     
@@ -103,7 +109,6 @@ public class BlockingRowSet extends BaseRowSet implements Comparable<RowSet>, Ro
     	}
     }
     
-    @Override
     public int size() {
     	return queArray.size();
     }

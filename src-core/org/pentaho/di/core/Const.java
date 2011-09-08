@@ -640,6 +640,18 @@ public class Const
 	public static final String	XML_FILE_KETTLE_PARTITION_PLUGINS	= "kettle-partition-plugins.xml";
 
 	/**
+	  * The name of the variable that optionally contains an alternative rowset get timeout (in ms).
+	  * This only makes a difference for extremely short lived transformations.
+	  */
+	public static final String KETTLE_ROWSET_GET_TIMEOUT = "KETTLE_ROWSET_GET_TIMEOUT";
+
+	/**
+	  * The name of the variable that optionally contains an alternative rowset put timeout (in ms).
+	  * This only makes a difference for extremely short lived transformations.
+	 */
+	 public static final String KETTLE_ROWSET_PUT_TIMEOUT = "KETTLE_ROWSET_PUT_TIMEOUT";	
+	
+	/**
 	 * The XML file that contains the list of native Kettle job entries
 	 */
 	public static final String	XML_FILE_KETTLE_JOB_ENTRIES	= "kettle-job-entries.xml";

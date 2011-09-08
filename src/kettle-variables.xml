@@ -137,6 +137,16 @@
 		<default-value>0</default-value>
 	</kettle-variable>
 	
+	<kettle-variable>
+		<description>The name of the variable that optionally contains an alternative rowset get timeout (in ms). This only makes a difference for extremely short lived transformations.</description>
+		<variable>KETTLE_ROWSET_GET_TIMEOUT</variable>
+		<default-value>50</default-value>
+	</kettle-variable>
 	
-
+	<kettle-variable>
+		<description>The name of the variable that optionally contains an alternative rowset put timeout (in ms). This only makes a difference for extremely short lived transformations.</description>
+		<variable>KETTLE_ROWSET_PUT_TIMEOUT</variable>
+		<default-value>50</default-value>
+	</kettle-variable>
+	
 </kettle-variables>
