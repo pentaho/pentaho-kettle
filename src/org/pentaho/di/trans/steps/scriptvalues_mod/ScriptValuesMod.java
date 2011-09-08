@@ -176,7 +176,7 @@ public class ScriptValuesMod extends BaseStep implements StepInterface {
       
       try {
          String optimizationLevelAsString = environmentSubstitute(meta.getOptimizationLevel());
-         if (!Const.isEmpty(optimizationLevelAsString)) {
+         if (!Const.isEmpty(optimizationLevelAsString.trim())) {
             data.cx.setOptimizationLevel(Integer.parseInt(optimizationLevelAsString.trim()));
             logBasic(BaseMessages.getString(PKG, "ScriptValuesMod.Optimization.Level", environmentSubstitute(meta.getOptimizationLevel())));
          }
