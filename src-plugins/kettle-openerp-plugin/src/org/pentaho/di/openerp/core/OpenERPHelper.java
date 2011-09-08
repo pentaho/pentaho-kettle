@@ -19,6 +19,7 @@ package org.pentaho.di.openerp.core;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import org.apache.xmlrpc.XmlRpcException;
 import org.pentaho.di.core.database.DatabaseFactoryInterface;
@@ -42,6 +43,9 @@ import com.debortoliwines.openerp.api.Session.RowsReadListener;
 public class OpenERPHelper implements DatabaseFactoryInterface {
 
 	private Session openERPConnection;
+	
+	// Cache used to store the name_get result of an model to cater for many2many relations
+	private HashMap<String, HashMap<String, String>> modelNameCache = new HashMap<String, HashMap<String, String>>();
 
 	@Override
 	public String getConnectionTestReport(DatabaseMeta databaseMeta){
@@ -107,8 +111,7 @@ public class OpenERPHelper implements DatabaseFactoryInterface {
 
 		ArrayList<String> fieldArray = new ArrayList<String>();
 		for(Field field : fields){
-			if (field.getType() == FieldType.MANY2MANY
-					|| field.getType() == FieldType.ONE2MANY
+			if (field.getType() == FieldType.ONE2MANY
 					|| field.getReadonly() == true)
 				continue;
 
@@ -141,7 +144,30 @@ public class OpenERPHelper implements DatabaseFactoryInterface {
 			for(Field field : fieldDef)
 				if (field.getName().equals(targetField)){
 					switch (field.getType()) {
-					case ONE2MANY:
+					case MANY2MANY:
+						/* The import function uses the Names of the objects for the import.  Replace the ID list passed
+						 * in with a Name list for the import_data function that we are about to call
+						 */
+						HashMap<String, String> idToName = null;
+						if (!modelNameCache.containsKey(field.getRelation())){
+							idToName = new HashMap<String, String>();
+							Object [] ids = openERPConnection.searchObject(field.getRelation(), null);
+							Object[] names = openERPConnection.nameGet(field.getRelation(), ids);
+							for (int j = 0; j < ids.length; j++){
+								Object [] nameValue = (Object [])names[j]; 
+								idToName.put(nameValue[0].toString(), nameValue[1].toString());
+							}
+							modelNameCache.put(field.getRelation(), idToName);
+						}
+						else idToName = modelNameCache.get(field.getRelation());
+						
+						String newValue = "";
+						for (String singleID : inputRow[i].toString().split(","))
+							if (idToName.containsKey(singleID))
+								newValue = newValue + "," + idToName.get(singleID);
+							else throw new Exception("Could not find " + field.getRelation() + " with ID " + singleID);
+						
+						outputRow[i] = newValue.substring(1);
 						
 						break;
 
@@ -231,9 +257,6 @@ public class OpenERPHelper implements DatabaseFactoryInterface {
 				fieldMap.target_field_type = ValueMetaInterface.TYPE_DATE;
 				mappings.add(fieldMap);
 				break;
-			case ONE2MANY:
-			case MANY2MANY:
-				break;
 			case MANY2ONE:
 				FieldMapping newFieldMap = fieldMap.Clone();
 
@@ -257,6 +280,8 @@ public class OpenERPHelper implements DatabaseFactoryInterface {
 
 				mappings.add(newFieldMap);
 				break;
+			case ONE2MANY:
+			case MANY2MANY:
 			default:
 				fieldMap.target_field_type = ValueMetaInterface.TYPE_STRING;
 				mappings.add(fieldMap);

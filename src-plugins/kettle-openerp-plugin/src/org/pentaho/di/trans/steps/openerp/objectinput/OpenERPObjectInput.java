@@ -79,6 +79,15 @@ public class OpenERPObjectInput extends BaseStep implements StepInterface{
 			fixedValue = Long.parseLong(value.toString());
 		else if (map.target_field_type == ValueMetaInterface.TYPE_NUMBER)
 			fixedValue = Double.parseDouble(value.toString());
+		// ONE2MANY and MANY2MANY fields
+		else if (map.target_field_type == ValueMetaInterface.TYPE_STRING && value instanceof Object []){
+			String stringValue = "";
+			for(Object singleValue : (Object []) value)
+				stringValue += "," + singleValue.toString(); 
+			
+			fixedValue = stringValue.substring(1); 
+		}
+			
 		
 		return fixedValue;
 	}
@@ -93,6 +102,7 @@ public class OpenERPObjectInput extends BaseStep implements StepInterface{
 				
 				ArrayList<FieldMapping> allFields = data.helper.getDefaultFieldMappings(meta.getModelName());
 				
+				// Building search filter
 				Object [][] filter = new Object[meta.getFilterList().size()][3];
 				for(int i = 0; i < meta.getFilterList().size(); i++){
 					ReadFilter filterItem = meta.getFilterList().get(i);

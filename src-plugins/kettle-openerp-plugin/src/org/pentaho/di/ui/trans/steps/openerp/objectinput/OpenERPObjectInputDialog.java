@@ -333,7 +333,7 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 	}
 
 	private void getFields(){
-		ArrayList<FieldMapping> mappings = getFieldMappings();
+		ArrayList<FieldMapping> mappings = getFieldMappings(false);
 		
 		if (mappings != null)
 			populateFielsTable(mappings);
@@ -475,15 +475,11 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 	}
 	
 	private void fillFilterCombos(){
-		ArrayList<FieldMapping> mappings = getFieldMappings();
+		ArrayList<FieldMapping> mappings = getFieldMappings(false);
 		if (mappings != null)
 			fillFilterCombos(mappings);
 	}
 
-	private ArrayList<FieldMapping> getFieldMappings(){
-		return getFieldMappings(false);
-	}
-	
 	private ArrayList<FieldMapping> getFieldMappings(boolean showError){
 		if (addConnectionLine.getText() != null) {
 
