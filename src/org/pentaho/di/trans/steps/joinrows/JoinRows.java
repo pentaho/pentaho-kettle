@@ -369,6 +369,9 @@ public class JoinRows extends BaseStep implements StepInterface
 			data.joinrow[data.filenr] = getRowData(data.filenr);
 			if (data.joinrow[data.filenr]==null) // 100 x 0 = 0 : don't output when one of the input streams has no rows.
 			{                                    // If this is filenr #0, it's fine too!
+
+			   while (!isStopped() && getRow()!=null);
+			   
 				setOutputDone();
 				return false;
 			}
