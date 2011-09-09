@@ -887,7 +887,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 	public void getData()
 	{
 		wCompatible.setSelection(input.isCompatible());
-		if (!Const.isEmpty(input.getOptimizationLevel().trim())) {
+		if (!Const.isEmpty(Const.trim(input.getOptimizationLevel()))) {
    		wOptimizationLevel.setText(input.getOptimizationLevel().trim());
 	   }
 		else {
