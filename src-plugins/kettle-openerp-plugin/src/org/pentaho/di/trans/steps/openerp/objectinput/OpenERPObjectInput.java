@@ -34,6 +34,7 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
+import com.debortoliwines.openerp.api.FilterCollection;
 import com.debortoliwines.openerp.api.Row;
 import com.debortoliwines.openerp.api.RowCollection;
 import com.debortoliwines.openerp.api.Session.RowsReadListener;
@@ -97,17 +98,16 @@ public class OpenERPObjectInput extends BaseStep implements StepInterface{
 
 		this.logBasic("Getting Rows.");
 		if (first == true){
+			first = false;
 			try {
 				final RowMetaInterface rowMeta = data.helper.getFieldRowMeta(meta.getMappings());
 				
 				ArrayList<FieldMapping> allFields = data.helper.getDefaultFieldMappings(meta.getModelName());
 				
 				// Building search filter
-				Object [][] filter = new Object[meta.getFilterList().size()][3];
+				FilterCollection filter = new FilterCollection();
 				for(int i = 0; i < meta.getFilterList().size(); i++){
 					ReadFilter filterItem = meta.getFilterList().get(i);
-					filter[i][0] = filterItem.field_name;
-					filter[i][1] = filterItem.operator;
 					
 					FieldMapping fld = null;
 					for (int j = 0; j < allFields.size(); j++)
@@ -117,23 +117,27 @@ public class OpenERPObjectInput extends BaseStep implements StepInterface{
 							break;
 						}
 				
+					Object value = filterItem.value;
+					
+					// Fix the value type if required
 					if (fld == null)
-						filter[i][2] = filterItem.value;
+						value = filterItem.value;
 					else if (fld.target_field_type == ValueMetaInterface.TYPE_BOOLEAN){
-						if (filterItem.value.equals("1") 
-								|| filterItem.value.equalsIgnoreCase("yes") 
-								|| filterItem.value.equalsIgnoreCase("y"))
-							filter[i][2] = true;
-						else 
-							filter[i][2] = Boolean.parseBoolean(filterItem.value);
+						char firstchar = filterItem.value.toLowerCase().charAt(0);
+						if (firstchar == '1' || firstchar == 'y' || firstchar == 't')
+							value = true;
+						else if (firstchar == '0' || firstchar == 'n' || firstchar == 'f') 
+							value = false;
+						else throw new Exception ("Unknown boolean " + filterItem.value);
 					}
 					else if (fld.target_field_type == ValueMetaInterface.TYPE_NUMBER)
-						filter[i][2] = Double.parseDouble(filterItem.value);
+						value = Double.parseDouble(filterItem.value);
 					else if (fld.target_field_type == ValueMetaInterface.TYPE_INTEGER)
-						filter[i][2] = Integer.parseInt(filterItem.value);
-					else filter[i][2] = filterItem.value;
+						value = Integer.parseInt(filterItem.value);
 					
-					this.logBasic("Setting filter: [" + filter[i][0].toString() + "," + filter[i][1].toString() + "," + filter[i][2].toString() + "]");
+					filter.add(filterItem.field_name, filterItem.operator, value);
+					
+					this.logBasic("Setting filter: [" + filterItem.field_name + "," + filterItem.operator + "," + value.toString() + "]");
 				}
 				
 				data.helper.getModelData(meta.getModelName(), filter, meta.getReadBatchSize(), meta.getMappings(), new RowsReadListener() {

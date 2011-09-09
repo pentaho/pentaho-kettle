@@ -29,6 +29,8 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
+import com.debortoliwines.openerp.api.FilterCollection;
+import com.debortoliwines.openerp.api.SelectionOption;
 import com.debortoliwines.openerp.api.Session;
 import com.debortoliwines.openerp.api.Field;
 import com.debortoliwines.openerp.api.FieldCollection;
@@ -84,7 +86,7 @@ public class OpenERPHelper implements DatabaseFactoryInterface {
 		String [] modelNames = new String[0];
 
 		try {
-			RowCollection rows = openERPConnection.searchAndReadObject("ir.model", new Object[][]{}, new String[] {"model"});
+			RowCollection rows = openERPConnection.searchAndReadObject("ir.model", null, new String[] {"model"});
 			modelNames = new String[rows.size()];
 			for (int i = 0; i < modelNames.length; i++)
 				modelNames[i] = rows.get(i).get("model").toString();
@@ -93,7 +95,7 @@ public class OpenERPHelper implements DatabaseFactoryInterface {
 		return modelNames;
 	}
 
-	public void getModelData(String model, Object[][] filter, int batchSize, ArrayList<FieldMapping> mappings, RowsReadListener listener) throws MalformedURLException, XmlRpcException{
+	public void getModelData(String model, FilterCollection filter, int batchSize, ArrayList<FieldMapping> mappings, RowsReadListener listener) throws MalformedURLException, XmlRpcException{
 
 		ArrayList<String> fieldList = new ArrayList<String>();
 		for(FieldMapping map : mappings)
@@ -143,6 +145,28 @@ public class OpenERPHelper implements DatabaseFactoryInterface {
 			// Do any type conversions
 			for(Field field : fieldDef)
 				if (field.getName().equals(targetField)){
+					// Check selection values
+					if (field.getType() == FieldType.SELECTION){
+						boolean validValue = false;
+						for (SelectionOption option : field.getSelectionOptions()){
+							// If the database code was specified, replace it with the value.
+							// The import procedure uses the value and not the code
+							if (option.code.equals(outputRow[i].toString())){
+								validValue = true;
+								outputRow[i] = option.value;
+								break;
+							}
+							else if (option.value.equals(outputRow[i].toString())){
+								validValue = true;
+								break;
+							}
+						}
+						if (!validValue)
+							throw new Exception("Could not find a valid value for section field " + field.getName() + " with value " + outputRow[i].toString());
+					}
+					
+					
+					// Check types
 					switch (field.getType()) {
 					case MANY2MANY:
 						/* The import function uses the Names of the objects for the import.  Replace the ID list passed
@@ -170,8 +194,10 @@ public class OpenERPHelper implements DatabaseFactoryInterface {
 						outputRow[i] = newValue.substring(1);
 						
 						break;
-
+					
+					// The import procedure expects all types to be strings
 					default:
+						outputRow[i] = outputRow[i].toString();
 						break;
 					}
 				}
@@ -197,7 +223,7 @@ public class OpenERPHelper implements DatabaseFactoryInterface {
 				if (field.getName().equals(targetField)){
 					found = true;
 					if (field.getType() == FieldType.MANY2ONE)
-						fieldList.add(field.getName() + "/.id");
+						fieldList.add(field.getName() + ".id");
 					else
 						fieldList.add(field.getName());
 				}
