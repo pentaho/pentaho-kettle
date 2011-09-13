@@ -235,6 +235,10 @@ public class OpenERPHelper implements DatabaseFactoryInterface {
 		return fieldList.toArray(new String[fieldList.size()]);
 
 	}
+	
+	public void deleteObjects(String model, ArrayList<Object> ids) throws XmlRpcException{
+		openERPConnection.unlinkObject(model, ids.toArray(new Object[ids.size()]));
+	}
 
 	public ArrayList<FieldMapping> getDefaultFieldMappings(String model) throws MalformedURLException, XmlRpcException{
 
