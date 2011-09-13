@@ -111,27 +111,27 @@ public class OpenERPObjectInput extends BaseStep implements StepInterface{
 					ReadFilter filterItem = meta.getFilterList().get(i);
 					
 					// Handle logical operators
-					if (filterItem.operator.equalsIgnoreCase("not"))
+					if (filterItem.getOperator().equalsIgnoreCase("not"))
 						filter.add(FilterOperator.NOT);
-					else if (filterItem.operator.equalsIgnoreCase("or"))
+					else if (filterItem.getOperator().equalsIgnoreCase("or"))
 						filter.add(FilterOperator.OR);
 					
 					// Get the source field to filter on
 					FieldMapping fld = null;
 					for (int j = 0; j < allFields.size(); j++)
-						if (allFields.get(j).source_field.equals(filterItem.field_name) 
+						if (allFields.get(j).source_field.equals(filterItem.getFieldName()) 
 								&& allFields.get(j).source_index <= 0){
 							fld = allFields.get(j);
 							break;
 						}
 				
-					String fieldName = filterItem.field_name;
-					String operator = filterItem.comparator;
-					Object value = filterItem.value;
+					String fieldName = filterItem.getFieldName();
+					String operator = filterItem.getComparator();
+					Object value = filterItem.getValue();
 					
 					// Fix the value type if required
 					if (fld == null)
-						value = filterItem.value;
+						value = filterItem.getValue();
 					else if (operator.equals("is null")){
 						operator = "=";
 						value = false;
@@ -141,21 +141,21 @@ public class OpenERPObjectInput extends BaseStep implements StepInterface{
 						value = false;
 					}
 					else if (fld.target_field_type == ValueMetaInterface.TYPE_BOOLEAN){
-						char firstchar = filterItem.value.toLowerCase().charAt(0);
+						char firstchar = filterItem.getValue().toLowerCase().charAt(0);
 						if (firstchar == '1' || firstchar == 'y' || firstchar == 't')
 							value = true;
 						else if (firstchar == '0' || firstchar == 'n' || firstchar == 'f') 
 							value = false;
-						else throw new Exception ("Unknown boolean " + filterItem.value);
+						else throw new Exception ("Unknown boolean " + filterItem.getValue());
 					}
 					else if (fld.target_field_type == ValueMetaInterface.TYPE_NUMBER)
-						value = Double.parseDouble(filterItem.value);
+						value = Double.parseDouble(filterItem.getValue());
 					else if (fld.target_field_type == ValueMetaInterface.TYPE_INTEGER)
-						value = Integer.parseInt(filterItem.value);
+						value = Integer.parseInt(filterItem.getValue());
 					
 					filter.add(fieldName, operator, value);
 					
-					this.logBasic("Setting filter: [" + filterItem.field_name + "," + filterItem.comparator + "," + value.toString() + "]");
+					this.logBasic("Setting filter: [" + filterItem.getFieldName() + "," + filterItem.getComparator() + "," + value.toString() + "]");
 				}
 				
 				data.helper.getModelData(meta.getModelName(), filter, meta.getReadBatchSize(), meta.getMappings(), new RowsReadListener() {

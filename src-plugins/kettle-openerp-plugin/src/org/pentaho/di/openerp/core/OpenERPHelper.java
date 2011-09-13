@@ -145,6 +145,10 @@ public class OpenERPHelper implements DatabaseFactoryInterface {
 				continue;
 			}
 			
+			// No other conversions required for a null value
+			if (outputRow[i] == null)
+				continue;
+			
 			// Do any type conversions
 			for(Field field : fieldDef)
 				if (field.getName().equals(targetField)){

@@ -23,8 +23,45 @@ package org.pentaho.di.openerp.core;
  *
  */
 public class ReadFilter {
-	public String operator;
-	public String field_name;
-	public String comparator;
-	public String value;
+	private String operator = "";
+	private String fieldName = "";
+	private String comparator = "";
+	private String value = "";
+	
+	public String getOperator() {
+		return operator;
+	}
+	public void setOperator(String operator) {
+		if (operator == null)
+			operator = "";
+		
+		this.operator = operator;
+	}
+	public String getFieldName() {
+		return fieldName;
+	}
+	public void setFieldName(String fieldName) {
+		if (fieldName == null)
+			fieldName = "";
+		
+		this.fieldName = fieldName;
+	}
+	public String getComparator() {
+		return comparator;
+	}
+	public void setComparator(String comparator) {
+		if (comparator == null)
+			comparator = "";
+		
+		this.comparator = comparator;
+	}
+	public String getValue() {
+		return value;
+	}
+	public void setValue(String value) {
+		if (value == null)
+			value = "";
+		
+		this.value = value;
+	}
 }

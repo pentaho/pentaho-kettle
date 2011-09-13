@@ -126,10 +126,10 @@ public class OpenERPObjectInputMeta extends BaseStepMeta implements StepMetaInte
         retval.append("    <filters>").append(Const.CR);
         for (ReadFilter filter : this.getFilterList()) {
             retval.append("      <filter>").append(Const.CR);
-            retval.append("        ").append(XMLHandler.addTagValue("operator",filter.operator));
-            retval.append("        ").append(XMLHandler.addTagValue("field_name",filter.field_name));
-            retval.append("        ").append(XMLHandler.addTagValue("comparator",filter.comparator));
-            retval.append("        ").append(XMLHandler.addTagValue("value",filter.value));
+            retval.append("        ").append(XMLHandler.addTagValue("operator",filter.getOperator()));
+            retval.append("        ").append(XMLHandler.addTagValue("field_name",filter.getFieldName()));
+            retval.append("        ").append(XMLHandler.addTagValue("comparator",filter.getComparator()));
+            retval.append("        ").append(XMLHandler.addTagValue("value",filter.getValue()));
             retval.append("      </filter>").append(Const.CR);
         }
         retval.append("    </filters>").append(Const.CR);
@@ -172,10 +172,10 @@ public class OpenERPObjectInputMeta extends BaseStepMeta implements StepMetaInte
             for (int i=0;i<nrFilters;i++) {
             	ReadFilter filter = new ReadFilter();
             	
-            	filter.operator = rep.getStepAttributeString (idStep, i, "operator");
-            	filter.field_name = rep.getStepAttributeString (idStep, i, "field_name");
-            	filter.comparator = rep.getStepAttributeString (idStep, i, "comparator");
-            	filter.value = rep.getStepAttributeString (idStep, i, "value");
+            	filter.setOperator(rep.getStepAttributeString (idStep, i, "operator"));
+            	filter.setFieldName(rep.getStepAttributeString (idStep, i, "field_name"));
+            	filter.setComparator(rep.getStepAttributeString (idStep, i, "comparator"));
+            	filter.setValue(rep.getStepAttributeString (idStep, i, "value"));
             	
             	this.getFilterList().add(filter);
             }
@@ -206,10 +206,10 @@ public class OpenERPObjectInputMeta extends BaseStepMeta implements StepMetaInte
 			
 			for (int i=0;i<getFilterList().size();i++) {
 				ReadFilter filter = this.getFilterList().get(i);
-				rep.saveStepAttribute(idTransformation, idStep, i, "operator", filter.operator);
-				rep.saveStepAttribute(idTransformation, idStep, i, "field_name", filter.field_name);
-                rep.saveStepAttribute(idTransformation, idStep, i, "comparator", filter.comparator);
-                rep.saveStepAttribute(idTransformation, idStep, i, "value", filter.value);
+				rep.saveStepAttribute(idTransformation, idStep, i, "operator", filter.getOperator());
+				rep.saveStepAttribute(idTransformation, idStep, i, "field_name", filter.getFieldName());
+                rep.saveStepAttribute(idTransformation, idStep, i, "comparator", filter.getComparator());
+                rep.saveStepAttribute(idTransformation, idStep, i, "value", filter.getValue());
             }
 			
 		} catch (Exception e) {
@@ -259,10 +259,10 @@ public class OpenERPObjectInputMeta extends BaseStepMeta implements StepMetaInte
             	
             	Node fnode = XMLHandler.getSubNodeByNr(filters, "filter", i);
             	
-            	filter.operator = XMLHandler.getTagValue(fnode, "operator");
-            	filter.field_name = XMLHandler.getTagValue(fnode, "field_name");
-            	filter.comparator = XMLHandler.getTagValue(fnode, "comparator");
-            	filter.value = XMLHandler.getTagValue(fnode, "value");
+            	filter.setOperator(XMLHandler.getTagValue(fnode, "operator"));
+            	filter.setFieldName(XMLHandler.getTagValue(fnode, "field_name"));
+            	filter.setComparator(XMLHandler.getTagValue(fnode, "comparator"));
+            	filter.setValue(XMLHandler.getTagValue(fnode, "value"));
             	
             	this.getFilterList().add(filter);
             }

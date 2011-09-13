@@ -99,6 +99,10 @@ public class OpenERPObjectOutput extends BaseStep implements StepInterface {
 	}
 
 	private void CommitBatch() throws Exception{
+		// In the process of stopping, return
+		if (isStopped())
+			return;
+		
 		try {
 			data.helper.importData(meta.getModelName(), fieldList,	data.batchRows);
 			for (int i = 0; i < data.batchRows.size(); i++)

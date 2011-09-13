@@ -440,10 +440,10 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 
 		for (ReadFilter filter : filters)
 			tableViewFilter.add(
-					filter.operator,
-					filter.field_name, 
-					filter.comparator,
-					filter.value);
+					filter.getOperator(),
+					filter.getFieldName(), 
+					filter.getComparator(),
+					filter.getValue());
 
 		tableViewFilter.add("","","","");
 
@@ -621,12 +621,12 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 		for (int i = 0; i < tableViewFilter.table.getItemCount(); i++) {
 			
 			ReadFilter filter = new ReadFilter();
-			filter.operator = tableViewFilter.table.getItem(i).getText(1);
-			filter.field_name = tableViewFilter.table.getItem(i).getText(2);
-			filter.comparator = tableViewFilter.table.getItem(i).getText(3);
-			filter.value = tableViewFilter.table.getItem(i).getText(4);
+			filter.setOperator(tableViewFilter.table.getItem(i).getText(1));
+			filter.setFieldName(tableViewFilter.table.getItem(i).getText(2));
+			filter.setComparator(tableViewFilter.table.getItem(i).getText(3));
+			filter.setValue(tableViewFilter.table.getItem(i).getText(4));
 			
-			if (filter.field_name != "")
+			if (filter.getFieldName() != "")
 				filters.add(filter);
 		}
 
