@@ -37,6 +37,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import com.debortoliwines.openerp.api.FilterCollection;
 import com.debortoliwines.openerp.api.Row;
 import com.debortoliwines.openerp.api.RowCollection;
+import com.debortoliwines.openerp.api.FilterCollection.FilterOperator;
 import com.debortoliwines.openerp.api.Session.RowsReadListener;
 
 public class OpenERPObjectInput extends BaseStep implements StepInterface{
@@ -109,6 +110,13 @@ public class OpenERPObjectInput extends BaseStep implements StepInterface{
 				for(int i = 0; i < meta.getFilterList().size(); i++){
 					ReadFilter filterItem = meta.getFilterList().get(i);
 					
+					// Handle logical operators
+					if (filterItem.operator.equalsIgnoreCase("not"))
+						filter.add(FilterOperator.NOT);
+					else if (filterItem.operator.equalsIgnoreCase("or"))
+						filter.add(FilterOperator.OR);
+					
+					// Get the source field to filter on
 					FieldMapping fld = null;
 					for (int j = 0; j < allFields.size(); j++)
 						if (allFields.get(j).source_field.equals(filterItem.field_name) 
@@ -117,11 +125,21 @@ public class OpenERPObjectInput extends BaseStep implements StepInterface{
 							break;
 						}
 				
+					String fieldName = filterItem.field_name;
+					String operator = filterItem.comparator;
 					Object value = filterItem.value;
 					
 					// Fix the value type if required
 					if (fld == null)
 						value = filterItem.value;
+					else if (operator.equals("is null")){
+						operator = "=";
+						value = false;
+					}
+					else if (operator.equals("is not null")){
+						operator = "!=";
+						value = false;
+					}
 					else if (fld.target_field_type == ValueMetaInterface.TYPE_BOOLEAN){
 						char firstchar = filterItem.value.toLowerCase().charAt(0);
 						if (firstchar == '1' || firstchar == 'y' || firstchar == 't')
@@ -135,9 +153,9 @@ public class OpenERPObjectInput extends BaseStep implements StepInterface{
 					else if (fld.target_field_type == ValueMetaInterface.TYPE_INTEGER)
 						value = Integer.parseInt(filterItem.value);
 					
-					filter.add(filterItem.field_name, filterItem.operator, value);
+					filter.add(fieldName, operator, value);
 					
-					this.logBasic("Setting filter: [" + filterItem.field_name + "," + filterItem.operator + "," + value.toString() + "]");
+					this.logBasic("Setting filter: [" + filterItem.field_name + "," + filterItem.comparator + "," + value.toString() + "]");
 				}
 				
 				data.helper.getModelData(meta.getModelName(), filter, meta.getReadBatchSize(), meta.getMappings(), new RowsReadListener() {

@@ -81,6 +81,7 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 	private Text                   textReadBatchSize;
 	private Label                  labelFilter;
 	private TableView              tableViewFilter;
+	private Button                 buttonHelpFilter;
 	private Label                  labelFields;
 	private TableView              tableViewFields;
 	private Button                 buttonGetFields;
@@ -169,7 +170,8 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 		filterViewColinf = new ColumnInfo[] { 
 				new ColumnInfo(getLocalizedFilterColumn(0), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false), 
 				new ColumnInfo(getLocalizedFilterColumn(1), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
-				new ColumnInfo(getLocalizedFilterColumn(2), ColumnInfo.COLUMN_TYPE_TEXT, false, false)};
+				new ColumnInfo(getLocalizedFilterColumn(2), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
+				new ColumnInfo(getLocalizedFilterColumn(3), ColumnInfo.COLUMN_TYPE_TEXT, false, false)};
 		
 		tableViewFilter = new TableView(null, shell, SWT.MULTI | SWT.BORDER, filterViewColinf, 0, true, lsMod, props);
 		tableViewFilter.setReadonly(false);
@@ -180,6 +182,13 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 		fd.right = new FormAttachment(100, -150);
 		fd.bottom = new FormAttachment(labelFilter, 200);
 		tableViewFilter.setLayoutData(fd);
+		
+		buttonHelpFilter = new Button(shell, SWT.NONE);
+		fd = new FormData();
+		fd.left = new FormAttachment(tableViewFilter, margin);
+		fd.top = new FormAttachment(labelFilter, 3 * margin);
+		fd.right = new FormAttachment(100, 0);
+		buttonHelpFilter.setLayoutData(fd);
 
 		labelFields = new Label(shell, SWT.NONE);
 		fd = new FormData();
@@ -244,6 +253,11 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 		comboModelName.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				fillFilterCombos();
+			}
+		});
+		buttonHelpFilter.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				showHelp();
 			}
 		});
 		buttonGetFields.addSelectionListener(new SelectionAdapter() {
@@ -321,17 +335,27 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 	
 	private String getLocalizedFilterColumn(int columnIndex) {
 		switch (columnIndex) {
+		
 		case 0:
-			return BaseMessages.getString(PKG, "OpenERPObjectInputDialog.TableViewFilterField");
-		case 1:
 			return BaseMessages.getString(PKG, "OpenERPObjectInputDialog.TableViewFilterOperator");
+		case 1:
+			return BaseMessages.getString(PKG, "OpenERPObjectInputDialog.TableViewFilterField");
 		case 2:
+			return BaseMessages.getString(PKG, "OpenERPObjectInputDialog.TableViewFilterComparator");
+		case 3:
 			return BaseMessages.getString(PKG, "OpenERPObjectInputDialog.TableViewFilterValue");  
 		default:
 			return "";
 		}
 	}
 
+	private void showHelp(){
+		EnterTextDialog text = new EnterTextDialog(shell, 
+				BaseMessages.getString(PKG,"OpenERPObjectInputDialog.FilterHelp.Title"),"", 
+				BaseMessages.getString(PKG,"OpenERPObjectInputDialog.FilterHelp.Text"));
+		text.setReadOnly();
+		text.open();
+	}
 	private void getFields(){
 		ArrayList<FieldMapping> mappings = getFieldMappings(false);
 		
@@ -416,11 +440,12 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 
 		for (ReadFilter filter : filters)
 			tableViewFilter.add(
-					filter.field_name, 
 					filter.operator,
+					filter.field_name, 
+					filter.comparator,
 					filter.value);
 
-		tableViewFilter.add("","","");
+		tableViewFilter.add("","","","");
 
 		tableViewFilter.setRowNums();
 		tableViewFilter.optWidth(true);		
@@ -469,8 +494,9 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 		fieldStringList = fieldList.toArray(fieldStringList);
 		Arrays.sort(fieldStringList,String.CASE_INSENSITIVE_ORDER);
 		
-		filterViewColinf[0].setComboValues(fieldStringList);
-		filterViewColinf[1].setComboValues(new String [] {"=","<", "<=", ">", ">=","like", "ilike"});
+		filterViewColinf[0].setComboValues(new String [] {"", "NOT", "OR"});
+		filterViewColinf[1].setComboValues(fieldStringList);
+		filterViewColinf[2].setComboValues(new String [] {"=", "!=", ">", ">=", "<", "<=", "like", "ilike", "is null", "is not null", "in", "not in", "child_of", "parent_left", "parent_right"});
 		tableViewFilter.optWidth(true);
 	}
 	
@@ -532,6 +558,7 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 		labelReadBatchSize.setText(BaseMessages.getString(PKG, "OpenERPObjectInputDialog.ReadBatchSize"));
 		labelFilter.setText(BaseMessages.getString(PKG, "OpenERPObjectInputDialog.LabelFilterSpecify"));
 		labelFields.setText(BaseMessages.getString(PKG, "OpenERPObjectInputDialog.LabelSpecifyFields"));
+		buttonHelpFilter.setText(BaseMessages.getString(PKG, "OpenERPObjectInputDialog.ButtonFilterHelp"));
 		buttonGetFields.setText(BaseMessages.getString(PKG, "OpenERPObjectInputDialog.ButtonGetFields"));
 	}
 
@@ -594,9 +621,10 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 		for (int i = 0; i < tableViewFilter.table.getItemCount(); i++) {
 			
 			ReadFilter filter = new ReadFilter();
-			filter.field_name = tableViewFilter.table.getItem(i).getText(1);
-			filter.operator = tableViewFilter.table.getItem(i).getText(2);
-			filter.value = tableViewFilter.table.getItem(i).getText(3);
+			filter.operator = tableViewFilter.table.getItem(i).getText(1);
+			filter.field_name = tableViewFilter.table.getItem(i).getText(2);
+			filter.comparator = tableViewFilter.table.getItem(i).getText(3);
+			filter.value = tableViewFilter.table.getItem(i).getText(4);
 			
 			if (filter.field_name != "")
 				filters.add(filter);

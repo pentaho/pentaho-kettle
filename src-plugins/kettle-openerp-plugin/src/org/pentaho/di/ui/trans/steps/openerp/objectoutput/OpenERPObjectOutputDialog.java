@@ -398,7 +398,7 @@ public class OpenERPObjectOutputDialog extends BaseStepDialog implements StepDia
 				}
 				catch (Exception e){
 					if (showError)
-						new ErrorDialog(shell, BaseMessages.getString(PKG, "OpenERPObjectOuputDialog.ConnectionErrorTitle"), BaseMessages.getString(PKG, "OpenERPObjectInputDialog.ConnectionErrorString"), e);
+						new ErrorDialog(shell, BaseMessages.getString(PKG, "OpenERPObjectOuputDialog.ConnectionErrorTitle"), BaseMessages.getString(PKG, "OpenERPObjectOutputDialog.ConnectionErrorString"), e);
 					return null;
 				}
 			}

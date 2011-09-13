@@ -23,7 +23,8 @@ package org.pentaho.di.openerp.core;
  *
  */
 public class ReadFilter {
-	public String field_name;
 	public String operator;
+	public String field_name;
+	public String comparator;
 	public String value;
 }

@@ -79,6 +79,9 @@ public class OpenERPHelper implements DatabaseFactoryInterface {
 
 	public void StartSession() throws Exception{
 		openERPConnection.startSession();
+		
+		// Don't automatically filter out active items in any steps 
+		openERPConnection.getContext().setActiveTest(false);
 	}
 
 	public String[] getModelList(){
