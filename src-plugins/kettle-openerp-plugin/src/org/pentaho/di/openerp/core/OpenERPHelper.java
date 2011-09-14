@@ -97,8 +97,39 @@ public class OpenERPHelper implements DatabaseFactoryInterface {
 
 		return modelNames;
 	}
+	
+	public Object[] formatFilterValue(final String fieldName, final String operator, final Object value, final FieldMapping fld) throws Exception{
+		Object newValue = value;
+		Object newOperator = operator;
+		
+		// Fix the value type if required
+		if (fld == null)
+			newValue = value;
+		else if (operator.equals("is null")){
+			newOperator = "=";
+			newValue = false;
+		}
+		else if (operator.equals("is not null")){
+			newOperator = "!=";
+			newValue = false;
+		}
+		else if (fld.target_field_type == ValueMetaInterface.TYPE_BOOLEAN){
+			char firstchar = value.toString().toLowerCase().charAt(0);
+			if (firstchar == '1' || firstchar == 'y' || firstchar == 't')
+				newValue = true;
+			else if (firstchar == '0' || firstchar == 'n' || firstchar == 'f') 
+				newValue = false;
+			else throw new Exception ("Unknown boolean " + value.toString());
+		}
+		else if (fld.target_field_type == ValueMetaInterface.TYPE_NUMBER)
+			newValue = Double.parseDouble(value.toString());
+		else if (fld.target_field_type == ValueMetaInterface.TYPE_INTEGER)
+			newValue = Integer.parseInt(value.toString());
+		
+		return new Object[] {newOperator, newValue};
+	}
 
-	public void getModelData(String model, FilterCollection filter, int batchSize, ArrayList<FieldMapping> mappings, RowsReadListener listener) throws MalformedURLException, XmlRpcException{
+	public void getModelData(String model, FilterCollection filter, int batchSize, ArrayList<FieldMapping> mappings, RowsReadListener listener) throws XmlRpcException{
 
 		ArrayList<String> fieldList = new ArrayList<String>();
 		for(FieldMapping map : mappings)
@@ -109,6 +140,10 @@ public class OpenERPHelper implements DatabaseFactoryInterface {
 		fieldStringList = fieldList.toArray(fieldStringList);
 
 		openERPConnection.searchAndReadObject(model, filter, fieldStringList, batchSize, listener);
+	}
+	
+	public RowCollection getModelData(String model, FilterCollection filter, String [] fieldStringList) throws XmlRpcException{
+		return openERPConnection.searchAndReadObject(model, filter, fieldStringList);
 	}
 
 	public String [] getOutputFields(String model) throws MalformedURLException, XmlRpcException{

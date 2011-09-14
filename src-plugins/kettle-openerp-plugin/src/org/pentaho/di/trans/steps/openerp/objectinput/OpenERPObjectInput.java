@@ -124,38 +124,12 @@ public class OpenERPObjectInput extends BaseStep implements StepInterface{
 							fld = allFields.get(j);
 							break;
 						}
-				
-					String fieldName = filterItem.getFieldName();
-					String operator = filterItem.getComparator();
-					Object value = filterItem.getValue();
 					
-					// Fix the value type if required
-					if (fld == null)
-						value = filterItem.getValue();
-					else if (operator.equals("is null")){
-						operator = "=";
-						value = false;
-					}
-					else if (operator.equals("is not null")){
-						operator = "!=";
-						value = false;
-					}
-					else if (fld.target_field_type == ValueMetaInterface.TYPE_BOOLEAN){
-						char firstchar = filterItem.getValue().toLowerCase().charAt(0);
-						if (firstchar == '1' || firstchar == 'y' || firstchar == 't')
-							value = true;
-						else if (firstchar == '0' || firstchar == 'n' || firstchar == 'f') 
-							value = false;
-						else throw new Exception ("Unknown boolean " + filterItem.getValue());
-					}
-					else if (fld.target_field_type == ValueMetaInterface.TYPE_NUMBER)
-						value = Double.parseDouble(filterItem.getValue());
-					else if (fld.target_field_type == ValueMetaInterface.TYPE_INTEGER)
-						value = Integer.parseInt(filterItem.getValue());
+					Object[] result = data.helper.formatFilterValue(filterItem.getFieldName(), filterItem.getComparator(), filterItem.getValue(), fld);
 					
-					filter.add(fieldName, operator, value);
+					filter.add(filterItem.getFieldName(), result[0].toString(), result[1]);
 					
-					this.logBasic("Setting filter: [" + filterItem.getFieldName() + "," + filterItem.getComparator() + "," + value.toString() + "]");
+					this.logBasic("Setting filter: [" + filterItem.getFieldName() + "," + result[0].toString() + "," + result[1].toString() + "]");
 				}
 				
 				data.helper.getModelData(meta.getModelName(), filter, meta.getReadBatchSize(), meta.getMappings(), new RowsReadListener() {

@@ -19,7 +19,7 @@ package org.pentaho.di.ui.trans.steps.openerp.objectoutput;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Hashtable;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -48,11 +48,11 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.steps.openerp.objectoutput.OpenERPObjectOutputData;
 import org.pentaho.di.trans.steps.openerp.objectoutput.OpenERPObjectOutputMeta;
 import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
@@ -61,13 +61,14 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
 public class OpenERPObjectOutputDialog extends BaseStepDialog implements StepDialogInterface {
 
 	private static Class<?> PKG = OpenERPObjectOutputMeta.class; // for i18n purposes, needed by Translator2!! // $NON-NLS-1$
-	private static Class<?> PKGStepInterface = StepInterface.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	ColumnInfo[] fieldMappingColumnInfo;
+	private ColumnInfo[] keyFieldsViewColinf;
 
 	private final OpenERPObjectOutputMeta meta;
 	private Label                  labelStepName;
@@ -77,11 +78,12 @@ public class OpenERPObjectOutputDialog extends BaseStepDialog implements StepDia
 	private CCombo                 comboModelName;
 	private Label                  labelCommitBatchSize;
 	private Text                   textCommitBatchSize;
-	private Label                  labelIDFieldName;
-	private CCombo                 comboIDFieldName;
+	private Label                  labelKeyFields;
+	private Button                 buttonGetKeyFields;
+	private TableView              tableViewKeyFields;
 	private Label                  labelFieldMappings;
 	private TableView              tableViewFieldMappings;
-	private Button                 buttonGetFields;
+	private Button                 buttonGetMappingFields;
 	private Button                 buttonDoMappings;
 	private Button                 buttonOk;
 	private Button                 buttonCancel;
@@ -158,24 +160,38 @@ public class OpenERPObjectOutputDialog extends BaseStepDialog implements StepDia
 		fd.top = new FormAttachment(comboModelName, margin);
 		textCommitBatchSize.setLayoutData(fd);
 
-		labelIDFieldName = new Label(shell, SWT.RIGHT);
+		labelKeyFields = new Label(shell, SWT.NONE);
 		fd = new FormData();
 		fd.left = new FormAttachment(0, 0);
-		fd.right = new FormAttachment(middle, -margin);
 		fd.top = new FormAttachment(textCommitBatchSize, margin);
-		labelIDFieldName.setLayoutData(fd);
-
-		comboIDFieldName = new CCombo(shell, SWT.BORDER);
+		labelKeyFields.setLayoutData(fd);
+		
+		keyFieldsViewColinf = new ColumnInfo[] { 
+				new ColumnInfo(getLocalizedKeyColumn(0), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false), 
+				new ColumnInfo(getLocalizedKeyColumn(1), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
+				new ColumnInfo(getLocalizedKeyColumn(2), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false)};
+		
+		tableViewKeyFields = new TableView(null, shell, SWT.MULTI | SWT.BORDER, keyFieldsViewColinf, 0, true, lsMod, props);
+		tableViewKeyFields.setReadonly(false);
+		tableViewKeyFields.setSortable(false);
 		fd = new FormData();
-		fd.left = new FormAttachment(middle, 0);
+		fd.left = new FormAttachment(0, margin);
+		fd.top = new FormAttachment(labelKeyFields, 3 * margin);
+		fd.right = new FormAttachment(100, -150);
+		fd.bottom = new FormAttachment(labelKeyFields, 200);
+		tableViewKeyFields.setLayoutData(fd);
+		
+		buttonGetKeyFields = new Button(shell, SWT.NONE);
+		fd = new FormData();
+		fd.left = new FormAttachment(tableViewKeyFields, margin);
+		fd.top = new FormAttachment(labelKeyFields, 3 * margin);
 		fd.right = new FormAttachment(100, 0);
-		fd.top = new FormAttachment(textCommitBatchSize, margin);
-		comboIDFieldName.setLayoutData(fd);
+		buttonGetKeyFields.setLayoutData(fd);
 	    
 		labelFieldMappings = new Label(shell, SWT.NONE);
 		fd = new FormData();
 		fd.left = new FormAttachment(0, 0);
-		fd.top = new FormAttachment(comboIDFieldName, margin);
+		fd.top = new FormAttachment(tableViewKeyFields, margin);
 		labelFieldMappings.setLayoutData(fd);
 
 		fieldMappingColumnInfo = new ColumnInfo[] { 
@@ -194,17 +210,17 @@ public class OpenERPObjectOutputDialog extends BaseStepDialog implements StepDia
 		fd.bottom = new FormAttachment(100, -50);
 		tableViewFieldMappings.setLayoutData(fd);
 
-		buttonGetFields = new Button(shell, SWT.NONE);
+		buttonGetMappingFields = new Button(shell, SWT.NONE);
 		fd = new FormData();
 		fd.left = new FormAttachment(tableViewFieldMappings, margin);
 		fd.top = new FormAttachment(labelFieldMappings, 3 * margin);
 		fd.right = new FormAttachment(100, 0);
-		buttonGetFields.setLayoutData(fd);
+		buttonGetMappingFields.setLayoutData(fd);
 
 		buttonDoMappings = new Button(shell, SWT.NONE);
 		fd = new FormData();
 		fd.left = new FormAttachment(tableViewFieldMappings, margin);
-		fd.top = new FormAttachment(buttonGetFields, 3 * margin);
+		fd.top = new FormAttachment(buttonGetMappingFields, 3 * margin);
 		fd.right = new FormAttachment(100, 0);
 		buttonDoMappings.setLayoutData(fd);
 
@@ -236,9 +252,14 @@ public class OpenERPObjectOutputDialog extends BaseStepDialog implements StepDia
 			public void focusGained(FocusEvent arg0) {
 			}
 		});
-		buttonGetFields.addSelectionListener(new SelectionAdapter() {
+		buttonGetKeyFields.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				getFields();
+				getKeyFields();
+			}
+		});
+		buttonGetMappingFields.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				getUpdateFields();
 			}
 		});
 		buttonDoMappings.addListener(SWT.Selection, new Listener() { 	
@@ -282,8 +303,8 @@ public class OpenERPObjectOutputDialog extends BaseStepDialog implements StepDia
 		props.setLook(comboModelName);
 		props.setLook(labelCommitBatchSize);
 		props.setLook(textCommitBatchSize);
-		props.setLook(labelIDFieldName);
-		props.setLook(comboIDFieldName);
+		props.setLook(labelKeyFields);
+		props.setLook(labelFieldMappings);
 
 		meta.setChanged(changed);
 		setSize();
@@ -296,14 +317,30 @@ public class OpenERPObjectOutputDialog extends BaseStepDialog implements StepDia
 
 		return stepname;
 	}
+	
+	private String getLocalizedKeyColumn(int columnIndex) {
+		switch (columnIndex) {
+		
+		case 0:
+			return BaseMessages.getString(PKG, "OpenERPObjectOutputDialog.KeyMappingModelField");
+		case 1:
+			return BaseMessages.getString(PKG, "OpenERPObjectOutputDialog.KeyMappingComparisonField");
+		case 2:
+			return BaseMessages.getString(PKG, "OpenERPObjectOutputDialog.KeyMappingStreamField");
+		default:
+			return "";
+		}
+	}
 
 	private void fillLocalizationData() {
 		shell.setText(BaseMessages.getString(PKG, "OpenERPObjectOutputDialog.Title"));
 		labelStepName.setText(BaseMessages.getString(PKG, "OpenERPObjectOutputDialog.StepName"));
 		labelModelName.setText(BaseMessages.getString(PKG, "OpenERPObjectOutputDialog.ModelName"));
 		labelCommitBatchSize.setText(BaseMessages.getString(PKG, "OpenERPObjectOutputDialog.CommitBatchSize"));
-		labelIDFieldName.setText(BaseMessages.getString(PKG, "OpenERPObjectOutputDialog.IDFieldName"));
-		buttonGetFields.setText(BaseMessages.getString(PKG, "OpenERPObjectOutputDialog.ButtonGetFields"));
+		labelKeyFields.setText(BaseMessages.getString(PKG, "OpenERPObjectOutputDialog.KeyMappingLabel"));
+		buttonGetKeyFields.setText(BaseMessages.getString(PKG, "OpenERPObjectOutputDialog.ButtonGetKeyFields"));
+		buttonGetMappingFields.setText(BaseMessages.getString(PKG, "OpenERPObjectOutputDialog.ButtonGetMappingFields"));
+		labelFieldMappings.setText(BaseMessages.getString(PKG, "OpenERPObjectOutputDialog.MappingLabel"));
 		buttonDoMappings.setText(BaseMessages.getString(PKG, "OpenERPObjectOutputDialog.ButtonDoMappings"));
 		
 	}
@@ -353,9 +390,20 @@ public class OpenERPObjectOutputDialog extends BaseStepDialog implements StepDia
 	}
 
 	private void setTalbleFieldsOptions(){
-		fieldMappingColumnInfo[0].setComboValues(new String[]{});
+		String[] modelFieldName = getModelFieldNames();
+		
+		if (modelFieldName == null)
+			return;
+		
 		fieldMappingColumnInfo[0].setComboValues(getModelFieldNames());
 		tableViewFieldMappings.optWidth(true);
+		
+		ArrayList<String> options = new ArrayList<String>();
+		options.add("id");
+		Collections.addAll(options, modelFieldName);
+		
+		keyFieldsViewColinf[0].setComboValues(options.toArray(new String[options.size()]));
+		tableViewKeyFields.optWidth(true);
 	}
 
 	private String [] getModelFieldNames(){
@@ -414,9 +462,9 @@ public class OpenERPObjectOutputDialog extends BaseStepDialog implements StepDia
 			fieldMappingColumnInfo[1].setComboValues(steamFields);
 			tableViewFieldMappings.optWidth(true);
 			
-			for (String streamField : steamFields)
-				if (comboIDFieldName.indexOf(streamField) == -1)
-					comboIDFieldName.add(streamField);
+			keyFieldsViewColinf[2].setComboValues(new String[]{});
+			keyFieldsViewColinf[2].setComboValues(steamFields);
+			tableViewKeyFields.optWidth(true);
 		}
 	}
 
@@ -533,47 +581,47 @@ public class OpenERPObjectOutputDialog extends BaseStepDialog implements StepDia
 			tableViewFieldMappings.optWidth(true);
 		}
 	}
-
-	private void getFields(){
-		int choice = 0;
-
-		String [] modelFields = getModelFieldNames(true);
-		
-		if (modelFields == null)
-			return;
-
-		if (tableViewFieldMappings.table.getItemCount() > 0) {
-			// Ask what we should do with the existing data in the step.
-			MessageDialog md = new MessageDialog(tableViewFieldMappings.getShell(), BaseMessages.getString(PKGStepInterface, "BaseStepDialog.GetFieldsChoice.Title"),//"Warning!"  //$NON-NLS-1$
-					null, BaseMessages.getString(PKGStepInterface, "BaseStepDialog.GetFieldsChoice.Message", "" + tableViewFieldMappings.table.getItemCount(), "" + modelFields.length), //$NON-NLS-1$  //$NON-NLS-2$  //$NON-NLS-3$
-					MessageDialog.WARNING, new String[] { BaseMessages.getString(PKGStepInterface, "BaseStepDialog.AddNew"), //$NON-NLS-1$
-				BaseMessages.getString(PKGStepInterface, "BaseStepDialog.ClearAndAdd"), //$NON-NLS-1$  //$NON-NLS-2$
-				BaseMessages.getString(PKGStepInterface, "BaseStepDialog.Cancel"), }, 0); //$NON-NLS-1$
-			MessageDialog.setDefaultImage(GUIResource.getInstance().getImageSpoon());
-			int idx = md.open();
-			choice = idx & 0xFF;
+	
+	// Grabbed from the update step
+	private void getKeyFields(){
+		try
+		{
+			RowMetaInterface r = transMeta.getPrevStepFields(stepname);
+			if (r!=null && !r.isEmpty())
+			{
+                TableItemInsertListener listener = new TableItemInsertListener()
+                {
+                    public boolean tableItemInserted(TableItem tableItem, ValueMetaInterface v)
+                    {
+                        tableItem.setText(2, "=");
+                        return true;
+                    }
+                };
+                BaseStepDialog.getFieldsFromPrevious(r, tableViewKeyFields, 1, new int[] { 1, 3}, new int[] {}, -1, -1, listener);
+			}
 		}
-
-		if (choice == 2 || choice == 255 /* 255 = escape pressed */)
-			return; // Cancel clicked
-
-		if (choice == 1)
-			tableViewFieldMappings.table.removeAll();
-
-		// Make a list of the old elements
-		Hashtable<String, Object> currentFields = new Hashtable<String, Object>();
-		for (int i = 0; i < tableViewFieldMappings.table.getItemCount(); i++)
-			currentFields.put(tableViewFieldMappings.table.getItem(i).getText(1), true);
-
-		for (String newField : modelFields)
-			// Only add new elements
-			if (!currentFields.containsKey(newField))
-				tableViewFieldMappings.add(newField, "");
-
-		tableViewFieldMappings.setRowNums();
-		tableViewFieldMappings.optWidth(true);		
+		catch(KettleException ke)
+		{
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "OpenERPObjectOutputDialog.FailedToGetFields.Title"), BaseMessages.getString(PKG, "OpenERPObjectOutputDialog.FailedToGetFields.Message"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+		}
 	}
-
+	
+	// Grabbed from the update step
+	private void getUpdateFields(){
+		try
+		{
+			RowMetaInterface r = transMeta.getPrevStepFields(stepname);
+			if (r!=null && !r.isEmpty())
+			{
+                BaseStepDialog.getFieldsFromPrevious(r, tableViewFieldMappings, 1, new int[] { 1, 2}, new int[] {}, -1, -1, null);
+			}
+		}
+		catch(KettleException ke)
+		{
+			new ErrorDialog(shell, BaseMessages.getString(PKG, "OpenERPObjectOutputDialog.FailedToGetFields.Title"), BaseMessages.getString(PKG, "OpenERPObjectOutputDialog.FailedToGetFields.Message"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+	}
+	
 	private void fillStoredData() {
 
 		if (stepname != null)
@@ -589,9 +637,21 @@ public class OpenERPObjectOutputDialog extends BaseStepDialog implements StepDia
 		}
 
 		textCommitBatchSize.setText(String.valueOf(meta.getCommitBatchSize()));
-		
-		comboIDFieldName.setText(meta.getIdFieldName());
 
+		keyFieldsViewColinf[1].setComboValues(new String[]{"=","is null", "is not null"});
+
+		tableViewKeyFields.table.removeAll();
+		tableViewKeyFields.table.setItemCount(meta.getKeyLookups().size());
+		for (int i = 0; i < meta.getKeyLookups().size(); i++) {
+			TableItem item = tableViewKeyFields.table.getItem(i);
+			item.setText(1, meta.getKeyLookups().get(i)[0]);
+			item.setText(2, meta.getKeyLookups().get(i)[1]);
+			item.setText(3, meta.getKeyLookups().get(i)[2]);
+		}
+		tableViewKeyFields.removeEmptyRows();
+		tableViewKeyFields.setRowNums();
+		tableViewKeyFields.optWidth(true);
+		
 		tableViewFieldMappings.table.removeAll();
 		tableViewFieldMappings.table.setItemCount(meta.getModelFields().length);
 		for (int i = 0; i < meta.getModelFields().length; i++) {
@@ -599,6 +659,7 @@ public class OpenERPObjectOutputDialog extends BaseStepDialog implements StepDia
 			item.setText(1, meta.getModelFields()[i]);
 			item.setText(2, meta.getStreamFields()[i]);
 		}
+		tableViewFieldMappings.removeEmptyRows();
 		tableViewFieldMappings.setRowNums();
 		tableViewFieldMappings.optWidth(true);
 	}
@@ -642,8 +703,17 @@ public class OpenERPObjectOutputDialog extends BaseStepDialog implements StepDia
 			targetTableFields[i] = tableViewFieldMappings.table.getItem(i).getText(1);
 			streamFields[i] = tableViewFieldMappings.table.getItem(i).getText(2);
 		}
+		
+		ArrayList<String[]> keyFields = new ArrayList<String[]>();
+		for (int i = 0; i < tableViewKeyFields.table.getItemCount(); i++) {
+			String [] keyMap = new String[3]; 
+			keyMap[0] = tableViewKeyFields.table.getItem(i).getText(1);
+			keyMap[1] = tableViewKeyFields.table.getItem(i).getText(2);
+			keyMap[2] = tableViewKeyFields.table.getItem(i).getText(3);
+			keyFields.add(keyMap);
+		}
 
-		targetMeta.setIdFieldName(comboIDFieldName.getText());
+		targetMeta.setKeyLookups(keyFields);
 		targetMeta.setModelFields(targetTableFields);
 		targetMeta.setStreamFields(streamFields);
 		targetMeta.setDatabaseMeta(transMeta.findDatabase(addConnectionLine.getText()));

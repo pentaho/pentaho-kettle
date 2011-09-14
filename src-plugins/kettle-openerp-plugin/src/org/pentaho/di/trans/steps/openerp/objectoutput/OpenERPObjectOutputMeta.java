@@ -17,6 +17,7 @@
 
 package org.pentaho.di.trans.steps.openerp.objectoutput;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -54,7 +55,7 @@ import org.w3c.dom.Node;
 	private int commitBatchSize = 1000;
 	private String[] modelFields = new String[0];
 	private String[] streamFields = new String[0];
-	private String idFieldName = "";
+	private ArrayList<String[]> keyLookups = new ArrayList<String[]>();
 
 	@Override
 	public void check(List<CheckResultInterface> remarks, TransMeta transMeta,
@@ -86,7 +87,6 @@ import org.w3c.dom.Node;
 		retval.append("    ").append(XMLHandler.addTagValue("connection", this.databaseMeta == null ? "": this.databaseMeta.getName()));
 		retval.append("    ").append(XMLHandler.addTagValue("modelName", this.modelName));
 		retval.append("    ").append(XMLHandler.addTagValue("readBatchSize", this.commitBatchSize));
-		retval.append("    ").append(XMLHandler.addTagValue("idFieldName", this.idFieldName));
 
 		retval.append("    <mappings>").append(Const.CR);
 		for (int i = 0; i < modelFields.length; i++) {
@@ -96,6 +96,16 @@ import org.w3c.dom.Node;
 			retval.append("      </mapping>").append(Const.CR);
 		}
 		retval.append("    </mappings>").append(Const.CR);
+		
+		retval.append("    <key_mappings>").append(Const.CR);
+		for (int i = 0; i < keyLookups.size(); i++) {
+			retval.append("      <key_map>").append(Const.CR);
+			retval.append("        ").append(XMLHandler.addTagValue("model_key_field",keyLookups.get(i)[0]));
+			retval.append("        ").append(XMLHandler.addTagValue("comparitor",keyLookups.get(i)[1]));
+			retval.append("        ").append(XMLHandler.addTagValue("stream_key_field",keyLookups.get(i)[2]));
+			retval.append("      </key_map>").append(Const.CR);
+		}
+		retval.append("    </key_mappings>").append(Const.CR);
 
 		return retval.toString();
 	}
@@ -119,14 +129,27 @@ import org.w3c.dom.Node;
 			this.databaseMeta = rep.loadDatabaseMetaFromStepAttribute(idStep, "connection", databases);
 			this.modelName = rep.getStepAttributeString(idStep, "modelName");
 			this.commitBatchSize = Integer.parseInt(rep.getStepAttributeString(idStep, "readBatchSize"));
-			this.idFieldName = rep.getStepAttributeString(idStep, "idFieldName");
 
-			int nrMappings = rep.countNrStepAttributes(idStep, "table_field");
+			int nrMappings = rep.countNrStepAttributes(idStep, "model_field");
 			allocate(nrMappings);
 
 			for (int i=0;i<nrMappings;i++) {
 				modelFields[i] = rep.getStepAttributeString (idStep, i, "model_field");
 				streamFields[i] = rep.getStepAttributeString (idStep, i, "stream_field");
+			}
+			
+			nrMappings = rep.countNrStepAttributes(idStep, "model_key_field");
+			allocate(nrMappings);
+
+			keyLookups.clear();
+			for (int i=0;i<nrMappings;i++) {
+				String[] key_maps = new String[3];
+				
+				key_maps[0] = rep.getStepAttributeString (idStep, i, "model_key_field");
+				key_maps[1] = rep.getStepAttributeString (idStep, i, "comparitor");
+				key_maps[2] = rep.getStepAttributeString (idStep, i, "stream_key_field");
+				
+				keyLookups.add(key_maps);
 			}
 
 		} catch (Exception e) {
@@ -141,13 +164,17 @@ import org.w3c.dom.Node;
 			rep.saveDatabaseMetaStepAttribute(idTransformation, idStep, "connection", this.databaseMeta);
 			rep.saveStepAttribute(idTransformation, idStep, "modelName", this.modelName);
 			rep.saveStepAttribute(idTransformation, idStep, "readBatchSize", this.commitBatchSize);
-			rep.saveStepAttribute(idTransformation, idStep, "idFieldName", this.idFieldName);
 
 			for (int i=0;i < modelFields.length;i++) {
 				rep.saveStepAttribute(idTransformation, idStep, i, "model_field", modelFields[i]);
 				rep.saveStepAttribute(idTransformation, idStep, i, "stream_field", streamFields[i]);
 			}
-
+			
+			for (int i = 0; i < keyLookups.size(); i++) {
+				rep.saveStepAttribute(idTransformation, idStep, i, "model_key_field", keyLookups.get(i)[0]);
+				rep.saveStepAttribute(idTransformation, idStep, i, "comparitor", keyLookups.get(i)[1]);
+				rep.saveStepAttribute(idTransformation, idStep, i, "stream_key_field", keyLookups.get(i)[2]);
+			}
 		} catch (Exception e) {
 			throw new KettleException("Unable to save step information to the repository for idStep=" + idStep, e);
 		}
@@ -165,7 +192,6 @@ import org.w3c.dom.Node;
 			this.databaseMeta = DatabaseMeta.findDatabase(databases, XMLHandler.getTagValue(stepnode, "connection"));
 			this.modelName = XMLHandler.getTagValue(stepnode, "modelName");
 			this.commitBatchSize = Integer.parseInt(XMLHandler.getTagValue(stepnode, "readBatchSize"));
-			this.idFieldName = XMLHandler.getTagValue(stepnode, "idFieldName");
 
 			Node mappings = XMLHandler.getSubNode(stepnode,"mappings");
 			int nrLevels = XMLHandler.countNodes(mappings,"mapping");
@@ -177,6 +203,22 @@ import org.w3c.dom.Node;
 
 				modelFields[i] = XMLHandler.getTagValue(fnode, "model_field");
 				streamFields[i] = XMLHandler.getTagValue(fnode, "stream_field");
+			}
+			
+			Node keyMappings = XMLHandler.getSubNode(stepnode,"key_mappings");
+			nrLevels = XMLHandler.countNodes(keyMappings,"key_map");
+
+			keyLookups.clear();
+			for (int i=0;i<nrLevels;i++) {
+
+				String[] key_maps = new String[3];
+				Node fnode = XMLHandler.getSubNodeByNr(keyMappings, "key_map", i);
+
+				key_maps[0] = XMLHandler.getTagValue(fnode, "model_key_field");
+				key_maps[1] = XMLHandler.getTagValue(fnode, "comparitor");
+				key_maps[2] = XMLHandler.getTagValue(fnode, "stream_key_field");
+				
+				keyLookups.add(key_maps);
 			}
 
 		} catch (Exception e) {
@@ -223,11 +265,11 @@ import org.w3c.dom.Node;
 		return streamFields;
 	}
 
-	public void setIdFieldName(String idFieldName) {
-		this.idFieldName = idFieldName;
+	public void setKeyLookups(ArrayList<String[]> keyLookups) {
+		this.keyLookups = keyLookups;
 	}
 
-	public String getIdFieldName() {
-		return (idFieldName == null ? "" : idFieldName);
+	public ArrayList<String[]> getKeyLookups() {
+		return keyLookups;
 	}
 }
