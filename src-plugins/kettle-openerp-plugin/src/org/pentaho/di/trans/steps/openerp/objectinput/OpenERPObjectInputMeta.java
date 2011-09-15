@@ -29,7 +29,9 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.openerp.core.FieldMapping;
@@ -71,11 +73,19 @@ public class OpenERPObjectInputMeta extends BaseStepMeta implements StepMetaInte
 		final OpenERPHelper helper = new OpenERPHelper(databaseMeta);
 		try {
 			helper.StartSession();
-			final RowMetaInterface rowMeta = helper.getFieldRowMeta(mappings);
+			final RowMetaInterface rowMeta = this.getRowMeta();
 			row.addRowMeta(rowMeta);
 		} catch (Exception e) {
 			throw new KettleStepException(e);
 		}
+	}
+	
+	public RowMetaInterface getRowMeta(){
+		RowMetaInterface rowMeta = new RowMeta();
+		for (FieldMapping map : this.getMappings()){
+			rowMeta.addValueMeta(new ValueMeta(map.target_field, map.target_field_type));
+		}
+		return rowMeta;
 	}
 
 	@Override

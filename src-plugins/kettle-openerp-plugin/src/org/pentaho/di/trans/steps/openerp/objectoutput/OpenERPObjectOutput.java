@@ -22,7 +22,6 @@ import java.util.HashMap;
 
 import org.apache.xmlrpc.XmlRpcException;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.openerp.core.FieldMapping;
 import org.pentaho.di.openerp.core.OpenERPHelper;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -34,6 +33,8 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 
 import com.debortoliwines.openerp.api.FieldCollection;
 import com.debortoliwines.openerp.api.FilterCollection;
+import com.debortoliwines.openerp.api.ObjectAdapter;
+import com.debortoliwines.openerp.api.OpeneERPApiException;
 import com.debortoliwines.openerp.api.Row;
 import com.debortoliwines.openerp.api.RowCollection;
 
@@ -41,14 +42,15 @@ public class OpenERPObjectOutput extends BaseStep implements StepInterface {
 	private OpenERPObjectOutputMeta meta;
 	private OpenERPObjectOutputData data;
 
-	private String[] fieldList;
-	private FieldCollection fieldCache;
+	ObjectAdapter openerERPAdapter;
+	private int idIndex = -1;
 	private int[] index;
 	private FilterCollection readSourceFilter;
 	private ArrayList<String> readFieldList = new ArrayList<String>();
 	private int[] readRowIndex = new int[0];
 	private HashMap<String, Object> filterRowCache = new HashMap<String, Object>();
 	private final String SEPARATOR = "A|a";
+	private FieldCollection rowFields;;
 
 	public OpenERPObjectOutput(StepMeta stepMeta,
 			StepDataInterface stepDataInterface, int copyNr,
@@ -79,37 +81,39 @@ public class OpenERPObjectOutput extends BaseStep implements StepInterface {
 				prepareFieldList();
 				
 				/* If the ID isn't used as the filter, prepare the filter */
-				if (index[0] == -1 && meta.getKeyLookups().size() > 0){
+				if (idIndex == -1 && meta.getKeyLookups().size() > 0){
 					prepareReadParameters();
 					prepareCache();
 				}
+				
+				rowFields = openerERPAdapter.getFields(meta.getModelFields());
+				
 			} catch (Exception e) {
 				throw new KettleException("Failed to initialize step ", e);
 			}
 			first = false;
 			data.batchRows.clear();
+			 
 		}
 
 		String row = "";
 		try {
-			Object[] newRow = new Object[fieldList.length];
-
+			Row newRow = openerERPAdapter.getNewRow(rowFields);
+			
 			// If ID field was mapped in the filter, use it.  Otherwise try and find it from cache.
-			if (index[0] >= 0)
-				newRow[0] = inputRow[this.index[0]];
+			if (idIndex >= 0)
+				newRow.put("id", inputRow[idIndex]);
 			else{
 				String combinedKey = "";
 				for (int i : readRowIndex)
 					combinedKey += SEPARATOR + (inputRow[i] == null ? "" : inputRow[i]);
 				if (filterRowCache.containsKey(combinedKey))
-					newRow[0] = filterRowCache.get(combinedKey);
+					newRow.put("id", filterRowCache.get(combinedKey));
 			}
 			
-			for (int i = 1; i < fieldList.length; i++)
-				newRow[i] = inputRow[this.index[i]];
+			for (int i = 0; i < meta.getModelFields().length; i++)
+				newRow.put(meta.getModelFields()[i], inputRow[this.index[i]]);
 				
-			newRow = data.helper.fixImportDataTypes(meta.getModelName(),fieldList, fieldCache, newRow);
-			
 			data.batchRows.add(newRow);
 
 			if (data.batchRows.size() == meta.getCommitBatchSize())
@@ -124,11 +128,11 @@ public class OpenERPObjectOutput extends BaseStep implements StepInterface {
 
 	private void CommitBatch() throws Exception{
 		// In the process of stopping, return
-		if (isStopped())
+		if (isStopped() || data.batchRows.size() == 0)
 			return;
 		
 		try {
-			data.helper.importData(meta.getModelName(), fieldList,	data.batchRows);
+			openerERPAdapter.importData(data.batchRows);
 			for (int i = 0; i < data.batchRows.size(); i++)
 				incrementLinesOutput();
 		} finally {
@@ -136,7 +140,7 @@ public class OpenERPObjectOutput extends BaseStep implements StepInterface {
 		}
 	}
 	
-	private void prepareCache() throws XmlRpcException{
+	private void prepareCache() throws XmlRpcException, OpeneERPApiException{
 		filterRowCache.clear();
 		
 		RowCollection rows = data.helper.getModelData(meta.getModelName(), readSourceFilter, readFieldList.toArray(new String[readFieldList.size()]));
@@ -156,8 +160,6 @@ public class OpenERPObjectOutput extends BaseStep implements StepInterface {
 	}
 	
 	private void prepareReadParameters() throws Exception{
-		ArrayList<FieldMapping> allFields = data.helper.getDefaultFieldMappings(meta.getModelName());
-		
 		ArrayList<Integer> readIdx = new ArrayList<Integer>();
 		// Building search filter with constant values
 		readSourceFilter = new FilterCollection();
@@ -176,18 +178,8 @@ public class OpenERPObjectOutput extends BaseStep implements StepInterface {
 				continue;
 			}
 			
-			// Get the source field to filter on
-			FieldMapping fld = null;
-			for (int j = 0; j < allFields.size(); j++)
-				if (allFields.get(j).source_field.equals(modelField) 
-						&& allFields.get(j).source_index <= 0){
-					fld = allFields.get(j);
-					break;
-				}
-			
-			Object[] result = data.helper.formatFilterValue(modelField, comparison, streamField, fld);
-			readSourceFilter.add(modelField, result[0].toString(), result[1]);
-			this.logBasic("Setting filter: [" + modelField + "," + result[0].toString() + "," + result[1].toString() + "]");
+			readSourceFilter.add(modelField, comparison, streamField);
+			this.logBasic("Setting filter: [" + modelField + "," + comparison + "," + streamField + "]");
 		}
 		readRowIndex = new int[readIdx.size()];
 		for (int i = 0; i < readRowIndex.length; i++)
@@ -196,22 +188,16 @@ public class OpenERPObjectOutput extends BaseStep implements StepInterface {
 	
 	private void prepareFieldList() throws Exception {
 
-		index = new int[meta.getModelFields().length + 1];
-
-		// Place holder for the ID field that must be first 
-		index[0] = -1;
-		
 		// If the ID field is the only filter, include it in the field
 		if (meta.getKeyLookups().size() == 1
 				&& meta.getKeyLookups().get(0)[0].equals("id")
 				&& meta.getKeyLookups().get(0)[1].equals("="))
-			index[0] = getInputRowMeta().indexOfValue(meta.getKeyLookups().get(0)[2]);
+			idIndex = getInputRowMeta().indexOfValue(meta.getKeyLookups().get(0)[2]);
 		
+		index = new int[meta.getModelFields().length];
 		for (int i = 0; i < meta.getModelFields().length; i++)
-			index[i + 1] = getInputRowMeta().indexOfValue(meta.getStreamFields()[i]);
-		
-		this.fieldList = data.helper.getFieldListForImport(meta.getModelName(), meta.getModelFields());
-		this.fieldCache = data.helper.getModelFields(meta.getModelName());
+			index[i] = getInputRowMeta().indexOfValue(meta.getStreamFields()[i]);
+
 	}
 
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi) {
@@ -223,6 +209,7 @@ public class OpenERPObjectOutput extends BaseStep implements StepInterface {
 				this.logDebug("Initializing OpenERP Session");
 				data.helper = new OpenERPHelper(meta.getDatabaseMeta());
 				data.helper.StartSession();
+				openerERPAdapter = data.helper.getAdapter(meta.getModelName());
 				return true;
 			} catch (Exception e) {
 				logError("An error occurred, processing will be stopped: "

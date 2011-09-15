@@ -19,35 +19,31 @@ package org.pentaho.di.openerp.core;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
-import java.util.HashMap;
 
 import org.apache.xmlrpc.XmlRpcException;
 import org.pentaho.di.core.database.DatabaseFactoryInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.row.RowMeta;
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 import com.debortoliwines.openerp.api.FilterCollection;
-import com.debortoliwines.openerp.api.SelectionOption;
+import com.debortoliwines.openerp.api.ObjectAdapter;
+import com.debortoliwines.openerp.api.OpenERPCommand;
+import com.debortoliwines.openerp.api.OpeneERPApiException;
 import com.debortoliwines.openerp.api.Session;
 import com.debortoliwines.openerp.api.Field;
 import com.debortoliwines.openerp.api.FieldCollection;
 import com.debortoliwines.openerp.api.RowCollection;
 import com.debortoliwines.openerp.api.Field.FieldType;
-import com.debortoliwines.openerp.api.Session.RowsReadListener;
 
 /**
- * Class to make life easier for transformations and keep transformation code simple
+ * Helper class to keep common functionality in one class
  * @author Pieter van der Merwe
  */
 public class OpenERPHelper implements DatabaseFactoryInterface {
 
 	private Session openERPConnection;
+	private OpenERPCommand commands;
 	
-	// Cache used to store the name_get result of an model to cater for many2many relations
-	private HashMap<String, HashMap<String, String>> modelNameCache = new HashMap<String, HashMap<String, String>>();
 
 	@Override
 	public String getConnectionTestReport(DatabaseMeta databaseMeta){
@@ -80,6 +76,8 @@ public class OpenERPHelper implements DatabaseFactoryInterface {
 	public void StartSession() throws Exception{
 		openERPConnection.startSession();
 		
+		commands = openERPConnection.getOpenERPCommand();
+		
 		// Don't automatically filter out active items in any steps 
 		openERPConnection.getContext().setActiveTest(false);
 	}
@@ -87,9 +85,9 @@ public class OpenERPHelper implements DatabaseFactoryInterface {
 	public String[] getModelList(){
 
 		String [] modelNames = new String[0];
-
 		try {
-			RowCollection rows = openERPConnection.searchAndReadObject("ir.model", null, new String[] {"model"});
+			ObjectAdapter modelAdapter = new ObjectAdapter(openERPConnection, "ir.model");
+			RowCollection rows = modelAdapter.searchAndReadObject(null, new String[] {"model"});
 			modelNames = new String[rows.size()];
 			for (int i = 0; i < modelNames.length; i++)
 				modelNames[i] = rows.get(i).get("model").toString();
@@ -98,39 +96,12 @@ public class OpenERPHelper implements DatabaseFactoryInterface {
 		return modelNames;
 	}
 	
-	public Object[] formatFilterValue(final String fieldName, final String operator, final Object value, final FieldMapping fld) throws Exception{
-		Object newValue = value;
-		Object newOperator = operator;
-		
-		// Fix the value type if required
-		if (fld == null)
-			newValue = value;
-		else if (operator.equals("is null")){
-			newOperator = "=";
-			newValue = false;
-		}
-		else if (operator.equals("is not null")){
-			newOperator = "!=";
-			newValue = false;
-		}
-		else if (fld.target_field_type == ValueMetaInterface.TYPE_BOOLEAN){
-			char firstchar = value.toString().toLowerCase().charAt(0);
-			if (firstchar == '1' || firstchar == 'y' || firstchar == 't')
-				newValue = true;
-			else if (firstchar == '0' || firstchar == 'n' || firstchar == 'f') 
-				newValue = false;
-			else throw new Exception ("Unknown boolean " + value.toString());
-		}
-		else if (fld.target_field_type == ValueMetaInterface.TYPE_NUMBER)
-			newValue = Double.parseDouble(value.toString());
-		else if (fld.target_field_type == ValueMetaInterface.TYPE_INTEGER)
-			newValue = Integer.parseInt(value.toString());
-		
-		return new Object[] {newOperator, newValue};
+	public int getModelDataCount(String model, FilterCollection filter) throws XmlRpcException, OpeneERPApiException{
+		ObjectAdapter modelAdapter = new ObjectAdapter(openERPConnection, model);
+		return modelAdapter.getObjectCount(filter);
 	}
-
-	public void getModelData(String model, FilterCollection filter, int batchSize, ArrayList<FieldMapping> mappings, RowsReadListener listener) throws XmlRpcException{
-
+		
+	public RowCollection getModelData(String model, FilterCollection filter, ArrayList<FieldMapping> mappings, int offset, int limit) throws XmlRpcException, OpeneERPApiException{
 		ArrayList<String> fieldList = new ArrayList<String>();
 		for(FieldMapping map : mappings)
 			if (!fieldList.contains(map.source_field))
@@ -139,15 +110,18 @@ public class OpenERPHelper implements DatabaseFactoryInterface {
 		String [] fieldStringList = new String[fieldList.size()];
 		fieldStringList = fieldList.toArray(fieldStringList);
 
-		openERPConnection.searchAndReadObject(model, filter, fieldStringList, batchSize, listener);
+		ObjectAdapter modelAdapter = new ObjectAdapter(openERPConnection, model);
+		return modelAdapter.searchAndReadObject(filter, fieldStringList, offset, limit, null);
 	}
 	
-	public RowCollection getModelData(String model, FilterCollection filter, String [] fieldStringList) throws XmlRpcException{
-		return openERPConnection.searchAndReadObject(model, filter, fieldStringList);
+	public RowCollection getModelData(String model, FilterCollection filter, String [] fieldStringList) throws XmlRpcException, OpeneERPApiException{
+		ObjectAdapter modelAdapter = new ObjectAdapter(openERPConnection, model);
+		return modelAdapter.searchAndReadObject(filter, fieldStringList);
 	}
 
-	public String [] getOutputFields(String model) throws MalformedURLException, XmlRpcException{
-		FieldCollection fields = openERPConnection.getFields(model);
+	public String [] getOutputFields(String model) throws MalformedURLException, XmlRpcException, OpeneERPApiException{
+		ObjectAdapter modelAdapter = new ObjectAdapter(openERPConnection, model);
+		FieldCollection fields = modelAdapter.getFields();
 
 		ArrayList<String> fieldArray = new ArrayList<String>();
 		for(Field field : fields){
@@ -161,131 +135,19 @@ public class OpenERPHelper implements DatabaseFactoryInterface {
 		return fieldArray.toArray(new String[fieldArray.size()]);
 	}
 
-	public void importData(String model, String [] fieldList, ArrayList<Object []> inputRows) throws Exception{
-		openERPConnection.importData(model, fieldList, inputRows);
+	public ObjectAdapter getAdapter(String objectName) throws XmlRpcException, OpeneERPApiException{
+		return openERPConnection.getObjectAdapter(objectName);
 	}
 
-	public Object[] fixImportDataTypes(String model, String [] targetFieldNames, FieldCollection fieldDef, Object [] inputRow) throws Exception {
-		Object[] outputRow = new Object[inputRow.length];
-		
-		for (int i = 0; i < inputRow.length; i++){
-			outputRow[i] = inputRow[i];
-			String targetField = targetFieldNames[i];
-			
-			if (targetField.endsWith(".id")){
-				if (outputRow[i] == null)
-					outputRow[i] = 0;
-				else
-					outputRow[i] = Integer.parseInt(inputRow[i].toString());
-				continue;
-			}
-			
-			// No other conversions required for a null value
-			if (outputRow[i] == null)
-				continue;
-			
-			// Do any type conversions
-			for(Field field : fieldDef)
-				if (field.getName().equals(targetField)){
-					// Check selection values
-					if (field.getType() == FieldType.SELECTION){
-						boolean validValue = false;
-						for (SelectionOption option : field.getSelectionOptions()){
-							// If the database code was specified, replace it with the value.
-							// The import procedure uses the value and not the code
-							if (option.code.equals(outputRow[i].toString())){
-								validValue = true;
-								outputRow[i] = option.value;
-								break;
-							}
-							else if (option.value.equals(outputRow[i].toString())){
-								validValue = true;
-								break;
-							}
-						}
-						if (!validValue)
-							throw new Exception("Could not find a valid value for section field " + field.getName() + " with value " + outputRow[i].toString());
-					}
-					
-					
-					// Check types
-					switch (field.getType()) {
-					case MANY2MANY:
-						/* The import function uses the Names of the objects for the import.  Replace the ID list passed
-						 * in with a Name list for the import_data function that we are about to call
-						 */
-						HashMap<String, String> idToName = null;
-						if (!modelNameCache.containsKey(field.getRelation())){
-							idToName = new HashMap<String, String>();
-							Object [] ids = openERPConnection.searchObject(field.getRelation(), null);
-							Object[] names = openERPConnection.nameGet(field.getRelation(), ids);
-							for (int j = 0; j < ids.length; j++){
-								Object [] nameValue = (Object [])names[j]; 
-								idToName.put(nameValue[0].toString(), nameValue[1].toString());
-							}
-							modelNameCache.put(field.getRelation(), idToName);
-						}
-						else idToName = modelNameCache.get(field.getRelation());
-						
-						String newValue = "";
-						for (String singleID : inputRow[i].toString().split(","))
-							if (idToName.containsKey(singleID))
-								newValue = newValue + "," + idToName.get(singleID);
-							else throw new Exception("Could not find " + field.getRelation() + " with ID " + singleID);
-						
-						outputRow[i] = newValue.substring(1);
-						
-						break;
-					
-					// The import procedure expects all types to be strings
-					default:
-						outputRow[i] = outputRow[i].toString();
-						break;
-					}
-				}
-		}
-		
-		return outputRow;
-	}
-	
-	public FieldCollection getModelFields(String model) throws Exception{
-		return openERPConnection.getFields(model);
-	}
-
-	public String[] getFieldListForImport(String model, String [] targetFieldNames) throws Exception {
-
-		ArrayList<String> fieldList = new ArrayList<String>();
-		fieldList.add(".id");
-
-		FieldCollection fields = openERPConnection.getFields(model);
-
-		for (String targetField : targetFieldNames){
-			boolean found = false;
-			for(Field field : fields)
-				if (field.getName().equals(targetField)){
-					found = true;
-					if (field.getType() == FieldType.MANY2ONE)
-						fieldList.add(field.getName() + ".id");
-					else
-						fieldList.add(field.getName());
-				}
-
-			if (!found)
-				throw new Exception("Could not find field '" + targetField + "' in object '" + model + "'");
-		}
-
-		return fieldList.toArray(new String[fieldList.size()]);
-
-	}
-	
 	public void deleteObjects(String model, ArrayList<Object> ids) throws XmlRpcException{
-		openERPConnection.unlinkObject(model, ids.toArray(new Object[ids.size()]));
+		commands.unlinkObject(model, ids.toArray(new Object[ids.size()]));
 	}
 
-	public ArrayList<FieldMapping> getDefaultFieldMappings(String model) throws MalformedURLException, XmlRpcException{
+	public ArrayList<FieldMapping> getDefaultFieldMappings(String model) throws Exception{
 
 		ArrayList<FieldMapping> mappings = new ArrayList<FieldMapping>();
-		FieldCollection fields = openERPConnection.getFields(model);
+		ObjectAdapter adapter = new ObjectAdapter(openERPConnection, model);
+		FieldCollection fields = adapter.getFields();
 
 		FieldMapping fieldMap = new FieldMapping();
 		fieldMap.source_model = model;
@@ -362,17 +224,6 @@ public class OpenERPHelper implements DatabaseFactoryInterface {
 		}
 
 		return mappings;
-
-	}
-
-	public final RowMetaInterface getFieldRowMeta(ArrayList<FieldMapping> mappings) throws MalformedURLException, XmlRpcException{
-
-		RowMetaInterface rowMeta = new RowMeta();
-		for (FieldMapping map : mappings){
-			rowMeta.addValueMeta(new ValueMeta(map.target_field, map.target_field_type));
-		}
-
-		return rowMeta;
 
 	}
 }

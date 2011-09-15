@@ -622,6 +622,10 @@ public class OpenERPObjectOutputDialog extends BaseStepDialog implements StepDia
 		}
 	}
 	
+	private void setTextItem(TableItem item, int index, Object value){
+		item.setText(index, (value == null ? "" : value.toString()));
+	}
+	
 	private void fillStoredData() {
 
 		if (stepname != null)
@@ -644,9 +648,9 @@ public class OpenERPObjectOutputDialog extends BaseStepDialog implements StepDia
 		tableViewKeyFields.table.setItemCount(meta.getKeyLookups().size());
 		for (int i = 0; i < meta.getKeyLookups().size(); i++) {
 			TableItem item = tableViewKeyFields.table.getItem(i);
-			item.setText(1, meta.getKeyLookups().get(i)[0]);
-			item.setText(2, meta.getKeyLookups().get(i)[1]);
-			item.setText(3, meta.getKeyLookups().get(i)[2]);
+			setTextItem(item,1,meta.getKeyLookups().get(i)[0]);
+			setTextItem(item,2, meta.getKeyLookups().get(i)[1]);
+			setTextItem(item,3, meta.getKeyLookups().get(i)[2]);
 		}
 		tableViewKeyFields.removeEmptyRows();
 		tableViewKeyFields.setRowNums();
@@ -656,8 +660,8 @@ public class OpenERPObjectOutputDialog extends BaseStepDialog implements StepDia
 		tableViewFieldMappings.table.setItemCount(meta.getModelFields().length);
 		for (int i = 0; i < meta.getModelFields().length; i++) {
 			TableItem item = tableViewFieldMappings.table.getItem(i);
-			item.setText(1, meta.getModelFields()[i]);
-			item.setText(2, meta.getStreamFields()[i]);
+			setTextItem(item,1, meta.getModelFields()[i]);
+			setTextItem(item,2, meta.getStreamFields()[i]);
 		}
 		tableViewFieldMappings.removeEmptyRows();
 		tableViewFieldMappings.setRowNums();

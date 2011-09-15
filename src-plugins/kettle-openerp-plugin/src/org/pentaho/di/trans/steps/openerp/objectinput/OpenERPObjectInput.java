@@ -38,7 +38,6 @@ import com.debortoliwines.openerp.api.FilterCollection;
 import com.debortoliwines.openerp.api.Row;
 import com.debortoliwines.openerp.api.RowCollection;
 import com.debortoliwines.openerp.api.FilterCollection.FilterOperator;
-import com.debortoliwines.openerp.api.Session.RowsReadListener;
 
 public class OpenERPObjectInput extends BaseStep implements StepInterface{
 	private OpenERPObjectInputMeta meta;
@@ -101,10 +100,8 @@ public class OpenERPObjectInput extends BaseStep implements StepInterface{
 		if (first == true){
 			first = false;
 			try {
-				final RowMetaInterface rowMeta = data.helper.getFieldRowMeta(meta.getMappings());
-				
-				ArrayList<FieldMapping> allFields = data.helper.getDefaultFieldMappings(meta.getModelName());
-				
+				final RowMetaInterface rowMeta = meta.getRowMeta();
+
 				// Building search filter
 				FilterCollection filter = new FilterCollection();
 				for(int i = 0; i < meta.getFilterList().size(); i++){
@@ -116,38 +113,32 @@ public class OpenERPObjectInput extends BaseStep implements StepInterface{
 					else if (filterItem.getOperator().equalsIgnoreCase("or"))
 						filter.add(FilterOperator.OR);
 					
-					// Get the source field to filter on
-					FieldMapping fld = null;
-					for (int j = 0; j < allFields.size(); j++)
-						if (allFields.get(j).source_field.equals(filterItem.getFieldName()) 
-								&& allFields.get(j).source_index <= 0){
-							fld = allFields.get(j);
-							break;
-						}
+					filter.add(filterItem.getFieldName(), filterItem.getComparator(), filterItem.getValue());
 					
-					Object[] result = data.helper.formatFilterValue(filterItem.getFieldName(), filterItem.getComparator(), filterItem.getValue(), fld);
-					
-					filter.add(filterItem.getFieldName(), result[0].toString(), result[1]);
-					
-					this.logBasic("Setting filter: [" + filterItem.getFieldName() + "," + result[0].toString() + "," + result[1].toString() + "]");
+					this.logBasic("Setting filter: [" + filterItem.getFieldName() + "," + filterItem.getComparator() + "," + filterItem.getValue() + "]");
 				}
 				
-				data.helper.getModelData(meta.getModelName(), filter, meta.getReadBatchSize(), meta.getMappings(), new RowsReadListener() {
-
-					@Override
-					public void rowsRead(RowCollection rows) {
-						for (Row row : rows){
-							try {
-								putRow(row,rowMeta);
-							} catch (KettleStepException e) {
-								logError("An error occurred, processing will be stopped: " + e.getMessage());
-								setErrors(1);
-								stopAll();
-							}
-							incrementLinesInput();
+				int rowCount = data.helper.getModelDataCount(meta.getModelName(), filter);
+				int offset = 0;
+				int limit = meta.getReadBatchSize();
+				
+				while (offset < rowCount){
+					if (isStopped())
+						break;
+					
+					RowCollection rows = data.helper.getModelData(meta.getModelName(), filter, meta.getMappings(), offset, limit);
+					for (Row row : rows){
+						try {
+							putRow(row,rowMeta);
+						} catch (KettleStepException e) {
+							logError("An error occurred, processing will be stopped: " + e.getMessage());
+							setErrors(1);
+							stopAll();
 						}
+						incrementLinesInput();
+						offset++;
 					}
-				});
+				}
 			} catch (Exception e) {
 				throw new KettleException(e.getMessage());
 			}
