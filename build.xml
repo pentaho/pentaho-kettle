@@ -26,6 +26,7 @@
 	    <mkdir dir="${classes-ui}/ui"/>
 	    <mkdir dir="${classes-core}"/>
 	    <mkdir dir="${classes-db}"/>
+	    <mkdir dir="${classes-jdbc}"/>
 	  	<mkdir dir="${classes-dbdialog}"/>
 	  	<mkdir dir="${testClasses}"/>
 	    <mkdir dir="${lib}"/>
@@ -152,8 +153,32 @@
             </classpath>
         </javac>
 	  </target>
-	  
-	  <target name="compile-ui" depends="compile-dbdialog, compile-db, compile" description="compile the UI source " >
+
+	  <target name="compile-jdbc" depends="compile" description="compile the JDBC driver" >
+	  	<echo>Compiling the Kettle JDBC driver...</echo>
+      <javac fork="true"
+          destdir="${classes-jdbc}"
+          target="5"
+          source="5"
+          deprecation="true"
+          debug="${debug}"
+          optimize="${optimize}"
+          memorymaximumsize="256m"
+      	includeantruntime="false">
+          <src path="${src-jdbc}"/>
+
+          <classpath id="cp-kettle-jdbc">
+              <pathelement path="${classes-core}"/>
+	    	  <pathelement path="${classes-db}"/>
+    		  <pathelement path="${classes}"/>
+              <fileset dir="${libext}" 		includes="*.jar *.zip"/>
+              <fileset dir="${libext}/"	    includes="**/*.jar *.zip"/>
+          </classpath>
+      </javac>
+	  </target>
+
+	
+	  <target name="compile-ui" depends="compile-dbdialog, compile-db, compile, compile-jdbc" description="compile the UI source " >
 	  	<echo>Compiling Kettle UI...</echo>
 	    <javac 
 	    	   destdir="${classes-ui}"
@@ -242,6 +267,13 @@
 	  	<echo>Copying db images etc to classes-dbdialog directory...</echo>
 	    <copy todir="${classes-dbdialog}">
 	    	<fileset dir="${src-dbdialog}" includes="**/*.xml **/*.xul **/*properties"/>
+	  	    </copy>
+	  </target>
+	
+	  <target name="copy-jdbc" depends="compile-jdbc" description="copy additional files from the src-jdbc to the classes-jdbc directory" >
+	  	<echo>Copying additional files from the src-jdbc to the classes-jdbc directory...</echo>
+	    <copy todir="${classes-jdbc}">
+	    	<fileset dir="${src-jdbc}" includes="**/*.xml **/*.xul **/*properties **/*config"/>
 	  	    </copy>
 	  </target>
 
@@ -384,6 +416,24 @@
       </jar>
 	  </target>
 
+	  <target name="kettle-jdbc" depends="compile-jdbc, copy-jdbc" description="Generate the kettle JDBC driver kettle-jdbc.jar">
+	  	<echo>Generating the Kettle JDBC driver kettle-jdbc.jar ...</echo>
+	  	<jar jarfile="${lib}/kettle-jdbc.jar" 
+	    	 basedir="${classes-jdbc}" 
+	    	 includes="**/* ${version.file.path}"
+	  	     excludes="**/Thumbs.db **/kettle.jar">
+            <manifest>
+                <attribute name="Implementation-Title" value="${impl.title.ui}" />
+                <attribute name="Implementation-Version" value="${impl.version}" />
+                <attribute name="Specification-Version" value="${revision}" />
+                <attribute name="Implementation-Vendor" value="${impl.vendor}" />
+				<attribute name="Implementation-ProductID" value="${impl.productID}" />
+                <attribute name="Compile-Timestamp" value="${compile.timestamp}" />
+                <attribute name="Compile-User" value="${user.name}" />
+            </manifest>
+	  	</jar>
+	  </target>
+
 	
 	  <target name="kettle" depends="compile, copy" description="generate the kettle library kettle-engine.jar">
 	  	<echo>Generating the Kettle library kettle-engine.jar ...</echo>
@@ -404,6 +454,7 @@
         </jar>
 	  </target>	
 
+	
 	  <target name="kettle-ui" depends="compile-ui" description="generate the kettle library kettle-ui-swt.jar">
 	  	<echo>Generating the Kettle library kettle-ui-swt.jar ...</echo>
 	  	<jar jarfile="${lib}/kettle-ui-swt.jar" 
@@ -420,7 +471,6 @@
                     <attribute name="Compile-User" value="${user.name}" />
                 </manifest>
 	  	</jar>
-
 	  </target>
 
 	  <target name="kettle-test" depends="compileTests" description="generate the kettle library kettle-test.jar">
@@ -446,7 +496,7 @@
 	        Distribution jar package
 	       ==========================
 	  -->
-	<target name="distrib" depends="kettle-core, kettle-db, kettle, kettle-dbdialog, kettle-ui, kettle-plugins, kettle-test, distrib-nodeps" description="compile and copy jar files to distribution directory" />
+	<target name="distrib" depends="kettle-core, kettle-db, kettle, kettle-dbdialog, kettle-ui, kettle-plugins, kettle-jdbc, kettle-test, distrib-nodeps" description="compile and copy jar files to distribution directory" />
 
 	<target name="distrib-nodeps" description="copy jar files to distribution directory" >
 	  	<echo>Construct the distribution package...</echo>
@@ -1100,6 +1150,7 @@
 	    <delete dir="${classes-ui}"/>
 	    <delete dir="${classes-core}"/>
 	    <delete dir="${classes-db}"/>
+	    <delete dir="${classes-jdbc}"/>
 	    <delete dir="${testClasses}"/>
 	    <delete dir="${lib}"/>
 	    <delete dir="${junit}"/>
