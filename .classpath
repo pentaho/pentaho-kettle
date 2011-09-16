@@ -11,6 +11,9 @@
 	<classpathentry kind="src" output="src-plugins/kettle-gpload-plugin/bin/classes-eclipse" path="src-plugins/kettle-gpload-plugin/test"/>
 	<classpathentry kind="src" output="src-plugins/kettle-palo-plugin/bin/classes-eclipse" path="src-plugins/kettle-palo-plugin/src"/>
 	<classpathentry kind="src" path="src-plugins/kettle-openerp-plugin/src"/>
+	<classpathentry kind="src" path="src-plugins/kettle-profiling-datacleaner/src"/>
+	<classpathentry kind="src" path="src-plugins/birt-output/src"/>
+	<classpathentry kind="src" path="src-jdbc"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="lib" path="libext/js.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/mail.jar"/>
@@ -128,6 +131,7 @@
 	<classpathentry exported="true" kind="lib" path="libext/poi/poi-ooxml-schemas-3.7-20101029.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/poi/xmlbeans-2.3.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/xbean.jar"/>
+	<classpathentry kind="lib" path="libswt/linux/x86_64/swt.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/pentaho/jets3t-0.7.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/pentaho/pentaho-hdfs-vfs-TRUNK-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/pentaho/pentaho-s3-vfs-TRUNK-SNAPSHOT.jar"/>
@@ -269,6 +273,32 @@
 	<classpathentry kind="lib" path="libext/webservices/xmlrpc-client-3.1.3.jar"/>
 	<classpathentry kind="lib" path="libext/webservices/xmlrpc-common-3.1.3.jar"/>
 	<classpathentry kind="lib" path="libext/webservices/ws-commons-util-1.0.2.jar"/>
-	<classpathentry kind="lib" path="libswt/win32/swt.jar"/>
+	<classpathentry kind="lib" path="src-plugins/kettle-profiling-datacleaner/lib/DataCleaner-core-2.2.jar"/>
+	<classpathentry kind="lib" path="src-plugins/kettle-profiling-datacleaner/lib/DataCleaner.jar"/>
+	<classpathentry kind="lib" path="src-plugins/birt-output/lib/chartengineapi.jar"/>
+	<classpathentry kind="lib" path="src-plugins/birt-output/lib/chartexamplescoreapi.jar"/>
+	<classpathentry kind="lib" path="src-plugins/birt-output/lib/chartitemapi.jar"/>
+	<classpathentry kind="lib" path="src-plugins/birt-output/lib/com.ibm.icu_4.2.1.v20100412.jar"/>
+	<classpathentry kind="lib" path="src-plugins/birt-output/lib/commons-cli-1.0.jar"/>
+	<classpathentry kind="lib" path="src-plugins/birt-output/lib/coreapi.jar"/>
+	<classpathentry kind="lib" path="src-plugins/birt-output/lib/crosstabcoreapi.jar"/>
+	<classpathentry kind="lib" path="src-plugins/birt-output/lib/dataadapterapi.jar"/>
+	<classpathentry kind="lib" path="src-plugins/birt-output/lib/dataaggregationapi.jar"/>
+	<classpathentry kind="lib" path="src-plugins/birt-output/lib/dataextraction.jar"/>
+	<classpathentry kind="lib" path="src-plugins/birt-output/lib/dteapi.jar"/>
+	<classpathentry kind="lib" path="src-plugins/birt-output/lib/emitterconfig.jar"/>
+	<classpathentry kind="lib" path="src-plugins/birt-output/lib/engineapi.jar"/>
+	<classpathentry kind="lib" path="src-plugins/birt-output/lib/flute.jar"/>
+	<classpathentry kind="lib" path="src-plugins/birt-output/lib/modelapi.jar"/>
+	<classpathentry kind="lib" path="src-plugins/birt-output/lib/modelodaapi.jar"/>
+	<classpathentry kind="lib" path="src-plugins/birt-output/lib/odadesignapi.jar"/>
+	<classpathentry kind="lib" path="src-plugins/birt-output/lib/org.eclipse.emf.common_2.6.0.v20100914-1218.jar"/>
+	<classpathentry kind="lib" path="src-plugins/birt-output/lib/org.eclipse.emf.ecore_2.6.1.v20100914-1218.jar"/>
+	<classpathentry kind="lib" path="src-plugins/birt-output/lib/org.eclipse.emf.ecore.xmi_2.5.0.v20100521-1846.jar"/>
+	<classpathentry kind="lib" path="src-plugins/birt-output/lib/org.w3c.css.sac_1.3.0.v200805290154.jar"/>
+	<classpathentry kind="lib" path="src-plugins/birt-output/lib/scriptapi.jar"/>
+	<classpathentry kind="lib" path="src-plugins/kettle-profiling-datacleaner/lib/AnalyzerBeans-0.6.jar"/>
+	<classpathentry kind="lib" path="src-plugins/kettle-profiling-datacleaner/lib/MetaModel-core-1.7.4.jar"/>
+	<classpathentry kind="lib" path="src-plugins/kettle-profiling-datacleaner/lib/MetaModel-jdbc-1.7.4.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

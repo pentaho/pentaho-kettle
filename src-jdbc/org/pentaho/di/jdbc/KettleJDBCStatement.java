@@ -133,8 +133,8 @@ public class KettleJDBCStatement implements Statement {
 			columnStr = tmp[2];
 			
 			String kettleurl = this.url.substring(url
-					.indexOf(JDBCKettleDriver.driverPrefix)
-					+ JDBCKettleDriver.driverPrefix.length());
+					.indexOf(KettleDriver.driverPrefix)
+					+ KettleDriver.driverPrefix.length());
 			URLParser p = new URLParser();
 			p.parse(kettleurl);
 			

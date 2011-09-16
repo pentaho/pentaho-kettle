@@ -46,7 +46,7 @@ public class LoggingRegistry {
 	private LoggingRegistry() {
 		map = new ConcurrentHashMap<String, LoggingObjectInterface>();	
 		lastModificationTime = new Date();
-		maxSize = Const.toInt(EnvUtil.getSystemProperty(Const.KETTLE_MAX_LOGGING_REGISTRY_SIZE), 1000);
+		maxSize = Const.toInt(EnvUtil.getSystemProperty(Const.KETTLE_MAX_LOGGING_REGISTRY_SIZE), 10000);
 	}
 	
 	public static LoggingRegistry getInstance() {

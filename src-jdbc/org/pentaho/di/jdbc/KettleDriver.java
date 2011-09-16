@@ -27,11 +27,7 @@ import java.util.Properties;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-
-
-
-
-public class JDBCKettleDriver implements Driver
+public class KettleDriver implements Driver
 {
 	public static final String LOGINTIMEOUT  = "prop.logintimeout";
 	public final static String driverPrefix = "jdbc:kettle:";
@@ -40,12 +36,12 @@ public class JDBCKettleDriver implements Driver
             "1.4".compareTo(System.getProperty("java.specification.version")) <= 0;
     
     private transient static final Log log = LogFactory
-	.getLog(JDBCKettleDriver.class);
+	.getLog(KettleDriver.class);
     
     static {
         try {
             // Register this with the DriverManager
-            DriverManager.registerDriver(new JDBCKettleDriver());
+            DriverManager.registerDriver(new KettleDriver());
             log.debug("------JDBCKettleDriver is registered!-----");
         } catch (SQLException e) {
         }

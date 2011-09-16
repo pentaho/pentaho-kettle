@@ -59,7 +59,7 @@ public class Log4jKettleLayout extends Layout implements Log4JLayoutInterface
     if (object instanceof LogMessage) {
       LogMessage message = (LogMessage) object;
 
-      String parts[] = message.getMessage().split(Const.CR);
+      String parts[] = message.getMessage()==null ? new String[] {} : message.getMessage().split(Const.CR);
       for (int i = 0; i < parts.length; i++) {
         // Start every line of the output with a dateTimeString
         line.append(dateTimeString);

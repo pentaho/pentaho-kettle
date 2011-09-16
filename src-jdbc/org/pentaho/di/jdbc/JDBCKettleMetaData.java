@@ -51,8 +51,8 @@ public class JDBCKettleMetaData implements java.sql.DatabaseMetaData {
 		this.connectionJDBC3 = connectionJDBC3;
 		this.url = url;
 		String kettleurl = url.substring(url
-				.indexOf(JDBCKettleDriver.driverPrefix)
-				+ JDBCKettleDriver.driverPrefix.length());
+				.indexOf(KettleDriver.driverPrefix)
+				+ KettleDriver.driverPrefix.length());
 		URLParser p = new URLParser();
 		p.parse(kettleurl);
 		helper = new KettleHelper();
