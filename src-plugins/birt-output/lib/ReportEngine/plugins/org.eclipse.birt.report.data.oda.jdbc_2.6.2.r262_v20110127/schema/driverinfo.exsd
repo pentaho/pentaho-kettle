@@ -1,0 +1,143 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!-- Schema file written by PDE -->
+<schema targetNamespace="org.eclipse.birt.report.data.oda.jdbc">
+<annotation>
+      <appInfo>
+         <meta.schema plugin="org.eclipse.birt.report.data.oda.jdbc" id="driverinfo" name="JDBC Driver Information Extension"/>
+      </appInfo>
+      <documentation>
+         An extension to supply additional information about a JDBC driver available to the JDBC-ODA Bridge. The information provided for a JDBC driver by this extension include: Driver class name (which uniquely identifies the driver in the BIRT environment), a display-friendly driver name and a URL template to help report desinger compose a data source connection URL.
+      </documentation>
+   </annotation>
+
+   <element name="extension">
+      <complexType>
+         <sequence>
+            <element ref="jdbcDriver" minOccurs="0" maxOccurs="unbounded"/>
+         </sequence>
+         <attribute name="point" type="string" use="required">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="id" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  
+               </documentation>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <element name="jdbcDriver">
+      <annotation>
+         <documentation>
+            Provides information about a JDBC driver available to the JDBC-ODA bridge.
+         </documentation>
+      </annotation>
+      <complexType>
+         <sequence>
+         </sequence>
+         <attribute name="name" type="string">
+            <annotation>
+               <documentation>
+                  Displayable name of the JDBD driver. Can be translatable.
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="driverClass" type="string" use="required">
+            <annotation>
+               <documentation>
+                  Name of the JDBD driver&apos;s class implementing java.sql.Driver. For example, &quot;sun.jdbc.odbc.JdbcOdbcDriver&quot;.
+               </documentation>
+               <appInfo>
+                  <meta.attribute kind="java" basedOn="java.sql.Driver"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+         <attribute name="urlTemplate" type="string">
+            <annotation>
+               <documentation>
+                  A template string to help the user compose a proper URL accepted by the JDBD driver. For example: &quot;jdbc:odbc:&lt;odbc-data-source-name&gt;[;&lt;attribute-name&gt;=&lt;attribute-value&gt;]*&quot;
+               </documentation>
+            </annotation>
+         </attribute>
+         <attribute name="connectionFactory" type="string">
+            <annotation>
+               <documentation>
+                  Defines an extension class which provides connections using this JDBC driver. If defined, an instance of this class will be used instead of java.sql.DriverManager to obtain connections for the given driverClass.
+The extension class must implement interface org.eclipse.birt.report.data.oda.jdbc.IConnectionFactory.
+               </documentation>
+               <appInfo>
+                  <meta.attribute kind="java" basedOn="org.eclipse.birt.report.data.oda.jdbc.IConnectionFactory"/>
+               </appInfo>
+            </annotation>
+         </attribute>
+      </complexType>
+   </element>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="since"/>
+      </appInfo>
+      <documentation>
+         1.0
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="examples"/>
+      </appInfo>
+      <documentation>
+         This is a sample extension which defines the embedded Derby JDBC driver. It is an excerpt from the jdbc-oda driver&apos;s plugin manifest.
+      &lt;extension
+          point=&quot;org.eclipse.birt.report.data.oda.jdbc.driverinfo&quot;&gt;
+      &lt;jdbcDriver
+            driverClass=&quot;org.apache.derby.jdbc.EmbeddedDriver&quot;
+            urlTemplate=&quot;jdbc:derby:[subsubprotocol:][databasename][;attributes]&quot;
+            name=&quot;Apache Derby Embedded Driver&quot;&gt;
+      &lt;/jdbcDriver&gt;
+      &lt;/extension&gt;
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="apiInfo"/>
+      </appInfo>
+      <documentation>
+         
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="implementation"/>
+      </appInfo>
+      <documentation>
+         
+      </documentation>
+   </annotation>
+
+   <annotation>
+      <appInfo>
+         <meta.section type="copyright"/>
+      </appInfo>
+      <documentation>
+         Copyright (c) 2004-2005 Actuate Corporation.
+All rights reserved. This program and the accompanying materials are made available under the  terms of the Eclipse Public License v1.0 which accompanies this distribution, and is available at http://www.eclipse.org/legal/epl-v10.html
+      </documentation>
+   </annotation>
+
+</schema>

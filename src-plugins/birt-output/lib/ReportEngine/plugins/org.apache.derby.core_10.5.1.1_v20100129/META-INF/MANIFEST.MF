@@ -1,0 +1,33 @@
+Manifest-Version: 1.0
+Bundle-ClassPath: derby.jar
+Bundle-Vendor: Eclipse.org
+Bundle-Localization: plugin
+Bundle-RequiredExecutionEnvironment: J2SE-1.4
+Bundle-Name: Apache Derby Core Plug-in for Eclipse
+Eclipse-LazyStart: true
+Bundle-SymbolicName: org.apache.derby.core; singleton:=true
+Bundle-Version: 10.5.1.1_v20100129
+Export-Package: org.apache.derby.jdbc
+Bundle-ManifestVersion: 2
+
+Name: about_files/LICENSE-2.0.txt
+SHA1-Digest: K4uBUimqimHkg/tLoFiLi2xJGJA=
+
+Name: about_files/NOTICE
+SHA1-Digest: 7vMEQzHidETwp2KNlXNazQCw9SI=
+
+Name: asl-v20.txt
+SHA1-Digest: K4uBUimqimHkg/tLoFiLi2xJGJA=
+
+Name: META-INF/eclipse.inf
+SHA1-Digest: KyT9FF7C7t86NoBoa2kZT3ZJBfw=
+
+Name: derby.jar
+SHA1-Digest: FyYR9LHIBjdVzEFUCCg2GDNU/9U=
+
+Name: plugin.xml
+SHA1-Digest: jKDgf3xTSsALMBO7axMrqhc0Kgo=
+
+Name: about.html
+SHA1-Digest: dJdy+Hklg0aipMvWWrtYiGfRQ5E=
+

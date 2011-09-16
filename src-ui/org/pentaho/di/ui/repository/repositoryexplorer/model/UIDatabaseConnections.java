@@ -17,6 +17,8 @@ import org.pentaho.ui.xul.util.AbstractModelList;
 
 public class UIDatabaseConnections extends AbstractModelList<UIDatabaseConnection> {
   
+  private static final long serialVersionUID = -5835985536358581894L;
+
   public UIDatabaseConnections(){
   }
   

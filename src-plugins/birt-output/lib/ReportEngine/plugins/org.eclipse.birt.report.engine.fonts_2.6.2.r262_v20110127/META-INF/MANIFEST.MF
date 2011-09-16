@@ -1,0 +1,26 @@
+Manifest-Version: 1.0
+Bundle-Vendor: Eclipse.org
+Bundle-Localization: plugin
+Bundle-Name: BIRT Engine fonts
+Bundle-SymbolicName: org.eclipse.birt.report.engine.fonts
+Bundle-Version: 2.6.2.r262_v20110127
+Bundle-ManifestVersion: 2
+
+Name: fontsConfig_pdf.xml
+SHA1-Digest: EFzcJWtuslgUc9F/TivwMoSiqRo=
+
+Name: META-INF/eclipse.inf
+SHA1-Digest: KyT9FF7C7t86NoBoa2kZT3ZJBfw=
+
+Name: fontsConfig_linux.xml
+SHA1-Digest: 3//Jvtjq/MTD4jdqzAj+4A3yUdg=
+
+Name: fontsConfig_win32.xml
+SHA1-Digest: eQGilCbsKEKOpU19+lgSGNrsOvE=
+
+Name: about.html
+SHA1-Digest: ObsP47Fq6CSfBimdpGOcNnxQyPA=
+
+Name: fontsConfig.xml
+SHA1-Digest: oUHd/Cixo1WEkKva49EuoHeVcD4=
+

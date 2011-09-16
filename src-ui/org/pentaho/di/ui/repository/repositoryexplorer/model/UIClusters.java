@@ -22,6 +22,8 @@ import org.pentaho.ui.xul.util.AbstractModelList;
 
 public class UIClusters extends AbstractModelList<UICluster> {
 
+  private static final long serialVersionUID = -3044131509454994992L;
+
   public UIClusters() {
   }
 

@@ -1,0 +1,9 @@
+org.eclipse.birt.report.data.oda.jdbc/debug = false
+org.eclipse.birt.report.data.oda.jdbc/traceLogging/logLevel = WARNING
+org.eclipse.birt.report.data.oda.jdbc/traceLogging/logFormatterClass = 
+org.eclipse.birt.report.data.oda.jdbc/traceLogging/logFileNamePrefix = 
+org.eclipse.birt.report.data.oda.jdbc/traceLogging/logDirectory = 
+org.eclipse.birt.report.data.oda.jdbc/JDBCDriverManager=true
+org.eclipse.birt.report.data.oda.jdbc/OdaJdbcDriver=true
+org.eclipse.birt.report.data.oda.jdbc/Connection=true
+org.eclipse.birt.report.data.oda.jdbc/Statement=true

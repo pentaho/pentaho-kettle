@@ -100,29 +100,27 @@ public class StringSearcher
                 }
                 catch(IllegalAccessException e)
                 {
-                    // OK, it's private, let's see if we can go there later on using getters and setters...
-                    // fileName becomes: getFileName();
-                     
-                    Method method = findMethod(baseClass, field.getName());
-                    if (method!=null)
-                    {
-                        // String fullMethod = baseClass.getName()+"."+method.getName()+"()";
-                            
-                        // OK, how do we get the value now?
-                        try
-                        {
-                            Object string = method.invoke(object, (Object[])null);
-                            if (string!=null)
-                            {
-                            	stringSearchInObject(string, level, stringList, parentObject, grandParentObject, field);
-                            }
-                        }
-                        catch(Exception ex)
-                        {
-                        	// Ignore this error silently.  If we can't access the method there is nothing you can do about it.
-                        }
+                // OK, it's private, let's see if we can go there later on using
+                // getters and setters...
+                // fileName becomes: getFileName();
+                // OK, how do we get the value now?
+                try {
+      
+                  Method method = findMethod(baseClass, field.getName());
+                  if (method != null) {
+                    // String fullMethod =
+                    // baseClass.getName()+"."+method.getName()+"()";
+      
+                    Object string = method.invoke(object, (Object[]) null);
+                    if (string != null) {
+                      stringSearchInObject(string, level, stringList, parentObject, grandParentObject, field);
                     }
+                  }
+                } catch (Throwable ex) {
+                  // Ignore this error silently. If we can't access the method there
+                  // is nothing you can do about it.
                 }
+              }
             }
         }        
     }

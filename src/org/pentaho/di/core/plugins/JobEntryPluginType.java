@@ -29,8 +29,8 @@ import org.w3c.dom.Node;
  *
  */
 
-@PluginTypeCategoriesOrder(getNaturalCategoriesOrder={"BaseStep.Category.Input",
-    "JobCategory.Category.General"
+@PluginTypeCategoriesOrder(getNaturalCategoriesOrder={
+     "JobCategory.Category.General"
     ,"JobCategory.Category.Mail"
     ,"JobCategory.Category.FileManagement"
     ,"JobCategory.Category.Conditions"
@@ -40,6 +40,7 @@ import org.w3c.dom.Node;
     ,"JobCategory.Category.Utility"
     ,"JobCategory.Category.Repository"
     ,"JobCategory.Category.FileTransfer"
+    ,"JobCategory.Category.FileEncryption"
     ,"JobCategory.Category.Experimental"
 },
    i18nPackageClass = JobMeta.class)

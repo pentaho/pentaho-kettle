@@ -759,6 +759,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
 		  
 		  String[] inputFields = transMeta.getPrevStepFields(stepMeta).getFieldNames();
 		  parameterColumns[1].setComboValues(inputFields);
+		  wGroupField.setItems(inputFields);
 		} catch(Exception e) {
 		  log.logError("couldn't get previous step list",e);
 		}
