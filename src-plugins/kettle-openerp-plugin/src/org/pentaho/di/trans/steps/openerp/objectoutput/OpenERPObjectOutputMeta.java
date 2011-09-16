@@ -52,7 +52,7 @@ import org.w3c.dom.Node;
 
 	private DatabaseMeta databaseMeta;
 	private String modelName;
-	private int commitBatchSize = 1000;
+	private int commitBatchSize = 100;
 	private String[] modelFields = new String[0];
 	private String[] streamFields = new String[0];
 	private ArrayList<String[]> keyLookups = new ArrayList<String[]>();
