@@ -32,7 +32,7 @@ public class SpoonPluginType extends BasePluginType implements PluginTypeInterfa
   private SpoonPluginType() {
     super(SpoonPlugin.class, "SPOONPLUGIN", "Spoon Plugin");
     
-    pluginFolders.add( new PluginFolder("plugins/spoon", false, true) ); 
+    pluginFolders.add( new PluginFolder("plugins", false, true) ); 
   }
   
   private static SpoonPluginType pluginType;
