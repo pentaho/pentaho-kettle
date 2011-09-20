@@ -22,8 +22,11 @@ import java.util.ArrayList;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.pentaho.di.i18n.BaseMessages;
 
 public class SQLParser {
+  private static Class<?> PKG = KettleDriver.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	/** Original SQL string */
 	private String sql;
 	/** Input buffer with SQL statement. */
@@ -219,7 +222,7 @@ public class SQLParser {
 			return result;
 		} catch (IndexOutOfBoundsException e) {
 			// Should only come here if string is invalid in some way.
-			throw new SQLException(Messages.get("error.parsesql.missing",
+			throw new SQLException(BaseMessages.getString(PKG, "error.parsesql.missing",
 					String.valueOf(terminator)), "22025");
 		}
 
@@ -318,7 +321,7 @@ public class SQLParser {
 	 */
 	private void copyParam(String name, int pos) throws SQLException {
 //		if (params == null) {
-//			throw new SQLException(Messages.get(
+//			throw new SQLException(BaseMessages.getString(PKG, 
 //					"error.parsesql.unexpectedparam", String.valueOf(s)),
 //					"2A000");
 //		}
@@ -371,7 +374,7 @@ public class SQLParser {
 				// comments should be passed on to the server
 				out[d++] = in[s++];
 			} else {
-				throw new SQLException(Messages.get("error.parsesql.missing",
+				throw new SQLException(BaseMessages.getString(PKG, "error.parsesql.missing",
 						"*/"), "22025");
 			}
 		} while (block > 0);
@@ -406,7 +409,7 @@ public class SQLParser {
 			if ("call".equals(esc)) {
 				callEscape();
 			} else {
-				throw new SQLException(Messages.get("error.parsesql.syntax",
+				throw new SQLException(BaseMessages.getString(PKG, "error.parsesql.syntax",
 						"call", String.valueOf(s)), "22019");
 			}
 		} else {
@@ -422,23 +425,23 @@ public class SQLParser {
 			} else if ("t".equals(esc)) {
 				if (!getDateTimeField(timeMask)) {
 					throw new SQLException(
-							Messages.get("error.parsesql.syntax", "time",
+							BaseMessages.getString(PKG, "error.parsesql.syntax", "time",
 									String.valueOf(s)), "22019");
 				}
 			} else if ("d".equals(esc)) {
 				if (!getDateTimeField(dateMask)) {
 					throw new SQLException(
-							Messages.get("error.parsesql.syntax", "date",
+							BaseMessages.getString(PKG, "error.parsesql.syntax", "date",
 									String.valueOf(s)), "22019");
 				}
 			} else if ("ts".equals(esc)) {
 				if (!getDateTimeField(timestampMask)) {
-					throw new SQLException(Messages.get(
+					throw new SQLException(BaseMessages.getString(PKG, 
 							"error.parsesql.syntax", "timestamp", String
 									.valueOf(s)), "22019");
 				}
 			} else {
-				throw new SQLException(Messages.get("error.parsesql.badesc",
+				throw new SQLException(BaseMessages.getString(PKG, "error.parsesql.badesc",
 						esc, String.valueOf(s)), "22019");
 			}
 		}
@@ -539,7 +542,7 @@ public class SQLParser {
 	 */
 	private void mustbe(char c, boolean copy) throws SQLException {
 		if (in[s] != c) {
-			throw new SQLException(Messages.get("error.parsesql.mustbe", String
+			throw new SQLException(BaseMessages.getString(PKG, "error.parsesql.mustbe", String
 					.valueOf(s), String.valueOf(c)), "22019");
 		}
 
@@ -657,7 +660,7 @@ public class SQLParser {
 
 		if (d == start) {
 			// Procedure name expected but found something else
-			throw new SQLException(Messages.get("error.parsesql.syntax",
+			throw new SQLException(BaseMessages.getString(PKG, "error.parsesql.syntax",
 					"call", String.valueOf(s)), "22025");
 		}
 

@@ -26,10 +26,12 @@ import java.util.Properties;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.pentaho.di.i18n.BaseMessages;
 
-public class KettleDriver implements Driver
-{
-	public static final String LOGINTIMEOUT  = "prop.logintimeout";
+public class KettleDriver implements Driver {
+  
+  private static Class<?> PKG = KettleDriver.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	public final static String driverPrefix = "jdbc:kettle:";
 	/** Set if the JDBC specification to implement is 3.0 or greater. */
     public static final boolean JDBC3 =
@@ -83,11 +85,11 @@ public class KettleDriver implements Driver
         Properties props = parseURL(url, info);
 
         if (props == null) {
-            throw new SQLException(Messages.get("error.driver.badurl", url), "08001");
+            throw new SQLException(BaseMessages.getString(PKG, "error.driver.badurl", url), "08001");
         }
 
-        if (props.getProperty(Messages.get(LOGINTIMEOUT)) == null) {
-            props.setProperty(Messages.get(LOGINTIMEOUT), Integer.toString(DriverManager.getLoginTimeout()));
+        if (props.getProperty(Constants.LOGINTIMEOUT) == null) {
+            props.setProperty(Constants.LOGINTIMEOUT, Integer.toString(DriverManager.getLoginTimeout()));
         }
 
         // Set default properties

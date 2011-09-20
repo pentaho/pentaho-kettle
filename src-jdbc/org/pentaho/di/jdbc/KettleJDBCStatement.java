@@ -34,11 +34,14 @@ import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.util.EnvUtil;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepInterface;
 
 public class KettleJDBCStatement implements Statement {
+  private static Class<?> PKG = KettleDriver.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private transient static final Log log = LogFactory.getLog(KettleJDBCStatement.class);
 	private String url = null;
 	private static Map<String,String[]> stepsMap = new Hashtable<String,String[]>();
@@ -83,31 +86,25 @@ public class KettleJDBCStatement implements Statement {
 
 	public void addBatch(String sql) throws SQLException {
 		throw new UnsupportedOperationException();
-
 	}
 
 	public void cancel() throws SQLException {
-		
-
 	}
 
 	public void clearBatch() throws SQLException {
 		throw new UnsupportedOperationException();
-
 	}
 
 	public void clearWarnings() throws SQLException {
 		throw new UnsupportedOperationException();
-
 	}
 
 	public void close() throws SQLException {
-		
 	}
 
 	public boolean execute(String sql) throws SQLException {
 		if (sql == null || sql.length() == 0) {
-			throw new SQLException(Messages.get("error.generic.nosql"), "HY000");
+			throw new SQLException(BaseMessages.getString(PKG, "error.generic.nosql"), "HY000");
 		}
 
 		// checkOpen();
@@ -300,7 +297,7 @@ public class KettleJDBCStatement implements Statement {
 	 */
 	protected void checkOpen() throws SQLException {
 		if (closed || connection == null || connection.isClosed()) {
-			throw new SQLException(Messages.get("error.generic.closed",
+			throw new SQLException(BaseMessages.getString(PKG, "error.generic.closed",
 					"Statement"), "HY010");
 		}
 	}

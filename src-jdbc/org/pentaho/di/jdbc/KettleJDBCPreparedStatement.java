@@ -47,8 +47,7 @@ public class KettleJDBCPreparedStatement extends KettleJDBCStatement implements
 	ConnectionJDBC3 connection;
 	String sql;
 	String url;
-	private transient final Log log = LogFactory
-	.getLog(KettleJDBCPreparedStatement.class);
+	private transient final Log log = LogFactory.getLog(KettleJDBCPreparedStatement.class);
 	
 	
 	public KettleJDBCPreparedStatement(ConnectionJDBC3 connection,

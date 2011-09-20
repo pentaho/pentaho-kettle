@@ -24,8 +24,13 @@ import java.sql.Timestamp;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 
+import org.pentaho.di.i18n.BaseMessages;
+
 
 public class DateTime {
+  
+    private static Class<?> PKG = KettleDriver.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     /** Per thread instance of Calendar used for conversions. */
     private static ThreadLocal<Object> calendar = new ThreadLocal<Object>() {
         protected synchronized Object initialValue() {
@@ -287,7 +292,7 @@ public class DateTime {
      */
     public void packDate() throws SQLException {
         if (year < 1753 || year > 9999) {
-            throw new SQLException(Messages.get("error.datetime.range"), "22003");
+            throw new SQLException(BaseMessages.getString(PKG, "error.datetime.range"), "22003");
         }
         date = day - 32075 + 1461 * (year + 4800 + (month - 14) / 12) / 4
                 + 367 * (month - 2 - (month - 14) / 12 * 12) / 12

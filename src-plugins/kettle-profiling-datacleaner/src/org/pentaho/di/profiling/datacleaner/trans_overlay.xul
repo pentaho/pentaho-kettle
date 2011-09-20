@@ -5,7 +5,7 @@
   xmlns:pen="http://www.pentaho.org/2008/xul">
 
   <menupopup id="trans-graph-entry">
-    <menuitem id="trans-graph-entry-profile" label="Profile" command="profiler.openProfiler()" />
+    <menuitem id="trans-graph-entry-profile" label="Profile" command="profiler.profileStep()" />
   </menupopup>
 
 </overlay>

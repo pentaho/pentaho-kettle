@@ -25,12 +25,15 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.i18n.BaseMessages;
 
 public class KettleJDBCResultSetMetaData implements ResultSetMetaData {
+  
+  private static Class<?> PKG = KettleDriver.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	// private List<RowMetaAndData> rowAndDatas;
 	private ColInfo[] columns;
-	private transient final Log log = LogFactory
-			.getLog(KettleJDBCResultSetMetaData.class);
+	private transient final Log log = LogFactory.getLog(KettleJDBCResultSetMetaData.class);
 
 	public ColInfo[] getColumns() {
 		return columns;
@@ -153,7 +156,7 @@ public class KettleJDBCResultSetMetaData implements ResultSetMetaData {
 
 	ColInfo getColumn(int column) throws SQLException {
 		if (column < 1 || column > columnCount) {
-			throw new SQLException(Messages.get("error.resultset.colindex",
+			throw new SQLException(BaseMessages.getString(PKG, "error.resultset.colindex",
 					Integer.toString(column)), "07009");
 		}
 		log.debug("getColumn");

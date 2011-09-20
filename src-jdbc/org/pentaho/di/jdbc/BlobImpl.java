@@ -23,10 +23,14 @@ import java.io.OutputStream;
 import java.sql.Blob;
 import java.sql.SQLException;
 
+import org.pentaho.di.i18n.BaseMessages;
+
 
 
 
 public class BlobImpl implements Blob {
+    private static Class<?> PKG = KettleDriver.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     /**
      * 0 length <code>byte[]</code> as initial value for empty
      * <code>Blob</code>s.
@@ -82,7 +86,7 @@ public class BlobImpl implements Blob {
 
     public long position(Blob pattern, long start) throws SQLException {
         if (pattern == null) {
-            throw new SQLException(Messages.get("error.blob.badpattern"), "HY009");
+            throw new SQLException(BaseMessages.getString(PKG, "error.blob.badpattern"), "HY009");
         }
         return blobBuffer.position(pattern.getBytes(1, (int) pattern.length()), start);
     }
@@ -93,7 +97,7 @@ public class BlobImpl implements Blob {
 
     public int setBytes(long pos, byte[] bytes) throws SQLException {
         if (bytes == null) {
-            throw new SQLException(Messages.get("error.blob.bytesnull"), "HY009");
+            throw new SQLException(BaseMessages.getString(PKG, "error.blob.bytesnull"), "HY009");
         }
         return setBytes(pos, bytes, 0, bytes.length);
     }
@@ -101,7 +105,7 @@ public class BlobImpl implements Blob {
     public int setBytes(long pos, byte[] bytes, int offset, int len)
             throws SQLException {
         if (bytes == null) {
-            throw new SQLException(Messages.get("error.blob.bytesnull"), "HY009");
+            throw new SQLException(BaseMessages.getString(PKG, "error.blob.bytesnull"), "HY009");
         }
         // Force BlobBuffer to take a copy of the byte array
         // In many cases this is wasteful but the user may

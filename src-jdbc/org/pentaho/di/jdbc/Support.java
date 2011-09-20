@@ -28,11 +28,14 @@ import java.util.HashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.pentaho.di.i18n.BaseMessages;
 
 
 
 
 public class Support {
+    private static Class<?> PKG = KettleDriver.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     // Constants used in datatype conversions to avoid object allocations.
     private static final Integer INTEGER_ZERO = new Integer(0);
     private static final Integer INTEGER_ONE = new Integer(1);
@@ -153,7 +156,7 @@ public class Support {
 
             if (scale < 0) {
                 // Can't do it number just too big
-                throw new SQLException(Messages.get("error.normalize.numtoobig",
+                throw new SQLException(BaseMessages.getString(PKG, "error.normalize.numtoobig",
                         String.valueOf(maxPrecision)), "22000");
             }
 
@@ -280,7 +283,7 @@ public class Support {
                         long length = clob.length();
 
                         if (length > Integer.MAX_VALUE) {
-                            throw new SQLException(Messages.get("error.normalize.lobtoobig"),
+                            throw new SQLException(BaseMessages.getString(PKG, "error.normalize.lobtoobig"),
                                                    "22000");
                         }
 
@@ -290,7 +293,7 @@ public class Support {
                         long length = blob.length();
 
                         if (length > Integer.MAX_VALUE) {
-                            throw new SQLException(Messages.get("error.normalize.lobtoobig"),
+                            throw new SQLException(BaseMessages.getString(PKG, "error.normalize.lobtoobig"),
                                                    "22000");
                         }
 
@@ -334,7 +337,7 @@ public class Support {
                         long length = clob.length();
 
                         if (length > Integer.MAX_VALUE) {
-                            throw new SQLException(Messages.get("error.normalize.lobtoobig"),
+                            throw new SQLException(BaseMessages.getString(PKG, "error.normalize.lobtoobig"),
                                                    "22000");
                         }
 
@@ -433,7 +436,7 @@ public class Support {
 
                 case java.sql.Types.JAVA_OBJECT:
                     throw new SQLException(
-                            Messages.get("error.convert.badtypes",
+                            BaseMessages.getString(PKG, "error.convert.badtypes",
                                     x.getClass().getName(),
                                     getJdbcTypeName(jdbcType)), "22005");
 
@@ -471,7 +474,7 @@ public class Support {
                             // Unlikely to happen but fall back on in memory copy
                             x = clob.getSubString(1, (int) clob.length());
                         } catch (IOException e) {
-                            throw new SQLException(Messages.get("error.generic.ioerror", e.getMessage()),
+                            throw new SQLException(BaseMessages.getString(PKG, "error.generic.ioerror", e.getMessage()),
                             "HY000");
                         }
                     }
@@ -525,7 +528,7 @@ public class Support {
                             is.close();
                             return clob;
                         } catch (IOException e) {
-                            throw new SQLException(Messages.get("error.generic.ioerror", e.getMessage()),
+                            throw new SQLException(BaseMessages.getString(PKG, "error.generic.ioerror", e.getMessage()),
                             "HY000");
                         }
                     } else if (x instanceof Boolean) {
@@ -547,17 +550,17 @@ public class Support {
 
                 default:
                     throw new SQLException(
-                            Messages.get("error.convert.badtypeconst",
+                            BaseMessages.getString(PKG, "error.convert.badtypeconst",
                                     getJdbcTypeName(jdbcType)), "HY004");
             }
 
             throw new SQLException(
-                    Messages.get("error.convert.badtypes",
+                    BaseMessages.getString(PKG, "error.convert.badtypes",
                             x.getClass().getName(),
                             getJdbcTypeName(jdbcType)), "22005");
         } catch (NumberFormatException nfe) {
             throw new SQLException(
-                    Messages.get("error.convert.badnumber",
+                    BaseMessages.getString(PKG, "error.convert.badnumber",
                             getJdbcTypeName(jdbcType)), "22000");
         }
     }

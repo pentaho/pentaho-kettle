@@ -27,4 +27,6 @@ public class Constants
 	
 	public static final String TABLE_TYPE_TABLE ="TABLE";
 	public static final String TABLE_TYPE_VIEW ="VIEW";
+
+	public static final String LOGINTIMEOUT = "LOGINTIMEOUT";
 }

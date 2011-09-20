@@ -18,17 +18,24 @@
 
 package org.pentaho.di.jdbc;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.RandomAccessFile;
 import java.sql.SQLException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.pentaho.di.i18n.BaseMessages;
 
 
 
 
 public class BlobBuffer {
-	
+
+  private static Class<?> PKG = KettleDriver.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+  
 	private transient static final Log log = LogFactory.getLog(BlobBuffer.class);
 
     /**
@@ -908,13 +915,13 @@ public class BlobBuffer {
     public byte[] getBytes(long pos, int len) throws SQLException {
         pos--;
         if (pos < 0) {
-            throw new SQLException(Messages.get("error.blobclob.badpos"), "HY090");
+            throw new SQLException(BaseMessages.getString(PKG, "error.blobclob.badpos"), "HY090");
         }
         if (pos > this.length) {
-            throw new SQLException(Messages.get("error.blobclob.badposlen"), "HY090");
+            throw new SQLException(BaseMessages.getString(PKG, "error.blobclob.badposlen"), "HY090");
         }
         if (len < 0) {
-            throw new SQLException(Messages.get("error.blobclob.badlen"), "HY090");
+            throw new SQLException(BaseMessages.getString(PKG, "error.blobclob.badlen"), "HY090");
         }
         if (pos + len > this.length) {
             // Don't throw an exception, just return as much data as available
@@ -945,7 +952,7 @@ public class BlobBuffer {
             }
             return data;
         } catch (IOException e) {
-            throw new SQLException(Messages.get("error.generic.ioerror", e.getMessage()),
+            throw new SQLException(BaseMessages.getString(PKG, "error.generic.ioerror", e.getMessage()),
                     "HY000");
         }
     }
@@ -965,7 +972,7 @@ public class BlobBuffer {
                 return new BlobInputStream(0);
             }
         } catch (IOException e) {
-            throw new SQLException(Messages.get("error.generic.ioerror",
+            throw new SQLException(BaseMessages.getString(PKG, "error.generic.ioerror",
                     e.getMessage()),
                     "HY000");
         }
@@ -982,7 +989,7 @@ public class BlobBuffer {
         try {
             return new UnicodeInputStream(0);
         } catch (IOException e) {
-            throw new SQLException(Messages.get("error.generic.ioerror",
+            throw new SQLException(BaseMessages.getString(PKG, "error.generic.ioerror",
                     e.getMessage()),
                     "HY000");
         }
@@ -1004,11 +1011,11 @@ public class BlobBuffer {
             throws SQLException {
         pos--;
         if (pos < 0) {
-            throw new SQLException(Messages.get("error.blobclob.badpos"),
+            throw new SQLException(BaseMessages.getString(PKG, "error.blobclob.badpos"),
                     "HY090");
         }
         if (pos > this.length) {
-            throw new SQLException(Messages.get("error.blobclob.badposlen"),
+            throw new SQLException(BaseMessages.getString(PKG, "error.blobclob.badposlen"),
                     "HY090");
         }
         try {
@@ -1021,7 +1028,7 @@ public class BlobBuffer {
                 return new BlobOutputStream(pos);
             }
         } catch (IOException e) {
-            throw new SQLException(Messages.get("error.generic.ioerror",
+            throw new SQLException(BaseMessages.getString(PKG, "error.generic.ioerror",
                     e.getMessage()),
                     "HY000");
         }
@@ -1052,24 +1059,24 @@ public class BlobBuffer {
             throws SQLException {
         pos--;
         if (pos < 0) {
-            throw new SQLException(Messages.get("error.blobclob.badpos"),
+            throw new SQLException(BaseMessages.getString(PKG, "error.blobclob.badpos"),
                     "HY090");
         }
         if (pos > this.length) {
-            throw new SQLException(Messages.get("error.blobclob.badposlen"),
+            throw new SQLException(BaseMessages.getString(PKG, "error.blobclob.badposlen"),
                     "HY090");
         }
         if (bytes == null) {
-            throw new SQLException(Messages.get("error.blob.bytesnull"),
+            throw new SQLException(BaseMessages.getString(PKG, "error.blob.bytesnull"),
                     "HY009");
         }
         if (offset < 0 || offset > bytes.length) {
-            throw new SQLException(Messages.get("error.blobclob.badoffset"),
+            throw new SQLException(BaseMessages.getString(PKG, "error.blobclob.badoffset"),
                     "HY090");
         }
         if (len < 0 || pos + len > (long) Integer.MAX_VALUE
                 || offset + len > bytes.length) {
-            throw new SQLException(Messages.get("error.blobclob.badlen"),
+            throw new SQLException(BaseMessages.getString(PKG, "error.blobclob.badlen"),
                     "HY090");
         }
         //
@@ -1107,7 +1114,7 @@ public class BlobBuffer {
             close();
             return len;
         } catch (IOException e) {
-            throw new SQLException(Messages.get("error.generic.ioerror",
+            throw new SQLException(BaseMessages.getString(PKG, "error.generic.ioerror",
                     e.getMessage()),
                     "HY000");
         }
@@ -1139,11 +1146,11 @@ public class BlobBuffer {
      */
     public void truncate(long len) throws SQLException {
         if (len < 0) {
-            throw new SQLException(Messages.get("error.blobclob.badlen"),
+            throw new SQLException(BaseMessages.getString(PKG, "error.blobclob.badlen"),
                     "HY090");
         }
         if (len > this.length) {
-            throw new SQLException(Messages.get("error.blobclob.lentoolong"),
+            throw new SQLException(BaseMessages.getString(PKG, "error.blobclob.lentoolong"),
                     "HY090");
         }
 
@@ -1160,7 +1167,7 @@ public class BlobBuffer {
                     blobFile.delete();
                 }
             } catch (IOException e) {
-                throw new SQLException(Messages.get("error.generic.ioerror",
+                throw new SQLException(BaseMessages.getString(PKG, "error.generic.ioerror",
                         e.getMessage()),
                         "HY000");
             } finally {
@@ -1186,15 +1193,15 @@ public class BlobBuffer {
         try {
             start--;
             if (start < 0) {
-                throw new SQLException(Messages.get("error.blobclob.badpos"),
+                throw new SQLException(BaseMessages.getString(PKG, "error.blobclob.badpos"),
                         "HY090");
             }
             if (start >= this.length) {
-                throw new SQLException(Messages.get("error.blobclob.badposlen"),
+                throw new SQLException(BaseMessages.getString(PKG, "error.blobclob.badposlen"),
                         "HY090");
             }
             if (pattern == null) {
-                throw new SQLException(Messages.get("error.blob.badpattern"),
+                throw new SQLException(BaseMessages.getString(PKG, "error.blob.badpattern"),
                         "HY009");
             }
             if (pattern.length == 0 || length == 0 || pattern.length > length) {
@@ -1229,7 +1236,7 @@ public class BlobBuffer {
             }
             return -1;
         } catch (IOException e) {
-            throw new SQLException(Messages.get("error.generic.ioerror",
+            throw new SQLException(BaseMessages.getString(PKG, "error.generic.ioerror",
                     e.getMessage()),
                     "HY000");
         }

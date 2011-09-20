@@ -111,7 +111,7 @@ public class KettleHelper {
 
 			ValueMetaInterface v = rm.getValueMetaList().get(i);
 			cols[i].setRealName(Sanitizer.doFilter(v.getName()));
-			cols[i].setJdbcType(v.getType());
+			cols[i].setJdbcType(translateType(v.getType()));
 
 		}
 		return cols;

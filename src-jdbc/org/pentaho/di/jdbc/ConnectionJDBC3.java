@@ -22,6 +22,7 @@ import java.sql.Array;
 import java.sql.Blob;
 import java.sql.CallableStatement;
 import java.sql.Clob;
+import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.sql.NClob;
 import java.sql.PreparedStatement;
@@ -32,12 +33,14 @@ import java.sql.SQLXML;
 import java.sql.Savepoint;
 import java.sql.Statement;
 import java.sql.Struct;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import org.pentaho.di.core.Const;
+
 public class ConnectionJDBC3 implements java.sql.Connection {
 	private String url=null;
-	// private Properties props=null;
 	private boolean useUnicode;
 	private CharsetInfo charsetInfo =null;
 	public ConnectionJDBC3()
@@ -47,23 +50,15 @@ public class ConnectionJDBC3 implements java.sql.Connection {
 
 	public ConnectionJDBC3(String url, Properties props) {
 		this.url = url;
-		// this.props = props;
-		
 	}
 
 	public void clearWarnings() throws SQLException {
-		// TODO Auto-generated method stub
-		
 	}
 
 	public void close() throws SQLException {
-		// TODO Auto-generated method stub
-		
 	}
 
 	public void commit() throws SQLException {
-		// TODO Auto-generated method stub
-		
 	}
 
 	public Statement createStatement() throws SQLException {
@@ -85,8 +80,7 @@ public class ConnectionJDBC3 implements java.sql.Connection {
 	}
 
 	public boolean getAutoCommit() throws SQLException {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 	public String getCatalog() throws SQLException {
@@ -95,7 +89,6 @@ public class ConnectionJDBC3 implements java.sql.Connection {
 	}
 
 	public int getHoldability() throws SQLException {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
@@ -105,33 +98,27 @@ public class ConnectionJDBC3 implements java.sql.Connection {
 		return md;
 	}
 
-	public int getTransactionIsolation() throws SQLException {
-		// TODO Auto-generated method stub
-		return 0;
+	public int getTransactionIsolation() throws SQLException {	
+		return Connection.TRANSACTION_READ_UNCOMMITTED;
 	}
 
 	public Map<String, Class<?>> getTypeMap() throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		return new HashMap<String, Class<?>>();
 	}
 
 	public SQLWarning getWarnings() throws SQLException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public boolean isClosed() throws SQLException {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
 	public boolean isReadOnly() throws SQLException {
-		// TODO Auto-generated method stub
 		return true;
 	}
 
 	public String nativeSQL(String sql) throws SQLException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -186,58 +173,38 @@ public class ConnectionJDBC3 implements java.sql.Connection {
 	}
 
 	public void releaseSavepoint(Savepoint savepoint) throws SQLException {
-		// TODO Auto-generated method stub
-		
 	}
 
 	public void rollback() throws SQLException {
-		// TODO Auto-generated method stub
-		
 	}
 
 	public void rollback(Savepoint savepoint) throws SQLException {
-		// TODO Auto-generated method stub
-		
 	}
 
 	public void setAutoCommit(boolean autoCommit) throws SQLException {
-		// TODO Auto-generated method stub
-		
 	}
 
 	public void setCatalog(String catalog) throws SQLException {
-		// TODO Auto-generated method stub
-		
 	}
 
 	public void setHoldability(int holdability) throws SQLException {
-		// TODO Auto-generated method stub
-		
 	}
 
 	public void setReadOnly(boolean readOnly) throws SQLException {
-		// TODO Auto-generated method stub
-		
 	}
 
 	public Savepoint setSavepoint() throws SQLException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public Savepoint setSavepoint(String name) throws SQLException {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public void setTransactionIsolation(int level) throws SQLException {
-		// TODO Auto-generated method stub
-		
 	}
 
 	public void setTypeMap(Map<String, Class<?>> map) throws SQLException {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	 /**
@@ -250,17 +217,14 @@ public class ConnectionJDBC3 implements java.sql.Connection {
     }
 
 	public long getLobBuffer() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
 	public File getBufferDir() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public int getMaxPrecision() {
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
@@ -274,13 +238,11 @@ public class ConnectionJDBC3 implements java.sql.Connection {
 	}
 
 	public String getDatabaseProductName() {
-		
-		return "jdbc kettle";
+		return "Pentaho Data Integration";
 	}
 
 	public String getDatabaseProductVersion() {
-		
-		return "1.0";
+		return Const.VERSION;
 	}
 
   public boolean isWrapperFor(Class<?> arg0) throws SQLException {

@@ -26,11 +26,16 @@ import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.pentaho.di.i18n.BaseMessages;
 
 
 
 
 public final class CharsetInfo {
+  
+  private static Class<?> PKG = KettleDriver.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
+  
     //
     // Static fields and methods
     //
@@ -38,7 +43,7 @@ public final class CharsetInfo {
 
     /** Name of the <code>Charsets.properties</code> resource. */
     private static final String CHARSETS_RESOURCE_NAME
-            = "com/bayontechnologies/eii/Charsets.properties";
+            = "org/pentaho/di/jdbc/Charsets.properties";
 
     /** Server charset to Java charset map. */
     private static final HashMap<String, CharsetInfo> charsets = new HashMap<String, CharsetInfo>();
@@ -178,7 +183,7 @@ public final class CharsetInfo {
 
         if (charset == null) {
             throw new SQLException(
-                    Messages.get("error.charset.nocollation", Support.toHex(collation)),
+                    BaseMessages.getString(PKG, "error.charset.nocollation", Support.toHex(collation)),
                     "2C000");
         }
 

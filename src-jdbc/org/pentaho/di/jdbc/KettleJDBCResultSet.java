@@ -44,8 +44,11 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.pentaho.di.core.RowMetaAndData;
+import org.pentaho.di.i18n.BaseMessages;
 
 public class KettleJDBCResultSet implements ResultSet {
+  private static Class<?> PKG = KettleDriver.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private List<RowMetaAndData> rowAndDatas;
 	/** Number of visible columns in row. */
     protected int columnCount;
@@ -147,7 +150,7 @@ public class KettleJDBCResultSet implements ResultSet {
 	            }
 	        }
 
-	        throw new SQLException(Messages.get("error.resultset.colname", columnName), "07009");
+	        throw new SQLException(BaseMessages.getString(PKG, "error.resultset.colname", columnName), "07009");
 	
 	}
 
@@ -374,13 +377,13 @@ public class KettleJDBCResultSet implements ResultSet {
         
 
         if (index < 1 || index > columnCount) {
-            throw new SQLException(Messages.get("error.resultset.colindex",
+            throw new SQLException(BaseMessages.getString(PKG, "error.resultset.colindex",
                                                       Integer.toString(index)),
                                                        "07009");
         }
 
         if (currentRow == null) {
-            throw new SQLException(Messages.get("error.resultset.norow"), "24000");
+            throw new SQLException(BaseMessages.getString(PKG, "error.resultset.norow"), "24000");
         }
 
         Object data = currentRow[index-1];

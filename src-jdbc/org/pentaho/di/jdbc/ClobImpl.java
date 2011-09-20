@@ -30,9 +30,14 @@ import java.io.Writer;
 import java.sql.Clob;
 import java.sql.SQLException;
 
+import org.pentaho.di.i18n.BaseMessages;
+
 
 
 public class ClobImpl implements Clob {
+  
+    private static Class<?> PKG = KettleDriver.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
     /**
      * 0 length <code>String</code> as initial value for empty
      * <code>Clob</code>s.
@@ -107,7 +112,7 @@ public class ClobImpl implements Clob {
             byte data[] = blobBuffer.getBytes((pos - 1) * 2 + 1, length * 2);
             return new String(data, "UTF-16LE");
         } catch (IOException e) {
-            throw new SQLException(Messages.get("error.generic.ioerror",
+            throw new SQLException(BaseMessages.getString(PKG, "error.generic.ioerror",
                     e.getMessage()),
                     "HY000");
         }
@@ -120,7 +125,7 @@ public class ClobImpl implements Clob {
     public long position(String searchStr, long start) throws SQLException {
         if (searchStr == null) {
             throw new SQLException(
-                    Messages.get("error.clob.searchnull"), "HY009");
+                    BaseMessages.getString(PKG, "error.clob.searchnull"), "HY009");
         }
         try {
             byte[] pattern = searchStr.getBytes("UTF-16LE");
@@ -136,7 +141,7 @@ public class ClobImpl implements Clob {
     public long position(Clob searchStr, long start) throws SQLException {
         if (searchStr == null) {
             throw new SQLException(
-                    Messages.get("error.clob.searchnull"), "HY009");
+                    BaseMessages.getString(PKG, "error.clob.searchnull"), "HY009");
         }
         BlobBuffer bbuf = ((ClobImpl) searchStr).getBlobBuffer();
         byte[] pattern = bbuf.getBytes(1, (int) bbuf.getLength());
@@ -162,7 +167,7 @@ public class ClobImpl implements Clob {
     public int setString(long pos, String str) throws SQLException {
         if (str == null) {
             throw new SQLException(
-                    Messages.get("error.clob.strnull"), "HY009");
+                    BaseMessages.getString(PKG, "error.clob.strnull"), "HY009");
         }
         return setString(pos, str, 0, str.length());
     }
@@ -170,12 +175,12 @@ public class ClobImpl implements Clob {
     public int setString(long pos, String str, int offset, int len)
             throws SQLException {
         if (offset < 0 || offset > str.length()) {
-            throw new SQLException(Messages.get(
+            throw new SQLException(BaseMessages.getString(PKG, 
                     "error.blobclob.badoffset"), "HY090");
         }
         if (len < 0 || offset + len > str.length()) {
             throw new SQLException(
-                    Messages.get("error.blobclob.badlen"), "HY090");
+                    BaseMessages.getString(PKG, "error.blobclob.badlen"), "HY090");
         }
         try {
             byte[] data = str.substring(offset, offset + len)

@@ -171,6 +171,7 @@ public class JDBCKettleMetaData implements java.sql.DatabaseMetaData {
 
 			log.debug(helper.getRowMeta(tableNamePattern));
 			RowMeta rm = helper.getRowMeta(tableNamePattern);
+			ColInfo[] colInfo = KettleHelper.convert(rm);
 			String[] columns = rm.getFieldNames();
 			for (int i = 0; columns != null && i < columns.length; i++) {
 
@@ -183,7 +184,7 @@ public class JDBCKettleMetaData implements java.sql.DatabaseMetaData {
 						tableNamePattern);
 				rd.addValue("COLUMN_NAME", ValueMetaInterface.TYPE_STRING,
 						columns[i]);
-				rd.addValue("DATA_TYPE", ValueMetaInterface.TYPE_INTEGER, "4");
+				rd.addValue("DATA_TYPE", ValueMetaInterface.TYPE_INTEGER, colInfo[i].jdbcType);
 				rd.addValue("TYPE_NAME", ValueMetaInterface.TYPE_STRING, "");
 				rd.addValue("COLUMN_SIZE", ValueMetaInterface.TYPE_INTEGER,
 						columns.length);
@@ -224,7 +225,8 @@ public class JDBCKettleMetaData implements java.sql.DatabaseMetaData {
 	
 //		log.debug("getRowMeta:" + helper.getRowMeta(tableNamePattern));
 		RowMeta rm = helper.getRowMeta(tableNamePattern);
-		String[] columns = rm.getFieldNames();
+		ColInfo[] colInfo = KettleHelper.convert(rm);
+    String[] columns = rm.getFieldNames();
 		for (int i = 0; columns != null && i < columns.length; i++) {
 			String name = columns[i];
 			RowMetaAndData rd = new RowMetaAndData();
@@ -233,7 +235,7 @@ public class JDBCKettleMetaData implements java.sql.DatabaseMetaData {
 					schemaPattern);
 			rd.addValue("TABLE_NAME", ValueMetaInterface.TYPE_STRING, tableNamePattern);
 			rd.addValue("COLUMN_NAME", ValueMetaInterface.TYPE_STRING, name);
-			rd.addValue("DATA_TYPE", ValueMetaInterface.TYPE_INTEGER, "4");
+			rd.addValue("DATA_TYPE", ValueMetaInterface.TYPE_INTEGER, colInfo[i].getJdbcType());
 			rd.addValue("TYPE_NAME", ValueMetaInterface.TYPE_STRING, "");
 			rd.addValue("COLUMN_SIZE", ValueMetaInterface.TYPE_INTEGER,
 					columns.length);
@@ -293,7 +295,7 @@ public class JDBCKettleMetaData implements java.sql.DatabaseMetaData {
 
 	public String getDatabaseProductName() throws SQLException {
 
-		return "bayontechnologies.com";
+		return "Pentaho Data Integration";
 	}
 
 	public String getDatabaseProductVersion() throws SQLException {
@@ -390,8 +392,7 @@ public class JDBCKettleMetaData implements java.sql.DatabaseMetaData {
 
 	public ResultSet getIndexInfo(String catalog, String schema, String table,
 			boolean unique, boolean approximate) throws SQLException {
-		// TODO Auto-generated method stub
-		return null;
+		return new KettleJDBCResultSet(null, new ArrayList<RowMetaAndData>(), "*");
 	}
 
 	public int getJDBCMajorVersion() throws SQLException {
@@ -1196,17 +1197,6 @@ public class JDBCKettleMetaData implements java.sql.DatabaseMetaData {
 	public boolean usesLocalFiles() throws SQLException {
 		// TODO Auto-generated method stub
 		return false;
-	}
-
-	String[] generateColumns() {
-		return new String[] { "Year", "PresentsNickReceived",
-				"PresentsRequested" };
-	}
-
-	Object[] generateValues() {
-		String[] r1 = new String[] { "2003", "7", "4" };
-		String[] r2 = new String[] { "2004", "9", "8" };
-		return new Object[] { r1, r2 };
 	}
 
   public boolean isWrapperFor(Class<?> iface) throws SQLException {
