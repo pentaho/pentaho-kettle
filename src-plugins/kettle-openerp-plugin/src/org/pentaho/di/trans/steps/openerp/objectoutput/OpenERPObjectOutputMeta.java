@@ -27,8 +27,12 @@ import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
@@ -55,8 +59,24 @@ import org.w3c.dom.Node;
 	private int commitBatchSize = 100;
 	private String[] modelFields = new String[0];
 	private String[] streamFields = new String[0];
+	private boolean outputIDField = false;
+	private String outputIDFieldName = "";
 	private ArrayList<String[]> keyLookups = new ArrayList<String[]>();
-
+	
+	@Override
+	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
+    {
+		if (outputIDField){
+			if (outputIDFieldName == null || outputIDFieldName.length() == 0)
+				throw new KettleStepException("Error while retrieving fields",new Exception("ID field name is null"));
+			
+			ValueMetaInterface v = new ValueMeta(outputIDFieldName, ValueMetaInterface.TYPE_INTEGER);
+	        v.setOrigin(name);
+	        
+	        row.addValueMeta( v );
+		}
+    }
+	
 	@Override
 	public void check(List<CheckResultInterface> remarks, TransMeta transMeta,
 			StepMeta stepMeta, RowMetaInterface prev, String[] input,
@@ -87,7 +107,9 @@ import org.w3c.dom.Node;
 		retval.append("    ").append(XMLHandler.addTagValue("connection", this.databaseMeta == null ? "": this.databaseMeta.getName()));
 		retval.append("    ").append(XMLHandler.addTagValue("modelName", this.modelName));
 		retval.append("    ").append(XMLHandler.addTagValue("readBatchSize", this.commitBatchSize));
-
+		retval.append("    ").append(XMLHandler.addTagValue("outputIDField", this.outputIDField));
+		retval.append("    ").append(XMLHandler.addTagValue("outputIDFieldName", this.outputIDFieldName));
+		
 		retval.append("    <mappings>").append(Const.CR);
 		for (int i = 0; i < modelFields.length; i++) {
 			retval.append("      <mapping>").append(Const.CR);
@@ -129,6 +151,8 @@ import org.w3c.dom.Node;
 			this.databaseMeta = rep.loadDatabaseMetaFromStepAttribute(idStep, "connection", databases);
 			this.modelName = rep.getStepAttributeString(idStep, "modelName");
 			this.commitBatchSize = Integer.parseInt(rep.getStepAttributeString(idStep, "readBatchSize"));
+			this.outputIDField = rep.getStepAttributeBoolean(idStep, "outputIDField");
+			this.outputIDFieldName = rep.getStepAttributeString(idStep, "outputIDFieldName");
 
 			int nrMappings = rep.countNrStepAttributes(idStep, "model_field");
 			allocate(nrMappings);
@@ -164,6 +188,8 @@ import org.w3c.dom.Node;
 			rep.saveDatabaseMetaStepAttribute(idTransformation, idStep, "connection", this.databaseMeta);
 			rep.saveStepAttribute(idTransformation, idStep, "modelName", this.modelName);
 			rep.saveStepAttribute(idTransformation, idStep, "readBatchSize", this.commitBatchSize);
+			rep.saveStepAttribute(idTransformation, idStep, "outputIDField", this.outputIDField);
+			rep.saveStepAttribute(idTransformation, idStep, "outputIDFieldName", this.outputIDFieldName);
 
 			for (int i=0;i < modelFields.length;i++) {
 				rep.saveStepAttribute(idTransformation, idStep, i, "model_field", modelFields[i]);
@@ -192,6 +218,8 @@ import org.w3c.dom.Node;
 			this.databaseMeta = DatabaseMeta.findDatabase(databases, XMLHandler.getTagValue(stepnode, "connection"));
 			this.modelName = XMLHandler.getTagValue(stepnode, "modelName");
 			this.commitBatchSize = Integer.parseInt(XMLHandler.getTagValue(stepnode, "readBatchSize"));
+			this.outputIDField = XMLHandler.getTagValue(stepnode, "outputIDField").equals("Y") ? true : false;
+			this.outputIDFieldName = XMLHandler.getTagValue(stepnode, "outputIDFieldName");
 
 			Node mappings = XMLHandler.getSubNode(stepnode,"mappings");
 			int nrLevels = XMLHandler.countNodes(mappings,"mapping");
@@ -271,5 +299,21 @@ import org.w3c.dom.Node;
 
 	public ArrayList<String[]> getKeyLookups() {
 		return keyLookups;
+	}
+
+	public void setOutputIDField(boolean outputIDField) {
+		this.outputIDField = outputIDField;
+	}
+
+	public boolean getOutputIDField() {
+		return outputIDField;
+	}
+
+	public void setOutputIDFieldName(String outputIDFieldName) {
+		this.outputIDFieldName = outputIDFieldName;
+	}
+
+	public String getOutputIDFieldName() {
+		return outputIDFieldName;
 	}
 }

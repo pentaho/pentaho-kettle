@@ -62,6 +62,7 @@ public class OpenERPObjectOutput extends BaseStep implements StepInterface {
 			final StepDataInterface sdi) throws KettleException {
 
 		Object[] inputRow = getRow(); // this also waits for a previous step to be finished.
+		
 		if (inputRow == null) {
 			try{
 				// Commit the last batch
@@ -75,9 +76,13 @@ public class OpenERPObjectOutput extends BaseStep implements StepInterface {
 			setOutputDone();
 			return false;
 		}
-
+		
 		if (first) {
 			try{
+				// Prepare output meta
+				data.outputRowMeta = getInputRowMeta().clone();
+	            meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+	            
 				prepareFieldList();
 				
 				/* If the ID isn't used as the filter, prepare the filter */
@@ -92,32 +97,55 @@ public class OpenERPObjectOutput extends BaseStep implements StepInterface {
 				throw new KettleException("Failed to initialize step ", e);
 			}
 			first = false;
-			data.batchRows.clear();
+			data.updateBatchRows.clear();
 			 
 		}
-
+		
+		// Prepare output row
+		Object[] outputRow = new Object[data.outputRowMeta.size()];
+        for (int i=0; i< getInputRowMeta().size();i++)
+            outputRow[i] = inputRow[i];
+        
 		String row = "";
 		try {
-			Row newRow = openerERPAdapter.getNewRow(rowFields);
+			Row updateRow = openerERPAdapter.getNewRow(rowFields);
 			
 			// If ID field was mapped in the filter, use it.  Otherwise try and find it from cache.
 			if (idIndex >= 0)
-				newRow.put("id", inputRow[idIndex]);
+				updateRow.put("id", inputRow[idIndex]);
 			else{
 				String combinedKey = "";
 				for (int i : readRowIndex)
 					combinedKey += SEPARATOR + (inputRow[i] == null ? "" : inputRow[i]);
 				if (filterRowCache.containsKey(combinedKey))
-					newRow.put("id", filterRowCache.get(combinedKey));
+					updateRow.put("id", filterRowCache.get(combinedKey));
+				else 
+					updateRow.put("id", 0);
 			}
 			
 			for (int i = 0; i < meta.getModelFields().length; i++)
-				newRow.put(meta.getModelFields()[i], inputRow[this.index[i]]);
+				updateRow.put(meta.getModelFields()[i], inputRow[this.index[i]]);
 				
-			data.batchRows.add(newRow);
-
-			if (data.batchRows.size() == meta.getCommitBatchSize())
-				CommitBatch();
+			// The import function does not return the ID field once complete
+			// We have to call the create function for each row, to return the ID
+			if (meta.getOutputIDField() && updateRow.getID() == 0){
+				openerERPAdapter.createObject(updateRow);
+				outputRow[data.outputRowMeta.indexOfValue(meta.getOutputIDFieldName())] = Long.parseLong(updateRow.get("id").toString());
+				
+				incrementLinesOutput();
+				putRow(data.outputRowMeta, outputRow);
+				
+			}
+			else{
+				if (meta.getOutputIDField())
+					outputRow[data.outputRowMeta.indexOfValue(meta.getOutputIDFieldName())] = Long.parseLong(updateRow.get("id").toString());
+					
+				data.updateBatchRows.add(updateRow);
+				data.outputBatchRows.add(outputRow);
+	
+				if (data.updateBatchRows.size() == meta.getCommitBatchSize())
+					CommitBatch();
+			}
 
 		} catch (Exception e) {
 			throw new KettleException("Failed to commit batch: " + row, e);
@@ -128,15 +156,19 @@ public class OpenERPObjectOutput extends BaseStep implements StepInterface {
 
 	private void CommitBatch() throws Exception{
 		// In the process of stopping, return
-		if (isStopped() || data.batchRows.size() == 0)
+		if (isStopped() || data.updateBatchRows.size() == 0)
 			return;
 		
 		try {
-			openerERPAdapter.importData(data.batchRows);
-			for (int i = 0; i < data.batchRows.size(); i++)
+			openerERPAdapter.importData(data.updateBatchRows);
+			for (int i = 0; i < data.updateBatchRows.size(); i++){
 				incrementLinesOutput();
+				
+				putRow(data.outputRowMeta, data.outputBatchRows.get(i));
+			}
 		} finally {
-			data.batchRows.clear();
+			data.updateBatchRows.clear();
+			data.outputBatchRows.clear();
 		}
 	}
 	
@@ -194,9 +226,13 @@ public class OpenERPObjectOutput extends BaseStep implements StepInterface {
 				&& meta.getKeyLookups().get(0)[1].equals("="))
 			idIndex = getInputRowMeta().indexOfValue(meta.getKeyLookups().get(0)[2]);
 		
+		
 		index = new int[meta.getModelFields().length];
-		for (int i = 0; i < meta.getModelFields().length; i++)
+		for (int i = 0; i < meta.getModelFields().length; i++){
 			index[i] = getInputRowMeta().indexOfValue(meta.getStreamFields()[i]);
+			if (index[i] < 0)
+				throw new KettleException("Stream field not found", new Exception("Could not find stream field: " + meta.getStreamFields()[i]));
+		}
 
 	}
 

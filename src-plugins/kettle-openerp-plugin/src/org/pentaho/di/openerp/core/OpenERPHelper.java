@@ -19,6 +19,7 @@ package org.pentaho.di.openerp.core;
 
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import org.apache.xmlrpc.XmlRpcException;
 import org.pentaho.di.core.database.DatabaseFactoryInterface;
@@ -132,6 +133,9 @@ public class OpenERPHelper implements DatabaseFactoryInterface {
 			fieldArray.add(field.getName());
 		}
 
+		// Sort the fields alphabetically
+		Collections.sort(fieldArray);
+		
 		return fieldArray.toArray(new String[fieldArray.size()]);
 	}
 

@@ -201,7 +201,7 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 				new ColumnInfo(getLocalizedColumn(1), ColumnInfo.COLUMN_TYPE_TEXT, false, true),
 				new ColumnInfo(getLocalizedColumn(2), ColumnInfo.COLUMN_TYPE_TEXT, false, true)};
 
-		tableViewFields = new TableView(null, shell, SWT.FILL | SWT.BORDER, colinf, 0, true, lsMod, props);
+		tableViewFields = new TableView(null, shell, SWT.MULTI | SWT.BORDER, colinf, 0, true, lsMod, props);
 		tableViewFields.setSize(477, 280);
 		tableViewFields.setBounds(5, 125, 477, 280);
 		tableViewFields.setReadonly(false);

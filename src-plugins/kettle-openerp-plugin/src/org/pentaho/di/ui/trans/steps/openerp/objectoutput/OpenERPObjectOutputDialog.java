@@ -78,6 +78,10 @@ public class OpenERPObjectOutputDialog extends BaseStepDialog implements StepDia
 	private CCombo                 comboModelName;
 	private Label                  labelCommitBatchSize;
 	private Text                   textCommitBatchSize;
+	private Label                  labelOutputIDField;
+	private Button                 buttonOutputIDField;
+	private Label                  labelIDFieldName;
+	private Text                   textIDFieldName;
 	private Label                  labelKeyFields;
 	private Button                 buttonGetKeyFields;
 	private TableView              tableViewKeyFields;
@@ -159,11 +163,39 @@ public class OpenERPObjectOutputDialog extends BaseStepDialog implements StepDia
 		fd.right = new FormAttachment(100, 0);
 		fd.top = new FormAttachment(comboModelName, margin);
 		textCommitBatchSize.setLayoutData(fd);
+		
+		labelOutputIDField = new Label(shell, SWT.RIGHT);
+	    fd = new FormData();
+	    fd.left = new FormAttachment(0, 0);
+	    fd.right = new FormAttachment(middle, -margin);
+	    fd.top = new FormAttachment(textCommitBatchSize, margin);
+	    labelOutputIDField.setLayoutData(fd);
+
+	    buttonOutputIDField = new Button(shell, SWT.CHECK);
+	    fd = new FormData();
+	    fd.left = new FormAttachment(middle, 0);
+	    fd.right = new FormAttachment(100, 0);
+	    fd.top = new FormAttachment(textCommitBatchSize, margin);
+	    buttonOutputIDField.setLayoutData(fd);
+	    
+	    labelIDFieldName = new Label(shell, SWT.RIGHT);
+	    fd = new FormData();
+	    fd.left = new FormAttachment(0, 0);
+	    fd.right = new FormAttachment(middle, -margin);
+	    fd.top = new FormAttachment(labelOutputIDField, margin);
+	    labelIDFieldName.setLayoutData(fd);
+
+	    textIDFieldName = new Text(shell, SWT.BORDER);
+	    fd = new FormData();
+	    fd.left = new FormAttachment(middle, 0);
+	    fd.right = new FormAttachment(100, 0);
+	    fd.top = new FormAttachment(labelOutputIDField, margin);
+	    textIDFieldName.setLayoutData(fd);
 
 		labelKeyFields = new Label(shell, SWT.NONE);
 		fd = new FormData();
 		fd.left = new FormAttachment(0, 0);
-		fd.top = new FormAttachment(textCommitBatchSize, margin);
+		fd.top = new FormAttachment(textIDFieldName, margin);
 		labelKeyFields.setLayoutData(fd);
 		
 		keyFieldsViewColinf = new ColumnInfo[] { 
@@ -252,6 +284,11 @@ public class OpenERPObjectOutputDialog extends BaseStepDialog implements StepDia
 			public void focusGained(FocusEvent arg0) {
 			}
 		});
+		buttonOutputIDField.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent arg0) {
+				textIDFieldName.setEnabled(buttonOutputIDField.getSelection());
+			}
+		});
 		buttonGetKeyFields.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				getKeyFields();
@@ -303,6 +340,10 @@ public class OpenERPObjectOutputDialog extends BaseStepDialog implements StepDia
 		props.setLook(comboModelName);
 		props.setLook(labelCommitBatchSize);
 		props.setLook(textCommitBatchSize);
+		props.setLook(labelOutputIDField);
+		props.setLook(buttonOutputIDField);
+		props.setLook(labelIDFieldName);
+		props.setLook(textIDFieldName);
 		props.setLook(labelKeyFields);
 		props.setLook(labelFieldMappings);
 
@@ -337,6 +378,8 @@ public class OpenERPObjectOutputDialog extends BaseStepDialog implements StepDia
 		labelStepName.setText(BaseMessages.getString(PKG, "OpenERPObjectOutputDialog.StepName"));
 		labelModelName.setText(BaseMessages.getString(PKG, "OpenERPObjectOutputDialog.ModelName"));
 		labelCommitBatchSize.setText(BaseMessages.getString(PKG, "OpenERPObjectOutputDialog.CommitBatchSize"));
+		labelOutputIDField.setText(BaseMessages.getString(PKG, "OpenERPObjectOutputDialog.OutputIDField"));
+		labelIDFieldName.setText(BaseMessages.getString(PKG, "OpenERPObjectOutputDialog.OutputIDFieldName"));
 		labelKeyFields.setText(BaseMessages.getString(PKG, "OpenERPObjectOutputDialog.KeyMappingLabel"));
 		buttonGetKeyFields.setText(BaseMessages.getString(PKG, "OpenERPObjectOutputDialog.ButtonGetKeyFields"));
 		buttonGetMappingFields.setText(BaseMessages.getString(PKG, "OpenERPObjectOutputDialog.ButtonGetMappingFields"));
@@ -639,6 +682,10 @@ public class OpenERPObjectOutputDialog extends BaseStepDialog implements StepDia
 			comboModelName.add(meta.getModelName());
 			comboModelName.select(0);
 		}
+		
+		buttonOutputIDField.setSelection(meta.getOutputIDField());
+		textIDFieldName.setText((meta.getOutputIDFieldName() == null ? "" : meta.getOutputIDFieldName()));
+		textIDFieldName.setEnabled(buttonOutputIDField.getSelection());
 
 		textCommitBatchSize.setText(String.valueOf(meta.getCommitBatchSize()));
 
@@ -700,6 +747,9 @@ public class OpenERPObjectOutputDialog extends BaseStepDialog implements StepDia
 			new ErrorDialog(shell, BaseMessages.getString(PKG, "OpenERPObjectOutputDialog.ParseErrorTitle"), BaseMessages.getString(PKG, "OpenERPObjectOutputDialog.ParseErrorString", textCommitBatchSize.getText()), e);
 			return false;
 		}
+		
+		meta.setOutputIDField(buttonOutputIDField.getSelection());
+		meta.setOutputIDFieldName(textIDFieldName.getText());
 
 		String[] targetTableFields = new String[tableViewFieldMappings.table.getItemCount()];
 		String[] streamFields = new String[tableViewFieldMappings.table.getItemCount()];

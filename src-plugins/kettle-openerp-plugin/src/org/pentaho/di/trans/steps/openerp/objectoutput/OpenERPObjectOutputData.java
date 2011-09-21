@@ -17,9 +17,12 @@
 
 package org.pentaho.di.trans.steps.openerp.objectoutput;
 
+import java.util.ArrayList;
+
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.OpenERPDatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.openerp.core.OpenERPHelper;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -29,7 +32,9 @@ import com.debortoliwines.openerp.api.RowCollection;
 public class OpenERPObjectOutputData extends BaseStepData implements StepDataInterface {
 
 	public OpenERPHelper helper;
-	public RowCollection batchRows = new RowCollection(); 
+	public RowCollection updateBatchRows = new RowCollection();
+	public ArrayList<Object[]> outputBatchRows = new ArrayList<Object[]>();
+	public RowMetaInterface outputRowMeta;
 	
 	public OpenERPObjectOutputData(DatabaseMeta databaseMeta) throws KettleException {
 		super();
