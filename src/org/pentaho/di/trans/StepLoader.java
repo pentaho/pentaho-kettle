@@ -763,6 +763,7 @@ public class StepLoader implements LoaderInputStreamProvider
                             {
                                 return inputStream;
                             }
+                            jarFile.close();
                         }
                     }
                 }
