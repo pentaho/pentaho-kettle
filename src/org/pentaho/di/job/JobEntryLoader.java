@@ -490,6 +490,7 @@ public class JobEntryLoader implements LoaderInputStreamProvider
 							{
 								return inputStream;
 							}
+							jarFile.close();
 						}
 					}
 				}
