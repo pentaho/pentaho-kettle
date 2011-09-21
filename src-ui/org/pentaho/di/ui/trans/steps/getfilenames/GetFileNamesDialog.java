@@ -364,7 +364,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
   		props.setLook(wlIncludeSubFolder );
   		fdlIncludeSubFolder = new FormData();
   		fdlIncludeSubFolder.left = new FormAttachment(0, -margin);
-  		fdlIncludeSubFolder.top = new FormAttachment(wWildcardField, margin);
+  		fdlIncludeSubFolder.top = new FormAttachment(wExcludeWildcardField, margin);
   		fdlIncludeSubFolder.right = new FormAttachment(middle, -2*margin);
   		wlIncludeSubFolder .setLayoutData(fdlIncludeSubFolder);
   		
@@ -373,7 +373,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
   		wIncludeSubFolder.setToolTipText(BaseMessages.getString(PKG, "GetFileNamesDialog.includeSubFolder.Tooltip"));
   		fdIncludeSubFolder = new FormData();
   		fdIncludeSubFolder.left = new FormAttachment(middle, -margin);
-  		fdIncludeSubFolder.top = new FormAttachment(wWildcardField, margin);
+  		fdIncludeSubFolder.top = new FormAttachment(wExcludeWildcardField, margin);
   		wIncludeSubFolder .setLayoutData(fdIncludeSubFolder);		
         	  
 		fdOriginFiles = new FormData();
