@@ -332,6 +332,7 @@ public class JobEntryPGPEncryptFiles extends JobEntryBase implements Cloneable, 
 			
 			// How many arguments?
 			int argnr = rep.countNrJobEntryAttributes(id_jobentry, "source_filefolder");
+			action_type = new int[argnr];
 			source_filefolder = new String[argnr];
 			userid = new String[argnr];
 			destination_filefolder = new String[argnr];
