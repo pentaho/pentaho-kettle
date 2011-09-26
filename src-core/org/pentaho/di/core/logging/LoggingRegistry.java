@@ -154,7 +154,7 @@ public class LoggingRegistry {
 			}
 			
 			LoggingObjectInterface parent = loggingObject.getParent(); 
-			if (parent!=null && parent.getLogChannelId()!=null) {
+			if (parent!=null) {
 				// object has a parent, this is a candidate
 				//
 				if (parent.getLogChannelId().equals(parentLogChannelId)) {
