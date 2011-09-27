@@ -28,6 +28,9 @@ public class PoiSheet implements KSheet {
       return new KCell[] {};
     }
     int cols = row.getLastCellNum();
+    if (cols < 0){ // this happens if a row has no cells, POI returns -1 then
+        return new KCell[] {};
+    }    
     PoiCell[] xlsCells = new PoiCell[cols];
     for (int i=0;i<cols;i++) {
       Cell cell = row.getCell(i);
