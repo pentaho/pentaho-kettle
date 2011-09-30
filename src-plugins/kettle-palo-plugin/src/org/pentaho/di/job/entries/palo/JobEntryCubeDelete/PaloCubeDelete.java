@@ -17,16 +17,13 @@
  *   Copyright 2011 De Bortoli Wines Pty Limited (Australia)
  */
 
-package org.pentaho.di.job.entries.palo.cubecreate;
+package org.pentaho.di.job.entries.palo.JobEntryCubeDelete;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import org.pentaho.di.cluster.SlaveServer;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
-
 import org.pentaho.di.palo.core.PaloHelper;
 
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -41,36 +38,36 @@ import org.w3c.dom.Node;
 
 
 /**
- * Job to create a cube in palo
+ * Job to delete a cube in palo
  * 
  * @author Pieter van der Merwe
  * @since 03-08-2011
  */
 
 @org.pentaho.di.core.annotations.JobEntry(
-		id="palocubecreate", 
-		i18nPackageName="org.pentaho.di.job.entries.palo.cubecreate",
-		image = "PaloCubeCreate.png",
-		name="PaloCubeCreate.JobName", 
-		description = "PaloCubeCreate.JobDescription",
+		id="PALO_CUBE_DELETE",
+		i18nPackageName="org.pentaho.di.job.entries.palo.JobEntryCubeDelete",
+		image = "PaloCubeDelete.png",
+		name="PaloCubeDelete.JobName",
+		description="PaloCubeDelete.JobDescription",
 		categoryDescription = "i18n:org.pentaho.di.job:JobCategory.Category.Palo")
-public class PaloCubeCreate extends JobEntryBase implements Cloneable, JobEntryInterface {
+public class PaloCubeDelete extends JobEntryBase implements Cloneable, JobEntryInterface {
 
 	private DatabaseMeta databaseMeta;
 	private String cubeName = "";
-	private List<String> dimensionNames = new ArrayList<String>();
 
-	public PaloCubeCreate(String n) {
+
+	public PaloCubeDelete(String n) {
 		super(n, "");
 		setID(-1L);
 	}
 
-	public PaloCubeCreate() {
+	public PaloCubeDelete() {
 		this("");
 	}
 
 	public Object clone() {
-		PaloCubeCreate je = (PaloCubeCreate) super.clone();
+		PaloCubeDelete je = (PaloCubeDelete) super.clone();
 		return je;
 	}
 
@@ -81,12 +78,6 @@ public class PaloCubeCreate extends JobEntryBase implements Cloneable, JobEntryI
 
 		retval.append("      ").append(XMLHandler.addTagValue("connection", getDatabaseMeta() == null ? "": getDatabaseMeta().getName()));
 		retval.append("      ").append(XMLHandler.addTagValue("cubeName", getCubeName()));
-		
-		retval.append("      <dimensions>").append(Const.CR);
-        for (String dimensionName : this.dimensionNames) 
-        	retval.append("        ").append(XMLHandler.addTagValue("dimensionname",dimensionName));
-        
-        retval.append("      </dimensions>").append(Const.CR);
 
 		return retval.toString();
 	}
@@ -98,33 +89,20 @@ public class PaloCubeCreate extends JobEntryBase implements Cloneable, JobEntryI
 			this.setDatabaseMeta(DatabaseMeta.findDatabase(
 					databases, XMLHandler.getTagValue(entrynode, "connection")));
 			this.setCubeName(XMLHandler.getTagValue(entrynode, "cubeName"));
-			
-			Node dimensionNode = XMLHandler.getSubNode(entrynode,"dimensions");
-            int nrDimensions = XMLHandler.countNodes(dimensionNode,"dimensionname");
-            for (int i=0; i<nrDimensions; i++) {
-                String dimensionName = XMLHandler.getNodeValue(XMLHandler.getSubNodeByNr(dimensionNode, "dimensionname", i));
-                this.dimensionNames.add(dimensionName);
-            }
-			
 		} catch (KettleXMLException xe) {
 			throw new KettleXMLException("Unable to load file exists job entry from XML node",
 					xe);
 		}
 	}
 
-    public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
+	public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
 		try {
+			
 			super.loadRep(rep, id_jobentry, databases, slaveServers);
 
 			this.databaseMeta = rep.loadDatabaseMetaFromJobEntryAttribute(id_jobentry, "connection", "id_database", databases);
 			this.setCubeName(rep.getStepAttributeString(id_jobentry, "cubeName"));
-			
-			int nrFields = rep.countNrStepAttributes(id_jobentry, "dimensionname");
-            
-            for (int i=0;i<nrFields;i++) {
-                String dimensionName = rep.getStepAttributeString (id_jobentry, i, "dimensionname");
-                this.dimensionNames.add(dimensionName);
-            }
+
 		} catch (KettleException dbe) {
 			throw new KettleException(
 					"Unable to load job entry for type file exists from the repository for id_jobentry="
@@ -132,15 +110,12 @@ public class PaloCubeCreate extends JobEntryBase implements Cloneable, JobEntryI
 		}
 	}
 
-    public void saveRep(Repository rep, ObjectId id_job) throws KettleException {
-    	try {
+	public void saveRep(Repository rep, ObjectId id_job) throws KettleException {
+	    try {
 			super.saveRep(rep, id_job);
 
 			rep.saveDatabaseMetaJobEntryAttribute(id_job, getObjectId(), "connection", "id_database", databaseMeta);
-			rep.saveJobEntryAttribute(id_job, getObjectId(), "cubeName", this.getCubeName());
-			
-			for (int i=0; i<this.dimensionNames.size(); i++)
-				rep.saveJobEntryAttribute(id_job, getObjectId(), i, "dimensionname", this.dimensionNames.get(i));
+			rep.saveStepAttribute(id_job, getObjectId(), "cubeName", this.getCubeName());
 
 		} catch (KettleDatabaseException dbe) {
 			throw new KettleException(
@@ -149,9 +124,8 @@ public class PaloCubeCreate extends JobEntryBase implements Cloneable, JobEntryI
 		}
 	}
 
-	@Override
 	public Result execute(Result prevResult, int nr) throws KettleException {
-
+		
 		Result result = new Result(nr);
 		result.setResult(false);
 
@@ -163,13 +137,13 @@ public class PaloCubeCreate extends JobEntryBase implements Cloneable, JobEntryI
 		PaloHelper database = new PaloHelper(this.getDatabaseMeta());
 		try {
 			database.connect();
-			database.createCube(realCubeName, dimensionNames.toArray(new String[dimensionNames.size()]));
+			int cubesremoved = database.removeCube(realCubeName);
 			result.setResult(true);
-			result.setNrLinesOutput(1);
+			result.setNrLinesOutput(cubesremoved);
 		} catch (Exception e) {
 			result.setNrErrors(1);
 			e.printStackTrace();
-			logError(toString(), "Error processing Palo Cube Create : " + e.getMessage());
+			logError(toString(), "Error processing Palo Cube Delete : " + e.getMessage());
 		}
 		finally{
 			database.disconnect();
@@ -196,13 +170,5 @@ public class PaloCubeCreate extends JobEntryBase implements Cloneable, JobEntryI
 
 	public String getCubeName() {
 		return cubeName;
-	}
-
-	public void setDimensionNames(List<String> dimensionNames) {
-		this.dimensionNames = dimensionNames;
-	}
-
-	public List<String> getDimensionNames() {
-		return dimensionNames;
 	}
 }

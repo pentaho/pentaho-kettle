@@ -17,7 +17,7 @@
  *   Copyright 2011 De Bortoli Wines Pty Limited (Australia)
  */
 
-package org.pentaho.di.ui.job.entries.palo.cubecreate;
+package org.pentaho.di.ui.job.entries.palo.JobEntryCubeCreate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -48,7 +48,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.palo.core.PaloHelper;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.job.entries.palo.cubecreate.PaloCubeCreate;
+import org.pentaho.di.job.entries.palo.JobEntryCubeCreate.PaloCubeCreate;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
