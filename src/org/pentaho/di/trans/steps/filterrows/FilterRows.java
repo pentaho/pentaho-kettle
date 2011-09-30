@@ -140,6 +140,10 @@ public class FilterRows extends BaseStep implements StepInterface
 
         if (super.init(smi, sdi))
         {
+            // PDI-6785 
+        	// could it be a better idea to have a clone on the condition in data and do this on the first row?
+            meta.getCondition().clearFieldPositions();                    	
+        	
         	List<StreamInterface> targetStreams = meta.getStepIOMeta().getTargetStreams();
         	data.trueStepname = targetStreams.get(0).getStepname();
         	data.falseStepname = targetStreams.get(1).getStepname();
