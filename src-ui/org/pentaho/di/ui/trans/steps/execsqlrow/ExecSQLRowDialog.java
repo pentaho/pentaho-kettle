@@ -45,6 +45,7 @@ import org.pentaho.di.trans.steps.execsqlrow.ExecSQLRowMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
+
 public class ExecSQLRowDialog extends BaseStepDialog implements StepDialogInterface
 {
 	private static Class<?> PKG = ExecSQLRowMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
@@ -81,6 +82,12 @@ public class ExecSQLRowDialog extends BaseStepDialog implements StepDialogInterf
 	private Group wAdditionalFields;
 
 	private ExecSQLRowMeta input;
+	
+	
+	private Label        wlSQLFromFile;
+	private Button       wSQLFromFile;
+	private FormData     fdlSQLFromFile, fdSQLFromFile;
+
 	
 	
 	public ExecSQLRowDialog(Shell parent, Object in, TransMeta transMeta, String sname)
@@ -194,6 +201,32 @@ public class ExecSQLRowDialog extends BaseStepDialog implements StepDialogInterf
         }
     );
 		
+		wlSQLFromFile=new Label(shell, SWT.RIGHT);
+		wlSQLFromFile.setText(BaseMessages.getString(PKG, "ExecSQLRowDialog.SQLFromFile.Label"));
+ 		props.setLook(wlSQLFromFile);
+		fdlSQLFromFile=new FormData();
+		fdlSQLFromFile.left = new FormAttachment(0, 0);
+		fdlSQLFromFile.top  = new FormAttachment(wSQLFieldName, margin);
+		fdlSQLFromFile.right= new FormAttachment(middle, -margin);
+		wlSQLFromFile.setLayoutData(fdlSQLFromFile);
+		wSQLFromFile=new Button(shell, SWT.CHECK );
+		wSQLFromFile.setToolTipText(BaseMessages.getString(PKG, "ExecSQLRowDialog.SQLFromFile.Tooltip"));
+ 		props.setLook(wSQLFromFile);
+		fdSQLFromFile=new FormData();
+		fdSQLFromFile.left = new FormAttachment(middle, 0);
+		fdSQLFromFile.top  = new FormAttachment(wSQLFieldName, margin);
+		fdSQLFromFile.right= new FormAttachment(100, 0);
+		wSQLFromFile.setLayoutData(fdSQLFromFile);
+		wSQLFromFile.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					input.setChanged();
+				}
+			}
+		);
+		
+		
 		///////////////////////////////// 
 		// START OF Additional Fields GROUP  //
 		///////////////////////////////// 
@@ -214,14 +247,14 @@ public class ExecSQLRowDialog extends BaseStepDialog implements StepDialogInterf
         fdlInsertField=new FormData();
         fdlInsertField.left = new FormAttachment(0, margin);
         fdlInsertField.right= new FormAttachment(middle, -margin);
-        fdlInsertField.top  = new FormAttachment(wSQLFieldName, margin);
+        fdlInsertField.top  = new FormAttachment(wSQLFromFile, margin);
         wlInsertField.setLayoutData(fdlInsertField);
         wInsertField=new Text(wAdditionalFields, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(        wInsertField);
         wInsertField.addModifyListener(lsMod);
         fdInsertField=new FormData();
         fdInsertField.left = new FormAttachment(middle, 0);
-        fdInsertField.top  = new FormAttachment(wSQLFieldName, margin);
+        fdInsertField.top  = new FormAttachment(wSQLFromFile, margin);
         fdInsertField.right= new FormAttachment(100, 0);
         wInsertField.setLayoutData(fdInsertField);
         
@@ -281,7 +314,7 @@ public class ExecSQLRowDialog extends BaseStepDialog implements StepDialogInterf
         
 		fdAdditionalFields = new FormData();
 		fdAdditionalFields.left = new FormAttachment(0, margin);
-		fdAdditionalFields.top = new FormAttachment(wSQLFieldName, 2*margin);
+		fdAdditionalFields.top = new FormAttachment(wSQLFromFile, 2*margin);
 		fdAdditionalFields.right = new FormAttachment(100, -margin);
 		wAdditionalFields.setLayoutData(fdAdditionalFields);
 		
@@ -341,7 +374,7 @@ public class ExecSQLRowDialog extends BaseStepDialog implements StepDialogInterf
         if (input.getInsertField()!=null) wInsertField.setText(input.getInsertField());
         if (input.getDeleteField()!=null) wDeleteField.setText(input.getDeleteField());
         if (input.getReadField()  !=null) wReadField  .setText(input.getReadField());
-		
+        wSQLFromFile.setSelection(input.isSqlFromfile());
 
 		wStepname.selectAll();
 	}
@@ -366,7 +399,7 @@ public class ExecSQLRowDialog extends BaseStepDialog implements StepDialogInterf
         input.setUpdateField(wUpdateField.getText());
         input.setDeleteField(wDeleteField.getText());
         input.setReadField  (wReadField  .getText());
-		
+		input.setSqlFromfile(wSQLFromFile.getSelection());
         
 		if (input.getDatabaseMeta()==null)
 		{

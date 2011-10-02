@@ -65,11 +65,27 @@ public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface
 	/** Commit size for inserts/updates */
 	private int    commitSize; 
 	
+	private boolean  sqlFromfile;
+	
 	public ExecSQLRowMeta()
 	{
 		super();
 	}
-	
+    /**
+     * @return Returns the sqlFromfile.
+     */
+    public boolean isSqlFromfile()
+    {
+        return sqlFromfile;
+    }
+    
+    /**
+     * @param sqlFromfile The sqlFromfile to set.
+     */
+    public void setSqlFromfile(boolean sqlFromfile)
+    {
+        this.sqlFromfile = sqlFromfile;
+    }
 	/**
 	 * @return Returns the database.
 	 */
@@ -209,6 +225,7 @@ public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface
 			updateField           = XMLHandler.getTagValue(stepnode, "update_field"); //$NON-NLS-1$			
 			deleteField           = XMLHandler.getTagValue(stepnode, "delete_field"); //$NON-NLS-1$
 			readField             = XMLHandler.getTagValue(stepnode, "read_field"); //$NON-NLS-1$
+            sqlFromfile        = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "sqlFromfile"));
         }
 		catch(Exception e)
 		{
@@ -218,6 +235,7 @@ public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void setDefault()
 	{
+		sqlFromfile=false;
 		commitSize   = 1;
 		databaseMeta = null;
 		sqlField     = null; //$NON-NLS-1$
@@ -242,6 +260,7 @@ public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    ").append(XMLHandler.addTagValue("update_field",  updateField)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    ").append(XMLHandler.addTagValue("delete_field",  deleteField)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    ").append(XMLHandler.addTagValue("read_field",    readField)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("sqlFromfile",        sqlFromfile));
 
 		return retval.toString();
 	}
@@ -259,6 +278,7 @@ public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface
             updateField           = rep.getStepAttributeString (id_step, "update_field"); //$NON-NLS-1$
             deleteField           = rep.getStepAttributeString (id_step, "delete_field"); //$NON-NLS-1$
             readField             = rep.getStepAttributeString (id_step, "read_field"); //$NON-NLS-1$
+            sqlFromfile              = rep.getStepAttributeBoolean(id_step, "sqlFromfile");
            
 		}
 		catch(Exception e)
@@ -283,6 +303,8 @@ public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface
             
 			// Also, save the step-database relationship!
 			if (databaseMeta!=null) rep.insertStepDatabase(id_transformation, id_step, databaseMeta.getObjectId());
+			
+			rep.saveStepAttribute(id_transformation, id_step, "sqlFromfile",             sqlFromfile);
 		}
 		catch(Exception e)
 		{

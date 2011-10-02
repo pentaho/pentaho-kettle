@@ -28,8 +28,11 @@
 
 package org.pentaho.di.core.database;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.sql.BatchUpdateException;
 import java.sql.Blob;
@@ -57,6 +60,7 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.DBCache;
@@ -86,10 +90,12 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.RepositoryDirectory;
+
 
 
 /**
@@ -4976,4 +4982,53 @@ public class Database implements VariableSpace, LoggingObjectInterface
   public void setNrExecutedCommits(int nrExecutedCommits) {
     this.nrExecutedCommits = nrExecutedCommits;
   }
+  /**
+   * Execute an SQL statement inside a file on the database connection (has to be open)
+   * @param sql The file that contains SQL to execute
+   * @return a Result object indicating the number of lines read, deleted, inserted, updated, ...
+   * @throws KettleDatabaseException in case anything goes wrong.
+   */
+	public Result execStatementFromFile(String filename) throws KettleException
+	{
+		FileObject sqlFile=null;
+		InputStream is=null;
+		InputStreamReader bis =null;
+		try {
+			if(Const.isEmpty(filename)) {
+				throw new KettleException("Filename is missing!");
+			}
+			sqlFile=KettleVFS.getFileObject(filename);
+			if(!sqlFile.exists()) {
+				throw new KettleException("We can not find file [" + filename + "]!");
+			}
+			
+			is = KettleVFS.getInputStream(sqlFile);
+			bis = new InputStreamReader(new BufferedInputStream(is, 500));
+			StringBuffer lineStringBuffer = new StringBuffer(256);
+			lineStringBuffer.setLength(0);
+			
+			BufferedReader buff = new BufferedReader(bis);
+			String sLine = null;
+			String sql=Const.CR;;
+
+			while((sLine=buff.readLine())!=null) {
+				if(Const.isEmpty(sLine)){
+					sql= sql +  Const.CR;	
+				} else {
+					sql=sql+  Const.CR + sLine;
+				}
+			}
+				
+			return execStatement(sql);
+		
+		}catch(Exception e) {
+			throw new KettleException(e);
+		}finally {
+			try {
+				if(sqlFile != null) sqlFile.close();
+				if(is!=null) is.close();
+				if(bis!=null) bis.close();
+			}catch(Exception e) {};
+		}
+	}
 }

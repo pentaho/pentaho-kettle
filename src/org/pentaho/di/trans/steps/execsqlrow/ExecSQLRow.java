@@ -29,6 +29,7 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
+
 /**
  * Execute one or more SQL statements in a script, one time or parameterised (for every row)
  * 
@@ -124,13 +125,22 @@ public class ExecSQLRow extends BaseStep implements StepInterface
 		}
 
     	// get SQL
-    	String SQLScript= getInputRowMeta().getString(row,data.indexOfSQLFieldname);
+    	String sql= getInputRowMeta().getString(row,data.indexOfSQLFieldname);
     	 
 		try
 		{
-	        if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "ExecSQLRow.Log.ExecutingSQLScript")+Const.CR+SQLScript); //$NON-NLS-1$
-	        data.result = data.db.execStatement(SQLScript);
-	
+			if(meta.isSqlFromfile()) {
+				if(Const.isEmpty(sql)) {
+					// empty filename
+					throw new KettleException(BaseMessages.getString(PKG, "ExecSQLRow.Log.EmptySQLFromFile"));
+				}
+				if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "ExecSQLRow.Log.ExecutingSQLFromFile", sql));
+				data.result = data.db.execStatementFromFile(sql);
+			}else {
+				if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "ExecSQLRow.Log.ExecutingSQLScript")+Const.CR+sql); //$NON-NLS-1$
+				data.result = data.db.execStatement(sql);
+			}
+	      
 			RowMetaAndData add = getResultRow(data.result, meta.getUpdateField(), meta.getInsertField(), meta.getDeleteField(), meta.getReadField());			
 			row = RowDataUtil.addRowData(row, getInputRowMeta().size(), add.getData());
 	        
