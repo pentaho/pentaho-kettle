@@ -59,7 +59,6 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.http.HTTPMeta;
-import org.pentaho.di.trans.steps.httppost.HTTPPOSTMeta;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
@@ -883,8 +882,8 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		      if (input.getHeaderParameter()[i]  !=null) item.setText(2, input.getHeaderParameter()[i]);
 		   }
 		}
-	    wSocketTimeOut.setText(Const.NVL(input.getSocketTimeout(), String.valueOf(HTTPPOSTMeta.DEFAULT_SOCKET_TIMEOUT)));
-	    wConnectionTimeOut.setText(Const.NVL(input.getConnectionTimeout(), String.valueOf(HTTPPOSTMeta.DEFAULT_CONNECTION_TIMEOUT)));
+	    wSocketTimeOut.setText(Const.NVL(input.getSocketTimeout(), String.valueOf(HTTPMeta.DEFAULT_SOCKET_TIMEOUT)));
+	    wConnectionTimeOut.setText(Const.NVL(input.getConnectionTimeout(), String.valueOf(HTTPMeta.DEFAULT_CONNECTION_TIMEOUT)));
 	    
 		wUrl.setText(Const.NVL(input.getUrl(), ""));
         wUrlInField.setSelection(input.isUrlInField());

@@ -63,8 +63,6 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
-import com.ibm.wsdl.extensions.http.HTTPOperationSerializer;
-
 
 public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterface
 {
