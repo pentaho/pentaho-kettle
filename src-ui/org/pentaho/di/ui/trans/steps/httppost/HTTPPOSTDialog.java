@@ -63,6 +63,8 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
 
+import com.ibm.wsdl.extensions.http.HTTPOperationSerializer;
+
 
 public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterface
 {
@@ -151,6 +153,12 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 	private FormData     fdGeneralComp, fdAdditionalComp;
 
     private boolean      gotEncodings = false;
+    
+    private Label wlConnectionTimeOut;
+    private TextVar wConnectionTimeOut;
+
+    private Label wlSocketTimeOut;
+    private TextVar wSocketTimeOut;
     
 	public HTTPPOSTDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
@@ -404,6 +412,44 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
         fdPostAFile.top  = new FormAttachment(wrequestEntity, margin);
         fdPostAFile.right= new FormAttachment(100, 0);
         wPostAFile.setLayoutData(fdPostAFile);
+        
+        wlConnectionTimeOut = new Label(gSettings, SWT.RIGHT);
+        wlConnectionTimeOut.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.ConnectionTimeOut.Label")); //$NON-NLS-1$
+        props.setLook(wlConnectionTimeOut);
+        FormData fdlConnectionTimeOut = new FormData();
+        fdlConnectionTimeOut.top = new FormAttachment(wPostAFile, margin);
+        fdlConnectionTimeOut.left = new FormAttachment(0, 0);
+        fdlConnectionTimeOut.right = new FormAttachment(middle, -margin);
+        wlConnectionTimeOut.setLayoutData(fdlConnectionTimeOut);
+        wConnectionTimeOut = new TextVar(transMeta, gSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wConnectionTimeOut.addModifyListener(lsMod);
+        wConnectionTimeOut.setToolTipText(BaseMessages.getString(PKG, "HTTPPOSTDialog.ConnectionTimeOut.Tooltip")); //$NON-NLS-1$
+        props.setLook(wConnectionTimeOut);
+        FormData fdConnectionTimeOut = new FormData();
+        fdConnectionTimeOut.top = new FormAttachment(wPostAFile, margin);
+        fdConnectionTimeOut.left = new FormAttachment(middle, 0);
+        fdConnectionTimeOut.right = new FormAttachment(100, 0);
+        wConnectionTimeOut.setLayoutData(fdConnectionTimeOut);
+        
+        wlSocketTimeOut = new Label(gSettings, SWT.RIGHT);
+        wlSocketTimeOut.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.SocketTimeOut.Label")); //$NON-NLS-1$
+        props.setLook(wlSocketTimeOut);
+        FormData fdlSocketTimeOut = new FormData();
+        fdlSocketTimeOut.top = new FormAttachment(wConnectionTimeOut, margin);
+        fdlSocketTimeOut.left = new FormAttachment(0, 0);
+        fdlSocketTimeOut.right = new FormAttachment(middle, -margin);
+        wlSocketTimeOut.setLayoutData(fdlSocketTimeOut);
+        wSocketTimeOut = new TextVar(transMeta, gSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wSocketTimeOut.addModifyListener(lsMod);
+        wSocketTimeOut.setToolTipText(BaseMessages.getString(PKG, "HTTPPOSTDialog.SocketTimeOut.Tooltip")); //$NON-NLS-1$
+        props.setLook(wSocketTimeOut);
+        FormData fdSocketTimeOut = new FormData();
+        fdSocketTimeOut.top = new FormAttachment(wConnectionTimeOut, margin);
+        fdSocketTimeOut.left = new FormAttachment(middle, 0);
+        fdSocketTimeOut.right = new FormAttachment(100, 0);
+        wSocketTimeOut.setLayoutData(fdSocketTimeOut);
+
+
         
         FormData fdSettings = new FormData();
         fdSettings.left = new FormAttachment(0, 0);
@@ -925,6 +971,9 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 	    if(input.getProxyHost() != null) wProxyHost.setText(input.getProxyHost());
 	    if(input.getProxyPort() != null) wProxyPort.setText(input.getProxyPort());
 		
+	    wSocketTimeOut.setText(Const.NVL(input.getSocketTimeout(), String.valueOf(HTTPPOSTMeta.DEFAULT_SOCKET_TIMEOUT)));
+	    wConnectionTimeOut.setText(Const.NVL(input.getConnectionTimeout(), String.valueOf(HTTPPOSTMeta.DEFAULT_CONNECTION_TIMEOUT)));
+	    
 		wFields.setRowNums();
 		wFields.optWidth(true);
 		wStepname.selectAll();
@@ -977,6 +1026,8 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 		input.setHttpPassword(wHttpPassword.getText());
 		input.setProxyHost(wProxyHost.getText());
 		input.setProxyPort(wProxyPort.getText());
+		input.setSocketTimeout(wSocketTimeOut.getText());
+		input.setConnectionTimeout(wConnectionTimeOut.getText());
 		
 		stepname = wStepname.getText(); // return value
 

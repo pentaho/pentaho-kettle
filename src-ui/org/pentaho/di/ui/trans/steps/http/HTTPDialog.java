@@ -59,6 +59,7 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.http.HTTPMeta;
+import org.pentaho.di.trans.steps.httppost.HTTPPOSTMeta;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
@@ -137,6 +138,13 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
     private Map<String, Integer> inputFields;
 
 	private boolean gotEncodings = false;
+	
+    
+    private Label wlConnectionTimeOut;
+    private TextVar wConnectionTimeOut;
+
+    private Label wlSocketTimeOut;
+    private TextVar wSocketTimeOut;
 
 	public HTTPDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
@@ -346,6 +354,46 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 	            }
 	        }
 	    );
+        
+        wlConnectionTimeOut = new Label(gSettings, SWT.RIGHT);
+        wlConnectionTimeOut.setText(BaseMessages.getString(PKG, "HTTPDialog.ConnectionTimeOut.Label")); //$NON-NLS-1$
+        props.setLook(wlConnectionTimeOut);
+        FormData fdlConnectionTimeOut = new FormData();
+        fdlConnectionTimeOut.top = new FormAttachment(wEncoding, margin);
+        fdlConnectionTimeOut.left = new FormAttachment(0, 0);
+        fdlConnectionTimeOut.right = new FormAttachment(middle, -margin);
+        wlConnectionTimeOut.setLayoutData(fdlConnectionTimeOut);
+        wConnectionTimeOut = new TextVar(transMeta, gSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wConnectionTimeOut.addModifyListener(lsMod);
+        wConnectionTimeOut.setToolTipText(BaseMessages.getString(PKG, "HTTPDialog.ConnectionTimeOut.Tooltip")); //$NON-NLS-1$
+        props.setLook(wConnectionTimeOut);
+        FormData fdConnectionTimeOut = new FormData();
+        fdConnectionTimeOut.top = new FormAttachment(wEncoding, margin);
+        fdConnectionTimeOut.left = new FormAttachment(middle, 0);
+        fdConnectionTimeOut.right = new FormAttachment(100, 0);
+        wConnectionTimeOut.setLayoutData(fdConnectionTimeOut);
+        
+        wlSocketTimeOut = new Label(gSettings, SWT.RIGHT);
+        wlSocketTimeOut.setText(BaseMessages.getString(PKG, "HTTPDialog.SocketTimeOut.Label")); //$NON-NLS-1$
+        props.setLook(wlSocketTimeOut);
+        FormData fdlSocketTimeOut = new FormData();
+        fdlSocketTimeOut.top = new FormAttachment(wConnectionTimeOut, margin);
+        fdlSocketTimeOut.left = new FormAttachment(0, 0);
+        fdlSocketTimeOut.right = new FormAttachment(middle, -margin);
+        wlSocketTimeOut.setLayoutData(fdlSocketTimeOut);
+        wSocketTimeOut = new TextVar(transMeta, gSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wSocketTimeOut.addModifyListener(lsMod);
+        wSocketTimeOut.setToolTipText(BaseMessages.getString(PKG, "HTTPDialog.SocketTimeOut.Tooltip")); //$NON-NLS-1$
+        props.setLook(wSocketTimeOut);
+        FormData fdSocketTimeOut = new FormData();
+        fdSocketTimeOut.top = new FormAttachment(wConnectionTimeOut, margin);
+        fdSocketTimeOut.left = new FormAttachment(middle, 0);
+        fdSocketTimeOut.right = new FormAttachment(100, 0);
+        wSocketTimeOut.setLayoutData(fdSocketTimeOut);
+
+
+        
+        
         
         FormData fdSettings = new FormData();
         fdSettings.left = new FormAttachment(0, 0);
@@ -835,7 +883,9 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		      if (input.getHeaderParameter()[i]  !=null) item.setText(2, input.getHeaderParameter()[i]);
 		   }
 		}
-		
+	    wSocketTimeOut.setText(Const.NVL(input.getSocketTimeout(), String.valueOf(HTTPPOSTMeta.DEFAULT_SOCKET_TIMEOUT)));
+	    wConnectionTimeOut.setText(Const.NVL(input.getConnectionTimeout(), String.valueOf(HTTPPOSTMeta.DEFAULT_CONNECTION_TIMEOUT)));
+	    
 		wUrl.setText(Const.NVL(input.getUrl(), ""));
         wUrlInField.setSelection(input.isUrlInField());
         wUrlField.setText(Const.NVL(input.getUrlField(), ""));
@@ -899,6 +949,8 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		input.setProxyPort(wProxyPort.getText());
 		input.setResultCodeFieldName( wResultCode.getText() );
 		input.setResponseTimeFieldName( wResponseTime.getText() );
+		input.setSocketTimeout(wSocketTimeOut.getText());
+		input.setConnectionTimeout(wConnectionTimeOut.getText());
 		
 		stepname = wStepname.getText(); // return value
 
@@ -933,7 +985,7 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
       }
       catch(KettleException ke)
       {
-         new ErrorDialog(shell, BaseMessages.getString(PKG, "HTTPPOSTDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "HTTPPOSTDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+         new ErrorDialog(shell, BaseMessages.getString(PKG, "HTTPDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "HTTPDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
       }
 
    }

@@ -46,6 +46,9 @@ public class HTTPPOSTData extends BaseStepData implements StepDataInterface
 	public int realProxyPort;
 	public String realHttpLogin;
 	public String realHttpPassword;
+	
+	public int realSocketTimeout;
+	public int realConnectionTimeout;
 
 	/**
 	 * 

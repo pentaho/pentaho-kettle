@@ -25,6 +25,7 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
+
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -82,6 +83,10 @@ public class HTTPPOST extends BaseStep implements StepInterface
             PostMethod post = new PostMethod(data.realUrl);
             //post.setFollowRedirects(false); 
             
+            // Set timeout
+            HTTPPOSTclient.getHttpConnectionManager().getParams().setConnectionTimeout(data.realConnectionTimeout);
+            HTTPPOSTclient.getHttpConnectionManager().getParams().setSoTimeout(data.realSocketTimeout);
+
             if (!Const.isEmpty(data.realHttpLogin))
             {
                 HTTPPOSTclient.getParams().setAuthenticationPreemptive(true);
@@ -94,7 +99,6 @@ public class HTTPPOST extends BaseStep implements StepInterface
             {   
                 hostConfiguration.setProxy(data.realProxyHost, data.realProxyPort);
             }
-            
             // Specify content type and encoding
             // If content encoding is not explicitly specified
             // ISO-8859-1 is assumed by the POSTMethod
@@ -268,6 +272,8 @@ public class HTTPPOST extends BaseStep implements StepInterface
           }
         }
     }
+
+
     public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
 		meta=(HTTPPOSTMeta)smi;
@@ -443,6 +449,10 @@ public class HTTPPOST extends BaseStep implements StepInterface
 			data.realProxyPort= Const.toInt(environmentSubstitute(meta.getProxyPort()), 8080);
 			data.realHttpLogin=environmentSubstitute(meta.getHttpLogin());
 			data.realHttpPassword=environmentSubstitute(meta.getHttpPassword());
+			
+			data.realSocketTimeout= Const.toInt(environmentSubstitute(meta.getSocketTimeout()), HTTPPOSTMeta.DEFAULT_SOCKET_TIMEOUT);
+			data.realConnectionTimeout= Const.toInt(environmentSubstitute(meta.getSocketTimeout()), HTTPPOSTMeta.DEFAULT_SOCKET_TIMEOUT);
+			
 		    return true;
 		}
 		return false;

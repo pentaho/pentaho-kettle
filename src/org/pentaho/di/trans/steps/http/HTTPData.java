@@ -34,6 +34,9 @@ public class HTTPData extends BaseStepData implements StepDataInterface
    public int header_parameters_nrs[];
    public boolean useHeaderParameters;
    public NameValuePair[] headerParameters; 
+	
+	public int realSocketTimeout;
+	public int realConnectionTimeout;
 
 	/**
 	 * Default constructor. 

@@ -49,6 +49,15 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
 {
 	private static Class<?> PKG = HTTPMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
+	// the timeout for waiting for data (milliseconds)
+	public static final int DEFAULT_SOCKET_TIMEOUT=10000;
+	
+	// the timeout until a connection is established (milliseconds)
+	public static final int DEFAULT_CONNECTION_TIMEOUT=10000;
+	
+	private String socketTimeout;
+	private String connectionTimeout;
+	
     /** URL / service to be called */
     private String  url;
 
@@ -87,6 +96,39 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
     public HTTPMeta()
     {
         super(); // allocate BaseStepMeta
+    }
+    /**
+     * @return Returns the connectionTimeout.
+     */
+    public String getConnectionTimeout()
+    {
+        return connectionTimeout;
+    }
+    
+    /**
+     * @param connectionTimeout The connectionTimeout to set.
+     */
+    public void setConnectionTimeout(String connectionTimeout)
+    {
+        this.connectionTimeout = connectionTimeout;
+    }
+
+    
+    
+    /**
+     * @return Returns the socketTimeout.
+     */
+    public String getSocketTimeout()
+    {
+        return socketTimeout;
+    }
+    
+    /**
+     * @param socketTimeout The socketTimeout to set.
+     */
+    public void setSocketTimeout(String socketTimeout)
+    {
+        this.socketTimeout = socketTimeout;
     }
 
     /**
@@ -246,6 +288,8 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
 
     public void setDefault()
     {
+        socketTimeout= String.valueOf(DEFAULT_SOCKET_TIMEOUT);
+        connectionTimeout= String.valueOf(DEFAULT_CONNECTION_TIMEOUT);
         int i;
         int nrargs;
         int nrquery;
@@ -306,6 +350,8 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    " + XMLHandler.addTagValue("httpPassword", httpPassword));
         retval.append("    " + XMLHandler.addTagValue("proxyHost", proxyHost));
         retval.append("    " + XMLHandler.addTagValue("proxyPort", proxyPort));
+        retval.append("    " + XMLHandler.addTagValue("socketTimeout", socketTimeout));
+        retval.append("    " + XMLHandler.addTagValue("connectionTimeout", connectionTimeout));
         
         retval.append("    <lookup>").append(Const.CR); //$NON-NLS-1$
 
@@ -349,6 +395,9 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
             httpPassword = XMLHandler.getTagValue(stepnode, "httpPassword");
             proxyHost = XMLHandler.getTagValue(stepnode, "proxyHost");
             proxyPort = XMLHandler.getTagValue(stepnode, "proxyPort");
+            
+            socketTimeout = XMLHandler.getTagValue(stepnode, "socketTimeout");
+            connectionTimeout = XMLHandler.getTagValue(stepnode, "connectionTimeout");
             
             
             Node lookup = XMLHandler.getSubNode(stepnode, "lookup"); //$NON-NLS-1$
@@ -394,6 +443,9 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
             httpPassword = rep.getStepAttributeString(id_step, "httpPassword");
             proxyHost = rep.getStepAttributeString(id_step, "proxyHost");
             proxyPort = rep.getStepAttributeString(id_step, "proxyPort");
+            socketTimeout = rep.getStepAttributeString(id_step, "socketTimeout");
+            connectionTimeout = rep.getStepAttributeString(id_step, "connectionTimeout");
+            
             
             int nrargs = rep.countNrStepAttributes(id_step, "arg_name"); //$NON-NLS-1$
             int nrheaders = rep.countNrStepAttributes(id_step, "header_name"); //$NON-NLS-1$
@@ -433,6 +485,8 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "httpPassword",   httpPassword);
 			rep.saveStepAttribute(id_transformation, id_step, "proxyHost",   proxyHost);
 			rep.saveStepAttribute(id_transformation, id_step, "proxyPort",   proxyPort);
+			rep.saveStepAttribute(id_transformation, id_step, "socketTimeout",   socketTimeout);
+			rep.saveStepAttribute(id_transformation, id_step, "connectionTimeout",   connectionTimeout);
 			
             for (int i = 0; i < argumentField.length; i++)
             {

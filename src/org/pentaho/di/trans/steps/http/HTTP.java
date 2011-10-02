@@ -90,6 +90,10 @@ public class HTTP extends BaseStep implements StepInterface
             HttpClient httpclient = new HttpClient();
             HttpMethod method = new GetMethod(url);
 
+            // Set timeout
+            httpclient.getHttpConnectionManager().getParams().setConnectionTimeout(data.realConnectionTimeout);
+            httpclient.getHttpConnectionManager().getParams().setSoTimeout(data.realSocketTimeout);
+
             if (!Const.isEmpty(data.realHttpLogin))
             {
             	httpclient.getParams().setAuthenticationPreemptive(true);
@@ -366,6 +370,10 @@ public class HTTP extends BaseStep implements StepInterface
 			data.realProxyPort= Const.toInt(environmentSubstitute(meta.getProxyPort()), 8080);
 			data.realHttpLogin=environmentSubstitute(meta.getHttpLogin());
 			data.realHttpPassword=environmentSubstitute(meta.getHttpPassword());
+			
+			data.realSocketTimeout= Const.toInt(environmentSubstitute(meta.getSocketTimeout()), HTTPMeta.DEFAULT_SOCKET_TIMEOUT);
+			data.realConnectionTimeout= Const.toInt(environmentSubstitute(meta.getSocketTimeout()), HTTPMeta.DEFAULT_SOCKET_TIMEOUT);
+			
 		    return true;
 		}
 		return false;

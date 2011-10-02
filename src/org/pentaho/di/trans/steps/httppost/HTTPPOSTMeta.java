@@ -49,6 +49,16 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
 {
 	private static Class<?> PKG = HTTPPOSTMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
+	// the timeout for waiting for data (milliseconds)
+	public static final int DEFAULT_SOCKET_TIMEOUT=10000;
+	
+	// the timeout until a connection is established (milliseconds)
+	public static final int DEFAULT_CONNECTION_TIMEOUT=10000;
+	
+	private String socketTimeout;
+	private String connectionTimeout;
+
+	
 	private static final String YES = "Y"; //$NON-NLS-1$
 	
     /** URL / service to be called */
@@ -138,7 +148,39 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
         this.queryField = queryfield;
     }
     
+    /**
+     * @return Returns the connectionTimeout.
+     */
+    public String getConnectionTimeout()
+    {
+        return connectionTimeout;
+    }
     
+    /**
+     * @param connectionTimeout The connectionTimeout to set.
+     */
+    public void setConnectionTimeout(String connectionTimeout)
+    {
+        this.connectionTimeout = connectionTimeout;
+    }
+
+    
+    
+    /**
+     * @return Returns the socketTimeout.
+     */
+    public String getSocketTimeout()
+    {
+        return socketTimeout;
+    }
+    
+    /**
+     * @param socketTimeout The socketTimeout to set.
+     */
+    public void setSocketTimeout(String socketTimeout)
+    {
+        this.socketTimeout = socketTimeout;
+    }
 
 
     /**
@@ -315,6 +357,9 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
         resultCodeFieldName = ""; //$NON-NLS-1$
         responseTimeFieldName = ""; //$NON-NLS-1$
         postafile=false;
+        
+        socketTimeout= String.valueOf(DEFAULT_SOCKET_TIMEOUT);
+        connectionTimeout= String.valueOf(DEFAULT_CONNECTION_TIMEOUT);
     }
     public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException    
     {
@@ -350,6 +395,8 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    " + XMLHandler.addTagValue("httpPassword", httpPassword));
         retval.append("    " + XMLHandler.addTagValue("proxyHost", proxyHost));
         retval.append("    " + XMLHandler.addTagValue("proxyPort", proxyPort));
+        retval.append("    " + XMLHandler.addTagValue("socketTimeout", socketTimeout));
+        retval.append("    " + XMLHandler.addTagValue("connectionTimeout", connectionTimeout));
         
         retval.append("    <lookup>" + Const.CR); //$NON-NLS-1$
 
@@ -395,6 +442,8 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
             proxyHost = XMLHandler.getTagValue(stepnode, "proxyHost");
             proxyPort = XMLHandler.getTagValue(stepnode, "proxyPort");
             
+            socketTimeout = XMLHandler.getTagValue(stepnode, "socketTimeout");
+            connectionTimeout = XMLHandler.getTagValue(stepnode, "connectionTimeout");
             
             Node lookup = XMLHandler.getSubNode(stepnode, "lookup"); //$NON-NLS-1$
             
@@ -442,6 +491,8 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
             httpPassword = rep.getStepAttributeString(id_step, "httpPassword");
             proxyHost = rep.getStepAttributeString(id_step, "proxyHost");
             proxyPort = rep.getStepAttributeString(id_step, "proxyPort");
+            socketTimeout = rep.getStepAttributeString(id_step, "socketTimeout");
+            connectionTimeout = rep.getStepAttributeString(id_step, "connectionTimeout");
             
             int nrargs = rep.countNrStepAttributes(id_step, "arg_name"); //$NON-NLS-1$
             allocate(nrargs);
@@ -488,6 +539,9 @@ public class HTTPPOSTMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "proxyHost",   proxyHost);
 			rep.saveStepAttribute(id_transformation, id_step, "proxyPort",   proxyPort);
             
+			rep.saveStepAttribute(id_transformation, id_step, "socketTimeout",   socketTimeout);
+			rep.saveStepAttribute(id_transformation, id_step, "connectionTimeout",   connectionTimeout);
+			
             for (int i = 0; i < argumentField.length; i++)
             {
                 rep.saveStepAttribute(id_transformation, id_step, i, "arg_name", argumentField[i]); //$NON-NLS-1$
