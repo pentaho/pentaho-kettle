@@ -1459,5 +1459,12 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.JobExecutor</tooltip>
 		<iconfile>ui/images/JOB.png</iconfile>
 	</step> 
+		<step id="ZipFile">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.ZipFile</description>
+		<classname>org.pentaho.di.trans.steps.zipfile.ZipFileMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Utility</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.ZipFile</tooltip>
+		<iconfile>ui/images/ZIP.png</iconfile>
+	</step> 
 	 
 </steps>
