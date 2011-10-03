@@ -499,8 +499,8 @@ public class ZipFileDialog extends BaseStepDialog implements StepDialogInterface
 	{
 		  if(Const.isEmpty(wStepname.getText())) {
 	 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-	 			mb.setMessage("Please give a name to this step!");
-	 			mb.setText("Error");
+	 			mb.setMessage(BaseMessages.getString(PKG, "System.Error.StepNameMissing.Message"));
+	 			mb.setText(BaseMessages.getString(PKG, "System.Error.StepNameMissing.Title"));
 	 			mb.open(); 
 	 			return;
 	       }
