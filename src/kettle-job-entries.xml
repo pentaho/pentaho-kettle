@@ -551,4 +551,12 @@
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.PGPVerify.Tooltip</tooltip>
 		<iconfile>ui/images/PGPVerif.png</iconfile>
 	</job-entry>
+		<job-entry id="SEND_NAGIOS_PASSIVE_CHECK">
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.SendNagiosPassiveCheck.TypeDesc</description>
+		<classname>org.pentaho.di.job.entries.sendnagiospassivecheck.JobEntrySendNagiosPassiveCheck</classname>
+		<category>i18n:org.pentaho.di.job:JobCategory.Category.Utility</category>
+		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.SendNagiosPassiveCheck.Tooltip</tooltip>
+		<iconfile>ui/images/nagios.png</iconfile>
+	</job-entry>
 </job-entries>
+
