@@ -196,8 +196,6 @@
 	<classpathentry kind="lib" path="libext/reporting/pentaho-cwm-1.5.4.jar"/>
 	<classpathentry kind="lib" path="libext/reporting/xstream-1.3.1.jar"/>
 	<classpathentry kind="lib" path="libext/commons/commons-math-1.1.jar"/>
-	<classpathentry kind="lib" path="libext/mondrian/mondrian-3.2.1.13885.jar"/>
-	<classpathentry kind="lib" path="libext/mondrian/olap4j-0.9.8.340.jar"/>
 	<classpathentry kind="lib" path="libext/commons/commons-beanutils-1.8.0.jar"/>
 	<classpathentry kind="lib" path="libext/commons/commons-discovery-0.4.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/postgresql-8.4-702.jdbc3.jar"/>
@@ -264,5 +262,9 @@
 	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-legacy-charts-3.8.1-GA.jar"/>
 	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-legacy-functions-3.8.1-GA.jar"/>
 	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-wizard-core-3.8.1-GA.jar"/>
+	<classpathentry kind="lib" path="libext/mondrian/javacc.jar"/>
+	<classpathentry kind="lib" path="libext/mondrian/mondrian-3.3-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libext/mondrian/olap4j-1.0.0.445.jar"/>
+	<classpathentry kind="lib" path="libext/mondrian/olap4j-xmla-1.0.0.445.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
