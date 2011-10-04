@@ -91,8 +91,8 @@ public class HTTP extends BaseStep implements StepInterface
             HttpMethod method = new GetMethod(url);
 
             // Set timeout
-            httpclient.getHttpConnectionManager().getParams().setConnectionTimeout(data.realConnectionTimeout);
-            httpclient.getHttpConnectionManager().getParams().setSoTimeout(data.realSocketTimeout);
+            if(data.realConnectionTimeout>-1) httpclient.getHttpConnectionManager().getParams().setConnectionTimeout(data.realConnectionTimeout);
+            if(data.realSocketTimeout>-1) httpclient.getHttpConnectionManager().getParams().setSoTimeout(data.realSocketTimeout);
 
             if (!Const.isEmpty(data.realHttpLogin))
             {
@@ -371,8 +371,8 @@ public class HTTP extends BaseStep implements StepInterface
 			data.realHttpLogin=environmentSubstitute(meta.getHttpLogin());
 			data.realHttpPassword=environmentSubstitute(meta.getHttpPassword());
 			
-			data.realSocketTimeout= Const.toInt(environmentSubstitute(meta.getSocketTimeout()), HTTPMeta.DEFAULT_SOCKET_TIMEOUT);
-			data.realConnectionTimeout= Const.toInt(environmentSubstitute(meta.getSocketTimeout()), HTTPMeta.DEFAULT_SOCKET_TIMEOUT);
+			data.realSocketTimeout= Const.toInt(environmentSubstitute(meta.getSocketTimeout()), -1);
+			data.realConnectionTimeout= Const.toInt(environmentSubstitute(meta.getSocketTimeout()), -1);
 			
 		    return true;
 		}

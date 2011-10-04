@@ -969,8 +969,8 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 	    if(input.getProxyHost() != null) wProxyHost.setText(input.getProxyHost());
 	    if(input.getProxyPort() != null) wProxyPort.setText(input.getProxyPort());
 		
-	    wSocketTimeOut.setText(Const.NVL(input.getSocketTimeout(), String.valueOf(HTTPPOSTMeta.DEFAULT_SOCKET_TIMEOUT)));
-	    wConnectionTimeOut.setText(Const.NVL(input.getConnectionTimeout(), String.valueOf(HTTPPOSTMeta.DEFAULT_CONNECTION_TIMEOUT)));
+	    wSocketTimeOut.setText(Const.NVL(input.getSocketTimeout(), ""));
+	    wConnectionTimeOut.setText(Const.NVL(input.getConnectionTimeout(), ""));
 	    
 		wFields.setRowNums();
 		wFields.optWidth(true);

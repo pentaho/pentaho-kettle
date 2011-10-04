@@ -84,8 +84,8 @@ public class HTTPPOST extends BaseStep implements StepInterface
             //post.setFollowRedirects(false); 
             
             // Set timeout
-            HTTPPOSTclient.getHttpConnectionManager().getParams().setConnectionTimeout(data.realConnectionTimeout);
-            HTTPPOSTclient.getHttpConnectionManager().getParams().setSoTimeout(data.realSocketTimeout);
+            if(data.realConnectionTimeout>-1) HTTPPOSTclient.getHttpConnectionManager().getParams().setConnectionTimeout(data.realConnectionTimeout);
+            if(data.realSocketTimeout>-1) HTTPPOSTclient.getHttpConnectionManager().getParams().setSoTimeout(data.realSocketTimeout);
 
             if (!Const.isEmpty(data.realHttpLogin))
             {
@@ -450,8 +450,8 @@ public class HTTPPOST extends BaseStep implements StepInterface
 			data.realHttpLogin=environmentSubstitute(meta.getHttpLogin());
 			data.realHttpPassword=environmentSubstitute(meta.getHttpPassword());
 			
-			data.realSocketTimeout= Const.toInt(environmentSubstitute(meta.getSocketTimeout()), HTTPPOSTMeta.DEFAULT_SOCKET_TIMEOUT);
-			data.realConnectionTimeout= Const.toInt(environmentSubstitute(meta.getSocketTimeout()), HTTPPOSTMeta.DEFAULT_SOCKET_TIMEOUT);
+			data.realSocketTimeout= Const.toInt(environmentSubstitute(meta.getSocketTimeout()), -1);
+			data.realConnectionTimeout= Const.toInt(environmentSubstitute(meta.getSocketTimeout()), -1);
 			
 		    return true;
 		}

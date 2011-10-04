@@ -882,8 +882,8 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		      if (input.getHeaderParameter()[i]  !=null) item.setText(2, input.getHeaderParameter()[i]);
 		   }
 		}
-	    wSocketTimeOut.setText(Const.NVL(input.getSocketTimeout(), String.valueOf(HTTPMeta.DEFAULT_SOCKET_TIMEOUT)));
-	    wConnectionTimeOut.setText(Const.NVL(input.getConnectionTimeout(), String.valueOf(HTTPMeta.DEFAULT_CONNECTION_TIMEOUT)));
+	    wSocketTimeOut.setText(Const.NVL(input.getSocketTimeout(), ""));
+	    wConnectionTimeOut.setText(Const.NVL(input.getConnectionTimeout(), ""));
 	    
 		wUrl.setText(Const.NVL(input.getUrl(), ""));
         wUrlInField.setSelection(input.isUrlInField());
