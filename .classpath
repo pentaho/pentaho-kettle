@@ -301,5 +301,9 @@
 	<classpathentry kind="lib" path="src-plugins/kettle-profiling-datacleaner/lib/MetaModel-jdbc-1.7.4.jar"/>
 	<classpathentry kind="lib" path="libswt/win32/swt.jar"/>
 	<classpathentry kind="lib" path="libext/jsendnsca-2.0.1.jar"/>
+	<classpathentry kind="lib" path="libext/mondrian/javacc.jar"/>
+	<classpathentry kind="lib" path="libext/mondrian/mondrian-3.3-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libext/mondrian/olap4j-1.0.0.445.jar"/>
+	<classpathentry kind="lib" path="libext/mondrian/olap4j-xmla-1.0.0.445.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

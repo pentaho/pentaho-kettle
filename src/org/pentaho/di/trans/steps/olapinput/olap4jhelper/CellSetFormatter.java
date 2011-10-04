@@ -370,8 +370,8 @@ public class CellSetFormatter {
                     if (x - 1 == offset)
 
                     matrix.setOffset(offset);
-                    memberInfo.setRawValue(member.getCaption(null));
-                    memberInfo.setFormattedValue(member.getCaption(null)); // First try to get a formatted value
+                    memberInfo.setRawValue(member.getCaption());
+                    memberInfo.setFormattedValue(member.getCaption()); // First try to get a formatted value
                     memberInfo.setParentDimension(member.getDimension().getName());
                     memberInfo.setUniqueName(member.getUniqueName());
 
