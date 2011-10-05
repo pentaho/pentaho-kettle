@@ -177,7 +177,7 @@ TYPICAL TARGET SEQUENCE
             value="true"
             description="Prefer SVNKit binding over the command line client for native svn support (defaults to true)" />
   <property name="ivy.url"
-            value="http://repo2.maven.org/maven2/org/apache/ivy/ivy/2.1.0/ivy-2.1.0.jar"
+            value="http://repo2.maven.org/maven2/org/apache/ivy/ivy/2.2.0/ivy-2.2.0.jar"
             description="The URL to the current release of Apache IVY" />
 
   <!-- Test properties -->
@@ -203,6 +203,7 @@ TYPICAL TARGET SEQUENCE
   <property name="junit.haltonfailure" value="no" description="Fail the build if a test fails" />
   <property name="junit.maxmemory" value="256M" description="Heap size when Junit is run in fork mode" />
   <property name="headless.unittest" value="true" description="Runs the unit tests in headless mode" />
+  <property name="tests.publish" value="" description="Create and publish the tests as jar, this variable must not be set if you do not want this feature enabled"/>
 
   <!-- Code Coverage properties -->
   <property name="instrumented.classes.dir"
@@ -267,6 +268,20 @@ TYPICAL TARGET SEQUENCE
             value="${bin.dir}/reports/ivy"
             description="Base directory that holds all IVY dependency report files" />
   <property name="ivy.configs" value="*" description="Set of configs used for IVY reporting and checking operations" />
+
+  <!-- Tattletale properties -->
+  <property name="tattletale.url"
+            value="http://repo.pentaho.org/artifactory/repo/jboss/tattletale/1.1.2.Final/tattletale-1.1.2.Final.zip"
+            description="The URL from which to download tattletale" />
+  <property name="tattletale.classname"
+            value="org.jboss.tattletale.ant.ReportTask"
+            description="The name of the class which will run the tattletale reports" />
+  <property name="tattletale.reports.dir"
+            value="${bin.dir}/reports/tattletale"
+            description="Base directory that holds the output of the tattletale reports" />
+  <property name="tattletale.configfile"
+            value=""
+            description="The configuration file for the tattletale report" />
 
   <!-- Load the manifest file (if any) as a properties file -->
   <property name="dist.manifest.file"
@@ -346,8 +361,8 @@ TYPICAL TARGET SEQUENCE
     <fileset dir="${testlib.dir}">
       <include name="**/*.jar" />
     </fileset>
-    <dirset dir="${testclasses.dir}" />
-    <dirset dir="${classes.dir}" />
+    <pathelement path="${testclasses.dir}" />
+    <pathelement path="${classes.dir}" />
   </path>
 
   <!--=======================================================================
@@ -711,13 +726,23 @@ TYPICAL TARGET SEQUENCE
       for download by other projects currently being executed on the user's
       system.
       ====================================================================-->
-  <target name="publish-local-nojar" depends="install-ivy">
+  <target name="publish-local-nojar" depends="install-ivy,publish-local-nojar.internal">
+    <if>
+      <equals arg1="${tests.publish}" arg2="true" />
+      <then>
+        <antcall target="publish-local-nojar.internal">
+          <param name="ivy.artifact.id" value="${ivy.artifact.id}-test"/>
+        </antcall>
+      </then>
+    </if>
+  </target>
+
+  <target name="publish-local-nojar.internal" depends="install-ivy">
     <ivy:resolve file="${ivy.artifact.ivyfilename}" />
     <ivy:publish resolver="local" pubrevision="${project.revision}" overwrite="true" forcedeliver="true">
       <artifacts pattern="${dist.dir}/[artifact]-[revision](-[classifier]).[ext]" />
     </ivy:publish>
   </target>
-
 
   <!--=======================================================================
       publish-local
@@ -746,7 +771,18 @@ TYPICAL TARGET SEQUENCE
       
       Publishes the jar file for this project to a Maven2 repository.
       ====================================================================-->
-  <target name="publish-nojar" depends="install-antcontrib,create-pom,ivy.deliver">
+  <target name="publish-nojar" depends="install-antcontrib,create-pom,ivy.deliver,publish-nojar.internal">
+    <if>
+      <equals arg1="${tests.publish}" arg2="true" />
+      <then>
+        <antcall target="publish-nojar.internal">
+          <param name="ivy.artifact.id" value="${ivy.artifact.id}-test"/>
+        </antcall>
+      </then>
+    </if>
+  </target>
+
+  <target name="publish-nojar.internal" depends="install-antcontrib,create-pom,ivy.deliver">
     <antcall target="maven-publish-dependencies">
       <param name="publish.groupId" value="${ivy.artifact.group}" />
       <param name="publish.artifactId" value="${ivy.artifact.id}" />
@@ -1127,13 +1163,24 @@ TYPICAL TARGET SEQUENCE
       Creates a jar file from the bin directory
       ====================================================================-->
   <target name="jar"
-          depends="compile,set-build.id,generate.manifest"
+          depends="jar.main,jar.test"
           description="Jars up the bin directory after a compile">
+  </target>
+
+  <target name="jar.test"
+          depends="jar.main,compile-tests"
+          if="tests.publish">
+    <jar destfile="${dist.dir}/${ivy.artifact.id}-test-${project.revision}.jar" manifest="${dist.manifest.file}">
+      <fileset dir="${testclasses.dir}"/>
+    </jar>
+  </target>
+
+  <target name="jar.main"
+          depends="compile,set-build.id,generate.manifest">
     <jar destfile="${dist.dir}/${ivy.artifact.id}-${project.revision}.jar" manifest="${dist.manifest.file}">
       <fileset dir="${classes.dir}" />
     </jar>
   </target>
-
 
   <!--=======================================================================
       generate.manifest
@@ -1170,6 +1217,12 @@ TYPICAL TARGET SEQUENCE
       ====================================================================-->
   <target name="source.jar" depends="init">
     <jar jarfile="${dist.dir}/${ivy.artifact.id}-${project.revision}-sources.jar" basedir="${src.dir}" />
+    <if>
+      <equals arg1="${tests.publish}" arg2="true" />
+      <then>
+        <jar jarfile="${dist.dir}/${ivy.artifact.id}-test-${project.revision}-sources.jar" basedir="${src.dir}" />
+      </then>
+    </if>
   </target>
 
   <!--=======================================================================
@@ -1426,6 +1479,7 @@ TYPICAL TARGET SEQUENCE
       Runs tests in an instrumented environment and produces Cobertura test coverage reports
       ====================================================================-->
   <target name="cobertura"
+          description="Runs tests in an instrumented environment and produces Cobertura test coverage reports"
           depends="clean-cobertura,install-cobertura,compile,compile-tests,cobertura.instrument-classes,cobertura.test-instrumented,cobertura.xml-report,cobertura.html-report" />
 
 
@@ -1739,4 +1793,42 @@ TYPICAL TARGET SEQUENCE
     </sequential>
   </macrodef>
 
+  <!--=======================================================================
+    install-tattletale
+    
+    (Fetches and) installs TATTLETALE for use by this ant script
+    ====================================================================-->
+  <target name="install-tattletale" depends="install-antcontrib">
+    <if>
+      <istrue value="${tattletale.isinstalled}" />
+      <then>
+        <echo message="Skipping TATTLETALE install.  TATTLETALE has already been configured by the build" />
+      </then>
+      <else>
+        <download-antlib name="tattletale"
+                         url="${tattletale.url}"
+                         classname="${tattletale.classname}" 
+                         extension="zip"/>
+                          
+        <taskdef name="tattletale.report" classname="${tattletale.classname}">
+          <classpath>
+            <fileset dir="${subfloor.resources.dir}/tattletale">
+              <include name="*.jar" />
+            </fileset>
+          </classpath>
+        </taskdef>
+
+        <property name="tattletale.isinstalled" value="true" />
+      </else>
+    </if>
+  </target>
+  
+  <!--=======================================================================
+    tattletale-report
+    
+    Generates a tattletale report for this project
+    ====================================================================-->
+  <target name="tattletale-report" depends="install-tattletale,jar">
+    <tattletale.report source="${basedir}" destination="${tattletale.reports.dir}"/>
+  </target>
 </project>
