@@ -251,20 +251,26 @@ public class PGBulkLoader extends BaseStep implements StepInterface
 			
 			if (r==null)          // no more input to be expected...
 			{
-				setOutputDone();
-
-				// Close the output stream...
-				//
-				data.pgOutputStream.flush();
-				data.pgOutputStream.close();
-				
-                // wait for the pgsql process to finish and check for any error...
-				//
+            setOutputDone();
+            
+            // Close the output stream...
+            // will be null if no records (empty stream)
+            if (data!=null && data.psqlProcess!=null)
+            {
+            	data.pgOutputStream.flush();
+            	data.pgOutputStream.close();
+  
+            	// wait for the pgsql process to finish and check for any error...
+             	//
             	int exitVal = data.psqlProcess.waitFor();
-				logBasic(BaseMessages.getString(PKG, "GPBulkLoader.Log.ExitValuePsqlPath", "" + exitVal)); //$NON-NLS-1$
-	            
-				return false;
-			}
+              	logBasic(BaseMessages.getString(PKG, "GPBulkLoader.Log.ExitValuePsqlPath", "" + exitVal)); //$NON-NLS-1$
+            }
+            else {
+               logBasic(BaseMessages.getString(PKG, "PGBulkLoader.Log.NullInputAndOrPSQLProcess"));
+            }
+               
+            return false;
+         }
 			
 			if (first)
 			{
