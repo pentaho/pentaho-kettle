@@ -1121,6 +1121,9 @@ public class DimensionLookup extends BaseStep implements StepInterface
         case DimensionLookupMeta.TYPE_UPDATE_LAST_VERSION:
           updateRow[updateIndex++] = Boolean.FALSE;
           break; // Never the last version on this update
+        case DimensionLookupMeta.TYPE_UPDATE_DATE_UPDATED:
+          updateRow[updateIndex++] = new Date();
+          break; 
         }
       }
 
