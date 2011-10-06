@@ -203,7 +203,6 @@ TYPICAL TARGET SEQUENCE
   <property name="junit.haltonfailure" value="no" description="Fail the build if a test fails" />
   <property name="junit.maxmemory" value="256M" description="Heap size when Junit is run in fork mode" />
   <property name="headless.unittest" value="true" description="Runs the unit tests in headless mode" />
-  <property name="tests.publish" value="" description="Create and publish the tests as jar, this variable must not be set if you do not want this feature enabled"/>
 
   <!-- Code Coverage properties -->
   <property name="instrumented.classes.dir"
@@ -819,7 +818,7 @@ TYPICAL TARGET SEQUENCE
       
       A function that deploys an ivy.xml file to a maven repository
       ====================================================================-->
-  <target name="maven-publish-dependencies">
+  <target name="maven-publish-dependencies" depends="install-antcontrib">
     <sequential>
       <fail message="No file found at: ${publish.file}">
         <condition>
@@ -868,7 +867,7 @@ TYPICAL TARGET SEQUENCE
       
       A function that deploys an artifact to a maven repository
       ====================================================================-->
-  <target name="maven-publish-artifact">
+  <target name="maven-publish-artifact" depends="install-antcontrib">
     <sequential>
       <fail message="No file found at: ${publish.file}">
         <condition>
@@ -910,7 +909,7 @@ TYPICAL TARGET SEQUENCE
       
       A function that deploys a java-sources artifact to a maven repository
       ====================================================================-->
-  <target name="maven-publish-sources">
+  <target name="maven-publish-sources" depends="install-antcontrib">
     <sequential>
       <fail message="No file found at: ${publish.file}">
         <condition>
@@ -1167,9 +1166,12 @@ TYPICAL TARGET SEQUENCE
           description="Jars up the bin directory after a compile">
   </target>
 
+  <!-- jar the tests ONLY IF tests.publish it true -->
+  <!-- if the compile-tests target is in the dependency list for this target, -->
+  <!-- it will get executed no matter what the value of tests.publish is      -->
   <target name="jar.test"
-          depends="jar.main,compile-tests"
           if="tests.publish">
+    <antcall target="compile-tests" />
     <jar destfile="${dist.dir}/${ivy.artifact.id}-test-${project.revision}.jar" manifest="${dist.manifest.file}">
       <fileset dir="${testclasses.dir}"/>
     </jar>
@@ -1215,7 +1217,7 @@ TYPICAL TARGET SEQUENCE
       
       Creates a jar of the project source for distribution
       ====================================================================-->
-  <target name="source.jar" depends="init">
+  <target name="source.jar" depends="init,install-antcontrib">
     <jar jarfile="${dist.dir}/${ivy.artifact.id}-${project.revision}-sources.jar" basedir="${src.dir}" />
     <if>
       <equals arg1="${tests.publish}" arg2="true" />
