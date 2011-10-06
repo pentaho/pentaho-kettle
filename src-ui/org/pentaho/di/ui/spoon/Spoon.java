@@ -6735,26 +6735,30 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         }
       });
       loginDialog.show();
-    } else if (!Const.isEmpty(optionRepname) && Const.isEmpty(optionFilename)) {
+    } 
+    else if (!Const.isEmpty(optionRepname) && Const.isEmpty(optionFilename)) {
       RepositoriesMeta repsinfo = new RepositoriesMeta();
       try {
         repsinfo.readData();
         repositoryMeta = repsinfo.findRepository(optionRepname.toString());
-        if (repositoryMeta != null) {
+        if (repositoryMeta != null && !Const.isEmpty(optionUsername) && !Const.isEmpty(optionPassword)) {
           // Define and connect to the repository...
           Repository repo = PluginRegistry.getInstance().loadClass(RepositoryPluginType.class, repositoryMeta,
               Repository.class);
-          repo.init(repositoryMeta);
+          repo.init(repositoryMeta);         
           repo.connect(optionUsername != null ? optionUsername.toString() : null,
               optionPassword != null ? optionPassword.toString() : null);
           setRepository(repo);
         } else {
-          String msg = BaseMessages.getString(PKG, "Spoon.Log.NoRepositoriesDefined");
-          log.logError(msg);// "No repositories defined on this system."
-          MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-          mb.setMessage(BaseMessages.getString(PKG, "Spoon.Error.Repository.NotFound", optionRepname.toString()));
-          mb.setText(BaseMessages.getString(PKG, "Spoon.Error.Repository.NotFound.Title"));
-          mb.open();
+          if (!Const.isEmpty(optionUsername) && !Const.isEmpty(optionPassword)) {
+             String msg = BaseMessages.getString(PKG, "Spoon.Log.NoRepositoriesDefined");
+             log.logError(msg);// "No repositories defined on this system."
+             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
+             mb.setMessage(BaseMessages.getString(PKG, "Spoon.Error.Repository.NotFound", optionRepname.toString()));
+             mb.setText(BaseMessages.getString(PKG, "Spoon.Error.Repository.NotFound.Title"));
+             mb.open();
+          }
+          
           loginDialog = new RepositoriesDialog(shell, null, new ILoginCallback() {
 
             public void onSuccess(Repository repository) {
@@ -6887,17 +6891,18 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   }
 
   public void start(Splash splash, CommandLineOption[] options) throws KettleException {
-    // Read the start option parameters
+
+    // Show the repository connection dialog
+    //
+    selectRep(splash, options);
+     
+     // Read the start option parameters
     //
     handleStartOptions(options);
     
     // Open the spoon application
     //
     open();
-    
-    // Show the repository connection dialog
-    //
-    selectRep(splash, options);
     
     // Load the last loaded files
     //
