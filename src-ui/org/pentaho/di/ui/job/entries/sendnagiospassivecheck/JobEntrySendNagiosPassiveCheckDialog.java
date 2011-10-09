@@ -615,14 +615,13 @@ public class JobEntrySendNagiosPassiveCheckDialog extends JobEntryDialog impleme
 
     private void ok()
     {
-        if(Const.isEmpty(wName.getText())) 
-        {
+  	  if(Const.isEmpty(wName.getText())) {
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage("Veuillez svp donner un nom à cette entrée tâche!");
-			mb.setText("Entrée tâche non nommée");
+			mb.setMessage(BaseMessages.getString(PKG, "System.Error.StepNameMissing.Message"));
+			mb.setText(BaseMessages.getString(PKG, "System.Error.StepNameMissing.Title"));
 			mb.open(); 
 			return;
-        }
+     }
         jobEntry.setName(wName.getText());
         jobEntry.setPort(wPort.getText());
         jobEntry.setServerName(wServerName.getText());

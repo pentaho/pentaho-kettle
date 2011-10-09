@@ -466,8 +466,8 @@ public class WMIInputDialog extends BaseStepDialog implements StepDialogInterfac
 	{
 		  if(Const.isEmpty(wStepname.getText())) {
 	 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-	 			mb.setMessage("Veuillez svp donner un nom à cette étape!");
-	 			mb.setText("Etape non nommée");
+	 			mb.setMessage(BaseMessages.getString(PKG, "System.Error.StepNameMissing.Message"));
+	 			mb.setText(BaseMessages.getString(PKG, "System.Error.StepNameMissing.Title"));
 	 			mb.open(); 
 	 			return;
 	       }
