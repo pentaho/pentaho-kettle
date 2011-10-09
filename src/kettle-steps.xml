@@ -1466,5 +1466,11 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.ZipFile</tooltip>
 		<iconfile>ui/images/ZIP.png</iconfile>
 	</step> 
-	 
+	<step id="WMIInput">
+    <description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.WMIInput</description>
+    <classname>org.pentaho.di.trans.steps.wmiinput.WMIInputMeta</classname>
+    <category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
+    <tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.WMIInput</tooltip>
+    <iconfile>ui/images/wmiinput.png</iconfile>
+  </step> 
 </steps>

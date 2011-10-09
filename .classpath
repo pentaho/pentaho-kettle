@@ -303,5 +303,7 @@
 	<classpathentry kind="lib" path="libext/mondrian/mondrian-3.3-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/mondrian/olap4j-1.0.0.445.jar"/>
 	<classpathentry kind="lib" path="libext/mondrian/olap4j-xmla-1.0.0.445.jar"/>
+	<classpathentry kind="lib" path="libext/j-interop.jar"/>
+	<classpathentry kind="lib" path="libext/j-interopdeps.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
