@@ -550,7 +550,7 @@ public class JobEntrySendNagiosPassiveCheckDialog extends JobEntryDialog impleme
     	String errMsg=null;
     	String hostname=jobMeta.environmentSubstitute(wServerName.getText());
     	int nrPort=Const.toInt(jobMeta.environmentSubstitute(""+wPort.getText()),JobEntrySendNagiosPassiveCheck.DEFAULT_PORT);
-    	int realConnectionTimeOut=Const.toInt(jobMeta.environmentSubstitute(wConnectionTimeOut.getText()), JobEntrySendNagiosPassiveCheck.DEFAULT_CONNECTION_TIME_OUT);
+    	int realConnectionTimeOut=Const.toInt(jobMeta.environmentSubstitute(wConnectionTimeOut.getText()), -1);
     	
     	try {
     	
