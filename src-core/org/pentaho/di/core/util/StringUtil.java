@@ -30,7 +30,6 @@ import java.util.Map;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
-import org.pentaho.di.ui.core.widget.TextVar;
 
 
 
@@ -613,54 +612,5 @@ public class StringUtil
     		}catch(Exception e){};	
 		}
 	}
-	 public static final void checkPasswordVisible(TextVar control)
-	   {
-	       String password = control.getText();
-	       java.util.List<String> list = new ArrayList<String>();
-	       StringUtil.getUsedVariables(password, list, true);
-	       // ONLY show the variable in clear text if there is ONE variable used
-	       // Also, it has to be the only string in the field.
-	       //
-
-	       if (list.size() != 1)
-	       {
-	       	control.setEchoChar('*');
-	       }
-	       else
-	       {
-	       	String variableName = null;
-	           if ((password.startsWith(StringUtil.UNIX_OPEN) && password.endsWith(StringUtil.UNIX_CLOSE)))
-	           {
-	           	//  ${VAR}
-	           	//  012345
-	           	// 
-	           	variableName = password.substring(StringUtil.UNIX_OPEN.length(), password.length()-StringUtil.UNIX_CLOSE.length());
-	           }
-	           if ((password.startsWith(StringUtil.WINDOWS_OPEN) && password.endsWith(StringUtil.WINDOWS_CLOSE)))
-	           {
-	           	//  %VAR%
-	           	//  01234
-	           	// 
-	           	variableName = password.substring(StringUtil.WINDOWS_OPEN.length(), password.length()-StringUtil.WINDOWS_CLOSE.length());
-	           }
-	           
-	           // If there is a variable name in there AND if it's defined in the system properties...
-	           // Otherwise, we'll leave it alone.
-	           //
-	           /*if (variableName!=null && System.getProperty(variableName)!=null)
-	           {
-	           	control.setEchoChar('\0'); // Show it all...
-	           }
-	           else
-	           {
-	           	control.setEchoChar('*');
-	           }*/
-	           if(variableName!=null) {
-	        	   control.setEchoChar('\0'); // Show it all...  
-	           }else {
-	        	   control.setEchoChar('*');
-	           }
-	       }
-	       control.setToolTipText("Password");
-	   }
+	
 }
