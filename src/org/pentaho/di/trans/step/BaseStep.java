@@ -286,25 +286,11 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
      */
     public BaseStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
     {
-      this(stepMeta, stepDataInterface);
-      setTrans(trans);
-      setTransMeta(transMeta);
-      setCopyNumber(copyNr);
-    }
-
-
-  /**
-     * This is the base step that forms that basis for all steps. You can derive from this class to implement your own
-     * steps.
-     *
-     * @param stepMeta The StepMeta object to run.
-     * @param stepDataInterface the data object to store temporary data, database connections, caches, result sets,
-     * hashtables etc.
-     */
-    public BaseStep(StepMeta stepMeta, StepDataInterface stepDataInterface)
-    {
         this.stepMeta = stepMeta;
         this.stepDataInterface = stepDataInterface;
+        this.stepcopy = copyNr;
+        this.transMeta = transMeta;
+        this.trans = trans;
         this.stepname = stepMeta.getName();
         this.socketRepository = trans.getSocketRepository();
         
@@ -391,11 +377,6 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
         upperBufferBoundary = (int)(transMeta.getSizeRowset() * 0.99);
         lowerBufferBoundary = (int)(transMeta.getSizeRowset() * 0.01);
     }
-
-    public void setCopyNumber(int num){
-      this.stepcopy = num;
-    }
-
 
     public boolean init(StepMetaInterface smi, StepDataInterface sdi)
     {
@@ -1012,11 +993,6 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     public Trans getTrans()
     {
         return trans;
-    }
-
-    public void setTrans(Trans trans){
-      this.trans = trans;
-        this.socketRepository = trans.getSocketRepository();
     }
 
     /**
