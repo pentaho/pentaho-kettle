@@ -173,7 +173,6 @@
 	<classpathentry exported="true" kind="lib" path="libext/reporting/jta-1.0.1B.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/libbase-1.2.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/libfonts-1.2.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/libformat-1.2.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/libformula-1.2.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/libloader-1.2.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/libpixie-1.2.2.jar"/>
@@ -238,9 +237,6 @@
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-hdfs-vfs-1.0.0.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-s3-vfs-1.0.1.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-vfs-browser-2.0.3.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-core-3.3.1.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-swt-3.3.1.jar"/>
-	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-core-3.8.1-GA.jar"/>
 	<classpathentry kind="lib" path="libext/reporting/libdocbundle-1.2.3.jar"/>
 	<classpathentry kind="lib" path="libext/reporting/libformula-ui-1.2.3.jar"/>
 	<classpathentry kind="lib" path="libext/reporting/librepository-1.2.3.jar"/>
@@ -263,8 +259,12 @@
 	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-legacy-functions-3.8.1-GA.jar"/>
 	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-wizard-core-3.8.1-GA.jar"/>
 	<classpathentry kind="lib" path="libext/mondrian/javacc.jar"/>
-	<classpathentry kind="lib" path="libext/mondrian/mondrian-3.3-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/mondrian/olap4j-1.0.0.445.jar"/>
 	<classpathentry kind="lib" path="libext/mondrian/olap4j-xmla-1.0.0.445.jar"/>
+	<classpathentry kind="lib" path="libext/mondrian/mondrian-3.3.0.14682.jar"/>
+	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-core-3.3.2.jar"/>
+	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-swt-3.3.2.jar"/>
+	<classpathentry kind="lib" path="libext/reporting/libformat-1.2.4.jar"/>
+	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-core-3.8.3-GA.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
