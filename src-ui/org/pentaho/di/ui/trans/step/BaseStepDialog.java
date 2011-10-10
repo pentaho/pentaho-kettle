@@ -105,7 +105,7 @@ public class BaseStepDialog extends Dialog {
 
   protected boolean changed, backupChanged;
 
-  protected BaseStepMeta baseStepMeta;
+  protected StepMetaInterface baseStepMeta;
 
   protected PropsUI props;
 
@@ -132,6 +132,18 @@ public class BaseStepDialog extends Dialog {
 
   public BaseStepDialog(Shell parent, BaseStepMeta baseStepMeta, TransMeta transMeta, String stepname) {
     super(parent, SWT.NONE);
+
+    this.log = new LogChannel(baseStepMeta);
+    this.transMeta = transMeta;
+    this.stepname = stepname;
+    this.stepMeta = transMeta.findStep(stepname);
+    this.baseStepMeta = (StepMetaInterface) baseStepMeta;
+    this.backupChanged = baseStepMeta.hasChanged();
+    this.props = PropsUI.getInstance();
+  }
+
+  public BaseStepDialog(Shell parent, StepMetaInterface baseStepMeta, TransMeta transMeta, String stepname){
+     super(parent, SWT.NONE);
 
     this.log = new LogChannel(baseStepMeta);
     this.transMeta = transMeta;
@@ -546,6 +558,10 @@ public class BaseStepDialog extends Dialog {
 
   public void storeScreenSize() {
     props.setScreen(new WindowProperty(shell));
+  }
+
+  public String toString() {
+    return this.getClass().getName();
   }
 
   /**

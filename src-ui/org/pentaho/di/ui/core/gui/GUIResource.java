@@ -40,10 +40,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.plugins.JobEntryPluginType;
-import org.pentaho.di.core.plugins.PluginInterface;
-import org.pentaho.di.core.plugins.PluginRegistry;
-import org.pentaho.di.core.plugins.StepPluginType;
+import org.pentaho.di.core.plugins.*;
 import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
@@ -127,9 +124,9 @@ public class GUIResource
 	private ManagedFont fontSmall;
 
 	/* * * Images * * */
-	private Map<String, Image> imagesSteps;
+	private Map<String, Image> imagesSteps = new Hashtable<String, Image>();
 
-	private Map<String, Image> imagesStepsSmall;
+	private Map<String, Image> imagesStepsSmall = new Hashtable<String, Image>();;
 
 	private Map<String, Image> imagesJobentries;
 
@@ -321,6 +318,20 @@ public class GUIResource
 		});
 
 		clipboard = null;
+
+    // Reload images as required by changes in the plugins
+    PluginRegistry.getInstance().addPluginListener(StepPluginType.class, new PluginTypeListener() {
+      @Override
+      public void pluginAdded(Object serviceObject) {
+        loadStepImages();
+	    }
+      @Override
+      public void pluginRemoved(Object serviceObject) {
+        loadStepImages();
+      }
+      @Override
+      public void pluginChanged(Object serviceObject) {}
+    });
 	}
 
 	public static final GUIResource getInstance()
@@ -554,8 +565,8 @@ public class GUIResource
 	 */
 	private void loadStepImages()
 	{
-		imagesSteps = new Hashtable<String, Image>();
-		imagesStepsSmall = new Hashtable<String, Image>();
+		//imagesSteps.clear();
+		//imagesStepsSmall.clear();
 
 		//
 		// STEP IMAGES TO LOAD
@@ -565,6 +576,10 @@ public class GUIResource
 		List<PluginInterface> steps = registry.getPlugins(StepPluginType.class);
 		for (int i = 0; i < steps.size(); i++)
 		{
+      if(imagesSteps.get(steps.get(i).getIds()[0]) != null){
+        continue;
+      }
+
 			Image image = null;
 			Image small_image = null;
 

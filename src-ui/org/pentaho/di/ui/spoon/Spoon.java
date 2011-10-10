@@ -16,8 +16,6 @@ import java.beans.PropertyChangeSupport;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -143,14 +141,7 @@ import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.parameters.NamedParams;
-import org.pentaho.di.core.plugins.JobEntryPluginType;
-import org.pentaho.di.core.plugins.LifecyclePluginType;
-import org.pentaho.di.core.plugins.PartitionerPluginType;
-import org.pentaho.di.core.plugins.PluginFolder;
-import org.pentaho.di.core.plugins.PluginInterface;
-import org.pentaho.di.core.plugins.PluginRegistry;
-import org.pentaho.di.core.plugins.RepositoryPluginType;
-import org.pentaho.di.core.plugins.StepPluginType;
+import org.pentaho.di.core.plugins.*;
 import org.pentaho.di.core.reflection.StringSearchResult;
 import org.pentaho.di.core.row.RowBuffer;
 import org.pentaho.di.core.row.RowMeta;
@@ -163,7 +154,6 @@ import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.di.imp.ImportRules;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobExecutionConfiguration;
@@ -276,12 +266,10 @@ import org.pentaho.ui.xul.components.XulWaitBox;
 import org.pentaho.ui.xul.containers.XulMenu;
 import org.pentaho.ui.xul.containers.XulMenupopup;
 import org.pentaho.ui.xul.containers.XulToolbar;
-import org.pentaho.ui.xul.containers.XulVbox;
 import org.pentaho.ui.xul.impl.XulEventHandler;
 import org.pentaho.ui.xul.swt.SwtXulLoader;
 import org.pentaho.ui.xul.swt.tags.SwtDeck;
 import org.pentaho.ui.xul.swt.tags.SwtMenupopup;
-import org.pentaho.ui.xul.swt.tags.SwtToolbarbutton;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 import org.pentaho.xul.swt.tab.TabItem;
 import org.pentaho.xul.swt.tab.TabListener;
@@ -487,6 +475,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
   private VfsFileChooserDialog vfsFileChooserDialog;
 
+  private Composite sashComposite = null;
   /**
    * This is the main procedure for Spoon.
    * 
@@ -685,7 +674,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     cursor_hourglass = new Cursor(display, SWT.CURSOR_WAIT);
     cursor_hand = new Cursor(display, SWT.CURSOR_HAND);
 
-    Composite sashComposite = null;
     MainSpoonPerspective mainPerspective = null;
     try {
       xulLoader = new SwtXulLoader();
@@ -712,51 +700,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
       SpoonPerspectiveManager.getInstance().setDeck(deck);
       SpoonPerspectiveManager.getInstance().setXulDoc(mainSpoonContainer);
-      boolean firstBtn = true;
-      int y = 0;
-      for (SpoonPerspective per : SpoonPerspectiveManager.getInstance().getPerspectives()) {
-        String name = per.getDisplayName(LanguageChoice.getInstance().getDefaultLocale());
-        InputStream in = per.getPerspectiveIcon();
 
-        final SwtToolbarbutton btn = (SwtToolbarbutton) mainSpoonContainer.getDocumentRoot().createElement(
-            "toolbarbutton");
-        btn.setType("toggle");
-        btn.setLabel(name);
-        btn.setTooltiptext(name);
-        btn.setOnclick("spoon.loadPerspective(" + y + ")");
-        mainToolbar.addChild(btn);
-        if (firstBtn) {
-          btn.setSelected(true);
-          firstBtn = false;
-        }
-        if (in != null) {
-          btn.setImageFromStream(in);
-          try {
-            in.close();
-          } catch (IOException e1) {
-          }
-        }
-
-        XulVbox box = deck.createVBoxCard();
-        box.setId("perspective-" + per.getId());
-        box.setFlex(1);
-        deck.addChild(box);
-
-        per.getUI().setParent((Composite) box.getManagedObject());
-        per.getUI().layout();
-
-        per.addPerspectiveListener(new SpoonPerspectiveListener() {
-          public void onActivation() {
-            btn.setSelected(true);
-          }
-
-          public void onDeactication() {
-            btn.setSelected(false);
-          }
-        });
-        y++;
-      }
-      deck.setSelectedIndex(0);
+      SpoonPerspectiveManager.getInstance().initialize();
 
     } catch (IllegalArgumentException e1) {
       // TODO Auto-generated catch block
@@ -874,6 +819,34 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
           }
         }
       }
+    });
+
+    // listen for steps being added or removed
+    PluginRegistry.getInstance().addPluginListener(StepPluginType.class, new PluginTypeListener() {
+      @Override
+      public void pluginAdded(Object serviceObject) {
+        previousShowTrans = false;    //hack to get the tree to reload
+        Display.getDefault().asyncExec(new Runnable() {
+          @Override
+          public void run() {
+            refreshCoreObjects();
+          }
+        });
+      }
+
+      @Override
+      public void pluginRemoved(Object serviceObject) {
+        previousShowTrans = false;    //hack to get the tree to reload
+        Display.getDefault().asyncExec(new Runnable() {
+          @Override
+          public void run() {
+            refreshCoreObjects();
+          }
+        });
+      }
+
+      @Override
+      public void pluginChanged(Object serviceObject) {}
     });
   }
 
@@ -8125,4 +8098,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	      }
         }
     }
+
+  public void layout() {
+    if(sashComposite != null){
+      sashComposite.layout(true, true);
+    }
+  }
 }

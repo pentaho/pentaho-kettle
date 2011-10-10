@@ -19,7 +19,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.pentaho.di.core.exception.KettlePluginException;
+import org.pentaho.di.core.gui.SpoonFactory;
 import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginTypeListener;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.ui.spoon.SpoonLifecycleListener.SpoonLifeCycleEvent;
 import org.pentaho.ui.xul.XulDomContainer;
@@ -64,7 +66,10 @@ public class SpoonPluginManager {
     }
   }
   
-  private void loadPlugin(final SpoonPluginInterface sp){
+  private SpoonPluginInterface loadPlugin(final SpoonPluginInterface sp){
+    if(plugins.contains(sp)){
+      return null;
+    }
     SpoonPluginCategories categories = sp.getClass().getAnnotation(SpoonPluginCategories.class);
     if(categories != null){
       for(String cat : categories.value()){
@@ -82,6 +87,19 @@ public class SpoonPluginManager {
     }
 
     plugins.add(sp);
+    return sp;
+  }
+
+
+  private SpoonPluginInterface removePlugin(final SpoonPluginInterface sp){
+    SpoonPluginCategories categories = sp.getClass().getAnnotation(SpoonPluginCategories.class);
+
+    if(sp.getPerspective() != null){
+      SpoonPerspectiveManager.getInstance().removePerspective(sp.getPerspective());
+    }
+
+    plugins.remove(sp);
+    return sp;
   }
   
   /**
@@ -94,13 +112,43 @@ public class SpoonPluginManager {
   }
   
   
-  public void applyPluginsForContainer(String category, XulDomContainer container) throws XulException{
+  public void applyPluginsForContainer(final String category, final XulDomContainer container) throws XulException{
     List<SpoonPluginInterface> plugins = pluginCategoryMap.get(category);
     if(plugins != null){
       for(SpoonPluginInterface sp : plugins){
         sp.applyToContainer(category, container);
       }
     }
+    PluginRegistry.getInstance().addPluginListener(SpoonPluginType.class, new PluginTypeListener() {
+      public void pluginAdded(final Object serviceObject) {
+        ((Spoon) SpoonFactory.getInstance()).getDisplay().asyncExec(new Runnable(){
+          public void run() {
+            try {
+              final SpoonPluginInterface sp = loadPlugin((SpoonPluginInterface) PluginRegistry.getInstance().loadClass((PluginInterface) serviceObject));
+              if(sp == null){ //invalid or already loaded
+                return;
+              }
+
+              ((Spoon) SpoonFactory.getInstance()).getDisplay().syncExec(new Runnable() {
+                public void run() {
+                  try{
+                    sp.applyToContainer(category, container);
+                  } catch (XulException e) {
+                    e.printStackTrace();
+                  }
+                }
+              });
+            } catch (KettlePluginException e) {
+              e.printStackTrace();
+            }
+          }
+        });
+      }
+
+      public void pluginRemoved(Object serviceObject) {}
+
+      public void pluginChanged(Object serviceObject) {}
+    });
   }
   
   /**

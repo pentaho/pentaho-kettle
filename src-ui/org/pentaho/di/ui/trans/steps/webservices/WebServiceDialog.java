@@ -60,7 +60,9 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.webservices.WebServiceField;
 import org.pentaho.di.trans.steps.webservices.WebServiceMeta;
 import org.pentaho.di.trans.steps.webservices.wsdl.ComplexType;
@@ -879,7 +881,7 @@ public class WebServiceDialog extends BaseStepDialog implements StepDialogInterf
 
     public WebServiceDialog(Shell aShell, Object in, TransMeta transMeta, String sname)
     {
-        super(aShell, (WebServiceMeta)in, transMeta, sname);
+        super(aShell, (StepMetaInterface)in, transMeta, sname);
         meta = (WebServiceMeta) in;
     }
 

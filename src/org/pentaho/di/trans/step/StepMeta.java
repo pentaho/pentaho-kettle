@@ -421,7 +421,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 	
 	public boolean hasChanged()
 	{
-		BaseStepMeta bsi = (BaseStepMeta)this.getStepMetaInterface();
+		StepMetaInterface bsi = this.getStepMetaInterface();
 		return bsi!=null?bsi.hasChanged():false;
 	}
 	
@@ -433,7 +433,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 
 	public void setChanged()
 	{
-		BaseStepMeta bsi = (BaseStepMeta)this.getStepMetaInterface();
+		StepMetaInterface bsi = (StepMetaInterface) this.getStepMetaInterface();
 		if (bsi!=null) bsi.setChanged();
 	}
 

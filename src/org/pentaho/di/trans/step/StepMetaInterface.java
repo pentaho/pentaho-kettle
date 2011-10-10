@@ -307,4 +307,8 @@ public interface StepMetaInterface
    * @param repository the repository to reference.
    */
   public void lookupRepositoryReferences(Repository repository) throws KettleException;
+  
+  
+  public void setChanged();
+  public boolean hasChanged();
 }

@@ -12,22 +12,25 @@
  */
 package org.pentaho.di.ui.spoon;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-import java.util.TreeSet;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.*;
 
+import org.eclipse.swt.widgets.Composite;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.i18n.LanguageChoice;
+import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulOverlay;
 import org.pentaho.ui.xul.containers.XulDeck;
+import org.pentaho.ui.xul.containers.XulToolbar;
+import org.pentaho.ui.xul.containers.XulVbox;
+import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.impl.XulEventHandler;
+import org.pentaho.ui.xul.swt.tags.SwtDeck;
+import org.pentaho.ui.xul.swt.tags.SwtToolbarbutton;
 
 /**
  * Singleton Object controlling SpoonPerspectives.
@@ -41,11 +44,12 @@ import org.pentaho.ui.xul.impl.XulEventHandler;
 public class SpoonPerspectiveManager {
   private static SpoonPerspectiveManager instance = new SpoonPerspectiveManager();
   private Map<Class<? extends SpoonPerspective>, SpoonPerspective> perspectives = new LinkedHashMap<Class<? extends SpoonPerspective>, SpoonPerspective>();
-  private TreeSet<SpoonPerspective> orderedPerspectives = new TreeSet<SpoonPerspective>(new SpoonPerspectiveComparator());
+  private List<SpoonPerspective> orderedPerspectives = new ArrayList<SpoonPerspective>();
   private XulDeck deck;
   private SpoonPerspective activePerspective;
   private XulDomContainer domContainer;
-  
+
+
   private static class SpoonPerspectiveComparator implements Comparator<SpoonPerspective> {
     public int compare(SpoonPerspective o1, SpoonPerspective o2) {
       return o1.getId().compareTo(o2.getId());
@@ -53,7 +57,7 @@ public class SpoonPerspectiveManager {
   }
   
   private SpoonPerspectiveManager(){
-    
+
   }
   
   /**
@@ -96,6 +100,9 @@ public class SpoonPerspectiveManager {
     }
     perspectives.put(perspective.getClass(), perspective);
     orderedPerspectives.add(perspective);
+    if(domContainer != null){
+      initialize();
+    }
   }
   
   /**
@@ -113,7 +120,7 @@ public class SpoonPerspectiveManager {
     if(overlays != null){
       for(XulOverlay overlay : overlays){
         try {
-          domContainer.removeOverlay(overlay.getOverlayUri());
+         domContainer.removeOverlay(overlay.getOverlayUri());
         } catch (XulException e) {
           e.printStackTrace();
         }
@@ -185,5 +192,91 @@ public class SpoonPerspectiveManager {
   public SpoonPerspective getActivePerspective(){
     return activePerspective;
   }
+
+  public void removePerspective(SpoonPerspective per) {
+    perspectives.remove(per);
+    orderedPerspectives.remove(per);
+    Document document = domContainer.getDocumentRoot();
+
+    XulComponent comp = document.getElementById("perspective-" + per.getId());
+    comp.getParent().removeChild(comp);
+
+    comp = document.getElementById("perspective-btn-" + per.getId());
+    comp.getParent().removeChild(comp);
+    XulToolbar mainToolbar = (XulToolbar) domContainer.getDocumentRoot().getElementById("main-toolbar");
+    ((Composite) mainToolbar.getManagedObject()).layout(true, true);
+
+    deck.setSelectedIndex(0);
+
+  }
+
+  private List<SpoonPerspective> installedPerspectives = new ArrayList<SpoonPerspective>();
+
+  public void initialize(){
+    XulToolbar mainToolbar = (XulToolbar) domContainer.getDocumentRoot().getElementById("main-toolbar");
+    SwtDeck deck = (SwtDeck) domContainer.getDocumentRoot().getElementById("canvas-deck");
+
+
+    boolean firstBtn = true;
+    int y = 0;
+
+    for (SpoonPerspective per : SpoonPerspectiveManager.getInstance().getPerspectives()) {
+      if(installedPerspectives.contains(per)){
+        y++;
+        continue;
+      }
+      String name = per.getDisplayName(LanguageChoice.getInstance().getDefaultLocale());
+      InputStream in = per.getPerspectiveIcon();
+
+      SwtToolbarbutton btn = null;
+      try {
+        btn = (SwtToolbarbutton) domContainer.getDocumentRoot().createElement("toolbarbutton");
+      } catch (XulException e) {
+        e.printStackTrace();
+      }
+      btn.setType("toggle");
+      btn.setLabel(name);
+      btn.setTooltiptext(name);
+      btn.setOnclick("spoon.loadPerspective(" + y + ")");
+      btn.setId("perspective-btn-" + per.getId());
+      mainToolbar.addChild(btn);
+      if (firstBtn) {
+        btn.setSelected(true);
+        firstBtn = false;
+      }
+      if (in != null) {
+        btn.setImageFromStream(in);
+        try {
+          in.close();
+        } catch (IOException e1) {
+        }
+      }
+
+      XulVbox box = deck.createVBoxCard();
+      box.setId("perspective-" + per.getId());
+      box.setFlex(1);
+      deck.addChild(box);
+
+      per.getUI().setParent((Composite) box.getManagedObject());
+      per.getUI().layout();
+      ((Composite) mainToolbar.getManagedObject()).layout(true, true);
+
+      final SwtToolbarbutton finalBtn = btn;
+      per.addPerspectiveListener(new SpoonPerspectiveListener() {
+        public void onActivation() {
+          finalBtn.setSelected(true);
+        }
+
+        public void onDeactication() {
+          finalBtn.setSelected(false);
+        }
+      });
+      y++;
+      installedPerspectives.add(per);
+    }
+    deck.setSelectedIndex(0);
+
+  }
+
   
 }

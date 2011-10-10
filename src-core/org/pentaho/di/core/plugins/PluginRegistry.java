@@ -54,9 +54,12 @@ public class PluginRegistry {
 	private Map<Class<? extends PluginTypeInterface>, Map<PluginInterface, URLClassLoader>> classLoaderMap;
 	
 	private Map<Class<? extends PluginTypeInterface>, List<String>> categoryMap;
-	
-    private static List<PluginTypeInterface> pluginTypes = new ArrayList<PluginTypeInterface>();
-  
+
+  private static List<PluginTypeInterface> pluginTypes = new ArrayList<PluginTypeInterface>();
+
+  private Map<Class<? extends PluginTypeInterface>, List<PluginTypeListener>> listeners = new HashMap<Class<? extends PluginTypeInterface>, List<PluginTypeListener>>();
+  private static List<PluginRegistryExtension> extensions = new ArrayList<PluginRegistryExtension>();
+
 	/**
 	 * Initialize the registry, keep private to keep this a singleton 
 	 */
@@ -88,6 +91,11 @@ public class PluginRegistry {
 
 	}
 	
+  public synchronized void  removePlugin(Class<? extends PluginTypeInterface> pluginType, PluginInterface plugin){
+		List<PluginInterface> list = pluginMap.get(pluginType);
+    list.remove(plugin);
+  }
+
 	public synchronized void registerPlugin(Class<? extends PluginTypeInterface> pluginType, PluginInterface plugin) throws KettlePluginException {
 		
 		if (plugin.getIds()[0]==null) {
@@ -117,6 +125,10 @@ public class PluginRegistry {
 		
 		if (!Const.isEmpty(plugin.getCategory())) {
 			List<String> categories = categoryMap.get(pluginType);
+      if(categories == null){
+        categories = new ArrayList<String>();
+        categoryMap.put(pluginType, categories);
+      }
 			if (!categories.contains(plugin.getCategory())) {
 				categories.add(plugin.getCategory());
 				
@@ -279,108 +291,102 @@ public class PluginRegistry {
 	 * @throws KettlePluginException In case there was a class loading problem somehow
 	 */
 	@SuppressWarnings("unchecked")
-    public <T> T loadClass(PluginInterface plugin, Class<T> pluginClass) throws KettlePluginException {
-        if (plugin == null)
-        {
-            throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.NoValidStepOrPlugin.PLUGINREGISTRY001")); //$NON-NLS-1$
-        }
+ public <T> T loadClass(PluginInterface plugin, Class<T> pluginClass) throws KettlePluginException {
+    if (plugin == null)
+    {
+      throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.NoValidStepOrPlugin.PLUGINREGISTRY001")); //$NON-NLS-1$
+    }
 
-    	String className = plugin.getClassMap().get(pluginClass);
-    	if (className==null) {
-            throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.NoValidClassRequested.PLUGINREGISTRY002", pluginClass.getName())); //$NON-NLS-1$
-    	}
-    	
-        try
-        {
-        	Class<? extends T> cl = null;
-            if (plugin.isNativePlugin()) {
-                cl = (Class<? extends T>) Class.forName(className);
+    if (plugin instanceof ClassLoadingPluginInterface) {
+      return ((ClassLoadingPluginInterface) plugin).loadClass(pluginClass);
+    } else {
+      String className = plugin.getClassMap().get(pluginClass);
+      if (className == null) {
+        throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.NoValidClassRequested.PLUGINREGISTRY002", pluginClass.getName())); //$NON-NLS-1$
+      }
+
+      try
+      {
+        Class<? extends T> cl = null;
+        if (plugin.isNativePlugin()) {
+          cl = (Class<? extends T>) Class.forName(className);
+        } else {
+          List<String> jarfiles = plugin.getLibraries();
+          URL urls[] = new URL[jarfiles.size()];
+          for (int i = 0; i < jarfiles.size(); i++)
+          {
+            File jarfile = new File(jarfiles.get(i));
+            urls[i] = new URL(URLDecoder.decode(jarfile.toURI().toURL().toString(), "UTF-8"));
+          }
+
+          // Load the class!!
+          //
+          // First get the class loader: get the one that's the webstart classloader, not the thread classloader
+          //
+          ClassLoader classLoader = getClass().getClassLoader();
+
+          URLClassLoader ucl = null;
+
+          // If the plugin needs to have a separate class loader for each instance of the plugin.
+          // This is not the default.  By default we cache the class loader for each plugin ID.
+          //
+          if (plugin.isSeparateClassLoaderNeeded()) {
+
+            // Create a new one each time
+            //
+            ucl = new KettleURLClassLoader(urls, classLoader, plugin.getDescription());
+
+          } else {
+
+            // See if we can find a class loader to re-use.
+            //
+
+            Map<PluginInterface, URLClassLoader> classLoaders = classLoaderMap.get(plugin.getPluginType());
+            if (classLoaders==null) {
+              classLoaders=new HashMap<PluginInterface, URLClassLoader>();
+              classLoaderMap.put(plugin.getPluginType(), classLoaders);
             } else {
-                List<String> jarfiles = plugin.getLibraries();
-                URL urls[] = new URL[jarfiles.size()];
-                for (int i = 0; i < jarfiles.size(); i++)
-                {
-                    File jarfile = new File(jarfiles.get(i));
-                    urls[i] = new URL(URLDecoder.decode(jarfile.toURI().toURL().toString(), "UTF-8"));
-                }
-
-                // Load the class!!
-                // 
-                // First get the class loader: get the one that's the webstart classloader, not the thread classloader
-                //
-                ClassLoader classLoader = getClass().getClassLoader(); 
-                
-                URLClassLoader ucl = null;
-                
-                // If the plugin needs to have a separate class loader for each instance of the plugin.
-                // This is not the default.  By default we cache the class loader for each plugin ID.
-                //
-                if (plugin.isSeparateClassLoaderNeeded()) {
-                	
-                	// Create a new one each time
-                	//
-                    ucl = new KettleURLClassLoader(urls, classLoader, plugin.getDescription());
-                    
-                } else {
-                	
-                    // See if we can find a class loader to re-use.
-                	//
-                  
-                	Map<PluginInterface, URLClassLoader> classLoaders = classLoaderMap.get(plugin.getPluginType());
-                	if (classLoaders==null) {
-                		classLoaders=new HashMap<PluginInterface, URLClassLoader>();
-                		classLoaderMap.put(plugin.getPluginType(), classLoaders);
-                	} else {
-                		ucl = classLoaders.get(plugin);
-                	}
-                  if (ucl==null)
-                  {
-
-                    if(plugin.getPluginDirectory() != null){
-                      ucl = folderBasedClassLoaderMap.get(plugin.getPluginDirectory().toString());
-                      if(ucl == null){
-                        ucl = new KettleURLClassLoader(urls, classLoader, plugin.getDescription());
-                        classLoaders.put(plugin, ucl); // save for later use...
-                        folderBasedClassLoaderMap.put(plugin.getPluginDirectory().toString(), ucl);
-                      }
-                    } else {
-                    	ucl = classLoaders.get(plugin);
-                    	if (ucl==null) {
-	                        ucl = new KettleURLClassLoader(urls, classLoader, plugin.getDescription());
-	                        classLoaders.put(plugin, ucl); // save for later use...
-                    	}
-                    }
-                  }
-                }
-              
-                // Load the class.
-                cl = (Class<? extends T>) ucl.loadClass(className);
+              ucl = classLoaders.get(plugin);
             }
+            if (ucl==null)
+            {
 
-            return cl.newInstance();
+            if(plugin.getPluginDirectory() != null){
+                ucl = folderBasedClassLoaderMap.get(plugin.getPluginDirectory().toString());
+                if(ucl == null){
+                  ucl = new KettleURLClassLoader(urls, classLoader, plugin.getDescription());
+                  classLoaders.put(plugin, ucl); // save for later use...
+                  folderBasedClassLoaderMap.put(plugin.getPluginDirectory().toString(), ucl);
+                }
+              } else {
+                ucl = classLoaders.get(plugin);
+                if (ucl==null) {
+                  ucl = new KettleURLClassLoader(urls, classLoader, plugin.getDescription());
+                  classLoaders.put(plugin, ucl); // save for later use...
+                }
+              }
+            }
+          }
+
+          // Load the class.
+          cl = (Class<? extends T>) ucl.loadClass(className);
         }
-        catch (ClassNotFoundException e)
-        {
-            throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.ClassNotFound.PLUGINREGISTRY003"), e); //$NON-NLS-1$
-        }
-        catch (InstantiationException e)
-        {
-            throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.UnableToInstantiateClass.PLUGINREGISTRY004"), e); //$NON-NLS-1$
-        }
-        catch (IllegalAccessException e)
-        {
-            throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.IllegalAccessToClass.PLUGINREGISTRY005"), e); //$NON-NLS-1$
-        }
-        catch (MalformedURLException e)
-        {
-            throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.MalformedURL.PLUGINREGISTRY006"), e); //$NON-NLS-1$
-        }
-        catch (Throwable e)
-        {
-        	e.printStackTrace();
-            throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.UnExpectedErrorLoadingClass.PLUGINREGISTRY007"), e); //$NON-NLS-1$
-        }
-	}
+
+        return cl.newInstance();
+      } catch (ClassNotFoundException e) {
+        throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.ClassNotFound.PLUGINREGISTRY003"), e); //$NON-NLS-1$
+      } catch (InstantiationException e) {
+        throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.UnableToInstantiateClass.PLUGINREGISTRY004"), e); //$NON-NLS-1$
+      } catch (IllegalAccessException e) {
+        throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.IllegalAccessToClass.PLUGINREGISTRY005"), e); //$NON-NLS-1$
+      } catch (MalformedURLException e) {
+        throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.MalformedURL.PLUGINREGISTRY006"), e); //$NON-NLS-1$
+      } catch (Throwable e) {
+        e.printStackTrace();
+        throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.UnExpectedErrorLoadingClass.PLUGINREGISTRY007"), e); //$NON-NLS-1$
+      }
+    }
+  }
 	
 	
 	/**
@@ -396,48 +402,68 @@ public class PluginRegistry {
 	 * 
 	 * @throws KettlePluginException
 	 */
-	public synchronized static void init() throws KettlePluginException {
-		PluginRegistry registry = getInstance();
-				
-		for (PluginTypeInterface pluginType : pluginTypes) {
-			// Register the plugin type 
-			//
-			registry.registerPluginType(pluginType.getClass());
-			
-			// Search plugins for this type...
-			//
-			long startScan = System.currentTimeMillis();
-			pluginType.searchPlugins();
-			
-			// Also scan for plugin classes to facilitate debugging etc.
-			//
-			String pluginClasses = EnvUtil.getSystemProperty(Const.KETTLE_PLUGIN_CLASSES);
-			if (!Const.isEmpty(pluginClasses)) {
-				String[] classNames = pluginClasses.split(",");
-				for (String className : classNames) {
-					try {
-						// What annotation does the plugin type have?
-						//
-						PluginAnnotationType annotationType = pluginType.getClass().getAnnotation(PluginAnnotationType.class);
-						Class<? extends Annotation> annotationClass = annotationType.value();
+  public synchronized static void init() throws KettlePluginException {
+      final PluginRegistry registry = getInstance();
 
-						Class<?> clazz = Class.forName(className);
-						Annotation annotation = clazz.getAnnotation(annotationClass);
-						
-						if (annotation!=null) {
-							// Register this one!
-							//
-							pluginType.handlePluginAnnotation(clazz, annotation, new ArrayList<String>(), true, null);
-						}
-					} catch(Exception e) {
-						LogChannel.GENERAL.logError("Error registring plugin class from KETTLE_PLUGIN_CLASSES: "+className, e);
-					}
-				}
-			}
-			
-			LogChannel.GENERAL.logDetailed("Registered "+registry.getPlugins(pluginType.getClass()).size()+" plugins of type '"+pluginType.getName()+"' in "+(System.currentTimeMillis()-startScan)+"ms.");
-		}
-	}
+      // Find pluginRegistry extensions
+      try {
+        registry.registerType(PluginRegistryPluginType.getInstance());
+        List<PluginInterface> plugins = registry.getPlugins(PluginRegistryPluginType.class);
+        for(PluginInterface extensionPlugin : plugins){
+          PluginRegistryExtension extension = (PluginRegistryExtension) registry.loadClass(extensionPlugin);
+          extensions.add(extension);
+        }
+      } catch (KettlePluginException e) {
+        e.printStackTrace();
+      }
+
+      for (final PluginTypeInterface pluginType : pluginTypes) {
+        registry.registerType(pluginType);
+      }
+
+    }
+
+    private void registerType(PluginTypeInterface pluginType) throws KettlePluginException {
+      registerPluginType(pluginType.getClass());
+
+        // Search plugins for this type...
+        //
+        long startScan = System.currentTimeMillis();
+        pluginType.searchPlugins();
+
+        for(PluginRegistryExtension ext : extensions){
+          ext.searchForType(pluginType);
+        }
+
+        // Also scan for plugin classes to facilitate debugging etc.
+        //
+        String pluginClasses = EnvUtil.getSystemProperty(Const.KETTLE_PLUGIN_CLASSES);
+        if (!Const.isEmpty(pluginClasses)) {
+          String[] classNames = pluginClasses.split(",");
+          for (String className : classNames) {
+            try {
+              // What annotation does the plugin type have?
+              //
+              PluginAnnotationType annotationType = pluginType.getClass().getAnnotation(PluginAnnotationType.class);
+              Class<? extends Annotation> annotationClass = annotationType.value();
+
+              Class<?> clazz = Class.forName(className);
+              Annotation annotation = clazz.getAnnotation(annotationClass);
+
+              if (annotation!=null) {
+                // Register this one!
+                //
+                pluginType.handlePluginAnnotation(clazz, annotation, new ArrayList<String>(), true, null);
+              }
+            } catch(Exception e) {
+              LogChannel.GENERAL.logError("Error registring plugin class from KETTLE_PLUGIN_CLASSES: "+className, e);
+            }
+          }
+        }
+
+        LogChannel.GENERAL.logDetailed("Registered "+getPlugins(pluginType.getClass()).size()+" plugins of type '"+pluginType.getName()+"' in "+(System.currentTimeMillis()-startScan)+"ms.");
+    }
+
 
 	/**
 	 * Find the plugin ID based on the class
@@ -470,6 +496,13 @@ public class PluginRegistry {
 				}
 			}
 		}
+
+    for(PluginRegistryExtension ext : extensions){
+      String id = ext.getPluginId(pluginType, pluginClass);
+      if(id != null){
+        return id;
+      }
+    }
 		return null;
 	}
 	
@@ -683,10 +716,16 @@ public class PluginRegistry {
         return this.getClass().getClassLoader();
       } else {
         List<String> jarfiles = plugin.getLibraries();
-        URL urls[] = new URL[jarfiles.size()];
-        for (int i = 0; i < jarfiles.size(); i++) {
-          File jarfile = new File(jarfiles.get(i));
-          urls[i] = new URL(URLDecoder.decode(jarfile.toURI().toURL().toString(), "UTF-8"));
+        int librarySize = 0;
+        if(jarfiles != null){
+          librarySize = jarfiles.size();
+        }
+        URL urls[] = new URL[librarySize];
+        if(jarfiles != null){
+          for (int i = 0; i < jarfiles.size(); i++) {
+            File jarfile = new File(jarfiles.get(i));
+            urls[i] = new URL(URLDecoder.decode(jarfile.toURI().toURL().toString(), "UTF-8"));
+          }
         }
 
         // Load the class!!
@@ -732,6 +771,11 @@ public class PluginRegistry {
             } else {
               ucl = classLoaders.get(plugin);
               if (ucl == null) {
+                if(urls.length == 0){
+                  if (plugin instanceof ClassLoadingPluginInterface) {
+                    return ((ClassLoadingPluginInterface) plugin).getClassLoader();
+                  }
+                }
                 ucl = new KettleURLClassLoader(urls, classLoader, plugin.getDescription());
                 classLoaders.put(plugin, ucl); // save for later use...
               }
@@ -748,5 +792,27 @@ public class PluginRegistry {
       e.printStackTrace();
       throw new KettlePluginException(BaseMessages.getString(PKG, "PluginRegistry.RuntimeError.UnExpectedCreatingClassLoader.PLUGINREGISTRY008"), e); //$NON-NLS-1$
     }
+  }
+    /**
+   * Allows the tracking of plugins as they come and go.
+   *
+   * @param typeToTrack extension of PluginTypeInterface to track.
+   * @param listener receives notification when a plugin of the specified type is added/removed/modified
+   * @param <T> extension of PluginTypeInterface
+   */
+  public <T extends PluginTypeInterface> void addPluginListener(Class<T> typeToTrack, PluginTypeListener listener){
+    List<PluginTypeListener> list = listeners.get(typeToTrack);
+    if(list == null){
+      list = new ArrayList<PluginTypeListener>();
+      listeners.put(typeToTrack, list);
+    }
+    if(list.contains(listener) == false){
+      list.add(listener);
+    }
+
+  }
+
+  public List<PluginTypeListener> getListenersForType(Class<? extends PluginTypeInterface> clazz){
+    return listeners.get(clazz);
   }
 }
