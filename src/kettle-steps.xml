@@ -1458,8 +1458,8 @@
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Flow</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.JobExecutor</tooltip>
 		<iconfile>ui/images/JOB.png</iconfile>
-	</step> 
-		<step id="ZipFile">
+	</step>
+	<step id="ZipFile">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.ZipFile</description>
 		<classname>org.pentaho.di.trans.steps.zipfile.ZipFileMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Utility</category>
@@ -1467,10 +1467,17 @@
 		<iconfile>ui/images/ZIP.png</iconfile>
 	</step> 
 	<step id="WMIInput">
-    <description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.WMIInput</description>
-    <classname>org.pentaho.di.trans.steps.wmiinput.WMIInputMeta</classname>
-    <category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
-    <tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.WMIInput</tooltip>
-    <iconfile>ui/images/wmiinput.png</iconfile>
-  </step> 
+        <description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.WMIInput</description>
+		<classname>org.pentaho.di.trans.steps.wmiinput.WMIInputMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.WMIInput</tooltip>
+		<iconfile>ui/images/wmiinput.png</iconfile>
+	</step>
+	<step id="SASInput">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SASInput</description>
+		<classname>org.pentaho.di.trans.steps.sasinput.SasInputMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SASInput</tooltip>
+		<iconfile>ui/images/SASInput.png</iconfile>
+	</step> 
 </steps>
