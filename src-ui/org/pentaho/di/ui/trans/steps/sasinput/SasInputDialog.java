@@ -161,7 +161,15 @@ public class SasInputDialog extends BaseStepDialog implements StepDialogInterfac
     setButtonPositions(new Button[] { wOK, wGet, wCancel }, margin, null);
     
     
-    
+    Label wlFields = new Label(shell, SWT.LEFT);
+    wlFields.setText(BaseMessages.getString(PKG, "SASInputDialog.Fields.Label"));
+    props.setLook(wlFields);
+    FormData fdlFields = new FormData();
+    fdlFields.top = new FormAttachment(lastControl, margin);
+    fdlFields.left = new FormAttachment(0, 0);
+    fdlFields.right = new FormAttachment(100, 0);
+    wlFields.setLayoutData(fdlFields);
+    lastControl = wlFields;
     
     // Fields
     ColumnInfo[] colinf = new ColumnInfo[] { 

@@ -86,7 +86,8 @@ public class SasInput extends BaseStep implements StepInterface {
       meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
     }
 
-    final String filename = getInputRowMeta().getString(fileRowData, meta.getAcceptingField(), null);
+    String rawFilename = getInputRowMeta().getString(fileRowData, meta.getAcceptingField(), null);
+    final String filename = KettleVFS.getFilename(KettleVFS.getFileObject(rawFilename)); 
     
     data.helper = new SasInputHelper(filename);
     logBasic(BaseMessages.getString(PKG, "SASInput.Log.OpenedSASFile") + " : [" + data.helper + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -200,11 +201,14 @@ public class SasInput extends BaseStep implements StepInterface {
   }
   
   protected void convertData(RowMetaInterface source, Object[] sourceData, RowMetaInterface target) throws KettleException { 
-    int sourceIndex=0;
-    for (int i=getInputRowMeta().size();i<target.size();i++) {
-      ValueMetaInterface sourceValueMeta = source.getValueMeta(sourceIndex++);
-      ValueMetaInterface targetValueMeta = target.getValueMeta(i);
-      sourceData[i] = targetValueMeta.convertData(sourceValueMeta, sourceData[i]);
+    int targetIndex=getInputRowMeta().size();
+    for (int i=0;i<data.fieldIndexes.size();i++) {
+      int fieldIndex = data.fieldIndexes.get(i);
+      ValueMetaInterface sourceValueMeta = source.getValueMeta(fieldIndex);
+      ValueMetaInterface targetValueMeta = target.getValueMeta(targetIndex);
+      sourceData[targetIndex] = targetValueMeta.convertData(sourceValueMeta, sourceData[targetIndex]);
+      
+      targetIndex++;
     }
   }
 
