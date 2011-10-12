@@ -108,16 +108,7 @@ public class Rest extends BaseStep implements StepInterface
             // used for calculating the responseTime
             long startTime = System.currentTimeMillis();
             
-			if(data.useHeaders) {
-				// Add headers
-				for(int i=0; i<data.nrheader; i++) {
-					String value = data.inputRowMeta.getString(rowData, data.indexOfHeaderFields[i]);
 
-					webResource.header(data.headerNames[i], value);
-	        		if(isDebug()) logDebug(BaseMessages.getString(PKG, "Rest.Log.HeaderValue",data.headerNames[i],value));
-				}
-			}
-		
 			if(data.useParams) {
 				// Add parameters
 				for(int i=0; i<data.nrParams; i++) {
@@ -125,7 +116,19 @@ public class Rest extends BaseStep implements StepInterface
 					String value = data.inputRowMeta.getString(rowData, data.indexOfParamFields[i]);
 					queryParams.add(data.paramNames[i], value);
 	        		if(isDebug()) logDebug(BaseMessages.getString(PKG, "Rest.Log.parameterValue",data.paramNames[i],value));
-					webResource.queryParams(queryParams);
+					webResource = webResource.queryParams(queryParams);
+				}
+			}
+
+         WebResource.Builder builder = webResource.getRequestBuilder();
+         if(data.useHeaders) {
+				// Add headers
+			   for(int i=0; i<data.nrheader; i++) {
+					String value = data.inputRowMeta.getString(rowData, data.indexOfHeaderFields[i]);
+					
+					//  unsure if an already set header will be returned to builder
+					builder = builder.header(data.headerNames[i], value);
+	        		if(isDebug()) logDebug(BaseMessages.getString(PKG, "Rest.Log.HeaderValue",data.headerNames[i],value));
 				}
 			}
 
@@ -138,17 +141,17 @@ public class Rest extends BaseStep implements StepInterface
 			}
 			try {
 				if(data.method.equals(RestMeta.HTTP_METHOD_GET)) {
-					response = webResource.get(ClientResponse.class);
+					response = builder.get(ClientResponse.class);
 				}else if (data.method.equals(RestMeta.HTTP_METHOD_POST)) {
-	        		response = webResource.type(data.mediaType).post(ClientResponse.class, entityString);
+	        		response = builder.type(data.mediaType).post(ClientResponse.class, entityString);
 				}else if (data.method.equals(RestMeta.HTTP_METHOD_PUT)) {
-	        		response = webResource.type(data.mediaType).put(ClientResponse.class, entityString);
+	        		response = builder.type(data.mediaType).put(ClientResponse.class, entityString);
 				}else if (data.method.equals(RestMeta.HTTP_METHOD_DELETE)) {
-	        		response = webResource.type(data.mediaType).delete(ClientResponse.class, entityString);
+	        		response = builder.type(data.mediaType).delete(ClientResponse.class, entityString);
 				}else if (data.method.equals(RestMeta.HTTP_METHOD_HEAD)) {
-					response = webResource.head();
+					response = builder.head();
 				}else if (data.method.equals(RestMeta.HTTP_METHOD_OPTIONS)) {
-					response = webResource.options(ClientResponse.class);
+					response = builder.options(ClientResponse.class);
 				}else {
 					throw new KettleException(BaseMessages.getString(PKG, "Rest.Error.UnknownMethod", data.method));
 				}
@@ -349,6 +352,7 @@ public class Rest extends BaseStep implements StepInterface
 				// Parameters
 				int nrparams= meta.getParameterField()==null?0:meta.getParameterField().length;
 				if(nrparams>0) {
+				   data.nrParams=nrparams;
 					data.paramNames=new String[nrparams];
 					data.indexOfParamFields= new int[nrparams];
 					for (int i=0;i<nrparams;i++)  {
