@@ -236,9 +236,7 @@ public class Janino extends BaseStep implements StepInterface
                     	if (fn.getValueType()!=ValueMetaInterface.TYPE_BOOLEAN) {
                     		throw new KettleValueException("Please specify a Boolean type to parse ["+formulaResult.getClass().getName()+"] for field ["+fn.getFieldName()+"] as a result of formula ["+fn.getFormula()+"]");
                     	}
-                    } else {
-                    	data.returnType[i] = JaninoData.RETURN_TYPE_STRING;
-                    }
+                    } 
                 }
 
                 Object value;
