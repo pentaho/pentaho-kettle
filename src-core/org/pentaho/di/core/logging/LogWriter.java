@@ -287,8 +287,8 @@ public class LogWriter
 	{
 		this.type = type;
 	}
-	// synchronizing logWriter singleton instance PDI-6840
-	synchronized public boolean close()
+	
+	public boolean close()
 	{
 		boolean retval=true;
 		try
@@ -302,7 +302,7 @@ public class LogWriter
                 appender.close();
             }
             pentahoLogger.removeAllAppenders();
-            logWriter=null;
+            LogWriter.unsetLogWriter();
 		}
 		catch(Exception e) 
 		{ 
@@ -311,6 +311,12 @@ public class LogWriter
 		
 		return retval;
 	}
+	
+	// synchronizing logWriter singleton instance PDI-6840
+	synchronized static private void unsetLogWriter(){
+		logWriter = null;
+	}
+	
 	
 	/**
 	 * 
