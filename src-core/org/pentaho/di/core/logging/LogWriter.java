@@ -62,7 +62,8 @@ public class LogWriter
 
     private static Layout layout;
 
-	public static final LogWriter getInstance()
+	// synchronizing logWriter singleton instance PDI-6840
+	synchronized public static final LogWriter getInstance()
 	{
 		if (logWriter != null)
         {
@@ -125,7 +126,8 @@ public class LogWriter
      * @param exact is this an exact filename (false: prefix of name in temp directory)
 	 * @return the LogWriter object
 	 */
-	public static final LogWriter getInstance(String filename, boolean exact) throws KettleException
+	// synchronizing logWriter singleton instance PDI-6840
+	synchronized public static final LogWriter getInstance(String filename, boolean exact) throws KettleException
 	{
 		if (logWriter != null) 
 	    {
@@ -285,8 +287,8 @@ public class LogWriter
 	{
 		this.type = type;
 	}
-
-	public boolean close()
+	// synchronizing logWriter singleton instance PDI-6840
+	synchronized public boolean close()
 	{
 		boolean retval=true;
 		try
