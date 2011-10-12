@@ -343,7 +343,7 @@ public class JobEntryPGPEncryptFiles extends JobEntryBase implements Cloneable, 
 			{
 				action_type[a] = getActionTypeByCode(Const.NVL(rep.getJobEntryAttributeString(id_jobentry, a, "action_type"), ""));
 				source_filefolder[a]= rep.getJobEntryAttributeString(id_jobentry, a, "source_filefolder");
-				userid[a]        =  rep.getJobEntryAttributeString(id_jobentry, "userid");
+				userid[a]        =  rep.getJobEntryAttributeString(id_jobentry, a, "userid");
 				destination_filefolder[a]= rep.getJobEntryAttributeString(id_jobentry, a, "destination_filefolder");
 				wildcard[a]= rep.getJobEntryAttributeString(id_jobentry, a, "wildcard");
 			}
@@ -390,10 +390,9 @@ public class JobEntryPGPEncryptFiles extends JobEntryBase implements Cloneable, 
 			{
 				for (int i=0;i<source_filefolder.length;i++) 
 				{
-					rep.saveJobEntryAttribute(id_job, getObjectId(),"action_type", getActionTypeCode(action_type[i]));
+					rep.saveJobEntryAttribute(id_job, getObjectId(), i, "action_type", getActionTypeCode(action_type[i]));
 					rep.saveJobEntryAttribute(id_job, getObjectId(), i, "source_filefolder",     source_filefolder[i]);
 					rep.saveJobEntryAttribute(id_job, getObjectId(), i, "userid",     userid[i]);
-					rep.saveJobEntryAttribute(id_job, getObjectId(), "userid", userid[i]);
 					rep.saveJobEntryAttribute(id_job, getObjectId(), i, "destination_filefolder",     destination_filefolder[i]);
 					rep.saveJobEntryAttribute(id_job, getObjectId(), i, "wildcard", wildcard[i]);
 				}
