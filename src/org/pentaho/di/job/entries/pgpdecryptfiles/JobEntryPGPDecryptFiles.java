@@ -299,7 +299,7 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
 			for (int a=0;a<argnr;a++) 
 			{
 				source_filefolder[a]= rep.getJobEntryAttributeString(id_jobentry, a, "source_filefolder");
-				passphrase[a]        = Encr.decryptPasswordOptionallyEncrypted(rep.getJobEntryAttributeString(id_jobentry, "passphrase"));
+				passphrase[a]        = Encr.decryptPasswordOptionallyEncrypted(rep.getJobEntryAttributeString(id_jobentry, a, "passphrase"));
 				destination_filefolder[a]= rep.getJobEntryAttributeString(id_jobentry, a, "destination_filefolder");
 				wildcard[a]= rep.getJobEntryAttributeString(id_jobentry, a, "wildcard");
 			}
@@ -345,8 +345,7 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
 				for (int i=0;i<source_filefolder.length;i++) 
 				{
 					rep.saveJobEntryAttribute(id_job, getObjectId(), i, "source_filefolder",     source_filefolder[i]);
-					rep.saveJobEntryAttribute(id_job, getObjectId(), i, "passphrase",     passphrase[i]);
-					rep.saveJobEntryAttribute(id_job, getObjectId(), "passphrase", Encr.encryptPasswordIfNotUsingVariables(passphrase[i]));
+					rep.saveJobEntryAttribute(id_job, getObjectId(), i, "passphrase", Encr.encryptPasswordIfNotUsingVariables(passphrase[i]));
 					rep.saveJobEntryAttribute(id_job, getObjectId(), i, "destination_filefolder",     destination_filefolder[i]);
 					rep.saveJobEntryAttribute(id_job, getObjectId(), i, "wildcard", wildcard[i]);
 				}
