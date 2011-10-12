@@ -24,6 +24,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.ParseException;
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -690,8 +691,11 @@ public class ValueMeta implements ValueMetaInterface
         if (Const.isEmpty(string)) return null;
 
         try
-        {
-            return new Double( getDecimalFormat(false).parse(string).doubleValue() );
+        {   
+            ParsePosition parsePosition = new ParsePosition(0);
+            Number number = getDecimalFormat(false).parse(string, parsePosition);
+            // System.out.println("String: "+string+",  number: "+number+", index: "+parsePosition.getIndex()+", errorIndex: "+parsePosition.getErrorIndex());
+            return new Double( number.doubleValue() );
         }
         catch(Exception e)
         {

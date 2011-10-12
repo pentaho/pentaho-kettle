@@ -2882,6 +2882,18 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   }
 
   private void detach(StepMeta stepMeta) {
+
+    for (int i=transMeta.nrTransHops()-1;i>=0;i--) {
+      TransHopMeta hop = transMeta.getTransHop(i);
+      if (stepMeta.equals(hop.getFromStep()) || stepMeta.equals(hop.getToStep())) {
+        // Step is connected with a hop, remove this hop.
+        //
+        spoon.addUndoNew(transMeta, new TransHopMeta[] { hop }, new int[] { i });
+        transMeta.removeTransHop(i);
+      }
+    }
+    
+    /*
     TransHopMeta hfrom = transMeta.findTransHopTo(stepMeta);
     TransHopMeta hto = transMeta.findTransHopFrom(stepMeta);
 
@@ -2907,6 +2919,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         spoon.refreshTree();
       }
     }
+    */
     spoon.refreshTree();
     redraw();
   }

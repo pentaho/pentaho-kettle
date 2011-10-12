@@ -34,6 +34,9 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.swing.UIManager;
+import javax.swing.plaf.metal.MetalLookAndFeel;
+
 import org.apache.commons.vfs.FileObject;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
@@ -484,6 +487,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
    */
   public static void main(String[] a) throws KettleException {
     try {
+      
+      UIManager.setLookAndFeel(new MetalLookAndFeel());
+      
       // Bootstrap Kettle
       //
       //  We start Sleak if the VM argument RUN_SLEAK was provided

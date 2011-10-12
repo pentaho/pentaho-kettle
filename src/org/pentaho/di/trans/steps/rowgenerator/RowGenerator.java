@@ -149,6 +149,11 @@ public class RowGenerator extends BaseStep implements StepInterface
 		Object[] r=null;
 		boolean retval=true;
 		
+		if (first) {
+		  first=false;
+		  getRow();
+		}
+		
 		if (data.rowsWritten<data.rowLimit)
 		{
 			r=data.outputRowMeta.cloneRow(data.outputRowData);

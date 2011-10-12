@@ -55,5 +55,6 @@ public class XulStepFieldsModel extends XulEventSourceAdapter {
 	}
 
 	public static class FieldsCollection extends AbstractModelList<StepFieldNode> {
+    private static final long serialVersionUID = -2489107137334871323L;
 	}
 }

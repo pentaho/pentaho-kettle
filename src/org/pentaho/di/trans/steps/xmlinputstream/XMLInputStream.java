@@ -221,13 +221,13 @@ public class XMLInputStream extends BaseStep implements StepInterface
 					outputRowData[data.pos_xml_data_name]=prefix+":"+e.asStartElement().getName().getLocalPart();
 				}
 			} else {
-				outputRowData[data.pos_xml_data_name]=e.asStartElement().getName().getLocalPart();
+				if (data.pos_xml_data_name>=0) outputRowData[data.pos_xml_data_name]=e.asStartElement().getName().getLocalPart();
 			}
 			
 			//store the name
-			data.elementName[data.elementLevel]=new String((String)outputRowData[data.pos_xml_data_name]);
+		  if (data.pos_xml_data_name>=0) data.elementName[data.elementLevel]=new String((String)outputRowData[data.pos_xml_data_name]);
 			//store simple path
-			data.elementPath[data.elementLevel]=data.elementPath[data.elementLevel-1]+"/"+outputRowData[data.pos_xml_data_name];
+			if (data.pos_xml_data_name>=0) data.elementPath[data.elementLevel]=data.elementPath[data.elementLevel-1]+"/"+outputRowData[data.pos_xml_data_name];
 
 			// write Namespaces out
 			if (meta.isEnableNamespaces()) outputRowData = parseNamespaces(outputRowData, e);
@@ -238,7 +238,7 @@ public class XMLInputStream extends BaseStep implements StepInterface
 			break;
 
 		case XMLStreamConstants.END_ELEMENT:
-			outputRowData[data.pos_xml_data_name]=e.asEndElement().getName().getLocalPart();
+			if (data.pos_xml_data_name>=0) outputRowData[data.pos_xml_data_name]=e.asEndElement().getName().getLocalPart();
 			putRowOut(outputRowData);
 			data.elementParentID[data.elementLevel+1]=null;
 			data.elementLevel--;
@@ -250,11 +250,11 @@ public class XMLInputStream extends BaseStep implements StepInterface
 			break;
 
 		case XMLStreamConstants.CHARACTERS:
-			outputRowData[data.pos_xml_data_name]=data.elementName[data.elementLevel];
-			outputRowData[data.pos_xml_data_value]=e.asCharacters().getData();
+			if (data.pos_xml_data_name>=0) outputRowData[data.pos_xml_data_name]=data.elementName[data.elementLevel];
+			if (data.pos_xml_data_value>=0) outputRowData[data.pos_xml_data_value]=e.asCharacters().getData();
 			//optional trim is also eliminating white spaces, tab, cr, lf
-			if (meta.isEnableTrim()) outputRowData[data.pos_xml_data_value]=Const.trim((String)outputRowData[data.pos_xml_data_value]);
-			if (Const.isEmpty((String)outputRowData[data.pos_xml_data_value])) outputRowData=null; // ignore & continue
+			if (data.pos_xml_data_value>=0 && meta.isEnableTrim()) outputRowData[data.pos_xml_data_value]=Const.trim((String)outputRowData[data.pos_xml_data_value]);
+			if (data.pos_xml_data_value>=0 && Const.isEmpty((String)outputRowData[data.pos_xml_data_value])) outputRowData=null; // ignore & continue
 			break;
 
 		case XMLStreamConstants.PROCESSING_INSTRUCTION:

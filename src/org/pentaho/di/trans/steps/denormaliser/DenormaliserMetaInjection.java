@@ -106,9 +106,9 @@ public class DenormaliserMetaInjection implements StepMetaInjectionInterface {
     FIELDS(ValueMetaInterface.TYPE_NONE, "All the fields"),
     FIELD(ValueMetaInterface.TYPE_NONE, "One field"),
 
-    NAME(ValueMetaInterface.TYPE_STRING, "Input field name"),
-    KEY_VALUE(ValueMetaInterface.TYPE_STRING, "Key value"),
     TARGET_NAME(ValueMetaInterface.TYPE_STRING, "Target field name"),
+    NAME(ValueMetaInterface.TYPE_STRING, "Value field name"),
+    KEY_VALUE(ValueMetaInterface.TYPE_STRING, "Key value"),
     TARGET_TYPE(ValueMetaInterface.TYPE_STRING, "Target field type"),
     TARGET_LENGTH(ValueMetaInterface.TYPE_STRING, "Target field length"),
     TARGET_PRECISION(ValueMetaInterface.TYPE_STRING, "Target field precision"),

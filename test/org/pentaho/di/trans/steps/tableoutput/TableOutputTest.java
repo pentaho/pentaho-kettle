@@ -578,8 +578,6 @@ public class TableOutputTest extends TestCase
 	 */
     public void testTableOutputJIRA2733() throws Exception
     {
-    	int dataDelay = 10;  	// Delay in milliseconds between issuing records to output rows  
-    	
         KettleEnvironment.init();
 
         try
@@ -661,7 +659,6 @@ public class TableOutputTest extends TestCase
 	            List<RowMetaAndData> inputList = createNormalDataRows();
 	            for (RowMetaAndData rm : inputList )
 	            {
-	            	Thread.sleep(dataDelay);
 	            	rp.putRow(rm.getRowMeta(), rm.getData());
 	            }   
 	            rp.finished();
@@ -692,7 +689,7 @@ public class TableOutputTest extends TestCase
     
     public static void main(String[] args) throws Exception {
       TableOutputTest test = new TableOutputTest();
-      for (int i=0;i<100;i++) {
+      for (int i=0;i<1000;i++) {
         test.testTableOutputJIRA2733();
       }
     }

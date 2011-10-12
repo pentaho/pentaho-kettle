@@ -492,12 +492,6 @@ public class CsvInput extends BaseStep implements StepInterface
 			//
 			while (!newLineFound && outputIndex<meta.getInputFields().length) {
 				
-			  /*
-			  if (getLinesInput()==5445) {
-			    System.out.println("Break!");
-			  }
-			  */
-			  
 				if (checkBufferSize()) {
 					// Last row was being discarded if the last item is null and
 					// there is no end of line delimiter

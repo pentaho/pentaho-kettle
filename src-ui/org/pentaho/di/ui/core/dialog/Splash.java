@@ -85,7 +85,7 @@ public class Splash {
     versionWarningBackgroundColor = new Color(display, 255, 253, 213);
     versionWarningForegroundColor = new Color(display, 220, 177, 20);
     
-    splash = new Shell(display, SWT.ON_TOP);
+    splash = new Shell(display, SWT.BACKGROUND | SWT.APPLICATION_MODAL);
     splash.setImage(kettle_icon);
 
     splash.setText(BaseMessages.getString(PKG, "SplashDialog.Title")); // "Pentaho Data Integration" //$NON-NLS-1$

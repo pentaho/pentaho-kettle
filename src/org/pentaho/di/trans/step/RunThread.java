@@ -50,6 +50,7 @@ public class RunThread implements Runnable {
 		            // nor call the setErrors() and stopAll() below.
 		        	log.logError("UnexpectedError: ", t); //$NON-NLS-1$
 		        } else {
+		          t.printStackTrace();
 		        	log.logError(BaseMessages.getString(PKG, "System.Log.UnexpectedError"), t); //$NON-NLS-1$ //$NON-NLS-2$
 		        }
 		        // baseStep.logError(Const.getStackTracker(t));
