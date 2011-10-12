@@ -6,7 +6,7 @@
     xmlns:pen="http://www.pentaho.org/2008/xul" >
     
     <menupopup id="tools-popup">
-	    <menuitem id="tools-datacleaner" acceltext="CTRL-ALT-P" accesskey="ctrl-alt-p" label="DataCleaner (Human Inference)"
+	    <menuitem id="tools-datacleaner" label="DataCleaner profiling"
               command="profiler.openProfiler()" />
 	</menupopup>	
   

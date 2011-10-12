@@ -23,7 +23,6 @@
 	<classpathentry exported="true" kind="lib" path="libswt/commands.jar"/>
 	<classpathentry exported="true" kind="lib" path="libswt/common.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/jakarta-oro-2.0.8.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/commons/commons-codec-1.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/commons/commons-collections-3.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/commons/commons-dbcp-1.2.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/commons/commons-fileupload-1.0.jar"/>
@@ -61,7 +60,6 @@
 	<classpathentry exported="true" kind="lib" path="test/libext/junit.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/dom4j-1.6.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/jaxen-1.1.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/jfree/jfreechart-1.0.9.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/JDBC/kingbasejdbc.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/JDBC/monetdb-1.7-jdbc.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/jxl.jar"/>
@@ -78,9 +76,7 @@
 	<classpathentry exported="true" kind="lib" path="libext/janino.jar" sourcepath="libext-src/janino-2.5.16-src.zip"/>
 	<classpathentry exported="true" kind="lib" path="libext/SNMP4J.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/jcifs-1.3.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/jfree/jcommon-1.0.14.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/pentaho/pentaho-formula-editor-0.0.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/commons/commons-lang-2.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/ini4j-0.5.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/pentaho/pentaho-xul-core-TRUNK-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/pentaho/pentaho-xul-swt-TRUNK-SNAPSHOT.jar"/>
@@ -120,8 +116,6 @@
 	<classpathentry exported="true" kind="lib" path="libext/rules/mvel2-2.0.10.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/rules/core-3.4.2.v_883_R34x.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/json_simple-1.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/slf4j-api-1.5.8.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/slf4j-jcl-1.5.8.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/jsonpath.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/snakeyaml-1.7.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/odfdom.jar"/>
@@ -227,7 +221,6 @@
 	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-pmd-3.8.0-GA.jar"/>
 	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-wizard-core-3.8.0-GA.jar"/>
 	<classpathentry kind="lib" path="libext/reporting/xstream-1.3.1.jar"/>
-	<classpathentry kind="lib" path="libext/commons/commons-math-1.1.jar"/>
 	<classpathentry kind="lib" path="libext/commons/commons-beanutils-1.8.0.jar"/>
 	<classpathentry kind="lib" path="libext/commons/commons-discovery-0.4.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/postgresql-8.4-702.jdbc3.jar"/>
@@ -270,8 +263,6 @@
 	<classpathentry kind="lib" path="libext/webservices/xmlrpc-client-3.1.3.jar"/>
 	<classpathentry kind="lib" path="libext/webservices/xmlrpc-common-3.1.3.jar"/>
 	<classpathentry kind="lib" path="libext/webservices/ws-commons-util-1.0.2.jar"/>
-	<classpathentry kind="lib" path="src-plugins/kettle-profiling-datacleaner/lib/DataCleaner-core-2.2.jar"/>
-	<classpathentry kind="lib" path="src-plugins/kettle-profiling-datacleaner/lib/DataCleaner.jar"/>
 	<classpathentry kind="lib" path="src-plugins/birt-output/lib/chartengineapi.jar"/>
 	<classpathentry kind="lib" path="src-plugins/birt-output/lib/chartexamplescoreapi.jar"/>
 	<classpathentry kind="lib" path="src-plugins/birt-output/lib/chartitemapi.jar"/>
@@ -294,9 +285,6 @@
 	<classpathentry kind="lib" path="src-plugins/birt-output/lib/org.eclipse.emf.ecore.xmi_2.5.0.v20100521-1846.jar"/>
 	<classpathentry kind="lib" path="src-plugins/birt-output/lib/org.w3c.css.sac_1.3.0.v200805290154.jar"/>
 	<classpathentry kind="lib" path="src-plugins/birt-output/lib/scriptapi.jar"/>
-	<classpathentry kind="lib" path="src-plugins/kettle-profiling-datacleaner/lib/AnalyzerBeans-0.6.jar"/>
-	<classpathentry kind="lib" path="src-plugins/kettle-profiling-datacleaner/lib/MetaModel-core-1.7.4.jar"/>
-	<classpathentry kind="lib" path="src-plugins/kettle-profiling-datacleaner/lib/MetaModel-jdbc-1.7.4.jar"/>
 	<classpathentry kind="lib" path="libswt/win32/swt.jar"/>
 	<classpathentry kind="lib" path="libext/jsendnsca-2.0.1.jar"/>
 	<classpathentry kind="lib" path="libext/mondrian/javacc.jar"/>
@@ -305,5 +293,70 @@
 	<classpathentry kind="lib" path="libext/mondrian/olap4j-xmla-1.0.0.445.jar"/>
 	<classpathentry kind="lib" path="libext/j-interop.jar"/>
 	<classpathentry kind="lib" path="libext/j-interopdeps.jar"/>
+	<classpathentry kind="lib" path="libext/commons/commons-codec-1.4.jar"/>
+	<classpathentry kind="lib" path="libext/commons/commons-lang-2.6.jar"/>
+	<classpathentry kind="lib" path="libext/commons/commons-math-2.1.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/AnalyzerBeans-api-0.7.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/AnalyzerBeans-berkeleydb-0.7.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/AnalyzerBeans-cli-0.7.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/AnalyzerBeans-core-0.7.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/AnalyzerBeans-el-0.7.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/AnalyzerBeans-h2-0.7.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/AnalyzerBeans-i18n-0.7.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/AnalyzerBeans-javascript-0.7.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/AnalyzerBeans-scala-0.7.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/AnalyzerBeans-xml-config-0.7.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/aopalliance-1.0.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/args4j-2.0.12.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/asm-3.2.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/collections-generic-4.01.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/colt-1.2.0.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/concurrent-1.3.4.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/DataCleaner-core-2.4-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/filters-2.0.235.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/gentyref-1.1.0.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/guice-3.0.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/httpclient-4.1.1.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/httpcore-4.1.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/icu4j-4.8.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/javax.inject-1.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/jcl-over-slf4j-1.6.1.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/je-3.2.76.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/joda-time-2.0.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/juel-2.1.3.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/jung-algorithms-2.0.1.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/jung-api-2.0.1.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/jung-graph-impl-2.0.1.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/jung-io-2.0.1.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/jung-visualization-2.0.1.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/looks-2.2.2.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/MetaModel-access-2.0.1.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/MetaModel-core-2.0.1.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/MetaModel-csv-2.0.1.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/MetaModel-dbase-2.0.1.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/MetaModel-excel-2.0.1.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/MetaModel-fixedwidth-2.0.1.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/MetaModel-full-2.0.1.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/MetaModel-jdbc-2.0.1.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/MetaModel-openoffice-2.0.1.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/MetaModel-xml-2.0.1.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/ojdbc6-11.2.0.2.0.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/opencsv-2.1.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/SassyReader-0.2.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/scala-library-2.9.0-1.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/simple-4.1.21.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/slf4j-log4j12-1.6.1.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/stax-api-1.0.1.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/swingx-1.6.1.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/wstx-asl-3.2.6.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/xml-apis-1.3.04.jar"/>
+	<classpathentry kind="lib" path="libext/datacleaner-ui/xmlbeans-2.3.0.jar"/>
+	<classpathentry kind="lib" path="libext/eobjects/SassyReader-0.2.jar"/>
+	<classpathentry kind="lib" path="libext/jersey/mimepull-1.5.jar"/>
+	<classpathentry kind="lib" path="libext/jfree/jcommon-1.0.15.jar"/>
+	<classpathentry kind="lib" path="libext/jfree/jfreechart-1.0.13.jar"/>
+	<classpathentry kind="lib" path="libext/pentaho/hbase-0.90.1.jar"/>
+	<classpathentry kind="lib" path="libext/pentaho/zookeeper-3.3.2.jar"/>
+	<classpathentry kind="lib" path="libext/slf4j-api-1.6.1.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
