@@ -1014,6 +1014,7 @@
 		  	<test todir="${junit}" name="org.pentaho.di.trans.steps.unique.UniqueRowsTest" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.trans.steps.update.UpdateTest" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.trans.steps.valuemapper.ValueMapperTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.janino.JaninoStepTest" haltonerror="false" />			
 
 		</junit>
 	</target>
