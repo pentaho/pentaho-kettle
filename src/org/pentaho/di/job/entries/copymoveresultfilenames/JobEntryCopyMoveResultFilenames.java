@@ -76,8 +76,8 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 	public  String SUCCESS_IF_ERRORS_LESS="success_if_errors_less";
 	public  String SUCCESS_IF_NO_ERRORS="success_if_no_errors";
 	private String success_condition;
-  private Pattern wildcardPattern;
-  private Pattern wildcardExcludePattern;
+    private Pattern wildcardPattern;
+    private Pattern wildcardExcludePattern;
   
 	
 	
@@ -437,22 +437,25 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 		Result result = previousResult;
 		result.setNrErrors(1);
 		result.setResult(false);
-		String realdestinationFolder=environmentSubstitute(getDestinationFolder());
-    if (!Const.isEmpty(wildcard)){
-      wildcardPattern = Pattern.compile(environmentSubstitute(wildcard));
-    }
-    if (!Const.isEmpty(wildcardexclude)) {
-      wildcardExcludePattern = Pattern.compile(environmentSubstitute(wildcardexclude));
-    }
 		
-		if(!CreateDestinationFolder(realdestinationFolder))
-		{
-			return result;
+		boolean deleteFile = getAction().equals("delete");
+		
+		String realdestinationFolder=null;
+		if(!deleteFile) {
+			realdestinationFolder= environmentSubstitute(getDestinationFolder());
+
+			if(!CreateDestinationFolder(realdestinationFolder)) {
+				return result;
+			}
+		}	
+		if (!Const.isEmpty(wildcard)){
+		      wildcardPattern = Pattern.compile(environmentSubstitute(wildcard));
 		}
-			
-		
-		if(previousResult!=null)
-		{
+	    if (!Const.isEmpty(wildcardexclude)) {
+	      wildcardExcludePattern = Pattern.compile(environmentSubstitute(wildcardexclude));
+	    }
+		    
+		if(previousResult!=null) {
 			NrErrors=0;
 			limitFiles=Const.toInt(environmentSubstitute(getNrErrorsLessThan()),10);
 			NrErrors=0;
@@ -462,8 +465,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 			
 			FileObject file = null;
 
-			try
-			{
+			try {
 				int size=result.getResultFiles().size();
 				if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.log.FilesFound",""+size));
 
@@ -488,7 +490,7 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 			           			&&specifywildcard))
 			  			{
 			        		// Copy or Move file
-							if(!processFile(file,realdestinationFolder,result,parentJob))
+							if(!processFile(file,realdestinationFolder,result,parentJob, deleteFile))
 							{
 								// Update Errors
 								updateErrors();
@@ -599,52 +601,62 @@ public class JobEntryCopyMoveResultFilenames extends JobEntryBase implements Clo
 		 return false;
 	}
 
-	private boolean processFile(FileObject sourcefile,String destinationFolder,Result result,Job parentJob) 
+	private boolean processFile(FileObject sourcefile,String destinationFolder,Result result,Job parentJob, boolean deleteFile) 
 	{
 		boolean retval=false;
-		boolean filexists=false;
+
 		try
 		{
-			// return destination short filename
-			String shortfilename=getDestinationFilename(sourcefile.getName().getBaseName());
-			// build full destination filename
-			String destinationFilename=destinationFolder+Const.FILE_SEPARATOR+shortfilename;
-			FileObject destinationfile=KettleVFS.getFileObject(destinationFilename, this);
-			filexists=destinationfile.exists();
-			if(filexists)
-			{
-				if(log.isDetailed())
-					logDetailed(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.Log.FileExists",destinationFilename));
-			}
-			if((!filexists)  || (filexists && isOverwriteFile()))
-			{
-				if(getAction().equals("copy"))
-				{
-					// Copy file
-					FileUtil.copyContent(sourcefile, destinationfile);
+			if(deleteFile) {
+				// delete file
+				if(sourcefile.delete()) {
 					if(log.isDetailed()) 
-						logDetailed(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.log.CopiedFile",sourcefile.toString(),destinationFolder));
-				}else{
-					// Move file
-					sourcefile.moveTo(destinationfile);	
-					if(log.isDetailed()) 
-						logDetailed(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.log.MovedFile",sourcefile.toString(),destinationFolder));
-				}
+						logDetailed(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.log.DeletedFile",sourcefile.toString()));
 				
-				if(isRemovedSourceFilename())
-				{
 					// Remove source file from result files list
 					result.getResultFiles().remove(sourcefile.toString());
 					if(log.isDetailed())
 						logDetailed(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.RemovedFileFromResult",sourcefile.toString()));
+
+				}else {
+					logError(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.CanNotDeletedFile",sourcefile.toString()));
 				}
-				if(isAddDestinationFilename())
-				{
-					// Add destination filename to Resultfilenames ...
-					ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(destinationfile.toString(), this), parentJob.getJobname(), toString());
-					result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
+			}else {
+				// return destination short filename
+				String shortfilename=getDestinationFilename(sourcefile.getName().getBaseName());
+				// build full destination filename
+				String destinationFilename=destinationFolder+Const.FILE_SEPARATOR+shortfilename;
+				FileObject destinationfile=KettleVFS.getFileObject(destinationFilename, this);
+				boolean filexists=destinationfile.exists();
+				if(filexists) {
 					if(log.isDetailed())
-						logDetailed(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.AddedFileToResult",destinationfile.toString()));
+						logDetailed(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.Log.FileExists",destinationFilename));
+				}
+				if((!filexists)  || (filexists && isOverwriteFile())) {
+					if(getAction().equals("copy")) {
+						// Copy file
+						FileUtil.copyContent(sourcefile, destinationfile);
+						if(log.isDetailed()) 
+							logDetailed(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.log.CopiedFile",sourcefile.toString(),destinationFolder));
+					}else {
+						// Move file
+						sourcefile.moveTo(destinationfile);	
+						if(log.isDetailed()) 
+							logDetailed(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.log.MovedFile",sourcefile.toString(),destinationFolder));
+					} 
+					if(isRemovedSourceFilename()) {
+						// Remove source file from result files list
+						result.getResultFiles().remove(sourcefile.toString());
+						if(log.isDetailed())
+							logDetailed(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.RemovedFileFromResult",sourcefile.toString()));
+					}
+					if(isAddDestinationFilename()) {
+						// Add destination filename to Resultfilenames ...
+						ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(destinationfile.toString(), this), parentJob.getJobname(), toString());
+						result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
+						if(log.isDetailed())
+							logDetailed(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.AddedFileToResult",destinationfile.toString()));
+					}
 				}
 			}
 			retval=true;

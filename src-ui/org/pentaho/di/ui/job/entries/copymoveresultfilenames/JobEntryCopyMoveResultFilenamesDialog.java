@@ -209,6 +209,7 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 	  	wAction = new CCombo(shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
 	  	wAction.add(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.Copy.Label"));
 	  	wAction.add(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.Move.Label"));
+	  	wAction.add(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.Delete.Label"));
 	  	wAction.select(0); // +1: starts at -1
 	  	
 		props.setLook(wAction);
@@ -217,8 +218,15 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 		fdAction.top = new FormAttachment(wName, 2*margin);
 		fdAction.right = new FormAttachment(100, 0);
 		wAction.setLayoutData(fdAction);
-		
-		
+		wAction.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				enableAction();
+				jobEntry.setChanged();
+			}
+		});
+
 		// Foldername line
 		wlFoldername=new Label(shell, SWT.RIGHT);
 		wlFoldername.setText(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.Foldername.Label"));
@@ -485,7 +493,7 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
         
         
 
-        // Add Date befor extension?
+        // Add Date before extension?
         wlAddDateBeforeExtension = new Label(shell, SWT.RIGHT);
         wlAddDateBeforeExtension.setText(BaseMessages.getString(PKG, "JobEntryCopyMoveResultFilenames.AddDateBeforeExtension.Label"));
         props.setLook(wlAddDateBeforeExtension);
@@ -731,7 +739,7 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 		setDateTimeFormat();
 		activeSuccessCondition();
 		setAddDateBeforeExtension();
-
+		enableAction();
 		BaseStepDialog.setSize(shell);
 
 		shell.open();
@@ -820,6 +828,8 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 		{
 			if(jobEntry.getAction().equals("move"))
 				wAction.select(1);
+			else if(jobEntry.getAction().equals("delete"))
+				wAction.select(2);	
 			else
 				wAction.select(0);	
 		}else wAction.select(0);
@@ -873,6 +883,8 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 		
 		if(wAction.getSelectionIndex()==1)
 			jobEntry.setAction("move");
+		else if(wAction.getSelectionIndex()==2)
+			jobEntry.setAction("delete");
 		else
 			jobEntry.setAction("copy");	
 		
@@ -902,5 +914,32 @@ public class JobEntryCopyMoveResultFilenamesDialog extends JobEntryDialog implem
 	public boolean isUnconditional()
 	{
 		return false;
+	}
+	
+	private void enableAction()
+	{
+		boolean copyOrMove= wAction.getSelectionIndex()!=2;
+		
+		wlCreateDestinationFolder.setEnabled(copyOrMove);
+		wCreateDestinationFolder.setEnabled(copyOrMove);
+		wlOverwriteFile.setEnabled(copyOrMove);
+		wOverwriteFile.setEnabled(copyOrMove);
+		wlRemovedSourceFilename.setEnabled(copyOrMove);
+		wRemovedSourceFilename.setEnabled(copyOrMove);
+		wlAddDestinationFilename.setEnabled(copyOrMove);
+		wAddDestinationFilename.setEnabled(copyOrMove);
+		wlAddDate.setEnabled(copyOrMove);
+		wAddDate.setEnabled(copyOrMove);
+		wlAddTime.setEnabled(copyOrMove);
+		wAddTime.setEnabled(copyOrMove);
+		wlSpecifyFormat.setEnabled(copyOrMove);
+		wSpecifyFormat.setEnabled(copyOrMove);
+		wlDateTimeFormat.setEnabled(copyOrMove);
+		wDateTimeFormat.setEnabled(copyOrMove);
+		wAddDateBeforeExtension.setEnabled(copyOrMove);
+		wlAddDateBeforeExtension.setEnabled(copyOrMove);
+		wlFoldername.setEnabled(copyOrMove);
+		wFoldername.setEnabled(copyOrMove);
+		wbFoldername.setEnabled(copyOrMove);
 	}
 }
