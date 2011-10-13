@@ -1,11 +1,10 @@
 package org.pentaho.di.core.plugins;
 
-import org.pentaho.di.core.exception.KettlePluginException;
-import org.pentaho.di.core.gui.GUIOption;
-import org.pentaho.di.core.lifecycle.LifecycleListener;
-
 import java.lang.annotation.Annotation;
 import java.util.Map;
+
+import org.pentaho.di.core.exception.KettlePluginException;
+import org.pentaho.di.core.gui.GUIOption;
 
 /**
  * Plugins of this type can extend to capabilities of the PluginRegiestry

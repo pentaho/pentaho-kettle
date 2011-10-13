@@ -431,6 +431,8 @@ public class KettleDatabaseRepositoryBase {
 	public static final String TRANS_ATTRIBUTE_LOG_SIZE_LIMIT = "LOG_SIZE_LIMIT";
 	public static final String TRANS_ATTRIBUTE_LOG_INTERVAL = "LOG_INTERVAL";
 	public static final String TRANS_ATTRIBUTE_TRANSFORMATION_TYPE = "TRANSFORMATION_TYPE";
+  public static final String TRANS_ATTRIBUTE_SLEEP_TIME_EMPTY = "SLEEP_TIME_EMPTY";
+  public static final String TRANS_ATTRIBUTE_SLEEP_TIME_FULL = "SLEEP_TIME_FULL";
 	
 	public static final String TRANS_ATTRIBUTE_PARAM_KEY         = "PARAM_KEY";
 	public static final String TRANS_ATTRIBUTE_PARAM_DEFAULT     = "PARAM_DEFAULT";

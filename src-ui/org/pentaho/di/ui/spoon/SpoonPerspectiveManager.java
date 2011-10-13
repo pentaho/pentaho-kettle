@@ -14,11 +14,17 @@ package org.pentaho.di.ui.spoon;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 import org.eclipse.swt.widgets.Composite;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.i18n.LanguageChoice;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
@@ -50,7 +56,7 @@ public class SpoonPerspectiveManager {
   private XulDomContainer domContainer;
 
 
-  private static class SpoonPerspectiveComparator implements Comparator<SpoonPerspective> {
+  protected static class SpoonPerspectiveComparator implements Comparator<SpoonPerspective> {
     public int compare(SpoonPerspective o1, SpoonPerspective o2) {
       return o1.getId().compareTo(o2.getId());
     }

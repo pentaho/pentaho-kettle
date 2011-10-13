@@ -347,8 +347,7 @@ public class KettleDatabaseRepositoryDatabaseDelegate extends KettleDatabaseRepo
 		
 		if (jobList.length==0 && transList.length==0)
 		{
-			String sql = "DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_DATABASE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE)+" = " + id_database;
-			repository.connectionDelegate.getDatabase().execStatement(sql);
+		  repository.connectionDelegate.performDelete("DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_DATABASE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_DATABASE_ID_DATABASE)+" = ? ", id_database);
 		}
 		else
 		{
@@ -374,8 +373,7 @@ public class KettleDatabaseRepositoryDatabaseDelegate extends KettleDatabaseRepo
     
     public synchronized void delDatabaseAttributes(ObjectId id_database) throws KettleException
     {
-        String sql = "DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_DATABASE_ATTRIBUTE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_ID_DATABASE)+" = " + id_database;
-        repository.connectionDelegate.getDatabase().execStatement(sql);
+        repository.connectionDelegate.performDelete("DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_DATABASE_ATTRIBUTE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_ID_DATABASE)+" = ? ", id_database);
     }
 
 	public synchronized int getNrDatabases() throws KettleException
@@ -396,8 +394,9 @@ public class KettleDatabaseRepositoryDatabaseDelegate extends KettleDatabaseRepo
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_STEP_DATABASE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_STEP_DATABASE_ID_TRANSFORMATION)+" = " + id_transformation;
-		RowMetaAndData r = repository.connectionDelegate.getOneRow(sql);
+		RowMetaAndData transIdRow = repository.connectionDelegate.getParameterMetaData(id_transformation);
+		String sql = "SELECT COUNT(*) FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_STEP_DATABASE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_STEP_DATABASE_ID_TRANSFORMATION)+" = ? ";
+		RowMetaAndData r = repository.connectionDelegate.getOneRow(sql, transIdRow.getRowMeta(), transIdRow.getData());
 		if (r != null)
 		{
 			retval = (int) r.getInteger(0, 0L);

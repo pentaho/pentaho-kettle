@@ -91,8 +91,8 @@ public class SpoonPluginManager {
   }
 
 
-  private SpoonPluginInterface removePlugin(final SpoonPluginInterface sp){
-    SpoonPluginCategories categories = sp.getClass().getAnnotation(SpoonPluginCategories.class);
+  protected SpoonPluginInterface removePlugin(final SpoonPluginInterface sp){
+    // SpoonPluginCategories categories = sp.getClass().getAnnotation(SpoonPluginCategories.class);
 
     if(sp.getPerspective() != null){
       SpoonPerspectiveManager.getInstance().removePerspective(sp.getPerspective());

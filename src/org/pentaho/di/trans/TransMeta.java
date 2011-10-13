@@ -4775,7 +4775,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      */
     public int getSleepTimeEmpty()
     {
-        return Const.TIMEOUT_GET_MILLIS;
+        return sleepTimeEmpty;
     }
 
     /**
@@ -4783,7 +4783,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      */
     public int getSleepTimeFull()
     {
-        return Const.TIMEOUT_PUT_MILLIS;
+        return sleepTimeFull;
     }
 
     /**

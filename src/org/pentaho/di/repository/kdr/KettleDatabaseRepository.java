@@ -36,7 +36,6 @@ import org.pentaho.di.core.exception.KettleDependencyException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleSecurityException;
 import org.pentaho.di.core.logging.LogChannel;
-import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -676,7 +675,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 
 	public synchronized String[] getTransformationNames(ObjectId id_directory, boolean includeDeleted) throws KettleException
 	{
-		return connectionDelegate.getStrings("SELECT "+quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_NAME)+" FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_TRANSFORMATION)+" WHERE "+quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_DIRECTORY)+" = " + id_directory + " ORDER BY "+quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_NAME));
+		return connectionDelegate.getStrings("SELECT "+quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_NAME)+" FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_TRANSFORMATION)+" WHERE "+quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_DIRECTORY)+" = ? ORDER BY "+quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_NAME), id_directory);
 	}
     
     public List<RepositoryElementMetaInterface> getJobObjects(ObjectId id_directory, boolean includeDeleted) throws KettleException
@@ -707,12 +706,12 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 
 	public synchronized String[] getJobNames(ObjectId id_directory, boolean includeDeleted) throws KettleException
 	{
-        return connectionDelegate.getStrings("SELECT "+quote(KettleDatabaseRepository.FIELD_JOB_NAME)+" FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_JOB)+" WHERE "+quote(KettleDatabaseRepository.FIELD_JOB_ID_DIRECTORY)+" = " + id_directory + " ORDER BY "+quote(KettleDatabaseRepository.FIELD_JOB_NAME));
+        return connectionDelegate.getStrings("SELECT "+quote(KettleDatabaseRepository.FIELD_JOB_NAME)+" FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_JOB)+" WHERE "+quote(KettleDatabaseRepository.FIELD_JOB_ID_DIRECTORY)+" = ? ORDER BY "+quote(KettleDatabaseRepository.FIELD_JOB_NAME), id_directory);
 	}
 
 	public synchronized String[] getDirectoryNames(ObjectId id_directory) throws KettleException
 	{
-        return connectionDelegate.getStrings("SELECT "+quote(KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME)+" FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_DIRECTORY)+" WHERE "+quote(KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT)+" = " + id_directory + " ORDER BY "+quote(KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME));
+        return connectionDelegate.getStrings("SELECT "+quote(KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME)+" FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_DIRECTORY)+" WHERE "+quote(KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT)+" = ? ORDER BY "+quote(KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME), id_directory);
 	}
 
 	public synchronized String[] getJobNames() throws KettleException
@@ -821,60 +820,50 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 
 	public synchronized String[] getTransformationsUsingDatabase(ObjectId id_database) throws KettleException
 	{
-		String sql = "SELECT DISTINCT "+quote(KettleDatabaseRepository.FIELD_STEP_DATABASE_ID_TRANSFORMATION)+" FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_STEP_DATABASE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_STEP_DATABASE_ID_DATABASE)+" = " + id_database;
-        return transDelegate.getTransformationsWithIDList( connectionDelegate.getRows(sql, 100), connectionDelegate.getReturnRowMeta() );
+	   ObjectId[] transIds = connectionDelegate.getIDs("SELECT DISTINCT "+quote(FIELD_STEP_DATABASE_ID_TRANSFORMATION)+
+         " FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_STEP_DATABASE)+
+         " WHERE "+quote(FIELD_STEP_DATABASE_ID_DATABASE)+" = ?", id_database);
+
+	   return transDelegate.getTransformationsWithIDList( transIds );
 	}
 	
 	public synchronized String[] getJobsUsingDatabase(ObjectId id_database) throws KettleException
 	{
-		String sql = "SELECT DISTINCT "+quote(KettleDatabaseRepository.FIELD_JOBENTRY_DATABASE_ID_JOB)+" FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_JOBENTRY_DATABASE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_JOBENTRY_DATABASE_ID_DATABASE)+" = " + id_database;
-        return jobDelegate.getJobsWithIDList( connectionDelegate.getRows(sql, 100), connectionDelegate.getReturnRowMeta() );
+		ObjectId[] jobIds = connectionDelegate.getIDs("SELECT DISTINCT "+quote(KettleDatabaseRepository.FIELD_JOBENTRY_DATABASE_ID_JOB)+
+		    " FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_JOBENTRY_DATABASE)+
+		    " WHERE "+quote(KettleDatabaseRepository.FIELD_JOBENTRY_DATABASE_ID_DATABASE)+" = ? ", id_database);
+		
+    return jobDelegate.getJobsWithIDList( jobIds );
 	}
 	
     public synchronized String[] getClustersUsingSlave(ObjectId id_slave) throws KettleException
     {
-        String sql = "SELECT DISTINCT "+quote(KettleDatabaseRepository.FIELD_CLUSTER_SLAVE_ID_CLUSTER)+" FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_CLUSTER_SLAVE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_CLUSTER_SLAVE_ID_SLAVE)+" = " + id_slave;
-
-        List<Object[]> list = connectionDelegate.getRows(sql, 100);
-        RowMetaInterface rowMeta = connectionDelegate.getReturnRowMeta();
-        List<String> clusterList = new ArrayList<String>();
-
-        for (int i=0;i<list.size();i++)
-        {
-        	long id_cluster_schema = rowMeta.getInteger(list.get(i), quote(KettleDatabaseRepository.FIELD_CLUSTER_SLAVE_ID_CLUSTER), -1L);
-            if (id_cluster_schema > 0)
-            {
-                RowMetaAndData transRow =  clusterSchemaDelegate.getClusterSchema(new LongObjectId(id_cluster_schema));
-                if (transRow!=null)
-                {
-                    String clusterName = transRow.getString(quote(KettleDatabaseRepository.FIELD_CLUSTER_NAME), "<name not found>");
-                    if (clusterName!=null) clusterList.add(clusterName);
-                }
-            }
-        }
-
-        return (String[]) clusterList.toArray(new String[clusterList.size()]);
+      return connectionDelegate.getStrings("SELECT DISTINCT "+quote(FIELD_CLUSTER_SLAVE_ID_CLUSTER)+" FROM "+quoteTable(TABLE_R_CLUSTER_SLAVE)+" WHERE "+quote(FIELD_CLUSTER_SLAVE_ID_SLAVE)+" = ?", id_slave);
     }
 
 	public synchronized String[] getTransformationsUsingSlave(ObjectId id_slave) throws KettleException
     {
-        String sql = "SELECT DISTINCT "+quote(KettleDatabaseRepository.FIELD_TRANS_SLAVE_ID_TRANSFORMATION)+" FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_TRANS_SLAVE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_TRANS_SLAVE_ID_SLAVE)+" = " + id_slave;
-        return transDelegate.getTransformationsWithIDList( connectionDelegate.getRows(sql, 100), connectionDelegate.getReturnRowMeta() );
+      ObjectId[] transIds = connectionDelegate.getIDs("SELECT DISTINCT "+quote(FIELD_TRANS_SLAVE_ID_TRANSFORMATION)+
+          " FROM "+quoteTable(TABLE_R_TRANS_SLAVE)+
+          " WHERE "+quote(FIELD_TRANS_SLAVE_ID_SLAVE)+" = ?", id_slave);
+      return transDelegate.getTransformationsWithIDList( transIds );
     }
     
     public synchronized String[] getTransformationsUsingPartitionSchema(ObjectId id_partition_schema) throws KettleException
     {
-        String sql = "SELECT DISTINCT "+quote(KettleDatabaseRepository.FIELD_TRANS_PARTITION_SCHEMA_ID_TRANSFORMATION)+
-                     " FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_TRANS_PARTITION_SCHEMA)+" WHERE "+quote(KettleDatabaseRepository.FIELD_TRANS_PARTITION_SCHEMA_ID_PARTITION_SCHEMA)+" = " + id_partition_schema;
-        return transDelegate.getTransformationsWithIDList( connectionDelegate.getRows(sql, 100), connectionDelegate.getReturnRowMeta() );
+      ObjectId[] transIds = connectionDelegate.getIDs("SELECT DISTINCT "+quote(FIELD_TRANS_PARTITION_SCHEMA_ID_TRANSFORMATION)+
+          " FROM "+quoteTable(TABLE_R_TRANS_PARTITION_SCHEMA)+
+          " WHERE "+quote(FIELD_TRANS_PARTITION_SCHEMA_ID_PARTITION_SCHEMA)+" = ?", id_partition_schema);
+      return transDelegate.getTransformationsWithIDList( transIds );
     }
     
     public synchronized String[] getTransformationsUsingCluster(ObjectId id_cluster) throws KettleException
     {
-        String sql = "SELECT DISTINCT "+quote(KettleDatabaseRepository.FIELD_TRANS_CLUSTER_ID_TRANSFORMATION)+" FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_TRANS_CLUSTER)+" WHERE "+quote(KettleDatabaseRepository.FIELD_TRANS_CLUSTER_ID_CLUSTER)+" = " + id_cluster;
-        return transDelegate.getTransformationsWithIDList( connectionDelegate.getRows(sql, 100), connectionDelegate.getReturnRowMeta() );
+      ObjectId[] transIds = connectionDelegate.getIDs("SELECT DISTINCT "+quote(FIELD_TRANS_CLUSTER_ID_TRANSFORMATION)+
+          " FROM "+quoteTable(TABLE_R_TRANS_CLUSTER)+
+          " WHERE "+quote(FIELD_TRANS_CLUSTER_ID_CLUSTER)+" = ?", id_cluster);
+      return transDelegate.getTransformationsWithIDList( transIds );
     }
-
 
 	public ObjectId[] getJobHopIDs(ObjectId id_job) throws KettleException
 	{
@@ -951,8 +940,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 
 	public synchronized void delSteps(ObjectId id_transformation) throws KettleException
 	{
-		String sql = "DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_STEP)+" WHERE "+quote(KettleDatabaseRepository.FIELD_STEP_ID_TRANSFORMATION)+" = " + id_transformation;
-		execStatement(sql);
+	  connectionDelegate.performDelete("DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_STEP)+" WHERE "+quote(KettleDatabaseRepository.FIELD_STEP_ID_TRANSFORMATION)+" = ? ", id_transformation);
 	}
 
 	public synchronized void deleteCondition(ObjectId id_condition) throws KettleException
@@ -972,8 +960,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 		}
 		else
 		{
-			String sql = "DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_CONDITION)+" WHERE "+quote(KettleDatabaseRepository.FIELD_CONDITION_ID_CONDITION)+" = " + id_condition;
-			execStatement(sql);
+		  connectionDelegate.performDelete("DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_CONDITION)+" WHERE "+quote(KettleDatabaseRepository.FIELD_CONDITION_ID_CONDITION)+" = ? ", id_condition);
 		}
 	}
 
@@ -984,8 +971,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 		{
 			deleteCondition(ids[i]);
 		}
-		String sql = "DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_TRANS_STEP_CONDITION)+" WHERE "+quote(KettleDatabaseRepository.FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION)+" = " + id_transformation;
-		execStatement(sql);
+		connectionDelegate.performDelete("DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_TRANS_STEP_CONDITION)+" WHERE "+quote(KettleDatabaseRepository.FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION)+" = ? ", id_transformation);
 	}
 
 	/**
@@ -995,8 +981,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 	 */
 	public synchronized void delStepDatabases(ObjectId id_transformation) throws KettleException
 	{
-		String sql = "DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_STEP_DATABASE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_STEP_DATABASE_ID_TRANSFORMATION)+" = " + id_transformation;
-		execStatement(sql);
+	  connectionDelegate.performDelete("DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_STEP_DATABASE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_STEP_DATABASE_ID_TRANSFORMATION)+" = ? ", id_transformation);
 	}
 	/**
 	 * Delete the relationships between the job/job entries and the databases.
@@ -1005,93 +990,77 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 	 */
 	public synchronized void delJobEntryDatabases(ObjectId id_job) throws KettleException
 	{
-		String sql = "DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_JOBENTRY_DATABASE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_JOBENTRY_DATABASE_ID_JOB)+" = " + id_job;
-		execStatement(sql);
+	  connectionDelegate.performDelete("DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_JOBENTRY_DATABASE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_JOBENTRY_DATABASE_ID_JOB)+" = ? ", id_job);
 	}
 	public synchronized void delJobEntries(ObjectId id_job) throws KettleException
 	{
-		String sql = "DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_JOBENTRY)+" WHERE "+quote(KettleDatabaseRepository.FIELD_JOBENTRY_ID_JOB)+" = " + id_job;
-		execStatement(sql);
+	  connectionDelegate.performDelete("DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_JOBENTRY)+" WHERE "+quote(KettleDatabaseRepository.FIELD_JOBENTRY_ID_JOB)+" = ? ", id_job);
 	}
 
 	public synchronized void delJobEntryCopies(ObjectId id_job) throws KettleException
 	{
-		String sql = "DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_JOBENTRY_COPY)+" WHERE "+quote(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOB)+" = " + id_job;
-		execStatement(sql);
+	  connectionDelegate.performDelete("DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_JOBENTRY_COPY)+" WHERE "+quote(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOB)+" = ? ", id_job);
 	}
 
 	public synchronized void delDependencies(ObjectId id_transformation) throws KettleException
 	{
-		String sql = "DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_DEPENDENCY)+" WHERE "+quote(KettleDatabaseRepository.FIELD_DEPENDENCY_ID_TRANSFORMATION)+" = " + id_transformation;
-		execStatement(sql);
+	  connectionDelegate.performDelete("DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_DEPENDENCY)+" WHERE "+quote(KettleDatabaseRepository.FIELD_DEPENDENCY_ID_TRANSFORMATION)+" = ? ", id_transformation);
 	}
 
 	public synchronized void delStepAttributes(ObjectId id_transformation) throws KettleException
 	{
-		String sql = "DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_STEP_ATTRIBUTE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_ID_TRANSFORMATION)+" = " + id_transformation;
-		execStatement(sql);
+	  connectionDelegate.performDelete("DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_STEP_ATTRIBUTE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_ID_TRANSFORMATION)+" = ? ", id_transformation);
 	}
 
     public synchronized void delTransAttributes(ObjectId id_transformation) throws KettleException
     {
-        String sql = "DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_TRANS_ATTRIBUTE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION)+" = " + id_transformation;
-        execStatement(sql);
+      connectionDelegate.performDelete("DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_TRANS_ATTRIBUTE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_TRANS_ATTRIBUTE_ID_TRANSFORMATION)+" = ? ", id_transformation);
     }
 
     public synchronized void delJobAttributes(ObjectId id_job) throws KettleException
     {
-        String sql = "DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_JOB_ATTRIBUTE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_ID_JOB)+" = " + id_job;
-        execStatement(sql);
+      connectionDelegate.performDelete("DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_JOB_ATTRIBUTE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_JOB_ATTRIBUTE_ID_JOB)+" = ? ", id_job);
     }   
     
     public synchronized void delPartitionSchemas(ObjectId id_transformation) throws KettleException
     {
-        String sql = "DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_TRANS_PARTITION_SCHEMA)+" WHERE "+quote(KettleDatabaseRepository.FIELD_TRANS_PARTITION_SCHEMA_ID_TRANSFORMATION)+" = " + id_transformation;
-        execStatement(sql);
+      connectionDelegate.performDelete("DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_TRANS_PARTITION_SCHEMA)+" WHERE "+quote(KettleDatabaseRepository.FIELD_TRANS_PARTITION_SCHEMA_ID_TRANSFORMATION)+" = ? ", id_transformation);
     }
 
     public synchronized void delPartitions(ObjectId id_partition_schema) throws KettleException
     {
-        // First see if the partition is used by a step, transformation etc.
-        // 
-        execStatement("DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_PARTITION)+" WHERE "+quote(KettleDatabaseRepository.FIELD_PARTITION_ID_PARTITION_SCHEMA)+" = " + id_partition_schema);
+      connectionDelegate.performDelete("DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_PARTITION)+" WHERE "+quote(KettleDatabaseRepository.FIELD_PARTITION_ID_PARTITION_SCHEMA)+" = ? ", id_partition_schema);
     }
     
     public synchronized void delClusterSlaves(ObjectId id_cluster) throws KettleException
     {
-        String sql = "DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_CLUSTER_SLAVE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_CLUSTER_SLAVE_ID_CLUSTER)+" = " + id_cluster;
-        execStatement(sql);
+      connectionDelegate.performDelete("DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_CLUSTER_SLAVE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_CLUSTER_SLAVE_ID_CLUSTER)+" =  ? ", id_cluster);
     }
     
     public synchronized void delTransformationClusters(ObjectId id_transformation) throws KettleException
     {
-        String sql = "DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_TRANS_CLUSTER)+" WHERE "+quote(KettleDatabaseRepository.FIELD_TRANS_CLUSTER_ID_TRANSFORMATION)+" = " + id_transformation;
-        execStatement(sql);
+      connectionDelegate.performDelete("DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_TRANS_CLUSTER)+" WHERE "+quote(KettleDatabaseRepository.FIELD_TRANS_CLUSTER_ID_TRANSFORMATION)+" = ? ", id_transformation);
     }
 
     public synchronized void delTransformationSlaves(ObjectId id_transformation) throws KettleException
     {
-        String sql = "DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_TRANS_SLAVE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_TRANS_SLAVE_ID_TRANSFORMATION)+" = " + id_transformation;
-        execStatement(sql);
+      connectionDelegate.performDelete("DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_TRANS_SLAVE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_TRANS_SLAVE_ID_TRANSFORMATION)+" = ? ", id_transformation);
     }
 
 
 	public synchronized void delJobEntryAttributes(ObjectId id_job) throws KettleException
 	{
-		String sql = "DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_JOBENTRY_ATTRIBUTE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOB)+" = " + id_job;
-		execStatement(sql);
+	  connectionDelegate.performDelete("DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_JOBENTRY_ATTRIBUTE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOB)+" = ? ", id_job);
 	}
 
 	public synchronized void delTransHops(ObjectId id_transformation) throws KettleException
 	{
-		String sql = "DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_TRANS_HOP)+" WHERE "+quote(KettleDatabaseRepository.FIELD_TRANS_HOP_ID_TRANSFORMATION)+" = " + id_transformation;
-		execStatement(sql);
+	  connectionDelegate.performDelete("DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_TRANS_HOP)+" WHERE "+quote(KettleDatabaseRepository.FIELD_TRANS_HOP_ID_TRANSFORMATION)+" =  ? ", id_transformation);
 	}
 
 	public synchronized void delJobHops(ObjectId id_job) throws KettleException
 	{
-		String sql = "DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_JOB_HOP)+" WHERE "+quote(KettleDatabaseRepository.FIELD_JOB_HOP_ID_JOB)+" = " + id_job;
-		execStatement(sql);
+	  connectionDelegate.performDelete("DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_JOB_HOP)+" WHERE "+quote(KettleDatabaseRepository.FIELD_JOB_HOP_ID_JOB)+" = ? ", id_job);
 	}
 
 	public synchronized void delTransNotes(ObjectId id_transformation) throws KettleException
@@ -1100,12 +1069,10 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 
 		for (int i = 0; i < ids.length; i++)
 		{
-			String sql = "DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_NOTE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_NOTE_ID_NOTE)+" = " + ids[i];
-			execStatement(sql);
+		  connectionDelegate.performDelete("DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_NOTE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_NOTE_ID_NOTE)+" = ? ", ids[i]);
 		}
 
-		String sql = "DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_TRANS_NOTE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_TRANS_NOTE_ID_TRANSFORMATION)+" = " + id_transformation;
-		execStatement(sql);
+		connectionDelegate.performDelete("DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_TRANS_NOTE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_TRANS_NOTE_ID_TRANSFORMATION)+" = ? ", id_transformation);
 	}
 
 	public synchronized void delJobNotes(ObjectId id_job) throws KettleException
@@ -1114,40 +1081,34 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 
 		for (int i = 0; i < ids.length; i++)
 		{
-			String sql = "DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_NOTE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_NOTE_ID_NOTE)+" = " + ids[i];
-			execStatement(sql);
+		  connectionDelegate.performDelete("DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_NOTE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_NOTE_ID_NOTE)+" = ? ", ids[i]);
 		}
 
-		String sql = "DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_JOB_NOTE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_JOB_NOTE_ID_JOB)+" = " + id_job;
-		execStatement(sql);
+		connectionDelegate.performDelete("DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_JOB_NOTE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_JOB_NOTE_ID_JOB)+" = ? ", id_job);
 	}
 
 	public synchronized void delTrans(ObjectId id_transformation) throws KettleException
 	{
 		securityProvider.validateAction(RepositoryOperation.DELETE_TRANSFORMATION);
 
-		String sql = "DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_TRANSFORMATION)+" WHERE "+quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_TRANSFORMATION)+" = " + id_transformation;
-		execStatement(sql);
+		connectionDelegate.performDelete("DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_TRANSFORMATION)+" WHERE "+quote(KettleDatabaseRepository.FIELD_TRANSFORMATION_ID_TRANSFORMATION)+" = ? ", id_transformation);
 	}
 
 	public synchronized void delJob(ObjectId id_job) throws KettleException
 	{
 		securityProvider.validateAction(RepositoryOperation.DELETE_TRANSFORMATION);
 
-		String sql = "DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_JOB)+" WHERE "+quote(KettleDatabaseRepository.FIELD_JOB_ID_JOB)+" = " + id_job;
-		execStatement(sql);
+		connectionDelegate.performDelete("DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_JOB)+" WHERE "+quote(KettleDatabaseRepository.FIELD_JOB_ID_JOB)+" = ? ", id_job);
 	}
 
 	public synchronized void delTransStepCondition(ObjectId id_transformation) throws KettleException
 	{
-		String sql = "DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_TRANS_STEP_CONDITION)+" WHERE "+quote(KettleDatabaseRepository.FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION)+" = " + id_transformation;
-		execStatement(sql);
+	  connectionDelegate.performDelete("DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_TRANS_STEP_CONDITION)+" WHERE "+quote(KettleDatabaseRepository.FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION)+" = ? ", id_transformation);
 	}
 
 	public synchronized void delValue(ObjectId id_value) throws KettleException
 	{
-		String sql = "DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_VALUE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_VALUE_ID_VALUE)+" = " + id_value;
-		execStatement(sql);
+	  connectionDelegate.performDelete("DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_VALUE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_VALUE_ID_VALUE)+" = ? ", id_value);
 	}
 
     public synchronized void deleteSlave(ObjectId id_slave) throws KettleException
@@ -1164,8 +1125,8 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 
         if (transList.length==0 && clustList.length==0)
         {
-            execStatement("DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_SLAVE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_SLAVE_ID_SLAVE)+" = " + id_slave);
-            execStatement("DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_TRANS_SLAVE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_TRANS_SLAVE_ID_SLAVE)+" = " + id_slave);
+          connectionDelegate.performDelete("DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_SLAVE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_SLAVE_ID_SLAVE)+" = ? ", id_slave);
+          connectionDelegate.performDelete("DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_TRANS_SLAVE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_TRANS_SLAVE_ID_SLAVE)+" = ? ", id_slave);
         }
         else
         {

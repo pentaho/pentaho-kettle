@@ -87,9 +87,8 @@ public class KettleDatabaseRepositorySecurityProvider extends BaseRepositorySecu
 
   }
   public synchronized void delUser(ObjectId id_user) throws KettleException {
-    String sql = "DELETE FROM " + repository.quoteTable(KettleDatabaseRepository.TABLE_R_USER) + " WHERE "
-        + repository.quote(KettleDatabaseRepository.FIELD_USER_ID_USER) + " = " + id_user;
-    repository.execStatement(sql);
+    repository.connectionDelegate.performDelete("DELETE FROM " + repository.quoteTable(KettleDatabaseRepository.TABLE_R_USER) + 
+        " WHERE " + repository.quote(KettleDatabaseRepository.FIELD_USER_ID_USER) + " = ? ", id_user);
   }
 
   public synchronized ObjectId getUserID(String login) throws KettleException {

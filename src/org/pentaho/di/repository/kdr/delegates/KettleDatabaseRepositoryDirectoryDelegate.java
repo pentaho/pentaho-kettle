@@ -147,19 +147,6 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
     }
     */
 
-  public synchronized int getNrDirectories(long id_directory) throws KettleException {
-    int retval = 0;
-
-    String sql = "SELECT COUNT(*) FROM " + quoteTable(KettleDatabaseRepository.TABLE_R_DIRECTORY) + " WHERE "
-        + quote(KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT) + " = " + id_directory;
-    RowMetaAndData r = repository.connectionDelegate.getOneRow(sql);
-    if (r != null) {
-      retval = (int) r.getInteger(0, 0L);
-    }
-
-    return retval;
-  }
-
   private synchronized ObjectId insertDirectory(ObjectId id_directory_parent, RepositoryDirectoryInterface dir)
       throws KettleException {
     ObjectId id = repository.connectionDelegate.getNextDirectoryID();
@@ -183,10 +170,8 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
 
   
   public synchronized void deleteDirectory(ObjectId id_directory) throws KettleException {
-    String sql = "DELETE FROM " + quoteTable(KettleDatabaseRepository.TABLE_R_DIRECTORY) + " WHERE "
-        + quote(KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY) + " = " + id_directory;
-    repository.connectionDelegate.getDatabase().execStatement(sql);
-    repository.connectionDelegate.getDatabase().commit();
+    repository.connectionDelegate.performDelete("DELETE FROM " + quoteTable(KettleDatabaseRepository.TABLE_R_DIRECTORY) + 
+        " WHERE " + quote(KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY) + " = ? ", id_directory);
   }
 
   public synchronized void deleteDirectory(RepositoryDirectoryInterface dir) throws KettleException {
@@ -269,10 +254,8 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
             ValueMetaInterface.TYPE_INTEGER), id_directory_parent);
       }
 
-      sql += " WHERE " + quote(KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY) + " = " + id_directory;
-
-      log.logBasic("sql = [" + sql + "]");
-      log.logBasic("row = [" + r + "]");
+      sql += " WHERE " + quote(KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY) + " = ? ";
+      r.addValue(new ValueMeta("id_directory", ValueMetaInterface.TYPE_INTEGER), Long.valueOf(id_directory.toString()));
 
       repository.connectionDelegate.getDatabase().execStatement(sql, r.getRowMeta(), r.getData());
     }
@@ -281,9 +264,10 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
   public synchronized int getNrSubDirectories(ObjectId id_directory) throws KettleException {
     int retval = 0;
 
+    RowMetaAndData dirParRow = repository.connectionDelegate.getParameterMetaData(id_directory);
     String sql = "SELECT COUNT(*) FROM " + quoteTable(KettleDatabaseRepository.TABLE_R_DIRECTORY) + " WHERE "
-        + quote(KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT) + " = " + id_directory;
-    RowMetaAndData r = repository.connectionDelegate.getOneRow(sql);
+        + quote(KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT) + " = ? ";
+    RowMetaAndData r = repository.connectionDelegate.getOneRow(sql, dirParRow.getRowMeta(), dirParRow.getData());
     if (r != null) {
       retval = (int) r.getInteger(0, 0);
     }
@@ -295,8 +279,8 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
     return repository.connectionDelegate.getIDs("SELECT "
         + quote(KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY) + " FROM "
         + quoteTable(KettleDatabaseRepository.TABLE_R_DIRECTORY) + " WHERE "
-        + quote(KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT) + " = " + id_directory + " ORDER BY "
-        + quote(KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME));
+        + quote(KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT) + " = ? ORDER BY "
+        + quote(KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME), id_directory);
   }
 
   public void saveRepositoryDirectory(RepositoryDirectoryInterface dir) throws KettleException {

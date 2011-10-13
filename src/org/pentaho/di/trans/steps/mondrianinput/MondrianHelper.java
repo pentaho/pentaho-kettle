@@ -79,6 +79,7 @@ public class MondrianHelper {
 		this.space = space;
 	}
 	
+    @SuppressWarnings("deprecation")
     public void openQuery() throws KettleDatabaseException {
 
     	connection = null;

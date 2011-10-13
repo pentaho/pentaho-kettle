@@ -290,8 +290,9 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_STEP)+" WHERE "+quote(KettleDatabaseRepository.FIELD_STEP_ID_TRANSFORMATION)+" = " + id_transformation;
-		RowMetaAndData r = repository.connectionDelegate.getOneRow(sql);
+		RowMetaAndData par = repository.connectionDelegate.getParameterMetaData(id_transformation);
+    String sql = "SELECT COUNT(*) FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_STEP)+" WHERE "+quote(KettleDatabaseRepository.FIELD_STEP_ID_TRANSFORMATION)+" = ? ";
+		RowMetaAndData r = repository.connectionDelegate.getOneRow(sql, par.getRowMeta(), par.getData());
 		if (r != null)
 		{
 			retval = (int) r.getInteger(0, 0L);
@@ -305,8 +306,9 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_STEP_ATTRIBUTE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_ID_STEP)+" = " + id_step;
-		RowMetaAndData r = repository.connectionDelegate.getOneRow(sql);
+    RowMetaAndData par = repository.connectionDelegate.getParameterMetaData(id_step);
+		String sql = "SELECT COUNT(*) FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_STEP_ATTRIBUTE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_ID_STEP)+" = ? ";
+		RowMetaAndData r = repository.connectionDelegate.getOneRow(sql, par.getRowMeta(), par.getData());
 		if (r != null)
 		{
 			retval = (int) r.getInteger(0, 0L);
