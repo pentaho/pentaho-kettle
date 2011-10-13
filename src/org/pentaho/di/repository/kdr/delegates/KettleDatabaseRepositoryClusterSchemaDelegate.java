@@ -87,12 +87,16 @@ public class KettleDatabaseRepositoryClusterSchemaDelegate extends KettleDatabas
 
     public void saveClusterSchema(ClusterSchema clusterSchema, String versionComment, ObjectId id_transformation, boolean isUsedByTransformation, boolean overwrite) throws KettleException
     {
+      ObjectId existingClusterSchemaId = getClusterID(clusterSchema.getName());
+      if (existingClusterSchemaId  != null) {
+        clusterSchema.setObjectId(existingClusterSchemaId);
+      }
+
       if (clusterSchema.getObjectId() == null)
       {
         // New Slave Server
         clusterSchema.setObjectId(insertCluster(clusterSchema));
       } else {
-        ObjectId existingClusterSchemaId = getClusterID(clusterSchema.getName());
         
         // If we received a clusterSchemaId and it is different from the cluster schema we are working with...
         if(existingClusterSchemaId != null && !clusterSchema.getObjectId().equals(existingClusterSchemaId)) {
@@ -183,7 +187,7 @@ public class KettleDatabaseRepositoryClusterSchemaDelegate extends KettleDatabas
 
         if (transList.length==0)
         {
-            repository.connectionDelegate.getDatabase().execStatement("DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_CLUSTER)+" WHERE "+quote(KettleDatabaseRepository.FIELD_CLUSTER_ID_CLUSTER)+" = " + id_cluster);
+            repository.connectionDelegate.performDelete("DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_CLUSTER)+" WHERE "+quote(KettleDatabaseRepository.FIELD_CLUSTER_ID_CLUSTER)+" = ? ", id_cluster);
         }
         else
         {
