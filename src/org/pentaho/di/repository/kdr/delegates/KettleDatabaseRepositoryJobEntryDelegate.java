@@ -265,37 +265,9 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_JOBENTRY)+" WHERE "+quote(KettleDatabaseRepository.FIELD_JOBENTRY_ID_JOB)+" = " + id_job;
-		RowMetaAndData r = repository.connectionDelegate.getOneRow(sql);
-		if (r != null)
-		{
-			retval = (int) r.getInteger(0, 0L);
-		}
-
-		return retval;
-	}
-
-	public synchronized int getNrJobEntryCopies(long id_job, long id_jobentry) throws KettleException
-	{
-		int retval = 0;
-
-		String sql = "SELECT COUNT(*) FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_JOBENTRY_COPY)+" WHERE "+quote(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOB)+" = " + id_job + " AND "+quote(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOBENTRY)+" = "
-						+ id_jobentry;
-		RowMetaAndData r = repository.connectionDelegate.getOneRow(sql);
-		if (r != null)
-		{
-			retval = (int) r.getInteger(0, 0L);
-		}
-
-		return retval;
-	}
-
-	public synchronized int getNrJobEntryCopies(long id_job) throws KettleException
-	{
-		int retval = 0;
-
-		String sql = "SELECT COUNT(*) FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_JOBENTRY_COPY)+" WHERE "+quote(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOB)+" = " + id_job;
-		RowMetaAndData r = repository.connectionDelegate.getOneRow(sql);
+		RowMetaAndData par = repository.connectionDelegate.getParameterMetaData(id_job);
+    String sql = "SELECT COUNT(*) FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_JOBENTRY)+" WHERE "+quote(KettleDatabaseRepository.FIELD_JOBENTRY_ID_JOB)+" = ? ";
+		RowMetaAndData r = repository.connectionDelegate.getOneRow(sql, par.getRowMeta(), par.getData());
 		if (r != null)
 		{
 			retval = (int) r.getInteger(0, 0L);

@@ -225,35 +225,6 @@ public class KettleDatabaseRepositoryConditionDelegate extends KettleDatabaseRep
 	}
 
 
-	public synchronized int getNrConditions(long id_transforamtion) throws KettleException
-	{
-		int retval = 0;
-
-		String sql = "SELECT COUNT(*) FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_TRANS_STEP_CONDITION)+" WHERE "+quote(KettleDatabaseRepository.FIELD_TRANS_STEP_CONDITION_ID_TRANSFORMATION)+" = " + id_transforamtion;
-		RowMetaAndData r = repository.connectionDelegate.getOneRow(sql);
-		if (r != null)
-		{
-			retval = (int) r.getInteger(0, 0L);
-		}
-
-		return retval;
-	}
-
-
-	public synchronized int getNrSubConditions(long id_condition) throws KettleException
-	{
-		int retval = 0;
-
-		String sql = "SELECT COUNT(*) FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_CONDITION)+" WHERE "+quote(KettleDatabaseRepository.FIELD_CONDITION_ID_CONDITION_PARENT)+" = " + id_condition;
-		RowMetaAndData r = repository.connectionDelegate.getOneRow(sql);
-		if (r != null)
-		{
-			retval = (int) r.getInteger(0, 0L);
-		}
-
-		return retval;
-	}
-
 
 
 }

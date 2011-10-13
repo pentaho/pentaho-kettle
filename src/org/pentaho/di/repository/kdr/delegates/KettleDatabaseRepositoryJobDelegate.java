@@ -687,8 +687,9 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_JOB)+" WHERE "+quote(KettleDatabaseRepository.FIELD_JOB_ID_DIRECTORY)+" = " + id_directory;
-		RowMetaAndData r = repository.connectionDelegate.getOneRow(sql);
+		RowMetaAndData par = repository.connectionDelegate.getParameterMetaData(id_directory);
+		String sql = "SELECT COUNT(*) FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_JOB)+" WHERE "+quote(KettleDatabaseRepository.FIELD_JOB_ID_DIRECTORY)+" = ? ";
+		RowMetaAndData r = repository.connectionDelegate.getOneRow(sql, par.getRowMeta(), par.getData());
 		if (r != null)
 		{
 			retval = (int) r.getInteger(0, 0L);
@@ -702,8 +703,9 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 	{
 		int retval = 0;
 
-		String sql = "SELECT COUNT(*) FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_JOB_HOP)+" WHERE "+quote(KettleDatabaseRepository.FIELD_JOB_HOP_ID_JOB)+" = " + id_job;
-		RowMetaAndData r = repository.connectionDelegate.getOneRow(sql);
+		RowMetaAndData par = repository.connectionDelegate.getParameterMetaData(id_job);
+    String sql = "SELECT COUNT(*) FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_JOB_HOP)+" WHERE "+quote(KettleDatabaseRepository.FIELD_JOB_HOP_ID_JOB)+" = ? ";
+		RowMetaAndData r = repository.connectionDelegate.getOneRow(sql, par.getRowMeta(), par.getData());
 		if (r != null)
 		{
 			retval = (int) r.getInteger(0, 0L);
@@ -735,6 +737,29 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
         return jobList;
     }
 
+  public String[] getJobsWithIDList(ObjectId[] ids) throws KettleException
+  {
+      String[] jobsList = new String[ids.length];
+      for (int i=0;i<ids.length;i++)
+      {
+          ObjectId id_job = ids[i]; 
+          if (id_job != null)
+          {
+              RowMetaAndData transRow =  getJob(id_job);
+              if (transRow!=null)
+              {
+                String jobName = transRow.getString(KettleDatabaseRepository.FIELD_JOB_NAME, "<name not found>");
+                long id_directory = transRow.getInteger(KettleDatabaseRepository.FIELD_JOB_ID_DIRECTORY, -1L);
+                RepositoryDirectoryInterface dir = repository.loadRepositoryDirectoryTree().findDirectory(new LongObjectId(id_directory));
+                
+                jobsList[i]=dir.getPathObjectCombination(jobName);
+              }
+          }            
+      }
+
+      return jobsList;
+  }
+	 
 	private synchronized void insertJob(JobMeta jobMeta) throws KettleException
 	{
 		RowMetaAndData table = new RowMetaAndData();
