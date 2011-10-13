@@ -83,12 +83,14 @@ public class KettleFileRepository implements Repository {
 	private KettleFileRepositorySecurityProvider	securityProvider;
 	
 	private LogChannelInterface log;
+	
+	private boolean connected;
 
 	private Map<Class<? extends IRepositoryService>, IRepositoryService> serviceMap;
 	private List<Class<? extends IRepositoryService>> serviceList;
-	public void connect(String username, String password) throws KettleException {}
+	public void connect(String username, String password) throws KettleException { connected=true;}
 
-	public void disconnect() {}
+	public void disconnect() { connected = false; }
 
 	public void init(RepositoryMeta repositoryMeta) {
 	  this.serviceMap = new HashMap<Class<? extends IRepositoryService>, IRepositoryService>(); 
@@ -105,7 +107,7 @@ public class KettleFileRepository implements Repository {
 	}
 	
 	public boolean isConnected() {
-		return true;
+		return connected;
 	}
 	
 	public RepositorySecurityProvider getSecurityProvider() {
@@ -242,7 +244,7 @@ public class KettleFileRepository implements Repository {
 			}
 			
 			if (!Const.isEmpty(versionComment)) {
-				insertLogEntry(versionComment);
+				insertLogEntry("Save repository element : "+repositoryElement.toString()+" : "+versionComment);
 			}
 			
 			ObjectId objectId = new StringObjectId(calcObjectId(repositoryElement));
@@ -290,7 +292,7 @@ public class KettleFileRepository implements Repository {
 		//
 		RepositoryDirectory newDir = new RepositoryDirectory(parentDirectory, directoryPath);
 		parentDirectory.addSubdirectory(newDir);
-		newDir.setObjectId(new StringObjectId(newDir.toString()));
+		newDir.setObjectId(new StringObjectId(calcObjectId(newDir)));
 		
 		return newDir;
 	}
@@ -608,19 +610,19 @@ public class KettleFileRepository implements Repository {
 			String folderName = calcDirectoryName(directory);
 			FileObject folder = KettleVFS.getFileObject(folderName);
 			
-			for (FileObject child : folder.getChildren()) {
-				if (child.getType().equals(FileType.FILE)) {
-                  if (!child.isHidden() || !repositoryMeta.isHidingHiddenFiles()) {
-					String name = child.getName().getBaseName();
-					
-					if (name.endsWith(EXT_TRANSFORMATION)) {
-						
-						String transName = name.substring(0, name.length()-4);
-						list.add( transName );
-					}
-                  }
-				}
-			}
+      for (FileObject child : folder.getChildren()) {
+        if (child.getType().equals(FileType.FILE)) {
+          if (!child.isHidden() || !repositoryMeta.isHidingHiddenFiles()) {
+            String name = child.getName().getBaseName();
+
+            if (name.endsWith(EXT_TRANSFORMATION)) {
+
+              String transName = name.substring(0, name.length() - 4);
+              list.add(transName);
+            }
+          }
+        }
+      }
 			
 			return list.toArray(new String[list.size()]);
 		}
@@ -648,6 +650,7 @@ public class KettleFileRepository implements Repository {
 		try {
 			OutputStream outputStream = KettleVFS.getOutputStream(logfile, true);
 			outputStream.write(description.getBytes());
+      outputStream.write(Const.CR.getBytes());
 			outputStream.close();
 			
 			return new StringObjectId(logfile);
@@ -769,18 +772,18 @@ public class KettleFileRepository implements Repository {
 			String folderName = calcDirectoryName(dir);
 			FileObject folder = KettleVFS.getFileObject(folderName);
 			
-			for (FileObject child : folder.getChildren()) {
-				if (child.getType().equals(FileType.FOLDER)) {
-				  if (!child.isHidden() || !repositoryMeta.isHidingHiddenFiles()) {
-					RepositoryDirectory subDir = new RepositoryDirectory(dir, child.getName().getBaseName());
-					subDir.setObjectId(new StringObjectId(calcObjectId(subDir)));
-					dir.addSubdirectory(subDir);
-					
-					loadRepositoryDirectoryTree(subDir);
-				  }
-				}
-			}
-			
+      for (FileObject child : folder.getChildren()) {
+        if (child.getType().equals(FileType.FOLDER)) {
+          if (!child.isHidden() || !repositoryMeta.isHidingHiddenFiles()) {
+            RepositoryDirectory subDir = new RepositoryDirectory(dir, child.getName().getBaseName());
+            subDir.setObjectId(new StringObjectId(calcObjectId(subDir)));
+            dir.addSubdirectory(subDir);
+
+            loadRepositoryDirectoryTree(subDir);
+          }
+        }
+      }
+
 			return dir;
 		}
 		catch(Exception e) {
