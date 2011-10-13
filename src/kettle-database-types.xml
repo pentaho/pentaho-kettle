@@ -125,6 +125,11 @@
     <classname>org.pentaho.di.core.database.MySQLDatabaseMeta</classname>
   </database-type>                                                       
 
+  <database-type id="MONDRIAN">
+    <description>Native Mondrian</description>
+    <classname>org.pentaho.di.core.database.MondrianNativeDatabaseMeta</classname>
+  </database-type>                                                       
+
   <database-type id="NEOVIEW">
     <description>Neoview</description>
     <classname>org.pentaho.di.core.database.NeoviewDatabaseMeta</classname>
