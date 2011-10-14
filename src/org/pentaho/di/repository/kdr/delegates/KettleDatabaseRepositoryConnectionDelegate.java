@@ -248,7 +248,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 				repository.connectionDelegate.closeStepAttributeLookupPreparedStatement();
 				repository.connectionDelegate.closeTransAttributeLookupPreparedStatement();
 				repository.connectionDelegate.closeLookupJobEntryAttribute();
-	            
+
 	            for (String sql : sqlMap.keySet()) {
 	              PreparedStatement ps = sqlMap.get(sql);
 	              try {
@@ -388,11 +388,19 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 	{
 	    String sql = "SELECT "+quote(KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_ID_STEP)+", "+quote(KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_CODE)+", "+quote(KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_NR)+", "+quote(KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_VALUE_NUM)+", "+quote(KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_VALUE_STR)+" "+
 	                 "FROM "+databaseMeta.getQuotedSchemaTableCombination(null, KettleDatabaseRepository.TABLE_R_STEP_ATTRIBUTE) +" "+
-	                 "WHERE "+quote(KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_ID_TRANSFORMATION)+" = "+id_transformation+" "+
+	                 "WHERE "+quote(KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_ID_TRANSFORMATION)+" = ? "+
 	                 "ORDER BY "+quote(KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_ID_STEP)+", "+quote(KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_CODE)+", "+quote(KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_NR)
 	                 ;
 	    
-	    stepAttributesBuffer = database.getRows(sql, -1);
+      PreparedStatement ps = sqlMap.get(sql);
+      if (ps == null) {
+        ps = database.prepareSQL(sql);
+        sqlMap.put(sql, ps);
+      }
+
+	    RowMetaAndData parameter = getParameterMetaData(id_transformation);
+	    ResultSet resultSet = database.openQuery(ps, parameter.getRowMeta(), parameter.getData());
+	    stepAttributesBuffer = database.getRows(resultSet, -1, null);
 	    stepAttributesRowMeta = database.getReturnRowMeta();
         
 	    // must use java-based sort to ensure compatibility with binary search
@@ -400,7 +408,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 	    //
         Collections.sort(stepAttributesBuffer, new StepAttributeComparator());  // in case db sort does not match our sort
 	}
-
+	
 	/**
      * @return Returns the stepAttributesBuffer.
      */
