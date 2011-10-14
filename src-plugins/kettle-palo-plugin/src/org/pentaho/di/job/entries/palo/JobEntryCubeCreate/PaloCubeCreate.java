@@ -160,7 +160,7 @@ public class PaloCubeCreate extends JobEntryBase implements Cloneable, JobEntryI
 		// String substitution..
 		String realCubeName = environmentSubstitute(getCubeName());
 
-		PaloHelper database = new PaloHelper(this.getDatabaseMeta());
+		PaloHelper database = new PaloHelper(this.getDatabaseMeta(), getLogLevel());
 		try {
 			database.connect();
 			database.createCube(realCubeName, dimensionNames.toArray(new String[dimensionNames.size()]));

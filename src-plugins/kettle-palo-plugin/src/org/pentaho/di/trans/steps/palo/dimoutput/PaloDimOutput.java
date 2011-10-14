@@ -127,7 +127,7 @@ public class PaloDimOutput extends BaseStep implements StepInterface {
         if (i % 2 == 1 && data.indexes[i] < 0)
     		newRow[i] = "1";
     	else
-    		newRow[i] = r[data.indexes[i]].toString();
+    		newRow[i] = (r[data.indexes[i]] == null ? null : r[data.indexes[i]].toString());
       }
       incrementLinesOutput();
       this.currentTransformationRows.add(newRow);
@@ -146,7 +146,7 @@ public class PaloDimOutput extends BaseStep implements StepInterface {
     if (super.init(smi, sdi)) {
       try {
         this.logBasic("Meta Levels:" + meta.getLevels().size());
-        data.helper = new PaloHelper(meta.getDatabaseMeta());
+        data.helper = new PaloHelper(meta.getDatabaseMeta(), getLogLevel());
         data.helper.connect();
         return true;
       } catch (Exception e) {

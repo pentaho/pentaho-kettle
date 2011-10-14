@@ -375,11 +375,8 @@ public class PaloDimInputDialog extends BaseStepDialog implements StepDialogInte
 					  data.helper.connect();
 					  List<PaloDimensionLevel> levels = data.helper.getDimensionLevels(comboDimension.getText());
 					  for (int i = 0; i < levels.size(); i++){
-						  PaloDimensionLevel level = levels.get(i);
-						  if (i < levels.size() - 1)
-							  tableViewFields.add(level.getLevelName(), String.valueOf(level.getLevelNumber()), level.getFieldName());
-						  else 
-							  tableViewFields.add(BaseMessages.getString(PKG, "PaloDimInputDialog.BaseElementName"), String.valueOf(level.getLevelNumber()), level.getFieldName());
+  					      PaloDimensionLevel level = levels.get(i);
+					      tableViewFields.add(level.getLevelName(), String.valueOf(level.getLevelNumber()), level.getFieldName());
 					  }
 					  tableViewFields.setRowNums();
 					  tableViewFields.optWidth(true);

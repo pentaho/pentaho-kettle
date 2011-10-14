@@ -41,6 +41,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.palo.core.PaloHelper;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
@@ -237,7 +238,7 @@ public class PaloCubeDeleteDialog extends JobEntryDialog implements JobEntryDial
             if(addConnectionLine.getText() != null) {
                 DatabaseMeta dbMeta = DatabaseMeta.findDatabase(jobMeta.getDatabases(), addConnectionLine.getText());
                 if (dbMeta != null) {
-                	PaloHelper helper = new PaloHelper(dbMeta);
+                	PaloHelper helper = new PaloHelper(dbMeta, DefaultLogLevel.getLogLevel());
                     helper.connect();
                     for (String cubename : helper.getCubesNames()){
                         if(comboCubeName.indexOf(cubename) == -1)

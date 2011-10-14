@@ -45,6 +45,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -142,7 +143,7 @@ implements StepMetaInterface {
             throw new KettleStepException("There is no Palo database server connection defined");
         
 
-        final PaloHelper helper = new PaloHelper(databaseMeta);
+        final PaloHelper helper = new PaloHelper(databaseMeta, DefaultLogLevel.getLogLevel());
         try {
             helper.connect();
             try {
@@ -227,7 +228,7 @@ implements StepMetaInterface {
             cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, "Connection exists", stepMeta);
             remarks.add(cr);
 
-            final PaloHelper helper = new PaloHelper(databaseMeta);
+            final PaloHelper helper = new PaloHelper(databaseMeta, DefaultLogLevel.getLogLevel());
             try {
                 helper.connect();
                 cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, "Connection to database OK", stepMeta);

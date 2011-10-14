@@ -134,7 +134,7 @@ public class PaloCubeDelete extends JobEntryBase implements Cloneable, JobEntryI
 		// String substitution..
 		String realCubeName = environmentSubstitute(getCubeName());
 
-		PaloHelper database = new PaloHelper(this.getDatabaseMeta());
+		PaloHelper database = new PaloHelper(this.getDatabaseMeta(), getLogLevel());
 		try {
 			database.connect();
 			int cubesremoved = database.removeCube(realCubeName);

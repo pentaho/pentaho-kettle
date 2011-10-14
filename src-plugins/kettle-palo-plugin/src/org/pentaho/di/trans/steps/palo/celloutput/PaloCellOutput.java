@@ -122,7 +122,7 @@ public class PaloCellOutput extends BaseStep implements StepInterface {
     if (super.init(smi, sdi)) {
       try {
         this.logDebug("Meta Fields: " + meta.getFields().size());
-        data.helper = new PaloHelper(meta.getDatabaseMeta());
+        data.helper = new PaloHelper(meta.getDatabaseMeta(), getLogLevel());
         data.helper.connect();
         data.helper.loadCubeCache(meta.getCube(), meta.getEnableDimensionCache(), meta.getPreloadDimensionCache());
         data.batchCache.clear();

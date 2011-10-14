@@ -44,6 +44,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.logging.DefaultLogLevel;
 
 import org.pentaho.di.palo.core.PaloHelper;
 import org.pentaho.di.i18n.BaseMessages;
@@ -280,7 +281,7 @@ public class PaloCubeCreateDialog extends JobEntryDialog implements JobEntryDial
 		if(comboDropDown == null && addConnectionLine.getText() != null) {
 			DatabaseMeta dbMeta = DatabaseMeta.findDatabase(jobMeta.getDatabases(), addConnectionLine.getText());
 			if (dbMeta != null) {
-				PaloHelper helper = new PaloHelper(dbMeta);
+				PaloHelper helper = new PaloHelper(dbMeta, DefaultLogLevel.getLogLevel());
 				try{
 					helper.connect();
 					List<String> dimensionNames = helper.getDimensionsNames();

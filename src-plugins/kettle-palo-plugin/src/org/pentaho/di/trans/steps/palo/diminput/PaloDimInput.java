@@ -32,8 +32,6 @@ package org.pentaho.di.trans.steps.palo.diminput;
  *   Copyright 2011 De Bortoli Wines Pty Limited (Australia)
  */
 
-import java.util.List;
-
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.palo.core.PaloHelper;
@@ -51,53 +49,64 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 public class PaloDimInput extends BaseStep implements StepInterface {
   private PaloDimInputMeta meta;
   private PaloDimInputData data;
+  private ListenerWithException listener;
 
   public PaloDimInput(final StepMeta stepMeta, final StepDataInterface stepDataInterface, final int copyNr, final TransMeta transMeta, final Trans trans) {
     super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
   }
 
+  private abstract class ListenerWithException implements PaloHelper.Listener {
+	  protected Exception throwedException = null;
+  }
+	  
   public boolean processRow(final StepMetaInterface smi, final StepDataInterface sdi) throws KettleException {
     this.logBasic("Getting Dimension Row Meta.");
 
     final RowMetaInterface rowMeta = data.helper.getDimensionRowMeta(meta.getDimension(), meta.getLevels(), meta.getBaseElementsOnly());
 
     this.logBasic("Getting Dimension Rows.");
-    final List<Object[]> rows = data.helper.getDimensionRows(meta.getDimension(), rowMeta, meta.getBaseElementsOnly(), new PaloHelper.Listener() {
-      public void resume() {
+    listener = new ListenerWithException() {
+        public void resume() {
 
-      }
+        }
 
-      public void stop() {
+        public void stop() {
 
-      }
+        }
 
-      public void cancel() {
+        public void cancel() {
 
-      }
+        }
 
-      public boolean getStop() {
-        return false;
-      }
+        public boolean getStop() {
+          return false;
+        }
 
-      public void prepareElements(int numElements) {
+        public void prepareElements(int numElements) {
 
-      }
+        }
 
-      public boolean getCancel() {
-        return false;
-      }
+        public boolean getCancel() {
+          return false;
+        }
 
-      public void oneMoreElement(Object element) {
+        public void oneMoreElement(Object element) {
+      	  final Object[] row = (Object[]) element;
+            try {
+              assert (rowMeta.size() != row.length);
+              incrementLinesInput();
+              putRow(rowMeta, row);
+            } catch (Exception ex) {
+              this.throwedException = ex;
+              this.cancel();
+            }
+        }
+      };
+      
+    data.helper.getDimensionRows(meta.getDimension(), rowMeta, meta.getBaseElementsOnly(), listener);
+    if (listener.throwedException != null)
+        throw new KettleException("Failed to fetch some row", listener.throwedException);
 
-      }
-    }
-
-    );
-
-    for (Object[] row : rows) {
-      putRow(rowMeta, row);
-      incrementLinesInput();
-    }
     this.logBasic("Process Ended.");
     setOutputDone();
     return false;
@@ -110,7 +119,7 @@ public class PaloDimInput extends BaseStep implements StepInterface {
     if (super.init(smi, sdi)) {
       try {
         this.logDebug("Meta Levels: " + meta.getLevels().size());
-        data.helper = new PaloHelper(meta.getDatabaseMeta());
+        data.helper = new PaloHelper(meta.getDatabaseMeta(), getLogLevel());
         data.helper.connect();
         return true;
       } catch (Exception e) {

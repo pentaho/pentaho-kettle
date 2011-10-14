@@ -39,6 +39,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.PALODatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.DefaultLogLevel;
 
 public class PaloCellInputData extends BaseStepData 
 implements StepDataInterface {
@@ -49,6 +50,6 @@ implements StepDataInterface {
         if(!(databaseMeta.getDatabaseInterface() instanceof PALODatabaseMeta)) {
             throw new KettleException ("A connection of type PALO is expected");
         }
-        this.helper = new PaloHelper(databaseMeta);
+        this.helper = new PaloHelper(databaseMeta, DefaultLogLevel.getLogLevel());
     }
 }
