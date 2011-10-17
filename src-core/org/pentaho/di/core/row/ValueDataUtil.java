@@ -837,13 +837,13 @@ public class ValueDataUtil
         {
           if (dataA!=null && dataB!=null)
           {
-            Date startDate = metaB.getDate(dataB);
-            Date endDate = metaA.getDate(dataA);
+              Date startDate = metaA.getDate(dataA);
+              Date endDate = metaB.getDate(dataB);
 
-			Calendar stDateCal = Calendar.getInstance();
-			Calendar endDateCal = Calendar.getInstance();
-			stDateCal.setTime(startDate);
-			endDateCal.setTime(endDate);
+  			Calendar stDateCal = Calendar.getInstance();
+  			Calendar endDateCal = Calendar.getInstance();
+  			stDateCal.setTime(startDate);
+  			endDateCal.setTime(endDate);
 
 			long endL = endDateCal.getTimeInMillis() + endDateCal.getTimeZone().getOffset( endDateCal.getTimeInMillis() );
 			long startL = stDateCal.getTimeInMillis() + stDateCal.getTimeZone().getOffset( stDateCal.getTimeInMillis() );
