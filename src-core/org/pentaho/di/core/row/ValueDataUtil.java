@@ -888,28 +888,43 @@ public class ValueDataUtil
      * @param dataA The "end date"
      * @param metaB
      * @param dataB The "start date"
+     * @param resultType The "result type" (ms, s, mn, h, d)
      * @return Number of days
      * @throws KettleValueException
      */
 
-    public static Object DateDiff(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB) throws KettleValueException
+    public static Object DateDiff(ValueMetaInterface metaA, Object dataA, ValueMetaInterface metaB, Object dataB
+    		, String resultType) throws KettleValueException
     {
+
         if (metaA.isDate() && metaB.isDate())
         {
           if (dataA!=null && dataB!=null)
           {
-            Date startDate = metaB.getDate(dataB);
-            Date endDate = metaA.getDate(dataA);
+            Date startDate = metaA.getDate(dataA);
+            Date endDate = metaB.getDate(dataB);
 
 			Calendar stDateCal = Calendar.getInstance();
 			Calendar endDateCal = Calendar.getInstance();
 			stDateCal.setTime(startDate);
 			endDateCal.setTime(endDate);
-
+		
 			long endL = endDateCal.getTimeInMillis() + endDateCal.getTimeZone().getOffset( endDateCal.getTimeInMillis() );
 			long startL = stDateCal.getTimeInMillis() + stDateCal.getTimeZone().getOffset( stDateCal.getTimeInMillis() );
-
-			return new Long(((endL - startL) / 86400000));
+			long diff= endL - startL;
+			
+			 if(Const.isEmpty(resultType))
+				return new Long(diff / 86400000);
+			 else if(resultType.equals("ms")) // millisecond
+             	return new Long(diff); 
+             else if(resultType.equals("s"))
+             	return new Long (diff / 1000) ; // second
+             else if(resultType.equals("mn"))
+             	return new Long (diff / 60000) ; // minute
+             else if(resultType.equals("h"))
+             	return new Long(diff / 360000) ; // hour
+             else if(resultType.equals("d"))
+            	return new Long(diff / 86400000);
           } else {
             return null;
           }

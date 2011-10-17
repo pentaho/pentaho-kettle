@@ -235,6 +235,8 @@ public class Calculator extends BaseStep implements StepInterface
                     dataB = calcData[ data.fieldIndexes[i].indexB ];
                 }
 
+
+                
                 ValueMetaInterface metaC=null;
                 Object dataC=null;
 
@@ -501,7 +503,7 @@ public class Calculator extends BaseStep implements StepInterface
                 break;
                 case CalculatorMetaFunction.CALC_DATE_DIFF                :  // DateA - DateB
                 {
-                    calcData[index] = ValueDataUtil.DateDiff(metaA, dataA, metaB, dataB);
+                    calcData[index] = ValueDataUtil.DateDiff(metaA, dataA, metaB, dataB, "d");
                     resultType=ValueMetaInterface.TYPE_INTEGER;
                 }
                 break;
@@ -694,6 +696,30 @@ public class Calculator extends BaseStep implements StepInterface
                 {
                     calcData[index] = ValueDataUtil.get_RefinedSoundEx(metaA, dataA);
                     resultType=ValueMetaInterface.TYPE_STRING;
+                }
+                break;
+                case CalculatorMetaFunction.CALC_DATE_DIFF_MSEC               :  // DateA - DateB (ms)
+                {
+                    calcData[index] = ValueDataUtil.DateDiff(metaA, dataA, metaB, dataB, "ms");
+                    resultType=ValueMetaInterface.TYPE_INTEGER;
+                }
+                break;
+                case CalculatorMetaFunction.CALC_DATE_DIFF_SEC              :  // DateA - DateB (s)
+                {
+                    calcData[index] = ValueDataUtil.DateDiff(metaA, dataA, metaB, dataB, "s");
+                    resultType=ValueMetaInterface.TYPE_INTEGER;
+                }
+                break;
+                case CalculatorMetaFunction.CALC_DATE_DIFF_MN              :  // DateA - DateB (mn)
+                {
+                    calcData[index] = ValueDataUtil.DateDiff(metaA, dataA, metaB, dataB, "mn");
+                    resultType=ValueMetaInterface.TYPE_INTEGER;
+                }
+                break;
+                case CalculatorMetaFunction.CALC_DATE_DIFF_HR             :  // DateA - DateB (hr)
+                {
+                    calcData[index] = ValueDataUtil.DateDiff(metaA, dataA, metaB, dataB, "hr");
+                    resultType=ValueMetaInterface.TYPE_INTEGER;
                 }
                 break;
                 default:

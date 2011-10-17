@@ -106,6 +106,10 @@ public class CalculatorMetaFunction implements Cloneable
   public static final int    CALC_REFINED_SOUNDEX            = 73;
   public static final int    CALC_ADD_HOURS                  = 74;
   public static final int    CALC_ADD_MINUTES                = 75;
+  public static final int 	CALC_DATE_DIFF_MSEC 			 = 76;
+  public static final int 	CALC_DATE_DIFF_SEC  			 = 77;
+  public static final int 	CALC_DATE_DIFF_MN  				 = 78;
+  public static final int 	CALC_DATE_DIFF_HR  				 = 79;
    
     public static final String calc_desc[] = 
         { 
@@ -184,7 +188,11 @@ public class CalculatorMetaFunction implements Cloneable
         	"SOUNDEX",
         	"REFINED_SOUNDEX",
         	"ADD_HOURS",
-        	"ADD_MINUTES"
+        	"ADD_MINUTES",
+            "DATE_DIFF_MSEC",
+            "DATE_DIFF_SEC",
+            "DATE_DIFF_MN",
+            "DATE_DIFF_HR",
         };
     
     public static final String calcLongDesc[] = 
@@ -264,7 +272,11 @@ public class CalculatorMetaFunction implements Cloneable
             BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.SoundEx"),
             BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.RefinedSoundEx"),
             BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.DatePlusHours"),
-            BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.DatePlusMinutes")
+            BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.DatePlusMinutes"),
+            BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.DateDiffMsec"),
+            BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.DateDiffSec"),
+            BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.DateDiffMn"),
+            BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.DateDiffHr"),
         };
    
     private String fieldName;
