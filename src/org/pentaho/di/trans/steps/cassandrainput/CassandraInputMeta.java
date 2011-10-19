@@ -61,7 +61,7 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
   /** The keyspace (database) to use */
   protected String m_cassandraKeyspace;
   
-  /** Whether to use GZIP compression of result sets */
+  /** Whether to use GZIP compression of CQL queries */
   protected boolean m_useCompression;
   
   /** The select query to execute */
