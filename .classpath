@@ -245,7 +245,6 @@
 	<classpathentry kind="lib" path="libext/mondrian/javacc.jar"/>
 	<classpathentry kind="lib" path="libext/mondrian/olap4j-1.0.0.445.jar"/>
 	<classpathentry kind="lib" path="libext/mondrian/olap4j-xmla-1.0.0.445.jar"/>
-	<classpathentry kind="lib" path="libext/mondrian/mondrian-3.3.0.14682.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-core-3.3.2.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-swt-3.3.2.jar"/>
 	<classpathentry kind="lib" path="libext/reporting/libformat-1.2.4.jar"/>
@@ -266,5 +265,6 @@
 	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-legacy-charts-3.8.3-GA.jar"/>
 	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-legacy-functions-3.8.3-GA.jar"/>
 	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-wizard-core-3.8.3-GA.jar"/>
+	<classpathentry kind="lib" path="libext/mondrian/mondrian-3.3.0.14703.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
