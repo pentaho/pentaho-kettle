@@ -947,6 +947,9 @@
 		  	<test todir="${junit}" name="org.pentaho.di.imp.rule.TransformationHasTransLogConfiguredImportRuleTest" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.imp.rule.TransformationHasNoDisabledHopsImportRuleTest" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.imp.rule.JobHasNoDisabledHopsImportRuleTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.repository.KettleDatabaseRepositoryTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.repository.KettleFileRepositoryTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.repository.RepositoryImportExporterApiTest" haltonerror="false" />
 			
 		</junit>
 	</target>
