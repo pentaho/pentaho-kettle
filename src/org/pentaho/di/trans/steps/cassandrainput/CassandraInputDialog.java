@@ -280,14 +280,14 @@ public class CassandraInputDialog extends BaseStepDialog implements
       public void widgetSelected(SelectionEvent e) {
         RowMeta outputF = new RowMeta();
         try {
-          CassandraInputMeta tempMeta = (CassandraInputMeta)m_currentMeta.clone();
+//          CassandraInputMeta tempMeta = (CassandraInputMeta)m_currentMeta.clone();
           String hostS = transMeta.environmentSubstitute(m_hostText.getText());
           String portS = transMeta.environmentSubstitute(m_portText.getText());
           String keyspaceS = transMeta.environmentSubstitute(m_keyspaceText.getText());
-          tempMeta.setCassandraHost(hostS); tempMeta.setCassandraPort(portS);
-          tempMeta.setCassandraKeyspace(keyspaceS);
+  //        tempMeta.setCassandraHost(hostS); tempMeta.setCassandraPort(portS);
+//          tempMeta.setCassandraKeyspace(keyspaceS);
           String cqlText = transMeta.environmentSubstitute(m_cqlText.getText());
-          tempMeta.setCQLSelectQuery(cqlText);                    
+//          tempMeta.setCQLSelectQuery(cqlText);                    
           
           CassandraConnection conn = CassandraInputData.
             getCassandraConnection(hostS, Integer.parseInt(portS));
@@ -303,8 +303,19 @@ public class CassandraInputDialog extends BaseStepDialog implements
             return;
           }
           
-          tempMeta.getFields(outputF, stepname, null, null, transMeta);
-          String colFam = outputF.getValueMeta(0).getName();
+          String colFam = CassandraInputData.getColumnFamilyNameFromCQLSelectQuery(cqlText);
+          if (Const.isEmpty(colFam)) {
+            throw new Exception("SELECT query does not seem to contain the name " +
+            		"of a column family!");
+          }
+          
+          if (!CassandraColumnMetaData.columnFamilyExists(conn, colFam)) {
+            throw new Exception("The column family '" + colFam + "' does not " +
+                "seem to exist in the keyspace '" + keyspaceS);
+          }
+          
+/*          tempMeta.getFields(outputF, stepname, null, null, transMeta);
+          String colFam = outputF.getValueMeta(0).getName(); */
           
           CassandraColumnMetaData cassMeta = new CassandraColumnMetaData(conn, colFam);
           String schemaDescription = cassMeta.getSchemaDescription();

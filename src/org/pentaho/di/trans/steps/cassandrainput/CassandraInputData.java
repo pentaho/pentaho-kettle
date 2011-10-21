@@ -23,6 +23,7 @@ import org.apache.cassandra.thrift.Compression;
 import org.apache.cassandra.thrift.CqlRow;
 import org.pentaho.cassandra.CassandraColumnMetaData;
 import org.pentaho.cassandra.CassandraConnection;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -111,6 +112,61 @@ public class CassandraInputData extends BaseStepData implements StepDataInterfac
     }
     
     return outputRowData;
+  }
+  
+  /**
+   * Extract the column family name (table name) from a CQL SELECT
+   * query. Assumes that any kettle variables have been already substituted
+   * in the query
+   * 
+   * @param subQ the query with vars substituted
+   * @return the column family name or null if the query is malformed
+   */
+  public static String getColumnFamilyNameFromCQLSelectQuery(String subQ) {
+    
+    String result = null;
+    
+    if (Const.isEmpty(subQ)) {
+      return null;
+    }
+    
+    // assumes env variables already replaced in query!
+
+    if (!subQ.toLowerCase().startsWith("select")) {
+      // not a select statement!
+      return null;
+    }
+    
+    if (subQ.indexOf(';') < 0) {
+      // query must end with a ';' or it will wait for more!
+      return null;
+    }
+    
+    //subQ = subQ.toLowerCase();
+    
+    // strip off where clause (if any)
+    if (subQ.toLowerCase().lastIndexOf("where") > 0) {
+      subQ = subQ.substring(0, subQ.toLowerCase().lastIndexOf("where"));
+    }
+    
+    // determine the source column family
+    int fromIndex = subQ.toLowerCase().lastIndexOf("from");
+    if (fromIndex < 0) {
+      return null; // no from clause
+    }
+    
+    result = subQ.substring(fromIndex + 4, subQ.length()).trim();
+    if (result.indexOf(' ') > 0) {
+      result = result.substring(0, result.indexOf(' '));
+    } else {
+      result = result.replace(";", "");
+    }
+    
+    if (result.length() == 0) {
+      return null; // no column family specified
+    }
+    
+    return result;
   }
   
   /**

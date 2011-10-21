@@ -74,8 +74,6 @@ public class CassandraColumnMetaData {
   protected StringBuffer m_schemaDescription = new StringBuffer();
   
   
-  // perhaps static serd routines - or perhaps just a cassandraRowToKettle routine?
-  
   /**
    * Constructor.
    * 
@@ -173,6 +171,43 @@ public class CassandraColumnMetaData {
     }
     
 //    System.out.println(m_schemaDescription.toString());
+  }
+  
+  /**
+   * Static utility routine for checking for the existence of
+   * a column family (table)
+   * 
+   * @param conn the connection to use
+   * @param columnFamily the column family to check for
+   * @return true if the supplied column family name exists in the keyspace
+   * @throws Exception if a problem occurs
+   */
+  public static boolean columnFamilyExists(CassandraConnection conn,
+      String columnFamily) throws Exception {
+    
+    boolean found = false;
+
+    // column families               
+    KsDef keySpace = conn.describeKeyspace();
+    List<CfDef> colFams = null;
+    if (keySpace != null) {
+      colFams = keySpace.getCf_defs();
+    } else {
+      throw new Exception("Unable to get meta data on keyspace '" 
+          + conn.m_keyspaceName + "'");
+    }
+
+    // look for the requested column family
+    CfDef colDefs = null;
+    for (CfDef fam : colFams) {
+      String columnFamilyName = fam.getName(); // table name
+      if (columnFamilyName.equals(columnFamily)) {
+        found = true;
+        break;
+      }
+    }
+    
+    return found;
   }
   
   /**

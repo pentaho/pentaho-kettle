@@ -103,6 +103,25 @@ public class CassandraInput extends BaseStep implements StepInterface {
         throw new KettleException(ex.fillInStackTrace());
       }
       
+      // check the source column family (table) first
+      String colFamName = m_data.
+        getColumnFamilyNameFromCQLSelectQuery(m_transMeta.
+            environmentSubstitute(m_meta.getCQLSelectQuery()));
+      
+      if (Const.isEmpty(colFamName)) {
+        throw new KettleException("SELECT query does not seem to contain the name" +
+        		" of a column family to read from!");
+      }
+      
+      try {
+        if (!CassandraColumnMetaData.columnFamilyExists(m_connection, colFamName)) {
+          throw new KettleException("The column family '" + colFamName + "' does not " +
+              "seem to exist in the keyspace '" + keyspaceS);
+        }
+      } catch (Exception ex) {
+        throw new KettleException(ex.fillInStackTrace());
+      }
+
       // set up the output row meta
       m_data.setOutputRowMeta(new RowMeta());
       m_meta.getFields(m_data.getOutputRowMeta(), getStepname(), null, null, this);
@@ -120,7 +139,7 @@ public class CassandraInput extends BaseStep implements StepInterface {
       }
       
       // column family name (key) is the first field output
-      String colFamName = m_data.getOutputRowMeta().getValueMeta(0).getName();
+      // String colFamName = m_data.getOutputRowMeta().getValueMeta(0).getName();
       try {
         logBasic("Getting meta data for column family '" + colFamName + "'");
         m_cassandraMeta = new CassandraColumnMetaData(m_connection, colFamName);
