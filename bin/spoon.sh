@@ -50,11 +50,31 @@ case `uname -s` in
 		;;
 
 	Darwin)
-		echo "Starting Data Integration using 'Spoon.sh' from OS X is not supported."
-		echo "Please start using 'Data Integration 32-bit' or"
-		echo "'Data Integration 64-bit' as appropriate."
-		exit
-		;;
+    ARCH=`uname -m`
+	OPT="-XstartOnFirstThread $OPT"
+	case $ARCH in
+		x86_64)
+			if $($_PENTAHO_JAVA -version 2>&1 | grep "64-Bit" > /dev/null )
+                            then
+			  LIBPATH=$BASEDIR/../libswt/osx64/
+                            else
+			  LIBPATH=$BASEDIR/../libswt/osx/
+                            fi
+			;;
+
+		i[3-6]86)
+			LIBPATH=$BASEDIR/../libswt/osx/
+			;;
+
+		*)	
+			echo "I'm sorry, this Linux platform [$ARCH] is not yet supported!"
+			echo "Please try starting using 'Data Integration 32-bit' or"
+			echo "'Data Integration 64-bit' as appropriate."
+			exit
+			;;
+	esac
+	;;
+
 
 	Linux)
 	    ARCH=`uname -m`
