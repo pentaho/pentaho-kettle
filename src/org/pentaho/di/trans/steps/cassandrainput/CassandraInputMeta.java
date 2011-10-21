@@ -369,7 +369,9 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
             + "' at this stage.");
         return;
       } finally {
-        conn.close();
+        if (conn != null) {
+          conn.close();
+        }
       }            
     }
   }

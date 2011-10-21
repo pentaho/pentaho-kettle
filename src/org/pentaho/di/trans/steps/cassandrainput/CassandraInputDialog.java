@@ -279,6 +279,7 @@ public class CassandraInputDialog extends BaseStepDialog implements
     m_showSchemaBut.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent e) {
         RowMeta outputF = new RowMeta();
+        CassandraConnection conn = null;
         try {
 //          CassandraInputMeta tempMeta = (CassandraInputMeta)m_currentMeta.clone();
           String hostS = transMeta.environmentSubstitute(m_hostText.getText());
@@ -289,7 +290,7 @@ public class CassandraInputDialog extends BaseStepDialog implements
           String cqlText = transMeta.environmentSubstitute(m_cqlText.getText());
 //          tempMeta.setCQLSelectQuery(cqlText);                    
           
-          CassandraConnection conn = CassandraInputData.
+          conn = CassandraInputData.
             getCassandraConnection(hostS, Integer.parseInt(portS));
           try {
             conn.setKeyspace(keyspaceS);
@@ -329,6 +330,10 @@ public class CassandraInputDialog extends BaseStepDialog implements
               + ":\n\n" 
               + e1.getMessage());
           e1.printStackTrace();
+        } finally {
+          if (conn != null) {
+            conn.close();
+          }
         }
       }
     });
