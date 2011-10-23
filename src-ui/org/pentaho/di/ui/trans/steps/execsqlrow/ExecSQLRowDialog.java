@@ -89,6 +89,10 @@ public class ExecSQLRowDialog extends BaseStepDialog implements StepDialogInterf
 	private FormData     fdlSQLFromFile, fdSQLFromFile;
 
 	
+	private Label        wlSendOneStatement;
+	private Button       wSendOneStatement;
+	private FormData     fdlSendOneStatement, fdSendOneStatement;
+	
 	
 	public ExecSQLRowDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
@@ -166,6 +170,32 @@ public class ExecSQLRowDialog extends BaseStepDialog implements StepDialogInterf
 		fdCommit.right = new FormAttachment(100, 0);
 		wCommit.setLayoutData(fdCommit);
 		
+		wlSendOneStatement=new Label(shell, SWT.RIGHT);
+		wlSendOneStatement.setText(BaseMessages.getString(PKG, "ExecSQLRowDialog.SendOneStatement.Label"));
+ 		props.setLook(wlSendOneStatement);
+		fdlSendOneStatement=new FormData();
+		fdlSendOneStatement.left = new FormAttachment(0, 0);
+		fdlSendOneStatement.top  = new FormAttachment(wCommit, margin);
+		fdlSendOneStatement.right= new FormAttachment(middle, -margin);
+		wlSendOneStatement.setLayoutData(fdlSendOneStatement);
+		wSendOneStatement=new Button(shell, SWT.CHECK );
+		wSendOneStatement.setToolTipText(BaseMessages.getString(PKG, "ExecSQLRowDialog.SendOneStatement.Tooltip"));
+ 		props.setLook(wSendOneStatement);
+		fdSendOneStatement=new FormData();
+		fdSendOneStatement.left = new FormAttachment(middle, 0);
+		fdSendOneStatement.top  = new FormAttachment(wCommit, margin);
+		fdSendOneStatement.right= new FormAttachment(100, 0);
+		wSendOneStatement.setLayoutData(fdSendOneStatement);
+		wSendOneStatement.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					input.setChanged();
+				}
+			}
+		);
+		
+		
 		// SQLFieldName field
 		wlSQLFieldName=new Label(shell, SWT.RIGHT);
 		wlSQLFieldName.setText(BaseMessages.getString(PKG, "ExecSQLRowDialog.SQLFieldName.Label")); //$NON-NLS-1$
@@ -173,7 +203,7 @@ public class ExecSQLRowDialog extends BaseStepDialog implements StepDialogInterf
 		fdlSQLFieldName=new FormData();
 		fdlSQLFieldName.left = new FormAttachment(0, 0);
 		fdlSQLFieldName.right= new FormAttachment(middle, -margin);
-		fdlSQLFieldName.top  = new FormAttachment(wCommit, 2*margin);
+		fdlSQLFieldName.top  = new FormAttachment(wSendOneStatement, 2*margin);
 		wlSQLFieldName.setLayoutData(fdlSQLFieldName);
 		wSQLFieldName=new CCombo(shell, SWT.BORDER | SWT.READ_ONLY);
 		wSQLFieldName.setEditable(true);
@@ -181,7 +211,7 @@ public class ExecSQLRowDialog extends BaseStepDialog implements StepDialogInterf
  		wSQLFieldName.addModifyListener(lsMod);
 		fdSQLFieldName=new FormData();
 		fdSQLFieldName.left = new FormAttachment(middle, 0);
-		fdSQLFieldName.top  = new FormAttachment(wCommit, 2*margin);
+		fdSQLFieldName.top  = new FormAttachment(wSendOneStatement, 2*margin);
 		fdSQLFieldName.right= new FormAttachment(100, -margin);
 		wSQLFieldName.setLayoutData(fdSQLFieldName);
 		wSQLFieldName.addFocusListener(new FocusListener()
@@ -375,7 +405,7 @@ public class ExecSQLRowDialog extends BaseStepDialog implements StepDialogInterf
         if (input.getDeleteField()!=null) wDeleteField.setText(input.getDeleteField());
         if (input.getReadField()  !=null) wReadField  .setText(input.getReadField());
         wSQLFromFile.setSelection(input.isSqlFromfile());
-
+        wSendOneStatement.setSelection(input.IsSendOneStatement());
 		wStepname.selectAll();
 	}
 	
@@ -400,7 +430,7 @@ public class ExecSQLRowDialog extends BaseStepDialog implements StepDialogInterf
         input.setDeleteField(wDeleteField.getText());
         input.setReadField  (wReadField  .getText());
 		input.setSqlFromfile(wSQLFromFile.getSelection());
-        
+		input.SetSendOneStatement(wSendOneStatement.getSelection());
 		if (input.getDatabaseMeta()==null)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );

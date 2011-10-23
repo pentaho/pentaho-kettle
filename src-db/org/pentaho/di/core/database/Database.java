@@ -4985,10 +4985,11 @@ public class Database implements VariableSpace, LoggingObjectInterface
   /**
    * Execute an SQL statement inside a file on the database connection (has to be open)
    * @param sql The file that contains SQL to execute
+   * @sendSinglestatement send one statement
    * @return a Result object indicating the number of lines read, deleted, inserted, updated, ...
    * @throws KettleDatabaseException in case anything goes wrong.
    */
-	public Result execStatementFromFile(String filename) throws KettleException
+	public Result execStatementsFromFile(String filename, boolean sendSinglestatement) throws KettleException
 	{
 		FileObject sqlFile=null;
 		InputStream is=null;
@@ -5019,7 +5020,10 @@ public class Database implements VariableSpace, LoggingObjectInterface
 				}
 			}
 				
-			return execStatement(sql);
+			if(sendSinglestatement)
+				return execStatement(sql);
+			else
+				return execStatements(sql);
 		
 		}catch(Exception e) {
 			throw new KettleException(e);

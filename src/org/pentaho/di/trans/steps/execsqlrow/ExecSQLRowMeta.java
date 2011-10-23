@@ -67,10 +67,28 @@ public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface
 	
 	private boolean  sqlFromfile;
 	
+	/** Send SQL as single statement **/
+	private boolean sendOneStatement;
+	
 	public ExecSQLRowMeta()
 	{
 		super();
 	}
+	 /**
+     * @return Returns the sqlFromfile.
+     */
+    public boolean IsSendOneStatement()
+    {
+        return sendOneStatement;
+    }
+    
+    /**
+     * @param sendOneStatement The sendOneStatement to set.
+     */
+    public void SetSendOneStatement(boolean sendOneStatement)
+    {
+        this.sendOneStatement = sendOneStatement;
+    }
     /**
      * @return Returns the sqlFromfile.
      */
@@ -226,6 +244,8 @@ public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface
 			deleteField           = XMLHandler.getTagValue(stepnode, "delete_field"); //$NON-NLS-1$
 			readField             = XMLHandler.getTagValue(stepnode, "read_field"); //$NON-NLS-1$
             sqlFromfile        = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "sqlFromfile"));
+            
+            sendOneStatement = "Y".equalsIgnoreCase(Const.NVL(XMLHandler.getTagValue(stepnode, "sendOneStatement"), "Y"));
         }
 		catch(Exception e)
 		{
@@ -239,6 +259,7 @@ public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface
 		commitSize   = 1;
 		databaseMeta = null;
 		sqlField     = null; //$NON-NLS-1$
+		sendOneStatement= true;
 	}
 
 	public void getFields(RowMetaInterface r, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
@@ -261,7 +282,7 @@ public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    ").append(XMLHandler.addTagValue("delete_field",  deleteField)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    ").append(XMLHandler.addTagValue("read_field",    readField)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("sqlFromfile",        sqlFromfile));
-
+		retval.append("    ").append(XMLHandler.addTagValue("sendOneStatement",        sendOneStatement));
 		return retval.toString();
 	}
 
@@ -279,6 +300,11 @@ public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface
             deleteField           = rep.getStepAttributeString (id_step, "delete_field"); //$NON-NLS-1$
             readField             = rep.getStepAttributeString (id_step, "read_field"); //$NON-NLS-1$
             sqlFromfile              = rep.getStepAttributeBoolean(id_step, "sqlFromfile");
+            
+            String sendOneStatementString    = rep.getStepAttributeString(id_step, "sendOneStatement");
+            if(Const.isEmpty(sendOneStatementString)) sendOneStatement=true;
+            else  sendOneStatement              = rep.getStepAttributeBoolean(id_step, "sendOneStatement");
+            
            
 		}
 		catch(Exception e)
@@ -305,6 +331,7 @@ public class ExecSQLRowMeta extends BaseStepMeta implements StepMetaInterface
 			if (databaseMeta!=null) rep.insertStepDatabase(id_transformation, id_step, databaseMeta.getObjectId());
 			
 			rep.saveStepAttribute(id_transformation, id_step, "sqlFromfile",             sqlFromfile);
+			rep.saveStepAttribute(id_transformation, id_step, "sendOneStatement",             sendOneStatement);
 		}
 		catch(Exception e)
 		{

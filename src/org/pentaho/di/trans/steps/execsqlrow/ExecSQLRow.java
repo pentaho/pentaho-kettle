@@ -135,10 +135,14 @@ public class ExecSQLRow extends BaseStep implements StepInterface
 					throw new KettleException(BaseMessages.getString(PKG, "ExecSQLRow.Log.EmptySQLFromFile"));
 				}
 				if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "ExecSQLRow.Log.ExecutingSQLFromFile", sql));
-				data.result = data.db.execStatementFromFile(sql);
+				data.result = data.db.execStatementsFromFile(sql, meta.IsSendOneStatement());
 			}else {
 				if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "ExecSQLRow.Log.ExecutingSQLScript")+Const.CR+sql); //$NON-NLS-1$
-				data.result = data.db.execStatement(sql);
+				if(meta.IsSendOneStatement()) {
+					data.result = data.db.execStatement(sql);
+				} else {
+					data.result = data.db.execStatements(sql);
+				}
 			}
 	      
 			RowMetaAndData add = getResultRow(data.result, meta.getUpdateField(), meta.getInsertField(), meta.getDeleteField(), meta.getReadField());			
