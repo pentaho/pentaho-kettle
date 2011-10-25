@@ -32,6 +32,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.groupby.GroupByMeta;
 import org.pentaho.di.trans.steps.memgroupby.MemoryGroupByData.HashEntry;
 
 
@@ -291,9 +292,11 @@ public class MemoryGroupBy extends BaseStep implements StepInterface
                 case MemoryGroupByMeta.TYPE_GROUP_CONCAT_COMMA   :
                     if (!(subj==null)) 
                     {
-                    	String vString=valueMeta.getString(value);
-                        if (vString.length()>0) vString=vString+", "; //$NON-NLS-1$
-                        aggregate.agg[i]=vString+subjMeta.getString(subj);
+                      StringBuilder sb = (StringBuilder) value;
+                      if(sb.length()>0){
+                          sb.append(", ");
+                      }
+                      sb.append(subjMeta.getString(subj));
                     }
                     break; 
                 case MemoryGroupByMeta.TYPE_GROUP_CONCAT_STRING   :
@@ -301,9 +304,11 @@ public class MemoryGroupBy extends BaseStep implements StepInterface
                     {
                     	String separator="";
                     	if(!Const.isEmpty(meta.getValueField()[i])) separator=environmentSubstitute(meta.getValueField()[i]);
-                    	String vString=valueMeta.getString(value);
-                        if (vString.length()>0) vString=vString+separator; //$NON-NLS-1$
-                        aggregate.agg[i]=vString+subjMeta.getString(subj);
+                      StringBuilder sb = (StringBuilder) value;
+                      if (sb.length() > 0) {
+                        sb.append(separator);
+                      }
+                      sb.append(subjMeta.getString(subj));
                     }
                     
                     break; 
@@ -359,11 +364,11 @@ public class MemoryGroupBy extends BaseStep implements StepInterface
 					break;
                 case MemoryGroupByMeta.TYPE_GROUP_CONCAT_COMMA    :
                     vMeta = new ValueMeta(meta.getAggregateField()[i], ValueMetaInterface.TYPE_STRING);
-                    v = ""; //$NON-NLS-1$
+                    v = new StringBuilder();
                     break; 
                 case MemoryGroupByMeta.TYPE_GROUP_CONCAT_STRING   :
                     vMeta = new ValueMeta(meta.getAggregateField()[i], ValueMetaInterface.TYPE_STRING);
-                    v = ""; //$NON-NLS-1$
+                    v = new StringBuilder();
                     break; 
 				default: 
 					throw new KettleException("Unknown data type for aggregation : "+meta.getAggregateField()[i]);
@@ -428,6 +433,10 @@ public class MemoryGroupBy extends BaseStep implements StepInterface
                     	double sum = (Double)ag / aggregate.counts[i];
                     	ag = Double.valueOf( Math.sqrt( sum ) );
                     	break;
+                    case GroupByMeta.TYPE_GROUP_CONCAT_COMMA:;
+                    case GroupByMeta.TYPE_GROUP_CONCAT_STRING: 
+                      ag = ((StringBuilder) ag).toString();
+                      break;
                     default: break;
                 }
                 result[i]=ag;
