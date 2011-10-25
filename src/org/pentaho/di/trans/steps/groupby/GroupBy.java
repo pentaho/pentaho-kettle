@@ -520,9 +520,11 @@ public class GroupBy extends BaseStep implements StepInterface
                 case GroupByMeta.TYPE_GROUP_CONCAT_COMMA   :
                     if (!(subj==null)) 
                     {
-                    	String vString=valueMeta.getString(value);
-                        if (vString.length()>0) vString=vString+", "; //$NON-NLS-1$
-                        data.agg[i]=vString+subjMeta.getString(subj);
+                    	  StringBuilder sb = (StringBuilder) value;
+                        if(sb.length()>0){
+                            sb.append(", ");
+                        }
+                        sb.append(subjMeta.getString(subj));
                     }
                     break; 
                 case GroupByMeta.TYPE_GROUP_CONCAT_STRING   :
@@ -530,9 +532,12 @@ public class GroupBy extends BaseStep implements StepInterface
                     {
                     	String separator="";
                     	if(!Const.isEmpty(meta.getValueField()[i])) separator=environmentSubstitute(meta.getValueField()[i]);
-                    	String vString=valueMeta.getString(value);
-                        if (vString.length()>0) vString=vString+separator; //$NON-NLS-1$
-                        data.agg[i]=vString+subjMeta.getString(subj);
+                    	
+                        StringBuilder sb = (StringBuilder) value;
+                        if(sb.length()>0){
+                            sb.append(separator);
+                        }
+                        sb.append(subjMeta.getString(subj));
                     }
                     
                     break; 
@@ -592,11 +597,11 @@ public class GroupBy extends BaseStep implements StepInterface
 					break;
                 case GroupByMeta.TYPE_GROUP_CONCAT_COMMA    :
                     vMeta = new ValueMeta(meta.getAggregateField()[i], ValueMetaInterface.TYPE_STRING);
-                    v = ""; //$NON-NLS-1$
+                    v = new StringBuilder(); //$NON-NLS-1$
                     break; 
                 case GroupByMeta.TYPE_GROUP_CONCAT_STRING   :
                     vMeta = new ValueMeta(meta.getAggregateField()[i], ValueMetaInterface.TYPE_STRING);
-                    v = ""; //$NON-NLS-1$
+                    v = new StringBuilder(); //$NON-NLS-1$
                     break; 
 				default: 
 					// TODO raise an error here because we cannot continue successfully maybe the UI should validate this
@@ -676,6 +681,10 @@ public class GroupBy extends BaseStep implements StepInterface
                     	double sum = (Double)ag / data.counts[i];
                     	ag = Double.valueOf( Math.sqrt( sum ) );
                     	break;
+                    case GroupByMeta.TYPE_GROUP_CONCAT_COMMA:;
+                    case GroupByMeta.TYPE_GROUP_CONCAT_STRING: 
+                        ag = ((StringBuilder) ag).toString();
+                        break;
                     default: break;
                 }
                 result[i]=ag;
