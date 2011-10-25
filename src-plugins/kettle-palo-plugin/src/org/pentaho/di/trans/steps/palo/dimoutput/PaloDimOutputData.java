@@ -32,6 +32,8 @@ package org.pentaho.di.trans.steps.palo.dimoutput;
  */
 
 
+import java.util.ArrayList;
+
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.PALODatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
@@ -44,6 +46,8 @@ public class PaloDimOutputData extends BaseStepData
 implements StepDataInterface{
     public PaloHelper helper;
     public int[] indexes;
+    public ArrayList<String> elementNamesBatch = new ArrayList<String>();
+    
     public PaloDimOutputData(DatabaseMeta databaseMeta) throws KettleException {
         super();
         if(!(databaseMeta.getDatabaseInterface() instanceof PALODatabaseMeta )) {
