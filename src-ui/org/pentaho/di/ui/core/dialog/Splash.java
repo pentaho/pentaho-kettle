@@ -129,13 +129,13 @@ public class Splash {
           drawVersionWarning(e);
         } else if (Const.RELEASE.equals(Const.ReleaseType.RELEASE_CANDIDATE)) {
           versionText = BaseMessages.getString(PKG, "SplashDialog.ReleaseCandidate") + " - " + versionText;  //$NON-NLS-1$//$NON-NLS-2$
-        }
-        else if (Const.RELEASE.equals(Const.ReleaseType.PREVIEW)) {
+        } else if (Const.RELEASE.equals(Const.ReleaseType.PREVIEW)) {
           versionText = BaseMessages.getString(PKG, "SplashDialog.PreviewRelease") + " - " + versionText;  //$NON-NLS-1$//$NON-NLS-2$
-        }
-        else if (Const.RELEASE.equals(Const.ReleaseType.GA)) {
+        } else if (Const.RELEASE.equals(Const.ReleaseType.GA)) {
             versionText = BaseMessages.getString(PKG, "SplashDialog.GA") + " - " + versionText;  //$NON-NLS-1$//$NON-NLS-2$
-          }
+        } else if (Const.RELEASE.equals(Const.ReleaseType.STABLE)) {
+                versionText = BaseMessages.getString(PKG, "SplashDialog.Stable") + " - " + versionText;  //$NON-NLS-1$//$NON-NLS-2$  
+        }
         
         e.gc.setFont(verFont);
         e.gc.drawText(versionText, 290, 205, true);
