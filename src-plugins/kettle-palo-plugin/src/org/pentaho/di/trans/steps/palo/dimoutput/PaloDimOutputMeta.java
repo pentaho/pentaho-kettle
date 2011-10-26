@@ -130,8 +130,8 @@ public class PaloDimOutputMeta extends BaseStepMeta
     			XMLHandler.getTagValue(stepnode, "recreatedimension").equals("Y") ? true : false);
             enableElementCache = (XMLHandler.getTagValue(stepnode, "enableElementCache") == null ? false :
     			XMLHandler.getTagValue(stepnode, "enableElementCache").equals("Y") ? true : false);
-            preloadElementCache = (XMLHandler.getTagValue(stepnode, "enableElementCache") == null ? false :
-    			XMLHandler.getTagValue(stepnode, "enableElementCache").equals("Y") ? true : false);
+            preloadElementCache = (XMLHandler.getTagValue(stepnode, "preloadElementCache") == null ? false :
+    			XMLHandler.getTagValue(stepnode, "preloadElementCache").equals("Y") ? true : false);
             
             Node levels = XMLHandler.getSubNode(stepnode,"levels");
             int nrLevels = XMLHandler.countNodes(levels,"level");

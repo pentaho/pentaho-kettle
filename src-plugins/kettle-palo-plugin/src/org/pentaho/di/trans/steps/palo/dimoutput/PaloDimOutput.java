@@ -129,9 +129,9 @@ public class PaloDimOutput extends BaseStep implements StepInterface {
 					}
 				}
 	
+				// Should probably make this a parameter on the dialog
 				if (data.elementNamesBatch.size() % 100 == 0)
 					commitBatch();
-	
 	
 				this.currentTransformationRows.add(newRow);
 	
@@ -152,14 +152,18 @@ public class PaloDimOutput extends BaseStep implements StepInterface {
 				data.helper.loadDimensionCache(meta.getDimension(), meta.getEnableElementCache(), meta.getPreloadElementCache());
 				
 				// if it's the last row create the dimension
-				this.logBasic("All rows have been read. Looking for consolidations");
+				this.logBasic("All rows have been added. Looking for consolidations");
 				this.logDebug("Read rows:" + this.currentTransformationRows.size());
 				DimensionGroupingCollection newDimension = data.helper.getDimensionGroupings(meta.getDimension(), this.currentTransformationRows);
-				this.logBasic("Consolidations got.");
-				this.logBasic(newDimension == null ? "Null Consolidations" : " Consolidations Ok");
-				this.logBasic("Add Dimension " + meta.getDimension());
-				data.helper.addDimensionConsolidations(meta.getDimension(), newDimension);
-				this.logBasic("Dimension Added.");
+				if (newDimension == null || newDimension.size() == 0){
+					this.logBasic("No consolidations to update.");
+				}
+				else{
+					this.logBasic("Consolidations Ok");
+					this.logBasic("Updating consolidations for Dimension" + meta.getDimension());
+					data.helper.addDimensionConsolidations(meta.getDimension(), newDimension);
+					this.logBasic("Consolidations updated.");
+				}
 				setOutputDone();
 				return false;
 			} catch (Exception e) {
