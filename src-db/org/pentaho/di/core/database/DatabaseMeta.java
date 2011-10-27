@@ -2468,7 +2468,15 @@ public class DatabaseMeta
 	
 	public DatabaseFactoryInterface getDatabaseFactory() throws Exception
 	{
-		Class<?> clazz = Class.forName(databaseInterface.getDatabaseFactoryName());
+		PluginRegistry registry = PluginRegistry.getInstance();
+		PluginInterface plugin = registry.getPlugin(DatabasePluginType.class, databaseInterface.getPluginId());
+		if (plugin==null) {
+			throw new KettleDatabaseException("database type with plugin id ["+databaseInterface.getPluginId()+"] couldn't be found!");
+		}
+		
+		ClassLoader loader = registry.getClassLoader(plugin);
+		
+		Class<?> clazz = Class.forName(databaseInterface.getDatabaseFactoryName(),true,loader);
 		return (DatabaseFactoryInterface)clazz.newInstance();
 	}
 	
