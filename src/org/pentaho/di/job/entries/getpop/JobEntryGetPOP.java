@@ -966,7 +966,8 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 			if(!usePOP3 && !Const.isEmpty(realIMAPFolder)) {
 				mailConn.openFolder(realIMAPFolder, !(getActionType()==MailConnectionMeta.ACTION_TYPE_GET && getAfterGetIMAP()==MailConnectionMeta.AFTER_GET_IMAP_NOTHING));
 			} else {
-				mailConn.openFolder(!(getActionType()==MailConnectionMeta.ACTION_TYPE_GET && getAfterGetIMAP()==MailConnectionMeta.AFTER_GET_IMAP_NOTHING));
+				// If Protocol is POP3 and "Delete after retrieval" is checked, we should open Folder in READ_WRITE Mode!
+				mailConn.openFolder(!(getActionType()==MailConnectionMeta.ACTION_TYPE_GET && getAfterGetIMAP()==MailConnectionMeta.AFTER_GET_IMAP_NOTHING) || (usePOP3 && delete));
 			}
 
 			mailConn.retrieveMessages();
