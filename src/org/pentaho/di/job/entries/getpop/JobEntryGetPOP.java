@@ -748,7 +748,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 			}
 
 			
-			String targetAttachmentFolder=realOutputFolder;
+			String targetAttachmentFolder=KettleVFS.getFilename(fileObject);
 			// check for attachment folder
 			boolean useDifferentFolderForAttachment=(isSaveAttachment() && isDifferentFolderForAttachment());
 			
@@ -766,7 +766,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 				if (fileObject.getType()!=FileType.FOLDER)
 					throw new KettleException(BaseMessages.getString(PKG, "JobGetMailsFromPOP.Error.AttachmentFolderNotAFolder",realFolderAttachment));
 				
-				targetAttachmentFolder=realFolderAttachment;
+				targetAttachmentFolder=KettleVFS.getFilename(fileObject);
 			}
 		    // Close fileObject! we don't need it anymore ...
 			try  {fileObject.close();fileObject=null;}catch ( IOException ex ) {};
@@ -972,7 +972,8 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 			if(!usePOP3 && !Const.isEmpty(realIMAPFolder)) {
 				mailConn.openFolder(realIMAPFolder, !(getActionType()==MailConnectionMeta.ACTION_TYPE_GET && getAfterGetIMAP()==MailConnectionMeta.AFTER_GET_IMAP_NOTHING));
 			} else {
-				mailConn.openFolder(!(getActionType()==MailConnectionMeta.ACTION_TYPE_GET && getAfterGetIMAP()==MailConnectionMeta.AFTER_GET_IMAP_NOTHING));
+				// If Protocol is POP3 and "Delete after retrieval" is checked, we should open Folder in READ_WRITE Mode!
+				mailConn.openFolder(!(getActionType()==MailConnectionMeta.ACTION_TYPE_GET && getAfterGetIMAP()==MailConnectionMeta.AFTER_GET_IMAP_NOTHING) || (usePOP3 && delete));
 			}
 
 			mailConn.retrieveMessages();
