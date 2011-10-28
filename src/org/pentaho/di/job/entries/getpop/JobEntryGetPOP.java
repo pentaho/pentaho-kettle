@@ -744,7 +744,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 			}
 
 			
-			String targetAttachmentFolder=realOutputFolder;
+			String targetAttachmentFolder=KettleVFS.getFilename(fileObject);
 			// check for attachment folder
 			boolean useDifferentFolderForAttachment=(isSaveAttachment() && isDifferentFolderForAttachment());
 			
@@ -761,7 +761,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 				if (fileObject.getType()!=FileType.FOLDER)
 					throw new KettleException(BaseMessages.getString(PKG, "JobGetMailsFromPOP.Error.AttachmentFolderNotAFolder",realFolderAttachment));
 				
-				targetAttachmentFolder=realFolderAttachment;
+				targetAttachmentFolder=KettleVFS.getFilename(fileObject);
 			}
 		    // Close fileObject! we don't need it anymore ...
 			try  {fileObject.close();fileObject=null;}catch ( IOException ex ) {};
