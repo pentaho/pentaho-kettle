@@ -558,5 +558,12 @@
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.SendNagiosPassiveCheck.Tooltip</tooltip>
 		<iconfile>ui/images/nagios.png</iconfile>
 	</job-entry>
+		<job-entry id="TELNET">
+		<description>i18n:org.pentaho.di.job.entry:JobEntry.Telnet.TypeDesc</description>
+		<classname>org.pentaho.di.job.entries.telnet.JobEntryTelnet</classname>
+		<category>i18n:org.pentaho.di.job:JobCategory.Category.Utility</category>
+		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.Telnet.Tooltip</tooltip>
+		<iconfile>ui/images/telnet.png</iconfile>
+	</job-entry>
 </job-entries>
 
