@@ -64,6 +64,17 @@ public class SplitFieldToRowsMeta extends BaseStepMeta implements StepMetaInterf
 	/** Flag indicating that we should reset RowNum for each file */
 	private boolean resetRowNumber;
 	
+	/** Flag indicating that the delimiter is a regular expression */
+	private boolean isDelimiterRegex;
+
+	public boolean isDelimiterRegex() {
+		return isDelimiterRegex;
+	}
+
+	public void setDelimiterRegex(boolean isDelimiterRegex) {
+		this.isDelimiterRegex = isDelimiterRegex;
+	}
+
 	public SplitFieldToRowsMeta()
 	{
 		super(); // allocate BaseStepMeta
@@ -116,6 +127,7 @@ public class SplitFieldToRowsMeta extends BaseStepMeta implements StepMetaInterf
 			includeRowNumber  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "rownum"));
 			resetRowNumber  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "resetrownumber"));
 			rowNumberField    = XMLHandler.getTagValue(stepnode, "rownum_field");
+			isDelimiterRegex  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "delimiter_is_regex"));
 		}
 		catch(Exception e)
 		{
@@ -129,6 +141,7 @@ public class SplitFieldToRowsMeta extends BaseStepMeta implements StepMetaInterf
 		delimiter  = ";"; //$NON-NLS-1$
 		newFieldname = "";
 		includeRowNumber = false;
+		isDelimiterRegex = false;
 		rowNumberField   = "";
 		resetRowNumber=true;
 	}
@@ -159,6 +172,7 @@ public class SplitFieldToRowsMeta extends BaseStepMeta implements StepMetaInterf
         retval.append("   "+XMLHandler.addTagValue("rownum",          includeRowNumber));
         retval.append("   "+XMLHandler.addTagValue("rownum_field",    rowNumberField));
         retval.append("   "+XMLHandler.addTagValue("resetrownumber",  resetRowNumber));
+        retval.append("   "+XMLHandler.addTagValue("delimiter_is_regex",  isDelimiterRegex));
 		
 		return retval.toString();
 	}
@@ -172,6 +186,7 @@ public class SplitFieldToRowsMeta extends BaseStepMeta implements StepMetaInterf
 			includeRowNumber  = rep.getStepAttributeBoolean(id_step, "rownum");
 			rowNumberField    = rep.getStepAttributeString (id_step, "rownum_field");
 			resetRowNumber     = rep.getStepAttributeBoolean (id_step, "reset_rownumber");
+			isDelimiterRegex = rep.getStepAttributeBoolean(id_step, 0, "delimiter_is_regex", false);
 		}
 		catch(Exception e)
 		{
@@ -189,6 +204,7 @@ public class SplitFieldToRowsMeta extends BaseStepMeta implements StepMetaInterf
 			rep.saveStepAttribute(id_transformation, id_step, "rownum",          includeRowNumber);
 			rep.saveStepAttribute(id_transformation, id_step, "reset_rownumber",  resetRowNumber);
 			rep.saveStepAttribute(id_transformation, id_step, "rownum_field",    rowNumberField);
+			rep.saveStepAttribute(id_transformation, id_step, "delimiter_is_regex",    isDelimiterRegex);
 		}
 		catch(Exception e)
 		{

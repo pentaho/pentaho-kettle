@@ -98,18 +98,39 @@ public class SplitFieldToRows extends BaseStep implements StepInterface
 		
 		if(meta.includeRowNumber() && meta.resetRowNumber()) data.rownr=1L;
 		
-		SimpleTokenizer tokenizer = new SimpleTokenizer(originalString, data.realDelimiter, true);
-		while (tokenizer.hasMoreTokens()) {
-			Object[] outputRow = RowDataUtil.createResizedCopy(rowData, data.outputRowMeta.size());
-			outputRow[rowMeta.size()] = tokenizer.nextToken();
-			// Include row number in output?
-			if(meta.includeRowNumber())
-			{
-				outputRow[rowMeta.size()+1]=data.rownr;
+		if (meta.isDelimiterRegex()){
+			// regex
+			String[] parts = originalString.split(data.realDelimiter);
+			for (String string : parts) {
+
+				Object[] outputRow = RowDataUtil.createResizedCopy(rowData, data.outputRowMeta.size());
+				outputRow[rowMeta.size()] = string;
+				// Include row number in output?
+				if(meta.includeRowNumber()){
+					outputRow[rowMeta.size()+1]=data.rownr;
+				}
+				putRow(data.outputRowMeta, outputRow);
+				data.rownr ++;
+				
 			}
-			putRow(data.outputRowMeta, outputRow);
-			data.rownr ++;
+			
 		}
+		else{
+			// non-regex
+			SimpleTokenizer tokenizer = new SimpleTokenizer(originalString, data.realDelimiter, true);
+			while (tokenizer.hasMoreTokens()) {
+				Object[] outputRow = RowDataUtil.createResizedCopy(rowData, data.outputRowMeta.size());
+				outputRow[rowMeta.size()] = tokenizer.nextToken();
+				// Include row number in output?
+				if(meta.includeRowNumber()){
+					outputRow[rowMeta.size()+1]=data.rownr;
+				}
+				putRow(data.outputRowMeta, outputRow);
+				data.rownr ++;
+			}
+			
+		}
+		
 		
 		return true;
 	}
