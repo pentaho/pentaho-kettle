@@ -687,13 +687,6 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 		wIfSheetExists.addModifyListener(lsMod);
 		wIfSheetExists.setToolTipText(BaseMessages.getString(PKG, "ExcelWriterDialog.IfSheetExists.Tooltip"));
 
-		//		wIfSheetExists.addSelectionListener(new SelectionAdapter() {
-		//			public void widgetSelected(SelectionEvent e) {
-		//				input.setChanged();
-		//				EnableIfSheetExists();
-		//			}
-		//		});
-
 		FormData fdIfSheetExists = new FormData();
 		fdIfSheetExists.left = new FormAttachment(middle, 0);
 		fdIfSheetExists.top = new FormAttachment(wMakeActiveSheet, margin);
@@ -1265,6 +1258,7 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 		fdFields.bottom = new FormAttachment(wGet, -margin);
 		wFields.setLayoutData(fdFields);
 		wFields.addModifyListener(lsMod);
+		
 		// Search the fields in the background
 
 		final Runnable runnable = new Runnable() {
@@ -1319,10 +1313,6 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 		sc.setLayoutData(fdSc);
 		
 		sc.setContent(wTabFolder);
-		//wTabFolder.setSize();
-		sc.setMinSize(wTabFolder.computeSize(SWT.DEFAULT, SWT.DEFAULT));
-		sc.setExpandHorizontal(true);
-		sc.setExpandVertical(true);
 
 		// ///////////////////////////////////////////////////////////
 		// / END OF CONTENT TAB
@@ -1454,9 +1444,6 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 
 		wTabFolder.setSelection(0);
 
-		// Set the shell size, based upon previous time...
-		setSize(shell, 600, 600, true);
-
 		getData();
 		setDateTimeFormat();
 		enableExtension();
@@ -1465,6 +1452,24 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 		enableTemplateSheet();
 		input.setChanged(changed);
 
+		// artificially reduce table size
+		for(int t=0;t<wFields.table.getColumnCount();t++)
+			wFields.table.getColumn(t).setWidth(20);
+		
+		wFields.layout();
+		wFields.pack();
+
+		// determine scrollable area
+		sc.setMinSize(wTabFolder.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+		sc.setExpandHorizontal(true);
+		sc.setExpandVertical(true);
+		
+		// set window size
+		setSize(shell, 600, 600, true);
+		
+		// restore optimal column widths
+		wFields.optWidth(true);
+				
 		shell.open();
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch())
