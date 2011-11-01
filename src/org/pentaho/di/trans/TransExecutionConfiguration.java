@@ -9,6 +9,9 @@
  * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
  * the license for the specific language governing your rights and limitations.
+ *
+ *  Copyright 2011 De Bortoli Wines Pty Limited (Australia)
+ *  
 */
 package org.pentaho.di.trans;
 
@@ -537,8 +540,11 @@ public class TransExecutionConfiguration implements Cloneable
         {
             xml.append(XMLHandler.openTag("repository"));
             xml.append(XMLHandler.addTagValue("name", repository.getName()));
-            xml.append(XMLHandler.addTagValue("login", repository.getUserInfo().getLogin()));
-            xml.append(XMLHandler.addTagValue("password", Encr.encryptPassword(repository.getUserInfo().getPassword())));
+            // File base repositories doesn't have user info
+            if (repository.getUserInfo() != null){
+	            xml.append(XMLHandler.addTagValue("login", repository.getUserInfo().getLogin()));
+	            xml.append(XMLHandler.addTagValue("password", Encr.encryptPassword(repository.getUserInfo().getPassword())));
+            }
             xml.append(XMLHandler.closeTag("repository"));
         }
 

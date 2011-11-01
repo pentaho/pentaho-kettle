@@ -7,7 +7,11 @@
 *
 * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
 * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
-* the license for the specific language governing your rights and limitations.*/
+* the license for the specific language governing your rights and limitations.
+*
+*  Copyright 2011 De Bortoli Wines Pty Limited (Australia)
+*  
+*/
 
 package org.pentaho.di.ui.repository.repositoryexplorer.controllers;
 
@@ -128,7 +132,7 @@ public class SlavesController extends LazilyInitializedController implements IUI
         // Make sure the slave does not already exist
         if(slaveId != null) {
           MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-          mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.AlreadyExists.Message")); //$NON-NLS-1$
+          mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.AlreadyExists.Message", slaveServer.getName())); //$NON-NLS-1$
           mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Create.Title")); //$NON-NLS-1$
           mb.open();
         } else {

@@ -9,6 +9,9 @@
  * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
  * the license for the specific language governing your rights and limitations.
+ * 
+ * Copyright 2011 De Bortoli Wines Pty Limited (Australia)
+ * 
  */
 package org.pentaho.di.repository.filerep;
 
@@ -351,7 +354,7 @@ public class KettleFileRepository implements Repository {
 
 	public void deleteSlave(ObjectId id_slave) throws KettleException {
 		// ID and filename are the same
-		deleteFile(id_slave.getId());
+		deleteFile(calcDirectoryName(null)+id_slave.getId());
 	}
 	
 	public void deleteDatabaseMeta(String databaseName) throws KettleException {
@@ -510,9 +513,16 @@ public class KettleFileRepository implements Repository {
 	}
 
 	public ObjectId getSlaveID(String name) throws KettleException {
-		// The ID is the filename relative to the base directory, including the file extension
-		//
-		return new StringObjectId( calcObjectId((RepositoryDirectory)null)+name+EXT_SLAVE_SERVER);
+		// Only return the ID if the slave server exists
+		Object slaveID = name + EXT_SLAVE_SERVER;
+		
+		Object[] ids = getRootObjectIDs(EXT_SLAVE_SERVER);
+		for(Object rootID : ids){
+			if (rootID.toString().equals(slaveID))
+				return new StringObjectId( slaveID.toString() );
+		}
+		
+		return null;
 	}
 
 	private ObjectId[] getRootObjectIDs(String extension) throws KettleException {
