@@ -142,6 +142,13 @@ public class ProcessFiles extends BaseStep implements StepInterface
 				if(data.targetFile.exists())
 				{
 					if(log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "ProcessFiles.Log.TargetFileExists",targetFilename));
+					// check if target is really a file otherwise it could overwrite a complete folder by copy or move operations
+		        	if(data.targetFile.getType()!=FileType.FILE)
+		        	{
+		        		logError(BaseMessages.getString(PKG, "ProcessFiles.Error.TargetFileNotFile",targetFilename));
+		        		throw new KettleException(BaseMessages.getString(PKG, "ProcessFiles.Error.TargetFileNotFile",targetFilename));
+		        	}
+					
 				}
 				else
 				{
