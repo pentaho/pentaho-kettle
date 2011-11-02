@@ -20,6 +20,8 @@
 package org.pentaho.di.ui.job.entries.palo.JobEntryCubeCreate;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -285,7 +287,9 @@ public class PaloCubeCreateDialog extends JobEntryDialog implements JobEntryDial
 				try{
 					helper.connect();
 					List<String> dimensionNames = helper.getDimensionsNames();
-					comboDropDown = new ColumnInfo("Field",  ColumnInfo.COLUMN_TYPE_CCOMBO, helper.getDimensionsNames().toArray(new String[dimensionNames.size()]), true);
+					List <String> dimensions = helper.getDimensionsNames();
+					Collections.sort(dimensions, new CompareDimensionNames());
+					comboDropDown = new ColumnInfo("Field",  ColumnInfo.COLUMN_TYPE_CCOMBO, dimensions.toArray(new String[dimensionNames.size()]), true);
 					tableViewFields.setColumnInfo(0, comboDropDown);
 				}
 				catch (Exception ex) {
@@ -371,6 +375,21 @@ public class PaloCubeCreateDialog extends JobEntryDialog implements JobEntryDial
 	public boolean isUnconditional()
 	{
 		return false;
+	}
+	
+	private class CompareDimensionNames implements Comparator<String>{
+
+		@Override
+		public int compare(String arg0, String arg1) {
+			if (arg0.startsWith("#") && !arg1.startsWith("#"))
+				return 1;
+				
+			if (!arg0.startsWith("#") && arg1.startsWith("#"))
+				return -1;
+			
+			return arg0.compareTo(arg1);
+		}
+		
 	}
 
 }
