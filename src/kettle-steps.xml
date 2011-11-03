@@ -1480,4 +1480,17 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SASInput</tooltip>
 		<iconfile>ui/images/SASInput.png</iconfile>
 	</step> 
+	<step id="TableCompare">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.TableCompare</description>
+		<classname>org.pentaho.di.trans.steps.tablecompare.TableCompareMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Utility</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.TableCompare</tooltip>
+		<iconfile>ui/images/TBLCMP.png</iconfile>
+	</step> 
+	
+//		id = "TableCompare",
+//		image = "be/kjube/plugins/images/table_compare.png",
+//		description ="kJube.Plugins.TableCompare.Description",
+//		name = "kJube.Plugins.TableCompare.Name",
+//		categoryDescription="kJube.Category.Name",
 </steps>
