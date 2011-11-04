@@ -50,6 +50,8 @@
       changing="false"/>
     <dependency org="apache-cassandra" name="apache-cassandra" rev="${dependency.apache-cassandra.revision}" transitive="false" conf="default->default" changing="false"/>
     <dependency org="apache-cassandra-thrift" name="apache-cassandra-thrift" rev="${dependency.apache-cassandra-thrift.revision}" transitive="false" conf="default->default"  changing="false"/>
+    <dependency org="com.google.guava" name="guava" rev="${dependency.guava.revision}" transitive="false" conf="default->default"  changing="false"/>
+    <dependency org="commons-lang" name="commons-lang" rev="${dependency.commons-lang.revision}" transitive="false" conf="default->default"  changing="false"/>
 
 
       
