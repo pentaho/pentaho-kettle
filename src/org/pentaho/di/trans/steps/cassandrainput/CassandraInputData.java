@@ -157,7 +157,6 @@ public class CassandraInputData extends BaseStepData implements StepDataInterfac
     while (fromIndex > 0 && tempS.charAt(fromIndex - 1) != ' ' && 
         (fromIndex + 4 < tempS.length()) && tempS.charAt(fromIndex + 4) != ' ') {
       tempS = tempS.substring(fromIndex + 4, tempS.length());
-      System.out.println("***** : " + tempS);
       fromIndex = tempS.indexOf("from");
       offset += (4 + fromIndex);
     }
