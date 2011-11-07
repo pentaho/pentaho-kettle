@@ -150,7 +150,21 @@ public class CassandraInputData extends BaseStepData implements StepDataInterfac
     }
     
     // determine the source column family
-    int fromIndex = subQ.toLowerCase().lastIndexOf("from");
+    // look for a FROM that is surrounded by space
+    int fromIndex = subQ.toLowerCase().indexOf("from");
+    String tempS = subQ.toLowerCase();
+    int offset = fromIndex;
+    while (fromIndex > 0 && tempS.charAt(fromIndex - 1) != ' ' && 
+        (fromIndex + 4 < tempS.length()) && tempS.charAt(fromIndex + 4) != ' ') {
+      tempS = tempS.substring(fromIndex + 4, tempS.length());
+      System.out.println("***** : " + tempS);
+      fromIndex = tempS.indexOf("from");
+      offset += (4 + fromIndex);
+    }
+    
+    fromIndex = offset;
+    
+//    int fromIndex = subQ.toLowerCase().lastIndexOf("from");
     if (fromIndex < 0) {
       return null; // no from clause
     }

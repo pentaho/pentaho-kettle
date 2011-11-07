@@ -288,13 +288,25 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
       
       //subQ = subQ.toLowerCase();
       
-      // strip off where clause (if any)
+      // strip off where clause (if any)      
       if (subQ.toLowerCase().lastIndexOf("where") > 0) {
         subQ = subQ.substring(0, subQ.toLowerCase().lastIndexOf("where"));
       }
       
       // first determine the source column family
-      int fromIndex = subQ.toLowerCase().lastIndexOf("from");
+      // look for a FROM that is surrounded by space
+      int fromIndex = subQ.toLowerCase().indexOf("from");
+      String tempS = subQ.toLowerCase();
+      int offset = fromIndex;
+      while (fromIndex > 0 && tempS.charAt(fromIndex - 1) != ' ' && 
+          (fromIndex + 4 < tempS.length()) && tempS.charAt(fromIndex + 4) != ' ') {
+        tempS = tempS.substring(fromIndex + 4, tempS.length());
+        fromIndex = tempS.indexOf("from");
+        offset += (4 + fromIndex);
+      }
+      
+      fromIndex = offset;
+//      int fromIndex = subQ.toLowerCase().lastIndexOf("from");
       if (fromIndex < 0) {
         logError("Must specify a column family using a 'FROM' clause");
         return; // no from clause
