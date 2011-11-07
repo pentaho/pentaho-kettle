@@ -87,7 +87,7 @@ public class CassandraColumnMetaData {
   protected Map<String, String> m_columnMeta;
   
   /** Map of column names to indexed values (if any) */
-  protected Map<String, HashSet<String>> m_indexedVals;
+  protected Map<String, HashSet<Object>> m_indexedVals;
   
   /** Holds the schema textual description */
   protected StringBuffer m_schemaDescription;
@@ -186,10 +186,10 @@ public class CassandraColumnMetaData {
     
     // set up our meta data map
     m_columnMeta = new TreeMap<String, String>();
-    m_indexedVals = new HashMap<String, HashSet<String>>();
+    m_indexedVals = new HashMap<String, HashSet<Object>>();
     
     String comment = colDefs.getComment();
-    if (comment != null && comment.length() > 0) {
+    if (comment != null && comment.length() > 0) {      
       extractIndexedMeta(comment, m_indexedVals);
     }
     
@@ -215,12 +215,12 @@ public class CassandraColumnMetaData {
         }
         
         if (m_indexedVals.containsKey(colName)) {
-          HashSet<String> indexedVals = m_indexedVals.get(colName);
+          HashSet<Object> indexedVals = m_indexedVals.get(colName);
           
-          m_schemaDescription.append("\n\tLegal values: {");
+          m_schemaDescription.append("\n\t\tLegal values: {");
           int count = 0; 
-          for (String val : indexedVals) {
-            m_schemaDescription.append(val);
+          for (Object val : indexedVals) {
+            m_schemaDescription.append(val.toString());
             count++;
             if (count != indexedVals.size()) {
               m_schemaDescription.append(",");
@@ -236,7 +236,7 @@ public class CassandraColumnMetaData {
   }
   
   protected void extractIndexedMeta(String comment, 
-      Map<String, HashSet<String>> indexedVals) {
+      Map<String, HashSet<Object>> indexedVals) {
     if (comment.indexOf("@@@") < 0) {
       return;
     }
@@ -244,33 +244,34 @@ public class CassandraColumnMetaData {
     String meta = comment.substring(comment.indexOf("@@@"), comment.lastIndexOf("@@@"));
     meta = meta.replace("@@@", "");
     String[] fields = meta.split(";");
-    
+
     for (String field : fields) {
       field = field.trim();
       String[] parts = field.split(":");
+
       if (parts.length != 2) {
         continue;
       }
-      
+
       String fieldName = parts[0].trim();
-      if (m_columnMeta.containsKey(fieldName)) {
-        String valsS = parts[1];
-        valsS = valsS.replace("{", "");
-        valsS = valsS.replace("}", "");
-        
-        String[] vals = valsS.split(",");
-        
-        if (vals.length > 0) {
-          HashSet<String> valsSet = new HashSet<String>();
-          
-          for (String aVal : vals) {
-            valsSet.add(aVal.trim());
-          }
-          
-          indexedVals.put(fieldName, valsSet);
-        }        
-      }
+      //      if (m_columnMeta.containsKey(fieldName)) {
+      String valsS = parts[1];
+      valsS = valsS.replace("{", "");
+      valsS = valsS.replace("}", "");
+
+      String[] vals = valsS.split(",");
+
+      if (vals.length > 0) {
+        HashSet<Object> valsSet = new HashSet<Object>();
+
+        for (String aVal : vals) {
+          valsSet.add(aVal.trim());
+        }
+
+        indexedVals.put(fieldName, valsSet);
+      }        
     }
+    //  }
   }
   
   /**
@@ -547,6 +548,13 @@ public class CassandraColumnMetaData {
     }
     
     ValueMetaInterface newVM = new ValueMeta(colName, kettleType);
+    if (m_indexedVals.containsKey(colName)) {
+      // make it indexed!
+      newVM.setStorageType(ValueMetaInterface.STORAGE_TYPE_INDEXED);
+      HashSet<Object> indexedV = m_indexedVals.get(colName);
+      Object[] iv = indexedV.toArray();
+      newVM.setIndex(iv);
+    }
     
     return newVM;
   }  
@@ -714,6 +722,29 @@ public class CassandraColumnMetaData {
     }
     
     ByteBuffer valueBuff = aCol.bufferForValue();
-    return getColumnValue(valueBuff, decoder);    
+    Object result = getColumnValue(valueBuff, decoder);
+    
+    // check for indexed values
+    if (m_indexedVals.containsKey(colName)) {
+      HashSet<Object> vals = m_indexedVals.get(colName);
+      
+      // look for the correct index
+      int foundIndex = -1;
+      Object[] indexedV = vals.toArray();
+      for (int i = 0; i < indexedV.length; i++) {
+        if (indexedV[i].equals(result)) {
+          foundIndex = i;
+          break;
+        }
+      }
+      
+      if (foundIndex >= 0) {
+        result = new Integer(foundIndex);
+      } else {
+        result = null; // any values that are not indexed are unknown...
+      }
+    }
+        
+    return result; 
   }  
 }
