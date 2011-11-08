@@ -140,8 +140,11 @@ public class CassandraOutput extends BaseStep implements StepInterface {
         if (!CassandraColumnMetaData.columnFamilyExists(m_connection, m_columnFamilyName)) {
           if (m_meta.getCreateColumnFamily()) {
             // create the column family (table)
-            CassandraOutputData.createColumnFamily(m_connection, m_columnFamilyName, getInputRowMeta(), m_keyIndex, 
+            boolean result = CassandraOutputData.createColumnFamily(m_connection, m_columnFamilyName, getInputRowMeta(), m_keyIndex, 
                 m_meta.getUseCompression());
+            if (!result) {
+              throw new KettleException("Need at least one incoming field apart from the key!");
+            }
           } else {
             throw new KettleException("Column family '" + m_columnFamilyName + "' does not" +
             		" exist in keyspace '" + keyspaceS + "'. Turn on the " +
@@ -149,7 +152,7 @@ public class CassandraOutput extends BaseStep implements StepInterface {
             				"to have this column family created automatically " +
             				"using the incoming field meta data.");
           }
-        }
+        }                
       } catch (Exception e) {
         closeConnection();
         throw new KettleException(e.fillInStackTrace());
@@ -159,6 +162,12 @@ public class CassandraOutput extends BaseStep implements StepInterface {
       try {
         logBasic("Getting meta data for column family '" + m_columnFamilyName + "'");
         m_cassandraMeta = new CassandraColumnMetaData(m_connection, m_columnFamilyName);
+        
+        // check that we have at least one incoming field apart from the key
+        if (CassandraOutputData.numFieldsToBeWritten(m_columnFamilyName, getInputRowMeta(), 
+            m_keyIndex, m_cassandraMeta, m_meta.getInsertFieldsNotInMeta()) < 2) {
+          throw new KettleException("Must insert at least one other field apart from the key!");
+        }
       } catch (Exception e) {
         closeConnection();
         throw new KettleException(e.fillInStackTrace());
@@ -173,33 +182,46 @@ public class CassandraOutput extends BaseStep implements StepInterface {
         try {
           m_batchSize = Integer.parseInt(batchSize);
         } catch (NumberFormatException e) {
+          logError("Can't parse batch size - setting to 100");
           m_batchSize = 100;
-        }
-        
-        if (m_meta.getUpdateCassandraMeta()) {
-          // Update cassandra meta data for unknown incoming fields?
-          try {
-            CassandraOutputData.updateCassandraMeta(m_connection, m_columnFamilyName, 
-                getInputRowMeta(), m_keyIndex, m_cassandraMeta);
-          } catch (Exception e) {
-            closeConnection();
-            throw new KettleException(e.fillInStackTrace());
-          }
-        }
-        
-        // Truncate (remove all data from) column family first?
-        if (m_meta.getTruncateColumnFamily()) {
-          try {
-            CassandraOutputData.truncateColumnFamily(m_connection, m_columnFamilyName);
-          } catch (Exception e) {
-            closeConnection();
-            throw new KettleException(e.fillInStackTrace());
-          }
+        }                        
+      } else {
+        throw new KettleException("No batch size set!");
+      }
+      
+      if (m_meta.getUpdateCassandraMeta()) {
+        // Update cassandra meta data for unknown incoming fields?
+        try {
+          CassandraOutputData.updateCassandraMeta(m_connection, m_columnFamilyName, 
+              getInputRowMeta(), m_keyIndex, m_cassandraMeta);
+        } catch (Exception e) {
+          closeConnection();
+          throw new KettleException(e.fillInStackTrace());
         }
       }
       
+      // Truncate (remove all data from) column family first?
+      if (m_meta.getTruncateColumnFamily()) {
+        try {
+          CassandraOutputData.truncateColumnFamily(m_connection, m_columnFamilyName);
+        } catch (Exception e) {
+          closeConnection();
+          throw new KettleException(e.fillInStackTrace());
+        }
+      }
+      
+      // Try to execute any apriori CQL commands?
+      if (!Const.isEmpty(m_meta.getAprioriCQL())) {
+        String aprioriCQL = m_transMeta.environmentSubstitute(m_meta.getAprioriCQL());
+        logBasic("Executing the following CQL prior to writing to column family '" 
+            + m_columnFamilyName + "'\n\n" + aprioriCQL);
+        CassandraOutputData.executeAprioriCQL(m_connection, aprioriCQL, log, 
+            m_meta.getUseCompression());
+
+      }
+      
       m_consistency = m_transMeta.environmentSubstitute(m_meta.getConsistency());      
-      m_batchInsert = m_data.newBatch(m_batchSize, m_consistency);            
+      m_batchInsert = CassandraOutputData.newBatch(m_batchSize, m_consistency);            
     }
     
     // add the row to the batch
@@ -221,7 +243,7 @@ public class CassandraOutput extends BaseStep implements StepInterface {
     logDetailed("Committing batch to column family '" 
         + m_columnFamilyName + "'");
     CassandraOutputData.completeBatch(m_batchInsert);
-    System.out.println(m_batchInsert.toString());
+//    System.out.println(m_batchInsert.toString());
     try {
       CassandraOutputData.commitBatch(m_batchInsert, m_connection, 
           m_meta.getUseCompression());

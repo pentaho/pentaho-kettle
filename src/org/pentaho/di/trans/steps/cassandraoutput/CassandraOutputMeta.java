@@ -96,6 +96,12 @@ public class CassandraOutputMeta extends BaseStepMeta implements
   /** Whether to truncate the column family (table) before inserting */
   protected boolean m_truncateColumnFamily = false;
   
+  /** 
+   * Any CQL statements to execute before inserting the first row. Can be used, for
+   * example, to create secondary indexes on columns in a column family. 
+   */
+  protected String m_aprioriCQL = "";
+  
   /**
    * Set the cassandra node hostname to connect to
    * 
@@ -338,6 +344,30 @@ public class CassandraOutputMeta extends BaseStepMeta implements
     return m_truncateColumnFamily;
   }
   
+  /**
+   * Set any cql statements (separated by ;'s) to execute before
+   * inserting the first row into the column family. Can be used
+   * to do tasks like creating secondary indexes on columns in the
+   * table.
+   * 
+   * @param cql cql statements (separated by ;'s) to execute
+   */
+  public void setAprioriCQL(String cql) {
+    m_aprioriCQL = cql;
+  }
+  
+  /**
+   * Get any cql statements (separated by ;'s) to execute before
+   * inserting the first row into the column family. Can be used
+   * to do tasks like creating secondary indexes on columns in the
+   * table.
+   * 
+   * @return cql statements (separated by ;'s) to execute
+   */
+  public String getAprioriCQL() {
+    return m_aprioriCQL;
+  }
+  
   public String getXML() {
     StringBuffer retval = new StringBuffer();
     
@@ -390,6 +420,11 @@ public class CassandraOutputMeta extends BaseStepMeta implements
     
     retval.append("\n    ").append(XMLHandler.
         addTagValue("truncate_column_family", m_truncateColumnFamily));
+    
+    if (!Const.isEmpty(m_aprioriCQL)) {
+      retval.append("\n    ").append(XMLHandler.addTagValue("apriori_cql", 
+          m_aprioriCQL));
+    }
             
     return retval.toString();
   }
@@ -413,7 +448,9 @@ public class CassandraOutputMeta extends BaseStepMeta implements
     m_updateCassandraMeta = XMLHandler.getTagValue(stepnode, "update_cassandra_meta").
       equalsIgnoreCase("Y");
     m_truncateColumnFamily = XMLHandler.getTagValue(stepnode, "truncate_column_family").
-      equalsIgnoreCase("Y"); 
+      equalsIgnoreCase("Y");
+    
+    m_aprioriCQL = XMLHandler.getTagValue(stepnode, "apriori_cql");
   }
   
   public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases,
@@ -436,6 +473,8 @@ public class CassandraOutputMeta extends BaseStepMeta implements
       equalsIgnoreCase("Y");
     m_truncateColumnFamily = rep.getStepAttributeString(id_step, 0, "truncate_column_family").
       equalsIgnoreCase("Y");
+    
+    m_aprioriCQL = rep.getStepAttributeString(id_step, 0, "apriori_cql");
     
   }
   
@@ -486,6 +525,11 @@ public class CassandraOutputMeta extends BaseStepMeta implements
         m_updateCassandraMeta);
     rep.saveStepAttribute(id_transformation, id_step, "truncate_column_family",
         m_truncateColumnFamily);
+    
+    if (!Const.isEmpty(m_aprioriCQL)) {
+      rep.saveStepAttribute(id_transformation, id_step, "apriori_cql",
+          m_aprioriCQL);
+    }
    
   }
   
@@ -539,6 +583,7 @@ public class CassandraOutputMeta extends BaseStepMeta implements
     m_insertFieldsNotInMeta = false;
     m_updateCassandraMeta = false;
     m_truncateColumnFamily = false;
+    m_aprioriCQL = "";
   }
   
   /**

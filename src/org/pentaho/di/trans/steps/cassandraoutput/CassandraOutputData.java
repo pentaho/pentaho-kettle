@@ -22,11 +22,17 @@ import java.util.zip.Deflater;
 import org.apache.cassandra.thrift.CfDef;
 import org.apache.cassandra.thrift.ColumnDef;
 import org.apache.cassandra.thrift.Compression;
+import org.apache.cassandra.thrift.InvalidRequestException;
 import org.apache.cassandra.thrift.KsDef;
+import org.apache.cassandra.thrift.SchemaDisagreementException;
+import org.apache.cassandra.thrift.TimedOutException;
+import org.apache.cassandra.thrift.UnavailableException;
+import org.apache.thrift.TException;
 import org.pentaho.cassandra.CassandraColumnMetaData;
 import org.pentaho.cassandra.CassandraConnection;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
@@ -211,6 +217,30 @@ public class CassandraOutputData extends BaseStepData implements
     batch.append(")\n");    
   }
   
+  protected static int numFieldsToBeWritten(String colFamilyName, RowMetaInterface inputMeta,
+      int keyIndex, CassandraColumnMetaData cassandraMeta, boolean insertFieldsNotInMetaData) {
+    
+    // check how many fields will actually be inserted - we must insert at least one field
+    // appart from the key or Cassandra will complain.
+    
+    // TODO
+    
+    int count = 1; // key
+    for (int i = 0; i < inputMeta.size(); i++) {
+      if (i != keyIndex) {
+        ValueMetaInterface colMeta = inputMeta.getValueMeta(i);
+        String colName = colMeta.getName();
+        if (!cassandraMeta.columnExistsInSchema(colName) && 
+            !insertFieldsNotInMetaData) {
+          continue;
+        }
+        count++;
+      }
+    }
+    
+    return count;
+  }
+  
   /**
    * Constructs and executes a CQL TRUNCATE statement.
    * 
@@ -337,6 +367,64 @@ public class CassandraOutputData extends BaseStepData implements
   }
   
   /**
+   * Static utility method that executes a set of semicolon separated 
+   * CQL commands against a keyspace. In the context of CassandraOutput
+   * this method can be used to execute CQL commands (to create secondary
+   * indexes for example) before rows are inserted into the column family
+   * in question.
+   * 
+   * @param conn the connection to use
+   * @param cql the string containing the semicolon separated cql commands
+   * to execute
+   * @param log the logging object to log errors to
+   * @param compressCQL true if the cql commands should be compressed before
+   * sending to the server.
+   */
+  public static void executeAprioriCQL(CassandraConnection conn, String cql, 
+      LogChannelInterface log, boolean compressCQL) {
+    
+    // split out separate statements
+    String[] cqlRequests = cql.split(";");
+    if (cqlRequests.length > 0) {
+      for (String cqlC : cqlRequests) {
+        cqlC = cqlC.trim();
+        if (!cqlC.endsWith(";")) {
+          cqlC += ";";
+        }
+        
+        // try and execute it
+        byte[] toSend = null;
+        if (compressCQL) {
+          toSend = compressQuery(cqlC, Compression.GZIP);
+        } else {
+          toSend = cqlC.getBytes(Charset.forName(CassandraColumnMetaData.UTF8));
+        }
+
+        String errorMessage = null;
+        try {
+          conn.getClient().execute_cql_query(ByteBuffer.wrap(toSend), 
+              compressCQL ? Compression.GZIP : Compression.NONE);
+        } catch (InvalidRequestException e) {
+          errorMessage = e.why;
+        } catch (UnavailableException e) {
+          errorMessage = e.getMessage();
+        } catch (TimedOutException e) {
+          errorMessage = e.getMessage();
+        } catch (SchemaDisagreementException e) {            
+          errorMessage = e.getMessage();
+        } catch (TException e) {
+          errorMessage = e.getMessage();
+        }
+
+        if (errorMessage != null) {
+          log.logBasic("Unable to execute a priori CQL command '" + cqlC +
+              "'. (" + errorMessage + ")");
+        }       
+      }
+    }
+  }
+  
+  /**
    * Constructs a CQL statement to create a new column family. Uses
    * Cassandra defaults for default comparator, key_cache size etc. at present.
    * 
@@ -350,7 +438,7 @@ public class CassandraOutputData extends BaseStepData implements
    * to the server
    * @throws Exception if a problem occurs.
    */
-  public static void createColumnFamily(CassandraConnection conn, 
+  public static boolean createColumnFamily(CassandraConnection conn, 
       String colFamilyName, RowMetaInterface inputMeta,
       int keyIndex, boolean compressCQL) throws Exception {
     
@@ -386,13 +474,15 @@ public class CassandraOutputData extends BaseStepData implements
           buff.append(colType);
         }
       }
+    } else {
+      return false; // we can't insert any data if there is only the key coming into the step     
     }
     
     // abuse the comment field to store any indexed values :-)
     if (indexedVals.size() == 0) {
       buff.append(");");
     } else {
-      buff.append(" WITH comment = '@@@");
+      buff.append(") WITH comment = '@@@");
       int count = 0;
       for (ValueMetaInterface vm : indexedVals) {
         String colName = vm.getName();
@@ -410,10 +500,10 @@ public class CassandraOutputData extends BaseStepData implements
         }
         count++;
       }
-      buff.append("@@@'");
-    }
-    
-//    System.out.println(buff.toString());
+      buff.append("@@@';");
+    }    
+    System.out.println(buff.toString());
+        
     byte[] toSend = null;
     if (compressCQL) {
       toSend = compressQuery(buff.toString(), Compression.GZIP);
@@ -422,6 +512,8 @@ public class CassandraOutputData extends BaseStepData implements
     }
     conn.getClient().execute_cql_query(ByteBuffer.wrap(toSend), 
         compressCQL ? Compression.GZIP : Compression.NONE);    
+    
+    return true;
   }
   
   /**

@@ -107,6 +107,10 @@ public class CassandraOutputDialog extends BaseStepDialog implements
   
   private Button m_showSchemaBut;
   
+  private Button m_aprioriCQLBut;
+  
+  private String m_aprioriCQL;
+  
   public CassandraOutputDialog(Shell parent, Object in,
       TransMeta tr, String name) {
     
@@ -128,7 +132,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     setShellImage(shell, m_currentMeta);
 
     // used to listen to a text field (m_wStepname)
-    ModifyListener lsMod = new ModifyListener() {
+    final ModifyListener lsMod = new ModifyListener() {
         public void modifyText(ModifyEvent e) {
           m_currentMeta.setChanged();
         }
@@ -365,7 +369,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     fd.right = new FormAttachment(m_getFieldsBut, -margin);
     fd.top = new FormAttachment(m_batchSizeText, margin);
     fd.left = new FormAttachment(middle, 0);
-    m_keyFieldCombo.setLayoutData(fd);
+    m_keyFieldCombo.setLayoutData(fd);    
     
     // create column family line
     m_createColumnFamilyLab = new Label(shell, SWT.RIGHT);
@@ -524,6 +528,20 @@ public class CassandraOutputDialog extends BaseStepDialog implements
       }
     });
     
+    // Apriori CQL button
+    m_aprioriCQLBut = new Button(shell, SWT.PUSH | SWT.CENTER);
+    props.setLook(m_aprioriCQLBut);
+    m_aprioriCQLBut.setText(BaseMessages.getString(PKG, 
+        "CassandraOutputDialog.CQL.Button"));
+    fd = new FormData();
+    fd.right = new FormAttachment(m_showSchemaBut, 0);
+    fd.top = new FormAttachment(m_useCompressionBut, margin);
+    m_aprioriCQLBut.setLayoutData(fd);
+    m_aprioriCQLBut.addSelectionListener(new SelectionAdapter() {
+      public void widgetSelected(SelectionEvent e) {
+        popupCQLEditor(lsMod);
+      }
+    });
     
     
     // Buttons inherited from BaseStepDialog
@@ -670,11 +688,12 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     m_currentMeta.setUpdateCassandraMeta(m_updateColumnFamilyMetaDataBut.getSelection());
     m_currentMeta.setInsertFieldsNotInMeta(m_insertFieldsNotInColumnFamMetaBut.getSelection());    
     m_currentMeta.setUseCompression(m_useCompressionBut.getSelection());
+    m_currentMeta.setAprioriCQL(m_aprioriCQL);
     
     if (!m_originalMeta.equals(m_currentMeta)) {
       m_currentMeta.setChanged();
       changed = m_currentMeta.hasChanged();
-    }
+    }   
     
     dispose();
   }
@@ -684,6 +703,14 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     m_currentMeta.setChanged(changed);
     
     dispose();
+  }
+  
+  protected void popupCQLEditor(ModifyListener lsMod) {
+    
+    EnterCQLDialog ecd = new EnterCQLDialog(shell, transMeta, lsMod, 
+        "CQL to execute before inserting first row", m_aprioriCQL);
+    
+    m_aprioriCQL = ecd.open();
   }
   
   protected void popupSchemaInfo() {
@@ -777,6 +804,11 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     m_truncateColumnFamilyBut.setSelection(m_currentMeta.getTruncateColumnFamily());
     m_updateColumnFamilyMetaDataBut.setSelection(m_currentMeta.getUpdateCassandraMeta());
     m_insertFieldsNotInColumnFamMetaBut.setSelection(m_currentMeta.getInsertFieldsNotInMeta());    
-    m_useCompressionBut.setSelection(m_currentMeta.getUseCompression());    
+    m_useCompressionBut.setSelection(m_currentMeta.getUseCompression());
+    
+    m_aprioriCQL = m_currentMeta.getAprioriCQL();
+    if (m_aprioriCQL == null) {
+      m_aprioriCQL = "";
+    }
   }
 }
