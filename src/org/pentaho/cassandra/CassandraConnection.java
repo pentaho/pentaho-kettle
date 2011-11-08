@@ -12,6 +12,10 @@
 
 package org.pentaho.cassandra;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.cassandra.thrift.AuthenticationRequest;
 import org.apache.cassandra.thrift.Cassandra;
 import org.apache.cassandra.thrift.KsDef;
 import org.apache.thrift.protocol.TBinaryProtocol;
@@ -19,6 +23,7 @@ import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TFramedTransport;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
+import org.pentaho.di.core.Const;
 
 /**
  * Class for establishing a connection with Cassandra. Encapsulates
@@ -31,20 +36,44 @@ public class CassandraConnection {
   private TTransport m_transport;
   
   protected Cassandra.Client m_client;
-  protected String m_keyspaceName;    
+  protected String m_keyspaceName;
   
   /**
-   * Construct an CassandaraConnection
+   * Construct an CassandaraConnection with no authentication.
    * 
    * @param host the host to connect to
    * @param port the port to use
    * @throws Exception if the connection fails
    */
-  public CassandraConnection(String host, int port) throws Exception {
+  public CassandraConnection(String host, int port) 
+    throws Exception {
+    this (host, port, null, null);
+  }
+  
+  /**
+   * Construct an CassandaraConnection with optional authentication.
+   * 
+   * @param host the host to connect to
+   * @param port the port to use
+   * @param username the username to authenticate with (may be null
+   * for no authentication)
+   * @param password the password to authenticate with (may be null
+   * for no authentication)
+   * @throws Exception if the connection fails
+   */
+  public CassandraConnection(String host, int port,
+      String username, String password) throws Exception {
     m_transport = new TFramedTransport(new TSocket(host, port));
     TProtocol protocol = new TBinaryProtocol(m_transport);
     m_client = new Cassandra.Client(protocol);      
     m_transport.open();
+    
+    if (!Const.isEmpty(username) && !Const.isEmpty(password)) {
+      Map<String, String> creds = new HashMap<String, String>();
+      creds.put("username", username);
+      creds.put("password", password);
+      m_client.login(new AuthenticationRequest(creds));
+    }
   }
   
   /**

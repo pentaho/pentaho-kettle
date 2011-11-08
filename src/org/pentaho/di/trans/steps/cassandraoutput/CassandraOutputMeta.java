@@ -22,6 +22,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -55,6 +56,12 @@ public class CassandraOutputMeta extends BaseStepMeta implements
   
   /** The port that cassandra is listening on */
   protected String m_cassandraPort = "9160";
+  
+  /** The username to use for authentication */
+  protected String m_username;
+  
+  /** The password to use for authentication */
+  protected String m_password;
   
   /** The keyspace (database) to use */
   protected String m_cassandraKeyspace;
@@ -136,6 +143,42 @@ public class CassandraOutputMeta extends BaseStepMeta implements
    */
   public String getCassandraPort() {
     return m_cassandraPort;
+  }
+  
+  /**
+   * Set the username to authenticate with
+   * 
+   * @param un the username to authenticate with
+   */
+  public void setUsername(String un) {
+    m_username = un;
+  }
+  
+  /**
+   * Get the username to authenticate with
+   * 
+   * @return the username to authenticate with
+   */
+  public String getUsername() {
+    return m_username;
+  }
+  
+  /**
+   * Set the password to authenticate with
+   * 
+   * @param pass the password to authenticate with
+   */
+  public void setPassword(String pass) {
+    m_password = pass;
+  }
+  
+  /**
+   * Get the password to authenticate with
+   * 
+   * @return the password to authenticate with
+   */
+  public String getPassword() {
+    return m_password;
   }
   
   /**
@@ -381,6 +424,16 @@ public class CassandraOutputMeta extends BaseStepMeta implements
           m_cassandraPort));
     }
     
+    if (!Const.isEmpty(m_password)) {
+      retval.append("\n    ").append(XMLHandler.addTagValue("password", 
+          Encr.encryptPasswordIfNotUsingVariables(m_password)));
+    }
+    
+    if (!Const.isEmpty(m_cassandraKeyspace)) {
+      retval.append("\n    ").append(XMLHandler.addTagValue("cassandra_keyspace", 
+          m_cassandraKeyspace));
+    }
+    
     if (!Const.isEmpty(m_cassandraKeyspace)) {
       retval.append("\n    ").append(XMLHandler.addTagValue("cassandra_keyspace", 
           m_cassandraKeyspace));
@@ -433,6 +486,8 @@ public class CassandraOutputMeta extends BaseStepMeta implements
       Map<String, Counter> counters) throws KettleXMLException {
     m_cassandraHost = XMLHandler.getTagValue(stepnode, "cassandra_host");
     m_cassandraPort = XMLHandler.getTagValue(stepnode, "cassandra_port");
+    m_username = XMLHandler.getTagValue(stepnode, "username");
+    m_password = XMLHandler.getTagValue(stepnode, "password");
     m_cassandraKeyspace = XMLHandler.getTagValue(stepnode, "cassandra_keyspace");
     m_columnFamily = XMLHandler.getTagValue(stepnode, "column_family");
     m_keyField = XMLHandler.getTagValue(stepnode, "key_field");
@@ -457,6 +512,11 @@ public class CassandraOutputMeta extends BaseStepMeta implements
       Map<String, Counter> counters) throws KettleException {
     m_cassandraHost = rep.getStepAttributeString(id_step, 0, "cassandra_host");
     m_cassandraPort = rep.getStepAttributeString(id_step, 0, "cassandra_port");
+    m_username = rep.getStepAttributeString(id_step, 0, "username");
+    m_password = rep.getStepAttributeString(id_step, 0, "password");
+    if (!Const.isEmpty(m_password)) {
+      m_password = Encr.decryptPasswordOptionallyEncrypted(m_password);
+    }
     m_cassandraKeyspace = rep.getStepAttributeString(id_step, 0, "cassandra_keyspace");
     m_columnFamily = rep.getStepAttributeString(id_step, 0, "column_family");
     m_keyField = rep.getStepAttributeString(id_step, 0, "key_field");
@@ -488,6 +548,16 @@ public class CassandraOutputMeta extends BaseStepMeta implements
     if (!Const.isEmpty(m_cassandraPort)) {
       rep.saveStepAttribute(id_transformation, id_step, "cassandra_port",
           m_cassandraPort);
+    }
+    
+    if (!Const.isEmpty(m_username)) {
+      rep.saveStepAttribute(id_transformation, id_step, "username",
+          m_username);
+    }
+    
+    if (!Const.isEmpty(m_password)) {
+      rep.saveStepAttribute(id_transformation, id_step, "password",
+          Encr.encryptPasswordIfNotUsingVariables(m_password));
     }
 
     if (!Const.isEmpty(m_cassandraKeyspace)) {

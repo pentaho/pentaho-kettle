@@ -23,6 +23,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -57,6 +58,12 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
   
   /** The port that cassandra is listening on */
   protected String m_cassandraPort = "9160";
+  
+  /** Username for authentication */
+  protected String m_username;
+  
+  /** Password for authentication */
+  protected String m_password;
   
   /** The keyspace (database) to use */
   protected String m_cassandraKeyspace;
@@ -158,6 +165,42 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
     return m_cqlSelectQuery;
   }
   
+  /**
+   * Set the username to authenticate with
+   * 
+   * @param un the username to authenticate with
+   */
+  public void setUsername(String un) {
+    m_username = un;
+  }
+  
+  /**
+   * Get the username to authenticate with
+   * 
+   * @return the username to authenticate with
+   */
+  public String getUsername() {
+    return m_username;
+  }
+  
+  /**
+   * Set the password to authenticate with
+   * 
+   * @param pass the password to authenticate with
+   */
+  public void setPassword(String pass) {
+    m_password = pass;
+  }
+  
+  /**
+   * Get the password to authenticate with
+   * 
+   * @return the password to authenticate with
+   */
+  public String getPassword() {
+    return m_password;
+  }
+  
   public String getXML() {
     StringBuffer retval = new StringBuffer();
     
@@ -169,6 +212,16 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
     if (!Const.isEmpty(m_cassandraPort)) {
       retval.append("\n    ").append(XMLHandler.addTagValue("cassandra_port", 
           m_cassandraPort));
+    }
+    
+    if (!Const.isEmpty(m_username)) {
+      retval.append("\n    ").append(XMLHandler.addTagValue("username", 
+          m_username));
+    }
+    
+    if (!Const.isEmpty(m_password)) {
+      retval.append("\n    ").append(XMLHandler.addTagValue("password", 
+          Encr.encryptPasswordIfNotUsingVariables(m_password)));
     }
     
     if (!Const.isEmpty(m_cassandraKeyspace)) {
@@ -191,6 +244,11 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
       Map<String, Counter> counters) throws KettleXMLException {
     m_cassandraHost = XMLHandler.getTagValue(stepnode, "cassandra_host");
     m_cassandraPort = XMLHandler.getTagValue(stepnode, "cassandra_port");
+    m_username = XMLHandler.getTagValue(stepnode, "username");
+    m_password = XMLHandler.getTagValue(stepnode, "password");
+    if (!Const.isEmpty(m_password)) {
+      m_password = Encr.decryptPasswordOptionallyEncrypted(m_password);
+    }
     m_cassandraKeyspace = XMLHandler.getTagValue(stepnode, "cassandra_keyspace");
     m_cqlSelectQuery = XMLHandler.getTagValue(stepnode, "cql_select_query");
     m_useCompression = XMLHandler.getTagValue(stepnode, "use_compression").
@@ -201,6 +259,11 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
       Map<String, Counter> counters) throws KettleException {
     m_cassandraHost = rep.getStepAttributeString(id_step, 0, "cassandra_host");
     m_cassandraPort = rep.getStepAttributeString(id_step, 0, "cassandra_port");
+    m_username = rep.getStepAttributeString(id_step, 0, "username");
+    m_password = rep.getStepAttributeString(id_step, 0, "password");
+    if (!Const.isEmpty(m_password)) {
+      m_password = Encr.decryptPasswordOptionallyEncrypted(m_password);
+    }
     m_cassandraKeyspace = rep.getStepAttributeString(id_step, 0, "cassandra_keyspace");
     m_cqlSelectQuery = rep.getStepAttributeString(id_step, 0, "cql_select_query");
     m_useCompression = rep.getStepAttributeString(id_step, 0, "use_compression").
@@ -217,6 +280,16 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
     if (!Const.isEmpty(m_cassandraPort)) {
       rep.saveStepAttribute(id_transformation, id_step, "cassandra_port",
           m_cassandraPort);
+    }
+    
+    if (!Const.isEmpty(m_username)) {
+      rep.saveStepAttribute(id_transformation, id_step, "username",
+          m_username);
+    }
+    
+    if (!Const.isEmpty(m_password)) {
+      rep.saveStepAttribute(id_transformation, id_step, "password",
+          Encr.encryptPasswordIfNotUsingVariables(m_password));
     }
     
     if (!Const.isEmpty(m_cassandraKeyspace)) {
@@ -335,11 +408,17 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
       // try and connect to get meta data
       String hostS = space.environmentSubstitute(m_cassandraHost);
       String portS = space.environmentSubstitute(m_cassandraPort);
+      String userS = m_username;
+      String passS = m_password;
+      if (!Const.isEmpty(userS) && !Const.isEmpty(passS)) {
+        userS = space.environmentSubstitute(m_username);
+        passS = space.environmentSubstitute(m_password);
+      }
       String keyspaceS = space.environmentSubstitute(m_cassandraKeyspace);
       CassandraConnection conn = null;
       try {
         conn = CassandraInputData.getCassandraConnection(hostS, 
-            Integer.parseInt(portS));
+            Integer.parseInt(portS), userS, passS);
         conn.setKeyspace(keyspaceS);        
       } catch (Exception ex) {
         logError(ex.getMessage());

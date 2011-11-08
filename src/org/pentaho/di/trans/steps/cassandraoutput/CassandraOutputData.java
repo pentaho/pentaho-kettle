@@ -75,11 +75,14 @@ public class CassandraOutputData extends BaseStepData implements
    * 
    * @param host the hostname of a cassandra node
    * @param port the port that cassandra is listening on
+   * @param username the username for (optional) authentication
+   * @param password the password for (optional) authentication
    * @return a connection to cassandra
    * @throws Exception if a problem occurs during connection
    */
-  public static CassandraConnection getCassandraConnection(String host, int port) throws Exception {
-    return new CassandraConnection(host, port);
+  public static CassandraConnection getCassandraConnection(String host, 
+      int port, String username, String password) throws Exception {
+    return new CassandraConnection(host, port, username, password);
   }
   
   /**

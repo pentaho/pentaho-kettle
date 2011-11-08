@@ -86,6 +86,12 @@ public class CassandraInput extends BaseStep implements StepInterface {
       // Get the connection to Cassandra
       String hostS = m_transMeta.environmentSubstitute(m_meta.getCassandraHost());
       String portS = m_transMeta.environmentSubstitute(m_meta.getCassandraPort());
+      String userS = m_meta.getUsername();
+      String passS = m_meta.getPassword();
+      if (!Const.isEmpty(userS) && !Const.isEmpty(passS)) {
+        userS = m_transMeta.environmentSubstitute(userS);
+        passS = m_transMeta.environmentSubstitute(passS);
+      }
       String keyspaceS = m_transMeta.environmentSubstitute(m_meta.getCassandraKeyspace());
       
       if (Const.isEmpty(hostS) || Const.isEmpty(portS) || Const.isEmpty(keyspaceS)) {
@@ -96,7 +102,7 @@ public class CassandraInput extends BaseStep implements StepInterface {
       		"keyspace '" + keyspaceS +"'...");      
       try {
         m_connection = CassandraInputData.getCassandraConnection(hostS, 
-            Integer.parseInt(portS));
+            Integer.parseInt(portS), userS, passS);
         m_connection.setKeyspace(keyspaceS);
       } catch (Exception ex) {
         closeConnection();

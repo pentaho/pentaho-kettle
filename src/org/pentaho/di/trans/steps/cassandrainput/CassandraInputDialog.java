@@ -12,6 +12,8 @@
 
 package org.pentaho.di.trans.steps.cassandrainput;
 
+import java.util.ArrayList;
+
 import org.apache.cassandra.thrift.InvalidRequestException;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -41,6 +43,7 @@ import org.pentaho.cassandra.CassandraColumnMetaData;
 import org.pentaho.cassandra.CassandraConnection;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -73,6 +76,11 @@ public class CassandraInputDialog extends BaseStepDialog implements
   private TextVar m_hostText;
   private Label m_portLab;
   private TextVar m_portText;
+  
+  private Label m_userLab;
+  private TextVar m_userText;
+  private Label m_passLab;
+  private TextVar m_passText;
   
   private Label m_keyspaceLab;
   private TextVar m_keyspaceText;
@@ -166,6 +174,7 @@ public class CassandraInputDialog extends BaseStepDialog implements
         m_hostText.setToolTipText(transMeta.environmentSubstitute(m_hostText.getText()));
       }
     });
+    m_hostText.addModifyListener(lsMod);
     fd = new FormData();
     fd.right = new FormAttachment(100, 0);
     fd.top = new FormAttachment(m_stepnameText, margin);
@@ -190,12 +199,66 @@ public class CassandraInputDialog extends BaseStepDialog implements
         m_portText.setToolTipText(transMeta.environmentSubstitute(m_portText.getText()));
       }
     });
+    m_portText.addModifyListener(lsMod);
     fd = new FormData();
     fd.right = new FormAttachment(100, 0);
     fd.top = new FormAttachment(m_hostText, margin);
     fd.left = new FormAttachment(middle, 0);
     m_portText.setLayoutData(fd);
     
+    // username line
+    m_userLab = new Label(shell, SWT.RIGHT);
+    props.setLook(m_userLab);
+    m_userLab.setText(BaseMessages.getString(PKG, 
+        "CassandraInputDialog.User.Label"));
+    fd = new FormData();
+    fd.left = new FormAttachment(0, 0);
+    fd.top = new FormAttachment(m_portText, margin);
+    fd.right = new FormAttachment(middle, -margin);
+    m_userLab.setLayoutData(fd);
+    
+    m_userText = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+    props.setLook(m_userText);
+    m_userText.addModifyListener(new ModifyListener() {
+      public void modifyText(ModifyEvent e) {
+        m_userText.setToolTipText(transMeta.environmentSubstitute(m_userText.getText()));
+      }
+    });
+    m_userText.addModifyListener(lsMod);
+    fd = new FormData();
+    fd.right = new FormAttachment(100, 0);
+    fd.top = new FormAttachment(m_portText, margin);
+    fd.left = new FormAttachment(middle, 0);
+    m_userText.setLayoutData(fd);
+    
+    // password line
+    m_passLab = new Label(shell, SWT.RIGHT);
+    props.setLook(m_passLab);
+    m_passLab.setText(BaseMessages.getString(PKG, 
+        "CassandraInputDialog.Password.Label"));
+    fd = new FormData();
+    fd.left = new FormAttachment(0, 0);
+    fd.top = new FormAttachment(m_userText, margin);
+    fd.right = new FormAttachment(middle, -margin);
+    m_passLab.setLayoutData(fd);
+    
+    m_passText = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+    props.setLook(m_passText);
+    m_passText.setEchoChar('*');
+    // If the password contains a variable, don't hide it.
+    m_passText.getTextWidget().addModifyListener(new ModifyListener() {
+      public void modifyText(ModifyEvent e) {
+        checkPasswordVisible();
+      }
+    });
+    
+    m_passText.addModifyListener(lsMod);
+
+    fd = new FormData();
+    fd.right = new FormAttachment(100, 0);
+    fd.top = new FormAttachment(m_userText, margin);
+    fd.left = new FormAttachment(middle, 0);
+    m_passText.setLayoutData(fd);
     
     // keyspace line
     m_keyspaceLab = new Label(shell, SWT.RIGHT);
@@ -204,7 +267,7 @@ public class CassandraInputDialog extends BaseStepDialog implements
         "CassandraInputDialog.Keyspace.Label"));
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
-    fd.top = new FormAttachment(m_portText, margin);
+    fd.top = new FormAttachment(m_passText, margin);
     fd.right = new FormAttachment(middle, -margin);
     m_keyspaceLab.setLayoutData(fd);
     
@@ -217,7 +280,7 @@ public class CassandraInputDialog extends BaseStepDialog implements
     });
     fd = new FormData();
     fd.right = new FormAttachment(100, 0);
-    fd.top = new FormAttachment(m_portText, margin);
+    fd.top = new FormAttachment(m_passText, margin);
     fd.left = new FormAttachment(middle, 0);
     m_keyspaceText.setLayoutData(fd);
     
@@ -284,6 +347,12 @@ public class CassandraInputDialog extends BaseStepDialog implements
 //          CassandraInputMeta tempMeta = (CassandraInputMeta)m_currentMeta.clone();
           String hostS = transMeta.environmentSubstitute(m_hostText.getText());
           String portS = transMeta.environmentSubstitute(m_portText.getText());
+          String userS = m_userText.getText();
+          String passS = m_passText.getText();
+          if (!Const.isEmpty(userS) && !Const.isEmpty(passS)) {
+            userS = transMeta.environmentSubstitute(userS);
+            passS = transMeta.environmentSubstitute(passS);
+          }
           String keyspaceS = transMeta.environmentSubstitute(m_keyspaceText.getText());
   //        tempMeta.setCassandraHost(hostS); tempMeta.setCassandraPort(portS);
 //          tempMeta.setCassandraKeyspace(keyspaceS);
@@ -291,7 +360,7 @@ public class CassandraInputDialog extends BaseStepDialog implements
 //          tempMeta.setCQLSelectQuery(cqlText);                    
           
           conn = CassandraInputData.
-            getCassandraConnection(hostS, Integer.parseInt(portS));
+            getCassandraConnection(hostS, Integer.parseInt(portS), userS, passS);
           try {
             conn.setKeyspace(keyspaceS);
           } catch (InvalidRequestException ire) {
@@ -442,6 +511,8 @@ public class CassandraInputDialog extends BaseStepDialog implements
     stepname = m_stepnameText.getText();
     m_currentMeta.setCassandraHost(m_hostText.getText());
     m_currentMeta.setCassandraPort(m_portText.getText());
+    m_currentMeta.setUsername(m_userText.getText());
+    m_currentMeta.setPassword(m_passText.getText());
     m_currentMeta.setCassandraKeyspace(m_keyspaceText.getText());
     m_currentMeta.setUseCompression(m_useCompressionBut.getSelection());
     m_currentMeta.setCQLSelectQuery(m_cqlText.getText());
@@ -470,6 +541,14 @@ public class CassandraInputDialog extends BaseStepDialog implements
       m_portText.setText(m_currentMeta.getCassandraPort());
     }
     
+    if (!Const.isEmpty(m_currentMeta.getUsername())) {
+      m_userText.setText(m_currentMeta.getUsername());
+    }
+    
+    if (!Const.isEmpty(m_currentMeta.getPassword())) {
+      m_passText.setText(m_currentMeta.getPassword());
+    }
+    
     if (!Const.isEmpty(m_currentMeta.getCassandraKeyspace())) {
       m_keyspaceText.setText(m_currentMeta.getCassandraKeyspace());
     }
@@ -494,5 +573,16 @@ public class CassandraInputDialog extends BaseStepDialog implements
     }
     m_positionLab.setText(BaseMessages.getString(PKG, 
         "CassandraInputDialog.Position.Label", "" + linenr, "" + colnr));
+  }
+  
+  private void checkPasswordVisible() {
+    String password = m_passText.getText();
+    ArrayList<String> list = new ArrayList<String>();
+    StringUtil.getUsedVariables(password, list, true);
+    if (list.size() == 0) {
+      m_passText.setEchoChar('*');      
+    } else {
+      m_passText.setEchoChar('\0'); // show everything
+    }
   }
 }

@@ -100,6 +100,12 @@ public class CassandraOutput extends BaseStep implements StepInterface {
       // Get the connection to Cassandra
       String hostS = m_transMeta.environmentSubstitute(m_meta.getCassandraHost());
       String portS = m_transMeta.environmentSubstitute(m_meta.getCassandraPort());
+      String userS = m_meta.getUsername();
+      String passS = m_meta.getPassword();
+      if (!Const.isEmpty(userS) && !Const.isEmpty(passS)) {
+        userS = m_transMeta.environmentSubstitute(userS);
+        passS = m_transMeta.environmentSubstitute(passS);
+      }
       String keyspaceS = m_transMeta.environmentSubstitute(m_meta.getCassandraKeyspace());
       m_columnFamilyName = m_transMeta.environmentSubstitute(m_meta.getColumnFamilyName());
       String keyField = m_transMeta.environmentSubstitute(m_meta.getKeyField());
@@ -129,7 +135,7 @@ public class CassandraOutput extends BaseStep implements StepInterface {
       
       try {
         m_connection = CassandraOutputData.getCassandraConnection(hostS, 
-            Integer.parseInt(portS));
+            Integer.parseInt(portS), userS, passS);
         m_connection.setKeyspace(keyspaceS);
       } catch (Exception ex) {
         closeConnection();
