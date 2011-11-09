@@ -399,9 +399,9 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
       // now determine if its a select * or specific set of columns
       String[] cols = null;
       if (subQ.indexOf("*") > 0) {
-        // 
-      } else {
-        String colsS = subQ.substring(7, fromIndex);
+        // nothing special to do here
+      } else {        
+        String colsS = subQ.substring(subQ.indexOf('\''), fromIndex);
         cols = colsS.split(",");
       }
       
