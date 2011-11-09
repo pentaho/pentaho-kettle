@@ -125,6 +125,7 @@ public class CassandraInput extends BaseStep implements StepInterface {
               "seem to exist in the keyspace '" + keyspaceS);
         }
       } catch (Exception ex) {
+        closeConnection();
         throw new KettleException(ex.fillInStackTrace());
       }
 
