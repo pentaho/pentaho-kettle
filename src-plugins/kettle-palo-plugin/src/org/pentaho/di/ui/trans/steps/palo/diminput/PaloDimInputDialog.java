@@ -33,6 +33,7 @@ package org.pentaho.di.ui.trans.steps.palo.diminput;
  */
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -57,6 +58,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.palo.core.PaloDimensionLevel;
+import org.pentaho.di.palo.core.PaloNameComparator;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPreviewFactory;
@@ -340,6 +342,7 @@ public class PaloDimInputDialog extends BaseStepDialog implements StepDialogInte
           PaloDimInputData data = new PaloDimInputData(dbMeta);
           data.helper.connect();
           List<String> dimensions = data.helper.getDimensionsNames();
+          Collections.sort(dimensions, new PaloNameComparator());
           for (String dimensionName : dimensions) {
             if (comboDimension.indexOf(dimensionName) == -1)
               comboDimension.add(dimensionName);

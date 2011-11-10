@@ -33,6 +33,8 @@ package org.pentaho.di.ui.trans.steps.palo.celloutput;
  */
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.swt.SWT;
@@ -59,6 +61,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.palo.core.DimensionField;
+import org.pentaho.di.palo.core.PaloNameComparator;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
@@ -236,10 +239,7 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
       }
     };
 
-    colinf = new ColumnInfo[] { new ColumnInfo(getLocalizedColumn(0), ColumnInfo.COLUMN_TYPE_TEXT, false, true), new ColumnInfo(getLocalizedColumn(1), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {}, true),
-    // new ColumnInfo(getLocalizedColumn(2), ColumnInfo.COLUMN_TYPE_CCOMBO, new
-    // String[] {"String","Number"}, true)
-    };
+    colinf = new ColumnInfo[] { new ColumnInfo(getLocalizedColumn(0), ColumnInfo.COLUMN_TYPE_TEXT, false, true), new ColumnInfo(getLocalizedColumn(1), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {}, true),};
 
     tableViewFields = new TableView(null, shell, SWT.NONE | SWT.BORDER, colinf, 10, true, lsMod, props);
 
@@ -416,17 +416,20 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
 
     if (meta.getFields().size() > 0) {
       for (DimensionField level : meta.getFields()) {
-        tableViewFields.add(level.getDimensionName(), level.getFieldName());// ,level.getFieldType());
+        tableViewFields.add(level.getDimensionName(), level.getFieldName());
       }
     }
 
-    String[] fieldNames = null;
+    List<String> fieldNameList = null;
     try {
       RowMetaInterface r = transMeta.getPrevStepFields(stepname);
-      fieldNames = r.getFieldNames();
+      fieldNameList =  Arrays.asList( r.getFieldNames());
+      Collections.sort(fieldNameList);
     } catch (Exception e) {
     }
-    tableViewFields.setColumnInfo(1, new ColumnInfo("Field", ColumnInfo.COLUMN_TYPE_CCOMBO, fieldNames, true));
+    tableViewFields.setColumnInfo(1, new ColumnInfo("Field", ColumnInfo.COLUMN_TYPE_CCOMBO, 
+    		(fieldNameList == null ? null : fieldNameList.toArray(new String[0]))
+    		, true));
 
     if (meta.getMeasure() != null) {
       final TableItem item = new TableItem(tableViewFields.table, SWT.NONE);
@@ -455,6 +458,7 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
           PaloCellOutputData data = new PaloCellOutputData(dbMeta);
           data.helper.connect();
           List<String> cubes = data.helper.getCubesNames();
+          Collections.sort(cubes, new PaloNameComparator());
           for (String cubeName : cubes) {
             if (comboCube.indexOf(cubeName) == -1)
               comboCube.add(cubeName);
@@ -470,8 +474,9 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
   private void fillPreviousFieldTableViewColumn() throws KettleException {
     RowMetaInterface r = transMeta.getPrevStepFields(stepname);
     if (r != null) {
-      String[] fieldNames = r.getFieldNames();
-      colinf[1] = new ColumnInfo(getLocalizedColumn(1), ColumnInfo.COLUMN_TYPE_CCOMBO, fieldNames, true);
+      List<String> fieldNameList =  Arrays.asList( r.getFieldNames());
+      Collections.sort(fieldNameList);
+      colinf[1] = new ColumnInfo(getLocalizedColumn(1), ColumnInfo.COLUMN_TYPE_CCOMBO, fieldNameList.toArray(new String[0]), true);
     }
   }
 

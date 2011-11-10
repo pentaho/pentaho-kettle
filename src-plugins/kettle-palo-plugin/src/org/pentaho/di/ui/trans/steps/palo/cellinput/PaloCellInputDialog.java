@@ -33,6 +33,7 @@ package org.pentaho.di.ui.trans.steps.palo.cellinput;
  */
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -60,6 +61,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.palo.core.DimensionField;
+import org.pentaho.di.palo.core.PaloNameComparator;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPreviewFactory;
@@ -386,6 +388,7 @@ public class PaloCellInputDialog extends BaseStepDialog implements StepDialogInt
               final TableItem item = new TableItem(tableViewFields.table, SWT.NONE);
               item.setText(1, cubeDimensions.get(i));
               item.setText(2, cubeDimensions.get(i));
+              item.setText(3, "String");
             }
             tableViewFields.removeEmptyRows();
             tableViewFields.setRowNums();
@@ -419,6 +422,7 @@ public class PaloCellInputDialog extends BaseStepDialog implements StepDialogInt
           PaloCellInputData data = new PaloCellInputData(dbMeta);
           data.helper.connect();
           List<String> cubes = data.helper.getCubesNames();
+          Collections.sort(cubes, new PaloNameComparator());
           for (String cubeName : cubes) {
             if (comboCube.indexOf(cubeName) == -1)
               comboCube.add(cubeName);

@@ -19,6 +19,9 @@
 
 package org.pentaho.di.ui.job.entries.palo.JobEntryCubeDelete;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.FocusEvent;
@@ -43,6 +46,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.palo.core.PaloHelper;
+import org.pentaho.di.palo.core.PaloNameComparator;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.palo.JobEntryCubeDelete.PaloCubeDelete;
@@ -240,7 +244,9 @@ public class PaloCubeDeleteDialog extends JobEntryDialog implements JobEntryDial
                 if (dbMeta != null) {
                 	PaloHelper helper = new PaloHelper(dbMeta, DefaultLogLevel.getLogLevel());
                     helper.connect();
-                    for (String cubename : helper.getCubesNames()){
+                    List<String> cubes = helper.getCubesNames();
+                    Collections.sort(cubes, new PaloNameComparator());
+                    for (String cubename : cubes){
                         if(comboCubeName.indexOf(cubename) == -1)
                         	comboCubeName.add(cubename);
                     }
@@ -265,8 +271,10 @@ public class PaloCubeDeleteDialog extends JobEntryDialog implements JobEntryDial
 		if (index >=0) 
 			addConnectionLine.select(index);
 
-		if (jobEntry.getCubeName() != null)
-			comboCubeName.setText(jobEntry.getCubeName());
+		if (jobEntry.getCubeName() != null) {
+			comboCubeName.add(jobEntry.getCubeName());
+			comboCubeName.select(0);
+	    }
 	}
 
 	private void cancel()
