@@ -14,6 +14,9 @@ package org.pentaho.di.www;
 
 import java.io.IOException;
 import java.io.PrintStream;
+import java.lang.management.OperatingSystemMXBean;
+import java.lang.management.RuntimeMXBean;
+import java.lang.management.ThreadMXBean;
 import java.net.URLEncoder;
 import java.util.Collections;
 import java.util.List;
@@ -70,6 +73,8 @@ public class GetStatusServlet extends BaseHttpServlet implements CarteServletInt
       out.print(XMLHandler.getXMLHeader(Const.XML_ENCODING));
       SlaveServerStatus serverStatus = new SlaveServerStatus();
       serverStatus.setStatusDescription("Online");
+      
+      getSystemInfo(serverStatus);
 
       for (CarteObjectEntry entry : transEntries) {
         String name = entry.getName();
@@ -225,6 +230,43 @@ public class GetStatusServlet extends BaseHttpServlet implements CarteServletInt
       out.println("</BODY>");
       out.println("</HTML>");
     }
+  }
+
+  private void getSystemInfo(SlaveServerStatus serverStatus) {
+    OperatingSystemMXBean operatingSystemMXBean = java.lang.management.ManagementFactory.getOperatingSystemMXBean();
+    ThreadMXBean threadMXBean = java.lang.management.ManagementFactory.getThreadMXBean();
+    RuntimeMXBean runtimeMXBean = java.lang.management.ManagementFactory.getRuntimeMXBean();
+    
+    int cores = Runtime.getRuntime().availableProcessors();
+    
+    long freeMemory = Runtime.getRuntime().freeMemory();
+    long totalMemory = Runtime.getRuntime().totalMemory();
+    String osArch = operatingSystemMXBean.getArch();
+    String osName = operatingSystemMXBean.getName();
+    String osVersion = operatingSystemMXBean.getVersion();
+    double loadAvg = operatingSystemMXBean.getSystemLoadAverage();
+    
+    int threadCount = threadMXBean.getThreadCount();
+    long allThreadsCpuTime = 0L;
+    
+    long[] threadIds = threadMXBean.getAllThreadIds();
+    for (int i=0;i<threadIds.length;i++) {
+      allThreadsCpuTime+=threadMXBean.getThreadCpuTime(threadIds[i]);
+    }
+    
+    long uptime = runtimeMXBean.getUptime();
+    
+    serverStatus.setCpuCores(cores);
+    serverStatus.setCpuProcessTime(allThreadsCpuTime);
+    serverStatus.setUptime(uptime);
+    serverStatus.setThreadCount(threadCount);
+    serverStatus.setLoadAvg(loadAvg);
+    serverStatus.setOsName(osName);
+    serverStatus.setOsVersion(osVersion);
+    serverStatus.setOsArchitecture(osArch);
+    serverStatus.setMemoryFree(freeMemory);
+    serverStatus.setMemoryTotal(totalMemory);
+    
   }
 
   public String toString() {
