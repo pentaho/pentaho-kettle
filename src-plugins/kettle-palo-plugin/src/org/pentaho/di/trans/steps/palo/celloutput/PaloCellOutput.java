@@ -100,7 +100,7 @@ public class PaloCellOutput extends BaseStep implements StepInterface {
       data.batchCache.add(newRow);
       if (data.batchCache.size() == meta.getCommitSize()){
     	  try {
-    		  data.helper.addCells(data.batchCache);
+    		  data.helper.addCells(data.batchCache, meta.getUpdateMode(), meta.getSplashMode());
     		  for (int i = 0; i < data.batchCache.size(); i++)
     			  incrementLinesOutput();
     	  }
@@ -139,7 +139,7 @@ public class PaloCellOutput extends BaseStep implements StepInterface {
   public void dispose(StepMetaInterface smi, StepDataInterface sdi) {
 	  try {
 		  if (getErrors() == 0 && data.batchCache.size() > 0){
-			  data.helper.addCells(data.batchCache);
+			  data.helper.addCells(data.batchCache, meta.getUpdateMode(), meta.getSplashMode());
 			  for (int i = 0; i < data.batchCache.size(); i++)
 				  incrementLinesOutput();
 		  }

@@ -61,7 +61,10 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.palo.core.DimensionField;
+import org.pentaho.di.palo.core.PaloHelper;
 import org.pentaho.di.palo.core.PaloNameComparator;
+import org.pentaho.di.palo.core.PaloOption;
+import org.pentaho.di.palo.core.PaloOptionCollection;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
@@ -93,10 +96,14 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
   private TableView          tableViewFields;
   private Text               textStepName;
   private Combo              comboCube;
-  private Combo              comboMeasureType;
   private Label              labelStepName;
   private Label              labelCube;
   private Label              labelMeasureType;
+  private Combo              comboMeasureType;
+  private Label              labelUpdateMode;
+  private Combo              comboUpdateMode;
+  private Label              labelSplashMode;
+  private Combo              comboSplashMode;
   private Button             buttonClearFields;
   private Button             buttonGetFields;
   private Button             buttonOk;
@@ -111,6 +118,9 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
   private Button             buttonEnableDimensionCache;
   private CCombo             addConnectionLine;
   private ColumnInfo[]       colinf;
+  
+  private PaloOptionCollection splashOptions = PaloHelper.getSplasModeOptions();
+  private PaloOptionCollection updateOptions = PaloHelper.getUpdateModeOptions();
 
   public PaloCellOutputDialog(Shell parent, Object in, TransMeta transMeta, String sname) {
     super(parent, (BaseStepMeta) in, transMeta, sname);
@@ -177,18 +187,46 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
     fd.top = new FormAttachment(comboCube, margin);
     comboMeasureType.setLayoutData(fd);
     
-    labelCommitSize = new Label(shell, SWT.RIGHT);
+    labelUpdateMode = new Label(shell, SWT.RIGHT);
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
     fd.right = new FormAttachment(middle, -margin);
     fd.top = new FormAttachment(comboMeasureType, margin);
+    labelUpdateMode.setLayoutData(fd);
+
+    comboUpdateMode = new Combo(shell, SWT.READ_ONLY | SWT.FILL);
+    fd = new FormData();
+    fd.left = new FormAttachment(middle, 0);
+    fd.right = new FormAttachment(100, 0);
+    fd.top = new FormAttachment(comboMeasureType, margin);
+    comboUpdateMode.setLayoutData(fd);
+    
+    labelSplashMode = new Label(shell, SWT.RIGHT);
+    fd = new FormData();
+    fd.left = new FormAttachment(0, 0);
+    fd.right = new FormAttachment(middle, -margin);
+    fd.top = new FormAttachment(comboUpdateMode, margin);
+    labelSplashMode.setLayoutData(fd);
+
+    comboSplashMode = new Combo(shell, SWT.READ_ONLY | SWT.FILL);
+    fd = new FormData();
+    fd.left = new FormAttachment(middle, 0);
+    fd.right = new FormAttachment(100, 0);
+    fd.top = new FormAttachment(comboUpdateMode, margin);
+    comboSplashMode.setLayoutData(fd);
+    
+    labelCommitSize = new Label(shell, SWT.RIGHT);
+    fd = new FormData();
+    fd.left = new FormAttachment(0, 0);
+    fd.right = new FormAttachment(middle, -margin);
+    fd.top = new FormAttachment(comboSplashMode, margin);
     labelCommitSize.setLayoutData(fd);
 
     textCommitSize = new Text(shell, SWT.BORDER);
     fd = new FormData();
     fd.left = new FormAttachment(middle, 0);
     fd.right = new FormAttachment(100, 0);
-    fd.top = new FormAttachment(comboMeasureType, margin);
+    fd.top = new FormAttachment(comboSplashMode, margin);
     textCommitSize.setLayoutData(fd);
 
     labelClearCube = new Label(shell, SWT.RIGHT);
@@ -319,10 +357,14 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
     props.setLook(tableViewFields);
     props.setLook(textStepName);
     props.setLook(comboCube);
-    props.setLook(comboMeasureType);
     props.setLook(labelStepName);
     props.setLook(labelCube);
     props.setLook(labelMeasureType);
+    props.setLook(comboMeasureType);
+    props.setLook(labelUpdateMode);
+    props.setLook(comboUpdateMode);
+    props.setLook(labelSplashMode);
+    props.setLook(comboSplashMode);
     props.setLook(buttonClearFields);
     props.setLook(buttonGetFields);
     props.setLook(buttonOk);
@@ -375,10 +417,21 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
     buttonClearFields.setText(BaseMessages.getString(PKG, "PaloCellOutputDialog.ClearFields"));
     labelCube.setText(BaseMessages.getString(PKG, "PaloCellOutputDialog.SelectCube"));
     labelMeasureType.setText(BaseMessages.getString(PKG, "PaloCellOutputDialog.SelectMeasureType"));
+    labelUpdateMode.setText(BaseMessages.getString(PKG, "PaloCellOutputDialog.UpdateMode"));
+    labelSplashMode.setText(BaseMessages.getString(PKG, "PaloCellOutputDialog.SplashMode"));
     labelClearCube.setText(BaseMessages.getString(PKG, "PaloCellOutputDialog.ClearCube"));
     labelCommitSize.setText(BaseMessages.getString(PKG, "PaloCellOutputDialog.CommitSize"));
     labelPreloadDimensionCache.setText(BaseMessages.getString(PKG, "PaloCellOutputDialog.PreloadDimensionCache"));
     labelEnableDimensionCache.setText(BaseMessages.getString(PKG, "PaloCellOutputDialog.EnableDimensionCache"));
+    
+    for (PaloOption option : updateOptions){
+    	option.setDescription(BaseMessages.getString(PKG, "PaloCellOutputDialog.UpdateOptions." + option.getCode()));
+    }
+    
+    for (PaloOption option : splashOptions){
+    	option.setDescription(BaseMessages.getString(PKG, "PaloCellOutputDialog.SplashOptions." + option.getCode()));
+    }
+    
   }
 
   private void fillStoredData() {
@@ -393,11 +446,16 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
       comboCube.add(meta.getCube());
       comboCube.select(0);
     }
-
-    if (meta.getMeasureType() != null) {
-      comboMeasureType.add(meta.getMeasureType());
-      comboMeasureType.select(0);
+    
+    for (PaloOption option : updateOptions){
+   		comboUpdateMode.add(option.getDescription());
     }
+    comboUpdateMode.select(comboUpdateMode.indexOf(this.updateOptions.getDescription(meta.getUpdateMode())));
+    
+    for (PaloOption option : splashOptions){
+    	comboSplashMode.add(option.getDescription());
+    }
+    comboSplashMode.select(comboSplashMode.indexOf(this.splashOptions.getDescription(meta.getSplashMode())));
     
     textCommitSize.setText(String.valueOf(meta.getCommitSize()));
     buttonEnableDimensionCache.setSelection(meta.getEnableDimensionCache());
@@ -549,6 +607,16 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
     stepname = textStepName.getText();
     List<DimensionField> fields = new ArrayList<DimensionField>();
 
+    if (this.updateOptions.getCode(comboUpdateMode.getText()) == "ADD"
+    	&& this.splashOptions.getCode(comboSplashMode.getText()) == "SET")
+    	{
+    		throw new KettleException(BaseMessages.getString(PKG, "PaloCellOutputDialog.UpdateSplashError", 
+    				BaseMessages.getString(PKG, "PaloCellOutputDialog.UpdateMode"),
+    				comboUpdateMode.getText(), 
+    				BaseMessages.getString(PKG, "PaloCellOutputDialog.SplashMode"),
+    				comboSplashMode.getText()));
+    	}
+    	
     try{
     	Integer.parseInt(this.textCommitSize.getText());
     }
@@ -574,6 +642,8 @@ public class PaloCellOutputDialog extends BaseStepDialog implements StepDialogIn
     
     myMeta.setCube(this.comboCube.getText());
     myMeta.setMeasureType(this.comboMeasureType.getText());
+    myMeta.setUpdateMode(this.updateOptions.getCode(comboUpdateMode.getText()));
+    myMeta.setSplashMode(this.splashOptions.getCode(comboSplashMode.getText()));
     myMeta.setLevels(fields);
     myMeta.setClearCube(this.buttonClearCube.getSelection());
     myMeta.setDatabaseMeta(transMeta.findDatabase(addConnectionLine.getText()));
