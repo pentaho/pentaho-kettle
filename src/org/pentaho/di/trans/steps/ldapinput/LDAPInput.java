@@ -142,7 +142,7 @@ public class LDAPInput extends BaseStep implements StepInterface
 	        	}
         	}
         	if(meta.isDynamicFilter()) {
-        		if(Const.isEmpty(meta.getDynamicSearchFieldName())) {
+        		if(Const.isEmpty(meta.getDynamicFilterFieldName())) {
             		throw new KettleException(BaseMessages.getString(PKG, "LDAPInput.Error.DynamicFilterFieldMissing"));
             	}
         	}
