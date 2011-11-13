@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
 import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileType;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -95,8 +96,34 @@ public class GPG {
 	public GPG(String gpgFilename, LogChannelInterface logInterface) throws KettleException {
 		this.log=logInterface;
 		this.gpgexe=gpgFilename;
+		// Let's check GPG filename
 		if(Const.isEmpty(getGpgExeFile())) {
+			// No filename specified
 			throw new KettleException(BaseMessages.getString(PKG, "GPG.GPGFilenameMissing"));
+		}
+		// We have a filename, we need to check
+		FileObject file =null;
+		try {
+			file = KettleVFS.getFileObject(getGpgExeFile());
+			
+			if(!file.exists()) {
+				throw new KettleException(BaseMessages.getString(PKG, "GPG.GPGFilenameNotFound"));
+			}
+			// The file exists
+			if(!file.getType().equals(FileType.FILE)) {
+				throw new KettleException(BaseMessages.getString(PKG, "GPG.GPGNotAFile"));
+			}
+			
+			// Ok we have a real file
+			// Get the local filename
+			this.gpgexe= KettleVFS.getFilename(file);
+			
+		}catch(Exception e) {
+			throw new KettleException(BaseMessages.getString(PKG, "GPG.ErrorCheckingGPGFile"), e);
+		}finally {
+			try {
+				if(file!=null) file.close();
+			}catch(Exception e){}
 		}
 	}
 	
