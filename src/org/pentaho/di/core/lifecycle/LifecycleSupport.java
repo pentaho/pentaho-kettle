@@ -12,6 +12,7 @@
  */
 package org.pentaho.di.core.lifecycle;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -32,7 +33,7 @@ public class LifecycleSupport implements LifecycleListener
 
 	public LifecycleSupport()
 	{
-		lifeListeners = new HashSet<LifecycleListener>();
+		lifeListeners = Collections.synchronizedSet(new HashSet<LifecycleListener>());
     final PluginRegistry registry = PluginRegistry.getInstance();
         List<PluginInterface> plugins = registry.getPlugins(LifecyclePluginType.class);
         for (PluginInterface plugin : plugins) {
