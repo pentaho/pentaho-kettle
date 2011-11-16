@@ -20,6 +20,7 @@ public class LastUsedFile
     public static final String FILE_TYPE_TRANSFORMATION = "Trans";
     public static final String FILE_TYPE_JOB            = "Job";
     public static final String FILE_TYPE_SCHEMA         = "Schema";
+    public static final String FILE_TYPE_CUSTOM         = "Custom";
     
     public static final int OPENED_ITEM_TYPE_MASK_NONE    = 0;
     public static final int OPENED_ITEM_TYPE_MASK_GRAPH   = 1;

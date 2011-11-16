@@ -23,10 +23,11 @@ public enum RepositoryObjectType {
 	STEP("step", ".kst"),
 	JOB_ENTRY("job entry", ".kje"),
 
+	PLUGIN("plugin", ""),
+	
 	// non-standard, Kettle database repository only!
 	//
 	// USER("user", ".usr"),
-
 	; 
 	
 	private String	typeDescription;

@@ -2186,19 +2186,19 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		if (bitmap && databaseMeta.supportsBitmapIndex()) 
 			cr_index += "BITMAP ";
 		
-		cr_index += "INDEX "+databaseMeta.quoteField(indexname)+Const.CR+" ";
+		cr_index += "INDEX "+databaseMeta.quoteField(indexname)+" ";
 		cr_index += "ON ";
   	    // assume table has already been quoted (and possibly includes schema)
 		cr_index += tablename;
-		cr_index += Const.CR + "( "+Const.CR;
+		cr_index += "(";
 		for (int i=0;i<idx_fields.length;i++)
 		{
-			if (i>0) cr_index+=", "; else cr_index+="  ";
-			cr_index += databaseMeta.quoteField(idx_fields[i])+Const.CR;
+			if (i>0) cr_index+=", ";
+			cr_index += databaseMeta.quoteField(idx_fields[i]);
 		}
 		cr_index+=")"+Const.CR;
 		
-      cr_index+=databaseInterface.getIndexTablespaceDDL(variables, databaseMeta);
+    cr_index+=databaseInterface.getIndexTablespaceDDL(variables, databaseMeta);
 				
 		if (semi_colon)
 		{

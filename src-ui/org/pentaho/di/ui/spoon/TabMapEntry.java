@@ -17,7 +17,7 @@ import org.pentaho.xul.swt.tab.TabItem;
 
 public class TabMapEntry
 {
-	public enum ObjectType { TRANSFORMATION_GRAPH, JOB_GRAPH, SLAVE_SERVER, BROWSER, };
+	public enum ObjectType { TRANSFORMATION_GRAPH, JOB_GRAPH, SLAVE_SERVER, BROWSER, PLUGIN, };
 	
     private TabItem tabItem;
     

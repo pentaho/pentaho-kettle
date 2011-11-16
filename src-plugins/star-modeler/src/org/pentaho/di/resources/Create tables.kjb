@@ -1,0 +1,634 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<job>
+  <name>Create tables for &apos;Pentaho Logging&apos;</name>
+    <description>This domain covers all Pentaho related logging metadata</description>
+    <extended_description/>
+    <job_version/>
+  <directory>&#47;</directory>
+  <created_user>-</created_user>
+  <created_date>2011&#47;11&#47;08 10:44:45.400</created_date>
+  <modified_user>-</modified_user>
+  <modified_date>2011&#47;11&#47;08 10:44:45.400</modified_date>
+    <parameters>
+    </parameters>
+  <connection>
+    <name>XXXXXX</name>
+    <server/>
+    <type>H2</type>
+    <access>Native</access>
+    <database>&#47;tmp&#47;xxxxxx</database>
+    <port>-1</port>
+    <username/>
+    <password>Encrypted </password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>-1</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>N</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
+    <slaveservers>
+    </slaveservers>
+<job-log-table><connection/>
+<schema/>
+<table/>
+<size_limit_lines/>
+<interval/>
+<timeout_days/>
+<field><id>ID_JOB</id><enabled>Y</enabled><name>ID_JOB</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>JOBNAME</id><enabled>Y</enabled><name>JOBNAME</name></field><field><id>STATUS</id><enabled>Y</enabled><name>STATUS</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>STARTDATE</id><enabled>Y</enabled><name>STARTDATE</name></field><field><id>ENDDATE</id><enabled>Y</enabled><name>ENDDATE</name></field><field><id>LOGDATE</id><enabled>Y</enabled><name>LOGDATE</name></field><field><id>DEPDATE</id><enabled>Y</enabled><name>DEPDATE</name></field><field><id>REPLAYDATE</id><enabled>Y</enabled><name>REPLAYDATE</name></field><field><id>LOG_FIELD</id><enabled>Y</enabled><name>LOG_FIELD</name></field></job-log-table>
+<jobentry-log-table><connection/>
+<schema/>
+<table/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>JOBNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>JOBENTRYNAME</id><enabled>Y</enabled><name>STEPNAME</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>RESULT</id><enabled>Y</enabled><name>RESULT</name></field><field><id>NR_RESULT_ROWS</id><enabled>Y</enabled><name>NR_RESULT_ROWS</name></field><field><id>NR_RESULT_FILES</id><enabled>Y</enabled><name>NR_RESULT_FILES</name></field><field><id>LOG_FIELD</id><enabled>N</enabled><name>LOG_FIELD</name></field><field><id>COPY_NR</id><enabled>N</enabled><name>COPY_NR</name></field></jobentry-log-table>
+<channel-log-table><connection/>
+<schema/>
+<table/>
+<timeout_days/>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>LOGGING_OBJECT_TYPE</id><enabled>Y</enabled><name>LOGGING_OBJECT_TYPE</name></field><field><id>OBJECT_NAME</id><enabled>Y</enabled><name>OBJECT_NAME</name></field><field><id>OBJECT_COPY</id><enabled>Y</enabled><name>OBJECT_COPY</name></field><field><id>REPOSITORY_DIRECTORY</id><enabled>Y</enabled><name>REPOSITORY_DIRECTORY</name></field><field><id>FILENAME</id><enabled>Y</enabled><name>FILENAME</name></field><field><id>OBJECT_ID</id><enabled>Y</enabled><name>OBJECT_ID</name></field><field><id>OBJECT_REVISION</id><enabled>Y</enabled><name>OBJECT_REVISION</name></field><field><id>PARENT_CHANNEL_ID</id><enabled>Y</enabled><name>PARENT_CHANNEL_ID</name></field><field><id>ROOT_CHANNEL_ID</id><enabled>Y</enabled><name>ROOT_CHANNEL_ID</name></field></channel-log-table>
+   <pass_batchid>N</pass_batchid>
+   <shared_objects_file/>
+  <entries>
+    <entry>
+      <name>START</name>
+      <description>A job starts to process here.</description>
+      <type>SPECIAL</type>
+      <start>Y</start>
+      <dummy>N</dummy>
+      <repeat>N</repeat>
+      <schedulerType>0</schedulerType>
+      <intervalSeconds>0</intervalSeconds>
+      <intervalMinutes>60</intervalMinutes>
+      <hour>12</hour>
+      <minutes>0</minutes>
+      <weekDay>1</weekDay>
+      <DayOfMonth>1</DayOfMonth>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>100</xloc>
+      <yloc>100</yloc>
+      </entry>
+    <entry>
+      <name>DIM_DATE</name>
+      <description>Generated based on logical table &apos;Execution Date&apos;
+
+The execution date dimension</description>
+      <type>SQL</type>
+      <sql>CREATE TABLE DIM_DATE
+(
+  date_tk INTEGER
+, date_field TIMESTAMP
+, ymd VARCHAR(10)
+, ym VARCHAR(7)
+, year SMALLINT
+, quarter TINYINT
+, quarter_code VARCHAR(2)
+, month TINYINT
+, month_desc VARCHAR(20)
+, month_code VARCHAR(3)
+, day TINYINT
+, day_of_year SMALLINT
+, day_of_week TINYINT
+, day_of_week_desc VARCHAR(20)
+, day_of_week_code VARCHAR(3)
+, week TINYINT
+)
+;</sql>
+      <useVariableSubstitution>F</useVariableSubstitution>
+      <sqlfromfile>F</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>F</sendOneStatement>
+      <connection>XXXXXX</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>350</xloc>
+      <yloc>100</yloc>
+      </entry>
+    <entry>
+      <name>DIM_TIME</name>
+      <description>Generated based on logical table &apos;Execution time&apos;
+
+The execution time dimension</description>
+      <type>SQL</type>
+      <sql>CREATE TABLE DIM_TIME
+(
+  time_tk INTEGER
+, hms VARCHAR(8)
+, hm VARCHAR(5)
+, ampm VARCHAR(8)
+, hour TINYINT
+, hour12 TINYINT
+, minute TINYINT
+, second TINYINT
+)
+;</sql>
+      <useVariableSubstitution>F</useVariableSubstitution>
+      <sqlfromfile>F</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>F</sendOneStatement>
+      <connection>XXXXXX</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>600</xloc>
+      <yloc>100</yloc>
+      </entry>
+    <entry>
+      <name>DIM_BATCH</name>
+      <description>Generated based on logical table &apos;Batch&apos;
+
+The batch dimension</description>
+      <type>SQL</type>
+      <sql>CREATE TABLE DIM_BATCH
+(
+  batch_tk IDENTITY
+, batch_id BIGINT
+, logchannel_id VARCHAR(100)
+, parent_logchannel_id VARCHAR(100)
+)
+;
+CREATE INDEX IDX_DIM_BATCH_BATCH_TK ON DIM_BATCH(batch_tk)
+;
+
+CREATE INDEX IDX_DIM_BATCH_LOOKUP ON DIM_BATCH(batch_id, logchannel_id, parent_logchannel_id)
+;
+</sql>
+      <useVariableSubstitution>F</useVariableSubstitution>
+      <sqlfromfile>F</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>F</sendOneStatement>
+      <connection>XXXXXX</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>850</xloc>
+      <yloc>100</yloc>
+      </entry>
+    <entry>
+      <name>DIM_ENVIRONMENT</name>
+      <description>Generated based on logical table &apos;Environment&apos;
+
+The execution environment dimension</description>
+      <type>SQL</type>
+      <sql>CREATE TABLE DIM_ENVIRONMENT
+(
+  environment_tk IDENTITY
+, environment_name VARCHAR(100)
+, tenant VARCHAR(100)
+, project VARCHAR(100)
+, customer VARCHAR(100)
+, lifecycle VARCHAR(100)
+)
+;
+CREATE INDEX IDX_DIM_ENVIRONMENT_ENVIRONMENT_TK ON DIM_ENVIRONMENT(environment_tk)
+;
+
+CREATE INDEX IDX_DIM_ENVIRONMENT_LOOKUP ON DIM_ENVIRONMENT(environment_name, tenant, project, customer, lifecycle)
+;
+</sql>
+      <useVariableSubstitution>F</useVariableSubstitution>
+      <sqlfromfile>F</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>F</sendOneStatement>
+      <connection>XXXXXX</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>100</xloc>
+      <yloc>250</yloc>
+      </entry>
+    <entry>
+      <name>DIM_EXECUTION</name>
+      <description>Generated based on logical table &apos;Execution&apos;
+
+The execution dimension</description>
+      <type>SQL</type>
+      <sql>CREATE TABLE DIM_EXECUTION
+(
+  execution_tk IDENTITY
+, version SMALLINT
+, date_from TIMESTAMP
+, date_to TIMESTAMP
+, execution_id VARCHAR(100)
+, server_name VARCHAR(100)
+, server_host VARCHAR(100)
+, executing_user VARCHAR(100)
+)
+;
+CREATE INDEX IDX_DIM_EXECUTION_EXECUTION_TK ON DIM_EXECUTION(execution_tk)
+;
+
+CREATE INDEX IDX_DIM_EXECUTION_LOOKUP ON DIM_EXECUTION(execution_id)
+;
+</sql>
+      <useVariableSubstitution>F</useVariableSubstitution>
+      <sqlfromfile>F</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>F</sendOneStatement>
+      <connection>XXXXXX</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>350</xloc>
+      <yloc>250</yloc>
+      </entry>
+    <entry>
+      <name>DIM_EXECUTOR</name>
+      <description>Generated based on logical table &apos;Executor&apos;
+
+The executor dimension</description>
+      <type>SQL</type>
+      <sql>CREATE TABLE DIM_EXECUTOR
+(
+  excutor_tk IDENTITY
+, version SMALLINT
+, date_from TIMESTAMP
+, date_to TIMESTAMP
+, executor_id VARCHAR(255)
+, executor_source VARCHAR(255)
+, executor_environment VARCHAR(255)
+, executor_type VARCHAR(255)
+, executor_name VARCHAR(255)
+, executor_desc VARCHAR(255)
+, executor_name_1 VARCHAR(255)
+, executor_revision VARCHAR(255)
+, executor_version_label VARCHAR(255)
+, last_updated_date TIMESTAMP
+, last_updated_user VARCHAR(255)
+)
+;
+CREATE INDEX IDX_DIM_EXECUTOR_EXCUTOR_TK ON DIM_EXECUTOR(excutor_tk)
+;
+
+CREATE INDEX IDX_DIM_EXECUTOR_LOOKUP ON DIM_EXECUTOR(executor_id)
+;
+</sql>
+      <useVariableSubstitution>F</useVariableSubstitution>
+      <sqlfromfile>F</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>F</sendOneStatement>
+      <connection>XXXXXX</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>600</xloc>
+      <yloc>250</yloc>
+      </entry>
+    <entry>
+      <name>FACT_EXECUTION</name>
+      <description>Generated based on logical table &apos;Execution Results&apos;
+
+The execution results fact table</description>
+      <type>SQL</type>
+      <sql>CREATE TABLE FACT_EXECUTION
+(
+  execution_date_tk INTEGER
+, execution_time_tk INTEGER
+, batch_tk INTEGER
+, environment_tk INTEGER
+, execution_tk INTEGER
+, executor_tk INTEGER
+, parent_executor_tk INTEGER
+, root_executor_tk INTEGER
+, duration DECIMAL(12, 2)
+, rows_input INTEGER
+, rows_output INTEGER
+, rows_read INTEGER
+, rows_written INTEGER
+, rows_rejected INTEGER
+, errors INTEGER
+)
+;
+CREATE INDEX IDX_FACT_EXECUTION_EXECUTION_DATE_TK ON FACT_EXECUTION(execution_date_tk)
+;
+
+CREATE INDEX IDX_FACT_EXECUTION_EXECUTION_TIME_TK ON FACT_EXECUTION(execution_time_tk)
+;
+
+CREATE INDEX IDX_FACT_EXECUTION_BATCH_TK ON FACT_EXECUTION(batch_tk)
+;
+
+CREATE INDEX IDX_FACT_EXECUTION_ENVIRONMENT_TK ON FACT_EXECUTION(environment_tk)
+;
+
+CREATE INDEX IDX_FACT_EXECUTION_EXECUTION_TK ON FACT_EXECUTION(execution_tk)
+;
+
+CREATE INDEX IDX_FACT_EXECUTION_EXECUTOR_TK ON FACT_EXECUTION(executor_tk)
+;
+
+CREATE INDEX IDX_FACT_EXECUTION_PARENT_EXECUTOR_TK ON FACT_EXECUTION(parent_executor_tk)
+;
+
+CREATE INDEX IDX_FACT_EXECUTION_ROOT_EXECUTOR_TK ON FACT_EXECUTION(root_executor_tk)
+;
+</sql>
+      <useVariableSubstitution>F</useVariableSubstitution>
+      <sqlfromfile>F</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>F</sendOneStatement>
+      <connection>XXXXXX</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>850</xloc>
+      <yloc>250</yloc>
+      </entry>
+    <entry>
+      <name>FACT_MONITORING_RESULT</name>
+      <description>Generated based on logical table &apos;null&apos;
+
+</description>
+      <type>SQL</type>
+      <sql>CREATE TABLE FACT_MONITORING_RESULT
+(
+  monitoring_status_date_tk INTEGER
+, monitoring_status_time_tk INTEGER
+)
+;
+CREATE INDEX IDX_FACT_MONITORING_RESULT_MONITORING_STATUS_DATE_TK ON FACT_MONITORING_RESULT(monitoring_status_date_tk)
+;
+
+CREATE INDEX IDX_FACT_MONITORING_RESULT_MONITORING_STATUS_TIME_TK ON FACT_MONITORING_RESULT(monitoring_status_time_tk)
+;
+</sql>
+      <useVariableSubstitution>F</useVariableSubstitution>
+      <sqlfromfile>F</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>F</sendOneStatement>
+      <connection>XXXXXX</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>100</xloc>
+      <yloc>400</yloc>
+      </entry>
+    <entry>
+      <name>FACT_SERVER_MONITORING</name>
+      <description>Generated based on logical table &apos;Server monitoring result&apos;
+
+Contains the server monitoring result KPIs</description>
+      <type>SQL</type>
+      <sql>CREATE TABLE FACT_SERVER_MONITORING
+(
+  date_tk INTEGER
+, time_tk INTEGER
+, monitoring_result_tk INTEGER
+, load_avg DECIMAL(5, 2)
+, mem_utilization_pct DECIMAL(5, 2)
+, uptime INTEGER
+, dt_prev_result TIMESTAMP
+, interval INTEGER
+, memory_free BIGINT
+, memory_total BIGINT
+, cpu_process_time BIGINT
+, cpu_process_time_diff BIGINT
+, thread_count INTEGER
+)
+;
+CREATE INDEX IDX_FACT_SERVER_MONITORING_DATE_TK ON FACT_SERVER_MONITORING(date_tk)
+;
+
+CREATE INDEX IDX_FACT_SERVER_MONITORING_TIME_TK ON FACT_SERVER_MONITORING(time_tk)
+;
+
+CREATE INDEX IDX_FACT_SERVER_MONITORING_MONITORING_RESULT_TK ON FACT_SERVER_MONITORING(monitoring_result_tk)
+;
+</sql>
+      <useVariableSubstitution>F</useVariableSubstitution>
+      <sqlfromfile>F</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>F</sendOneStatement>
+      <connection>XXXXXX</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>350</xloc>
+      <yloc>400</yloc>
+      </entry>
+    <entry>
+      <name>DIM_MONITORING_RESULT</name>
+      <description>Generated based on logical table &apos;Monitoring Result&apos;
+
+The monitoring result dimension</description>
+      <type>SQL</type>
+      <sql>CREATE TABLE DIM_MONITORING_RESULT
+(
+  monitoring_result_tk IDENTITY
+, server_name VARCHAR(255)
+, server_url VARCHAR(255)
+, is_alive VARCHAR(1)
+, cpu_cores SMALLINT
+, os_name VARCHAR(255)
+, os_version VARCHAR(255)
+, os_architecture VARCHAR(255)
+)
+;
+CREATE INDEX IDX_DIM_MONITORING_RESULT_MONITORING_RESULT_TK ON DIM_MONITORING_RESULT(monitoring_result_tk)
+;
+
+CREATE INDEX IDX_DIM_MONITORING_RESULT_LOOKUP ON DIM_MONITORING_RESULT(server_name, server_url, is_alive, cpu_cores, os_name, os_version, os_architecture)
+;
+</sql>
+      <useVariableSubstitution>F</useVariableSubstitution>
+      <sqlfromfile>F</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>F</sendOneStatement>
+      <connection>XXXXXX</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>600</xloc>
+      <yloc>400</yloc>
+      </entry>
+    <entry>
+      <name>FACT_TASK_MONITORING</name>
+      <description>Generated based on logical table &apos;Task monitoring result&apos;
+
+Contains task monitoring results</description>
+      <type>SQL</type>
+      <sql>CREATE TABLE FACT_TASK_MONITORING
+(
+  monitoring_date_tk INTEGER
+, monitoring_time_tk INTEGER
+, executor_tk INTEGER
+, task_monitoring_tk INTEGER
+, running_time INTEGER
+, throughput DECIMAL(12, 2)
+)
+;
+CREATE INDEX IDX_FACT_TASK_MONITORING_MONITORING_DATE_TK ON FACT_TASK_MONITORING(monitoring_date_tk)
+;
+
+CREATE INDEX IDX_FACT_TASK_MONITORING_MONITORING_TIME_TK ON FACT_TASK_MONITORING(monitoring_time_tk)
+;
+
+CREATE INDEX IDX_FACT_TASK_MONITORING_EXECUTOR_TK ON FACT_TASK_MONITORING(executor_tk)
+;
+
+CREATE INDEX IDX_FACT_TASK_MONITORING_TASK_MONITORING_TK ON FACT_TASK_MONITORING(task_monitoring_tk)
+;
+</sql>
+      <useVariableSubstitution>F</useVariableSubstitution>
+      <sqlfromfile>F</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>F</sendOneStatement>
+      <connection>XXXXXX</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>850</xloc>
+      <yloc>400</yloc>
+      </entry>
+    <entry>
+      <name>DIM_TASK_MONITORING</name>
+      <description>Generated based on logical table &apos;Task Monitoring&apos;
+
+The task monitoring junk dimension</description>
+      <type>SQL</type>
+      <sql>CREATE TABLE DIM_TASK_MONITORING
+(
+  task_monitoring_tk IDENTITY
+, server_name VARCHAR(255)
+, server_url VARCHAR(255)
+)
+;
+CREATE INDEX IDX_DIM_TASK_MONITORING_TASK_MONITORING_TK ON DIM_TASK_MONITORING(task_monitoring_tk)
+;
+
+CREATE INDEX IDX_DIM_TASK_MONITORING_LOOKUP ON DIM_TASK_MONITORING(server_name, server_url)
+;
+</sql>
+      <useVariableSubstitution>F</useVariableSubstitution>
+      <sqlfromfile>F</sqlfromfile>
+      <sqlfilename/>
+      <sendOneStatement>F</sendOneStatement>
+      <connection>XXXXXX</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>100</xloc>
+      <yloc>550</yloc>
+      </entry>
+  </entries>
+  <hops>
+    <hop>
+      <from>START</from>
+      <to>DIM_DATE</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
+    </hop>
+    <hop>
+      <from>DIM_DATE</from>
+      <to>DIM_TIME</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>DIM_TIME</from>
+      <to>DIM_BATCH</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>DIM_BATCH</from>
+      <to>DIM_ENVIRONMENT</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>DIM_ENVIRONMENT</from>
+      <to>DIM_EXECUTION</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>DIM_EXECUTION</from>
+      <to>DIM_EXECUTOR</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>DIM_EXECUTOR</from>
+      <to>FACT_EXECUTION</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>FACT_EXECUTION</from>
+      <to>FACT_MONITORING_RESULT</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>FACT_MONITORING_RESULT</from>
+      <to>FACT_SERVER_MONITORING</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>FACT_SERVER_MONITORING</from>
+      <to>DIM_MONITORING_RESULT</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>DIM_MONITORING_RESULT</from>
+      <to>FACT_TASK_MONITORING</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>FACT_TASK_MONITORING</from>
+      <to>DIM_TASK_MONITORING</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+  </hops>
+  <notepads>
+  </notepads>
+</job>

@@ -85,24 +85,12 @@ public class Splash {
     versionWarningBackgroundColor = new Color(display, 255, 253, 213);
     versionWarningForegroundColor = new Color(display, 220, 177, 20);
     
-    splash = new Shell(display, SWT.BACKGROUND | SWT.APPLICATION_MODAL);
+    splash = new Shell(display, SWT.BACKGROUND | SWT.APPLICATION_MODAL | SWT.BORDER);
     splash.setImage(kettle_icon);
 
     splash.setText(BaseMessages.getString(PKG, "SplashDialog.Title")); // "Pentaho Data Integration" //$NON-NLS-1$
-
-    FormLayout splashLayout = new FormLayout();
-    splash.setLayout(splashLayout);
-
-    Canvas canvas = new Canvas(splash, SWT.NO_BACKGROUND);
-
-    FormData fdCanvas = new FormData();
-    fdCanvas.left = new FormAttachment(0, 0);
-    fdCanvas.top = new FormAttachment(0, 0);
-    fdCanvas.right = new FormAttachment(100, 0);
-    fdCanvas.bottom = new FormAttachment(100, 0);
-    canvas.setLayoutData(fdCanvas);
     
-    canvas.addPaintListener(new PaintListener() {
+    splash.addPaintListener(new PaintListener() {
       public void paintControl(PaintEvent e) {
         String versionText = BaseMessages.getString(PKG, "SplashDialog.Version") + " " + Const.VERSION; //$NON-NLS-1$ //$NON-NLS-2$
         
@@ -153,7 +141,7 @@ public class Splash {
           e.gc.setFont(licFont);          
         }
         
-        e.gc.drawText(licenseText, 290, 290, true);
+        e.gc.drawText(licenseText, 290, 290, false);
       }
     });
 
