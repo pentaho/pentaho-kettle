@@ -96,6 +96,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 	private LogLevel logLevel = DefaultLogLevel.getLogLevel();
 	private String containerObjectId;
 	private JobMeta jobMeta;
+	private int logCommitSize=10;
 	private Repository rep;
     private AtomicInteger errors;
 
@@ -191,6 +192,19 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     maxJobEntriesLogged = Const.toInt(EnvUtil.getSystemProperty(Const.KETTLE_MAX_JOB_ENTRIES_LOGGED), 1000);
 
     result = null;
+    this.setDefaultLogCommitSize();
+  }
+
+  private void setDefaultLogCommitSize() {
+    String propLogCommitSize = this.getVariable("pentaho.log.commit.size");
+    if (propLogCommitSize != null) {
+      // override the logCommit variable
+      try {
+        logCommitSize = Integer.parseInt(propLogCommitSize);
+      } catch (Exception ignored) {
+        logCommitSize = 10; // ignore parsing error and default to 10
+      }
+    }
   }
 
 	public Job(Repository repository, JobMeta jobMeta)
@@ -796,6 +810,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       String schemaAndTable = jobMeta.getJobLogTable().getDatabaseMeta().getQuotedSchemaTableCombination(schemaName, tableName);
       Database ldb = new Database(this, logcon);
       ldb.shareVariablesWith(this);
+      ldb.setCommit(logCommitSize);
         ldb.connect();
 
       try {
@@ -947,6 +962,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
 				Database ldb = new Database(this, logcon);
 				ldb.shareVariablesWith(this);
+				ldb.setCommit(logCommitSize);
 				try
 				{
 					ldb.connect();
@@ -978,6 +994,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 		try {
 			db = new Database(this, channelLogTable.getDatabaseMeta());
 			db.shareVariablesWith(this);
+			db.setCommit(logCommitSize);
 			db.connect();
 			
 			List<LoggingHierarchy> loggingHierarchyList = getLoggingHierarchy();
@@ -1003,6 +1020,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       try {
         db = new Database(this, jobEntryLogTable.getDatabaseMeta());
         db.shareVariablesWith(this);
+        db.setCommit(logCommitSize);
         db.connect();
         
         for (JobEntryCopy copy : jobMeta.getJobCopies()) {
