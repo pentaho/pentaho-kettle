@@ -764,6 +764,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       String schemaAndTable = jobMeta.getJobLogTable().getDatabaseMeta().getQuotedSchemaTableCombination(schemaName, tableName);
       Database ldb = new Database(this, logcon);
       ldb.shareVariablesWith(this);
+      ldb.setCommit(10); // always turn autocommit off
       ldb.connect();
 
       try {
@@ -915,6 +916,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
 				Database ldb = new Database(this, logcon);
 				ldb.shareVariablesWith(this);
+	      ldb.setCommit(10); // always turn autocommit off
 				try
 				{
 					ldb.connect();
@@ -945,6 +947,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 		try {
 			db = new Database(this, channelLogTable.getDatabaseMeta());
 			db.shareVariablesWith(this);
+      db.setCommit(10); // always turn autocommit off
 			db.connect();
 			
 			List<LoggingHierarchy> loggingHierarchyList = getLoggingHierarchy();
@@ -969,6 +972,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       try {
         db = new Database(this, jobEntryLogTable.getDatabaseMeta());
         db.shareVariablesWith(this);
+        db.setCommit(10); // always turn autocommit off
         db.connect();
         
         for (JobEntryCopy copy : jobMeta.getJobCopies()) {
