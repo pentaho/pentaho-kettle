@@ -63,6 +63,8 @@ import org.pentaho.di.ui.spoon.job.JobGraph;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.steps.tableinput.SQLValuesHighlight;
 
+
+
 public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 {
 	private static Class<?> PKG = ExecSQLMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
@@ -78,6 +80,11 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 	private Label wlEachRow;
 	private Button wEachRow;
 
+	  private Label wlSetParams;
+	  private Button wSetParams;
+	  private FormData fdlSetParams;
+	  private FormData fdSetParams;
+	
 	private Label wlSingleStatement;
 	private Button wSingleStatement;
 
@@ -423,6 +430,30 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 		fdEachRow.bottom = new FormAttachment(wSingleStatement, -margin);
 		fdEachRow.right = new FormAttachment(middle, 0);
 		wEachRow.setLayoutData(fdEachRow);
+		
+	    wlSetParams = new Label(this.shell, SWT.RIGHT);
+	    wlSetParams.setText(BaseMessages.getString(PKG, "ExecSQLDialog.SetParams.Label"));
+	    props.setLook(this.wlSetParams);
+	    fdlSetParams = new FormData();
+	    fdlSetParams.left = new FormAttachment(0, margin);
+	    fdlSetParams.bottom = new FormAttachment(wEachRow, -margin);
+	    fdlSetParams.right = new FormAttachment(0, width);
+	    wlSetParams.setLayoutData(this.fdlSetParams);
+	    wSetParams = new Button(this.shell, 32);
+	    props.setLook(this.wSetParams);
+	    wSetParams.setToolTipText(BaseMessages.getString(PKG, "ExecSQLDialog.SetParams.Tooltip"));
+	    fdSetParams = new FormData();
+	    fdSetParams.left = new FormAttachment(wlSetParams, margin);
+	    fdSetParams.bottom = new FormAttachment(wEachRow, -margin);
+	    fdSetParams.right = new FormAttachment(middle, 0);
+	    wSetParams.setLayoutData(fdSetParams);
+	    wSetParams.addSelectionListener(new SelectionAdapter()
+	    {
+	      public void widgetSelected(SelectionEvent e)
+	      {
+	        input.setChanged();
+	      }
+	    });
 
 
 		// Position label under the SQL editor
@@ -432,7 +463,7 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 		fdlPosition = new FormData();
 		fdlPosition.left = new FormAttachment(0, 0);
 		fdlPosition.right = new FormAttachment(100, 0);
-		fdlPosition.bottom= new FormAttachment(wEachRow, -margin);
+		fdlPosition.bottom= new FormAttachment(wSetParams, -margin);
 		wlPosition.setLayoutData(fdlPosition);
 
 		// Finally, the SQL editor takes up all other space between the position and the SQL label  
@@ -496,8 +527,15 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 		};
 
 		wStepname.addSelectionListener(lsDef);
-		wEachRow.addSelectionListener(lsDef);
 
+		wEachRow.addSelectionListener(new SelectionAdapter()
+	    {
+	      public void widgetSelected(SelectionEvent e)
+	      {
+	        ExecSQLDialog.this.setExecutedEachInputRow();
+	        ExecSQLDialog.this.input.setChanged();
+	      }
+	    });
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(new ShellAdapter() {
 			public void shellClosed(ShellEvent e) {
@@ -506,6 +544,7 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 		});
 
 		getData();
+		setExecutedEachInputRow();
 		changedInDialog = false; // for prompting if dialog is simply closed
 		input.setChanged(changed);
 
@@ -519,6 +558,17 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 		}
 		return stepname;
 	}
+	  private void setExecutedEachInputRow()
+	  {
+	    wlFields.setEnabled(wEachRow.getSelection());
+	    wFields.setEnabled(wEachRow.getSelection());
+	    wlSetParams.setEnabled(wEachRow.getSelection());
+	    wSetParams.setEnabled(wEachRow.getSelection());
+	    if(!wEachRow.getSelection())
+	    {
+	    	 wSetParams.setSelection(wEachRow.getSelection());
+	    }
+	  }
 
 	public void setPosition(){
 		
@@ -581,7 +631,8 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 			if (input.getArguments()[i] != null)
 				item.setText(1, input.getArguments()[i]);
 		}
-
+		wSetParams.setSelection(input.isParams());
+		
 		wStepname.selectAll();
 	}
 
@@ -627,7 +678,7 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 		input.setExecutedEachInputRow(wEachRow.getSelection());
 		input.setSingleStatement(wSingleStatement.getSelection());
 		input.setVariableReplacementActive(wVariables.getSelection());
-
+	    input.setParams(wSetParams.getSelection());
 		input.setInsertField(wInsertField.getText());
 		input.setUpdateField(wUpdateField.getText());
 		input.setDeleteField(wDeleteField.getText());

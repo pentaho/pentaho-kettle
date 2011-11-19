@@ -74,13 +74,34 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface
 	
 	private boolean singleStatement;
     
-  private boolean replaceVariables;
+	private boolean replaceVariables;
+	
+	private boolean setParams;
 
 	public ExecSQLMeta()
 	{
 		super();
 	}
 
+	/**
+	 * @return Returns the true if we have to set params.
+	 */
+	  public boolean isParams()
+	  {
+	    return this.setParams;
+	  }
+
+	  
+	 /**
+	 * @param value
+	 *            set true if we have to set params.
+	 */
+	  public void setParams(boolean value) 
+	  {
+	    this.setParams = value;
+	  }
+	  
+	  
 	/**
 	 * @return Returns the database.
 	 */
@@ -243,6 +264,7 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface
 			executedEachInputRow = "Y".equalsIgnoreCase(eachRow); //$NON-NLS-1$
 			singleStatement = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "single_statement")); //$NON-NLS-1$
 			replaceVariables = "Y".equals(XMLHandler.getTagValue(stepnode, "replace_variables"));
+		    setParams = "Y".equals(XMLHandler.getTagValue(stepnode, "set_params"));
 			sql = XMLHandler.getTagValue(stepnode, "sql"); //$NON-NLS-1$
 
 			insertField = XMLHandler.getTagValue(stepnode, "insert_field"); //$NON-NLS-1$
@@ -288,7 +310,7 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("    ").append(XMLHandler.addTagValue("single_statement", singleStatement)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("replace_variables",   replaceVariables));        
 		retval.append("    ").append(XMLHandler.addTagValue("sql", sql)); //$NON-NLS-1$ //$NON-NLS-2$
-
+	    retval.append("    ").append(XMLHandler.addTagValue("set_params", setParams));
 		retval.append("    ").append(XMLHandler.addTagValue("insert_field", insertField)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("update_field", updateField)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("delete_field", deleteField)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -314,7 +336,7 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface
 			singleStatement = rep.getStepAttributeBoolean(id_step, "single_statement"); //$NON-NLS-1$
 			replaceVariables = rep.getStepAttributeBoolean(id_step, "replace_variables"); //$NON-NLS-1$
 			sql = rep.getStepAttributeString(id_step, "sql"); //$NON-NLS-1$
-
+		    setParams = rep.getStepAttributeBoolean(id_step, "set_params");
 			insertField = rep.getStepAttributeString(id_step, "insert_field"); //$NON-NLS-1$
 			updateField = rep.getStepAttributeString(id_step, "update_field"); //$NON-NLS-1$
 			deleteField = rep.getStepAttributeString(id_step, "delete_field"); //$NON-NLS-1$
@@ -342,7 +364,7 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "execute_each_row", executedEachInputRow); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "single_statement", singleStatement); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "replace_variables", replaceVariables); //$NON-NLS-1$
-
+			  rep.saveStepAttribute(id_transformation, id_step, "set_params", setParams);
 			rep.saveStepAttribute(id_transformation, id_step, "insert_field", insertField); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "update_field", updateField); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "delete_field", deleteField); //$NON-NLS-1$

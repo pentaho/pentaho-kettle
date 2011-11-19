@@ -21,6 +21,8 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
@@ -126,49 +128,77 @@ public class ExecSQL extends BaseStep implements StepInterface
 					logError(BaseMessages.getString(PKG, "ExecSQL.Log.ErrorFindingField") + meta.getArguments()[i] + "]"); //$NON-NLS-1$ //$NON-NLS-2$
 					throw new KettleStepException(BaseMessages.getString(PKG, "ExecSQL.Exception.CouldNotFindField", meta.getArguments()[i])); //$NON-NLS-1$ //$NON-NLS-2$
 				}
+				if(meta.isParams())
+				{
+					if(i==0) 
+					{
+						System.out.println("---------------------------->");
+						// Define parameters meta
+						data.paramsMeta = new RowMeta();
+					}
+					data.paramsMeta.addValueMeta(getInputRowMeta().getValueMeta(data.argumentIndexes[i]));
+				}
 			}
 
-			// Find the locations of the question marks in the String...
-			// We replace the question marks with the values...
-			// We ignore quotes etc. to make inserts easier...
-			data.markerPositions = new ArrayList<Integer>();
-            int len = data.sql.length();
-			int pos = len - 1;
-			while (pos >= 0)
-			{
-				if (data.sql.charAt(pos) == '?')
-					data.markerPositions.add(Integer.valueOf(pos)); // save the
-				// marker
-				// position
-				pos--;
-			}
+			 if (!meta.isParams())
+			 {
+				 // We need to replace question marks by string value
+				 
+				// Find the locations of the question marks in the String...
+				// We replace the question marks with the values...
+				// We ignore quotes etc. to make inserts easier...
+				data.markerPositions = new ArrayList<Integer>();
+	            int len = data.sql.length();
+				int pos = len - 1;
+				while (pos >= 0)
+				{
+					if (data.sql.charAt(pos) == '?')
+						data.markerPositions.add(Integer.valueOf(pos)); // save the
+					// marker
+					// position
+					pos--;
+				}
+			 }
 		}
 
 		String sql;
-		int numMarkers = data.markerPositions.size();
-		if (numMarkers > 0) {
-			StringBuffer buf = new StringBuffer(data.sql);
-			
-			// Replace the values in the SQL string...
-			//
-			for (int i=0;i<numMarkers;i++) {
-				// Get the appropriate value from the input row...
-				//
-				int index = data.argumentIndexes[data.markerPositions.size() - i - 1];
-				ValueMetaInterface valueMeta = getInputRowMeta().getValueMeta( index );
-				Object valueData = row[ index ];
-			
-				// replace the '?' with the String in the row.
-				//
-				int pos = data.markerPositions.get(i);
-				String replaceValue = valueMeta.getString(valueData);
-				replaceValue = Const.NVL(replaceValue, "");
-				buf.replace(pos, pos + 1, replaceValue); 
-			}
-			sql = buf.toString();
+	    Object[] paramsData = null;
+		if(meta.isParams())
+		{
+			// Get parameters data
+			paramsData = new Object[data.argumentIndexes.length];
+	        sql = this.data.sql;
+	        for (int i = 0; i < this.data.argumentIndexes.length; i++) {
+	        	paramsData[i]= row[data.argumentIndexes[i]];
+	        }	
 		}
-		else  {
-			sql = data.sql;
+		else
+		{
+			int numMarkers = data.markerPositions.size();
+			if (numMarkers > 0) {
+				StringBuffer buf = new StringBuffer(data.sql);
+				
+				// Replace the values in the SQL string...
+				//
+				for (int i=0;i<numMarkers;i++) {
+					// Get the appropriate value from the input row...
+					//
+					int index = data.argumentIndexes[data.markerPositions.size() - i - 1];
+					ValueMetaInterface valueMeta = getInputRowMeta().getValueMeta( index );
+					Object valueData = row[ index ];
+				
+					// replace the '?' with the String in the row.
+					//
+					int pos = data.markerPositions.get(i);
+					String replaceValue = valueMeta.getString(valueData);
+					replaceValue = Const.NVL(replaceValue, "");
+					buf.replace(pos, pos + 1, replaceValue); 
+				}
+				sql = buf.toString();
+			}
+			else  {
+				sql = data.sql;
+			}
 		}
 		if (log.isRowLevel()) logRowlevel(BaseMessages.getString(PKG, "ExecSQL.Log.ExecutingSQLScript") + Const.CR + sql); //$NON-NLS-1$
 		
@@ -177,9 +207,9 @@ public class ExecSQL extends BaseStep implements StepInterface
 		try{
 			
 			if (meta.isSingleStatement()) {
-				data.result = data.db.execStatement(sql);
+				data.result = data.db.execStatement(sql, data.paramsMeta, paramsData);
 			} else {
-				data.result = data.db.execStatements(sql);
+				data.result = data.db.execStatements(sql, data.paramsMeta, paramsData);
 			}
 	
 			RowMetaAndData add = getResultRow(data.result, meta.getUpdateField(), meta.getInsertField(), meta.getDeleteField(), meta.getReadField());

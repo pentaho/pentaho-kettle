@@ -36,6 +36,7 @@ public class ExecSQLData extends BaseStepData implements StepDataInterface
     public RowMetaInterface outputRowMeta;
     public String   sql;
 	public boolean isCanceled;
+    public RowMetaInterface paramsMeta;
 	
 	public ExecSQLData()
 	{
@@ -45,5 +46,6 @@ public class ExecSQLData extends BaseStepData implements StepDataInterface
         result          = null;
         argumentIndexes = null;
         markerPositions = null;
+        paramsMeta=null;
 	}
 }

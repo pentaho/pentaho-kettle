@@ -1697,6 +1697,24 @@ public class Database implements VariableSpace, LoggingObjectInterface
 	  return returnBuffer.toString();
 	}
 
+	   /**
+	    * Execute a series of SQL statements, separated by ;
+	    * 
+	    * We are already connected...
+	    
+	    * Multiple statements have to be split into parts
+	    * We use the ";" to separate statements...
+	    *
+	    * We keep the results in Result object from Jobs
+	    *
+	    * @param script The SQL script to be execute
+	    * @throws KettleDatabaseException In case an error occurs
+	    * @return A result with counts of the number or records updates, inserted, deleted or read.
+	    */
+	 public Result execStatements(String script) throws KettleDatabaseException
+	 {
+		 return  execStatements(script, null, null);
+	 }
 	
    /**
     * Execute a series of SQL statements, separated by ;
@@ -1709,10 +1727,12 @@ public class Database implements VariableSpace, LoggingObjectInterface
     * We keep the results in Result object from Jobs
     *
     * @param script The SQL script to be execute
+    * @param params Parameters Meta
+    * @param data Parameters value
     * @throws KettleDatabaseException In case an error occurs
     * @return A result with counts of the number or records updates, inserted, deleted or read.
     */
- public Result execStatements(String script) throws KettleDatabaseException
+ public Result execStatements(String script, RowMetaInterface params, Object[] data) throws KettleDatabaseException
  {
        Result result = new Result();
        
@@ -1766,7 +1786,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
            ResultSet rs = null;
            try 
            {
-             rs = openQuery(sql);
+             rs = openQuery(sql, params, data);
              if (rs!=null)
              {
                                Object[] row = getRow(rs);
@@ -1780,7 +1800,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
              }
              else
              {
-                               if (log.isDebug()) log.logDebug("Error executing query: "+Const.CR+sql);
+                  if (log.isDebug()) log.logDebug("Error executing query: "+Const.CR+sql);
              }
            } catch (KettleValueException e) {
              throw new KettleDatabaseException(e); // just pass the error upwards.
@@ -1793,7 +1813,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
              }
              catch (SQLException ex )
              {
-                               if (log.isDebug()) log.logDebug("Error closing query: "+Const.CR+sql);
+                  if (log.isDebug()) log.logDebug("Error closing query: "+Const.CR+sql);
              }
            }           
          }
@@ -1803,7 +1823,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 
                        // A DDL statement
                        nrstats++;
-                       Result res = execStatement(sql);
+                       Result res = execStatement(sql, params, data);
                        result.add(res);
                    }
        }
