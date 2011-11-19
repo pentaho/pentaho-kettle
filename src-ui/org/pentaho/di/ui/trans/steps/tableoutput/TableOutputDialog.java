@@ -1234,6 +1234,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         boolean specifyFields = wSpecifyFields.getSelection();
         wFields.setEnabled(specifyFields);
         wGetFields.setEnabled(specifyFields);
+        wDoMapping.setEnabled(specifyFields);
         
         // If people specify the fields we don't want them to use the "store name
         // in table" button.
