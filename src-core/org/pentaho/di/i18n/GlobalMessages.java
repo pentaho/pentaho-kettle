@@ -185,12 +185,13 @@ public class GlobalMessages extends AbstractMessageHandler
     	String filename = buildHashKey(locale, packageName);
     	filename = "/"+filename.replace('.', '/') + ".properties";
     	
+	    InputStream inputStream=null;
     	try
     	{
     	    ResourceBundle bundle = locales.get(filename);
             if (bundle == null)
             {
-                InputStream inputStream = resourceClass.getResourceAsStream(filename);
+                inputStream = resourceClass.getResourceAsStream(filename);
                 if (inputStream==null) {
                   // Retry with the system class loader, just in case we are dealing with a messy plug-in.
                   //
@@ -213,6 +214,20 @@ public class GlobalMessages extends AbstractMessageHandler
     	catch(IOException e)
     	{
     		throw new MissingResourceException("Unable to find properties file ["+filename+"] : "+e.toString(), locale.toString(), packageName);
+    	}
+    	finally
+    	{
+    		if(inputStream!=null)
+    		{
+    			try 
+    			{
+    				inputStream.close();
+    			}
+    			catch(Exception e)
+    			{
+    				// ignore this
+    			}
+    		}
     	}
     }
 
