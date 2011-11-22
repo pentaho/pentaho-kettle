@@ -652,7 +652,7 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
 
   private void addTree() {
     
-    wTree = new Tree(shell, SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
+    wTree = new Tree(shell, SWT.SINGLE | SWT.FULL_SELECTION | SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
     FormData fdTree = new FormData();
     fdTree.left = new FormAttachment(0,0);
     fdTree.right = new FormAttachment(100,0);
