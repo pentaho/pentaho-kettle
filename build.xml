@@ -74,7 +74,6 @@
             deprecation="true"
             debug="${debug}"
             optimize="${optimize}"
-        	encoding="${compile-encoding}"
             memorymaximumsize="256m"
         	includeantruntime="false">
 	    	<src path="${src-core}"/>
@@ -95,7 +94,6 @@
           deprecation="true"
           debug="${debug}"
           optimize="${optimize}"
-      	  encoding="${compile-encoding}"
           memorymaximumsize="256m"
 	      includeantruntime="false">
 	    	<src path="${src-db}"/>
@@ -118,7 +116,6 @@
         deprecation="true"
         debug="${debug}"
         optimize="${optimize}"
-    	encoding="${compile-encoding}"      	
         memorymaximumsize="256m"
 	      includeantruntime="false">
 	    	<src path="${src-dbdialog}"/>
@@ -144,7 +141,6 @@
             deprecation="true"
             debug="${debug}"
             optimize="${optimize}"
-        	encoding="${compile-encoding}"
             memorymaximumsize="256m"
         	includeantruntime="false">
             <src path="${src}"/>
@@ -167,7 +163,6 @@
           deprecation="true"
           debug="${debug}"
           optimize="${optimize}"
-      	  encoding="${compile-encoding}"
           memorymaximumsize="256m"
       	includeantruntime="false">
           <src path="${src-jdbc}"/>
@@ -192,7 +187,6 @@
 	           deprecation="true"
 	    	   debug="${debug}"
                optimize="${optimize}"
-	    	   encoding="${compile-encoding}"
 	    	   excludes="be/ibridge/kettle/schema/**/* be/ibridge/kettle/menu/**/*"
 	    	   memorymaximumsize="256M"
 	    	   fork="true"
@@ -234,7 +228,6 @@
 		    	   target="5"
 		    	   source="5"
 		           deprecation="true"
-		    	   encoding="${compile-encoding}"
 		    	   debug="true"
 	        	   includeantruntime="false"
 		    	>
@@ -1344,7 +1337,6 @@
 			    	   source="5"
 			           deprecation="true"
 			    	   debug="${debug}"
-			    	   encoding="${compile-encoding}"
 			    	   memorymaximumsize="256M"
 			    	   fork="true"
 		        	   includeantruntime="false"
@@ -1442,7 +1434,6 @@
 			    	   source="5"
 			           deprecation="true"
 			    	   debug="${debug}"
-			    	   encoding="${compile-encoding}"
 			    	   memorymaximumsize="256M"
 			    	   fork="true"
 		        	   includeantruntime="false"
