@@ -280,6 +280,8 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
   public Result execute(Result result, int arg1) throws KettleException {
     Log4jFileAppender appender = null;
     String logFileName = "pdi-" + this.getName(); //$NON-NLS-1$
+    String fsProtocol = "hdfs://";    
+    
     try
     {
       appender = LogWriter.createFileAppender(logFileName, true, false);
@@ -289,6 +291,23 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
     {
       logError(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.FailedToOpenLogFile", logFileName, e.toString())); //$NON-NLS-1$
       logError(Const.getStackTracker(e));
+    }
+    
+    try {
+      // see if there is a specific file system protocol to use. If not, default to hdfs.      
+      fsProtocol = System.getProperty("hadoop.filesystem.protocol", "hdfs://");
+      if (!Const.isEmpty(fsProtocol)) {
+        if (!fsProtocol.endsWith("://")) {
+          fsProtocol += "://";
+        }
+      } else {
+        fsProtocol = "hdfs://";
+      }
+      logBasic(BaseMessages.getString(PKG, 
+          "JobEntryHadoopJobExecutor.Message.HadoopFilesystem") + fsProtocol);
+    } catch (Exception ex) {
+      logError(BaseMessages.getString(PKG, 
+          "JobEntryHadoopJobExecutor.Error.UnableToAccessFSProperty"));
     }
     
     try {
@@ -376,7 +395,15 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
 
         String hdfsHostnameS = environmentSubstitute(hdfsHostname);
         String hdfsPortS = environmentSubstitute(hdfsPort);
-        String hdfsBaseUrl = "hdfs://" + hdfsHostnameS + ":" + hdfsPortS;
+        //        String hdfsBaseUrl = "hdfs://" + hdfsHostnameS + ":" + hdfsPortS;
+        //String hdfsBaseUrl = fsProtocol + hdfsHostnameS + ":" + hdfsPortS;
+        String hdfsBaseUrl = fsProtocol;
+        if (!Const.isEmpty(hdfsHostnameS)) {
+          hdfsBaseUrl += hdfsHostnameS;
+        }
+        if (!Const.isEmpty(hdfsPort)) {
+          hdfsBaseUrl += ":" + hdfsPortS;
+        }
         
         String hdfsBaseUrlS = environmentSubstitute(hdfsBaseUrl);
         conf.set("fs.default.name", hdfsBaseUrlS);
