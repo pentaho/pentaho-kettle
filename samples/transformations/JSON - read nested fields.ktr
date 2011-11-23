@@ -86,30 +86,6 @@
   </info>
   <notepads>
     <notepad>
-      <note>Each submission has a ID. 
-
-JSON step complained about different counts of answers being returned when i tried to
-keep the IDs tied to the answers.</note>
-      <xloc>482</xloc>
-      <yloc>55</yloc>
-      <width>673</width>
-      <heigth>88</heigth>
-      <fontname>Ariel</fontname>
-      <fontsize>10</fontsize>
-      <fontbold>N</fontbold>
-      <fontitalic>N</fontitalic>
-      <fontcolorred>0</fontcolorred>
-      <fontcolorgreen>0</fontcolorgreen>
-      <fontcolorblue>0</fontcolorblue>
-      <backgroundcolorred>255</backgroundcolorred>
-      <backgroundcolorgreen>165</backgroundcolorgreen>
-      <backgroundcolorblue>0</backgroundcolorblue>
-      <bordercolorred>100</bordercolorred>
-      <bordercolorgreen>100</bordercolorgreen>
-      <bordercolorblue>100</bordercolorblue>
-      <drawshadow>Y</drawshadow>
-    </notepad>
-    <notepad>
       <note>Example of reading nested JSON data.</note>
       <xloc>65</xloc>
       <yloc>24</yloc>
