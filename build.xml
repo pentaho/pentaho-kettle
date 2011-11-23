@@ -234,6 +234,7 @@
 		    	   target="5"
 		    	   source="5"
 		           deprecation="true"
+		    	   encoding="${compile-encoding}"
 		    	   debug="true"
 	        	   includeantruntime="false"
 		    	>
@@ -1343,6 +1344,7 @@
 			    	   source="5"
 			           deprecation="true"
 			    	   debug="${debug}"
+			    	   encoding="${compile-encoding}"
 			    	   memorymaximumsize="256M"
 			    	   fork="true"
 		        	   includeantruntime="false"
@@ -1440,6 +1442,7 @@
 			    	   source="5"
 			           deprecation="true"
 			    	   debug="${debug}"
+			    	   encoding="${compile-encoding}"
 			    	   memorymaximumsize="256M"
 			    	   fork="true"
 		        	   includeantruntime="false"
