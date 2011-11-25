@@ -333,7 +333,7 @@ public class CassandraOutputData extends BaseStepData implements
           before = comment.substring(0, comment.indexOf("@@@"));
           after = comment.substring(comment.lastIndexOf("@@@") + 3, comment.length());
           meta = comment.substring(comment.indexOf("@@@", comment.lastIndexOf("@@@")));
-          meta.replace("@@@", "");
+          meta = meta.replace("@@@", "");
         }
       }
       
