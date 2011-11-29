@@ -258,6 +258,9 @@ public class ConstantTest extends TestCase
         int    intDummies1[]  = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         		                  0, 0, 0, 0, 0, 0, 0, 0};
         
+        boolean    setEmptystring[]  = { false, false, false, false, false, false, false, false, false, false,
+        		false, false, false, false, false, false, false, false};
+        
         
         cnst1.setFieldName(fieldName1);
         cnst1.setFieldType(type1);
@@ -268,6 +271,7 @@ public class ConstantTest extends TestCase
         cnst1.setGroup(group1);
         cnst1.setDecimal(decimal1);
         cnst1.setCurrency(currency);
+        cnst1.setEmptyString(setEmptystring);
 
         String addSeqPid1 = registry.getPluginId(StepPluginType.class, cnst1);
         StepMeta addSeqStep1 = new StepMeta(addSeqPid1, constStepname1, (StepMetaInterface)cnst1);

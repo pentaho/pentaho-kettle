@@ -165,6 +165,7 @@ public class RowGeneratorTest extends TestCase
         String group[]       = { "", "", ""  };
         String decimal[]     = { "", "", ""  };
         int    intDummies[]  = { -1, -1, -1 };
+        boolean    setEmptystring[]  = { false, false, false};
                 
         rm.setDefault();
         rm.setFieldName(fieldName);
@@ -176,6 +177,7 @@ public class RowGeneratorTest extends TestCase
         rm.setFieldFormat(fieldFormat);
         rm.setGroup(group);
         rm.setDecimal(decimal);
+        rm.setEmptyString(setEmptystring);
 
         // 
         // Create a dummy step
