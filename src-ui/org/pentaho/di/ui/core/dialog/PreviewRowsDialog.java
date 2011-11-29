@@ -379,6 +379,9 @@ public class PreviewRowsDialog {
 
       if (show != null) {
         item.setText(c + 1, show);
+      }else {
+    	  // Set null value
+    	  item.setText(c + 1, "<null>");
       }
     }
 
