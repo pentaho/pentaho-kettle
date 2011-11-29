@@ -44,6 +44,7 @@ public class MappingTest extends TestCase {
     String group[] = { "" }; //$NON-NLS-1$
     String decimal[] = { "" }; //$NON-NLS-1$
     int intDummies[] = { -1, -1, -1 };
+    boolean    setEmptystring[]  = { false, false, false};
 
     rm.setDefault();
     rm.setFieldName(fieldName);
@@ -55,6 +56,7 @@ public class MappingTest extends TestCase {
     rm.setFieldFormat(fieldFormat);
     rm.setGroup(group);
     rm.setDecimal(decimal);
+    rm.setEmptyString(setEmptystring);
 
     return rowGeneratorStep;
   }
