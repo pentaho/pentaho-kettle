@@ -1433,7 +1433,7 @@
 	<step id="MultiwayMergeJoin">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.MultiwayMergeJoin</description>
 		<classname>org.pentaho.di.trans.steps.multimerge.MultiMergeJoinMeta</classname>
-		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Joins</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.MultiwayMergeJoin</tooltip>
 		<iconfile>ui/images/MJOINS.png</iconfile>
 	</step> 	
@@ -1441,14 +1441,14 @@
 	<step id="SymmetricCryptoTrans">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SymmetricCryptography</description>
 		<classname>org.pentaho.di.trans.steps.symmetriccrypto.symmetriccryptotrans.SymmetricCryptoTransMeta</classname>
-		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Cryptography</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SymmetricCryptography</tooltip>
 		<iconfile>ui/images/SCE.png</iconfile>
 	</step> 	
 	<step id="SecretKeyGenerator">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SecretKeyGenerator</description>
 		<classname>org.pentaho.di.trans.steps.symmetriccrypto.secretkeygenerator.SecretKeyGeneratorMeta</classname>
-		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Cryptography</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SecretKeyGenerator</tooltip>
 		<iconfile>ui/images/SCG.png</iconfile>
 	</step>
