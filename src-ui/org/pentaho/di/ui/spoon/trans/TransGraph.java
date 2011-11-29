@@ -1365,22 +1365,22 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     	if (!forward) {
     		streams.addAll(infoStreams);
     	}
-    	
+    	 
     	if (forward) {
     		if (fromIoMeta.isOutputProducer() && toStep.equals(currentStep)) {
-    			streams.add( new Stream(StreamType.OUTPUT, fromStep, "Main output of step", StreamIcon.OUTPUT, null) ); //$NON-NLS-1$
+    			streams.add( new Stream(StreamType.OUTPUT, fromStep, BaseMessages.getString(PKG, "Spoon.Hop.MainOutputOfStep"), StreamIcon.OUTPUT, null) ); //$NON-NLS-1$
     		}
 
         	if (fromStep.supportsErrorHandling() && toStep.equals(currentStep)) {
-        		streams.add( new Stream(StreamType.ERROR, fromStep, "Error handling of step", StreamIcon.ERROR, null) ); //$NON-NLS-1$
+        		streams.add( new Stream(StreamType.ERROR, fromStep, BaseMessages.getString(PKG, "Spoon.Hop.ErrorHandlingOfStep"), StreamIcon.ERROR, null) ); //$NON-NLS-1$
         	}
     	} else {
 	    	if (toIoMeta.isInputAcceptor() && fromStep.equals(currentStep)) {
-	    		streams.add( new Stream(StreamType.INPUT, toStep, "Main input of step", StreamIcon.INPUT, null) ); //$NON-NLS-1$
+	    		streams.add( new Stream(StreamType.INPUT, toStep, BaseMessages.getString(PKG, "Spoon.Hop.MainInputOfStep"), StreamIcon.INPUT, null) ); //$NON-NLS-1$
 	    	}
 
         	if (fromStep.supportsErrorHandling() && fromStep.equals(currentStep)) {
-        		streams.add( new Stream(StreamType.ERROR, fromStep, "Error handling of step", StreamIcon.ERROR, null) ); //$NON-NLS-1$
+        		streams.add( new Stream(StreamType.ERROR, fromStep, BaseMessages.getString(PKG, "Spoon.Hop.ErrorHandlingOfStep"), StreamIcon.ERROR, null) ); //$NON-NLS-1$
         	}
     	}
     	

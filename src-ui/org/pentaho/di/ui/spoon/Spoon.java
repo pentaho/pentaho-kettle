@@ -280,6 +280,7 @@ import org.pentaho.xul.swt.tab.TabSet;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+
 /**
  * This class handles the main window of the Spoon graphical transformation
  * editor.
@@ -5163,6 +5164,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       }
     }
   }
+
 
   /**
    * Matches if the filter is non-empty
