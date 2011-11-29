@@ -17,6 +17,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -65,7 +66,7 @@ public class DataGrid extends BaseStep implements StepInterface
         	
             data.outputRowMeta = new RowMeta();
             meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
-        	
+
         	// Use these metadata values to convert data...
         	//
         	data.convertMeta = data.outputRowMeta.clone();
@@ -78,11 +79,17 @@ public class DataGrid extends BaseStep implements StepInterface
         List<String> outputLine = meta.getDataLines().get(data.linesWritten);
         
     	for (int i=0;i<data.outputRowMeta.size();i++) {
-    		ValueMetaInterface valueMeta = data.outputRowMeta.getValueMeta(i);
-    		ValueMetaInterface convertMeta = data.convertMeta.getValueMeta(i);
-    		String valueData = outputLine.get(i);
-    		
-    		outputRowData[i] = valueMeta.convertDataFromString(valueData, convertMeta, null, null, 0);
+    		if(meta.isSetEmptyString()[i]) {
+    			// Set empty string
+    			outputRowData[i]= StringUtil.EMPTY_STRING;
+    		}else {
+    		 
+	    		ValueMetaInterface valueMeta = data.outputRowMeta.getValueMeta(i);
+	    		ValueMetaInterface convertMeta = data.convertMeta.getValueMeta(i);
+	    		String valueData = outputLine.get(i);
+	    		
+	    		outputRowData[i] = valueMeta.convertDataFromString(valueData, convertMeta, null, null, 0);
+    		}
     	}
     	
     	putRow(data.outputRowMeta, outputRowData);

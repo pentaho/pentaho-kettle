@@ -164,12 +164,13 @@ public class SetValueConstantDialog extends BaseStepDialog implements StepDialog
 		fdlFields.top  = new FormAttachment(wuseVars, margin);
 		wlFields.setLayoutData(fdlFields);
 		
-		int FieldsCols=3;
+		int FieldsCols=4;
 		final int FieldsRows=input.getFieldName().length;
 		colinf=new ColumnInfo[FieldsCols];
 		colinf[0]=new ColumnInfo(BaseMessages.getString(PKG, "SetValueConstantDialog.Fieldname.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[]{},false);
 		colinf[1]=new ColumnInfo(BaseMessages.getString(PKG, "SetValueConstantDialog.Value.Column"), ColumnInfo.COLUMN_TYPE_TEXT , false);
 		colinf[2]=new ColumnInfo(BaseMessages.getString(PKG, "SetValueConstantDialog.Value.ConversionMask"), ColumnInfo.COLUMN_TYPE_CCOMBO, Const.getDateFormats());
+		colinf[3]=new ColumnInfo(BaseMessages.getString(PKG, "SetValueConstantDialog.Value.SetEmptyString"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString(PKG, "System.Combo.Yes"), BaseMessages.getString(PKG, "System.Combo.No") } );
 		
 		wFields=new TableView(transMeta,shell, 
 				  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -319,6 +320,8 @@ public class SetValueConstantDialog extends BaseStepDialog implements StepDialog
 			if(input.getFieldName()[i]!=null)    ti.setText(1, input.getFieldName()[i]);
 			if(input.getReplaceValue()[i]!=null) ti.setText(2, input.getReplaceValue()[i]);
 			if(input.getReplaceMask()[i]!=null)  ti.setText(3, input.getReplaceMask()[i]);
+			ti.setText(4, input.isSetEmptyString()[i]?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No"));
+			
 		}
 
         wFields.setRowNums();
@@ -348,8 +351,12 @@ public class SetValueConstantDialog extends BaseStepDialog implements StepDialog
 		{
 			TableItem ti = wFields.getNonEmpty(i);
 			input.getFieldName()[i] = ti.getText(1);
-			input.getReplaceValue()[i] = ti.getText(2);
-			input.getReplaceMask()[i] = ti.getText(3);
+			
+			input.isSetEmptyString()[i] = BaseMessages.getString(PKG, "System.Combo.Yes").equalsIgnoreCase(ti.getText(4));
+			
+			input.getReplaceValue()[i] = input.isSetEmptyString()[i]?"":ti.getText(2);
+			input.getReplaceMask()[i] = input.isSetEmptyString()[i]?"":ti.getText(3);
+
 		}
 		
 		dispose();

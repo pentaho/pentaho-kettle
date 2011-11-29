@@ -160,6 +160,8 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
 			new ColumnInfo(BaseMessages.getString(PKG, "DataGridDialog.Currency.Column"),   ColumnInfo.COLUMN_TYPE_TEXT,   false),
 			new ColumnInfo(BaseMessages.getString(PKG, "DataGridDialog.Decimal.Column"),    ColumnInfo.COLUMN_TYPE_TEXT,   false),
 			new ColumnInfo(BaseMessages.getString(PKG, "DataGridDialog.Group.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,   false),
+			new ColumnInfo(BaseMessages.getString(PKG, "DataGridDialog.Value.SetEmptyString"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString(PKG, "System.Combo.Yes"), BaseMessages.getString(PKG, "System.Combo.No") }),
+			
 		};
 		
 		wFields=new TableView(transMeta, wMetaComp, 
@@ -363,6 +365,8 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
 				item.setText(col++, Const.NVL(curr  , ""));
 				item.setText(col++, Const.NVL(decim , ""));
 				item.setText(col++, Const.NVL(group , ""));
+				item.setText(col++, input.isSetEmptyString()[i]?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No"));
+				
 			}
 		}
         
@@ -419,10 +423,13 @@ public class DataGridDialog extends BaseStepDialog implements StepDialogInterfac
 				meta.getFieldLength()[i] = -1;
 			}
 			try {
-				input.getFieldPrecision()[i] = Integer.parseInt(sprec);
+				meta.getFieldPrecision()[i] = Integer.parseInt(sprec);
 			} catch (Exception e) {
 				meta.getFieldPrecision()[i] = -1;
 			}
+			meta.isSetEmptyString()[i] = BaseMessages.getString(PKG, "System.Combo.Yes").equalsIgnoreCase(item.getText(col++));
+		
+			if(meta.isSetEmptyString()[i]) meta.getFieldType()[i]="String";
 		}
 	}
 	

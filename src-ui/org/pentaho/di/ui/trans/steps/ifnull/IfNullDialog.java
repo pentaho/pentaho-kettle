@@ -102,6 +102,11 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface
 	private FormData fdAllFields;
 	private Group wAllFields;
 	
+    private Label        wlSetEmptyStringAll;
+    private Button       wSetEmptyStringAll;
+    private FormData     fdlSetEmptyStringAll, fdSetEmptyStringAll;
+
+	
 	public IfNullDialog(Shell parent, Object in, TransMeta tr, String sname)
 	{
 		super(parent, (BaseStepMeta)in, tr, sname);
@@ -124,6 +129,8 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface
 				input.setChanged();
 			}
 		};
+
+        
 		changed = input.hasChanged();
 		oldlsMod=lsMod;
 		FormLayout formLayout = new FormLayout ();
@@ -190,12 +197,40 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface
 		fdReplaceByValue.right = new FormAttachment(100, 0);
 		wReplaceByValue.setLayoutData(fdReplaceByValue);
 		
+        // SetEmptyStringAll line
+        wlSetEmptyStringAll=new Label(wAllFields, SWT.RIGHT);
+        wlSetEmptyStringAll.setText(BaseMessages.getString(PKG, "IfNullDialog.SetEmptyStringAll.Label"));
+        props.setLook(wlSetEmptyStringAll);
+        fdlSetEmptyStringAll=new FormData();
+        fdlSetEmptyStringAll.left  = new FormAttachment(0, 0);
+        fdlSetEmptyStringAll.top   = new FormAttachment(wReplaceByValue, margin);
+        fdlSetEmptyStringAll.right = new FormAttachment(middle, -margin);
+        wlSetEmptyStringAll.setLayoutData(fdlSetEmptyStringAll);
+        wSetEmptyStringAll=new Button(wAllFields, SWT.CHECK);
+        wSetEmptyStringAll.setToolTipText(BaseMessages.getString(PKG, "IfNullDialog.SetEmptyStringAll.Tooltip"));
+        props.setLook(wSetEmptyStringAll);
+        fdSetEmptyStringAll=new FormData();
+        fdSetEmptyStringAll.left  = new FormAttachment(middle, 0);
+        fdSetEmptyStringAll.top   = new FormAttachment(wReplaceByValue, margin);
+        fdSetEmptyStringAll.right = new FormAttachment(100, 0);
+        wSetEmptyStringAll.setLayoutData(fdSetEmptyStringAll);
+        wSetEmptyStringAll.addSelectionListener(new SelectionAdapter()
+        {
+        
+            public void widgetSelected(SelectionEvent e)
+            {
+                input.setChanged();
+                enableSetEmptyStringAll();
+            }
+        }
+        );   
+		
 	    wlMask=new Label(wAllFields, SWT.RIGHT);
         wlMask.setText(BaseMessages.getString(PKG, "IfNullDialog.Mask.Label"));
         props.setLook(wlMask);
         fdlMask=new FormData();
         fdlMask.left = new FormAttachment(0, 0);
-        fdlMask.top  = new FormAttachment(wReplaceByValue, margin);
+        fdlMask.top  = new FormAttachment(wSetEmptyStringAll, margin);
         fdlMask.right= new FormAttachment(middle, -margin);
         wlMask.setLayoutData(fdlMask);
         wMask=new CCombo(wAllFields, SWT.BORDER | SWT.READ_ONLY);
@@ -205,7 +240,7 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface
         wMask.addModifyListener(lsMod);
         fdMask=new FormData();
         fdMask.left = new FormAttachment(middle, 0);
-        fdMask.top  = new FormAttachment(wReplaceByValue, margin);
+        fdMask.top  = new FormAttachment(wSetEmptyStringAll, margin);
         fdMask.right= new FormAttachment(100, 0);
         wMask.setLayoutData(fdMask);
 	
@@ -266,13 +301,14 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface
 		wlValueTypes.setLayoutData(fdlValueTypes);
 		
 		int ValueTypesRows=input.getFieldName().length;
-		int FieldsCols=3;
+		int FieldsCols=4;
 		
 		ColumnInfo[] colval=new ColumnInfo[FieldsCols];
 		colval[0]=new ColumnInfo(BaseMessages.getString(PKG, "IfNullDialog.ValueType.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMetaInterface.typeCodes);
 		colval[1]=new ColumnInfo(BaseMessages.getString(PKG, "IfNullDialog.Value.Column"), ColumnInfo.COLUMN_TYPE_TEXT , false);
 		colval[2]=new ColumnInfo(BaseMessages.getString(PKG, "IfNullDialog.Value.ConversionMask"), ColumnInfo.COLUMN_TYPE_CCOMBO, Const.getDateFormats());
-		
+		colval[3]= new ColumnInfo(BaseMessages.getString(PKG, "IfNullDialog.Value.SetEmptyString"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString(PKG, "System.Combo.Yes"), BaseMessages.getString(PKG, "System.Combo.No") } );
+			
 		colval[1].setUsingVariables(true);
 		wValueTypes=new TableView(transMeta, shell, 
 				  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -344,6 +380,7 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface
 		setSize();
 		
 		getData();
+		enableSetEmptyStringAll();
 		//setComboValues();
 		activeSelectFields();
 		activeSelectValuesType();
@@ -358,7 +395,7 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface
 	}
 	private void addFields()
 	{
-		int FieldsCols=3;
+		int FieldsCols=4;
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
 		
         // Table with fields
@@ -374,6 +411,8 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface
 		colinf[1]=new ColumnInfo(BaseMessages.getString(PKG, "IfNullDialog.Value.Column"), ColumnInfo.COLUMN_TYPE_TEXT , false);
 		colinf[2]=new ColumnInfo(BaseMessages.getString(PKG, "IfNullDialog.Value.ConversionMask"), ColumnInfo.COLUMN_TYPE_CCOMBO, Const.getDateFormats());
 		colinf[1].setUsingVariables(true);
+		colinf[3]= new ColumnInfo(BaseMessages.getString(PKG, "IfNullDialog.Value.SetEmptyString"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString(PKG, "System.Combo.Yes"), BaseMessages.getString(PKG, "System.Combo.No") } );
+			
 		wFields=new TableView(transMeta, shell, 
 				  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
 				  colinf, 
@@ -425,6 +464,8 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface
 		wReplaceByValue.setEnabled(!wSelectFields.getSelection() && !wSelectValuesType.getSelection());
 		wlMask.setEnabled(!wSelectFields.getSelection() && !wSelectValuesType.getSelection());
 		wMask.setEnabled(!wSelectFields.getSelection() && !wSelectValuesType.getSelection());
+		wlSetEmptyStringAll.setEnabled(!wSelectFields.getSelection() && !wSelectValuesType.getSelection());
+		wSetEmptyStringAll.setEnabled(!wSelectFields.getSelection() && !wSelectValuesType.getSelection());
 	}
 	private void get()
 	{
@@ -486,6 +527,7 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface
 	{
         if (input.getReplaceAllByValue()!= null)  wReplaceByValue.setText(input.getReplaceAllByValue());
         if (input.getReplaceAllMask()!= null)  wMask.setText(input.getReplaceAllMask());
+        wSetEmptyStringAll.setSelection(input.isSetEmptyStringAll());
         
 		wSelectFields.setSelection(input.isSelectFields());
 		wSelectValuesType.setSelection(input.isSelectValuesType());
@@ -499,6 +541,8 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface
 			if(input.getTypeName()[i]!=null) ti.setText(1, input.getTypeName()[i]);
 			if(input.getTypeReplaceValue()[i]!=null) ti.setText(2, input.getTypeReplaceValue()[i]);
 			if(input.getTypeReplaceMask()[i]!=null) ti.setText(3, input.getTypeReplaceMask()[i]);
+			ti.setText(4, input.isSetTypeEmptyString()[i]?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No"));
+			
 		}
 
 		wValueTypes.setRowNums();
@@ -515,6 +559,7 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface
 			if(input.getFieldName()[i]!=null) ti.setText(1, input.getFieldName()[i]);
 			if(input.getReplaceValue()[i]!=null) ti.setText(2, input.getReplaceValue()[i]);
 			if(input.getReplaceMask()[i]!=null) ti.setText(3, input.getReplaceMask()[i]);
+			ti.setText(4, input.isSetEmptyString()[i]?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No"));
 		}
 
         wFields.setRowNums();
@@ -530,14 +575,31 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface
 		input.setChanged(changed);
 		dispose();
 	}
+	private void enableSetEmptyStringAll()
+	{
+		wMask.setText("");
+	}
 	
 	private void ok()
 	{
 		if (Const.isEmpty(wStepname.getText())) return;
 		stepname = wStepname.getText(); // return value
 		
-		input.setReplaceAllByValue(wReplaceByValue.getText());
-		input.setReplaceAllMask(wMask.getText());
+		input.setEmptyStringAll(wSetEmptyStringAll.getSelection());
+		
+		if(wSetEmptyStringAll.getSelection())
+		{
+			input.setReplaceAllByValue("");
+			input.setReplaceAllMask("");
+			
+		}
+		else
+		{
+			input.setReplaceAllByValue(wReplaceByValue.getText());
+			input.setReplaceAllMask(wMask.getText());
+		}
+	
+
 		
 		input.setSelectFields(wSelectFields.getSelection());
 		input.setSelectValuesType(wSelectValuesType.getSelection());
@@ -550,8 +612,18 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface
 		{
 			TableItem ti = wValueTypes.getNonEmpty(i);
 			input.getTypeName()[i] = ti.getText(1);
-			input.getTypeReplaceValue()[i] = ti.getText(2);
-			input.getTypeReplaceMask()[i] = ti.getText(3);
+			input.isSetTypeEmptyString()[i] = BaseMessages.getString(PKG, "System.Combo.Yes").equalsIgnoreCase(ti.getText(4));
+			if(input.isSetTypeEmptyString()[i])
+			{
+				input.getTypeReplaceValue()[i] = "";
+				input.getTypeReplaceMask()[i]="";
+			}
+			else
+			{
+				input.getTypeReplaceValue()[i] = ti.getText(2);
+				input.getTypeReplaceMask()[i] = ti.getText(3);
+			}
+			
 		}
 		
 
@@ -559,8 +631,17 @@ public class IfNullDialog extends BaseStepDialog implements StepDialogInterface
 		{
 			TableItem ti = wFields.getNonEmpty(i);
 			input.getFieldName()[i] = ti.getText(1);
-			input.getReplaceValue()[i] = ti.getText(2);
-			input.getReplaceMask()[i] = ti.getText(3);
+			input.isSetEmptyString()[i] = BaseMessages.getString(PKG, "System.Combo.Yes").equalsIgnoreCase(ti.getText(4));
+			if(input.isSetEmptyString()[i])
+			{
+				input.getReplaceValue()[i] ="";
+				input.getReplaceMask()[i] = "";
+			}
+			else
+			{
+				input.getReplaceValue()[i] = ti.getText(2);
+				input.getReplaceMask()[i] = ti.getText(3);
+			}
 		}
 		dispose();
 	}

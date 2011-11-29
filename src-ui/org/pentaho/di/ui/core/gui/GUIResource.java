@@ -295,7 +295,7 @@ public class GUIResource
     private Map<RGB,Color> colorMap;
 
 	private ManagedFont fontBold;
-
+	
 	/**
 	 * GUIResource also contains the clipboard as it has to be allocated only
 	 * once! I don't want to put it in a separate singleton just for this one
@@ -649,6 +649,7 @@ public class GUIResource
 		if (Const.isOSX()) extraHeigth=3;
 		FontData boldFontData = new FontData( props.getDefaultFont().getName(), props.getDefaultFont().getHeight()+extraHeigth, props.getDefaultFont().getStyle() | SWT.BOLD );
 		fontBold = new ManagedFont(display, boldFontData);
+
 	}
 
 	private void loadCommonImages()
@@ -1350,6 +1351,7 @@ public class GUIResource
 	{
 		return fontBold.getFont();
 	}
+	
 
 	/**
 	 * @return the imageVariable

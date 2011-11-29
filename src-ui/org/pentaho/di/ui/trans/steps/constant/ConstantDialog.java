@@ -119,7 +119,7 @@ public class ConstantDialog extends BaseStepDialog implements StepDialogInterfac
 		fdlFields.top  = new FormAttachment(wStepname, margin);
 		wlFields.setLayoutData(fdlFields);
 		
-		final int FieldsCols=9;
+		final int FieldsCols=10;
 		final int FieldsRows=input.getFieldName().length;
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
@@ -132,7 +132,8 @@ public class ConstantDialog extends BaseStepDialog implements StepDialogInterfac
 		colinf[6]=new ColumnInfo(BaseMessages.getString(PKG, "ConstantDialog.Decimal.Column"),    ColumnInfo.COLUMN_TYPE_TEXT,   false);
 		colinf[7]=new ColumnInfo(BaseMessages.getString(PKG, "ConstantDialog.Group.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,   false);
 		colinf[8]=new ColumnInfo(BaseMessages.getString(PKG, "ConstantDialog.Value.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		
+		colinf[9]=new ColumnInfo(BaseMessages.getString(PKG, "ConstantDialog.Value.SetEmptyString"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString(PKG, "System.Combo.Yes"), BaseMessages.getString(PKG, "System.Combo.No") });
+			
 		wFields=new TableView(transMeta, shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
 						      colinf, 
@@ -202,7 +203,7 @@ public class ConstantDialog extends BaseStepDialog implements StepDialogInterfac
 	public void getData()
 	{
 		int i;
-		logDebug("getting fields info...");
+		if(log.isDebug()) logDebug("getting fields info...");
 
 		for (i=0;i<input.getFieldName().length;i++)
 		{
@@ -214,8 +215,8 @@ public class ConstantDialog extends BaseStepDialog implements StepDialogInterfac
 				
 				String type   = input.getFieldType()[i];
 				String format = input.getFieldFormat()[i];
-        String length = input.getFieldLength()[i]<0?"":(""+input.getFieldLength()[i]);
-        String prec   = input.getFieldPrecision()[i]<0?"":(""+input.getFieldPrecision()[i]);;
+				String length = input.getFieldLength()[i]<0?"":(""+input.getFieldLength()[i]);
+				String prec   = input.getFieldPrecision()[i]<0?"":(""+input.getFieldPrecision()[i]);;
 				String curr   = input.getCurrency()[i];
 				String group  = input.getGroup()[i];
 				String decim  = input.getDecimal()[i];
@@ -229,6 +230,8 @@ public class ConstantDialog extends BaseStepDialog implements StepDialogInterfac
 				item.setText(col++, Const.NVL(decim, ""));
 				item.setText(col++, Const.NVL(group, ""));
 				item.setText(col++, Const.NVL(def, ""));
+				item.setText(col++, input.isSetEmptyString()[i]?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No"));
+				
 			}
 		}
         
@@ -262,14 +265,16 @@ public class ConstantDialog extends BaseStepDialog implements StepDialogInterfac
 		{
 			TableItem item = wFields.getNonEmpty(i);
 			input.getFieldName()[i]   = item.getText(1);
-			input.getFieldType()[i]   = item.getText(2);
+			input.isSetEmptyString()[i] = BaseMessages.getString(PKG, "System.Combo.Yes").equalsIgnoreCase(item.getText(10));
+				
+			input.getFieldType()[i]   = input.isSetEmptyString()[i]?"String":item.getText(2);
 			input.getFieldFormat()[i] = item.getText(3);
 			String slength = item.getText(4);
 			String sprec   = item.getText(5);
 			input.getCurrency()[i] = item.getText(6);
 			input.getDecimal()[i]  = item.getText(7);
 			input.getGroup()[i]    = item.getText(8);
-			input.getValue()[i]        = item.getText(9);
+			input.getValue()[i]        = input.isSetEmptyString()[i]?"":item.getText(9);
 			
 			try { input.getFieldLength()[i]    = Integer.parseInt(slength); } 
 			  catch(Exception e) { input.getFieldLength()[i]    = -1; }

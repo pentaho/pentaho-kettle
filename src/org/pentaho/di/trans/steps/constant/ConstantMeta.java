@@ -59,7 +59,9 @@ public class ConstantMeta extends BaseStepMeta implements StepMetaInterface
 
 	private  int fieldLength[];
 	private  int fieldPrecision[];
-
+    /** Flag : set empty string **/
+    private boolean setEmptyString[];
+    
 	public ConstantMeta()
 	{
 		super(); // allocate BaseStepMeta
@@ -176,6 +178,19 @@ public class ConstantMeta extends BaseStepMeta implements StepMetaInterface
     {
         this.fieldType = fieldType;
     }
+	/**
+	 * @return the setEmptyString
+	 */
+	public boolean[] isSetEmptyString() {
+		return setEmptyString;
+	}
+
+	/**
+	 * @param setEmptyString the setEmptyString to set
+	 */
+	public void setEmptyString(boolean[] setEmptyString) {
+		this.setEmptyString = setEmptyString;
+	}
     
     /**
      * @return Returns the group.
@@ -226,6 +241,7 @@ public class ConstantMeta extends BaseStepMeta implements StepMetaInterface
 		decimal        = new String[nrfields];
 		group          = new String[nrfields];
 		value          = new String[nrfields];
+	    setEmptyString = new boolean[nrfields];
 	}
 	
 	public Object clone()
@@ -245,8 +261,9 @@ public class ConstantMeta extends BaseStepMeta implements StepMetaInterface
 			retval.decimal[i]     = decimal[i];
 			retval.group[i]       = group[i];
 			retval.value[i]       = value[i];
-			fieldLength[i]        = fieldLength[i]; 
-			fieldPrecision[i]     = fieldPrecision[i]; 
+			retval.fieldLength[i]        = fieldLength[i]; 
+			retval.fieldPrecision[i]     = fieldPrecision[i]; 
+		    retval.setEmptyString[i]=setEmptyString[i];
 		}
 		
 		return retval;
@@ -280,6 +297,8 @@ public class ConstantMeta extends BaseStepMeta implements StepMetaInterface
 				
 				fieldLength[i]    = Const.toInt(slength, -1);
 				fieldPrecision[i] = Const.toInt(sprecision, -1);
+			    String emptyString = XMLHandler.getTagValue(fnode, "set_empty_string");
+	            setEmptyString[i] = !Const.isEmpty(emptyString) && "Y".equalsIgnoreCase(emptyString);
 			}
         }
 		catch(Exception e)
@@ -307,6 +326,7 @@ public class ConstantMeta extends BaseStepMeta implements StepMetaInterface
 			decimal[i]        = new String(new char[] { decimalFormat.getDecimalFormatSymbols().getDecimalSeparator() } );
 			group[i]          = new String(new char[] { decimalFormat.getDecimalFormatSymbols().getGroupingSeparator() } );
 			value[i]          = "-";
+		    setEmptyString[i] = false;
 		}
 
 	}
@@ -347,6 +367,7 @@ public class ConstantMeta extends BaseStepMeta implements StepMetaInterface
 				retval.append("        ").append(XMLHandler.addTagValue("nullif",    value[i]));
 				retval.append("        ").append(XMLHandler.addTagValue("length",    fieldLength[i]));
 				retval.append("        ").append(XMLHandler.addTagValue("precision", fieldPrecision[i]));
+			    retval.append("        ").append(XMLHandler.addTagValue("set_empty_string", setEmptyString[i]));
 				retval.append("      </field>").append(Const.CR);
 			}
 		}
@@ -376,6 +397,7 @@ public class ConstantMeta extends BaseStepMeta implements StepMetaInterface
 				value[i]          =       rep.getStepAttributeString (id_step, i, "field_nullif");
 				fieldLength[i]    =  (int)rep.getStepAttributeInteger(id_step, i, "field_length");
 				fieldPrecision[i] =  (int)rep.getStepAttributeInteger(id_step, i, "field_precision");
+	            setEmptyString[i] = rep.getStepAttributeBoolean(id_step, i, "set_empty_string", false);
 			}
 		}
 		catch(Exception e)
@@ -402,6 +424,7 @@ public class ConstantMeta extends BaseStepMeta implements StepMetaInterface
 					rep.saveStepAttribute(id_transformation, id_step, i, "field_nullif",    value[i]);
 					rep.saveStepAttribute(id_transformation, id_step, i, "field_length",    fieldLength[i]);
 					rep.saveStepAttribute(id_transformation, id_step, i, "field_precision", fieldPrecision[i]);
+				    rep.saveStepAttribute(id_transformation, id_step, i, "set_empty_string", setEmptyString[i]);
 				}
 			}
 		}

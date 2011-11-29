@@ -51,6 +51,8 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface
 
 	private  int fieldLength[];
 	private  int fieldPrecision[];
+    /** Flag : set empty string **/
+    private boolean setEmptyString[];
 	
 	private  List<List<String>> dataLines;
 
@@ -58,7 +60,19 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		super(); // allocate BaseStepMeta
 	}
-	
+	/**
+	 * @return the setEmptyString
+	 */
+	public boolean[] isSetEmptyString() {
+		return setEmptyString;
+	}
+
+	/**
+	 * @param setEmptyString the setEmptyString to set
+	 */
+	public void setEmptyString(boolean[] setEmptyString) {
+		this.setEmptyString = setEmptyString;
+	}
     /**
      * @return Returns the currency.
      */
@@ -209,6 +223,7 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface
 		currency       = new String[nrfields];
 		decimal        = new String[nrfields];
 		group          = new String[nrfields];
+	    setEmptyString = new boolean[nrfields];
 	}
 	
 	public Object clone()
@@ -227,8 +242,9 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface
 			retval.currency[i]    = currency[i];
 			retval.decimal[i]     = decimal[i];
 			retval.group[i]       = group[i];
-			fieldLength[i]        = fieldLength[i]; 
-			fieldPrecision[i]     = fieldPrecision[i]; 
+			retval.fieldLength[i]        = fieldLength[i]; 
+			retval.fieldPrecision[i]     = fieldPrecision[i]; 
+		    retval.setEmptyString[i]=setEmptyString[i];
 		}
 		
 		retval.setDataLines(new ArrayList<List<String>>());
@@ -268,6 +284,8 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface
 				
 				fieldLength[i]    = Const.toInt(slength, -1);
 				fieldPrecision[i] = Const.toInt(sprecision, -1);
+			    String emptyString = XMLHandler.getTagValue(fnode, "set_empty_string");
+	            setEmptyString[i] = !Const.isEmpty(emptyString) && "Y".equalsIgnoreCase(emptyString);
 			}
 			
 			Node datanode = XMLHandler.getSubNode(stepnode, "data");
@@ -323,6 +341,7 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface
 			currency[i]       = decimalFormat.getDecimalFormatSymbols().getCurrencySymbol();
 			decimal[i]        = new String(new char[] { decimalFormat.getDecimalFormatSymbols().getDecimalSeparator() } );
 			group[i]          = new String(new char[] { decimalFormat.getDecimalFormatSymbols().getGroupingSeparator() } );
+		    setEmptyString[i] = false;
 		}
 
 		dataLines = new ArrayList<List<String>>();
@@ -366,6 +385,7 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface
 				retval.append("        ").append(XMLHandler.addTagValue("group",     group[i]));
 				retval.append("        ").append(XMLHandler.addTagValue("length",    fieldLength[i]));
 				retval.append("        ").append(XMLHandler.addTagValue("precision", fieldPrecision[i]));
+			    retval.append("        ").append(XMLHandler.addTagValue("set_empty_string", setEmptyString[i]));
 				retval.append("      </field>").append(Const.CR);
 			}
 		}
@@ -403,6 +423,7 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface
 				group[i]          =       rep.getStepAttributeString (idStep, i, "field_group");
 				fieldLength[i]    =  (int)rep.getStepAttributeInteger(idStep, i, "field_length");
 				fieldPrecision[i] =  (int)rep.getStepAttributeInteger(idStep, i, "field_precision");
+			    setEmptyString[i] = rep.getStepAttributeBoolean(idStep, i, "set_empty_string", false);
 			}
 			
 			int nrLines = (int) rep.getStepAttributeInteger(idStep, "nr_lines");
@@ -440,6 +461,7 @@ public class DataGridMeta extends BaseStepMeta implements StepMetaInterface
 					rep.saveStepAttribute(idTransformation, idStep, i, "field_group",     group[i]);
 					rep.saveStepAttribute(idTransformation, idStep, i, "field_length",    fieldLength[i]);
 					rep.saveStepAttribute(idTransformation, idStep, i, "field_precision", fieldPrecision[i]);
+				    rep.saveStepAttribute(idTransformation, idStep, i, "set_empty_string", setEmptyString[i]);
 				}
 			}
 

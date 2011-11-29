@@ -25,6 +25,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -33,6 +34,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+
 
 /**
  * Generates a number of (empty or the same) rows
@@ -76,62 +78,73 @@ public class RowGenerator extends BaseStep implements StepInterface
                 ValueMetaInterface stringMeta = valueMeta.clone();
                 stringMeta.setType(ValueMetaInterface.TYPE_STRING);
                 
-                String stringValue = meta.getValue()[i];
                 
-                // If the value is empty: consider it to be NULL.
-                if (Const.isEmpty(stringValue))
+                if(meta.isSetEmptyString()[i])
                 {
-                    rowData[i]=null;
-                    
-                    if ( valueMeta.getType() == ValueMetaInterface.TYPE_NONE )
-                    {
-                        String message = BaseMessages.getString(PKG, "RowGenerator.CheckResult.SpecifyTypeError", valueMeta.getName(), stringValue);
-                        remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, message, null));                    
-                    }
+                	//Set empty string
+                	rowData[i]= StringUtil.EMPTY_STRING;
                 }
                 else
                 {
-                	// Convert the data from String to the specified type ...
-                	//
-                	try {
-                		rowData[i]=valueMeta.convertData(stringMeta, stringValue);
-                	}
-                	catch(KettleValueException e) {
-                		switch(valueMeta.getType()) {
-                		case ValueMetaInterface.TYPE_NUMBER:
-	                		{
-	                            String message = BaseMessages.getString(PKG, "RowGenerator.BuildRow.Error.Parsing.Number", valueMeta.getName(), stringValue, e.toString() );
-	                            remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, message, null));
+                    String stringValue = meta.getValue()[i];
+                    
+	                // If the value is empty: consider it to be NULL.
+	                if (Const.isEmpty(stringValue))
+	                {
+	                    rowData[i]=null;
+	                    
+	                    if ( valueMeta.getType() == ValueMetaInterface.TYPE_NONE )
+	                    {
+	                        String message = BaseMessages.getString(PKG, "RowGenerator.CheckResult.SpecifyTypeError", valueMeta.getName(), stringValue);
+	                        remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, message, null));                    
+	                    }
+	                }
+	                else
+	                {
+	                	// Convert the data from String to the specified type ...
+	                	//
+	                	try {
+	                		rowData[i]=valueMeta.convertData(stringMeta, stringValue);
+	                	}
+	                	catch(KettleValueException e) {
+	                		switch(valueMeta.getType()) {
+	                		case ValueMetaInterface.TYPE_NUMBER:
+		                		{
+		                            String message = BaseMessages.getString(PKG, "RowGenerator.BuildRow.Error.Parsing.Number", valueMeta.getName(), stringValue, e.toString() );
+		                            remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, message, null));
+		                		}
+	                            break;
+	                		case ValueMetaInterface.TYPE_DATE:
+		                		{
+		                            String message = BaseMessages.getString(PKG, "RowGenerator.BuildRow.Error.Parsing.Date", valueMeta.getName(), stringValue, e.toString() );
+		                            remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, message, null));
+		                		}
+	                            break;
+	                		case ValueMetaInterface.TYPE_INTEGER:
+		                		{
+		                            String message = BaseMessages.getString(PKG, "RowGenerator.BuildRow.Error.Parsing.Integer", valueMeta.getName(), stringValue, e.toString() );
+		                            remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, message, null));
+		                		}
+		                		break;
+	                        case ValueMetaInterface.TYPE_BIGNUMBER:
+		                        {
+		                            String message = BaseMessages.getString(PKG, "RowGenerator.BuildRow.Error.Parsing.BigNumber", valueMeta.getName(), stringValue, e.toString() );
+		                            remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, message, null));
+		                        }
+		                        break;
+	                        default:
+	                        	// Boolean and binary don't throw errors normally, so it's probably an unspecified error problem...
+		                        {
+		                            String message = BaseMessages.getString(PKG, "RowGenerator.CheckResult.SpecifyTypeError", valueMeta.getName(), stringValue);
+		                            remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, message, null));
+		                        }
+	                        	break;
 	                		}
-                            break;
-                		case ValueMetaInterface.TYPE_DATE:
-	                		{
-	                            String message = BaseMessages.getString(PKG, "RowGenerator.BuildRow.Error.Parsing.Date", valueMeta.getName(), stringValue, e.toString() );
-	                            remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, message, null));
-	                		}
-                            break;
-                		case ValueMetaInterface.TYPE_INTEGER:
-	                		{
-	                            String message = BaseMessages.getString(PKG, "RowGenerator.BuildRow.Error.Parsing.Integer", valueMeta.getName(), stringValue, e.toString() );
-	                            remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, message, null));
-	                		}
-	                		break;
-                        case ValueMetaInterface.TYPE_BIGNUMBER:
-	                        {
-	                            String message = BaseMessages.getString(PKG, "RowGenerator.BuildRow.Error.Parsing.BigNumber", valueMeta.getName(), stringValue, e.toString() );
-	                            remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, message, null));
-	                        }
-	                        break;
-                        default:
-                        	// Boolean and binary don't throw errors normally, so it's probably an unspecified error problem...
-	                        {
-	                            String message = BaseMessages.getString(PKG, "RowGenerator.CheckResult.SpecifyTypeError", valueMeta.getName(), stringValue);
-	                            remarks.add(new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, message, null));
-	                        }
-                        	break;
-                		}
-                	}
+	                	}
+	                }
                 }
+                
+                
                 // Now add value to the row!
                 // This is in fact a copy from the fields row, but now with data.
                 rowMeta.addValueMeta(valueMeta); 

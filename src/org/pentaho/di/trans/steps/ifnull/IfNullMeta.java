@@ -59,6 +59,13 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface
     
     private String replaceMask[];
     
+    /** Flag : set empty string for type  **/
+    private boolean setTypeEmptyString[];
+    
+    /** Flag : set empty string **/
+    private boolean setEmptyString[];
+    
+    
     
     private boolean selectFields;
     
@@ -68,18 +75,63 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface
     
     private String replaceAllMask;
     
+
+    /** The flag to set auto commit on or off on the connection */
+    private boolean  setEmptyStringAll;
+
+    
 	public IfNullMeta()
 	{
 		super(); // allocate BaseStepMeta
 	}
 
+    /**
+     * @return Returns the setEmptyStringAll.
+     */
+    public boolean isSetEmptyStringAll()
+    {
+        return setEmptyStringAll;
+    }
 
+    /**
+     * @param setEmptyStringAll The setEmptyStringAll to set.
+     */
+    public void setEmptyStringAll(boolean setEmptyStringAll)
+    {
+        this.setEmptyStringAll = setEmptyStringAll;
+    }
 	
     public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters) throws KettleXMLException
     {
         readData(stepnode, databases);
     }
+	/**
+	 * @return the setEmptyString
+	 */
+	public boolean[] isSetEmptyString() {
+		return setEmptyString;
+	}
 
+	/**
+	 * @param setEmptyString the setEmptyString to set
+	 */
+	public void setEmptyString(boolean[] setEmptyString) {
+		this.setEmptyString = setEmptyString;
+	}
+	
+	/**
+	 * @return the setTypeEmptyString
+	 */
+	public boolean[] isSetTypeEmptyString() {
+		return setTypeEmptyString;
+	}
+
+	/**
+	 * @param setTypeEmptyString the setTypeEmptyString to set
+	 */
+	public void setTypeEmptyString(boolean[] setTypeEmptyString) {
+		this.setTypeEmptyString = setTypeEmptyString;
+	}
 	public Object clone()
 	{	
         IfNullMeta retval = (IfNullMeta) super.clone();
@@ -93,6 +145,7 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface
             retval.typeName[i] = typeName[i];
             retval.typereplaceValue[i] = typereplaceValue[i];
             retval.typereplaceMask[i]= typereplaceMask[i];
+		    retval.setTypeEmptyString[i]=setTypeEmptyString[i];
         }
         
         for (int i = 0; i < nrfields; i++)
@@ -100,6 +153,7 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface
             retval.fieldName[i] = fieldName[i];
             retval.replaceValue[i] = replaceValue[i];
             retval.replaceMask[i]=replaceMask[i];
+            retval.setEmptyString[i]=setEmptyString[i];
         }
 
         
@@ -110,10 +164,12 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface
         typeName = new String[nrtypes]; 
         typereplaceValue = new String[nrtypes]; 
         typereplaceMask = new String[nrtypes];
-       
+        setTypeEmptyString = new boolean[nrfields];
+        
         fieldName = new String[nrfields]; 
         replaceValue = new String[nrfields]; 
-        replaceMask = new String[nrfields];  
+        replaceMask = new String[nrfields]; 
+        setEmptyString = new boolean[nrfields];
     }
    
  
@@ -250,7 +306,7 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface
 		  selectValuesType = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "selectValuesType"));
 		  replaceAllByValue = XMLHandler.getTagValue(stepnode, "replaceAllByValue");
 		  replaceAllMask = XMLHandler.getTagValue(stepnode, "replaceAllMask");
-		  
+		  setEmptyStringAll = !"N".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "setEmptyStringAll"));
 		  
 		  Node types = XMLHandler.getSubNode(stepnode, "valuetypes");
           int nrtypes = XMLHandler.countNodes(types, "valuetype");
@@ -264,7 +320,9 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface
               Node tnode = XMLHandler.getSubNodeByNr(types, "valuetype", i);
               typeName[i] = XMLHandler.getTagValue(tnode, "name");
               typereplaceValue[i] = XMLHandler.getTagValue(tnode, "value");
-              typereplaceMask[i] = XMLHandler.getTagValue(tnode, "mask");    
+              typereplaceMask[i] = XMLHandler.getTagValue(tnode, "mask");  
+              String typeemptyString = XMLHandler.getTagValue(tnode, "set_type_empty_string");
+	          setTypeEmptyString[i] = Const.isEmpty(typeemptyString) || "Y".equalsIgnoreCase(typeemptyString);
           }
           for (int i = 0; i < nrfields; i++)
           {
@@ -272,6 +330,8 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface
               fieldName[i] = XMLHandler.getTagValue(fnode, "name");
               replaceValue[i] = XMLHandler.getTagValue(fnode, "value");
               replaceMask[i] = XMLHandler.getTagValue(fnode, "mask");
+              String emptyString = XMLHandler.getTagValue(fnode, "set_empty_string");
+	          setEmptyString[i] = !Const.isEmpty(emptyString) && "Y".equalsIgnoreCase(emptyString);
           }  
 	    }
       catch (Exception e)
@@ -287,6 +347,7 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("      " + XMLHandler.addTagValue("replaceAllMask", replaceAllMask));
         retval.append("      " + XMLHandler.addTagValue("selectFields", selectFields));
         retval.append("      " + XMLHandler.addTagValue("selectValuesType", selectValuesType));
+        retval.append("      " + XMLHandler.addTagValue("setEmptyStringAll", setEmptyStringAll));
         
         retval.append("    <valuetypes>" + Const.CR);
         for (int i = 0; i < typeName.length; i++)
@@ -295,6 +356,7 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface
             retval.append("        " + XMLHandler.addTagValue("name", typeName[i]));
             retval.append("        " + XMLHandler.addTagValue("value", typereplaceValue[i]));
             retval.append("        " + XMLHandler.addTagValue("mask", typereplaceMask[i]));
+            retval.append("        " + XMLHandler.addTagValue("set_type_empty_string", setTypeEmptyString[i]));
             retval.append("        </valuetype>" + Const.CR);
         }
         retval.append("      </valuetypes>" + Const.CR);
@@ -307,6 +369,7 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface
             retval.append("        " + XMLHandler.addTagValue("name", fieldName[i]));
             retval.append("        " + XMLHandler.addTagValue("value", replaceValue[i]));
             retval.append("        " + XMLHandler.addTagValue("mask", replaceMask[i]));
+            retval.append("        " + XMLHandler.addTagValue("set_empty_string", setEmptyString[i]));
             retval.append("        </field>" + Const.CR);
         }
         retval.append("      </fields>" + Const.CR);
@@ -319,6 +382,7 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface
 		replaceAllMask=null;
 		selectFields=false;
 		selectValuesType=false;
+		setEmptyStringAll=false;
 		
 		int nrfields = 0;
 		int nrtypes = 0;
@@ -328,12 +392,14 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface
             typeName[i] = "typename" + i;
             typereplaceValue[i] = "typevalue" + i;
             typereplaceMask[i] = "typemask" + i;
+            setTypeEmptyString[i] = false;
         }
         for (int i = 0; i < nrfields; i++)
         {
             fieldName[i] = "field" + i;
             replaceValue[i] = "value" + i;
             replaceMask[i] = "mask" + i;
+            setEmptyString[i] = false;
         }
 	}
 
@@ -345,7 +411,8 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface
 	        	replaceAllMask = rep.getStepAttributeString(id_step, "replaceAllMask");
 	        	selectFields = rep.getStepAttributeBoolean(id_step, "selectFields");
 	        	selectValuesType = rep.getStepAttributeBoolean(id_step, "selectValuesType");
-	        	
+	        	setEmptyStringAll = rep.getStepAttributeBoolean(id_step, 0, "setEmptyStringAll", false);
+	        	  
 	            int nrtypes = rep.countNrStepAttributes(id_step, "type_name");
 	            int nrfields = rep.countNrStepAttributes(id_step, "field_name");
 	            allocate(nrtypes,nrfields);
@@ -355,6 +422,7 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface
 	                typeName[i] = rep.getStepAttributeString(id_step, i, "type_name");
 	                typereplaceValue[i] = rep.getStepAttributeString(id_step, i, "type_replace_value");
 	                typereplaceMask[i]= rep.getStepAttributeString(id_step, i, "type_replace_mask");
+	                setTypeEmptyString[i] = rep.getStepAttributeBoolean(id_step, i, "set_type_empty_string", false);
 	            }
 	            
 	            for (int i = 0; i < nrfields; i++)
@@ -362,6 +430,7 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface
 	                fieldName[i] = rep.getStepAttributeString(id_step, i, "field_name");
 	                replaceValue[i] = rep.getStepAttributeString(id_step, i, "replace_value");
 	                replaceMask[i] = rep.getStepAttributeString(id_step, i, "replace_mask");
+	                setEmptyString[i] = rep.getStepAttributeBoolean(id_step, i, "set_empty_string", false);
 	            }
 	        }
 	        catch (Exception e)
@@ -378,12 +447,14 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface
 	        	rep.saveStepAttribute(id_transformation, id_step, "replaceAllMask", replaceAllMask);
 	        	rep.saveStepAttribute(id_transformation, id_step, "selectFields", selectFields);
 	        	rep.saveStepAttribute(id_transformation, id_step, "selectValuesType", selectValuesType);
-	        	
+	        	rep.saveStepAttribute(id_transformation, id_step, "setEmptyStringAll", setEmptyStringAll); //$NON-NLS-1$
+	        	   
 	            for (int i = 0; i < typeName.length; i++)
 	            {
 	                rep.saveStepAttribute(id_transformation, id_step, i, "type_name", typeName[i]);
 	                rep.saveStepAttribute(id_transformation, id_step, i, "type_replace_value", typereplaceValue[i]);
 	                rep.saveStepAttribute(id_transformation, id_step, i, "type_replace_mask", typereplaceMask[i]);
+	        	    rep.saveStepAttribute(id_transformation, id_step, i, "set_type_empty_string", setTypeEmptyString[i]);
 	            }
 	            
 	            for (int i = 0; i < fieldName.length; i++)
@@ -391,6 +462,7 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface
 	                rep.saveStepAttribute(id_transformation, id_step, i, "field_name", fieldName[i]);
 	                rep.saveStepAttribute(id_transformation, id_step, i, "replace_value", replaceValue[i]);
 	                rep.saveStepAttribute(id_transformation, id_step, i, "replace_mask", replaceMask[i]);
+	        	    rep.saveStepAttribute(id_transformation, id_step, i, "set_empty_string", setEmptyString[i]);
 	            }
 	        }
 	        catch (Exception e)

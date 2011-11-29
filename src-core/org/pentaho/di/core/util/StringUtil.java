@@ -54,6 +54,8 @@ public class StringUtil
 
     public static final String INDENTCHARS = "                    "; //$NON-NLS-1$
     
+    public static final String EMPTY_STRING ="";
+    
     public static final String[] SYSTEM_PROPERTIES = new String[] {
     	 "java.version",
     	 "java.vendor",

@@ -379,9 +379,11 @@ public class PreviewRowsDialog {
 
       if (show != null) {
         item.setText(c + 1, show);
+  	  	item.setForeground(c + 1, GUIResource.getInstance().getColorBlack());
       }else {
     	  // Set null value
     	  item.setText(c + 1, "<null>");
+    	  item.setForeground(c + 1, GUIResource.getInstance().getColorBlue());
       }
     }
 

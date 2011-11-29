@@ -36,9 +36,13 @@ public class IfNullData extends BaseStepData implements StepDataInterface
 	public int     fieldnr;
 	public String realReplaceByValue;
 	public String realconversionMask;
+	public boolean realSetEmptyString;
+	
+	
 	public HashMap<String, Integer> ListTypes;
 	public String defaultValues[];
 	public String defaultMasks[];
+	public boolean setEmptyString[];
 	
 	public IfNullData()
 	{

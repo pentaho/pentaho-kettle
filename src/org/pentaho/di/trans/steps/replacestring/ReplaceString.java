@@ -20,6 +20,7 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -89,6 +90,12 @@ public class ReplaceString extends BaseStep implements StepInterface {
 
     private String getResolvedReplaceByString(int index, Object[] row)  throws KettleException {
     	
+    	
+    	if(data.setEmptyString[index]) {
+    		// return empty string rather than null value
+    		return StringUtil.EMPTY_STRING;
+    	}
+    	
     	//if there is something in the original replaceByString, then use it.
     	if (data.replaceFieldIndex[index] == -1) {
     		return data.replaceByString[index];
@@ -141,6 +148,7 @@ public class ReplaceString extends BaseStep implements StepInterface {
             data.outStreamNrs = new String[data.numFields];
             data.patterns = new Pattern[data.numFields];
             data.replaceByString = new String[data.numFields];
+            data.setEmptyString = new boolean[data.numFields];
             data.replaceFieldIndex = new int[data.numFields];
             
             for (int i = 0; i < data.numFields; i++) {
@@ -169,6 +177,7 @@ public class ReplaceString extends BaseStep implements StepInterface {
                 	data.replaceFieldIndex[i]=-1;
                 	data.replaceByString[i] = environmentSubstitute(meta.getReplaceByString()[i]);
                 }
+                data.setEmptyString[i]=meta.isSetEmptyString()[i];
 
             }
         } // end if first

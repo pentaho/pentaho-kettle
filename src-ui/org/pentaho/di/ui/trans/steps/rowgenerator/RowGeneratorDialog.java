@@ -162,6 +162,8 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
 		 new ColumnInfo(BaseMessages.getString(PKG, "System.Column.Decimal"),    ColumnInfo.COLUMN_TYPE_TEXT,   false),
 		 new ColumnInfo(BaseMessages.getString(PKG, "System.Column.Group"),      ColumnInfo.COLUMN_TYPE_TEXT,   false),
 		 new ColumnInfo(BaseMessages.getString(PKG, "System.Column.Value"),      ColumnInfo.COLUMN_TYPE_TEXT,   false),
+		 new ColumnInfo(BaseMessages.getString(PKG, "System.Column.SetEmptyString"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { BaseMessages.getString(PKG, "System.Combo.Yes"), BaseMessages.getString(PKG, "System.Combo.No") } )
+			
 		};
 		
 		wFields=new TableView(transMeta, shell, 
@@ -265,6 +267,8 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
 				item.setText(col++, Const.NVL(decim, ""));
 				item.setText(col++, Const.NVL(group, ""));
 				item.setText(col++, Const.NVL(def, ""));
+				item.setText(col++, input.isSetEmptyString()[i]?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No"));
+				
 			}
 		}
         
@@ -311,15 +315,17 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
             TableItem item = wFields.getNonEmpty(i);
             
             meta.getFieldName()[i]   = item.getText(1);
-            meta.getFieldType()[i]   = item.getText(2);
+    
             meta.getFieldFormat()[i] = item.getText(3);
             String slength           = item.getText(4);
             String sprec             = item.getText(5);
             meta.getCurrency()[i]    = item.getText(6);
             meta.getDecimal()[i]     = item.getText(7);
             meta.getGroup()[i]       = item.getText(8);
-            meta.getValue()[i]       = item.getText(9);
-            
+            meta.isSetEmptyString()[i] = BaseMessages.getString(PKG, "System.Combo.Yes").equalsIgnoreCase(item.getText(10));
+			
+            meta.getValue()[i]       = meta.isSetEmptyString()[i]?"":item.getText(9);
+            meta.getFieldType()[i]   = meta.isSetEmptyString()[i]?"String": item.getText(2);
             meta.getFieldLength()[i]    = Const.toInt( slength, -1);
             meta.getFieldPrecision()[i] = Const.toInt( sprec  , -1);
         }

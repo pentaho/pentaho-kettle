@@ -35,6 +35,8 @@ public class ReplaceStringData extends BaseStepData implements StepDataInterface
 	
 	public String replaceByString[];
 	
+	public boolean setEmptyString[];
+	
 	public int replaceFieldIndex[];
 	
 	public int wholeWord[];

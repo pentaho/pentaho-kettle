@@ -15,6 +15,7 @@ package org.pentaho.di.trans.steps.setvalueconstant;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -97,10 +98,19 @@ public class SetValueConstant extends BaseStep implements StepInterface
 						throw new KettleException(BaseMessages.getString(PKG, "SetValueConstant.Log.CanNotFindField",meta.getFieldName()[i]));
 					}
 					
-					if(meta.isUseVars())
-						data.realReplaceByvalues[i]=environmentSubstitute(meta.getReplaceValue()[i]);
+					if(meta.isSetEmptyString()[i]) 
+					{
+						// Just set empty string
+						data.realReplaceByvalues[i]= StringUtil.EMPTY_STRING;
+					}
 					else
-						data.realReplaceByvalues[i]=meta.getReplaceValue()[i];
+					{
+						// set specified value
+						if(meta.isUseVars())
+							data.realReplaceByvalues[i]=environmentSubstitute(meta.getReplaceValue()[i]);
+						else
+							data.realReplaceByvalues[i]=meta.getReplaceValue()[i];
+					}
 	 			}
 			}else
 				throw new KettleException(BaseMessages.getString(PKG, "SetValueConstant.Log.SelectFieldsEmpty"));

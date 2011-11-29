@@ -20,6 +20,7 @@ import java.util.List;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -86,6 +87,7 @@ public class IfNull extends BaseStep implements StepInterface
 					data.fieldnrs=new int[meta.getFieldName().length];
 					data.defaultValues= new String[meta.getFieldName().length];
 					data.defaultMasks= new String[meta.getFieldName().length];
+					data.setEmptyString= new boolean[meta.getFieldName().length];
 					
 					for (int i=0;i<meta.getFieldName().length;i++)
 					{
@@ -97,6 +99,7 @@ public class IfNull extends BaseStep implements StepInterface
 						}
 						data.defaultValues[i]=environmentSubstitute(meta.getReplaceValue()[i]); 
 						data.defaultMasks[i]=environmentSubstitute(meta.getReplaceMask()[i]); 
+						data.setEmptyString[i]=meta.isSetEmptyString()[i]; 
 		 			}
 				}else
 					throw new KettleException(BaseMessages.getString(PKG, "IfNull.Log.SelectFieldsEmpty"));
@@ -108,7 +111,8 @@ public class IfNull extends BaseStep implements StepInterface
 					// return the real default values
 					data.defaultValues= new String[meta.getTypeName().length];
 					data.defaultMasks= new String[meta.getTypeName().length];
-			
+					data.setEmptyString= new boolean[meta.getTypeName().length];
+					
 					// return all type codes
 					HashSet<String> AlllistTypes = new HashSet<String>();
 					for(int i=0; i<ValueMetaInterface.typeCodes.length;i++){
@@ -123,6 +127,7 @@ public class IfNull extends BaseStep implements StepInterface
 						data.ListTypes.put(meta.getTypeName()[i], i);
 						data.defaultValues[i]=environmentSubstitute(meta.getTypeReplaceValue()[i]); 
 						data.defaultMasks[i]=environmentSubstitute(meta.getTypeReplaceMask()[i]); 
+						data.setEmptyString[i]=meta.isSetTypeEmptyString()[i]; 
 					}
 				
 					HashSet<Integer> fieldsSelectedIndex = new HashSet<Integer>();
@@ -147,6 +152,7 @@ public class IfNull extends BaseStep implements StepInterface
 			{
 				data.realReplaceByValue=environmentSubstitute(meta.getReplaceAllByValue());
 				data.realconversionMask=environmentSubstitute(meta.getReplaceAllMask());
+				data.realSetEmptyString = meta.isSetEmptyStringAll();
 				
 				// Consider all fields in input stream
 				data.fieldnrs=new int[data.outputRowMeta.size()];
@@ -202,16 +208,15 @@ public class IfNull extends BaseStep implements StepInterface
 				 if(meta.isSelectValuesType()){
 					 ValueMetaInterface fieldMeta= data.outputRowMeta.getValueMeta(data.fieldnrs[i]);
 					 int pos=data.ListTypes.get(fieldMeta.getTypeDesc());
-					 data.realReplaceByValue=data.defaultValues[pos];	
-					 data.realconversionMask=data.defaultMasks[pos];
-					 replaceNull(r,sourceValueMeta, data.fieldnrs[i], data.defaultValues[pos], data.defaultMasks[pos]);
+		
+					 replaceNull(r,sourceValueMeta, data.fieldnrs[i], data.defaultValues[pos], data.defaultMasks[pos], data.setEmptyString[pos]);
 				 }else if(meta.isSelectFields()) {
-					 replaceNull(r,sourceValueMeta, data.fieldnrs[i], data.defaultValues[i], data.defaultMasks[i]);
+					 replaceNull(r,sourceValueMeta, data.fieldnrs[i], data.defaultValues[i], data.defaultMasks[i], data.setEmptyString[i]);
 				 }else { // all
 					 if (data.outputRowMeta.getValueMeta(data.fieldnrs[i]).isDate()) {
-						 replaceNull(r,sourceValueMeta, data.fieldnrs[i], data.realReplaceByValue, data.realconversionMask);
+						 replaceNull(r,sourceValueMeta, data.fieldnrs[i], data.realReplaceByValue, data.realconversionMask, false);
 					 } else { // don't use any special date format when not a date
-						 replaceNull(r,sourceValueMeta, data.fieldnrs[i], data.realReplaceByValue, null);
+						 replaceNull(r,sourceValueMeta, data.fieldnrs[i], data.realReplaceByValue, null, data.realSetEmptyString);
 					 }
 				 }
 				 
@@ -219,13 +224,21 @@ public class IfNull extends BaseStep implements StepInterface
 		}
 	}
 		
-	public void replaceNull(Object[] row, ValueMetaInterface sourceValueMeta, int i, String realReplaceByValue, String realconversionMask) throws Exception
+	public void replaceNull(Object[] row, ValueMetaInterface sourceValueMeta, 
+			int i, String realReplaceByValue, String realconversionMask, boolean setEmptystring) throws Exception
 	{
-		// DO CONVERSION OF THE DEFAULT VALUE ...
-		// Entered by user
-		ValueMetaInterface targetValueMeta = data.outputRowMeta.getValueMeta(i);
-		if(!Const.isEmpty(realconversionMask)) sourceValueMeta.setConversionMask(realconversionMask);
-		row[i] = targetValueMeta.convertData(sourceValueMeta, realReplaceByValue);
+		if(setEmptystring)
+		{
+			row[i]= StringUtil.EMPTY_STRING;
+		}
+		else
+		{
+			// DO CONVERSION OF THE DEFAULT VALUE ...
+			// Entered by user
+			ValueMetaInterface targetValueMeta = data.outputRowMeta.getValueMeta(i);
+			if(!Const.isEmpty(realconversionMask)) sourceValueMeta.setConversionMask(realconversionMask);
+			row[i] = targetValueMeta.convertData(sourceValueMeta, realReplaceByValue);
+		}
 	}
 	
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)

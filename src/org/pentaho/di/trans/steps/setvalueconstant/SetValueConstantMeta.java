@@ -51,6 +51,9 @@ public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterf
     
     private String replaceMask[];
     
+    /** Flag : set empty string **/
+    private boolean setEmptyString[];
+    
     private boolean usevar;
     
 	public SetValueConstantMeta()
@@ -76,6 +79,7 @@ public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterf
             retval.fieldName[i] = fieldName[i];
             retval.replaceValue[i] = replaceValue[i];
             retval.replaceMask[i]=replaceMask[i];
+            retval.setEmptyString[i]=setEmptyString[i];
         }
 
         
@@ -85,7 +89,8 @@ public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterf
     {
         fieldName = new String[nrfields]; 
         replaceValue = new String[nrfields]; 
-        replaceMask = new String[nrfields];  
+        replaceMask = new String[nrfields]; 
+        setEmptyString = new boolean[nrfields];
     }
    
  
@@ -134,6 +139,19 @@ public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterf
     {
         this.replaceMask = replaceMask;
     }
+	/**
+	 * @return the setEmptyString
+	 */
+	public boolean[] isSetEmptyString() {
+		return setEmptyString;
+	}
+
+	/**
+	 * @param setEmptyString the setEmptyString to set
+	 */
+	public void setEmptyString(boolean[] setEmptyString) {
+		this.setEmptyString = setEmptyString;
+	}
     public void setUseVars (boolean usevar)
     {
     	this.usevar=usevar;
@@ -157,6 +175,8 @@ public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterf
               fieldName[i] = XMLHandler.getTagValue(fnode, "name");
               replaceValue[i] = XMLHandler.getTagValue(fnode, "value");
               replaceMask[i] = XMLHandler.getTagValue(fnode, "mask");
+              String emptyString = XMLHandler.getTagValue(fnode, "set_empty_string");
+              setEmptyString[i] = !Const.isEmpty(emptyString) && "Y".equalsIgnoreCase(emptyString);
           }  
 	    }
       catch (Exception e)
@@ -175,6 +195,7 @@ public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterf
             retval.append("        " + XMLHandler.addTagValue("name", fieldName[i]));
             retval.append("        " + XMLHandler.addTagValue("value", replaceValue[i]));
             retval.append("        " + XMLHandler.addTagValue("mask", replaceMask[i]));
+            retval.append("        " + XMLHandler.addTagValue("set_empty_string", setEmptyString[i]));
             retval.append("        </field>" + Const.CR);
         }
         retval.append("      </fields>" + Const.CR);
@@ -190,6 +211,7 @@ public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterf
             fieldName[i] = "field" + i;
             replaceValue[i] = "value" + i;
             replaceMask[i] = "mask" + i;
+            setEmptyString[i] = false;
         }
         usevar=false;
 	}
@@ -207,6 +229,7 @@ public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterf
 	                fieldName[i] = rep.getStepAttributeString(id_step, i, "field_name");
 	                replaceValue[i] = rep.getStepAttributeString(id_step, i, "replace_value");
 	                replaceMask[i] = rep.getStepAttributeString(id_step, i, "replace_mask");
+	                setEmptyString[i] = rep.getStepAttributeBoolean(id_step, i, "set_empty_string", false);
 	            }
 	        }
 	        catch (Exception e)
@@ -225,6 +248,7 @@ public class SetValueConstantMeta extends BaseStepMeta implements StepMetaInterf
 	                rep.saveStepAttribute(id_transformation, id_step, i, "field_name", fieldName[i]);
 	                rep.saveStepAttribute(id_transformation, id_step, i, "replace_value", replaceValue[i]);
 	                rep.saveStepAttribute(id_transformation, id_step, i, "replace_mask", replaceMask[i]);
+	                rep.saveStepAttribute(id_transformation, id_step, i, "set_empty_string", setEmptyString[i]);
 	            }
 	        }
 	        catch (Exception e)
