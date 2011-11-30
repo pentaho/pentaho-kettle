@@ -849,17 +849,22 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
                 //
                 if (jobMeta.findJobHop(selectedEntry, hi.getFromEntry()) == null && jobMeta.findJobHop(hi.getToEntry(), selectedEntry) == null) {
               	  
-                  JobHopMeta newhop1 = new JobHopMeta(hi.getFromEntry(), selectedEntry);
-                  if (hi.getFromEntry().getEntry().isUnconditional()) {
-                	  newhop1.setUnconditional();
+                  if (jobMeta.findJobHop(hi.getFromEntry(), selectedEntry, true)==null) {
+                    JobHopMeta newhop1 = new JobHopMeta(hi.getFromEntry(), selectedEntry);
+                    if (hi.getFromEntry().getEntry().isUnconditional()) {
+                  	  newhop1.setUnconditional();
+                    }
+                    jobMeta.addJobHop(newhop1);
+                    spoon.addUndoNew(jobMeta, new JobHopMeta[] { newhop1, }, new int[] { jobMeta.indexOfJobHop(newhop1), }, true);
                   }
-                  jobMeta.addJobHop(newhop1);
-                  JobHopMeta newhop2 = new JobHopMeta(selectedEntry, hi.getToEntry());
-                  if (selectedEntry.getEntry().isUnconditional()) {
-                    newhop2.setUnconditional();
+                  if (jobMeta.findJobHop(selectedEntry, hi.getToEntry(), true)==null) {
+                    JobHopMeta newhop2 = new JobHopMeta(selectedEntry, hi.getToEntry());
+                    if (selectedEntry.getEntry().isUnconditional()) {
+                      newhop2.setUnconditional();
+                    }
+                    jobMeta.addJobHop(newhop2);
+                    spoon.addUndoNew(jobMeta, new JobHopMeta[] { newhop2, }, new int[] { jobMeta.indexOfJobHop(newhop2), }, true);
                   }
-                  jobMeta.addJobHop(newhop2);
-                  spoon.addUndoNew(jobMeta, new JobHopMeta[] { newhop1, newhop2, }, new int[] { jobMeta.indexOfJobHop(newhop1), jobMeta.indexOfJobHop(newhop2), }, true);
                   
                   int idx = jobMeta.indexOfJobHop(hi);
                   spoon.addUndoDelete(jobMeta, new JobHopMeta[] { hi }, new int[] { idx }, true);
