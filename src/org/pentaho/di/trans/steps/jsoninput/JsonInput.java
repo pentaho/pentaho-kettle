@@ -453,7 +453,9 @@ public class JsonInput extends BaseStep implements StepInterface
 			}
 		}// End of loop over fields...	
 		
-		int rowIndex = data.nrInputFields;
+		// When we have an input stream
+		// the row index take care of previous fields
+		int rowIndex = data.totalpreviousfields + data.nrInputFields;
 		
 		// See if we need to add the filename to the row...
 		if ( meta.includeFilename() && !Const.isEmpty(meta.getFilenameField()) ) {
