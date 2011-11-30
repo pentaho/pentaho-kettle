@@ -401,9 +401,10 @@ public class JsonInput extends BaseStep implements StepInterface
 		
 	private Object[] buildRow() throws KettleException {
 		// Create new row...
-		Object[] outputRowData = buildEmptyRow();
+		Object[] outputRowData = null;
 
 		if(data.readrow!=null) outputRowData = data.readrow.clone();
+		else outputRowData = buildEmptyRow();
 
 		// Read fields...
 		for (int i=0;i<data.nrInputFields;i++) {	
@@ -453,7 +454,9 @@ public class JsonInput extends BaseStep implements StepInterface
 			}
 		}// End of loop over fields...	
 		
-		int rowIndex = data.nrInputFields;
+		// When we have an input stream
+		// the row index take care of previous fields
+		int rowIndex = data.totalpreviousfields + data.nrInputFields;
 		
 		// See if we need to add the filename to the row...
 		if ( meta.includeFilename() && !Const.isEmpty(meta.getFilenameField()) ) {
