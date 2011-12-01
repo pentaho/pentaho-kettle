@@ -288,7 +288,7 @@ public class SQLValuesHighlight implements LineStyleListener {
 					"column","decimal","distinct","primary","key","timestamp","varbinary","nvarchar","nchar","longnvarchar",
 					"nclob","numeric", "constraint", "dbcc", "backup", "bit", "clustered","pad_index",
 					"off", "statistics_norecompute", "ignore_dup_key", "allow_row_locks", "allow_page_locks",
-					"textimage_on", "double"
+					"textimage_on", "double", "rollback", "tran", "transaction", "commit"
 			};
 
 		public JavaScanner() {
