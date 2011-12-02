@@ -62,18 +62,19 @@ public class HBaseInputData extends BaseStepData implements StepDataInterface {
    * 
    * @param zookeeperHosts a comma separated list of hosts that zookeeper is
    * running on
+   * @param zookeeperPort an (optional) port that zookeeper is listening on. If not
+   * specified, then the default for zookeeper is used
    * @param coreConfig URL to the hbase-site.xml (may be null)
    * @param defaultConfig URL to the hbase-default.xml (may be null)
    * @return a Configuration object that can be used ot access HBase.
    * @throws IOException if a problem occurs.
    */
   public static Configuration getHBaseConnection(String zookeeperHosts, 
-      URL coreConfig, URL defaultConfig) 
+      String zookeeperPort, URL coreConfig, URL defaultConfig) 
     throws IOException {
     Configuration con = new Configuration();
     
     if (defaultConfig != null) {
-      // TODO - might have to check URL for spaces (need to for URIs)
       con.addResource(defaultConfig);
     } else {
       // hopefully it's in the classpath
@@ -81,7 +82,6 @@ public class HBaseInputData extends BaseStepData implements StepDataInterface {
     }
     
     if (coreConfig != null) {
-      // TODO - might have to check URL for spaces (need to for URIs)
       con.addResource(coreConfig);
     } else {
       // hopefully it's in the classpath
@@ -91,6 +91,15 @@ public class HBaseInputData extends BaseStepData implements StepDataInterface {
     if (!Const.isEmpty(zookeeperHosts)) {
       // override default and site with this
       con.set("hbase.zookeeper.quorum", zookeeperHosts);
+    }
+    
+    if (!Const.isEmpty(zookeeperPort)) {
+      try {
+        int port = Integer.parseInt(zookeeperPort);
+        con.setInt("hbase.zookeeper.property.clientPort", port);
+      } catch (NumberFormatException e) { 
+        System.err.println("Unable to parse zookeeper port!");
+      }
     }
     
     return con;    

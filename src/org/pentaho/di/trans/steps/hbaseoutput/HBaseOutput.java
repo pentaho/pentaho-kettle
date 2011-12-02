@@ -121,6 +121,7 @@ public class HBaseOutput extends BaseStep implements StepInterface {
         logBasic("Connecting to HBase...");
         m_connection = HBaseOutputData.
           getHBaseConnection(m_transMeta.environmentSubstitute(m_meta.getZookeeperHosts()),
+              m_transMeta.environmentSubstitute(m_meta.getZookeeperPort()),
             HBaseOutputData.
               stringToURL(m_transMeta.environmentSubstitute(m_meta.getCoreConfigURL())), 
             HBaseOutputData.

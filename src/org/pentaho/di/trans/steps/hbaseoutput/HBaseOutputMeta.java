@@ -54,6 +54,9 @@ public class HBaseOutputMeta extends BaseStepMeta implements StepMetaInterface {
   /** comma separated list of hosts that the zookeeper quorum is running on */
   protected String m_zookeeperHosts;
   
+  /** the port that zookeeper is listening on - if blank, then the default is used */
+  protected String m_zookeeperPort;
+  
   /** path/url to hbase-site.xml */
   protected String m_coreConfigURL;
   
@@ -78,6 +81,24 @@ public class HBaseOutputMeta extends BaseStepMeta implements StepMetaInterface {
   
   public String getZookeeperHosts() {
     return m_zookeeperHosts;
+  }
+  
+  /**
+   * Set the port that zookeeper is listening on
+   * 
+   * @param port the port
+   */
+  public void setZookeeperPort(String port) {
+    m_zookeeperPort = port;
+  }
+  
+  /**
+   * Get the port that zookeeper is listening on
+   * 
+   * @return the port
+   */
+  public String getZookeeperPort() {
+    return m_zookeeperPort;
   }
   
   public void setCoreConfigURL(String coreConfig) {
@@ -165,6 +186,10 @@ public class HBaseOutputMeta extends BaseStepMeta implements StepMetaInterface {
       retval.append("\n    ").append(XMLHandler.addTagValue("zookeeper_hosts", 
           m_zookeeperHosts));
     }
+    if (!Const.isEmpty(m_zookeeperPort)) {
+      retval.append("\n    ").append(XMLHandler.addTagValue("zookeeper_port", 
+          m_zookeeperPort));
+    }
     if (!Const.isEmpty(m_coreConfigURL)) {
       retval.append("\n    ").append(XMLHandler.addTagValue("core_config_url", 
           m_coreConfigURL));
@@ -203,6 +228,7 @@ public class HBaseOutputMeta extends BaseStepMeta implements StepMetaInterface {
       Map<String, Counter> counters) throws KettleXMLException {
     
     m_zookeeperHosts = XMLHandler.getTagValue(stepnode, "zookeeper_hosts");
+    m_zookeeperPort = XMLHandler.getTagValue(stepnode, "zookeeper_port");
     m_coreConfigURL = XMLHandler.getTagValue(stepnode, "core_config_url");
     m_defaultConfigURL = XMLHandler.getTagValue(stepnode, "default_config_url"); 
     m_targetTableName = XMLHandler.getTagValue(stepnode, "target_table_name");
@@ -216,6 +242,7 @@ public class HBaseOutputMeta extends BaseStepMeta implements StepMetaInterface {
       Map<String, Counter> counters) throws KettleException {
     
     m_zookeeperHosts = rep.getStepAttributeString(id_step, 0, "zookeeper_hosts");
+    m_zookeeperPort = rep.getStepAttributeString(id_step, 0, "zookeeper_port");
     m_coreConfigURL = rep.getStepAttributeString(id_step, 0, "core_config_url");
     m_defaultConfigURL = rep.getStepAttributeString(id_step, 0, "default_config_url");
     m_targetTableName = rep.getStepAttributeString(id_step, 0, "target_table_name");
@@ -229,6 +256,10 @@ public class HBaseOutputMeta extends BaseStepMeta implements StepMetaInterface {
     if (!Const.isEmpty(m_zookeeperHosts)) {
       rep.saveStepAttribute(id_transformation, id_step, "zookeeper_hosts", 
           m_zookeeperHosts);
+    }
+    if (!Const.isEmpty(m_zookeeperPort)) {
+      rep.saveStepAttribute(id_transformation, id_step, "zookeeper_port", 
+          m_zookeeperPort);
     }
     if (!Const.isEmpty(m_coreConfigURL)) {
       rep.saveStepAttribute(id_transformation, id_step, "core_config_url", 

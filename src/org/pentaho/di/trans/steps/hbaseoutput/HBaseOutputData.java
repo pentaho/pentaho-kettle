@@ -46,12 +46,11 @@ public class HBaseOutputData extends BaseStepData implements StepDataInterface {
   }
   
   public static Configuration getHBaseConnection(String zookeeperHosts, 
-      URL coreConfig, URL defaultConfig) 
+      String zookeeperPort, URL coreConfig, URL defaultConfig) 
     throws IOException {
     Configuration con = new Configuration();
     
     if (defaultConfig != null) {
-      // TODO - might have to check URL for spaces (need to for URIs)
       con.addResource(defaultConfig);
     } else {
       // hopefully it's in the classpath
@@ -59,7 +58,6 @@ public class HBaseOutputData extends BaseStepData implements StepDataInterface {
     }
     
     if (coreConfig != null) {
-      // TODO - might have to check URL for spaces (need to for URIs)
       con.addResource(coreConfig);
     } else {
       // hopefully it's in the classpath
@@ -69,6 +67,15 @@ public class HBaseOutputData extends BaseStepData implements StepDataInterface {
     if (!Const.isEmpty(zookeeperHosts)) {
       // override default and site with this
       con.set("hbase.zookeeper.quorum", zookeeperHosts);
+    }
+    
+    if (!Const.isEmpty(zookeeperPort)) {
+      try {
+        int port = Integer.parseInt(zookeeperPort);
+        con.setInt("hbase.zookeeper.property.clientPort", port);
+      } catch (NumberFormatException e) { 
+        System.err.println("Unable to parse zookeeper port!");
+      }
     }
     
     return con;    

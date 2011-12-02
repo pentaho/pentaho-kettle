@@ -84,6 +84,9 @@ public class HBaseInputDialog extends BaseStepDialog implements
   // Zookeeper host(s) line
   private TextVar m_zookeeperQuorumText;
   
+  // Zookeeper port
+  private TextVar m_zookeeperPortText;
+  
   // Core config line
   private Button m_coreConfigBut;
   private TextVar m_coreConfigText;
@@ -244,6 +247,33 @@ public class HBaseInputDialog extends BaseStepDialog implements
     fd.left = new FormAttachment(middle, 0);
     m_zookeeperQuorumText.setLayoutData(fd);
     
+    // zookeeper port
+    Label zookeeperPortLab = new Label(wConfigComp, SWT.RIGHT);
+    zookeeperPortLab.setText(Messages.getString("HBaseInputDialog.ZookeeperPort.Label"));
+    props.setLook(zookeeperPortLab);
+    fd = new FormData();
+    fd.left = new FormAttachment(0, 0);
+    fd.top = new FormAttachment(m_zookeeperQuorumText, margin);
+    fd.right = new FormAttachment(middle, -margin);
+    zookeeperPortLab.setLayoutData(fd);
+    
+    m_zookeeperPortText = new TextVar(transMeta, wConfigComp, 
+        SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+    props.setLook(m_zookeeperPortText);
+    m_zookeeperPortText.addModifyListener(lsMod);
+    // set the tool tip to the contents with any env variables expanded
+    m_zookeeperPortText.addModifyListener(new ModifyListener() {      
+      public void modifyText(ModifyEvent e) {
+        m_zookeeperPortText.
+        setToolTipText(transMeta.environmentSubstitute(m_zookeeperPortText.getText()));
+      }
+    });
+    fd = new FormData();
+    fd.right = new FormAttachment(100, 0);
+    fd.top = new FormAttachment(m_zookeeperQuorumText, margin);
+    fd.left = new FormAttachment(middle, 0);
+    m_zookeeperPortText.setLayoutData(fd);
+    
     // core config line
     Label coreConfigLab = new Label(wConfigComp, SWT.RIGHT);
     coreConfigLab.setText(Messages.getString("HBaseInputDialog.CoreConfig.Label"));
@@ -251,7 +281,7 @@ public class HBaseInputDialog extends BaseStepDialog implements
     props.setLook(coreConfigLab);
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
-    fd.top = new FormAttachment(m_zookeeperQuorumText, margin);
+    fd.top = new FormAttachment(m_zookeeperPortText, margin);
     fd.right = new FormAttachment(middle, -margin);
     coreConfigLab.setLayoutData(fd);
     
@@ -260,7 +290,7 @@ public class HBaseInputDialog extends BaseStepDialog implements
     m_coreConfigBut.setText(Messages.getString("System.Button.Browse"));
     fd = new FormData();
     fd.right = new FormAttachment(100, 0);
-    fd.top = new FormAttachment(m_zookeeperQuorumText, 0);
+    fd.top = new FormAttachment(m_zookeeperPortText, 0);
     m_coreConfigBut.setLayoutData(fd);
     
     m_coreConfigBut.addSelectionListener(new SelectionAdapter() {
@@ -972,6 +1002,7 @@ public class HBaseInputDialog extends BaseStepDialog implements
     stepname = m_stepnameText.getText();
     
     m_currentMeta.setZookeeperHosts(m_zookeeperQuorumText.getText());
+    m_currentMeta.setZookeeperPort(m_zookeeperPortText.getText());
     m_currentMeta.setCoreConfigURL(m_coreConfigText.getText());    
     m_currentMeta.setDefaulConfigURL(m_defaultConfigText.getText());
     m_currentMeta.setSourceTableName(m_mappedTableNamesCombo.getText());
@@ -1069,6 +1100,9 @@ public class HBaseInputDialog extends BaseStepDialog implements
     if (!Const.isEmpty(m_currentMeta.getZookeeperHosts())) {
       m_zookeeperQuorumText.setText(m_currentMeta.getZookeeperHosts());
     }
+    if (!Const.isEmpty(m_currentMeta.getZookeeperPort())) {
+      m_zookeeperPortText.setText(m_currentMeta.getZookeeperPort());
+    }
     
     if (!Const.isEmpty(m_currentMeta.getCoreConfigURL())) {
       m_coreConfigText.setText(m_currentMeta.getCoreConfigURL());
@@ -1142,6 +1176,7 @@ public class HBaseInputDialog extends BaseStepDialog implements
     URL coreConf = null;
     URL defaultConf = null;
     String zookeeperHosts = null;
+    String zookeeperPort = null;
     
     if (!Const.isEmpty(m_coreConfigText.getText())) {
       coreConf = HBaseInputData.stringToURL(transMeta.
@@ -1157,7 +1192,12 @@ public class HBaseInputDialog extends BaseStepDialog implements
       zookeeperHosts = transMeta.environmentSubstitute(m_zookeeperQuorumText.getText());
     }
     
-    conf = HBaseInputData.getHBaseConnection(zookeeperHosts, coreConf, defaultConf);
+    if (!Const.isEmpty(m_zookeeperPortText.getText())) {
+      zookeeperPort = transMeta.environmentSubstitute(m_zookeeperPortText.getText());
+    }
+    
+    conf = HBaseInputData.getHBaseConnection(zookeeperHosts, zookeeperPort, 
+        coreConf, defaultConf);
     
     return conf;
   }

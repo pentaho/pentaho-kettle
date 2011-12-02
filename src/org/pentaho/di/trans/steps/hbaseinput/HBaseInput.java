@@ -112,6 +112,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
       try {
         m_connection = HBaseInputData.
         getHBaseConnection(m_transMeta.environmentSubstitute(m_meta.getZookeeperHosts()),
+            m_transMeta.environmentSubstitute(m_meta.getZookeeperPort()),
             HBaseInputData.
               stringToURL(m_transMeta.environmentSubstitute(m_meta.getCoreConfigURL())), 
             HBaseInputData.
