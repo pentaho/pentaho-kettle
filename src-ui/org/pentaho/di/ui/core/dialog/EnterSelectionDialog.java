@@ -190,7 +190,7 @@ public class EnterSelectionDialog extends Dialog
 			if(Const.isOSX()) {
 				wtfilter.setWidth(100);
 			} else {
-				wtfilter.setWidth(60);
+				wtfilter.setWidth(70);
 			}
 			
 			wfilter = new ToolItem(treeTb, SWT.SEPARATOR);
