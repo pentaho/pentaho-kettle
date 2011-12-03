@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010 Pentaho Corporation.  All rights reserved. 
+ * Copyright (c) 2011 Pentaho Corporation.  All rights reserved. 
  * This software was developed by Pentaho Corporation and is provided under the terms 
  * of the GNU Lesser General Public License, Version 2.1. You may not use 
  * this file except in compliance with the license. If you need a copy of the license, 
@@ -24,7 +24,6 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.job.entries.hadoopjobexecutor.JobEntryHadoopJobExecutor;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.containers.XulVbox;

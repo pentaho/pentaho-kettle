@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2007 Pentaho Corporation.  All rights reserved. 
+ * Copyright (c) 2011 Pentaho Corporation.  All rights reserved. 
  * This software was developed by Pentaho Corporation and is provided under the terms 
  * of the GNU Lesser General Public License, Version 2.1. You may not use 
  * this file except in compliance with the license. If you need a copy of the license, 
@@ -9,27 +9,7 @@
  * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
  * the license for the specific language governing your rights and limitations.
-*/
-/**********************************************************************
- **                                                                   **
- **               This code belongs to the KETTLE project.            **
- **                                                                   **
- ** It belongs to, is maintained by and is copyright 1999-2005 by     **
- **                                                                   **
- **      i-Bridge bvba                                                **
- **      Fonteinstraat 70                                             **
- **      9400 OKEGEM                                                  **
- **      Belgium                                                      **
- **      http://www.kettle.be                                         **
- **      info@kettle.be                                               **
- **                                                                   **
- **********************************************************************/
- 
-/*
- * Created on 
- *
  */
-
 package org.pentaho.di.ui.trans.steps.hadoopfileinput;
 
 import java.io.IOException;

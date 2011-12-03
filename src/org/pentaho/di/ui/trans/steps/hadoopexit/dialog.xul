@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<dialog id="hadoop-exit-dialog"
+	pack="true"
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+    xmlns:pen="http://www.pentaho.org/2008/xul" 
+	title="${StepConfigruationDialog.Title}"
+	resizable="true"
+    height="250" width="600"
+	appicon="ui/images/spoon.ico"
+	buttons="accept,cancel"
+	buttonalign="end" 
+	buttonlabelaccept="${Dialog.Accept}"
+	buttonlabelcancel="${Dialog.Cancel}" 
+	ondialogaccept="handler.onAccept()"
+	ondialogcancel="handler.onCancel()">
+
+	<vbox>
+		<grid>
+			<columns>
+				<column/>
+				<column flex="1"/>
+			</columns>
+			<rows>
+				<row>
+					<label value="${Step.Name.Label}"/>
+					<textbox id="step-name" flex="1" multiline="false"/>
+				</row>
+				<row>
+					<label value="${HadoopExit.OutKey.Label}" />
+					<menulist id="output-key-fieldname" flex="1" editable="true" pen:binding="name">
+						<menupopup>
+						</menupopup>
+					</menulist>
+				</row>
+				<row>
+					<label value="${HadoopExit.OutValue.Label}" />
+					<menulist id="output-value-fieldname" flex="1" editable="true" pen:binding="name">
+						<menupopup>
+						</menupopup>
+					</menulist>
+				</row>
+			</rows>
+		</grid>
+	</vbox>
+</dialog>

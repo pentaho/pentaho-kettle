@@ -1,0 +1,284 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+
+<window id="hadoop-window-wrapper">
+
+<dialog id="job-entry-dialog"
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+    xmlns:pen="http://www.pentaho.org/2008/xul" 
+	title="${JobEntryDialog.Title}"
+	resizable="true"
+    height="620" width="735"
+	appicon="ui/images/spoon.ico"
+	buttons="accept,cancel"
+	buttonalign="end" 
+	buttonlabelaccept="${Dialog.Accept}"
+	buttonlabelcancel="${Dialog.Cancel}" 
+	ondialogaccept="jobEntryController.accept()"
+	ondialogcancel="jobEntryController.cancel()">
+	
+	<vbox>
+		<grid>
+			<columns>
+				<column/>
+				<column flex="1"/>
+			</columns>
+			<rows>
+				<row>
+					<label value="${JobEntry.Name.Label}"/>
+					<textbox id="jobentry-name" flex="1" multiline="false"/>
+				</row>
+				<row>
+					<label value="${JobEntryHadoopTransJobExecutor.Name.Label}" />
+					<textbox id="jobentry-hadoopjob-name" flex="1" multiline="false"/>
+				</row>
+			</rows>
+		</grid>
+		
+	</vbox>
+	
+	<vbox id="advanced-configuration" hidden="false">
+		<tabbox>
+			<tabs>
+			    <tab label="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.MapReduce.Label}"/>
+				<tab label="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.JobSetup.Label}"/>
+				<tab label="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.Cluster.Label}"/>
+				<tab label="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.UserDefined.Label}"/>
+  			</tabs>
+			<tabpanels>
+			    <tabpanel>
+					<vbox>
+						<groupbox>
+							<caption label="${JobEntryHadoopTransJobExecutor.GroupBox.MapLabel}"/>
+					        <grid>
+					            <columns>
+		  			                <column/>
+					                <column flex="1"/>
+					            </columns>
+					            <rows>
+					            	<row>
+					            		<label value="${JobEntryHadoopTransJobExecutor.StorageType.Label}" />
+					            		<menulist id="mapper-storage-type">
+										    <menupopup>
+										        <menuitem label="${JobEntryHadoopTransJobExecutor.StorageType.Local}" />
+										        <menuitem label="${JobEntryHadoopTransJobExecutor.StorageType.Repository.Location}" />
+										        <menuitem label="${JobEntryHadoopTransJobExecutor.StorageType.Repository.Reference}" />
+										    </menupopup>
+										</menulist>
+					            	</row>
+									<row>
+										<label value="${JobEntryHadoopTransJobExecutor.MapTrans.Label}" />
+										<hbox>
+											<textbox id="jobentry-map-transformation" flex="1" width="400" multiline="false"/>
+											<button id="browse" label="${JobEntryHadoopTransJobExecutor.MapTrans.Browse}" onclick="jobEntryController.mapTransBrowse()"/>
+										</hbox>
+									</row>
+									<row>
+										<label value="${JobEntryHadoopTransJobExecutor.MapInputStepName.Label}" />
+										<hbox>
+											<textbox id="jobentry-map-input-stepname" flex="1" width="200" multiline="false"/>
+										</hbox>
+									</row>
+			
+									<row>
+										<label value="${JobEntryHadoopTransJobExecutor.MapOutputStepName.Label}" />
+										<hbox>
+											<textbox id="jobentry-map-output-stepname" flex="1" width="200" multiline="false"/>
+										</hbox>
+									</row>
+								</rows>
+							</grid>
+						</groupbox>
+						
+						<groupbox>
+							<caption label="${JobEntryHadoopTransJobExecutor.GroupBox.CombinerLabel}"/>
+							<grid>
+								<columns>
+		  			                <column/>
+					                <column flex="1"/>
+					            </columns>
+								<rows>
+									<row>
+					            		<label value="${JobEntryHadoopTransJobExecutor.StorageType.Label}" />
+					            		<menulist id="combiner-storage-type">
+										    <menupopup>
+										        <menuitem label="${JobEntryHadoopTransJobExecutor.StorageType.Local}" />
+										        <menuitem label="${JobEntryHadoopTransJobExecutor.StorageType.Repository.Location}" />
+										        <menuitem label="${JobEntryHadoopTransJobExecutor.StorageType.Repository.Reference}" />
+										    </menupopup>
+										</menulist>		            		
+					            	</row>
+									<row>
+										<label value="${JobEntryHadoopTransJobExecutor.CombinerTrans.Label}" />
+										<hbox>
+											<textbox id="jobentry-combiner-transformation" flex="1" width="400" multiline="false"/>
+											<button id="browse" label="${JobEntryHadoopTransJobExecutor.CombinerTrans.Browse}" onclick="jobEntryController.combinerTransBrowse()"/>
+										</hbox>
+									</row>
+						
+									<row>
+										<label value="${JobEntryHadoopTransJobExecutor.CombinerInputStepName.Label}" />
+										<hbox>
+											<textbox id="jobentry-combiner-input-stepname" flex="1" width="200" multiline="false"/>
+										</hbox>
+									</row>
+		
+									<row>
+										<label value="${JobEntryHadoopTransJobExecutor.CombinerOutputStepName.Label}" />
+										<hbox>
+											<textbox id="jobentry-combiner-output-stepname" flex="1" width="200" multiline="false"/>
+										</hbox>
+									</row>
+					            </rows>
+					        </grid>
+				        </groupbox>						
+						
+						
+						<groupbox>
+							<caption label="${JobEntryHadoopTransJobExecutor.GroupBox.ReduceLabel}"/>
+							<grid>
+								<columns>
+		  			                <column/>
+					                <column flex="1"/>
+					            </columns>
+								<rows>
+									<row>
+					            		<label value="${JobEntryHadoopTransJobExecutor.StorageType.Label}" />
+					            		<menulist id="reducer-storage-type">
+										    <menupopup>
+										        <menuitem label="${JobEntryHadoopTransJobExecutor.StorageType.Local}" />
+										        <menuitem label="${JobEntryHadoopTransJobExecutor.StorageType.Repository.Location}" />
+										        <menuitem label="${JobEntryHadoopTransJobExecutor.StorageType.Repository.Reference}" />
+										    </menupopup>
+										</menulist>		            		
+					            	</row>
+									<row>
+										<label value="${JobEntryHadoopTransJobExecutor.ReduceTrans.Label}" />
+										<hbox>
+											<textbox id="jobentry-reduce-transformation" flex="1" width="400" multiline="false"/>
+											<button id="browse" label="${JobEntryHadoopTransJobExecutor.ReduceTrans.Browse}" onclick="jobEntryController.reduceTransBrowse()"/>
+										</hbox>
+									</row>
+						
+									<row>
+										<label value="${JobEntryHadoopTransJobExecutor.ReduceInputStepName.Label}" />
+										<hbox>
+											<textbox id="jobentry-reduce-input-stepname" flex="1" width="200" multiline="false"/>
+										</hbox>
+									</row>
+		
+									<row>
+										<label value="${JobEntryHadoopTransJobExecutor.ReduceOutputStepName.Label}" />
+										<hbox>
+											<textbox id="jobentry-reduce-output-stepname" flex="1" width="200" multiline="false"/>
+										</hbox>
+									</row>
+					            </rows>
+					        </grid>
+				        </groupbox>
+			        </vbox>
+			    </tabpanel>
+    			<tabpanel>
+    				<grid>
+    					<columns>
+    						<column />
+    						<column flex="1"/>
+    					</columns>
+    					<rows>
+    						<row>
+    							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.Classes.OutputKeyClass.Label}" />
+    							<textbox id="classes-output-key-class" flex="1" multiline="false"/>
+    						</row>
+    						<row>
+    							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.Classes.OutputValueClass.Label}" />
+    							<textbox id="classes-output-value-class" flex="1" multiline="false"/>
+    						</row>
+    						<row>
+    							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.Paths.InputPath.Label}" />
+    							<textbox id="input-path" flex="1" multiline="false"/>
+    						</row>
+    						<row>
+    							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.Paths.OutputPath.Label}" />
+    							<textbox id="output-path" flex="1" multiline="false"/>
+    						</row>
+    						<row>
+    							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.Classes.InputFormat.Label}" />
+    							<textbox id="classes-input-format" flex="1" multiline="false"/>
+    						</row>
+    						<row>
+    							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.Classes.OutputFormat.Label}" />
+    							<textbox id="classes-output-format" flex="1" multiline="false"/>
+    						</row>
+    					</rows>
+    				</grid>
+    			</tabpanel>
+    			<tabpanel>
+    				<grid>
+    					<columns>
+    						<column />
+    						<column flex="1"/>
+    					</columns>
+    					<rows>
+    						<row>
+    							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.Paths.WorkingDirectory.Label}" />
+    							<textbox id="working-dir" flex="1" multiline="false"/>
+    						</row>
+    						<row>
+    							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.Paths.HDFSHostname.Label}" />
+    							<textbox id="hdfs-hostname" flex="1" multiline="false"/>
+    						</row>
+    						<row>
+    							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.Paths.HDFSPort.Label}" />
+    							<textbox id="hdfs-port" flex="1" multiline="false"/>
+    						</row>
+    						<row>
+    							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.Paths.JobTrackerHostname.Label}" />
+    							<textbox id="job-tracker-hostname" flex="1" multiline="false"/>
+    						</row>
+    						<row>
+    							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.Paths.JobTrackerPort.Label}" />
+    							<textbox id="job-tracker-port" flex="1" multiline="false"/>
+    						</row>
+    						<row>
+    							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.NumMapTasks.Label}" />
+    							<textbox id="num-map-tasks" flex="1" multiline="false"/>
+    						</row>
+    						<row>
+    							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.NumReduceTasks.Label}" />
+    							<textbox id="num-reduce-tasks" flex="1" multiline="false"/>
+    						</row>   
+    						<row>
+    							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Blocking.Label}" />
+    							<checkbox id="blocking" flex="1" command="jobEntryController.invertBlocking()"/>
+    						</row>
+    						<row>
+    							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Logging.Interval.Label}" />
+    							<textbox id="logging-interval" width="80" flex="1" multiline="false"/>
+    						</row>    						
+    					</rows>
+    				</grid>
+    			</tabpanel>
+    			<tabpanel>
+    				<tree id="fields-table" flex="1" hidecolumnpicker="true" autocreatenewrows="true" newitembinding="jobEntryController.newUserDefinedItem()">
+						<treecols>
+							<treecol id="name-col" editable="true" flex="1" label="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.UserDefined.NameColumn.Label}" pen:binding="name"/>
+							<treecol id="value-col" editable="true" flex="1" label="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.UserDefined.ValueColumn.Label}" pen:binding="value"/>
+						</treecols>
+						<treechildren />
+					</tree>
+    			</tabpanel>
+  			</tabpanels>
+		</tabbox>
+	</vbox>
+</dialog>
+
+
+  <!--  ###############################################################################   -->
+  <!--     ERROR DIALOG: Dialog to display error text                                     -->
+  <!--  ###############################################################################   -->   
+  <dialog id="hadoop-error-dialog" title="${Dialog.Error}" buttonlabelaccept="${Dialog.OK}" buttons="accept" ondialogaccept="jobEntryController.closeErrorDialog()" width="600" height="300" buttonalign="center">
+        <textbox id="hadoop-error-message" value="${errorDialog.errorOccurred}" multiline="true" readonly="true" flex="1" />
+  </dialog>
+
+
+</window>

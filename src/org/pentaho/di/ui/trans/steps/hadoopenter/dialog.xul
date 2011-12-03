@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<dialog id="hadoop-enter-dialog"
+	pack="true"
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+    xmlns:pen="http://www.pentaho.org/2008/xul" 
+	title="${StepConfigruationDialog.Title}"
+	resizable="true"
+    height="250" width="600"
+	appicon="ui/images/spoon.ico"
+	buttons="accept,cancel"
+	buttonalign="end" 
+	buttonlabelaccept="${Dialog.Accept}"
+	buttonlabelcancel="${Dialog.Cancel}" 
+	ondialogaccept="handler.onAccept()"
+	ondialogcancel="handler.onCancel()">
+
+	<vbox>
+		<hbox>
+			<label value="${Step.Name.Label}"/>
+			<textbox id="step-name" flex="1" multiline="false"/>
+		</hbox>
+		<grid>
+			<columns>
+				<column/>
+				<column flex="1"/>
+				<column flex="1"/>
+				<column flex="1"/>
+			</columns>
+			<rows>
+				<row>
+					<label value="" />
+					<label value="${HadoopEnter.Type.Label}" />
+					<label value="${HadoopEnter.Length.Label}" />
+					<label value="${HadoopEnter.Precision.Label}" />
+				</row>
+				<row>
+					<label value="${HadoopEnter.InKey.Label}" />
+					<menulist id="input-key-type" flex="1" editable="true">
+						<menupopup>
+						</menupopup>
+					</menulist>
+					<textbox id="input-key-length" flex="1" multiline="false"/>
+					<textbox id="input-key-precision" flex="1" multiline="false"/>
+				</row>
+				<row>
+					<label value="${HadoopEnter.InValue.Label}" />
+					<menulist id="input-value-type" flex="1" editable="true">
+						<menupopup>
+						</menupopup>
+					</menulist>
+					<textbox id="input-value-length" flex="1" multiline="false"/>
+					<textbox id="input-value-precision" flex="1" multiline="false"/>
+				</row>
+			</rows>
+		</grid>
+	</vbox>
+</dialog>

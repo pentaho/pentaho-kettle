@@ -9,16 +9,11 @@
  * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
  * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
  * the license for the specific language governing your rights and limitations.
- *
- * @author Michael D'Amour
  */
+package org.pentaho.hadoop.mapreduce;
 
-package org.pentaho.di.trans.steps.hadoopfileinput;
+import org.pentaho.di.core.row.ValueMetaInterface;
 
-import org.pentaho.di.core.annotations.Step;
-import org.pentaho.di.trans.steps.textfileinput.TextFileInputMeta;
-
-@Step(id = "HadoopFileInputPlugin", image = "HDI.png", name = "Hadoop File Input", description="Process files from an HDFS location", categoryDescription="Hadoop")
-public class HadoopFileInputMeta extends TextFileInputMeta {
-
+public interface ITypeConverter {
+	public Object convert(ValueMetaInterface meta, Object obj) throws Exception;
 }
