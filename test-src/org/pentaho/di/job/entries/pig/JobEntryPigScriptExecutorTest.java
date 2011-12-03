@@ -43,7 +43,7 @@ public class JobEntryPigScriptExecutorTest {
   public void setup() throws IOException {
     BufferedReader br = 
       new BufferedReader(new InputStreamReader(
-         ClassLoader.getSystemResourceAsStream("org/pentaho/di/job/entries/pig/JobEntryPigScriptExecutorTest.ref")));
+         ClassLoader.getSystemResourceAsStream("resources/org/pentaho/di/job/entries/pig/JobEntryPigScriptExecutorTest.ref")));
 
     m_reference = readResource(br);
   }

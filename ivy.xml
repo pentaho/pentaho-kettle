@@ -57,19 +57,26 @@
       
     <dependency org="pentaho" name="pentaho-vfs-browser" rev="${dependency.pentaho-vfs-browser.revision}" transitive="false" conf="default->default"
       changing="true" />
+    <dependency org="pentaho" name="pentaho-s3-vfs" rev="${dependency.pentaho-s3-vfs.revision}" transitive="false" conf="default->default" changing="true" />
+    <dependency org="net.java.dev.jets3t" name="jets3t" rev="0.7.4" transitive="false" conf="default->default"/>
+    <dependency org="com.amazonaws" name="aws-java-sdk" rev="1.0.008" transitive="false"/>
       
 	<dependency org="dom4j"              name="dom4j"              rev="1.6.1">
 		<exclude org="xml-apis" name="xml-apis" />
 	</dependency>
       
-    <dependency org="log4j" name="log4j" rev="1.2.14" />
-    <dependency org="commons-logging"       name="commons-logging"    rev="1.1.1"/>
+    <dependency org="log4j"                    name="log4j"           rev="1.2.14" />
+    <dependency org="commons-logging"          name="commons-logging" rev="1.1.1"/>
+    <dependency org="commons-lang"             name="commons-lang"    rev="2.2"/>
+    <dependency org="commons-cli" name="commons-cli" rev="1.2" transitive="false" conf="default->default" />
+    <dependency org="commons-io" name="commons-io" rev="1.4" transitive="false" conf="default->default" />
+    
+    <dependency org="com.thoughtworks.xstream" name="xstream"         rev="1.3.1" />
+
     <dependency org="junit" name="junit" rev="4.4" conf="test->default" />
     <dependency org="commons-io" name="commons-io" rev="1.4" transitive="false" conf="test->default" />
-    <dependency org="commons-logging"       name="commons-logging"    rev="1.1"   transitive="false" conf="test->default" />
     <dependency org="org.apache.hadoop" name="hadoop-test" rev="${dependency.pentaho-hadoop.revision}" transitive="false" conf="test->default" changing="false" />
     <dependency org="org.apache.hadoop" name="hadoop-examples" rev="${dependency.pentaho-hadoop.revision}" transitive="false" conf="test->default" changing="false" />
     <dependency org="commons-httpclient" name="commons-httpclient" rev="3.0.1" conf="test->default"/>
-
   </dependencies>
 </ivy-module>

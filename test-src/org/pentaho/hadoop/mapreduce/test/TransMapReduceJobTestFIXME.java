@@ -18,6 +18,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.net.URLDecoder;
+import java.util.Enumeration;
 import java.util.Properties;
 
 import org.apache.commons.io.IOUtils;
@@ -42,8 +44,12 @@ import org.apache.hadoop.mapred.TextOutputFormat;
 import org.apache.hadoop.mapred.JobTracker.State;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.trans.TransConfiguration;
+import org.pentaho.di.trans.TransExecutionConfiguration;
+import org.pentaho.di.trans.TransMeta;
 
-public class TestSubmitMapReduceJob {
+public class TransMapReduceJobTestFIXME {
 
   private static FileSystemManager fsManager;
 
@@ -68,7 +74,7 @@ public class TestSubmitMapReduceJob {
   public static void beforeClass() throws IOException {
     fsManager = VFS.getManager();
     Properties settings = new Properties();
-    settings.load(TestSubmitMapReduceJob.class.getResourceAsStream("/test-settings.properties"));
+    settings.load(TransMapReduceJobTestFIXME.class.getResourceAsStream("/test-settings.properties"));
     hostname = settings.getProperty("hostname", hostname);
     hdfsPort = settings.getProperty("hdfsPort", hdfsPort);
     trackerPort = settings.getProperty("trackerPort", trackerPort);
@@ -97,16 +103,32 @@ public class TestSubmitMapReduceJob {
     JobConf conf = new JobConf();
     conf.setJobName("wordcount");
 
+    KettleEnvironment.init();
+    TransExecutionConfiguration transExecConfig = new TransExecutionConfiguration();
+    TransMeta transMeta = new TransMeta("./test-res/wordcount-mapper.ktr");
+    TransConfiguration transConfig = new TransConfiguration(transMeta, transExecConfig);
+    conf.set("transformation-map-xml", transConfig.getXML());
+
+    transMeta = new TransMeta("./test-res/wordcount-reducer.ktr");
+    transConfig = new TransConfiguration(transMeta, transExecConfig);
+    conf.set("transformation-reduce-xml", transConfig.getXML());
+
+    conf.set("transformation-map-input-stepname", "Injector");
+    conf.set("transformation-map-output-stepname", "Output");
+
+    conf.set("transformation-reduce-input-stepname", "Injector");
+    conf.set("transformation-reduce-output-stepname", "Output");
+    
     conf.setOutputKeyClass(Text.class);
     conf.setOutputValueClass(IntWritable.class);
 
-    File jar = new File("./test-res/pentaho-mapreduce-sample.jar");
+    File jar = new File("./dist/pdi-hadoop-plugin-ee-TRUNK-SNAPSHOT.jar");
 
     URLClassLoader loader = new URLClassLoader(new URL[] { jar.toURI().toURL() });
 
-    conf.setMapperClass((Class<? extends Mapper>) loader.loadClass("org.pentaho.hadoop.mapreduce.sample.MRWordCount$Map"));
-    conf.setCombinerClass((Class<? extends Reducer>) loader.loadClass("org.pentaho.hadoop.mapreduce.sample.MRWordCount$Reduce"));
-    conf.setReducerClass((Class<? extends Reducer>) loader.loadClass("org.pentaho.hadoop.mapreduce.sample.MRWordCount$Reduce"));
+    conf.setMapperClass((Class<? extends Mapper>) loader.loadClass("org.pentaho.hadoop.mapreduce.GenericTransMap"));
+    conf.setCombinerClass((Class<? extends Reducer>) loader.loadClass("org.pentaho.hadoop.mapreduce.GenericTransReduce"));
+    conf.setReducerClass((Class<? extends Reducer>) loader.loadClass("org.pentaho.hadoop.mapreduce.GenericTransReduce"));
 
     conf.setInputFormat(TextInputFormat.class);
     conf.setOutputFormat(TextOutputFormat.class);
@@ -117,7 +139,7 @@ public class TestSubmitMapReduceJob {
     conf.set("fs.default.name", "hdfs://" + hostname + ":" + hdfsPort);
     conf.set("mapred.job.tracker", hostname + ":" + trackerPort);
 
-    conf.setJarByClass(loader.loadClass("org.pentaho.hadoop.mapreduce.sample.MRWordCount"));
+    conf.setJar(jar.toURI().toURL().toExternalForm());
     conf.setWorkingDirectory(new Path("/tmp/wordcount"));
 
     JobClient jobClient = new JobClient(conf);
@@ -135,7 +157,7 @@ public class TestSubmitMapReduceJob {
 
     FileObject file = fsManager.resolveFile(buildHDFSURL("/junit/wordcount/output/part-00000"));
     String output = IOUtils.toString(file.getContent().getInputStream());
-    assertEquals("Bye\t1\nGoodbye\t1\nHadoop\t2\nHello\t2\nWorld\t2\n", output);
+    assertEquals("Bye\t4\nGood\t2\nGoodbye\t1\nHadoop\t2\nHello\t5\nThis\t1\nWorld\t5\nand\t1\ncounting\t1\nextra\t1\nfor\t1\nis\t1\nsome\t1\ntext\t1\nwords\t1\n", output);
   }
 
 }
