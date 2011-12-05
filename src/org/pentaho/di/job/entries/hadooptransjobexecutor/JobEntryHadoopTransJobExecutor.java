@@ -103,8 +103,8 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
   private boolean blocking;
   private int loggingInterval = 60;
 
-  private int numMapTasks = 1;
-  private int numReduceTasks = 1;
+  private String numMapTasks = "1";
+  private String numReduceTasks = "1";
 
   private List<UserDefinedItem> userDefined = new ArrayList<UserDefinedItem>();
   
@@ -375,19 +375,19 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
     this.userDefined = userDefined;
   }
 
-  public int getNumMapTasks() {
+  public String getNumMapTasks() {
     return numMapTasks;
   }
 
-  public void setNumMapTasks(int numMapTasks) {
+  public void setNumMapTasks(String numMapTasks) {
     this.numMapTasks = numMapTasks;
   }
 
-  public int getNumReduceTasks() {
+  public String getNumReduceTasks() {
     return numReduceTasks;
   }
 
-  public void setNumReduceTasks(int numReduceTasks) {
+  public void setNumReduceTasks(String numReduceTasks) {
     this.numReduceTasks = numReduceTasks;
   }
 
@@ -566,8 +566,8 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
       conf.setWorkingDirectory(new Path(hdfsBaseUrl + workingDirectoryS));
       conf.setJarByClass(PentahoMapRunnable.class);
 
-      conf.setNumMapTasks(numMapTasks);
-      conf.setNumReduceTasks(numReduceTasks);
+      conf.setNumMapTasks(Const.toInt(environmentSubstitute(numMapTasks), 1));
+      conf.setNumReduceTasks(Const.toInt(environmentSubstitute(numReduceTasks), 1));
 
       //  get a reference to the variable space
       VariableSpace variableSpace = this.getVariables();
@@ -716,8 +716,8 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
     hdfsPort = XMLHandler.getTagValue(entrynode, "hdfs_port"); //$NON-NLS-1$
     jobTrackerHostname = XMLHandler.getTagValue(entrynode, "job_tracker_hostname"); //$NON-NLS-1$
     jobTrackerPort = XMLHandler.getTagValue(entrynode, "job_tracker_port"); //$NON-NLS-1$
-    numMapTasks = Integer.parseInt(XMLHandler.getTagValue(entrynode, "num_map_tasks")); //$NON-NLS-1$
-    numReduceTasks = Integer.parseInt(XMLHandler.getTagValue(entrynode, "num_reduce_tasks")); //$NON-NLS-1$
+    numMapTasks = XMLHandler.getTagValue(entrynode, "num_map_tasks"); //$NON-NLS-1$
+    numReduceTasks = XMLHandler.getTagValue(entrynode, "num_reduce_tasks"); //$NON-NLS-1$
     workingDirectory = XMLHandler.getTagValue(entrynode, "working_dir"); //$NON-NLS-1$
 
     // How many user defined elements?
@@ -838,8 +838,18 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
       setHdfsPort(rep.getJobEntryAttributeString(id_jobentry, "hdfs_port")); //$NON-NLS-1$
       setJobTrackerHostname(rep.getJobEntryAttributeString(id_jobentry, "job_tracker_hostname")); //$NON-NLS-1$
       setJobTrackerPort(rep.getJobEntryAttributeString(id_jobentry, "job_tracker_port")); //$NON-NLS-1$
-      setNumMapTasks(new Long(rep.getJobEntryAttributeInteger(id_jobentry, "num_map_tasks")).intValue()); //$NON-NLS-1$
-      setNumReduceTasks(new Long(rep.getJobEntryAttributeInteger(id_jobentry, "num_reduce_tasks")).intValue()); //$NON-NLS-1$
+      long mapTasks = rep.getJobEntryAttributeInteger(id_jobentry, "num_map_tasks");
+      if (mapTasks>0) {
+        setNumMapTasks(Long.toString(mapTasks));
+      } else {
+        setNumMapTasks(rep.getJobEntryAttributeString(id_jobentry, "num_map_tasks"));
+      }
+      long reduceTasks = rep.getJobEntryAttributeInteger(id_jobentry, "num_reduce_tasks");
+      if (reduceTasks>0) {
+        setNumReduceTasks(Long.toString(reduceTasks));
+      } else {
+        setNumReduceTasks(rep.getJobEntryAttributeString(id_jobentry, "num_reduce_tasks"));
+      }
       setWorkingDirectory(rep.getJobEntryAttributeString(id_jobentry, "working_dir")); //$NON-NLS-1$
 
       int argnr = rep.countNrJobEntryAttributes(id_jobentry, "user_defined_name");//$NON-NLS-1$

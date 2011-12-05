@@ -92,8 +92,8 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
   private String inputPath;
   private String outputPath;
 
-  private int numMapTasks = 1;
-  private int numReduceTasks = 1;
+  private String  numMapTasks = "1";
+  private String  numReduceTasks = "1";
 
   private boolean blocking;
   private int loggingInterval = 60;
@@ -142,9 +142,6 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
     }
     if (StringUtil.isEmpty(hadoopJobName)) {
       validationErrors += BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.HadoopJobName.Error") + "\n";
-    }
-    if (numMapTasks <= 0) {
-      validationErrors += BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.NumMapTasks.Error") + "\n";
     }
 
     if (!StringUtil.isEmpty(validationErrors)) {
@@ -934,25 +931,25 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
     firePropertyChange(LOGGING_INTERVAL, previousVal, newVal);
   }
 
-  public int getNumMapTasks() {
+  public String getNumMapTasks() {
     return numMapTasks;
   }
 
-  public void setNumMapTasks(int numMapTasks) {
-    int previousVal = this.numMapTasks;
-    int newVal = numMapTasks;
+  public void setNumMapTasks(String numMapTasks) {
+    String previousVal = this.numMapTasks;
+    String newVal = numMapTasks;
 
     this.numMapTasks = numMapTasks;
     firePropertyChange(NUM_MAP_TASKS, previousVal, newVal);
   }
 
-  public int getNumReduceTasks() {
+  public String  getNumReduceTasks() {
     return numReduceTasks;
   }
 
-  public void setNumReduceTasks(int numReduceTasks) {
-    int previousVal = this.numReduceTasks;
-    int newVal = numReduceTasks;
+  public void setNumReduceTasks(String  numReduceTasks) {
+    String  previousVal = this.numReduceTasks;
+    String  newVal = numReduceTasks;
 
     this.numReduceTasks = numReduceTasks;
     firePropertyChange(NUM_REDUCE_TASKS, previousVal, newVal);

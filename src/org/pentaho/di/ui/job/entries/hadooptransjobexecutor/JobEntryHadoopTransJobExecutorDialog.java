@@ -114,8 +114,8 @@ public class JobEntryHadoopTransJobExecutorDialog extends JobEntryDialog impleme
 
     };
 
-    bf.createBinding("num-map-tasks", "value", controller, JobEntryHadoopTransJobExecutorController.NUM_MAP_TASKS, bindingConverter); //$NON-NLS-1$ //$NON-NLS-2$ 
-    bf.createBinding("num-reduce-tasks", "value", controller, JobEntryHadoopTransJobExecutorController.NUM_REDUCE_TASKS, bindingConverter); //$NON-NLS-1$ //$NON-NLS-2$ 
+    bf.createBinding("num-map-tasks", "value", controller, JobEntryHadoopTransJobExecutorController.NUM_MAP_TASKS); //$NON-NLS-1$ //$NON-NLS-2$ 
+    bf.createBinding("num-reduce-tasks", "value", controller, JobEntryHadoopTransJobExecutorController.NUM_REDUCE_TASKS); //$NON-NLS-1$ //$NON-NLS-2$ 
 
     bf.createBinding("blocking", "selected", controller, JobEntryHadoopTransJobExecutorController.BLOCKING); //$NON-NLS-1$ //$NON-NLS-2$ 
     bf.createBinding("logging-interval", "value", controller, JobEntryHadoopTransJobExecutorController.LOGGING_INTERVAL, bindingConverter); //$NON-NLS-1$ //$NON-NLS-2$ 
