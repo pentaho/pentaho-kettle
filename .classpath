@@ -356,16 +356,6 @@
 	<classpathentry kind="lib" path="libext/slf4j-api-1.6.1.jar"/>
 	<classpathentry kind="lib" path="libext/reporting/asm-3.2.jar"/>
 	<classpathentry kind="lib" path="libext/jsch-0.1.45.jar"/>
-	<classpathentry kind="lib" path="libext/datacleaner-ui/asm-3.2.jar"/>
-	<classpathentry kind="lib" path="libext/datacleaner-ui/commons-codec-1.4.jar"/>
-	<classpathentry kind="lib" path="libext/datacleaner-ui/commons-lang-2.6.jar"/>
-	<classpathentry kind="lib" path="libext/datacleaner-ui/commons-math-2.1.jar"/>
 	<classpathentry kind="lib" path="libext/datacleaner-ui/DataCleaner-core-2.3.jar"/>
-	<classpathentry kind="lib" path="libext/datacleaner-ui/dom4j-1.6.1.jar"/>
-	<classpathentry kind="lib" path="libext/datacleaner-ui/jcommon-1.0.15.jar"/>
-	<classpathentry kind="lib" path="libext/datacleaner-ui/poi-3.8-beta3.jar"/>
-	<classpathentry kind="lib" path="libext/datacleaner-ui/poi-ooxml-3.8-beta3.jar"/>
-	<classpathentry kind="lib" path="libext/datacleaner-ui/poi-ooxml-schemas-3.8-beta3.jar"/>
-	<classpathentry kind="lib" path="libext/datacleaner-ui/slf4j-api-1.6.1.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
