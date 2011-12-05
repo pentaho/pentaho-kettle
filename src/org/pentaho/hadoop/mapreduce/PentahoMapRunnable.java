@@ -119,7 +119,7 @@ public class PentahoMapRunnable<K1, V1, K2, V2> implements MapRunnable<K1, V1, K
    String taskId = job.get("mapred.task.id");
    variableSpace.setVariable("Internal.Hadoop.TaskId", taskId);
    // TODO: Verify if the string range holds true for all Hadoop distributions
-   String nodeNumber = taskId.substring(28, 34); 
+   String nodeNumber = taskId==null || taskId.length()<34 ? "0" : taskId.substring(28, 34); 
    // get rid of zeroes.
    variableSpace.setVariable("Internal.Hadoop.NodeNumber", Integer.toString(Integer.valueOf(nodeNumber))); 
       
