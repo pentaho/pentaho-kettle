@@ -83,7 +83,7 @@ public class AmazonElasticMapReduceJobExecutorDialog extends JobEntryDialog impl
     swtXulLoader.register("VARIABLETEXTBOX", "org.pentaho.di.ui.core.database.dialog.tags.ExtTextbox");
     swtXulLoader.setOuterContext(shell);
 
-    container = swtXulLoader.loadXul("com/pentaho/amazon/emr/ui/AmazonElasticMapReduceJobExecutorDialog.xul", bundle); //$NON-NLS-1$
+    container = swtXulLoader.loadXul("org/pentaho/amazon/emr/ui/AmazonElasticMapReduceJobExecutorDialog.xul", bundle); //$NON-NLS-1$
 
     final XulRunner runner = new SwtXulRunner();
     runner.addContainer(container);
