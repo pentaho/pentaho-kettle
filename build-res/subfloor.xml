@@ -401,7 +401,7 @@ TYPICAL TARGET SEQUENCE
       Runs a typical continuous integration build including project dist,
       test, and coverage artifacts
       ====================================================================-->
-  <target name="continuous" depends="build,sonar,publish" />
+  <target name="continuous" depends="build,publish" />
 
 
   <!--=======================================================================
