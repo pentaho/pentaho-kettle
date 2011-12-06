@@ -430,7 +430,7 @@ public class CassandraColumnMetaData {
       String toConvert = vm.getString(value);
       ByteBuffer decomposed = u.decompose(toConvert);
       String cassandraString = u.getString(decomposed);
-      return cassandraString;
+      return escapeSingleQuotes(cassandraString);
     }
     case ValueMetaInterface.TYPE_BIGNUMBER:
     {
@@ -446,7 +446,7 @@ public class CassandraColumnMetaData {
       Boolean toConvert = vm.getBoolean(value);
       ByteBuffer decomposed = bt.decompose(toConvert);
       String cassandraString = bt.getString(decomposed);
-      return cassandraString;
+      return escapeSingleQuotes(cassandraString);
     }      
     case ValueMetaInterface.TYPE_INTEGER: 
     {
@@ -470,7 +470,7 @@ public class CassandraColumnMetaData {
       Date toConvert = vm.getDate(value);
       ByteBuffer decomposed = d.decompose(toConvert);
       String cassandraFormattedDateString = d.getString(decomposed);
-      return cassandraFormattedDateString;
+      return escapeSingleQuotes(cassandraFormattedDateString);
     case ValueMetaInterface.TYPE_BINARY:      
     case ValueMetaInterface.TYPE_SERIALIZABLE:
       throw new KettleValueException("Can't convert binary/serializable data " +
@@ -479,6 +479,12 @@ public class CassandraColumnMetaData {
         
     throw new KettleValueException("Not sure how to encode " + vm.toString() + " to" +
     		" CQL-compatible values");
+  }
+  
+  protected static String escapeSingleQuotes(String source) {
+    
+    // escaped by doubling (as in SQL)
+    return source.replace("'", "''");
   }
   
   /**
