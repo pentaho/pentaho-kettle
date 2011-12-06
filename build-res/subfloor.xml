@@ -282,6 +282,12 @@ TYPICAL TARGET SEQUENCE
             value=""
             description="The configuration file for the tattletale report" />
 
+  <!-- Sonar properties -->
+  <property name="sonar.url"
+            value="http://repo1.maven.org/maven2/org/codehaus/sonar-plugins/sonar-ant-task/1.2/sonar-ant-task-1.2.jar"/>
+  <property name="sonar.classname"
+	        value="org.sonar.ant.SonarTask"/>
+
   <!-- Load the manifest file (if any) as a properties file -->
   <property name="dist.manifest.file"
             value="${dist.dir}/MANIFEST.MF"
@@ -364,12 +370,47 @@ TYPICAL TARGET SEQUENCE
     <pathelement path="${classes.dir}" />
   </path>
 
+
   <!--=======================================================================
       default
       
       The target that is run if no target is given
       ====================================================================-->
-  <target name="default" depends="clean-all,resolve,dist" />
+  <target name="default" depends="build" />
+
+
+  <!--=======================================================================
+      build
+      
+      Runs a typical build process to create the project locally
+      ====================================================================-->
+  <target name="build" depends="clean-all,resolve,cobertura,dist-source,dist" />
+
+
+  <!--=======================================================================
+      build-testless
+      
+      Runs a typical build process to create the project locally (no testing)
+      ====================================================================-->
+  <target name="build-testless" depends="clean-all,resolve,dist-source,dist" />
+
+
+  <!--=======================================================================
+      continuous
+      
+      Runs a typical continuous integration build including project dist,
+      test, and coverage artifacts
+      ====================================================================-->
+  <target name="continuous" depends="build,sonar,publish" />
+
+
+  <!--=======================================================================
+      continuous-testless
+      
+      Runs a typical continuous integration build including project dist,
+      and coverage artifacts
+      ====================================================================-->
+  <target name="continuous-testless" depends="build-testless,publish" />
 
 
   <!--=======================================================================
@@ -986,7 +1027,7 @@ TYPICAL TARGET SEQUENCE
       ====================================================================-->
   <target name="clean"
           description="Cleans all the files generated from a build with the exception of IVY-downloaded jars (see clean-all)"
-          depends="clean-tests, clean-cobertura, clean-javadoc, clean-dist">
+          depends="clean-tests, clean-cobertura, clean-sonar, clean-javadoc, clean-dist">
     <delete dir="${classes.dir}" />
     <delete dir="${bin.dir}" />
   </target>
@@ -1305,6 +1346,12 @@ TYPICAL TARGET SEQUENCE
            haltonfailure="${junit.haltonfailure}"
            printsummary="yes">
       <sysproperty key="java.awt.headless" value="${headless.unittest}" />
+    	
+      <syspropertyset>
+        <propertyref prefix="junit.sysprop." />
+        <mapper type="glob" from="junit.sysprop.*" to="*"/>
+      </syspropertyset>
+    	
       <classpath refid="test.classpath" />
       <formatter type="xml" />
       <test name="${testcase}" todir="${testreports.xml.dir}" if="testcase" />
@@ -1371,24 +1418,6 @@ TYPICAL TARGET SEQUENCE
       <zipfileset dir="${dist.dir}" includes="**/*.jar"/>
     </zip>
   </target>
-
-
-  <!--=======================================================================
-      continuous
-      
-      Runs a typical continuous integration build including project dist, javadoc, test, 
-      and coverage artifacts
-      ====================================================================-->
-  <target name="continuous" depends="clean-all,resolve,cobertura,dist-source,dist" />
-
-
-  <!--=======================================================================
-      continuous-testless
-      
-      Runs a typical continuous integration build including project dist, javadoc, test, 
-      and coverage artifacts
-      ====================================================================-->
-  <target name="continuous-testless" depends="clean-all,resolve,dist-source,dist" />
 
 
   <!--=======================================================================
@@ -1526,6 +1555,15 @@ TYPICAL TARGET SEQUENCE
     <delete dir="${cobertura.data.dir}" />
   </target>
 
+  <!--=======================================================================
+      clean-sonar
+      
+      Removes the temporary file location for sonar files
+      ====================================================================-->
+  <target name="clean-sonar">
+  	<delete dir="${basedir}/.sonar" />
+  </target>
+
 
   <!--=======================================================================
     cobertura.clean-instrumented-classes
@@ -1571,6 +1609,11 @@ TYPICAL TARGET SEQUENCE
       <!-- Specify the name of the coverage data file to use. -->
       <sysproperty key="net.sourceforge.cobertura.datafile" file="${cobertura.data.dir}/cobertura.ser" />
 
+      <syspropertyset>
+        <propertyref prefix="junit.sysprop." />
+        <mapper type="glob" from="junit.sysprop.*" to="*"/>
+      </syspropertyset>
+    	
       <!--
         Note the classpath order: instrumented classes are before the
         original (uninstrumented) classes.  This is important.
@@ -1833,4 +1876,58 @@ TYPICAL TARGET SEQUENCE
   <target name="tattletale-report" depends="install-tattletale,jar">
     <tattletale.report source="${basedir}" destination="${tattletale.reports.dir}"/>
   </target>
+	
+<!--=======================================================================
+    install-sonar
+    
+    (Fetches and) installs SONAR ant plugin for use by this ant script
+    ====================================================================-->
+  <target name="install-sonar" depends="install-antcontrib">
+    <if>
+      <istrue value="${sonar.isinstalled}" />
+      <then>
+        <echo message="Skipping SONAR install.  SONAR has already been configured by the build" />
+      </then>
+      <else>
+        <download-antlib name="sonar"
+                         url="${sonar.url}"
+                         classname="${sonar.classname}" 
+                         extension="jar"/>
+                          
+      	<taskdef uri="antlib:org.sonar.ant" resource="org/sonar/ant/antlib.xml">
+      	    <classpath>
+      	    	<fileset dir="${subfloor.resources.dir}/sonar">
+      	    	    <include name="*.jar" />
+      	    	</fileset>
+      	    </classpath> 
+    	  </taskdef>
+
+        <property name="sonar.isinstalled" value="true" />
+      </else>
+    </if>
+  </target>
+
+  <!--=======================================================================
+    sonar
+	    
+    Execute the sonar analysis and publish to a sonar server specified by:
+    sonar.jdbc.url
+    sonar.jdbc.driverClassName
+    sonar.jdbc.username
+    sonar.jdbc.password
+    sonar.host.url
+    ====================================================================-->
+  <target name="sonar" depends="install-sonar, compile, test, cobertura">
+    <property name="sonar.sources" value="${src.dir}" />
+    <property name="sonar.binaries" value="${classes.dir}" />
+    <property name="sonar.tests" value="${testsrc.dir}" />
+    <property name="sonar.libraries" value="${lib.dir}" />
+
+    <property name="sonar.dynamicAnalysis" value="reuseReports" />
+    <property name="sonar.cobertura.reportPath" value="${coberturareports.xml.dir}/coverage.xml" />
+    <property name="sonar.surefire.reportsPath" value="${testreports.xml.dir}" />
+  	
+    <sonar:sonar key="${ivy.artifact.group}:${ivy.artifact.id}" version="${project.revision}" xmlns:sonar="antlib:org.sonar.ant"/>
+  </target>
+	
 </project>
