@@ -86,17 +86,25 @@ public class FilterRows extends BaseStep implements StepInterface
             if (data.chosesTargetSteps)
             {
             	List<StreamInterface> targetStreams = meta.getStepIOMeta().getTargetStreams();
-            	data.trueRowSet = findOutputRowSet(getStepname(), getCopy(), targetStreams.get(0).getStepname(), 0);
-            	if ( data.trueRowSet == null )
-            	{
-            		throw new KettleException(BaseMessages.getString(PKG, "FilterRows.Log.TargetStepInvalid", targetStreams.get(0).getStepname()));
+            	if (!Const.isEmpty(targetStreams.get(0).getStepname())) {
+              	data.trueRowSet = findOutputRowSet(getStepname(), getCopy(), targetStreams.get(0).getStepname(), 0);
+              	if ( data.trueRowSet == null )
+              	{
+              		throw new KettleException(BaseMessages.getString(PKG, "FilterRows.Log.TargetStepInvalid", targetStreams.get(0).getStepname()));
+              	}
+            	} else {
+            	  data.trueRowSet = null;
             	}
             	
-            	data.falseRowSet = findOutputRowSet(getStepname(), getCopy(), targetStreams.get(1).getStepname(), 0);
-            	if ( data.falseRowSet == null )
-            	{
-            		throw new KettleException(BaseMessages.getString(PKG, "FilterRows.Log.TargetStepInvalid", targetStreams.get(1).getStepname()));
-            	}            	
+            	if (!Const.isEmpty(targetStreams.get(1).getStepname())) {
+              	data.falseRowSet = findOutputRowSet(getStepname(), getCopy(), targetStreams.get(1).getStepname(), 0);
+              	if ( data.falseRowSet == null )
+              	{
+              		throw new KettleException(BaseMessages.getString(PKG, "FilterRows.Log.TargetStepInvalid", targetStreams.get(1).getStepname()));
+              	}
+            	} else {
+            	  data.falseRowSet = null;
+            	}
             }
         }
 
@@ -112,20 +120,24 @@ public class FilterRows extends BaseStep implements StepInterface
 		{
 		    if (keep)
 		    {
+		      if (data.trueRowSet!=null) {
 		        if (log.isRowLevel()) logRowlevel("Sending row to true  :"+data.trueStepname+" : "+getInputRowMeta().getString(r));
 		        putRowTo(data.outputRowMeta, r, data.trueRowSet);
+		      }
 		    }
 		    else
 		    {
+		      if (data.falseRowSet!=null) {
 		        if (log.isRowLevel()) logRowlevel("Sending row to false :"+data.falseStepname+" : "+getInputRowMeta().getString(r));
 		        putRowTo(data.outputRowMeta, r, data.falseRowSet);
+		      }
 		    }
 		}
 		
-        if (checkFeedback(getLinesRead())) 
-        {
-        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "FilterRows.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
-        }
+    if (checkFeedback(getLinesRead())) 
+    {
+    	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "FilterRows.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+    }
 			
 		return true;
 	}
@@ -148,16 +160,8 @@ public class FilterRows extends BaseStep implements StepInterface
         	data.trueStepname = targetStreams.get(0).getStepname();
         	data.falseStepname = targetStreams.get(1).getStepname();
         	
-            if (targetStreams.get(0).getStepMeta()!=null ^ targetStreams.get(1).getStepMeta()!=null)
-            {
-                logError(BaseMessages.getString(PKG, "FilterRows.Log.BothTrueAndFalseNeeded")); //$NON-NLS-1$
-            }
-            else
-            {
-            	data.chosesTargetSteps = targetStreams.get(0).getStepMeta()!=null && targetStreams.get(1).getStepMeta()!=null;
-            	
-                return true;
-            } 
+        	data.chosesTargetSteps = targetStreams.get(0).getStepMeta()!=null || targetStreams.get(1).getStepMeta()!=null;
+        	return true;
         }
         return false;
     }

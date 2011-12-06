@@ -269,23 +269,6 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
 		String error_message = ""; //$NON-NLS-1$
 		
 		List<StreamInterface> targetStreams = getStepIOMeta().getTargetStreams();
-
-		if (targetStreams.get(0).getStepname()!=null && targetStreams.get(1).getStepname()!=null)
-		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "FilterRowsMeta.CheckResult.BothTrueAndFalseStepSpecified"), stepinfo); //$NON-NLS-1$
-			remarks.add(cr);
-		}
-		else
-		if (targetStreams.get(0).getStepname()==null && targetStreams.get(1).getStepname()==null)
-		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "FilterRowsMeta.CheckResult.NeitherTrueAndFalseStepSpecified"), stepinfo); //$NON-NLS-1$
-			remarks.add(cr);
-		}
-		else
-		{
-			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "FilterRowsMeta.CheckResult.PlsSpecifyBothTrueAndFalseStep"), stepinfo); //$NON-NLS-1$
-			remarks.add(cr);
-		}
 				
 		if ( targetStreams.get(0).getStepname()!=null )
 		{
