@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="src-plugins/star-modeler/src"/>
 	<classpathentry kind="src" path="src-plugins/kettle-hl7-plugin/src"/>
 	<classpathentry kind="src" output="classes-ui" path="src-ui"/>
 	<classpathentry kind="src" path="test"/>
