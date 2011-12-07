@@ -14,6 +14,8 @@ package org.pentaho.di.trans.steps.cassandrainput;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.Charset;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.Deflater;
@@ -27,6 +29,8 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
@@ -77,6 +81,89 @@ public class CassandraInputData extends BaseStepData implements StepDataInterfac
   }
   
   /**
+   * Converts a cassandra row to a Kettle row in the key, colName, colValue, timestamp
+   * format
+   * 
+   * @param metaData meta data on the cassandra column family being read from
+   * @param cassandraRow a row from the column family
+   * @param cassandraColIter an interator over columns for the current row
+   * 
+   * @return a Kettle row
+   * @throws KettleException if a problem occurs
+   */
+  public Object[] cassandraRowToKettleTupleMode(CassandraColumnMetaData metaData,
+      CqlRow cassandraRow, Iterator<Column> cassandraColIter)
+    throws KettleException {
+    
+    Object[] outputRowData = RowDataUtil.allocateRowData(m_outputRowMeta.size());
+    Object key = metaData.getKeyValue(cassandraRow);
+    if (key == null) {
+      throw new KettleException("Unable to obtain a key value for the row!");
+    }
+    
+    String keyName = metaData.getKeyName();
+    int keyIndex = m_outputRowMeta.indexOfValue(keyName);
+    if (keyIndex < 0) {
+      throw new KettleException("Unable to find the key field name '" + keyName 
+          + "' in the output row meta data!");
+    }
+    outputRowData[keyIndex] = key;
+    
+    // advance the iterator to the next column
+    if (cassandraColIter.hasNext()) {
+      Column aCol = cassandraColIter.next();
+      
+      String colName = metaData.getColumnName(aCol);
+      
+      // skip the key
+      if (colName.equals("KEY")) {
+        if (cassandraColIter.hasNext()) {
+          aCol = cassandraColIter.next();
+          colName = metaData.getColumnName(aCol);
+        } else {
+          // run out of columns
+          return null;
+        }
+      }      
+      
+      // for queries that specify column names we need to check that the value
+      // is not null in this row
+      while (metaData.getColumnValue(aCol) == null) {
+        if (cassandraColIter.hasNext()) {
+          aCol = cassandraColIter.next();
+          colName = metaData.getColumnName(aCol);
+        } else {
+          return null;
+        }
+      }
+      
+      outputRowData[1] = colName;
+      
+      // do the value (stored as a string)
+      Object colValue = metaData.getColumnValue(aCol);
+      //System.err.println("KEY " + key.toString() + " Column name: " + colName + " Value " + colValue);
+      String stringV = colValue.toString();
+      if (colValue instanceof Date) {
+        ValueMeta tempDateMeta = new ValueMeta("temp", ValueMetaInterface.TYPE_DATE);
+        stringV = tempDateMeta.getString(colValue);
+      } else if (colValue instanceof byte[]) {
+        stringV = new String((byte[]) colValue);
+      }
+      
+      
+      outputRowData[2] = stringV;
+      
+      // the timestamp as a date object
+      long timestampL = aCol.getTimestamp();
+      outputRowData[3] = timestampL;      
+    } else {
+      return null; // signify no more columns for this row...
+    }
+        
+    return outputRowData;
+  }
+  
+  /**
    * Converts a cassandra row to a Kettle row
    * 
    * @param metaData meta data on the cassandra column family being read from
@@ -87,7 +174,7 @@ public class CassandraInputData extends BaseStepData implements StepDataInterfac
    * @throws KettleException if a problem occurs
    */
   public Object[] cassandraRowToKettle(CassandraColumnMetaData metaData,
-      CqlRow cassandraRow, Map<String, Integer> outputFormatMap) throws KettleException {
+      CqlRow cassandraRow, Map<String, Integer> outputFormatMap) throws KettleException {    
     
     Object[] outputRowData = RowDataUtil.allocateRowData(m_outputRowMeta.size());
     Object key = metaData.getKeyValue(cassandraRow);

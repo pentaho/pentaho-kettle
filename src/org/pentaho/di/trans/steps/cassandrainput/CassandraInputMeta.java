@@ -28,6 +28,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -73,6 +74,8 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
   
   /** The select query to execute */
   protected String m_cqlSelectQuery = "SELECT <fields> FROM <column family> WHERE <condition>;";
+  
+  protected boolean m_outputKeyValueTimestampTuples;
   
   /**
    * Set the cassandra node hostname to connect to
@@ -201,6 +204,26 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
     return m_password;
   }
   
+  /**
+   * Set whether to output key, column, timestamp tuples as rows rather
+   * than standard row format.
+   * 
+   * @param o true if tuples are to be output
+   */
+  public void setOutputKeyValueTimestampTuples(boolean o) {
+    m_outputKeyValueTimestampTuples = o;
+  }
+  
+  /**
+   * Get whether to output key, column, timestamp tuples as rows rather
+   * than standard row format.
+   * 
+   * @return true if tuples are to be output
+   */
+  public boolean getOutputKeyValueTimestampTuples() {
+    return m_outputKeyValueTimestampTuples;
+  }
+  
   public String getXML() {
     StringBuffer retval = new StringBuffer();
     
@@ -236,6 +259,9 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
       retval.append("\n    ").append(XMLHandler.addTagValue("cql_select_query", 
           m_cqlSelectQuery));
     }
+    
+    retval.append("\n    ").append(XMLHandler.addTagValue("output_key_value_timestamp_tuples", 
+        m_outputKeyValueTimestampTuples));
             
     return retval.toString();
   }
@@ -253,6 +279,12 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
     m_cqlSelectQuery = XMLHandler.getTagValue(stepnode, "cql_select_query");
     m_useCompression = XMLHandler.getTagValue(stepnode, "use_compression").
       equalsIgnoreCase("Y");
+    
+    String kV = XMLHandler.getTagValue(stepnode, "output_key_value_timestamp_tuples");
+    
+    if (kV != null) {
+      m_outputKeyValueTimestampTuples = kV.equalsIgnoreCase("Y");
+    }
   }
   
   public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases,
@@ -268,6 +300,12 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
     m_cqlSelectQuery = rep.getStepAttributeString(id_step, 0, "cql_select_query");
     m_useCompression = rep.getStepAttributeString(id_step, 0, "use_compression").
       equalsIgnoreCase("Y");
+    
+    String kV = rep.getStepAttributeString(id_step, 0, "output_key_value_timestamp_tuples");
+    
+    if (kV != null) {
+      m_outputKeyValueTimestampTuples = kV.equalsIgnoreCase("Y");
+    }
   }
 
   public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step)
@@ -304,6 +342,9 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
       rep.saveStepAttribute(id_transformation, id_step, "cql_select_query",
           m_cqlSelectQuery);
     }
+    
+    rep.saveStepAttribute(id_transformation, id_step, "output_key_value_timestamp_tuples",
+        m_outputKeyValueTimestampTuples);
   }
 
   public void check(List<CheckResultInterface> remarks, TransMeta transMeta,
@@ -330,7 +371,7 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
     m_cassandraPort = "9160";
     m_cqlSelectQuery = "SELECT <fields> FROM <column family> WHERE <condition>;";
     m_useCompression = false;
-  }
+  }  
   
   public void getFields(RowMetaInterface rowMeta, String origin, 
       RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) 
@@ -383,7 +424,7 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
       if (fromIndex < 0) {
         logError("Must specify a column family using a 'FROM' clause");
         return; // no from clause
-      }
+      }      
       
       colFamName = subQ.substring(fromIndex + 4, subQ.length()).trim();
       if (colFamName.indexOf(' ') > 0) {
@@ -430,6 +471,20 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
         // Do the key first
         ValueMetaInterface km = colMeta.getValueMetaForKey();
         rowMeta.addValueMeta(km);
+        
+        if (getOutputKeyValueTimestampTuples()) {
+          // special case where user has asked for all row keys, columns and
+          // timestamps output as separate rows.
+          ValueMetaInterface vm = new ValueMeta("ColumnName", ValueMetaInterface.TYPE_STRING);
+          rowMeta.addValueMeta(vm);
+          vm = new ValueMeta("ColumnValue", ValueMetaInterface.TYPE_STRING);
+          rowMeta.addValueMeta(vm);
+          vm = new ValueMeta("Timestamp", ValueMetaInterface.TYPE_INTEGER);
+          rowMeta.addValueMeta(vm);
+          
+          conn.close();
+          return;
+        }
         
         if (cols == null) {
           // select * - use all the columns that are defined in the schema

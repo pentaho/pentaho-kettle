@@ -129,6 +129,7 @@ public class CassandraOutputData extends BaseStepData implements
   public static void commitBatch(StringBuilder batch, CassandraConnection conn,
       boolean compressCQL) throws Exception {
     
+    System.out.println(batch.toString());
     // compress the batch if necessary
     byte[] toSend = null;
     if (compressCQL) {

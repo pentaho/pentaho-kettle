@@ -87,6 +87,9 @@ public class CassandraInputDialog extends BaseStepDialog implements
 
   private Label m_compressionLab;
   private Button m_useCompressionBut;
+  
+  private Label m_outputTuplesLab;
+  private Button m_outputTuplesBut;
 
   private Label m_positionLab;
   
@@ -284,6 +287,26 @@ public class CassandraInputDialog extends BaseStepDialog implements
     fd.left = new FormAttachment(middle, 0);
     m_keyspaceText.setLayoutData(fd);
     
+    // output key, column, timestamp tuples line
+    m_outputTuplesLab = new Label(shell, SWT.RIGHT);
+    props.setLook(m_outputTuplesLab);
+    m_outputTuplesLab.setText(BaseMessages.getString(PKG, 
+      "CassandraInputDialog.OutputTuples.Label"));
+    fd = new FormData();
+    fd.left = new FormAttachment(0, 0);
+    fd.top = new FormAttachment(m_keyspaceText, margin);
+    fd.right = new FormAttachment(middle, -margin);
+    m_outputTuplesLab.setLayoutData(fd);
+    
+    m_outputTuplesBut = new Button(shell, SWT.CHECK);
+    props.setLook(m_outputTuplesBut);
+    fd = new FormData();
+    fd.right = new FormAttachment(100, 0);
+    fd.top = new FormAttachment(m_keyspaceText, margin);
+    fd.left = new FormAttachment(middle, 0);
+    m_outputTuplesBut.setLayoutData(fd);
+    
+    
     // compression check box
     m_compressionLab = new Label(shell, SWT.RIGHT);
     props.setLook(m_compressionLab);
@@ -291,7 +314,7 @@ public class CassandraInputDialog extends BaseStepDialog implements
         "CassandraInputDialog.UseCompression.Label"));
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
-    fd.top = new FormAttachment(m_keyspaceText, margin);
+    fd.top = new FormAttachment(m_outputTuplesBut, margin);
     fd.right = new FormAttachment(middle, -margin);
     m_compressionLab.setLayoutData(fd);
     
@@ -300,7 +323,7 @@ public class CassandraInputDialog extends BaseStepDialog implements
     fd = new FormData();
     fd.right = new FormAttachment(100, 0);
     fd.left = new FormAttachment(middle, 0);
-    fd.top = new FormAttachment(m_keyspaceText, margin);
+    fd.top = new FormAttachment(m_outputTuplesBut, margin);
     m_useCompressionBut.setLayoutData(fd);
     m_useCompressionBut.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent e) {
@@ -515,6 +538,7 @@ public class CassandraInputDialog extends BaseStepDialog implements
     m_currentMeta.setPassword(m_passText.getText());
     m_currentMeta.setCassandraKeyspace(m_keyspaceText.getText());
     m_currentMeta.setUseCompression(m_useCompressionBut.getSelection());
+    m_currentMeta.setOutputKeyValueTimestampTuples(m_outputTuplesBut.getSelection());
     m_currentMeta.setCQLSelectQuery(m_cqlText.getText());
     
     if (!m_originalMeta.equals(m_currentMeta)) {
@@ -554,6 +578,8 @@ public class CassandraInputDialog extends BaseStepDialog implements
     }
     
     m_useCompressionBut.setSelection(m_currentMeta.getUseCompression());
+    
+    m_outputTuplesBut.setSelection(m_currentMeta.getOutputKeyValueTimestampTuples());
     
     if (!Const.isEmpty(m_currentMeta.getCQLSelectQuery())) {
       m_cqlText.setText(m_currentMeta.getCQLSelectQuery());

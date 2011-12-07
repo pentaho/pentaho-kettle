@@ -140,9 +140,11 @@ public class CassandraInput extends BaseStep implements StepInterface {
       }
       
       // set up the lookup map
-      for (int i = 0; i < m_data.getOutputRowMeta().size(); i++) {
-        String fieldName = m_data.getOutputRowMeta().getValueMeta(i).getName();
-        m_outputFormatMap.put(fieldName, i);
+      if (!m_meta.getOutputKeyValueTimestampTuples()) {
+        for (int i = 0; i < m_data.getOutputRowMeta().size(); i++) {
+          String fieldName = m_data.getOutputRowMeta().getValueMeta(i).getName();
+          m_outputFormatMap.put(fieldName, i);
+        }
       }
       
       // column family name (key) is the first field output
@@ -175,17 +177,35 @@ public class CassandraInput extends BaseStep implements StepInterface {
     
     if (m_resultIterator.hasNext()) {
       CqlRow nextRow = m_resultIterator.next();
+      Object[] outputRowData = null;
       
-      Object[] outputRowData = 
-        m_data.cassandraRowToKettle(m_cassandraMeta, nextRow, m_outputFormatMap);      
-      
-      // output the row
-      putRow(m_data.getOutputRowMeta(), outputRowData);
-      
-      if (log.isRowLevel()) {
-        log.logRowlevel(toString(), "Outputted row #" + getProcessed() 
-            + " : " + outputRowData);
-      }
+      if (m_meta.getOutputKeyValueTimestampTuples()) {
+        //System.err.println("Number of columns in row: " + nextRow.getColumnsSize());
+        Iterator<Column> columnIterator = nextRow.getColumnsIterator();
+        
+        while ((outputRowData =
+          m_data.cassandraRowToKettleTupleMode(m_cassandraMeta, nextRow, 
+              columnIterator)) != null) {
+          
+          putRow(m_data.getOutputRowMeta(), outputRowData);
+          
+          if (log.isRowLevel()) {
+            log.logRowlevel(toString(), "Outputted row #" + getProcessed() 
+                + " : " + outputRowData);
+          }
+        }
+      } else { 
+        outputRowData = 
+          m_data.cassandraRowToKettle(m_cassandraMeta, nextRow, m_outputFormatMap);
+        
+        // output the row
+        putRow(m_data.getOutputRowMeta(), outputRowData);
+        
+        if (log.isRowLevel()) {
+          log.logRowlevel(toString(), "Outputted row #" + getProcessed() 
+              + " : " + outputRowData);
+        }
+      }            
     } else {
       //m_connection.close();
       closeConnection();
