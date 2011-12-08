@@ -431,6 +431,24 @@ public class JobEntryPigScriptExecutor extends JobEntryBase implements Cloneable
       logError(Const.getStackTracker(e));    
     }
     
+    String fsProtocol = "hdfs://";
+    try {
+      // see if there is a specific file system protocol to use. If not, default to hdfs.      
+      fsProtocol = System.getProperty("hadoop.filesystem.protocol", "hdfs://");
+      if (!Const.isEmpty(fsProtocol)) {
+        if (!fsProtocol.endsWith("://")) {
+          fsProtocol += "://";
+        }
+      } else {
+        fsProtocol = "hdfs://";
+      }
+      logBasic(BaseMessages.getString(PKG, 
+          "JobEntryPigScriptExecutor.Message.HadoopFilesystem") + fsProtocol);
+    } catch (Exception ex) {
+      logError(BaseMessages.getString(PKG, 
+          "JobEntryPigScriptExecutor.Error.UnableToAccessFSProperty"));
+    }
+    
     if (!m_localExecution && Const.isEmpty(m_hdfsHostname)) {
       throw new KettleException(BaseMessages.getString(PKG, 
           "JobEntryPigScriptExecutor.Error.NoHDFSHostSpecified"));
@@ -474,11 +492,16 @@ public class JobEntryPigScriptExecutor extends JobEntryBase implements Cloneable
         
         String hdfsHost = m_hdfsHostname;
         hdfsHost = environmentSubstitute(hdfsHost);
-        if (m_hdfsHostname.toLowerCase().indexOf("hdfs://") < 0) {
+/*        if (m_hdfsHostname.toLowerCase().indexOf("hdfs://") < 0) {
           hdfsHost = "hdfs://" + hdfsHost;
+        } */
+        hdfsHost = fsProtocol + hdfsHost;
+        
+        if (!Const.isEmpty(hdfsP)) {
+          hdfsHost += ":" + hdfsP;
         }
         
-        conf.set("fs.default.name", hdfsHost + ":" + hdfsP);
+        conf.set("fs.default.name", hdfsHost);
         conf.set("mapred.job.tracker", m_jobTrackerHostname + ":" + jobTP);
       }
       
