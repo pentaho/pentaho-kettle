@@ -62,6 +62,8 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
+import com.debortoliwines.openerp.api.helpers.FilterHelper;
+
 public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDialogInterface {
 
 	private static Class<?> PKG = OpenERPObjectInputMeta.class; // for i18n purposes, needed by Translator2!! // $NON-NLS-1$
@@ -494,9 +496,9 @@ public class OpenERPObjectInputDialog extends BaseStepDialog implements StepDial
 		fieldStringList = fieldList.toArray(fieldStringList);
 		Arrays.sort(fieldStringList,String.CASE_INSENSITIVE_ORDER);
 		
-		filterViewColinf[0].setComboValues(new String [] {"", "NOT", "OR"});
+		filterViewColinf[0].setComboValues(FilterHelper.getOperators());
 		filterViewColinf[1].setComboValues(fieldStringList);
-		filterViewColinf[2].setComboValues(new String [] {"=", "!=", ">", ">=", "<", "<=", "like", "ilike", "is null", "is not null", "in", "not in", "child_of", "parent_left", "parent_right"});
+		filterViewColinf[2].setComboValues(FilterHelper.getComparators());
 		tableViewFilter.optWidth(true);
 	}
 	
