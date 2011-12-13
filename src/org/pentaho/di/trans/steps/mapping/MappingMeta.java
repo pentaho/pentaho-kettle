@@ -435,12 +435,14 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface, HasR
         // However, we do need to re-map some fields...
         // 
         inputRowMeta = row.clone();
-        for (MappingValueRename valueRename : definition.getValueRenames()) {
-          ValueMetaInterface valueMeta = inputRowMeta.searchValueMeta(valueRename.getSourceValueName());
-          if (valueMeta == null) {
-            throw new KettleStepException(BaseMessages.getString(PKG, "MappingMeta.Exception.UnableToFindField", valueRename.getSourceValueName()));
+        if (!inputRowMeta.isEmpty()) {
+          for (MappingValueRename valueRename : definition.getValueRenames()) {
+            ValueMetaInterface valueMeta = inputRowMeta.searchValueMeta(valueRename.getSourceValueName());
+            if (valueMeta == null) {
+              throw new KettleStepException(BaseMessages.getString(PKG, "MappingMeta.Exception.UnableToFindField", valueRename.getSourceValueName()));
+            }
+            valueMeta.setName(valueRename.getTargetValueName());
           }
-          valueMeta.setName(valueRename.getTargetValueName());
         }
       } else {
         // The row metadata that goes to the info mapping input comes from the

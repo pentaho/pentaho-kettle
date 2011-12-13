@@ -172,7 +172,7 @@ public class Mapping extends BaseStep implements StepInterface
           System.out.println("Input buffer 0 size: "+mappingInputs[0].getInputRowSets().get(0).size());
         }
         
-			  // Now execute one batch...
+			  // Now execute one batch...Basic logging
 			  //
 			  boolean result = data.singleThreadedTransExcecutor.oneIteration();
 			  if (!result) {
