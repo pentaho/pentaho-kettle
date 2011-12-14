@@ -130,7 +130,10 @@ public class Const
 
     /**
      * Path to the users home directory (keep this entry above references to getKettleDirectory())
+     * 
+     * @deprecated Use {@link Const.getUserHomeDirectory()} instead.
      */
+    @Deprecated
     public static final String USER_HOME_DIRECTORY = NVL(System.getProperty("KETTLE_HOME"), System.getProperty("user.home"));
     
     /**
@@ -1306,6 +1309,15 @@ public class Const
 		}
 	}
 
+  /**
+   * Looks up the user's home directory (or KETTLE_HOME) for every invocation. This is no longer a static property so
+   * the value may be set after this class is loaded.
+   *
+   * @return The path to the users home directory, or the System property {@code KETTLE_HOME} if set.
+   */
+  public static final String getUserHomeDirectory() {
+    return NVL(System.getProperty("KETTLE_HOME"), System.getProperty("user.home"));
+  }
 
 	/**
 	 * Determines the Kettle directory in the user's home directory.
@@ -1313,7 +1325,7 @@ public class Const
 	 */
 	public static final String getKettleDirectory()
 	{
-		return USER_HOME_DIRECTORY + FILE_SEPARATOR + BasePropertyHandler.getProperty("userBaseDir", ".kettle");
+		return getUserHomeDirectory() + FILE_SEPARATOR + BasePropertyHandler.getProperty("userBaseDir", ".kettle");
 	}
 	
 	/** 

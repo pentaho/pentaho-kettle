@@ -324,11 +324,11 @@ public class JobEntryPGPVerifyDialog extends JobEntryDialog implements JobEntryD
 							DetachedFilename = KettleVFS.getInstance().getFileSystemManager().resolveFile(
 									jobMeta.environmentSubstitute(wDetachedFilename.getText()));
 						else
-							DetachedFilename = KettleVFS.getInstance().getFileSystemManager().resolveFile(Const.USER_HOME_DIRECTORY);
+							DetachedFilename = KettleVFS.getInstance().getFileSystemManager().resolveFile(Const.getUserHomeDirectory());
 							
 					} catch (FileSystemException ex)
 					{
-						DetachedFilename = KettleVFS.getInstance().getFileSystemManager().resolveFile(Const.USER_HOME_DIRECTORY);
+						DetachedFilename = KettleVFS.getInstance().getFileSystemManager().resolveFile(Const.getUserHomeDirectory());
 					}
 
 					VfsFileChooserDialog vfsFileChooser = Spoon.getInstance().getVfsFileChooserDialog(DetachedFilename.getParent(), DetachedFilename);
@@ -369,11 +369,11 @@ public class JobEntryPGPVerifyDialog extends JobEntryDialog implements JobEntryD
 							fileName = KettleVFS.getInstance().getFileSystemManager().resolveFile(
 									jobMeta.environmentSubstitute(wFilename.getText()));
 						else
-							fileName = KettleVFS.getInstance().getFileSystemManager().resolveFile(Const.USER_HOME_DIRECTORY);
+							fileName = KettleVFS.getInstance().getFileSystemManager().resolveFile(Const.getUserHomeDirectory());
 							
 					} catch (FileSystemException ex)
 					{
-						fileName = KettleVFS.getInstance().getFileSystemManager().resolveFile(Const.USER_HOME_DIRECTORY);
+						fileName = KettleVFS.getInstance().getFileSystemManager().resolveFile(Const.getUserHomeDirectory());
 					}
 
 					VfsFileChooserDialog vfsFileChooser = Spoon.getInstance().getVfsFileChooserDialog(fileName.getParent(), fileName);
@@ -413,11 +413,11 @@ public class JobEntryPGPVerifyDialog extends JobEntryDialog implements JobEntryD
 							fileName = KettleVFS.getInstance().getFileSystemManager().resolveFile(
 									jobMeta.environmentSubstitute(wGPGLocation.getText()));
 						else
-							fileName = KettleVFS.getInstance().getFileSystemManager().resolveFile(Const.USER_HOME_DIRECTORY);
+							fileName = KettleVFS.getInstance().getFileSystemManager().resolveFile(Const.getUserHomeDirectory());
 							
 					} catch (FileSystemException ex)
 					{
-						fileName = KettleVFS.getInstance().getFileSystemManager().resolveFile(Const.USER_HOME_DIRECTORY);
+						fileName = KettleVFS.getInstance().getFileSystemManager().resolveFile(Const.getUserHomeDirectory());
 					}
 
 					VfsFileChooserDialog vfsFileChooser = Spoon.getInstance().getVfsFileChooserDialog(fileName.getParent(), fileName);

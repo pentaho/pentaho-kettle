@@ -208,11 +208,11 @@ public class JobEntryTalendJobExecDialog extends JobEntryDialog implements JobEn
 							fileName = KettleVFS.getInstance().getFileSystemManager().resolveFile(
 									jobMeta.environmentSubstitute(wFilename.getText()));
 						else
-							fileName = KettleVFS.getInstance().getFileSystemManager().resolveFile(Const.USER_HOME_DIRECTORY);
+							fileName = KettleVFS.getInstance().getFileSystemManager().resolveFile(Const.getUserHomeDirectory());
 							
 					} catch (FileSystemException ex)
 					{
-						fileName = KettleVFS.getInstance().getFileSystemManager().resolveFile(Const.USER_HOME_DIRECTORY);
+						fileName = KettleVFS.getInstance().getFileSystemManager().resolveFile(Const.getUserHomeDirectory());
 					}
 
          VfsFileChooserDialog vfsFileChooser = Spoon.getInstance().getVfsFileChooserDialog(fileName.getParent(), fileName);

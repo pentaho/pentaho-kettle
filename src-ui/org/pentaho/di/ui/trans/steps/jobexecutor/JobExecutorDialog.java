@@ -595,7 +595,7 @@ public class JobExecutorDialog extends BaseStepDialog implements StepDialogInter
     FileObject root = null;
 
     try {
-      root = KettleVFS.getFileObject(curFile != null ? curFile : Const.USER_HOME_DIRECTORY);
+      root = KettleVFS.getFileObject(curFile != null ? curFile : Const.getUserHomeDirectory());
 
       VfsFileChooserDialog vfsFileChooser = Spoon.getInstance().getVfsFileChooserDialog(root.getParent(), root);
       FileObject file = vfsFileChooser.open(shell, null, Const.STRING_TRANS_FILTER_EXT, Const.getJobFilterNames(), VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE);
