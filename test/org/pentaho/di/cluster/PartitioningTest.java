@@ -102,4 +102,45 @@ public class PartitioningTest extends BaseCluster {
 			}
 		}
 	}
+	
+	 /**
+   * Same as testPartitioningRepartitioningOnCluster() but passing the data to a non-partitioned step on the master.
+   * 
+   * File: "partitioning-repartitioning-on-cluster3.ktr"<br>
+   */
+  public void testPartitioningRepartitioningOnCluster3() throws Exception {
+    init();
+    
+    ClusterGenerator clusterGenerator = new ClusterGenerator();
+    try {
+      clusterGenerator.launchSlaveServers();
+      
+      TransMeta transMeta = loadAndModifyTestTransformation(clusterGenerator, "test/org/pentaho/di/cluster/partitioning-repartitioning-on-cluster3.ktr");
+      TransExecutionConfiguration config = createClusteredTransExecutionConfiguration();
+      TransSplitter transSplitter = Trans.executeClustered(transMeta, config);
+      long nrErrors = Trans.monitorClusteredTransformation(new LogChannel("cluster unit test <testParallelFileReadOnMaster>"), transSplitter, null, 1);
+      assertEquals(0L, nrErrors);
+      
+      String goldenData = "000;16\n001;17\n002;17\n003;17\n004;17\n005;16";
+      String filename = "${java.io.tmpdir}/partitioning-repartitioning-on-cluster3.txt";
+      String result = loadFileContent(transMeta, filename);
+      assertEqualsIgnoreWhitespacesAndCase(goldenData, result);
+        
+      // Remove the output file : we don't want to leave too much clutter around
+      //
+      // FileObject file = KettleVFS.getFileObject(transMeta.environmentSubstitute(filename));
+      // file.delete();
+    } catch (Exception e) {
+      e.printStackTrace();
+      fail(e.toString());
+    }
+    finally {
+      try {
+        clusterGenerator.stopSlaveServers();
+      } catch (Exception e) {
+        e.printStackTrace();
+        fail(e.toString());
+      }
+    }
+  }
 }
