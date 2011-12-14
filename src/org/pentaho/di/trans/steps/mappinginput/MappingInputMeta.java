@@ -308,11 +308,13 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface
         		
         		// Validate the existence of all the specified fields...
         		//
-    	    	for (int i=0;i<fieldName.length;i++) {
-    	    		if (row.indexOfValue(fieldName[i])<0) {
-    	    			throw new KettleStepException(BaseMessages.getString(PKG, "MappingInputMeta.Exception.UnknownField", fieldName[i]));
-    	    		}
-    	        }
+            if (!row.isEmpty()) {
+      	    	for (int i=0;i<fieldName.length;i++) {
+      	    		if (row.indexOfValue(fieldName[i])<0) {
+      	    			throw new KettleStepException(BaseMessages.getString(PKG, "MappingInputMeta.Exception.UnknownField", fieldName[i]));
+      	    		}
+     	        }
+        	  }
     		}
     	}
     	else {

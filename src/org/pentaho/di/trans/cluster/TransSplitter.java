@@ -538,7 +538,7 @@ public class TransSplitter
                               // Also set the target partitioning on the slave step.
                               // A copy of the original previous step partitioning schema
                               //
-                              if (previousStepPartitioningMeta.isPartitioned()) {
+                              if (referenceStep.isPartitioned()) {
                                 
                                 // Set the target partitioning schema for the source step (master)
                                 //
