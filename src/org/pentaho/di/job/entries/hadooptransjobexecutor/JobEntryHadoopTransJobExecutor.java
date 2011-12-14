@@ -48,6 +48,8 @@ import org.pentaho.di.trans.TransConfiguration;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.job.entries.hadoopjobexecutor.UserDefinedItem;
+import org.pentaho.hadoop.jobconf.HadoopConfigurer;
+import org.pentaho.hadoop.jobconf.HadoopConfigurerFactory;
 import org.pentaho.hadoop.mapreduce.GenericTransCombiner;
 import org.pentaho.hadoop.mapreduce.GenericTransReduce;
 import org.pentaho.hadoop.mapreduce.PentahoMapRunnable;
@@ -105,6 +107,8 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
 
   private String numMapTasks = "1";
   private String numReduceTasks = "1";
+  
+  private String hadoopDistribution = "generic";
 
   private List<UserDefinedItem> userDefined = new ArrayList<UserDefinedItem>();
   
@@ -390,12 +394,25 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
   public void setNumReduceTasks(String numReduceTasks) {
     this.numReduceTasks = numReduceTasks;
   }
-
+  
+  public void setHadoopDistribution(String hadoopDistro) {
+    hadoopDistribution = hadoopDistro;
+  }
+  
+  public String getHadoopDistribution() {
+    return hadoopDistribution;
+  }
+  
   public Result execute(Result result, int arg1) throws KettleException {
 
     Log4jFileAppender appender = null;
     String logFileName = "pdi-" + this.getName(); //$NON-NLS-1$
-    String fsProtocol = "hdfs://";
+
+    String hadoopDistro = System.getProperty("hadoop.distribution.name", hadoopDistribution);
+    hadoopDistro = environmentSubstitute(hadoopDistro);
+    if (Const.isEmpty(hadoopDistro)) {
+      hadoopDistro = "generic";
+    }        
     
     try
     {
@@ -406,24 +423,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
     {
       logError(BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.FailedToOpenLogFile", logFileName, e.toString())); //$NON-NLS-1$
       logError(Const.getStackTracker(e));
-    }
-    
-    try {
-      // see if there is a specific file system protocol to use. If not, default to hdfs.      
-      fsProtocol = System.getProperty("hadoop.filesystem.protocol", "hdfs://");
-      if (!Const.isEmpty(fsProtocol)) {
-        if (!fsProtocol.endsWith("://")) {
-          fsProtocol += "://";
-        }
-      } else {
-        fsProtocol = "hdfs://";
-      }
-      logBasic(BaseMessages.getString(PKG, 
-          "JobEntryHadoopTransJobExecutor.Message.HadoopFilesystem") + fsProtocol);
-    } catch (Exception ex) {
-      logError(BaseMessages.getString(PKG, 
-          "JobEntryHadoopTransJobExecutor.Error.UnableToAccessFSProperty"));
-    }
+    }    
     
     try {
       ClassLoader loader = getClass().getClassLoader();
@@ -531,27 +531,37 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
 
       String hdfsHostnameS = environmentSubstitute(hdfsHostname);
       String hdfsPortS = environmentSubstitute(hdfsPort);
-      String hdfsBaseUrl = fsProtocol;
-      if (!Const.isEmpty(hdfsHostnameS)) {
-        hdfsBaseUrl += hdfsHostnameS;
-      }
-      if (!Const.isEmpty(hdfsPort)) {
-        hdfsBaseUrl += ":" + hdfsPortS;
-      }
-      
-      //String hdfsBaseUrl = "hdfs://" + hdfsHostnameS + ":" + hdfsPortS; //$NON-NLS-1$ //$NON-NLS-2$
-      
-      
-      conf.set("fs.default.name", hdfsBaseUrl); //$NON-NLS-1$
       String jobTrackerHostnameS = environmentSubstitute(jobTrackerHostname);
       String jobTrackerPortS = environmentSubstitute(jobTrackerPort);
-      conf.set("mapred.job.tracker", jobTrackerHostnameS + ":" + jobTrackerPortS); //$NON-NLS-1$ //$NON-NLS-2$
+      
+      HadoopConfigurer configurer = HadoopConfigurerFactory.getConfigurer(hadoopDistro);
+      if (configurer == null) {
+        throw new KettleException(BaseMessages.
+            getString(PKG, "JobEntryHadoopTransJobExecutor.Error.UnknownHadoopDistribution", 
+                hadoopDistro));
+      }
+      logBasic(BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.Message.DistroConfigMessage", 
+          configurer.distributionName()));
+      
+      List<String> configMessages = new ArrayList<String>();
+      configurer.configure(hdfsHostnameS, hdfsPortS, 
+          jobTrackerHostnameS, jobTrackerPortS, conf, configMessages);
+      for (String m : configMessages) {
+        logBasic(m);
+      }            
 
-      // TODO: this could be a list of input paths apparently
       String inputPathS = environmentSubstitute(inputPath);
+      String[] inputPathParts = inputPathS.split(",");
+      List<Path> paths = new ArrayList<Path>();
+      for (String path : inputPathParts) {
+        paths.add(new Path(configurer.getFilesystemURL() + path));
+      }
+      Path[] finalPaths = paths.toArray(new Path[paths.size()]);
+      
       String outputPathS = environmentSubstitute(outputPath);
-      FileInputFormat.setInputPaths(conf, new Path(hdfsBaseUrl + inputPathS));
-      FileOutputFormat.setOutputPath(conf, new Path(hdfsBaseUrl + outputPathS));
+      //FileInputFormat.setInputPaths(conf, new Path(configurer.getFilesystemURL() + inputPathS));
+      FileInputFormat.setInputPaths(conf, finalPaths);
+      FileOutputFormat.setOutputPath(conf, new Path(configurer.getFilesystemURL() + outputPathS));
 
       // process user defined values
       for (UserDefinedItem item : userDefined) {
@@ -563,7 +573,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
       }
 
       String workingDirectoryS = environmentSubstitute(workingDirectory);
-      conf.setWorkingDirectory(new Path(hdfsBaseUrl + workingDirectoryS));
+      conf.setWorkingDirectory(new Path(configurer.getFilesystemURL() + workingDirectoryS));
       conf.setJarByClass(PentahoMapRunnable.class);
 
       conf.setNumMapTasks(Const.toInt(environmentSubstitute(numMapTasks), 1));
@@ -674,6 +684,10 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
   public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException {
     super.loadXML(entrynode, databases, slaveServers);
     hadoopJobName = XMLHandler.getTagValue(entrynode, "hadoop_job_name"); //$NON-NLS-1$
+    
+    if (!Const.isEmpty(XMLHandler.getTagValue(entrynode, "hadoop_distribution"))) {
+      hadoopDistribution = XMLHandler.getTagValue(entrynode, "hadoop_distribution"); //$NON-NLS-1$
+    }
 
     mapRepositoryDir = XMLHandler.getTagValue(entrynode, "map_trans_repo_dir"); //$NON-NLS-1$
     mapRepositoryFile = XMLHandler.getTagValue(entrynode, "map_trans_repo_file"); //$NON-NLS-1$
@@ -739,6 +753,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
     StringBuffer retval = new StringBuffer(1024);
     retval.append(super.getXML());
     retval.append("      ").append(XMLHandler.addTagValue("hadoop_job_name", hadoopJobName)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("      ").append(XMLHandler.addTagValue("hadoop_distribution", hadoopDistribution)); //$NON-NLS-1$ //$NON-NLS-2$
     
     retval.append("      ").append(XMLHandler.addTagValue("map_trans_repo_dir", mapRepositoryDir)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("      ").append(XMLHandler.addTagValue("map_trans_repo_file", mapRepositoryFile)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -798,6 +813,10 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
   public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
     if(rep != null) {
       setHadoopJobName(rep.getJobEntryAttributeString(id_jobentry, "hadoop_job_name")); //$NON-NLS-1$
+     
+      if (!Const.isEmpty(rep.getJobEntryAttributeString(id_jobentry, "hadoop_distribution"))) {
+        setHadoopDistribution(rep.getJobEntryAttributeString(id_jobentry, "hadoop_distribution")); //$NON-NLS-1$
+      }
       
       setMapRepositoryDir(rep.getJobEntryAttributeString(id_jobentry, "map_trans_repo_dir")); //$NON-NLS-1$
       setMapRepositoryFile(rep.getJobEntryAttributeString(id_jobentry, "map_trans_repo_file")); //$NON-NLS-1$
@@ -873,6 +892,9 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
   public void saveRep(Repository rep, ObjectId id_job) throws KettleException {
     if(rep != null) {
       rep.saveJobEntryAttribute(id_job, getObjectId(),"hadoop_job_name", hadoopJobName); //$NON-NLS-1$
+      
+      rep.saveJobEntryAttribute(id_job, getObjectId(),"hadoop_distribution", hadoopDistribution); //$NON-NLS-1$
+      
       rep.saveJobEntryAttribute(id_job, getObjectId(),"map_trans_repo_dir", mapRepositoryDir); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getObjectId(),"map_trans_repo_file", mapRepositoryFile); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getObjectId(),"map_trans_repo_reference", mapRepositoryReference == null ? null : mapRepositoryReference.toString()); //$NON-NLS-1$

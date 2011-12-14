@@ -44,7 +44,7 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
   private String hadoopJobName;
   private String jarUrl = "";
 
-  private boolean isSimple = true;
+  private boolean isSimple = true;  
 
   private SimpleConfiguration sConf = new SimpleConfiguration();
   private AdvancedConfiguration aConf = new AdvancedConfiguration();
@@ -56,6 +56,7 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
   public void accept() {
     // common/simple
     jobEntry.setName(jobEntryName);
+    jobEntry.setHadoopDistribution(aConf.getHadoopDistribution());
     jobEntry.setHadoopJobName(hadoopJobName);
     jobEntry.setSimple(isSimple);
     jobEntry.setJarUrl(jarUrl);
@@ -93,13 +94,15 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
       setJobEntryName(jobEntry.getName());
       setHadoopJobName(jobEntry.getHadoopJobName());
       setSimple(jobEntry.isSimple());
-      setJarUrl(jobEntry.getJarUrl());
+      setJarUrl(jobEntry.getJarUrl());            
       sConf.setCommandLineArgs(jobEntry.getCmdLineArgs());
       // advanced config
       userDefined.clear();
       if (jobEntry.getUserDefined() != null) {
         userDefined.addAll(jobEntry.getUserDefined());
       }
+      aConf.setHadoopDistribution(jobEntry.getHadoopDistribution());
+      
       aConf.setBlocking(jobEntry.isBlocking());
       aConf.setLoggingInterval(jobEntry.getLoggingInterval());
       aConf.setMapperClass(jobEntry.getMapperClass());
@@ -302,6 +305,7 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
     public static final String JOB_TRACKER_PORT = "jobTrackerPort"; //$NON-NLS-1$
     public static final String NUM_MAP_TASKS = "numMapTasks"; //$NON-NLS-1$
     public static final String NUM_REDUCE_TASKS = "numReduceTasks"; //$NON-NLS-1$
+    public static final String HADOOP_DISTRIBUTION = "hadoopDistribution"; //$NON-NLS-1$
 
     private String outputKeyClass;
     private String outputValueClass;
@@ -324,6 +328,8 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
 
     private boolean blocking;
     private int loggingInterval = 60; // 60 seconds
+    
+    private String hadoopDistribution = "";
 
     public String getOutputKeyClass() {
       return outputKeyClass;
@@ -539,7 +545,17 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
 
       this.numReduceTasks = numReduceTasks;
       firePropertyChange(AdvancedConfiguration.NUM_REDUCE_TASKS, previousVal, newVal);
+    }    
+    
+    public String getHadoopDistribution() {
+      return hadoopDistribution;
     }
-
+    
+    public void setHadoopDistribution(String hadoopDistribution) {
+      String previousVal = this.hadoopDistribution;
+      this.hadoopDistribution = hadoopDistribution;
+      
+      firePropertyChange(AdvancedConfiguration.HADOOP_DISTRIBUTION, previousVal, hadoopDistribution);
+    }
   }
 }

@@ -86,6 +86,9 @@ public class JobEntryHadoopJobExecutorDialog extends JobEntryDialog implements J
     bf.setBindingType(Type.BI_DIRECTIONAL);
 
     bf.createBinding("jobentry-name", "value", controller, JobEntryHadoopJobExecutorController.JOB_ENTRY_NAME); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    
+    bf.createBinding("hadoop-distribution", "selectedItem", controller.getAdvancedConfiguration(), JobEntryHadoopJobExecutorController.AdvancedConfiguration.HADOOP_DISTRIBUTION); //$NON-NLS-1$ //$NON-NLS-2$ 
+    
     bf.createBinding("jobentry-hadoopjob-name", "value", controller, JobEntryHadoopJobExecutorController.HADOOP_JOB_NAME); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     bf.createBinding("jar-url", "value", controller, JobEntryHadoopJobExecutorController.JAR_URL); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     bf.createBinding("command-line-arguments", "value", controller.getSimpleConfiguration(), SimpleConfiguration.CMD_LINE_ARGS); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$

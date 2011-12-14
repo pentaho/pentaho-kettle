@@ -220,6 +220,16 @@
     					</columns>
     					<rows>
     						<row>
+					        	<label value="${JobEntryHadoopTransJobExecutor.HadoopDistribution.Label}" />
+					        	<menulist id="hadoop-distribution">
+									<menupopup>
+										<menuitem label="${JobEntryHadoopTransJobExecutor.HadoopDistribution.Generic}" />
+										<menuitem label="${JobEntryHadoopTransJobExecutor.HadoopDistribution.Cloudera}" />
+										<menuitem label="${JobEntryHadoopTransJobExecutor.HadoopDistribution.MapR}" />
+									</menupopup>
+								</menulist>
+					        </row>
+    						<row>
     							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.Paths.WorkingDirectory.Label}" />
     							<textbox id="working-dir" flex="1" multiline="false"/>
     						</row>

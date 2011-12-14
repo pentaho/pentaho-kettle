@@ -75,6 +75,8 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
   public static final String MAPPER_STORAGE_TYPE = "mapperStorageType"; //$NON-NLS-1$
   public static final String COMBINER_STORAGE_TYPE = "combinerStorageType"; //$NON-NLS-1$
   public static final String REDUCER_STORAGE_TYPE = "reducerStorageType"; //$NON-NLS-1$
+  
+  public static final String HADOOP_DISTRIBUTION = "hadoopDistribution"; //$NON-NLS-1$
 
   private String jobEntryName;
   private String hadoopJobName;
@@ -123,6 +125,8 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
   private String mapperStorageType = "";
   private String combinerStorageType = "";
   private String reducerStorageType = "";
+  
+  private String hadoopDistribution = "";
 
   private Shell shell;
   private Repository rep;
@@ -153,6 +157,8 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
     // common/simple
     jobEntry.setName(jobEntryName);
     jobEntry.setHadoopJobName(hadoopJobName);
+    
+    jobEntry.setHadoopDistribution(hadoopDistribution);
 
     // Save only one method of accessing the transformation
     if (mapRepositoryReference != null) {
@@ -246,6 +252,7 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
       setName(jobEntry.getName());
       setJobEntryName(jobEntry.getName());
       setHadoopJobName(jobEntry.getHadoopJobName());
+      setHadoopDistribution(jobEntry.getHadoopDistribution());
 
       if (rep == null) {
         ((XulMenuList) getXulDomContainer().getDocumentRoot().getElementById("mapper-storage-type")).setDisabled(true);
@@ -953,6 +960,16 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
 
     this.numReduceTasks = numReduceTasks;
     firePropertyChange(NUM_REDUCE_TASKS, previousVal, newVal);
+  }
+  
+  public String getHadoopDistribution() {
+    return hadoopDistribution;
+  }
+  
+  public void setHadoopDistribution(String hadoopDistribution) {
+    this.hadoopDistribution = hadoopDistribution;
+    
+    firePropertyChange(HADOOP_DISTRIBUTION, null, hadoopDistribution);
   }
 
   public void setMapperStorageType(String mapperStorageType) {

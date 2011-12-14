@@ -80,6 +80,8 @@ public class JobEntryHadoopTransJobExecutorDialog extends JobEntryDialog impleme
     bf.setDocument(container.getDocumentRoot());
     bf.setBindingType(Type.BI_DIRECTIONAL);
     
+    bf.createBinding("hadoop-distribution", "selectedItem", controller, JobEntryHadoopTransJobExecutorController.HADOOP_DISTRIBUTION); //$NON-NLS-1$ //$NON-NLS-2$ 
+    
     bf.createBinding("mapper-storage-type", "selectedItem", controller, JobEntryHadoopTransJobExecutorController.MAPPER_STORAGE_TYPE); //$NON-NLS-1$ //$NON-NLS-2$ 
     bf.createBinding("combiner-storage-type", "selectedItem", controller, JobEntryHadoopTransJobExecutorController.COMBINER_STORAGE_TYPE); //$NON-NLS-1$ //$NON-NLS-2$ 
     bf.createBinding("reducer-storage-type", "selectedItem", controller, JobEntryHadoopTransJobExecutorController.REDUCER_STORAGE_TYPE); //$NON-NLS-1$ //$NON-NLS-2$ 

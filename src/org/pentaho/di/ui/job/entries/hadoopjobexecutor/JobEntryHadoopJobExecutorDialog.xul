@@ -119,6 +119,16 @@
     					</columns>
     					<rows>
     						<row>
+					        	<label value="${JobEntryHadoopJobExecutor.HadoopDistribution.Label}" />
+					        	<menulist id="hadoop-distribution">
+									<menupopup>
+										<menuitem label="${JobEntryHadoopJobExecutor.HadoopDistribution.Generic}" />
+										<menuitem label="${JobEntryHadoopJobExecutor.HadoopDistribution.Cloudera}" />
+										<menuitem label="${JobEntryHadoopJobExecutor.HadoopDistribution.MapR}" />
+									</menupopup>
+								</menulist>
+					        </row>
+    						<row>
     							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Paths.WorkingDirectory.Label}" />
     							<textbox id="working-dir" flex="1" multiline="false"/>
     						</row>
