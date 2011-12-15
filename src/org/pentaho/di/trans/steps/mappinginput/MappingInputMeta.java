@@ -251,7 +251,7 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface
     	// From the viewpoint of the transformation that executes the mapping, it's important to know what comes out at the exit points.
     	// For that reason we need to re-order etc, based on the input specification...
     	//
-    	if (inputRowMeta!=null) {
+      if (inputRowMeta!=null && !inputRowMeta.isEmpty()) {
     		// this gets set only in the parent transformation...
     		// It includes all the renames that needed to be done
     		// 
