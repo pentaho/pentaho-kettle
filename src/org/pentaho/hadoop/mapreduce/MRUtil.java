@@ -20,6 +20,7 @@ import java.sql.Date;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.hadoop.conf.Configuration;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
@@ -27,30 +28,35 @@ import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransConfiguration;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
 
 public class MRUtil {
+  /**
+   * Path to the directory to load plugins from. This must be accessible from all TaskTracker nodes.
+   */
+  public static final String PROPERTY_PENTAHO_KETTLE_PLUGINS_DIR = "pentaho.kettle.plugins.dir";
 
+  /**
+   * Hadoop Configuration for setting KETTLE_HOME. See {@link Const.getKettleDirectory()} for usage.
+   */
+  public static final String PROPERTY_PENTAHO_KETTLE_HOME = "pentaho.kettle.home";
   
-  public static Trans getTrans(String transXml) throws KettleException {
-    Trans trans = null;
+  public static Trans getTrans(final Configuration conf, final String transXml) throws KettleException {
     if (!KettleEnvironment.isInitialized()) {
-      // Additionally load plugins from:
-      //   $HADOOP_HOME/plugins
-      //   $HADOOP_PDI_PLUGIN_FOLDER
-      String hadoopPdiPluginPaths = System.getenv("HADOOP_HOME") + "/plugins"; //$NON-NLS-1$ //$NON-NLS-2$
-      String hadoopPdiPluginFolder = System.getenv("HADOOP_PDI_PLUGIN_FOLDER"); //$NON-NLS-1$
-      if (!StringUtils.isEmpty(hadoopPdiPluginFolder)) {
-        hadoopPdiPluginPaths += "," + hadoopPdiPluginFolder; //$NON-NLS-1$
+      System.setProperty(Const.PLUGIN_BASE_FOLDERS_PROP, getPluginDirProperty(conf));
+      final String kettleHome = conf.get(PROPERTY_PENTAHO_KETTLE_HOME);
+      if (StringUtils.isEmpty(kettleHome)) {
+        throw new KettleException(BaseMessages.getString(MRUtil.class, "Property.Missing", PROPERTY_PENTAHO_KETTLE_HOME));
       }
-      hadoopPdiPluginPaths = Const.DEFAULT_PLUGIN_BASE_FOLDERS + "," + hadoopPdiPluginPaths; //$NON-NLS-1$
-      System.setProperty(Const.PLUGIN_BASE_FOLDERS_PROP, hadoopPdiPluginPaths);
-      System.out.format("Loading PDI plugins from: '%s'\n", hadoopPdiPluginPaths); //$NON-NLS-1$
+      System.setProperty("KETTLE_HOME", kettleHome);
+        
       KettleEnvironment.init();
     }
+
     TransConfiguration transConfiguration = TransConfiguration.fromXML(transXml);
     TransMeta transMeta = transConfiguration.getTransMeta();
     String carteObjectId = UUID.randomUUID().toString();
@@ -58,9 +64,26 @@ public class MRUtil {
     servletLoggingObject.setContainerObjectId(carteObjectId);
     TransExecutionConfiguration executionConfiguration = transConfiguration.getTransExecutionConfiguration();
     servletLoggingObject.setLogLevel(executionConfiguration.getLogLevel());
-    trans = new Trans(transMeta, servletLoggingObject);
+    return new Trans(transMeta, servletLoggingObject);
+  }
 
-    return trans;
+  /**
+   * Builds a comma-separated list of paths to load Kettle plugins from. To be used as the value for the System property
+   * {@link Const.PLUGIN_BASE_FOLDERS_PROP}.
+   *
+   * @param conf Configuration to retrieve properties from
+   * @return Comma-separated list of paths to look for Kettle plugins in
+   */
+  public static String getPluginDirProperty(final Configuration conf) throws KettleException {
+    // Load plugins from the directory specified in the configuration
+    String kettlePluginDir = conf.get(PROPERTY_PENTAHO_KETTLE_PLUGINS_DIR);
+    
+    if (StringUtils.isEmpty(kettlePluginDir)) {
+      throw new KettleException(BaseMessages.getString(MRUtil.class, "Property.Missing", PROPERTY_PENTAHO_KETTLE_PLUGINS_DIR));
+    }
+
+    kettlePluginDir = Const.DEFAULT_PLUGIN_BASE_FOLDERS + "," + kettlePluginDir;
+    return kettlePluginDir;
   }
   
   /**

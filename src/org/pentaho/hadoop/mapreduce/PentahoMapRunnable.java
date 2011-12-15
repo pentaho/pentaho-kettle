@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.MapRunnable;
 import org.apache.hadoop.mapred.OutputCollector;
@@ -82,7 +83,6 @@ public class PentahoMapRunnable<K1, V1, K2, V2> implements MapRunnable<K1, V1, K
   public PentahoMapRunnable() throws KettleException {
   }
 
-  @Override
   public void configure(JobConf job) {
     debug = "true".equalsIgnoreCase(job.get("debug")); //$NON-NLS-1$
 
@@ -137,7 +137,7 @@ public class PentahoMapRunnable<K1, V1, K2, V2> implements MapRunnable<K1, V1, K
        System.out.println("Could not retrieve the log level from the job configuration.  logLevel will not be set.");
     }
     
-    createTrans();
+    createTrans(job);
   }
 
   public void injectValue(Object key, ITypeConverter inConverterK, Object value, ITypeConverter inConverterV,
@@ -159,11 +159,11 @@ public class PentahoMapRunnable<K1, V1, K2, V2> implements MapRunnable<K1, V1, K
     rowProducer.putRow(injectorRowMeta, row);
   }
 
-  protected void createTrans() {
+  protected void createTrans(final Configuration conf) {
 
     try {
       setDebugStatus("Creating a transformation for a map.");
-      trans = MRUtil.getTrans(transMapXml);
+      trans = MRUtil.getTrans(conf, transMapXml);
       
       // TODO Remove this once MRUtil is rolled back to not set SingleThreaded
       trans.getTransMeta().setTransformationType(TransformationType.Normal); 
@@ -339,7 +339,6 @@ public class PentahoMapRunnable<K1, V1, K2, V2> implements MapRunnable<K1, V1, K
     }
   }
 
-  @Override
   public void run(RecordReader<K1, V1> input, final OutputCollector<K2, V2> output, final Reporter reporter)
       throws IOException {
     try {

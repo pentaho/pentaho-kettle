@@ -15,6 +15,7 @@ package org.pentaho.hadoop.mapreduce;
 import java.io.IOException;
 import java.util.UUID;
 
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.MapReduceBase;
 import org.apache.hadoop.mapred.Reporter;
@@ -131,7 +132,7 @@ public class PentahoMapReduceBase<K, V> extends MapReduceBase {
        System.out.println("Could not retrieve the log level from the job configuration.  logLevel will not be set.");
     }
     
-    createTrans();
+    createTrans(job);
   }
 
   @Override
@@ -168,7 +169,7 @@ public class PentahoMapReduceBase<K, V> extends MapReduceBase {
     rowProducer.putRow(injectorRowMeta, row);
   }
 
-  protected void createTrans() {
+  protected void createTrans(final Configuration conf) {
       
       if (mrOperation == null) {
           throw new RuntimeException("Map or reduce operation has not been specified.  Call setMRType from implementing classes constructor.");
@@ -177,15 +178,15 @@ public class PentahoMapReduceBase<K, V> extends MapReduceBase {
       try {
           if (mrOperation.equals(MROperations.Map)) {
               setDebugStatus("Creating a transformation for a map.");
-              trans = MRUtil.getTrans(transMapXml);
+              trans = MRUtil.getTrans(conf, transMapXml);
           }
           else if (mrOperation.equals(MROperations.Combine)) {
             setDebugStatus("Creating a transformation for a combiner.");
-            trans = MRUtil.getTrans(transCombinerXml);
+            trans = MRUtil.getTrans(conf, transCombinerXml);
         }
           else if (mrOperation.equals(MROperations.Reduce)) {
               setDebugStatus("Creating a transformation for a reduce.");
-              trans = MRUtil.getTrans(transReduceXml);
+              trans = MRUtil.getTrans(conf, transReduceXml);
           }
       }      
       catch (KettleException ke) {
