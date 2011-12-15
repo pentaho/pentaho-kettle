@@ -62,6 +62,9 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
   private String jarUrl = "";
 
   private boolean isSimple = true;
+  
+  /** Number of classes with main() methods that were successfully executed in simple mode */
+  private int successCount;
 
   private String cmdLineArgs;
 
@@ -287,6 +290,9 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
   }
 
   public Result execute(Result result, int arg1) throws KettleException {
+    result.setNrErrors(0);
+    successCount = 0;
+    
     Log4jFileAppender appender = null;
     String logFileName = "pdi-" + this.getName(); //$NON-NLS-1$
 
@@ -324,7 +330,7 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
       if (isSimple) {
         if (log.isDetailed())
           logDetailed(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.SimpleMode"));
-        List<Class<?>> classesWithMains = JarUtility.getClassesInJarWithMain(resolvedJarUrl.toExternalForm(), getClass().getClassLoader());
+        List<Class<?>> classesWithMains = JarUtility.getClassesInJarWithMain(resolvedJarUrl.toExternalForm(), getClass().getClassLoader());        
         for (final Class<?> clazz : classesWithMains) {
           Runnable r = new Runnable() {
             public void run() {
@@ -337,16 +343,19 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
                   mainMethod.invoke(null, args);
                 } finally {
                   Thread.currentThread().setContextClassLoader(cl);
+                  successCount++;
                 }
               } catch (Throwable ignored) {
                 // skip, try the next one
+                logError(ignored.getMessage());
               }
             }
           };
           Thread t = new Thread(r);
           t.start();
         }
-
+        result.setResult(successCount > 0);
+        result.setNrErrors((successCount > 0) ? 0 : 1);
       } else {
         if (log.isDetailed())
           logDetailed(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.AdvancedMode"));
@@ -469,7 +478,7 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
                     }break;
                     case FAILED: {
                       logError(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.TaskDetails", TaskCompletionEvent.Status.FAILED, tcEvents[i].getTaskAttemptId().getTaskID().getId(), tcEvents[i].getTaskAttemptId().getId(), tcEvents[i].getEventId(), diagsOutput)); //$NON-NLS-1$
-                      result.setResult(false);
+                      //result.setResult(false);
                     }break;
                     case SUCCEEDED: {
                       logDetailed(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.TaskDetails", TaskCompletionEvent.Status.SUCCEEDED, tcEvents[i].getTaskAttemptId().getTaskID().getId(), tcEvents[i].getTaskAttemptId().getId(), tcEvents[i].getEventId(), diagsOutput)); //$NON-NLS-1$
@@ -484,10 +493,20 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
               }
             }
             
+            if (parentJob.isStopped() && !runningJob.isComplete()) {
+              // We must stop the job running on Hadoop
+              runningJob.killJob();
+              // Indicate this job entry did not complete
+              result.setResult(false);
+            }
+            
             printJobStatus(runningJob);
           } catch (InterruptedException ie) {
             logError(ie.getMessage(), ie);
           }
+          
+          // Entry is successful if the MR job is successful overall
+          result.setResult(runningJob.isSuccessful());
         }
 
       }

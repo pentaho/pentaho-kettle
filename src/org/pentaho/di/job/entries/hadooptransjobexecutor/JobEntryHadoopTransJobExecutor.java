@@ -404,6 +404,8 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
   }
   
   public Result execute(Result result, int arg1) throws KettleException {
+    
+    result.setNrErrors(0);
 
     Log4jFileAppender appender = null;
     String logFileName = "pdi-" + this.getName(); //$NON-NLS-1$
@@ -624,7 +626,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
                   }break;
                   case FAILED: {
                     logError(BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.TaskDetails", TaskCompletionEvent.Status.FAILED, tcEvents[i].getTaskAttemptId().getTaskID().getId(), tcEvents[i].getTaskAttemptId().getId(), tcEvents[i].getEventId(), diagsOutput)); //$NON-NLS-1$
-                    result.setResult(false);
+                    //result.setResult(false);
                   }break;
                   case SUCCEEDED: {
                     logDetailed(BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.TaskDetails", TaskCompletionEvent.Status.SUCCEEDED, tcEvents[i].getTaskAttemptId().getTaskID().getId(), tcEvents[i].getTaskAttemptId().getId(), tcEvents[i].getEventId(), diagsOutput)); //$NON-NLS-1$
@@ -650,6 +652,9 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
         } catch (InterruptedException ie) {
           logError(ie.getMessage(), ie);
         }
+        
+        // Entry is successful if the MR job is successful overall
+        result.setResult(runningJob.isSuccessful());
       }
 
     } catch (Throwable t) {
