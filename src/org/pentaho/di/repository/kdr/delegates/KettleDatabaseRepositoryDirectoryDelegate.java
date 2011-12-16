@@ -308,11 +308,13 @@ public class KettleDatabaseRepositoryDirectoryDelegate extends KettleDatabaseRep
         ObjectId[] subDirectories = repository.getSubDirectoryIDs(dir.getObjectId());
         if (trans.length == 0 && jobs.length == 0 && subDirectories.length == 0) {
           repository.directoryDelegate.deleteDirectory(dir.getObjectId());
+          repository.commit();
         } else {
           throw new KettleException("This directory is not empty!");
         }
       } else {
         repository.directoryDelegate.deleteDirectory(dir);
+        repository.commit();
       }
     } catch (Exception e) {
       throw new KettleException("Unexpected error deleting repository directory:", e);
