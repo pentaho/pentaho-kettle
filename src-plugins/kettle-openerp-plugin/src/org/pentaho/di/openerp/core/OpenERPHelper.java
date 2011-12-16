@@ -126,8 +126,23 @@ public class OpenERPHelper implements DatabaseFactoryInterface {
 
 		ArrayList<String> fieldArray = new ArrayList<String>();
 		for(Field field : fields){
+			boolean readonly = field.getReadonly();
+			
+			// See if any of the states allows the readonly property to be false
+			// If so, then we need to display the field as rows could potentially be in a
+			// state that allows readonly to be false
+			if (readonly == true){
+				for (Object[] stateProperty : field.getStateProperties("readonly")){
+					boolean stateReadonly = ((Boolean) (stateProperty[1] instanceof Integer ? (Integer) stateProperty[1] == 1: stateProperty[1]));
+					readonly = readonly && stateReadonly;
+					
+					if (readonly == false)
+						break;
+				}
+			}
+			
 			if (field.getType() == FieldType.ONE2MANY
-					|| field.getReadonly() == true)
+					|| readonly == true)
 				continue;
 
 			fieldArray.add(field.getName());
@@ -179,6 +194,7 @@ public class OpenERPHelper implements DatabaseFactoryInterface {
 			switch (fieldType) {
 			case CHAR:
 			case TEXT:
+			case BINARY:  // Binaries are base64 encoded strings
 				fieldMap.target_field_type = ValueMetaInterface.TYPE_STRING;
 				mappings.add(fieldMap);
 				break;

@@ -258,7 +258,6 @@
 	<classpathentry kind="lib" path="libext/elasticsearch/lucene-memory-3.1.0.jar"/>
 	<classpathentry kind="lib" path="libext/elasticsearch/lucene-queries-3.1.0.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/mysql-connector-java-5.1.17.jar"/>
-	<classpathentry kind="lib" path="libext/webservices/openerp-java-api.jar"/>
 	<classpathentry kind="lib" path="libext/webservices/xmlrpc-client-3.1.3.jar"/>
 	<classpathentry kind="lib" path="libext/webservices/xmlrpc-common-3.1.3.jar"/>
 	<classpathentry kind="lib" path="libext/webservices/ws-commons-util-1.0.2.jar"/>
@@ -358,5 +357,6 @@
 	<classpathentry kind="lib" path="libext/reporting/asm-3.2.jar"/>
 	<classpathentry kind="lib" path="libext/jsch-0.1.45.jar"/>
 	<classpathentry kind="lib" path="libext/datacleaner-ui/DataCleaner-core-2.3.jar"/>
+	<classpathentry kind="lib" path="src-plugins/kettle-openerp-plugin/lib/openerp-java-api.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
