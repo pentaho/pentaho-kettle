@@ -255,6 +255,7 @@ public class CassandraOutput extends BaseStep implements StepInterface {
           m_meta.getUseCompression());
     } catch (Exception e) {
       closeConnection();
+      System.out.println(m_batchInsert.toString());
       throw new KettleException(e.fillInStackTrace());
     }
     

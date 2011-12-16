@@ -129,7 +129,7 @@ public class CassandraOutputData extends BaseStepData implements
   public static void commitBatch(StringBuilder batch, CassandraConnection conn,
       boolean compressCQL) throws Exception {
     
-    System.out.println(batch.toString());
+    //System.out.println(batch.toString());
     // compress the batch if necessary
     byte[] toSend = null;
     if (compressCQL) {
@@ -174,6 +174,24 @@ public class CassandraOutputData extends BaseStepData implements
       throw new KettleException("Can't insert this row because the key is null!");
     }
     
+    // quick scan to see if we have at least one non-null value apart from
+    // the key
+    boolean ok = false;
+    for (int i = 0; i < inputMeta.size(); i++) {
+      if (i != keyIndex) {
+        ValueMetaInterface v = inputMeta.getValueMeta(i);
+        if (!v.isNull(row[i])) {
+          ok = true;
+          break;
+        }
+      }
+    }
+    if (!ok) {
+      System.err.println("Skipping row with key '" + keyMeta.getString(row[keyIndex])
+          +"' because there are no non-null values!");
+      return;
+    }
+    
     batch.append("INSERT INTO ").append(colFamilyName).append(" (KEY");
     
     for (int i = 0; i < inputMeta.size(); i++) {
@@ -195,8 +213,9 @@ public class CassandraOutputData extends BaseStepData implements
     }
     
     batch.append(") VALUES (");
-    // key first    
-    String keyString = keyMeta.getString(row[keyIndex]);
+    // key first
+    String keyString = CassandraColumnMetaData.kettleValueToCQL(keyMeta, row[keyIndex]);
+    //String keyString = keyMeta.getString(row[keyIndex]);
     batch.append("'").append(keyString).append("'");
     
     for (int i = 0; i < inputMeta.size(); i++) {
