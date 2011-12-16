@@ -621,6 +621,10 @@ public class Database implements VariableSpace, LoggingObjectInterface
      */
 	public void cancelQuery() throws KettleDatabaseException
 	{
+	  // Canceling statements only if we're not streaming results on MySQL
+	  //
+	  if (databaseMeta.isMySQLVariant() && databaseMeta.isStreamingResults()) return;
+
         cancelStatement(pstmt);
         cancelStatement(sel_stmt);
 	}
@@ -3846,6 +3850,9 @@ public class Database implements VariableSpace, LoggingObjectInterface
                         stop=true;
                     }
                     if (monitor!=null && limit>0) monitor.worked(1);
+                    if (monitor!=null && monitor.isCanceled()) {
+                      break;
+                    }
                 }
                 closeQuery(rset);
                 if (monitor!=null) monitor.done();
