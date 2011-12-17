@@ -164,7 +164,7 @@ public class IfNullMeta extends BaseStepMeta implements StepMetaInterface
         typeName = new String[nrtypes]; 
         typereplaceValue = new String[nrtypes]; 
         typereplaceMask = new String[nrtypes];
-        setTypeEmptyString = new boolean[nrfields];
+        setTypeEmptyString = new boolean[nrtypes];
         
         fieldName = new String[nrfields]; 
         replaceValue = new String[nrfields]; 
