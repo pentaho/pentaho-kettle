@@ -34,12 +34,12 @@ public class MapRHadoopConfigurer extends AbstractHadoopConfigurer {
       filesystemHost = m_defaultCluster;
       logMessages.add("Using MapR default cluster for filesystem");
     } else if (filesystemPort == null || filesystemPort.trim().length() == 0) {
-      filesystemHost = "/mapr/fileSystemHost";
       logMessages.add("Using MapR CLDB named cluster: " + filesystemHost 
           + " for filesystem");
+      filesystemHost = "/mapr/" + filesystemHost;
     } else {
-      filesystemHost = filesystemHost + ":" + filesystemPort;
       logMessages.add("Using filesystem at " + filesystemHost + ":" + filesystemPort);
+      filesystemHost = filesystemHost + ":" + filesystemPort;
     }
     
     m_filesystemURL = s_protocol + filesystemHost;
@@ -49,12 +49,12 @@ public class MapRHadoopConfigurer extends AbstractHadoopConfigurer {
       trackerHost = m_defaultCluster;
       logMessages.add("Using MapR default cluster for job tracker");
     } else if (trackerPort == null || trackerPort.trim().length() == 0) {
-      trackerHost = "/mapr/trackerHost";
       logMessages.add("Using MapR CLDB named cluster: " + trackerHost +
-          " for job tracker");
+      " for job tracker");
+      trackerHost = "/mapr/" + trackerHost;
     } else {
-      trackerHost = trackerHost + ":" + trackerPort;
       logMessages.add("Using job tracker at " + trackerHost + ":" + trackerPort);
+      trackerHost = trackerHost + ":" + trackerPort;
     }
     
     m_jobtrackerURL = s_protocol + trackerHost;
