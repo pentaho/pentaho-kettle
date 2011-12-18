@@ -15,7 +15,7 @@ package org.pentaho.hadoop.jobconf;
 
 import java.util.List;
 
-import org.apache.hadoop.mapred.JobConf;
+import org.apache.hadoop.conf.Configuration;
 
 public interface HadoopConfigurer {
   
@@ -25,6 +25,6 @@ public interface HadoopConfigurer {
   String getJobtrackerURL();
   
   void configure(String filesystemHost, String filesystemPort, 
-      String trackerHost, String trackerPort, JobConf conf, 
+      String trackerHost, String trackerPort, Configuration conf, 
       List<String> logMessages) throws Exception;
 }
