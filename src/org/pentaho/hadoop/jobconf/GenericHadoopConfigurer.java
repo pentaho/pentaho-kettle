@@ -19,11 +19,13 @@ import org.apache.hadoop.conf.Configuration;
 
 public class GenericHadoopConfigurer extends AbstractHadoopConfigurer {
   
+  public static final String DISTRIBUTION_NAME = "generic";
+  
   protected String m_defaultHDFSPort = "9000";
   protected String m_defaultTrackerPort = "9001";
   
   public String distributionName() {
-    return "Generic";
+    return DISTRIBUTION_NAME;
   }
   
   public void configure(String filesystemHost, String filesystemPort,

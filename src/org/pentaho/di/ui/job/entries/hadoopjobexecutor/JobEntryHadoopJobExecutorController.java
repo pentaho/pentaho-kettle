@@ -28,6 +28,7 @@ import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.hadoop.jobconf.HadoopConfigurer;
 import org.pentaho.hadoop.jobconf.HadoopConfigurerFactory;
+import org.pentaho.ui.xul.XulDomException;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
 import org.pentaho.ui.xul.components.XulMenuList;
 import org.pentaho.ui.xul.containers.XulDialog;
@@ -92,7 +93,7 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
     cancel();
   }
 
-  public void init() throws Throwable {
+  public void init() throws XulDomException {
     if (jobEntry != null) {
       // common/simple
       setName(jobEntry.getName());

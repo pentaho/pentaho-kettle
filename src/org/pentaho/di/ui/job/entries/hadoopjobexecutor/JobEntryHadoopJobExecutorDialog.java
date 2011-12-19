@@ -146,12 +146,7 @@ public class JobEntryHadoopJobExecutorDialog extends JobEntryDialog implements J
     bf.setBindingType(Type.BI_DIRECTIONAL);
 
     controller.setJobEntry((JobEntryHadoopJobExecutor) jobEntry);
-    try {
-      // TODO Controller should not throw Throwable. Looks like we need to change HadoopConfigurerFactory to throw a more specific exception.
-      controller.init();
-    } catch (Throwable t) {
-      throw new XulException("Unable to initialize", t);
-    }
+    controller.init();
   }
 
   public JobEntryInterface open() {

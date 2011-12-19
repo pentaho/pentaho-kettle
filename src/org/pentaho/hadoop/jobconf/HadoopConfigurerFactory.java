@@ -13,6 +13,8 @@
 
 package org.pentaho.hadoop.jobconf;
 
+import org.pentaho.hadoop.HadoopConfigurerException;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,9 +27,9 @@ public class HadoopConfigurerFactory {
   
   static {
     // TODO these could be read from a property/config file somewhere
-    CONFIGURER_NAMES.add("org.pentaho.hadoop.jobconf.GenericHadoopConfigurer");
-    CONFIGURER_NAMES.add("org.pentaho.hadoop.jobconf.ClouderaHadoopConfigurer");
-    CONFIGURER_NAMES.add("org.pentaho.hadoop.jobconf.MapRHadoopConfigurer");
+    CONFIGURER_NAMES.add(GenericHadoopConfigurer.class.getName());
+    CONFIGURER_NAMES.add(ClouderaHadoopConfigurer.class.getName());
+    CONFIGURER_NAMES.add(MapRHadoopConfigurer.class.getName());
     
     for (String cname : CONFIGURER_NAMES) {
       try {
@@ -62,17 +64,19 @@ public class HadoopConfigurerFactory {
    * @throws Exception if the named configurer is unknown
    */
   public static HadoopConfigurer getConfigurer(String distroName) 
-    throws Exception {
+    throws HadoopConfigurerException {
 
     String implClass = CONFIGURER_LOOKUP.get(distroName);
     
     if (implClass == null) {
-      throw new Exception("Unknown Hadoop distribution: " + distroName);
+      throw new HadoopConfigurerException("Unknown Hadoop distribution: " + distroName);
     }
-    
 
-    HadoopConfigurer config = (HadoopConfigurer)Class.forName(implClass).newInstance();
-    return config;    
+    try {
+      return (HadoopConfigurer) Class.forName(implClass).newInstance();
+    } catch (Exception ex) {
+      throw new HadoopConfigurerException("Error loading Hadoop Configuration " + implClass, ex);
+    }
   }
   
   /**
@@ -81,10 +85,8 @@ public class HadoopConfigurerFactory {
    * the installed/available hadoop distribution.
    * 
    * @return a list of configurers.
-   * @throws Exception if no configurers are available
    */
-  public static List<HadoopConfigurer> getAvailableConfigurers() 
-    throws Exception {
+  public static List<HadoopConfigurer> getAvailableConfigurers() {
     List<HadoopConfigurer> available = new ArrayList<HadoopConfigurer>();
     for (String conf : CONFIGURER_LOOKUP.keySet()) {
       try {
@@ -99,8 +101,13 @@ public class HadoopConfigurerFactory {
     }
     
     if (available.size() == 0) {
-      // make sure that generic is always available      
-      available.add(getConfigurer("generic"));
+      // make sure that generic is always available
+      try {
+        available.add(getConfigurer(GenericHadoopConfigurer.DISTRIBUTION_NAME));
+      } catch (HadoopConfigurerException ex) {
+        // Should not happen - must be caught in unit tests
+        throw new IllegalStateException("Missing generic hadoop configuration");
+      }
     }
     
     return available;
