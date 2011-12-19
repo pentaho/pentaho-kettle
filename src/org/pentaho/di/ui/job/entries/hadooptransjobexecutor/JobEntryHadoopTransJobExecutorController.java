@@ -13,6 +13,8 @@
 package org.pentaho.di.ui.job.entries.hadooptransjobexecutor;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -31,6 +33,8 @@ import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.job.entries.hadoopjobexecutor.UserDefinedItem;
 import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
+import org.pentaho.hadoop.jobconf.HadoopConfigurer;
+import org.pentaho.hadoop.jobconf.HadoopConfigurerFactory;
 import org.pentaho.ui.xul.components.XulMenuList;
 import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulDialog;
@@ -252,7 +256,23 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
       setName(jobEntry.getName());
       setJobEntryName(jobEntry.getName());
       setHadoopJobName(jobEntry.getHadoopJobName());
-      setHadoopDistribution(jobEntry.getHadoopDistribution());
+      
+      // can we detect a distribution?
+      HadoopConfigurer config = HadoopConfigurerFactory.locateConfigurer();
+      if (config != null) {
+        List<String> newItems = new ArrayList<String>();
+        newItems.add(config.distributionName());
+        ((XulMenuList) getXulDomContainer().getDocumentRoot().getElementById("hadoop-distribution")).replaceAllItems(newItems);
+      } else {
+        List<String> newItems = new ArrayList<String>();
+        List<HadoopConfigurer> available = HadoopConfigurerFactory.getAvailableConfigurers();
+        for (HadoopConfigurer c : available) {
+          newItems.add(c.distributionName());
+        }
+ 
+        ((XulMenuList) getXulDomContainer().getDocumentRoot().getElementById("hadoop-distribution")).replaceAllItems(newItems);
+        setHadoopDistribution(jobEntry.getHadoopDistribution());        
+      }
 
       if (rep == null) {
         ((XulMenuList) getXulDomContainer().getDocumentRoot().getElementById("mapper-storage-type")).setDisabled(true);

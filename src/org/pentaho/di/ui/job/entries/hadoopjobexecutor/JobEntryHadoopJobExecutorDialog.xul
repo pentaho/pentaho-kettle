@@ -123,8 +123,6 @@
 					        	<menulist id="hadoop-distribution">
 									<menupopup>
 										<menuitem label="${JobEntryHadoopJobExecutor.HadoopDistribution.Generic}" />
-										<menuitem label="${JobEntryHadoopJobExecutor.HadoopDistribution.Cloudera}" />
-										<menuitem label="${JobEntryHadoopJobExecutor.HadoopDistribution.MapR}" />
 									</menupopup>
 								</menulist>
 					        </row>

@@ -14,6 +14,8 @@
 package org.pentaho.di.ui.job.entries.hadoopjobexecutor;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
@@ -24,7 +26,10 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.job.entries.hadoopjobexecutor.JobEntryHadoopJobExecutor;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.hadoop.jobconf.HadoopConfigurer;
+import org.pentaho.hadoop.jobconf.HadoopConfigurerFactory;
 import org.pentaho.ui.xul.XulEventSourceAdapter;
+import org.pentaho.ui.xul.components.XulMenuList;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.containers.XulVbox;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
@@ -87,7 +92,7 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
     cancel();
   }
 
-  public void init() {
+  public void init() throws Throwable {
     if (jobEntry != null) {
       // common/simple
       setName(jobEntry.getName());
@@ -101,7 +106,23 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
       if (jobEntry.getUserDefined() != null) {
         userDefined.addAll(jobEntry.getUserDefined());
       }
-      aConf.setHadoopDistribution(jobEntry.getHadoopDistribution());
+      
+      HadoopConfigurer config = HadoopConfigurerFactory.locateConfigurer();
+      if (config != null) {
+        List<String> newItems = new ArrayList<String>();
+        newItems.add(config.distributionName());
+        ((XulMenuList) getXulDomContainer().getDocumentRoot().getElementById("hadoop-distribution")).replaceAllItems(newItems);
+      } else {
+        List<String> newItems = new ArrayList<String>();
+        List<HadoopConfigurer> available = HadoopConfigurerFactory.getAvailableConfigurers();
+        for (HadoopConfigurer c : available) {
+          newItems.add(c.distributionName());
+        }
+ 
+        ((XulMenuList) getXulDomContainer().getDocumentRoot().getElementById("hadoop-distribution")).replaceAllItems(newItems);
+        aConf.setHadoopDistribution(jobEntry.getHadoopDistribution());
+        //setHadoopDistribution(jobEntry.getHadoopDistribution());        
+      }
       
       aConf.setBlocking(jobEntry.isBlocking());
       aConf.setLoggingInterval(jobEntry.getLoggingInterval());

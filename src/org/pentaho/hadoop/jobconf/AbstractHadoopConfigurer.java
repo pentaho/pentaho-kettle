@@ -25,5 +25,23 @@ HadoopConfigurer {
 
   public String getJobtrackerURL() {
     return m_jobtrackerURL;
-  }        
+  }
+  
+  /**
+   * Default implementation returns false
+   * 
+   * @return false
+   */
+  public boolean isDetectable() {
+    return false;
+  }
+  
+  /**
+   * Default implementation returns false
+   * 
+   * @return false
+   */
+  public boolean isAvailable() {
+    return false;
+  }
 }

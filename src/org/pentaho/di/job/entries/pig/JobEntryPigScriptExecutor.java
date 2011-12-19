@@ -54,6 +54,8 @@ import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.hadoop.jobconf.HadoopConfigurer;
+import org.pentaho.hadoop.jobconf.HadoopConfigurerFactory;
 import org.w3c.dom.Node;
 
 /**
@@ -90,12 +92,9 @@ public class JobEntryPigScriptExecutor extends JobEntryBase implements Cloneable
   protected boolean m_localExecution;
 
   /** Parameters for the script */
-  protected HashMap<String, String> m_params = new HashMap<String, String>(); 
+  protected HashMap<String, String> m_params = new HashMap<String, String>();
   
-  /** Default name node and job tracker ports */
-  public static final String DEFAULT_HDFS_PORT = "9000";
-  public static final String DEFAULT_JOBTRACKER_PORT = "9001";
-  
+  protected String m_hadoopDistribution = "generic";    
   
   /**
    * An extended PrintWriter that sends output to Kettle's logging
@@ -134,6 +133,7 @@ public class JobEntryPigScriptExecutor extends JobEntryBase implements Cloneable
   public String getXML() {
     StringBuffer retval = new StringBuffer();
     retval.append(super.getXML());
+    retval.append("    ").append(XMLHandler.addTagValue("hadoop_distribution", m_hadoopDistribution));
     retval.append("    ").append(XMLHandler.addTagValue("hdfs_hostname", m_hdfsHostname));
     retval.append("    ").append(XMLHandler.addTagValue("hdfs_port", m_hdfsPort));
     retval.append("    ").append(XMLHandler.addTagValue("jobtracker_hostname", m_jobTrackerHostname));
@@ -166,6 +166,10 @@ public class JobEntryPigScriptExecutor extends JobEntryBase implements Cloneable
       List<SlaveServer> slaveServers, Repository repository) throws KettleXMLException {
     super.loadXML(entrynode, databases, slaveServers);
     
+    if (!Const.isEmpty(XMLHandler.getTagValue(entrynode, "hadoop_distribution"))) {
+      m_hadoopDistribution = XMLHandler.getTagValue(entrynode, "hadoop_distribution");
+    }
+    
     m_hdfsHostname = XMLHandler.getTagValue(entrynode, "hdfs_hostname");
     m_hdfsPort = XMLHandler.getTagValue(entrynode, "hdfs_port");
     m_jobTrackerHostname = XMLHandler.getTagValue(entrynode, "jobtracker_hostname");
@@ -197,6 +201,10 @@ public class JobEntryPigScriptExecutor extends JobEntryBase implements Cloneable
     if (rep != null) {
       super.loadRep(rep, id_jobentry, databases, slaveServers);
       
+      if (!Const.isEmpty(rep.getJobEntryAttributeString(id_jobentry, "hadoop_distribution"))) {
+        setHadoopDistribution(rep.getJobEntryAttributeString(id_jobentry, "hadoop_distribution"));
+      }
+      
       setHDFSHostname(rep.getJobEntryAttributeString(id_jobentry, "hdfs_hostname"));
       setHDFSPort(rep.getJobEntryAttributeString(id_jobentry, "hdfs_port"));
       setJobTrackerHostname(rep.getJobEntryAttributeString(id_jobentry, "jobtracker_hostname"));
@@ -227,6 +235,7 @@ public class JobEntryPigScriptExecutor extends JobEntryBase implements Cloneable
     if (rep != null) {
       super.saveRep(rep, id_job);
       
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "hadoop_distribution", m_hadoopDistribution);
       rep.saveJobEntryAttribute(id_job, getObjectId(), "hdfs_hostname", m_hdfsHostname);
       rep.saveJobEntryAttribute(id_job, getObjectId(), "hdfs_port", m_hdfsPort);
       rep.saveJobEntryAttribute(id_job, getObjectId(), "jobtracker_hostname", m_jobTrackerHostname);
@@ -404,11 +413,37 @@ public class JobEntryPigScriptExecutor extends JobEntryBase implements Cloneable
     return m_params;
   }
   
+  /**
+   * Set the hadoop distribution to configure for
+   * 
+   * @param hadoopDistro the hadoop distro to configure for
+   */
+  public void setHadoopDistribution(String hadoopDistro) {
+    m_hadoopDistribution = hadoopDistro;
+  }
+  
+  /**
+   * Get the hadoop distro to configure for.
+   * 
+   * @return the hadoop distro to configure for
+   */
+  public String getHadoopDistribution() {
+    return m_hadoopDistribution;
+  }
+  
 
   /* (non-Javadoc)
    * @see org.pentaho.di.job.entry.JobEntryInterface#execute(org.pentaho.di.core.Result, int)
    */
   public Result execute(final Result result, int arg1) throws KettleException {
+    
+    result.setNrErrors(0);
+    
+    String hadoopDistro = System.getProperty("hadoop.distribution.name", m_hadoopDistribution);
+    hadoopDistro = environmentSubstitute(hadoopDistro);
+    if (Const.isEmpty(hadoopDistro)) {
+      hadoopDistro = "generic";
+    }
     
     // Set up an appender that will send all pig log messages to Kettle's log
     // via logBasic().
@@ -429,35 +464,7 @@ public class JobEntryPigScriptExecutor extends JobEntryBase implements Cloneable
     } catch (Exception e) {
       logError(BaseMessages.getString(PKG, "JobEntryPigScriptExecutor.FailedToOpenLogFile", logFileName, e.toString())); //$NON-NLS-1$
       logError(Const.getStackTracker(e));    
-    }
-    
-    String fsProtocol = "hdfs://";
-    try {
-      // see if there is a specific file system protocol to use. If not, default to hdfs.      
-      fsProtocol = System.getProperty("hadoop.filesystem.protocol", "hdfs://");
-      if (!Const.isEmpty(fsProtocol)) {
-        if (!fsProtocol.endsWith("://")) {
-          fsProtocol += "://";
-        }
-      } else {
-        fsProtocol = "hdfs://";
-      }
-      logBasic(BaseMessages.getString(PKG, 
-          "JobEntryPigScriptExecutor.Message.HadoopFilesystem") + fsProtocol);
-    } catch (Exception ex) {
-      logError(BaseMessages.getString(PKG, 
-          "JobEntryPigScriptExecutor.Error.UnableToAccessFSProperty"));
-    }
-    
-    if (!m_localExecution && Const.isEmpty(m_hdfsHostname)) {
-      throw new KettleException(BaseMessages.getString(PKG, 
-          "JobEntryPigScriptExecutor.Error.NoHDFSHostSpecified"));
-    }
-    
-    if (!m_localExecution && Const.isEmpty(m_jobTrackerHostname)) {
-      throw new KettleException(BaseMessages.getString(PKG, 
-          "JobEntryPigScriptExecutor.Error.NoJobTrackerHostSpecified"));
-    }
+    }    
     
     if (Const.isEmpty(m_scriptFile)) {
       throw new KettleException(BaseMessages.getString(PKG, 
@@ -474,35 +481,36 @@ public class JobEntryPigScriptExecutor extends JobEntryBase implements Cloneable
       } else {
         scriptU = new URL(scriptFileS);
       }
+      
+      // See if we can auto detect the distribution first
+      HadoopConfigurer configurer = HadoopConfigurerFactory.locateConfigurer();
 
+      if (configurer == null) {
+        // go with what has been selected by the user or generic
+        configurer = HadoopConfigurerFactory.getConfigurer(hadoopDistro);
+      }
+      if (configurer == null) {
+        throw new KettleException(BaseMessages.
+            getString(PKG, "JobEntryPigScriptExecutor.Error.UnknownHadoopDistribution", 
+                hadoopDistro));
+      }
+      logBasic(BaseMessages.getString(PKG, "JobEntryPigScriptExecutor.Message.DistroConfigMessage", 
+          configurer.distributionName()));
+      
       // configure for connection to hadoop
       Configuration conf = new Configuration(true);
       if (!m_localExecution) {
-        String hdfsP = m_hdfsPort;
-        if (Const.isEmpty(hdfsP)) {
-          hdfsP = DEFAULT_HDFS_PORT; // default for name node
-        }
-        hdfsP = environmentSubstitute(hdfsP);
+        String hdfsHost = environmentSubstitute(m_hdfsHostname);
+        String hdfsP = environmentSubstitute(m_hdfsPort);
+        String jobTrackerHost = environmentSubstitute(m_jobTrackerHostname);
+        String jobTP = environmentSubstitute(m_jobTrackerPort);
         
-        String jobTP = m_jobTrackerPort;
-        if (Const.isEmpty(jobTP)) {
-          jobTP = DEFAULT_JOBTRACKER_PORT; // default for job tracker
-        }
-        jobTP = environmentSubstitute(jobTP);
-        
-        String hdfsHost = m_hdfsHostname;
-        hdfsHost = environmentSubstitute(hdfsHost);
-/*        if (m_hdfsHostname.toLowerCase().indexOf("hdfs://") < 0) {
-          hdfsHost = "hdfs://" + hdfsHost;
-        } */
-        hdfsHost = fsProtocol + hdfsHost;
-        
-        if (!Const.isEmpty(hdfsP)) {
-          hdfsHost += ":" + hdfsP;
-        }
-        
-        conf.set("fs.default.name", hdfsHost);
-        conf.set("mapred.job.tracker", m_jobTrackerHostname + ":" + jobTP);
+        List<String> configMessages = new ArrayList<String>();
+        configurer.configure(hdfsHost, hdfsP, 
+            jobTrackerHost, jobTP, conf, configMessages);
+        for (String m : configMessages) {
+          logBasic(m);
+        }        
       }
       
       Properties properties = new Properties();

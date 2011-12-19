@@ -26,6 +26,24 @@ public class MapRHadoopConfigurer extends AbstractHadoopConfigurer {
     return "MapR";
   }
   
+  public boolean isDetectable() {
+    return true;
+  }
+  
+  public boolean isAvailable() {
+    boolean result = false;
+    
+    try {
+      Class detected = Class.forName("com.mapr.fs.MapRFileSystem");
+      if (detected != null) {
+        result = true;
+      }
+    } catch (Exception ex) {
+    }
+    
+    return result;
+  }
+  
   public void configure(String filesystemHost, String filesystemPort,
       String trackerHost, String trackerPort, Configuration conf,
       List<String> logMessages) throws Exception {

@@ -24,6 +24,37 @@ public interface HadoopConfigurer {
   String getFilesystemURL();
   String getJobtrackerURL();
   
+  /**
+   * If it is possible to detect which distribution is installed, 
+   * then implementers should return true if they detect that their 
+   * distribution is in use and false otherwise
+   * 
+   * @return true if the specific hadoop distribution is in use
+   */
+  boolean isAvailable();
+  
+  /**
+   * If it is possible to detect that this particular
+   * distribution is installed then implementers should
+   * return true
+   * 
+   * @return true if it is possible to detect whether this
+   * distribution is installed/available.
+   */
+  boolean isDetectable();
+  
+  /**
+   * Setup the config object based on the supplied information with
+   * respect to the specific distribution
+   * 
+   * @param filesystemHost
+   * @param filesystemPort
+   * @param trackerHost
+   * @param trackerPort
+   * @param conf
+   * @param logMessages
+   * @throws Exception
+   */
   void configure(String filesystemHost, String filesystemPort, 
       String trackerHost, String trackerPort, Configuration conf, 
       List<String> logMessages) throws Exception;

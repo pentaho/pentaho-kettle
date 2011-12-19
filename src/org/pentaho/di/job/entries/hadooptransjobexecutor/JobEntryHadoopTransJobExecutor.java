@@ -536,7 +536,13 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
       String jobTrackerHostnameS = environmentSubstitute(jobTrackerHostname);
       String jobTrackerPortS = environmentSubstitute(jobTrackerPort);
       
-      HadoopConfigurer configurer = HadoopConfigurerFactory.getConfigurer(hadoopDistro);
+      // See if we can auto detect the distribution first
+      HadoopConfigurer configurer = HadoopConfigurerFactory.locateConfigurer();
+      
+      if (configurer == null) {        
+        // go with what has been selected by the user
+        configurer = HadoopConfigurerFactory.getConfigurer(hadoopDistro);
+      }
       if (configurer == null) {
         throw new KettleException(BaseMessages.
             getString(PKG, "JobEntryHadoopTransJobExecutor.Error.UnknownHadoopDistribution", 
