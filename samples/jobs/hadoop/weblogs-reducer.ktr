@@ -79,7 +79,7 @@
   <notepads>
     <notepad>
       <note>Hadoop will pass data into this step based on the 
-input format defined in the Hadoop Trans Job Executor
+input format defined in the Pentaho MapReduce entry
 used to run this reducer.  We are expecting:
 
 (monthYear, client_ip)

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <job>
-  <name>Hadoop Trans Job Executor</name>
+  <name>Pentaho MapReduce - weblogs</name>
     <description/>
     <extended_description/>
     <job_version/>
@@ -102,14 +102,14 @@
    <shared_objects_file/>
   <entries>
     <entry>
-      <name>Hadoop Transformation Job Executor</name>
+      <name>Pentaho MapReduce</name>
       <description/>
       <type>HadoopTransJobExecutorPlugin</type>
-      <hadoop_job_name>jobname - job executor</hadoop_job_name>
+      <hadoop_job_name>Web Logs- Number of HTTP Methods by Month</hadoop_job_name>
       <map_trans_repo_dir/>
       <map_trans_repo_file/>
       <map_trans_repo_reference/>
-      <map_trans>.&#47;samples&#47;jobs&#47;hadoop&#47;wordcount-mapper.ktr</map_trans>
+      <map_trans>.&#47;samples&#47;jobs&#47;hadoop&#47;weblogs-mapper.ktr</map_trans>
       <combiner_trans_repo_dir/>
       <combiner_trans_repo_file/>
       <combiner_trans_repo_reference/>
@@ -117,7 +117,7 @@
       <reduce_trans_repo_dir/>
       <reduce_trans_repo_file/>
       <reduce_trans_repo_reference/>
-      <reduce_trans>.&#47;samples&#47;jobs&#47;hadoop&#47;wordcount-reducer.ktr</reduce_trans>
+      <reduce_trans>.&#47;samples&#47;jobs&#47;hadoop&#47;weblogs-reducer.ktr</reduce_trans>
       <map_input_step_name>Hadoop Input</map_input_step_name>
       <map_output_step_name>Hadoop Output</map_output_step_name>
       <combiner_input_step_name/>
@@ -126,11 +126,11 @@
       <reduce_output_step_name>Hadoop Output</reduce_output_step_name>
       <blocking>Y</blocking>
       <logging_interval>5</logging_interval>
-      <input_path>&#47;wordcount&#47;input</input_path>
+      <input_path>&#47;weblogs&#47;input</input_path>
       <input_format_class>org.apache.hadoop.mapred.TextInputFormat</input_format_class>
-      <output_path>&#47;wordcount&#47;output</output_path>
+      <output_path>&#47;weblogs&#47;output</output_path>
       <output_key_class>org.apache.hadoop.io.Text</output_key_class>
-      <output_value_class>org.apache.hadoop.io.IntWritable</output_value_class>
+      <output_value_class>org.apache.hadoop.io.Text</output_value_class>
       <output_format_class>org.apache.hadoop.mapred.TextOutputFormat</output_format_class>
       <hdfs_hostname>hadoop-server</hdfs_hostname>
       <hdfs_port>8020</hdfs_port>
@@ -144,8 +144,8 @@
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>486</xloc>
-      <yloc>207</yloc>
+      <xloc>580</xloc>
+      <yloc>337</yloc>
       </entry>
     <entry>
       <name>START</name>
@@ -164,8 +164,18 @@
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>180</xloc>
-      <yloc>207</yloc>
+      <xloc>58</xloc>
+      <yloc>337</yloc>
+      </entry>
+    <entry>
+      <name>Success</name>
+      <description/>
+      <type>SUCCESS</type>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>931</xloc>
+      <yloc>337</yloc>
       </entry>
     <entry>
       <name>Clean Output</name>
@@ -176,38 +186,69 @@
       <limit_folders>10</limit_folders>
       <fields>
         <field>
-          <name>hdfs:&#47;&#47;hadoop-server:8020&#47;wordcount&#47;output</name>
+          <name>hdfs:&#47;&#47;hadoop-server:8020&#47;weblogs&#47;output&#47;</name>
         </field>
       </fields>
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>333</xloc>
-      <yloc>207</yloc>
+      <xloc>264</xloc>
+      <yloc>337</yloc>
       </entry>
     <entry>
-      <name>Failure</name>
+      <name>Copy input files to HDFS</name>
       <description/>
-      <type>ABORT</type>
-      <message/>
+      <type>HadoopCopyFilesPlugin</type>
+      <copy_empty_folders>Y</copy_empty_folders>
+      <arg_from_previous>N</arg_from_previous>
+      <overwrite_files>N</overwrite_files>
+      <include_subfolders>N</include_subfolders>
+      <remove_source_files>N</remove_source_files>
+      <add_result_filesname>N</add_result_filesname>
+      <destination_is_a_file>N</destination_is_a_file>
+      <create_destination_folder>N</create_destination_folder>
+      <fields>
+        <field>
+          <source_filefolder>file:&#47;&#47;&#47;C:&#47;&lt;pdi-install-path&gt;&#47;pdi-ee&#47;data-integration&#47;samples&#47;jobs&#47;hadoop&#47;files&#47;</source_filefolder>
+          <destination_filefolder>hdfs:&#47;&#47;hadoop-server&#47;weblogs&#47;input</destination_filefolder>
+          <wildcard>([^\s]+(\.(?i)(log))$)</wildcard>
+        </field>
+      </fields>
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>639</xloc>
-      <yloc>341</yloc>
+      <xloc>412</xloc>
+      <yloc>337</yloc>
       </entry>
     <entry>
-      <name>Success</name>
+      <name>Delete input files</name>
       <description/>
-      <type>SUCCESS</type>
+      <type>DELETE_FILES</type>
+      <arg_from_previous>N</arg_from_previous>
+      <include_subfolders>N</include_subfolders>
+      <fields>
+        <field>
+          <name>hdfs:&#47;&#47;hadoop-server:8020&#47;weblogs&#47;input&#47;</name>
+          <filemask>([^\s]+(\.(?i)(log))$)</filemask>
+        </field>
+      </fields>
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>639</xloc>
-      <yloc>207</yloc>
+      <xloc>739</xloc>
+      <yloc>337</yloc>
       </entry>
   </entries>
   <hops>
+    <hop>
+      <from>Copy input files to HDFS</from>
+      <to>Pentaho MapReduce</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
     <hop>
       <from>START</from>
       <to>Clean Output</to>
@@ -219,46 +260,123 @@
     </hop>
     <hop>
       <from>Clean Output</from>
-      <to>Hadoop Transformation Job Executor</to>
+      <to>Copy input files to HDFS</to>
       <from_nr>0</from_nr>
       <to_nr>0</to_nr>
       <enabled>Y</enabled>
       <evaluation>Y</evaluation>
-      <unconditional>N</unconditional>
+      <unconditional>Y</unconditional>
     </hop>
     <hop>
-      <from>Hadoop Transformation Job Executor</from>
+      <from>Pentaho MapReduce</from>
+      <to>Delete input files</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
+    </hop>
+    <hop>
+      <from>Delete input files</from>
       <to>Success</to>
       <from_nr>0</from_nr>
       <to_nr>0</to_nr>
       <enabled>Y</enabled>
       <evaluation>Y</evaluation>
-      <unconditional>N</unconditional>
-    </hop>
-    <hop>
-      <from>Hadoop Transformation Job Executor</from>
-      <to>Failure</to>
-      <from_nr>0</from_nr>
-      <to_nr>0</to_nr>
-      <enabled>Y</enabled>
-      <evaluation>N</evaluation>
-      <unconditional>N</unconditional>
+      <unconditional>Y</unconditional>
     </hop>
   </hops>
   <notepads>
     <notepad>
-      <note>SETUP INSTRUCTIONS:
-1. Update the HDFS path within the &apos;Clean Output&apos; step to match your Hadoop server location and path to where you intend to generate output from the wordcount example
-2. Create an input directory in HDFS and place text file(s) in the input directory that you want to use to test the wordcount example
-3. Update the &apos;Hadoop Transformation Job Exector&apos; step (Job Setup and Cluster tabs) to configure the correct paths and server names including:
+      <note>Cleans the Output Directory</note>
+      <xloc>203</xloc>
+      <yloc>279</yloc>
+      <width>170</width>
+      <heigth>25</heigth>
+      <fontname>Microsoft Sans Serif</fontname>
+      <fontsize>8</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>255</backgroundcolorgreen>
+      <backgroundcolorblue>0</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>Y</drawshadow>
+    </notepad>
+    <notepad>
+      <note>Monitor the logs for progress
+(if blocking option is selected)</note>
+      <xloc>823</xloc>
+      <yloc>267</yloc>
+      <width>182</width>
+      <heigth>39</heigth>
+      <fontname>Microsoft Sans Serif</fontname>
+      <fontsize>8</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>255</backgroundcolorgreen>
+      <backgroundcolorblue>0</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>Y</drawshadow>
+    </notepad>
+    <notepad>
+      <note>Transformation Based Hadoop 
+WordCount Map Reduce Job
+  - Edit the HDFS hostname
+  - Edit the Job Tracker hostname
+</note>
+      <xloc>502</xloc>
+      <yloc>252</yloc>
+      <width>208</width>
+      <heigth>69</heigth>
+      <fontname>Microsoft Sans Serif</fontname>
+      <fontsize>8</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>255</backgroundcolorgreen>
+      <backgroundcolorblue>0</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>Y</drawshadow>
+    </notepad>
+    <notepad>
+      <note>This example:
+  - Reads one or more weblogs from an input directory in HDFS
+  - Uses the Transformation Job Executor to generate a new MapReduce job in Hadoop calling
+    - &apos;weblogs-mapper.ktr&apos; to parse the weblog and generate keys based on the Year and Month as part of the mapping phase
+    - &apos;weblogs-reducer.ktr&apos; to aggregate all page hits by Year and Month (our key) as part of the reducing phase
+
+SETUP INSTRUCTIONS:
+1. Update the HDFS path within the &apos;Clean Output&apos; step to match your Hadoop server location and path to where you intend to generate output from the weblogs example
+2. Update the &apos;Copy input files to HDFS&apos; step
+     - update the source path to match the location of your PDI installation directory
+     - update the target path to be the location of your input directory in HDFS where the job will read the weblog files from
+3. Update the &apos;Pentaho MapReduce&apos; step (Job Setup and Cluster tabs) to configure the correct paths and server names including:
     - Input Path - the path in HDFS from which to read files for counting
     - Output Path - where the processed count of words will be placed
     - HDFS Hostname
-    - Job Tracker Hostname</note>
-      <xloc>30</xloc>
-      <yloc>36</yloc>
-      <width>999</width>
-      <heigth>128</heigth>
+    - Job Tracker Hostname
+4. Update the &apos;Delete input files&apos; step to point to your input directory location in HDFS</note>
+      <xloc>12</xloc>
+      <yloc>4</yloc>
+      <width>986</width>
+      <heigth>260</heigth>
       <fontname>Microsoft Sans Serif</fontname>
       <fontsize>8</fontsize>
       <fontbold>N</fontbold>
@@ -268,6 +386,50 @@
       <fontcolorblue>0</fontcolorblue>
       <backgroundcolorred>255</backgroundcolorred>
       <backgroundcolorgreen>165</backgroundcolorgreen>
+      <backgroundcolorblue>0</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>Y</drawshadow>
+    </notepad>
+    <notepad>
+      <note>Copy log files from local
+file system to HDFS</note>
+      <xloc>353</xloc>
+      <yloc>405</yloc>
+      <width>155</width>
+      <heigth>39</heigth>
+      <fontname>Microsoft Sans Serif</fontname>
+      <fontsize>8</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>255</backgroundcolorgreen>
+      <backgroundcolorblue>0</backgroundcolorblue>
+      <bordercolorred>100</bordercolorred>
+      <bordercolorgreen>100</bordercolorgreen>
+      <bordercolorblue>100</bordercolorblue>
+      <drawshadow>Y</drawshadow>
+    </notepad>
+    <notepad>
+      <note>Delete processed input
+files from HDFS</note>
+      <xloc>696</xloc>
+      <yloc>400</yloc>
+      <width>150</width>
+      <heigth>39</heigth>
+      <fontname>Microsoft Sans Serif</fontname>
+      <fontsize>8</fontsize>
+      <fontbold>N</fontbold>
+      <fontitalic>N</fontitalic>
+      <fontcolorred>0</fontcolorred>
+      <fontcolorgreen>0</fontcolorgreen>
+      <fontcolorblue>0</fontcolorblue>
+      <backgroundcolorred>255</backgroundcolorred>
+      <backgroundcolorgreen>255</backgroundcolorgreen>
       <backgroundcolorblue>0</backgroundcolorblue>
       <bordercolorred>100</bordercolorred>
       <bordercolorgreen>100</bordercolorgreen>

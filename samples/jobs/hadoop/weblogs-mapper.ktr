@@ -79,7 +79,7 @@
   <notepads>
     <notepad>
       <note>Hadoop will pass data into this step based on the 
-format defined in the Hadoop Trans Job Executor
+format defined in the Pentaho MapReduce entry
 used to run this mapper.  For this example we
 assume the input will be:
 
