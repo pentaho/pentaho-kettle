@@ -88,10 +88,10 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
   private String outputPath;
 
   private boolean blocking;
-  private int loggingInterval = 60; // 60 seconds default
+  private String loggingInterval = "60"; // 60 seconds default
 
-  private int numMapTasks = 1;
-  private int numReduceTasks = 1;
+  private String numMapTasks = "1";
+  private String numReduceTasks = "1";
 
   private List<UserDefinedItem> userDefined = new ArrayList<UserDefinedItem>();
   
@@ -249,11 +249,11 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
     this.blocking = blocking;
   }
 
-  public int getLoggingInterval() {
+  public String getLoggingInterval() {
     return loggingInterval;
   }
 
-  public void setLoggingInterval(int loggingInterval) {
+  public void setLoggingInterval(String loggingInterval) {
     this.loggingInterval = loggingInterval;
   }
 
@@ -265,19 +265,19 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
     this.userDefined = userDefined;
   }
 
-  public int getNumMapTasks() {
+  public String getNumMapTasks() {
     return numMapTasks;
   }
 
-  public void setNumMapTasks(int numMapTasks) {
+  public void setNumMapTasks(String numMapTasks) {
     this.numMapTasks = numMapTasks;
   }
 
-  public int getNumReduceTasks() {
+  public String getNumReduceTasks() {
     return numReduceTasks;
   }
 
-  public void setNumReduceTasks(int numReduceTasks) {
+  public void setNumReduceTasks(String numReduceTasks) {
     this.numReduceTasks = numReduceTasks;
   }
   
@@ -323,6 +323,8 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
       } else {
         resolvedJarUrl = new URL(jarUrlS);
       }
+      
+      final String cmdLineArgsS = environmentSubstitute(cmdLineArgs);
 
       if (log.isDetailed())
         logDetailed(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.ResolvedJar", resolvedJarUrl.toExternalForm()));
@@ -339,7 +341,7 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
                 try {
                   Thread.currentThread().setContextClassLoader(clazz.getClassLoader());
                   Method mainMethod = clazz.getMethod("main", new Class[] { String[].class });
-                  Object[] args = (cmdLineArgs != null) ? new Object[] { cmdLineArgs.split(" ") } : new Object[0];
+                  Object[] args = (cmdLineArgsS != null) ? new Object[] { cmdLineArgsS.split(" ") } : new Object[0];
                   mainMethod.invoke(null, args);
                 } finally {
                   Thread.currentThread().setContextClassLoader(cl);
@@ -452,17 +454,42 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
         conf.setWorkingDirectory(new Path(configurer.getFilesystemURL() + workingDirectoryS));
         conf.setJar(jarUrl);
 
-        conf.setNumMapTasks(numMapTasks);
-        conf.setNumReduceTasks(numReduceTasks);
+        String numMapTasksS = environmentSubstitute(numMapTasks);
+        String numReduceTasksS = environmentSubstitute(numReduceTasks);
+        int numM = 1;
+        try {
+          numM = Integer.parseInt(numMapTasksS);
+        } catch (NumberFormatException e) {
+          logError("Can't parse number of map tasks '" + numMapTasksS + "'. Setting num" +
+          		"map tasks to 1");
+        }
+        int numR = 1;
+        try {
+          numR = Integer.parseInt(numReduceTasksS);
+        } catch (NumberFormatException e) {
+          logError("Can't parse number of reduce tasks '" + numReduceTasksS + "'. Setting num" +
+            "reduce tasks to 1");
+        }
+        
+        conf.setNumMapTasks(numM);
+        conf.setNumReduceTasks(numR);
 
         JobClient jobClient = new JobClient(conf);
         RunningJob runningJob = jobClient.submitJob(conf);
         
+        String loggingIntervalS = environmentSubstitute(loggingInterval);
+        int logIntv = 60;
+        try {
+          logIntv = Integer.parseInt(loggingIntervalS);
+        } catch (NumberFormatException e) {
+          logError("Can't parse logging interval '" + loggingIntervalS + "'. Setting " +
+          "logging interval to 60");
+        }
         if (blocking) {
           try {
             int taskCompletionEventIndex = 0;
             while (!runningJob.isComplete()) {
-              if (loggingInterval >= 1) {
+              if (logIntv >= 1) {
                 printJobStatus(runningJob);
                 
                 TaskCompletionEvent[] tcEvents = runningJob.getTaskCompletionEvents(taskCompletionEventIndex);
@@ -493,7 +520,7 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
                 }
                 taskCompletionEventIndex += tcEvents.length;
                 
-                Thread.sleep(loggingInterval * 1000);
+                Thread.sleep(logIntv * 1000);
               } else {
                 Thread.sleep(60000);
               }
@@ -556,10 +583,11 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
     jarUrl = XMLHandler.getTagValue(entrynode, "jar_url");
     cmdLineArgs = XMLHandler.getTagValue(entrynode, "command_line_args");
     blocking = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "blocking"));
-    try {
+    /*try {
       loggingInterval = Integer.parseInt(XMLHandler.getTagValue(entrynode, "logging_interval"));
     } catch (NumberFormatException nfe) {
-    }
+    } */
+    loggingInterval = XMLHandler.getTagValue(entrynode, "logging_interval");
 
     mapperClass = XMLHandler.getTagValue(entrynode, "mapper_class");
     combinerClass = XMLHandler.getTagValue(entrynode, "combiner_class");
@@ -575,8 +603,10 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
     hdfsPort = XMLHandler.getTagValue(entrynode, "hdfs_port");
     jobTrackerHostname = XMLHandler.getTagValue(entrynode, "job_tracker_hostname");
     jobTrackerPort = XMLHandler.getTagValue(entrynode, "job_tracker_port");
-    numMapTasks = Integer.parseInt(XMLHandler.getTagValue(entrynode, "num_map_tasks"));
-    numReduceTasks = Integer.parseInt(XMLHandler.getTagValue(entrynode, "num_reduce_tasks"));
+    //numMapTasks = Integer.parseInt(XMLHandler.getTagValue(entrynode, "num_map_tasks"));
+    numMapTasks = XMLHandler.getTagValue(entrynode, "num_map_tasks");
+    //numReduceTasks = Integer.parseInt(XMLHandler.getTagValue(entrynode, "num_reduce_tasks"));
+    numReduceTasks = XMLHandler.getTagValue(entrynode, "num_reduce_tasks");
     workingDirectory = XMLHandler.getTagValue(entrynode, "working_dir");
 
     // How many user defined elements?
@@ -655,7 +685,8 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
       setJarUrl(rep.getJobEntryAttributeString(id_jobentry, "jar_url"));
       setCmdLineArgs(rep.getJobEntryAttributeString(id_jobentry, "command_line_args"));
       setBlocking(rep.getJobEntryAttributeBoolean(id_jobentry, "blocking"));
-      setLoggingInterval(new Long(rep.getJobEntryAttributeInteger(id_jobentry, "logging_interval")).intValue());
+      //setLoggingInterval(new Long(rep.getJobEntryAttributeInteger(id_jobentry, "logging_interval")).intValue());
+      setLoggingInterval(rep.getJobEntryAttributeString(id_jobentry, "logging_interval"));
 
       setMapperClass(rep.getJobEntryAttributeString(id_jobentry, "mapper_class"));
       setCombinerClass(rep.getJobEntryAttributeString(id_jobentry, "combiner_class"));
@@ -671,8 +702,10 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
       setHdfsPort(rep.getJobEntryAttributeString(id_jobentry, "hdfs_port"));
       setJobTrackerHostname(rep.getJobEntryAttributeString(id_jobentry, "job_tracker_hostname"));
       setJobTrackerPort(rep.getJobEntryAttributeString(id_jobentry, "job_tracker_port"));
-      setNumMapTasks(new Long(rep.getJobEntryAttributeInteger(id_jobentry, "num_map_tasks")).intValue());
-      setNumReduceTasks(new Long(rep.getJobEntryAttributeInteger(id_jobentry, "num_reduce_tasks")).intValue());
+      //setNumMapTasks(new Long(rep.getJobEntryAttributeInteger(id_jobentry, "num_map_tasks")).intValue());
+      setNumMapTasks(rep.getJobEntryAttributeString(id_jobentry, "num_map_tasks"));
+//      setNumReduceTasks(new Long(rep.getJobEntryAttributeInteger(id_jobentry, "num_reduce_tasks")).intValue());
+      setNumReduceTasks(rep.getJobEntryAttributeString(id_jobentry, "num_reduce_tasks"));
       setWorkingDirectory(rep.getJobEntryAttributeString(id_jobentry, "working_dir"));
 
       
