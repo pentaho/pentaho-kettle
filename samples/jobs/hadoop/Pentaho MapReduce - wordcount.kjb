@@ -92,7 +92,7 @@
 <schema/>
 <table/>
 <timeout_days/>
-<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>JOBNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>JOBENTRYNAME</id><enabled>Y</enabled><name>STEPNAME</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>RESULT</id><enabled>Y</enabled><name>RESULT</name></field><field><id>NR_RESULT_ROWS</id><enabled>Y</enabled><name>NR_RESULT_ROWS</name></field><field><id>NR_RESULT_FILES</id><enabled>Y</enabled><name>NR_RESULT_FILES</name></field><field><id>LOG_FIELD</id><enabled>N</enabled><name>LOG_FIELD</name></field></jobentry-log-table>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>JOBNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>JOBENTRYNAME</id><enabled>Y</enabled><name>STEPNAME</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>RESULT</id><enabled>Y</enabled><name>RESULT</name></field><field><id>NR_RESULT_ROWS</id><enabled>Y</enabled><name>NR_RESULT_ROWS</name></field><field><id>NR_RESULT_FILES</id><enabled>Y</enabled><name>NR_RESULT_FILES</name></field><field><id>LOG_FIELD</id><enabled>N</enabled><name>LOG_FIELD</name></field><field><id>COPY_NR</id><enabled>N</enabled><name>COPY_NR</name></field></jobentry-log-table>
 <channel-log-table><connection/>
 <schema/>
 <table/>
@@ -106,6 +106,7 @@
       <description/>
       <type>HadoopTransJobExecutorPlugin</type>
       <hadoop_job_name>jobname - job executor</hadoop_job_name>
+      <hadoop_distribution>generic</hadoop_distribution>
       <map_trans_repo_dir/>
       <map_trans_repo_file/>
       <map_trans_repo_reference/>
@@ -164,7 +165,7 @@
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>180</xloc>
+      <xloc>78</xloc>
       <yloc>207</yloc>
       </entry>
     <entry>
@@ -182,7 +183,7 @@
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>333</xloc>
+      <xloc>212</xloc>
       <yloc>207</yloc>
       </entry>
     <entry>
@@ -206,6 +207,31 @@
       <xloc>639</xloc>
       <yloc>207</yloc>
       </entry>
+    <entry>
+      <name>Copy Files to HDFS</name>
+      <description/>
+      <type>HadoopCopyFilesPlugin</type>
+      <copy_empty_folders>Y</copy_empty_folders>
+      <arg_from_previous>N</arg_from_previous>
+      <overwrite_files>N</overwrite_files>
+      <include_subfolders>N</include_subfolders>
+      <remove_source_files>N</remove_source_files>
+      <add_result_filesname>N</add_result_filesname>
+      <destination_is_a_file>N</destination_is_a_file>
+      <create_destination_folder>Y</create_destination_folder>
+      <fields>
+        <field>
+          <source_filefolder>.&#47;</source_filefolder>
+          <destination_filefolder>hdfs:&#47;&#47;hadoop-server:8020&#47;wordcount&#47;input</destination_filefolder>
+          <wildcard>.*README.*</wildcard>
+        </field>
+      </fields>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>343</xloc>
+      <yloc>208</yloc>
+      </entry>
   </entries>
   <hops>
     <hop>
@@ -216,15 +242,6 @@
       <enabled>Y</enabled>
       <evaluation>Y</evaluation>
       <unconditional>Y</unconditional>
-    </hop>
-    <hop>
-      <from>Clean Output</from>
-      <to>Pentaho MapReduce</to>
-      <from_nr>0</from_nr>
-      <to_nr>0</to_nr>
-      <enabled>Y</enabled>
-      <evaluation>Y</evaluation>
-      <unconditional>N</unconditional>
     </hop>
     <hop>
       <from>Pentaho MapReduce</from>
@@ -243,6 +260,24 @@
       <enabled>Y</enabled>
       <evaluation>N</evaluation>
       <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>Clean Output</from>
+      <to>Copy Files to HDFS</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
+    </hop>
+    <hop>
+      <from>Copy Files to HDFS</from>
+      <to>Pentaho MapReduce</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
     </hop>
   </hops>
   <notepads>
