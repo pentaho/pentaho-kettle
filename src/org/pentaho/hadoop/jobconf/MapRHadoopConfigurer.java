@@ -38,7 +38,8 @@ public class MapRHadoopConfigurer extends AbstractHadoopConfigurer {
       if (detected != null) {
         result = true;
       }
-    } catch (Exception ex) {
+    } catch (ClassNotFoundException ex) {
+    } catch (NoClassDefFoundError ex) {
     }
     
     return result;
