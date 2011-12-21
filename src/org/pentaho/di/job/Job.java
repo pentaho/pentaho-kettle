@@ -98,6 +98,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 	private Repository rep;
     private AtomicInteger errors;
 
+  private int logCommitSize = 10;
 	private VariableSpace variables = new Variables();
 	
     /** The job that's launching this (sub-) job. This gives us access to the whole chain, including the parent variables, etc. */
@@ -185,6 +186,20 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     passedBatchId = -1;
 
     result = null;
+    this.setDefaultLogCommitSize();
+  }
+
+  private void setDefaultLogCommitSize() {
+    String propLogCommitSize = this.getVariable("pentaho.log.commit.size");
+    if (propLogCommitSize != null) {
+      // override the logCommit variable
+      try {
+        logCommitSize = Integer.parseInt(propLogCommitSize);
+      } catch (Exception ignored) {
+        logCommitSize = 10; // ignore parsing error and default to 10
+      }
+    }
+    
   }
 
 	public Job(Repository repository, JobMeta jobMeta)
@@ -764,6 +779,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       String schemaAndTable = jobMeta.getJobLogTable().getDatabaseMeta().getQuotedSchemaTableCombination(schemaName, tableName);
       Database ldb = new Database(this, logcon);
       ldb.shareVariablesWith(this);
+      ldb.setCommit(logCommitSize); // always turn autocommit off
       ldb.connect();
 
       try {
@@ -915,6 +931,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
 				Database ldb = new Database(this, logcon);
 				ldb.shareVariablesWith(this);
+	      ldb.setCommit(logCommitSize); // always turn autocommit off
 				try
 				{
 					ldb.connect();
@@ -945,6 +962,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 		try {
 			db = new Database(this, channelLogTable.getDatabaseMeta());
 			db.shareVariablesWith(this);
+      db.setCommit(logCommitSize); // always turn autocommit off
 			db.connect();
 			
 			List<LoggingHierarchy> loggingHierarchyList = getLoggingHierarchy();
@@ -969,6 +987,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       try {
         db = new Database(this, jobEntryLogTable.getDatabaseMeta());
         db.shareVariablesWith(this);
+        db.setCommit(logCommitSize); // always turn autocommit off
         db.connect();
         
         for (JobEntryCopy copy : jobMeta.getJobCopies()) {

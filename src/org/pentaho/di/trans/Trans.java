@@ -243,6 +243,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	private Map<String, Trans> activeSubtransformations;
 
   private int stepPerformanceSnapshotSizeLimit;
+  private int logCommitSize = 10;
 	
 	public Trans() {
 		finished = new AtomicBoolean(false);
@@ -293,6 +294,20 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		initializeVariablesFrom(transMeta);
 		copyParametersFrom(transMeta);
 		transMeta.activateParameters();
+    this.setDefaultLogCommitSize();
+	}
+		
+  private void setDefaultLogCommitSize() {
+    String propLogCommitSize = this.getVariable("pentaho.log.commit.size");
+    if (propLogCommitSize != null) {
+      // override the logCommit variable
+      try {
+        logCommitSize = Integer.parseInt(propLogCommitSize);
+      } catch (Exception ignored) {
+        logCommitSize = 10; // ignore parsing error and default to 10
+      }
+    }
+    
 	}
 		
 	public LogChannelInterface getLogChannel() {
@@ -338,6 +353,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 			initializeVariablesFrom(parentVariableSpace);
 			transMeta.copyParametersFrom(this);
 			transMeta.activateParameters();		
+	    this.setDefaultLogCommitSize();
 		}
 		catch(KettleException e)
 		{
@@ -1371,6 +1387,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	            }
 			    transLogTableDatabaseConnection = new Database(this, logConnection);
 			    transLogTableDatabaseConnection.shareVariablesWith(this);
+			    transLogTableDatabaseConnection.setCommit(logCommitSize); // always turn autocommit off
+
 			    if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.OpeningLogConnection",""+logConnection)); //$NON-NLS-1$ //$NON-NLS-2$
 			    transLogTableDatabaseConnection.connect();
 				
@@ -1408,6 +1426,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 					{
 						Database maxdb = new Database(this, maxcon);
 						maxdb.shareVariablesWith(this);
+						maxdb.setCommit(logCommitSize); // always disable auto-commit.
 						try
 						{
 							if(log.isDetailed())  log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.OpeningMaximumDateConnection")); //$NON-NLS-1$
@@ -1478,6 +1497,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 							Database depdb = new Database(this, depcon);
 							try
 							{
+							  depdb.setCommit(logCommitSize); // always turn off autocommit;
 								depdb.connect();
 
 								String sql = "SELECT MAX("+td.getFieldname()+") FROM "+td.getTablename(); //$NON-NLS-1$ //$NON-NLS-2$
@@ -1711,6 +1731,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		try {
 			db = new Database(this, channelLogTable.getDatabaseMeta());
 			db.shareVariablesWith(this);
+			db.setCommit(logCommitSize); // always turn off autocommit;
 			db.connect();
 			
 			List<LoggingHierarchy> loggingHierarchyList = getLoggingHierarchy();
@@ -1734,6 +1755,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		try {
 			db = new Database(this, stepLogTable.getDatabaseMeta());
 			db.shareVariablesWith(this);
+			db.setCommit(logCommitSize); // always turn off autocommit;
 			db.connect();
 			
 			for (StepMetaDataCombi combi : steps) {
@@ -1818,6 +1840,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 				if (transLogTableDatabaseConnection==null) {
 					ldb = new Database(this, logcon);
 					ldb.shareVariablesWith(this);
+					ldb.setCommit(logCommitSize); // always turn off autocommit;
 					ldb.connect();
 					transLogTableDatabaseConnection=ldb;
 				} else {
@@ -1863,6 +1886,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		try {
 			ldb = new Database(this, performanceLogTable.getDatabaseMeta());
 			ldb.shareVariablesWith(this);
+			ldb.setCommit(logCommitSize); // always turn off autocommit;
 			ldb.connect();
 			
 			// Write to the step performance log table...
