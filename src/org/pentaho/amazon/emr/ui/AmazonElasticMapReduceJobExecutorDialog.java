@@ -64,7 +64,7 @@ public class AmazonElasticMapReduceJobExecutorDialog extends JobEntryDialog impl
       DocumentException {
     super(parent, jobEntry, rep, jobMeta);
 
-    final BindingConvertor<String, Integer> bindingConverter = new BindingConvertor<String, Integer>() {
+ /*   final BindingConvertor<String, Integer> bindingConverter = new BindingConvertor<String, Integer>() {
 
       public Integer sourceToTarget(String value) {
         return Integer.parseInt(value);
@@ -74,7 +74,7 @@ public class AmazonElasticMapReduceJobExecutorDialog extends JobEntryDialog impl
         return value.toString();
       }
 
-    };
+    }; */
 
     this.jobEntry = (AmazonElasticMapReduceJobExecutor) jobEntry;
 
@@ -101,7 +101,8 @@ public class AmazonElasticMapReduceJobExecutorDialog extends JobEntryDialog impl
     bf.createBinding("access-key", "value", controller, AmazonElasticMapReduceJobExecutorController.ACCESS_KEY); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     bf.createBinding("secret-key", "value", controller, AmazonElasticMapReduceJobExecutorController.SECRET_KEY); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     bf.createBinding("s3-staging-directory", "value", controller, AmazonElasticMapReduceJobExecutorController.STAGING_DIR); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-    bf.createBinding("num-instances", "value", controller, AmazonElasticMapReduceJobExecutorController.NUM_INSTANCES, bindingConverter); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+//    bf.createBinding("num-instances", "value", controller, AmazonElasticMapReduceJobExecutorController.NUM_INSTANCES, bindingConverter); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    bf.createBinding("num-instances", "value", controller, AmazonElasticMapReduceJobExecutorController.NUM_INSTANCES); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     bf.createBinding("master-instance-type", "selectedItem", controller, AmazonElasticMapReduceJobExecutorController.MASTER_INSTANCE_TYPE); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     bf.createBinding("slave-instance-type", "selectedItem", controller, AmazonElasticMapReduceJobExecutorController.SLAVE_INSTANCE_TYPE); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
@@ -117,15 +118,30 @@ public class AmazonElasticMapReduceJobExecutorDialog extends JobEntryDialog impl
     slaveInstanceType.setSelectedItem("" + controller.getSlaveInstanceType());
 
     bf.createBinding("blocking", "selected", controller, AmazonElasticMapReduceJobExecutorController.BLOCKING); //$NON-NLS-1$ //$NON-NLS-2$ 
-    bf.createBinding("logging-interval", "value", controller, AmazonElasticMapReduceJobExecutorController.LOGGING_INTERVAL, bindingConverter); //$NON-NLS-1$ //$NON-NLS-2$ 
+//    bf.createBinding("logging-interval", "value", controller, AmazonElasticMapReduceJobExecutorController.LOGGING_INTERVAL, bindingConverter); //$NON-NLS-1$ //$NON-NLS-2$
+    bf.createBinding("logging-interval", "value", controller, AmazonElasticMapReduceJobExecutorController.LOGGING_INTERVAL); //$NON-NLS-1$ //$NON-NLS-2$ 
 
     XulTextbox loggingInterval = (XulTextbox) container.getDocumentRoot().getElementById("logging-interval");
     loggingInterval.setValue("" + controller.getLoggingInterval());
 
-    ExtTextbox accessKeyTB = (ExtTextbox) container.getDocumentRoot().getElementById("access-key");
-    accessKeyTB.setVariableSpace(controller.getVariableSpace());
-    ExtTextbox secretKeyTB = (ExtTextbox) container.getDocumentRoot().getElementById("secret-key");
-    secretKeyTB.setVariableSpace(controller.getVariableSpace());
+    ExtTextbox tempBox = (ExtTextbox) container.getDocumentRoot().getElementById("access-key");
+    tempBox.setVariableSpace(controller.getVariableSpace());
+    tempBox = (ExtTextbox) container.getDocumentRoot().getElementById("secret-key");
+    tempBox.setVariableSpace(controller.getVariableSpace());
+    tempBox = (ExtTextbox) container.getDocumentRoot().getElementById("jobentry-hadoopjob-name");
+    tempBox.setVariableSpace(controller.getVariableSpace());
+    tempBox = (ExtTextbox) container.getDocumentRoot().getElementById("jobentry-hadoopjob-flow-id");
+    tempBox.setVariableSpace(controller.getVariableSpace());
+    tempBox = (ExtTextbox) container.getDocumentRoot().getElementById("s3-staging-directory");
+    tempBox.setVariableSpace(controller.getVariableSpace());
+    tempBox = (ExtTextbox) container.getDocumentRoot().getElementById("jar-url");
+    tempBox.setVariableSpace(controller.getVariableSpace());
+    tempBox = (ExtTextbox) container.getDocumentRoot().getElementById("command-line-arguments");
+    tempBox.setVariableSpace(controller.getVariableSpace());
+    tempBox = (ExtTextbox) container.getDocumentRoot().getElementById("num-instances");
+    tempBox.setVariableSpace(controller.getVariableSpace());
+    tempBox = (ExtTextbox) container.getDocumentRoot().getElementById("logging-interval");
+    tempBox.setVariableSpace(controller.getVariableSpace());
     
     bf.setBindingType(Type.BI_DIRECTIONAL);
 

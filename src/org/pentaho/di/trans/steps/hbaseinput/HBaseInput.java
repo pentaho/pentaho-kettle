@@ -337,19 +337,21 @@ public class HBaseInput extends BaseStep implements StepInterface {
         }
         
         for (ColumnFilter cf : m_meta.getColumnFilters()) {
-          HBaseValueMeta mappedCol = m_columnsMappedByAlias.get(cf.getFieldAlias());
+          String fieldAliasS = m_transMeta.environmentSubstitute(cf.getFieldAlias());
+          HBaseValueMeta mappedCol = m_columnsMappedByAlias.get(fieldAliasS);
           if (mappedCol == null) {
-            throw new KettleException("Column filter \"" + cf.getFieldAlias() 
+            throw new KettleException("Column filter \"" + fieldAliasS 
                 + "\" is not in the mapping!");
           }
           
           // check the type (if set in the ColumnFilter) against the type
           // of this field in the mapping
-          if (!Const.isEmpty(cf.getFieldType())) {
-            if (!mappedCol.getHBaseTypeDesc().equalsIgnoreCase(cf.getFieldType())) {
-              throw new KettleException("Type (" + cf.getFieldType() 
+          String fieldTypeS = m_transMeta.environmentSubstitute(cf.getFieldType());
+          if (!Const.isEmpty(fieldTypeS)) {
+            if (!mappedCol.getHBaseTypeDesc().equalsIgnoreCase(fieldTypeS)) {
+              throw new KettleException("Type (" + fieldTypeS 
                   + ") of column filter for \""
-                  + cf.getFieldAlias() + "\" does not match type specified " 
+                  + fieldAliasS + "\" does not match type specified " 
                   + "for this field in the mapping (" 
                   + mappedCol.getHBaseTypeDesc() + ")");
             }
@@ -382,6 +384,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
           }
           
           String comparisonString = cf.getConstant().trim();
+          comparisonString = m_transMeta.environmentSubstitute(comparisonString);
           
           if (comp != null) {
 
@@ -392,8 +395,9 @@ public class HBaseInput extends BaseStep implements StepInterface {
               
               // Double/Float or Long/Integer              
               DecimalFormat df = new DecimalFormat();
-              if (!Const.isEmpty(cf.getFormat())) {
-                df.applyPattern(cf.getFormat());
+              String formatS = m_transMeta.environmentSubstitute(cf.getFormat());
+              if (!Const.isEmpty(formatS)) {
+                df.applyPattern(formatS);
               }
               
               Number num = null;
@@ -450,8 +454,9 @@ public class HBaseInput extends BaseStep implements StepInterface {
               }        
             } else if (mappedCol.isDate()) {
               SimpleDateFormat sdf = new SimpleDateFormat();
-              if (!Const.isEmpty(cf.getFormat())) {
-                sdf.applyPattern(cf.getFormat());
+              String formatS = m_transMeta.environmentSubstitute(cf.getFormat());
+              if (!Const.isEmpty(formatS)) {
+                sdf.applyPattern(formatS);
               }
               Date d = null;
               try {

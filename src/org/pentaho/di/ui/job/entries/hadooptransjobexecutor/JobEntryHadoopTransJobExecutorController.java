@@ -20,9 +20,12 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.entries.hadooptransjobexecutor.JobEntryHadoopTransJobExecutor;
@@ -30,9 +33,11 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.database.dialog.tags.ExtTextbox;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.job.entries.hadoopjobexecutor.UserDefinedItem;
 import org.pentaho.di.ui.repository.dialog.SelectObjectDialog;
+import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.hadoop.jobconf.HadoopConfigurer;
 import org.pentaho.hadoop.jobconf.HadoopConfigurerFactory;
 import org.pentaho.ui.xul.components.XulMenuList;
@@ -102,7 +107,7 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
   private String  numReduceTasks = "1";
 
   private boolean blocking;
-  private int loggingInterval = 60;
+  private String loggingInterval = "60";
 
   private String mapRepositoryDir = "";
   private String mapRepositoryFile = "";
@@ -141,9 +146,68 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
 
   public JobEntryHadoopTransJobExecutorController() throws Throwable {
   }
+  
+  protected VariableSpace getVariableSpace() {
+    if (Spoon.getInstance().getActiveTransformation() != null) {
+      return Spoon.getInstance().getActiveTransformation();
+    } else if (Spoon.getInstance().getActiveJob() != null) {
+      return Spoon.getInstance().getActiveJob();
+    } else {
+      return new Variables();
+    }
+  }
 
   public void accept() {
-
+    
+    ExtTextbox tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("jobentry-hadoopjob-name");
+    this.hadoopJobName = ((Text) tempBox.getTextControl()).getText();
+    tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("jobentry-map-transformation");
+    this.mapTrans = ((Text) tempBox.getTextControl()).getText();
+    tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("jobentry-map-input-stepname");
+    this.mapTransInputStepName = ((Text) tempBox.getTextControl()).getText();
+    tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("jobentry-map-output-stepname");
+    this.mapTransOutputStepName = ((Text) tempBox.getTextControl()).getText();
+    tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("jobentry-combiner-transformation");
+    this.combinerTrans = ((Text) tempBox.getTextControl()).getText();
+    tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("jobentry-combiner-input-stepname");
+    this.combinerTransInputStepName = ((Text) tempBox.getTextControl()).getText();
+    tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("jobentry-combiner-output-stepname");
+    this.combinerTransOutputStepName = ((Text) tempBox.getTextControl()).getText();
+    tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("jobentry-reduce-transformation");
+    this.reduceTrans = ((Text) tempBox.getTextControl()).getText();
+    tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("jobentry-reduce-input-stepname");
+    this.reduceTransInputStepName = ((Text) tempBox.getTextControl()).getText();
+    tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("jobentry-reduce-output-stepname");
+    this.reduceTransOutputStepName = ((Text) tempBox.getTextControl()).getText();
+    tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("classes-output-key-class");
+    this.outputKeyClass = ((Text) tempBox.getTextControl()).getText();
+    tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("classes-output-value-class");
+    this.outputValueClass = ((Text) tempBox.getTextControl()).getText();
+    tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("input-path");
+    this.inputPath = ((Text) tempBox.getTextControl()).getText();
+    tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("output-path");
+    this.outputPath = ((Text) tempBox.getTextControl()).getText();
+    tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("classes-input-format");
+    this.inputFormatClass = ((Text) tempBox.getTextControl()).getText();
+    tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("classes-output-format");
+    this.outputFormatClass = ((Text) tempBox.getTextControl()).getText();
+    tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("working-dir");
+    this.workingDirectory = ((Text) tempBox.getTextControl()).getText();
+    tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("hdfs-hostname");
+    this.hdfsHostname = ((Text) tempBox.getTextControl()).getText();
+    tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("hdfs-port");
+    this.hdfsPort = ((Text) tempBox.getTextControl()).getText();
+    tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("job-tracker-hostname");
+    this.jobTrackerHostname = ((Text) tempBox.getTextControl()).getText();
+    tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("job-tracker-port");
+    this.jobTrackerPort = ((Text) tempBox.getTextControl()).getText();
+    tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("num-map-tasks");
+    this.numMapTasks = ((Text) tempBox.getTextControl()).getText();
+    tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("num-reduce-tasks");
+    this.numReduceTasks = ((Text) tempBox.getTextControl()).getText();
+    tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("logging-interval");
+    this.loggingInterval = ((Text) tempBox.getTextControl()).getText();
+    
     String validationErrors = "";
     if (StringUtil.isEmpty(jobEntryName)) {
       validationErrors += BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.JobEntryName.Error") + "\n";
@@ -273,6 +337,58 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
         ((XulMenuList) getXulDomContainer().getDocumentRoot().getElementById("hadoop-distribution")).replaceAllItems(newItems);
         setHadoopDistribution(jobEntry.getHadoopDistribution());        
       }
+      
+      // set variables
+      VariableSpace varSpace = getVariableSpace();
+      ExtTextbox tempBox;
+      tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("jobentry-hadoopjob-name");
+      tempBox.setVariableSpace(varSpace);
+      tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("jobentry-map-transformation");
+      tempBox.setVariableSpace(varSpace);
+      tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("jobentry-map-input-stepname");
+      tempBox.setVariableSpace(varSpace);
+      tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("jobentry-map-output-stepname");
+      tempBox.setVariableSpace(varSpace);
+      tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("jobentry-combiner-transformation");
+      tempBox.setVariableSpace(varSpace);
+      tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("jobentry-combiner-input-stepname");
+      tempBox.setVariableSpace(varSpace);
+      tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("jobentry-combiner-output-stepname");
+      tempBox.setVariableSpace(varSpace);
+      tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("jobentry-reduce-transformation");
+      tempBox.setVariableSpace(varSpace);
+      tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("jobentry-reduce-input-stepname");
+      tempBox.setVariableSpace(varSpace);
+      tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("jobentry-reduce-output-stepname");
+      tempBox.setVariableSpace(varSpace);
+      tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("classes-output-key-class");
+      tempBox.setVariableSpace(varSpace);
+      tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("classes-output-value-class");
+      tempBox.setVariableSpace(varSpace);
+      tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("input-path");
+      tempBox.setVariableSpace(varSpace);
+      tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("output-path");
+      tempBox.setVariableSpace(varSpace);
+      tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("classes-input-format");
+      tempBox.setVariableSpace(varSpace);
+      tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("classes-output-format");
+      tempBox.setVariableSpace(varSpace);
+      tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("working-dir");
+      tempBox.setVariableSpace(varSpace);
+      tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("hdfs-hostname");
+      tempBox.setVariableSpace(varSpace);
+      tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("hdfs-port");
+      tempBox.setVariableSpace(varSpace);
+      tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("job-tracker-hostname");
+      tempBox.setVariableSpace(varSpace);
+      tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("job-tracker-port");
+      tempBox.setVariableSpace(varSpace);
+      tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("num-map-tasks");
+      tempBox.setVariableSpace(varSpace);
+      tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("num-reduce-tasks");
+      tempBox.setVariableSpace(varSpace);
+      tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("logging-interval");
+      tempBox.setVariableSpace(varSpace);
 
       if (rep == null) {
         ((XulMenuList) getXulDomContainer().getDocumentRoot().getElementById("mapper-storage-type")).setDisabled(true);
@@ -946,13 +1062,13 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
     firePropertyChange(BLOCKING, previousVal, newVal);
   }
 
-  public int getLoggingInterval() {
+  public String getLoggingInterval() {
     return loggingInterval;
   }
 
-  public void setLoggingInterval(int loggingInterval) {
-    int previousVal = this.loggingInterval;
-    int newVal = loggingInterval;
+  public void setLoggingInterval(String loggingInterval) {
+    String previousVal = this.loggingInterval;
+    String newVal = loggingInterval;
 
     this.loggingInterval = loggingInterval;
     firePropertyChange(LOGGING_INTERVAL, previousVal, newVal);

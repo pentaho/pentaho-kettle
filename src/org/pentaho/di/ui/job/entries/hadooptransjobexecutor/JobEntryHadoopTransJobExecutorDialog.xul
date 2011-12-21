@@ -30,7 +30,7 @@
 				</row>
 				<row>
 					<label value="${JobEntryHadoopTransJobExecutor.Name.Label}" />
-					<textbox id="jobentry-hadoopjob-name" flex="1" multiline="false"/>
+					<textbox pen:customclass="variabletextbox" id="jobentry-hadoopjob-name" flex="1" multiline="false"/>
 				</row>
 			</rows>
 		</grid>
@@ -69,21 +69,21 @@
 									<row>
 										<label value="${JobEntryHadoopTransJobExecutor.MapTrans.Label}" />
 										<hbox>
-											<textbox id="jobentry-map-transformation" flex="1" width="400" multiline="false"/>
+											<textbox pen:customclass="variabletextbox" id="jobentry-map-transformation" flex="1" width="400" multiline="false"/>
 											<button id="browse" label="${JobEntryHadoopTransJobExecutor.MapTrans.Browse}" onclick="jobEntryController.mapTransBrowse()"/>
 										</hbox>
 									</row>
 									<row>
 										<label value="${JobEntryHadoopTransJobExecutor.MapInputStepName.Label}" />
 										<hbox>
-											<textbox id="jobentry-map-input-stepname" flex="1" width="200" multiline="false"/>
+											<textbox pen:customclass="variabletextbox" id="jobentry-map-input-stepname" flex="1" width="200" multiline="false"/>
 										</hbox>
 									</row>
 			
 									<row>
 										<label value="${JobEntryHadoopTransJobExecutor.MapOutputStepName.Label}" />
 										<hbox>
-											<textbox id="jobentry-map-output-stepname" flex="1" width="200" multiline="false"/>
+											<textbox pen:customclass="variabletextbox" id="jobentry-map-output-stepname" flex="1" width="200" multiline="false"/>
 										</hbox>
 									</row>
 								</rows>
@@ -111,7 +111,7 @@
 									<row>
 										<label value="${JobEntryHadoopTransJobExecutor.CombinerTrans.Label}" />
 										<hbox>
-											<textbox id="jobentry-combiner-transformation" flex="1" width="400" multiline="false"/>
+											<textbox pen:customclass="variabletextbox" id="jobentry-combiner-transformation" flex="1" width="400" multiline="false"/>
 											<button id="browse" label="${JobEntryHadoopTransJobExecutor.CombinerTrans.Browse}" onclick="jobEntryController.combinerTransBrowse()"/>
 										</hbox>
 									</row>
@@ -119,14 +119,14 @@
 									<row>
 										<label value="${JobEntryHadoopTransJobExecutor.CombinerInputStepName.Label}" />
 										<hbox>
-											<textbox id="jobentry-combiner-input-stepname" flex="1" width="200" multiline="false"/>
+											<textbox pen:customclass="variabletextbox" id="jobentry-combiner-input-stepname" flex="1" width="200" multiline="false"/>
 										</hbox>
 									</row>
 		
 									<row>
 										<label value="${JobEntryHadoopTransJobExecutor.CombinerOutputStepName.Label}" />
 										<hbox>
-											<textbox id="jobentry-combiner-output-stepname" flex="1" width="200" multiline="false"/>
+											<textbox pen:customclass="variabletextbox" id="jobentry-combiner-output-stepname" flex="1" width="200" multiline="false"/>
 										</hbox>
 									</row>
 					            </rows>
@@ -155,7 +155,7 @@
 									<row>
 										<label value="${JobEntryHadoopTransJobExecutor.ReduceTrans.Label}" />
 										<hbox>
-											<textbox id="jobentry-reduce-transformation" flex="1" width="400" multiline="false"/>
+											<textbox pen:customclass="variabletextbox" id="jobentry-reduce-transformation" flex="1" width="400" multiline="false"/>
 											<button id="browse" label="${JobEntryHadoopTransJobExecutor.ReduceTrans.Browse}" onclick="jobEntryController.reduceTransBrowse()"/>
 										</hbox>
 									</row>
@@ -163,14 +163,14 @@
 									<row>
 										<label value="${JobEntryHadoopTransJobExecutor.ReduceInputStepName.Label}" />
 										<hbox>
-											<textbox id="jobentry-reduce-input-stepname" flex="1" width="200" multiline="false"/>
+											<textbox pen:customclass="variabletextbox" id="jobentry-reduce-input-stepname" flex="1" width="200" multiline="false"/>
 										</hbox>
 									</row>
 		
 									<row>
 										<label value="${JobEntryHadoopTransJobExecutor.ReduceOutputStepName.Label}" />
 										<hbox>
-											<textbox id="jobentry-reduce-output-stepname" flex="1" width="200" multiline="false"/>
+											<textbox pen:customclass="variabletextbox" id="jobentry-reduce-output-stepname" flex="1" width="200" multiline="false"/>
 										</hbox>
 									</row>
 					            </rows>
@@ -187,27 +187,27 @@
     					<rows>
     						<row>
     							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.Classes.OutputKeyClass.Label}" />
-    							<textbox id="classes-output-key-class" flex="1" multiline="false"/>
+    							<textbox pen:customclass="variabletextbox" id="classes-output-key-class" flex="1" multiline="false"/>
     						</row>
     						<row>
     							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.Classes.OutputValueClass.Label}" />
-    							<textbox id="classes-output-value-class" flex="1" multiline="false"/>
+    							<textbox pen:customclass="variabletextbox" id="classes-output-value-class" flex="1" multiline="false"/>
     						</row>
     						<row>
     							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.Paths.InputPath.Label}" />
-    							<textbox id="input-path" flex="1" multiline="false"/>
+    							<textbox pen:customclass="variabletextbox" id="input-path" flex="1" multiline="false"/>
     						</row>
     						<row>
     							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.Paths.OutputPath.Label}" />
-    							<textbox id="output-path" flex="1" multiline="false"/>
+    							<textbox pen:customclass="variabletextbox" id="output-path" flex="1" multiline="false"/>
     						</row>
     						<row>
     							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.Classes.InputFormat.Label}" />
-    							<textbox id="classes-input-format" flex="1" multiline="false"/>
+    							<textbox pen:customclass="variabletextbox" id="classes-input-format" flex="1" multiline="false"/>
     						</row>
     						<row>
     							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.Classes.OutputFormat.Label}" />
-    							<textbox id="classes-output-format" flex="1" multiline="false"/>
+    							<textbox pen:customclass="variabletextbox" id="classes-output-format" flex="1" multiline="false"/>
     						</row>
     					</rows>
     				</grid>
@@ -229,31 +229,31 @@
 					        </row>
     						<row>
     							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.Paths.WorkingDirectory.Label}" />
-    							<textbox id="working-dir" flex="1" multiline="false"/>
+    							<textbox pen:customclass="variabletextbox" id="working-dir" flex="1" multiline="false"/>
     						</row>
     						<row>
     							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.Paths.HDFSHostname.Label}" />
-    							<textbox id="hdfs-hostname" flex="1" multiline="false"/>
+    							<textbox pen:customclass="variabletextbox" id="hdfs-hostname" flex="1" multiline="false"/>
     						</row>
     						<row>
     							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.Paths.HDFSPort.Label}" />
-    							<textbox id="hdfs-port" flex="1" multiline="false"/>
+    							<textbox pen:customclass="variabletextbox" id="hdfs-port" flex="1" multiline="false"/>
     						</row>
     						<row>
     							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.Paths.JobTrackerHostname.Label}" />
-    							<textbox id="job-tracker-hostname" flex="1" multiline="false"/>
+    							<textbox pen:customclass="variabletextbox" id="job-tracker-hostname" flex="1" multiline="false"/>
     						</row>
     						<row>
     							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.Paths.JobTrackerPort.Label}" />
-    							<textbox id="job-tracker-port" flex="1" multiline="false"/>
+    							<textbox pen:customclass="variabletextbox" id="job-tracker-port" flex="1" multiline="false"/>
     						</row>
     						<row>
     							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.NumMapTasks.Label}" />
-    							<textbox id="num-map-tasks" flex="1" multiline="false"/>
+    							<textbox pen:customclass="variabletextbox" id="num-map-tasks" flex="1" multiline="false"/>
     						</row>
     						<row>
     							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.NumReduceTasks.Label}" />
-    							<textbox id="num-reduce-tasks" flex="1" multiline="false"/>
+    							<textbox pen:customclass="variabletextbox" id="num-reduce-tasks" flex="1" multiline="false"/>
     						</row>   
     						<row>
     							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Blocking.Label}" />
@@ -261,7 +261,7 @@
     						</row>
     						<row>
     							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Logging.Interval.Label}" />
-    							<textbox id="logging-interval" width="80" flex="1" multiline="false"/>
+    							<textbox pen:customclass="variabletextbox" id="logging-interval" width="80" flex="1" multiline="false"/>
     						</row>    						
     					</rows>
     				</grid>

@@ -67,6 +67,7 @@ public class JobEntryHadoopTransJobExecutorDialog extends JobEntryDialog impleme
 
     SwtXulLoader swtXulLoader = new SwtXulLoader();
     swtXulLoader.registerClassLoader(getClass().getClassLoader());
+    swtXulLoader.register("VARIABLETEXTBOX", "org.pentaho.di.ui.core.database.dialog.tags.ExtTextbox");
     swtXulLoader.setOuterContext(shell);
 
     container = swtXulLoader.loadXul("org/pentaho/di/ui/job/entries/hadooptransjobexecutor/JobEntryHadoopTransJobExecutorDialog.xul", bundle); //$NON-NLS-1$
@@ -104,7 +105,7 @@ public class JobEntryHadoopTransJobExecutorDialog extends JobEntryDialog impleme
     bf.createBinding("classes-input-format", "value", controller, JobEntryHadoopTransJobExecutorController.INPUT_FORMAT_CLASS); //$NON-NLS-1$ //$NON-NLS-2$
     bf.createBinding("classes-output-format", "value", controller, JobEntryHadoopTransJobExecutorController.OUTPUT_FORMAT_CLASS); //$NON-NLS-1$ //$NON-NLS-2$
 
-    final BindingConvertor<String, Integer> bindingConverter = new BindingConvertor<String, Integer>() {
+ /*   final BindingConvertor<String, Integer> bindingConverter = new BindingConvertor<String, Integer>() {
 
       public Integer sourceToTarget(String value) {
         return Integer.parseInt(value);
@@ -114,13 +115,14 @@ public class JobEntryHadoopTransJobExecutorDialog extends JobEntryDialog impleme
         return value.toString();
       }
 
-    };
+    }; */
 
     bf.createBinding("num-map-tasks", "value", controller, JobEntryHadoopTransJobExecutorController.NUM_MAP_TASKS); //$NON-NLS-1$ //$NON-NLS-2$ 
     bf.createBinding("num-reduce-tasks", "value", controller, JobEntryHadoopTransJobExecutorController.NUM_REDUCE_TASKS); //$NON-NLS-1$ //$NON-NLS-2$ 
 
     bf.createBinding("blocking", "selected", controller, JobEntryHadoopTransJobExecutorController.BLOCKING); //$NON-NLS-1$ //$NON-NLS-2$ 
-    bf.createBinding("logging-interval", "value", controller, JobEntryHadoopTransJobExecutorController.LOGGING_INTERVAL, bindingConverter); //$NON-NLS-1$ //$NON-NLS-2$ 
+//    bf.createBinding("logging-interval", "value", controller, JobEntryHadoopTransJobExecutorController.LOGGING_INTERVAL, bindingConverter); //$NON-NLS-1$ //$NON-NLS-2$
+    bf.createBinding("logging-interval", "value", controller, JobEntryHadoopTransJobExecutorController.LOGGING_INTERVAL); //$NON-NLS-1$ //$NON-NLS-2$ 
     bf.createBinding("input-path", "value", controller, JobEntryHadoopTransJobExecutorController.INPUT_PATH); //$NON-NLS-1$ //$NON-NLS-2$
     bf.createBinding("output-path", "value", controller, JobEntryHadoopTransJobExecutorController.OUTPUT_PATH); //$NON-NLS-1$ //$NON-NLS-2$
 

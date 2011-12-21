@@ -103,7 +103,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
   private String outputPath;
 
   private boolean blocking;
-  private int loggingInterval = 60;
+  private String loggingInterval = "60";
 
   private String numMapTasks = "1";
   private String numReduceTasks = "1";
@@ -363,11 +363,11 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
     this.blocking = blocking;
   }
 
-  public int getLoggingInterval() {
+  public String getLoggingInterval() {
     return loggingInterval;
   }
 
-  public void setLoggingInterval(int loggingInterval) {
+  public void setLoggingInterval(String loggingInterval) {
     this.loggingInterval = loggingInterval;
   }
 
@@ -605,12 +605,21 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
       
       JobClient jobClient = new JobClient(conf);
       RunningJob runningJob = jobClient.submitJob(conf);
+      
+      String loggingIntervalS = environmentSubstitute(loggingInterval);
+      int logIntv = 60;
+      try {
+        logIntv = Integer.parseInt(loggingIntervalS);
+      } catch (NumberFormatException e) {
+        logError("Can't parse logging interval '" + loggingIntervalS + "'. Setting " +
+          "logging interval to 60");
+      }
 
       if (blocking) {
         try {
           int taskCompletionEventIndex = 0;
           while (!parentJob.isStopped() && !runningJob.isComplete()) {
-            if (loggingInterval >= 1) {
+            if (logIntv >= 1) {
               printJobStatus(runningJob);
               
               TaskCompletionEvent[] tcEvents = runningJob.getTaskCompletionEvents(taskCompletionEventIndex);
@@ -641,7 +650,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
               }
               taskCompletionEventIndex += tcEvents.length;
               
-              Thread.sleep(loggingInterval * 1000);
+              Thread.sleep(logIntv * 1000);
             } else {
               Thread.sleep(60000);
             }
@@ -726,10 +735,11 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
     reduceOutputStepName = XMLHandler.getTagValue(entrynode, "reduce_output_step_name"); //$NON-NLS-1$
 
     blocking = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "blocking")); //$NON-NLS-1$ //$NON-NLS-2$
-    try {
+    /*try {
       loggingInterval = Integer.parseInt(XMLHandler.getTagValue(entrynode, "logging_interval")); //$NON-NLS-1$
     } catch (NumberFormatException nfe) {
-    }
+    }*/
+    loggingInterval = XMLHandler.getTagValue(entrynode, "logging_interval"); //$NON-NLS-1$
     inputPath = XMLHandler.getTagValue(entrynode, "input_path"); //$NON-NLS-1$
     inputFormatClass = XMLHandler.getTagValue(entrynode, "input_format_class"); //$NON-NLS-1$
     outputPath = XMLHandler.getTagValue(entrynode, "output_path"); //$NON-NLS-1$
@@ -855,7 +865,8 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
       setReduceOutputStepName(rep.getJobEntryAttributeString(id_jobentry, "reduce_output_step_name")); //$NON-NLS-1$
 
       setBlocking(rep.getJobEntryAttributeBoolean(id_jobentry, "blocking")); //$NON-NLS-1$
-      setLoggingInterval(new Long(rep.getJobEntryAttributeInteger(id_jobentry, "logging_interval")).intValue()); //$NON-NLS-1$
+      //setLoggingInterval(new Long(rep.getJobEntryAttributeInteger(id_jobentry, "logging_interval")).intValue()); //$NON-NLS-1$
+      setLoggingInterval(rep.getJobEntryAttributeString(id_jobentry, "logging_interval")); //$NON-NLS-1$
 
       setInputPath(rep.getJobEntryAttributeString(id_jobentry, "input_path")); //$NON-NLS-1$
       setInputFormatClass(rep.getJobEntryAttributeString(id_jobentry, "input_format_class")); //$NON-NLS-1$

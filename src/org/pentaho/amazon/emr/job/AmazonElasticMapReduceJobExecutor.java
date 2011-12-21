@@ -72,14 +72,14 @@ public class AmazonElasticMapReduceJobExecutor extends JobEntryBase implements C
   private String accessKey = "";
   private String secretKey = "";
   private String stagingDir = "";
-  private int numInstances = 2;
+  private String numInstances = "2";
   private String masterInstanceType = "Small [m1.small]";
   private String slaveInstanceType = "Small [m1.small]";
 
   private String cmdLineArgs;
 
   private boolean blocking;
-  private int loggingInterval = 60; // 60 seconds default
+  private String loggingInterval = "60"; // 60 seconds default
 
   public AmazonElasticMapReduceJobExecutor() {
   }
@@ -132,11 +132,11 @@ public class AmazonElasticMapReduceJobExecutor extends JobEntryBase implements C
     this.stagingDir = stagingDir;
   }
 
-  public int getNumInstances() {
+  public String getNumInstances() {
     return numInstances;
   }
 
-  public void setNumInstances(int numInstances) {
+  public void setNumInstances(String numInstances) {
     this.numInstances = numInstances;
   }
 
@@ -172,11 +172,11 @@ public class AmazonElasticMapReduceJobExecutor extends JobEntryBase implements C
     this.blocking = blocking;
   }
 
-  public int getLoggingInterval() {
+  public String getLoggingInterval() {
     return loggingInterval;
   }
 
-  public void setLoggingInterval(int loggingInterval) {
+  public void setLoggingInterval(String loggingInterval) {
     this.loggingInterval = loggingInterval;
   }
 
@@ -290,6 +290,15 @@ public class AmazonElasticMapReduceJobExecutor extends JobEntryBase implements C
 
         emrClient.addJobFlowSteps(addJobFlowStepsRequest);
       }
+      
+      String loggingIntervalS = environmentSubstitute(loggingInterval);
+      int logIntv = 60;
+      try {
+        logIntv = Integer.parseInt(loggingIntervalS);
+      } catch (NumberFormatException ex) {
+        logError("Unable to parse logging interval '" + loggingIntervalS + "' - using " +
+        		"default of 60");
+      }
 
       // monitor it / blocking / logging if desired
       if (blocking) {
@@ -325,7 +334,7 @@ public class AmazonElasticMapReduceJobExecutor extends JobEntryBase implements C
               logBasic(hadoopJobName + " execution status: " + executionState);
               try {
                 if (isRunning(executionState)) {
-                  Thread.sleep(loggingInterval * 1000);
+                  Thread.sleep(logIntv * 1000);
                 }
               } catch (InterruptedException ie) {
               }
@@ -395,8 +404,16 @@ public class AmazonElasticMapReduceJobExecutor extends JobEntryBase implements C
     List<StepConfig> steps = new ArrayList<StepConfig>();
     steps.add(stepConfig);
 
+    String numInstancesS = environmentSubstitute(numInstances);
+    int numInsts = 2;
+    try {
+      numInsts = Integer.parseInt(numInstancesS);
+    } catch (NumberFormatException e) {
+      logError("Unable to parse number of instances to use '" + numInstancesS + "' - " +
+      		"using 2 instances...");
+    }
     JobFlowInstancesConfig instances = new JobFlowInstancesConfig();
-    instances.setInstanceCount(numInstances);
+    instances.setInstanceCount(numInsts);
     instances.setMasterInstanceType(getInstanceType(masterInstanceType));
     instances.setSlaveInstanceType(getInstanceType(slaveInstanceType));
     instances.setHadoopVersion("0.20");
@@ -450,16 +467,18 @@ public class AmazonElasticMapReduceJobExecutor extends JobEntryBase implements C
     accessKey = Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(entrynode, "access_key"));
     secretKey = Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(entrynode, "secret_key"));
     stagingDir = XMLHandler.getTagValue(entrynode, "staging_dir");
-    numInstances = Integer.parseInt(XMLHandler.getTagValue(entrynode, "num_instances"));
+    // numInstances = Integer.parseInt(XMLHandler.getTagValue(entrynode, "num_instances"));
+    numInstances = XMLHandler.getTagValue(entrynode, "num_instances");
     masterInstanceType = XMLHandler.getTagValue(entrynode, "master_instance_type");
     slaveInstanceType = XMLHandler.getTagValue(entrynode, "slave_instance_type");
 
     cmdLineArgs = XMLHandler.getTagValue(entrynode, "command_line_args");
     blocking = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "blocking"));
-    try {
+    /*try {
       loggingInterval = Integer.parseInt(XMLHandler.getTagValue(entrynode, "logging_interval"));
     } catch (NumberFormatException nfe) {
-    }
+    }*/
+    loggingInterval = XMLHandler.getTagValue(entrynode, "logging_interval");
   }
 
   public String getXML() {
@@ -495,13 +514,15 @@ public class AmazonElasticMapReduceJobExecutor extends JobEntryBase implements C
       setSecretKey(Encr.decryptPasswordOptionallyEncrypted(rep.getJobEntryAttributeString(id_jobentry, "secret_key")));
       setStagingDir(rep.getJobEntryAttributeString(id_jobentry, "staging_dir"));
 
-      setNumInstances(new Long(rep.getJobEntryAttributeInteger(id_jobentry, "num_instances")).intValue());
+      // setNumInstances(new Long(rep.getJobEntryAttributeInteger(id_jobentry, "num_instances")).intValue());
+      setNumInstances(rep.getJobEntryAttributeString(id_jobentry, "num_instances"));
       setMasterInstanceType(rep.getJobEntryAttributeString(id_jobentry, "master_instance_type"));
       setSlaveInstanceType(rep.getJobEntryAttributeString(id_jobentry, "slave_instance_type"));
 
       setCmdLineArgs(rep.getJobEntryAttributeString(id_jobentry, "command_line_args"));
       setBlocking(rep.getJobEntryAttributeBoolean(id_jobentry, "blocking"));
-      setLoggingInterval(new Long(rep.getJobEntryAttributeInteger(id_jobentry, "logging_interval")).intValue());
+      //setLoggingInterval(new Long(rep.getJobEntryAttributeInteger(id_jobentry, "logging_interval")).intValue());
+      setLoggingInterval(rep.getJobEntryAttributeString(id_jobentry, "logging_interval"));
 
     } else {
       throw new KettleException("Unable to save to a repository. The repository is null."); //$NON-NLS-1$

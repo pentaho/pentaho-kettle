@@ -30,11 +30,11 @@
 				</row>
 				<row>
 					<label value="${AmazonElasticMapReduceJobExecutor.Name.Label}" align="end" />
-					<textbox id="jobentry-hadoopjob-name" flex="1" multiline="false" width="200"/>
+					<textbox pen:customclass="variabletextbox" id="jobentry-hadoopjob-name" flex="1" multiline="false" width="200"/>
 				</row>
 				<row>
 					<label value="${AmazonElasticMapReduceJobExecutor.JobFlowIdOptional.Label}" align="end" />
-					<textbox id="jobentry-hadoopjob-flow-id" flex="1" multiline="false" width="200"/>
+					<textbox pen:customclass="variabletextbox" id="jobentry-hadoopjob-flow-id" flex="1" multiline="false" width="200"/>
 				</row>
 				<row>
 					<label value="${AmazonElasticMapReduceJobExecutor.AWSAccessKey.Label}" align="end" />
@@ -47,24 +47,24 @@
 				<row>
 					<label value="${AmazonElasticMapReduceJobExecutor.S3StagingDir.Label}" align="end" />
 					<hbox>
-						<textbox id="s3-staging-directory" flex="1" width="400" multiline="false"/>
+						<textbox pen:customclass="variabletextbox" id="s3-staging-directory" flex="1" width="400" multiline="false"/>
 						<button id="browseS3Stage" label="${AmazonElasticMapReduceJobExecutor.S3StagingDir.Browse}" onclick="jobEntryController.browseS3StagingDir()"/>
 					</hbox>
 				</row>
 				<row>
 					<label value="${AmazonElasticMapReduceJobExecutor.JarUrl.Label}" align="end" />
 					<hbox>
-						<textbox id="jar-url" flex="1" width="400" multiline="false"/>
+						<textbox pen:customclass="variabletextbox" id="jar-url" flex="1" width="400" multiline="false"/>
 						<button id="browseJarUrl" label="${AmazonElasticMapReduceJobExecutor.JarUrl.Browse}" onclick="jobEntryController.browseJar()"/>
 					</hbox>
 				</row>
 				<row>
 					<label value="${AmazonElasticMapReduceJobExecutor.ModeSimple.CommandLineArguments.Label}" align="end" />
-					<textbox id="command-line-arguments" flex="1" multiline="false"/>
+					<textbox pen:customclass="variabletextbox" id="command-line-arguments" flex="1" multiline="false"/>
 				</row>
 				<row>
 					<label value="${AmazonElasticMapReduceJobExecutor.NumInstances.Label}" align="end" />
-					<textbox id="num-instances" flex="1" multiline="false" width="50"/>
+					<textbox pen:customclass="variabletextbox" id="num-instances" flex="1" multiline="false" width="50"/>
 				</row>
 				<row>
 					<label value="${AmazonElasticMapReduceJobExecutor.MasterInstanceType.Label}" align="end" />
@@ -103,7 +103,7 @@
 				</row>
 				<row>
 					<label value="${AmazonElasticMapReduceJobExecutor.ModeAdvanced.Logging.Interval.Label}" align="end" />
-					<textbox id="logging-interval" width="50" flex="1" multiline="false"/>
+					<textbox pen:customclass="variabletextbox" id="logging-interval" width="50" flex="1" multiline="false"/>
 				</row>
 
 			</rows>

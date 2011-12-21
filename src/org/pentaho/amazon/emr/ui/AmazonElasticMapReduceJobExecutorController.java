@@ -63,22 +63,35 @@ public class AmazonElasticMapReduceJobExecutorController extends AbstractXulEven
   private String accessKey = "";
   private String secretKey = "";
   private String stagingDir = "";
-  private int numInstances = 2;
+  private String numInstances = "2";
   private String masterInstanceType = "m1.small";
   private String slaveInstanceType = "m1.small";
   private String cmdLineArgs;
   private boolean blocking;
-  private int loggingInterval = 60; // 60 seconds
+  private String loggingInterval = "60"; // 60 seconds
 
   private AmazonElasticMapReduceJobExecutor jobEntry;
 
   public void accept() {
 
-    ExtTextbox accessKeyTB = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("access-key");
-    this.accessKey = ((Text) accessKeyTB.getTextControl()).getText();
-
-    ExtTextbox secretKeyTB = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("secret-key");
-    this.secretKey = ((Text) secretKeyTB.getTextControl()).getText();
+    ExtTextbox tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("jobentry-hadoopjob-name");
+    this.hadoopJobName = ((Text) tempBox.getTextControl()).getText();
+    tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("access-key");
+    this.accessKey = ((Text) tempBox.getTextControl()).getText();
+    tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("secret-key");
+    this.secretKey = ((Text) tempBox.getTextControl()).getText();
+    tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("jobentry-hadoopjob-flow-id");
+    this.hadoopJobFlowId = ((Text) tempBox.getTextControl()).getText();
+    tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("s3-staging-directory");
+    this.stagingDir = ((Text) tempBox.getTextControl()).getText();
+    tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("jar-url");
+    this.jarUrl = ((Text) tempBox.getTextControl()).getText();
+    tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("command-line-arguments");
+    this.cmdLineArgs = ((Text) tempBox.getTextControl()).getText();
+    tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("num-instances");
+    this.numInstances = ((Text) tempBox.getTextControl()).getText();
+    tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("logging-interval");
+    this.loggingInterval = ((Text) tempBox.getTextControl()).getText();
 
     String validationErrors = "";
     if (StringUtil.isEmpty(jobEntryName)) {
@@ -113,9 +126,9 @@ public class AmazonElasticMapReduceJobExecutorController extends AbstractXulEven
         }
       }
     }
-    if (numInstances <= 0) {
+    /*if (numInstances <= 0) {
       validationErrors += BaseMessages.getString(PKG, "AmazonElasticMapReduceJobExecutor.NumInstances.Error") + "\n";
-    }
+    }*/
     if (StringUtil.isEmpty(masterInstanceType)) {
       validationErrors += BaseMessages.getString(PKG, "AmazonElasticMapReduceJobExecutor.MasterInstanceType.Error") + "\n";
     }
@@ -417,13 +430,13 @@ public class AmazonElasticMapReduceJobExecutorController extends AbstractXulEven
     firePropertyChange(AmazonElasticMapReduceJobExecutorController.STAGING_DIR, previousVal, newVal);
   }
 
-  public int getNumInstances() {
+  public String getNumInstances() {
     return numInstances;
   }
 
-  public void setNumInstances(int numInstances) {
-    int previousVal = this.numInstances;
-    int newVal = numInstances;
+  public void setNumInstances(String numInstances) {
+    String previousVal = this.numInstances;
+    String newVal = numInstances;
 
     this.numInstances = numInstances;
     firePropertyChange(AmazonElasticMapReduceJobExecutorController.NUM_INSTANCES, previousVal, newVal);
@@ -490,13 +503,13 @@ public class AmazonElasticMapReduceJobExecutorController extends AbstractXulEven
     firePropertyChange(BLOCKING, previousVal, newVal);
   }
 
-  public int getLoggingInterval() {
+  public String getLoggingInterval() {
     return loggingInterval;
   }
 
-  public void setLoggingInterval(int loggingInterval) {
-    int previousVal = this.loggingInterval;
-    int newVal = loggingInterval;
+  public void setLoggingInterval(String loggingInterval) {
+    String previousVal = this.loggingInterval;
+    String newVal = loggingInterval;
 
     this.loggingInterval = loggingInterval;
     firePropertyChange(LOGGING_INTERVAL, previousVal, newVal);
