@@ -614,9 +614,25 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
       String workingDirectoryS = environmentSubstitute(workingDirectory);
       conf.setWorkingDirectory(new Path(configurer.getFilesystemURL() + workingDirectoryS));
       conf.setJarByClass(PentahoMapRunnable.class);
+      
+      String numMapTasksS = environmentSubstitute(numMapTasks);
+      try {
+        if (Integer.parseInt(numMapTasksS) < 0) {
+          throw new KettleException(BaseMessages.getString(PKG, 
+              "JobEntryHadoopTransJobExecutor.NumMapTasks.Error"));
+        }
+      } catch (NumberFormatException e) { }
+      
+      String numReduceTasksS = environmentSubstitute(numReduceTasks);
+      try {
+        if (Integer.parseInt(numReduceTasksS) < 0) {
+          throw new KettleException(BaseMessages.getString(PKG, 
+              "JobEntryHadoopTransJobExecutor.NumReduceTasks.Error"));
+        }
+      } catch (NumberFormatException e) { }
 
-      conf.setNumMapTasks(Const.toInt(environmentSubstitute(numMapTasks), 1));
-      conf.setNumReduceTasks(Const.toInt(environmentSubstitute(numReduceTasks), 1));
+      conf.setNumMapTasks(Const.toInt(numMapTasksS, 1));
+      conf.setNumReduceTasks(Const.toInt(numReduceTasksS, 1));
 
       //  get a reference to the variable space
       VariableSpace variableSpace = this.getVariables();

@@ -292,7 +292,7 @@
   <!--  ###############################################################################   -->
   <!--     ERROR DIALOG: Dialog to display error text                                     -->
   <!--  ###############################################################################   -->   
-  <dialog id="hadoop-error-dialog" title="${Dialog.Error}" buttonlabelaccept="${Dialog.OK}" buttons="accept" ondialogaccept="jobEntryController.closeErrorDialog()" width="600" height="300" buttonalign="center">
+  <dialog id="hadoop-error-dialog" title="${Dialog.Error}" buttonlabelaccept="${Dialog.Accept}" buttons="accept" ondialogaccept="jobEntryController.closeErrorDialog()" width="600" height="300" buttonalign="center">
         <textbox id="hadoop-error-message" value="${errorDialog.errorOccurred}" multiline="true" readonly="true" flex="1" />
   </dialog>
 

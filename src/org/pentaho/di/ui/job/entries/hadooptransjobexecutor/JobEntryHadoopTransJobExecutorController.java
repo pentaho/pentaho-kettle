@@ -225,6 +225,27 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
     if (StringUtil.isEmpty(hadoopJobName)) {
       validationErrors += BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.HadoopJobName.Error") + "\n";
     }
+    if (!Const.isEmpty(numReduceTasks)) {
+      String reduceS = getVariableSpace().environmentSubstitute(numReduceTasks);
+      try {
+        int numR = Integer.parseInt(reduceS);
+        
+        if (numR < 0) {
+          validationErrors += BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.NumReduceTasks.Error") + "\n";
+        }
+      } catch (NumberFormatException e) { }
+    }
+    if (!Const.isEmpty(numMapTasks)) {
+      String mapS = getVariableSpace().environmentSubstitute(numMapTasks);
+      
+      try {
+        int numM = Integer.parseInt(mapS);
+        
+        if (numM < 0) {
+          validationErrors += BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.NumMapTasks.Error") + "\n";
+        }
+      } catch (NumberFormatException e) { }
+    }
 
     if (!StringUtil.isEmpty(validationErrors)) {
       openErrorDialog(BaseMessages.getString(PKG, "Dialog.Error"), validationErrors);
