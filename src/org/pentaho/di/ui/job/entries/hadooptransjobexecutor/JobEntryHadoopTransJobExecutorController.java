@@ -63,6 +63,8 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
   public static final String REDUCE_TRANS_INPUT_STEP_NAME = "reduceTransInputStepName"; //$NON-NLS-1$
   public static final String REDUCE_TRANS_OUTPUT_STEP_NAME = "reduceTransOutputStepName"; //$NON-NLS-1$
 
+  public static final String MAP_OUTPUT_KEY_CLASS = "mapOutputKeyClass"; //$NON-NLS-1$
+  public static final String MAP_OUTPUT_VALUE_CLASS = "mapOutputValueClass"; //$NON-NLS-1$
   public static final String OUTPUT_KEY_CLASS = "outputKeyClass"; //$NON-NLS-1$
   public static final String OUTPUT_VALUE_CLASS = "outputValueClass"; //$NON-NLS-1$
   public static final String INPUT_FORMAT_CLASS = "inputFormatClass"; //$NON-NLS-1$
@@ -90,6 +92,8 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
   private String jobEntryName;
   private String hadoopJobName;
 
+  private String mapOutputKeyClass;
+  private String mapOutputValueClass;
   private String outputKeyClass;
   private String outputValueClass;
   private String inputFormatClass;
@@ -179,6 +183,12 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
     this.reduceTransInputStepName = ((Text) tempBox.getTextControl()).getText();
     tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("jobentry-reduce-output-stepname");
     this.reduceTransOutputStepName = ((Text) tempBox.getTextControl()).getText();
+    
+    tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("classes-map-output-key-class");
+    this.mapOutputKeyClass = ((Text) tempBox.getTextControl()).getText();
+    tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("classes-map-output-value-class");
+    this.mapOutputValueClass = ((Text) tempBox.getTextControl()).getText();
+    
     tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("classes-output-key-class");
     this.outputKeyClass = ((Text) tempBox.getTextControl()).getText();
     tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("classes-output-value-class");
@@ -297,6 +307,10 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
     jobEntry.setInputPath(getInputPath());
     jobEntry.setInputFormatClass(getInputFormatClass());
     jobEntry.setOutputPath(getOutputPath());
+    
+    jobEntry.setMapOutputKeyClass(getMapOutputKeyClass());
+    jobEntry.setMapOutputValueClass(getMapOutputValueClass());
+    
     jobEntry.setOutputKeyClass(getOutputKeyClass());
     jobEntry.setOutputValueClass(getOutputValueClass());
     jobEntry.setOutputFormatClass(getOutputFormatClass());
@@ -361,6 +375,12 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
       tempBox.setVariableSpace(varSpace);
       tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("jobentry-reduce-output-stepname");
       tempBox.setVariableSpace(varSpace);
+      
+      tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("classes-map-output-key-class");
+      tempBox.setVariableSpace(varSpace);
+      tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("classes-map-output-value-class");
+      tempBox.setVariableSpace(varSpace);
+      
       tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("classes-output-key-class");
       tempBox.setVariableSpace(varSpace);
       tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("classes-output-value-class");
@@ -485,6 +505,10 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
       setInputPath(jobEntry.getInputPath());
       setInputFormatClass(jobEntry.getInputFormatClass());
       setOutputPath(jobEntry.getOutputPath());
+      
+      setMapOutputKeyClass(jobEntry.getMapOutputKeyClass());
+      setMapOutputValueClass(jobEntry.getMapOutputValueClass());
+      
       setOutputKeyClass(jobEntry.getOutputKeyClass());
       setOutputValueClass(jobEntry.getOutputValueClass());
       setOutputFormatClass(jobEntry.getOutputFormatClass());
@@ -916,6 +940,30 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
 
   public void setJobEntry(JobEntryHadoopTransJobExecutor jobEntry) {
     this.jobEntry = jobEntry;
+  }
+  
+  public String getMapOutputKeyClass() {
+    return mapOutputKeyClass;
+  }
+
+  public void setMapOutputKeyClass(String mapOutputKeyClass) {
+    String previousVal = this.mapOutputKeyClass;
+    String newVal = mapOutputKeyClass;
+
+    this.mapOutputKeyClass = mapOutputKeyClass;
+    firePropertyChange(MAP_OUTPUT_KEY_CLASS, previousVal, newVal);
+  }
+  
+  public String getMapOutputValueClass() {
+    return mapOutputValueClass;
+  }
+
+  public void setMapOutputValueClass(String mapOutputValueClass) {
+    String previousVal = this.mapOutputValueClass;
+    String newVal = mapOutputValueClass;
+
+    this.mapOutputValueClass = mapOutputValueClass;
+    firePropertyChange(MAP_OUTPUT_VALUE_CLASS, previousVal, newVal);
   }
 
   public String getOutputKeyClass() {

@@ -14,6 +14,7 @@ package org.pentaho.hadoop.mapreduce;
 
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.io.Text;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
@@ -36,6 +37,7 @@ public class TypeConverterFactory {
 			return new ConvertToNull();
 		} else {
 
+		  if (AnyToNullWritable.is(from, to)) { return new AnyToNullWritable(); }
 		  if(IntegerToText.is(from, to)) { return new IntegerToText(); }
 			if(IntegerToIntWritable.is(from, to)) { return new IntegerToIntWritable(); }
 			if(LongToIntWritable.is(from, to)) { return new LongToIntWritable(); }
@@ -57,6 +59,16 @@ public class TypeConverterFactory {
 		
 		//  Do we want our own ConverterNotAvailableException?
 		throw new RuntimeException("No converter available for " + from + " to " + to); 
+	}
+	
+	private static class AnyToNullWritable implements ITypeConverter {
+	  public static boolean is (Class<?> from, Class<?> to) {
+	    return to.equals(NullWritable.class);
+	  }
+	  
+	  public Object convert(ValueMetaInterface meta, Object obj) throws Exception {
+	    return NullWritable.get();
+	  }
 	}
 	
 	private static class ConvertToNull implements ITypeConverter {

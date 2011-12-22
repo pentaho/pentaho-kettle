@@ -85,6 +85,9 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
   private String combinerOutputStepName;
   private String reduceInputStepName;
   private String reduceOutputStepName;
+  
+  private String mapOutputKeyClass;
+  private String mapOutputValueClass;
 
   private String outputKeyClass;
   private String outputValueClass;
@@ -266,6 +269,22 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
   public void setReduceOutputStepName(String reduceOutputStepName) {
     this.reduceOutputStepName = reduceOutputStepName;
   }
+  
+  public void setMapOutputKeyClass(String mapOutputKeyClass) {
+    this.mapOutputKeyClass = mapOutputKeyClass;
+  }
+  
+  public String getMapOutputKeyClass() {
+    return mapOutputKeyClass;
+  }
+  
+  public void setMapOutputValueClass(String mapOutputValueClass) {
+    this.mapOutputValueClass = mapOutputValueClass;
+  }
+  
+  public String getMapOutputValueClass() {
+    return mapOutputValueClass;
+  }
 
   public String getOutputKeyClass() {
     return outputKeyClass;
@@ -277,11 +296,11 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
 
   public String getOutputValueClass() {
     return outputValueClass;
-  }
+  }   
 
   public void setOutputValueClass(String outputValueClass) {
     this.outputValueClass = outputValueClass;
-  }
+  }  
 
   public String getInputFormatClass() {
     return inputFormatClass;
@@ -507,6 +526,18 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
         conf.set("transformation-reduce-input-stepname", reduceInputStepName); //$NON-NLS-1$
         conf.set("transformation-reduce-output-stepname", reduceOutputStepName); //$NON-NLS-1$
         conf.setReducerClass(GenericTransReduce.class);
+      }
+      
+      if (!Const.isEmpty(mapOutputKeyClass)) {
+        logDebug("Using " + mapOutputKeyClass + " For the map output key");
+        String mapOutputKeyClassS = environmentSubstitute(mapOutputKeyClass);
+        conf.setMapOutputKeyClass(loader.loadClass(mapOutputKeyClassS));
+      }
+      
+      if (!Const.isEmpty(mapOutputValueClass)) {
+        logDebug("Using " + mapOutputValueClass + " For the map output value");
+        String mapOutputValueClassS = environmentSubstitute(mapOutputValueClass);
+        conf.setMapOutputValueClass(loader.loadClass(mapOutputValueClassS));
       }
 
       if(outputKeyClass != null) {
@@ -743,6 +774,10 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
     inputPath = XMLHandler.getTagValue(entrynode, "input_path"); //$NON-NLS-1$
     inputFormatClass = XMLHandler.getTagValue(entrynode, "input_format_class"); //$NON-NLS-1$
     outputPath = XMLHandler.getTagValue(entrynode, "output_path"); //$NON-NLS-1$
+    
+    mapOutputKeyClass = XMLHandler.getTagValue(entrynode, "map_output_key_class"); //$NON-NLS-1$
+    mapOutputValueClass = XMLHandler.getTagValue(entrynode, "map_output_value_class"); //$NON-NLS-1$
+    
     outputKeyClass = XMLHandler.getTagValue(entrynode, "output_key_class"); //$NON-NLS-1$
     outputValueClass = XMLHandler.getTagValue(entrynode, "output_value_class"); //$NON-NLS-1$
     outputFormatClass = XMLHandler.getTagValue(entrynode, "output_format_class"); //$NON-NLS-1$
@@ -804,6 +839,10 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
     retval.append("      ").append(XMLHandler.addTagValue("input_path", inputPath)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("      ").append(XMLHandler.addTagValue("input_format_class", inputFormatClass)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("      ").append(XMLHandler.addTagValue("output_path", outputPath)); //$NON-NLS-1$ //$NON-NLS-2$
+    
+    retval.append("      ").append(XMLHandler.addTagValue("map_output_key_class", mapOutputKeyClass)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("      ").append(XMLHandler.addTagValue("map_output_value_class", mapOutputValueClass)); //$NON-NLS-1$ //$NON-NLS-2$
+    
     retval.append("      ").append(XMLHandler.addTagValue("output_key_class", outputKeyClass)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("      ").append(XMLHandler.addTagValue("output_value_class", outputValueClass)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("      ").append(XMLHandler.addTagValue("output_format_class", outputFormatClass)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -871,6 +910,10 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
       setInputPath(rep.getJobEntryAttributeString(id_jobentry, "input_path")); //$NON-NLS-1$
       setInputFormatClass(rep.getJobEntryAttributeString(id_jobentry, "input_format_class")); //$NON-NLS-1$
       setOutputPath(rep.getJobEntryAttributeString(id_jobentry, "output_path")); //$NON-NLS-1$
+      
+      setMapOutputKeyClass(rep.getJobEntryAttributeString(id_jobentry, "map_output_key_class")); //$NON-NLS-1$
+      setMapOutputValueClass(rep.getJobEntryAttributeString(id_jobentry, "map_output_value_class")); //$NON-NLS-1$
+      
       setOutputKeyClass(rep.getJobEntryAttributeString(id_jobentry, "output_key_class")); //$NON-NLS-1$
       setOutputValueClass(rep.getJobEntryAttributeString(id_jobentry, "output_value_class")); //$NON-NLS-1$
       setOutputFormatClass(rep.getJobEntryAttributeString(id_jobentry, "output_format_class")); //$NON-NLS-1$
@@ -945,6 +988,10 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
       rep.saveJobEntryAttribute(id_job, getObjectId(),"input_path", inputPath); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getObjectId(),"input_format_class", inputFormatClass); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getObjectId(),"output_path", outputPath); //$NON-NLS-1$
+      
+      rep.saveJobEntryAttribute(id_job, getObjectId(),"map_output_key_class", mapOutputKeyClass); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(),"map_output_value_class", mapOutputValueClass); //$NON-NLS-1$
+      
       rep.saveJobEntryAttribute(id_job, getObjectId(),"output_key_class", outputKeyClass); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getObjectId(),"output_value_class", outputValueClass); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getObjectId(),"output_format_class", outputFormatClass); //$NON-NLS-1$

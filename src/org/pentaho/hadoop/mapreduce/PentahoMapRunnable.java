@@ -94,8 +94,8 @@ public class PentahoMapRunnable<K1, V1, K2, V2> implements MapRunnable<K1, V1, K
     reduceOutputStepName = job.get("transformation-reduce-output-stepname");
     String xmlVariableSpace = job.get("variableSpace");
     
-    outClassK = (Class<K2>) job.getOutputKeyClass();
-    outClassV = (Class<V2>) job.getOutputValueClass();
+    outClassK = (Class<K2>) job.getMapOutputKeyClass();
+    outClassV = (Class<V2>) job.getMapOutputValueClass();
 
     if (!Const.isEmpty(xmlVariableSpace)) {
        setDebugStatus("PentahoMapRunnable(): variableSpace was retrieved from the job.  The contents: ");

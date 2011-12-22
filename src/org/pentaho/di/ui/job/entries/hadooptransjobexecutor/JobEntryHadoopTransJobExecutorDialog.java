@@ -100,6 +100,9 @@ public class JobEntryHadoopTransJobExecutorDialog extends JobEntryDialog impleme
     bf.createBinding("jobentry-reduce-input-stepname", "value", controller, JobEntryHadoopTransJobExecutorController.REDUCE_TRANS_INPUT_STEP_NAME); //$NON-NLS-1$ //$NON-NLS-2$ 
     bf.createBinding("jobentry-reduce-output-stepname", "value", controller, JobEntryHadoopTransJobExecutorController.REDUCE_TRANS_OUTPUT_STEP_NAME); //$NON-NLS-1$ //$NON-NLS-2$
 
+    bf.createBinding("classes-map-output-key-class", "value", controller, JobEntryHadoopTransJobExecutorController.MAP_OUTPUT_KEY_CLASS); //$NON-NLS-1$ //$NON-NLS-2$
+    bf.createBinding("classes-map-output-value-class", "value", controller, JobEntryHadoopTransJobExecutorController.MAP_OUTPUT_VALUE_CLASS); //$NON-NLS-1$ //$NON-NLS-2$
+    
     bf.createBinding("classes-output-key-class", "value", controller, JobEntryHadoopTransJobExecutorController.OUTPUT_KEY_CLASS); //$NON-NLS-1$ //$NON-NLS-2$
     bf.createBinding("classes-output-value-class", "value", controller, JobEntryHadoopTransJobExecutorController.OUTPUT_VALUE_CLASS); //$NON-NLS-1$ //$NON-NLS-2$
     bf.createBinding("classes-input-format", "value", controller, JobEntryHadoopTransJobExecutorController.INPUT_FORMAT_CLASS); //$NON-NLS-1$ //$NON-NLS-2$

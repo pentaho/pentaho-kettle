@@ -186,6 +186,14 @@
     					</columns>
     					<rows>
     						<row>
+    							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.Classes.MapOutputKeyClass.Label}" />
+    							<textbox pen:customclass="variabletextbox" id="classes-map-output-key-class" flex="1" multiline="false"/>
+    						</row>
+    						<row>
+    							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.Classes.MapOutputValueClass.Label}" />
+    							<textbox pen:customclass="variabletextbox" id="classes-map-output-value-class" flex="1" multiline="false"/>
+    						</row>
+    						<row>
     							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.Classes.OutputKeyClass.Label}" />
     							<textbox pen:customclass="variabletextbox" id="classes-output-key-class" flex="1" multiline="false"/>
     						</row>
