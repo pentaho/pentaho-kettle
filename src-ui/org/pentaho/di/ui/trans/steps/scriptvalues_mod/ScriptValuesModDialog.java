@@ -1612,11 +1612,18 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
 										strItemToAdd=v.getName()+".setValue(var)"; break; //$NON-NLS-1$
 									default: strItemToAdd=v.getName(); break;
 								}*/
-								itemFields = new TreeItem(itemoutput, SWT.NULL);
-								itemFields.setImage(imageArrowOrange);
-								itemFields.setText(strItemToAddOut);
-								itemFields.setData(strItemToAddOut);
+								if (wCompatible.getSelection()) {
+									itemFields = new TreeItem(itemoutput, SWT.NULL);
+									itemFields.setImage(imageArrowOrange);
+									itemFields.setText(strItemToAddOut);
+									itemFields.setData(strItemToAddOut);
+								}
 							}
+						if (!wCompatible.getSelection()) {
+							TreeItem itemFields = new TreeItem(itemoutput, SWT.NULL);
+							itemFields.setData("");
+							itemFields.setText(BaseMessages.getString(PKG , "ScriptValuesDialogMod.OutputFiels.CompatibilityOff"));
+						}
 					}
 				/*}catch(KettleException ke){
 					new ErrorDialog(shell, BaseMessages.getString(PKG, "ScriptValuesDialogMod.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "ScriptValuesDialogMod.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
