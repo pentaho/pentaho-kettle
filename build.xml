@@ -595,7 +595,10 @@
 	  	    <!-- make JavaApplicationStub executable for OSX -->
 	  	    <chmod file="${distrib}/Data Integration 32-bit.app/Contents/MacOS/JavaApplicationStub" perm="ugo+rx"/>
   	        <chmod file="${distrib}/Data Integration 64-bit.app/Contents/MacOS/JavaApplicationStub" perm="ugo+rx"/>
-	  		  		
+
+	        <!-- LICENSE.txt -->
+	  		<copy todir="${distrib}/" file="LICENSE.txt" />
+
 	  </target>
 	
 	  <!--
