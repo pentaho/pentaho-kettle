@@ -103,14 +103,15 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
 	public static final String XML_TAG = "job"; //$NON-NLS-1$
 
-	private static final String XML_TAG_SLAVESERVERS = "slaveservers"; //$NON-NLS-1$
+	protected static final String XML_TAG_SLAVESERVERS = "slaveservers"; //$NON-NLS-1$
 	
 	public static final RepositoryObjectType REPOSITORY_ELEMENT_TYPE = RepositoryObjectType.JOB;
 
 	protected ObjectId objectId;
 	
-	private LogLevel logLevel = DefaultLogLevel.getLogLevel();
-  private String containerObjectId;
+	protected LogLevel logLevel = DefaultLogLevel.getLogLevel();
+
+    protected String containerObjectId;
 
 	protected String name;
 
@@ -124,15 +125,15 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
 	protected String filename;
 
-	private List<JobEntryCopy> jobcopies;
+	protected List<JobEntryCopy> jobcopies;
 
-	private List<JobHopMeta> jobhops;
+	protected List<JobHopMeta> jobhops;
 
-	private List<NotePadMeta> notes;
+	protected List<NotePadMeta> notes;
 
-	private List<DatabaseMeta> databases;
+	protected List<DatabaseMeta> databases;
 
-	private List<SlaveServer> slaveServers;
+	protected List<SlaveServer> slaveServers;
 
 	protected RepositoryDirectoryInterface directory;
 
@@ -146,7 +147,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
 	protected List<TransAction> undo;
 
-	private VariableSpace variables = new Variables();
+	protected VariableSpace variables = new Variables();
 
 	protected int max_undo;
 
@@ -173,9 +174,9 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	// Remember the size and position of the different windows...
 	public boolean max[] = new boolean[1];
 
-	private String created_user, modifiedUser;
+	protected String created_user, modifiedUser;
 
-	private Date created_date, modifiedDate;
+	protected Date created_date, modifiedDate;
 
 
 	protected boolean batchIdPassed;
@@ -187,18 +188,18 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	protected String sharedObjectsFile;
 	
 	/** The last loaded version of the shared objects */
-	private SharedObjects sharedObjects;
+	protected SharedObjects sharedObjects;
 
-	private List<NameChangedListener> nameChangedListeners;
+	protected List<NameChangedListener> nameChangedListeners;
 
-	private List<FilenameChangedListener> filenameChangedListeners;
+	protected List<FilenameChangedListener> filenameChangedListeners;
 	
-    private NamedParams namedParams = new NamedParamsDefault();
+    protected NamedParams namedParams = new NamedParamsDefault();
     
-    private static final String XML_TAG_PARAMETERS = "parameters";
+    protected static final String XML_TAG_PARAMETERS = "parameters";
     
-    
-	private ObjectRevision objectRevision;
+	protected ObjectRevision objectRevision;
+
 	public JobMeta() {
 		clear();
 		initializeVariablesFrom(null);

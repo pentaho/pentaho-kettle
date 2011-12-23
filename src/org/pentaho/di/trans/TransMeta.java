@@ -128,126 +128,126 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     
 	public static final RepositoryObjectType REPOSITORY_ELEMENT_TYPE = RepositoryObjectType.TRANSFORMATION;
 
-    private List<DatabaseMeta>       databases;
+    protected List<DatabaseMeta>       databases;
 
-    private List<StepMeta>           steps;
+    protected List<StepMeta>           steps;
 
-    private List<TransHopMeta>       hops;
+    protected List<TransHopMeta>       hops;
 
-    private List<NotePadMeta>        notes;
+    protected List<NotePadMeta>        notes;
 
-    private List<TransDependency>    dependencies;
+    protected List<TransDependency>    dependencies;
     
-    private List<SlaveServer>        slaveServers;
+    protected List<SlaveServer>        slaveServers;
     
-    private List<ClusterSchema>      clusterSchemas;
+    protected List<ClusterSchema>      clusterSchemas;
 
-    private List<PartitionSchema>    partitionSchemas;
+    protected List<PartitionSchema>    partitionSchemas;
 
-    private RepositoryDirectoryInterface directory;
+    protected RepositoryDirectoryInterface directory;
 
-    private String              name;
+    protected String              name;
 
-	private String              description;
+	protected String              description;
 
-	private String              extended_description;
+	protected String              extended_description;
 
-	private String				trans_version;
+	protected String				trans_version;
 
-	private int					trans_status;
+	protected int					trans_status;
 
-    private String              filename;
+    protected String              filename;
 
-    private TransLogTable       transLogTable;
-    private PerformanceLogTable performanceLogTable;
-    private ChannelLogTable     channelLogTable;
-    private StepLogTable     	stepLogTable;
+    protected TransLogTable       transLogTable;
+    protected PerformanceLogTable performanceLogTable;
+    protected ChannelLogTable     channelLogTable;
+    protected StepLogTable     	stepLogTable;
 
 
-    private int                 sizeRowset;
+    protected int                 sizeRowset;
 
-    private DatabaseMeta        maxDateConnection;
+    protected DatabaseMeta        maxDateConnection;
 
-    private String              maxDateTable;
+    protected String              maxDateTable;
 
-    private String              maxDateField;
+    protected String              maxDateField;
 
-    private double              maxDateOffset;
+    protected double              maxDateOffset;
 
-    private double              maxDateDifference;
+    protected double              maxDateDifference;
 
-    private String              arguments[];
+    protected String              arguments[];
 
-    private Hashtable<String,Counter> counters;
+    protected Hashtable<String,Counter> counters;
 
-    private boolean             changed_steps, changed_databases, changed_hops, changed_notes;
+    protected boolean             changed_steps, changed_databases, changed_hops, changed_notes;
 
-    private List<TransAction>   undo;
+    protected List<TransAction>   undo;
 
-    private int                 max_undo;
+    protected int                 max_undo;
 
-    private int                 undo_position;
+    protected int                 undo_position;
 
-    private DBCache             dbCache;
+    protected DBCache             dbCache;
 
-    private ObjectId            id;
+    protected ObjectId            id;
 
-    private String              createdUser, modifiedUser;
+    protected String              createdUser, modifiedUser;
 
-    private Date                createdDate, modifiedDate;
+    protected Date                createdDate, modifiedDate;
 
-    private int                 sleepTimeEmpty;
+    protected int                 sleepTimeEmpty;
 
-    private int                 sleepTimeFull;
+    protected int                 sleepTimeFull;
 
-	private Result              previousResult;
-    private List<RowMetaAndData> resultRows;
-    private List<ResultFile>     resultFiles;            
+	protected Result              previousResult;
+    protected List<RowMetaAndData> resultRows;
+    protected List<ResultFile>     resultFiles;            
         
-    private boolean             usingUniqueConnections;
+    protected boolean             usingUniqueConnections;
     
-    private boolean             feedbackShown;
-    private int                 feedbackSize;
+    protected boolean             feedbackShown;
+    protected int                 feedbackSize;
     
     /** flag to indicate thread management usage.  Set to default to false from version 2.5.0 on. Before that it was enabled by default. */
-    private boolean             usingThreadPriorityManagment;
+    protected boolean             usingThreadPriorityManagment;
     
     /** If this is null, we load from the default shared objects file : $KETTLE_HOME/.kettle/shared.xml */
-    private String              sharedObjectsFile;
+    protected String              sharedObjectsFile;
     
     /** The last load of the shared objects file by this TransMet object */
-    private SharedObjects       sharedObjects;
+    protected SharedObjects       sharedObjects;
     
-    private VariableSpace       variables = new Variables();
+    protected VariableSpace       variables = new Variables();
     
     /** The slave-step-copy/partition distribution.  Only used for slave transformations in a clustering environment. */
-    private SlaveStepCopyPartitionDistribution slaveStepCopyPartitionDistribution;
+    protected SlaveStepCopyPartitionDistribution slaveStepCopyPartitionDistribution;
     
     /** Just a flag indicating that this is a slave transformation - internal use only, no GUI option */
-    private boolean slaveTransformation;
+    protected boolean slaveTransformation;
     
     /** The repository to reference in the one-off case that it is needed */
-    private Repository repository;
+    protected Repository repository;
     
-    private boolean    capturingStepPerformanceSnapShots;
+    protected boolean    capturingStepPerformanceSnapShots;
     
-    private long       stepPerformanceCapturingDelay;
+    protected long       stepPerformanceCapturingDelay;
     
-    private String     stepPerformanceCapturingSizeLimit;
+    protected String     stepPerformanceCapturingSizeLimit;
     
-    private Map<String, RowMetaInterface> stepsFieldsCache;
-    private Map<String, Boolean> loopCache;
+    protected Map<String, RowMetaInterface> stepsFieldsCache;
+    protected Map<String, Boolean> loopCache;
     
-    private List<NameChangedListener> nameChangedListeners;
-    private List<FilenameChangedListener> filenameChangedListeners;
+    protected List<NameChangedListener> nameChangedListeners;
+    protected List<FilenameChangedListener> filenameChangedListeners;
     
-    private NamedParams namedParams = new NamedParamsDefault();
+    protected NamedParams namedParams = new NamedParamsDefault();
    
-    private LogChannelInterface log;
+    protected LogChannelInterface log;
     
-    private LogLevel logLevel = DefaultLogLevel.getLogLevel();
+    protected LogLevel logLevel = DefaultLogLevel.getLogLevel();
     
-    private String containerObjectId;
+    protected String containerObjectId;
     
     public enum TransformationType {
     	Normal("Normal", BaseMessages.getString(PKG, "TransMeta.TransformationType.Normal")),
@@ -282,7 +282,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 		}
     }
     
-    private TransformationType transformationType;
+    protected TransformationType transformationType;
     
     
     // //////////////////////////////////////////////////////////////////////////
@@ -297,15 +297,15 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
     public static final String  desc_type_undo[]   = { "", BaseMessages.getString(PKG, "TransMeta.UndoTypeDesc.UndoChange"), BaseMessages.getString(PKG, "TransMeta.UndoTypeDesc.UndoNew"), BaseMessages.getString(PKG, "TransMeta.UndoTypeDesc.UndoDelete"), BaseMessages.getString(PKG, "TransMeta.UndoTypeDesc.UndoPosition") }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 
-    private static final String XML_TAG_INFO                = "info";
-    private static final String XML_TAG_ORDER               = "order";
+    protected static final String XML_TAG_INFO                = "info";
+    protected static final String XML_TAG_ORDER               = "order";
     public  static final String XML_TAG_NOTEPADS            = "notepads";
     public  static final String XML_TAG_PARAMETERS          = "parameters";
-    private static final String XML_TAG_DEPENDENCIES        = "dependencies";
+    protected static final String XML_TAG_DEPENDENCIES        = "dependencies";
     public  static final String XML_TAG_PARTITIONSCHEMAS    = "partitionschemas";
     public  static final String XML_TAG_SLAVESERVERS        = "slaveservers";
     public  static final String XML_TAG_CLUSTERSCHEMAS      = "clusterschemas";
-    private static final String XML_TAG_STEP_ERROR_HANDLING = "step_error_handling";
+    protected static final String XML_TAG_STEP_ERROR_HANDLING = "step_error_handling";
     
     /**
      * Builds a new empty transformation.
