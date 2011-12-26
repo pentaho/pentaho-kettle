@@ -18,7 +18,6 @@ package org.pentaho.di.ui.trans.steps.accessinput;
 
 import java.io.File;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import org.eclipse.swt.SWT;
@@ -1562,16 +1561,10 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
 					//
 					Set<String> settables = accessDatabase.getTableNames();
 					
+					// Get System tables
+					settables.addAll(accessDatabase.getSystemTableNames());
+					
 					// Get system tables
-					
-					 Table SystTable= accessDatabase.getSystemCatalog();
-					 Map<String,Object>   rw; 
-					 while (((rw = SystTable.getNextRow())!=null))
-					 {
-					     String name = (String) rw.get("Name");	
-						 if (name.startsWith(AccessInputMeta.PREFIX_SYSTEM))   settables.add(name);
-					 }
-					
 
 					String[] tablenames = (String[]) settables.toArray(new String[settables.size()]);
 					Const.sortStrings(tablenames);

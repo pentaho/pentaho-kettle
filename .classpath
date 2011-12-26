@@ -250,7 +250,6 @@
 	<classpathentry kind="lib" path="libext/jersey/jersey-apache-client-1.7.jar"/>
 	<classpathentry kind="lib" path="libext/jersey/jersey-client-1.7.jar"/>
 	<classpathentry kind="lib" path="libext/jersey/jersey-core-1.7.jar"/>
-	<classpathentry kind="lib" path="libext/jackcess-1.2.4.jar"/>
 	<classpathentry kind="lib" path="libext/elasticsearch/elasticsearch-0.16.3.jar"/>
 	<classpathentry kind="lib" path="libext/elasticsearch/lucene-analyzers-3.1.0.jar"/>
 	<classpathentry kind="lib" path="libext/elasticsearch/lucene-core-3.1.0.jar"/>
@@ -358,5 +357,6 @@
 	<classpathentry kind="lib" path="libext/jsch-0.1.45.jar"/>
 	<classpathentry kind="lib" path="libext/datacleaner-ui/DataCleaner-core-2.3.jar"/>
 	<classpathentry kind="lib" path="src-plugins/kettle-openerp-plugin/lib/openerp-java-api.jar"/>
+	<classpathentry kind="lib" path="libext/jackcess-1.2.6.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
