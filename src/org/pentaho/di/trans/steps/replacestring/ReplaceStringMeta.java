@@ -323,19 +323,15 @@ public class ReplaceStringMeta extends BaseStepMeta implements StepMetaInterface
 	 public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface info[], StepMeta nextStep,
 	            VariableSpace space) throws KettleStepException
 	  {
-		for(int i=0;i<fieldOutStream.length;i++) {
-			ValueMetaInterface valueMeta = new ValueMeta(space.environmentSubstitute(fieldOutStream[i]), ValueMeta.TYPE_STRING);
-			valueMeta.setLength(100, -1);
-			valueMeta.setOrigin(name);
-			
+		 int nrFields=fieldInStream==null?0:fieldInStream.length;
+		 for(int i=0;i<nrFields;i++) {
+			String fieldName=space.environmentSubstitute(fieldOutStream[i]);
+
 			if (!Const.isEmpty(fieldOutStream[i])){
+				// We have a new field
+				ValueMetaInterface valueMeta = new ValueMeta(fieldName, ValueMeta.TYPE_STRING);
+				valueMeta.setOrigin(name);
 				inputRowMeta.addValueMeta(valueMeta);
-			} else {
-				int index = inputRowMeta.indexOfValue(fieldInStream[i]);
-				if (index>=0) {
-					valueMeta.setName(fieldInStream[i]);
-					inputRowMeta.setValueMeta(index, valueMeta);
-				}
 			}
 		}
 	}

@@ -107,18 +107,22 @@ public class ReplaceString extends BaseStep implements StepInterface {
     private synchronized Object[] getOneRow(RowMetaInterface rowMeta,Object[] row) throws KettleException {
 
     	Object[] rowData = RowDataUtil.resizeArray(row, data.outputRowMeta.size());
-        
+        int index=0;
 
         for (int i = 0; i < data.numFields; i++) {
+     
             String value = replaceString(
                     getInputRowMeta().getString(row, data.inStreamNrs[i]),	
                     data.patterns[i],
                     getResolvedReplaceByString(i, row));
 
-            if(Const.isEmpty(data.outStreamNrs[i])) 
+            if(Const.isEmpty(data.outStreamNrs[i]))  {
+            	// update field value
                 rowData[data.inStreamNrs[i]] = value;
-            else
-                rowData[data.inputFieldsNr+i] = value;	
+            } else {
+            	// add new field value
+                rowData[data.inputFieldsNr+index++] = value;	
+            }
         }
         return rowData;
     }

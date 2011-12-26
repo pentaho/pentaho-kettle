@@ -322,7 +322,7 @@ public class ReplaceStringDialog extends BaseStepDialog implements StepDialogInt
 		int nrkeys = wFields.nrNonEmpty();
 
 		inf.allocate(nrkeys);
-		if(log.isDebug())
+		if(isDebug())
 			logDebug(BaseMessages.getString(PKG, "ReplaceStringDialog.Log.FoundFields", String.valueOf(nrkeys))); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i = 0; i < nrkeys; i++) {
 			TableItem item = wFields.getNonEmpty(i);
@@ -330,15 +330,13 @@ public class ReplaceStringDialog extends BaseStepDialog implements StepDialogInt
 			inf.getFieldOutStream()[i] = item.getText(2);
 			inf.getUseRegEx()[i] =ReplaceStringMeta.getUseRegExByDesc(item.getText(3));
 			inf.getReplaceString()[i] = item.getText(4);
-			input.isSetEmptyString()[i] = BaseMessages.getString(PKG, "System.Combo.Yes").equalsIgnoreCase(item.getText(5));
+			inf.getReplaceByString()[i] = item.getText(5);
 			
-			if(Const.isEmpty(item.getText(7))) {
-				if(input.isSetEmptyString()[i]) inf.getReplaceByString()[i]=""; 
-				else
-					inf.getReplaceByString()[i] = item.getText(6);
-			} else
-				inf.getFieldReplaceByString()[i] = item.getText(7);
-			
+			inf.isSetEmptyString()[i] = BaseMessages.getString(PKG, "System.Combo.Yes").equalsIgnoreCase(item.getText(6));
+			if(inf.isSetEmptyString()[i]) inf.getReplaceByString()[i]=""; 
+			inf.getFieldReplaceByString()[i] = item.getText(7);
+			if(!Const.isEmpty(item.getText(7))) inf.getReplaceByString()[i]=""; 
+				
 			inf.getWholeWord()[i] = ReplaceStringMeta.getWholeWordByDesc(item.getText(8));
 			inf.getCaseSensitive()[i] = ReplaceStringMeta.getCaseSensitiveByDesc(item.getText(9));
 		}
@@ -368,6 +366,7 @@ public class ReplaceStringDialog extends BaseStepDialog implements StepDialogInt
 							tableItem.setText(6, BaseMessages.getString(PKG, "System.Combo.No"));
 							tableItem.setText(7, BaseMessages.getString(PKG, "System.Combo.No"));
 							tableItem.setText(8, BaseMessages.getString(PKG, "System.Combo.No"));
+							tableItem.setText(9, BaseMessages.getString(PKG, "System.Combo.No"));
 							return true;
 						} else {
 							return false;
