@@ -68,6 +68,13 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 				r = RowDataUtil.allocateRowData(data.outputRowMeta.size());
 			}
 			
+			if(meta.isSmartCount() && data.foundData)
+			{
+				// We have data right the last separator,
+				// we need to update the row count
+				data.rownr++;
+			}
+			
 			r[data.totalpreviousfields]=data.rownr;
 			
 			if (meta.includeCountFiles()) r[data.totalpreviousfields+1]= data.filenr;
@@ -77,9 +84,7 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 		}
 		 catch (Exception e)
 		 {
-			 
 			throw new KettleException("Unable to read row from file", e);
-			
 		 }
 		 
 		return r;
@@ -116,21 +121,51 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 
   private void getRowNumber() throws KettleException {
     try {
+
       if (data.file.getType() == FileType.FILE) {
         data.fr = KettleVFS.getInputStream(data.file);
         // Avoid method calls - see here:
         // http://java.sun.com/developer/technicalArticles/Programming/PerfTuning/
         byte buf[] = new byte[8192]; // BufferedaInputStream default buffer size
         int n;
+        boolean prevCR=false;
         while ((n = data.fr.read(buf)) != -1) {
           for (int i = 0; i < n; i++) {
-            if (buf[i] == data.separator) {
-              data.rownr++;
-            }
+        	 data.foundData=true;
+        	 if (meta.getRowSeparatorFormat().equals("CRLF")){
+        		 // We need to check for CRLF 
+        		 if (buf[i] == '\r' || buf[i] == '\n') {
+        			 if(buf[i] == '\r') {
+        				 // we have a carriage return
+        				 // keep track of it..maybe we will have a line feed right after :-)
+        				 prevCR=true;
+        			 } else if (buf[i] == '\n') {
+        				 // we have a line feed
+        				 // let's see if we had previously a carriage return
+        				 if(prevCR){
+        					 // we have a carriage return followed by a line feed 
+        					 data.rownr++;
+        					 // Maybe we won't have data after
+        					 data.foundData=false;
+        					 prevCR=false;
+        				 }
+        			 }
+        		 }else {
+        			 // we have another char (other than \n , \r)
+        			 prevCR=false;
+        		 }
+        		
+	    	} else {
+	        	  if (buf[i] == data.separator) {
+	        		 data.rownr++;
+	        		 // Maybe we won't have data after
+	        		 data.foundData=false;
+	            }
+	    	}
           }
         }
       }
-      if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetFilesRowsCount.Log.RowsInFile", data.file.toString(), "" + data.rownr));
+      if (isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetFilesRowsCount.Log.RowsInFile", data.file.toString(), "" + data.rownr));
     } catch (Exception e) {
       throw new KettleException(e);
     } finally {
@@ -250,7 +285,7 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 		{
 			  if((meta.getRowSeparatorFormat().equals("CUSTOM")) && (Const.isEmpty(meta.getRowSeparator())))
 	            {
-	            	log.logError(BaseMessages.getString(PKG, "GetFilesRowsCount.Error.NoSeparator.Title"), BaseMessages.getString(PKG, "GetFilesRowsCount.Error.NoSeparator.Msg"));
+	            	logError(BaseMessages.getString(PKG, "GetFilesRowsCount.Error.NoSeparator.Title"), BaseMessages.getString(PKG, "GetFilesRowsCount.Error.NoSeparator.Msg"));
 	            	setErrors(1);
 	                stopAll(); 
 	            }
@@ -260,25 +295,29 @@ public class GetFilesRowsCount extends BaseStep implements StepInterface
 		            if (meta.getRowSeparatorFormat().equals("CARRIAGERETURN") || meta.getRowSeparatorFormat().equals("LF"))
 		    		{
 		    			data.separator='\r';
-		    			if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separator.Title"), BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separatoris.Infos") + " \\n");
+		    			if (isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separator.Title"), BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separatoris.Infos") + " \\n");
 		    		}
 		            // Checking for 'CR' for backwards compatibility.
 		            else if (meta.getRowSeparatorFormat().equals("LINEFEED") || meta.getRowSeparatorFormat().equals("CR"))
 		    		{
 		            	data.separator='\n';
-		    			if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separator.Title"), BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separatoris.Infos") + " \\r");
+		    			if (isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separator.Title"), BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separatoris.Infos") + " \\r");
 		    		}
 		            else if (meta.getRowSeparatorFormat().equals("TAB"))
 		    		{
 		            	data.separator='\t';
-		            	if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separator.Title"), BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separatoris.Infos") + " \\t");
+		            	if (isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separator.Title"), BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separatoris.Infos") + " \\t");
+		    		}
+		            else if (meta.getRowSeparatorFormat().equals("CRLF"))
+		    		{
+		    			if (isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separator.Title"), BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separatoris.Infos") + " \\r\\n");
 		    		}
 		            else
 		    		{
 		            	
 		            	data.separator=environmentSubstitute(meta.getRowSeparator()).charAt(0);
 		            	 
-		            	if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separator.Title"), BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separatoris.Infos") + " " +data.separator);
+		            	if (isDetailed()) logDetailed(BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separator.Title"), BaseMessages.getString(PKG, "GetFilesRowsCount.Log.Separatoris.Infos") + " " +data.separator);
 		    		}
 	            }
 			  

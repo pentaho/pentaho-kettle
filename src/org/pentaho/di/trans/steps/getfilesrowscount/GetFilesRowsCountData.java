@@ -45,6 +45,8 @@ public class GetFilesRowsCountData extends BaseStepData implements StepDataInter
     public Object[] readrow;
     public RowMetaInterface inputRowMeta;
     public char separator;
+    
+    public boolean foundData;
 
 	/**
 	 * 
@@ -62,5 +64,6 @@ public class GetFilesRowsCountData extends BaseStepData implements StepDataInter
 		indexOfFilenameField=-1;
 		readrow=null;
 		separator='\n';
+		foundData=false;
 	}
 }

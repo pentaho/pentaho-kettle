@@ -129,12 +129,12 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 	private Group wAdditionalGroup,wFilesCountFieldGroup,wRowSeparatorGroup,wOriginFiles,wAddFileResult;
 	private FormData fdAdditionalGroup,fdFilesCountFieldGroup,fdRowSeparatorGroup,fdAddFileResult;
 	
-	private FormData fdOriginFiles,fdFilenameField,fdlFilenameField,fdAddResult;
-    private Button wFileField,wAddResult;
+	private FormData fdOriginFiles,fdFilenameField,fdlFilenameField,fdAddResult, fdSmartCount;
+    private Button wFileField,wAddResult, wSmartCount;
     
-    private Label wlFileField,wlFilenameField,wlAddResult;
+    private Label wlFileField,wlFilenameField,wlAddResult, wlSmartCount;
     private CCombo wFilenameField;
-    private FormData fdlFileField,fdFileField;
+    private FormData fdlFileField,fdFileField, fdlSmartCount;
     
     
 
@@ -550,6 +550,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
         props.setLook(wRowSeparatorFormat);
         wRowSeparatorFormat.add(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.RowSeparatorFormat.CR.Label"));
         wRowSeparatorFormat.add(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.RowSeparatorFormat.LF.Label"));
+        wRowSeparatorFormat.add(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.RowSeparatorFormat.CRLF.Label"));
         wRowSeparatorFormat.add(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.RowSeparatorFormat.TAB.Label"));
         wRowSeparatorFormat.add(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.RowSeparatorFormat.CUSTOM.Label"));
         wRowSeparatorFormat.select(0);
@@ -587,6 +588,24 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 		fdRowSeparator.top  = new FormAttachment(wRowSeparatorFormat, margin);
 		fdRowSeparator.right= new FormAttachment(100, 0);
 		wRowSeparator.setLayoutData(fdRowSeparator);
+		
+
+		wlSmartCount=new Label(wRowSeparatorGroup, SWT.RIGHT);
+		wlSmartCount.setText(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.SmartCount.Label"));
+ 		props.setLook(wlSmartCount);
+		fdlSmartCount=new FormData();
+		fdlSmartCount.left = new FormAttachment(0, 0);
+		fdlSmartCount.top  = new FormAttachment(wRowSeparator, margin);
+		fdlSmartCount.right= new FormAttachment(middle, -margin);
+		wlSmartCount.setLayoutData(fdlSmartCount);
+		wSmartCount=new Button(wRowSeparatorGroup, SWT.CHECK );
+ 		props.setLook(wSmartCount);
+		wSmartCount.setToolTipText(BaseMessages.getString(PKG, "GetFilesRowsCountDialog.SmartCount.Tooltip"));
+		fdSmartCount=new FormData();
+		fdSmartCount.left = new FormAttachment(middle, 0);
+		fdSmartCount.top  = new FormAttachment(wRowSeparator, margin);
+		wSmartCount.setLayoutData(fdSmartCount);
+		
 		
 		fdRowSeparatorGroup = new FormData();
 		fdRowSeparatorGroup.left = new FormAttachment(0, margin);
@@ -647,7 +666,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 		fdInclFilesCountField.top  = new FormAttachment(wRowSeparatorGroup, margin);
 		fdInclFilesCountField.right= new FormAttachment(100, 0);
 		wInclFilesCountField.setLayoutData(fdInclFilesCountField);
-		
+
 	
 		fdAdditionalGroup = new FormData();
 		fdAdditionalGroup.left = new FormAttachment(0, margin);
@@ -1016,13 +1035,18 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 			{
 				wRowSeparatorFormat.select(1);
 			}
-			else if (in.getRowSeparatorFormat().equals("TAB"))
+			else if (in.getRowSeparatorFormat().equals("CRLF"))
 			{
 				wRowSeparatorFormat.select(2);
 			}
-			else
+			else if (in.getRowSeparatorFormat().equals("TAB"))
 			{
 				wRowSeparatorFormat.select(3);
+			}
+		
+			else
+			{
+				wRowSeparatorFormat.select(4);
 			}
 		}
 		else
@@ -1083,8 +1107,11 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 		{
 			in.setRowSeparatorFormat("LINEFEED");
 		}
-
 		else if (wRowSeparatorFormat.getSelectionIndex()==2)
+		{
+			in.setRowSeparatorFormat("CRLF");
+		}
+		else if (wRowSeparatorFormat.getSelectionIndex()==3)
 		{
 			in.setRowSeparatorFormat("TAB");
 		}
@@ -1117,7 +1144,7 @@ public class GetFilesRowsCountDialog extends BaseStepDialog implements StepDialo
 			}
 		}
 		in.setRowSeparator(wRowSeparator.getText());
-		
+		in.setSmartCount(wSmartCount.getSelection() );
 		in.setAddResultFile( wAddResult.getSelection() );
 		in.setFileField(wFileField.getSelection() );
 		in.setOutputFilenameField( wFilenameField.getText() );

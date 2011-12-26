@@ -101,6 +101,10 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
 	private  String  includeSubFolders[];
 	
 	
+	/** Flag : check if a data is there right after separator **/
+	private boolean smartCount;
+	
+	
 	public GetFilesRowsCountMeta()
 	{
 		super(); // allocate BaseStepMeta
@@ -137,6 +141,15 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
     {
         this.isaddresult = isaddresult;
     }
+    
+    
+    /**
+     * @param isaddresult The isaddresult to set.
+     */
+    public void setSmartCount(boolean smartCount)
+    {
+        this.smartCount = smartCount;
+    }
 	/**
 	 * @return Returns the excludeFileMask.
 	 */
@@ -157,6 +170,14 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
     public boolean isAddResultFile()
     {
         return isaddresult;
+    }
+    
+    /**
+     *  @return Returns smartCount.
+     */
+    public boolean isSmartCount()
+    {
+        return smartCount;
     }
     /**
      * @return Returns the output filename_Field.
@@ -360,6 +381,8 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
         retval.append("    ").append(XMLHandler.addTagValue("isaddresult",isaddresult));
         retval.append("    ").append(XMLHandler.addTagValue("filefield",filefield));
         retval.append("    ").append(XMLHandler.addTagValue("filename_Field",outputFilenameField));
+        retval.append("    ").append(XMLHandler.addTagValue("smartCount",smartCount));
+        
         
         
         retval.append("    <file>").append(Const.CR);
@@ -405,9 +428,11 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
 			rowsCountFieldName    = XMLHandler.getTagValue(stepnode, "rows_count_fieldname");
 
 			RowSeparator_format    = scrubOldRowSeparator(XMLHandler.getTagValue(stepnode, "rowseparator_format"));
-			RowSeparator    = XMLHandler.getTagValue(stepnode, "row_separator");
+			RowSeparator    = XMLHandler.getTagValue(stepnode, "row_separator");			
 			
-			String addresult  = XMLHandler.getTagValue(stepnode, "isaddresult");
+			smartCount  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "smartCount"));
+			
+			String addresult  = XMLHandler.getTagValue(stepnode, "addresult");
 			if(Const.isEmpty(addresult))
 				isaddresult=true;
 			else
@@ -453,6 +478,7 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
 	
 	public void setDefault()
 	{
+		smartCount=false;
 		outputFilenameField="";
 		filefield=false;
 		isaddresult=true;
@@ -506,7 +532,7 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
 			
 			RowSeparator_format    = scrubOldRowSeparator(rep.getStepAttributeString (id_step, "rowseparator_format"));
 			RowSeparator    = rep.getStepAttributeString (id_step, "row_separator");
-			
+			smartCount=rep.getStepAttributeBoolean (id_step, "smartCount");
 			String addresult    = rep.getStepAttributeString (id_step, "isaddresult");
 			if(Const.isEmpty(addresult))
 				isaddresult=true;
@@ -553,6 +579,8 @@ public class GetFilesRowsCountMeta extends BaseStepMeta implements StepMetaInter
 			rep.saveStepAttribute(id_transformation, id_step, "rowseparator_format",  RowSeparator_format);
 			rep.saveStepAttribute(id_transformation, id_step, "row_separator",  RowSeparator);
 			rep.saveStepAttribute(id_transformation, id_step, "isaddresult",        isaddresult);
+			rep.saveStepAttribute(id_transformation, id_step, "smartCount",        smartCount);
+			
 			rep.saveStepAttribute(id_transformation, id_step, "filefield",        filefield);
 			rep.saveStepAttribute(id_transformation, id_step, "filename_Field",  outputFilenameField);
 			
