@@ -577,8 +577,6 @@ public class TextFileOutput extends BaseStep implements StepInterface
 
     data.writer = null;
 
-    ResultFile resultFile = null;
-
     String filename = buildFilename(environmentSubstitute(baseFilename), true);
 
     try {
@@ -618,11 +616,6 @@ public class TextFileOutput extends BaseStep implements StepInterface
 
         // Check for parent folder
         createParentFolder(filename);
-
-        // Add this to the result file names...
-        resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(filename, getTransMeta()), getTransMeta().getName(), getStepname());
-        resultFile.setComment("This file was created with a text file output step");
-        addResultFile(resultFile);
 
         OutputStream outputStream;
 
@@ -682,13 +675,16 @@ public class TextFileOutput extends BaseStep implements StepInterface
     } catch (Exception e) {
       throw new KettleException("Error opening new file : " + e.toString());
     }
-    // System.out.println("end of newFile(), splitnr="+splitnr);
 
     data.splitnr++;
 
-    if (resultFile != null && meta.isAddToResultFiles()) {
+    if (meta.isAddToResultFiles()) {
       // Add this to the result file names...
-      addResultFile(resultFile);
+      ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, KettleVFS.getFileObject(filename, getTransMeta()), getTransMeta().getName(), getStepname());
+      if(resultFile!=null) {
+    	  resultFile.setComment(BaseMessages.getString(PKG, "TextFileOutput.AddResultFile"));
+    	  addResultFile(resultFile);
+      }
     }
   }
 
