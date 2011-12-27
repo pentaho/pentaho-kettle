@@ -80,6 +80,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import com.ctc.wstx.exc.WstxParsingException;
+import java.io.InputStreamReader;
 
 public class WebService extends BaseStep implements StepInterface
 {
@@ -422,7 +423,7 @@ public class WebService extends BaseStep implements StepInterface
             int responseCode = vHttpClient.executeMethod(vHostConfiguration, vHttpMethod);
             if (responseCode == 200)
             {
-                processRows(vHttpMethod.getResponseBodyAsStream(), rowData, rowMeta, wsdl.getWsdlTypes().isElementFormQualified(wsdl.getTargetNamespace()));
+                processRows(vHttpMethod.getResponseBodyAsStream(), rowData, rowMeta, wsdl.getWsdlTypes().isElementFormQualified(wsdl.getTargetNamespace()), vHttpMethod.getResponseCharSet());
             }
             else if (responseCode == 401)
             {
@@ -482,32 +483,40 @@ public class WebService extends BaseStep implements StepInterface
         super.dispose(smi, sdi);
     }
     
-    private String readStringFromInputStream(InputStream anXml) throws KettleStepException {
-		StringBuffer response = new StringBuffer();
-		try
-    	{
-    		int c=anXml.read();
-    		while (c>=0)
-    		{
-    			response.append((char)c);
-    			c=anXml.read();
-    		}
-    		anXml.close();
-    		
-    		return response.toString();
-    	}
+    private String readStringFromInputStream(InputStream is, String encoding) throws KettleStepException {
+		
+
+        try {
+
+            StringBuilder sb = new StringBuilder(Math.max(16, is.available()));
+            char[] tmp = new char[4096];
+
+            try {
+                InputStreamReader reader = new InputStreamReader(is, encoding!=null?encoding:"UTF-8");
+                for (int cnt; (cnt = reader.read(tmp)) > 0;) {
+                    sb.append(tmp, 0, cnt);
+                }
+            } finally {
+                is.close();
+            }
+            return sb.toString();
+
+        
+        }
     	catch(Exception e)
     	{
     		throw new KettleStepException("Unable to read web service response data from input stream", e);
     	}
+
+    
     }
 
-    private void processRows(InputStream anXml, Object[] rowData, RowMetaInterface rowMeta, boolean ignoreNamespacePrefix) throws KettleException
+    private void processRows(InputStream anXml, Object[] rowData, RowMetaInterface rowMeta, boolean ignoreNamespacePrefix, String encoding) throws KettleException
     {
     	// Just to make sure the old transformations keep working...
     	//
     	if (meta.isCompatible()) {
-    		compatibleProcessRows(anXml, rowData, rowMeta, ignoreNamespacePrefix);
+    		compatibleProcessRows(anXml, rowData, rowMeta, ignoreNamespacePrefix, encoding);
     		return;
     	}
     	
@@ -518,7 +527,7 @@ public class WebService extends BaseStep implements StepInterface
     	// Then we create an input stream from the content again.
     	// It's elaborate, but that way we can report on the failure more correctly.
     	//
-    	String response = readStringFromInputStream(anXml);
+    	String response = readStringFromInputStream(anXml, encoding);
 
     	try {
 
@@ -735,7 +744,7 @@ public class WebService extends BaseStep implements StepInterface
     	return inputRowData==null ? RowDataUtil.allocateRowData(data.outputRowMeta.size()) : RowDataUtil.createResizedCopy(inputRowData, data.outputRowMeta.size());
 	}
 
-	private void compatibleProcessRows(InputStream anXml, Object[] rowData, RowMetaInterface rowMeta, boolean ignoreNamespacePrefix) throws KettleException {
+	private void compatibleProcessRows(InputStream anXml, Object[] rowData, RowMetaInterface rowMeta, boolean ignoreNamespacePrefix, String encoding) throws KettleException {
 
 		// First we should get the complete string
 		// The problem is that the string can contain XML or any other format such as HTML saying the service is no longer available.
@@ -744,7 +753,7 @@ public class WebService extends BaseStep implements StepInterface
 		// Then we create an input stream from the content again.
 		// It's elaborate, but that way we can report on the failure more correctly.
 		//
-		String response = readStringFromInputStream(anXml);
+		String response = readStringFromInputStream(anXml, encoding);
 
 		// Create a new reader to feed into the XML Input Factory below...
 		//
