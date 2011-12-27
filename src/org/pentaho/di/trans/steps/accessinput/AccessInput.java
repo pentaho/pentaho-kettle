@@ -35,6 +35,8 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
+import com.healthmarketscience.jackcess.Column;
+import com.healthmarketscience.jackcess.DataType;
 import com.healthmarketscience.jackcess.Database;
 
 /**
@@ -135,49 +137,16 @@ public class AccessInput extends BaseStep implements StepInterface
 		 try{	
 			 
 				// Execute for each Input field...
-				for (int i=0;i<meta.getInputFields().length;i++)
+				for (int i=0;i<data.nrFields;i++)
 				{
 					// get field
 					AccessInputField field= meta.getInputFields()[i];
 
 					// Get field value
-					Object obj = data.rw.get(environmentSubstitute(field.getColumn()));	
-						
-					if(obj instanceof Date && field.getType()==ValueMetaInterface.TYPE_DATE
-						|| obj instanceof byte[] && field.getType()==ValueMetaInterface.TYPE_BINARY)
-					{
-						r[data.totalpreviousfields+i]=obj;
-					}
-					else 
-					{
-						String value=null;
-						if (obj!=null) {
-							value=String.valueOf(obj);
-						}
-						
-						// DO Trimming!
-						switch (field.getTrimType())
-						{
-						case AccessInputField.TYPE_TRIM_LEFT:
-							value = Const.ltrim(value);
-							break;
-						case AccessInputField.TYPE_TRIM_RIGHT:
-							value = Const.rtrim(value);
-							break;
-						case AccessInputField.TYPE_TRIM_BOTH:
-							value = Const.trim(value);
-							break;
-						default:
-							break;
-						}
+					Object obj = data.rw.get(field.getColumn());	
+				
+					r[data.totalpreviousfields+i]=convert(obj, field, i);
 					
-						// DO CONVERSIONS...
-						//
-						ValueMetaInterface targetValueMeta = data.outputRowMeta.getValueMeta(data.totalpreviousfields+i);
-						ValueMetaInterface sourceValueMeta = data.convertRowMeta.getValueMeta(data.totalpreviousfields+i);
-						r[data.totalpreviousfields+i] = targetValueMeta.convertData(sourceValueMeta, value);
-					}
-						
 					// Do we need to repeat this field if it is null?
 					if (field.isRepeated())
 					{
@@ -330,6 +299,7 @@ public class AccessInput extends BaseStep implements StepInterface
 							throw new KettleException(BaseMessages.getString(PKG, "AccessInput.Exception.CouldnotFindField",meta.getDynamicFilenameField())); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 					}   
+					
 		        }  // End if first
 				
 				
@@ -481,7 +451,14 @@ public class AccessInput extends BaseStep implements StepInterface
 					logError(Const.getStackTracker(e));
 					return false;
 				}
-			} 			
+			} 	
+			// Take care of variable substitution
+			data.nrFields=meta.getInputFields()==null?0:meta.getInputFields().length;
+			
+			for(int i=0; i<data.nrFields; i++) {
+				meta.getInputFields()[i].setColumn(environmentSubstitute(meta.getInputFields()[i].getColumn()));
+			}
+			
 			return true;
 		}
 		return false;
@@ -507,7 +484,29 @@ public class AccessInput extends BaseStep implements StepInterface
 				data.file.close();
 				data.file=null;
 			}
+			data.daf=null;
+
 		} catch  (Exception e){} // ignore this
 		super.dispose(smi, sdi);
 	}	
+	
+	private Object convert(Object obj, AccessInputField field, int index) throws Exception
+	{
+
+		Object o=obj;
+		
+		Column c = data.t.getColumn(field.getColumn());
+		
+		ValueMetaInterface sourceValueMeta= AccessInputMeta.getValueMeta(c, field.getName());
+		if(c.getType().equals(DataType.BYTE)) {
+			sourceValueMeta.setType(ValueMetaInterface.TYPE_STRING);
+			o= (String) o.toString();
+		}
+
+		
+		// DO CONVERSIONS...
+		//
+		ValueMetaInterface targetValueMeta = data.outputRowMeta.getValueMeta(data.totalpreviousfields+index);
+		return targetValueMeta.convertData(sourceValueMeta, o);
+	}
 }

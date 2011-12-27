@@ -68,6 +68,8 @@ public class AccessInputData extends BaseStepData implements StepDataInterface
 	public String tableName;
 	public boolean isTableSystem;
 	
+	public int nrFields;
+	
 
 	/**
 	 * 

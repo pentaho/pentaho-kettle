@@ -51,6 +51,9 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
 
+import com.healthmarketscience.jackcess.Column;
+import com.healthmarketscience.jackcess.DataType;
+
 
 public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 {	
@@ -1135,5 +1138,48 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 		} catch (Exception e) {
 			throw new KettleException(e); //$NON-NLS-1$
 		}
+	}
+	
+	public static ValueMetaInterface getValueMeta(Column c, String name)
+	{
+	
+		DataType type= c.getType();
+		
+		ValueMetaInterface sourceValueMeta= new ValueMeta(name==null?c.getName():name, ValueMeta.TYPE_STRING);
+		sourceValueMeta.setLength(c.getLength(), c.getPrecision());
+		
+		if(type.equals(DataType.BINARY)) {
+			sourceValueMeta.setType(ValueMeta.TYPE_BINARY);	
+		}else if(type.equals(DataType.BOOLEAN)) {
+			sourceValueMeta.setType(ValueMeta.TYPE_BOOLEAN);
+		}else if(type.equals(DataType.DOUBLE)) {
+			sourceValueMeta.setType(ValueMeta.TYPE_NUMBER);
+			sourceValueMeta.setLength(c.getLength());
+		}else if(type.equals(DataType.FLOAT)) {
+			sourceValueMeta.setType(ValueMeta.TYPE_NUMBER);
+			sourceValueMeta.setLength(c.getLength());
+		} else if(type.equals(DataType.FLOAT)) {
+			sourceValueMeta.setType(ValueMeta.TYPE_BIGNUMBER);
+			sourceValueMeta.setLength(c.getLength());
+		}else if(type.equals(DataType.INT)) {
+			sourceValueMeta.setType(ValueMeta.TYPE_INTEGER);
+			sourceValueMeta.setLength(c.getLength());
+		}else if(type.equals(DataType.BYTE)) {
+			sourceValueMeta.setType(ValueMeta.TYPE_INTEGER);
+			sourceValueMeta.setLength(c.getLength());
+		}else if(type.equals(DataType.LONG)) {
+			sourceValueMeta.setType(ValueMeta.TYPE_INTEGER);
+			sourceValueMeta.setLength(c.getLength());
+		} else if(type.equals(DataType.MEMO)) {
+			sourceValueMeta.setType(ValueMeta.TYPE_BINARY);
+		} else if(type.equals(DataType.MONEY)) {
+			sourceValueMeta.setType(ValueMeta.TYPE_NUMBER);
+		} else if(type.equals(DataType.NUMERIC)) {
+			sourceValueMeta.setType(ValueMeta.TYPE_INTEGER);
+		} else if(type.equals(DataType.SHORT_DATE_TIME)) {
+			sourceValueMeta.setType(ValueMeta.TYPE_DATE);
+		}
+		
+		return sourceValueMeta;
 	}
 }

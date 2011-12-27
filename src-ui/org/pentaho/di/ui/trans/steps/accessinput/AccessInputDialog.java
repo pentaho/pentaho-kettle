@@ -77,7 +77,6 @@ import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 import com.healthmarketscience.jackcess.Column;
-import com.healthmarketscience.jackcess.DataType;
 import com.healthmarketscience.jackcess.Database;
 import com.healthmarketscience.jackcess.Table;
 
@@ -1179,40 +1178,12 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
     		
     			for (int i=0;i<col.size() ;i++)
     			{
-    				String fieldname = null;
-					int    fieldtype = ValueMetaInterface.TYPE_NONE;
-					
     				Column c = (Column)col.get(i);
-    				
-    				// Get column name
-    				fieldname=c.getName();
-    				
-		            // Get column type and Map with PDI values    				
-    				
-    				if(DataType.INT.equals(c.getType()))
-    					fieldtype = ValueMetaInterface.TYPE_INTEGER;
-    				else if(DataType.BOOLEAN.equals(c.getType()))
-    					fieldtype = ValueMetaInterface.TYPE_BOOLEAN;
-    				else if(DataType.BINARY.equals(c.getType()))
-    					fieldtype = ValueMetaInterface.TYPE_BINARY;
-    				else if((DataType.DOUBLE.equals(c.getType())) || (DataType.LONG.equals(c.getType()))
-    						|| (DataType.BYTE.equals(c.getType())) || (DataType.NUMERIC.equals(c.getType())))
-    					fieldtype = ValueMetaInterface.TYPE_NUMBER;
-    				else if((DataType.FLOAT.equals(c.getType())) || (DataType.MONEY.equals(c.getType())) )
-    					fieldtype = ValueMetaInterface.TYPE_BIGNUMBER;
-    				else if((DataType.SHORT_DATE_TIME.equals(c.getType())))
-    					fieldtype = ValueMetaInterface.TYPE_DATE;
-    				else
-    					fieldtype = ValueMetaInterface.TYPE_STRING;    				
-    				if (fieldname!=null && fieldtype!=ValueMetaInterface.TYPE_NONE)
-					{
-    					ValueMetaInterface field = new ValueMeta(fieldname, fieldtype);
-    					if (fields.indexOfValue(field.getName())<0) fields.addValueMeta(field);
-					}
-						
+
+    				ValueMetaInterface field = AccessInputMeta.getValueMeta(c, null);
+    				if (fields.indexOfValue(field.getName())<0) fields.addValueMeta(field);	
     			}
-    			
-            }	
+    		  }	
     					
     		}
             catch(Exception e)
