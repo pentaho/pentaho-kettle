@@ -443,6 +443,41 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     }
     
     /**
+     * @return the hops
+     */
+    protected List<TransHopMeta> getHops() {
+        return hops;
+    }
+
+    /**
+     * @param hops the hops to set
+     */
+    protected void setHops(List<TransHopMeta> hops) {
+        this.hops = hops;
+    }
+
+    /**
+     * @return the notes
+     */
+    protected List<NotePadMeta> getNotes() {
+        return notes;
+    }
+
+    /**
+     * @param notes the notes to set
+     */
+    protected void setNotes(List<NotePadMeta> notes) {
+        this.notes = notes;
+    }
+
+    /**
+     * @param steps the steps to set
+     */
+    protected void setSteps(List<StepMeta> steps) {
+        this.steps = steps; 
+    }
+    
+    /**
      * Get the database ID in the repository for this object.
      *
      * @return the database ID in the repository for this object.
