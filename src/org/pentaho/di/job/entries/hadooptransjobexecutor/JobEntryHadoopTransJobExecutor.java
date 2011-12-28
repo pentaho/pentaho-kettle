@@ -498,8 +498,10 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
       if (transMeta != null) {
         transConfig = new TransConfiguration(transMeta, transExecConfig);
         conf.set("transformation-combiner-xml", transConfig.getXML()); //$NON-NLS-1$
-        conf.set("transformation-combiner-input-stepname", combinerInputStepName); //$NON-NLS-1$
-        conf.set("transformation-combiner-output-stepname", combinerOutputStepName); //$NON-NLS-1$
+        String combinerInputStepNameS = environmentSubstitute(combinerInputStepName);
+        String combinerOutputStepNameS = environmentSubstitute(combinerOutputStepName);
+        conf.set("transformation-combiner-input-stepname", combinerInputStepNameS); //$NON-NLS-1$
+        conf.set("transformation-combiner-output-stepname", combinerOutputStepNameS); //$NON-NLS-1$
         conf.setCombinerClass(GenericTransCombiner.class);
       }
       
@@ -523,8 +525,10 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
       if (transMeta != null) {
         transConfig = new TransConfiguration(transMeta, transExecConfig);
         conf.set("transformation-reduce-xml", transConfig.getXML()); //$NON-NLS-1$
-        conf.set("transformation-reduce-input-stepname", reduceInputStepName); //$NON-NLS-1$
-        conf.set("transformation-reduce-output-stepname", reduceOutputStepName); //$NON-NLS-1$
+        String reduceInputStepNameS = environmentSubstitute(reduceInputStepName);
+        String reduceOutputStepNameS = environmentSubstitute(reduceOutputStepName);
+        conf.set("transformation-reduce-input-stepname", reduceInputStepNameS); //$NON-NLS-1$
+        conf.set("transformation-reduce-output-stepname", reduceOutputStepNameS); //$NON-NLS-1$
         conf.setReducerClass(GenericTransReduce.class);
       }
       
