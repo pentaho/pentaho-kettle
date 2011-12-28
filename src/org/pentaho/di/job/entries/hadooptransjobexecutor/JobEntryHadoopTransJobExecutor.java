@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.mapred.FileInputFormat;
 import org.apache.hadoop.mapred.FileOutputFormat;
 import org.apache.hadoop.mapred.InputFormat;
@@ -35,6 +36,8 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.Log4jFileAppender;
 import org.pentaho.di.core.logging.LogWriter;
+import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -47,11 +50,14 @@ import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.trans.TransConfiguration;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.steps.hadoopexit.HadoopExitMeta;
 import org.pentaho.di.ui.job.entries.hadoopjobexecutor.UserDefinedItem;
 import org.pentaho.hadoop.jobconf.HadoopConfigurer;
 import org.pentaho.hadoop.jobconf.HadoopConfigurerFactory;
 import org.pentaho.hadoop.mapreduce.GenericTransCombiner;
 import org.pentaho.hadoop.mapreduce.GenericTransReduce;
+import org.pentaho.hadoop.mapreduce.MRUtil;
 import org.pentaho.hadoop.mapreduce.PentahoMapRunnable;
 import org.w3c.dom.Node;
 
@@ -86,11 +92,12 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
   private String reduceInputStepName;
   private String reduceOutputStepName;
   
-  private String mapOutputKeyClass;
-  private String mapOutputValueClass;
+  private boolean suppressOutputMapKey;
+  private boolean suppressOutputMapValue;
 
-  private String outputKeyClass;
-  private String outputValueClass;
+  private boolean suppressOutputKey;
+  private boolean suppressOutputValue;
+
   private String inputFormatClass;
   private String outputFormatClass;
 
@@ -270,36 +277,36 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
     this.reduceOutputStepName = reduceOutputStepName;
   }
   
-  public void setMapOutputKeyClass(String mapOutputKeyClass) {
-    this.mapOutputKeyClass = mapOutputKeyClass;
+  public void setSuppressOutputOfMapKey(boolean suppress) {
+    suppressOutputMapKey = suppress;
   }
   
-  public String getMapOutputKeyClass() {
-    return mapOutputKeyClass;
+  public boolean getSuppressOutputOfMapKey() {
+    return suppressOutputMapKey;
+  }  
+  
+  public void setSuppressOutputOfMapValue(boolean suppress) {
+    suppressOutputMapValue = suppress;
   }
   
-  public void setMapOutputValueClass(String mapOutputValueClass) {
-    this.mapOutputValueClass = mapOutputValueClass;
+  public boolean getSuppressOutputOfMapValue() {
+    return suppressOutputMapValue;
   }
   
-  public String getMapOutputValueClass() {
-    return mapOutputValueClass;
+  public void setSuppressOutputOfKey(boolean suppress) {
+    suppressOutputKey = suppress;
   }
-
-  public String getOutputKeyClass() {
-    return outputKeyClass;
+  
+  public boolean getSuppressOutputOfKey() {
+    return suppressOutputKey;
   }
-
-  public void setOutputKeyClass(String outputKeyClass) {
-    this.outputKeyClass = outputKeyClass;
+  
+  public void setSuppressOutputOfValue(boolean suppress) {
+    suppressOutputValue = suppress;
   }
-
-  public String getOutputValueClass() {
-    return outputValueClass;
-  }   
-
-  public void setOutputValueClass(String outputValueClass) {
-    this.outputValueClass = outputValueClass;
+  
+  public boolean getSuppressOutputOfValue() {
+    return suppressOutputValue;
   }  
 
   public String getInputFormatClass() {
@@ -477,6 +484,51 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
       conf.set("transformation-map-xml", transConfig.getXML()); //$NON-NLS-1$
       conf.set("transformation-map-input-stepname", mapInputStepNameS); //$NON-NLS-1$
       conf.set("transformation-map-output-stepname", mapOutputStepNameS); //$NON-NLS-1$
+      
+      if (getSuppressOutputOfMapKey()) {
+        conf.setMapOutputKeyClass(NullWritable.class);
+      }
+      if (getSuppressOutputOfMapValue()) {
+        conf.setMapOutputValueClass(NullWritable.class);
+      }
+      
+      // auto configure the output mapper key and value classes
+      if (!getSuppressOutputOfMapKey() || !getSuppressOutputOfMapValue() && 
+          transMeta != null) {
+        StepMeta mapOut = transMeta.findStep(mapOutputStepNameS);
+        RowMetaInterface prevStepFields = transMeta.getPrevStepFields(mapOut);
+        if (mapOut.getStepMetaInterface() instanceof HadoopExitMeta) {
+          String keyName = ((HadoopExitMeta)mapOut.getStepMetaInterface()).getOutKeyFieldname();
+          String valName = ((HadoopExitMeta)mapOut.getStepMetaInterface()).getOutValueFieldname();
+          int keyI = prevStepFields.indexOfValue(keyName);
+          ValueMetaInterface keyVM = (keyI >= 0) ? prevStepFields.getValueMeta(keyI) : null;
+          int valI = prevStepFields.indexOfValue(valName);
+          ValueMetaInterface valueVM = (valI >= 0) ? prevStepFields.getValueMeta(valI) : null;
+          if (!getSuppressOutputOfMapKey()) {
+            if (keyVM == null) {
+              throw new KettleException(BaseMessages.getString(PKG, 
+                  "JobEntryHadoopTransJobExecutor.NoMapOutputKeyDefined.Error"));
+            }
+            Class hadoopWritableKey = MRUtil.getWritableForKettleType(keyVM);
+            conf.setMapOutputKeyClass(hadoopWritableKey);
+            logDebug(BaseMessages.getString(PKG, 
+                "JobEntryHadoopTransJobExecutor.Message.MapOutputKeyMessage", 
+                hadoopWritableKey.getName()));
+          }
+          
+          if (!getSuppressOutputOfMapValue()) {
+            if (valueVM == null) {
+              throw new KettleException(BaseMessages.getString(PKG, 
+                "JobEntryHadoopTransJobExecutor.NoMapOutputValueDefined.Error"));
+            }
+            Class hadoopWritableValue = MRUtil.getWritableForKettleType(valueVM);            
+            conf.setMapOutputValueClass(hadoopWritableValue);
+            logDebug(BaseMessages.getString(PKG, 
+                "JobEntryHadoopTransJobExecutor.Message.MapOutputValueMessage", 
+                hadoopWritableValue.getName()));
+          }
+        }
+      }
 
       // combiner
       transMeta = null;
@@ -530,28 +582,53 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
         conf.set("transformation-reduce-input-stepname", reduceInputStepNameS); //$NON-NLS-1$
         conf.set("transformation-reduce-output-stepname", reduceOutputStepNameS); //$NON-NLS-1$
         conf.setReducerClass(GenericTransReduce.class);
-      }
-      
-      if (!Const.isEmpty(mapOutputKeyClass)) {
-        logDebug("Using " + mapOutputKeyClass + " For the map output key");
-        String mapOutputKeyClassS = environmentSubstitute(mapOutputKeyClass);
-        conf.setMapOutputKeyClass(loader.loadClass(mapOutputKeyClassS));
-      }
-      
-      if (!Const.isEmpty(mapOutputValueClass)) {
-        logDebug("Using " + mapOutputValueClass + " For the map output value");
-        String mapOutputValueClassS = environmentSubstitute(mapOutputValueClass);
-        conf.setMapOutputValueClass(loader.loadClass(mapOutputValueClassS));
-      }
-
-      if(outputKeyClass != null) {
-        String outputKeyClassS = environmentSubstitute(outputKeyClass);
-        conf.setOutputKeyClass(loader.loadClass(outputKeyClassS));
-      }
-      if(outputValueClass != null) {
-        String outputValueClassS = environmentSubstitute(outputValueClass);
-        conf.setOutputValueClass(loader.loadClass(outputValueClassS));
-      }
+        
+        if (getSuppressOutputOfKey()) {
+          conf.setOutputKeyClass(NullWritable.class);
+        }
+        if (getSuppressOutputOfValue()) {
+          conf.setOutputValueClass(NullWritable.class);
+        }
+        
+        // auto configure the output reduce key and value classes
+        if (!getSuppressOutputOfKey() || !getSuppressOutputOfValue()) {
+          StepMeta reduceOut = transMeta.findStep(reduceOutputStepNameS);
+          RowMetaInterface prevStepFields = transMeta.getPrevStepFields(reduceOut);
+          if (reduceOut.getStepMetaInterface() instanceof HadoopExitMeta) {
+            String keyName = ((HadoopExitMeta)reduceOut.getStepMetaInterface()).getOutKeyFieldname();
+            String valName = ((HadoopExitMeta)reduceOut.getStepMetaInterface()).getOutValueFieldname();
+            int keyI = prevStepFields.indexOfValue(keyName);
+            ValueMetaInterface keyVM = (keyI >= 0) ? prevStepFields.getValueMeta(keyI) : null;
+            int valI = prevStepFields.indexOfValue(valName);
+            ValueMetaInterface valueVM = (valI >= 0) ? prevStepFields.getValueMeta(valI) : null;
+           
+            if (!getSuppressOutputOfKey()) {
+              if (keyVM == null) {
+                throw new KettleException(BaseMessages.getString(PKG, 
+                    "JobEntryHadoopTransJobExecutor.NoOutputKeyDefined.Error"));
+              }
+              Class hadoopWritableKey = MRUtil.getWritableForKettleType(keyVM);
+              conf.setOutputKeyClass(hadoopWritableKey);
+              logDebug(BaseMessages.getString(PKG, 
+                  "JobEntryHadoopTransJobExecutor.Message.OutputKeyMessage", 
+                  hadoopWritableKey.getName()));
+            }
+           
+            if (!getSuppressOutputOfValue()) {
+              if (valueVM == null) {
+                throw new KettleException(BaseMessages.getString(PKG, 
+                  "JobEntryHadoopTransJobExecutor.NoOutputValueDefined.Error"));
+              }
+              Class hadoopWritableValue = MRUtil.getWritableForKettleType(valueVM);            
+              conf.setOutputValueClass(hadoopWritableValue);
+              logDebug(BaseMessages.getString(PKG, 
+                  "JobEntryHadoopTransJobExecutor.Message.OutputValueMessage", 
+                  hadoopWritableValue.getName()));
+            }
+            
+          }
+        }
+      }            
 
       conf.setMapRunnerClass(PentahoMapRunnable.class);
 
@@ -786,20 +863,24 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
     reduceOutputStepName = XMLHandler.getTagValue(entrynode, "reduce_output_step_name"); //$NON-NLS-1$
 
     blocking = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "blocking")); //$NON-NLS-1$ //$NON-NLS-2$
-    /*try {
-      loggingInterval = Integer.parseInt(XMLHandler.getTagValue(entrynode, "logging_interval")); //$NON-NLS-1$
-    } catch (NumberFormatException nfe) {
-    }*/
+
     loggingInterval = XMLHandler.getTagValue(entrynode, "logging_interval"); //$NON-NLS-1$
     inputPath = XMLHandler.getTagValue(entrynode, "input_path"); //$NON-NLS-1$
     inputFormatClass = XMLHandler.getTagValue(entrynode, "input_format_class"); //$NON-NLS-1$
     outputPath = XMLHandler.getTagValue(entrynode, "output_path"); //$NON-NLS-1$
     
-    mapOutputKeyClass = XMLHandler.getTagValue(entrynode, "map_output_key_class"); //$NON-NLS-1$
-    mapOutputValueClass = XMLHandler.getTagValue(entrynode, "map_output_value_class"); //$NON-NLS-1$
+    if (!Const.isEmpty(XMLHandler.getTagValue(entrynode, "suppress_output_map_key"))) {
+      suppressOutputMapKey = XMLHandler.getTagValue(entrynode, "suppress_output_map_key").equalsIgnoreCase("Y");    }
+    if (!Const.isEmpty(XMLHandler.getTagValue(entrynode, "suppress_output_map_value"))) {
+      suppressOutputMapValue = XMLHandler.getTagValue(entrynode, "suppress_output_map_value").equalsIgnoreCase("Y");
+    }
     
-    outputKeyClass = XMLHandler.getTagValue(entrynode, "output_key_class"); //$NON-NLS-1$
-    outputValueClass = XMLHandler.getTagValue(entrynode, "output_value_class"); //$NON-NLS-1$
+    if (!Const.isEmpty(XMLHandler.getTagValue(entrynode, "suppress_output_key"))) {
+      suppressOutputKey = XMLHandler.getTagValue(entrynode, "suppress_output_key").equalsIgnoreCase("Y");
+    }
+    if (!Const.isEmpty(XMLHandler.getTagValue(entrynode, "suppress_output_value"))) {
+      suppressOutputValue = XMLHandler.getTagValue(entrynode, "suppress_output_value").equalsIgnoreCase("Y");
+    }
     outputFormatClass = XMLHandler.getTagValue(entrynode, "output_format_class"); //$NON-NLS-1$
 
     hdfsHostname = XMLHandler.getTagValue(entrynode, "hdfs_hostname"); //$NON-NLS-1$
@@ -860,11 +941,11 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
     retval.append("      ").append(XMLHandler.addTagValue("input_format_class", inputFormatClass)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("      ").append(XMLHandler.addTagValue("output_path", outputPath)); //$NON-NLS-1$ //$NON-NLS-2$
     
-    retval.append("      ").append(XMLHandler.addTagValue("map_output_key_class", mapOutputKeyClass)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("      ").append(XMLHandler.addTagValue("map_output_value_class", mapOutputValueClass)); //$NON-NLS-1$ //$NON-NLS-2$
-    
-    retval.append("      ").append(XMLHandler.addTagValue("output_key_class", outputKeyClass)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("      ").append(XMLHandler.addTagValue("output_value_class", outputValueClass)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("      ").append(XMLHandler.addTagValue("suppress_output_map_key", suppressOutputMapKey)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("      ").append(XMLHandler.addTagValue("suppress_output_map_value", suppressOutputMapValue)); //$NON-NLS-1$ //$NON-NLS-2$
+
+    retval.append("      ").append(XMLHandler.addTagValue("suppress_output_key", suppressOutputKey)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("      ").append(XMLHandler.addTagValue("suppress_output_value", suppressOutputValue)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("      ").append(XMLHandler.addTagValue("output_format_class", outputFormatClass)); //$NON-NLS-1$ //$NON-NLS-2$
 
     retval.append("      ").append(XMLHandler.addTagValue("hdfs_hostname", hdfsHostname)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -924,18 +1005,17 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
       setReduceOutputStepName(rep.getJobEntryAttributeString(id_jobentry, "reduce_output_step_name")); //$NON-NLS-1$
 
       setBlocking(rep.getJobEntryAttributeBoolean(id_jobentry, "blocking")); //$NON-NLS-1$
-      //setLoggingInterval(new Long(rep.getJobEntryAttributeInteger(id_jobentry, "logging_interval")).intValue()); //$NON-NLS-1$
       setLoggingInterval(rep.getJobEntryAttributeString(id_jobentry, "logging_interval")); //$NON-NLS-1$
 
       setInputPath(rep.getJobEntryAttributeString(id_jobentry, "input_path")); //$NON-NLS-1$
       setInputFormatClass(rep.getJobEntryAttributeString(id_jobentry, "input_format_class")); //$NON-NLS-1$
       setOutputPath(rep.getJobEntryAttributeString(id_jobentry, "output_path")); //$NON-NLS-1$
       
-      setMapOutputKeyClass(rep.getJobEntryAttributeString(id_jobentry, "map_output_key_class")); //$NON-NLS-1$
-      setMapOutputValueClass(rep.getJobEntryAttributeString(id_jobentry, "map_output_value_class")); //$NON-NLS-1$
-      
-      setOutputKeyClass(rep.getJobEntryAttributeString(id_jobentry, "output_key_class")); //$NON-NLS-1$
-      setOutputValueClass(rep.getJobEntryAttributeString(id_jobentry, "output_value_class")); //$NON-NLS-1$
+      setSuppressOutputOfMapKey(rep.getJobEntryAttributeBoolean(id_jobentry, "suppress_output_map_key")); //$NON-NLS-1$
+      setSuppressOutputOfMapValue(rep.getJobEntryAttributeBoolean(id_jobentry, "suppress_output_map_value")); //$NON-NLS-1$
+
+      setSuppressOutputOfKey(rep.getJobEntryAttributeBoolean(id_jobentry, "suppress_output_key")); //$NON-NLS-1$
+      setSuppressOutputOfValue(rep.getJobEntryAttributeBoolean(id_jobentry, "suppress_output_value")); //$NON-NLS-1$
       setOutputFormatClass(rep.getJobEntryAttributeString(id_jobentry, "output_format_class")); //$NON-NLS-1$
 
       setHdfsHostname(rep.getJobEntryAttributeString(id_jobentry, "hdfs_hostname")); //$NON-NLS-1$
@@ -1009,11 +1089,11 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
       rep.saveJobEntryAttribute(id_job, getObjectId(),"input_format_class", inputFormatClass); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getObjectId(),"output_path", outputPath); //$NON-NLS-1$
       
-      rep.saveJobEntryAttribute(id_job, getObjectId(),"map_output_key_class", mapOutputKeyClass); //$NON-NLS-1$
-      rep.saveJobEntryAttribute(id_job, getObjectId(),"map_output_value_class", mapOutputValueClass); //$NON-NLS-1$
-      
-      rep.saveJobEntryAttribute(id_job, getObjectId(),"output_key_class", outputKeyClass); //$NON-NLS-1$
-      rep.saveJobEntryAttribute(id_job, getObjectId(),"output_value_class", outputValueClass); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(),"suppress_output_map_key", suppressOutputMapKey); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(),"suppress_output_map_value", suppressOutputMapValue); //$NON-NLS-1$
+
+      rep.saveJobEntryAttribute(id_job, getObjectId(),"suppress_output_key", suppressOutputKey); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(),"suppress_output_value", suppressOutputValue); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getObjectId(),"output_format_class", outputFormatClass); //$NON-NLS-1$
 
       rep.saveJobEntryAttribute(id_job, getObjectId(),"hdfs_hostname", hdfsHostname); //$NON-NLS-1$
@@ -1048,5 +1128,4 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
   {
     return true;
   }
-
 }

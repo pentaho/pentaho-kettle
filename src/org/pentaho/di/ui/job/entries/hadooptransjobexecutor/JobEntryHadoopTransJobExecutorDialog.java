@@ -100,11 +100,13 @@ public class JobEntryHadoopTransJobExecutorDialog extends JobEntryDialog impleme
     bf.createBinding("jobentry-reduce-input-stepname", "value", controller, JobEntryHadoopTransJobExecutorController.REDUCE_TRANS_INPUT_STEP_NAME); //$NON-NLS-1$ //$NON-NLS-2$ 
     bf.createBinding("jobentry-reduce-output-stepname", "value", controller, JobEntryHadoopTransJobExecutorController.REDUCE_TRANS_OUTPUT_STEP_NAME); //$NON-NLS-1$ //$NON-NLS-2$
 
-    bf.createBinding("classes-map-output-key-class", "value", controller, JobEntryHadoopTransJobExecutorController.MAP_OUTPUT_KEY_CLASS); //$NON-NLS-1$ //$NON-NLS-2$
-    bf.createBinding("classes-map-output-value-class", "value", controller, JobEntryHadoopTransJobExecutorController.MAP_OUTPUT_VALUE_CLASS); //$NON-NLS-1$ //$NON-NLS-2$
-    
-    bf.createBinding("classes-output-key-class", "value", controller, JobEntryHadoopTransJobExecutorController.OUTPUT_KEY_CLASS); //$NON-NLS-1$ //$NON-NLS-2$
-    bf.createBinding("classes-output-value-class", "value", controller, JobEntryHadoopTransJobExecutorController.OUTPUT_VALUE_CLASS); //$NON-NLS-1$ //$NON-NLS-2$
+
+    bf.createBinding("classes-suppress-output-map-key", "selected", controller, JobEntryHadoopTransJobExecutorController.SUPPRESS_OUTPUT_MAP_KEY); //$NON-NLS-1$ //$NON-NLS-2$
+    bf.createBinding("classes-suppress-output-map-value", "selected", controller, JobEntryHadoopTransJobExecutorController.SUPPRESS_OUTPUT_MAP_VALUE); //$NON-NLS-1$ //$NON-NLS-2$
+  
+    bf.createBinding("classes-suppress-output-key", "selected", controller, JobEntryHadoopTransJobExecutorController.SUPPRESS_OUTPUT_KEY); //$NON-NLS-1$ //$NON-NLS-2$
+    bf.createBinding("classes-suppress-output-value", "selected", controller, JobEntryHadoopTransJobExecutorController.SUPPRESS_OUTPUT_VALUE); //$NON-NLS-1$ //$NON-NLS-2$
+
     bf.createBinding("classes-input-format", "value", controller, JobEntryHadoopTransJobExecutorController.INPUT_FORMAT_CLASS); //$NON-NLS-1$ //$NON-NLS-2$
     bf.createBinding("classes-output-format", "value", controller, JobEntryHadoopTransJobExecutorController.OUTPUT_FORMAT_CLASS); //$NON-NLS-1$ //$NON-NLS-2$
 
@@ -124,7 +126,6 @@ public class JobEntryHadoopTransJobExecutorDialog extends JobEntryDialog impleme
     bf.createBinding("num-reduce-tasks", "value", controller, JobEntryHadoopTransJobExecutorController.NUM_REDUCE_TASKS); //$NON-NLS-1$ //$NON-NLS-2$ 
 
     bf.createBinding("blocking", "selected", controller, JobEntryHadoopTransJobExecutorController.BLOCKING); //$NON-NLS-1$ //$NON-NLS-2$ 
-//    bf.createBinding("logging-interval", "value", controller, JobEntryHadoopTransJobExecutorController.LOGGING_INTERVAL, bindingConverter); //$NON-NLS-1$ //$NON-NLS-2$
     bf.createBinding("logging-interval", "value", controller, JobEntryHadoopTransJobExecutorController.LOGGING_INTERVAL); //$NON-NLS-1$ //$NON-NLS-2$ 
     bf.createBinding("input-path", "value", controller, JobEntryHadoopTransJobExecutorController.INPUT_PATH); //$NON-NLS-1$ //$NON-NLS-2$
     bf.createBinding("output-path", "value", controller, JobEntryHadoopTransJobExecutorController.OUTPUT_PATH); //$NON-NLS-1$ //$NON-NLS-2$

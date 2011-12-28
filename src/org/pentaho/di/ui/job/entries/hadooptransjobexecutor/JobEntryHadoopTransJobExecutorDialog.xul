@@ -185,21 +185,21 @@
     						<column flex="1"/>
     					</columns>
     					<rows>
-    						<row>
-    							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.Classes.MapOutputKeyClass.Label}" />
-    							<textbox pen:customclass="variabletextbox" id="classes-map-output-key-class" flex="1" multiline="false"/>
+    						<row>    							
+    							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.SuppressMapOutputKey.Label}" />
+    							<checkbox id="classes-suppress-output-map-key" flex="1" command="jobEntryController.invertSuppressOutputOfMapKey()"/>
     						</row>
     						<row>
-    							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.Classes.MapOutputValueClass.Label}" />
-    							<textbox pen:customclass="variabletextbox" id="classes-map-output-value-class" flex="1" multiline="false"/>
+    						    <label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.SuppressMapOutputValue.Label}" />
+    							<checkbox id="classes-suppress-output-map-value" flex="1" command="jobEntryController.invertSuppressOutputOfMapValue()"/>
     						</row>
     						<row>
-    							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.Classes.OutputKeyClass.Label}" />
-    							<textbox pen:customclass="variabletextbox" id="classes-output-key-class" flex="1" multiline="false"/>
+    						    <label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.SuppressOutputKey.Label}" />
+    							<checkbox id="classes-suppress-output-key" flex="1" command="jobEntryController.invertSuppressOutputOfKey()"/>
     						</row>
     						<row>
-    							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.Classes.OutputValueClass.Label}" />
-    							<textbox pen:customclass="variabletextbox" id="classes-output-value-class" flex="1" multiline="false"/>
+    							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.SuppressOutputValue.Label}" />    							
+								<checkbox id="classes-suppress-output-value" flex="1" command="jobEntryController.invertSuppressOutputOfValue()"/>
     						</row>
     						<row>
     							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.Paths.InputPath.Label}" />

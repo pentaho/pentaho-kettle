@@ -63,6 +63,10 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
   public static final String REDUCE_TRANS_INPUT_STEP_NAME = "reduceTransInputStepName"; //$NON-NLS-1$
   public static final String REDUCE_TRANS_OUTPUT_STEP_NAME = "reduceTransOutputStepName"; //$NON-NLS-1$
 
+  public static final String SUPPRESS_OUTPUT_MAP_KEY = "suppressOutputOfMapKey";
+  public static final String SUPPRESS_OUTPUT_MAP_VALUE = "suppressOutputOfMapValue";
+  public static final String SUPPRESS_OUTPUT_KEY = "suppressOutputOfKey";
+  public static final String SUPPRESS_OUTPUT_VALUE = "suppressOutputOfValue";
   public static final String MAP_OUTPUT_KEY_CLASS = "mapOutputKeyClass"; //$NON-NLS-1$
   public static final String MAP_OUTPUT_VALUE_CLASS = "mapOutputValueClass"; //$NON-NLS-1$
   public static final String OUTPUT_KEY_CLASS = "outputKeyClass"; //$NON-NLS-1$
@@ -92,10 +96,11 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
   private String jobEntryName;
   private String hadoopJobName;
 
-  private String mapOutputKeyClass;
-  private String mapOutputValueClass;
-  private String outputKeyClass;
-  private String outputValueClass;
+  private boolean suppressOutputMapKey;
+  private boolean suppressOutputMapValue;
+  private boolean suppressOutputKey;
+  private boolean suppressOutputValue;
+  
   private String inputFormatClass;
   private String outputFormatClass;
 
@@ -184,15 +189,6 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
     tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("jobentry-reduce-output-stepname");
     this.reduceTransOutputStepName = ((Text) tempBox.getTextControl()).getText();
     
-    tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("classes-map-output-key-class");
-    this.mapOutputKeyClass = ((Text) tempBox.getTextControl()).getText();
-    tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("classes-map-output-value-class");
-    this.mapOutputValueClass = ((Text) tempBox.getTextControl()).getText();
-    
-    tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("classes-output-key-class");
-    this.outputKeyClass = ((Text) tempBox.getTextControl()).getText();
-    tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("classes-output-value-class");
-    this.outputValueClass = ((Text) tempBox.getTextControl()).getText();
     tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("input-path");
     this.inputPath = ((Text) tempBox.getTextControl()).getText();
     tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("output-path");
@@ -329,11 +325,12 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
     jobEntry.setInputFormatClass(getInputFormatClass());
     jobEntry.setOutputPath(getOutputPath());
     
-    jobEntry.setMapOutputKeyClass(getMapOutputKeyClass());
-    jobEntry.setMapOutputValueClass(getMapOutputValueClass());
+    jobEntry.setSuppressOutputOfMapKey(isSuppressOutputOfMapKey());
+    jobEntry.setSuppressOutputOfMapValue(isSuppressOutputOfMapValue());
     
-    jobEntry.setOutputKeyClass(getOutputKeyClass());
-    jobEntry.setOutputValueClass(getOutputValueClass());
+    jobEntry.setSuppressOutputOfKey(isSuppressOutputOfKey());
+    jobEntry.setSuppressOutputOfValue(isSuppressOutputOfValue());
+
     jobEntry.setOutputFormatClass(getOutputFormatClass());
     jobEntry.setHdfsHostname(getHdfsHostname());
     jobEntry.setHdfsPort(getHdfsPort());
@@ -397,15 +394,6 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
       tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("jobentry-reduce-output-stepname");
       tempBox.setVariableSpace(varSpace);
       
-      tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("classes-map-output-key-class");
-      tempBox.setVariableSpace(varSpace);
-      tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("classes-map-output-value-class");
-      tempBox.setVariableSpace(varSpace);
-      
-      tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("classes-output-key-class");
-      tempBox.setVariableSpace(varSpace);
-      tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("classes-output-value-class");
-      tempBox.setVariableSpace(varSpace);
       tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("input-path");
       tempBox.setVariableSpace(varSpace);
       tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("output-path");
@@ -527,11 +515,15 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
       setInputFormatClass(jobEntry.getInputFormatClass());
       setOutputPath(jobEntry.getOutputPath());
       
-      setMapOutputKeyClass(jobEntry.getMapOutputKeyClass());
-      setMapOutputValueClass(jobEntry.getMapOutputValueClass());
-      
-      setOutputKeyClass(jobEntry.getOutputKeyClass());
-      setOutputValueClass(jobEntry.getOutputValueClass());
+      setSuppressOutputOfMapKey(jobEntry.getSuppressOutputOfMapKey());
+      setSuppressOutputOfMapValue(jobEntry.getSuppressOutputOfMapValue());
+//      setMapOutputKeyClass(jobEntry.getMapOutputKeyClass());
+//      setMapOutputValueClass(jobEntry.getMapOutputValueClass());
+  
+      setSuppressOutputOfKey(jobEntry.getSuppressOutputOfKey());
+      setSuppressOutputOfValue(jobEntry.getSuppressOutputOfValue());
+//      setOutputKeyClass(jobEntry.getOutputKeyClass());
+//      setOutputValueClass(jobEntry.getOutputValueClass());
       setOutputFormatClass(jobEntry.getOutputFormatClass());
       setHdfsHostname(jobEntry.getHdfsHostname());
       setHdfsPort(jobEntry.getHdfsPort());
@@ -963,53 +955,69 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
     this.jobEntry = jobEntry;
   }
   
-  public String getMapOutputKeyClass() {
-    return mapOutputKeyClass;
-  }
-
-  public void setMapOutputKeyClass(String mapOutputKeyClass) {
-    String previousVal = this.mapOutputKeyClass;
-    String newVal = mapOutputKeyClass;
-
-    this.mapOutputKeyClass = mapOutputKeyClass;
-    firePropertyChange(MAP_OUTPUT_KEY_CLASS, previousVal, newVal);
+  public void invertSuppressOutputOfMapKey() {
+    setSuppressOutputOfMapKey(!isSuppressOutputOfMapKey());
   }
   
-  public String getMapOutputValueClass() {
-    return mapOutputValueClass;
+  public boolean isSuppressOutputOfMapKey() {
+    return this.suppressOutputMapKey;
   }
-
-  public void setMapOutputValueClass(String mapOutputValueClass) {
-    String previousVal = this.mapOutputValueClass;
-    String newVal = mapOutputValueClass;
-
-    this.mapOutputValueClass = mapOutputValueClass;
-    firePropertyChange(MAP_OUTPUT_VALUE_CLASS, previousVal, newVal);
+  
+  public void setSuppressOutputOfMapKey(boolean suppress) {
+    boolean previousVal = this.suppressOutputMapKey;
+    boolean newVal = suppress;
+    
+    this.suppressOutputMapKey = suppress;
+    firePropertyChange(SUPPRESS_OUTPUT_MAP_KEY, previousVal, newVal);
   }
-
-  public String getOutputKeyClass() {
-    return outputKeyClass;
+  
+  public void invertSuppressOutputOfMapValue() {
+    setSuppressOutputOfMapValue(!isSuppressOutputOfMapValue());
   }
-
-  public void setOutputKeyClass(String outputKeyClass) {
-    String previousVal = this.outputKeyClass;
-    String newVal = outputKeyClass;
-
-    this.outputKeyClass = outputKeyClass;
-    firePropertyChange(OUTPUT_KEY_CLASS, previousVal, newVal);
+  
+  public boolean isSuppressOutputOfMapValue() {
+    return this.suppressOutputMapValue;
   }
-
-  public String getOutputValueClass() {
-    return outputValueClass;
+  
+  public void setSuppressOutputOfMapValue(boolean suppress) {
+    boolean previousVal = this.suppressOutputMapValue;
+    boolean newVal = suppress;
+    
+    this.suppressOutputMapValue = suppress;
+    firePropertyChange(SUPPRESS_OUTPUT_MAP_VALUE, previousVal, newVal);
   }
-
-  public void setOutputValueClass(String outputValueClass) {
-    String previousVal = this.outputValueClass;
-    String newVal = outputValueClass;
-
-    this.outputValueClass = outputValueClass;
-    firePropertyChange(OUTPUT_VALUE_CLASS, previousVal, newVal);
+  
+  public void invertSuppressOutputOfKey() {
+    setSuppressOutputOfKey(!isSuppressOutputOfKey());
   }
+  
+  public boolean isSuppressOutputOfKey() {
+    return this.suppressOutputKey;
+  }
+  
+  public void setSuppressOutputOfKey(boolean suppress) {
+    boolean previousVal = this.suppressOutputKey;
+    boolean newVal = suppress;
+    
+    this.suppressOutputKey = suppress;
+    firePropertyChange(SUPPRESS_OUTPUT_KEY, previousVal, newVal);
+  }
+  
+  public void invertSuppressOutputOfValue() {
+    setSuppressOutputOfValue(!isSuppressOutputOfValue());
+  }
+  
+  public boolean isSuppressOutputOfValue() {
+    return this.suppressOutputValue;
+  }
+  
+  public void setSuppressOutputOfValue(boolean suppress) {
+    boolean previousVal = this.suppressOutputValue;
+    boolean newVal = suppress;
+    
+    this.suppressOutputValue = suppress;
+    firePropertyChange(SUPPRESS_OUTPUT_VALUE, previousVal, newVal);
+  }  
 
   public String getInputFormatClass() {
     return inputFormatClass;

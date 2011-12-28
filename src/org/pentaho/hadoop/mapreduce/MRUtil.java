@@ -21,6 +21,11 @@ import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.io.BooleanWritable;
+import org.apache.hadoop.io.BytesWritable;
+import org.apache.hadoop.io.DoubleWritable;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
@@ -178,5 +183,23 @@ public class MRUtil {
 
     return metaClass;
   }
-
+  
+  public static Class getWritableForKettleType(ValueMetaInterface kettleType) {
+    switch (kettleType.getType()) {
+    case ValueMetaInterface.TYPE_STRING:
+    case ValueMetaInterface.TYPE_BIGNUMBER:
+    case ValueMetaInterface.TYPE_DATE:
+      return Text.class;
+    case ValueMetaInterface.TYPE_INTEGER:
+      return LongWritable.class;
+    case ValueMetaInterface.TYPE_NUMBER:
+      return DoubleWritable.class;
+    case ValueMetaInterface.TYPE_BOOLEAN:
+      return BooleanWritable.class;
+    case ValueMetaInterface.TYPE_BINARY:
+      return BytesWritable.class;
+    default:
+        return Text.class;      
+    }
+  }
 }
