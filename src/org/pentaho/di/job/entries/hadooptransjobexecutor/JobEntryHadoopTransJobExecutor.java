@@ -654,12 +654,22 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
       if (configurer == null) {        
         // go with what has been selected by the user
         configurer = HadoopConfigurerFactory.getConfigurer(hadoopDistro);
+        
+        // if the user-specified distribution is detectable, make sure it is still
+        // the current distribution!
+        if (configurer != null && configurer.isDetectable()) {
+          if (!configurer.isAvailable()) {
+            throw new KettleException(BaseMessages.getString(PKG, 
+                "JobEntryHadoopTransJobExecutor.Error.DistroNoLongerPresent", configurer.distributionName()));
+          }
+        }
       }
       if (configurer == null) {
         throw new KettleException(BaseMessages.
             getString(PKG, "JobEntryHadoopTransJobExecutor.Error.UnknownHadoopDistribution", 
                 hadoopDistro));
       }
+      
       logBasic(BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.Message.DistroConfigMessage", 
           configurer.distributionName()));
       

@@ -412,6 +412,15 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
         if (configurer == null) {
           // go with what has been selected by the user
           configurer = HadoopConfigurerFactory.getConfigurer(hadoopDistro);
+          
+          // if the user-specified distribution is detectable, make sure it is still
+          // the current distribution!
+          if (configurer != null && configurer.isDetectable()) {
+            if (!configurer.isAvailable()) {
+              throw new KettleException(BaseMessages.getString(PKG, 
+                  "JobEntryHadoopJobExecutor.Error.DistroNoLongerPresent", configurer.distributionName()));
+            }
+          }
         }
         if (configurer == null) {
           throw new KettleException(BaseMessages.

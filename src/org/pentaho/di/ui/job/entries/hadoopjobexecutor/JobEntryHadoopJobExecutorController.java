@@ -176,7 +176,12 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
         }
  
         ((XulMenuList) getXulDomContainer().getDocumentRoot().getElementById("hadoop-distribution")).replaceAllItems(newItems);
-        aConf.setHadoopDistribution(jobEntry.getHadoopDistribution());
+        if (newItems.contains(jobEntry.getHadoopDistribution())) {
+          aConf.setHadoopDistribution(jobEntry.getHadoopDistribution());
+        } else {
+          aConf.setHadoopDistribution(newItems.get(0));
+          jobEntry.setHadoopDistribution(newItems.get(0));
+        }
         //setHadoopDistribution(jobEntry.getHadoopDistribution());        
       }
       

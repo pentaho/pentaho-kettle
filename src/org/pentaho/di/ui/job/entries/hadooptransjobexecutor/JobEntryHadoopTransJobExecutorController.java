@@ -367,7 +367,12 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
         }
  
         ((XulMenuList) getXulDomContainer().getDocumentRoot().getElementById("hadoop-distribution")).replaceAllItems(newItems);
-        setHadoopDistribution(jobEntry.getHadoopDistribution());        
+        if (newItems.contains(jobEntry.getHadoopDistribution())) {
+          setHadoopDistribution(jobEntry.getHadoopDistribution());
+        } else {
+          setHadoopDistribution(newItems.get(0));
+          jobEntry.setHadoopDistribution(newItems.get(0));
+        }
       }
       
       // set variables
