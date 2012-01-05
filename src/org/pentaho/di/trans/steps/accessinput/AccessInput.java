@@ -24,6 +24,7 @@ import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
@@ -36,7 +37,6 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
 import com.healthmarketscience.jackcess.Column;
-import com.healthmarketscience.jackcess.DataType;
 import com.healthmarketscience.jackcess.Database;
 
 /**
@@ -492,21 +492,14 @@ public class AccessInput extends BaseStep implements StepInterface
 	
 	private Object convert(Object obj, AccessInputField field, int index) throws Exception
 	{
-
-		Object o=obj;
-		
+		// Get column
 		Column c = data.t.getColumn(field.getColumn());
-		
-		ValueMetaInterface sourceValueMeta= AccessInputMeta.getValueMeta(c, field.getName());
-		if(c.getType().equals(DataType.BYTE)) {
-			sourceValueMeta.setType(ValueMetaInterface.TYPE_STRING);
-			o= (String) o.toString();
-		}
-
-		
+		// Find out field type
+		ValueMetaAndData sourceValueMetaAndData= AccessInputMeta.getValueMetaAndData(c, field.getName(), obj);
+	
 		// DO CONVERSIONS...
 		//
 		ValueMetaInterface targetValueMeta = data.outputRowMeta.getValueMeta(data.totalpreviousfields+index);
-		return targetValueMeta.convertData(sourceValueMeta, o);
+		return targetValueMeta.convertData(sourceValueMetaAndData.getValueMeta(), sourceValueMetaAndData.getValueData());
 	}
 }

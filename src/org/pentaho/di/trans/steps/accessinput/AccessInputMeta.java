@@ -17,6 +17,7 @@
 
 package org.pentaho.di.trans.steps.accessinput;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -33,6 +34,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
@@ -547,12 +549,14 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
     }
       
     
-    public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters)
+    @Override
+	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String, Counter> counters)
 	throws KettleXMLException
 	{
     	readData(stepnode);
 	}
 
+	@Override
 	public Object clone()
 	{
 		AccessInputMeta retval = (AccessInputMeta)super.clone();
@@ -578,7 +582,8 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 		return retval;
 	}
     
-    public String getXML()
+    @Override
+	public String getXML()
     {
         StringBuffer retval=new StringBuffer(500);
         retval.append("    ").append(XMLHandler.addTagValue("include",         includeFilename));
@@ -731,6 +736,7 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 		inputFields = new AccessInputField[nrfields];        
 	}
 	
+	@Override
 	public void setDefault()
 	{
 		shortFileFieldName=null;
@@ -774,11 +780,13 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 
 		rowLimit=0;
 	}
+	@Override
 	public void getFields(RowMetaInterface r, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{
 		
 		int i;
-		for (i=0;i<inputFields.length;i++)
+		int nr=inputFields==null?0:inputFields.length;
+		for (i=0;i<nr;i++)
 		{
 		    AccessInputField field = inputFields[i];       
 	        
@@ -792,6 +800,7 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 	        v.setDecimalSymbol(field.getDecimalSymbol());
 	        v.setGroupingSymbol(field.getGroupSymbol());
 	        v.setCurrencySymbol(field.getCurrencySymbol());
+	        v.setTrimType(field.getTrimType());
 			r.addValueMeta(v);  
   
 		}
@@ -895,6 +904,7 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	
 	
+	@Override
 	public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String, Counter> counters)
 	throws KettleException
 	{
@@ -969,6 +979,7 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 	
+	@Override
 	public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step)
 		throws KettleException
 	{
@@ -1043,6 +1054,7 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		return includeSubFolderBoolean;
     }
+	@Override
 	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
 	{
 	
@@ -1102,16 +1114,19 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
         return fileString;
     }
     
+	@Override
 	public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr, Trans trans)
 	{
 		return new AccessInput(stepMeta, stepDataInterface, cnr, tr, trans);
 	}
 	
+	@Override
 	public StepDataInterface getStepData()
 	{
 		return new AccessInputData();
 	}
-    public boolean supportsErrorHandling()
+    @Override
+	public boolean supportsErrorHandling()
     {
         return true;
     }
@@ -1123,6 +1138,7 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 
 	 * TODO: create options to configure this behavior 
 	 */
+	@Override
 	public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository) throws KettleException {
 		try {
 			// The object that we're modifying here is a copy of the original!
@@ -1140,46 +1156,120 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 	
-	public static ValueMetaInterface getValueMeta(Column c, String name)
+	/**
+	 * Returns kettle type from Microsoft Access database
+	 * @param : MS Access column
+	 * @return valuemeta 
+	 */
+	public static ValueMetaInterface getValueMeta(Column c)
 	{
+		// get value
+		ValueMetaAndData vmd=getValueMetaAndData(c, null, null);
+		if(vmd!=null) {
+			// returns meta
+			return vmd.getValueMeta();
+		}
+		return null;
+	}
 	
+
+	/**
+	 * Returns kettle type from Microsoft Access database
+	 * also convert data to prepare kettle value
+	 * @param : MS Access column
+	 * @param : destination field name
+	 * @param : MS Access column value
+	 * @return valuemeta and data 
+	 */
+	public static ValueMetaAndData getValueMetaAndData(Column c, String name, Object data)
+	{
+		
+		ValueMetaAndData valueMetaData= new ValueMetaAndData();
+		// get data
+		Object o = data;
+	
+		// Get column type
 		DataType type= c.getType();
 		
+		// Build a value Meta
+		// set default value
 		ValueMetaInterface sourceValueMeta= new ValueMeta(name==null?c.getName():name, ValueMeta.TYPE_STRING);
 		sourceValueMeta.setLength(c.getLength(), c.getPrecision());
+	
+		// Find corresponding Kettle type for each MS Access type
+		// We have to take of Meta AND data
+		switch(type)   {
+            case BINARY: 
+            	sourceValueMeta.setType(ValueMeta.TYPE_BINARY);	
+                break;
+            case BOOLEAN:
+            	sourceValueMeta.setType(ValueMeta.TYPE_BOOLEAN);
+    			if(o!=null) {
+    				o = Boolean.valueOf(o.toString());
+    			}
+            	
+                break;
+            case DOUBLE:
+            	sourceValueMeta.setType(ValueMeta.TYPE_NUMBER);
+            	
+                break;
+            case FLOAT:
+            	sourceValueMeta.setType(ValueMeta.TYPE_BIGNUMBER);
+    			if(o!=null) {
+    				o= new BigDecimal(Float.toString((Float)o)); 
+    			}
+            	
+                break;
+            case INT:
+     
+            	sourceValueMeta.setType(ValueMeta.TYPE_NUMBER);
+    			if(o!=null) {
+    				o = Double.parseDouble(o.toString());
+    			}
+                break;
+            case BYTE:
+            	sourceValueMeta.setType(ValueMeta.TYPE_NUMBER);
+    			if(o!=null) {
+    				o = Double.parseDouble(o.toString());
+    			}
+                break;
+            case LONG:
+        		sourceValueMeta.setType(ValueMeta.TYPE_INTEGER);
+    			if(o!=null) {
+    				Integer i=(Integer)o;
+    				o =  i.longValue();
+    			}
+            	
+                break;
+            case MEMO:
+    			// Should be considered as String
+            	
+                break;
+            case MONEY:
+            	sourceValueMeta.setType(ValueMeta.TYPE_BIGNUMBER);
+            	
+                break;
+            case NUMERIC:
+        		sourceValueMeta.setType(ValueMeta.TYPE_BIGNUMBER);
+            	
+                break;
+            case SHORT_DATE_TIME:
+            	sourceValueMeta.setType(ValueMeta.TYPE_DATE);
+            	
+                break;
+            default:
+            	// Default it's string
+    			if(o!=null) {
+    				o = o.toString();
+    			}
+            	break;
+          }
 		
-		if(type.equals(DataType.BINARY)) {
-			sourceValueMeta.setType(ValueMeta.TYPE_BINARY);	
-		}else if(type.equals(DataType.BOOLEAN)) {
-			sourceValueMeta.setType(ValueMeta.TYPE_BOOLEAN);
-		}else if(type.equals(DataType.DOUBLE)) {
-			sourceValueMeta.setType(ValueMeta.TYPE_NUMBER);
-			sourceValueMeta.setLength(c.getLength());
-		}else if(type.equals(DataType.FLOAT)) {
-			sourceValueMeta.setType(ValueMeta.TYPE_NUMBER);
-			sourceValueMeta.setLength(c.getLength());
-		} else if(type.equals(DataType.FLOAT)) {
-			sourceValueMeta.setType(ValueMeta.TYPE_BIGNUMBER);
-			sourceValueMeta.setLength(c.getLength());
-		}else if(type.equals(DataType.INT)) {
-			sourceValueMeta.setType(ValueMeta.TYPE_INTEGER);
-			sourceValueMeta.setLength(c.getLength());
-		}else if(type.equals(DataType.BYTE)) {
-			sourceValueMeta.setType(ValueMeta.TYPE_INTEGER);
-			sourceValueMeta.setLength(c.getLength());
-		}else if(type.equals(DataType.LONG)) {
-			sourceValueMeta.setType(ValueMeta.TYPE_INTEGER);
-			sourceValueMeta.setLength(c.getLength());
-		} else if(type.equals(DataType.MEMO)) {
-			sourceValueMeta.setType(ValueMeta.TYPE_BINARY);
-		} else if(type.equals(DataType.MONEY)) {
-			sourceValueMeta.setType(ValueMeta.TYPE_NUMBER);
-		} else if(type.equals(DataType.NUMERIC)) {
-			sourceValueMeta.setType(ValueMeta.TYPE_INTEGER);
-		} else if(type.equals(DataType.SHORT_DATE_TIME)) {
-			sourceValueMeta.setType(ValueMeta.TYPE_DATE);
-		}
+	
+		// set value meta data and return it
+		valueMetaData.setValueMeta(sourceValueMeta);
+		if(o!=null)  valueMetaData.setValueData(o);
 		
-		return sourceValueMeta;
+		return valueMetaData;
 	}
 }

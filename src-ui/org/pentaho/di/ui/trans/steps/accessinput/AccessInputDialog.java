@@ -1175,13 +1175,13 @@ public class AccessInputDialog extends BaseStepDialog implements StepDialogInter
     			
     			// Get the list of columns
     			List<Column> col = t.getColumns();    			
-    		
-    			for (int i=0;i<col.size() ;i++)
+    			int nr=col.size();
+    			for (int i=0;i<nr ;i++)
     			{
     				Column c = (Column)col.get(i);
 
-    				ValueMetaInterface field = AccessInputMeta.getValueMeta(c, null);
-    				if (fields.indexOfValue(field.getName())<0) fields.addValueMeta(field);	
+    				ValueMetaInterface field = AccessInputMeta.getValueMeta(c);
+    				if (field!=null && fields.indexOfValue(field.getName())<0) fields.addValueMeta(field);	
     			}
     		  }	
     					
