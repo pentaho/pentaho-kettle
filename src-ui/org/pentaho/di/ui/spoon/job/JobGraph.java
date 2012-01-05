@@ -2249,12 +2249,12 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
         
         // Open the transformation or create a new one...
         //
-        boolean exists = spoon.rep.getTransformationID(exactTransname, spoon.rep.findDirectory(entry.getDirectory())) != null;
+        boolean exists = spoon.rep.getTransformationID(exactTransname, spoon.rep.findDirectory(jobMeta.environmentSubstitute(entry.getDirectory()))) != null;
         if (!exists) {
           launchTransMeta = new TransMeta(null, exactTransname, entry.arguments);
         } 
         else {
-          launchTransMeta = spoon.rep.loadTransformation(exactTransname, spoon.rep.findDirectory(entry.getDirectory()), null, true, null); // reads last version
+          launchTransMeta = spoon.rep.loadTransformation(exactTransname, spoon.rep.findDirectory(jobMeta.environmentSubstitute(entry.getDirectory())), null, true, null); // reads last version
         }
         break;
       case REPOSITORY_BY_REFERENCE:
