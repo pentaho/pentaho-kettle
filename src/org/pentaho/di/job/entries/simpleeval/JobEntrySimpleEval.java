@@ -455,8 +455,12 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
 				if(isSuccessWhenVarSet())
 				{
 					// return variable name
-					String variableName=StringUtil.getVariableName(getVariableWithSpec());
-					if(System.getProperty(variableName)!=null)
+					// remove specifications if needed
+					String variableName=StringUtil.getVariableName(Const.NVL(getVariableName(), ""));		
+					// Get value, if the variable is not set, Null will be returned
+					String value = getVariable(variableName);
+
+					if(value!=null)
 					{
 						if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntrySimpleEval.VariableSet",variableName));
 						result.setResult(true);
