@@ -48,16 +48,12 @@ import org.pentaho.hbase.mapping.MappingAdmin;
 public class HBaseOutput extends BaseStep implements StepInterface {
   
   protected HBaseOutputMeta m_meta;
-  protected HBaseOutputData m_data;
-  
-  protected TransMeta m_transMeta;
+  protected HBaseOutputData m_data;  
   
   public HBaseOutput(StepMeta stepMeta, StepDataInterface stepDataInterface,
       int copyNr, TransMeta transMeta, Trans trans) {
     
-    super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
-    
-    m_transMeta = transMeta;    
+    super(stepMeta, stepDataInterface, copyNr, transMeta, trans);    
   }
   
   /** Configuration object for connecting to HBase */
@@ -120,12 +116,12 @@ public class HBaseOutput extends BaseStep implements StepInterface {
       try {
         logBasic("Connecting to HBase...");
         m_connection = HBaseOutputData.
-          getHBaseConnection(m_transMeta.environmentSubstitute(m_meta.getZookeeperHosts()),
-              m_transMeta.environmentSubstitute(m_meta.getZookeeperPort()),
+          getHBaseConnection(environmentSubstitute(m_meta.getZookeeperHosts()),
+              environmentSubstitute(m_meta.getZookeeperPort()),
             HBaseOutputData.
-              stringToURL(m_transMeta.environmentSubstitute(m_meta.getCoreConfigURL())), 
+              stringToURL(environmentSubstitute(m_meta.getCoreConfigURL())), 
             HBaseOutputData.
-              stringToURL(m_transMeta.environmentSubstitute(m_meta.getDefaultConfigURL())));
+              stringToURL(environmentSubstitute(m_meta.getDefaultConfigURL())));
       } catch (IOException ex) {
         ex.printStackTrace();
         throw new KettleException("Unable to obtain a connection to HBase: "
@@ -148,7 +144,7 @@ public class HBaseOutput extends BaseStep implements StepInterface {
             + ex.getMessage());
       }
 
-      String targetName = m_transMeta.environmentSubstitute(m_meta.getTargetTableName());
+      String targetName = environmentSubstitute(m_meta.getTargetTableName());
       if (Const.isEmpty(targetName)) {
         throw new KettleException("No target table specified!");
       }
@@ -170,9 +166,9 @@ public class HBaseOutput extends BaseStep implements StepInterface {
       // Get mapping details for the target table
       try {
         logBasic("Retrieving mapping details for target table.");
-        m_tableMapping = m_mappingAdmin.getMapping(m_transMeta.
+        m_tableMapping = m_mappingAdmin.getMapping(
             environmentSubstitute(m_meta.getTargetTableName()), 
-            m_transMeta.environmentSubstitute(m_meta.getTargetMappingName()));
+            environmentSubstitute(m_meta.getTargetMappingName()));
         m_columnsMappedByAlias = m_tableMapping.getMappedColumns();
       } catch (IOException ex) {
         ex.printStackTrace();
@@ -218,7 +214,7 @@ public class HBaseOutput extends BaseStep implements StepInterface {
         
         // set a write buffer size (and disable auto flush)
         if (!Const.isEmpty(m_meta.getWriteBufferSize())) {
-          long writeBuffer = Long.parseLong(m_transMeta.
+          long writeBuffer = Long.parseLong(
               environmentSubstitute(m_meta.getWriteBufferSize()));
           
           logBasic("Setting the write buffer to " + writeBuffer + " bytes.");

@@ -67,16 +67,12 @@ import org.pentaho.hbase.mapping.MappingAdmin;
 public class HBaseInput extends BaseStep implements StepInterface {
   
   protected HBaseInputMeta m_meta;
-  protected HBaseInputData m_data;
-  
-  protected TransMeta m_transMeta;
+  protected HBaseInputData m_data;  
 
   public HBaseInput(StepMeta stepMeta, StepDataInterface stepDataInterface,
       int copyNr, TransMeta transMeta, Trans trans) {
     
-    super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
-    
-    m_transMeta = transMeta;
+    super(stepMeta, stepDataInterface, copyNr, transMeta, trans);    
   }
   
   /** Configuration object for connecting to HBase */
@@ -111,12 +107,12 @@ public class HBaseInput extends BaseStep implements StepInterface {
       // Get the connection to HBase
       try {
         m_connection = HBaseInputData.
-        getHBaseConnection(m_transMeta.environmentSubstitute(m_meta.getZookeeperHosts()),
-            m_transMeta.environmentSubstitute(m_meta.getZookeeperPort()),
+        getHBaseConnection(environmentSubstitute(m_meta.getZookeeperHosts()),
+            environmentSubstitute(m_meta.getZookeeperPort()),
             HBaseInputData.
-              stringToURL(m_transMeta.environmentSubstitute(m_meta.getCoreConfigURL())), 
+              stringToURL(environmentSubstitute(m_meta.getCoreConfigURL())), 
             HBaseInputData.
-              stringToURL(m_transMeta.environmentSubstitute(m_meta.getDefaultConfigURL())));
+              stringToURL(environmentSubstitute(m_meta.getDefaultConfigURL())));
       } catch (IOException ex) {
         throw new KettleException("Unable to obtain a connection to HBase.");
       }
@@ -134,7 +130,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
         throw new KettleException("Unable to obtain a connection to HBase.");
       }
 
-      String sourceName = m_transMeta.environmentSubstitute(m_meta.getSourceTableName());
+      String sourceName = environmentSubstitute(m_meta.getSourceTableName());
       try {
         if (!admin.tableExists(sourceName)) {          
           throw new KettleException("Source table \"" + sourceName + "\" does not exist!");
@@ -151,9 +147,9 @@ public class HBaseInput extends BaseStep implements StepInterface {
       
       // Get mapping details for the source table
       try {
-        m_tableMapping = m_mappingAdmin.getMapping(m_transMeta.
+        m_tableMapping = m_mappingAdmin.getMapping(
             environmentSubstitute(m_meta.getSourceTableName()), 
-            m_transMeta.environmentSubstitute(m_meta.getSourceMappingName()));
+            environmentSubstitute(m_meta.getSourceMappingName()));
         m_columnsMappedByAlias = m_tableMapping.getMappedColumns();
       } catch (IOException ex) {
         throw new KettleException(ex.getMessage());
@@ -191,7 +187,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
         s = new Scan(); // scan all rows
       } else {
         byte[] keyLowerBound = null;
-        String keyStartS = m_transMeta.environmentSubstitute(m_meta.getKeyStartValue());
+        String keyStartS = environmentSubstitute(m_meta.getKeyStartValue());
         String convM = dateOrNumberConversionMaskForKey;
         if (m_tableMapping.getKeyType() != Mapping.KeyType.STRING) {
           // allow a conversion mask in the start key field to override any specified for
@@ -244,7 +240,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
           s = new Scan(keyLowerBound);
         } else {
           byte[] keyUpperBound = null;
-          String keyStopS = m_transMeta.environmentSubstitute(m_meta.getKeyStopValue());
+          String keyStopS = environmentSubstitute(m_meta.getKeyStopValue());
           convM = dateOrNumberConversionMaskForKey;
           if (m_tableMapping.getKeyType() != Mapping.KeyType.STRING) {
             
@@ -298,7 +294,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
       
       // set any user-specified scanner caching
       if (!Const.isEmpty(m_meta.getScannerCacheSize())) {
-        String temp = m_transMeta.environmentSubstitute(m_meta.getScannerCacheSize());
+        String temp = environmentSubstitute(m_meta.getScannerCacheSize());
         int sc = Integer.parseInt(temp);        
         s.setCaching(sc);
         logBasic("Set scanner caching to " + sc + " rows.");
@@ -337,7 +333,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
         }
         
         for (ColumnFilter cf : m_meta.getColumnFilters()) {
-          String fieldAliasS = m_transMeta.environmentSubstitute(cf.getFieldAlias());
+          String fieldAliasS = environmentSubstitute(cf.getFieldAlias());
           HBaseValueMeta mappedCol = m_columnsMappedByAlias.get(fieldAliasS);
           if (mappedCol == null) {
             throw new KettleException("Column filter \"" + fieldAliasS 
@@ -346,7 +342,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
           
           // check the type (if set in the ColumnFilter) against the type
           // of this field in the mapping
-          String fieldTypeS = m_transMeta.environmentSubstitute(cf.getFieldType());
+          String fieldTypeS = environmentSubstitute(cf.getFieldType());
           if (!Const.isEmpty(fieldTypeS)) {
             if (!mappedCol.getHBaseTypeDesc().equalsIgnoreCase(fieldTypeS)) {
               throw new KettleException("Type (" + fieldTypeS 
@@ -384,7 +380,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
           }
           
           String comparisonString = cf.getConstant().trim();
-          comparisonString = m_transMeta.environmentSubstitute(comparisonString);
+          comparisonString = environmentSubstitute(comparisonString);
           
           if (comp != null) {
 
@@ -395,7 +391,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
               
               // Double/Float or Long/Integer              
               DecimalFormat df = new DecimalFormat();
-              String formatS = m_transMeta.environmentSubstitute(cf.getFormat());
+              String formatS = environmentSubstitute(cf.getFormat());
               if (!Const.isEmpty(formatS)) {
                 df.applyPattern(formatS);
               }
@@ -454,7 +450,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
               }        
             } else if (mappedCol.isDate()) {
               SimpleDateFormat sdf = new SimpleDateFormat();
-              String formatS = m_transMeta.environmentSubstitute(cf.getFormat());
+              String formatS = environmentSubstitute(cf.getFormat());
               if (!Const.isEmpty(formatS)) {
                 sdf.applyPattern(formatS);
               }

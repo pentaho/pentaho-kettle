@@ -47,16 +47,12 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 public class CassandraInput extends BaseStep implements StepInterface {
   
   protected CassandraInputMeta m_meta;
-  protected CassandraInputData m_data;
-  
-  protected TransMeta m_transMeta;
+  protected CassandraInputData m_data;  
   
   public CassandraInput(StepMeta stepMeta, StepDataInterface stepDataInterface,
       int copyNr, TransMeta transMeta, Trans trans) {
     
-    super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
-    
-    m_transMeta = transMeta;    
+    super(stepMeta, stepDataInterface, copyNr, transMeta, trans);    
   }
   
   /** Connection to cassandra */
@@ -84,15 +80,15 @@ public class CassandraInput extends BaseStep implements StepInterface {
       m_meta = (CassandraInputMeta)smi;
       
       // Get the connection to Cassandra
-      String hostS = m_transMeta.environmentSubstitute(m_meta.getCassandraHost());
-      String portS = m_transMeta.environmentSubstitute(m_meta.getCassandraPort());
+      String hostS = environmentSubstitute(m_meta.getCassandraHost());
+      String portS = environmentSubstitute(m_meta.getCassandraPort());
       String userS = m_meta.getUsername();
       String passS = m_meta.getPassword();
       if (!Const.isEmpty(userS) && !Const.isEmpty(passS)) {
-        userS = m_transMeta.environmentSubstitute(userS);
-        passS = m_transMeta.environmentSubstitute(passS);
+        userS = environmentSubstitute(userS);
+        passS = environmentSubstitute(passS);
       }
-      String keyspaceS = m_transMeta.environmentSubstitute(m_meta.getCassandraKeyspace());
+      String keyspaceS = environmentSubstitute(m_meta.getCassandraKeyspace());
       
       if (Const.isEmpty(hostS) || Const.isEmpty(portS) || Const.isEmpty(keyspaceS)) {
         throw new KettleException("Some connection details are missing!!");
@@ -111,7 +107,7 @@ public class CassandraInput extends BaseStep implements StepInterface {
       
       // check the source column family (table) first
       String colFamName = m_data.
-        getColumnFamilyNameFromCQLSelectQuery(m_transMeta.
+        getColumnFamilyNameFromCQLSelectQuery(
             environmentSubstitute(m_meta.getCQLSelectQuery()));
       
       if (Const.isEmpty(colFamName)) {
@@ -157,7 +153,7 @@ public class CassandraInput extends BaseStep implements StepInterface {
         throw new KettleException(e.fillInStackTrace());
       }
       
-      String queryS = m_transMeta.environmentSubstitute(m_meta.getCQLSelectQuery());
+      String queryS = environmentSubstitute(m_meta.getCQLSelectQuery());
       Compression compression = 
         m_meta.getUseCompression() ? Compression.GZIP : Compression.NONE;
       try {

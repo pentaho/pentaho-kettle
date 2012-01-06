@@ -35,16 +35,12 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 public class CassandraOutput extends BaseStep implements StepInterface {
   
   protected CassandraOutputMeta m_meta;
-  protected CassandraOutputData m_data;
-  
-  protected TransMeta m_transMeta;
+  protected CassandraOutputData m_data;  
   
   public CassandraOutput(StepMeta stepMeta, StepDataInterface stepDataInterface,
       int copyNr, TransMeta transMeta, Trans trans) {
     
-    super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
-    
-    m_transMeta = transMeta;    
+    super(stepMeta, stepDataInterface, copyNr, transMeta, trans);    
   }
 
   /** Connection to cassandra */
@@ -98,17 +94,17 @@ public class CassandraOutput extends BaseStep implements StepInterface {
       m_data = (CassandraOutputData)sdi;
       
       // Get the connection to Cassandra
-      String hostS = m_transMeta.environmentSubstitute(m_meta.getCassandraHost());
-      String portS = m_transMeta.environmentSubstitute(m_meta.getCassandraPort());
+      String hostS = environmentSubstitute(m_meta.getCassandraHost());
+      String portS = environmentSubstitute(m_meta.getCassandraPort());
       String userS = m_meta.getUsername();
       String passS = m_meta.getPassword();
       if (!Const.isEmpty(userS) && !Const.isEmpty(passS)) {
-        userS = m_transMeta.environmentSubstitute(userS);
-        passS = m_transMeta.environmentSubstitute(passS);
+        userS = environmentSubstitute(userS);
+        passS = environmentSubstitute(passS);
       }
-      String keyspaceS = m_transMeta.environmentSubstitute(m_meta.getCassandraKeyspace());
-      m_columnFamilyName = m_transMeta.environmentSubstitute(m_meta.getColumnFamilyName());
-      String keyField = m_transMeta.environmentSubstitute(m_meta.getKeyField());
+      String keyspaceS = environmentSubstitute(m_meta.getCassandraKeyspace());
+      m_columnFamilyName = environmentSubstitute(m_meta.getColumnFamilyName());
+      String keyField = environmentSubstitute(m_meta.getKeyField());
       
       if (Const.isEmpty(hostS) || Const.isEmpty(portS) || Const.isEmpty(keyspaceS)) {
         throw new KettleException("Some connection details are missing!!");
@@ -183,7 +179,7 @@ public class CassandraOutput extends BaseStep implements StepInterface {
       // output (downstream) is the same as input
       m_data.setOutputRowMeta(getInputRowMeta());
       
-      String batchSize = m_transMeta.environmentSubstitute(m_meta.getBatchSize());
+      String batchSize = environmentSubstitute(m_meta.getBatchSize());
       if (!Const.isEmpty(batchSize)) {
         try {
           m_batchSize = Integer.parseInt(batchSize);
@@ -218,7 +214,7 @@ public class CassandraOutput extends BaseStep implements StepInterface {
       
       // Try to execute any apriori CQL commands?
       if (!Const.isEmpty(m_meta.getAprioriCQL())) {
-        String aprioriCQL = m_transMeta.environmentSubstitute(m_meta.getAprioriCQL());
+        String aprioriCQL = environmentSubstitute(m_meta.getAprioriCQL());
         logBasic("Executing the following CQL prior to writing to column family '" 
             + m_columnFamilyName + "'\n\n" + aprioriCQL);
         CassandraOutputData.executeAprioriCQL(m_connection, aprioriCQL, log, 
@@ -226,7 +222,7 @@ public class CassandraOutput extends BaseStep implements StepInterface {
 
       }
       
-      m_consistency = m_transMeta.environmentSubstitute(m_meta.getConsistency());      
+      m_consistency = environmentSubstitute(m_meta.getConsistency());      
       m_batchInsert = CassandraOutputData.newBatch(m_batchSize, m_consistency);            
     }
     
