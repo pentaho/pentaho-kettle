@@ -41,7 +41,7 @@ public class SybaseIQDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	
 	public int getDefaultDatabasePort()
 	{
-		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE) return 5001;
+		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE) return 2638;
 		return -1;
 	}
 
