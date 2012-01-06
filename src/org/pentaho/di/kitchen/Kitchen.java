@@ -388,6 +388,7 @@ public class Kitchen
         {
             if (repository!=null) repository.disconnect();
             if (fileAppender!=null) {
+              fileAppender.close();
               LogWriter.getInstance().removeAppender(fileAppender);
             }
         }
