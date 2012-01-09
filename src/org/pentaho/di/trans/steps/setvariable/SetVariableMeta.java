@@ -311,7 +311,7 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			for (int i=0;i<fieldName.length;i++)
 			{
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",      fieldName[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_name", Const.isEmpty(fieldName[i])?"":fieldName[i]); //$NON-NLS-1$
 				rep.saveStepAttribute(id_transformation, id_step, i, "variable_name",     variableName[i]); //$NON-NLS-1$
                 rep.saveStepAttribute(id_transformation, id_step, i, "variable_type",   getVariableTypeCode(variableType[i])); //$NON-NLS-1$
                 rep.saveStepAttribute(id_transformation, id_step, i, "default_value",     defaultValue[i]);
