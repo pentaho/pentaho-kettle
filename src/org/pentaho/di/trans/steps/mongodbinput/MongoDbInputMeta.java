@@ -1,14 +1,24 @@
- /* Copyright (c) 2007 Pentaho Corporation.  All rights reserved. 
- * This software was developed by Pentaho Corporation and is provided under the terms 
- * of the GNU Lesser General Public License, Version 2.1. You may not use 
- * this file except in compliance with the license. If you need a copy of the license, 
- * please go to http://www.gnu.org/licenses/lgpl-2.1.txt. The Original Code is Pentaho 
- * Data Integration.  The Initial Developer is Pentaho Corporation.
+/*******************************************************************************
  *
- * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
- * the license for the specific language governing your rights and limitations.*/
-
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2012 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.trans.steps.mongodbinput;
 
@@ -56,6 +66,8 @@ public class MongoDbInputMeta extends BaseStepMeta implements StepMetaInterface
   
   private String authenticationUser;
   private String authenticationPassword;
+  
+  private String jsonQuery;
 
 
 	public MongoDbInputMeta()
@@ -85,6 +97,9 @@ public class MongoDbInputMeta extends BaseStepMeta implements StepMetaInterface
       dbName = XMLHandler.getTagValue(stepnode, "db_name"); //$NON-NLS-1$
 			collection  = XMLHandler.getTagValue(stepnode, "collection"); //$NON-NLS-1$
       jsonFieldName = XMLHandler.getTagValue(stepnode, "json_field_name"); //$NON-NLS-1$
+      jsonQuery = XMLHandler.getTagValue(stepnode, "json_query"); //$NON-NLS-1$
+      authenticationUser = XMLHandler.getTagValue(stepnode, "auth_user"); //$NON-NLS-1$
+      authenticationPassword = Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(stepnode, "auth_password")); //$NON-NLS-1$ 
 		}
 		catch(Exception e)
 		{
@@ -118,6 +133,7 @@ public class MongoDbInputMeta extends BaseStepMeta implements StepMetaInterface
     retval.append("    ").append(XMLHandler.addTagValue("db_name", dbName)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("    ").append(XMLHandler.addTagValue("collection", collection)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("    ").append(XMLHandler.addTagValue("json_field_name", jsonFieldName)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("    ").append(XMLHandler.addTagValue("json_query", jsonQuery)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("    ").append(XMLHandler.addTagValue("auth_user", authenticationUser));
     retval.append("    ").append(XMLHandler.addTagValue("auth_password", Encr.encryptPasswordIfNotUsingVariables(authenticationPassword)));
 
@@ -134,6 +150,7 @@ public class MongoDbInputMeta extends BaseStepMeta implements StepMetaInterface
       dbName        = rep.getStepAttributeString (id_step, "db_name"); //$NON-NLS-1$
       collection    = rep.getStepAttributeString (id_step, "collection"); //$NON-NLS-1$
       jsonFieldName = rep.getStepAttributeString (id_step, "json_field_name"); //$NON-NLS-1$
+      jsonQuery     = rep.getStepAttributeString (id_step, "json_query"); //$NON-NLS-1$
 			
       authenticationUser = rep.getStepAttributeString(id_step, "auth_user");
       authenticationPassword = Encr.decryptPasswordOptionallyEncrypted(rep.getStepAttributeString(id_step, "auth_password"));
@@ -154,6 +171,7 @@ public class MongoDbInputMeta extends BaseStepMeta implements StepMetaInterface
       rep.saveStepAttribute(id_transformation, id_step, "db_name", dbName); //$NON-NLS-1$
       rep.saveStepAttribute(id_transformation, id_step, "collection", collection); //$NON-NLS-1$
       rep.saveStepAttribute(id_transformation, id_step, "json_field_name", jsonFieldName); //$NON-NLS-1$
+      rep.saveStepAttribute(id_transformation, id_step, "json_query", jsonQuery); //$NON-NLS-1$
 
       rep.saveStepAttribute(id_transformation, id_step, "auth_user", authenticationUser);
       rep.saveStepAttribute(id_transformation, id_step, "auth_password", Encr.encryptPasswordIfNotUsingVariables(authenticationPassword));
@@ -276,4 +294,19 @@ public class MongoDbInputMeta extends BaseStepMeta implements StepMetaInterface
   public void setAuthenticationPassword(String authenticationPassword) {
     this.authenticationPassword = authenticationPassword;
   }
+
+  /**
+   * @return the jsonQuery
+   */
+  public String getJsonQuery() {
+    return jsonQuery;
+  }
+
+  /**
+   * @param jsonQuery the jsonQuery to set
+   */
+  public void setJsonQuery(String jsonQuery) {
+    this.jsonQuery = jsonQuery;
+  }
+  
 }
