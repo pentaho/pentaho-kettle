@@ -434,9 +434,11 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
       if (jobEntry.getMapTrans() != null || rep == null) {
         ((XulMenuList) getXulDomContainer().getDocumentRoot().getElementById("mapper-storage-type")).setSelectedIndex(0);
         setMapTrans(jobEntry.getMapTrans());
+        this.mapperStorageType = "local";
       } else if (jobEntry.getMapRepositoryReference() != null) {
         ((XulMenuList) getXulDomContainer().getDocumentRoot().getElementById("mapper-storage-type")).setSelectedIndex(2);
         setMapRepositoryReference(jobEntry.getMapRepositoryReference());
+        this.mapperStorageType = "reference";
         // Load the repository directory and file for displaying to the user
         try {
           TransMeta transMeta = rep.loadTransformation(getMapRepositoryReference(), null);
@@ -452,6 +454,7 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
         setMapRepositoryDir(jobEntry.getMapRepositoryDir());
         setMapRepositoryFile(jobEntry.getMapRepositoryFile());
         setMapTrans(buildRepositoryPath(getMapRepositoryDir(), getMapRepositoryFile()));
+        this.mapperStorageType = "repository";
       }
       setMapTransInputStepName(jobEntry.getMapInputStepName());
       setMapTransOutputStepName(jobEntry.getMapOutputStepName());
@@ -460,9 +463,11 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
       if (jobEntry.getCombinerTrans() != null || rep == null) {
         ((XulMenuList) getXulDomContainer().getDocumentRoot().getElementById("combiner-storage-type")).setSelectedIndex(0);
         setCombinerTrans(jobEntry.getCombinerTrans());
+        this.combinerStorageType = "local";
       } else if (jobEntry.getCombinerRepositoryReference() != null) {
         ((XulMenuList) getXulDomContainer().getDocumentRoot().getElementById("combiner-storage-type")).setSelectedIndex(2);
         setCombinerRepositoryReference(jobEntry.getCombinerRepositoryReference());
+        this.combinerStorageType = "reference";
         // Load the repository directory and file for displaying to the user
         try {
           TransMeta transMeta = rep.loadTransformation(getCombinerRepositoryReference(), null);
@@ -478,6 +483,7 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
         setCombinerRepositoryDir(jobEntry.getCombinerRepositoryDir());
         setCombinerRepositoryFile(jobEntry.getCombinerRepositoryFile());
         setCombinerTrans(buildRepositoryPath(getCombinerRepositoryDir(), getCombinerRepositoryFile()));
+        this.combinerStorageType = "repository";
       }
 
       setCombinerTransInputStepName(jobEntry.getCombinerInputStepName());
@@ -487,9 +493,11 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
       if (jobEntry.getReduceTrans() != null || rep == null) {
         ((XulMenuList) getXulDomContainer().getDocumentRoot().getElementById("reducer-storage-type")).setSelectedIndex(0);
         setReduceTrans(jobEntry.getReduceTrans());
+        this.reducerStorageType = "local";
       } else if (jobEntry.getReduceRepositoryReference() != null) {
         ((XulMenuList) getXulDomContainer().getDocumentRoot().getElementById("reducer-storage-type")).setSelectedIndex(2);
         setReduceRepositoryReference(jobEntry.getReduceRepositoryReference());
+        this.reducerStorageType = "reference";
         // Load the repository directory and file for displaying to the user
         try {
           TransMeta transMeta = rep.loadTransformation(getReduceRepositoryReference(), null);
@@ -505,6 +513,7 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
         setReduceRepositoryDir(jobEntry.getReduceRepositoryDir());
         setReduceRepositoryFile(jobEntry.getReduceRepositoryFile());
         setReduceTrans(buildRepositoryPath(getReduceRepositoryDir(), getReduceRepositoryFile()));
+        this.reducerStorageType = "repository";
       }
 
       setReduceTransInputStepName(jobEntry.getReduceInputStepName());
