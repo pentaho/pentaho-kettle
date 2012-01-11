@@ -28,7 +28,7 @@ import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransMeta;
 
 public interface Repository {
-  
+   
   /**
    * @return The name of the repository
    */
@@ -464,14 +464,37 @@ public interface Repository {
   public DatabaseMeta loadDatabaseMetaFromJobEntryAttribute(ObjectId id_jobentry, String nameCode, String idCode, List<DatabaseMeta> databases) throws KettleException;
 
   /**
+   * This method is introduced to avoid having to go over an integer/string/whatever in the interface and the job entry code.
+   * 
+   * @param id_entry
+   * @param nameCode
+   * @param nr
+   * @param idcode
+   * @param databases
+   * @return
+   * @throws KettleException
+   */
+  public DatabaseMeta loadDatabaseMetaFromJobEntryAttribute(ObjectId id_jobentry, String nameCode, int nr, String idCode, List<DatabaseMeta> databases) throws KettleException;
+
+  /**
    * This method saves the object ID of the database object (if not null) in the job entry attributes
    * @param id_job
    * @param id_jobentry
-   * @param code
+   * @param idCode
    * @param database
    */
   public void saveDatabaseMetaJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, String nameCode, String idCode, DatabaseMeta database) throws KettleException;
 
+  /**
+   * This method saves the object ID of the database object (if not null) in the job entry attributes
+   * @param id_job
+   * @param id_jobentry
+   * @param nr
+   * @param code
+   * @param database
+   */
+  public void saveDatabaseMetaJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, int nr, String nameCode, String idCode, DatabaseMeta database) throws KettleException;
+  
   /**
    * Removes he deleted flag from a repository element in the repository.  
    * If it wasn't deleted, it remains untouched.

@@ -744,7 +744,9 @@ public class KettleFileRepository implements Repository {
 	}
 
 	public DatabaseMeta loadDatabaseMetaFromJobEntryAttribute(ObjectId id_jobentry, String nameCode, String idCode, List<DatabaseMeta> databases) throws KettleException { return null; }
+   public DatabaseMeta loadDatabaseMetaFromJobEntryAttribute(ObjectId id_jobentry, String nameCode, int nr, String idCode, List<DatabaseMeta> databases)  throws KettleException { return null; }
 	public void saveDatabaseMetaJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, String nameCode, String idCode, DatabaseMeta database) throws KettleException {}
+	public void saveDatabaseMetaJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, int nr, String nameCode, String idCode, DatabaseMeta database) throws KettleException {}
 
 	public DatabaseMeta loadDatabaseMetaFromStepAttribute(ObjectId id_step, String code, List<DatabaseMeta> databases) throws KettleException { return null; }
 	

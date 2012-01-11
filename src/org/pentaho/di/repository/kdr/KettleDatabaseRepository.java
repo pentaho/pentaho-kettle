@@ -1609,11 +1609,11 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 		}
 	}
 
-	public DatabaseMeta loadDatabaseMetaFromJobEntryAttribute(ObjectId id_jobentry, String nameCode, String idCode, List<DatabaseMeta> databases) throws KettleException {
+	public DatabaseMeta loadDatabaseMetaFromJobEntryAttribute(ObjectId id_jobentry, String nameCode, int nr, String idCode, List<DatabaseMeta> databases) throws KettleException {
 		
-		long id_database = getJobEntryAttributeInteger(id_jobentry, idCode);
+		long id_database = getJobEntryAttributeInteger(id_jobentry, nr, idCode);
 		if (id_database<=0) {
-			String name = getJobEntryAttributeString(id_jobentry, nameCode);
+			String name = getJobEntryAttributeString(id_jobentry, nr, nameCode);
 			if (name==null) {
 				return null;
 			}
@@ -1622,6 +1622,18 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 		return DatabaseMeta.findDatabase(databases, new LongObjectId(id_database));
 	}
 	
+	public DatabaseMeta loadDatabaseMetaFromJobEntryAttribute(ObjectId id_jobentry, String nameCode, String idCode, List<DatabaseMeta> databases) throws KettleException {
+	    
+	   long id_database = getJobEntryAttributeInteger(id_jobentry, idCode);
+	   if (id_database<=0) {
+	      String name = getJobEntryAttributeString(id_jobentry, nameCode);
+	      if (name==null) {
+	         return null;
+	      }
+	      return DatabaseMeta.findDatabase(databases, name);
+	   }
+	   return DatabaseMeta.findDatabase(databases, new LongObjectId(id_database));
+	}
 	
 	/**
 	 * This method saves the object ID of the database object (if not null) in the step attributes
@@ -1645,6 +1657,31 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 			
 			insertJobEntryDatabase(id_job, id_jobentry, id);
 		}
+	}
+	
+   /**
+    * This method saves the object ID of the database object (if not null) in the step attributes
+    * @param id_job
+    * @param nr
+    * @param id_jobentry
+    * @param nameCode
+    * @param nameCode
+    * @param idCode
+    * @param database
+    */
+	public void saveDatabaseMetaJobEntryAttribute(ObjectId id_job, ObjectId id_jobentry, int nr, String nameCode, String idCode, DatabaseMeta database) throws KettleException {
+	   ObjectId id = null;
+	   if (database!=null) {
+	      id = database.getObjectId();
+	      Long id_database = id==null ? Long.valueOf(-1L) : new LongObjectId(id).longValue();
+	         
+	      // Save both the ID and the name of the database connection...
+	      //
+	      saveJobEntryAttribute(id_job, id_jobentry, nr, idCode, id_database);
+	      saveJobEntryAttribute(id_job, id_jobentry, nr, nameCode, id_database);
+	         
+	      insertJobEntryDatabase(id_job, id_jobentry, id);
+	   }
 	}
 
 	/**

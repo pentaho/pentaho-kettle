@@ -185,16 +185,16 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
 		try
 		{
 			 // How many connections?
-	        int argnr = rep.countNrJobEntryAttributes(id_jobentry, "connection"); //$NON-NLS-1$
+	        int argnr = rep.countNrJobEntryAttributes(id_jobentry, "id_database"); //$NON-NLS-1$
 	        connections = new DatabaseMeta[argnr];
 	        waitfors = new String[argnr];
 	        waittimes = new int[argnr];
 	        // Read them all...
 	        for (int a = 0; a < argnr; a++) 
 	        {
-				   connections[a] = rep.loadDatabaseMetaFromJobEntryAttribute(id_jobentry, "connection", "id_database", databases);	
-				   waitfors[a] = rep.getJobEntryAttributeString(id_jobentry,"waitfor");
-				   waittimes[a] = getWaitByCode(Const.NVL(rep.getJobEntryAttributeString(id_jobentry,"waittime"), ""));
+				   connections[a] = rep.loadDatabaseMetaFromJobEntryAttribute(id_jobentry, "connection", a, "id_database", databases);	
+				   waitfors[a] = rep.getJobEntryAttributeString(id_jobentry, a, "waitfor");
+				   waittimes[a] = getWaitByCode(Const.NVL(rep.getJobEntryAttributeString(id_jobentry, a, "waittime"), ""));
 	        }
 		}
 		catch(KettleException dbe)
@@ -210,10 +210,10 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
 			   // save the arguments...
 		      if (connections != null) {
 		        for (int i = 0; i < connections.length; i++) {
-					rep.saveDatabaseMetaJobEntryAttribute(id_job, getObjectId(), "connection", "id_database", connections[i]);
+					rep.saveDatabaseMetaJobEntryAttribute(id_job, getObjectId(), i, "connection", "id_database", connections[i]);
 					
-					rep.saveJobEntryAttribute(id_job, getObjectId(),"waittime", getWaitTimeCode(waittimes[i]));
-					rep.saveJobEntryAttribute(id_job, getObjectId(),"waitfor", waitfors[i]);
+					rep.saveJobEntryAttribute(id_job, getObjectId(), i, "waittime", getWaitTimeCode(waittimes[i]));
+					rep.saveJobEntryAttribute(id_job, getObjectId(), i, "waitfor", waitfors[i]);
 		        }
 		      }
 		}
