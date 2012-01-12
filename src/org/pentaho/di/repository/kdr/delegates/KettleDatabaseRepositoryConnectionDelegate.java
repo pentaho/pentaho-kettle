@@ -278,6 +278,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 			finally
 			{
 				database.disconnect();
+				sqlMap.clear();
 			}
 		}
 
