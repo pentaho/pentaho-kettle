@@ -795,7 +795,7 @@ public class CsvInput extends BaseStep implements StepInterface
           length-=2;
           if (length<=0) length=0;
       }
-      if (data.delimiter.length>1) {
+      if (newLines<=0 && data.delimiter.length>1) {
         length-=data.delimiter.length-1;
       }
       if (length<=0) length=0;
