@@ -25,6 +25,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.mail.Flags;
+import javax.mail.Flags.Flag;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
@@ -33,7 +34,6 @@ import javax.mail.Part;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.URLName;
-import javax.mail.Flags.Flag;
 import javax.mail.internet.MimeUtility;
 import javax.mail.search.AndTerm;
 import javax.mail.search.BodyTerm;
@@ -49,6 +49,7 @@ import javax.mail.search.SubjectTerm;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 
 import com.sun.mail.imap.IMAPSSLStore;
@@ -589,12 +590,9 @@ public class MailConnection {
  
 	public void saveMessageContentToFile(String filename, String foldername)
     throws KettleException {
-		File file=null;
 		OutputStream os= null;
 		try {
-			
-			file = new File(foldername,filename);
-			os = new FileOutputStream(file);
+			os = KettleVFS.getOutputStream(foldername+(foldername.endsWith("/")?"":"/")+filename, false);
 			getMessage().writeTo(os);
 			updateSavedMessagesCounter();
 		}catch(Exception e) {
@@ -606,9 +604,9 @@ public class MailConnection {
 					os.close();os=null;
 				}catch(Exception e){};
 			}
-			if(file!=null)  file=null;
 		}
 	}
+		
     /**
      * Save attached files to a folder.
      * @param foldername the target foldername
