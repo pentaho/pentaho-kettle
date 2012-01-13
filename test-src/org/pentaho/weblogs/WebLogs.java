@@ -93,7 +93,7 @@ public class WebLogs extends Configured implements Tool {
     conf.set("fs.default.name", "local");
     
     //  The mapper, reducer and combiner classes.
-    File jar = new File("./dist/pdi-hadoop-plugin-ee-TRUNK-SNAPSHOT.jar");
+    File jar = new File("./dist/pentaho-big-data-plugin-TRUNK-SNAPSHOT.jar");
     URLClassLoader loader = new URLClassLoader(new URL[] { jar.toURI().toURL() });
     conf.setMapperClass((Class<? extends Mapper>) loader.loadClass("org.pentaho.hadoop.mapreduce.GenericTransMap"));
     //conf.setCombinerClass((Class<? extends Reducer>) loader.loadClass("org.pentaho.hadoop.mapreduce.GenericTransReduce"));

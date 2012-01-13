@@ -1,5 +1,5 @@
 <!--===========================================================================
-  This is the build file for the Pentaho PDI Hadoop Plugin Project
+  This is the build file for the Pentaho Big Data Project
   
   This build file will use the subfloor.xml file as the default build
   process and should only override the tasks that need to differ from
@@ -7,11 +7,11 @@
   
   See subfloor.xml for more details
 ============================================================================-->
-<project name="PDI Hadoop Plugin" basedir="." default="dist" 
+<project name="Pentaho Big Data Plugin" basedir="." default="dist"
 	xmlns:ivy="antlib:org.apache.ivy.ant" >
 	
 	<description>
-	  This build file is used to create the PDI Hadoop Plugin project
+	  This build file is used to create the Pentaho Big Data Plugin project
 		and works with the subfloor.xml file.
 	</description>
 
@@ -20,9 +20,9 @@
 
 	<property name="libswt" location="libswt" />
 	<property name="swt.os" value="win32" />
-	<property name="pdiwithhadoopplugin"
-					value="pdi-ce-hadoop" 
-					description="Name of the pdi distribution with Hadoop plugin"/>
+	<property name="pdi-with-plugin"
+					value="pdi-ce-big-data"
+					description="Name of the pdi distribution with Big Data plugin"/>
 
 	<property name="plugin.destination" location="kettle-dist" />
 	
@@ -114,29 +114,41 @@
 
 	<!-- this target builds a kettle release that includes the plugin -->
 	<target name="kettle-w-plugin-dist">
-		<unzip dest="${bin.dir}/kettle-dist">
-			<fileset dir="${kettle.dist.dir}">
-				<exclude name="*-javadoc-*.zip"/>
-				<exclude name="*-src-*.zip"/>
-				<include name="pdi-ce-${project.revision}.zip"/>
-			</fileset>
-		</unzip>
-		
-		<available file="${bin.dir}/kettle-dist/data-integration" type="dir" property="plugin.destination" value="kettle-dist/data-integration" />
+    <property name="pdi-dist-root" value="${bin.dir}/kettle-dist/${kettle-distrib-with-plugin-name}"/>
+    <delete dir="${bin.dir}/kettle-dist" />
+    <!-- Unzip PDI CE -->
+		<untar compression="gzip" dest="${pdi-dist-root}" src="${kettle.dist.dir}/${kettle-distrib-artifact-name}.tar.gz" />
+    <!-- Unzip plugin -->
+		<unzip src="${dist.dir}/${package.basename}.zip" dest="${pdi-dist-root}/plugins"/>
+    <!-- Unzip samples -->
+    <unzip src="${dist.dir}/${ivy.artifact.id}-samples-${project.revision}.zip" dest="${pdi-dist-root}/samples" />
 
-		<unzip dest="${bin.dir}/${plugin.destination}">
-			<fileset dir="${dist.dir}">
-				<include name="${package.basename}.zip"/>
-			</fileset>
-		</unzip>
-		<zip destfile="${dist.dir}/${pdiwithhadoopplugin}.zip">
-			<zipfileset dir="${bin.dir}/kettle-dist" />
+    <tar destfile="${dist.dir}/${kettle-distrib-with-plugin-name}.tar.gz" longfile="gnu" compression="gzip">
+      <tarfileset dir="${bin.dir}/kettle-dist" mode="755" excludes="docs/api/** docs/api-core/** **/Thumbs.db">
+        <include name="**/*.sh" />
+        <include name="**/JavaApplicationStub" />
+      </tarfileset>
+      <tarfileset dir="${bin.dir}/kettle-dist" excludes="docs/api/** docs/api-core/** **/Thumbs.db">
+        <exclude name="**/*.sh" />
+        <exclude name="**/JavaApplicationStub" />
+      </tarfileset>
+    </tar>
+    <!-- Zip up new PDI CE with Pentaho Big Data Plugin and Samples -->
+		<zip destfile="${dist.dir}/${kettle-distrib-with-plugin-name}.zip">
+			<zipfileset dir="${bin.dir}/kettle-dist" filemode="755">
+        <include name="**/*.sh" />
+        <include name="**/JavaApplicationStub" />
+      </zipfileset>
+      <zipfileset dir="${bin.dir}/kettle-dist">
+        <exclude name="**/*.sh" />
+        <exclude name="**/JavaApplicationStub" />
+      </zipfileset>
 		</zip>
 	</target>
 	
 	<target name="install-plugin">
-		<delete dir="${kettle.dist.dir}/libext/pdi-hadoop-plugin"/>
-		<delete dir="${kettle.dist.dir}/plugins/pdi-hadoop-plugin"/>
+		<delete dir="${kettle.dist.dir}/libext/pentaho-big-data-plugin"/>
+		<delete dir="${kettle.dist.dir}/plugins/pentaho-big-data-plugin"/>
 		<unzip dest="${kettle.dist.dir}">
 			<fileset file="${dist.dir}/${package.basename}.zip"/>
 			</unzip>

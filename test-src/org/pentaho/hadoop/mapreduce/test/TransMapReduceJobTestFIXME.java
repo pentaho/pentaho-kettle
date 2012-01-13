@@ -122,7 +122,7 @@ public class TransMapReduceJobTestFIXME {
     conf.setOutputKeyClass(Text.class);
     conf.setOutputValueClass(IntWritable.class);
 
-    File jar = new File("./dist/pdi-hadoop-plugin-ee-TRUNK-SNAPSHOT.jar");
+    File jar = new File("./dist/pentaho-big-data-plugin-TRUNK-SNAPSHOT.jar");
 
     URLClassLoader loader = new URLClassLoader(new URL[] { jar.toURI().toURL() });
 
