@@ -117,11 +117,11 @@
     <property name="pdi-dist-root" value="${bin.dir}/kettle-dist/${kettle-distrib-with-plugin-name}"/>
     <delete dir="${bin.dir}/kettle-dist" />
     <!-- Unzip PDI CE -->
-		<untar compression="gzip" dest="${pdi-dist-root}" src="${kettle.dist.dir}/${kettle-distrib-artifact-name}.tar.gz" />
+		<untar compression="gzip" dest="${pdi-dist-root}" src="${kettle.dist.dir}/${kettle-distrib-artifact-name}.tar.gz"/>
     <!-- Unzip plugin -->
-		<unzip src="${dist.dir}/${package.basename}.zip" dest="${pdi-dist-root}/plugins"/>
+		<unzip src="${dist.dir}/${package.basename}.zip" dest="${pdi-dist-root}/data-integration/plugins"/>
     <!-- Unzip samples -->
-    <unzip src="${dist.dir}/${ivy.artifact.id}-samples-${project.revision}.zip" dest="${pdi-dist-root}/samples" />
+    <unzip src="${dist.dir}/${ivy.artifact.id}-samples-${project.revision}.zip" dest="${pdi-dist-root}/data-integration/samples" />
 
     <tar destfile="${dist.dir}/${kettle-distrib-with-plugin-name}.tar.gz" longfile="gnu" compression="gzip">
       <tarfileset dir="${bin.dir}/kettle-dist" mode="755" excludes="docs/api/** docs/api-core/** **/Thumbs.db">
