@@ -401,6 +401,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 	public void deleteDatabaseMeta(String databaseName) throws KettleException {
     	securityProvider.validateAction(RepositoryOperation.DELETE_DATABASE);
 		databaseDelegate.deleteDatabaseMeta(databaseName);
+		commit();
 	}
 
 	// ClusterSchema
@@ -466,13 +467,14 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 	public void deleteRepositoryDirectory(RepositoryDirectoryInterface dir) throws KettleException {
     	securityProvider.validateAction(RepositoryOperation.DELETE_DIRECTORY);
 		directoryDelegate.delRepositoryDirectory(dir, true);
+		commit();
 	}
 
 	public ObjectId renameRepositoryDirectory(ObjectId id, RepositoryDirectoryInterface newParentDir, String newName) throws KettleException {
 	  ObjectId result = null;
 	  securityProvider.validateAction(RepositoryOperation.RENAME_DIRECTORY);
 	  result = directoryDelegate.renameRepositoryDirectory(id, newParentDir, newName);
-	   
+	  commit();
 	  return result;
 	}
 	
@@ -1127,6 +1129,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
         {
           connectionDelegate.performDelete("DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_SLAVE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_SLAVE_ID_SLAVE)+" = ? ", id_slave);
           connectionDelegate.performDelete("DELETE FROM "+quoteTable(KettleDatabaseRepository.TABLE_R_TRANS_SLAVE)+" WHERE "+quote(KettleDatabaseRepository.FIELD_TRANS_SLAVE_ID_SLAVE)+" = ? ", id_slave);
+          commit();
         }
         else
         {
@@ -1157,10 +1160,12 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
    
     public synchronized void deletePartitionSchema(ObjectId id_partition_schema) throws KettleException {
     	partitionSchemaDelegate.delPartitionSchema(id_partition_schema);
+    	commit();
     }
     
     public synchronized void deleteClusterSchema(ObjectId id_cluster) throws KettleException {
        clusterSchemaDelegate.delClusterSchema(id_cluster);
+       commit();
     }
 
 	public synchronized void deleteTransformation(ObjectId id_transformation) throws KettleException
@@ -1177,6 +1182,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
         delTransformationClusters(id_transformation);
         delTransformationSlaves(id_transformation);
 		delTrans(id_transformation);
+		commit();
 	}
 	
 	public synchronized void deleteJob(ObjectId id_job) throws KettleException
@@ -1191,6 +1197,7 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 		delJobEntryCopies(id_job);
 		delJobHops(id_job);
 		delJob(id_job);
+		commit();
 
 		// logBasic("All deleted on job with ID_JOB: "+id_job);
 	}
