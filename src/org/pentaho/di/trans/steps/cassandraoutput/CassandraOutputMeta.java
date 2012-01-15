@@ -439,6 +439,11 @@ public class CassandraOutputMeta extends BaseStepMeta implements
           Encr.encryptPasswordIfNotUsingVariables(m_password)));
     }
     
+    if (!Const.isEmpty(m_username)) {
+      retval.append("\n    ").append(XMLHandler.addTagValue("cassandra_user", 
+          m_username));
+    }
+    
     if (!Const.isEmpty(m_cassandraKeyspace)) {
       retval.append("\n    ").append(XMLHandler.addTagValue("cassandra_keyspace", 
           m_cassandraKeyspace));
