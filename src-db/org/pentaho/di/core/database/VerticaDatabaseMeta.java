@@ -91,15 +91,6 @@ public class VerticaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 		return false;
 	}
 	
-	/**
-	 * @param tableName The table to be truncated.
-	 * @return The SQL statement to truncate a table: remove all rows from it without a transaction
-	 */
-	public String getTruncateTableStatement(String tableName)
-	{
-	    throw new UnsupportedOperationException("Truncate not supported.");
-	}
-
 
 	/**
 	 * Generates the SQL statement to add a column to the specified table
@@ -293,13 +284,6 @@ public class VerticaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
     public boolean supportsBooleanDataType()
     {
         return true;
-    }
-    
-    @Override
-    public boolean supportsViews()
-    {
-    	//TODO: This will change in Vertica 3.0
-        return false;
     }
     
 	/**
