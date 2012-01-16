@@ -182,6 +182,8 @@
         <menuitem id="help-step-plugins" label="${Spoon.Menu.StepPlugins}" command="spoon.helpShowStepPlugins()" />
         <menuitem id="help-jobentry-plugins" label="${Spoon.Menu.JobEntryPlugins}" command="spoon.helpShowJobEntryPlugins()" />
         <menuseparator />
+        <menuitem id="help-marketplace" label="${Spoon.Menu.MarketPlace}" command="spoon.openMarketPlace()" />
+        <menuseparator />
         <menuitem id="help-about" label="${Spoon.Menu.About}" command="spoon.helpAbout()" />
       </menupopup>
     </menu>

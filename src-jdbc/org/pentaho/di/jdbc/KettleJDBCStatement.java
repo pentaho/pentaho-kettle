@@ -282,11 +282,13 @@ public class KettleJDBCStatement implements Statement {
 
 	private void initialize() {
 		
-		try {
-			KettleEnvironment.init();
-		} catch (KettleException e) {
-			throw new RuntimeException("Unable to initialize Kettle", e);
-		}
+    if (!KettleEnvironment.isInitialized()) {
+  		try {
+  		    KettleEnvironment.init();
+  		} catch (KettleException e) {
+  			throw new RuntimeException("Unable to initialize Kettle", e);
+  		}
+    }
 	}
 
 	/**

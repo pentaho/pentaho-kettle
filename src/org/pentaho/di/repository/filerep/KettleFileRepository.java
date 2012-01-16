@@ -1,18 +1,25 @@
-/*
- * Copyright (c) 2010 Pentaho Corporation.  All rights reserved. 
- * This software was developed by Pentaho Corporation and is provided under the terms 
- * of the GNU Lesser General Public License, Version 2.1. You may not use 
- * this file except in compliance with the license. If you need a copy of the license, 
- * please go to http://www.gnu.org/licenses/lgpl-2.1.txt. The Original Code is Pentaho 
- * Data Integration.  The Initial Developer is Pentaho Corporation.
+/*******************************************************************************
  *
- * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
- * the license for the specific language governing your rights and limitations.
- * 
- * Copyright 2011 De Bortoli Wines Pty Limited (Australia)
- * 
- */
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2012 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
 package org.pentaho.di.repository.filerep;
 
 import java.io.IOException;
@@ -39,6 +46,7 @@ import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.ValueMetaAndData;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
@@ -65,6 +73,7 @@ import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
+import org.pentaho.di.trans.HasDatabasesInterface;
 import org.pentaho.di.trans.TransMeta;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -760,6 +769,9 @@ public class KettleFileRepository implements Repository {
 		jobMeta.setName(jobname);
 		jobMeta.setObjectId(new StringObjectId(calcObjectId(repdir, jobname, EXT_JOB)));
 		
+    readDatabases(jobMeta, true);
+    jobMeta.clearChanged();
+    
 		return jobMeta;
 
 	}
@@ -907,8 +919,49 @@ public class KettleFileRepository implements Repository {
 		transMeta.setFilename(null);
 		transMeta.setName(transname);
 		transMeta.setObjectId(new StringObjectId(calcObjectId(repdir, transname, EXT_TRANSFORMATION)));
+		
+		readDatabases(transMeta, true);
+		transMeta.clearChanged();
+		
 		return transMeta;
 	}
+	
+  /**
+   * Read all the databases from the repository, insert into the has databases object, overwriting optionally
+   * 
+   * @param TransMeta The transformation to load into.
+   * @param overWriteShared if an object with the same name exists, overwrite
+   * @throws KettleException 
+   */
+  public void readDatabases(HasDatabasesInterface transMeta, boolean overWriteShared) throws KettleException
+  {
+      try
+      {
+          ObjectId dbids[] = getDatabaseIDs(false);
+          for (int i = 0; i < dbids.length; i++)
+          {
+              DatabaseMeta databaseMeta = loadDatabaseMeta(dbids[i], null); // reads last version
+              if (transMeta instanceof VariableSpace) {
+                databaseMeta.shareVariablesWith((VariableSpace)transMeta);
+              }
+              
+              DatabaseMeta check = transMeta.findDatabase(databaseMeta.getName()); // Check if there already is one in the transformation
+              if (check==null || overWriteShared) // We only add, never overwrite database connections. 
+              {
+                  if (databaseMeta.getName() != null)
+                  {
+                    transMeta.addOrReplaceDatabase(databaseMeta);
+                      if (!overWriteShared) databaseMeta.setChanged(false);
+                  }
+              }
+          }
+      }
+      catch (KettleException e)
+      {
+          throw e;
+      }
+  }
+	
 
 	public ValueMetaAndData loadValueMetaAndData(ObjectId id_value) throws KettleException {
 		
@@ -1198,7 +1251,6 @@ public class KettleFileRepository implements Repository {
   }
 
   public TransMeta loadTransformation(ObjectId idTransformation, String versionLabel) throws KettleException {
-    System.out.println("Loading transformation with ID : "+idTransformation);
     RepositoryObject jobInfo = getObjectInformation(idTransformation, RepositoryObjectType.TRANSFORMATION);
     return loadTransformation(jobInfo.getName(), jobInfo.getRepositoryDirectory(), null, true, versionLabel);
   }

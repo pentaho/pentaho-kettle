@@ -1,13 +1,24 @@
-/* Copyright (c) 2007 Pentaho Corporation.  All rights reserved. 
- * This software was developed by Pentaho Corporation and is provided under the terms 
- * of the GNU Lesser General Public License, Version 2.1. You may not use 
- * this file except in compliance with the license. If you need a copy of the license, 
- * please go to http://www.gnu.org/licenses/lgpl-2.1.txt. The Original Code is Pentaho 
- * Data Integration.  The Initial Developer is Pentaho Corporation.
+/*******************************************************************************
  *
- * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
- * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
- * the license for the specific language governing your rights and limitations.*/
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2012 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
 
 package org.pentaho.di.ui.spoon;
 
@@ -246,6 +257,7 @@ import org.pentaho.di.ui.spoon.delegates.SpoonDelegates;
 import org.pentaho.di.ui.spoon.dialog.AnalyseImpactProgressDialog;
 import org.pentaho.di.ui.spoon.dialog.CheckTransProgressDialog;
 import org.pentaho.di.ui.spoon.dialog.LogSettingsDialog;
+import org.pentaho.di.ui.spoon.dialog.MarketplaceDialog;
 import org.pentaho.di.ui.spoon.dialog.SaveProgressDialog;
 import org.pentaho.di.ui.spoon.dialog.TipsDialog;
 import org.pentaho.di.ui.spoon.job.JobGraph;
@@ -508,7 +520,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
       // The core plugin types don't know about UI classes. Add them in now
       // before the PluginRegistry inits.
-      Splash splash = new Splash(display);
+      Splash splash = null; // new Splash(display);
 
       registerUIPluginObjectTypes();
 
@@ -6693,7 +6705,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         log.logBasic(BaseMessages.getString(PKG, "Spoon.Log.AskingForRepository"));
       }
 
-      splash.hide();
+      if (splash!=null) splash.hide();
       loginDialog = new RepositoriesDialog(shell, null, new ILoginCallback() {
 
         public void onSuccess(Repository repository) {
@@ -8111,5 +8123,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     if(sashComposite != null){
       sashComposite.layout(true, true);
     }
+  }
+  
+  public void openMarketPlace() {
+    new MarketplaceDialog(shell).open();
   }
 }

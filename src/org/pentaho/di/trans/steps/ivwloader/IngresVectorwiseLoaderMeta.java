@@ -1,3 +1,25 @@
+/*******************************************************************************
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2012 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
 package org.pentaho.di.trans.steps.ivwloader;
 
 import java.util.List;
@@ -49,16 +71,30 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
   /** The name of the FIFO file to create */
   private String fifoFileName;
   
+  /** The name of the file to write the error log to */
+  private String errorFileName;
+  
+  /** Flag to enable Copy Error Handling */
+  private boolean continueOnError;
+  
   /** Path to the Ingres "sql" utility */
   private String sqlPath;
 
+  /** Use standard formatting for Date and Number fields*/
+  private boolean useStandardConversion;
+  
   /** Encoding to use */
   private String encoding;
 
   /** The delimiter to use */
   private String delimiter;
+  
+  private boolean useSSV;
     
   private boolean rejectErrors = false;
+  
+  //connect with dynamic VNode build from JDBC Connection
+  private boolean useDynamicVNode;
   
   /**
    * Default constructor.
@@ -99,6 +135,10 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
     sqlPath="/opt/Ingres/IngresVW/ingres/bin/sql";
     delimiter="|";
     fifoFileName = "${java.io.tmpdir}/fifoVW";
+    useStandardConversion = false;
+    continueOnError = false;
+    useDynamicVNode = false;
+    useSSV=false;
   }
     
   /** @return the rejectErrors */
@@ -133,7 +173,12 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
       retval.append("    ").append(XMLHandler.addTagValue("sql_path",       sqlPath));        //$NON-NLS-1$ //$NON-NLS-2$
       retval.append("    ").append(XMLHandler.addTagValue("encoding",       encoding));      //$NON-NLS-1$ //$NON-NLS-2$
       retval.append("    ").append(XMLHandler.addTagValue("delimiter",      delimiter));      //$NON-NLS-1$ //$NON-NLS-2$
-
+      retval.append("    ").append(XMLHandler.addTagValue("continue_on_error",continueOnError));      //$NON-NLS-1$ //$NON-NLS-2$
+      retval.append("    ").append(XMLHandler.addTagValue("error_file_name",errorFileName));      //$NON-NLS-1$ //$NON-NLS-2$
+      retval.append("    ").append(XMLHandler.addTagValue("use_standard_conversion",useStandardConversion));      //$NON-NLS-1$ //$NON-NLS-2$
+      retval.append("    ").append(XMLHandler.addTagValue("use_dynamic_vnode",useDynamicVNode));      //$NON-NLS-1$ //$NON-NLS-2$
+      retval.append("    ").append(XMLHandler.addTagValue("use_SSV_delimiter",useSSV));      //$NON-NLS-1$ //$NON-NLS-2$
+     
       retval.append("    <fields>").append(Const.CR); //$NON-NLS-1$
 
       for (int i=0;i<fieldDatabase.length;i++)
@@ -160,6 +205,11 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
         sqlPath        = XMLHandler.getTagValue(stepnode, "sql_path");       //$NON-NLS-1$
         encoding       = XMLHandler.getTagValue(stepnode, "encoding");         //$NON-NLS-1$
         delimiter      = XMLHandler.getTagValue(stepnode, "delimiter");         //$NON-NLS-1$
+        continueOnError    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "continue_on_error"));         //$NON-NLS-1$
+        errorFileName      = XMLHandler.getTagValue(stepnode, "error_file_name");         //$NON-NLS-1$
+        useStandardConversion    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_standard_conversion"));         //$NON-NLS-1$
+        useDynamicVNode    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_dynamic_vnode"));         //$NON-NLS-1$
+        useSSV    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_SSV_delimiter"));         //$NON-NLS-1$
 
         Node fields = XMLHandler.getSubNode(stepnode, "fields");   //$NON-NLS-1$
         int nrRows  = XMLHandler.countNodes(fields, "field");      //$NON-NLS-1$
@@ -190,6 +240,11 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
           sqlPath      = rep.getStepAttributeString(id_step,  "sql_path");         //$NON-NLS-1$
           encoding     = rep.getStepAttributeString(id_step,  "encoding");       //$NON-NLS-1$
           delimiter    = rep.getStepAttributeString(id_step,  "delimiter");       //$NON-NLS-1$
+          continueOnError = rep.getStepAttributeBoolean(id_step,  "continue_on_error");       //$NON-NLS-1$
+          errorFileName   = rep.getStepAttributeString(id_step,  "error_file_name");       //$NON-NLS-1$
+          useStandardConversion = rep.getStepAttributeBoolean(id_step,  "use_standard_conversion");       //$NON-NLS-1$
+          useDynamicVNode = rep.getStepAttributeBoolean(id_step,  "use_dynamic_vnode");       //$NON-NLS-1$
+          useSSV = rep.getStepAttributeBoolean(id_step,  "use_SSV_delimiter");       //$NON-NLS-1$
 
           int nrCols    = rep.countNrStepAttributes(id_step, "column_name"); //$NON-NLS-1$
           int nrStreams = rep.countNrStepAttributes(id_step, "stream_name"); //$NON-NLS-1$
@@ -219,6 +274,11 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
           rep.saveStepAttribute(id_transformation, id_step, "sql_path",         sqlPath);        //$NON-NLS-1$
           rep.saveStepAttribute(id_transformation, id_step, "encoding",         encoding);      //$NON-NLS-1$
           rep.saveStepAttribute(id_transformation, id_step, "delimiter",        delimiter);      //$NON-NLS-1$
+          rep.saveStepAttribute(id_transformation, id_step, "continue_on_error",  continueOnError);      //$NON-NLS-1$
+          rep.saveStepAttribute(id_transformation, id_step, "error_file_name",  errorFileName);      //$NON-NLS-1$
+          rep.saveStepAttribute(id_transformation, id_step, "use_standard_conversion",  useStandardConversion);      //$NON-NLS-1$
+          rep.saveStepAttribute(id_transformation, id_step, "use_dynamic_vnode",  useDynamicVNode);      //$NON-NLS-1$
+          rep.saveStepAttribute(id_transformation, id_step, "use_SSV_delimiter",  useSSV);      //$NON-NLS-1$
 
           int nrRows = (fieldDatabase.length < fieldStream.length ? fieldStream.length : fieldDatabase.length);
           for (int idx=0; idx < nrRows; idx++)
@@ -430,5 +490,44 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
   public void setDelimiter(String delimiter) {
     this.delimiter = delimiter;
   }
+  
+  public String getErrorFileName() {
+  return errorFileName;
+}
 
+public void setErrorFileName(String errorFileName) {
+  this.errorFileName = errorFileName;
+}
+
+public boolean isContinueOnError() {
+  return continueOnError;
+}
+
+public void setContinueOnError(boolean continueOnError) {
+  this.continueOnError = continueOnError;
+}
+
+public boolean isUseStandardConversion() {
+  return useStandardConversion;
+}
+
+public void setUseStandardConversion(boolean useStandardConversion) {
+  this.useStandardConversion = useStandardConversion;
+}
+
+public boolean isUseDynamicVNode() {
+  return useDynamicVNode;
+}
+
+public void setUseDynamicVNode(boolean createDynamicVNode) {
+  this.useDynamicVNode = createDynamicVNode;
+}
+
+public boolean isUseSSV() {
+  return useSSV;
+}
+
+public void setUseSSV(boolean useSSV) {
+  this.useSSV = useSSV;
+}
 }

@@ -68,13 +68,19 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
   protected IngresVectorwiseLoaderMeta input;
   
   private ModifyListener lsMod;
+  private SelectionAdapter lsSelMod;
 
-  private TextVar	wTable;
+  private TextVar wTable;
   private TextVar   wFifoFile;
   private TextVar   wSqlPath;
   private TableView wFields;
   private TextVar   wDelimiter;
   private TextVar   wCharSet;
+  private TextVar   wErrorFile;
+  private Button  wContinueOnError;
+  private Button  wUseStandardConversion;
+  private Button  wUseDynamicVNode;
+  private Button  wUseSSV;
 
   /**
    * List of ColumnInfo that should have the field names of the selected database table
@@ -95,6 +101,14 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
       public void modifyText(ModifyEvent e) {
         input.setChanged();
       }
+    };
+    
+    lsSelMod = new SelectionAdapter()
+    {
+        public void widgetSelected(SelectionEvent arg0)
+        {
+            input.setChanged();
+        }
     };
   }
   
@@ -133,6 +147,7 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
     wStepname.addModifyListener(lsMod);
     wStepname.setLayoutData(standardInputSpacing(null, wlStepname));
     props.setLook(wStepname);
+    
 
     Control lastControl = addDbConnectionInputs();
     lastControl = addCustomInputs(lastControl);
@@ -219,14 +234,14 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
    * @return the last control specified
    */
   protected Control addDbConnectionInputs() {
-	List<String> ibConnections = new ArrayList<String>();
-	for (DatabaseMeta dbMeta : transMeta.getDatabases()) {
-		if (dbMeta.getDatabaseInterface() instanceof IngresDatabaseMeta) {
-			ibConnections.add(dbMeta.getName());
-		}
-	}
-	serverConnection = addStandardSelect("Connection", wStepname, ibConnections.toArray(new String[ibConnections.size()]));
-	
+  List<String> ibConnections = new ArrayList<String>();
+  for (DatabaseMeta dbMeta : transMeta.getDatabases()) {
+    if (dbMeta.getDatabaseInterface() instanceof IngresDatabaseMeta) {
+      ibConnections.add(dbMeta.getName());
+    }
+  }
+  serverConnection = addStandardSelect("Connection", wStepname, ibConnections.toArray(new String[ibConnections.size()]));
+  
     return serverConnection;
   }
 
@@ -237,12 +252,51 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
    */
   protected Control addCustomInputs(Control prevControl) {
     wTable = addStandardTextVar(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.TargetTable.Label"), prevControl);
-    wFifoFile = addStandardTextVar(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.FifoFile.Label"), wTable);
+    wUseDynamicVNode = addStandardCheckBox(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.UseDynamicVNode.Label"), wTable);
+    wUseDynamicVNode.addSelectionListener(lsSelMod);
+    wFifoFile = addStandardTextVar(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.FifoFile.Label"), wUseDynamicVNode);
     wSqlPath = addStandardTextVar(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.SqlPath.Label"), wFifoFile);
-    wDelimiter = addStandardTextVar(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.Delimiter.Label"), wSqlPath);
+    wUseSSV = addStandardCheckBox(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.UseSSVDelimiter.Label"), wSqlPath);
+    wUseSSV.addSelectionListener(lsSelMod);
+    wUseSSV.addSelectionListener(
+            new SelectionAdapter()
+            {
+                public void widgetSelected(SelectionEvent se)
+                {
+                    if (wUseSSV.getSelection())  {
+                      wDelimiter.setEnabled(false);
+                    }else{
+                      wDelimiter.setEnabled(true);
+                    }
+                }
+            }
+        );
+    wDelimiter = addStandardTextVar(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.Delimiter.Label"), wUseSSV);
     wCharSet = addStandardTextVar(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.Charset.Label"), wDelimiter);
+    wUseStandardConversion = addStandardCheckBox(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.UseStandardConversion.Label"), wCharSet);
+    wUseStandardConversion.addSelectionListener(lsSelMod);
+    wContinueOnError = addStandardCheckBox(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.ContinueOnError.Label"), wUseStandardConversion);
+    wContinueOnError.addSelectionListener(lsSelMod);
+    wErrorFile = addStandardTextVar(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.ErrorFile.Label"), wContinueOnError);
+    wErrorFile.addModifyListener(lsMod);
+    //standard is disabled
+    wErrorFile.setEnabled(false);
+    wContinueOnError.addSelectionListener(
+            new SelectionAdapter()
+            {
+                public void widgetSelected(SelectionEvent se)
+                {
+                    if (wContinueOnError.getSelection())  {
+                      wErrorFile.setEnabled(true);
+                    }else{
+                      wErrorFile.setEnabled(false);
+                    }
+                }
+            }
+        );
+   
     
-    return wCharSet;
+    return wErrorFile;
   }
 
   protected CCombo addStandardSelect(String labelMessageKey, Control prevControl, String[] choices) {
@@ -274,18 +328,20 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
     return textVar;
   }
   
+
+  
   protected Button addStandardCheckBox(String labelMessageKey, Control prevControl) {
-    Label label = addStandardLabel(labelMessageKey, prevControl);
-    Button targetControl = new Button(shell, SWT.CHECK);
-    targetControl.addSelectionListener(new SelectionAdapter() {
-      public void widgetSelected(SelectionEvent e) {
-        input.setChanged();
+      Label label = addStandardLabel(labelMessageKey, prevControl);
+      Button targetControl = new Button(shell, SWT.CHECK);
+      targetControl.addSelectionListener(new SelectionAdapter() {
+        public void widgetSelected(SelectionEvent e) {
+          input.setChanged();
+        }
       }
+      );
+      targetControl.setLayoutData(standardInputSpacing(prevControl, label));
+      return targetControl;
     }
-    );
-    targetControl.setLayoutData(standardInputSpacing(prevControl, label));
-    return targetControl;
-  }
   
   private Label addStandardLabel(String messageString, Control previousControl) {
     Label label = new Label(shell, SWT.RIGHT);
@@ -398,13 +454,26 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
   public void getData() {
     wStepname.selectAll();
     if (input.getDatabaseMeta()!=null) {
-    	serverConnection.setText(input.getDatabaseMeta().getName());
+      serverConnection.setText(input.getDatabaseMeta().getName());
     }
     wTable.setText(Const.NVL(input.getTablename(), ""));
     wFifoFile.setText(Const.NVL(input.getFifoFileName(), ""));
     wSqlPath.setText(Const.NVL(input.getSqlPath(), ""));
+    wUseSSV.setSelection(input.isUseSSV());
+    if(input.isUseSSV()){
+      wDelimiter.setEnabled(false);
+    }
     wDelimiter.setText(Const.NVL(input.getDelimiter(), ""));   //$NON-NLS-1$
     wCharSet.setText(Const.NVL(input.getEncoding(), ""));   //$NON-NLS-1$
+    
+    wUseStandardConversion.setSelection(input.isUseStandardConversion());
+    wUseDynamicVNode.setSelection(input.isUseDynamicVNode());
+    wContinueOnError.setSelection(input.isContinueOnError());
+    wErrorFile.setText(Const.NVL(input.getErrorFileName(),""));
+    if(input.isContinueOnError()){
+      wErrorFile.setEnabled(true);
+    }
+    
 
     for (int i=0; i<input.getFieldDatabase().length; i++)
     {
@@ -425,8 +494,13 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
     input.setTablename(wTable.getText());
     input.setFifoFileName(wFifoFile.getText());
     input.setSqlPath(wSqlPath.getText());
+    input.setUseSSV(wUseSSV.getSelection());
     input.setDelimiter( wDelimiter.getText() );
     input.setEncoding( wCharSet.getText() );
+    input.setUseStandardConversion(wUseStandardConversion.getSelection());
+    input.setContinueOnError(wContinueOnError.getSelection());
+    input.setErrorFileName(wErrorFile.getText());
+    input.setUseDynamicVNode(wUseDynamicVNode.getSelection());
 
     int nrRows = wFields.nrNonEmpty();        
     input.allocate(nrRows);      
@@ -465,7 +539,7 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
           sourceFields = transMeta.getPrevStepFields(stepMeta);
       } catch(KettleException e) {
           new ErrorDialog(shell, BaseMessages.getString(PKG, "IngresVectorWiseLoaderDialog.DoMapping.UnableToFindSourceFields.Title"), 
-        		  BaseMessages.getString(PKG, "IngresVectorWiseLoaderDialog.DoMapping.UnableToFindSourceFields.Message"), e);
+              BaseMessages.getString(PKG, "IngresVectorWiseLoaderDialog.DoMapping.UnableToFindSourceFields.Message"), e);
           return;
       }
       
@@ -610,7 +684,7 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
       catch(KettleException ke)
       {
           new ErrorDialog(shell, BaseMessages.getString(PKG, "IngresVectorWiseLoaderDialog.BuildSQLError.DialogTitle"), 
-        		  BaseMessages.getString(PKG, "IngresVectorWiseLoaderDialog.BuildSQLError.DialogMessage"), ke);
+              BaseMessages.getString(PKG, "IngresVectorWiseLoaderDialog.BuildSQLError.DialogMessage"), ke);
       }
   }
 
