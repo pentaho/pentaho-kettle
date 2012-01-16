@@ -294,4 +294,16 @@ public class VerticaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 		return true;
 	}
 
+  /**
+   * @return This indicator separates the normal URL from the options
+   */
+  public String getExtraOptionIndicator()
+  {
+      return "?";
+  }
+  
+  @Override
+  public String getExtraOptionSeparator() {
+    return "&";
+  }
 }
