@@ -620,10 +620,12 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
 
   public void mapTransBrowse() {
     if (getMapperStorageType().equalsIgnoreCase("local")) { //$NON-NLS-1$
+      final ExtTextbox tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("jobentry-map-transformation");
       browseLocalFilesystem(new StringResultSetter() {
         @Override
         public void set(String val) {
           JobEntryHadoopTransJobExecutorController.this.setMapTrans(val);
+          ((Text) tempBox.getTextControl()).setText(val);
           JobEntryHadoopTransJobExecutorController.this.setMapRepositoryDir(null);
           JobEntryHadoopTransJobExecutorController.this.setMapRepositoryFile(null);
           JobEntryHadoopTransJobExecutorController.this.setMapRepositoryReference(null);
@@ -661,10 +663,12 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
 
   public void combinerTransBrowse() {
     if (getCombinerStorageType().equalsIgnoreCase("local")) { //$NON-NLS-1$
+      final ExtTextbox tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("jobentry-combiner-transformation");
       browseLocalFilesystem(new StringResultSetter() {
         @Override
         public void set(String val) {
           JobEntryHadoopTransJobExecutorController.this.setCombinerTrans(val);
+          ((Text) tempBox.getTextControl()).setText(val);
           JobEntryHadoopTransJobExecutorController.this.setCombinerRepositoryDir(null);
           JobEntryHadoopTransJobExecutorController.this.setCombinerRepositoryFile(null);
           JobEntryHadoopTransJobExecutorController.this.setCombinerRepositoryReference(null);
@@ -702,10 +706,12 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
   
   public void reduceTransBrowse() {
     if (getReducerStorageType().equalsIgnoreCase("local")) { //$NON-NLS-1$
+      final ExtTextbox tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("jobentry-reduce-transformation");
       browseLocalFilesystem(new StringResultSetter() {
         @Override
         public void set(String val) {
           JobEntryHadoopTransJobExecutorController.this.setReduceTrans(val);
+          ((Text) tempBox.getTextControl()).setText(val);
           JobEntryHadoopTransJobExecutorController.this.setReduceRepositoryDir(null);
           JobEntryHadoopTransJobExecutorController.this.setReduceRepositoryFile(null);
           JobEntryHadoopTransJobExecutorController.this.setReduceRepositoryReference(null);
@@ -743,7 +749,7 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
 
   public void browseLocalFilesystem(StringResultSetter setter, String originalTransformationName) {
     XulDialog xulDialog = (XulDialog) getXulDomContainer().getDocumentRoot().getElementById("job-entry-dialog");
-    Shell shell = (Shell) xulDialog.getRootObject();
+    Shell shell = (Shell) xulDialog.getRootObject();    
 
     FileDialog dialog = new FileDialog(shell, SWT.OPEN);
     dialog.setFilterExtensions(Const.STRING_TRANS_FILTER_EXT);
