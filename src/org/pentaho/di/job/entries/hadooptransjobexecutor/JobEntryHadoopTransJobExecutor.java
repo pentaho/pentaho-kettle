@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.mapred.FileInputFormat;
@@ -121,6 +123,8 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
 
   private String inputPath;
   private String outputPath;
+
+  private boolean cleanOutputPath;
 
   private boolean blocking;
   private String loggingInterval = "60";
@@ -389,6 +393,14 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
 
   public void setOutputPath(String outputPath) {
     this.outputPath = outputPath;
+  }
+
+  public boolean isCleanOutputPath() {
+    return cleanOutputPath;
+  }
+
+  public void setCleanOutputPath(boolean cleanOutputPath) {
+    this.cleanOutputPath = cleanOutputPath;
   }
 
   public boolean isBlocking() {
@@ -697,11 +709,10 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
         paths.add(new Path(configurer.getFilesystemURL() + path));
       }
       Path[] finalPaths = paths.toArray(new Path[paths.size()]);
-      
-      String outputPathS = environmentSubstitute(outputPath);
-      //FileInputFormat.setInputPaths(conf, new Path(configurer.getFilesystemURL() + inputPathS));
+
+      final Path outputPathPath = new Path(configurer.getFilesystemURL() + environmentSubstitute(outputPath));
       FileInputFormat.setInputPaths(conf, finalPaths);
-      FileOutputFormat.setOutputPath(conf, new Path(configurer.getFilesystemURL() + outputPathS));
+      FileOutputFormat.setOutputPath(conf, outputPathPath);
 
       // process user defined values
       for (UserDefinedItem item : userDefined) {
@@ -750,6 +761,23 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
       
       //  we now tell the job what level of logging this job is running at
       conf.setStrings("logLevel", this.getLogLevel().toString());
+      
+      if(isCleanOutputPath()) {
+        if (log.isBasic()) {
+          logBasic(BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.CleaningOutputPath", outputPathPath.toUri().toString()));
+        }
+        try {
+          if (!cleanOutputPath(conf, outputPathPath)) {
+            logBasic(BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.FailedToCleanOutputPath", outputPathPath.toUri().toString()));
+          }
+        } catch (IOException ex) {
+          result.setStopped(true);
+          result.setNrErrors(1);
+          result.setResult(false);
+          logError(BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.ErrorCleaningOutputPath", outputPathPath.toUri().toString()), ex);
+          return result;
+        }
+      }
       
       JobClient jobClient = new JobClient(conf);
       RunningJob runningJob = jobClient.submitJob(conf);
@@ -840,6 +868,11 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
     return result;
   }
 
+  private boolean cleanOutputPath(Configuration conf, Path path) throws IOException {
+    FileSystem fs = FileSystem.get(conf);
+    return fs.delete(path, true);
+  }
+
   public void printJobStatus(RunningJob runningJob) throws IOException {
     if (log.isBasic()) {
       float setupPercent = runningJob.setupProgress() * 100f;
@@ -888,6 +921,11 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
     inputPath = XMLHandler.getTagValue(entrynode, "input_path"); //$NON-NLS-1$
     inputFormatClass = XMLHandler.getTagValue(entrynode, "input_format_class"); //$NON-NLS-1$
     outputPath = XMLHandler.getTagValue(entrynode, "output_path"); //$NON-NLS-1$
+    
+    final String cleanOutputPath = XMLHandler.getTagValue(entrynode, "clean_output_path");
+    if (!Const.isEmpty(cleanOutputPath)) { //$NON-NLS-1$
+      setCleanOutputPath(cleanOutputPath.equalsIgnoreCase("Y")); //$NON-NLS-1$ //$NON-NLS-2$
+    }
     
     if (!Const.isEmpty(XMLHandler.getTagValue(entrynode, "suppress_output_map_key"))) {
       suppressOutputMapKey = XMLHandler.getTagValue(entrynode, "suppress_output_map_key").equalsIgnoreCase("Y");    }
@@ -960,6 +998,8 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
     retval.append("      ").append(XMLHandler.addTagValue("input_path", inputPath)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("      ").append(XMLHandler.addTagValue("input_format_class", inputFormatClass)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("      ").append(XMLHandler.addTagValue("output_path", outputPath)); //$NON-NLS-1$ //$NON-NLS-2$
+
+    retval.append("      ").append(XMLHandler.addTagValue("clean_output_path", cleanOutputPath)); //$NON-NLS-1$ //$NON-NLS-2$
     
     retval.append("      ").append(XMLHandler.addTagValue("suppress_output_map_key", suppressOutputMapKey)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("      ").append(XMLHandler.addTagValue("suppress_output_map_value", suppressOutputMapValue)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -1030,6 +1070,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
       setInputPath(rep.getJobEntryAttributeString(id_jobentry, "input_path")); //$NON-NLS-1$
       setInputFormatClass(rep.getJobEntryAttributeString(id_jobentry, "input_format_class")); //$NON-NLS-1$
       setOutputPath(rep.getJobEntryAttributeString(id_jobentry, "output_path")); //$NON-NLS-1$
+      setCleanOutputPath(rep.getJobEntryAttributeBoolean(id_jobentry, "clean_output_path")); //$NON-NLS-1$
       
       setSuppressOutputOfMapKey(rep.getJobEntryAttributeBoolean(id_jobentry, "suppress_output_map_key")); //$NON-NLS-1$
       setSuppressOutputOfMapValue(rep.getJobEntryAttributeBoolean(id_jobentry, "suppress_output_map_value")); //$NON-NLS-1$
@@ -1108,6 +1149,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
       rep.saveJobEntryAttribute(id_job, getObjectId(),"input_path", inputPath); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getObjectId(),"input_format_class", inputFormatClass); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getObjectId(),"output_path", outputPath); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(),"clean_output_path", cleanOutputPath); //$NON-NLS-1$
       
       rep.saveJobEntryAttribute(id_job, getObjectId(),"suppress_output_map_key", suppressOutputMapKey); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getObjectId(),"suppress_output_map_value", suppressOutputMapValue); //$NON-NLS-1$

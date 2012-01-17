@@ -86,6 +86,7 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
   public static final String WORKING_DIRECTORY = "workingDirectory"; //$NON-NLS-1$
   public static final String INPUT_PATH = "inputPath"; //$NON-NLS-1$
   public static final String OUTPUT_PATH = "outputPath"; //$NON-NLS-1$
+  public static final String CLEAN_OUTPUT_PATH = "cleanOutputPath"; //$NON-NLS-1$
   public static final String BLOCKING = "blocking"; //$NON-NLS-1$
   public static final String LOGGING_INTERVAL = "loggingInterval"; //$NON-NLS-1$
   public static final String HDFS_HOSTNAME = "hdfsHostname"; //$NON-NLS-1$
@@ -121,6 +122,8 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
   private String jobTrackerPort;
   private String inputPath;
   private String outputPath;
+
+  private boolean cleanOutputPath;
 
   private String  numMapTasks = "1";
   private String  numReduceTasks = "1";
@@ -334,6 +337,7 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
     jobEntry.setInputPath(getInputPath());
     jobEntry.setInputFormatClass(getInputFormatClass());
     jobEntry.setOutputPath(getOutputPath());
+    jobEntry.setCleanOutputPath(isCleanOutputPath());
     
     jobEntry.setSuppressOutputOfMapKey(isSuppressOutputOfMapKey());
     jobEntry.setSuppressOutputOfMapValue(isSuppressOutputOfMapValue());
@@ -538,6 +542,7 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
       setInputPath(jobEntry.getInputPath());
       setInputFormatClass(jobEntry.getInputFormatClass());
       setOutputPath(jobEntry.getOutputPath());
+      setCleanOutputPath(jobEntry.isCleanOutputPath());
       
       setSuppressOutputOfMapKey(jobEntry.getSuppressOutputOfMapKey());
       setSuppressOutputOfMapValue(jobEntry.getSuppressOutputOfMapValue());
@@ -1149,6 +1154,20 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
 
     this.outputPath = outputPath;
     firePropertyChange(OUTPUT_PATH, previousVal, newVal);
+  }
+
+  public void invertCleanOutputPath() {
+    setCleanOutputPath(!isCleanOutputPath());
+  }
+  
+  public boolean isCleanOutputPath() {
+    return cleanOutputPath;
+  }
+
+  public void setCleanOutputPath(boolean cleanOutputPath) {
+    boolean old = this.cleanOutputPath;
+    this.cleanOutputPath = cleanOutputPath;
+    firePropertyChange(CLEAN_OUTPUT_PATH, old, this.cleanOutputPath);
   }
 
   public boolean isBlocking() {

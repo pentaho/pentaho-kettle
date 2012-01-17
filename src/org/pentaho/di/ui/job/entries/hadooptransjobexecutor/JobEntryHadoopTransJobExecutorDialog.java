@@ -139,6 +139,7 @@ public class JobEntryHadoopTransJobExecutorDialog extends JobEntryDialog impleme
     bf.createBinding("logging-interval", "value", controller, JobEntryHadoopTransJobExecutorController.LOGGING_INTERVAL); //$NON-NLS-1$ //$NON-NLS-2$ 
     bf.createBinding("input-path", "value", controller, JobEntryHadoopTransJobExecutorController.INPUT_PATH); //$NON-NLS-1$ //$NON-NLS-2$
     bf.createBinding("output-path", "value", controller, JobEntryHadoopTransJobExecutorController.OUTPUT_PATH); //$NON-NLS-1$ //$NON-NLS-2$
+    bf.createBinding("clean-output-path", "selected", controller, JobEntryHadoopTransJobExecutorController.CLEAN_OUTPUT_PATH); //$NON-NLS-1$ //$NON-NLS-2$
 
     bf.createBinding("hdfs-hostname", "value", controller, JobEntryHadoopTransJobExecutorController.HDFS_HOSTNAME); //$NON-NLS-1$ //$NON-NLS-2$ 
     bf.createBinding("hdfs-port", "value", controller, JobEntryHadoopTransJobExecutorController.HDFS_PORT); //$NON-NLS-1$ //$NON-NLS-2$ 

@@ -217,6 +217,10 @@
     							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.Classes.OutputFormat.Label}" />
     							<textbox pen:customclass="variabletextbox" id="classes-output-format" flex="1" multiline="false"/>
     						</row>
+                <row>
+                  <label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.Paths.CleanOutputPath.Label}" />
+                  <checkbox id="clean-output-path" flex="1" command="jobEntryController.invertCleanOutputPath()"/>
+                </row>
     					</rows>
     				</grid>
     			</tabpanel>
