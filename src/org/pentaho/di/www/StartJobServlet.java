@@ -25,6 +25,7 @@ package org.pentaho.di.www;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URLEncoder;
+import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -32,6 +33,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
@@ -124,7 +127,12 @@ public class StartJobServlet extends BaseHttpServlet implements CarteServletInte
           //
           synchronized (getJobMap()) {
             JobConfiguration jobConfiguration = getJobMap().getConfiguration(jobName);
-            Job newJob = new Job(job.getRep(), job.getJobMeta());
+            
+            String carteObjectId = UUID.randomUUID().toString();
+            SimpleLoggingObject servletLoggingObject = new SimpleLoggingObject(CONTEXT_PATH, LoggingObjectType.CARTE, null);
+            servletLoggingObject.setContainerObjectId(carteObjectId);
+            
+            Job newJob = new Job(job.getRep(), job.getJobMeta(), servletLoggingObject);
             newJob.setLogLevel(job.getLogLevel());
 
             // Discard old log lines from the old job

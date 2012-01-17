@@ -25,6 +25,7 @@ package org.pentaho.di.www;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URLEncoder;
+import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -32,6 +33,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.logging.CentralLogStore;
+import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -112,6 +116,17 @@ public class StartTransServlet extends BaseHttpServlet implements CarteServletIn
 			}
 
 			if (trans != null) {
+				
+	            // Discard old log lines from old transformation runs
+	            //
+	            CentralLogStore.discardLines(trans.getLogChannelId(), true);
+				
+				String carteObjectId = UUID.randomUUID().toString();
+				SimpleLoggingObject servletLoggingObject = new SimpleLoggingObject(CONTEXT_PATH, LoggingObjectType.CARTE, null);
+				servletLoggingObject.setContainerObjectId(carteObjectId);
+				servletLoggingObject.setLogLevel(trans.getLogLevel());
+				trans.setParent(servletLoggingObject);
+				
 				trans.execute(null);
 
 				String message = BaseMessages.getString(PKG, "StartTransServlet.Log.TransStarted", transName);

@@ -310,4 +310,20 @@ public class Log4jBufferAppender implements Appender
 	public Iterator<BufferLine> getBufferIterator() {
 		return buffer.iterator();
 	}
+	
+	public String dump(){
+		StringBuffer buf = new StringBuffer(50000);
+    	synchronized(buffer) {
+    		for (BufferLine line : buffer) {
+    			Object payload = line.getEvent().getMessage();
+    			if (payload instanceof LogMessage) {
+    				LogMessage message = (LogMessage) payload;
+    				//LoggingObjectInterface loggingObject = LoggingRegistry.getInstance().getLoggingObject(message.getLogChannelId());
+    				buf.append(message.getLogChannelId()+"\t"+message.getSubject() +"\t"+message.getMessage()+"\n");
+    			}
+    			
+    		}
+    	}		
+    	return buf.toString();
+	}
 }

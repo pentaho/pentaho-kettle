@@ -129,6 +129,8 @@ public class LoggingObject implements LoggingObjectInterface {
 		
 		if (loggingObject.getParent()!=null) {
 			getParentLoggingObject(loggingObject.getParent());
+			// inherit the containerObjectId from parent
+			containerObjectId = loggingObject.getParent().getContainerObjectId();
 		}
 	}
 

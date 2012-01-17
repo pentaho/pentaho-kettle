@@ -242,6 +242,31 @@ public class LoggingRegistry {
 		return lastModificationTime;
 	}
 
+	public String dump(boolean includeGeneral){
+		StringBuffer out  = new StringBuffer(50000);
+		for (LoggingObjectInterface o : map.values()){
+			if (!includeGeneral && o.getObjectType().equals(LoggingObjectType.GENERAL)){
+				continue;
+			}
+			out.append(o.getContainerObjectId());
+			out.append("\t");
+			out.append(o.getLogChannelId());
+			out.append("\t");
+			out.append(o.getObjectType().name());
+			out.append("\t");
+			out.append(o.getObjectName());
+			out.append("\t");
+			out.append((o.getParent()!=null)?o.getParent().getLogChannelId():"-");
+			out.append("\t");
+			out.append((o.getParent()!=null)?o.getParent().getObjectType().name():"-");
+			out.append("\t");
+			out.append((o.getParent()!=null)?o.getParent().getObjectName():"-");
+			out.append("\n");
+			
+		}
+		return out.toString();
+	}
+	
 	/**
 	 * Removes the logging registry entry and all its children from the registry.
 	 * 
