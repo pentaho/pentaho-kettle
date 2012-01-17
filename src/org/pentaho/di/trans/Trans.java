@@ -302,6 +302,14 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	{
 		this();
 		this.transMeta = transMeta;
+		setParent(parent);
+		
+		initializeVariablesFrom(transMeta);
+		copyParametersFrom(transMeta);
+		transMeta.activateParameters();
+	}
+
+	public void setParent(LoggingObjectInterface parent){
 		this.parent = parent;
 		
 		this.log = new LogChannel(this, parent);
@@ -310,11 +318,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		
 		if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.TransformationIsPreloaded")); //$NON-NLS-1$
 		if (log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "Trans.Log.NumberOfStepsToRun",String.valueOf(transMeta.nrSteps()) ,String.valueOf(transMeta.nrTransHops()))); //$NON-NLS-1$ //$NON-NLS-2$
-		initializeVariablesFrom(transMeta);
-		copyParametersFrom(transMeta);
-		transMeta.activateParameters();
-	}
 		
+	}
+	
 	public LogChannelInterface getLogChannel() {
 		return log;
 	}
