@@ -202,7 +202,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
   private Button           radioByReference;
 
   private Button           wbByReference;
-  private TextVar          wByReference;
+  private Text             wByReference;
 
   private Composite        wAdvanced;
 
@@ -423,7 +423,7 @@ public class JobEntryTransDialog extends JobEntryDialog implements JobEntryDialo
     fdbByReference.right = new FormAttachment(100, 0);
     wbByReference.setLayoutData(fdbByReference);
 
-    wByReference = new TextVar(jobMeta, gByReference, SWT.SINGLE | SWT.LEFT | SWT.BORDER | SWT.READ_ONLY);
+    wByReference = new Text(gByReference, SWT.SINGLE | SWT.LEFT | SWT.BORDER | SWT.READ_ONLY);
     props.setLook(wByReference);
     wByReference.addModifyListener(lsMod);
     FormData fdByReference = new FormData();
