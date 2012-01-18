@@ -35,9 +35,8 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.logging.Log4jFileAppender;
+import org.pentaho.di.core.logging.LogChannelFileWriter;
 import org.pentaho.di.core.logging.LogLevel;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -58,9 +57,9 @@ import org.pentaho.di.repository.RepositoryObjectType;
 import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceEntry;
+import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
-import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
@@ -530,7 +529,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	{
 		result.setEntryNr( nr );
 
-		Log4jFileAppender appender = null;
+    LogChannelFileWriter logChannelFileWriter = null;
 		
 		LogLevel transLogLevel = parentJob.getLogLevel();
 		
@@ -558,8 +557,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         	}
             try
             {
-                appender = LogWriter.createFileAppender(realLogFilename, true,setAppendLogfile);
-                LogWriter.getInstance().addAppender(appender);
+              logChannelFileWriter = new LogChannelFileWriter(this.getLogChannelId(), KettleVFS.getFileObject(realLogFilename), setAppendLogfile);
+              logChannelFileWriter.startLogging();
             }
             catch(KettleException e)
             {
@@ -1044,14 +1043,22 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         
         if (setLogfile)
         {
-            if (appender!=null)
-            {
-            	LogWriter.getInstance().removeAppender(appender);
-                appender.close();
+          if (logChannelFileWriter != null) {
+            logChannelFileWriter.stopLogging();
 
-                ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_LOG, appender.getFile(), parentJob.getJobname(), getName());
-                result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
+            ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_LOG, logChannelFileWriter.getLogFile(), parentJob.getJobname(), getName());
+            result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
+            
+            // See if anything went wrong during file writing...
+            //
+            if (logChannelFileWriter.getException()!=null) {
+              logError("Unable to open log file [" + getLogFilename() + "] : ");
+              logError(Const.getStackTracker(logChannelFileWriter.getException()));
+              result.setNrErrors(1);
+              result.setResult(false);
+              return result;
             }
+          }
         }
 
 		if (result.getNrErrors()==0)
