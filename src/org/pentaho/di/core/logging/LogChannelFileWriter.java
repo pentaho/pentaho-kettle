@@ -106,7 +106,7 @@ public class LogChannelFileWriter {
             int last = CentralLogStore.getLastBufferLineNr();
             StringBuffer buffer = CentralLogStore.getAppender().getBuffer(logChannelId, false, lastBufferLineNr, last);
             logFileOutputStream.write(buffer.toString().getBytes());
-            lastBufferLineNr=last;
+            lastBufferLineNr=last+1;
             
             Thread.sleep(pollingInterval);
           }
