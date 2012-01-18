@@ -23,14 +23,4 @@ public interface IRepositoryImporter extends ProgressMonitorListener, Repository
    */
   public void importAll(RepositoryImportFeedbackInterface feedback, String fileDirectory, String[] filenames,
       RepositoryDirectoryInterface baseDirectory, boolean overwrite, boolean continueOnError, String versionComment);
-  
-  /**
-   * Overrides repository directory for all imported transformations.
-   */
-  public void setTransDirOverride(String transDirOverride);
-  
-  /**
-   * Overrides repository directory for all imported jobs.
-   */
-  public void setJobDirOverride(String jobDirOverride);
 }
