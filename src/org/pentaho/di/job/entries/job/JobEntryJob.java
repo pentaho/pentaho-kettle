@@ -46,9 +46,8 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.logging.Log4jFileAppender;
+import org.pentaho.di.core.logging.LogChannelFileWriter;
 import org.pentaho.di.core.logging.LogLevel;
-import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
@@ -482,7 +481,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
   public Result execute(Result result, int nr) throws KettleException {
     result.setEntryNr(nr);
 
-    Log4jFileAppender appender = null;
+    LogChannelFileWriter logChannelFileWriter = null;
+    
     LogLevel jobLogLevel = parentJob.getLogLevel();
     if (setLogfile) {
       String realLogFilename = environmentSubstitute(getLogFilename());
@@ -502,7 +502,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         return result;
       }
       try {
-        appender = LogWriter.createFileAppender(realLogFilename, true, setAppendLogfile);
+        logChannelFileWriter = new LogChannelFileWriter(this.getLogChannelId(), KettleVFS.getFileObject(realLogFilename), setAppendLogfile);
+        logChannelFileWriter.startLogging();
       } catch (KettleException e) {
         logError("Unable to open file appender for file [" + getLogFilename() + "] : " + e.toString());
         logError(Const.getStackTracker(e));
@@ -510,7 +511,6 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         result.setResult(false);
         return result;
       }
-      LogWriter.getInstance().addAppender(appender);
       jobLogLevel = logFileLevel;
     }
 
@@ -950,12 +950,21 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     }
 
     if (setLogfile) {
-      if (appender != null) {
-        LogWriter.getInstance().removeAppender(appender);
-        appender.close();
+      if (logChannelFileWriter != null) {
+        logChannelFileWriter.stopLogging();
 
-        ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_LOG, appender.getFile(), parentJob.getJobname(), getName());
+        ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_LOG, logChannelFileWriter.getLogFile(), parentJob.getJobname(), getName());
         result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
+        
+        // See if anything went wrong during file writing...
+        //
+        if (logChannelFileWriter.getException()!=null) {
+          logError("Unable to open log file [" + getLogFilename() + "] : ");
+          logError(Const.getStackTracker(logChannelFileWriter.getException()));
+          result.setNrErrors(1);
+          result.setResult(false);
+          return result;
+        }
       }
     }
 
