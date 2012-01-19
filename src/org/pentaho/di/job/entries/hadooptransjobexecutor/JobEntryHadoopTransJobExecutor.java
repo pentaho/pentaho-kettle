@@ -903,6 +903,10 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
 
   private boolean cleanOutputPath(Configuration conf, Path path) throws IOException {
     FileSystem fs = FileSystem.get(conf);
+    if (!fs.exists(path)) {
+      // If the path does not exist one could think of it as "already cleaned"
+      return true;
+    }
     return fs.delete(path, true);
   }
 
