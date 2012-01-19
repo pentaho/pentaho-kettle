@@ -74,7 +74,7 @@ import org.w3c.dom.Node;
  * @author Mark Hall (mhall{[at]}pentaho{[dot]}com)
  * @version $Revision$
  */
-@JobEntry(id = "HadoopPigScriptExecutorPlugin", name = "Pig Script Executor", categoryDescription = "Hadoop", description = "Execute Pig Scripts in Hadoop", image = "HDE.png")
+@JobEntry(id = "HadoopPigScriptExecutorPlugin", name = "Pig Script Executor", categoryDescription = "Big Data", description = "Execute Pig Scripts in Hadoop", image = "HDE.png")
 public class JobEntryPigScriptExecutor extends JobEntryBase implements Cloneable, JobEntryInterface {
   
   private static Class<?> PKG = JobEntryPigScriptExecutor.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$

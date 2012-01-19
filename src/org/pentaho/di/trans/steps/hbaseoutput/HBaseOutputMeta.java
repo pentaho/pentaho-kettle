@@ -58,7 +58,7 @@ import org.w3c.dom.Node;
  * @version $Revision$
  *
  */
-@Step(id = "HBaseOutput", image = "HBO.png", name = "HBase Output", description="Writes data to an HBase table according to a mapping", categoryDescription="Hadoop")
+@Step(id = "HBaseOutput", image = "HBO.png", name = "HBase Output", description="Writes data to an HBase table according to a mapping", categoryDescription="Big Data")
 public class HBaseOutputMeta extends BaseStepMeta implements StepMetaInterface {
   
   /** comma separated list of hosts that the zookeeper quorum is running on */

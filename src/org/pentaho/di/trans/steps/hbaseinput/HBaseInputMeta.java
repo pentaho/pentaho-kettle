@@ -71,7 +71,7 @@ import org.w3c.dom.Node;
  * @version $Revision$
  *
  */
-@Step(id = "HBaseInput", image = "HB.png", name = "HBase Input", description="Reads data from a HBase table according to a mapping", categoryDescription="Hadoop")
+@Step(id = "HBaseInput", image = "HB.png", name = "HBase Input", description="Reads data from a HBase table according to a mapping", categoryDescription="Big Data")
 public class HBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
   
   /** comma separated list of hosts that the zookeeper quorum is running on */
