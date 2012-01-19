@@ -1411,7 +1411,7 @@
 	<step id="MongoDbInput">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.MongoDbInput</description>
 		<classname>org.pentaho.di.trans.steps.mongodbinput.MongoDbInputMeta</classname>
-		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.BigData</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.MongoDbInput</tooltip>
 		<iconfile>ui/images/mongodb-input.png</iconfile>
 	</step>
