@@ -98,7 +98,8 @@ public class StringCut extends BaseStep implements StepInterface {
 		int length = meta.getFieldInStream().length;
 
 		for (int i = 0; i < length; i++) {
-				String value=CutString((String) row[data.inStreamNrs[i]],data.cutFrom[i],data.cutTo[i]);
+				String valueIn=getInputRowMeta().getString(row, data.inStreamNrs[i]);
+				String value=CutString(valueIn, data.cutFrom[i], data.cutTo[i]);
 				if(Const.isEmpty(data.outStreamNrs[i])) 
 					RowData[data.inStreamNrs[i]]=value;
 				else
