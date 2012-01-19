@@ -48,6 +48,7 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransConfiguration;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.TransMeta.TransformationType;
 
 public class MRUtil {
   /**
@@ -60,7 +61,7 @@ public class MRUtil {
    */
   public static final String PROPERTY_PENTAHO_KETTLE_HOME = "pentaho.kettle.home";
   
-  public static Trans getTrans(final Configuration conf, final String transXml) throws KettleException {
+  public static Trans getTrans(final Configuration conf, final String transXml, boolean singleThreaded) throws KettleException {
     if (!KettleEnvironment.isInitialized()) {
       System.setProperty(Const.PLUGIN_BASE_FOLDERS_PROP, getPluginDirProperty(conf));
       final String kettleHome = conf.get(PROPERTY_PENTAHO_KETTLE_HOME);
@@ -79,6 +80,20 @@ public class MRUtil {
     servletLoggingObject.setContainerObjectId(carteObjectId);
     TransExecutionConfiguration executionConfiguration = transConfiguration.getTransExecutionConfiguration();
     servletLoggingObject.setLogLevel(executionConfiguration.getLogLevel());
+    
+    if (singleThreaded) {
+      // Set the type to single threaded in case the user forgot...
+      //
+      transMeta.setTransformationType(TransformationType.SingleThreaded);
+      
+      // Disable thread priority management as it will slow things down needlessly.
+      // The single threaded engine doesn't use threads and doesn't need row locking.
+      //
+      transMeta.setUsingThreadPriorityManagment(false);
+    } else {
+      transMeta.setTransformationType(TransformationType.Normal);
+    }
+    
     return new Trans(transMeta, servletLoggingObject);
   }
 

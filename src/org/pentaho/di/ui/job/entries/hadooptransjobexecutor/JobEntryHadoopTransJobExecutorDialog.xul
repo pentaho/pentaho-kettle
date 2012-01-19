@@ -40,16 +40,18 @@
 	<vbox id="advanced-configuration" hidden="false">
 		<tabbox>
 			<tabs>
-			    <tab label="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.MapReduce.Label}"/>
+			    <tab label="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.MapReduceMapper.Label}"/>
+			    <tab label="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.MapReduceReducer.Label}"/>
+			    <tab label="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.MapReduceCombiner.Label}"/>
 				<tab label="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.JobSetup.Label}"/>
 				<tab label="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.Cluster.Label}"/>
 				<tab label="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.UserDefined.Label}"/>
   			</tabs>
 			<tabpanels>
+			
+			   <!-- The Mapper tab -->
+			
 			    <tabpanel>
-					<vbox>
-						<groupbox>
-							<caption label="${JobEntryHadoopTransJobExecutor.GroupBox.MapLabel}"/>
 					        <grid>
 					            <columns>
 		  			                <column/>
@@ -88,10 +90,62 @@
 									</row>
 								</rows>
 							</grid>
-						</groupbox>
+			    </tabpanel>
+			   
+			    <!-- The Reducer tab -->
+			    
+			    <tabpanel>
+							<grid>
+								<columns>
+		  			                <column/>
+					                <column flex="1"/>
+					            </columns>
+								<rows>
+									<row>
+					            		<label value="${JobEntryHadoopTransJobExecutor.StorageType.Label}" />
+					            		<menulist id="reducer-storage-type">
+										    <menupopup>
+										        <menuitem label="${JobEntryHadoopTransJobExecutor.StorageType.Local}" />
+										        <menuitem label="${JobEntryHadoopTransJobExecutor.StorageType.Repository.Location}" />
+										        <menuitem label="${JobEntryHadoopTransJobExecutor.StorageType.Repository.Reference}" />
+										    </menupopup>
+										</menulist>		            		
+					            	</row>
+									<row>
+										<label value="${JobEntryHadoopTransJobExecutor.ReduceTrans.Label}" />
+										<hbox>
+											<textbox pen:customclass="variabletextbox" id="jobentry-reduce-transformation" flex="1" width="400" multiline="false"/>
+											<button id="browse" label="${JobEntryHadoopTransJobExecutor.ReduceTrans.Browse}" onclick="jobEntryController.reduceTransBrowse()"/>
+										</hbox>
+									</row>
 						
-						<groupbox>
-							<caption label="${JobEntryHadoopTransJobExecutor.GroupBox.CombinerLabel}"/>
+									<row>
+										<label value="${JobEntryHadoopTransJobExecutor.ReduceInputStepName.Label}" />
+										<hbox>
+											<textbox pen:customclass="variabletextbox" id="jobentry-reduce-input-stepname" flex="1" width="200" multiline="false"/>
+										</hbox>
+									</row>
+		
+									<row>
+										<label value="${JobEntryHadoopTransJobExecutor.ReduceOutputStepName.Label}" />
+										<hbox>
+											<textbox pen:customclass="variabletextbox" id="jobentry-reduce-output-stepname" flex="1" width="200" multiline="false"/>
+										</hbox>
+									</row>
+									
+									<row>    							
+    									<label value="${JobEntryHadoopTransJobExecutor.ReduceSingleThreaded.Label}" />
+    									<checkbox id="jobentry-reduce-single-threaded" flex="1" command="jobEntryController.invertReducingSingleThreaded()"/>
+    								</row>
+									
+									
+					            </rows>
+					        </grid>
+			    </tabpanel>
+			    
+			     <!-- The Combiner tab -->
+			    
+				<tabpanel>
 							<grid>
 								<columns>
 		  			                <column/>
@@ -131,53 +185,10 @@
 									</row>
 					            </rows>
 					        </grid>
-				        </groupbox>						
-						
-						
-						<groupbox>
-							<caption label="${JobEntryHadoopTransJobExecutor.GroupBox.ReduceLabel}"/>
-							<grid>
-								<columns>
-		  			                <column/>
-					                <column flex="1"/>
-					            </columns>
-								<rows>
-									<row>
-					            		<label value="${JobEntryHadoopTransJobExecutor.StorageType.Label}" />
-					            		<menulist id="reducer-storage-type">
-										    <menupopup>
-										        <menuitem label="${JobEntryHadoopTransJobExecutor.StorageType.Local}" />
-										        <menuitem label="${JobEntryHadoopTransJobExecutor.StorageType.Repository.Location}" />
-										        <menuitem label="${JobEntryHadoopTransJobExecutor.StorageType.Repository.Reference}" />
-										    </menupopup>
-										</menulist>		            		
-					            	</row>
-									<row>
-										<label value="${JobEntryHadoopTransJobExecutor.ReduceTrans.Label}" />
-										<hbox>
-											<textbox pen:customclass="variabletextbox" id="jobentry-reduce-transformation" flex="1" width="400" multiline="false"/>
-											<button id="browse" label="${JobEntryHadoopTransJobExecutor.ReduceTrans.Browse}" onclick="jobEntryController.reduceTransBrowse()"/>
-										</hbox>
-									</row>
-						
-									<row>
-										<label value="${JobEntryHadoopTransJobExecutor.ReduceInputStepName.Label}" />
-										<hbox>
-											<textbox pen:customclass="variabletextbox" id="jobentry-reduce-input-stepname" flex="1" width="200" multiline="false"/>
-										</hbox>
-									</row>
-		
-									<row>
-										<label value="${JobEntryHadoopTransJobExecutor.ReduceOutputStepName.Label}" />
-										<hbox>
-											<textbox pen:customclass="variabletextbox" id="jobentry-reduce-output-stepname" flex="1" width="200" multiline="false"/>
-										</hbox>
-									</row>
-					            </rows>
-					        </grid>
-				        </groupbox>
-			        </vbox>
+
 			    </tabpanel>
+			    
+			    
     			<tabpanel>
     				<grid>
     					<columns>

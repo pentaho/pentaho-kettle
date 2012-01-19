@@ -164,7 +164,9 @@ public class PentahoMapRunnable<K1, V1, K2, V2> implements MapRunnable<K1, V1, K
     row[valueOrdinal] = inConverterV != null ? inConverterV.convert(injectorRowMeta.getValueMeta(valueOrdinal), value)
         : value;
 
-    setDebugStatus(reporter, "Injecting input record [" + row[keyOrdinal] + "] - [" + row[valueOrdinal] + "]");
+    if (debug) {
+      setDebugStatus(reporter, "Injecting input record [" + row[keyOrdinal] + "] - [" + row[valueOrdinal] + "]");
+    }
 
     rowProducer.putRow(injectorRowMeta, row);
   }
@@ -173,10 +175,7 @@ public class PentahoMapRunnable<K1, V1, K2, V2> implements MapRunnable<K1, V1, K
 
     try {
       setDebugStatus("Creating a transformation for a map.");
-      trans = MRUtil.getTrans(conf, transMapXml);
-      
-      // TODO Remove this once MRUtil is rolled back to not set SingleThreaded
-      trans.getTransMeta().setTransformationType(TransformationType.Normal); 
+      trans = MRUtil.getTrans(conf, transMapXml, false);
     } catch (KettleException ke) {
       throw new RuntimeException("Error loading transformation", ke); //$NON-NLS-1$
     }

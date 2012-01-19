@@ -48,7 +48,9 @@ public class PentahoMapReduceBase<K, V> extends MapReduceBase {
     OUTPUT_RECORDS,
     OUT_RECORD_WITH_NULL_KEY,
     OUT_RECORD_WITH_NULL_VALUE
-  };
+  }
+
+  public static final String STRING_REDUCE_SINGLE_THREADED = "transformation-reduce-single-threaded";
 
   protected String transMapXml;
   protected String transCombinerXml;
@@ -83,10 +85,12 @@ public class PentahoMapReduceBase<K, V> extends MapReduceBase {
   protected MROperations mrOperation;
 
   protected OutputCollectorRowListener<K, V> rowCollector;
+  protected boolean reduceSingleThreaded;
   
   public PentahoMapReduceBase() throws KettleException {
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public void configure(JobConf job) {
     super.configure(job);
@@ -102,6 +106,7 @@ public class PentahoMapReduceBase<K, V> extends MapReduceBase {
     combinerOutputStepName = job.get("transformation-combiner-output-stepname");
     reduceInputStepName = job.get("transformation-reduce-input-stepname");
     reduceOutputStepName = job.get("transformation-reduce-output-stepname");
+    reduceSingleThreaded = "true".equalsIgnoreCase(job.get(STRING_REDUCE_SINGLE_THREADED));
     String xmlVariableSpace = job.get("variableSpace");
     
     if (!Const.isEmpty(xmlVariableSpace)) {
@@ -114,9 +119,6 @@ public class PentahoMapReduceBase<K, V> extends MapReduceBase {
        if (xStream != null) {
            setDebugStatus("PentahoMapReduceBase: Setting classes variableSpace property.: ");
            variableSpace = (VariableSpace)xStream.fromXML(xmlVariableSpace);
-       }
-       else {
-          throw new RuntimeException("Could not instantiate an XStream.");
        }
     }
     else {
@@ -160,7 +162,7 @@ public class PentahoMapReduceBase<K, V> extends MapReduceBase {
   
   public void injectValue(Object key, ITypeConverter inConverterK, 
       Object value, ITypeConverter inConverterV,
-      RowMeta injectorRowMeta, RowProducer rowProducer, Reporter reporter)
+      RowMetaInterface injectorRowMeta, RowProducer rowProducer, Reporter reporter)
       throws Exception {
     
     injectValue(key, 0, inConverterK, value, 1, inConverterV, injectorRowMeta, rowProducer, reporter);
@@ -168,13 +170,15 @@ public class PentahoMapReduceBase<K, V> extends MapReduceBase {
   
   public void injectValue(Object key, int keyOrdinal, ITypeConverter inConverterK, 
                           Object value, int valueOrdinal, ITypeConverter inConverterV,
-                          RowMeta injectorRowMeta, RowProducer rowProducer, Reporter reporter)
+                          RowMetaInterface injectorRowMeta, RowProducer rowProducer, Reporter reporter)
                           throws Exception {
     Object[] row = new Object[injectorRowMeta.size()];
     row[keyOrdinal] = inConverterK != null ? inConverterK.convert(injectorRowMeta.getValueMeta(keyOrdinal), key) : key;
     row[valueOrdinal] = inConverterV != null ? inConverterV.convert(injectorRowMeta.getValueMeta(valueOrdinal), value) : value;
 
-    setDebugStatus(reporter, "Injecting input record [" + row[keyOrdinal] + "] - [" + row[valueOrdinal] + "]");
+    if (debug) {
+      setDebugStatus(reporter, "Injecting input record [" + row[keyOrdinal] + "] - [" + row[valueOrdinal] + "]");
+    }
     
     rowProducer.putRow(injectorRowMeta, row);
   }
@@ -188,15 +192,18 @@ public class PentahoMapReduceBase<K, V> extends MapReduceBase {
       try {
           if (mrOperation.equals(MROperations.Map)) {
               setDebugStatus("Creating a transformation for a map.");
-              trans = MRUtil.getTrans(conf, transMapXml);
+              trans = MRUtil.getTrans(conf, transMapXml, false);
           }
           else if (mrOperation.equals(MROperations.Combine)) {
             setDebugStatus("Creating a transformation for a combiner.");
-            trans = MRUtil.getTrans(conf, transCombinerXml);
+            trans = MRUtil.getTrans(conf, transCombinerXml, false);
         }
           else if (mrOperation.equals(MROperations.Reduce)) {
+            
+              boolean singleThreaded = "true".equalsIgnoreCase(conf.get(PentahoMapReduceBase.STRING_REDUCE_SINGLE_THREADED));
+            
               setDebugStatus("Creating a transformation for a reduce.");
-              trans = MRUtil.getTrans(conf, transReduceXml);
+              trans = MRUtil.getTrans(conf, transReduceXml, singleThreaded);
           }
       }      
       catch (KettleException ke) {

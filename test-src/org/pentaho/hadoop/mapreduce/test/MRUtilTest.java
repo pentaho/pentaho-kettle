@@ -39,7 +39,7 @@ public class MRUtilTest {
     final Configuration c = new Configuration();
     c.set(MRUtil.PROPERTY_PENTAHO_KETTLE_PLUGINS_DIR, "/opt/pentaho");
     try {
-      MRUtil.getTrans(c, null);
+      MRUtil.getTrans(c, null, false);
       fail("Expected exception for missing " + MRUtil.PROPERTY_PENTAHO_KETTLE_HOME);
     } catch (KettleException ex) {
       assertTrue("Wrong exception: " + ex.getMessage(), ex.getMessage().contains(MRUtil.PROPERTY_PENTAHO_KETTLE_HOME));

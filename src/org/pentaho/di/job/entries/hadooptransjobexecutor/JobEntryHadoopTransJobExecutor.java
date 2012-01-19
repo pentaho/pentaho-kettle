@@ -62,6 +62,7 @@ import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.trans.TransConfiguration;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.TransMeta.TransformationType;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.hadoopexit.HadoopExitMeta;
 import org.pentaho.di.ui.job.entries.hadoopjobexecutor.UserDefinedItem;
@@ -70,11 +71,13 @@ import org.pentaho.hadoop.jobconf.HadoopConfigurerFactory;
 import org.pentaho.hadoop.mapreduce.GenericTransCombiner;
 import org.pentaho.hadoop.mapreduce.GenericTransReduce;
 import org.pentaho.hadoop.mapreduce.MRUtil;
+import org.pentaho.hadoop.mapreduce.PentahoMapReduceBase;
 import org.pentaho.hadoop.mapreduce.PentahoMapRunnable;
 import org.w3c.dom.Node;
 
 import com.thoughtworks.xstream.XStream;
 
+@SuppressWarnings("deprecation")
 @JobEntry(id = "HadoopTransJobExecutorPlugin", name = "Pentaho MapReduce", categoryDescription = "Hadoop", description = "Execute Transformation Based Map/Reduce Jobs in Hadoop", image = "HDT.png")
 public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Cloneable, JobEntryInterface {
 
@@ -96,6 +99,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
   private String reduceRepositoryFile;
   private ObjectId reduceRepositoryReference;
   private String reduceTrans;
+  private boolean reducingSingleThreaded;
 
   private String mapInputStepName;
   private String mapOutputStepName;
@@ -137,6 +141,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
   private List<UserDefinedItem> userDefined = new ArrayList<UserDefinedItem>();
   
   public JobEntryHadoopTransJobExecutor() throws Throwable {
+    reducingSingleThreaded = true;
   }
   
   public String getHadoopJobName() {
@@ -473,8 +478,8 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
     {
       logError(BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.FailedToOpenLogFile", logFileName, e.toString())); //$NON-NLS-1$
       logError(Const.getStackTracker(e));
-    }    
-    
+    }
+        
     try {
       ClassLoader loader = getClass().getClassLoader();
 
@@ -507,6 +512,10 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
       conf.set("transformation-map-input-stepname", mapInputStepNameS); //$NON-NLS-1$
       conf.set("transformation-map-output-stepname", mapOutputStepNameS); //$NON-NLS-1$
       
+      // Pass the single threaded reduction to the configuration...
+      //
+      conf.set(PentahoMapReduceBase.STRING_REDUCE_SINGLE_THREADED, reducingSingleThreaded ? "true" : "false");
+      
       if (getSuppressOutputOfMapKey()) {
         conf.setMapOutputKeyClass(NullWritable.class);
       }
@@ -531,7 +540,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
               throw new KettleException(BaseMessages.getString(PKG, 
                   "JobEntryHadoopTransJobExecutor.NoMapOutputKeyDefined.Error"));
             }
-            Class hadoopWritableKey = MRUtil.getWritableForKettleType(keyVM);
+            Class<?> hadoopWritableKey = MRUtil.getWritableForKettleType(keyVM);
             conf.setMapOutputKeyClass(hadoopWritableKey);
             logDebug(BaseMessages.getString(PKG, 
                 "JobEntryHadoopTransJobExecutor.Message.MapOutputKeyMessage", 
@@ -543,7 +552,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
               throw new KettleException(BaseMessages.getString(PKG, 
                 "JobEntryHadoopTransJobExecutor.NoMapOutputValueDefined.Error"));
             }
-            Class hadoopWritableValue = MRUtil.getWritableForKettleType(valueVM);            
+            Class<?> hadoopWritableValue = MRUtil.getWritableForKettleType(valueVM);            
             conf.setMapOutputValueClass(hadoopWritableValue);
             logDebug(BaseMessages.getString(PKG, 
                 "JobEntryHadoopTransJobExecutor.Message.MapOutputValueMessage", 
@@ -597,6 +606,15 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
         }
       }
       if (transMeta != null) {
+
+        // See if this is a valid single threading reducer
+        //
+        if (reducingSingleThreaded) {
+          verifySingleThreadingValidity(transMeta);
+        }
+
+
+        
         transConfig = new TransConfiguration(transMeta, transExecConfig);
         conf.set("transformation-reduce-xml", transConfig.getXML()); //$NON-NLS-1$
         String reduceInputStepNameS = environmentSubstitute(reduceInputStepName);
@@ -629,7 +647,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
                 throw new KettleException(BaseMessages.getString(PKG, 
                     "JobEntryHadoopTransJobExecutor.NoOutputKeyDefined.Error"));
               }
-              Class hadoopWritableKey = MRUtil.getWritableForKettleType(keyVM);
+              Class<?> hadoopWritableKey = MRUtil.getWritableForKettleType(keyVM);
               conf.setOutputKeyClass(hadoopWritableKey);
               logDebug(BaseMessages.getString(PKG, 
                   "JobEntryHadoopTransJobExecutor.Message.OutputKeyMessage", 
@@ -641,7 +659,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
                 throw new KettleException(BaseMessages.getString(PKG, 
                   "JobEntryHadoopTransJobExecutor.NoOutputValueDefined.Error"));
               }
-              Class hadoopWritableValue = MRUtil.getWritableForKettleType(valueVM);            
+              Class<?> hadoopWritableValue = MRUtil.getWritableForKettleType(valueVM);            
               conf.setOutputValueClass(hadoopWritableValue);
               logDebug(BaseMessages.getString(PKG, 
                   "JobEntryHadoopTransJobExecutor.Message.OutputValueMessage", 
@@ -656,11 +674,13 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
 
       if(inputFormatClass != null) {
         String inputFormatClassS = environmentSubstitute(inputFormatClass);
+        @SuppressWarnings({ "rawtypes", "unchecked" })
         Class<? extends InputFormat> inputFormat = (Class<? extends InputFormat>) loader.loadClass(inputFormatClassS);
         conf.setInputFormat(inputFormat);
       }
       if(outputFormatClass != null) {
         String outputFormatClassS = environmentSubstitute(outputFormatClass);
+        @SuppressWarnings({ "rawtypes", "unchecked" })
         Class<? extends OutputFormat> outputFormat = (Class<? extends OutputFormat>) loader.loadClass(outputFormatClassS);
         conf.setOutputFormat(outputFormat);
       }
@@ -868,6 +888,19 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
     return result;
   }
 
+  private void verifySingleThreadingValidity(TransMeta transMeta) throws KettleException {
+    for (StepMeta stepMeta : transMeta.getSteps()) {
+      TransformationType[] types = stepMeta.getStepMetaInterface().getSupportedTransformationTypes();
+      boolean ok = false;
+      for (TransformationType type : types) {
+        if (type == TransformationType.SingleThreaded) ok = true; 
+      }
+      if (!ok) {
+        throw new KettleException("Step '"+stepMeta.getName()+"' of type '"+stepMeta.getStepID()+"' is not supported in a Single Threaded transformation engine.");
+      }
+    }
+  }
+
   private boolean cleanOutputPath(Configuration conf, Path path) throws IOException {
     FileSystem fs = FileSystem.get(conf);
     return fs.delete(path, true);
@@ -907,7 +940,13 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
     String reduceTransId = XMLHandler.getTagValue(entrynode, "reduce_trans_repo_reference"); //$NON-NLS-1$
     reduceRepositoryReference = Const.isEmpty(reduceTransId) ? null : new StringObjectId(reduceTransId);
     reduceTrans = XMLHandler.getTagValue(entrynode, "reduce_trans"); //$NON-NLS-1$
-
+    String single = XMLHandler.getTagValue(entrynode, "reduce_single_threaded");  //$NON-NLS-1$
+    if (Const.isEmpty(single)) {
+      reducingSingleThreaded = true;
+    } else {
+      reducingSingleThreaded = "Y".equalsIgnoreCase(single);  //$NON-NLS-1$
+    }
+    
     mapInputStepName = XMLHandler.getTagValue(entrynode, "map_input_step_name"); //$NON-NLS-1$
     mapOutputStepName = XMLHandler.getTagValue(entrynode, "map_output_step_name"); //$NON-NLS-1$
     combinerInputStepName = XMLHandler.getTagValue(entrynode, "combiner_input_step_name"); //$NON-NLS-1$
@@ -984,6 +1023,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
     retval.append("      ").append(XMLHandler.addTagValue("reduce_trans_repo_file", reduceRepositoryFile)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("      ").append(XMLHandler.addTagValue("reduce_trans_repo_reference", reduceRepositoryReference == null ? null : reduceRepositoryReference.toString())); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("      ").append(XMLHandler.addTagValue("reduce_trans", reduceTrans)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("      ").append(XMLHandler.addTagValue("reduce_single_threaded", reducingSingleThreaded)); //$NON-NLS-1$ //$NON-NLS-2$
 
     retval.append("      ").append(XMLHandler.addTagValue("map_input_step_name", mapInputStepName)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("      ").append(XMLHandler.addTagValue("map_output_step_name", mapOutputStepName)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -1050,6 +1090,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
       String reduceTransId = rep.getJobEntryAttributeString(id_jobentry, "reduce_trans_repo_reference"); //$NON-NLS-1$
       setReduceRepositoryReference(Const.isEmpty(reduceTransId) ? null : new StringObjectId(reduceTransId));
       setReduceTrans(rep.getJobEntryAttributeString(id_jobentry, "reduce_trans")); //$NON-NLS-1$
+      setReducingSingleThreaded(rep.getJobEntryAttributeBoolean(id_jobentry, "reduce_single_threaded", true)); //$NON-NLS-1$
 
       setCombinerRepositoryDir(rep.getJobEntryAttributeString(id_jobentry, "combiner_trans_repo_dir")); //$NON-NLS-1$
       setCombinerRepositoryFile(rep.getJobEntryAttributeString(id_jobentry, "combiner_trans_repo_file")); //$NON-NLS-1$
@@ -1130,6 +1171,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
       rep.saveJobEntryAttribute(id_job, getObjectId(),"reduce_trans_repo_file", reduceRepositoryFile); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getObjectId(),"reduce_trans_repo_reference", reduceRepositoryReference == null ? null : reduceRepositoryReference.toString()); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getObjectId(),"reduce_trans", reduceTrans); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(),"reduce_single_threaded", reducingSingleThreaded); //$NON-NLS-1$
 
       rep.saveJobEntryAttribute(id_job, getObjectId(),"combiner_trans_repo_dir", combinerRepositoryDir); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getObjectId(),"combiner_trans_repo_file", combinerRepositoryFile); //$NON-NLS-1$
@@ -1189,5 +1231,19 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
   public boolean isUnconditional()
   {
     return true;
+  }
+
+  /**
+   * @return the reduceSingleThreaded
+   */
+  public boolean isReducingSingleThreaded() {
+    return reducingSingleThreaded;
+  }
+
+  /**
+   * @param reducingSingleThreaded the reducing single threaded to set
+   */
+  public void setReducingSingleThreaded(boolean reducingSingleThreaded) {
+    this.reducingSingleThreaded = reducingSingleThreaded;
   }
 }

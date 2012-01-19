@@ -72,6 +72,7 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
   public static final String COMBINER_TRANS_OUTPUT_STEP_NAME = "combinerTransOutputStepName"; //$NON-NLS-1$
   public static final String REDUCE_TRANS_INPUT_STEP_NAME = "reduceTransInputStepName"; //$NON-NLS-1$
   public static final String REDUCE_TRANS_OUTPUT_STEP_NAME = "reduceTransOutputStepName"; //$NON-NLS-1$
+  public static final String REDUCING_SINGLE_THREADED = "reducingSingleThreaded"; //$NON-NLS-1$
 
   public static final String SUPPRESS_OUTPUT_MAP_KEY = "suppressOutputOfMapKey";
   public static final String SUPPRESS_OUTPUT_MAP_VALUE = "suppressOutputOfMapValue";
@@ -145,6 +146,7 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
   private String reduceRepositoryFile = "";
   private ObjectId reduceRepositoryReference;
   private String reduceTrans = "";
+  private boolean reducingSingleThreaded;
 
   private String mapTransInputStepName = "";
   private String mapTransOutputStepName = "";
@@ -159,7 +161,7 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
   
   private String hadoopDistribution = "";
 
-  private Shell shell;
+  protected Shell shell;
   private Repository rep;
 
   private JobEntryHadoopTransJobExecutor jobEntry;
@@ -322,6 +324,7 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
       jobEntry.setReduceRepositoryFile(reduceRepositoryFile);
       jobEntry.setReduceRepositoryReference(null);
       jobEntry.setReduceTrans(null);
+      jobEntry.setReducingSingleThreaded(reducingSingleThreaded);
     } else {
       jobEntry.setReduceTrans(reduceTrans);
       jobEntry.setReduceRepositoryDir(null);
@@ -331,6 +334,8 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
 
     jobEntry.setReduceInputStepName(reduceTransInputStepName);
     jobEntry.setReduceOutputStepName(reduceTransOutputStepName);
+    jobEntry.setReducingSingleThreaded(reducingSingleThreaded);
+    
     // advanced config
     jobEntry.setBlocking(isBlocking());
     jobEntry.setLoggingInterval(loggingInterval);
@@ -360,6 +365,7 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
     cancel();
   }
 
+  @SuppressWarnings({ "unchecked", "rawtypes" })
   public void init() throws Throwable {
     if (jobEntry != null) {
       // common/simple
@@ -532,6 +538,7 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
 
       setReduceTransInputStepName(jobEntry.getReduceInputStepName());
       setReduceTransOutputStepName(jobEntry.getReduceOutputStepName());
+      setReducingSingleThreaded(jobEntry.isReducingSingleThreaded());
       
       userDefined.clear();
       if (jobEntry.getUserDefined() != null) {
@@ -563,6 +570,10 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
       setWorkingDirectory(jobEntry.getWorkingDirectory());
     }
   }
+  
+  public void setShell(Shell shell) {
+    this.shell = shell;
+  }
 
   public void closeErrorDialog() {
     XulDialog errorDialog = (XulDialog) getXulDomContainer().getDocumentRoot().getElementById("hadoop-error-dialog");
@@ -588,10 +599,6 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
     }
 
     return dir + "/" + file;
-  }
-
-  public void setShell(Shell shell) {
-    this.shell = shell;
   }
 
   public void setRepository(Repository rep) {
@@ -1187,6 +1194,15 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
     this.blocking = blocking;
     firePropertyChange(BLOCKING, previousVal, newVal);
   }
+  
+  public void setReducingSingleThreaded(boolean reducingSingleThreaded) {
+    boolean previousVal = this.reducingSingleThreaded;
+    boolean newVal = reducingSingleThreaded;
+
+    this.reducingSingleThreaded = reducingSingleThreaded;
+    firePropertyChange(REDUCING_SINGLE_THREADED, previousVal, newVal);
+  }
+
 
   public String getLoggingInterval() {
     return loggingInterval;
@@ -1234,6 +1250,7 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
     firePropertyChange(HADOOP_DISTRIBUTION, null, hadoopDistribution);
   }
 
+  @SuppressWarnings("rawtypes")
   public void setMapperStorageType(String mapperStorageType) {
     switch (((XulMenuList) getXulDomContainer().getDocumentRoot().getElementById("mapper-storage-type")).getSelectedIndex()) {
     case 0: { // Local
@@ -1282,6 +1299,7 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
   
 
   
+  @SuppressWarnings("rawtypes")
   public void setCombinerStorageType(String mapperStorageType) {
     switch (((XulMenuList) getXulDomContainer().getDocumentRoot().getElementById("combiner-storage-type")).getSelectedIndex()) {
     case 0: { // Local
@@ -1327,6 +1345,7 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
     }
   }
   
+  @SuppressWarnings("rawtypes")
   public void setReducerStorageType(String reducerStorageType) {
     switch (((XulMenuList) getXulDomContainer().getDocumentRoot().getElementById("reducer-storage-type")).getSelectedIndex()) {
     case 0: { // Local
@@ -1454,4 +1473,11 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
     errorDialog.show();
   }
 
+  public void invertReducingSingleThreaded() {
+    setReducingSingleThreaded(!isReducingSingleThreaded());
+  }
+  
+  public boolean isReducingSingleThreaded() {
+    return reducingSingleThreaded;
+  }
 }
