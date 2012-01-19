@@ -53,7 +53,7 @@
       <reduce_trans_repo_file/>
       <reduce_trans_repo_reference/>
       <reduce_trans>${Internal.Job.Filename.Directory}&#47;wordcount-reducer.ktr</reduce_trans>
-      <reduce_single_threaded>N</reduce_single_threaded>
+      <reduce_single_threaded>Y</reduce_single_threaded>
       <map_input_step_name>Hadoop Input</map_input_step_name>
       <map_output_step_name>Hadoop Output</map_output_step_name>
       <combiner_input_step_name/>
@@ -71,9 +71,9 @@
       <suppress_output_key>N</suppress_output_key>
       <suppress_output_value>N</suppress_output_value>
       <output_format_class>org.apache.hadoop.mapred.TextOutputFormat</output_format_class>
-      <hdfs_hostname>localhost</hdfs_hostname>
+      <hdfs_hostname>hadoop-server</hdfs_hostname>
       <hdfs_port>8020</hdfs_port>
-      <job_tracker_hostname>localhost</job_tracker_hostname>
+      <job_tracker_hostname>hadoop-server</job_tracker_hostname>
       <job_tracker_port>8021</job_tracker_port>
       <num_map_tasks>2</num_map_tasks>
       <num_reduce_tasks>2</num_reduce_tasks>
@@ -115,7 +115,7 @@
       <limit_folders>10</limit_folders>
       <fields>
         <field>
-          <name>hdfs:&#47;&#47;matt:abcd@kettle:8020&#47;wordcount&#47;output</name>
+          <name>hdfs:&#47;&#47;hadoop-server:8020&#47;wordcount&#47;output</name>
         </field>
       </fields>
       <parallel>N</parallel>
@@ -159,9 +159,9 @@
       <create_destination_folder>Y</create_destination_folder>
       <fields>
         <field>
-          <source_filefolder>&#47;tmp</source_filefolder>
-          <destination_filefolder>hdfs:&#47;&#47;matt:abcd@kettle:8020&#47;wordcount&#47;input</destination_filefolder>
-          <wildcard>crap.txt</wildcard>
+          <source_filefolder>.&#47;</source_filefolder>
+          <destination_filefolder>hdfs:&#47;&#47;hadoop-server:8020&#47;wordcount&#47;input</destination_filefolder>
+          <wildcard>.*README.*</wildcard>
         </field>
       </fields>
       <parallel>N</parallel>
@@ -174,7 +174,7 @@
       <name>hdfs:&#47;wordcount</name>
       <description/>
       <type>CREATE_FOLDER</type>
-      <foldername>hdfs:&#47;&#47;matt:abcd@kettle:8020&#47;wordcount</foldername>
+      <foldername>hdfs:&#47;&#47;hadoop-server:8020&#47;wordcount</foldername>
       <fail_of_folder_exists>N</fail_of_folder_exists>
       <parallel>N</parallel>
       <draw>Y</draw>
@@ -186,7 +186,7 @@
       <name>hdfs:&#47;wordcount&#47;input</name>
       <description/>
       <type>CREATE_FOLDER</type>
-      <foldername>hdfs:&#47;&#47;matt:abcd@kettle:8020&#47;wordcount&#47;input</foldername>
+      <foldername>hdfs:&#47;&#47;hadoop-server:8020&#47;wordcount&#47;input</foldername>
       <fail_of_folder_exists>N</fail_of_folder_exists>
       <parallel>N</parallel>
       <draw>Y</draw>
@@ -198,7 +198,7 @@
       <name>hdfs:&#47;wordcount&#47;output</name>
       <description/>
       <type>CREATE_FOLDER</type>
-      <foldername>hdfs:&#47;&#47;matt:abcd@kettle:8020&#47;wordcount&#47;output</foldername>
+      <foldername>hdfs:&#47;&#47;hadoop-server:8020&#47;wordcount&#47;output</foldername>
       <fail_of_folder_exists>N</fail_of_folder_exists>
       <parallel>N</parallel>
       <draw>Y</draw>
@@ -215,7 +215,7 @@
       <limit_folders>10</limit_folders>
       <fields>
         <field>
-          <name>hdfs:&#47;&#47;matt:abcd@kettle:8020&#47;wordcount&#47;input</name>
+          <name>hdfs:&#47;&#47;hadoop-server:8020&#47;wordcount&#47;input</name>
         </field>
       </fields>
       <parallel>N</parallel>
