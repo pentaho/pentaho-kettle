@@ -13,7 +13,6 @@
     <parameters>
     </parameters>
     <slaveservers>
-         <slaveserver><name>ID-Server</name><hostname>localhost</hostname><port>8181</port><webAppName/><username>cluster</username><password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password><proxy_hostname/><proxy_port/><non_proxy_hosts/><master>N</master></slaveserver>
     </slaveservers>
 <job-log-table><connection/>
 <schema/>
@@ -36,10 +35,10 @@
    <shared_objects_file/>
   <entries>
     <entry>
-      <name>Pentaho MapReduce</name>
+      <name>Pentaho MapReduce (Wordcount)</name>
       <description/>
       <type>HadoopTransJobExecutorPlugin</type>
-      <hadoop_job_name>jobname - job executor</hadoop_job_name>
+      <hadoop_job_name>Pentaho MapReduce (Wordcount)</hadoop_job_name>
       <hadoop_distribution>generic</hadoop_distribution>
       <map_trans_repo_dir/>
       <map_trans_repo_file/>
@@ -65,7 +64,7 @@
       <input_path>&#47;wordcount&#47;input</input_path>
       <input_format_class>org.apache.hadoop.mapred.TextInputFormat</input_format_class>
       <output_path>&#47;wordcount&#47;output</output_path>
-      <clean_output_path>N</clean_output_path>
+      <clean_output_path>Y</clean_output_path>
       <suppress_output_map_key>N</suppress_output_map_key>
       <suppress_output_map_value>N</suppress_output_map_value>
       <suppress_output_key>N</suppress_output_key>
@@ -76,15 +75,15 @@
       <job_tracker_hostname>hadoop-server</job_tracker_hostname>
       <job_tracker_port>8021</job_tracker_port>
       <num_map_tasks>2</num_map_tasks>
-      <num_reduce_tasks>2</num_reduce_tasks>
-      <working_dir>&#47;var&#47;tmp&#47;</working_dir>
+      <num_reduce_tasks>1</num_reduce_tasks>
+      <working_dir>&#47;var&#47;tmp</working_dir>
       <user_defined_list>
       </user_defined_list>
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>704</xloc>
-      <yloc>209</yloc>
+      <xloc>299</xloc>
+      <yloc>158</yloc>
       </entry>
     <entry>
       <name>START</name>
@@ -103,26 +102,8 @@
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>78</xloc>
-      <yloc>209</yloc>
-      </entry>
-    <entry>
-      <name>Clean Output</name>
-      <description/>
-      <type>DELETE_FOLDERS</type>
-      <arg_from_previous>N</arg_from_previous>
-      <success_condition>success_if_no_errors</success_condition>
-      <limit_folders>10</limit_folders>
-      <fields>
-        <field>
-          <name>hdfs:&#47;&#47;hadoop-server:8020&#47;wordcount&#47;output</name>
-        </field>
-      </fields>
-      <parallel>N</parallel>
-      <draw>Y</draw>
-      <nr>0</nr>
-      <xloc>384</xloc>
-      <yloc>389</yloc>
+      <xloc>19</xloc>
+      <yloc>158</yloc>
       </entry>
     <entry>
       <name>Failure</name>
@@ -132,8 +113,8 @@
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>889</xloc>
-      <yloc>342</yloc>
+      <xloc>440</xloc>
+      <yloc>292</yloc>
       </entry>
     <entry>
       <name>Success</name>
@@ -142,8 +123,8 @@
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>889</xloc>
-      <yloc>209</yloc>
+      <xloc>439</xloc>
+      <yloc>158</yloc>
       </entry>
     <entry>
       <name>Copy Files to HDFS</name>
@@ -167,67 +148,13 @@
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>519</xloc>
-      <yloc>209</yloc>
-      </entry>
-    <entry>
-      <name>hdfs:&#47;wordcount</name>
-      <description/>
-      <type>CREATE_FOLDER</type>
-      <foldername>hdfs:&#47;&#47;hadoop-server:8020&#47;wordcount</foldername>
-      <fail_of_folder_exists>N</fail_of_folder_exists>
-      <parallel>N</parallel>
-      <draw>Y</draw>
-      <nr>0</nr>
-      <xloc>243</xloc>
-      <yloc>207</yloc>
-      </entry>
-    <entry>
-      <name>hdfs:&#47;wordcount&#47;input</name>
-      <description/>
-      <type>CREATE_FOLDER</type>
-      <foldername>hdfs:&#47;&#47;hadoop-server:8020&#47;wordcount&#47;input</foldername>
-      <fail_of_folder_exists>N</fail_of_folder_exists>
-      <parallel>N</parallel>
-      <draw>Y</draw>
-      <nr>0</nr>
-      <xloc>243</xloc>
-      <yloc>308</yloc>
-      </entry>
-    <entry>
-      <name>hdfs:&#47;wordcount&#47;output</name>
-      <description/>
-      <type>CREATE_FOLDER</type>
-      <foldername>hdfs:&#47;&#47;hadoop-server:8020&#47;wordcount&#47;output</foldername>
-      <fail_of_folder_exists>N</fail_of_folder_exists>
-      <parallel>N</parallel>
-      <draw>Y</draw>
-      <nr>0</nr>
-      <xloc>243</xloc>
-      <yloc>428</yloc>
-      </entry>
-    <entry>
-      <name>Clean Input</name>
-      <description/>
-      <type>DELETE_FOLDERS</type>
-      <arg_from_previous>N</arg_from_previous>
-      <success_condition>success_if_no_errors</success_condition>
-      <limit_folders>10</limit_folders>
-      <fields>
-        <field>
-          <name>hdfs:&#47;&#47;hadoop-server:8020&#47;wordcount&#47;input</name>
-        </field>
-      </fields>
-      <parallel>N</parallel>
-      <draw>Y</draw>
-      <nr>0</nr>
-      <xloc>392</xloc>
-      <yloc>212</yloc>
+      <xloc>159</xloc>
+      <yloc>158</yloc>
       </entry>
   </entries>
   <hops>
     <hop>
-      <from>Pentaho MapReduce</from>
+      <from>Pentaho MapReduce (Wordcount)</from>
       <to>Success</to>
       <from_nr>0</from_nr>
       <to_nr>0</to_nr>
@@ -236,7 +163,7 @@
       <unconditional>N</unconditional>
     </hop>
     <hop>
-      <from>Pentaho MapReduce</from>
+      <from>Pentaho MapReduce (Wordcount)</from>
       <to>Failure</to>
       <from_nr>0</from_nr>
       <to_nr>0</to_nr>
@@ -245,17 +172,8 @@
       <unconditional>N</unconditional>
     </hop>
     <hop>
-      <from>Clean Output</from>
-      <to>Copy Files to HDFS</to>
-      <from_nr>0</from_nr>
-      <to_nr>0</to_nr>
-      <enabled>Y</enabled>
-      <evaluation>Y</evaluation>
-      <unconditional>Y</unconditional>
-    </hop>
-    <hop>
       <from>Copy Files to HDFS</from>
-      <to>Pentaho MapReduce</to>
+      <to>Pentaho MapReduce (Wordcount)</to>
       <from_nr>0</from_nr>
       <to_nr>0</to_nr>
       <enabled>Y</enabled>
@@ -264,43 +182,7 @@
     </hop>
     <hop>
       <from>START</from>
-      <to>hdfs:&#47;wordcount</to>
-      <from_nr>0</from_nr>
-      <to_nr>0</to_nr>
-      <enabled>Y</enabled>
-      <evaluation>Y</evaluation>
-      <unconditional>Y</unconditional>
-    </hop>
-    <hop>
-      <from>hdfs:&#47;wordcount</from>
-      <to>hdfs:&#47;wordcount&#47;input</to>
-      <from_nr>0</from_nr>
-      <to_nr>0</to_nr>
-      <enabled>Y</enabled>
-      <evaluation>Y</evaluation>
-      <unconditional>Y</unconditional>
-    </hop>
-    <hop>
-      <from>hdfs:&#47;wordcount&#47;input</from>
-      <to>hdfs:&#47;wordcount&#47;output</to>
-      <from_nr>0</from_nr>
-      <to_nr>0</to_nr>
-      <enabled>Y</enabled>
-      <evaluation>N</evaluation>
-      <unconditional>Y</unconditional>
-    </hop>
-    <hop>
-      <from>hdfs:&#47;wordcount&#47;output</from>
-      <to>Clean Input</to>
-      <from_nr>0</from_nr>
-      <to_nr>0</to_nr>
-      <enabled>Y</enabled>
-      <evaluation>Y</evaluation>
-      <unconditional>Y</unconditional>
-    </hop>
-    <hop>
-      <from>Clean Input</from>
-      <to>Clean Output</to>
+      <to>Copy Files to HDFS</to>
       <from_nr>0</from_nr>
       <to_nr>0</to_nr>
       <enabled>Y</enabled>
@@ -311,17 +193,16 @@
   <notepads>
     <notepad>
       <note>SETUP INSTRUCTIONS:
-1. Update the HDFS path within the &apos;Clean Output&apos; step to match your Hadoop server location and path to where you intend to generate output from the wordcount example
-2. Create an input directory in HDFS and place text file(s) in the input directory that you want to use to test the wordcount example
-3. Update the &apos;Pentaho MapReduce&apos; step (Job Setup and Cluster tabs) to configure the correct paths and server names including:
+1. Create an input directory in HDFS and place text file(s) in the input directory that you want to use to test the wordcount example
+2. Update the &apos;Pentaho MapReduce&apos; step (Job Setup and Cluster tabs) to configure the correct paths and server names including:
     - Input Path - the path in HDFS from which to read files for counting
     - Output Path - where the processed count of words will be placed
     - HDFS Hostname
     - Job Tracker Hostname</note>
-      <xloc>30</xloc>
-      <yloc>36</yloc>
-      <width>999</width>
-      <heigth>128</heigth>
+      <xloc>20</xloc>
+      <yloc>40</yloc>
+      <width>443</width>
+      <heigth>73</heigth>
       <fontname>Microsoft Sans Serif</fontname>
       <fontsize>8</fontsize>
       <fontbold>N</fontbold>

@@ -12,73 +12,6 @@
   <modified_date>2010&#47;07&#47;19 21:35:45.843</modified_date>
     <parameters>
     </parameters>
-  <connection>
-    <name>Hypersonic</name>
-    <server>localhost</server>
-    <type>HYPERSONIC</type>
-    <access>Native</access>
-    <database>kettle_3.2</database>
-    <port>9002</port>
-    <username>sa</username>
-    <password>Encrypted </password>
-    <servername/>
-    <data_tablespace/>
-    <index_tablespace/>
-    <attributes>
-      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
-      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
-      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
-      <attribute><code>PORT_NUMBER</code><attribute>9002</attribute></attribute>
-      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
-      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>N</attribute></attribute>
-      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
-    </attributes>
-  </connection>
-  <connection>
-    <name>myconnections</name>
-    <server>localhost</server>
-    <type>HYPERSONIC</type>
-    <access>Native</access>
-    <database>sampledata</database>
-    <port>8021</port>
-    <username>sa</username>
-    <password>Encrypted </password>
-    <servername/>
-    <data_tablespace>af</data_tablespace>
-    <index_tablespace>sdaf</index_tablespace>
-    <attributes>
-      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
-      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
-      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
-      <attribute><code>PORT_NUMBER</code><attribute>8021</attribute></attribute>
-      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
-      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>N</attribute></attribute>
-      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
-    </attributes>
-  </connection>
-  <connection>
-    <name>mysql</name>
-    <server>localhost</server>
-    <type>MYSQL</type>
-    <access>Native</access>
-    <database>stock_market</database>
-    <port>3306</port>
-    <username>root</username>
-    <password>Encrypted 2be98afc86aa7f2e4bb18bd63c99dbdde</password>
-    <servername/>
-    <data_tablespace>af</data_tablespace>
-    <index_tablespace>sdaf</index_tablespace>
-    <attributes>
-      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
-      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
-      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
-      <attribute><code>PORT_NUMBER</code><attribute>3306</attribute></attribute>
-      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
-      <attribute><code>STREAM_RESULTS</code><attribute>Y</attribute></attribute>
-      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>N</attribute></attribute>
-      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
-    </attributes>
-  </connection>
     <slaveservers>
     </slaveservers>
 <job-log-table><connection/>
@@ -92,7 +25,7 @@
 <schema/>
 <table/>
 <timeout_days/>
-<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>JOBNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>JOBENTRYNAME</id><enabled>Y</enabled><name>STEPNAME</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>RESULT</id><enabled>Y</enabled><name>RESULT</name></field><field><id>NR_RESULT_ROWS</id><enabled>Y</enabled><name>NR_RESULT_ROWS</name></field><field><id>NR_RESULT_FILES</id><enabled>Y</enabled><name>NR_RESULT_FILES</name></field><field><id>LOG_FIELD</id><enabled>N</enabled><name>LOG_FIELD</name></field></jobentry-log-table>
+<field><id>ID_BATCH</id><enabled>Y</enabled><name>ID_BATCH</name></field><field><id>CHANNEL_ID</id><enabled>Y</enabled><name>CHANNEL_ID</name></field><field><id>LOG_DATE</id><enabled>Y</enabled><name>LOG_DATE</name></field><field><id>JOBNAME</id><enabled>Y</enabled><name>TRANSNAME</name></field><field><id>JOBENTRYNAME</id><enabled>Y</enabled><name>STEPNAME</name></field><field><id>LINES_READ</id><enabled>Y</enabled><name>LINES_READ</name></field><field><id>LINES_WRITTEN</id><enabled>Y</enabled><name>LINES_WRITTEN</name></field><field><id>LINES_UPDATED</id><enabled>Y</enabled><name>LINES_UPDATED</name></field><field><id>LINES_INPUT</id><enabled>Y</enabled><name>LINES_INPUT</name></field><field><id>LINES_OUTPUT</id><enabled>Y</enabled><name>LINES_OUTPUT</name></field><field><id>LINES_REJECTED</id><enabled>Y</enabled><name>LINES_REJECTED</name></field><field><id>ERRORS</id><enabled>Y</enabled><name>ERRORS</name></field><field><id>RESULT</id><enabled>Y</enabled><name>RESULT</name></field><field><id>NR_RESULT_ROWS</id><enabled>Y</enabled><name>NR_RESULT_ROWS</name></field><field><id>NR_RESULT_FILES</id><enabled>Y</enabled><name>NR_RESULT_FILES</name></field><field><id>LOG_FIELD</id><enabled>N</enabled><name>LOG_FIELD</name></field><field><id>COPY_NR</id><enabled>N</enabled><name>COPY_NR</name></field></jobentry-log-table>
 <channel-log-table><connection/>
 <schema/>
 <table/>
@@ -102,14 +35,15 @@
    <shared_objects_file/>
   <entries>
     <entry>
-      <name>Pentaho MapReduce</name>
+      <name>Pentaho MapReduce (Web Log Parsing)</name>
       <description/>
       <type>HadoopTransJobExecutorPlugin</type>
       <hadoop_job_name>Web Logs- Number of HTTP Methods by Month</hadoop_job_name>
+      <hadoop_distribution>generic</hadoop_distribution>
       <map_trans_repo_dir/>
       <map_trans_repo_file/>
       <map_trans_repo_reference/>
-      <map_trans>.&#47;samples&#47;jobs&#47;hadoop&#47;weblogs-mapper.ktr</map_trans>
+      <map_trans>${Internal.Job.Filename.Directory}&#47;weblogs-mapper.ktr</map_trans>
       <combiner_trans_repo_dir/>
       <combiner_trans_repo_file/>
       <combiner_trans_repo_reference/>
@@ -117,7 +51,8 @@
       <reduce_trans_repo_dir/>
       <reduce_trans_repo_file/>
       <reduce_trans_repo_reference/>
-      <reduce_trans>.&#47;samples&#47;jobs&#47;hadoop&#47;weblogs-reducer.ktr</reduce_trans>
+      <reduce_trans>${Internal.Job.Filename.Directory}&#47;weblogs-reducer.ktr</reduce_trans>
+      <reduce_single_threaded>Y</reduce_single_threaded>
       <map_input_step_name>Hadoop Input</map_input_step_name>
       <map_output_step_name>Hadoop Output</map_output_step_name>
       <combiner_input_step_name/>
@@ -129,8 +64,11 @@
       <input_path>&#47;weblogs&#47;input</input_path>
       <input_format_class>org.apache.hadoop.mapred.TextInputFormat</input_format_class>
       <output_path>&#47;weblogs&#47;output</output_path>
-      <output_key_class>org.apache.hadoop.io.Text</output_key_class>
-      <output_value_class>org.apache.hadoop.io.Text</output_value_class>
+      <clean_output_path>Y</clean_output_path>
+      <suppress_output_map_key>N</suppress_output_map_key>
+      <suppress_output_map_value>N</suppress_output_map_value>
+      <suppress_output_key>N</suppress_output_key>
+      <suppress_output_value>N</suppress_output_value>
       <output_format_class>org.apache.hadoop.mapred.TextOutputFormat</output_format_class>
       <hdfs_hostname>hadoop-server</hdfs_hostname>
       <hdfs_port>8020</hdfs_port>
@@ -138,14 +76,14 @@
       <job_tracker_port>8021</job_tracker_port>
       <num_map_tasks>2</num_map_tasks>
       <num_reduce_tasks>1</num_reduce_tasks>
-      <working_dir>&#47;tmp&#47;pdiwordcount</working_dir>
+      <working_dir>&#47;var&#47;tmp</working_dir>
       <user_defined_list>
       </user_defined_list>
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>580</xloc>
-      <yloc>337</yloc>
+      <xloc>337</xloc>
+      <yloc>286</yloc>
       </entry>
     <entry>
       <name>START</name>
@@ -164,8 +102,8 @@
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>58</xloc>
-      <yloc>337</yloc>
+      <xloc>25</xloc>
+      <yloc>286</yloc>
       </entry>
     <entry>
       <name>Success</name>
@@ -174,26 +112,8 @@
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>931</xloc>
-      <yloc>337</yloc>
-      </entry>
-    <entry>
-      <name>Clean Output</name>
-      <description/>
-      <type>DELETE_FOLDERS</type>
-      <arg_from_previous>N</arg_from_previous>
-      <success_condition>success_if_no_errors</success_condition>
-      <limit_folders>10</limit_folders>
-      <fields>
-        <field>
-          <name>hdfs:&#47;&#47;hadoop-server:8020&#47;weblogs&#47;output&#47;</name>
-        </field>
-      </fields>
-      <parallel>N</parallel>
-      <draw>Y</draw>
-      <nr>0</nr>
-      <xloc>264</xloc>
-      <yloc>337</yloc>
+      <xloc>493</xloc>
+      <yloc>286</yloc>
       </entry>
     <entry>
       <name>Copy input files to HDFS</name>
@@ -206,10 +126,10 @@
       <remove_source_files>N</remove_source_files>
       <add_result_filesname>N</add_result_filesname>
       <destination_is_a_file>N</destination_is_a_file>
-      <create_destination_folder>N</create_destination_folder>
+      <create_destination_folder>Y</create_destination_folder>
       <fields>
         <field>
-          <source_filefolder>file:&#47;&#47;&#47;C:&#47;&lt;pdi-install-path&gt;&#47;pdi-ee&#47;data-integration&#47;samples&#47;jobs&#47;hadoop&#47;files&#47;</source_filefolder>
+          <source_filefolder>${Internal.Job.Filename.Directory}&#47;files&#47;</source_filefolder>
           <destination_filefolder>hdfs:&#47;&#47;hadoop-server&#47;weblogs&#47;input</destination_filefolder>
           <wildcard>([^\s]+(\.(?i)(log))$)</wildcard>
         </field>
@@ -217,32 +137,25 @@
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>412</xloc>
-      <yloc>337</yloc>
+      <xloc>181</xloc>
+      <yloc>286</yloc>
       </entry>
     <entry>
-      <name>Delete input files</name>
+      <name>Failure</name>
       <description/>
-      <type>DELETE_FILES</type>
-      <arg_from_previous>N</arg_from_previous>
-      <include_subfolders>N</include_subfolders>
-      <fields>
-        <field>
-          <name>hdfs:&#47;&#47;hadoop-server:8020&#47;weblogs&#47;input&#47;</name>
-          <filemask>([^\s]+(\.(?i)(log))$)</filemask>
-        </field>
-      </fields>
+      <type>ABORT</type>
+      <message/>
       <parallel>N</parallel>
       <draw>Y</draw>
       <nr>0</nr>
-      <xloc>739</xloc>
-      <yloc>337</yloc>
+      <xloc>493</xloc>
+      <yloc>408</yloc>
       </entry>
   </entries>
   <hops>
     <hop>
       <from>Copy input files to HDFS</from>
-      <to>Pentaho MapReduce</to>
+      <to>Pentaho MapReduce (Web Log Parsing)</to>
       <from_nr>0</from_nr>
       <to_nr>0</to_nr>
       <enabled>Y</enabled>
@@ -251,15 +164,6 @@
     </hop>
     <hop>
       <from>START</from>
-      <to>Clean Output</to>
-      <from_nr>0</from_nr>
-      <to_nr>0</to_nr>
-      <enabled>Y</enabled>
-      <evaluation>Y</evaluation>
-      <unconditional>Y</unconditional>
-    </hop>
-    <hop>
-      <from>Clean Output</from>
       <to>Copy input files to HDFS</to>
       <from_nr>0</from_nr>
       <to_nr>0</to_nr>
@@ -268,93 +172,25 @@
       <unconditional>Y</unconditional>
     </hop>
     <hop>
-      <from>Pentaho MapReduce</from>
-      <to>Delete input files</to>
-      <from_nr>0</from_nr>
-      <to_nr>0</to_nr>
-      <enabled>Y</enabled>
-      <evaluation>Y</evaluation>
-      <unconditional>Y</unconditional>
-    </hop>
-    <hop>
-      <from>Delete input files</from>
+      <from>Pentaho MapReduce (Web Log Parsing)</from>
       <to>Success</to>
       <from_nr>0</from_nr>
       <to_nr>0</to_nr>
       <enabled>Y</enabled>
       <evaluation>Y</evaluation>
-      <unconditional>Y</unconditional>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>Pentaho MapReduce (Web Log Parsing)</from>
+      <to>Failure</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>N</evaluation>
+      <unconditional>N</unconditional>
     </hop>
   </hops>
   <notepads>
-    <notepad>
-      <note>Cleans the Output Directory</note>
-      <xloc>203</xloc>
-      <yloc>279</yloc>
-      <width>170</width>
-      <heigth>25</heigth>
-      <fontname>Microsoft Sans Serif</fontname>
-      <fontsize>8</fontsize>
-      <fontbold>N</fontbold>
-      <fontitalic>N</fontitalic>
-      <fontcolorred>0</fontcolorred>
-      <fontcolorgreen>0</fontcolorgreen>
-      <fontcolorblue>0</fontcolorblue>
-      <backgroundcolorred>255</backgroundcolorred>
-      <backgroundcolorgreen>255</backgroundcolorgreen>
-      <backgroundcolorblue>0</backgroundcolorblue>
-      <bordercolorred>100</bordercolorred>
-      <bordercolorgreen>100</bordercolorgreen>
-      <bordercolorblue>100</bordercolorblue>
-      <drawshadow>Y</drawshadow>
-    </notepad>
-    <notepad>
-      <note>Monitor the logs for progress
-(if blocking option is selected)</note>
-      <xloc>823</xloc>
-      <yloc>267</yloc>
-      <width>182</width>
-      <heigth>39</heigth>
-      <fontname>Microsoft Sans Serif</fontname>
-      <fontsize>8</fontsize>
-      <fontbold>N</fontbold>
-      <fontitalic>N</fontitalic>
-      <fontcolorred>0</fontcolorred>
-      <fontcolorgreen>0</fontcolorgreen>
-      <fontcolorblue>0</fontcolorblue>
-      <backgroundcolorred>255</backgroundcolorred>
-      <backgroundcolorgreen>255</backgroundcolorgreen>
-      <backgroundcolorblue>0</backgroundcolorblue>
-      <bordercolorred>100</bordercolorred>
-      <bordercolorgreen>100</bordercolorgreen>
-      <bordercolorblue>100</bordercolorblue>
-      <drawshadow>Y</drawshadow>
-    </notepad>
-    <notepad>
-      <note>Transformation Based Hadoop 
-WordCount Map Reduce Job
-  - Edit the HDFS hostname
-  - Edit the Job Tracker hostname
-</note>
-      <xloc>502</xloc>
-      <yloc>252</yloc>
-      <width>208</width>
-      <heigth>69</heigth>
-      <fontname>Microsoft Sans Serif</fontname>
-      <fontsize>8</fontsize>
-      <fontbold>N</fontbold>
-      <fontitalic>N</fontitalic>
-      <fontcolorred>0</fontcolorred>
-      <fontcolorgreen>0</fontcolorgreen>
-      <fontcolorblue>0</fontcolorblue>
-      <backgroundcolorred>255</backgroundcolorred>
-      <backgroundcolorgreen>255</backgroundcolorgreen>
-      <backgroundcolorblue>0</backgroundcolorblue>
-      <bordercolorred>100</bordercolorred>
-      <bordercolorgreen>100</bordercolorgreen>
-      <bordercolorblue>100</bordercolorblue>
-      <drawshadow>Y</drawshadow>
-    </notepad>
     <notepad>
       <note>This example:
   - Reads one or more weblogs from an input directory in HDFS
@@ -363,22 +199,21 @@ WordCount Map Reduce Job
     - &apos;weblogs-reducer.ktr&apos; to aggregate all page hits by Year and Month (our key) as part of the reducing phase
 
 SETUP INSTRUCTIONS:
-1. Update the HDFS path within the &apos;Clean Output&apos; step to match your Hadoop server location and path to where you intend to generate output from the weblogs example
-2. Update the &apos;Copy input files to HDFS&apos; step
+1. Update the &apos;Copy input files to HDFS&apos; step
      - update the source path to match the location of your PDI installation directory
      - update the target path to be the location of your input directory in HDFS where the job will read the weblog files from
-3. Update the &apos;Pentaho MapReduce&apos; step (Job Setup and Cluster tabs) to configure the correct paths and server names including:
+2. Update the &apos;Pentaho MapReduce&apos; step (Job Setup and Cluster tabs) to configure the correct paths and server names including:
     - Input Path - the path in HDFS from which to read files for counting
     - Output Path - where the processed count of words will be placed
     - HDFS Hostname
     - Job Tracker Hostname
-4. Update the &apos;Delete input files&apos; step to point to your input directory location in HDFS</note>
+3. Update the &apos;Delete input files&apos; step to point to your input directory location in HDFS</note>
       <xloc>12</xloc>
       <yloc>4</yloc>
-      <width>986</width>
-      <heigth>260</heigth>
+      <width>707</width>
+      <heigth>234</heigth>
       <fontname>Microsoft Sans Serif</fontname>
-      <fontsize>8</fontsize>
+      <fontsize>12</fontsize>
       <fontbold>N</fontbold>
       <fontitalic>N</fontitalic>
       <fontcolorred>0</fontcolorred>
@@ -386,50 +221,6 @@ SETUP INSTRUCTIONS:
       <fontcolorblue>0</fontcolorblue>
       <backgroundcolorred>255</backgroundcolorred>
       <backgroundcolorgreen>165</backgroundcolorgreen>
-      <backgroundcolorblue>0</backgroundcolorblue>
-      <bordercolorred>100</bordercolorred>
-      <bordercolorgreen>100</bordercolorgreen>
-      <bordercolorblue>100</bordercolorblue>
-      <drawshadow>Y</drawshadow>
-    </notepad>
-    <notepad>
-      <note>Copy log files from local
-file system to HDFS</note>
-      <xloc>353</xloc>
-      <yloc>405</yloc>
-      <width>155</width>
-      <heigth>39</heigth>
-      <fontname>Microsoft Sans Serif</fontname>
-      <fontsize>8</fontsize>
-      <fontbold>N</fontbold>
-      <fontitalic>N</fontitalic>
-      <fontcolorred>0</fontcolorred>
-      <fontcolorgreen>0</fontcolorgreen>
-      <fontcolorblue>0</fontcolorblue>
-      <backgroundcolorred>255</backgroundcolorred>
-      <backgroundcolorgreen>255</backgroundcolorgreen>
-      <backgroundcolorblue>0</backgroundcolorblue>
-      <bordercolorred>100</bordercolorred>
-      <bordercolorgreen>100</bordercolorgreen>
-      <bordercolorblue>100</bordercolorblue>
-      <drawshadow>Y</drawshadow>
-    </notepad>
-    <notepad>
-      <note>Delete processed input
-files from HDFS</note>
-      <xloc>696</xloc>
-      <yloc>400</yloc>
-      <width>150</width>
-      <heigth>39</heigth>
-      <fontname>Microsoft Sans Serif</fontname>
-      <fontsize>8</fontsize>
-      <fontbold>N</fontbold>
-      <fontitalic>N</fontitalic>
-      <fontcolorred>0</fontcolorred>
-      <fontcolorgreen>0</fontcolorgreen>
-      <fontcolorblue>0</fontcolorblue>
-      <backgroundcolorred>255</backgroundcolorred>
-      <backgroundcolorgreen>255</backgroundcolorgreen>
       <backgroundcolorblue>0</backgroundcolorblue>
       <bordercolorred>100</bordercolorred>
       <bordercolorgreen>100</bordercolorgreen>
