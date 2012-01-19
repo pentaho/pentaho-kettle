@@ -47,6 +47,8 @@ public class OutputCollectorRowListener<K, V> extends RowAdapter {
   private OutputCollector<K, V> output;
 
   private Exception exception;
+  
+  private OutKeyValueOrdinals outOrdinals;
 
   public OutputCollectorRowListener(OutputCollector<K, V> output, Class<K> outClassK, Class<V> outClassV,
       Reporter reporter, boolean debug) {
@@ -55,6 +57,8 @@ public class OutputCollectorRowListener<K, V> extends RowAdapter {
     this.outClassV = outClassV;
     this.reporter = reporter;
     this.debug = debug;
+    
+    outOrdinals = null;
   }
 
   @Override
@@ -66,25 +70,32 @@ public class OutputCollectorRowListener<K, V> extends RowAdapter {
        * Column 2: Value (convert to outClassV)
        */
       if (row != null && !rowMeta.isEmpty() && rowMeta.size() >= 2) {
-        OutKeyValueOrdinals outOrdinals = new OutKeyValueOrdinals(rowMeta);
+        if (outOrdinals==null) {
+          outOrdinals = new OutKeyValueOrdinals(rowMeta);
 
-        if (outOrdinals.getKeyOrdinal() < 0 || outOrdinals.getValueOrdinal() < 0) {
-          throw new KettleException("outKey or outValue is not defined in transformation output stream"); //$NON-NLS-1$
+          if (outOrdinals.getKeyOrdinal() < 0 || outOrdinals.getValueOrdinal() < 0) {
+            throw new KettleException("outKey or outValue is not defined in transformation output stream"); //$NON-NLS-1$
+          }
         }
 
         // TODO Implement type safe converters
-        setDebugStatus(
-            reporter,
+        
+        if (debug) {
+          setDebugStatus( reporter,
             "Begin conversion of output key [from:" + (row[outOrdinals.getKeyOrdinal()] == null ? null : row[outOrdinals.getKeyOrdinal()].getClass()) + "] [to:" + outClassK + "]"); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+        
         Object outKey = TypeConverterFactory
             .getInstance()
             .getConverter(
                 row[outOrdinals.getKeyOrdinal()] == null ? null : row[outOrdinals.getKeyOrdinal()].getClass(),
                 outClassK).convert(rowMeta.getValueMeta(outOrdinals.getKeyOrdinal()), row[outOrdinals.getKeyOrdinal()]);
 
-        setDebugStatus(reporter,
+       if (debug) {
+         setDebugStatus(reporter,
             "Begin conversion of output value [from:" + (row[outOrdinals.getValueOrdinal()] == null ? null //$NON-NLS-1$
-                : row[outOrdinals.getValueOrdinal()].getClass()) + "] [to:" + outClassV + "]"); //$NON-NLS-1$ //$NON-NLS-2$
+                : row[outOrdinals.getValueOrdinal()].getClass()) + "] [to:" + outClassV + "]")  ; //$NON-NLS-1$ //$NON-NLS-2$
+       }
         Object outVal = TypeConverterFactory
             .getInstance()
             .getConverter(
@@ -93,7 +104,7 @@ public class OutputCollectorRowListener<K, V> extends RowAdapter {
             .convert(rowMeta.getValueMeta(outOrdinals.getValueOrdinal()), row[outOrdinals.getValueOrdinal()]);
 
         if (outKey != null && outVal != null) {
-          setDebugStatus(reporter, "Collecting output record [" + outKey + "] - [" + outVal + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+          if (debug) setDebugStatus(reporter, "Collecting output record [" + outKey + "] - [" + outVal + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
           // TODO Implement type safe converters
           @SuppressWarnings("unchecked")
           K k = (K) outKey;
@@ -103,26 +114,26 @@ public class OutputCollectorRowListener<K, V> extends RowAdapter {
           output.collect(k, v);
         } else {
           if (outKey == null) {
-            setDebugStatus(reporter, "Transformation returned a null key"); //$NON-NLS-1$
+            if (debug) setDebugStatus(reporter, "Transformation returned a null key"); //$NON-NLS-1$
             reporter.incrCounter(Counter.OUT_RECORD_WITH_NULL_KEY, 1);
           }
           if (outVal == null) {
-            setDebugStatus(reporter, "Transformation returned a null value"); //$NON-NLS-1$
+            if (debug) setDebugStatus(reporter, "Transformation returned a null value"); //$NON-NLS-1$
             reporter.incrCounter(Counter.OUT_RECORD_WITH_NULL_VALUE, 1);
           }
         }
       } else {
         if (row == null || rowMeta.isEmpty()) {
-          setDebugStatus(reporter, "Invalid row received from transformation"); //$NON-NLS-1$
+          if (debug) setDebugStatus(reporter, "Invalid row received from transformation"); //$NON-NLS-1$
         } else if (rowMeta.size() < 2) {
-          setDebugStatus(reporter, "Invalid row format. Expected key/value columns, but received " + rowMeta.size() //$NON-NLS-1$
+          if (debug) setDebugStatus(reporter, "Invalid row format. Expected key/value columns, but received " + rowMeta.size() //$NON-NLS-1$
               + " columns"); //$NON-NLS-1$
         } else {
           OutKeyValueOrdinals outOrdinals = new OutKeyValueOrdinals(rowMeta);
           if (outOrdinals.getKeyOrdinal() < 0 || outOrdinals.getValueOrdinal() < 0) {
-            setDebugStatus(reporter, "outKey or outValue is missing from the transformation output step"); //$NON-NLS-1$
+            if (debug) setDebugStatus(reporter, "outKey or outValue is missing from the transformation output step"); //$NON-NLS-1$
           }
-          setDebugStatus(reporter, "Unknown issue with received data from transformation"); //$NON-NLS-1$
+          if (debug) setDebugStatus(reporter, "Unknown issue with received data from transformation"); //$NON-NLS-1$
         }
       }
     } catch (Exception ex) {
