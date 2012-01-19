@@ -1488,9 +1488,4 @@
 		<iconfile>ui/images/TBLCMP.png</iconfile>
 	</step> 
 	
-//		id = "TableCompare",
-//		image = "be/kjube/plugins/images/table_compare.png",
-//		description ="kJube.Plugins.TableCompare.Description",
-//		name = "kJube.Plugins.TableCompare.Name",
-//		categoryDescription="kJube.Category.Name",
 </steps>
