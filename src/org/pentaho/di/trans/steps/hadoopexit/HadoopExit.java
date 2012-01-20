@@ -42,7 +42,7 @@ public class HadoopExit extends BaseStep implements StepInterface {
   }
   
   public boolean runtimeInit() throws KettleException {
-    data.init(getInputRowMeta().clone(), meta);
+    data.init(getInputRowMeta(), meta);
     return true;
   }
 
