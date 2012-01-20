@@ -118,7 +118,6 @@ public class KettleEnvironment {
 	}
 	
 	private static void createDefaultKettleProperties(String directory) {
-		LogChannelInterface log = new LogChannel(Const.KETTLE_PROPERTIES);
 		
 		String kpFile = directory+Const.FILE_SEPARATOR+Const.KETTLE_PROPERTIES;
 		File file = new File(kpFile);
@@ -132,7 +131,8 @@ public class KettleEnvironment {
 			} 
 			catch (IOException e) 
 			{
-				log.logError(BaseMessages.getString(PKG, "Props.Log.Error.UnableToCreateDefaultKettleProperties.Message", Const.KETTLE_PROPERTIES, kpFile), e);
+				System.err.println(BaseMessages.getString(PKG, "Props.Log.Error.UnableToCreateDefaultKettleProperties.Message", Const.KETTLE_PROPERTIES, kpFile));
+				System.err.println(e.getStackTrace());
 			}
 			finally 
 			{
@@ -140,7 +140,8 @@ public class KettleEnvironment {
 					try {
 						out.close();
 					} catch (IOException e) {
-						log.logError(BaseMessages.getString(PKG, "Props.Log.Error.UnableToCreateDefaultKettleProperties.Message", Const.KETTLE_PROPERTIES, kpFile), e);
+						System.err.println(BaseMessages.getString(PKG, "Props.Log.Error.UnableToCreateDefaultKettleProperties.Message", Const.KETTLE_PROPERTIES, kpFile));
+						System.err.println(e.getStackTrace());
 					}
 				}
 			}
