@@ -821,8 +821,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       String schemaAndTable = jobMeta.getJobLogTable().getDatabaseMeta().getQuotedSchemaTableCombination(schemaName, tableName);
       Database ldb = new Database(this, logcon);
       ldb.shareVariablesWith(this);
+      ldb.connect();
       ldb.setCommit(logCommitSize);
-        ldb.connect();
 
       try {
         // See if we have to add a batch id...
@@ -973,10 +973,10 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
 				Database ldb = new Database(this, logcon);
 				ldb.shareVariablesWith(this);
-				ldb.setCommit(logCommitSize);
 				try
 				{
 					ldb.connect();
+  	            ldb.setCommit(logCommitSize);
 					ldb.writeLogRecord(jobMeta.getJobLogTable(), status, this, null);
 				}
 				catch(KettleDatabaseException dbe)
@@ -1005,9 +1005,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 		try {
 			db = new Database(this, channelLogTable.getDatabaseMeta());
 			db.shareVariablesWith(this);
+         db.connect();
 			db.setCommit(logCommitSize);
-			db.connect();
-			
+
 			List<LoggingHierarchy> loggingHierarchyList = getLoggingHierarchy();
 			for (LoggingHierarchy loggingHierarchy : loggingHierarchyList) {
 				db.writeLogRecord(channelLogTable, LogStatus.START, loggingHierarchy, null);
@@ -1031,9 +1031,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       try {
         db = new Database(this, jobEntryLogTable.getDatabaseMeta());
         db.shareVariablesWith(this);
-        db.setCommit(logCommitSize);
         db.connect();
-        
+        db.setCommit(logCommitSize);
+
         for (JobEntryCopy copy : jobMeta.getJobCopies()) {
           db.writeLogRecord(jobEntryLogTable, LogStatus.START, copy, this);
         }
