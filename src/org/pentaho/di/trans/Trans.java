@@ -1387,11 +1387,11 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	            }
 			    transLogTableDatabaseConnection = new Database(this, logConnection);
 			    transLogTableDatabaseConnection.shareVariablesWith(this);
-			    transLogTableDatabaseConnection.setCommit(logCommitSize); // always turn autocommit off
 
 			    if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.OpeningLogConnection",""+logConnection)); //$NON-NLS-1$ //$NON-NLS-2$
 			    transLogTableDatabaseConnection.connect();
-				
+             transLogTableDatabaseConnection.setCommit(logCommitSize); // always turn autocommit off
+			    
 				// See if we have to add a batch id...
 				// Do this first, before anything else to lock the complete table exclusively
 				//
@@ -1426,11 +1426,12 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 					{
 						Database maxdb = new Database(this, maxcon);
 						maxdb.shareVariablesWith(this);
-						maxdb.setCommit(logCommitSize); // always disable auto-commit.
+						
 						try
 						{
 							if(log.isDetailed())  log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.OpeningMaximumDateConnection")); //$NON-NLS-1$
 							maxdb.connect();
+							maxdb.setCommit(logCommitSize); // always disable auto-commit.
 
 							//
 							// Determine the endDate by looking at a field in a table...
@@ -1497,8 +1498,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 							Database depdb = new Database(this, depcon);
 							try
 							{
-							  depdb.setCommit(logCommitSize); // always turn off autocommit;
-								depdb.connect();
+                        depdb.connect();
+							   depdb.setCommit(logCommitSize); // always turn off autocommit;
 
 								String sql = "SELECT MAX("+td.getFieldname()+") FROM "+td.getTablename(); //$NON-NLS-1$ //$NON-NLS-2$
 								RowMetaAndData r1 = depdb.getOneRow(sql);
@@ -1731,8 +1732,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		try {
 			db = new Database(this, channelLogTable.getDatabaseMeta());
 			db.shareVariablesWith(this);
+         db.connect();
 			db.setCommit(logCommitSize); // always turn off autocommit;
-			db.connect();
 			
 			List<LoggingHierarchy> loggingHierarchyList = getLoggingHierarchy();
 			for (LoggingHierarchy loggingHierarchy : loggingHierarchyList) {
@@ -1755,9 +1756,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		try {
 			db = new Database(this, stepLogTable.getDatabaseMeta());
 			db.shareVariablesWith(this);
-			db.setCommit(logCommitSize); // always turn off autocommit;
 			db.connect();
-			
+         db.setCommit(logCommitSize); // always turn off autocommit;
+         
 			for (StepMetaDataCombi combi : steps) {
 				db.writeLogRecord(stepLogTable, LogStatus.START, combi, null);
 			}
@@ -1840,8 +1841,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 				if (transLogTableDatabaseConnection==null) {
 					ldb = new Database(this, logcon);
 					ldb.shareVariablesWith(this);
+               ldb.connect();
 					ldb.setCommit(logCommitSize); // always turn off autocommit;
-					ldb.connect();
 					transLogTableDatabaseConnection=ldb;
 				} else {
 					ldb = transLogTableDatabaseConnection;
@@ -1886,8 +1887,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		try {
 			ldb = new Database(this, performanceLogTable.getDatabaseMeta());
 			ldb.shareVariablesWith(this);
+         ldb.connect();
 			ldb.setCommit(logCommitSize); // always turn off autocommit;
-			ldb.connect();
 			
 			// Write to the step performance log table...
 			//
