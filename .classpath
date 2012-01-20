@@ -24,7 +24,7 @@
 	<classpathentry exported="true" kind="lib" path="libswt/commands.jar"/>
 	<classpathentry exported="true" kind="lib" path="libswt/common.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/jakarta-oro-2.0.8.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/commons/commons-collections-3.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/commons/commons-collections-3.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/commons/commons-dbcp-1.2.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/commons/commons-fileupload-1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/commons/commons-httpclient-3.0.1.jar"/>
@@ -348,7 +348,7 @@
 	<classpathentry kind="lib" path="libext/datacleaner-ui/xmlbeans-2.3.0.jar"/>
 	<classpathentry kind="lib" path="libext/eobjects/SassyReader-0.2.jar"/>
 	<classpathentry kind="lib" path="libext/jersey/mimepull-1.5.jar"/>
-	<classpathentry kind="lib" path="libext/jfree/jcommon-1.0.15.jar"/>
+	<classpathentry kind="lib" path="libext/jfree/jcommon-1.0.16.jar"/>
 	<classpathentry kind="lib" path="libext/jfree/jfreechart-1.0.13.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/hbase-0.90.1.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/zookeeper-3.3.2.jar"/>
