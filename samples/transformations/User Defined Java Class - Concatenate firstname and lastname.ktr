@@ -241,7 +241,7 @@ public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws K
     
     // putRow will send the row on to the default output hop.
 	//
-    putRow(data.outputRowMeta, r);
+    putRow(data.outputRowMeta, outputRow);
 
 	return true;
 }]]></class_source>
