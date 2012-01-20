@@ -36,56 +36,64 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
+import com.mongodb.DBObject;
 import com.mongodb.Mongo;
+import com.mongodb.util.JSON;
 
 public class MongoDbInput extends BaseStep implements StepInterface
 {
-	private static Class<?> PKG = MongoDbInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+  private static Class<?> PKG = MongoDbInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	private MongoDbInputMeta meta;
-	private MongoDbInputData data;
-	
-	public MongoDbInput(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
-	{
-		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
-	}
-
-	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
-	{
-	  if (first) {
-	    first=false;
-	    
-	    data.outputRowMeta = new RowMeta();
-	    meta.getFields(data.outputRowMeta,getStepname(), null, null, this);
-	    
-	    data.cursor = data.collection.find();
-	  }
-
-	  if (data.cursor.hasNext() && !isStopped()) {
-	    String json = data.cursor.next().toString();
-	    Object[] row = RowDataUtil.allocateRowData(data.outputRowMeta.size());
-	    int index=0;
-	    
-	    row[index++] = json;
-
-	    // putRow will send the row on to the default output hop.
-	    //
-	    putRow(data.outputRowMeta, row);
-	    
-	    return true;
-	  } else {
-
-	    setOutputDone();
+  private MongoDbInputMeta meta;
+  private MongoDbInputData data;
   
-  	  return false;
-	  }
-	}
+  public MongoDbInput(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
+  {
+    super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
+  }
 
-	public boolean init(StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface)
-	{
-	  if (super.init(stepMetaInterface, stepDataInterface)) {
-  	  meta = (MongoDbInputMeta) stepMetaInterface;
-  	  data = (MongoDbInputData) stepDataInterface;
+  public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
+  {
+    if (first) {
+      first=false;
+      
+      data.outputRowMeta = new RowMeta();
+      meta.getFields(data.outputRowMeta,getStepname(), null, null, this);
+      
+      String query = environmentSubstitute(meta.getJsonQuery());
+      if (Const.isEmpty(query)) {
+        data.cursor = data.collection.find();
+      } else {
+        DBObject dbObject = (DBObject)JSON.parse(query);
+        data.cursor = data.collection.find(dbObject);
+      }
+    }
+
+    if (data.cursor.hasNext() && !isStopped()) {
+      String json = data.cursor.next().toString();
+      Object[] row = RowDataUtil.allocateRowData(data.outputRowMeta.size());
+      int index=0;
+      
+      row[index++] = json;
+
+      // putRow will send the row on to the default output hop.
+      //
+      putRow(data.outputRowMeta, row);
+      
+      return true;
+    } else {
+
+      setOutputDone();
+  
+      return false;
+    }
+  }
+
+  public boolean init(StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface)
+  {
+    if (super.init(stepMetaInterface, stepDataInterface)) {
+      meta = (MongoDbInputMeta) stepMetaInterface;
+      data = (MongoDbInputData) stepDataInterface;
       
       String hostname = environmentSubstitute(meta.getHostname());
       int port = Const.toInt(environmentSubstitute(meta.getPort()), 27017);
@@ -112,21 +120,21 @@ public class MongoDbInput extends BaseStep implements StepInterface
         logError(BaseMessages.getString(PKG, "MongoDbInput.ErrorConnectingToMongoDb.Exception", hostname, ""+port, db, collection), e);
         return false;
       }
-	  } else {
-	    return false;
-	  }
-	}
-	
-	@Override
-	public void dispose(StepMetaInterface smi, StepDataInterface sdi) {
-	  if (data.cursor!=null) {
-	    data.cursor.close();
-	  }
-	  if (data.mongo!=null) {
-	    data.mongo.close();
-	  }
-	  
-	  super.dispose(smi, sdi);
-	}
-	
+    } else {
+      return false;
+    }
+  }
+  
+  @Override
+  public void dispose(StepMetaInterface smi, StepDataInterface sdi) {
+    if (data.cursor!=null) {
+      data.cursor.close();
+    }
+    if (data.mongo!=null) {
+      data.mongo.close();
+    }
+    
+    super.dispose(smi, sdi);
+  }
+  
 }

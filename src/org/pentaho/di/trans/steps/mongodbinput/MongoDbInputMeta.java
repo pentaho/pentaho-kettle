@@ -56,133 +56,141 @@ import org.w3c.dom.Node;
  */
 public class MongoDbInputMeta extends BaseStepMeta implements StepMetaInterface
 {
-	private static Class<?> PKG = MongoDbInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+  private static Class<?> PKG = MongoDbInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	private String hostname;
-	private String port;
+  private String hostname;
+  private String port;
   private String dbName;
   private String collection;
   private String jsonFieldName;
   
   private String authenticationUser;
   private String authenticationPassword;
+  
+  private String jsonQuery;
 
 
-	public MongoDbInputMeta()
-	{
-		super(); // allocate BaseStepMeta
-	}
+  public MongoDbInputMeta()
+  {
+    super(); // allocate BaseStepMeta
+  }
 
-	public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String,Counter> counters)
-		throws KettleXMLException
-	{
-		readData(stepnode);
-	}
+  public void loadXML(Node stepnode, List<DatabaseMeta> databases, Map<String,Counter> counters)
+    throws KettleXMLException
+  {
+    readData(stepnode);
+  }
 
-	public Object clone()
-	{
-		MongoDbInputMeta retval = (MongoDbInputMeta)super.clone();
-		return retval;
-	}
-	
-	private void readData(Node stepnode)
-		throws KettleXMLException
-	{
-		try
-		{
-			hostname  = XMLHandler.getTagValue(stepnode, "hostname"); //$NON-NLS-1$ //$NON-NLS-2$
+  public Object clone()
+  {
+    MongoDbInputMeta retval = (MongoDbInputMeta)super.clone();
+    return retval;
+  }
+  
+  private void readData(Node stepnode)
+    throws KettleXMLException
+  {
+    try
+    {
+      hostname  = XMLHandler.getTagValue(stepnode, "hostname"); //$NON-NLS-1$ //$NON-NLS-2$
       port = XMLHandler.getTagValue(stepnode, "port"); //$NON-NLS-1$ //$NON-NLS-2$
       dbName = XMLHandler.getTagValue(stepnode, "db_name"); //$NON-NLS-1$
-			collection  = XMLHandler.getTagValue(stepnode, "collection"); //$NON-NLS-1$
+      collection  = XMLHandler.getTagValue(stepnode, "collection"); //$NON-NLS-1$
       jsonFieldName = XMLHandler.getTagValue(stepnode, "json_field_name"); //$NON-NLS-1$
-		}
-		catch(Exception e)
-		{
-			throw new KettleXMLException(BaseMessages.getString(PKG, "MongoDbInputMeta.Exception.UnableToLoadStepInfo"), e); //$NON-NLS-1$
-		}
-	}
+      jsonQuery = XMLHandler.getTagValue(stepnode, "json_query"); //$NON-NLS-1$
+      authenticationUser = XMLHandler.getTagValue(stepnode, "auth_user"); //$NON-NLS-1$
+      authenticationPassword = Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(stepnode, "auth_password")); //$NON-NLS-1$ 
+    }
+    catch(Exception e)
+    {
+      throw new KettleXMLException(BaseMessages.getString(PKG, "MongoDbInputMeta.Exception.UnableToLoadStepInfo"), e); //$NON-NLS-1$
+    }
+  }
 
-	public void setDefault()
-	{
-		hostname = "localhost"; //$NON-NLS-1$
+  public void setDefault()
+  {
+    hostname = "localhost"; //$NON-NLS-1$
     port = "27017"; //$NON-NLS-1$
     dbName = "db";  //$NON-NLS-1$
     collection = "collection";  //$NON-NLS-1$
     jsonFieldName = "json";  //$NON-NLS-1$
-	}
-	
-	public void getFields(RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space)
-		throws KettleStepException
-	{
-	  ValueMetaInterface jsonValueMeta = new ValueMeta(jsonFieldName, ValueMetaInterface.TYPE_STRING);
-	  jsonValueMeta.setOrigin(origin);
-	  rowMeta.addValueMeta(jsonValueMeta);
-	}
-	
-	public String getXML()
-	{
+  }
+  
+  public void getFields(RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space)
+    throws KettleStepException
+  {
+    ValueMetaInterface jsonValueMeta = new ValueMeta(jsonFieldName, ValueMetaInterface.TYPE_STRING);
+    jsonValueMeta.setOrigin(origin);
+    rowMeta.addValueMeta(jsonValueMeta);
+  }
+  
+  public String getXML()
+  {
     StringBuffer retval = new StringBuffer(300);
-		
-		retval.append("    ").append(XMLHandler.addTagValue("hostname", hostname)); //$NON-NLS-1$ //$NON-NLS-2$
+    
+    retval.append("    ").append(XMLHandler.addTagValue("hostname", hostname)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("    ").append(XMLHandler.addTagValue("port", port)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("    ").append(XMLHandler.addTagValue("db_name", dbName)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("    ").append(XMLHandler.addTagValue("collection", collection)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("    ").append(XMLHandler.addTagValue("json_field_name", jsonFieldName)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("    ").append(XMLHandler.addTagValue("json_query", jsonQuery)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("    ").append(XMLHandler.addTagValue("auth_user", authenticationUser));
     retval.append("    ").append(XMLHandler.addTagValue("auth_password", Encr.encryptPasswordIfNotUsingVariables(authenticationPassword)));
 
-		return retval.toString();
-	}
-	
-	public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String,Counter> counters)
-		throws KettleException
-	{
-		try
-		{
-			hostname      = rep.getStepAttributeString (id_step, "hostname"); //$NON-NLS-1$
+    return retval.toString();
+  }
+  
+  public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases, Map<String,Counter> counters)
+    throws KettleException
+  {
+    try
+    {
+      hostname      = rep.getStepAttributeString (id_step, "hostname"); //$NON-NLS-1$
       port          = rep.getStepAttributeString (id_step, "port"); //$NON-NLS-1$
       dbName        = rep.getStepAttributeString (id_step, "db_name"); //$NON-NLS-1$
       collection    = rep.getStepAttributeString (id_step, "collection"); //$NON-NLS-1$
       jsonFieldName = rep.getStepAttributeString (id_step, "json_field_name"); //$NON-NLS-1$
-			
+      jsonQuery     = rep.getStepAttributeString (id_step, "json_query"); //$NON-NLS-1$
+      
       authenticationUser = rep.getStepAttributeString(id_step, "auth_user");
       authenticationPassword = Encr.decryptPasswordOptionallyEncrypted(rep.getStepAttributeString(id_step, "auth_password"));
-		}
-		catch(Exception e)
-		{
-			throw new KettleException(BaseMessages.getString(PKG, "MongoDbInputMeta.Exception.UnexpectedErrorWhileReadingStepInfo"), e); //$NON-NLS-1$
-		}
-	}
+    }
+    catch(Exception e)
+    {
+      throw new KettleException(BaseMessages.getString(PKG, "MongoDbInputMeta.Exception.UnexpectedErrorWhileReadingStepInfo"), e); //$NON-NLS-1$
+    }
+  }
 
-	public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step)
-		throws KettleException
-	{
-		try
-		{
+  public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step)
+    throws KettleException
+  {
+    try
+    {
       rep.saveStepAttribute(id_transformation, id_step, "hostname", hostname); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "port", port); //$NON-NLS-1$
+      rep.saveStepAttribute(id_transformation, id_step, "port", port); //$NON-NLS-1$
       rep.saveStepAttribute(id_transformation, id_step, "db_name", dbName); //$NON-NLS-1$
       rep.saveStepAttribute(id_transformation, id_step, "collection", collection); //$NON-NLS-1$
       rep.saveStepAttribute(id_transformation, id_step, "json_field_name", jsonFieldName); //$NON-NLS-1$
+      rep.saveStepAttribute(id_transformation, id_step, "json_query", jsonQuery); //$NON-NLS-1$
 
       rep.saveStepAttribute(id_transformation, id_step, "auth_user", authenticationUser);
       rep.saveStepAttribute(id_transformation, id_step, "auth_password", Encr.encryptPasswordIfNotUsingVariables(authenticationPassword));
-		}
-		catch(KettleException e)
-		{
-			throw new KettleException(BaseMessages.getString(PKG, "MongoDbInputMeta.Exception.UnableToSaveStepInfo")+id_step, e); //$NON-NLS-1$
-		}
-	}
+    }
+    catch(KettleException e)
+    {
+      throw new KettleException(BaseMessages.getString(PKG, "MongoDbInputMeta.Exception.UnableToSaveStepInfo")+id_step, e); //$NON-NLS-1$
+    }
+  }
 
-	public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr, Trans trans)
-	{
-		return new MongoDbInput(stepMeta, stepDataInterface, cnr, tr, trans);
-	}
+  public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta tr, Trans trans)
+  {
+    return new MongoDbInput(stepMeta, stepDataInterface, cnr, tr, trans);
+  }
 
-	public StepDataInterface getStepData()
-	{
-		return new MongoDbInputData();
-	}
+  public StepDataInterface getStepData()
+  {
+    return new MongoDbInputData();
+  }
 
   @Override
   public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String[] input, String[] output, RowMetaInterface info) {
@@ -286,4 +294,19 @@ public class MongoDbInputMeta extends BaseStepMeta implements StepMetaInterface
   public void setAuthenticationPassword(String authenticationPassword) {
     this.authenticationPassword = authenticationPassword;
   }
+
+  /**
+   * @return the jsonQuery
+   */
+  public String getJsonQuery() {
+    return jsonQuery;
+  }
+
+  /**
+   * @param jsonQuery the jsonQuery to set
+   */
+  public void setJsonQuery(String jsonQuery) {
+    this.jsonQuery = jsonQuery;
+  }
+  
 }
