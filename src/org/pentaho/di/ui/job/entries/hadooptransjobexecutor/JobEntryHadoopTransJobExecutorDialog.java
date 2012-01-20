@@ -107,6 +107,7 @@ public class JobEntryHadoopTransJobExecutorDialog extends JobEntryDialog impleme
     bf.createBinding("jobentry-map-output-stepname", "value", controller, JobEntryHadoopTransJobExecutorController.MAP_TRANS_OUTPUT_STEP_NAME); //$NON-NLS-1$ //$NON-NLS-2$ 
     bf.createBinding("jobentry-combiner-input-stepname", "value", controller, JobEntryHadoopTransJobExecutorController.COMBINER_TRANS_INPUT_STEP_NAME); //$NON-NLS-1$ //$NON-NLS-2$ 
     bf.createBinding("jobentry-combiner-output-stepname", "value", controller, JobEntryHadoopTransJobExecutorController.COMBINER_TRANS_OUTPUT_STEP_NAME); //$NON-NLS-1$ //$NON-NLS-2$
+    bf.createBinding("jobentry-combiner-single-threaded", "selected", controller, JobEntryHadoopTransJobExecutorController.COMBINING_SINGLE_THREADED); //$NON-NLS-1$ //$NON-NLS-2$
     bf.createBinding("jobentry-reduce-input-stepname", "value", controller, JobEntryHadoopTransJobExecutorController.REDUCE_TRANS_INPUT_STEP_NAME); //$NON-NLS-1$ //$NON-NLS-2$ 
     bf.createBinding("jobentry-reduce-output-stepname", "value", controller, JobEntryHadoopTransJobExecutorController.REDUCE_TRANS_OUTPUT_STEP_NAME); //$NON-NLS-1$ //$NON-NLS-2$
     bf.createBinding("jobentry-reduce-single-threaded", "selected", controller, JobEntryHadoopTransJobExecutorController.REDUCING_SINGLE_THREADED); //$NON-NLS-1$ //$NON-NLS-2$ 

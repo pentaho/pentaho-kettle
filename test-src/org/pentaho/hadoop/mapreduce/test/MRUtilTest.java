@@ -2,11 +2,13 @@ package org.pentaho.hadoop.mapreduce.test;
 
 import org.apache.hadoop.conf.Configuration;
 import org.junit.Test;
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.TransMeta;
 import org.pentaho.hadoop.mapreduce.MRUtil;
 
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 
 /**
@@ -44,5 +46,23 @@ public class MRUtilTest {
     } catch (KettleException ex) {
       assertTrue("Wrong exception: " + ex.getMessage(), ex.getMessage().contains(MRUtil.PROPERTY_PENTAHO_KETTLE_HOME));
     }
+  }
+
+  @Test
+  public void createTrans_normalEngine() throws Exception {
+    KettleEnvironment.init();
+    final Configuration c = new Configuration();
+    final TransMeta transMeta = new TransMeta("./test-res/wordcount-reducer.ktr");
+    final Trans trans = MRUtil.getTrans(c, transMeta.getXML(), false);
+    assertEquals(TransMeta.TransformationType.Normal, trans.getTransMeta().getTransformationType());
+  }
+
+  @Test
+  public void createTrans_singleThreaded() throws Exception {
+    KettleEnvironment.init();
+    final Configuration c = new Configuration();
+    final TransMeta transMeta = new TransMeta("./test-res/wordcount-reducer.ktr");
+    final Trans trans = MRUtil.getTrans(c, transMeta.getXML(), true);
+    assertEquals(TransMeta.TransformationType.SingleThreaded, trans.getTransMeta().getTransformationType());
   }
 }

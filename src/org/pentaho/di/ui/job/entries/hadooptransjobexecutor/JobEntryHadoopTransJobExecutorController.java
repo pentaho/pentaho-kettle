@@ -70,6 +70,7 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
   public static final String MAP_TRANS_OUTPUT_STEP_NAME = "mapTransOutputStepName"; //$NON-NLS-1$
   public static final String COMBINER_TRANS_INPUT_STEP_NAME = "combinerTransInputStepName"; //$NON-NLS-1$
   public static final String COMBINER_TRANS_OUTPUT_STEP_NAME = "combinerTransOutputStepName"; //$NON-NLS-1$
+  public static final String COMBINING_SINGLE_THREADED = "combiningSingleThreaded"; //$NON-NLS-1$
   public static final String REDUCE_TRANS_INPUT_STEP_NAME = "reduceTransInputStepName"; //$NON-NLS-1$
   public static final String REDUCE_TRANS_OUTPUT_STEP_NAME = "reduceTransOutputStepName"; //$NON-NLS-1$
   public static final String REDUCING_SINGLE_THREADED = "reducingSingleThreaded"; //$NON-NLS-1$
@@ -141,6 +142,7 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
   private String combinerRepositoryFile = "";
   private ObjectId combinerRepositoryReference;
   private String combinerTrans = "";
+  private boolean combiningSingleThreaded;
   
   private String reduceRepositoryDir = "";
   private String reduceRepositoryFile = "";
@@ -310,8 +312,8 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
     }
 
     jobEntry.setCombinerInputStepName(combinerTransInputStepName);
-    jobEntry.setCombinerOutputStepName(combinerTransOutputStepName);    
-    
+    jobEntry.setCombinerOutputStepName(combinerTransOutputStepName); 
+    jobEntry.setCombiningSingleThreaded(combiningSingleThreaded);
     
     // Save only one method of accessing the transformation
     if (reduceRepositoryReference != null) {
@@ -324,7 +326,6 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
       jobEntry.setReduceRepositoryFile(reduceRepositoryFile);
       jobEntry.setReduceRepositoryReference(null);
       jobEntry.setReduceTrans(null);
-      jobEntry.setReducingSingleThreaded(reducingSingleThreaded);
     } else {
       jobEntry.setReduceTrans(reduceTrans);
       jobEntry.setReduceRepositoryDir(null);
@@ -508,6 +509,7 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
 
       setCombinerTransInputStepName(jobEntry.getCombinerInputStepName());
       setCombinerTransOutputStepName(jobEntry.getCombinerOutputStepName());
+      setCombiningSingleThreaded(jobEntry.isCombiningSingleThreaded());
       
       // Load the reduce transformation into the UI
       if (jobEntry.getReduceTrans() != null || rep == null) {
@@ -1479,5 +1481,19 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
   
   public boolean isReducingSingleThreaded() {
     return reducingSingleThreaded;
+  }
+  
+  public void invertCombiningSingleThreaded() {
+    setCombiningSingleThreaded(!isCombiningSingleThreaded());
+  }
+
+  public boolean isCombiningSingleThreaded() {
+    return combiningSingleThreaded;
+  }
+
+  public void setCombiningSingleThreaded(boolean combiningSingleThreaded) {
+    boolean old = this.combiningSingleThreaded;
+    this.combiningSingleThreaded = combiningSingleThreaded;
+    firePropertyChange(COMBINING_SINGLE_THREADED, old, this.combiningSingleThreaded);
   }
 }

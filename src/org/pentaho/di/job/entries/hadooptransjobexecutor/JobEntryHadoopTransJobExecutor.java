@@ -94,6 +94,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
   private String combinerRepositoryFile;
   private ObjectId combinerRepositoryReference;
   private String combinerTrans;
+  private boolean combiningSingleThreaded;
   
   private String reduceRepositoryDir;
   private String reduceRepositoryFile;
@@ -142,6 +143,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
   
   public JobEntryHadoopTransJobExecutor() throws Throwable {
     reducingSingleThreaded = true;
+    combiningSingleThreaded = true;
   }
   
   public String getHadoopJobName() {
@@ -512,6 +514,8 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
       conf.set("transformation-map-input-stepname", mapInputStepNameS); //$NON-NLS-1$
       conf.set("transformation-map-output-stepname", mapOutputStepNameS); //$NON-NLS-1$
       
+      conf.set(PentahoMapReduceBase.STRING_COMBINE_SINGLE_THREADED, combiningSingleThreaded ? "true" : "false");
+      
       // Pass the single threaded reduction to the configuration...
       //
       conf.set(PentahoMapReduceBase.STRING_REDUCE_SINGLE_THREADED, reducingSingleThreaded ? "true" : "false");
@@ -579,6 +583,11 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
         }
       }
       if (transMeta != null) {
+        
+        if (combiningSingleThreaded) {
+          verifySingleThreadingValidity(transMeta);
+        }
+
         transConfig = new TransConfiguration(transMeta, transExecConfig);
         conf.set("transformation-combiner-xml", transConfig.getXML()); //$NON-NLS-1$
         String combinerInputStepNameS = environmentSubstitute(combinerInputStepName);
@@ -612,8 +621,6 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
         if (reducingSingleThreaded) {
           verifySingleThreadingValidity(transMeta);
         }
-
-
         
         transConfig = new TransConfiguration(transMeta, transExecConfig);
         conf.set("transformation-reduce-xml", transConfig.getXML()); //$NON-NLS-1$
@@ -938,6 +945,10 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
     String combinerTransId = XMLHandler.getTagValue(entrynode, "combiner_trans_repo_reference"); //$NON-NLS-1$
     combinerRepositoryReference = Const.isEmpty(combinerTransId) ? null : new StringObjectId(combinerTransId);
     combinerTrans = XMLHandler.getTagValue(entrynode, "combiner_trans"); //$NON-NLS-1$
+    final String combinerSingleThreaded = XMLHandler.getTagValue(entrynode, "combiner_single_threaded");  //$NON-NLS-1$
+    if (!Const.isEmpty(combinerSingleThreaded)) {
+      setCombiningSingleThreaded("Y".equalsIgnoreCase(combinerSingleThreaded));  //$NON-NLS-1$
+    }
     
     reduceRepositoryDir = XMLHandler.getTagValue(entrynode, "reduce_trans_repo_dir"); //$NON-NLS-1$
     reduceRepositoryFile = XMLHandler.getTagValue(entrynode, "reduce_trans_repo_file"); //$NON-NLS-1$
@@ -1022,6 +1033,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
     retval.append("      ").append(XMLHandler.addTagValue("combiner_trans_repo_file", combinerRepositoryFile)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("      ").append(XMLHandler.addTagValue("combiner_trans_repo_reference", combinerRepositoryReference == null ? null : combinerRepositoryReference.toString())); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("      ").append(XMLHandler.addTagValue("combiner_trans", combinerTrans)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("      ").append(XMLHandler.addTagValue("combiner_single_threaded", combiningSingleThreaded)); //$NON-NLS-1$ //$NON-NLS-2$
     
     retval.append("      ").append(XMLHandler.addTagValue("reduce_trans_repo_dir", reduceRepositoryDir)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("      ").append(XMLHandler.addTagValue("reduce_trans_repo_file", reduceRepositoryFile)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -1101,6 +1113,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
       String combinerTransId = rep.getJobEntryAttributeString(id_jobentry, "combiner_trans_repo_reference"); //$NON-NLS-1$
       setCombinerRepositoryReference(Const.isEmpty(combinerTransId) ? null : new StringObjectId(combinerTransId));
       setCombinerTrans(rep.getJobEntryAttributeString(id_jobentry, "combiner_trans")); //$NON-NLS-1$
+      setCombiningSingleThreaded(rep.getJobEntryAttributeBoolean(id_jobentry, "combiner_single_threaded", true)); //$NON-NLS-1$
       
       setMapInputStepName(rep.getJobEntryAttributeString(id_jobentry, "map_input_step_name")); //$NON-NLS-1$
       setMapOutputStepName(rep.getJobEntryAttributeString(id_jobentry, "map_output_step_name")); //$NON-NLS-1$
@@ -1181,6 +1194,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
       rep.saveJobEntryAttribute(id_job, getObjectId(),"combiner_trans_repo_file", combinerRepositoryFile); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getObjectId(),"combiner_trans_repo_reference", combinerRepositoryReference == null ? null : combinerRepositoryReference.toString()); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getObjectId(),"combiner_trans", combinerTrans); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(),"combiner_single_threaded", combiningSingleThreaded); //$NON-NLS-1$
       
       rep.saveJobEntryAttribute(id_job, getObjectId(),"map_input_step_name", mapInputStepName); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getObjectId(),"map_output_step_name", mapOutputStepName); //$NON-NLS-1$
@@ -1249,5 +1263,13 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
    */
   public void setReducingSingleThreaded(boolean reducingSingleThreaded) {
     this.reducingSingleThreaded = reducingSingleThreaded;
+  }
+
+  public boolean isCombiningSingleThreaded() {
+    return combiningSingleThreaded;
+  }
+
+  public void setCombiningSingleThreaded(boolean combiningSingleThreaded) {
+    this.combiningSingleThreaded = combiningSingleThreaded;
   }
 }

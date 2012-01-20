@@ -50,6 +50,7 @@ public class PentahoMapReduceBase<K, V> extends MapReduceBase {
     OUT_RECORD_WITH_NULL_VALUE
   }
 
+  public static final String STRING_COMBINE_SINGLE_THREADED = "transformation-combine-single-threaded";
   public static final String STRING_REDUCE_SINGLE_THREADED = "transformation-reduce-single-threaded";
 
   protected String transMapXml;
@@ -85,6 +86,7 @@ public class PentahoMapReduceBase<K, V> extends MapReduceBase {
   protected MROperations mrOperation;
 
   protected OutputCollectorRowListener<K, V> rowCollector;
+  protected boolean combineSingleThreaded;
   protected boolean reduceSingleThreaded;
   
   public PentahoMapReduceBase() throws KettleException {
@@ -104,14 +106,14 @@ public class PentahoMapReduceBase<K, V> extends MapReduceBase {
     mapOutputStepName = job.get("transformation-map-output-stepname");
     combinerInputStepName = job.get("transformation-combiner-input-stepname");
     combinerOutputStepName = job.get("transformation-combiner-output-stepname");
+    combineSingleThreaded = isCombinerSingleThreaded(job);
     reduceInputStepName = job.get("transformation-reduce-input-stepname");
     reduceOutputStepName = job.get("transformation-reduce-output-stepname");
-    reduceSingleThreaded = "true".equalsIgnoreCase(job.get(STRING_REDUCE_SINGLE_THREADED));
+    reduceSingleThreaded = isReducerSingleThreaded(job);
     String xmlVariableSpace = job.get("variableSpace");
     
     if (!Const.isEmpty(xmlVariableSpace)) {
        setDebugStatus("PentahoMapReduceBase. variableSpace was retrieved from the job.  The contents: ");
-       System.out.println(xmlVariableSpace);
        
        //  deserialize from xml to variable space
        XStream xStream = new XStream();
@@ -195,15 +197,12 @@ public class PentahoMapReduceBase<K, V> extends MapReduceBase {
               trans = MRUtil.getTrans(conf, transMapXml, false);
           }
           else if (mrOperation.equals(MROperations.Combine)) {
-            setDebugStatus("Creating a transformation for a combiner.");
-            trans = MRUtil.getTrans(conf, transCombinerXml, false);
+              setDebugStatus("Creating a transformation for a combiner.");
+              trans = MRUtil.getTrans(conf, transCombinerXml, isCombinerSingleThreaded(conf));
         }
           else if (mrOperation.equals(MROperations.Reduce)) {
-            
-              boolean singleThreaded = "true".equalsIgnoreCase(conf.get(PentahoMapReduceBase.STRING_REDUCE_SINGLE_THREADED));
-            
               setDebugStatus("Creating a transformation for a reduce.");
-              trans = MRUtil.getTrans(conf, transReduceXml, singleThreaded);
+              trans = MRUtil.getTrans(conf, transReduceXml, isReducerSingleThreaded(conf));
           }
       }      
       catch (KettleException ke) {
@@ -211,7 +210,15 @@ public class PentahoMapReduceBase<K, V> extends MapReduceBase {
       }
       
   }
+
+  private boolean isCombinerSingleThreaded(final Configuration conf) {
+    return "true".equalsIgnoreCase(conf.get(STRING_COMBINE_SINGLE_THREADED));
+  }
   
+  private boolean isReducerSingleThreaded(final Configuration conf) {
+    return "true".equalsIgnoreCase(conf.get(STRING_REDUCE_SINGLE_THREADED));
+  }
+
   public void setMRType(MROperations mrOperation) {
       this.mrOperation = mrOperation;   
   }
