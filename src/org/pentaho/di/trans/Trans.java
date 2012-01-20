@@ -133,6 +133,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	private LogChannelInterface log;
 	private LogLevel logLevel = LogLevel.BASIC;
 	private String containerObjectId;
+	private int logCommitSize=10;
 	
 	/**
 	 * The transformation metadata to execute
@@ -321,6 +322,19 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		
 	}
 	
+	private void setDefaultLogCommitSize() {
+	  String propLogCommitSize = this.getVariable("pentaho.log.commit.size");
+	  if (propLogCommitSize != null) {
+      // override the logCommit variable
+      try {
+        logCommitSize = Integer.parseInt(propLogCommitSize);
+      } catch (Exception ignored) {
+        logCommitSize = 10; // ignore parsing error and default to 10
+      }
+    }
+	  
+	}
+	
 	public LogChannelInterface getLogChannel() {
 		return log;
 	}
@@ -364,6 +378,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 			initializeVariablesFrom(parentVariableSpace);
 			transMeta.copyParametersFrom(this);
 			transMeta.activateParameters();		
+	      this.setDefaultLogCommitSize();
 		}
 		catch(KettleException e)
 		{
@@ -1496,6 +1511,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 			    transLogTableDatabaseConnection.shareVariablesWith(this);
 			    if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.OpeningLogConnection",""+logConnection)); //$NON-NLS-1$ //$NON-NLS-2$
 			    transLogTableDatabaseConnection.connect();
+             transLogTableDatabaseConnection.setCommit(logCommitSize);
 				
 				// See if we have to add a batch id...
 				// Do this first, before anything else to lock the complete table exclusively
@@ -1535,6 +1551,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 						{
 							if(log.isDetailed())  log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.OpeningMaximumDateConnection")); //$NON-NLS-1$
 							maxdb.connect();
+ 	                  maxdb.setCommit(logCommitSize);
 
 							//
 							// Determine the endDate by looking at a field in a table...
@@ -1602,6 +1619,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 							try
 							{
 								depdb.connect();
+							   depdb.setCommit(logCommitSize);
 
 								String sql = "SELECT MAX("+td.getFieldname()+") FROM "+td.getTablename(); //$NON-NLS-1$ //$NON-NLS-2$
 								RowMetaAndData r1 = depdb.getOneRow(sql);
@@ -1840,6 +1858,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 			db = new Database(this, channelLogTable.getDatabaseMeta());
 			db.shareVariablesWith(this);
 			db.connect();
+			db.setCommit(logCommitSize);
 			
 			List<LoggingHierarchy> loggingHierarchyList = getLoggingHierarchy();
 			for (LoggingHierarchy loggingHierarchy : loggingHierarchyList) {
@@ -1864,6 +1883,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 			db = new Database(this, stepLogTable.getDatabaseMeta());
 			db.shareVariablesWith(this);
 			db.connect();
+			db.setCommit(logCommitSize);
 			
 			for (StepMetaDataCombi combi : steps) {
 				db.writeLogRecord(stepLogTable, LogStatus.START, combi, null);
@@ -1949,6 +1969,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 					ldb = new Database(this, logcon);
 					ldb.shareVariablesWith(this);
 					ldb.connect();
+					ldb.setCommit(logCommitSize);
 					transLogTableDatabaseConnection=ldb;
 				} else {
 					ldb = transLogTableDatabaseConnection;
@@ -1998,6 +2019,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 			ldb = new Database(this, performanceLogTable.getDatabaseMeta());
 			ldb.shareVariablesWith(this);
 			ldb.connect();
+			ldb.setCommit(logCommitSize);
 			
 			// Write to the step performance log table...
 			//
