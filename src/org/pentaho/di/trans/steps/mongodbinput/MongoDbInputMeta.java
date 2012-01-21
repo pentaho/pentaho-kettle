@@ -27,6 +27,7 @@ import java.util.Map;
 
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Counter;
+import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
@@ -54,6 +55,7 @@ import org.w3c.dom.Node;
  * @author matt
  * @since 4.2.0-M1
  */
+@Step(id = "MongoDbInput", image = "mongodb-input.png", name = "MongoDb Input", description="Reads from a Mongo DB collection", categoryDescription="Big Data")
 public class MongoDbInputMeta extends BaseStepMeta implements StepMetaInterface
 {
 	private static Class<?> PKG = MongoDbInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
