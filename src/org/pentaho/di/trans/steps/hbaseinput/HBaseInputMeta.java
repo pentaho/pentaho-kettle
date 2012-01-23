@@ -746,21 +746,21 @@ public class HBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
         conf = HBaseInputData.getHBaseConnection(zookeeperHosts, zookeeperPort, 
             coreConf, defaultConf);            
       } catch (IOException ex) {
-        throw new KettleStepException(ex.getMessage());
+        throw new KettleStepException(ex.getMessage(), ex);
       }
       
       MappingAdmin mappingAdmin = null;
       try {
         mappingAdmin = new MappingAdmin(conf);
       } catch (Exception ex) {
-        throw new KettleStepException(ex.getMessage());
+        throw new KettleStepException(ex.getMessage(), ex);
       }
 
       try {
         m_cachedMapping = 
           mappingAdmin.getMapping(m_sourceTableName, m_sourceMappingName);
       } catch (IOException ex) {
-        throw new KettleStepException(ex.getMessage());
+        throw new KettleStepException(ex.getMessage(), ex);
       }
     }
   }

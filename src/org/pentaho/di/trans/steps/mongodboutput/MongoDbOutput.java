@@ -183,7 +183,7 @@ public class MongoDbOutput extends BaseStep implements StepInterface {
           m_data.setCollection(m_data.getDB().getCollection(collection));
         } catch (Exception m) {
           disconnect();
-          throw new KettleException(m.fillInStackTrace());
+          throw new KettleException(m.getMessage(), m);
         }                
       }
     }
@@ -232,7 +232,7 @@ public class MongoDbOutput extends BaseStep implements StepInterface {
               try {
                 cmd.throwOnError();
               } catch (MongoException me) {
-                throw new KettleException(me.fillInStackTrace());
+                throw new KettleException(me.getMessage(), me);
               }
             }
           }          
@@ -268,7 +268,7 @@ public class MongoDbOutput extends BaseStep implements StepInterface {
       try {
         cmd.throwOnError();
       } catch (MongoException me) {
-        throw new KettleException(me.fillInStackTrace());
+        throw new KettleException(me.getMessage(), me);
       }
     }
     
@@ -312,11 +312,11 @@ public class MongoDbOutput extends BaseStep implements StepInterface {
         return true;
       } catch (UnknownHostException ex) {
         logError(BaseMessages.getString(PKG, 
-            "MongoDbOutput.Messages.Error.UnknownHost", hostname));
+            "MongoDbOutput.Messages.Error.UnknownHost", hostname), ex);
         return false;
       } catch (Exception e){
         logError(BaseMessages.getString(PKG, "MongoDbOutput.Messages.Error.ProblemConnecting", 
-           hostname, "" + port));
+           hostname, "" + port), e);
         return false;
       }
     }

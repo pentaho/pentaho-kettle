@@ -145,7 +145,7 @@ public class CassandraOutput extends BaseStep implements StepInterface {
         m_connection.setKeyspace(keyspaceS);
       } catch (Exception ex) {
         closeConnection();
-        throw new KettleException(ex.fillInStackTrace());
+        throw new KettleException(ex.getMessage(), ex);
       }
       
       try {
@@ -167,7 +167,7 @@ public class CassandraOutput extends BaseStep implements StepInterface {
         }                
       } catch (Exception e) {
         closeConnection();
-        throw new KettleException(e.fillInStackTrace());
+        throw new KettleException(e.getMessage(), e);
       }
       
       // get the column family meta data
@@ -182,7 +182,7 @@ public class CassandraOutput extends BaseStep implements StepInterface {
         }
       } catch (Exception e) {
         closeConnection();
-        throw new KettleException(e.fillInStackTrace());
+        throw new KettleException(e.getMessage(), e);
       }
       
       
@@ -208,7 +208,7 @@ public class CassandraOutput extends BaseStep implements StepInterface {
               getInputRowMeta(), m_keyIndex, m_cassandraMeta);
         } catch (Exception e) {
           closeConnection();
-          throw new KettleException(e.fillInStackTrace());
+          throw new KettleException(e.getMessage(), e);
         }
       }
       
@@ -218,7 +218,7 @@ public class CassandraOutput extends BaseStep implements StepInterface {
           CassandraOutputData.truncateColumnFamily(m_connection, m_columnFamilyName);
         } catch (Exception e) {
           closeConnection();
-          throw new KettleException(e.fillInStackTrace());
+          throw new KettleException(e.getMessage(), e);
         }
       }
       
@@ -262,7 +262,7 @@ public class CassandraOutput extends BaseStep implements StepInterface {
     } catch (Exception e) {
       closeConnection();
       System.out.println(m_batchInsert.toString());
-      throw new KettleException(e.fillInStackTrace());
+      throw new KettleException(e.getMessage(), e);
     }
     
     // ready for a new batch

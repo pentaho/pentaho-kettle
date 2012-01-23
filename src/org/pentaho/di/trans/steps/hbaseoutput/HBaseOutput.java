@@ -100,7 +100,7 @@ public class HBaseOutput extends BaseStep implements StepInterface {
         } catch (IOException e) {        
           e.printStackTrace();
           throw new KettleException("A problem occurred whilst flushing buffered " +
-              "data: " + e.getMessage());
+              "data: " + e.getMessage(), e);
         }
       }
       
@@ -110,7 +110,7 @@ public class HBaseOutput extends BaseStep implements StepInterface {
       } catch (IOException e) {
         e.printStackTrace();
         throw new KettleException("A problem occurred when closing the connection " +
-        		"the target table: " + e.getMessage());
+        		"the target table: " + e.getMessage(), e);
       }
       
       setOutputDone();
@@ -135,13 +135,13 @@ public class HBaseOutput extends BaseStep implements StepInterface {
       } catch (IOException ex) {
         ex.printStackTrace();
         throw new KettleException("Unable to obtain a connection to HBase: "
-            + ex.getMessage());
+            + ex.getMessage(), ex);
       }
       try {
         m_mappingAdmin = new MappingAdmin(m_connection);
       } catch (Exception ex) {
         ex.printStackTrace();
-        throw new KettleException("Unable to create a MappingAdmin connection");
+        throw new KettleException("Unable to create a MappingAdmin connection", ex);
       }
       
       // check on the existence and readiness of the target table
@@ -170,7 +170,7 @@ public class HBaseOutput extends BaseStep implements StepInterface {
         ex.printStackTrace();
         throw new KettleException("A problem occurred when trying to check " +
         		"availablility/readyness of target table \"" 
-            + targetName + "\": " + ex.getMessage());
+            + targetName + "\": " + ex.getMessage(), ex);
       }
       
       // Get mapping details for the target table
@@ -183,7 +183,7 @@ public class HBaseOutput extends BaseStep implements StepInterface {
       } catch (IOException ex) {
         ex.printStackTrace();
         throw new KettleException("Problem getting mapping inforation: " 
-            + ex.getMessage());
+            + ex.getMessage(), ex);
       }
       
       // check that all incoming fields are in the mapping.
@@ -237,7 +237,7 @@ public class HBaseOutput extends BaseStep implements StepInterface {
       } catch (IOException e) {
         e.printStackTrace();
         throw new KettleException("Problem connecting to target table: " 
-            + e.getMessage());
+            + e.getMessage(), e);
       }
       
       // output (downstream) is the same as input
@@ -319,7 +319,7 @@ public class HBaseOutput extends BaseStep implements StepInterface {
         } catch (IOException e) {        
           e.printStackTrace();
           logError("A problem occurred whilst flushing buffered " +
-              "data: " + e.getMessage());
+              "data: " + e.getMessage(), e);
         }
       }
 
@@ -329,7 +329,7 @@ public class HBaseOutput extends BaseStep implements StepInterface {
       } catch (IOException e) {
         e.printStackTrace();
         logError("A problem occurred when closing the connection " +
-            "the target table: " + e.getMessage());
+            "the target table: " + e.getMessage(), e);
       }
     }
   }

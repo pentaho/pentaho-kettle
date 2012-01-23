@@ -124,12 +124,12 @@ public class HBaseInput extends BaseStep implements StepInterface {
             HBaseInputData.
               stringToURL(environmentSubstitute(m_meta.getDefaultConfigURL())));
       } catch (IOException ex) {
-        throw new KettleException("Unable to obtain a connection to HBase.");
+        throw new KettleException("Unable to obtain a connection to HBase.", ex);
       }
       try {
         m_mappingAdmin = new MappingAdmin(m_connection);
       } catch (Exception ex) {
-        throw new KettleException("Unable to create a MappingAdmin connection");
+        throw new KettleException("Unable to create a MappingAdmin connection", ex);
       }
       
       // check on the existence and readiness of the target table
@@ -137,7 +137,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
       try {
         admin = new HBaseAdmin(m_connection);
       } catch (Exception ex) {
-        throw new KettleException("Unable to obtain a connection to HBase.");
+        throw new KettleException("Unable to obtain a connection to HBase.", ex);
       }
 
       String sourceName = environmentSubstitute(m_meta.getSourceTableName());
@@ -152,7 +152,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
       } catch (IOException ex) {
         throw new KettleException("A problem occurred when trying to check " +
                         "availablility/readyness of source table \"" 
-            + sourceName + "\"");
+            + sourceName + "\"", ex);
       }
       
       // Get mapping details for the source table
@@ -162,7 +162,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
             environmentSubstitute(m_meta.getSourceMappingName()));
         m_columnsMappedByAlias = m_tableMapping.getMappedColumns();
       } catch (IOException ex) {
-        throw new KettleException(ex.getMessage());
+        throw new KettleException(ex.getMessage(), ex);
       }
       
       // conversion mask to use for user specified key values in range scan.
@@ -272,7 +272,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
                   keyUpperBound = HBaseValueMeta.encodeKeyValue(d, m_tableMapping.getKeyType());
                 } catch (ParseException e) {
                   throw new KettleException("Unable to parse upper bound key value \""
-                      + keyStopS + "\"");
+                      + keyStopS + "\"", e);
                 }
               } else {
                 // Number type
@@ -285,7 +285,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
                   keyUpperBound = HBaseValueMeta.encodeKeyValue(num, m_tableMapping.getKeyType());
                 } catch (ParseException e) {
                   throw new KettleException("Unable to parse upper bound key value \""
-                      + keyStopS + "\"");
+                      + keyStopS + "\"", e);
                 }
               }              
             } else {
@@ -410,7 +410,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
               try {
                 num = df.parse(comparisonString);
               } catch (ParseException e) {
-                throw new KettleException(e.getMessage());
+                throw new KettleException(e.getMessage(), e);
               }
               
               if (mappedCol.isInteger()) {
@@ -468,7 +468,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
               try {
                 d = sdf.parse(comparisonString);
               } catch (ParseException e) {
-                throw new KettleException(e.getMessage());
+                throw new KettleException(e.getMessage(), e);
               }
               
               long dateAsMillis = d.getTime();
@@ -532,7 +532,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
         m_sourceTable = new HTable(m_connection, m_tableMapping.getTableName());
         m_resultSet = m_sourceTable.getScanner(s); 
       } catch (IOException e) {
-        throw new KettleException(e.getMessage());
+        throw new KettleException(e.getMessage(), e);
       }
 
       // set up the output fields (using the mapping)
@@ -544,7 +544,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
     try {
       r = m_resultSet.next();
     } catch (IOException e) {
-      throw new KettleException(e.getMessage());
+      throw new KettleException(e.getMessage(), e);
     }
     
     if (r == null) {
@@ -553,7 +553,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
         m_sourceTable.close();
       } catch (IOException e) {
         throw new KettleException("Problem closing connection to HBase table: " 
-            + e.getMessage());
+            + e.getMessage(), e);
       }
       setOutputDone();
       return false;
@@ -646,7 +646,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
         m_sourceTable.close();
       } catch (IOException e) {
         logError("A problem occurred while closing connection to HBase: " 
-            + e.getMessage());
+            + e.getMessage(), e);
       }
     }
   }

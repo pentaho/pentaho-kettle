@@ -112,7 +112,7 @@ public class CassandraInput extends BaseStep implements StepInterface {
         m_connection.setKeyspace(keyspaceS);
       } catch (Exception ex) {
         closeConnection();
-        throw new KettleException(ex.fillInStackTrace());
+        throw new KettleException(ex.getMessage(), ex);
       }
       
       // check the source column family (table) first
@@ -132,7 +132,7 @@ public class CassandraInput extends BaseStep implements StepInterface {
         }
       } catch (Exception ex) {
         closeConnection();
-        throw new KettleException(ex.fillInStackTrace());
+        throw new KettleException(ex.getMessage(), ex);
       }
 
       // set up the output row meta
@@ -160,7 +160,7 @@ public class CassandraInput extends BaseStep implements StepInterface {
         m_cassandraMeta = new CassandraColumnMetaData(m_connection, colFamName);
       } catch (Exception e) {
         closeConnection();
-        throw new KettleException(e.fillInStackTrace());
+        throw new KettleException(e.getMessage(), e);
       }
       
       String queryS = environmentSubstitute(m_meta.getCQLSelectQuery());
@@ -177,7 +177,7 @@ public class CassandraInput extends BaseStep implements StepInterface {
         m_resultIterator = result.getRowsIterator();
       } catch (Exception e) {
         closeConnection();
-        throw new KettleException(e.fillInStackTrace());
+        throw new KettleException(e.getMessage(), e);
       }
     }
     

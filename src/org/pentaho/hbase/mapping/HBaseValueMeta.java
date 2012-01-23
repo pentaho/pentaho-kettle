@@ -599,7 +599,7 @@ public class HBaseValueMeta extends ValueMeta {
         encoded = encodeObject(columnValue);
       } catch (IOException e) {
         throw new KettleException("Unable to serialize serializable type \""
-            + colMeta.getName() + "\"");
+            + colMeta.getName() + "\"", e);
       }
       break;
     case TYPE_BINARY:

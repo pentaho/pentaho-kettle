@@ -472,7 +472,7 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
             Integer.parseInt(portS), userS, passS);
         conn.setKeyspace(keyspaceS);        
       } catch (Exception ex) {
-        logError(ex.getMessage());
+        logError(ex.getMessage(), ex);
         return;
       }
       try {
@@ -522,7 +522,7 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
       } catch (Exception ex) {
         ex.printStackTrace();
         logBasic("Unable to connect to retrieve column meta data for '" + colFamName 
-            + "' at this stage.");
+            + "' at this stage.", ex);
         return;
       } finally {
         if (conn != null) {
