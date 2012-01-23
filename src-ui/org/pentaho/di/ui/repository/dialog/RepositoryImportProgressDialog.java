@@ -23,6 +23,7 @@
 package org.pentaho.di.ui.repository.dialog;
 
 import java.util.Date;
+import java.util.List;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
@@ -270,5 +271,10 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
   @Override
   public boolean isAskingOverwriteConfirmation() {
     return askOverwrite;
+  }
+
+  @Override
+  public List<Exception> getExceptions() {
+     return null;
   }
 }

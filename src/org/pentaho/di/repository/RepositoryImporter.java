@@ -78,6 +78,8 @@ public class RepositoryImporter implements IRepositoryImporter {
   private List<String> limitDirs;
   
   private List<RepositoryObject> referencingObjects;
+  
+  private List<Exception> exceptions;
 
   public RepositoryImporter(Repository repository) {
     this(repository, new ImportRules(), new ArrayList<String>());
@@ -88,6 +90,7 @@ public class RepositoryImporter implements IRepositoryImporter {
       this.rep = repository;
       this.importRules = importRules;
       this.limitDirs = limitDirs;
+      this.exceptions = new ArrayList<Exception>();
   }
   
   public synchronized void importAll(RepositoryImportFeedbackInterface feedback, String fileDirectory, String[] filenames, RepositoryDirectoryInterface baseDirectory, boolean overwrite, boolean continueOnError, String versionComment) {
@@ -748,5 +751,10 @@ public class RepositoryImporter implements IRepositoryImporter {
   @Override
   public boolean isAskingOverwriteConfirmation() {
     return askOverwrite;
+  }
+
+  @Override
+  public List<Exception> getExceptions() {
+     return exceptions;
   }
 }

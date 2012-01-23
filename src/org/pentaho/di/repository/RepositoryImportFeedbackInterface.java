@@ -22,6 +22,7 @@
 
 package org.pentaho.di.repository;
 
+import java.util.List;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.trans.TransMeta;
 
@@ -38,4 +39,5 @@ public interface RepositoryImportFeedbackInterface {
   public boolean askContinueOnErrorQuestion(String title, String message);
   
   public boolean isAskingOverwriteConfirmation();
+  public List<Exception> getExceptions();
 }
