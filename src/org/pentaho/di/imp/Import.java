@@ -283,6 +283,11 @@ public class Import {
         public boolean isAskingOverwriteConfirmation() {
           return false;
         }
+        
+        @Override
+        public List<Exception> getExceptions() {
+           return null;
+        }        
       };
       
       // Import files in a certain directory
