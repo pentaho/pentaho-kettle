@@ -223,7 +223,7 @@
       <drawshadow>Y</drawshadow>
     </notepad>
     <notepad>
-      <note>Hadoop WordCount Map Reduce Job
+      <note>Hadoop WordCount MapReduce Job
 - Edit the Input and Output directory paths
 - Edit the HDFS hostname
 - Edit the Job Tracker hostname

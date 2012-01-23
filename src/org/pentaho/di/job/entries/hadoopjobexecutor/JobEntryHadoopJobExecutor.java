@@ -62,7 +62,7 @@ import org.pentaho.hadoop.jobconf.HadoopConfigurer;
 import org.pentaho.hadoop.jobconf.HadoopConfigurerFactory;
 import org.w3c.dom.Node;
 
-@JobEntry(id = "HadoopJobExecutorPlugin", name = "Hadoop Job Executor", categoryDescription = "Big Data", description = "Execute Map/Reduce jobs in Hadoop", image = "HDE.png")
+@JobEntry(id = "HadoopJobExecutorPlugin", name = "Hadoop Job Executor", categoryDescription = "Big Data", description = "Execute MapReduce jobs in Hadoop", image = "HDE.png")
 public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable, JobEntryInterface {
 
   private static Class<?> PKG = JobEntryHadoopJobExecutor.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$

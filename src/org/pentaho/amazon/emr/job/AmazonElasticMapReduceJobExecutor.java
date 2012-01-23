@@ -71,7 +71,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 
-@JobEntry(id = "EMRJobExecutorPlugin", name = "Amazon EMR Job Executor", categoryDescription = "Big Data", description = "Execute Map/Reduce jobs in Amazon EMR", image = "EMR.png")
+@JobEntry(id = "EMRJobExecutorPlugin", name = "Amazon EMR Job Executor", categoryDescription = "Big Data", description = "Execute MapReduce jobs in Amazon EMR", image = "EMR.png")
 public class AmazonElasticMapReduceJobExecutor extends JobEntryBase implements Cloneable, JobEntryInterface {
 
   private static Class<?> PKG = AmazonElasticMapReduceJobExecutor.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$

@@ -223,7 +223,7 @@
       <drawshadow>Y</drawshadow>
     </notepad>
     <notepad>
-      <note>Hadoop WordCount Map Reduce Job</note>
+      <note>Hadoop WordCount MapReduce Job</note>
       <xloc>421</xloc>
       <yloc>275</yloc>
       <width>197</width>
