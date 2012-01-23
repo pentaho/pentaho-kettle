@@ -344,7 +344,7 @@ public class PentahoMapReduceBase<K, V> extends MapReduceBase {
         }     
   }
   
-  protected static class OutKeyValueOrdinals extends BaseKeyValueOrdinals {
+  public static class OutKeyValueOrdinals extends BaseKeyValueOrdinals {
     public OutKeyValueOrdinals(RowMetaInterface rowMeta) {
       super(rowMeta);
     }
@@ -360,7 +360,7 @@ public class PentahoMapReduceBase<K, V> extends MapReduceBase {
     }
   }
   
-  protected static class InKeyValueOrdinals extends BaseKeyValueOrdinals {
+  public static class InKeyValueOrdinals extends BaseKeyValueOrdinals {
     public InKeyValueOrdinals(RowMetaInterface rowMeta) {
       super(rowMeta);
     }

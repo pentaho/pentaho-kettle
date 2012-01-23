@@ -39,6 +39,7 @@ import org.apache.hadoop.mapred.OutputFormat;
 import org.apache.hadoop.mapred.RunningJob;
 import org.apache.hadoop.mapred.TaskCompletionEvent;
 import org.pentaho.di.cluster.SlaveServer;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.ResultFile;
@@ -47,6 +48,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.Log4jFileAppender;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -587,6 +589,8 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
         if (combiningSingleThreaded) {
           verifySingleThreadingValidity(transMeta);
         }
+        
+        verifyReducerCombinerTransMeta(false, transMeta, this, reduceInputStepName, reduceOutputStepName);
 
         transConfig = new TransConfiguration(transMeta, transExecConfig);
         conf.set("transformation-combiner-xml", transConfig.getXML()); //$NON-NLS-1$
@@ -621,6 +625,8 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
         if (reducingSingleThreaded) {
           verifySingleThreadingValidity(transMeta);
         }
+        
+        verifyReducerCombinerTransMeta(true, transMeta, this, reduceInputStepName, reduceOutputStepName);
         
         transConfig = new TransConfiguration(transMeta, transExecConfig);
         conf.set("transformation-reduce-xml", transConfig.getXML()); //$NON-NLS-1$
@@ -893,6 +899,80 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
     }
     
     return result;
+  }
+
+  /**
+   * Verify the validity of a reducer transformation.
+   * 1) 
+   * @param transMeta
+   * @throws KettleException
+   */
+  public static void verifyReducerCombinerTransMeta(boolean reducer, TransMeta transMeta, VariableSpace space, String inputStepName, String outputStepName) throws KettleException {
+    
+    String type = reducer ? "reducer" : "combiner";
+    
+    // Verify the input step: see that the key/value fields are present...
+    //
+    String realInputStepName = space.environmentSubstitute(inputStepName);
+    if (Const.isEmpty(realInputStepName)) {
+      throw new KettleException("The "+type+" input step was not specified");
+    }
+    StepMeta inputStepMeta = transMeta.findStep(realInputStepName);
+    if (inputStepMeta==null) {
+      throw new KettleException("The "+type+" input step with name '"+realInputStepName+"' could not be found");
+    }
+    
+    // Get the fields coming out of the input step...
+    //
+    RowMetaInterface injectorRowMeta = transMeta.getStepFields(inputStepMeta);
+    
+    // Verify that the key and value fields are found
+    //
+    PentahoMapReduceBase.InKeyValueOrdinals inOrdinals = new PentahoMapReduceBase.InKeyValueOrdinals(injectorRowMeta);
+    if(inOrdinals.getKeyOrdinal() < 0 || inOrdinals.getValueOrdinal() < 0) {
+      throw new KettleException("key or value is not defined in "+type+" injector step");
+    }
+    
+    // Now verify the output step output of the reducer...
+    //
+    String realOutputStepName = space.environmentSubstitute(outputStepName);
+    if (Const.isEmpty(realOutputStepName)) {
+      throw new KettleException("The "+type+" output step was not specified");
+    }
+
+    StepMeta outputStepMeta = transMeta.findStep(realOutputStepName);
+    if (outputStepMeta==null) {
+      throw new KettleException("The "+type+" output step with name '"+realOutputStepName+"' could not be found");
+    }
+    
+    // It's a special step designed to map the output key/value pair fields...
+    //
+    if (outputStepMeta.getStepMetaInterface() instanceof HadoopExitMeta) {
+      // Get the row fields entering the output step...
+      //
+      RowMetaInterface outputRowMeta = transMeta.getPrevStepFields(outputStepMeta);
+      HadoopExitMeta exitMeta = (HadoopExitMeta) outputStepMeta.getStepMetaInterface();
+      
+      List<CheckResultInterface> remarks = new ArrayList<CheckResultInterface>();
+      exitMeta.check(remarks, transMeta, outputStepMeta, outputRowMeta, null, null, null);
+      StringBuilder message = new StringBuilder();
+      for (CheckResultInterface remark : remarks) {
+        if (remark.getType() == CheckResultInterface.TYPE_RESULT_ERROR) {
+          message.append(message.toString()).append(Const.CR);
+        }
+      }
+      if (message.length()>0) {
+        throw new KettleException("There was a validation error with the Hadoop Output step:"+Const.CR+message);
+      }
+    } else {
+      // Any other step: verify that the outKey and outValue fields exist...
+      //
+      RowMetaInterface outputRowMeta = transMeta.getStepFields(outputStepMeta);
+      PentahoMapReduceBase.OutKeyValueOrdinals outOrdinals = new PentahoMapReduceBase.OutKeyValueOrdinals(outputRowMeta);
+      if (outOrdinals.getKeyOrdinal() < 0 || outOrdinals.getValueOrdinal() < 0) {
+        throw new KettleException("outKey or outValue is not defined in "+type+" output stream"); //$NON-NLS-1$
+      }
+    }
   }
 
   private void verifySingleThreadingValidity(TransMeta transMeta) throws KettleException {

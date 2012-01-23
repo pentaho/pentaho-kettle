@@ -26,6 +26,7 @@ import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LoggingRegistry;
 import org.pentaho.di.core.plugins.*;
+import org.pentaho.di.job.entries.hadooptransjobexecutor.JobEntryHadoopTransJobExecutor;
 import org.pentaho.di.trans.TransConfiguration;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
@@ -139,16 +140,12 @@ public class MapperAndReducerTest {
   @Test
   public void testReducerBadOutputFields() throws IOException, KettleException {
     try {
-      GenericTransReduce reducer = new GenericTransReduce();
-      MockOutputCollector outputCollector = new MockOutputCollector();
-      MockReporter reporter = new MockReporter();
-    
-      reducer.configure(createJobConf("./test-res/bad-output-fields.ktr", "./test-res/bad-output-fields.ktr"));
-      
-      reducer.reduce(new Text("key"), Arrays.asList(new Text("value")).iterator(), outputCollector, reporter);
+     TransMeta transMeta = new TransMeta("./test-res/bad-output-fields.ktr");
+     
+     JobEntryHadoopTransJobExecutor.verifyReducerCombinerTransMeta(true, transMeta, transMeta, "Injector", "Output");
       fail("Should have thrown an exception");
-    } catch (IOException e) {
-      assertTrue("Test for KettleException", e.getMessage().contains("outKey or outValue is not defined in transformation output stream"));
+    } catch (KettleException e) {
+      assertTrue("Test for KettleException", e.getMessage().contains("outKey or outValue is not defined in reducer output stream"));
     }
   }
   
@@ -753,6 +750,18 @@ public class MapperAndReducerTest {
     assertEquals("Expected 1 output row", 1, outputCollector.getCollection().size());
     assertEquals("Expected 1 result for word 'pentaho'", 1, outputCollector.getCollection().get(new Text("pentaho")).size());
     assertEquals("Expected 10 counts of 'pentaho'", new IntWritable(10), outputCollector.getCollection().get(new Text("pentaho")).get(0));
+  }
+  
+  @Test
+  public void testCombinerBadOutputFields() throws IOException, KettleException {
+    try {
+     TransMeta transMeta = new TransMeta("./test-res/bad-output-fields.ktr");
+     
+     JobEntryHadoopTransJobExecutor.verifyReducerCombinerTransMeta(false, transMeta, transMeta, "Injector", "Output");
+      fail("Should have thrown an exception");
+    } catch (KettleException e) {
+      assertTrue("Test for KettleException", e.getMessage().contains("outKey or outValue is not defined in combiner output stream"));
+    }
   }
 
   @Test
