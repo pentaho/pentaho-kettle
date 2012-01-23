@@ -35,6 +35,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -107,8 +108,20 @@ public class HadoopExitMeta extends BaseStepMeta implements StepMetaInterface {
 
   public void getFields(RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
       VariableSpace space) throws KettleStepException {
-    // This is a final step only
+    
+    // The output consists of 2 fields: outKey and outValue
+    // The data types rely on the input data type so we look those up
+    //
+    ValueMetaInterface keyMeta = rowMeta.searchValueMeta(getOutKeyFieldname()).clone();
+    ValueMetaInterface valueMeta = rowMeta.searchValueMeta(getOutValueFieldname()).clone();
+    
+    keyMeta.setName("outKey");
+    valueMeta.setName("outValue");
+    
     rowMeta.clear();
+
+    rowMeta.addValueMeta(keyMeta);
+    rowMeta.addValueMeta(valueMeta);
   }
 
   public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev,

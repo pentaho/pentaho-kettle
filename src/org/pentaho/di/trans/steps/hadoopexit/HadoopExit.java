@@ -32,8 +32,6 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
 public class HadoopExit extends BaseStep implements StepInterface {
-  private static Class<?> PKG = HadoopExit.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
-
   private HadoopExitMeta meta;
   private HadoopExitData data;
   
@@ -42,7 +40,7 @@ public class HadoopExit extends BaseStep implements StepInterface {
   }
   
   public boolean runtimeInit() throws KettleException {
-    data.init(getInputRowMeta(), meta);
+    data.init(getInputRowMeta(), meta, this);
     return true;
   }
 
@@ -51,17 +49,17 @@ public class HadoopExit extends BaseStep implements StepInterface {
     data = (HadoopExitData) sdi;
     
     Object[] r = getRow();
-    if(first) {
-        if(!runtimeInit()) {
-        return false;
-      }
-      first = false;
-    }
-    
     if (r == null) // no more input to be expected...
     {
       setOutputDone();
       return false;
+    }
+
+    if(first) {
+      if(!runtimeInit()) {
+        return false;
+      }
+      first = false;
     }
 
     Object[] outputRow = new Object[2];

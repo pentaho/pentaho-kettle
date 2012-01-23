@@ -26,6 +26,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
@@ -42,21 +43,13 @@ public class HadoopExitData extends BaseStepData implements StepDataInterface {
     super();
   }
 
-  public void init(RowMetaInterface rowMeta, HadoopExitMeta stepMeta) throws KettleException {
+  public void init(RowMetaInterface rowMeta, HadoopExitMeta stepMeta, VariableSpace space) throws KettleException {
     if (rowMeta != null) {
-      outputRowMeta = new RowMeta();
+      outputRowMeta = rowMeta.clone();
+      stepMeta.getFields(outputRowMeta, stepMeta.getName(), null, null, space);
       
       setInKeyOrdinal(rowMeta.indexOfValue(stepMeta.getOutKeyFieldname()));
       setInValueOrdinal(rowMeta.indexOfValue(stepMeta.getOutValueFieldname()));
-
-      ValueMetaInterface keyMeta = rowMeta.searchValueMeta(stepMeta.getOutKeyFieldname()).clone();
-      ValueMetaInterface valueMeta = rowMeta.searchValueMeta(stepMeta.getOutValueFieldname()).clone();
-      
-      keyMeta.setName("outKey");
-      valueMeta.setName("outValue");
-      
-      outputRowMeta.addValueMeta(getOutKeyOrdinal(), keyMeta);
-      outputRowMeta.addValueMeta(getOutValueOrdinal(), valueMeta);
     }
   }
 
