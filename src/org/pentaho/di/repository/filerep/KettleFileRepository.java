@@ -46,6 +46,7 @@ import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.ValueMetaAndData;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
@@ -72,6 +73,7 @@ import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
+import org.pentaho.di.trans.HasDatabasesInterface;
 import org.pentaho.di.trans.TransMeta;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -757,6 +759,9 @@ public class KettleFileRepository implements Repository {
 		jobMeta.setName(jobname);
 		jobMeta.setObjectId(new StringObjectId(calcObjectId(repdir, jobname, EXT_JOB)));
 		
+    readDatabases(jobMeta, true);
+    jobMeta.clearChanged();
+    
 		return jobMeta;
 
 	}
@@ -904,8 +909,48 @@ public class KettleFileRepository implements Repository {
 		transMeta.setFilename(null);
 		transMeta.setName(transname);
 		transMeta.setObjectId(new StringObjectId(calcObjectId(repdir, transname, EXT_TRANSFORMATION)));
+		
+    readDatabases(transMeta, true);
+    transMeta.clearChanged();
+    
 		return transMeta;
 	}
+	
+  /**
+   * Read all the databases from the repository, insert into the has databases object, overwriting optionally
+   * 
+   * @param TransMeta The transformation to load into.
+   * @param overWriteShared if an object with the same name exists, overwrite
+   * @throws KettleException 
+   */
+  public void readDatabases(HasDatabasesInterface transMeta, boolean overWriteShared) throws KettleException
+  {
+      try
+      {
+          ObjectId dbids[] = getDatabaseIDs(false);
+          for (int i = 0; i < dbids.length; i++)
+          {
+              DatabaseMeta databaseMeta = loadDatabaseMeta(dbids[i], null); // reads last version
+              if (transMeta instanceof VariableSpace) {
+                databaseMeta.shareVariablesWith((VariableSpace)transMeta);
+              }
+              
+              DatabaseMeta check = transMeta.findDatabase(databaseMeta.getName()); // Check if there already is one in the transformation
+              if (check==null || overWriteShared) // We only add, never overwrite database connections. 
+              {
+                  if (databaseMeta.getName() != null)
+                  {
+                    transMeta.addOrReplaceDatabase(databaseMeta);
+                      if (!overWriteShared) databaseMeta.setChanged(false);
+                  }
+              }
+          }
+      }
+      catch (KettleException e)
+      {
+          throw e;
+      }
+  }
 
 	public ValueMetaAndData loadValueMetaAndData(ObjectId id_value) throws KettleException {
 		
