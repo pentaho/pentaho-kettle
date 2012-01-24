@@ -278,6 +278,10 @@ public abstract class BaseDatabaseMeta implements Cloneable
 	public void setAccessType(int accessType)
 	{
 		this.accessType = accessType;
+		if (this.accessType == DatabaseMeta.TYPE_ACCESS_JNDI) {
+		    this.username = "";
+		    this.password = "";
+		}
 	}
 	
 	/**
@@ -389,7 +393,12 @@ public abstract class BaseDatabaseMeta implements Cloneable
 	 */
 	public void setPassword(String password)
 	{
-		this.password = password;
+	   if (this.accessType == DatabaseMeta.TYPE_ACCESS_JNDI) {
+	       this.password = "";
+	   }
+	   else {
+   		 this.password = password;
+	   }
 	}
 	
 	/**
@@ -453,7 +462,10 @@ public abstract class BaseDatabaseMeta implements Cloneable
 	 */
 	public void setUsername(String username)
 	{
-		this.username = username;
+	   if (this.accessType == DatabaseMeta.TYPE_ACCESS_JNDI) {
+	      this.username = "";
+	   }
+   		this.username = username;
 	}
     
     /**
