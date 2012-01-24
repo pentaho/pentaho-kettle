@@ -204,6 +204,11 @@ public class GenericTransReduce<K extends WritableComparable<?>, V extends Itera
           injectValue(key, inConverterK, value, inConverterV, injectorRowMeta, rowProducer, reporter);
         }
       }
+      
+      // make sure we don't pick up a bogus row next time this method is called without rows.
+      //
+      value = null; 
+      
       rowProducer.finished();
     }
   }
