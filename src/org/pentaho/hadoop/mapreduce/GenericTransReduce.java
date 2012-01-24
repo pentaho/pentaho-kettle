@@ -341,7 +341,7 @@ public class GenericTransReduce<K extends WritableComparable<?>, V extends Itera
   public void close() throws IOException {
     
     // Stop the executor if any is defined...
-    if (isSingleThreaded()) {
+    if (isSingleThreaded() && executor!=null) {
       try {
         executor.dispose();
       } catch (KettleException e) {
