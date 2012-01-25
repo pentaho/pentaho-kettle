@@ -2195,6 +2195,11 @@ public class Database implements VariableSpace, LoggingObjectInterface
 	{
 		String cr_index="";
 		DatabaseInterface databaseInterface = databaseMeta.getDatabaseInterface();
+
+		// Exasol does not support explicit handling of indexes
+		if (databaseInterface instanceof Exasol4DatabaseMeta){
+			return "";
+		}
 		
 		cr_index += "CREATE ";
 	
