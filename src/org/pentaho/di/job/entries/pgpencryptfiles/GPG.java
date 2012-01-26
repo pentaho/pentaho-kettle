@@ -174,12 +174,17 @@ public class GPG {
 		String		command = getGpgExeFile() + " " + (fileMode?"":gnuPGCommand + " ")  + commandArgs;
 	
 		if(log.isDebug()) {
-			log.logDebug(toString(), BaseMessages.getString(PKG, "GPG.RunningCommand", command));
+			log.logDebug(BaseMessages.getString(PKG, "GPG.RunningCommand", command));
 		}
 		String retval;
 
 		try {
-			p = Runtime.getRuntime().exec(command);
+      if (Const.isWindows()) {
+        p = Runtime.getRuntime().exec(command);
+      } else {
+        ProcessBuilder processBuilder = new ProcessBuilder("/bin/sh", "-c", command);
+        p = processBuilder.start();
+      }
 		} catch(IOException io) {
 			throw new KettleException(BaseMessages.getString(PKG, "GPG.IOException"), io);
 		}
