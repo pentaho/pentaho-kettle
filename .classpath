@@ -209,7 +209,6 @@
 	<classpathentry kind="lib" path="src-plugins/kettle-hl7-plugin/lib/hapi-structures-v25-1.1.jar"/>
 	<classpathentry kind="lib" path="src-plugins/kettle-hl7-plugin/lib/hapi-structures-v251-1.1.jar"/>
 	<classpathentry kind="lib" path="src-plugins/kettle-hl7-plugin/lib/hapi-structures-v26-1.1.jar"/>
-	<classpathentry kind="lib" path="libext/mongo-2.5.3.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/infobright-core-3.4.jar"/>
 	<classpathentry kind="lib" path="libext/jsch-0.1.44.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/sqlite-jdbc-3.7.2.jar"/>
@@ -235,7 +234,7 @@
 	<classpathentry kind="lib" path="libext/hive/hive-metastore-0.7.0-pentaho-1.0.0.jar"/>
 	<classpathentry kind="lib" path="libext/hive/hive-service-0.7.0-pentaho-1.0.0.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/libbase-1.2.2.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/pentaho-hdfs-vfs-1.0.0.jar"/>
+	<classpathentry kind="lib" path="/home/matt/svn/kettle/branches/4.3.0/libext/pentaho/pentaho-hdfs-vfs-TRUNK-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-s3-vfs-1.0.1.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-vfs-browser-2.0.3.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-core-TRUNK-SNAPSHOT.jar"/>
