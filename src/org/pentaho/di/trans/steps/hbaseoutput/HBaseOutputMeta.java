@@ -264,34 +264,34 @@ public class HBaseOutputMeta extends BaseStepMeta implements StepMetaInterface {
   public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step)
       throws KettleException {
     if (!Const.isEmpty(m_zookeeperHosts)) {
-      rep.saveStepAttribute(id_transformation, id_step, "zookeeper_hosts", 
+      rep.saveStepAttribute(id_transformation, id_step, 0, "zookeeper_hosts", 
           m_zookeeperHosts);
     }
     if (!Const.isEmpty(m_zookeeperPort)) {
-      rep.saveStepAttribute(id_transformation, id_step, "zookeeper_port", 
+      rep.saveStepAttribute(id_transformation, id_step, 0, "zookeeper_port", 
           m_zookeeperPort);
     }
     if (!Const.isEmpty(m_coreConfigURL)) {
-      rep.saveStepAttribute(id_transformation, id_step, "core_config_url", 
+      rep.saveStepAttribute(id_transformation, id_step, 0, "core_config_url", 
           m_coreConfigURL);
     }
     if (!Const.isEmpty(m_defaultConfigURL)) {
-      rep.saveStepAttribute(id_transformation, id_step, "default_config_url", 
+      rep.saveStepAttribute(id_transformation, id_step, 0, "default_config_url", 
           m_defaultConfigURL);
     }
     if (!Const.isEmpty(m_targetTableName)) {
-      rep.saveStepAttribute(id_transformation, id_step,"target_table_name", 
+      rep.saveStepAttribute(id_transformation, id_step, 0, "target_table_name", 
           m_targetTableName);
     }
     if (!Const.isEmpty(m_targetMappingName)) {
-      rep.saveStepAttribute(id_transformation, id_step,"target_mapping_name", 
+      rep.saveStepAttribute(id_transformation, id_step, 0, "target_mapping_name", 
           m_targetMappingName);
     }
     if (!Const.isEmpty(m_writeBufferSize)) {
-      rep.saveStepAttribute(id_transformation, id_step,"write_buffer_size", 
+      rep.saveStepAttribute(id_transformation, id_step, 0, "write_buffer_size", 
           m_writeBufferSize);
     }
-    rep.saveStepAttribute(id_transformation, id_step,"disable_wal", 
+    rep.saveStepAttribute(id_transformation, id_step, 0, "disable_wal", 
         m_disableWriteToWAL);
   }
 

@@ -639,14 +639,10 @@ public class MongoDbOutputMeta extends BaseStepMeta implements
     m_collection = rep.getStepAttributeString(id_step, 0, "mongo_collection");
     m_batchInsertSize = rep.getStepAttributeString(id_step, 0, "batch_insert_size");
     
-    m_truncate = rep.getStepAttributeString(id_step, 0, "truncate").
-      equalsIgnoreCase("Y");
-    m_upsert = rep.getStepAttributeString(id_step, 0, "upsert").
-      equalsIgnoreCase("Y");
-    m_multi = rep.getStepAttributeString(id_step, 0, "multi").
-      equalsIgnoreCase("Y");
-    m_modifierUpdate = rep.getStepAttributeString(id_step, 0, "modifier_update").
-      equalsIgnoreCase("Y");
+    m_truncate = rep.getStepAttributeBoolean(id_step, 0, "truncate");
+    m_upsert = rep.getStepAttributeBoolean(id_step, 0, "upsert");
+    m_multi = rep.getStepAttributeBoolean(id_step, 0, "multi");
+    m_modifierUpdate = rep.getStepAttributeBoolean(id_step, 0, "modifier_update");
     
     int nrfields = rep.countNrStepAttributes(id_step, "incoming_field_name");
     
@@ -662,11 +658,9 @@ public class MongoDbOutputMeta extends BaseStepMeta implements
           rep.getStepAttributeString(id_step, i, "mongo_doc_path");
         
         newField.m_useIncomingFieldNameAsMongoFieldName = 
-          rep.getStepAttributeString(id_step, i, "use_incoming_field_name_as_mongo_field_name").
-            equalsIgnoreCase("Y");
+          rep.getStepAttributeBoolean(id_step, i, "use_incoming_field_name_as_mongo_field_name");
         newField.m_updateMatchField = 
-          rep.getStepAttributeString(id_step, i, "update_match_field").
-            equalsIgnoreCase("Y");
+          rep.getStepAttributeBoolean(id_step, i, "update_match_field");
         newField.m_modifierUpdateOperation = 
           rep.getStepAttributeString(id_step, i, "modifier_update_operation");
         
@@ -684,11 +678,11 @@ public class MongoDbOutputMeta extends BaseStepMeta implements
         newIndex.m_pathToFields = 
           rep.getStepAttributeString(id_step, i, "path_to_fields");
         newIndex.m_drop = 
-          rep.getStepAttributeString(id_step, i, "drop").equalsIgnoreCase("Y");
+          rep.getStepAttributeBoolean(id_step, i, "drop");
         newIndex.m_unique = 
-          rep.getStepAttributeString(id_step, i, "unique").equalsIgnoreCase("Y");
+          rep.getStepAttributeBoolean(id_step, i, "unique");
         newIndex.m_sparse = 
-          rep.getStepAttributeString(id_step, i, "sparse").equalsIgnoreCase("Y");
+          rep.getStepAttributeBoolean(id_step, i, "sparse");
         
         m_mongoIndexes.add(newIndex);
       }
@@ -699,41 +693,41 @@ public class MongoDbOutputMeta extends BaseStepMeta implements
       ObjectId id_step) throws KettleException {
     
     if (!Const.isEmpty(m_hostname)) {
-      rep.saveStepAttribute(id_transformation, id_step, "mongo_host", 
+      rep.saveStepAttribute(id_transformation, id_step, 0, "mongo_host", 
           m_hostname);
     }
     if (!Const.isEmpty(m_port)) {
-      rep.saveStepAttribute(id_transformation, id_step, "mongo_port", 
+      rep.saveStepAttribute(id_transformation, id_step, 0, "mongo_port", 
           m_port);
     }
     if (!Const.isEmpty(m_username)) {
-      rep.saveStepAttribute(id_transformation, id_step, "mongo_user", 
+      rep.saveStepAttribute(id_transformation, id_step, 0, "mongo_user", 
           m_username);
     }
     if (!Const.isEmpty(m_password)) {
-      rep.saveStepAttribute(id_transformation, id_step, "password",
+      rep.saveStepAttribute(id_transformation, id_step, 0, "password",
           Encr.encryptPasswordIfNotUsingVariables(m_password));
     }
     if (!Const.isEmpty(m_dbName)) {
-      rep.saveStepAttribute(id_transformation, id_step, "mongo_db", 
+      rep.saveStepAttribute(id_transformation, id_step, 0, "mongo_db", 
           m_dbName);
     }
     if (!Const.isEmpty(m_collection)) {
-      rep.saveStepAttribute(id_transformation, id_step, "mongo_collection", 
+      rep.saveStepAttribute(id_transformation, id_step, 0, "mongo_collection", 
           m_collection);
     }
     if (!Const.isEmpty(m_batchInsertSize)) {
-      rep.saveStepAttribute(id_transformation, id_step, "batch_insert_size", 
+      rep.saveStepAttribute(id_transformation, id_step, 0, "batch_insert_size", 
           m_batchInsertSize);
     }
     
-    rep.saveStepAttribute(id_transformation, id_step, "truncate",
+    rep.saveStepAttribute(id_transformation, id_step, 0, "truncate",
         m_truncate);
-    rep.saveStepAttribute(id_transformation, id_step, "upsert",
+    rep.saveStepAttribute(id_transformation, id_step, 0, "upsert",
         m_upsert);
-    rep.saveStepAttribute(id_transformation, id_step, "multi",
+    rep.saveStepAttribute(id_transformation, id_step, 0, "multi",
         m_multi);
-    rep.saveStepAttribute(id_transformation, id_step, "modifier_update",
+    rep.saveStepAttribute(id_transformation, id_step, 0, "modifier_update",
         m_modifierUpdate);
     
     if (m_mongoFields != null && m_mongoFields.size() > 0) {

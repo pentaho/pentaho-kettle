@@ -540,39 +540,39 @@ public class HBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
       ObjectId id_step) throws KettleException {
 
     if (!Const.isEmpty(m_zookeeperHosts)) {
-      rep.saveStepAttribute(id_transformation, id_step, "zookeeper_hosts", 
+      rep.saveStepAttribute(id_transformation, id_step, 0, "zookeeper_hosts", 
           m_zookeeperHosts);
     }
     if (!Const.isEmpty(m_zookeeperPort)) {
-      rep.saveStepAttribute(id_transformation, id_step, "zookeeper_port", 
+      rep.saveStepAttribute(id_transformation, id_step, 0, "zookeeper_port", 
           m_zookeeperPort);
     }
     if (!Const.isEmpty(m_coreConfigURL)) {
-      rep.saveStepAttribute(id_transformation, id_step, "core_config_url", 
+      rep.saveStepAttribute(id_transformation, id_step, 0, "core_config_url", 
           m_coreConfigURL);
     }
     if (!Const.isEmpty(m_defaultConfigURL)) {
-      rep.saveStepAttribute(id_transformation, id_step, "default_config_url", 
+      rep.saveStepAttribute(id_transformation, id_step, 0, "default_config_url", 
           m_defaultConfigURL);
     }
     if (!Const.isEmpty(m_sourceTableName)) {
-      rep.saveStepAttribute(id_transformation, id_step,"source_table_name", 
+      rep.saveStepAttribute(id_transformation, id_step, 0, "source_table_name", 
           m_sourceTableName);
     }
     if (!Const.isEmpty(m_sourceMappingName)) {
-      rep.saveStepAttribute(id_transformation, id_step,"source_mapping_name", 
+      rep.saveStepAttribute(id_transformation, id_step, 0, "source_mapping_name", 
           m_sourceMappingName);
     }
     if (!Const.isEmpty(m_keyStart)) {
-      rep.saveStepAttribute(id_transformation, id_step,"key_start", 
+      rep.saveStepAttribute(id_transformation, id_step, 0, "key_start", 
           m_keyStart);
     }
     if (!Const.isEmpty(m_keyStop)) {
-      rep.saveStepAttribute(id_transformation, id_step,"key_stop", 
+      rep.saveStepAttribute(id_transformation, id_step, 0, "key_stop", 
           m_keyStop);
     }
     if (!Const.isEmpty(m_scannerCacheSize)) {
-      rep.saveStepAttribute(id_transformation, id_step,"scanner_cache_size", 
+      rep.saveStepAttribute(id_transformation, id_step, 0, "scanner_cache_size", 
           m_scannerCacheSize);
     }
     
@@ -605,7 +605,7 @@ public class HBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
       }
     }
     
-    rep.saveStepAttribute(id_transformation, id_step, "match_any_filter", 
+    rep.saveStepAttribute(id_transformation, id_step, 0, "match_any_filter", 
         m_matchAnyFilter);
   }
 
@@ -639,8 +639,14 @@ public class HBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
         if (!Const.isEmpty(colName)) {
           colName = colName.trim();
         }
-        String alias = rep.getStepAttributeString(id_step, i, "alias").trim();
-        String typeS = rep.getStepAttributeString(id_step, i, "type").trim();
+        String alias = rep.getStepAttributeString(id_step, i, "alias");
+        if (!Const.isEmpty(alias)) {
+          alias = alias.trim();
+        }
+        String typeS = rep.getStepAttributeString(id_step, i, "type");
+        if (!Const.isEmpty(typeS)) {
+          typeS = typeS.trim();
+        }
         boolean isKey = rep.getStepAttributeBoolean(id_step, i , "key");
         HBaseValueMeta vm = new HBaseValueMeta(colFamily + HBaseValueMeta.SEPARATOR 
             + colName + HBaseValueMeta.SEPARATOR + alias, ValueMeta.getType(typeS), -1, -1);

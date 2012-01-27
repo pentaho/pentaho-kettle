@@ -308,52 +308,49 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
     }
     m_cassandraKeyspace = rep.getStepAttributeString(id_step, 0, "cassandra_keyspace");
     m_cqlSelectQuery = rep.getStepAttributeString(id_step, 0, "cql_select_query");
-    m_useCompression = rep.getStepAttributeString(id_step, 0, "use_compression").
-      equalsIgnoreCase("Y");
-    
-    String kV = rep.getStepAttributeString(id_step, 0, "output_key_value_timestamp_tuples");
-    
-    if (kV != null) {
-      m_outputKeyValueTimestampTuples = kV.equalsIgnoreCase("Y");
-    }
+    m_useCompression = rep.getStepAttributeBoolean(id_step, 0, "use_compression");
+
+    m_outputKeyValueTimestampTuples = 
+      rep.getStepAttributeBoolean(id_step, 0, "output_key_value_timestamp_tuples");
+
   }
 
   public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step)
       throws KettleException {
     if (!Const.isEmpty(m_cassandraHost)) {
-      rep.saveStepAttribute(id_transformation, id_step, "cassandra_host",
+      rep.saveStepAttribute(id_transformation, id_step, 0, "cassandra_host",
           m_cassandraHost);
     }
     
     if (!Const.isEmpty(m_cassandraPort)) {
-      rep.saveStepAttribute(id_transformation, id_step, "cassandra_port",
+      rep.saveStepAttribute(id_transformation, id_step, 0, "cassandra_port",
           m_cassandraPort);
     }
     
     if (!Const.isEmpty(m_username)) {
-      rep.saveStepAttribute(id_transformation, id_step, "username",
+      rep.saveStepAttribute(id_transformation, id_step, 0, "username",
           m_username);
     }
     
     if (!Const.isEmpty(m_password)) {
-      rep.saveStepAttribute(id_transformation, id_step, "password",
+      rep.saveStepAttribute(id_transformation, id_step, 0, "password",
           Encr.encryptPasswordIfNotUsingVariables(m_password));
     }
     
     if (!Const.isEmpty(m_cassandraKeyspace)) {
-      rep.saveStepAttribute(id_transformation, id_step, "cassandra_keyspace",
+      rep.saveStepAttribute(id_transformation, id_step, 0, "cassandra_keyspace",
           m_cassandraKeyspace);
     }
     
-    rep.saveStepAttribute(id_transformation, id_step, "use_compression",
+    rep.saveStepAttribute(id_transformation, id_step, 0, "use_compression",
         m_useCompression);
     
     if (!Const.isEmpty(m_cqlSelectQuery)) {
-      rep.saveStepAttribute(id_transformation, id_step, "cql_select_query",
+      rep.saveStepAttribute(id_transformation, id_step, 0, "cql_select_query",
           m_cqlSelectQuery);
     }
     
-    rep.saveStepAttribute(id_transformation, id_step, "output_key_value_timestamp_tuples",
+    rep.saveStepAttribute(id_transformation, id_step, 0, "output_key_value_timestamp_tuples",
         m_outputKeyValueTimestampTuples);
   }
 

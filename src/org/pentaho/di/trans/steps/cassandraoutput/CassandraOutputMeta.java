@@ -538,16 +538,11 @@ public class CassandraOutputMeta extends BaseStepMeta implements
     m_consistency = rep.getStepAttributeString(id_step, 0, "consistency");
     m_batchSize = rep.getStepAttributeString(id_step, 0, "batch_size");
        
-    m_createColumnFamily = rep.getStepAttributeString(id_step, 0, "create_column_family").
-      equalsIgnoreCase("Y");
-    m_useCompression = rep.getStepAttributeString(id_step, 0, "use_compression").
-      equalsIgnoreCase("Y");
-    m_insertFieldsNotInMeta = rep.getStepAttributeString(id_step, 0, "insert_fields_not_in_meta").
-      equalsIgnoreCase("Y");
-    m_updateCassandraMeta = rep.getStepAttributeString(id_step, 0, "update_cassandra_meta").
-      equalsIgnoreCase("Y");
-    m_truncateColumnFamily = rep.getStepAttributeString(id_step, 0, "truncate_column_family").
-      equalsIgnoreCase("Y");
+    m_createColumnFamily = rep.getStepAttributeBoolean(id_step, 0, "create_column_family");
+    m_useCompression = rep.getStepAttributeBoolean(id_step, 0, "use_compression");
+    m_insertFieldsNotInMeta = rep.getStepAttributeBoolean(id_step, 0, "insert_fields_not_in_meta");
+    m_updateCassandraMeta = rep.getStepAttributeBoolean(id_step, 0, "update_cassandra_meta");
+    m_truncateColumnFamily = rep.getStepAttributeBoolean(id_step, 0, "truncate_column_family");
     
     m_aprioriCQL = rep.getStepAttributeString(id_step, 0, "apriori_cql");
     
@@ -556,66 +551,65 @@ public class CassandraOutputMeta extends BaseStepMeta implements
   public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step)
     throws KettleException {
     if (!Const.isEmpty(m_cassandraHost)) {
-      rep.saveStepAttribute(id_transformation, id_step, "cassandra_host",
+      rep.saveStepAttribute(id_transformation, id_step, 0, "cassandra_host",
           m_cassandraHost);
     }
 
     if (!Const.isEmpty(m_cassandraPort)) {
-      rep.saveStepAttribute(id_transformation, id_step, "cassandra_port",
+      rep.saveStepAttribute(id_transformation, id_step, 0, "cassandra_port",
           m_cassandraPort);
     }
     
     if (!Const.isEmpty(m_username)) {
-      rep.saveStepAttribute(id_transformation, id_step, "username",
+      rep.saveStepAttribute(id_transformation, id_step, 0, "username",
           m_username);
     }
     
     if (!Const.isEmpty(m_password)) {
-      rep.saveStepAttribute(id_transformation, id_step, "password",
+      rep.saveStepAttribute(id_transformation, id_step, 0, "password",
           Encr.encryptPasswordIfNotUsingVariables(m_password));
     }
 
     if (!Const.isEmpty(m_cassandraKeyspace)) {
-      rep.saveStepAttribute(id_transformation, id_step, "cassandra_keyspace",
+      rep.saveStepAttribute(id_transformation, id_step, 0, "cassandra_keyspace",
           m_cassandraKeyspace);
     }
     
     if (!Const.isEmpty(m_columnFamily)) {
-      rep.saveStepAttribute(id_transformation, id_step, "column_family",
+      rep.saveStepAttribute(id_transformation, id_step, 0, "column_family",
           m_columnFamily);
     }
     
     if (!Const.isEmpty(m_keyField)) {
-      rep.saveStepAttribute(id_transformation, id_step, "key_field",
+      rep.saveStepAttribute(id_transformation, id_step, 0, "key_field",
           m_keyField);
     }
     
     if (!Const.isEmpty(m_consistency)) {
-      rep.saveStepAttribute(id_transformation, id_step, "consistency",
+      rep.saveStepAttribute(id_transformation, id_step, 0, "consistency",
           m_consistency);
     }
     
     if (!Const.isEmpty(m_batchSize)) {
-      rep.saveStepAttribute(id_transformation, id_step, "batch_size",
+      rep.saveStepAttribute(id_transformation, id_step, 0, "batch_size",
           m_batchSize);
     }
 
-    rep.saveStepAttribute(id_transformation, id_step, "create_column_family",
+    rep.saveStepAttribute(id_transformation, id_step, 0, "create_column_family",
         m_createColumnFamily);
-    rep.saveStepAttribute(id_transformation, id_step, "use_compression",
+    rep.saveStepAttribute(id_transformation, id_step, 0, "use_compression",
         m_useCompression);
-    rep.saveStepAttribute(id_transformation, id_step, "insert_fields_not_in_meta",
+    rep.saveStepAttribute(id_transformation, id_step, 0, "insert_fields_not_in_meta",
         m_insertFieldsNotInMeta);
-    rep.saveStepAttribute(id_transformation, id_step, "update_cassandra_meta",
+    rep.saveStepAttribute(id_transformation, id_step, 0, "update_cassandra_meta",
         m_updateCassandraMeta);
-    rep.saveStepAttribute(id_transformation, id_step, "truncate_column_family",
+    rep.saveStepAttribute(id_transformation, id_step, 0, "truncate_column_family",
         m_truncateColumnFamily);
     
     if (!Const.isEmpty(m_aprioriCQL)) {
-      rep.saveStepAttribute(id_transformation, id_step, "apriori_cql",
+      rep.saveStepAttribute(id_transformation, id_step, 0, "apriori_cql",
           m_aprioriCQL);
-    }
-   
+    }   
   }
   
   public void check(List<CheckResultInterface> remarks, TransMeta transMeta,
