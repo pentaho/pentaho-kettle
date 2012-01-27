@@ -171,13 +171,13 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 
 	private Text wLimit;
 
-	final static String REFERENCE_SORT_URI = "http://code.google.com/apis/analytics/docs/gdata/gdataReferenceDataFeed.html#sort";
-	final static String REFERENCE_METRICS_URI = "http://code.google.com/apis/analytics/docs/gdata/gdataReferenceDataFeed.html#metrics";
-	final static String REFERENCE_DIMENSIONS_URI = "http://code.google.com/apis/analytics/docs/gdata/gdataReferenceDataFeed.html#dimensions";
-	final static String REFERENCE_SEGMENT_URI = "http://code.google.com/apis/analytics/docs/gdata/gdataReferenceDataFeed.html#segment";
-	final static String REFERENCE_FILTERS_URI = "http://code.google.com/apis/analytics/docs/gdata/gdataReferenceDataFeed.html#filters";
-	final static String REFERENCE_DIMENSION_AND_METRIC_URI = "http://code.google.com/apis/analytics/docs/gdata/gdataReferenceDimensionsMetrics.html";
-	final static String REFERENCE_TABLE_ID_URI = "http://code.google.com/apis/analytics/docs/gdata/gdataReferenceDataFeed.html#ids";
+	final static String REFERENCE_SORT_URI = "http://code.google.com/apis/analytics/docs/gdata/v2/gdataReferenceDataFeed.html#sort";
+	final static String REFERENCE_METRICS_URI = "http://code.google.com/apis/analytics/docs/gdata/v2/gdataReferenceDataFeed.html#metrics";
+	final static String REFERENCE_DIMENSIONS_URI = "http://code.google.com/apis/analytics/docs/gdata/v2/gdataReferenceDataFeed.html#dimensions";
+	final static String REFERENCE_SEGMENT_URI = "http://code.google.com/apis/analytics/docs/gdata/v2/gdataReferenceDataFeed.html#segment";
+	final static String REFERENCE_FILTERS_URI = "http://code.google.com/apis/analytics/docs/gdata/v2/gdataReferenceDataFeed.html#filters";
+	final static String REFERENCE_DIMENSION_AND_METRIC_URI = "http://code.google.com/apis/analytics/docs/gdata/v2/gdataReferenceDimensionsMetrics.html";
+	final static String REFERENCE_TABLE_ID_URI = "http://code.google.com/apis/analytics/docs/gdata/v2/gdataReferenceDataFeed.html#ids";
 	final static String WEBSITE_URL = "http://type-exit.org/adventures-with-open-source-bi/google-analytics-plugin-for-kettle/";
 
 	// constructor
