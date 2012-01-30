@@ -60,6 +60,7 @@ import org.pentaho.di.trans.step.errorhandling.CompositeFileErrorHandler;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerContentLineNumber;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandlerMissingFiles;
+import org.pentaho.hadoop.HadoopCompression;
 
 
 /**
@@ -1361,6 +1362,10 @@ public class TextFileInput extends BaseStep implements StepInterface
 				{
 					data.gzi.close();
 				}
+				else if (sFileCompression != null && sFileCompression.equals("Snappy") && data.sis != null)
+                                {
+                                        data.sis.close();
+                                }
 				data.fr.close();
 				data.isr.close();
 				data.filename = null; // send it down the next time.
@@ -1491,6 +1496,19 @@ public class TextFileInput extends BaseStep implements StepInterface
 				{
 					data.isr = new InputStreamReader(new BufferedInputStream(data.gzi, BUFFER_SIZE_INPUT_STREAM));
 				}
+			}
+			else if (sFileCompression != null && sFileCompression.equals("Hadoop-snappy")) {
+			  if (log.isDetailed()) logDetailed("This is a snappy compressed file");
+			  //data.sis = new SnappyInputStream(data.fr);
+			  data.sis = HadoopCompression.getSnappyInputStream(null, data.fr);
+			  if (meta.getEncoding() != null && meta.getEncoding().length() > 0)
+			  {
+			    data.isr = new InputStreamReader(new BufferedInputStream(data.sis, BUFFER_SIZE_INPUT_STREAM), meta.getEncoding());
+			  }
+			  else
+			  {
+			    data.isr = new InputStreamReader(new BufferedInputStream(data.sis, BUFFER_SIZE_INPUT_STREAM));
+			  }
 			}
 			else
 			{
