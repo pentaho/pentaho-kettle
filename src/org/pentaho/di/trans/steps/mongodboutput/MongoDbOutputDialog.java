@@ -501,6 +501,10 @@ public class MongoDbOutputDialog extends BaseStepDialog implements
           m_modifierUpdateBut.setSelection(false);
           m_multiBut.setSelection(false);
         }
+        m_multiBut.setEnabled(m_modifierUpdateBut.getSelection());
+        if (!m_multiBut.getEnabled()) {
+          m_multiBut.setSelection(false);
+        }
       }
     });
     
@@ -525,7 +529,7 @@ public class MongoDbOutputDialog extends BaseStepDialog implements
     m_multiBut.setLayoutData(fd);
     m_multiBut.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent e) {
-        m_currentMeta.setChanged();
+        m_currentMeta.setChanged();                
       }
     });
     
@@ -552,6 +556,12 @@ public class MongoDbOutputDialog extends BaseStepDialog implements
     m_modifierUpdateBut.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent e) {
         m_currentMeta.setChanged();
+        
+        m_multiBut.setEnabled(m_modifierUpdateBut.getSelection());
+        
+        if (!m_modifierUpdateBut.getSelection()) {
+          m_multiBut.setSelection(false);          
+        }        
       }
     });
     
@@ -894,6 +904,10 @@ public class MongoDbOutputDialog extends BaseStepDialog implements
     m_multiBut.setEnabled(m_upsertBut.getSelection());
     if (!m_upsertBut.getSelection()) {
       m_modifierUpdateBut.setSelection(false);
+      m_multiBut.setSelection(false);
+    }
+    m_multiBut.setEnabled(m_modifierUpdateBut.getSelection());
+    if (!m_multiBut.getEnabled()) {
       m_multiBut.setSelection(false);
     }
     
