@@ -22,6 +22,8 @@
 
 package org.pentaho.di.repository;
 
+import java.util.List;
+
 import org.pentaho.di.core.ProgressMonitorListener;
 import org.pentaho.di.imp.ImportRules;
 
@@ -63,4 +65,10 @@ public interface IRepositoryImporter extends ProgressMonitorListener, Repository
    * Overrides repository directory for all imported jobs.
    */
   public void setJobDirOverride(String jobDirOverride);
+  
+  /**
+   * Returns a list of exceptions that the implementation may maintain.
+   * @return
+   */
+  public List<Exception> getExceptions();
 }

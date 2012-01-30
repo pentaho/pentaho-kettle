@@ -184,5 +184,11 @@
 		<variable>KETTLE_CARTE_OBJECT_TIMEOUT_MINUTES</variable>
 		<default-value>1440</default-value>
 	</kettle-variable>
-
+	
+	<kettle-variable>
+		<description>Set this variable to an integer that will be returned as the Pan JVM exit code.</description>
+		<variable>KETTLE_TRANS_PAN_JVM_EXIT_CODE</variable>
+		<default-value></default-value>
+	</kettle-variable>
+	
 </kettle-variables>

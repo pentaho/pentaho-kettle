@@ -473,8 +473,25 @@ public class Pan {
       if (trans.getResult().getNrErrors() == 0) {
         trans.printStats(seconds);
         exitJVM(0);
-      } else {
-        exitJVM(1);
+      } 
+      else {
+         
+         String transJVMExitCode = trans.getVariable(Const.KETTLE_TRANS_PAN_JVM_EXIT_CODE);
+         
+         //  If the trans has a return code to return to the OS, then we exit with that
+         if (!Const.isEmpty(transJVMExitCode)) {
+            try {
+               exitJVM(Integer.valueOf(transJVMExitCode));
+            }
+            catch (NumberFormatException nfe) {
+               log.logError(BaseMessages.getString(PKG, "Pan.Error.TransJVMExitCodeInvalid", Const.KETTLE_TRANS_PAN_JVM_EXIT_CODE, transJVMExitCode));
+               log.logError(BaseMessages.getString(PKG, "Pan.Log.JVMExitCode", "1"));
+               exitJVM(1);
+            }
+         }
+         else {  // the trans does not have a return code.
+             exitJVM(1);
+         }
       }
     } catch (KettleException ke) {
       System.out.println(BaseMessages.getString(PKG, "Pan.Log.ErrorOccurred", "" + ke.getMessage()));

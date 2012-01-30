@@ -272,9 +272,4 @@ public class RepositoryImportProgressDialog extends Dialog implements ProgressMo
   public boolean isAskingOverwriteConfirmation() {
     return askOverwrite;
   }
-
-  @Override
-  public List<Exception> getExceptions() {
-     return null;
-  }
 }

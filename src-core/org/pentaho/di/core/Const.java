@@ -723,6 +723,11 @@ public class Const
 	public static final String	XML_FILE_KETTLE_DATABASE_TYPES = "kettle-database-types.xml";
 
   /**
+	 * the value the Pan JVM should return on exit.
+	 */
+	public static final String KETTLE_TRANS_PAN_JVM_EXIT_CODE = "KETTLE_TRANS_PAN_JVM_EXIT_CODE";
+
+  /**
    * The XML file that contains the list of native import rules
    */
   public static final String  XML_FILE_KETTLE_IMPORT_RULES = "kettle-import-rules.xml";
