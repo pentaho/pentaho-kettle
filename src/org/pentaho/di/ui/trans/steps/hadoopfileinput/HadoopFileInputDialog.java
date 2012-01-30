@@ -109,6 +109,7 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.steps.textfileinput.TextFileCSVImportProgressDialog;
 import org.pentaho.di.ui.trans.steps.textfileinput.TextFileImportWizardPage1;
 import org.pentaho.di.ui.trans.steps.textfileinput.TextFileImportWizardPage2;
+import org.pentaho.hadoop.HadoopCompression;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
 
@@ -1254,6 +1255,11 @@ public class HadoopFileInputDialog extends BaseStepDialog implements StepDialogI
         wCompression.add("None");
         wCompression.add("Zip");
         wCompression.add("GZip");
+        try {
+          if (HadoopCompression.isHadoopSnappyAvailable()) {
+            wCompression.add("Hadoop-snappy");
+          }
+        } catch (Exception ex) { }
         wCompression.select(0);
         wCompression.addModifyListener(lsMod);
         fdCompression=new FormData();
@@ -2511,6 +2517,15 @@ public class HadoopFileInputDialog extends BaseStepDialog implements StepDialogI
 					gzipInputStream = new GZIPInputStream(fileInputStream);
 					inputStream=gzipInputStream;
 				}
+				else if (meta.getFileCompression().equals("Hadoop-snappy") &&
+                                    HadoopCompression.isHadoopSnappyAvailable()) 
+                                {
+                                  try {
+                                    inputStream = HadoopCompression.getSnappyInputStream(null, fileInputStream);
+                                  } catch (Exception ex) {
+                                    throw new IOException(ex.fillInStackTrace());
+                                  }
+                                }
 				else
 				{
 					inputStream=fileInputStream;
@@ -2832,6 +2847,10 @@ public class HadoopFileInputDialog extends BaseStepDialog implements StepDialogI
 					gzi = new GZIPInputStream(fi);
 					f=gzi;
 				}
+				else if (meta.getFileCompression().equals("Hadoop-snappy") &&
+                                    HadoopCompression.isHadoopSnappyAvailable()) {
+                                  f = HadoopCompression.getSnappyInputStream(null, fi);
+                                }
 				else
 				{
 					f=fi;
