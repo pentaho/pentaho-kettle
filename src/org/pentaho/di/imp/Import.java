@@ -212,7 +212,12 @@ public class Import {
     }
     try {
       repository.connect(optionUsername != null ? optionUsername.toString() : null, optionPassword != null ? optionPassword.toString() : null);
-    } catch (Exception e) {
+    } 
+    catch (KettleException ke) {
+       log.logError(ke.getMessage());
+       exitJVM(1);
+    }
+    catch (Exception e) {
       log.logError(BaseMessages.getString(PKG, "Import.Error.UnableToConnectToRepository"));
       exitJVM(1);
     }
@@ -282,11 +287,6 @@ public class Import {
         @Override
         public boolean isAskingOverwriteConfirmation() {
           return false;
-        }
-        
-        @Override
-        public List<Exception> getExceptions() {
-           return null;
         }        
       };
       
@@ -296,7 +296,13 @@ public class Import {
           filenames.toArray(new String[filenames.size()]), 
           targetDirectory, replace, continueOnError, optionComment.toString()
          );
-
+      
+      //  If the importer has exceptions, then our return code is 2
+      List<Exception> exceptions = importer.getExceptions();
+      if (exceptions != null && !exceptions.isEmpty()) {
+         log.logError(BaseMessages.getString(PKG, "Import.Error.UnexpectedErrorDuringImport"), exceptions.get(0));
+         returnCode = 2;
+      }
     } catch (Exception e) {
       log.logError(BaseMessages.getString(PKG, "Import.Error.UnexpectedErrorDuringImport"), e);
       exitJVM(2);

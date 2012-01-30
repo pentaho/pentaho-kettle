@@ -22,6 +22,7 @@
 
 package org.pentaho.di.repository;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -123,7 +124,19 @@ public class RepositoryImporter implements IRepositoryImporter {
         try {
           RepositoryExportSaxParser parser = new RepositoryExportSaxParser(filename, feedback);          
           parser.parse(this);
-        } catch(Exception e) {
+        } 
+        catch (FileNotFoundException fnfe) {
+           addException(fnfe);
+           feedback.showError(BaseMessages.getString(PKG, "PurRepositoryImporter.ErrorGeneral.Title"), 
+                 BaseMessages.getString(PKG, "PurRepositoryImporter.FileNotFound.Message", filename), fnfe);
+           
+         }
+         catch (SAXParseException spe) {
+           addException(spe);
+           feedback.showError(BaseMessages.getString(PKG, "PurRepositoryImporter.ErrorGeneral.Title"), 
+                  BaseMessages.getString(PKG, "PurRepositoryImporter.ParseError.Message", filename), spe);
+         }
+        catch(Exception e) { 
           feedback.showError(BaseMessages.getString(PKG, "RepositoryImporter.ErrorGeneral.Title"), 
               BaseMessages.getString(PKG, "RepositoryImporter.ErrorGeneral.Message"), e);
         }        
@@ -751,6 +764,13 @@ public class RepositoryImporter implements IRepositoryImporter {
   @Override
   public boolean isAskingOverwriteConfirmation() {
     return askOverwrite;
+  }
+  
+  private void addException(Exception exception) {
+     if (this.exceptions == null) {
+        this.exceptions = new ArrayList<Exception>();
+     }
+     exceptions.add(exception);
   }
 
   @Override
