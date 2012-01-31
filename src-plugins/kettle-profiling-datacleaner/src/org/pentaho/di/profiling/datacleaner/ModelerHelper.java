@@ -168,7 +168,7 @@ public class ModelerHelper extends AbstractXulEventHandler implements ISpoonMenu
         }
 
         public Datastore getSingleDatastore(DatastoreCatalog catalog) {
-          return new JdbcDatastore(transMeta.getName(), url, driverClass, "", "");
+          return new JdbcDatastore(transMeta.getName(), url, driverClass);
         };
 
         @Override

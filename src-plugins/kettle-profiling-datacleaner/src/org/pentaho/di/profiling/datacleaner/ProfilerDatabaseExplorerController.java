@@ -80,7 +80,7 @@ public class ProfilerDatabaseExplorerController extends AbstractXulEventHandler 
 
         public Datastore getSingleDatastore(DatastoreCatalog catalog) {
           try {
-            return new JdbcDatastore(dbMeta.getName(), dbMeta.getURL(), dbMeta.getDriverClass(), dbMeta.getUsername(), dbMeta.getPassword());
+            return new JdbcDatastore(dbMeta.getName(), dbMeta.getURL(), dbMeta.getDriverClass(), dbMeta.getUsername(), dbMeta.getPassword(), false);
           } catch (KettleDatabaseException e) {
             throw new RuntimeException(e);
           }
