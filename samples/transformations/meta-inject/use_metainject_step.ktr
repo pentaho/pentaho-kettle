@@ -70,6 +70,129 @@
   </info>
   <notepads>
   </notepads>
+  <connection>
+    <name>Logging</name>
+    <server/>
+    <type>H2</type>
+    <access>Native</access>
+    <database>LOGGING</database>
+    <port>-1</port>
+    <username/>
+    <password>Encrypted </password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>-1</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>N</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>LucidDB</name>
+    <server>127.0.0.1</server>
+    <type>LucidDB</type>
+    <access>Native</access>
+    <database>nimbuzz</database>
+    <port>8034</port>
+    <username>MATT</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>8034</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>N</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>MySQL</name>
+    <server>localhost</server>
+    <type>MYSQL</type>
+    <access>Native</access>
+    <database>test</database>
+    <port>3306</port>
+    <username>matt</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>EXTRA_OPTION_MYSQL.characterEncoding</code><attribute>UTF-8</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.characterSetResults</code><attribute>UTF-8</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.useServerPrepStmts</code><attribute>false</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.useUnicode</code><attribute>true</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>3306</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>STREAM_RESULTS</code><attribute>Y</attribute></attribute>
+      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>N</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>Nimbuzz</name>
+    <server>localhost</server>
+    <type>MYSQL</type>
+    <access>Native</access>
+    <database>nimbuzz</database>
+    <port>3306</port>
+    <username>matt</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>EXTRA_OPTION_MYSQL.characterEncoding</code><attribute>UTF-8</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.characterSetResults</code><attribute>UTF-8</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.useUnicode</code><attribute>true</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>3306</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>STREAM_RESULTS</code><attribute>Y</attribute></attribute>
+      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>N</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>VectorWise</name>
+    <server>localhost</server>
+    <type>INGRES</type>
+    <access>Native</access>
+    <database>test</database>
+    <port>VW7</port>
+    <username>ingres</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>VW7</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>N</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
   <order>
   <hop> <from>Fields</from><to>ETL Metadata Injection</to><enabled>Y</enabled> </hop>  <hop> <from>Filename</from><to>ETL Metadata Injection</to><enabled>Y</enabled> </hop>  <hop> <from>Rename</from><to>ETL Metadata Injection</to><enabled>Y</enabled> </hop>  <hop> <from>Remove</from><to>ETL Metadata Injection</to><enabled>Y</enabled> </hop>  </order>
   <step>
@@ -87,21 +210,86 @@
     <trans_name/>
     <filename>${Internal.Transformation.Filename.Directory}&#47;read_csv_file.ktr</filename>
     <directory_path/>
-    <mappings>      <mapping>        <target_step_name>CSV file input</target_step_name>
-        <target_attribute_key>group</target_attribute_key>
-        <target_detail>Y</target_detail>
-        <source_step>Fields</source_step>
-        <source_field>group</source_field>
-      </mapping>      <mapping>        <target_step_name>Select values</target_step_name>
+    <mappings>      <mapping>        <target_step_name>Select values</target_step_name>
         <target_attribute_key>name</target_attribute_key>
         <target_detail>Y</target_detail>
         <source_step>Rename fields</source_step>
         <source_field>name</source_field>
       </mapping>      <mapping>        <target_step_name>CSV file input</target_step_name>
+        <target_attribute_key>group</target_attribute_key>
+        <target_detail>Y</target_detail>
+        <source_step>Fields</source_step>
+        <source_field>group</source_field>
+      </mapping>      <mapping>        <target_step_name>CSV file input</target_step_name>
         <target_attribute_key>field_format</target_attribute_key>
         <target_detail>Y</target_detail>
         <source_step>Fields</source_step>
         <source_field>format</source_field>
+      </mapping>      <mapping>        <target_step_name>Select values</target_step_name>
+        <target_attribute_key>remove_name</target_attribute_key>
+        <target_detail>Y</target_detail>
+        <source_step>Remove</source_step>
+        <source_field>name</source_field>
+      </mapping>      <mapping>        <target_step_name>CSV file input</target_step_name>
+        <target_attribute_key>filename</target_attribute_key>
+        <target_detail>N</target_detail>
+        <source_step>Filename</source_step>
+        <source_field>filename</source_field>
+      </mapping>      <mapping>        <target_step_name>CSV file input</target_step_name>
+        <target_attribute_key>FIELD_CURRENCY</target_attribute_key>
+        <target_detail>Y</target_detail>
+        <source_step>Fields</source_step>
+        <source_field>currency</source_field>
+      </mapping>      <mapping>        <target_step_name>CSV file input</target_step_name>
+        <target_attribute_key>field_currency</target_attribute_key>
+        <target_detail>Y</target_detail>
+        <source_step>Fields</source_step>
+        <source_field>currency</source_field>
+      </mapping>      <mapping>        <target_step_name>CSV file input</target_step_name>
+        <target_attribute_key>field_length</target_attribute_key>
+        <target_detail>Y</target_detail>
+        <source_step>Fields</source_step>
+        <source_field>length</source_field>
+      </mapping>      <mapping>        <target_step_name>CSV file input</target_step_name>
+        <target_attribute_key>decimal</target_attribute_key>
+        <target_detail>Y</target_detail>
+        <source_step>Fields</source_step>
+        <source_field>decimal</source_field>
+      </mapping>      <mapping>        <target_step_name>Select values</target_step_name>
+        <target_attribute_key>META_NAME</target_attribute_key>
+        <target_detail>Y</target_detail>
+        <source_step>Rename</source_step>
+        <source_field>name</source_field>
+      </mapping>      <mapping>        <target_step_name>CSV file input</target_step_name>
+        <target_attribute_key>FILENAME</target_attribute_key>
+        <target_detail>N</target_detail>
+        <source_step>Filename</source_step>
+        <source_field>filename</source_field>
+      </mapping>      <mapping>        <target_step_name>CSV file input</target_step_name>
+        <target_attribute_key>format</target_attribute_key>
+        <target_detail>Y</target_detail>
+        <source_step>Fields</source_step>
+        <source_field>format</source_field>
+      </mapping>      <mapping>        <target_step_name>CSV file input</target_step_name>
+        <target_attribute_key>FIELD_FORMAT</target_attribute_key>
+        <target_detail>Y</target_detail>
+        <source_step>Fields</source_step>
+        <source_field>format</source_field>
+      </mapping>      <mapping>        <target_step_name>CSV file input</target_step_name>
+        <target_attribute_key>FIELD_PRECISION</target_attribute_key>
+        <target_detail>Y</target_detail>
+        <source_step>Fields</source_step>
+        <source_field>precision</source_field>
+      </mapping>      <mapping>        <target_step_name>CSV file input</target_step_name>
+        <target_attribute_key>FIELD_LENGTH</target_attribute_key>
+        <target_detail>Y</target_detail>
+        <source_step>Fields</source_step>
+        <source_field>length</source_field>
+      </mapping>      <mapping>        <target_step_name>CSV file input</target_step_name>
+        <target_attribute_key>precision</target_attribute_key>
+        <target_detail>Y</target_detail>
+        <source_step>Fields</source_step>
+        <source_field>precision</source_field>
       </mapping>      <mapping>        <target_step_name>CSV file input</target_step_name>
         <target_attribute_key>field_decimal</target_attribute_key>
         <target_detail>Y</target_detail>
@@ -113,40 +301,30 @@
         <source_step>Fields</source_step>
         <source_field>length</source_field>
       </mapping>      <mapping>        <target_step_name>CSV file input</target_step_name>
-        <target_attribute_key>filename</target_attribute_key>
-        <target_detail>N</target_detail>
-        <source_step>Filename</source_step>
-        <source_field>filename</source_field>
-      </mapping>      <mapping>        <target_step_name>Select values</target_step_name>
-        <target_attribute_key>remove_name</target_attribute_key>
-        <target_detail>Y</target_detail>
-        <source_step>Remove</source_step>
-        <source_field>name</source_field>
-      </mapping>      <mapping>        <target_step_name>CSV file input</target_step_name>
-        <target_attribute_key>field_currency</target_attribute_key>
+        <target_attribute_key>trim_type</target_attribute_key>
         <target_detail>Y</target_detail>
         <source_step>Fields</source_step>
-        <source_field>currency</source_field>
-      </mapping>      <mapping>        <target_step_name>CSV file input</target_step_name>
-        <target_attribute_key>field_group</target_attribute_key>
-        <target_detail>Y</target_detail>
-        <source_step>Fields</source_step>
-        <source_field>group</source_field>
+        <source_field>trimtype</source_field>
       </mapping>      <mapping>        <target_step_name>CSV file input</target_step_name>
         <target_attribute_key>name</target_attribute_key>
         <target_detail>Y</target_detail>
         <source_step>Fields</source_step>
         <source_field>name</source_field>
       </mapping>      <mapping>        <target_step_name>CSV file input</target_step_name>
-        <target_attribute_key>trim_type</target_attribute_key>
+        <target_attribute_key>field_group</target_attribute_key>
         <target_detail>Y</target_detail>
         <source_step>Fields</source_step>
-        <source_field>trimtype</source_field>
+        <source_field>group</source_field>
       </mapping>      <mapping>        <target_step_name>CSV file input</target_step_name>
-        <target_attribute_key>field_length</target_attribute_key>
+        <target_attribute_key>FIELD_TYPE</target_attribute_key>
         <target_detail>Y</target_detail>
         <source_step>Fields</source_step>
-        <source_field>length</source_field>
+        <source_field>type</source_field>
+      </mapping>      <mapping>        <target_step_name>Select values</target_step_name>
+        <target_attribute_key>META_RENAME</target_attribute_key>
+        <target_detail>Y</target_detail>
+        <source_step>Rename</source_step>
+        <source_field>rename</source_field>
       </mapping>      <mapping>        <target_step_name>Select values</target_step_name>
         <target_attribute_key>meta_name</target_attribute_key>
         <target_detail>Y</target_detail>
@@ -163,15 +341,20 @@
         <source_step>Fields</source_step>
         <source_field>trimtype</source_field>
       </mapping>      <mapping>        <target_step_name>CSV file input</target_step_name>
-        <target_attribute_key>decimal</target_attribute_key>
+        <target_attribute_key>FIELD_GROUP</target_attribute_key>
         <target_detail>Y</target_detail>
         <source_step>Fields</source_step>
-        <source_field>decimal</source_field>
+        <source_field>group</source_field>
       </mapping>      <mapping>        <target_step_name>CSV file input</target_step_name>
         <target_attribute_key>currency</target_attribute_key>
         <target_detail>Y</target_detail>
         <source_step>Fields</source_step>
         <source_field>currency</source_field>
+      </mapping>      <mapping>        <target_step_name>Select values</target_step_name>
+        <target_attribute_key>REMOVE_NAME</target_attribute_key>
+        <target_detail>Y</target_detail>
+        <source_step>Remove</source_step>
+        <source_field>name</source_field>
       </mapping>      <mapping>        <target_step_name>Select values</target_step_name>
         <target_attribute_key>meta_rename</target_attribute_key>
         <target_detail>Y</target_detail>
@@ -183,10 +366,15 @@
         <source_step>Fields</source_step>
         <source_field>precision</source_field>
       </mapping>      <mapping>        <target_step_name>CSV file input</target_step_name>
-        <target_attribute_key>format</target_attribute_key>
+        <target_attribute_key>FIELD_NAME</target_attribute_key>
         <target_detail>Y</target_detail>
         <source_step>Fields</source_step>
-        <source_field>format</source_field>
+        <source_field>name</source_field>
+      </mapping>      <mapping>        <target_step_name>CSV file input</target_step_name>
+        <target_attribute_key>FIELD_TRIM_TYPE</target_attribute_key>
+        <target_detail>Y</target_detail>
+        <source_step>Fields</source_step>
+        <source_field>trimtype</source_field>
       </mapping>      <mapping>        <target_step_name>CSV file input</target_step_name>
         <target_attribute_key>field_name</target_attribute_key>
         <target_detail>Y</target_detail>
@@ -198,14 +386,14 @@
         <source_step>Fields</source_step>
         <source_field>type</source_field>
       </mapping>      <mapping>        <target_step_name>CSV file input</target_step_name>
-        <target_attribute_key>precision</target_attribute_key>
+        <target_attribute_key>FIELD_DECIMAL</target_attribute_key>
         <target_detail>Y</target_detail>
         <source_step>Fields</source_step>
-        <source_field>precision</source_field>
+        <source_field>decimal</source_field>
       </mapping>    </mappings>     <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
-      <xloc>265</xloc>
-      <yloc>127</yloc>
+      <xloc>266</xloc>
+      <yloc>126</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -355,7 +543,7 @@
       </field>
     </fields>
     <data>
-      <line> <item>&#47;parking&#47;testfiles&#47;customers-1M.txt</item> </line>
+      <line> <item>samples&#47;transformations&#47;files&#47;customers-100.txt</item> </line>
     </data>
      <cluster_schema/>
  <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>
