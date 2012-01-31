@@ -2260,7 +2260,13 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
         
         // Open the transformation or create a new one...
         //
-        boolean exists = spoon.rep.getTransformationID(exactTransname, spoon.rep.findDirectory(jobMeta.environmentSubstitute(entry.getDirectory()))) != null;
+        // But first we look to see if the directory does exist
+        RepositoryDirectoryInterface repositoryDirectoryInterface = spoon.rep.findDirectory(jobMeta.environmentSubstitute(entry.getDirectory()));
+        if (repositoryDirectoryInterface== null) {
+           throw new Exception(BaseMessages.getString(PKG, "JobGraph.Exception.DirectoryDoesNotExist", jobMeta.environmentSubstitute(entry.getDirectory())));
+        }
+        
+        boolean exists = spoon.rep.getTransformationID(exactTransname, repositoryDirectoryInterface) != null;
         if (!exists) {
           launchTransMeta = new TransMeta(null, exactTransname, entry.arguments);
         } 
