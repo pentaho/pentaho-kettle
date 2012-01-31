@@ -1500,7 +1500,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 			else if (sFileCompression != null && sFileCompression.equals("Hadoop-snappy")) {
 			  if (log.isDetailed()) logDetailed("This is a snappy compressed file");
 			  //data.sis = new SnappyInputStream(data.fr);
-			  data.sis = HadoopCompression.getSnappyInputStream(null, data.fr);
+			  data.sis = HadoopCompression.getSnappyInputStream(data.fr);
 			  if (meta.getEncoding() != null && meta.getEncoding().length() > 0)
 			  {
 			    data.isr = new InputStreamReader(new BufferedInputStream(data.sis, BUFFER_SIZE_INPUT_STREAM), meta.getEncoding());

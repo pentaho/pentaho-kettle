@@ -40,7 +40,6 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.errorhandling.FileErrorHandler;
-import org.apache.hadoop.io.compress.CompressionInputStream;
 
 /**
  * @author Matt
@@ -81,7 +80,7 @@ public class TextFileInputData extends BaseStepData implements
 
 	public GZIPInputStream gzi;
 	
-	public CompressionInputStream sis;
+	public InputStream sis;
 
 	public InputStreamReader isr;
 

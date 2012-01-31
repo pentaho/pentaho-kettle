@@ -25,10 +25,6 @@ package org.pentaho.hadoop;
 import java.io.*;
 import java.lang.reflect.Method;
 
-import org.apache.hadoop.io.compress.CompressionInputStream;
-import org.apache.hadoop.io.compress.CompressionOutputStream;
-import org.apache.hadoop.conf.Configuration;
-
 /**
  * Helper class for determining (via reflection) whether various 
  * Hadoop compression codecs (such as Snappy) are available on
@@ -41,6 +37,10 @@ import org.apache.hadoop.conf.Configuration;
 public class HadoopCompression {
   
   public static String SNAPPY_CODEC_CLASS = "org.apache.hadoop.io.compress.SnappyCodec";
+  public static final String IO_COMPRESSION_CODEC_SNAPPY_BUFFERSIZE_KEY =
+    "io.compression.codec.snappy.buffersize";
+  public static final int IO_COMPRESSION_CODEC_SNAPPY_DEFAULT_BUFFERSIZE =
+    256 * 1024;
 
   /**
    * Tests whether hadoop-snappy (not to be confused with other java-based
@@ -52,12 +52,13 @@ public class HadoopCompression {
   public static boolean isHadoopSnappyAvailable() {
     try {
       Object snappyCodec = Class.forName(SNAPPY_CODEC_CLASS).newInstance();
-      Class confClass = new Configuration().getClass();
+      Class confClass = Class.forName("org.apache.hadoop.conf.Configuration").newInstance().getClass();
       Class[] paramClass = new Class[1];
       paramClass[0] = confClass;
 
       Method m = snappyCodec.getClass().getMethod("isNativeSnappyLoaded", paramClass);
-      Object result = m.invoke(snappyCodec, new Configuration());
+      Object aConf = Class.forName("org.apache.hadoop.conf.Configuration").newInstance();
+      Object result = m.invoke(snappyCodec, aConf);
 
       return ((Boolean)result).booleanValue();
     } catch (Exception ex) {
@@ -69,84 +70,117 @@ public class HadoopCompression {
    * Gets a CompressionInputStream that uses the snappy codec and 
    * wraps the supplied base input stream.
    * 
-   * @param conf a Hadoop Configuration object. The client can set the 
-   * io.compression.codec.snappy.buffersize property here for controlling
-   * the size of the buffer (in bytes) used by the Snappy codec. The default buffer
-   * size is 256K.
-   * 
    * @param in the base input stream to wrap around
-   * @return a CompressionInputStream that uses the Snappy codec
+   * @return an InputStream that uses the Snappy codec
    * 
    * @throws Exception if snappy is not available or an error occurs during
    * reflection
    */
-  public static CompressionInputStream getSnappyInputStream(Configuration conf, InputStream in) 
+  public static InputStream getSnappyInputStream(InputStream in) throws Exception {
+    return getSnappyInputStream(IO_COMPRESSION_CODEC_SNAPPY_DEFAULT_BUFFERSIZE, in);
+  }
+
+  /**
+   * Gets an InputStream that uses the snappy codec and 
+   * wraps the supplied base input stream.
+   * 
+   * @param the buffer size for the codec to use (in bytes)
+   * @param in the base input stream to wrap around
+   * @return an InputStream that uses the Snappy codec
+   * 
+   * @throws Exception if snappy is not available or an error occurs during
+   * reflection
+   */
+  public static InputStream getSnappyInputStream(int bufferSize, InputStream in) 
     throws Exception {
     if (!isHadoopSnappyAvailable()) {
       throw new Exception("Hadoop-snappy does not seem to be available");
     }
 
     Object snappyCodec = Class.forName(SNAPPY_CODEC_CLASS).newInstance();
-    Class confClass = new Configuration().getClass();
+    Class confClass = Class.forName("org.apache.hadoop.conf.Configuration").newInstance().getClass();
     Class[] paramClass = new Class[1];
     paramClass[0] = confClass;
     
-    if (conf == null) {
-      conf = new Configuration();
-    }
+    Object newConf = Class.forName("org.apache.hadoop.conf.Configuration").newInstance();
+
+    Object[] args = new Object[2];
+    args[0] = IO_COMPRESSION_CODEC_SNAPPY_BUFFERSIZE_KEY;
+    args[1] = "" + bufferSize;
+    Method cm = confClass.getMethod("set", new Class[] {String.class, String.class});
+    cm.invoke(newConf, args);
+    
     Method m = snappyCodec.getClass().getMethod("setConf", paramClass);
-    m.invoke(snappyCodec, conf);
+    m.invoke(snappyCodec, newConf);
 
     paramClass[0] = Class.forName("java.io.InputStream");
     m = snappyCodec.getClass().getMethod("createInputStream", paramClass);
     Object result = m.invoke(snappyCodec, in);
 
-    return (CompressionInputStream)result;
+    return (InputStream)result;
   }
-  
+
   /**
-   * Gets a CompressionOutputStream that uses the snappy codec and 
+   * Gets an OutputStream that uses the snappy codec and 
    * wraps the supplied base output stream.
    * 
-   * @param conf a Hadoop Configuration object. The client can set the 
-   * io.compression.codec.snappy.buffersize property here for controlling
-   * the size of the buffer (in bytes) used by the Snappy codec. The default buffer
-   * size is 256K.
-   * 
+   * @param the buffer size for the codec to use (in bytes)
    * @param out the base output stream to wrap around
-   * @return a CompressionOutputStream that uses the Snappy codec
+   * @return a OutputStream that uses the Snappy codec
    * 
    * @throws Exception if snappy is not available or an error occurs during
    * reflection
    */
-  public static CompressionOutputStream getSnappyOutputStream(Configuration conf, OutputStream out)
+  public OutputStream getSnappyOutputStream(OutputStream out) throws Exception {
+    return getSnappyOutputStream(IO_COMPRESSION_CODEC_SNAPPY_DEFAULT_BUFFERSIZE, out);
+  }
+  
+  /**
+   * Gets an OutputStream that uses the snappy codec and 
+   * wraps the supplied base output stream.
+   * 
+   * @param the buffer size for the codec to use (in bytes)
+   * 
+   * @param out the base output stream to wrap around
+   * @return a OutputStream that uses the Snappy codec
+   * 
+   * @throws Exception if snappy is not available or an error occurs during
+   * reflection
+   */
+  public static OutputStream getSnappyOutputStream(int bufferSize, OutputStream out)
     throws Exception {
     if (!isHadoopSnappyAvailable()) {
       throw new Exception("Hadoop-snappy does not seem to be available");
     }
     
-    Object snappyCodec = Class.forName(SNAPPY_CODEC_CLASS).newInstance();
-    Class confClass = new Configuration().getClass();
+    Object snappyCodec = Class.forName(SNAPPY_CODEC_CLASS).newInstance();    
+    Class confClass = Class.forName("org.apache.hadoop.conf.Configuration").newInstance().getClass();
     Class[] paramClass = new Class[1];
     paramClass[0] = confClass;
     
-    if (conf == null) {
-      conf = new Configuration();
-    }
+    Object newConf = Class.forName("org.apache.hadoop.conf.Configuration").newInstance();    
+    
+    Object[] args = new Object[2];
+    args[0] = IO_COMPRESSION_CODEC_SNAPPY_BUFFERSIZE_KEY;
+    args[1] = "" + bufferSize;
+    Method cm = confClass.getMethod("set", new Class[] {String.class, String.class});
+    cm.invoke(newConf, args);
+    
     Method m = snappyCodec.getClass().getMethod("setConf", paramClass);
-    m.invoke(snappyCodec, conf);
+    m.invoke(snappyCodec, newConf);
     
     paramClass[0] = Class.forName("java.io.OutputStream");
     m = snappyCodec.getClass().getMethod("createOutputStream", paramClass);
     Object result = m.invoke(snappyCodec, out);
     
-    return (CompressionOutputStream)result;
+    return (OutputStream)result;
   }
 
   public static void main(String[] args) {
     try {
       FileInputStream fis = new FileInputStream(args[0]);
-      CompressionInputStream cis = HadoopCompression.getSnappyInputStream(new Configuration(), fis);
+      //      Object newConf = Class.forName("org.apache.hadoop.conf.Configuration");    
+      InputStream cis = HadoopCompression.getSnappyInputStream(1024 * 256, fis);
       BufferedInputStream bis = new BufferedInputStream(cis);
       InputStreamReader isr = new InputStreamReader(bis);
 
