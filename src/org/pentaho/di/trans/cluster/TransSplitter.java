@@ -146,14 +146,28 @@ public class TransSplitter
             {
                 map.put(clusterSchema.getName(), clusterSchema);
                 
+                // Make sure we have at least one master to work with.
+                //
                 if (clusterSchema.findMaster()==null)
                 {
                     throw new KettleException("No master server was specified in cluster schema ["+clusterSchema+"]");
                 }
                 
-                // Grab the 
+                // Remember cluster details while we have the cluster handy
+                //
                 socketsBufferSize = Const.toInt( originalTransformation.environmentSubstitute(clusterSchema.getSocketsBufferSize()), 50000  );
                 compressingSocketStreams = clusterSchema.isSocketsCompressed();
+                
+                // Validate the number of slaves. We need at least one to have a valid cluster
+                //
+                List<SlaveServer> slaves = clusterSchema.getSlaveServersFromMasterOrLocal();
+                int count = 0;
+                for (int s=0;s<slaves.size();s++) {
+                  if (!slaves.get(s).isMaster()) count++;
+                }
+                if (count<=0) {
+                  throw new KettleException("At least one slave server is required to be present in cluster schema ["+clusterSchema+"]");
+                }
             }
         }
         if (map.size()==0)
