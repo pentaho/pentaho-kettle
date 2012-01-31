@@ -898,6 +898,15 @@
         	
         </war>
 	</target>
+	
+	<target name="junit-report" depends="tests-all" description="Create an HTML report of ALL unit tests">
+		<junitreport todir="${junit}">
+		  <fileset dir="${junit}">
+			<include name="TEST-*.xml"/>
+		  </fileset>
+		  <report format="frames" todir="${junit}/html"/>
+		</junitreport>
+	</target>
 
 	<!--
 	       ===========================================
