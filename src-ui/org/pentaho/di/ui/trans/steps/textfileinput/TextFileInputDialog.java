@@ -101,6 +101,7 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
+import org.pentaho.hadoop.HadoopCompression;
 
 
 
@@ -1331,6 +1332,11 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wCompression.add("None");
         wCompression.add("Zip");
         wCompression.add("GZip");
+        try {
+          if (HadoopCompression.isHadoopSnappyAvailable()) {
+            wCompression.add("Hadoop-snappy");
+          }
+        } catch (Exception ex) { }
         wCompression.select(0);
         wCompression.addModifyListener(lsMod);
         fdCompression=new FormData();
@@ -2617,6 +2623,15 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 				{
 					gzipInputStream = new GZIPInputStream(fileInputStream);
 					inputStream=gzipInputStream;
+				} 
+				else if (meta.getFileCompression().equals("Hadoop-snappy") &&
+				    HadoopCompression.isHadoopSnappyAvailable()) 
+				{
+				  try {
+				    inputStream = HadoopCompression.getSnappyInputStream(fileInputStream);
+				  } catch (Exception ex) {
+				    throw new IOException(ex.fillInStackTrace());
+				  }
 				}
 				else
 				{
@@ -2940,6 +2955,10 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 				{
 					gzi = new GZIPInputStream(fi);
 					f=gzi;
+				} 
+				else if (meta.getFileCompression().equals("Hadoop-snappy") &&
+				    HadoopCompression.isHadoopSnappyAvailable()) {
+				  f = HadoopCompression.getSnappyInputStream(fi);
 				}
 				else
 				{
