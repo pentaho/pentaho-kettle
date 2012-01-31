@@ -2521,7 +2521,7 @@ public class HadoopFileInputDialog extends BaseStepDialog implements StepDialogI
                                     HadoopCompression.isHadoopSnappyAvailable()) 
                                 {
                                   try {
-                                    inputStream = HadoopCompression.getSnappyInputStream(null, fileInputStream);
+                                    inputStream = HadoopCompression.getSnappyInputStream(fileInputStream);
                                   } catch (Exception ex) {
                                     throw new IOException(ex.fillInStackTrace());
                                   }
@@ -2849,7 +2849,7 @@ public class HadoopFileInputDialog extends BaseStepDialog implements StepDialogI
 				}
 				else if (meta.getFileCompression().equals("Hadoop-snappy") &&
                                     HadoopCompression.isHadoopSnappyAvailable()) {
-                                  f = HadoopCompression.getSnappyInputStream(null, fi);
+                                  f = HadoopCompression.getSnappyInputStream(fi);
                                 }
 				else
 				{
