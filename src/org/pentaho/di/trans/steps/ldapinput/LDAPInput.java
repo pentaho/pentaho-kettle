@@ -188,7 +188,7 @@ public class LDAPInput extends BaseStep implements StepInterface
 			searchBase=getInputRowMeta().getString(data.readRow, data.indexOfSearchBaseField);
 		}
 		String filter=data.staticFilter;
-		if(data.indexOfFilterField>0) {
+		if(data.indexOfFilterField>=0) {
 			// retrieve dynamic filter string
 			filter=getInputRowMeta().getString(data.readRow, data.indexOfFilterField);
 		}
