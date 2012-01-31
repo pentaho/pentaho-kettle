@@ -111,6 +111,13 @@ public class ProcessFilesDialog extends BaseStepDialog implements StepDialogInte
 			}
 		};
 
+      SelectionAdapter lsButtonChanged = new SelectionAdapter()
+      {
+          public void widgetSelected(SelectionEvent e)
+          {
+              input.setChanged();
+          }
+      };
         
 		changed = input.hasChanged();
 
@@ -195,6 +202,7 @@ public class ProcessFilesDialog extends BaseStepDialog implements StepDialogInte
 		wCreateParentFolder=new Button(wSettingsGroup, SWT.CHECK );
  		props.setLook(wCreateParentFolder);
 		wCreateParentFolder.setToolTipText(BaseMessages.getString(PKG, "ProcessFilesDialog.CreateParentFolder.Tooltip"));
+		wCreateParentFolder.addSelectionListener(lsButtonChanged);
 		fdCreateParentFolder=new FormData();
 		fdCreateParentFolder.left = new FormAttachment(middle, 0);
 		fdCreateParentFolder.top  = new FormAttachment(wOperation, margin);
@@ -212,6 +220,7 @@ public class ProcessFilesDialog extends BaseStepDialog implements StepDialogInte
 		wOverwriteTarget=new Button(wSettingsGroup, SWT.CHECK );
  		props.setLook(wOverwriteTarget);
 		wOverwriteTarget.setToolTipText(BaseMessages.getString(PKG, "ProcessFilesDialog.OverwriteTarget.Tooltip"));
+		wOverwriteTarget.addSelectionListener(lsButtonChanged);
 		fdOverwriteTarget=new FormData();
 		fdOverwriteTarget.left = new FormAttachment(middle, 0);
 		fdOverwriteTarget.top  = new FormAttachment(wCreateParentFolder, margin);
@@ -229,6 +238,7 @@ public class ProcessFilesDialog extends BaseStepDialog implements StepDialogInte
 		wAddResult=new Button(wSettingsGroup, SWT.CHECK );
  		props.setLook(wAddResult);
 		wAddResult.setToolTipText(BaseMessages.getString(PKG, "ProcessFilesDialog.AddResult.Tooltip"));
+		wAddResult.addSelectionListener(lsButtonChanged);
 		fdAddResult=new FormData();
 		fdAddResult.left = new FormAttachment(middle, 0);
 		fdAddResult.top  = new FormAttachment(wOverwriteTarget, margin);
@@ -246,6 +256,7 @@ public class ProcessFilesDialog extends BaseStepDialog implements StepDialogInte
 		wSimulate=new Button(wSettingsGroup, SWT.CHECK );
  		props.setLook(wSimulate);
 		wSimulate.setToolTipText(BaseMessages.getString(PKG, "ProcessFilesDialog.Simulate.Tooltip"));
+		wSimulate.addSelectionListener(lsButtonChanged);
 		fdSimulate=new FormData();
 		fdSimulate.left = new FormAttachment(middle, 0);
 		fdSimulate.top  = new FormAttachment(wAddResult, margin);

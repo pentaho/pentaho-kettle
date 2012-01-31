@@ -115,7 +115,6 @@ public class ProcessFiles extends BaseStep implements StepInterface
         		throw new KettleException(BaseMessages.getString(PKG, "ProcessFiles.Error.SourceFileEmpty"));
         	}
         	data.sourceFile=KettleVFS.getFileObject(sourceFilename, getTransMeta());
-        	boolean targetFileExists=false;
         	
         	if(!data.sourceFile.exists())
         	{
@@ -168,17 +167,31 @@ public class ProcessFiles extends BaseStep implements StepInterface
     		switch (meta.getOperationType()) 
     		{
 	    		case ProcessFilesMeta.OPERATION_TYPE_COPY:
-	    			if(((meta.isOverwriteTargetFile() && targetFileExists) || !targetFileExists)&& !meta.simulate)
+	    			if(((meta.isOverwriteTargetFile() && data.targetFile.exists()) || !data.targetFile.exists())&& !meta.simulate) {
 	    				data.targetFile.copyFrom(data.sourceFile, new TextOneToOneFileSelector());
-	    			if(log.isDetailed()) 
-	    				logDetailed(BaseMessages.getString(PKG, "ProcessFiles.Log.SourceFileCopied",sourceFilename,targetFilename));
+	    			   if(log.isDetailed()) {
+	    				   logDetailed(BaseMessages.getString(PKG, "ProcessFiles.Log.SourceFileCopied",sourceFilename,targetFilename));
+	    			   }
+	    			}
+	    			else {
+                  if(log.isDetailed()) {
+                     logDetailed(BaseMessages.getString(PKG, "ProcessFiles.Log.TargetNotOverwritten",sourceFilename,targetFilename));
+                  }
+	    			}
 	    			break;
 	    		case ProcessFilesMeta.OPERATION_TYPE_MOVE:
-	    			if(((meta.isOverwriteTargetFile() && targetFileExists) || !targetFileExists)&& !meta.simulate)
+	    			if(((meta.isOverwriteTargetFile() && data.targetFile.exists()) || !data.targetFile.exists())&& !meta.simulate) {
 	    				data.sourceFile.moveTo(KettleVFS.getFileObject(targetFilename, getTransMeta()));
-	    			if(log.isDetailed()) 
-	    				logDetailed(BaseMessages.getString(PKG, "ProcessFiles.Log.SourceFileMoved",sourceFilename,targetFilename));
-	    			break;
+   	    			if(log.isDetailed()) {
+	      				logDetailed(BaseMessages.getString(PKG, "ProcessFiles.Log.SourceFileMoved",sourceFilename,targetFilename));
+   	    			}
+	    			}
+	    			else {
+	               if(log.isDetailed()) {
+	                  logDetailed(BaseMessages.getString(PKG, "ProcessFiles.Log.TargetNotOverwritten",sourceFilename,targetFilename));
+	               }
+	    			}
+	       		break;
 	    		case ProcessFilesMeta.OPERATION_TYPE_DELETE:
 	    			if(!meta.simulate)
 	    			{
