@@ -48,7 +48,6 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.logging.Log4jFileAppender;
-import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -483,7 +482,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
       logError(BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.FailedToOpenLogFile", logFileName, e.toString())); //$NON-NLS-1$
       logError(Const.getStackTracker(e));
     }
-        
+
     try {
       ClassLoader loader = getClass().getClassLoader();
 
@@ -512,6 +511,13 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
       TransConfiguration transConfig = new TransConfiguration(transMeta, transExecConfig);
       String mapInputStepNameS = environmentSubstitute(mapInputStepName);
       String mapOutputStepNameS = environmentSubstitute(mapOutputStepName);
+
+      try {
+        verifyTransMeta(transMeta, mapInputStepNameS, mapOutputStepNameS);
+      } catch (Exception ex) {
+        throw new KettleException(BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.MapConfiguration.Error"), ex);
+      }
+
       conf.set("transformation-map-xml", transConfig.getXML()); //$NON-NLS-1$
       conf.set("transformation-map-input-stepname", mapInputStepNameS); //$NON-NLS-1$
       conf.set("transformation-map-output-stepname", mapOutputStepNameS); //$NON-NLS-1$
@@ -589,8 +595,6 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
         if (combiningSingleThreaded) {
           verifySingleThreadingValidity(transMeta);
         }
-        
-        verifyReducerCombinerTransMeta(false, transMeta, this, reduceInputStepName, reduceOutputStepName);
 
         transConfig = new TransConfiguration(transMeta, transExecConfig);
         conf.set("transformation-combiner-xml", transConfig.getXML()); //$NON-NLS-1$
@@ -599,6 +603,12 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
         conf.set("transformation-combiner-input-stepname", combinerInputStepNameS); //$NON-NLS-1$
         conf.set("transformation-combiner-output-stepname", combinerOutputStepNameS); //$NON-NLS-1$
         conf.setCombinerClass(GenericTransCombiner.class);
+
+        try {
+          verifyTransMeta(transMeta, combinerInputStepNameS, combinerOutputStepNameS);
+        } catch (Exception ex) {
+          throw new KettleException(BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.CombinerConfiguration.Error"), ex);
+        }
       }
       
       // reducer
@@ -625,9 +635,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
         if (reducingSingleThreaded) {
           verifySingleThreadingValidity(transMeta);
         }
-        
-        verifyReducerCombinerTransMeta(true, transMeta, this, reduceInputStepName, reduceOutputStepName);
-        
+
         transConfig = new TransConfiguration(transMeta, transExecConfig);
         conf.set("transformation-reduce-xml", transConfig.getXML()); //$NON-NLS-1$
         String reduceInputStepNameS = environmentSubstitute(reduceInputStepName);
@@ -635,6 +643,12 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
         conf.set("transformation-reduce-input-stepname", reduceInputStepNameS); //$NON-NLS-1$
         conf.set("transformation-reduce-output-stepname", reduceOutputStepNameS); //$NON-NLS-1$
         conf.setReducerClass(GenericTransReduce.class);
+
+        try {
+          verifyTransMeta(transMeta, reduceInputStepNameS, reduceOutputStepNameS);
+        } catch (Exception ex) {
+          throw new KettleException(BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.ReducerConfiguration.Error"), ex);
+        }
         
         if (getSuppressOutputOfKey()) {
           conf.setOutputKeyClass(NullWritable.class);
@@ -902,24 +916,23 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
   }
 
   /**
-   * Verify the validity of a reducer transformation.
-   * 1) 
+   * Verify the validity of a transformation to be used in Pentaho MapReduce.
+   * 1)
    * @param transMeta
+   * @param inputStepName Name of the input step to be passed data from the {@link org.apache.hadoop.mapred.RecordReader}
+   * @param outputStepName Name of output step to listen for output and pass to the {@link org.apache.hadoop.mapred.OutputCollector}
    * @throws KettleException
    */
-  public static void verifyReducerCombinerTransMeta(boolean reducer, TransMeta transMeta, VariableSpace space, String inputStepName, String outputStepName) throws KettleException {
-    
-    String type = reducer ? "reducer" : "combiner";
-    
+  public static void verifyTransMeta(TransMeta transMeta, String inputStepName, String outputStepName) throws KettleException {
+
     // Verify the input step: see that the key/value fields are present...
     //
-    String realInputStepName = space.environmentSubstitute(inputStepName);
-    if (Const.isEmpty(realInputStepName)) {
-      throw new KettleException("The "+type+" input step was not specified");
+    if (Const.isEmpty(inputStepName)) {
+      throw new KettleException("The input step was not specified");
     }
-    StepMeta inputStepMeta = transMeta.findStep(realInputStepName);
+    StepMeta inputStepMeta = transMeta.findStep(inputStepName);
     if (inputStepMeta==null) {
-      throw new KettleException("The "+type+" input step with name '"+realInputStepName+"' could not be found");
+      throw new KettleException("The input step with name '"+inputStepName+"' could not be found");
     }
     
     // Get the fields coming out of the input step...
@@ -930,19 +943,18 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
     //
     PentahoMapReduceBase.InKeyValueOrdinals inOrdinals = new PentahoMapReduceBase.InKeyValueOrdinals(injectorRowMeta);
     if(inOrdinals.getKeyOrdinal() < 0 || inOrdinals.getValueOrdinal() < 0) {
-      throw new KettleException("key or value is not defined in "+type+" injector step");
+      throw new KettleException("key or value is not defined in input step");
     }
     
     // Now verify the output step output of the reducer...
     //
-    String realOutputStepName = space.environmentSubstitute(outputStepName);
-    if (Const.isEmpty(realOutputStepName)) {
-      throw new KettleException("The "+type+" output step was not specified");
+    if (Const.isEmpty(outputStepName)) {
+      throw new KettleException("The output step was not specified");
     }
 
-    StepMeta outputStepMeta = transMeta.findStep(realOutputStepName);
+    StepMeta outputStepMeta = transMeta.findStep(outputStepName);
     if (outputStepMeta==null) {
-      throw new KettleException("The "+type+" output step with name '"+realOutputStepName+"' could not be found");
+      throw new KettleException("The output step with name '"+outputStepName+"' could not be found");
     }
     
     // It's a special step designed to map the output key/value pair fields...
@@ -970,7 +982,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
       RowMetaInterface outputRowMeta = transMeta.getStepFields(outputStepMeta);
       PentahoMapReduceBase.OutKeyValueOrdinals outOrdinals = new PentahoMapReduceBase.OutKeyValueOrdinals(outputRowMeta);
       if (outOrdinals.getKeyOrdinal() < 0 || outOrdinals.getValueOrdinal() < 0) {
-        throw new KettleException("outKey or outValue is not defined in "+type+" output stream"); //$NON-NLS-1$
+        throw new KettleException("outKey or outValue is not defined in output stream"); //$NON-NLS-1$
       }
     }
   }

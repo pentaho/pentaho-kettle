@@ -142,10 +142,10 @@ public class MapperAndReducerTest {
     try {
      TransMeta transMeta = new TransMeta("./test-res/bad-output-fields.ktr");
      
-     JobEntryHadoopTransJobExecutor.verifyReducerCombinerTransMeta(true, transMeta, transMeta, "Injector", "Output");
+     JobEntryHadoopTransJobExecutor.verifyTransMeta(transMeta, "Injector", "Output");
       fail("Should have thrown an exception");
     } catch (KettleException e) {
-      assertTrue("Test for KettleException", e.getMessage().contains("outKey or outValue is not defined in reducer output stream"));
+      assertTrue("Test for KettleException", e.getMessage().contains("outKey or outValue is not defined in output stream"));
     }
   }
   
@@ -757,10 +757,10 @@ public class MapperAndReducerTest {
     try {
      TransMeta transMeta = new TransMeta("./test-res/bad-output-fields.ktr");
      
-     JobEntryHadoopTransJobExecutor.verifyReducerCombinerTransMeta(false, transMeta, transMeta, "Injector", "Output");
+     JobEntryHadoopTransJobExecutor.verifyTransMeta(transMeta, "Injector", "Output");
       fail("Should have thrown an exception");
     } catch (KettleException e) {
-      assertTrue("Test for KettleException", e.getMessage().contains("outKey or outValue is not defined in combiner output stream"));
+      assertTrue("Test for KettleException", e.getMessage().contains("outKey or outValue is not defined in output stream"));
     }
   }
 
