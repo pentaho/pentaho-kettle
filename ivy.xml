@@ -6,10 +6,12 @@
     <conf name="default" />
     <conf name="test" visibility="private" />
     <conf name="source" />
+    <conf name="zip" />
   </configurations>
 
   <publications>
     <artifact name="${ivy.artifact.id}" type="jar" conf="default" />
+    <artifact name="${package.id}" type="zip" conf="zip" />
   </publications>
 
   <dependencies defaultconf="default->default">
