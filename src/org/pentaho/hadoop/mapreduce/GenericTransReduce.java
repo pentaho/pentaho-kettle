@@ -33,6 +33,8 @@ import org.apache.hadoop.io.WritableComparable;
 import org.apache.hadoop.mapred.OutputCollector;
 import org.apache.hadoop.mapred.Reducer;
 import org.apache.hadoop.mapred.Reporter;
+import org.apache.log4j.Level;
+import org.apache.log4j.spi.LoggingEvent;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.row.RowMeta;
@@ -153,6 +155,20 @@ public class GenericTransReduce<K extends WritableComparable<?>, V extends Itera
         }
       }
 
+      if (trans.getErrors() > 0) {
+        setDebugStatus(reporter, "Errors detected in reducer/combiner transformation");
+        
+        List<LoggingEvent> logList = CentralLogStore.getLogBufferFromTo(trans.getLogChannelId(), false, 0, CentralLogStore.getLastBufferLineNr());
+
+        StringBuffer buff = new StringBuffer();
+        for (LoggingEvent le : logList) {
+          if (le.getLevel() == Level.ERROR) {
+            buff.append(le.getMessage().toString()).append("\n");
+          }
+        }
+        throw new Exception("Errors were detected for reducer/combiner transformation:\n\n" 
+            + buff.toString());
+      }
 
     } catch (Exception e) {
       printException(reporter, e);
