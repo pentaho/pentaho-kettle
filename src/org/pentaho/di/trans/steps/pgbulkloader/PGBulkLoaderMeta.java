@@ -331,7 +331,9 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 			PsqlPath         =      rep.getStepAttributeString(id_step,  "PsqlPath");         //$NON-NLS-1$
 
 			dbNameOverride =      rep.getStepAttributeString(id_step,  "dbname_override");//$NON-NLS-1$			
-			
+         enclosure = rep.getStepAttributeString(id_step, "enclosure");//$NON-NLS-1$
+         delimiter = rep.getStepAttributeString(id_step, "delimiter");//$NON-NLS-1$
+
 			int nrvalues = rep.countNrStepAttributes(id_step, "stream_name");             //$NON-NLS-1$
 
 			allocate(nrvalues);
@@ -363,6 +365,8 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "PsqlPath",          PsqlPath);        //$NON-NLS-1$
 
 			rep.saveStepAttribute(id_transformation, id_step, "dbname_override", dbNameOverride);//$NON-NLS-1$
+         rep.saveStepAttribute(id_transformation, id_step, "enclosure", enclosure);//$NON-NLS-1$
+         rep.saveStepAttribute(id_transformation, id_step, "delimiter", delimiter);//$NON-NLS-1$
 
 			for (int i=0;i<fieldTable.length;i++)
 			{
