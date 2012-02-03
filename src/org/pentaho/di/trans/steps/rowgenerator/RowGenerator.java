@@ -90,7 +90,7 @@ public class RowGenerator extends BaseStep implements StepInterface
                 stringMeta.setType(ValueMetaInterface.TYPE_STRING);
                 
                 
-                if(meta.isSetEmptyString()[i])
+                if(meta.isSetEmptyString() != null && meta.isSetEmptyString()[i])
                 {
                 	//Set empty string
                 	rowData[i]= StringUtil.EMPTY_STRING;

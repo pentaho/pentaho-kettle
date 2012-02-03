@@ -118,6 +118,9 @@ public class JsonOutputMeta extends BaseStepMeta  implements StepMetaInterface
 	/** Flag to indicate the we want to append to the end of an existing file (if it exists) */
     private  boolean fileAppended;
 
+   /** Flag to indicate whether or not to create JSON structures compatible with pre PDI-4.3.0  */
+   private boolean compatibilityMode;
+
 	/** Flag: add the stepnr in the filename */
     private  boolean stepNrInFilename;
 	
@@ -340,6 +343,7 @@ public class JsonOutputMeta extends BaseStepMeta  implements StepMetaInterface
             jsonBloc    = XMLHandler.getTagValue(stepnode, "jsonBloc"); //$NON-NLS-1$
             nrRowsInBloc= XMLHandler.getTagValue(stepnode, "nrRowsInBloc"); //$NON-NLS-1$
             operationType = getOperationTypeByCode(Const.NVL(XMLHandler.getTagValue(stepnode,	"operation_type"), ""));
+            compatibilityMode = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "compatibility_mode"));
             
 			encoding         = XMLHandler.getTagValue(stepnode, "encoding");
 			AddToResult = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "AddToResult"));
@@ -411,6 +415,7 @@ public class JsonOutputMeta extends BaseStepMeta  implements StepMetaInterface
         retval.append("    ").append(XMLHandler.addTagValue("jsonBloc",  jsonBloc)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    ").append(XMLHandler.addTagValue("nrRowsInBloc",  nrRowsInBloc)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    ").append(XMLHandler.addTagValue("operation_type",getOperationTypeCode(operationType)));
+        retval.append("    ").append(XMLHandler.addTagValue("compatibility_mode", compatibilityMode));
 		retval.append("    ").append(XMLHandler.addTagValue("encoding",  encoding));
 		retval.append("    ").append(XMLHandler.addTagValue("addtoresult",      AddToResult));
 		retval.append("    <file>"+Const.CR);
@@ -451,6 +456,7 @@ public class JsonOutputMeta extends BaseStepMeta  implements StepMetaInterface
             nrRowsInBloc   =      rep.getStepAttributeString (id_step, "nrRowsInBloc"); //$NON-NLS-1$
             
             operationType = getOperationTypeByCode(Const.NVL(rep.getStepAttributeString(id_step, "operation_type"), ""));
+            compatibilityMode = rep.getStepAttributeBoolean(id_step, "compatibility_mode");
 			encoding        =      rep.getStepAttributeString (id_step, "encoding");
 			AddToResult     =      rep.getStepAttributeBoolean(id_step, "addtoresult"); 
 			
@@ -498,6 +504,7 @@ public class JsonOutputMeta extends BaseStepMeta  implements StepMetaInterface
             rep.saveStepAttribute(id_transformation, id_step, "nrRowsInBloc", nrRowsInBloc); //$NON-NLS-1$
             
             rep.saveStepAttribute(id_transformation, id_step, "operation_type", getOperationTypeCode(operationType));		
+            rep.saveStepAttribute(id_transformation, id_step, "compatibility_mode",  compatibilityMode);
 			rep.saveStepAttribute(id_transformation, id_step, "encoding",         encoding);
 			rep.saveStepAttribute(id_transformation, id_step, "addtoresult",        AddToResult);
 			
@@ -732,5 +739,13 @@ public class JsonOutputMeta extends BaseStepMeta  implements StepMetaInterface
     
     public void setServletOutput(boolean servletOutput) {
       this.servletOutput = servletOutput;
+    }
+    
+    public boolean isCompatibilityMode() {
+       return compatibilityMode;
+    }
+
+    public void setCompatibilityMode(boolean compatibilityMode) {
+       this.compatibilityMode = compatibilityMode;
     }
 }

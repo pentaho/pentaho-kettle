@@ -99,6 +99,11 @@ public class JsonOutputDialog extends BaseStepDialog implements StepDialogInterf
     private TextVar       wOutputValue;
     private FormData     fdlOutputValue, fdOutputValue;
 
+    private Label        wlCompatibilityMode;
+    private Button       wCompatibilityMode;
+    private FormData     fdlCompatibilityMode, fdCompatibilityMode;
+    
+
     private Label        wlBlocName;
     private TextVar       wBlocName;
     private FormData     fdlBlocName, fdBlocName;
@@ -345,6 +350,31 @@ public class JsonOutputDialog extends BaseStepDialog implements StepDialogInterf
         fdOutputValue.right= new FormAttachment(100, 0);
         wOutputValue.setLayoutData(fdOutputValue);
 
+        ////////////////////////////  start of compatibility mode
+        wlCompatibilityMode=new Label(wSettings, SWT.RIGHT);
+        wlCompatibilityMode.setText(BaseMessages.getString(PKG, "JsonOutputDialog.CompatibilityMode.Label"));
+        props.setLook(wlCompatibilityMode);
+        fdlCompatibilityMode=new FormData();
+        fdlCompatibilityMode.left = new FormAttachment(0, 0);
+        fdlCompatibilityMode.top  = new FormAttachment(wOutputValue, margin);
+        fdlCompatibilityMode.right= new FormAttachment(middle, -margin);
+        wlCompatibilityMode.setLayoutData(fdlCompatibilityMode);
+        wCompatibilityMode=new Button(wSettings, SWT.CHECK);
+        wCompatibilityMode.setToolTipText(BaseMessages.getString(PKG, "JsonOutputDialog.CompatibilityMode.Tooltip"));
+        props.setLook(wCompatibilityMode);
+        fdCompatibilityMode=new FormData();
+        fdCompatibilityMode.left = new FormAttachment(middle, 0);
+        fdCompatibilityMode.top  = new FormAttachment(wOutputValue, margin);
+        fdCompatibilityMode.right= new FormAttachment(100, 0);
+        wCompatibilityMode.setLayoutData(fdCompatibilityMode);
+        wCompatibilityMode.addSelectionListener(new SelectionAdapter() 
+           {
+              public void widgetSelected(SelectionEvent e) 
+              {
+                 input.setChanged();
+              }
+           }
+        );
 	
 		fdSettings = new FormData();
 		fdSettings.left = new FormAttachment(0, margin);
@@ -950,6 +980,7 @@ public class JsonOutputDialog extends BaseStepDialog implements StepDialogInterf
     wNrRowsInBloc.setText(Const.NVL(input.getNrRowsInBloc(), ""));
     wEncoding.setText(Const.NVL(input.getEncoding(), ""));
     wOutputValue.setText(Const.NVL(input.getOutputValue(), ""));
+    wCompatibilityMode.setSelection(input.isCompatibilityMode());
     wOperation.setText(JsonOutputMeta.getOperationTypeDesc(input.getOperationType()));
     wFilename.setText(Const.NVL(input.getFileName(), ""));
     wCreateParentFolder.setSelection(input.isCreateParentFolder());
@@ -994,6 +1025,7 @@ public class JsonOutputDialog extends BaseStepDialog implements StepDialogInterf
       jsometa.setNrRowsInBloc(wNrRowsInBloc.getText());
       jsometa.setEncoding(wEncoding.getText());
       jsometa.setOutputValue(wOutputValue.getText());
+      jsometa.setCompatibilityMode(wCompatibilityMode.getSelection());
       jsometa.setOperationType(JsonOutputMeta.getOperationTypeByDesc(wOperation.getText()));
       jsometa.setCreateParentFolder(wCreateParentFolder.getSelection());
       jsometa.setFileName(wFilename.getText());
@@ -1096,6 +1128,8 @@ public class JsonOutputDialog extends BaseStepDialog implements StepDialogInterf
     	wEncoding.setEnabled(activeFile);
     	wlAppend.setEnabled(activeFile);
     	wAppend.setEnabled(activeFile);
+      wlCompatibilityMode.setEnabled(activeFile);
+      wlCompatibilityMode.setEnabled(activeFile);
     	wlCreateParentFolder.setEnabled(activeFile);
     	wCreateParentFolder.setEnabled(activeFile);
     	wlDoNotOpenNewFileInit.setEnabled(activeFile);
