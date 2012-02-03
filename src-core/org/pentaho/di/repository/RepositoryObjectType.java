@@ -32,8 +32,8 @@ public enum RepositoryObjectType {
 	PARTITION_SCHEMA("partition schema", ".kps"),
 	STEP("step", ".kst"),
 	JOB_ENTRY("job entry", ".kje"),
-
 	PLUGIN("plugin", ""),
+  UNKNOWN("unknown", ""),
 	
 	// non-standard, Kettle database repository only!
 	//
