@@ -588,7 +588,7 @@ public class StarModelDialog extends Dialog {
             LogicalColumn fromColumn = column;
             LogicalTable toTable = dimensionTable;
             LogicalColumn toColumn = tk;
-            LogicalRelationship relationship = new LogicalRelationship(fromTable, toTable, fromColumn, toColumn);
+            LogicalRelationship relationship = new LogicalRelationship(LogicalModel, fromTable, toTable, fromColumn, toColumn);
             logicalRelationships.add(relationship);
           }
         }
