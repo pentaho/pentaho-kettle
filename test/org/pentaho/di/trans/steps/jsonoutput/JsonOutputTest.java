@@ -34,12 +34,16 @@ import org.slf4j.LoggerFactory;
  * JsonOutputTests.
  * 
  * @author Hendy Irawan <hendy@soluvas.com>
+ * Modified by Sean Flatley, removing dependency on external text file to hold expected results 
+ * and modifying code to handle "Compatibility Mode".
  */
 public class JsonOutputTest extends TestCase {
 
   private transient Logger logger = LoggerFactory.getLogger(JsonOutputTest.class);
    
-  private final static String EXPECTED_JSON = "{\"data\":[{\"id\":1,\"state\":\"Orlando\",\"city\":\"Florida\"},{\"id\":1,\"state\":\"Orlando\",\"city\":\"Florida\"},{\"id\":1,\"state\":\"Orlando\",\"city\":\"Florida\"},{\"id\":1,\"state\":\"Orlando\",\"city\":\"Florida\"},{\"id\":1,\"state\":\"Orlando\",\"city\":\"Florida\"},{\"id\":1,\"state\":\"Orlando\",\"city\":\"Florida\"},{\"id\":1,\"state\":\"Orlando\",\"city\":\"Florida\"},{\"id\":1,\"state\":\"Orlando\",\"city\":\"Florida\"},{\"id\":1,\"state\":\"Orlando\",\"city\":\"Florida\"},{\"id\":1,\"state\":\"Orlando\",\"city\":\"Florida\"}]}";
+  private final static String EXPECTED_NON_COMPATIBILITY_JSON  = "{\"data\":[{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"},{\"id\":1,\"state\":\"Florida\",\"city\":\"Orlando\"}]}";
+
+  private final static String EXPECTED_COMPATIBILITY_MODE_JSON = "{\"data\":[{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"},{\"id\":1},{\"state\":\"Florida\"},{\"city\":\"Orlando\"}]}";
 
   /**
    * Creates a row generator step for this class..
@@ -61,7 +65,7 @@ public class JsonOutputTest extends TestCase {
         //  Set the field names, types and values
         rowGeneratorMeta.setFieldName(new String[]{"Id", "State", "City"});
         rowGeneratorMeta.setFieldType(new String[]{"Integer", "String", "String"});
-        rowGeneratorMeta.setValue(new String[]{"1", "Orlando", "Florida"});
+        rowGeneratorMeta.setValue(new String[]{"1", "Florida", "Orlando"});
         rowGeneratorMeta.setFieldLength(new int[]{-1, -1, -1});
         rowGeneratorMeta.setFieldPrecision(new int[]{-1, -1, -1});
         rowGeneratorMeta.setGroup(new String[]{"", "", ""});
@@ -169,9 +173,9 @@ public class JsonOutputTest extends TestCase {
 
         ValueMetaInterface[] valuesMeta = { 
                 new ValueMeta("Id", ValueMeta.TYPE_INTEGER),
-                new ValueMeta("City", ValueMeta.TYPE_STRING),
-                new ValueMeta("State", ValueMeta.TYPE_STRING)
-                };      
+                new ValueMeta("State", ValueMeta.TYPE_STRING),
+                new ValueMeta("City", ValueMeta.TYPE_STRING)
+        };      
         
         for (int i = 0; i < valuesMeta.length; i++) {
             rowMetaInterface.addValueMeta(valuesMeta[i]);
@@ -201,11 +205,11 @@ public class JsonOutputTest extends TestCase {
         fields[0].setFieldName("id");
         fields[0].setElementName("id");
 
-        fields[1].setFieldName("city");
-        fields[1].setElementName("city");
+        fields[1].setFieldName("state");
+        fields[1].setElementName("state");
 
-        fields[2].setFieldName("state");
-        fields[2].setElementName("state");
+        fields[2].setFieldName("city");
+        fields[2].setElementName("city");
 
         //  call this to allocate the number of fields
         jsonOutputMeta.allocate(fields.length);
@@ -226,29 +230,15 @@ public class JsonOutputTest extends TestCase {
 
         return jsonOutputStep;
         
-    }
+    }  
     
-    /**
-     * Check the 2 lists comparing the rows in order. If they are not the same
-     * fail the test.
-     * 
-     * @param rows1
-     *            set 1 of rows to compare
-     * @param rows2
-     *            set 2 of rows to compare
-     * @param fileNameColumn
-     *            Number of the column containing the filename. This is only checked
-     *            for being non-null (some systems maybe canonize names differently 
-     *            than we input).                       
-     */
-
-    public void testJsonOutput1() throws Exception {
+    public String test(boolean compatibilityMode) throws Exception {
         KettleEnvironment.init();
         
         // Create a new transformation...
         //
         TransMeta transMeta = new TransMeta();
-        transMeta.setName("testJsonOutput1");
+        transMeta.setName("testJsonOutput");
         PluginRegistry registry = PluginRegistry.getInstance();
         
         //  create an injector step
@@ -268,6 +258,7 @@ public class JsonOutputTest extends TestCase {
         //    but first lets get a filename
         String jsonFileName = TestUtilities.createEmptyTempFile("testJsonOutput1_");
         StepMeta jsonOutputStep = createJsonOutputStep("json output step", jsonFileName, registry);
+        ((JsonOutputMeta)jsonOutputStep.getStepMetaInterface()).setCompatibilityMode(compatibilityMode);
         transMeta.addStep(jsonOutputStep);
 
         //  create a TransHopMeta for jsonOutputStep and add it to the transMeta
@@ -296,11 +287,24 @@ public class JsonOutputTest extends TestCase {
         trans.startThreads();
         trans.waitUntilFinished();
 
-        // Compare the results
+        // get the results and return it
         File outputFile = new File(jsonFileName + ".js");
         logger.info("Reading JSON file {}", outputFile);
-        String result = FileUtils.readFileToString(outputFile);
-        logger.debug("JSON output => {}", result);
-        Assert.assertEquals(EXPECTED_JSON, result);
+        String jsonStructure = FileUtils.readFileToString(outputFile);
+        logger.debug("JSON output => {}", jsonStructure);
+        
+        return jsonStructure;
     }
+    
+    //  The actual tests
+    
+    public void testNonCompatibilityMode() throws Exception { 
+       String jsonStructure = test(false);  
+       Assert.assertEquals(EXPECTED_NON_COMPATIBILITY_JSON, jsonStructure);
+     }
+     
+     public void testCompatibilityMode() throws Exception {
+        String jsonStructure = test(true);
+        Assert.assertEquals(EXPECTED_COMPATIBILITY_MODE_JSON, jsonStructure);
+     }
 }
