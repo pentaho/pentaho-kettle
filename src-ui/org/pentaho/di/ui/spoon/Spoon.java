@@ -505,6 +505,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
    *            Arguments are available in the "Get System Info" step.
    */
   public static void main(String[] a) throws KettleException {
+    
     try {
       // Bootstrap Kettle
       //
@@ -6711,7 +6712,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   public void selectRep(Splash splash, CommandLineOption[] options) {
     RepositoryMeta repositoryMeta = null;
     // UserInfo userinfo = null;
-
+    
     StringBuffer optionRepname = getCommandLineOption(options, "rep").getArgument();
     StringBuffer optionFilename = getCommandLineOption(options, "file").getArgument();
     StringBuffer optionUsername = getCommandLineOption(options, "user").getArgument();
@@ -6723,7 +6724,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         log.logBasic(BaseMessages.getString(PKG, "Spoon.Log.AskingForRepository"));
       }
 
-      splash.hide();
       loginDialog = new RepositoriesDialog(shell, null, new ILoginCallback() {
 
         public void onSuccess(Repository repository) {
@@ -6737,7 +6737,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
                 "Spoon.Dialog.LoginFailed.Title"), t.getLocalizedMessage());
             dialog.open();
           } else {
-            new ErrorDialog(loginDialog.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Title"), BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Message", t), t);
+             new ErrorDialog(loginDialog.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Title"), BaseMessages.getString(PKG, "Spoon.Dialog.LoginFailed.Message", t), t);
           }
         }
 
@@ -6745,7 +6745,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
           // do nothing
         }
       });
+      if (splash != null) {
+         splash.hide();
+      }
       loginDialog.show();
+      if (splash != null) {
+         splash.show();
+      }
     } 
     else if (!Const.isEmpty(optionRepname) && Const.isEmpty(optionFilename)) {
       RepositoriesMeta repsinfo = new RepositoriesMeta();
@@ -6789,16 +6795,25 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
             }
           });
+          if (splash != null) {
+             splash.hide();
+          }
           loginDialog.show();
+          if (splash != null) {
+             splash.show();
+          }
         }
       } catch (Exception e) {
+        if (splash != null) {
+           splash.hide();
+        }
         // Eat the exception but log it...
         log.logError("Error reading repositories xml file", e);
       }
     }
   }
 
-  public void handleStartOptions(CommandLineOption[] options) {
+  public void handleStartOptions(Splash splash, CommandLineOption[] options) {
 
     // note that at this point the rep object is populated by previous calls 
 
@@ -6870,6 +6885,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         }
       }
     } catch (KettleException ke) {
+      if (splash != null) {
+         splash.hide();
+      }
       log.logError(BaseMessages.getString(PKG, "Spoon.Log.ErrorOccurred") + Const.CR + ke.getMessage());// "An error occurred: "
       log.logError(Const.getStackTracker(ke));
       // do not just eat the exception
@@ -6880,7 +6898,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     }
   }
   
-  private void loadLastUsedFiles() {
+  private void loadLastUsedFiles(Splash splash) {
     if (props.openLastFile()) {
       if (log.isDetailed())
         // "Trying to open the last file used."
@@ -6894,6 +6912,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
             loadLastUsedFile(lastUsedFile, rep == null ? null : rep.getName(), false);
           }
         } catch(Exception e) {
+           if (splash != null) {
+              splash.hide();
+           }
           new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.LoadLastUsedFile.Exception.Title"), 
               BaseMessages.getString(PKG, "Spoon.LoadLastUsedFile.Exception.Message", lastUsedFile.toString()), e);
         }
@@ -6909,7 +6930,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
      
     // Read the start option parameters
     //
-    handleStartOptions(options);
+    handleStartOptions(splash, options);
     
     // Open the spoon application
     //
@@ -6917,7 +6938,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     
     // Load the last loaded files
     //
-    loadLastUsedFiles();
+    loadLastUsedFiles(splash);
     
     // Enable menus based on whether user was able to login or not
     //
