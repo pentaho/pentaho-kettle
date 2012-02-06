@@ -29,8 +29,6 @@ import java.io.IOException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.logging.CentralLogStore;
-import org.pentaho.di.core.logging.LogChannel;
-import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.plugins.DatabasePluginType;
 import org.pentaho.di.core.plugins.ImportRulePluginType;

@@ -52,8 +52,8 @@ public class HadoopCompression {
   public static boolean isHadoopSnappyAvailable() {
     try {
       Object snappyCodec = Class.forName(SNAPPY_CODEC_CLASS).newInstance();
-      Class confClass = Class.forName("org.apache.hadoop.conf.Configuration").newInstance().getClass();
-      Class[] paramClass = new Class[1];
+      Class<?> confClass = Class.forName("org.apache.hadoop.conf.Configuration").newInstance().getClass();
+      Class<?>[] paramClass = new Class[1];
       paramClass[0] = confClass;
 
       Method m = snappyCodec.getClass().getMethod("isNativeSnappyLoaded", paramClass);
@@ -98,8 +98,8 @@ public class HadoopCompression {
     }
 
     Object snappyCodec = Class.forName(SNAPPY_CODEC_CLASS).newInstance();
-    Class confClass = Class.forName("org.apache.hadoop.conf.Configuration").newInstance().getClass();
-    Class[] paramClass = new Class[1];
+    Class<?> confClass = Class.forName("org.apache.hadoop.conf.Configuration").newInstance().getClass();
+    Class<?>[] paramClass = new Class[1];
     paramClass[0] = confClass;
     
     Object newConf = Class.forName("org.apache.hadoop.conf.Configuration").newInstance();
@@ -154,8 +154,8 @@ public class HadoopCompression {
     }
     
     Object snappyCodec = Class.forName(SNAPPY_CODEC_CLASS).newInstance();    
-    Class confClass = Class.forName("org.apache.hadoop.conf.Configuration").newInstance().getClass();
-    Class[] paramClass = new Class[1];
+    Class<?> confClass = Class.forName("org.apache.hadoop.conf.Configuration").newInstance().getClass();
+    Class<?>[] paramClass = new Class[1];
     paramClass[0] = confClass;
     
     Object newConf = Class.forName("org.apache.hadoop.conf.Configuration").newInstance();    
@@ -184,7 +184,7 @@ public class HadoopCompression {
       BufferedInputStream bis = new BufferedInputStream(cis);
       InputStreamReader isr = new InputStreamReader(bis);
 
-      String tempLine = null;
+      // String tempLine = null;
 
       int c = 0;
 

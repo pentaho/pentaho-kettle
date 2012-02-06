@@ -155,7 +155,7 @@ public class ErrorDialog extends Dialog
 			if (exception instanceof KettleException) // Normal error
 			{
 				KettleException ke = (KettleException) exception;
-				text.append(ke.getMessage());
+				text.append(ke.getCause().getMessage());
 			}
 			else
             // Error from somewhere else, what is the cause?

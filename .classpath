@@ -127,7 +127,6 @@
 	<classpathentry exported="true" kind="lib" path="libext/poi/xmlbeans-2.3.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/xbean.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/pentaho/jets3t-0.7.4.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/pentaho/pentaho-hdfs-vfs-TRUNK-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/pentaho/pentaho-s3-vfs-TRUNK-SNAPSHOT.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/pentaho/kettle-vfs-20100924.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/edtftpj2.1.jar"/>
@@ -234,19 +233,11 @@
 	<classpathentry kind="lib" path="src-plugins/kettle-hl7-plugin/lib/hapi-structures-v25-1.1.jar"/>
 	<classpathentry kind="lib" path="src-plugins/kettle-hl7-plugin/lib/hapi-structures-v251-1.1.jar"/>
 	<classpathentry kind="lib" path="src-plugins/kettle-hl7-plugin/lib/hapi-structures-v26-1.1.jar"/>
-	<classpathentry kind="lib" path="libext/mongo-2.5.3.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/infobright-core-3.4.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/sqlite-jdbc-3.7.2.jar"/>
 	<classpathentry kind="lib" path="src-plugins/kettle-palo-plugin/lib/palo-core.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/hadoop-core-0.20.2-cdh3u0.jar"/>
 	<classpathentry kind="lib" path="libext/jackson-core-asl-1.5.2.jar"/>
 	<classpathentry kind="lib" path="libext/jackson-mapper-asl-1.5.2.jar"/>
-	<classpathentry kind="lib" path="libext/hive/hive-exec-0.7.0-pentaho-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="libext/hive/hive-metastore-0.7.0-pentaho-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="libext/hive/hive-service-0.7.0-pentaho-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="libext/hive/libfb303-0.5.0.jar"/>
-	<classpathentry kind="lib" path="libext/hive/libthrift-0.5.0.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/hive-jdbc-0.7.0-pentaho-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/jersey/jersey-apache-client-1.7.jar"/>
 	<classpathentry kind="lib" path="libext/jersey/jersey-client-1.7.jar"/>
 	<classpathentry kind="lib" path="libext/jersey/jersey-core-1.7.jar"/>
@@ -256,7 +247,6 @@
 	<classpathentry kind="lib" path="libext/elasticsearch/lucene-highlighter-3.1.0.jar"/>
 	<classpathentry kind="lib" path="libext/elasticsearch/lucene-memory-3.1.0.jar"/>
 	<classpathentry kind="lib" path="libext/elasticsearch/lucene-queries-3.1.0.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/mysql-connector-java-5.1.17.jar"/>
 	<classpathentry kind="lib" path="libext/webservices/xmlrpc-client-3.1.3.jar"/>
 	<classpathentry kind="lib" path="libext/webservices/xmlrpc-common-3.1.3.jar"/>
 	<classpathentry kind="lib" path="libext/webservices/ws-commons-util-1.0.2.jar"/>
@@ -320,8 +310,6 @@
 	<classpathentry kind="lib" path="libext/jersey/mimepull-1.5.jar"/>
 	<classpathentry kind="lib" path="/home/matt/svn/kettle/trunk/libext/jfree/jcommon-1.0.16.jar"/>
 	<classpathentry kind="lib" path="libext/jfree/jfreechart-1.0.13.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/hbase-0.90.1.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/zookeeper-3.3.2.jar"/>
 	<classpathentry kind="lib" path="libext/slf4j-api-1.6.1.jar"/>
 	<classpathentry kind="lib" path="libext/reporting/asm-3.2.jar"/>
 	<classpathentry kind="lib" path="libext/jsch-0.1.45.jar"/>
@@ -366,5 +354,17 @@
 	<classpathentry kind="lib" path="libext/commons/commons-configuration-1.7.jar"/>
 	<classpathentry kind="lib" path="libext/eobjects/SassyReader-0.4.jar"/>
 	<classpathentry kind="lib" path="libext/jfree/jcommon-1.0.16.jar"/>
+	<classpathentry kind="lib" path="libext/bigdata/hive/hive-exec-0.7.0-pentaho-1.0.0.jar"/>
+	<classpathentry kind="lib" path="libext/bigdata/hive/hive-metastore-0.7.0-pentaho-1.0.0.jar"/>
+	<classpathentry kind="lib" path="libext/bigdata/hive/hive-service-0.7.0-pentaho-1.0.0.jar"/>
+	<classpathentry kind="lib" path="libext/bigdata/hive/libfb303-0.5.0.jar"/>
+	<classpathentry kind="lib" path="libext/bigdata/hive/libthrift-0.5.0.jar"/>
+	<classpathentry kind="lib" path="libext/bigdata/JDBC/hive-jdbc-0.7.0-pentaho-1.0.0.jar"/>
+	<classpathentry kind="lib" path="libext/bigdata/hadoop-core-0.20.2.jar"/>
+	<classpathentry kind="lib" path="libext/bigdata/hadoop-snappy-0.0.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libext/bigdata/hbase-0.90.1.jar"/>
+	<classpathentry kind="lib" path="libext/bigdata/pentaho-hdfs-vfs-TRUNK-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libext/bigdata/zookeeper-3.3.2.jar"/>
+	<classpathentry kind="lib" path="libext/JDBC/mysql-connector-java-3.1.14-bin.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
