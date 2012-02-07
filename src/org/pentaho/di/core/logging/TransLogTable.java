@@ -173,14 +173,12 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
         LogTableField field = findField(id);
         if (field.isSubjectAllowed()) {
           String stepname = (String) field.getSubject();
-          if (Const.isEmpty(stepname)) {
+          if (!Const.isEmpty(stepname)) {
             field.setSubject( StepMeta.findStep(steps, stepname) );
-            continue;
+          } else {
+            field.setSubject(null);
           }
         }
-        // If the step name is not known, clear the subject...
-        // This forces the data type to StepMeta or nothing at all.
-        field.setSubject(null); 
       }
 		}
   
