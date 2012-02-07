@@ -275,10 +275,10 @@
 	<classpathentry kind="lib" path="libswt/win32/swt.jar"/>
 	<classpathentry kind="lib" path="libext/jsendnsca-2.0.1.jar"/>
 	<classpathentry kind="lib" path="libext/mondrian/javacc.jar"/>
-	<classpathentry kind="lib" path="libext/mondrian/mondrian-3.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="libext/mondrian/olap4j-1.0.0.445.jar"/>
-	<classpathentry kind="lib" path="libext/mondrian/olap4j-xmla-1.0.0.445.jar"/>
-	<classpathentry kind="lib" path="libext/j-interop.jar"/>
+	<classpathentry kind="lib" path="libext/mondrian/mondrian-3.4.0-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libext/mondrian/olap4j-1.0.1.500.jar"/>
+	<classpathentry kind="lib" path="libext/mondrian/olap4j-xmla-1.0.1.500.jar"/>
+    <classpathentry kind="lib" path="libext/j-interop.jar"/>
 	<classpathentry kind="lib" path="libext/j-interopdeps.jar"/>
 	<classpathentry kind="lib" path="libext/commons/commons-codec-1.4.jar"/>
 	<classpathentry kind="lib" path="libext/commons/commons-lang-2.6.jar"/>
