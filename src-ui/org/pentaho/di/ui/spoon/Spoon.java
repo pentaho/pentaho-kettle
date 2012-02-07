@@ -6946,6 +6946,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
     if (props.showTips()) {
       TipsDialog tip = new TipsDialog(shell);
+      
+      if (splash != null) {
+         splash.hide();
+      }
       tip.open();
     }
     if (splash != null) {
