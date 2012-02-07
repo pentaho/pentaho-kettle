@@ -1128,8 +1128,6 @@ public class JsonOutputDialog extends BaseStepDialog implements StepDialogInterf
     	wEncoding.setEnabled(activeFile);
     	wlAppend.setEnabled(activeFile);
     	wAppend.setEnabled(activeFile);
-      wlCompatibilityMode.setEnabled(activeFile);
-      wlCompatibilityMode.setEnabled(activeFile);
     	wlCreateParentFolder.setEnabled(activeFile);
     	wCreateParentFolder.setEnabled(activeFile);
     	wlDoNotOpenNewFileInit.setEnabled(activeFile);
