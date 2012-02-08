@@ -13,11 +13,9 @@
 		</fileset>
 		<fileset dir="${lib.dir}">
 			<include name="**/*.jar" />
-			<!-- exclude name="**/asm*.jar" / -->
 		</fileset>
-		<fileset dir="${lib}" includes="kettle-engine-3.0.jar"/>
-		<fileset dir="test/libext/" includes="kettle.jar"/>
-		<!-- fileset dir="test/libext/" includes="junit.jar"/ -->
+		<fileset dir="${lib}" excludes="*test*.jar"/>
+		<fileset dir="test/libext/" includes="jetty-servlet-tester*.jar"/>
 		<pathelement path="${testClasses}"/>
 
 		<fileset dir="${libext}" 		includes="*.jar *.zip"/>
