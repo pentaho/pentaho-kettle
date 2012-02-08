@@ -116,6 +116,7 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
   
   // Edit the mapping transformation in Spoon
   //
+  private Button                            wValidateTrans;
   private Button                            wEditTrans;
 
   private TransMeta                         injectTransMeta = null;
@@ -373,12 +374,28 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
       }
     });
 
+    wValidateTrans = new Button(gTransGroup, SWT.PUSH | SWT.CENTER); // Browse
+    props.setLook(wValidateTrans);
+    wValidateTrans.setText(BaseMessages.getString(PKG, "MetaInjectDialog.Validate.Button"));
+    wValidateTrans.setToolTipText(BaseMessages.getString(PKG, "MetaInjectDialog.Validate.Tooltip"));
+    FormData fdValidateTrans = new FormData();
+    fdValidateTrans.left = new FormAttachment(0, 0);
+    fdValidateTrans.right = new FormAttachment(50, 0);
+    fdValidateTrans.top = new FormAttachment(wByReference, 3 * margin);
+    wValidateTrans.setLayoutData(fdValidateTrans);
+    wValidateTrans.addSelectionListener(new SelectionAdapter() {
+      public void widgetSelected(SelectionEvent e) {
+        validateTrans();
+      }
+    });
+
+    
     wEditTrans = new Button(gTransGroup, SWT.PUSH | SWT.CENTER); // Browse
     props.setLook(wEditTrans);
     wEditTrans.setText(BaseMessages.getString(PKG, "MetaInjectDialog.Edit.Button"));
     wEditTrans.setToolTipText(BaseMessages.getString(PKG, "System.Tooltip.BrowseForFileOrDirAndAdd"));
     FormData fdEditTrans = new FormData();
-    fdEditTrans.left = new FormAttachment(0, 0);
+    fdEditTrans.left = new FormAttachment(wValidateTrans, margin);
     fdEditTrans.right = new FormAttachment(100, 0);
     fdEditTrans.top = new FormAttachment(wByReference, 3 * margin);
     wEditTrans.setLayoutData(fdEditTrans);
@@ -562,6 +579,18 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
       }
     } catch (KettleException e) {
       new ErrorDialog(shell, BaseMessages.getString(PKG, "MetaInjectDialog.ErrorShowingTransformation.Title"), BaseMessages.getString(PKG, "MetaInjectDialog.ErrorShowingTransformation.Message"), e);
+    }
+  }
+
+  /**
+   * validate the transformation specified and refresh UI information
+   */
+  private void validateTrans() {
+    try {
+      loadTransformation();
+      refreshTree();
+    } catch (KettleException e) {
+      new ErrorDialog(shell, BaseMessages.getString(PKG, "MetaInjectDialog.ErrorValidatingTransformation.Title"), BaseMessages.getString(PKG, "MetaInjectDialog.ErrorValidatingTransformation.Message"), e);
     }
   }
 

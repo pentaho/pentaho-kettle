@@ -47,6 +47,7 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
 
@@ -60,23 +61,22 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 {
 	private static Class<?> PKG = GroupByMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	public static final int TYPE_GROUP_NONE               =  0;
-	public static final int TYPE_GROUP_SUM                =  1;
-	public static final int TYPE_GROUP_AVERAGE            =  2;
-	public static final int TYPE_GROUP_MIN                =  3;
-	public static final int TYPE_GROUP_MAX                =  4;
-	public static final int TYPE_GROUP_COUNT_ALL          =  5;
-    public static final int TYPE_GROUP_CONCAT_COMMA       =  6;
-    public static final int TYPE_GROUP_FIRST              =  7;
-    public static final int TYPE_GROUP_LAST               =  8;
-    public static final int TYPE_GROUP_FIRST_INCL_NULL    =  9;
-    public static final int TYPE_GROUP_LAST_INCL_NULL     = 10;
-	public static final int TYPE_GROUP_CUMULATIVE_SUM     = 11;
-	public static final int TYPE_GROUP_CUMULATIVE_AVERAGE = 12;
-	public static final int TYPE_GROUP_STANDARD_DEVIATION = 13;
-	public static final int TYPE_GROUP_CONCAT_STRING	  = 14;
-	public static final int TYPE_GROUP_COUNT_DISTINCT   = 15;
-	
+  public static final int    TYPE_GROUP_NONE               = 0;
+  public static final int    TYPE_GROUP_SUM                = 1;
+  public static final int    TYPE_GROUP_AVERAGE            = 2;
+  public static final int    TYPE_GROUP_MIN                = 3;
+  public static final int    TYPE_GROUP_MAX                = 4;
+  public static final int    TYPE_GROUP_COUNT_ALL          = 5;
+  public static final int    TYPE_GROUP_CONCAT_COMMA       = 6;
+  public static final int    TYPE_GROUP_FIRST              = 7;
+  public static final int    TYPE_GROUP_LAST               = 8;
+  public static final int    TYPE_GROUP_FIRST_INCL_NULL    = 9;
+  public static final int    TYPE_GROUP_LAST_INCL_NULL     = 10;
+  public static final int    TYPE_GROUP_CUMULATIVE_SUM     = 11;
+  public static final int    TYPE_GROUP_CUMULATIVE_AVERAGE = 12;
+  public static final int    TYPE_GROUP_STANDARD_DEVIATION = 13;
+  public static final int    TYPE_GROUP_CONCAT_STRING      = 14;
+  public static final int    TYPE_GROUP_COUNT_DISTINCT     = 15;	
 
 	public static final String typeGroupCode[] =  /* WARNING: DO NOT TRANSLATE THIS. WE ARE SERIOUS, DON'T TRANSLATE! */ 
 		{
@@ -720,6 +720,10 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 	public void setAlwaysGivingBackOneRow(boolean alwaysGivingBackOneRow) {
 		this.alwaysGivingBackOneRow = alwaysGivingBackOneRow;
 	}
-    
+ 
+	@Override
+	public StepMetaInjectionInterface getStepMetaInjectionInterface() {
+	  return new GroupByMetaInjection(this);
+	}
     
 }

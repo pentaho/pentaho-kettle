@@ -46,6 +46,7 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
 
@@ -596,4 +597,8 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
         return new FieldSplitterData();
     }
 
+    @Override
+    public StepMetaInjectionInterface getStepMetaInjectionInterface() {
+      return new FieldSplitterMetaInjection(this);
+    }
 }
