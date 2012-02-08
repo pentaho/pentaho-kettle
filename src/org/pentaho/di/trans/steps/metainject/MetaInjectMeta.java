@@ -74,6 +74,9 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface
     private String                            sourceStepName;
 
     private Map<TargetStepAttribute, SourceStepField> targetSourceMapping;
+    
+    private String                            targetFile;
+    private boolean                           noExecution;
 	
 	public MetaInjectMeta()
 	{
@@ -102,6 +105,8 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface
 	    retval.append("    ").append(XMLHandler.addTagValue("directory_path", directoryPath)); //$NON-NLS-1$
 
 	    retval.append("    ").append(XMLHandler.addTagValue("source_step", sourceStepName)); //$NON-NLS-1$
+      retval.append("    ").append(XMLHandler.addTagValue("target_file", targetFile)); //$NON-NLS-1$
+      retval.append("    ").append(XMLHandler.addTagValue("no_execution", noExecution)); //$NON-NLS-1$
 
 	    retval.append("    ").append(XMLHandler.openTag("mappings"));
 	    for (TargetStepAttribute target : targetSourceMapping.keySet()) {
@@ -133,6 +138,8 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface
         directoryPath = XMLHandler.getTagValue(stepnode, "directory_path"); //$NON-NLS-1$
 
         sourceStepName = XMLHandler.getTagValue(stepnode, "source_step"); //$NON-NLS-1$
+        targetFile = XMLHandler.getTagValue(stepnode, "target_file"); //$NON-NLS-1$
+        noExecution= "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "no_execution")); //$NON-NLS-1$
 
         Node mappingsNode = XMLHandler.getSubNode(stepnode, "mappings");
         int nrMappings = XMLHandler.countNodes(mappingsNode, "mapping");
@@ -166,6 +173,8 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface
 		    directoryPath = rep.getStepAttributeString(id_step, "directory_path"); //$NON-NLS-1$
 
         sourceStepName = rep.getStepAttributeString(id_step, "source_step"); //$NON-NLS-1$
+        targetFile = rep.getStepAttributeString(id_step, "target_file"); //$NON-NLS-1$
+        noExecution = rep.getStepAttributeBoolean(id_step, "no_execution"); //$NON-NLS-1$
 
         int nrMappings = rep.countNrStepAttributes(id_step, "mapping_target_step_name");
         for (int i=0;i<nrMappings;i++) {
@@ -196,6 +205,8 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface
 		    rep.saveStepAttribute(id_transformation, id_step, "directory_path", directoryPath); //$NON-NLS-1$
 
         rep.saveStepAttribute(id_transformation, id_step, "source_step", sourceStepName); //$NON-NLS-1$
+        rep.saveStepAttribute(id_transformation, id_step, "target_file", targetFile); //$NON-NLS-1$
+        rep.saveStepAttribute(id_transformation, id_step, "no_execution", noExecution); //$NON-NLS-1$
 
         List<TargetStepAttribute> keySet = new ArrayList<TargetStepAttribute>(targetSourceMapping.keySet());
         for (int i=0;i<keySet.size();i++) {
@@ -384,4 +395,33 @@ public class MetaInjectMeta extends BaseStepMeta implements StepMetaInterface
   public void setSourceStepName(String sourceStepName) {
     this.sourceStepName = sourceStepName;
   }
+
+  /**
+   * @return the targetFile
+   */
+  public String getTargetFile() {
+    return targetFile;
+  }
+
+  /**
+   * @param targetFile the targetFile to set
+   */
+  public void setTargetFile(String targetFile) {
+    this.targetFile = targetFile;
+  }
+
+  /**
+   * @return the noExecution
+   */
+  public boolean isNoExecution() {
+    return noExecution;
+  }
+
+  /**
+   * @param noExecution the noExecution to set
+   */
+  public void setNoExecution(boolean noExecution) {
+    this.noExecution = noExecution;
+  }
+   
 }

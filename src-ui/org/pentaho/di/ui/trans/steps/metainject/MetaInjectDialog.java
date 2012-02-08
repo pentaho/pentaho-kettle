@@ -44,6 +44,7 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
@@ -135,6 +136,15 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
   // the source step
   //
   private CCombo wSourceStep;
+
+  // the target file
+  //
+  private TextVar wTargetFile;
+
+  // don't execute the transformation
+  //
+  private Button wNoExecution;
+
   
   // The tree object to show the options...
   //
@@ -411,23 +421,60 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     fdTransGroup.right = new FormAttachment(100, 0);
     // fdTransGroup.bottom = new FormAttachment(wStepname, 350);
     gTransGroup.setLayoutData(fdTransGroup);
+    Control lastControl = gTransGroup;
     
-    Label wlSourceStep = new Label(shell, SWT.LEFT);
+    Label wlSourceStep = new Label(shell, SWT.RIGHT);
     wlSourceStep.setText(BaseMessages.getString(PKG, "MetaInjectDialog.SourceStep.Label")); //$NON-NLS-1$
     props.setLook(wlSourceStep);
     FormData fdlSourceStep = new FormData();
     fdlSourceStep.left = new FormAttachment(0, 0);
-    fdlSourceStep.top = new FormAttachment(gTransGroup, 2*margin);
+    fdlSourceStep.right = new FormAttachment(middle, 0);
+    fdlSourceStep.top = new FormAttachment(lastControl, 2*margin);
     wlSourceStep.setLayoutData(fdlSourceStep);
     wSourceStep = new CCombo(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-    wSourceStep.setText(stepname);
     props.setLook(wSourceStep);
     wSourceStep.addModifyListener(lsMod);
     FormData fdSourceStep = new FormData();
     fdSourceStep.left = new FormAttachment(wlSourceStep, 2*margin);
-    fdSourceStep.top = new FormAttachment(gTransGroup, margin);
+    fdSourceStep.top = new FormAttachment(lastControl, margin);
     fdSourceStep.right = new FormAttachment(100, 0);
     wSourceStep.setLayoutData(fdSourceStep);
+    lastControl = wSourceStep;
+
+    Label wlTargetFile = new Label(shell, SWT.RIGHT);
+    wlTargetFile.setText(BaseMessages.getString(PKG, "MetaInjectDialog.TargetFile.Label")); //$NON-NLS-1$
+    props.setLook(wlTargetFile);
+    FormData fdlTargetFile = new FormData();
+    fdlTargetFile.left = new FormAttachment(0, 0);
+    fdlTargetFile.right = new FormAttachment(middle, 0);
+    fdlTargetFile.top = new FormAttachment(lastControl, margin);
+    wlTargetFile.setLayoutData(fdlTargetFile);
+    wTargetFile = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+    props.setLook(wTargetFile);
+    wTargetFile.addModifyListener(lsMod);
+    FormData fdTargetFile = new FormData();
+    fdTargetFile.left = new FormAttachment(middle, margin);
+    fdTargetFile.top = new FormAttachment(lastControl, margin);
+    fdTargetFile.right = new FormAttachment(100, 0);
+    wTargetFile.setLayoutData(fdTargetFile);
+    lastControl = wTargetFile;
+
+    Label wlNoExecution = new Label(shell, SWT.RIGHT);
+    wlNoExecution.setText(BaseMessages.getString(PKG, "MetaInjectDialog.NoExecution.Label")); //$NON-NLS-1$
+    props.setLook(wlNoExecution);
+    FormData fdlNoExecution = new FormData();
+    fdlNoExecution.left = new FormAttachment(0, 0);
+    fdlNoExecution.right = new FormAttachment(middle, 0);
+    fdlNoExecution.top = new FormAttachment(lastControl, margin);
+    wlNoExecution.setLayoutData(fdlNoExecution);
+    wNoExecution = new Button(shell, SWT.CHECK);
+    props.setLook(wNoExecution);
+    FormData fdNoExecution = new FormData();
+    fdNoExecution.left = new FormAttachment(middle, margin);
+    fdNoExecution.top = new FormAttachment(lastControl, margin);
+    fdNoExecution.right = new FormAttachment(100, 0);
+    wNoExecution.setLayoutData(fdNoExecution);
+    lastControl = wNoExecution;
 
     // Some buttons
     wOK = new Button(shell, SWT.PUSH);
@@ -438,7 +485,7 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     
     // Now the tree with the field selection etc.
     //
-    addTree();
+    addTree(lastControl);
     
 
     // Add listeners
@@ -679,19 +726,21 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     }
     
     wSourceStep.setText(Const.NVL(metaInjectMeta.getSourceStepName(), ""));
+    wTargetFile.setText(Const.NVL(metaInjectMeta.getTargetFile(), ""));
+    wNoExecution.setSelection(metaInjectMeta.isNoExecution());
     
     setRadioButtons();
     
     refreshTree();
   }
 
-  private void addTree() {
+  private void addTree(Control lastControl) {
     
 	wTree = new Tree(shell, SWT.SINGLE | SWT.FULL_SELECTION | SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
     FormData fdTree = new FormData();
     fdTree.left = new FormAttachment(0,0);
     fdTree.right = new FormAttachment(100,0);
-    fdTree.top = new FormAttachment(wSourceStep, 2*margin);
+    fdTree.top = new FormAttachment(lastControl, 2*margin);
     fdTree.bottom = new FormAttachment(wOK, -2*margin);
     wTree.setLayoutData(fdTree);
     
@@ -906,6 +955,8 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
     }
     
     metaInjectMeta.setSourceStepName(wSourceStep.getText());
+    metaInjectMeta.setTargetFile(wTargetFile.getText());
+    metaInjectMeta.setNoExecution(wNoExecution.getSelection());
     
     metaInjectMeta.setTargetSourceMapping(targetSourceMapping);
     metaInjectMeta.setChanged(true);

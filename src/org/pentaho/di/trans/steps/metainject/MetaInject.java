@@ -22,6 +22,8 @@
 
 package org.pentaho.di.trans.steps.metainject;
 
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,6 +38,8 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -201,40 +205,64 @@ public class MetaInject extends BaseStep implements StepInterface {
     }
     
     if (log.isDetailed()) logDetailed("XML of transformation after injection: "+data.transMeta.getXML());
-    
-    // Now we can execute this modified transformation metadata.
-    //
-    final Trans injectTrans = new Trans(data.transMeta, this);
-    getTrans().addTransStoppedListener(new TransStoppedListener() {
-      public void transStopped(Trans parentTrans) {
-        injectTrans.stopAll();
+    String targetFile = environmentSubstitute(meta.getTargetFile());
+    if (!Const.isEmpty(targetFile)) {
+      OutputStream os = null;
+      try {
+        os = KettleVFS.getOutputStream(targetFile, false);
+        os.write(XMLHandler.getXMLHeader().getBytes(Const.XML_ENCODING));
+        os.write(data.transMeta.getXML().getBytes(Const.XML_ENCODING));
       }
-    });
-    injectTrans.prepareExecution(null);
-    
-    if (!Const.isEmpty(meta.getSourceStepName())) {
-      StepInterface stepInterface = injectTrans.getStepInterface(meta.getSourceStepName(), 0);
-      if (stepInterface==null) {
-        throw new KettleException("Unable to find step '"+meta.getSourceStepName()+"' to read from.");
+      catch(IOException e) {
+        throw new KettleException("Unable to write target file (ktr after injection) to file '"+targetFile+"'", e);
+      } finally {
+        if (os!=null) {
+          try {
+            os.close();
+          } catch(Exception e) {
+            throw new KettleException(e);
+          }
+        }
       }
-      stepInterface.addRowListener(new RowAdapter() {
-        @Override
-        public void rowWrittenEvent(RowMetaInterface rowMeta, Object[] row) throws KettleStepException {
-          // Just pass along the data as output of this step...
-          //
-          MetaInject.this.putRow(rowMeta, row);
+    }
+    
+    if (!meta.isNoExecution()) {
+      // Now we can execute this modified transformation metadata.
+      //
+      final Trans injectTrans = new Trans(data.transMeta, this);
+      getTrans().addTransStoppedListener(new TransStoppedListener() {
+        public void transStopped(Trans parentTrans) {
+          injectTrans.stopAll();
         }
       });
+      injectTrans.prepareExecution(null);
+      
+      if (!Const.isEmpty(meta.getSourceStepName())) {
+        StepInterface stepInterface = injectTrans.getStepInterface(meta.getSourceStepName(), 0);
+        if (stepInterface==null) {
+          throw new KettleException("Unable to find step '"+meta.getSourceStepName()+"' to read from.");
+        }
+        stepInterface.addRowListener(new RowAdapter() {
+          @Override
+          public void rowWrittenEvent(RowMetaInterface rowMeta, Object[] row) throws KettleStepException {
+            // Just pass along the data as output of this step...
+            //
+            MetaInject.this.putRow(rowMeta, row);
+          }
+        });
+      }
+      
+      injectTrans.startThreads();
+      while (!injectTrans.isFinished() && !injectTrans.isStopped()) {
+        copyResult(injectTrans);
+        
+        // Wait a little bit.
+        try { Thread.sleep(50); } catch (Exception e) { }
+      }
+      copyResult(injectTrans);
     }
     
-    injectTrans.startThreads();
-    while (!injectTrans.isFinished() && !injectTrans.isStopped()) {
-      copyResult(injectTrans);
-      
-      // Wait a little bit.
-      try { Thread.sleep(500); } catch (Exception e) { }
-    }
-    copyResult(injectTrans);
+    // All done!
     
     setOutputDone();
 
