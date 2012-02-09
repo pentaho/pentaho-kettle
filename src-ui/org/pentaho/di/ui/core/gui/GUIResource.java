@@ -295,7 +295,9 @@ public class GUIResource
     private Image imageUnconditionalHop;
     private Image imageParallelHop;
     private Image imageBusy;
-    
+
+    private Image imageInject;
+
     /**
      * Same result as <code>new Image(display, 16, 16)</code>.
      */
@@ -513,7 +515,8 @@ public class GUIResource
 		    imageUnconditionalHop.dispose();
 		    imageBusy.dispose();
 		    imageEmpty16x16.dispose();
-
+		    imageInject.dispose();
+        
 		    disposeImage(imageNoteSmall);
 		    disposeImage(imageColor);
 			disposeImage(imageEditOptionButton);
@@ -755,6 +758,7 @@ public class GUIResource
     imageParallelHop = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("ParallelHop_image")); // , "ui/images/parallel-hop.png
     imageUnconditionalHop = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("UnconditionalHop_image")); // , "ui/images/unconditional-hop.png
     imageBusy = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Busy_image")); // , "ui/images/busy.png
+    imageInject = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Inject_image")); // , "ui/images/inject.png
     
     imageEmpty16x16 = new Image(display, 16, 16);
     
@@ -1904,4 +1908,7 @@ public class GUIResource
 	  return imageEmpty16x16;
 	}
 
+	public Image getImageInject() {
+	    return imageInject;
+	}
 }

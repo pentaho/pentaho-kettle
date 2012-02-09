@@ -28,22 +28,23 @@ import java.util.Map;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.gui.AreaOwner;
+import org.pentaho.di.core.gui.AreaOwner.AreaType;
 import org.pentaho.di.core.gui.BasePainter;
 import org.pentaho.di.core.gui.GCInterface;
-import org.pentaho.di.core.gui.Point;
-import org.pentaho.di.core.gui.Rectangle;
-import org.pentaho.di.core.gui.ScrollBarInterface;
-import org.pentaho.di.core.gui.AreaOwner.AreaType;
 import org.pentaho.di.core.gui.GCInterface.EColor;
 import org.pentaho.di.core.gui.GCInterface.EFont;
 import org.pentaho.di.core.gui.GCInterface.EImage;
 import org.pentaho.di.core.gui.GCInterface.ELineStyle;
+import org.pentaho.di.core.gui.Point;
+import org.pentaho.di.core.gui.Rectangle;
+import org.pentaho.di.core.gui.ScrollBarInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.partition.PartitionSchema;
 import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
 import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepPartitioningMeta;
 import org.pentaho.di.trans.step.StepStatus;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
@@ -723,21 +724,29 @@ public class TransPainter extends BasePainter
         //
         if (stepError) {
         	String log = stepLogMap.get(stepMeta);
-    		// Show an error lines icon in the lower right corner of the step...
-    		//
-    		int xError = x + iconsize - 5;
-    		int yError = y + iconsize - 5;
-    		Point ib = gc.getImageBounds(EImage.STEP_ERROR);
-    		gc.drawImage(EImage.STEP_ERROR, xError, yError);
-    		if (!shadow) {
-    			areaOwners.add(new AreaOwner(AreaType.STEP_ERROR_ICON, pt.x + iconsize-5, pt.y + iconsize-5, ib.x, ib.y, offset, log, STRING_STEP_ERROR_LOG));
-    		}
+
+        	// Show an error lines icon in the lower right corner of the step...
+      		//
+      		int xError = x + iconsize - 5;
+      		int yError = y + iconsize - 5;
+      		Point ib = gc.getImageBounds(EImage.STEP_ERROR);
+      		gc.drawImage(EImage.STEP_ERROR, xError, yError);
+      		if (!shadow) {
+      			areaOwners.add(new AreaOwner(AreaType.STEP_ERROR_ICON, pt.x + iconsize-5, pt.y + iconsize-5, ib.x, ib.y, offset, log, STRING_STEP_ERROR_LOG));
+      		}
         }
         
         // Optionally drawn the mouse-over information
         //
         if (mouseOverSteps.contains(stepMeta)) {
-        	EImage[] miniIcons = new EImage[] { EImage.INPUT, EImage.EDIT, EImage.CONTEXT_MENU, EImage.OUTPUT, };
+          StepMetaInjectionInterface injectionInterface = stepMeta.getStepMetaInterface().getStepMetaInjectionInterface();
+
+          EImage[] miniIcons;
+          if (injectionInterface!=null) {
+            miniIcons = new EImage[] { EImage.INPUT, EImage.EDIT, EImage.CONTEXT_MENU, EImage.OUTPUT, EImage.INJECT, };
+          } else {
+            miniIcons = new EImage[] { EImage.INPUT, EImage.EDIT, EImage.CONTEXT_MENU, EImage.OUTPUT, };
+          }
         	
         	int totalHeight=0;
         	int totalIconsWidth=0;
@@ -807,8 +816,12 @@ public class TransPainter extends BasePainter
                 	break;
         		case 3: // OUTPUT
         			enabled=ioMeta.isOutputProducer() || ioMeta.isOutputDynamic();
-                	areaOwners.add(new AreaOwner(AreaType.STEP_OUTPUT_HOP_ICON, xIcon, yIcon, bounds.x, bounds.y, offset, stepMeta, ioMeta));
+              areaOwners.add(new AreaOwner(AreaType.STEP_OUTPUT_HOP_ICON, xIcon, yIcon, bounds.x, bounds.y, offset, stepMeta, ioMeta));
         			break;
+        		case 4: // INJECT
+              enabled = injectionInterface!=null;
+              areaOwners.add(new AreaOwner(AreaType.STEP_INJECT_ICON, xIcon, yIcon, bounds.x, bounds.y, offset, stepMeta, injectionInterface));
+              break;
         		}
         		if (enabled) {
         			gc.setAlpha(255);

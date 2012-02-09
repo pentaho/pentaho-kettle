@@ -813,6 +813,15 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 					}
 					break;
 
+       case STEP_INJECT_ICON:
+         {
+           MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
+           mb.setMessage(BaseMessages.getString(PKG, "TransGraph.StepInjectionSupported.Tooltip")); //$NON-NLS-1$
+           mb.setText(BaseMessages.getString(PKG, "TransGraph.StepInjectionSupported.Title")); //$NON-NLS-1$
+           mb.open();
+         }
+         break;
+
 				case STEP_MENU_ICON:
 					clearSettings();
 					StepMeta stepMeta = (StepMeta) areaOwner.getParent();
@@ -2540,6 +2549,16 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 				tip.append(BaseMessages.getString(PKG, "TransGraph.EditStep.Tooltip")); //$NON-NLS-1$
 				tipImage = GUIResource.getInstance().getImageEdit();
 				break;
+      case STEP_INJECT_ICON:
+        stepMeta = (StepMeta) (areaOwner.getParent());
+        Object injection = areaOwner.getOwner();
+        if (injection!=null) {
+          tip.append(BaseMessages.getString(PKG, "TransGraph.StepInjectionSupported.Tooltip")); //$NON-NLS-1$
+        } else {
+          tip.append(BaseMessages.getString(PKG, "TransGraph.StepInjectionNotSupported.Tooltip")); //$NON-NLS-1$
+        }
+        tipImage = GUIResource.getInstance().getImageEdit();
+        break;
 			}
 		}
 

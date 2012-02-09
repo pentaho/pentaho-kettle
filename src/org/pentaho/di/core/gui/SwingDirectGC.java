@@ -44,9 +44,6 @@ import javax.imageio.ImageIO;
 import org.jfree.text.TextUtilities;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.gui.GCInterface;
-import org.pentaho.di.core.gui.Point;
-import org.pentaho.di.core.gui.SwingGUIResource;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.laf.BasePropertyHandler;
 import org.pentaho.di.trans.step.StepMeta;
@@ -90,6 +87,7 @@ public class SwingDirectGC implements GCInterface {
 
 	private static BufferedImage	imageBusy;
 	
+  private static BufferedImage  imageInject;
 	
 	protected Color        background;
     
@@ -196,6 +194,7 @@ public class SwingDirectGC implements GCInterface {
     	imageStart = getImageIcon(BasePropertyHandler.getProperty("STR_image"));
     	imageDummy = getImageIcon(BasePropertyHandler.getProperty("DUM_image"));
     	imageBusy = getImageIcon(BasePropertyHandler.getProperty("Busy_image"));
+      imageInject = getImageIcon(BasePropertyHandler.getProperty("Inject_image"));
     	
     	fontGraph = new Font("FreeSans", Font.PLAIN, 10);
     	fontNote = new Font("FreeSans", Font.PLAIN, 10);
@@ -312,7 +311,8 @@ public class SwingDirectGC implements GCInterface {
 		case COPY_ROWS: return imageCopyHop;
 		case PARALLEL: return imageParallelHop;
 		case UNCONDITIONAL: return imageUnconditionalHop;
-		case BUSY: return imageBusy;
+    case BUSY: return imageBusy;
+		case INJECT: return imageInject;
 		}
 		return null;
 	}
