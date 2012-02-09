@@ -60,6 +60,7 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
 
@@ -810,16 +811,19 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void allocate(int nrfiles, int nrfields, int nrfilters)
 	{
-		fileName = new String[nrfiles];
-		fileMask = new String[nrfiles];
-		excludeFileMask = new String[nrfiles];
-		fileRequired = new String[nrfiles];
-		includeSubFolders = new String[nrfiles];
-
+	  allocateFiles(nrfiles);
+	  
 		inputFields = new TextFileInputField[nrfields];
-
 		filter = new TextFileFilter[nrfilters];
 	}
+	
+  public void allocateFiles(int nrFiles) {
+    fileName = new String[nrFiles];
+    fileMask = new String[nrFiles];
+    excludeFileMask = new String[nrFiles];
+    fileRequired = new String[nrFiles];
+    includeSubFolders = new String[nrFiles];
+  }
 
 	public void setDefault()
 	{
@@ -2103,5 +2107,10 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 	@Override
 	public boolean supportsErrorHandling() {
 	  return isErrorIgnored() && isSkipBadFiles();
+	}
+	
+	@Override
+	public StepMetaInjectionInterface getStepMetaInjectionInterface() {
+	  return new TextFileInputMetaInjection(this);
 	}
 }

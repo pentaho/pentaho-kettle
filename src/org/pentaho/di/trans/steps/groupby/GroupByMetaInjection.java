@@ -216,15 +216,19 @@ public class GroupByMetaInjection implements StepMetaInjectionInterface {
 
     // Pass the grid to the step metadata
     //
-    meta.setGroupField(groupFields.toArray(new String[groupFields.size()]));
-    meta.setAggregateField(aggFields.toArray(new String[aggFields.size()]));
-    meta.setSubjectField(aggSubjects.toArray(new String[aggSubjects.size()]));
-    int[] types = new int[aggTypes.size()];
-    for (int i=0;i<types.length;i++) {
-      types[i] = aggTypes.get(i);
+    if (groupFields.size()>0) {
+      meta.setGroupField(groupFields.toArray(new String[groupFields.size()]));
     }
-    meta.setAggregateType(types);
-    meta.setValueField(aggValues.toArray(new String[aggValues.size()]));
+    if (aggFields.size()>0) {
+      meta.setAggregateField(aggFields.toArray(new String[aggFields.size()]));
+      meta.setSubjectField(aggSubjects.toArray(new String[aggSubjects.size()]));
+      int[] types = new int[aggTypes.size()];
+      for (int i=0;i<types.length;i++) {
+        types[i] = aggTypes.get(i);
+      }
+      meta.setAggregateType(types);
+      meta.setValueField(aggValues.toArray(new String[aggValues.size()]));
+    }
   }
 
   public GroupByMeta getMeta() {
