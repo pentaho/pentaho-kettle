@@ -278,7 +278,7 @@
 	<classpathentry kind="lib" path="libext/mondrian/mondrian-3.4.0-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/mondrian/olap4j-1.0.1.500.jar"/>
 	<classpathentry kind="lib" path="libext/mondrian/olap4j-xmla-1.0.1.500.jar"/>
-    <classpathentry kind="lib" path="libext/j-interop.jar"/>
+	<classpathentry kind="lib" path="libext/j-interop.jar"/>
 	<classpathentry kind="lib" path="libext/j-interopdeps.jar"/>
 	<classpathentry kind="lib" path="libext/commons/commons-codec-1.4.jar"/>
 	<classpathentry kind="lib" path="libext/commons/commons-lang-2.6.jar"/>
@@ -366,5 +366,6 @@
 	<classpathentry kind="lib" path="libext/bigdata/pentaho-hdfs-vfs-TRUNK-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/bigdata/zookeeper-3.3.2.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/mysql-connector-java-3.1.14-bin.jar"/>
+	<classpathentry kind="lib" path="libext/slf4j-log4j12-1.6.1.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
