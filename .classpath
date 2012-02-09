@@ -111,8 +111,6 @@
 	<classpathentry exported="true" kind="lib" path="libext/rules/mvel2-2.0.10.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/rules/core-3.4.2.v_883_R34x.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/json_simple-1.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/slf4j-api-1.5.8.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/slf4j-jcl-1.5.8.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/jsonpath.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/snakeyaml-1.7.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/odfdom.jar"/>
@@ -268,5 +266,7 @@
 	<classpathentry kind="lib" path="libext/bigdata/hbase-0.90.1.jar"/>
 	<classpathentry kind="lib" path="libext/bigdata/pentaho-hdfs-vfs-TRUNK-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/bigdata/zookeeper-3.3.2.jar"/>
+	<classpathentry kind="lib" path="libext/slf4j-api-1.6.1.jar"/>
+	<classpathentry kind="lib" path="libext/slf4j-log4j12-1.6.1.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
