@@ -89,4 +89,13 @@ public class RemedyActionRequestSystemDatabaseMeta extends GenericDatabaseMeta i
 	{
 		return false;
 	}
+
+  /**
+   * The JDBC/ODBC Driver doesn't support listing views, so turn this feature off.
+   */
+  @Override
+  public boolean supportsViews()
+  {
+    return false;
+  }
 }
