@@ -863,16 +863,25 @@ public class MetaInjectDialog extends BaseStepDialog implements StepDialogInterf
             TreeItem listsItem = new TreeItem(stepItem, SWT.NONE);
             listsItem.setText(entry.getKey());
             listsItem.setText(1, entry.getDescription());
-            
+            StepInjectionMetaEntry listEntry = entry.getDetails().get(0);
+            listsItem.addListener(SWT.Selection, new Listener() {
+              
+              @Override
+              public void handleEvent(Event arg0) {
+                System.out.println(entry.getKey()+" - "+entry.getDescription());
+              }
+            });
+
+            /*
             // Field...
             //
-            StepInjectionMetaEntry listEntry = entry.getDetails().get(0);
             TreeItem listItem = new TreeItem(listsItem, SWT.NONE);
             listItem.setText(listEntry.getKey());
             listItem.setText(1, listEntry.getDescription());
+            */
             
             for (StepInjectionMetaEntry me : listEntry.getDetails()) {
-              TreeItem treeItem = new TreeItem(listItem, SWT.NONE);
+              TreeItem treeItem = new TreeItem(listsItem, SWT.NONE);
               treeItem.setText(me.getKey());
               treeItem.setText(1, me.getDescription());
 
