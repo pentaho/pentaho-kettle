@@ -362,6 +362,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   private Display display;
 
   private Shell shell;
+  
+  private static Splash splash;
 
   private boolean destroy;
 
@@ -524,7 +526,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
       // The core plugin types don't know about UI classes. Add them in now
       // before the PluginRegistry inits.
-      Splash splash = new Splash(display);
+      splash = new Splash(display);
 
       registerUIPluginObjectTypes();
 
@@ -562,7 +564,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       }
 
       staticSpoon.setArguments(args.toArray(new String[args.size()]));
-      staticSpoon.start(splash, commandLineOptions);
+      staticSpoon.start(commandLineOptions);
     } catch (Throwable t) {
       // avoid calls to Messages i18n method getString() in this block
       // We do this to (hopefully) also catch Out of Memory Exceptions
@@ -3975,6 +3977,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       }
       if (!loaded) {
         // Give error back
+        if (splash != null) {
+           splash.hide();
+        }
         MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
         mb.setMessage(BaseMessages.getString(PKG, "Spoon.UnknownFileType.Message", fname));
         mb.setText(BaseMessages.getString(PKG, "Spoon.UnknownFileType.Title"));
@@ -6709,7 +6714,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     return APP_NAME;
   }
 
-  public void selectRep(Splash splash, CommandLineOption[] options) {
+  public void selectRep(CommandLineOption[] options) {
     RepositoryMeta repositoryMeta = null;
     // UserInfo userinfo = null;
     
@@ -6813,7 +6818,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     }
   }
 
-  public void handleStartOptions(Splash splash, CommandLineOption[] options) {
+  public void handleStartOptions(CommandLineOption[] options) {
 
     // note that at this point the rep object is populated by previous calls 
 
@@ -6898,7 +6903,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     }
   }
   
-  private void loadLastUsedFiles(Splash splash) {
+  private void loadLastUsedFiles() {
     if (props.openLastFile()) {
       if (log.isDetailed())
         // "Trying to open the last file used."
@@ -6922,15 +6927,15 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     }
   }
 
-  public void start(Splash splash, CommandLineOption[] options) throws KettleException {
+  public void start(CommandLineOption[] options) throws KettleException {
 
     // Show the repository connection dialog
     //
-    selectRep(splash, options);
+    selectRep(options);
      
     // Read the start option parameters
     //
-    handleStartOptions(splash, options);
+    handleStartOptions(options);
     
     // Open the spoon application
     //
@@ -6938,7 +6943,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     
     // Load the last loaded files
     //
-    loadLastUsedFiles(splash);
+    loadLastUsedFiles();
     
     // Enable menus based on whether user was able to login or not
     //
@@ -8160,5 +8165,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	        menuController.updateMenu(doc);
 	      }
         }
+    }
+    
+    public Splash getSplash() {
+       return this.splash;
     }
 }

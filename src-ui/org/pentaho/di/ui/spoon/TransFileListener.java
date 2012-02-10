@@ -35,6 +35,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.dialog.Splash;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.w3c.dom.Node;
 
@@ -83,7 +84,11 @@ public class TransFileListener implements FileListener {
             
         }
         catch(KettleException e)
-        {
+        {   
+           Splash splash = Spoon.getInstance().getSplash();
+           if (splash != null) {
+              splash.hide();
+           }
             new ErrorDialog(spoon.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorOpening.Title"), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorOpening.Message")+fname, e);
         }
         return false;
