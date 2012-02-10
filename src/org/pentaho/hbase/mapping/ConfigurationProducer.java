@@ -45,4 +45,6 @@ public interface ConfigurationProducer {
    * @throws IOException if the connection can't be supplied for some reason
    */
   Configuration getHBaseConnection() throws IOException;
+  
+  String getCurrentConfiguration();
 }

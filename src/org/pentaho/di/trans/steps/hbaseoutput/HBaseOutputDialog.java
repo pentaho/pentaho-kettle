@@ -80,6 +80,7 @@ public class HBaseOutputDialog extends BaseStepDialog implements
 
   private HBaseOutputMeta m_currentMeta;
   private HBaseOutputMeta m_originalMeta;
+  private HBaseOutputMeta m_configurationMeta;
 
   /** various UI bits and pieces for the dialog */
   private Label m_stepnameLabel;
@@ -129,6 +130,7 @@ public class HBaseOutputDialog extends BaseStepDialog implements
     
     m_currentMeta = (HBaseOutputMeta)in;
     m_originalMeta = (HBaseOutputMeta)m_currentMeta.clone();
+    m_configurationMeta = (HBaseOutputMeta)m_currentMeta.clone();
   }
 
   public String open() {
@@ -653,21 +655,9 @@ public class HBaseOutputDialog extends BaseStepDialog implements
   }
   
   protected void ok() {
-    if (Const.isEmpty(m_stepnameText.getText())) {
-      return;
-    }
-    
     stepname = m_stepnameText.getText();
     
-    m_currentMeta.setZookeeperHosts(m_zookeeperQuorumText.getText());
-    m_currentMeta.setZookeeperPort(m_zookeeperPortText.getText());
-    m_currentMeta.setCoreConfigURL(m_coreConfigText.getText());    
-    m_currentMeta.setDefaulConfigURL(m_defaultConfigText.getText());
-    m_currentMeta.setTargetTableName(m_mappedTableNamesCombo.getText());
-    m_currentMeta.setTargetMappingName(m_mappingNamesCombo.getText());
-    
-    m_currentMeta.setDisableWriteToWAL(m_disableWriteToWALBut.getSelection());
-    m_currentMeta.setWriteBufferSize(m_writeBufferSizeText.getText());
+    updateMetaConnectionDetails(m_currentMeta);
     
     if (!m_originalMeta.equals(m_currentMeta)) {
       m_currentMeta.setChanged();
@@ -675,6 +665,24 @@ public class HBaseOutputDialog extends BaseStepDialog implements
     }
             
     dispose();
+  }
+  
+  protected void updateMetaConnectionDetails(HBaseOutputMeta meta) {
+    if (Const.isEmpty(m_stepnameText.getText())) {
+      return;
+    }    
+    
+    meta.setZookeeperHosts(m_zookeeperQuorumText.getText());
+    meta.setZookeeperPort(m_zookeeperPortText.getText());
+    meta.setCoreConfigURL(m_coreConfigText.getText());    
+    meta.setDefaulConfigURL(m_defaultConfigText.getText());
+    meta.setTargetTableName(m_mappedTableNamesCombo.getText());
+    meta.setTargetMappingName(m_mappingNamesCombo.getText());
+    
+    meta.setDisableWriteToWAL(m_disableWriteToWALBut.getSelection());
+    meta.setWriteBufferSize(m_writeBufferSizeText.getText());
+    
+
   }
   
   private void getData() {
@@ -803,6 +811,11 @@ public class HBaseOutputDialog extends BaseStepDialog implements
     }
     
     return result;
-  }     
+  }
+  
+  public String getCurrentConfiguration() {
+    updateMetaConnectionDetails(m_configurationMeta);
+    return m_configurationMeta.getXML();
+  }
 
 }

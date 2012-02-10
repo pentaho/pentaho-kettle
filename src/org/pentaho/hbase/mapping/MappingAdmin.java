@@ -39,6 +39,8 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
+import org.apache.hadoop.hbase.MasterNotRunningException;
+import org.apache.hadoop.hbase.ZooKeeperConnectionException;
 import org.apache.hadoop.hbase.client.Delete;
 import org.apache.hadoop.hbase.client.Get;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
@@ -84,7 +86,7 @@ public class MappingAdmin {
    * Constructor. No conneciton information configured.
    */
   public MappingAdmin() {
-  }
+  }  
   
   /**
    * Constructor
@@ -115,6 +117,18 @@ public class MappingAdmin {
   public void setUseDefaultConnection() throws Exception {
     m_connection = HBaseConfiguration.create();
     m_admin = new HBaseAdmin(m_connection);    
+  }
+  
+  /**
+   * Check to see if HBase is available
+   * 
+   * @param conf the connection configuration to use
+   * @throws MasterNotRunningException
+   * @throws ZooKeeperConnectionException
+   */
+  public static void checkHBaseAvailable(Configuration conf) 
+    throws MasterNotRunningException, ZooKeeperConnectionException {
+    HBaseAdmin.checkHBaseAvailable(conf);
   }
   
   /**

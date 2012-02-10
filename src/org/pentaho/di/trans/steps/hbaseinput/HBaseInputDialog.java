@@ -107,6 +107,7 @@ public class HBaseInputDialog extends BaseStepDialog implements
   
   private HBaseInputMeta m_currentMeta;
   private HBaseInputMeta m_originalMeta;
+  private HBaseInputMeta m_configurationMeta;
   
   // Table name line
   private Button m_mappedTableNamesBut;
@@ -157,6 +158,7 @@ public class HBaseInputDialog extends BaseStepDialog implements
     
     m_currentMeta = (HBaseInputMeta)in;
     m_originalMeta = (HBaseInputMeta)m_currentMeta.clone();
+    m_configurationMeta = (HBaseInputMeta)m_currentMeta.clone();
   }
 
   public String open() {
@@ -1004,6 +1006,15 @@ public class HBaseInputDialog extends BaseStepDialog implements
     return null;
   }
   
+  protected void updateMetaConnectionDetails(HBaseInputMeta meta) {
+    meta.setZookeeperHosts(m_zookeeperQuorumText.getText());
+    meta.setZookeeperPort(m_zookeeperPortText.getText());
+    meta.setCoreConfigURL(m_coreConfigText.getText());    
+    meta.setDefaulConfigURL(m_defaultConfigText.getText());
+    meta.setSourceTableName(m_mappedTableNamesCombo.getText());
+    meta.setSourceMappingName(m_mappingNamesCombo.getText());
+  }
+  
   protected void ok() {
     if (Const.isEmpty(m_stepnameText.getText())) {
       return;
@@ -1011,12 +1022,8 @@ public class HBaseInputDialog extends BaseStepDialog implements
     
     stepname = m_stepnameText.getText();
     
-    m_currentMeta.setZookeeperHosts(m_zookeeperQuorumText.getText());
-    m_currentMeta.setZookeeperPort(m_zookeeperPortText.getText());
-    m_currentMeta.setCoreConfigURL(m_coreConfigText.getText());    
-    m_currentMeta.setDefaulConfigURL(m_defaultConfigText.getText());
-    m_currentMeta.setSourceTableName(m_mappedTableNamesCombo.getText());
-    m_currentMeta.setSourceMappingName(m_mappingNamesCombo.getText());
+    updateMetaConnectionDetails(m_currentMeta);    
+    
     m_currentMeta.setKeyStartValue(m_keyStartText.getText());
     m_currentMeta.setKeyStopValue(m_keyStopText.getText());
     m_currentMeta.setScannerCacheSize(m_scanCacheText.getText());
@@ -1497,5 +1504,10 @@ public class HBaseInputDialog extends BaseStepDialog implements
         }
       }
     }    
+  }
+
+  public String getCurrentConfiguration() {
+    updateMetaConnectionDetails(m_configurationMeta);
+    return m_configurationMeta.getXML();
   }
 }

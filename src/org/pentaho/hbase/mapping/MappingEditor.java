@@ -34,6 +34,8 @@ import java.util.TreeSet;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HColumnDescriptor;
 import org.apache.hadoop.hbase.HTableDescriptor;
+import org.apache.hadoop.hbase.MasterNotRunningException;
+import org.apache.hadoop.hbase.ZooKeeperConnectionException;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
 import org.apache.hadoop.hbase.io.hfile.Compression;
 import org.apache.hadoop.hbase.util.Bytes;
@@ -116,6 +118,9 @@ public class MappingEditor extends Composite {
   /** default family name to use when creating a new table using incoming fields */
   protected static final String DEFAULT_FAMILY = "Family1";
   
+  protected String m_currentConfiguration = "";
+  protected boolean m_connectionProblem;
+  
   public MappingEditor(Shell shell, Composite parent, ConfigurationProducer configProducer, 
       FieldProducer fieldProducer, int tableViewStyle, boolean allowTableCreate, 
       PropsUI props, TransMeta transMeta) {
@@ -125,6 +130,10 @@ public class MappingEditor extends Composite {
     m_shell = shell;
     m_parent = parent;
     m_configProducer = configProducer;
+    if (m_configProducer != null) {
+      m_currentConfiguration = m_configProducer.getCurrentConfiguration();
+    }
+    
     m_incomingFieldsProducer = fieldProducer;
     
     m_allowTableCreate = allowTableCreate;
@@ -438,13 +447,24 @@ public class MappingEditor extends Composite {
     if (m_configProducer == null) {
       return;
     }
+    
+    if (m_connectionProblem) {
+      if (!m_currentConfiguration.equals(m_configProducer.getCurrentConfiguration())) {
+        // try again - perhaps the user has corrected connection information
+        m_connectionProblem = false;
+        m_currentConfiguration = m_configProducer.getCurrentConfiguration();
+      }
+    }
 
-    if (m_existingTableNamesCombo.getItemCount() == 0 || force) {
+    if ((m_existingTableNamesCombo.getItemCount() == 0 || force) && 
+        !m_connectionProblem) {
       String existingName = m_existingTableNamesCombo.getText();
       m_existingTableNamesCombo.removeAll();
       //m_existingMappingNamesCombo.removeAll();
       try  {
         Configuration conf = m_configProducer.getHBaseConnection();
+        MappingAdmin.checkHBaseAvailable(conf);
+        
         m_admin = new MappingAdmin();
         m_admin.setConnection(conf);
 
@@ -459,10 +479,29 @@ public class MappingEditor extends Composite {
         if (!Const.isEmpty(existingName)) {
           m_existingTableNamesCombo.setText(existingName);
         }
+      } catch (MasterNotRunningException m) {
+        System.err.println("HBase master does not seem to be running.");
+        m.printStackTrace();
+        m_connectionProblem = true;
+        showConnectionErrorDialog(m);
+      } catch (ZooKeeperConnectionException z) {
+        System.err.println("Unable to connect to zookeeper.");
+        z.printStackTrace();
+        m_connectionProblem = true;
+        showConnectionErrorDialog(z);
       } catch (Exception ex) {
-        // ignore quietly
+        ex.printStackTrace();
+        m_connectionProblem = true;
+        showConnectionErrorDialog(ex);
       }
     }
+  }
+  
+  private void showConnectionErrorDialog(Exception ex) {
+    new ErrorDialog(m_shell, 
+        Messages.getString("MappingDialog.Error.Title.UnableToConnect"), 
+        Messages.getString("MappingDialog.Error.Message.UnableToConnect")
+        + "\n\n", ex);
   }
   
   private void deleteMapping() {
