@@ -60,6 +60,7 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.repository.StringObjectId;
+import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransConfiguration;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
@@ -944,6 +945,13 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
     PentahoMapReduceBase.InKeyValueOrdinals inOrdinals = new PentahoMapReduceBase.InKeyValueOrdinals(injectorRowMeta);
     if(inOrdinals.getKeyOrdinal() < 0 || inOrdinals.getValueOrdinal() < 0) {
       throw new KettleException("key or value is not defined in input step");
+    }
+    
+    Trans t = new Trans(transMeta);
+    if (t.getStepInterface(inputStepName, 0) == null) {
+      throw new KettleException("Input step '" + inputStepName 
+          + "' does not seem to be enabled in the map "
+          + "transformation.");
     }
     
     // Now verify the output step output of the reducer...
