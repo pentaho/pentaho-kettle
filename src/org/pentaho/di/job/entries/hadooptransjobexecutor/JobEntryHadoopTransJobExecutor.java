@@ -934,7 +934,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
     StepMeta inputStepMeta = transMeta.findStep(inputStepName);
     if (inputStepMeta==null) {
       throw new KettleException("The input step with name '"+inputStepName+"' could not be found");
-    }
+    }    
     
     // Get the fields coming out of the input step...
     //
@@ -947,7 +947,10 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
       throw new KettleException("key or value is not defined in input step");
     }
     
+    // make sure that the input step is enabled (i.e. its outgoing hop
+    // hasn't been disabled)
     Trans t = new Trans(transMeta);
+    t.prepareExecution(null);
     if (t.getStepInterface(inputStepName, 0) == null) {
       throw new KettleException("Input step '" + inputStepName 
           + "' does not seem to be enabled in the map "
@@ -993,6 +996,8 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
         throw new KettleException("outKey or outValue is not defined in output stream"); //$NON-NLS-1$
       }
     }
+    
+
   }
 
   private void verifySingleThreadingValidity(TransMeta transMeta) throws KettleException {
