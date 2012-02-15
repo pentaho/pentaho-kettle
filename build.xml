@@ -515,6 +515,7 @@
 		    <copy todir="${distrib}/lib"  file="${lib}/kettle-dbdialog.jar"/>
   			<copy todir="${distrib}/lib"  file="${lib}/kettle-ui-swt.jar"/>
 	  		<copy todir="${distrib}/lib"  file="${lib}/kettle-test.jar"/>
+			<copy todir="${distrib}/lib"  file="${lib}/kettle-jdbc.jar"/>
 
   	        <!-- external libs (jdbc etc) -->
 	  		<mkdir dir="${distrib}/libext"/>
