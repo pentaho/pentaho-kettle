@@ -496,7 +496,7 @@
 	        Distribution jar package
 	       ==========================
 	  -->
-	<target name="distrib" depends="kettle-core, kettle-db, kettle, kettle-dbdialog, kettle-ui, kettle-plugins, kettle-jdbc, kettle-test, distrib-nodeps" description="compile and copy jar files to distribution directory" />
+	<target name="distrib" depends="kettle-core, kettle-db, kettle, kettle-dbdialog, kettle-ui, kettle-jdbc, kettle-plugins, kettle-jdbc, kettle-test, distrib-nodeps" description="compile and copy jar files to distribution directory" />
 
 	<target name="distrib-nodeps" description="copy jar files to distribution directory" >
 	  	<echo>Construct the distribution package...</echo>
