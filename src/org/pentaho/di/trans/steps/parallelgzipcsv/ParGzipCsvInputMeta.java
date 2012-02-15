@@ -55,6 +55,7 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.textfileinput.InputFileMetaInterface;
 import org.pentaho.di.trans.steps.textfileinput.TextFileInputField;
@@ -673,6 +674,11 @@ public class ParGzipCsvInputMeta extends BaseStepMeta implements StepMetaInterfa
 		} catch (Exception e) {
 			throw new KettleException(e); //$NON-NLS-1$
 		}
+	}
+	
+	@Override
+	public StepMetaInjectionInterface getStepMetaInjectionInterface() {
+	  return new ParGzipCsvInputMetaInjection(this);
 	}
 	
 }
