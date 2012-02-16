@@ -29,6 +29,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapred.FileInputFormat;
@@ -71,10 +72,7 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
 
   private String jarUrl = "";
 
-  private boolean isSimple = true;
-  
-  /** Number of classes with main() methods that were successfully executed in simple mode */
-  private int successCount;
+  private boolean isSimple = true;  
 
   private String cmdLineArgs;
 
@@ -301,7 +299,6 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
 
   public Result execute(Result result, int arg1) throws KettleException {
     result.setNrErrors(0);
-    successCount = 0;
     
     Log4jFileAppender appender = null;
     String logFileName = "pdi-" + this.getName(); //$NON-NLS-1$
@@ -340,6 +337,10 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
         logDetailed(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.ResolvedJar", resolvedJarUrl.toExternalForm()));
 
       if (isSimple) {
+        final AtomicInteger taskCount = new AtomicInteger(0);
+        final AtomicInteger successCount = new AtomicInteger(0);
+        final AtomicInteger failedCount = new AtomicInteger(0);
+        
         if (log.isDetailed())
           logDetailed(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.SimpleMode"));
         List<Class<?>> classesWithMains = JarUtility.getClassesInJarWithMain(resolvedJarUrl.toExternalForm(), getClass().getClassLoader());        
@@ -349,25 +350,49 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
               try {
                 final ClassLoader cl = Thread.currentThread().getContextClassLoader();
                 try {
+                  taskCount.incrementAndGet();
                   Thread.currentThread().setContextClassLoader(clazz.getClassLoader());
                   Method mainMethod = clazz.getMethod("main", new Class[] { String[].class });
                   Object[] args = (cmdLineArgsS != null) ? new Object[] { cmdLineArgsS.split(" ") } : new Object[0];
                   mainMethod.invoke(null, args);
                 } finally {
                   Thread.currentThread().setContextClassLoader(cl);
-                  successCount++;
+                  successCount.incrementAndGet();
+                  taskCount.decrementAndGet();
                 }
               } catch (Throwable ignored) {
                 // skip, try the next one
                 logError(ignored.getMessage());
+                failedCount.incrementAndGet();
               }
             }
           };
           Thread t = new Thread(r);
           t.start();
-        }
-        result.setResult(successCount > 0);
-        result.setNrErrors((successCount > 0) ? 0 : 1);
+        }                
+
+        // uncomment to implement blocking
+        /* if (blocking) {
+          while (taskCount.get() > 0 && !parentJob.isStopped()) {
+            Thread.sleep(1000);
+          }
+
+          if (!parentJob.isStopped()) {
+            result.setResult(successCount.get() > 0);
+            result.setNrErrors((successCount.get() > 0) ? 0 : 1);
+          } else {
+            // we can't really know at this stage if 
+            // the hadoop job will finish successfully 
+            // because we have to stop now
+            result.setResult(true); // look on the bright side of life :-)...
+            result.setNrErrors(0);
+          }
+        } else { */
+          // non-blocking - just set success equal to no failures arising
+          // from invocation
+          result.setResult(failedCount.get() == 0);
+          result.setNrErrors(failedCount.get());
+       /* } */
       } else {
         if (log.isDetailed())
           logDetailed(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.AdvancedMode"));
