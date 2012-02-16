@@ -1857,8 +1857,11 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
   }
     
   /**
-   * If there is a 100% full input rowset and a 0% rowset you could have a deadlock.
-   * 
+   * - A step sees that it can't get a new row from input in the step.  
+   * - Then it verifies that there is more than one input row set and that at least one is full and at least one is empty.
+   * - Then it finds a step in the transformation (situated before the reader step) which has at least one full and one empty output row set.
+   * - If this situation presents itself and if it happens twice with the same rows read count (meaning: stalled reading step) we throw an exception. For the attached example that exception is:
+   *
    * @throws KettleStepException
    */
   private void verifyInputDeadLock() throws KettleStepException {
