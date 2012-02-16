@@ -280,6 +280,11 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 	private long minRowsForMaxErrorPercent = -1L;
 	
 	/**
+	 * Keeps track of the number of rows read for input deadlock verification.
+	 */
+	private long deadLockCounter;
+	
+	/**
      * This is the base step that forms that basis for all steps. You can derive from this class to implement your own
      * steps.
      *
@@ -1801,6 +1806,15 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     rowData = rowSet.getRow();
     while (rowData == null && !rowSet.isDone() && !stopped.get()) {
       rowData = rowSet.getRow();
+      
+      // Verify deadlocks!
+      //
+      if (rowData==null) {
+        if (getInputRowSets().size()>1 && getLinesRead()==deadLockCounter) {
+          verifyInputDeadLock();
+        }
+        deadLockCounter=getLinesRead();
+      }
     }
 
     // Still nothing: no more rows to be had?
@@ -1842,6 +1856,55 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     return rowData;
   }
     
+  /**
+   * If there is a 100% full input rowset and a 0% rowset you could have a deadlock.
+   * 
+   * @throws KettleStepException
+   */
+  private void verifyInputDeadLock() throws KettleStepException {
+    RowSet inputFull = null;
+    RowSet inputEmpty = null;
+    for (RowSet rowSet : getInputRowSets()) {
+      if (rowSet.size() == transMeta.getSizeRowset()) { 
+        inputFull = rowSet;
+      } else if (rowSet.size() == 0) {
+        inputEmpty = rowSet;
+      }
+    }
+    if (inputFull!=null && inputEmpty!=null) {
+      // Find a step where 
+      // - the input rowset are full 
+      // - one output rowset is full 
+      // - one output is empty
+      for (StepMetaDataCombi combi : trans.getSteps()) {
+        int inputSize=0;
+        int totalSize = combi.step.getInputRowSets().size()*transMeta.getSizeRowset();
+        for (RowSet rowSet : combi.step.getInputRowSets()) {
+          inputSize+=rowSet.size();
+        }
+        // All full probably means a stalled step.
+        if (inputSize>0 && inputSize==totalSize && combi.step.getOutputRowSets().size()>1) {
+          RowSet outputFull = null;
+          RowSet outputEmpty = null;
+          for (RowSet rowSet : combi.step.getOutputRowSets()) {
+            if (rowSet.size()==transMeta.getSizeRowset()) {
+              outputFull = rowSet;
+            } else if (rowSet.size()==0) {
+              outputEmpty = rowSet;
+            }
+          }
+          if (outputFull!=null && outputEmpty!=null) {
+            // Verify that this step is lated before the current one
+            //
+            if (transMeta.findPrevious(stepMeta, combi.stepMeta)) {
+              throw new KettleStepException("A deadlock was detected between steps '"+combi.stepname+"' and '"+stepname+"'.  The steps are both waiting for each other because a series of row set buffers filled up.");
+            }
+          }
+        } 
+      }
+    }
+  }
+
     public RowSet findInputRowSet(String sourceStep) throws KettleStepException {
     	// Check to see that "sourceStep" only runs in a single copy
     	// Otherwise you'll see problems during execution.
