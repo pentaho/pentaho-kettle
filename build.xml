@@ -36,11 +36,6 @@
                 description="The Maven pom file defining dependencies of the package" />
 	
 	
-	<path id="cp-meta">
-	    <fileset dir="${libswt}" includes="*.jar" />
-	    <fileset dir="${libswt}/${swt.os}/" includes="*.jar" />
-	  </path>
-	
 	<!-- override compile.compile to include custom classpath and do resource copying -->
 	<target name="compile.compile" depends="init">
 	  <javac destdir="${classes.dir}"
@@ -51,7 +46,6 @@
 	         target="${javac.target}">
 	    <classpath>
 	      <path refid="classpath" />
-	      <path refid="cp-meta" />
 	    </classpath>
 	    <src path="${src.dir}" />
 	  </javac>
@@ -87,8 +81,6 @@
 			<exclude name="pentaho-xul-*.jar" />
 			<exclude name="metro-*.jar" />
 			<exclude name="log4j-*.jar" />
-			<exclude name="pentaho-ee-dsc-core-${dependency.pentaho-ee-dsc.revision}.jar" />
-			<exclude name="pentaho-bi-platform-ee-${dependency.bi-platform.revision}.jar" />
 			<exclude name="jface*.jar" />
 			<exclude name="jets3t-*.jar" />
 			<exclude name="hadoop-*.jar" />
@@ -105,6 +97,8 @@
 			<exclude name="pentaho-vfs-browser*.jar" />
 			<exclude name="scannotation*.jar" />
 			<exclude name="dom4j*.jar" />	      	
+			<exclude name="jface*.jar" />	      	
+			<exclude name="x86*.jar" />	      	
           </fileset>
 	    </copy>
 	    <copy todir="${stage.dir}/${ivy.artifact.id}">

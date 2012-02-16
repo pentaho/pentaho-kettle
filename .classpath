@@ -4,38 +4,5 @@
 	<classpathentry kind="src" path="test-src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.apache.ivyde.eclipse.cpcontainer.IVYDE_CONTAINER/?ivyXmlPath=ivy.xml&amp;confs=*&amp;ivySettingsPath=file%3A.%2Fivysettings.xml&amp;buildPropertyFiles=build.properties&amp;acceptedTypes=jar&amp;sourceTypes=source&amp;javadocTypes=javadoc&amp;sourceSuffixes=-source%2C-sources%2C-src&amp;javadocSuffixes=-javadoc%2C-javadocs%2C-doc%2C-docs&amp;doRetrieve=false&amp;retrievePattern=lib%2F%5Bconf%5D%2F%5Bartifact%5D.%5Bext%5D&amp;alphaOrder=false"/>
-	<classpathentry kind="lib" path="libswt/jface.jar"/>
-	<classpathentry kind="lib" path="libswt/win32/swt.jar"/>
-	<classpathentry kind="lib" path="lib/apache-cassandra-1.0.0.jar"/>
-	<classpathentry kind="lib" path="lib/apache-cassandra-thrift-1.0.0.jar"/>
-	<classpathentry kind="lib" path="lib/aws-java-sdk-1.0.008.jar"/>
-	<classpathentry kind="lib" path="lib/commons-cli-1.2.jar"/>
-	<classpathentry kind="lib" path="lib/commons-io-1.4.jar"/>
-	<classpathentry kind="lib" path="lib/commons-lang-2.4.jar"/>
-	<classpathentry kind="lib" path="lib/commons-logging-1.1.1.jar"/>
-	<classpathentry kind="lib" path="lib/commons-vfs-20091118-pentaho.jar"/>
-	<classpathentry kind="lib" path="lib/dom4j-1.6.1.jar"/>
-	<classpathentry kind="lib" path="lib/guava-r08.jar"/>
-	<classpathentry kind="lib" path="lib/hadoop-core-0.20.2.jar"/>
-	<classpathentry kind="lib" path="lib/hbase-0.90.1.jar"/>
-	<classpathentry kind="lib" path="lib/jets3t-0.7.4.jar"/>
-	<classpathentry kind="lib" path="lib/jline-0.9.94.jar"/>
-	<classpathentry kind="lib" path="lib/kettle-core-4.3.0-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="lib/kettle-db-4.3.0-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="lib/kettle-engine-4.3.0-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="lib/kettle-ui-swt-4.3.0-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="lib/libthrift-0.6.jar"/>
-	<classpathentry kind="lib" path="lib/log4j-1.2.14.jar"/>
-	<classpathentry kind="lib" path="lib/pentaho-hdfs-vfs-TRUNK-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="lib/pentaho-s3-vfs-TRUNK-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="lib/pentaho-vfs-browser-TRUNK-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="lib/pentaho-xul-core-TRUNK-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="lib/pentaho-xul-swt-TRUNK-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="lib/pig-0.8.1.jar"/>
-	<classpathentry kind="lib" path="lib/xpp3_min-1.1.4c.jar"/>
-	<classpathentry kind="lib" path="lib/xstream-1.3.1.jar"/>
-	<classpathentry kind="lib" path="lib/zookeeper-3.3.2.jar"/>
-	<classpathentry kind="lib" path="test-lib/junit-4.4.jar"/>
-	<classpathentry kind="lib" path="lib/mongo-java-driver-2.7.2.jar"/>
 	<classpathentry kind="output" path="eclipse-bin"/>
 </classpath>

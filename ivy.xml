@@ -18,6 +18,9 @@
 
     <dependency org="commons-vfs" name="commons-vfs" rev="20091118-pentaho" transitive="false" />
 
+    <dependency org="org.eclipse.swt.win32.win32" name="x86" rev="3.3.0-v3346" transitive="false" /> 
+    <dependency org="org.eclipse" name="jface" rev="3.3.0-I20070606-0010" transitive="false" /> 
+
     <dependency org="pentaho-kettle" name="kettle-engine" rev="${dependency.kettle.revision}" transitive="false" conf="default->default"
       changing="true" />
     <dependency org="pentaho-kettle" name="kettle-core" rev="${dependency.kettle.revision}" transitive="false" conf="default->default"
