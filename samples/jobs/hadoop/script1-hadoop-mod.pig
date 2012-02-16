@@ -24,9 +24,9 @@
 -- Register the tutorial JAR file so that the included UDFs can be called in the script.
 REGISTER $udf_jar;
 
--- Use the  PigStorage function to load the excite log file into the “raw” bag as an array of records.
+-- Use the  PigStorage function to load the excite log file into the "raw" bag as an array of records.
 -- Input: (user,time,query) 
-raw = LOAD 'excite.log.bz2' USING PigStorage('\t') AS (user, time, query);
+raw = LOAD '/excite.log.bz2' USING PigStorage('\t') AS (user, time, query);
 
 
 -- Call the NonURLDetector UDF to remove records if the query field is empty or a URL. 
@@ -71,4 +71,4 @@ ordered_uniq_frequency = ORDER filtered_uniq_frequency BY hour, score;
 
 -- Use the  PigStorage function to store the results. 
 -- Output: (hour, n-gram, score, count, average_counts_among_all_hours)
-STORE ordered_uniq_frequency INTO 'script1-hadoop-results' USING PigStorage();
+STORE ordered_uniq_frequency INTO '/script1-hadoop-results' USING PigStorage();
