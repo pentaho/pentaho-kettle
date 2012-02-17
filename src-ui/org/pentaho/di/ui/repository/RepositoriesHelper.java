@@ -45,6 +45,7 @@ import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.repository.dialog.RepositoryDialogInterface;
 import org.pentaho.di.ui.repository.dialog.RepositoryDialogInterface.MODE;
 import org.pentaho.di.ui.repository.model.RepositoriesModel;
+import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.components.XulConfirmBox;
 import org.pentaho.ui.xul.dom.Document;
@@ -76,6 +77,7 @@ public class RepositoriesHelper {
           throw new KettleException(input.getErrorMessage());
         }
       } catch (KettleException e) {
+        Spoon.getInstance().hideSplash();
         log.logDetailed(BaseMessages.getString(PKG, "RepositoryLogin.ErrorReadingRepositoryDefinitions", e.getLocalizedMessage()));//$NON-NLS-1$
         new ErrorDialog(shell, BaseMessages.getString(PKG, "Dialog.Error"), BaseMessages.getString(PKG, "RepositoryLogin.ErrorReadingRepositoryDefinitions", e.getLocalizedMessage()), e); //$NON-NLS-1$ //$NON-NLS-2$
       }      
