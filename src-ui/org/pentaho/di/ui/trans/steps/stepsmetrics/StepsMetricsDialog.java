@@ -179,7 +179,7 @@ public class StepsMetricsDialog extends BaseStepDialog implements StepDialogInte
 		// START OF GENERAL TAB///
 		///
 		wGeneralTab=new CTabItem(wTabFolder, SWT.NONE);
-		wGeneralTab.setText("General");
+		wGeneralTab.setText(BaseMessages.getString(PKG, "StepsMetricsDialog.General"));
 		Composite wGeneralComp = new Composite(wTabFolder, SWT.NONE);
  		props.setLook(wGeneralComp);
 		FormLayout fileLayout = new FormLayout();
