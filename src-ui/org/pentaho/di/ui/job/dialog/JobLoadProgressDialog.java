@@ -35,6 +35,7 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.spoon.Spoon;
 
 
 /**
@@ -108,11 +109,13 @@ public class JobLoadProgressDialog
 		}
 		catch (InvocationTargetException e)
 		{
+		   Spoon.getInstance().hideSplash();
 			new ErrorDialog(shell, "Error loading job", "An error occured loading the job!", e);
 			jobInfo = null;
 		}
 		catch (InterruptedException e)
 		{
+		   Spoon.getInstance().hideSplash();
 			new ErrorDialog(shell, "Error loading job", "An error occured loading the job!", e);
 			jobInfo = null;
 		}

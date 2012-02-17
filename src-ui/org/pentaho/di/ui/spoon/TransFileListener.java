@@ -85,10 +85,7 @@ public class TransFileListener implements FileListener {
         }
         catch(KettleException e)
         {   
-           Splash splash = Spoon.getInstance().getSplash();
-           if (splash != null) {
-              splash.hide();
-           }
+            Spoon.getInstance().hideSplash();
             new ErrorDialog(spoon.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorOpening.Title"), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorOpening.Message")+fname, e);
         }
         return false;

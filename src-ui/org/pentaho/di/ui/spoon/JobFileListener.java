@@ -58,6 +58,7 @@ public class JobFileListener implements FileListener {
         }
         catch(KettleException e)
         {
+            Spoon.getInstance().hideSplash();
             new ErrorDialog(spoon.getShell(), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorOpening.Title"), BaseMessages.getString(PKG, "Spoon.Dialog.ErrorOpening.Message")+fname, e);
         }
         return false;

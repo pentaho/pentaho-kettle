@@ -36,6 +36,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.spoon.Spoon;
 
 
 
@@ -116,11 +117,13 @@ public class TransLoadProgressDialog
 		}
 		catch (InvocationTargetException e)
 		{
+		   Spoon.getInstance().hideSplash();
 			new ErrorDialog(shell, BaseMessages.getString(PKG, "TransLoadProgressDialog.ErrorLoadingTransformation.DialogTitle"), BaseMessages.getString(PKG, "TransLoadProgressDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
 			transInfo = null;
 		}
 		catch (InterruptedException e)
 		{
+		   Spoon.getInstance().hideSplash();
 			new ErrorDialog(shell, BaseMessages.getString(PKG, "TransLoadProgressDialog.ErrorLoadingTransformation.DialogTitle"), BaseMessages.getString(PKG, "TransLoadProgressDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
 			transInfo = null;
 		}

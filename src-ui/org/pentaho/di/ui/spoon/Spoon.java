@@ -3977,9 +3977,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       }
       if (!loaded) {
         // Give error back
-        if (splash != null) {
-           splash.hide();
-        }
+        hideSplash();
         MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
         mb.setMessage(BaseMessages.getString(PKG, "Spoon.UnknownFileType.Message", fname));
         mb.setText(BaseMessages.getString(PKG, "Spoon.UnknownFileType.Title"));
@@ -6750,13 +6748,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
           // do nothing
         }
       });
-      if (splash != null) {
-         splash.hide();
-      }
+      hideSplash();
       loginDialog.show();
-      if (splash != null) {
-         splash.show();
-      }
+      showSplash();
     } 
     else if (!Const.isEmpty(optionRepname) && Const.isEmpty(optionFilename)) {
       RepositoriesMeta repsinfo = new RepositoriesMeta();
@@ -6800,18 +6794,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
             }
           });
-          if (splash != null) {
-             splash.hide();
-          }
+          hideSplash();
           loginDialog.show();
-          if (splash != null) {
-             splash.show();
-          }
+          showSplash();
         }
       } catch (Exception e) {
-        if (splash != null) {
-           splash.hide();
-        }
+        hideSplash();
         // Eat the exception but log it...
         log.logError("Error reading repositories xml file", e);
       }
@@ -6890,9 +6878,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         }
       }
     } catch (KettleException ke) {
-      if (splash != null) {
-         splash.hide();
-      }
+      hideSplash();
       log.logError(BaseMessages.getString(PKG, "Spoon.Log.ErrorOccurred") + Const.CR + ke.getMessage());// "An error occurred: "
       log.logError(Const.getStackTracker(ke));
       // do not just eat the exception
@@ -6917,9 +6903,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
             loadLastUsedFile(lastUsedFile, rep == null ? null : rep.getName(), false);
           }
         } catch(Exception e) {
-           if (splash != null) {
-              splash.hide();
-           }
+          hideSplash();
           new ErrorDialog(shell, BaseMessages.getString(PKG, "Spoon.LoadLastUsedFile.Exception.Title"), 
               BaseMessages.getString(PKG, "Spoon.LoadLastUsedFile.Exception.Message", lastUsedFile.toString()), e);
         }
@@ -6952,9 +6936,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     if (props.showTips()) {
       TipsDialog tip = new TipsDialog(shell);
       
-      if (splash != null) {
-         splash.hide();
-      }
+      hideSplash();
       tip.open();
     }
     if (splash != null) {
@@ -8166,8 +8148,16 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 	      }
         }
     }
+        
+    public void hideSplash() {
+       if (splash!=null) {
+          splash.hide();
+       }
+    }
     
-    public Splash getSplash() {
-       return this.splash;
+    private void showSplash() {
+       if (splash != null) {
+          splash.show();
+       }
     }
 }
