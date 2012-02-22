@@ -24,12 +24,10 @@
 	<classpathentry exported="true" kind="lib" path="libswt/commands.jar"/>
 	<classpathentry exported="true" kind="lib" path="libswt/common.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/jakarta-oro-2.0.8.jar"/>
-	<classpathentry kind="lib" path="/home/matt/svn/kettle/trunk/libext/commons/commons-collections-3.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/commons/commons-dbcp-1.2.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/commons/commons-fileupload-1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/commons/commons-httpclient-3.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/commons/commons-logging-1.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/commons/commons-net-1.4.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/commons/commons-pool-1.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/web/simple-jndi-0.11.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/JDBC/asjava.zip"/>
@@ -61,7 +59,6 @@
 	<classpathentry exported="true" kind="lib" path="test/libext/junit.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/dom4j-1.6.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/jaxen-1.1.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/JDBC/kingbasejdbc.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/JDBC/monetdb-1.7-jdbc.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/jxl.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/web/servlet-api-2.5-6.1.9.jar"/>
@@ -110,7 +107,6 @@
 	<classpathentry exported="true" kind="lib" path="libext/JDBC/orai18n.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/secondstring.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/webservices/wstx-asl-3.2.9.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/rules/antlr-runtime-3.1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/rules/drools-api-5.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/rules/drools-compiler-5.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/rules/drools-core-5.0.1.jar"/>
@@ -308,7 +304,6 @@
 	<classpathentry kind="lib" path="libext/datacleaner-ui/xml-apis-1.3.04.jar"/>
 	<classpathentry kind="lib" path="libext/datacleaner-ui/xmlbeans-2.3.0.jar"/>
 	<classpathentry kind="lib" path="libext/jersey/mimepull-1.5.jar"/>
-	<classpathentry kind="lib" path="/home/matt/svn/kettle/trunk/libext/jfree/jcommon-1.0.16.jar"/>
 	<classpathentry kind="lib" path="libext/jfree/jfreechart-1.0.13.jar"/>
 	<classpathentry kind="lib" path="libext/slf4j-api-1.6.1.jar"/>
 	<classpathentry kind="lib" path="libext/reporting/asm-3.2.jar"/>
@@ -349,7 +344,6 @@
 	<classpathentry kind="lib" path="libext/datacleaner-ui/mongo-java-driver-2.7.2.jar"/>
 	<classpathentry kind="lib" path="libext/datacleaner-ui/ojdbc6-11.2.0.3.jar"/>
 	<classpathentry kind="lib" path="libext/datacleaner-ui/scala-library-2.9.1.jar"/>
-	<classpathentry kind="lib" path="libext/datacleaner-ui/slf4j-log4j12-1.6.4.jar"/>
 	<classpathentry kind="lib" path="libext/commons/commons-collections-3.2.jar"/>
 	<classpathentry kind="lib" path="libext/commons/commons-configuration-1.7.jar"/>
 	<classpathentry kind="lib" path="libext/eobjects/SassyReader-0.4.jar"/>
@@ -362,10 +356,10 @@
 	<classpathentry kind="lib" path="libext/bigdata/JDBC/hive-jdbc-0.7.0-pentaho-1.0.0.jar"/>
 	<classpathentry kind="lib" path="libext/bigdata/hadoop-core-0.20.2.jar"/>
 	<classpathentry kind="lib" path="libext/bigdata/hadoop-snappy-0.0.1-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="libext/bigdata/hbase-0.90.1.jar"/>
 	<classpathentry kind="lib" path="libext/bigdata/pentaho-hdfs-vfs-TRUNK-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/bigdata/zookeeper-3.3.2.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/mysql-connector-java-3.1.14-bin.jar"/>
 	<classpathentry kind="lib" path="libext/slf4j-log4j12-1.6.1.jar"/>
+	<classpathentry kind="lib" path="libext/antlr-3.4-complete.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

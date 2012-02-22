@@ -64,7 +64,7 @@
 	            Compile the code
 	       ==========================
 	  -->
-	
+		
 	  <target name="compile-core" depends="init" description="compile the core source code " >
 	  	<echo>Compiling Kettle CORE...</echo>
         <javac fork="true"
@@ -85,7 +85,18 @@
 	    </javac>
 	  </target>
 	
-	  <target name="compile-db" depends="compile-core" description="compile the db source code " >
+	  <target name="generate-parser-for-edi2xml-step" depends="compile-core" description="">
+	  	<echo>Generating parser java classes for the  edi2xml step...</echo>
+		<java classname="org.antlr.Tool" fork="true" failonerror="true">
+			<classpath refid="cp-kettle-core" />
+			<arg value="-verbose"/>
+			<arg value="-o"/>
+			<arg path="src/org/pentaho/di/trans/steps/edi2xml/grammar"/>
+			<arg path="src/org/pentaho/di/trans/steps/edi2xml/grammar/FastSimpleGenericEdifactDirectXML.g"/>
+		</java>
+	  </target>
+	
+	  <target name="compile-db" depends="generate-parser-for-edi2xml-step" description="compile the db source code " >
 	  	<echo>Compiling Kettle DB...</echo>
       <javac fork="true"
           destdir="${classes-db}"
@@ -131,7 +142,6 @@
 	    </javac>
 	  </target>
 	
-
 	  <target name="compile" depends="compile-db" description="compile the source " >
 	  	<echo>Compiling Kettle...</echo>
         <javac fork="true"
