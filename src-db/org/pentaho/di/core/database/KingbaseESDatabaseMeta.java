@@ -437,7 +437,16 @@ public class KingbaseESDatabaseMeta extends BaseDatabaseMeta implements Database
     
     public String[] getUsedLibraries()
     {
-        return new String[] { "kingbasejdbc.jar" };
+        return new String[] { "kingbasejdbc4.jar" };
+    }
+    
+    /**
+     * @return true if the database supports timestamp to date conversion.
+     * Kingbase doesn't support this!
+     */
+    public boolean supportsTimeStampToDateConversion()
+    {
+        return false;
     }
 
 }
