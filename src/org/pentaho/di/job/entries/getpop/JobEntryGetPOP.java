@@ -310,10 +310,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 			username = rep.getJobEntryAttributeString(id_jobentry, "username");
 			password        = Encr.decryptPasswordOptionallyEncrypted(rep.getJobEntryAttributeString(id_jobentry, "password"));
 			usessl          = rep.getJobEntryAttributeBoolean(id_jobentry, "usessl");
-			int intSSLPort = (int)rep.getJobEntryAttributeInteger(id_jobentry, "sslport");
 			sslport = rep.getJobEntryAttributeString(id_jobentry, "sslport"); // backward compatible.
-			if (intSSLPort>0 && Const.isEmpty(sslport)) sslport = Integer.toString(intSSLPort);
-
 			outputdirectory        = rep.getJobEntryAttributeString(id_jobentry, "outputdirectory");
 			filenamepattern        = rep.getJobEntryAttributeString(id_jobentry, "filenamepattern");
 			if(Const.isEmpty(filenamepattern)) filenamepattern=DEFAULT_FILE_NAME_PATTERN;
