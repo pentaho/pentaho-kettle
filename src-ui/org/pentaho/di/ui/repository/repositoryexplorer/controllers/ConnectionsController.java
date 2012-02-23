@@ -257,7 +257,7 @@ public class ConnectionsController extends LazilyInitializedController implement
     } catch (KettleException e) {
       new ErrorDialog(shell, BaseMessages.getString(PKG,
           "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title"), //$NON-NLS-1$
-          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Message"), e); //$NON-NLS-1$
+          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Edit.UnexpectedError.Message"), e); //$NON-NLS-1$
     } finally {
       refreshConnectionList();
     }
@@ -296,7 +296,7 @@ public class ConnectionsController extends LazilyInitializedController implement
     } catch (KettleException e) {
       new ErrorDialog(shell, BaseMessages.getString(PKG,
           "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Title"), //$NON-NLS-1$
-          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Create.UnexpectedError.Message"), e); //$NON-NLS-1$
+          BaseMessages.getString(PKG, "RepositoryExplorerDialog.Connection.Remove.UnexpectedError.Message"), e); //$NON-NLS-1$
     } finally {
       refreshConnectionList();
     }
