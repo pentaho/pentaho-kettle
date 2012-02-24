@@ -1004,11 +1004,13 @@ public class KettleFileRepository implements Repository {
 		//
 		for (ObjectId id : getDatabaseIDs(false)) {
 			DatabaseMeta databaseMeta = loadDatabaseMeta(id, null); // Load last version
+			databaseMeta.shareVariablesWith(jobMeta);
 			jobMeta.addOrReplaceDatabase(databaseMeta);
 		}
 		
 		for (ObjectId id : getSlaveIDs(false)) {
 			SlaveServer slaveServer = loadSlaveServer(id, null);  // Load last version
+			slaveServer.shareVariablesWith(jobMeta);
 			jobMeta.addOrReplaceSlaveServer(slaveServer);
 		}
 
@@ -1025,16 +1027,19 @@ public class KettleFileRepository implements Repository {
 		//
 		for (ObjectId id : getDatabaseIDs(false)) {
 			DatabaseMeta databaseMeta = loadDatabaseMeta(id, null);  // Load last version
+			databaseMeta.shareVariablesWith(transMeta);
 			transMeta.addOrReplaceDatabase(databaseMeta);
 		}
 		
 		for (ObjectId id : getSlaveIDs(false)) {
-			SlaveServer slaveServer = loadSlaveServer(id, null);  // Load last version 
+			SlaveServer slaveServer = loadSlaveServer(id, null);  // Load last version
+			slaveServer.shareVariablesWith(transMeta);
 			transMeta.addOrReplaceSlaveServer(slaveServer);
 		}
 
 		for (ObjectId id : getClusterIDs(false)) {
-			ClusterSchema clusterSchema = loadClusterSchema(id, transMeta.getSlaveServers(), null);  // Load last version 
+			ClusterSchema clusterSchema = loadClusterSchema(id, transMeta.getSlaveServers(), null);  // Load last version
+			clusterSchema.shareVariablesWith(transMeta);
 			transMeta.addOrReplaceClusterSchema(clusterSchema);
 		}
 
