@@ -212,7 +212,7 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
         fdFields.right = new FormAttachment(100, 0);
         wFields.setLayoutData(fdFields);
         
-        // input file line (report definition)
+        // output types
         //
         wlProcessor=new Label(shell, SWT.RIGHT);
         wlProcessor.setText(BaseMessages.getString(PKG, "PentahoReportingOutputDialog.Processor.Label")); //$NON-NLS-1$
@@ -230,6 +230,7 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
         fdProcessor.right= new FormAttachment(100, 0);
         wProcessor.setLayoutData(fdProcessor);
         wProcessor.setItems(ProcessorType.getDescriptions());
+        wProcessor.addListener(SWT.Selection, new Listener(){public void handleEvent(Event e){ input.setChanged();}});
         
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(BaseMessages.getString("System.Button.OK")); //$NON-NLS-1$
