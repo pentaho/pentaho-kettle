@@ -24,9 +24,16 @@ package org.pentaho.di.trans.steps.userdefinedjavaclass;
 
 import org.pentaho.di.trans.step.StepMeta;
 
-public class StepDefinition {
+public class StepDefinition implements Cloneable {
 	public String tag;
 	public String stepName;
 	public StepMeta stepMeta;
 	public String description;
+	
+	public Object clone() throws CloneNotSupportedException{
+		StepDefinition retval;
+		retval = (StepDefinition) super.clone();
+		retval.stepMeta = (StepMeta) stepMeta.clone();
+		return retval;
+	}
 }

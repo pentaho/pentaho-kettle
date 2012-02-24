@@ -22,10 +22,14 @@
 
 package org.pentaho.di.trans.steps.userdefinedjavaclass;
 
-public class UsageParameter {
+public class UsageParameter implements Cloneable {
 	
 	public String tag;
 	public String value;
 	public String description;
+	
+    public Object clone() throws CloneNotSupportedException{
+    	return super.clone();
+    }
 	
 }

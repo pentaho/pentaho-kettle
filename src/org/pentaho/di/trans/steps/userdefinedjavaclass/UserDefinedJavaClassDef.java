@@ -24,7 +24,7 @@ package org.pentaho.di.trans.steps.userdefinedjavaclass;
 
 import org.pentaho.di.core.exception.KettleStepException;
 
-public class UserDefinedJavaClassDef
+public class UserDefinedJavaClassDef implements Cloneable
 {
     public enum ClassType
     {
@@ -58,6 +58,10 @@ public class UserDefinedJavaClassDef
     public String getSource()
     {
         return this.source;
+    }
+    
+    public Object clone() throws CloneNotSupportedException{
+    	return super.clone();
     }
 
     public String getTransformedSource() throws KettleStepException
