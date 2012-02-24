@@ -230,6 +230,7 @@ public class PentahoReportingOutputDialog extends BaseStepDialog implements Step
         fdProcessor.right= new FormAttachment(100, 0);
         wProcessor.setLayoutData(fdProcessor);
         wProcessor.setItems(ProcessorType.getDescriptions());
+        wProcessor.addListener(SWT.Selection, new Listener(){public void handleEvent(Event e){ input.setChanged();}});
         
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(BaseMessages.getString("System.Button.OK")); //$NON-NLS-1$
