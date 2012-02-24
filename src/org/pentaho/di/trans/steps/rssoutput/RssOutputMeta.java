@@ -948,7 +948,7 @@ public class RssOutputMeta extends BaseStepMeta implements StepMetaInterface
 			createparentfolder        =      rep.getStepAttributeBoolean(id_step, "create_parent_folder");
 			AddToResult     =      rep.getStepAttributeBoolean(id_step, "addtoresult");
 			// Channel Custom
-			int nrchannel   = rep.countNrStepAttributes(id_step, "channel_custom_fields"); //$NON-NLS-1$
+			int nrchannel   = rep.countNrStepAttributes(id_step, "channel_custom_field"); //$NON-NLS-1$
 			allocate(nrchannel);
 			for (int i=0;i<nrchannel;i++)
 			{
@@ -956,7 +956,7 @@ public class RssOutputMeta extends BaseStepMeta implements StepMetaInterface
 				ChannelCustomFields[i]  = rep.getStepAttributeString(id_step, i, "channel_custom_field"); //$NON-NLS-1$	
 			}
 			// Item Custom
-			int nritem   = rep.countNrStepAttributes(id_step, "item_custom_fields"); //$NON-NLS-1$
+			int nritem   = rep.countNrStepAttributes(id_step, "item_custom_field"); //$NON-NLS-1$
 			allocateitem(nritem);
 			for (int i=0;i<nritem;i++)
 			{
