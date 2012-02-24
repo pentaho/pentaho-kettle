@@ -51,6 +51,7 @@
     <shared_objects_file/>
     <capture_step_performance>N</capture_step_performance>
     <step_performance_capturing_delay>1000</step_performance_capturing_delay>
+    <step_performance_capturing_size_limit/>
     <dependencies>
     </dependencies>
     <partitionschemas>
@@ -59,19 +60,25 @@
     </slaveservers>
     <clusterschemas>
     </clusterschemas>
+  <created_user/>
+  <created_date>2012&#47;02&#47;24 11:35:52.416</created_date>
   <modified_user>-</modified_user>
   <modified_date>2010&#47;02&#47;17 20:26:09.478</modified_date>
   </info>
   <notepads>
     <notepad>
-      <note>Don&apos;t forget to specify your username, 
-password and search term </note>
-      <xloc>64</xloc>
-      <yloc>112</yloc>
-      <width>260</width>
-      <heigth>44</heigth>
-      <fontname>Microsoft Sans Serif</fontname>
-      <fontsize>8</fontsize>
+      <note>For this sample to work, you&apos;ll need to put the JTwitter jar into libext and restart  spoon
+JTwitter is hosted at http:&#47;&#47;www.winterwell.com&#47;software&#47;jtwitter.php 
+
+The sample is tested to work against JTwitter 2.4
+Don&apos;t forget to specify your username, password and search term on the paramters pane
+of the UDJC step!</note>
+      <xloc>48</xloc>
+      <yloc>50</yloc>
+      <width>529</width>
+      <heigth>100</heigth>
+      <fontname>SansSerif</fontname>
+      <fontsize>12</fontsize>
       <fontbold>N</fontbold>
       <fontitalic>N</fontitalic>
       <fontcolorred>0</fontcolorred>
@@ -283,9 +290,10 @@ password and search term </note>
 
         <class_source><![CDATA[import java.util.*;
 import winterwell.jtwitter.*;
+import java.math.BigInteger;
 
 private Twitter twitter;
-private long lastId;
+private BigInteger lastId;
 
 public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException 
 {
@@ -297,33 +305,34 @@ public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws K
   // First see if we need to look at any of the status' reports
   // Determine the maximum ID and compare it to last times status ID
   //
-  long maxId=-1L;
+  BigInteger maxId=BigInteger.valueOf(-1L);
   for (int i=0;i<timeLine.size();i++) {
-    Twitter.Status status = (Twitter.Status)timeLine.get(i);
-    if (maxId<status.getId()) {
+    Status status = (Status)timeLine.get(i);
+    if (maxId.compareTo(status.getId()) == -1) {
       maxId=status.getId();
     }
   }
-
+  
+  logBasic("Last processed id: "+lastId+", highest incoming is: "+maxId);
   // Do we have anything to do with this batch of statuses?
   //
-  if (maxId>lastId) {
+  if (maxId.compareTo(lastId) == 1) {
     // Process all the status reports...
     //
     for (int i=0;i<timeLine.size();i++) {
-      Twitter.Status status = (Twitter.Status)timeLine.get(i);
+      Status status = (Status)timeLine.get(i);
       
       // If the id is recent, process it
       //
-      if (status.getId()>lastId) {
+      if (status.getId().compareTo(lastId) == 1) {
         // New things to report...
         //
         Object[] rowData = RowDataUtil.allocateRowData(data.outputRowMeta.size());
         int index = 0;
 
         rowData[index++] = status.createdAt;
-        rowData[index++] = Long.valueOf(status.getId());
-        rowData[index++] = status.inReplyToStatusId;
+        rowData[index++] = Long.valueOf(status.getId().longValue());
+        rowData[index++] = (status.inReplyToStatusId!=null)?Long.valueOf(status.inReplyToStatusId.longValue()):null;
         rowData[index++] = status.getText();
         rowData[index++] = status.getUser().toString();
 	    rowData[index++] = Boolean.valueOf(status.isFavorite());
@@ -332,7 +341,7 @@ public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws K
       }
     } 
   } else {
-    // Wait for 30 seconds before retrying
+    // Wait for DELAY seconds before retrying
     //
     int delay = Integer.parseInt(getParameter("DELAY"));
     for (int s=0;s<1000 && !isStopped();s++) {
@@ -354,7 +363,7 @@ public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws K
 public boolean init(StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface) {
    if (super.init(stepMetaInterface, stepDataInterface)) {
      twitter = new Twitter(getParameter("USER"), getParameter("PASSWD"));
-     lastId=-1;
+     lastId=BigInteger.valueOf(-1L);
      return true;
    }
    return false;
@@ -426,10 +435,10 @@ public boolean init(StepMetaInterface stepMetaInterface, StepDataInterface stepD
         </field>
     </fields><clear_result_fields>N</clear_result_fields>
 <info_steps></info_steps><target_steps></target_steps><usage_parameters><usage_parameter><parameter_tag>USER</parameter_tag>
-<parameter_value>username</parameter_value>
+<parameter_value>USERNAME</parameter_value>
 <parameter_description>The twitter username</parameter_description>
 </usage_parameter><usage_parameter><parameter_tag>PASSWD</parameter_tag>
-<parameter_value>password</parameter_value>
+<parameter_value>PASSWORD</parameter_value>
 <parameter_description>The twitter password</parameter_description>
 </usage_parameter><usage_parameter><parameter_tag>SEARCH</parameter_tag>
 <parameter_value>pentaho</parameter_value>
