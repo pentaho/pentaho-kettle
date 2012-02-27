@@ -296,7 +296,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
           } else {
             // it is a string
             keyUpperBound = HBaseValueMeta.
-              encodeKeyValue(keyStartS, m_tableMapping.getKeyType());
+              encodeKeyValue(keyStopS, m_tableMapping.getKeyType());
           }
           s = new Scan(keyLowerBound, keyUpperBound);
         }  
