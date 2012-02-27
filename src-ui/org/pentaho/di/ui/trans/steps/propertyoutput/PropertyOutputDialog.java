@@ -872,7 +872,7 @@ public class PropertyOutputDialog extends BaseStepDialog implements StepDialogIn
 		wAddTime.setSelection(input.isTimeInFilename());
 		wAddStepnr.setSelection(input.isStepNrInFilename());
         
-        wAddToResult.setSelection( input.AddToResult() );
+        wAddToResult.setSelection( input.addToResult() );
         wAppend.setSelection( input.isAppend());
         
     	if (input.getComment() != null) 
