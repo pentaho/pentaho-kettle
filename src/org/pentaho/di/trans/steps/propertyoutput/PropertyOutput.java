@@ -274,7 +274,7 @@ public class PropertyOutput extends BaseStep implements StepInterface
 			propsFile = KettleVFS.getOutputStream(data.file,false);
             data.pro.store(propsFile, environmentSubstitute(meta.getComment()));
           
-			if( meta.AddToResult())
+			if( meta.addToResult())
 			{
 				// Add this to the result file names...
 				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), getStepname());
