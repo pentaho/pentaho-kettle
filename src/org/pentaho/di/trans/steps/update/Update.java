@@ -558,7 +558,7 @@ public class Update extends BaseStep implements StepInterface
 	            {
 	                if (getErrors()==0)
 	                {
-	                    data.db.commit();
+	                   data.db.emptyAndCommit(data.prepStatementUpdate, meta.useBatchUpdate());
 	                }
 	                else
 	                {
