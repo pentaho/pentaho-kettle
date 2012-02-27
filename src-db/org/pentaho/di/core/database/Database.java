@@ -1447,6 +1447,19 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		prepStatementInsert = null;
 	}
 	
+	/**
+	 * Close the passed prepared statement.
+	 * This object's "written" property is passed to the
+	 * method that does the execute and commit.
+	 * 
+	 * @param ps
+	 * @param batch
+	 * @throws KettleDatabaseException
+	 */
+	public void emptyAndCommit(PreparedStatement ps, boolean batch) throws KettleDatabaseException {
+	   emptyAndCommit(ps, batch, written);
+	}
+	
 		/**
 		 * Close the prepared statement of the insert statement.
 		 * 
