@@ -114,8 +114,12 @@ public class NumberRangeSet
 		 */
 		 	public String evaluate(Double value) throws KettleException
 			{
-				String result = evaluateDouble(value);
-			    if (!"".equals(result))	return result;
+		 		if (value != null){
+		 			
+		 			String result = evaluateDouble(value);
+		 			if (!"".equals(result))	return result;
+
+		 		}
 			    
 				return fallBackValue;
 			}
