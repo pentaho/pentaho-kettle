@@ -1,4 +1,4 @@
-<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" align="vertical">
+<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" align="stretch">
 
   <toolbar id="nav-toolbar" mode="icons">
     <toolbarbutton id="browse-back" label="${SpoonBrowser.Dialog.Back}" image="images/back.png"
