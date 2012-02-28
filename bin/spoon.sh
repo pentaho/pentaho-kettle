@@ -67,7 +67,7 @@ case `uname -s` in
 			;;
 
 		*)	
-			echo "I'm sorry, this Linux platform [$ARCH] is not yet supported!"
+			echo "I'm sorry, this Mac platform [$ARCH] is not yet supported!"
 			echo "Please try starting using 'Data Integration 32-bit' or"
 			echo "'Data Integration 64-bit' as appropriate."
 			exit
@@ -108,7 +108,7 @@ case `uname -s` in
 		case $ARCH in
 			x86_64)
 				LIBPATH=$BASEDIR/../libswt/freebsd/x86_64/
-				echo "I'm sorry, this Linux platform [$ARCH] is not yet supported!"
+				echo "I'm sorry, this FreeBSD platform [$ARCH] is not yet supported!"
 				exit
 				;;
 
@@ -118,12 +118,12 @@ case `uname -s` in
 
 			ppc)
 				LIBPATH=$BASEDIR/../libswt/freebsd/ppc/
-				echo "I'm sorry, this Linux platform [$ARCH] is not yet supported!"
+				echo "I'm sorry, this FreeBSD platform [$ARCH] is not yet supported!"
 				exit
 				;;
 
 			*)	
-				echo "I'm sorry, this Linux platform [$ARCH] is not yet supported!"
+				echo "I'm sorry, this FreeBSD platform [$ARCH] is not yet supported!"
 				exit
 				;;
 		esac
