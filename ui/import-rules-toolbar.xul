@@ -1,4 +1,4 @@
-<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" align="vertical">
+<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" align="stretch">
   <toolbar id="import-rules-toolbar" mode="full">
 
     <toolbarbutton id="add-rule" label="${ImportRulesDialog.ToolItem.AddRule.Label}" image="images/addSmall.png"

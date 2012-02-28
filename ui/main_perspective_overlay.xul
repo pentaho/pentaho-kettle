@@ -5,8 +5,10 @@
 	xmlns:HTML="http://www.w3.org/Profiles/XHTML-transitional" 
     xmlns:pen="http://www.pentaho.org/2008/xul" >
     
+<!--
     <menu id="trans" visible="true"/>
     <menu id="job" visible="true"/>
+-->   
     <menu id="wizard" visible="true"/>
     <!--   
     <menu id="file-export" disabled="true"/>
