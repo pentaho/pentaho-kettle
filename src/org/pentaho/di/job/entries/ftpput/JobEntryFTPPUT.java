@@ -636,7 +636,7 @@ public class JobEntryFTPPUT extends JobEntryBase implements Cloneable, JobEntryI
 		try
 		{
 			// Create ftp client to host:port ...
-			ftpclient = new PDIFTPClient();
+			ftpclient = new PDIFTPClient(log);
             ftpclient.setRemoteAddr(InetAddress.getByName(realServerName));
             if(!Const.isEmpty(realServerPort))
             {
