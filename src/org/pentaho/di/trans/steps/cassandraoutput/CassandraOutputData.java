@@ -169,11 +169,13 @@ public class CassandraOutputData extends BaseStepData implements
    * are not in the Cassandra column family (table) meta data are to be
    * inserted. This is irrelevant if the user has opted
    * to have the step initially update the Cassandra meta data for incoming
-   * fields that are not known about. 
+   * fields that are not known about.
+   * 
+   * @return true if the row was added to the batch
    * 
    * @throws KettleException if the key is null in the incoming row
    */
-  public static void addRowToBatch(StringBuilder batch, String colFamilyName, 
+  public static boolean addRowToBatch(StringBuilder batch, String colFamilyName, 
       RowMetaInterface inputMeta, int keyIndex, Object[] row, 
       CassandraColumnMetaData cassandraMeta, boolean insertFieldsNotInMetaData) 
     throws KettleException {
@@ -181,7 +183,9 @@ public class CassandraOutputData extends BaseStepData implements
     // check the key first
     ValueMetaInterface keyMeta = inputMeta.getValueMeta(keyIndex);
     if (keyMeta.isNull(row[keyIndex])) {
-      throw new KettleException("Can't insert this row because the key is null!");
+      //throw new KettleException("Can't insert this row because the key is null!");
+      System.err.println("Skipping this row because the key is null! " + row);
+      return false;
     }
     
     // quick scan to see if we have at least one non-null value apart from
@@ -199,7 +203,7 @@ public class CassandraOutputData extends BaseStepData implements
     if (!ok) {
       System.err.println("Skipping row with key '" + keyMeta.getString(row[keyIndex])
           +"' because there are no non-null values!");
-      return;
+      return false;
     }
     
     batch.append("INSERT INTO ").append(colFamilyName).append(" (KEY");
@@ -247,7 +251,9 @@ public class CassandraOutputData extends BaseStepData implements
       }
     }
     
-    batch.append(")\n");    
+    batch.append(")\n");
+    
+    return true;
   }
   
   protected static int numFieldsToBeWritten(String colFamilyName, RowMetaInterface inputMeta,

@@ -237,9 +237,10 @@ public class CassandraOutput extends BaseStep implements StepInterface {
     }
     
     // add the row to the batch
-    CassandraOutputData.addRowToBatch(m_batchInsert, m_columnFamilyName, getInputRowMeta(), 
-        m_keyIndex, r, m_cassandraMeta, m_meta.getInsertFieldsNotInMeta());
-    m_rowsSeen++;
+    if (CassandraOutputData.addRowToBatch(m_batchInsert, m_columnFamilyName, getInputRowMeta(), 
+        m_keyIndex, r, m_cassandraMeta, m_meta.getInsertFieldsNotInMeta())) {
+      m_rowsSeen++;
+    }
     
     if (m_rowsSeen == m_batchSize) {
       doBatch();    
@@ -256,6 +257,13 @@ public class CassandraOutput extends BaseStep implements StepInterface {
         + m_columnFamilyName + "'");
     CassandraOutputData.completeBatch(m_batchInsert);
 //    System.out.println(m_batchInsert.toString());
+    
+    if (m_batchInsert.indexOf("INSERT") < 0) {
+      logError("There are no rows to insert in this batch. This means that all " +
+      		"incoming rows for this batch had either a null key or all null " +
+      		"values");
+      return;
+    }
     try {
       CassandraOutputData.commitBatch(m_batchInsert, m_connection, 
           m_meta.getUseCompression());
