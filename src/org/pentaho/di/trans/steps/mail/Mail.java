@@ -474,6 +474,8 @@ public class Mail extends BaseStep implements StepInterface
 			 msg.setHeader("Importance", meta.getImportance());
 			 //seems to be needed for MS Outlook.
 			 //where it returns a string of high /normal /low.
+			 msg.setHeader("Sensitivity", meta.getSensitivity());
+			 //Possible values are normal, personal, private, company-confidential
 	      }
 	
 	      // set Email sender

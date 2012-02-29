@@ -269,6 +269,10 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface
     private CCombo       wImportance;
     private FormData     fdlImportance, fdImportance;
     
+    private Label        wlSensitivity;
+    private CCombo       wSensitivity;
+    private FormData     fdlSensitivity, fdSensitivity;
+    
     private Label wlZipFiles;
     
     private FormData fdlisZipFileDynamic;
@@ -1213,6 +1217,14 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface
             }
         });
         
+        SelectionAdapter selChanged = new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent e)
+            {
+               input.setChanged();
+            }
+        };        
+        
         // Priority
         wlPriority = new Label(wMessageSettingsGroup, SWT.RIGHT);
         wlPriority.setText(BaseMessages.getString(PKG, "Mail.Priority.Label"));
@@ -1227,6 +1239,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface
         wPriority.add(BaseMessages.getString(PKG, "Mail.Priority.Normal.Label"));
         wPriority.add(BaseMessages.getString(PKG, "Mail.Priority.High.Label"));
         wPriority.select(1); // +1: starts at -1
+        wPriority.addSelectionListener(selChanged);
         props.setLook(wPriority);
         fdPriority = new FormData();
         fdPriority.left = new FormAttachment(middle, -margin);
@@ -1249,6 +1262,7 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface
         wImportance.add(BaseMessages.getString(PKG, "Mail.Priority.High.Label"));
    
         wImportance.select(1); // +1: starts at -1
+        wImportance.addSelectionListener(selChanged);
         
         props.setLook(wImportance);
         fdImportance = new FormData();
@@ -1257,7 +1271,29 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface
         fdImportance.right = new FormAttachment(100, 0);
         wImportance.setLayoutData(fdImportance);
         
+        // Sensitivity
+        wlSensitivity = new Label(wMessageSettingsGroup, SWT.RIGHT);
+        wlSensitivity.setText(BaseMessages.getString(PKG, "Mail.Sensitivity.Label"));
+        props.setLook(wlSensitivity);
+        fdlSensitivity = new FormData();
+        fdlSensitivity.left = new FormAttachment(0, 0);
+        fdlSensitivity.right = new FormAttachment(middle, -2*margin);
+        fdlSensitivity.top = new FormAttachment(wImportance, margin);
+        wlSensitivity.setLayoutData(fdlSensitivity);
+        wSensitivity = new CCombo(wMessageSettingsGroup, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
+        wSensitivity.add(BaseMessages.getString(PKG, "Mail.Sensitivity.normal.Label"));
+        wSensitivity.add(BaseMessages.getString(PKG, "Mail.Sensitivity.personal.Label"));
+        wSensitivity.add(BaseMessages.getString(PKG, "Mail.Sensitivity.private.Label"));
+        wSensitivity.add(BaseMessages.getString(PKG, "Mail.Sensitivity.confidential.Label"));
+        wSensitivity.select(0);
+        wSensitivity.addSelectionListener(selChanged);
         
+        props.setLook(wSensitivity);
+        fdSensitivity = new FormData();
+        fdSensitivity.left = new FormAttachment(middle, -margin);
+        fdSensitivity.top = new FormAttachment(wImportance, margin);
+        fdSensitivity.right = new FormAttachment(100, 0);
+        wSensitivity.setLayoutData(fdSensitivity);
         fdMessageSettingsGroup = new FormData();
     	fdMessageSettingsGroup.left = new FormAttachment(0, margin);
       	fdMessageSettingsGroup.top = new FormAttachment(wName, margin);
@@ -2263,6 +2299,8 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface
 		wPriority.setEnabled(wUsePriority.getSelection());
 		wlImportance.setEnabled(wUsePriority.getSelection());
 		wImportance.setEnabled(wUsePriority.getSelection());
+		wlSensitivity.setEnabled(wUsePriority.getSelection());
+		wSensitivity.setEnabled(wUsePriority.getSelection());
 	}
     private void SetEnabledEncoding ()
     {
@@ -2437,6 +2475,31 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface
 
 	        if (input.getReplyToAddresses() != null)
 	            wReplyToAddresses.setText(input.getReplyToAddresses());
+
+	        // Sensitivity
+	        if (input.getSensitivity()!=null)
+	        {
+	            if (input.getSensitivity().equals("personal")) 
+	            {
+	            	wSensitivity.select(1);
+	            }
+	            else if (input.getSensitivity().equals("private")) 
+	            {	
+	            	wSensitivity.select(2); 
+	            }
+	            else if (input.getSensitivity().equals("company-confidential")) 
+	            {	
+	            	wSensitivity.select(3); 
+	            }
+	    	    else 
+	    	    {	
+	    	    	wSensitivity.select(0);
+	    	    }
+	        }
+	        else
+	        {
+	        	wSensitivity.select(0);  // Default normal
+	        }
 	        
 	        if (input.getEmbeddedImages() != null)
 			{
@@ -2533,6 +2596,24 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface
         else
         {
         	input.setImportance("high");
+        }
+        
+     // Sensitivity
+        if (wSensitivity.getSelectionIndex()==1)
+        {
+        	input.setSensitivity("personal");
+        }
+        else if (wSensitivity.getSelectionIndex()==2)
+        {
+        	input.setSensitivity("private");
+        }
+        else if (wSensitivity.getSelectionIndex()==3)
+        {
+        	input.setSensitivity("company-confidential");
+        }
+        else
+        {
+        	input.setSensitivity("normal"); //default is normal
         }
                   
         // Secure Connection type

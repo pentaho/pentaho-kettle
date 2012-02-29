@@ -143,6 +143,8 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
   
   private String importance;
   
+  private String sensitivity;
+  
   private String secureConnectionType;
 
   /** The encoding to use for reading: null or empty string means system default encoding */
@@ -207,6 +209,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     retval.append("      ").append(XMLHandler.addTagValue("encoding", encoding));
     retval.append("      ").append(XMLHandler.addTagValue("priority", priority));
     retval.append("      ").append(XMLHandler.addTagValue("importance", importance));
+    retval.append("      ").append(XMLHandler.addTagValue("sensitivity", sensitivity));
     
     retval.append("      ").append(XMLHandler.addTagValue("secureconnectiontype", secureConnectionType));
     retval.append("      ").append(XMLHandler.addTagValue("replyToAddresses", replyToAddresses));
@@ -271,6 +274,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       setEncoding(XMLHandler.getTagValue(entrynode, "encoding"));
       setPriority(XMLHandler.getTagValue(entrynode, "priority"));
       setImportance(XMLHandler.getTagValue(entrynode, "importance"));
+      setSensitivity(XMLHandler.getTagValue(entrynode, "sensitivity"));
       setSecureConnectionType(XMLHandler.getTagValue(entrynode, "secureconnectiontype"));
       
 
@@ -330,6 +334,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       encoding = rep.getJobEntryAttributeString(id_jobentry, "encoding");
       priority = rep.getJobEntryAttributeString(id_jobentry, "priority");
       importance = rep.getJobEntryAttributeString(id_jobentry, "importance");
+      sensitivity = rep.getJobEntryAttributeString(id_jobentry, "sensitivity");
       includingFiles = rep.getJobEntryAttributeBoolean(id_jobentry, "include_files");
       usingAuthentication = rep.getJobEntryAttributeBoolean(id_jobentry, "use_auth");
       usingSecureAuthentication = rep.getJobEntryAttributeBoolean(id_jobentry, "use_secure_auth");
@@ -394,7 +399,7 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
       rep.saveJobEntryAttribute(id_job, getObjectId(), "encoding", encoding);
       rep.saveJobEntryAttribute(id_job, getObjectId(), "priority", priority);
       rep.saveJobEntryAttribute(id_job, getObjectId(), "importance", importance);
-      
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "sensitivity", sensitivity);
       
       rep.saveJobEntryAttribute(id_job, getObjectId(), "include_files", includingFiles);
       rep.saveJobEntryAttribute(id_job, getObjectId(), "use_auth", usingAuthentication);
@@ -777,7 +782,15 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
     return importance;
   }
   
-  /**
+  public String getSensitivity() {
+	return sensitivity;
+}
+
+public void setSensitivity(String sensitivity) {
+	this.sensitivity = sensitivity;
+}
+
+/**
    * @param priority the priority to set
    */
   public void setPriority(String priority)
@@ -872,6 +885,9 @@ public class JobEntryMail extends JobEntryBase implements Cloneable, JobEntryInt
 		 msg.setHeader("Importance", importance);
 		 //seems to be needed for MS Outlook.
 		 //where it returns a string of high /normal /low.
+		 msg.setHeader("Sensitivity", sensitivity);
+		 //Possible values are normal, personal, private, company-confidential
+		 
       }
 
       // Set Mail sender (From) 

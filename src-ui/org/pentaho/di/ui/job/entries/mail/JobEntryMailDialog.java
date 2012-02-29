@@ -207,6 +207,10 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
     private CCombo       wImportance;
     private FormData     fdlImportance, fdImportance;
 
+    private Label        wlSensitivity;
+    private CCombo       wSensitivity;
+    private FormData     fdlSensitivity, fdSensitivity;
+
 
     private Button wOK, wCancel;
 
@@ -871,6 +875,29 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
         fdImportance.top = new FormAttachment(wPriority, margin);
         fdImportance.right = new FormAttachment(100, 0);
         wImportance.setLayoutData(fdImportance);
+      	
+     // Sensitivity
+        wlSensitivity = new Label(wMessageSettingsGroup, SWT.RIGHT);
+        wlSensitivity.setText(BaseMessages.getString(PKG, "JobMail.Sensitivity.Label"));
+        props.setLook(wlSensitivity);
+        fdlSensitivity = new FormData();
+        fdlSensitivity.left = new FormAttachment(0, 0);
+        fdlSensitivity.right = new FormAttachment(middle, -margin);
+        fdlSensitivity.top = new FormAttachment(wImportance, margin);
+        wlSensitivity.setLayoutData(fdlSensitivity);
+        wSensitivity = new CCombo(wMessageSettingsGroup, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
+        wSensitivity.add(BaseMessages.getString(PKG, "JobMail.Sensitivity.normal.Label"));
+        wSensitivity.add(BaseMessages.getString(PKG, "JobMail.Sensitivity.personal.Label"));
+        wSensitivity.add(BaseMessages.getString(PKG, "JobMail.Sensitivity.private.Label"));
+        wSensitivity.add(BaseMessages.getString(PKG, "JobMail.Sensitivity.confidential.Label"));
+        wSensitivity.select(0);
+        
+        props.setLook(wSensitivity);
+        fdSensitivity = new FormData();
+        fdSensitivity.left = new FormAttachment(middle, 0);
+        fdSensitivity.top = new FormAttachment(wImportance, margin);
+        fdSensitivity.right = new FormAttachment(100, 0);
+        wSensitivity.setLayoutData(fdSensitivity);
         
         
         fdMessageSettingsGroup = new FormData();
@@ -1418,6 +1445,8 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
 		wPriority.setEnabled(wUsePriority.getSelection());
 		wlImportance.setEnabled(wUsePriority.getSelection());
 		wImportance.setEnabled(wUsePriority.getSelection());
+		wlSensitivity.setEnabled(wUsePriority.getSelection());
+		wSensitivity.setEnabled(wUsePriority.getSelection());
 	}
     private void SetEnabledEncoding ()
     {
@@ -1592,6 +1621,33 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
         
         if (jobEntry.getReplyToAddresses() != null)
             wReplyToAddress.setText(jobEntry.getReplyToAddresses());
+        
+        // Sensitivity
+        if (jobEntry.getSensitivity()!=null)
+        {
+            if (jobEntry.getSensitivity().equals("personal")) 
+            {
+            	wSensitivity.select(1);
+            }
+            else if (jobEntry.getSensitivity().equals("private")) 
+            {	
+            	wSensitivity.select(2); 
+            }
+            else if (jobEntry.getSensitivity().equals("company-confidential")) 
+            {	
+            	wSensitivity.select(3); 
+            }
+    	    else 
+    	    {	
+    	    	wSensitivity.select(0);
+    	    }
+        }
+        else
+        {
+        	wSensitivity.select(0);  // Default normal
+        }
+                
+        
         if (jobEntry.embeddedimages != null)
 		{
 			for (int i = 0; i < jobEntry.embeddedimages.length; i++)
@@ -1682,7 +1738,27 @@ public class JobEntryMailDialog extends JobEntryDialog implements JobEntryDialog
         {
         	jobEntry.setImportance("high");
         }
-                  
+
+
+        // Sensitivity
+        if (wSensitivity.getSelectionIndex()==1)
+        {
+        	jobEntry.setSensitivity("personal");
+        }
+        else if (wSensitivity.getSelectionIndex()==2)
+        {
+        	jobEntry.setSensitivity("private");
+        }
+        else if (wSensitivity.getSelectionIndex()==3)
+        {
+        	jobEntry.setSensitivity("company-confidential");
+        }
+        else
+        {
+        	jobEntry.setSensitivity("normal"); //default is normal
+        }
+
+        
         // Secure Connection type
         jobEntry.setSecureConnectionType(wSecureConnectionType.getText());
         

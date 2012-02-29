@@ -127,6 +127,8 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 	  private String priority;
 	  
 	  private String importance;
+
+	  private String sensitivity;
 	  
 	  private String secureconnectiontype;
 	  
@@ -196,6 +198,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
       setEncoding(XMLHandler.getTagValue(stepnode, "encoding"));
       setPriority(XMLHandler.getTagValue(stepnode, "priority"));
       setImportance(XMLHandler.getTagValue(stepnode, "importance"));
+      setSensitivity(XMLHandler.getTagValue(stepnode, "sensitivity"));
       setSecureConnectionType(XMLHandler.getTagValue(stepnode, "secureconnectiontype"));
       setZipFiles("Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "zip_files")));
       setZipFilename(XMLHandler.getTagValue(stepnode, "zip_name"));
@@ -267,6 +270,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 	    retval.append("    " + XMLHandler.addTagValue("encoding", this.encoding));
 	    retval.append("    " + XMLHandler.addTagValue("priority", this.priority));
 	    retval.append("    " + XMLHandler.addTagValue("importance", this.importance));
+	    retval.append("    " + XMLHandler.addTagValue("sensitivity", this.sensitivity));
 	    retval.append("    " + XMLHandler.addTagValue("secureconnectiontype", this.secureconnectiontype));
 	    
 	    retval.append("      <embeddedimages>").append(Const.CR); //$NON-NLS-1$
@@ -741,7 +745,15 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 	    return this.importance;
 	  }
 	  
-	  /**
+	  public String getSensitivity() {
+		return sensitivity;
+	}
+
+	public void setSensitivity(String sensitivity) {
+		this.sensitivity = sensitivity;
+	}
+
+	/**
 	   * @param priority the priority to set
 	   */
 	  public void setPriority(String priorityin)
@@ -786,6 +798,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 		     this.encoding = rep.getStepAttributeString(id_step, "encoding");
 		     this.priority = rep.getStepAttributeString(id_step, "priority");
 		     this.importance = rep.getStepAttributeString(id_step, "importance");
+		     this.sensitivity = rep.getStepAttributeString(id_step, "sensitivity");
 
 		     this.includingFiles = rep.getStepAttributeBoolean(id_step, "include_files");
 
@@ -856,7 +869,7 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 	      rep.saveStepAttribute(id_transformation, id_step, "encoding", encoding);
 	      rep.saveStepAttribute(id_transformation, id_step, "priority", priority);
 	      rep.saveStepAttribute(id_transformation, id_step, "importance", importance);
-	      
+	      rep.saveStepAttribute(id_transformation, id_step, "sensitivity", sensitivity);
 	      
 	      rep.saveStepAttribute(id_transformation, id_step, "include_files", includingFiles);
 	      rep.saveStepAttribute(id_transformation, id_step, "use_auth", usingAuthentication);
