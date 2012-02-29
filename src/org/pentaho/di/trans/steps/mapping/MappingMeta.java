@@ -149,11 +149,6 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface, HasR
       inputMappings.clear();
       outputMappings.clear();
       
-      String multiInput = XMLHandler.getTagValue(stepnode, "allow_multiple_input");
-      allowingMultipleInputs = Const.isEmpty(multiInput) ? inputMappings.size()>1 : "Y".equalsIgnoreCase(multiInput);
-      String multiOutput = XMLHandler.getTagValue(stepnode, "allow_multiple_output");
-      allowingMultipleOutputs = Const.isEmpty(multiOutput) ? outputMappings.size()>1 : "Y".equalsIgnoreCase(multiOutput);
-      
       if (mappingsNode != null) {
         // Read all the input mapping definitions...
         //
@@ -221,6 +216,12 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface, HasR
         mappingParameters = new MappingParameters();
         
       }
+      
+      String multiInput = XMLHandler.getTagValue(stepnode, "allow_multiple_input");
+      allowingMultipleInputs = Const.isEmpty(multiInput) ? inputMappings.size()>1 : "Y".equalsIgnoreCase(multiInput);
+      String multiOutput = XMLHandler.getTagValue(stepnode, "allow_multiple_output");
+      allowingMultipleOutputs = Const.isEmpty(multiOutput) ? outputMappings.size()>1 : "Y".equalsIgnoreCase(multiOutput);
+      
     } catch (Exception e) {
       throw new KettleXMLException(BaseMessages.getString(PKG, "MappingMeta.Exception.ErrorLoadingTransformationStepFromXML"), e); //$NON-NLS-1$
     }
