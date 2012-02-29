@@ -25,6 +25,11 @@
     <classname>org.pentaho.di.core.database.DerbyDatabaseMeta</classname>
   </database-type>                                                       
 
+  <database-type id="EXASOL4">
+    <description>Exasol 4</description>
+    <classname>org.pentaho.di.core.database.Exasol4DatabaseMeta</classname>
+  </database-type>                                                         
+
   <database-type id="EXTENDB">
     <description>ExtenDB</description>
     <classname>org.pentaho.di.core.database.ExtenDBDatabaseMeta</classname>
