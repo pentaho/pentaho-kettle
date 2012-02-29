@@ -89,6 +89,7 @@
 	  	<echo>Generating parser java classes for the  edi2xml step...</echo>
 		<java classname="org.antlr.Tool" fork="true" failonerror="true">
 			<classpath refid="cp-kettle-core" />
+			<arg value="-make"/>
 			<arg value="-verbose"/>
 			<arg value="-o"/>
 			<arg path="src/org/pentaho/di/trans/steps/edi2xml/grammar"/>
