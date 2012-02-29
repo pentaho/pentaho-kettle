@@ -25,7 +25,7 @@ package org.pentaho.di.job.entries.ftpput;
 import java.io.IOException;
 import java.text.ParseException;
 
-import org.apache.log4j.Logger;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.i18n.BaseMessages;
 
 import com.enterprisedt.net.ftp.FTPClient;
@@ -53,14 +53,16 @@ public class PDIFTPClient extends FTPClient {
   private boolean sizeSupported = true;
 
   private static Class<?> PKG = PDIFTPClient.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
-  private static Logger log4j = Logger.getLogger(PDIFTPClient.class);
+  private LogChannelInterface log;
 
-  public PDIFTPClient() {
-    super();
-    log4j.info(BaseMessages.getString(PKG, "PDIFTPClient.DEBUG.Using.Overridden.FTPClient")); //$NON-NLS-1$
-  }
   
-  /*
+  public PDIFTPClient(LogChannelInterface log) {
+	  super();
+	  this.log = log;
+	  log.logBasic(BaseMessages.getString(PKG, "PDIFTPClient.DEBUG.Using.Overridden.FTPClient")); //$NON-NLS-1$
+  }
+
+/*
    *  (non-Javadoc)
    * @see com.enterprisedt.net.ftp.FTPClientInterface#exists(java.lang.String)
    */
@@ -77,7 +79,7 @@ public class PDIFTPClient extends FTPClient {
         return false;
 
       sizeSupported = false;
-      log4j.debug("SIZE not supported - trying MDTM"); //$NON-NLS-1$
+      log.logDebug("SIZE not supported - trying MDTM"); //$NON-NLS-1$
     }
 
     // then try the MDTM command
@@ -90,7 +92,7 @@ public class PDIFTPClient extends FTPClient {
         return false;
 
       mdtmSupported = false;
-      log4j.debug("MDTM not supported - trying LIST"); //$NON-NLS-1$
+      log.logDebug("MDTM not supported - trying LIST"); //$NON-NLS-1$
     }
 
     try {
@@ -102,7 +104,7 @@ public class PDIFTPClient extends FTPClient {
       }
       return false;
     } catch (ParseException ex) {
-      log4j.warn(ex.getMessage());
+      log.logBasic(ex.getMessage());
       return false;
     }
   }
