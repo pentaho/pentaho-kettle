@@ -87,7 +87,9 @@ public class MondrianInputDialog extends BaseStepDialog implements StepDialogInt
 
     private Label        wlVariables;
     private Button       wVariables;
-    private FormData     fdlVariables, fdVariables; 
+    private FormData     fdlVariables, fdVariables;
+
+	private TextVar wRole; 
 
 	public MondrianInputDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
@@ -159,7 +161,26 @@ public class MondrianInputDialog extends BaseStepDialog implements StepDialogInt
 		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wPreview, wCancel }, margin, null);
-
+		
+		// Mondrian Role
+		Label wlRole = new Label(shell, SWT.RIGHT);
+		wlRole.setText(BaseMessages.getString(PKG, "MondrianInputDialog.Role")); //$NON-NLS-1$
+ 		props.setLook(wlRole);
+		FormData fdlRole = new FormData();
+		fdlRole.left = new FormAttachment(0, 0);
+		fdlRole.right= new FormAttachment(middle, -margin);
+		fdlRole.bottom = new FormAttachment(wOK, -2*margin);
+		wlRole.setLayoutData(fdlRole);
+		wRole=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wRole);
+		wRole.addModifyListener(lsMod);
+		wRole.setToolTipText(BaseMessages.getString(PKG, "MondrianInputDialog.Role.Tooltip"));
+		FormData fdRole = new FormData();
+		fdRole.left = new FormAttachment(middle, 0);
+		fdRole.right= new FormAttachment(100, -margin);
+		fdRole.bottom = new FormAttachment(wOK, -2*margin);
+		wRole.setLayoutData(fdRole);		
+		
 		// Catalog location...
 		//
 		wbbFilename=new Button(shell, SWT.PUSH| SWT.CENTER);
@@ -168,7 +189,7 @@ public class MondrianInputDialog extends BaseStepDialog implements StepDialogInt
         wbbFilename.setToolTipText(BaseMessages.getString("System.Tooltip.BrowseForFileOrDirAndAdd"));
         FormData fdbFilename = new FormData();
         fdbFilename.right= new FormAttachment(100, 0);
-        fdbFilename.bottom = new FormAttachment(wOK, -2*margin);
+        fdbFilename.bottom = new FormAttachment(wRole, -2*margin);
 		wbbFilename.setLayoutData(fdbFilename);
 		
 		wlCatalog=new Label(shell, SWT.RIGHT);
@@ -177,7 +198,7 @@ public class MondrianInputDialog extends BaseStepDialog implements StepDialogInt
 		fdlCatalog=new FormData();
 		fdlCatalog.left = new FormAttachment(0, 0);
 		fdlCatalog.right= new FormAttachment(middle, -margin);
-		fdlCatalog.bottom = new FormAttachment(wOK, -2*margin);
+		fdlCatalog.bottom = new FormAttachment(wRole, -2*margin);
 		wlCatalog.setLayoutData(fdlCatalog);
 		wCatalog=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wCatalog);
@@ -185,7 +206,7 @@ public class MondrianInputDialog extends BaseStepDialog implements StepDialogInt
 		fdCatalog=new FormData();
 		fdCatalog.left = new FormAttachment(middle, 0);
 		fdCatalog.right= new FormAttachment(wbbFilename, -margin);
-		fdCatalog.bottom = new FormAttachment(wOK, -2*margin);
+		fdCatalog.bottom = new FormAttachment(wRole, -2*margin);
 		wCatalog.setLayoutData(fdCatalog);
 		
         // Replace variables in MDX?
@@ -356,6 +377,7 @@ public class MondrianInputDialog extends BaseStepDialog implements StepDialogInt
 		if (input.getSQL() != null) wSQL.setText(input.getSQL());
 		if (input.getDatabaseMeta() != null) wConnection.setText(input.getDatabaseMeta().getName());
 		if (input.getCatalog() != null) wCatalog.setText(input.getCatalog());
+		if (input.getRole() != null) wRole.setText(input.getRole());
         wVariables.setSelection(input.isVariableReplacementActive());
         
 		wStepname.selectAll();
@@ -374,6 +396,7 @@ public class MondrianInputDialog extends BaseStepDialog implements StepDialogInt
         meta.setDatabaseMeta( transMeta.findDatabase(wConnection.getText()) );
         meta.setCatalog( wCatalog.getText() );
         meta.setVariableReplacementActive(wVariables.getSelection());
+        meta.setRole(wRole.getText());
     }
     
 	private void ok()

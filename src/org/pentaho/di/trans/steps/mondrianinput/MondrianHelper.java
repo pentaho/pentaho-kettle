@@ -77,6 +77,7 @@ public class MondrianHelper {
 	private Result result;
 	private Query query;
 	private VariableSpace space;
+	private String role;
 	
     private List<List<Object>> rows;
     private List<String> headings;
@@ -93,12 +94,18 @@ public class MondrianHelper {
     public void openQuery() throws KettleDatabaseException {
 
     	connection = null;
-    	
+		String realRole = space.environmentSubstitute(role);
+
 		if (databaseMeta.getAccessType() == DatabaseMeta.TYPE_ACCESS_JNDI){
 			DataSource dataSource = DataSourceProviderFactory.getDataSourceProviderInterface().getNamedDataSource(databaseMeta.getDatabaseName());
 			mondrian.olap.Util.PropertyList propList = new mondrian.olap.Util.PropertyList();
 			propList.put("Provider", "mondrian");
 			propList.put("Catalog", space.environmentSubstitute(catalog));
+			
+			if (!Const.isEmpty(realRole)){
+				propList.put("Role", realRole);
+			}
+			
 			connection = DriverManager.getConnection(propList, null, dataSource);
 		}
 		else{
@@ -114,6 +121,11 @@ public class MondrianHelper {
 	    	if (!Const.isEmpty(databaseMeta.getPassword())) {
 	    		connectString+="JdbcPassword="+space.environmentSubstitute(databaseMeta.getPassword())+";";
 	    	}
+	    	
+			if (!Const.isEmpty(realRole)){
+				connectString+="Role="+realRole+";";
+			}
+	    	
 	    	connection = DriverManager.getConnection(connectString, null);
 			
 		}
@@ -482,6 +494,13 @@ public class MondrianHelper {
 	public List<String> getHeadings() {
 		return headings;
 	}
+
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
+	}
 }
 
-// End Foo.java

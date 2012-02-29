@@ -64,6 +64,8 @@ public class MondrianInputMeta extends BaseStepMeta implements StepMetaInterface
 	private DatabaseMeta databaseMeta;
 	private String sql;
 	private String catalog;
+	private String role;
+	
     private boolean variableReplacementActive;
     public MondrianInputMeta()
 	{
@@ -139,6 +141,7 @@ public class MondrianInputMeta extends BaseStepMeta implements StepMetaInterface
 			databaseMeta              = DatabaseMeta.findDatabase(databases, XMLHandler.getTagValue(stepnode, "connection"));
 			sql                       = XMLHandler.getTagValue(stepnode, "sql");
 			catalog                   = XMLHandler.getTagValue(stepnode, "catalog");
+			role                      = XMLHandler.getTagValue(stepnode, "role");
             variableReplacementActive = "Y".equals(XMLHandler.getTagValue(stepnode, "variables_active"));
 		}
 		catch(Exception e)
@@ -201,6 +204,7 @@ public class MondrianInputMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("    "+XMLHandler.addTagValue("connection", databaseMeta==null?"":databaseMeta.getName()));
 		retval.append("    "+XMLHandler.addTagValue("sql",        sql));
 		retval.append("    "+XMLHandler.addTagValue("catalog",    catalog));
+		retval.append("    "+XMLHandler.addTagValue("role",    role));
         retval.append("    "+XMLHandler.addTagValue("variables_active",   variableReplacementActive));
         
 		return retval.toString();
@@ -215,6 +219,7 @@ public class MondrianInputMeta extends BaseStepMeta implements StepMetaInterface
 			
 			sql                       =      rep.getStepAttributeString (id_step, "sql");
 			catalog                   =      rep.getStepAttributeString(id_step, "catalog");
+			role                      =      rep.getStepAttributeString(id_step, "role");
             variableReplacementActive =      rep.getStepAttributeBoolean(id_step, "variables_active");
 		}
 		catch(Exception e)
@@ -231,6 +236,7 @@ public class MondrianInputMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveDatabaseMetaStepAttribute(id_transformation, id_step, "id_connection", databaseMeta);
 			rep.saveStepAttribute(id_transformation, id_step, "sql",              sql);
 			rep.saveStepAttribute(id_transformation, id_step, "catalog",            catalog);
+			rep.saveStepAttribute(id_transformation, id_step, "role",            role);
             rep.saveStepAttribute(id_transformation, id_step, "variables_active", variableReplacementActive);
 			
 			// Also, save the step-database relationship!
@@ -301,6 +307,14 @@ public class MondrianInputMeta extends BaseStepMeta implements StepMetaInterface
 		this.catalog = catalog;
 	}
 	
+	public String getRole() {
+		return role;
+	}
+
+	public void setRole(String role) {
+		this.role = role;
+	}
+
 	/**
 	 * Since the exported transformation that runs this will reside in a ZIP file, we can't reference files relatively.
 	 * So what this does is turn the name of files into absolute paths OR it simply includes the resource in the ZIP file.
