@@ -159,7 +159,7 @@ public class RegexEval extends BaseStep implements StepInterface {
 			Matcher m = data.pattern.matcher(fieldValue);
 			boolean isMatch = m.matches();
 
-			if (data.positions.length != m.groupCount()) {
+			if (meta.isAllowCaptureGroupsFlagSet() && data.positions.length != m.groupCount()) {
 				// Runtime exception case. The number of capture groups in the
 				// regex doesn't match the number of fields.
 				logError(BaseMessages.getString(PKG, "RegexEval.Log.ErrorCaptureGroupFieldsMismatch", String.valueOf(m.groupCount()), String.valueOf(data.positions.length)));
