@@ -287,8 +287,6 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
 	private Point[]											previous_step_locations;
 	private Point[]											previous_note_locations;
 	private JobEntryCopy									currentEntry;
-
-	private XulDomContainer xulDomContainer;
 	
 public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
     super(par, SWT.NONE);

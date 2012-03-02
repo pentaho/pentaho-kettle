@@ -331,9 +331,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   private Map<StepMeta, DelayTimer> delayTimers;
 
   private StepMeta showTargetStreamsStep;
-  
-  private XulDomContainer xulDomContainer;
-  
+    
   Timer redrawTimer;
 
   public void setCurrentNote(NotePadMeta ni) {
@@ -4293,7 +4291,4 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     location.x = location.x + nodeMass*velocity.dx*velocity.dx;
     location.y = location.y + nodeMass*velocity.dy*velocity.dy;
   }
-
-
-
 }

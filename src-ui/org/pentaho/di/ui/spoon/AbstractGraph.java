@@ -22,12 +22,16 @@
 
 package org.pentaho.di.ui.spoon;
 
+import java.util.List;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.Point;
+import org.pentaho.ui.xul.XulComponent;
+import org.pentaho.ui.xul.XulDomContainer;
 
 /**
  * The beginnings of a common graph object, used by JobGraph and TransGraph to share common behaviors.
@@ -45,6 +49,8 @@ public abstract class AbstractGraph extends Composite {
   protected float magnification = 1.0f;
   
   protected Combo zoomLabel;
+  
+  protected XulDomContainer xulDomContainer;
   
   public AbstractGraph(Composite parent, int style) {
     super(parent, style);
@@ -176,5 +182,13 @@ public abstract class AbstractGraph extends Composite {
   
   public int showChangedWarning() throws KettleException {
     return showChangedWarning(null);
+  }
+  
+  public void dispose() {
+     super.dispose();
+     List<XulComponent> pops = xulDomContainer.getDocumentRoot().getElementsByTagName("menupopup");
+     for(XulComponent pop : pops){
+       ((Menu) pop.getManagedObject()).dispose();
+     }
   }
 }
