@@ -55,11 +55,14 @@ import org.w3c.dom.Node;
     ,"JobCategory.Category.Conditions"
     ,"JobCategory.Category.Scripting"
     ,"JobCategory.Category.BulkLoading"
+    ,"JobCategory.Category.BigData"
+    ,"JobCategory.Category.DataQuality"
     ,"JobCategory.Category.XML"
     ,"JobCategory.Category.Utility"
     ,"JobCategory.Category.Repository"
     ,"JobCategory.Category.FileTransfer"
     ,"JobCategory.Category.FileEncryption"
+    ,"JobCategory.Category.Palo"
     ,"JobCategory.Category.Experimental"
 },
    i18nPackageClass = JobMeta.class)

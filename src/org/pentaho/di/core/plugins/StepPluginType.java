@@ -46,8 +46,9 @@ import org.w3c.dom.Node;
  * @author matt
  *
  */
-@PluginTypeCategoriesOrder(getNaturalCategoriesOrder={"BaseStep.Category.Input",
-    "BaseStep.Category.Output"
+@PluginTypeCategoriesOrder(getNaturalCategoriesOrder={
+    "BaseStep.Category.Input"
+   ,"BaseStep.Category.Output"
    ,"BaseStep.Category.Transform"
    ,"BaseStep.Category.Utility"
    ,"BaseStep.Category.Flow"
@@ -57,6 +58,8 @@ import org.w3c.dom.Node;
    ,"BaseStep.Category.DataWarehouse"
    ,"BaseStep.Category.Validation"
    ,"BaseStep.Category.Statistics"
+   ,"BaseStep.Category.BigData"
+   ,"BaseStep.Category.DataQuality"
    ,"BaseStep.Category.Palo"
    ,"BaseStep.Category.OpenERP"
    ,"BaseStep.Category.Job"
