@@ -41,8 +41,6 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
-
-
 /**
  * Read data from POP3/IMAP server and input data to the next steps.
  * 
@@ -265,10 +263,16 @@ public class MailInput extends BaseStep implements StepInterface
 						r[index]=data.mailConn.getMessageBody();
 						break;
 					case MailInputField.COLUMN_RECEIVED_DATE:
-						r[index]= new Date(data.mailConn.getMessage().getReceivedDate().getTime());
+					   Date receivedDate = data.mailConn.getMessage().getReceivedDate();
+					   if (receivedDate != null) {
+   						r[index]= new Date(receivedDate.getTime());
+					   }
+					   else {
+					      r[index] = null;
+					   }
 						break;
 					case MailInputField.COLUMN_SENT_DATE:
-						r[index]= new Date(data.mailConn.getMessage().getReceivedDate().getTime());
+						r[index]= new Date(data.mailConn.getMessage().getSentDate().getTime());
 						break;
 					case MailInputField.COLUMN_CONTENT_TYPE:
 						r[index]=data.mailConn.getMessage().getContentType();
@@ -437,7 +441,7 @@ public class MailInput extends BaseStep implements StepInterface
 				}
 			}
 			data.usePOP=meta.getProtocol().equals(MailConnectionMeta.PROTOCOL_STRING_POP3);
-			
+
 			String realserver=environmentSubstitute(meta.getServerName());
 			String realusername=environmentSubstitute(meta.getUserName());
 			String realpassword=environmentSubstitute(meta.getPassword());  
