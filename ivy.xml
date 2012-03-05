@@ -58,6 +58,9 @@
     <dependency org="com.google.guava" name="guava" rev="${dependency.guava.revision}" transitive="false" conf="default->default"  changing="false"/>
     <dependency org="commons-lang" name="commons-lang" rev="${dependency.commons-lang.revision}" transitive="false" conf="default->default"  changing="false"/>
     <dependency org="org.mongodb" name="mongo-java-driver" rev="${dependency.mongo-driver.revision}" transitive="false" conf="default->default"  changing="false"/>
+    <dependency org="org.apache.avro" name="avro" rev="${dependency.avro.revision}" transitive="false" conf="default->default"  changing="false"/>
+    <dependency org="org.codehaus.jackson" name="jackson-core-asl" rev="${dependency.jackson-core-asl.revision}" transitive="false" conf="default->default"  changing="false"/>
+    <dependency org="org.codehaus.jackson" name="jackson-mapper-asl" rev="${dependency.jackson-mapper-asl.revision}" transitive="false" conf="default->default"  changing="false"/>
 
 
 
