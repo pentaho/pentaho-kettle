@@ -265,10 +265,16 @@ public class MailInput extends BaseStep implements StepInterface
 						r[index]=data.mailConn.getMessageBody();
 						break;
 					case MailInputField.COLUMN_RECEIVED_DATE:
-						r[index]= new Date(data.mailConn.getMessage().getReceivedDate().getTime());
+					   Date receivedDate = data.mailConn.getMessage().getReceivedDate();
+					   if (receivedDate != null) {
+   						r[index]= new Date(receivedDate.getTime());
+					   }
+					   else {
+					      r[index] = null;
+					   }
 						break;
 					case MailInputField.COLUMN_SENT_DATE:
-						r[index]= new Date(data.mailConn.getMessage().getReceivedDate().getTime());
+						r[index]= new Date(data.mailConn.getMessage().getSentDate().getTime());
 						break;
 					case MailInputField.COLUMN_CONTENT_TYPE:
 						r[index]=data.mailConn.getMessage().getContentType();
