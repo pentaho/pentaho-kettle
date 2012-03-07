@@ -34,6 +34,8 @@ import org.apache.avro.file.DataFileStream;
 import org.apache.avro.generic.GenericData;
 import org.apache.avro.generic.GenericDatumReader;
 import org.apache.avro.io.BinaryDecoder;
+import org.apache.avro.io.Decoder;
+import org.apache.avro.io.JsonDecoder;
 import org.apache.avro.io.DecoderFactory;
 import org.apache.avro.util.Utf8;
 import org.apache.commons.vfs.FileObject;
@@ -69,7 +71,7 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
   
   /** For reading from files of just serialized objects */
   protected GenericDatumReader m_datumReader;
-  protected BinaryDecoder m_decoder;
+  protected Decoder m_decoder;
   protected InputStream m_inStream;
   
   /** The schema used to write the file - will be null if the file is not a container file */
@@ -282,7 +284,7 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
   }   
   
   public void establishFileType(FileObject avroFile, String readerSchemaFile, 
-      List<AvroInputMeta.AvroField> fields) 
+      List<AvroInputMeta.AvroField> fields, boolean jsonEncoded) 
     throws KettleException {
     
     // four possibilities:
@@ -304,47 +306,67 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
     try {
       m_inStream = KettleVFS.getInputStream(avroFile);
     } catch (FileSystemException e1) {
-      throw new KettleException("Unable to open avro file", e1);
+      throw new KettleException(BaseMessages.getString(AvroInputMeta.PKG,
+          "AvroInput.Error.UnableToOpenAvroFile"), e1);
     }
     
     // load and handle reader schema....
     if (!Const.isEmpty(readerSchemaFile)) {
       m_schemaToUse = loadSchema(readerSchemaFile);
+    } else if (jsonEncoded) {
+      throw new KettleException(BaseMessages.getString(AvroInputMeta.PKG, 
+          "AvroInput.Error.NoSchemaProvided"));
     }
     
     m_datumReader = new GenericDatumReader();
-    
-    try {
-      m_containerReader = new DataFileStream(m_inStream, m_datumReader);
-      m_writerSchema = m_containerReader.getSchema();
-      
-      // resolve reader/writer schemas
-      if (!Const.isEmpty(readerSchemaFile)) {
-        // map any aliases for schema migration
-        m_schemaToUse = Schema.applyAliases(m_writerSchema, m_schemaToUse);
-      } else {      
-        m_schemaToUse = m_writerSchema;
-      }           
-    } catch (IOException e) {
-      // doesn't look like a container file....
+    boolean nonContainer = false;
+
+    if (!jsonEncoded) {
       try {
+        m_containerReader = new DataFileStream(m_inStream, m_datumReader);
+        m_writerSchema = m_containerReader.getSchema();
+
+        // resolve reader/writer schemas
+        if (!Const.isEmpty(readerSchemaFile)) {
+          // map any aliases for schema migration
+          m_schemaToUse = Schema.applyAliases(m_writerSchema, m_schemaToUse);
+        } else {      
+          m_schemaToUse = m_writerSchema;
+        }           
+      } catch (IOException e) {
+        // doesn't look like a container file....
+        nonContainer = true;
         try {
-          m_inStream.close();
-        } catch (IOException e1) { } 
-        m_inStream = KettleVFS.getInputStream(avroFile);
-      } catch (FileSystemException e1) {
-        throw new KettleException(BaseMessages.getString(AvroInputMeta.PKG, 
-        "AvroInputDialog.Error.KettleFileException"), e1);        
+          try {
+            m_inStream.close();
+          } catch (IOException e1) { } 
+          m_inStream = KettleVFS.getInputStream(avroFile);
+        } catch (FileSystemException e1) {
+          throw new KettleException(BaseMessages.getString(AvroInputMeta.PKG, 
+          "AvroInputDialog.Error.KettleFileException"), e1);        
+        }
+
+        m_containerReader = null;      
       }
-      
-      m_containerReader = null;
-      
+    }
+    
+    if (nonContainer || jsonEncoded) {
       if (Const.isEmpty(readerSchemaFile)) {
         throw new KettleException(BaseMessages.getString(AvroInputMeta.PKG, "AvroInput.Error.NoSchema"));        
       }
       
       DecoderFactory factory = new DecoderFactory();
-      m_decoder = factory.binaryDecoder(m_inStream, null);
+      if (jsonEncoded) {
+        try {
+          m_decoder = factory.jsonDecoder(m_schemaToUse, m_inStream);
+        } catch (IOException e) {
+          // TODO Auto-generated catch block
+          throw new KettleException("A problem occurred while trying to establish a " +
+          		"decoder for a Json encoded avro file");
+        }
+      } else {
+        m_decoder = factory.binaryDecoder(m_inStream, null);
+      }
       m_datumReader = new GenericDatumReader(m_schemaToUse);
       // System.out.println("Using schema: " + m_schemaToUse.toString());
     }
@@ -420,9 +442,9 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
     } else {
       // non-container file
       try {
-        if (m_decoder.isEnd()) {
+        /*if (m_decoder.isEnd()) {
           return null;
-        }
+        } */
         if (m_topLevelRecord != null) {
           m_datumReader.read(m_topLevelRecord, m_decoder);
           System.out.println(m_topLevelRecord);

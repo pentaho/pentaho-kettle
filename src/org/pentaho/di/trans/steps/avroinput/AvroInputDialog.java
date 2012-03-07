@@ -91,6 +91,8 @@ public class AvroInputDialog extends BaseStepDialog implements
   private TextVar m_schemaFilenameText;
   private Button m_schemaFileBrowse;
   
+  private Button m_jsonEncodedBut;
+  
   private Button m_getFields;
   private TableView m_fieldsView;
   
@@ -315,6 +317,32 @@ public class AvroInputDialog extends BaseStepDialog implements
     fd.right = new FormAttachment(m_schemaFileBrowse, -margin);
     m_schemaFilenameText.setLayoutData(fd);
     
+    // json encoded check box
+    Label jsonL = new Label(shell, SWT.RIGHT);
+    props.setLook(jsonL);
+    jsonL.setText(BaseMessages.getString(PKG, 
+        "AvroInputDialog.JsonEncoded.Label"));
+    fd = new FormData();
+    fd.left = new FormAttachment(0, 0);
+    fd.top = new FormAttachment(m_schemaFilenameText, margin);
+    fd.right = new FormAttachment(middle, -margin);
+    jsonL.setLayoutData(fd);
+    jsonL.setToolTipText(BaseMessages.getString(PKG, "AvroInputDialog.JsonEncoded.TipText"));
+    
+    m_jsonEncodedBut = new Button(shell, SWT.CHECK);
+    props.setLook(m_jsonEncodedBut);
+    fd = new FormData();
+    fd.right = new FormAttachment(100, 0);
+    fd.left = new FormAttachment(middle, 0);
+    fd.top = new FormAttachment(m_schemaFilenameText, margin);
+    m_jsonEncodedBut.setLayoutData(fd);
+    m_jsonEncodedBut.addSelectionListener(new SelectionAdapter() {
+      public void widgetSelected(SelectionEvent e) {
+        m_currentMeta.setChanged();
+      }
+    });
+    
+    
     // Buttons inherited from BaseStepDialog
     wOK = new Button(shell, SWT.PUSH);
     wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
@@ -372,7 +400,7 @@ public class AvroInputDialog extends BaseStepDialog implements
         props);
     
     fd = new FormData();
-    fd.top = new FormAttachment(m_schemaFilenameText, margin * 2);
+    fd.top = new FormAttachment(m_jsonEncodedBut, margin * 2);
     fd.bottom = new FormAttachment(m_getFields, -margin * 2);
     fd.left = new FormAttachment(0, 0);
     fd.right = new FormAttachment(100, 0);
@@ -451,6 +479,7 @@ public class AvroInputDialog extends BaseStepDialog implements
   protected void setMeta(AvroInputMeta avroMeta) {
     avroMeta.setFilename(m_avroFilenameText.getText());
     avroMeta.setSchemaFilename(m_schemaFilenameText.getText());
+    avroMeta.setAvroFileIsJsonEncoded(m_jsonEncodedBut.getSelection());
     
     int numNonEmpty = m_fieldsView.nrNonEmpty();
     if (numNonEmpty > 0) {
@@ -544,6 +573,8 @@ public class AvroInputDialog extends BaseStepDialog implements
     if (!Const.isEmpty(m_currentMeta.getSchemaFilename())) {
       m_schemaFilenameText.setText(m_currentMeta.getSchemaFilename());
     }
+    
+    m_jsonEncodedBut.setSelection(m_currentMeta.getAvroFileIsJsonEncoded());
     
     // fields
     if (m_currentMeta.getAvroFields() != null && 
