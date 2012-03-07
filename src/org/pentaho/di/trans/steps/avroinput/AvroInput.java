@@ -83,7 +83,8 @@ public class AvroInput extends BaseStep implements StepInterface {
       String readerSchema = m_meta.getSchemaFilename();
       readerSchema = environmentSubstitute(readerSchema);
 
-      m_data.establishFileType(fileObject, readerSchema, m_meta.getAvroFields());
+      m_data.establishFileType(fileObject, readerSchema, m_meta.getAvroFields(), 
+          m_meta.getAvroFileIsJsonEncoded());
       
       // setup the output row meta
       m_data.setOutputRowMeta(new RowMeta());

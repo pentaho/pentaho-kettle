@@ -362,6 +362,9 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
   /** The schema to use if not reading from a container file */
   protected String m_schemaFilename = "";
   
+  /** True if the user's avro file is json encoded rather than binary */
+  protected boolean m_isJsonEncoded = false;
+  
   /** The fields to emit */
   protected List<AvroField> m_fields;
   
@@ -399,6 +402,26 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
    */
   public String getSchemaFilename() {
     return m_schemaFilename;
+  }
+  
+  /**
+   * Get whether the avro file to read is json encoded rather 
+   * than binary
+   * 
+   * @return true if the file to read is json encoded
+   */
+  public boolean getAvroFileIsJsonEncoded() {
+    return m_isJsonEncoded;
+  }
+  
+  /**
+   * Set whether the avro file to read is json encoded rather 
+   * than binary
+   * 
+   * @param j true if the file to read is json encoded
+   */
+  public void setAvroFileIsJsonEncoded(boolean j) {
+    m_isJsonEncoded = j;
   }
   
   /**
@@ -523,6 +546,9 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
           m_schemaFilename));
     }
     
+    retval.append("\n    ").append(XMLHandler.addTagValue("json_encoded", 
+        m_isJsonEncoded));
+    
     if (m_fields != null && m_fields.size() > 0) {
       retval.append("\n    ").append(XMLHandler.openTag("avro_fields"));
       
@@ -547,6 +573,11 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
       Map<String, Counter> counters) throws KettleXMLException {
     m_filename = XMLHandler.getTagValue(stepnode, "avro_filename");
     m_schemaFilename = XMLHandler.getTagValue(stepnode, "schema_filename");
+    
+    String jsonEnc = XMLHandler.getTagValue(stepnode, "json_encoded");
+    if (!Const.isEmpty(jsonEnc)) {
+      m_isJsonEncoded = jsonEnc.equalsIgnoreCase("Y");
+    }
     
     Node fields = XMLHandler.getSubNode(stepnode, "avro_fields");
     if (fields != null && XMLHandler.countNodes(fields, "avro_field") > 0) {
@@ -576,6 +607,8 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
     
     m_filename = rep.getStepAttributeString(id_step, 0, "avro_filename");
     m_schemaFilename = rep.getStepAttributeString(id_step, 0, "schema_filename");
+    
+    m_isJsonEncoded = rep.getStepAttributeBoolean(id_step, 0, "json_encoded");
     
     int nrfields = rep.countNrStepAttributes(id_step, "field_name");
     if (nrfields > 0) {
@@ -612,6 +645,8 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute(id_transformation, id_step, 0, "schema_filename", 
           m_schemaFilename);
     }
+    
+    rep.saveStepAttribute(id_transformation, id_step, 0, "json_encoded", m_isJsonEncoded);
 
     if (m_fields != null && m_fields.size() > 0) {
       for (int i = 0; i < m_fields.size(); i++) {
