@@ -31,6 +31,7 @@ import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.BooleanWritable;
 import org.apache.hadoop.io.BytesWritable;
 import org.apache.hadoop.io.DoubleWritable;
@@ -62,16 +63,7 @@ public class MRUtil {
   public static final String PROPERTY_PENTAHO_KETTLE_HOME = "pentaho.kettle.home";
   
   public static Trans getTrans(final Configuration conf, final String transXml, boolean singleThreaded) throws KettleException {
-    if (!KettleEnvironment.isInitialized()) {
-      System.setProperty(Const.PLUGIN_BASE_FOLDERS_PROP, getPluginDirProperty(conf));
-      final String kettleHome = conf.get(PROPERTY_PENTAHO_KETTLE_HOME);
-      if (StringUtils.isEmpty(kettleHome)) {
-        throw new KettleException(BaseMessages.getString(MRUtil.class, "Property.Missing", PROPERTY_PENTAHO_KETTLE_HOME));
-      }
-      System.setProperty("KETTLE_HOME", kettleHome);
-        
-      KettleEnvironment.init();
-    }
+    initKettleEnvironment(conf);
 
     TransConfiguration transConfiguration = TransConfiguration.fromXML(transXml);
     TransMeta transMeta = transConfiguration.getTransMeta();
@@ -98,6 +90,47 @@ public class MRUtil {
   }
 
   /**
+   * Initialize the Kettle environment with settings from the provided configuration
+   * 
+   * @param conf Configuration to configure Kettle environment with
+   */
+  private static void initKettleEnvironment(Configuration conf) throws KettleException {
+    if (!KettleEnvironment.isInitialized()) {
+      String kettleHome = getKettleHomeProperty(conf);
+      String pluginDir = getPluginDirProperty(conf);
+      System.setProperty("KETTLE_HOME", kettleHome);
+      System.setProperty(Const.PLUGIN_BASE_FOLDERS_PROP, pluginDir);
+      
+      System.out.println(BaseMessages.getString(MRUtil.class, "KettleHome.Info", kettleHome));
+      System.out.println(BaseMessages.getString(MRUtil.class, "PluginDirectory.Info", pluginDir));
+
+      KettleEnvironment.init();
+    }
+  }
+
+  /**
+   * @return the current working directory for this JVM.
+   */
+  public static String getWorkingDir() {
+    return System.getProperty("user.dir");
+  }
+
+  /**
+   * Determines the Kettle Home property to use for this invocation from the configuration provided. If it is not set
+   * the current working directory will be used.
+   *
+   * @param conf Configuration to check for Kettle Home to be set in.
+   * @return The Kettle Home directory to use
+   */
+  public static String getKettleHomeProperty(Configuration conf) {
+    String kettleHome = conf.get(PROPERTY_PENTAHO_KETTLE_HOME);
+    if (StringUtils.isEmpty(kettleHome)) {
+      return getWorkingDir();
+    }
+    return kettleHome;
+  }
+
+  /**
    * Builds a comma-separated list of paths to load Kettle plugins from. To be used as the value for the System property
    * {@link Const.PLUGIN_BASE_FOLDERS_PROP}.
    *
@@ -109,7 +142,7 @@ public class MRUtil {
     String kettlePluginDir = conf.get(PROPERTY_PENTAHO_KETTLE_PLUGINS_DIR);
     
     if (StringUtils.isEmpty(kettlePluginDir)) {
-      throw new KettleException(BaseMessages.getString(MRUtil.class, "Property.Missing", PROPERTY_PENTAHO_KETTLE_PLUGINS_DIR));
+      kettlePluginDir = getWorkingDir();
     }
 
     kettlePluginDir = Const.DEFAULT_PLUGIN_BASE_FOLDERS + "," + kettlePluginDir;

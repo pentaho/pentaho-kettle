@@ -18,8 +18,9 @@
 	<!-- Import the common_build.xml file which contains all the default tasks -->	
 	<import file="build-res/subfloor-pkg.xml"/>
 
-	<property name="libswt" location="libswt" />
-	<property name="swt.os" value="win32" />
+  <property name="stage.pmr.dir" value="${bin.dir}/pmr"/>
+  <property name="pmr.archive.name" value="pentaho-mapreduce-libraries"/>
+  
 	<property name="pdi-with-plugin"
 					value="pdi-ce-big-data"
 					description="Name of the pdi distribution with Big Data plugin"/>
@@ -50,10 +51,14 @@
 	    <src path="${src.dir}" />
 	  </javac>
 	</target>
-	
-	<target name="resolve"
-	          depends="resolve-default, resolve-test, ivy.check-releasable"
-	          description="Retrieves all the dependent libraries" />
+
+  <target name="resolve" depends="subfloor.resolve,resolve-pmr"/>
+
+  <target name="resolve-pmr" depends="install-ivy">
+    <delete dir="${stage.pmr.dir}/lib"/>
+    <ivy:resolve file="${ivyfile}" conf="default" />
+    <ivy:retrieve conf="pmr" pattern="${stage.pmr.dir}/lib/[module]-[revision](-[classifier]).[ext]" symlink="true" />
+  </target>
 
 	<target name="dist-noresolve" depends="jar,hbase-custom-comparators-jar,package" description="Builds and packages the application" />
 	<target name="dist" depends="resolve,jar,hbase-custom-comparators-jar,package" description="Builds and packages the application" />
@@ -69,12 +74,20 @@
       THE TASKS THAT NEED TO DIFFER FROM THE DEFAULT IMPLEMENTATION OF THE TASKS
       FOUND IN subfloor.xml.
     --> 
-	
+  
   <target name="assemble.init">
     <mkdir dir="${stage.dir}" />
   </target>
+
+  <!-- Assemble all libraries required for Pentaho MapReduce into the ${pmr.archive.name}.zip file in the staging directory -->
+  <target name="assemble-pmr-libraries">
+    <!-- Archive must contain a top level lib/ directory -->
+    <zip destfile="${stage.dir}/${ivy.artifact.id}/${pmr.archive.name}.zip">
+      <zipfileset dir="${stage.pmr.dir}/lib" prefix="lib"/>
+    </zip>
+  </target>
 	
-	  <target name="assemble.copy-libs">
+	  <target name="assemble.copy-libs" depends="assemble-pmr-libraries">
 	    <copy todir="${stage.dir}/${ivy.artifact.id}/lib">
 	      <fileset dir="${lib.dir}">
 			<exclude name="kettle-*.jar" />
