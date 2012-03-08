@@ -141,11 +141,17 @@
 	</target>
 	
 	<target name="install-plugin">
-		<delete dir="${kettle.dist.dir}/libext/pentaho-big-data-plugin"/>
+		<!-- Install the plugin -->
 		<delete dir="${kettle.dist.dir}/plugins/pentaho-big-data-plugin"/>
-		<unzip dest="${kettle.dist.dir}">
+		<unzip dest="${kettle.dist.dir}/plugins">
 			<fileset file="${dist.dir}/${package.basename}.zip"/>
-			</unzip>
+		</unzip>
+
+		<!-- Install samples -->
+		<delete dir="${kettle.dist.dir}/samples/job/hadoop"/>
+		<unzip dest="${kettle.dist.dir}/samples">
+			<fileset file="${dist.dir}/${ivy.artifact.id}-samples-${project.revision}.zip"/>
+		</unzip>
 	</target>
 	
 	<target name="publish-local-nojar" depends="install-ivy,subfloor.publish-local-nojar">
