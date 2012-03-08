@@ -77,6 +77,7 @@
   
   <target name="assemble.init">
     <mkdir dir="${stage.dir}" />
+    <mkdir dir="${stage.dir}/${ivy.artifact.id}" />
   </target>
 
   <!-- Assemble all libraries required for Pentaho MapReduce into the ${pmr.archive.name}.zip file in the staging directory -->
