@@ -245,8 +245,13 @@ public class RepositoriesHelper {
     if(model != null && model.getSelectedRepository() != null) {
       RepositoryMeta repositoryMeta = input.getRepository(model.getRepositoryIndex(model.getSelectedRepository()));
       repository = PluginRegistry.getInstance().loadClass(RepositoryPluginType.class, repositoryMeta.getId(), Repository.class);
-      repository.init(repositoryMeta);
-      repository.connect(model.getUsername(), model.getPassword());
+      try {
+         repository.init(repositoryMeta);
+         repository.connect(model.getUsername(), model.getPassword());
+      }
+      catch (Exception e) {
+         throw new KettleException(BaseMessages.getString(PKG, "RepositoryLogin.LoginFailure"));  
+      }
       props.setLastRepository(repositoryMeta.getName());
       props.setLastRepositoryLogin(model.getUsername());
     } else {
