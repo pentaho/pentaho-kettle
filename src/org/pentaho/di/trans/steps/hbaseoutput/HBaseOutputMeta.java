@@ -304,6 +304,10 @@ public class HBaseOutputMeta extends BaseStepMeta implements StepMetaInterface {
     m_writeBufferSize = null;
   }
   
+  public boolean supportsErrorHandling() {
+    return true;
+  }
+  
   /**
    * Get the UI for this step.
    *
