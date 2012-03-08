@@ -59,7 +59,7 @@ public class JobEntryPigScriptExecutorTest {
     job.waitUntilFinished();
 
     BufferedReader br = 
-      new BufferedReader(new FileReader("test-res/pig/script1-local-results.txt/part-r-00000"));
+      new BufferedReader(new FileReader("bin/test/pig/script1-local-results.txt/part-r-00000"));
     StringBuffer pigOutput = readResource(br);
 
     assertEquals(m_reference.toString(), pigOutput.toString());    

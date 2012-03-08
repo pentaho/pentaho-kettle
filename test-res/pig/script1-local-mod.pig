@@ -69,4 +69,4 @@ ordered_uniq_frequency = ORDER filtered_uniq_frequency BY hour, score;
 
 -- Use the PigStorage function to store the results. 
 -- Output: (hour, n-gram, score, count, average_counts_among_all_hours)
-STORE ordered_uniq_frequency INTO '$script_dir/script1-local-results.txt' USING PigStorage();
+STORE ordered_uniq_frequency INTO '$output_dir/script1-local-results.txt' USING PigStorage();

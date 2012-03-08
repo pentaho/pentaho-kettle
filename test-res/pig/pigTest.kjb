@@ -60,9 +60,10 @@
    <shared_objects_file/>
   <entries>
     <entry>
-      <name>Pig Script Executor</name>
+      <name>bin</name>
       <description/>
       <type>HadoopPigScriptExecutorPlugin</type>
+    <hadoop_distribution>generic</hadoop_distribution>
     <hdfs_hostname>hadoop-vm3</hdfs_hostname>
     <hdfs_port>8020</hdfs_port>
     <jobtracker_hostname>hadoop-vm3</jobtracker_hostname>
@@ -74,6 +75,10 @@
       <parameter>
         <name>script_dir</name>
         <value>${Internal.Job.Filename.Directory}</value>
+      </parameter>
+      <parameter>
+        <name>output_dir</name>
+        <value>${Internal.Job.Filename.Directory}&#47;..&#47;..&#47;bin&#47;test&#47;pig</value>
       </parameter>
       <parameter>
         <name>udf_jar</name>
@@ -137,7 +142,7 @@
   </entries>
   <hops>
     <hop>
-      <from>Pig Script Executor</from>
+      <from>bin</from>
       <to>Success</to>
       <from_nr>0</from_nr>
       <to_nr>0</to_nr>
@@ -156,7 +161,7 @@
     </hop>
     <hop>
       <from>Delete folders</from>
-      <to>Pig Script Executor</to>
+      <to>bin</to>
       <from_nr>0</from_nr>
       <to_nr>0</to_nr>
       <enabled>Y</enabled>
