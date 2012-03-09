@@ -75,6 +75,9 @@ public class LoggingRegistry {
 	 * @return a new ID (UUID)
 	 */
 	public String registerLoggingSource(Object object) {
+
+		// recalc max size: see PDI-7270
+		maxSize = Const.toInt(EnvUtil.getSystemProperty(Const.KETTLE_MAX_LOGGING_REGISTRY_SIZE), 1000);
 		
 		// Extract the core logging information from the object itself, including the hierarchy.
 		//
