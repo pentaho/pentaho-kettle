@@ -52,11 +52,12 @@ public class LoggingRegistry {
 	private Date lastModificationTime;
 	
 	private int maxSize;
+	private final int DEFAULT_MAX_SIZE = 10000;
 	
 	private LoggingRegistry() {
 		map = new ConcurrentHashMap<String, LoggingObjectInterface>();	
 		lastModificationTime = new Date();
-		maxSize = Const.toInt(EnvUtil.getSystemProperty(Const.KETTLE_MAX_LOGGING_REGISTRY_SIZE), 10000);
+		maxSize = Const.toInt(EnvUtil.getSystemProperty(Const.KETTLE_MAX_LOGGING_REGISTRY_SIZE), DEFAULT_MAX_SIZE);
 	}
 	
 	public static LoggingRegistry getInstance() {
@@ -76,6 +77,9 @@ public class LoggingRegistry {
 	 */
 	public String registerLoggingSource(Object object) {
 		
+		// recalc max size: see PDI-7270
+		maxSize = Const.toInt(EnvUtil.getSystemProperty(Const.KETTLE_MAX_LOGGING_REGISTRY_SIZE), DEFAULT_MAX_SIZE);
+
 		// Extract the core logging information from the object itself, including the hierarchy.
 		//
 		LoggingObject loggingSource = new LoggingObject(object);
