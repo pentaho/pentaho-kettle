@@ -573,7 +573,7 @@ public class SpoonSlave extends Composite implements TabItemInterface {
     if (treeEntry.isJob()) {
       // We clicked on a job line item
       //
-      SlaveServerJobStatus jobStatus = slaveServerStatus.findJobStatus(treeEntry.name);
+      SlaveServerJobStatus jobStatus = slaveServerStatus.findJobStatus(treeEntry.name, treeEntry.id);
       StringBuffer message = new StringBuffer();
       String errorDescription = jobStatus.getErrorDescription();
       if (!Const.isEmpty(errorDescription)) {
@@ -617,11 +617,11 @@ public class SpoonSlave extends Composite implements TabItemInterface {
     }
 
     if (treeEntry.isJob()) {
-      SlaveServerJobStatus jobStatus = slaveServerStatus.findJobStatus(treeEntry.name);
+      SlaveServerJobStatus jobStatus = slaveServerStatus.findJobStatus(treeEntry.name, treeEntry.id);
       if (jobStatus != null) {
         if (!jobStatus.isRunning()) {
           try {
-            WebResult webResult = slaveServer.startJob(treeEntry.name, treeEntry.id);
+            WebResult webResult = slaveServer.startJob(treeEntry.name, jobStatus.getId());
             if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK)) {
               EnterTextDialog dialog = new EnterTextDialog(shell, BaseMessages.getString(PKG, "SpoonSlave.ErrorStartingJob.Title"), BaseMessages.getString(PKG,
                   "SpoonSlave.ErrorStartingJob.Message"), webResult.getMessage());
@@ -679,11 +679,11 @@ public class SpoonSlave extends Composite implements TabItemInterface {
     // Jobs
     //
     if (treeEntry.isJob()) {
-      SlaveServerJobStatus jobStatus = slaveServerStatus.findJobStatus(treeEntry.name);
+      SlaveServerJobStatus jobStatus = slaveServerStatus.findJobStatus(treeEntry.name, treeEntry.id);
       if (jobStatus != null) {
         if (jobStatus.isRunning()) {
           try {
-            WebResult webResult = slaveServer.stopJob(treeEntry.name, treeEntry.id);
+            WebResult webResult = slaveServer.stopJob(treeEntry.name, jobStatus.getId());
             if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK)) {
               EnterTextDialog dialog = new EnterTextDialog(shell, BaseMessages.getString(PKG, "SpoonSlave.ErrorStoppingJob.Title"), BaseMessages.getString(PKG,
                   "SpoonSlave.ErrorStoppingJob.Message"), webResult.getMessage());
