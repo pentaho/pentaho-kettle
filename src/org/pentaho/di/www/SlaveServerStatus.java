@@ -187,12 +187,14 @@ public class SlaveServerStatus
         return null;
     }
 
-    public SlaveServerJobStatus findJobStatus(String jobName)
+    public SlaveServerJobStatus findJobStatus(String jobName, String id)
     {
         for (int i=0;i<jobStatusList.size();i++)
         {
             SlaveServerJobStatus jobStatus = (SlaveServerJobStatus) jobStatusList.get(i);
-            if (jobStatus.getJobName().equalsIgnoreCase(jobName)) return jobStatus;
+            if (jobStatus.getJobName().equalsIgnoreCase(jobName) &&
+            	(Const.isEmpty(id) || jobStatus.getId().equals(id))
+            ) return jobStatus;
         }
         return null;
     }
