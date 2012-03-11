@@ -60,7 +60,7 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CarteServlet
   private static final long serialVersionUID  = -5879219287669847357L;
 
   public static final String  CONTEXT_PATH    = "/kettle/executeTrans";
-
+  
   public ExecuteTransServlet() {
   }
 
@@ -154,11 +154,8 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CarteServlet
       try {
         // Execute the transformation...
         //
-        trans.prepareExecution(null);
-        trans.startThreads();
-        trans.waitUntilFinished();
-        
-        out.flush();
+         executeTrans(trans);
+         out.flush();
         
       } catch(Exception executionException) {
         String logging = CentralLogStore.getAppender().getBuffer(trans.getLogChannelId(), false).toString();
@@ -227,4 +224,10 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CarteServlet
   public String getService() {
     return CONTEXT_PATH + " (" + toString() + ")";
   }
+  
+  protected void executeTrans(Trans trans) throws KettleException { 
+     trans.prepareExecution(null);
+     trans.startThreads();
+     trans.waitUntilFinished();
+  } 
 }

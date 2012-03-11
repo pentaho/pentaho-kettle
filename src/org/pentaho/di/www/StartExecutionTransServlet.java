@@ -31,6 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -101,7 +102,7 @@ public class StartExecutionTransServlet extends BaseHttpServlet implements Carte
 
       if (trans != null) {
         if (trans.isReadyToStart()) {
-          trans.startThreads();
+          startThreads(trans);
 
           if (useXML) {
             out.println(WebResult.OK.getXML());
@@ -154,5 +155,9 @@ public class StartExecutionTransServlet extends BaseHttpServlet implements Carte
 
   public String getService() {
     return CONTEXT_PATH + " (" + toString() + ")";
+  }
+  
+  protected void startThreads(Trans trans) throws KettleException {
+      trans.startThreads();
   }
 }

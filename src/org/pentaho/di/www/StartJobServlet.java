@@ -32,6 +32,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
@@ -144,7 +145,7 @@ public class StartJobServlet extends BaseHttpServlet implements CarteServletInte
           }
         }
 
-        job.start(); // runs the thread in the background...
+        runJob(job);
 
         String message = BaseMessages.getString(PKG, "StartJobServlet.Log.JobStarted", jobName);
         if (useXML) {
@@ -191,4 +192,8 @@ public class StartJobServlet extends BaseHttpServlet implements CarteServletInte
   public String getService() {
     return CONTEXT_PATH + " (" + toString() + ")";
   }
+  
+  protected void runJob(Job job) throws KettleException { 
+     job.start(); // runs the thread in the background... 
+   } 
 }
