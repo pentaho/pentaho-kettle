@@ -238,4 +238,22 @@ public class HiveDatabaseMeta
       
       return false;
     }
+    
+    /**
+     * Quotes around table names are not valid Hive QL
+     * 
+     * return an empty string for the start quote
+     */
+    public String getStartQuote() {
+      return "";
+    }
+    
+    /**
+     * Quotes around table names are not valid Hive QL
+     * 
+     * return an empty string for the end quote
+     */
+    public String getEndQuote() {
+      return "";
+    }
 }
