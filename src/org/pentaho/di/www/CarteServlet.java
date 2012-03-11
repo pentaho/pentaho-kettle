@@ -27,10 +27,13 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.pentaho.pms.util.Const;
 
 public class CarteServlet extends HttpServlet {
 
@@ -122,4 +125,45 @@ public class CarteServlet extends HttpServlet {
     }
   }
 
+  @Override 
+  public void init(ServletConfig config) throws ServletException {
+     
+    try {
+       String startJobClass = config.getInitParameter("startJobServletClass"); 
+       if (!Const.isEmpty(startJobClass)) {
+          Class clazz = Class.forName(startJobClass);
+          startJobServlet = (StartJobServlet)clazz.newInstance();
+       } 
+       
+       String startExecutionTransClass = config.getInitParameter("startExecutionTransServletClass"); 
+       if (!Const.isEmpty(startExecutionTransClass)) {
+          Class clazz = Class.forName(startExecutionTransClass);
+          startExecutionTransServlet = (StartExecutionTransServlet)clazz.newInstance();
+       }
+       
+       String startTransClass = config.getInitParameter("startTransServletClass");
+       if (!Const.isEmpty(startTransClass)) {
+          Class clazz = Class.forName(startTransClass);
+          this.startTransServlet = (StartTransServlet)clazz.newInstance();
+       }
+       
+       String executeTransClass = config.getInitParameter("executeTransServletClass");
+       if (!Const.isEmpty(executeTransClass)) {
+          Class clazz = Class.forName(executeTransClass);
+          this.executeTransServlet = (ExecuteTransServlet)clazz.newInstance();
+       }
+     }
+     catch (ClassNotFoundException cnfe) {
+        throw new ServletException(cnfe);
+     }    
+     catch (IllegalAccessException iae) {
+        throw new ServletException(iae);
+     }
+     catch (InstantiationException ie) {
+        throw new ServletException(ie);
+     }
+     catch (ClassCastException cce) {
+        throw new ServletException(cce);
+     }
+  }
 }

@@ -33,6 +33,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
@@ -127,7 +128,7 @@ public class StartTransServlet extends BaseHttpServlet implements CarteServletIn
 				servletLoggingObject.setLogLevel(trans.getLogLevel());
 				trans.setParent(servletLoggingObject);
 				
-				trans.execute(null);
+				executeTrans(trans);
 
 				String message = BaseMessages.getString(PKG, "StartTransServlet.Log.TransStarted", transName);
 				if (useXML) {
@@ -171,4 +172,8 @@ public class StartTransServlet extends BaseHttpServlet implements CarteServletIn
 	public String getService() {
 		return CONTEXT_PATH + " (" + toString() + ")";
 	}
+
+	protected void executeTrans(Trans trans) throws KettleException { 
+	   trans.execute(null);
+	} 
 }

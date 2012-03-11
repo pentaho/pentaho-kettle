@@ -154,10 +154,7 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CarteServlet
       try {
         // Execute the transformation...
         //
-        trans.prepareExecution(null);
-        trans.startThreads();
-        trans.waitUntilFinished();
-        
+        executeTrans(trans);
         out.flush();
         
       } catch(Exception executionException) {
@@ -227,4 +224,10 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CarteServlet
   public String getService() {
     return CONTEXT_PATH + " (" + toString() + ")";
   }
+  
+  protected void executeTrans(Trans trans) throws KettleException { 
+     trans.prepareExecution(null);
+     trans.startThreads();
+     trans.waitUntilFinished();
+  } 
 }
