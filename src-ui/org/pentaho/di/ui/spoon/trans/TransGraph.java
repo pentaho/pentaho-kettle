@@ -3275,27 +3275,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
   public synchronized void start(TransExecutionConfiguration executionConfiguration) throws KettleException {
       // Auto save feature...
-      if (transMeta.hasChanged()) {
-        if (spoon.props.getAutoSave()) {
-          spoon.saveToFile(transMeta);
-        } else {
-          MessageDialogWithToggle md = new MessageDialogWithToggle(
-              shell,
-              BaseMessages.getString(PKG, "TransLog.Dialog.FileHasChanged.Title"), //$NON-NLS-1$
-              null,
-              BaseMessages.getString(PKG, "TransLog.Dialog.FileHasChanged1.Message") + Const.CR + BaseMessages.getString(PKG, "TransLog.Dialog.FileHasChanged2.Message") + Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
-              MessageDialog.QUESTION, new String[] {
-                  BaseMessages.getString(PKG, "System.Button.Yes"), BaseMessages.getString(PKG, "System.Button.No") }, //$NON-NLS-1$ //$NON-NLS-2$
-              0, BaseMessages.getString(PKG, "TransLog.Dialog.Option.AutoSaveTransformation"), //$NON-NLS-1$
-              spoon.props.getAutoSave());
-          int answer = md.open();
-          if ((answer & 0xFF) == 0) {
-            spoon.saveToFile(transMeta);
-          }
-          spoon.props.setAutoSave(md.getToggleState());
-        }
-      }
-
+	  this.handleTransMetaChanges(transMeta);
+	  
       if (((transMeta.getName() != null && transMeta.getObjectId() != null && spoon.rep != null) || // Repository available & name / id set
           (transMeta.getFilename() != null && spoon.rep == null) // No repository & filename set
           )
@@ -4290,5 +4271,29 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   private void adjustLocation(StepLocation location, StepVelocity velocity) {
     location.x = location.x + nodeMass*velocity.dx*velocity.dx;
     location.y = location.y + nodeMass*velocity.dy*velocity.dy;
+  }
+  
+  public void handleTransMetaChanges(TransMeta transMeta) throws KettleException {
+     if (transMeta.hasChanged()) {
+        if (spoon.props.getAutoSave()) {
+           spoon.saveToFile(transMeta);
+        } 
+        else {
+           MessageDialogWithToggle md = new MessageDialogWithToggle(
+             shell,
+             BaseMessages.getString(PKG, "TransLog.Dialog.FileHasChanged.Title"), //$NON-NLS-1$
+             null,
+             BaseMessages.getString(PKG, "TransLog.Dialog.FileHasChanged1.Message") + Const.CR + BaseMessages.getString(PKG, "TransLog.Dialog.FileHasChanged2.Message") + Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
+             MessageDialog.QUESTION, new String[] {
+                 BaseMessages.getString(PKG, "System.Button.Yes"), BaseMessages.getString(PKG, "System.Button.No") }, //$NON-NLS-1$ //$NON-NLS-2$
+             0, BaseMessages.getString(PKG, "TransLog.Dialog.Option.AutoSaveTransformation"), //$NON-NLS-1$
+             spoon.props.getAutoSave());
+           int answer = md.open();
+           if ((answer & 0xFF) == 0) {
+             spoon.saveToFile(transMeta);
+           }
+           spoon.props.setAutoSave(md.getToggleState());
+        }
+     }
   }
 }

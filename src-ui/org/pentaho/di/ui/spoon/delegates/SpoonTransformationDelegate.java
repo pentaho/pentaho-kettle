@@ -940,6 +940,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 			// Are we executing clustered?
 			//
 			} else if (executionConfiguration.isExecutingClustered()) {
+				activeTransGraph.handleTransMetaChanges(transMeta);
 				splitTrans(transMeta, executionConfiguration); 
 			}
 		}
