@@ -38,7 +38,7 @@
 		<key>StartOnMainThread</key>
 		<true/>
 		<key>VMOptions</key>
-		<string>-Xmx256m -Xms256m -XX:MaxPermSize=128m</string>
+		<string>-Xmx512m -Xms512m -XX:MaxPermSize=256m</string>
 	</dict>
 </dict>
 </plist>
