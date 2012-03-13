@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.UUID;
 
 import org.apache.log4j.spi.LoggingEvent;
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -108,7 +109,9 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogMessage;
 import org.pentaho.di.core.logging.LogParentProvidedInterface;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.LoggingRegistry;
+import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
@@ -3315,6 +3318,13 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             // To be able to completely test this, we need to run it as we would normally do in pan
             //
             trans = new Trans(transMeta, spoon.rep, transMeta.getName(), transMeta.getRepositoryDirectory().getPath(), transMeta.getFilename());
+            
+			String spoonLogObjectId = UUID.randomUUID().toString();
+			SimpleLoggingObject spoonLoggingObject = new SimpleLoggingObject("SPOON", LoggingObjectType.SPOON, null);
+			spoonLoggingObject.setContainerObjectId(spoonLogObjectId);
+			spoonLoggingObject.setLogLevel(executionConfiguration.getLogLevel());
+			trans.setParent(spoonLoggingObject);
+			
             trans.setLogLevel(executionConfiguration.getLogLevel());
             trans.setReplayDate(executionConfiguration.getReplayDate());
             trans.setRepository(executionConfiguration.getRepository());
