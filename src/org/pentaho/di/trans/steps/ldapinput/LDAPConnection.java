@@ -55,7 +55,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.trans.steps.ldapinput.store.CustomdSocketFactory;
+import org.pentaho.di.trans.steps.ldapinput.store.CustomSocketFactory;
 
 public class LDAPConnection {
   private static Class<?> PKG = LDAPInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
@@ -219,9 +219,9 @@ public class LDAPConnection {
 
     if (getProtocol() != PROTOCOL_LDAP) { // if SSL or TLS
         if (isTrustAllCertificates()) {
-          CustomdSocketFactory.configure();
+          CustomSocketFactory.configure();
         } else {
-          CustomdSocketFactory.configure(getTrustStorePath(), getTrustStorePassword());
+          CustomSocketFactory.configure(getTrustStorePath(), getTrustStorePassword());
         }
     }
 
@@ -246,7 +246,7 @@ public class LDAPConnection {
         StartTlsRequest tlsRequest = new StartTlsRequest();
         this.tls = (StartTlsResponse) getInitialContext().extendedOperation(tlsRequest);
         /* Starting TLS */
-        this.tls.negotiate((SSLSocketFactory) CustomdSocketFactory.getDefault());
+        this.tls.negotiate((SSLSocketFactory) CustomSocketFactory.getDefault());
       }
 
       if (log.isBasic())

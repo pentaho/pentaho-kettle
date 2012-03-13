@@ -27,6 +27,7 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.security.KeyManagementException;
+import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 
 import javax.net.SocketFactory;
@@ -34,9 +35,13 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.i18n.BaseMessages;
 
-public class CustomdSocketFactory extends SSLSocketFactory {
+public class CustomSocketFactory extends SSLSocketFactory {
+
+  private static Class<?> PKG = CustomSocketFactory.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   private static boolean configured;
   
@@ -49,14 +54,14 @@ public class CustomdSocketFactory extends SSLSocketFactory {
   /**
    * Required for reflection.
    */
-  public CustomdSocketFactory() {
+  public CustomSocketFactory() {
     super();
   }
   
   /**
    * For internal use only.
    */
-  protected CustomdSocketFactory(SSLSocketFactory factory) {
+  protected CustomSocketFactory(SSLSocketFactory factory) {
     this.factory = factory;
   }
   
@@ -74,18 +79,29 @@ public class CustomdSocketFactory extends SSLSocketFactory {
     } catch (NoSuchAlgorithmException e) {
       throw new RuntimeException(e);
     }
-    return new CustomdSocketFactory(ctx.getSocketFactory());
+    return new CustomSocketFactory(ctx.getSocketFactory());
   }
 
   /**
    * Configures this SSLSocketFactory so that it uses the given keystore as its truststore.
    */
   public static synchronized void configure(String path, String password) throws KettleException {
-    if (password != null) {
-      trustManagers = new Truster[] { new Truster(path, password) };
-    } else {
-      trustManagers = new Truster[] { new Truster(path) };
+    
+    // Get the appropriate key-store based on the file path...
+    //
+    KeyStore keyStore;
+    
+    try {
+      if (!Const.isEmpty(path) && path.endsWith(".p12")) { 
+        keyStore = KeyStore.getInstance("PKCS12");
+      } else { 
+        keyStore = KeyStore.getInstance("JKS");
+      }
+    } catch(Exception e) {
+      throw new KettleException(BaseMessages.getString(PKG, "KettleTrustManager.Exception.CouldNotCreateCertStore"), e);
     }
+    
+    trustManagers = new KettleTrustManager[] { new KettleTrustManager(keyStore, path, password) };
     configured = true;
   }
   
