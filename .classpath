@@ -307,7 +307,7 @@
 	<classpathentry kind="lib" path="libext/jfree/jfreechart-1.0.13.jar"/>
 	<classpathentry kind="lib" path="libext/slf4j-api-1.6.1.jar"/>
 	<classpathentry kind="lib" path="libext/reporting/asm-3.2.jar"/>
-	<classpathentry kind="lib" path="libext/jsch-0.1.45.jar"/>
+	<classpathentry kind="lib" path="libext/jsch-0.1.46.jar"/>
 	<classpathentry kind="lib" path="src-plugins/kettle-openerp-plugin/lib/openerp-java-api.jar"/>
 	<classpathentry kind="lib" path="libext/jackcess-1.2.6.jar"/>
 	<classpathentry kind="lib" path="libext/datacleaner-ui/AnalyzerBeans-api-0.10.jar"/>
