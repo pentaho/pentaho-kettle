@@ -207,7 +207,7 @@
 	<classpathentry kind="lib" path="src-plugins/kettle-hl7-plugin/lib/hapi-structures-v251-1.1.jar"/>
 	<classpathentry kind="lib" path="src-plugins/kettle-hl7-plugin/lib/hapi-structures-v26-1.1.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/infobright-core-3.4.jar"/>
-	<classpathentry kind="lib" path="libext/jsch-0.1.44.jar"/>
+	<classpathentry kind="lib" path="libext/jsch-0.1.46.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/sqlite-jdbc-3.7.2.jar"/>
 	<classpathentry kind="lib" path="src-plugins/kettle-palo-plugin/lib/palo-core.jar"/>
 	<classpathentry kind="lib" path="libext/jackson-core-asl-1.5.2.jar"/>
@@ -267,6 +267,5 @@
 	<classpathentry kind="lib" path="libext/slf4j-api-1.6.1.jar"/>
 	<classpathentry kind="lib" path="libext/slf4j-log4j12-1.6.1.jar"/>
 	<classpathentry kind="lib" path="libext/bigdata/hbase-0.90.3.jar"/>
-	<classpathentry kind="lib" path="libext/pentaho/pentaho-bi-platform-engine-core-4.3-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
