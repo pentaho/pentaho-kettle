@@ -31,6 +31,7 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.UUID;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
@@ -101,6 +102,8 @@ import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogParentProvidedInterface;
+import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
@@ -3112,9 +3115,14 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
 			} else {
 			  runJobMeta = new JobMeta(jobMeta.getFilename(), null, null);
 			}
-		    
-			job = new Job(spoon.rep, runJobMeta);
-        	  job.setLogLevel(executionConfiguration.getLogLevel());
+
+            String spoonObjectId = UUID.randomUUID().toString();
+            SimpleLoggingObject spoonLoggingObject = new SimpleLoggingObject("SPOON", LoggingObjectType.SPOON, null);
+            spoonLoggingObject.setContainerObjectId(spoonObjectId);
+            spoonLoggingObject.setLogLevel(executionConfiguration.getLogLevel());
+			job = new Job(spoon.rep, runJobMeta, spoonLoggingObject);
+			
+			job.setLogLevel(executionConfiguration.getLogLevel());
             // job = new Job(jobMeta.getName(), jobMeta.getFilename(), null);
             // job.open(spoon.rep, jobMeta.getFilename(), jobMeta.getName(), jobMeta.getRepositoryDirectory().getPath(), spoon);
             job.getJobMeta().setArguments(jobMeta.getArguments());
