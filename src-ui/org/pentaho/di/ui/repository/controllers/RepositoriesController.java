@@ -178,7 +178,21 @@ public class RepositoriesController extends AbstractXulEventHandler {
     } else {
       username.setFocus();
     }
+    
+    // PDI-7443: The repo list does not show the selected repo
+    // make the layout play nice, this is necessary to have the selection box scroll reliably
+    if (availableRepositories.getRows() < 4){
+    	availableRepositories.setRows(4);
+    }
+
+    int idx = loginModel.getRepositoryIndex(loginModel.getSelectedRepository());
+    if (idx >= 0){
+    	availableRepositories.setSelectedIndex(idx);
+    }
+    // END OF PDI-7443
+    
     loginDialog.show();
+
   }
 
   public void login() {
