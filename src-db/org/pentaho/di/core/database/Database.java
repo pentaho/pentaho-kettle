@@ -2634,7 +2634,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
                 length = rm.getPrecision(index);
             }
             else
-            if ( (databaseMeta.getDatabaseInterface() instanceof OracleDatabaseMeta || databaseMeta.isMySQLVariant()) &&
+            if ( (databaseMeta.getDatabaseInterface() instanceof OracleDatabaseMeta) &&
                 ( type==java.sql.Types.VARBINARY || type==java.sql.Types.LONGVARBINARY )
                )
             {
@@ -2642,6 +2642,16 @@ public class Database implements VariableSpace, LoggingObjectInterface
                 valtype = ValueMetaInterface.TYPE_STRING;
                 length = rm.getColumnDisplaySize(index);
             }
+            else
+            if ( databaseMeta.isMySQLVariant() &&
+                    ( type==java.sql.Types.VARBINARY || type==java.sql.Types.LONGVARBINARY )
+                    )
+                 {
+                     // set the data type to String, see PDI-4812
+                     valtype = ValueMetaInterface.TYPE_STRING;
+                     // PDI-6677 - don't call 'length = rm.getColumnDisplaySize(index);'
+                     length=-1; // keep the length to -1, e.g. for string functions (e.g. CONCAT see PDI-4812)
+                 }
             else
             {
                 length=-1; 
