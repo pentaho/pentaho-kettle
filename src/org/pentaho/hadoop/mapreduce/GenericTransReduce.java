@@ -321,7 +321,6 @@ public class GenericTransReduce<K extends WritableComparable<?>, V extends Itera
           if (values.hasNext()) {
             value = values.next();
           }
-          // TODO If the first value if null conversion will be disabled for the entire input! Fix ASAP!
           if (value != null) {
             // Get a converter for the Value if the value meta has a concrete Java class we can use.
             // If no converter can be found here we wont do any type conversion.
