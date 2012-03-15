@@ -60,13 +60,13 @@ public class MapperAndReducerTest {
   @Test
   public void testMapperBadInjectorFields() throws IOException, KettleException {
     try {
-      GenericTransMap mapper = new GenericTransMap();
+      PentahoMapRunnable mapper = new PentahoMapRunnable();
       MockOutputCollector outputCollector = new MockOutputCollector();
       MockReporter reporter = new MockReporter();
-    
+      MockRecordReader reader = new MockRecordReader(Arrays.asList("test"));
       mapper.configure(createJobConf("./test-res/bad-injector-fields.ktr", "./test-res/bad-injector-fields.ktr"));
-      
-      mapper.map(new Text("key"), new Text("value"), outputCollector, reporter);
+
+      mapper.run(reader, outputCollector, reporter);
       fail("Should have thrown an exception");
     } catch (IOException e) {
       assertTrue("Test for KettleException", e.getMessage().contains("key or value is not defined in transformation injector step"));
@@ -76,13 +76,14 @@ public class MapperAndReducerTest {
   @Test
   public void testMapperBadOutputFields() throws IOException, KettleException {
     try {
-      GenericTransMap mapper = new GenericTransMap();
+      PentahoMapRunnable mapper = new PentahoMapRunnable();
       MockOutputCollector outputCollector = new MockOutputCollector();
       MockReporter reporter = new MockReporter();
-    
+      MockRecordReader reader = new MockRecordReader(Arrays.asList("test"));
+
       mapper.configure(createJobConf("./test-res/bad-output-fields.ktr", "./test-res/bad-output-fields.ktr"));
-      
-      mapper.map(new Text("key"), new Text("value"), outputCollector, reporter);
+
+      mapper.run(reader, outputCollector, reporter);
       fail("Should have thrown an exception");
     } catch (IOException e) {
       assertTrue("Test for KettleException", e.getMessage().contains("outKey or outValue is not defined in transformation output stream"));
@@ -92,13 +93,14 @@ public class MapperAndReducerTest {
   @Test
   public void testMapperNoInjectorStep() throws IOException, KettleException {
     try {
-      GenericTransMap mapper = new GenericTransMap();
+      PentahoMapRunnable mapper = new PentahoMapRunnable();
       MockOutputCollector outputCollector = new MockOutputCollector();
       MockReporter reporter = new MockReporter();
-    
-      mapper.configure(createJobConf("./test-res/no-injector-step.ktr", "./test-res/no-injector-step.ktr"));
+      MockRecordReader reader = new MockRecordReader(Arrays.asList("test"));
       
-      mapper.map(new Text("key"), new Text("value"), outputCollector, reporter);
+      mapper.configure(createJobConf("./test-res/no-injector-step.ktr", "./test-res/no-injector-step.ktr"));
+
+      mapper.run(reader, outputCollector, reporter);
       fail("Should have thrown an exception");
     } catch (IOException e) {
       assertTrue("Test for KettleException", e.getMessage().contains("Unable to find thread with name Injector and copy number 0"));
@@ -108,13 +110,13 @@ public class MapperAndReducerTest {
   @Test
   public void testMapperNoOutputStep() throws IOException, KettleException {
     try {
-      GenericTransMap mapper = new GenericTransMap();
+      PentahoMapRunnable mapper = new PentahoMapRunnable();
       MockOutputCollector outputCollector = new MockOutputCollector();
       MockReporter reporter = new MockReporter();
-    
+      MockRecordReader reader = new MockRecordReader(Arrays.asList("test"));
       mapper.configure(createJobConf("./test-res/no-output-step.ktr", "./test-res/no-output-step.ktr"));
       
-      mapper.map(new Text("key"), new Text("value"), outputCollector, reporter);
+      mapper.run(reader, outputCollector, reporter);
       fail("Should have thrown an exception");
     } catch (IOException e) {
       assertTrue("Test for KettleException", e.getMessage().contains("Output step not defined in transformation"));
@@ -180,127 +182,6 @@ public class MapperAndReducerTest {
       assertTrue("Test for KettleException", e.getMessage().contains("Output step not defined in transformation"));
     }
   }
-  
-  @Test
-  @Ignore
-  public void testWordCount() throws IOException, KettleException {
-      GenericTransMap mapper = new GenericTransMap();
-      MockOutputCollector outputCollector = new MockOutputCollector();
-      MockReporter reporter = new MockReporter();
-    
-      mapper.configure(createJobConf("./test-res/wordcount-mapper.ktr", "./test-res/wordcount-reducer.ktr"));
-      
-//      mapper.map(new Text("key"), new Text("a quick brown fox jumped over the fence"), outputCollector, reporter);
-//      mapper.map(new Text("key"), new Text("another quick brown fox jumped over the same fence"), outputCollector, reporter);
-//      mapper.map(new Text("key"), new Text("but then a quicker brown fox jumped over the fence"), outputCollector, reporter);
-//      mapper.map(new Text("key"), new Text("Hadoop pentaho hadoop"), outputCollector, reporter);
-//      mapper.map(new Text("key"), new Text("Pentaho"), outputCollector, reporter);
-//      mapper.map(new Text("key"), new Text("pentaho"), outputCollector, reporter);
-//      mapper.map(new Text("key"), new Text("Only totally unique words go here"), outputCollector, reporter);
-
-      int ROWS = 100000;
-      
-      long start = System.currentTimeMillis();
-      for (int i=0;i<ROWS;i++) {
-        mapper.map(new Text("key"), new Text("zebra giraffe hippo elephant tiger"), outputCollector, reporter);
-      }
-      mapper.close();
-      outputCollector.close(); // Immediately stop collecting.  This reproduces the execution environment when running within Hadoop.
-      long stop = System.currentTimeMillis();
-      System.out.println("Executed " + ROWS + " in " + (stop-start) + "ms");
-      System.out.println("Average: " + ((stop-start)/(float)ROWS) + "ms");
-      System.out.println("Rows/Second: " + ((float)ROWS / ((stop-start)/1000f)));
-      
-      
-      class CountValues {
-        private Object workingKey;
-        
-        public CountValues setWorkingKey(Object k) {
-          workingKey = k;
-          return this;
-        }
-        
-        public void countValues(String k, Object v, MockOutputCollector oc) {
-          if(workingKey.equals(new Text(k))) {
-            assertEquals(k.toString(), v, oc.getCollection().get(new Text(k)).size());
-          }
-        }
-      }
-      
-      assertNotNull(outputCollector);
-      assertNotNull(outputCollector.getCollection());
-      assertNotNull(outputCollector.getCollection().keySet());
-      assertEquals(5, outputCollector.getCollection().keySet().size());
-      
-      CountValues cv = new CountValues();
-      for(Object key : outputCollector.getCollection().keySet()) {
-        cv.setWorkingKey(key).countValues("zebra", ROWS, outputCollector);
-        cv.setWorkingKey(key).countValues("giraffe", ROWS, outputCollector);
-        cv.setWorkingKey(key).countValues("hippo", ROWS, outputCollector);
-        cv.setWorkingKey(key).countValues("elephant", ROWS, outputCollector);
-        cv.setWorkingKey(key).countValues("tiger", ROWS, outputCollector);
-        //TODO: Add words that will not exist: unique words, same words - diff case
-        
-        if(debug) {
-          for(Object value : outputCollector.getCollection().get(key)) {
-            System.out.println(key + ": " + value);
-          }
-        }
-      }
-
-      GenericTransReduce reducer = new GenericTransReduce();
-      MockOutputCollector inputCollector = outputCollector;
-      outputCollector = new MockOutputCollector();
-    
-      reducer.configure(createJobConf("./test-res/wordcount-mapper.ktr", "./test-res/wordcount-reducer.ktr"));
-      
-      start = System.currentTimeMillis();
-      for(Object key : inputCollector.getCollection().keySet()) {
-        System.out.println("reducing: " + key);
-        reducer.reduce((Text)key, (Iterator)new ArrayList(inputCollector.getCollection().get(key)).iterator(), outputCollector, reporter);
-      }
-      reducer.close();
-      outputCollector.close(); // Immediately stop collecting.  This reproduces the execution environment when running within Hadoop.
-      stop = System.currentTimeMillis();
-      System.out.println("Executed " + ROWS + " in " + (stop-start) + "ms");
-      System.out.println("Average: " + ((stop-start)/(float)ROWS) + "ms");
-      System.out.println("Rows/Second: " + ((float)ROWS / ((stop-start)/1000f)));
-      
-      assertNotNull(outputCollector);
-      assertNotNull(outputCollector.getCollection());
-      assertNotNull(outputCollector.getCollection().keySet());
-      assertEquals(5, outputCollector.getCollection().keySet().size());
-      
-      class CheckValues {
-        private Object workingKey;
-        
-        public CheckValues setWorkingKey(Object k) {
-          workingKey = k;
-          return this;
-        }
-        
-        public void checkValues(String k, Object v, MockOutputCollector oc) {
-          if(workingKey.equals(new Text(k))) {
-            assertEquals(k.toString(), v, ((IntWritable)oc.getCollection().get(new Text(k)).get(0)).get());
-          }
-        }
-      }
-      
-      CheckValues cv2 = new CheckValues();
-      for(Object key : outputCollector.getCollection().keySet()) {
-        cv2.setWorkingKey(key).checkValues("zebra", ROWS, outputCollector);
-        cv2.setWorkingKey(key).checkValues("giraffe", ROWS, outputCollector);
-        cv2.setWorkingKey(key).checkValues("hippo", ROWS, outputCollector);
-        cv2.setWorkingKey(key).checkValues("elephant", ROWS, outputCollector);
-        cv2.setWorkingKey(key).checkValues("tiger", ROWS, outputCollector);
-        
-        if(debug) {
-          for(Object value : outputCollector.getCollection().get(key)) {
-            System.out.println(key + ": " + value);
-          }
-        }
-      }
-  }
 
   public static JobConf createJobConf(String mapperTransformationFile, String reducerTransformationFile) throws IOException, KettleException {
     return createJobConf(mapperTransformationFile, null, reducerTransformationFile, "localhost", "9000", "9001");
@@ -337,7 +218,7 @@ public class MapperAndReducerTest {
     TransConfiguration transConfig = null;
     
     if (mapperTransformationFile != null) {
-      conf.setMapperClass((Class<? extends Mapper>) GenericTransMap.class);
+      conf.setMapRunnerClass(PentahoMapRunnable.class);
       transMeta = new TransMeta(mapperTransformationFile);
       transConfig = new TransConfiguration(transMeta, transExecConfig);
       conf.set("transformation-map-xml", transConfig.getXML());
