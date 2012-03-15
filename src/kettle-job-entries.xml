@@ -453,7 +453,7 @@
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.SNMPTrap.Tooltip</tooltip>
 		<iconfile>ui/images/SNMP.png</iconfile>
 	</job-entry>
-		<job-entry id="JobCategory.Category.Mail_VALIDATOR">
+		<job-entry id="MAIL_VALIDATOR,JobCategory.Category.Mail_VALIDATOR">
 		<description>i18n:org.pentaho.di.job.entry:JobEntry.MailValidator.TypeDesc</description>
 		<classname>org.pentaho.di.job.entries.mailvalidator.JobEntryMailValidator</classname>
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.Mail</category>
