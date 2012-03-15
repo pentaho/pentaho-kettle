@@ -1487,6 +1487,14 @@ public abstract class BaseDatabaseMeta implements Cloneable
 		return true;
 	}
 
+	  /**
+	   * @return true if this database only supports metadata retrieval on a result set, 
+	   * never on a statement (even if the statement has been executed)
+	   */
+	  public boolean supportsResultSetMetadataRetrievalOnly() {
+		  return false;
+	  }
+	
 	/**
 	 * @param tableName
 	 * @return true if the specified table is a system table

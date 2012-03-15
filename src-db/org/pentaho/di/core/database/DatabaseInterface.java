@@ -949,4 +949,11 @@ public interface DatabaseInterface extends Cloneable
    *         Returns false for certain databases (SQLite) that invalidate a prepared statement or even the complete connection when an error occurs. 
    */
   public boolean supportsErrorHandling();
+  
+  /**
+   * @return true if this database only supports metadata retrieval on a result set, 
+   * never on a statement (even if the statement has been executed)
+   */
+  public boolean supportsResultSetMetadataRetrievalOnly();
+  
 }
