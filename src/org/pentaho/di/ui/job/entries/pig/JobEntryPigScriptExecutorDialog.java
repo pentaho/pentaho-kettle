@@ -22,6 +22,10 @@
 
 package org.pentaho.di.ui.job.entries.pig;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -107,6 +111,8 @@ public class JobEntryPigScriptExecutorDialog extends JobEntryDialog implements
   
   protected JobEntryPigScriptExecutor m_jobEntry;
   
+  private boolean m_isMapR = false;
+  
   /**
    * Constructor.
    * 
@@ -181,11 +187,16 @@ public class JobEntryPigScriptExecutorDialog extends JobEntryDialog implements
     props.setLook(m_distroCombo);
     m_distroCombo.setEditable(false);
     
+    m_isMapR = false;
     try {
       // auto detected first
       HadoopConfigurer auto = HadoopConfigurerFactory.locateConfigurer();
+
       if (auto != null) {
         m_distroCombo.add(auto.distributionName());
+        if (auto.distributionName().equals("MapR")) {
+          m_isMapR = true;
+        }
       } else {
         List<HadoopConfigurer> available = HadoopConfigurerFactory.getAvailableConfigurers();
         for (HadoopConfigurer config : available) {
@@ -393,6 +404,13 @@ public class JobEntryPigScriptExecutorDialog extends JobEntryDialog implements
         setEnabledStatus();
       }
     });
+    if (m_isMapR) {
+      m_localExecutionBut.setEnabled(false);
+      m_localExecutionBut.setSelection(false);
+      m_localExecutionBut.setToolTipText(BaseMessages.getString(PKG, 
+          "JobEntryPigScriptExecutor.Warning.MapRLocalExecution"));
+      localExecutionLab.setToolTipText(m_localExecutionBut.getToolTipText());
+    }
     
     // script parameters -----------------
     Group paramsGroup = new Group(shell, SWT.SHADOW_ETCHED_IN);
@@ -502,6 +520,11 @@ public class JobEntryPigScriptExecutorDialog extends JobEntryDialog implements
   }
   
   protected void setEnabledStatus() {
+    if (m_isMapR) {
+      m_localExecutionBut.setEnabled(false);
+      m_localExecutionBut.setSelection(false);
+    }
+    
     boolean local = m_localExecutionBut.getSelection();
     m_hdfsLab.setEnabled(!local);
     m_hdfsHostname.setEnabled(!local);
@@ -542,6 +565,13 @@ public class JobEntryPigScriptExecutorDialog extends JobEntryDialog implements
   
   protected void getData() {
     m_wName.setText(Const.NVL(m_jobEntry.getName(), ""));
+    
+    if (m_distroCombo.indexOf(m_jobEntry.getHadoopDistribution()) >= 0) {
+      m_distroCombo.select(m_distroCombo.indexOf(m_jobEntry.getHadoopDistribution()));
+    } else {
+      m_distroCombo.select(0);
+    }
+    
     m_distroCombo.setText(m_jobEntry.getHadoopDistribution());
     if (!Const.isEmpty(m_jobEntry.getHDFSHostname())) {
       m_hdfsHostname.setText(m_jobEntry.getHDFSHostname());
@@ -568,7 +598,7 @@ public class JobEntryPigScriptExecutorDialog extends JobEntryDialog implements
         item.setText(1, name);
         item.setText(2, value);
       }
-    }
+    }    
     
     m_scriptParams.removeEmptyRows();
     m_scriptParams.setRowNums();

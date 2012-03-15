@@ -497,6 +497,10 @@ public class JobEntryPigScriptExecutor extends JobEntryBase implements Cloneable
       if (configurer == null) {
         // go with what has been selected by the user or generic
         configurer = HadoopConfigurerFactory.getConfigurer(hadoopDistro);
+        if (configurer.distributionName().equals("MapR") && m_localExecution) {
+          throw new KettleException(BaseMessages.getString(PKG, 
+              "JobEntryPigScriptExecutor.Warning.MapRLocalExecution"));
+        }
       }
       if (configurer == null) {
         throw new KettleException(BaseMessages.
