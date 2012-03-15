@@ -24,16 +24,13 @@
 
 package org.pentaho.hadoop.mapreduce.converter;
 
-import org.apache.hadoop.io.BytesWritable;
-import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.*;
 import org.junit.Test;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.hadoop.mapreduce.converter.converters.ObjectToStringConverter;
 import org.pentaho.hadoop.mapreduce.converter.spi.ITypeConverter;
 
-import javax.xml.soap.Text;
 import java.math.BigDecimal;
 import java.sql.Date;
 
@@ -61,6 +58,38 @@ public class TypeConverterFactoryTest {
     assertFalse(TypeConverterFactory.isKettleType(LongWritable.class));
     assertFalse(TypeConverterFactory.isKettleType(Text.class));
     assertFalse(TypeConverterFactory.isKettleType(BytesWritable.class));
+  }
+  
+  @Test
+  public void getWritableForKettleType() {
+    ValueMeta meta = new ValueMeta("test");
+    
+    meta.setType(ValueMetaInterface.TYPE_STRING);
+    assertEquals(Text.class, TypeConverterFactory.getWritableForKettleType(meta));
+
+    meta.setType(ValueMetaInterface.TYPE_BIGNUMBER);
+    assertEquals(Text.class, TypeConverterFactory.getWritableForKettleType(meta));
+
+    meta.setType(ValueMetaInterface.TYPE_DATE);
+    assertEquals(Text.class, TypeConverterFactory.getWritableForKettleType(meta));
+
+    meta.setType(ValueMetaInterface.TYPE_INTEGER);
+    assertEquals(LongWritable.class, TypeConverterFactory.getWritableForKettleType(meta));
+
+    meta.setType(ValueMetaInterface.TYPE_NUMBER);
+    assertEquals(DoubleWritable.class, TypeConverterFactory.getWritableForKettleType(meta));
+
+    meta.setType(ValueMetaInterface.TYPE_BOOLEAN);
+    assertEquals(BooleanWritable.class, TypeConverterFactory.getWritableForKettleType(meta));
+
+    meta.setType(ValueMetaInterface.TYPE_BINARY);
+    assertEquals(BytesWritable.class, TypeConverterFactory.getWritableForKettleType(meta));
+
+    // Default is Text
+    meta.setType(ValueMetaInterface.TYPE_SERIALIZABLE);
+    assertEquals(Text.class, TypeConverterFactory.getWritableForKettleType(meta));
+    meta.setType(ValueMetaInterface.TYPE_NONE);
+    assertEquals(Text.class, TypeConverterFactory.getWritableForKettleType(meta));
   }
   
   @Test

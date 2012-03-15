@@ -24,6 +24,7 @@
 
 package org.pentaho.hadoop.mapreduce.converter;
 
+import org.apache.hadoop.io.*;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
@@ -122,6 +123,30 @@ public class TypeConverterFactory {
     return metaClass;
   }
 
+  /**
+   * Determine the Hadoop writable type to pass Kettle type back to Hadoop as.
+   *
+   * @param kettleType
+   * @return Java type to convert {@code kettleType} to when sending data back to Hadoop.
+   */
+  public static Class getWritableForKettleType(ValueMetaInterface kettleType) {
+    switch (kettleType.getType()) {
+      case ValueMetaInterface.TYPE_STRING:
+      case ValueMetaInterface.TYPE_BIGNUMBER:
+      case ValueMetaInterface.TYPE_DATE:
+        return Text.class;
+      case ValueMetaInterface.TYPE_INTEGER:
+        return LongWritable.class;
+      case ValueMetaInterface.TYPE_NUMBER:
+        return DoubleWritable.class;
+      case ValueMetaInterface.TYPE_BOOLEAN:
+        return BooleanWritable.class;
+      case ValueMetaInterface.TYPE_BINARY:
+        return BytesWritable.class;
+      default:
+        return Text.class;
+    }
+  }
 
   /**
    * Local cache of type converters

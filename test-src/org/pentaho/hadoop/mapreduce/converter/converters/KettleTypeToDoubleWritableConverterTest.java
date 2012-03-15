@@ -22,7 +22,7 @@
 
 package org.pentaho.hadoop.mapreduce.converter.converters;
 
-import org.apache.hadoop.io.IntWritable;
+import org.apache.hadoop.io.DoubleWritable;
 import org.junit.Test;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -30,26 +30,26 @@ import org.pentaho.hadoop.mapreduce.converter.TypeConversionException;
 
 import static org.junit.Assert.*;
 
-public class KettleTypeToIntWritableConverterTest {
+public class KettleTypeToDoubleWritableConverterTest {
   @Test
   public void canConvert() throws Exception {
-    KettleTypeToIntWritableConverter c = new KettleTypeToIntWritableConverter();
+    KettleTypeToDoubleWritableConverter c = new KettleTypeToDoubleWritableConverter();
 
-    assertTrue(c.canConvert(String.class, IntWritable.class));
-    assertTrue(c.canConvert(Long.class, IntWritable.class));
-    assertTrue(c.canConvert(String.class, IntWritable.class));
-    assertFalse(c.canConvert(Object.class, IntWritable.class));
-    assertFalse(c.canConvert(IntWritable.class, IntWritable.class));
+    assertTrue(c.canConvert(String.class, DoubleWritable.class));
+    assertTrue(c.canConvert(Long.class, DoubleWritable.class));
+    assertTrue(c.canConvert(String.class, DoubleWritable.class));
+    assertFalse(c.canConvert(Object.class, DoubleWritable.class));
+    assertFalse(c.canConvert(DoubleWritable.class, DoubleWritable.class));
     assertFalse(c.canConvert(null, null));
-    assertFalse(c.canConvert(IntWritable.class, Object.class));
+    assertFalse(c.canConvert(DoubleWritable.class, Object.class));
     assertFalse(c.canConvert(Object.class, Long.class));
   }
 
   @Test
   public void convert() throws Exception {
-    KettleTypeToIntWritableConverter c = new KettleTypeToIntWritableConverter();
-    IntWritable expected = new IntWritable(100);
-    String value = "100";
+    KettleTypeToDoubleWritableConverter c = new KettleTypeToDoubleWritableConverter();
+    DoubleWritable expected = new DoubleWritable(100.50);
+    String value = "100.50";
 
     // Convert from a normal String
     ValueMeta normalMeta = new ValueMeta("test", ValueMetaInterface.TYPE_STRING, ValueMetaInterface.STORAGE_TYPE_NORMAL);
@@ -61,10 +61,10 @@ public class KettleTypeToIntWritableConverterTest {
     binaryMeta.setStorageMetadata(storageMeta);
     byte[] rawValue = value.getBytes("UTF-8");
     assertEquals(expected, c.convert(binaryMeta, rawValue));
-    
+
     // Convert from an Integer
     ValueMeta integerMeta = new ValueMeta("test", ValueMetaInterface.TYPE_INTEGER, ValueMetaInterface.STORAGE_TYPE_NORMAL);
-    assertEquals(expected, c.convert(integerMeta, Long.valueOf(100)));
+    assertEquals(new DoubleWritable(100), c.convert(integerMeta, Long.valueOf(100)));
 
     try {
       c.convert(null, null);
@@ -72,7 +72,7 @@ public class KettleTypeToIntWritableConverterTest {
     } catch (NullPointerException ex) {
       // Expected
     }
-    
+
     try {
       c.convert(integerMeta, "not an integer");
       fail();

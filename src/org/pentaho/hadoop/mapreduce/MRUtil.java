@@ -191,7 +191,6 @@ public class MRUtil {
     logMessage(new Integer(id).toString(), getStackTrace(t));
   }
 
-  
   public static void logMessage(String id, String message) {
     try {
       FileOutputStream fos = new FileOutputStream("/tmp/PDIMapReduce.log", true); //$NON-NLS-1$
@@ -202,25 +201,6 @@ public class MRUtil {
       fos.write(System.getProperty("line.separator").getBytes()); //$NON-NLS-1$
       fos.close();
     } catch (Throwable t) {
-    }
-  }
-
-  public static Class getWritableForKettleType(ValueMetaInterface kettleType) {
-    switch (kettleType.getType()) {
-    case ValueMetaInterface.TYPE_STRING:
-    case ValueMetaInterface.TYPE_BIGNUMBER:
-    case ValueMetaInterface.TYPE_DATE:
-      return Text.class;
-    case ValueMetaInterface.TYPE_INTEGER:
-      return LongWritable.class;
-    case ValueMetaInterface.TYPE_NUMBER:
-      return DoubleWritable.class;
-    case ValueMetaInterface.TYPE_BOOLEAN:
-      return BooleanWritable.class;
-    case ValueMetaInterface.TYPE_BINARY:
-      return BytesWritable.class;
-    default:
-        return Text.class;      
     }
   }
 }

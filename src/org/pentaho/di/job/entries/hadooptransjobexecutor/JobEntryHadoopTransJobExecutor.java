@@ -67,6 +67,7 @@ import org.pentaho.hadoop.PluginPropertiesUtil;
 import org.pentaho.hadoop.jobconf.HadoopConfigurer;
 import org.pentaho.hadoop.jobconf.HadoopConfigurerFactory;
 import org.pentaho.hadoop.mapreduce.*;
+import org.pentaho.hadoop.mapreduce.converter.TypeConverterFactory;
 import org.w3c.dom.Node;
 
 import java.io.IOException;
@@ -557,7 +558,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
               throw new KettleException(BaseMessages.getString(PKG, 
                   "JobEntryHadoopTransJobExecutor.NoMapOutputKeyDefined.Error"));
             }
-            Class<?> hadoopWritableKey = MRUtil.getWritableForKettleType(keyVM);
+            Class<?> hadoopWritableKey = TypeConverterFactory.getWritableForKettleType(keyVM);
             conf.setMapOutputKeyClass(hadoopWritableKey);
             logDebug(BaseMessages.getString(PKG, 
                 "JobEntryHadoopTransJobExecutor.Message.MapOutputKeyMessage", 
@@ -569,7 +570,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
               throw new KettleException(BaseMessages.getString(PKG, 
                 "JobEntryHadoopTransJobExecutor.NoMapOutputValueDefined.Error"));
             }
-            Class<?> hadoopWritableValue = MRUtil.getWritableForKettleType(valueVM);            
+            Class<?> hadoopWritableValue = TypeConverterFactory.getWritableForKettleType(valueVM);
             conf.setMapOutputValueClass(hadoopWritableValue);
             logDebug(BaseMessages.getString(PKG, 
                 "JobEntryHadoopTransJobExecutor.Message.MapOutputValueMessage", 
@@ -679,7 +680,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
                 throw new KettleException(BaseMessages.getString(PKG, 
                     "JobEntryHadoopTransJobExecutor.NoOutputKeyDefined.Error"));
               }
-              Class<?> hadoopWritableKey = MRUtil.getWritableForKettleType(keyVM);
+              Class<?> hadoopWritableKey = TypeConverterFactory.getWritableForKettleType(keyVM);
               conf.setOutputKeyClass(hadoopWritableKey);
               logDebug(BaseMessages.getString(PKG, 
                   "JobEntryHadoopTransJobExecutor.Message.OutputKeyMessage", 
@@ -691,7 +692,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
                 throw new KettleException(BaseMessages.getString(PKG, 
                   "JobEntryHadoopTransJobExecutor.NoOutputValueDefined.Error"));
               }
-              Class<?> hadoopWritableValue = MRUtil.getWritableForKettleType(valueVM);            
+              Class<?> hadoopWritableValue = TypeConverterFactory.getWritableForKettleType(valueVM);
               conf.setOutputValueClass(hadoopWritableValue);
               logDebug(BaseMessages.getString(PKG, 
                   "JobEntryHadoopTransJobExecutor.Message.OutputValueMessage", 
