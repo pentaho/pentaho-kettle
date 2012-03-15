@@ -44,6 +44,8 @@ import org.pentaho.di.trans.SingleThreadedTransExecutor;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.hadoop.mapreduce.converter.TypeConverterFactory;
+import org.pentaho.hadoop.mapreduce.converter.spi.ITypeConverter;
 
 /**
  * A reducer class that just emits the sum of the input values.
@@ -55,6 +57,7 @@ public class GenericTransReduce<K extends WritableComparable<?>, V extends Itera
   protected RowProducer rowProducer;
   protected Object value;
   protected InKeyValueOrdinals inOrdinals = null;
+  protected TypeConverterFactory typeConverterFactory;
   protected ITypeConverter inConverterK = null;
   protected ITypeConverter inConverterV = null;
   protected RowMetaInterface injectorRowMeta;
@@ -63,6 +66,7 @@ public class GenericTransReduce<K extends WritableComparable<?>, V extends Itera
   public GenericTransReduce() throws KettleException {
       super();
       this.setMRType(MROperations.Reduce);
+      typeConverterFactory = new TypeConverterFactory();
   } 
 
   public boolean isSingleThreaded() {
@@ -283,10 +287,10 @@ public class GenericTransReduce<K extends WritableComparable<?>, V extends Itera
     setDebugStatus(reporter, "Locating output step: " + outputStepName);
     StepInterface outputStep = trans.findRunThread(outputStepName);
     if (outputStep != null) {
-      injectorRowMeta = new RowMeta();
-      rowCollector = new OutputCollectorRowListener<K2, V2>(output, outClassK, outClassV, reporter, debug);
+      rowCollector = new OutputCollectorRowListener(output, outClassK, outClassV, reporter, debug);
       outputStep.addRowListener(rowCollector);
-    
+
+      injectorRowMeta = new RowMeta();
       setDebugStatus(reporter, "Locating input step: " + inputStepName);
       if (inputStepName != null) {
         // Setup row injection
@@ -307,32 +311,22 @@ public class GenericTransReduce<K extends WritableComparable<?>, V extends Itera
             throw new KettleException("key or value is not defined in transformation injector step");
           }
           
-          // Get a converter for the Key
+          // Get a converter for the Key if the value meta has a concrete Java class we can use.
+          // If no converter can be found here we wont do any type conversion.
           if (injectorRowMeta.getValueMeta(inOrdinals.getKeyOrdinal()) != null) {
-            Class<?> metaClass = null;
-  
-            // Get the concrete java class that corresponds to a given Kettle meta data type
-            metaClass = MRUtil.getJavaClass(injectorRowMeta.getValueMeta(inOrdinals.getKeyOrdinal()));
-  
-            if (metaClass != null) {
-              // If a KettleType with a concrete conversion was found then use it
-              inConverterK = TypeConverterFactory.getInstance().getConverter(key.getClass(), metaClass);
-            }
+            inConverterK = typeConverterFactory.getConverter(key.getClass(), injectorRowMeta.getValueMeta(inOrdinals.getKeyOrdinal()));
           }
-  
-          // Get a converter for the Value
-          if (injectorRowMeta.getValueMeta(inOrdinals.getValueOrdinal()) != null) {
-            Class<?> metaClass = null;
-  
-            // Get the concrete java class that corresponds to a given Kettle meta data type
-            metaClass = MRUtil.getJavaClass(injectorRowMeta.getValueMeta(inOrdinals.getValueOrdinal()));
-  
-            // we need to peek into the first value to get the class (the combination of Iterator and generic makes this a pain)
-            if (values.hasNext()) {
-              value = values.next();
-            }
-            if (metaClass != null && value != null) {
-              inConverterV = TypeConverterFactory.getInstance().getConverter(value.getClass(), metaClass);
+
+          // we need to peek into the first value to get the class (the combination of Iterator and generic makes this a pain)
+          if (values.hasNext()) {
+            value = values.next();
+          }
+          // TODO If the first value if null conversion will be disabled for the entire input! Fix ASAP!
+          if (value != null) {
+            // Get a converter for the Value if the value meta has a concrete Java class we can use.
+            // If no converter can be found here we wont do any type conversion.
+            if (injectorRowMeta.getValueMeta(inOrdinals.getValueOrdinal()) != null) {
+              inConverterV = typeConverterFactory.getConverter(value.getClass(), injectorRowMeta.getValueMeta(inOrdinals.getValueOrdinal()));
             }
           }
         }

@@ -1,0 +1,12 @@
+org.pentaho.hadoop.mapreduce.converter.converters.IntWritableToLongConverter
+org.pentaho.hadoop.mapreduce.converter.converters.KettleTypeToIntWritableConverter
+org.pentaho.hadoop.mapreduce.converter.converters.KettleTypeToLongWritableConverter
+org.pentaho.hadoop.mapreduce.converter.converters.KettleTypeToTextConverter
+org.pentaho.hadoop.mapreduce.converter.converters.LongWritableToLongConverter
+org.pentaho.hadoop.mapreduce.converter.converters.LongWritableToTextConverter
+org.pentaho.hadoop.mapreduce.converter.converters.NullConverter
+org.pentaho.hadoop.mapreduce.converter.converters.NullWritableConverter
+org.pentaho.hadoop.mapreduce.converter.converters.ObjectToStringConverter
+org.pentaho.hadoop.mapreduce.converter.converters.TextToIntegerConverter
+org.pentaho.hadoop.mapreduce.converter.converters.TextToLongConverter
+org.pentaho.hadoop.mapreduce.converter.converters.TextToStringConverter

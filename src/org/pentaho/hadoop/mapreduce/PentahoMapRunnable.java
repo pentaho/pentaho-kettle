@@ -22,18 +22,9 @@
 
 package org.pentaho.hadoop.mapreduce;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
-
+import com.thoughtworks.xstream.XStream;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.mapred.JobConf;
-import org.apache.hadoop.mapred.MapRunnable;
-import org.apache.hadoop.mapred.OutputCollector;
-import org.apache.hadoop.mapred.RecordReader;
-import org.apache.hadoop.mapred.Reporter;
+import org.apache.hadoop.mapred.*;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 import org.pentaho.di.core.Const;
@@ -46,12 +37,17 @@ import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.Trans;
-import org.pentaho.di.trans.TransMeta.TransformationType;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.hadoop.mapreduce.converter.TypeConverterFactory;
+import org.pentaho.hadoop.mapreduce.converter.spi.ITypeConverter;
 
-import com.thoughtworks.xstream.XStream;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Map runner that uses the normal Kettle execution engine to process all input data during one single run.<p>
@@ -412,11 +408,13 @@ public class PentahoMapRunnable<K1, V1, K2, V2> implements MapRunnable<K1, V1, K
         setDebugStatus(reporter, "Locating output step: " + mapOutputStepName);
         StepInterface outputStep = trans.findRunThread(mapOutputStepName);
         if (outputStep != null) {
-          RowMeta injectorRowMeta = new RowMeta();
-          OutputCollectorRowListener<K2, V2> rowCollector = new OutputCollectorRowListener<K2, V2>(output, outClassK, outClassV, reporter, debug);
+          rowCollector = new OutputCollectorRowListener(output, outClassK, outClassV, reporter, debug);
+//          rowCollector = OutputCollectorRowListener.build(output, outputRowMeta, outClassK, outClassV, reporter, debug);
           outputStep.addRowListener(rowCollector);
 
+          RowMeta injectorRowMeta = new RowMeta();
           RowProducer rowProducer = null;
+          TypeConverterFactory typeConverterFactory = new TypeConverterFactory();
           ITypeConverter inConverterK = null;
           ITypeConverter inConverterV = null;
 
@@ -432,8 +430,8 @@ public class PentahoMapRunnable<K1, V1, K2, V2> implements MapRunnable<K1, V1, K
               setDebugStatus(reporter,
                   "Generating converters from RowMeta for injection into the mapper transformation");
 
-              // Convert to BaseStepMeta and use getFields(...) to get the row meta and therefore the expected input types
-              ((BaseStepMeta) inputStepMeta).getFields(injectorRowMeta, null, null, null, null);
+              // Use getFields(...) to get the row meta and therefore the expected input types
+              inputStepMeta.getFields(injectorRowMeta, null, null, null, null);
 
               inOrdinals = new InKeyValueOrdinals(injectorRowMeta);
 
@@ -441,30 +439,16 @@ public class PentahoMapRunnable<K1, V1, K2, V2> implements MapRunnable<K1, V1, K
                 throw new KettleException("key or value is not defined in transformation injector step");
               }
 
-              // Get a converter for the Key
+              // Get a converter for the Key if the value meta has a concrete Java class we can use. 
+              // If no converter can be found here we wont do any type conversion.
               if (injectorRowMeta.getValueMeta(inOrdinals.getKeyOrdinal()) != null) {
-                Class<?> metaClass = null;
-
-                // Get the concrete java class that corresponds to a given Kettle meta data type
-                metaClass = MRUtil.getJavaClass(injectorRowMeta.getValueMeta(inOrdinals.getKeyOrdinal()));
-
-                if (metaClass != null) {
-                  // If a KettleType with a concrete conversion was found then use it
-                  inConverterK = TypeConverterFactory.getInstance().getConverter(key.getClass(), metaClass);
-                }
+                inConverterK = typeConverterFactory.getConverter(key.getClass(), injectorRowMeta.getValueMeta(inOrdinals.getKeyOrdinal()));
               }
 
-              // Get a converter for the Value
+              // Get a converter for the Value if the value meta has a concrete Java class we can use. 
+              // If no converter can be found here we wont do any type conversion.
               if (injectorRowMeta.getValueMeta(inOrdinals.getValueOrdinal()) != null) {
-                Class<?> metaClass = null;
-
-                // Get the concrete java class that corresponds to a given Kettle meta data type
-                metaClass = MRUtil.getJavaClass(injectorRowMeta.getValueMeta(inOrdinals.getValueOrdinal()));
-
-                if (metaClass != null) {
-                  // If a KettleType with a concrete conversion was found then use it
-                  inConverterV = TypeConverterFactory.getInstance().getConverter(value.getClass(), metaClass);
-                }
+                inConverterV = typeConverterFactory.getConverter(value.getClass(), injectorRowMeta.getValueMeta(inOrdinals.getValueOrdinal()));
               }
             }
 

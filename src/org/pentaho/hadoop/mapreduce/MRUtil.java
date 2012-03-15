@@ -205,43 +205,6 @@ public class MRUtil {
     }
   }
 
-  public static Class<?> getJavaClass(ValueMetaInterface vmi) {
-    Class<?> metaClass = null;
-
-    switch (vmi.getType()) {
-    case ValueMeta.TYPE_BIGNUMBER: {
-      metaClass = BigDecimal.class;
-    }
-      break;
-    case ValueMeta.TYPE_BINARY: {
-      metaClass = byte[].class;
-    }
-      break;
-    case ValueMeta.TYPE_BOOLEAN: {
-      metaClass = Boolean.class;
-    }
-      break;
-    case ValueMeta.TYPE_DATE: {
-      metaClass = Date.class;
-    }
-      break;
-    case ValueMeta.TYPE_INTEGER: {
-      metaClass = Long.class;
-    }
-      break;
-    case ValueMeta.TYPE_NUMBER: {
-      metaClass = Double.class;
-    }
-      break;
-    case ValueMeta.TYPE_STRING: {
-      metaClass = String.class;
-    }
-      break;
-    }
-
-    return metaClass;
-  }
-  
   public static Class getWritableForKettleType(ValueMetaInterface kettleType) {
     switch (kettleType.getType()) {
     case ValueMetaInterface.TYPE_STRING:

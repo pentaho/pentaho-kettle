@@ -30,6 +30,8 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.RowAdapter;
 import org.pentaho.hadoop.mapreduce.PentahoMapRunnable.Counter;
 import org.pentaho.hadoop.mapreduce.PentahoMapRunnable.OutKeyValueOrdinals;
+import org.pentaho.hadoop.mapreduce.converter.TypeConverterFactory;
+import org.pentaho.hadoop.mapreduce.converter.spi.ITypeConverter;
 
 /**
  * Row Listener that forwards rows along to an {@link OutputCollector}.
@@ -49,6 +51,8 @@ public class OutputCollectorRowListener<K, V> extends RowAdapter {
   private Exception exception;
   
   private OutKeyValueOrdinals outOrdinals;
+  
+  private TypeConverterFactory typeConverterFactory;
 
   public OutputCollectorRowListener(OutputCollector<K, V> output, Class<K> outClassK, Class<V> outClassV,
       Reporter reporter, boolean debug) {
@@ -57,6 +61,8 @@ public class OutputCollectorRowListener<K, V> extends RowAdapter {
     this.outClassV = outClassV;
     this.reporter = reporter;
     this.debug = debug;
+
+    this.typeConverterFactory = new TypeConverterFactory();
     
     outOrdinals = null;
   }
@@ -84,24 +90,22 @@ public class OutputCollectorRowListener<K, V> extends RowAdapter {
           setDebugStatus( reporter,
             "Begin conversion of output key [from:" + (row[outOrdinals.getKeyOrdinal()] == null ? null : row[outOrdinals.getKeyOrdinal()].getClass()) + "] [to:" + outClassK + "]"); //$NON-NLS-1$ //$NON-NLS-2$
         }
-        
-        Object outKey = TypeConverterFactory
-            .getInstance()
+
+        ITypeConverter converter = typeConverterFactory
             .getConverter(
                 row[outOrdinals.getKeyOrdinal()] == null ? null : row[outOrdinals.getKeyOrdinal()].getClass(),
-                outClassK).convert(rowMeta.getValueMeta(outOrdinals.getKeyOrdinal()), row[outOrdinals.getKeyOrdinal()]);
+                outClassK);
+        Object outKey = converter.convert(rowMeta.getValueMeta(outOrdinals.getKeyOrdinal()), row[outOrdinals.getKeyOrdinal()]);
 
        if (debug) {
          setDebugStatus(reporter,
             "Begin conversion of output value [from:" + (row[outOrdinals.getValueOrdinal()] == null ? null //$NON-NLS-1$
                 : row[outOrdinals.getValueOrdinal()].getClass()) + "] [to:" + outClassV + "]")  ; //$NON-NLS-1$ //$NON-NLS-2$
        }
-        Object outVal = TypeConverterFactory
-            .getInstance()
-            .getConverter(
-                row[outOrdinals.getValueOrdinal()] == null ? null : row[outOrdinals.getValueOrdinal()].getClass(),
-                outClassV)
-            .convert(rowMeta.getValueMeta(outOrdinals.getValueOrdinal()), row[outOrdinals.getValueOrdinal()]);
+        ITypeConverter valueConverter = typeConverterFactory.getConverter(
+            row[outOrdinals.getValueOrdinal()] == null ? null : row[outOrdinals.getValueOrdinal()].getClass(),
+            outClassV);
+        Object outVal = valueConverter.convert(rowMeta.getValueMeta(outOrdinals.getValueOrdinal()), row[outOrdinals.getValueOrdinal()]);
 
         if (outKey != null && outVal != null) {
           if (debug) setDebugStatus(reporter, "Collecting output record [" + outKey + "] - [" + outVal + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$

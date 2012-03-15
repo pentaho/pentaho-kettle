@@ -20,10 +20,24 @@
  *
  ******************************************************************************/
 
-package org.pentaho.hadoop.mapreduce;
+package org.pentaho.hadoop.mapreduce.converter.converters;
 
+import org.apache.hadoop.io.IntWritable;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.hadoop.mapreduce.converter.TypeConversionException;
+import org.pentaho.hadoop.mapreduce.converter.spi.ITypeConverter;
 
-public interface ITypeConverter {
-	public Object convert(ValueMetaInterface meta, Object obj) throws Exception;
+/**
+ * Converts {@link IntWritable} objects to {@link Long} objects
+ */
+public class IntWritableToLongConverter implements ITypeConverter<IntWritable, Long> {
+  @Override
+  public boolean canConvert(Class from, Class to) {
+    return IntWritable.class.equals(from) && Long.class.equals(to);
+  }
+
+  @Override
+  public Long convert(ValueMetaInterface meta, IntWritable obj) throws TypeConversionException {
+    return new Long(obj.get());
+  }
 }

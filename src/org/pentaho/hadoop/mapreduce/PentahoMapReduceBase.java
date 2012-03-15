@@ -39,6 +39,7 @@ import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.Trans;
 
 import com.thoughtworks.xstream.XStream;
+import org.pentaho.hadoop.mapreduce.converter.spi.ITypeConverter;
 
 @SuppressWarnings("deprecation")
 public class PentahoMapReduceBase<K, V> extends MapReduceBase {

@@ -64,7 +64,7 @@ public class MapperAndReducerTest {
       MockOutputCollector outputCollector = new MockOutputCollector();
       MockReporter reporter = new MockReporter();
       MockRecordReader reader = new MockRecordReader(Arrays.asList("test"));
-      mapper.configure(createJobConf("./test-res/bad-injector-fields.ktr", "./test-res/bad-injector-fields.ktr"));
+      mapper.configure(createJobConf("./test-res/bad-injector-fields.ktr", "./test-res/wordcount-reducer.ktr"));
 
       mapper.run(reader, outputCollector, reporter);
       fail("Should have thrown an exception");
@@ -72,7 +72,7 @@ public class MapperAndReducerTest {
       assertTrue("Test for KettleException", e.getMessage().contains("key or value is not defined in transformation injector step"));
     }
   }
-  
+
   @Test
   public void testMapperBadOutputFields() throws IOException, KettleException {
     try {
@@ -89,7 +89,7 @@ public class MapperAndReducerTest {
       assertTrue("Test for KettleException", e.getMessage().contains("outKey or outValue is not defined in transformation output stream"));
     }
   }
-  
+
   @Test
   public void testMapperNoInjectorStep() throws IOException, KettleException {
     try {
@@ -106,7 +106,7 @@ public class MapperAndReducerTest {
       assertTrue("Test for KettleException", e.getMessage().contains("Unable to find thread with name Injector and copy number 0"));
     }
   }
-  
+
   @Test
   public void testMapperNoOutputStep() throws IOException, KettleException {
     try {
