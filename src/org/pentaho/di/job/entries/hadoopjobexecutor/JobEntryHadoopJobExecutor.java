@@ -535,35 +535,7 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
             while (!runningJob.isComplete()) {
               if (logIntv >= 1) {
                 printJobStatus(runningJob);
-                
-                TaskCompletionEvent[] tcEvents = runningJob.getTaskCompletionEvents(taskCompletionEventIndex);
-                for(int i = 0; i < tcEvents.length; i++) {
-                  String[] diags = runningJob.getTaskDiagnostics(tcEvents[i].getTaskAttemptId());
-                  StringBuilder diagsOutput = new StringBuilder();
-                  
-                  if(diags != null && diags.length > 0) {
-                    diagsOutput.append(Const.CR);
-                    for(String s : diags) {
-                      diagsOutput.append(s);
-                      diagsOutput.append(Const.CR);
-                    }
-                  }
-                  
-                  switch(tcEvents[i].getTaskStatus()) {
-                    case KILLED: {
-                      logError(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.TaskDetails", TaskCompletionEvent.Status.KILLED, tcEvents[i].getTaskAttemptId().getTaskID().getId(), tcEvents[i].getTaskAttemptId().getId(), tcEvents[i].getEventId(), diagsOutput)); //$NON-NLS-1$
-                    }break;
-                    case FAILED: {
-                      logError(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.TaskDetails", TaskCompletionEvent.Status.FAILED, tcEvents[i].getTaskAttemptId().getTaskID().getId(), tcEvents[i].getTaskAttemptId().getId(), tcEvents[i].getEventId(), diagsOutput)); //$NON-NLS-1$
-                      //result.setResult(false);
-                    }break;
-                    case SUCCEEDED: {
-                      logDetailed(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.TaskDetails", TaskCompletionEvent.Status.SUCCEEDED, tcEvents[i].getTaskAttemptId().getTaskID().getId(), tcEvents[i].getTaskAttemptId().getId(), tcEvents[i].getEventId(), diagsOutput)); //$NON-NLS-1$
-                    }break;
-                  }
-                }
-                taskCompletionEventIndex += tcEvents.length;
-                
+                taskCompletionEventIndex = logTaskMessages(runningJob, taskCompletionEventIndex);
                 Thread.sleep(logIntv * 1000);
               } else {
                 Thread.sleep(60000);
@@ -578,6 +550,8 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
             }
             
             printJobStatus(runningJob);
+            // Log any messages we may have missed while polling
+            logTaskMessages(runningJob, taskCompletionEventIndex);
           } catch (InterruptedException ie) {
             logError(ie.getMessage(), ie);
           }
@@ -605,6 +579,43 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
     }
     
     return result;
+  }
+
+  /**
+   * Log messages indicating completion (success/failure) of component tasks for the provided running job.
+   *
+   * @param runningJob Running job to poll for completion events
+   * @param startIndex Start at this event index to poll from
+   * @return Total events consumed
+   * @throws IOException Error fetching events
+   */
+  private int logTaskMessages(RunningJob runningJob, int startIndex) throws IOException {
+    TaskCompletionEvent[] tcEvents = runningJob.getTaskCompletionEvents(startIndex);
+    for(int i = 0; i < tcEvents.length; i++) {
+      String[] diags = runningJob.getTaskDiagnostics(tcEvents[i].getTaskAttemptId());
+      StringBuilder diagsOutput = new StringBuilder();
+
+      if(diags != null && diags.length > 0) {
+        diagsOutput.append(Const.CR);
+        for(String s : diags) {
+          diagsOutput.append(s);
+          diagsOutput.append(Const.CR);
+        }
+      }
+
+      switch(tcEvents[i].getTaskStatus()) {
+        case KILLED: {
+          logError(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.TaskDetails", TaskCompletionEvent.Status.KILLED, tcEvents[i].getTaskAttemptId().getTaskID().getId(), tcEvents[i].getTaskAttemptId().getId(), tcEvents[i].getEventId(), diagsOutput)); //$NON-NLS-1$
+        }break;
+        case FAILED: {
+          logError(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.TaskDetails", TaskCompletionEvent.Status.FAILED, tcEvents[i].getTaskAttemptId().getTaskID().getId(), tcEvents[i].getTaskAttemptId().getId(), tcEvents[i].getEventId(), diagsOutput)); //$NON-NLS-1$
+        }break;
+        case SUCCEEDED: {
+          logDetailed(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.TaskDetails", TaskCompletionEvent.Status.SUCCEEDED, tcEvents[i].getTaskAttemptId().getTaskID().getId(), tcEvents[i].getTaskAttemptId().getId(), tcEvents[i].getEventId(), diagsOutput)); //$NON-NLS-1$
+        }break;
+      }
+    }
+    return tcEvents.length;
   }
 
   public void printJobStatus(RunningJob runningJob) throws IOException {
