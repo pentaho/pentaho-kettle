@@ -18,6 +18,11 @@
 	<!-- Import the common_build.xml file which contains all the default tasks -->	
 	<import file="build-res/subfloor-pkg.xml"/>
 
+  <property name="mapred.src.dir" value="${basedir}/src-mapred" description="MapReduce source code directory"/>
+  <property name="mapred.classes.dir" value="${bin.dir}/mapreduce-classes"
+            description="Classes compiled from src-mapred are placed here"/>
+  <property name="mapred.artifact.name" value="${ivy.artifact.id}-mapred-${project.revision}.jar" description="Name of the mapred jar file to create"/>
+
   <property name="stage.pmr.dir" value="${bin.dir}/pmr"/>
   <property name="pmr.archive.name" value="pentaho-mapreduce-libraries"/>
   
@@ -36,9 +41,30 @@
                 value="package-samples-pom.xml"
                 description="The Maven pom file defining dependencies of the package" />
 	
-	
+
+  <!-- override init so we can create our mapred.classes.dir -->
+  <target name="init" depends="subfloor.init">
+    <mkdir dir="${mapred.classes.dir}" />
+  </target>
+
+  <!-- override the test classpath to include our mapred classes -->
+  <path id="test.classpath">
+    <fileset dir="${devlib.dir}">
+      <include name="**/*.jar" />
+    </fileset>
+    <fileset dir="${lib.dir}">
+      <include name="**/*.jar" />
+    </fileset>
+    <fileset dir="${testlib.dir}">
+      <include name="**/*.jar" />
+    </fileset>
+    <pathelement path="${testclasses.dir}" />
+    <pathelement path="${classes.dir}" />
+    <pathelement path="${mapred.classes.dir}"/>
+  </path>
+
 	<!-- override compile.compile to include custom classpath and do resource copying -->
-	<target name="compile.compile" depends="init">
+	<target name="compile.compile" depends="compile-mapred">
 	  <javac destdir="${classes.dir}"
 	         debug="${javac.debug}"
 	         deprecation="${javac.deprecation}"
@@ -47,10 +73,37 @@
 	         target="${javac.target}">
 	    <classpath>
 	      <path refid="classpath" />
+        <path location="${mapred.classes.dir}"/>
 	    </classpath>
 	    <src path="${src.dir}" />
 	  </javac>
 	</target>
+  
+  <target name="compile-mapred" depends="init">
+    <javac destdir="${mapred.classes.dir}"
+           debug="${javac.debug}"
+           deprecation="${javac.deprecation}"
+           fork="true"
+           source="${javac.source}"
+           target="${javac.target}">
+      <classpath>
+        <path refid="classpath"/>
+      </classpath>
+      <src path="${mapred.src.dir}"/>
+    </javac>
+    <copy todir="${mapred.classes.dir}" flatten="false">
+      <fileset dir="${mapred.src.dir}" excludes="**/*.java" />
+    </copy>
+  </target>
+  
+  <!-- override jar.main so we can jar up our mapred stuff too -->
+  <target name="jar.main" depends="subfloor.jar.main,jar-mapred"/>
+
+  <target name="jar-mapred" depends="compile-mapred,generate.manifest">
+    <jar destfile="${dist.dir}/${mapred.artifact.name}" manifest="${dist.manifest.file}">
+      <fileset dir="${mapred.classes.dir}" />
+    </jar>
+  </target>
 
   <target name="resolve" depends="subfloor.resolve,resolve-pmr"/>
 
@@ -60,8 +113,8 @@
     <ivy:retrieve conf="pmr" pattern="${stage.pmr.dir}/lib/[module]-[revision](-[classifier]).[ext]" symlink="true" />
   </target>
 
-	<target name="dist-noresolve" depends="jar,hbase-custom-comparators-jar,package" description="Builds and packages the application" />
-	<target name="dist" depends="resolve,jar,hbase-custom-comparators-jar,package" description="Builds and packages the application" />
+	<target name="dist-noresolve" depends="jar,hbase-custom-comparators-jar,jar-mapred,package" description="Builds and packages the application" />
+	<target name="dist" depends="resolve,jar,hbase-custom-comparators-jar,jar-mapred,package" description="Builds and packages the application" />
 	
 	<target name="clean-dist">
 		<delete dir="${dist.dir}" />
@@ -114,6 +167,7 @@
 			<exclude name="jface*.jar" />	      	
 			<exclude name="x86*.jar" />	      	
           </fileset>
+        <fileset file="${dist.dir}/${mapred.artifact.name}" />
 	    </copy>
 	    <copy todir="${stage.dir}/${ivy.artifact.id}">
 	      <fileset file="${dist.dir}/${ivy.artifact.id}-${project.revision}.jar" />
