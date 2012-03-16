@@ -219,7 +219,7 @@ public class DistributedCacheUtilTest {
         files = ch.findFiles(fs, dest, Pattern.compile(".*jar$"));
         assertEquals(2, files.size());
 
-        files = ch.findFiles(fs, dest, Pattern.compile(".*txt$"));
+        files = ch.findFiles(fs, dest, Pattern.compile(".*folder$"));
         assertEquals(1, files.size());
       } finally {
         fs.delete(root, true);
@@ -516,10 +516,16 @@ public class DistributedCacheUtilTest {
       assertTrue(conf.get("mapred.job.classpath.files").contains("lib/kettle-core.jar"));
       assertTrue(conf.get("mapred.job.classpath.files").contains("lib/kettle-engine.jar"));
 
-      // Make sure our plugin files are registered
-      assertTrue(conf.get("mapred.cache.files").contains("pentaho-big-data-plugin/jar1.jar"));
-      assertTrue(conf.get("mapred.cache.files").contains("pentaho-big-data-plugin/jar2.jar"));
-      assertTrue(conf.get("mapred.cache.files").contains("pentaho-big-data-plugin/folder/file.txt"));
+      // Make sure our plugins folder is registered
+      assertTrue(conf.get("mapred.cache.files").contains("#plugins"));
+
+      // Make sure our libraries aren't included twice
+      assertFalse(conf.get("mapred.cache.files").contains("#lib"));
+
+      // We should not have individual files registered
+      assertFalse(conf.get("mapred.cache.files").contains("pentaho-big-data-plugin/jar1.jar"));
+      assertFalse(conf.get("mapred.cache.files").contains("pentaho-big-data-plugin/jar2.jar"));
+      assertFalse(conf.get("mapred.cache.files").contains("pentaho-big-data-plugin/folder/file.txt"));
 
     } finally {
       bigDataPluginDir.delete(new AllFileSelector());

@@ -33,15 +33,14 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.plugins.PluginFolder;
 import org.pentaho.di.core.plugins.PluginFolderInterface;
-import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -62,9 +61,9 @@ public class DistributedCacheUtil {
    */
   private static final Pattern JAR_FILES = Pattern.compile(".*\\.jar$");
   /**
-   * Pattern to match all files that are not in the lib/ directory
+   * Pattern to match all files that are not in the lib/ directory. Matches any string that does not contain /lib
    */
-  private static final Pattern NOT_LIB_FILES = Pattern.compile("^((?!lib/).)*$");
+  private static final Pattern NOT_LIB_FILES = Pattern.compile("^((?!/lib).)*$");
 
   /**
    * Default permission for cached files
@@ -205,16 +204,17 @@ public class DistributedCacheUtil {
   }
 
   /**
-   * Register a list of files from a Hadoop file system to be available when the configuration is used to submit Hadoop jobs
+   * Register a list of paths from a Hadoop file system to be available when the configuration is used to submit Hadoop jobs
    *
-   * @param files Paths to add to the list of cached files for the configuration provided
+   * @param paths Paths to add to the list of cached paths for the configuration provided
    * @param conf  Configuration to modify
    * @throws IOException
    */
-  public void addCachedFiles(List<Path> files, Configuration conf) throws IOException {
+  public void addCachedFiles(List<Path> paths, Configuration conf) throws IOException {
     DistributedCache.createSymlink(conf);
-    for (Path file : files) {
-      DistributedCache.addCacheFile(file.toUri(), conf);
+    for (Path path : paths) {
+      // Build a URI and set the path's short name in the fragment so the file is copied properly
+      DistributedCache.addCacheFile(URI.create(path.toUri() + "#" + path.getName()), conf);
     }
   }
 
@@ -303,10 +303,11 @@ public class DistributedCacheUtil {
   }
 
   /**
-   * Recursively looks for all files in the path within the given file system that match the pattern provided.
+   * Looks for all files in the path within the given file system that match the pattern provided. Only the direct
+   * descendants of {@code path} will be evaluated; this is not recursive.
    * 
    * @param fs File system to search within
-   * @param path Path to start search at
+   * @param path Path to search in
    * @param fileNamePattern Pattern of file name to match. If {@code null}, all files will be matched.
    * @return All {@link Path}s that match the provided pattern.
    * @throws IOException Error retrieving listing status of a path from the file system
@@ -315,11 +316,7 @@ public class DistributedCacheUtil {
     FileStatus[] files = fs.listStatus(path);
     List<Path> found = new ArrayList<Path>(files.length);
     for (FileStatus file : files) {
-      // Recurse through subdirectories
-      if (file.isDir()) {
-        found.addAll(findFiles(fs, file.getPath(), fileNamePattern));
-        // do not add directories to list of paths
-      } else if (fileNamePattern == null || fileNamePattern.matcher(file.getPath().toString()).matches()) {
+      if (fileNamePattern == null || fileNamePattern.matcher(file.getPath().toString()).matches()) {
         found.add(file.getPath());
       }
     }
