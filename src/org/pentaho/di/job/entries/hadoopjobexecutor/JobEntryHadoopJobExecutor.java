@@ -532,7 +532,7 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
         if (blocking) {
           try {
             int taskCompletionEventIndex = 0;
-            while (!runningJob.isComplete()) {
+            while (!parentJob.isStopped() && !runningJob.isComplete()) {
               if (logIntv >= 1) {
                 printJobStatus(runningJob);
                 taskCompletionEventIndex = logTaskMessages(runningJob, taskCompletionEventIndex);
