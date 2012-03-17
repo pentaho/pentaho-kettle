@@ -435,7 +435,7 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface
 			tableName      =      rep.getStepAttributeString(id_step, "table"); //$NON-NLS-1$
 			updateBypassed =      rep.getStepAttributeBoolean(id_step, "update_bypassed"); //$NON-NLS-1$
 	
-			int nrkeys   = rep.countNrStepAttributes(id_step, "key_name"); //$NON-NLS-1$
+			int nrkeys   = rep.countNrStepAttributes(id_step, "key_field"); //$NON-NLS-1$
 			int nrvalues = rep.countNrStepAttributes(id_step, "value_name"); //$NON-NLS-1$
 			
 			allocate(nrkeys, nrvalues);
