@@ -105,6 +105,21 @@
     </jar>
   </target>
 
+  <target name="cobertura.instrument-classes" depends="subfloor.cobertura.instrument-classes">
+    <cobertura-instrument todir="${instrumented.classes.dir}" datafile="${cobertura.data.dir}/cobertura.ser">
+      <ignore regex="org.apache.log4j.*" />
+      <fileset dir="${mapred.classes.dir}">
+        <!--
+          Instrument all the application classes, but
+          don't instrument the test classes.
+        -->
+        <include name="**/*.class" />
+        <exclude name="**/*Test.class" />
+      </fileset>
+
+    </cobertura-instrument>
+  </target>
+
   <target name="resolve" depends="subfloor.resolve,resolve-pmr"/>
 
   <target name="resolve-pmr" depends="install-ivy">
