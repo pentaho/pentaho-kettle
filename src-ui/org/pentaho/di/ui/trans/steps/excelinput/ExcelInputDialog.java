@@ -388,13 +388,36 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		fileLayout.marginHeight = 3;
 		wFileComp.setLayout(fileLayout);
 
+        // spreadsheet engine type
+        wlSpreadSheetType=new Label(wFileComp, SWT.RIGHT);
+        wlSpreadSheetType.setText(BaseMessages.getString(PKG, "ExcelInputDialog.SpreadSheetType.Label"));
+        props.setLook(wlSpreadSheetType);
+        fdlSpreadSheetType=new FormData();
+        fdlSpreadSheetType.left = new FormAttachment(0, 0);
+        fdlSpreadSheetType.right= new FormAttachment(middle, -margin);
+        fdlSpreadSheetType.top = new FormAttachment(0, 0);
+        
+        wlSpreadSheetType.setLayoutData(fdlSpreadSheetType);
+        wSpreadSheetType=new CCombo(wFileComp, SWT.BORDER | SWT.READ_ONLY);
+        wSpreadSheetType.setEditable(true);
+        props.setLook(wSpreadSheetType);
+        wSpreadSheetType.addModifyListener(lsMod);
+        fdSpreadSheetType=new FormData();
+        fdSpreadSheetType.left = new FormAttachment(middle, 0);
+        fdSpreadSheetType.right= new FormAttachment(100, 0);
+        fdSpreadSheetType.top = new FormAttachment(0, 0);
+        wSpreadSheetType.setLayoutData(fdSpreadSheetType);
+        for (SpreadSheetType type : SpreadSheetType.values()) {
+          wSpreadSheetType.add(type.getDescription());
+        }  		
+		
 		// Filename line
 		wlFilename=new Label(wFileComp, SWT.RIGHT);
 		wlFilename.setText(BaseMessages.getString(PKG, "ExcelInputDialog.Filename.Label"));
  		props.setLook(wlFilename);
 		fdlFilename=new FormData();
 		fdlFilename.left = new FormAttachment(0, 0);
-		fdlFilename.top  = new FormAttachment(0, 0);
+		fdlFilename.top  = new FormAttachment(wSpreadSheetType, margin);
 		fdlFilename.right= new FormAttachment(middle, -margin);
 		wlFilename.setLayoutData(fdlFilename);
 
@@ -404,7 +427,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		wbbFilename.setToolTipText(BaseMessages.getString(PKG, "System.Tooltip.BrowseForFileOrDirAndAdd"));
 		fdbFilename=new FormData();
 		fdbFilename.right= new FormAttachment(100, 0);
-		fdbFilename.top  = new FormAttachment(0, 0);
+		fdbFilename.top  = new FormAttachment(wSpreadSheetType, margin);
 		wbbFilename.setLayoutData(fdbFilename);
 
 		wbaFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
@@ -413,7 +436,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		wbaFilename.setToolTipText(BaseMessages.getString(PKG, "ExcelInputDialog.FilenameAdd.Tooltip"));
 		fdbaFilename=new FormData();
 		fdbaFilename.right= new FormAttachment(wbbFilename, -margin);
-		fdbaFilename.top  = new FormAttachment(0, 0);
+		fdbaFilename.top  = new FormAttachment(wSpreadSheetType, margin);
 		wbaFilename.setLayoutData(fdbaFilename);
 
 		wFilename=new TextVar(transMeta, wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -422,7 +445,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		fdFilename=new FormData();
 		fdFilename.left = new FormAttachment(middle, 0);
 		fdFilename.right= new FormAttachment(wbaFilename, -margin);
-		fdFilename.top  = new FormAttachment(0, 0);
+		fdFilename.top  = new FormAttachment(wSpreadSheetType, margin);
 		wFilename.setLayoutData(fdFilename);
 
 		wlFilemask=new Label(wFileComp, SWT.RIGHT);
@@ -497,6 +520,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		fdbShowFiles.left   = new FormAttachment(middle, 0);
 		fdbShowFiles.bottom = new FormAttachment(100, -margin);
 		wbShowFiles.setLayoutData(fdbShowFiles);
+        
         
         // Accepting filenames group
         // 
@@ -597,7 +621,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         fdAccepting.bottom = new FormAttachment(wbShowFiles, -margin*2);
         // fdAccepting.bottom = new FormAttachment(wAccStep, margin);
         gAccepting.setLayoutData(fdAccepting);
-
+        
 		ColumnInfo[] colinfo=new ColumnInfo[5];
 		colinfo[0]=new ColumnInfo(BaseMessages.getString(PKG, "ExcelInputDialog.FileDir.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,    false);
         colinfo[0].setUsingVariables(true);
@@ -835,27 +859,6 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
             }
         );
 
-        wlSpreadSheetType=new Label(wContentComp, SWT.RIGHT);
-        wlSpreadSheetType.setText(BaseMessages.getString(PKG, "ExcelInputDialog.SpreadSheetType.Label"));
-        props.setLook(wlSpreadSheetType);
-        fdlSpreadSheetType=new FormData();
-        fdlSpreadSheetType.left = new FormAttachment(0, 0);
-        fdlSpreadSheetType.top  = new FormAttachment(wEncoding, margin);
-        fdlSpreadSheetType.right= new FormAttachment(middle, -margin);
-        wlSpreadSheetType.setLayoutData(fdlSpreadSheetType);
-        wSpreadSheetType=new CCombo(wContentComp, SWT.BORDER | SWT.READ_ONLY);
-        wSpreadSheetType.setEditable(true);
-        props.setLook(wSpreadSheetType);
-        wSpreadSheetType.addModifyListener(lsMod);
-        fdSpreadSheetType=new FormData();
-        fdSpreadSheetType.left = new FormAttachment(middle, 0);
-        fdSpreadSheetType.top  = new FormAttachment(wEncoding, margin);
-        fdSpreadSheetType.right= new FormAttachment(100, 0);
-        wSpreadSheetType.setLayoutData(fdSpreadSheetType);
-        for (SpreadSheetType type : SpreadSheetType.values()) {
-          wSpreadSheetType.add(type.getDescription());
-        }
-
         // ///////////////////////////////
 		// START OF AddFileResult GROUP  //
 		///////////////////////////////// 
@@ -874,7 +877,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
  		props.setLook(wlAddResult);
 		fdlAddResult=new FormData();
 		fdlAddResult.left = new FormAttachment(0, 0);
-		fdlAddResult.top  = new FormAttachment(wSpreadSheetType, margin);
+		fdlAddResult.top  = new FormAttachment(wEncoding, margin);
 		fdlAddResult.right= new FormAttachment(middle, -margin);
 		wlAddResult.setLayoutData(fdlAddResult);
 		wAddResult=new Button(wAddFileResult, SWT.CHECK );
@@ -882,12 +885,12 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		wAddResult.setToolTipText(BaseMessages.getString(PKG, "ExcelInputDialog.AddResult.Tooltip"));
 		fdAddResult=new FormData();
 		fdAddResult.left = new FormAttachment(middle, 0);
-		fdAddResult.top  = new FormAttachment(wSpreadSheetType, margin);
+		fdAddResult.top  = new FormAttachment(wEncoding, margin);
 		wAddResult.setLayoutData(fdAddResult);
 
 		fdAddFileResult = new FormData();
 		fdAddFileResult.left = new FormAttachment(0, margin);
-		fdAddFileResult.top = new FormAttachment(wSpreadSheetType, margin);
+		fdAddFileResult.top = new FormAttachment(wEncoding, margin);
 		fdAddFileResult.right = new FormAttachment(100, -margin);
 		wAddFileResult.setLayoutData(fdAddFileResult);
 			
