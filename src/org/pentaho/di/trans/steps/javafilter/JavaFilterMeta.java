@@ -264,7 +264,7 @@ public class JavaFilterMeta extends BaseStepMeta implements StepMetaInterface
     		ioMeta = new StepIOMeta(true, true, false, false, false, false);
     	
 	    	ioMeta.addStream( new Stream(StreamType.TARGET, null, BaseMessages.getString(PKG, "JavaFilterMeta.InfoStream.True.Description"), StreamIcon.TRUE, null) );
-	    	ioMeta.addStream( new Stream(StreamType.TARGET, null, BaseMessages.getString(PKG, "JavaFilterMeta.InfoStream.False.Description"), StreamIcon.TRUE, null) );
+	    	ioMeta.addStream( new Stream(StreamType.TARGET, null, BaseMessages.getString(PKG, "JavaFilterMeta.InfoStream.False.Description"), StreamIcon.FALSE, null) );
     	}
     	
     	return ioMeta;
@@ -273,4 +273,9 @@ public class JavaFilterMeta extends BaseStepMeta implements StepMetaInterface
     @Override
     public void resetStepIoMeta() {
     }
+    
+    @Override
+    public boolean excludeFromCopyDistributeVerification() {
+    	return true;
+    }    
 }
