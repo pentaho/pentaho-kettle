@@ -122,7 +122,7 @@ public class ErrorDialog extends Dialog
         final Font largeFont = GUIResource.getInstance().getFontBold();
 		final Color gray = GUIResource.getInstance().getColorDemoGray();
 
-		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN | SWT.APPLICATION_MODAL);
+		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN | SWT.APPLICATION_MODAL| SWT.SHEET);
  		props.setLook(shell);
  		shell.setImage(GUIResource.getInstance().getImageShowErrorLines());
 
@@ -155,7 +155,14 @@ public class ErrorDialog extends Dialog
 			if (exception instanceof KettleException) // Normal error
 			{
 				KettleException ke = (KettleException) exception;
-				text.append(ke.getCause().getMessage());
+				Throwable cause = ke.getCause();
+				if (cause != null){
+					text.append(ke.getCause().getMessage());	
+				}
+				else{
+					text.append(ke.getMessage());
+				}
+				
 			}
 			else
             // Error from somewhere else, what is the cause?
