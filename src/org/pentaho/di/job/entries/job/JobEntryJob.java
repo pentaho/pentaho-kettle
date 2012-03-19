@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
@@ -810,7 +811,10 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
           
           JobEntryJobRunner runner = new JobEntryJobRunner( job, result, nr, log);
           Thread jobRunnerThread = new Thread(runner);
-          jobRunnerThread.setName( Const.NVL(job.getJobMeta().getName(), job.getJobMeta().getFilename()) );
+          // PDI-6518
+          // added UUID to thread name, otherwise threads do share names if jobs entries are executed in parallel in a parent job
+          // if that happens, contained transformations start closing each other's connections
+          jobRunnerThread.setName( Const.NVL(job.getJobMeta().getName(), job.getJobMeta().getFilename())+" UUID: "+UUID.randomUUID().toString() );
           jobRunnerThread.start();
           
           //job.start();
