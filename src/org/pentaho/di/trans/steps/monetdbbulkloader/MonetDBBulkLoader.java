@@ -23,10 +23,12 @@
 package org.pentaho.di.trans.steps.monetdbbulkloader;
 
 import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
 import java.util.Date;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
@@ -70,13 +72,12 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 	 * information supplied.
 	 * 
 	 * @param meta The meta data to create the command line from
-	 * @param password Use the real password or not
 	 * 
 	 * @return The string to execute.
 	 * 
 	 * @throws KettleException Upon any exception
 	 */
-	public String createCommandLine(MonetDBBulkLoaderMeta meta, boolean password) throws KettleException
+	public String createCommandLine(MonetDBBulkLoaderMeta meta, boolean lSql) throws KettleException
 	{
 	   StringBuffer sb = new StringBuffer(300);
 	   
@@ -100,8 +101,9 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 
 	   // Add standard options to the mclient command:
 	   //
-	   sb.append(" -lsql");
-	   
+	   if( lSql ) {
+		   sb.append(" -lsql");
+	   }
 	   // See if the encoding is set...
 	   //
 	   if ( !Const.isEmpty(meta.getEncoding()))
@@ -128,23 +130,10 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
        DatabaseMeta dm = meta.getDatabaseMeta();
        if ( dm != null )
        {
-           String user     = environmentSubstitute(Const.NVL(dm.getUsername(), ""));
-           String pass     = environmentSubstitute(Const.NVL(dm.getPassword(), ""));
            String hostname = environmentSubstitute(Const.NVL(dm.getHostname(), ""));
            String portnum  = environmentSubstitute(Const.NVL(dm.getDatabasePortNumberString(), ""));
            String dbname   = environmentSubstitute(Const.NVL(dm.getDatabaseName(), ""));
 
-           if (!Const.isEmpty(user)) {
-        	   sb.append(" --user=").append(user);
-           }
-           if (!Const.isEmpty(pass)) {
-        	   sb.append(" --passwd=");
-        	   if (password) {
-        		   sb.append(pass);
-        	   } else {
-        		   sb.append("******");
-        	   }
-           }
            if (!Const.isEmpty(hostname)) {
         	   sb.append(" --host=").append(hostname);
            }
@@ -165,14 +154,43 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 	
 	public boolean execute(MonetDBBulkLoaderMeta meta, boolean wait) throws KettleException
 	{
-        Runtime rt = Runtime.getRuntime();
+		Runtime rt = Runtime.getRuntime();
+		if (log.isDetailed()) logDetailed("Started execute" );
 
-        try  
+    	String cmd = null;
+    	String cmdLSql = null;
+		if (log.isDetailed()) logDetailed("Creating commands" );
+        try 
         {
-        	String cmd = createCommandLine(meta, true);
+        	cmdLSql = createCommandLine(meta, true);
+        	cmd = createCommandLine(meta, false);
+        }
+        catch ( Exception ex )
+        {
+           	throw new KettleException("Error while generating MonetDB commands", ex);
+        }
+		if (log.isDetailed()) logDetailed("Created command: "+cmdLSql );
+		if (log.isDetailed()) logDetailed("Created command: "+cmd );
+
+            try  
+        {
+
+       		if (log.isDetailed()) logDetailed("Truncate flag: "+meta.isTruncate() );
+       		if (log.isDetailed()) logDetailed("Auto Adjust Schema flag: "+meta.isAutoSchema() );
+       		if (log.isDetailed()) logDetailed("Auto String Length flag: "+meta.isAutoStringWidths() );
+            if( meta.isTruncate() && meta.isAutoSchema() ) {
+            	dropTable( rt, cmd );
+            } else {
+	            if( meta.isTruncate() ) {
+	            	truncateTable( rt, cmd );
+	            }
+	            if( meta.isAutoSchema() ) {
+	            	autoAdjustSchema( rt, cmd );
+	            }
+            }
         	
-        	logBasic("Executing command: "+cmd);
-            data.mClientlProcess = rt.exec(cmd);
+        	logBasic("Executing command: "+cmdLSql);
+            data.mClientlProcess = rt.exec(cmdLSql);
             
             // any error message?
             //
@@ -194,7 +212,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
         }
         catch ( Exception ex )
         {
-        	throw new KettleException("Error while executing mclient : " + createCommandLine(meta, false), ex);
+        	throw new KettleException("Error while executing mclient : " + cmdLSql, ex);
         }
         
         return true;
@@ -212,15 +230,17 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 			{
 				setOutputDone();
 
+	    		writeBufferToMonetDB();
 				// Close the output stream...
 				//
-				data.monetOutputStream.flush();
-				data.monetOutputStream.close();
-				
-                // wait for the mclient process to finish and check for any error...
-				//
-            	int exitVal = data.mClientlProcess.waitFor();
-				logBasic(BaseMessages.getString(PKG, "MonetDBBulkLoader.Log.ExitValuePsqlPath", "" + exitVal)); //$NON-NLS-1$
+	    		if( data.monetOutputStream != null ) {
+	    			data.monetOutputStream.flush();
+	    			data.monetOutputStream.close();
+	                // wait for the mclient process to finish and check for any error...
+					//
+	            	int exitVal = data.mClientlProcess.waitFor();
+					logBasic(BaseMessages.getString(PKG, "MonetDBBulkLoader.Log.ExitValuePsqlPath", "" + exitVal)); //$NON-NLS-1$
+	    		}
 	            
 				return false;
 			}
@@ -258,11 +278,10 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 	}
 
     private void writeRowToMonetDB(RowMetaInterface rowMeta, Object[] r) throws KettleException {
-    	if (data.bufferIndex<data.bufferSize) {
-    		addRowToBuffer(rowMeta, r);
-    	} else {
+    	if (data.bufferIndex==data.bufferSize) {
     		writeBufferToMonetDB();
     	}
+		addRowToBuffer(rowMeta, r);
     }
 
 	private void addRowToBuffer(RowMetaInterface rowMeta, Object[] r) throws KettleException {
@@ -290,11 +309,19 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 		    		switch(valueMeta.getType()) {
 		    		case ValueMetaInterface.TYPE_STRING :
 		    			line.write(data.quote);
-		    			if (valueMeta.isStorageBinaryString() && meta.getFieldFormatOk()[i]) {
+		    			if(meta.isAutoStringWidths()) {
+		    				// this is slower, but safer
+		    				String str = valueMeta.getString(valueData);
+		    				if( str.length() > valueMeta.getLength()) {
+		    					str = str.substring(0, valueMeta.getLength());
+		    				}
+		    				line.write(str.getBytes(meta.getEncoding()));
+		    			}
+		    			else if (valueMeta.isStorageBinaryString() && meta.getFieldFormatOk()[i]) {
 		    				// We had a string, just dump it back.
 		    				line.write((byte[])valueData);
 		    			} else {
-		    				line.write(valueMeta.getString(valueData).getBytes());
+		    				line.write(valueMeta.getString(valueData).getBytes(meta.getEncoding()));
 		    			}
 		    			line.write(data.quote);
 		    			break;
@@ -358,13 +385,117 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 		
 	}
 
+	public void truncateTable( Runtime rt, String mClientCmd ) throws KettleException {
+		
+    	try {
+		   if (log.isDetailed()) logDetailed("attempting to truncate table" );
+		
+		  	Process p = rt.exec(mClientCmd);
+		  	OutputStream stdIn = p.getOutputStream();
+		   
+		  	String cmd;
+		  	cmd = meta.getDatabaseMeta().getTruncateTableStatement(null, data.schemaTable)+";";		  	
+		  	
+		  	if (log.isDetailed()) logDetailed("Trying: "+cmd);
+		  	stdIn.write(cmd.getBytes());
+		  	if (log.isDetailed()) logDetailed("Successfull: "+cmd);
+		   
+		   stdIn.flush();
+		   stdIn.close();
+		    // wait for the process to finish and check for any error...
+
+		   int exitVal = p.waitFor();
+		   logBasic(BaseMessages.getString(PKG, "MonetDBBulkLoader.Log.ExitValuePsqlPath", "" + exitVal)); //$NON-NLS-1$
+	
+    	}
+    	catch(Exception e) {
+    		throw new KettleException("An error occurred writing data to the mclient process", e);
+    	}		
+	}
+
+
+	public void dropTable( Runtime rt, String mClientCmd ) throws KettleException {
+		
+    	try {
+		   if (log.isDetailed()) logDetailed("attempting to truncate table" );
+		
+		  	Process p = rt.exec(mClientCmd);
+		  	OutputStream stdIn = p.getOutputStream();
+		   
+		  	String cmd;
+		  	cmd = "drop table " + data.schemaTable+";";		  	
+		  	
+		  	if (log.isDetailed()) logDetailed("Trying: "+cmd);
+		  	stdIn.write(cmd.getBytes());
+		  	if (log.isDetailed()) logDetailed("Successfull: "+cmd);
+		   
+		   stdIn.flush();
+		   stdIn.close();
+		    // wait for the process to finish and check for any error...
+
+		   int exitVal = p.waitFor();
+		   logBasic(BaseMessages.getString(PKG, "MonetDBBulkLoader.Log.ExitValuePsqlPath", "" + exitVal)); //$NON-NLS-1$
+	
+		   autoAdjustSchema(rt, mClientCmd);
+		   
+    	}
+    	catch(Exception e) {
+    		throw new KettleException("An error occurred writing data to the mclient process", e);
+    	}		
+	}	
+	
+	public void autoAdjustSchema( Runtime rt, String mClientCmd )  throws KettleException {
+		
+    	try {
+ 		   if (log.isDetailed()) logDetailed("Attempting to auto adjust table structure" );
+ 		
+		   Process p = rt.exec(mClientCmd);
+		   OutputStream stdIn = p.getOutputStream();
+ 		  	
+		   if (log.isDetailed()) logDetailed("getTransMeta: "+getTransMeta() );
+   		   if (log.isDetailed()) logDetailed("getStepname: "+getStepname() );
+   		   SQLStatement statement = meta.getTableDdl(getTransMeta(), getStepname(), true, data);
+   		   if (log.isDetailed()) logDetailed("Statement: "+statement );
+  		   if (log.isDetailed() && statement != null) logDetailed("Statement has SQL: "+statement.hasSQL() );
+    		
+  		   if(statement != null && statement.hasSQL()) {
+    			String cmd = statement.getSQL();
+     		  	if (log.isDetailed()) logDetailed("Trying: "+cmd);
+     		  	stdIn.write(cmd.getBytes());
+     		  	if (log.isDetailed()) logDetailed("Successfull: "+cmd);
+    		}	    	
+ 		  	 		   
+ 		   stdIn.flush();
+ 		   stdIn.close();
+ 		    // wait for the process to finish and check for any error...
+
+ 		   int exitVal = p.waitFor();
+ 		   logBasic(BaseMessages.getString(PKG, "MonetDBBulkLoader.Log.ExitValuePsqlPath", "" + exitVal)); //$NON-NLS-1$
+ 	
+     	}
+     	catch(Exception e) {
+     		throw new KettleException("An error occurred writing data to the mclient process", e);
+     	}		
+     	
+	}
+		
     private void writeBufferToMonetDB() throws KettleException {
     	if (data.bufferIndex==0) return;
     	
     	try {
 	    	// first write the COPY INTO command...
 	    	//
-	    	String cmd = "COPY "+data.bufferIndex+" RECORDS INTO "+data.schemaTable+" FROM STDIN;";
+    		StringBuffer cmdBuff = new StringBuffer();
+    		cmdBuff.append( "COPY " )
+    		.append(data.bufferIndex)
+    		.append(" RECORDS INTO ")
+    		.append(data.schemaTable)
+    		.append(" FROM STDIN USING DELIMITERS '")
+    		.append(new String(data.separator))
+    		.append("','\\n','")
+    		.append(new String(data.quote))
+    		.append("';");
+    		String cmd = cmdBuff.toString();
 	    	if (log.isDetailed()) logDetailed(cmd);
 	    	data.monetOutputStream.write(cmd.getBytes());
 	    	
@@ -375,7 +506,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 	    	
 	    	// Also write an empty row
 	    	//
-	    	data.monetOutputStream.write(Const.CR.getBytes());
+//	    	data.monetOutputStream.write(Const.CR.getBytes());
 	    	if (log.isRowLevel()) logRowlevel(Const.CR);
 	    	
 	    	// reset the buffer pointer...
@@ -434,9 +565,11 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 	    // Close the mclient output stream
 	    //
 	    try {
-	    	data.monetOutputStream.close();
-	    	int exitValue = data.mClientlProcess.waitFor();
-	    	logDetailed("Exit value for the mclient process was : "+exitValue);
+	    	if( data.monetOutputStream != null ) {
+	    		data.monetOutputStream.close();
+		    	int exitValue = data.mClientlProcess.waitFor();
+		    	logDetailed("Exit value for the mclient process was : "+exitValue);
+	    	}
 	    }
 	    catch(Exception e) {
 	    	setErrors(1L);
@@ -445,5 +578,5 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 	    
 	    super.dispose(smi, sdi);
 	}
-	
+
 }

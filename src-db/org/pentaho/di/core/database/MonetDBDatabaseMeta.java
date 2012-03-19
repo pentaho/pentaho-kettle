@@ -263,7 +263,23 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 
     public String[] getUsedLibraries()
     {
-        return new String[] { "monetdb-1.7-jdbc.jar", };
+        return new String[] { "monetdb-jdbc-2.1.jar", };
     }
 
+	/**
+	 * Returns the minimal SQL to launch in order to determine the layout of the resultset for a given database table
+	 * @param tableName The name of the table to determine the layout for
+	 * @return The SQL to launch.
+	 */
+    @Override
+	public String getSQLQueryFields(String tableName)
+	{
+	    return "SELECT * FROM "+tableName+";";
+	}    
+
+    @Override
+    public boolean supportsResultSetMetadataRetrievalOnly() {
+  	  return true;
+    }
+    
 }
