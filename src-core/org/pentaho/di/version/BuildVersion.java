@@ -24,12 +24,16 @@ package org.pentaho.di.version;
 
 import java.net.JarURLConnection;
 import java.net.URL;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.jar.Attributes;
 import java.util.jar.Manifest;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.xml.XMLHandler;
+
+import java.text.SimpleDateFormat;
 
 
 /**
@@ -41,6 +45,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 public class BuildVersion
 {
 	public static final String REFERENCE_FILE = "/kettle-steps.xml";
+	private static final String JAR_BUILD_DATE_FORMAT = "yyyy-MM-dd HH.mm.ss";
 	
 	private static BuildVersion buildVersion;
     
@@ -90,6 +95,26 @@ public class BuildVersion
     public String getBuildDate()
     {
         return buildDate;
+    }
+    
+    public Date getBuildDateAsLocalDate(){
+
+    	SimpleDateFormat sdf = new SimpleDateFormat(JAR_BUILD_DATE_FORMAT);
+		try {
+			Date d = sdf.parse(buildDate);
+			return d;
+			// ignore failure, retry using standard format
+		} catch (ParseException e) {};
+		
+		sdf = new SimpleDateFormat(ValueMeta.DEFAULT_DATE_FORMAT_MASK);
+		try {
+			Date d = sdf.parse(buildDate);
+			return d;
+			// ignore failure and return null
+		} catch (ParseException e) {};
+		
+		return null;
+    	
     }
 
     /**
