@@ -774,11 +774,9 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
 			break;
 		}
 		
-		if(success)
-		{
-			result.setResult(true);
-			result.setNrErrors(0);
-		}
+		result.setResult(success);
+		// PDI-6943: this job entry does not set errors upon evaluation, independently of the outcome of the check
+		result.setNrErrors(0);
 		return result;
 	}
 	
