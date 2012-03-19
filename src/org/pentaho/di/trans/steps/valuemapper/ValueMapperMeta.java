@@ -179,7 +179,21 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface
 		if (!Const.isEmpty(getTargetField()))
         {
 		    extra = new ValueMeta(getTargetField(), ValueMetaInterface.TYPE_STRING);
-		    
+		    extra.setOrigin(name);
+            r.addValueMeta(extra);
+        }
+		else
+		{
+			if (!Const.isEmpty(getFieldToUse())) {
+				extra = r.searchValueMeta(getFieldToUse());
+			}
+		}
+		
+		if (extra!=null) {
+			// The output of a changed field or new field is always a normal storage type...
+			//
+			extra.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
+			
             // Lengths etc?
             // Take the max length of all the strings...
 		    //
@@ -196,20 +210,7 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface
                 maxlen = nonMatchDefault.length();
             }
             extra.setLength(maxlen);
-            extra.setOrigin(name);
-            r.addValueMeta(extra);
-        }
-		else
-		{
-			if (!Const.isEmpty(getFieldToUse())) {
-				extra = r.searchValueMeta(getFieldToUse());
-			}
-		}
-		
-		if (extra!=null) {
-			// The output of a changed field or new field is always a normal storage type...
-			//
-			extra.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
+			
 		}
 	}
 
