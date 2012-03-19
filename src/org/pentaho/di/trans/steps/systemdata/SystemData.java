@@ -260,7 +260,7 @@ public class SystemData extends BaseStep implements StepInterface
                 row[index] = BuildVersion.getInstance().getVersion();
                 break;
             case SystemDataMeta.TYPE_SYSTEM_INFO_KETTLE_BUILD_DATE:
-                row[index] = BuildVersion.getInstance().getBuildDate();
+                row[index] = BuildVersion.getInstance().getBuildDateAsLocalDate();
                 break;
             case SystemDataMeta.TYPE_SYSTEM_INFO_CURRENT_PID:
                 row[index] =new Long(Management.getPID());
