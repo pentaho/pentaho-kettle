@@ -30,7 +30,6 @@
 	<classpathentry exported="true" kind="lib" path="libext/commons/commons-logging-1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/commons/commons-pool-1.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/web/simple-jndi-0.11.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/JDBC/asjava.zip"/>
 	<classpathentry exported="true" kind="lib" path="libext/JDBC/db2jcc_license_cu.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/JDBC/db2jcc.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/JDBC/hsqldb.jar"/>
@@ -76,8 +75,8 @@
 	<classpathentry exported="true" kind="lib" path="libext/jcifs-1.3.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/pentaho/pentaho-formula-editor-0.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/ini4j-0.5.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/pentaho/pentaho-xul-core-TRUNK-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/pentaho/pentaho-xul-swt-TRUNK-SNAPSHOT.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/pentaho/pentaho-xul-core-TRUNK-SNAPSHOT.jar" sourcepath="/pentaho-xul-core/src"/>
+	<classpathentry exported="true" kind="lib" path="libext/pentaho/pentaho-xul-swt-TRUNK-SNAPSHOT.jar" sourcepath="/pentaho-xul-swt/src"/>
 	<classpathentry exported="true" kind="lib" path="libext/spring/spring-beans-2.5.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/spring/spring-context-2.5.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/spring/spring-context-support-2.5.6.jar"/>
@@ -136,7 +135,6 @@
 	<classpathentry exported="true" kind="lib" path="libext/saxon9-dom.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/saxon9.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/mondrian/saxon9-xom.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/salesforce/SFpartner21.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/jzlib-1.0.7.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/asm-attrs-1.5.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/axis2-adb-1.4.1.jar"/>
@@ -268,7 +266,6 @@
 	<classpathentry kind="lib" path="src-plugins/birt-output/lib/org.eclipse.emf.ecore.xmi_2.5.0.v20100521-1846.jar"/>
 	<classpathentry kind="lib" path="src-plugins/birt-output/lib/org.w3c.css.sac_1.3.0.v200805290154.jar"/>
 	<classpathentry kind="lib" path="src-plugins/birt-output/lib/scriptapi.jar"/>
-	<classpathentry kind="lib" path="libswt/linux/x86_64/swt.jar"/>
 	<classpathentry kind="lib" path="libext/jsendnsca-2.0.1.jar"/>
 	<classpathentry kind="lib" path="libext/mondrian/javacc.jar"/>
 	<classpathentry kind="lib" path="libext/mondrian/mondrian-3.4.0-SNAPSHOT.jar"/>
@@ -361,5 +358,7 @@
 	<classpathentry kind="lib" path="libext/JDBC/mysql-connector-java-3.1.14-bin.jar"/>
 	<classpathentry kind="lib" path="libext/slf4j-log4j12-1.6.1.jar"/>
 	<classpathentry kind="lib" path="libext/antlr-3.4-complete.jar"/>
+	<classpathentry kind="lib" path="libswt/osx64/swt.jar" sourcepath="/Users/slawo/Desktop/swt-3.7.2-cocoa-macosx-x86_64/src"/>
+	<classpathentry kind="lib" path="libext/salesforce/salesforce-partner-24.0.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
