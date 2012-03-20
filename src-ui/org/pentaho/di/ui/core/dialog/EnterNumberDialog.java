@@ -98,7 +98,7 @@ public class EnterNumberDialog extends Dialog
         Shell parent = getParent();
         Display display = parent.getDisplay();
 
-        shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.RESIZE);
+        shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.SHEET| SWT.RESIZE);
         props.setLook(shell);
         shell.setImage(GUIResource.getInstance().getImageSpoon());
 

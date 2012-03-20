@@ -231,7 +231,7 @@ public class EnterOptionsDialog extends Dialog
 
 		getData();
 
-		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.RESIZE);
+		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.SHEET| SWT.RESIZE);
 		props.setLook(shell);
 		shell.setImage(GUIResource.getInstance().getImageLogoSmall());
 

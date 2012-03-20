@@ -124,7 +124,7 @@ public class KettleDatabaseRepositoryDialog implements RepositoryDialogInterface
     this.masterRepositoriesMeta = repositoriesMeta.clone();
     this.masterRepositoryName = repositoryMeta.getName();
 
-    shell = new Shell(parent, style | SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN | SWT.APPLICATION_MODAL);
+    shell = new Shell(parent, style | SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN | SWT.APPLICATION_MODAL| SWT.SHEET);
     shell.setText(BaseMessages.getString(PKG, "RepositoryDialog.Dialog.Main.Title")); //$NON-NLS-1$
 
   }

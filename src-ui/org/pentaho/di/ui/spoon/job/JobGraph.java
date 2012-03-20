@@ -624,7 +624,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
   
   public void mouseDown(MouseEvent e) {
 
-		boolean control = (e.stateMask & SWT.CONTROL) != 0;
+		boolean control = (e.stateMask & SWT.MOD1) != 0;
 		boolean shift = (e.stateMask & SWT.SHIFT) != 0;
 
 		lastButton = e.button;
@@ -771,7 +771,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
 	}
 
 	public void mouseUp(MouseEvent e) {
-    boolean control = (e.stateMask & SWT.CONTROL) != 0;
+    boolean control = (e.stateMask & SWT.MOD1) != 0;
 
     if (iconoffset == null)
       iconoffset = new Point(0, 0);
@@ -1371,19 +1371,19 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
 		}
 		
 		// CTRL-UP : allignTop();
-		if (e.keyCode == SWT.ARROW_UP && (e.stateMask & SWT.CONTROL) != 0) {
+		if (e.keyCode == SWT.ARROW_UP && (e.stateMask & SWT.MOD1) != 0) {
 			alligntop();
 		}
 		// CTRL-DOWN : allignBottom();
-		if (e.keyCode == SWT.ARROW_DOWN && (e.stateMask & SWT.CONTROL) != 0) {
+		if (e.keyCode == SWT.ARROW_DOWN && (e.stateMask & SWT.MOD1) != 0) {
 			allignbottom();
 		}
 		// CTRL-LEFT : allignleft();
-		if (e.keyCode == SWT.ARROW_LEFT && (e.stateMask & SWT.CONTROL) != 0) {
+		if (e.keyCode == SWT.ARROW_LEFT && (e.stateMask & SWT.MOD1) != 0) {
 			allignleft();
 		}
 		// CTRL-RIGHT : allignRight();
-		if (e.keyCode == SWT.ARROW_RIGHT && (e.stateMask & SWT.CONTROL) != 0) {
+		if (e.keyCode == SWT.ARROW_RIGHT && (e.stateMask & SWT.MOD1) != 0) {
 			allignright();
 		}
 		// ALT-RIGHT : distributeHorizontal();
@@ -1399,8 +1399,8 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
 			snaptogrid(ConstUI.GRID_SIZE);
 		}
 		// CTRL-W or CTRL-F4 : close tab
-		if ((e.keyCode=='w' && (e.stateMask & SWT.CONTROL) != 0 ) ||
-		    (e.keyCode==SWT.F4 && (e.stateMask & SWT.CONTROL) != 0 )
+		if ((e.keyCode=='w' && (e.stateMask & SWT.MOD1) != 0 ) ||
+		    (e.keyCode==SWT.F4 && (e.stateMask & SWT.MOD1) != 0 )
 			)
 		{
 			spoon.closeFile();

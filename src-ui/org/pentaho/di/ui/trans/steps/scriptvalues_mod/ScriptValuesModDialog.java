@@ -939,7 +939,7 @@ public class ScriptValuesModDialog extends BaseStepDialog implements StepDialogI
     private boolean cancel()
     {
     	if (input.hasChanged()) {
-    		MessageBox box = new MessageBox(shell, SWT.YES | SWT.NO | SWT.APPLICATION_MODAL);
+    		MessageBox box = new MessageBox(shell, SWT.YES | SWT.NO | SWT.APPLICATION_MODAL| SWT.SHEET);
     		box.setText(BaseMessages.getString(PKG, "ScriptValuesModDialog.WarningDialogChanged.Title"));
     		box.setMessage(BaseMessages.getString(PKG, "ScriptValuesModDialog.WarningDialogChanged.Message", Const.CR));
     		int answer = box.open();

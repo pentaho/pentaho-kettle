@@ -85,7 +85,7 @@ public class ShowBrowserDialog extends Dialog
 		Shell parent = getParent();
 		Display display = parent.getDisplay();
 		
-		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.RESIZE | SWT.MAX | SWT.MIN);
+		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.SHEET| SWT.RESIZE | SWT.MAX | SWT.MIN);
 		shell.setImage(GUIResource.getInstance().getImageSpoon());
 		props.setLook(shell);
 

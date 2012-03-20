@@ -743,7 +743,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     public void mouseDown(MouseEvent e) {
 
 		boolean alt = (e.stateMask & SWT.ALT) != 0;
-		boolean control = (e.stateMask & SWT.CONTROL) != 0;
+		boolean control = (e.stateMask & SWT.MOD1) != 0;
 		boolean shift = (e.stateMask & SWT.SHIFT) != 0;
 
 		lastButton = e.button;
@@ -901,7 +901,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 	}
 
 	public void mouseUp(MouseEvent e) {
-      boolean control = (e.stateMask & SWT.CONTROL) != 0;
+      boolean control = (e.stateMask & SWT.MOD1) != 0;
 
       if (iconoffset == null)
         iconoffset = new Point(0, 0);
@@ -1751,19 +1751,19 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
 
       // CTRL-UP : allignTop();
-      if (e.keyCode == SWT.ARROW_UP && (e.stateMask & SWT.CONTROL) != 0) {
+      if (e.keyCode == SWT.ARROW_UP && (e.stateMask & SWT.MOD1) != 0) {
         alligntop();
       }
       // CTRL-DOWN : allignBottom();
-      if (e.keyCode == SWT.ARROW_DOWN && (e.stateMask & SWT.CONTROL) != 0) {
+      if (e.keyCode == SWT.ARROW_DOWN && (e.stateMask & SWT.MOD1) != 0) {
         allignbottom();
       }
       // CTRL-LEFT : allignleft();
-      if (e.keyCode == SWT.ARROW_LEFT && (e.stateMask & SWT.CONTROL) != 0) {
+      if (e.keyCode == SWT.ARROW_LEFT && (e.stateMask & SWT.MOD1) != 0) {
         allignleft();
       }
       // CTRL-RIGHT : allignRight();
-      if (e.keyCode == SWT.ARROW_RIGHT && (e.stateMask & SWT.CONTROL) != 0) {
+      if (e.keyCode == SWT.ARROW_RIGHT && (e.stateMask & SWT.MOD1) != 0) {
         allignright();
       }
       // ALT-RIGHT : distributeHorizontal();
@@ -1786,8 +1786,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       // System.out.println("e.character="+e.character+", e.keyCode="+e.keyCode+", stateMask & SWT.CTRL = "+(e.stateMask & SWT.CTRL));
       
       // CTRL-W or CTRL-F4 : close tab
-      if ((e.keyCode=='w' && (e.stateMask & SWT.CONTROL) != 0 ) ||
-          (e.keyCode==SWT.F4 && (e.stateMask & SWT.CONTROL) != 0 )
+      if ((e.keyCode=='w' && (e.stateMask & SWT.MOD1) != 0 ) ||
+          (e.keyCode==SWT.F4 && (e.stateMask & SWT.MOD1) != 0 )
           )
       {
           spoon.closeFile();
@@ -1821,8 +1821,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       }
       
 		// CTRL-W or CTRL-F4 : close tab
-		if ((e.character=='w' && (e.stateMask & SWT.CONTROL) != 0 ) ||
-		    (e.keyCode==SWT.F4 && (e.stateMask & SWT.CONTROL) != 0 )
+		if ((e.character=='w' && (e.stateMask & SWT.MOD1) != 0 ) ||
+		    (e.keyCode==SWT.F4 && (e.stateMask & SWT.MOD1) != 0 )
 			)
 		{
 			dispose();
@@ -3557,7 +3557,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         setControlStates();
         checkErrorVisuals();
 
-        PreviewRowsDialog previewRowsDialog = new PreviewRowsDialog(shell, transMeta, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.APPLICATION_MODAL,
+        PreviewRowsDialog previewRowsDialog = new PreviewRowsDialog(shell, transMeta, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.APPLICATION_MODAL| SWT.SHEET,
             stepDebugMeta.getStepMeta().getName(), rowBufferMeta, rowBuffer);
         previewRowsDialog.setProposingToGetMoreRows(true);
         previewRowsDialog.setProposingToStop(true);

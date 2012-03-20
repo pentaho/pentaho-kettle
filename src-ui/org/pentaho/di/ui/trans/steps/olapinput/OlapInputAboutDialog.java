@@ -58,7 +58,7 @@ public class OlapInputAboutDialog {
      * @param shell the shell.
      */
     public OlapInputAboutDialog(final Shell shell) {
-        this.dialog = new Shell(shell, SWT.BORDER | SWT.CLOSE | SWT.APPLICATION_MODAL);
+        this.dialog = new Shell(shell, SWT.BORDER | SWT.CLOSE | SWT.APPLICATION_MODAL| SWT.SHEET);
         GridLayout gridLayout = new GridLayout();
         gridLayout.numColumns = 2;
         

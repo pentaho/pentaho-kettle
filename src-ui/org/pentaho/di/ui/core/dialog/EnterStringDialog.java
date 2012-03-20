@@ -118,7 +118,7 @@ public class EnterStringDialog extends Dialog
 		Shell parent = getParent();
 		Display display = parent.getDisplay();
 
-		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.APPLICATION_MODAL);
+		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.APPLICATION_MODAL| SWT.SHEET);
  		props.setLook(shell);
 
 		FormLayout formLayout = new FormLayout ();

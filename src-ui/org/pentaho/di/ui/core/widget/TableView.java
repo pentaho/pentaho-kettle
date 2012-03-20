@@ -30,6 +30,8 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.event.DocumentEvent.EventType;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.custom.CCombo;
@@ -305,33 +307,28 @@ public class TableView extends Composite
         editor.grabHorizontal = true;
         editor.grabVertical = true;
 		
-        if (mRow!=null && !mRow.isDisposed())
-        {
-            mRow.dispose();
-        }
         mRow = new Menu(table);
-		MenuItem miRowInsBef = new MenuItem(mRow, SWT.NONE); miRowInsBef.setText(BaseMessages.getString(PKG, "TableView.menu.InsertBeforeRow"));
-		MenuItem miRowInsAft = new MenuItem(mRow, SWT.NONE); miRowInsAft.setText(BaseMessages.getString(PKG, "TableView.menu.InsertAfterRow"));
+		MenuItem miRowInsBef = new MenuItem(mRow, SWT.NONE); miRowInsBef.setText(OsHelper.customizeMenuitemText(BaseMessages.getString(PKG, "TableView.menu.InsertBeforeRow")));
+		MenuItem miRowInsAft = new MenuItem(mRow, SWT.NONE); miRowInsAft.setText(OsHelper.customizeMenuitemText(BaseMessages.getString(PKG, "TableView.menu.InsertAfterRow")));
 		new MenuItem(mRow, SWT.SEPARATOR);
-		MenuItem miRowUp     = new MenuItem(mRow, SWT.NONE); miRowUp    .setText(BaseMessages.getString(PKG, "TableView.menu.MoveUp"));
-		MenuItem miRowDown   = new MenuItem(mRow, SWT.NONE); miRowDown  .setText(BaseMessages.getString(PKG, "TableView.menu.MoveDown"));
+		MenuItem miRowUp     = new MenuItem(mRow, SWT.NONE); miRowUp    .setText(OsHelper.customizeMenuitemText(BaseMessages.getString(PKG, "TableView.menu.MoveUp")));
+		MenuItem miRowDown   = new MenuItem(mRow, SWT.NONE); miRowDown  .setText(OsHelper.customizeMenuitemText(BaseMessages.getString(PKG, "TableView.menu.MoveDown")));
+		MenuItem miCol1      = new MenuItem(mRow, SWT.NONE); miCol1     .setText(OsHelper.customizeMenuitemText(BaseMessages.getString(PKG, "TableView.menu.OptimalSizeWithHeader")));
+		MenuItem miCol2      = new MenuItem(mRow, SWT.NONE); miCol2     .setText(OsHelper.customizeMenuitemText(BaseMessages.getString(PKG, "TableView.menu.OptimalSizeWithoutHeader")));
 		new MenuItem(mRow, SWT.SEPARATOR);
-		MenuItem miCol1      = new MenuItem(mRow, SWT.NONE); miCol1     .setText(BaseMessages.getString(PKG, "TableView.menu.OptimalSizeWithHeader"));
-		MenuItem miCol2      = new MenuItem(mRow, SWT.NONE); miCol2     .setText(BaseMessages.getString(PKG, "TableView.menu.OptimalSizeWithoutHeader"));
+		MenuItem miClear     = new MenuItem(mRow, SWT.NONE); miClear    .setText(OsHelper.customizeMenuitemText(BaseMessages.getString(PKG, "TableView.menu.ClearAll")));
 		new MenuItem(mRow, SWT.SEPARATOR);
-		MenuItem miClear     = new MenuItem(mRow, SWT.NONE); miClear    .setText(BaseMessages.getString(PKG, "TableView.menu.ClearAll"));
+		MenuItem miSelAll    = new MenuItem(mRow, SWT.NONE); miSelAll   .setText(OsHelper.customizeMenuitemText(BaseMessages.getString(PKG, "TableView.menu.SelectAll")));
+		MenuItem miUnselAll  = new MenuItem(mRow, SWT.NONE); miUnselAll .setText(OsHelper.customizeMenuitemText(BaseMessages.getString(PKG, "TableView.menu.ClearSelection")));
+		MenuItem miFilter    = new MenuItem(mRow, SWT.NONE); miFilter   .setText(OsHelper.customizeMenuitemText(BaseMessages.getString(PKG, "TableView.menu.FilteredSelection")));
 		new MenuItem(mRow, SWT.SEPARATOR);
-		MenuItem miSelAll    = new MenuItem(mRow, SWT.NONE); miSelAll   .setText(BaseMessages.getString(PKG, "TableView.menu.SelectAll"));
-		MenuItem miUnselAll  = new MenuItem(mRow, SWT.NONE); miUnselAll .setText(BaseMessages.getString(PKG, "TableView.menu.ClearSelection"));
-		MenuItem miFilter    = new MenuItem(mRow, SWT.NONE); miFilter   .setText(BaseMessages.getString(PKG, "TableView.menu.FilteredSelection"));
+		MenuItem miClipAll   = new MenuItem(mRow, SWT.NONE); miClipAll  .setText(OsHelper.customizeMenuitemText(BaseMessages.getString(PKG, "TableView.menu.CopyToClipboard")));
+		MenuItem miPasteAll  = new MenuItem(mRow, SWT.NONE); miPasteAll .setText(OsHelper.customizeMenuitemText(BaseMessages.getString(PKG, "TableView.menu.PasteFromClipboard")));
+		MenuItem miCutAll    = new MenuItem(mRow, SWT.NONE); miCutAll   .setText(OsHelper.customizeMenuitemText(BaseMessages.getString(PKG, "TableView.menu.CutSelected")));
+		MenuItem miDelAll    = new MenuItem(mRow, SWT.NONE); miDelAll   .setText(OsHelper.customizeMenuitemText(BaseMessages.getString(PKG, "TableView.menu.DeleteSelected")));
+		MenuItem miKeep      = new MenuItem(mRow, SWT.NONE); miKeep     .setText(OsHelper.customizeMenuitemText(BaseMessages.getString(PKG, "TableView.menu.KeepSelected")));
 		new MenuItem(mRow, SWT.SEPARATOR);
-		MenuItem miClipAll   = new MenuItem(mRow, SWT.NONE); miClipAll  .setText(BaseMessages.getString(PKG, "TableView.menu.CopyToClipboard"));
-		MenuItem miPasteAll  = new MenuItem(mRow, SWT.NONE); miPasteAll .setText(BaseMessages.getString(PKG, "TableView.menu.PasteFromClipboard"));
-		MenuItem miCutAll    = new MenuItem(mRow, SWT.NONE); miCutAll   .setText(BaseMessages.getString(PKG, "TableView.menu.CutSelected"));
-		MenuItem miDelAll    = new MenuItem(mRow, SWT.NONE); miDelAll   .setText(BaseMessages.getString(PKG, "TableView.menu.DeleteSelected"));
-		MenuItem miKeep      = new MenuItem(mRow, SWT.NONE); miKeep     .setText(BaseMessages.getString(PKG, "TableView.menu.KeepSelected"));
-		new MenuItem(mRow, SWT.SEPARATOR);
-		MenuItem miCopyToAll = new MenuItem(mRow, SWT.NONE); miCopyToAll.setText(BaseMessages.getString(PKG, "TableView.menu.CopyFieldToAllRows"));
+		MenuItem miCopyToAll = new MenuItem(mRow, SWT.NONE); miCopyToAll.setText(OsHelper.customizeMenuitemText(BaseMessages.getString(PKG, "TableView.menu.CopyFieldToAllRows")));
 		new MenuItem(mRow, SWT.SEPARATOR);
 		miEditUndo           = new MenuItem(mRow, SWT.NONE);
 		miEditRedo           = new MenuItem(mRow, SWT.NONE);
@@ -665,14 +662,14 @@ public class TableView extends Composite
 					previous_shift = shift;
 					
 					// Move rows up or down shortcuts...					
-					if (!readonly && e.keyCode   == SWT.ARROW_DOWN && (( e.stateMask & SWT.CTRL)!=0 ))
+					if (!readonly && e.keyCode   == SWT.ARROW_DOWN && (( e.stateMask & SWT.MOD1)!=0 ))
 					{
 						moveRows(+1);
 						e.doit = false;
                         return;
 					}
 
-					if (!readonly && e.keyCode   == SWT.ARROW_UP && (( e.stateMask & SWT.CTRL)!=0 ))
+					if (!readonly && e.keyCode   == SWT.ARROW_UP && (( e.stateMask & SWT.MOD1)!=0 ))
 					{
 						moveRows(-1);
 						e.doit = false;
@@ -755,7 +752,7 @@ public class TableView extends Composite
 					}
 
 					// CTRL-A --> Select All lines
-					if (e.character ==  1 ) 
+					if (e.character ==  'a' && (( e.stateMask & SWT.MOD1)!=0 )) 
 					{
 						selectAll(); 
                         return;
@@ -770,28 +767,28 @@ public class TableView extends Composite
 					} 
 
 					// CTRL-C --> Copy selected lines to clipboard
-					if (e.character ==  3 ) 
+					if (e.character ==  'c' && (( e.stateMask & SWT.MOD1)!=0 ) ) 
 					{
 						clipSelected();
                         return;
 					}
 
 					// CTRL-K --> keep only selected lines
-					if (!readonly && e.character == 11  ) 
+					if (!readonly && e.character == 'k' && (( e.stateMask & SWT.MOD1)!=0 )  ) 
 					{
 						keepSelected();
                         return;
 					}
 
 					// CTRL-X --> Cut selected infomation...
-					if (!readonly && e.character ==  24  ) 
+					if (!readonly && e.character ==  'x' && (( e.stateMask & SWT.MOD1)!=0 )  ) 
 					{
 						cutSelected();
                         return;
 					}
 
                     // CTRL-V --> Paste selected infomation...
-					if (!readonly && e.character ==  22  ) 
+					if (!readonly && e.character ==  'v' && (( e.stateMask & SWT.MOD1)!=0 )  ) 
 					{
 						pasteSelected();
                         return;
@@ -819,14 +816,14 @@ public class TableView extends Composite
 					}
 
 					// CTRL-Y --> redo action
-					if (e.character == 25  ) 
+					if (e.character == 'y' && (( e.stateMask & SWT.MOD1)!=0 )  ) 
                     { 
                         redoAction(); 
                         return;
                     }
 
 					// CTRL-Z --> undo action
-					if (e.character == 26  ) 
+					if (e.character == 'z' && (( e.stateMask & SWT.MOD1)!=0 )  ) 
                     { 
                         undoAction(); 
                         return;
@@ -927,7 +924,7 @@ public class TableView extends Composite
 					if (event.button == 1)
                 {
                     boolean shift = (event.stateMask & SWT.SHIFT) != 0;
-                    boolean control = (event.stateMask & SWT.CONTROL) != 0;
+                    boolean control = (event.stateMask & SWT.MOD1) != 0;
                     if (!shift && !control)
                     {
                         Rectangle clientArea = table.getClientArea();
@@ -2640,23 +2637,23 @@ public class TableView extends Composite
 		if (prev!=null) 
 		{
 			miEditUndo.setEnabled(true);
-			miEditUndo.setText(BaseMessages.getString(PKG, "TableView.menu.Undo", prev.toString()));
+			miEditUndo.setText(OsHelper.customizeMenuitemText(BaseMessages.getString(PKG, "TableView.menu.Undo", prev.toString())));
 		} 
 		else            
 		{
 			miEditUndo.setEnabled(false);
-			miEditUndo.setText(BaseMessages.getString(PKG, "TableView.menu.UndoNotAvailable"));
+			miEditUndo.setText(OsHelper.customizeMenuitemText(BaseMessages.getString(PKG, "TableView.menu.UndoNotAvailable")));
 		} 
 
 		if (next!=null) 
 		{
 			miEditRedo.setEnabled(true);
-			miEditRedo.setText(BaseMessages.getString(PKG, "TableView.menu.Redo",next.toString()));
+			miEditRedo.setText(OsHelper.customizeMenuitemText(BaseMessages.getString(PKG, "TableView.menu.Redo",next.toString())));
 		} 
 		else            
 		{
 			miEditRedo.setEnabled(false);
-			miEditRedo.setText(BaseMessages.getString(PKG, "TableView.menu.RedoNotAvailable"));
+			miEditRedo.setText(OsHelper.customizeMenuitemText(BaseMessages.getString(PKG, "TableView.menu.RedoNotAvailable")));
 		} 
 
 	}

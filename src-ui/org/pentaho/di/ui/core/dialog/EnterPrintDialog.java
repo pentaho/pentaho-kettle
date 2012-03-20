@@ -139,7 +139,7 @@ public class EnterPrintDialog extends Dialog
 		
 		retval = SWT.OK;
 
-		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.RESIZE | SWT.MAX | SWT.MIN);
+		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL| SWT.SHEET | SWT.RESIZE | SWT.MAX | SWT.MIN);
  		props.setLook(shell);
 
 		FormLayout formLayout = new FormLayout ();

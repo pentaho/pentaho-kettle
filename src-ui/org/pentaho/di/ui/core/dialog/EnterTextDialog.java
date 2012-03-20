@@ -132,7 +132,7 @@ public class EnterTextDialog extends Dialog
         
         modal |= Const.isLinux(); // On Linux, this dialog seems to behave strangely except when shown modal
         
-        shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN |  (modal?SWT.APPLICATION_MODAL:SWT.NONE));
+        shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN |  (modal?SWT.APPLICATION_MODAL| SWT.SHEET:SWT.NONE));
         props.setLook(shell);
         shell.setImage(GUIResource.getInstance().getImageSpoon());
 

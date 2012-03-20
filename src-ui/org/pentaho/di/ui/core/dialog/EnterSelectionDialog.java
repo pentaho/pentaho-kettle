@@ -172,7 +172,7 @@ public class EnterSelectionDialog extends Dialog
 		Shell parent = getParent();
 		Display display = parent.getDisplay();
 
-		shell = new Shell(parent, SWT.DIALOG_TRIM | (modal?SWT.APPLICATION_MODAL:SWT.NONE) | SWT.RESIZE | SWT.MIN | SWT.MAX );
+		shell = new Shell(parent, SWT.DIALOG_TRIM | (modal?SWT.APPLICATION_MODAL| SWT.SHEET:SWT.NONE) | SWT.RESIZE | SWT.MIN | SWT.MAX );
  		props.setLook(shell);
  		
 

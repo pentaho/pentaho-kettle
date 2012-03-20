@@ -109,7 +109,7 @@ public class EnterPasswordDialog extends Dialog
 		Shell parent = getParent();
 		Display display = parent.getDisplay();
 
-		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN |  (modal?SWT.APPLICATION_MODAL:SWT.NONE));
+		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN |  (modal?SWT.APPLICATION_MODAL| SWT.SHEET:SWT.NONE));
  		props.setLook(shell);
 		shell.setImage(GUIResource.getInstance().getImageLogoSmall());
 

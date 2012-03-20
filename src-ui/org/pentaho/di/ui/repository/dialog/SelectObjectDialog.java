@@ -158,7 +158,7 @@ public class SelectObjectDialog extends Dialog {
     Shell parent = getParent();
     dircolor = GUIResource.getInstance().getColorDirectory();
 
-    shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.RESIZE | SWT.MIN | SWT.MAX);
+    shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.SHEET| SWT.RESIZE | SWT.MIN | SWT.MAX);
     props.setLook(shell);
     shell.setImage(GUIResource.getInstance().getImageFolderConnections());
 

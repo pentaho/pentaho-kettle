@@ -101,6 +101,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Sash;
@@ -155,7 +156,15 @@ import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.parameters.NamedParams;
-import org.pentaho.di.core.plugins.*;
+import org.pentaho.di.core.plugins.JobEntryPluginType;
+import org.pentaho.di.core.plugins.LifecyclePluginType;
+import org.pentaho.di.core.plugins.PartitionerPluginType;
+import org.pentaho.di.core.plugins.PluginFolder;
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.PluginTypeListener;
+import org.pentaho.di.core.plugins.RepositoryPluginType;
+import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.reflection.StringSearchResult;
 import org.pentaho.di.core.row.RowBuffer;
 import org.pentaho.di.core.row.RowMeta;
@@ -232,6 +241,7 @@ import org.pentaho.di.ui.core.dialog.ShowMessageDialog;
 import org.pentaho.di.ui.core.dialog.Splash;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.core.widget.OsHelper;
 import org.pentaho.di.ui.core.widget.TreeMemory;
 import org.pentaho.di.ui.imp.ImportRulesDialog;
 import org.pentaho.di.ui.job.dialog.JobLoadProgressDialog;
@@ -276,6 +286,7 @@ import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.components.WaitBoxRunnable;
 import org.pentaho.ui.xul.components.XulMenuitem;
+import org.pentaho.ui.xul.components.XulMenuseparator;
 import org.pentaho.ui.xul.components.XulToolbarbutton;
 import org.pentaho.ui.xul.components.XulWaitBox;
 import org.pentaho.ui.xul.containers.XulMenu;
@@ -302,7 +313,7 @@ import org.w3c.dom.Node;
  */
 public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterface, OverwritePrompter, PDIObserver,
     LifeEventHandler, XulEventSource, XulEventHandler {
-
+    	
   private static Class<?> PKG = Spoon.class;
 
   public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject("Spoon", LoggingObjectType.SPOON,
@@ -499,11 +510,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
    *            Arguments are available in the "Get System Info" step.
    */
   public static void main(String[] a) throws KettleException {
-    try {
-      
-      UIManager.setLookAndFeel(new MetalLookAndFeel());
-      
-      // Bootstrap Kettle
+
+	  try {
+		  
+	  OsHelper.setAppName();
+
+	  // Bootstrap Kettle
       //
       //  We start Sleak if the VM argument RUN_SLEAK was provided
       Display display = null;
@@ -515,9 +527,15 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
          sleak.open();
       }
       else {
-         display = new Display();
+         //display = new Display();
+    	  display = Display.getDefault();
       }
-
+      
+      // Note: this needs to be done befre the look and feel is set
+      OsHelper.initOsHandlers(display);
+      
+      UIManager.setLookAndFeel(new MetalLookAndFeel());
+      
       // The core plugin types don't know about UI classes. Add them in now
       // before the PluginRegistry inits.
       Splash splash = null; // new Splash(display);
@@ -557,8 +575,12 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         box.open();
       }
 
+      OsHelper.customizeWindow();
+      
       staticSpoon.setArguments(args.toArray(new String[args.size()]));
       staticSpoon.start(splash, commandLineOptions);
+      
+      
     } catch (Throwable t) {
       // avoid calls to Messages i18n method getString() in this block
       // We do this to (hopefully) also catch Out of Memory Exceptions
@@ -609,7 +631,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   }
 
   public Spoon(Display d, Repository rep) {
-    log = new LogChannel(APP_NAME);
+   
+	log = new LogChannel(APP_NAME);
     SpoonFactory.setSpoonInstance(this);
     setRepository(rep);
 
@@ -687,8 +710,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     variables = new RowMetaAndData(new RowMeta(), new Object[] {});
 
     // props.setLook(shell);
-
-    shell.setImage(GUIResource.getInstance().getImageSpoon());
+    Image[] images = {GUIResource.getInstance().getImageSpoonHigh(), GUIResource.getInstance().getImageSpoon()};
+    shell.setImages(images);
+    
+    //shell.setImage(GUIResource.getInstance().getImageSpoon());
 
     cursor_hourglass = new Cursor(display, SWT.CURSOR_WAIT);
     cursor_hand = new Cursor(display, SWT.CURSOR_HAND);
@@ -1316,6 +1341,38 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     }
   }
 
+  public void removeMenuItem(String itemid, boolean removeTrailingSeparators){
+	  XulMenuitem item = (XulMenuitem) mainSpoonContainer.getDocumentRoot().getElementById(itemid);
+	  if (item != null){
+		  XulComponent menu = item.getParent();
+		  item.getParent().removeChild(item);
+
+		  if (removeTrailingSeparators){
+			  List<XulComponent> children = menu.getChildNodes();
+			  
+			  if (children.size() > 0){
+				  XulComponent lastMenuItem = children.get(children.size()-1);
+				  
+				  if (lastMenuItem instanceof XulMenuseparator){
+					  menu.removeChild(lastMenuItem);
+					  // above call should work, but doesn't for some reason, removing seperator by force
+					  // the menu separators seem to not be modeled as individual objects in XUL
+					  try{
+						  Menu swtm = (Menu) menu.getManagedObject();
+						  swtm.getItems()[swtm.getItemCount()-1].dispose();
+					  }
+					  catch(Throwable t){t.printStackTrace();}
+				  }
+			  }
+			  
+		  }
+		  
+	  }
+	  else{
+		  log.logError("Could not find menuitem with id "+itemid+" to remove from Spoon menu");
+	  }
+  }
+  
   public void createPopupMenus() {
 
     try {
@@ -1719,13 +1776,14 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     treeTb.setLayoutData(fdTreeToolbar);
     lastControl = treeTb;
 
-    selectionFilter = new Text(mainComposite, SWT.SINGLE | SWT.BORDER | SWT.LEFT);
+    selectionFilter = new Text(mainComposite, SWT.SINGLE | SWT.BORDER | SWT.LEFT | SWT.SEARCH | SWT.ICON_SEARCH | SWT.ICON_CANCEL);
     selectionFilter.setFont(GUIResource.getInstance().getFontSmall());
     selectionFilter.setToolTipText(BaseMessages.getString(PKG, "Spoon.SelectionFilter.Tooltip"));
     FormData fdSelectionFilter = new FormData();
     fdSelectionFilter.top = new FormAttachment(lastControl,
         -(GUIResource.getInstance().getImageExpandAll().getBounds().height + 5));
     fdSelectionFilter.right = new FormAttachment(95, -55);
+    fdSelectionFilter.left = new FormAttachment(selectionLabel, 10);
     selectionFilter.setLayoutData(fdSelectionFilter);
 
     selectionFilter.addModifyListener(new ModifyListener() {
@@ -4707,7 +4765,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   public boolean exportRepositoryDirectory(RepositoryDirectory directoryToExport) {
     
     if (directoryToExport!=null) {
-      MessageBox box = new MessageBox(shell, SWT.ICON_QUESTION | SWT.APPLICATION_MODAL | SWT.YES | SWT.NO | SWT.CANCEL);
+      MessageBox box = new MessageBox(shell, SWT.ICON_QUESTION | SWT.APPLICATION_MODAL|SWT.SHEET | SWT.YES | SWT.NO | SWT.CANCEL);
       box.setText(BaseMessages.getString(PKG, "Spoon.QuestionExportDirectory.Title"));
       box.setMessage(BaseMessages.getString(PKG, "Spoon.QuestionExportFolder.Message", Const.CR, directoryToExport.getPath()));
       int answer = box.open();
@@ -4722,7 +4780,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     String filename = dialog.getFilterPath() + Const.FILE_SEPARATOR + dialog.getFileName();
     log.logBasic(BaseMessages.getString(PKG, "Spoon.Log.Exporting"), BaseMessages.getString(PKG, "Spoon.Log.ExportObjectsToFile", filename));
     
-    MessageBox box = new MessageBox(shell, SWT.ICON_QUESTION | SWT.APPLICATION_MODAL | SWT.YES | SWT.NO | SWT.CANCEL);
+    MessageBox box = new MessageBox(shell, SWT.ICON_QUESTION | SWT.APPLICATION_MODAL |SWT.SHEET | SWT.YES | SWT.NO | SWT.CANCEL);
     box.setText(BaseMessages.getString(PKG, "Spoon.QuestionApplyImportRulesToExport.Title"));
     box.setMessage(BaseMessages.getString(PKG, "Spoon.QuestionApplyImportRulesToExport.Message"));
     int answer = box.open();
@@ -4749,7 +4807,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     
     // Ask for a set of import rules
     //
-    MessageBox box = new MessageBox(shell, SWT.ICON_QUESTION | SWT.APPLICATION_MODAL | SWT.YES | SWT.NO | SWT.CANCEL);
+    MessageBox box = new MessageBox(shell, SWT.ICON_QUESTION | SWT.APPLICATION_MODAL |SWT.SHEET | SWT.YES | SWT.NO | SWT.CANCEL);
     box.setText(BaseMessages.getString(PKG, "Spoon.QuestionApplyImportRules.Title"));
     box.setMessage(BaseMessages.getString(PKG, "Spoon.QuestionApplyImportRules.Message"));
     int answer = box.open();
@@ -5048,7 +5106,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   }
 
   public void helpAbout() {
-    MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION | SWT.CENTER);
+    MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION | SWT.CENTER | SWT.SHEET);
+    
 
     //  resolve the release text
     String releaseText = "";

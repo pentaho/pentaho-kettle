@@ -115,7 +115,7 @@ public class TransDebugDialog extends Dialog {
     public int open() {
     	
         display = parent.getDisplay();
-        shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.RESIZE | SWT.MAX | SWT.MIN);
+        shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.SHEET | SWT.RESIZE | SWT.MAX | SWT.MIN);
         props.setLook(shell);
 		shell.setImage(GUIResource.getInstance().getImageTransGraph());
         

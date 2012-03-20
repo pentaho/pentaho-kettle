@@ -307,6 +307,8 @@ public class GUIResource
     private Map<RGB,Color> colorMap;
 
 	private ManagedFont fontBold;
+
+	private Image imageSpoonHigh;
 	
 	/**
 	 * GUIResource also contains the clipboard as it has to be allocated only
@@ -697,6 +699,8 @@ public class GUIResource
 		imageStart = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("STR_image")); // , "ui/images/STR.png"
 		imageDummy = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("DUM_image")); // , "ui/images/DUM.png"
 		imageSpoon = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("spoon_image")); // , "ui/images/spoon.ico"
+		imageSpoonHigh = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("spoon_image_high")); // , "ui/images/spoon_highres.png"
+		
 		imageJob = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Chef_image")); // , "ui/images/chef.png"
 		imagePentaho = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("CorpLogo_image")); // , "ui/images/PentahoLogo.png"
 		imageVariable = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Variable_image")); // , "ui/images/variable.png"
@@ -819,6 +823,7 @@ public class GUIResource
 		    
 	}
 	
+
 	/**
 	 * Load all step images from files.
 	 * 
@@ -1911,4 +1916,13 @@ public class GUIResource
 	public Image getImageInject() {
 	    return imageInject;
 	}
+
+	public Image getImageSpoonHigh() {
+		return imageSpoonHigh;
+	}
+
+	public void setImageSpoonHigh(Image imageSpoonHigh) {
+		this.imageSpoonHigh = imageSpoonHigh;
+	}
+
 }

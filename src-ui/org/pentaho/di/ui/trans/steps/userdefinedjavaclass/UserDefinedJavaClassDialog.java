@@ -1060,7 +1060,7 @@ public class UserDefinedJavaClassDialog extends BaseStepDialog implements StepDi
 
 	private boolean cancel() {
 		if (input.hasChanged()) {
-			MessageBox box = new MessageBox(shell, SWT.YES | SWT.NO | SWT.APPLICATION_MODAL);
+			MessageBox box = new MessageBox(shell, SWT.YES | SWT.NO | SWT.APPLICATION_MODAL| SWT.SHEET);
 			box.setText(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.WarningDialogChanged.Title"));
 			box.setMessage(BaseMessages.getString(PKG, "UserDefinedJavaClassDialog.WarningDialogChanged.Message",
 							Const.CR));

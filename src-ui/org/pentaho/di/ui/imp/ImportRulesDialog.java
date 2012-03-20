@@ -283,7 +283,7 @@ public class ImportRulesDialog extends Dialog implements XulEventHandler {
   }
   
   public void removeRule() {
-    MessageBox box = new MessageBox(shell, SWT.ICON_WARNING | SWT.APPLICATION_MODAL | SWT.YES | SWT.NO);
+    MessageBox box = new MessageBox(shell, SWT.ICON_WARNING | SWT.APPLICATION_MODAL | SWT.SHEET| SWT.YES | SWT.NO);
     box.setText("Warning");
     box.setMessage("Are you sure you want to remove the selected rules from the list?");
     int answer = box.open();
@@ -336,7 +336,7 @@ public class ImportRulesDialog extends Dialog implements XulEventHandler {
    */
   protected void importRules() {
     if (!importRules.getRules().isEmpty()) {
-      MessageBox box = new MessageBox(shell, SWT.ICON_WARNING | SWT.APPLICATION_MODAL | SWT.YES | SWT.NO);
+      MessageBox box = new MessageBox(shell, SWT.ICON_WARNING | SWT.APPLICATION_MODAL| SWT.SHEET | SWT.YES | SWT.NO);
       box.setText("Warning");
       box.setMessage("Are you sure you want to load a new set of rules, replacing the current list?");
       int answer = box.open();

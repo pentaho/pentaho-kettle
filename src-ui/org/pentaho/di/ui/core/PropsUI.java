@@ -1124,7 +1124,7 @@ public class PropsUI extends Props
         for (int i = 0; i < styles.length; i++)
         {
             if ("APPLICATION_MODAL".equals(styles[i]))
-                style |= SWT.APPLICATION_MODAL;
+                style |= SWT.APPLICATION_MODAL|SWT.SHEET;
             else if ("RESIZE".equals(styles[i]))
                 style |= SWT.RESIZE;
             else if ("MIN".equals(styles[i]))
