@@ -68,11 +68,13 @@ public class AmazonElasticMapReduceJobExecutor extends AbstractAmazonJobEntry im
 
   private static Class<?> PKG = AmazonElasticMapReduceJobExecutor.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
+  private JarUtility util = new JarUtility();
+
   public AmazonElasticMapReduceJobExecutor() {
   }
   
   public String getMainClass(String localJarUrl) throws Exception {
-    List<Class<?>> classesWithMains = JarUtility.getClassesInJarWithMain(localJarUrl, getClass().getClassLoader());
+    List<Class<?>> classesWithMains = util.getClassesInJarWithMain(localJarUrl, getClass().getClassLoader());
 
     for (final Class<?> clazz : classesWithMains) {
       try {
