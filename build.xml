@@ -269,7 +269,7 @@
         <target name="hbase-custom-comparators-jar" 
                 depends="compile" 
                 description="Jars up the custom comparators for use in filtering signed and boolean column values in HBase">
-          <jar destfile="${lib.dir}/hbase-comparators-${project.revision}.jar">
+          <jar destfile="${lib.dir}/pentaho-hbase-comparators-${project.revision}.jar">
             <fileset dir="${classes.dir}" includes="**/*Comparator*"/>
           </jar>
         </target>
