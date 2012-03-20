@@ -1355,8 +1355,29 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 		String sRC="";
 		if(ArgList.length==1){
 			try{
+				
 				String sArg1 = Context.toString(ArgList[0]);
-				sRC=System.getProperty(sArg1, "");
+				// PDI-1276 Function getEnvironmentVar() does not work for user defined variables.
+				// check if the system property exists, and if it does not, try getting a Kettle var instead
+				if (System.getProperties().contains(sArg1)){
+					sRC=System.getProperty(sArg1, "");	
+				}
+				else{
+					Object scmo = actualObject.get("_step_", actualObject);
+					Object scmO = Context.jsToJava(scmo, StepInterface.class);
+					
+					if ( scmO instanceof StepInterface){
+						StepInterface scm = (StepInterface)Context.jsToJava(scmO, StepInterface.class);
+				        sArg1 = Context.toString(ArgList[0]);
+					    sRC= scm.getVariable(sArg1, "");
+					}
+					// running in test mode, return ""
+					else{
+						sRC = "";
+					}
+					
+				}
+				
 			}catch(Exception e){
 				sRC="";
 			}
