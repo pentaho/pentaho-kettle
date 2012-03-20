@@ -28,7 +28,6 @@
 	<classpathentry exported="true" kind="lib" path="libext/commons/commons-net-1.4.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/commons/commons-pool-1.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/web/simple-jndi-0.11.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/JDBC/asjava.zip"/>
 	<classpathentry exported="true" kind="lib" path="libext/JDBC/db2jcc_license_cu.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/JDBC/db2jcc.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/JDBC/hsqldb.jar"/>
@@ -215,7 +214,6 @@
 	<classpathentry kind="lib" path="libext/jersey/jersey-apache-client-1.7.jar"/>
 	<classpathentry kind="lib" path="libext/jersey/jersey-client-1.7.jar"/>
 	<classpathentry kind="lib" path="libext/jersey/jersey-core-1.7.jar"/>
-	<classpathentry kind="lib" path="libext/jackcess-1.2.4.jar"/>
 	<classpathentry kind="lib" path="libext/elasticsearch/elasticsearch-0.16.3.jar"/>
 	<classpathentry kind="lib" path="libext/elasticsearch/lucene-analyzers-3.1.0.jar"/>
 	<classpathentry kind="lib" path="libext/elasticsearch/lucene-core-3.1.0.jar"/>
@@ -267,5 +265,6 @@
 	<classpathentry kind="lib" path="libext/slf4j-api-1.6.1.jar"/>
 	<classpathentry kind="lib" path="libext/slf4j-log4j12-1.6.1.jar"/>
 	<classpathentry kind="lib" path="libext/bigdata/hbase-0.90.3.jar"/>
+	<classpathentry kind="lib" path="libext/jackcess-1.2.4.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
