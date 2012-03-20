@@ -1,45 +1,75 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
-<dict>
-	<key>CFBundleAllowMixedLocalizations</key>
-	<string>false</string>
-	<key>CFBundleDevelopmentRegion</key>
-	<string>English</string>
-	<key>CFBundleGetInfoString</key>
-	<string>Pentaho Data Integration 4.0 Copyright (c) 2008 - 2009 Pentaho Corporation</string>	
-	<key>CFBundleExecutable</key>
-	<string>JavaApplicationStub</string>
-	<key>CFBundleIconFile</key>
-	<string>pdi.icns</string>
-	<key>CFBundleInfoDictionaryVersion</key>
-	<string>6.0</string>
-	<key>CFBundleName</key>
-	<string>Data Integration</string>
-	<key>CFBundlePackageType</key>
-	<string>APPL</string>
-	<key>CFBundleShortVersionString</key>
-	<string>4.0.0</string>
-	<key>CFBundleSignature</key>
-	<string>PTHO</string>
-	<key>CFBundleVersion</key>
-	<string>4.0.0.Preview</string>
-	<key>Java</key>
 	<dict>
-		<key>ClassPath</key>
+		<key>CFBundleAllowMixedLocalizations</key>
+		<string>false</string>
+		<key>CFBundleDevelopmentRegion</key>
+		<string>English</string>
+		<key>CFBundleGetInfoString</key>
+		<string>Pentaho Data Integration 4.4 Copyright (c) 2008 - 2012 Pentaho Corporation</string>
+		<key>CFBundleExecutable</key>
+		<string>JavaApplicationStub</string>
+		<key>CFBundleIconFile</key>
+		<string>pdi.icns</string>
+		<key>CFBundleInfoDictionaryVersion</key>
+		<string>6.0</string>
+		<key>CFBundleName</key>
+		<string>Data Integration</string>
+		<key>CFBundlePackageType</key>
+		<string>APPL</string>
+		<key>CFBundleShortVersionString</key>
+		<string>4.4.0</string>
+		<key>CFBundleSignature</key>
+		<string>PTHO</string>
+		<key>CFBundleVersion</key>
+		<string>4.4.0.Preview</string>
+		<key>Java</key>
+		<dict>
+			<key>ClassPath</key>
+			<array>
+				<string>./launcher/launcher.jar</string>
+				<string>./libswt/osx64/swt.jar</string>
+			</array>
+			<key>JVMVersion</key>
+			<string>1.6*</string>
+			<key>MainClass</key>
+			<string>org.pentaho.commons.launcher.Launcher</string>
+			<key>StartOnMainThread</key>
+			<true/>
+			<key>VMOptions</key>
+			<string>-Xmx512m -Xms512m -XX:MaxPermSize=256m</string>
+		</dict>
+		<key>CFBundleDocumentTypes</key>
 		<array>
-			<string>./launcher/launcher.jar</string>
-			<string>./libswt/osx64/swt.jar</string>
+			<dict>
+				<key>CFBundleTypeIconFile</key>
+				<string>pdi.icns</string>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleTypeName</key>
+				<string>Pentaho Data Integration Transformation</string>
+				<key>LSHandlerRank</key>
+				<string>Default</string>
+				<key>CFBundleTypeExtensions</key>
+				<array>
+					<string>ktr</string>
+				</array>
+			</dict>
+			<dict>
+				<key>CFBundleTypeIconFile</key>
+				<string>pdi.icns</string>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleTypeName</key>
+				<string>Pentaho Data Integration Job</string>
+				<key>LSHandlerRank</key>
+				<string>Default</string>
+				<key>CFBundleTypeExtensions</key>
+				<array>
+					<string>kjb</string>
+				</array>
+			</dict>
 		</array>
-		<key>JVMVersion</key>
-		<string>1.6*</string>
-		<key>MainClass</key>
-		<string>org.pentaho.commons.launcher.Launcher</string>
-		<key>StartOnMainThread</key>
-		<true/>
-		<key>VMOptions</key>
-		<string>-Xmx512m -Xms512m -XX:MaxPermSize=256m</string>
-
 	</dict>
-</dict>
 </plist>

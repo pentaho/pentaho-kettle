@@ -42,11 +42,35 @@ STARTUP="-jar launcher/launcher.jar"
 
 case `uname -s` in 
 	AIX)
-		LIBPATH=$BASEDIR/../libswt/aix/
-		;;
+	ARCH=`uname -m`
+		case $ARCH in
 
+			ppc)
+				LIBPATH=$BASEDIR/../libswt/aix/
+				;;
+
+			ppc64)
+				LIBPATH=$BASEDIR/../libswt/aix64/
+				;;
+
+			*)	
+				echo "I'm sorry, this AIX platform [$ARCH] is not yet supported!"
+				exit
+				;;
+		esac
+		;;
 	SunOS) 
-		LIBPATH=$BASEDIR/../libswt/solaris/
+	ARCH=`uname -m`
+		case $ARCH in
+
+			i[3-6]86)
+				LIBPATH=$BASEDIR/../libswt/solaris-x86/
+				;;
+
+			*)	
+				LIBPATH=$BASEDIR/../libswt/solaris/
+				;;
+		esac
 		;;
 
 	Darwin)
@@ -96,6 +120,10 @@ case `uname -s` in
 				LIBPATH=$BASEDIR/../libswt/linux/ppc/
 				;;
 
+			ppc64)
+				LIBPATH=$BASEDIR/../libswt/linux/ppc64/
+				;;
+
 			*)	
 				echo "I'm sorry, this Linux platform [$ARCH] is not yet supported!"
 				exit
@@ -104,20 +132,22 @@ case `uname -s` in
 		;;
 
 	FreeBSD)
+		# note, the SWT library for linux is used, so FreeBSD should have the
+		# linux compatibility packages installed
 	    ARCH=`uname -m`
 		case $ARCH in
 			x86_64)
-				LIBPATH=$BASEDIR/../libswt/freebsd/x86_64/
+				LIBPATH=$BASEDIR/../libswt/linux/x86_64/
 				echo "I'm sorry, this FreeBSD platform [$ARCH] is not yet supported!"
 				exit
 				;;
 
 			i[3-6]86)
-				LIBPATH=$BASEDIR/../libswt/freebsd/x86/
+				LIBPATH=$BASEDIR/../libswt/linux/x86/
 				;;
 
 			ppc)
-				LIBPATH=$BASEDIR/../libswt/freebsd/ppc/
+				LIBPATH=$BASEDIR/../libswt/linux/ppc/
 				echo "I'm sorry, this FreeBSD platform [$ARCH] is not yet supported!"
 				exit
 				;;
