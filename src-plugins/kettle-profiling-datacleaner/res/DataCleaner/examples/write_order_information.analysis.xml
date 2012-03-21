@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<job xmlns="http://eobjects.org/analyzerbeans/job/1.0">
+	<job-metadata>
+		<job-description>Demonstrates DataCleaner's ETLightweight capabilities in
+			looking up values and writing to a database table.</job-description>
+		<updated-date>2011-11-30+01:00</updated-date>
+	</job-metadata>
+	<source>
+		<data-context ref="orderdb" />
+		<columns>
+			<column path="PUBLIC.ORDERFACT.ORDERNUMBER" id="col_0" />
+			<column path="PUBLIC.ORDERFACT.PRODUCTCODE" id="col_1" />
+			<column path="PUBLIC.ORDERFACT.QUANTITYORDERED" id="col_2" />
+			<column path="PUBLIC.ORDERFACT.PRICEEACH" id="col_3" />
+			<column path="PUBLIC.ORDERFACT.ORDERLINENUMBER" id="col_4" />
+			<column path="PUBLIC.ORDERFACT.TOTALPRICE" id="col_5" />
+			<column path="PUBLIC.ORDERFACT.ORDERDATE" id="col_6" />
+			<column path="PUBLIC.ORDERFACT.REQUIREDDATE" id="col_7" />
+			<column path="PUBLIC.ORDERFACT.SHIPPEDDATE" id="col_8" />
+			<column path="PUBLIC.ORDERFACT.STATUS" id="col_9" />
+			<column path="PUBLIC.ORDERFACT.COMMENTS" id="col_10" />
+			<column path="PUBLIC.ORDERFACT.CUSTOMERNUMBER" id="col_11" />
+			<column path="PUBLIC.ORDERFACT.TIME_ID" id="col_12" />
+			<column path="PUBLIC.ORDERFACT.QTR_ID" id="col_13" />
+			<column path="PUBLIC.ORDERFACT.MONTH_ID" id="col_14" />
+			<column path="PUBLIC.ORDERFACT.YEAR_ID" id="col_15" />
+		</columns>
+	</source>
+	<transformation>
+		<transformer>
+			<descriptor ref="Table lookup" />
+			<properties>
+				<property value="[CUSTOMERNUMBER]" name="Condition columns" />
+				<property value="orderdb" name="Datastore" />
+				<property value="[CUSTOMERNAME,CONTACTLASTNAME,CONTACTFIRSTNAME]"
+					name="Output columns" />
+				<property value="PUBLIC" name="Schema name" />
+				<property value="CUSTOMERS" name="Table name" />
+			</properties>
+			<input ref="col_11" />
+			<output id="col_20" name="CUSTOMERNAME" />
+			<output id="col_21" name="CONTACTLASTNAME" />
+			<output id="col_22" name="CONTACTFIRSTNAME" />
+		</transformer>
+		<transformer>
+			<descriptor ref="Table lookup" />
+			<properties>
+				<property value="[PRODUCTCODE]" name="Condition columns" />
+				<property value="orderdb" name="Datastore" />
+				<property value="[PRODUCTNAME,PRODUCTLINE,PRODUCTVENDOR]"
+					name="Output columns" />
+				<property value="PUBLIC" name="Schema name" />
+				<property value="PRODUCTS" name="Table name" />
+			</properties>
+			<input ref="col_1" />
+			<output id="col_17" name="PRODUCTNAME" />
+			<output id="col_18" name="PRODUCTLINE" />
+			<output id="col_19" name="PRODUCTVENDOR" />
+		</transformer>
+		<transformer>
+			<descriptor ref="Convert to date" />
+			<properties>
+				<property
+					value="[yyyy-MM-dd HH:mm:ss.S,yyyy-MM-dd HH:mm:ss,yyyyMMddHHmmssZ,yyMMddHHmmssZ,yyyy-MM-dd,yyyy.MM.dd,yyyy/MM/dd,dd-MM-yyyy,dd.MM.yyyy,dd/MM/yyyy,MM-dd-yyyy,MM.dd.yyyy,MM/dd/yyyy]"
+					name="Date masks" />
+			</properties>
+			<input ref="col_12" />
+			<output id="col_16" name="ORDERDATE" />
+		</transformer>
+	</transformation>
+	<analysis>
+		<analyzer>
+			<descriptor ref="Create staging table" />
+			<properties>
+				<property value="DataCleaner-staging" name="Datastore name" />
+				<property value="orderdb-readable-orders" name="Table name" />
+				<property value="TRUNCATE" name="Write mode" />
+			</properties>
+			<input ref="col_0" />
+			<input ref="col_2" />
+			<input ref="col_5" />
+			<input ref="col_20" />
+			<input ref="col_21" />
+			<input ref="col_22" />
+			<input ref="col_17" />
+			<input ref="col_18" />
+			<input ref="col_19" />
+			<input ref="col_16" />
+		</analyzer>
+	</analysis>
+</job>

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<job xmlns="http://eobjects.org/analyzerbeans/job/1.0">
+    <job-metadata>
+        <job-description>Created with DataCleaner 2.0 (BETA)</job-description>
+        <updated-date>2011-02-09+01:00</updated-date>
+    </job-metadata>
+    <source>
+        <data-context ref="orderdb"/>
+        <columns>
+            <column path="PUBLIC.EMPLOYEES.EMPLOYEENUMBER" id="col_0"/>
+            <column path="PUBLIC.EMPLOYEES.LASTNAME" id="col_1"/>
+            <column path="PUBLIC.EMPLOYEES.FIRSTNAME" id="col_2"/>
+            <column path="PUBLIC.EMPLOYEES.EXTENSION" id="col_3"/>
+            <column path="PUBLIC.EMPLOYEES.EMAIL" id="col_4"/>
+            <column path="PUBLIC.EMPLOYEES.OFFICECODE" id="col_5"/>
+            <column path="PUBLIC.EMPLOYEES.REPORTSTO" id="col_6"/>
+            <column path="PUBLIC.EMPLOYEES.JOBTITLE" id="col_7"/>
+        </columns>
+        <variables>
+        	<variable id="employee type" value="Sales Rep"/>
+        </variables>
+    </source>
+    <transformation>
+        <transformer>
+            <descriptor ref="Email standardizer"/>
+            <properties/>
+            <input ref="col_4"/>
+            <output id="col_8" name="Username"/>
+            <output id="col_9" name="Domain"/>
+        </transformer>
+        <filter name="Sales Rep?">
+            <descriptor ref="Equals"/>
+            <properties>
+                <property name="Values" ref="employee type"/>
+            </properties>
+            <input ref="col_7"/>
+            <outcome id="outcome_0" category="VALID"/>
+        </filter>
+    </transformation>
+    <analysis>
+        <analyzer name="Value distribution amongst Sales Reps" requires="outcome_0">
+            <descriptor ref="Value distribution"/>
+            <properties>
+                <property value="true" name="Record unique values"/>
+            </properties>
+            <input ref="col_5"/>
+        </analyzer>
+        <analyzer name="Value distribution amongst Sales Reps" requires="outcome_0">
+            <descriptor ref="Value distribution"/>
+            <properties>
+                <property value="true" name="Record unique values"/>
+            </properties>
+            <input ref="col_6"/>
+        </analyzer>
+        <analyzer>
+            <descriptor ref="Pattern finder"/>
+            <properties>
+                <property value="true" name="Discriminate text case"/>
+                <property value="false" name="Discriminate negative numbers"/>
+                <property value="true" name="Discriminate decimals"/>
+                <property value="true" name="Enable mixed tokens"/>
+                <property value="false" name="Ignore repeated spaces"/>
+                <property value="false" name="Upper case patterns expand in size"/>
+                <property value="true" name="Lower case patterns expand in size"/>
+                <property value="[]" name="Predefined token regexes"/>
+                <property value="&amp;#44;" name="Decimal separator"/>
+                <property value="." name="Thousands separator"/>
+                <property value="-" name="Minus sign"/>
+            </properties>
+            <input ref="col_1"/>
+        </analyzer>
+        <analyzer>
+            <descriptor ref="Pattern finder"/>
+            <properties>
+                <property value="true" name="Discriminate text case"/>
+                <property value="false" name="Discriminate negative numbers"/>
+                <property value="true" name="Discriminate decimals"/>
+                <property value="true" name="Enable mixed tokens"/>
+                <property value="false" name="Ignore repeated spaces"/>
+                <property value="false" name="Upper case patterns expand in size"/>
+                <property value="true" name="Lower case patterns expand in size"/>
+                <property value="[]" name="Predefined token regexes"/>
+                <property value="&amp;#44;" name="Decimal separator"/>
+                <property value="." name="Thousands separator"/>
+                <property value="-" name="Minus sign"/>
+            </properties>
+            <input ref="col_2"/>
+        </analyzer>
+        <analyzer>
+            <descriptor ref="Pattern finder"/>
+            <properties>
+                <property value="true" name="Discriminate text case"/>
+                <property value="false" name="Discriminate negative numbers"/>
+                <property value="true" name="Discriminate decimals"/>
+                <property value="true" name="Enable mixed tokens"/>
+                <property value="false" name="Ignore repeated spaces"/>
+                <property value="false" name="Upper case patterns expand in size"/>
+                <property value="true" name="Lower case patterns expand in size"/>
+                <property value="[]" name="Predefined token regexes"/>
+                <property value="&amp;#44;" name="Decimal separator"/>
+                <property value="." name="Thousands separator"/>
+                <property value="-" name="Minus sign"/>
+            </properties>
+            <input ref="col_4"/>
+        </analyzer>
+        <analyzer>
+            <descriptor ref="Pattern finder"/>
+            <properties>
+                <property value="true" name="Discriminate text case"/>
+                <property value="false" name="Discriminate negative numbers"/>
+                <property value="true" name="Discriminate decimals"/>
+                <property value="true" name="Enable mixed tokens"/>
+                <property value="false" name="Ignore repeated spaces"/>
+                <property value="false" name="Upper case patterns expand in size"/>
+                <property value="true" name="Lower case patterns expand in size"/>
+                <property value="[]" name="Predefined token regexes"/>
+                <property value="&amp;#44;" name="Decimal separator"/>
+                <property value="." name="Thousands separator"/>
+                <property value="-" name="Minus sign"/>
+            </properties>
+            <input ref="col_7"/>
+        </analyzer>
+        <analyzer>
+            <descriptor ref="Pattern finder"/>
+            <properties>
+                <property value="true" name="Discriminate text case"/>
+                <property value="false" name="Discriminate negative numbers"/>
+                <property value="true" name="Discriminate decimals"/>
+                <property value="true" name="Enable mixed tokens"/>
+                <property value="false" name="Ignore repeated spaces"/>
+                <property value="false" name="Upper case patterns expand in size"/>
+                <property value="true" name="Lower case patterns expand in size"/>
+                <property value="[]" name="Predefined token regexes"/>
+                <property value="&amp;#44;" name="Decimal separator"/>
+                <property value="." name="Thousands separator"/>
+                <property value="-" name="Minus sign"/>
+            </properties>
+            <input ref="col_8"/>
+        </analyzer>
+        <analyzer>
+            <descriptor ref="Pattern finder"/>
+            <properties>
+                <property value="true" name="Discriminate text case"/>
+                <property value="false" name="Discriminate negative numbers"/>
+                <property value="true" name="Discriminate decimals"/>
+                <property value="true" name="Enable mixed tokens"/>
+                <property value="false" name="Ignore repeated spaces"/>
+                <property value="false" name="Upper case patterns expand in size"/>
+                <property value="true" name="Lower case patterns expand in size"/>
+                <property value="[]" name="Predefined token regexes"/>
+                <property value="&amp;#44;" name="Decimal separator"/>
+                <property value="." name="Thousands separator"/>
+                <property value="-" name="Minus sign"/>
+            </properties>
+            <input ref="col_9"/>
+        </analyzer>
+    </analysis>
+</job>
