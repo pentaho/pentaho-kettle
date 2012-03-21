@@ -121,8 +121,22 @@ public class ModelerHelper extends AbstractXulEventHandler implements ISpoonMenu
       List<String> cmds = new ArrayList<String>();
       
       cmds.add(System.getProperty("java.home")+"/bin/java");
+      
+      // Assemble the class path for DataCleaner
+      //
+      String[] paths = new String[] {
+          pluginPath+"/DataCleaner.jar",
+          pluginPath+"/../datacleaner-kettle-plugin.jar",
+          pluginPath+"/../kettle-core.jar",
+      };
+      String classPath = "";
+      for (String path : paths) {
+        if (!classPath.isEmpty()) classPath+=File.pathSeparator;
+        classPath+=path;
+      }
+      
       cmds.add("-cp");
-      cmds.add(pluginPath+"/DataCleaner.jar"+File.pathSeparator+pluginPath+"/datacleaner-kettle-plugin.jar"+File.pathSeparator+pluginPath+"/lib/kettle-core.jar");
+      cmds.add(classPath);
       cmds.add("-Ddatacleaner.ui.visible=true");
       cmds.add("-Ddatacleaner.embed.client=Kettle");
       cmds.add("-DDATACLEANER_HOME="+pluginPath);
@@ -166,9 +180,13 @@ public class ModelerHelper extends AbstractXulEventHandler implements ISpoonMenu
       psrStdout.join();
       psrStderr.join();
       
-      Spoon.getInstance().getLog().logBasic(psrStdout.getString());
-      Spoon.getInstance().getLog().logError(psrStderr.getString());
-      
+      if (!Const.isEmpty(psrStdout.getString())) {
+        Spoon.getInstance().getLog().logBasic("DataCleaner stdout: "+psrStdout.getString());
+      }
+      if (!Const.isEmpty(psrStderr.getString())) {
+        Spoon.getInstance().getLog().logError("DataCleaner stderr: "+psrStderr.getString());
+      }
+        
       // When DC finishes we clean up the temporary files...
       //
       if (!Const.isEmpty(confFile)) {
@@ -180,7 +198,6 @@ public class ModelerHelper extends AbstractXulEventHandler implements ISpoonMenu
       if (!Const.isEmpty(dataFile)) {
         new File(dataFile).delete();
       }
-
     } catch(Throwable e) {
       new ErrorDialog(Spoon.getInstance().getShell(), "Error launching DataCleaner", "There was an unexpected error launching DataCleaner", e);
     }
