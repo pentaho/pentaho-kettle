@@ -1,8 +1,0 @@
-eobjects.org DataCleaner
-Copyright 2011 eobjects.org
-
-This product includes software developed by
-the eobjects.org community (http://eobjects.org/).
-
-Please refer to the 'about' dialog for more
-info on credits, license and history.
