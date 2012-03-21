@@ -30,23 +30,23 @@
       command="jobgraph.editEntryParallel()" />
     <menuseparator />
     <menuitem id="job-graph-entry-duplicate" label="${JobGraph.PopupMenu.JobEntry.Duplicate}" command="jobgraph.duplicateEntry()" />
-    <menuitem id="job-graph-entry-copy" label="${JobGraph.PopupMenu.JobEntry.CopyToClipboard}" command="jobgraph.copyEntry()" />
+    <menuitem id="job-graph-entry-copy" acceltext="CTRL-C" accesskey="ctrl-c" label="${JobGraph.PopupMenu.JobEntry.CopyToClipboard}" command="jobgraph.copyEntry()" />
     <menuseparator />
     <menu id="job-graph-entry-align" label="${JobGraph.PopupMenu.JobEntry.AllignDistribute}">
       <menupopup id="job-graph-entry-align-popup">
         <menuitem id="job-graph-entry-align-left" label="${JobGraph.PopupMenu.JobEntry.AllignDistribute.Left}"
-          accesskey="ctrl-left" command="jobgraph.allignleft()" />
+         acceltext="CTRL-LEFT" accesskey="ctrl-left" command="jobgraph.allignleft()" />
         <menuitem id="job-graph-entry-align-right" label="${JobGraph.PopupMenu.JobEntry.AllignDistribute.Right}"
-          accesskey="ctrl-right" command="jobgraph.allignright()" />
+         acceltext="CTRL-RIGHT" accesskey="ctrl-right" command="jobgraph.allignright()" />
         <menuitem id="job-graph-entry-align-top" label="${JobGraph.PopupMenu.JobEntry.AllignDistribute.Top}"
-          accesskey="ctrl-up" command="jobgraph.alligntop()" />
+          acceltext="CTRL-UP" accesskey="ctrl-up" command="jobgraph.alligntop()" />
         <menuitem id="job-graph-entry-align-bottom" label="${JobGraph.PopupMenu.JobEntry.AllignDistribute.Bottom}"
-          accesskey="ctrl-down" command="jobgraph.allignbottom()" />
+          acceltext="CTRL-DOWN" accesskey="ctrl-down" command="jobgraph.allignbottom()" />
         <menuseparator />
         <menuitem id="job-graph-entry-align-horz" label="${JobGraph.PopupMenu.JobEntry.AllignDistribute.Horizontally}"
-          accesskey="alt-right" command="jobgraph.distributehorizontal()" />
+          acceltext="ALT-RIGHT" accesskey="alt-right" command="jobgraph.distributehorizontal()" />
         <menuitem id="job-graph-entry-align-vert" label="${JobGraph.PopupMenu.JobEntry.AllignDistribute.Vertically}"
-          accesskey="alt-up" command="jobgraph.distributevertical()" />
+          acceltext="ALT-UP" accesskey="alt-up" command="jobgraph.distributevertical()" />
         <menuseparator />
         <menuitem id="job-graph-entry-align-snap" label="${JobGraph.PopupMenu.JobEntry.AllignDistribute.SnapToGrid}"
           accesskey="alt-home" command="jobgraph.snaptogrid()" />
@@ -89,12 +89,12 @@
 
   <menupopup id="job-graph-background">
     <menuitem id="job-graph-note-new" label="${JobGraph.PopupMenu.Note.New}" command="jobgraph.newNote()" />
-    <menuitem id="job-graph-note-paste" label="${JobGraph.PopupMenu.PasteStepFromClipboard}" command="jobgraph.pasteNote()" />
+    <menuitem id="job-graph-note-paste" acceltext="CTRL-V" accesskey="ctrl-v" label="${JobGraph.PopupMenu.PasteStepFromClipboard}" command="jobgraph.pasteNote()" />
     <menuseparator />
-    <menuitem id="job-graph-background-select-all" label="${JobGraph.PopupMenu.SelectAll}" command="jobgraph.selectAll()" />
+    <menuitem id="job-graph-background-select-all" acceltext="CTRL-A" accesskey="ctrl-a" label="${JobGraph.PopupMenu.SelectAll}" command="jobgraph.selectAll()" />
     <menuitem id="job-graph-background-clear-selection" label="${JobGraph.PopupMenu.ClearSelection}" command="jobgraph.clearSelection()" />
     <menuseparator />
-    <menuitem id="job-graph-background-settings" label="${JobGraph.PopupMenu.Settings}" command="jobgraph.editJobProperties()" />
+    <menuitem id="job-graph-background-settings" acceltext="CTRL-J" accesskey="ctrl-j" label="${JobGraph.PopupMenu.Settings}" command="jobgraph.editJobProperties()" />
   </menupopup>
 
 </window>
