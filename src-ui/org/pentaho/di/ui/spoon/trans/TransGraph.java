@@ -2336,8 +2336,11 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             }
 
             item = (XulMenuitem) doc.getElementById("trans-graph-entry-align-snap"); //$NON-NLS-1$
-            item.setLabel(BaseMessages.getString(PKG, "TransGraph.PopupMenu.SnapToGrid") + ConstUI.GRID_SIZE + ")\tALT-HOME"); //$NON-NLS-1$ //$NON-NLS-2$
 
+            item.setAcceltext("ALT-HOME");
+            item.setLabel(BaseMessages.getString(PKG, "TransGraph.PopupMenu.SnapToGrid") + ConstUI.GRID_SIZE + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+            item.setAccesskey("alt-home");
+            
             item = (XulMenuitem) doc.getElementById("trans-graph-entry-open-mapping"); // $NON-NLS-1$
             
             XulMenu men = (XulMenu) doc.getElementById("trans-graph-entry-sniff");

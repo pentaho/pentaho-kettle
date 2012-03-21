@@ -54,9 +54,9 @@
     </menu>
     <menuitem id="trans-graph-entry-copies" label="${TransGraph.PopupMenu.NumberOfCopies}" command="transgraph.copies()" />
     <menuseparator />
-    <menuitem id="trans-graph-entry-copy" label="${TransGraph.PopupMenu.CopyToClipboard}" command="transgraph.copyStep()" />
+    <menuitem id="trans-graph-entry-copy" acceltext="CTRL-C" accesskey="ctrl-c" label="${TransGraph.PopupMenu.CopyToClipboard}" command="transgraph.copyStep()" />
     <menuitem id="trans-graph-entry-duplicate" label="${TransGraph.PopupMenu.DuplicateStep}" command="transgraph.dupeStep()" />
-    <menuitem id="trans-graph-entry-delete" label="${TransGraph.PopupMenu.DeleteStep}" command="transgraph.delSelected()" />
+    <menuitem id="trans-graph-entry-delete" acceltext="DEL" accesskey="del" label="${TransGraph.PopupMenu.DeleteStep}" command="transgraph.delSelected()" />
     <menuitem id="trans-graph-entry-hide" label="${TransGraph.PopupMenu.HideStep}" command="transgraph.hideStep()" />
     <menuitem id="trans-graph-entry-detach" label="${TransGraph.PopupMenu.DetachStep}" command="transgraph.detachStep()" />
     <menuseparator />
@@ -77,21 +77,21 @@
     <menuseparator />
     <menu id="trans-graph-entry-align" label="${TransGraph.PopupMenu.AllignDistribute}">
       <menupopup id="trans-graph-entry-align-popup">
-        <menuitem id="trans-graph-entry-align-left" label="${TransGraph.PopupMenu.AllignLeft}" accesskey="ctrl-left"
+        <menuitem id="trans-graph-entry-align-left" label="${TransGraph.PopupMenu.AllignLeft}" acceltext="CTRL-LEFT" accesskey="ctrl-left"
           command="transgraph.allignleft()" />
-        <menuitem id="trans-graph-entry-align-right" label="${TransGraph.PopupMenu.AllignRight}" accesskey="ctrl-right"
+        <menuitem id="trans-graph-entry-align-right" label="${TransGraph.PopupMenu.AllignRight}" acceltext="CTRL-RIGHT" accesskey="ctrl-right"
           command="transgraph.allignright()" />
-        <menuitem id="trans-graph-entry-align-top" label="${TransGraph.PopupMenu.AllignTop}" accesskey="ctrl-up"
+        <menuitem id="trans-graph-entry-align-top" label="${TransGraph.PopupMenu.AllignTop}" acceltext="CTRL-UP" accesskey="ctrl-up"
           command="transgraph.alligntop()" />
-        <menuitem id="trans-graph-entry-align-bottom" label="${TransGraph.PopupMenu.AllignBottom}" accesskey="ctrl-down"
+        <menuitem id="trans-graph-entry-align-bottom" label="${TransGraph.PopupMenu.AllignBottom}" acceltext="CTRL-DOWN" accesskey="ctrl-down"
           command="transgraph.allignbottom()" />
         <menuseparator />
         <menuitem id="trans-graph-entry-align-horz" label="${TransGraph.PopupMenu.DistributeHorizontally}"
-          accesskey="alt-right" command="transgraph.distributehorizontal()" />
+          acceltext="ALT-RIGHT" accesskey="alt-right" command="transgraph.distributehorizontal()" />
         <menuitem id="trans-graph-entry-align-vert" label="${TransGraph.PopupMenu.DistributeVertically}"
-          accesskey="alt-up" command="transgraph.distributevertical()" />
+          acceltext="ALT-UP" accesskey="alt-up" command="transgraph.distributevertical()" />
         <menuseparator />
-        <menuitem id="trans-graph-entry-align-snap" label="${TransGraph.PopupMenu.SnapToGrid}" accesskey="alt-home"
+        <menuitem id="trans-graph-entry-align-snap" label="${TransGraph.PopupMenu.SnapToGrid}" acceltext="ALT-HOME" accesskey="alt-home"
           command="transgraph.snaptogrid()" />
       </menupopup>
     </menu>
@@ -109,7 +109,7 @@
     <menuitem id="trans-graph-hop-edit" label="${TransGraph.PopupMenu.EditHop}" command="transgraph.editHop()" />
     <menuitem id="trans-graph-hop-flip" label="${TransGraph.PopupMenu.FlipDirection}" command="transgraph.flipHopDirection()" />
     <menuitem id="trans-graph-hop-enabled" label="${TransGraph.PopupMenu.DisableHop}" command="transgraph.enableHop() " />
-    <menuitem id="trans-graph-hop-delete" label="${TransGraph.PopupMenu.DeleteHop}" command="transgraph.deleteHop()" />
+    <menuitem id="trans-graph-hop-delete" acceltext="del" accesskey="del" label="${TransGraph.PopupMenu.DeleteHop}" command="transgraph.deleteHop()" />
     <menu id="trans-graph-graph-hop-bulk" label="${TransGraph.PopupMenu.BulkHop}">
       <menupopup id="trans-graph-entry-hop-bulk">
         <menuitem id="trans-graph-entry-hop-enable-selected" label="${TransGraph.PopupMenu.HopEnableSelected}" command="transgraph.enableHopsBetweenSelectedSteps()" />
@@ -130,13 +130,13 @@
   <menupopup id="trans-graph-background">
     <menuitem id="trans-graph-background-new-note" label="${TransGraph.PopupMenu.NewNote}" command="transgraph.newNote()" />
 
-    <menuitem id="trans-graph-background-paste" label="${TransGraph.PopupMenu.PasteStepFromClipboard}" command="transgraph.paste()" />
+    <menuitem id="trans-graph-background-paste" acceltext="CTRL-V" accesskey="ctrl-v" label="${TransGraph.PopupMenu.PasteStepFromClipboard}" command="transgraph.paste()" />
     <menuseparator />
-    <menuitem id="trans-graph-background-select-all" label="${TransGraph.PopupMenu.SelectAll}" command="transgraph.selectAll()" />
+    <menuitem id="trans-graph-background-select-all" acceltext="CTRL-A" accesskey="ctrl-a" label="${TransGraph.PopupMenu.SelectAll}" command="transgraph.selectAll()" />
     <menuitem id="trans-graph-background-clear-selection" label="${TransGraph.PopupMenu.ClearSelection}"
       command="transgraph.clearSelection()" />
     <menuseparator />
-    <menuitem id="trans-graph-background-settings" label="${TransGraph.PopupMenu.Settings}" command="transgraph.settings()" />
+    <menuitem id="trans-graph-background-settings" acceltext="CTRL-T" accesskey="ctrl-t" label="${TransGraph.PopupMenu.Settings}" command="transgraph.settings()" />
 
   </menupopup>
 

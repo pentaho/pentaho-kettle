@@ -1741,8 +1741,8 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
         
         item.setAcceltext("ALT-HOME");
         item.setLabel(BaseMessages.getString(PKG, "JobGraph.PopupMenu.JobEntry.AllignDistribute.SnapToGrid") + ConstUI.GRID_SIZE + ")");
-        
         item.setAccesskey("alt-home");
+
         XulMenu aMenu = (XulMenu) doc.getElementById("job-graph-entry-align");
         if (aMenu != null) {
           aMenu.setDisabled(sels < 1);

@@ -56,7 +56,7 @@
         <menuitem id="edit-redo" acceltext="CTRL-Y" accesskey="ctrl-y" label="${Spoon.Menu.Redo.NotAvailable}"
           command="spoon.redoAction()" />
         <menuseparator />
-        <menuitem id="edit-cut-steps" label="${Spoon.Menu.Edit.Cut}" command="spoon.cut()" />
+        <menuitem id="edit-cut-steps" acceltext="CTRL-X" accesskey="ctrl-x" label="${Spoon.Menu.Edit.Cut}" command="spoon.cut()" />
         <menuitem id="edit-copy-steps" acceltext="CTRL-C" accesskey="ctrl-c" label="${Spoon.Menu.Edit.CopyToClipboard}"
           command="spoon.copy()" />
         <menuitem id="edit.copy-file" label="${Spoon.Menu.Edit.Copy.File}" command="spoon.copyFile()" />
