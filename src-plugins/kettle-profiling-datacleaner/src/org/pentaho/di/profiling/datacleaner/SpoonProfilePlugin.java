@@ -11,11 +11,11 @@ import org.pentaho.ui.xul.XulException;
 @SpoonPlugin(id = "SpoonDataCleaner", image = "")
 @SpoonPluginCategories({"spoon", "trans-graph", "database_dialog"})
 public class SpoonProfilePlugin implements SpoonPluginInterface {
-
+  
   @Override
   public void applyToContainer(String category, XulDomContainer container) throws XulException {
     container.registerClassLoader(getClass().getClassLoader());
-    
+        
     if(category.equals("spoon")){
       container.loadOverlay("org/pentaho/di/profiling/datacleaner/spoon_overlay.xul");
       container.addEventHandler(ModelerHelper.getInstance());

@@ -18,28 +18,31 @@
  */
 package org.pentaho.di.profiling.datacleaner;
 
-import java.awt.Image;
+import java.io.OutputStream;
+import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.vfs.FileObject;
 import org.eobjects.analyzer.beans.BooleanAnalyzer;
 import org.eobjects.analyzer.beans.DateAndTimeAnalyzer;
 import org.eobjects.analyzer.beans.NumberAnalyzer;
 import org.eobjects.analyzer.beans.StringAnalyzer;
-import org.eobjects.analyzer.cli.CliArguments;
+import org.eobjects.analyzer.configuration.AnalyzerBeansConfiguration;
+import org.eobjects.analyzer.configuration.AnalyzerBeansConfigurationImpl;
 import org.eobjects.analyzer.connection.Datastore;
-import org.eobjects.analyzer.connection.DatastoreCatalog;
+import org.eobjects.analyzer.connection.DatastoreConnection;
 import org.eobjects.analyzer.connection.JdbcDatastore;
-import org.eobjects.analyzer.data.DataTypeFamily;
 import org.eobjects.analyzer.data.InputColumn;
+import org.eobjects.analyzer.job.JaxbJobWriter;
 import org.eobjects.analyzer.job.builder.AnalysisJobBuilder;
-import org.eobjects.datacleaner.bootstrap.Bootstrap;
-import org.eobjects.datacleaner.bootstrap.BootstrapOptions;
-import org.eobjects.datacleaner.bootstrap.ExitActionListener;
 import org.eobjects.metamodel.DataContext;
 import org.eobjects.metamodel.schema.Column;
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.gui.SpoonFactory;
+import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.ui.core.database.dialog.XulDatabaseExplorerController;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.spoon.Spoon;
@@ -71,86 +74,138 @@ public class ProfilerDatabaseExplorerController extends AbstractXulEventHandler 
       final DatabaseMeta dbMeta = dbExplorerController.getDatabaseMeta();
       final String tableName = dbExplorerController.getSelectedTable();
       final String schemaName = dbExplorerController.getSelectedSchema();
-
-      // TODO: profile the table...
-      //
       final String schemaTable = dbMeta.getQuotedSchemaTableCombination(schemaName, tableName);
+      
 
-      final BootstrapOptions bootstrapOptions = new BootstrapOptions() {
-
-        public Datastore getSingleDatastore(DatastoreCatalog catalog) {
-          try {
-            return new JdbcDatastore(dbMeta.getName(), dbMeta.getURL(), dbMeta.getDriverClass(), dbMeta.getUsername(), dbMeta.getPassword(), false);
-          } catch (KettleDatabaseException e) {
-            throw new RuntimeException(e);
-          }
-        };
-
-        public Image getWelcomeImage() {
-          return null;
+      // Pass along the configuration of the KettleDatabaseStore...
+      //
+      AnalyzerBeansConfiguration abc = new AnalyzerBeansConfigurationImpl();
+      AnalysisJobBuilder analysisJobBuilder = new AnalysisJobBuilder(abc);
+      Datastore datastore = new JdbcDatastore(dbMeta.getName(), dbMeta.getURL(), dbMeta.getDriverClass(), dbMeta.getUsername(), dbMeta.getPassword(), false);
+      analysisJobBuilder.setDatastore(datastore);
+      DatastoreConnection connection  = null;
+      
+      try {
+        connection = datastore.openConnection();
+        DataContext dataContext = connection.getDataContext();
+        
+        // add all columns of a table
+        Column[] customerColumns = dataContext.getTableByQualifiedLabel(schemaTable).getColumns();
+        analysisJobBuilder.addSourceColumns(customerColumns);
+  
+        List<InputColumn<?>> numberColumns = analysisJobBuilder.getAvailableInputColumns(Number.class);
+        if (!numberColumns.isEmpty()) {
+          analysisJobBuilder.addAnalyzer(NumberAnalyzer.class).addInputColumns(numberColumns);
         }
 
-        @Override
-        public boolean isSingleDatastoreMode() {
-          return true;
+        List<InputColumn<?>> dateColumns = analysisJobBuilder.getAvailableInputColumns(Date.class);
+        if (!dateColumns.isEmpty()) {
+          analysisJobBuilder.addAnalyzer(DateAndTimeAnalyzer.class).addInputColumns(dateColumns);
+        }
+  
+        List<InputColumn<?>> booleanColumns = analysisJobBuilder.getAvailableInputColumns(Boolean.class);
+        if (!booleanColumns.isEmpty()) {
+          analysisJobBuilder.addAnalyzer(BooleanAnalyzer.class).addInputColumns(booleanColumns);
+        }
+  
+        List<InputColumn<?>> stringColumns = analysisJobBuilder.getAvailableInputColumns(String.class);
+        if (!stringColumns.isEmpty()) {
+          analysisJobBuilder.addAnalyzer(StringAnalyzer.class).addInputColumns(stringColumns);
         }
 
-        @Override
-        public boolean isCommandLineMode() {
-          return false;
-        }
-
-        @Override
-        public ExitActionListener getExitActionListener() {
-          return null;
-        }
-
-        @Override
-        public CliArguments getCommandLineArguments() {
-          // TODO Auto-generated method stub
-          return null;
-        }
-
-        @Override
-        public void initializeSingleDatastoreJob(AnalysisJobBuilder analysisJobBuilder, DataContext dataContext) {
-
-          // add all columns of a table
-          Column[] customerColumns = dataContext.getTableByQualifiedLabel(schemaTable).getColumns();
-          analysisJobBuilder.addSourceColumns(customerColumns);
-
-          List<InputColumn<?>> numberColumns = analysisJobBuilder.getAvailableInputColumns(DataTypeFamily.NUMBER);
-          if (!numberColumns.isEmpty()) {
-            analysisJobBuilder.addAnalyzer(NumberAnalyzer.class).addInputColumns(numberColumns);
-          }
-
-          List<InputColumn<?>> dateColumns = analysisJobBuilder.getAvailableInputColumns(DataTypeFamily.DATE);
-          if (!dateColumns.isEmpty()) {
-            analysisJobBuilder.addAnalyzer(DateAndTimeAnalyzer.class).addInputColumns(dateColumns);
-          }
-
-          List<InputColumn<?>> booleanColumns = analysisJobBuilder.getAvailableInputColumns(DataTypeFamily.BOOLEAN);
-          if (!booleanColumns.isEmpty()) {
-            analysisJobBuilder.addAnalyzer(BooleanAnalyzer.class).addInputColumns(booleanColumns);
-          }
-
-          List<InputColumn<?>> stringColumns = analysisJobBuilder.getAvailableInputColumns(DataTypeFamily.STRING);
-          if (!stringColumns.isEmpty()) {
-            analysisJobBuilder.addAnalyzer(StringAnalyzer.class).addInputColumns(stringColumns);
+        // Write the job.xml to a temporary file...
+        //
+        final FileObject jobFile = KettleVFS.createTempFile("datacleaner-job", ".xml", System.getProperty("java.io.tmpdir"), new Variables());
+        OutputStream jobOutputStream = null;
+        try {
+          jobOutputStream = KettleVFS.getOutputStream(jobFile, false);
+          new JaxbJobWriter(abc).write(analysisJobBuilder.toAnalysisJob(), jobOutputStream);
+          jobOutputStream.close();
+        } finally {
+          if (jobOutputStream!=null) {
+            jobOutputStream.close();
           }
         }
-      };
+        
+        // Write the conf.xml to a temporary file...
+        //
+        String confXml = generateConfXml(dbMeta.getName(), schemaTable, dbMeta.getURL(), dbMeta.getDriverClass(), dbMeta.getUsername(), dbMeta.getPassword());
+        final FileObject confFile = KettleVFS.createTempFile("datacleaner-conf", ".xml", System.getProperty("java.io.tmpdir"), new Variables());
+        OutputStream confOutputStream  = null;
+        try {
+          confOutputStream = KettleVFS.getOutputStream(confFile, false);
+          confOutputStream.write(confXml.getBytes(Const.XML_ENCODING));
+          confOutputStream.close();
+        } finally {
+          if (confOutputStream!=null) {
+            confOutputStream.close();
+          }
+        }
 
-      Bootstrap bootstrap = new Bootstrap(bootstrapOptions);
-      bootstrap.run();
+        // Launch DataCleaner and point to the generated configuration and job XML files...
+        //
+        
+        // Launch DataCleaner and point to the generated configuration and job XML files...
+        //
+        Spoon.getInstance().getDisplay().syncExec(new Runnable() {          
+          public void run() {
+            new Thread() {
+              public void run() {
+                ModelerHelper.launchDataCleaner(KettleVFS.getFilename(confFile), KettleVFS.getFilename(jobFile), dbMeta.getName(), null);
+              }
+            }.start();
+          }
+        });
+
+
+      } finally {
+        if (connection!=null) {
+          connection.close();
+        }
+      }
 
     } catch (final Exception ex) {
       new ErrorDialog(spoon.getShell(), "Error", "unexpected error occurred", ex);
-    } finally {
-      //
     }
 
   }
 
+  private String generateConfXml(String name, String description, String url, String driver, String username, String password) {
+    StringBuilder xml = new StringBuilder();
+    
+    xml.append(XMLHandler.getXMLHeader());
+    xml.append("<configuration xmlns=\"http://eobjects.org/analyzerbeans/configuration/1.0\"");
+    xml.append("   xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">").append(Const.CR);
+    xml.append(XMLHandler.openTag("datastore-catalog"));
+    
+    /*
+            <jdbc-datastore name="my_jdbc_connection" description="jdbc_con">
+              <url>jdbc:hsqldb:file:../../clie/examples/orderdb;readonly=true</url>
+              <driver>org.hsqldb.jdbcDriver</driver>
+              <username>SA</username>
+              <password></password>
+            </jdbc-datastore>
+     */
+    
+    xml.append("<jdbc-datastore name=\""+name+"\" description=\""+description+"\">").append(Const.CR);
+    xml.append(XMLHandler.addTagValue("url", url));
+    xml.append(XMLHandler.addTagValue("driver", driver));
+    xml.append(XMLHandler.addTagValue("username", username));
+    xml.append(XMLHandler.addTagValue("password", password));
+        
+    xml.append(XMLHandler.closeTag("jdbc-datastore"));
+    xml.append(XMLHandler.closeTag("datastore-catalog"));
+    
+    xml.append("<multithreaded-taskrunner max-threads=\"30\" />");
+    xml.append(XMLHandler.openTag("classpath-scanner"));
+    xml.append("<package recursive=\"true\">org.eobjects.analyzer.beans</package> <package>org.eobjects.analyzer.result.renderer</package> <package>org.eobjects.datacleaner.output.beans</package> <package>org.eobjects.datacleaner.panels</package> <package recursive=\"true\">org.eobjects.datacleaner.widgets.result</package> <package recursive=\"true\">com.hi</package>");
+    xml.append(XMLHandler.closeTag("classpath-scanner"));
+    
+    xml.append(XMLHandler.closeTag("configuration"));
+    
+    return xml.toString();
+  }  
+    
   private XulDatabaseExplorerController getDbController() {
     if (dbExplorerController == null) {
       try {
