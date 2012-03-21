@@ -95,6 +95,46 @@ public class KettleFileRepositoryTest extends TestCase {
       verifyTransformationSamples(samplesDirectory);
       verifyJobSamples(samplesDirectory);
       
+      // Verify key/value store functionality
+      //
+      /*
+      RepositoryKeyValueInterface keyValue = repository.getKeyValueInterface();
+      List<String> namespaces = keyValue.listNamespaces();
+      assertEquals(0, namespaces.size()); // nothing in there
+      for (int n=0;n<10;n++) {
+        for (int i=0;i<=n;i++) {
+          keyValue.putValue("namespace"+n, "key"+i, "value"+i);
+        }
+      }
+      namespaces = keyValue.listNamespaces();
+      Collections.sort(namespaces);
+      assertEquals(10, namespaces.size()); // 10 namespaces created.
+      for (int n=0;n<10;n++) {
+        // Test key retrieval
+        List<String> keys = keyValue.listKeys("namespace"+n);
+        Collections.sort(keys);
+        assertEquals(n+1, keys.size());
+        for (int i=0;i<=n;i++) {
+          assertEquals("key"+i, keys.get(i));
+          // test value retrieval
+          String value = keyValue.getValue("namespace"+n, "key"+i, null);
+          assertEquals("value"+i, value);
+        }
+        // test listing values
+        List<RepositoryValueInterface> values = keyValue.listValues("namespace"+n);
+        Collections.sort(values, new Comparator<RepositoryValueInterface>() {@Override
+          public int compare(RepositoryValueInterface o1, RepositoryValueInterface o2) {
+            return o1.getKey().compareTo(o2.getKey());
+          }});
+        assertEquals(n+1, values.size());
+        for (int i=0;i<=n;i++) {
+          assertEquals("namespace"+n, values.get(i).getNamespace());
+          assertEquals("key"+i, values.get(i).getKey());
+          assertEquals("value"+i, values.get(i).getValue());
+        }
+      }
+      */
+      
       // Finally test disconnecting
       repository.disconnect();
       assertFalse(repository.isConnected());
@@ -111,7 +151,7 @@ public class KettleFileRepositoryTest extends TestCase {
 
   private void verifyTransformationSamples(RepositoryDirectoryInterface samplesDirectory) throws Exception {
     File transSamplesFolder = new File("samples/transformations/");
-    String[] files = transSamplesFolder.list(new FilenameFilter() { public boolean accept(File dir, String name) { return name.endsWith(".ktr"); }});
+    String[] files = transSamplesFolder.list(new FilenameFilter() { public boolean accept(File dir, String name) { return name.endsWith(".ktr") && !name.contains("HL7"); }});
     Arrays.sort(files);
     
     for (String file : files) {
