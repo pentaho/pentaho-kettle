@@ -24,10 +24,11 @@ package org.pentaho.di.trans.steps.mailinput;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Iterator;
 
 import javax.mail.Message;
 
-import org.apache.commons.collections15.iterators.ArrayIterator;
+import org.apache.commons.collections.iterators.ArrayIterator;
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
@@ -416,7 +417,7 @@ public class MailInput extends BaseStep implements StepInterface
 			}
 			else {//fetch all
 				data.mailConn.retrieveMessages();
-				data.folderIterator = new ArrayIterator<Message>(data.mailConn.getMessages());
+				data.folderIterator = (Iterator<Message>) new ArrayIterator(data.mailConn.getMessages());
 			}
 			
 			if(isDebug()) logDebug(BaseMessages.getString(PKG, "MailInput.Log.MessagesInFolder",data.folder,data.messagesCount));	
