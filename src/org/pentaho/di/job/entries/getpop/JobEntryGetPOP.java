@@ -818,7 +818,7 @@ public class JobEntryGetPOP extends JobEntryBase implements Cloneable, JobEntryI
 
 			initVariables();
 			// create a mail connection object			
-			mailConn= new MailConnection(log, usePOP3?MailConnectionMeta.PROTOCOL_POP3:MailConnectionMeta.PROTOCOL_IMAP
+			mailConn= new MailConnection(log, MailConnectionMeta.getProtocolFromString( getProtocol(), MailConnectionMeta.PROTOCOL_IMAP)
 					,realserver,realport, realusername, realpassword, isUseSSL(), isUseProxy(),realProxyUsername);
 			// connect
 			mailConn.connect();

@@ -23,6 +23,7 @@
 package org.pentaho.di.job.entries.getpop;
 
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.reporting.libraries.base.util.StringUtils;
 
 
 /**
@@ -41,11 +42,13 @@ public class MailConnectionMeta {
 	  
 	public static final int PROTOCOL_POP3=0;
 	public static final int PROTOCOL_IMAP=1;
+	public static final int PROTOCOL_MBOX=2;
 	
     public static final String INBOX_FOLDER="INBOX";
 	public static final String PROTOCOL_STRING_IMAP="IMAP";
 	public static final String PROTOCOL_STRING_POP3="POP3";
-	public static final String[] protocolCodes = new String[]{"POP3","IMAP"};
+	public static final String[] protocolCodes = new String[]{"POP3","IMAP","MBOX"};
+	public static final String PROTOCOL_STRING_MBOX= protocolCodes[PROTOCOL_MBOX];
 	  
 	public static final int DEFAULT_IMAP_PORT=110;
 	public static final int DEFAULT_POP3_PORT=110;
@@ -295,5 +298,12 @@ public class MailConnectionMeta {
 				return i;
 		}
 		return 0;
+	}
+	
+	public static int getProtocolFromString(String protocolCode, int defaultProtocol){
+	  if(StringUtils.equals(protocolCode, PROTOCOL_STRING_IMAP) ) return PROTOCOL_IMAP;
+	  else if(StringUtils.equals(protocolCode, PROTOCOL_STRING_POP3) ) return PROTOCOL_POP3;
+	  else if(StringUtils.equals(protocolCode, PROTOCOL_STRING_MBOX) ) return PROTOCOL_MBOX;
+	  return defaultProtocol;
 	}
 }

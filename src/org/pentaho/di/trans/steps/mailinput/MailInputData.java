@@ -22,6 +22,10 @@
 
 package org.pentaho.di.trans.steps.mailinput;
 
+import java.util.Iterator;
+
+import javax.mail.Message;
+
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.job.entries.getpop.MailConnection;
 import org.pentaho.di.trans.step.BaseStepData;
@@ -50,7 +54,11 @@ public class MailInputData extends BaseStepData implements StepDataInterface
 	public Object[] readrow;
 	public int rowlimit;
 	public int nrFields;
+    public Iterator<Message> folderIterator;
 	
+    public Integer start;
+    public Integer end;
+    
 	/**
 	 * 
 	 */

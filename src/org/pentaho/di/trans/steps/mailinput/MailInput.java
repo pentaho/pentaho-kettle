@@ -23,9 +23,12 @@
 package org.pentaho.di.trans.steps.mailinput;
 
 import java.text.SimpleDateFormat;
-import java.lang.StringBuffer;
 import java.util.Date;
 
+import javax.mail.Message;
+
+import org.apache.commons.collections15.iterators.ArrayIterator;
+import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -90,6 +93,7 @@ public class MailInput extends BaseStep implements StepInterface
 		
 		return true;
 	}
+	
 	public String[] getFolders(String realIMAPFolder) throws KettleException
 	{
 		data.folderenr=0;
@@ -99,7 +103,10 @@ public class MailInput extends BaseStep implements StepInterface
 		if(meta.isIncludeSubFolders()) {
 			String[] folderslist0= data.mailConn.returnAllFolders(realIMAPFolder);
 			if(folderslist0==null || folderslist0.length==0) {
-				folderslist= new String[] {Const.NVL(realIMAPFolder, MailConnectionMeta.INBOX_FOLDER)};
+				//mstor's default folder has no name
+				folderslist= data.mailConn.getProtocol() == MailConnectionMeta.PROTOCOL_MBOX ? 
+				            new String[] {""}: 
+				            new String[] {Const.NVL(realIMAPFolder, MailConnectionMeta.INBOX_FOLDER)};
 			}else {
 				folderslist= new String[folderslist0.length+1];
 				folderslist[0]=Const.NVL(realIMAPFolder, MailConnectionMeta.INBOX_FOLDER);
@@ -108,9 +115,12 @@ public class MailInput extends BaseStep implements StepInterface
 				}
 			}
 		}else
-			folderslist= new String[] {Const.NVL(realIMAPFolder, MailConnectionMeta.INBOX_FOLDER)};
+			folderslist= data.mailConn.getProtocol() == MailConnectionMeta.PROTOCOL_MBOX ? 
+			             new String[] {""}: 
+			             new String[] {Const.NVL(realIMAPFolder, MailConnectionMeta.INBOX_FOLDER)};
 		return folderslist;
 	}
+	
     private void applySearch(Date beginDate, Date endDate)
     {
 		// apply search term?
@@ -196,127 +206,113 @@ public class MailInput extends BaseStep implements StepInterface
  
 		 return rowData;
 	}
+	
+	private boolean isFolderExausted(){
+		return data.folder==null || !data.folderIterator.hasNext();
+	}
 
 	private Object[] getOneRow()  throws KettleException
-	{		
-		while ((data.rownr>=data.messagesCount || data.folder==null)) {
-			if (!openNextFolder()) return null;
-		}	
-	 
-        Object[] r= buildEmptyRow();     
-        if(meta.isDynamicFolder()) System.arraycopy(data.readrow, 0, r, 0, data.readrow.length);
+	{
 
-        try {
-			// Get next message
-			data.mailConn.fetchNext();
+		while (isFolderExausted()) {
+			if (!openNextFolder()) return null;
+		}
+
+		Object[] r= buildEmptyRow();     
+		if(meta.isDynamicFolder()) System.arraycopy(data.readrow, 0, r, 0, data.readrow.length);
+
+		try {
+
+			Message message = data.folderIterator.next(); 
 			
-			if(isDebug()) logDebug(BaseMessages.getString(PKG, "MailInput.Log.FetchingMessage",data.mailConn.getMessage().getMessageNumber()));
+			if(isDebug()) logDebug(BaseMessages.getString(PKG, "MailInput.Log.FetchingMessage", message.getMessageNumber()));
 			
 			// Execute for each Input field...
 			for (int i=0;i<data.nrFields;i++)
 			{
 				int index=data.totalpreviousfields+i;
+				
+				try{
+				
 				switch (meta.getInputFields()[i].getColumn())
 				{
 					case MailInputField.COLUMN_MESSAGE_NR:
-						r[index] = new Long(data.mailConn.getMessage().getMessageNumber());
+						r[index] = new Long(message.getMessageNumber());
 						break;
 					case MailInputField.COLUMN_SUBJECT:
-						r[index] = data.mailConn.getMessage().getSubject();
+						r[index] = message.getSubject();
 						break;
 					case MailInputField.COLUMN_SENDER:
-						String From=null;
-						if(data.mailConn.getMessage().getFrom()!=null) {
-							for(int f=0; f<data.mailConn.getMessage().getFrom().length; f++) {
-								if(From==null)
-									From=data.mailConn.getMessage().getFrom()[f].toString();
-								else
-									From+=";"+data.mailConn.getMessage().getFrom()[f].toString();
-							}
-						}
-						r[index] =From;
+						r[index] = StringUtils.join(message.getFrom(), ";");
 						break;
 					case MailInputField.COLUMN_REPLY_TO:
-						String replyto=null;
-						if(data.mailConn.getMessage().getReplyTo()!=null) {
-							for(int f=0; f<data.mailConn.getMessage().getReplyTo().length; f++) {
-								if(replyto==null)
-									replyto=data.mailConn.getMessage().getReplyTo()[f].toString();
-								else
-									replyto+=";"+data.mailConn.getMessage().getReplyTo()[f].toString();
-							}
-						}
-						r[index]=replyto;
+						r[index]=StringUtils.join(message.getReplyTo(), ";");
 						break;
 					case MailInputField.COLUMN_RECIPIENTS:
-						String Recipients=null;
-						for(int f=0; f<data.mailConn.getMessage().getAllRecipients().length; f++) {
-							if(Recipients==null)
-								Recipients=data.mailConn.getMessage().getAllRecipients()[f].toString();
-							else
-								Recipients+=";"+data.mailConn.getMessage().getAllRecipients()[f].toString();
-						}
-						r[index]=Recipients;
+						r[index]=StringUtils.join(message.getAllRecipients(), ";");;
 						break;
 					case MailInputField.COLUMN_DESCRIPTION:
-						r[index]=data.mailConn.getMessage().getDescription();
+						r[index]=message.getDescription();
 						break;
 					case MailInputField.COLUMN_BODY:
-						r[index]=data.mailConn.getMessageBody();
+						r[index]=data.mailConn.getMessageBody(message);
 						break;
 					case MailInputField.COLUMN_RECEIVED_DATE:
-					   Date receivedDate = data.mailConn.getMessage().getReceivedDate();
-					   if (receivedDate != null) {
-   						r[index]= new Date(receivedDate.getTime());
-					   }
-					   else {
-					      r[index] = null;
-					   }
+						Date receivedDate = message.getReceivedDate();
+						r[index] = receivedDate != null ? new Date(receivedDate.getTime()) : null;
 						break;
 					case MailInputField.COLUMN_SENT_DATE:
-						r[index]= new Date(data.mailConn.getMessage().getSentDate().getTime());
+						Date sentDate = message.getSentDate();
+						r[index]= sentDate != null ? new Date(sentDate.getTime()) : null;
 						break;
 					case MailInputField.COLUMN_CONTENT_TYPE:
-						r[index]=data.mailConn.getMessage().getContentType();
+						r[index]=message.getContentType();
 						break;
 					case MailInputField.COLUMN_FOLDER_NAME:
 						r[index]=data.mailConn.getFolderName();
 						break;
 					case MailInputField.COLUMN_SIZE:
-						r[index]=new Long(data.mailConn.getMessage().getSize());
+						r[index]=new Long(message.getSize());
 						break;
 					case MailInputField.COLUMN_FLAG_DRAFT:
-						r[index]=new Boolean(data.mailConn.isMessageDraft());
+						r[index]=new Boolean(data.mailConn.isMessageDraft(message));
 						break;
 					case MailInputField.COLUMN_FLAG_FLAGGED:
-						r[index]=new Boolean(data.mailConn.isMessageFlagged());
+						r[index]=new Boolean(data.mailConn.isMessageFlagged(message));
 						break;
 					case MailInputField.COLUMN_FLAG_NEW:
-						r[index]=new Boolean(data.mailConn.isMessageNew());
+						r[index]=new Boolean(data.mailConn.isMessageNew(message));
 						break;
 					case MailInputField.COLUMN_FLAG_READ:
-						r[index]=new Boolean(data.mailConn.isMessageRead());
+						r[index]=new Boolean(data.mailConn.isMessageRead(message));
 						break;
 					case MailInputField.COLUMN_FLAG_DELETED:
-						r[index]=new Boolean(data.mailConn.isMessageDeleted());
+						r[index]=new Boolean(data.mailConn.isMessageDeleted(message));
 						break;
 					case MailInputField.COLUMN_ATTACHED_FILES_COUNT:
-						r[index]=new Long(data.mailConn.getAttachedFilesCount(null));
+						r[index]=new Long(data.mailConn.getAttachedFilesCount(message, null));
 						break;
 					case MailInputField.COLUMN_HEADER:
-                        String name = meta.getInputFields()[i].getName();
-                        String[] headerValues = data.mailConn.getMessage().getHeader(name);
-                        StringBuffer sb = new StringBuffer();
-                        if ( headerValues != null && headerValues.length > 0 ) {
-                            for ( int h = 0 ; h < headerValues.length; h++ ) {
-                                if ( h > 0 ) sb.append(";");
-                                sb.append(headerValues[h]);
-                            }
-                            r[index]=new String(sb.toString());
-                        }
+						String name = meta.getInputFields()[i].getName();
+						String[] headerValues = message.getHeader(name);
+						r[index] = StringUtils.join(headerValues, ";");
+						break;
+					case MailInputField.COLUMN_BODY_CONTENT_TYPE:
+						r[index] = data.mailConn.getMessageBodyContentType(message);
+						break;
 					default:
 
 						break;
+				}
+				}
+				catch (Exception e){
+					String errMsg = "Error adding value for field " + meta.getInputFields()[i].getName();
+					if(meta.isStopOnError()){
+						throw new KettleException(errMsg, e);
+					}
+					else {
+						logError(errMsg, e);
+					}
 				}
 			}   // End of loop over fields...
 			
@@ -394,6 +390,9 @@ public class MailInput extends BaseStep implements StepInterface
 				 }
 			}
 			
+			
+			data.start = parseIntWithSubstitute(meta.getStart());
+			data.end = parseIntWithSubstitute(meta.getEnd());
 			 // Get the current folder
 			 data.folder=data.folders[data.folderenr];
 				
@@ -408,9 +407,17 @@ public class MailInput extends BaseStep implements StepInterface
 				data.mailConn.openFolder(false);
 			}
 			
-			// retrieve messages	
-			data.mailConn.retrieveMessages();
-			data.messagesCount=data.mailConn.getMessagesCount();
+			if (meta.useBatch()) {//get data by pieces
+				data.folderIterator = new BatchFolderIterator(data.mailConn.getFolder(), meta.getBatchSize(), data.start, data.end);// TODO:args
+        
+				if (data.mailConn.getSearchTerm() != null) {//add search filter
+					data.folderIterator = new SearchEnabledFolderIterator(data.folderIterator, data.mailConn.getSearchTerm());
+				}
+			}
+			else {//fetch all
+				data.mailConn.retrieveMessages();
+				data.folderIterator = new ArrayIterator<Message>(data.mailConn.getMessages());
+			}
 			
 			if(isDebug()) logDebug(BaseMessages.getString(PKG, "MailInput.Log.MessagesInFolder",data.folder,data.messagesCount));	
 			
@@ -445,6 +452,10 @@ public class MailInput extends BaseStep implements StepInterface
 			data.usePOP=meta.getProtocol().equals(MailConnectionMeta.PROTOCOL_STRING_POP3);
 			
 			String realserver=environmentSubstitute(meta.getServerName());
+			if(meta.getProtocol().equals(MailConnectionMeta.PROTOCOL_STRING_MBOX) && StringUtils.startsWith(realserver, "file://")){
+				realserver = StringUtils.remove(realserver, "file://");
+			}
+			
 			String realusername=environmentSubstitute(meta.getUserName());
 			String realpassword=environmentSubstitute(meta.getPassword());  
 			int realport=Const.toInt(environmentSubstitute(meta.getPort()),-1);
@@ -489,7 +500,7 @@ public class MailInput extends BaseStep implements StepInterface
 			}
 			try {	
 				// create a mail connection object			
-				data.mailConn= new MailConnection(log, data.usePOP?MailConnectionMeta.PROTOCOL_POP3:MailConnectionMeta.PROTOCOL_IMAP
+				data.mailConn= new MailConnection(log, MailConnectionMeta.getProtocolFromString(meta.getProtocol(), MailConnectionMeta.PROTOCOL_IMAP)
 						,realserver,realport, realusername, realpassword, meta.isUseSSL(), meta.isUseProxy(), realProxyUsername);
 				// connect
 				data.mailConn.connect();
@@ -517,18 +528,31 @@ public class MailInput extends BaseStep implements StepInterface
 	
 	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
 	{
-	    meta = (MailInputMeta)smi;
-	    data = (MailInputData)sdi;
-	    
-	    if(data.mailConn!=null)
-	    {
-	    	try {
-	    		data.mailConn.disconnect();
-	    		data.mailConn=null;
-	    	}catch(Exception e){};
-	    }
-	    
-	    super.dispose(smi, sdi);
+		meta = (MailInputMeta)smi;
+		data = (MailInputData)sdi;
+		
+		if(data.mailConn!=null)
+		{
+			try {
+				data.mailConn.disconnect();
+				data.mailConn=null;
+			}catch(Exception e){};
+		}
+		
+		super.dispose(smi, sdi);
+	}
+	
+	private Integer parseIntWithSubstitute(String toParse){
+		toParse = environmentSubstitute(toParse);
+			if(!StringUtils.isEmpty(toParse)){
+				try{
+					return Integer.parseInt(toParse);
+				}
+				catch (NumberFormatException e){
+					log.logError(e.getLocalizedMessage());
+				}
+		}
+			return null;
 	}
 
 }

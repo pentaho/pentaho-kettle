@@ -26,6 +26,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Date;
@@ -189,9 +190,13 @@ public class MailConnection {
 				this.prop.setProperty("mail.pop3s.rsetbeforequit","true"); 
 				this.prop.setProperty("mail.pop3.rsetbeforequit","true"); 
 			}
+			else if (protocol == MailConnectionMeta.PROTOCOL_MBOX){
+			  this.prop.setProperty("mstor.mbox.metadataStrategy", "none");//mstor.mbox.metadataStrategy={none|xml|yaml}
+			  this.prop.setProperty("mstor.cache.disabled", "true");//prevent diskstore fail 
+			}
 			
-			String protocolString=(protocol==MailConnectionMeta.PROTOCOL_POP3)?"pop3":"imap";
-			if(usessl) {
+			String protocolString=(protocol==MailConnectionMeta.PROTOCOL_POP3)? "pop3" : protocol == MailConnectionMeta.PROTOCOL_MBOX ? "mstor" : "imap";
+			if(usessl && protocol != MailConnectionMeta.PROTOCOL_MBOX) {
 				// Supports IMAP/POP3 connection with SSL, the connection is established via SSL.
 				this.prop.setProperty("mail."+protocolString+".socketFactory.class", "javax.net.ssl.SSLSocketFactory");
 				this.prop.setProperty("mail."+protocolString+".socketFactory.fallback", "false");
@@ -210,7 +215,12 @@ public class MailConnection {
 			} else {
 				this.session = Session.getInstance(this.prop, null);
 				this.session.setDebug(log.isDebug());
-				this.store = this.session.getStore(protocolString);
+				if(protocol == MailConnectionMeta.PROTOCOL_MBOX){
+				  this.store = this.session.getStore(new URLName(protocolString + ":" + server) );
+				}
+				else {
+	              this.store = this.session.getStore(protocolString);
+				}
 			}
 			
 			if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "JobGetMailsFromPOP.NewConnectionDefined"));
@@ -267,7 +277,7 @@ public class MailConnection {
     public void connect() throws KettleException {
     	if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "JobGetMailsFromPOP.Connecting",this.server, this.username, ""+this.port));
     	try{
-    		if(this.usessl) {
+    		if(this.usessl || this.protocol == MailConnectionMeta.PROTOCOL_MBOX) {
 				// Supports IMAP/POP3 connection with SSL, 
     			// the connection is established via SSL.
     			this.store.connect();
@@ -320,16 +330,21 @@ public class MailConnection {
   		    
      		  
 	    	  if(defaultFolder) {
+	    	    if(protocol == MailConnectionMeta.PROTOCOL_MBOX){
+	    	      this.folder = this.store.getDefaultFolder();
+	    	    }
+	    	    else {
 	          	// get the default folder
-	          	this.folder = this.store.getDefaultFolder().getFolder(MailConnectionMeta.INBOX_FOLDER);
+	          	  this.folder = this.store.getDefaultFolder().getFolder(MailConnectionMeta.INBOX_FOLDER);
+	    	    }
 
 	  			 if(this.folder==null) throw new KettleException(BaseMessages.getString(PKG, "JobGetMailsFromPOP.InvalidDefaultFolder.Label"));  
 	  			 
 	  			 if ((folder.getType() & Folder.HOLDS_MESSAGES) == 0) 
 	  				 throw new KettleException(BaseMessages.getString(PKG, "MailConnection.DefaultFolderCanNotHoldMessage"));  
 	    	  }else {
-	    		 // Open specified Folder (for IMAP)
-		    	 if(this.protocol==MailConnectionMeta.PROTOCOL_IMAP)  {
+	    		 // Open specified Folder (for IMAP/MBOX)
+		    	 if(this.protocol==MailConnectionMeta.PROTOCOL_IMAP || this.protocol == MailConnectionMeta.PROTOCOL_MBOX)  {
 					this.folder=this.store.getFolder(foldername);
 		    	  }	  
 		  		 if (this.folder == null || !this.folder.exists()) 
@@ -401,15 +416,19 @@ public class MailConnection {
 
    /**
 	 * Add search term.
-	 * @param Term search term to add
+	 * @param term search term to add
 	 */
-    private void addSearchTerm(SearchTerm Term)
+    private void addSearchTerm(SearchTerm term)
     {
 	 if (this.searchTerm != null) {
-		 this.searchTerm = new AndTerm(this.searchTerm, Term);
+		 this.searchTerm = new AndTerm(this.searchTerm, term);
         } else  {
-          this.searchTerm = Term;
+          this.searchTerm = term;
         }
+    }
+    
+    public SearchTerm getSearchTerm(){
+      return searchTerm;
     }
     
     /**
@@ -991,49 +1010,62 @@ public class MailConnection {
     	return retval;
     }
     public String getMessageBody() throws Exception {
-    	return  getMessageBody((Part) getMessage()); 
+    	return  getMessageBody(getMessage()); 
     }
     /**
      * Return the primary text content of the message.
      */
-    private String getMessageBody(Part p) throws
-                MessagingException, Exception {
-        if (p.isMimeType("text/*")) {
-            String s = (String)p.getContent();
-            return s;
-        }
-
-        if (p.isMimeType("multipart/alternative")) {
-            // prefer html text over plain text
-            Multipart mp = (Multipart)p.getContent();
-            String text = null;
-            for (int i = 0; i < mp.getCount(); i++) {
-                Part bp = mp.getBodyPart(i);
-                if (bp.isMimeType("text/plain")) {
-                    if (text == null)
-                        text = getMessageBody(bp);
-                } 
-            }
-            return text;
-        } else if (p.isMimeType("multipart/*")) {
-            Multipart mp = (Multipart)p.getContent();
-            for (int i = 0; i < mp.getCount(); i++) {
-                String s = getMessageBody(mp.getBodyPart(i));
-                if (s != null)
-                    return s;
-            }
-        }
-
-        return null;
+    public String getMessageBody(Message m) throws
+                MessagingException, IOException {
+      return getMessageBodyOrContentType(m, false);
     }
+    
+    public String getMessageBodyContentType(Message m) throws
+    MessagingException, IOException {
+      return getMessageBodyOrContentType(m, true);
+    }
+    
+    private String getMessageBodyOrContentType(Part p, final boolean returnContentType) throws MessagingException, IOException {
+      if (p.isMimeType("text/*")) {
+        String s = (String) p.getContent();
+        return returnContentType ? p.getContentType() : s;
+      }
+  
+      if (p.isMimeType("multipart/alternative")) {
+        // prefer html text over plain text
+        Multipart mp = (Multipart) p.getContent();
+        String text = null;
+        for (int i = 0; i < mp.getCount(); i++) {
+          Part bp = mp.getBodyPart(i);
+          if (bp.isMimeType("text/plain")) {
+            if (text == null) text = getMessageBodyOrContentType(bp, returnContentType);
+          }
+        }
+        return text;
+      } else if (p.isMimeType("multipart/*")) {
+        Multipart mp = (Multipart) p.getContent();
+        for (int i = 0; i < mp.getCount(); i++) {
+          String s = getMessageBodyOrContentType(mp.getBodyPart(i), returnContentType);
+          if (s != null) return s;
+        }
+      }
+  
+      return null;
+    }
+    
+    
     /**
 	 * Returns if message is new
 	 * @return true if new message
 	 */
     public boolean isMessageNew() {
+      return isMessageNew(getMessage());
+    }
+    
+    public boolean isMessageNew(Message msg) {
       try
       {
-        return getMessage().isSet(Flag.RECENT);
+        return msg.isSet(Flag.RECENT);
       }
       catch(MessagingException e) {
          return false;
@@ -1045,9 +1077,13 @@ public class MailConnection {
 	 * @return true if message is read
 	 */
     public boolean isMessageRead() {
+      return isMessageRead(getMessage());
+    }
+    
+    public boolean isMessageRead(Message msg) {
       try
       {
-        return getMessage().isSet(Flag.SEEN);
+        return msg.isSet(Flag.SEEN);
       }
       catch(MessagingException e) {
          return false;
@@ -1059,35 +1095,49 @@ public class MailConnection {
 	 * @return true if message is flagged
 	 */
     public boolean isMessageFlagged() {
+      return isMessageFlagged(getMessage());
+    }
+    public boolean isMessageFlagged(Message msg) {
       try
       {
-        return getMessage().isSet(Flag.FLAGGED);
+        return msg.isSet(Flag.FLAGGED);
       }
       catch(MessagingException e) {
          return false;
       }
     }
+
+
     /**
-	 * Returns if message is deleted
-	 * @return true if message is deleted
-	 */
-    public boolean isMessageDeleted() {
+     * Returns if message is deleted
+     * @return true if message is deleted
+     */
+    public boolean isMessageDeleted(){
+      return isMessageDeleted(getMessage());
+    }
+    
+    public boolean isMessageDeleted(Message msg) {
       try
       {
-        return getMessage().isSet(Flag.DELETED);
+        return msg.isSet(Flag.DELETED);
       }
       catch(MessagingException e) {
          return false;
       }
     }
+    
     /**
 	 * Returns if message is Draft
 	 * @return true if message is Draft
 	 */
     public boolean isMessageDraft() {
+      return isMessageDraft(getMessage());
+    }
+    
+    public boolean isMessageDraft(Message msg) {
       try
       {
-        return getMessage().isSet(Flag.DRAFT);
+        return msg.isSet(Flag.DRAFT);
       }
       catch(MessagingException e) {
          return false;
@@ -1103,10 +1153,13 @@ public class MailConnection {
 	 * @param pattern (optional)
 	 */
     public int getAttachedFilesCount(Pattern pattern) throws KettleException {
+      return getAttachedFilesCount(getMessage(), pattern);
+    }
+    public int getAttachedFilesCount(Message message, Pattern pattern) throws KettleException {
 		Object content=null;
 		int retval=0;
 		try {
-			content = getMessage().getContent();
+			content = message.getContent();
 			if (content instanceof Multipart) {
 				Multipart multipart=(Multipart)content;
 				for (int i=0, n=multipart.getCount(); i<n; i++) {

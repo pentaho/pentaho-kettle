@@ -1761,9 +1761,9 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 		    	int realport=Const.toInt(jobMeta.environmentSubstitute(wPort.getText()),-1);
 		    	String realproxyuser=jobMeta.environmentSubstitute(wProxyUsername.getText());
 		    	try{
-		    		mailConn=new MailConnection(LogChannel.UI, wProtocol.getText().equals(MailConnectionMeta.PROTOCOL_STRING_POP3)?MailConnectionMeta.PROTOCOL_POP3:MailConnectionMeta.PROTOCOL_IMAP
-		    				,realserver,realport, realuser, realpass, wUseSSL.getSelection(), 
-		    				wUseProxy.getSelection(),realproxyuser);
+		    		mailConn=new MailConnection(LogChannel.UI, MailConnectionMeta.getProtocolFromString( wProtocol.getText(), MailConnectionMeta.PROTOCOL_IMAP) 
+		    		    ,realserver,realport, realuser, realpass, wUseSSL.getSelection(), 
+		    			wUseProxy.getSelection(),realproxyuser);
 		    		mailConn.connect();
 		    		
 		    		retval=true;
@@ -2099,8 +2099,8 @@ public class JobEntryGetPOPDialog extends JobEntryDialog implements JobEntryDial
 	        if(Const.isEmpty(wName.getText())) 
 	        {
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-				mb.setMessage("Veuillez svp donner un nom � cette entr�e t�che!");
-				mb.setText("Entr�e t�che non nomm�e");
+				mb.setMessage(BaseMessages.getString(PKG, "JobGetPOP.NoNameMessageBox.Message"));
+				mb.setText(BaseMessages.getString(PKG, "JobGetPOP.NoNameMessageBox.Text"));
 				mb.open(); 
 				return;
 	        }

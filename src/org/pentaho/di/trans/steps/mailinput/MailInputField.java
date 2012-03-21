@@ -54,11 +54,13 @@ public class MailInputField implements Cloneable
     public final static int COLUMN_FLAG_DELETED  = 16;
     public final static int COLUMN_ATTACHED_FILES_COUNT  = 17;
     public final static int COLUMN_HEADER  = 18;
+    public final static int COLUMN_BODY_CONTENT_TYPE = 19;
     
     
     public final static String ColumnCode[] = {"messagenumber","subject", "sender", "replyto", "recipients",
     	"description", "body", "receiveddate", "sendeddate", "contenttype", "folder", "size",
-    	"flag_new","flag_read", "flag_flagged", "flag_draft", "flag_deleted", "attached_files_count", "header"};
+    	"flag_new","flag_read", "flag_flagged", "flag_draft", "flag_deleted", "attached_files_count", "header",
+    	"body_contenttype"};
     
     
     public final static String ColumnDesc[] = { 
@@ -81,6 +83,7 @@ public class MailInputField implements Cloneable
     	BaseMessages.getString(PKG, "MailInputField.Column.FlagDeleted"),
     	BaseMessages.getString(PKG, "MailInputField.Column.AttachedFilesCount"),
     	BaseMessages.getString(PKG, "MailInputField.Column.Header"),
+    	BaseMessages.getString(PKG, "MailInputField.Column.BodyContentType"),
 };
     
 	private String 	  name;

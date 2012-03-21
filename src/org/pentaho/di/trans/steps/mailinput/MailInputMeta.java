@@ -95,6 +95,14 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface
 	
 	/** The fields ... */
 	private MailInputField inputFields[];
+
+    private boolean useBatch;
+    private String start;
+    private String end;
+  
+    private Integer batchSize;
+    
+    private boolean stopOnError;
 	
 	public MailInputMeta()
 	{
@@ -156,6 +164,16 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface
 		includesubfolders          = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "includesubfolders") );
 		usedynamicfolder          = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "usedynamicfolder") );
 		folderfield      = XMLHandler.getTagValue(stepnode, "folderfield");
+
+		useBatch = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, Tags.USE_BATCH));
+		try{
+		  batchSize = Integer.parseInt(XMLHandler.getTagValue(stepnode, Tags.BATCH_SIZE));
+		} catch(NumberFormatException e){
+		  batchSize = null;
+		}
+		start = XMLHandler.getTagValue(stepnode, Tags.START_MSG);
+		end = XMLHandler.getTagValue(stepnode, Tags.END_MSG);
+		stopOnError = "Y".equalsIgnoreCase(XMLHandler.getTagAttribute(stepnode, Tags.STOP_ON_ERROR));
 		
 		rowlimit      = XMLHandler.getTagValue(stepnode, "rowlimit");
 		Node fields     = XMLHandler.getSubNode(stepnode,  "fields");
@@ -202,6 +220,12 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface
 		folderfield=null;
 		usedynamicfolder=false;
 		rowlimit="0";
+		
+		batchSize = 500;
+		useBatch = false;
+		start = null;
+		end = null;
+		stopOnError = true;
 		
 		int nrFields =0;
 		allocate(nrFields);	
@@ -253,6 +277,16 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface
 			folderfield        = rep.getStepAttributeString(id_step, "folderfield");
 			rowlimit       = rep.getStepAttributeString(id_step, "rowlimit");
 			int nrFields      = rep.countNrStepAttributes(id_step, "field_name");
+			
+			useBatch = rep.getStepAttributeBoolean(id_step, Tags.USE_BATCH);
+			try{
+			batchSize = (int) rep.getStepAttributeInteger(id_step, Tags.BATCH_SIZE);
+			} catch(Exception e){
+			  batchSize = null;
+			}
+			start = rep.getStepAttributeString(id_step, Tags.START_MSG);
+			end = rep.getStepAttributeString(id_step, Tags.END_MSG);
+			stopOnError = rep.getStepAttributeBoolean(id_step, Tags.STOP_ON_ERROR);
             
 			allocate(nrFields);
 			for (int i=0;i<nrFields;i++)
@@ -264,7 +298,7 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface
 
 				inputFields[i] = field;
 			}
-		}catch(Exception e)
+		} catch(Exception e)
 		{
 			throw new KettleException("Erreur inattendue", e); //$NON-NLS-1$
 		}
@@ -307,6 +341,11 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step,  "folderfield",        folderfield);
 			rep.saveStepAttribute(id_transformation, id_step,  "rowlimit",        rowlimit);
 			
+			rep.saveStepAttribute(id_transformation, id_step, Tags.USE_BATCH, useBatch);
+			rep.saveStepAttribute(id_transformation, id_step, Tags.BATCH_SIZE, batchSize);
+			rep.saveStepAttribute(id_transformation, id_step, Tags.START_MSG, start);
+			rep.saveStepAttribute(id_transformation, id_step, Tags.END_MSG, end);
+			rep.saveStepAttribute(id_transformation, id_step, Tags.STOP_ON_ERROR, stopOnError);
 			
 			for (int i=0;i<inputFields.length;i++)
 			{
@@ -320,10 +359,19 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface
 			throw new KettleException("Unable to save step of type 'get pop' to the repository for id_step="+id_step, dbe);
 		}
 	}
+	
+	private static final class Tags {
+	  static final String USE_BATCH="useBatch";
+	  static final String BATCH_SIZE="batchSize";
+	  static final String START_MSG="startMsg";
+	  static final String END_MSG="endMsg";
+	  static final String STOP_ON_ERROR="stopOnError";
+	}
+	
 	public String getXML()
 	{
         StringBuffer retval = new StringBuffer();
-		
+		String tab = "      ";
         retval.append("      ").append(XMLHandler.addTagValue("servername",   servername));
 		retval.append("      ").append(XMLHandler.addTagValue("username",   username));
 		retval.append("      ").append(XMLHandler.addTagValue("password", Encr.encryptPasswordIfNotUsingVariables(password)));
@@ -354,6 +402,11 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("      ").append(XMLHandler.addTagValue("usedynamicfolder",       usedynamicfolder));
 		retval.append("      ").append(XMLHandler.addTagValue("folderfield",     folderfield));
 		retval.append("      ").append(XMLHandler.addTagValue("rowlimit",     rowlimit));
+		retval.append(tab).append(XMLHandler.addTagValue(Tags.USE_BATCH, useBatch));
+		retval.append(tab).append(XMLHandler.addTagValue(Tags.BATCH_SIZE, batchSize));
+		retval.append(tab).append(XMLHandler.addTagValue(Tags.START_MSG, start));
+		retval.append(tab).append(XMLHandler.addTagValue(Tags.END_MSG, end));
+		retval.append(tab).append(XMLHandler.addTagValue(Tags.STOP_ON_ERROR, stopOnError));
 		
 		 /*
 		 * Describe the fields to read
@@ -672,6 +725,62 @@ public class MailInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		
 	}
+
+
+    public boolean useBatch() {
+      return useBatch ;
+    }
+    
+    public Integer getBatchSize(){
+      return batchSize;
+    }
+  
+  
+    public boolean isStopOnError() {
+      return stopOnError;
+    }
+
+
+	public void setStopOnError(boolean breakOnError) {
+	  this.stopOnError = breakOnError;
+	}
+	
+	
+	public boolean isUseBatch() {
+	  return useBatch;
+	}
+	
+	
+	public void setUseBatch(boolean useBatch) {
+	  this.useBatch = useBatch;
+	}
+	
+	
+	public String getStart() {
+	  return start;
+	}
+	
+	
+	public void setStart(String start) {
+	  this.start = start;
+	}
+	
+	
+	public String getEnd() {
+	  return end;
+	}
+	
+	
+	public void setEnd(String end) {
+	  this.end = end;
+	}
+	
+	
+	public void setBatchSize(Integer batchSize) {
+	  this.batchSize = batchSize;
+	}
+  
+  
 	
 
 }
