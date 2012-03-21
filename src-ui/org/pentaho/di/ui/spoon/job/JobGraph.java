@@ -1403,7 +1403,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
 		    (e.keyCode==SWT.F4 && (e.stateMask & SWT.MOD1) != 0 )
 			)
 		{
-			spoon.closeFile();
+			spoon.tabCloseSelected();
 		}
 
 	}  

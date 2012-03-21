@@ -1790,7 +1790,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           (e.keyCode==SWT.F4 && (e.stateMask & SWT.MOD1) != 0 )
           )
       {
-          spoon.closeFile();
+    	  spoon.tabCloseSelected();
       }
 
       

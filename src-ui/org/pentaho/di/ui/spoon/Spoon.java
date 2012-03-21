@@ -2910,6 +2910,10 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
   }
 
+  public boolean tabCloseSelected(){
+	  return tabClose(tabfolder.getSelected());
+  }
+  
   public boolean tabClose(TabItem item) {
     try {
       return delegates.tabs.tabClose(item);
