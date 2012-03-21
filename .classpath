@@ -17,7 +17,7 @@
 	<classpathentry kind="src" path="src-jdbc"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="lib" path="libext/js.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/mail.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/mail-1.4.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/javadbf.jar" sourcepath="/javadbf/javadbf"/>
 	<classpathentry exported="true" kind="lib" path="libswt/jface.jar"/>
 	<classpathentry exported="true" kind="lib" path="libswt/runtime.jar"/>
@@ -99,7 +99,7 @@
 	<classpathentry exported="true" kind="lib" path="libext/ascsapjco3wrp.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/syslog4j-0.9.34.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/livetribe-jsr223-2.0.6.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/log4j-1.2.14.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/log4j-1.2.16.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/xercesImpl-2.9.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/feeds/rome-1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/webservices/xalan-2.4.1.jar"/>
@@ -119,7 +119,6 @@
 	<classpathentry exported="true" kind="lib" path="libext/poi/poi-3.7-20101029.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/poi/poi-ooxml-3.7-20101029.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/poi/poi-ooxml-schemas-3.7-20101029.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/poi/xmlbeans-2.3.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/xbean.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/pentaho/jets3t-0.7.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/pentaho/pentaho-s3-vfs-TRUNK-SNAPSHOT.jar"/>
