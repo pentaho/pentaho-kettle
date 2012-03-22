@@ -17,6 +17,7 @@ public class DataCleanerJobEntryDialog extends AbstractJobEntryDialog implements
     private TextVar executableFilenameField;
     private TextVar jobFilenameField;
     private TextVar outputFilenameField;
+    private TextVar additionalArgumentsField;
     private EnumCombo<DataCleanerOutputType> outputTypeCombo;
 
     public DataCleanerJobEntryDialog(Shell parent, JobEntryInterface jobEntry, Repository rep, JobMeta jobMeta) {
@@ -66,6 +67,16 @@ public class DataCleanerJobEntryDialog extends AbstractJobEntryDialog implements
             outputTypeCombo.setToolTipText("Select HTML output, Text output or Serialized result");
         }
 
+        // Additional arguments
+        {
+            final Label fieldLabel = new Label(propertiesGroup, SWT.RIGHT);
+            fieldLabel.setLayoutData(WidgetFactory.createGridData());
+            fieldLabel.setText("Additional arguments:");
+
+            additionalArgumentsField = new TextVar(jobMeta, propertiesGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+            additionalArgumentsField.setLayoutData(WidgetFactory.createGridData());
+        }
+
         // initialize values
         {
             final DataCleanerJobEntryConfiguration configuration = getConfiguration();
@@ -73,6 +84,7 @@ public class DataCleanerJobEntryDialog extends AbstractJobEntryDialog implements
             executableFilenameField.setText(configuration.getExecutableFile());
             jobFilenameField.setText(configuration.getJobFile());
             outputFilenameField.setText(configuration.getOutputFile());
+            additionalArgumentsField.setText(configuration.getAdditionalArguments());
         }
     }
 
@@ -83,6 +95,7 @@ public class DataCleanerJobEntryDialog extends AbstractJobEntryDialog implements
         configuration.setJobFile(jobFilenameField.getText());
         configuration.setOutputFile(outputFilenameField.getText());
         configuration.setOutputType(outputTypeCombo.getValue());
+        configuration.setAdditionalArguments(additionalArgumentsField.getText());
     }
 
     private DataCleanerJobEntryConfiguration getConfiguration() {

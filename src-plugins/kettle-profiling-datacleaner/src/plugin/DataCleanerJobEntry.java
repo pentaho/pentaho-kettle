@@ -23,9 +23,15 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
-@JobEntry(id = "DataCleanerJobEntry", categoryDescription = "DataCleaner", image = "org/eobjects/datacleaner/logo.png", name = DataCleanerJobEntry.NAME, description = "Executes a DataCleaner job")
+/**
+ * A job entry for executing DataCleaner jobs
+ * 
+ * @author Kasper Sorensen
+ * @since 22-03-2012
+ */
+@JobEntry(id = "DataCleanerJobEntry", categoryDescription = "Utility", image = "org/eobjects/datacleaner/logo.png", name = DataCleanerJobEntry.NAME, description = "Executes a DataCleaner job")
 public class DataCleanerJobEntry extends JobEntryBase implements JobEntryInterface, Cloneable {
-    
+
     public static final String NAME = "Execute DataCleaner job";
 
     private final DataCleanerJobEntryConfiguration configuration = new DataCleanerJobEntryConfiguration();
@@ -43,6 +49,14 @@ public class DataCleanerJobEntry extends JobEntryBase implements JobEntryInterfa
         commands.add(configuration.getOutputType().toString());
         commands.add("-of");
         commands.add(environmentSubstitute(configuration.getOutputFile()));
+
+        final String additionalArguments = configuration.getAdditionalArguments();
+        if (additionalArguments != null && additionalArguments.length() != 0) {
+            final String[] args = additionalArguments.split(" ");
+            for (String arg : args) {
+                commands.add(arg);
+            }
+        }
 
         final ProcessBuilder processBuilder = new ProcessBuilder(commands);
         processBuilder.directory(executableFile.getParentFile());

@@ -10,6 +10,7 @@ public class DataCleanerJobEntryConfiguration implements Serializable, Cloneable
     private String jobFile;
     private DataCleanerOutputType outputType;
     private String outputFile;
+    private String additionalArguments;
 
     public String getJobFile() {
         if (jobFile == null) {
@@ -53,5 +54,16 @@ public class DataCleanerJobEntryConfiguration implements Serializable, Cloneable
 
     public void setOutputType(DataCleanerOutputType outputType) {
         this.outputType = outputType;
+    }
+
+    public String getAdditionalArguments() {
+        if (additionalArguments == null) {
+            additionalArguments = "";
+        }
+        return additionalArguments;
+    }
+
+    public void setAdditionalArguments(String additionalArguments) {
+        this.additionalArguments = additionalArguments;
     }
 }
