@@ -121,6 +121,7 @@
       <exclude org="jfree" name="jcommon" conf="pmr->default"/>
     </dependency>
     <dependency org="net.sf.saxon" name="saxon" rev="9.1.0.8" conf="pmr->default"/>
+    <dependency org="net.sf.saxon" name="saxon-dom" rev="9.1.0.8" conf="pmr->default"/>
     <dependency org="rhino" name="js" rev="1.7R1" conf="pmr->default"/>
     <dependency org="com.thoughtworks.xstream" name="xstream" rev="1.3" conf="pmr->default"/>
     <dependency org="org.apache.hbase" name="hbase" rev="${dependency.apache-hbase.revision}" transitive="false"
