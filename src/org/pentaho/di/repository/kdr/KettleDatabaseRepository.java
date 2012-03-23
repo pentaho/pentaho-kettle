@@ -25,7 +25,6 @@ package org.pentaho.di.repository.kdr;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -88,8 +87,6 @@ import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryStepDeleg
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryTransDelegate;
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryUserDelegate;
 import org.pentaho.di.repository.kdr.delegates.KettleDatabaseRepositoryValueDelegate;
-import org.pentaho.di.repository.keyvalue.RepositoryKeyValueInterface;
-import org.pentaho.di.repository.keyvalue.RepositoryValueInterface;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransMeta;
 
@@ -103,7 +100,7 @@ import org.pentaho.di.trans.TransMeta;
  * Created on 31-mrt-2004
  *
  */
-public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase implements Repository, RepositoryKeyValueInterface
+public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase implements Repository
 {
 //	private static Class<?> PKG = Repository.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 	
@@ -1842,87 +1839,5 @@ public class KettleDatabaseRepository extends KettleDatabaseRepositoryBase imple
 
   public IRepositoryImporter getImporter() {
     return new RepositoryImporter(this);
-  }
-
-  public RepositoryKeyValueInterface getKeyValueInterface() {
-    return this;
-  }
-
-  @Override
-  public void putValue(String namespace, String key, String value) throws KettleException {
-    
-    // Remove the old value, then save the new one.
-    removeValue(namespace, key);
-    
-    ObjectId keyValueID = connectionDelegate.getNextKeyValueID();
-    RowMetaAndData values = new RowMetaAndData();
-    values.addValue(quote(FIELD_KEY_VALUE_ID_KEY_VALUE), ValueMetaInterface.TYPE_INTEGER, Long.valueOf(((LongObjectId)keyValueID).longValue()));
-    values.addValue(quote(FIELD_KEY_VALUE_NAMESPACE), ValueMetaInterface.TYPE_STRING, namespace);
-    values.addValue(quote(FIELD_KEY_VALUE_KEY), ValueMetaInterface.TYPE_STRING, key);
-    values.addValue(quote(FIELD_KEY_VALUE_VALUE), ValueMetaInterface.TYPE_STRING, value);
-    connectionDelegate.insertTableRow(quote(TABLE_R_KEY_VALUE), values);
-  }
-  
-  @Override
-  public void removeValue(String namespace, String key) throws KettleException {
-    RowMetaAndData values = new RowMetaAndData();
-    values.addValue(quote(FIELD_KEY_VALUE_NAMESPACE), ValueMetaInterface.TYPE_STRING, namespace);
-    values.addValue(quote(FIELD_KEY_VALUE_KEY), ValueMetaInterface.TYPE_STRING, key);
-    String sql = "DELETE FROM "+quoteTable(TABLE_R_KEY_VALUE)+" WHERE "+quote(FIELD_KEY_VALUE_NAMESPACE)+" = ? AND "+quote(FIELD_KEY_VALUE_KEY)+" = ? ";
-    connectionDelegate.getDatabase().execStatement(sql, values.getRowMeta(), values.getData());
-  }
-
-  @Override
-  public String getValue(String namespace, String key, String revision) throws KettleException {
-    RowMetaAndData values = new RowMetaAndData();
-    values.addValue(quote(FIELD_KEY_VALUE_NAMESPACE), ValueMetaInterface.TYPE_STRING, namespace);
-    values.addValue(quote(FIELD_KEY_VALUE_KEY), ValueMetaInterface.TYPE_STRING, key);
-    String sql = "SELECT "+quote(FIELD_KEY_VALUE_VALUE)+" FROM "+quoteTable(TABLE_R_KEY_VALUE)+" WHERE "+quote(FIELD_KEY_VALUE_NAMESPACE)+" = ? AND "+quote(FIELD_KEY_VALUE_KEY)+" = ? ";
-    RowMetaAndData row = connectionDelegate.getOneRow(sql, values.getRowMeta(), values.getData());
-    return row.getString(0, null); // Just on value
-  }
-
-  @Override
-  public List<String> listNamespaces() throws KettleException {
-    String sql = "SELECT DISTINCT "+quote(FIELD_KEY_VALUE_NAMESPACE)+" FROM "+quoteTable(TABLE_R_KEY_VALUE);
-    return connectionDelegate.findStrings(sql);
-  }
-
-  @Override
-  public List<String> listKeys(String namespace) throws KettleException {
-    String sql = "SELECT DISTINCT "+quote(FIELD_KEY_VALUE_KEY)+" FROM "+quoteTable(TABLE_R_KEY_VALUE)+" WHERE "+quote(FIELD_KEY_VALUE_NAMESPACE)+" = ?";
-    return connectionDelegate.findStrings(sql, namespace);
-  }
-
-  @Override
-  public List<RepositoryValueInterface> listValues(final String namespace) throws KettleException {
-    String sql = "SELECT "+quote(FIELD_KEY_VALUE_KEY)+", "+quote(FIELD_KEY_VALUE_VALUE)+" FROM "+quoteTable(TABLE_R_KEY_VALUE)+" WHERE "+quote(FIELD_KEY_VALUE_NAMESPACE)+" = ? ";
-    RowMetaAndData values = new RowMetaAndData();
-    values.addValue(quote(FIELD_KEY_VALUE_NAMESPACE), ValueMetaInterface.TYPE_STRING, namespace);
-    List<RepositoryValueInterface> list = new ArrayList<RepositoryValueInterface>();
-    ResultSet resultSet = null;
-    Database db = connectionDelegate.getDatabase();
-    try {
-      resultSet = db.openQuery(sql, values.getRowMeta(), values.getData());
-      Object[] row = db.getRow(resultSet);
-      while (row!=null) {
-        final String key = db.getReturnRowMeta().getString(row, 0);
-        final String value = db.getReturnRowMeta().getString(row, 1);
-        list.add(new RepositoryValueInterface() {
-          public String getNamespace() { return namespace; }
-          public String getKey() { return key; }
-          public String getValue() { return value; }
-        });
-        row = db.getRow(resultSet);
-      }
-    } catch(Exception e) {
-      throw new KettleException("Unable to read key/value entries", e);
-    } finally {
-      if (resultSet!=null) { 
-        connectionDelegate.getDatabase().closeQuery(resultSet);
-      }
-    }
-    
-    return list;
   }
 }

@@ -617,7 +617,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
           logDetailed("Starting: " + cmdstr);
         Runtime r = Runtime.getRuntime();
         data.cmdProc = r.exec(cmdstr, EnvUtil.getEnvironmentVariablesForRuntimeExec());
-        data.writer = new BufferedOutputStream(data.cmdProc.getOutputStream(), 50000);
+        data.writer = data.cmdProc.getOutputStream();
         StreamLogger stdoutLogger = new StreamLogger(log, data.cmdProc.getInputStream(), "(stdout)");
         StreamLogger stderrLogger = new StreamLogger(log, data.cmdProc.getErrorStream(), "(stderr)");
         new Thread(stdoutLogger).start();

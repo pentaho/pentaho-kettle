@@ -377,11 +377,6 @@ public class KettleDatabaseRepositoryBase {
 	public static final String FIELD_JOB_LOCK_LOCK_MESSAGE = "LOCK_MESSAGE";
 	public static final String FIELD_JOB_LOCK_LOCK_DATE = "LOCK_DATE";
 
-	public static final String TABLE_R_KEY_VALUE = "R_KEY_VALUE";
-  public static final String FIELD_KEY_VALUE_ID_KEY_VALUE = "ID_KEY_VALUE";
-	public static final String FIELD_KEY_VALUE_NAMESPACE = "KEY_NAMESPACE";
-  public static final String FIELD_KEY_VALUE_KEY = "KEY_STRING";
-  public static final String FIELD_KEY_VALUE_VALUE = "VALUE_STRING";
 
     public static final String repositoryTableNames[] = new String[] 
          { 

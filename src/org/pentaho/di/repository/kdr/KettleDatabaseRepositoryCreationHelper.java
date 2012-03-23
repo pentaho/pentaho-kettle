@@ -1941,62 +1941,6 @@ public class KettleDatabaseRepositoryCreationHelper {
             }
 		}
 		if (monitor!=null) monitor.worked(1);
-		
-		
-		
-    //////////////////////////////////////////////////////////////////////////////////
-    //
-    // R_KEY_VALUE
-    //
-    // Create table...
-    table = new RowMeta();
-    tablename = KettleDatabaseRepository.TABLE_R_KEY_VALUE;
-    schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
-    if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
-    table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_KEY_VALUE_ID_KEY_VALUE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
-    table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_KEY_VALUE_NAMESPACE, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
-    table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_KEY_VALUE_KEY, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
-    table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_KEY_VALUE_VALUE, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_LENGTH, 0));
-    sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_KEY_VALUE_ID_KEY_VALUE, false);
-
-    if (!Const.isEmpty(sql)) // Doesn't exist: create the table...
-    {
-      statements.add(sql);
-      if (!dryrun) {
-        if (log.isDetailed()) log.logDetailed("executing SQL statements: " + Const.CR + sql);
-        database.execStatements(sql);
-        if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
-      }
-
-      try
-      {
-        indexname = "IDX_" + schemaTable.substring(2) + "_LOOKUP";
-        keyfield = new String[] { KettleDatabaseRepository.FIELD_KEY_VALUE_NAMESPACE, KettleDatabaseRepository.FIELD_KEY_VALUE_KEY, };
-  
-        if (!database.checkIndexExists(schemaTable, keyfield))
-        {
-          sql = database.getCreateIndexStatement(schemaTable, indexname, keyfield, false, true, false, false);
-          statements.add(sql);
-          if (!dryrun) {
-            if (log.isDetailed()) log.logDetailed("executing SQL statements: " + Const.CR + sql);
-            database.execStatements(sql);
-            if (log.isDetailed()) log.logDetailed("Created lookup index " + indexname + " on " + schemaTable);
-          }
-        }
-      }
-      catch(KettleException kdbe)
-      {
-        // Ignore this one: index is not properly detected, it already exists...
-      }
-    }
-    else
-    {
-            if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
-    }
-    if (monitor!=null) monitor.worked(1);
-
-		
-		
 		if (monitor!=null) monitor.done();
         
         log.logBasic((upgrade?"Upgraded":"Created")+ " "+KettleDatabaseRepository.repositoryTableNames.length+" repository tables.");

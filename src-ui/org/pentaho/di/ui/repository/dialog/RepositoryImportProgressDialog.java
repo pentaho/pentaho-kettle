@@ -23,6 +23,7 @@
 package org.pentaho.di.ui.repository.dialog;
 
 import java.util.Date;
+import java.util.List;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;

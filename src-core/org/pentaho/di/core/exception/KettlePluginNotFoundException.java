@@ -22,6 +22,7 @@
 
 package org.pentaho.di.core.exception;
 
+import org.pentaho.di.core.market.MarketEntryType;
 
 
 /**
