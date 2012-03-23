@@ -2911,7 +2911,30 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   }
 
   public boolean tabCloseSelected(){
-	  return tabClose(tabfolder.getSelected());
+	  // this gets called on by the file-close menu item
+	  
+	  String activePerspectiveId = SpoonPerspectiveManager.getInstance().getActivePerspective().getId();
+	  boolean etlPerspective = activePerspectiveId.equals(MainSpoonPerspective.ID);
+	  
+	  if (etlPerspective){
+		  return tabClose(tabfolder.getSelected());		  
+	  }
+
+	  // hack to make the plugins see file-close commands
+	  // this should be resolved properly when resolving PDI-6054
+	  // maybe by extending the SpoonPerspectiveInterface to register event handlers from Spoon?
+    	try {
+    		SpoonPerspective activePerspective = SpoonPerspectiveManager.getInstance().getActivePerspective();
+			Class<? extends SpoonPerspective> cls = activePerspective.getClass();
+			Method m = cls.getMethod("onFileClose", new Class[0]);
+			return (Boolean) m.invoke(activePerspective);
+		} catch (Exception e) {
+			// ignore any errors resulting from the hack
+			//e.printStackTrace();
+		}
+		  
+	  return false;
+
   }
   
   public boolean tabClose(TabItem item) {

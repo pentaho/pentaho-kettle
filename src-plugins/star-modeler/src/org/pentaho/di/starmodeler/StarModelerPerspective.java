@@ -905,4 +905,29 @@ public class StarModelerPerspective extends AbstractXulEventHandler implements S
     }
     return true;
   }
+  
+	public boolean onFileClose() {
+		
+		int idx = tabbox.getSelectedIndex();
+		if (idx == -1 || idx >= tabbox.getTabs().getChildNodes().size()) {
+			return false;
+		}
+
+		try {
+			if (onTabClose(idx)) {
+				
+				XulComponent panel = panels.getChildNodes().get(idx);
+				XulComponent tab = tabs.getChildNodes().get(idx);
+
+				panels.removeChild(panel);	
+				tabs.removeChild(tab);
+											    								
+				return true;
+			}
+		} catch (XulException e) {
+			e.printStackTrace();
+		}
+
+		return false;
+  }
 }
