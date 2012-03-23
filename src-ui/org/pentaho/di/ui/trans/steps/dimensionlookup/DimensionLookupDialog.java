@@ -316,7 +316,6 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
       wConnection.select(0);
     // wConnection.addModifyListener(lsConnectionMod);
     // wConnection.addSelectionListener(lsSelection);
-    wConnection.addFocusListener(lsConnectionFocus);
     wConnection.addModifyListener(new ModifyListener() {
       public void modifyText(ModifyEvent e) {
         // We have new content: change ci connection:
@@ -345,7 +344,6 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 
     wSchema = new TextVar(transMeta, comp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
     props.setLook(wSchema);
-    wSchema.addModifyListener(lsTableMod);
     FormData fdSchema = new FormData();
     fdSchema.left = new FormAttachment(middle, 0);
     fdSchema.top = new FormAttachment(wConnection, margin);
@@ -372,7 +370,6 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 
     wTable = new TextVar(transMeta, comp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
     props.setLook(wTable);
-    wTable.addModifyListener(lsTableMod);
     FormData fdTable = new FormData();
     fdTable.left = new FormAttachment(middle, 0);
     fdTable.top = new FormAttachment(wbSchema, margin);
@@ -1043,6 +1040,15 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
         cancel();
       }
     });
+
+
+    wTabFolder.setSelection(0);
+
+    // Set the shell size, based upon previous time...
+    setSize();
+
+    getData();
+    
     wbSchema.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent e) {
         getSchemaNames();
@@ -1053,15 +1059,14 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
         getTableName();
       }
     });
+    
+    wConnection.addFocusListener(lsConnectionFocus);
+    wSchema.addModifyListener(lsTableMod);
+    wTable.addModifyListener(lsTableMod);
 
-    wTabFolder.setSelection(0);
-
-    // Set the shell size, based upon previous time...
-    setSize();
-
-    getData();
-    setTableFieldCombo();
     input.setChanged(backupChanged);
+    
+    
 
     shell.open();
     while (!shell.isDisposed()) {

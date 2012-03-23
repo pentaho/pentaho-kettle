@@ -146,61 +146,66 @@ public class JobGenerator {
         
         // Generate the required SQL to make this happen
         //
-        String sql = db.getCreateTableStatement(schemaTable, fields, phKeyField, databaseMeta.supportsAutoinc() && !isFact, null, true);
+        String sql;
+        if (db.checkTableExists(schemaTable)) {
+          sql = db.getAlterTableStatement(schemaTable, fields, phKeyField, databaseMeta.supportsAutoinc() && !isFact, null, true);
+        } else {
+          sql = db.getCreateTableStatement(schemaTable, fields, phKeyField, databaseMeta.supportsAutoinc() && !isFact, null, true);
         
-        // Also generate an index for the technical key field
-        //
-        if (keyColumn!=null) {
-          ValueMetaInterface keyValueMeta = getValueForLogicalColumn(databaseMeta, keyColumn);
-          String indexName = databaseMeta.quoteField( "IDX_" + phTable.replace(" ", "_").toUpperCase() + "_" + phKeyField.toUpperCase() );
-          String indexSql = db.getCreateIndexStatement(schemaTable, indexName, new String[] { keyValueMeta.getName(), }, true, false, true, true);
-          sql+=Const.CR+indexSql;
-        }
-        
-        // In case it's a fact table generate an index for each TK column
-        //
-        if (isFact) {
-          List<LogicalColumn> fks = ConceptUtil.findLogicalColumns(logicalTable, AttributeType.TECHNICAL_KEY);
-          for (LogicalColumn fk : fks) {
-            ValueMetaInterface keyValueMeta = getValueForLogicalColumn(databaseMeta, fk);
-            String phColumn = ConceptUtil.getString(fk, DefaultIDs.LOGICAL_COLUMN_PHYSICAL_COLUMN_NAME);
-            if (!Const.isEmpty(phColumn)) {
-              String indexName = databaseMeta.quoteField( "IDX_" + phTable.replace(" ", "_").toUpperCase() + "_" + phColumn.toUpperCase() );
-              String indexSql = db.getCreateIndexStatement(schemaTable, indexName, new String[] { keyValueMeta.getName(), }, true, false, true, true);
+          //        
+          // Also generate an index for the technical key field
+          //
+          if (keyColumn!=null) {
+            ValueMetaInterface keyValueMeta = getValueForLogicalColumn(databaseMeta, keyColumn);
+            String indexName = databaseMeta.quoteField( "IDX_" + phTable.replace(" ", "_").toUpperCase() + "_" + phKeyField.toUpperCase() );
+            String indexSql = db.getCreateIndexStatement(schemaTable, indexName, new String[] { keyValueMeta.getName(), }, true, false, true, true);
+            sql+=Const.CR+indexSql;
+          }
+          
+          // In case it's a fact table generate an index for each TK column
+          //
+          if (isFact) {
+            List<LogicalColumn> fks = ConceptUtil.findLogicalColumns(logicalTable, AttributeType.TECHNICAL_KEY);
+            for (LogicalColumn fk : fks) {
+              ValueMetaInterface keyValueMeta = getValueForLogicalColumn(databaseMeta, fk);
+              String phColumn = ConceptUtil.getString(fk, DefaultIDs.LOGICAL_COLUMN_PHYSICAL_COLUMN_NAME);
+              if (!Const.isEmpty(phColumn)) {
+                String indexName = databaseMeta.quoteField( "IDX_" + phTable.replace(" ", "_").toUpperCase() + "_" + phColumn.toUpperCase() );
+                String indexSql = db.getCreateIndexStatement(schemaTable, indexName, new String[] { keyValueMeta.getName(), }, true, false, true, true);
+                sql+=Const.CR+indexSql;
+              }
+            }
+          }
+          
+          // Put an index on all natural keys too...
+          //
+          if (isDimension) {
+            List<LogicalColumn> naturalKeys = ConceptUtil.findLogicalColumns(logicalTable, AttributeType.NATURAL_KEY);
+            if (!naturalKeys.isEmpty()) {
+              String indexName = databaseMeta.quoteField( "IDX_" + phTable.replace(" ", "_").toUpperCase() + "_LOOKUP" );
+              String[] fieldNames = new String[naturalKeys.size()];
+              for (int i=0;i<fieldNames.length;i++) {
+                ValueMetaInterface keyValueMeta = getValueForLogicalColumn(databaseMeta, naturalKeys.get(i));
+                fieldNames[i] = keyValueMeta.getName();
+              }
+              String indexSql = db.getCreateIndexStatement(schemaTable, indexName, fieldNames, false, false, false, true);
+              sql+=Const.CR+indexSql;
+            }
+          }
+          if (isJunk) {
+            List<LogicalColumn> attributes = ConceptUtil.findLogicalColumns(logicalTable, AttributeType.ATTRIBUTE);
+            if (!attributes.isEmpty()) {
+              String indexName = databaseMeta.quoteField( "IDX_" + phTable.replace(" ", "_").toUpperCase() + "_LOOKUP" );
+              String[] fieldNames = new String[attributes.size()];
+              for (int i=0;i<fieldNames.length;i++) {
+                ValueMetaInterface attrValueMeta = getValueForLogicalColumn(databaseMeta, attributes.get(i));
+                fieldNames[i] = attrValueMeta.getName();
+              }
+              String indexSql = db.getCreateIndexStatement(schemaTable, indexName, fieldNames, false, false, false, true);
               sql+=Const.CR+indexSql;
             }
           }
         }
-        
-        // Put an index on all natural keys too...
-        //
-        if (isDimension) {
-          List<LogicalColumn> naturalKeys = ConceptUtil.findLogicalColumns(logicalTable, AttributeType.NATURAL_KEY);
-          if (!naturalKeys.isEmpty()) {
-            String indexName = databaseMeta.quoteField( "IDX_" + phTable.replace(" ", "_").toUpperCase() + "_LOOKUP" );
-            String[] fieldNames = new String[naturalKeys.size()];
-            for (int i=0;i<fieldNames.length;i++) {
-              ValueMetaInterface keyValueMeta = getValueForLogicalColumn(databaseMeta, naturalKeys.get(i));
-              fieldNames[i] = keyValueMeta.getName();
-            }
-            String indexSql = db.getCreateIndexStatement(schemaTable, indexName, fieldNames, false, false, false, true);
-            sql+=Const.CR+indexSql;
-          }
-        }
-        if (isJunk) {
-          List<LogicalColumn> attributes = ConceptUtil.findLogicalColumns(logicalTable, AttributeType.ATTRIBUTE);
-          if (!attributes.isEmpty()) {
-            String indexName = databaseMeta.quoteField( "IDX_" + phTable.replace(" ", "_").toUpperCase() + "_LOOKUP" );
-            String[] fieldNames = new String[attributes.size()];
-            for (int i=0;i<fieldNames.length;i++) {
-              ValueMetaInterface attrValueMeta = getValueForLogicalColumn(databaseMeta, attributes.get(i));
-              fieldNames[i] = attrValueMeta.getName();
-            }
-            String indexSql = db.getCreateIndexStatement(schemaTable, indexName, fieldNames, false, false, false, true);
-            sql+=Const.CR+indexSql;
-          }
-        }
-        
         
         // If it's 
         

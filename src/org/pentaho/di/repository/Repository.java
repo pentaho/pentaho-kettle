@@ -34,6 +34,7 @@ import org.pentaho.di.core.exception.KettleSecurityException;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.partition.PartitionSchema;
+import org.pentaho.di.repository.keyvalue.RepositoryKeyValueInterface;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.TransMeta;
 
@@ -573,4 +574,9 @@ public interface Repository {
    * @return the exporter that will handle exports from this repository
    */
   public IRepositoryExporter getExporter();
+  
+  /**
+   * @return A key-value pair interface allowing folks to save arbitrary information in the repository as well as load it back.
+   */
+  public RepositoryKeyValueInterface getKeyValueInterface();
 }

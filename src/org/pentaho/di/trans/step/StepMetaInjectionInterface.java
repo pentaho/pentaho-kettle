@@ -34,9 +34,17 @@ import org.pentaho.di.core.exception.KettleException;
  */
 public interface StepMetaInjectionInterface {
   /**
-   * @return A list of step injection metadata entries.  In case the data type of the entry is NONE (0) you will get at least one entry in the details section.
-   *         You can use this list 
+   * @return A list of step injection metadata entries.  
+   *   In case the data type of the entry is NONE (0) you will get at least one entry in the details section.
    */
   public List<StepInjectionMetaEntry> getStepInjectionMetadataEntries() throws KettleException;
+  
+  /**
+   * Inject a list of step injection metadata entries into the owned step metadata object.
+   * 
+   * @param metadata The metadata to inject.
+   * 
+   * @throws KettleException
+   */
   public void injectStepMetadataEntries(List<StepInjectionMetaEntry> metadata) throws KettleException; 
 }

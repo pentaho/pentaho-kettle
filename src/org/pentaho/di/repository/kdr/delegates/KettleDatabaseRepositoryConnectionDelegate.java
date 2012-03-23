@@ -1271,6 +1271,12 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 		return getNextID(quoteTable(KettleDatabaseRepository.TABLE_R_DIRECTORY), quote(KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY));
 	}
 
+  public synchronized ObjectId getNextKeyValueID() throws KettleException
+  {
+      return getNextID(quoteTable(KettleDatabaseRepository.TABLE_R_KEY_VALUE), quote(KettleDatabaseRepository.FIELD_KEY_VALUE_ID_KEY_VALUE));
+  }
+
+	
 	public synchronized ObjectId insertStepAttribute(ObjectId id_transformation, ObjectId id_step, long nr, String code, double value_num,
 			String value_str) throws KettleException
 	{
@@ -1516,8 +1522,6 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
         sqlMap.put(sql, ps);
       }
 
-      // Assemble the parameters (if any)
-      //
       // Assemble the parameters (if any)
       //
       RowMetaInterface parameterMeta = new RowMeta();
@@ -1808,4 +1812,43 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
         throw new KettleException("Unable to perform delete with SQL: "+sql+", ids="+ids.toString(), e);
       }
     }
+    
+    
+    public List<String> findStrings(String sql, String...parameters) throws KettleException
+    {
+      // Get the prepared statement
+      //
+      PreparedStatement ps = sqlMap.get(sql);
+      if (ps == null) {
+        ps = database.prepareSQL(sql);
+        sqlMap.put(sql, ps);
+      }
+
+      // Assemble the parameters (if any)
+      //
+      RowMetaInterface parameterMeta = new RowMeta();
+      for (int i = 0; i < parameters.length; i++) {
+        parameterMeta.addValueMeta(new ValueMeta("par" + (i + 1), ValueMetaInterface.TYPE_STRING));
+      }
+
+      // Get the result set back...
+      //
+      ResultSet resultSet = database.openQuery(ps, parameterMeta, parameters);
+      List<Object[]> rows = database.getRows(resultSet, 0, null);
+      if (Const.isEmpty(rows)) {
+        return new ArrayList<String>();
+      }
+      
+      // assemble the result
+      //
+      RowMetaInterface rowMeta = database.getReturnRowMeta();
+      List<String> strings = new ArrayList<String>();
+      for (int i=0;i<rows.size();i++) {
+        Object[] row = rows.get(i);
+        strings.add(rowMeta.getString(row, 0));
+      }
+      
+      return strings;
+    }
+
 }

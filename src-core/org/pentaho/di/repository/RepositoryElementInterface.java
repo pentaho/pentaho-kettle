@@ -52,5 +52,4 @@ public interface RepositoryElementInterface extends RepositoryObjectInterface {
 	
   public ObjectRevision getObjectRevision();	
 	public void setObjectRevision(ObjectRevision objectRevision);
-
 }

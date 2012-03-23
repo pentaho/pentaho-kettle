@@ -56,94 +56,87 @@ public class UniqueRows extends BaseStep implements StepInterface
 		data=(UniqueRowsData)stepDataInterface; // create new data object.
 	}
 	
-	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
-	{
-		meta=(UniqueRowsMeta)smi;
-		data=(UniqueRowsData)sdi;
+  public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException {
+    meta = (UniqueRowsMeta) smi;
+    data = (UniqueRowsData) sdi;
 
-		Object[] r=getRow();    // get row!
-		if (r==null)  // no more input to be expected...
-		{
-			// Don't forget the last set of rows...
-			if (data.previous!=null) 
-			{
-				Object[] outputRow = addCounter(data.outputRowMeta, data.previous, data.counter);
-				putRow(data.outputRowMeta, outputRow);
-			} 
-			setOutputDone();
-			return false;
-		}
+    Object[] r = getRow(); // get row!
+    if (r == null) // no more input to be expected...
+    {
+      // Don't forget the last set of rows...
+      if (data.previous != null) {
+        Object[] outputRow = addCounter(data.outputRowMeta, data.previous, data.counter);
+        putRow(data.outputRowMeta, outputRow);
+      }
+      setOutputDone();
+      return false;
+    }
 
-		if (first)
-		{
-            
-            data.inputRowMeta = getInputRowMeta().clone();
-            data.compareRowMeta = getInputRowMeta().clone();
-            data.outputRowMeta = getInputRowMeta().clone();
-            meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
-            
-			data.previous=data.inputRowMeta.cloneRow(r); // copy the row
-			
-			// Cache lookup of fields
-			data.fieldnrs=new int[meta.getCompareFields().length];
-            
-			for (int i=0;i<meta.getCompareFields().length;i++)
-			{
-				data.fieldnrs[i] = getInputRowMeta().indexOfValue(meta.getCompareFields()[i]);
-				if (data.fieldnrs[i]<0)
-				{
-					logError(BaseMessages.getString(PKG, "UniqueRows.Log.CouldNotFindFieldInRow",meta.getCompareFields()[i])); //$NON-NLS-1$ //$NON-NLS-2$
-					setErrors(1);
-					stopAll();
-					return false;
-				}
-				// Change the case insensitive flag...
-				//
-                data.compareRowMeta.getValueMeta(data.fieldnrs[i]).setCaseInsensitive(meta.getCaseInsensitive()[i]);
-                
-				if(data.sendDuplicateRows)
-				{
-					data.compareFields=data.compareFields==null?meta.getCompareFields()[i]:data.compareFields+","+meta.getCompareFields()[i];
-				}
-			}
-			if(data.sendDuplicateRows && !Const.isEmpty(meta.getErrorDescription())) 
-				data.realErrorDescription=environmentSubstitute(meta.getErrorDescription());
-		}
-		
-		boolean isEqual = false;
-		
-		if (meta.getCompareFields()==null || meta.getCompareFields().length==0)
-		{
-		    // Compare the complete row...
-		    isEqual = data.outputRowMeta.compare(r, data.previous)==0;
-		}
-		else
-		{
-		    isEqual = data.outputRowMeta.compare(r, data.previous, data.fieldnrs)==0;
-		}
-		if (!isEqual)
-		{
-			Object[] outputRow = addCounter(data.outputRowMeta, data.previous, data.counter);
-			putRow(data.outputRowMeta, outputRow); // copy row to possible alternate rowset(s).
-			data.previous=data.inputRowMeta.cloneRow(r);
-			data.counter=1;
-		}
-		else
-		{
-			data.counter++;
-			if(data.sendDuplicateRows && !first) 
-			{
-				putError(getInputRowMeta(), r, 1, data.realErrorDescription, data.compareFields==""?null:data.compareFields, "UNR001");
-			}
-		}
+    if (first) {
+      first = false;
+      data.inputRowMeta = getInputRowMeta().clone();
+      data.compareRowMeta = getInputRowMeta().clone();
+      data.outputRowMeta = getInputRowMeta().clone();
+      meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 
-        if (checkFeedback(getLinesRead())) 
-        {
-        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "UniqueRows.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+      data.previous = data.inputRowMeta.cloneRow(r); // copy the row
+
+      // Cache lookup of fields
+      data.fieldnrs = new int[meta.getCompareFields().length];
+
+      for (int i = 0; i < meta.getCompareFields().length; i++) {
+        data.fieldnrs[i] = getInputRowMeta().indexOfValue(meta.getCompareFields()[i]);
+        if (data.fieldnrs[i] < 0) {
+          logError(BaseMessages.getString(PKG, "UniqueRows.Log.CouldNotFindFieldInRow", meta.getCompareFields()[i])); //$NON-NLS-1$ //$NON-NLS-2$
+          setErrors(1);
+          stopAll();
+          return false;
         }
-		if(first) first=false;
-		return true;
-	}
+        // Change the case insensitive flag...
+        //
+        data.compareRowMeta.getValueMeta(data.fieldnrs[i]).setCaseInsensitive(meta.getCaseInsensitive()[i]);
+
+        if (data.sendDuplicateRows) {
+          data.compareFields = data.compareFields == null ? meta.getCompareFields()[i] : data.compareFields + "," + meta.getCompareFields()[i];
+        }
+      }
+      if (data.sendDuplicateRows && !Const.isEmpty(meta.getErrorDescription()))
+        data.realErrorDescription = environmentSubstitute(meta.getErrorDescription());
+    }
+    
+    // Emptied in a previous batch in single threading mode.
+    //
+    if (data.previous==null) {
+      data.previous = data.inputRowMeta.cloneRow(r);
+    }
+
+    boolean isEqual = false;
+
+    if (meta.getCompareFields() == null || meta.getCompareFields().length == 0) {
+      // Compare the complete row...
+      isEqual = data.outputRowMeta.compare(r, data.previous) == 0;
+    } else {
+      isEqual = data.outputRowMeta.compare(r, data.previous, data.fieldnrs) == 0;
+    }
+    if (!isEqual) {
+      Object[] outputRow = addCounter(data.outputRowMeta, data.previous, data.counter);
+      putRow(data.outputRowMeta, outputRow); // copy row to possible alternate
+                                             // rowset(s).
+      data.previous = data.inputRowMeta.cloneRow(r);
+      data.counter = 1;
+    } else {
+      data.counter++;
+      if (data.sendDuplicateRows && !first) {
+        putError(getInputRowMeta(), r, 1, data.realErrorDescription, data.compareFields == "" ? null : data.compareFields, "UNR001");
+      }
+    }
+
+    if (checkFeedback(getLinesRead())) {
+      if (log.isBasic())
+        logBasic(BaseMessages.getString(PKG, "UniqueRows.Log.LineNumber") + getLinesRead()); //$NON-NLS-1$
+    }
+    return true;
+  }
 	
 	private Object[] addCounter(RowMetaInterface outputRowMeta, Object[] r, long count)
 	{
@@ -173,4 +166,16 @@ public class UniqueRows extends BaseStep implements StepInterface
 		return false;
 	}
 
+	
+	@Override
+	public void batchComplete() throws KettleException {
+	  // If there's a previous row, output it at the end of the batch...
+	  //
+    if (data.previous!=null) 
+    {
+      Object[] outputRow = addCounter(data.outputRowMeta, data.previous, data.counter);
+      putRow(data.outputRowMeta, outputRow);
+      data.previous = null;
+    }
+	}
 }

@@ -71,6 +71,8 @@ import org.pentaho.di.repository.RepositorySecurityManager;
 import org.pentaho.di.repository.RepositorySecurityProvider;
 import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.repository.UserInfo;
+import org.pentaho.di.repository.keyvalue.RepositoryKeyValueInterface;
+import org.pentaho.di.repository.keyvalue.RepositoryValueInterface;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.HasDatabasesInterface;
@@ -78,7 +80,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-public class KettleFileRepository implements Repository {
+public class KettleFileRepository implements Repository, RepositoryKeyValueInterface {
 
 	private static final String	EXT_TRANSFORMATION		= ".ktr";
 	private static final String EXT_JOB					= ".kjb";
@@ -89,7 +91,11 @@ public class KettleFileRepository implements Repository {
 	
 	private static final String LOG_FILE = "repository.log";
 	
+	public static final String KEY_VALUE_DIRECTORY = "__key_value_store__"; 
+	
 	public static final String	FILE_REPOSITORY_VERSION	= "0.1";
+	
+	public static final String TEXT_ENCODING = "UTF8";
 	
 	private KettleFileRepositoryMeta repositoryMeta;
 	private KettleFileRepositorySecurityProvider	securityProvider;
@@ -798,12 +804,16 @@ public class KettleFileRepository implements Repository {
 			
       for (FileObject child : folder.getChildren()) {
         if (child.getType().equals(FileType.FOLDER)) {
-          if (!child.isHidden() || !repositoryMeta.isHidingHiddenFiles()) {
-            RepositoryDirectory subDir = new RepositoryDirectory(dir, child.getName().getBaseName());
-            subDir.setObjectId(new StringObjectId(calcObjectId(subDir)));
-            dir.addSubdirectory(subDir);
-
-            loadRepositoryDirectoryTree(subDir);
+          // Ignore the key-value store folder
+          //
+          if (!KEY_VALUE_DIRECTORY.equals(child.getName().getBaseName())) {
+            if (!child.isHidden() || !repositoryMeta.isHidingHiddenFiles()) {
+              RepositoryDirectory subDir = new RepositoryDirectory(dir, child.getName().getBaseName());
+              subDir.setObjectId(new StringObjectId(calcObjectId(subDir)));
+              dir.addSubdirectory(subDir);
+  
+              loadRepositoryDirectoryTree(subDir);
+            }
           }
         }
       }
@@ -1271,4 +1281,141 @@ public class KettleFileRepository implements Repository {
   public IRepositoryImporter getImporter() {
     return new RepositoryImporter(this);
   }
+
+  @Override
+  public RepositoryKeyValueInterface getKeyValueInterface() {
+    return this;
+  }
+
+  @Override
+  public void putValue(String namespace, String key, String value) throws KettleException {
+    try {
+      FileObject storeDir = KettleVFS.getFileObject(getKeyValueStoreDirectory());
+      if (!storeDir.exists()) {
+        storeDir.createFolder();
+      }
+      FileObject namespaceDir = KettleVFS.getFileObject(getNamespaceDir(namespace));
+      if (!namespaceDir.exists()) {
+        namespaceDir.createFolder();
+      }
+      OutputStream outputStream = null;
+      try {
+        outputStream = KettleVFS.getOutputStream(getKeyFilename(namespace, key), false);
+        outputStream.write(value.getBytes(TEXT_ENCODING));
+      } finally {
+        if (outputStream!=null) {
+          outputStream.close();
+        }
+      }
+      
+    } catch(IOException e) {
+      throw new KettleException("Unable to create key/value entry for namespace '"+namespace+"' and key '"+key+"'", e);
+    }
+    
+  }
+
+  @Override
+  public void removeValue(String namespace, String key) throws KettleException {
+    try {
+      FileObject fileObject = KettleVFS.getFileObject(getKeyFilename(namespace, key));
+      if (!fileObject.delete()) {
+        throw new KettleException("The value with namespace '"+namespace+"' and key '"+key+"' was not deleted!");
+      }
+    } catch(Exception e) {
+      throw new KettleException("Unable to remove value with namespace '"+namespace+"' and key '"+key+"'", e);
+    }
+    
+  }
+
+  @Override
+  public String getValue(String namespace, String key, String revision) throws KettleException {
+    try {
+      return KettleVFS.getTextFileContent(getKeyFilename(namespace, key), TEXT_ENCODING);
+    } catch(Exception e) {
+      throw new KettleException("Unable to read value with namespace '"+namespace+"' and key '"+key+"'", e);
+    }
+  }
+
+  @Override
+  public List<String> listNamespaces() throws KettleException {
+    List<String> spaces = new ArrayList<String>();
+    try {
+      FileObject keyValueDir = KettleVFS.getFileObject(getKeyValueStoreDirectory());
+      if (!keyValueDir.exists()) return spaces;
+      
+      for (FileObject dir : keyValueDir.getChildren()) {
+        if (dir.getType().equals(FileType.FOLDER) && !dir.isHidden()) {
+          spaces.add(dir.getName().getBaseName());
+        }
+      }
+    } catch(Exception e) {
+      throw new KettleException("It was not possible to get the list of namespaces", e);
+    }
+    return spaces;
+  }
+
+  @Override
+  public List<String> listKeys(String namespace) throws KettleException {
+    List<String> list = new ArrayList<String>();
+    try {
+      FileObject keyValueDir = KettleVFS.getFileObject(getKeyValueStoreDirectory());
+      if (!keyValueDir.exists()) return list;
+      for (FileObject dir : keyValueDir.getChildren()) {
+        if (namespace.equals(dir.getName().getBaseName()) && !dir.isHidden()) {
+          for (FileObject file : dir.getChildren()) {
+            if (!file.isHidden()) {
+              list.add(file.getName().getBaseName());
+            }
+          }
+        }
+      }
+    } catch(Exception e) {
+      throw new KettleException("It was not possible to get the list of keys for namespace '"+namespace+"'", e);
+    }
+    return list;
+  }
+
+  @Override
+  public List<RepositoryValueInterface> listValues(final String namespace) throws KettleException {
+    List<RepositoryValueInterface> list = new ArrayList<RepositoryValueInterface>();
+    try {
+      FileObject keyValueDir = KettleVFS.getFileObject(getKeyValueStoreDirectory());
+      if (!keyValueDir.exists()) return list;
+      for (FileObject dir : keyValueDir.getChildren()) {
+        if (namespace.equals(dir.getName().getBaseName()) && !dir.isHidden()) {
+          for (FileObject file : dir.getChildren()) {
+            if (!file.isHidden()) {
+              final String key = file.getName().getBaseName();
+              final String value = KettleVFS.getTextFileContent(file.toString(), Const.XML_ENCODING);
+              list.add(new RepositoryValueInterface() {
+                public String getNamespace() { return namespace; }
+                public String getKey() { return key; }
+                public String getValue() { return value; }
+              });
+            }
+          }
+        }
+      }
+    } catch(Exception e) {
+      throw new KettleException("It was not possible to get the list of values for namespace '"+namespace+"'", e);
+    }
+    return list;
+  }
+  
+  private String getKeyValueStoreDirectory() {
+    String dir = repositoryMeta.getBaseDirectory();
+    if (!dir.endsWith("/")) dir+="/";
+    dir+=KEY_VALUE_DIRECTORY;
+    
+    return dir;
+  }
+
+  private String getNamespaceDir(String namespace) {
+    return getKeyValueStoreDirectory()+"/"+namespace;
+  }
+  
+  private String getKeyFilename(String namespace, String key) {
+    return getNamespaceDir(namespace)+"/"+key;    
+  }
+
 }
