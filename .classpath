@@ -34,15 +34,10 @@
 	<classpathentry exported="true" kind="lib" path="libext/JDBC/db2jcc.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/JDBC/hsqldb.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/JDBC/ifxjdbc.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/JDBC/iijdbc.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/JDBC/interclient.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/JDBC/jaybird-full-2.1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/JDBC/jt400.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/JDBC/ojdbc14.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/JDBC/rdbthin.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/JDBC/sapdbc.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/JDBC/unijdbc.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/JDBC/xdbjdbc.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/webservices/jsr173_api.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/webservices/qname.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/webservices/wsdl4j.jar"/>
@@ -103,7 +98,6 @@
 	<classpathentry exported="true" kind="lib" path="libext/xercesImpl-2.9.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/feeds/rome-1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/webservices/xalan-2.4.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/JDBC/orai18n.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/secondstring.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/webservices/wstx-asl-3.2.9.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/rules/drools-api-5.0.1.jar"/>
@@ -296,7 +290,6 @@
 	<classpathentry kind="lib" path="libext/bigdata/hadoop-snappy-0.0.1-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/bigdata/pentaho-hdfs-vfs-TRUNK-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/bigdata/zookeeper-3.3.2.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/mysql-connector-java-3.1.14-bin.jar"/>
 	<classpathentry kind="lib" path="libext/slf4j-log4j12-1.6.1.jar"/>
 	<classpathentry kind="lib" path="libext/antlr-3.4-complete.jar"/>
 	<classpathentry kind="lib" path="libswt/osx64/swt.jar" sourcepath="/Users/slawo/Desktop/swt-3.7.2-cocoa-macosx-x86_64/src"/>
