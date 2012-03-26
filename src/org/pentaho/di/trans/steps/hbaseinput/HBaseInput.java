@@ -637,16 +637,21 @@ public class HBaseInput extends BaseStep implements StepInterface {
    * @see org.pentaho.di.trans.step.BaseStep#setStopped(boolean)
    */
   public void setStopped(boolean stopped) {
+    if (isStopped() && stopped == true) {
+      return;
+    }
     super.setStopped(stopped);
 
-    if (m_resultSet != null) {
-      logBasic("Closing connection...");
-      m_resultSet.close();
-      try {
-        m_sourceTable.close();
-      } catch (IOException e) {
-        logError("A problem occurred while closing connection to HBase: " 
-            + e.getMessage(), e);
+    if (stopped) {
+      if (m_resultSet != null) {
+        logBasic("Closing connection...");
+        m_resultSet.close();
+        try {
+          m_sourceTable.close();
+        } catch (IOException e) {
+          logError("A problem occurred while closing connection to HBase: " 
+              + e.getMessage(), e);
+        }
       }
     }
   }

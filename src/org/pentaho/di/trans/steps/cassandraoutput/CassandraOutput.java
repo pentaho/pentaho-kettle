@@ -279,6 +279,10 @@ public class CassandraOutput extends BaseStep implements StepInterface {
   }
   
   public void setStopped(boolean stopped) {
+    if (isStopped() && stopped == true) {
+      return;
+    }
+    
     super.setStopped(stopped);
     
     if (stopped) {

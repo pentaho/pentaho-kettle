@@ -312,27 +312,32 @@ public class HBaseOutput extends BaseStep implements StepInterface {
   }
   
   public void setStopped(boolean stopped) {
+    if (isStopped() && stopped == true) {
+      return;
+    }
     super.setStopped(stopped);
 
-    if (m_targetTable != null) {
-      if (!m_targetTable.isAutoFlush()) {
-        try {
-          logBasic("Flushing write buffer...");
-          m_targetTable.flushCommits();
-        } catch (IOException e) {        
-          e.printStackTrace();
-          logError("A problem occurred whilst flushing buffered " +
-              "data: " + e.getMessage(), e);
+    if (stopped) {
+      if (m_targetTable != null) {
+        if (!m_targetTable.isAutoFlush()) {
+          try {
+            logBasic("Flushing write buffer...");
+            m_targetTable.flushCommits();
+          } catch (IOException e) {        
+            e.printStackTrace();
+            logError("A problem occurred whilst flushing buffered " +
+                "data: " + e.getMessage(), e);
+          }
         }
-      }
 
-      try {
-        logBasic("Closing connection to target table.");
-        m_targetTable.close();
-      } catch (IOException e) {
-        e.printStackTrace();
-        logError("A problem occurred when closing the connection " +
-            "the target table: " + e.getMessage(), e);
+        try {
+          logBasic("Closing connection to target table.");
+          m_targetTable.close();
+        } catch (IOException e) {
+          e.printStackTrace();
+          logError("A problem occurred when closing the connection " +
+              "the target table: " + e.getMessage(), e);
+        }
       }
     }
   }
