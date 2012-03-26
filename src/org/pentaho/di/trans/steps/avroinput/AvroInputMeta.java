@@ -37,6 +37,7 @@ import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -56,14 +57,17 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
 
+import com.sun.org.apache.bcel.internal.generic.Type;
+
 /**
- * Class providing an input step for reading data from an Avro serialized file. 
+ * Class providing an input step for reading data from an Avro serialized file or an incoming field. 
  * Handles both container files (where the schema is serialized into the file) and 
- * schemaless files. In the case of the later, the user must supply a schema in order 
- * to read objects from the file. In the case of the former, a schema can be optionally 
+ * schemaless files. In the case of the later (and incoming field), the user must supply a schema in order 
+ * to read objects from the file/field. In the case of the former, a schema can be optionally 
  * supplied.
  * 
- * Currently supports Avro records, arrays, maps and primitive types. Paths use the "dot" 
+ * Currently supports Avro records, arrays, maps, unions and primitive types. Union types are
+ * limited to two base types, where one of the base types must be "null". Paths use the "dot" 
  * notation and "$" indicates the root of the object. Arrays and maps are accessed via "[]" 
  * and differ only in that array elements are accessed via zero-based integer indexes and 
  * map values are accessed by string keys.
@@ -75,6 +79,90 @@ import org.w3c.dom.Node;
 public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
   
   protected static Class<?> PKG = AvroInputMeta.class;
+  
+  /**
+   * Inner class encapsulating a field to provide lookup values. Field values (non-avro) 
+   * from the incoming row stream can be substituted into the avro paths used to
+   * extract avro fields from an incoming binary/json avro field.
+   * 
+   * @author Mark Hall (mhall{[at]}pentaho{[dot]}com)
+   *
+   */
+  public static class LookupField {
+    
+    /** The name of the field in the incoming rows to use for a lookup */
+    public String m_fieldName = "";
+    
+    /** The name of the variable to hold this field's values */
+    public String m_variableName = "";
+    
+    /** A default value to use if the incoming field is null */
+    public String m_defaultValue = "";
+    
+    protected String m_cleansedVariableName;
+    protected String m_resolvedFieldName;
+    protected String m_resolvedDefaultValue;
+    
+    /** False if this field does not exist in the incoming row stream */
+    protected boolean m_isValid = true;
+    
+    /** Index of this field in the incoming row stream */
+    protected int m_inputIndex = -1;
+    
+    protected ValueMetaInterface m_fieldVM;
+    
+    public boolean init(RowMetaInterface inRowMeta, VariableSpace space) {
+//      System.out.println("*** Initializing lookup field...");
+      
+      m_resolvedFieldName = space.environmentSubstitute(m_fieldName);
+      
+      m_inputIndex = inRowMeta.indexOfValue(m_resolvedFieldName);
+      if (m_inputIndex < 0) {
+        m_isValid = false;
+        
+        return m_isValid;
+      }
+      
+      m_fieldVM = inRowMeta.getValueMeta(m_inputIndex);
+      
+      if (!Const.isEmpty(m_variableName)) {
+        m_cleansedVariableName = m_variableName.replaceAll("\\.", "_");
+      } else {
+        m_isValid = false;
+        return m_isValid;
+      }
+      
+      m_resolvedDefaultValue = space.environmentSubstitute(m_defaultValue);
+      
+      return m_isValid;
+    }        
+    
+    public void setVariable(VariableSpace space, Object[] inRow) {
+      if (!m_isValid) {
+        return;
+      }
+      
+//      System.out.println("+++++++++++++ Resolved field name " + m_resolvedFieldName);
+      String valueToSet = "";
+      try {
+        if (m_fieldVM.isNull(inRow[m_inputIndex])) {
+          if (!Const.isEmpty(m_resolvedDefaultValue)) {
+            valueToSet = m_resolvedDefaultValue;
+          } else {
+            valueToSet = "null";
+          }
+        } else {
+          valueToSet = m_fieldVM.getString(inRow[m_inputIndex]);
+        }
+      } catch (KettleValueException e) {
+        valueToSet = "null";
+      }
+      
+//      System.out.println("Setting value " + valueToSet);
+      space.setVariable(m_cleansedVariableName, valueToSet);
+//      System.out.println("++ Value set successfully...");
+    }        
+  }
   
   /**
    * Inner class for encapsulating name, path and type information for a field to
@@ -96,7 +184,8 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
     
     /** any indexed values (i.e. enum types in avro) */
     public List<String> m_indexedVals;
-    
+
+    protected int m_outputIndex; // the index that this field is in the output row structure
     private ValueMeta m_tempValueMeta;    
     private List<String> m_pathParts;    
     private List<String> m_tempParts;
@@ -104,9 +193,10 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
     /**
      * Initialize this field by parsing the path etc.
      * 
+     * @param outputIndex the index in the output row structure for this field
      * @throws KettleException if a problem occurs
      */
-    public void init() throws KettleException {
+    public void init(int outputIndex) throws KettleException {
       if (Const.isEmpty(m_fieldPath)) {
         throw new KettleException("No path has been set!");
       }
@@ -114,7 +204,10 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
         return;
       }
       
-      String[] temp = m_fieldPath.split("\\.");
+//      System.out.println("%%%%% About to cleanse path: " + m_fieldPath);
+      String fieldPath = AvroInputData.cleansePath(m_fieldPath);
+      
+      String[] temp = fieldPath.split("\\.");
       m_pathParts = new ArrayList<String>();
       for (String part : temp) {
         m_pathParts.add(part);
@@ -122,24 +215,41 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
       
       if (m_pathParts.get(0).equals("$")) {
         m_pathParts.remove(0); // root record indicator
-      } else if (m_pathParts.get(0).startsWith("$")) {
+      } else if (m_pathParts.get(0).startsWith("$[")) {
         
         // strip leading $ off of array
         String r = m_pathParts.get(0).substring(1, m_pathParts.get(0).length());
         m_pathParts.set(0, r);
       }
+      
+//      System.out.println("*** (init) Number of path parts " + m_pathParts.size());
+//      System.out.println("** " + m_pathParts.get(0));
+      
+      
       m_tempParts = new ArrayList<String>();
       
       m_tempValueMeta = new ValueMeta();
       m_tempValueMeta.setType(ValueMeta.getType(m_kettleType));
+      m_outputIndex = outputIndex;
     }
       
     /**
      * Reset this field. Should be called prior to processing a new field 
      * value from the avro file
+     * 
+     * @param space environment variables (values that environment variables
+     * resolve to cannot contain "."s)
      */
-    public void reset() {
-      m_tempParts.addAll(m_pathParts);
+    public void reset(VariableSpace space) {
+      // first clear because there may be stuff left over from processing
+      // the previous avro object (especially if a path exited early due to
+      // non-existent map key or array index out of bounds)
+      m_tempParts.clear();
+      //m_tempParts.addAll(m_pathParts);
+      
+      for (String part : m_pathParts) {
+        m_tempParts.add(space.environmentSubstitute(part));
+      }
     }
     
     protected Object getKettleValue(Object fieldValue) 
@@ -229,6 +339,10 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
       
       Schema valueType = s.getValueType();
       
+      if (valueType.getType() == Schema.Type.UNION) {
+        valueType = AvroInputData.checkUnion(valueType);
+      }
+      
       // what have we got?
       if (valueType.getType() == Schema.Type.RECORD) {
         return convertToKettleValue((GenericData.Record)value, valueType);
@@ -280,13 +394,22 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
         part = part.substring(part.indexOf(']') + 1, part.length());
         m_tempParts.add(0, part);
       }
-      
+            
       if (arrayI >= array.size() || arrayI < 0) {
+//        System.out.println("*** array index " + arrayI + " array size " + array.size());
         return null;
       }
       
       Object element = array.get(arrayI);
       Schema elementType = s.getElementType();
+      
+      if (element == null) {
+        return null;
+      }
+      
+      if (elementType.getType() == Schema.Type.UNION) {
+        elementType = AvroInputData.checkUnion(elementType);
+      }
       
       // what have we got?
       if (elementType.getType() == Schema.Type.RECORD) {
@@ -336,24 +459,41 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
       
       // part is a named field of the record
       Schema.Field fieldS = s.getField(part);
+//      System.out.println("Record part: " + part);
       if (fieldS == null) {
         throw new KettleException(BaseMessages.getString(PKG, "AvroInput.Error.NonExistentField", part));
       }      
       Object field = record.get(part);
       
+      if (field == null) {
+        return null;
+      }
+      
+      Schema.Type fieldT = fieldS.schema().getType();
+      Schema fieldSchema = fieldS.schema();
+      
+      if (fieldT == Schema.Type.UNION) {
+        // get the non-null part of the union
+        fieldSchema = AvroInputData.checkUnion(fieldSchema);
+        fieldT = fieldSchema.getType();
+      }
+      
       // what have we got?
-      if (fieldS.schema().getType() == Schema.Type.RECORD) {
-        return convertToKettleValue((GenericData.Record)field, fieldS.schema());
-      } else if (fieldS.schema().getType() == Schema.Type.ARRAY) {
-        return convertToKettleValue((GenericData.Array)field, fieldS.schema());
-      } else if (fieldS.schema().getType() == Schema.Type.MAP) {
-        
-        return convertToKettleValue((Map<Utf8, Object>)field, fieldS.schema());
+      if (fieldT == Schema.Type.RECORD) {
+        //System.out.println("Calling record...");
+        return convertToKettleValue((GenericData.Record)field, fieldSchema);
+      } else if (fieldT == Schema.Type.ARRAY) {
+        //System.out.println("Calling array...");
+        return convertToKettleValue((GenericData.Array)field, fieldSchema);
+      } else if (fieldT == Schema.Type.MAP) {
+        //System.out.println("Calling map...");
+        return convertToKettleValue((Map<Utf8, Object>)field, fieldSchema);
       } else {
         // assume primitive until we handle fixed types
-        return getPrimitive(field, fieldS.schema());
+//        System.out.println("Calling primitive...");
+        return getPrimitive(field, fieldSchema);
       }      
-    }
+    }    
   }
   
   /** The avro file to read */
@@ -365,8 +505,55 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
   /** True if the user's avro file is json encoded rather than binary */
   protected boolean m_isJsonEncoded = false;
   
+  /** True if the avro to be decoded is contained in an incoming field */
+  protected boolean m_avroInField = false;
+  
+  /** Holds the source field name (if decoding from an incoming field) */
+  protected String m_avroFieldName = "";
+  
   /** The fields to emit */
   protected List<AvroField> m_fields;
+  
+  /** Incoming field values to use for lookup/substitution in avro paths */
+  protected List<LookupField> m_lookups;
+  
+  /**
+   * Set whether the avro to be decoded is contained in an incoming field
+   * 
+   * @param a true if the avro to be decoded is contained in an incoming field
+   */
+  public void setAvroInField(boolean a) {
+    m_avroInField = a;
+  }
+  
+  /**
+   * Get whether the avro to be decoded is contained in an incoming field
+   * 
+   * @return true if the avro to be decoded is contained in an incoming field
+   */
+  public boolean getAvroInField() {
+    return m_avroInField;
+  }
+  
+  /**
+   * Set the name of the incoming field to decode avro from (if decoding from a
+   * field rather than a file)
+   * 
+   * @param f the name of the incoming field to decode from
+   */
+  public void setAvroFieldName(String f) {
+    m_avroFieldName = f;
+  }
+  
+  /**
+   * Get the name of the incoming field to decode avro from (if decoding from a
+   * field rather than a file)
+   * 
+   * @return the name of the incoming field to decode from
+   */
+  public String getAvroFieldName() {
+    return m_avroFieldName;
+  }
   
   /**
    * Set the avro filename
@@ -410,7 +597,7 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
    * 
    * @return true if the file to read is json encoded
    */
-  public boolean getAvroFileIsJsonEncoded() {
+  public boolean getAvroIsJsonEncoded() {
     return m_isJsonEncoded;
   }
   
@@ -420,7 +607,7 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
    * 
    * @param j true if the file to read is json encoded
    */
-  public void setAvroFileIsJsonEncoded(boolean j) {
+  public void setAvroIsJsonEncoded(boolean j) {
     m_isJsonEncoded = j;
   }
   
@@ -442,11 +629,31 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
     return m_fields;
   }
   
+  /**
+   * Get the incoming field values that will be used for lookup/substitution in 
+   * the avro paths
+   * 
+   * @return the lookup fields
+   */
+  public List<LookupField> getLookupFields() {
+    return m_lookups;
+  }
+  
+  /**
+   * Set the incoming field values that will be used for lookup/substitution in 
+   * the avro paths
+   * 
+   * @param lookups the lookup fields
+   */
+  public void setLookupFields(List<LookupField> lookups) {
+    m_lookups = lookups;
+  }
+  
   public void getFields(RowMetaInterface rowMeta, String origin,
       RowMetaInterface[] info, StepMeta nextStep, VariableSpace space)
   throws KettleStepException {
     
-    rowMeta.clear();
+    //rowMeta.clear();
     
     List<AvroField> fieldsToOutput = null;
     
@@ -467,6 +674,11 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
           throw new KettleStepException("Unable to load schema from file '" + fn + "'", e);
         }
       } else {
+        
+        if (m_avroInField) {
+          throw new KettleStepException("A schema must be supplied for decoding avro from incoming " +
+          		"field values");
+        }
         // assume a container file and grab from there...
         String avroFilename = m_filename;
         avroFilename = space.environmentSubstitute(avroFilename);
@@ -549,11 +761,20 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append("\n    ").append(XMLHandler.addTagValue("json_encoded", 
         m_isJsonEncoded));
     
+    retval.append("\n    ").append(XMLHandler.addTagValue("avro_in_field", 
+        m_avroInField));
+    
+    if (!Const.isEmpty(m_avroFieldName)) {
+      retval.append("\n    ").append(XMLHandler.addTagValue("avro_field_name", 
+          m_avroFieldName));
+    }
+    
     if (m_fields != null && m_fields.size() > 0) {
       retval.append("\n    ").append(XMLHandler.openTag("avro_fields"));
       
       for (AvroField f : m_fields) {
         retval.append("\n      ").append(XMLHandler.openTag("avro_field"));
+        
         retval.append("\n        ").append(XMLHandler.addTagValue("field_name", f.m_fieldName));
         retval.append("\n        ").append(XMLHandler.addTagValue("field_path", f.m_fieldPath));
         retval.append("\n        ").append(XMLHandler.addTagValue("field_type", f.m_kettleType));
@@ -564,6 +785,22 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
       }
       
       retval.append("\n    ").append(XMLHandler.closeTag("avro_fields"));
+    }
+    
+    if (m_lookups != null && m_lookups.size() > 0) {
+      retval.append("\n    ").append(XMLHandler.openTag("lookup_fields"));
+      
+      for (LookupField f : m_lookups) {
+        retval.append("\n      ").append(XMLHandler.openTag("lookup_field"));
+        
+        retval.append("\n        ").append(XMLHandler.addTagValue("lookup_field_name", f.m_fieldName));
+        retval.append("\n        ").append(XMLHandler.addTagValue("variable_name", f.m_variableName));
+        retval.append("\n        ").append(XMLHandler.addTagValue("default_value", f.m_defaultValue));
+        
+        retval.append("\n      ").append(XMLHandler.closeTag("lookup_field"));
+      }
+      
+      retval.append("\n    ").append(XMLHandler.closeTag("lookup_fields"));
     }
     
     return retval.toString();
@@ -578,6 +815,13 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
     if (!Const.isEmpty(jsonEnc)) {
       m_isJsonEncoded = jsonEnc.equalsIgnoreCase("Y");
     }
+    
+    String avroInField = XMLHandler.getTagValue(stepnode, "avro_in_field");
+    if (!Const.isEmpty(avroInField)) {
+      m_avroInField = avroInField.equalsIgnoreCase("Y");
+    }
+    m_avroFieldName = XMLHandler.getTagValue(stepnode, "avro_field_name");
+    
     
     Node fields = XMLHandler.getSubNode(stepnode, "avro_fields");
     if (fields != null && XMLHandler.countNodes(fields, "avro_field") > 0) {
@@ -599,6 +843,24 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
         m_fields.add(newField);
       }
     }
+    
+    Node lFields = XMLHandler.getSubNode(stepnode, "lookup_fields");
+    if (lFields != null && XMLHandler.countNodes(lFields, "lookup_field") > 0) {
+      int nrfields = XMLHandler.countNodes(lFields, "lookup_field");
+      
+      m_lookups = new ArrayList<LookupField>();      
+      
+      for (int i = 0; i < nrfields; i++) {
+        Node fieldNode = XMLHandler.getSubNodeByNr(lFields, "lookup_field", i);
+        
+        LookupField newField = new LookupField();
+        newField.m_fieldName = XMLHandler.getTagValue(fieldNode, "lookup_field_name");
+        newField.m_variableName = XMLHandler.getTagValue(fieldNode, "variable_name");
+        newField.m_defaultValue = XMLHandler.getTagValue(fieldNode, "default_value");
+        
+        m_lookups.add(newField);
+      }
+    }
   }
 
   public void readRep(Repository rep, ObjectId id_step,
@@ -609,6 +871,9 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
     m_schemaFilename = rep.getStepAttributeString(id_step, 0, "schema_filename");
     
     m_isJsonEncoded = rep.getStepAttributeBoolean(id_step, 0, "json_encoded");
+    
+    m_avroInField = rep.getStepAttributeBoolean(id_step, "avro_in_field");
+    m_avroFieldName = rep.getStepAttributeString(id_step, "avro_field_name");
     
     int nrfields = rep.countNrStepAttributes(id_step, "field_name");
     if (nrfields > 0) {
@@ -632,6 +897,24 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
         m_fields.add(newField);
       }
     }
+    
+    nrfields = rep.countNrStepAttributes(id_step, "lookup_field_name");
+    if (nrfields > 0) {
+      m_lookups = new ArrayList<LookupField>();
+      
+      for (int i = 0; i < nrfields; i++) {
+        LookupField newField = new LookupField();
+        
+        newField.m_fieldName =
+          rep.getStepAttributeString(id_step, i, "lookup_field_name");
+        newField.m_variableName =
+          rep.getStepAttributeString(id_step, i, "variable_name");
+        newField.m_defaultValue =
+          rep.getStepAttributeString(id_step, i, "default_value");
+        
+        m_lookups.add(newField);
+      }
+    }
   }
 
   public void saveRep(Repository rep, ObjectId id_transformation,
@@ -647,6 +930,12 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
     
     rep.saveStepAttribute(id_transformation, id_step, 0, "json_encoded", m_isJsonEncoded);
+    
+    rep.saveStepAttribute(id_transformation, id_step, 0, "avro_in_field", m_avroInField);
+    if (!Const.isEmpty(m_avroFieldName)) {
+      rep.saveStepAttribute(id_transformation, id_step, 0, "avro_field_name", 
+          m_avroFieldName);
+    }
 
     if (m_fields != null && m_fields.size() > 0) {
       for (int i = 0; i < m_fields.size(); i++) {
@@ -664,6 +953,19 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
           rep.saveStepAttribute(id_transformation, id_step, i, "indexed_vals", 
               indexedVals);
         }
+      }
+    }
+    
+    if (m_lookups != null && m_lookups.size() > 0) {
+      for (int i = 0; i < m_lookups.size(); i++) {
+        LookupField f = m_lookups.get(i);
+        
+        rep.saveStepAttribute(id_transformation, id_step, i, "lookup_field_name", 
+            f.m_fieldName);
+        rep.saveStepAttribute(id_transformation, id_step, i, "variable_name", 
+            f.m_variableName);
+        rep.saveStepAttribute(id_transformation, id_step, i, "default_value", 
+            f.m_defaultValue);
       }
     }
   }
