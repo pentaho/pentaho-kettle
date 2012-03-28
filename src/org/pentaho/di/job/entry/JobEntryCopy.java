@@ -165,6 +165,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 		draw = jobEntryCopy.draw;
 
 		id = jobEntryCopy.id;
+		setChanged();
 	}
 
 	public Object clone_deep()

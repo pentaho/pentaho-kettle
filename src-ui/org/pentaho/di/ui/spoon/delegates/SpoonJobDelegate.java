@@ -1326,6 +1326,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 			{
 				JobEntryCopy copy = (JobEntryCopy) ((JobEntryCopy) transAction.getPrevious()[i]).clone();
 				jobMeta.getJobEntry(transAction.getCurrentIndex()[i]).replaceMeta(copy);
+				
 			}
 			spoon.refreshTree();
 			spoon.refreshGraph();

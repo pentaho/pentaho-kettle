@@ -1640,7 +1640,17 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
    * Go from serial to parallel to serial execution
    */
   public void editEntryParallel() {
-    getJobEntry().setLaunchingInParallel(!getJobEntry().isLaunchingInParallel());
+	  
+	JobEntryCopy je = getJobEntry();
+	JobEntryCopy jeOld = (JobEntryCopy) je.clone_deep();
+
+	je.setLaunchingInParallel(!je.isLaunchingInParallel());
+	JobEntryCopy jeNew = (JobEntryCopy) je.clone_deep();
+	
+    spoon.addUndoChange(jobMeta, new JobEntryCopy[] { jeOld }, new JobEntryCopy[] { jeNew },
+            new int[] { jobMeta.indexOfJobEntry(jeNew) });
+    jobMeta.setChanged();
+	  
     if (getJobEntry().isLaunchingInParallel()) {
       // Show a warning (optional)
       //
@@ -1659,7 +1669,8 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
         spoon.props.saveProps();
       }
     }
-    redraw();
+    spoon.refreshGraph();
+    
   }
 
   public void duplicateEntry() throws KettleException {
