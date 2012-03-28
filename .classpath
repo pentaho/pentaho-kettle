@@ -26,7 +26,7 @@
 	<classpathentry exported="true" kind="lib" path="libext/jakarta-oro-2.0.8.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/commons/commons-dbcp-1.2.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/commons/commons-fileupload-1.0.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/commons/commons-httpclient-3.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/commons/commons-httpclient-3.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/commons/commons-logging-1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/commons/commons-pool-1.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/web/simple-jndi-0.11.1.jar"/>
@@ -61,7 +61,7 @@
 	<classpathentry exported="true" kind="lib" path="libext/feeds/jdom.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/feeds/feed4j.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/feeds/nekohtml.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/feeds/xml-apis.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/feeds/xml-apis-1.4.01.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/salesforce/axis.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/salesforce/jaxrpc.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/salesforce/saaj.jar"/>
@@ -161,19 +161,19 @@
 	<classpathentry exported="true" kind="lib" path="libext/reporting/jmiutils-200507110943.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/joda-time-1.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/jta-1.0.1B.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/libbase-1.2.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/libdocbundle-1.2.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/libfonts-1.2.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/libformat-1.2.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/libformula-1.2.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/reporting/libbase-1.2.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/reporting/libdocbundle-1.2.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/reporting/libfonts-1.2.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/reporting/libformat-1.2.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/reporting/libformula-1.2.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/libformula-ui-1.2.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/libloader-1.2.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/libpixie-1.2.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/librepository-1.2.2.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/libserializer-1.2.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/reporting/libloader-1.2.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/reporting/libpixie-1.2.3.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/reporting/librepository-1.2.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/reporting/libserializer-1.2.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/libsparkline-1.2.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/libswing-1.2.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/libxml-1.2.2.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/reporting/libswing-1.2.5.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/reporting/libxml-1.2.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/mdrapi-200507110943.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/nbmdr-200507110943-custom.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/openide-util-200507110943.jar"/>
