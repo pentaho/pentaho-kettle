@@ -287,7 +287,7 @@
 	<classpathentry kind="lib" path="libext/bigdata/hive/libthrift-0.5.0.jar"/>
 	<classpathentry kind="lib" path="libext/bigdata/JDBC/hive-jdbc-0.7.0-pentaho-1.0.0.jar"/>
 	<classpathentry kind="lib" path="libext/bigdata/hadoop-core-0.20.2.jar"/>
-	<classpathentry kind="lib" path="libext/bigdata/hadoop-snappy-0.0.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libext/bigdata/pentaho-hadoop-snappy-0.0.1-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/bigdata/pentaho-hdfs-vfs-TRUNK-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/bigdata/zookeeper-3.3.2.jar"/>
 	<classpathentry kind="lib" path="libext/slf4j-log4j12-1.6.1.jar"/>
