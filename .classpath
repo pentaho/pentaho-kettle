@@ -45,7 +45,6 @@
 	<classpathentry exported="true" kind="lib" path="libext/ldapjdk.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/JDBC/derby.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/JDBC/LucidDbClient-minimal.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/pentaho/pentaho-vfs-browser.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/commons/commons-digester-1.8.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/jug-lgpl-2.0.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/ognl-2.6.9.jar"/>
@@ -310,5 +309,6 @@
 	<classpathentry kind="lib" path="src-plugins/kettle-profiling-datacleaner/lib/javax.inject-1.jar"/>
 	<classpathentry kind="lib" path="src-plugins/kettle-profiling-datacleaner/lib/MetaModel-core-3.0-beta1.jar"/>
 	<classpathentry kind="lib" path="src-plugins/kettle-profiling-datacleaner/lib/MetaModel-jdbc-3.0-beta1.jar"/>
+	<classpathentry kind="lib" path="/Users/psung/java/Kettle trunk/libext/pentaho/pentaho-vfs-browser-TRUNK-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
