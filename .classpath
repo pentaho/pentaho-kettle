@@ -255,7 +255,7 @@
 	<classpathentry kind="lib" path="libext/jackcess-1.2.4.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-core-3.3-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-swt-3.3-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="/Users/psung/java/Kettle 4.3.0/libext/pentaho/pentaho-s3-vfs-TRUNK-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="/Users/psung/java/Kettle 4.3.0/libext/pentaho/pentaho-vfs-browser-TRUNK-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libext/pentaho/pentaho-s3-vfs-TRUNK-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libext/pentaho/pentaho-vfs-browser-TRUNK-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
