@@ -35,6 +35,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.steps.ldapinput.LDAPInputMeta;
 
 /**
  * This is a wrapper around a standard X509TrustManager.
@@ -43,7 +44,7 @@ import org.pentaho.di.i18n.BaseMessages;
  */
 public class KettleTrustManager implements X509TrustManager {
 
-  private static Class<?>  PKG = KettleTrustManager.class; // i18n purposes
+  private static Class<?>  PKG = LDAPInputMeta.class; // i18n purposes
 
   /**
    * The trust manager around which we wrap ourselves in this class.
