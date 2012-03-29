@@ -38,10 +38,11 @@ import javax.net.ssl.TrustManager;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.steps.ldapinput.LDAPInputMeta;
 
 public class CustomSocketFactory extends SSLSocketFactory {
 
-  private static Class<?> PKG = CustomSocketFactory.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+  private static Class<?> PKG = LDAPInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
   private static boolean configured;
   
