@@ -309,6 +309,6 @@
 	<classpathentry kind="lib" path="src-plugins/kettle-profiling-datacleaner/lib/javax.inject-1.jar"/>
 	<classpathentry kind="lib" path="src-plugins/kettle-profiling-datacleaner/lib/MetaModel-core-3.0-beta1.jar"/>
 	<classpathentry kind="lib" path="src-plugins/kettle-profiling-datacleaner/lib/MetaModel-jdbc-3.0-beta1.jar"/>
-	<classpathentry kind="lib" path="/Users/psung/java/Kettle trunk/libext/pentaho/pentaho-vfs-browser-TRUNK-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libext/pentaho/pentaho-vfs-browser-TRUNK-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
