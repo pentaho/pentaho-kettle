@@ -1756,6 +1756,12 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
                 {
                     throw new KettleRowException(BaseMessages.getString(PKG, "BaseStep.SafeMode.Exception.MixingTypes", ""+(i+1), referenceValue.getName()+" "+referenceValue.toStringMeta(), compareValue.getName()+" "+compareValue.toStringMeta()));               
                 }
+                
+                if (referenceValue.getStorageType() != compareValue.getStorageType())
+                {
+                	throw new KettleRowException(BaseMessages.getString(PKG, "BaseStep.SafeMode.Exception.MixingStorageTypes", ""+(i+1), referenceValue.getName()+" "+referenceValue.toStringMeta(), compareValue.getName()+" "+compareValue.toStringMeta()));                	
+                }                
+                                
             }
         }
     }
