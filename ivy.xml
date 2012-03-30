@@ -150,7 +150,6 @@
     <dependency org="pentaho-kettle" name="kettle-db" rev="${dependency.kettle.revision}" changing="true" conf="pmr->default"/>
 
     <dependency org="org.snmp4j" name="snmp4j" rev="1.9.3d" conf="pmr->default" transitive="false"/>
-    <dependency org="salesforce" name="salesforce" rev="20.0" conf="pmr->default" transitive="false"/>
     <dependency org="rome" name="rome" rev="1.0" conf="pmr->default" transitive="false"/>
     <dependency org="georss-rome" name="georss-rome" rev="0.9.8" conf="pmr->default" transitive="false"/>
     <dependency org="feed4j" name="feed4j" rev="1.0" conf="pmr->default" transitive="false"/>
