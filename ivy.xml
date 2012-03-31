@@ -161,7 +161,7 @@
     <dependency org="ldapjdk" name="ldapjdk" rev="20000524" conf="pmr->default" transitive="false"/>
     <dependency org="trilead-ssh2" name="trilead-ssh2" rev="build213" conf="pmr->default" transitive="false"/>
     <dependency org="ftp4che" name="ftp4che" rev="0.7.1" conf="pmr->default" transitive="false"/>
-    <dependency org="ascsapjco3wrp" name="ascsapjco3wrp" rev="20100401" conf="pmr->default" transitive="false"/>
+    <dependency org="ascsapjco3wrp" name="ascsapjco3wrp" rev="20100529" conf="pmr->default" transitive="false"/>
     <dependency org="jcifs" name="jcifs" rev="1.3.3" conf="pmr->default" transitive="false"/>
     <dependency org="com.jcraft" name="jsch" rev="0.1.46" conf="pmr->default" transitive="false"/>
     <dependency org="com.enterprisedt" name="edtFTPj" rev="2.0.4" conf="pmr->default" transitive="false"/>
