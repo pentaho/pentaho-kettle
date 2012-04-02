@@ -1628,31 +1628,52 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
                     {
                         public boolean tableItemInserted(TableItem tableItem, ValueMetaInterface v)
                         {
-                            if (v.isNumber())
-                            {
-                                if (v.getLength()>0)
+                        	
+                        	if (v.isNumeric()){
+                            	// currency symbol
+                            	tableItem.setText(6, Const.NVL(v.getCurrencySymbol(), ""));
+
+                            	// decimal and grouping
+                            	tableItem.setText(7, Const.NVL(v.getDecimalSymbol(),""));
+                            	tableItem.setText(8, Const.NVL(v.getGroupingSymbol(),""));
+                        	}
+
+                        	// trim type
+                        	tableItem.setText(9, Const.NVL(ValueMeta.getTrimTypeDesc(v.getTrimType()),""));
+                        	
+                        	// conversion mask
+                        	if (!Const.isEmpty(v.getConversionMask())){
+                        		tableItem.setText(3, v.getConversionMask());
+                        	}
+                        	else{
+                                if (v.isNumber())
                                 {
-                                    int le=v.getLength();
-                                    int pr=v.getPrecision();
-                                    
-                                    if (v.getPrecision()<=0)
+                                    if (v.getLength()>0)
                                     {
-                                        pr=0;
+                                        int le=v.getLength();
+                                        int pr=v.getPrecision();
+                                        
+                                        if (v.getPrecision()<=0)
+                                        {
+                                            pr=0;
+                                        }
+                                        
+                                        String mask="";
+                                        for (int m=0;m<le-pr;m++)
+                                        {
+                                            mask+="0";
+                                        }
+                                        if (pr>0) mask+=".";
+                                        for (int m=0;m<pr;m++)
+                                        {
+                                            mask+="0";
+                                        }
+                                        tableItem.setText(3, mask);
                                     }
-                                    
-                                    String mask="";
-                                    for (int m=0;m<le-pr;m++)
-                                    {
-                                        mask+="0";
-                                    }
-                                    if (pr>0) mask+=".";
-                                    for (int m=0;m<pr;m++)
-                                    {
-                                        mask+="0";
-                                    }
-                                    tableItem.setText(3, mask);
-                                }
-                            }
+                                }                        		
+                        	}
+                        	
+
                             return true;
                         }
                     };
