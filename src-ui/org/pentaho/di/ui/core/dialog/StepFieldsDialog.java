@@ -148,6 +148,7 @@ public class StepFieldsDialog extends Dialog
 			new ColumnInfo(BaseMessages.getString(PKG, "StepFieldsDialog.TableCol.Origin"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
 			new ColumnInfo(BaseMessages.getString(PKG, "StepFieldsDialog.TableCol.StorageType"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
 			new ColumnInfo(BaseMessages.getString(PKG, "StepFieldsDialog.TableCol.ConversionMask"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
+			new ColumnInfo(BaseMessages.getString(PKG, "StepFieldsDialog.TableCol.Currency"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
 			new ColumnInfo(BaseMessages.getString(PKG, "StepFieldsDialog.TableCol.Decimal"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
 			new ColumnInfo(BaseMessages.getString(PKG, "StepFieldsDialog.TableCol.Group"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
 			new ColumnInfo(BaseMessages.getString(PKG, "StepFieldsDialog.TableCol.TrimType"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ),
@@ -246,6 +247,7 @@ public class StepFieldsDialog extends Dialog
 			item.setText(idx++, Const.NVL(v.getOrigin(), ""));
 			item.setText(idx++, ValueMeta.getStorageTypeCode(v.getStorageType()));
 			item.setText(idx++, Const.NVL(v.getConversionMask(), ""));
+			item.setText(idx++, Const.NVL(v.getCurrencySymbol(), ""));
 			item.setText(idx++, Const.NVL(v.getDecimalSymbol(), ""));
 			item.setText(idx++, Const.NVL(v.getGroupingSymbol(), ""));
 			item.setText(idx++, ValueMeta.getTrimTypeDesc(v.getTrimType()));
