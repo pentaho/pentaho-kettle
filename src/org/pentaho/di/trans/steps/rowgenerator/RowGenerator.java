@@ -82,6 +82,7 @@ public class RowGenerator extends BaseStep implements StepInterface
                 valueMeta.setLength(meta.getFieldLength()[i]);
                 valueMeta.setPrecision(meta.getFieldPrecision()[i]);
                 valueMeta.setConversionMask(meta.getFieldFormat()[i]);
+                valueMeta.setCurrencySymbol(meta.getCurrency()[i]);
                 valueMeta.setGroupingSymbol(meta.getGroup()[i]);
                 valueMeta.setDecimalSymbol(meta.getDecimal()[i]);
                 valueMeta.setOrigin(origin);
