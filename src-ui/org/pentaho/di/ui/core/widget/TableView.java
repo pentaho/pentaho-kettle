@@ -550,6 +550,9 @@ public class TableView extends Composite
 					if (e.keyCode   == SWT.ESC)
 					{
 						text.dispose();
+						//setFocus();
+						table.setFocus();
+						
 					}
 					
 					
@@ -567,9 +570,9 @@ public class TableView extends Composite
 					
 					//left  = e.keyCode == SWT.ARROW_LEFT  && last_carret_position==0;
 					//right = e.keyCode == SWT.ARROW_RIGHT && last_carret_position==combo.getText().length();
-					
+					//System.out.println("keycode: "+e.keyCode+" character:"+e.character);
 					// "ENTER": close the text editor and copy the data over 
-					if (   e.character == SWT.CR
+					if (   e.keyCode == SWT.CR
 						|| e.keyCode   == SWT.TAB
 						|| left || right  
 						) 
@@ -624,11 +627,17 @@ public class TableView extends Composite
 						{
 							edit(activeTableRow, activeTableColumn);
 						}
+						table.setFocus();
 					}
 					else
 					if (e.keyCode   == SWT.ESC)
 					{
+						if (activeTableItem!=null){
+							activeTableItem.setText(activeTableColumn, before_edit[activeTableColumn-1]);	
+						}
 						combo.dispose();
+						table.setFocus();
+						e.doit = false;
 					}
 					
 					// last_carret_position = combo.isDisposed()?-1:0;
@@ -660,16 +669,19 @@ public class TableView extends Composite
 						selectionStart=activeTableRow;
 					}
 					previous_shift = shift;
+					boolean ctrl = (( e.stateMask & SWT.MOD1)!=0 );
+					
+					//System.out.println("ctrl: "+ctrl+" shift: " +shift+" keycode: "+e.keyCode+" character:"+e.character);
 					
 					// Move rows up or down shortcuts...					
-					if (!readonly && e.keyCode   == SWT.ARROW_DOWN && (( e.stateMask & SWT.MOD1)!=0 ))
+					if (!readonly && e.keyCode   == SWT.ARROW_DOWN && ctrl)
 					{
 						moveRows(+1);
 						e.doit = false;
                         return;
 					}
 
-					if (!readonly && e.keyCode   == SWT.ARROW_UP && (( e.stateMask & SWT.MOD1)!=0 ))
+					if (!readonly && e.keyCode   == SWT.ARROW_UP && ctrl)
 					{
 						moveRows(-1);
 						e.doit = false;
@@ -683,7 +695,9 @@ public class TableView extends Composite
                         if (activeTableRow>=maxrows) activeTableRow = maxrows-1;
                         
 						selectRows(selectionStart, activeTableRow);
-						table.showItem(activeTableItem);
+						//activeTableItem = table.getItem(activeTableRow);
+						table.showItem(table.getItem(activeTableRow));
+						e.doit = false;
                         return;
 					}
 
@@ -694,8 +708,10 @@ public class TableView extends Composite
                         if (activeTableRow<0) activeTableRow=0;
                         
 						selectRows(activeTableRow, selectionStart);
+						//activeTableItem = table.getItem(activeTableRow);
                         
-						table.showItem(activeTableItem);
+						table.showItem(table.getItem(activeTableRow));
+						e.doit = false;
                         return;
 					}
 
@@ -707,6 +723,7 @@ public class TableView extends Composite
 						// Select all indeces from "from_selection" to "row"
 						selectRows(selectionStart, activeTableRow);
 						table.showItem(activeTableItem);
+						e.doit = false;
                         return;
 					}
 
@@ -717,6 +734,7 @@ public class TableView extends Composite
                         
 						selectRows(selectionStart, activeTableRow);
 						table.showItem(activeTableItem);
+						e.doit = false;
                         return;
 					}
 
@@ -748,12 +766,15 @@ public class TableView extends Composite
                         setPosition(activeTableRow, activeTableColumn);
                         table.deselectAll();
 						table.select(activeTableRow);
+						table.showItem(table.getItem(activeTableRow));
+						e.doit = false;
                         return;
 					}
 
 					// CTRL-A --> Select All lines
-					if (e.character ==  'a' && (( e.stateMask & SWT.MOD1)!=0 )) 
+					if (e.keyCode ==  'a' && ctrl) 
 					{
+						e.doit = false;
 						selectAll(); 
                         return;
 					}
@@ -761,35 +782,42 @@ public class TableView extends Composite
 					// ESC --> unselect all
 					if (e.keyCode == SWT.ESC)
 					{
+						e.doit = false;
 						unselectAll();
 						selectRows(activeTableRow, activeTableRow);
+						setFocus();
+						//table.setFocus();
                         return;
 					} 
 
 					// CTRL-C --> Copy selected lines to clipboard
-					if (e.character ==  'c' && (( e.stateMask & SWT.MOD1)!=0 ) ) 
+					if (e.keyCode ==  'c' && ctrl) 
 					{
+						e.doit = false;
 						clipSelected();
                         return;
 					}
 
 					// CTRL-K --> keep only selected lines
-					if (!readonly && e.character == 'k' && (( e.stateMask & SWT.MOD1)!=0 )  ) 
+					if (!readonly && e.keyCode == 'k' && ctrl) 
 					{
+						e.doit = false;
 						keepSelected();
                         return;
 					}
 
 					// CTRL-X --> Cut selected infomation...
-					if (!readonly && e.character ==  'x' && (( e.stateMask & SWT.MOD1)!=0 )  ) 
+					if (!readonly && e.keyCode ==  'x' && ctrl) 
 					{
+						e.doit = false;
 						cutSelected();
                         return;
 					}
 
                     // CTRL-V --> Paste selected infomation...
-					if (!readonly && e.character ==  'v' && (( e.stateMask & SWT.MOD1)!=0 )  ) 
+					if (!readonly && e.keyCode ==  'v' && ctrl) 
 					{
+						e.doit = false;
 						pasteSelected();
                         return;
 					}
@@ -797,6 +825,7 @@ public class TableView extends Composite
 					// F3 --> optimal width including headers
 					if (e.keyCode == SWT.F3) 
 					{
+						e.doit = false;
 						optWidth(true);
                         return;
 					}
@@ -804,6 +833,7 @@ public class TableView extends Composite
 					// DEL --> delete selected lines
 					if (!readonly && e.keyCode == SWT.DEL) 
 					{
+						e.doit = false;
 						delSelected();
                         return;
 					}
@@ -811,20 +841,23 @@ public class TableView extends Composite
 					// F4 --> optimal width excluding headers
 					if (e.keyCode == SWT.F4) 
 					{
+						e.doit = false;
 						optWidth(false);
                         return;
 					}
 
 					// CTRL-Y --> redo action
-					if (e.character == 'y' && (( e.stateMask & SWT.MOD1)!=0 )  ) 
+					if (e.keyCode == 'y' && ctrl) 
                     { 
+						e.doit = false;
                         redoAction(); 
                         return;
                     }
 
 					// CTRL-Z --> undo action
-					if (e.character == 'z' && (( e.stateMask & SWT.MOD1)!=0 )  ) 
+					if (e.keyCode == 'z' && ctrl) 
                     { 
+						e.doit = false;
                         undoAction(); 
                         return;
                     } 
@@ -837,6 +870,7 @@ public class TableView extends Composite
                     {
                         activeTableColumn = 1;
                         edit(activeTableRow, activeTableColumn);
+                        e.doit = false;
                         return;
                     }
                         
@@ -872,6 +906,7 @@ public class TableView extends Composite
 								extra_char=e.character;
 								select_text = false;
 							}
+							e.doit = false;
 							edit(activeTableRow, activeTableColumn, select_text, extra_char);
 						}
 						if (e.character==SWT.TAB)
@@ -905,6 +940,7 @@ public class TableView extends Composite
 								setRowNums();
 							}
 							//row = table.getItem(rownr);
+							e.doit = false;
 							edit(activeTableRow, activeTableColumn);
 						}
 					}
@@ -2317,7 +2353,8 @@ public class TableView extends Composite
 			try
 			{
                 int extra = 25;
-                if (Const.isOSX() || Const.isLinux()) max*=1.25;
+                // Platform specific code not needed any more with current version SWT
+                //if (Const.isOSX() || Const.isLinux()) max*=1.25;
                 if (tc.getWidth() != max+extra) { tc.setWidth(max+extra);}
 			}
 			catch(Exception e) {}
