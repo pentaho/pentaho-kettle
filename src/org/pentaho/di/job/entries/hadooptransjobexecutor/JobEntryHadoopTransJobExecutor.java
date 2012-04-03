@@ -1120,7 +1120,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
     t.prepareExecution(null);
     if (t.getStepInterface(inputStepName, 0) == null) {
       throw new KettleException("Input step '" + inputStepName 
-          + "' does not seem to be enabled in the map "
+          + "' does not seem to be enabled in the "
           + "transformation.");
     }
     
