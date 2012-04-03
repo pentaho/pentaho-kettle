@@ -127,9 +127,19 @@ public class PentahoMapReduceBase<K, V> extends MapReduceBase {
     else {
       setDebugStatus("PentahoMapReduceBase: The PDI Job's variable space was not found in the job configuration.");
     }
-    
-    outClassK = (Class<K>) job.getOutputKeyClass();
-    outClassV = (Class<V>) job.getOutputValueClass();
+
+    switch(mrOperation) {
+      case Combine:
+        outClassK = (Class<K>) job.getMapOutputKeyClass();
+        outClassV = (Class<V>) job.getMapOutputValueClass();
+        break;
+      case Reduce:
+        outClassK = (Class<K>) job.getOutputKeyClass();
+        outClassV = (Class<V>) job.getOutputValueClass();
+        break;
+      default:
+        throw new IllegalArgumentException("Unsupported MapReduce operation: " + mrOperation);
+    }
     
     if(debug) {
       System.out.println("Job configuration>");

@@ -15,6 +15,8 @@ package org.pentaho.hadoop.mapreduce.test;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
+import org.apache.hadoop.io.LongWritable;
+import org.apache.hadoop.io.NullWritable;
 import org.apache.hadoop.mapred.Counters.Counter;
 import org.apache.hadoop.mapred.*;
 import org.junit.After;
@@ -737,5 +739,41 @@ public class MapperAndReducerTest {
     assertEquals("Validating output collector", new IntWritable(1), outputCollector.getCollection().get(new Text("2")).get(0));
     assertEquals("Validating output collector", new IntWritable(2), outputCollector.getCollection().get(new Text("3")).get(0));
 
+  }
+
+  @Test
+  public void testCombinerOutputClasses() throws IOException, KettleException {
+    JobConf jobConf = createJobConf("./test-res/wordcount-mapper.ktr", "./test-res/wordcount-reducer.ktr",
+        "./test-res/wordcount-reducer.ktr");
+
+    jobConf.setMapOutputKeyClass(Text.class);
+    jobConf.setMapOutputValueClass(IntWritable.class);
+    jobConf.setOutputValueClass(NullWritable.class);
+    jobConf.setOutputValueClass(LongWritable.class);
+
+    GenericTransCombiner combiner = new GenericTransCombiner();
+
+    combiner.configure(jobConf);
+
+    assertEquals(jobConf.getMapOutputKeyClass(), combiner.getOutClassK());
+    assertEquals(jobConf.getMapOutputValueClass(), combiner.getOutClassV());
+  }
+
+  @Test
+  public void testReducerOutputClasses() throws IOException, KettleException {
+    JobConf jobConf = createJobConf("./test-res/wordcount-mapper.ktr", "./test-res/wordcount-reducer.ktr",
+        "./test-res/wordcount-reducer.ktr");
+
+    jobConf.setMapOutputKeyClass(Text.class);
+    jobConf.setMapOutputValueClass(IntWritable.class);
+    jobConf.setOutputValueClass(NullWritable.class);
+    jobConf.setOutputValueClass(LongWritable.class);
+
+    GenericTransReduce reducer = new GenericTransReduce();
+
+    reducer.configure(jobConf);
+
+    assertEquals(jobConf.getOutputKeyClass(), reducer.getOutClassK());
+    assertEquals(jobConf.getOutputValueClass(), reducer.getOutClassV());
   }
 }
