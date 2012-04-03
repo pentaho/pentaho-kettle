@@ -52,9 +52,10 @@
 		<!-- unzip agile-bi -->
 		<unzip src="${agilebi.dist.dir}/agile-bi-${agilebi.version}.zip" dest="${pdice.repackage.basedir}/data-integration/plugins/spoon" overwrite="true"/>
 		
-		<!-- unzip pentaho-big-data-plugin -->
+		<!-- unzip pentaho-big-data-plugin and samples -->
 		<unzip src="${hadoop-ce.dist.dir}/pentaho-big-data-plugin-${hadoop-ce.version}.zip" dest="${pdice.repackage.basedir}/data-integration/plugins" overwrite="true"/>
-			
+		<unzip src="${hadoop-ce.dist.dir}/pentaho-big-data-plugin-samples-${hadoop-ce.version}.zip" dest="${pdice.repackage.basedir}/data-integration/samples" overwrite="true"/>
+  				
   	</target>	
 
 	<!--
