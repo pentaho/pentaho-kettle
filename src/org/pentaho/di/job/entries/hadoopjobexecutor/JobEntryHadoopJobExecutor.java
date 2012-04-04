@@ -337,9 +337,9 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
         logDetailed(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.ResolvedJar", resolvedJarUrl.toExternalForm()));
 
       if (isSimple) {
-        final AtomicInteger taskCount = new AtomicInteger(0);
+  /*      final AtomicInteger taskCount = new AtomicInteger(0);
         final AtomicInteger successCount = new AtomicInteger(0);
-        final AtomicInteger failedCount = new AtomicInteger(0);
+        final AtomicInteger failedCount = new AtomicInteger(0); */
         
         if (log.isDetailed())
           logDetailed(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.SimpleMode"));
@@ -350,20 +350,21 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
               try {
                 final ClassLoader cl = Thread.currentThread().getContextClassLoader();
                 try {
-                  taskCount.incrementAndGet();
+//                  taskCount.incrementAndGet();
                   Thread.currentThread().setContextClassLoader(clazz.getClassLoader());
                   Method mainMethod = clazz.getMethod("main", new Class[] { String[].class });
                   Object[] args = (cmdLineArgsS != null) ? new Object[] { cmdLineArgsS.split(" ") } : new Object[0];
                   mainMethod.invoke(null, args);
                 } finally {
                   Thread.currentThread().setContextClassLoader(cl);
-                  successCount.incrementAndGet();
-                  taskCount.decrementAndGet();
+//                  successCount.incrementAndGet();
+//                  taskCount.decrementAndGet();
                 }
               } catch (Throwable ignored) {
                 // skip, try the next one
-                logError(ignored.getMessage());
-                failedCount.incrementAndGet();
+//                logError(ignored.getMessage());
+//                failedCount.incrementAndGet();
+                ignored.printStackTrace();
               }
             }
           };
@@ -390,8 +391,10 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
         } else { */
           // non-blocking - just set success equal to no failures arising
           // from invocation
-          result.setResult(failedCount.get() == 0);
-          result.setNrErrors(failedCount.get());
+//          result.setResult(failedCount.get() == 0);
+//          result.setNrErrors(failedCount.get());
+        result.setResult(true);
+        result.setNrErrors(0);
        /* } */
       } else {
         if (log.isDetailed())
