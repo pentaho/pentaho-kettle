@@ -79,6 +79,11 @@ public class Const
    */
   public enum ReleaseType {RELEASE_CANDIDATE, MILESTONE, PREVIEW, GA}
 
+  /**
+   * The release type of this compilation
+   */
+  public static final ReleaseType RELEASE = ReleaseType.GA;
+
 	/**
 	 * Sleep time waiting when buffer is empty (the default)
 	 */
@@ -733,11 +738,6 @@ public class Const
   public static final String  XML_FILE_KETTLE_IMPORT_RULES = "kettle-import-rules.xml";
 
     private static String[] emptyPaddedSpacesStrings;
-
-    /**
-     * The release type of this compilation
-     */
-    public static final ReleaseType RELEASE = ReleaseType.MILESTONE;
     
     /** 
      *  rounds double f to any number of places after decimal point
