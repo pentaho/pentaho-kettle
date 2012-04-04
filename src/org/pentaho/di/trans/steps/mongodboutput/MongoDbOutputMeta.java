@@ -37,6 +37,7 @@ import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
@@ -80,6 +81,9 @@ public class MongoDbOutputMeta extends BaseStepMeta implements
      */
     public String m_mongoDocPath = "";
     
+    protected List<String> m_pathList;
+    protected List<String> m_tempPathList;
+    
     /**
      * Whether to use the incoming field name as the mongo field key name. If
      * false then the user must supply the terminating field/key name.
@@ -101,6 +105,26 @@ public class MongoDbOutputMeta extends BaseStepMeta implements
      * (support any others?)
      */
     public String m_modifierUpdateOperation = "N/A";
+    
+    public void init(VariableSpace vars) {
+      String path = vars.environmentSubstitute(m_mongoDocPath);
+      m_pathList = new ArrayList<String>();
+      
+      if (!Const.isEmpty(path)) {
+        String[] parts = path.split("\\.");
+        for (String p : parts) {
+          m_pathList.add(p);
+        }
+      }
+      m_tempPathList = new ArrayList<String>(m_pathList);
+    }
+    
+    public void reset() {
+      if (m_tempPathList.size() > 0) {
+        m_tempPathList.clear();
+      }
+      m_tempPathList.addAll(m_pathList);
+    }
   }
   
   /**

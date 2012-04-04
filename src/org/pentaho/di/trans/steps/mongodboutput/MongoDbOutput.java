@@ -122,16 +122,10 @@ public class MongoDbOutput extends BaseStep implements StepInterface {
       m_batch = new ArrayList<DBObject>(m_batchInsertSize);
       
       // output the same as the input
-      m_data.setOutputRowMeta(getInputRowMeta());
-      
-      // check the top level consistency of the mongo paths
-      VariableSpace parentVars = getParentVariableSpace();
-      if (parentVars == null) {
-        parentVars = new Variables();
-      }   
+      m_data.setOutputRowMeta(getInputRowMeta());         
       
       m_mongoTopLevelStructure = 
-        MongoDbOutputData.checkTopLevelConsistency(m_meta.m_mongoFields, parentVars);
+        MongoDbOutputData.checkTopLevelConsistency(m_meta.m_mongoFields, this);
       if (m_mongoTopLevelStructure == MongoDbOutputData.MongoTopLevel.INCONSISTENT) {
         throw new KettleException(BaseMessages.
             getString(PKG, "MongoDbOutput.Messages.Error.InconsistentMongoTopLevel"));
@@ -173,6 +167,11 @@ public class MongoDbOutput extends BaseStep implements StepInterface {
             b.toString());
       }
       
+      // init mongo fields
+      for (MongoDbOutputMeta.MongoField m : m_meta.getMongoFields()) {
+        m.init(this);
+      }
+      
       // check truncate
       if (m_meta.getTruncate()) {
         try {
@@ -196,7 +195,7 @@ public class MongoDbOutput extends BaseStep implements StepInterface {
         /*DBObject updateQuery = MongoDbOutputData.getQueryObject(m_meta.getMongoFields(), 
             getInputRowMeta(), row, getParentVariableSpace(), m_mongoTopLevelStructure); */
         DBObject updateQuery = MongoDbOutputData.getQueryObject(m_meta.getMongoFields(), 
-            getInputRowMeta(), row, getParentVariableSpace());
+            getInputRowMeta(), row, this);
         
         if (log.isDebug()) {
           logDebug(BaseMessages.getString(PKG, 
@@ -212,12 +211,12 @@ public class MongoDbOutput extends BaseStep implements StepInterface {
             // complete record replace or insert
             
             insertUpdate = MongoDbOutputData.kettleRowToMongo(m_meta.getMongoFields(), 
-              getInputRowMeta(), row, getParentVariableSpace(), 
+              getInputRowMeta(), row, this, 
               m_mongoTopLevelStructure);
           } else {
             // specific field update or insert
             insertUpdate = MongoDbOutputData.getModifierUpdateObject(m_meta.getMongoFields(), 
-                getInputRowMeta(), row, getParentVariableSpace(), m_mongoTopLevelStructure);
+                getInputRowMeta(), row, this, m_mongoTopLevelStructure);
             if (log.isDebug()) {
               logDebug(BaseMessages.getString(PKG, 
                   "MongoDbOutput.Messages.Debug.ModifierUpdateObject", insertUpdate));
@@ -255,7 +254,7 @@ public class MongoDbOutput extends BaseStep implements StepInterface {
         // straight insert
         
         DBObject mongoInsert = MongoDbOutputData.kettleRowToMongo(m_meta.getMongoFields(), 
-            getInputRowMeta(), row, getParentVariableSpace(), 
+            getInputRowMeta(), row, this, 
             m_mongoTopLevelStructure);
 
         if (mongoInsert != null) {

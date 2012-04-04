@@ -428,8 +428,10 @@ public class MongoDbOutputData extends BaseStepData implements StepDataInterface
     boolean haveNonNullFields = false;
     for (MongoDbOutputMeta.MongoField field : fieldDefs) {
       DBObject current = root;
-      String path = vars.environmentSubstitute(field.m_mongoDocPath);
-      List<String> pathParts = pathToList(path);
+      //String path = vars.environmentSubstitute(field.m_mongoDocPath);
+      //List<String> pathParts = pathToList(path);
+      field.reset();
+      List<String> pathParts = field.m_tempPathList;
       String incomingFieldName = vars.environmentSubstitute(field.m_incomingFieldName);
       int index = inputMeta.indexOfValue(incomingFieldName);
       ValueMetaInterface vm = inputMeta.getValueMeta(index);      
@@ -575,20 +577,7 @@ public class MongoDbOutputData extends BaseStepData implements StepDataInterface
     }    
     
     return false;
-  }
-  
-  private static List<String> pathToList(String path) {
-    List<String> pathList = new ArrayList<String>();
-    
-    if (!Const.isEmpty(path)) {
-      String[] parts = path.split("\\.");
-      for (String p : parts) {
-        pathList.add(p);
-      }
-    }
-    
-    return pathList;
-  }
+  }  
   
   private static Object getPathElementName(List<String> pathParts, DBObject current, 
       boolean incomingAsFieldName) 
