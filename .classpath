@@ -293,22 +293,15 @@
 	<classpathentry kind="lib" path="libext/antlr-3.4-complete.jar"/>
 	<classpathentry kind="lib" path="libswt/osx64/swt.jar" sourcepath="/Users/slawo/Desktop/swt-3.7.2-cocoa-macosx-x86_64/src"/>
 	<classpathentry kind="lib" path="libext/salesforce/salesforce-partner-24.0.jar"/>
-	<classpathentry kind="lib" path="src-plugins/kettle-profiling-datacleaner/lib/AnalyzerBeans-api-0.12-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="src-plugins/kettle-profiling-datacleaner/lib/AnalyzerBeans-berkeleydb-0.12-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="src-plugins/kettle-profiling-datacleaner/lib/AnalyzerBeans-cli-0.12-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="src-plugins/kettle-profiling-datacleaner/lib/AnalyzerBeans-core-0.12-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="src-plugins/kettle-profiling-datacleaner/lib/AnalyzerBeans-el-0.12-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="src-plugins/kettle-profiling-datacleaner/lib/AnalyzerBeans-h2-0.12-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="src-plugins/kettle-profiling-datacleaner/lib/AnalyzerBeans-i18n-0.12-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="src-plugins/kettle-profiling-datacleaner/lib/AnalyzerBeans-javascript-0.12-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="src-plugins/kettle-profiling-datacleaner/lib/AnalyzerBeans-json-0.12-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="src-plugins/kettle-profiling-datacleaner/lib/AnalyzerBeans-scala-0.12-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="src-plugins/kettle-profiling-datacleaner/lib/AnalyzerBeans-writers-0.12-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="src-plugins/kettle-profiling-datacleaner/lib/AnalyzerBeans-xml-config-0.12-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="src-plugins/kettle-profiling-datacleaner/lib/AnalyzerBeans-api-0.13.jar"/>
+	<classpathentry kind="lib" path="src-plugins/kettle-profiling-datacleaner/lib/AnalyzerBeans-core-0.13.jar"/>
+	<classpathentry kind="lib" path="src-plugins/kettle-profiling-datacleaner/lib/AnalyzerBeans-el-0.13.jar"/>
+	<classpathentry kind="lib" path="src-plugins/kettle-profiling-datacleaner/lib/AnalyzerBeans-xml-config-0.13.jar"/>
 	<classpathentry kind="lib" path="src-plugins/kettle-profiling-datacleaner/lib/datacleaner-kettle-plugin.jar"/>
 	<classpathentry kind="lib" path="src-plugins/kettle-profiling-datacleaner/lib/javax.inject-1.jar"/>
-	<classpathentry kind="lib" path="src-plugins/kettle-profiling-datacleaner/lib/MetaModel-core-3.0-beta1.jar"/>
-	<classpathentry kind="lib" path="src-plugins/kettle-profiling-datacleaner/lib/MetaModel-jdbc-3.0-beta1.jar"/>
+	<classpathentry kind="lib" path="src-plugins/kettle-profiling-datacleaner/lib/MetaModel-core-3.0-beta2.jar"/>
+	<classpathentry kind="lib" path="src-plugins/kettle-profiling-datacleaner/lib/MetaModel-jdbc-3.0-beta2.jar"/>
+	<classpathentry kind="lib" path="src-plugins/kettle-profiling-datacleaner/lib/MetaModel-full-3.0-beta2.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-vfs-browser-TRUNK-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
