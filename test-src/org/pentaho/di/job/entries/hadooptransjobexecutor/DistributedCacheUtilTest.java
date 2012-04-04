@@ -545,4 +545,30 @@ public class DistributedCacheUtilTest {
 
     assertNull("Should not have found plugin dir: src/org/", util.findPluginFolder("org"));
   }
+
+  @Test
+  public void addFilesToClassPath() throws IOException {
+    DistributedCacheUtil util = new DistributedCacheUtil();
+    Path p1 = new Path("/testing1");
+    Path p2 = new Path("/testing2");
+    Configuration conf = new Configuration();
+    util.addFileToClassPath(p1, conf);
+    util.addFileToClassPath(p2, conf);
+    assertEquals("/testing1:/testing2", conf.get("mapred.job.classpath.files"));
+  }
+
+  @Test
+  public void addFilesToClassPath_custom_path_separator() throws IOException {
+    DistributedCacheUtil util = new DistributedCacheUtil();
+    Path p1 = new Path("/testing1");
+    Path p2 = new Path("/testing2");
+    Configuration conf = new Configuration();
+
+    System.setProperty("hadoop.cluster.path.separator", "J");
+
+    util.addFileToClassPath(p1, conf);
+    util.addFileToClassPath(p2, conf);
+    assertEquals("/testing1J/testing2", conf.get("mapred.job.classpath.files"));
+
+  }
 }
