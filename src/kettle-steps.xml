@@ -1093,14 +1093,6 @@
     <iconfile>ui/images/GNR.png</iconfile>
   </step>
 
-  <step id="Script">
-    <description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.Script</description>
-    <classname>org.pentaho.di.trans.steps.script.ScriptMeta</classname>
-    <category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
-    <tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Script</tooltip>
-    <iconfile>ui/images/SCR_mod.png</iconfile>
-  </step>
-	
   <step id="TeraFast,TeraFastPlugin">
     <description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.TeraFast</description>
     <classname>org.pentaho.di.trans.steps.terafast.TeraFastMeta</classname>
