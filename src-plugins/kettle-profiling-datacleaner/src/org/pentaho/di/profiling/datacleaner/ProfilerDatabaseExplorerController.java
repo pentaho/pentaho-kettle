@@ -37,6 +37,8 @@ import org.eobjects.analyzer.job.JaxbJobWriter;
 import org.eobjects.analyzer.job.builder.AnalysisJobBuilder;
 import org.eobjects.metamodel.DataContext;
 import org.eobjects.metamodel.schema.Column;
+import org.eobjects.metamodel.schema.Schema;
+import org.eobjects.metamodel.schema.Table;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.gui.SpoonFactory;
@@ -90,46 +92,61 @@ public class ProfilerDatabaseExplorerController extends AbstractXulEventHandler 
         DataContext dataContext = connection.getDataContext();
         
         // add all columns of a table
-        Column[] customerColumns = dataContext.getTableByQualifiedLabel(schemaTable).getColumns();
-        analysisJobBuilder.addSourceColumns(customerColumns);
-  
-        List<InputColumn<?>> numberColumns = analysisJobBuilder.getAvailableInputColumns(Number.class);
-        if (!numberColumns.isEmpty()) {
-          analysisJobBuilder.addAnalyzer(NumberAnalyzer.class).addInputColumns(numberColumns);
+        Table table = dataContext.getTableByQualifiedLabel(schemaTable);
+        if (table == null) {
+            Schema schema = dataContext.getSchemaByName(schemaName);
+            if (schema != null) {
+                table = schema.getTableByName(tableName);
+            }
         }
+        
+        final FileObject jobFile;
+        if (table == null) {
+            // Could not resolve table, this sometimes happens
+            jobFile = null;
+        } else {
+            Column[] customerColumns = table.getColumns();
+            analysisJobBuilder.addSourceColumns(customerColumns);
+            
+            List<InputColumn<?>> numberColumns = analysisJobBuilder.getAvailableInputColumns(Number.class);
+            if (!numberColumns.isEmpty()) {
+                analysisJobBuilder.addAnalyzer(NumberAnalyzer.class).addInputColumns(numberColumns);
+            }
+            
+            List<InputColumn<?>> dateColumns = analysisJobBuilder.getAvailableInputColumns(Date.class);
+            if (!dateColumns.isEmpty()) {
+                analysisJobBuilder.addAnalyzer(DateAndTimeAnalyzer.class).addInputColumns(dateColumns);
+            }
+            
+            List<InputColumn<?>> booleanColumns = analysisJobBuilder.getAvailableInputColumns(Boolean.class);
+            if (!booleanColumns.isEmpty()) {
+                analysisJobBuilder.addAnalyzer(BooleanAnalyzer.class).addInputColumns(booleanColumns);
+            }
+            
+            List<InputColumn<?>> stringColumns = analysisJobBuilder.getAvailableInputColumns(String.class);
+            if (!stringColumns.isEmpty()) {
+                analysisJobBuilder.addAnalyzer(StringAnalyzer.class).addInputColumns(stringColumns);
+            }
+            
+            // Write the job.xml to a temporary file...
+            jobFile = KettleVFS.createTempFile("datacleaner-job", ".xml", System.getProperty("java.io.tmpdir"), new Variables());
+            OutputStream jobOutputStream = null;
+            try {
+                jobOutputStream = KettleVFS.getOutputStream(jobFile, false);
+                new JaxbJobWriter(abc).write(analysisJobBuilder.toAnalysisJob(), jobOutputStream);
+                jobOutputStream.close();
+            } finally {
+                if (jobOutputStream!=null) {
+                    jobOutputStream.close();
+                }
+            }
+        }
+        
 
-        List<InputColumn<?>> dateColumns = analysisJobBuilder.getAvailableInputColumns(Date.class);
-        if (!dateColumns.isEmpty()) {
-          analysisJobBuilder.addAnalyzer(DateAndTimeAnalyzer.class).addInputColumns(dateColumns);
-        }
-  
-        List<InputColumn<?>> booleanColumns = analysisJobBuilder.getAvailableInputColumns(Boolean.class);
-        if (!booleanColumns.isEmpty()) {
-          analysisJobBuilder.addAnalyzer(BooleanAnalyzer.class).addInputColumns(booleanColumns);
-        }
-  
-        List<InputColumn<?>> stringColumns = analysisJobBuilder.getAvailableInputColumns(String.class);
-        if (!stringColumns.isEmpty()) {
-          analysisJobBuilder.addAnalyzer(StringAnalyzer.class).addInputColumns(stringColumns);
-        }
-
-        // Write the job.xml to a temporary file...
-        //
-        final FileObject jobFile = KettleVFS.createTempFile("datacleaner-job", ".xml", System.getProperty("java.io.tmpdir"), new Variables());
-        OutputStream jobOutputStream = null;
-        try {
-          jobOutputStream = KettleVFS.getOutputStream(jobFile, false);
-          new JaxbJobWriter(abc).write(analysisJobBuilder.toAnalysisJob(), jobOutputStream);
-          jobOutputStream.close();
-        } finally {
-          if (jobOutputStream!=null) {
-            jobOutputStream.close();
-          }
-        }
         
         // Write the conf.xml to a temporary file...
         //
-        String confXml = generateConfXml(dbMeta.getName(), schemaTable, dbMeta.getURL(), dbMeta.getDriverClass(), dbMeta.getUsername(), dbMeta.getPassword());
+        String confXml = generateConfXml(dbMeta.getName(), dbMeta.getURL(), dbMeta.getDriverClass(), dbMeta.getUsername(), dbMeta.getPassword());
         final FileObject confFile = KettleVFS.createTempFile("datacleaner-conf", ".xml", System.getProperty("java.io.tmpdir"), new Variables());
         OutputStream confOutputStream  = null;
         try {
@@ -151,7 +168,13 @@ public class ProfilerDatabaseExplorerController extends AbstractXulEventHandler 
           public void run() {
             new Thread() {
               public void run() {
-                ModelerHelper.launchDataCleaner(KettleVFS.getFilename(confFile), KettleVFS.getFilename(jobFile), dbMeta.getName(), null);
+                final String jobFileName;
+                if (jobFile == null) {
+                    jobFileName = null;
+                } else {
+                    jobFileName = KettleVFS.getFilename(jobFile);
+                }
+                ModelerHelper.launchDataCleaner(KettleVFS.getFilename(confFile), jobFileName, dbMeta.getName(), null);
               }
             }.start();
           }
@@ -170,7 +193,7 @@ public class ProfilerDatabaseExplorerController extends AbstractXulEventHandler 
 
   }
 
-  private String generateConfXml(String name, String description, String url, String driver, String username, String password) {
+  private String generateConfXml(String name, String url, String driver, String username, String password) {
     StringBuilder xml = new StringBuilder();
     
     xml.append(XMLHandler.getXMLHeader());
@@ -187,7 +210,7 @@ public class ProfilerDatabaseExplorerController extends AbstractXulEventHandler 
             </jdbc-datastore>
      */
     
-    xml.append("<jdbc-datastore name=\""+name+"\" description=\""+description+"\">").append(Const.CR);
+    xml.append("<jdbc-datastore name=\""+name+"\" description=\"Database defined in Pentaho Data Integration\">").append(Const.CR);
     xml.append(XMLHandler.addTagValue("url", url));
     xml.append(XMLHandler.addTagValue("driver", driver));
     xml.append(XMLHandler.addTagValue("username", username));
