@@ -34,7 +34,7 @@ public class MongoDbOutputTest {
     mf.m_incomingFieldName = "field1";
     mf.m_mongoDocPath = "";
     mf.m_useIncomingFieldNameAsMongoFieldName = true;
-    paths.add(mf);
+    paths.add(mf);    
     
     mf = new MongoDbOutputMeta.MongoField();
     mf.m_incomingFieldName = "field2";
@@ -53,6 +53,10 @@ public class MongoDbOutputTest {
     Object[] row = new Object[2];
     row[0] = "value1"; row[1] = new Long(12);
     VariableSpace vs = new Variables();
+    
+    for (MongoDbOutputMeta.MongoField f : paths) {
+      f.init(vs);
+    }
     
       DBObject result = 
         kettleRowToMongo(paths, rmi, row, vs, 
@@ -91,6 +95,10 @@ public class MongoDbOutputTest {
     row[0] = "value1"; row[1] = new Long(12);
     VariableSpace vs = new Variables();
     
+    for (MongoDbOutputMeta.MongoField f : paths) {
+      f.init(vs);
+    }
+    
       DBObject result = 
         kettleRowToMongo(paths, rmi, row, vs, 
             MongoDbOutputData.MongoTopLevel.ARRAY);
@@ -126,6 +134,10 @@ public class MongoDbOutputTest {
     Object[] row = new Object[2];
     row[0] = "value1"; row[1] = new Long(12);
     VariableSpace vs = new Variables();
+    
+    for (MongoDbOutputMeta.MongoField f : paths) {
+      f.init(vs);
+    }
     
       DBObject result = 
         kettleRowToMongo(paths, rmi, row, vs, 
@@ -163,6 +175,10 @@ public class MongoDbOutputTest {
     row[0] = "value1"; row[1] = new Long(12);
     VariableSpace vs = new Variables();
     
+    for (MongoDbOutputMeta.MongoField f : paths) {
+      f.init(vs);
+    }
+    
       DBObject result = 
         kettleRowToMongo(paths, rmi, row, vs, 
             MongoDbOutputData.MongoTopLevel.ARRAY);
@@ -198,6 +214,10 @@ public class MongoDbOutputTest {
     Object[] row = new Object[2];
     row[0] = "value1"; row[1] = new Long(12);
     VariableSpace vs = new Variables();
+    
+    for (MongoDbOutputMeta.MongoField f : paths) {
+      f.init(vs);
+    }
     
       DBObject result = 
         kettleRowToMongo(paths, rmi, row, vs, 
@@ -235,6 +255,10 @@ public class MongoDbOutputTest {
     row[0] = "value1"; row[1] = new Long(12);
     VariableSpace vs = new Variables();
     
+    for (MongoDbOutputMeta.MongoField f : paths) {
+      f.init(vs);
+    }
+    
       DBObject result = 
         kettleRowToMongo(paths, rmi, row, vs, 
             MongoDbOutputData.MongoTopLevel.RECORD);
@@ -271,6 +295,10 @@ public class MongoDbOutputTest {
     Object[] row = new Object[2];
     row[0] = "value1"; row[1] = new Long(12);
     VariableSpace vs = new Variables();
+    
+    for (MongoDbOutputMeta.MongoField f : paths) {
+      f.init(vs);
+    }
     
       DBObject result = 
         kettleRowToMongo(paths, rmi, row, vs, 
