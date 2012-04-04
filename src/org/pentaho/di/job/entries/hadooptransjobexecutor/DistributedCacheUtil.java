@@ -29,6 +29,7 @@ import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.permission.FsPermission;
+import org.apache.hadoop.util.VersionInfo;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.plugins.PluginFolder;
@@ -199,7 +200,34 @@ public class DistributedCacheUtil {
     for (Path file : files) {
       // We need to disqualify the path so Distributed Cache in 0.20.2 can properly add the resources to
       // the classpath: https://issues.apache.org/jira/browse/MAPREDUCE-752
-      DistributedCache.addFileToClassPath(disqualifyPath(file), conf);
+      addFileToClassPath(disqualifyPath(file), conf);
+    }
+  }
+
+  /**
+   * Add an file path to the current set of classpath entries. It adds the file
+   * to cache as well.
+   *
+   * This is copied from Hadoop 0.20.2 o.a.h.filecache.DistributedCache so we can inject the correct path separator
+   * for the environment the cluster is executing in. See {@link #getClusterPathSeparator()}.
+   *
+   * @param file Path of the file to be added
+   * @param conf Configuration that contains the classpath setting
+   */
+  public void addFileToClassPath(Path file, Configuration conf)
+      throws IOException {
+
+    // TODO Replace this with a Hadoop shim if we end up having version-specific implementations scattered around
+    if (VersionInfo.getVersion().contains("0.21")) {
+      DistributedCache.addFileToClassPath(file, conf);
+    } else {
+      String classpath = conf.get("mapred.job.classpath.files");
+      conf.set("mapred.job.classpath.files", classpath == null ? file.toString()
+          : classpath + getClusterPathSeparator() + file.toString());
+      FileSystem fs = FileSystem.get(conf);
+      URI uri = fs.makeQualified(file).toUri();
+
+      DistributedCache.addCacheFile(uri, conf);
     }
   }
 
@@ -459,4 +487,16 @@ public class DistributedCacheUtil {
     return null;
   }
 
+  /**
+   * Determine the class path separator of the cluster. For now there is no way to determine the remote cluster's path
+   * separator nor would we want to ultimately do that. This can be configured externally with the system property
+   * "hadoop.cluster.path.separator". This will default to ":" if the system property is not set.
+   *
+   * This is not necessary for Hadoop 0.21.x. See https://issues.apache.org/jira/browse/HADOOP-4864.
+   *
+   * @return Path separator to use when building up the classpath to use for the Distributed Cache
+   */
+  public String getClusterPathSeparator() {
+    return System.getProperty("hadoop.cluster.path.separator", ":");
+  }
 }
