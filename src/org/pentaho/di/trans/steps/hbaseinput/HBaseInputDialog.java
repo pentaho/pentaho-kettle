@@ -286,6 +286,8 @@ public class HBaseInputDialog extends BaseStepDialog implements
     fd.left = new FormAttachment(middle, 0);
     m_zookeeperPortText.setLayoutData(fd);
     
+    
+    
     // core config line
     Label coreConfigLab = new Label(wConfigComp, SWT.RIGHT);
     coreConfigLab.setText(Messages.getString("HBaseInputDialog.CoreConfig.Label"));
@@ -296,7 +298,7 @@ public class HBaseInputDialog extends BaseStepDialog implements
     fd.top = new FormAttachment(m_zookeeperPortText, margin);
     fd.right = new FormAttachment(middle, -margin);
     coreConfigLab.setLayoutData(fd);
-    
+
     m_coreConfigBut = new Button(wConfigComp, SWT.PUSH | SWT.CENTER);
     props.setLook(m_coreConfigBut);
     m_coreConfigBut.setText(Messages.getString("System.Button.Browse"));
@@ -304,7 +306,7 @@ public class HBaseInputDialog extends BaseStepDialog implements
     fd.right = new FormAttachment(100, 0);
     fd.top = new FormAttachment(m_zookeeperPortText, 0);
     m_coreConfigBut.setLayoutData(fd);
-    
+
     m_coreConfigBut.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent e) {
         FileDialog dialog = new FileDialog(shell, SWT.OPEN);
@@ -321,36 +323,34 @@ public class HBaseInputDialog extends BaseStepDialog implements
           Messages.getString("System.FileType.AllFiles");
 
         dialog.setFilterExtensions(extensions);
-        
+
         if (dialog.open() != null) {
           m_coreConfigText.setText(dialog.getFilterPath() 
               + System.getProperty("file.separator")
               + dialog.getFileName());
         }
-        
+
       }
-  });
-    
+    });
+
     m_coreConfigText = new TextVar(transMeta, wConfigComp, 
         SWT.SINGLE | SWT.LEFT | SWT.BORDER);
     props.setLook(m_coreConfigText);
-//    m_coreConfigText.setToolTipText(Messages.getString("HBaseInputDialog.CoreConfig.TipText"));
     m_coreConfigText.addModifyListener(lsMod);
-    
+
     // set the tool tip to the contents with any env variables expanded
     m_coreConfigText.addModifyListener(new ModifyListener() {      
       public void modifyText(ModifyEvent e) {
         m_coreConfigText.
-          setToolTipText(transMeta.environmentSubstitute(m_coreConfigText.getText()));
-       // checkKeyInformation(true);
+        setToolTipText(transMeta.environmentSubstitute(m_coreConfigText.getText()));
       }
     });
     fd = new FormData();
     fd.left = new FormAttachment(middle, 0);
-    fd.top = new FormAttachment(m_zookeeperQuorumText, margin);
+    fd.top = new FormAttachment(m_zookeeperPortText, margin);
     fd.right = new FormAttachment(m_coreConfigBut, -margin);
     m_coreConfigText.setLayoutData(fd);
-    
+
     // default config line
     Label defaultConfigLab = new Label(wConfigComp, SWT.RIGHT);
     defaultConfigLab.setText(Messages.getString("HBaseInputDialog.DefaultConfig.Label"));
@@ -361,7 +361,7 @@ public class HBaseInputDialog extends BaseStepDialog implements
     fd.top = new FormAttachment(m_coreConfigText, margin);
     fd.right = new FormAttachment(middle, -margin);
     defaultConfigLab.setLayoutData(fd);
-    
+
     m_defaultConfigBut = new Button(wConfigComp, SWT.PUSH | SWT.CENTER);
     props.setLook(m_defaultConfigBut);
     m_defaultConfigBut.setText(Messages.getString("System.Button.Browse"));
@@ -369,7 +369,7 @@ public class HBaseInputDialog extends BaseStepDialog implements
     fd.right = new FormAttachment(100, 0);
     fd.top = new FormAttachment(m_coreConfigText, 0);
     m_defaultConfigBut.setLayoutData(fd);
-    
+
     m_defaultConfigBut.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent e) {
         FileDialog dialog = new FileDialog(shell, SWT.OPEN);
@@ -386,28 +386,26 @@ public class HBaseInputDialog extends BaseStepDialog implements
           Messages.getString("System.FileType.AllFiles");
 
         dialog.setFilterExtensions(extensions);
-        
+
         if (dialog.open() != null) {
           m_defaultConfigText.setText(dialog.getFilterPath() 
               + System.getProperty("file.separator")
               + dialog.getFileName());
         }
-        
+
       }
-  });
-    
+    });
+
     m_defaultConfigText = new TextVar(transMeta, wConfigComp, 
         SWT.SINGLE | SWT.LEFT | SWT.BORDER);
     props.setLook(m_defaultConfigText);
-    // m_defaultConfigText.setToolTipText(Messages.getString("HBaseInputDialog.DefaultConfig.TipText"));
     m_defaultConfigText.addModifyListener(lsMod);
-    
+
     // set the tool tip to the contents with any env variables expanded
     m_defaultConfigText.addModifyListener(new ModifyListener() {      
       public void modifyText(ModifyEvent e) {
         m_defaultConfigText.
         setToolTipText(transMeta.environmentSubstitute(m_defaultConfigText.getText()));
-        //checkKeyInformation(true);
       }
     });
     fd = new FormData();
@@ -415,6 +413,13 @@ public class HBaseInputDialog extends BaseStepDialog implements
     fd.top = new FormAttachment(m_coreConfigText, margin);
     fd.right = new FormAttachment(m_defaultConfigBut, -margin);
     m_defaultConfigText.setLayoutData(fd);
+    
+    
+    
+    
+    
+    
+    
     
     // table name
     Label tableNameLab = new Label(wConfigComp, SWT.RIGHT);
