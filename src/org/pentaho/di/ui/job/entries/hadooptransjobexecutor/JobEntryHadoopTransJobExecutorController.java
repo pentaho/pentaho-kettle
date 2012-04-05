@@ -634,7 +634,6 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
         @Override
         public void set(String val) {
           JobEntryHadoopTransJobExecutorController.this.setMapTrans(val);
-          ((Text) tempBox.getTextControl()).setText(val);
           JobEntryHadoopTransJobExecutorController.this.setMapRepositoryDir(null);
           JobEntryHadoopTransJobExecutorController.this.setMapRepositoryFile(null);
           JobEntryHadoopTransJobExecutorController.this.setMapRepositoryReference(null);
@@ -677,7 +676,6 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
         @Override
         public void set(String val) {
           JobEntryHadoopTransJobExecutorController.this.setCombinerTrans(val);
-          ((Text) tempBox.getTextControl()).setText(val);
           JobEntryHadoopTransJobExecutorController.this.setCombinerRepositoryDir(null);
           JobEntryHadoopTransJobExecutorController.this.setCombinerRepositoryFile(null);
           JobEntryHadoopTransJobExecutorController.this.setCombinerRepositoryReference(null);
@@ -720,7 +718,6 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
         @Override
         public void set(String val) {
           JobEntryHadoopTransJobExecutorController.this.setReduceTrans(val);
-          ((Text) tempBox.getTextControl()).setText(val);
           JobEntryHadoopTransJobExecutorController.this.setReduceRepositoryDir(null);
           JobEntryHadoopTransJobExecutorController.this.setReduceRepositoryFile(null);
           JobEntryHadoopTransJobExecutorController.this.setReduceRepositoryReference(null);
