@@ -36,7 +36,7 @@ import org.pentaho.ui.xul.swt.tags.SwtTextbox;
 
 public class ExtTextbox extends SwtTextbox {
 
-  public TextVar extText = null;
+  public TextVar extText;
   private VariableSpace variableSpace;
   private XulComponent xulParent;
 
@@ -44,11 +44,15 @@ public class ExtTextbox extends SwtTextbox {
   
   public ExtTextbox(Element self, XulComponent parent, XulDomContainer container, String tagName) {
     super(self, parent, container, tagName);
+    createNewExtText(parent);
+  }
+
+  private void createNewExtText(XulComponent parent) {
     xulParent = parent;
 
     if ((xulParent != null) && (xulParent instanceof XulTree)){
       variableSpace = (DatabaseMeta)((XulTree)xulParent).getData();
-      
+
     }else{
       variableSpace = new DatabaseMeta();
       style = SWT.BORDER;
@@ -56,19 +60,14 @@ public class ExtTextbox extends SwtTextbox {
 
     extText = new TextVar(variableSpace, parentComposite, style);
     textBox = extText.getTextWidget();
+    addKeyListener(textBox);
     setManagedObject(extText);
   }
 
   @Override
   public Text createNewText() {
-    org.eclipse.swt.widgets.Text box; 
-    if (extText != null){
-      box =  extText.getTextWidget();
-      addKeyListener(box);
-    }else{
-      box = null;
-    }
-    return box;
+    // Don't do anything here. We'll create our own with createNewExtText().
+    return null;
   }
   
   @Override
