@@ -646,6 +646,12 @@ public class CassandraColumnMetaData {
     return getColumnValue(key, m_keyValidator); */
     
     ByteBuffer key = row.bufferForKey();
+    
+    if (m_keyValidator.indexOf("BytesType") > 0) {
+      //return aCol.getValue(); // raw bytes
+      return row.getKey();
+    }
+    
     return getColumnValue(key, m_keyValidator);
   }
   
@@ -682,25 +688,40 @@ public class CassandraColumnMetaData {
       deserializer = DateType.instance;
     } else if (decoder.indexOf("IntegerType") > 0) {
       deserializer = IntegerType.instance;
+      
+      result = new Long(((IntegerType)deserializer).compose(valueBuff).longValue());
+      return result;
     } else if (decoder.indexOf("FloatType") > 0) {
       deserializer = FloatType.instance;
+      
+      result = new Double(((FloatType)deserializer).compose(valueBuff)).doubleValue();
+      return result;
     } else if (decoder.indexOf("LexicalUUIDType") > 0) {
       deserializer = LexicalUUIDType.instance;
+      
+      result = new String(((LexicalUUIDType)deserializer).compose(valueBuff).toString());
+      return result;
     } else if (decoder.indexOf("UUIDType") > 0) {
       deserializer = UUIDType.instance;
+      
+      result = new String(((UUIDType)deserializer).compose(valueBuff).toString());
+      return result;
     } else if (decoder.indexOf("BooleanType") > 0) {
       deserializer = BooleanType.instance;
     } else if (decoder.indexOf("Int32Type") > 0) {
       deserializer = Int32Type.instance;
+      
+      result = new Long(((Int32Type)deserializer).compose(valueBuff)).longValue();
+      return result;
     } else if (decoder.indexOf("DecimalType") > 0) {
-      deserializer = DecimalType.instance;
+      deserializer = DecimalType.instance;      
     }
     
     if (deserializer == null) {
       throw new KettleException("Can't find deserializer for type '" + decoder + "'");
     }
     
-    result = deserializer.compose(valueBuff);
+    result = deserializer.compose(valueBuff);    
     
     return result;
   }
