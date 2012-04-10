@@ -88,7 +88,13 @@ public class AvroInput extends BaseStep implements StepInterface {
       avroFieldName = environmentSubstitute(avroFieldName);
       
       // setup the output row meta
-      RowMetaInterface outRowMeta = getInputRowMeta().clone();
+      RowMetaInterface outRowMeta = null;
+      outRowMeta = getInputRowMeta();
+      if (outRowMeta != null) {
+        outRowMeta = outRowMeta.clone();
+      } else {
+        outRowMeta = new RowMeta();
+      }
 
       int newFieldOffset = outRowMeta.size();
       m_data.setOutputRowMeta(outRowMeta);

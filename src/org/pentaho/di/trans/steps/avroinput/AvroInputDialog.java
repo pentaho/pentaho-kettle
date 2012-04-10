@@ -726,12 +726,13 @@ public class AvroInputDialog extends BaseStepDialog implements
     avroMeta.setSchemaFilename(m_schemaFilenameText.getText());
     avroMeta.setAvroIsJsonEncoded(m_jsonEncodedBut.getSelection());
     avroMeta.setAvroInField(m_sourceInFieldBut.getSelection());
+//    System.out.println("**** Setting avro in field to " + m_sourceInFieldBut.getSelection());
     avroMeta.setAvroFieldName(m_avroFieldNameText.getText());
-    if (!Const.isEmpty(m_avroFieldNameText.getText())) {
+    /*if (!Const.isEmpty(m_avroFieldNameText.getText())) {
       avroMeta.setAvroInField(true);
     } else {
       avroMeta.setAvroInField(false);
-    }
+    } */
     
     int numNonEmpty = m_fieldsView.nrNonEmpty();
     if (numNonEmpty > 0) {
@@ -882,6 +883,9 @@ public class AvroInputDialog extends BaseStepDialog implements
     
     m_jsonEncodedBut.setSelection(m_currentMeta.getAvroIsJsonEncoded());
     m_sourceInFieldBut.setSelection(m_currentMeta.getAvroInField());
+    if (!m_currentMeta.getAvroInField()) {
+      m_sourceInFileBut.setSelection(true);
+    }
     
     // fields
     if (m_currentMeta.getAvroFields() != null && 
