@@ -172,10 +172,8 @@ public class ModelerHelper extends AbstractXulEventHandler implements ISpoonMenu
             processBuilder.environment().put("DATACLEANER_HOME", pluginPath);
             Process process = processBuilder.start();
 
-            ProcessStreamReader psrStdout = new ProcessStreamReader(process.getInputStream(), Spoon.getInstance()
-                    .getLog(), false);
-            ProcessStreamReader psrStderr = new ProcessStreamReader(process.getErrorStream(), Spoon.getInstance()
-                    .getLog(), true);
+            ProcessStreamReader psrStdout = new ProcessStreamReader(process.getInputStream(), log, false);
+            ProcessStreamReader psrStderr = new ProcessStreamReader(process.getErrorStream(), log, true);
             psrStdout.start();
             psrStderr.start();
 
