@@ -311,50 +311,30 @@
 
 	  <target name="javadoc" depends="compile" description="compile the javadoc api" >
 	  	<echo>Compiling the Kettle core API javadocs...</echo>
-        <javadoc 
-      	destdir="${api-core}" 
-      	access="public" 
-      	source="1.5" 
-      	use="true" 
-      	notree="false" 
-      	nonavbar="false" 
-      	noindex="false" 
-      	splitindex="true" 
-      	author="true" 
-      	version="true" 
-      	maxmemory="256M"
-      	nodeprecatedlist="false" 
-      	nodeprecated="false" 
-      	packagenames ="org.pentaho.di.*" 
-      	sourcepath="${src-core}" 
-      	doctitle="Kettle core API documentation">
-              <link href="http://java.sun.com/j2se/1.5.0/docs/api/"/>
-      	<classpath refid="cp-kettle"/>
-      </javadoc>
-
-      <javadoc 
-	      	destdir="${api}" 
-	      	access="public" 
-	      	source="1.5" 
-	      	use="true" 
-	      	notree="false" 
-	      	nonavbar="false" 
-	      	noindex="false" 
-	      	splitindex="true" 
-	      	author="true" 
-	      	version="true" 
-	      	maxmemory="256M"
-	      	nodeprecatedlist="false" 
-	      	nodeprecated="false" 
-	      	packagenames ="org.pentaho.di.*" 
-	      	sourcepath="${src}" 
-	      	doctitle="Kettle API documentation">
-	              <link href="http://java.sun.com/j2se/1.5.0/docs/api/"/>
-	      	<classpath refid="cp-kettle"/>
-	      </javadoc>
-
-	  </target>
+        
+	  	<javadoc 
+	  		      	destdir="${api}" 
+	  		      	access="public" 
+	  		      	source="1.5" 
+	  		      	use="true" 
+	  		      	notree="false" 
+	  		      	nonavbar="false" 
+	  		      	noindex="false" 
+	  		      	splitindex="true" 
+	  		      	author="true" 
+	  		      	version="true" 
+	  		      	maxmemory="512M"
+	  		      	nodeprecatedlist="false" 
+	  		      	nodeprecated="false" 
+	  		      	packagenames ="org.pentaho.di.*" 
+	  		      	sourcepath="${src}:${src-core}:${src-db}:${src-dbdialog}:${src-ui}:${src-jdbc}:${test}" 
+	  		      	doctitle="Kettle ${version} API documentation">
+	  		              <link href="http://java.sun.com/j2se/1.5.0/docs/api/"/>
+	  		      	<classpath refid="cp-kettle"/>
+	  	</javadoc>
 	
+	  </target>
+
 	  <target name="javadoc_zip" depends="javadoc" description="generate a zip file containing the Kettle javadoc">
 	  	<echo>Generating the Kettle javadoc zip file ...</echo>
 	  	<jar jarfile="${dist.dir}/${product.name}-${product.release.type}-javadoc-${release.version}${release.status.token}.zip" 
