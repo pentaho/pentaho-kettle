@@ -86,7 +86,7 @@ public class MongoDbOutput extends BaseStep implements StepInterface {
       // no more output
       
       // check any remaining buffered objects
-      if (m_batch.size() > 0) {
+      if (m_batch != null && m_batch.size() > 0) {
         doBatch();
       }
       
