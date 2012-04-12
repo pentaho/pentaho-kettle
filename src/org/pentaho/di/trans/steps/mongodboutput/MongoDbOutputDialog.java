@@ -1119,6 +1119,9 @@ public class MongoDbOutputDialog extends BaseStepDialog implements
     VariableSpace vs = new Variables();
     MongoDbOutputData.MongoTopLevel topLevelStruct = 
       MongoDbOutputData.checkTopLevelConsistency(mongoFields, vs);
+    for (MongoDbOutputMeta.MongoField m : mongoFields) {
+      m.init(vs);
+    }
     try {
       DBObject result = 
         MongoDbOutputData.kettleRowToMongo(mongoFields, r, dummyRow, vs, topLevelStruct);
