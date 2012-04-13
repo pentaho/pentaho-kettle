@@ -264,9 +264,12 @@ public class ModelerHelper extends AbstractXulEventHandler implements ISpoonMenu
 
             // Open a server socket. This thing will block on init() until
             // DataCleaner connects to it...
-            //
             final DataCleanerKettleFileWriter writer = new DataCleanerKettleFileWriter(trans, stepMeta);
-            writer.run();
+            try {
+                writer.run();
+            } finally {
+                writer.close();
+            }
 
             // Pass along the configuration of the KettleDatabaseStore...
             //
