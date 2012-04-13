@@ -51,6 +51,8 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -141,8 +143,11 @@ public class HBaseInput extends BaseStep implements StepInterface {
       }
 
       String sourceName = environmentSubstitute(m_meta.getSourceTableName());
+      if (StringUtil.isEmpty(sourceName)) {
+        throw new KettleException(BaseMessages.getString(getClass(), "HBaseInput.TableName.Missing"));
+      }
       try {
-        if (!admin.tableExists(sourceName)) {          
+        if (!admin.tableExists(sourceName)) {
           throw new KettleException("Source table \"" + sourceName + "\" does not exist!");
         }
       
