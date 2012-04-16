@@ -16,8 +16,8 @@ public class DataCleanerJobEntryDialog extends AbstractJobEntryDialog implements
 
     private TextVar executableFilenameField;
     private TextVar jobFilenameField;
-    private TextVar outputFilenameField;
     private TextVar additionalArgumentsField;
+    private OutputFileSelectionWidget outputFileSelectionWidget;
     private EnumCombo<DataCleanerOutputType> outputTypeCombo;
 
     public DataCleanerJobEntryDialog(Shell parent, JobEntryInterface jobEntry, Repository rep, JobMeta jobMeta) {
@@ -52,9 +52,9 @@ public class DataCleanerJobEntryDialog extends AbstractJobEntryDialog implements
             final Label fieldLabel = new Label(propertiesGroup, SWT.RIGHT);
             fieldLabel.setLayoutData(WidgetFactory.createGridData());
             fieldLabel.setText("Output file:");
-
-            outputFilenameField = new TextVar(jobMeta, propertiesGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-            outputFilenameField.setLayoutData(WidgetFactory.createGridData());
+            
+            outputFileSelectionWidget = new OutputFileSelectionWidget(propertiesGroup, jobMeta);
+            outputFileSelectionWidget.setLayoutData(WidgetFactory.createGridData());
         }
 
         {
@@ -81,9 +81,10 @@ public class DataCleanerJobEntryDialog extends AbstractJobEntryDialog implements
         {
             final DataCleanerJobEntryConfiguration configuration = getConfiguration();
             outputTypeCombo.setValue(configuration.getOutputType());
-            executableFilenameField.setText(configuration.getExecutableFile());
-            jobFilenameField.setText(configuration.getJobFile());
-            outputFilenameField.setText(configuration.getOutputFile());
+            executableFilenameField.setText(configuration.getExecutableFilename());
+            jobFilenameField.setText(configuration.getJobFilename());
+            outputFileSelectionWidget.setOutputFilename(configuration.getOutputFilename());
+            outputFileSelectionWidget.setOutputFileInResult(configuration.isOutputFileInResult());
             additionalArgumentsField.setText(configuration.getAdditionalArguments());
         }
     }
@@ -91,9 +92,10 @@ public class DataCleanerJobEntryDialog extends AbstractJobEntryDialog implements
     @Override
     public void ok() {
         DataCleanerJobEntryConfiguration configuration = getConfiguration();
-        configuration.setExecutableFile(executableFilenameField.getText());
-        configuration.setJobFile(jobFilenameField.getText());
-        configuration.setOutputFile(outputFilenameField.getText());
+        configuration.setExecutableFilename(executableFilenameField.getText());
+        configuration.setJobFilename(jobFilenameField.getText());
+        configuration.setOutputFilename(outputFileSelectionWidget.getOutputFilename());
+        configuration.setOutputFileInResult(outputFileSelectionWidget.isOutputFileInResult());
         configuration.setOutputType(outputTypeCombo.getValue());
         configuration.setAdditionalArguments(additionalArgumentsField.getText());
     }

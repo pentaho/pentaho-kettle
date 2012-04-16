@@ -6,43 +6,44 @@ public class DataCleanerJobEntryConfiguration implements Serializable, Cloneable
 
     private static final long serialVersionUID = 1L;
 
-    private String executableFile;
-    private String jobFile;
+    private String executableFilename;
+    private String jobFilename;
     private DataCleanerOutputType outputType;
-    private String outputFile;
+    private String outputFilename;
     private String additionalArguments;
+    private boolean outputFileInResult = true;
 
-    public String getJobFile() {
-        if (jobFile == null) {
-            jobFile = "examples/employees.analysis.xml";
+    public String getJobFilename() {
+        if (jobFilename == null) {
+            jobFilename = "examples/employees.analysis.xml";
         }
-        return jobFile;
+        return jobFilename;
     }
 
-    public void setJobFile(String jobFile) {
-        this.jobFile = jobFile;
+    public void setJobFilename(String jobFile) {
+        this.jobFilename = jobFile;
     }
 
-    public String getExecutableFile() {
-        if (executableFile == null) {
-            executableFile = "${user.home}/DataCleaner/DataCleaner-console.exe";
+    public String getExecutableFilename() {
+        if (executableFilename == null) {
+            executableFilename = "${user.home}/DataCleaner/DataCleaner-console.exe";
         }
-        return executableFile;
+        return executableFilename;
     }
 
-    public void setExecutableFile(String executableFile) {
-        this.executableFile = executableFile;
+    public void setExecutableFilename(String executableFile) {
+        this.executableFilename = executableFile;
     }
 
-    public String getOutputFile() {
-        if (outputFile == null) {
-            outputFile = "out." + getOutputType().getFileExtension();
+    public String getOutputFilename() {
+        if (outputFilename == null) {
+            outputFilename = "out." + getOutputType().getFileExtension();
         }
-        return outputFile;
+        return outputFilename;
     }
 
-    public void setOutputFile(String outputFile) {
-        this.outputFile = outputFile;
+    public void setOutputFilename(String outputFile) {
+        this.outputFilename = outputFile;
     }
 
     public DataCleanerOutputType getOutputType() {
@@ -65,5 +66,13 @@ public class DataCleanerJobEntryConfiguration implements Serializable, Cloneable
 
     public void setAdditionalArguments(String additionalArguments) {
         this.additionalArguments = additionalArguments;
+    }
+
+    public void setOutputFileInResult(boolean outputFileInResult) {
+        this.outputFileInResult = outputFileInResult;
+    }
+
+    public boolean isOutputFileInResult() {
+        return outputFileInResult;
     }
 }

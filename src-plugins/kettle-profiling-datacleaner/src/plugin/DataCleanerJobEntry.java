@@ -6,16 +6,21 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
+import org.apache.commons.vfs.FileObject;
 import org.eobjects.datacleaner.kettle.jobentry.DataCleanerJobEntryConfiguration;
 import org.eobjects.datacleaner.kettle.jobentry.DataCleanerJobEntryDialog;
 import org.eobjects.datacleaner.kettle.jobentry.DataCleanerOutputType;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.annotations.JobEntry;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -40,15 +45,17 @@ public class DataCleanerJobEntry extends JobEntryBase implements JobEntryInterfa
     public Result execute(Result result, int nr) throws KettleException {
 
         final List<String> commands = new ArrayList<String>();
-        final String executableFilePath = environmentSubstitute(configuration.getExecutableFile());
+        final String executableFilePath = environmentSubstitute(configuration.getExecutableFilename());
         final File executableFile = new File(executableFilePath);
+        final String outputFilename = environmentSubstitute(configuration.getOutputFilename());
+
         commands.add(executableFilePath);
         commands.add("-job");
-        commands.add(environmentSubstitute(configuration.getJobFile()));
+        commands.add(environmentSubstitute(configuration.getJobFilename()));
         commands.add("-ot");
         commands.add(configuration.getOutputType().toString());
         commands.add("-of");
-        commands.add(environmentSubstitute(configuration.getOutputFile()));
+        commands.add(outputFilename);
 
         final String additionalArguments = configuration.getAdditionalArguments();
         if (additionalArguments != null && additionalArguments.length() != 0) {
@@ -59,7 +66,8 @@ public class DataCleanerJobEntry extends JobEntryBase implements JobEntryInterfa
         }
 
         final ProcessBuilder processBuilder = new ProcessBuilder(commands);
-        processBuilder.directory(executableFile.getParentFile());
+        final File dataCleanerDirectory = executableFile.getParentFile();
+        processBuilder.directory(dataCleanerDirectory);
         processBuilder.redirectErrorStream(true);
 
         try {
@@ -81,6 +89,23 @@ public class DataCleanerJobEntry extends JobEntryBase implements JobEntryInterfa
 
             result.setExitStatus(exitCode);
             result.setResult(true);
+
+            if (configuration.isOutputFileInResult()) {
+                File outputFile = new File(outputFilename);
+                if (!outputFile.exists()) {
+                    outputFile = new File(dataCleanerDirectory, outputFilename);
+                }
+
+                if (outputFile.exists()) {
+                    final Map<String, ResultFile> files = new ConcurrentHashMap<String, ResultFile>();
+                    final FileObject fileObject = KettleVFS.getFileObject(outputFile.getCanonicalPath(), this);
+                    final ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, fileObject,
+                            parentJob.getJobname(), toString());
+                    files.put(outputFilename, resultFile);
+                    result.setResultFiles(files);
+                }
+            }
+
         } catch (Exception e) {
             logError("Error occurred while executing DataCleaner job", e);
             result.setResult(false);
@@ -109,10 +134,13 @@ public class DataCleanerJobEntry extends JobEntryBase implements JobEntryInterfa
         final StringBuilder retval = new StringBuilder();
 
         retval.append(super.getXML());
-        retval.append("      ").append(XMLHandler.addTagValue("executable_file", configuration.getExecutableFile()));
-        retval.append("      ").append(XMLHandler.addTagValue("job_file", configuration.getJobFile()));
-        retval.append("      ").append(XMLHandler.addTagValue("output_file", configuration.getOutputFile()));
+        retval.append("      ")
+                .append(XMLHandler.addTagValue("executable_file", configuration.getExecutableFilename()));
+        retval.append("      ").append(XMLHandler.addTagValue("job_file", configuration.getJobFilename()));
+        retval.append("      ").append(XMLHandler.addTagValue("output_file", configuration.getOutputFilename()));
         retval.append("      ").append(XMLHandler.addTagValue("output_type", configuration.getOutputType().toString()));
+        retval.append("      ").append(
+                XMLHandler.addTagValue("output_file_in_result", configuration.isOutputFileInResult()));
 
         return retval.toString();
     }
@@ -122,11 +150,15 @@ public class DataCleanerJobEntry extends JobEntryBase implements JobEntryInterfa
         try {
             super.loadXML(entrynode, databases, slaveServers);
 
-            configuration.setExecutableFile(XMLHandler.getTagValue(entrynode, "executable_file"));
-            configuration.setJobFile(XMLHandler.getTagValue(entrynode, "job_file"));
-            configuration.setOutputFile(XMLHandler.getTagValue(entrynode, "output_file"));
+            configuration.setExecutableFilename(XMLHandler.getTagValue(entrynode, "executable_file"));
+            configuration.setJobFilename(XMLHandler.getTagValue(entrynode, "job_file"));
+            configuration.setOutputFilename(XMLHandler.getTagValue(entrynode, "output_file"));
             configuration
                     .setOutputType(DataCleanerOutputType.valueOf(XMLHandler.getTagValue(entrynode, "output_type")));
+            final String outputFileInResult = XMLHandler.getTagValue(entrynode, "output_file_in_result");
+            if ("false".equalsIgnoreCase(outputFileInResult)) {
+                configuration.setOutputFileInResult(false);
+            }
 
         } catch (KettleXMLException xe) {
             throw new KettleXMLException("Unable to load job entry from XML node", xe);
@@ -137,10 +169,11 @@ public class DataCleanerJobEntry extends JobEntryBase implements JobEntryInterfa
     public void saveRep(Repository rep, ObjectId id_job) throws KettleException {
         super.saveRep(rep, id_job);
 
-        rep.saveJobEntryAttribute(id_job, getObjectId(), "executable_file", configuration.getExecutableFile());
-        rep.saveJobEntryAttribute(id_job, getObjectId(), "job_file", configuration.getJobFile());
-        rep.saveJobEntryAttribute(id_job, getObjectId(), "output_file", configuration.getOutputFile());
+        rep.saveJobEntryAttribute(id_job, getObjectId(), "executable_file", configuration.getExecutableFilename());
+        rep.saveJobEntryAttribute(id_job, getObjectId(), "job_file", configuration.getJobFilename());
+        rep.saveJobEntryAttribute(id_job, getObjectId(), "output_file", configuration.getOutputFilename());
         rep.saveJobEntryAttribute(id_job, getObjectId(), "output_type", configuration.getOutputType().toString());
+        rep.saveJobEntryAttribute(id_job, getObjectId(), "output_file_in_result", configuration.isOutputFileInResult());
     }
 
     @Override
@@ -148,10 +181,12 @@ public class DataCleanerJobEntry extends JobEntryBase implements JobEntryInterfa
             List<SlaveServer> slaveServers) throws KettleException {
         super.loadRep(rep, id_jobentry, databases, slaveServers);
 
-        configuration.setExecutableFile(rep.getJobEntryAttributeString(id_jobentry, "executable_file"));
-        configuration.setJobFile(rep.getJobEntryAttributeString(id_jobentry, "job_file"));
-        configuration.setOutputFile(rep.getJobEntryAttributeString(id_jobentry, "output_file"));
+        configuration.setExecutableFilename(rep.getJobEntryAttributeString(id_jobentry, "executable_file"));
+        configuration.setJobFilename(rep.getJobEntryAttributeString(id_jobentry, "job_file"));
+        configuration.setOutputFilename(rep.getJobEntryAttributeString(id_jobentry, "output_file"));
         configuration.setOutputType(DataCleanerOutputType.valueOf(rep.getJobEntryAttributeString(id_jobentry,
                 "output_type")));
+        configuration
+                .setOutputFileInResult(rep.getJobEntryAttributeBoolean(id_jobentry, "output_file_in_result", true));
     }
 }
