@@ -135,7 +135,8 @@ public class TypeConverterFactoryTest {
     assertEquals(Double.class, factory.getJavaClass(valueMeta));
 
     valueMeta.setType(ValueMetaInterface.TYPE_SERIALIZABLE);
-    assertNull(factory.getJavaClass(valueMeta));
+    //assertNull(factory.getJavaClass(valueMeta));
+    assertEquals(Object.class, factory.getJavaClass(valueMeta));
     
     valueMeta.setType(ValueMetaInterface.TYPE_STRING);
     assertEquals(String.class, factory.getJavaClass(valueMeta));

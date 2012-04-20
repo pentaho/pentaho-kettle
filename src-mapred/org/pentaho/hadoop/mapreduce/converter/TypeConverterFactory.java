@@ -118,6 +118,9 @@ public class TypeConverterFactory {
       case ValueMeta.TYPE_STRING:
         metaClass = String.class;
         break;
+      case ValueMeta.TYPE_SERIALIZABLE:
+        metaClass = Object.class;
+        break;
     }
 
     return metaClass;

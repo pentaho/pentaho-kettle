@@ -16,3 +16,5 @@ org.pentaho.hadoop.mapreduce.converter.converters.ObjectToStringConverter
 org.pentaho.hadoop.mapreduce.converter.converters.TextToIntegerConverter
 org.pentaho.hadoop.mapreduce.converter.converters.TextToLongConverter
 org.pentaho.hadoop.mapreduce.converter.converters.TextToStringConverter
+org.pentaho.hadoop.mapreduce.converter.converters.ImmutableBytesWritablePassThroughConverter
+org.pentaho.hadoop.mapreduce.converter.converters.ResultPassThroughConverter

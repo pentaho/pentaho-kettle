@@ -61,6 +61,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.steps.hbaseinput.HBaseInputData;
 import org.pentaho.di.trans.steps.hbaseinput.Messages;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -68,6 +69,7 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.ComboValuesSelectionListener;
 import org.pentaho.di.ui.core.widget.TableView;
+import org.pentaho.di.ui.core.widget.TextVar;
 
 /**
  * A re-usable composite for creating and editing table mappings for
@@ -85,12 +87,15 @@ import org.pentaho.di.ui.core.widget.TableView;
  * @version $Revision$
  *
  */
-public class MappingEditor extends Composite {
+public class MappingEditor extends Composite implements ConfigurationProducer {
   
   protected Shell m_shell;
   protected Composite m_parent;
   
   protected boolean m_allowTableCreate;
+  
+  protected TextVar m_zookeeperHostText;
+  protected TextVar m_zookeeperPortText;
   
   // table name line
   protected CCombo m_existingTableNamesCombo;
@@ -121,6 +126,8 @@ public class MappingEditor extends Composite {
   protected String m_currentConfiguration = "";
   protected boolean m_connectionProblem;
   
+  protected TransMeta m_transMeta;
+  
   public MappingEditor(Shell shell, Composite parent, ConfigurationProducer configProducer, 
       FieldProducer fieldProducer, int tableViewStyle, boolean allowTableCreate, 
       PropsUI props, TransMeta transMeta) {
@@ -129,9 +136,14 @@ public class MappingEditor extends Composite {
     
     m_shell = shell;
     m_parent = parent;
+    m_transMeta = transMeta;
+    boolean showConnectWidgets = false;
     m_configProducer = configProducer;
     if (m_configProducer != null) {
       m_currentConfiguration = m_configProducer.getCurrentConfiguration();
+    } else {
+      showConnectWidgets = true;
+      m_configProducer = this;
     }
     
     m_incomingFieldsProducer = fieldProducer;
@@ -151,13 +163,57 @@ public class MappingEditor extends Composite {
     setLayout(controlLayout);
     props.setLook(this);
     
+    if (showConnectWidgets) {
+      Label zooHostLab = new Label(this, SWT.RIGHT);
+      zooHostLab.setText("Zookeeper host");
+      props.setLook(zooHostLab);
+      FormData fd = new FormData();
+      fd.left = new FormAttachment(0, 0);
+      fd.top = new FormAttachment(0, margin);
+      fd.right = new FormAttachment(middle, -margin);
+      zooHostLab.setLayoutData(fd);
+      
+      m_zookeeperHostText = new TextVar(transMeta, this, 
+          SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+      props.setLook(m_zookeeperHostText);
+      fd = new FormData();
+      fd.left = new FormAttachment(middle, 0);
+      fd.top = new FormAttachment(0, margin);
+      fd.right = new FormAttachment(100, 0);
+      m_zookeeperHostText.setLayoutData(fd);
+      
+      Label zooPortLab = new Label(this, SWT.RIGHT);
+      zooPortLab.setText("Zookeeper port");
+      props.setLook(zooPortLab);
+      fd = new FormData();
+      fd.left = new FormAttachment(0, 0);
+      fd.top = new FormAttachment(m_zookeeperHostText, margin);
+      fd.right = new FormAttachment(middle, -margin);
+      zooPortLab.setLayoutData(fd);
+      
+      m_zookeeperPortText = new TextVar(transMeta, this, 
+          SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+      props.setLook(m_zookeeperPortText);
+      fd = new FormData();
+      fd.left = new FormAttachment(middle, 0);
+      fd.top = new FormAttachment(m_zookeeperHostText, margin);
+      fd.right = new FormAttachment(100, 0);
+      m_zookeeperPortText.setLayoutData(fd);
+      
+      m_currentConfiguration = m_configProducer.getCurrentConfiguration();
+    }
+    
     // table names
     Label tableNameLab = new Label(this, SWT.RIGHT);
     tableNameLab.setText(Messages.getString("MappingDialog.TableName.Label"));
     props.setLook(tableNameLab);
     FormData fd = new FormData();
     fd.left = new FormAttachment(0, 0);
-    fd.top = new FormAttachment(0, margin);
+    if (showConnectWidgets) {
+      fd.top = new FormAttachment(m_zookeeperPortText, margin);
+    } else {
+      fd.top = new FormAttachment(0, margin);
+    }
     fd.right = new FormAttachment(middle, -margin);
     tableNameLab.setLayoutData(fd);
     
@@ -173,7 +229,11 @@ public class MappingEditor extends Composite {
     props.setLook(m_existingTableNamesCombo);
     fd = new FormData();
     fd.left = new FormAttachment(middle, 0);
-    fd.top = new FormAttachment(0, margin);
+    if (showConnectWidgets) {
+      fd.top = new FormAttachment(m_zookeeperPortText, margin);
+    } else {
+      fd.top = new FormAttachment(0, margin);
+    }
     fd.right = new FormAttachment(100, 0);
     m_existingTableNamesCombo.setLayoutData(fd);
     
@@ -558,7 +618,7 @@ public class MappingEditor extends Composite {
     }
   }
   
-  private void saveMapping() {
+  public Mapping getMapping(boolean checkForMissingTableAndMapping) {
     String tableName = "";
     if (!Const.isEmpty(m_existingTableNamesCombo.getText().trim())) {
       tableName = m_existingTableNamesCombo.getText().trim();
@@ -568,12 +628,13 @@ public class MappingEditor extends Composite {
       }
     }
     
-    if (Const.isEmpty(m_existingTableNamesCombo.getText().trim()) ||
-        Const.isEmpty(tableName)) {
+    if (checkForMissingTableAndMapping && 
+        (Const.isEmpty(m_existingTableNamesCombo.getText().trim()) ||
+        Const.isEmpty(tableName))) {
       MessageDialog.openError(m_shell, 
           Messages.getString("MappingDialog.Error.Title.MissingTableMappingName"),
           Messages.getString("MappingDialog.Error.Message.MissingTableMappingName"));
-      return;
+      return null;
     }
     
     // do we have any non-empty rows in the table?
@@ -581,7 +642,7 @@ public class MappingEditor extends Composite {
       MessageDialog.openError(m_shell, 
           Messages.getString("MappingDialog.Error.Title.NoFieldsDefined"), 
           Messages.getString("MappingDialog.Error.Message.NoFieldsDefined"));
-      return;
+      return null;
     }
     // do we have a key defined in the table?
     Mapping theMapping = new Mapping(tableName,
@@ -651,7 +712,7 @@ public class MappingEditor extends Composite {
           MessageDialog.openError(m_shell, 
               Messages.getString("MappingDialog.Error.Title.NoAliasForKey"),
               Messages.getString("MappingDialog.Error.Message.NoAliasForKey"));
-          return;
+          return null;
         }
         
         if (Const.isEmpty(type)) {
@@ -659,7 +720,7 @@ public class MappingEditor extends Composite {
           MessageDialog.openError(m_shell, 
               Messages.getString("MappingDialog.Error.Title.NoTypeForKey"),
               Messages.getString("MappingDialog.Error.Message.NoTypeForKey"));
-          return;
+          return null;
         }
         
         if (moreThanOneKey) {
@@ -667,7 +728,7 @@ public class MappingEditor extends Composite {
           MessageDialog.openError(m_shell, 
               Messages.getString("MappingDialog.Error.Title.MoreThanOneKey"),
               Messages.getString("MappingDialog.Error.Message.MoreThanOneKey"));
-          return;
+          return null;
         }
         
         theMapping.setKeyName(alias);
@@ -689,7 +750,7 @@ public class MappingEditor extends Composite {
             vm.setHBaseTypeFromString(type);
           } catch (IllegalArgumentException e) {
             // TODO pop up an error dialog for this one
-            return;
+            return null;
           }
           if (vm.isString() && indexedVals != null && indexedVals.length() > 0) {
             Object[] vals = HBaseValueMeta.stringIndexListToObjects(indexedVals);
@@ -708,7 +769,7 @@ public class MappingEditor extends Composite {
                 family + HBaseValueMeta.SEPARATOR + colName + 
                 Messages.getString("MappingDialog.Message1.Title.DuplicateColumn"));
             ex.printStackTrace();
-            return;
+            return null;
           }
         }
       }
@@ -719,7 +780,7 @@ public class MappingEditor extends Composite {
       MessageDialog.openError(m_shell,
           Messages.getString("MappingDialog.Error.Title.NoKeyDefined"), 
           Messages.getString("MappingDialog.Error.Message.NoKeyDefined"));
-      return;
+      return null;
     }
     
     if (missingFamilies.size() > 0 || missingColumnNames.size() > 0 || 
@@ -743,9 +804,16 @@ public class MappingEditor extends Composite {
       MessageDialog.openError(m_shell, 
           Messages.getString("MappingDialog.Error.Title.IssuesPreventingSaving"), 
           buff.toString());
-      return;
+      return null;
     }
     
+    return theMapping;
+  }
+  
+  private void saveMapping() {
+
+    Mapping theMapping = getMapping(true);
+    String tableName = theMapping.getTableName();
     
     if (m_allowTableCreate) {
       // check for existence of the table. If table doesn't exist
@@ -853,6 +921,55 @@ public class MappingEditor extends Composite {
     }
   }
   
+  public void setMapping(Mapping mapping) {
+    if (mapping == null) {
+      return;
+    }
+    
+    m_fieldsView.clearAll();
+    
+    // do the key first
+    TableItem keyItem = new TableItem(m_fieldsView.table, SWT.NONE);
+    keyItem.setText(1, mapping.getKeyName());
+    keyItem.setText(2, "Y");
+    keyItem.setText(5, mapping.getKeyType().toString());
+    
+    // the rest of the fields in the mapping
+    Map<String, HBaseValueMeta> mappedFields = mapping.getMappedColumns();
+    for (String alias : mappedFields.keySet()) {
+      HBaseValueMeta vm = mappedFields.get(alias);
+      TableItem item = new TableItem(m_fieldsView.table, SWT.NONE);
+      item.setText(1, alias);
+      item.setText(2, "N");
+      item.setText(3, vm.getColumnFamily());
+      item.setText(4, vm.getColumnName());
+      
+      if (vm.isInteger()) {
+        if (vm.getIsLongOrDouble()) {
+          item.setText(5, "Long");
+        } else {
+          item.setText(5, "Integer");
+        }
+      } else if (vm.isNumber()) {
+        if (vm.getIsLongOrDouble()) {
+          item.setText(5, "Double");
+        } else {
+          item.setText(5, "Float");
+        }
+      }  else {
+        item.setText(5, vm.getTypeDesc());
+      }
+      
+      if (vm.getStorageType() == ValueMetaInterface.STORAGE_TYPE_INDEXED) {
+        item.setText(6, HBaseValueMeta.objectIndexValuesToString(vm.getIndex()));
+      }
+    }
+    
+    m_fieldsView.removeEmptyRows();
+    m_fieldsView.setRowNums();
+    m_fieldsView.optWidth(true);
+  }
+  
   private void loadTableViewFromMapping() {
     String tableName = "";
     if (!Const.isEmpty(m_existingTableNamesCombo.getText().trim())) {
@@ -870,7 +987,10 @@ public class MappingEditor extends Composite {
         Mapping mapping = 
           m_admin.getMapping(tableName, 
               m_existingMappingNamesCombo.getText().trim());
-        m_fieldsView.clearAll();
+        
+        setMapping(mapping);
+        
+        /*m_fieldsView.clearAll();
         
         // do the key first
         TableItem keyItem = new TableItem(m_fieldsView.table, SWT.NONE);
@@ -911,7 +1031,7 @@ public class MappingEditor extends Composite {
         
         m_fieldsView.removeEmptyRows();
         m_fieldsView.setRowNums();
-        m_fieldsView.optWidth(true);
+        m_fieldsView.optWidth(true); */
       }
 
     } catch (IOException ex) {
@@ -975,5 +1095,36 @@ public class MappingEditor extends Composite {
         e.printStackTrace();
       }
     }    
+  }
+
+  public Configuration getHBaseConnection() throws IOException {
+    Configuration conf = null;
+    String zookeeperHosts = null;
+    String zookeeperPort = null;
+    
+    if (!Const.isEmpty(m_zookeeperHostText.getText())) {
+      zookeeperHosts = m_transMeta.environmentSubstitute(m_zookeeperHostText.getText());
+    }
+    
+    if (!Const.isEmpty(m_zookeeperPortText.getText())) {
+      zookeeperPort = m_transMeta.environmentSubstitute(m_zookeeperPortText.getText());
+    }
+    
+    conf = HBaseInputData.getHBaseConnection(zookeeperHosts, zookeeperPort, 
+        null, null);
+    
+    return conf;
+  }
+
+  public String getCurrentConfiguration() {
+    String host = "";
+    String port = "";
+    if (!Const.isEmpty(m_zookeeperHostText.getText())) {
+      host = m_zookeeperHostText.getText();
+    }
+    if (!Const.isEmpty(m_zookeeperPortText.getText())) {
+      port =  m_zookeeperPortText.getText();
+    }
+    return host + ":" + port;
   }
 }
