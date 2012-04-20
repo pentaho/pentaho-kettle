@@ -241,7 +241,7 @@
            <method>none</method>
            <schema_name/>
            </partitioning>
-<send_true_to>Dummy (do nothing)</send_true_to>
+<send_true_to/>
 <send_false_to/>
     <compare>
 <condition>
