@@ -167,6 +167,9 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 
     private Label wlSocketTimeOut;
     private TextVar wSocketTimeOut;
+
+    private Label wlCloseIdleConnectionsTime;
+    private TextVar wCloseIdleConnectionsTime;
     
 	public HTTPPOSTDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
@@ -457,7 +460,23 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
         fdSocketTimeOut.right = new FormAttachment(100, 0);
         wSocketTimeOut.setLayoutData(fdSocketTimeOut);
 
-
+        wlCloseIdleConnectionsTime = new Label(gSettings, SWT.RIGHT);
+        wlCloseIdleConnectionsTime.setText(BaseMessages.getString(PKG, "HTTPPOSTDialog.CloseIdleConnectionsTime.Label")); //$NON-NLS-1$
+        props.setLook(wlCloseIdleConnectionsTime);
+        FormData fdlCloseIdleConnectionsTime = new FormData();
+        fdlCloseIdleConnectionsTime.top = new FormAttachment(wSocketTimeOut, margin);
+        fdlCloseIdleConnectionsTime.left = new FormAttachment(0, 0);
+        fdlCloseIdleConnectionsTime.right = new FormAttachment(middle, -margin);
+        wlCloseIdleConnectionsTime.setLayoutData(fdlCloseIdleConnectionsTime);
+        wCloseIdleConnectionsTime = new TextVar(transMeta, gSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wCloseIdleConnectionsTime.addModifyListener(lsMod);
+        wCloseIdleConnectionsTime.setToolTipText(BaseMessages.getString(PKG, "HTTPPOSTDialog.CloseIdleConnectionsTime.Tooltip")); //$NON-NLS-1$
+        props.setLook(wCloseIdleConnectionsTime);
+        FormData fdCloseIdleConnectionsTime = new FormData();
+        fdCloseIdleConnectionsTime.top = new FormAttachment(wSocketTimeOut, margin);
+        fdCloseIdleConnectionsTime.left = new FormAttachment(middle, 0);
+        fdCloseIdleConnectionsTime.right = new FormAttachment(100, 0);
+        wCloseIdleConnectionsTime.setLayoutData(fdCloseIdleConnectionsTime);
         
         FormData fdSettings = new FormData();
         fdSettings.left = new FormAttachment(0, 0);
@@ -981,6 +1000,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 		
 	    wSocketTimeOut.setText(Const.NVL(input.getSocketTimeout(), ""));
 	    wConnectionTimeOut.setText(Const.NVL(input.getConnectionTimeout(), ""));
+	    wCloseIdleConnectionsTime.setText(Const.NVL(input.getCloseIdleConnectionsTime(), ""));
 	    
 		wFields.setRowNums();
 		wFields.optWidth(true);
@@ -1036,6 +1056,7 @@ public class HTTPPOSTDialog extends BaseStepDialog implements StepDialogInterfac
 		input.setProxyPort(wProxyPort.getText());
 		input.setSocketTimeout(wSocketTimeOut.getText());
 		input.setConnectionTimeout(wConnectionTimeOut.getText());
+		input.setCloseIdleConnectionsTime(wCloseIdleConnectionsTime.getText());
 		
 		stepname = wStepname.getText(); // return value
 

@@ -267,6 +267,7 @@ public class HTTPPOST extends BaseStep implements StepInterface
             	if(inputStreamReader!=null) inputStreamReader.close(); 
                 // Release current connection to the connection pool once you are done
             	post.releaseConnection();
+            	if(data.realcloseIdleConnectionsTime>-1)HTTPPOSTclient.getHttpConnectionManager().closeIdleConnections(data.realcloseIdleConnectionsTime);
             }
             return newRow;
         }
@@ -463,6 +464,7 @@ public class HTTPPOST extends BaseStep implements StepInterface
 			
 			data.realSocketTimeout= Const.toInt(environmentSubstitute(meta.getSocketTimeout()), -1);
 			data.realConnectionTimeout= Const.toInt(environmentSubstitute(meta.getSocketTimeout()), -1);
+			data.realcloseIdleConnectionsTime= Const.toInt(environmentSubstitute(meta.getCloseIdleConnectionsTime()), -1);
 			
 		    return true;
 		}

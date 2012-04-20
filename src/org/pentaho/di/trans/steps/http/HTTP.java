@@ -213,6 +213,7 @@ public class HTTP extends BaseStep implements StepInterface
             	if(inputStreamReader!=null) inputStreamReader.close(); 
                 // Release current connection to the connection pool once you are done
                 method.releaseConnection();
+            	if(data.realcloseIdleConnectionsTime>-1)httpclient.getHttpConnectionManager().closeIdleConnections(data.realcloseIdleConnectionsTime);
             }
             return newRow;
         }

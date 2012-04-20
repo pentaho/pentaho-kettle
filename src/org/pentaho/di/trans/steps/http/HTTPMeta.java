@@ -66,8 +66,12 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
 	// the timeout until a connection is established (milliseconds)
 	public static final int DEFAULT_CONNECTION_TIMEOUT=10000;
 	
+	// the time to wait till a connection is closed (milliseconds)? -1 is no not close.
+	public static final int DEFAULT_CLOSE_CONNECTIONS_TIME=-1;
+	
 	private String socketTimeout;
 	private String connectionTimeout;
+	private String closeIdleConnectionsTime;
 	
     /** URL / service to be called */
     private String  url;
@@ -124,7 +128,22 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
         this.connectionTimeout = connectionTimeout;
     }
 
+
+    /**
+     * @return Returns the closeIdleConnectionsTime.
+     */
+    public String getCloseIdleConnectionsTime()
+    {
+        return closeIdleConnectionsTime;
+    }
     
+    /**
+     * @param connectionTimeout The connectionTimeout to set.
+     */
+    public void setCloseIdleConnectionsTime(String closeIdleConnectionsTime)
+    {
+        this.closeIdleConnectionsTime = closeIdleConnectionsTime;
+    }
     
     /**
      * @return Returns the socketTimeout.
@@ -301,6 +320,7 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
     {
         socketTimeout= String.valueOf(DEFAULT_SOCKET_TIMEOUT);
         connectionTimeout= String.valueOf(DEFAULT_CONNECTION_TIMEOUT);
+        closeIdleConnectionsTime= String.valueOf(DEFAULT_CLOSE_CONNECTIONS_TIME);
         int i;
         int nrargs;
         int nrquery;
@@ -363,6 +383,7 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    " + XMLHandler.addTagValue("proxyPort", proxyPort));
         retval.append("    " + XMLHandler.addTagValue("socketTimeout", socketTimeout));
         retval.append("    " + XMLHandler.addTagValue("connectionTimeout", connectionTimeout));
+        retval.append("    " + XMLHandler.addTagValue("closeIdleConnectionsTime", closeIdleConnectionsTime));
         
         retval.append("    <lookup>").append(Const.CR); //$NON-NLS-1$
 
@@ -409,6 +430,7 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
             
             socketTimeout = XMLHandler.getTagValue(stepnode, "socketTimeout");
             connectionTimeout = XMLHandler.getTagValue(stepnode, "connectionTimeout");
+            closeIdleConnectionsTime = XMLHandler.getTagValue(stepnode, "closeIdleConnectionsTime");
             
             
             Node lookup = XMLHandler.getSubNode(stepnode, "lookup"); //$NON-NLS-1$
@@ -456,6 +478,7 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
             proxyPort = rep.getStepAttributeString(id_step, "proxyPort");
             socketTimeout = rep.getStepAttributeString(id_step, "socketTimeout");
             connectionTimeout = rep.getStepAttributeString(id_step, "connectionTimeout");
+            closeIdleConnectionsTime = rep.getStepAttributeString(id_step, "closeIdleConnectionsTime");
             
             
             int nrargs = rep.countNrStepAttributes(id_step, "arg_name"); //$NON-NLS-1$
@@ -498,6 +521,7 @@ public class HTTPMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "proxyPort",   proxyPort);
 			rep.saveStepAttribute(id_transformation, id_step, "socketTimeout",   socketTimeout);
 			rep.saveStepAttribute(id_transformation, id_step, "connectionTimeout",   connectionTimeout);
+			rep.saveStepAttribute(id_transformation, id_step, "closeIdleConnectionsTime",   closeIdleConnectionsTime);
 			
             for (int i = 0; i < argumentField.length; i++)
             {

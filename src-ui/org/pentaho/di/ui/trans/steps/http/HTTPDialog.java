@@ -150,6 +150,9 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
     private Label wlSocketTimeOut;
     private TextVar wSocketTimeOut;
 
+    private Label wlCloseIdleConnectionsTime;
+    private TextVar wCloseIdleConnectionsTime;
+
 	public HTTPDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
 		super(parent, (BaseStepMeta)in, transMeta, sname);
@@ -396,6 +399,23 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
         wSocketTimeOut.setLayoutData(fdSocketTimeOut);
 
 
+        wlCloseIdleConnectionsTime = new Label(gSettings, SWT.RIGHT);
+        wlCloseIdleConnectionsTime.setText(BaseMessages.getString(PKG, "HTTPDialog.CloseIdleConnectionsTime.Label")); //$NON-NLS-1$
+        props.setLook(wlCloseIdleConnectionsTime);
+        FormData fdlCloseIdleConnectionsTime = new FormData();
+        fdlCloseIdleConnectionsTime.top = new FormAttachment(wSocketTimeOut, margin);
+        fdlCloseIdleConnectionsTime.left = new FormAttachment(0, 0);
+        fdlCloseIdleConnectionsTime.right = new FormAttachment(middle, -margin);
+        wlCloseIdleConnectionsTime.setLayoutData(fdlCloseIdleConnectionsTime);
+        wCloseIdleConnectionsTime = new TextVar(transMeta, gSettings, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wCloseIdleConnectionsTime.addModifyListener(lsMod);
+        wCloseIdleConnectionsTime.setToolTipText(BaseMessages.getString(PKG, "HTTPDialog.CloseIdleConnectionsTime.Tooltip")); //$NON-NLS-1$
+        props.setLook(wCloseIdleConnectionsTime);
+        FormData fdCloseIdleConnectionsTime = new FormData();
+        fdCloseIdleConnectionsTime.top = new FormAttachment(wSocketTimeOut, margin);
+        fdCloseIdleConnectionsTime.left = new FormAttachment(middle, 0);
+        fdCloseIdleConnectionsTime.right = new FormAttachment(100, 0);
+        wCloseIdleConnectionsTime.setLayoutData(fdCloseIdleConnectionsTime);
         
         
         
@@ -889,6 +909,7 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		}
 	    wSocketTimeOut.setText(Const.NVL(input.getSocketTimeout(), ""));
 	    wConnectionTimeOut.setText(Const.NVL(input.getConnectionTimeout(), ""));
+	    wCloseIdleConnectionsTime.setText(Const.NVL(input.getCloseIdleConnectionsTime(), ""));
 	    
 		wUrl.setText(Const.NVL(input.getUrl(), ""));
         wUrlInField.setSelection(input.isUrlInField());
@@ -955,6 +976,7 @@ public class HTTPDialog extends BaseStepDialog implements StepDialogInterface
 		input.setResponseTimeFieldName( wResponseTime.getText() );
 		input.setSocketTimeout(wSocketTimeOut.getText());
 		input.setConnectionTimeout(wConnectionTimeOut.getText());
+		input.setCloseIdleConnectionsTime(wCloseIdleConnectionsTime.getText());
 		
 		stepname = wStepname.getText(); // return value
 
