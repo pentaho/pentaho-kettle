@@ -334,7 +334,11 @@ public class HBaseValueMeta extends ValueMeta {
         "long value is negative.");
       }
       result = encodeKeyValue(new Long(keyLong), keyType);
-      break;      
+      break;
+      
+    case BINARY:
+      byte[] keyBinary = keyMeta.getBinary(keyValue);
+      result = encodeKeyValue(keyBinary, keyType);
     }
     
     if (result == null) {
@@ -358,6 +362,10 @@ public class HBaseValueMeta extends ValueMeta {
     
     if (keyType == Mapping.KeyType.STRING) {
       return encodeKeyValue((String)keyValue, keyType);
+    }
+    
+    if (keyType == Mapping.KeyType.BINARY && keyValue instanceof byte[]) {
+      return (byte[]) keyValue;
     }
     
     if (keyType == Mapping.KeyType.UNSIGNED_LONG || 
@@ -444,6 +452,15 @@ public class HBaseValueMeta extends ValueMeta {
         return Bytes.toBytes(keyValue);
       }
     }
+    
+    if (keyType == Mapping.KeyType.BINARY) {
+      if (Const.isEmpty(keyValue)) {
+        return new byte[1]; // zero
+      }
+      
+      // assume we've been given a hex encoded string
+      return Bytes.toBytesBinary(keyValue);
+    }
 
     if (keyType == Mapping.KeyType.UNSIGNED_LONG || 
         keyType == Mapping.KeyType.UNSIGNED_DATE) {
@@ -514,6 +531,10 @@ public class HBaseValueMeta extends ValueMeta {
 
     if (rawKey == null) {
       return null;
+    }
+    
+    if (keyType == Mapping.KeyType.BINARY) {
+      return rawKey; // raw bytes for the key
     }
 
     if (keyType == Mapping.KeyType.STRING) {

@@ -343,7 +343,7 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
               "Double", "Boolean", "Date", "BigNumber", "Serializable", "Binary"};
         } else {
           comboValues = new String[] {"String", "Integer", "UnsignedInteger", 
-              "Long", "UnsignedLong", "Date", "UnsignedDate"};
+              "Long", "UnsignedLong", "Date", "UnsignedDate", "Binary"};
         }
         
         return comboValues;

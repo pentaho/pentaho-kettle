@@ -278,8 +278,16 @@ public class HBaseOutput extends BaseStep implements StepInterface {
         HBaseValueMeta hbaseColMeta = m_columnsMappedByAlias.get(current.getName());
         String columnFamily = hbaseColMeta.getColumnFamily();
         String columnName = hbaseColMeta.getColumnName();
+        
+        boolean binaryColName = false;
+        if (columnName.startsWith("@@@binary@@@")) {
+          // assume hex encoded column name
+          columnName = columnName.replace("@@@binary@@@", "");
+          binaryColName = true;
+        }
         byte[] encoded = HBaseValueMeta.encodeColumnValue(r[i], current, hbaseColMeta);
-        p.add(Bytes.toBytes(columnFamily), Bytes.toBytes(columnName), encoded);        
+        p.add(Bytes.toBytes(columnFamily), (binaryColName) ? 
+            Bytes.toBytesBinary(columnName) : Bytes.toBytes(columnName), encoded);        
       }
     }
     

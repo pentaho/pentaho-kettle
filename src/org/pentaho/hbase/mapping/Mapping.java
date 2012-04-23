@@ -83,7 +83,7 @@ public class Mapping {
     // >= the epoch)
     STRING("String"), INTEGER("Integer"), UNSIGNED_INTEGER("UnsignedInteger"), 
     LONG("Long"), UNSIGNED_LONG("UnsignedLong"), 
-    DATE("Date"), UNSIGNED_DATE("UnsignedDate");    
+    DATE("Date"), UNSIGNED_DATE("UnsignedDate"), BINARY("Binary");    
     
     private final String m_stringVal;
     

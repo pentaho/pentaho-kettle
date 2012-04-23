@@ -1314,8 +1314,13 @@ public class HBaseInputDialog extends BaseStepDialog implements
             item.setText(5, ValueMeta.getTypeDesc(ValueMetaInterface.TYPE_DATE));            
           } else if (current.getKeyType() == Mapping.KeyType.STRING) {
             item.setText(5, ValueMeta.getTypeDesc(ValueMetaInterface.TYPE_STRING));
-          } else {
+          } else if (current.getKeyType() == Mapping.KeyType.INTEGER ||
+              current.getKeyType() == Mapping.KeyType.UNSIGNED_INTEGER ||
+              current.getKeyType() == Mapping.KeyType.UNSIGNED_LONG || 
+              current.getKeyType() == Mapping.KeyType.LONG) {
             item.setText(5, ValueMeta.getTypeDesc(ValueMetaInterface.TYPE_INTEGER));
+          } else {
+            item.setText(5, ValueMeta.getTypeDesc(ValueMetaInterface.TYPE_BINARY));
           }
   //        keyDone = true;
           // get all the fields from the mapping

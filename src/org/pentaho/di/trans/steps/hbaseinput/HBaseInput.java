@@ -204,7 +204,11 @@ public class HBaseInput extends BaseStep implements StepInterface {
         byte[] keyLowerBound = null;
         String keyStartS = environmentSubstitute(m_meta.getKeyStartValue());
         String convM = dateOrNumberConversionMaskForKey;
-        if (m_tableMapping.getKeyType() != Mapping.KeyType.STRING) {
+        
+        if (m_tableMapping.getKeyType() == Mapping.KeyType.BINARY) {
+          // assume we have a hex encoded string
+          keyLowerBound = HBaseValueMeta.encodeKeyValue(keyStartS, m_tableMapping.getKeyType());
+        } else if (m_tableMapping.getKeyType() != Mapping.KeyType.STRING) {
           // allow a conversion mask in the start key field to override any specified for
           // the key in the user specified fields
           String[] parts = keyStartS.split("@");
@@ -257,7 +261,11 @@ public class HBaseInput extends BaseStep implements StepInterface {
           byte[] keyUpperBound = null;
           String keyStopS = environmentSubstitute(m_meta.getKeyStopValue());
           convM = dateOrNumberConversionMaskForKey;
-          if (m_tableMapping.getKeyType() != Mapping.KeyType.STRING) {
+          
+          if (m_tableMapping.getKeyType() == Mapping.KeyType.BINARY) {
+            // assume we have a hex encoded string
+            keyUpperBound = HBaseValueMeta.encodeKeyValue(keyStopS, m_tableMapping.getKeyType());
+          } else if (m_tableMapping.getKeyType() != Mapping.KeyType.STRING) {
             
             // allow a conversion mask in the stop key field to override any specified for
             // the key in the user specified fields
@@ -322,7 +330,15 @@ public class HBaseInput extends BaseStep implements StepInterface {
           if (!currentCol.isKey()) {
             String colFamilyName = currentCol.getColumnFamily();
             String qualifier = currentCol.getColumnName();
-            s.addColumn(Bytes.toBytes(colFamilyName), Bytes.toBytes(qualifier));
+            
+            boolean binaryColName = false;
+            if (qualifier.startsWith("@@@binary@@@")) {              
+              qualifier = qualifier.replace("@@@binary@@@", "");
+              binaryColName = true;
+            }
+            
+            s.addColumn(Bytes.toBytes(colFamilyName), (binaryColName) ? 
+                Bytes.toBytesBinary(qualifier) : Bytes.toBytes(qualifier));
           }
         }
       } else {
@@ -581,9 +597,23 @@ public class HBaseInput extends BaseStep implements StepInterface {
         } else {
           String colFamilyName = currentCol.getColumnFamily();
           String qualifier = currentCol.getColumnName();
+          
+          System.out.println("Processing qualifier: " + qualifier);
+          
+          boolean binaryColName = false;
+          if (qualifier.startsWith("@@@binary@@@")) {
+            qualifier = qualifier.replace("@@@binary@@@", "");
+            // assume hex encoded
+            binaryColName = true;
+          }
 
           KeyValue kv = r.getColumnLatest(Bytes.toBytes(colFamilyName), 
-              Bytes.toBytes(qualifier));
+              (binaryColName) ? Bytes.toBytesBinary(qualifier) : Bytes.toBytes(qualifier));
+          
+          if (kv == null) {
+            System.out.println("Unable to look up qualifier " + qualifier);
+          }
+          
           int outputIndex = m_data.getOutputRowMeta().indexOfValue(currentCol.getAlias());
           if (outputIndex < 0) {
             throw new KettleException("HBase column \"" + currentCol.getAlias() 
@@ -610,9 +640,17 @@ public class HBaseInput extends BaseStep implements StepInterface {
         HBaseValueMeta currentCol = m_columnsMappedByAlias.get(name);
         String colFamilyName = currentCol.getColumnFamily();
         String qualifier = currentCol.getColumnName();
+        
+        boolean binaryColName = false;
+        if (qualifier.startsWith("@@@binary@@@")) {
+          qualifier = qualifier.replace("@@@binary@@@", "");
+          // assume hex encoded
+          binaryColName = true;
+        }
 
         KeyValue kv = r.getColumnLatest(Bytes.toBytes(colFamilyName), 
-            Bytes.toBytes(qualifier));
+            (binaryColName) ? Bytes.toBytesBinary(qualifier) : Bytes.toBytes(qualifier));        
+        
         int outputIndex = m_data.getOutputRowMeta().indexOfValue(name);
         if (outputIndex < 0) {
           throw new KettleException("HBase column \"" + name + "\" doesn't seem " +
