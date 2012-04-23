@@ -149,7 +149,7 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
     allocate(0);
     sqlPath = "/opt/Ingres/IngresVW/ingres/bin/sql";
     delimiter = "|";
-    fifoFileName = "${java.io.tmpdir}/fifoVW";
+    fifoFileName = "${java.io.tmpdir}/fifoVW-${Internal.Step.CopyNr}";
     useStandardConversion = false;
     continueOnError = false;
     useDynamicVNode = false;
