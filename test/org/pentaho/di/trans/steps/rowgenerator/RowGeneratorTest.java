@@ -171,6 +171,7 @@ public class RowGeneratorTest extends TestCase
         String fieldFormat[] = { "", "", ""  };
         String group[]       = { "", "", ""  };
         String decimal[]     = { "", "", ""  };
+        String currency[]     = { "", "", ""  };
         int    intDummies[]  = { -1, -1, -1 };
         boolean    setEmptystring[]  = { false, false, false};
                 
@@ -184,6 +185,7 @@ public class RowGeneratorTest extends TestCase
         rm.setFieldFormat(fieldFormat);
         rm.setGroup(group);
         rm.setDecimal(decimal);
+        rm.setCurrency(currency);
         rm.setEmptyString(setEmptystring);
 
         // 
