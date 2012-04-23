@@ -353,7 +353,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
         // Allocate a buffer
         //
         data.fileChannel = data.fifoOpener.getFileChannel();
-        data.byteBuffer = ByteBuffer.allocateDirect(data.bufferSize);
+        data.byteBuffer = ByteBuffer.allocate(data.bufferSize);
       }
 
       // check if SQL process is still running before processing row
@@ -602,7 +602,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
     public void run() {
       try {
 
-        fileOutputStream = new FileOutputStream(this.fifoName, true);
+        fileOutputStream = new FileOutputStream(this.fifoName);
         fileChannel = fileOutputStream.getChannel();
       } catch (Exception ex) {
         this.ex = ex;
