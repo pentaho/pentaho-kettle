@@ -514,15 +514,12 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface
   private void write(byte[] content) throws IOException {
     if (data.fileChannel==null) {
       data.fileChannel = data.fifoOpener.getFileChannel();
-      data.byteBuffer = ByteBuffer.allocateDirect(5000);
+      data.byteBuffer = ByteBuffer.allocateDirect(50000);
     }
 
-    if (data.byteBuffer.position()+content.length<data.byteBuffer.capacity()) {
-      data.byteBuffer.put(content);
-    } else {
-      data.fileChannel.write(data.byteBuffer);
-      data.byteBuffer.clear();
-    }    
+    data.byteBuffer.put(content);
+    data.fileChannel.write(data.byteBuffer);
+    data.byteBuffer.clear();    
   }
 
   public boolean init(StepMetaInterface smi, StepDataInterface sdi)
