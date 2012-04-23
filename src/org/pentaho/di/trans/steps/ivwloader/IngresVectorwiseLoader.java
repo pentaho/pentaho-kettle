@@ -22,9 +22,11 @@
 
 package org.pentaho.di.trans.steps.ivwloader;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
@@ -229,7 +231,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface
         // Ready to start writing rows to the FIFO file now...
         //
       logDetailed("Opening fifo file " + data.fifoFilename + " for writing.");
-        data.fifoOpener = new FifoOpener(data.fifoFilename, 1000);
+        data.fifoOpener = new FifoOpener(data.fifoFilename);
         data.fifoOpener.start();
   }
   
@@ -267,9 +269,9 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface
           catch (Exception e){
               throw e;
           }
+          
+          data.fileChannel = data.fifoOpener.getFileChannel();
       }
-      
-      data.fifoStream = data.fifoOpener.getFifoStream();
       
       logDetailed("Opened fifo file " + data.fifoFilename + " for writing.");
   }
@@ -400,8 +402,8 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface
   {
     // Close the fifo file...
     //
-    data.fifoStream.close();
-    data.fifoStream=null;
+    data.fifoOpener.close();
+    data.fileChannel=null;
     
         // wait for the INSERT statement to finish and check for any
         // error and/or warning...
@@ -434,7 +436,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface
         if (i>0) {
             // Write a separator 
             //
-          data.fifoStream.write(delimiter);
+          write(delimiter);
         }
         
           int index = data.keynrs[i];
@@ -447,7 +449,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface
           } else {
                   if (valueMeta.isStorageBinaryString()) {
                     byte[] value = valueMeta.getBinaryString(valueData);
-                    data.fifoStream.write( value );
+                    write( value );
                   } else {
                   if(meta.isUseStandardConversion()){
                     if(valueMeta.isDate()){
@@ -482,7 +484,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface
                         string = '"'+string+'"';
                       }
                       byte[] value = data.getBytes( string );
-                      data.fifoStream.write(value);
+                      write(value);
                     }
                   }
                 }
@@ -490,7 +492,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface
       
       // finally write a newline
       //
-        data.fifoStream.write(data.newline);
+        write(data.newline);
       }
       catch(Exception e)
       { 
@@ -506,6 +508,12 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface
         throw new KettleException("Error serializing rows of data to the fifo file", e);
       }
     
+  }
+
+  private void write(byte[] content) throws IOException {
+    ByteBuffer buf = ByteBuffer.allocateDirect(content.length);
+    buf.put(content);
+    data.fileChannel.write(buf);
   }
 
   public boolean init(StepMetaInterface smi, StepDataInterface sdi)
@@ -528,6 +536,8 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface
       
       data.encoding = environmentSubstitute(meta.getEncoding());
       data.isEncoding = !Const.isEmpty(environmentSubstitute(meta.getEncoding()));
+      
+      data.byteBuffer  = ByteBuffer.allocateDirect(10000);
       
       return true;
     }
@@ -563,23 +573,22 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface
   //
   public class FifoOpener extends Thread
   {
-    private BufferedOutputStream fifoStream = null;
+    private FileOutputStream fileOutputStream = null;
+    private FileChannel fileChannel = null;
     private Exception ex;
     private String fifoName;
-    private int size;
          
-    public FifoOpener(String fifoName, int size)
+    public FifoOpener(String fifoName)
         {
       this.fifoName = fifoName;
-      this.size = size;
         }
     
     public void run()
       {
       try{
         
-        FileOutputStream fos = new FileOutputStream( this.fifoName );
-        fifoStream = new BufferedOutputStream(fos , this.size );
+        fileOutputStream = new FileOutputStream( this.fifoName );
+        fileChannel = fileOutputStream.getChannel();
       } catch (Exception ex) {
               this.ex = ex;
             }
@@ -595,8 +604,15 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface
             }
         }
     
-    public BufferedOutputStream getFifoStream(){
-      return fifoStream;
+    public FileChannel getFileChannel(){
+      return fileChannel;
+    }
+    
+    public void close() throws IOException {
+      if (fileChannel!=null && fileOutputStream!=null) {
+        fileChannel.close();
+        fileOutputStream.close();
+      }
     }
   }
   
@@ -639,8 +655,8 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface
    // Close the output streams if still needed.
       //
       try {
-        if (data.fifoStream!=null) {
-          data.fifoStream.close();
+        if (data.fifoOpener!=null) {
+          data.fifoOpener.close();
         }
   
           // Stop the SQL execution thread

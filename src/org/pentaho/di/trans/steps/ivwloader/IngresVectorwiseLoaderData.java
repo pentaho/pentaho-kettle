@@ -24,6 +24,8 @@ package org.pentaho.di.trans.steps.ivwloader;
 
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 
 import org.pentaho.di.core.util.StreamLogger;
 import org.pentaho.di.trans.step.BaseStepData;
@@ -51,7 +53,7 @@ public class IngresVectorwiseLoaderData extends BaseStepData implements StepData
 
 	public String fifoFilename;
 
-	public OutputStream fifoStream;
+	public FileChannel fileChannel;
 	
 	public IngresVectorwiseLoader.SqlRunner sqlRunner;
 
@@ -66,6 +68,9 @@ public class IngresVectorwiseLoaderData extends BaseStepData implements StepData
     public boolean isEncoding;
 
     public String encoding;
+
+    public ByteBuffer byteBuffer;
+
 
 	/**
 	 *  Default constructor.
