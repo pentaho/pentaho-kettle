@@ -413,10 +413,10 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
       //
       // The data format required is essentially "value|value|value|value"
       // new feature implemented
-      // "use SSV which requires the fomat to be '"value";"value","value"'
+      // "use SSV which requires the format to be '"value";"value","value"'
       byte[] delimiter;
       if (meta.isUseSSV()) {
-        delimiter = data.getBytes(";");
+        delimiter = data.semicolon;
       } else {
         delimiter = data.separator;
       }
@@ -541,6 +541,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
       }
 
       data.newline = data.getBytes("\n");
+      data.semicolon = data.getBytes(";");
 
       // Schema-table combination...
       data.schemaTable = meta.getDatabaseMeta().getQuotedSchemaTableCombination(null, environmentSubstitute(meta.getTablename()));
