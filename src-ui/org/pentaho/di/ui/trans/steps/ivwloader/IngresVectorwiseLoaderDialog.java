@@ -77,6 +77,7 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
   private TextVar   wDelimiter;
   private TextVar   wCharSet;
   private TextVar   wErrorFile;
+  private TextVar   wBufferSize;
   private Button  wContinueOnError;
   private Button  wUseStandardConversion;
   private Button  wUseDynamicVNode;
@@ -275,7 +276,8 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
     wEscapeSpecialChars = addStandardCheckBox(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.EscapeSpecialChars.Label"), wUseSSV);
     wDelimiter = addStandardTextVar(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.Delimiter.Label"), wUseSSV);
     wCharSet = addStandardTextVar(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.Charset.Label"), wDelimiter);
-    wUseStandardConversion = addStandardCheckBox(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.UseStandardConversion.Label"), wCharSet);
+    wBufferSize = addStandardTextVar(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.BufferSize.Label"), wCharSet);
+    wUseStandardConversion = addStandardCheckBox(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.UseStandardConversion.Label"), wBufferSize);
     wUseStandardConversion.addSelectionListener(lsSelMod);
     wContinueOnError = addStandardCheckBox(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.ContinueOnError.Label"), wUseStandardConversion);
     wContinueOnError.addSelectionListener(lsSelMod);
@@ -468,6 +470,7 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
     }
     wDelimiter.setText(Const.NVL(input.getDelimiter(), ""));   //$NON-NLS-1$
     wCharSet.setText(Const.NVL(input.getEncoding(), ""));   //$NON-NLS-1$
+    wBufferSize.setText(Const.NVL(input.getBufferSize(), ""));   //$NON-NLS-1$
     
     wUseStandardConversion.setSelection(input.isUseStandardConversion());
     wUseDynamicVNode.setSelection(input.isUseDynamicVNode());
@@ -501,6 +504,7 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
     input.setEscapingSpecialCharacters(wEscapeSpecialChars.getSelection());
     input.setDelimiter( wDelimiter.getText() );
     input.setEncoding( wCharSet.getText() );
+    input.setBufferSize( wBufferSize.getText() );
     input.setUseStandardConversion(wUseStandardConversion.getSelection());
     input.setContinueOnError(wContinueOnError.getSelection());
     input.setErrorFileName(wErrorFile.getText());

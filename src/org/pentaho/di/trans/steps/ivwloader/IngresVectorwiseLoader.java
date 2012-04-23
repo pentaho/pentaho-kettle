@@ -353,7 +353,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
         // Allocate a buffer
         //
         data.fileChannel = data.fifoOpener.getFileChannel();
-        data.byteBuffer = ByteBuffer.allocateDirect(50000);
+        data.byteBuffer = ByteBuffer.allocate(data.bufferSize);
       }
 
       // check if SQL process is still running before processing row
@@ -451,9 +451,10 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
             String string = valueMeta.getString(valueData);
             if (string != null) {
               // support of SSV feature
+              //
               if (meta.isUseSSV()) {
                 // replace " in string fields
-/*
+                //
                 if (meta.isEscapingSpecialCharacters() && valueMeta.isString()) {
 
                   StringBuilder builder = new StringBuilder(string);
@@ -470,7 +471,6 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
                   }
                   string = builder.toString();
                }
-*/
 
                 string = '"' + string + '"';
               }
@@ -549,6 +549,9 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
       data.isEncoding = !Const.isEmpty(environmentSubstitute(meta.getEncoding()));
 
       data.byteBuffer = null;
+      
+      String bufferSizeString = environmentSubstitute(meta.getBufferSize());
+      data.bufferSize = Const.isEmpty(bufferSizeString) ? 5000 : Const.toInt(bufferSizeString, 5000);
 
       return true;
     }

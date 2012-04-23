@@ -71,6 +71,8 @@ public class IngresVectorwiseLoaderData extends BaseStepData implements StepData
 
     public ByteBuffer byteBuffer;
 
+    public int bufferSize;
+
 
 	/**
 	 *  Default constructor.
