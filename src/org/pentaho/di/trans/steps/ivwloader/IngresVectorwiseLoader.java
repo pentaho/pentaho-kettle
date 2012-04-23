@@ -515,9 +515,10 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface
 
     if (data.byteBuffer!=null) {
       if (data.byteBuffer.capacity()<content.length) {
-        data.byteBuffer.limit(content.length);
+        data.byteBuffer = ByteBuffer.allocateDirect(content.length);
+      } else {
+        data.byteBuffer.clear();
       }
-      data.byteBuffer.clear();
     } else {
       data.byteBuffer = ByteBuffer.allocateDirect(content.length);
     }
