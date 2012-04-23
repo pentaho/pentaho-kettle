@@ -460,16 +460,25 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface
                     String string = valueMeta.getString(valueData); 
                     if (string!=null) {
                       // support of SSV feature
-                      if(meta.isUseSSV()){
+                      if(meta.isUseSSV()) {
                         //replace " in string fields
-                        if(valueMeta.isString()){
-                          string = string.replaceAll("\"","\\\\\"");
-                          string = string.replaceAll("\\n", "\\\n");
-                          string = string.replaceAll("\\r", "\\\r");
-                        }else{
-                          // add enclosure to String
-                         // string = "\""+string+"\"";
+                        if(meta.isEscapingSpecialCharacters() && valueMeta.isString()) {
+                          
+                          StringBuilder builder = new StringBuilder(string);
+                          String[] escapeStrings = new String[] { "\"", "\n", "\r", };
+                          String[] replaceStrings = new String[] { "\\\"", "\\n", "\\r", };
+                          for (int e=0;e<escapeStrings.length;e++) {
+                            String chr = escapeStrings[e];
+                            String rep = replaceStrings[e];
+                            int idx = builder.indexOf(chr, 0);
+                            while (idx>0) {
+                              builder.replace(idx, idx+chr.length(), rep);
+                              idx = builder.indexOf(chr, idx+rep.length());
+                            }
+                          }
+                          string = builder.toString();
                         }
+                        
                         string = '"'+string+'"';
                       }
                       byte[] value = data.getBytes( string );

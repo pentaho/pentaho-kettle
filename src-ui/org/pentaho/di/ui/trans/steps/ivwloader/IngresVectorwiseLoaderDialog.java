@@ -81,6 +81,7 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
   private Button  wUseStandardConversion;
   private Button  wUseDynamicVNode;
   private Button  wUseSSV;
+  private Button  wEscapeSpecialChars;
 
   /**
    * List of ColumnInfo that should have the field names of the selected database table
@@ -271,6 +272,7 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
                 }
             }
         );
+    wEscapeSpecialChars = addStandardCheckBox(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.EscapeSpecialChars.Label"), wUseSSV);
     wDelimiter = addStandardTextVar(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.Delimiter.Label"), wUseSSV);
     wCharSet = addStandardTextVar(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.Charset.Label"), wDelimiter);
     wUseStandardConversion = addStandardCheckBox(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.UseStandardConversion.Label"), wCharSet);
@@ -460,6 +462,7 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
     wFifoFile.setText(Const.NVL(input.getFifoFileName(), ""));
     wSqlPath.setText(Const.NVL(input.getSqlPath(), ""));
     wUseSSV.setSelection(input.isUseSSV());
+    wEscapeSpecialChars.setSelection(input.isEscapingSpecialCharacters());
     if(input.isUseSSV()){
       wDelimiter.setEnabled(false);
     }
@@ -495,6 +498,7 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
     input.setFifoFileName(wFifoFile.getText());
     input.setSqlPath(wSqlPath.getText());
     input.setUseSSV(wUseSSV.getSelection());
+    input.setEscapingSpecialCharacters(wEscapeSpecialChars.getSelection());
     input.setDelimiter( wDelimiter.getText() );
     input.setEncoding( wCharSet.getText() );
     input.setUseStandardConversion(wUseStandardConversion.getSelection());
