@@ -269,10 +269,8 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface
           catch (Exception e){
               throw e;
           }
-          
-          data.fileChannel = data.fifoOpener.getFileChannel();
       }
-      
+                
       logDetailed("Opened fifo file " + data.fifoFilename + " for writing.");
   }
   
@@ -511,6 +509,10 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface
   }
 
   private void write(byte[] content) throws IOException {
+    if (data.fileChannel==null) {
+      data.fileChannel = data.fifoOpener.getFileChannel();
+    }
+    
     ByteBuffer buf = ByteBuffer.allocateDirect(content.length);
     buf.put(content);
     data.fileChannel.write(buf);
