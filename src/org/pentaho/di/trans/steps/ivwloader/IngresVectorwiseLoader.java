@@ -349,6 +349,11 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
         // execute the client statement...
         //
         execute(meta);
+
+        // Allocate a buffer
+        //
+        data.fileChannel = data.fifoOpener.getFileChannel();
+        data.byteBuffer = ByteBuffer.allocateDirect(50000);
       }
 
       // check if SQL process is still running before processing row
@@ -374,6 +379,14 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
   }
 
   private void closeOutput() throws Exception {
+
+    // Flush the rest of the buffer to disk!
+    //
+    if (data.byteBuffer.position()>0) {
+      data.byteBuffer.flip();
+      data.fileChannel.write(data.byteBuffer);
+    }
+
     // Close the fifo file...
     //
     data.fifoOpener.close();
@@ -440,6 +453,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
               // support of SSV feature
               if (meta.isUseSSV()) {
                 // replace " in string fields
+/*
                 if (meta.isEscapingSpecialCharacters() && valueMeta.isString()) {
 
                   StringBuilder builder = new StringBuilder(string);
@@ -455,10 +469,12 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
                     }
                   }
                   string = builder.toString();
-                }
+               }
+*/
 
                 string = '"' + string + '"';
               }
+
               byte[] value = data.getBytes(string);
               write(value);
             }
@@ -484,14 +500,33 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
   }
 
   private void write(byte[] content) throws IOException {
-    if (data.fileChannel == null) {
-      data.fileChannel = data.fifoOpener.getFileChannel();
-      data.byteBuffer = ByteBuffer.allocateDirect(50000);
-    }
 
-    data.byteBuffer.put(content);
-    data.fileChannel.write(data.byteBuffer);
-    data.byteBuffer.clear();
+    if (content==null || content.length==0) return;
+
+    // If exceptionally we have a block of data larger than the buffer simply dump it to disk!
+    //
+    if (content.length>data.byteBuffer.capacity()) {
+      // It should be exceptional to have a single field containing over 50k data
+      //
+      ByteBuffer buf = ByteBuffer.wrap(content); // slow method!
+      data.byteBuffer.flip();
+      data.fileChannel.write(buf); 
+    } else {
+      // Normal situation, is there capacity in the buffer?
+      //
+      if (data.byteBuffer.remaining()>content.length) {
+        // Yes, there is room: add content to buffer
+        //
+        data.byteBuffer.put(content);
+      } else {
+        // No: empty the buffer to disk
+        //
+        data.byteBuffer.flip();
+        data.fileChannel.write(data.byteBuffer);
+        data.byteBuffer.clear();
+        data.byteBuffer.put(content);
+      }
+    }
   }
 
   public boolean init(StepMetaInterface smi, StepDataInterface sdi) {
