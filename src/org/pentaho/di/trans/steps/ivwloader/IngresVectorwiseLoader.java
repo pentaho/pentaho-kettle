@@ -522,7 +522,6 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface
     } else {
       data.fileChannel.write(data.byteBuffer, 0);
       data.byteBuffer.clear();
-      data.byteBuffer.position(0);
     }    
   }
 
