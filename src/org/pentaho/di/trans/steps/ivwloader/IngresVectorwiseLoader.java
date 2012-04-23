@@ -602,7 +602,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
     public void run() {
       try {
 
-        fileOutputStream = new FileOutputStream(this.fifoName);
+        fileOutputStream = new FileOutputStream(this.fifoName, true);
         fileChannel = fileOutputStream.getChannel();
       } catch (Exception ex) {
         this.ex = ex;
