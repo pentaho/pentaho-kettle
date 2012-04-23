@@ -512,10 +512,18 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface
     if (data.fileChannel==null) {
       data.fileChannel = data.fifoOpener.getFileChannel();
     }
+
+    if (data.byteBuffer!=null) {
+      if (data.byteBuffer.capacity()<content.length) {
+        data.byteBuffer.limit(content.length);
+      }
+      data.byteBuffer.clear();
+    } else {
+      data.byteBuffer = ByteBuffer.allocateDirect(content.length);
+    }
     
-    ByteBuffer buf = ByteBuffer.allocateDirect(content.length);
-    buf.put(content);
-    data.fileChannel.write(buf);
+    data.byteBuffer.put(content);
+    data.fileChannel.write(data.byteBuffer);
   }
 
   public boolean init(StepMetaInterface smi, StepDataInterface sdi)
@@ -539,7 +547,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface
       data.encoding = environmentSubstitute(meta.getEncoding());
       data.isEncoding = !Const.isEmpty(environmentSubstitute(meta.getEncoding()));
       
-      data.byteBuffer  = ByteBuffer.allocateDirect(10000);
+      data.byteBuffer  = null;
       
       return true;
     }
