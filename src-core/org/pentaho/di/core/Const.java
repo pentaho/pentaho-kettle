@@ -77,12 +77,12 @@ public class Const
   /**
    * Release Type
    */
-  public enum ReleaseType {RELEASE_CANDIDATE, MILESTONE, PREVIEW, GA}
+  public enum ReleaseType {RELEASE_CANDIDATE, MILESTONE, PREVIEW, GA, STABLE}
 
   /**
    * The release type of this compilation
    */
-  public static final ReleaseType RELEASE = ReleaseType.GA;
+  public static final ReleaseType RELEASE = ReleaseType.STABLE;
 
 	/**
 	 * Sleep time waiting when buffer is empty (the default)
