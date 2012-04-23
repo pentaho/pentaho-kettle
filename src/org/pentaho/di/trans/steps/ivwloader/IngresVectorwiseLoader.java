@@ -515,8 +515,10 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface
     }
 
     data.byteBuffer.clear();
+    data.byteBuffer.position(0);
+    data.byteBuffer.limit(content.length);
     data.byteBuffer.put(content);
-    data.fileChannel.write(data.byteBuffer);
+    data.fileChannel.write(data.byteBuffer, 0);
   }
 
   public boolean init(StepMetaInterface smi, StepDataInterface sdi)
