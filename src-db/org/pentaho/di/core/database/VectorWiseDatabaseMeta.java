@@ -39,7 +39,7 @@ public class VectorWiseDatabaseMeta extends IngresDatabaseMeta implements Databa
     if (getAccessType() == DatabaseMeta.TYPE_ACCESS_ODBC) {
       return "jdbc:odbc:" + databaseName;
     } else {
-      if (Const.isEmpty(port)) {
+      if (Const.isEmpty(port) || "-1".equals(port)) {
         return "jdbc:ingres://" + hostname + ":VW7/" + databaseName;
       } else {
         return "jdbc:ingres://" + hostname + ":" + port + "/" + databaseName;
