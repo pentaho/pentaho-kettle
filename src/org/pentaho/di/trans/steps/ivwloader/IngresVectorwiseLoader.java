@@ -455,12 +455,11 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
               //
               if (meta.isUseSSV()) {
 
-                StringBuilder builder = new StringBuilder(string);
-
                 // replace " in string fields
                 //
                 if (meta.isEscapingSpecialCharacters() && valueMeta.isString()) {
 
+                  StringBuilder builder = new StringBuilder(string);
                   String[] escapeStrings = new String[] { "\"", "\n", "\r", };
                   String[] replaceStrings = new String[] { "\\\"", "\\n", "\\r", };
                   for (int e = 0; e < escapeStrings.length; e++) {
@@ -474,13 +473,12 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
                   }
                   string = builder.toString();
                 }
-
-                builder.insert(0, "\"").append("\"");
-                string = builder.toString();
+                write(data.doubleQuote);
+                write(data.getBytes(string));
+                write(data.doubleQuote);
+              } else {
+                write(data.getBytes(string));
               }
-
-              byte[] value = data.getBytes(string);
-              write(value);
             }
           }
         }
@@ -546,6 +544,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
 
       data.newline = data.getBytes("\n");
       data.semicolon = data.getBytes(";");
+      data.doubleQuote = data.getBytes("\"");
 
       // Schema-table combination...
       data.schemaTable = meta.getDatabaseMeta().getQuotedSchemaTableCombination(null, environmentSubstitute(meta.getTablename()));
