@@ -398,6 +398,9 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface
 
   private void closeOutput() throws Exception 
   {
+    // Write the last of the byte buffer
+    data.fileChannel.write(data.byteBuffer, 0);
+
     // Close the fifo file...
     //
     data.fifoOpener.close();
@@ -514,11 +517,13 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface
       data.byteBuffer = ByteBuffer.allocateDirect(50000);
     }
 
-    data.byteBuffer.clear();
-    data.byteBuffer.position(0);
-    data.byteBuffer.limit(content.length);
-    data.byteBuffer.put(content);
-    data.fileChannel.write(data.byteBuffer, 0);
+    if (data.byteBuffer.position()+content.length<data.byteBuffer.limit()) {
+      data.byteBuffer.put(content);
+    } else {
+      data.fileChannel.write(data.byteBuffer, 0);
+      data.byteBuffer.clear();
+      data.byteBuffer.position(0);
+    }    
   }
 
   public boolean init(StepMetaInterface smi, StepDataInterface sdi)
