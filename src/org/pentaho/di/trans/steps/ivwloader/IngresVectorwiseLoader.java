@@ -353,12 +353,13 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
         // Allocate a buffer
         //
         data.fileChannel = data.fifoOpener.getFileChannel();
-        data.byteBuffer = ByteBuffer.allocate(data.bufferSize);
+        data.byteBuffer = ByteBuffer.allocateDirect(data.bufferSize);
       }
 
       // check if SQL process is still running before processing row
-      if (!checkSqlProcessRunning(data.sqlProcess))
+      if (!checkSqlProcessRunning(data.sqlProcess)) {
         throw new Exception("Ingres SQL process has stopped");
+      }
 
       writeRowToBulk(getInputRowMeta(), r);
       putRow(getInputRowMeta(), r);
@@ -453,11 +454,13 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
               // support of SSV feature
               //
               if (meta.isUseSSV()) {
+
+                StringBuilder builder = new StringBuilder(string);
+
                 // replace " in string fields
                 //
                 if (meta.isEscapingSpecialCharacters() && valueMeta.isString()) {
 
-                  StringBuilder builder = new StringBuilder(string);
                   String[] escapeStrings = new String[] { "\"", "\n", "\r", };
                   String[] replaceStrings = new String[] { "\\\"", "\\n", "\\r", };
                   for (int e = 0; e < escapeStrings.length; e++) {
@@ -470,9 +473,10 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
                     }
                   }
                   string = builder.toString();
-               }
+                }
 
-                string = '"' + string + '"';
+                builder.insert(0, "\"").append("\"");
+                string = builder.toString();
               }
 
               byte[] value = data.getBytes(string);
