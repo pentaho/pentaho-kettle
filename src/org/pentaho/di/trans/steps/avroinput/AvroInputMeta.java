@@ -992,4 +992,7 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
     return new AvroInputDialog(shell, meta, transMeta, name);
   }
 
+  public boolean supportsErrorHandling() {
+    return true;
+  }
 }
