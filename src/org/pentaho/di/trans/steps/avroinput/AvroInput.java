@@ -138,7 +138,29 @@ public class AvroInput extends BaseStep implements StepInterface {
       }
     }
         
-    Object[][] outputRow = m_data.avroObjectToKettle(currentInputRow, this);
+    Object [][] outputRow = null;
+    try {
+      outputRow = m_data.avroObjectToKettle(currentInputRow, this);
+    } catch (Exception ex) {
+      if (getStepMeta().isDoingErrorHandling()) {
+        String errorDescriptions = "An error occurred while decoding an avro object: " 
+          + ex.getMessage();
+        String errorFields = "";
+        RowMetaInterface rowMeta = null;
+        Object[] currentRow = new Object[0];
+        if (m_meta.getAvroInField()) {
+          errorFields += m_meta.getAvroFieldName();
+          rowMeta = getInputRowMeta();
+          currentRow = currentInputRow;
+        } else {
+          errorFields = "Data read from file";
+          rowMeta = m_data.getOutputRowMeta();
+        }
+        putError(rowMeta, currentRow, 1, errorDescriptions, errorFields, "AvroInput001");
+      } else {
+        throw new KettleException(ex.getMessage(), ex);
+      }
+    }
     if (outputRow != null) {
       // there may be more than one row if the paths contain an array/map expansion
       for (int i = 0; i < outputRow.length; i++) {
