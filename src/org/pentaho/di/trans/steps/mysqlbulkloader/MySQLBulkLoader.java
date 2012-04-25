@@ -155,7 +155,7 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
         } else if (meta.isIgnoringErrors()) {
         	loadCommand += "IGNORE ";
         }
-        loadCommand += "INTO TABLE `"+data.schemaTable+"` ";
+        loadCommand += "INTO TABLE "+data.schemaTable+" ";
         if (!Const.isEmpty(meta.getEncoding())) {
         	loadCommand += "CHARACTER SET "+meta.getEncoding()+" ";
         }
@@ -171,7 +171,7 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
         // Build list of column names to set
         loadCommand += "(";
         for (int cnt = 0; cnt < meta.getFieldTable().length; cnt++){
-        	loadCommand += "`" + meta.getFieldTable()[cnt] + "`";
+        	loadCommand += meta.getDatabaseMeta().quoteField( meta.getFieldTable()[cnt] );
         	if (cnt < meta.getFieldTable().length - 1)
         		loadCommand += ",";
         }
