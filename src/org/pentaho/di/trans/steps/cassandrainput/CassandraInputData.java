@@ -118,11 +118,16 @@ public class CassandraInputData extends BaseStepData implements StepDataInterfac
           + "' in the output row meta data!");
     }
     outputRowData[keyIndex] = key;
+//    System.out.println("Got a key value for a row " + key.toString());
     
     // advance the iterator to the next column
     if (cassandraColIter.hasNext()) {
+  //    System.out.println("We have more columns.....");
       Column aCol = cassandraColIter.next();
       
+/*      if (aCol.bufferForValue() == null) {
+        System.out.println("******* The value of this column is null!");
+      } */
       String colName = metaData.getColumnName(aCol);
       
       // skip the key
@@ -167,6 +172,7 @@ public class CassandraInputData extends BaseStepData implements StepDataInterfac
       long timestampL = aCol.getTimestamp();
       outputRowData[3] = timestampL;      
     } else {
+//      System.out.println("No more columns for this row!!!!!!!");
       return null; // signify no more columns for this row...
     }
         

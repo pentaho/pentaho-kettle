@@ -172,6 +172,10 @@ public class CassandraInput extends BaseStep implements StepInterface {
             + "...");
         byte[] queryBytes = (m_meta.getUseCompression() ? 
             CassandraInputData.compressQuery(queryS, compression) : queryS.getBytes());
+        
+        // In Cassandra 1.1 the version of CQL to use can be set programatically. The default
+        // is to use CQL v 2.0.0
+        //m_connection.getClient().set_cql_version("3.0.0");
         CqlResult result = m_connection.getClient().
           execute_cql_query(ByteBuffer.wrap(queryBytes), compression);
         m_resultIterator = result.getRowsIterator();
@@ -188,6 +192,11 @@ public class CassandraInput extends BaseStep implements StepInterface {
       if (m_meta.getOutputKeyValueTimestampTuples()) {
         //System.err.println("Number of columns in row: " + nextRow.getColumnsSize());
         Iterator<Column> columnIterator = nextRow.getColumnsIterator();
+        
+        // The key always appears to be the first column in the list (even though it is separately
+        // avaliable via CqlRow.getKey(). We discard it here because testing for a column named 
+        // "KEY" only works if column names are textual
+        columnIterator.next(); // throw away the key column        
         
         while ((outputRowData =
           m_data.cassandraRowToKettleTupleMode(m_cassandraMeta, nextRow, 
