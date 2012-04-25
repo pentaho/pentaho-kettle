@@ -157,6 +157,14 @@ public class AvroInput extends BaseStep implements StepInterface {
           rowMeta = m_data.getOutputRowMeta();
         }
         putError(rowMeta, currentRow, 1, errorDescriptions, errorFields, "AvroInput001");
+        
+        if (checkFeedback(getProcessed())) {
+          logBasic(BaseMessages.getString(AvroInputMeta.PKG, "AvroInput.Message.CheckFeedback", 
+              getProcessed()));
+//          logBasic("Read " + getProcessed() + " rows from Avro file");
+        }
+        
+        return true;
       } else {
         throw new KettleException(ex.getMessage(), ex);
       }
