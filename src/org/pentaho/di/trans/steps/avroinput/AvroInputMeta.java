@@ -872,8 +872,8 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
     
     m_isJsonEncoded = rep.getStepAttributeBoolean(id_step, 0, "json_encoded");
     
-    m_avroInField = rep.getStepAttributeBoolean(id_step, "avro_in_field");
-    m_avroFieldName = rep.getStepAttributeString(id_step, "avro_field_name");
+    m_avroInField = rep.getStepAttributeBoolean(id_step, 0, "avro_in_field");
+    m_avroFieldName = rep.getStepAttributeString(id_step, 0, "avro_field_name");
     
     int nrfields = rep.countNrStepAttributes(id_step, "field_name");
     if (nrfields > 0) {
