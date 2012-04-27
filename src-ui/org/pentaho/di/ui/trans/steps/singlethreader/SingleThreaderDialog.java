@@ -411,6 +411,7 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
         BaseMessages.getString(PKG, "SingleThreaderDialog.InjectStep.Label"), 
         BaseMessages.getString(PKG, "SingleThreaderDialog.InjectStep.Tooltip") 
       );
+    wInjectStep.addModifyListener(lsMod);
     FormData fdInjectStep = new FormData();
     fdInjectStep.left = new FormAttachment(0, 0);
     fdInjectStep.top = new FormAttachment(gTransGroup, 2*margin);
@@ -452,6 +453,7 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
         BaseMessages.getString(PKG, "SingleThreaderDialog.RetrieveStep.Label"), 
         BaseMessages.getString(PKG, "SingleThreaderDialog.RetrieveStep.Tooltip") 
       );
+    wRetrieveStep.addModifyListener(lsMod);
     FormData fdRetrieveStep = new FormData();
     fdRetrieveStep.left = new FormAttachment(0, 0);
     fdRetrieveStep.top = new FormAttachment(wInjectStep, margin);
@@ -474,6 +476,7 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
         BaseMessages.getString(PKG, "SingleThreaderDialog.BatchTime.Label"), 
         BaseMessages.getString(PKG, "SingleThreaderDialog.BatchTime.Tooltip") 
       );
+    wBatchTime.addModifyListener(lsMod);
     FormData fdBatchTime = new FormData();
     fdBatchTime.left = new FormAttachment(0, 0);
     fdBatchTime.top = new FormAttachment(wBatchSize, margin);
@@ -507,6 +510,11 @@ public class SingleThreaderDialog extends BaseStepDialog implements StepDialogIn
     fdPassParams.top = new FormAttachment(0, 0);
     fdPassParams.right = new FormAttachment(100, 0);
     wPassParams.setLayoutData(fdPassParams);
+    wPassParams.addSelectionListener(new SelectionAdapter() {
+      public void widgetSelected(SelectionEvent arg0) {
+        changed=true;
+      }
+    });
 
     wbGetParams = new Button(gParametersGroup, SWT.PUSH);
     wbGetParams.setText(BaseMessages.getString(PKG, "SingleThreaderDialog.GetParameters.Button.Label"));
