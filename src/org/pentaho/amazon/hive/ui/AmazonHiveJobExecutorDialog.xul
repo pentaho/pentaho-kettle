@@ -1,0 +1,132 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+
+<window id="amazon-emr-window-wrapper">
+
+<dialog id="amazon-emr-job-entry-dialog"
+    xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+    xmlns:pen="http://www.pentaho.org/2008/xul" 
+	title="${JobEntryDialog.Title}"
+	resizable="true"
+    height="470" width="700"
+	appicon="ui/images/spoon.ico"
+	buttons="accept,cancel"
+	buttonalign="end" 
+	buttonlabelaccept="${Dialog.Accept}"
+	buttonlabelcancel="${Dialog.Cancel}" 
+	ondialogaccept="jobEntryController.accept()"
+	ondialogcancel="jobEntryController.cancel()">
+	
+	<vbox>
+		<grid>
+			<columns>
+				<column/>
+				<column flex="1"/>
+			</columns>
+			<rows>
+				<row>
+					<label value="${JobEntry.Name.Label}" align="end"/>
+					<textbox id="jobentry-name" flex="1" multiline="false" width="200"/>
+				</row>
+				<row>
+					<label value="${AmazonElasticMapReduceJobExecutor.Name.Label}" align="end" />
+					<textbox pen:customclass="variabletextbox" id="jobentry-hadoopjob-name" flex="1" multiline="false" width="200"/>
+				</row>
+				<row>
+					<label value="${AmazonElasticMapReduceJobExecutor.JobFlowIdOptional.Label}" align="end" />
+					<textbox pen:customclass="variabletextbox" id="jobentry-hadoopjob-flow-id" flex="1" multiline="false" width="200"/>
+				</row>
+				<row>
+					<label value="${AmazonElasticMapReduceJobExecutor.AWSAccessKey.Label}" align="end" />
+					<textbox pen:customclass="variabletextbox" type="password" id="access-key" flex="1" multiline="false" width="200"/>
+				</row>
+				<row>
+					<label value="${AmazonElasticMapReduceJobExecutor.AWSSecretKey.Label}" align="end" />
+					<textbox pen:customclass="variabletextbox" type="password" id="secret-key" flex="1" multiline="false" width="400"/>
+				</row>
+				<row>
+					<label value="${AmazonElasticMapReduceJobExecutor.BootstrapActions.Label}" align="end" />
+					<textbox pen:customclass="variabletextbox" id="bootstrap-actions" flex="1" multiline="false"/>
+				</row>
+				<row>
+					<label value="${AmazonElasticMapReduceJobExecutor.S3StagingDir.Label}" align="end" />
+					<hbox>
+						<textbox pen:customclass="variabletextbox" id="s3-staging-directory" flex="1" width="400" multiline="false"/>
+						<button id="browseS3Stage" label="${AmazonElasticMapReduceJobExecutor.S3StagingDir.Browse}" onclick="jobEntryController.browseS3StagingDir()"/>
+					</hbox>
+				</row>
+				<row>
+					<label value="${AmazonElasticMapReduceJobExecutor.QUrl.Label}" align="end" />
+					<hbox>
+						<textbox pen:customclass="variabletextbox" id="q-url" flex="1" width="400" multiline="false"/>
+						<button id="browseQUrl" label="${AmazonElasticMapReduceJobExecutor.QUrl.Browse}" onclick="jobEntryController.browseQ()"/>
+					</hbox>
+				</row>
+				<row>
+					<label value="${AmazonElasticMapReduceJobExecutor.ModeSimple.CommandLineArguments.Label}" align="end" />
+					<textbox pen:customclass="variabletextbox" id="command-line-arguments" flex="1" multiline="false"/>
+				</row>
+				<row>
+					<label value="${AmazonElasticMapReduceJobExecutor.NumInstances.Label}" align="end" />
+					<textbox pen:customclass="variabletextbox" id="num-instances" flex="1" multiline="false" width="50"/>
+				</row>
+				<row>
+					<label value="${AmazonElasticMapReduceJobExecutor.MasterInstanceType.Label}" align="end" />
+                    <menulist id="master-instance-type">
+                      <menupopup>
+                        <menuitem label="Small [m1.small]"/>
+                        <menuitem label="Large [m1.large]"/>
+                        <menuitem label="Extra Large [m1.xlarge]"/>
+                        <menuitem label="High Memory Extra Large [m2.xlarge]"/>
+                        <menuitem label="High Memory Double Extra Large [m2.2xlarge]"/>
+                        <menuitem label="High Memory Quad Extra Large [m2.4xlarge]"/>
+                        <menuitem label="High CPU Medium [c1.medium]"/>
+                        <menuitem label="High CPU Extra Large [c1.xlarge]"/>
+                      </menupopup>
+                    </menulist>
+				</row>
+				<row>
+					<label value="${AmazonElasticMapReduceJobExecutor.SlaveInstanceType.Label}" align="end" />
+                    <menulist id="slave-instance-type">
+                      <menupopup>
+                        <menuitem label="Small [m1.small]"/>
+                        <menuitem label="Large [m1.large]"/>
+                        <menuitem label="Extra Large [m1.xlarge]"/>
+                        <menuitem label="High Memory Extra Large [m2.xlarge]"/>
+                        <menuitem label="High Memory Double Extra Large [m2.2xlarge]"/>
+                        <menuitem label="High Memory Quad Extra Large [m2.4xlarge]"/>
+                        <menuitem label="High CPU Medium [c1.medium]"/>
+                        <menuitem label="High CPU Extra Large [c1.xlarge]"/>
+                      </menupopup>
+                    </menulist>
+				</row>
+
+				<row>
+					<label value="${AmazonElasticMapReduceJobExecutor.Alive.Label}" align="end" />
+					<checkbox id="alive" flex="1" command="jobEntryController.invertAlive()"/>
+				</row>
+				<row>
+					<label value="${AmazonElasticMapReduceJobExecutor.ModeAdvanced.Blocking.Label}" align="end" />
+					<checkbox id="blocking" flex="1" command="jobEntryController.invertBlocking()"/>
+				</row>
+				<row>
+					<label value="${AmazonElasticMapReduceJobExecutor.ModeAdvanced.Logging.Interval.Label}" align="end" />
+					<textbox pen:customclass="variabletextbox" id="logging-interval" width="50" flex="1" multiline="false"/>
+				</row>
+
+			</rows>
+		</grid>
+		
+	</vbox>
+	
+</dialog>
+
+  <!--  ###############################################################################   -->
+  <!--     ERROR DIALOG: Dialog to display error text                                     -->
+  <!--  ###############################################################################   -->   
+  <dialog id="amazon-emr-error-dialog" title="${Dialog.Error}" buttonlabelaccept="${Dialog.OK}" buttons="accept" ondialogaccept="jobEntryController.closeErrorDialog()" width="600" height="300" buttonalign="center">
+        <textbox id="amazon-emr-error-message" value="${errorDialog.errorOccurred}" multiline="true" readonly="true" flex="1" />
+  </dialog>
+
+
+</window>
