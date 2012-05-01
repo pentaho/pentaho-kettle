@@ -58,93 +58,94 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 public class MongoDbInputDialog extends BaseStepDialog implements StepDialogInterface
 {
-	private static Class<?> PKG = MongoDbInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+  private static Class<?> PKG = MongoDbInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	private TextVar      wHostname;
+  private TextVar      wHostname;
   private TextVar      wPort;
   private TextVar      wDbName;
+  private TextVar      wFieldsName;
   private TextVar      wCollection;
   private TextVar      wJsonField;
   private TextVar      wJsonQuery;
-	
+  
   private TextVar wAuthUser;
   private TextVar wAuthPass;
 
-	private MongoDbInputMeta input;
+  private MongoDbInputMeta input;
 
-	public MongoDbInputDialog(Shell parent,  Object in, TransMeta tr, String sname)
-	{
-		super(parent, (BaseStepMeta)in, tr, sname);
-		input=(MongoDbInputMeta)in;
-	}
+  public MongoDbInputDialog(Shell parent,  Object in, TransMeta tr, String sname)
+  {
+    super(parent, (BaseStepMeta)in, tr, sname);
+    input=(MongoDbInputMeta)in;
+  }
 
-	public String open()
-	{
-		Shell parent = getParent();
-		Display display = parent.getDisplay();
+  public String open()
+  {
+    Shell parent = getParent();
+    Display display = parent.getDisplay();
 
-		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
- 		props.setLook(shell);
+    shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
+    props.setLook(shell);
         setShellImage(shell, input);
 
-		ModifyListener lsMod = new ModifyListener() 
-		{
-			public void modifyText(ModifyEvent e) 
-			{
-				input.setChanged();
-			}
-		};
-		changed = input.hasChanged();
+    ModifyListener lsMod = new ModifyListener() 
+    {
+      public void modifyText(ModifyEvent e) 
+      {
+        input.setChanged();
+      }
+    };
+    changed = input.hasChanged();
 
-		FormLayout formLayout = new FormLayout ();
-		formLayout.marginWidth  = Const.FORM_MARGIN;
-		formLayout.marginHeight = Const.FORM_MARGIN;
+    FormLayout formLayout = new FormLayout ();
+    formLayout.marginWidth  = Const.FORM_MARGIN;
+    formLayout.marginHeight = Const.FORM_MARGIN;
 
-		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "MongoDbInputDialog.Shell.Title")); //$NON-NLS-1$
-		
-		int middle = props.getMiddlePct();
-		int margin = Const.MARGIN;
+    shell.setLayout(formLayout);
+    shell.setText(BaseMessages.getString(PKG, "MongoDbInputDialog.Shell.Title")); //$NON-NLS-1$
+    
+    int middle = props.getMiddlePct();
+    int margin = Const.MARGIN;
 
-		// Stepname line
-		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(BaseMessages.getString(PKG, "MongoDbInputDialog.Stepname.Label")); //$NON-NLS-1$
- 		props.setLook(wlStepname);
-		fdlStepname=new FormData();
-		fdlStepname.left = new FormAttachment(0, 0);
-		fdlStepname.right= new FormAttachment(middle, -margin);
-		fdlStepname.top  = new FormAttachment(0, margin);
-		wlStepname.setLayoutData(fdlStepname);
-		wStepname=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wStepname.setText(stepname);
- 		props.setLook(wStepname);
-		wStepname.addModifyListener(lsMod);
-		fdStepname=new FormData();
-		fdStepname.left = new FormAttachment(middle, 0);
-		fdStepname.top  = new FormAttachment(0, margin);
-		fdStepname.right= new FormAttachment(100, 0);
-		wStepname.setLayoutData(fdStepname);
-		Control lastControl = wStepname; 
+    // Stepname line
+    wlStepname=new Label(shell, SWT.RIGHT);
+    wlStepname.setText(BaseMessages.getString(PKG, "MongoDbInputDialog.Stepname.Label")); //$NON-NLS-1$
+    props.setLook(wlStepname);
+    fdlStepname=new FormData();
+    fdlStepname.left = new FormAttachment(0, 0);
+    fdlStepname.right= new FormAttachment(middle, -margin);
+    fdlStepname.top  = new FormAttachment(0, margin);
+    wlStepname.setLayoutData(fdlStepname);
+    wStepname=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+    wStepname.setText(stepname);
+    props.setLook(wStepname);
+    wStepname.addModifyListener(lsMod);
+    fdStepname=new FormData();
+    fdStepname.left = new FormAttachment(middle, 0);
+    fdStepname.top  = new FormAttachment(0, margin);
+    fdStepname.right= new FormAttachment(100, 0);
+    wStepname.setLayoutData(fdStepname);
+    Control lastControl = wStepname; 
 
-		// Hostname input ...
-		//
-		Label wlHostname = new Label(shell, SWT.RIGHT);
-		wlHostname.setText(BaseMessages.getString(PKG, "MongoDbInputDialog.Hostname.Label")); //$NON-NLS-1$
- 		props.setLook(wlHostname);
-		FormData fdlHostname = new FormData();
-		fdlHostname.left = new FormAttachment(0, 0);
-		fdlHostname.right= new FormAttachment(middle, -margin);
-		fdlHostname.top  = new FormAttachment(lastControl, margin);
-		wlHostname.setLayoutData(fdlHostname);
-		wHostname=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wHostname);
-		wHostname.addModifyListener(lsMod);
-		FormData fdHostname = new FormData();
-		fdHostname.left = new FormAttachment(middle, 0);
-		fdHostname.top  = new FormAttachment(lastControl, margin);
-		fdHostname.right= new FormAttachment(100, 0);
-		wHostname.setLayoutData(fdHostname);
-		lastControl = wHostname;
+    // Hostname input ...
+    //
+    Label wlHostname = new Label(shell, SWT.RIGHT);
+    wlHostname.setText(BaseMessages.getString(PKG, "MongoDbInputDialog.Hostname.Label")); //$NON-NLS-1$
+    props.setLook(wlHostname);
+    FormData fdlHostname = new FormData();
+    fdlHostname.left = new FormAttachment(0, 0);
+    fdlHostname.right= new FormAttachment(middle, -margin);
+    fdlHostname.top  = new FormAttachment(lastControl, margin);
+    wlHostname.setLayoutData(fdlHostname);
+    wHostname=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+    props.setLook(wHostname);
+    wHostname.addModifyListener(lsMod);
+    FormData fdHostname = new FormData();
+    fdHostname.left = new FormAttachment(middle, 0);
+    fdHostname.top  = new FormAttachment(lastControl, margin);
+    fdHostname.right= new FormAttachment(100, 0);
+    wHostname.setLayoutData(fdHostname);
+    lastControl = wHostname;
 
     // Port input ...
     //
@@ -245,6 +246,26 @@ public class MongoDbInputDialog extends BaseStepDialog implements StepDialogInte
     fdJsonQuery.right= new FormAttachment(100, 0);
     wJsonQuery.setLayoutData(fdJsonQuery);
     lastControl = wJsonQuery;
+    
+    // fields input ...
+    //
+    Label wlFieldsName = new Label(shell, SWT.RIGHT);
+    wlFieldsName.setText(BaseMessages.getString(PKG, "MongoDbInputDialog.FieldsName.Label")); //$NON-NLS-1$
+    props.setLook(wlFieldsName);
+    FormData fdlFieldsName = new FormData();
+    fdlFieldsName.left = new FormAttachment(0, 0);
+    fdlFieldsName.right= new FormAttachment(middle, -margin);
+    fdlFieldsName.top  = new FormAttachment(lastControl, margin);
+    wlFieldsName.setLayoutData(fdlFieldsName);
+    wFieldsName=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+    props.setLook(wFieldsName);
+    wFieldsName.addModifyListener(lsMod);
+    FormData fdFieldsName = new FormData();
+    fdFieldsName.left = new FormAttachment(middle, 0);
+    fdFieldsName.top  = new FormAttachment(lastControl, margin);
+    fdFieldsName.right= new FormAttachment(100, 0);
+    wFieldsName.setLayoutData(fdFieldsName);
+    lastControl = wFieldsName;
 
     // Authentication...
     //
@@ -291,57 +312,58 @@ public class MongoDbInputDialog extends BaseStepDialog implements StepDialogInte
     wAuthPass.setLayoutData(fdAuthPass);
     lastControl = wAuthPass;
     
-		// Some buttons
-		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+    // Some buttons
+    wOK=new Button(shell, SWT.PUSH);
+    wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
     wPreview=new Button(shell, SWT.PUSH);
     wPreview.setText(BaseMessages.getString(PKG, "System.Button.Preview")); //$NON-NLS-1$
-		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+    wCancel=new Button(shell, SWT.PUSH);
+    wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
-		setButtonPositions(new Button[] { wOK, wPreview, wCancel }, margin, lastControl);
+    setButtonPositions(new Button[] { wOK, wPreview, wCancel }, margin, lastControl);
 
-		// Add listeners
-		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
+    // Add listeners
+    lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
     lsPreview  = new Listener() { public void handleEvent(Event e) { preview(); } };
-		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
-		
-		wCancel.addListener(SWT.Selection, lsCancel);
+    lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
+    
+    wCancel.addListener(SWT.Selection, lsCancel);
     wPreview.addListener(SWT.Selection, lsPreview);
-		wOK.addListener    (SWT.Selection, lsOK    );
+    wOK.addListener    (SWT.Selection, lsOK    );
 
-		
-		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
-		
-		wStepname.addSelectionListener( lsDef );
-		wHostname.addSelectionListener( lsDef );
-		
-		
-		// Detect X or ALT-F4 or something that kills this window...
-		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
-		
-		getData();
-		input.setChanged(changed);
+    
+    lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
+    
+    wStepname.addSelectionListener( lsDef );
+    wHostname.addSelectionListener( lsDef );
+    
+    
+    // Detect X or ALT-F4 or something that kills this window...
+    shell.addShellListener( new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
+    
+    getData();
+    input.setChanged(changed);
 
-		// Set the shell size, based upon previous time...
-		setSize();
-		
-		shell.open();
-		while (!shell.isDisposed())
-		{
-				if (!display.readAndDispatch()) display.sleep();
-		}
-		return stepname;
-	}
-	
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		wHostname.setText(Const.NVL(input.getHostname(), "")); //$NON-NLS-1$
+    // Set the shell size, based upon previous time...
+    setSize();
+    
+    shell.open();
+    while (!shell.isDisposed())
+    {
+        if (!display.readAndDispatch()) display.sleep();
+    }
+    return stepname;
+  }
+  
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */ 
+  public void getData()
+  {
+    wHostname.setText(Const.NVL(input.getHostname(), "")); //$NON-NLS-1$
     wPort.setText(Const.NVL(input.getPort(), "")); //$NON-NLS-1$
     wDbName.setText(Const.NVL(input.getDbName(), "")); //$NON-NLS-1$
+    wFieldsName.setText(Const.NVL(input.getFieldsName(), "")); //$NON-NLS-1$
     wCollection.setText(Const.NVL(input.getCollection(), "")); //$NON-NLS-1$
     wJsonField.setText(Const.NVL(input.getJsonFieldName(), "")); //$NON-NLS-1$
     wJsonQuery.setText(Const.NVL(input.getJsonQuery(), "")); //$NON-NLS-1$
@@ -350,20 +372,21 @@ public class MongoDbInputDialog extends BaseStepDialog implements StepDialogInte
     wAuthPass.setText(Const.NVL(input.getAuthenticationPassword(), "")); // $NON-NLS-1$
 
     wStepname.selectAll();
-	}
-	
-	private void cancel()
-	{
-		stepname=null;
-		input.setChanged(changed);
-		dispose();
-	}
+  }
+  
+  private void cancel()
+  {
+    stepname=null;
+    input.setChanged(changed);
+    dispose();
+  }
 
   private void getInfo(MongoDbInputMeta meta) {
 
     meta.setHostname(wHostname.getText());
     meta.setPort(wPort.getText());
     meta.setDbName(wDbName.getText());
+    meta.setFieldsName(wFieldsName.getText());
     meta.setCollection(wCollection.getText());
     meta.setJsonFieldName(wJsonField.getText());
     meta.setJsonQuery(wJsonQuery.getText());
@@ -372,18 +395,18 @@ public class MongoDbInputDialog extends BaseStepDialog implements StepDialogInte
     meta.setAuthenticationPassword(wAuthPass.getText());
   }
 
-	private void ok()
-	{
-		if (Const.isEmpty(wStepname.getText())) return;
+  private void ok()
+  {
+    if (Const.isEmpty(wStepname.getText())) return;
 
-		stepname = wStepname.getText(); // return value
+    stepname = wStepname.getText(); // return value
 
-		getInfo(input);
+    getInfo(input);
     
-		dispose();
-	}
-	
-	 // Preview the data
+    dispose();
+  }
+  
+   // Preview the data
   private void preview()
   {
       // Create the XML input step

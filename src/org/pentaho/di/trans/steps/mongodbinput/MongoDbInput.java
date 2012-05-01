@@ -61,11 +61,13 @@ public class MongoDbInput extends BaseStep implements StepInterface
 	    meta.getFields(data.outputRowMeta,getStepname(), null, null, this);
 	    
 	    String query = environmentSubstitute(meta.getJsonQuery());
-	    if (Const.isEmpty(query)) {
+	    String fields = environmentSubstitute(meta.getFieldsName());
+	    if (Const.isEmpty(query) && Const.isEmpty(fields)) {
 	      data.cursor = data.collection.find();
 	    } else {
-	      DBObject dbObject = (DBObject)JSON.parse(query);
-	      data.cursor = data.collection.find(dbObject);
+	      DBObject dbObject = (DBObject)JSON.parse(Const.isEmpty(query) ? "{}" : query);
+	      DBObject dbObject2 = (DBObject)JSON.parse(fields);
+	      data.cursor = data.collection.find(dbObject,dbObject2);     
 	    }
 	  }
 
@@ -78,6 +80,7 @@ public class MongoDbInput extends BaseStep implements StepInterface
 
 	    // putRow will send the row on to the default output hop.
 	    //
+
 	    putRow(data.outputRowMeta, row);
 	    
 	    return true;
@@ -89,7 +92,8 @@ public class MongoDbInput extends BaseStep implements StepInterface
 	  }
 	}
 
-	public boolean init(StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface)
+	@SuppressWarnings("deprecation")
+  public boolean init(StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface)
 	{
 	  if (super.init(stepMetaInterface, stepDataInterface)) {
   	  meta = (MongoDbInputMeta) stepMetaInterface;
@@ -99,10 +103,12 @@ public class MongoDbInput extends BaseStep implements StepInterface
       int port = Const.toInt(environmentSubstitute(meta.getPort()), 27017);
       String db = environmentSubstitute(meta.getDbName());
       String collection = environmentSubstitute(meta.getCollection());
-  
+        
       try {
+    	     	 
   
         data.mongo = new Mongo(hostname, port);
+        data.mongo.slaveOk(); //slaveOK for ce;
         data.db = data.mongo.getDB(db);
         
         String realUser = environmentSubstitute(meta.getAuthenticationUser());
