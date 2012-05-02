@@ -185,7 +185,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
         
 		return retval.toString();
 	}
-	private static String getAfterSFTPPutCode(int i) {
+	public static String getAfterSFTPPutCode(int i) {
 		if (i < 0 || i >= afterFTPSCode.length)
 			return afterFTPSCode[0];
 		return afterFTPSCode[i];
@@ -234,7 +234,7 @@ public class JobEntrySFTPPUT extends JobEntryBase implements Cloneable, JobEntry
 			throw new KettleXMLException("Unable to load job entry of type 'SFTPPUT' from XML node", xe);
 		}
 	}
-	private static int getAfterSFTPPutByCode(String tt) {
+	public static int getAfterSFTPPutByCode(String tt) {
 		if (tt == null)
 			return 0;
 

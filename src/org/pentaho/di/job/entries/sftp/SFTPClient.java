@@ -235,6 +235,23 @@ public class SFTPClient {
 			}
 		}
 	}
+	public void put(InputStream inputStream, String remoteFile) throws KettleJobException {
+		int mode=ChannelSftp.OVERWRITE;
+
+		try {
+			c.put(inputStream, remoteFile, null, mode);
+		} catch(Exception e) {
+			throw new KettleJobException(e);
+		} finally {
+			if (inputStream!=null) {
+				try {
+					inputStream.close();
+				} catch (IOException e) {
+					throw new KettleJobException(e);
+				}
+			}
+		}
+	}
 	
 	public void delete (String file) throws KettleJobException {
 		try {
