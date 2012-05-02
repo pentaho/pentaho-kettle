@@ -613,10 +613,8 @@ public class FastSimpleGenericEdifactDirectXMLLexer extends Lexer {
                 {
                 mTEXT_DATA(); 
 
-
                 }
                 break;
-
         }
 
     }
