@@ -1479,6 +1479,14 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Edi2Xml</tooltip>
 		<iconfile>ui/images/EDI2XML.png</iconfile>
 	</step> 
+	<step id="SFTPPut">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SFTPPut</description>
+		<classname>org.pentaho.di.trans.steps.sftpput.SFTPPutMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SFTPPut</tooltip>
+		<iconfile>ui/images/SFP.png</iconfile>
+	</step> 
+
 
 
 	
