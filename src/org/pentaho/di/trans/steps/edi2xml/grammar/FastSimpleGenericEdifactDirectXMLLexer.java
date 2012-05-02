@@ -621,7 +621,4 @@ public class FastSimpleGenericEdifactDirectXMLLexer extends Lexer {
 
     }
 
-
- 
-
 }
