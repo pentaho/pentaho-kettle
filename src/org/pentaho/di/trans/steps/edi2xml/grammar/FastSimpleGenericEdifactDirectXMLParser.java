@@ -1,5 +1,3 @@
-// $ANTLR 3.4 C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g 2012-02-23 11:20:00
-
 package org.pentaho.di.trans.steps.edi2xml.grammar;
 import org.apache.commons.lang.StringEscapeUtils;
 import java.util.LinkedList;
@@ -70,7 +68,7 @@ public static class STAttrMap extends HashMap {
   }
 }
     public String[] getTokenNames() { return FastSimpleGenericEdifactDirectXMLParser.tokenNames; }
-    public String getGrammarFileName() { return "C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g"; }
+    public String getGrammarFileName() { return ".g"; }
 
 
 
@@ -133,17 +131,17 @@ public static class STAttrMap extends HashMap {
 
 
     // $ANTLR start "edifact"
-    // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:77:1: edifact : ( una )? ( segment )* ;
+    // .g:77:1: edifact : ( una )? ( segment )* ;
     public final FastSimpleGenericEdifactDirectXMLParser.edifact_return edifact() throws RecognitionException {
         FastSimpleGenericEdifactDirectXMLParser.edifact_return retval = new FastSimpleGenericEdifactDirectXMLParser.edifact_return();
         retval.start = input.LT(1);
 
 
         try {
-            // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:81:4: ( ( una )? ( segment )* )
-            // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:81:6: ( una )? ( segment )*
+            // .g:81:4: ( ( una )? ( segment )* )
+            // .g:81:6: ( una )? ( segment )*
             {
-            // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:81:6: ( una )?
+            // .g:81:6: ( una )?
             int alt1=2;
             int LA1_0 = input.LA(1);
 
@@ -152,7 +150,7 @@ public static class STAttrMap extends HashMap {
             }
             switch (alt1) {
                 case 1 :
-                    // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:81:6: una
+                    // .g:81:6: una
                     {
                     pushFollow(FOLLOW_una_in_edifact64);
                     una();
@@ -168,7 +166,7 @@ public static class STAttrMap extends HashMap {
 
              buf = new StringBuilder(8192); buf.append(XML_HEAD); buf.append(TAG_EDIFACT); 
 
-            // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:83:4: ( segment )*
+            // .g:83:4: ( segment )*
             loop2:
             do {
                 int alt2=2;
@@ -181,7 +179,7 @@ public static class STAttrMap extends HashMap {
 
                 switch (alt2) {
             	case 1 :
-            	    // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:83:4: segment
+            	    // .g:83:4: segment
             	    {
             	    pushFollow(FOLLOW_segment_in_edifact76);
             	    segment();
@@ -229,15 +227,15 @@ public static class STAttrMap extends HashMap {
 
 
     // $ANTLR start "una"
-    // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:89:1: una : ( 'UNA:+.? \\'' | 'UNA:+,? \\'' );
+    // .g:89:1: una : ( 'UNA:+.? \\'' | 'UNA:+,? \\'' );
     public final FastSimpleGenericEdifactDirectXMLParser.una_return una() throws RecognitionException {
         FastSimpleGenericEdifactDirectXMLParser.una_return retval = new FastSimpleGenericEdifactDirectXMLParser.una_return();
         retval.start = input.LT(1);
 
 
         try {
-            // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:89:7: ( 'UNA:+.? \\'' | 'UNA:+,? \\'' )
-            // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:
+            // .g:89:7: ( 'UNA:+.? \\'' | 'UNA:+,? \\'' )
+            // .g:
             {
             if ( (input.LA(1) >= 10 && input.LA(1) <= 11) ) {
                 input.consume();
@@ -275,7 +273,7 @@ public static class STAttrMap extends HashMap {
 
 
     // $ANTLR start "segment"
-    // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:91:1: segment : tag ( data_element )* SEGMENT_TERMINATOR ( ' ' | '\\n' | '\\r' | '\\t' )* ;
+    // .g:91:1: segment : tag ( data_element )* SEGMENT_TERMINATOR ( ' ' | '\\n' | '\\r' | '\\t' )* ;
     public final FastSimpleGenericEdifactDirectXMLParser.segment_return segment() throws RecognitionException {
         FastSimpleGenericEdifactDirectXMLParser.segment_return retval = new FastSimpleGenericEdifactDirectXMLParser.segment_return();
         retval.start = input.LT(1);
@@ -285,8 +283,8 @@ public static class STAttrMap extends HashMap {
 
 
         try {
-            // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:91:11: ( tag ( data_element )* SEGMENT_TERMINATOR ( ' ' | '\\n' | '\\r' | '\\t' )* )
-            // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:91:13: tag ( data_element )* SEGMENT_TERMINATOR ( ' ' | '\\n' | '\\r' | '\\t' )*
+            // .g:91:11: ( tag ( data_element )* SEGMENT_TERMINATOR ( ' ' | '\\n' | '\\r' | '\\t' )* )
+            // .g:91:13: tag ( data_element )* SEGMENT_TERMINATOR ( ' ' | '\\n' | '\\r' | '\\t' )*
             {
             pushFollow(FOLLOW_tag_in_segment107);
             tag1=tag();
@@ -296,7 +294,7 @@ public static class STAttrMap extends HashMap {
 
             buf.append("\t<"+(tag1!=null?tag1.name:null)+">\n"); appendIndexes();
 
-            // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:92:4: ( data_element )*
+            // .g:92:4: ( data_element )*
             loop3:
             do {
                 int alt3=2;
@@ -309,7 +307,7 @@ public static class STAttrMap extends HashMap {
 
                 switch (alt3) {
             	case 1 :
-            	    // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:92:4: data_element
+            	    // .g:92:4: data_element
             	    {
             	    pushFollow(FOLLOW_data_element_in_segment114);
             	    data_element();
@@ -328,7 +326,7 @@ public static class STAttrMap extends HashMap {
 
             match(input,SEGMENT_TERMINATOR,FOLLOW_SEGMENT_TERMINATOR_in_segment117); 
 
-            // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:92:37: ( ' ' | '\\n' | '\\r' | '\\t' )*
+            // .g:92:37: ( ' ' | '\\n' | '\\r' | '\\t' )*
             loop4:
             do {
                 int alt4=2;
@@ -341,7 +339,7 @@ public static class STAttrMap extends HashMap {
 
                 switch (alt4) {
             	case 1 :
-            	    // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:
+            	    // .g:
             	    {
             	    if ( input.LA(1)==9||(input.LA(1) >= 12 && input.LA(1) <= 14) ) {
             	        input.consume();
@@ -390,15 +388,15 @@ public static class STAttrMap extends HashMap {
 
 
     // $ANTLR start "data_element"
-    // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:96:1: data_element : ss data_element_payload ;
+    // .g:96:1: data_element : ss data_element_payload ;
     public final FastSimpleGenericEdifactDirectXMLParser.data_element_return data_element() throws RecognitionException {
         FastSimpleGenericEdifactDirectXMLParser.data_element_return retval = new FastSimpleGenericEdifactDirectXMLParser.data_element_return();
         retval.start = input.LT(1);
 
 
         try {
-            // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:96:15: ( ss data_element_payload )
-            // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:96:17: ss data_element_payload
+            // .g:96:15: ( ss data_element_payload )
+            // .g:96:17: ss data_element_payload
             {
             pushFollow(FOLLOW_ss_in_data_element143);
             ss();
@@ -438,19 +436,19 @@ public static class STAttrMap extends HashMap {
 
 
     // $ANTLR start "data_element_payload"
-    // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:98:1: data_element_payload : ( composite_data_item ds )* composite_data_item ;
+    // .g:98:1: data_element_payload : ( composite_data_item ds )* composite_data_item ;
     public final FastSimpleGenericEdifactDirectXMLParser.data_element_payload_return data_element_payload() throws RecognitionException {
         FastSimpleGenericEdifactDirectXMLParser.data_element_payload_return retval = new FastSimpleGenericEdifactDirectXMLParser.data_element_payload_return();
         retval.start = input.LT(1);
 
 
         try {
-            // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:98:22: ( ( composite_data_item ds )* composite_data_item )
-            // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:98:24: ( composite_data_item ds )* composite_data_item
+            // .g:98:22: ( ( composite_data_item ds )* composite_data_item )
+            // .g:98:24: ( composite_data_item ds )* composite_data_item
             {
             buf.append(TAG_ELEMENT);
 
-            // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:99:4: ( composite_data_item ds )*
+            // .g:99:4: ( composite_data_item ds )*
             loop5:
             do {
                 int alt5=2;
@@ -472,7 +470,7 @@ public static class STAttrMap extends HashMap {
 
                 switch (alt5) {
             	case 1 :
-            	    // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:99:5: composite_data_item ds
+            	    // .g:99:5: composite_data_item ds
             	    {
             	    pushFollow(FOLLOW_composite_data_item_in_data_element_payload160);
             	    composite_data_item();
@@ -529,7 +527,7 @@ public static class STAttrMap extends HashMap {
 
 
     // $ANTLR start "composite_data_item"
-    // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:102:1: composite_data_item : composite_data_item_val ;
+    // .g:102:1: composite_data_item : composite_data_item_val ;
     public final FastSimpleGenericEdifactDirectXMLParser.composite_data_item_return composite_data_item() throws RecognitionException {
         FastSimpleGenericEdifactDirectXMLParser.composite_data_item_return retval = new FastSimpleGenericEdifactDirectXMLParser.composite_data_item_return();
         retval.start = input.LT(1);
@@ -539,8 +537,8 @@ public static class STAttrMap extends HashMap {
 
 
         try {
-            // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:102:21: ( composite_data_item_val )
-            // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:102:23: composite_data_item_val
+            // .g:102:21: ( composite_data_item_val )
+            // .g:102:23: composite_data_item_val
             {
             pushFollow(FOLLOW_composite_data_item_val_in_composite_data_item180);
             composite_data_item_val2=composite_data_item_val();
@@ -576,14 +574,14 @@ public static class STAttrMap extends HashMap {
 
 
     // $ANTLR start "composite_data_item_val"
-    // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:105:1: composite_data_item_val : ( txt |);
+    // .g:105:1: composite_data_item_val : ( txt |);
     public final FastSimpleGenericEdifactDirectXMLParser.composite_data_item_val_return composite_data_item_val() throws RecognitionException {
         FastSimpleGenericEdifactDirectXMLParser.composite_data_item_val_return retval = new FastSimpleGenericEdifactDirectXMLParser.composite_data_item_val_return();
         retval.start = input.LT(1);
 
 
         try {
-            // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:105:25: ( txt |)
+            // .g:105:25: ( txt |)
             int alt6=2;
             int LA6_0 = input.LA(1);
 
@@ -602,7 +600,7 @@ public static class STAttrMap extends HashMap {
             }
             switch (alt6) {
                 case 1 :
-                    // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:105:27: txt
+                    // .g:105:27: txt
                     {
                     pushFollow(FOLLOW_txt_in_composite_data_item_val193);
                     txt();
@@ -613,7 +611,7 @@ public static class STAttrMap extends HashMap {
                     }
                     break;
                 case 2 :
-                    // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:105:31: 
+                    // .g:105:31: 
                     {
                     }
                     break;
@@ -645,7 +643,7 @@ public static class STAttrMap extends HashMap {
 
 
     // $ANTLR start "tag"
-    // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:108:1: tag returns [String name, List indexes] : tag_name ( ds i+= tag_index_id )* ;
+    // .g:108:1: tag returns [String name, List indexes] : tag_name ( ds i+= tag_index_id )* ;
     public final FastSimpleGenericEdifactDirectXMLParser.tag_return tag() throws RecognitionException {
         FastSimpleGenericEdifactDirectXMLParser.tag_return retval = new FastSimpleGenericEdifactDirectXMLParser.tag_return();
         retval.start = input.LT(1);
@@ -656,8 +654,8 @@ public static class STAttrMap extends HashMap {
 
         RuleReturnScope i = null;
         try {
-            // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:108:41: ( tag_name ( ds i+= tag_index_id )* )
-            // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:108:43: tag_name ( ds i+= tag_index_id )*
+            // .g:108:41: ( tag_name ( ds i+= tag_index_id )* )
+            // .g:108:43: tag_name ( ds i+= tag_index_id )*
             {
             pushFollow(FOLLOW_tag_name_in_tag208);
             tag_name3=tag_name();
@@ -667,7 +665,7 @@ public static class STAttrMap extends HashMap {
 
             tagIndexes.clear();
 
-            // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:108:74: ( ds i+= tag_index_id )*
+            // .g:108:74: ( ds i+= tag_index_id )*
             loop7:
             do {
                 int alt7=2;
@@ -680,7 +678,7 @@ public static class STAttrMap extends HashMap {
 
                 switch (alt7) {
             	case 1 :
-            	    // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:108:75: ds i+= tag_index_id
+            	    // .g:108:75: ds i+= tag_index_id
             	    {
             	    pushFollow(FOLLOW_ds_in_tag213);
             	    ds();
@@ -734,15 +732,15 @@ public static class STAttrMap extends HashMap {
 
 
     // $ANTLR start "tag_name"
-    // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:112:1: tag_name : txt ;
+    // .g:112:1: tag_name : txt ;
     public final FastSimpleGenericEdifactDirectXMLParser.tag_name_return tag_name() throws RecognitionException {
         FastSimpleGenericEdifactDirectXMLParser.tag_name_return retval = new FastSimpleGenericEdifactDirectXMLParser.tag_name_return();
         retval.start = input.LT(1);
 
 
         try {
-            // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:112:11: ( txt )
-            // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:112:13: txt
+            // .g:112:11: ( txt )
+            // .g:112:13: txt
             {
             pushFollow(FOLLOW_txt_in_tag_name239);
             txt();
@@ -776,7 +774,7 @@ public static class STAttrMap extends HashMap {
 
 
     // $ANTLR start "tag_index_id"
-    // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:115:1: tag_index_id : tag_index_id_val ;
+    // .g:115:1: tag_index_id : tag_index_id_val ;
     public final FastSimpleGenericEdifactDirectXMLParser.tag_index_id_return tag_index_id() throws RecognitionException {
         FastSimpleGenericEdifactDirectXMLParser.tag_index_id_return retval = new FastSimpleGenericEdifactDirectXMLParser.tag_index_id_return();
         retval.start = input.LT(1);
@@ -786,8 +784,8 @@ public static class STAttrMap extends HashMap {
 
 
         try {
-            // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:115:15: ( tag_index_id_val )
-            // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:115:17: tag_index_id_val
+            // .g:115:15: ( tag_index_id_val )
+            // .g:115:17: tag_index_id_val
             {
             pushFollow(FOLLOW_tag_index_id_val_in_tag_index_id249);
             tag_index_id_val4=tag_index_id_val();
@@ -823,14 +821,14 @@ public static class STAttrMap extends HashMap {
 
 
     // $ANTLR start "tag_index_id_val"
-    // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:116:1: tag_index_id_val : ( txt |);
+    // .g:116:1: tag_index_id_val : ( txt |);
     public final FastSimpleGenericEdifactDirectXMLParser.tag_index_id_val_return tag_index_id_val() throws RecognitionException {
         FastSimpleGenericEdifactDirectXMLParser.tag_index_id_val_return retval = new FastSimpleGenericEdifactDirectXMLParser.tag_index_id_val_return();
         retval.start = input.LT(1);
 
 
         try {
-            // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:116:18: ( txt |)
+            // .g:116:18: ( txt |)
             int alt8=2;
             int LA8_0 = input.LA(1);
 
@@ -849,7 +847,7 @@ public static class STAttrMap extends HashMap {
             }
             switch (alt8) {
                 case 1 :
-                    // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:116:20: txt
+                    // .g:116:20: txt
                     {
                     pushFollow(FOLLOW_txt_in_tag_index_id_val258);
                     txt();
@@ -860,7 +858,7 @@ public static class STAttrMap extends HashMap {
                     }
                     break;
                 case 2 :
-                    // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:116:24: 
+                    // .g:116:24: 
                     {
                     }
                     break;
@@ -890,15 +888,15 @@ public static class STAttrMap extends HashMap {
 
 
     // $ANTLR start "ds"
-    // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:119:1: ds : COMPLEX_ELEMENT_ITEM_SEPARATOR ;
+    // .g:119:1: ds : COMPLEX_ELEMENT_ITEM_SEPARATOR ;
     public final FastSimpleGenericEdifactDirectXMLParser.ds_return ds() throws RecognitionException {
         FastSimpleGenericEdifactDirectXMLParser.ds_return retval = new FastSimpleGenericEdifactDirectXMLParser.ds_return();
         retval.start = input.LT(1);
 
 
         try {
-            // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:119:6: ( COMPLEX_ELEMENT_ITEM_SEPARATOR )
-            // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:119:8: COMPLEX_ELEMENT_ITEM_SEPARATOR
+            // .g:119:6: ( COMPLEX_ELEMENT_ITEM_SEPARATOR )
+            // .g:119:8: COMPLEX_ELEMENT_ITEM_SEPARATOR
             {
             match(input,COMPLEX_ELEMENT_ITEM_SEPARATOR,FOLLOW_COMPLEX_ELEMENT_ITEM_SEPARATOR_in_ds271); 
 
@@ -928,15 +926,15 @@ public static class STAttrMap extends HashMap {
 
 
     // $ANTLR start "ss"
-    // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:120:1: ss : ELEMENT_SEPARATOR ;
+    // .g:120:1: ss : ELEMENT_SEPARATOR ;
     public final FastSimpleGenericEdifactDirectXMLParser.ss_return ss() throws RecognitionException {
         FastSimpleGenericEdifactDirectXMLParser.ss_return retval = new FastSimpleGenericEdifactDirectXMLParser.ss_return();
         retval.start = input.LT(1);
 
 
         try {
-            // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:120:6: ( ELEMENT_SEPARATOR )
-            // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:120:8: ELEMENT_SEPARATOR
+            // .g:120:6: ( ELEMENT_SEPARATOR )
+            // .g:120:8: ELEMENT_SEPARATOR
             {
             match(input,ELEMENT_SEPARATOR,FOLLOW_ELEMENT_SEPARATOR_in_ss280); 
 
@@ -966,15 +964,15 @@ public static class STAttrMap extends HashMap {
 
 
     // $ANTLR start "txt"
-    // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:121:1: txt : TEXT_DATA ;
+    // .g:121:1: txt : TEXT_DATA ;
     public final FastSimpleGenericEdifactDirectXMLParser.txt_return txt() throws RecognitionException {
         FastSimpleGenericEdifactDirectXMLParser.txt_return retval = new FastSimpleGenericEdifactDirectXMLParser.txt_return();
         retval.start = input.LT(1);
 
 
         try {
-            // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:121:7: ( TEXT_DATA )
-            // C:\\PDI\\PDI4.4\\src\\org\\pentaho\\di\\trans\\steps\\edi2xml\\grammar\\FastSimpleGenericEdifactDirectXML.g:121:9: TEXT_DATA
+            // .g:121:7: ( TEXT_DATA )
+            // .g:121:9: TEXT_DATA
             {
             match(input,TEXT_DATA,FOLLOW_TEXT_DATA_in_txt289); 
 
