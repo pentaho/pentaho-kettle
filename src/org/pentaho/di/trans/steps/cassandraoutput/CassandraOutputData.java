@@ -92,7 +92,7 @@ public class CassandraOutputData extends BaseStepData implements
    */
   public static CassandraConnection getCassandraConnection(String host, 
       int port, String username, String password) throws Exception {
-    return new CassandraConnection(host, port, username, password);
+    return new CassandraConnection(host, port, username, password, -1);
   }
   
   /**
