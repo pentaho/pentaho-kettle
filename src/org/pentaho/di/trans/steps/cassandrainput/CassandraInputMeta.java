@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.cassandrainput;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -85,7 +86,73 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
   /** The select query to execute */
   protected String m_cqlSelectQuery = "SELECT <fields> FROM <column family> WHERE <condition>;";
   
+  /** Output in tuple mode? */
   protected boolean m_outputKeyValueTimestampTuples;
+  
+  /** Use thrift IO for tuple mode? */
+  protected boolean m_useThriftIO = false;
+  
+  /** 
+   * Timeout (milliseconds) to use for socket connections - 
+   * blank means use cluster default 
+   */
+  protected String m_socketTimeout = "";
+
+  // set based on parsed CQL
+  /** True if a select * is being done - this is important to know because rows from
+   * select * queries contain the key as the first column. Key is also available separately
+   * in the API (and we use this for retrieving the key). The column that contains the key
+   * in this case is not necessarily convertible using the default column validator because
+   * there is a separate key validator. So we need to be able to recognize the key when it
+   * appears as a column and skip it. Can't rely on it's name (KEY) since this is only easily
+   * detectable when the column names are strings.
+   */
+  protected boolean m_isSelectStarQuery = false;
+  
+  // these are set based on the parsed CQL when executing tuple mode using thrift 
+  protected int m_rowLimit = -1; // no limit - otherwise we look for LIMIT in CQL
+  protected int m_colLimit = -1; // no limit - otherwise we look for FIRST N in CQL
+  
+  // maximum number of rows or columns to pull over at one time via thrift
+  protected int m_rowBatchSize = 100;
+  protected int m_colBatchSize = 100;
+  protected List<String> m_specificCols;
+  
+  /**
+   * Set the timeout (milliseconds) to use for socket comms
+   * 
+   * @param t the timeout to use in milliseconds
+   */
+  public void setSocketTimeout(String t) {
+    m_socketTimeout = t;
+  }
+  
+  /**
+   * Get the timeout (milliseconds) to use for socket comms
+   * 
+   * @return the timeout to use in milliseconds
+   */
+  public String getSocketTimeout() {
+    return m_socketTimeout;
+  }
+  
+  /**
+   * Set whether to use pure thrift IO for the <key,value> tuple mode.
+   * 
+   * @param useThrift true if thrift IO is to be used
+   */
+  public void setUseThriftIO(boolean useThrift) {
+    m_useThriftIO = useThrift;
+  }
+  
+  /**
+   * Get whether to use pure thrift IO for the <key,value> tuple mode.
+   * 
+   * @return true if thrift IO is to be used
+   */
+  public boolean getUseThriftIO() {
+    return m_useThriftIO;
+  }
   
   /**
    * Set the cassandra node hostname to connect to
@@ -272,6 +339,15 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
     
     retval.append("\n    ").append(XMLHandler.addTagValue("output_key_value_timestamp_tuples", 
         m_outputKeyValueTimestampTuples));
+    
+    retval.append("\n    ").append(XMLHandler.addTagValue("use_thrift_io", 
+        m_useThriftIO));
+    
+    if (!Const.isEmpty(m_socketTimeout)) {
+      retval.append("\n    ").append(XMLHandler.addTagValue("socket_timeout", 
+          m_socketTimeout));
+    }
+    
             
     return retval.toString();
   }
@@ -295,6 +371,13 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
     if (kV != null) {
       m_outputKeyValueTimestampTuples = kV.equalsIgnoreCase("Y");
     }
+    
+    String thrift = XMLHandler.getTagValue(stepnode, "use_thrift_io");
+    if (thrift != null) {
+      m_useThriftIO = thrift.equalsIgnoreCase("Y");
+    }
+    
+    m_socketTimeout = XMLHandler.getTagValue(stepnode, "socket_timeout");
   }
   
   public void readRep(Repository rep, ObjectId id_step, List<DatabaseMeta> databases,
@@ -312,7 +395,10 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
 
     m_outputKeyValueTimestampTuples = 
       rep.getStepAttributeBoolean(id_step, 0, "output_key_value_timestamp_tuples");
-
+    m_useThriftIO = 
+      rep.getStepAttributeBoolean(id_step, 0, "use_thrift_io");
+    
+    m_socketTimeout = rep.getStepAttributeString(id_step, 0, "socket_timeout");
   }
 
   public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step)
@@ -352,6 +438,14 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
     
     rep.saveStepAttribute(id_transformation, id_step, 0, "output_key_value_timestamp_tuples",
         m_outputKeyValueTimestampTuples);
+    
+    rep.saveStepAttribute(id_transformation, id_step, 0, "use_thrift_io",
+        m_useThriftIO);
+    
+    if (!Const.isEmpty(m_socketTimeout)) {
+      rep.saveStepAttribute(id_transformation, id_step, 0, "socket_timeout",
+          m_socketTimeout);
+    }
   }
 
   public void check(List<CheckResultInterface> remarks, TransMeta transMeta,
@@ -378,11 +472,16 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
     m_cassandraPort = "9160";
     m_cqlSelectQuery = "SELECT <fields> FROM <column family> WHERE <condition>;";
     m_useCompression = false;
+    m_socketTimeout = "";
   }  
   
   public void getFields(RowMetaInterface rowMeta, String origin, 
       RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) 
     throws KettleStepException {
+    
+    m_specificCols = null;
+    m_rowLimit = -1;
+    m_colLimit = -1;
     
     rowMeta.clear(); // start afresh - eats the input
     
@@ -394,6 +493,18 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
     String colFamName = null;
     if (!Const.isEmpty(m_cqlSelectQuery)) {            
       String subQ = space.environmentSubstitute(m_cqlSelectQuery);
+      
+      // is there a LIMIT clause?
+      if (subQ.toLowerCase().indexOf("limit") > 0) {
+        String limitS = subQ.toLowerCase().
+          substring(subQ.toLowerCase().indexOf("limit") + 6, subQ.length());
+        try {
+          m_rowLimit = Integer.parseInt(limitS);
+        } catch (NumberFormatException ex) {
+          logError("Unable to parse FIRST clause in query: " + m_cqlSelectQuery);
+          return;
+        }
+      }
       
       if (!subQ.toLowerCase().startsWith("select")) {
         // not a select statement!
@@ -444,11 +555,26 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
         return; // no column family specified
       }      
       
+      // is there a FIRST clause?
+      if (subQ.toLowerCase().indexOf("first") > 0) {
+        String firstS = subQ.toLowerCase().
+          substring(subQ.indexOf("first") + 6, subQ.length());
+        firstS = firstS.substring(0, firstS.indexOf(' '));
+        try {
+          m_colLimit = Integer.parseInt(firstS);
+        } catch (NumberFormatException ex) {
+          logError("Unable to parse FIRST clause in query: " + m_cqlSelectQuery);
+          return;
+        }
+      }
+      
       // now determine if its a select * or specific set of columns
       String[] cols = null;
       if (subQ.indexOf("*") > 0) {
         // nothing special to do here
+        m_isSelectStarQuery = true;
       } else {        
+        m_isSelectStarQuery = false;
         String colsS = subQ.substring(subQ.indexOf('\''), fromIndex);
         cols = colsS.split(",");
       }
@@ -484,12 +610,33 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
           // timestamps output as separate rows.
           ValueMetaInterface vm = new ValueMeta("ColumnName", ValueMetaInterface.TYPE_STRING);
           rowMeta.addValueMeta(vm);
-          vm = new ValueMeta("ColumnValue", ValueMetaInterface.TYPE_STRING);
+          vm = null;
+          String defaultColumnValidator = colMeta.getDefaultValidationClass();
+          if (!Const.isEmpty(defaultColumnValidator)) {
+            if (defaultColumnValidator.indexOf('(') > 0) {
+              defaultColumnValidator = defaultColumnValidator.substring(0, defaultColumnValidator.indexOf(')'));
+            }
+            if (defaultColumnValidator.endsWith("BytesType")) {
+              vm = new ValueMeta("ColumnValue", ValueMeta.TYPE_BINARY);
+            }
+          }
+          if (vm == null) {
+            vm = new ValueMeta("ColumnValue", ValueMetaInterface.TYPE_STRING);
+          }
           rowMeta.addValueMeta(vm);
           vm = new ValueMeta("Timestamp", ValueMetaInterface.TYPE_INTEGER);
           rowMeta.addValueMeta(vm);
           
           conn.close();
+          
+          // specific columns requested
+          if (cols != null) {
+            m_specificCols = new ArrayList<String>();
+            for (String col : cols) {
+              col = cleanseColName(col);
+              m_specificCols.add(col);
+            }
+          }
           return;
         }
         
@@ -500,11 +647,10 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
             rowMeta.addValueMeta(vm);
           }
         } else {
+          m_specificCols = new ArrayList<String>();
           // do the individual columns
           for (String col : cols) {
-            col = col.trim();
-            col = col.replace("'", "");
-            col = col.replace("\"", "");
+            col = cleanseColName(col);
             if (!colMeta.columnExistsInSchema(col)) {
               // this one isn't known about in about in the schema - we can output it
               // as long as its values satisfy the default validator...
@@ -513,7 +659,7 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
                         "validator will be used");
             }
             ValueMetaInterface vm = colMeta.getValueMetaForColumn(col);
-            rowMeta.addValueMeta(vm);
+            rowMeta.addValueMeta(vm);            
           }
         }
       } catch (Exception ex) {
@@ -527,6 +673,14 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
         }
       }            
     }
+  }
+  
+  private String cleanseColName(String col) {
+    col = col.trim();
+    col = col.replace("'", "");
+    col = col.replace("\"", "");
+    
+    return col;
   }
 
   /**

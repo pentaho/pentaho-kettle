@@ -57,6 +57,7 @@ import org.apache.cassandra.thrift.CfDef;
 import org.apache.cassandra.thrift.Column;
 import org.apache.cassandra.thrift.ColumnDef;
 import org.apache.cassandra.thrift.CqlRow;
+import org.apache.cassandra.thrift.KeySlice;
 import org.apache.cassandra.thrift.KsDef;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
@@ -74,7 +75,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  */
 public class CassandraColumnMetaData {
   public static final String UTF8 = "UTF-8";
-  public static final String ASCII = "US-ASCII";
+  /* public static final String ASCII = "US-ASCII"; */
   
 //  public static final String CASSANDRA_CQL_DATE_FORMAT = "yyyy-MM-dd HH:mm:ssZ";
   
@@ -120,6 +121,10 @@ public class CassandraColumnMetaData {
     m_columnFamilyName = columnFamily;
     
     refresh(conn);
+  }
+  
+  public String getDefaultValidationClass() {
+    return m_defaultValidationClass;
   }
   
   /**
@@ -523,6 +528,71 @@ public class CassandraColumnMetaData {
   }
   
   /**
+   * Encode a string representation of a column name using the
+   * serializer for the default comparator.
+   * 
+   * @param colName the textual column name to serialze
+   * @return a ByteBuffer encapsulating the serialized column name
+   * @throws KettleException if a problem occurs during serialization
+   */
+  public ByteBuffer columnNameToByteBuffer(String colName) 
+    throws KettleException {
+    // TODO
+    
+    AbstractType serializer = null;
+    String fullEncoder = m_columnComparator;
+    String encoder = fullEncoder;
+    
+    // if it's a composite type make sure that we check only against the
+    // primary type
+    if (encoder.indexOf('(') > 0) {
+      encoder = encoder.substring(0, encoder.indexOf('('));
+    }
+    
+    if (encoder.indexOf("UTF8Type") > 0) {
+      serializer = UTF8Type.instance;
+    } else if (encoder.indexOf("AsciiType") > 0) {
+      serializer = AsciiType.instance;
+    } else if (encoder.indexOf("LongType") > 0) {
+      serializer = LongType.instance;      
+    } else if (encoder.indexOf("DoubleType") > 0) {
+      serializer = DoubleType.instance;
+    } else if (encoder.indexOf("DateType") > 0) {
+      serializer = DateType.instance;
+    } else if (encoder.indexOf("IntegerType") > 0) {
+      serializer = IntegerType.instance;
+    }  else if (encoder.indexOf("FloatType") > 0) {
+      serializer = FloatType.instance;      
+    } else if (encoder.indexOf("LexicalUUIDType") > 0) {
+      serializer = LexicalUUIDType.instance;            
+    } else if (encoder.indexOf("UUIDType") > 0) {
+      serializer = UUIDType.instance;      
+    } else if (encoder.indexOf("BooleanType") > 0) {
+      serializer = BooleanType.instance;
+    } else if (encoder.indexOf("Int32Type") > 0) {
+      serializer = Int32Type.instance;      
+    } else if (encoder.indexOf("DecimalType") > 0) {
+      serializer = DecimalType.instance;
+    }  else if (encoder.indexOf("DynamicCompositeType") > 0) {
+      try {
+        serializer = TypeParser.parse(fullEncoder);        
+      } catch (ConfigurationException e) {
+        throw new KettleException(e.getMessage(), e);
+      }
+    } else if (encoder.indexOf("CompositeType") > 0) {
+      try {
+        serializer = TypeParser.parse(fullEncoder);        
+      } catch (ConfigurationException e) {
+        throw new KettleException(e.getMessage(), e);
+      }
+    }
+    
+    ByteBuffer result = serializer.fromString(colName);
+    
+    return result;
+  }
+  
+  /**
    * Encodes and object via serialization
    * 
    * @param obj the object to encode
@@ -670,6 +740,25 @@ public class CassandraColumnMetaData {
     
     return getColumnValue(key, m_keyValidator); */
     
+    ByteBuffer key = row.bufferForKey();
+    
+    if (m_keyValidator.indexOf("BytesType") > 0) {
+      //return aCol.getValue(); // raw bytes
+      return row.getKey();
+    }
+    
+    return getColumnValue(key, m_keyValidator);
+  }
+  
+  /**
+   * Return the decoded key value of a row. Assumes that the supplied
+   * row comes from the column family that this meta data represents!!
+   * 
+   * @param row a Cassandra row
+   * @return the decoded key value
+   * @throws KettleException if a deserializer can't be determined
+   */
+  public Object getKeyValue(KeySlice row) throws KettleException {
     ByteBuffer key = row.bufferForKey();
     
     if (m_keyValidator.indexOf("BytesType") > 0) {

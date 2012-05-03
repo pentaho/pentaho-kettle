@@ -57,7 +57,21 @@ public class CassandraConnection {
    */
   public CassandraConnection(String host, int port) 
     throws Exception {
-    this (host, port, null, null);
+    this (host, port, null, null, -1);
+  }
+  
+  /**
+   * Construct a CassandraConnection with no authentication 
+   * and the supplied socket timeout (milliseconds).
+   * 
+   * @param host the host to connect to
+   * @param port the port to use
+   * @param timeout the socket timeout to use in milliseconds
+   * @throws Exception if the connection fails
+   */
+  public CassandraConnection(String host, int port, int timeout) 
+    throws Exception {
+    this (host, port, null, null, timeout);
   }
   
   /**
@@ -72,8 +86,13 @@ public class CassandraConnection {
    * @throws Exception if the connection fails
    */
   public CassandraConnection(String host, int port,
-      String username, String password) throws Exception {
-    m_transport = new TFramedTransport(new TSocket(host, port));
+      String username, String password, int timeout) throws Exception {
+    TSocket socket = new TSocket(host, port);
+    if (timeout > 0) {
+      socket.setTimeout(timeout);
+    }
+    
+    m_transport = new TFramedTransport(socket);
     TProtocol protocol = new TBinaryProtocol(m_transport);
     m_client = new Cassandra.Client(protocol);      
     m_transport.open();

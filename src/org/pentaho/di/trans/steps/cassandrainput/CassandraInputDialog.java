@@ -63,6 +63,7 @@ import org.pentaho.di.ui.core.widget.StyledTextComp;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.steps.tableinput.SQLValuesHighlight;
+import org.pentaho.vfs.messages.Messages;
 
 /**
  * Dialog class for the CassandraInput step
@@ -100,6 +101,12 @@ public class CassandraInputDialog extends BaseStepDialog implements
   
   private Label m_outputTuplesLab;
   private Button m_outputTuplesBut;
+  
+  private Label m_useThriftLab;
+  private Button m_useThriftBut;
+  
+  private Label m_timeoutLab;
+  private TextVar m_timeoutText;
 
   private Label m_positionLab;
   
@@ -219,6 +226,31 @@ public class CassandraInputDialog extends BaseStepDialog implements
     fd.left = new FormAttachment(middle, 0);
     m_portText.setLayoutData(fd);
     
+    // timeout line
+    m_timeoutLab = new Label(shell, SWT.RIGHT);
+    props.setLook(m_timeoutLab);
+    m_timeoutLab.setText(BaseMessages.getString(PKG, 
+        "CassandraInputDialog.Timeout.Label"));
+    fd = new FormData();
+    fd.left = new FormAttachment(0, 0);
+    fd.top = new FormAttachment(m_portText, margin);
+    fd.right = new FormAttachment(middle, -margin);
+    m_timeoutLab.setLayoutData(fd);
+    
+    m_timeoutText = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+    props.setLook(m_timeoutText);
+    m_timeoutText.addModifyListener(new ModifyListener() {
+      public void modifyText(ModifyEvent e) {
+        m_timeoutText.setToolTipText(transMeta.environmentSubstitute(m_timeoutText.getText()));
+      }
+    });
+    m_timeoutText.addModifyListener(lsMod);
+    fd = new FormData();
+    fd.right = new FormAttachment(100, 0);
+    fd.top = new FormAttachment(m_portText, margin);
+    fd.left = new FormAttachment(middle, 0);
+    m_timeoutText.setLayoutData(fd);
+    
     // username line
     m_userLab = new Label(shell, SWT.RIGHT);
     props.setLook(m_userLab);
@@ -226,7 +258,7 @@ public class CassandraInputDialog extends BaseStepDialog implements
         "CassandraInputDialog.User.Label"));
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
-    fd.top = new FormAttachment(m_portText, margin);
+    fd.top = new FormAttachment(m_timeoutText, margin);
     fd.right = new FormAttachment(middle, -margin);
     m_userLab.setLayoutData(fd);
     
@@ -240,7 +272,7 @@ public class CassandraInputDialog extends BaseStepDialog implements
     m_userText.addModifyListener(lsMod);
     fd = new FormData();
     fd.right = new FormAttachment(100, 0);
-    fd.top = new FormAttachment(m_portText, margin);
+    fd.top = new FormAttachment(m_timeoutText, margin);
     fd.left = new FormAttachment(middle, 0);
     m_userText.setLayoutData(fd);
     
@@ -316,6 +348,29 @@ public class CassandraInputDialog extends BaseStepDialog implements
     fd.left = new FormAttachment(middle, 0);
     m_outputTuplesBut.setLayoutData(fd);
     
+    m_outputTuplesBut.addSelectionListener(new SelectionAdapter() {
+      public void widgetSelected(SelectionEvent e) {
+        // check tuple/thrift mode
+        checkWidgets();
+      }
+    });
+    
+    m_useThriftLab = new Label(shell, SWT.RIGHT);
+    props.setLook(m_useThriftLab);
+    m_useThriftLab.setText(BaseMessages.getString(PKG, "CassandraInputDialog.Thrift.Label"));
+    fd = new FormData();
+    fd.left = new FormAttachment(0, 0);
+    fd.top = new FormAttachment(m_outputTuplesBut, margin);
+    fd.right = new FormAttachment(middle, -margin);
+    m_useThriftLab.setLayoutData(fd);
+    
+    m_useThriftBut = new Button(shell, SWT.CHECK);
+    props.setLook(m_useThriftBut);
+    fd = new FormData();
+    fd.right = new FormAttachment(100, 0);
+    fd.top = new FormAttachment(m_outputTuplesBut, margin);
+    fd.left = new FormAttachment(middle, 0);
+    m_useThriftBut.setLayoutData(fd);
     
     // compression check box
     m_compressionLab = new Label(shell, SWT.RIGHT);
@@ -324,7 +379,7 @@ public class CassandraInputDialog extends BaseStepDialog implements
         "CassandraInputDialog.UseCompression.Label"));
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
-    fd.top = new FormAttachment(m_outputTuplesBut, margin);
+    fd.top = new FormAttachment(m_useThriftBut, margin);
     fd.right = new FormAttachment(middle, -margin);
     m_compressionLab.setLayoutData(fd);
     
@@ -333,7 +388,7 @@ public class CassandraInputDialog extends BaseStepDialog implements
     fd = new FormData();
     fd.right = new FormAttachment(100, 0);
     fd.left = new FormAttachment(middle, 0);
-    fd.top = new FormAttachment(m_outputTuplesBut, margin);
+    fd.top = new FormAttachment(m_useThriftBut, margin);
     m_useCompressionBut.setLayoutData(fd);
     m_useCompressionBut.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent e) {
@@ -536,6 +591,15 @@ public class CassandraInputDialog extends BaseStepDialog implements
     return stepname;
   }
   
+  private void checkWidgets() {
+    if (m_outputTuplesBut.getSelection()) {
+      m_useThriftBut.setEnabled(true);
+    } else {
+      m_useThriftBut.setSelection(false);
+      m_useThriftBut.setEnabled(false);
+    }
+  }
+  
   protected void ok() {
     if (Const.isEmpty(m_stepnameText.getText())) {
       return;
@@ -544,11 +608,13 @@ public class CassandraInputDialog extends BaseStepDialog implements
     stepname = m_stepnameText.getText();
     m_currentMeta.setCassandraHost(m_hostText.getText());
     m_currentMeta.setCassandraPort(m_portText.getText());
+    m_currentMeta.setSocketTimeout(m_timeoutText.getText());
     m_currentMeta.setUsername(m_userText.getText());
     m_currentMeta.setPassword(m_passText.getText());
     m_currentMeta.setCassandraKeyspace(m_keyspaceText.getText());
     m_currentMeta.setUseCompression(m_useCompressionBut.getSelection());
     m_currentMeta.setOutputKeyValueTimestampTuples(m_outputTuplesBut.getSelection());
+    m_currentMeta.setUseThriftIO(m_useThriftBut.getSelection());
     m_currentMeta.setCQLSelectQuery(m_cqlText.getText());
     
     if (!m_originalMeta.equals(m_currentMeta)) {
@@ -575,6 +641,10 @@ public class CassandraInputDialog extends BaseStepDialog implements
       m_portText.setText(m_currentMeta.getCassandraPort());
     }
     
+    if (!Const.isEmpty(m_currentMeta.getSocketTimeout())) {
+      m_timeoutText.setText(m_currentMeta.getSocketTimeout());
+    }
+    
     if (!Const.isEmpty(m_currentMeta.getUsername())) {
       m_userText.setText(m_currentMeta.getUsername());
     }
@@ -590,10 +660,13 @@ public class CassandraInputDialog extends BaseStepDialog implements
     m_useCompressionBut.setSelection(m_currentMeta.getUseCompression());
     
     m_outputTuplesBut.setSelection(m_currentMeta.getOutputKeyValueTimestampTuples());
+    m_useThriftBut.setSelection(m_currentMeta.getUseThriftIO());
     
     if (!Const.isEmpty(m_currentMeta.getCQLSelectQuery())) {
       m_cqlText.setText(m_currentMeta.getCQLSelectQuery());
     }
+    
+    checkWidgets();
   }
   
   protected void setPosition() {

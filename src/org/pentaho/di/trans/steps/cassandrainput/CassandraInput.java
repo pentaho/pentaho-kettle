@@ -29,9 +29,15 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.cassandra.thrift.Column;
+import org.apache.cassandra.thrift.ColumnParent;
 import org.apache.cassandra.thrift.Compression;
+import org.apache.cassandra.thrift.ConsistencyLevel;
 import org.apache.cassandra.thrift.CqlResult;
 import org.apache.cassandra.thrift.CqlRow;
+import org.apache.cassandra.thrift.KeyRange;
+import org.apache.cassandra.thrift.KeySlice;
+import org.apache.cassandra.thrift.SlicePredicate;
+import org.apache.cassandra.thrift.SliceRange;
 import org.pentaho.cassandra.CassandraColumnMetaData;
 import org.pentaho.cassandra.CassandraConnection;
 import org.pentaho.di.core.Const;
@@ -92,6 +98,7 @@ public class CassandraInput extends BaseStep implements StepInterface {
       // Get the connection to Cassandra
       String hostS = environmentSubstitute(m_meta.getCassandraHost());
       String portS = environmentSubstitute(m_meta.getCassandraPort());
+      String timeoutS = environmentSubstitute(m_meta.getSocketTimeout());
       String userS = m_meta.getUsername();
       String passS = m_meta.getPassword();
       if (!Const.isEmpty(userS) && !Const.isEmpty(passS)) {
@@ -107,8 +114,13 @@ public class CassandraInput extends BaseStep implements StepInterface {
       logBasic("Connecting to Cassandra node at '" + hostS + ":" + portS + "' using " +
       		"keyspace '" + keyspaceS +"'...");      
       try {
-        m_connection = CassandraInputData.getCassandraConnection(hostS, 
-            Integer.parseInt(portS), userS, passS);
+        if (Const.isEmpty(timeoutS)) {
+          m_connection = CassandraInputData.getCassandraConnection(hostS, 
+              Integer.parseInt(portS), userS, passS);
+        } else {
+          m_connection = CassandraInputData.getCassandraConnection(hostS, 
+              Integer.parseInt(portS), userS, passS, Integer.parseInt(timeoutS));
+        }
         m_connection.setKeyspace(keyspaceS);
       } catch (Exception ex) {
         closeConnection();
@@ -167,18 +179,46 @@ public class CassandraInput extends BaseStep implements StepInterface {
       Compression compression = 
         m_meta.getUseCompression() ? Compression.GZIP : Compression.NONE;
       try {
-        logBasic("Executing query '" + queryS + "'" 
-            + (m_meta.getUseCompression() ? " (using GZIP query compression)" : "") 
-            + "...");
-        byte[] queryBytes = (m_meta.getUseCompression() ? 
-            CassandraInputData.compressQuery(queryS, compression) : queryS.getBytes());
-        
-        // In Cassandra 1.1 the version of CQL to use can be set programatically. The default
-        // is to use CQL v 2.0.0
-        //m_connection.getClient().set_cql_version("3.0.0");
-        CqlResult result = m_connection.getClient().
+        if (!m_meta.getUseThriftIO()) {
+          logBasic("Executing query '" + queryS + "'" 
+              + (m_meta.getUseCompression() ? " (using GZIP query compression)" : "") 
+              + "...");
+          byte[] queryBytes = (m_meta.getUseCompression() ? 
+              CassandraInputData.compressQuery(queryS, compression) : queryS.getBytes());
+
+          // In Cassandra 1.1 the version of CQL to use can be set programatically. The default
+          // is to use CQL v 2.0.0
+          //m_connection.getClient().set_cql_version("3.0.0");
+          CqlResult result = m_connection.getClient().
           execute_cql_query(ByteBuffer.wrap(queryBytes), compression);
-        m_resultIterator = result.getRowsIterator();
+          m_resultIterator = result.getRowsIterator();
+        } else if (m_meta.getOutputKeyValueTimestampTuples()) {
+          // --------------- use thrift IO (only applicable for <key, value> tuple mode at present) ----------
+          List<String> userCols = (m_meta.m_specificCols != null && m_meta.m_specificCols.size() > 0)
+            ? m_meta.m_specificCols : null;
+          m_data.sliceModeInit(m_cassandraMeta, userCols, m_meta.m_rowLimit, m_meta.m_colLimit, 
+              m_meta.m_rowBatchSize, m_meta.m_colBatchSize);
+          List<Object[]> batch = 
+            m_data.cassandraRowToKettleTupleSliceMode(m_cassandraMeta, m_connection);
+          
+          while (batch != null) {
+            for (Object[] r : batch) {
+              putRow(m_data.getOutputRowMeta(), r);
+              if (log.isRowLevel()) {
+                log.logRowlevel(toString(), "Outputted row #" + getProcessed() 
+                    + " : " + r);
+              }
+            }
+            batch = 
+              m_data.cassandraRowToKettleTupleSliceMode(m_cassandraMeta, m_connection);
+          }
+          // done
+          closeConnection();
+          setOutputDone();
+          return false;
+          
+          // --------------- end thrift IO mode ----------------------------------------------------------
+        }
       } catch (Exception e) {
         closeConnection();
         throw new KettleException(e.getMessage(), e);
@@ -196,7 +236,12 @@ public class CassandraInput extends BaseStep implements StepInterface {
         // The key always appears to be the first column in the list (even though it is separately
         // avaliable via CqlRow.getKey(). We discard it here because testing for a column named 
         // "KEY" only works if column names are textual
-        columnIterator.next(); // throw away the key column        
+        // ARGHHHHH! - this assumption is only true for wildcard queries!!!!!! (i.e. select *)!!!!!!
+        // So select col1, col2 etc. or ranges (which we don't support) will not include the row key
+        // as the first column
+        if (m_meta.m_isSelectStarQuery) {
+          columnIterator.next(); // throw away the key column
+        }
         
         while ((outputRowData =
           m_data.cassandraRowToKettleTupleMode(m_cassandraMeta, nextRow, 
