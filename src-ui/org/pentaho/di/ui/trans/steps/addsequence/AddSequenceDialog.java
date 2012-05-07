@@ -74,7 +74,7 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 
     private Label        wlConnection;
 	private CCombo       wConnection;
-    private Button       wbnConnection, wbeConnection;
+    private Button       wbnConnection, wbeConnection, wbwConnection;
 
     private Label        wlSchema;
     private TextVar      wSchema;
@@ -213,9 +213,10 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 	);
 		// Connection line
 		wlConnection = new Label(gDatabase, SWT.RIGHT);
+		wbwConnection = new Button(gDatabase, SWT.PUSH);
         wbnConnection = new Button(gDatabase, SWT.PUSH);
 		wbeConnection = new Button(gDatabase, SWT.PUSH);
-        wConnection = addConnectionLine(gDatabase, wUseDatabase, middle, margin, wlConnection,wbnConnection, wbeConnection);
+        wConnection = addConnectionLine(gDatabase, wUseDatabase, middle, margin, wlConnection,wbwConnection, wbnConnection, wbeConnection);
 		if (input.getDatabase()==null && transMeta.nrDatabases()==1) wConnection.select(0);
 		wConnection.addModifyListener(lsMod);
         
@@ -472,6 +473,7 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
         wbSchema.setEnabled(useDatabase);
 		wlConnection.setEnabled(useDatabase);
 		wConnection.setEnabled(useDatabase);
+		wbwConnection.setEnabled(useDatabase);
         wbnConnection.setEnabled(useDatabase);
 		wbeConnection.setEnabled(useDatabase);
         wlSchema.setEnabled(useDatabase);

@@ -73,6 +73,7 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
+import org.pentaho.di.ui.core.database.wizard.CreateDatabaseWizard;
 import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
@@ -456,17 +457,17 @@ public class BaseStepDialog extends Dialog {
 
   public CCombo addConnectionLine(Composite parent, Control previous, int middle, int margin, Class<? extends DatabaseInterface> databaseType) {
     return addConnectionLine(parent, previous, middle, margin, new Label(parent, SWT.RIGHT), new Button(parent,
-        SWT.PUSH), new Button(parent, SWT.PUSH), databaseType);
+            SWT.PUSH), new Button(parent, SWT.PUSH), new Button(parent, SWT.PUSH), databaseType);
   }
 
   public CCombo addConnectionLine(Composite parent, Control previous, int middle, int margin, final Label wlConnection,
-	      final Button wbnConnection, final Button wbeConnection) {
-	  return addConnectionLine(parent, previous, middle, margin, wlConnection, wbnConnection, wbeConnection, null);
+		  final Button wbwConnection, final Button wbnConnection, final Button wbeConnection) {
+	  return addConnectionLine(parent, previous, middle, margin, wlConnection, wbwConnection, wbnConnection, wbeConnection, null);
   }
   public CCombo addConnectionLine(Composite parent, Control previous, int middle, int margin, final Label wlConnection,
-      final Button wbnConnection, final Button wbeConnection, final Class<? extends DatabaseInterface> databaseType) {
+		  final Button wbwConnection , final Button wbnConnection, final Button wbeConnection, final Class<? extends DatabaseInterface> databaseType) {
     final CCombo wConnection;
-    final FormData fdlConnection, fdbConnection, fdeConnection, fdConnection;
+    final FormData fdlConnection, fdbConnection, fdeConnection, fdConnection, fdbwConnection;
 
     wConnection = new CCombo(parent, SWT.BORDER | SWT.READ_ONLY);
     props.setLook(wConnection);
@@ -484,6 +485,31 @@ public class BaseStepDialog extends Dialog {
       fdlConnection.top = new FormAttachment(0, 0);
     wlConnection.setLayoutData(fdlConnection);
 
+    // 
+    // Wizard button
+    //
+    wbwConnection.setText(BaseMessages.getString(PKG, "BaseStepDialog.WizardConnectionButton.Label")); //$NON-NLS-1$
+    wbwConnection.addSelectionListener(new SelectionAdapter() {
+      public void widgetSelected(SelectionEvent e) {
+    	CreateDatabaseWizard cdw = new CreateDatabaseWizard();
+    	DatabaseMeta newDBInfo = cdw.createAndRunDatabaseWizard(shell, props, transMeta.getDatabases());
+    	if (newDBInfo != null) {
+             transMeta.addDatabase(newDBInfo);
+             wConnection.removeAll();
+             addDatabases(wConnection);
+             selectDatabase(wConnection, newDBInfo.getName());
+           }
+      }
+    });
+    fdbwConnection = new FormData();
+    fdbwConnection.right = new FormAttachment(100, 0);
+    if (previous != null)
+      fdbwConnection.top = new FormAttachment(previous, margin);
+    else
+      fdbwConnection.top = new FormAttachment(0, 0);
+    wbwConnection.setLayoutData(fdbwConnection);
+
+    
     // 
     // NEW button
     //
@@ -504,7 +530,7 @@ public class BaseStepDialog extends Dialog {
       }
     });
     fdbConnection = new FormData();
-    fdbConnection.right = new FormAttachment(100, 0);
+    fdbConnection.right = new FormAttachment(wbwConnection, -margin);
     if (previous != null)
       fdbConnection.top = new FormAttachment(previous, margin);
     else

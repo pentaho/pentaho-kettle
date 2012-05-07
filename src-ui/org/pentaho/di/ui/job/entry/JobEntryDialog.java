@@ -45,6 +45,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
+import org.pentaho.di.ui.core.database.wizard.CreateDatabaseWizard;
 
 public class JobEntryDialog extends Dialog {
 	private static Class<?> PKG = StepInterface.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
@@ -81,13 +82,14 @@ public class JobEntryDialog extends Dialog {
   }
   
   public CCombo addConnectionLine(Composite parent, Control previous, int middle, int margin) {
-    return addConnectionLine(parent, previous, middle, margin, new Label(parent, SWT.RIGHT), new Button(parent, SWT.PUSH), new Button(parent, SWT.PUSH));
+    return addConnectionLine(parent, previous, middle, margin, new Label(parent, SWT.RIGHT)
+    , new Button(parent, SWT.PUSH), new Button(parent, SWT.PUSH), new Button(parent, SWT.PUSH));
   }
   
   public CCombo addConnectionLine(Composite parent, Control previous, int middle, int margin, final Label wlConnection,
-      final Button wbnConnection, final Button wbeConnection) {
+      final Button wbwConnection, final Button wbnConnection, final Button wbeConnection) {
     final CCombo wConnection;
-    final FormData fdlConnection, fdbConnection, fdeConnection, fdConnection;
+    final FormData fdlConnection, fdbConnection, fdeConnection, fdConnection, fdbwConnection;
 
     wConnection = new CCombo(parent, SWT.BORDER | SWT.READ_ONLY);
     props.setLook(wConnection);
@@ -105,6 +107,31 @@ public class JobEntryDialog extends Dialog {
       fdlConnection.top = new FormAttachment(0, 0);
     wlConnection.setLayoutData(fdlConnection);
 
+    // 
+    // Wizard button
+    //
+    wbwConnection.setText(BaseMessages.getString(PKG, "BaseStepDialog.WizardConnectionButton.Label")); //$NON-NLS-1$
+    wbwConnection.addSelectionListener(new SelectionAdapter() {
+      public void widgetSelected(SelectionEvent e) {
+    	CreateDatabaseWizard cdw = new CreateDatabaseWizard();
+    	DatabaseMeta newDBInfo = cdw.createAndRunDatabaseWizard(shell, props, jobMeta.getDatabases());
+    	if (newDBInfo != null) {
+             jobMeta.addDatabase(newDBInfo);
+             wConnection.removeAll();
+             addDatabases(wConnection);
+             selectDatabase(wConnection, newDBInfo.getName());
+           }
+      }
+    });
+    fdbwConnection = new FormData();
+    fdbwConnection.right = new FormAttachment(100, 0);
+    if (previous != null)
+      fdbwConnection.top = new FormAttachment(previous, margin);
+    else
+      fdbwConnection.top = new FormAttachment(0, 0);
+    wbwConnection.setLayoutData(fdbwConnection);
+
+    
     // 
     // NEW button
     //
@@ -125,7 +152,7 @@ public class JobEntryDialog extends Dialog {
       }
     });
     fdbConnection = new FormData();
-    fdbConnection.right = new FormAttachment(100, 0);
+    fdbConnection.right = new FormAttachment(wbwConnection, -margin);
     if (previous != null)
       fdbConnection.top = new FormAttachment(previous, margin);
     else

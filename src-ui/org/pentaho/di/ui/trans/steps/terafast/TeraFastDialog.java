@@ -95,7 +95,7 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
 
     private Label wlConnection;
 
-    private Button wbnConnection, wbeConnection;
+    private Button wbwConnection, wbnConnection, wbeConnection;
 
     private Label wlTable;
 
@@ -586,10 +586,11 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
         this.buildFastloadLine(factory);
         this.buildLogFileLine(factory);
         // connection line
+        this.wbwConnection = new Button(this.shell, SWT.PUSH);
         this.wbnConnection = new Button(this.shell, SWT.PUSH);
         this.wbeConnection = new Button(this.shell, SWT.PUSH);
         this.wlConnection = new Label(this.shell, SWT.RIGHT);
-        this.wConnection = addConnectionLine(this.shell, this.wLogFile, factory.getMiddle(), factory.getMargin(), this.wlConnection, this.wbnConnection, this.wbeConnection, TeradataDatabaseMeta.class);
+        this.wConnection = addConnectionLine(this.shell, this.wLogFile, factory.getMiddle(), factory.getMargin(), this.wlConnection, this.wbwConnection, this.wbnConnection, this.wbeConnection, TeradataDatabaseMeta.class);
         this.buildTableLine(factory);
         this.buildTruncateTableLine(factory);
         this.buildDataFileLine(factory);
@@ -939,6 +940,7 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
         this.wbTruncateTable.setEnabled(!useControlFile);
         this.wConnection.setEnabled(!useControlFile);
         this.wbeConnection.setEnabled(!useControlFile);
+        this.wbwConnection.setEnabled(!useControlFile);
         this.wbnConnection.setEnabled(!useControlFile);
         this.wVariableSubstitution.setEnabled(useControlFile);
     }
