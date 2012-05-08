@@ -23,7 +23,7 @@
             description="Classes compiled from src-mapred are placed here"/>
   <property name="mapred.artifact.name" value="${ivy.artifact.id}-mapred-${project.revision}.jar" description="Name of the mapred jar file to create"/>
 
-  <property name="stage.pmr.dir" value="${bin.dir}/pmr"/>
+  <property name="stage.pmr.dir" value="${basedir}/stage-pmr"/>
   <property name="pmr.archive.name" value="pentaho-mapreduce-libraries"/>
   
 	<property name="pdi-with-plugin"
@@ -97,7 +97,7 @@
   </target>
   
   <!-- override jar.main so we can jar up our mapred stuff too -->
-  <target name="jar.main" depends="subfloor.jar.main,jar-mapred"/>
+  <target name="jar" depends="subfloor-pkg.jar,jar-mapred"/>
 
   <target name="jar-mapred" depends="compile-mapred,generate.manifest">
     <jar destfile="${dist.dir}/${mapred.artifact.name}" manifest="${dist.manifest.file}">
@@ -122,6 +122,10 @@
 
   <target name="resolve" depends="subfloor.resolve,resolve-pmr"/>
 
+  <target name="clean-pmr">
+    <delete dir="${stage.pmr.dir}"/>
+  </target>
+
   <target name="resolve-pmr" depends="install-ivy">
     <delete dir="${stage.pmr.dir}/lib"/>
     <ivy:resolve file="${ivyfile}" conf="default" />
@@ -130,7 +134,9 @@
 
 	<target name="dist-noresolve" depends="jar,hbase-custom-comparators-jar,jar-mapred,package" description="Builds and packages the application" />
 	<target name="dist" depends="resolve,jar,hbase-custom-comparators-jar,jar-mapred,package" description="Builds and packages the application" />
-	
+
+  <target name="clean-all" depends="subfloor.clean-all,clean-pmr" />
+
 	<target name="clean-dist">
 		<delete dir="${dist.dir}" />
 		<delete dir="${stage.dir}" />
@@ -223,7 +229,7 @@
 		</zip>
 	</target>
 	
-	<target name="install-plugin">
+	<target name="install-plugin" depends="jar,package">
 		<!-- Install the plugin -->
 		<delete dir="${kettle.dist.dir}/plugins/pentaho-big-data-plugin"/>
 		<unzip dest="${kettle.dist.dir}/plugins">

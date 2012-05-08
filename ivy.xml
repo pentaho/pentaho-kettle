@@ -52,6 +52,7 @@
       changing="false" />
     <dependency org="org.apache.pig" name="pig" rev="${dependency.pig.revision}" transitive="false" conf="default->default"
       changing="false"/>
+    <dependency org="org.apache.sqoop" name="sqoop" rev="1.4.1-incubating" changing="true" transitive="false"/>
     <dependency org="jline" name="jline" rev="${dependency.jline.revision}" transitive="false" conf="default->default"
       changing="false"/>
     <dependency org="libthrift" name="libthrift" rev="${dependency.libthrift.revision}" transitive="false" conf="default->default"
