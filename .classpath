@@ -8,6 +8,7 @@
 	<classpathentry kind="src" output="classes-dbdialog" path="src-dbdialog"/>
 	<classpathentry kind="src" path="src-plugins/kettle-profiling-datacleaner/src"/>
 	<classpathentry kind="src" path="src-plugins/birt-output/src"/>
+	<classpathentry kind="src" path="src-plugins/kettle-palo-plugin/src"/>
 	<classpathentry kind="src" path="src-jdbc"/>
 	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="lib" path="libext/js.jar"/>

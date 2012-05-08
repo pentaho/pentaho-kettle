@@ -32,11 +32,9 @@ package org.pentaho.di.trans.steps.palo.dimoutput;
  *   Copyright 2011 De Bortoli Wines Pty Limited (Australia)
  */
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.palo.core.DimensionGroupingCollection;
+import org.pentaho.di.palo.core.ConsolidationCollection;
+import org.pentaho.di.palo.core.ConsolidationElement;
 import org.pentaho.di.palo.core.PaloHelper;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -46,14 +44,11 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
-/**
- *
- */
 public class PaloDimOutput extends BaseStep implements StepInterface {
 	private PaloDimOutputMeta meta;
 	private PaloDimOutputData data;
-	private List<String[]>    currentTransformationRows = null;
 	private int rowCount = 0;
+	private ConsolidationCollection consolidations;
 
 	public PaloDimOutput(final StepMeta stepMeta, final StepDataInterface stepDataInterface, final int copyNr, final TransMeta transMeta, final Trans trans) {
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
@@ -112,14 +107,8 @@ public class PaloDimOutput extends BaseStep implements StepInterface {
 			
 			try {
 	
-				String[] newRow = new String[data.indexes.length];
+				ConsolidationElement parent = null;
 				for (int i = 0; i < data.indexes.length; i++) {
-					/* Default weight to 1 if it was left to default */
-					if (i % 2 == 1 && data.indexes[i] < 0)
-						newRow[i] = "1";
-					else
-						newRow[i] = (r[data.indexes[i]] == null ? null : r[data.indexes[i]].toString());
-	
 					if (i % 2 == 0)
 					{
 						if (r[data.indexes[i]] == null)
@@ -127,13 +116,33 @@ public class PaloDimOutput extends BaseStep implements StepInterface {
 	
 						data.elementNamesBatch.add(r[data.indexes[i]].toString());
 					}
+					else{
+						/* Default weight to 1 if it was left to default */
+						double consolidation_factor = 1;
+						if (data.indexes[i] >= 0)
+							consolidation_factor = Double.parseDouble((r[data.indexes[i]] == null ? 0 : r[data.indexes[i]]).toString());
+						
+						ConsolidationElement child = null;
+						
+						if (r[data.indexes[i - 1]] != null){
+							String elementName = r[data.indexes[i - 1]].toString();
+							if (!this.consolidations.hasConsolidationElement(elementName)){
+								child = new ConsolidationElement(elementName);
+								this.consolidations.add(child);
+							}
+							else child = this.consolidations.getConsolidationElement(elementName);
+
+							if (parent != null)
+								parent.addChild(child, consolidation_factor);
+						}
+						
+						parent = child;
+					}
 				}
 	
 				// Should probably make this a parameter on the dialog
 				if (data.elementNamesBatch.size() % 100 == 0)
 					commitBatch();
-	
-				this.currentTransformationRows.add(newRow);
 	
 			} catch (Exception e) {
 				throw new KettleException("Failed to add row to the row buffer", e);
@@ -153,17 +162,11 @@ public class PaloDimOutput extends BaseStep implements StepInterface {
 				
 				// if it's the last row create the dimension
 				this.logBasic("All rows have been added. Looking for consolidations");
-				this.logDebug("Read rows:" + this.currentTransformationRows.size());
-				DimensionGroupingCollection newDimension = data.helper.getDimensionGroupings(meta.getDimension(), this.currentTransformationRows);
-				if (newDimension == null || newDimension.size() == 0){
-					this.logBasic("No consolidations to update.");
-				}
-				else{
-					this.logBasic("Consolidations Ok");
-					this.logBasic("Updating consolidations for Dimension" + meta.getDimension());
-					data.helper.addDimensionConsolidations(meta.getDimension(), newDimension);
-					this.logBasic("Consolidations updated.");
-				}
+				
+				this.logBasic("Updating consolidations for Dimension" + meta.getDimension());
+				data.helper.addDimensionConsolidations(meta.getDimension(), this.consolidations);
+				this.logBasic("Consolidations updated.");
+				
 				setOutputDone();
 				return false;
 			} catch (Exception e) {
@@ -187,7 +190,7 @@ public class PaloDimOutput extends BaseStep implements StepInterface {
 		meta = (PaloDimOutputMeta) smi;
 		data = (PaloDimOutputData) sdi;
 
-		this.currentTransformationRows = new ArrayList<String[]>();
+		this.consolidations = new ConsolidationCollection();
 		if (super.init(smi, sdi)) {
 			try {
 				this.logBasic("Meta Levels:" + meta.getLevels().size());
