@@ -5,6 +5,8 @@ package org.pentaho.di.core.market;
 
 import junit.framework.TestCase;
 
+import org.pentaho.di.core.market.entry.MarketEntry;
+import org.pentaho.di.core.market.entry.MarketEntryType;
 import org.pentaho.di.core.xml.XMLHandler;
 
 /**

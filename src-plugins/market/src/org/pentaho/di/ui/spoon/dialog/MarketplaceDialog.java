@@ -21,15 +21,6 @@
  ******************************************************************************/
 
 package org.pentaho.di.ui.spoon.dialog;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -50,11 +41,10 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.market.MarketEntry;
-import org.pentaho.di.core.market.Marketplace;
-import org.pentaho.di.core.plugins.PluginRegistry;
-import org.pentaho.di.core.vfs.KettleVFS;
-import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.market.Market;
+import org.pentaho.di.core.market.entry.MarketEntries;
+import org.pentaho.di.core.market.entry.MarketEntry;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -62,13 +52,11 @@ import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 
 
 public class MarketplaceDialog extends Dialog
 {
-	private static Class<?> PKG = MarketplaceDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	private static Class<?> MARKET_PKG = Market.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	private Label        wlMarketplaces;
 
@@ -78,25 +66,20 @@ public class MarketplaceDialog extends Dialog
 	
 	private PropsUI props;
 	
-	private List<Marketplace> marketplaces;
+    private ExpandBar bar;
 
-  private ExpandBar bar;
+    private int margin;
 
-  private ArrayList<MarketEntry> marketEntries;
-
-  private int margin;
-
-  private int middle;
+    private int middle;
 	
 	public MarketplaceDialog(Shell parent)
 	{
 		super(parent, SWT.NONE);
-		
-		props = PropsUI.getInstance();
+		props = PropsUI.getInstance();  
 	}
 
 	public void open()
-	{
+	{	
 		Shell parent = getParent();
 		Display display = parent.getDisplay();
 
@@ -113,14 +96,8 @@ public class MarketplaceDialog extends Dialog
 		shell.setImage(GUIResource.getInstance().getImageLogoSmall());
 		
 		margin = Const.MARGIN;
-    middle = props.getMiddlePct();
-		
-		// First read the markets file, set a default when non exists
-		//
-		if (!readMarketsFile()) return;
-		
-		if (!readMarketEntries()) return;
-		
+        middle = props.getMiddlePct();
+				
 		wlMarketplaces=new Label(shell, SWT.NONE);
 		wlMarketplaces.setText("Detected plugins"); 
  		props.setLook(wlMarketplaces);
@@ -139,6 +116,7 @@ public class MarketplaceDialog extends Dialog
 		
 		// Add an expand item for each market place...
 		//
+		MarketEntries marketEntries = new MarketEntries();
 		for (final MarketEntry marketEntry : marketEntries) {
 		  Composite composite = new Composite(bar, SWT.NONE);
 		  FormLayout layout = new FormLayout();
@@ -153,77 +131,90 @@ public class MarketplaceDialog extends Dialog
 		  Control lastControl = null;
 
 		  // The ID
-		  addLeftLabel(composite, "ID:", lastControl);
+		  addLeftLabel(composite, BaseMessages.getString(MARKET_PKG, "MarketplacesDialog.ID.label"), lastControl);
 		  lastControl = addRightLabel(composite, Const.NVL(marketEntry.getId(), ""), lastControl);
 		  
 		  // The name
-		  addLeftLabel(composite, "Name:", lastControl);
+		  addLeftLabel(composite, BaseMessages.getString(MARKET_PKG, "MarketplacesDialog.Name.label"), lastControl);
 		  lastControl = addRightLabel(composite, Const.NVL(marketEntry.getName(), ""), lastControl);
 
       // The description
 		  if (!Const.isEmpty(marketEntry.getDescription())) {
-        addLeftLabel(composite, "Description:", lastControl);
+        addLeftLabel(composite, BaseMessages.getString(MARKET_PKG, "MarketplacesDialog.Description.label"), lastControl);
         lastControl = addRightLabel(composite, marketEntry.getDescription(), lastControl);
 		  }
 
       // The package URL
-      addLeftLabel(composite, "Package URL:", lastControl);
+      addLeftLabel(composite, BaseMessages.getString(MARKET_PKG, "MarketplacesDialog.PackageURL.label"), lastControl);
       lastControl = addRightURL(composite, marketEntry.getPackageUrl(), lastControl);
 
 
       // The documentation URL
       if (!Const.isEmpty(marketEntry.getDocumentationUrl())) {
-        addLeftLabel(composite, "Documentation:", lastControl);
+        addLeftLabel(composite, BaseMessages.getString(MARKET_PKG, "MarketplacesDialog.Documentation.label"), lastControl);
         lastControl = addRightURL(composite, marketEntry.getDocumentationUrl(), lastControl);
       }
 
       // The case tracking URL
       if (!Const.isEmpty(marketEntry.getCasesUrl())) {
-        addLeftLabel(composite, "Case tracking:", lastControl);
+        addLeftLabel(composite, BaseMessages.getString(MARKET_PKG, "MarketplacesDialog.CaseTracking.label"), lastControl);
         lastControl = addRightURL(composite, marketEntry.getCasesUrl(), lastControl);
       }
 
       // The source code URL
       if (!Const.isEmpty(marketEntry.getSourceUrl())) {
-        addLeftLabel(composite, "Source code:", lastControl);
+        addLeftLabel(composite, BaseMessages.getString(MARKET_PKG, "MarketplacesDialog.SourceCode.label"), lastControl);
         lastControl = addRightURL(composite, marketEntry.getSourceUrl(), lastControl);
       }
       
       // The license name
       if (!Const.isEmpty(marketEntry.getLicenseName())) {
-        addLeftLabel(composite, "License:", lastControl);
+        addLeftLabel(composite, BaseMessages.getString(MARKET_PKG, "MarketplacesDialog.License.label"), lastControl);
         lastControl = addRightLabel(composite, Const.NVL(marketEntry.getLicenseName(), ""), lastControl);
       }
 
       // The license text
       if (!Const.isEmpty(marketEntry.getLicenseText())) {
-        addLeftLabel(composite, "License details:", lastControl);
+        addLeftLabel(composite, BaseMessages.getString(MARKET_PKG, "MarketplacesDialog.LicenseDetails.label"), lastControl);
         lastControl = addRightLabel(composite, Const.NVL(marketEntry.getLicenseText(), ""), lastControl);
       }
 
       // The support level
-      addLeftLabel(composite, "Support level:", lastControl);
+      addLeftLabel(composite, BaseMessages.getString(MARKET_PKG, "MarketplacesDialog.SupportLevel.label"), lastControl);
       lastControl = addRightLabel(composite, marketEntry.getSupportLevel().getDescription(), lastControl);
 
       // The support message
       if (!Const.isEmpty(marketEntry.getSupportMessage())) {
-        addLeftLabel(composite, "Support message:", lastControl);
+        addLeftLabel(composite, BaseMessages.getString(MARKET_PKG, "MarketplacesDialog.SupportMessage.label"), lastControl);
         lastControl = addRightLabel(composite, marketEntry.getSupportMessage(), lastControl);
       }
 
       // The support URL
       if (!Const.isEmpty(marketEntry.getSupportUrl())) {
-        addLeftLabel(composite, "Support URL:", lastControl);
+        addLeftLabel(composite, BaseMessages.getString(MARKET_PKG, "MarketplacesDialog.SupportURL.label"), lastControl);
         lastControl = addRightURL(composite, marketEntry.getSupportUrl(), lastControl);
       }
 
-      Button button = new Button(composite, SWT.PUSH);
-      button.setText("  Install this plugin  ");
+      final Button button = new Button(composite, SWT.PUSH);
+      final ExpandItem expandItem = new ExpandItem (bar, SWT.NONE, 0);
+      setButtonLabel(button, Market.isInstalled(marketEntry.getName()));
+	  button.addSelectionListener(new SelectionAdapter() { 
+		  public void widgetSelected(SelectionEvent e) { 
+			  try {
+				  Market.installUninstall(marketEntry, Market.isInstalled(marketEntry.getName()));
+				  setButtonLabel(button, Market.isInstalled(marketEntry.getName()));
+				  setPluginName(expandItem, marketEntry.getName(), Market.isInstalled(marketEntry.getName()));
+			  }
+			  catch(KettleException ke){
+			     new ErrorDialog(Spoon.getInstance().getShell(), BaseMessages.getString(MARKET_PKG, "Market.error"), BaseMessages.getString(MARKET_PKG, "Market.installUninstall.error"), ke);
+			  } 
+		  } 
+      });
+      
       FormData fdButton = new FormData();
       fdButton.top = new FormAttachment(lastControl, 4*margin);
       fdButton.left = new FormAttachment(middle, margin);
       button.setLayoutData(fdButton);
-      button.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { installPlugin(marketEntry); } });
       
       Label wlName = new Label(composite, SWT.LEFT);
       props.setLook(wlName);
@@ -237,8 +228,8 @@ public class MarketplaceDialog extends Dialog
 		  
 		  // add widgets to composite...
 		  //
-		  ExpandItem expandItem = new ExpandItem (bar, SWT.NONE, 0);
-		  expandItem.setText(marketEntry.getName());
+		  
+		  setPluginName(expandItem, marketEntry.getName(), Market.isInstalled(marketEntry.getName()));
 		  expandItem.setHeight(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT).y);
 		  expandItem.setControl(composite);
 		  Image image;
@@ -253,7 +244,7 @@ public class MarketplaceDialog extends Dialog
 		}
 
 		wClose=new Button(shell, SWT.PUSH);
-		wClose.setText(BaseMessages.getString(PKG, "System.Button.Close"));
+		wClose.setText(BaseMessages.getString(MARKET_PKG, "System.Button.Close"));
 		wClose.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { dispose(); }});
 		
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wClose }, margin, null);
@@ -270,93 +261,24 @@ public class MarketplaceDialog extends Dialog
 		}
 	}
 
-  protected void installPlugin(final MarketEntry marketEntry) {
-    
-    // First see if we need to put a support disclaimer in front of the user...
-    //
-    
-    
-    
-    try {
-      // Unzip content of zip file in appropriate folder in KETTLE_HOME...
-      //
-      String subfolder;
-      switch(marketEntry.getType()) {
-      case Step : subfolder = "steps"; break;
-      case JobEntry : subfolder = "jobentries"; break;
-      case Partitioner: subfolder = "steps"; break;
-      case SpoonPlugin: subfolder = "spoon"; break;
-      case Database: subfolder = "databases"; break;
-      case Repository: subfolder = "repositories"; break;
-      default: subfolder = null;
+  private void setButtonLabel(Button button, boolean isInstalled) {
+      if (isInstalled) {
+    	  button.setText("  Uninstall this plugin  ");
+   	  }
+      else {
+    	  button.setText("  Install this plugin  ");  
       }
-      
-      // ~/.kettle/plugins/steps/
-      // ~/.kettle/plugins/
-      //
-      String folderName = Const.getKettleDirectory() + Const.FILE_SEPARATOR + "plugins" + ( subfolder==null ? "" : Const.FILE_SEPARATOR + subfolder );
-      
-      File folder = new File(folderName);
-      if (folder.exists()) {
-        // TODO: ask about overwrite...
-        //
-      }
-      
-      // Read the package, extract in folder
-      //
-      InputStream inputStream = KettleVFS.getInputStream(marketEntry.getPackageUrl());
-      ZipInputStream zis = new ZipInputStream(inputStream);
-      ZipEntry zipEntry = zis.getNextEntry();
-      byte[] buffer = new byte[1024];
-      int bytesRead = 0;
-      FileOutputStream fos=null;
-      
-      while (zipEntry!=null) {
-        try {
-          File file = new File(folderName + File.separator + zipEntry.getName());
-          
-          if (zipEntry.isDirectory()) {
-            file.mkdirs();
-          } else {
-            file.getParentFile().mkdirs();
-            
-            fos = new FileOutputStream(file);
-            while( (bytesRead=zis.read(buffer))!=-1) {
-              fos.write(buffer, 0, bytesRead);
-            }
-          }
-          
-          zipEntry = zis.getNextEntry();
-        } finally {
-          if (fos!=null) {
-            try {
-              fos.close();
-            } catch(IOException e) {
-              // Ignore.
-            }
-          }
-        }
-      }
-      
-      // At the end, refresh the plugin registry
-      //
-      PluginRegistry.init();
-      Spoon spoon = Spoon.getInstance(); 
-      spoon.refreshCoreObjects();
-      spoon.refreshTree();
-      spoon.refreshGraph();
-      spoon.enableMenus();
-      GUIResource.getInstance().reload();
-      
-      // Refresh active filter too
-      spoon.selectionFilter.setText(spoon.selectionFilter.getText());
-      
-    } catch(Exception e) {
-      new ErrorDialog(shell, "Error", "Error installing plugin: ", e);
-    }
-    
   }
-
+  
+  private void setPluginName(ExpandItem expandItem, String name, boolean isInstalled) {
+	  if (isInstalled) {
+		  expandItem.setText(BaseMessages.getString(MARKET_PKG, "Marketplaces.Dialog.PluginInstalled.message", name));
+	  }
+	  else {
+		  expandItem.setText(BaseMessages.getString(MARKET_PKG, "Marketplaces.Dialog.PluginNotInstalled.message", name));
+	  }
+  }
+	
   private void addLeftLabel(Composite composite, String string, Control lastControl) {
     Label label = new Label(composite, SWT.RIGHT);
     props.setLook(label);
@@ -414,49 +336,6 @@ public class MarketplaceDialog extends Dialog
     return link;
   }
   
-  private boolean readMarketsFile() {
-    marketplaces = new ArrayList<Marketplace>();
-    String marketplacesFile = Const.getMarketplacesFile();
-    try {
-      File file = new File(marketplacesFile);
-      if (file.exists()) {
-        Document doc = XMLHandler.loadXMLFile(marketplacesFile);
-        Node placesNode = XMLHandler.getSubNode(doc, "marketplaces");
-        List<Node> nodes = XMLHandler.getNodes(placesNode, Marketplace.XML_TAG);
-        for (Node node : nodes ) {
-          marketplaces.add(new Marketplace(node));
-        }
-      } else {
-        marketplaces = Marketplace.getDefaultMarketplaces();
-      }
-      
-      return true;
-    } catch(Exception e) {
-      new ErrorDialog(shell, "Error", "There was an error reading from marketplaces file: "+marketplacesFile, e);
-      return false;
-    }
-  }
-  
-  private boolean readMarketEntries() {
-    marketEntries = new ArrayList<MarketEntry>();
-    for (Marketplace marketplace : marketplaces) {
-      try {
-        // Read the content from the given URL...
-        //
-        Document doc = XMLHandler.loadXMLFile( KettleVFS.getInputStream(marketplace.getEntriesUrl()) );
-        
-        Node marketNode = XMLHandler.getSubNode(doc, "market");
-        List<Node> entryNodes = XMLHandler.getNodes(marketNode, MarketEntry.XML_TAG);
-        for (Node entryNode : entryNodes ) {
-          marketEntries.add(new MarketEntry(entryNode));
-        }
-      } catch(Exception e) {
-        new ErrorDialog(shell, "Error", "There was an error reading from marketplace '"+marketplace.getName()+"' with URL '"+marketplace.getEntriesUrl()+"'", e);
-      }
-    }
-    return !marketEntries.isEmpty();
-  }
-
   public void dispose()
 	{
 		props.setScreen(new WindowProperty(shell));

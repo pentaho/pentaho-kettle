@@ -1359,17 +1359,7 @@ public class Const
     {
         return getKettleDirectory() + FILE_SEPARATOR + "shared.xml";
     }
-    
-    /**
-     * Determines the location of the marketplaces file
-     * @return the name of the marketplaces file
-     */
-    public static final String getMarketplacesFile()
-    {
-        return getKettleDirectory() + FILE_SEPARATOR + "marketplaces.xml";
-    }
-
-    
+        
 	/**
 	 * Returns the path to the Kettle local (current directory) repositories XML file.
 	 * @return The local repositories file.

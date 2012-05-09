@@ -1,6 +1,7 @@
-package org.pentaho.di.core.market;
+package org.pentaho.di.core.market.entry;
 
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.market.SupportLevel;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.w3c.dom.Node;
@@ -149,7 +150,7 @@ public class MarketEntry implements XMLInterface {
     minPdiVersion = XMLHandler.getTagValue(node, "min_pdi_version");
     maxPdiVersion = XMLHandler.getTagValue(node, "max_pdi_version");
   }
-
+  
   /**
    * @return the id
    */

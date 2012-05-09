@@ -267,7 +267,6 @@ import org.pentaho.di.ui.spoon.delegates.SpoonDelegates;
 import org.pentaho.di.ui.spoon.dialog.AnalyseImpactProgressDialog;
 import org.pentaho.di.ui.spoon.dialog.CheckTransProgressDialog;
 import org.pentaho.di.ui.spoon.dialog.LogSettingsDialog;
-import org.pentaho.di.ui.spoon.dialog.MarketplaceDialog;
 import org.pentaho.di.ui.spoon.dialog.SaveProgressDialog;
 import org.pentaho.di.ui.spoon.dialog.TipsDialog;
 import org.pentaho.di.ui.spoon.job.JobGraph;
@@ -8209,9 +8208,5 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     if(sashComposite != null){
       sashComposite.layout(true, true);
     }
-  }
-  
-  public void openMarketPlace() {
-    new MarketplaceDialog(shell).open();
   }
 }

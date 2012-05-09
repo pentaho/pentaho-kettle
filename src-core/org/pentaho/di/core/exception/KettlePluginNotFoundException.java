@@ -22,9 +22,6 @@
 
 package org.pentaho.di.core.exception;
 
-import org.pentaho.di.core.market.MarketEntryType;
-
-
 /**
  * This exception is thrown in case there is an error in the Kettle plugin loader
  * 
@@ -33,10 +30,7 @@ import org.pentaho.di.core.market.MarketEntryType;
  */
 public class KettlePluginNotFoundException extends KettlePluginException {
 
-  private String parentSubject;
-  private String subject;
-  private String pluginType;
-  private String pluginId;
+  private static final long serialVersionUID = 1L;
   
 	/**
 	 * @param message

@@ -1,4 +1,4 @@
-package org.pentaho.di.core.market;
+package org.pentaho.di.core.market.entry;
 
 /**
  * Describes the various types of market entries

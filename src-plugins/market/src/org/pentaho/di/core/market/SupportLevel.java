@@ -1,5 +1,7 @@
 package org.pentaho.di.core.market;
 
+import org.pentaho.di.core.market.SupportLevel;
+
 /**
  * This is an indicator for the support level of a certain software component (plugin)
  * 

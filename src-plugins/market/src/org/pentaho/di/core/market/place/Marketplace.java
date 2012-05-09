@@ -1,4 +1,4 @@
-package org.pentaho.di.core.market;
+package org.pentaho.di.core.market.place;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.batik.xml.XMLException;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.market.place.Marketplace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.w3c.dom.Node;
@@ -16,6 +17,7 @@ import org.w3c.dom.Node;
  * @author matt
  */
 public class Marketplace implements XMLInterface {
+	
   public static String XML_TAG = "marketplace"; 
   
   private String name;
