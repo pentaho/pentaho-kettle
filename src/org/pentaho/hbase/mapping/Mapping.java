@@ -106,6 +106,15 @@ public class Mapping {
   protected Map<String, HBaseValueMeta> m_mappedColumnsByFamilyCol = 
     new HashMap<String, HBaseValueMeta>();
   
+  /** True if this is a key, <colFam, colName, value, timestamp> tuple mapping */
+  protected boolean m_tupleMapping;
+  /**
+   * Holds specified column families to get all columns from for tuple mode - 
+   * may be empty to indicate get all column families+cols 
+   */
+  protected String m_tupleFamilies = "";
+  
+  
   public Mapping() {
     this(null, null, null, null);
   }
@@ -157,19 +166,24 @@ public class Mapping {
    * @throws Exception if the family, qualifier pair (which uniquely
    * identifieds a column) already exists in this mapping. 
    */
-  public String addMappedColumn(HBaseValueMeta column) throws Exception {
+  public String addMappedColumn(HBaseValueMeta column, 
+      boolean isTupleColumn) throws Exception {
     
     // each <column family,column name> tuple can only be in the
-    // mapping once!
-    if (m_mappedColumnsByFamilyCol.get(column.getColumnFamily() 
-        + "," + column.getColumnName()) != null) {
-      throw new Exception("\"" + column.getColumnFamily() + "," 
-          + column.getColumnName() + "\" is already mapped in mapping \"" 
-          + m_mappingName + "\"");
+    // mapping once! Tuple-mode columns are an exception and don't get
+    // added to this mapping since they are not "real" columns as such in
+    // HBase
+    if (!isTupleColumn) {
+      if (m_mappedColumnsByFamilyCol.get(column.getColumnFamily() 
+          + "," + column.getColumnName()) != null) {
+        throw new Exception("\"" + column.getColumnFamily() + "," 
+            + column.getColumnName() + "\" is already mapped in mapping \"" 
+            + m_mappingName + "\"");
+      }
+
+      m_mappedColumnsByFamilyCol.put(column.getColumnFamily() 
+          + "," + column.getColumnName(), column);
     }
-    
-    m_mappedColumnsByFamilyCol.put(column.getColumnFamily() 
-        + "," + column.getColumnName(), column);
     
     String alias = column.getAlias();
     
@@ -295,6 +309,22 @@ public class Mapping {
     return m_keyType;
   }  
   
+  public boolean isTupleMapping() {
+    return m_tupleMapping;
+  }
+  
+  public void setTupleMapping(boolean t) {
+    m_tupleMapping = t;
+  }
+  
+  public String getTupleFamilies() {
+    return m_tupleFamilies;
+  }
+  
+  public void setTupleFamilies(String f) {
+    m_tupleFamilies = f;
+  }
+  
   /**
    * Set the columns mapped by this mapping
    * 
@@ -322,7 +352,16 @@ public class Mapping {
     
     rep.saveStepAttribute(id_transformation, id_step, 0, "mapping_name", getMappingName());
     rep.saveStepAttribute(id_transformation, id_step, 0, "table_name", getTableName());
-    rep.saveStepAttribute(id_transformation, id_step, 0, "key", getKeyName());
+    
+    String keyName = getKeyName();
+    if (isTupleMapping()) {
+      keyName += HBaseValueMeta.SEPARATOR;
+      if (!Const.isEmpty(getTupleFamilies())) {
+        keyName += getTupleFamilies();
+      }
+    }
+    
+    rep.saveStepAttribute(id_transformation, id_step, 0, "key", keyName);
     rep.saveStepAttribute(id_transformation, id_step, 0, "key_type", getKeyType().toString());
     
     Set<String> aliases = m_mappedColumnsByAlias.keySet();
@@ -357,7 +396,15 @@ public class Mapping {
     retval.append("\n      ").append(XMLHandler.addTagValue("table_name", getTableName()));
     
     // key info
-    retval.append("\n      ").append(XMLHandler.addTagValue("key", getKeyName()));
+    String keyName = getKeyName();
+    if (isTupleMapping()) {
+      keyName += HBaseValueMeta.SEPARATOR;
+      if (!Const.isEmpty(getTupleFamilies())) {
+        keyName += getTupleFamilies();
+      }
+    }
+    
+    retval.append("\n      ").append(XMLHandler.addTagValue("key", keyName));
     retval.append("\n      ").append(XMLHandler.addTagValue("key_type", getKeyType().toString()));
     
     // field info
@@ -398,7 +445,23 @@ public class Mapping {
     
     setMappingName(XMLHandler.getTagValue(stepnode, "mapping_name"));
     setTableName(XMLHandler.getTagValue(stepnode, "table_name"));
-    setKeyName(XMLHandler.getTagValue(stepnode, "key"));
+    
+    String keyName = XMLHandler.getTagValue(stepnode, "key");
+    if (keyName.indexOf(',') > 0) {
+      System.out.println("******** This is a tuple mapping **********");
+      setTupleMapping(true);
+      setKeyName(keyName.substring(0, keyName.indexOf(',')));
+      if (keyName.indexOf(',') != keyName.length() - 1) {
+        // specific families have been supplied
+        String familiesList = 
+          keyName.substring(keyName.indexOf(',') + 1, keyName.length());
+        if (!Const.isEmpty(familiesList.trim())) {
+          setTupleFamilies(familiesList);
+        }
+      }
+    } else {
+      setKeyName(keyName);
+    }
     
     String keyTypeS = XMLHandler.getTagValue(stepnode, "key_type"); 
     for (KeyType k : KeyType.values()) {
@@ -416,7 +479,13 @@ public class Mapping {
         Node fieldNode = XMLHandler.getSubNodeByNr(fields, "mapped_column", i);
         String alias = XMLHandler.getTagValue(fieldNode, "alias");
         String colFam = XMLHandler.getTagValue(fieldNode, "column_family");
+        if (colFam == null) {
+          colFam = "";
+        }
         String colName = XMLHandler.getTagValue(fieldNode, "column_name");
+        if (colName == null) {
+          colName = "";
+        }
         String type = XMLHandler.getTagValue(fieldNode, "type");
         String combined = colFam + HBaseValueMeta.SEPARATOR 
           + colName + HBaseValueMeta.SEPARATOR + alias;
@@ -430,7 +499,7 @@ public class Mapping {
         }
         
         try {
-          addMappedColumn(hbvm);
+          addMappedColumn(hbvm, isTupleMapping());
         } catch (Exception ex) {
           throw new KettleXMLException(ex);
         }
@@ -445,7 +514,23 @@ public class Mapping {
     
     setMappingName(rep.getStepAttributeString(id_step, 0, "mapping_name"));
     setTableName(rep.getStepAttributeString(id_step, 0, "table_name"));
-    setKeyName(rep.getStepAttributeString(id_step, 0, "key"));
+    
+    String keyName = rep.getStepAttributeString(id_step, 0, "key");
+    if (keyName.indexOf(',') > 0) {
+      setTupleMapping(true);
+      setKeyName(keyName.substring(0, keyName.indexOf(',')));
+      if (keyName.indexOf(',') != keyName.length() - 1) {
+        // specific families have been supplied
+        String familiesList = 
+          keyName.substring(keyName.indexOf(',') + 1, keyName.length());
+        if (!Const.isEmpty(familiesList.trim())) {
+          setTupleFamilies(familiesList);
+        }
+      }
+    } else {
+      setKeyName(keyName);
+    }
+    
     String keyTypeS = rep.getStepAttributeString(id_step, 0, "key_type");
     for (KeyType k : KeyType.values()) {
       if (k.toString().equalsIgnoreCase(keyTypeS)) {
@@ -459,7 +544,13 @@ public class Mapping {
       for (int i = 0; i < nrfields; i++) {
         String alias = rep.getStepAttributeString(id_step, i, "alias");
         String colFam = rep.getStepAttributeString(id_step, i, "column_family");
+        if (colFam == null) {
+          colFam = "";
+        }
         String colName = rep.getStepAttributeString(id_step, i, "column_name");
+        if (colName == null) {
+          colName = "";
+        }
         String type = rep.getStepAttributeString(id_step, i, "type");
         int iType = ValueMeta.getType(type);
         String combined = colFam + HBaseValueMeta.SEPARATOR 
@@ -473,7 +564,7 @@ public class Mapping {
         }
         
         try {
-          addMappedColumn(hbvm);
+          addMappedColumn(hbvm, isTupleMapping());
         } catch (Exception ex) {
           throw new KettleException(ex);
         }        

@@ -115,6 +115,8 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
   
   protected Button m_getFieldsBut;
   
+  protected Button m_keyValueTupleBut;
+  
   protected MappingAdmin m_admin;
   
   protected ConfigurationProducer m_configProducer;
@@ -392,6 +394,29 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
           populateTableWithIncomingFields();
         }
       });
+    } else {
+
+
+      m_keyValueTupleBut = new Button(this, SWT.PUSH | SWT.CENTER);
+      props.setLook(m_keyValueTupleBut);
+      m_keyValueTupleBut.setText(Messages.getString("MappingDialog.KeyValueTemplate"));
+      m_keyValueTupleBut.setToolTipText(Messages.getString("MappingDialog.KeyValueTemplate.TipText"));
+      fd = new FormData();
+      //fd.left = new FormAttachment(0, margin);
+      fd.right = new FormAttachment(100, 0);
+      fd.bottom = new FormAttachment(100, -margin*2);
+      m_keyValueTupleBut.setLayoutData(fd);
+      
+      m_keyValueTupleBut.addSelectionListener(new SelectionAdapter() {
+        public void widgetSelected(SelectionEvent e) {
+          populateTableWithTupleTemplate();
+        }
+      });
+      
+/*      colinf[0].setReadOnly(true);
+      colinf[1].setReadOnly(true);
+      colinf[2].setReadOnly(true); 
+      colinf[4].setReadOnly(true); */
     }
     
     
@@ -411,6 +436,59 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
     // --
     //layout();
     //pack();    
+  }
+  
+  private void populateTableWithTupleTemplate() {
+    Table table = m_fieldsView.table;
+    
+    Set<String> existingRowAliases = new HashSet<String>();
+    for (int i = 0; i < table.getItemCount(); i++) {
+      TableItem tableItem = table.getItem(i);
+      String alias = tableItem.getText(1);
+      if (!Const.isEmpty(alias)) {
+        existingRowAliases.add(alias);
+      }
+    }
+    
+    int choice = 0;
+    if (existingRowAliases.size() > 0) {
+      // Ask what we should do with existing mapping data
+      MessageDialog md = new MessageDialog(m_shell, 
+          Messages.getString("MappingDialog.GetFieldsChoice.Title"),
+          null, Messages.getString("MappingDialog.GetFieldsChoice.Message", 
+              "" + existingRowAliases.size(), 
+              "" + 5),
+          MessageDialog.WARNING, 
+          new String[] {
+              Messages.getString("MappingOutputDialog.ClearAndAdd"),
+              Messages.getString("MappingOutputDialog.Cancel"), }, 
+              0);
+      MessageDialog.setDefaultImage(GUIResource.getInstance().getImageSpoon());
+      int idx = md.open();
+      choice = idx & 0xFF;
+    }
+    
+    if (choice == 1 || choice == 255 /* 255 = escape pressed */) {
+      return; // Cancel
+    }
+    
+    m_fieldsView.clearAll();
+    TableItem item = new TableItem(table, SWT.NONE);
+    item.setText(1, "KEY"); item.setText(2, "Y");
+    item = new TableItem(table, SWT.NONE);
+    item.setText(1, "Family"); item.setText(2, "N");
+    item.setText(5, "String");
+    item = new TableItem(table, SWT.NONE);
+    item.setText(1, "Column"); item.setText(2, "N");
+    item = new TableItem(table, SWT.NONE);
+    item.setText(1, "Value"); item.setText(2, "N");
+    item = new TableItem(table, SWT.NONE);
+    item.setText(1, "Timestamp"); item.setText(2, "N");
+    item.setText(5, "Long");
+    
+    m_fieldsView.removeEmptyRows();
+    m_fieldsView.setRowNums();
+    m_fieldsView.optWidth(true);
   }
   
   private void populateTableWithIncomingFields() {
@@ -654,6 +732,34 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
     List<String> missingTypes = new ArrayList<String>();
     
     int nrNonEmpty = m_fieldsView.nrNonEmpty();
+    
+    // is the mapping a tuple mapping?
+    boolean isTupleMapping = false;
+    int tupleIdCount = 0;
+    if (nrNonEmpty == 5) {
+      for (int i = 0; i < nrNonEmpty; i++) {
+        if (m_fieldsView.getNonEmpty(i).getText(1).equals("KEY") ||
+        m_fieldsView.getNonEmpty(i).getText(1).equals("Family") ||
+        m_fieldsView.getNonEmpty(i).getText(1).equals("Column") ||
+        m_fieldsView.getNonEmpty(i).getText(1).equals("Value") ||
+        m_fieldsView.getNonEmpty(i).getText(1).equals("Timestamp")) {
+          tupleIdCount++;
+        }
+      }
+    }
+/*    if (nrNonEmpty == 5 && m_fieldsView.getNonEmpty(0).getText(1).equals("KEY") &&
+        m_fieldsView.getNonEmpty(1).getText(1).equals("Family") &&
+        m_fieldsView.getNonEmpty(2).getText(1).equals("Column") &&
+        m_fieldsView.getNonEmpty(3).getText(1).equals("Value") && 
+        m_fieldsView.getNonEmpty(4).getText(1).equals("Timestamp")) {
+      isTupleMapping = true;
+      theMapping.setTupleMapping(true);
+    } */
+    if (tupleIdCount == 5) {
+      isTupleMapping = true;
+      theMapping.setTupleMapping(true);
+    }
+    
     for (int i = 0; i < nrNonEmpty; i++) {
       TableItem item = m_fieldsView.getNonEmpty(i);
       boolean isKey = false;
@@ -673,19 +779,21 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
           keyDefined = true;
         }
       }
-      String family = null;
+      //String family = null;
+      String family = "";
       if (!Const.isEmpty(item.getText(3))) {
         family = item.getText(3);
       } else {
-        if (!isKey) {
+        if (!isKey && !isTupleMapping) {
           missingFamilies.add(item.getText(0));
         }
       }
-      String colName = null;
+      //String colName = null;
+      String colName = "";
       if (!Const.isEmpty(item.getText(4))) {
         colName = item.getText(4);
       } else {
-        if (!isKey) {
+        if (!isKey && !isTupleMapping) {
           missingColumnNames.add(item.getText(0));
         }
       }
@@ -731,7 +839,12 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
           return null;
         }
         
-        theMapping.setKeyName(alias);
+        if (isTupleMapping) {
+          theMapping.setKeyName(alias);
+          theMapping.setTupleFamilies(family);
+        } else {
+          theMapping.setKeyName(alias);
+        }
         try {
           theMapping.setKeyTypeAsString(type);
         } catch (Exception ex) {
@@ -759,15 +872,15 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
           }
           
           try {
-            theMapping.addMappedColumn(vm);
+            theMapping.addMappedColumn(vm, isTupleMapping);
           } catch (Exception ex) {
             // popup an error if this family:column is already in the mapping and
             // then return.
             MessageDialog.openError(m_shell, 
                 Messages.getString("MappingDialog.Error.Title.DuplicateColumn"), 
-                Messages.getString("MappingDialog.Message1.Title.DuplicateColumn") +
+                Messages.getString("MappingDialog.Error.Message1.DuplicateColumn") +
                 family + HBaseValueMeta.SEPARATOR + colName + 
-                Messages.getString("MappingDialog.Message1.Title.DuplicateColumn"));
+                Messages.getString("MappingDialog.Error.Message2.DuplicateColumn"));
             ex.printStackTrace();
             return null;
           }
@@ -813,6 +926,11 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
   private void saveMapping() {
 
     Mapping theMapping = getMapping(true);
+    if (theMapping == null) {
+      // some problem with the mapping (user will have been informed via dialog)
+      return;
+    }
+    
     String tableName = theMapping.getTableName();
     
     if (m_allowTableCreate) {
@@ -933,6 +1051,9 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
     keyItem.setText(1, mapping.getKeyName());
     keyItem.setText(2, "Y");
     keyItem.setText(5, mapping.getKeyType().toString());
+    if (mapping.isTupleMapping() && !Const.isEmpty(mapping.getTupleFamilies())) {
+      keyItem.setText(3, mapping.getTupleFamilies());
+    }
     
     // the rest of the fields in the mapping
     Map<String, HBaseValueMeta> mappedFields = mapping.getMappedColumns();

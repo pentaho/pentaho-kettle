@@ -634,7 +634,7 @@ public class HBaseValueMeta extends ValueMeta {
     
     return encoded;
   }
-
+  
   /**
    * Decode a raw column value
    * 
@@ -643,18 +643,35 @@ public class HBaseValueMeta extends ValueMeta {
    * @return the decoded column value
    * @throws KettleException if something goes wrong
    */
-  public static Object decodeColumnValue(KeyValue columnValue, 
+  public static Object decodeColumnValue(KeyValue columnValue,
+      HBaseValueMeta columnMeta) throws KettleException {
+
+    if (columnValue == null) {
+      return null;
+    }               
+    byte[] rawColValue = columnValue.getValue();
+
+    return decodeColumnValue(rawColValue, columnMeta);
+  }
+
+  /**
+   * Decode a raw column value
+   * 
+   * @param rawColValue the raw column value to decode
+   * @param columnMeta the meta data on the column
+   * @return the decoded column value
+   * @throws KettleException if something goes wrong
+   */
+  public static Object decodeColumnValue(byte[] rawColValue, 
       HBaseValueMeta columnMeta) throws KettleException {
 
 //    System.err.println(":::: Column type for " +columnMeta.getAlias() + "  " + columnMeta.getTypeDesc());
     // just return null if this column doesn't have a value for the row
-    if (columnValue == null) {
-  //    System.err.println("No value for this col.");
+    
+    if (rawColValue == null) {
       return null;
     }
-    
 
-    byte[] rawColValue = columnValue.getValue();
 
     if (columnMeta.isString()) {
       String convertedString = Bytes.toString(rawColValue);

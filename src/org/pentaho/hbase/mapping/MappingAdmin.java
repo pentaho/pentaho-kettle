@@ -52,6 +52,7 @@ import org.apache.hadoop.hbase.client.Scan;
 import org.apache.hadoop.hbase.filter.KeyOnlyFilter;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.Const;
 
 /**
  * Class for managing a mapping table in HBase. Has routines for creating the mapping
@@ -543,6 +544,8 @@ public class MappingAdmin {
     Map<String, HBaseValueMeta> mapping = theMapping.getMappedColumns();
     String keyName = theMapping.getKeyName();
     Mapping.KeyType keyType = theMapping.getKeyType();
+    boolean isTupleMapping = theMapping.isTupleMapping();
+    String tupleFamilies = theMapping.getTupleFamilies();
     
     if (m_connection == null) {
       throw new IOException("No connection exists yet!");
@@ -632,6 +635,15 @@ public class MappingAdmin {
     // now do the key
     family = KEY_FAMILY_NAME;
     String qualifier = keyName;
+    
+    // indicate that this is a tuple mapping by appending SEPARATOR to the name
+    // of the key + any specified column families to extract from
+    if (isTupleMapping) {
+      qualifier += HBaseValueMeta.SEPARATOR;
+      if (!Const.isEmpty(tupleFamilies)) {
+        qualifier += tupleFamilies;
+      }
+    }
     String valueType = keyType.toString();
 
     p.add(Bytes.toBytes(family), Bytes.toBytes(qualifier), Bytes.toBytes(valueType));
@@ -749,8 +761,25 @@ public class MappingAdmin {
       		"in \"" + compoundKey + "\"");
     } */
     
+    String tupleFamilies = "";
+    boolean isTupleMapping = false;
+    if (decodedKeyName.indexOf(',') > 0 ) {
+
+      isTupleMapping = true;
+      
+      if (decodedKeyName.indexOf(',') != decodedKeyName.length() - 1) {
+        tupleFamilies = decodedKeyName.substring(decodedKeyName.indexOf(',') + 1, 
+            decodedKeyName.length());
+      }
+      decodedKeyName = decodedKeyName.substring(0, decodedKeyName.indexOf(','));
+    }
+    
     Mapping resultMapping = new Mapping(tableName, mappingName, 
         decodedKeyName, keyType);
+    resultMapping.setTupleMapping(isTupleMapping);
+    if (!Const.isEmpty(tupleFamilies)) {
+      resultMapping.setTupleFamilies(tupleFamilies);
+    }
     
   /*  if (dateFormatString != null) {
       resultMapping.setKeyStringDateFormat(dateFormatString);
@@ -946,14 +975,14 @@ public class MappingAdmin {
           + HBaseValueMeta.SEPARATOR + colA;
         HBaseValueMeta vm = new HBaseValueMeta(combined, ValueMetaInterface.TYPE_STRING, -1, -1);
         vm.setTableName(tableName); vm.setMappingName(mappingName);
-        testMapping.addMappedColumn(vm);
+        testMapping.addMappedColumn(vm, false);
         
         String colB = "first_integer_column";
         combined = family1 + HBaseValueMeta.SEPARATOR + colB 
           + HBaseValueMeta.SEPARATOR + colB;
         vm = new HBaseValueMeta(combined, ValueMetaInterface.TYPE_INTEGER, -1, -1);
         vm.setTableName(tableName); vm.setMappingName(mappingName);
-        testMapping.addMappedColumn(vm);
+        testMapping.addMappedColumn(vm, false);
         
         String family2 = "Family2";
         String colC = "first_indexed_column";
@@ -964,7 +993,7 @@ public class MappingAdmin {
         vm.setStorageType(ValueMetaInterface.STORAGE_TYPE_INDEXED);
         Object[] vals = {"nomVal1", "nomVal2", "nomVal3"}; 
         vm.setIndex(vals);
-        testMapping.addMappedColumn(vm);        
+        testMapping.addMappedColumn(vm, false);        
 
         admin.putMapping(testMapping, false);
       } else if (args[0].equalsIgnoreCase("describe")) {

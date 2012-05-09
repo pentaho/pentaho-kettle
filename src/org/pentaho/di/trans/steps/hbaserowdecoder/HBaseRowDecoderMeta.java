@@ -148,6 +148,8 @@ public class HBaseRowDecoderMeta extends BaseStepMeta implements
           kettleType = ValueMetaInterface.TYPE_DATE;
         } else if (m_mapping.getKeyType() == Mapping.KeyType.STRING) {
           kettleType = ValueMetaInterface.TYPE_STRING;
+        } else if (m_mapping.getKeyType() == Mapping.KeyType.BINARY) {
+          kettleType = ValueMetaInterface.TYPE_BINARY;
         } else {
           kettleType = ValueMetaInterface.TYPE_INTEGER;
         }

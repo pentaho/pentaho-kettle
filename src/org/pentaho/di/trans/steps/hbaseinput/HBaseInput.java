@@ -23,11 +23,9 @@
 package org.pentaho.di.trans.steps.hbaseinput;
 
 import java.io.IOException;
-import java.net.URL;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -60,6 +58,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.hbase.HBaseRowToKettleTuple;
 import org.pentaho.hbase.mapping.DeserializedBooleanComparator;
 import org.pentaho.hbase.mapping.DeserializedNumericComparator;
 import org.pentaho.hbase.mapping.HBaseValueMeta;
@@ -107,6 +106,9 @@ public class HBaseInput extends BaseStep implements StepInterface {
   
   /** Scanner over the result rows */
   protected ResultScanner m_resultSet;
+
+  /** Used when decoding columns to <key, family, column, value, time stamp> tuples */
+  protected HBaseRowToKettleTuple m_tupleHandler;
   
   public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) 
     throws KettleException {
@@ -168,6 +170,10 @@ public class HBaseInput extends BaseStep implements StepInterface {
         m_columnsMappedByAlias = m_tableMapping.getMappedColumns();
       } catch (IOException ex) {
         throw new KettleException(ex.getMessage(), ex);
+      }
+      
+      if (m_tableMapping.isTupleMapping()) {
+        m_tupleHandler = new HBaseRowToKettleTuple();
       }
       
       // conversion mask to use for user specified key values in range scan.
@@ -325,7 +331,8 @@ public class HBaseInput extends BaseStep implements StepInterface {
       
       // LIMIT THE SCAN TO JUST THE COLUMNS IN THE MAPPING
       // User-selected output columns?
-      if (m_userOutputColumns != null && m_userOutputColumns.size() > 0) {
+      if (m_userOutputColumns != null && m_userOutputColumns.size() > 0 && !
+          m_tableMapping.isTupleMapping()) {
         for (HBaseValueMeta currentCol : m_userOutputColumns) {
           if (!currentCol.isKey()) {
             String colFamilyName = currentCol.getColumnFamily();
@@ -588,18 +595,81 @@ public class HBaseInput extends BaseStep implements StepInterface {
     
     // User-selected output columns?
     if (m_userOutputColumns != null && m_userOutputColumns.size() > 0) {
-      for (HBaseValueMeta currentCol : m_userOutputColumns) {
-        if (currentCol.isKey()) {
-          byte[] rawKey = r.getRow();
-          Object decodedKey = HBaseValueMeta.decodeKeyValue(rawKey, m_tableMapping);
-          int keyIndex = m_data.getOutputRowMeta().indexOfValue(currentCol.getAlias());
-          outputRowData[keyIndex] = decodedKey;
-        } else {
+      if (m_tableMapping.isTupleMapping()) {
+//        List<Object[]> hrowToKettleRow = m_data.hbaseRowToKettleTupleMode(r, m_tableMapping, m_userOutputColumns);
+        List<Object[]> hrowToKettleRow = m_tupleHandler.hbaseRowToKettleTupleMode(r, m_tableMapping, 
+              m_userOutputColumns, m_data.getOutputRowMeta());
+        for (Object[] tuple : hrowToKettleRow) {
+          putRow(m_data.getOutputRowMeta(), tuple);
+        }
+        return true;
+      } else {
+        for (HBaseValueMeta currentCol : m_userOutputColumns) {
+          if (currentCol.isKey()) {
+            byte[] rawKey = r.getRow();
+            Object decodedKey = HBaseValueMeta.decodeKeyValue(rawKey, m_tableMapping);
+            int keyIndex = m_data.getOutputRowMeta().indexOfValue(currentCol.getAlias());
+            outputRowData[keyIndex] = decodedKey;
+          } else {
+            String colFamilyName = currentCol.getColumnFamily();
+            String qualifier = currentCol.getColumnName();
+
+            //          System.out.println("Processing qualifier: " + qualifier);
+
+            boolean binaryColName = false;
+            if (qualifier.startsWith("@@@binary@@@")) {
+              qualifier = qualifier.replace("@@@binary@@@", "");
+              // assume hex encoded
+              binaryColName = true;
+            }
+
+            KeyValue kv = r.getColumnLatest(Bytes.toBytes(colFamilyName), 
+                (binaryColName) ? Bytes.toBytesBinary(qualifier) : Bytes.toBytes(qualifier));
+
+            if (kv == null) {
+              System.out.println("Unable to look up qualifier " + qualifier);
+            }
+
+            int outputIndex = m_data.getOutputRowMeta().indexOfValue(currentCol.getAlias());
+            if (outputIndex < 0) {
+              throw new KettleException("HBase column \"" + currentCol.getAlias() 
+                  + "\" doesn't seem to be defined in the output");
+            }
+
+            Object decodedVal = HBaseValueMeta.decodeColumnValue(kv, currentCol);      
+            outputRowData[outputIndex] = decodedVal;
+          }
+        }
+      }
+    } else {
+
+      // all the columns in the mapping
+      if (m_tableMapping.isTupleMapping()) {
+        /*List<Object[]> hrowToKettleRow = 
+          m_data.hbaseRowToKettleTupleMode(r, m_tableMapping, m_columnsMappedByAlias); */
+        List<Object[]> hrowToKettleRow = 
+          m_tupleHandler.hbaseRowToKettleTupleMode(r, m_tableMapping, 
+              m_columnsMappedByAlias, m_data.getOutputRowMeta());
+        
+        for (Object[] tuple : hrowToKettleRow) {
+          putRow(m_data.getOutputRowMeta(), tuple);
+        }
+        return true;
+      } else {
+
+        // do the key first
+        byte[] rawKey = r.getRow();
+        Object decodedKey = HBaseValueMeta.decodeKeyValue(rawKey, m_tableMapping);
+        int keyIndex = m_data.getOutputRowMeta().indexOfValue(m_tableMapping.getKeyName());
+        outputRowData[keyIndex] = decodedKey;
+
+        Set<String> aliasSet = m_columnsMappedByAlias.keySet();
+
+        for (String name : aliasSet) {
+          HBaseValueMeta currentCol = m_columnsMappedByAlias.get(name);
           String colFamilyName = currentCol.getColumnFamily();
           String qualifier = currentCol.getColumnName();
-          
-          System.out.println("Processing qualifier: " + qualifier);
-          
+
           boolean binaryColName = false;
           if (qualifier.startsWith("@@@binary@@@")) {
             qualifier = qualifier.replace("@@@binary@@@", "");
@@ -608,57 +678,17 @@ public class HBaseInput extends BaseStep implements StepInterface {
           }
 
           KeyValue kv = r.getColumnLatest(Bytes.toBytes(colFamilyName), 
-              (binaryColName) ? Bytes.toBytesBinary(qualifier) : Bytes.toBytes(qualifier));
-          
-          if (kv == null) {
-            System.out.println("Unable to look up qualifier " + qualifier);
-          }
-          
-          int outputIndex = m_data.getOutputRowMeta().indexOfValue(currentCol.getAlias());
+              (binaryColName) ? Bytes.toBytesBinary(qualifier) : Bytes.toBytes(qualifier));        
+
+          int outputIndex = m_data.getOutputRowMeta().indexOfValue(name);
           if (outputIndex < 0) {
-            throw new KettleException("HBase column \"" + currentCol.getAlias() 
-                + "\" doesn't seem to be defined in the output");
+            throw new KettleException("HBase column \"" + name + "\" doesn't seem " +
+            "to be defined in the output");
           }
 
           Object decodedVal = HBaseValueMeta.decodeColumnValue(kv, currentCol);      
           outputRowData[outputIndex] = decodedVal;
         }
-      }
-    } else {
-
-      // all the columns in the mapping
-      
-      // do the key first
-      byte[] rawKey = r.getRow();
-      Object decodedKey = HBaseValueMeta.decodeKeyValue(rawKey, m_tableMapping);
-      int keyIndex = m_data.getOutputRowMeta().indexOfValue(m_tableMapping.getKeyName());
-      outputRowData[keyIndex] = decodedKey;
-      
-      Set<String> aliasSet = m_columnsMappedByAlias.keySet();
-
-      for (String name : aliasSet) {
-        HBaseValueMeta currentCol = m_columnsMappedByAlias.get(name);
-        String colFamilyName = currentCol.getColumnFamily();
-        String qualifier = currentCol.getColumnName();
-        
-        boolean binaryColName = false;
-        if (qualifier.startsWith("@@@binary@@@")) {
-          qualifier = qualifier.replace("@@@binary@@@", "");
-          // assume hex encoded
-          binaryColName = true;
-        }
-
-        KeyValue kv = r.getColumnLatest(Bytes.toBytes(colFamilyName), 
-            (binaryColName) ? Bytes.toBytesBinary(qualifier) : Bytes.toBytes(qualifier));        
-        
-        int outputIndex = m_data.getOutputRowMeta().indexOfValue(name);
-        if (outputIndex < 0) {
-          throw new KettleException("HBase column \"" + name + "\" doesn't seem " +
-          "to be defined in the output");
-        }
-
-        Object decodedVal = HBaseValueMeta.decodeColumnValue(kv, currentCol);      
-        outputRowData[outputIndex] = decodedVal;
       }
     }
     

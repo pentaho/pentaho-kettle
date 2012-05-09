@@ -189,6 +189,11 @@ public class HBaseOutput extends BaseStep implements StepInterface {
             + ex.getMessage(), ex);
       }
       
+      if (m_tableMapping.isTupleMapping()) {
+        throw new KettleException("HBaseOutput can't write using a " +
+        		"<key, family, column, value, time stamp> tuple mapping!");
+      }
+      
       // check that all incoming fields are in the mapping.
       // fewer fields than the mapping defines is OK as long as we have
       // the key as an incoming field. Can either use strict type checking

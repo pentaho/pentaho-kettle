@@ -22,6 +22,8 @@
 
 package org.pentaho.di.trans.steps.hbaserowdecoder;
 
+import java.util.List;
+
 import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
@@ -38,6 +40,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.hbase.HBaseRowToKettleTuple;
 import org.pentaho.hbase.mapping.HBaseValueMeta;
 import org.pentaho.hbase.mapping.Mapping;
 
@@ -72,7 +75,9 @@ public class HBaseRowDecoder extends BaseStep implements StepInterface {
   /** Index of incoming HBase row (Result object) */
   protected int m_resultInIndex = -1;
   
-  
+  /** Used when decoding columns to <key, family, column, value, time stamp> tuples */
+  protected HBaseRowToKettleTuple m_tupleHandler;
+    
   public boolean processRow(StepMetaInterface smi, StepDataInterface sdi)
     throws KettleException {
     
@@ -94,6 +99,10 @@ public class HBaseRowDecoder extends BaseStep implements StepInterface {
       if (m_tableMapping == null || Const.isEmpty(m_tableMapping.getKeyName())) {
         throw new KettleException(BaseMessages.getString(PKG, 
             "HBaseRowDecoder.Error.NoMappingInfo"));
+      }
+      
+      if (m_tableMapping.isTupleMapping()) {
+        m_tupleHandler = new HBaseRowToKettleTuple();
       }
       
       m_outputColumns = new HBaseValueMeta[m_tableMapping.getMappedColumns().keySet().size()];
@@ -134,26 +143,38 @@ public class HBaseRowDecoder extends BaseStep implements StepInterface {
     //ImmutableBytesWritable key = (ImmutableBytesWritable)inputRow[m_keyInIndex];
     Result hRow = (Result)inputRow[m_resultInIndex];
     if (inputRow[m_keyInIndex] != null && hRow != null) {
-      Object[] outputRowData = RowDataUtil.allocateRowData(m_outputColumns.length + 1); // + 1 for key
       
-      byte[] rowKey = hRow.getRow();
-      Object decodedKey = HBaseValueMeta.decodeKeyValue(rowKey, m_tableMapping);
-      outputRowData[0] = decodedKey;
+      if (m_tableMapping.isTupleMapping()) {
+        List<Object[]> hrowToKettleRow = 
+          m_tupleHandler.hbaseRowToKettleTupleMode(hRow, m_tableMapping, 
+              m_tableMapping.getMappedColumns(), m_data.getOutputRowMeta());
+        
+        for (Object[] tuple : hrowToKettleRow) {
+          putRow(m_data.getOutputRowMeta(), tuple);
+        }
+      } else {
 
-      for (int i = 0; i < m_outputColumns.length; i++) {
-        HBaseValueMeta current = m_outputColumns[i];
+        Object[] outputRowData = RowDataUtil.allocateRowData(m_outputColumns.length + 1); // + 1 for key
 
-        String colFamilyName = current.getColumnFamily();
-        String qualifier = current.getColumnName();
+        byte[] rowKey = hRow.getRow();
+        Object decodedKey = HBaseValueMeta.decodeKeyValue(rowKey, m_tableMapping);
+        outputRowData[0] = decodedKey;
 
-        KeyValue kv = hRow.getColumnLatest(Bytes.toBytes(colFamilyName), 
-            Bytes.toBytes(qualifier));
-        Object decodedVal = HBaseValueMeta.decodeColumnValue(kv, current);
-        outputRowData[i + 1] = decodedVal;
+        for (int i = 0; i < m_outputColumns.length; i++) {
+          HBaseValueMeta current = m_outputColumns[i];
+
+          String colFamilyName = current.getColumnFamily();
+          String qualifier = current.getColumnName();
+
+          KeyValue kv = hRow.getColumnLatest(Bytes.toBytes(colFamilyName), 
+              Bytes.toBytes(qualifier));
+          Object decodedVal = HBaseValueMeta.decodeColumnValue(kv, current);
+          outputRowData[i + 1] = decodedVal;
+        }
+
+        // output the row
+        putRow(m_data.getOutputRowMeta(), outputRowData);      
       }
-      
-      // output the row
-      putRow(m_data.getOutputRowMeta(), outputRowData);      
     }
         
     return true;

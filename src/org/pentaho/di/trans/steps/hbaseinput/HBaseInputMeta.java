@@ -489,8 +489,13 @@ public class HBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
         String colFamily = "";
         String colName = alias;
         if (!isKey.equalsIgnoreCase("Y")) {
-          colFamily = XMLHandler.getTagValue(fieldNode, "family").trim();
-          colName = XMLHandler.getTagValue(fieldNode, "column").trim();
+          if (XMLHandler.getTagValue(fieldNode, "family") != null) {
+            colFamily = XMLHandler.getTagValue(fieldNode, "family").trim();
+          }
+          
+          if ( XMLHandler.getTagValue(fieldNode, "column") != null) {
+            colName = XMLHandler.getTagValue(fieldNode, "column").trim();
+          }
         }        
 
         String typeS = XMLHandler.getTagValue(fieldNode, "type").trim();
@@ -795,6 +800,8 @@ public class HBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
         kettleType = ValueMetaInterface.TYPE_DATE;
       } else if (m_cachedMapping.getKeyType() == Mapping.KeyType.STRING) {
         kettleType = ValueMetaInterface.TYPE_STRING;
+      } else if (m_cachedMapping.getKeyType() == Mapping.KeyType.BINARY) {
+        kettleType = ValueMetaInterface.TYPE_BINARY;
       } else {
         kettleType = ValueMetaInterface.TYPE_INTEGER;
       }

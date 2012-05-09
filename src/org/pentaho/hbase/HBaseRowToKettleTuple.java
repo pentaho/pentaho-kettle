@@ -20,149 +20,89 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.trans.steps.hbaseinput;
 
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
+package org.pentaho.hbase;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
 
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.client.Result;
 import org.apache.hadoop.hbase.util.Bytes;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.trans.step.BaseStepData;
-import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.hbase.mapping.HBaseValueMeta;
 import org.pentaho.hbase.mapping.Mapping;
 
 /**
- * Class providing an input step for reading data from an HBase table
- * according to meta data mapping info stored in a separate HBase table
- * called "pentaho_mappings". See org.pentaho.hbase.mapping.Mapping for
- * details on the meta data format.
+ * Class for decoding HBase rows to a <key, family, column, value, time stamp> 
+ * Kettle row format.
  * 
  * @author Mark Hall (mhall{[at]}pentaho{[dot]}com)
  * @version $Revision$
- *
  */
-public class HBaseInputData extends BaseStepData implements StepDataInterface {
+public class HBaseRowToKettleTuple {
   
-  /** The output data format */
-  protected RowMetaInterface m_outputRowMeta;
-    
-  /**
-   * Get the output row format
-   * 
-   * @return the output row format
-   */
-  public RowMetaInterface getOutputRowMeta() {
-    return m_outputRowMeta;
-  }
-  
-  /**
-   * Set the output row format
-   * 
-   * @param rmi the output row format
-   */
-  public void setOutputRowMeta(RowMetaInterface rmi) {
-    m_outputRowMeta = rmi;
-  }
-  
-  /**
-   * Get a configured connection to HBase. A connection can be obtained via
-   * a list of host(s) that zookeeper is running on or via the hbase-site.xml
-   * (and optionally hbase-default.xml) file.
-   * 
-   * @param zookeeperHosts a comma separated list of hosts that zookeeper is
-   * running on
-   * @param zookeeperPort an (optional) port that zookeeper is listening on. If not
-   * specified, then the default for zookeeper is used
-   * @param coreConfig URL to the hbase-site.xml (may be null)
-   * @param defaultConfig URL to the hbase-default.xml (may be null)
-   * @return a Configuration object that can be used ot access HBase.
-   * @throws IOException if a problem occurs.
-   */
-  public static Configuration getHBaseConnection(String zookeeperHosts, 
-      String zookeeperPort, URL coreConfig, URL defaultConfig) 
-    throws IOException {
-    Configuration con = new Configuration();
-    
-    if (defaultConfig != null) {
-      con.addResource(defaultConfig);
-    } else {
-      // hopefully it's in the classpath
-      con.addResource("hbase-default.xml");
-    }
-    
-    if (coreConfig != null) {
-      con.addResource(coreConfig);
-    } else {
-      // hopefully it's in the classpath
-      con.addResource("hbase-site.xml");
-    } 
-    
-    if (!Const.isEmpty(zookeeperHosts)) {
-      // override default and site with this
-      con.set("hbase.zookeeper.quorum", zookeeperHosts);
-    }
-    
-    if (!Const.isEmpty(zookeeperPort)) {
-      try {
-        int port = Integer.parseInt(zookeeperPort);
-        con.setInt("hbase.zookeeper.property.clientPort", port);
-      } catch (NumberFormatException e) { 
-        System.err.println("Unable to parse zookeeper port!");
-      }
-    }
-    
-    return con;    
-  }
-  
-  /**
-   * Utility method to covert a string to a URL object.
-   * 
-   * @param pathOrURL file or http URL as a string
-   * @return a URL
-   * @throws MalformedURLException if there is a problem with the URL.
-   */
-  public static URL stringToURL(String pathOrURL) throws MalformedURLException {
-    URL result = null;
-    
-    if (!Const.isEmpty(pathOrURL)) {
-      if (pathOrURL.toLowerCase().startsWith("http://") ||
-          pathOrURL.toLowerCase().startsWith("file://")) {
-        result = new URL(pathOrURL);
-      } else {
-        String c = "file://" + pathOrURL;
-        result = new URL(c);
-      }
-    }
-    
-    return result;
-  }
-  
+  /** Holds a set of tuples (Kettle rows) - one for each column from an HBase row */  
   protected List<Object[]> m_decodedTuples;
+  
+  /** Index in the Kettle row format of the key column */
   protected int m_keyIndex = -1;
+  
+  /** Index in the Kettle row format of the family column */
   protected int m_familyIndex = -1;
+  
+  /** Index in the Kettle row format of the column name column */
   protected int m_colNameIndex = -1;
+  
+  /** Index in the Kettle row format of the column value column */
   protected int m_valueIndex = -1;
+  
+  /** Index in the Kettle row format of the time stamp column */
   protected int m_timestampIndex = -1;
+  
+  /** List of (optional) byte array encoded user-specified column families to extract column values for */
   protected List<byte[]> m_userSpecifiedFamilies;
+  
+  /** List of (optional) human-readable user-specified column families to extract column values for */
   protected List<String> m_userSpecifiedFamiliesHumanReadable;
   
-  protected List<HBaseValueMeta> m_tupleColsFromAliasMap;
+  protected List<HBaseValueMeta> m_tupleColsFromAliasMap;  
   
+  public void reset() {
+    m_decodedTuples = null;
+    
+    m_keyIndex = -1;
+    m_familyIndex = -1;
+    m_colNameIndex = -1;
+    m_valueIndex = -1;
+    m_timestampIndex = -1;
+    m_userSpecifiedFamilies = null;
+    m_userSpecifiedFamiliesHumanReadable = null;
+    
+    m_tupleColsFromAliasMap = null;
+    m_decodedTuples = null;
+  }
+  
+  /**
+   * Convert an HBase row to (potentially) multiple Kettle rows in tuple 
+   * format.
+   * 
+   * @param hRow an HBase row
+   * @param mapping the mapping information to use (must be a "tuple" mapping)
+   * @param tupleColsMappedByAlias the meta data for each of the tuple columns the user 
+   * has opted to have output
+   * @param outputRowMeta the outgoing Kettle row format
+   * @return a list of Kettle rows in tuple format
+   * @throws KettleException if a problem occurs
+   */
   public List<Object[]> hbaseRowToKettleTupleMode(Result hRow, Mapping mapping,
-      Map<String, HBaseValueMeta> tupleColsMappedByAlias) throws KettleException {
+      Map<String, HBaseValueMeta> tupleColsMappedByAlias, 
+      RowMetaInterface outputRowMeta) throws KettleException {
     
     if (m_decodedTuples == null) {
       m_tupleColsFromAliasMap = new ArrayList<HBaseValueMeta>();
@@ -178,21 +118,34 @@ public class HBaseInputData extends BaseStepData implements StepDataInterface {
       for (String alias : tupleColsMappedByAlias.keySet()) {
         m_tupleColsFromAliasMap.add(tupleColsMappedByAlias.get(alias));
       }
-    }
+    }    
     
-    return hbaseRowToKettleTupleMode(hRow, mapping, m_tupleColsFromAliasMap);    
+    return hbaseRowToKettleTupleMode(hRow, mapping, m_tupleColsFromAliasMap, 
+        outputRowMeta);    
   }
   
+  /**
+   * Convert an HBase row to (potentially) multiple Kettle rows in tuple 
+   * format.
+   * 
+   * @param hRow an HBase row
+   * @param mapping the mapping information to use (must be a "tuple" mapping)
+   * @param tupleCols the meta data for each of the tuple columns the user 
+   * has opted to have output
+   * @param outputRowMeta the outgoing Kettle row format
+   * @return a list of Kettle rows in tuple format
+   * @throws KettleException if a problem occurs
+   */
   public List<Object[]> hbaseRowToKettleTupleMode(Result hRow, Mapping mapping, 
-      List<HBaseValueMeta> tupleCols) throws KettleException {
+      List<HBaseValueMeta> tupleCols, RowMetaInterface outputRowMeta) throws KettleException {
     
     if (m_decodedTuples == null) {
       m_decodedTuples = new ArrayList<Object[]>();
-      m_keyIndex = getOutputRowMeta().indexOfValue(mapping.getKeyName());
-      m_familyIndex = getOutputRowMeta().indexOfValue("Family");
-      m_colNameIndex = getOutputRowMeta().indexOfValue("Column");
-      m_valueIndex = getOutputRowMeta().indexOfValue("Value");
-      m_timestampIndex = getOutputRowMeta().indexOfValue("Timestamp");
+      m_keyIndex = outputRowMeta.indexOfValue(mapping.getKeyName());
+      m_familyIndex = outputRowMeta.indexOfValue("Family");
+      m_colNameIndex = outputRowMeta.indexOfValue("Column");
+      m_valueIndex = outputRowMeta.indexOfValue("Value");
+      m_timestampIndex = outputRowMeta.indexOfValue("Timestamp");
       
       if (!Const.isEmpty(mapping.getTupleFamilies())) {
         String[] familiesS = mapping.getTupleFamilies().split(HBaseValueMeta.SEPARATOR);
@@ -214,14 +167,14 @@ public class HBaseInputData extends BaseStepData implements StepDataInterface {
     NavigableMap<byte[],NavigableMap<byte[],NavigableMap<Long,byte[]>>> rowData = 
       hRow.getMap();
     
-    if (!Const.isEmpty(mapping.getTupleFamilies())) {      
+    if (!Const.isEmpty(mapping.getTupleFamilies())) {   
       int i = 0;
       for (byte[] family : m_userSpecifiedFamilies) {
         NavigableMap<byte[], NavigableMap<Long, byte[]>> colMap = rowData.get(family);
         for (byte[] colName : colMap.keySet()) {
           NavigableMap<Long, byte[]> valuesByTimestamp = colMap.get(colName);
           
-          Object[] newTuple = RowDataUtil.allocateRowData(getOutputRowMeta().size());
+          Object[] newTuple = RowDataUtil.allocateRowData(outputRowMeta.size());
           
           // row key
           if (m_keyIndex != -1) {
@@ -275,7 +228,7 @@ public class HBaseInputData extends BaseStepData implements StepDataInterface {
         for (byte[] colName : colMap.keySet()) {
           NavigableMap<Long, byte[]> valuesByTimestamp = colMap.get(colName);
           
-          Object[] newTuple = RowDataUtil.allocateRowData(getOutputRowMeta().size());
+          Object[] newTuple = RowDataUtil.allocateRowData(outputRowMeta.size());
           
           // row key
           if (m_keyIndex != -1) {
@@ -314,8 +267,7 @@ public class HBaseInputData extends BaseStepData implements StepDataInterface {
         }
       }
     }
-    
-    
+       
     return m_decodedTuples;
   }
 }
