@@ -29,7 +29,11 @@ import org.apache.log4j.spi.LoggingEvent;
 
 /**
  * Logs Log4j log events to a Kettle log channel
+ *
+ * @deprecated Use the {@link KettleLogChannelAppender} from Kettle core. This is to be deleted when we no longer need
+ * to support Kettle <= 4.3.0.
  */
+@Deprecated
 public class KettleLogChannelAppender extends AppenderSkeleton {
   private LogChannelInterface log;
 
