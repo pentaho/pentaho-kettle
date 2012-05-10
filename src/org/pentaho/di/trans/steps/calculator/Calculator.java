@@ -727,9 +727,9 @@ public class Calculator extends BaseStep implements StepInterface
                     resultType=ValueMetaInterface.TYPE_INTEGER;
                 }
                 break;
-                case CalculatorMetaFunction.CALC_DATE_DIFF_HR             :  // DateA - DateB (hr)
+                case CalculatorMetaFunction.CALC_DATE_DIFF_HR             :  // DateA - DateB (h)
                 {
-                    calcData[index] = ValueDataUtil.DateDiff(metaA, dataA, metaB, dataB, "hr");
+                    calcData[index] = ValueDataUtil.DateDiff(metaA, dataA, metaB, dataB, "h");
                     resultType=ValueMetaInterface.TYPE_INTEGER;
                 }
                 break;
