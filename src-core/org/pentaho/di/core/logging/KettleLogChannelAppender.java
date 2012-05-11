@@ -27,10 +27,31 @@ import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Logs Log4j log events to a Kettle log channel
  */
 public class KettleLogChannelAppender extends AppenderSkeleton {
+  /**
+   * Maps Kettle LogLevels to Log4j Levels
+   */
+  public static Map<LogLevel, Level> LOG_LEVEL_MAP;
+
+  static {
+    Map<LogLevel, Level> map = new HashMap<LogLevel, Level>();
+    map.put(LogLevel.BASIC, Level.INFO);
+    map.put(LogLevel.MINIMAL, Level.INFO);
+    map.put(LogLevel.DEBUG, Level.DEBUG);
+    map.put(LogLevel.ERROR, Level.ERROR);
+    map.put(LogLevel.DETAILED, Level.INFO);
+    map.put(LogLevel.ROWLEVEL, Level.DEBUG);
+    map.put(LogLevel.NOTHING, Level.OFF);
+    LOG_LEVEL_MAP = Collections.unmodifiableMap(map);
+  }
+
   private LogChannelInterface log;
 
   public KettleLogChannelAppender(LogChannelInterface log) {
