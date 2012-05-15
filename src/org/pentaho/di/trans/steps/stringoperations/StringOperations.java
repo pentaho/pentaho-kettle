@@ -191,7 +191,7 @@ public class StringOperations extends BaseStep implements StepInterface {
 		Object[] RowData = new Object[data.outputRowMeta.size()];
 		// Copy the input fields.
 		System.arraycopy(row, 0, RowData, 0, rowMeta.size());
-
+		int j=0; // Index into "new fields" area, past the first {data.inputFieldsNr} records
 		for (int i = 0; i < data.nrFieldsInStream; i++) {
 			if (data.inStreamNrs[i] >= 0) {
 				// Get source value
@@ -206,7 +206,8 @@ public class StringOperations extends BaseStep implements StepInterface {
 					RowData[data.inStreamNrs[i]]=value;
 				} else {
 					// create a new Field
-					RowData[data.inputFieldsNr+i]=value;
+					RowData[data.inputFieldsNr + j]=value;
+					j++;
 				}	
 			}
 		}
