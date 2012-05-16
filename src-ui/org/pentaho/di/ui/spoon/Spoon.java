@@ -5157,7 +5157,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     messageBuilder.append(Const.CR);
     messageBuilder.append(Const.CR);
     messageBuilder.append(Const.CR);
-    messageBuilder.append(BaseMessages.getString(PKG, "System.CompanyInfo"));
+    messageBuilder.append(BaseMessages.getString(PKG, "System.CompanyInfo", Const.COPYRIGHT_YEAR));
     messageBuilder.append(Const.CR);
     messageBuilder.append("         ");
     messageBuilder.append(BaseMessages.getString(PKG, "System.ProductWebsiteUrl"));

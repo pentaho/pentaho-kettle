@@ -75,6 +75,11 @@ public class Const
   public static final String VERSION = "4.4.0-M1";
 
   /**
+   * Copyright year 
+   */
+  public static final String COPYRIGHT_YEAR = "2012";
+  
+  /**
    * Release Type
    */
   public enum ReleaseType {RELEASE_CANDIDATE, MILESTONE, PREVIEW, GA}
