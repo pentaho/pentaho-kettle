@@ -27,6 +27,7 @@ import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.util.StreamLogger;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -76,6 +77,8 @@ public class IngresVectorwiseLoaderData extends BaseStepData implements StepData
     public byte[] semicolon;
 
     public byte[] doubleQuote;
+
+    public RowMetaInterface bulkRowMeta;
 
 
 	/**

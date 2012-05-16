@@ -347,6 +347,20 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
         for (int i = 0; i < data.keynrs.length; i++) {
           data.keynrs[i] = getInputRowMeta().indexOfValue(meta.getFieldStream()[i]);
         }
+        data.bulkRowMeta = getInputRowMeta().clone();
+        if (meta.isUseStandardConversion()) {
+          for (int i=0;i<data.bulkRowMeta.size();i++) {
+            ValueMetaInterface valueMeta = data.bulkRowMeta.getValueMeta(i);
+            if (valueMeta.isStorageNormal()) {
+              if (valueMeta.isDate()) {
+                valueMeta.setConversionMask("yyyy-MM-dd HH:mm:ss");
+              } else if (valueMeta.isNumeric()) {
+                valueMeta.setDecimalSymbol(".");
+                valueMeta.setGroupingSymbol("");
+              }
+            }
+          }
+        }
 
         // execute the client statement...
         //
@@ -363,7 +377,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
         throw new Exception("Ingres SQL process has stopped");
       }
 
-      writeRowToBulk(getInputRowMeta(), r);
+      writeRowToBulk(data.bulkRowMeta, r);
       putRow(getInputRowMeta(), r);
       incrementLinesOutput();
 
@@ -443,14 +457,8 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
             byte[] value = valueMeta.getBinaryString(valueData);
             write(value);
           } else {
-            if (meta.isUseStandardConversion()) {
-              if (valueMeta.isDate()) {
-                valueMeta.setConversionMask("yyyy-MM-dd HH:mm:ss.SSS");
-              } else if (valueMeta.isNumber()) {
-                valueMeta.setDecimalSymbol(".");
-                valueMeta.setGroupingSymbol("");
-              }
-            }
+            // We're using the bulk row metadata so dates and numerics should be in the correct format now...
+            //
             String string = valueMeta.getString(valueData);
             if (string != null) {
               // support of SSV feature
