@@ -296,20 +296,22 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
 
     DatabaseMeta dm = meta.getDatabaseMeta();
     if (dm != null) {
+      String dnName = environmentSubstitute(Const.NVL(dm.getDatabaseName(), ""));
+      String passWord = Encr.decryptPasswordOptionallyEncrypted(environmentSubstitute(Const.NVL(dm.getDatabaseInterface().getPassword(), "")));
       if (meta.isUseDynamicVNode()) {
         // logical portname in JDBC use a 7
         String port = environmentSubstitute(Const.NVL(dm.getDatabasePortNumberString(), "")).replace("7", "");
         String userName = environmentSubstitute(Const.NVL(dm.getDatabaseInterface().getUsername(), ""));
-        String passWord = Encr.decryptPasswordOptionallyEncrypted(environmentSubstitute(Const.NVL(dm.getDatabaseInterface().getPassword(), "")));
         String hostName = environmentSubstitute(Const.NVL(dm.getDatabaseInterface().getHostname(), ""));
-        String dnName = environmentSubstitute(Const.NVL(dm.getDatabaseName(), ""));
 
         sb.append(" @").append(hostName).append(",").append(port).append("[").append(userName).append(",").append(passWord).append("]::").append(dnName);
       } else {
         // Database Name
         //
-        String dnName = environmentSubstitute(Const.NVL(dm.getDatabaseName(), ""));
         sb.append(" ").append(dnName);
+        if (meta.isUseAuthentication()) {
+          sb.append("-P").append(passWord);
+        }
       }
     } else {
       throw new KettleException("No connection specified");

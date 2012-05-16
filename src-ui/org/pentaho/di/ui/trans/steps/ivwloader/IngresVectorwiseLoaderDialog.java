@@ -80,6 +80,7 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
   private TextVar   wBufferSize;
   private Button  wContinueOnError;
   private Button  wUseStandardConversion;
+  private Button  wUseAuthentication;
   private Button  wUseDynamicVNode;
   private Button  wUseSSV;
   private Button  wEscapeSpecialChars;
@@ -279,7 +280,9 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
     wBufferSize = addStandardTextVar(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.BufferSize.Label"), wCharSet);
     wUseStandardConversion = addStandardCheckBox(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.UseStandardConversion.Label"), wBufferSize);
     wUseStandardConversion.addSelectionListener(lsSelMod);
-    wContinueOnError = addStandardCheckBox(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.ContinueOnError.Label"), wUseStandardConversion);
+    wUseAuthentication = addStandardCheckBox(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.UseAuthentication.Label"), wUseStandardConversion);
+    wUseAuthentication.addSelectionListener(lsSelMod);
+    wContinueOnError = addStandardCheckBox(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.ContinueOnError.Label"), wUseAuthentication);
     wContinueOnError.addSelectionListener(lsSelMod);
     wErrorFile = addStandardTextVar(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.ErrorFile.Label"), wContinueOnError);
     wErrorFile.addModifyListener(lsMod);
@@ -473,6 +476,7 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
     wBufferSize.setText(Const.NVL(input.getBufferSize(), ""));   //$NON-NLS-1$
     
     wUseStandardConversion.setSelection(input.isUseStandardConversion());
+    wUseAuthentication.setSelection(input.isUseAuthentication());
     wUseDynamicVNode.setSelection(input.isUseDynamicVNode());
     wContinueOnError.setSelection(input.isContinueOnError());
     wErrorFile.setText(Const.NVL(input.getErrorFileName(),""));

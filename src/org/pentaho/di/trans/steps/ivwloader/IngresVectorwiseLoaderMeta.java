@@ -88,6 +88,9 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
   /** Use standard formatting for Date and Number fields */
   private boolean         useStandardConversion;
 
+  /** Use authentication */
+  private boolean         useAuthentication;
+
   /** Encoding to use */
   private String          encoding;
 
@@ -154,6 +157,7 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
     delimiter = "|";
     fifoFileName = "${java.io.tmpdir}/fifoVW-${Internal.Step.CopyNr}";
     useStandardConversion = false;
+    useAuthentication = false;
     continueOnError = false;
     useDynamicVNode = false;
     escapingSpecialCharacters = true;
@@ -197,6 +201,7 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
     retval.append("    ").append(XMLHandler.addTagValue("continue_on_error", continueOnError)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("    ").append(XMLHandler.addTagValue("error_file_name", errorFileName)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("    ").append(XMLHandler.addTagValue("use_standard_conversion", useStandardConversion)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("    ").append(XMLHandler.addTagValue("use_authentication", useAuthentication)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("    ").append(XMLHandler.addTagValue("use_dynamic_vnode", useDynamicVNode)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("    ").append(XMLHandler.addTagValue("use_SSV_delimiter", useSSV)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("    ").append(XMLHandler.addTagValue("escape_special_characters", escapingSpecialCharacters)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -228,6 +233,7 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
       continueOnError = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "continue_on_error")); //$NON-NLS-1$
       errorFileName = XMLHandler.getTagValue(stepnode, "error_file_name"); //$NON-NLS-1$
       useStandardConversion = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_standard_conversion")); //$NON-NLS-1$
+      useAuthentication = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_authentication")); //$NON-NLS-1$
       useDynamicVNode = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_dynamic_vnode")); //$NON-NLS-1$
       useSSV = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_SSV_delimiter")); //$NON-NLS-1$
       String escape = XMLHandler.getTagValue(stepnode, "escape_special_characters");
@@ -261,6 +267,7 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
       continueOnError = rep.getStepAttributeBoolean(id_step, "continue_on_error"); //$NON-NLS-1$
       errorFileName = rep.getStepAttributeString(id_step, "error_file_name"); //$NON-NLS-1$
       useStandardConversion = rep.getStepAttributeBoolean(id_step, "use_standard_conversion"); //$NON-NLS-1$
+      useAuthentication = rep.getStepAttributeBoolean(id_step, "use_authentication"); //$NON-NLS-1$
       useDynamicVNode = rep.getStepAttributeBoolean(id_step, "use_dynamic_vnode"); //$NON-NLS-1$
       useSSV = rep.getStepAttributeBoolean(id_step, "use_SSV_delimiter"); //$NON-NLS-1$
       escapingSpecialCharacters = rep.getStepAttributeBoolean(id_step, 0, "escape_special_characters", true); //$NON-NLS-1$
@@ -292,6 +299,7 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
       rep.saveStepAttribute(id_transformation, id_step, "continue_on_error", continueOnError); //$NON-NLS-1$
       rep.saveStepAttribute(id_transformation, id_step, "error_file_name", errorFileName); //$NON-NLS-1$
       rep.saveStepAttribute(id_transformation, id_step, "use_standard_conversion", useStandardConversion); //$NON-NLS-1$
+      rep.saveStepAttribute(id_transformation, id_step, "use_authentication", useAuthentication); //$NON-NLS-1$
       rep.saveStepAttribute(id_transformation, id_step, "use_dynamic_vnode", useDynamicVNode); //$NON-NLS-1$
       rep.saveStepAttribute(id_transformation, id_step, "use_SSV_delimiter", useSSV); //$NON-NLS-1$
       rep.saveStepAttribute(id_transformation, id_step, "escape_special_characters", escapingSpecialCharacters); //$NON-NLS-1$
@@ -570,6 +578,20 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
    */
   public void setBufferSize(String bufferSize) {
     this.bufferSize = bufferSize;
+  }
+
+  /**
+   * @return the useAuthentication
+   */
+  public boolean isUseAuthentication() {
+    return useAuthentication;
+  }
+
+  /**
+   * @param useAuthentication the useAuthentication to set
+   */
+  public void setUseAuthentication(boolean useAuthentication) {
+    this.useAuthentication = useAuthentication;
   }
   
 }
