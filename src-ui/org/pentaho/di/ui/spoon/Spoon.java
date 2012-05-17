@@ -934,27 +934,28 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     return vfsFileChooserDialog;
   }
   
-  public void closeFile() {
+  public boolean closeFile() {
+	boolean closed = true;
     TransMeta transMeta = getActiveTransformation();
     if (transMeta != null) {
       // If a transformation is the current active tab, close it
-      delegates.trans.closeTransformation(transMeta);
+    	 closed = tabCloseSelected();
     } else {
       // Otherwise try to find the current open job and close it
       JobMeta jobMeta = getActiveJob();
       if (jobMeta != null)
-        delegates.jobs.closeJob(jobMeta);
+    	  closed = tabCloseSelected();
     }
+    return closed;
   }
 
   public void closeAllFiles() {
-    TransMeta transMeta = getActiveTransformation();
-    JobMeta jobMeta = getActiveJob();
-    while (jobMeta != null || transMeta != null) {
-      closeFile();
-      transMeta = getActiveTransformation();
-      jobMeta = getActiveJob();
-    }
+    int numTabs = delegates.tabs.getTabs().size();
+	for(int i=numTabs-1;i>=0;i--) {
+		tabfolder.setSelected(i);
+		if(!closeFile()) break;  // A single cancel aborts the rest of the operation
+	}
+	  
   }
 
   public void closeSpoonBrowser() {
