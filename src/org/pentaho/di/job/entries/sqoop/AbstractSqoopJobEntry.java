@@ -33,7 +33,6 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -288,6 +287,7 @@ public abstract class AbstractSqoopJobEntry<S extends SqoopConfig> extends JobEn
    * @param jobResult Job result for the execution that spawned the thread
    */
   protected void handleUncaughtThreadException(Thread t, Throwable e, Result jobResult) {
+    logError(BaseMessages.getString(AbstractSqoopJobEntry.class, "ErrorRunningSqoopTool"), e);
     removeLoggingAppenders();
     setJobResultFailed(jobResult);
   }
@@ -318,7 +318,7 @@ public abstract class AbstractSqoopJobEntry<S extends SqoopConfig> extends JobEn
         setJobResultFailed(jobResult);
       }
     } catch (Exception ex) {
-      logError(BaseMessages.getString(SqoopExportJobEntry.class, "ErrorRunningSqoopTool"), ex);
+      logError(BaseMessages.getString(AbstractSqoopJobEntry.class, "ErrorRunningSqoopTool"), ex);
       setJobResultFailed(jobResult);
     } finally {
       removeLoggingAppenders();
@@ -355,7 +355,7 @@ public abstract class AbstractSqoopJobEntry<S extends SqoopConfig> extends JobEn
         logBasic(m);
       }
     } catch (Exception e) {
-      throw new KettleException(BaseMessages.getString(SqoopExportJobEntry.class, "ErrorConfiguringHadoopEnvironment"), e);
+      throw new KettleException(BaseMessages.getString(AbstractSqoopJobEntry.class, "ErrorConfiguringHadoopEnvironment"), e);
     }
   }
 

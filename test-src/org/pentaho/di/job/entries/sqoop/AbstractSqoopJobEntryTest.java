@@ -28,47 +28,54 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.job.Job;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class AbstractSqoopJobEntryTest {
-  /**
-   * Create a {@link SqoopImportJobEntry} that will simply wait for {@code waitTime} instead of
-   * executing Sqoop.
-   *
-   * @param waitTime Time in milliseconds to block during {@link AbstractSqoopJobEntry#executeSqoop(SqoopConfig, org.apache.hadoop.conf.Configuration, org.pentaho.di.core.Result)}
-   * @return A sqoop job entry that will block instead of actually executing Sqoop
-   */
-  private AbstractSqoopJobEntry createBlockingMockEntry(final long waitTime) {
-    return new AbstractSqoopJobEntry() {
-      @Override
-      protected void executeSqoop(SqoopConfig config, Configuration hadoopConfig, Result jobResult) {
-        // Don't actually execute sqoop, just block for the requested time
-        try {
-          Thread.sleep(waitTime);
-        } catch (InterruptedException e) {
-          throw new RuntimeException(e);
-        }
-      }
 
-      @Override
-      protected SqoopConfig buildSqoopConfig() {
-        return new SqoopConfig() {
-        };
-      }
+  private static class TestSqoopJobEntry extends AbstractSqoopJobEntry<SqoopConfig> {
 
-      @Override
-      protected String getToolName() {
-        return null;
+    private long waitTime = 0L;
+
+    /**
+     * Create a {@link SqoopImportJobEntry} that will simply wait for {@code waitTime} instead of executing Sqoop.
+     *
+     * @param waitTime Time in milliseconds to block during {@link AbstractSqoopJobEntry#executeSqoop(SqoopConfig, org.apache.hadoop.conf.Configuration, org.pentaho.di.core.Result)}
+     */
+    private TestSqoopJobEntry(long waitTime) {
+      this.waitTime = waitTime;
+    }
+
+    @Override
+    protected void executeSqoop(SqoopConfig config, Configuration hadoopConfig, Result jobResult) {
+      // Don't actually execute sqoop, just block for the requested time
+      try {
+        Thread.sleep(waitTime);
+      } catch (InterruptedException e) {
+        throw new RuntimeException(e);
       }
-    };
+    }
+
+    @Override
+    protected SqoopConfig buildSqoopConfig() {
+      return new SqoopConfig() {
+      };
+    }
+
+    @Override
+    protected String getToolName() {
+      return null;
+    }
   }
 
   @Test
   public void execute_blocking() throws KettleException {
     final long waitTime = 1000;
-    AbstractSqoopJobEntry je = createBlockingMockEntry(waitTime);
+    AbstractSqoopJobEntry je = new TestSqoopJobEntry(waitTime);
 
     je.setParentJob(new Job("test", null, null));
     Result result = new Result();
@@ -84,7 +91,7 @@ public class AbstractSqoopJobEntryTest {
   @Test
   public void execute_nonblocking() throws KettleException {
     final long waitTime = 1000;
-    AbstractSqoopJobEntry je = createBlockingMockEntry(waitTime);
+    AbstractSqoopJobEntry je = new TestSqoopJobEntry(waitTime);
 
     je.setParentJob(new Job("test", null, null));
     je.getSqoopConfig().setBlockingExecution(false);
@@ -101,7 +108,13 @@ public class AbstractSqoopJobEntryTest {
   @Test
   public void execute_interrupted() throws KettleException {
     final long waitTime = 1000 * 10;
-    AbstractSqoopJobEntry je = createBlockingMockEntry(waitTime);
+    final List<String> loggedErrors = new ArrayList<String>();
+    AbstractSqoopJobEntry je = new TestSqoopJobEntry(waitTime) {
+      @Override
+      public void logError(String message, Throwable e) {
+        loggedErrors.add(message);
+      }
+    };
 
     final Job parentJob = new Job("test", null, null);
 
@@ -130,5 +143,8 @@ public class AbstractSqoopJobEntryTest {
 
     assertEquals(1, result.getNrErrors());
     assertFalse(result.getResult());
+
+    // Make sure when an uncaught exception occurs an error log message is generated
+    assertEquals(1, loggedErrors.size());
   }
 }
