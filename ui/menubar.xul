@@ -20,9 +20,9 @@
         <menu id="file-open-recent" label="${Spoon.Menu.File.Open.Recent.Popup}">
           <menupopup id="file-open-recent-popup" />
         </menu>
-        <menuitem id="file-close" acceltext="CTRL-F4" accesskey="ctrl-f4" label="${Spoon.Menu.File.Close}"
-          command="spoon.closeFile()" />
-        <menuitem id="file-close-all" label="${Spoon.Menu.File.Close.All}" command="spoon.closeAllFiles()" />
+        <menuitem id="file-close" acceltext="CTRL-W" accesskey="ctrl-w" label="${Spoon.Menu.File.Close}"
+          command="spoon.tabCloseSelected()" />
+        <menuitem id="file-close-all" acceltext="SHIFT-CTRL-W" accesskey="shift-ctrl-w" label="${Spoon.Menu.File.Close.All}" command="spoon.closeAllFiles()" />
 
         <menuseparator />
         <menuitem id="file-save" acceltext="CTRL-S" accesskey="ctrl-s" label="${Spoon.Menu.File.Save}" command="spoon.saveFile()" />
@@ -56,7 +56,7 @@
         <menuitem id="edit-redo" acceltext="CTRL-Y" accesskey="ctrl-y" label="${Spoon.Menu.Redo.NotAvailable}"
           command="spoon.redoAction()" />
         <menuseparator />
-        <menuitem id="edit-cut-steps" label="${Spoon.Menu.Edit.Cut}" command="spoon.cut()" />
+        <menuitem id="edit-cut-steps" acceltext="CTRL-X" accesskey="ctrl-x" label="${Spoon.Menu.Edit.Cut}" command="spoon.cut()" />
         <menuitem id="edit-copy-steps" acceltext="CTRL-C" accesskey="ctrl-c" label="${Spoon.Menu.Edit.CopyToClipboard}"
           command="spoon.copy()" />
         <menuitem id="edit.copy-file" label="${Spoon.Menu.Edit.Copy.File}" command="spoon.copyFile()" />
@@ -181,7 +181,6 @@
         <menuseparator />
         <menuitem id="help-step-plugins" label="${Spoon.Menu.StepPlugins}" command="spoon.helpShowStepPlugins()" />
         <menuitem id="help-jobentry-plugins" label="${Spoon.Menu.JobEntryPlugins}" command="spoon.helpShowJobEntryPlugins()" />
-        <menuseparator />
         <menuitem id="help-about" label="${Spoon.Menu.About}" command="spoon.helpAbout()" />
       </menupopup>
     </menu>

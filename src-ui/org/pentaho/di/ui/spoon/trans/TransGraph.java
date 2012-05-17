@@ -1768,11 +1768,11 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       // System.out.println("e.character="+e.character+", e.keyCode="+e.keyCode+", stateMask & SWT.CTRL = "+(e.stateMask & SWT.CTRL));
       
       // CTRL-W or CTRL-F4 : close tab
-      if ((e.keyCode=='w' && (e.stateMask & SWT.CONTROL) != 0 ) ||
-          (e.keyCode==SWT.F4 && (e.stateMask & SWT.CONTROL) != 0 )
+      if ((e.keyCode=='w' && (e.stateMask & SWT.MOD1) != 0 ) ||
+          (e.keyCode==SWT.F4 && (e.stateMask & SWT.MOD1) != 0 )
           )
       {
-          spoon.closeFile();
+    	  spoon.tabCloseSelected();
       }
 
       
@@ -1801,14 +1801,6 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           inputOutputFields(stepMeta, false);
         }
       }
-      
-		// CTRL-W or CTRL-F4 : close tab
-		if ((e.character=='w' && (e.stateMask & SWT.CONTROL) != 0 ) ||
-		    (e.keyCode==SWT.F4 && (e.stateMask & SWT.CONTROL) != 0 )
-			)
-		{
-			dispose();
-		}
 
     }
 
