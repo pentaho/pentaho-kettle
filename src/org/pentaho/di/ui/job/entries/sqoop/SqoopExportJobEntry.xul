@@ -1,0 +1,131 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+
+<dialog id="sqoop-export"
+        xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+        xmlns:pen="http://www.pentaho.org/2008/xul"
+        title="${Sqoop.Export.Dialog.Title}"
+        resizable="true"
+        appicon="ui/images/spoon.ico"
+        width="640"
+        height="440"
+        buttons="accept,cancel"
+        buttonalign="end"
+        buttonlabelaccept="${Dialog.Accept}"
+        buttonlabelcancel="${Dialog.Cancel}"
+        ondialogaccept="controller.accept()"
+        ondialogcancel="controller.cancel()"
+        onload="controller.init()">
+
+  <vbox>
+    <grid>
+      <columns>
+        <column/>
+        <column/>
+      </columns>
+      <rows>
+        <row>
+          <label value="${Sqoop.Export.JobEntry.Name.Label}"/>
+          <textbox id="jobEntryName" flex="1" multiline="false"/>
+        </row>
+      </rows>
+    </grid>
+
+  </vbox>
+  <vbox flex="1">
+    <tabbox flex="1" selectedIndex="1">
+      <tabs>
+        <tab label="${Sqoop.Export.JobEntry.Tab.Basic}"/>
+        <tab label="${Sqoop.Export.JobEntry.Tab.Advanced}"/>
+      </tabs>
+      <tabpanels>
+        <tabpanel>
+          <!-- This is the start of the basic mode layout. Nothing has been implemented in the controller to handle this.
+          <groupbox>
+            <caption label="${Sqoop.Export.JobEntry.Source.Group.Header}"/>
+            <grid align="start">
+              <columns>
+                <column/>
+                <column/>
+              </columns>
+              <rows>
+                <row>
+                  <label value="${Sqoop.Export.JobEntry.Connection.Label}"/>
+                  <hbox flex="1">
+                    <menulist id="connection" flex="1">
+                      <menupopup>
+                        <menuitem label="connection 1"/>
+                      </menupopup>
+                    </menulist>
+                    <button label="${Sqoop.Export.JobEntry.Edit.Button.Text}" onclick="controller.editConnection();"/>
+                    <button label="${Sqoop.Export.JobEntry.New.Button.Text}" onclick="controller.newConnection();"/>
+                  </hbox>
+                </row>
+                <row>
+                  <label value="${Sqoop.Export.JobEntry.Schema.Label}"/>
+                  <hbox flex="1">
+                    <textbox pen:customclass="variabletextbox" id="sourceSchema" flex="1"/>
+                  </hbox>
+                </row>
+                <row align="start">
+                  <label value="${Sqoop.Export.JobEntry.SourceTable.Label}" align="start"/>
+                  <hbox flex="1" align="start">
+                    <textbox pen:customclass="variabletextbox" id="sourceTable" flex="1"/>
+                    <button label="${Sqoop.Export.JobEntry.Browse.Button.Text}" onclick="controller.browseSourceTable();"/>
+                  </hbox>
+                </row>
+              </rows>
+            </grid>
+          </groupbox>
+          <groupbox>
+            <caption label="${Sqoop.Export.JobEntry.HDFSTarget.Group.Header}"/>
+            <grid>
+              <columns>
+                <column/>
+                <column flex="1"/>
+              </columns>
+              <rows>
+                <row>
+                  <label value="${Sqoop.Export.JobEntry.FileFormat.Label}"/>
+                  <menulist id="fileformat">
+                    <menupopup>
+                      <menuitem label="${Sqoop.Export.JobEntry.FileFormat.Option1.Label}" selected="true"/>
+                      <menuitem label="${Sqoop.Export.JobEntry.FileFormat.Option2.Label}"/>
+                      <menuitem label="${Sqoop.Export.JobEntry.FileFormat.Option3.Label}"/>
+                    </menupopup>
+                  </menulist>
+                </row>
+                <row>
+                  <label value="${Sqoop.Export.JobEntry.NamenodeHostname.Label}"/>
+                  <textbox pen:customclass="variabletextbox" id="hdfsHostname" flex="1"/>
+                </row>
+                <row>
+                  <label value="${Sqoop.Export.JobEntry.NamenodePort.Label}"/>
+                  <textbox pen:customclass="variabletextbox" id="hdfsPort" flex="1"/>
+                </row>
+                <row>
+                  <label value="${Sqoop.Export.JobEntry.JobtrackerHostname.Label}"/>
+                  <textbox pen:customclass="variabletextbox" id="jobtrackerHostname" flex="1"/>
+                </row>
+                <row>
+                  <label value="${Sqoop.Export.JobEntry.JobtrackerPort.Label}"/>
+                  <textbox pen:customclass="variabletextbox" id="jobtrackerPort" flex="1"/>
+                </row>
+              </rows>
+            </grid>
+          </groupbox>
+            -->
+        </tabpanel>
+        <tabpanel>
+          <tree id="advanced-table" hidecolumnpicker="true" autocreatenewrows="false" flex="1">
+            <treecols>
+              <treecol id="name-col" editable="false" flex="1" label="${Sqoop.JobEntry.AdvancedTable.Column.Name.Label}" pen:binding="displayName"/>
+              <treecol id="value-col" editable="true" flex="1" label="${Sqoop.JobEntry.AdvancedTable.Column.Name.Label}" pen:binding="value"/>
+            </treecols>
+            <treechildren />
+          </tree>
+        </tabpanel>
+      </tabpanels>
+    </tabbox>
+  </vbox>
+</dialog>

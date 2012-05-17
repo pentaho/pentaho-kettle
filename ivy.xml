@@ -45,6 +45,7 @@
     <dependency org="org.apache.hadoop" name="hadoop-core" rev="${dependency.pentaho-hadoop.revision}" transitive="true" conf="default->default"
       changing="false">
       <exclude org="junit"/>
+      <exclude org="ant"/>
     </dependency>
     <dependency org="org.apache.hbase" name="hbase" rev="${dependency.apache-hbase.revision}" transitive="false" conf="default->default"
       changing="false" />
@@ -52,7 +53,7 @@
       changing="false" />
     <dependency org="org.apache.pig" name="pig" rev="${dependency.pig.revision}" transitive="false" conf="default->default"
       changing="false"/>
-    <dependency org="org.apache.sqoop" name="sqoop" rev="1.4.1-incubating" changing="true" transitive="false"/>
+    <dependency org="org.apache.sqoop" name="sqoop" rev="1.4.1-incubating-hadoop-20" changing="true" transitive="false"/>
     <dependency org="jline" name="jline" rev="${dependency.jline.revision}" transitive="false" conf="default->default"
       changing="false"/>
     <dependency org="libthrift" name="libthrift" rev="${dependency.libthrift.revision}" transitive="false" conf="default->default"
@@ -90,7 +91,7 @@
     <dependency org="org.apache.hadoop" name="hadoop-examples" rev="${dependency.pentaho-hadoop.revision}" transitive="false" conf="test->default" changing="false" />
     <dependency org="commons-httpclient" name="commons-httpclient" rev="3.0.1" conf="test->default"/>
     <dependency org="org.safehaus.jug" name="jug-lgpl" rev="2.0.0" transitive="false" conf="test->default"/>
-
+    <dependency org="com.h2database" name="h2" rev="1.3.166" conf="test->default" />
 
     <!--                                                                                              -->
     <!--                                                                                              -->
