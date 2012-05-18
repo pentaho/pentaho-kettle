@@ -47,7 +47,7 @@ public class SqoopImportConfig extends SqoopConfig {
     addArgument(new Argument("split-by"));
     addArgument(new Argument("query"));
     addArgument(new Argument("where"));
-    addArgument(new Argument("compress"));
+    addArgument(new Argument("compress", true));
     addArgument(new Argument("compression-codec"));
     addArgument(new Argument("null-string"));
     addArgument(new Argument("null-non-string"));
