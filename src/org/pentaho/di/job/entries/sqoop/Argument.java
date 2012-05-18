@@ -130,27 +130,6 @@ public class Argument implements XulEventSource {
   }
 
   /**
-   * Append this argument to a list of arguments if it has a value or if it's a flag.
-   *
-   * @param args List of arguments to append to
-   * @param argumentPrefix Prefix to use for appending the name of this argument, e.g. "--"
-   */
-  public void appendTo(List<String> args, String argumentPrefix) {
-    if (argumentPrefix == null) {
-      argumentPrefix = "";
-    }
-
-    if (getValue() != null) {
-      if (isFlag() && Boolean.parseBoolean(getValue())) {
-        args.add(argumentPrefix + getName());
-      } else if (!isFlag() && getValue() != null) {
-        args.add(argumentPrefix + getName());
-        args.add(getValue());
-      }
-    }
-  }
-
-  /**
    * Uses the argument's name to determine equality.
    * @param o another object
    * @return {@code true} if {@code o} is an {@link Argument} and its name equals this argument's name

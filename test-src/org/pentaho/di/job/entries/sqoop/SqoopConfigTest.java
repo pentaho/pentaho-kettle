@@ -23,6 +23,7 @@
 package org.pentaho.di.job.entries.sqoop;
 
 import org.junit.Test;
+import org.pentaho.di.core.variables.Variables;
 
 import java.util.List;
 
@@ -32,22 +33,58 @@ public class SqoopConfigTest {
 
   @Test
   public void getCommandLineArgs_empty() {
+    Variables v = new Variables();
     SqoopConfig config = new SqoopExportConfig();
-    assertEquals(0, config.getCommandLineArgs().size());
+    assertEquals(0, config.getCommandLineArgs(v).size());
 
     // Job Entry Name is not annotated so it shouldn't be added to the args list
     config.setJobEntryName("testing");
-    assertEquals(0, config.getCommandLineArgs().size());
+    assertEquals(0, config.getCommandLineArgs(v).size());
   }
 
   @Test
   public void getCommandLineArgs_boolean() {
+    Variables v = new Variables();
     SqoopConfig config = new SqoopExportConfig();
 
-    config.setArgumentValue("verbose", Boolean.toString(true));
+    config.setArgumentValue("verbose", Boolean.TRUE.toString());
 
-    assertEquals(1, config.getCommandLineArgs().size());
-    assertEquals("--verbose", config.getCommandLineArgs().get(0));
+    List<String> args = config.getCommandLineArgs(v);
+    assertEquals(1, args.size());
+    assertEquals("--verbose", args.get(0));
+  }
+
+  @Test
+  public void getCommandLineArgs_variable_replace() {
+    Variables v = new Variables();
+    SqoopConfig config = new SqoopConfig() {
+    };
+    String connect = "jdbc:mysql://localhost:3306/test";
+
+    config.setArgumentValue("connect", "${testing}");
+    List<String> args = config.getCommandLineArgs(null);
+    assertEquals(2, args.size());
+    assertEquals("--connect", args.get(0));
+    assertEquals("${testing}", args.get(1));
+
+    v.setVariable("testing", connect);
+    args = config.getCommandLineArgs(v);
+    assertEquals(2, args.size());
+    assertEquals("--connect", args.get(0));
+    assertEquals(connect, args.get(1));
+  }
+
+  @Test
+  public void getCommandLineArgs_variable_replace_flag() {
+    Variables v = new Variables();
+    SqoopConfig config = new SqoopConfig() {
+    };
+    config.setArgumentValue("verbose", "${testing}");
+    assertEquals(0, config.getCommandLineArgs(null).size());
+
+    v.setVariable("testing", Boolean.TRUE.toString());
+    assertEquals(1, config.getCommandLineArgs(v).size());
+    assertEquals("--verbose", config.getCommandLineArgs(v).get(0));
   }
 
   @Test
@@ -140,8 +177,8 @@ public class SqoopConfigTest {
 
     // Make sure no arguments are shared
     for (Argument ai : cArgs) {
-      for(Argument ai2 : cloneArgs) {
-        assertFalse( ai == ai2);
+      for (Argument ai2 : cloneArgs) {
+        assertFalse(ai == ai2);
       }
     }
 

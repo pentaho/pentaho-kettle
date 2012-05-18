@@ -22,6 +22,7 @@
 
 package org.pentaho.di.job.entries.sqoop;
 
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.ui.xul.XulEventSource;
 import org.pentaho.ui.xul.util.AbstractModelList;
@@ -36,6 +37,9 @@ import java.util.*;
 public abstract class SqoopConfig implements XulEventSource, Cloneable {
   protected transient PropertyChangeSupport pcs = new PropertyChangeSupport(this);
 
+  /**
+   * Prefix to append before an argument's name when building up a list of command-line arguments, e.g. "--"
+   */
   protected static final String ARG_PREFIX = "--";
 
   private String jobEntryName;
@@ -175,12 +179,15 @@ public abstract class SqoopConfig implements XulEventSource, Cloneable {
   }
 
   /**
+   * Generate a list of command line arguments and their values for arguments that require them.
+   *
+   * @param variableSpace Variable space to look up argument values from. May be {@code null}.
    * @return All the command line arguments for this configuration object
    */
-  public List<String> getCommandLineArgs() {
+  public List<String> getCommandLineArgs(VariableSpace variableSpace) {
     List<String> args = new ArrayList<String>();
 
-    appendArguments(args, arguments);
+    appendArguments(args, arguments, variableSpace);
 
     return args;
   }
@@ -188,13 +195,31 @@ public abstract class SqoopConfig implements XulEventSource, Cloneable {
   /**
    * Add all {@link Argument}s to a list of arguments
    *
-   * @param args          Arguments to append to
+   * @param args      Arguments to append to
    * @param arguments Arguments to append
-   * @return
+   * @param variableSpace Variable space to look up argument values from. May be {@code null}.
    */
-  protected void appendArguments(List<String> args, Set<? extends Argument> arguments) {
+  protected void appendArguments(List<String> args, Set<? extends Argument> arguments, VariableSpace variableSpace) {
     for (Argument ai : arguments) {
-      ai.appendTo(args, ARG_PREFIX);
+      appendArgument(args, ai, variableSpace);
+    }
+  }
+
+  /**
+   * Append this argument to a list of arguments if it has a value or if it's a flag.
+   *
+   * @param args List of arguments to append to
+   */
+  protected void appendArgument(List<String> args, Argument arg, VariableSpace variableSpace) {
+    String value = arg.getValue();
+    if (variableSpace != null) {
+      value = variableSpace.environmentSubstitute(value);
+    }
+    if (arg.isFlag() && Boolean.parseBoolean(value)) {
+      args.add(ARG_PREFIX + arg.getName());
+    } else if (!arg.isFlag() && value != null) {
+      args.add(ARG_PREFIX + arg.getName());
+      args.add(value);
     }
   }
 

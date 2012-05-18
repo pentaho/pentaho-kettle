@@ -311,7 +311,7 @@ public abstract class AbstractSqoopJobEntry<S extends SqoopConfig> extends JobEn
     attachLoggingAppenders();
     try {
       configure(hadoopConfig);
-      List<String> args = config.getCommandLineArgs();
+      List<String> args = config.getCommandLineArgs(getVariables());
       args.add(0, getToolName()); // push the tool command-line argument on the top of the args list
       int result = Sqoop.runTool(args.toArray(new String[args.size()]), hadoopConfig);
       if (result != 0) {

@@ -47,53 +47,6 @@ public class ArgumentTest {
   }
 
   @Test
-  public void appendTo() {
-    Argument a = new Argument("test", "value");
-    List<String> args = new ArrayList<String>();
-
-    a.appendTo(args, null);
-
-    assertEquals(2, args.size());
-    assertEquals("test", args.get(0));
-    assertEquals("value", args.get(1));
-  }
-
-  @Test
-  public void appendTo_no_value() {
-    Argument a = new Argument("test");
-    List<String> args = new ArrayList<String>();
-
-    a.appendTo(args, "--");
-
-    assertEquals(0, args.size());
-  }
-
-  @Test
-  public void appendTo_flag() {
-    Argument a = new Argument("test", null, Boolean.TRUE.toString(), true);
-    List<String> args = new ArrayList<String>();
-
-    a.appendTo(args, "--");
-
-    assertEquals(1, args.size());
-    assertEquals("--test", args.get(0));
-  }
-
-  @Test
-  public void appendTo_flag_not_true() {
-    Argument a1 = new Argument("test", null, null, true);
-    Argument a2 = new Argument("test", null, "", true);
-    Argument a3 = new Argument("test", null, "false", true);
-    List<String> args = new ArrayList<String>();
-
-    a1.appendTo(args, "--");
-    a2.appendTo(args, "--");
-    a3.appendTo(args, "--");
-
-    assertEquals(0, args.size());
-  }
-
-  @Test
   public void name() {
     String name = "test";
     Argument a = new Argument();
