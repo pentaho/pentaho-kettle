@@ -667,7 +667,9 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 		String realkeyFilename=environmentSubstitute(keyFilename);
 		String realkeyPass=environmentSubstitute(keyFilePass);
 		
-		
+		// PDI The following is used to apply a path for SSH because the SFTPv3Client doesn't let us specify/change dirs
+		String sourceFolder="";  
+				
 		if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryFTPDelete.Start")); //$NON-NLS-1$
 		
 		if(copyprevious && rows.size()==0)
@@ -749,7 +751,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 						realproxyhost,realproxyusername, realproxypassword, realproxyport,
 						realkeyFilename, realkeyPass);
 				
-				String sourceFolder=".";
+				sourceFolder=".";
 				if (realFtpDirectory!=null) 
 					sourceFolder=realFtpDirectory + "/";
 				else
@@ -757,12 +759,12 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 				
 				// NOTE: Source of the unchecked warning suppression for the declaration of this method.
 				Vector<SFTPv3DirectoryEntry> vfilelist = sshclient.ls(sourceFolder);
-				int i=0;
 				if(vfilelist!=null)
 				{
-					filelist = new String[vfilelist.size()];
+					// Make one pass through the vfilelist to get an accurate count
+					//  Using the two-pass method with arrays is faster than using ArrayList
+					int fileCount = 0;
 					Iterator<SFTPv3DirectoryEntry> iterator = vfilelist.iterator();
-					
 					while (iterator.hasNext()) 
 					{
 						SFTPv3DirectoryEntry dirEntry = iterator.next();
@@ -770,9 +772,25 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 						if (dirEntry != null && !dirEntry.filename.equals(".") && !dirEntry.filename.equals("..") 
 								&& !isDirectory(sshclient, sourceFolder+dirEntry.filename))
 						{
-							filelist[i++]=dirEntry.filename;
+							fileCount++;
 						}
 					}
+					
+					// Now that we have the correct count, create and fill in the array
+					filelist = new String[fileCount];
+					iterator = vfilelist.iterator();
+					int i=0;
+					while (iterator.hasNext()) 
+					{
+						SFTPv3DirectoryEntry dirEntry = iterator.next();
+			
+						if (dirEntry != null && !dirEntry.filename.equals(".") && !dirEntry.filename.equals("..") 
+								&& !isDirectory(sshclient, sourceFolder+dirEntry.filename))
+						{
+							filelist[i] = dirEntry.filename;
+							i++;
+						}
+					}					
 				}
 			}
 
@@ -856,7 +874,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 						}
 						else if(protocol.equals(PROTOCOL_SSH))
 						{
-							sshclient.rm(filelist[i]);	
+							sshclient.rm(sourceFolder+filelist[i]);	
 						}
 						if(isDetailed()) logDetailed("JobEntryFTPDelete.RemotefileDeleted",filelist[i]);
 						updateDeletedFiles();
@@ -997,7 +1015,7 @@ public class JobEntryFTPDelete extends JobEntryBase implements Cloneable, JobEnt
 		boolean isAuthenticated = false;
 		if(publicpublickey)
 		{
-			isAuthenticated=conn.authenticateWithPublicKey(realUsername, new File(keyFilename), realkeyPass);
+			isAuthenticated=conn.authenticateWithPublicKey(realUsername, new File(realkeyFilename), realkeyPass);
 		}else
 		{
 			isAuthenticated=conn.authenticateWithPassword(realUsername, realserverpassword);
