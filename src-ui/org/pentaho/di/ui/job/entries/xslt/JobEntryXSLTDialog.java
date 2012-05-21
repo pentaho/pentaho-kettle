@@ -647,7 +647,7 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 	     fdlOutputProperties.top  = new FormAttachment(0, margin);
 	     wlOutputProperties.setLayoutData(fdlOutputProperties);
 
-	    final int OutputPropertiesRows=0;//input.getParameterField().length;
+	    final int OutputPropertiesRows=jobEntry.getOutputPropertyName().length;
 		
 		 colinf=new ColumnInfo[] { 
 		  new ColumnInfo(BaseMessages.getString(PKG, "XsltDialog.ColumnInfo.OutputProperties.Name"),      ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
@@ -682,7 +682,7 @@ public class JobEntryXSLTDialog extends JobEntryDialog implements JobEntryDialog
 	       
 		
 			
-		final int FieldsRows=0;//input.getParameterField().length;
+		final int FieldsRows=jobEntry.getParameterField().length;
 		
 		 colinf=new ColumnInfo[] { 
 		  new ColumnInfo(BaseMessages.getString(PKG, "XsltDialog.ColumnInfo.Name"),   ColumnInfo.COLUMN_TYPE_TEXT,   false),
