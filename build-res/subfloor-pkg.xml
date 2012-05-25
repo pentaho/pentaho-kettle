@@ -26,11 +26,9 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ============================================================================-->
 <!--===========================================================================
     == SUBFLOOR-PKG ==
-    
     $Rev: 100 $
     $Date: 2009-12-09 11:43:26 -0500 (Wed, 09 Dec 2009) $
     Project Home: http://code.google.com/p/subfloor/
-    
     Provides default targets for creating application archives such as zip and tar.gzip
     files.
     ============================================================================-->
@@ -130,20 +128,212 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
     </tar>
   </target>
 
+  <!-- ============================================linuxPackage===================================================== -->
+
+  <property name="linuxPackage.name" value="pentaho-${package.id}" />
+
+  <property name="linuxPackage.longName" value="${impl.title}" />
+  <property name="linuxPackage.description" value="${impl.title}" />
+  <property name="linuxPackage.release" value="1" />
+  <property name="linuxPackage.initd.startCommandDelegatee" value="start.pentaho.sh" 
+    description="init.d script will delegate to this script located in /opt/pentaho/${linuxPackage.name}" />
+
+  <property name="linuxPackage.initd.stopCommandDelegatee" value="stop.pentaho.sh" 
+    description="init.d script will delegate to this script located in /opt/pentaho/${linuxPackage.name}" />
+
+  <property name="linuxPackage.initd.processName" value="catalina" 
+    description="string that must be present to prove pid is not stale; see init.d script" />
+  <property name="linuxPackage.res.dir" value="linux-res" description="Directory with Linux package resources." />
+  <filterset begintoken="[[[" endtoken="]]]" id="linuxPackage.filterset">
+    <filter token="linuxPackage.initd.startCommandDelegatee" value="${linuxPackage.initd.startCommandDelegatee}" />
+    <filter token="linuxPackage.initd.stopCommandDelegatee" value="${linuxPackage.initd.stopCommandDelegatee}" />
+    <filter token="linuxPackage.initd.processName" value="${linuxPackage.initd.processName}" />
+    <filter token="linuxPackage.name" value="${linuxPackage.name}" />
+    <filter token="linuxPackage.longName" value="${linuxPackage.longName}" />
+  </filterset>
+  <!-- prepares Debian control file and scripts shared by DEB and RPM -->
+  <target name="linuxPackage-prepare-control">
+    <copy todir="${linuxPackage.stage.dir}/control" overwrite="true">
+      <fileset dir="${linuxPackage.res.dir}/control" />
+      <filterset refid="linuxPackage.filterset" />
+      <filterset refid="${linuxPackage.extraFilterset}" />
+    </copy>
+  </target>
+  <!-- prepares actual files to be installed shared by DEB and RPM -->
+  <target name="linuxPackage-prepare-data">
+    <mkdir dir="${linuxPackage.stage.dir}/data/opt/pentaho/${linuxPackage.name}" />
+
+    <antcall target="linuxPackage-copy-files">
+      <param name="linuxPackage.dataDir" value="${linuxPackage.stage.dir}/data" />
+      <param name="linuxPackage.packageFormat" value="${linuxPackage.packageFormat}" />
+    </antcall>
+    <copy todir="${linuxPackage.stage.dir}/data" overwrite="true">
+      <fileset dir="${linuxPackage.res.dir}/data" />
+      <filterset refid="linuxPackage.filterset" />
+      <filterset refid="${linuxPackage.extraFilterset}" />
+    </copy>
+    <!-- if any files named __package.name__, rename them-->
+
+    <if>
+      <available file="${linuxPackage.stage.dir}/data/etc/init.d/__package.name__" type="file" />
+      <then>
+        <move file="${linuxPackage.stage.dir}/data/etc/init.d/__package.name__" tofile="${linuxPackage.stage.dir}/data/etc/init.d/${linuxPackage.name}" />
+      </then>
+    </if>
+    <if>
+      <available file="${linuxPackage.stage.dir}/data/opt/pentaho/__package.name__" type="dir" />
+      <then>
+        <move file="${linuxPackage.stage.dir}/data/opt/pentaho/__package.name__" tofile="${linuxPackage.stage.dir}/data/opt/pentaho/${linuxPackage.name}" />
+      </then>
+    </if>
+  </target>
+
+  <!-- override if necessary -->
+  <target name="linuxPackage-copy-files">
+    <echo>Copying files for Linux package format: ${linuxPackage.packageFormat}</echo>
+    <copy todir="${linuxPackage.dataDir}/opt/pentaho/${linuxPackage.name}">
+      <fileset dir="${stage.dir}/${package.id}" />
+    </copy>
+  </target>
+  <!-- ============================================deb============================================================== -->
+
+  <property name="deb.longName" value="${linuxPackage.longName}" />
+
+  <property name="deb.name" value="${linuxPackage.name}" />
+  <property name="deb.arch"
+            value="all"
+            description="One of i386, amd64, or all." />
+
+ <property name="deb.maintainer" value="buildguy &lt;buildguy@pentaho.com&gt;" />
+  <property name="deb.desc" value="${linuxPackage.description}" />
+  <property name="deb.release" value="${linuxPackage.release}" />
+  <property name="deb.stage.dir"
+            value="${bin.dir}/deb-stage"
+            description="Staging directory for Debian package creation." />
+
+  <property name="deb.res.dir"
+            value="${linuxPackage.res.dir}"
+            description="Debian package resources." />
+  <filterset begintoken="[[[" endtoken="]]]" id="deb.filterset">
+    <filter token="deb.name" value="${deb.name}" />
+    <filter token="deb.version" value="${project.revision}-${deb.release}" />
+    <filter token="deb.longName" value="${deb.longName}" />
+    <filter token="deb.arch" value="${deb.arch}" />
+    <filter token="deb.desc" value="${deb.desc}" />
+    <filter token="deb.maintainer" value="${deb.maintainer}" />
+  </filterset>
+  <!-- jdeb is cross-platform Debian package tool -->
+  <target name="install-jdeb" depends="install-ivy">
+    <taskdef-with-ivy task-name="jdeb" classname="org.vafer.jdeb.ant.DebAntTask" organisation="org.vafer" module="jdeb" 
+      revision="0.8" />
+  </target>
+
+  <target name="package-deb" depends="install-jdeb" description="Creates Debian package.">
+
+    <antcall target="linuxPackage-prepare-control">
+      <param name="linuxPackage.stage.dir" value="${deb.stage.dir}" />
+      <param name="linuxPackage.res.dir" value="${deb.res.dir}" />
+      <param name="linuxPackage.extraFilterset" value="deb.filterset" />
+    </antcall>
+    <antcall target="linuxPackage-prepare-data">
+      <param name="linuxPackage.stage.dir" value="${deb.stage.dir}" />
+      <param name="linuxPackage.res.dir" value="${deb.res.dir}" />
+      <param name="linuxPackage.extraFilterset" value="deb.filterset" />
+      <param name="linuxPackage.packageFormat" value="deb" />
+    </antcall>
+    <!-- tar for the sole purpose of creating execute bit -->
+    <tar destfile="${deb.stage.dir}/data.tar.gz" longfile="gnu" compression="gzip">
+      <tarfileset dir="${deb.stage.dir}/data" mode="755">
+        <include name="**/*.sh" />
+      </tarfileset>
+      <tarfileset dir="${deb.stage.dir}/data">
+        <exclude name="**/*.sh" />
+      </tarfileset>
+    </tar>
+    <!-- do not change this package name; it is consistent with Debian package naming conventions -->
+    <!-- the 1 below is the Debian revision number, which may change if only the control files are changed -->
+    <!-- http://www.debian.org/doc/manuals/debian-faq/ch-pkg_basics.html -->
+    <jdeb destfile="${dist.dir}/${deb.name}_${project.revision}-${deb.release}_${deb.arch}.deb"
+        control="${deb.stage.dir}/control">
+      <data src="${deb.stage.dir}/data.tar.gz" type="archive" />
+    </jdeb>
+  </target>
+  <!-- ================================================rpm========================================================== -->
+
+  <property name="rpm.name" value="${linuxPackage.name}" />
+  <property name="rpm.arch"
+            value="NOARCH"
+            description="One of I386, X86_64, or NOARCH. Case matters." />
+  <property name="rpm.group" value="System Environment/Daemons" description="Group for RPM spec file." />
+  <property name="rpm.summary" value="${linuxPackage.description}" description="Summary for RPM spec file." />
+
+  <property name="rpm.stage.dir"
+            value="${bin.dir}/rpm-stage"
+            description="Staging directory for RPM package creation." />
+
+  <property name="rpm.res.dir"
+            value="${linuxPackage.res.dir}"
+            description="RPM package resources." />
+  <filterset begintoken="[[[" endtoken="]]]" id="rpm.filterset">
+  </filterset>
+  <!-- redline is cross-platform RPM package tool -->
+  <target name="install-redline" depends="install-ivy">
+    <taskdef-with-ivy task-name="redline" classname="org.freecompany.redline.ant.RedlineTask" organisation="org.redline-rpm" module="redline" 
+      revision="1.1.9" />
+  </target>
+  <target name="package-rpm" depends="install-redline">
+    <antcall target="linuxPackage-prepare-control">
+      <param name="linuxPackage.stage.dir" value="${rpm.stage.dir}" />
+      <param name="linuxPackage.res.dir" value="${rpm.res.dir}" />
+      <param name="linuxPackage.extraFilterset" value="rpm.filterset" />
+    </antcall>
+    <antcall target="linuxPackage-prepare-data">
+      <param name="linuxPackage.stage.dir" value="${rpm.stage.dir}" />
+      <param name="linuxPackage.res.dir" value="${rpm.res.dir}" />
+      <param name="linuxPackage.extraFilterset" value="rpm.filterset" />
+      <param name="linuxPackage.packageFormat" value="rpm" />
+    </antcall>
+    <!-- to adhere to naming conventions, version number cannot contain dash -->
+    <!-- http://www.rpm.org/max-rpm/ch-rpm-file-format.html -->
+    <propertyregex property="rpm.version" input="${project.revision}" regexp="-" replace="_" />
+    <property name="rpm.release" value="${linuxPackage.release}" />
+    <antcall target="create-rpm"></antcall>
+  </target>
+
+  <target name="create-rpm">
+    <!-- these tarfilesets can be overridden -->
+    <!-- you can't just include everything in ${rpm.stage.dir}/data without a prefix; rpm will complain that the path 
+         already exists; the prefixes here are paths that are expected to already exist and thus should not be created
+         by this package -->
+    <tarfileset erroronmissingdir="false" prefix="/etc/init.d" dir="${rpm.stage.dir}/data/etc/init.d" id="rpm.tarfileset1" />
+    <tarfileset erroronmissingdir="false" prefix="/opt" dir="${rpm.stage.dir}/data/opt" id="rpm.tarfileset2" />
+    <tarfileset erroronmissingdir="false" prefix="/var/run" dir="${rpm.stage.dir}/data/var/run" id="rpm.tarfileset3" />
+    <tarfileset erroronmissingdir="false" dir="${rpm.stage.dir}/data" includes="doesnotexist" id="rpm.tarfileset4" />
+    <tarfileset erroronmissingdir="false" dir="${rpm.stage.dir}/data" includes="doesnotexist" id="rpm.tarfileset5" />
+    <redline architecture="${rpm.arch}" group="${rpm.group}" name="${rpm.name}" version="${rpm.version}" 
+      postInstallScript="${rpm.stage.dir}/control/postinst" preUninstallScript="${rpm.stage.dir}/control/prerm" 
+      destination="${dist.dir}" summary="${rpm.summary}" release="${rpm.release}">
+      <tarfileset refid="rpm.tarfileset1" />
+      <tarfileset refid="rpm.tarfileset2" />
+      <tarfileset refid="rpm.tarfileset3" />
+      <tarfileset refid="rpm.tarfileset4" />
+      <tarfileset refid="rpm.tarfileset5" />
+    </redline>
+  </target>
+  <!-- =========================================================================================================== -->
+
   <!--=======================================================================
-	    create-pom (override)
-	    
-	    Creates the POM files for publishing the jar and gwt zip package to the Maven repository
-	    ====================================================================-->
+      create-pom (override)
+      Creates the POM files for publishing the jar and gwt zip package to the Maven repository
+      ====================================================================-->
   <target name="create-pom"
           depends="install-ivy,subfloor.create-pom,create-package-pom"
           description="Creates a POM file based on the ivy dependencies" />
 
   <!--=======================================================================
-	    create-package-pom 
-	    
-	    Creates a POM file for the package
-	    ====================================================================-->
+      create-package-pom 
+      Creates a POM file for the package
+      ====================================================================-->
   <target name="create-package-pom"
           depends="install-ivy"
           description="Creates a POM file based on the ivy dependencies for a separate package">
@@ -153,7 +343,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
   <!--=======================================================================
       publish-nojar (override)
-      
       Publishes the jar and zip package to the Maven repository
       ====================================================================-->
   <target name="publish-nojar" depends="install-antcontrib,create-pom,ivy.deliver,subfloor.publish-nojar">
@@ -166,7 +355,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
   <!--=======================================================================
       publish-local-nojar (override)
-      
       Publishes jar and zip package locally
       ====================================================================-->
   <target name="publish-local-nojar" depends="install-ivy,subfloor.publish-local-nojar">
