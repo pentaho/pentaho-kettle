@@ -31,6 +31,7 @@ import java.util.StringTokenizer;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs.FileObject;
+import org.pentaho.amazon.AbstractAmazonJobEntry;
 import org.pentaho.amazon.AmazonSpoonPlugin;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
@@ -77,76 +78,23 @@ import com.amazonaws.services.s3.model.S3Object;
  * A job entry plug-in class to submits a Hive job into the AWS Elastic MapReduce service from Pentaho Data Integration (Kettle).
  */
 @JobEntry(id = "HiveJobExecutorPlugin", name = "Amazon Hive Job Executor", categoryDescription = "Big Data", description = "Execute Hive jobs in Amazon EMR", image = "AWS-HIVE.png")
-public class AmazonHiveJobExecutor extends JobEntryBase implements Cloneable, JobEntryInterface {
+public class AmazonHiveJobExecutor extends AbstractAmazonJobEntry implements Cloneable, JobEntryInterface {
 
   private static Class<?> PKG = AmazonHiveJobExecutor.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-  private String hadoopJobName;
-  private String hadoopJobFlowId;
-
-  private String jarUrl = "";
-  private String qUrl = "";
-  private String accessKey = "";
-  private String secretKey = "";
-  private String bootstrapActions = "";
-  private String stagingDir = "";
-  private String numInstances = "2";
-  private String masterInstanceType = "Small [m1.small]";
-  private String slaveInstanceType = "Small [m1.small]";
-  private String cmdLineArgs;
-  private boolean alive;
-  private boolean blocking;
-  private String loggingInterval = "10"; // 10 seconds default
+  protected String qUrl = "";
+  protected String bootstrapActions = "";
+  protected boolean alive;
 
   public AmazonHiveJobExecutor() {
   }
   
-  public String getHadoopJobName() {
-    return hadoopJobName;
-  }
-
-  public void setHadoopJobName(String hadoopJobName) {
-    this.hadoopJobName = hadoopJobName;
-  }
-
-  public String getHadoopJobFlowId() {
-    return hadoopJobFlowId;
-  }
-
-  public void setHadoopJobFlowId(String hadoopJobFlowId) {
-    this.hadoopJobFlowId = hadoopJobFlowId;
-  }
-
-  public String getJarUrl() {
-    return jarUrl;
-  }
-
-  public void setJarUrl(String jarUrl) {
-    this.jarUrl = jarUrl;
-  }
-
   public String getQUrl() {
     return qUrl;
   }
 
   public void setQUrl(String qUrl) {
     this.qUrl = qUrl;
-  }
-
-  public String getAccessKey() {
-    return accessKey;
-  }
-
-  public void setAccessKey(String accessKey) {
-    this.accessKey = accessKey;
-  }
-
-  public String getSecretKey() {
-    return secretKey;
-  }
-
-  public void setSecretKey(String secretKey) {
-    this.secretKey = secretKey;
   }
 
   public String getBootstrapActions() {
@@ -157,46 +105,6 @@ public class AmazonHiveJobExecutor extends JobEntryBase implements Cloneable, Jo
     this.bootstrapActions = bootstrapActions;
   }
 
-  public String getStagingDir() {
-    return stagingDir;
-  }
-
-  public void setStagingDir(String stagingDir) {
-    this.stagingDir = stagingDir;
-  }
-
-  public String getNumInstances() {
-    return numInstances;
-  }
-
-  public void setNumInstances(String numInstances) {
-    this.numInstances = numInstances;
-  }
-
-  public String getMasterInstanceType() {
-    return masterInstanceType;
-  }
-
-  public void setMasterInstanceType(String masterInstanceType) {
-    this.masterInstanceType = masterInstanceType;
-  }
-
-  public String getSlaveInstanceType() {
-    return slaveInstanceType;
-  }
-
-  public void setSlaveInstanceType(String slaveInstanceType) {
-    this.slaveInstanceType = slaveInstanceType;
-  }
-
-  public String getCmdLineArgs() {
-    return cmdLineArgs;
-  }
-
-  public void setCmdLineArgs(String cmdLineArgs) {
-    this.cmdLineArgs = cmdLineArgs;
-  }
-
   public boolean isAlive() {
     return alive;
   }
@@ -204,33 +112,6 @@ public class AmazonHiveJobExecutor extends JobEntryBase implements Cloneable, Jo
   public void setAlive(boolean alive) {
     this.alive = alive;
   }
-
-  public boolean isBlocking() {
-    return blocking;
-  }
-
-  public void setBlocking(boolean blocking) {
-    this.blocking = blocking;
-  }
-
-  public String getLoggingInterval() {
-    return loggingInterval;
-  }
-
-  public void setLoggingInterval(String loggingInterval) {
-    this.loggingInterval = loggingInterval;
-  }
-
-  private AWSCredentials awsCredentials = new AWSCredentials() {
-
-    public String getAWSSecretKey() {
-      return environmentSubstitute(secretKey);
-    }
-
-    public String getAWSAccessKeyId() {
-      return environmentSubstitute(accessKey);
-    }
-  };
 
   /**
    * Executes a Hive job into the AWS Elastic MapReduce service.
@@ -422,7 +303,6 @@ public class AmazonHiveJobExecutor extends JobEntryBase implements Cloneable, Jo
 
   /**
    * Prepare to create a EMR job flow.
-   * @param logUrl    URL for EMR log directory
    * @return RunJobFlowRequest    The object to request an EMR job flow
    */
   public RunJobFlowRequest createJobFlow() {
@@ -562,7 +442,7 @@ public class AmazonHiveJobExecutor extends JobEntryBase implements Cloneable, Jo
   
   /**
    * Configure the HadoopJarStep, which is one Hadoop step of an EMR job to be submitted to AWS.
-   * @param  stepname         name of step
+   * @param  stepName         name of step
    * @param  stagingS3JarUrl  URL for MapReduce jar file
    * @param  args             arguments for MapReduce jar
    * @return configuration data object for the step

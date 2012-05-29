@@ -223,9 +223,19 @@ public class HadoopVfsFileChooserDialog extends CustomVfsUiPanel {
         Props.getInstance().setCustomParameter("HadoopVfsFileChooserDialog.port", wPort.getText());
         Props.getInstance().setCustomParameter("HadoopVfsFileChooserDialog.user", wUserID.getText());
         Props.getInstance().setCustomParameter("HadoopVfsFileChooserDialog.password", wPassword.getText());
-        
-        vfsFileChooserDialog.openFileCombo.setText(buildHadoopFileSystemUrlString());
-        vfsFileChooserDialog.resolveVfsBrowser();
+
+        FileObject root = rootFile;
+        try {
+          root = vfsFileChooserDialog.rootFile.getFileSystem().getFileSystemManager().resolveFile(buildHadoopFileSystemUrlString());
+        } catch (FileSystemException e1) {
+          // TODO - MessageBox
+          e1.printStackTrace();
+        }
+        vfsFileChooserDialog.setSelectedFile(root);
+        vfsFileChooserDialog.setRootFile(root);
+        rootFile = root;
+//        vfsFileChooserDialog.openFileCombo.setText(buildHadoopFileSystemUrlString());
+//        vfsFileChooserDialog.resolveVfsBrowser();
       }
     });
 

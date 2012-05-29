@@ -31,6 +31,9 @@ import java.util.Set;
 
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
+import org.apache.commons.vfs.FileSystemOptions;
+import org.apache.commons.vfs.auth.StaticUserAuthenticator;
+import org.apache.commons.vfs.impl.DefaultFileSystemConfigBuilder;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
@@ -64,6 +67,8 @@ import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
@@ -81,6 +86,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.di.ui.trans.step.TableItemInsertListener;
+import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.vfs.ui.CustomVfsUiPanel;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
@@ -96,6 +102,14 @@ public class S3FileOutputDialog extends BaseStepDialog implements StepDialogInte
   private CTabItem wFileTab, wContentTab, wFieldsTab;
 
   private FormData fdFileComp, fdContentComp, fdFieldsComp;
+
+  private Label wlAccessKey;
+  private TextVar wAccessKey;
+  private FormData fdlAccessKey, fdAccessKey;
+
+  private Label wlSecretKey;
+  private TextVar wSecretKey;
+  private FormData fdlSecretKey, fdSecretKey;
 
   private Label wlFilename;
   private Button wbFilename;
@@ -195,7 +209,7 @@ public class S3FileOutputDialog extends BaseStepDialog implements StepDialogInte
   private TableView wFields;
   private FormData fdFields;
 
-  private TextFileOutputMeta input;
+  private S3FileOutputMeta input;
 
   private Button wMinWidth;
   private Listener lsMinWidth;
@@ -223,9 +237,12 @@ public class S3FileOutputDialog extends BaseStepDialog implements StepDialogInte
 
   private boolean gotPreviousFields = false;
 
+  private S3VfsFileChooserHelper helper = null;
+  private VfsFileChooserDialog fileChooserDialog = null;
+
   public S3FileOutputDialog(Shell parent, Object in, TransMeta transMeta, String sname) {
     super(parent, (BaseStepMeta) in, transMeta, sname);
-    input = (TextFileOutputMeta) in;
+    input = (S3FileOutputMeta) in;
     inputFields = new HashMap<String, Integer>();
   }
 
@@ -291,13 +308,49 @@ public class S3FileOutputDialog extends BaseStepDialog implements StepDialogInte
     fileLayout.marginHeight = 3;
     wFileComp.setLayout(fileLayout);
 
+    // S3 AccessKey
+    wlAccessKey = new Label(wFileComp, SWT.RIGHT);
+    wlAccessKey.setText(BaseMessages.getString(PKG, "S3VfsFileChooserDialog.AccessKey.Label"));
+    props.setLook(wlAccessKey);
+    fdlAccessKey = new FormData();
+    fdlAccessKey.left = new FormAttachment(0, 0);
+    fdlAccessKey.top = new FormAttachment(0, margin);
+    fdlAccessKey.right = new FormAttachment(middle, -margin);
+    wlAccessKey.setLayoutData(fdlAccessKey);
+    wAccessKey = new TextVar(transMeta, wFileComp, SWT.PASSWORD | SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+    props.setLook(wAccessKey);
+    wAccessKey.addModifyListener(lsMod);
+    fdAccessKey = new FormData();
+    fdAccessKey.left = new FormAttachment(middle, 0);
+    fdAccessKey.top = new FormAttachment(0, margin);
+    fdAccessKey.right = new FormAttachment(100, 0);
+    wAccessKey.setLayoutData(fdAccessKey);
+
+    // S3 SecretKey
+    wlSecretKey = new Label(wFileComp, SWT.RIGHT);
+    wlSecretKey.setText(BaseMessages.getString(PKG, "S3VfsFileChooserDialog.SecretKey.Label"));
+    props.setLook(wlSecretKey);
+    fdlSecretKey = new FormData();
+    fdlSecretKey.left = new FormAttachment(0, 0);
+    fdlSecretKey.top = new FormAttachment(wAccessKey, margin);
+    fdlSecretKey.right = new FormAttachment(middle, -margin);
+    wlSecretKey.setLayoutData(fdlSecretKey);
+    wSecretKey = new TextVar(transMeta, wFileComp, SWT.PASSWORD | SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+    props.setLook(wSecretKey);
+    wSecretKey.addModifyListener(lsMod);
+    fdSecretKey = new FormData();
+    fdSecretKey.left = new FormAttachment(middle, 0);
+    fdSecretKey.top = new FormAttachment(wAccessKey, margin);
+    fdSecretKey.right = new FormAttachment(100, 0);
+    wSecretKey.setLayoutData(fdSecretKey);
+
     // Filename line
     wlFilename = new Label(wFileComp, SWT.RIGHT);
     wlFilename.setText(BaseMessages.getString(BASE_PKG, "TextFileOutputDialog.Filename.Label"));
     props.setLook(wlFilename);
     fdlFilename = new FormData();
     fdlFilename.left = new FormAttachment(0, 0);
-    fdlFilename.top = new FormAttachment(0, margin);
+    fdlFilename.top = new FormAttachment(wSecretKey, margin);
     fdlFilename.right = new FormAttachment(middle, -margin);
     wlFilename.setLayoutData(fdlFilename);
 
@@ -306,7 +359,7 @@ public class S3FileOutputDialog extends BaseStepDialog implements StepDialogInte
     wbFilename.setText(BaseMessages.getString(BASE_PKG, "System.Button.Browse"));
     fdbFilename = new FormData();
     fdbFilename.right = new FormAttachment(100, 0);
-    fdbFilename.top = new FormAttachment(0, 0);
+    fdbFilename.top = new FormAttachment(wSecretKey, margin);
     wbFilename.setLayoutData(fdbFilename);
 
     wFilename = new TextVar(transMeta, wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -314,7 +367,7 @@ public class S3FileOutputDialog extends BaseStepDialog implements StepDialogInte
     wFilename.addModifyListener(lsMod);
     fdFilename = new FormData();
     fdFilename.left = new FormAttachment(middle, 0);
-    fdFilename.top = new FormAttachment(0, margin);
+    fdFilename.top = new FormAttachment(wSecretKey, margin);
     fdFilename.right = new FormAttachment(wbFilename, -margin);
     wFilename.setLayoutData(fdFilename);
 
@@ -582,7 +635,7 @@ public class S3FileOutputDialog extends BaseStepDialog implements StepDialogInte
     wbShowFiles.setLayoutData(fdbShowFiles);
     wbShowFiles.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent e) {
-        TextFileOutputMeta tfoi = new TextFileOutputMeta();
+        S3FileOutputMeta tfoi = new S3FileOutputMeta();
         getInfo(tfoi);
         String files[] = tfoi.getFiles(transMeta);
         if (files != null && files.length > 0) {
@@ -1108,46 +1161,9 @@ public class S3FileOutputDialog extends BaseStepDialog implements StepDialogInte
           String[] fileFilterNames = new String[] { BaseMessages.getString(BASE_PKG, "System.FileType.TextFiles"),
               BaseMessages.getString(BASE_PKG, "System.FileType.CSVFiles"), BaseMessages.getString(BASE_PKG, "System.FileType.AllFiles") };
 
-          // Get current file
-          FileObject rootFile = null;
-          FileObject initialFile = null;
-          FileObject defaultInitialFile = null;
-
-          if (wFilename.getText() != null) {
-            String fileName = transMeta.environmentSubstitute(wFilename.getText());
-            if (fileName != null && !fileName.equals("")) {
-              initialFile = KettleVFS.getFileObject(fileName);
-              rootFile = initialFile.getFileSystem().getRoot();
-            } else {
-              initialFile = KettleVFS.getFileObject(Spoon.getInstance().getLastFileOpened());
-            }
-          }
-
-          defaultInitialFile = KettleVFS.getFileObject("file:///c:/");
-          if (rootFile == null) {
-            rootFile = defaultInitialFile.getFileSystem().getRoot();
-            initialFile = defaultInitialFile;
-          }
-
-          VfsFileChooserDialog fileChooserDialog = Spoon.getInstance().getVfsFileChooserDialog(rootFile, initialFile);
-          fileChooserDialog.defaultInitialFile = defaultInitialFile;
-          FileObject selectedFile = fileChooserDialog.open(shell, null, AmazonSpoonPlugin.S3_SCHEME, true, null, fileFilters, fileFilterNames,
-              VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE_OR_DIRECTORY);
-          if (selectedFile != null) {
-
-            String filename = selectedFile.getURL().toString();
-
-            if (selectedFile.getName().getScheme().equals(AmazonSpoonPlugin.S3_SCHEME)) {
-              // try S3 name substitution
-              for (CustomVfsUiPanel panel : Spoon.getInstance().getVfsFileChooserDialog(null, null).getCustomVfsUiPanels()) {
-                if (panel.getVfsScheme().equals(AmazonSpoonPlugin.S3_SCHEME)) {
-                  S3VfsFileChooserDialog s3panel = (S3VfsFileChooserDialog) panel;
-                  filename = buildS3FileSystemUrlString(s3panel.getAccessKey(), s3panel.getSecretKey(), selectedFile.getName().getPath());
-                  break;
-                }
-              }
-            }
-
+          FileObject selectedFile = getFileChooserHelper().browse(fileFilters, fileFilterNames, wFilename.getText(), getFileSystemOptions(), VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE_OR_DIRECTORY);
+          if(selectedFile != null) {
+            String filename = selectedFile.getName().getURI();
             String extension = wExtension.getText();
             if (extension != null && filename.endsWith("." + extension)) {
               // The extension is filled in and matches the end
@@ -1158,6 +1174,8 @@ public class S3FileOutputDialog extends BaseStepDialog implements StepDialogInte
             }
           }
         } catch (KettleFileException ex) {
+          log.logError(BaseMessages.getString(PKG, "S3FileOutputDialog.FileBrowser.KettleFileException"), ex);
+        } catch (KettleException ex) {
           log.logError(BaseMessages.getString(PKG, "S3FileOutputDialog.FileBrowser.KettleFileException"), ex);
         } catch (FileSystemException ex) {
           log.logError(BaseMessages.getString(PKG, "S3FileOutputDialog.FileBrowser.FileSystemException"), ex);
@@ -1197,10 +1215,6 @@ public class S3FileOutputDialog extends BaseStepDialog implements StepDialogInte
         display.sleep();
     }
     return stepname;
-  }
-
-  private String buildS3FileSystemUrlString(String accessKey, String secretKey, String path) {
-    return AmazonSpoonPlugin.S3_SCHEME + "://" + accessKey + ":" + secretKey + "@s3" + path;
   }
 
   private void activeFileNameField() {
@@ -1339,6 +1353,13 @@ public class S3FileOutputDialog extends BaseStepDialog implements StepDialogInte
     if (input.getFileNameField() != null)
       wFileNameField.setText(input.getFileNameField());
 
+    if(input.getAccessKey() != null) {
+      wAccessKey.setText(input.getAccessKey());
+    }
+    if(input.getSecretKey() != null) {
+      wSecretKey.setText(input.getSecretKey());
+    }
+
     wSplitEvery.setText("" + input.getSplitEvery());
 
     wEnclForced.setSelection(input.isEnclosureForced());
@@ -1398,7 +1419,9 @@ public class S3FileOutputDialog extends BaseStepDialog implements StepDialogInte
     dispose();
   }
 
-  private void getInfo(TextFileOutputMeta tfoi) {
+  private void getInfo(S3FileOutputMeta tfoi) {
+    tfoi.setAccessKey(wAccessKey.getText());
+    tfoi.setSecretKey(wSecretKey.getText());
     tfoi.setFileName(wFilename.getText());
     tfoi.setFileAsCommand(wFileIsCommand.getSelection());
     tfoi.setDoNotOpenNewFileInit(wDoNotOpenNewFileInit.getSelection());
@@ -1542,5 +1565,44 @@ public class S3FileOutputDialog extends BaseStepDialog implements StepDialogInte
 
   public String toString() {
     return this.getClass().getName();
+  }
+
+  protected S3VfsFileChooserHelper getFileChooserHelper() throws KettleFileException, FileSystemException {
+    if (helper == null) {
+      helper = new S3VfsFileChooserHelper(shell, getFileChooserDialog(), getVariableSpace(), getFileSystemOptions());
+    }
+    return helper;
+  }
+
+  protected VfsFileChooserDialog getFileChooserDialog() throws KettleFileException {
+    if (this.fileChooserDialog == null) {
+      FileObject rootFile = null;
+      FileObject initialFile = null;
+      FileObject defaultInitialFile = KettleVFS.getFileObject("file:///c:/");
+
+      VfsFileChooserDialog fileChooserDialog = Spoon.getInstance().getVfsFileChooserDialog(defaultInitialFile, initialFile);
+      this.fileChooserDialog = fileChooserDialog;
+    }
+    return this.fileChooserDialog;
+  }
+
+  public VariableSpace getVariableSpace() {
+    return transMeta;
+  }
+
+  protected FileSystemOptions getFileSystemOptions() throws FileSystemException {
+    FileSystemOptions opts = new FileSystemOptions();
+
+    if(!Const.isEmpty(wAccessKey.getText()) || !Const.isEmpty(wSecretKey.getText())) {
+      // create a FileSystemOptions with user & password
+      StaticUserAuthenticator userAuthenticator =
+          new StaticUserAuthenticator(null,
+              getVariableSpace().environmentSubstitute(wAccessKey.getText()),
+              getVariableSpace().environmentSubstitute(wSecretKey.getText())
+          );
+
+      DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator(opts, userAuthenticator);
+    }
+    return opts;
   }
 }

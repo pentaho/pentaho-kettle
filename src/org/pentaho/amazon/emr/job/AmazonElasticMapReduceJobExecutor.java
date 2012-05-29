@@ -22,17 +22,18 @@
 
 package org.pentaho.amazon.emr.job;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.StringTokenizer;
-
+import com.amazonaws.services.elasticmapreduce.AmazonElasticMapReduceClient;
+import com.amazonaws.services.elasticmapreduce.model.*;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs.FileObject;
-import org.pentaho.amazon.AmazonSpoonPlugin;
+import org.apache.commons.vfs.FileSystemOptions;
+import org.apache.commons.vfs.auth.StaticUserAuthenticator;
+import org.apache.commons.vfs.impl.DefaultFileSystemConfigBuilder;
+import org.pentaho.amazon.AbstractAmazonJobEntry;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
@@ -49,159 +50,27 @@ import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.entries.hadoopjobexecutor.JarUtility;
-import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
 
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.services.elasticmapreduce.AmazonElasticMapReduceClient;
-import com.amazonaws.services.elasticmapreduce.model.AddJobFlowStepsRequest;
-import com.amazonaws.services.elasticmapreduce.model.DescribeJobFlowsRequest;
-import com.amazonaws.services.elasticmapreduce.model.DescribeJobFlowsResult;
-import com.amazonaws.services.elasticmapreduce.model.HadoopJarStepConfig;
-import com.amazonaws.services.elasticmapreduce.model.JobFlowDetail;
-import com.amazonaws.services.elasticmapreduce.model.JobFlowInstancesConfig;
-import com.amazonaws.services.elasticmapreduce.model.RunJobFlowRequest;
-import com.amazonaws.services.elasticmapreduce.model.RunJobFlowResult;
-import com.amazonaws.services.elasticmapreduce.model.StepConfig;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.S3Object;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 
 @JobEntry(id = "EMRJobExecutorPlugin", name = "Amazon EMR Job Executor", categoryDescription = "Big Data", description = "Execute MapReduce jobs in Amazon EMR", image = "EMR.png")
-public class AmazonElasticMapReduceJobExecutor extends JobEntryBase implements Cloneable, JobEntryInterface {
+public class AmazonElasticMapReduceJobExecutor extends AbstractAmazonJobEntry implements Cloneable, JobEntryInterface {
 
   private static Class<?> PKG = AmazonElasticMapReduceJobExecutor.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
-
-  private String hadoopJobName;
-  private String hadoopJobFlowId;
-
-  private String jarUrl = "";
-  private String accessKey = "";
-  private String secretKey = "";
-  private String stagingDir = "";
-  private String numInstances = "2";
-  private String masterInstanceType = "Small [m1.small]";
-  private String slaveInstanceType = "Small [m1.small]";
-
-  private String cmdLineArgs;
-
-  private boolean blocking;
-  private String loggingInterval = "60"; // 60 seconds default
 
   public AmazonElasticMapReduceJobExecutor() {
   }
   
-  public String getHadoopJobName() {
-    return hadoopJobName;
-  }
-
-  public void setHadoopJobName(String hadoopJobName) {
-    this.hadoopJobName = hadoopJobName;
-  }
-
-  public String getHadoopJobFlowId() {
-    return hadoopJobFlowId;
-  }
-
-  public void setHadoopJobFlowId(String hadoopJobFlowId) {
-    this.hadoopJobFlowId = hadoopJobFlowId;
-  }
-
-  public String getJarUrl() {
-    return jarUrl;
-  }
-
-  public void setJarUrl(String jarUrl) {
-    this.jarUrl = jarUrl;
-  }
-
-  public String getAccessKey() {
-    return accessKey;
-  }
-
-  public void setAccessKey(String accessKey) {
-    this.accessKey = accessKey;
-  }
-
-  public String getSecretKey() {
-    return secretKey;
-  }
-
-  public void setSecretKey(String secretKey) {
-    this.secretKey = secretKey;
-  }
-
-  public String getStagingDir() {
-    return stagingDir;
-  }
-
-  public void setStagingDir(String stagingDir) {
-    this.stagingDir = stagingDir;
-  }
-
-  public String getNumInstances() {
-    return numInstances;
-  }
-
-  public void setNumInstances(String numInstances) {
-    this.numInstances = numInstances;
-  }
-
-  public String getMasterInstanceType() {
-    return masterInstanceType;
-  }
-
-  public void setMasterInstanceType(String masterInstanceType) {
-    this.masterInstanceType = masterInstanceType;
-  }
-
-  public String getSlaveInstanceType() {
-    return slaveInstanceType;
-  }
-
-  public void setSlaveInstanceType(String slaveInstanceType) {
-    this.slaveInstanceType = slaveInstanceType;
-  }
-
-  public String getCmdLineArgs() {
-    return cmdLineArgs;
-  }
-
-  public void setCmdLineArgs(String cmdLineArgs) {
-    this.cmdLineArgs = cmdLineArgs;
-  }
-
-  public boolean isBlocking() {
-    return blocking;
-  }
-
-  public void setBlocking(boolean blocking) {
-    this.blocking = blocking;
-  }
-
-  public String getLoggingInterval() {
-    return loggingInterval;
-  }
-
-  public void setLoggingInterval(String loggingInterval) {
-    this.loggingInterval = loggingInterval;
-  }
-
-  private AWSCredentials awsCredentials = new AWSCredentials() {
-
-    public String getAWSSecretKey() {
-      return environmentSubstitute(secretKey);
-    }
-
-    public String getAWSAccessKeyId() {
-      return environmentSubstitute(accessKey);
-    }
-  };
-
   public String getMainClass(String localJarUrl) throws Exception {
     List<Class<?>> classesWithMains = JarUtility.getClassesInJarWithMain(localJarUrl, getClass().getClassLoader());
 
@@ -247,7 +116,11 @@ public class AmazonElasticMapReduceJobExecutor extends JobEntryBase implements C
 
       // create staging bucket
       AmazonS3 s3Client = new AmazonS3Client(awsCredentials);
-      FileObject stagingDirFileObject = KettleVFS.getFileObject(buildFilename(stagingDir));
+
+      FileSystemOptions opts = new FileSystemOptions();
+      DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator(opts, new StaticUserAuthenticator(null, awsCredentials.getAWSAccessKeyId(), awsCredentials.getAWSSecretKey()));
+      FileObject stagingDirFileObject = KettleVFS.getFileObject(stagingDir, getVariables(), opts);
+
       String stagingBucketName = stagingDirFileObject.getName().getBaseName();
       if (!s3Client.doesBucketExist(stagingBucketName)) {
         s3Client.createBucket(stagingBucketName);
@@ -565,10 +438,6 @@ public class AmazonElasticMapReduceJobExecutor extends JobEntryBase implements C
 
   public String buildFilename(String filename) {
     filename = environmentSubstitute(filename);
-    if (filename.startsWith(AmazonSpoonPlugin.S3_SCHEME)) {
-      String authPart = filename.substring(AmazonSpoonPlugin.S3_SCHEME.length() + 3, filename.indexOf("@s3")).replaceAll("\\+", "%2B").replaceAll("/", "%2F");
-      filename = AmazonSpoonPlugin.S3_SCHEME + "://" + authPart + "@s3" + filename.substring(filename.indexOf("@s3") + 3);
-    }
     return filename;
   }
 

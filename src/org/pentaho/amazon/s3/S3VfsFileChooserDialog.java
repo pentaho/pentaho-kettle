@@ -22,11 +22,15 @@
 
 package org.pentaho.amazon.s3;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-
+import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
+import org.apache.commons.vfs.FileSystemOptions;
+import org.apache.commons.vfs.auth.StaticUserAuthenticator;
+import org.apache.commons.vfs.impl.DefaultFileSystemConfigBuilder;
 import org.apache.commons.vfs.provider.GenericFileName;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -35,29 +39,21 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.*;
+import org.pentaho.amazon.AmazonSpoonPlugin;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.s3.vfs.S3FileObject;
 import org.pentaho.vfs.ui.CustomVfsUiPanel;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
-
-import com.amazonaws.auth.AWSCredentials;
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.AmazonS3Exception;
-import org.pentaho.amazon.AmazonSpoonPlugin;
 
 public class S3VfsFileChooserDialog extends CustomVfsUiPanel {
 
@@ -106,6 +102,8 @@ public class S3VfsFileChooserDialog extends CustomVfsUiPanel {
 
   private String accessKey;
   private String secretKey;
+
+  private StaticUserAuthenticator userAuthenticator = null;
 
   public S3VfsFileChooserDialog(VfsFileChooserDialog vfsFileChooserDialog, FileObject rootFile, FileObject initialFile) {
     super(AmazonSpoonPlugin.S3_SCHEME, AmazonSpoonPlugin.S3_SCHEME_DISPLAY_TEXT, vfsFileChooserDialog, SWT.NONE);
@@ -228,9 +226,21 @@ public class S3VfsFileChooserDialog extends CustomVfsUiPanel {
           // s3 credentials valid, continue
           Props.getInstance().setCustomParameter("S3VfsFileChooserDialog.AccessKey", wAccessKey.getText());
           Props.getInstance().setCustomParameter("S3VfsFileChooserDialog.SecretKey", wSecretKey.getText());
-          
-          vfsFileChooserDialog.openFileCombo.setText(buildS3FileSystemUrlString());
-          vfsFileChooserDialog.resolveVfsBrowser();
+
+          try {
+            FileObject root = rootFile;
+            root = resolveFile(buildS3FileSystemUrlString());
+            vfsFileChooserDialog.setSelectedFile(root);
+            vfsFileChooserDialog.setRootFile(root);
+            rootFile = root;
+          } catch (FileSystemException e1) {
+            MessageBox box = new MessageBox(getShell());
+            box.setText(BaseMessages.getString(PKG, "S3VfsFileChooserDialog.error")); //$NON-NLS-1$
+            box.setMessage(e1.getMessage());
+            log.logError(e1.getMessage(), e1);
+            box.open();
+            return;
+          }
 
         } catch (AmazonS3Exception ex) {
           // if anything went wrong, we have to show an error dialog
@@ -270,13 +280,7 @@ public class S3VfsFileChooserDialog extends CustomVfsUiPanel {
    * @TODO: relocate to a s3 helper class or similar
    */
   public String buildS3FileSystemUrlString() {
-    try {
-      return AmazonSpoonPlugin.S3_SCHEME + "://" + URLEncoder.encode(environmentSubstitute(wAccessKey.getText()), "UTF-8") + ":"
-          + URLEncoder.encode(environmentSubstitute(wSecretKey.getText()), "UTF-8") + "@s3/";
-    } catch (UnsupportedEncodingException uee) {
-      return AmazonSpoonPlugin.S3_SCHEME + "://" + environmentSubstitute(wAccessKey.getText()).replaceAll("\\+", "%2B").replaceAll("/", "%2F") + ":"
-          + environmentSubstitute(wSecretKey.getText()).replaceAll("\\+", "%2B").replaceAll("/", "%2F") + "@s3/";
-    }
+    return AmazonSpoonPlugin.S3_SCHEME + "://s3/";
   }
 
   @Override
@@ -315,8 +319,8 @@ public class S3VfsFileChooserDialog extends CustomVfsUiPanel {
 
   private void handleConnectionButton() {
     if (!Const.isEmpty(wAccessKey.getText()) && !Const.isEmpty(wSecretKey.getText())) {
-      accessKey = wAccessKey.getText();
-      secretKey = wSecretKey.getText();
+      accessKey = getVariableSpace().environmentSubstitute(wAccessKey.getText());
+      secretKey = getVariableSpace().environmentSubstitute(wSecretKey.getText());
       wConnectionButton.setEnabled(true);
     } else {
       accessKey = null;
@@ -331,5 +335,37 @@ public class S3VfsFileChooserDialog extends CustomVfsUiPanel {
 
   public String getSecretKey() {
     return secretKey;
+  }
+
+  public FileObject resolveFile(String fileUri) throws FileSystemException {
+    try {
+      return KettleVFS.getFileObject(fileUri, getVariableSpace(), getFileSystemOptions());
+    } catch (KettleFileException e) {
+      throw new FileSystemException(e);
+    }
+  }
+
+  public FileObject resolveFile(String fileUri, FileSystemOptions opts) throws FileSystemException {
+    try {
+      return KettleVFS.getFileObject(fileUri, getVariableSpace(), opts);
+    } catch (KettleFileException e) {
+      throw new FileSystemException(e);
+    }
+  }
+
+  protected FileSystemOptions getFileSystemOptions() throws FileSystemException {
+    FileSystemOptions opts = new FileSystemOptions();
+
+    if(!Const.isEmpty(getAccessKey()) || !Const.isEmpty(getSecretKey())) {
+      // create a FileSystemOptions with user & password
+      StaticUserAuthenticator userAuthenticator =
+          new StaticUserAuthenticator(null,
+              getVariableSpace().environmentSubstitute(getAccessKey()),
+              getVariableSpace().environmentSubstitute(getSecretKey())
+          );
+
+      DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator(opts, userAuthenticator);
+    }
+    return opts;
   }
 }

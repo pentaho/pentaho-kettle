@@ -22,12 +22,17 @@
 
 package org.pentaho.amazon.emr.ui;
 
-import java.util.Enumeration;
-import java.util.ResourceBundle;
-
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSystemException;
+import org.apache.commons.vfs.FileSystemOptions;
+import org.apache.commons.vfs.auth.StaticUserAuthenticator;
+import org.apache.commons.vfs.impl.DefaultFileSystemConfigBuilder;
 import org.dom4j.DocumentException;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.amazon.emr.job.AmazonElasticMapReduceJobExecutor;
+import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
@@ -47,6 +52,9 @@ import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.swt.SwtXulLoader;
 import org.pentaho.ui.xul.swt.SwtXulRunner;
+
+import java.util.Enumeration;
+import java.util.ResourceBundle;
 
 public class AmazonElasticMapReduceJobExecutorDialog extends JobEntryDialog implements JobEntryDialogInterface {
   private static final Class<?> CLZ = AmazonElasticMapReduceJobExecutor.class;
@@ -111,7 +119,40 @@ public class AmazonElasticMapReduceJobExecutorDialog extends JobEntryDialog impl
     bf.createBinding("jar-url", "value", controller, AmazonElasticMapReduceJobExecutorController.JAR_URL); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     bf.createBinding("access-key", "value", controller, AmazonElasticMapReduceJobExecutorController.ACCESS_KEY); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     bf.createBinding("secret-key", "value", controller, AmazonElasticMapReduceJobExecutorController.SECRET_KEY); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+    BindingConvertor<String, FileObject> stagingDirBinding = new BindingConvertor<String, FileObject>() {
+
+      @Override
+      public FileObject sourceToTarget(String s) {
+        // resolve the file
+        try {
+          VariableSpace vs = controller.getVariableSpace();
+          FileSystemOptions opts = new FileSystemOptions();
+          DefaultFileSystemConfigBuilder.getInstance().setUserAuthenticator(
+              opts,
+              new StaticUserAuthenticator(null, controller.getAccessKey(), controller.getSecretKey())
+          );
+          FileObject file = KettleVFS.getFileObject(s, vs, opts);
+          return file;
+        } catch (FileSystemException e) {
+          return null;
+        } catch (KettleFileException e) {
+          return null;
+        }
+      }
+
+      @Override
+      public String targetToSource(FileObject fileObject) {
+        return fileObject.getName().getURI();
+      }
+    };
+
     bf.createBinding("s3-staging-directory", "value", controller, AmazonElasticMapReduceJobExecutorController.STAGING_DIR); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+    bf.setBindingType(Type.ONE_WAY);
+    bf.createBinding("s3-staging-directory", "value", controller, AmazonElasticMapReduceJobExecutorController.STAGING_DIR_FILE, stagingDirBinding); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+    bf.setBindingType(Type.BI_DIRECTIONAL);
 //    bf.createBinding("num-instances", "value", controller, AmazonElasticMapReduceJobExecutorController.NUM_INSTANCES, bindingConverter); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     bf.createBinding("num-instances", "value", controller, AmazonElasticMapReduceJobExecutorController.NUM_INSTANCES); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     bf.createBinding("master-instance-type", "selectedItem", controller, AmazonElasticMapReduceJobExecutorController.MASTER_INSTANCE_TYPE); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$

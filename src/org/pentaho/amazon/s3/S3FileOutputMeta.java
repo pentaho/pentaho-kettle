@@ -31,6 +31,25 @@ import org.pentaho.amazon.AmazonSpoonPlugin;
 @Step(id = "S3FileOutputPlugin", image = "S3O.png", name = "S3 File Output", description = "Create files in an S3 location", categoryDescription = "Output")
 public class S3FileOutputMeta extends TextFileOutputMeta {
 
+  private String accessKey = null;
+  private String secretKey = null;
+
+  public String getAccessKey() {
+    return accessKey;
+  }
+
+  public void setAccessKey(String accessKey) {
+    this.accessKey = accessKey;
+  }
+
+  public String getSecretKey() {
+    return secretKey;
+  }
+
+  public void setSecretKey(String secretKey) {
+    this.secretKey = secretKey;
+  }
+
   @Override
   public void setDefault() {
     // call the base classes method
@@ -44,10 +63,10 @@ public class S3FileOutputMeta extends TextFileOutputMeta {
   public String buildFilename(String filename, String extension, VariableSpace space, int stepnr, String partnr, int splitnr, boolean ziparchive,
       TextFileOutputMeta meta) {
     String retval = super.buildFilename(filename, extension, space, stepnr, partnr, splitnr, ziparchive, meta);
-    if (retval.startsWith(AmazonSpoonPlugin.S3_SCHEME)) {
-      String authPart = retval.substring(AmazonSpoonPlugin.S3_SCHEME.length() + 3, retval.indexOf("@s3")).replaceAll("\\+", "%2B").replaceAll("/", "%2F");
-      retval = AmazonSpoonPlugin.S3_SCHEME + "://" + authPart + "@s3" + retval.substring(retval.indexOf("@s3")+3);
-    }
+//    if (retval.startsWith(AmazonSpoonPlugin.S3_SCHEME)) {
+//      String authPart = retval.substring(AmazonSpoonPlugin.S3_SCHEME.length() + 3, retval.indexOf("@s3")).replaceAll("\\+", "%2B").replaceAll("/", "%2F");
+//      retval = AmazonSpoonPlugin.S3_SCHEME + "://" + authPart + "@s3" + retval.substring(retval.indexOf("@s3")+3);
+//    }
     return retval;
   }
 
