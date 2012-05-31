@@ -33,9 +33,10 @@ import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Test;
 import org.pentaho.di.core.logging.LogLevel;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.Assert.*;
 
@@ -54,6 +55,21 @@ public class SqoopUtilsTest {
     public void close() {
     }
   };
+
+  private static class MockConfig extends SqoopConfig {
+    @CommandLineArgument(name = "test", displayName = "Test", description = "Test argument", flag = true)
+    private String test;
+
+    public String getTest() {
+      return test;
+    }
+
+    public void setTest(String test) {
+      String old = this.test;
+      this.test = test;
+      pcs.firePropertyChange("test", old, this.test);
+    }
+  }
 
   @Test
   public void findLogger() {
@@ -148,5 +164,122 @@ public class SqoopUtilsTest {
 
     assertNull(config.getJobtrackerHost());
     assertNull(config.getJobtrackerPort());
+  }
+
+  @Test
+  public void getCommandLineArgs_empty() {
+    Variables v = new Variables();
+    SqoopConfig config = new SqoopExportConfig();
+    assertEquals(0, SqoopUtils.getCommandLineArgs(config, v).size());
+
+    // Job Entry Name is not annotated so it shouldn't be added to the args list
+    config.setJobEntryName("testing");
+    assertEquals(0, SqoopUtils.getCommandLineArgs(config, v).size());
+  }
+
+  @Test
+  public void getCommandLineArgs_boolean() {
+    Variables v = new Variables();
+    SqoopConfig config = new SqoopExportConfig();
+
+    config.setVerbose(Boolean.TRUE.toString());
+
+    List<String> args = SqoopUtils.getCommandLineArgs(config, v);
+    assertEquals(1, args.size());
+    assertEquals("--verbose", args.get(0));
+  }
+
+  @Test
+  public void getCommandLineArgs_variable_replace() {
+    Variables v = new Variables();
+    SqoopConfig config = new SqoopConfig() {
+    };
+    String connect = "jdbc:mysql://localhost:3306/test";
+
+    config.setConnect("${testing}");
+    List<String> args = SqoopUtils.getCommandLineArgs(config, null);
+    assertEquals(2, args.size());
+    assertEquals("--connect", args.get(0));
+    assertEquals("${testing}", args.get(1));
+
+    v.setVariable("testing", connect);
+    args = SqoopUtils.getCommandLineArgs(config, v);
+    assertEquals(2, args.size());
+    assertEquals("--connect", args.get(0));
+    assertEquals(connect, args.get(1));
+  }
+
+  @Test
+  public void getCommandLineArgs_variable_replace_flag() {
+    Variables v = new Variables();
+    SqoopConfig config = new SqoopConfig() {
+    };
+
+    config.setVerbose("${testing}");
+    assertEquals(0, SqoopUtils.getCommandLineArgs(config, null).size());
+
+    v.setVariable("testing", Boolean.TRUE.toString());
+    List<String> args = SqoopUtils.getCommandLineArgs(config, v);
+    assertEquals(1, args.size());
+    assertEquals("--verbose", args.get(0));
+  }
+
+  @Test
+  public void findAllArguments() {
+    MockConfig config = new MockConfig();
+
+    Set<? extends ArgumentWrapper> args = SqoopUtils.findAllArguments(config);
+
+    for (ArgumentWrapper arg : args) {
+      if (arg.getName().equals("test")) {
+        assertEquals("Test", arg.getDisplayName());
+        assertTrue(arg.isFlag());
+        return;
+      }
+    }
+    fail("Unable to find test @CommandLineArgument annotated field");
+  }
+
+  @Test
+  public void findMethod() {
+    assertNotNull(SqoopUtils.findMethod(MockConfig.class, "Connect", null, "bogus", "get"));
+    assertNotNull(SqoopUtils.findMethod(MockConfig.class, "Test", null, "bogus", "get"));
+    assertNull(SqoopUtils.findMethod(MockConfig.class, "Test", null, "bogus"));
+  }
+
+  @Test
+  public void asBoolean() {
+    VariableSpace variableSpace = new Variables();
+
+    assertFalse(SqoopUtils.asBoolean("not-true", variableSpace));
+    assertFalse(SqoopUtils.asBoolean(Boolean.FALSE.toString(), variableSpace));
+    assertTrue(SqoopUtils.asBoolean(Boolean.TRUE.toString(), variableSpace));
+
+    // No variable set, should attempt convert ${booleanValue} as is
+    assertFalse(SqoopUtils.asBoolean("${booleanValue}", variableSpace));
+
+    variableSpace.setVariable("booleanValue", Boolean.TRUE.toString());
+    assertTrue(SqoopUtils.asBoolean("${booleanValue}", variableSpace));
+
+    variableSpace.setVariable("booleanValue", Boolean.FALSE.toString());
+    assertFalse(SqoopUtils.asBoolean("${booleanValue}", variableSpace));
+  }
+
+  @Test
+  public void asLong() {
+    VariableSpace variableSpace = new Variables();
+
+    assertNull(SqoopUtils.asLong(null, variableSpace));
+    assertEquals(Long.valueOf("10", 10), SqoopUtils.asLong("10", variableSpace));
+
+    variableSpace.setVariable("long", "150");
+    assertEquals(Long.valueOf("150", 10), SqoopUtils.asLong("${long}", variableSpace));
+
+    try {
+      SqoopUtils.asLong("NaN", variableSpace);
+      fail("expected number format exception");
+    } catch (NumberFormatException ex) {
+      // we're good
+    }
   }
 }

@@ -22,36 +22,25 @@
 
 package org.pentaho.di.ui.job.entries.sqoop;
 
+import java.lang.reflect.InvocationTargetException;
+
 import org.eclipse.swt.widgets.Shell;
-import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.sqoop.AbstractSqoopJobEntry;
+import org.pentaho.di.job.entries.sqoop.SqoopExportConfig;
 import org.pentaho.di.job.entries.sqoop.SqoopExportJobEntry;
-import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.ui.core.database.dialog.tags.ExtTextbox;
-import org.pentaho.di.ui.job.entry.JobEntryDialog;
-import org.pentaho.di.ui.spoon.XulSpoonSettingsManager;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
-import org.pentaho.ui.xul.XulRunner;
 import org.pentaho.ui.xul.binding.BindingFactory;
-import org.pentaho.ui.xul.binding.DefaultBindingFactory;
-import org.pentaho.ui.xul.containers.XulDialog;
-import org.pentaho.ui.xul.swt.SwtXulLoader;
-import org.pentaho.ui.xul.swt.SwtXulRunner;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.Enumeration;
-import java.util.ResourceBundle;
 
 /**
  * Dialog for the Sqoop Export job entry.
  *
  * @see org.pentaho.di.job.entries.sqoop.SqoopExportJobEntry
  */
-public class SqoopExportJobEntryDialog extends AbstractSqoopJobEntryDialog {
+public class SqoopExportJobEntryDialog extends AbstractSqoopJobEntryDialog<SqoopExportConfig> {
 
   public SqoopExportJobEntryDialog(Shell parent, JobEntryInterface jobEntry, Repository rep, JobMeta jobMeta) throws XulException, InvocationTargetException {
     super(parent, jobEntry, rep, jobMeta);
@@ -68,7 +57,7 @@ public class SqoopExportJobEntryDialog extends AbstractSqoopJobEntryDialog {
   }
 
   @Override
-  protected AbstractSqoopJobEntryController createController(XulDomContainer container, AbstractSqoopJobEntry jobEntry, BindingFactory bindingFactory) {
-    return new SqoopExportJobEntryController(container, jobEntry, bindingFactory);
+  protected AbstractSqoopJobEntryController<SqoopExportConfig> createController(XulDomContainer container, AbstractSqoopJobEntry<SqoopExportConfig> jobEntry, BindingFactory bindingFactory) {
+    return new SqoopExportJobEntryController(jobMeta, container, jobEntry, bindingFactory);
   }
 }

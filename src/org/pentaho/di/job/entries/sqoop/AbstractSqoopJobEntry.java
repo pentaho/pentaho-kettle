@@ -30,9 +30,12 @@ import org.apache.sqoop.Sqoop;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.database.HiveDatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -146,7 +149,7 @@ public abstract class AbstractSqoopJobEntry<S extends SqoopConfig> extends JobEn
   public String getXML() {
     StringBuffer buffer = new StringBuffer(1024);
     buffer.append(super.getXML());
-    JobEntrySerializationHelper.write(sqoopConfig, 1, buffer);
+    JobEntrySerializationHelper.write(getSqoopConfig(), 1, buffer);
     return buffer.toString();
   }
 
@@ -162,36 +165,44 @@ public abstract class AbstractSqoopJobEntry<S extends SqoopConfig> extends JobEn
   @Override
   public void loadXML(Node node, List<DatabaseMeta> databaseMetas, List<SlaveServer> slaveServers, Repository repository) throws KettleXMLException {
     super.loadXML(node, databaseMetas, slaveServers);
-
-    // Load into a new SqoopConfig since JobEntrySerializationHelper will obliterate the list of arguments
     S loaded = createSqoopConfig();
     JobEntrySerializationHelper.read(loaded, node);
-    updateConfigFromSavedState(loaded);
-  }
-
-  @Override
-  public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
-    super.loadRep(rep, id_jobentry, databases, slaveServers);
-
-    // Load the arguments and merge them with the existing ones
-    S loaded = createSqoopConfig();
-    JobEntrySerializationHelper.loadRep(loaded, rep, id_jobentry, databases, slaveServers);
-    updateConfigFromSavedState(loaded);
-  }
-
-  private void updateConfigFromSavedState(S loaded) {
-    // Clone the loaded config so we can re-initialize the arguments and re-apply their values
-    S loadedClone = (S) loaded.clone();
-    loaded.initArguments();
-    loaded.copyArguments(loadedClone);
     setSqoopConfig(loaded);
   }
 
+  /**
+   * Load the state of this job entry from a repository.
+   *
+   * @param rep
+   * @param id_jobentry
+   * @param databases
+   * @param slaveServers
+   * @throws KettleException
+   */
   @Override
-  public void saveRep(Repository rep, ObjectId id_job) throws KettleException {
-    JobEntrySerializationHelper.saveRep(sqoopConfig, rep, id_job, getObjectId());
+  public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
+    super.loadRep(rep, id_jobentry, databases, slaveServers);
+    S loaded = createSqoopConfig();
+    JobEntrySerializationHelper.loadRep(loaded, rep, id_jobentry, databases, slaveServers);
+    setSqoopConfig(loaded);
   }
 
+  /**
+   * Save the state of this job entry to a repository.
+   *
+   * @param rep
+   * @param id_job
+   * @throws KettleException
+   */
+  @Override
+  public void saveRep(Repository rep, ObjectId id_job) throws KettleException {
+    JobEntrySerializationHelper.saveRep(getSqoopConfig(), rep, id_job, getObjectId());
+  }
+
+  /**
+   * Attach a log appender to all Loggers used by Sqoop so we can redirect the output to Kettle's logging
+   * facilities.
+   */
   @SuppressWarnings("deprecation")
   public void attachLoggingAppenders() {
     sqoopToKettleAppender = new org.pentaho.di.core.logging.KettleLogChannelAppender(log);
@@ -216,6 +227,9 @@ public abstract class AbstractSqoopJobEntry<S extends SqoopConfig> extends JobEn
     }
   }
 
+  /**
+   * Remove our log appender from all loggers used by Sqoop.
+   */
   public void removeLoggingAppenders() {
     try {
       if (sqoopToKettleAppender != null) {
@@ -232,9 +246,52 @@ public abstract class AbstractSqoopJobEntry<S extends SqoopConfig> extends JobEn
     }
   }
 
+  /**
+   * Validate any configuration option we use directly that could be invalid at runtime.
+   *
+   * @param config Configuration to validate
+   * @return List of warning messages for any invalid configuration options we use directly in this job entry.
+   */
+  public List<String> getValidationWarnings(SqoopConfig config) {
+    List<String> warnings = new ArrayList<String>();
+
+    if (StringUtil.isEmpty(config.getConnect())) {
+      warnings.add(BaseMessages.getString(AbstractSqoopJobEntry.class, "ValidationError.Connect.Message", config.getConnect()));
+    }
+
+    try {
+      SqoopUtils.asLong(config.getBlockingPollingInterval(), variables);
+    } catch (NumberFormatException ex) {
+      warnings.add(BaseMessages.getString(AbstractSqoopJobEntry.class, "ValidationError.BlockingPollingInterval.Message", config.getBlockingPollingInterval()));
+    }
+
+    return warnings;
+  }
+
+  /**
+   * Determine if the configuration provide is valid. This will validate all options in one pass.
+   *
+   * @param config Configuration to validate
+   * @return {@code true} if the configuration contains valid values for all options we use directly in this job entry.
+   */
+  public boolean isValid(SqoopConfig config) {
+    List<String> warnings = getValidationWarnings(config);
+    for (String warning : warnings) {
+      logError(warning);
+    }
+    return warnings.isEmpty();
+  }
+
   @Override
   public Result execute(Result result, int i) throws KettleException {
-    System.setProperty(Sqoop.SQOOP_RETHROW_PROPERTY, "true"); // Make sure Sqoop throws errors instead of returning a status of 1
+    // Verify the sqoop configuration is correct
+    if (!isValid(sqoopConfig)) {
+      setJobResultFailed(result);
+      return result;
+    }
+
+    // Make sure Sqoop throws exceptions instead of returning a status of 1
+    System.setProperty(Sqoop.SQOOP_RETHROW_PROPERTY, "true");
 
     final Result jobResult = result;
     result.setResult(true);
@@ -255,10 +312,10 @@ public abstract class AbstractSqoopJobEntry<S extends SqoopConfig> extends JobEn
 
     t.start();
 
-    if (sqoopConfig.isBlockingExecution()) {
+    if (SqoopUtils.asBoolean(sqoopConfig.getBlockingExecution(), variables)) {
       while (!parentJob.isStopped() && t.isAlive()) {
         try {
-          t.join(300);
+          t.join(SqoopUtils.asLong(sqoopConfig.getBlockingPollingInterval(), variables));
         } catch (InterruptedException ex) {
           // ignore
           break;
@@ -267,6 +324,7 @@ public abstract class AbstractSqoopJobEntry<S extends SqoopConfig> extends JobEn
       // If the parent job is stopped and the thread is still running make sure to interrupt it
       if (t.isAlive()) {
         t.interrupt();
+        setJobResultFailed(result);
       }
       // Wait for thread to die so we get the proper return status set in jobResult before returning
       try {
@@ -282,8 +340,8 @@ public abstract class AbstractSqoopJobEntry<S extends SqoopConfig> extends JobEn
   /**
    * Handle any clean up required when our execution thread encounters an unexpected {@link Exception}.
    *
-   * @param t Thread that encountered the uncaught exception
-   * @param e Exception that was encountered
+   * @param t         Thread that encountered the uncaught exception
+   * @param e         Exception that was encountered
    * @param jobResult Job result for the execution that spawned the thread
    */
   protected void handleUncaughtThreadException(Thread t, Throwable e, Result jobResult) {
@@ -303,15 +361,15 @@ public abstract class AbstractSqoopJobEntry<S extends SqoopConfig> extends JobEn
    * Executes Sqoop using the provided configuration objects. The {@code jobResult} will accurately reflect the completed
    * execution state when finished.
    *
-   * @param config Sqoop configuration settings
+   * @param config       Sqoop configuration settings
    * @param hadoopConfig Hadoop configuration settings. This will be additionally configured using {@link #configure(org.apache.hadoop.conf.Configuration)}.
-   * @param jobResult Result to update based on feedback from the Sqoop tool
+   * @param jobResult    Result to update based on feedback from the Sqoop tool
    */
   protected void executeSqoop(SqoopConfig config, Configuration hadoopConfig, Result jobResult) {
     attachLoggingAppenders();
     try {
       configure(hadoopConfig);
-      List<String> args = config.getCommandLineArgs(getVariables());
+      List<String> args = SqoopUtils.getCommandLineArgs(config, getVariables());
       args.add(0, getToolName()); // push the tool command-line argument on the top of the args list
       int result = Sqoop.runTool(args.toArray(new String[args.size()]), hadoopConfig);
       if (result != 0) {
@@ -343,7 +401,7 @@ public abstract class AbstractSqoopJobEntry<S extends SqoopConfig> extends JobEn
    * @throws org.pentaho.di.core.exception.KettleException
    *
    */
-  protected void configure(Configuration conf) throws KettleException {
+  public void configure(Configuration conf) throws KettleException {
     try {
       HadoopConfigurer configurer = HadoopConfigurerFactory.getConfigurer("generic"); // TODO The default should be handled by the factory
       List<String> messages = new ArrayList<String>();
@@ -359,4 +417,13 @@ public abstract class AbstractSqoopJobEntry<S extends SqoopConfig> extends JobEn
     }
   }
 
+  /**
+   * Determine if a database type is supported.
+   *
+   * @param databaseType Database type to check for compatibility
+   * @return {@code true} if this database is supported for this tool
+   */
+  public boolean isDatabaseSupported(Class<? extends DatabaseInterface> databaseType) {
+    return !HiveDatabaseMeta.class.isAssignableFrom(databaseType);
+  }
 }

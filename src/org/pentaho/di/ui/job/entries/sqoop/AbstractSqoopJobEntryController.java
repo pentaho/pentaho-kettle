@@ -22,79 +22,333 @@
 
 package org.pentaho.di.ui.job.entries.sqoop;
 
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSystemException;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.hadoop.HadoopSpoonPlugin;
+import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.sqoop.AbstractSqoopJobEntry;
+import org.pentaho.di.job.entries.sqoop.ArgumentWrapper;
 import org.pentaho.di.job.entries.sqoop.SqoopConfig;
+import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
+import org.pentaho.di.ui.core.database.dialog.DatabaseExplorerDialog;
+import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
+import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingFactory;
+import org.pentaho.ui.xul.components.XulButton;
+import org.pentaho.ui.xul.containers.XulDeck;
 import org.pentaho.ui.xul.containers.XulDialog;
+import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
+import org.pentaho.ui.xul.swt.tags.SwtDialog;
+import org.pentaho.ui.xul.util.AbstractModelList;
+import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
+
+import static org.pentaho.di.job.entries.sqoop.SqoopConfig.*;
 
 /**
  * Base functionality to support a Sqoop job entry controller that provides most of the common functionality to back a XUL-based dialog.
+ *
+ * @param <S> Type of Sqoop configuration object this controller depends upon. Must match the configuration object the
+ *            job entry expects.
  */
-public abstract class AbstractSqoopJobEntryController extends AbstractXulEventHandler {
+public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> extends AbstractXulEventHandler {
+
+  public static final String SELECTED_DATABASE_CONNECTION = "selectedDatabaseConnection";
+  private final String[] MODE_I18N_STRINGS = new String[]{"Sqoop.JobEntry.AdvancedOptions.Button.Text", "Sqoop.JobEntry.QuickSetup.Button.Text"};
+  public static final String VALUE = "value";
+  public static final String NO_DATABASE = "";
 
   private XulDomContainer container;
   private BindingFactory bindingFactory;
-  private AbstractSqoopJobEntry sqoopJobEntry;
-  private SqoopConfig config;
+  private List<Binding> bindings;
 
-  private String dialogElementId;
+  private AbstractSqoopJobEntry<S> sqoopJobEntry;
+  private S config;
+
+  protected AbstractModelList<ArgumentWrapper> advancedArguments;
+  protected AbstractModelList<String> databaseConnections;
+  private DatabaseDialog databaseDialog;
+
+  private JobMeta jobMeta;
+
+  // Flag to indicate we shouldn't handle any events. Useful for preventing unwanted synchronization during initialization
+  // or other user-driven events.
+  private boolean suppressEventHandling = false;
 
   /**
    * Creates a new Sqoop job entry controller.
    *
-   * @param container Container with dialog for which we will control
-   * @param sqoopJobEntry Job entry the dialog is being created for
-   * @param bindingFactory Binding factory to generate bindings
-   * @param dialogElementId Element id within the XUL document that references the dialog this controller is backing
+   * @param container       Container with dialog for which we will control
+   * @param sqoopJobEntry   Job entry the dialog is being created for
+   * @param bindingFactory  Binding factory to generate bindings
    */
-  public AbstractSqoopJobEntryController(XulDomContainer container, AbstractSqoopJobEntry sqoopJobEntry, BindingFactory bindingFactory, String dialogElementId) {
+  @SuppressWarnings("unchecked")
+  public AbstractSqoopJobEntryController(JobMeta jobMeta, XulDomContainer container, AbstractSqoopJobEntry<S> sqoopJobEntry, BindingFactory bindingFactory) {
+    this.jobMeta = jobMeta;
     this.container = container;
     this.bindingFactory = bindingFactory;
     this.sqoopJobEntry = sqoopJobEntry;
-    this.dialogElementId = dialogElementId;
-    this.config = sqoopJobEntry.getSqoopConfig().clone();
+    this.config = (S) sqoopJobEntry.getSqoopConfig().clone();
+    this.advancedArguments = new AbstractModelList<ArgumentWrapper>();
+    this.databaseConnections = new AbstractModelList<String>();
   }
+
+  /**
+   * @return the element id of the XUL dialog element in the XUL document
+   */
+  public abstract String getDialogElementId();
 
   /**
    * Create the necessary XUL {@link Binding}s to support the dialog's desired functionality.
    *
+   * @param config         Configuration object to bind to
+   * @param container      Container with components to bind to
    * @param bindingFactory Binding factory to create bindings with
-   * @param bindings       Collection to add created bindings to. This collection will be initialized ({@link org.pentaho.ui.xul.binding.Binding#fireSourceChanged()}) upon return.
+   * @param bindings       Collection to add created bindings to. This collection will be initialized via {@link org.pentaho.ui.xul.binding.Binding#fireSourceChanged()} upon return.
    */
-  protected abstract void createBindings(SqoopConfig config, XulDomContainer container, BindingFactory bindingFactory, Collection<Binding> bindings);
+  protected void createBindings(S config, XulDomContainer container, BindingFactory bindingFactory, Collection<Binding> bindings) {
+    bindingFactory.setBindingType(Binding.Type.BI_DIRECTIONAL);
+    bindings.add(bindingFactory.createBinding(config, JOB_ENTRY_NAME, JOB_ENTRY_NAME, VALUE));
+    bindings.add(bindingFactory.createBinding(config, NAMENODE_HOST, NAMENODE_HOST, VALUE));
+    bindings.add(bindingFactory.createBinding(config, NAMENODE_PORT, NAMENODE_PORT, VALUE));
+    bindings.add(bindingFactory.createBinding(config, JOBTRACKER_HOST, JOBTRACKER_HOST, VALUE));
+    bindings.add(bindingFactory.createBinding(config, JOBTRACKER_PORT, JOBTRACKER_PORT, VALUE));
+    // TODO Determine if separate schema field is required, this has to be provided as part of the --table argument anyway.
+//    bindings.add(bindingFactory.createBinding(config, SCHEMA, SCHEMA, VALUE));
+    bindings.add(bindingFactory.createBinding(config, TABLE, TABLE, VALUE));
+
+    bindingFactory.setBindingType(Binding.Type.ONE_WAY);
+    bindings.add(bindingFactory.createBinding(databaseConnections, "children", "connection", "elements"));
+
+    XulTree variablesTree = (XulTree) container.getDocumentRoot().getElementById("advanced-table");
+    bindings.add(bindingFactory.createBinding(advancedArguments, "children", variablesTree, "elements"));
+
+    // Create database/connection sync so that we're notified any time the connect argument is updated
+    bindingFactory.createBinding(config, "connect", this, "connectChanged");
+
+    bindingFactory.setBindingType(Binding.Type.BI_DIRECTIONAL);
+    // Specifically create this binding after the databaseConnections binding so the list is populated before we attempt to select an item
+    bindings.add(bindingFactory.createBinding(this, SELECTED_DATABASE_CONNECTION, "connection", "selectedItem"));
+  }
 
   /**
-   * Initialize the dialog by creating bindings and firing initial sync ({@link org.pentaho.ui.xul.binding.Binding#fireSourceChanged()}.
+   * @return the job entry this controller will modify configuration for
+   */
+  protected AbstractSqoopJobEntry<S> getJobEntry() {
+    return sqoopJobEntry;
+  }
+
+  /**
+   * Remove and destroy all bindings from {@link #bindings}.
+   */
+  protected void removeBindings() {
+    for (Binding binding : bindings) {
+      binding.destroyBindings();
+    }
+    bindings.clear();
+  }
+
+  /**
+   * @return element id for the deck of dialog modes (quick setup, advanced)
+   */
+  protected String getModeDeckElementId() {
+    return "modeDeck";
+  }
+
+  /**
+   * Initialize the dialog by loading model data, creating bindings and firing initial sync
+   * ({@link org.pentaho.ui.xul.binding.Binding#fireSourceChanged()}.
    *
    * @throws XulException
    * @throws InvocationTargetException
    */
   public void init() throws XulException, InvocationTargetException {
-    List<Binding> bindings = new ArrayList<Binding>();
-    bindingFactory.setBindingType(Binding.Type.BI_DIRECTIONAL);
-    createBindings(config, container, bindingFactory, bindings);
+    bindings = new ArrayList<Binding>();
+    // Suppress event handling while we're initializing to prevent unwanted value changes
+    suppressEventHandling = true;
+    try {
+      populateDatabases();
+      createBindings(config, container, bindingFactory, bindings);
+      syncModel();
 
-    for (Binding binding : bindings) {
-      binding.fireSourceChanged();
+      for (Binding binding : bindings) {
+        binding.fireSourceChanged();
+      }
+    } finally {
+      suppressEventHandling = false;
+    }
+
+    // Manually set the current database, if it is valid, to sync the UI buttons since we suppressed their event handling while initializing bindings
+    setSelectedDatabaseConnection(getConfig().getDatabase());
+  }
+
+  /**
+   * Synchronize the model values from the configuration object to our internal model objects.
+   */
+  protected void syncModel() {
+    advancedArguments.clear();
+    advancedArguments.addAll(config.getAdvancedArgumentsList());
+  }
+
+  /**
+   * Populate the list of databases from the {@link JobMeta}.
+   */
+  protected void populateDatabases() {
+    databaseConnections.clear();
+    databaseConnections.add(NO_DATABASE);
+    for (DatabaseMeta dbMeta : jobMeta.getDatabases()) {
+      if (sqoopJobEntry.isDatabaseSupported(dbMeta.getDatabaseInterface().getClass())) {
+        databaseConnections.add(dbMeta.getName());
+      }
     }
   }
 
   /**
-   * Get the simple name for this controller. This controller can be referenced by this name in the XUL document.
+   * This is used to be notified when the connect string changes so we can remove the selection from the database dropdown.
+   */
+  public void setConnectChanged(String connect) {
+    // If the connect string changes unselect the database
+    if (!suppressEventHandling) {
+      updateSelectedDatabase(NO_DATABASE, false);
+    }
+  }
+
+  /**
+   * @return the selected database from the configuration object
+   */
+  public String getSelectedDatabaseConnection() {
+    String database = config.getDatabase();
+    return getCleansedDatabaseName(database);
+  }
+
+  /**
+   * Cleanse database names for use in a bound combo box.
+   *
+   * @param database Database name
    * @return
+   */
+  protected String getCleansedDatabaseName(String database) {
+    // Make sure we translate null to NO_DATABASE so binding works properly
+    return database == null ? NO_DATABASE : database;
+  }
+
+  /**
+   * Sets the selected database by name. This database will be verified to exist and the appropriate settings within
+   * the model will be set.
+   *
+   * @param selected Name of database to select. It should exist in the list of database names returned by {@link org.pentaho.di.job.JobMeta#getDatabaseNames()}.
+   */
+  public void setSelectedDatabaseConnection(String selected) {
+    updateSelectedDatabase(selected, true);
+  }
+
+  /**
+   * Update the selected database and optionally persist the changes down to the configuration object.
+   *
+   * @param database      Name of database to select
+   * @param persistChange If {@code true}, the new database information will be set on the configuration object. This is
+   *                      useful if this selection change occurred as a result of the configuration object changing and
+   *                      we don't want to infinitely loop.
+   */
+  public void updateSelectedDatabase(String database, boolean persistChange) {
+    String old = getSelectedDatabaseConnection();
+    DatabaseMeta databaseMeta = jobMeta.findDatabase(database);
+    boolean validDatabaseSelected = databaseMeta != null;
+    setDatabaseInteractionButtonsDisabled(!validDatabaseSelected);
+    if (!suppressEventHandling && !getSelectedDatabaseConnection().equals(getCleansedDatabaseName(database))) {
+      if (persistChange) {
+        try {
+          if (validDatabaseSelected) {
+            try {
+              getConfig().setDatabaseConnectionInformation(databaseMeta.getName(), databaseMeta.getURL(), databaseMeta.getUsername(), databaseMeta.getPassword());
+            } catch (KettleDatabaseException e) {
+              sqoopJobEntry.logError(BaseMessages.getString(AbstractSqoopJobEntry.class, "ErrorConfiguringDatabaseConnection"), e);
+            }
+          } else {
+            getConfig().setDatabaseConnectionInformation(null, null, null, null);
+          }
+        } finally {
+          suppressEventHandling = false;
+        }
+      } else {
+        // Always keep the database in sync even if the connection details aren't
+        config.setDatabase(databaseMeta == null ? null : databaseMeta.getName());
+      }
+      firePropertyChange(SELECTED_DATABASE_CONNECTION, old, getSelectedDatabaseConnection());
+    }
+  }
+
+  /**
+   * Set the enabled state for all buttons that require a valid database to be selected.
+   *
+   * @param b {@code true} if the buttons should be disabled
+   */
+  protected void setDatabaseInteractionButtonsDisabled(boolean b) {
+    document.getElementById(getEditConnectionButtonId()).setDisabled(b);
+    document.getElementById(getBrowseTableButtonId()).setDisabled(b);
+//    document.getElementById(getBrowseSchemaButtonId()).setDisabled(b);
+  }
+
+  protected DatabaseDialog getDatabaseDialog() {
+    if (databaseDialog == null) {
+      databaseDialog = new DatabaseDialog(getShell());
+    }
+    return databaseDialog;
+  }
+
+  public void editConnection() {
+    DatabaseMeta current = jobMeta.findDatabase(config.getDatabase());
+    if (current == null) {
+      return; // nothing to edit, this should not be possible through the UI
+    }
+    editDatabaseMeta(current, false);
+  }
+
+  public void newConnection() {
+    editDatabaseMeta(new DatabaseMeta(), true);
+  }
+
+  /**
+   * Open the Database Connection Dialog to edit
+   *
+   * @param database Database meta to edit
+   * @param isNew    Is this database meta new? If so and the user chooses to save the database connection we will make sure to save this into the job meta.
+   */
+  protected void editDatabaseMeta(DatabaseMeta database, boolean isNew) {
+    database.shareVariablesWith(jobMeta);
+    getDatabaseDialog().setDatabaseMeta(database);
+    if (getDatabaseDialog().open() != null) {
+      if (isNew) {
+        jobMeta.addDatabase(getDatabaseDialog().getDatabaseMeta());
+      }
+      populateDatabases();
+      setSelectedDatabaseConnection(getDatabaseDialog().getDatabaseMeta().getName());
+    }
+  }
+
+  /**
+   * @return the simple name for this controller. This controller can be referenced by this name in the XUL document.
    */
   @Override
   public String getName() {
@@ -102,10 +356,51 @@ public abstract class AbstractSqoopJobEntryController extends AbstractXulEventHa
   }
 
   /**
-   * @return the element id of the XUL dialog element in the XUL document
+   * @return the edit connection button's id. By default this is {@code "editConnectionButton"}
    */
-  public String getDialogElementId() {
-    return dialogElementId;
+  public String getEditConnectionButtonId() {
+    return "editConnectionButton";
+  }
+
+  /**
+   * @return the browse table button's id. By default this is {@code "browseTableButton"}
+   */
+  public String getBrowseTableButtonId() {
+    return "browseTableButton";
+  }
+
+  public String getBrowseSchemaButtonId() {
+    return "browseSchemaButton";
+  }
+
+  /**
+   * @return the current configuration object. This configuration may be discarded if the dialog is canceled.
+   */
+  protected S getConfig() {
+    return config;
+  }
+
+  /**
+   * @return the job meta for the job entry we're editing
+   */
+  protected JobMeta getJobMeta() {
+    return jobMeta;
+  }
+
+  /**
+   * Look up the dialog reference from the document.
+   *
+   * @return The dialog element referred to by {@link #getDialogElementId()}
+   */
+  protected SwtDialog getDialog() {
+    return (SwtDialog) getXulDomContainer().getDocumentRoot().getElementById(getDialogElementId());
+  }
+
+  /**
+   * @return the shell for the currently visible dialog. This will be used to display additional dialogs/popups.
+   */
+  protected Shell getShell() {
+    return getDialog().getShell();
   }
 
   /**
@@ -113,14 +408,27 @@ public abstract class AbstractSqoopJobEntryController extends AbstractXulEventHa
    */
   public void accept() {
     sqoopJobEntry.setSqoopConfig(config);
+    sqoopJobEntry.setChanged();
     cancel();
+  }
+
+  /**
+   * Open the dialog
+   *
+   * @return chang
+   */
+  public JobEntryInterface open() {
+    XulDialog dialog = (XulDialog) container.getDocumentRoot().getElementById(getDialogElementId());
+    dialog.show();
+    return sqoopJobEntry;
   }
 
   /**
    * Close the dialog discarding all changes.
    */
   public void cancel() {
-    XulDialog xulDialog = (XulDialog) getXulDomContainer().getDocumentRoot().getElementById(dialogElementId);
+    removeBindings();
+    XulDialog xulDialog = getDialog();
 
     Shell shell = (Shell) xulDialog.getRootObject();
     if (!shell.isDisposed()) {
@@ -131,4 +439,134 @@ public abstract class AbstractSqoopJobEntryController extends AbstractXulEventHa
     }
   }
 
+  /**
+   * Browse for a file or directory with the VFS Browser.
+   *
+   * @param root       Root object
+   * @param initial    Initial file or folder the browser should open to
+   * @param dialogMode Mode to open dialog in: e.g. {@link VfsFileChooserDialog#VFS_DIALOG_OPEN_FILE_OR_DIRECTORY}
+   * @return The selected file object, {@code null} if no object is selected
+   * @throws KettleFileException Error accessing the root file using the initial file, when {@code root} is not provided
+   */
+  protected FileObject browseVfs(FileObject root, FileObject initial, int dialogMode) throws KettleFileException {
+    if (initial == null) {
+      initial = KettleVFS.getFileObject(Spoon.getInstance().getLastFileOpened());
+    }
+    if (root == null) {
+      try {
+        root = initial.getFileSystem().getRoot();
+      } catch (FileSystemException e) {
+        throw new KettleFileException(e);
+      }
+    }
+    VfsFileChooserDialog fileChooserDialog = Spoon.getInstance().getVfsFileChooserDialog(root, initial);
+    FileObject selected = fileChooserDialog.open(getShell(), HadoopSpoonPlugin.HDFS_SCHEME, HadoopSpoonPlugin.HDFS_SCHEME, false,
+      initial.getName().getFriendlyURI(), new String[]{"*.*"}, new String[]{BaseMessages.getString(getClass(), "System.FileType.AllFiles")}, dialogMode);
+    return selected;
+  }
+
+  /**
+   * Test the configuration settings and show a dialog with the feedback.
+   */
+  public void testSettings() {
+    List<String> warnings = sqoopJobEntry.getValidationWarnings(getConfig());
+    if (!warnings.isEmpty()) {
+      StringBuilder sb = new StringBuilder();
+      for (String warning : warnings) {
+        sb.append(warning).append("\n");
+      }
+      showErrorDialog(
+        BaseMessages.getString(AbstractSqoopJobEntry.class, "ValidationError.Dialog.Title"),
+        sb.toString());
+      return;
+    }
+    // TODO implement
+    showErrorDialog("Error", "Not Implemented");
+  }
+
+  /**
+   * Toggles between Quick Setup and Advanced Options mode. This assumes there exists a deck by id {@link #getModeDeckElementId()}
+   * and it contains two panels.
+   */
+  public void toggleMode() {
+    XulDeck deck = (XulDeck) getXulDomContainer().getDocumentRoot().getElementById(getModeDeckElementId());
+    deck.setSelectedIndex(deck.getSelectedIndex() == 0 ? 1 : 0);
+
+    // Synchronize the model every time we swap modes so the UI is always up to date. This is required since we don't
+    // set argument item values directly or listen for their changes
+    syncModel();
+
+    // Swap the label on the button
+    XulDialog dialog = getDialog();
+    ((XulButton) dialog.getElementById(getDialogElementId() + "_" + "extra2")).setLabel(BaseMessages.getString(AbstractSqoopJobEntry.class, MODE_I18N_STRINGS[deck.getSelectedIndex()]));
+  }
+
+  /**
+   * Show the schema browse dialog if schemas can be detected and exist for the give database. Set the selected schema
+   * to {@link SqoopConfig#setSchema(String) getConfig().setSchema(schema)}.
+   */
+  public void browseSchema() {
+    DatabaseMeta databaseMeta = jobMeta.findDatabase(getConfig().getDatabase());
+    Database database = new Database(jobMeta.getParent(), databaseMeta);
+    try {
+      database.connect();
+      String schemas[] = database.getSchemas();
+
+      if (null != schemas && schemas.length > 0) {
+        schemas = Const.sortStrings(schemas);
+        EnterSelectionDialog dialog = new EnterSelectionDialog(getShell(), schemas,
+          BaseMessages.getString(AbstractSqoopJobEntry.class, "AvailableSchemas.Title"),
+          BaseMessages.getString(AbstractSqoopJobEntry.class, "AvailableSchemas.Message"));
+        String schema = dialog.open();
+        if (schema != null) {
+          getConfig().setSchema(schema);
+        }
+      } else {
+        showErrorDialog(BaseMessages.getString(AbstractSqoopJobEntry.class, "Dialog.Error"), BaseMessages.getString(AbstractSqoopJobEntry.class, "NoSchema.Error"));
+      }
+    } catch (Exception e) {
+      showErrorDialog(BaseMessages.getString(BaseMessages.getString(AbstractSqoopJobEntry.class, "System.Dialog.Error.Title")),
+        BaseMessages.getString(BaseMessages.getString(AbstractSqoopJobEntry.class, "ErrorRetrievingSchemas")), e);
+    } finally {
+      database.disconnect();
+    }
+  }
+
+  /**
+   * Show the Database Explorer Dialog for the database information provided. The provided schema and table
+   * will be selected if already configured. Any new selection will be saved in the current configuration.
+   */
+  public void browseTable() {
+    DatabaseMeta databaseMeta = jobMeta.findDatabase(getConfig().getDatabase());
+    DatabaseExplorerDialog std = new DatabaseExplorerDialog(getShell(), SWT.NONE, databaseMeta, jobMeta.getDatabases());
+    std.setSelectedSchemaAndTable(getConfig().getSchema(), getConfig().getTable());
+    if (std.open()) {
+      getConfig().setSchema(std.getSchemaName());
+      getConfig().setTable(std.getTableName());
+    }
+  }
+
+  /**
+   * Show an error dialog with the title and message provided.
+   *
+   * @param title   Dialog window title
+   * @param message Dialog message
+   */
+  protected void showErrorDialog(String title, String message) {
+    MessageBox mb = new MessageBox(getShell(), SWT.OK | SWT.ICON_ERROR);
+    mb.setText(title);
+    mb.setMessage(message);
+    mb.open();
+  }
+
+  /**
+   * Show an error dialog with the title, message, and toggle button to see the entire stacktrace produced by {@code t}.
+   *
+   * @param title   Dialog window title
+   * @param message Dialog message
+   * @param t       Cause for this error
+   */
+  protected void showErrorDialog(String title, String message, Throwable t) {
+    new ErrorDialog(getShell(), title, message, t);
+  }
 }

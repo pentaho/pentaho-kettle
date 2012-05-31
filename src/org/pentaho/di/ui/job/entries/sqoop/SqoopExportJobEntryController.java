@@ -22,31 +22,57 @@
 
 package org.pentaho.di.ui.job.entries.sqoop;
 
+import org.apache.commons.vfs.FileObject;
+import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.sqoop.AbstractSqoopJobEntry;
-import org.pentaho.di.job.entries.sqoop.SqoopConfig;
-import org.pentaho.di.job.entries.sqoop.SqoopExportJobEntry;
+import org.pentaho.di.job.entries.sqoop.SqoopExportConfig;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingFactory;
-import org.pentaho.ui.xul.containers.XulTree;
+import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
 import java.util.Collection;
+
+import static org.pentaho.di.job.entries.sqoop.SqoopExportConfig.EXPORT_DIR;
 
 /**
  * Controller for the Sqoop Export Dialog.
  */
-public class SqoopExportJobEntryController extends AbstractSqoopJobEntryController {
+public class SqoopExportJobEntryController extends AbstractSqoopJobEntryController<SqoopExportConfig> {
 
-  public SqoopExportJobEntryController(XulDomContainer container, AbstractSqoopJobEntry sqoopJobEntry, BindingFactory bindingFactory) {
-    super(container, sqoopJobEntry, bindingFactory, "sqoop-export");
+  public SqoopExportJobEntryController(JobMeta jobMeta, XulDomContainer container, AbstractSqoopJobEntry<SqoopExportConfig> sqoopJobEntry, BindingFactory bindingFactory) {
+    super(jobMeta, container, sqoopJobEntry, bindingFactory);
   }
 
   @Override
-  protected void createBindings(SqoopConfig config, XulDomContainer container, BindingFactory bindingFactory, Collection<Binding> bindings) {
-    bindings.add(bindingFactory.createBinding(config, "jobEntryName", "jobEntryName", "value"));
+  public String getDialogElementId() {
+    return "sqoop-export";
+  }
 
-    XulTree variablesTree = (XulTree) container.getDocumentRoot().getElementById("advanced-table");
-    bindingFactory.setBindingType(Binding.Type.ONE_WAY);
-    bindings.add(bindingFactory.createBinding(config.getArguments(), "children", variablesTree, "elements"));
+  @Override
+  protected void createBindings(SqoopExportConfig config, XulDomContainer container, BindingFactory bindingFactory, Collection<Binding> bindings) {
+    super.createBindings(config, container, bindingFactory, bindings);
+
+    bindings.add(bindingFactory.createBinding(config, EXPORT_DIR, EXPORT_DIR, "value"));
+  }
+
+  public void browseForExportDirectory() {
+    FileObject path = null;
+    try {
+      // TODO Build proper URL for path
+//      path = resolveFile(getConfig().getExportDir());
+    } catch (Exception e) {
+      // Ignore, use null (default VFS browse path)
+    }
+    try {
+      FileObject exportDir = browseVfs(null, path, VfsFileChooserDialog.VFS_DIALOG_OPEN_DIRECTORY);
+      if (exportDir != null) {
+        getConfig().setExportDir(exportDir.getName().getPath());
+      }
+    } catch (KettleFileException e) {
+      getJobEntry().logError(BaseMessages.getString(AbstractSqoopJobEntry.class, "ErrorBrowsingDirectory"), e);
+    }
   }
 }

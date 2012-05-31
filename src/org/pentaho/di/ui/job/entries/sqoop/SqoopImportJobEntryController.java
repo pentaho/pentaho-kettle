@@ -22,39 +22,57 @@
 
 package org.pentaho.di.ui.job.entries.sqoop;
 
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Shell;
-import org.pentaho.di.job.entries.sqoop.*;
-import org.pentaho.di.ui.core.PropsUI;
-import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.apache.commons.vfs.FileObject;
+import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.entries.sqoop.AbstractSqoopJobEntry;
+import org.pentaho.di.job.entries.sqoop.SqoopImportConfig;
 import org.pentaho.ui.xul.XulDomContainer;
-import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingFactory;
-import org.pentaho.ui.xul.containers.XulDialog;
-import org.pentaho.ui.xul.containers.XulTree;
-import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
+import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+
+import static org.pentaho.di.job.entries.sqoop.SqoopImportConfig.TARGET_DIR;
 
 /**
  * Controller for the Sqoop Import Dialog.
  */
-public class SqoopImportJobEntryController extends AbstractSqoopJobEntryController {
+public class SqoopImportJobEntryController extends AbstractSqoopJobEntryController<SqoopImportConfig> {
 
-  public SqoopImportJobEntryController(XulDomContainer container, AbstractSqoopJobEntry sqoopJobEntry, BindingFactory bindingFactory) {
-    super(container, sqoopJobEntry, bindingFactory, "sqoop-import");
+  public SqoopImportJobEntryController(JobMeta jobMeta, XulDomContainer container, AbstractSqoopJobEntry<SqoopImportConfig> sqoopJobEntry, BindingFactory bindingFactory) {
+    super(jobMeta, container, sqoopJobEntry, bindingFactory);
   }
 
   @Override
-  protected void createBindings(SqoopConfig config, XulDomContainer container, BindingFactory bindingFactory, Collection<Binding> bindings) {
-    bindings.add(bindingFactory.createBinding(config, "jobEntryName", "jobEntryName", "value"));
+  public String getDialogElementId() {
+    return "sqoop-import";
+  }
 
-    XulTree variablesTree = (XulTree) container.getDocumentRoot().getElementById("advanced-table");
-    bindingFactory.setBindingType(Binding.Type.ONE_WAY);
-    bindings.add(bindingFactory.createBinding(config.getArguments(), "children", variablesTree, "elements"));
+  @Override
+  protected void createBindings(SqoopImportConfig config, XulDomContainer container, BindingFactory bindingFactory, Collection<Binding> bindings) {
+    super.createBindings(config, container, bindingFactory, bindings);
+
+    bindings.add(bindingFactory.createBinding(config, TARGET_DIR, TARGET_DIR, "value"));
+  }
+
+  public void browseForTargetDirectory() {
+    FileObject path = null;
+    try {
+      // TODO Build proper URL for path
+//      path = resolveFile(getConfig().getExportDir());
+    } catch (Exception e) {
+      // Ignore, use null (default VFS browse path)
+    }
+    try {
+      FileObject targetDir = browseVfs(null, path, VfsFileChooserDialog.VFS_DIALOG_OPEN_DIRECTORY);
+      if (targetDir != null) {
+        getConfig().setTargetDir(targetDir.getName().getPath());
+      }
+    } catch (KettleFileException e) {
+      getJobEntry().logError(BaseMessages.getString(AbstractSqoopJobEntry.class, "ErrorBrowsingDirectory"), e);
+    }
   }
 }

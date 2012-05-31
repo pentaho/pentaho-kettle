@@ -25,9 +25,12 @@ package org.pentaho.di.job.entries.sqoop;
 import org.apache.hadoop.conf.Configuration;
 import org.junit.Test;
 import org.pentaho.di.core.Result;
+import org.pentaho.di.core.database.HiveDatabaseMeta;
+import org.pentaho.di.core.database.MySQLDatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.job.Job;
 
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,14 +65,35 @@ public class AbstractSqoopJobEntryTest {
 
     @Override
     protected SqoopConfig buildSqoopConfig() {
-      return new SqoopConfig() {
+      SqoopConfig config = new SqoopConfig() {
       };
+      config.setConnect("jdbc:bogus://localhost");
+      return config;
     }
 
     @Override
     protected String getToolName() {
       return null;
     }
+  }
+
+  @Test
+  public void execute_invalid_config() throws KettleException {
+    final List<String> loggedErrors = new ArrayList<String>();
+    AbstractSqoopJobEntry je = new TestSqoopJobEntry(0) {
+      @Override
+      public void logError(String message) {
+        loggedErrors.add(message);
+      }
+    };
+    je.getSqoopConfig().setConnect(null);
+
+    Result result = new Result();
+    je.execute(result, 0);
+
+    assertEquals(1, loggedErrors.size());
+    assertEquals(1, result.getNrErrors());
+    assertFalse(result.getResult());
   }
 
   @Test
@@ -94,7 +118,7 @@ public class AbstractSqoopJobEntryTest {
     AbstractSqoopJobEntry je = new TestSqoopJobEntry(waitTime);
 
     je.setParentJob(new Job("test", null, null));
-    je.getSqoopConfig().setBlockingExecution(false);
+    je.getSqoopConfig().setBlockingExecution("false");
     Result result = new Result();
     long start = System.currentTimeMillis();
     je.execute(result, 0);
@@ -146,5 +170,39 @@ public class AbstractSqoopJobEntryTest {
 
     // Make sure when an uncaught exception occurs an error log message is generated
     assertEquals(1, loggedErrors.size());
+  }
+
+  @Test
+  public void isValidSqoopConfig_connect() {
+    SqoopConfig config = new SqoopConfig() {
+    };
+
+    final List<String> errorsLogged = new ArrayList<String>();
+    AbstractSqoopJobEntry jobEntry = new TestSqoopJobEntry(10) {
+      @Override
+      public void logError(String message) {
+        errorsLogged.add(message);
+      }
+    };
+
+    assertFalse(jobEntry.isValid(config));
+    assertEquals(1, errorsLogged.size());
+    errorsLogged.clear();
+
+    config.setConnect("bogus but not empty");
+    assertTrue(jobEntry.isValid(config));
+    assertEquals(0, errorsLogged.size());
+
+    config.setBlockingPollingInterval("asdf");
+    assertFalse(jobEntry.isValid(config));
+    assertEquals(1, errorsLogged.size());
+  }
+
+  @Test
+  public void isDatabaseSupported() {
+    AbstractSqoopJobEntry jobEntry = new TestSqoopJobEntry(10);
+
+    assertTrue(jobEntry.isDatabaseSupported(MySQLDatabaseMeta.class));
+    assertFalse(jobEntry.isDatabaseSupported(HiveDatabaseMeta.class));
   }
 }

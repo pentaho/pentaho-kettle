@@ -62,16 +62,16 @@ public class SqoopImportJobEntryTest {
   }
 
   @Test
-  public void saveLoadTest() throws KettleXMLException {
+  public void saveLoadTest_xml() throws KettleXMLException {
     SqoopImportJobEntry je = new SqoopImportJobEntry();
     SqoopImportConfig config = new SqoopImportConfig();
     String connectValue = "jdbc:mysql://localhost:3306/test";
 
     config.setJobEntryName("testing");
-    config.setBlockingExecution(false);
+    config.setBlockingExecution("false");
     config.setBlockingPollingInterval("100");
-    config.setArgumentValue("connect", connectValue);
-    config.setArgumentValue("target-dir", "/test-import-target");
+    config.setConnect(connectValue);
+    config.setTargetDir("/test-import-target");
 
     je.setSqoopConfig(config);
 
@@ -84,12 +84,12 @@ public class SqoopImportJobEntryTest {
     SqoopImportJobEntry je2 = new SqoopImportJobEntry();
     je2.loadXML(d.getDocumentElement(), null, null, null);
 
-    SqoopConfig config2 = je2.getSqoopConfig();
+    SqoopImportConfig config2 = je2.getSqoopConfig();
     assertEquals(config.getJobEntryName(), config2.getJobEntryName());
-    assertEquals(config.isBlockingExecution(), config2.isBlockingExecution());
+    assertEquals(config.getBlockingExecution(), config2.getBlockingExecution());
     assertEquals(config.getBlockingPollingInterval(), config2.getBlockingPollingInterval());
-    assertEquals(config.getArgument("connect").getValue(), config2.getArgument("connect").getValue());
-    assertEquals(config.getArgument("target-dir").getValue(), config2.getArgument("target-dir").getValue());
+    assertEquals(config.getConnect(), config2.getConnect());
+    assertEquals(config.getTargetDir(), config2.getTargetDir());
   }
 
   @Test
@@ -99,10 +99,10 @@ public class SqoopImportJobEntryTest {
     String connectValue = "jdbc:mysql://localhost:3306/test";
 
     config.setJobEntryName("testing");
-    config.setBlockingExecution(false);
+    config.setBlockingExecution("false");
     config.setBlockingPollingInterval("100");
-    config.setArgumentValue("connect", connectValue);
-    config.setArgumentValue("target-dir", "/test-import-target");
+    config.setConnect(connectValue);
+    config.setTargetDir("/test-import-target");
 
     je.setSqoopConfig(config);
 
@@ -136,12 +136,12 @@ public class SqoopImportJobEntryTest {
       je2.loadRep(repository, id_job, null, null);
 
       // Make sure all settings we set are properly loaded
-      SqoopConfig config2 = je2.getSqoopConfig();
+      SqoopImportConfig config2 = je2.getSqoopConfig();
       assertEquals(config.getJobEntryName(), config2.getJobEntryName());
-      assertEquals(config.isBlockingExecution(), config2.isBlockingExecution());
+      assertEquals(config.getBlockingExecution(), config2.getBlockingExecution());
       assertEquals(config.getBlockingPollingInterval(), config2.getBlockingPollingInterval());
-      assertEquals(config.getArgument("connect").getValue(), config2.getArgument("connect").getValue());
-      assertEquals(config.getArgument("target-dir").getValue(), config2.getArgument("target-dir").getValue());
+      assertEquals(config.getConnect(), config2.getConnect());
+      assertEquals(config.getTargetDir(), config2.getTargetDir());
     } finally {
       // Delete test database
       new File(filename+".h2.db").delete();

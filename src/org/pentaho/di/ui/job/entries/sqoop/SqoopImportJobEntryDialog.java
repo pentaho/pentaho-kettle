@@ -23,35 +23,22 @@
 package org.pentaho.di.ui.job.entries.sqoop;
 
 import org.eclipse.swt.widgets.Shell;
-import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.sqoop.AbstractSqoopJobEntry;
+import org.pentaho.di.job.entries.sqoop.SqoopImportConfig;
 import org.pentaho.di.job.entries.sqoop.SqoopImportJobEntry;
-import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.di.ui.core.database.dialog.tags.ExtTextbox;
-import org.pentaho.di.ui.job.entry.JobEntryDialog;
-import org.pentaho.di.ui.spoon.XulSpoonSettingsManager;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
-import org.pentaho.ui.xul.XulRunner;
 import org.pentaho.ui.xul.binding.BindingFactory;
-import org.pentaho.ui.xul.binding.DefaultBindingFactory;
-import org.pentaho.ui.xul.containers.XulDialog;
-import org.pentaho.ui.xul.swt.SwtXulLoader;
-import org.pentaho.ui.xul.swt.SwtXulRunner;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.Enumeration;
-import java.util.ResourceBundle;
 
 /**
  * Dialog for the Sqoop Import Job Entry
  *
  * @see org.pentaho.di.job.entries.sqoop.SqoopImportJobEntry
  */
-public class SqoopImportJobEntryDialog extends AbstractSqoopJobEntryDialog {
+public class SqoopImportJobEntryDialog extends AbstractSqoopJobEntryDialog<SqoopImportConfig> {
 
   public SqoopImportJobEntryDialog(Shell parent, JobEntryInterface jobEntry, Repository rep, JobMeta jobMeta) throws XulException {
     super(parent, jobEntry, rep, jobMeta);
@@ -63,8 +50,8 @@ public class SqoopImportJobEntryDialog extends AbstractSqoopJobEntryDialog {
   }
 
   @Override
-  protected AbstractSqoopJobEntryController createController(XulDomContainer container, AbstractSqoopJobEntry jobEntry, BindingFactory bindingFactory) {
-    return new SqoopImportJobEntryController(container, jobEntry, bindingFactory);
+  protected AbstractSqoopJobEntryController<SqoopImportConfig> createController(XulDomContainer container, AbstractSqoopJobEntry<SqoopImportConfig> jobEntry, BindingFactory bindingFactory) {
+    return new SqoopImportJobEntryController(jobMeta, container, jobEntry, bindingFactory);
   }
 
   @Override

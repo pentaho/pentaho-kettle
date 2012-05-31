@@ -71,10 +71,10 @@ public class SqoopExportJobEntryTest {
     String connectValue = "jdbc:mysql://localhost:3306/test";
 
     config.setJobEntryName("testing");
-    config.setBlockingExecution(false);
+    config.setBlockingExecution("false");
     config.setBlockingPollingInterval("100");
-    config.setArgumentValue("connect", connectValue);
-    config.setArgumentValue("export-dir", "/test-export");
+    config.setConnect(connectValue);
+    config.setExportDir("/test-export");
 
     je.setSqoopConfig(config);
 
@@ -87,12 +87,12 @@ public class SqoopExportJobEntryTest {
     SqoopExportJobEntry je2 = new SqoopExportJobEntry();
     je2.loadXML(d.getDocumentElement(), null, null, null);
 
-    SqoopConfig config2 = je2.getSqoopConfig();
+    SqoopExportConfig config2 = je2.getSqoopConfig();
     assertEquals(config.getJobEntryName(), config2.getJobEntryName());
-    assertEquals(config.isBlockingExecution(), config2.isBlockingExecution());
+    assertEquals(config.getBlockingExecution(), config2.getBlockingExecution());
     assertEquals(config.getBlockingPollingInterval(), config2.getBlockingPollingInterval());
-    assertEquals(config.getArgument("connect").getValue(), config2.getArgument("connect").getValue());
-    assertEquals(config.getArgument("export-dir").getValue(), config2.getArgument("export-dir").getValue());
+    assertEquals(config.getConnect(), config2.getConnect());
+    assertEquals(config.getExportDir(), config2.getExportDir());
   }
 
   @Test
@@ -102,10 +102,10 @@ public class SqoopExportJobEntryTest {
     String connectValue = "jdbc:mysql://localhost:3306/test";
 
     config.setJobEntryName("testing");
-    config.setBlockingExecution(false);
+    config.setBlockingExecution("${blocking}");
     config.setBlockingPollingInterval("100");
-    config.setArgumentValue("connect", connectValue);
-    config.setArgumentValue("export-dir", "/test-export");
+    config.setConnect(connectValue);
+    config.setExportDir("/test-export");
 
     je.setSqoopConfig(config);
 
@@ -139,12 +139,12 @@ public class SqoopExportJobEntryTest {
       je2.loadRep(repository, id_job, null, null);
 
       // Make sure all settings we set are properly loaded
-      SqoopConfig config2 = je2.getSqoopConfig();
+      SqoopExportConfig config2 = je2.getSqoopConfig();
       assertEquals(config.getJobEntryName(), config2.getJobEntryName());
-      assertEquals(config.isBlockingExecution(), config2.isBlockingExecution());
+      assertEquals(config.getBlockingExecution(), config2.getBlockingExecution());
       assertEquals(config.getBlockingPollingInterval(), config2.getBlockingPollingInterval());
-      assertEquals(config.getArgument("connect").getValue(), config2.getArgument("connect").getValue());
-      assertEquals(config.getArgument("export-dir").getValue(), config2.getArgument("export-dir").getValue());
+      assertEquals(config.getConnect(), config2.getConnect());
+      assertEquals(config.getExportDir(), config2.getExportDir());
     } finally {
       // Delete test database
       new File(filename+".h2.db").delete();

@@ -26,6 +26,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.sqoop.AbstractSqoopJobEntry;
+import org.pentaho.di.job.entries.sqoop.SqoopConfig;
 import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
@@ -37,7 +38,6 @@ import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulRunner;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
-import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.swt.SwtXulLoader;
 import org.pentaho.ui.xul.swt.SwtXulRunner;
 
@@ -46,8 +46,11 @@ import java.util.ResourceBundle;
 
 /**
  * Base functionality for a XUL-based Sqoop job entry dialog
+ * 
+ * @param <S> Type of Sqoop configuration object this dialog depends upon. Must match the configuration object the
+ *            job entry expects.
  */
-public abstract class AbstractSqoopJobEntryDialog extends JobEntryDialog implements JobEntryDialogInterface {
+public abstract class AbstractSqoopJobEntryDialog<S extends SqoopConfig> extends JobEntryDialog implements JobEntryDialogInterface {
 
   protected ResourceBundle bundle = new ResourceBundle() {
     @Override
@@ -62,8 +65,9 @@ public abstract class AbstractSqoopJobEntryDialog extends JobEntryDialog impleme
   };
 
   private XulDomContainer container;
-  private AbstractSqoopJobEntryController controller;
+  private AbstractSqoopJobEntryController<S> controller;
 
+  @SuppressWarnings("unchecked")
   protected AbstractSqoopJobEntryDialog(Shell parent, JobEntryInterface jobEntry, Repository rep, JobMeta jobMeta) throws XulException {
     super(parent, jobEntry, rep, jobMeta);
     init(AbstractSqoopJobEntry.class.cast(jobEntry));
@@ -87,14 +91,14 @@ public abstract class AbstractSqoopJobEntryDialog extends JobEntryDialog impleme
    * @param bindingFactory Binding factory to create bindings with
    * @return Controller capable of handling requests for this dialog
    */
-  protected abstract AbstractSqoopJobEntryController createController(XulDomContainer container, AbstractSqoopJobEntry jobEntry, BindingFactory bindingFactory);
+  protected abstract AbstractSqoopJobEntryController<S> createController(XulDomContainer container, AbstractSqoopJobEntry<S> jobEntry, BindingFactory bindingFactory);
 
   /**
    * Initialize this dialog for the job entry instance provided.
    *
    * @param jobEntry The job entry this dialog supports.
    */
-  protected void init(AbstractSqoopJobEntry jobEntry) throws XulException {
+  protected void init(AbstractSqoopJobEntry<S> jobEntry) throws XulException {
     SwtXulLoader swtXulLoader = new SwtXulLoader();
     // Register the settings manager so dialog position and size is restored
     swtXulLoader.setSettingsManager(XulSpoonSettingsManager.getInstance());
@@ -120,8 +124,6 @@ public abstract class AbstractSqoopJobEntryDialog extends JobEntryDialog impleme
 
   @Override
   public JobEntryInterface open() {
-    XulDialog dialog = (XulDialog) container.getDocumentRoot().getElementById(controller.getDialogElementId());
-    dialog.show();
-    return jobEntryInt;
+    return controller.open();
   }
 }
