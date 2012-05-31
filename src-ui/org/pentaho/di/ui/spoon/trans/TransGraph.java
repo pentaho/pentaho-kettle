@@ -2021,6 +2021,14 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
   public void setDistributes() {
     getCurrentStep().setDistributes(true);
+    getCurrentStep().setLoadBalancing(false);
+    spoon.refreshGraph();
+    spoon.refreshTree();
+  }
+  
+  public void setLoadbalancing() {
+    getCurrentStep().setDistributes(true);
+    getCurrentStep().setLoadBalancing(true);
     spoon.refreshGraph();
     spoon.refreshTree();
   }
@@ -2350,7 +2358,9 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             }
 
             item = (XulMenuitem) doc.getElementById("trans-graph-entry-data-movement-distribute"); //$NON-NLS-1$
-            item.setSelected(stepMeta.isDistributes());
+            item.setSelected(stepMeta.isDistributes() && !stepMeta.isLoadBalancing());
+            item = (XulMenuitem) doc.getElementById("trans-graph-entry-data-movement-loadbalance"); //$NON-NLS-1$
+            item.setSelected(stepMeta.isDistributes() && stepMeta.isLoadBalancing());
             item = (XulMenuitem) doc.getElementById("trans-graph-entry-data-movement-copy"); //$NON-NLS-1$
             item.setSelected(!stepMeta.isDistributes());
 

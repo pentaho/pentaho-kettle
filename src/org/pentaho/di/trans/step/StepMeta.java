@@ -86,6 +86,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 	private StepMetaInterface stepMetaInterface;
 	private boolean       selected;
 	private boolean       distributes;
+  private boolean       loadBalancing;
 	private int           copies;
 	private Point         location;
 	private boolean       drawstep;
@@ -177,6 +178,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 		retval.append("    ").append(XMLHandler.addTagValue("type",        getStepID()) ); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("description", description) ); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("distribute",  distributes) ); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("    ").append(XMLHandler.addTagValue("loadbalance", loadBalancing) ); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("copies",      copies) ); //$NON-NLS-1$ //$NON-NLS-2$
         
         retval.append( stepPartitioningMeta.getXML() );
@@ -263,6 +265,9 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 			String sdistri = XMLHandler.getTagValue(stepnode, "distribute"); //$NON-NLS-1$
 			distributes     = "Y".equalsIgnoreCase(sdistri); //$NON-NLS-1$
 			if (sdistri==null) distributes=true; // default=distribute
+      String sloadb = XMLHandler.getTagValue(stepnode, "loadbalance"); //$NON-NLS-1$
+      loadBalancing = "Y".equalsIgnoreCase(sloadb); //$NON-NLS-1$
+      if (sloadb==null) loadBalancing=false; // defaults to round robin distribution
 	
 			// Handle GUI information: location & drawstep?
 			String xloc, yloc;
@@ -904,5 +909,19 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
   
   public TransMeta getParentTransMeta() {
 	return parentTransMeta;
+  }
+
+  /**
+   * @return the loadBalancing
+   */
+  public boolean isLoadBalancing() {
+    return loadBalancing;
+  }
+
+  /**
+   * @param loadBalancing the loadBalancing to set
+   */
+  public void setLoadBalancing(boolean loadBalancing) {
+    this.loadBalancing = loadBalancing;
   }
 }

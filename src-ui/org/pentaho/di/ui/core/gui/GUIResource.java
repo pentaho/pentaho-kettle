@@ -297,6 +297,7 @@ public class GUIResource
     private Image imageBusy;
 
     private Image imageInject;
+    private Image imageBalance;
 
     /**
      * Same result as <code>new Image(display, 16, 16)</code>.
@@ -518,6 +519,7 @@ public class GUIResource
 		    imageBusy.dispose();
 		    imageEmpty16x16.dispose();
 		    imageInject.dispose();
+        imageBalance.dispose();
         
 		    disposeImage(imageNoteSmall);
 		    disposeImage(imageColor);
@@ -763,6 +765,7 @@ public class GUIResource
     imageUnconditionalHop = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("UnconditionalHop_image")); // , "ui/images/unconditional-hop.png
     imageBusy = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Busy_image")); // , "ui/images/busy.png
     imageInject = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Inject_image")); // , "ui/images/inject.png
+    imageBalance = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("LoadBalance_image")); // , "ui/images/scales.png
     
     imageEmpty16x16 = new Image(display, 16, 16);
     
@@ -1916,6 +1919,10 @@ public class GUIResource
 	public Image getImageInject() {
 	    return imageInject;
 	}
+
+  public Image getImageBalance() {
+    return imageBalance;
+  }
 
 	public Image getImageSpoonHigh() {
 		return imageSpoonHigh;

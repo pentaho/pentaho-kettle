@@ -61,6 +61,7 @@ public class TransPainter extends BasePainter
 	public static final String STRING_REMOTE_OUTPUT_STEPS       = "RemoteOutputSteps";       // $NON-NLS-1$
 	public static final String STRING_STEP_ERROR_LOG            = "StepErrorLog";            // $NON-NLS-1$
 	public static final String STRING_HOP_TYPE_COPY             = "HopTypeCopy";             // $NON-NLS-1$
+  public static final String STRING_HOP_TYPE_BALANCE          = "HopTypeLoadBalance";      // $NON-NLS-1$
 	
 	public static final String[] magnificationDescriptions = 
 		new String[] { "  200% ", "  150% ", "  100% ", "  75% ", "  50% ", "  25% "};
@@ -975,138 +976,149 @@ public class TransPainter extends BasePainter
         drawArrow(screen_from.x, screen_from.y, screen_to.x, screen_to.y, theta, calcArrowLength(), -1, startObject, endObject);
     }
 
-    private void drawArrow(int x1, int y1, int x2, int y2, double theta, int size, double factor, Object startObject, Object endObject)
-    {
-        int mx, my;
-        int x3;
-        int y3;
-        int x4;
-        int y4;
-        int a, b, dist;
-        double angle;
+  private void drawArrow(int x1, int y1, int x2, int y2, double theta, int size, double factor, Object startObject, Object endObject) {
+    int mx, my;
+    int x3;
+    int y3;
+    int x4;
+    int y4;
+    int a, b, dist;
+    double angle;
 
-        gc.drawLine(x1, y1, x2, y2);
+    gc.drawLine(x1, y1, x2, y2);
 
-        // in between 2 points
-        mx = x1 + (x2 - x1) / 2;
-        my = y1 + (y2 - y1) / 2;
+    // in between 2 points
+    mx = x1 + (x2 - x1) / 2;
+    my = y1 + (y2 - y1) / 2;
 
-        a = Math.abs(x2 - x1);
-        b = Math.abs(y2 - y1);
-        dist = (int) Math.sqrt(a * a + b * b);
+    a = Math.abs(x2 - x1);
+    b = Math.abs(y2 - y1);
+    dist = (int) Math.sqrt(a * a + b * b);
 
-        // determine factor (position of arrow to left side or right side
-        // 0-->100%)
-        if (factor<0)
-        {
-	        if (dist >= 2 * iconsize)
-	             factor = 1.3;
-	        else
-	             factor = 1.2;
+    // determine factor (position of arrow to left side or right side
+    // 0-->100%)
+    if (factor < 0) {
+      if (dist >= 2 * iconsize)
+        factor = 1.3;
+      else
+        factor = 1.2;
+    }
+
+    // in between 2 points
+    mx = (int) (x1 + factor * (x2 - x1) / 2);
+    my = (int) (y1 + factor * (y2 - y1) / 2);
+
+    // calculate points for arrowhead
+    angle = Math.atan2(y2 - y1, x2 - x1) + Math.PI;
+
+    x3 = (int) (mx + Math.cos(angle - theta) * size);
+    y3 = (int) (my + Math.sin(angle - theta) * size);
+
+    x4 = (int) (mx + Math.cos(angle + theta) * size);
+    y4 = (int) (my + Math.sin(angle + theta) * size);
+
+    gc.switchForegroundBackgroundColors();
+    gc.fillPolygon(new int[] { mx, my, x3, y3, x4, y4 });
+    gc.switchForegroundBackgroundColors();
+
+    if (startObject instanceof StepMeta && endObject instanceof StepMeta) {
+      factor = 0.8;
+
+      StepMeta fs = (StepMeta) startObject;
+      StepMeta ts = (StepMeta) endObject;
+
+      // in between 2 points
+      mx = (int) (x1 + factor * (x2 - x1) / 2) - 8;
+      my = (int) (y1 + factor * (y2 - y1) / 2) - 8;
+
+      boolean errorHop = fs.isSendingErrorRowsToStep(ts) || (startErrorHopStep && fs.equals(startHopStep));
+      boolean targetHop = Const.indexOfString(ts.getName(), fs.getStepMetaInterface().getStepIOMeta().getTargetStepnames()) >= 0;
+
+      if (targetHop) {
+        StepIOMetaInterface ioMeta = fs.getStepMetaInterface().getStepIOMeta();
+        StreamInterface targetStream = ioMeta.findTargetStream(ts);
+        if (targetStream != null) {
+          EImage hopsIcon = BasePainter.getStreamIconImage(targetStream.getStreamIcon());
+          Point bounds = gc.getImageBounds(hopsIcon);
+          gc.drawImage(hopsIcon, mx, my);
+          if (!shadow) {
+            areaOwners.add(new AreaOwner(AreaType.STEP_TARGET_HOP_ICON, mx, my, bounds.x, bounds.y, offset, fs, targetStream));
+          }
         }
+      } else if (fs.isDistributes() && fs.isLoadBalancing() && !ts.getStepPartitioningMeta().isMethodMirror() && !errorHop) {
 
-        // in between 2 points
-        mx = (int) (x1 + factor * (x2 - x1) / 2);
-        my = (int) (y1 + factor * (y2 - y1) / 2);
+        // Draw the load balancing icon on the hop
+        //
+        Point bounds = gc.getImageBounds(EImage.LOAD_BALANCE);
+        gc.drawImage(EImage.LOAD_BALANCE, mx, my);
+
+        if (!shadow) {
+          areaOwners.add(new AreaOwner(AreaType.HOP_COPY_ICON, mx, my, bounds.x, bounds.y, offset, fs, STRING_HOP_TYPE_BALANCE));
+        }
+        mx += 16;
         
-        // calculate points for arrowhead
-        angle = Math.atan2(y2 - y1, x2 - x1) + Math.PI;
-
-        x3 = (int) (mx + Math.cos(angle - theta) * size);
-        y3 = (int) (my + Math.sin(angle - theta) * size);
-
-        x4 = (int) (mx + Math.cos(angle + theta) * size);
-        y4 = (int) (my + Math.sin(angle + theta) * size);
-
-        gc.switchForegroundBackgroundColors();
-        gc.fillPolygon(new int[] { mx, my, x3, y3, x4, y4 });
-        gc.switchForegroundBackgroundColors();
+      } else if (!fs.isDistributes() && !ts.getStepPartitioningMeta().isMethodMirror() && !errorHop) {
         
-        if ( startObject instanceof StepMeta && endObject instanceof StepMeta) {
-        	factor = 0.8;
+        // Draw the copy icon on the hop
+        //
+        Point bounds = gc.getImageBounds(EImage.COPY_ROWS);
+        gc.drawImage(EImage.COPY_ROWS, mx, my);
 
-        	StepMeta fs = (StepMeta)startObject;
-        	StepMeta ts = (StepMeta)endObject;
-        	
-	        // in between 2 points
-	        mx = (int) (x1 + factor * (x2 - x1) / 2) - 8;
-	        my = (int) (y1 + factor * (y2 - y1) / 2) - 8;
-	        
-	        boolean errorHop = fs.isSendingErrorRowsToStep(ts) || (startErrorHopStep && fs.equals(startHopStep));
-	        boolean targetHop = Const.indexOfString(ts.getName(), fs.getStepMetaInterface().getStepIOMeta().getTargetStepnames())>=0;
+        if (!shadow) {
+          areaOwners.add(new AreaOwner(AreaType.HOP_COPY_ICON, mx, my, bounds.x, bounds.y, offset, fs, STRING_HOP_TYPE_COPY));
+        }
+        mx += 16;
+      }
 
-	        if (targetHop) {
-	        	StepIOMetaInterface ioMeta = fs.getStepMetaInterface().getStepIOMeta();
-	        	StreamInterface targetStream = ioMeta.findTargetStream(ts);
-	        	if (targetStream!=null) {
-		        	EImage hopsIcon = BasePainter.getStreamIconImage(targetStream.getStreamIcon());
-		        	Point bounds = gc.getImageBounds(hopsIcon);
-		        	gc.drawImage(hopsIcon, mx, my);
-		        	if (!shadow) {
-		    			areaOwners.add(new AreaOwner(AreaType.STEP_TARGET_HOP_ICON, mx, my, bounds.x, bounds.y, offset, fs, targetStream));
-		    		}
-	        	}
-	        } else  if (!fs.isDistributes() && !ts.getStepPartitioningMeta().isMethodMirror() && !errorHop) {
-		        
-	        	Point bounds = gc.getImageBounds(EImage.COPY_ROWS); 
-	        	gc.drawImage(EImage.COPY_ROWS, mx, my);
-	        	
-	        	if (!shadow) {
-	    			areaOwners.add(new AreaOwner(AreaType.HOP_COPY_ICON, mx, my, bounds.x, bounds.y, offset, fs, STRING_HOP_TYPE_COPY));
-	    		}
-		        mx+=16;
-	        } 
-	        
-	        if (errorHop) {
-	        	Point bounds = gc.getImageBounds(EImage.COPY_ROWS);
-		        gc.drawImage(EImage.ERROR, mx, my);
-	        	if (!shadow) {
-	    			areaOwners.add(new AreaOwner(AreaType.HOP_ERROR_ICON, mx, my, bounds.x, bounds.y, offset, fs, ts));
-	    		}
-		        mx+=16;
+      if (errorHop) {
+        Point bounds = gc.getImageBounds(EImage.COPY_ROWS);
+        gc.drawImage(EImage.ERROR, mx, my);
+        if (!shadow) {
+          areaOwners.add(new AreaOwner(AreaType.HOP_ERROR_ICON, mx, my, bounds.x, bounds.y, offset, fs, ts));
+        }
+        mx += 16;
+      }
+
+      StepIOMetaInterface ioMeta = ts.getStepMetaInterface().getStepIOMeta();
+      String[] infoStepnames = ioMeta.getInfoStepnames();
+
+      if ((candidateHopType == StreamType.INFO && ts.equals(endHopStep) && fs.equals(startHopStep)) || Const.indexOfString(fs.getName(), infoStepnames) >= 0) {
+        Point bounds = gc.getImageBounds(EImage.INFO);
+        gc.drawImage(EImage.INFO, mx, my);
+        if (!shadow) {
+          areaOwners.add(new AreaOwner(AreaType.HOP_INFO_ICON, mx, my, bounds.x, bounds.y, offset, fs, ts));
+        }
+        mx += 16;
+      }
+
+      // Check to see if the source step is an info step for the target step.
+      //
+      if (!Const.isEmpty(infoStepnames)) {
+        // Check this situation, the source step can't run in multiple copies!
+        //
+        for (String infoStep : infoStepnames) {
+          if (fs.getName().equalsIgnoreCase(infoStep)) {
+            // This is the info step over this hop!
+            //
+            if (fs.getCopies() > 1) {
+              // This is not a desirable situation, it will always end in error.
+              // As such, it's better not to give feedback on it.
+              // We do this by drawing an error icon over the hop...
+              //
+              gc.drawImage(EImage.ERROR, mx, my);
+              if (!shadow) {
+                areaOwners.add(new AreaOwner(AreaType.HOP_INFO_STEP_COPIES_ERROR, mx, my, MINI_ICON_SIZE, MINI_ICON_SIZE, offset, fs, ts));
+              }
+              mx += 16;
+
             }
-	        
-	        StepIOMetaInterface ioMeta = ts.getStepMetaInterface().getStepIOMeta();
-	        String[] infoStepnames = ioMeta.getInfoStepnames();
-	        
-	        if ( (candidateHopType==StreamType.INFO && ts.equals(endHopStep) && fs.equals(startHopStep)) || Const.indexOfString(fs.getName(), infoStepnames) >= 0) {
-	        	Point bounds = gc.getImageBounds(EImage.INFO);
-        		gc.drawImage(EImage.INFO, mx, my);
-	        	if (!shadow) {
-	    			areaOwners.add(new AreaOwner(AreaType.HOP_INFO_ICON, mx, my, bounds.x, bounds.y, offset, fs, ts));
-	    		}
-		        mx+=16;
-	        }
-	        
-	        // Check to see if the source step is an info step for the target step.
-	        //
-	        if (!Const.isEmpty(infoStepnames)) {
-	        	// Check this situation, the source step can't run in multiple copies!
-	        	//
-	        	for (String infoStep : infoStepnames) {
-	        		if (fs.getName().equalsIgnoreCase(infoStep)) {
-	        			// This is the info step over this hop!
-	        			//
-	        			if (fs.getCopies()>1) {
-	        				// This is not a desirable situation, it will always end in error.
-	        				// As such, it's better not to give feedback on it.
-	        				// We do this by drawing an error icon over the hop...
-	        				//
-	        	        	gc.drawImage(EImage.ERROR, mx, my);
-	        	        	if (!shadow) {
-	        	    			areaOwners.add(new AreaOwner(AreaType.HOP_INFO_STEP_COPIES_ERROR, mx, my, MINI_ICON_SIZE, MINI_ICON_SIZE, offset, fs, ts));
-	        	    		}
-	        		        mx+=16;
-	        				
-	        			}
-	        		}
-	        	}
-	        }
-
-
+          }
         }
+      }
 
     }
+
+  }
 
 	/**
 	 * @return the translationX

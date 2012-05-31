@@ -131,6 +131,8 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 
     
     private boolean                      distributed;
+    private boolean                      loadBalancing;
+    private int                          balanceTries;
 
     private long                         errors;
 
@@ -353,11 +355,17 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
         stop_time = null;
 
         distributed = stepMeta.isDistributes();
+        loadBalancing = stepMeta.isLoadBalancing();
 
-        if (distributed) if (log.isDetailed())
-            logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.DistributionActivated")); //$NON-NLS-1$
-        else
+        if (distributed) {
+          if (loadBalancing) {
+            if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.LoadBalancingActivated")); //$NON-NLS-1$
+          } else {
+            if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.DistributionActivated")); //$NON-NLS-1$
+          }
+        } else {
             if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "BaseStep.Log.DistributionDeactivated")); //$NON-NLS-1$
+        }
 
         rowListeners = new ArrayList<RowListener>();
         resultFiles = new Hashtable<String,ResultFile>();
@@ -1088,33 +1096,73 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
       {
           if (distributed)
           {
+            if (loadBalancing) {
+              // LOAD BALANCE:
+              // ----------------
               // Copy the row to the "next" output rowset.
               // We keep the next one in out_handling
-          	//
+            	//
               RowSet rs = outputRowSets.get(currentOutputRowSetNr);
-              
-      	    // To reduce stress on the locking system we are NOT going to allow
-      	    // the buffer to grow to its full capacity.
-      	    //
-              if (isUsingThreadPriorityManagment() && !rs.isDone() && rs.size()>= upperBufferBoundary && !isStopped())
-              {
-              	try { Thread.sleep(0,1); } catch (InterruptedException e) { }
+                
+        	    // To balance the output, if the row set is full, we're going to switch to the next row set and try there.
+              // Try at most once for each row set.  If they're all full, just take one to stall.
+        	    //
+              for (int i=0;i<outputRowSets.size();i++) {
+                if (rs.size()>= upperBufferBoundary) {
+                  currentOutputRowSetNr++;
+                  if (currentOutputRowSetNr >= outputRowSets.size()) currentOutputRowSetNr = 0;
+                  rs = outputRowSets.get(currentOutputRowSetNr);
+                } else {
+                  // This row set has capacity: exit for-loop
+                  //
+                  break;
+                }
               }
-              
-              // Loop until we find room in the target rowset
+                
+              // Loop until we find room in the target rowset, should always be instantly
               //
               while (!rs.putRow(rowMeta, row) && !isStopped()) 
-              	;
+              ;
               incrementLinesWritten();
-
+  
               // Now determine the next output rowset!
               // Only if we have more then one output...
               //
-              if (outputRowSets.size() > 1)
-              {
-                  currentOutputRowSetNr++;
-                  if (currentOutputRowSetNr >= outputRowSets.size()) currentOutputRowSetNr = 0;
+              if (outputRowSets.size() > 1) {
+                currentOutputRowSetNr++;
+                if (currentOutputRowSetNr >= outputRowSets.size()) currentOutputRowSetNr = 0;
               }
+            } else {
+              // ROUND ROBIN DISTRIBUTION:
+              // --------------------------
+              // Copy the row to the "next" output rowset.
+              // We keep the next one in out_handling
+              //
+                RowSet rs = outputRowSets.get(currentOutputRowSetNr);
+                
+              // To reduce stress on the locking system we are NOT going to allow
+              // the buffer to grow to its full capacity.
+              //
+                if (isUsingThreadPriorityManagment() && !rs.isDone() && rs.size()>= upperBufferBoundary && !isStopped())
+                {
+                  try { Thread.sleep(0,1); } catch (InterruptedException e) { }
+                }
+                
+                // Loop until we find room in the target rowset
+                //
+                while (!rs.putRow(rowMeta, row) && !isStopped()) 
+                  ;
+                incrementLinesWritten();
+  
+                // Now determine the next output rowset!
+                // Only if we have more then one output...
+                //
+                if (outputRowSets.size() > 1)
+                {
+                    currentOutputRowSetNr++;
+                    if (currentOutputRowSetNr >= outputRowSets.size()) currentOutputRowSetNr = 0;
+                }
+            }
           }
           else
           	

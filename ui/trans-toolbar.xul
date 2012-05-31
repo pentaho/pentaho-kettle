@@ -48,6 +48,8 @@
       <menupopup id="trans-graph-entry-data-movement-popup">
         <menuitem id="trans-graph-entry-data-movement-distribute" type="checkbox" label="${TransGraph.PopupMenu.DistributeData}"
           command="transgraph.setDistributes()" />
+        <menuitem id="trans-graph-entry-data-movement-loadbalance" type="checkbox" label="${TransGraph.PopupMenu.LoadBalanceData}"
+          command="transgraph.setLoadbalancing()" />
         <menuitem id="trans-graph-entry-data-movement-copy" type="checkbox" label="${TransGraph.PopupMenu.CopyData}"
           command="transgraph.setCopies()" />
       </menupopup>
