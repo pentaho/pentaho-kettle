@@ -27,6 +27,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.Deflater;
 
 import org.apache.cassandra.thrift.CfDef;
@@ -96,6 +97,23 @@ public class CassandraOutputData extends BaseStepData implements
   }
   
   /**
+   * Get a connection to cassandra
+   * 
+   * @param host the hostname of a cassandra node
+   * @param port the port that cassandra is listening on
+   * @param username the username for (optional) authentication
+   * @param password the password for (optional) authentication
+   * @param timeout the socket timeout to use
+   * @return a connection to cassandra
+   * @throws Exception if a problem occurs during connection
+   */
+  public static CassandraConnection getCassandraConnection(String host,
+      int port, String username, String password, int timeout) throws Exception {
+    return new CassandraConnection(host, port, username, password, timeout);
+  }
+  
+  
+  /**
    * Begin a new batch cql statement
    * 
    * @param numRows the number of rows to be inserted in this batch
@@ -126,6 +144,65 @@ public class CassandraOutputData extends BaseStepData implements
    */
   public static void completeBatch(StringBuilder batch) {
     batch.append("APPLY BATCH");
+  }
+  
+  /**
+   * Send the batch insert.
+   * 
+   * @param batch the CQL batch insert statement
+   * @param conn the connection to use
+   * @param compressCQL true if the CQL should be compressed
+   * @param timeout number of milliseconds to wait for connection to time out
+   * 
+   * @throws Exception if a problem occurs
+   */
+  @SuppressWarnings("deprecation")
+  public static void commitBatch(final StringBuilder batch,
+      final CassandraConnection conn, final boolean compressCQL,
+      final int timeout) throws Exception {
+
+    // System.out.println(batch.toString());
+    // compress the batch if necessary
+    final byte[] toSend = compressCQL ? compressQuery(batch.toString(),
+        Compression.GZIP) : batch.toString().getBytes(
+            Charset.forName(CassandraColumnMetaData.UTF8));
+
+    // do commit in separate thread to be able to monitor timeout
+    long start = System.currentTimeMillis();
+    long time = System.currentTimeMillis() - start;
+    final Exception[] e = new Exception[1];
+    final AtomicBoolean done = new AtomicBoolean(false);
+    Thread t = new Thread(new Runnable() {
+      public void run() {
+        try {
+          conn.getClient().execute_cql_query(ByteBuffer.wrap(toSend),
+              compressCQL ? Compression.GZIP : Compression.NONE);
+        } catch (Exception ex) {
+          e[0] = ex;
+        } finally {
+          done.set(true);
+        }
+      }
+    });
+    t.start();
+
+    // wait for it to complete
+    while (!done.get()) {
+      time = System.currentTimeMillis() - start;
+      if (timeout > 0 && time > timeout) {
+        try {
+          // try to kill it!
+          t.stop();
+        } catch (Exception ex) {/*YUM!*/}
+        throw new KettleException("Timeout reached waiting for commit.");
+      }
+      // wait
+      Thread.sleep(100);
+    }
+    // was there a problem?
+    if (e[0] != null) {
+      throw e[0];
+    }
   }
   
   /**
@@ -260,9 +337,7 @@ public class CassandraOutputData extends BaseStepData implements
       int keyIndex, CassandraColumnMetaData cassandraMeta, boolean insertFieldsNotInMetaData) {
     
     // check how many fields will actually be inserted - we must insert at least one field
-    // appart from the key or Cassandra will complain.
-    
-    // TODO
+    // apart from the key or Cassandra will complain.    
     
     int count = 1; // key
     for (int i = 0; i < inputMeta.size(); i++) {

@@ -98,6 +98,26 @@ public class CassandraOutputMeta extends BaseStepMeta implements
   protected String m_keyField = "";
   
   /** 
+   * Timeout (milliseconds) to use for socket connections - 
+   * blank means use cluster default 
+   */
+  protected String m_socketTimeout = "";
+  
+  /**
+   * Timeout (milliseconds) to use for CQL batch inserts. If blank, no timeout 
+   * is used. Otherwise, whent the timeout occurs the step will try to kill the 
+   * insert and re-try after splitting the batch according to the batch
+   * split factor
+   */
+  protected String m_cqlBatchTimeout = "";
+  
+  /** 
+   * Default batch split size - only comes into play if cql batch timeout has been specified. 
+   * Specifies the size of the sub-batches to split the batch into if a timeout occurs. 
+   */
+  protected String m_cqlSubBatchSize = "10";
+  
+  /** 
    * Whether or not to insert incoming fields that are not in the cassandra
    * table's meta data. Has no affect if the user has opted to update the meta
    * data for unknown incoming fields
@@ -118,6 +138,62 @@ public class CassandraOutputMeta extends BaseStepMeta implements
    * example, to create secondary indexes on columns in a column family. 
    */
   protected String m_aprioriCQL = "";
+  
+  /**
+   * Set how many sub-batches a batch should be split into when an insert times
+   * out.
+   * 
+   * @param f the number of sub-batches to create when an insert times out.
+   */
+  public void setCQLSubBatchSize(String f) {
+    m_cqlSubBatchSize = f;
+  }
+  
+  /**
+   * Get how many sub-batches a batch should be split into when an insert times
+   * out.
+   * 
+   * @return the number of sub-batches to create when an insert times out.
+   */
+  public String getCQLSubBatchSize() {
+    return m_cqlSubBatchSize;
+  }
+  
+  /**
+   * Set the timeout for failing a batch insert attempt.
+   * 
+   * @param t the time (milliseconds) to wait for a batch insert to succeed.
+   */
+  public void setCQLBatchInsertTimeout(String t) {
+    m_cqlBatchTimeout = t;
+  }
+  
+  /**
+   * Get the timeout for failing a batch insert attempt.
+   * 
+   * @return the time (milliseconds) to wait for a batch insert to succeed.
+   */
+  public String getCQLBatchInsertTimeout() {
+    return m_cqlBatchTimeout;
+  }
+  
+  /**
+   * Set the timeout (milliseconds) to use for socket comms
+   * 
+   * @param t the timeout to use in milliseconds
+   */
+  public void setSocketTimeout(String t) {
+    m_socketTimeout = t;
+  }
+  
+  /**
+   * Get the timeout (milliseconds) to use for socket comms
+   * 
+   * @return the timeout to use in milliseconds
+   */
+  public String getSocketTimeout() {
+    return m_socketTimeout;
+  }
   
   /**
    * Set the cassandra node hostname to connect to
@@ -434,6 +510,11 @@ public class CassandraOutputMeta extends BaseStepMeta implements
           m_cassandraPort));
     }
     
+    if (!Const.isEmpty(m_socketTimeout)) {
+      retval.append("\n    ").append(XMLHandler.addTagValue("socket_timeout", 
+          m_socketTimeout));
+    }
+    
     if (!Const.isEmpty(m_password)) {
       retval.append("\n    ").append(XMLHandler.addTagValue("password", 
           Encr.encryptPasswordIfNotUsingVariables(m_password)));
@@ -474,6 +555,16 @@ public class CassandraOutputMeta extends BaseStepMeta implements
           m_batchSize));
     }
     
+    if (!Const.isEmpty(m_cqlBatchTimeout)) {
+      retval.append("\n    ").append(XMLHandler.addTagValue("cql_batch_timeout", 
+          m_cqlBatchTimeout));
+    }
+    
+    if (!Const.isEmpty(m_cqlSubBatchSize)) {
+      retval.append("\n    ").append(XMLHandler.addTagValue("cql_sub_batch_size", 
+          m_cqlSubBatchSize));
+    }
+    
     retval.append("\n    ").append(XMLHandler.addTagValue("create_column_family", 
         m_createColumnFamily));
     
@@ -501,6 +592,7 @@ public class CassandraOutputMeta extends BaseStepMeta implements
       Map<String, Counter> counters) throws KettleXMLException {
     m_cassandraHost = XMLHandler.getTagValue(stepnode, "cassandra_host");
     m_cassandraPort = XMLHandler.getTagValue(stepnode, "cassandra_port");
+    m_socketTimeout = XMLHandler.getTagValue(stepnode, "socket_timeout");
     m_username = XMLHandler.getTagValue(stepnode, "username");
     m_password = XMLHandler.getTagValue(stepnode, "password");
     m_cassandraKeyspace = XMLHandler.getTagValue(stepnode, "cassandra_keyspace");
@@ -508,6 +600,8 @@ public class CassandraOutputMeta extends BaseStepMeta implements
     m_keyField = XMLHandler.getTagValue(stepnode, "key_field");
     m_consistency = XMLHandler.getTagValue(stepnode, "consistency");
     m_batchSize = XMLHandler.getTagValue(stepnode, "batch_size");
+    m_cqlBatchTimeout = XMLHandler.getTagValue(stepnode, "cql_batch_timeout");
+    m_cqlSubBatchSize = XMLHandler.getTagValue(stepnode, "cql_sub_batch_size");
 
     m_createColumnFamily = XMLHandler.getTagValue(stepnode, "create_column_family").
       equalsIgnoreCase("Y");
@@ -527,6 +621,7 @@ public class CassandraOutputMeta extends BaseStepMeta implements
       Map<String, Counter> counters) throws KettleException {
     m_cassandraHost = rep.getStepAttributeString(id_step, 0, "cassandra_host");
     m_cassandraPort = rep.getStepAttributeString(id_step, 0, "cassandra_port");
+    m_socketTimeout = rep.getStepAttributeString(id_step, 0, "socket_timeout");
     m_username = rep.getStepAttributeString(id_step, 0, "username");
     m_password = rep.getStepAttributeString(id_step, 0, "password");
     if (!Const.isEmpty(m_password)) {
@@ -537,6 +632,8 @@ public class CassandraOutputMeta extends BaseStepMeta implements
     m_keyField = rep.getStepAttributeString(id_step, 0, "key_field");
     m_consistency = rep.getStepAttributeString(id_step, 0, "consistency");
     m_batchSize = rep.getStepAttributeString(id_step, 0, "batch_size");
+    m_cqlBatchTimeout = rep.getStepAttributeString(id_step, 0, "cql_batch_timeout");
+    m_cqlSubBatchSize = rep.getStepAttributeString(id_step, 0, "cql_sub_batch_size");
        
     m_createColumnFamily = rep.getStepAttributeBoolean(id_step, 0, "create_column_family");
     m_useCompression = rep.getStepAttributeBoolean(id_step, 0, "use_compression");
@@ -544,8 +641,7 @@ public class CassandraOutputMeta extends BaseStepMeta implements
     m_updateCassandraMeta = rep.getStepAttributeBoolean(id_step, 0, "update_cassandra_meta");
     m_truncateColumnFamily = rep.getStepAttributeBoolean(id_step, 0, "truncate_column_family");
     
-    m_aprioriCQL = rep.getStepAttributeString(id_step, 0, "apriori_cql");
-    
+    m_aprioriCQL = rep.getStepAttributeString(id_step, 0, "apriori_cql");    
   }
   
   public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step)
@@ -558,6 +654,11 @@ public class CassandraOutputMeta extends BaseStepMeta implements
     if (!Const.isEmpty(m_cassandraPort)) {
       rep.saveStepAttribute(id_transformation, id_step, 0, "cassandra_port",
           m_cassandraPort);
+    }
+    
+    if (!Const.isEmpty(m_socketTimeout)) {
+      rep.saveStepAttribute(id_transformation, id_step, 0, "socket_timeout",
+          m_socketTimeout);
     }
     
     if (!Const.isEmpty(m_username)) {
@@ -593,6 +694,16 @@ public class CassandraOutputMeta extends BaseStepMeta implements
     if (!Const.isEmpty(m_batchSize)) {
       rep.saveStepAttribute(id_transformation, id_step, 0, "batch_size",
           m_batchSize);
+    }
+    
+    if (!Const.isEmpty(m_cqlBatchTimeout)) {
+      rep.saveStepAttribute(id_transformation, id_step, 0, "cql_batch_timeout",
+          m_cqlBatchTimeout);
+    }
+    
+    if (!Const.isEmpty(m_cqlSubBatchSize)) {
+      rep.saveStepAttribute(id_transformation, id_step, 0, "cql_sub_batch_size",
+          m_cqlSubBatchSize);
     }
 
     rep.saveStepAttribute(id_transformation, id_step, 0, "create_column_family",
@@ -682,5 +793,8 @@ public class CassandraOutputMeta extends BaseStepMeta implements
 
    return new CassandraOutputDialog(shell, meta, transMeta, name);
   }
-
+  
+  public boolean supportsErrorHandling() {
+    return true;
+  }
 }

@@ -89,6 +89,9 @@ public class CassandraOutputDialog extends BaseStepDialog implements
   private Label m_passLab;
   private TextVar m_passText;
   
+  private Label m_socketTimeoutLab;
+  private TextVar m_socketTimeoutText;
+  
   private Label m_keyspaceLab;
   private TextVar m_keyspaceText;
   
@@ -101,6 +104,11 @@ public class CassandraOutputDialog extends BaseStepDialog implements
   
   private Label m_batchSizeLab;
   private TextVar m_batchSizeText;
+  
+  private Label m_batchInsertTimeoutLab;
+  private TextVar m_batchInsertTimeoutText;
+  private Label m_subBatchSizeLab;
+  private TextVar m_subBatchSizeText;
   
   private Label m_keyFieldLab;
   private CCombo m_keyFieldCombo;
@@ -240,6 +248,31 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     fd.left = new FormAttachment(middle, 0);
     m_portText.setLayoutData(fd);
     
+    // socket timeout line
+    m_socketTimeoutLab = new Label(shell, SWT.RIGHT);
+    props.setLook(m_socketTimeoutLab);
+    m_socketTimeoutLab.setText(BaseMessages.getString(PKG, 
+        "CassandraOutputDialog.SocketTimeout.Label"));
+    fd = new FormData();
+    fd.left = new FormAttachment(0, 0);
+    fd.top = new FormAttachment(m_portText, margin);
+    fd.right = new FormAttachment(middle, -margin);
+    m_socketTimeoutLab.setLayoutData(fd);
+    
+    m_socketTimeoutText = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+    props.setLook(m_socketTimeoutText);
+    m_socketTimeoutText.addModifyListener(new ModifyListener() {
+      public void modifyText(ModifyEvent e) {
+        m_socketTimeoutText.setToolTipText(transMeta.environmentSubstitute(m_socketTimeoutText.getText()));
+      }
+    });
+    m_socketTimeoutText.addModifyListener(lsMod);
+    fd = new FormData();
+    fd.right = new FormAttachment(100, 0);
+    fd.top = new FormAttachment(m_portText, margin);
+    fd.left = new FormAttachment(middle, 0);
+    m_socketTimeoutText.setLayoutData(fd);
+    
     // username line
     m_userLab = new Label(shell, SWT.RIGHT);
     props.setLook(m_userLab);
@@ -247,7 +280,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
         "CassandraOutputDialog.User.Label"));
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
-    fd.top = new FormAttachment(m_portText, margin);
+    fd.top = new FormAttachment(m_socketTimeoutText, margin);
     fd.right = new FormAttachment(middle, -margin);
     m_userLab.setLayoutData(fd);
     
@@ -261,7 +294,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     m_userText.addModifyListener(lsMod);
     fd = new FormData();
     fd.right = new FormAttachment(100, 0);
-    fd.top = new FormAttachment(m_portText, margin);
+    fd.top = new FormAttachment(m_socketTimeoutText, margin);
     fd.left = new FormAttachment(middle, 0);
     m_userText.setLayoutData(fd);
     
@@ -412,6 +445,63 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     fd.left = new FormAttachment(middle, 0);
     m_batchSizeText.setLayoutData(fd);
     
+    // batch insert timeout
+    m_batchInsertTimeoutLab = new Label(shell, SWT.RIGHT);
+    props.setLook(m_batchInsertTimeoutLab);
+    m_batchInsertTimeoutLab.setText(BaseMessages.
+        getString(PKG, "CassandraOutputDialog.BatchInsertTimeout.Label"));
+    fd = new FormData();
+    fd.left = new FormAttachment(0, 0);
+    fd.top = new FormAttachment(m_batchSizeText, margin);
+    fd.right = new FormAttachment(middle, -margin);
+    m_batchInsertTimeoutLab.setLayoutData(fd);
+    m_batchInsertTimeoutLab.setToolTipText(BaseMessages.getString(PKG, 
+        "CassandraOutputDialog.BatchInsertTimeout.TipText"));
+    
+    m_batchInsertTimeoutText = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+    props.setLook(m_batchInsertTimeoutText);
+    m_batchInsertTimeoutText.addModifyListener(new ModifyListener() {
+      public void modifyText(ModifyEvent e) {
+        m_batchInsertTimeoutText.setToolTipText(transMeta.
+            environmentSubstitute(m_batchInsertTimeoutText.getText()));
+      }
+    });
+    m_batchInsertTimeoutText.addModifyListener(lsMod);
+    fd = new FormData();
+    fd.right = new FormAttachment(100, 0);
+    fd.top = new FormAttachment(m_batchSizeText, margin);
+    fd.left = new FormAttachment(middle, 0);
+    m_batchInsertTimeoutText.setLayoutData(fd);
+    
+    // sub-batch size
+    m_subBatchSizeLab = new Label(shell, SWT.RIGHT);
+    props.setLook(m_subBatchSizeLab);
+    m_subBatchSizeLab.setText(BaseMessages.getString(PKG, 
+    "CassandraOutputDialog.SubBatchSize.Label"));
+    m_subBatchSizeLab.setToolTipText(BaseMessages.getString(PKG, 
+        "CassandraOutputDialog.SubBatchSize.TipText"));
+    fd = new FormData();
+    fd.left = new FormAttachment(0, 0);
+    fd.top = new FormAttachment(m_batchInsertTimeoutText, margin);
+    fd.right = new FormAttachment(middle, -margin);
+    m_subBatchSizeLab.setLayoutData(fd);
+    
+    m_subBatchSizeText = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+    props.setLook(m_subBatchSizeText);
+    m_subBatchSizeText.addModifyListener(new ModifyListener() {
+      public void modifyText(ModifyEvent e) {
+        m_subBatchSizeText.setToolTipText(transMeta.
+            environmentSubstitute(m_subBatchSizeText.getText()));
+      }
+    });
+    m_subBatchSizeText.addModifyListener(lsMod);
+    fd = new FormData();
+    fd.right = new FormAttachment(100, 0);
+    fd.top = new FormAttachment(m_batchInsertTimeoutText, margin);
+    fd.left = new FormAttachment(middle, 0);
+    m_subBatchSizeText.setLayoutData(fd);
+    
+    
     // key field line
     m_keyFieldLab = new Label(shell, SWT.RIGHT);
     props.setLook(m_keyFieldLab);
@@ -419,7 +509,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
         "CassandraOutputDialog.KeyField.Label"));
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
-    fd.top = new FormAttachment(m_batchSizeText, margin);
+    fd.top = new FormAttachment(m_subBatchSizeText, margin);
     fd.right = new FormAttachment(middle, -margin);
     m_keyFieldLab.setLayoutData(fd);
     
@@ -428,7 +518,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     m_getFieldsBut.setText(BaseMessages.getString(PKG, "CassandraOutputDialog.GetFields.Button"));
     fd = new FormData();
     fd.right = new FormAttachment(100, 0);
-    fd.top = new FormAttachment(m_batchSizeText, 0);
+    fd.top = new FormAttachment(m_subBatchSizeText, 0);
     m_getFieldsBut.setLayoutData(fd);
     
     m_getFieldsBut.addSelectionListener(new SelectionAdapter() {
@@ -446,7 +536,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     m_keyFieldCombo.addModifyListener(lsMod);
     fd = new FormData();
     fd.right = new FormAttachment(m_getFieldsBut, -margin);
-    fd.top = new FormAttachment(m_batchSizeText, margin);
+    fd.top = new FormAttachment(m_subBatchSizeText, margin);
     fd.left = new FormAttachment(middle, 0);
     m_keyFieldCombo.setLayoutData(fd);    
     
@@ -762,12 +852,15 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     stepname = m_stepnameText.getText();
     m_currentMeta.setCassandraHost(m_hostText.getText());
     m_currentMeta.setCassandraPort(m_portText.getText());
+    m_currentMeta.setSocketTimeout(m_socketTimeoutText.getText());
     m_currentMeta.setUsername(m_userText.getText());
     m_currentMeta.setPassword(m_passText.getText());
     m_currentMeta.setCassandraKeyspace(m_keyspaceText.getText());
     m_currentMeta.setColumnFamilyName(m_columnFamilyCombo.getText());
     m_currentMeta.setConsistency(m_consistencyText.getText());
     m_currentMeta.setBatchSize(m_batchSizeText.getText());
+    m_currentMeta.setCQLBatchInsertTimeout(m_batchInsertTimeoutText.getText());
+    m_currentMeta.setCQLSubBatchSize(m_subBatchSizeText.getText());
     m_currentMeta.setKeyField(m_keyFieldCombo.getText());
     
     m_currentMeta.setCreateColumnFamily(m_createColumnFamilyBut.getSelection());
@@ -873,6 +966,10 @@ public class CassandraOutputDialog extends BaseStepDialog implements
       m_portText.setText(m_currentMeta.getCassandraPort());
     }
     
+    if (!Const.isEmpty(m_currentMeta.getSocketTimeout())) {
+      m_socketTimeoutText.setText(m_currentMeta.getSocketTimeout());
+    }
+    
     if (!Const.isEmpty(m_currentMeta.getUsername())) {
       m_userText.setText(m_currentMeta.getUsername());
     }
@@ -895,6 +992,14 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     
     if (!Const.isEmpty(m_currentMeta.getBatchSize())) {
       m_batchSizeText.setText(m_currentMeta.getBatchSize());
+    }
+    
+    if (!Const.isEmpty(m_currentMeta.getCQLBatchInsertTimeout())) {
+      m_batchInsertTimeoutText.setText(m_currentMeta.getCQLBatchInsertTimeout());
+    }
+    
+    if (!Const.isEmpty(m_currentMeta.getCQLSubBatchSize())) {
+      m_subBatchSizeText.setText(m_currentMeta.getCQLSubBatchSize());
     }
     
     if (!Const.isEmpty(m_currentMeta.getKeyField())) {
