@@ -138,15 +138,22 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
 					stepMeta.getStepMetaInterface().readRep(repository, stepMeta.getObjectId(), databases, counters);
 				}
                 
-                // Get the partitioning as well...
-				stepMeta.setStepPartitioningMeta( loadStepPartitioningMeta(stepMeta.getObjectId()) );
-				stepMeta.getStepPartitioningMeta().setPartitionSchemaAfterLoading(partitionSchemas);
-                
-                // Get the cluster schema name
-                stepMeta.setClusterSchemaName( repository.getStepAttributeString(id_step, "cluster_schema") );
-                
-                // Done!
-                return stepMeta;
+        // Get the partitioning as well...
+				//
+        stepMeta.setStepPartitioningMeta(loadStepPartitioningMeta(stepMeta.getObjectId()));
+        stepMeta.getStepPartitioningMeta().setPartitionSchemaAfterLoading(partitionSchemas);
+
+        // Get the cluster schema name
+        //
+        stepMeta.setClusterSchemaName(repository.getStepAttributeString(id_step, "cluster_schema"));
+
+        // Are we load balancing (defaults to false)? 
+        //
+        stepMeta.setLoadBalancing( repository.getStepAttributeBoolean(id_step, 0, "loadbalance", false) );
+
+        // Done!
+        //
+        return stepMeta;
 			}
 			else
 			{
@@ -188,9 +195,13 @@ public class KettleDatabaseRepositoryStepDelegate extends KettleDatabaseReposito
 			log.logDebug(BaseMessages.getString(PKG, "StepMeta.Log.SaveStepDetails")); //$NON-NLS-1$
 			stepMeta.getStepMetaInterface().saveRep(repository, id_transformation, stepMeta.getObjectId());
             
-            // Save the name of the clustering schema that was chosen.
+      // Save the name of the clustering schema that was chosen.
 			//
-            repository.saveStepAttribute(id_transformation, stepMeta.getObjectId(), "cluster_schema", stepMeta.getClusterSchema()==null?"":stepMeta.getClusterSchema().getName());
+      repository.saveStepAttribute(id_transformation, stepMeta.getObjectId(), "cluster_schema", stepMeta.getClusterSchema()==null?"":stepMeta.getClusterSchema().getName());
+      
+      // Save the load balancing boolean
+      //
+      repository.saveStepAttribute(id_transformation, stepMeta.getObjectId(), "loadbalance", stepMeta.isLoadBalancing());
 		}
 		catch(KettleException e)
 		{

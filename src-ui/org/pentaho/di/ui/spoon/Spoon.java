@@ -3274,25 +3274,34 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     // message
     if (nrNextSteps == 2) {
       boolean distributes = fr.getStepMetaInterface().excludeFromCopyDistributeVerification();
-
+      boolean loadBalance = false;
+      
       if (props.showCopyOrDistributeWarning() && !fr.getStepMetaInterface().excludeFromCopyDistributeVerification()) {
         MessageDialogWithToggle md = new MessageDialogWithToggle(shell, BaseMessages.getString(PKG, "System.Warning"),
             null, BaseMessages.getString(PKG, "Spoon.Dialog.CopyOrDistribute.Message", fr.getName(), Integer
                 .toString(nrNextSteps)), MessageDialog.WARNING, new String[] {
-                BaseMessages.getString(PKG, "Spoon.Dialog.CopyOrDistribute.Copy"),
-                BaseMessages.getString(PKG, "Spoon.Dialog.CopyOrDistribute.Distribute") }, 0, BaseMessages.getString(
+                  BaseMessages.getString(PKG, "Spoon.Dialog.CopyOrDistribute.Distribute"),
+                  BaseMessages.getString(PKG, "Spoon.Dialog.CopyOrDistribute.LoadBalance"),
+                  BaseMessages.getString(PKG, "Spoon.Dialog.CopyOrDistribute.Copy"),
+                }, 0, BaseMessages.getString(
                 PKG, "Spoon.Message.Warning.NotShowWarning"), !props.showCopyOrDistributeWarning());
         MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());
         int idx = md.open();
         props.setShowCopyOrDistributeWarning(!md.getToggleState());
         props.saveProps();
 
-        distributes = (idx & 0xFF) == 1;
+        distributes = (idx & 0xFF) == 0;
+        loadBalance = (idx & 0xFF) == 1;
       }
 
       if (distributes) {
         fr.setDistributes(true);
+        fr.setLoadBalancing(false);
+      } else if (loadBalance) {
+        fr.setDistributes(true);
+        fr.setLoadBalancing(true);
       } else {
+        fr.setDistributes(false);
         fr.setDistributes(false);
       }
 
