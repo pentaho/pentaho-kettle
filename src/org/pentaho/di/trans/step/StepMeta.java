@@ -922,6 +922,9 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
    * @param loadBalancing the loadBalancing to set
    */
   public void setLoadBalancing(boolean loadBalancing) {
-    this.loadBalancing = loadBalancing;
+    if (this.loadBalancing!= loadBalancing){
+      this.loadBalancing = loadBalancing;
+      setChanged();
+    }
   }
 }
