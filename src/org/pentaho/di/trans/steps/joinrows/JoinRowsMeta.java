@@ -294,7 +294,20 @@ public class JoinRowsMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void getFields(RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{
-		// Default: nothing changes to rowMeta
+	  if (space instanceof TransMeta) {
+	    TransMeta transMeta = (TransMeta) space;
+	    StepMeta[] steps = transMeta.getPrevSteps(transMeta.findStep(origin));
+	    StepMeta mainStep = transMeta.findStep(getMainStepname());
+	    rowMeta.clear();
+	    if (mainStep!=null) {
+	      rowMeta.addRowMeta(transMeta.getStepFields(mainStep));
+	    }
+	    for (StepMeta step : steps) {
+	      if (mainStep==null || !step.equals(mainStep)) {
+	        rowMeta.addRowMeta(transMeta.getStepFields(step));
+	      }
+	    }
+	  }
 	}
 
 	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
