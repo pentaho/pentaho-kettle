@@ -1,0 +1,5 @@
+bin/
+dist/
+lib/
+stage-pmr/
+test-lib/
