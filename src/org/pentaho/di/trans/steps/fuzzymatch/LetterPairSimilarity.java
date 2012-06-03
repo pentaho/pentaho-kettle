@@ -29,6 +29,31 @@ import org.pentaho.di.core.Const;
 public class LetterPairSimilarity
 {
 
+  /*
+   * This class is being used by permission of Simon White
+   * The source is directly from a catalysoft.com article
+   * http://www.catalysoft.com/articles/StrikeAMatch.html
+   * 
+   * 
+   *>> I'm happy for you to reuse parts of my articles provided that you give
+   *>> suitable attribution (preferably a link back to the original article).
+   *>>
+   *>> Best Regards,
+   *>> Simon
+   *
+   *> Will it be ok with you for us to use it in an open source project
+   *> offered under the Apache Software License, provided I give you both
+   *> attribution, and a link back to the original article?
+   *> Marc
+   *
+   * Hi Marc,
+   * Yes, that's fine.
+   * 
+   * Best Regards,
+   * Simon 
+   * 
+   */
+  
 	/** @return an array of adjacent letter pairs contained in the input string */
 
 	   private static String[] letterPairs(String str) {
