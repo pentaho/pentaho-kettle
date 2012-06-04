@@ -3,3 +3,5 @@ dist/
 lib/
 stage-pmr/
 test-lib/
+eclipse-bin/
+override.properties
