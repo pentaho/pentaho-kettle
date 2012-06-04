@@ -23,9 +23,14 @@
 package org.pentaho.di.job.entries.sqoop;
 
 import org.junit.Test;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.ui.xul.util.AbstractModelList;
 
-import static org.junit.Assert.assertEquals;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+
+import static org.junit.Assert.*;
 
 /**
  * Test the SqoopConfig functionality not exercised by {@link PropertyFiringObjectTests}
@@ -117,12 +122,101 @@ public class SqoopConfigTest {
     String password = "uncle";
 
 
-    config.setDatabaseConnectionInformation(database, connect, username, password);
+    config.setConnectionInfo(database, connect, username, password);
 
     assertEquals(0, l.getReceivedEvents().size());
     assertEquals(database, config.getDatabase());
     assertEquals(connect, config.getConnect());
     assertEquals(username, config.getUsername());
     assertEquals(password, config.getPassword());
+  }
+
+  @Test
+  public void numMappers() {
+    SqoopConfig config = new SqoopConfig() {
+    };
+
+    String numMappers = "5";
+
+    config.setNumMappers(numMappers);
+
+    List<String> args = new ArrayList<String>();
+
+    List<ArgumentWrapper> argumentWrappers = config.getAdvancedArgumentsList();
+
+    ArgumentWrapper arg = null;
+    Iterator<ArgumentWrapper> argIter = argumentWrappers.iterator();
+    while (arg == null && argIter.hasNext()) {
+      ArgumentWrapper a = argIter.next();
+      if (a.getName().equals("num-mappers")) {
+        arg = a;
+      }
+    }
+    assertNotNull(arg);
+    SqoopUtils.appendArgument(args, arg, new Variables());
+    assertEquals(2, args.size());
+    assertEquals("--num-mappers", args.get(0));
+    assertEquals(numMappers, args.get(1));
+  }
+
+  @Test
+  public void copyConnectionInfoFromAdvanced() {
+    SqoopConfig config = new SqoopConfig() {
+    };
+
+    PersistentPropertyChangeListener l = new PersistentPropertyChangeListener();
+    config.addPropertyChangeListener(l);
+
+    String connect = "connect";
+    String username = "username";
+    String password = "password";
+
+    config.setConnectFromAdvanced(connect);
+    config.setUsernameFromAdvanced(username);
+    config.setPasswordFromAdvanced(password);
+
+    assertNull(config.getConnect());
+    assertNull(config.getUsername());
+    assertNull(config.getPassword());
+
+    config.copyConnectionInfoFromAdvanced();
+
+    assertEquals(connect, config.getConnect());
+    assertEquals(username, config.getUsername());
+    assertEquals(password, config.getPassword());
+
+    assertEquals(0, l.getReceivedEvents().size());
+  }
+
+  @Test
+  public void copyConnectionInfoToAdvanced() {
+    SqoopConfig config = new SqoopConfig() {
+    };
+
+    PersistentPropertyChangeListener l = new PersistentPropertyChangeListener();
+    config.addPropertyChangeListener(l);
+
+    String connect = "connect";
+    String username = "username";
+    String password = "password";
+
+    config.setConnect(connect);
+    config.setUsername(username);
+    config.setPassword(password);
+
+    assertNull(config.getConnectFromAdvanced());
+    assertNull(config.getUsernameFromAdvanced());
+    assertNull(config.getPasswordFromAdvanced());
+
+    config.copyConnectionInfoToAdvanced();
+
+    assertEquals(connect, config.getConnectFromAdvanced());
+    assertEquals(username, config.getUsernameFromAdvanced());
+    assertEquals(password, config.getPasswordFromAdvanced());
+
+    assertEquals(3, l.getReceivedEvents().size());
+    assertEquals("connect", l.getReceivedEvents().get(0).getPropertyName());
+    assertEquals("username", l.getReceivedEvents().get(1).getPropertyName());
+    assertEquals("password", l.getReceivedEvents().get(2).getPropertyName());
   }
 }

@@ -9,17 +9,12 @@
         appicon="ui/images/spoon.ico"
         width="650"
         height="400"
-        buttons="accept,cancel,extra1,extra2"
+        buttons=""
         buttonalign="center"
-        buttonlabelaccept="${Dialog.Accept}"
-        buttonlabelcancel="${Dialog.Cancel}"
-        buttonlabelextra1="${Sqoop.JobEntry.Test.Button.Text}"
-        buttonlabelextra2="${Sqoop.JobEntry.AdvancedOptions.Button.Text}"
-        ondialogaccept="controller.accept()"
-        ondialogcancel="controller.cancel()"
-        ondialogextra1="controller.testSettings()"
-        ondialogextra2="controller.toggleMode()"
         onload="controller.init()">
+  <!--
+  buttons="accept,cancel,extra1,extra2"
+  -->
   <vbox>
     <grid>
       <columns>
@@ -127,11 +122,12 @@
         <tree id="advanced-table" hidecolumnpicker="true" autocreatenewrows="false" flex="1">
           <treecols>
             <treecol id="name-col" editable="false" flex="1" label="${Sqoop.JobEntry.AdvancedTable.Column.Name.Label}" pen:binding="displayName"/>
-            <treecol id="value-col" editable="true" flex="1" label="${Sqoop.JobEntry.AdvancedTable.Column.Name.Label}" pen:binding="value"/>
+            <treecol id="value-col" editable="true" flex="1" label="${Sqoop.JobEntry.AdvancedTable.Column.Value.Label}" pen:binding="value"/>
           </treecols>
           <treechildren />
         </tree>
       </vbox>
     </deck>
+    <pen:include src="button-bar.xul"/>
   </vbox>
 </dialog>
