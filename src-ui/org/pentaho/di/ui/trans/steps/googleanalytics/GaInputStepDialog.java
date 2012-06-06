@@ -59,6 +59,9 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPreviewFactory;
+import org.pentaho.di.trans.step.BaseStepMeta;
+import org.pentaho.di.trans.step.StepDialogInterface;
+import org.pentaho.di.trans.steps.googleanalytics.GaInputStepMeta;
 import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
@@ -67,20 +70,16 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.dialog.TransPreviewProgressDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.di.trans.step.BaseStepMeta;
-import org.pentaho.di.trans.step.StepDialogInterface;
-import org.pentaho.di.trans.steps.googleanalytics.GaInputStepMeta;
 
 import com.google.gdata.client.analytics.AnalyticsService;
 import com.google.gdata.client.analytics.DataQuery;
-import com.google.gdata.data.analytics.AccountEntry;
-import com.google.gdata.data.analytics.AccountFeed;
 import com.google.gdata.data.analytics.DataEntry;
 import com.google.gdata.data.analytics.DataFeed;
 import com.google.gdata.data.analytics.Dimension;
+import com.google.gdata.data.analytics.ManagementEntry;
+import com.google.gdata.data.analytics.ManagementFeed;
 import com.google.gdata.data.analytics.Metric;
 import com.google.gdata.data.analytics.Property;
-import com.google.gdata.data.analytics.Segment;
 import com.google.gdata.util.AuthenticationException;
 import com.google.gdata.util.ServiceException;
 
@@ -171,13 +170,15 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 
 	private Text wLimit;
 
-	final static String REFERENCE_SORT_URI = "http://code.google.com/apis/analytics/docs/gdata/v2/gdataReferenceDataFeed.html#sort";
-	final static String REFERENCE_METRICS_URI = "http://code.google.com/apis/analytics/docs/gdata/v2/gdataReferenceDataFeed.html#metrics";
-	final static String REFERENCE_DIMENSIONS_URI = "http://code.google.com/apis/analytics/docs/gdata/v2/gdataReferenceDataFeed.html#dimensions";
-	final static String REFERENCE_SEGMENT_URI = "http://code.google.com/apis/analytics/docs/gdata/v2/gdataReferenceDataFeed.html#segment";
-	final static String REFERENCE_FILTERS_URI = "http://code.google.com/apis/analytics/docs/gdata/v2/gdataReferenceDataFeed.html#filters";
-	final static String REFERENCE_DIMENSION_AND_METRIC_URI = "http://code.google.com/apis/analytics/docs/gdata/v2/gdataReferenceDimensionsMetrics.html";
-	final static String REFERENCE_TABLE_ID_URI = "http://code.google.com/apis/analytics/docs/gdata/v2/gdataReferenceDataFeed.html#ids";
+	private TextVar wGaApiKey;
+
+	final static String REFERENCE_SORT_URI = "https://developers.google.com/analytics/devguides/reporting/core/v2/gdataReferenceDataFeed#sort";
+	final static String REFERENCE_METRICS_URI = "https://developers.google.com/analytics/devguides/reporting/core/v2/gdataReferenceDataFeed#metrics";
+	final static String REFERENCE_DIMENSIONS_URI = "https://developers.google.com/analytics/devguides/reporting/core/v2/gdataReferenceDataFeed#dimensions";
+	final static String REFERENCE_SEGMENT_URI = "https://developers.google.com/analytics/devguides/reporting/core/v2/gdataReferenceDataFeed#segment";
+	final static String REFERENCE_FILTERS_URI = "https://developers.google.com/analytics/devguides/reporting/core/v2/gdataReferenceDataFeed#filters";
+	final static String REFERENCE_DIMENSION_AND_METRIC_URI = "https://developers.google.com/analytics/devguides/reporting/core/dimsmets";
+	final static String REFERENCE_TABLE_ID_URI = "https://developers.google.com/analytics/devguides/reporting/core/v2/gdataReferenceDataFeed#ids";
 	final static String WEBSITE_URL = "http://type-exit.org/adventures-with-open-source-bi/google-analytics-plugin-for-kettle/";
 
 	// constructor
@@ -305,13 +306,31 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 		fdGaPassword.right = new FormAttachment(100, 0);
 		wGaPassword.setLayoutData(fdGaPassword);
 
+		// Google Analytics Password
+		Label wlGaApiKey = new Label(gConnect, SWT.RIGHT);
+		wlGaApiKey.setText(BaseMessages.getString(PKG, "GoogleAnalyticsDialog.ApiKey.Label"));
+		props.setLook(wlGaApiKey);
+		FormData fdlGaApiKey = new FormData();
+		fdlGaApiKey.top = new FormAttachment(wGaPassword, margin);
+		fdlGaApiKey.left = new FormAttachment(0, 0);
+		fdlGaApiKey.right = new FormAttachment(middle, -margin);
+		wlGaApiKey.setLayoutData(fdlGaApiKey);
+		wGaApiKey = new TextVar(transMeta, gConnect, SWT.SINGLE | SWT.LEFT | SWT.BORDER | SWT.PASSWORD);
+		wGaApiKey.addModifyListener(lsMod);
+		wGaApiKey.setToolTipText(BaseMessages.getString(PKG, "GoogleAnalyticsDialog.ApiKey.Tooltip"));
+		props.setLook(wGaApiKey);
+		FormData fdGaApiKey = new FormData();
+		fdGaApiKey.top = new FormAttachment(wGaPassword, margin);
+		fdGaApiKey.left = new FormAttachment(middle, 0);
+		fdGaApiKey.right = new FormAttachment(100, 0);
+		wGaApiKey.setLayoutData(fdGaApiKey);		
 		
 		// custom profile definition
 		wlGaCustomProfile = new Label(gConnect, SWT.RIGHT);
 		wlGaCustomProfile.setText(BaseMessages.getString(PKG, "GoogleAnalyticsDialog.Profile.CustomProfileEnabled.Label"));
 		props.setLook(wlGaCustomProfile);
 		FormData fdlGaCustomProfile = new FormData();
-		fdlGaCustomProfile.top = new FormAttachment(wGaPassword, margin);
+		fdlGaCustomProfile.top = new FormAttachment(wGaApiKey, margin);
 		fdlGaCustomProfile.left = new FormAttachment(0, 0);
 		fdlGaCustomProfile.right = new FormAttachment(middle, -margin);
 		wlGaCustomProfile.setLayoutData(fdlGaCustomProfile);
@@ -322,7 +341,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 
 		FormData fdCustomProfileEnabled = new FormData();
 		fdCustomProfileEnabled.left = new FormAttachment(middle, 0);
-		fdCustomProfileEnabled.top = new FormAttachment(wGaPassword, margin);
+		fdCustomProfileEnabled.top = new FormAttachment(wGaApiKey, margin);
 		wCustomProfileEnabled.setLayoutData(fdCustomProfileEnabled);
 
 		wCustomProfileEnabled.addSelectionListener(new SelectionAdapter() {
@@ -355,13 +374,13 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 		wGaCustomProfileReference.pack(true);
 
 		FormData fdGaCustomProfile = new FormData();
-		fdGaCustomProfile.top = new FormAttachment(wGaPassword, margin);
+		fdGaCustomProfile.top = new FormAttachment(wGaApiKey, margin);
 		fdGaCustomProfile.left = new FormAttachment(wCustomProfileEnabled, margin);
 		fdGaCustomProfile.right = new FormAttachment(100, -wGaCustomProfileReference.getBounds().width - margin);
 		wGaCustomProfile.setLayoutData(fdGaCustomProfile);
 
 		FormData fdGaCustomProfileReference = new FormData();
-		fdGaCustomProfileReference.top = new FormAttachment(wGaPassword, margin);
+		fdGaCustomProfileReference.top = new FormAttachment(wGaApiKey, margin);
 		fdGaCustomProfileReference.left = new FormAttachment(wGaCustomProfile, 0);
 		fdGaCustomProfileReference.right = new FormAttachment(100, 0);
 		wGaCustomProfileReference.setLayoutData(fdGaCustomProfileReference);		
@@ -395,7 +414,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 				shell.getDisplay().asyncExec(new Runnable() {
 					@Override
 					public void run() {
-						readGaProfiles(wGaEmail.getText(), wGaPassword.getText(), wGaAppName.getText());
+						readGaProfiles(wGaEmail.getText(), wGaPassword.getText(), wGaAppName.getText(), wGaApiKey.getText().trim());
 					}
 				});
 			}
@@ -717,7 +736,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 				shell.getDisplay().asyncExec(new Runnable() {
 					@Override
 					public void run() {
-						readGaSegments(wGaEmail.getText(), wGaPassword.getText(), wGaProfile.getText(), wGaAppName.getText());
+						readGaSegments(wGaEmail.getText(), wGaPassword.getText(), wGaAppName.getText(), wGaApiKey.getText().trim());
 					}
 				});
 			}
@@ -824,6 +843,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 
 				String email = transMeta.environmentSubstitute(wGaEmail.getText());
 				String pass = transMeta.environmentSubstitute(wGaPassword.getText());
+				
 
 				AnalyticsService analyticsService = new AnalyticsService(transMeta.environmentSubstitute(wGaAppName.getText()));
 				
@@ -1076,6 +1096,7 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 		meta.setGaPassword(wGaPassword.getText());
 		meta.setGaProfileName(wGaProfile.getText());
 		meta.setGaAppName(wGaAppName.getText());
+		meta.setGaApiKey(wGaApiKey.getText().trim());
 		
 		if (!Const.isEmpty(wGaProfile.getText())) {
 			meta.setGaProfileTableId(profileTableIds.get(wGaProfile.getText()));
@@ -1179,6 +1200,10 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 		query.setEndDate(transMeta.environmentSubstitute(wQuEndDate.getText()));
 		query.setDimensions(transMeta.environmentSubstitute(wQuDimensions.getText()));
 		query.setMetrics(transMeta.environmentSubstitute(wQuMetrics.getText()));
+		
+		if (wGaApiKey.getText().trim().length() > 0){
+			query.setStringCustomParameter("key", wGaApiKey.getText().trim());	
+		}
 
 		if (wCustomSegmentEnabled.getSelection()) {
 			query.setSegment(transMeta.environmentSubstitute(wQuCustomSegment.getText()));
@@ -1216,24 +1241,28 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 
 	// Collect profile list from the GA service for the given authentication
 	// information
-	public void readGaProfiles(String emailText, String passwordText, String appName) {
+	public void readGaProfiles(String emailText, String passwordText, String appName, String apiKey) {
 
 		String email = transMeta.environmentSubstitute(emailText);
 		String pass = transMeta.environmentSubstitute(passwordText);
+		String key = transMeta.environmentSubstitute(apiKey);
 
 		AnalyticsService analyticsService = new AnalyticsService(transMeta.environmentSubstitute(appName));
 		try {
 			analyticsService.setUserCredentials(email, pass);
-			URL q = new URL(GaInputStepMeta.GA_ACCOUNTS_URL);
-			AccountFeed accountFeed = analyticsService.getFeed(q, AccountFeed.class);
+			
+			URL q = new URL(GaInputStepMeta.GA_MANAGEMENT_URL+"/accounts/~all/webproperties/~all/profiles?key="+key);
+			
+			ManagementFeed profilesFeed = analyticsService.getFeed(q, ManagementFeed.class);
 
-			ArrayList<String> profileNames = new ArrayList<String>(5);
+			ArrayList<String> profileNames = new ArrayList<String>(10);
 			profileTableIds.clear();
 
-			for (AccountEntry entry : accountFeed.getEntries()) {
-				String profileName = entry.getTableId().getValue() + " - profile: "+ entry.getTitle().getPlainText() + " [" + entry.getProperty("ga:accountName") + "]";
+			for (ManagementEntry entry : profilesFeed.getEntries()) {
+				String tableId = entry.getProperty("dxp:tableId");
+				String profileName = tableId + " - profile: " + entry.getProperty("ga:profileName");
 				profileNames.add(profileName);
-				profileTableIds.put(profileName, entry.getTableId().getValue());
+				profileTableIds.put(profileName, tableId);
 			}
 
 			// put the profiles to the combo box and select first one
@@ -1269,27 +1298,25 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 
 	// Collect segment list from the GA service for the given authentication
 	// information
-	public void readGaSegments(String emailText, String passwordText, String profileText, String appName) {
+	public void readGaSegments(String emailText, String passwordText, String appName, String apiKey) {
 
 		String email = transMeta.environmentSubstitute(emailText);
 		String pass = transMeta.environmentSubstitute(passwordText);
+		String key = transMeta.environmentSubstitute(apiKey);
 
 		AnalyticsService analyticsService = new AnalyticsService(transMeta.environmentSubstitute(appName));
 		try {
 			analyticsService.setUserCredentials(email, pass);
-			URL q = new URL(GaInputStepMeta.GA_ACCOUNTS_URL);
-			AccountFeed accountFeed = analyticsService.getFeed(q, AccountFeed.class);
+			URL q = new URL(GaInputStepMeta.GA_MANAGEMENT_URL+"/segments?key="+key);
+			
+			ManagementFeed segmentFeed = analyticsService.getFeed(q, ManagementFeed.class);
 
 			ArrayList<String> segmentNames = new ArrayList<String>(20);
 			segmentIds.clear();
 
-			if (!accountFeed.hasSegments()) {
-
-			} else {
-				for (Segment segment : accountFeed.getSegments()) {
-					segmentNames.add(segment.getName());
-					segmentIds.put(segment.getName(), segment.getId());
-				}
+			for (ManagementEntry segmentEntry : segmentFeed.getEntries()) {
+				segmentNames.add(segmentEntry.getSegment().getName());
+				segmentIds.put(segmentEntry.getSegment().getName(), segmentEntry.getSegment().getId());
 			}
 
 			// put the segments to the combo box and select first one
@@ -1339,6 +1366,10 @@ public class GaInputStepDialog extends BaseStepDialog implements StepDialogInter
 
 		if (input.getGaPassword() != null) {
 			wGaPassword.setText(input.getGaPassword());
+		}
+		
+		if (input.getGaApiKey() != null){
+			wGaApiKey.setText(input.getGaApiKey());
 		}
 
 		if (input.getGaProfileName() != null) {
