@@ -45,8 +45,8 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
 
 	private static Class<?> PKG = GaInputStepMeta.class; // for i18n purposes
 
-	public final static String GA_ACCOUNTS_URL = "https://www.google.com/analytics/feeds/accounts/default";
-	public final static String GA_DATA_URL = "https://www.google.com/analytics/feeds/data";
+	public final static String GA_MANAGEMENT_URL = "https://www.googleapis.com/analytics/v2.4/management";
+	public final static String GA_DATA_URL = "https://www.googleapis.com/analytics/v2.4/data";
 	
 	public final static String FIELD_TYPE_CONFIDENCE_INTERVAL = "Confidence Interval for Metric";
 	public final static String FIELD_TYPE_DIMENSION = "Dimension";
@@ -63,6 +63,7 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
 	private String gaPassword;
 	private String gaProfileTableId;
 	private String gaProfileName;
+	private String gaApiKey;
 	private boolean useCustomTableId;
 	private String gaCustomTableId;
 	private String startDate;
@@ -256,6 +257,14 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
 		return outputType;
 	}
 
+	public String getGaApiKey() {
+		return gaApiKey;
+	}
+
+	public void setGaApiKey(String gaApiKey) {
+		this.gaApiKey = gaApiKey;
+	}
+
 	// set sensible defaults for a new step
 	public void setDefault() {
 		gaEmail = "your.account@googlemail.com";
@@ -268,6 +277,7 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
 		sort = "-ga:visits";
 		gaAppName = DEFAULT_GA_APPLICATION_NAME;
 		rowLimit = 0;
+		gaApiKey = "";
 		// default is to have no key lookup settings
 		allocate(0);
 
@@ -332,6 +342,7 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
 		retval.append("    ").append(XMLHandler.addTagValue("user", gaEmail));
 		retval.append("    ").append(XMLHandler.addTagValue("pass", "Encrypted " + Encr.encryptPassword(gaPassword)));
 		retval.append("    ").append(XMLHandler.addTagValue("appName", gaAppName));
+		retval.append("    ").append(XMLHandler.addTagValue("apiKey", "Encrypted " + Encr.encryptPassword(gaApiKey)));
 		retval.append("    ").append(XMLHandler.addTagValue("profileName", gaProfileName));
 		retval.append("    ").append(XMLHandler.addTagValue("profileTableId", gaProfileTableId));
 		retval.append("    ").append(XMLHandler.addTagValue("customTableId", gaCustomTableId));
@@ -368,6 +379,7 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
 			gaEmail = XMLHandler.getTagValue(stepnode, "user");
 			gaPassword = Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(stepnode, "pass"));
 			gaAppName = XMLHandler.getTagValue(stepnode, "appName");
+			gaApiKey = Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(stepnode, "apiKey"));
 			gaProfileName = XMLHandler.getTagValue(stepnode, "profileName");
 			gaProfileTableId = XMLHandler.getTagValue(stepnode, "profileTableId");
 			gaCustomTableId = XMLHandler.getTagValue(stepnode, "customTableId");
@@ -416,6 +428,7 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
 			
 			gaEmail = rep.getStepAttributeString(id_step, "user");
 			gaPassword = Encr.decryptPasswordOptionallyEncrypted(rep.getStepAttributeString(id_step, "pass"));
+			gaApiKey = Encr.decryptPasswordOptionallyEncrypted(rep.getStepAttributeString(id_step, "apiKey"));
 			gaProfileName = rep.getStepAttributeString(id_step,  "profileName");
 			gaAppName = rep.getStepAttributeString(id_step,  "appName");
 			gaProfileTableId = rep.getStepAttributeString(id_step,  "profileTableId");
@@ -459,6 +472,7 @@ public class GaInputStepMeta extends BaseStepMeta implements StepMetaInterface {
 		try {
 			rep.saveStepAttribute(id_transformation, id_step, "user", gaEmail);
 			rep.saveStepAttribute(id_transformation, id_step, "pass", "Encrypted " + Encr.encryptPassword(gaPassword));
+			rep.saveStepAttribute(id_transformation, id_step, "apiKey", "Encrypted " + Encr.encryptPassword(gaApiKey));
 			rep.saveStepAttribute(id_transformation, id_step, "appName", gaAppName);
 			rep.saveStepAttribute(id_transformation, id_step, "profileName", gaProfileName);
 			rep.saveStepAttribute(id_transformation, id_step, "profileTableId", gaProfileTableId);

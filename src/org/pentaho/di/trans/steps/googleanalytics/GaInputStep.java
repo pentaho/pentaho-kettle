@@ -201,6 +201,10 @@ public class GaInputStep extends BaseStep implements StepInterface {
 		if (!Const.isEmpty(meta.getSort())) {
 			query.setSort(environmentSubstitute(meta.getSort()));
 		}
+		
+		if (!Const.isEmpty(meta.getGaApiKey())){
+			query.setStringCustomParameter("key", meta.getGaApiKey());	
+		}
 
 		return query;
 		
