@@ -78,6 +78,7 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
   private TextVar   wCharSet;
   private TextVar   wErrorFile;
   private TextVar   wBufferSize;
+  private TextVar   wMaxErrors;
   private Button  wContinueOnError;
   private Button  wUseStandardConversion;
   private Button  wUseAuthentication;
@@ -292,6 +293,7 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
     wErrorFile.addModifyListener(lsMod);
     //standard is disabled
     wErrorFile.setEnabled(false);
+    wMaxErrors = addStandardTextVar(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.MaxErrors.Label"), wErrorFile);
     wContinueOnError.addSelectionListener(
             new SelectionAdapter()
             {
@@ -299,15 +301,17 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
                 {
                     if (wContinueOnError.getSelection())  {
                       wErrorFile.setEnabled(true);
+                      wMaxErrors.setEnabled(true);
                     }else{
                       wErrorFile.setEnabled(false);
+                      wMaxErrors.setEnabled(false);
                     }
                 }
             }
         );
    
     
-    return wErrorFile;
+    return wMaxErrors;
   }
 
   protected CCombo addStandardSelect(String labelMessageKey, Control prevControl, String[] choices) {
@@ -489,6 +493,7 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
     if(input.isContinueOnError()){
       wErrorFile.setEnabled(true);
     }
+    wMaxErrors.setText(Const.NVL(input.getMaxNrErrors(),""));
     
 
     for (int i=0; i<input.getFieldDatabase().length; i++)
@@ -521,6 +526,7 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
     input.setContinueOnError(wContinueOnError.getSelection());
     input.setErrorFileName(wErrorFile.getText());
     input.setUseDynamicVNode(wUseDynamicVNode.getSelection());
+    input.setMaxNrErrors(wMaxErrors.getText());
 
     int nrRows = wFields.nrNonEmpty();        
     input.allocate(nrRows);      

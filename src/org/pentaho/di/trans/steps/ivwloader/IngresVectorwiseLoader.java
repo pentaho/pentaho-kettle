@@ -305,6 +305,8 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
       String schemaTable = dm.getQuotedSchemaTableCombination(null, environmentSubstitute(meta.getTablename()));
       String encoding = environmentSubstitute(Const.NVL(meta.getEncoding(), ""));
       String fifoFile = Const.optionallyQuoteStringByOS(environmentSubstitute(Const.NVL(meta.getFifoFileName(), "")));
+      String errorFile = Const.optionallyQuoteStringByOS(environmentSubstitute(Const.NVL(meta.getErrorFileName(), "")));
+      int maxNrErrors = Const.toInt(environmentSubstitute(Const.NVL(meta.getMaxNrErrors(), "0")), 0);
 
       if (meta.isUsingVwload()) {
         sb.append(" -u ").append(username);
@@ -315,10 +317,14 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
         if (!Const.isEmpty(encoding)) {
           sb.append(" -C ").append(encoding);
         }
+        if (!Const.isEmpty(errorFile)) {
+          sb.append(" -l ").append(errorFile);
+        }
+        if (maxNrErrors>0) {
+          sb.append(" -x ").append(maxNrErrors);
+        }
         sb.append(" ").append(databaseName);
         sb.append(" ").append(fifoFile);
-        
-        log.logBasic("vwload command: "+sb.toString());
         
       } else if (meta.isUseDynamicVNode()) {
         // logical portname in JDBC use a 7

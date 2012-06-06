@@ -113,6 +113,9 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
    */
   private boolean         usingVwload;
 
+  /** The maximum number of errors after which we want to abort vwload */
+  private String maxNrErrors;
+
   /**
    * truncate table prior to load?
    */
@@ -167,6 +170,7 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
     useDynamicVNode = false;
     escapingSpecialCharacters = true;
     usingVwload = false;
+    maxNrErrors = "50";
     truncatingTable = false;
     useSSV = false;
     bufferSize="5000";
@@ -214,6 +218,7 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
     retval.append("    ").append(XMLHandler.addTagValue("escape_special_characters", escapingSpecialCharacters)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("    ").append(XMLHandler.addTagValue("use_vwload", usingVwload)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("    ").append(XMLHandler.addTagValue("truncate_table", truncatingTable)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("    ").append(XMLHandler.addTagValue("max_errors", maxNrErrors)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("    ").append(XMLHandler.addTagValue("buffer_size", bufferSize)); //$NON-NLS-1$ //$NON-NLS-2$
 
     retval.append("    <fields>").append(Const.CR); //$NON-NLS-1$
@@ -248,6 +253,7 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
       String escape = XMLHandler.getTagValue(stepnode, "escape_special_characters");
       escapingSpecialCharacters = Const.isEmpty(escape) ? true : "Y".equalsIgnoreCase(escape); //$NON-NLS-1$
       usingVwload = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_vwload")); //$NON-NLS-1$
+      maxNrErrors = XMLHandler.getTagValue(stepnode, "max_errors"); //$NON-NLS-1$
       truncatingTable = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "truncate_table")); //$NON-NLS-1$
       bufferSize = XMLHandler.getTagValue(stepnode, "buffer_size"); //$NON-NLS-1$
       
@@ -283,6 +289,7 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
       useSSV = rep.getStepAttributeBoolean(id_step, "use_SSV_delimiter"); //$NON-NLS-1$
       escapingSpecialCharacters = rep.getStepAttributeBoolean(id_step, 0, "escape_special_characters", true); //$NON-NLS-1$
       usingVwload = rep.getStepAttributeBoolean(id_step, "use_vwload"); //$NON-NLS-1$
+      maxNrErrors = rep.getStepAttributeString(id_step, "max_errors"); //$NON-NLS-1$
       truncatingTable = rep.getStepAttributeBoolean(id_step, "truncate_table"); //$NON-NLS-1$
       bufferSize = rep.getStepAttributeString(id_step, "buffer_size"); //$NON-NLS-1$
       
@@ -317,6 +324,7 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
       rep.saveStepAttribute(id_transformation, id_step, "use_SSV_delimiter", useSSV); //$NON-NLS-1$
       rep.saveStepAttribute(id_transformation, id_step, "escape_special_characters", escapingSpecialCharacters); //$NON-NLS-1$
       rep.saveStepAttribute(id_transformation, id_step, "use_vwload", usingVwload); //$NON-NLS-1$
+      rep.saveStepAttribute(id_transformation, id_step, "max_errors", maxNrErrors); //$NON-NLS-1$
       rep.saveStepAttribute(id_transformation, id_step, "truncate_table", truncatingTable); //$NON-NLS-1$
       rep.saveStepAttribute(id_transformation, id_step, "buffer_size", bufferSize); //$NON-NLS-1$
       
@@ -623,5 +631,13 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
   
   public void setTruncatingTable(boolean truncatingTable) {
     this.truncatingTable = truncatingTable;
+  }
+  
+  public String getMaxNrErrors() {
+    return maxNrErrors;
+  }
+  
+  public void setMaxNrErrors(String maxNrErrors) {
+    this.maxNrErrors = maxNrErrors;
   }
 }
