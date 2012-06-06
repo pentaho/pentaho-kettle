@@ -2500,6 +2500,11 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 				tip.append(BaseMessages.getString(PKG, "TransGraph.Hop.Tooltip.HopTypeCopy", step.getName(), Const.CR)); //$NON-NLS-1$
 				tipImage = GUIResource.getInstance().getImageCopyHop();
 				break;
+			case HOP_LOAD_BALANCE:
+				step = (StepMeta) areaOwner.getParent();
+				tip.append(BaseMessages.getString(PKG, "TransGraph.Hop.Tooltip.HopTypeBalance", step.getName(), Const.CR)); //$NON-NLS-1$
+				tipImage = GUIResource.getInstance().getImageBalance();
+				break;
 			case HOP_INFO_ICON:
 				StepMeta from = (StepMeta) areaOwner.getParent();
 				StepMeta to = (StepMeta) areaOwner.getOwner();
@@ -2571,7 +2576,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 		if (hi != null) // We clicked on a HOP!
 		{
 			// Set the tooltip for the hop:
-			tip.append(Const.CR).append("Hop information: ").append(newTip = hi.toString()).append(Const.CR); //$NON-NLS-1$
+			tip.append(Const.CR).append( BaseMessages.getString(PKG, "TransGraph.Dialog.HopInfo")).append(newTip = hi.toString()).append(Const.CR); //$NON-NLS-1$
 		}
 
 		if (tip.length() == 0) {

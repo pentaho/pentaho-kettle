@@ -1053,7 +1053,7 @@ public class TransPainter extends BasePainter
         gc.drawImage(EImage.LOAD_BALANCE, mx, my);
 
         if (!shadow) {
-          areaOwners.add(new AreaOwner(AreaType.HOP_COPY_ICON, mx, my, bounds.x, bounds.y, offset, fs, STRING_HOP_TYPE_BALANCE));
+          areaOwners.add(new AreaOwner(AreaType.HOP_LOAD_BALANCE, mx, my, bounds.x, bounds.y, offset, fs, STRING_HOP_TYPE_BALANCE));
         }
         mx += 16;
         
