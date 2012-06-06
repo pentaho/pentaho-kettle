@@ -183,7 +183,7 @@ public class VectorWiseDatabaseMeta extends IngresDatabaseMeta implements Databa
      */
     public String getTruncateTableStatement(String tableName)
     {
-        return "DELETE FROM "+tableName;
+        return "CALL VECTORWISE( COMBINE '"+tableName+" - "+tableName+"' )";
     }
 
     public String[] getUsedLibraries()

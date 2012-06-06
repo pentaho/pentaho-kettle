@@ -84,6 +84,8 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
   private Button  wUseDynamicVNode;
   private Button  wUseSSV;
   private Button  wEscapeSpecialChars;
+  private Button  wUseVwload;
+  private Button  wTruncateTable;
 
   /**
    * List of ColumnInfo that should have the field names of the selected database table
@@ -275,7 +277,9 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
             }
         );
     wEscapeSpecialChars = addStandardCheckBox(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.EscapeSpecialChars.Label"), wUseSSV);
-    wDelimiter = addStandardTextVar(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.Delimiter.Label"), wUseSSV);
+    wUseVwload = addStandardCheckBox(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.UseVwload.Label"), wEscapeSpecialChars);
+    wTruncateTable = addStandardCheckBox(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.TruncateTable.Label"), wUseVwload);
+    wDelimiter = addStandardTextVar(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.Delimiter.Label"), wTruncateTable);
     wCharSet = addStandardTextVar(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.Charset.Label"), wDelimiter);
     wBufferSize = addStandardTextVar(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.BufferSize.Label"), wCharSet);
     wUseStandardConversion = addStandardCheckBox(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.UseStandardConversion.Label"), wBufferSize);
@@ -468,6 +472,8 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
     wSqlPath.setText(Const.NVL(input.getSqlPath(), ""));
     wUseSSV.setSelection(input.isUseSSV());
     wEscapeSpecialChars.setSelection(input.isEscapingSpecialCharacters());
+    wUseVwload.setSelection(input.isUsingVwload());
+    wTruncateTable.setSelection(input.isTruncatingTable());
     if(input.isUseSSV()){
       wDelimiter.setEnabled(false);
     }
@@ -506,6 +512,8 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
     input.setSqlPath(wSqlPath.getText());
     input.setUseSSV(wUseSSV.getSelection());
     input.setEscapingSpecialCharacters(wEscapeSpecialChars.getSelection());
+    input.setUsingVwload(wUseVwload.getSelection());
+    input.setTruncatingTable(wTruncateTable.getSelection());
     input.setDelimiter( wDelimiter.getText() );
     input.setEncoding( wCharSet.getText() );
     input.setBufferSize( wBufferSize.getText() );

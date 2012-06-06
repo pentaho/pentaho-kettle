@@ -30,6 +30,7 @@ import java.nio.channels.FileChannel;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
@@ -56,13 +57,9 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  * @since 14-apr-2009
  */
 public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
-  private static Class<?>            PKG = IngresVectorwiseLoaderMeta.class; // for
-                                                                             // i18n
-                                                                             // purposes,
-                                                                             // needed
-                                                                             // by
-                                                                             // Translator2!!
-                                                                             // $NON-NLS-1$
+  
+  /** For i18n purposes, needed by Translator2!! */
+  private static Class<?>            PKG = IngresVectorwiseLoaderMeta.class; 
 
   private IngresVectorwiseLoaderMeta meta;
   private IngresVectorwiseLoaderData data;
@@ -286,31 +283,53 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
         sb.append(sqlexec);
         // sql @tc-dwh-test.timocom.net,tcp_ip,VW[ingres,pwd]::dwh
       } catch (KettleFileException ex) {
-        throw new KettleException("Error retrieving 'sql' command string", ex);
+        throw new KettleException("Error retrieving command string", ex);
       }
     } else {
-      if (isDetailed())
-        logDetailed("sql defaults to system path");
-      sb.append("sql");
+      if (meta.isUsingVwload()) {
+        if (isDetailed()) logDetailed("vwload defaults to system path");
+        sb.append("vwload");
+      } else {
+        if (isDetailed()) logDetailed("sql defaults to system path");
+        sb.append("sql");
+      }
     }
 
     DatabaseMeta dm = meta.getDatabaseMeta();
     if (dm != null) {
-      String dnName = environmentSubstitute(Const.NVL(dm.getDatabaseName(), ""));
-      String passWord = Encr.decryptPasswordOptionallyEncrypted(environmentSubstitute(Const.NVL(dm.getDatabaseInterface().getPassword(), "")));
-      if (meta.isUseDynamicVNode()) {
-        // logical portname in JDBC use a 7
-        String port = environmentSubstitute(Const.NVL(dm.getDatabasePortNumberString(), "")).replace("7", "");
-        String userName = environmentSubstitute(Const.NVL(dm.getDatabaseInterface().getUsername(), ""));
-        String hostName = environmentSubstitute(Const.NVL(dm.getDatabaseInterface().getHostname(), ""));
+      String databaseName = environmentSubstitute(Const.NVL(dm.getDatabaseName(), ""));
+      String password = Encr.decryptPasswordOptionallyEncrypted(environmentSubstitute(Const.NVL(dm.getDatabaseInterface().getPassword(), "")));
+      String port = environmentSubstitute(Const.NVL(dm.getDatabasePortNumberString(), "")).replace("7", "");
+      String username = environmentSubstitute(Const.NVL(dm.getDatabaseInterface().getUsername(), ""));
+      String hostname = environmentSubstitute(Const.NVL(dm.getDatabaseInterface().getHostname(), ""));
+      String schemaTable = dm.getQuotedSchemaTableCombination(null, environmentSubstitute(meta.getTablename()));
+      String encoding = environmentSubstitute(Const.NVL(meta.getEncoding(), ""));
+      String fifoFile = Const.optionallyQuoteStringByOS(environmentSubstitute(Const.NVL(meta.getFifoFileName(), "")));
 
-        sb.append(" @").append(hostName).append(",").append(port).append("[").append(userName).append(",").append(passWord).append("]::").append(dnName);
+      if (meta.isUsingVwload()) {
+        sb.append(" -u ").append(username);
+        sb.append(" -P ").append(password);
+        sb.append(" -f ").append(meta.getDelimiter()).append("");
+        sb.append(" -t ").append(schemaTable);
+        
+        if (!Const.isEmpty(encoding)) {
+          sb.append(" -C ").append(encoding);
+        }
+        sb.append(" ").append(databaseName);
+        sb.append(" ").append(fifoFile);
+        
+        log.logBasic("vwload command: "+sb.toString());
+        
+      } else if (meta.isUseDynamicVNode()) {
+        // logical portname in JDBC use a 7
+
+        sb.append(" @").append(hostname).append(",").append(port).append("[").append(username).append(",").append(password).append("]::").append(databaseName);
       } else {
         // Database Name
         //
-        sb.append(" ").append(dnName);
+        sb.append(" ").append(databaseName);
         if (meta.isUseAuthentication()) {
-          sb.append("-P").append(passWord);
+          sb.append("-P").append(password);
         }
       }
     } else {
@@ -566,6 +585,28 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
       
       String bufferSizeString = environmentSubstitute(meta.getBufferSize());
       data.bufferSize = Const.isEmpty(bufferSizeString) ? 5000 : Const.toInt(bufferSizeString, 5000);
+      
+      if (meta.isTruncatingTable() && meta.getDatabaseMeta()!=null) {
+        
+        // Connect to Vectorwise over standard JDBC and truncate the table
+        //
+        Database db = new Database(this, meta.getDatabaseMeta());
+        try {
+          db.connect();
+          db.execStatement("CALL VECTORWISE( COMBINE '"+data.schemaTable+" - "+data.schemaTable+"' )");
+
+          // Just to make sure VW gets the message
+          //
+          db.execStatement("CALL VECTORWISE( COMBINE '"+data.schemaTable+" - "+data.schemaTable+"' )");
+          log.logDetailed("Table "+data.schemaTable+" was truncated using a 'combine' statement.");
+        } catch(Exception e) {
+          log.logError("Error truncating table", e);
+          return false;
+        } finally {
+          db.disconnect();
+        }
+        
+      }
 
       return true;
     }

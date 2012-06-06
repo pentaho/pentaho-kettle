@@ -53,13 +53,8 @@ import org.w3c.dom.Node;
  */
 public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMetaInterface {
 
-  private static Class<?> PKG          = IngresVectorwiseLoaderMeta.class; // for
-                                                                           // i18n
-                                                                           // purposes,
-                                                                           // needed
-                                                                           // by
-                                                                           // Translator2!!
-                                                                           // $NON-NLS-1$
+  /** For i18n purposes, needed by Translator2!! */
+  private static Class<?> PKG          = IngresVectorwiseLoaderMeta.class; 
 
   private DatabaseMeta    databaseMeta;
   private String          tablename;
@@ -112,6 +107,16 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
 
   /** NIO buffer size */
   private String bufferSize;
+
+  /**
+   * Use the "vwload" utility
+   */
+  private boolean         usingVwload;
+
+  /**
+   * truncate table prior to load?
+   */
+  private boolean         truncatingTable;
   
   /**
    * Default constructor.
@@ -161,6 +166,8 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
     continueOnError = false;
     useDynamicVNode = false;
     escapingSpecialCharacters = true;
+    usingVwload = false;
+    truncatingTable = false;
     useSSV = false;
     bufferSize="5000";
   }
@@ -205,6 +212,8 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
     retval.append("    ").append(XMLHandler.addTagValue("use_dynamic_vnode", useDynamicVNode)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("    ").append(XMLHandler.addTagValue("use_SSV_delimiter", useSSV)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("    ").append(XMLHandler.addTagValue("escape_special_characters", escapingSpecialCharacters)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("    ").append(XMLHandler.addTagValue("use_vwload", usingVwload)); //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("    ").append(XMLHandler.addTagValue("truncate_table", truncatingTable)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("    ").append(XMLHandler.addTagValue("buffer_size", bufferSize)); //$NON-NLS-1$ //$NON-NLS-2$
 
     retval.append("    <fields>").append(Const.CR); //$NON-NLS-1$
@@ -238,6 +247,8 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
       useSSV = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_SSV_delimiter")); //$NON-NLS-1$
       String escape = XMLHandler.getTagValue(stepnode, "escape_special_characters");
       escapingSpecialCharacters = Const.isEmpty(escape) ? true : "Y".equalsIgnoreCase(escape); //$NON-NLS-1$
+      usingVwload = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_vwload")); //$NON-NLS-1$
+      truncatingTable = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "truncate_table")); //$NON-NLS-1$
       bufferSize = XMLHandler.getTagValue(stepnode, "buffer_size"); //$NON-NLS-1$
       
       Node fields = XMLHandler.getSubNode(stepnode, "fields"); //$NON-NLS-1$
@@ -271,6 +282,8 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
       useDynamicVNode = rep.getStepAttributeBoolean(id_step, "use_dynamic_vnode"); //$NON-NLS-1$
       useSSV = rep.getStepAttributeBoolean(id_step, "use_SSV_delimiter"); //$NON-NLS-1$
       escapingSpecialCharacters = rep.getStepAttributeBoolean(id_step, 0, "escape_special_characters", true); //$NON-NLS-1$
+      usingVwload = rep.getStepAttributeBoolean(id_step, "use_vwload"); //$NON-NLS-1$
+      truncatingTable = rep.getStepAttributeBoolean(id_step, "truncate_table"); //$NON-NLS-1$
       bufferSize = rep.getStepAttributeString(id_step, "buffer_size"); //$NON-NLS-1$
       
       int nrCols = rep.countNrStepAttributes(id_step, "column_name"); //$NON-NLS-1$
@@ -303,6 +316,8 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
       rep.saveStepAttribute(id_transformation, id_step, "use_dynamic_vnode", useDynamicVNode); //$NON-NLS-1$
       rep.saveStepAttribute(id_transformation, id_step, "use_SSV_delimiter", useSSV); //$NON-NLS-1$
       rep.saveStepAttribute(id_transformation, id_step, "escape_special_characters", escapingSpecialCharacters); //$NON-NLS-1$
+      rep.saveStepAttribute(id_transformation, id_step, "use_vwload", usingVwload); //$NON-NLS-1$
+      rep.saveStepAttribute(id_transformation, id_step, "truncate_table", truncatingTable); //$NON-NLS-1$
       rep.saveStepAttribute(id_transformation, id_step, "buffer_size", bufferSize); //$NON-NLS-1$
       
       int nrRows = (fieldDatabase.length < fieldStream.length ? fieldStream.length : fieldDatabase.length);
@@ -594,4 +609,19 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
     this.useAuthentication = useAuthentication;
   }
   
+  public boolean isUsingVwload() {
+    return usingVwload;
+  }
+  
+  public void setUsingVwload(boolean usingVwload) {
+    this.usingVwload = usingVwload;
+  }
+  
+  public boolean isTruncatingTable() {
+    return truncatingTable;
+  }
+  
+  public void setTruncatingTable(boolean truncatingTable) {
+    this.truncatingTable = truncatingTable;
+  }
 }
