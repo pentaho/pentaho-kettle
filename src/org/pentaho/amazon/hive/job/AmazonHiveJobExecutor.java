@@ -200,7 +200,7 @@ public class AmazonHiveJobExecutor extends AbstractAmazonJobEntry implements Clo
 
       // Configure a HadoopJarStep.
       String args = "s3://elasticmapreduce/libs/hive/hive-script --base-path s3://elasticmapreduce/libs/hive/ --hive-version 0.7 --run-hive-script --args -f "
-                         + stagingS3qUrl + " " + cmdLineArgs; //$NON-NLS-1$ //$NON-NLS-1$
+                         + environmentSubstitute(stagingS3qUrl) + " " + environmentSubstitute(cmdLineArgs); //$NON-NLS-1$ //$NON-NLS-1$
       List<StepConfig> steps = ConfigHadoopJarStep(hadoopJobName, jarUrl, args);
 
       // Add a Run Hive Script step to the existing job flow.
