@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<!-- A button bar that contains a Quick Setup/Advanced Options toggle, test, ok, and cancel buttons. -->
+<grid>
+  <columns>
+    <column align="center"/>
+    <column flex="1"/>
+    <column/>
+    <column/>
+  </columns>
+  <rows>
+    <row>
+      <label id="mode-toggle-label" value="${Sqoop.JobEntry.AdvancedOptions.Button.Text}" onclick="controller.toggleMode();"/>
+      <hbox flex="1">
+        <spacer flex="1"/>
+        <button label="${Sqoop.JobEntry.Test.Button.Text}" onclick="controller.testSettings();"/>
+        <spacer flex="1"/>
+      </hbox>
+      <button label="${Dialog.Accept}" onclick="controller.accept();"/>
+      <button label="${Dialog.Cancel}" onclick="controller.cancel();"/>
+    </row>
+  </rows>
+</grid>

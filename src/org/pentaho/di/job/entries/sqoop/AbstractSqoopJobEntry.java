@@ -104,7 +104,12 @@ public abstract class AbstractSqoopJobEntry<S extends SqoopConfig> extends JobEn
    */
   protected final S createSqoopConfig() {
     S config = buildSqoopConfig();
-    SqoopUtils.configureConnectionInformation(config, new Configuration());
+    try {
+      SqoopUtils.configureConnectionInformation(config, new Configuration());
+    } catch (Exception ex) {
+      // Error loading connection information from Hadoop Configuration. Just log the error and leave the configuration as is.
+      logError(BaseMessages.getString(AbstractSqoopJobEntry.class, "ErrorLoadingHadoopConnectionInformation"), ex);
+    }
     return config;
   }
 
@@ -424,6 +429,7 @@ public abstract class AbstractSqoopJobEntry<S extends SqoopConfig> extends JobEn
    * @return {@code true} if this database is supported for this tool
    */
   public boolean isDatabaseSupported(Class<? extends DatabaseInterface> databaseType) {
-    return !HiveDatabaseMeta.class.isAssignableFrom(databaseType);
+    // For now all database types are supported
+    return true;
   }
 }

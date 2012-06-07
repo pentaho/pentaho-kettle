@@ -25,6 +25,13 @@ package org.pentaho.di.ui.job.entries.sqoop;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CLabel;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
@@ -52,17 +59,19 @@ import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingFactory;
-import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.containers.XulDeck;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.swt.tags.SwtDialog;
+import org.pentaho.ui.xul.swt.tags.SwtLabel;
 import org.pentaho.ui.xul.util.AbstractModelList;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import static org.pentaho.di.job.entries.sqoop.SqoopConfig.*;
 
@@ -77,7 +86,8 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> ext
   public static final String SELECTED_DATABASE_CONNECTION = "selectedDatabaseConnection";
   private final String[] MODE_I18N_STRINGS = new String[]{"Sqoop.JobEntry.AdvancedOptions.Button.Text", "Sqoop.JobEntry.QuickSetup.Button.Text"};
   public static final String VALUE = "value";
-  public static final String NO_DATABASE = "";
+  protected DatabaseItem NO_DATABASE = new DatabaseItem("@@none@@", "Choose Available"); // This is overwritten in init() with the i18n string
+  protected DatabaseItem USE_ADVANCED_OPTIONS = new DatabaseItem("@@advanced@@", "Use Advanced Options"); // This is overwritten in init() with the i18n string
 
   private XulDomContainer container;
   private BindingFactory bindingFactory;
@@ -87,14 +97,20 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> ext
   private S config;
 
   protected AbstractModelList<ArgumentWrapper> advancedArguments;
-  protected AbstractModelList<String> databaseConnections;
+  private AbstractModelList<DatabaseItem> databaseConnections;
+  private DatabaseItem selectedDatabaseConnection;
   private DatabaseDialog databaseDialog;
 
   private JobMeta jobMeta;
 
   // Flag to indicate we shouldn't handle any events. Useful for preventing unwanted synchronization during initialization
   // or other user-driven events.
-  private boolean suppressEventHandling = false;
+  protected boolean suppressEventHandling = false;
+
+  /**
+   * The text for the Quick Setup/Advanced Options mode toggle (label)
+   */
+  private String modeToggleLabel;
 
   /**
    * Creates a new Sqoop job entry controller.
@@ -111,13 +127,94 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> ext
     this.sqoopJobEntry = sqoopJobEntry;
     this.config = (S) sqoopJobEntry.getSqoopConfig().clone();
     this.advancedArguments = new AbstractModelList<ArgumentWrapper>();
-    this.databaseConnections = new AbstractModelList<String>();
+    this.databaseConnections = new AbstractModelList<DatabaseItem>();
   }
 
   /**
    * @return the element id of the XUL dialog element in the XUL document
    */
   public abstract String getDialogElementId();
+
+  /**
+   * Initialize the dialog by loading model data, creating bindings and firing initial sync
+   * ({@link org.pentaho.ui.xul.binding.Binding#fireSourceChanged()}.
+   *
+   * @throws XulException
+   * @throws InvocationTargetException
+   */
+  public void init() throws XulException, InvocationTargetException {
+    NO_DATABASE = new DatabaseItem("@@none@@", BaseMessages.getString(AbstractSqoopJobEntry.class, "DatabaseName.ChooseAvailable"));
+    USE_ADVANCED_OPTIONS = new DatabaseItem("@@advanced@@", BaseMessages.getString(AbstractSqoopJobEntry.class, "DatabaseName.UseAdvancedOptions"));
+    bindings = new ArrayList<Binding>();
+    // Suppress event handling while we're initializing to prevent unwanted value changes
+    suppressEventHandling = true;
+    try {
+      populateDatabases();
+      setModeToggleLabel(BaseMessages.getString(AbstractSqoopJobEntry.class, MODE_I18N_STRINGS[0]));
+      customizeModeToggleLabel(getModeToggleLabelElementId());
+      createBindings(config, container, bindingFactory, bindings);
+      syncModel();
+
+      for (Binding binding : bindings) {
+        binding.fireSourceChanged();
+      }
+    } finally {
+      suppressEventHandling = false;
+    }
+
+    // Manually set the current database, if it is valid, to sync the UI buttons since we suppressed their event handling while initializing bindings
+    setSelectedDatabaseConnection(createDatabaseItem(getConfig().getDatabase()));
+  }
+
+  /**
+   * Customizes the label that is used to toggle between quick setup and advanced options.
+   * <p>
+   *   - Set the label color to blue
+   *   - Underline the label
+   *   - Attaches a left-click listener on the label to perform the toggling
+   * </p>
+   *
+   * @param elementId Mode toggle element to attach listener on
+   */
+  private void customizeModeToggleLabel(String elementId) {
+    SwtLabel label = (SwtLabel) getDialog().getElementById(elementId);
+    // Only decorate the label if it's not a link. This was added in pentaho-xul-swt after PDI 4.3.0.
+    // TODO Remove this logic once pentaho-xul-swt is upgraded past 3.3 (when SwtLabel can support hyperlinks)
+    if (label != null && label.getManagedObject() instanceof CLabel) {
+      CLabel cLabel = (CLabel) label.getManagedObject();
+
+      FontData[] fontDatas = cLabel.getFont().getFontData();
+      for (FontData fontData : fontDatas) {
+        fontData.setStyle(SWT.BOLD);
+      }
+      final Font font = new Font(cLabel.getDisplay(), fontDatas);
+      cLabel.setFont(font);
+
+      final Cursor cursor = new Cursor(cLabel.getDisplay(), SWT.CURSOR_HAND);
+      cLabel.setCursor(cursor);
+
+      final Color color = new Color(cLabel.getDisplay(), 0, 0, 255);
+      cLabel.setForeground(color);
+
+      cLabel.addDisposeListener(new DisposeListener() {
+        @Override
+        public void widgetDisposed(DisposeEvent disposeEvent) {
+          color.dispose();
+          cursor.dispose();
+          font.dispose();
+        }
+      });
+
+      cLabel.addMouseListener(new MouseAdapter() {
+        @Override
+        public void mouseUp(MouseEvent e) {
+          if (e.button == 1) {
+            toggleMode();
+          }
+        }
+      });
+    }
+  }
 
   /**
    * Create the necessary XUL {@link Binding}s to support the dialog's desired functionality.
@@ -139,6 +236,7 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> ext
     bindings.add(bindingFactory.createBinding(config, TABLE, TABLE, VALUE));
 
     bindingFactory.setBindingType(Binding.Type.ONE_WAY);
+    bindings.add(bindingFactory.createBinding(this, "modeToggleLabel", getModeToggleLabelElementId(), "value"));
     bindings.add(bindingFactory.createBinding(databaseConnections, "children", "connection", "elements"));
 
     XulTree variablesTree = (XulTree) container.getDocumentRoot().getElementById("advanced-table");
@@ -146,6 +244,8 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> ext
 
     // Create database/connection sync so that we're notified any time the connect argument is updated
     bindingFactory.createBinding(config, "connect", this, "connectChanged");
+    bindingFactory.createBinding(config, "username", this, "usernameChanged");
+    bindingFactory.createBinding(config, "password", this, "passwordChanged");
 
     bindingFactory.setBindingType(Binding.Type.BI_DIRECTIONAL);
     // Specifically create this binding after the databaseConnections binding so the list is populated before we attempt to select an item
@@ -177,33 +277,6 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> ext
   }
 
   /**
-   * Initialize the dialog by loading model data, creating bindings and firing initial sync
-   * ({@link org.pentaho.ui.xul.binding.Binding#fireSourceChanged()}.
-   *
-   * @throws XulException
-   * @throws InvocationTargetException
-   */
-  public void init() throws XulException, InvocationTargetException {
-    bindings = new ArrayList<Binding>();
-    // Suppress event handling while we're initializing to prevent unwanted value changes
-    suppressEventHandling = true;
-    try {
-      populateDatabases();
-      createBindings(config, container, bindingFactory, bindings);
-      syncModel();
-
-      for (Binding binding : bindings) {
-        binding.fireSourceChanged();
-      }
-    } finally {
-      suppressEventHandling = false;
-    }
-
-    // Manually set the current database, if it is valid, to sync the UI buttons since we suppressed their event handling while initializing bindings
-    setSelectedDatabaseConnection(getConfig().getDatabase());
-  }
-
-  /**
    * Synchronize the model values from the configuration object to our internal model objects.
    */
   protected void syncModel() {
@@ -216,10 +289,10 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> ext
    */
   protected void populateDatabases() {
     databaseConnections.clear();
-    databaseConnections.add(NO_DATABASE);
+    updateDatabaseItemsList();
     for (DatabaseMeta dbMeta : jobMeta.getDatabases()) {
       if (sqoopJobEntry.isDatabaseSupported(dbMeta.getDatabaseInterface().getClass())) {
-        databaseConnections.add(dbMeta.getName());
+        databaseConnections.add(new DatabaseItem(dbMeta.getName()));
       }
     }
   }
@@ -230,72 +303,107 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> ext
   public void setConnectChanged(String connect) {
     // If the connect string changes unselect the database
     if (!suppressEventHandling) {
-      updateSelectedDatabase(NO_DATABASE, false);
+      if (connect != null) {
+        config.copyConnectionInfoToAdvanced();
+        setSelectedDatabaseConnection(USE_ADVANCED_OPTIONS);
+      } else {
+        setSelectedDatabaseConnection(NO_DATABASE);
+      }
     }
+  }
+
+  public void setUsernameChanged(String username) {
+    if (!suppressEventHandling) {
+      config.copyConnectionInfoToAdvanced();
+      setSelectedDatabaseConnection(USE_ADVANCED_OPTIONS);
+    }
+  }
+
+  public void setPasswordChanged(String password) {
+    if (!suppressEventHandling) {
+      config.copyConnectionInfoToAdvanced();
+      setSelectedDatabaseConnection(USE_ADVANCED_OPTIONS);
+    }
+  }
+
+  /**
+   * @return the list of database connections that back the connections list
+   */
+  public AbstractModelList<DatabaseItem> getDatabaseConnections() {
+    return databaseConnections;
   }
 
   /**
    * @return the selected database from the configuration object
    */
-  public String getSelectedDatabaseConnection() {
-    String database = config.getDatabase();
-    return getCleansedDatabaseName(database);
+  public DatabaseItem getSelectedDatabaseConnection() {
+    return selectedDatabaseConnection;
   }
 
   /**
-   * Cleanse database names for use in a bound combo box.
+   * Creates a {@link DatabaseItem} based on the name of a database and the existence of a connection string in the configuration.
    *
-   * @param database Database name
-   * @return
+   * @param database Name of database
+   * @return A database item whose name is {@code database}. If {@code database} is null, {@link #NO_DATABASE} is returned iff. {@link org.pentaho.di.job.entries.sqoop.SqoopConfig#getConnect() getConfig().getConnect()} is null; {@link #USE_ADVANCED_OPTIONS} otherwise.
    */
-  protected String getCleansedDatabaseName(String database) {
-    // Make sure we translate null to NO_DATABASE so binding works properly
-    return database == null ? NO_DATABASE : database;
+  protected DatabaseItem createDatabaseItem(String database) {
+    return database == null
+      ? (getConfig().getConnect() != null ? USE_ADVANCED_OPTIONS : NO_DATABASE)
+      : new DatabaseItem(database);
   }
 
   /**
-   * Sets the selected database by name. This database will be verified to exist and the appropriate settings within
+   * Sets the selected database connection. This database will be verified to exist and the appropriate settings within
    * the model will be set.
    *
-   * @param selected Name of database to select. It should exist in the list of database names returned by {@link org.pentaho.di.job.JobMeta#getDatabaseNames()}.
+   * @param selectedDatabaseConnection Database item to select
    */
-  public void setSelectedDatabaseConnection(String selected) {
-    updateSelectedDatabase(selected, true);
+  public void setSelectedDatabaseConnection(DatabaseItem selectedDatabaseConnection) {
+    DatabaseItem old = this.selectedDatabaseConnection;
+    this.selectedDatabaseConnection = selectedDatabaseConnection;
+    DatabaseMeta databaseMeta = this.selectedDatabaseConnection == null ? null : jobMeta.findDatabase(this.selectedDatabaseConnection.getName());
+    boolean validDatabaseSelected = databaseMeta != null;
+    setDatabaseInteractionButtonsDisabled(!validDatabaseSelected);
+    updateDatabaseItemsList();
+    // If the selected database changes update the config
+    if (!suppressEventHandling && (old == null && this.selectedDatabaseConnection != null || !old.equals(this.selectedDatabaseConnection))) {
+      if (validDatabaseSelected) {
+        try {
+          getConfig().setConnectionInfo(databaseMeta.getName(), databaseMeta.getURL(), databaseMeta.getUsername(), databaseMeta.getPassword());
+        } catch (KettleDatabaseException ex) {
+          sqoopJobEntry.logError(BaseMessages.getString(AbstractSqoopJobEntry.class, "ErrorConfiguringDatabaseConnection"), ex);
+        }
+      } else {
+        getConfig().copyConnectionInfoFromAdvanced();
+      }
+    }
+    firePropertyChange("selectedDatabaseConnection", old, this.selectedDatabaseConnection);
   }
 
   /**
-   * Update the selected database and optionally persist the changes down to the configuration object.
-   *
-   * @param database      Name of database to select
-   * @param persistChange If {@code true}, the new database information will be set on the configuration object. This is
-   *                      useful if this selection change occurred as a result of the configuration object changing and
-   *                      we don't want to infinitely loop.
+   * Make sure we have a "Use Advanced Option" in the list of database connections if we don't have a valid database selected
+   * but we have an advanced connect string.
    */
-  public void updateSelectedDatabase(String database, boolean persistChange) {
-    String old = getSelectedDatabaseConnection();
-    DatabaseMeta databaseMeta = jobMeta.findDatabase(database);
-    boolean validDatabaseSelected = databaseMeta != null;
-    setDatabaseInteractionButtonsDisabled(!validDatabaseSelected);
-    if (!suppressEventHandling && !getSelectedDatabaseConnection().equals(getCleansedDatabaseName(database))) {
-      if (persistChange) {
-        try {
-          if (validDatabaseSelected) {
-            try {
-              getConfig().setDatabaseConnectionInformation(databaseMeta.getName(), databaseMeta.getURL(), databaseMeta.getUsername(), databaseMeta.getPassword());
-            } catch (KettleDatabaseException e) {
-              sqoopJobEntry.logError(BaseMessages.getString(AbstractSqoopJobEntry.class, "ErrorConfiguringDatabaseConnection"), e);
-            }
-          } else {
-            getConfig().setDatabaseConnectionInformation(null, null, null, null);
-          }
-        } finally {
-          suppressEventHandling = false;
-        }
-      } else {
-        // Always keep the database in sync even if the connection details aren't
-        config.setDatabase(databaseMeta == null ? null : databaseMeta.getName());
+  protected void updateDatabaseItemsList() {
+    if (this.selectedDatabaseConnection == null || NO_DATABASE.equals(this.selectedDatabaseConnection)) {
+      if (!databaseConnections.contains(NO_DATABASE)) {
+        databaseConnections.add(0, NO_DATABASE);
       }
-      firePropertyChange(SELECTED_DATABASE_CONNECTION, old, getSelectedDatabaseConnection());
+    } else {
+      if (databaseConnections.contains(NO_DATABASE)) {
+        databaseConnections.remove(NO_DATABASE);
+      }
+    }
+    if (getConfig().getConnectFromAdvanced() != null ||
+      getConfig().getUsernameFromAdvanced() != null ||
+      getConfig().getPasswordFromAdvanced() != null) {
+      if (!databaseConnections.contains(USE_ADVANCED_OPTIONS)) {
+        databaseConnections.add(0, USE_ADVANCED_OPTIONS);
+      }
+    } else {
+      if (databaseConnections.contains(USE_ADVANCED_OPTIONS)) {
+        databaseConnections.remove(USE_ADVANCED_OPTIONS);
+      }
     }
   }
 
@@ -308,6 +416,23 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> ext
     document.getElementById(getEditConnectionButtonId()).setDisabled(b);
     document.getElementById(getBrowseTableButtonId()).setDisabled(b);
 //    document.getElementById(getBrowseSchemaButtonId()).setDisabled(b);
+  }
+
+  /**
+   * @return the text for the "modeToggleLabel" label
+   */
+  public String getModeToggleLabel() {
+    return modeToggleLabel;
+  }
+
+  /**
+   * Set the label text for the mode toggle label element
+   * @param modeToggleLabel
+   */
+  public void setModeToggleLabel(String modeToggleLabel) {
+    String old = this.modeToggleLabel;
+    this.modeToggleLabel = modeToggleLabel;
+    firePropertyChange("modeToggleLabel", old, this.modeToggleLabel);
   }
 
   protected DatabaseDialog getDatabaseDialog() {
@@ -343,7 +468,7 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> ext
         jobMeta.addDatabase(getDatabaseDialog().getDatabaseMeta());
       }
       populateDatabases();
-      setSelectedDatabaseConnection(getDatabaseDialog().getDatabaseMeta().getName());
+      setSelectedDatabaseConnection(createDatabaseItem(getDatabaseDialog().getDatabaseMeta().getName()));
     }
   }
 
@@ -371,6 +496,13 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> ext
 
   public String getBrowseSchemaButtonId() {
     return "browseSchemaButton";
+  }
+
+  /**
+   * @return the id of the element responsible for toggling between "Quick Setup" and "Advanced Options" modes
+   */
+  public String getModeToggleLabelElementId() {
+    return "mode-toggle-label";
   }
 
   /**
@@ -497,8 +629,7 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> ext
     syncModel();
 
     // Swap the label on the button
-    XulDialog dialog = getDialog();
-    ((XulButton) dialog.getElementById(getDialogElementId() + "_" + "extra2")).setLabel(BaseMessages.getString(AbstractSqoopJobEntry.class, MODE_I18N_STRINGS[deck.getSelectedIndex()]));
+    setModeToggleLabel(BaseMessages.getString(AbstractSqoopJobEntry.class, MODE_I18N_STRINGS[deck.getSelectedIndex()]));
   }
 
   /**

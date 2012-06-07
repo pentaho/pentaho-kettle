@@ -94,6 +94,11 @@ public abstract class SqoopConfig implements XulEventSource, Cloneable {
   private String database;
   private String schema;
 
+  // Properties to support toggling between quick setup and advanced mode in the UI. These should never be saved.
+  private transient String connectFromAdvanced;
+  private transient String usernameFromAdvanced;
+  private transient String passwordFromAdvanced;
+
   // Common arguments
   @CommandLineArgument(name = CONNECT)
   private String connect;
@@ -232,11 +237,31 @@ public abstract class SqoopConfig implements XulEventSource, Cloneable {
    * @param username Username
    * @param password Password
    */
-  public void setDatabaseConnectionInformation(String database, String connect, String username, String password) {
+  public void setConnectionInfo(String database, String connect, String username, String password) {
     this.database = database;
     this.connect = connect;
     this.username = username;
     this.password = password;
+  }
+
+  /**
+   * Copy connection information from temporary "advanced" fields into annotated argument fields.
+   */
+  public void copyConnectionInfoFromAdvanced() {
+    database = null;
+    connect = getConnectFromAdvanced();
+    username = getUsernameFromAdvanced();
+    password = getPasswordFromAdvanced();
+  }
+
+  /**
+   * Copy the current connection information into the "advanced" fields. These are temporary session properties
+   * used to aid the user during configuration via UI.
+   */
+  public void copyConnectionInfoToAdvanced() {
+    setConnectFromAdvanced(getConnect());
+    setUsernameFromAdvanced(getUsername());
+    setPasswordFromAdvanced(getPassword());
   }
 
   // All getters/setters below this line
@@ -359,6 +384,30 @@ public abstract class SqoopConfig implements XulEventSource, Cloneable {
     String old = this.password;
     this.password = password;
     pcs.firePropertyChange(PASSWORD, old, this.password);
+  }
+
+  public String getConnectFromAdvanced() {
+    return connectFromAdvanced;
+  }
+
+  public void setConnectFromAdvanced(String connectFromAdvanced) {
+    this.connectFromAdvanced = connectFromAdvanced;
+  }
+
+  public String getUsernameFromAdvanced() {
+    return usernameFromAdvanced;
+  }
+
+  public void setUsernameFromAdvanced(String usernameFromAdvanced) {
+    this.usernameFromAdvanced = usernameFromAdvanced;
+  }
+
+  public String getPasswordFromAdvanced() {
+    return passwordFromAdvanced;
+  }
+
+  public void setPasswordFromAdvanced(String passwordFromAdvanced) {
+    this.passwordFromAdvanced = passwordFromAdvanced;
   }
 
   public String getConnectionManager() {

@@ -85,8 +85,8 @@ public class PropertyFiringObjectTests {
     }
 
     for (Field f : oClass.getDeclaredFields()) {
-      if (!Modifier.isPrivate(f.getModifiers())) {
-        // Skip non-private fields
+      if (!Modifier.isPrivate(f.getModifiers()) || Modifier.isTransient(f.getModifiers())) {
+        // Skip non-private or transient fields
         continue;
       }
 

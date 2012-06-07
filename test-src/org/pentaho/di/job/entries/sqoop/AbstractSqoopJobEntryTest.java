@@ -203,6 +203,7 @@ public class AbstractSqoopJobEntryTest {
     AbstractSqoopJobEntry jobEntry = new TestSqoopJobEntry(10);
 
     assertTrue(jobEntry.isDatabaseSupported(MySQLDatabaseMeta.class));
-    assertFalse(jobEntry.isDatabaseSupported(HiveDatabaseMeta.class));
+    // All database are "supported" for now
+    assertTrue(jobEntry.isDatabaseSupported(HiveDatabaseMeta.class));
   }
 }

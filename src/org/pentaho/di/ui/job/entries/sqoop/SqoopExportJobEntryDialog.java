@@ -48,7 +48,7 @@ public class SqoopExportJobEntryDialog extends AbstractSqoopJobEntryDialog<Sqoop
 
   @Override
   protected String getXulFile() {
-    return "org/pentaho/di/ui/job/entries/sqoop/SqoopExportJobEntry.xul";
+    return "org/pentaho/di/ui/job/entries/sqoop/xul/SqoopExportJobEntry.xul";
   }
 
   @Override
