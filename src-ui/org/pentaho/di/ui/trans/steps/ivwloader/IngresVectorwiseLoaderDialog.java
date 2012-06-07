@@ -348,6 +348,7 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
   protected Button addStandardCheckBox(String labelMessageKey, Control prevControl) {
       Label label = addStandardLabel(labelMessageKey, prevControl);
       Button targetControl = new Button(shell, SWT.CHECK);
+      props.setLook(targetControl);
       targetControl.addSelectionListener(new SelectionAdapter() {
         public void widgetSelected(SelectionEvent e) {
           input.setChanged();
