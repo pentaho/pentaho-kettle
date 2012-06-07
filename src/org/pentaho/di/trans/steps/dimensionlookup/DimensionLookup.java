@@ -1256,6 +1256,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
     {
         if (data.prepStatementPunchThrough==null) // first time: construct prepared statement
         {
+        	DatabaseMeta databaseMeta = meta.getDatabaseMeta();
             data.punchThroughRowMeta = new RowMeta();
             
             /* 
@@ -1275,7 +1276,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
                 {
                     if (!first) sql_upd+=", "; else sql_upd+="  ";
                     first=false;
-                    sql_upd+=meta.getFieldLookup()[i]+" = ?"+Const.CR;
+                    sql_upd+=databaseMeta.quoteField(meta.getFieldLookup()[i])+" = ?"+Const.CR;
                     data.punchThroughRowMeta.addValueMeta( rowMeta.getValueMeta(data.fieldnrs[i]) );
                 }
             }
@@ -1288,7 +1289,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 				case DimensionLookupMeta.TYPE_UPDATE_DATE_UPDATED  : valueMeta = new ValueMeta(meta.getFieldLookup()[i], ValueMetaInterface.TYPE_DATE); break;
 				}
 				if (valueMeta!=null) {
-					sql_upd+=", "+meta.getDatabaseMeta().quoteField(valueMeta.getName()) +" = ?"+Const.CR;
+					sql_upd+=", "+databaseMeta.quoteField(valueMeta.getName()) +" = ?"+Const.CR;
 					data.punchThroughRowMeta.addValueMeta(valueMeta);
 				}
 			}
@@ -1297,7 +1298,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
             for (int i=0;i<meta.getKeyLookup().length;i++)
             {
                 if (i>0) sql_upd+="AND   ";
-                sql_upd+=meta.getKeyLookup()[i]+" = ?"+Const.CR;
+                sql_upd+=databaseMeta.quoteField(meta.getKeyLookup()[i])+" = ?"+Const.CR;
                 data.punchThroughRowMeta.addValueMeta( rowMeta.getValueMeta(data.keynrs[i]) );
             }
 
