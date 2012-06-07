@@ -23,6 +23,7 @@
 package org.pentaho.di.job.entries.sqoop;
 
 import org.junit.Test;
+import org.pentaho.di.job.entries.helper.PersistentPropertyChangeListener;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.ui.xul.util.AbstractModelList;
 

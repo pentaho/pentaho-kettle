@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.job.entries.sqoop;
+package org.pentaho.di.job;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;

@@ -30,8 +30,8 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.entries.helper.PersistentPropertyChangeListener;
 import org.pentaho.di.job.entries.sqoop.AbstractSqoopJobEntry;
-import org.pentaho.di.job.entries.sqoop.PersistentPropertyChangeListener;
 import org.pentaho.di.job.entries.sqoop.SqoopConfig;
 import org.pentaho.di.job.entries.sqoop.SqoopConfig.Mode;
 import org.pentaho.ui.xul.XulException;
@@ -43,9 +43,7 @@ import org.pentaho.ui.xul.impl.XulFragmentContainer;
 import java.beans.PropertyChangeEvent;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.*;
 

@@ -27,23 +27,19 @@ import org.apache.log4j.Appender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.sqoop.Sqoop;
-import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseInterface;
-import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.HiveDatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.entry.JobEntryBase;
+import org.pentaho.di.job.AbstractJobEntry;
+import org.pentaho.di.job.JobEntryUtils;
+import org.pentaho.di.job.LoggingProxy;
 import org.pentaho.di.job.entry.JobEntryInterface;
-import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.repository.Repository;
 import org.pentaho.hadoop.jobconf.HadoopConfigurer;
 import org.pentaho.hadoop.jobconf.HadoopConfigurerFactory;
-import org.w3c.dom.Node;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,11 +49,7 @@ import java.util.Map;
 /**
  * Base class for all Sqoop job entries.
  */
-public abstract class AbstractSqoopJobEntry<S extends SqoopConfig> extends JobEntryBase implements Cloneable, JobEntryInterface {
-  /**
-   * Configuration object for this job entry
-   */
-  private S sqoopConfig;
+public abstract class AbstractSqoopJobEntry<S extends SqoopConfig> extends AbstractJobEntry<S> implements Cloneable, JobEntryInterface {
 
   /**
    * Log4j appender that redirects all Log4j logging to a Kettle {@link org.pentaho.di.core.logging.LogChannel}
@@ -78,15 +70,8 @@ public abstract class AbstractSqoopJobEntry<S extends SqoopConfig> extends JobEn
   private Map<String, Level> logLevelCache = new HashMap<String, Level>();
 
   /**
-   * Creates a new Sqoop job entry and loads creates a default {@link SqoopConfig} object via {@link #createSqoopConfig()}.
-   */
-  protected AbstractSqoopJobEntry() {
-    sqoopConfig = createSqoopConfig();
-  }
-
-  /**
    * Build a configuration object that contains all configuration settings for this job entry. This will be configured by
-   * {@link #createSqoopConfig} and is not intended to be used directly.
+   * {@link #createJobConfig} and is not intended to be used directly.
    *
    * @return a {@link SqoopConfig} object that contains all configuration settings for this job entry
    */
@@ -102,7 +87,7 @@ public abstract class AbstractSqoopJobEntry<S extends SqoopConfig> extends JobEn
   /**
    * @return a {@link SqoopConfig} that contains all configuration settings for this job entry
    */
-  protected final S createSqoopConfig() {
+  protected final S createJobConfig() {
     S config = buildSqoopConfig();
     try {
       SqoopUtils.configureConnectionInformation(config, new Configuration());
@@ -111,97 +96,6 @@ public abstract class AbstractSqoopJobEntry<S extends SqoopConfig> extends JobEn
       logError(BaseMessages.getString(AbstractSqoopJobEntry.class, "ErrorLoadingHadoopConnectionInformation"), ex);
     }
     return config;
-  }
-
-  /**
-   * @return the Sqoop configuration object for this job entry
-   */
-  public S getSqoopConfig() {
-    sqoopConfig.setJobEntryName(getName());
-    return sqoopConfig;
-  }
-
-  /**
-   * Set the Sqoop configuration object for this job entry
-   *
-   * @param sqoopConfig Sqoop configuration object for this job entry
-   */
-  public void setSqoopConfig(S sqoopConfig) {
-    this.sqoopConfig = sqoopConfig;
-    setName(sqoopConfig.getJobEntryName());
-  }
-
-  /**
-   * @return {@code true} if this job entry yields a success or failure result
-   */
-  @Override
-  public boolean evaluates() {
-    return true;
-  }
-
-  /**
-   * @return {@code true} if this job entry supports and unconditional hop from it
-   */
-  @Override
-  public boolean isUnconditional() {
-    return true;
-  }
-
-  /**
-   * @return an portion of XML describing the current state of this job entry
-   */
-  @Override
-  public String getXML() {
-    StringBuffer buffer = new StringBuffer(1024);
-    buffer.append(super.getXML());
-    JobEntrySerializationHelper.write(getSqoopConfig(), 1, buffer);
-    return buffer.toString();
-  }
-
-  /**
-   * Set the state of this job entry from an XML document node containing a previous state.
-   *
-   * @param node
-   * @param databaseMetas
-   * @param slaveServers
-   * @param repository
-   * @throws KettleXMLException
-   */
-  @Override
-  public void loadXML(Node node, List<DatabaseMeta> databaseMetas, List<SlaveServer> slaveServers, Repository repository) throws KettleXMLException {
-    super.loadXML(node, databaseMetas, slaveServers);
-    S loaded = createSqoopConfig();
-    JobEntrySerializationHelper.read(loaded, node);
-    setSqoopConfig(loaded);
-  }
-
-  /**
-   * Load the state of this job entry from a repository.
-   *
-   * @param rep
-   * @param id_jobentry
-   * @param databases
-   * @param slaveServers
-   * @throws KettleException
-   */
-  @Override
-  public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers) throws KettleException {
-    super.loadRep(rep, id_jobentry, databases, slaveServers);
-    S loaded = createSqoopConfig();
-    JobEntrySerializationHelper.loadRep(loaded, rep, id_jobentry, databases, slaveServers);
-    setSqoopConfig(loaded);
-  }
-
-  /**
-   * Save the state of this job entry to a repository.
-   *
-   * @param rep
-   * @param id_job
-   * @throws KettleException
-   */
-  @Override
-  public void saveRep(Repository rep, ObjectId id_job) throws KettleException {
-    JobEntrySerializationHelper.saveRep(getSqoopConfig(), rep, id_job, getObjectId());
   }
 
   /**
@@ -265,7 +159,7 @@ public abstract class AbstractSqoopJobEntry<S extends SqoopConfig> extends JobEn
     }
 
     try {
-      SqoopUtils.asLong(config.getBlockingPollingInterval(), variables);
+      JobEntryUtils.asLong(config.getBlockingPollingInterval(), variables);
     } catch (NumberFormatException ex) {
       warnings.add(BaseMessages.getString(AbstractSqoopJobEntry.class, "ValidationError.BlockingPollingInterval.Message", config.getBlockingPollingInterval()));
     }
@@ -279,67 +173,13 @@ public abstract class AbstractSqoopJobEntry<S extends SqoopConfig> extends JobEn
    * @param config Configuration to validate
    * @return {@code true} if the configuration contains valid values for all options we use directly in this job entry.
    */
+  @Override
   public boolean isValid(SqoopConfig config) {
     List<String> warnings = getValidationWarnings(config);
     for (String warning : warnings) {
       logError(warning);
     }
     return warnings.isEmpty();
-  }
-
-  @Override
-  public Result execute(Result result, int i) throws KettleException {
-    // Verify the sqoop configuration is correct
-    if (!isValid(sqoopConfig)) {
-      setJobResultFailed(result);
-      return result;
-    }
-
-    // Make sure Sqoop throws exceptions instead of returning a status of 1
-    System.setProperty(Sqoop.SQOOP_RETHROW_PROPERTY, "true");
-
-    final Result jobResult = result;
-    result.setResult(true);
-
-    Thread t = new Thread() {
-      @Override
-      public void run() {
-        executeSqoop(getSqoopConfig(), getHadoopConfiguration(), jobResult);
-      }
-    };
-
-    t.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
-      @Override
-      public void uncaughtException(Thread t, Throwable e) {
-        handleUncaughtThreadException(t, e, jobResult);
-      }
-    });
-
-    t.start();
-
-    if (variables.getBooleanValueOfVariable(sqoopConfig.getBlockingExecution(), true)) {
-      while (!parentJob.isStopped() && t.isAlive()) {
-        try {
-          t.join(SqoopUtils.asLong(sqoopConfig.getBlockingPollingInterval(), variables));
-        } catch (InterruptedException ex) {
-          // ignore
-          break;
-        }
-      }
-      // If the parent job is stopped and the thread is still running make sure to interrupt it
-      if (t.isAlive()) {
-        t.interrupt();
-        setJobResultFailed(result);
-      }
-      // Wait for thread to die so we get the proper return status set in jobResult before returning
-      try {
-        t.join(10 * 1000); // Don't wait for more than 10 seconds in case the thread is really blocked
-      } catch (InterruptedException e) {
-        // ignore
-      }
-    }
-
-    return result;
   }
 
   /**
@@ -360,6 +200,17 @@ public abstract class AbstractSqoopJobEntry<S extends SqoopConfig> extends JobEn
    */
   protected Configuration getHadoopConfiguration() {
     return new Configuration();
+  }
+
+  @Override
+  protected Runnable getExecutionRunnable(final Result jobResult) {
+    Runnable runnable = new Runnable() {
+      @Override
+      public void run() {
+        executeSqoop(getJobConfig(), getHadoopConfiguration(), jobResult);
+      }
+    };
+    return runnable;
   }
 
   /**
@@ -389,16 +240,6 @@ public abstract class AbstractSqoopJobEntry<S extends SqoopConfig> extends JobEn
   }
 
   /**
-   * Flag a job result as failed
-   *
-   * @param jobResult
-   */
-  protected void setJobResultFailed(Result jobResult) {
-    jobResult.setNrErrors(1);
-    jobResult.setResult(false);
-  }
-
-  /**
    * Configure the Hadoop environment
    * TODO Move this to HadoopConfigurerFactory
    *
@@ -411,6 +252,7 @@ public abstract class AbstractSqoopJobEntry<S extends SqoopConfig> extends JobEn
       HadoopConfigurer configurer = HadoopConfigurerFactory.getConfigurer("generic"); // TODO The default should be handled by the factory
       List<String> messages = new ArrayList<String>();
 
+      SqoopConfig sqoopConfig = getJobConfig();
       configurer.configure(sqoopConfig.getNamenodeHost(), sqoopConfig.getNamenodePort(),
         sqoopConfig.getJobtrackerHost(), sqoopConfig.getJobtrackerPort(),
         conf, messages);

@@ -20,13 +20,14 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.job.entries.sqoop;
+package org.pentaho.di.job;
 
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Test;
+import org.pentaho.di.job.LoggingProxy;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,7 +35,7 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 
 /**
- * Tests the {@link LoggingProxy}.
+ * Tests the {@link org.pentaho.di.job.LoggingProxy}.
  */
 public class LoggingProxyTest {
 

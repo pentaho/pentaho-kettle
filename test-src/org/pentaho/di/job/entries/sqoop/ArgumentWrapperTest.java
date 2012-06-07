@@ -24,6 +24,7 @@ package org.pentaho.di.job.entries.sqoop;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.di.job.entries.helper.PersistentPropertyChangeListener;
 import org.pentaho.ui.xul.XulEventSource;
 
 import java.lang.reflect.Method;

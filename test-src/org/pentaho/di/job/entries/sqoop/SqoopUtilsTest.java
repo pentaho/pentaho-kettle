@@ -26,7 +26,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.logging.impl.Log4JLogger;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.util.GenericOptionsParser;
 import org.apache.log4j.Appender;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Level;
@@ -37,10 +36,14 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.job.entries.helper.PersistentPropertyChangeListener;
 
 import java.beans.PropertyChangeEvent;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import static org.junit.Assert.*;
 
@@ -465,21 +468,4 @@ public class SqoopUtilsTest {
     assertNull(SqoopUtils.findMethod(MockConfig.class, "Test", null, "bogus"));
   }
 
-  @Test
-  public void asLong() {
-    VariableSpace variableSpace = new Variables();
-
-    assertNull(SqoopUtils.asLong(null, variableSpace));
-    assertEquals(Long.valueOf("10", 10), SqoopUtils.asLong("10", variableSpace));
-
-    variableSpace.setVariable("long", "150");
-    assertEquals(Long.valueOf("150", 10), SqoopUtils.asLong("${long}", variableSpace));
-
-    try {
-      SqoopUtils.asLong("NaN", variableSpace);
-      fail("expected number format exception");
-    } catch (NumberFormatException ex) {
-      // we're good
-    }
-  }
 }

@@ -34,6 +34,7 @@ import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
 import java.util.Collection;
+import java.util.List;
 
 import static org.pentaho.di.job.entries.sqoop.SqoopExportConfig.EXPORT_DIR;
 
