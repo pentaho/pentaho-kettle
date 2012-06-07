@@ -53,7 +53,11 @@
       changing="false" />
     <dependency org="org.apache.pig" name="pig" rev="${dependency.pig.revision}" transitive="false" conf="default->default"
       changing="false"/>
-    <dependency org="org.apache.sqoop" name="sqoop" rev="1.4.1-incubating-hadoop-20" changing="true" transitive="false"/>
+    <dependency org="org.apache.sqoop" name="sqoop" rev="${dependency.apache-sqoop.revision}" changing="true" transitive="false"/>
+
+    <dependency org="org.apache.oozie" name="oozie-core" rev="${dependency.apache-oozie.revision}" changing="true" transitive="false"/>
+    <dependency org="org.apache.oozie" name="oozie-client" rev="${dependency.apache-oozie.revision}" changing="true" transitive="false"/>
+
     <dependency org="jline" name="jline" rev="${dependency.jline.revision}" transitive="false" conf="default->default"
       changing="false"/>
     <dependency org="libthrift" name="libthrift" rev="${dependency.libthrift.revision}" transitive="false" conf="default->default"
