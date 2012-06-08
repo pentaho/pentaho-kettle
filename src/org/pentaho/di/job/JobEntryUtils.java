@@ -20,13 +20,64 @@
 
 package org.pentaho.di.job;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.Appender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.variables.VariableSpace;
+
+import java.util.Map;
 
 /**
  * User: RFellows
  * Date: 6/7/12
  */
 public class JobEntryUtils {
+
+  public static Logger findLogger(String logName) {
+    Log log = LogFactory.getLog(logName);
+    if (log instanceof org.apache.commons.logging.impl.Log4JLogger) {
+      Logger logger = ((org.apache.commons.logging.impl.Log4JLogger) log).getLogger();
+      if (logger == null) {
+        throw new IllegalArgumentException("Logger does not exist for log: " + logName);
+      }
+      return logger;
+    } else if (log == null) {
+      throw new IllegalArgumentException("Unknown log name: " + logName);
+    } else {
+      throw new IllegalArgumentException("Unsupported logging type: " + log.getClass());
+    }
+  }
+
+  @SuppressWarnings("deprecation")
+  public static void attachAppenderTo(Appender appender, LogLevel logLevel, Map<String, Level> logLevelCache, String... logNames) {
+    for (String logName : logNames) {
+      Logger logger = findLogger(logName);
+      logger.addAppender(appender);
+      // Update logger level to match our logging level
+      Level level = org.pentaho.di.core.logging.KettleLogChannelAppender.LOG_LEVEL_MAP.get(logLevel);
+      if (level != null) {
+        // Cache the original level so we can reset it when we're done
+        logLevelCache.put(logger.getName(), logger.getLevel());
+        logger.setLevel(level);
+      }
+    }
+  }
+
+  public static void removeAppenderFrom(Appender appender, Map<String, Level> logLevelCache, String... logNames) {
+    for (String logName : logNames) {
+      Logger logger = findLogger(logName);
+      logger.removeAppender(appender);
+      // Reset logger level if it was changed
+      if (logLevelCache.containsKey(logger.getName())) {
+        logger.setLevel(logLevelCache.get(logger.getName()));
+        logLevelCache.remove(logger.getName());
+      }
+    }
+    appender.close();
+  }
 
   /**
    * @return {@code true} if {@link Boolean#parseBoolean(String)} returns {@code true} for {@link #isBlockingExecution()}

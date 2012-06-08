@@ -31,6 +31,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.job.JobEntryUtils;
 import org.pentaho.di.job.LoggingProxy;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.repository.LongObjectId;
@@ -207,8 +208,8 @@ public class SqoopImportJobEntryTest {
     SqoopImportJobEntry je = new SqoopImportJobEntry();
 
     PrintStream stderr = System.err;
-    Logger sqoopLogger = SqoopUtils.findLogger("org.apache.sqoop");
-    Logger hadoopLogger = SqoopUtils.findLogger("org.apache.hadoop");
+    Logger sqoopLogger = JobEntryUtils.findLogger("org.apache.sqoop");
+    Logger hadoopLogger = JobEntryUtils.findLogger("org.apache.hadoop");
 
     assertFalse(sqoopLogger.getAllAppenders().hasMoreElements());
     assertFalse(hadoopLogger.getAllAppenders().hasMoreElements());

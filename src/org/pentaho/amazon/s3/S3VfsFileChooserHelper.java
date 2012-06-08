@@ -31,84 +31,35 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.di.ui.vfs.VfsFileChooserHelper;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
 /**
  * created by: rfellows
  * date:       5/24/12
  */
-public class S3VfsFileChooserHelper {
-
-  private VfsFileChooserDialog fileChooserDialog = null;
-  private Shell shell = null;
-  private VariableSpace variableSpace = null;
-  private FileSystemOptions fileSystemOptions = null;
+public class S3VfsFileChooserHelper extends VfsFileChooserHelper {
 
   public S3VfsFileChooserHelper(Shell shell, VfsFileChooserDialog fileChooserDialog, VariableSpace variableSpace) {
-    this(shell, fileChooserDialog, variableSpace, new FileSystemOptions());
+    super(shell, fileChooserDialog, variableSpace);
+    setDefaultScheme(AmazonSpoonPlugin.S3_SCHEME);
+    setSchemeRestriction(AmazonSpoonPlugin.S3_SCHEME);
   }
 
   public S3VfsFileChooserHelper(Shell shell, VfsFileChooserDialog fileChooserDialog, VariableSpace variableSpace, FileSystemOptions fileSystemOptions) {
-    this.fileChooserDialog = fileChooserDialog;
-    this.shell = shell;
-    this.variableSpace = variableSpace;
-    this.fileSystemOptions = fileSystemOptions;
+    super(shell, fileChooserDialog, variableSpace, fileSystemOptions);
+    setDefaultScheme(AmazonSpoonPlugin.S3_SCHEME);
+    setSchemeRestriction(AmazonSpoonPlugin.S3_SCHEME);
   }
 
-  public FileObject browse(String[] fileFilters, String[] fileFilterNames, String fileUri) throws KettleException, FileSystemException {
-    return browse(fileFilters, fileFilterNames, fileUri, VfsFileChooserDialog.VFS_DIALOG_OPEN_DIRECTORY);
+  @Override
+  protected boolean returnsUserAuthenticatedFileObjects() {
+    return true;
   }
 
-  public FileObject browse(String[] fileFilters, String[] fileFilterNames, String fileUri, int fileDialogMode) throws KettleException, FileSystemException {
-    return browse(fileFilters, fileFilterNames, fileUri, fileSystemOptions, fileDialogMode);
+  @Override
+  public boolean showFileScheme() {
+    return false;
   }
 
-  public FileObject browse(String[] fileFilters, String[] fileFilterNames, String fileUri, FileSystemOptions opts) throws KettleException, FileSystemException {
-    return browse(fileFilters, fileFilterNames, fileUri, opts, VfsFileChooserDialog.VFS_DIALOG_OPEN_DIRECTORY);
-  }
-
-  public FileObject browse(String[] fileFilters, String[] fileFilterNames, String fileUri, FileSystemOptions opts, int fileDialogMode) throws KettleException, FileSystemException {
-    // Get current file
-    FileObject rootFile = null;
-    FileObject initialFile = null;
-    FileObject defaultInitialFile = KettleVFS.getFileObject("file:///c:/");
-
-    if (fileUri != null) {
-      initialFile = KettleVFS.getFileObject(fileUri, variableSpace, opts);
-    } else {
-      initialFile = KettleVFS.getFileObject(Spoon.getInstance().getLastFileOpened());
-    }
-    rootFile = initialFile.getFileSystem().getRoot();
-    fileChooserDialog.setRootFile(rootFile);
-    fileChooserDialog.setInitialFile(initialFile);
-
-    fileChooserDialog.defaultInitialFile = rootFile;
-
-    FileObject selectedFile = null;
-    if(initialFile != null) {
-      selectedFile = fileChooserDialog.open(shell, initialFile, initialFile.getName().getPath(), fileFilters, fileFilterNames,
-          fileDialogMode, true);
-    } else {
-      selectedFile = fileChooserDialog.open(shell, null, AmazonSpoonPlugin.S3_SCHEME, false, null, fileFilters, fileFilterNames,
-          fileDialogMode, true);
-    }
-
-    return selectedFile;
-  }
-
-  public VariableSpace getVariableSpace() {
-    return variableSpace;
-  }
-
-  public void setVariableSpace(VariableSpace variableSpace) {
-    this.variableSpace = variableSpace;
-  }
-
-  public FileSystemOptions getFileSystemOptions() {
-    return fileSystemOptions;
-  }
-
-  public void setFileSystemOptions(FileSystemOptions fileSystemOptions) {
-    this.fileSystemOptions = fileSystemOptions;
-  }
 }

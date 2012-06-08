@@ -51,10 +51,11 @@
                                 </hbox>
                             </row>
                             <row>
-                                <label value="${Oozie.JobExecutor.Workflow.Label}"/>
+                                <label value="${Oozie.JobExecutor.Workflow.Properties.Label}"/>
                                 <!-- Wrap with an hbox so all components align -->
                                 <hbox flex="1">
-                                    <textbox pen:customclass="variabletextbox" id="oozieWorkflow" flex="1"/>
+                                    <textbox pen:customclass="variabletextbox" id="oozieWorkflowConfig" flex="1"/>
+                                    <button label="${Oozie.JobExecutor.Browse.Workflow.Config.Label}" onclick="controller.browseWorkflowConfig()"/>
                                 </hbox>
                             </row>
                         </rows>

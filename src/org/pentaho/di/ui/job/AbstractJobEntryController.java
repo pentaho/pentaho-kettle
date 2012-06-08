@@ -20,10 +20,17 @@
 
 package org.pentaho.di.ui.job;
 
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSystemException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.hadoop.HadoopSpoonPlugin;
+import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.AbstractJobEntry;
 import org.pentaho.di.job.BlockableJobConfig;
 import org.pentaho.di.job.JobMeta;
@@ -31,6 +38,8 @@ import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.gui.WindowProperty;
+import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.di.ui.vfs.VfsFileChooserHelper;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.Binding;
@@ -39,6 +48,7 @@ import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.swt.tags.SwtDialog;
+import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -50,6 +60,9 @@ import java.util.List;
  * Date: 6/6/12
  */
 public abstract class AbstractJobEntryController<C extends BlockableJobConfig, E extends AbstractJobEntry<C>> extends AbstractXulEventHandler {
+
+  public static final String[] DEFAULT_FILE_FILTERS = new String[]{"*.*"};
+
   // Generically typed fields
   protected C config;     // BlockableJobConfig
   protected E jobEntry;   // AbstractJobEntry<BlockableJobConfig>
@@ -217,6 +230,78 @@ public abstract class AbstractJobEntryController<C extends BlockableJobConfig, E
    */
   protected Shell getShell() {
     return getDialog().getShell();
+  }
+
+  /**
+   * Browse for a file or directory with the VFS Browser.
+   *
+   * @param root       Root object
+   * @param initial    Initial file or folder the browser should open to
+   * @param dialogMode Mode to open dialog in: e.g. {@link org.pentaho.vfs.ui.VfsFileChooserDialog#VFS_DIALOG_OPEN_FILE_OR_DIRECTORY}
+   * @param schemeRestriction Scheme to limit the user to browsing from
+   * @param defaultScheme Scheme to select by default in the selection dropdown
+   * @return The selected file object, {@code null} if no object is selected
+   * @throws org.pentaho.di.core.exception.KettleFileException Error accessing the root file using the initial file, when {@code root} is not provided
+   */
+  protected FileObject browseVfs(FileObject root, FileObject initial, int dialogMode, String schemeRestriction, String defaultScheme, boolean showFileScheme) throws KettleFileException {
+
+    if (initial == null) {
+      initial = KettleVFS.getFileObject(Spoon.getInstance().getLastFileOpened());
+    }
+    if (root == null) {
+      try {
+        root = initial.getFileSystem().getRoot();
+      } catch (FileSystemException e) {
+        throw new KettleFileException(e);
+      }
+    }
+
+    VfsFileChooserHelper fileChooserHelper = new VfsFileChooserHelper(getShell(), Spoon.getInstance().getVfsFileChooserDialog(root, initial), jobEntry);
+    fileChooserHelper.setDefaultScheme(defaultScheme);
+    fileChooserHelper.setSchemeRestriction(schemeRestriction);
+    fileChooserHelper.setShowFileScheme(showFileScheme);
+    try {
+      return fileChooserHelper.browse(getFileFilters(), getFileFilterNames(), initial.getName().getURI(), dialogMode);
+    } catch (KettleException e) {
+      throw new KettleFileException(e);
+    } catch (FileSystemException e) {
+      throw new KettleFileException(e);
+    }
+
+  }
+
+  protected String[] getFileFilters() {
+    return DEFAULT_FILE_FILTERS;
+  }
+
+  /**
+   * Used by browseVfs method as names corresponding to the file filters. Override if {@code getFileFilters} is overridden.
+   * @return
+   */
+  protected String[] getFileFilterNames() {
+    return new String[]{BaseMessages.getString(getClass(), "System.FileType.AllFiles")};
+  }
+
+  /**
+   * @return the current configuration object. This configuration may be discarded if the dialog is canceled.
+   */
+  public C getConfig() {
+    return config;
+  }
+
+  public void setConfig(C config) {
+    this.config = config;
+  }
+
+  /**
+   * @return the job meta for the job entry we're editing
+   */
+  public JobMeta getJobMeta() {
+    return jobMeta;
+  }
+
+  public void setJobMeta(JobMeta jobMeta) {
+    this.jobMeta = jobMeta;
   }
 
   ////////////////////

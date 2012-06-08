@@ -107,19 +107,19 @@ public abstract class AbstractSqoopJobEntry<S extends SqoopConfig> extends Abstr
     sqoopToKettleAppender = new org.pentaho.di.core.logging.KettleLogChannelAppender(log);
     try {
       // Redirect all stderr logging to the first log to monitor so it shows up in the Kettle LogChannel
-      Logger sqoopLogger = SqoopUtils.findLogger(LOGS_TO_MONITOR[0]);
+      Logger sqoopLogger = JobEntryUtils.findLogger(LOGS_TO_MONITOR[0]);
       if (sqoopLogger != null) {
         stdErrProxy = new LoggingProxy(System.err, sqoopLogger, Level.ERROR);
         System.setErr(stdErrProxy);
       }
-      SqoopUtils.attachAppenderTo(sqoopToKettleAppender, getLogLevel(), logLevelCache, LOGS_TO_MONITOR);
+      JobEntryUtils.attachAppenderTo(sqoopToKettleAppender, getLogLevel(), logLevelCache, LOGS_TO_MONITOR);
     } catch (Exception ex) {
       logError(BaseMessages.getString(AbstractSqoopJobEntry.class, "ErrorAttachingLogging"));
       logError(Const.getStackTracker(ex));
 
       // Attempt to clean up logging if we failed
       try {
-        SqoopUtils.removeAppenderFrom(sqoopToKettleAppender, logLevelCache, LOGS_TO_MONITOR);
+        JobEntryUtils.removeAppenderFrom(sqoopToKettleAppender, logLevelCache, LOGS_TO_MONITOR);
       } catch (Exception e) {
         // Ignore any exceptions while trying to clean up
       }
@@ -132,7 +132,7 @@ public abstract class AbstractSqoopJobEntry<S extends SqoopConfig> extends Abstr
   public void removeLoggingAppenders() {
     try {
       if (sqoopToKettleAppender != null) {
-        SqoopUtils.removeAppenderFrom(sqoopToKettleAppender, logLevelCache, LOGS_TO_MONITOR);
+        JobEntryUtils.removeAppenderFrom(sqoopToKettleAppender, logLevelCache, LOGS_TO_MONITOR);
         sqoopToKettleAppender = null;
       }
       if (stdErrProxy != null) {

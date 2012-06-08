@@ -113,6 +113,10 @@ public class BlockableJobConfig implements XulEventSource, Cloneable {
 
     BlockableJobConfig that = (BlockableJobConfig) o;
 
+    if (blockingExecution != null ? !blockingExecution.equals(that.blockingExecution) : that.blockingExecution != null)
+      return false;
+    if (blockingPollingInterval != null ? !blockingPollingInterval.equals(that.blockingPollingInterval) : that.blockingPollingInterval != null)
+      return false;
     if (jobEntryName != null ? !jobEntryName.equals(that.jobEntryName) : that.jobEntryName != null) return false;
 
     return true;
@@ -120,6 +124,9 @@ public class BlockableJobConfig implements XulEventSource, Cloneable {
 
   @Override
   public int hashCode() {
-    return jobEntryName != null ? jobEntryName.hashCode() : 0;
+    int result = jobEntryName != null ? jobEntryName.hashCode() : 0;
+    result = 31 * result + (blockingPollingInterval != null ? blockingPollingInterval.hashCode() : 0);
+    result = 31 * result + (blockingExecution != null ? blockingExecution.hashCode() : 0);
+    return result;
   }
 }

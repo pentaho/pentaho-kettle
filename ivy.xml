@@ -57,8 +57,9 @@
 
     <dependency org="org.apache.oozie" name="oozie-core" rev="${dependency.apache-oozie.revision}" changing="true" transitive="false"/>
     <dependency org="org.apache.oozie" name="oozie-client" rev="${dependency.apache-oozie.revision}" changing="true" transitive="false"/>
+    <dependency org="com.googlecode.json-simple" name="json-simple" rev="1.1" transitive="false"/>
 
-    <dependency org="jline" name="jline" rev="${dependency.jline.revision}" transitive="false" conf="default->default"
+      <dependency org="jline" name="jline" rev="${dependency.jline.revision}" transitive="false" conf="default->default"
       changing="false"/>
     <dependency org="libthrift" name="libthrift" rev="${dependency.libthrift.revision}" transitive="false" conf="default->default"
       changing="false"/>

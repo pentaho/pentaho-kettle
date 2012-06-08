@@ -22,26 +22,20 @@
 
 package org.pentaho.di.ui.job.entries.sqoop;
 
-import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileSystemException;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CLabel;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.MessageBox;
-import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.graphics.FontData;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.exception.KettleFileException;
-import org.pentaho.di.core.hadoop.HadoopSpoonPlugin;
-import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.sqoop.AbstractSqoopJobEntry;
@@ -52,19 +46,14 @@ import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.database.dialog.DatabaseExplorerDialog;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.job.AbstractJobEntryController;
-import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.ui.xul.XulDomContainer;
-import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.containers.XulDeck;
-import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.containers.XulTree;
-import org.pentaho.ui.xul.swt.tags.SwtDialog;
 import org.pentaho.ui.xul.swt.tags.SwtLabel;
 import org.pentaho.ui.xul.util.AbstractModelList;
-import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
 import java.util.Collection;
 import java.util.List;
@@ -463,41 +452,9 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> ext
   /**
    * @return the current configuration object. This configuration may be discarded if the dialog is canceled.
    */
-  protected S getConfig() {
+  @Override
+  public S getConfig() {
     return config;
-  }
-
-  /**
-   * @return the job meta for the job entry we're editing
-   */
-  protected JobMeta getJobMeta() {
-    return jobMeta;
-  }
-
-  /**
-   * Browse for a file or directory with the VFS Browser.
-   *
-   * @param root       Root object
-   * @param initial    Initial file or folder the browser should open to
-   * @param dialogMode Mode to open dialog in: e.g. {@link VfsFileChooserDialog#VFS_DIALOG_OPEN_FILE_OR_DIRECTORY}
-   * @return The selected file object, {@code null} if no object is selected
-   * @throws KettleFileException Error accessing the root file using the initial file, when {@code root} is not provided
-   */
-  protected FileObject browseVfs(FileObject root, FileObject initial, int dialogMode) throws KettleFileException {
-    if (initial == null) {
-      initial = KettleVFS.getFileObject(Spoon.getInstance().getLastFileOpened());
-    }
-    if (root == null) {
-      try {
-        root = initial.getFileSystem().getRoot();
-      } catch (FileSystemException e) {
-        throw new KettleFileException(e);
-      }
-    }
-    VfsFileChooserDialog fileChooserDialog = Spoon.getInstance().getVfsFileChooserDialog(root, initial);
-    FileObject selected = fileChooserDialog.open(getShell(), HadoopSpoonPlugin.HDFS_SCHEME, HadoopSpoonPlugin.HDFS_SCHEME, false,
-      initial.getName().getFriendlyURI(), new String[]{"*.*"}, new String[]{BaseMessages.getString(getClass(), "System.FileType.AllFiles")}, dialogMode);
-    return selected;
   }
 
   /**
