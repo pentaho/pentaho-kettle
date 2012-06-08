@@ -109,6 +109,7 @@ public abstract class SqoopConfig implements XulEventSource, Cloneable {
   @CommandLineArgument(name = USERNAME)
   private String username;
   @CommandLineArgument(name = PASSWORD)
+  @Password
   private String password;
   @CommandLineArgument(name = VERBOSE, flag = true)
   private String verbose;

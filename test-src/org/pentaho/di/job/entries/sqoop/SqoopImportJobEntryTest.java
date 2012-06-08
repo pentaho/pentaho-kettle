@@ -66,18 +66,22 @@ public class SqoopImportJobEntryTest {
     SqoopImportJobEntry je = new SqoopImportJobEntry();
     SqoopImportConfig config = new SqoopImportConfig();
     String connectValue = "jdbc:mysql://localhost:3306/test";
+    String myPassword = "my-password";
 
     config.setJobEntryName("testing");
     config.setBlockingExecution("false");
     config.setBlockingPollingInterval("100");
     config.setConnect(connectValue);
     config.setTargetDir("/test-import-target");
+    config.setPassword(myPassword);
 
     je.setSqoopConfig(config);
 
     JobEntryCopy jec = new JobEntryCopy(je);
     jec.setLocation(0, 0);
     String xml = jec.getXML();
+
+    assertTrue("Password not encrypted upon save to xml", !xml.contains(myPassword));
 
     Document d = XMLHandler.loadXMLString(xml);
 
@@ -90,6 +94,7 @@ public class SqoopImportJobEntryTest {
     assertEquals(config.getBlockingPollingInterval(), config2.getBlockingPollingInterval());
     assertEquals(config.getConnect(), config2.getConnect());
     assertEquals(config.getTargetDir(), config2.getTargetDir());
+    assertEquals(config.getPassword(), config2.getPassword());
   }
 
   @Test
