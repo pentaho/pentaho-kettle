@@ -465,6 +465,29 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
     return hadoopDistribution;
   }
   
+  private static final TransMeta loadTransMeta(VariableSpace space, Repository rep, String filename, ObjectId transformationId, String repositoryDir, String repositoryFile) throws KettleException {
+    
+    TransMeta transMeta = null;
+    
+    if (!Const.isEmpty(filename)) {
+      String realFilename = space.environmentSubstitute(filename);
+      transMeta = new TransMeta(realFilename);
+    } else if (transformationId != null) {
+      if (rep != null) {
+        transMeta = rep.loadTransformation(transformationId, null);
+      }
+    } else if (!Const.isEmpty(repositoryDir) && !Const.isEmpty(repositoryFile)){
+      if(rep != null) {
+        String mapRepositoryDirS = space.environmentSubstitute(repositoryDir);
+        String mapRepositoryFileS = space.environmentSubstitute(repositoryFile);
+        RepositoryDirectoryInterface repositoryDirectory = rep.loadRepositoryDirectoryTree().findDirectory(mapRepositoryDirS);
+        transMeta = rep.loadTransformation(mapRepositoryFileS, repositoryDirectory, null, true, null);
+      }
+    }
+    
+    return transMeta;
+  }
+  
   public Result execute(Result result, int arg1) throws KettleException {
     
     result.setNrErrors(0);
@@ -498,22 +521,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
 
       // mapper
       TransExecutionConfiguration transExecConfig = new TransExecutionConfiguration();
-      TransMeta transMeta = null;
-      if(!Const.isEmpty(mapTrans)) {
-        String mapTransS = environmentSubstitute(mapTrans);
-        transMeta = new TransMeta(mapTransS);
-      } else if(mapRepositoryReference != null) {
-        if(rep != null) {
-          transMeta = rep.loadTransformation(mapRepositoryReference, null);
-        }
-      } else if(!Const.isEmpty(mapRepositoryDir) && !Const.isEmpty(mapRepositoryFile)){
-        if(rep != null) {
-          String mapRepositoryDirS = environmentSubstitute(mapRepositoryDir);
-          String mapRepositoryFileS = environmentSubstitute(mapRepositoryFile);
-          RepositoryDirectoryInterface repositoryDirectory = rep.loadRepositoryDirectoryTree().findDirectory(mapRepositoryDirS);
-          transMeta = rep.loadTransformation(mapRepositoryFileS, repositoryDirectory, null, true, null);
-        }
-      }
+      TransMeta transMeta = loadTransMeta(this, rep, mapTrans, mapRepositoryReference, mapRepositoryDir, mapRepositoryFile);
       TransConfiguration transConfig = new TransConfiguration(transMeta, transExecConfig);
       String mapInputStepNameS = environmentSubstitute(mapInputStepName);
       String mapOutputStepNameS = environmentSubstitute(mapOutputStepName);
@@ -580,22 +588,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
       }
 
       // combiner
-      transMeta = null;
-      if(!Const.isEmpty(combinerTrans)) {
-        String combinerTransS = environmentSubstitute(combinerTrans);
-        transMeta = new TransMeta(combinerTransS);
-      } else if(combinerRepositoryReference != null) {
-        if(rep != null) {
-          transMeta = rep.loadTransformation(combinerRepositoryReference, null);
-        }
-      } else if(!Const.isEmpty(combinerRepositoryDir) && !Const.isEmpty(combinerRepositoryFile)){
-        if(rep != null) {
-          String combinerRepositoryDirS = environmentSubstitute(combinerRepositoryDir);
-          String combinerRepositoryFileS = environmentSubstitute(combinerRepositoryFile);
-          RepositoryDirectoryInterface repositoryDirectory = rep.loadRepositoryDirectoryTree().findDirectory(combinerRepositoryDirS);
-          transMeta = rep.loadTransformation(combinerRepositoryFileS, repositoryDirectory, null, true, null);
-        }
-      }
+      transMeta = loadTransMeta(this, rep, combinerTrans, combinerRepositoryReference, combinerRepositoryDir, combinerRepositoryFile);
       if (transMeta != null) {
         
         if (combiningSingleThreaded) {
@@ -618,22 +611,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
       }
       
       // reducer
-      transMeta = null;
-      if(!Const.isEmpty(reduceTrans)) {
-        String reduceTransS = environmentSubstitute(reduceTrans);
-        transMeta = new TransMeta(reduceTransS);
-      } else if(reduceRepositoryReference != null) {
-        if(rep != null) {
-          transMeta = rep.loadTransformation(reduceRepositoryReference, null);
-        }
-      } else if(!Const.isEmpty(reduceRepositoryDir) && !Const.isEmpty(reduceRepositoryFile)){
-        if(rep != null) {
-          String reduceRepositoryDirS = environmentSubstitute(reduceRepositoryDir);
-          String reduceRepositoryFileS = environmentSubstitute(reduceRepositoryFile);
-          RepositoryDirectoryInterface repositoryDirectory = rep.loadRepositoryDirectoryTree().findDirectory(reduceRepositoryDirS);
-          transMeta = rep.loadTransformation(reduceRepositoryFileS, repositoryDirectory, null, true, null);
-        }
-      }
+      transMeta = loadTransMeta(this, rep, reduceTrans, reduceRepositoryReference, reduceRepositoryDir, reduceRepositoryFile);;
       if (transMeta != null) {
 
         // See if this is a valid single threading reducer
@@ -1542,5 +1520,57 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
 
   public void setCombiningSingleThreaded(boolean combiningSingleThreaded) {
     this.combiningSingleThreaded = combiningSingleThreaded;
+  }
+  
+  private boolean hasMapperDefinition() {
+    return !Const.isEmpty(mapTrans) || mapRepositoryReference!=null || (!Const.isEmpty(mapRepositoryDir) && !Const.isEmpty(mapRepositoryFile));
+  }
+
+  private boolean hasReducerDefinition() {
+    return !Const.isEmpty(reduceTrans) || reduceRepositoryReference!=null || (!Const.isEmpty(reduceRepositoryDir) && !Const.isEmpty(reduceRepositoryFile));
+  }
+
+  private boolean hasCombinerDefinition() {
+    return !Const.isEmpty(combinerTrans) || combinerRepositoryReference!=null || (!Const.isEmpty(combinerRepositoryDir) && !Const.isEmpty(combinerRepositoryFile));
+  }
+
+  /**
+   * @return The objects referenced in the step, like a a transformation, a job, a mapper, a reducer, a combiner, ... 
+   */
+  public String[] getReferencedObjectDescriptions() {
+    return new String[] { 
+        BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.ReferencedObject.Mapper"), 
+        BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.ReferencedObject.Combiner"), 
+        BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.ReferencedObject.Reducer"), 
+      };
+  }
+
+  /**
+   * @return true for each referenced object that is enabled or has a valid reference definition.
+   */
+  public boolean[] isReferencedObjectEnabled() {
+    return new boolean[] {
+        hasMapperDefinition(), 
+        hasCombinerDefinition(), 
+        hasReducerDefinition(), 
+    };
+  }
+  
+  /**
+   * Load the referenced object
+   * @param index the referenced object index to load (in case there are multiple references)
+   * @param rep the repository
+   * @param space the variable space to use
+   * @return the referenced object once loaded
+   * @throws KettleException
+   */
+  public Object loadReferencedObject(int index, Repository rep, VariableSpace space) throws KettleException {
+    switch(index) {
+    case 0 : return loadTransMeta(space, rep, mapTrans, mapRepositoryReference, mapRepositoryDir, mapRepositoryFile);
+    case 1 : return loadTransMeta(space, rep, combinerTrans, combinerRepositoryReference, combinerRepositoryDir, combinerRepositoryFile);
+    case 2 : return loadTransMeta(space, rep, reduceTrans, reduceRepositoryReference, reduceRepositoryDir, reduceRepositoryFile);
+    }
+    return null;
+    
   }
 }
