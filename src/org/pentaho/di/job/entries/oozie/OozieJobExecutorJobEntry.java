@@ -32,6 +32,7 @@ import org.pentaho.di.core.annotations.JobEntry;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.AbstractJobEntry;
 import org.pentaho.di.job.JobEntryUtils;
 import org.pentaho.di.job.entry.JobEntryInterface;
@@ -77,10 +78,11 @@ public class OozieJobExecutorJobEntry extends AbstractJobEntry<OozieJobExecutorC
         try {
           oozieClient.validateWSVersion();
         } catch (OozieClientException e) {
-          e.printStackTrace();
-          // TODO: invalid web service version, log the error
           setJobResultFailed(jobResult);
+          logError(BaseMessages.getString(OozieJobExecutorJobEntry.class, "Oozie.JobExecutor.ERROR.InvalidWSVersion", oozieClient.getClientBuildVersion()), e);
         }
+
+        String jobId = null;
 
         try {
           InputStreamReader reader = new InputStreamReader(KettleVFS.getInputStream(jobConfig.getOozieWorkflowConfig()));
@@ -91,37 +93,37 @@ public class OozieJobExecutorJobEntry extends AbstractJobEntry<OozieJobExecutorC
             jobProps.setProperty("user.name", variables.environmentSubstitute("${user.name}"));
           }
 
-          String jobId = oozieClient.run(jobProps);
+          jobId = oozieClient.run(jobProps);
           if (JobEntryUtils.asBoolean(getJobConfig().getBlockingExecution(), variables)) {
             while(oozieClient.getJobInfo(jobId).getStatus().equals(WorkflowJob.Status.RUNNING)) {
               System.out.println("Still running...");
               Thread.sleep(10 * 1000);
             }
+            String logDetail = oozieClient.getJobLog(jobId);
             if(oozieClient.getJobInfo(jobId).getStatus().equals(WorkflowJob.Status.SUCCEEDED)) {
-              // TODO: log the results back to kettle
-              jobResult.setLogText(oozieClient.getJobLog(jobId));
+              jobResult.setResult(true);
+              logDetailed(logDetail);
             } else {
               // it failed
               setJobResultFailed(jobResult);
+              logError(logDetail);
             }
           }
 
         } catch (KettleFileException e) {
           e.printStackTrace();
-          // TODO: handle the case where we have a file resolution failure
           setJobResultFailed(jobResult);
+          logError(BaseMessages.getString(OozieJobExecutorJobEntry.class, "Oozie.JobExecutor.ERROR.File.Resolution"), e);
         } catch (IOException e) {
           e.printStackTrace();
-          // TODO: handle the case where we can't load the props file
           setJobResultFailed(jobResult);
+          logError(BaseMessages.getString(OozieJobExecutorJobEntry.class, "Oozie.JobExecutor.ERROR.Props.Loading"), e);
         } catch (OozieClientException e) {
-          e.printStackTrace();
-          // TODO: handle an oozie failure
-          setJobResultFailed(jobResult);
+          logError(BaseMessages.getString(OozieJobExecutorJobEntry.class, "Oozie.JobExecutor.ERROR.OozieClient"), e);
         } catch (InterruptedException e) {
           e.printStackTrace();
-          // TODO: handle thread issue
           setJobResultFailed(jobResult);
+          logError(BaseMessages.getString(OozieJobExecutorJobEntry.class, "Oozie.JobExecutor.ERROR.Threading"), e);
         }
 
       }
@@ -130,6 +132,7 @@ public class OozieJobExecutorJobEntry extends AbstractJobEntry<OozieJobExecutorC
 
   @Override
   protected void handleUncaughtThreadException(Thread t, Throwable e, Result jobResult) {
-    // TODO, log the error
+    logError(BaseMessages.getString(OozieJobExecutorJobEntry.class, "Oozie.JobExecutor.ERROR.Generic"), e);
+    setJobResultFailed(jobResult);
   }
 }
