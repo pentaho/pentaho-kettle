@@ -248,24 +248,6 @@ public class SqoopUtilsTest {
   }
 
   @Test
-  public void asBoolean() {
-    VariableSpace variableSpace = new Variables();
-
-    assertFalse(SqoopUtils.asBoolean("not-true", variableSpace));
-    assertFalse(SqoopUtils.asBoolean(Boolean.FALSE.toString(), variableSpace));
-    assertTrue(SqoopUtils.asBoolean(Boolean.TRUE.toString(), variableSpace));
-
-    // No variable set, should attempt convert ${booleanValue} as is
-    assertFalse(SqoopUtils.asBoolean("${booleanValue}", variableSpace));
-
-    variableSpace.setVariable("booleanValue", Boolean.TRUE.toString());
-    assertTrue(SqoopUtils.asBoolean("${booleanValue}", variableSpace));
-
-    variableSpace.setVariable("booleanValue", Boolean.FALSE.toString());
-    assertFalse(SqoopUtils.asBoolean("${booleanValue}", variableSpace));
-  }
-
-  @Test
   public void asLong() {
     VariableSpace variableSpace = new Variables();
 

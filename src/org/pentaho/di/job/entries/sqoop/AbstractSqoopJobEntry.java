@@ -317,7 +317,7 @@ public abstract class AbstractSqoopJobEntry<S extends SqoopConfig> extends JobEn
 
     t.start();
 
-    if (SqoopUtils.asBoolean(sqoopConfig.getBlockingExecution(), variables)) {
+    if (variables.getBooleanValueOfVariable(sqoopConfig.getBlockingExecution(), true)) {
       while (!parentJob.isStopped() && t.isAlive()) {
         try {
           t.join(SqoopUtils.asLong(sqoopConfig.getBlockingPollingInterval(), variables));
