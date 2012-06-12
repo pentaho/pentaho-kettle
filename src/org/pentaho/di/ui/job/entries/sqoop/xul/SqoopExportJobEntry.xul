@@ -118,15 +118,7 @@
           </grid>
         </groupbox>
       </vbox>
-      <vbox id="advancedOptionsPanel" flex="1">
-        <tree id="advanced-table" hidecolumnpicker="true" autocreatenewrows="false" flex="1">
-          <treecols>
-            <treecol id="name-col" editable="false" flex="1" label="${Sqoop.JobEntry.AdvancedTable.Column.Name.Label}" pen:binding="displayName"/>
-            <treecol id="value-col" editable="true" flex="1" label="${Sqoop.JobEntry.AdvancedTable.Column.Value.Label}" pen:binding="value"/>
-          </treecols>
-          <treechildren />
-        </tree>
-      </vbox>
+      <pen:include src="advanced-mode.xul"/>
     </deck>
     <pen:include src="button-bar.xul"/>
   </vbox>

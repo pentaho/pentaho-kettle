@@ -9,7 +9,7 @@
   </columns>
   <rows>
     <row>
-      <label id="mode-toggle-label" value="${Sqoop.JobEntry.AdvancedOptions.Button.Text}" onclick="controller.toggleMode();"/>
+      <label flex="1" id="mode-toggle-label" value="${Sqoop.JobEntry.AdvancedOptions.Button.Text}" onclick="controller.toggleMode();"/>
       <hbox flex="1">
         <spacer flex="1"/>
         <button label="${Sqoop.JobEntry.Test.Button.Text}" onclick="controller.testSettings();"/>

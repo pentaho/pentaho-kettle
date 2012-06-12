@@ -47,6 +47,7 @@ import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.sqoop.AbstractSqoopJobEntry;
 import org.pentaho.di.job.entries.sqoop.ArgumentWrapper;
 import org.pentaho.di.job.entries.sqoop.SqoopConfig;
+import org.pentaho.di.job.entries.sqoop.SqoopUtils;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
@@ -59,6 +60,7 @@ import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingFactory;
+import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.containers.XulDeck;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.containers.XulTree;
@@ -69,9 +71,7 @@ import org.pentaho.ui.xul.util.AbstractModelList;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 import static org.pentaho.di.job.entries.sqoop.SqoopConfig.*;
 
@@ -84,6 +84,7 @@ import static org.pentaho.di.job.entries.sqoop.SqoopConfig.*;
 public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> extends AbstractXulEventHandler {
 
   public static final String SELECTED_DATABASE_CONNECTION = "selectedDatabaseConnection";
+  public static final String MODE_TOGGLE_LABEL = "modeToggleLabel";
   private final String[] MODE_I18N_STRINGS = new String[]{"Sqoop.JobEntry.AdvancedOptions.Button.Text", "Sqoop.JobEntry.QuickSetup.Button.Text"};
   public static final String VALUE = "value";
   protected DatabaseItem NO_DATABASE = new DatabaseItem("@@none@@", "Choose Available"); // This is overwritten in init() with the i18n string
@@ -108,9 +109,31 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> ext
   protected boolean suppressEventHandling = false;
 
   /**
-   * The text for the Quick Setup/Advanced Options mode toggle (label)
+   * The text for the Quick Setup/Advanced Options mode toggle (label).
    */
   private String modeToggleLabel;
+  private AdvancedButton selectedAdvancedButton = AdvancedButton.LIST;
+
+  protected enum AdvancedButton {
+    LIST(0, Mode.ADVANCED_LIST),
+    COMMAND_LINE(1, Mode.ADVANCED_COMMAND_LINE);
+
+    private int deckIndex;
+    private Mode mode;
+
+    private AdvancedButton(int deckIndex, Mode mode) {
+      this.deckIndex = deckIndex;
+      this.mode = mode;
+    }
+
+    public int getDeckIndex() {
+      return deckIndex;
+    }
+
+    public Mode getMode() {
+      return mode;
+    }
+  }
 
   /**
    * Creates a new Sqoop job entry controller.
@@ -145,6 +168,7 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> ext
   public void init() throws XulException, InvocationTargetException {
     NO_DATABASE = new DatabaseItem("@@none@@", BaseMessages.getString(AbstractSqoopJobEntry.class, "DatabaseName.ChooseAvailable"));
     USE_ADVANCED_OPTIONS = new DatabaseItem("@@advanced@@", BaseMessages.getString(AbstractSqoopJobEntry.class, "DatabaseName.UseAdvancedOptions"));
+
     bindings = new ArrayList<Binding>();
     // Suppress event handling while we're initializing to prevent unwanted value changes
     suppressEventHandling = true;
@@ -152,12 +176,14 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> ext
       populateDatabases();
       setModeToggleLabel(BaseMessages.getString(AbstractSqoopJobEntry.class, MODE_I18N_STRINGS[0]));
       customizeModeToggleLabel(getModeToggleLabelElementId());
-      createBindings(config, container, bindingFactory, bindings);
+      createBindings(getConfig(), container, bindingFactory, bindings);
       syncModel();
 
       for (Binding binding : bindings) {
         binding.fireSourceChanged();
       }
+
+      setUiMode(getConfig().getModeAsEnum());
     } finally {
       suppressEventHandling = false;
     }
@@ -235,8 +261,10 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> ext
 //    bindings.add(bindingFactory.createBinding(config, SCHEMA, SCHEMA, VALUE));
     bindings.add(bindingFactory.createBinding(config, TABLE, TABLE, VALUE));
 
+    bindings.add(bindingFactory.createBinding(config, COMMAND_LINE, COMMAND_LINE, VALUE));
+
     bindingFactory.setBindingType(Binding.Type.ONE_WAY);
-    bindings.add(bindingFactory.createBinding(this, "modeToggleLabel", getModeToggleLabelElementId(), "value"));
+    bindings.add(bindingFactory.createBinding(this, "modeToggleLabel", getModeToggleLabelElementId(), VALUE));
     bindings.add(bindingFactory.createBinding(databaseConnections, "children", "connection", "elements"));
 
     XulTree variablesTree = (XulTree) container.getDocumentRoot().getElementById("advanced-table");
@@ -274,6 +302,13 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> ext
    */
   protected String getModeDeckElementId() {
     return "modeDeck";
+  }
+
+  /**
+   * @return element id for the deck of advanced dialog modes (general, list, command line)
+   */
+  protected String getAdvancedModeDeckElementId() {
+    return "advancedModeDeck";
   }
 
   /**
@@ -432,7 +467,7 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> ext
   public void setModeToggleLabel(String modeToggleLabel) {
     String old = this.modeToggleLabel;
     this.modeToggleLabel = modeToggleLabel;
-    firePropertyChange("modeToggleLabel", old, this.modeToggleLabel);
+    firePropertyChange(MODE_TOGGLE_LABEL, old, this.modeToggleLabel);
   }
 
   protected DatabaseDialog getDatabaseDialog() {
@@ -503,6 +538,20 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> ext
    */
   public String getModeToggleLabelElementId() {
     return "mode-toggle-label";
+  }
+
+  /**
+   * @return the advanced list button's id. By default this is {@code "advanced-list-button"}
+   */
+  public String getAdvancedListButtonElementId() {
+    return "advanced-list-button";
+  }
+
+  /**
+   * @return the advanced command line button's id. By default this is {@code "advanced-command-line-button"}
+   */
+  public String getAdvancedCommandLineButtonElementId() {
+    return "advanced-command-line-button";
   }
 
   /**
@@ -621,15 +670,200 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> ext
    * and it contains two panels.
    */
   public void toggleMode() {
-    XulDeck deck = (XulDeck) getXulDomContainer().getDocumentRoot().getElementById(getModeDeckElementId());
-    deck.setSelectedIndex(deck.getSelectedIndex() == 0 ? 1 : 0);
+    XulDeck deck = getModeDeck();
+    setUiMode(deck.getSelectedIndex() == 1 ? Mode.QUICK_SETUP : selectedAdvancedButton.getMode());
+  }
 
-    // Synchronize the model every time we swap modes so the UI is always up to date. This is required since we don't
-    // set argument item values directly or listen for their changes
-    syncModel();
+  /**
+   * Toggles between Quick Setup and Advanced Options mode. This assumes there exists a deck by id {@link #getModeDeckElementId()}
+   * and it contains two panels.
+   *
+   * @param quickMode Should quick mode be visible/selected?
+   */
+  protected void toggleQuickMode(boolean quickMode) {
+    XulDeck deck = getModeDeck();
+    deck.setSelectedIndex(quickMode ? 0 : 1);
 
     // Swap the label on the button
     setModeToggleLabel(BaseMessages.getString(AbstractSqoopJobEntry.class, MODE_I18N_STRINGS[deck.getSelectedIndex()]));
+
+    // We toggle to and from quick setup in this method so either the old or the new is always Mode.QUICK_SETUP.
+    // Whichever is not is the mode for the currently selected advanced button
+    Mode oldMode = deck.getSelectedIndex() == 0 ? selectedAdvancedButton.getMode() : Mode.QUICK_SETUP;
+    Mode newMode = Mode.QUICK_SETUP == oldMode ? selectedAdvancedButton.getMode() : Mode.QUICK_SETUP;
+    updateUiMode(oldMode, newMode);
+  }
+
+  protected void setUiMode(Mode mode) {
+    switch(mode) {
+      case QUICK_SETUP:
+        toggleQuickMode(true);
+        break;
+      case ADVANCED_LIST:
+        setSelectedAdvancedButton(AdvancedButton.LIST);
+        toggleQuickMode(false);
+        break;
+      case ADVANCED_COMMAND_LINE:
+        setSelectedAdvancedButton(AdvancedButton.COMMAND_LINE);
+        toggleQuickMode(false);
+        break;
+      default:
+        throw new RuntimeException("unsupported mode: " + mode);
+    }
+  }
+
+  /**
+   * Update the UI Mode and configure the underlying {@link SqoopConfig} object.
+   *
+   * @param oldMode Old mode
+   * @param newMode New mode
+   */
+  protected void updateUiMode(Mode oldMode, Mode newMode) {
+    if (suppressEventHandling) {
+      return;
+    }
+    if (Mode.ADVANCED_COMMAND_LINE.equals(oldMode)) {
+      if (!syncCommandLineToConfig()) {
+        // Flip back to the advanced command line view
+        // Suppress event handling so we don't re-enter updateUiMode and copy the properties back on top of the command line
+        suppressEventHandling = true;
+        try {
+          setUiMode(Mode.ADVANCED_COMMAND_LINE);
+        } finally {
+          suppressEventHandling = false;
+        }
+        return;
+      }
+    } else if(Mode.ADVANCED_COMMAND_LINE.equals(newMode)) {
+      // Sync config properties -> command line
+      getConfig().setCommandLine(SqoopUtils.generateCommandLineString(getConfig(), getJobEntry()));
+    }
+
+    if (Mode.ADVANCED_LIST.equals(newMode)) {
+      // Synchronize the model when we switch to the advanced list to make sure it's fresh
+      syncModel();
+    }
+
+    getConfig().setMode(getMode().name());
+  }
+
+  /**
+   * @return the current UI mode based off the current state of the components
+   */
+  private Mode getMode() {
+    XulDeck modeDeck = getModeDeck();
+    XulDeck advancedModeDeck = getAdvancedModeDeck();
+    if (modeDeck.getSelectedIndex() == 0) {
+      return Mode.QUICK_SETUP;
+    } else {
+      for(AdvancedButton b : AdvancedButton.values()) {
+        if(b.getDeckIndex() == advancedModeDeck.getSelectedIndex()) {
+          return b.getMode();
+        }
+      }
+    }
+    throw new RuntimeException("unknown UI mode");
+  }
+
+  /**
+   * Configure the current config object from the command line string. This will invoke {@link #showErrorDialog(String, String, Throwable)}
+   * if an exception occurs.
+   *
+   * @return {@code true} if the command line could be parsed and the config object updated successfully.
+   */
+  protected boolean syncCommandLineToConfig() {
+    try {
+      // Sync command line -> config properties
+      SqoopUtils.configureFromCommandLine(getConfig(), getConfig().getCommandLine(), getJobEntry());
+      return true;
+    } catch (Exception ex) {
+      showErrorDialog(BaseMessages.getString(AbstractSqoopJobEntry.class, "Dialog.Error"),
+        BaseMessages.getString(AbstractSqoopJobEntry.class, "ErrorConfiguringFromCommandLine"),
+        ex);
+    }
+    return false;
+  }
+
+  public void setSelectedAdvancedButton(AdvancedButton button) {
+    AdvancedButton old = selectedAdvancedButton;
+    selectedAdvancedButton = button;
+    switch(button) {
+      case LIST:
+        XulButton advancedList = getAdvancedListButton();
+        advancedList.setSelected(true);
+        getAdvancedCommandLineButton().setSelected(false);
+        break;
+      case COMMAND_LINE:
+        getAdvancedListButton().setSelected(false);
+        getAdvancedCommandLineButton().setSelected(true);
+        break;
+      default:
+        throw new RuntimeException("Unknown button type: " + button);
+    }
+    toggleAdvancedMode(button);
+    updateUiMode(old == null ? null : old.getMode(), button.getMode());
+  }
+
+  /**
+   * Toggle the selected deck for advanced mode.
+   *
+   * @param button Button that was selected
+   */
+  protected void toggleAdvancedMode(AdvancedButton button) {
+    getAdvancedModeDeck().setSelectedIndex(button.getDeckIndex());
+  }
+
+  /**
+   * @return The button to select the advanced list mode
+   */
+  public XulButton getAdvancedListButton() {
+    return getButton(getAdvancedListButtonElementId());
+  }
+
+  /**
+   * @return The button to select the advanced command line mode
+   */
+  public XulButton getAdvancedCommandLineButton() {
+    return getButton(getAdvancedCommandLineButtonElementId());
+  }
+
+  /**
+   * @return the deck that shows either the Quick Setup or Advanced Mode UI
+   */
+  protected XulDeck getModeDeck() {
+    return (XulDeck) getXulDomContainer().getDocumentRoot().getElementById(getModeDeckElementId());
+  }
+
+  /**
+   * @return the deck that contains Advanced Mode panels
+   */
+  protected XulDeck getAdvancedModeDeck() {
+    return (XulDeck) getXulDomContainer().getDocumentRoot().getElementById(getAdvancedModeDeckElementId());
+  }
+
+
+  /**
+   * Gets a {@link XulButton} from the current {@link XulDomContainer}
+   *
+   * @param elementId Element Id of the button to look up
+   * @return The button with element id {@code elementId} or {@code null} if not found
+   */
+  protected XulButton getButton(String elementId) {
+    return (XulButton) getXulDomContainer().getDocumentRoot().getElementById(elementId);
+  }
+
+  /**
+   * Callback for clicking the advanced list button
+   */
+  public void advancedListButtonClicked() {
+    setSelectedAdvancedButton(AdvancedButton.LIST);
+  }
+
+  /**
+   * Callback for clicking the advanced command line button
+   */
+  public void advancedCommandLineButtonClicked() {
+    setSelectedAdvancedButton(AdvancedButton.COMMAND_LINE);
   }
 
   /**
