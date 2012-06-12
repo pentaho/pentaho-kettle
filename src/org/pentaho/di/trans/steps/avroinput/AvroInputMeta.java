@@ -974,23 +974,12 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
 
   }
   
-  /**
-   * Get the UI for this step.
-   *
-   * @param shell a <code>Shell</code> value
-   * @param meta a <code>StepMetaInterface</code> value
-   * @param transMeta a <code>TransMeta</code> value
-   * @param name a <code>String</code> value
-   * @return a <code>StepDialogInterface</code> value
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.BaseStepMeta#getDialogClassName()
    */
-  public StepDialogInterface getDialog(Shell shell, 
-                                       StepMetaInterface meta,
-                                       TransMeta transMeta, 
-                                       String name) {
-   
-
-    return new AvroInputDialog(shell, meta, transMeta, name);
-  }
+  public String getDialogClassName() {
+    return "org.pentaho.di.trans.steps.avroinput.AvroInputDialog";
+  }  
 
   public boolean supportsErrorHandling() {
     return true;

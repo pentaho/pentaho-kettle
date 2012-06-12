@@ -155,7 +155,7 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
    * @author Mark Hall (mhall{[at]}pentaho{[dot]}com)
    * @version $Revision$
    */
-  protected class AvroArrayExpansion {
+  protected static class AvroArrayExpansion {
     
     /** The prefix of the full path that defines the expansion */
     public String m_expansionPath;
@@ -165,6 +165,8 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
     
     private List<String> m_pathParts;    
     private List<String> m_tempParts;
+    
+    protected RowMetaInterface m_outputRowMeta;
     
     public AvroArrayExpansion(List<AvroInputMeta.AvroField> subFields) {
       m_subFields = subFields;
@@ -878,7 +880,7 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
       m_normalFields = getLeafFields(m_schemaToUse);
     }
     
-    checkFieldPaths();
+    m_expansionHandler = checkFieldPaths(m_normalFields, m_outputRowMeta);
     
     for (AvroInputMeta.AvroField f : m_normalFields) {
       int outputIndex = m_outputRowMeta.indexOfValue(f.m_fieldName);
@@ -890,7 +892,8 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
     }    
   }
   
-  private void checkFieldPaths() throws KettleException {
+  protected static AvroArrayExpansion checkFieldPaths(List<AvroInputMeta.AvroField> normalFields,
+      RowMetaInterface outputRowMeta) throws KettleException {
     // here we check whether there are any full map/array expansions
     // specified in the paths (via [*]). If so, we want to make sure
     // that only one is present across all paths. E.g. we can handle
@@ -900,14 +903,14 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
     String expansion = null;
     List<AvroInputMeta.AvroField> normalList = new ArrayList<AvroInputMeta.AvroField>();
     List<AvroInputMeta.AvroField> expansionList = new ArrayList<AvroInputMeta.AvroField>();
-    for (AvroInputMeta.AvroField f : m_normalFields) {
+    for (AvroInputMeta.AvroField f : normalFields) {
       String path = f.m_fieldPath;
       
       if (path != null && path.lastIndexOf("[*]") >= 0) {
         
         if (path.indexOf("[*]") != path.lastIndexOf("[*]")) {
           throw new KettleException("Path '" + path + "' contains multiple expansions - " +
-          		"we can't process that.");
+                        "we can't process that.");
         }
         String pathPart = path.substring(0, path.lastIndexOf("[*]") + 3);
         
@@ -916,7 +919,7 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
         } else {
           if (!expansion.equals(pathPart)) {
             throw new KettleException("There are multiple different array/map expansions " +
-            		"defined - we can only handle one!");
+                        "defined - we can only handle one!");
           }
         }
         
@@ -926,7 +929,11 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
       }
     }
     
-    m_normalFields = normalList;
+    //m_normalFields = normalList;
+    normalFields.clear();
+    for (AvroInputMeta.AvroField f : normalList) {
+      normalFields.add(f);
+    }
 
     if (expansionList.size() > 0) {
       
@@ -949,11 +956,16 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
         
         subFields.add(subField);
       }
-            
-      m_expansionHandler = new AvroArrayExpansion(subFields);
-      m_expansionHandler.m_expansionPath = expansion;
+      
+      AvroArrayExpansion exp = new AvroArrayExpansion(subFields);
+      exp.m_expansionPath = expansion;
+      exp.m_outputRowMeta = outputRowMeta;
+      
+      return exp;            
     }    
-  }
+    
+    return null;
+  }  
     
   private Object[][] setKettleFields(Object[] outputRowData, VariableSpace space) 
     throws KettleException {
@@ -1108,5 +1120,5 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
     if (m_inStream != null) {
       m_inStream.close();
     }
-  }  
+  }
 }
