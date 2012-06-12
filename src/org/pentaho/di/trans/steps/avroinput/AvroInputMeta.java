@@ -112,7 +112,6 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
     protected ValueMetaInterface m_fieldVM;
     
     public boolean init(RowMetaInterface inRowMeta, VariableSpace space) {
-//      System.out.println("*** Initializing lookup field...");
       
       m_resolvedFieldName = space.environmentSubstitute(m_fieldName);
       
@@ -142,7 +141,6 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
         return;
       }
       
-//      System.out.println("+++++++++++++ Resolved field name " + m_resolvedFieldName);
       String valueToSet = "";
       try {
         if (m_fieldVM.isNull(inRow[m_inputIndex])) {
@@ -158,9 +156,7 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
         valueToSet = "null";
       }
       
-//      System.out.println("Setting value " + valueToSet);
       space.setVariable(m_cleansedVariableName, valueToSet);
-//      System.out.println("++ Value set successfully...");
     }        
   }
   
@@ -204,7 +200,6 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
         return;
       }
       
-//      System.out.println("%%%%% About to cleanse path: " + m_fieldPath);
       String fieldPath = AvroInputData.cleansePath(m_fieldPath);
       
       String[] temp = fieldPath.split("\\.");
@@ -221,11 +216,7 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
         String r = m_pathParts.get(0).substring(1, m_pathParts.get(0).length());
         m_pathParts.set(0, r);
       }
-      
-//      System.out.println("*** (init) Number of path parts " + m_pathParts.size());
-//      System.out.println("** " + m_pathParts.get(0));
-      
-      
+            
       m_tempParts = new ArrayList<String>();
       
       m_tempValueMeta = new ValueMeta();
@@ -245,13 +236,19 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
       // the previous avro object (especially if a path exited early due to
       // non-existent map key or array index out of bounds)
       m_tempParts.clear();
-      //m_tempParts.addAll(m_pathParts);
       
       for (String part : m_pathParts) {
         m_tempParts.add(space.environmentSubstitute(part));
       }
     }
     
+    /**
+     * Perform Kettle type conversions for the Avro leaf field value.
+     * 
+     * @param fieldValue the leaf value from the Avro structure
+     * @return an Object of the appropriate Kettle type
+     * @throws KettleException if a problem occurs
+     */
     protected Object getKettleValue(Object fieldValue) 
       throws KettleException {
       
@@ -275,6 +272,15 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
       }      
     }
     
+    /**
+     * Get the value of the Avro leaf primitive with respect to the 
+     * Kettle type for this path.
+     * 
+     * @param fieldValue the Avro leaf value
+     * @param s the schema for the leaf value
+     * @return the appropriate Kettle typed value
+     * @throws KettleException if a problem occurs
+     */
     protected Object getPrimitive(Object fieldValue, Schema s) 
       throws KettleException {      
       
@@ -396,7 +402,6 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
       }
             
       if (arrayI >= array.size() || arrayI < 0) {
-//        System.out.println("*** array index " + arrayI + " array size " + array.size());
         return null;
       }
       
@@ -459,7 +464,6 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
       
       // part is a named field of the record
       Schema.Field fieldS = s.getField(part);
-//      System.out.println("Record part: " + part);
       if (fieldS == null) {
         throw new KettleException(BaseMessages.getString(PKG, "AvroInput.Error.NonExistentField", part));
       }      
@@ -480,17 +484,13 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
       
       // what have we got?
       if (fieldT == Schema.Type.RECORD) {
-        //System.out.println("Calling record...");
         return convertToKettleValue((GenericData.Record)field, fieldSchema);
       } else if (fieldT == Schema.Type.ARRAY) {
-        //System.out.println("Calling array...");
         return convertToKettleValue((GenericData.Array)field, fieldSchema);
       } else if (fieldT == Schema.Type.MAP) {
-        //System.out.println("Calling map...");
         return convertToKettleValue((Map<Utf8, Object>)field, fieldSchema);
       } else {
         // assume primitive until we handle fixed types
-//        System.out.println("Calling primitive...");
         return getPrimitive(field, fieldSchema);
       }      
     }    
@@ -649,6 +649,9 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
     m_lookups = lookups;
   }
   
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.BaseStepMeta#getFields(org.pentaho.di.core.row.RowMetaInterface, java.lang.String, org.pentaho.di.core.row.RowMetaInterface[], org.pentaho.di.trans.step.StepMeta, org.pentaho.di.core.variables.VariableSpace)
+   */
   public void getFields(RowMetaInterface rowMeta, String origin,
       RowMetaInterface[] info, StepMeta nextStep, VariableSpace space)
   throws KettleStepException {
@@ -705,11 +708,17 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.StepMetaInterface#check(java.util.List, org.pentaho.di.trans.TransMeta, org.pentaho.di.trans.step.StepMeta, org.pentaho.di.core.row.RowMetaInterface, java.lang.String[], java.lang.String[], org.pentaho.di.core.row.RowMetaInterface)
+   */
   public void check(List<CheckResultInterface> remarks, TransMeta transMeta,
       StepMeta stepMeta, RowMetaInterface prev, String[] input, String[] output,
       RowMetaInterface info) {
   }
 
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.StepMetaInterface#getStep(org.pentaho.di.trans.step.StepMeta, org.pentaho.di.trans.step.StepDataInterface, int, org.pentaho.di.trans.TransMeta, org.pentaho.di.trans.Trans)
+   */
   public StepInterface getStep(StepMeta stepMeta,
       StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
       Trans trans) {
@@ -718,10 +727,20 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
         transMeta, trans);
   }
 
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.StepMetaInterface#getStepData()
+   */
   public StepDataInterface getStepData() {
     return new AvroInputData();
   }
   
+  /**
+   * Helper function that takes a list of indexed values and returns them as 
+   * a String in comma-separated form.
+   * 
+   * @param indexedVals a list of indexed values
+   * @return the list a String in comma-separated form
+   */
   protected static String indexedValsList(List<String> indexedVals) {
     StringBuffer temp = new StringBuffer();
     
@@ -735,6 +754,13 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
     return temp.toString();
   }
   
+  /**
+   * Helper function that takes a comma-separated list in a String and returns 
+   * a list.
+   * 
+   * @param indexedVals the String containing the lsit
+   * @return a List containing the values
+   */
   protected static List<String> indexedValsList(String indexedVals) {
     
     String[] parts = indexedVals.split(",");
@@ -746,6 +772,9 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
     return list;
   }
   
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.BaseStepMeta#getXML()
+   */
   public String getXML() {
     StringBuffer retval = new StringBuffer();
     
@@ -807,6 +836,9 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
     return retval.toString();
   }
 
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.StepMetaInterface#loadXML(org.w3c.dom.Node, java.util.List, java.util.Map)
+   */
   public void loadXML(Node stepnode, List<DatabaseMeta> databases,
       Map<String, Counter> counters) throws KettleXMLException {
     m_filename = XMLHandler.getTagValue(stepnode, "avro_filename");
@@ -864,6 +896,9 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.StepMetaInterface#readRep(org.pentaho.di.repository.Repository, org.pentaho.di.repository.ObjectId, java.util.List, java.util.Map)
+   */
   public void readRep(Repository rep, ObjectId id_step,
       List<DatabaseMeta> databases, Map<String, Counter> counters)
     throws KettleException {
@@ -918,6 +953,9 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
 
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.StepMetaInterface#saveRep(org.pentaho.di.repository.Repository, org.pentaho.di.repository.ObjectId, org.pentaho.di.repository.ObjectId)
+   */
   public void saveRep(Repository rep, ObjectId id_transformation,
       ObjectId id_step) throws KettleException {
     
@@ -972,7 +1010,6 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
   }
 
   public void setDefault() {
-
   }
   
   /* (non-Javadoc)
@@ -982,6 +1019,9 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
     return "org.pentaho.di.trans.steps.avroinput.AvroInputDialog";
   }  
 
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.BaseStepMeta#supportsErrorHandling()
+   */
   public boolean supportsErrorHandling() {
     return true;
   }
