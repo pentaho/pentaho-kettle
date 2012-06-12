@@ -221,21 +221,6 @@ public class SqoopUtils {
   }
 
   /**
-   * @return {@code true} if {@link Boolean#parseBoolean(String)} returns {@code true} for {@link #isBlockingExecution()}
-   */
-  /**
-   * Determine if the string equates to {@link Boolean#TRUE} after performing a variable substitution.
-   *
-   * @param s             String-encoded boolean value or variable expression
-   * @param variableSpace Context for variables so we can substitute {@code s}
-   * @return the value returned by {@link Boolean#parseBoolean(String) Boolean.parseBoolean(s)} after substitution
-   */
-  public static boolean asBoolean(String s, VariableSpace variableSpace) {
-    String value = variableSpace.environmentSubstitute(s);
-    return Boolean.parseBoolean(value);
-  }
-
-  /**
    * Parse the string as a {@link Long} after variable substitution.
    *
    * @param s             String-encoded {@link Long} value or variable expression that should resolve to a {@link Long} value
