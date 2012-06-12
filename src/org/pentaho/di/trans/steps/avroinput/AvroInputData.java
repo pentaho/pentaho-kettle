@@ -102,6 +102,7 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
   /** If decoding from an incoming field, this holds its index */
   protected int m_fieldToDecodeIndex = -1;
   
+  /** Factory for obtaining a decoder */
   protected DecoderFactory m_factory;
   
   
@@ -191,7 +192,6 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
       String[] temp = expansionPath.split("\\.");
       m_pathParts = new ArrayList<String>();
       for (String part : temp) {
-//        System.out.println("**** Expansion init - adding part: " + part);
         m_pathParts.add(part);
       }
       
@@ -208,7 +208,6 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
       // initialize the sub fields
       if (m_subFields != null) {
         for (AvroInputMeta.AvroField f : m_subFields) {
-//          System.out.println("** calling subfield init()");
           int outputIndex = m_outputRowMeta.indexOfValue(f.m_fieldName);
           f.init(outputIndex);
         }
@@ -514,6 +513,13 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
     return m_outputRowMeta;
   }
   
+  /**
+   * Helper function that creates a field object once we've reached a leaf in the schema.
+   * 
+   * @param path the path so far
+   * @param s the schema for the primitive
+   * @return an avro field object.
+   */
   protected static AvroInputMeta.AvroField createAvroField(String path, Schema s) {
     AvroInputMeta.AvroField newField = new AvroInputMeta.AvroField();
     // newField.m_fieldName = s.getName(); // this will set the name to the primitive type if the schema is for a primitive
@@ -551,6 +557,14 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
     return newField;
   }
   
+  /**
+   * Helper function that checks the validity of a union. We can only handle unions that 
+   * contain two elements: a type and null.
+   * 
+   * @param s the union schema to check
+   * @return the type of the element that is not null.
+   * @throws KettleException if a problem occurs.
+   */
   protected static Schema checkUnion(Schema s) throws KettleException {
     boolean ok = false;
     List<Schema> types = s.getTypes();
@@ -579,6 +593,14 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
     return otherSchema;
   }
   
+  /**
+   * Builds a list of field objects holding paths corresponding to the leaf primitives 
+   * in an Avro schema.
+   * 
+   * @param s the schema to process
+   * @return a List of field objects
+   * @throws KettleException if a problem occurs
+   */
   protected static List<AvroInputMeta.AvroField> getLeafFields(Schema s) throws KettleException {
     List<AvroInputMeta.AvroField> fields = new ArrayList<AvroInputMeta.AvroField>();
     
@@ -624,6 +646,15 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
     return fields;
   }
   
+  /**
+   * Helper function used to build paths automatically when extracting leaf 
+   * fields from a schema
+   * 
+   * @param path the path so far
+   * @param s the schema
+   * @param fields a list of field objects that will correspond to leaf primitives
+   * @throws KettleException if a problem occurs
+   */
   protected static void processRecord(String path, Schema s, 
       List<AvroInputMeta.AvroField> fields) throws KettleException {
     
@@ -650,6 +681,15 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
     }
   }
   
+  /**
+   * Helper function used to build paths automatically when extracting leaf 
+   * fields from a schema
+   * 
+   * @param path the path so far
+   * @param s the schema
+   * @param fields a list of field objects that will correspond to leaf primitives
+   * @throws KettleException if a problem occurs
+   */
   protected static void processMap(String path, Schema s,
       List<AvroInputMeta.AvroField> fields) throws KettleException {
     
@@ -672,6 +712,15 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
     }
   }
   
+  /**
+   * Helper function used to build paths automatically when extracting leaf 
+   * fields from a schema
+   * 
+   * @param path the path so far
+   * @param s the schema
+   * @param fields a list of field objects that will correspond to leaf primitives
+   * @throws KettleException if a problem occurs
+   */
   protected static void processArray(String path, Schema s, 
       List<AvroInputMeta.AvroField> fields) throws KettleException {
     
@@ -693,6 +742,13 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
     }
   }
   
+  /**
+   * Load a schema from a file
+   * 
+   * @param schemaFile the file to load from
+   * @return the schema
+   * @throws KettleException if a problem occurs
+   */
   protected static Schema loadSchema(String schemaFile) throws KettleException {
     
     Schema s = null;
@@ -715,6 +771,13 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
     return s;
   }
   
+  /**
+   * Load a schema from a Avro container file
+   * 
+   * @param containerFilename the name of the Avro container file
+   * @return the schema
+   * @throws KettleException if a problem occurs
+   */
   protected static Schema loadSchemaFromContainer(String containerFilename)
     throws KettleException {
     Schema s = null;
@@ -749,6 +812,17 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
     m_outputRowMeta = rmi;
   }   
   
+  /**
+   * Performs initialization based on decoding from an incoming field.
+   * 
+   * @param fieldNameToDecode name of the field to decode from
+   * @param readerSchemaFile the reader schema file (must be supplied)
+   * @param fields the user-supplied paths to extract
+   * @param jsonEncoded true if the data is JSON encoded
+   * @param newFieldOffset offset in the outgoing row format for extracted 
+   * fields from any incoming kettle fields
+   * @throws KettleException
+   */
   public void initializeFromFieldDecoding(String fieldNameToDecode, String readerSchemaFile, 
       List<AvroInputMeta.AvroField> fields, boolean jsonEncoded, int newFieldOffset)
     throws KettleException {
@@ -773,22 +847,37 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
     init();
   }
   
+  /**
+   * Performs initialization based on the Avro file and schema provided.<p>
+   * 
+   * There are four possibilities:<p>
+   * <ol>
+   * <li>No schema file provided and no fields defined - can only
+   * process a container file, under the assumption that all leaf primitives are
+   * to be output</li>
+   * <li>No schema file provided but fields/paths defined - can only
+   * process a container file, and assume that supplied paths match schema </li>
+   * <li>Schema file provided, no fields defined - output all leaf primitives
+   * from schema and have to determine if input is a container file or just
+   * serialized data</li>
+   * <li>Schema file provided and fields defined - output leaf primitives associated
+   * with paths. Have to determine if file is container or not. If container, assume
+   * supplied schema overrides encapsulated schema </li>
+   * </ol> 
+   * 
+   * @param avroFile the Avro file
+   * @param readerSchemaFile the reader schema
+   * @param fields the user-supplied paths to extract
+   * @param jsonEncoded true if the data is JSON encoded
+   * @param newFieldOffset offset in the outgoing row format for extracted fields 
+   * from any incoming kettle fields
+   * @throws KettleException if a problem occurs
+   */
   public void establishFileType(FileObject avroFile, String readerSchemaFile, 
       List<AvroInputMeta.AvroField> fields, boolean jsonEncoded, int newFieldOffset) 
     throws KettleException {
     
-    // four possibilities:
-    // 1. No schema file provided and no fields defined - can only
-    // process a container file, under the assumption that all leaf primitives are
-    // to be output
-    // 2. No schema file provided but fields/paths defined - can only
-    // process a container file, and assume that supplied paths match schema
-    // 3. Schema file provided, no fields defined - output all leaf primitives
-    // from schema and have to determine if input is a container file or just
-    // serialized data
-    // 4. Schema file provided and fields defined - output leaf primitives associated
-    // with paths. Have to determine if file is container or not. If container, assume
-    // supplied schema overrides encapsulated schema
+
     
     m_newFieldOffset = newFieldOffset;
     m_normalFields = fields;
@@ -895,6 +984,18 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
     }    
   }
   
+  /**
+   * Examines the user-specified paths for the presence of a map/array expansion. If 
+   * such an expansion is detected it checks that it is valid and, if so, creates an 
+   * expansion handler for processing it.
+   * 
+   * @param normalFields the original user-specified paths. This is modified to contain only 
+   * non-expansion paths.
+   * @param outputRowMeta the output row format
+   * @return an AvroArrayExpansion object to handle expansions or null if no expansions are 
+   * present in the user-supplied path definitions.
+   * @throws KettleException if a problem occurs
+   */
   protected static AvroArrayExpansion checkFieldPaths(List<AvroInputMeta.AvroField> normalFields,
       RowMetaInterface outputRowMeta) throws KettleException {
     // here we check whether there are any full map/array expansions
@@ -999,7 +1100,6 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
       f.reset(space);
 
       if (m_schemaToUse.getType() == Schema.Type.RECORD) {
-//        System.out.println("Doing top-level record");
         value = f.convertToKettleValue(m_topLevelRecord, m_schemaToUse);          
       } else if (m_schemaToUse.getType() == Schema.Type.ARRAY) {
         value = f.convertToKettleValue(m_topLevelArray, m_schemaToUse);
@@ -1032,6 +1132,18 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
     return result;
   }
   
+  /**
+   * Converts an incoming row to outgoing format. Extracts fields from either an Avro
+   * object in the incoming row or from the next structure in the container or 
+   * non-container Avro file. May return more than one row if a map/array is being 
+   * expanded.
+   * 
+   * @param incoming incoming kettle row - may be null if decoding from a file rather
+   * than a field
+   * @param space the variables to use
+   * @return one or more rows in the outgoing format
+   * @throws KettleException if a problem occurs
+   */
   public Object[][] avroObjectToKettle(Object[] incoming, VariableSpace space) throws KettleException {
     
     if (m_containerReader != null) {
@@ -1096,7 +1208,6 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
         
         if (m_topLevelRecord != null) {
           m_datumReader.read(m_topLevelRecord, m_decoder);
-          //System.out.println(m_topLevelRecord);
         } else if (m_topLevelArray != null) {
           m_datumReader.read(m_topLevelArray, m_decoder);
         } else {
@@ -1108,9 +1219,7 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
         // some IO problem or no more input
         return null;
       }      
-    }
-    
-    //return outputRowData;
+    }    
   }
   
   public void close() throws IOException {
