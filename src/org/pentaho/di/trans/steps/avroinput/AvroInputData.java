@@ -179,7 +179,8 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
      */
     public void init() throws KettleException {
       if (Const.isEmpty(m_expansionPath)) {
-        throw new KettleException("No path has been set!");
+        throw new KettleException(BaseMessages.getString(AvroInputMeta.PKG, 
+            "AvroInput.Error.NoPathSet"));
       }
       if (m_pathParts != null) {
         return;
@@ -558,7 +559,8 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
     Schema otherSchema = null;
 
     if (types.size() != 2) {
-      throw new KettleException("Can only handle unions involving two types");
+      throw new KettleException(BaseMessages.getString(AvroInputMeta.PKG, 
+          "AvroInput.Error.UnionError1"));
     }
 
     for (Schema p : types) {
@@ -570,7 +572,8 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
     }
 
     if (!ok) {
-      throw new KettleException("Can only handle unions that have two types, where one is 'null'");
+      throw new KettleException(BaseMessages.getString(AvroInputMeta.PKG, 
+      "AvroInput.Error.UnionError2"));
     }
 
     return otherSchema;
@@ -849,8 +852,8 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
         try {
           m_decoder = m_factory.jsonDecoder(m_schemaToUse, m_inStream);
         } catch (IOException e) {
-          throw new KettleException("A problem occurred while trying to establish a " +
-          		"decoder for a Json encoded avro file");
+          throw new KettleException(BaseMessages.getString(AvroInputMeta.PKG, 
+              "AvroInput.Error.JsonDecoderError"));
         }
       } else {
         m_decoder = m_factory.binaryDecoder(m_inStream, null);
@@ -909,8 +912,8 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
       if (path != null && path.lastIndexOf("[*]") >= 0) {
         
         if (path.indexOf("[*]") != path.lastIndexOf("[*]")) {
-          throw new KettleException("Path '" + path + "' contains multiple expansions - " +
-                        "we can't process that.");
+          throw new KettleException(BaseMessages.getString(AvroInputMeta.PKG, 
+              "AvroInput.Error.PathContainsMultipleExpansions", path));
         }
         String pathPart = path.substring(0, path.lastIndexOf("[*]") + 3);
         
@@ -918,8 +921,8 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
           expansion = pathPart;
         } else {
           if (!expansion.equals(pathPart)) {
-            throw new KettleException("There are multiple different array/map expansions " +
-                        "defined - we can only handle one!");
+            throw new KettleException(BaseMessages.getString(AvroInputMeta.PKG, 
+                "AvroInput.Error.MutipleDifferentExpansions"));
           }
         }
         
@@ -929,7 +932,6 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
       }
     }
     
-    //m_normalFields = normalList;
     normalFields.clear();
     for (AvroInputMeta.AvroField f : normalList) {
       normalFields.add(f);
@@ -1062,7 +1064,6 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
         // reading from an incoming field
         if (m_decodingFromField) {
           if (incoming == null || incoming.length == 0) {
-            // throw new KettleException("No incoming row to read from!");
             // must be done - just return null
             return null;
           }
@@ -1084,9 +1085,8 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
               String fieldValue = fieldMeta.getString(incoming[m_fieldToDecodeIndex]);
               m_decoder = m_factory.jsonDecoder(m_schemaToUse, fieldValue);
             } catch (IOException e) {
-              // TODO Auto-generated catch block
-              throw new KettleException("A problem occurred while trying to establish a " +
-                            "decoder for a Json encoded avro file");
+              throw new KettleException(BaseMessages.getString(AvroInputMeta.PKG, 
+                  "AvroInput.Error.JsonDecoderError"));
             }
           } else {
             byte[] fieldValue = fieldMeta.getBinary(incoming[m_fieldToDecodeIndex]);

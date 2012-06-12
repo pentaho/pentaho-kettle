@@ -198,7 +198,7 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
      */
     public void init(int outputIndex) throws KettleException {
       if (Const.isEmpty(m_fieldPath)) {
-        throw new KettleException("No path has been set!");
+        throw new KettleException(BaseMessages.getString(PKG, "AvroInput.Error.NoPathSet"));
       }
       if (m_pathParts != null) {
         return;
@@ -671,13 +671,14 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
           Schema s = AvroInputData.loadSchema(fn);
           fieldsToOutput = AvroInputData.getLeafFields(s);          
         } catch (KettleException e) {
-          throw new KettleStepException("Unable to load schema from file '" + fn + "'", e);
+          throw new KettleStepException(BaseMessages.getString(PKG, 
+              "AvroInput.Error.UnableToLoadSchema", fn), e);
         }
       } else {
         
         if (m_avroInField) {
-          throw new KettleStepException("A schema must be supplied for decoding avro from incoming " +
-          		"field values");
+          throw new KettleStepException(BaseMessages.getString(PKG, 
+              "AvroInput.Error.NoSchemaSupplied"));
         }
         // assume a container file and grab from there...
         String avroFilename = m_filename;
