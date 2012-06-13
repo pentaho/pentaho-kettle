@@ -1905,11 +1905,13 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
   private void verifyInputDeadLock() throws KettleStepException {
     RowSet inputFull = null;
     RowSet inputEmpty = null;
-    for (RowSet rowSet : getInputRowSets()) {
-      if (rowSet.size() == transMeta.getSizeRowset()) { 
-        inputFull = rowSet;
-      } else if (rowSet.size() == 0) {
-        inputEmpty = rowSet;
+    synchronized(getInputRowSets()) {
+      for (RowSet rowSet : getInputRowSets()) {
+        if (rowSet.size() == transMeta.getSizeRowset()) { 
+          inputFull = rowSet;
+        } else if (rowSet.size() == 0) {
+          inputEmpty = rowSet;
+        }
       }
     }
     if (inputFull!=null && inputEmpty!=null) {
@@ -1920,18 +1922,22 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
       for (StepMetaDataCombi combi : trans.getSteps()) {
         int inputSize=0;
         int totalSize = combi.step.getInputRowSets().size()*transMeta.getSizeRowset();
-        for (RowSet rowSet : combi.step.getInputRowSets()) {
-          inputSize+=rowSet.size();
+        synchronized(combi.step.getInputRowSets()) {
+          for (RowSet rowSet : combi.step.getInputRowSets()) {
+            inputSize+=rowSet.size();
+          }
         }
         // All full probably means a stalled step.
         if (inputSize>0 && inputSize==totalSize && combi.step.getOutputRowSets().size()>1) {
           RowSet outputFull = null;
           RowSet outputEmpty = null;
-          for (RowSet rowSet : combi.step.getOutputRowSets()) {
-            if (rowSet.size()==transMeta.getSizeRowset()) {
-              outputFull = rowSet;
-            } else if (rowSet.size()==0) {
-              outputEmpty = rowSet;
+          synchronized(combi.step.getOutputRowSets()) {
+            for (RowSet rowSet : combi.step.getOutputRowSets()) {
+              if (rowSet.size()==transMeta.getSizeRowset()) {
+                outputFull = rowSet;
+              } else if (rowSet.size()==0) {
+                outputEmpty = rowSet;
+              }
             }
           }
           if (outputFull!=null && outputEmpty!=null) {
