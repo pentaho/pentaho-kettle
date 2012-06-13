@@ -24,6 +24,7 @@ import org.apache.oozie.client.OozieClient;
 import org.apache.oozie.client.WorkflowJob;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
@@ -54,6 +55,7 @@ public class OozieJobExecutorControllerTest {
 
   }
 
+  @Ignore
   @Test
   public void testOozieClient() throws Exception {
     OozieClient oozieClient = new OozieClient("http://localhost:11000/oozie");

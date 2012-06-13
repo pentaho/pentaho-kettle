@@ -47,7 +47,7 @@ import java.util.ResourceBundle;
  */
 public class OozieJobExecutorJobEntryDialog extends JobEntryDialog implements JobEntryDialogInterface {
 
-  private static final String OOZIE_JOB_EXECUTOR_XUL = "org/pentaho/di/ui/job/entries/oozie/OozieJobExecutor.xul";
+  private static final String OOZIE_JOB_EXECUTOR_XUL = "org/pentaho/di/ui/job/entries/oozie/xul/OozieJobExecutor.xul";
   public static final String VARIABLETEXTBOX = "VARIABLETEXTBOX";
 
   private OozieJobExecutorJobEntryController controller = null;

@@ -151,6 +151,7 @@ public abstract class AbstractSqoopJobEntry<S extends SqoopConfig> extends Abstr
    * @param config Configuration to validate
    * @return List of warning messages for any invalid configuration options we use directly in this job entry.
    */
+  @Override
   public List<String> getValidationWarnings(SqoopConfig config) {
     List<String> warnings = new ArrayList<String>();
 
@@ -165,21 +166,6 @@ public abstract class AbstractSqoopJobEntry<S extends SqoopConfig> extends Abstr
     }
 
     return warnings;
-  }
-
-  /**
-   * Determine if the configuration provide is valid. This will validate all options in one pass.
-   *
-   * @param config Configuration to validate
-   * @return {@code true} if the configuration contains valid values for all options we use directly in this job entry.
-   */
-  @Override
-  public boolean isValid(SqoopConfig config) {
-    List<String> warnings = getValidationWarnings(config);
-    for (String warning : warnings) {
-      logError(warning);
-    }
-    return warnings.isEmpty();
   }
 
   /**

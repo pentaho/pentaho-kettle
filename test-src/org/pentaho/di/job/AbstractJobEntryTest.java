@@ -66,8 +66,8 @@ public class AbstractJobEntryTest {
     }
 
     @Override
-    protected boolean isValid(BlockableJobConfig config) {
-      return true;
+    public List<String> getValidationWarnings(BlockableJobConfig config) {
+      return new ArrayList<String>();
     }
 
     @Override

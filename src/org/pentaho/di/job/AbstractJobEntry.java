@@ -25,10 +25,14 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.job.entries.sqoop.SqoopConfig;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.di.ui.spoon.Spoon;
 import org.w3c.dom.Node;
 
 import java.util.List;
@@ -185,17 +189,52 @@ public abstract class AbstractJobEntry<T extends BlockableJobConfig> extends Job
   }
 
   /**
+   * Determine if the configuration provide is valid. This will validate all options in one pass.
+   *
+   * @param config Configuration to validate
+   * @return {@code true} if the configuration contains valid values for all options we use directly in this job entry.
+   */
+  public boolean isValid(T config) {
+    List<String> warnings = getValidationWarnings(config);
+    for (String warning : warnings) {
+      logError(warning);
+    }
+    return warnings.isEmpty();
+  }
+
+  public VariableSpace getVariableSpace() {
+    try {
+      if (Spoon.getInstance().getActiveJob() != null) {
+        return Spoon.getInstance().getActiveJob();
+      } else {
+        return new Variables();
+      }
+    } catch (NullPointerException npe) {
+      // probably in unit testing mode, without init'ing spoon
+      return new Variables();
+    }
+  }
+
+  /**
    * Creates a job configuration
    * @return
    */
   protected abstract T createJobConfig();
 
+//  /**
+//   * Ensures that the configuration is valid for execution
+//   * @param config
+//   * @return
+//   */
+//  protected abstract boolean isValid(T config);
+
   /**
-   * Ensures that the configuration is valid for execution
-   * @param config
-   * @return
+   * Validate any configuration option we use directly that could be invalid at runtime.
+   *
+   * @param config Configuration to validate
+   * @return List of warning messages for any invalid configuration options we use directly in this job entry.
    */
-  protected abstract boolean isValid(T config);
+  public abstract List<String> getValidationWarnings(T config);
 
   /**
    * Get the {@link Runnable} that does the execution of the job

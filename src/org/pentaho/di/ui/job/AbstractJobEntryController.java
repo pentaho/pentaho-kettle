@@ -23,6 +23,15 @@ package org.pentaho.di.ui.job;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CLabel;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
@@ -34,6 +43,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.AbstractJobEntry;
 import org.pentaho.di.job.BlockableJobConfig;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.entries.sqoop.AbstractSqoopJobEntry;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -44,10 +54,12 @@ import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingFactory;
+import org.pentaho.ui.xul.containers.XulDeck;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
 import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.swt.tags.SwtDialog;
+import org.pentaho.ui.xul.swt.tags.SwtLabel;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
 import java.lang.reflect.InvocationTargetException;
@@ -72,6 +84,8 @@ public abstract class AbstractJobEntryController<C extends BlockableJobConfig, E
   protected BindingFactory bindingFactory;
   protected List<Binding> bindings;
   protected JobMeta jobMeta;
+
+  protected JobEntryMode jobEntryMode = JobEntryMode.BASIC;
 
   @SuppressWarnings("unchecked")
   public AbstractJobEntryController(JobMeta jobMeta, XulDomContainer container, E jobEntry, BindingFactory bindingFactory) {
@@ -200,6 +214,19 @@ public abstract class AbstractJobEntryController<C extends BlockableJobConfig, E
     return;
   }
 
+  /**
+   * Show an information dialog with the title and message provided.
+   *
+   * @param title   Dialog window title
+   * @param message Dialog message
+   */
+  protected void showInfoDialog(String title, String message) {
+    MessageBox mb = new MessageBox(getShell(), SWT.OK | SWT.ICON_INFORMATION);
+    mb.setText(title);
+    mb.setMessage(message);
+    mb.open();
+  }
+
 
   /**
    * Show an error dialog with the title and message provided.
@@ -304,6 +331,82 @@ public abstract class AbstractJobEntryController<C extends BlockableJobConfig, E
     this.jobMeta = jobMeta;
   }
 
+  /**
+   * Toggle between Advanced and Basic configuration modes
+   */
+  public void toggleMode() {
+    JobEntryMode prev = jobEntryMode;
+    jobEntryMode = (jobEntryMode == JobEntryMode.ADVANCED ? JobEntryMode.BASIC : JobEntryMode.ADVANCED);
+    XulDeck deck = (XulDeck) getXulDomContainer().getDocumentRoot().getElementById(getModeDeckElementId());
+    deck.setSelectedIndex(deck.getSelectedIndex() == 0 ? 1 : 0);
+
+    // Synchronize the model every time we swap modes so the UI is always up to date. This is required since we don't
+    // set argument item values directly or listen for their changes
+    syncModel();
+
+    // Swap the label on the button
+    setModeToggleLabel(prev);   // the label should display the inverse of the current mode
+
+  }
+
+  /**
+   * Customizes the label that is used to toggle between quick setup and advanced options.
+   * <p>
+   *   - Set the label color to blue
+   *   - Underline the label
+   *   - Attaches a left-click listener on the label to perform the toggling
+   * </p>
+   *
+   * @param elementId Mode toggle element to attach listener on
+   */
+  protected void customizeModeToggleLabel(String elementId) {
+    SwtLabel label = (SwtLabel) getXulDomContainer().getDocumentRoot().getElementById(elementId);
+    // Only decorate the label if it's not a link. This was added in pentaho-xul-swt after PDI 4.3.0.
+    // TODO Remove this logic once pentaho-xul-swt is upgraded past 3.3 (when SwtLabel can support hyperlinks)
+    if (label != null && label.getManagedObject() instanceof CLabel) {
+      CLabel cLabel = (CLabel) label.getManagedObject();
+
+      FontData[] fontDatas = cLabel.getFont().getFontData();
+      for (FontData fontData : fontDatas) {
+        fontData.setStyle(SWT.BOLD);
+      }
+      final Font font = new Font(cLabel.getDisplay(), fontDatas);
+      cLabel.setFont(font);
+
+      final Cursor cursor = new Cursor(cLabel.getDisplay(), SWT.CURSOR_HAND);
+      cLabel.setCursor(cursor);
+
+      final Color color = new Color(cLabel.getDisplay(), 0, 0, 255);
+      cLabel.setForeground(color);
+
+      cLabel.addDisposeListener(new DisposeListener() {
+        @Override
+        public void widgetDisposed(DisposeEvent disposeEvent) {
+          color.dispose();
+          cursor.dispose();
+          font.dispose();
+        }
+      });
+
+      cLabel.addMouseListener(new MouseAdapter() {
+        @Override
+        public void mouseUp(MouseEvent e) {
+          if (e.button == 1) {
+            toggleMode();
+          }
+        }
+      });
+    }
+  }
+
+  /**
+   * The mode deck element defined in your xul. Override this to customize the element id
+   * @return
+   */
+  protected String getModeDeckElementId() {
+    return "modeDeck";
+  }
+
   ////////////////////
   // abstract methods
   ////////////////////
@@ -312,5 +415,7 @@ public abstract class AbstractJobEntryController<C extends BlockableJobConfig, E
   protected abstract void createBindings(C config, XulDomContainer container, BindingFactory bindingFactory, Collection<Binding> bindings);
 
   protected abstract String getDialogElementId();
+
+  protected abstract void setModeToggleLabel(JobEntryMode mode);
 
 }

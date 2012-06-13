@@ -9,14 +9,8 @@
         appicon="ui/images/spoon.ico"
         width="650"
         height="400"
-        buttons="accept,cancel,extra1"
+        buttons=""
         buttonalign="center"
-        buttonlabelaccept="${Dialog.Accept}"
-        buttonlabelcancel="${Dialog.Cancel}"
-        buttonlabelextra1="${Dialog.Test}"
-        ondialogaccept="controller.accept()"
-        ondialogcancel="controller.cancel()"
-        ondialogextra1="controller.test()"
         onload="controller.init()">
     <vbox>
         <grid>
@@ -44,18 +38,30 @@
                         </columns>
                         <rows>
                             <row>
-                                <label value="${Oozie.JobExecutor.OozieUrl.Label}"/>
+                                <hbox padding="5">
+                                    <label value="${Oozie.JobExecutor.OozieUrl.Label}" />
+                                </hbox>
                                 <!-- Wrap with an hbox so all components align -->
-                                <hbox flex="1">
+                                <hbox flex="1" padding="5">
                                     <textbox pen:customclass="variabletextbox" id="oozieUrl" flex="1"/>
                                 </hbox>
                             </row>
                             <row>
-                                <label value="${Oozie.JobExecutor.Workflow.Properties.Label}"/>
+                                <hbox padding="5">
+                                    <label value="${Oozie.JobExecutor.Workflow.Properties.Label}"/>
+                                </hbox>
                                 <!-- Wrap with an hbox so all components align -->
-                                <hbox flex="1">
+                                <hbox flex="1" padding="5">
                                     <textbox pen:customclass="variabletextbox" id="oozieWorkflowConfig" flex="1"/>
                                     <button label="${Oozie.JobExecutor.Browse.Workflow.Config.Label}" onclick="controller.browseWorkflowConfig()"/>
+                                </hbox>
+                            </row>
+                            <row>
+                                <hbox padding="5">
+                                    <label value="${Oozie.JobExecutor.Enable.Blocking.Label}" />
+                                </hbox>
+                                <hbox padding="5">
+                                    <checkbox id="blockingExecution" checked="true" />
                                 </hbox>
                             </row>
                         </rows>
@@ -66,11 +72,12 @@
                 <tree id="advanced-table" hidecolumnpicker="true" autocreatenewrows="false" flex="1">
                     <treecols>
                         <treecol id="name-col" editable="false" flex="1" label="${Oozie.JobExecutor.AdvancedTable.Column.Name.Label}" pen:binding="displayName"/>
-                        <treecol id="value-col" editable="true" flex="1" label="${Oozie.JobExecutor.AdvancedTable.Column.Name.Label}" pen:binding="value"/>
+                        <treecol id="value-col" editable="true" flex="1" label="${Oozie.JobExecutor.AdvancedTable.Column.Value.Label}" pen:binding="value"/>
                     </treecols>
                     <treechildren />
                 </tree>
             </vbox>
         </deck>
+        <pen:include src="button-bar.xul"/>
     </vbox>
 </dialog>

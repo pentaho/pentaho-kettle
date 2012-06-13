@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<!--
+  ~ *******************************************************************************
+  ~ Pentaho Big Data
+  ~
+  ~ Copyright (C) 2002-2012 by Pentaho : http://www.pentaho.com
+  ~ *******************************************************************************
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with
+  ~ the License. You may obtain a copy of the License at
+  ~    http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  ~ ******************************************************************************
+  -->
+
+<!-- A button bar that contains a Quick Setup/Advanced Options toggle, test, ok, and cancel buttons. -->
+<grid>
+  <columns>
+    <column align="center"/>
+    <column flex="1"/>
+    <column/>
+    <column/>
+  </columns>
+  <rows>
+    <row>
+
+      <label id="mode-toggle-label" value="${Oozie.AdvancedOptions.Button.Text}" onclick="controller.toggleMode();"/>
+
+      <hbox flex="1">
+        <spacer flex="1"/>
+        <button label="${Dialog.Test}" onclick="controller.testSettings();"/>
+        <spacer flex="1"/>
+      </hbox>
+      <button label="${Dialog.Accept}" onclick="controller.accept();"/>
+      <button label="${Dialog.Cancel}" onclick="controller.cancel();"/>
+    </row>
+  </rows>
+</grid>

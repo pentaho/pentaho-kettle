@@ -23,15 +23,6 @@
 package org.pentaho.di.ui.job.entries.sqoop;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CLabel;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Cursor;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -46,13 +37,13 @@ import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.database.dialog.DatabaseExplorerDialog;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.job.AbstractJobEntryController;
+import org.pentaho.di.ui.job.JobEntryMode;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.containers.XulDeck;
 import org.pentaho.ui.xul.containers.XulTree;
-import org.pentaho.ui.xul.swt.tags.SwtLabel;
 import org.pentaho.ui.xul.util.AbstractModelList;
 
 import java.util.Collection;
@@ -131,6 +122,7 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> ext
    * @return the element id of the XUL dialog element in the XUL document
    */
   public abstract String getDialogElementId();
+
 
   /**
    * Create the necessary XUL {@link Binding}s to support the dialog's desired functionality.
@@ -363,6 +355,11 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> ext
     String old = this.modeToggleLabel;
     this.modeToggleLabel = modeToggleLabel;
     firePropertyChange(MODE_TOGGLE_LABEL, old, this.modeToggleLabel);
+  }
+
+  @Override
+  protected void setModeToggleLabel(JobEntryMode mode) {
+    setModeToggleLabel(BaseMessages.getString(AbstractSqoopJobEntry.class, MODE_I18N_STRINGS[mode.ordinal()]));
   }
 
   protected DatabaseDialog getDatabaseDialog() {
