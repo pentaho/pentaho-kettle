@@ -622,4 +622,33 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
     RepositoryDirectoryInterface repositoryDirectoryInterface = RepositoryImportLocation.getRepositoryImportLocation().findDirectory(directoryPath);
     transObjectId = repository.getTransformationID(transName, repositoryDirectoryInterface);
   }
+  
+  /**
+   * @return The objects referenced in the step, like a mapping, a transformation, a job, ... 
+   */
+  public String[] getReferencedObjectDescriptions() {
+    return new String[] { BaseMessages.getString(PKG, "SingleThreaderMeta.ReferencedObject.Description"), };
+  }
+
+  private boolean isTransformationDefined() {
+    return !Const.isEmpty(fileName) || transObjectId!=null || (!Const.isEmpty(this.directoryPath) && !Const.isEmpty(transName));
+  }
+
+  public boolean[] isReferencedObjectEnabled() {
+    return new boolean[] { isTransformationDefined(), };
+  }
+  
+  /**
+   * Load the referenced object
+   * @param meta The metadata that references 
+   * @param index the object index to load
+   * @param rep the repository
+   * @param space the variable space to use
+   * @return the referenced object once loaded
+   * @throws KettleException
+   */
+  public Object loadReferencedObject(int index, Repository rep, VariableSpace space) throws KettleException {
+    return loadSingleThreadedTransMeta(this, rep, space);
+  }
+
 }

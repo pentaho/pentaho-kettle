@@ -30,8 +30,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.event.DocumentEvent.EventType;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.custom.CCombo;

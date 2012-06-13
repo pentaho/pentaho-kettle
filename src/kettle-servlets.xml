@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<servlets>
+
+    <!-- NOTES:
+    
+         - The root servlet is handled separately
+         - As a convention, we use the service without "/kettle/" as the id of the plugin
+    
+    --> 
+  <!-- <servlet id="root"> <description>Root servlet, index.html</description> <classname>org.pentaho.di.www.GetRootServlet</classname> </servlet>  -->
+  
+  
+  <!-- The transformation handlers... -->
+  
+  <servlet id="status"> <description>Get the status of the server</description> <classname>org.pentaho.di.www.GetStatusServlet</classname> </servlet>
+  <servlet id="transStatus"> <description>The the status of a transformation</description> <classname>org.pentaho.di.www.GetTransStatusServlet</classname> </servlet>
+  <servlet id="prepareExec"> <description>Prepare the execution of a transformation</description> <classname>org.pentaho.di.www.PrepareExecutionTransServlet</classname> </servlet>
+  <servlet id="startExec"> <description>Start the execution of a transformation</description> <classname>org.pentaho.di.www.StartExecutionTransServlet</classname> </servlet>
+  <servlet id="startTrans"> <description>Prepare and start the execution of a transformation</description> <classname>org.pentaho.di.www.StartTransServlet</classname> </servlet>
+  <servlet id="pauseTrans"> <description>Pause or continue a transformation</description> <classname>org.pentaho.di.www.PauseTransServlet</classname> </servlet>
+  <servlet id="stopTrans"> <description>Stop a transformation</description> <classname>org.pentaho.di.www.StopTransServlet</classname> </servlet>
+  <servlet id="cleanupTrans"> <description>Cleanup a transformation: close remote sockets, ...</description> <classname>org.pentaho.di.www.CleanupTransServlet</classname> </servlet>
+  <servlet id="addTrans"> <description>Add a transformation for execution</description> <classname>org.pentaho.di.www.AddTransServlet</classname> </servlet>
+  <servlet id="removeTrans"> <description>Remove a transformation</description> <classname>org.pentaho.di.www.RemoveTransServlet</classname> </servlet>
+  <servlet id="allocateSocket"> <description>Service for the allocation of server sockets</description> <classname>org.pentaho.di.www.AllocateServerSocketServlet</classname> </servlet>
+  <servlet id="listSocket"> <description>Lists server socket allocation information</description> <classname>org.pentaho.di.www.ListServerSocketServlet</classname> </servlet>
+  <servlet id="sniffStep"> <description>Sniff test a transformation step</description> <classname>org.pentaho.di.www.SniffStepServlet</classname> </servlet>
+  <servlet id="executeTrans"> <description>Execute (prepare and start) a specific transformation and pass output to the servlet</description> <classname>org.pentaho.di.www.ExecuteTransServlet</classname> </servlet>
+  
+  <!-- The job handlers... -->
+  
+  <servlet id="startJob"> <description>Start a job</description> <classname>org.pentaho.di.www.StartJobServlet</classname> </servlet>
+  <servlet id="stopJob"> <description>Stop a job</description> <classname>org.pentaho.di.www.StopJobServlet</classname> </servlet>
+  <servlet id="jobStatus"> <description>Get the status of a job</description> <classname>org.pentaho.di.www.GetJobStatusServlet</classname> </servlet>
+  <servlet id="addJob"> <description>Add a job to the server</description> <classname>org.pentaho.di.www.AddJobServlet</classname> </servlet>
+  <servlet id="removeJob"> <description>Remove a job from the server</description> <classname>org.pentaho.di.www.RemoveJobServlet</classname> </servlet>
+  
+  <!-- The dynamic clustering ... -->
+  
+  <servlet id="registerSlave"> <description>Register a slave server</description> <classname>org.pentaho.di.www.RegisterSlaveServlet</classname> </servlet>
+  <servlet id="getSlaves"> <description>List all registered slave servers</description> <classname>org.pentaho.di.www.GetSlavesServlet</classname> </servlet>
+
+  <!-- Easier remote execution ... -->
+
+  <servlet id="addExport"> <description>Upload a resources export file</description> <classname>org.pentaho.di.www.AddExportServlet</classname> </servlet>
+
+  <!-- Sequence generation ... -->
+
+  <servlet id="nextSequence"> <description>Get the next block of values for a sequence</description> <classname>org.pentaho.di.www.NextSequenceValueServlet</classname> </servlet>
+  
+</servlets>

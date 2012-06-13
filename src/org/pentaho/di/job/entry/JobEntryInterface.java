@@ -162,4 +162,24 @@ public interface JobEntryInterface
    */
   public void lookupRepositoryReferences(Repository repository) throws KettleException;
 
+  /**
+   * @return The objects referenced in the step, like a a transformation, a job, a mapper, a reducer, a combiner, ... 
+   */
+  public String[] getReferencedObjectDescriptions();
+
+  /**
+   * @return true for each referenced object that is enabled or has a valid reference definition.
+   */
+  public boolean[] isReferencedObjectEnabled();
+  
+  /**
+   * Load the referenced object
+   * @param index the referenced object index to load (in case there are multiple references)
+   * @param rep the repository
+   * @param space the variable space to use
+   * @return the referenced object once loaded
+   * @throws KettleException
+   */
+  public Object loadReferencedObject(int index, Repository rep, VariableSpace space) throws KettleException;
+
 }

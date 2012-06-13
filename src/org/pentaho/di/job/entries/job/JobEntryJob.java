@@ -1339,4 +1339,33 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     RepositoryDirectoryInterface repositoryDirectoryInterface = RepositoryImportLocation.getRepositoryImportLocation().findDirectory(directory);
     jobObjectId = repository.getJobId(jobname, repositoryDirectoryInterface);
   }
+  
+  private boolean isJobDefined() {
+    return !Const.isEmpty(filename) || jobObjectId!=null || (!Const.isEmpty(this.directory) && !Const.isEmpty(jobname));
+  }
+  
+  public boolean[] isReferencedObjectEnabled() {
+    return new boolean[] { isJobDefined(), };
+  }
+  
+  /**
+   * @return The objects referenced in the step, like a a transformation, a job, a mapper, a reducer, a combiner, ... 
+   */
+  public String[] getReferencedObjectDescriptions() {
+    return new String[] { 
+        BaseMessages.getString(PKG, "JobEntryJob.ReferencedObject.Description"), 
+      };
+  }
+  
+  /**
+   * Load the referenced object
+   * @param index the referenced object index to load (in case there are multiple references)
+   * @param rep the repository
+   * @param space the variable space to use
+   * @return the referenced object once loaded
+   * @throws KettleException
+   */
+  public Object loadReferencedObject(int index, Repository rep, VariableSpace space) throws KettleException {
+    return getJobMeta(rep, space);
+  }
 }

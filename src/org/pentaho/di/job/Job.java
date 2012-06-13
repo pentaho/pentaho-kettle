@@ -109,7 +109,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 	private JobMeta jobMeta;
 	private int logCommitSize=10;
 	private Repository rep;
-    private AtomicInteger errors;
+  private AtomicInteger errors;
 
 	private VariableSpace variables = new Variables();
 	

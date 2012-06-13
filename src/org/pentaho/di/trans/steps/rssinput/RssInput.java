@@ -92,8 +92,6 @@ public class RssInput extends BaseStep implements StepInterface
 	private RssInputMeta meta;
 	private RssInputData data;
 
-	private int errors = 0;
-	
 	public RssInput(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
 	{
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
@@ -374,7 +372,6 @@ public class RssInput extends BaseStep implements StepInterface
          }
 
          putError(errorMeta, errorData, 1, e.toString(), this.data.currenturl, errorCode);
-         errors++;
          logError(BaseMessages.getString(PKG, "RssInput.ErrorProcessing.Run",e.toString())); //$NON-NLS-1$
          
          ByteArrayOutputStream byteOS = new ByteArrayOutputStream();

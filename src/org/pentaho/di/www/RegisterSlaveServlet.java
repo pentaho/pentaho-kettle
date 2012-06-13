@@ -36,8 +36,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-public class RegisterSlaveServlet extends BaseHttpServlet implements
-    CarteServletInterface {
+public class RegisterSlaveServlet extends BaseHttpServlet implements CartePluginInterface {
   private static final long serialVersionUID = 8513820270964866132L;
 
   public static final String CONTEXT_PATH = "/kettle/registerSlave";
@@ -132,4 +131,9 @@ public class RegisterSlaveServlet extends BaseHttpServlet implements
   public String getService() {
     return CONTEXT_PATH + " (" + toString() + ")";
   }
+  
+  public String getContextPath() {
+    return CONTEXT_PATH;
+  }
+
 }

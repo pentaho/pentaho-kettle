@@ -328,7 +328,8 @@ public class MailInput extends BaseStep implements StepInterface
 
 		return r;
 	}
-	private boolean openNextFolder() {
+	@SuppressWarnings("unchecked")
+  private boolean openNextFolder() {
 		try {
 			if(!meta.isDynamicFolder()) {
 				// static folders list

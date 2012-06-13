@@ -140,14 +140,11 @@ import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaDataCombi;
+import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.step.errorhandling.Stream;
 import org.pentaho.di.trans.step.errorhandling.StreamIcon;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface;
 import org.pentaho.di.trans.step.errorhandling.StreamInterface.StreamType;
-import org.pentaho.di.trans.steps.jobexecutor.JobExecutorMeta;
-import org.pentaho.di.trans.steps.mapping.MappingMeta;
-import org.pentaho.di.trans.steps.metainject.MetaInjectMeta;
-import org.pentaho.di.trans.steps.singlethreader.SingleThreaderMeta;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
@@ -176,6 +173,7 @@ import org.pentaho.di.ui.spoon.dialog.NotePadDialog;
 import org.pentaho.di.ui.spoon.dialog.SearchFieldsProgressDialog;
 import org.pentaho.di.ui.spoon.job.JobGraph;
 import org.pentaho.di.ui.trans.dialog.TransDialog;
+import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulLoader;
@@ -187,6 +185,7 @@ import org.pentaho.ui.xul.containers.XulToolbar;
 import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.impl.XulEventHandler;
 import org.pentaho.ui.xul.swt.SwtXulLoader;
+import org.pentaho.ui.xul.swt.tags.SwtMenuitem;
 
 /**
  * This class handles the display of the transformations in a graphical way using icons, arrows, etc.
@@ -2327,12 +2326,30 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             XulMenuitem item = (XulMenuitem) doc.getElementById("trans-graph-entry-newhop"); //$NON-NLS-1$
             item.setDisabled(sels != 2);
 
-            item = (XulMenuitem) doc.getElementById("trans-graph-entry-open-mapping"); //$NON-NLS-1$
-            item.setDisabled(!stepMeta.isMapping() && !stepMeta.isSingleThreader() && !stepMeta.isEtlMetaInject() && !stepMeta.isJobExecutor());
-            if (stepMeta.isJobExecutor()) {
-              item.setLabel(BaseMessages.getString(PKG, "TransGraph.PopupMenu.OpenJob")); //$NON-NLS-1$
-            } else {
-              item.setLabel(BaseMessages.getString(PKG, "TransGraph.PopupMenu.OpenMapping")); //$NON-NLS-1$
+            XulMenupopup launchMenu = (XulMenupopup) doc.getElementById("trans-graph-entry-launch-popup");
+            String[] referencedObjects = stepMeta.getStepMetaInterface().getReferencedObjectDescriptions();
+            boolean[] enabledObjects = stepMeta.getStepMetaInterface().isReferencedObjectEnabled();
+            launchMenu.setDisabled(Const.isEmpty(referencedObjects));
+            
+            List<XulComponent> childNodes = launchMenu.getChildNodes();
+            for (XulComponent childNode : childNodes) {
+              item.removeChild(childNode);
+            }
+            if (!Const.isEmpty(referencedObjects)) {
+              for (int i=0;i<referencedObjects.length;i++) {
+                String referencedObject = referencedObjects[i];
+                XulMenuitem child = new SwtMenuitem(launchMenu, xulDomContainer, referencedObject, i);
+                child.setLabel(referencedObject);
+                child.setDisabled(!enabledObjects[i]);
+                launchMenu.addChild(child);
+                MenuItem swtItem = (MenuItem) child.getManagedObject();
+                final int index = i;
+                swtItem.addSelectionListener(new SelectionAdapter() {
+                  public void widgetSelected(SelectionEvent event) {
+                    openMapping(stepMeta, index);
+                  }
+                });
+              }
             }
 
             item = (XulMenuitem) doc.getElementById("trans-graph-entry-align-snap"); //$NON-NLS-1$
@@ -3910,36 +3927,35 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       }
     });
   }
+
+  /**
+   * XUL dummy menu entry
+   */
+  public void openMapping() {
+  }
   
   /**
    * Open the transformation mentioned in the mapping...
    */
-  public void openMapping() {
+  public void openMapping(StepMeta stepMeta, int index) {
 	  try {
-	    TransMeta mappingMeta = null;
-	    if (this.currentStep.getStepMetaInterface() instanceof MappingMeta) {
-  		  MappingMeta meta = (MappingMeta) this.currentStep.getStepMetaInterface();
-  		  mappingMeta = MappingMeta.loadMappingMeta(meta, spoon.rep, transMeta);
+	    Object referencedMeta = null;
+	    StepMetaInterface meta = stepMeta.getStepMetaInterface();
+	    if (!Const.isEmpty(meta.getReferencedObjectDescriptions())) {
+        referencedMeta = meta.loadReferencedObject(index, spoon.rep, transMeta);
 	    }
-	    if (this.currentStep.getStepMetaInterface() instanceof SingleThreaderMeta) {
-	      SingleThreaderMeta meta = (SingleThreaderMeta) this.currentStep.getStepMetaInterface();
-        mappingMeta = SingleThreaderMeta.loadSingleThreadedTransMeta(meta, spoon.rep, transMeta);
-      }
-      if (this.currentStep.getStepMetaInterface() instanceof MetaInjectMeta) {
-        MetaInjectMeta meta = (MetaInjectMeta) this.currentStep.getStepMetaInterface();
-        mappingMeta = MetaInjectMeta.loadTransformationMeta(meta, spoon.rep, transMeta);
-      }
-      
-	    if (mappingMeta!=null) {
+	    if (referencedMeta==null) return;
+	    
+	    if (referencedMeta instanceof TransMeta) {
+	      TransMeta mappingMeta = (TransMeta) referencedMeta;
   		  mappingMeta.clearChanged();
   		  spoon.addTransGraph(mappingMeta);
   		  TransGraph subTransGraph = spoon.getActiveTransGraph();
   		  attachActiveTrans(subTransGraph, this.currentStep);
 	    }
 	    
-      if (this.currentStep.getStepMetaInterface() instanceof JobExecutorMeta) {
-        JobExecutorMeta meta = (JobExecutorMeta) this.currentStep.getStepMetaInterface();
-        JobMeta jobMeta = JobExecutorMeta.loadMappingMeta(meta, spoon.rep, transMeta);
+	    if (referencedMeta instanceof JobMeta) {
+        JobMeta jobMeta = (JobMeta) referencedMeta;
         jobMeta.clearChanged();
         spoon.addJobGraph(jobMeta);
         JobGraph jobGraph = spoon.getActiveJobGraph();

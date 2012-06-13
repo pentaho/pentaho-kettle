@@ -38,7 +38,7 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransConfiguration;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 
-public class PrepareExecutionTransServlet extends BaseHttpServlet implements CarteServletInterface {
+public class PrepareExecutionTransServlet extends BaseHttpServlet implements CartePluginInterface {
   private static Class<?>    PKG              = PrepareExecutionTransServlet.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
   private static final long  serialVersionUID = 3634806745372015720L;
@@ -51,7 +51,7 @@ public class PrepareExecutionTransServlet extends BaseHttpServlet implements Car
     super(transformationMap);
   }
 
-  protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     if (isJettyMode() && !request.getContextPath().startsWith(CONTEXT_PATH))
       return;
 
@@ -173,4 +173,9 @@ public class PrepareExecutionTransServlet extends BaseHttpServlet implements Car
   public String getService() {
     return CONTEXT_PATH + " (" + toString() + ")";
   }
+  
+  public String getContextPath() {
+    return CONTEXT_PATH;
+  }
+
 }

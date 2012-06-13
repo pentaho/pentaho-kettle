@@ -57,7 +57,7 @@ import org.w3c.dom.Document;
  * @author matt
  * 
  */
-public class AddExportServlet extends BaseHttpServlet implements CarteServletInterface {
+public class AddExportServlet extends BaseHttpServlet implements CartePluginInterface {
   public static final String PARAMETER_LOAD = "load";
   public static final String PARAMETER_TYPE = "type";
 
@@ -102,11 +102,11 @@ public class AddExportServlet extends BaseHttpServlet implements CarteServletInt
 
       // Pass the input directly to a temporary file
       //
-      int size = 0;
+      // int size = 0;
       int c;
       while ((c = in.read()) != -1) {
         outputStream.write(c);
-        size++;
+        // size++;
       }
 
       outputStream.flush();
@@ -204,4 +204,7 @@ public class AddExportServlet extends BaseHttpServlet implements CarteServletInt
     return CONTEXT_PATH + " (" + toString() + ")";
   }
 
+  public String getContextPath() {
+    return CONTEXT_PATH;
+  }
 }

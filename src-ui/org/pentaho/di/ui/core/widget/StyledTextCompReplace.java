@@ -181,9 +181,8 @@ public void open() {
 
 		btnReplaceAll.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
-		        int counter;
 		        text.setCaretOffset(-1);
-		        for (counter = 0; findText(); counter++) {
+		        while( findText() ) {
 		           replaceText();
 		        }
 			}

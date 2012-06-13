@@ -230,7 +230,8 @@ public class JobEntryFolderIsEmpty extends JobEntryBase implements Cloneable, Jo
 						if(filescount==0)
 						{
 							result.setResult(true);
-							result.setNrErrors(0);
+		          result.setNrLinesInput(folderscount);
+		          result.setNrErrors(0);
 						}
 					}
 					else

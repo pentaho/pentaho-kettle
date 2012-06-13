@@ -244,7 +244,7 @@ public class PluginRegistry {
 	/**
 	 * Retrieve a list of all categories for a certain plugin type.
 	 * @param pluginType The plugin type to search categories for.
-	 * @return The list of categories for this plugin type.  The list can be modified (sorted etc) but will not impact the registry in any way.
+	 * @return The list of categories for thihttp:// commons.apache.org/vfs/filesystems.htmls plugin type.  The list can be modified (sorted etc) but will not impact the registry in any way.
 	 */
 	public List<String> getCategories(Class<? extends PluginTypeInterface> pluginType) {
 		List<String> categories = categoryMap.get(pluginType);
@@ -413,8 +413,10 @@ public class PluginRegistry {
 	 * @throws KettlePluginException
 	 */
   public synchronized static void init() throws KettlePluginException {
+
       final PluginRegistry registry = getInstance();
 
+      long start = System.currentTimeMillis();
       // Find pluginRegistry extensions
       try {
         registry.registerType(PluginRegistryPluginType.getInstance());
@@ -426,11 +428,19 @@ public class PluginRegistry {
       } catch (KettlePluginException e) {
         e.printStackTrace();
       }
+      long end = System.currentTimeMillis();
+      System.out.println("Registration of plugin extension points: "+(end-start)+" ms");
 
+      start = System.currentTimeMillis();
       for (final PluginTypeInterface pluginType : pluginTypes) {
         registry.registerType(pluginType);
       }
-
+      end = System.currentTimeMillis();
+      System.out.println("Registeration of plugin types : "+(end-start)+" ms");
+      
+      // Clear the jar file cache so that we don't waste memory...
+      //
+      JarFileCache.getInstance().clear();
     }
 
     private void registerType(PluginTypeInterface pluginType) throws KettlePluginException {

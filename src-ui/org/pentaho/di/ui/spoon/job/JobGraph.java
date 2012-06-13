@@ -78,6 +78,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.ToolBar;
@@ -150,6 +151,7 @@ import org.pentaho.di.ui.spoon.dialog.NotePadDialog;
 import org.pentaho.di.ui.spoon.trans.DelayListener;
 import org.pentaho.di.ui.spoon.trans.DelayTimer;
 import org.pentaho.di.ui.spoon.trans.TransGraph;
+import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulLoader;
@@ -161,6 +163,7 @@ import org.pentaho.ui.xul.containers.XulToolbar;
 import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.impl.XulEventHandler;
 import org.pentaho.ui.xul.swt.SwtXulLoader;
+import org.pentaho.ui.xul.swt.tags.SwtMenuitem;
 
 /**
  * Handles the display of Jobs in Spoon, in a graphical form.
@@ -1604,7 +1607,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
   public JobEntryCopy getJobEntry() {
     return jobEntry;
   }
-
+  
   public void openTransformation() {
 	JobEntryCopy jobEntryCopy = getJobEntry();
     final JobEntryInterface entry = jobEntryCopy.getEntry();
@@ -1737,15 +1740,30 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
         XulMenuitem item = (XulMenuitem) doc.getElementById("job-graph-entry-newhop");
         item.setDisabled(sels < 2);
         
-        item = (XulMenuitem) doc.getElementById("job-graph-entry-launch");
-        if (jobEntry.isTransformation()) {
-          item.setDisabled(false);
-          item.setLabel(BaseMessages.getString(PKG, "JobGraph.PopupMenu.JobEntry.LaunchSpoon"));          
-        } else if (jobEntry.isJob()) {
-          item.setDisabled(false);
-          item.setLabel(BaseMessages.getString(PKG, "JobGraph.PopupMenu.JobEntry.LaunchChef"));          
-        } else {
-          item.setDisabled(true);
+        XulMenupopup launchMenu = (XulMenupopup) doc.getElementById("job-graph-entry-launch-popup");
+        String[] referencedObjects = jobEntry.getEntry().getReferencedObjectDescriptions();
+        boolean[] enabledObjects = jobEntry.getEntry().isReferencedObjectEnabled();
+        launchMenu.setDisabled(Const.isEmpty(referencedObjects));
+        
+        List<XulComponent> childNodes = launchMenu.getChildNodes();
+        for (XulComponent childNode : childNodes) {
+          item.removeChild(childNode);
+        }
+        if (!Const.isEmpty(referencedObjects)) {
+          for (int i=0;i<referencedObjects.length;i++) {
+            String referencedObject = referencedObjects[i];
+            XulMenuitem child = new SwtMenuitem(launchMenu, xulDomContainer, referencedObject, i);
+            child.setLabel(referencedObject);
+            child.setDisabled(!enabledObjects[i]);
+            launchMenu.addChild(child);
+            MenuItem swtItem = (MenuItem) child.getManagedObject();
+            final int index = i;
+            swtItem.addSelectionListener(new SelectionAdapter() {
+              public void widgetSelected(SelectionEvent event) {
+                loadReferencedObject(jobEntry, index);
+              }
+            });
+          }
         }
 
         item = (XulMenuitem) doc.getElementById("job-graph-entry-align-snap");
@@ -1863,6 +1881,8 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
     }
   }  
   
+
+
   public void selectAll() {
 	  spoon.editSelectAll();
   }
@@ -2218,6 +2238,12 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
   }
 
   public void launchStuff(JobEntryCopy jobEntryCopy) {
+    String[] references = jobEntryCopy.getEntry().getReferencedObjectDescriptions();
+    if (!Const.isEmpty(references)) {
+      loadReferencedObject(jobEntryCopy, 0);
+    }
+
+    /*
     if (jobEntryCopy.isJob()) {
       final JobEntryJob entry = (JobEntryJob) jobEntryCopy.getEntry();
       if ((entry != null && entry.getJobObjectId() == null && !Const.isEmpty(entry.getFilename()) && spoon.rep == null)
@@ -2235,11 +2261,74 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
         openTransformation(entry, jobEntryCopy);
       }
     }
+    */
   }
   
   public void launchStuff(){
     if(jobEntry!= null){
       launchStuff(jobEntry);
+    }
+  }
+  
+  protected void loadReferencedObject(JobEntryCopy jobEntryCopy, int index) {
+    try {
+      Object referencedMeta = jobEntryCopy.getEntry().loadReferencedObject(index, spoon.rep, jobMeta);
+      if (referencedMeta!=null && (referencedMeta instanceof TransMeta)) {
+        TransMeta launchTransMeta = (TransMeta) referencedMeta;
+        
+        // Try to see if this transformation is already loaded in another tab...
+        //
+        TabMapEntry tabEntry = spoon.delegates.tabs.findTabForTransformation(launchTransMeta);
+        if (tabEntry != null) {
+          // Switch to this one!
+          //
+          spoon.tabfolder.setSelected(tabEntry.getTabItem());
+          return;
+        }
+    
+        copyInternalJobVariables(jobMeta, launchTransMeta);
+        spoon.setParametersAsVariablesInUI(launchTransMeta, launchTransMeta);
+    
+        launchTransMeta.clearChanged();
+        spoon.addTransGraph(launchTransMeta);
+            
+        TransGraph transGraph = spoon.getActiveTransGraph();
+        attachActiveTrans(transGraph, launchTransMeta, jobEntryCopy);
+            
+        spoon.refreshTree();
+        spoon.applyVariables();     
+      }
+      
+      if (referencedMeta!=null && (referencedMeta instanceof JobMeta)) {
+        JobMeta launchJobMeta = (JobMeta) referencedMeta;
+
+        // Try to see if this job is already loaded in another tab...
+        //
+        String tabName = spoon.delegates.tabs.makeTabName(launchJobMeta, true);
+        TabMapEntry tabEntry = spoon.delegates.tabs.findTabMapEntry(tabName, ObjectType.JOB_GRAPH);
+        if (tabEntry != null) {
+          // Switch to this one!
+          //
+          spoon.tabfolder.setSelected(tabEntry.getTabItem());
+          return;
+        }
+    
+        spoon.setParametersAsVariablesInUI(launchJobMeta, launchJobMeta);
+    
+        launchJobMeta.clearChanged();
+        spoon.addJobGraph(launchJobMeta);
+            
+        JobGraph jobGraph = spoon.getActiveJobGraph();
+        attachActiveJob(jobGraph, launchJobMeta, jobEntryCopy);
+            
+        spoon.refreshTree();
+        spoon.applyVariables();
+      }
+    } catch(Exception e) {
+      new ErrorDialog(shell, 
+          BaseMessages.getString(PKG, "JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformation.Title"),
+          BaseMessages.getString(PKG, "JobGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformation.Message"), 
+         (Exception) e); 
     }
   }
 

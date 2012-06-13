@@ -105,7 +105,7 @@ public class WebService extends BaseStep implements StepInterface
 
     private int nbRowProcess;
 
-    private long requestTime;
+    // private long requestTime;
 
     private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 
@@ -429,7 +429,7 @@ public class WebService extends BaseStep implements StepInterface
 
             RequestEntity requestEntity = new ByteArrayRequestEntity(xml.toString().getBytes("UTF-8"), "UTF-8");
             vHttpMethod.setRequestEntity(requestEntity);
-            long currentRequestTime = Const.nanoTime();
+            // long currentRequestTime = Const.nanoTime();
             int responseCode = vHttpClient.executeMethod(vHostConfiguration, vHttpMethod);
             if (responseCode == 200)
             {
@@ -447,7 +447,7 @@ public class WebService extends BaseStep implements StepInterface
             {
             	throw new KettleStepException(BaseMessages.getString(PKG, "WebServices.ERROR0001.ServerError", Integer.toString(responseCode), Const.NVL(new String(vHttpMethod.getResponseBody()), ""), vURLService) );
             }
-            requestTime += Const.nanoTime() - currentRequestTime;
+            // requestTime += Const.nanoTime() - currentRequestTime;
         }
         catch (URIException e)
         {

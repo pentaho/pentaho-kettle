@@ -43,7 +43,7 @@ import org.pentaho.di.trans.TransConfiguration;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
 
-public class AddTransServlet extends BaseHttpServlet implements CarteServletInterface {
+public class AddTransServlet extends BaseHttpServlet implements CartePluginInterface {
   private static final long serialVersionUID = -6850701762586992604L;
 
   public static final String CONTEXT_PATH = "/kettle/addTrans";
@@ -175,5 +175,9 @@ public class AddTransServlet extends BaseHttpServlet implements CarteServletInte
 
   public String getService() {
     return CONTEXT_PATH + " (" + toString() + ")";
+  }
+  
+  public String getContextPath() {
+    return CONTEXT_PATH;
   }
 }

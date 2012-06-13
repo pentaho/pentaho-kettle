@@ -41,15 +41,10 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 
-public class StartTransServlet extends BaseHttpServlet implements CarteServletInterface {
+public class StartTransServlet extends BaseHttpServlet implements CartePluginInterface {
 
-	private static Class<?>		PKG					= StartTransServlet.class;	// for
-																				// i18n
-																				// purposes,
-																				// needed
-																				// by
-																				// Translator2!!
-																				// $NON-NLS-1$
+	private static Class<?>		PKG					= StartTransServlet.class;
+	
 	private static final long	serialVersionUID	= -5879200987669847357L;
 
 	public static final String	CONTEXT_PATH		= "/kettle/startTrans";
@@ -61,7 +56,7 @@ public class StartTransServlet extends BaseHttpServlet implements CarteServletIn
 		super(transformationMap);
 	}
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		if (isJettyMode() && !request.getContextPath().startsWith(CONTEXT_PATH)) {
 			return;
 		}
@@ -175,5 +170,10 @@ public class StartTransServlet extends BaseHttpServlet implements CarteServletIn
 
 	protected void executeTrans(Trans trans) throws KettleException { 
 	   trans.execute(null);
-	} 
+	}
+	
+  public String getContextPath() {
+    return CONTEXT_PATH;
+  }
+
 }

@@ -41,7 +41,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobConfiguration;
 
-public class StartJobServlet extends BaseHttpServlet implements CarteServletInterface {
+public class StartJobServlet extends BaseHttpServlet implements CartePluginInterface {
   private static Class<?> PKG = StartJobServlet.class; // for i18n purposes,
   // needed by
   // Translator2!!
@@ -57,7 +57,7 @@ public class StartJobServlet extends BaseHttpServlet implements CarteServletInte
     super(jobMap);
   }
 
-  protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     if (isJettyMode() && !request.getContextPath().startsWith(CONTEXT_PATH)) {
       return;
     }
@@ -195,5 +195,10 @@ public class StartJobServlet extends BaseHttpServlet implements CarteServletInte
   
   protected void runJob(Job job) throws KettleException { 
      job.start(); // runs the thread in the background... 
-   } 
+   }
+  
+  public String getContextPath() {
+    return CONTEXT_PATH;
+  }
+
 }

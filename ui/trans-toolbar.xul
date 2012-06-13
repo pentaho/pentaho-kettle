@@ -39,6 +39,15 @@
 
   <menupopup id="trans-graph-entry">
     <menuitem id="trans-graph-entry-newhop" label="${TransGraph.PopupMenu.NewHop}" command="transgraph.newHopChoice()" />
+    
+    <menu id="trans-graph-entry-launch" label="${TransGraph.PopupMenu.OpenReferencedObject}">
+      <menupopup id="trans-graph-entry-launch-popup">
+      
+         <menuitem id="trans-graph-entry-launch-popup-nothing" label="${TransGraph.PopupMenu.Launch.Nothing}" command="transgraph.openMapping()" />
+      
+	  </menupopup>
+	</menu>
+    
     <menuitem id="trans-graph-entry-open-mapping" label="${TransGraph.PopupMenu.OpenMapping}" command="transgraph.openMapping()" />
     <menuitem id="trans-graph-entry-edit" label="${TransGraph.PopupMenu.EditStep}" command="transgraph.editStep()" />
     <menuitem id="trans-graph-entry-edit-description" label="${TransGraph.PopupMenu.EditStepDescription}"

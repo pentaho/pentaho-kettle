@@ -1293,7 +1293,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
      * Then we're going to give it a new filename, modify that filename in this entries.
      * The parent caller will have made a copy of it, so it should be OK to do so.
      */
-    public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface, Repository repository) throws KettleException {
+  public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface namingInterface, Repository repository) throws KettleException {
 		// Try to load the transformation from repository or file.
 		// Modify this recursively too...
 		//
@@ -1436,4 +1436,34 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     RepositoryDirectoryInterface repositoryDirectoryInterface = RepositoryImportLocation.getRepositoryImportLocation().findDirectory(directory);
     transObjectId = repository.getTransformationID(transname, repositoryDirectoryInterface);
   }
+  
+  /**
+   * @return The objects referenced in the step, like a a transformation, a job, a mapper, a reducer, a combiner, ... 
+   */
+  public String[] getReferencedObjectDescriptions() {
+    return new String[] { 
+        BaseMessages.getString(PKG, "JobEntryTrans.ReferencedObject.Description"), 
+      };
+  }
+  
+  private boolean isTransformationDefined() {
+    return !Const.isEmpty(filename) || transObjectId!=null || (!Const.isEmpty(this.directory) && !Const.isEmpty(transname));
+  }
+
+  public boolean[] isReferencedObjectEnabled() {
+    return new boolean[] { isTransformationDefined(), };
+  }
+  
+  /**
+   * Load the referenced object
+   * @param index the referenced object index to load (in case there are multiple references)
+   * @param rep the repository
+   * @param space the variable space to use
+   * @return the referenced object once loaded
+   * @throws KettleException
+   */
+  public Object loadReferencedObject(int index, Repository rep, VariableSpace space) throws KettleException {
+    return getTransMeta(rep, space);
+  }
+
 }

@@ -72,8 +72,8 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 
 	public String schemaname[];
 	
-	private int NrErrors=0;
-	private int NrSuccess=0;
+	private int nrErrors=0;
+	private int nrSuccess=0;
 	boolean continueProcess=true;
 
 	public JobEntryTruncateTables(String n)
@@ -250,9 +250,9 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 	    RowMetaAndData resultRow = null;
 		
 		result.setResult(true);
-		NrErrors=0;
+		nrErrors=0;
 		continueProcess=true;
-		NrSuccess=0;
+		nrSuccess=0;
 		
 	    if (argFromPrevious) {
 		      if(log.isDetailed()) 
@@ -321,18 +321,19 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 			logError(BaseMessages.getString(PKG, "JobEntryTruncateTables.NoDbConnection"));
 		}
 		
-		result.setNrErrors(NrErrors);
-		result.setResult(NrErrors==0);
+		result.setNrErrors(nrErrors);
+		result.setNrLinesDeleted(nrSuccess);
+		result.setResult(nrErrors==0);
 		return result;
 	}
 	private void updateErrors()
 	{
-		NrErrors++;
+		nrErrors++;
 		continueProcess=false;
 	}
 	private void updateSuccess()
 	{
-		NrSuccess++;
+		nrSuccess++;
 	}
     
     public DatabaseMeta[] getUsedDatabaseConnections()

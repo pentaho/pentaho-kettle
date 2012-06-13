@@ -2976,7 +2976,6 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                 }
                 EncodingType encodingType = EncodingType.guessEncodingType(reader.getEncoding());
 
-				String firstlines="";
 				int    linenr=0;
 				int    maxnr = nrlines+(meta.hasHeader()?meta.getNrHeaderLines():0);
 				
@@ -3011,7 +3010,6 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 				while(line!=null && (linenr<maxnr || nrlines==0))
 				{
 					retval.add(line);
-					firstlines+=line+Const.CR;
 					linenr++;
 					line = TextFileInput.getLine(log, reader, encodingType, fileFormatType, lineStringBuilder);
 				}

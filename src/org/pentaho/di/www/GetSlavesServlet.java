@@ -34,8 +34,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 
-public class GetSlavesServlet extends BaseHttpServlet implements
-    CarteServletInterface {
+public class GetSlavesServlet extends BaseHttpServlet implements CartePluginInterface {
   private static Class<?> PKG = GetSlavesServlet.class; // for i18n purposes,
   // needed by
   // Translator2!!
@@ -57,7 +56,7 @@ public class GetSlavesServlet extends BaseHttpServlet implements
     super(slaveServers, isJetty);
   }
 
-  protected void doGet(HttpServletRequest request, HttpServletResponse response)
+  public void doGet(HttpServletRequest request, HttpServletResponse response)
       throws ServletException, IOException {
     if (isJettyMode() && !request.getContextPath().startsWith(CONTEXT_PATH))
       return;
@@ -92,4 +91,9 @@ public class GetSlavesServlet extends BaseHttpServlet implements
   public String getService() {
     return CONTEXT_PATH + " (" + toString() + ")";
   }
+  
+  public String getContextPath() {
+    return CONTEXT_PATH;
+  }
+
 }

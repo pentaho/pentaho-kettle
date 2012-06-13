@@ -466,30 +466,6 @@ public class TeraFastDialog extends BaseStepDialog implements StepDialogInterfac
             mappings.add(mapping);
         }
 
-        // show a confirm dialog if some missing field was found
-        //
-        if (missingSourceFields.length() > 0 || missingTargetFields.length() > 0) {
-
-            String message = "";
-            if (missingSourceFields.length() > 0) {
-                message += BaseMessages.getString(PKG, "TeraFastDialog.DoMapping.SomeSourceFieldsNotFound", missingSourceFields
-                        .toString())
-                        + Const.CR;
-            }
-            if (missingTargetFields.length() > 0) {
-                message += BaseMessages.getString(PKG, "TeraFastDialog.DoMapping.SomeTargetFieldsNotFound", missingSourceFields
-                        .toString())
-                        + Const.CR;
-            }
-            message += Const.CR;
-            message += BaseMessages.getString(PKG, "TeraFastDialog.DoMapping.SomeFieldsNotFoundContinue") + Const.CR;
-            // MessageDialog.setDefaultImage(GUIResource.getInstance().getImageSpoon());
-            // boolean goOn = MessageDialog.openConfirm(this.shell,
-            // BaseMessages.getString(PKG, "TeraFastDialog.DoMapping.SomeFieldsNotFoundTitle"), message);
-            // if (!goOn) {
-            // return;
-            // }
-        }
         EnterMappingDialog d = new EnterMappingDialog(TeraFastDialog.this.shell, sourceFields.getFieldNames(),
                 targetFields.getFieldNames(), mappings);
         mappings = d.open();

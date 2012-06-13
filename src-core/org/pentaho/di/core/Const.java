@@ -107,7 +107,7 @@ public class Const
 	/**
 	 * Fetch size in rows when querying a database
 	 */
-	public static final int FETCH_SIZE = 5000;
+	public static final int FETCH_SIZE = 10000;
 
 	/**
 	 * Sort size: how many rows do we sort in memory at once?
@@ -694,6 +694,16 @@ public class Const
    * The name of the environment variable that will contain the alternative location of the kettle-job-entries.xml file
    */
   public static final String   KETTLE_CORE_JOBENTRIES_FILE = "KETTLE_CORE_JOBENTRIES_FILE";
+
+  /**
+   * The XML file that contains the list of native Kettle Carte Servlets
+   */
+  public static final String  XML_FILE_KETTLE_SERVLETS = "kettle-servlets.xml";
+
+  /**
+   * The name of the environment variable that will contain the alternative location of the kettle-servlets.xml file
+   */
+  public static final String   KETTLE_CORE_SERVLETS_FILE = "KETTLE_CORE_SERVLETS_FILE";
 
   /**
    * The name of the variable that optionally contains an alternative rowset get timeout (in ms).
@@ -2490,11 +2500,9 @@ public class Const
 		  return 0;
 	  int counter=0;
 	  int len = searchFor.length();
-	  int result = 0;
 	  if (len > 0) {  
 	  int start = string.indexOf(searchFor);
 	  while (start != -1) {
-	            result++;
 	            start = string.indexOf(searchFor, start+len);
 	        }
 	    }

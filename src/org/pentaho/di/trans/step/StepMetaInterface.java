@@ -322,4 +322,25 @@ public interface StepMetaInterface
   
   public void setChanged();
   public boolean hasChanged();
+  
+  /**
+   * @return The objects referenced in the step, like a mapping, a transformation, a job, ... 
+   */
+  public String[] getReferencedObjectDescriptions();
+  
+  /**
+   * @return true for each referenced object that is enabled or has a valid reference definition.
+   */
+  public boolean[] isReferencedObjectEnabled();
+  
+  /**
+   * Load the referenced object
+   * @param index the referenced object index to load (in case there are multiple references)
+   * @param rep the repository
+   * @param space the variable space to use
+   * @return the referenced object once loaded
+   * @throws KettleException
+   */
+  public Object loadReferencedObject(int index, Repository rep, VariableSpace space) throws KettleException;
+
 }

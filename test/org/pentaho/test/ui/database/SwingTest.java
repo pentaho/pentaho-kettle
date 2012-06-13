@@ -88,8 +88,6 @@ public class SwingTest {
 		try{
 			@SuppressWarnings("unused")
       Object data = container.getEventHandler("dataHandler").getData(); //$NON-NLS-1$
-			int i=0;
-			i++;
 		} catch(XulException e){
 			System.out.println("Error getting data"); //$NON-NLS-1$
 		}

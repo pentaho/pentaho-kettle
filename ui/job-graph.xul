@@ -22,7 +22,15 @@
 
   <menupopup id="job-graph-entry">
     <menuitem id="job-graph-entry-newhop" label="${JobGraph.PopupMenu.JobEntry.NewHop}" command="jobgraph.newHopClick()" />
-    <menuitem id="job-graph-entry-launch" label="${JobGraph.PopupMenu.JobEntry.LaunchSpoon}" command="jobgraph.launchStuff()" />
+    
+    <menu id="job-graph-entry-launch" label="${JobGraph.PopupMenu.JobEntry.OpenReferencedObject}">
+      <menupopup id="job-graph-entry-launch-popup">
+      
+         <menuitem id="job-graph-entry-launch-popup-nothing" label="${JobGraph.PopupMenu.JobEntry.Launch.Nothing}" command="jobgraph.launchStuff()" />
+      
+	  </menupopup>
+	</menu>
+	      
     <menuitem id="job-graph-entry-edit" label="${JobGraph.PopupMenu.JobEntry.Edit}" command="jobgraph.editEntryClick()" />
     <menuitem id="job-graph-entry-edit-description" label="${JobGraph.PopupMenu.JobEntry.EditDescription}"
       command="jobgraph.editEntryDescription()" />

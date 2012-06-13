@@ -42,7 +42,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.trans.Trans;
 
-public class GetStatusServlet extends BaseHttpServlet implements CarteServletInterface {
+public class GetStatusServlet extends BaseHttpServlet implements CartePluginInterface {
   private static Class<?> PKG = GetStatusServlet.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
   private static final long serialVersionUID = 3634806745372015720L;
@@ -56,7 +56,7 @@ public class GetStatusServlet extends BaseHttpServlet implements CarteServletInt
     super(transformationMap, jobMap);
   }
 
-  protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     if (isJettyMode() && !request.getContextPath().startsWith(CONTEXT_PATH)) {
       return;
     }
@@ -286,4 +286,9 @@ public class GetStatusServlet extends BaseHttpServlet implements CarteServletInt
   public String getService() {
     return CONTEXT_PATH + " (" + toString() + ")";
   }
+  
+  public String getContextPath() {
+    return CONTEXT_PATH;
+  }
+
 }

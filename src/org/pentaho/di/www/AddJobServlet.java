@@ -44,7 +44,7 @@ import org.pentaho.di.job.JobListener;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
 
-public class AddJobServlet extends BaseHttpServlet implements CarteServletInterface {
+public class AddJobServlet extends BaseHttpServlet implements CartePluginInterface {
   private static final long serialVersionUID = -6850701762586992604L;
 
   public static final String CONTEXT_PATH = "/kettle/addJob";
@@ -199,5 +199,9 @@ public class AddJobServlet extends BaseHttpServlet implements CarteServletInterf
 
   public String getService() {
     return CONTEXT_PATH + " (" + toString() + ")";
+  }
+  
+  public String getContextPath() {
+    return CONTEXT_PATH;
   }
 }

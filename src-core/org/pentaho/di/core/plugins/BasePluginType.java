@@ -232,9 +232,14 @@ public abstract class BasePluginType implements PluginTypeInterface{
 							
 							// These are the jar files : find annotations in it...
 							//
-				      AnnotationDB annotationDB = new AnnotationDB();
-				      
-				      annotationDB.scanArchives(fileObject.getURL());
+				      AnnotationDB annotationDB = JarFileCache.getInstance().getEntry(fileObject);
+				      if (annotationDB==null) {
+				        annotationDB = new AnnotationDB();
+				        annotationDB.scanArchives(fileObject.getURL());
+				        JarFileCache.getInstance().addEntry(fileObject, annotationDB);
+				      } else {
+				        // System.out.println("Cache hit for : "+fileObject.toString());
+				      }
 				      
 				      // These are the jar files : find annotations in it...
 				      //

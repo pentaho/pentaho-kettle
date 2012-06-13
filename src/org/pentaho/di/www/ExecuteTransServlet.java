@@ -53,7 +53,7 @@ import org.pentaho.di.trans.TransConfiguration;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
 
-public class ExecuteTransServlet extends BaseHttpServlet implements CarteServletInterface {
+public class ExecuteTransServlet extends BaseHttpServlet implements CartePluginInterface {
 
   private static Class<?>   PKG         = ExecuteTransServlet.class;  // i18n
   
@@ -68,7 +68,7 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CarteServlet
     super(transformationMap);
   }
 
-  protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     if (isJettyMode() && !request.getContextPath().startsWith(CONTEXT_PATH)) {
       return;
     }
@@ -229,5 +229,10 @@ public class ExecuteTransServlet extends BaseHttpServlet implements CarteServlet
      trans.prepareExecution(null);
      trans.startThreads();
      trans.waitUntilFinished();
-  } 
+  }
+  
+  public String getContextPath() {
+    return CONTEXT_PATH;
+  }
+
 }

@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.servlet.Servlet;
+
 import org.mortbay.jetty.Connector;
 import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
@@ -43,6 +45,9 @@ import org.mortbay.jetty.servlet.ServletHolder;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.plugins.CartePluginType;
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.i18n.BaseMessages;
 
 
@@ -132,7 +137,7 @@ public class WebServer
         
         securityHandler.setConstraintMappings(new ConstraintMapping[]{constraintMapping});
                
-        // Add all the servlets...
+        // Add all the servlets defined in kettle-servlets.xml ...
         //
         ContextHandlerCollection contexts = new ContextHandlerCollection();
         
@@ -143,138 +148,18 @@ public class WebServer
         rootServlet.setJettyMode(true);
         root.addServlet(new ServletHolder(rootServlet), "/*");
         
-        // Carte Status
-        //
-        Context status = new Context(contexts, GetStatusServlet.CONTEXT_PATH, Context.SESSIONS);
-        status.addServlet(new ServletHolder(new GetStatusServlet(transformationMap, jobMap)), "/*");
+        PluginRegistry pluginRegistry = PluginRegistry.getInstance();
+        List<PluginInterface> plugins = pluginRegistry.getPlugins(CartePluginType.class);
+        for (PluginInterface plugin : plugins) {
 
-        // Trans status
-        //
-        Context transStatus = new Context(contexts, GetTransStatusServlet.CONTEXT_PATH, Context.SESSIONS);
-        transStatus.addServlet(new ServletHolder(new GetTransStatusServlet(transformationMap)), "/*");
-
-        // Prepare execution
-        //
-        Context prepareExecution = new Context(contexts, PrepareExecutionTransServlet.CONTEXT_PATH, Context.SESSIONS);
-        prepareExecution.addServlet(new ServletHolder(new PrepareExecutionTransServlet(transformationMap)), "/*");
-        
-        // Start execution
-        //
-        Context startExecution = new Context(contexts, StartExecutionTransServlet.CONTEXT_PATH, Context.SESSIONS);
-        startExecution.addServlet(new ServletHolder(new StartExecutionTransServlet(transformationMap)), "/*");
-
-        // Start transformation
-        //
-        Context startTrans = new Context(contexts, StartTransServlet.CONTEXT_PATH, Context.SESSIONS);
-        startTrans.addServlet(new ServletHolder(new StartTransServlet(transformationMap)), "/*");
-
-        // Pause/Resume transformation
-        //
-        Context pauseTrans = new Context(contexts, PauseTransServlet.CONTEXT_PATH, Context.SESSIONS);
-        pauseTrans.addServlet(new ServletHolder(new PauseTransServlet(transformationMap)), "/*");
-
-        // Stop transformation
-        //
-        Context stopTrans = new Context(contexts, StopTransServlet.CONTEXT_PATH, Context.SESSIONS);
-        stopTrans.addServlet(new ServletHolder(new StopTransServlet(transformationMap)), "/*");
-
-        // Transformation cleanup
-        //
-        Context cleanupTrans = new Context(contexts, CleanupTransServlet.CONTEXT_PATH, Context.SESSIONS);
-        cleanupTrans.addServlet(new ServletHolder(new CleanupTransServlet(transformationMap)), "/*");
-
-        // Add transformation
-        //
-        Context addTrans = new Context(contexts, AddTransServlet.CONTEXT_PATH, Context.SESSIONS);
-        addTrans.addServlet(new ServletHolder(new AddTransServlet(transformationMap, socketRepository)), "/*");
-
-        // Remove Transformation
-        //
-        Context removeTrans = new Context(contexts, RemoveTransServlet.CONTEXT_PATH, Context.SESSIONS);
-        removeTrans.addServlet(new ServletHolder(new RemoveTransServlet(transformationMap)), "/*");
-
-        // Step port reservation
-        //
-        Context getPort = new Context(contexts, AllocateServerSocketServlet.CONTEXT_PATH, Context.SESSIONS);
-        getPort.addServlet(new ServletHolder(new AllocateServerSocketServlet(transformationMap)), "/*");
-
-        // Port listing information 
-        //
-        Context listPorts = new Context(contexts, ListServerSocketServlet.CONTEXT_PATH, Context.SESSIONS);
-        listPorts.addServlet(new ServletHolder(new ListServerSocketServlet(transformationMap)), "/*");
-
-        // Sniff transformation step
-        //
-        Context sniffStep = new Context(contexts, SniffStepServlet.CONTEXT_PATH, Context.SESSIONS);
-        sniffStep.addServlet(new ServletHolder(new SniffStepServlet(transformationMap)), "/*");
-
-        // execute transformation
-        //
-        Context executeTrans = new Context(contexts, ExecuteTransServlet.CONTEXT_PATH, Context.SESSIONS);
-        executeTrans .addServlet(new ServletHolder(new ExecuteTransServlet(transformationMap)), "/*");
-
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////
-        //
-        // The job handlers...
-        //
-        
-        // Start job
-        //
-        Context startJob = new Context(contexts, StartJobServlet.CONTEXT_PATH, Context.SESSIONS);
-        startJob.addServlet(new ServletHolder(new StartJobServlet(jobMap)), "/*");
-        
-        // Stop transformation
-        //
-        Context stopJob = new Context(contexts, StopJobServlet.CONTEXT_PATH, Context.SESSIONS);
-        stopJob.addServlet(new ServletHolder(new StopJobServlet(jobMap)), "/*");
-
-        // Trans status
-        //
-        Context jobStatus = new Context(contexts, GetJobStatusServlet.CONTEXT_PATH, Context.SESSIONS);
-        jobStatus.addServlet(new ServletHolder(new GetJobStatusServlet(jobMap)), "/*");
-
-        // Add job
-        //
-        Context addJob= new Context(contexts, AddJobServlet.CONTEXT_PATH, Context.SESSIONS);
-        addJob.addServlet(new ServletHolder(new AddJobServlet(jobMap, socketRepository)), "/*");
-
-        // Remove Job
-        //
-        Context removeJob = new Context(contexts, RemoveJobServlet.CONTEXT_PATH, Context.SESSIONS);
-        removeJob.addServlet(new ServletHolder(new RemoveJobServlet(jobMap)), "/*");
-
-        
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////
-        //
-        /// Cluster management
-        //
-        
-        // Register a new slave on the master
-        //
-        Context registerSlave= new Context(contexts, RegisterSlaveServlet.CONTEXT_PATH, Context.SESSIONS);
-        registerSlave.addServlet(new ServletHolder(new RegisterSlaveServlet(detections)), "/*");
-
-        // Get list of registered slave servers
-        //
-        Context getSlaves= new Context(contexts, GetSlavesServlet.CONTEXT_PATH, Context.SESSIONS);
-        getSlaves.addServlet(new ServletHolder(new GetSlavesServlet(detections)), "/*");
-
-
-        ///////////////////////////////////////////////////////////////////////////////////////////////////////
-        //
-        /// Resources
-        //
-
-        // Add export 
-        //
-        Context addExport = new Context(contexts, AddExportServlet.CONTEXT_PATH, Context.SESSIONS);
-        addExport.addServlet(new ServletHolder(new AddExportServlet(jobMap, transformationMap)), "/*");
-
-        // Get next value from a slave sequence
-        //
-        Context nextSequence = new Context(contexts, NextSequenceValueServlet.CONTEXT_PATH, Context.SESSIONS);
-        nextSequence.addServlet(new ServletHolder(new NextSequenceValueServlet(transformationMap)), "/*");
-        
+          CartePluginInterface servlet = (CartePluginInterface) pluginRegistry.loadClass(plugin);
+          servlet.setup(transformationMap, jobMap, socketRepository, detections);
+          servlet.setJettyMode(true);
+          
+          Context servletContext = new Context(contexts, servlet.getContextPath(), Context.SESSIONS);
+          ServletHolder servletHolder = new ServletHolder((Servlet)servlet);
+          servletContext.addServlet(servletHolder, "/*");
+        }
         
         server.setHandlers(new Handler[] { securityHandler, contexts });
 

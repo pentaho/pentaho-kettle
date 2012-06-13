@@ -180,7 +180,6 @@ public class TextFileInput extends BaseStep implements StepInterface
   public static final String[] guessStringsFromLine(LogChannelInterface log, String line, TextFileInputMeta inf, String delimiter) throws KettleException
 	{
 		List<String> strings = new ArrayList<String>();
-        int fieldnr;
         
 		String pol; // piece of line
 
@@ -192,7 +191,6 @@ public class TextFileInput extends BaseStep implements StepInterface
 			{
 				// Split string in pieces, only for CSV!
 
-				fieldnr = 0;
 				int pos = 0;
 				int length = line.length();
 				boolean dencl = false;
@@ -273,7 +271,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 						encl_found = false;
 						boolean found = false;
 						int startpoint = from;
-						int tries = 1;
+						// int tries = 1;
 						do
 						{
 							next = line.indexOf(delimiter, startpoint); 
@@ -287,7 +285,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 								{
 									// take the next separator, this one is escaped...
 									startpoint = next + 1; 
-									tries++;
+									// tries++;
 									contains_escaped_separators = true;
 								}
 								else
@@ -349,13 +347,11 @@ public class TextFileInput extends BaseStep implements StepInterface
 					strings.add(pol);
 
 					pos = next + delimiter.length();
-					fieldnr++;
 				}
 				if ( pos == length )
 				{
 					if (log.isRowLevel()) log.logRowlevel(BaseMessages.getString(PKG, "TextFileInput.Log.ConvertLineToRowTitle"), BaseMessages.getString(PKG, "TextFileInput.Log.EndOfEmptyLineFound"));
 					strings.add("");
-                    fieldnr++;
 				}
 			}
 			else
@@ -490,7 +486,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 						encl_found = false;
 						boolean found = false;
 						int startpoint = from;
-						int tries = 1;
+						// int tries = 1;
 						do
 						{
 							next = line.indexOf(delimiter, startpoint);
@@ -504,7 +500,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 								{
 									// take the next separator, this one is escaped...
 									startpoint = next + 1; 
-									tries++;
+									// tries++;
 									contains_escaped_separators = true;
 								}
 								else
@@ -1172,7 +1168,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 				}
 				else
 				{
-					int repnr = 0;
+					// int repnr = 0;
 					for (int i = 0; i < meta.getInputFields().length; i++)
 					{
 						if (meta.getInputFields()[i].isRepeated())
@@ -1186,7 +1182,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 							{
 								data.previous_row[i] = r[i];
 							}
-							repnr++;
+							// repnr++;
 						}
 					}
 				}

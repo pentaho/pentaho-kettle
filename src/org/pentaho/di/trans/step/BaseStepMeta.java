@@ -580,4 +580,27 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface
      */
     public void lookupRepositoryReferences(Repository repository) throws KettleException {    
     }
+    
+    /**
+     * @return The objects referenced in the step, like a mapping, a transformation, a job, ... 
+     */
+    public String[] getReferencedObjectDescriptions() {
+      return null;
+    }
+
+    public boolean[] isReferencedObjectEnabled() {
+      return null;
+    }
+    /**
+     * Load the referenced object
+     * @param meta The metadata that references 
+     * @param index the object index to load
+     * @param rep the repository
+     * @param space the variable space to use
+     * @return the referenced object once loaded
+     * @throws KettleException
+     */
+    public Object loadReferencedObject(int index, Repository rep, VariableSpace space) throws KettleException {
+      return null;
+    }
 }

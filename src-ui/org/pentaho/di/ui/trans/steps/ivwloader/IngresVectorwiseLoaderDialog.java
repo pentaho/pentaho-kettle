@@ -228,7 +228,7 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
     FormData fdFields=new FormData();
     fdFields.left  = new FormAttachment(0, 0);
     fdFields.top   = new FormAttachment(wlFields, margin);
-    fdFields.right = new FormAttachment(wGetFields, -margin);
+    fdFields.right = new FormAttachment(wDoMapping, -margin);
     fdFields.bottom= new FormAttachment(wOK, -2 * margin);
     wFields.setLayoutData(fdFields);
 

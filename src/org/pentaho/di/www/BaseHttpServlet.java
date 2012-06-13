@@ -37,10 +37,10 @@ public class BaseHttpServlet extends HttpServlet {
 
   protected static final long serialVersionUID = -1348342810327662788L;
 
-  private TransformationMap transformationMap;
-  private JobMap jobMap;
-  private SocketRepository socketRepository;
-  private List<SlaveServerDetection> detections;
+  protected TransformationMap transformationMap;
+  protected JobMap jobMap;
+  protected SocketRepository socketRepository;
+  protected List<SlaveServerDetection> detections;
 
   private boolean jettyMode = false;
   
@@ -102,6 +102,10 @@ public class BaseHttpServlet extends HttpServlet {
     doGet(request, response);
   }
   
+  protected void doDelete(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    doGet(req, resp);
+  }
+
   public TransformationMap getTransformationMap() {
     if (transformationMap == null) {
       return CarteSingleton.getInstance().getTransformationMap();
@@ -173,6 +177,13 @@ public class BaseHttpServlet extends HttpServlet {
 
   public void logRowlevel(String s) {
     log.logRowlevel(s);
+  }
+
+  public void setup(TransformationMap transformationMap, JobMap jobMap, SocketRepository socketRepository, List<SlaveServerDetection> detections) {
+    this.transformationMap = transformationMap;
+    this.jobMap = jobMap;
+    this.socketRepository = socketRepository;
+    this.detections = detections;
   }
 
 }

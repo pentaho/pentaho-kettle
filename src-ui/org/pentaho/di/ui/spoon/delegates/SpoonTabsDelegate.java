@@ -74,7 +74,6 @@ public class SpoonTabsDelegate extends SpoonDelegate
 		// Try to find the tab-item that's being closed.
 		List<TabMapEntry> collection = new ArrayList<TabMapEntry>();
 		collection.addAll(tabMap);
-		int idx = 0;
 		
 		boolean close = true;
 		for (TabMapEntry entry : collection)
@@ -135,8 +134,6 @@ public class SpoonTabsDelegate extends SpoonDelegate
 				
 				break;
 			}
-			
-			idx+=1;
 		}
 		
 		return close;

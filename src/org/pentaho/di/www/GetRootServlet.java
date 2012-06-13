@@ -31,7 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.pentaho.di.i18n.BaseMessages;
 
-public class GetRootServlet extends BaseHttpServlet implements CarteServletInterface {
+public class GetRootServlet extends BaseHttpServlet implements CartePluginInterface {
   private static Class<?> PKG = GetRootServlet.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
   private static final long serialVersionUID = 3634806745372015720L;
@@ -40,7 +40,7 @@ public class GetRootServlet extends BaseHttpServlet implements CarteServletInter
   public GetRootServlet() {
   }
 
-  protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     if (isJettyMode() && !request.getRequestURI().equals(CONTEXT_PATH)) {
       return;
     }
@@ -76,4 +76,9 @@ public class GetRootServlet extends BaseHttpServlet implements CarteServletInter
   public String getService() {
     return CONTEXT_PATH + " (" + toString() + ")";
   }
+  
+  public String getContextPath() {
+    return CONTEXT_PATH;
+  }
+
 }

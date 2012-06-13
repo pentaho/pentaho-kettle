@@ -131,25 +131,25 @@ public class CarteServlet extends HttpServlet {
     try {
        String startJobClass = config.getInitParameter("startJobServletClass"); 
        if (!Const.isEmpty(startJobClass)) {
-          Class clazz = Class.forName(startJobClass);
+          Class<?> clazz = Class.forName(startJobClass);
           startJobServlet = (StartJobServlet)clazz.newInstance();
        } 
        
        String startExecutionTransClass = config.getInitParameter("startExecutionTransServletClass"); 
        if (!Const.isEmpty(startExecutionTransClass)) {
-          Class clazz = Class.forName(startExecutionTransClass);
+          Class<?> clazz = Class.forName(startExecutionTransClass);
           startExecutionTransServlet = (StartExecutionTransServlet)clazz.newInstance();
        }
        
        String startTransClass = config.getInitParameter("startTransServletClass");
        if (!Const.isEmpty(startTransClass)) {
-          Class clazz = Class.forName(startTransClass);
+          Class<?> clazz = Class.forName(startTransClass);
           this.startTransServlet = (StartTransServlet)clazz.newInstance();
        }
        
        String executeTransClass = config.getInitParameter("executeTransServletClass");
        if (!Const.isEmpty(executeTransClass)) {
-          Class clazz = Class.forName(executeTransClass);
+          Class<?> clazz = Class.forName(executeTransClass);
           this.executeTransServlet = (ExecuteTransServlet)clazz.newInstance();
        }
      }

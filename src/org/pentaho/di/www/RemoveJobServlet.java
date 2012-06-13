@@ -35,7 +35,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
 
-public class RemoveJobServlet extends BaseHttpServlet implements CarteServletInterface {
+public class RemoveJobServlet extends BaseHttpServlet implements CartePluginInterface {
 
   private static Class<?> PKG = RemoveJobServlet.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
   private static final long	serialVersionUID	= -2051906998698124039L;
@@ -49,7 +49,7 @@ public class RemoveJobServlet extends BaseHttpServlet implements CarteServletInt
     super(jobMap);
   }
 
-  protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     if (isJettyMode() && !request.getContextPath().startsWith(CONTEXT_PATH)) {
       return;
     }
@@ -135,4 +135,9 @@ public class RemoveJobServlet extends BaseHttpServlet implements CarteServletInt
   public String getService() {
     return CONTEXT_PATH + " (" + toString() + ")";
   }
+  
+  public String getContextPath() {
+    return CONTEXT_PATH;
+  }
+
 }

@@ -100,7 +100,8 @@ public void open () {
 }
 
 void refreshLabel () {
-   int colors = 0, cursors = 0, fonts = 0, gcs = 0, images = 0, regions = 0;
+   int colors = 0, cursors = 0, fonts = 0, gcs = 0, images = 0;
+   // int regions = 0;
    for (int i=0; i<objects.length; i++) {
       Object object = objects [i];
       if (object instanceof Color) colors++;
@@ -108,7 +109,7 @@ void refreshLabel () {
       if (object instanceof Font) fonts++;
       if (object instanceof GC) gcs++;
       if (object instanceof Image) images++;
-      if (object instanceof Region) regions++;
+      // if (object instanceof Region) regions++;
    }
    String string = "";
    if (colors != 0) string += colors + " Color(s)\n";
@@ -117,7 +118,7 @@ void refreshLabel () {
    if (gcs != 0) string += gcs + " GC(s)\n";
    if (images != 0) string += images + " Image(s)\n";
    /* Currently regions are not counted. */
-// if (regions != 0) string += regions + " Region(s)\n";
+   // if (regions != 0) string += regions + " Region(s)\n";
    if (string.length () != 0) {
       string = string.substring (0, string.length () - 1);
    }

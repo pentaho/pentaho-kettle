@@ -160,7 +160,11 @@ public class VectorWiseDatabaseMeta extends IngresDatabaseMeta implements Databa
 			//	Maybe use some default DB String length in case length<=0
 			if (length>0)
 			{
-				retval+="VARCHAR("+length+")";	
+			  if (length>32000) {
+			    retval+="VARCHAR(32000)";
+			  } else {
+			    retval+="VARCHAR("+length+")";
+			  }
 			}
 			else
 			{

@@ -132,8 +132,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     
     private boolean                      distributed;
     private boolean                      loadBalancing;
-    private int                          balanceTries;
-
+    
     private long                         errors;
 
     private StepMeta                     nextSteps[];
@@ -1099,39 +1098,25 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
             if (loadBalancing) {
               // LOAD BALANCE:
               // ----------------
-              // Copy the row to the "next" output rowset.
-              // We keep the next one in out_handling
-            	//
-              RowSet rs = outputRowSets.get(currentOutputRowSetNr);
-                
-        	    // To balance the output, if the row set is full, we're going to switch to the next row set and try there.
-              // Try at most once for each row set.  If they're all full, just take one to stall.
+              //
+              // To balance the output, look for the most empty output buffer and take that one to write to.
         	    //
+              int smallestSize=Integer.MAX_VALUE;
               for (int i=0;i<outputRowSets.size();i++) {
-                if (rs.size()>= upperBufferBoundary) {
-                  currentOutputRowSetNr++;
-                  if (currentOutputRowSetNr >= outputRowSets.size()) currentOutputRowSetNr = 0;
-                  rs = outputRowSets.get(currentOutputRowSetNr);
-                } else {
-                  // This row set has capacity: exit for-loop
-                  //
-                  break;
+                RowSet candidate = outputRowSets.get(i);
+                if (candidate.size()<smallestSize) {
+                  currentOutputRowSetNr=i;
+                  smallestSize=candidate.size();
                 }
               }
-                
-              // Loop until we find room in the target rowset, should always be instantly
+              RowSet rs = outputRowSets.get(currentOutputRowSetNr);
+
+              // Loop until we find room in the target rowset, could very well all be full so keep trying.
               //
               while (!rs.putRow(rowMeta, row) && !isStopped()) 
               ;
               incrementLinesWritten();
   
-              // Now determine the next output rowset!
-              // Only if we have more then one output...
-              //
-              if (outputRowSets.size() > 1) {
-                currentOutputRowSetNr++;
-                if (currentOutputRowSetNr >= outputRowSets.size()) currentOutputRowSetNr = 0;
-              }
             } else {
               // ROUND ROBIN DISTRIBUTION:
               // --------------------------

@@ -204,7 +204,6 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
     
 	private Label wlProtocol;
 	private CCombo wProtocol;
-	private FormData fdlProtocol, fdProtocol;
 	
 	private Button wTest;
 	private FormData fdTest;

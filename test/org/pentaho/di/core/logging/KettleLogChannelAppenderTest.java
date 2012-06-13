@@ -36,7 +36,7 @@ public class KettleLogChannelAppenderTest {
   /**
    * Test class to encapsulate log message information we might want to retrieve for comparison.
    */
-  private class MessageObject {
+  protected class MessageObject {
     private String message;
     private Object[] args;
     private Throwable throwable;

@@ -40,7 +40,7 @@ import javax.servlet.http.HttpServletResponse;
  * @author matt
  * 
  */
-public class ListServerSocketServlet extends BaseHttpServlet implements CarteServletInterface {
+public class ListServerSocketServlet extends BaseHttpServlet implements CartePluginInterface {
   private static final long serialVersionUID = 3634806745372015720L;
 
   public static final String CONTEXT_PATH = "/kettle/listSocket";
@@ -55,7 +55,7 @@ public class ListServerSocketServlet extends BaseHttpServlet implements CarteSer
     super(transformationMap);
   }
 
-  protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+  public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     if (isJettyMode() && !request.getContextPath().startsWith(CONTEXT_PATH))
       return;
 
@@ -111,4 +111,9 @@ public class ListServerSocketServlet extends BaseHttpServlet implements CarteSer
   public String getService() {
     return CONTEXT_PATH + " (" + toString() + ")";
   }
+  
+  public String getContextPath() {
+    return CONTEXT_PATH;
+  }
+
 }

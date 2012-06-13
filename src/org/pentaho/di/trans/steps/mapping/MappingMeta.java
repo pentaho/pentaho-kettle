@@ -1031,4 +1031,30 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface, HasR
   public void setAllowingMultipleOutputs(boolean allowingMultipleOutputs) {
     this.allowingMultipleOutputs = allowingMultipleOutputs;
   }
+  
+  /**
+   * @return The objects referenced in the step, like a mapping, a transformation, a job, ... 
+   */
+  public String[] getReferencedObjectDescriptions() {
+    return new String[] { BaseMessages.getString(PKG, "MappingMeta.ReferencedObject.Description"), };
+  }
+
+  private boolean isMapppingDefined() {
+    return !Const.isEmpty(fileName) || transObjectId!=null || (!Const.isEmpty(this.directoryPath) && !Const.isEmpty(transName));
+  }
+
+  public boolean[] isReferencedObjectEnabled() {
+    return new boolean[] { isMapppingDefined(), };
+  }
+  /**
+   * Load the referenced object
+   * @param index the object index to load
+   * @param rep the repository
+   * @param space the variable space to use
+   * @return the referenced object once loaded
+   * @throws KettleException
+   */
+  public Object loadReferencedObject(int index, Repository rep, VariableSpace space) throws KettleException {
+    return loadMappingMeta(this, rep, space);
+  }
 }

@@ -1254,5 +1254,31 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
     this.resultFilesFileNameField = resultFilesFileNameField;
   }
   
+  /**
+   * @return The objects referenced in the step, like a mapping, a transformation, a job, ... 
+   */
+  public String[] getReferencedObjectDescriptions() {
+    return new String[] { BaseMessages.getString(PKG, "JobExecutorMeta.ReferencedObject.Description"), };
+  }
+  
+  private boolean isJobDefined() {
+    return !Const.isEmpty(fileName) || jobObjectId!=null || (!Const.isEmpty(this.directoryPath) && !Const.isEmpty(jobName));
+  }
+
+  public boolean[] isReferencedObjectEnabled() {
+    return new boolean[] { isJobDefined(), };
+  }
+
+  /**
+   * Load the referenced object
+   * @param index the object index to load
+   * @param rep the repository
+   * @param space the variable space to use
+   * @return the referenced object once loaded
+   * @throws KettleException
+   */
+  public Object loadReferencedObject(int index, Repository rep, VariableSpace space) throws KettleException {
+    return loadMappingMeta(this, rep, space);
+  }
   
 }
