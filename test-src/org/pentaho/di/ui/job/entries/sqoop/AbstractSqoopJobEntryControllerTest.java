@@ -28,25 +28,42 @@ import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.sqoop.AbstractSqoopJobEntry;
 import org.pentaho.di.job.entries.sqoop.PersistentPropertyChangeListener;
 import org.pentaho.di.job.entries.sqoop.SqoopConfig;
+import org.pentaho.di.job.entries.sqoop.SqoopConfig.Mode;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
+import org.pentaho.ui.xul.components.XulButton;
+import org.pentaho.ui.xul.containers.XulDeck;
 import org.pentaho.ui.xul.impl.XulFragmentContainer;
 
 import java.beans.PropertyChangeEvent;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 public class AbstractSqoopJobEntryControllerTest {
 
   private class TestSqoopJobEntryController extends AbstractSqoopJobEntryController<SqoopConfig> {
+    private XulDeck modeDeck;
+    private XulDeck advancedModeDeck;
+    private XulButton advancedListButton;
+    private XulButton advancedCommandLineButton;
 
-    private TestSqoopJobEntryController() {
+    private List<Object[]> shownErrors = new ArrayList<Object[]>();
+
+    TestSqoopJobEntryController() {
+      this(null, null, null, null);
+    }
+
+    TestSqoopJobEntryController(XulDeck modeDeck, XulDeck advancedModeDeck, XulButton advancedListButton, XulButton advancedCommandLineButton) {
       super(new JobMeta(), new XulFragmentContainer(null), new AbstractSqoopJobEntry() {
         @Override
         protected SqoopConfig buildSqoopConfig() {
@@ -59,6 +76,11 @@ public class AbstractSqoopJobEntryControllerTest {
           return null;
         }
       }, new DefaultBindingFactory());
+      this.modeDeck = modeDeck;
+      this.advancedModeDeck = advancedModeDeck;
+      this.advancedListButton = advancedListButton;
+      this.advancedCommandLineButton = advancedCommandLineButton;
+      syncModel();
     }
 
     @Override
@@ -74,6 +96,36 @@ public class AbstractSqoopJobEntryControllerTest {
     @Override
     protected void setDatabaseInteractionButtonsDisabled(boolean b) {
       // do nothing in tests
+    }
+
+    @Override
+    protected void showErrorDialog(String title, String message) {
+      shownErrors.add(new Object[]{title, message, null});
+    }
+
+    @Override
+    protected void showErrorDialog(String title, String message, Throwable t) {
+      shownErrors.add(new Object[]{title, message, t});
+    }
+
+    @Override
+    protected XulDeck getModeDeck() {
+      return modeDeck;
+    }
+
+    @Override
+    protected XulDeck getAdvancedModeDeck() {
+      return advancedModeDeck;
+    }
+
+    @Override
+    public XulButton getAdvancedListButton() {
+      return advancedListButton;
+    }
+
+    @Override
+    public XulButton getAdvancedCommandLineButton() {
+      return advancedCommandLineButton;
     }
   }
 
@@ -323,5 +375,181 @@ public class AbstractSqoopJobEntryControllerTest {
     controller.getConfig().setConnect("jdbc:bogus://bogus");
     item = controller.createDatabaseItem(null);
     assertEquals(controller.USE_ADVANCED_OPTIONS, item);
+  }
+
+  @Test
+  public void updateUiMode() {
+    XulDeck modeDeck = new MockXulDeck();
+    XulDeck advancedModeDeck = new MockXulDeck();
+    XulButton advancedListButton = new MockXulButton();
+    XulButton advancedCommandLineButton = new MockXulButton();
+    AbstractSqoopJobEntryController controller = new TestSqoopJobEntryController(modeDeck, advancedModeDeck, advancedListButton, advancedCommandLineButton);
+    modeDeck.setSelectedIndex(0);
+    advancedModeDeck.setSelectedIndex(1);
+
+    assertNull(controller.getConfig().getMode());
+
+    controller.getConfig().setConnect("jdbc:mysql://from/config");
+    controller.getConfig().setCommandLine("sqoop import --connect jdbc:mysql://from/cli --table test");
+
+    Mode oldMode = Mode.ADVANCED_LIST;
+    Mode newMode = Mode.QUICK_SETUP;
+
+    controller.updateUiMode(oldMode, newMode);
+
+    assertEquals(SqoopConfig.Mode.QUICK_SETUP, controller.getConfig().getModeAsEnum());
+
+    // Command line should not be synced when changing from advanced list to quick setup
+    assertEquals("jdbc:mysql://from/config", controller.getConfig().getConnect());
+
+    modeDeck.setSelectedIndex(1);
+    oldMode = Mode.QUICK_SETUP;
+    newMode = Mode.ADVANCED_COMMAND_LINE;
+    controller.updateUiMode(oldMode, newMode);
+
+    // Command line should be synced when changing from anything to command line
+    assertEquals("--connect jdbc:mysql://from/config", controller.getConfig().getCommandLine()) ;
+
+    assertEquals(SqoopConfig.Mode.ADVANCED_COMMAND_LINE, controller.getConfig().getModeAsEnum());
+
+    // Change the command line string as if the user updated it
+    controller.getConfig().setCommandLine("sqoop import --connect jdbc:mysql://from/cli --table test");
+
+    advancedModeDeck.setSelectedIndex(0);
+    oldMode = Mode.ADVANCED_COMMAND_LINE;
+    newMode = Mode.ADVANCED_LIST;
+    controller.updateUiMode(oldMode, newMode);
+
+    // Command line should be synced when changing from command line to advanced list
+    assertEquals("jdbc:mysql://from/cli", controller.getConfig().getConnect());
+    assertEquals("test", controller.getConfig().getTable());
+
+    assertEquals(SqoopConfig.Mode.ADVANCED_LIST, controller.getConfig().getModeAsEnum());
+  }
+
+  @Test
+  public void setUiMode_exception_parsing_command_line() {
+    XulDeck modeDeck = new MockXulDeck();
+    XulDeck advancedModeDeck = new MockXulDeck();
+    XulButton advancedListButton = new MockXulButton();
+    XulButton advancedCommandLineButton = new MockXulButton();
+    TestSqoopJobEntryController controller = new TestSqoopJobEntryController(modeDeck, advancedModeDeck, advancedListButton, advancedCommandLineButton);
+
+    controller.setUiMode(Mode.QUICK_SETUP);
+
+    controller.getConfig().setCommandLine("--table test -P --connect jdbc:mysql://bogus/db");
+
+    controller.updateUiMode(Mode.ADVANCED_COMMAND_LINE, Mode.ADVANCED_LIST);
+
+    assertEquals(1, controller.shownErrors.size());
+    assertEquals(BaseMessages.getString(AbstractSqoopJobEntry.class, "ErrorConfiguringFromCommandLine"), controller.shownErrors.get(0)[1]);
+    assertEquals(KettleException.class, controller.shownErrors.get(0)[2].getClass());
+  }
+
+  @Test
+  public void toggleMode() {
+    XulDeck modeDeck = new MockXulDeck();
+    XulDeck advancedModeDeck = new MockXulDeck();
+    XulButton advancedListButton = new MockXulButton();
+    XulButton advancedCommandLineButton = new MockXulButton();
+    AbstractSqoopJobEntryController controller = new TestSqoopJobEntryController(modeDeck, advancedModeDeck, advancedListButton, advancedCommandLineButton);
+    modeDeck.setSelectedIndex(0);
+
+    assertFalse(advancedListButton.isSelected());
+    assertFalse(advancedCommandLineButton.isSelected());
+
+    controller.toggleMode();
+    assertEquals(1, modeDeck.getSelectedIndex());
+    assertTrue(advancedListButton.isSelected());
+    assertFalse(advancedCommandLineButton.isSelected());
+  }
+
+  @Test
+  public void setUiMode() {
+    XulDeck modeDeck = new MockXulDeck();
+    XulDeck advancedModeDeck = new MockXulDeck();
+    XulButton advancedListButton = new MockXulButton();
+    XulButton advancedCommandLineButton = new MockXulButton();
+    AbstractSqoopJobEntryController controller = new TestSqoopJobEntryController(modeDeck, advancedModeDeck, advancedListButton, advancedCommandLineButton);
+
+    assertEquals(-1, modeDeck.getSelectedIndex());
+    assertEquals(-1, advancedModeDeck.getSelectedIndex());
+
+    assertNull(controller.getModeToggleLabel());
+
+    controller.setUiMode(SqoopConfig.Mode.QUICK_SETUP);
+    assertEquals(0, modeDeck.getSelectedIndex());
+    assertEquals(-1, advancedModeDeck.getSelectedIndex());
+    assertEquals(BaseMessages.getString(AbstractSqoopJobEntry.class, "Sqoop.JobEntry.AdvancedOptions.Button.Text"), controller.getModeToggleLabel());
+
+    controller.setUiMode(SqoopConfig.Mode.ADVANCED_LIST);
+    assertEquals(1, modeDeck.getSelectedIndex());
+    assertEquals(0, advancedModeDeck.getSelectedIndex());
+    assertEquals(BaseMessages.getString(AbstractSqoopJobEntry.class, "Sqoop.JobEntry.QuickSetup.Button.Text"), controller.getModeToggleLabel());
+
+    controller.setUiMode(SqoopConfig.Mode.ADVANCED_COMMAND_LINE);
+    assertEquals(1, modeDeck.getSelectedIndex());
+    assertEquals(1, advancedModeDeck.getSelectedIndex());
+    assertEquals(BaseMessages.getString(AbstractSqoopJobEntry.class, "Sqoop.JobEntry.QuickSetup.Button.Text"), controller.getModeToggleLabel());
+  }
+
+  @Test
+  public void setSelectedAdvancedButton() {
+    XulDeck modeDeck = new MockXulDeck();
+    XulDeck advancedModeDeck = new MockXulDeck();
+    XulButton advancedListButton = new MockXulButton();
+    XulButton advancedCommandLineButton = new MockXulButton();
+    AbstractSqoopJobEntryController controller = new TestSqoopJobEntryController(modeDeck, advancedModeDeck, advancedListButton, advancedCommandLineButton);
+
+    assertNull(controller.getConfig().getMode());
+    assertEquals(-1, advancedModeDeck.getSelectedIndex());
+
+    assertFalse(advancedListButton.isSelected());
+    assertFalse(advancedCommandLineButton.isSelected());
+
+    controller.setSelectedAdvancedButton(AbstractSqoopJobEntryController.AdvancedButton.COMMAND_LINE);
+
+    assertEquals(Mode.ADVANCED_COMMAND_LINE, controller.getConfig().getModeAsEnum());
+    assertEquals(1, advancedModeDeck.getSelectedIndex());
+    assertFalse(advancedListButton.isSelected());
+    assertTrue(advancedCommandLineButton.isSelected());
+
+    controller.setSelectedAdvancedButton(AbstractSqoopJobEntryController.AdvancedButton.LIST);
+
+    assertEquals(Mode.ADVANCED_LIST, controller.getConfig().getModeAsEnum());
+    assertEquals(0, advancedModeDeck.getSelectedIndex());
+    assertTrue(advancedListButton.isSelected());
+    assertFalse(advancedCommandLineButton.isSelected());
+  }
+
+  @Test
+  public void syncCommandLineToConfig() throws XulException, InvocationTargetException {
+    AbstractSqoopJobEntryController controller = new TestSqoopJobEntryController();
+
+    controller.getConfig().setCommandLine("--table test --connect jdbc:fake://bogus/db");
+    controller.getConfig().setNamenodeHost("testing");
+    controller.getConfig().setNamenodePort("54310");
+    controller.getConfig().setJobtrackerHost("testing");
+    controller.getConfig().setJobtrackerPort("testing");
+
+    PersistentPropertyChangeListener l = new PersistentPropertyChangeListener();
+    controller.getConfig().addPropertyChangeListener(l);
+
+    controller.syncCommandLineToConfig();
+
+    assertEquals("test", controller.getConfig().getTable());
+    assertEquals("jdbc:fake://bogus/db", controller.getConfig().getConnect());
+
+    List<PropertyChangeEvent> receivedEventsWithChanges = l.getReceivedEventsWithChanges();
+    assertEquals(2, receivedEventsWithChanges.size());
+    PropertyChangeEvent evt = receivedEventsWithChanges.get(0);
+    assertEquals("connect", evt.getPropertyName());
+    assertEquals("jdbc:fake://bogus/db", evt.getNewValue());
+    evt = receivedEventsWithChanges.get(1);
+    assertEquals("table", evt.getPropertyName());
+    assertEquals("test", evt.getNewValue());
+
+    // Make sure connection information is not reset
+    assertEquals("testing", controller.getConfig().getNamenodeHost());
   }
 }

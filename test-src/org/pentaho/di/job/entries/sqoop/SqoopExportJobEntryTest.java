@@ -25,6 +25,7 @@ package org.pentaho.di.job.entries.sqoop;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -69,18 +70,22 @@ public class SqoopExportJobEntryTest {
     SqoopExportJobEntry je = new SqoopExportJobEntry();
     SqoopExportConfig config = new SqoopExportConfig();
     String connectValue = "jdbc:mysql://localhost:3306/test";
+    String myPassword = "my-password";
 
     config.setJobEntryName("testing");
     config.setBlockingExecution("false");
     config.setBlockingPollingInterval("100");
     config.setConnect(connectValue);
     config.setExportDir("/test-export");
+    config.setPassword(myPassword);
 
     je.setSqoopConfig(config);
 
     JobEntryCopy jec = new JobEntryCopy(je);
     jec.setLocation(0, 0);
     String xml = jec.getXML();
+
+    assertTrue("Password not encrypted upon save to xml", !xml.contains(myPassword));
 
     Document d = XMLHandler.loadXMLString(xml);
 
@@ -93,6 +98,7 @@ public class SqoopExportJobEntryTest {
     assertEquals(config.getBlockingPollingInterval(), config2.getBlockingPollingInterval());
     assertEquals(config.getConnect(), config2.getConnect());
     assertEquals(config.getExportDir(), config2.getExportDir());
+    assertEquals(config.getPassword(), config2.getPassword());
   }
 
   @Test
@@ -106,6 +112,7 @@ public class SqoopExportJobEntryTest {
     config.setBlockingPollingInterval("100");
     config.setConnect(connectValue);
     config.setExportDir("/test-export");
+    config.setPassword("my-password");
 
     je.setSqoopConfig(config);
 
@@ -145,6 +152,7 @@ public class SqoopExportJobEntryTest {
       assertEquals(config.getBlockingPollingInterval(), config2.getBlockingPollingInterval());
       assertEquals(config.getConnect(), config2.getConnect());
       assertEquals(config.getExportDir(), config2.getExportDir());
+      assertEquals(config.getPassword(), config2.getPassword());
     } finally {
       // Delete test database
       new File(filename+".h2.db").delete();

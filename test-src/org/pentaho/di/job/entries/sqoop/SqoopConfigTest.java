@@ -219,4 +219,17 @@ public class SqoopConfigTest {
     assertEquals("username", l.getReceivedEvents().get(1).getPropertyName());
     assertEquals("password", l.getReceivedEvents().get(2).getPropertyName());
   }
+
+  @Test
+  public void getModeAsEnum() {
+    SqoopConfig config = new SqoopConfig() {
+    };
+
+    assertNull(config.getMode());
+    assertEquals(SqoopConfig.Mode.QUICK_SETUP, config.getModeAsEnum());
+
+    config.setMode(SqoopConfig.Mode.ADVANCED_COMMAND_LINE.name());
+    assertEquals(SqoopConfig.Mode.ADVANCED_COMMAND_LINE.name(), config.getMode());
+    assertEquals(SqoopConfig.Mode.ADVANCED_COMMAND_LINE, config.getModeAsEnum());
+  }
 }

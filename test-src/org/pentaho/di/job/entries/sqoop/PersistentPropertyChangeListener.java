@@ -42,7 +42,23 @@ public class PersistentPropertyChangeListener implements PropertyChangeListener 
     receivedEvents.add(evt);
   }
 
+  /**
+   * @return every event received by this listener
+   */
   public List<PropertyChangeEvent> getReceivedEvents() {
     return receivedEvents;
+  }
+
+  /**
+   * @return only the events that resulted in changed values
+   */
+  public List<PropertyChangeEvent> getReceivedEventsWithChanges() {
+    List<PropertyChangeEvent> events = new ArrayList<PropertyChangeEvent>();
+    for (PropertyChangeEvent evt : receivedEvents) {
+      if (!(evt.getOldValue() == null ? evt.getNewValue() == null : evt.getOldValue().equals(evt.getNewValue()))) {
+        events.add(evt);
+      }
+    }
+    return events;
   }
 }

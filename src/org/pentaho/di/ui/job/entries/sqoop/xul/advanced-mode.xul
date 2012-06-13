@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!-- Layout that defines what an "Advanced Options" mode looks like for Sqoop Import/Export dialogs -->
+<vbox id="advancedMode" flex="1" xmlns:pen="http://www.pentaho.org/2008/xul">
+  <hbox>
+    <spacer flex="1"/>
+    <button id="advanced-list-button" onclick="controller.advancedListButtonClicked();" tooltiptext="${Sqoop.JobEntry.Advanced.List.Button.Text}" image="list_view.png" selectedimage="list_view_selected.png" type="radio" selected="true"/>
+    <spacer width="10"/>
+    <button id="advanced-command-line-button" onclick="controller.advancedCommandLineButtonClicked();" tooltiptext="${Sqoop.JobEntry.Advanced.CommandLine.Button.Text}" image="command_line_view.png" selectedimage="command_line_view_selected.png" type="radio"/>
+    <spacer flex="1"/>
+  </hbox>
+  <deck id="advancedModeDeck" flex="1">
+    <vbox flex="1">
+      <tree id="advanced-table" hidecolumnpicker="true" autocreatenewrows="false" flex="1">
+        <treecols>
+          <treecol id="name-col" editable="false" flex="1" label="${Sqoop.JobEntry.AdvancedTable.Column.Name.Label}" pen:binding="displayName"/>
+          <treecol id="value-col" editable="true" flex="1" label="${Sqoop.JobEntry.AdvancedTable.Column.Value.Label}" pen:binding="value"/>
+        </treecols>
+        <treechildren />
+      </tree>
+    </vbox>
+    <vbox flex="1">
+      <label value="${Sqoop.JobEntry.CommandLine.Label}"/>
+      <textbox pen:customclass="variabletextbox" multiLine="true" id="commandLine" flex="1"></textbox>
+    </vbox>
+  </deck>
+</vbox>

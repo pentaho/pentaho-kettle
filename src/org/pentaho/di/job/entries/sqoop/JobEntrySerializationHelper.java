@@ -25,6 +25,7 @@ package org.pentaho.di.job.entries.sqoop;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.repository.ObjectId;
@@ -206,10 +207,15 @@ public class JobEntrySerializationHelper implements Serializable {
         } else {
           // we're handling a regular field (not an array or list)
           try {
-            Object value = XMLHandler.getTagValue(node, field.getName());
+            String value = XMLHandler.getTagValue(node, field.getName());
             if (value == null) {
               continue;
             }
+
+            if (field.isAnnotationPresent(Password.class)) {
+              value = Encr.decryptPasswordOptionallyEncrypted(value);
+            }
+
             // System.out.println("Setting " + field.getName() + "(" + field.getType().getSimpleName() + ") = " + value + " on: " + object.getClass().getName());
             if (field.getType().isPrimitive() && "".equals(value)) {
               // skip setting of primitives if we see null
@@ -218,17 +224,17 @@ public class JobEntrySerializationHelper implements Serializable {
             } else if (field.getType().isPrimitive()) {
               // special primitive handling
               if (double.class.isAssignableFrom(field.getType())) {
-                field.set(object, Double.parseDouble(value.toString()));
+                field.set(object, Double.parseDouble(value));
               } else if (float.class.isAssignableFrom(field.getType())) {
-                field.set(object, Float.parseFloat(value.toString()));
+                field.set(object, Float.parseFloat(value));
               } else if (long.class.isAssignableFrom(field.getType())) {
-                field.set(object, Long.parseLong(value.toString()));
+                field.set(object, Long.parseLong(value));
               } else if (int.class.isAssignableFrom(field.getType())) {
-                field.set(object, Integer.parseInt(value.toString()));
+                field.set(object, Integer.parseInt(value));
               } else if (byte.class.isAssignableFrom(field.getType())) {
-                field.set(object, value.toString().getBytes());
+                field.set(object, value.getBytes());
               } else if (boolean.class.isAssignableFrom(field.getType())) {
-                field.set(object, "true".equalsIgnoreCase(value.toString()));
+                field.set(object, "true".equalsIgnoreCase(value));
               }
             } else if (String.class.isAssignableFrom(field.getType()) || Number.class.isAssignableFrom(field.getType()) || Boolean.class.isAssignableFrom(field.getType())) {
               Constructor constructor = field.getType().getConstructor(String.class);
@@ -294,9 +300,13 @@ public class JobEntrySerializationHelper implements Serializable {
         Object fieldValue = field.get(object);
         // no value? null? skip it!
         if (fieldValue == null || "".equals(fieldValue)) {
-
           continue;
         }
+
+        if (field.isAnnotationPresent(Password.class) && String.class.isAssignableFrom(field.getType())) {
+          fieldValue = Encr.encryptPasswordIfNotUsingVariables(String.class.cast(fieldValue));
+        }
+
         if (field.getType().isPrimitive() || String.class.isAssignableFrom(field.getType()) || Number.class.isAssignableFrom(field.getType()) || Boolean.class.isAssignableFrom(field.getType())) {
           indent(buffer, indentLevel);
           buffer.append(XMLHandler.addTagValue(field.getName(), fieldValue.toString()));

@@ -82,6 +82,8 @@ public abstract class SqoopConfig implements XulEventSource, Cloneable {
   // Shared Input/Export options
   public static final String TABLE = "table";
   public static final String NUM_MAPPERS = "numMappers";
+  public static final String COMMAND_LINE = "commandLine";
+  public static final String MODE = "mode";
 
   private String jobEntryName;
   private String blockingPollingInterval = String.valueOf(300);
@@ -99,9 +101,21 @@ public abstract class SqoopConfig implements XulEventSource, Cloneable {
   private transient String usernameFromAdvanced;
   private transient String passwordFromAdvanced;
 
+  /**
+   * Represents the last visible state of the UI and the execution mode.
+   */
+  public enum Mode {
+    QUICK_SETUP,
+    ADVANCED_LIST,
+    ADVANCED_COMMAND_LINE;
+  }
+
+  private String mode;
+
   // Common arguments
   @CommandLineArgument(name = CONNECT)
   private String connect;
+
   @CommandLineArgument(name = "connection-manager")
   private String connectionManager;
   @CommandLineArgument(name = DRIVER)
@@ -109,6 +123,7 @@ public abstract class SqoopConfig implements XulEventSource, Cloneable {
   @CommandLineArgument(name = USERNAME)
   private String username;
   @CommandLineArgument(name = PASSWORD)
+  @Password
   private String password;
   @CommandLineArgument(name = VERBOSE, flag = true)
   private String verbose;
@@ -116,10 +131,10 @@ public abstract class SqoopConfig implements XulEventSource, Cloneable {
   private String connectionParamFile;
   @CommandLineArgument(name = "hadoop-home")
   private String hadoopHome;
-
   // Output line formatting arguments
   @CommandLineArgument(name = "enclosed-by")
   private String enclosedBy;
+
   @CommandLineArgument(name = "escaped-by")
   private String escapedBy;
   @CommandLineArgument(name = "fields-terminated-by")
@@ -130,10 +145,10 @@ public abstract class SqoopConfig implements XulEventSource, Cloneable {
   private String optionallyEnclosedBy;
   @CommandLineArgument(name = "mysql-delimiters", flag = true)
   private String mysqlDelimiters;
-
   // Input parsing arguments
   @CommandLineArgument(name = "input-enclosed-by")
   private String inputEnclosedBy;
+
   @CommandLineArgument(name = "input-escaped-by")
   private String inputEscapedBy;
   @CommandLineArgument(name = "input-fields-terminated-by")
@@ -142,10 +157,10 @@ public abstract class SqoopConfig implements XulEventSource, Cloneable {
   private String inputLinesTerminatedBy;
   @CommandLineArgument(name = "input-optionally-enclosed-by")
   private String inputOptionallyEnclosedBy;
-
   // Code generation arguments
   @CommandLineArgument(name = "bindir")
   private String binDir;
+
   @CommandLineArgument(name = "class-name")
   private String className;
   @CommandLineArgument(name = "jar-file")
@@ -162,6 +177,7 @@ public abstract class SqoopConfig implements XulEventSource, Cloneable {
   private String table;
   @CommandLineArgument(name = "num-mappers")
   private String numMappers;
+  private String commandLine;
 
   /**
    * @see {@link PropertyChangeSupport#addPropertyChangeListener(java.beans.PropertyChangeListener)}
@@ -648,5 +664,42 @@ public abstract class SqoopConfig implements XulEventSource, Cloneable {
     String old = this.numMappers;
     this.numMappers = numMappers;
     pcs.firePropertyChange(NUM_MAPPERS, old, this.numMappers);
+  }
+
+  public String getCommandLine() {
+    return commandLine;
+  }
+
+  public void setCommandLine(String commandLine) {
+    String old = this.commandLine;
+    this.commandLine = commandLine;
+    pcs.firePropertyChange(COMMAND_LINE, old, this.commandLine);
+  }
+
+  public String getMode() {
+    return mode;
+  }
+
+  public Mode getModeAsEnum() {
+    try {
+      return Mode.valueOf(getMode());
+    } catch (Exception ex) {
+      // Not a valid ui mode, return the default
+      return Mode.QUICK_SETUP;
+    }
+  }
+
+  /**
+   * Sets the mode based on the enum value
+   * @param mode
+   */
+  public void setMode(Mode mode) {
+    setMode(mode.name());
+  }
+
+  public void setMode(String mode) {
+    String old = this.mode;
+    this.mode = mode;
+    pcs.firePropertyChange(MODE, old, this.mode);
   }
 }
