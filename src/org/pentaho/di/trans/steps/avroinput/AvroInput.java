@@ -65,6 +65,9 @@ public class AvroInput extends BaseStep implements StepInterface {
     super(stepMeta, stepDataInterface, copyNr, transMeta, trans);    
   }
   
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.BaseStep#processRow(org.pentaho.di.trans.step.StepMetaInterface, org.pentaho.di.trans.step.StepDataInterface)
+   */
   public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) 
     throws KettleException {
     
@@ -203,6 +206,9 @@ public class AvroInput extends BaseStep implements StepInterface {
     return true;
   }  
   
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.BaseStep#setStopped(boolean)
+   */
   public void setStopped(boolean stopped) {
     if (isStopped() && stopped == true) {
       return;
