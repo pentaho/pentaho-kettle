@@ -289,13 +289,20 @@ public class MongoDbOutputData extends BaseStepData implements StepDataInterface
           boolean hasPath = !Const.isEmpty(path);
           path += ((field.m_useIncomingFieldNameAsMongoFieldName) 
                 ? (hasPath ? "." + incomingFieldName : incomingFieldName) : "");
-          DBObject fieldToUpdateWithValue = new BasicDBObject();
-          setMongoValueFromKettleValue(fieldToUpdateWithValue, path, vm, row[index]); 
           
-          /*DBObject fieldToUpdateWithValue = 
-            kettleRowToMongo(updateField, inputMeta, row, vars, topLevelStructure); */
+          DBObject fieldsToUpdateWithValues = null;
           
-          updateObject.put(modifierUpdateOpp, fieldToUpdateWithValue);
+          if (updateObject.get(modifierUpdateOpp) != null) {
+            // if we have some field(s) already associated with this type of modifier
+            // operation then just add to them
+            fieldsToUpdateWithValues = (DBObject)updateObject.get(modifierUpdateOpp);
+          } else {
+            // otherwise create a new DBObject for this modifier operation
+            fieldsToUpdateWithValues = new BasicDBObject();
+          }
+          setMongoValueFromKettleValue(fieldsToUpdateWithValues, path, vm, row[index]);                    
+          
+          updateObject.put(modifierUpdateOpp, fieldsToUpdateWithValues);
         }
       }
     }
@@ -367,36 +374,6 @@ public class MongoDbOutputData extends BaseStepData implements StepDataInterface
     
     return query;
   }
-  
-/*  public static DBObject getQueryObject(List<MongoDbOutputMeta.MongoField> fieldDefs,
-      RowMetaInterface inputMeta, Object[] row, VariableSpace vars,
-      MongoTopLevel topLevelStructure) throws KettleException {
-    
-    boolean haveMatchFields = false;
-    boolean hasNonNullMatchValues = false;
-    List<MongoDbOutputMeta.MongoField> queryFields = new ArrayList<MongoDbOutputMeta.MongoField>();
-    for (MongoDbOutputMeta.MongoField field : fieldDefs) {
-      if (field.m_updateMatchField) {
-        haveMatchFields = true;
-        
-        String incomingFieldName = vars.environmentSubstitute(field.m_incomingFieldName);
-        int index = inputMeta.indexOfValue(incomingFieldName);
-        ValueMetaInterface vm = inputMeta.getValueMeta(index);
-        
-        if (!vm.isNull(row[index])) {
-          hasNonNullMatchValues = true;
-          queryFields.add(field);
-        }
-      }
-    }
-    
-    if (!haveMatchFields) {
-      throw new KettleException("No fields have been specified to match on for " +
-      		"upsert operation!");
-    }    
-    
-    return kettleRowToMongo(queryFields, inputMeta, row, vars, topLevelStructure);
-  } */
   
   /**
    * Converts a kettle row to a Mongo Object
@@ -691,23 +668,6 @@ public class MongoDbOutputData extends BaseStepData implements StepDataInterface
         new ArrayList<MongoDbOutputMeta.MongoField>();
       
       MongoDbOutputMeta.MongoField mf = new MongoDbOutputMeta.MongoField();
-      /*mf.m_incomingFieldName = "field1";
-      mf.m_mongoDocPath = "bob[0]";
-      mf.m_useIncomingFieldNameAsMongoFieldName = true;
-      paths.add(mf);
-      mf = new MongoDbOutputMeta.MongoField();
-      mf.m_incomingFieldName = "field2";
-      mf.m_mongoDocPath = "bob[0]";
-      mf.m_useIncomingFieldNameAsMongoFieldName = true;
-      paths.add(mf);
-      
-      RowMetaInterface rmi = new RowMeta();
-      ValueMetaInterface vm = new ValueMeta();
-      vm.setName("field1"); vm.setType(ValueMetaInterface.TYPE_STRING);
-      rmi.addValueMeta(vm);
-      vm = new ValueMeta();
-      vm.setName("field2"); vm.setType(ValueMetaInterface.TYPE_INTEGER);
-      rmi.addValueMeta(vm); */
       
       mf.m_incomingFieldName = "field1";
       mf.m_mongoDocPath = "nestedDoc.secondNested";

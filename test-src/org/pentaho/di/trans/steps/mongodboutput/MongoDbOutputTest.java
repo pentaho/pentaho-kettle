@@ -1,7 +1,9 @@
 package org.pentaho.di.trans.steps.mongodboutput;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.pentaho.di.trans.steps.mongodboutput.MongoDbOutputData.kettleRowToMongo;
+import static org.pentaho.di.trans.steps.mongodboutput.MongoDbOutputData.getModifierUpdateObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -305,5 +307,46 @@ public class MongoDbOutputTest {
             MongoDbOutputData.MongoTopLevel.RECORD);
       
       assertEquals(result.toString(), "{ \"nestedDoc\" : { \"secondNested\" : { \"field1\" : \"value1\"} , \"field2\" : 12}}");
+  }
+  
+  @Test
+  public void testModifierUpdateWithMultipleModifiersOfSameType() throws KettleException {
+    List<MongoDbOutputMeta.MongoField> paths = 
+      new ArrayList<MongoDbOutputMeta.MongoField>();
+    
+    MongoDbOutputMeta.MongoField mf = new MongoDbOutputMeta.MongoField();
+    mf.m_incomingFieldName = "field1";
+    mf.m_mongoDocPath = "";
+    mf.m_useIncomingFieldNameAsMongoFieldName = true;
+    mf.m_modifierUpdateOperation = "$set";
+    paths.add(mf);
+    
+    mf = new MongoDbOutputMeta.MongoField();
+    mf.m_incomingFieldName = "field2";
+    mf.m_mongoDocPath = "nestedDoc";
+    mf.m_useIncomingFieldNameAsMongoFieldName = true;
+    mf.m_modifierUpdateOperation = "$set";
+    paths.add(mf);
+    
+    RowMetaInterface rm = new RowMeta();
+    ValueMetaInterface vm = new ValueMeta("field1");
+    vm.setType(ValueMetaInterface.TYPE_STRING);
+    rm.addValueMeta(vm);
+    vm = new ValueMeta("field2");
+    vm.setType(ValueMetaInterface.TYPE_STRING);
+    rm.addValueMeta(vm);
+    
+    VariableSpace vars = new Variables();
+    Object[] dummyRow = new Object[] {"value1", "value2"};
+    
+    // test to see that having more than one path specify the $set operation results
+    // in an update object with two entries
+    DBObject modifierUpdate = getModifierUpdateObject(paths, rm, dummyRow, vars, 
+        MongoDbOutputData.MongoTopLevel.RECORD); 
+    
+    assertTrue(modifierUpdate != null);
+    assertTrue(modifierUpdate.get("$set") != null); 
+    DBObject setOpp = (DBObject)modifierUpdate.get("$set");
+    assertEquals(setOpp.keySet().size(), 2);
   }
 }
