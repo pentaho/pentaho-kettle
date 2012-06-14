@@ -28,6 +28,7 @@ import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.database.dialog.tags.ExtTextbox;
+import org.pentaho.di.ui.job.entries.sqoop.xul.SwtLabelOrLink;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.spoon.XulSpoonSettingsManager;
 import org.pentaho.ui.xul.XulDomContainer;
@@ -65,6 +66,7 @@ public class OozieJobExecutorJobEntryDialog extends JobEntryDialog implements Jo
 
     // register the variable-aware text box for use in XUL
     xulLoader.register(VARIABLETEXTBOX, ExtTextbox.class.getName());
+    xulLoader.register("LABEL", SwtLabelOrLink.class.getName());
     xulLoader.setOuterContext(shell);
 
     // Load the XUL document with the dialog defined in it

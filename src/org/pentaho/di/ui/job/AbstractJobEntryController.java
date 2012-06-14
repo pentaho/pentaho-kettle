@@ -350,56 +350,6 @@ public abstract class AbstractJobEntryController<C extends BlockableJobConfig, E
   }
 
   /**
-   * Customizes the label that is used to toggle between quick setup and advanced options.
-   * <p>
-   *   - Set the label color to blue
-   *   - Underline the label
-   *   - Attaches a left-click listener on the label to perform the toggling
-   * </p>
-   *
-   * @param elementId Mode toggle element to attach listener on
-   */
-  protected void customizeModeToggleLabel(String elementId) {
-    SwtLabel label = (SwtLabel) getXulDomContainer().getDocumentRoot().getElementById(elementId);
-    // Only decorate the label if it's not a link. This was added in pentaho-xul-swt after PDI 4.3.0.
-    // TODO Remove this logic once pentaho-xul-swt is upgraded past 3.3 (when SwtLabel can support hyperlinks)
-    if (label != null && label.getManagedObject() instanceof CLabel) {
-      CLabel cLabel = (CLabel) label.getManagedObject();
-
-      FontData[] fontDatas = cLabel.getFont().getFontData();
-      for (FontData fontData : fontDatas) {
-        fontData.setStyle(SWT.BOLD);
-      }
-      final Font font = new Font(cLabel.getDisplay(), fontDatas);
-      cLabel.setFont(font);
-
-      final Cursor cursor = new Cursor(cLabel.getDisplay(), SWT.CURSOR_HAND);
-      cLabel.setCursor(cursor);
-
-      final Color color = new Color(cLabel.getDisplay(), 0, 0, 255);
-      cLabel.setForeground(color);
-
-      cLabel.addDisposeListener(new DisposeListener() {
-        @Override
-        public void widgetDisposed(DisposeEvent disposeEvent) {
-          color.dispose();
-          cursor.dispose();
-          font.dispose();
-        }
-      });
-
-      cLabel.addMouseListener(new MouseAdapter() {
-        @Override
-        public void mouseUp(MouseEvent e) {
-          if (e.button == 1) {
-            toggleMode();
-          }
-        }
-      });
-    }
-  }
-
-  /**
    * The mode deck element defined in your xul. Override this to customize the element id
    * @return
    */

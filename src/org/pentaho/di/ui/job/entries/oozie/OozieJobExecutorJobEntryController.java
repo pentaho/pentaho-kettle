@@ -69,7 +69,6 @@ public class OozieJobExecutorJobEntryController extends AbstractJobEntryControll
   @Override
   protected void beforeInit() {
     setModeToggleLabel(JobEntryMode.ADVANCED);
-    customizeModeToggleLabel(getModeToggleLabelElementId());
     blockingEnabledCheck = (SwtCheckbox)container.getDocumentRoot().getElementById("blockingExecution");
   }
 
