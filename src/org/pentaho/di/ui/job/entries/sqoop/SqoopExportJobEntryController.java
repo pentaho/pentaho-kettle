@@ -24,6 +24,7 @@ package org.pentaho.di.ui.job.entries.sqoop;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.hadoop.HadoopSpoonPlugin;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.sqoop.AbstractSqoopJobEntry;
@@ -34,6 +35,7 @@ import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
 import java.util.Collection;
+import java.util.List;
 
 import static org.pentaho.di.job.entries.sqoop.SqoopExportConfig.EXPORT_DIR;
 
@@ -67,7 +69,7 @@ public class SqoopExportJobEntryController extends AbstractSqoopJobEntryControll
       // Ignore, use null (default VFS browse path)
     }
     try {
-      FileObject exportDir = browseVfs(null, path, VfsFileChooserDialog.VFS_DIALOG_OPEN_DIRECTORY);
+      FileObject exportDir = browseVfs(null, path, VfsFileChooserDialog.VFS_DIALOG_OPEN_DIRECTORY, HadoopSpoonPlugin.HDFS_SCHEME, HadoopSpoonPlugin.HDFS_SCHEME, false);
       if (exportDir != null) {
         getConfig().setExportDir(exportDir.getName().getPath());
       }

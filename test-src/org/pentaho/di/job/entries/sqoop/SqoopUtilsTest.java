@@ -22,21 +22,16 @@
 
 package org.pentaho.di.job.entries.sqoop;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.commons.logging.impl.Log4JLogger;
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.util.GenericOptionsParser;
 import org.apache.log4j.Appender;
 import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.job.entries.helper.PersistentPropertyChangeListener;
 
 import java.beans.PropertyChangeEvent;
 import java.io.IOException;
@@ -45,21 +40,6 @@ import java.util.*;
 import static org.junit.Assert.*;
 
 public class SqoopUtilsTest {
-  private static final Appender MOCK_APPENDER = new AppenderSkeleton() {
-    @Override
-    protected void append(LoggingEvent event) {
-    }
-
-    @Override
-    public boolean requiresLayout() {
-      return false;
-    }
-
-    @Override
-    public void close() {
-    }
-  };
-
   private static class MockConfig extends SqoopConfig {
     @CommandLineArgument(name = "test", displayName = "Test", description = "Test argument", flag = true)
     private String test;
@@ -72,67 +52,6 @@ public class SqoopUtilsTest {
       String old = this.test;
       this.test = test;
       pcs.firePropertyChange("test", old, this.test);
-    }
-  }
-
-  @Test
-  public void findLogger() {
-    String loggerName = "testLogger";
-    Log log = LogFactory.getLog(loggerName);
-    assertTrue(log instanceof org.apache.commons.logging.impl.Log4JLogger);
-    Log4JLogger log4jLogger = (org.apache.commons.logging.impl.Log4JLogger) log;
-    Logger logger = log4jLogger.getLogger();
-    assertNotNull(logger);
-
-    // This should find the logger we determined to exist above as "logger"
-    assertNotNull(SqoopUtils.findLogger(loggerName));
-  }
-
-  @Test
-  public void attachAppenderTo() {
-    Map<String, Level> logLevelCache = new HashMap<String, Level>();
-    String loggerName = "testLogger";
-    Log log = LogFactory.getLog(loggerName);
-    assertTrue(log instanceof org.apache.commons.logging.impl.Log4JLogger);
-    Log4JLogger log4jLogger = (org.apache.commons.logging.impl.Log4JLogger) log;
-    Logger logger = log4jLogger.getLogger();
-    assertNotNull(logger);
-
-    assertFalse(logger.getAllAppenders().hasMoreElements());
-    try {
-      SqoopUtils.attachAppenderTo(MOCK_APPENDER, LogLevel.DETAILED, logLevelCache, loggerName);
-      assertTrue(logger.getAllAppenders().hasMoreElements());
-      assertEquals(1, logLevelCache.size());
-    } finally {
-      logger.removeAllAppenders();
-    }
-  }
-
-  @Test
-  public void removeAppenderFrom() {
-    Map<String, Level> logLevelCache = new HashMap<String, Level>();
-    String loggerName = "testLogger";
-    logLevelCache.put(loggerName, Level.ERROR);
-
-    Log log = LogFactory.getLog(loggerName);
-    assertTrue(log instanceof org.apache.commons.logging.impl.Log4JLogger);
-    Log4JLogger log4jLogger = (org.apache.commons.logging.impl.Log4JLogger) log;
-    Logger logger = log4jLogger.getLogger();
-    logger.setLevel(Level.INFO);
-    assertNotNull(logger);
-
-    assertFalse(logger.getAllAppenders().hasMoreElements());
-    logger.addAppender(MOCK_APPENDER);
-    assertTrue(logger.getAllAppenders().hasMoreElements());
-    try {
-      SqoopUtils.removeAppenderFrom(MOCK_APPENDER, logLevelCache, loggerName);
-
-      // Make sure the appender is gone and the logging level is restored
-      assertFalse(logger.getAllAppenders().hasMoreElements());
-      assertEquals(Level.ERROR, logger.getLevel());
-      assertEquals(0, logLevelCache.size());
-    } finally {
-      logger.removeAllAppenders();
     }
   }
 
@@ -465,21 +384,4 @@ public class SqoopUtilsTest {
     assertNull(SqoopUtils.findMethod(MockConfig.class, "Test", null, "bogus"));
   }
 
-  @Test
-  public void asLong() {
-    VariableSpace variableSpace = new Variables();
-
-    assertNull(SqoopUtils.asLong(null, variableSpace));
-    assertEquals(Long.valueOf("10", 10), SqoopUtils.asLong("10", variableSpace));
-
-    variableSpace.setVariable("long", "150");
-    assertEquals(Long.valueOf("150", 10), SqoopUtils.asLong("${long}", variableSpace));
-
-    try {
-      SqoopUtils.asLong("NaN", variableSpace);
-      fail("expected number format exception");
-    } catch (NumberFormatException ex) {
-      // we're good
-    }
-  }
 }

@@ -22,56 +22,32 @@
 
 package org.pentaho.di.ui.job.entries.sqoop;
 
-import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileSystemException;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CLabel;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.MessageBox;
-import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
-import org.pentaho.di.core.exception.KettleFileException;
-import org.pentaho.di.core.hadoop.HadoopSpoonPlugin;
-import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.sqoop.AbstractSqoopJobEntry;
 import org.pentaho.di.job.entries.sqoop.ArgumentWrapper;
 import org.pentaho.di.job.entries.sqoop.SqoopConfig;
 import org.pentaho.di.job.entries.sqoop.SqoopUtils;
-import org.pentaho.di.job.entry.JobEntryInterface;
-import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.database.dialog.DatabaseExplorerDialog;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
-import org.pentaho.di.ui.core.dialog.ErrorDialog;
-import org.pentaho.di.ui.core.gui.WindowProperty;
-import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.di.ui.job.AbstractJobEntryController;
+import org.pentaho.di.ui.job.JobEntryMode;
 import org.pentaho.ui.xul.XulDomContainer;
-import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.components.XulButton;
 import org.pentaho.ui.xul.containers.XulDeck;
-import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.containers.XulTree;
-import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
-import org.pentaho.ui.xul.swt.tags.SwtDialog;
-import org.pentaho.ui.xul.swt.tags.SwtLabel;
 import org.pentaho.ui.xul.util.AbstractModelList;
-import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
 
 import static org.pentaho.di.job.entries.sqoop.SqoopConfig.*;
 
@@ -81,7 +57,7 @@ import static org.pentaho.di.job.entries.sqoop.SqoopConfig.*;
  * @param <S> Type of Sqoop configuration object this controller depends upon. Must match the configuration object the
  *            job entry expects.
  */
-public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> extends AbstractXulEventHandler {
+public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> extends AbstractJobEntryController<S, AbstractSqoopJobEntry<S>> {
 
   public static final String SELECTED_DATABASE_CONNECTION = "selectedDatabaseConnection";
   public static final String MODE_TOGGLE_LABEL = "modeToggleLabel";
@@ -90,23 +66,15 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> ext
   protected DatabaseItem NO_DATABASE = new DatabaseItem("@@none@@", "Choose Available"); // This is overwritten in init() with the i18n string
   protected DatabaseItem USE_ADVANCED_OPTIONS = new DatabaseItem("@@advanced@@", "Use Advanced Options"); // This is overwritten in init() with the i18n string
 
-  private XulDomContainer container;
-  private BindingFactory bindingFactory;
-  private List<Binding> bindings;
-
-  private AbstractSqoopJobEntry<S> sqoopJobEntry;
-  private S config;
-
   protected AbstractModelList<ArgumentWrapper> advancedArguments;
   private AbstractModelList<DatabaseItem> databaseConnections;
   private DatabaseItem selectedDatabaseConnection;
   private DatabaseDialog databaseDialog;
 
-  private JobMeta jobMeta;
-
   // Flag to indicate we shouldn't handle any events. Useful for preventing unwanted synchronization during initialization
   // or other user-driven events.
   protected boolean suppressEventHandling = false;
+
 
   /**
    * The text for the Quick Setup/Advanced Options mode toggle (label).
@@ -138,17 +106,14 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> ext
   /**
    * Creates a new Sqoop job entry controller.
    *
+   * @param jobMeta         Meta data for the job
    * @param container       Container with dialog for which we will control
-   * @param sqoopJobEntry   Job entry the dialog is being created for
+   * @param jobEntry        Job entry the dialog is being created for
    * @param bindingFactory  Binding factory to generate bindings
    */
-  @SuppressWarnings("unchecked")
-  public AbstractSqoopJobEntryController(JobMeta jobMeta, XulDomContainer container, AbstractSqoopJobEntry<S> sqoopJobEntry, BindingFactory bindingFactory) {
-    this.jobMeta = jobMeta;
-    this.container = container;
-    this.bindingFactory = bindingFactory;
-    this.sqoopJobEntry = sqoopJobEntry;
-    this.config = (S) sqoopJobEntry.getSqoopConfig().clone();
+  public AbstractSqoopJobEntryController(JobMeta jobMeta, XulDomContainer container, AbstractSqoopJobEntry<S> jobEntry, BindingFactory bindingFactory) {
+    super(jobMeta, container, jobEntry, bindingFactory);
+    this.config = (S) jobEntry.getJobConfig().clone();
     this.advancedArguments = new AbstractModelList<ArgumentWrapper>();
     this.databaseConnections = new AbstractModelList<DatabaseItem>();
   }
@@ -158,38 +123,6 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> ext
    */
   public abstract String getDialogElementId();
 
-  /**
-   * Initialize the dialog by loading model data, creating bindings and firing initial sync
-   * ({@link org.pentaho.ui.xul.binding.Binding#fireSourceChanged()}.
-   *
-   * @throws XulException
-   * @throws InvocationTargetException
-   */
-  public void init() throws XulException, InvocationTargetException {
-    NO_DATABASE = new DatabaseItem("@@none@@", BaseMessages.getString(AbstractSqoopJobEntry.class, "DatabaseName.ChooseAvailable"));
-    USE_ADVANCED_OPTIONS = new DatabaseItem("@@advanced@@", BaseMessages.getString(AbstractSqoopJobEntry.class, "DatabaseName.UseAdvancedOptions"));
-
-    bindings = new ArrayList<Binding>();
-    // Suppress event handling while we're initializing to prevent unwanted value changes
-    suppressEventHandling = true;
-    try {
-      populateDatabases();
-      setModeToggleLabel(BaseMessages.getString(AbstractSqoopJobEntry.class, MODE_I18N_STRINGS[0]));
-      createBindings(getConfig(), container, bindingFactory, bindings);
-      syncModel();
-
-      for (Binding binding : bindings) {
-        binding.fireSourceChanged();
-      }
-
-      setUiMode(getConfig().getModeAsEnum());
-    } finally {
-      suppressEventHandling = false;
-    }
-
-    // Manually set the current database, if it is valid, to sync the UI buttons since we suppressed their event handling while initializing bindings
-    setSelectedDatabaseConnection(createDatabaseItem(getConfig().getDatabase()));
-  }
 
   /**
    * Create the necessary XUL {@link Binding}s to support the dialog's desired functionality.
@@ -199,6 +132,7 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> ext
    * @param bindingFactory Binding factory to create bindings with
    * @param bindings       Collection to add created bindings to. This collection will be initialized via {@link org.pentaho.ui.xul.binding.Binding#fireSourceChanged()} upon return.
    */
+  @Override
   protected void createBindings(S config, XulDomContainer container, BindingFactory bindingFactory, Collection<Binding> bindings) {
     bindingFactory.setBindingType(Binding.Type.BI_DIRECTIONAL);
     bindings.add(bindingFactory.createBinding(config, JOB_ENTRY_NAME, JOB_ENTRY_NAME, VALUE));
@@ -230,27 +164,31 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> ext
   }
 
   /**
-   * @return the job entry this controller will modify configuration for
-   */
-  protected AbstractSqoopJobEntry<S> getJobEntry() {
-    return sqoopJobEntry;
-  }
-
-  /**
-   * Remove and destroy all bindings from {@link #bindings}.
-   */
-  protected void removeBindings() {
-    for (Binding binding : bindings) {
-      binding.destroyBindings();
-    }
-    bindings.clear();
-  }
-
-  /**
    * @return element id for the deck of dialog modes (quick setup, advanced)
    */
   protected String getModeDeckElementId() {
     return "modeDeck";
+  }
+
+  @Override
+  protected void beforeInit() {
+    NO_DATABASE = new DatabaseItem("@@none@@", BaseMessages.getString(AbstractSqoopJobEntry.class, "DatabaseName.ChooseAvailable"));
+    USE_ADVANCED_OPTIONS = new DatabaseItem("@@advanced@@", BaseMessages.getString(AbstractSqoopJobEntry.class, "DatabaseName.UseAdvancedOptions"));
+    // Suppress event handling while we're initializing to prevent unwanted value changes
+    suppressEventHandling = true;
+    populateDatabases();
+    setModeToggleLabel(BaseMessages.getString(AbstractSqoopJobEntry.class, MODE_I18N_STRINGS[0]));
+//    customizeModeToggleLabel(getModeToggleLabelElementId());
+  }
+
+  @Override
+  protected void afterInit() {
+    setUiMode(getConfig().getModeAsEnum());
+
+    suppressEventHandling = false;
+
+    // Manually set the current database, if it is valid, to sync the UI buttons since we suppressed their event handling while initializing bindings
+    setSelectedDatabaseConnection(createDatabaseItem(getConfig().getDatabase()));
   }
 
   /**
@@ -275,7 +213,7 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> ext
     databaseConnections.clear();
     updateDatabaseItemsList();
     for (DatabaseMeta dbMeta : jobMeta.getDatabases()) {
-      if (sqoopJobEntry.isDatabaseSupported(dbMeta.getDatabaseInterface().getClass())) {
+      if (jobEntry.isDatabaseSupported(dbMeta.getDatabaseInterface().getClass())) {
         databaseConnections.add(new DatabaseItem(dbMeta.getName()));
       }
     }
@@ -355,7 +293,7 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> ext
         try {
           getConfig().setConnectionInfo(databaseMeta.getName(), databaseMeta.getURL(), databaseMeta.getUsername(), databaseMeta.getPassword());
         } catch (KettleDatabaseException ex) {
-          sqoopJobEntry.logError(BaseMessages.getString(AbstractSqoopJobEntry.class, "ErrorConfiguringDatabaseConnection"), ex);
+          jobEntry.logError(BaseMessages.getString(AbstractSqoopJobEntry.class, "ErrorConfiguringDatabaseConnection"), ex);
         }
       } else {
         getConfig().copyConnectionInfoFromAdvanced();
@@ -417,6 +355,11 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> ext
     String old = this.modeToggleLabel;
     this.modeToggleLabel = modeToggleLabel;
     firePropertyChange(MODE_TOGGLE_LABEL, old, this.modeToggleLabel);
+  }
+
+  @Override
+  protected void setModeToggleLabel(JobEntryMode mode) {
+    setModeToggleLabel(BaseMessages.getString(AbstractSqoopJobEntry.class, MODE_I18N_STRINGS[mode.ordinal()]));
   }
 
   protected DatabaseDialog getDatabaseDialog() {
@@ -506,100 +449,16 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> ext
   /**
    * @return the current configuration object. This configuration may be discarded if the dialog is canceled.
    */
-  protected S getConfig() {
+  @Override
+  public S getConfig() {
     return config;
-  }
-
-  /**
-   * @return the job meta for the job entry we're editing
-   */
-  protected JobMeta getJobMeta() {
-    return jobMeta;
-  }
-
-  /**
-   * Look up the dialog reference from the document.
-   *
-   * @return The dialog element referred to by {@link #getDialogElementId()}
-   */
-  protected SwtDialog getDialog() {
-    return (SwtDialog) getXulDomContainer().getDocumentRoot().getElementById(getDialogElementId());
-  }
-
-  /**
-   * @return the shell for the currently visible dialog. This will be used to display additional dialogs/popups.
-   */
-  protected Shell getShell() {
-    return getDialog().getShell();
-  }
-
-  /**
-   * When the "OK" button is clicked in the dialog set the configuration object back into the job entry and close the dialog
-   */
-  public void accept() {
-    sqoopJobEntry.setSqoopConfig(config);
-    sqoopJobEntry.setChanged();
-    cancel();
-  }
-
-  /**
-   * Open the dialog
-   *
-   * @return chang
-   */
-  public JobEntryInterface open() {
-    XulDialog dialog = (XulDialog) container.getDocumentRoot().getElementById(getDialogElementId());
-    dialog.show();
-    return sqoopJobEntry;
-  }
-
-  /**
-   * Close the dialog discarding all changes.
-   */
-  public void cancel() {
-    removeBindings();
-    XulDialog xulDialog = getDialog();
-
-    Shell shell = (Shell) xulDialog.getRootObject();
-    if (!shell.isDisposed()) {
-      WindowProperty winprop = new WindowProperty(shell);
-      PropsUI.getInstance().setScreen(winprop);
-      ((Composite) xulDialog.getManagedObject()).dispose();
-      shell.dispose();
-    }
-  }
-
-  /**
-   * Browse for a file or directory with the VFS Browser.
-   *
-   * @param root       Root object
-   * @param initial    Initial file or folder the browser should open to
-   * @param dialogMode Mode to open dialog in: e.g. {@link VfsFileChooserDialog#VFS_DIALOG_OPEN_FILE_OR_DIRECTORY}
-   * @return The selected file object, {@code null} if no object is selected
-   * @throws KettleFileException Error accessing the root file using the initial file, when {@code root} is not provided
-   */
-  protected FileObject browseVfs(FileObject root, FileObject initial, int dialogMode) throws KettleFileException {
-    if (initial == null) {
-      initial = KettleVFS.getFileObject(Spoon.getInstance().getLastFileOpened());
-    }
-    if (root == null) {
-      try {
-        root = initial.getFileSystem().getRoot();
-      } catch (FileSystemException e) {
-        throw new KettleFileException(e);
-      }
-    }
-    VfsFileChooserDialog fileChooserDialog = Spoon.getInstance().getVfsFileChooserDialog(root, initial);
-    FileObject selected = fileChooserDialog.open(getShell(), HadoopSpoonPlugin.HDFS_SCHEME, HadoopSpoonPlugin.HDFS_SCHEME, false,
-      initial.getName().getFriendlyURI(), new String[]{"*.*"}, new String[]{BaseMessages.getString(getClass(), "System.FileType.AllFiles")}, dialogMode);
-    return selected;
   }
 
   /**
    * Test the configuration settings and show a dialog with the feedback.
    */
   public void testSettings() {
-    List<String> warnings = sqoopJobEntry.getValidationWarnings(getConfig());
+    List<String> warnings = jobEntry.getValidationWarnings(getConfig());
     if (!warnings.isEmpty()) {
       StringBuilder sb = new StringBuilder();
       for (String warning : warnings) {
@@ -860,27 +719,4 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> ext
     }
   }
 
-  /**
-   * Show an error dialog with the title and message provided.
-   *
-   * @param title   Dialog window title
-   * @param message Dialog message
-   */
-  protected void showErrorDialog(String title, String message) {
-    MessageBox mb = new MessageBox(getShell(), SWT.OK | SWT.ICON_ERROR);
-    mb.setText(title);
-    mb.setMessage(message);
-    mb.open();
-  }
-
-  /**
-   * Show an error dialog with the title, message, and toggle button to see the entire stacktrace produced by {@code t}.
-   *
-   * @param title   Dialog window title
-   * @param message Dialog message
-   * @param t       Cause for this error
-   */
-  protected void showErrorDialog(String title, String message, Throwable t) {
-    new ErrorDialog(getShell(), title, message, t);
-  }
 }

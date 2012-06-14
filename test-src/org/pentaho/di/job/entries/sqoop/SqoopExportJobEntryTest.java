@@ -79,7 +79,7 @@ public class SqoopExportJobEntryTest {
     config.setExportDir("/test-export");
     config.setPassword(myPassword);
 
-    je.setSqoopConfig(config);
+    je.setJobConfig(config);
 
     JobEntryCopy jec = new JobEntryCopy(je);
     jec.setLocation(0, 0);
@@ -92,7 +92,7 @@ public class SqoopExportJobEntryTest {
     SqoopExportJobEntry je2 = new SqoopExportJobEntry();
     je2.loadXML(d.getDocumentElement(), null, null, null);
 
-    SqoopExportConfig config2 = je2.getSqoopConfig();
+    SqoopExportConfig config2 = je2.getJobConfig();
     assertEquals(config.getJobEntryName(), config2.getJobEntryName());
     assertEquals(config.getBlockingExecution(), config2.getBlockingExecution());
     assertEquals(config.getBlockingPollingInterval(), config2.getBlockingPollingInterval());
@@ -114,7 +114,7 @@ public class SqoopExportJobEntryTest {
     config.setExportDir("/test-export");
     config.setPassword("my-password");
 
-    je.setSqoopConfig(config);
+    je.setJobConfig(config);
 
     KettleEnvironment.init();
     String filename = File.createTempFile(getClass().getSimpleName() + "-export-dbtest", "").getAbsolutePath();
@@ -146,7 +146,7 @@ public class SqoopExportJobEntryTest {
       je2.loadRep(repository, id_job, null, null);
 
       // Make sure all settings we set are properly loaded
-      SqoopExportConfig config2 = je2.getSqoopConfig();
+      SqoopExportConfig config2 = je2.getJobConfig();
       assertEquals(config.getJobEntryName(), config2.getJobEntryName());
       assertEquals(config.getBlockingExecution(), config2.getBlockingExecution());
       assertEquals(config.getBlockingPollingInterval(), config2.getBlockingPollingInterval());

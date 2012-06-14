@@ -63,78 +63,12 @@ public class SqoopUtils {
   private static final Pattern BACKSLASH_PATTERN = Pattern.compile("\\\\");
   // Simple map of Patterns that match an escape sequence and a replacement string to replace them with to escape them
   private static final Object[][] ESCAPE_SEQUENCES = new Object[][] {
-    new Object[] { Pattern.compile("\t"), "\\\\t" },
-    new Object[] { Pattern.compile("\b"), "\\\\b" },
-    new Object[] { Pattern.compile("\n"), "\\\\n" },
-    new Object[] { Pattern.compile("\r"), "\\\\r" },
-    new Object[] { Pattern.compile("\f"), "\\\\f" }
+      new Object[] { Pattern.compile("\t"), "\\\\t" },
+      new Object[] { Pattern.compile("\b"), "\\\\b" },
+      new Object[] { Pattern.compile("\n"), "\\\\n" },
+      new Object[] { Pattern.compile("\r"), "\\\\r" },
+      new Object[] { Pattern.compile("\f"), "\\\\f" }
   };
-
-  /**
-   * Find the log4j logger with the given name in a forest of slf4j logs.
-   *
-   * @param logName Logger name to find
-   *
-   * @return Logger if a log4j log with the provided name could be found.
-   */
-  public static Logger findLogger(String logName) {
-    Log log = LogFactory.getLog(logName);
-    if (log instanceof org.apache.commons.logging.impl.Log4JLogger) {
-      Logger logger = ((org.apache.commons.logging.impl.Log4JLogger) log).getLogger();
-      if (logger == null) {
-        throw new IllegalArgumentException("Logger does not exist for log: " + logName);
-      }
-      return logger;
-    } else if (log == null) {
-      throw new IllegalArgumentException("Unknown log name: " + logName);
-    } else {
-      throw new IllegalArgumentException("Unsupported logging type: " + log.getClass());
-    }
-  }
-
-  /**
-   * Attach an appender to the log names provided. All logging at the provided level will be passed to the appender.
-   *
-   * @param appender Appender to route log messages to
-   * @param logLevel Minimum logging level to log at
-   * @param logLevelCache Cache of original logging levels for the loggers. This is populated when the log level of a logger is
-   *                      set so it can be reverted if the appender is removed.
-   * @param logNames Name of log4j loggers to attach appender to
-   */
-  @SuppressWarnings("deprecation")
-  public static void attachAppenderTo(Appender appender, LogLevel logLevel, Map<String, Level> logLevelCache, String... logNames) {
-    for (String logName : logNames) {
-      Logger logger = findLogger(logName);
-      logger.addAppender(appender);
-      // Update logger level to match our logging level
-      Level level = org.pentaho.di.core.logging.KettleLogChannelAppender.LOG_LEVEL_MAP.get(logLevel);
-      if (level != null) {
-        // Cache the original level so we can reset it when we're done
-        logLevelCache.put(logger.getName(), logger.getLevel());
-        logger.setLevel(level);
-      }
-    }
-  }
-
-  /**
-   * Removes an appender from a log4j logger. The logger's logging levels will be reset based on the {@code logLevelCache}.
-   *
-   * @param appender Appender to remove
-   * @param logLevelCache Mapping of logger names to log levels to restore when the appender is removed
-   * @param logNames Logger names to remove appender from and restore original logging level to
-   */
-  public static void removeAppenderFrom(Appender appender, Map<String, Level> logLevelCache, String... logNames) {
-    for (String logName : logNames) {
-      Logger logger = findLogger(logName);
-      logger.removeAppender(appender);
-      // Reset logger level if it was changed
-      if (logLevelCache.containsKey(logger.getName())) {
-        logger.setLevel(logLevelCache.get(logger.getName()));
-        logLevelCache.remove(logger.getName());
-      }
-    }
-    appender.close();
-  }
 
   /**
    * Configure a {@link SqoopConfig}'s Namenode and Jobtracker connection information based off a Hadoop Configuration's
@@ -493,15 +427,4 @@ public class SqoopUtils {
     return aClass == null ? null : findMethod(aClass, methodName, parameterTypes, prefixes);
   }
 
-  /**
-   * Parse the string as a {@link Long} after variable substitution.
-   *
-   * @param s             String-encoded {@link Long} value or variable expression that should resolve to a {@link Long} value
-   * @param variableSpace Context for variables so we can substitute {@code s}
-   * @return the value returned by {@link Long#parseLong(String, int) Long.parseLong(s, 10)} after substitution
-   */
-  public static Long asLong(String s, VariableSpace variableSpace) {
-    String value = variableSpace.environmentSubstitute(s);
-    return value == null ? null : Long.valueOf(value, 10);
-  }
 }

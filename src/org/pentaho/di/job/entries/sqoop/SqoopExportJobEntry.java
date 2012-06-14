@@ -49,4 +49,5 @@ public class SqoopExportJobEntry extends AbstractSqoopJobEntry<SqoopExportConfig
   protected String getToolName() {
     return "export";
   }
+
 }

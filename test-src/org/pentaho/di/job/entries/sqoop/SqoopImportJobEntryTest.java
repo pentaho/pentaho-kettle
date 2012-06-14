@@ -31,6 +31,8 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.job.JobEntryUtils;
+import org.pentaho.di.job.LoggingProxy;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.repository.LongObjectId;
 import org.pentaho.di.repository.ObjectId;
@@ -52,7 +54,7 @@ public class SqoopImportJobEntryTest {
   @Test
   public void buildSqoopConfig() {
     SqoopImportJobEntry je = new SqoopImportJobEntry();
-    assertEquals(SqoopImportConfig.class, je.getSqoopConfig().getClass());
+    assertEquals(SqoopImportConfig.class, je.getJobConfig().getClass());
   }
 
   @Test
@@ -75,7 +77,7 @@ public class SqoopImportJobEntryTest {
     config.setTargetDir("/test-import-target");
     config.setPassword(myPassword);
 
-    je.setSqoopConfig(config);
+    je.setJobConfig(config);
 
     JobEntryCopy jec = new JobEntryCopy(je);
     jec.setLocation(0, 0);
@@ -88,7 +90,7 @@ public class SqoopImportJobEntryTest {
     SqoopImportJobEntry je2 = new SqoopImportJobEntry();
     je2.loadXML(d.getDocumentElement(), null, null, null);
 
-    SqoopImportConfig config2 = je2.getSqoopConfig();
+    SqoopImportConfig config2 = je2.getJobConfig();
     assertEquals(config.getJobEntryName(), config2.getJobEntryName());
     assertEquals(config.getBlockingExecution(), config2.getBlockingExecution());
     assertEquals(config.getBlockingPollingInterval(), config2.getBlockingPollingInterval());
@@ -109,7 +111,7 @@ public class SqoopImportJobEntryTest {
     config.setConnect(connectValue);
     config.setTargetDir("/test-import-target");
 
-    je.setSqoopConfig(config);
+    je.setJobConfig(config);
 
     KettleEnvironment.init();
     String filename = File.createTempFile(getClass().getSimpleName() + "-import-dbtest", "").getAbsolutePath();
@@ -141,7 +143,7 @@ public class SqoopImportJobEntryTest {
       je2.loadRep(repository, id_job, null, null);
 
       // Make sure all settings we set are properly loaded
-      SqoopImportConfig config2 = je2.getSqoopConfig();
+      SqoopImportConfig config2 = je2.getJobConfig();
       assertEquals(config.getJobEntryName(), config2.getJobEntryName());
       assertEquals(config.getBlockingExecution(), config2.getBlockingExecution());
       assertEquals(config.getBlockingPollingInterval(), config2.getBlockingPollingInterval());
@@ -179,7 +181,7 @@ public class SqoopImportJobEntryTest {
       }
     }
 
-    je.getSqoopConfig().setNamenodeHost("localhost");
+    je.getJobConfig().setNamenodeHost("localhost");
     try {
       je.configure(conf);
       fail("Expected exception");
@@ -190,15 +192,15 @@ public class SqoopImportJobEntryTest {
       }
     }
 
-    je.getSqoopConfig().setNamenodePort("54310");
-    je.getSqoopConfig().setJobtrackerHost("anotherhost");
-    je.getSqoopConfig().setJobtrackerPort("54311");
+    je.getJobConfig().setNamenodePort("54310");
+    je.getJobConfig().setJobtrackerHost("anotherhost");
+    je.getJobConfig().setJobtrackerPort("54311");
     je.configure(conf);
 
-    assertEquals("localhost", je.getSqoopConfig().getNamenodeHost());
-    assertEquals("54310", je.getSqoopConfig().getNamenodePort());
-    assertEquals("anotherhost", je.getSqoopConfig().getJobtrackerHost());
-    assertEquals("54311", je.getSqoopConfig().getJobtrackerPort());
+    assertEquals("localhost", je.getJobConfig().getNamenodeHost());
+    assertEquals("54310", je.getJobConfig().getNamenodePort());
+    assertEquals("anotherhost", je.getJobConfig().getJobtrackerHost());
+    assertEquals("54311", je.getJobConfig().getJobtrackerPort());
   }
 
   @Test
@@ -206,8 +208,8 @@ public class SqoopImportJobEntryTest {
     SqoopImportJobEntry je = new SqoopImportJobEntry();
 
     PrintStream stderr = System.err;
-    Logger sqoopLogger = SqoopUtils.findLogger("org.apache.sqoop");
-    Logger hadoopLogger = SqoopUtils.findLogger("org.apache.hadoop");
+    Logger sqoopLogger = JobEntryUtils.findLogger("org.apache.sqoop");
+    Logger hadoopLogger = JobEntryUtils.findLogger("org.apache.hadoop");
 
     assertFalse(sqoopLogger.getAllAppenders().hasMoreElements());
     assertFalse(hadoopLogger.getAllAppenders().hasMoreElements());

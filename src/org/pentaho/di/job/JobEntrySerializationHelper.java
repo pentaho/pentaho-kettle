@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.job.entries.sqoop;
+package org.pentaho.di.job;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
@@ -28,6 +28,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.job.entries.sqoop.Password;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Document;

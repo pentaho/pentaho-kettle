@@ -23,25 +23,18 @@
 package org.pentaho.di.job.entries.sqoop;
 
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.job.BlockableJobConfig;
 import org.pentaho.ui.xul.XulEventSource;
 import org.pentaho.ui.xul.util.AbstractModelList;
-
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
 
 /**
  * A collection of configuration objects for a Sqoop job entry.
  */
-public abstract class SqoopConfig implements XulEventSource, Cloneable {
-  protected transient PropertyChangeSupport pcs = new PropertyChangeSupport(this);
-
-  public static final String JOB_ENTRY_NAME = "jobEntryName";
+public abstract class SqoopConfig extends BlockableJobConfig implements XulEventSource, Cloneable {
   public static final String NAMENODE_HOST = "namenodeHost";
   public static final String NAMENODE_PORT = "namenodePort";
   public static final String JOBTRACKER_HOST = "jobtrackerHost";
   public static final String JOBTRACKER_PORT = "jobtrackerPort";
-  public static final String BLOCKING_EXECUTION = "blockingExecution";
-  public static final String BLOCKING_POLLING_INTERVAL = "blockingPollingInterval";
 
   public static final String DATABASE = "database";
   public static final String SCHEMA = "schema";
@@ -85,9 +78,6 @@ public abstract class SqoopConfig implements XulEventSource, Cloneable {
   public static final String COMMAND_LINE = "commandLine";
   public static final String MODE = "mode";
 
-  private String jobEntryName;
-  private String blockingPollingInterval = String.valueOf(300);
-  private String blockingExecution = Boolean.TRUE.toString();
   private String namenodeHost;
   private String namenodePort;
   private String jobtrackerHost;
@@ -180,34 +170,6 @@ public abstract class SqoopConfig implements XulEventSource, Cloneable {
   private String commandLine;
 
   /**
-   * @see {@link PropertyChangeSupport#addPropertyChangeListener(java.beans.PropertyChangeListener)}
-   */
-  public void addPropertyChangeListener(PropertyChangeListener l) {
-    pcs.addPropertyChangeListener(l);
-  }
-
-  /**
-   * @see {@link PropertyChangeSupport#addPropertyChangeListener(String, java.beans.PropertyChangeListener)}
-   */
-  public void addPropertyChangeListener(String propertyName, PropertyChangeListener l) {
-    pcs.addPropertyChangeListener(propertyName, l);
-  }
-
-  /**
-   * @see {@link PropertyChangeSupport#removePropertyChangeListener(java.beans.PropertyChangeListener)}
-   */
-  public void removePropertyChangeListener(PropertyChangeListener l) {
-    pcs.removePropertyChangeListener(l);
-  }
-
-  /**
-   * @see {@link PropertyChangeSupport#removePropertyChangeListener(String, java.beans.PropertyChangeListener)}
-   */
-  public void removePropertyChangeListener(String propertyName, PropertyChangeListener l) {
-    pcs.removePropertyChangeListener(propertyName, l);
-  }
-
-  /**
    * @return all known arguments for this config object. Some arguments may be synthetic and represent properties
    *         directly set on this config object for the purpose of showing them in the list view of the UI.
    */
@@ -238,11 +200,7 @@ public abstract class SqoopConfig implements XulEventSource, Cloneable {
 
   @Override
   public SqoopConfig clone() {
-    try {
-      return (SqoopConfig) super.clone();
-    } catch (CloneNotSupportedException e) {
-      throw new RuntimeException(e);
-    }
+    return (SqoopConfig) super.clone();
   }
 
   /**
@@ -281,36 +239,6 @@ public abstract class SqoopConfig implements XulEventSource, Cloneable {
   }
 
   // All getters/setters below this line
-
-  public String getJobEntryName() {
-    return jobEntryName;
-  }
-
-  public void setJobEntryName(String jobEntryName) {
-    String old = this.jobEntryName;
-    this.jobEntryName = jobEntryName;
-    pcs.firePropertyChange(JOB_ENTRY_NAME, old, this.jobEntryName);
-  }
-
-  public String getBlockingPollingInterval() {
-    return blockingPollingInterval;
-  }
-
-  public void setBlockingPollingInterval(String blockingPollingInterval) {
-    String old = this.blockingPollingInterval;
-    this.blockingPollingInterval = blockingPollingInterval;
-    pcs.firePropertyChange(BLOCKING_POLLING_INTERVAL, old, this.blockingPollingInterval);
-  }
-
-  public String getBlockingExecution() {
-    return blockingExecution;
-  }
-
-  public void setBlockingExecution(String blockingExecution) {
-    String old = this.blockingExecution;
-    this.blockingExecution = blockingExecution;
-    pcs.firePropertyChange(BLOCKING_EXECUTION, old, this.blockingExecution);
-  }
 
   public String getNamenodeHost() {
     return namenodeHost;
