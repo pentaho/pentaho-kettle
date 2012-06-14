@@ -492,19 +492,7 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
     
     String colFamName = null;
     if (!Const.isEmpty(m_cqlSelectQuery)) {            
-      String subQ = space.environmentSubstitute(m_cqlSelectQuery);
-      
-      // is there a LIMIT clause?
-      if (subQ.toLowerCase().indexOf("limit") > 0) {
-        String limitS = subQ.toLowerCase().
-          substring(subQ.toLowerCase().indexOf("limit") + 6, subQ.length());
-        try {
-          m_rowLimit = Integer.parseInt(limitS);
-        } catch (NumberFormatException ex) {
-          logError("Unable to parse FIRST clause in query: " + m_cqlSelectQuery);
-          return;
-        }
-      }
+      String subQ = space.environmentSubstitute(m_cqlSelectQuery);      
       
       if (!subQ.toLowerCase().startsWith("select")) {
         // not a select statement!
@@ -516,6 +504,20 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
         // query must end with a ';' or it will wait for more!
         logError("Query must be terminated by a ';'");
         return;
+      }
+      
+      // is there a LIMIT clause?
+      if (subQ.toLowerCase().indexOf("limit") > 0) {
+        String limitS = subQ.toLowerCase().
+          substring(subQ.toLowerCase().indexOf("limit") + 5, subQ.length()).trim();
+        limitS = limitS.replaceAll(";", "");
+        try {
+          m_rowLimit = Integer.parseInt(limitS);
+        } catch (NumberFormatException ex) {
+          logError("Unable to parse LIMIT clause in query: " + m_cqlSelectQuery 
+              + " using default limit of 10,000");
+          m_rowLimit = 10000;
+        }
       }
       
       //subQ = subQ.toLowerCase();
@@ -558,7 +560,7 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
       // is there a FIRST clause?
       if (subQ.toLowerCase().indexOf("first") > 0) {
         String firstS = subQ.toLowerCase().
-          substring(subQ.indexOf("first") + 6, subQ.length());
+          substring(subQ.toLowerCase().indexOf("first") + 5, subQ.length()).trim();
         firstS = firstS.substring(0, firstS.indexOf(' '));
         try {
           m_colLimit = Integer.parseInt(firstS);
@@ -568,7 +570,7 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
         }
       }
       
-      // now determine if its a select * or specific set of columns
+      // now determine if its a select */FIRST or specific set of columns
       String[] cols = null;
       if (subQ.indexOf("*") > 0) {
         // nothing special to do here
