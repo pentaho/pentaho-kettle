@@ -49,7 +49,7 @@ import java.util.Properties;
     name = "Oozie.JobExecutor.PluginName",
     description = "Oozie.JobExecutor.PluginDescription",
     categoryDescription = "BigData.Category.Description",
-    image = "oozie_job_executor.jpg",
+    image = "oozie-job-executor.png",
     i18nPackageName = "org.pentaho.di.job.entries.oozie",
     version = "1"
 )
