@@ -101,6 +101,9 @@ public class OozieJobExecutorJobEntryController extends AbstractJobEntryControll
     bindingFactory.setBindingType(Binding.Type.ONE_WAY);
     bindings.add(bindingFactory.createBinding(this, "modeToggleLabel", getModeToggleLabelElementId(), VALUE));
 
+    // only enable the polling interval text box is blocking is checked
+    bindings.add(bindingFactory.createBinding(config, BlockableJobConfig.BLOCKING_EXECUTION, BlockableJobConfig.BLOCKING_POLLING_INTERVAL, "!disabled", string2BooleanConvertor));
+
   }
 
   @Override
@@ -167,7 +170,7 @@ public class OozieJobExecutorJobEntryController extends AbstractJobEntryControll
   public void browseWorkflowConfig() {
     FileObject path = null;
     try {
-      path = KettleVFS.getFileObject(getConfig().getOozieWorkflowConfig());
+      path = KettleVFS.getFileObject(jobEntry.getVariableSpace().environmentSubstitute(getConfig().getOozieWorkflowConfig()));
     } catch (Exception e) {
       // Ignore, use null (default VFS browse path)
     }
