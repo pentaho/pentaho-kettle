@@ -349,6 +349,11 @@ public class CassandraInputData extends BaseStepData implements StepDataInterfac
             } else {
               getNextBatchOfColumns(conn);
               
+              // check against our limit again
+              if (m_rowCount == m_sliceRowsMax) {
+                return null;
+              }
+              
               if (m_cassandraRows == null) {
                 // we're done
                 return null;
