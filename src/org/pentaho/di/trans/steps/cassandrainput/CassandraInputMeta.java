@@ -43,6 +43,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
@@ -64,6 +65,8 @@ import org.w3c.dom.Node;
  */
 @Step(id = "CassandraInput", image = "Cassandra.png", name = "Cassandra Input", description="Reads data from a Cassandra table", categoryDescription="Big Data")
 public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterface {
+  
+  protected static final Class<?> PKG = CassandraInputMeta.class;
   
   /** The host to contact */
   protected String m_cassandraHost = "localhost";
@@ -496,13 +499,13 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
       
       if (!subQ.toLowerCase().startsWith("select")) {
         // not a select statement!
-        logError("No 'SELECT' in query!");
+        logError(BaseMessages.getString(PKG, "CassandraInput.Error.NoSelectInQuery"));
         return;
       }
       
       if (subQ.indexOf(';') < 0) {
         // query must end with a ';' or it will wait for more!
-        logError("Query must be terminated by a ';'");
+        logError(BaseMessages.getString(PKG, "CassandraInput.Error.QueryTermination"));
         return;
       }
       
@@ -514,13 +517,10 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
         try {
           m_rowLimit = Integer.parseInt(limitS);
         } catch (NumberFormatException ex) {
-          logError("Unable to parse LIMIT clause in query: " + m_cqlSelectQuery 
-              + " using default limit of 10,000");
+          logError(BaseMessages.getString(PKG, "CassandraInput.Error.UnableToParseLimitClause", m_cqlSelectQuery)); 
           m_rowLimit = 10000;
         }
-      }
-      
-      //subQ = subQ.toLowerCase();
+      }      
       
       // strip off where clause (if any)      
       if (subQ.toLowerCase().lastIndexOf("where") > 0) {
@@ -540,9 +540,8 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
       }
       
       fromIndex = offset;
-//      int fromIndex = subQ.toLowerCase().lastIndexOf("from");
       if (fromIndex < 0) {
-        logError("Must specify a column family using a 'FROM' clause");
+        logError(BaseMessages.getString(PKG, "CassandraInput.Error.MustSpecifyAColumnFamily"));
         return; // no from clause
       }      
       
@@ -565,7 +564,7 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
         try {
           m_colLimit = Integer.parseInt(firstS);
         } catch (NumberFormatException ex) {
-          logError("Unable to parse FIRST clause in query: " + m_cqlSelectQuery);
+          logError(BaseMessages.getString(PKG, "CassandraInput.Error.UnableToParseFirstClause", m_cqlSelectQuery));
           return;
         }
       }
@@ -656,9 +655,7 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
             if (!colMeta.columnExistsInSchema(col)) {
               // this one isn't known about in about in the schema - we can output it
               // as long as its values satisfy the default validator...
-              logBasic("Query specifies column '" + col + "', however this column is " +
-                        "not in the column family schema. The default column family " +
-                        "validator will be used");
+              logBasic(BaseMessages.getString(PKG, "CassandraInput.Info.DefaultColumnValidator", col));
             }
             ValueMetaInterface vm = colMeta.getValueMetaForColumn(col);
             rowMeta.addValueMeta(vm);            
@@ -666,8 +663,7 @@ public class CassandraInputMeta extends BaseStepMeta implements StepMetaInterfac
         }
       } catch (Exception ex) {
         ex.printStackTrace();
-        logBasic("Unable to connect to retrieve column meta data for '" + colFamName 
-            + "' at this stage.", ex);
+        logBasic(BaseMessages.getString(PKG, "CassandraInput.Info.UnableToRetrieveColumnMetaData", colFamName)); 
         return;
       } finally {
         if (conn != null) {

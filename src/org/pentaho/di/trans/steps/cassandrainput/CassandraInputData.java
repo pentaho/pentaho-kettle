@@ -38,14 +38,11 @@ import org.apache.cassandra.thrift.ColumnParent;
 import org.apache.cassandra.thrift.Compression;
 import org.apache.cassandra.thrift.ConsistencyLevel;
 import org.apache.cassandra.thrift.CqlRow;
-import org.apache.cassandra.thrift.InvalidRequestException;
 import org.apache.cassandra.thrift.KeyRange;
 import org.apache.cassandra.thrift.KeySlice;
 import org.apache.cassandra.thrift.SlicePredicate;
 import org.apache.cassandra.thrift.SliceRange;
 import org.apache.cassandra.thrift.TimedOutException;
-import org.apache.cassandra.thrift.UnavailableException;
-import org.apache.thrift.TException;
 import org.pentaho.cassandra.CassandraColumnMetaData;
 import org.pentaho.cassandra.CassandraConnection;
 import org.pentaho.di.core.Const;
@@ -196,10 +193,6 @@ public class CassandraInputData extends BaseStepData implements StepDataInterfac
     KeySlice row = m_cassandraRows.get(m_rowIndex);
     m_currentCols = row.getColumns();
     
-    // TODO this needs to be verified - is true for CQL queries (wildcard query has key as first col)
-    // no requested cols means we could get the key as a column??? in the first batch of columns.
-    /*int skipSize = (m_requestedCols == null || m_requestedCols.size() == 0)
-      ? 1 : 0; */
     int skipSize = 0;
     while (m_currentCols.size() == skipSize && 
         m_rowIndex < m_cassandraRows.size() - 1) {
@@ -299,7 +292,6 @@ public class CassandraInputData extends BaseStepData implements StepDataInterfac
                 m_slicePredicate, m_keyRange, ConsistencyLevel.ONE);
             if (m_cassandraRows == null || m_cassandraRows.size() == 0) {
               // done
-              //m_currentCols = null;
               return null;
             } else {
               advanceToNonEmptyRow();
@@ -313,8 +305,6 @@ public class CassandraInputData extends BaseStepData implements StepDataInterfac
                 return null;
               }
               
-/*              KeySlice row = m_cassandraRows.get(0);
-              m_currentCols = row.getColumns(); */
               m_colCount = 0;
               m_rowCount = 0;
               m_newSliceQuery = false;
@@ -369,12 +359,7 @@ public class CassandraInputData extends BaseStepData implements StepDataInterfac
       
       if (timeouts == 5) {
         throw new KettleException("Maximum number of consecutive timeouts exceeded");
-      }
-      
-/*      if (m_currentCols == null || m_currentCols.size() == 0) {
-        // must be done
-        return null;
-      } */
+      }      
       
       KeySlice row = m_cassandraRows.get(m_rowIndex);
       Object rowKey = metaData.getKeyValue(row);
@@ -392,10 +377,7 @@ public class CassandraInputData extends BaseStepData implements StepDataInterfac
         outputRowData[keyIndex] = rowKey;
         
         Column col = m_currentCols.get(i).getColumn();
-        String colName = metaData.getColumnName(col);
-        
-        // TODO do we need to check for the key as a column (like with
-        // CQL rows?)
+        String colName = metaData.getColumnName(col);        
         
         Object colValue = metaData.getColumnValue(col);
         if (colValue == null) {
@@ -481,12 +463,8 @@ public class CassandraInputData extends BaseStepData implements StepDataInterfac
     
     // advance the iterator to the next column
     if (cassandraColIter.hasNext()) {
-  //    System.out.println("We have more columns.....");
       Column aCol = cassandraColIter.next();
       
-/*      if (aCol.bufferForValue() == null) {
-        System.out.println("******* The value of this column is null!");
-      } */
       String colName = metaData.getColumnName(aCol);
       
       // skip the key
@@ -515,7 +493,7 @@ public class CassandraInputData extends BaseStepData implements StepDataInterfac
       
       // do the value (stored as a string)
       Object colValue = metaData.getColumnValue(aCol);
-      //System.err.println("KEY " + key.toString() + " Column name: " + colName + " Value " + colValue);
+
       String stringV = colValue.toString();
       outputRowData[2] = stringV;
 
@@ -524,7 +502,6 @@ public class CassandraInputData extends BaseStepData implements StepDataInterfac
         stringV = tempDateMeta.getString(colValue);
         outputRowData[2] = stringV;
       } else if (colValue instanceof byte[]) {
-        //        stringV = new String((byte[]) colValue);
         outputRowData[2] = colValue;
       }            
       
@@ -532,7 +509,6 @@ public class CassandraInputData extends BaseStepData implements StepDataInterfac
       long timestampL = aCol.getTimestamp();
       outputRowData[3] = timestampL;      
     } else {
-//      System.out.println("No more columns for this row!!!!!!!");
       return null; // signify no more columns for this row...
     }
         
@@ -629,7 +605,6 @@ public class CassandraInputData extends BaseStepData implements StepDataInterfac
     
     fromIndex = offset;
     
-//    int fromIndex = subQ.toLowerCase().lastIndexOf("from");
     if (fromIndex < 0) {
       return null; // no from clause
     }

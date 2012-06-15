@@ -422,7 +422,6 @@ public class CassandraInputDialog extends BaseStepDialog implements
         getString(PKG, "CassandraInputDialog.Schema.Button"));
     props.setLook(m_showSchemaBut);
     fd = new FormData();
-//    fd.left = new FormAttachment(middle, 0);
     fd.right = new FormAttachment(100, 0);
     fd.bottom = new FormAttachment(wOK, -margin);
     m_showSchemaBut.setLayoutData(fd);
@@ -432,7 +431,6 @@ public class CassandraInputDialog extends BaseStepDialog implements
         RowMeta outputF = new RowMeta();
         CassandraConnection conn = null;
         try {
-//          CassandraInputMeta tempMeta = (CassandraInputMeta)m_currentMeta.clone();
           String hostS = transMeta.environmentSubstitute(m_hostText.getText());
           String portS = transMeta.environmentSubstitute(m_portText.getText());
           String userS = m_userText.getText();
@@ -442,10 +440,7 @@ public class CassandraInputDialog extends BaseStepDialog implements
             passS = transMeta.environmentSubstitute(passS);
           }
           String keyspaceS = transMeta.environmentSubstitute(m_keyspaceText.getText());
-  //        tempMeta.setCassandraHost(hostS); tempMeta.setCassandraPort(portS);
-//          tempMeta.setCassandraKeyspace(keyspaceS);
           String cqlText = transMeta.environmentSubstitute(m_cqlText.getText());
-//          tempMeta.setCQLSelectQuery(cqlText);                    
           
           conn = CassandraInputData.
             getCassandraConnection(hostS, Integer.parseInt(portS), userS, passS);
@@ -463,17 +458,14 @@ public class CassandraInputDialog extends BaseStepDialog implements
           
           String colFam = CassandraInputData.getColumnFamilyNameFromCQLSelectQuery(cqlText);
           if (Const.isEmpty(colFam)) {
-            throw new Exception("SELECT query does not seem to contain the name " +
-            		"of a column family!");
+            throw new Exception(BaseMessages.getString(PKG, 
+                "CassandraInput.Error.NoFromClauseInQuery"));
           }
           
           if (!CassandraColumnMetaData.columnFamilyExists(conn, colFam)) {
-            throw new Exception("The column family '" + colFam + "' does not " +
-                "seem to exist in the keyspace '" + keyspaceS);
-          }
-          
-/*          tempMeta.getFields(outputF, stepname, null, null, transMeta);
-          String colFam = outputF.getValueMeta(0).getName(); */
+            throw new Exception(BaseMessages.getString(PKG, 
+                "CassandraInput.Error.NonExistentColumnFamily", colFam, keyspaceS));
+          }          
           
           CassandraColumnMetaData cassMeta = new CassandraColumnMetaData(conn, colFam);
           String schemaDescription = cassMeta.getSchemaDescription();
@@ -542,9 +534,7 @@ public class CassandraInputDialog extends BaseStepDialog implements
       public void mouseUp(MouseEvent e) { setPosition(); }
     });
     
-    
-
-    
+        
     // Add listeners
     lsCancel = new Listener() {
         public void handleEvent(Event e) {
