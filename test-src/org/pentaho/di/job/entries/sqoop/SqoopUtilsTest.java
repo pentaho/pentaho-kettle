@@ -55,7 +55,7 @@ public class SqoopUtilsTest {
     }
   }
 
-  @Test(timeout = 5000)
+  @Test(timeout = 10000)
   public void configureConnectionInformation() {
     SqoopConfig config = new SqoopConfig() {
     };
