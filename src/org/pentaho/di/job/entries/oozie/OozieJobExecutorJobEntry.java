@@ -125,7 +125,7 @@ public class OozieJobExecutorJobEntry extends AbstractJobEntry<OozieJobExecutorC
           jobId = oozieClient.run(jobProps);
           if (JobEntryUtils.asBoolean(getJobConfig().getBlockingExecution(), variables)) {
             while(oozieClient.getJobInfo(jobId).getStatus().equals(WorkflowJob.Status.RUNNING)) {
-              System.out.println("Still running...");
+              // System.out.println("Still running " + jobId + "...");
               long interval = JobEntryUtils.asLong(jobConfig.getBlockingPollingInterval(), variables);
               Thread.sleep(interval);
             }

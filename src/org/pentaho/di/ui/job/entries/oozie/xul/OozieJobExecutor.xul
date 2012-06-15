@@ -61,7 +61,15 @@
                                     <label value="${Oozie.JobExecutor.Enable.Blocking.Label}" />
                                 </hbox>
                                 <hbox padding="5">
-                                    <checkbox id="blockingExecution" checked="true" />
+                                    <checkbox id="blockingExecution" />
+                                </hbox>
+                            </row>
+                            <row>
+                                <hbox padding="5">
+                                    <label value="${Oozie.JobExecutor.Enable.Polling.Interval.Label}" />
+                                </hbox>
+                                <hbox padding="5" flex="1">
+                                    <textbox pen:customclass="variabletextbox" id="blockingPollingInterval" width="100"/>
                                 </hbox>
                             </row>
                         </rows>

@@ -28,6 +28,7 @@ import org.pentaho.di.job.entry.JobEntryDialogInterface;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.core.database.dialog.tags.ExtTextbox;
+import org.pentaho.di.ui.job.entries.oozie.xul.BindableSwtCheckbox;
 import org.pentaho.di.ui.job.entries.sqoop.xul.SwtLabelOrLink;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.spoon.XulSpoonSettingsManager;
@@ -50,6 +51,8 @@ public class OozieJobExecutorJobEntryDialog extends JobEntryDialog implements Jo
 
   private static final String OOZIE_JOB_EXECUTOR_XUL = "org/pentaho/di/ui/job/entries/oozie/xul/OozieJobExecutor.xul";
   public static final String VARIABLETEXTBOX = "VARIABLETEXTBOX";
+  public static final String LABEL = "LABEL";
+  public static final String CHECKBOX = "CHECKBOX";
 
   private OozieJobExecutorJobEntryController controller = null;
   private XulDomContainer container = null;
@@ -64,9 +67,10 @@ public class OozieJobExecutorJobEntryDialog extends JobEntryDialog implements Jo
     xulLoader.setSettingsManager(XulSpoonSettingsManager.getInstance());
     xulLoader.registerClassLoader(getClass().getClassLoader());
 
-    // register the variable-aware text box for use in XUL
+    // register the variable-aware text, LinkLabel, and a better checkbox box for use in XUL
     xulLoader.register(VARIABLETEXTBOX, ExtTextbox.class.getName());
-    xulLoader.register("LABEL", SwtLabelOrLink.class.getName());
+    xulLoader.register(LABEL, SwtLabelOrLink.class.getName());
+    xulLoader.register(CHECKBOX, BindableSwtCheckbox.class.getName());
     xulLoader.setOuterContext(shell);
 
     // Load the XUL document with the dialog defined in it

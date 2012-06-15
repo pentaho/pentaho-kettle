@@ -24,7 +24,6 @@ import org.apache.oozie.client.OozieClient;
 import org.apache.oozie.client.OozieClientException;
 import org.apache.oozie.client.WorkflowAction;
 import org.apache.oozie.client.WorkflowJob;
-import org.apache.oozie.local.LocalOozie;
 import org.junit.Assert;
 import org.junit.Test;
 import org.pentaho.di.core.Result;
@@ -35,7 +34,6 @@ import org.pentaho.di.job.Job;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.w3c.dom.Document;
 
-import java.net.MalformedURLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -107,7 +105,7 @@ public class OozieJobExecutorJobEntryTest {
   public void testGetValidationWarnings_incompatibleVersions() throws Exception {
     OozieJobExecutorConfig config = new OozieJobExecutorConfig();
 
-    OozieClient client = getBadConfigTest();
+    OozieClient client = getBadConfigTestOozieClient();
     OozieJobExecutorJobEntry je = new TestOozieJobExecutorJobEntry(client); // just use this to force an error condition
 
     config.setOozieUrl("http://localhost/oozie");
@@ -122,7 +120,7 @@ public class OozieJobExecutorJobEntryTest {
 
   @Test
   public void testGetValidationWarnings_everythingIsGood() throws Exception {
-    OozieJobExecutorJobEntry je = new TestOozieJobExecutorJobEntry(getSucceedingTest());
+    OozieJobExecutorJobEntry je = new TestOozieJobExecutorJobEntry(getSucceedingTestOozieClient());
 
     OozieJobExecutorConfig config = new OozieJobExecutorConfig();
     config.setOozieUrl("http://localhost:11000/oozie");             // don't worry if it isn't running, we fake out our test connection to it anyway
@@ -136,15 +134,15 @@ public class OozieJobExecutorJobEntryTest {
 
   @Test
   public void execute_blocking() throws KettleException {
-    final long waitTime = 0;
+    final long waitTime = 200;
 
     OozieJobExecutorConfig config = new OozieJobExecutorConfig();
     config.setOozieUrl("http://localhost:11000/oozie");             // don't worry if it isn't running, we fake out our test connection to it anyway
     config.setOozieWorkflowConfig("test-src/job.properties");
     config.setJobEntryName("name");
-    config.setBlockingPollingInterval("1000");
+    config.setBlockingPollingInterval(""+waitTime);
 
-    TestOozieJobExecutorJobEntry je = new TestOozieJobExecutorJobEntry(getSucceedingTest());
+    TestOozieJobExecutorJobEntry je = new TestOozieJobExecutorJobEntry(getSucceedingTestOozieClient());
 
     je.setParentJob(new Job("test", null, null));
     je.setJobConfig(config);
@@ -162,15 +160,15 @@ public class OozieJobExecutorJobEntryTest {
 
   @Test
   public void execute_blocking_FAIL() throws KettleException {
-    final long waitTime = 0;
+    final long waitTime = 1000;
 
     OozieJobExecutorConfig config = new OozieJobExecutorConfig();
     config.setOozieUrl("http://localhost:11000/oozie");             // don't worry if it isn't running, we fake out our test connection to it anyway
     config.setOozieWorkflowConfig("test-src/job.properties");
     config.setJobEntryName("name");
-    config.setBlockingPollingInterval("1000");
+    config.setBlockingPollingInterval(""+waitTime);
 
-    TestOozieJobExecutorJobEntry je = new TestOozieJobExecutorJobEntry(getFailingTest());
+    TestOozieJobExecutorJobEntry je = new TestOozieJobExecutorJobEntry(getFailingTestOozieClient());
 
     je.setParentJob(new Job("test", null, null));
     je.setJobConfig(config);
@@ -185,13 +183,22 @@ public class OozieJobExecutorJobEntryTest {
     assertFalse(result.getResult());
   }
 
-  private TestOozieClient getFailingTest() {
+  private TestOozieClient getFailingTestOozieClient() {
+    // return status = FAILED
+    // isValidWS = true
+    // isValidProtocol = true
     return new TestOozieClient(WorkflowJob.Status.FAILED, true, true);
   }
-  private TestOozieClient getSucceedingTest() {
+  private TestOozieClient getSucceedingTestOozieClient() {
+    // return status = SUCCEEDED
+    // isValidWS = true
+    // isValidProtocol = true
     return new TestOozieClient(WorkflowJob.Status.SUCCEEDED, true, true);
   }
-  private TestOozieClient getBadConfigTest() {
+  private TestOozieClient getBadConfigTestOozieClient() {
+    // return status = SUCCEEDED
+    // isValidWS = false
+    // isValidProtocol = false
     return new TestOozieClient(WorkflowJob.Status.SUCCEEDED, false, false);
   }
 

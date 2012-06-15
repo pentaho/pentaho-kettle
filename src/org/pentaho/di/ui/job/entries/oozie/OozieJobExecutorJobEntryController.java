@@ -59,9 +59,6 @@ public class OozieJobExecutorJobEntryController extends AbstractJobEntryControll
    */
   private String modeToggleLabel;
 
-  private SwtCheckbox blockingEnabledCheck = null;
-
-
   public OozieJobExecutorJobEntryController(JobMeta jobMeta, XulDomContainer container, OozieJobExecutorJobEntry jobEntry, BindingFactory bindingFactory) {
     super(jobMeta, container, jobEntry, bindingFactory);
   }
@@ -69,15 +66,11 @@ public class OozieJobExecutorJobEntryController extends AbstractJobEntryControll
   @Override
   protected void beforeInit() {
     setModeToggleLabel(JobEntryMode.ADVANCED);
-    blockingEnabledCheck = (SwtCheckbox)container.getDocumentRoot().getElementById("blockingExecution");
   }
 
   @Override
   protected void syncModel() {
     // no custom model syncing needed, bindings are enough
-
-    // except SWTCheckbox, it does not participate in xul binding as ov v 3.3
-    blockingEnabledCheck.setChecked(JobEntryUtils.asBoolean(config.getBlockingExecution(), getJobEntry().getVariableSpace()));
   }
 
   @Override
@@ -87,13 +80,23 @@ public class OozieJobExecutorJobEntryController extends AbstractJobEntryControll
     bindings.add(bindingFactory.createBinding(config, OozieJobExecutorConfig.OOZIE_URL, OozieJobExecutorConfig.OOZIE_URL, VALUE));
     bindings.add(bindingFactory.createBinding(config, OozieJobExecutorConfig.OOZIE_WORKFLOW_CONFIG, OozieJobExecutorConfig.OOZIE_WORKFLOW_CONFIG, VALUE));
 
-    /////////////////////////////////////////////////////////////////////
-    // Bindings to checkboxes aren't fully implemented in SWTCheckbox (v 3.3).
-    // the act of clicking doesn't fire any event...
-    // So, on accept of the dialog we have to get the state of the checkbox
-    // and set that value in the config object.
-    /////////////////////////////////////////////////////////////////////
-//    bindings.add(bindingFactory.createBinding("blockingExecution", "checked", config, BlockableJobConfig.BLOCKING_EXECUTION, BindingConvertor.boolean2String()));
+    bindings.add(bindingFactory.createBinding(config, BlockableJobConfig.BLOCKING_POLLING_INTERVAL, BlockableJobConfig.BLOCKING_POLLING_INTERVAL, VALUE));
+
+    BindingConvertor<String, Boolean> string2BooleanConvertor = new BindingConvertor<String, Boolean>() {
+
+      @Override
+      public String targetToSource(Boolean aBoolean) {
+        String val = aBoolean.toString();
+        return val;
+      }
+
+      @Override
+      public Boolean sourceToTarget(String s) {
+        Boolean val = Boolean.valueOf(s);
+        return val;
+      }
+    };
+    bindings.add(bindingFactory.createBinding(config, BlockableJobConfig.BLOCKING_EXECUTION, BlockableJobConfig.BLOCKING_EXECUTION, "checked", string2BooleanConvertor));
 
     bindingFactory.setBindingType(Binding.Type.ONE_WAY);
     bindings.add(bindingFactory.createBinding(this, "modeToggleLabel", getModeToggleLabelElementId(), VALUE));
@@ -186,21 +189,6 @@ public class OozieJobExecutorJobEntryController extends AbstractJobEntryControll
   @Override
   protected String[] getFileFilterNames() {
     return new String[] {BaseMessages.getString(OozieJobExecutorJobEntry.class, FILE_FILTER_NAMES_PROPERTIES)};
-  }
-
-
-  /**
-   * Accept and apply the changes made in the dialog. Also, close the dialog
-   */
-  @Override
-  @Bindable
-  public void accept() {
-    // Bindings to checkboxes aren't fully implemented in SWTCheckbox (as of v3.3 of xul). the act of clicking doesn't fire any event.
-    config.setBlockingExecution(Boolean.toString(blockingEnabledCheck.isChecked()));
-
-    jobEntry.setJobConfig(config);
-    jobEntry.setChanged();
-    cancel();
   }
 
 }
