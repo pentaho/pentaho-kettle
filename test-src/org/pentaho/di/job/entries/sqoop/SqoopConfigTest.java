@@ -23,6 +23,7 @@
 package org.pentaho.di.job.entries.sqoop;
 
 import org.junit.Test;
+import org.pentaho.di.job.JobEntryMode;
 import org.pentaho.di.job.entries.helper.PersistentPropertyChangeListener;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.ui.xul.util.AbstractModelList;
@@ -227,10 +228,10 @@ public class SqoopConfigTest {
     };
 
     assertNull(config.getMode());
-    assertEquals(SqoopConfig.Mode.QUICK_SETUP, config.getModeAsEnum());
+    assertEquals(JobEntryMode.QUICK_SETUP, config.getModeAsEnum());
 
-    config.setMode(SqoopConfig.Mode.ADVANCED_COMMAND_LINE.name());
-    assertEquals(SqoopConfig.Mode.ADVANCED_COMMAND_LINE.name(), config.getMode());
-    assertEquals(SqoopConfig.Mode.ADVANCED_COMMAND_LINE, config.getModeAsEnum());
+    config.setMode(JobEntryMode.ADVANCED_COMMAND_LINE.name());
+    assertEquals(JobEntryMode.ADVANCED_COMMAND_LINE.name(), config.getMode());
+    assertEquals(JobEntryMode.ADVANCED_COMMAND_LINE, config.getModeAsEnum());
   }
 }

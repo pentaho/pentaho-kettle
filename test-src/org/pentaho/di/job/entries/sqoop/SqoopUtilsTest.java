@@ -31,6 +31,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.job.JobEntryMode;
 import org.pentaho.di.job.entries.helper.PersistentPropertyChangeListener;
 
 import java.beans.PropertyChangeEvent;
@@ -155,7 +156,7 @@ public class SqoopUtilsTest {
     SqoopConfig config = new SqoopConfig() {
     };
 
-    config.setMode(SqoopConfig.Mode.ADVANCED_COMMAND_LINE.name());
+    config.setMode(JobEntryMode.ADVANCED_COMMAND_LINE.name());
 
     config.setTable("table-from-property");
 

@@ -25,18 +25,16 @@ import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.BlockableJobConfig;
-import org.pentaho.di.job.JobEntryUtils;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.oozie.OozieJobExecutorConfig;
 import org.pentaho.di.job.entries.oozie.OozieJobExecutorJobEntry;
 import org.pentaho.di.ui.job.AbstractJobEntryController;
-import org.pentaho.di.ui.job.JobEntryMode;
+import org.pentaho.di.job.JobEntryMode;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.stereotype.Bindable;
-import org.pentaho.ui.xul.swt.tags.SwtCheckbox;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
 import java.util.Collection;
@@ -65,7 +63,7 @@ public class OozieJobExecutorJobEntryController extends AbstractJobEntryControll
 
   @Override
   protected void beforeInit() {
-    setModeToggleLabel(JobEntryMode.ADVANCED);
+    setModeToggleLabel(JobEntryMode.ADVANCED_LIST);
   }
 
   @Override
@@ -134,9 +132,10 @@ public class OozieJobExecutorJobEntryController extends AbstractJobEntryControll
   @Override
   protected void setModeToggleLabel(JobEntryMode mode) {
     switch (mode) {
-      case ADVANCED:
+      case ADVANCED_LIST:
         setModeToggleLabel(BaseMessages.getString(OozieJobExecutorJobEntry.class, "Oozie.AdvancedOptions.Button.Text"));
         break;
+      case QUICK_SETUP:
       default:
         setModeToggleLabel(BaseMessages.getString(OozieJobExecutorJobEntry.class, "Oozie.BasicOptions.Button.Text"));
         break;

@@ -35,6 +35,7 @@ import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.job.JobEntryMode;
 
 import java.io.IOException;
 import java.io.StreamTokenizer;
@@ -258,12 +259,12 @@ public class SqoopUtils {
    * @param variableSpace Variable space to look up argument values from. May be {@code null}
    * @return All the command line arguments for this configuration object
    *
-   * @throws IOException when config mode is {@link org.pentaho.di.job.entries.sqoop.SqoopConfig.Mode#ADVANCED_COMMAND_LINE} and the command line could not be parsed
+   * @throws IOException when config mode is {@link org.pentaho.di.job.JobEntryMode#ADVANCED_COMMAND_LINE} and the command line could not be parsed
    */
   public static List<String> getCommandLineArgs(SqoopConfig config, VariableSpace variableSpace) throws IOException {
     List<String> args = new ArrayList<String>();
 
-    if (SqoopConfig.Mode.ADVANCED_COMMAND_LINE.equals(config.getModeAsEnum())) {
+    if (JobEntryMode.ADVANCED_COMMAND_LINE.equals(config.getModeAsEnum())) {
       return parseCommandLine(config.getCommandLine(), variableSpace, true);
     }
 

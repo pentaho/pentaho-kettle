@@ -18,13 +18,16 @@
  * *****************************************************************************
  */
 
-package org.pentaho.di.ui.job;
+package org.pentaho.di.job;
 
 /**
+ * Represents visible states of the UI and the execution mode.
+ *
  * User: RFellows
  * Date: 6/11/12
  */
 public enum JobEntryMode {
-  ADVANCED,
-  BASIC
+  QUICK_SETUP,
+  ADVANCED_LIST,
+  ADVANCED_COMMAND_LINE;
 }

@@ -29,11 +29,11 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.job.JobEntryMode;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.helper.PersistentPropertyChangeListener;
 import org.pentaho.di.job.entries.sqoop.AbstractSqoopJobEntry;
 import org.pentaho.di.job.entries.sqoop.SqoopConfig;
-import org.pentaho.di.job.entries.sqoop.SqoopConfig.Mode;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.components.XulButton;
@@ -390,39 +390,39 @@ public class AbstractSqoopJobEntryControllerTest {
     controller.getConfig().setConnect("jdbc:mysql://from/config");
     controller.getConfig().setCommandLine("sqoop import --connect jdbc:mysql://from/cli --table test");
 
-    Mode oldMode = Mode.ADVANCED_LIST;
-    Mode newMode = Mode.QUICK_SETUP;
+    JobEntryMode oldMode = JobEntryMode.ADVANCED_LIST;
+    JobEntryMode newMode = JobEntryMode.QUICK_SETUP;
 
     controller.updateUiMode(oldMode, newMode);
 
-    assertEquals(SqoopConfig.Mode.QUICK_SETUP, controller.getConfig().getModeAsEnum());
+    assertEquals(JobEntryMode.QUICK_SETUP, controller.getConfig().getModeAsEnum());
 
     // Command line should not be synced when changing from advanced list to quick setup
     assertEquals("jdbc:mysql://from/config", controller.getConfig().getConnect());
 
     modeDeck.setSelectedIndex(1);
-    oldMode = Mode.QUICK_SETUP;
-    newMode = Mode.ADVANCED_COMMAND_LINE;
+    oldMode = JobEntryMode.QUICK_SETUP;
+    newMode = JobEntryMode.ADVANCED_COMMAND_LINE;
     controller.updateUiMode(oldMode, newMode);
 
     // Command line should be synced when changing from anything to command line
     assertEquals("--connect jdbc:mysql://from/config", controller.getConfig().getCommandLine()) ;
 
-    assertEquals(SqoopConfig.Mode.ADVANCED_COMMAND_LINE, controller.getConfig().getModeAsEnum());
+    assertEquals(JobEntryMode.ADVANCED_COMMAND_LINE, controller.getConfig().getModeAsEnum());
 
     // Change the command line string as if the user updated it
     controller.getConfig().setCommandLine("sqoop import --connect jdbc:mysql://from/cli --table test");
 
     advancedModeDeck.setSelectedIndex(0);
-    oldMode = Mode.ADVANCED_COMMAND_LINE;
-    newMode = Mode.ADVANCED_LIST;
+    oldMode = JobEntryMode.ADVANCED_COMMAND_LINE;
+    newMode = JobEntryMode.ADVANCED_LIST;
     controller.updateUiMode(oldMode, newMode);
 
     // Command line should be synced when changing from command line to advanced list
     assertEquals("jdbc:mysql://from/cli", controller.getConfig().getConnect());
     assertEquals("test", controller.getConfig().getTable());
 
-    assertEquals(SqoopConfig.Mode.ADVANCED_LIST, controller.getConfig().getModeAsEnum());
+    assertEquals(JobEntryMode.ADVANCED_LIST, controller.getConfig().getModeAsEnum());
   }
 
   @Test
@@ -433,11 +433,11 @@ public class AbstractSqoopJobEntryControllerTest {
     XulButton advancedCommandLineButton = new MockXulButton();
     TestSqoopJobEntryController controller = new TestSqoopJobEntryController(modeDeck, advancedModeDeck, advancedListButton, advancedCommandLineButton);
 
-    controller.setUiMode(Mode.QUICK_SETUP);
+    controller.setUiMode(JobEntryMode.QUICK_SETUP);
 
     controller.getConfig().setCommandLine("--table test -P --connect jdbc:mysql://bogus/db");
 
-    controller.updateUiMode(Mode.ADVANCED_COMMAND_LINE, Mode.ADVANCED_LIST);
+    controller.updateUiMode(JobEntryMode.ADVANCED_COMMAND_LINE, JobEntryMode.ADVANCED_LIST);
 
     assertEquals(1, controller.shownErrors.size());
     assertEquals(BaseMessages.getString(AbstractSqoopJobEntry.class, "ErrorConfiguringFromCommandLine"), controller.shownErrors.get(0)[1]);
@@ -475,17 +475,17 @@ public class AbstractSqoopJobEntryControllerTest {
 
     assertNull(controller.getModeToggleLabel());
 
-    controller.setUiMode(SqoopConfig.Mode.QUICK_SETUP);
+    controller.setUiMode(JobEntryMode.QUICK_SETUP);
     assertEquals(0, modeDeck.getSelectedIndex());
     assertEquals(-1, advancedModeDeck.getSelectedIndex());
     assertEquals(BaseMessages.getString(AbstractSqoopJobEntry.class, "Sqoop.JobEntry.AdvancedOptions.Button.Text"), controller.getModeToggleLabel());
 
-    controller.setUiMode(SqoopConfig.Mode.ADVANCED_LIST);
+    controller.setUiMode(JobEntryMode.ADVANCED_LIST);
     assertEquals(1, modeDeck.getSelectedIndex());
     assertEquals(0, advancedModeDeck.getSelectedIndex());
     assertEquals(BaseMessages.getString(AbstractSqoopJobEntry.class, "Sqoop.JobEntry.QuickSetup.Button.Text"), controller.getModeToggleLabel());
 
-    controller.setUiMode(SqoopConfig.Mode.ADVANCED_COMMAND_LINE);
+    controller.setUiMode(JobEntryMode.ADVANCED_COMMAND_LINE);
     assertEquals(1, modeDeck.getSelectedIndex());
     assertEquals(1, advancedModeDeck.getSelectedIndex());
     assertEquals(BaseMessages.getString(AbstractSqoopJobEntry.class, "Sqoop.JobEntry.QuickSetup.Button.Text"), controller.getModeToggleLabel());
@@ -507,14 +507,14 @@ public class AbstractSqoopJobEntryControllerTest {
 
     controller.setSelectedAdvancedButton(AbstractSqoopJobEntryController.AdvancedButton.COMMAND_LINE);
 
-    assertEquals(Mode.ADVANCED_COMMAND_LINE, controller.getConfig().getModeAsEnum());
+    assertEquals(JobEntryMode.ADVANCED_COMMAND_LINE, controller.getConfig().getModeAsEnum());
     assertEquals(1, advancedModeDeck.getSelectedIndex());
     assertFalse(advancedListButton.isSelected());
     assertTrue(advancedCommandLineButton.isSelected());
 
     controller.setSelectedAdvancedButton(AbstractSqoopJobEntryController.AdvancedButton.LIST);
 
-    assertEquals(Mode.ADVANCED_LIST, controller.getConfig().getModeAsEnum());
+    assertEquals(JobEntryMode.ADVANCED_LIST, controller.getConfig().getModeAsEnum());
     assertEquals(0, advancedModeDeck.getSelectedIndex());
     assertTrue(advancedListButton.isSelected());
     assertFalse(advancedCommandLineButton.isSelected());
