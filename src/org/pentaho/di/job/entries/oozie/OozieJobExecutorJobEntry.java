@@ -55,7 +55,8 @@ import java.util.Properties;
 )
 public class OozieJobExecutorJobEntry extends AbstractJobEntry<OozieJobExecutorConfig> implements Cloneable, JobEntryInterface {
 
-
+  public static final String HTTP_ERROR_CODE_404 = "HTTP error code: 404";
+  public static final String USER_NAME = "user.name";
   private OozieClient oozieClient = null;
 
   @Override
@@ -81,7 +82,7 @@ public class OozieJobExecutorJobEntry extends AbstractJobEntry<OozieJobExecutorC
         oozieClient.getProtocolUrl();
         oozieClient.validateWSVersion();
       } catch (OozieClientException e) {
-        if(e.getCause() != null && e.getCause() instanceof MalformedURLException) {
+        if(e.getErrorCode().equals(HTTP_ERROR_CODE_404) || e.getCause() != null && e.getCause() instanceof MalformedURLException) {
           messages.add(BaseMessages.getString(OozieJobExecutorJobEntry.class, "ValidationMessages.Invalid.Oozie.URL"));
         } else {
           messages.add(BaseMessages.getString(OozieJobExecutorJobEntry.class, "ValidationMessages.Incompatible.Oozie.Versions", oozieClient.getClientBuildVersion()));
@@ -95,6 +96,18 @@ public class OozieJobExecutorJobEntry extends AbstractJobEntry<OozieJobExecutorC
     }
 
     return messages;
+  }
+
+  protected Properties getProperties(OozieJobExecutorConfig config) throws KettleFileException, IOException {
+    InputStreamReader reader = new InputStreamReader(KettleVFS.getInputStream(variables.environmentSubstitute(config.getOozieWorkflowConfig())));
+    Properties jobProps = PropertiesUtils.readProperties(reader, 100*1024);
+
+    // make sure we supply the current user name
+    if(!jobProps.containsKey(USER_NAME)) {
+      jobProps.setProperty(USER_NAME, variables.environmentSubstitute("${" + USER_NAME + "}"));
+    }
+
+    return jobProps;
   }
 
   @Override
@@ -114,13 +127,7 @@ public class OozieJobExecutorJobEntry extends AbstractJobEntry<OozieJobExecutorC
         String jobId = null;
 
         try {
-          InputStreamReader reader = new InputStreamReader(KettleVFS.getInputStream(getVariableSpace().environmentSubstitute(jobConfig.getOozieWorkflowConfig())));
-          Properties jobProps = PropertiesUtils.readProperties(reader, 100*1024);
-
-          // make sure we supply the current user name
-          if(!jobProps.containsKey("user.name")) {
-            jobProps.setProperty("user.name", variables.environmentSubstitute("${user.name}"));
-          }
+          Properties jobProps = getProperties(jobConfig);
 
           jobId = oozieClient.run(jobProps);
           if (JobEntryUtils.asBoolean(getJobConfig().getBlockingExecution(), variables)) {

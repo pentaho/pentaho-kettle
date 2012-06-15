@@ -183,6 +183,28 @@ public class OozieJobExecutorJobEntryTest {
     assertFalse(result.getResult());
   }
 
+  @Test
+  public void testGetProperties() throws Exception {
+    OozieJobExecutorConfig config = new OozieJobExecutorConfig();
+    config.setOozieWorkflowConfig("test-src/job.properties");
+    OozieJobExecutorJobEntry je = new OozieJobExecutorJobEntry();
+    Properties props = je.getProperties(config);
+
+    assertTrue("user.name was not added", props.containsKey("user.name"));
+    assertEquals(7, props.size());
+  }
+  @Test
+  public void testGetProperties_VariableizedWorkflowPath() throws Exception {
+    OozieJobExecutorConfig config = new OozieJobExecutorConfig();
+    config.setOozieWorkflowConfig("${propertiesFile}");
+    OozieJobExecutorJobEntry je = new OozieJobExecutorJobEntry();
+    je.setVariable("propertiesFile", "test-src/job.properties");
+
+    Properties props = je.getProperties(config);
+    assertTrue("user.name was not added", props.containsKey("user.name"));
+    assertEquals(7, props.size());
+  }
+
   private TestOozieClient getFailingTestOozieClient() {
     // return status = FAILED
     // isValidWS = true
@@ -201,7 +223,6 @@ public class OozieJobExecutorJobEntryTest {
     // isValidProtocol = false
     return new TestOozieClient(WorkflowJob.Status.SUCCEEDED, false, false);
   }
-
 
   ////////////////////////////////////////////////////////////
   // Stub classes to help in testing.
