@@ -26,6 +26,7 @@ import java.io.IOException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.hadoop.hbase.KeyValue;
 import org.apache.hadoop.hbase.UnknownScannerException;
 import org.apache.hadoop.hbase.client.HTable;
 import org.apache.hadoop.hbase.client.Result;
@@ -73,7 +74,8 @@ public class PentahoTableRecordReaderImpl {
     if ((endRow != null) && (endRow.length > 0)) {
       if (trrRowFilter != null) {
         scan = new Scan(firstRow, endRow);
-        scan.addColumns(trrInputColumns);
+        // scan.addColumns(trrInputColumns);
+        configureScanWithInputColumns(scan, trrInputColumns);
         scan.setFilter(trrRowFilter);
                 
         scan.setCacheBlocks(false);
@@ -83,17 +85,19 @@ public class PentahoTableRecordReaderImpl {
             Bytes.toStringBinary(firstRow) + ", endRow: " +
             Bytes.toStringBinary(endRow));
         scan = new Scan(firstRow, endRow);
-        scan.addColumns(trrInputColumns);
-        //this.scanner = this.htable.getScanner(scan);
+        // scan.addColumns(trrInputColumns);
+        configureScanWithInputColumns(scan, trrInputColumns);
+        // this.scanner = this.htable.getScanner(scan);
       }
     } else {
       LOG.debug("TIFB.restart, firstRow: " +
           Bytes.toStringBinary(firstRow) + ", no endRow");
 
       scan = new Scan(firstRow);
-      scan.addColumns(trrInputColumns);
-//      scan.setFilter(trrRowFilter);
-      //this.scanner = this.htable.getScanner(scan);
+      // scan.addColumns(trrInputColumns);
+      configureScanWithInputColumns(scan, trrInputColumns);
+      // scan.setFilter(trrRowFilter);
+      // this.scanner = this.htable.getScanner(scan);
     }
     
     if (scanCacheRows > 0) {
@@ -108,6 +112,24 @@ public class PentahoTableRecordReaderImpl {
     }
     
     this.scanner = this.htable.getScanner(scan);
+  }
+  
+  /**
+   * Map old family:column format onto non-deprecated API calls on Scan. 
+   * 
+   * @param scan the scan object to set the columns on
+   * @param inputColumns input columns in old-style family:column format
+   */
+  protected static void configureScanWithInputColumns(Scan scan, byte[][] inputColumns) {
+    for (byte[] familyAndQualifier : inputColumns) {
+      byte [][] fq = KeyValue.parseColumn(familyAndQualifier);
+      
+      if (fq.length > 1 && fq[1] != null && fq[1].length > 0) {
+        scan.addColumn(fq[0], fq[1]);
+      } else {
+        scan.addFamily(fq[0]);
+      }
+    }
   }
   
   public void setScanCacheRowSize(int size) {
