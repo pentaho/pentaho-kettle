@@ -44,6 +44,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -91,7 +92,7 @@ public class CassandraInput extends BaseStep implements StepInterface {
     
     if (first) {
       first = false;
-      // m_meta = (CassandraInputMeta)smi;
+
       m_data = (CassandraInputData)sdi;
       m_meta = (CassandraInputMeta)smi;
       
@@ -111,8 +112,8 @@ public class CassandraInput extends BaseStep implements StepInterface {
         throw new KettleException("Some connection details are missing!!");
       }
 
-      logBasic("Connecting to Cassandra node at '" + hostS + ":" + portS + "' using " +
-      		"keyspace '" + keyspaceS +"'...");      
+      logBasic(BaseMessages.getString(CassandraInputMeta.PKG, 
+          "CassandraInput.Info.Connecting", hostS, portS, keyspaceS));
       try {
         if (Const.isEmpty(timeoutS)) {
           m_connection = CassandraInputData.getCassandraConnection(hostS, 
@@ -166,9 +167,9 @@ public class CassandraInput extends BaseStep implements StepInterface {
       }
       
       // column family name (key) is the first field output
-      // String colFamName = m_data.getOutputRowMeta().getValueMeta(0).getName();
       try {
-        logBasic("Getting meta data for column family '" + colFamName + "'");
+        logBasic(BaseMessages.getString(CassandraInputMeta.PKG, 
+            "CassandraInput.Info.GettintMetaData", colFamName));
         m_cassandraMeta = new CassandraColumnMetaData(m_connection, colFamName);
       } catch (Exception e) {
         closeConnection();
@@ -180,15 +181,18 @@ public class CassandraInput extends BaseStep implements StepInterface {
         m_meta.getUseCompression() ? Compression.GZIP : Compression.NONE;
       try {
         if (!m_meta.getUseThriftIO()) {
-          logBasic("Executing query '" + queryS + "'" 
-              + (m_meta.getUseCompression() ? " (using GZIP query compression)" : "") 
-              + "...");
+          logBasic(BaseMessages.getString(CassandraInputMeta.PKG, 
+              "CassandraInput.Info.ExecutingQuery", queryS, 
+              (m_meta.getUseCompression() 
+                  ? BaseMessages.getString(CassandraInputMeta.PKG, "CassandraInput.Info.UsingGZIPCompression") 
+                      : ""))); 
+
           byte[] queryBytes = (m_meta.getUseCompression() ? 
               CassandraInputData.compressQuery(queryS, compression) : queryS.getBytes());
 
           // In Cassandra 1.1 the version of CQL to use can be set programatically. The default
           // is to use CQL v 2.0.0
-          //m_connection.getClient().set_cql_version("3.0.0");
+          // m_connection.getClient().set_cql_version("3.0.0");
           CqlResult result = m_connection.getClient().
           execute_cql_query(ByteBuffer.wrap(queryBytes), compression);
           m_resultIterator = result.getRowsIterator();
@@ -230,7 +234,6 @@ public class CassandraInput extends BaseStep implements StepInterface {
       Object[] outputRowData = null;
       
       if (m_meta.getOutputKeyValueTimestampTuples()) {
-        //System.err.println("Number of columns in row: " + nextRow.getColumnsSize());
         Iterator<Column> columnIterator = nextRow.getColumnsIterator();
         
         // The key always appears to be the first column in the list (even though it is separately
@@ -267,7 +270,6 @@ public class CassandraInput extends BaseStep implements StepInterface {
         }
       }            
     } else {
-      //m_connection.close();
       closeConnection();
       setOutputDone();
       return false;
@@ -293,7 +295,8 @@ public class CassandraInput extends BaseStep implements StepInterface {
  
   protected void closeConnection() {
     if (m_connection != null) {
-      logBasic("Closing connection...");
+      logBasic(BaseMessages.getString(CassandraInputMeta.PKG, 
+          "CassandraInput.Info.ClosingConnection"));
       m_connection.close();
     }
   }
