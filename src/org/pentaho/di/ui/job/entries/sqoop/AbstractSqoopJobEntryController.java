@@ -37,7 +37,7 @@ import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.database.dialog.DatabaseExplorerDialog;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.job.AbstractJobEntryController;
-import org.pentaho.di.ui.job.JobEntryMode;
+import org.pentaho.di.job.JobEntryMode;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingFactory;
@@ -83,13 +83,13 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> ext
   private AdvancedButton selectedAdvancedButton = AdvancedButton.LIST;
 
   protected enum AdvancedButton {
-    LIST(0, Mode.ADVANCED_LIST),
-    COMMAND_LINE(1, Mode.ADVANCED_COMMAND_LINE);
+    LIST(0, JobEntryMode.ADVANCED_LIST),
+    COMMAND_LINE(1, JobEntryMode.ADVANCED_COMMAND_LINE);
 
     private int deckIndex;
-    private Mode mode;
+    private JobEntryMode mode;
 
-    private AdvancedButton(int deckIndex, Mode mode) {
+    private AdvancedButton(int deckIndex, JobEntryMode mode) {
       this.deckIndex = deckIndex;
       this.mode = mode;
     }
@@ -98,7 +98,7 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> ext
       return deckIndex;
     }
 
-    public Mode getMode() {
+    public JobEntryMode getMode() {
       return mode;
     }
   }
@@ -479,7 +479,7 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> ext
    */
   public void toggleMode() {
     XulDeck deck = getModeDeck();
-    setUiMode(deck.getSelectedIndex() == 1 ? Mode.QUICK_SETUP : selectedAdvancedButton.getMode());
+    setUiMode(deck.getSelectedIndex() == 1 ? JobEntryMode.QUICK_SETUP : selectedAdvancedButton.getMode());
   }
 
   /**
@@ -497,12 +497,12 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> ext
 
     // We toggle to and from quick setup in this method so either the old or the new is always Mode.QUICK_SETUP.
     // Whichever is not is the mode for the currently selected advanced button
-    Mode oldMode = deck.getSelectedIndex() == 0 ? selectedAdvancedButton.getMode() : Mode.QUICK_SETUP;
-    Mode newMode = Mode.QUICK_SETUP == oldMode ? selectedAdvancedButton.getMode() : Mode.QUICK_SETUP;
+    JobEntryMode oldMode = deck.getSelectedIndex() == 0 ? selectedAdvancedButton.getMode() : JobEntryMode.QUICK_SETUP;
+    JobEntryMode newMode = JobEntryMode.QUICK_SETUP == oldMode ? selectedAdvancedButton.getMode() : JobEntryMode.QUICK_SETUP;
     updateUiMode(oldMode, newMode);
   }
 
-  protected void setUiMode(Mode mode) {
+  protected void setUiMode(JobEntryMode mode) {
     switch(mode) {
       case QUICK_SETUP:
         toggleQuickMode(true);
@@ -526,28 +526,28 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> ext
    * @param oldMode Old mode
    * @param newMode New mode
    */
-  protected void updateUiMode(Mode oldMode, Mode newMode) {
+  protected void updateUiMode(JobEntryMode oldMode, JobEntryMode newMode) {
     if (suppressEventHandling) {
       return;
     }
-    if (Mode.ADVANCED_COMMAND_LINE.equals(oldMode)) {
+    if (JobEntryMode.ADVANCED_COMMAND_LINE.equals(oldMode)) {
       if (!syncCommandLineToConfig()) {
         // Flip back to the advanced command line view
         // Suppress event handling so we don't re-enter updateUiMode and copy the properties back on top of the command line
         suppressEventHandling = true;
         try {
-          setUiMode(Mode.ADVANCED_COMMAND_LINE);
+          setUiMode(JobEntryMode.ADVANCED_COMMAND_LINE);
         } finally {
           suppressEventHandling = false;
         }
         return;
       }
-    } else if(Mode.ADVANCED_COMMAND_LINE.equals(newMode)) {
+    } else if(JobEntryMode.ADVANCED_COMMAND_LINE.equals(newMode)) {
       // Sync config properties -> command line
       getConfig().setCommandLine(SqoopUtils.generateCommandLineString(getConfig(), getJobEntry()));
     }
 
-    if (Mode.ADVANCED_LIST.equals(newMode)) {
+    if (JobEntryMode.ADVANCED_LIST.equals(newMode)) {
       // Synchronize the model when we switch to the advanced list to make sure it's fresh
       syncModel();
     }
@@ -558,11 +558,11 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> ext
   /**
    * @return the current UI mode based off the current state of the components
    */
-  private Mode getMode() {
+  private JobEntryMode getMode() {
     XulDeck modeDeck = getModeDeck();
     XulDeck advancedModeDeck = getAdvancedModeDeck();
     if (modeDeck.getSelectedIndex() == 0) {
-      return Mode.QUICK_SETUP;
+      return JobEntryMode.QUICK_SETUP;
     } else {
       for(AdvancedButton b : AdvancedButton.values()) {
         if(b.getDeckIndex() == advancedModeDeck.getSelectedIndex()) {

@@ -28,11 +28,25 @@ import org.junit.Ignore;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.job.JobEntryMode;
+import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.oozie.OozieJobExecutorConfig;
+import org.pentaho.di.job.entries.oozie.OozieJobExecutorJobEntry;
+import org.pentaho.di.job.entries.oozie.OozieJobExecutorJobEntryTest;
+import org.pentaho.ui.xul.XulDomContainer;
+import org.pentaho.ui.xul.binding.BindingFactory;
+import org.pentaho.ui.xul.binding.DefaultBindingFactory;
+import org.pentaho.ui.xul.components.XulButton;
+import org.pentaho.ui.xul.containers.XulDeck;
+import org.pentaho.ui.xul.impl.XulFragmentContainer;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * User: RFellows
@@ -41,6 +55,7 @@ import static org.junit.Assert.assertEquals;
 public class OozieJobExecutorControllerTest {
 
   OozieJobExecutorConfig jobConfig = null;
+  OozieJobExecutorJobEntryController controller = null;
 
   @BeforeClass
   public static void init() throws KettleException {
@@ -50,45 +65,115 @@ public class OozieJobExecutorControllerTest {
   @Before
   public void before() {
     jobConfig = new OozieJobExecutorConfig();
-
     jobConfig.setOozieWorkflow("hdfs://localhost:9000/user/" + System.getProperty("user.name") + "/examples/apps/map-reduce");
 
+    controller = new OozieJobExecutorJobEntryController(new JobMeta(),
+            new XulFragmentContainer(null),
+            new OozieJobExecutorJobEntry(),
+            new DefaultBindingFactory()
+        );
   }
 
-  @Ignore
   @Test
-  public void testOozieClient() throws Exception {
-    OozieClient oozieClient = new OozieClient("http://localhost:11000/oozie");
+  public void testSetModeToggleLabel_JobEntryMode() throws Exception {
+    assertEquals(controller.getModeToggleLabel(), null);
 
-    Properties config = oozieClient.createConfiguration();
+    controller.setModeToggleLabel(JobEntryMode.QUICK_SETUP);
+    assertEquals(controller.getModeToggleLabel(), "Basic Options");
 
-    // get the workflow?
-    // parse for props
-    // set props values
-    config.setProperty("nameNode", "hdfs://localhost:9000");
-    config.setProperty("jobTracker", "localhost:9001");
-    config.setProperty("queueName", "default");
-    config.setProperty("examplesRoot", "examples");
+    controller.setModeToggleLabel(JobEntryMode.ADVANCED_LIST);
+    assertEquals(controller.getModeToggleLabel(), "Advanced Options");
 
-//    config.setProperty(OozieClient.APP_PATH, jobConfig.getOozieWorkflow());
-    config.setProperty(OozieClient.APP_PATH, "${nameNode}/user/${user.name}/${examplesRoot}/apps/map-reduce");
+  }
 
-    config.setProperty("outputDir", "map-reduce");
+  @Test(expected = RuntimeException.class)
+  public void testSetModeToggleLabel_UnsupportedJobEntryMode() {
+    controller.setModeToggleLabel(JobEntryMode.ADVANCED_COMMAND_LINE);
+    fail("JobEntryMode.ADVANCED_COMMAND_LINE is not supported, should have gotten a RuntimeException");
+  }
 
-    // run the job
-    String jobId = oozieClient.run(config);
-    System.out.println("Started the workflow --> " + jobId);
+  @Test
+  public void testTestSettings_ErrorsFound() throws Exception {
+    TestOozieJobExecutorController ctr = new TestOozieJobExecutorController();
+    ctr.setConfig(new OozieJobExecutorConfig());
+    ctr.testSettings();
+    assertTrue(ctr.getShownErrors().size() > 0);
+  }
 
-    // wait for it to finish
-    while(oozieClient.getJobInfo(jobId).getStatus() == WorkflowJob.Status.RUNNING) {
-      System.out.println("Still running...");
-      Thread.sleep(10 * 1000);
+  @Test
+  public void testTestSettings_NoErrors() throws Exception {
+    TestOozieJobExecutorController ctr = new TestOozieJobExecutorController();
+
+    // the dummy test job entry will return no errors when getValidationMessages is called
+    ctr.setJobEntry(new TestOozieJobExecutorJobEntry());
+
+    OozieJobExecutorConfig config = new OozieJobExecutorConfig();
+    ctr.setConfig(config);
+    ctr.testSettings();
+    assertTrue(ctr.wasInfoShown());
+  }
+
+
+
+  // stub classes
+  class TestOozieJobExecutorController extends OozieJobExecutorJobEntryController {
+    private XulDeck modeDeck;
+
+    private List<Object[]> shownErrors = new ArrayList<Object[]>();
+    private boolean infoShown = false;
+
+    TestOozieJobExecutorController() {
+      this(null);
     }
 
-    // log results
-    oozieClient.getJobLog(jobId, null, null, System.out);
+    public TestOozieJobExecutorController(XulDeck modeDeck) {
+      super(new JobMeta(),
+          new XulFragmentContainer(null),
+          new OozieJobExecutorJobEntry(),
+          new DefaultBindingFactory());
 
-    assertEquals("Job was not successful", WorkflowJob.Status.SUCCEEDED, oozieClient.getJobInfo(jobId).getStatus());
+      this.modeDeck = modeDeck;
+      syncModel();
+    }
 
+    @Override
+    protected void showErrorDialog(String title, String message) {
+      shownErrors.add(new Object[]{title, message, null});
+    }
+
+    @Override
+    protected void showErrorDialog(String title, String message, Throwable t) {
+      shownErrors.add(new Object[]{title, message, t});
+    }
+
+    @Override
+    protected void showInfoDialog(String title, String message) {
+      infoShown = true;
+    }
+
+    public List<Object[]> getShownErrors() {
+      return shownErrors;
+    }
+
+    public boolean wasInfoShown() {
+      return infoShown;
+    }
+
+    public void setJobEntry(OozieJobExecutorJobEntry je) {
+      jobEntry = je;
+    }
+
+    //    @Override
+//    protected XulDeck getModeDeck() {
+//      return modeDeck;
+//    }
   }
+
+  public class TestOozieJobExecutorJobEntry extends OozieJobExecutorJobEntry {
+    @Override
+    public List<String> getValidationWarnings(OozieJobExecutorConfig config) {
+      return new ArrayList<String>();
+    }
+  }
+
 }

@@ -24,7 +24,6 @@ import org.apache.oozie.client.OozieClient;
 import org.apache.oozie.client.OozieClientException;
 import org.apache.oozie.client.WorkflowAction;
 import org.apache.oozie.client.WorkflowJob;
-import org.apache.oozie.local.LocalOozie;
 import org.junit.Assert;
 import org.junit.Test;
 import org.pentaho.di.core.Result;
@@ -35,7 +34,6 @@ import org.pentaho.di.job.Job;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.w3c.dom.Document;
 
-import java.net.MalformedURLException;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -94,7 +92,7 @@ public class OozieJobExecutorJobEntryTest {
     OozieJobExecutorJobEntry je = new OozieJobExecutorJobEntry();
 
     config.setOozieUrl("bad url");
-    config.setOozieWorkflowConfig("file:///test/job.properties");
+    config.setOozieWorkflowConfig("test-src/job.properties");
     config.setJobEntryName("name");
 
     List<String> warnings = je.getValidationWarnings(config);
@@ -107,11 +105,11 @@ public class OozieJobExecutorJobEntryTest {
   public void testGetValidationWarnings_incompatibleVersions() throws Exception {
     OozieJobExecutorConfig config = new OozieJobExecutorConfig();
 
-    OozieClient client = getBadConfigTest();
+    OozieClient client = getBadConfigTestOozieClient();
     OozieJobExecutorJobEntry je = new TestOozieJobExecutorJobEntry(client); // just use this to force an error condition
 
     config.setOozieUrl("http://localhost/oozie");
-    config.setOozieWorkflowConfig("file:///test/job.properties");
+    config.setOozieWorkflowConfig("test-src/job.properties");
     config.setJobEntryName("name");
 
     List<String> warnings = je.getValidationWarnings(config);
@@ -121,12 +119,47 @@ public class OozieJobExecutorJobEntryTest {
   }
 
   @Test
+  public void testGetValidationWarnings_CantFindPropertiesFile() throws Exception {
+    OozieJobExecutorConfig config = new OozieJobExecutorConfig();
+    OozieClient client = getSucceedingTestOozieClient();
+    OozieJobExecutorJobEntry je = new TestOozieJobExecutorJobEntry(client);
+
+    config.setOozieUrl("http://localhost:11000/oozie");
+    config.setOozieWorkflowConfig("test/job.properties");
+    config.setJobEntryName("name");
+
+    List<String> warnings = je.getValidationWarnings(config);
+
+    // file is a props file & can be parsed into Properties object
+    assertEquals(1, warnings.size());
+    assertTrue(warnings.get(0).startsWith("Can not resolve Workflow Properties file"));
+//    assertEquals("Invalid workflow job configuration file.", warnings.get(0));
+  }
+
+  @Test
+  public void testGetValidationWarnings_MissingAppPathSetting() throws Exception {
+    OozieJobExecutorConfig config = new OozieJobExecutorConfig();
+    OozieClient client = getSucceedingTestOozieClient();
+    OozieJobExecutorJobEntry je = new TestOozieJobExecutorJobEntry(client);
+
+    config.setOozieUrl("http://localhost:11000/oozie");
+    config.setOozieWorkflowConfig("test-src/badJob.properties");
+    config.setJobEntryName("name");
+
+    List<String> warnings = je.getValidationWarnings(config);
+
+    // file is a props file & can be parsed into Properties object
+    assertEquals(1, warnings.size());
+    assertTrue(warnings.get(0).startsWith("App Path setting not found in Workflow Properties file"));
+  }
+
+  @Test
   public void testGetValidationWarnings_everythingIsGood() throws Exception {
-    OozieJobExecutorJobEntry je = new TestOozieJobExecutorJobEntry(getSucceedingTest());
+    OozieJobExecutorJobEntry je = new TestOozieJobExecutorJobEntry(getSucceedingTestOozieClient());
 
     OozieJobExecutorConfig config = new OozieJobExecutorConfig();
     config.setOozieUrl("http://localhost:11000/oozie");             // don't worry if it isn't running, we fake out our test connection to it anyway
-    config.setOozieWorkflowConfig("file:///test/job.properties");
+    config.setOozieWorkflowConfig("test-src/job.properties");
     config.setJobEntryName("name");
 
     List<String> warnings = je.getValidationWarnings(config);
@@ -136,15 +169,15 @@ public class OozieJobExecutorJobEntryTest {
 
   @Test
   public void execute_blocking() throws KettleException {
-    final long waitTime = 0;
+    final long waitTime = 200;
 
     OozieJobExecutorConfig config = new OozieJobExecutorConfig();
     config.setOozieUrl("http://localhost:11000/oozie");             // don't worry if it isn't running, we fake out our test connection to it anyway
     config.setOozieWorkflowConfig("test-src/job.properties");
     config.setJobEntryName("name");
-    config.setBlockingPollingInterval("1000");
+    config.setBlockingPollingInterval(""+waitTime);
 
-    TestOozieJobExecutorJobEntry je = new TestOozieJobExecutorJobEntry(getSucceedingTest());
+    TestOozieJobExecutorJobEntry je = new TestOozieJobExecutorJobEntry(getSucceedingTestOozieClient());
 
     je.setParentJob(new Job("test", null, null));
     je.setJobConfig(config);
@@ -162,15 +195,15 @@ public class OozieJobExecutorJobEntryTest {
 
   @Test
   public void execute_blocking_FAIL() throws KettleException {
-    final long waitTime = 0;
+    final long waitTime = 1000;
 
     OozieJobExecutorConfig config = new OozieJobExecutorConfig();
     config.setOozieUrl("http://localhost:11000/oozie");             // don't worry if it isn't running, we fake out our test connection to it anyway
     config.setOozieWorkflowConfig("test-src/job.properties");
     config.setJobEntryName("name");
-    config.setBlockingPollingInterval("1000");
+    config.setBlockingPollingInterval(""+waitTime);
 
-    TestOozieJobExecutorJobEntry je = new TestOozieJobExecutorJobEntry(getFailingTest());
+    TestOozieJobExecutorJobEntry je = new TestOozieJobExecutorJobEntry(getFailingTestOozieClient());
 
     je.setParentJob(new Job("test", null, null));
     je.setJobConfig(config);
@@ -185,16 +218,46 @@ public class OozieJobExecutorJobEntryTest {
     assertFalse(result.getResult());
   }
 
-  private TestOozieClient getFailingTest() {
-    return new TestOozieClient(WorkflowJob.Status.FAILED, true, true);
+  @Test
+  public void testGetProperties() throws Exception {
+    OozieJobExecutorConfig config = new OozieJobExecutorConfig();
+    config.setOozieWorkflowConfig("test-src/job.properties");
+    OozieJobExecutorJobEntry je = new OozieJobExecutorJobEntry();
+    Properties props = je.getProperties(config);
+
+    assertTrue("user.name was not added", props.containsKey("user.name"));
+    assertEquals(7, props.size());
   }
-  private TestOozieClient getSucceedingTest() {
-    return new TestOozieClient(WorkflowJob.Status.SUCCEEDED, true, true);
-  }
-  private TestOozieClient getBadConfigTest() {
-    return new TestOozieClient(WorkflowJob.Status.SUCCEEDED, false, false);
+  @Test
+  public void testGetProperties_VariableizedWorkflowPath() throws Exception {
+    OozieJobExecutorConfig config = new OozieJobExecutorConfig();
+    config.setOozieWorkflowConfig("${propertiesFile}");
+    OozieJobExecutorJobEntry je = new OozieJobExecutorJobEntry();
+    je.setVariable("propertiesFile", "test-src/job.properties");
+
+    Properties props = je.getProperties(config);
+    assertTrue("user.name was not added", props.containsKey("user.name"));
+    assertEquals(7, props.size());
   }
 
+  private TestOozieClient getFailingTestOozieClient() {
+    // return status = FAILED
+    // isValidWS = true
+    // isValidProtocol = true
+    return new TestOozieClient(WorkflowJob.Status.FAILED, true, true);
+  }
+  private TestOozieClient getSucceedingTestOozieClient() {
+    // return status = SUCCEEDED
+    // isValidWS = true
+    // isValidProtocol = true
+    return new TestOozieClient(WorkflowJob.Status.SUCCEEDED, true, true);
+  }
+  private TestOozieClient getBadConfigTestOozieClient() {
+    // return status = SUCCEEDED
+    // isValidWS = false
+    // isValidProtocol = false
+    return new TestOozieClient(WorkflowJob.Status.SUCCEEDED, false, false);
+  }
 
   ////////////////////////////////////////////////////////////
   // Stub classes to help in testing.
@@ -252,7 +315,7 @@ public class OozieJobExecutorJobEntryTest {
     }
   }
 
-  class TestOozieJobExecutorJobEntry extends OozieJobExecutorJobEntry {
+  public class TestOozieJobExecutorJobEntry extends OozieJobExecutorJobEntry {
     private OozieClient client = null;
 
     TestOozieJobExecutorJobEntry(OozieClient client) {

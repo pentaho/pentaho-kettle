@@ -208,6 +208,9 @@ public abstract class AbstractSqoopJobEntry<S extends SqoopConfig> extends Abstr
    * @param jobResult    Result to update based on feedback from the Sqoop tool
    */
   protected void executeSqoop(SqoopConfig config, Configuration hadoopConfig, Result jobResult) {
+    // Make sure Sqoop throws exceptions instead of returning a status of 1
+    System.setProperty(Sqoop.SQOOP_RETHROW_PROPERTY, "true");
+
     attachLoggingAppenders();
     try {
       configure(hadoopConfig);

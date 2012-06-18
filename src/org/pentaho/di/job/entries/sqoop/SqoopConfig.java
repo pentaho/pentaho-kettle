@@ -24,6 +24,7 @@ package org.pentaho.di.job.entries.sqoop;
 
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.BlockableJobConfig;
+import org.pentaho.di.job.JobEntryMode;
 import org.pentaho.ui.xul.XulEventSource;
 import org.pentaho.ui.xul.util.AbstractModelList;
 
@@ -91,15 +92,7 @@ public abstract class SqoopConfig extends BlockableJobConfig implements XulEvent
   private transient String usernameFromAdvanced;
   private transient String passwordFromAdvanced;
 
-  /**
-   * Represents the last visible state of the UI and the execution mode.
-   */
-  public enum Mode {
-    QUICK_SETUP,
-    ADVANCED_LIST,
-    ADVANCED_COMMAND_LINE;
-  }
-
+  // Represents the last visible state of the UI and the execution mode.
   private String mode;
 
   // Common arguments
@@ -608,12 +601,12 @@ public abstract class SqoopConfig extends BlockableJobConfig implements XulEvent
     return mode;
   }
 
-  public Mode getModeAsEnum() {
+  public JobEntryMode getModeAsEnum() {
     try {
-      return Mode.valueOf(getMode());
+      return JobEntryMode.valueOf(getMode());
     } catch (Exception ex) {
       // Not a valid ui mode, return the default
-      return Mode.QUICK_SETUP;
+      return JobEntryMode.QUICK_SETUP;
     }
   }
 
@@ -621,7 +614,7 @@ public abstract class SqoopConfig extends BlockableJobConfig implements XulEvent
    * Sets the mode based on the enum value
    * @param mode
    */
-  public void setMode(Mode mode) {
+  public void setMode(JobEntryMode mode) {
     setMode(mode.name());
   }
 

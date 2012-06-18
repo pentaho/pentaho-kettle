@@ -25,18 +25,16 @@ import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.BlockableJobConfig;
-import org.pentaho.di.job.JobEntryUtils;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.oozie.OozieJobExecutorConfig;
 import org.pentaho.di.job.entries.oozie.OozieJobExecutorJobEntry;
 import org.pentaho.di.ui.job.AbstractJobEntryController;
-import org.pentaho.di.ui.job.JobEntryMode;
+import org.pentaho.di.job.JobEntryMode;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.stereotype.Bindable;
-import org.pentaho.ui.xul.swt.tags.SwtCheckbox;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
 import java.util.Collection;
@@ -59,26 +57,18 @@ public class OozieJobExecutorJobEntryController extends AbstractJobEntryControll
    */
   private String modeToggleLabel;
 
-  private SwtCheckbox blockingEnabledCheck = null;
-
-
   public OozieJobExecutorJobEntryController(JobMeta jobMeta, XulDomContainer container, OozieJobExecutorJobEntry jobEntry, BindingFactory bindingFactory) {
     super(jobMeta, container, jobEntry, bindingFactory);
   }
 
   @Override
   protected void beforeInit() {
-    setModeToggleLabel(JobEntryMode.ADVANCED);
-    customizeModeToggleLabel(getModeToggleLabelElementId());
-    blockingEnabledCheck = (SwtCheckbox)container.getDocumentRoot().getElementById("blockingExecution");
+    setModeToggleLabel(JobEntryMode.ADVANCED_LIST);
   }
 
   @Override
   protected void syncModel() {
     // no custom model syncing needed, bindings are enough
-
-    // except SWTCheckbox, it does not participate in xul binding as ov v 3.3
-    blockingEnabledCheck.setChecked(JobEntryUtils.asBoolean(config.getBlockingExecution(), getJobEntry().getVariableSpace()));
   }
 
   @Override
@@ -88,16 +78,29 @@ public class OozieJobExecutorJobEntryController extends AbstractJobEntryControll
     bindings.add(bindingFactory.createBinding(config, OozieJobExecutorConfig.OOZIE_URL, OozieJobExecutorConfig.OOZIE_URL, VALUE));
     bindings.add(bindingFactory.createBinding(config, OozieJobExecutorConfig.OOZIE_WORKFLOW_CONFIG, OozieJobExecutorConfig.OOZIE_WORKFLOW_CONFIG, VALUE));
 
-    /////////////////////////////////////////////////////////////////////
-    // Bindings to checkboxes aren't fully implemented in SWTCheckbox (v 3.3).
-    // the act of clicking doesn't fire any event...
-    // So, on accept of the dialog we have to get the state of the checkbox
-    // and set that value in the config object.
-    /////////////////////////////////////////////////////////////////////
-//    bindings.add(bindingFactory.createBinding("blockingExecution", "checked", config, BlockableJobConfig.BLOCKING_EXECUTION, BindingConvertor.boolean2String()));
+    bindings.add(bindingFactory.createBinding(config, BlockableJobConfig.BLOCKING_POLLING_INTERVAL, BlockableJobConfig.BLOCKING_POLLING_INTERVAL, VALUE));
+
+    BindingConvertor<String, Boolean> string2BooleanConvertor = new BindingConvertor<String, Boolean>() {
+
+      @Override
+      public String targetToSource(Boolean aBoolean) {
+        String val = aBoolean.toString();
+        return val;
+      }
+
+      @Override
+      public Boolean sourceToTarget(String s) {
+        Boolean val = Boolean.valueOf(s);
+        return val;
+      }
+    };
+    bindings.add(bindingFactory.createBinding(config, BlockableJobConfig.BLOCKING_EXECUTION, BlockableJobConfig.BLOCKING_EXECUTION, "checked", string2BooleanConvertor));
 
     bindingFactory.setBindingType(Binding.Type.ONE_WAY);
     bindings.add(bindingFactory.createBinding(this, "modeToggleLabel", getModeToggleLabelElementId(), VALUE));
+
+    // only enable the polling interval text box is blocking is checked
+    bindings.add(bindingFactory.createBinding(config, BlockableJobConfig.BLOCKING_EXECUTION, BlockableJobConfig.BLOCKING_POLLING_INTERVAL, "!disabled", string2BooleanConvertor));
 
   }
 
@@ -129,12 +132,14 @@ public class OozieJobExecutorJobEntryController extends AbstractJobEntryControll
   @Override
   protected void setModeToggleLabel(JobEntryMode mode) {
     switch (mode) {
-      case ADVANCED:
+      case ADVANCED_LIST:
         setModeToggleLabel(BaseMessages.getString(OozieJobExecutorJobEntry.class, "Oozie.AdvancedOptions.Button.Text"));
         break;
-      default:
+      case QUICK_SETUP:
         setModeToggleLabel(BaseMessages.getString(OozieJobExecutorJobEntry.class, "Oozie.BasicOptions.Button.Text"));
         break;
+      default:
+        throw new RuntimeException("unsupported JobEntryMode");
     }
   }
 
@@ -165,7 +170,7 @@ public class OozieJobExecutorJobEntryController extends AbstractJobEntryControll
   public void browseWorkflowConfig() {
     FileObject path = null;
     try {
-      path = KettleVFS.getFileObject(getConfig().getOozieWorkflowConfig());
+      path = KettleVFS.getFileObject(jobEntry.getVariableSpace().environmentSubstitute(getConfig().getOozieWorkflowConfig()));
     } catch (Exception e) {
       // Ignore, use null (default VFS browse path)
     }
@@ -187,21 +192,6 @@ public class OozieJobExecutorJobEntryController extends AbstractJobEntryControll
   @Override
   protected String[] getFileFilterNames() {
     return new String[] {BaseMessages.getString(OozieJobExecutorJobEntry.class, FILE_FILTER_NAMES_PROPERTIES)};
-  }
-
-
-  /**
-   * Accept and apply the changes made in the dialog. Also, close the dialog
-   */
-  @Override
-  @Bindable
-  public void accept() {
-    // Bindings to checkboxes aren't fully implemented in SWTCheckbox (as of v3.3 of xul). the act of clicking doesn't fire any event.
-    config.setBlockingExecution(Boolean.toString(blockingEnabledCheck.isChecked()));
-
-    jobEntry.setJobConfig(config);
-    jobEntry.setChanged();
-    cancel();
   }
 
 }
