@@ -280,7 +280,7 @@ public class OozieJobExecutorJobEntryTest {
     }
   }
 
-  class TestOozieJobExecutorJobEntry extends OozieJobExecutorJobEntry {
+  public class TestOozieJobExecutorJobEntry extends OozieJobExecutorJobEntry {
     private OozieClient client = null;
 
     TestOozieJobExecutorJobEntry(OozieClient client) {

@@ -136,9 +136,10 @@ public class OozieJobExecutorJobEntryController extends AbstractJobEntryControll
         setModeToggleLabel(BaseMessages.getString(OozieJobExecutorJobEntry.class, "Oozie.AdvancedOptions.Button.Text"));
         break;
       case QUICK_SETUP:
-      default:
         setModeToggleLabel(BaseMessages.getString(OozieJobExecutorJobEntry.class, "Oozie.BasicOptions.Button.Text"));
         break;
+      default:
+        throw new RuntimeException("unsupported JobEntryMode");
     }
   }
 
