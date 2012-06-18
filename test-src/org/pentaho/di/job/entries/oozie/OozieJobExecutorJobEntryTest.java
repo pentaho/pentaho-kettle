@@ -92,7 +92,7 @@ public class OozieJobExecutorJobEntryTest {
     OozieJobExecutorJobEntry je = new OozieJobExecutorJobEntry();
 
     config.setOozieUrl("bad url");
-    config.setOozieWorkflowConfig("file:///test/job.properties");
+    config.setOozieWorkflowConfig("test-src/job.properties");
     config.setJobEntryName("name");
 
     List<String> warnings = je.getValidationWarnings(config);
@@ -109,7 +109,7 @@ public class OozieJobExecutorJobEntryTest {
     OozieJobExecutorJobEntry je = new TestOozieJobExecutorJobEntry(client); // just use this to force an error condition
 
     config.setOozieUrl("http://localhost/oozie");
-    config.setOozieWorkflowConfig("file:///test/job.properties");
+    config.setOozieWorkflowConfig("test-src/job.properties");
     config.setJobEntryName("name");
 
     List<String> warnings = je.getValidationWarnings(config);
@@ -119,12 +119,47 @@ public class OozieJobExecutorJobEntryTest {
   }
 
   @Test
+  public void testGetValidationWarnings_CantFindPropertiesFile() throws Exception {
+    OozieJobExecutorConfig config = new OozieJobExecutorConfig();
+    OozieClient client = getSucceedingTestOozieClient();
+    OozieJobExecutorJobEntry je = new TestOozieJobExecutorJobEntry(client);
+
+    config.setOozieUrl("http://localhost:11000/oozie");
+    config.setOozieWorkflowConfig("test/job.properties");
+    config.setJobEntryName("name");
+
+    List<String> warnings = je.getValidationWarnings(config);
+
+    // file is a props file & can be parsed into Properties object
+    assertEquals(1, warnings.size());
+    assertTrue(warnings.get(0).startsWith("Can not resolve Workflow Properties file"));
+//    assertEquals("Invalid workflow job configuration file.", warnings.get(0));
+  }
+
+  @Test
+  public void testGetValidationWarnings_MissingAppPathSetting() throws Exception {
+    OozieJobExecutorConfig config = new OozieJobExecutorConfig();
+    OozieClient client = getSucceedingTestOozieClient();
+    OozieJobExecutorJobEntry je = new TestOozieJobExecutorJobEntry(client);
+
+    config.setOozieUrl("http://localhost:11000/oozie");
+    config.setOozieWorkflowConfig("test-src/badJob.properties");
+    config.setJobEntryName("name");
+
+    List<String> warnings = je.getValidationWarnings(config);
+
+    // file is a props file & can be parsed into Properties object
+    assertEquals(1, warnings.size());
+    assertTrue(warnings.get(0).startsWith("App Path setting not found in Workflow Properties file"));
+  }
+
+  @Test
   public void testGetValidationWarnings_everythingIsGood() throws Exception {
     OozieJobExecutorJobEntry je = new TestOozieJobExecutorJobEntry(getSucceedingTestOozieClient());
 
     OozieJobExecutorConfig config = new OozieJobExecutorConfig();
     config.setOozieUrl("http://localhost:11000/oozie");             // don't worry if it isn't running, we fake out our test connection to it anyway
-    config.setOozieWorkflowConfig("file:///test/job.properties");
+    config.setOozieWorkflowConfig("test-src/job.properties");
     config.setJobEntryName("name");
 
     List<String> warnings = je.getValidationWarnings(config);

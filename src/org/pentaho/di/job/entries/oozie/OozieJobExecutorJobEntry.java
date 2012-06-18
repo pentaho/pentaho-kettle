@@ -64,6 +64,18 @@ public class OozieJobExecutorJobEntry extends AbstractJobEntry<OozieJobExecutorC
     return new OozieJobExecutorConfig();
   }
 
+  /**
+   * Validates the current configuration of the step.
+   * <p/>
+   * <strong>To be valid in Quick Setup mode:</strong>
+   * <ul>
+   * <li>Name is required</li>
+   * <li>Oozie URL is required and must be a valid oozie location</li>
+   * <li>Workflow Properties file path is required and must be a valid job properties file</li>
+   * </ul>
+   * @param config Configuration to validate
+   * @return
+   */
   @Override
   public List<String> getValidationWarnings(OozieJobExecutorConfig config) {
     List<String> messages = new ArrayList<String>();
@@ -93,6 +105,29 @@ public class OozieJobExecutorJobEntry extends AbstractJobEntry<OozieJobExecutorC
     // path to oozie workflow properties file
     if(StringUtil.isEmpty(config.getOozieWorkflowConfig())) {
       messages.add(BaseMessages.getString(OozieJobExecutorJobEntry.class, "ValidationMessages.Missing.Workflow.Properties"));
+    } else {
+      // make sure the path to the properties file is valid
+      try {
+        Properties props = getProperties(config);
+
+        // make sure it has at minimum a workflow definition (need app path)
+        if(props.containsKey(OozieClient.APP_PATH) ||
+           props.containsKey(OozieClient.COORDINATOR_APP_PATH) ||
+           props.containsKey(OozieClient.BUNDLE_APP_PATH)) {
+        } else {
+          messages.add(BaseMessages.getString(OozieJobExecutorJobEntry.class,
+              "ValidationMessages.App.Path.Property.Missing"));
+        }
+
+      } catch (KettleFileException e) {
+        // can't find the file specified as the Workflow Properties definition
+        messages.add(BaseMessages.getString(OozieJobExecutorJobEntry.class,
+            "ValidationMessages.Workflow.Properties.FileNotFound"));
+      } catch (IOException e) {
+        // something went wrong with the reading of the properties file
+        messages.add(BaseMessages.getString(OozieJobExecutorJobEntry.class,
+            "ValidationMessages.Workflow.Properties.ReadError"));
+      }
     }
 
     return messages;
