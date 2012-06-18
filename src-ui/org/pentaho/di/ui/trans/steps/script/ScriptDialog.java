@@ -85,9 +85,9 @@ import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.NodeTransformer;
 import org.mozilla.javascript.Parser;
 import org.mozilla.javascript.Script;
-import org.mozilla.javascript.ScriptOrFnNode;
 import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
+import org.mozilla.javascript.ast.ScriptNode;
 import org.mozilla.javascript.tools.ToolErrorReporter;
 import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.Const;
@@ -1255,7 +1255,7 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 					//Object tranScript = jscx.evaluateString(jsscope, scr, "script", 1, null);
 						
 					if (getvars){
-						ScriptOrFnNode tree = parseVariables(jscx, jsscope, scr, "script", 1, null); 
+						ScriptNode tree = parseVariables(jscx, jsscope, scr, "script", 1, null); 
 						for (int i=0;i<tree.getParamAndVarCount();i++){
 							String varname = tree.getParamOrVarName(i);
 							if (!varname.equalsIgnoreCase("row") && !varname.equalsIgnoreCase("trans_Status")){
@@ -1910,7 +1910,7 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
 	}
 	
 	// This could be useful for further improvements
-	public static ScriptOrFnNode parseVariables(Context cx, Scriptable scope, String source, String sourceName, int lineno, Object securityDomain){
+	public static ScriptNode parseVariables(Context cx, Scriptable scope, String source, String sourceName, int lineno, Object securityDomain){
     	// Interpreter compiler = new Interpreter();
     	CompilerEnvirons evn = new CompilerEnvirons();
     	//evn.setLanguageVersion(Context.VERSION_1_5);
@@ -1919,7 +1919,7 @@ public class ScriptDialog extends BaseStepDialog implements StepDialogInterface
     	evn.setGenerateDebugInfo(true);
     	ErrorReporter errorReporter = new ToolErrorReporter(false);
     	Parser p = new Parser(evn, errorReporter);
-    	ScriptOrFnNode tree = p.parse(source, "",0); // IOException
+    	ScriptNode tree = p.parse(source, "",0); // IOException
         new NodeTransformer().transform(tree);
     	//Script result = (Script)compiler.compile(scope, evn, tree, p.getEncodedSource(),false, null);
     	return tree;
