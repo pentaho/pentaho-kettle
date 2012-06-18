@@ -30,7 +30,7 @@ import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.sqoop.AbstractSqoopJobEntry;
-import org.pentaho.di.job.entries.sqoop.ArgumentWrapper;
+import org.pentaho.di.job.ArgumentWrapper;
 import org.pentaho.di.job.entries.sqoop.SqoopConfig;
 import org.pentaho.di.job.entries.sqoop.SqoopUtils;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;

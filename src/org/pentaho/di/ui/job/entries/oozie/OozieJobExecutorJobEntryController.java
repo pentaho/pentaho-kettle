@@ -25,16 +25,19 @@ import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.BlockableJobConfig;
+import org.pentaho.di.job.JobEntryMode;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.oozie.OozieJobExecutorConfig;
 import org.pentaho.di.job.entries.oozie.OozieJobExecutorJobEntry;
+import org.pentaho.di.job.ArgumentWrapper;
 import org.pentaho.di.ui.job.AbstractJobEntryController;
-import org.pentaho.di.job.JobEntryMode;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
+import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.stereotype.Bindable;
+import org.pentaho.ui.xul.util.AbstractModelList;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
 import java.util.Collection;
@@ -51,6 +54,7 @@ public class OozieJobExecutorJobEntryController extends AbstractJobEntryControll
   public static final String ERROR_BROWSING_DIRECTORY = "ErrorBrowsingDirectory";
   public static final String FILE_FILTER_NAMES_PROPERTIES = "FileFilterNames.Properties";
   public static final String MODE_TOGGLE_LABEL = "mode-toggle-label";
+  protected AbstractModelList<ArgumentWrapper> advancedArguments;
 
   /**
    * The text for the Quick Setup/Advanced Options mode toggle (label)
@@ -101,6 +105,9 @@ public class OozieJobExecutorJobEntryController extends AbstractJobEntryControll
 
     // only enable the polling interval text box is blocking is checked
     bindings.add(bindingFactory.createBinding(config, BlockableJobConfig.BLOCKING_EXECUTION, BlockableJobConfig.BLOCKING_POLLING_INTERVAL, "!disabled", string2BooleanConvertor));
+
+    XulTree variablesTree = (XulTree) container.getDocumentRoot().getElementById("advanced-table");
+    bindings.add(bindingFactory.createBinding(advancedArguments, "children", variablesTree, "elements"));
 
   }
 

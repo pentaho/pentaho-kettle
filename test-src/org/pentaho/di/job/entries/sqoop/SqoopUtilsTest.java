@@ -23,14 +23,12 @@
 package org.pentaho.di.job.entries.sqoop;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.log4j.Appender;
-import org.apache.log4j.AppenderSkeleton;
-import org.apache.log4j.spi.LoggingEvent;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.di.job.ArgumentWrapper;
+import org.pentaho.di.job.CommandLineArgument;
 import org.pentaho.di.job.JobEntryMode;
 import org.pentaho.di.job.entries.helper.PersistentPropertyChangeListener;
 
