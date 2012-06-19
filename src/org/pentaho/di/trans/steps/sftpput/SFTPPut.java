@@ -83,6 +83,68 @@ public class SFTPPut extends BaseStep implements StepInterface
 			// Go there only for the first row received
             first = false;
             
+            try
+            {
+            	// String substitution..
+		        String realServerName      = environmentSubstitute(meta.getServerName());
+		        String realServerPort      = environmentSubstitute(meta.getServerPort());
+		        String realUsername        = environmentSubstitute(meta.getUserName());
+		        String realPassword        = Encr.decryptPasswordOptionallyEncrypted(environmentSubstitute(meta.getPassword()));
+		        String realKeyFilename	= null;
+		        String realPassPhrase	= null;
+				
+				if(meta.isUseKeyFile())
+				{
+					// We must have here a private keyfilename
+					realKeyFilename = environmentSubstitute(meta.getKeyFilename());
+					if(Const.isEmpty(realKeyFilename))
+					{
+						// Error..Missing keyfile
+						logError(BaseMessages.getString(PKG, "SFTPPut.Error.KeyFileMissing"));
+						return false;
+					}
+					if(!KettleVFS.fileExists(realKeyFilename))
+					{
+						// Error.. can not reach keyfile
+						logError(BaseMessages.getString(PKG, "SFTPPut.Error.KeyFileNotFound", realKeyFilename));
+						return false;
+					}
+					realPassPhrase =environmentSubstitute(meta.getKeyPassPhrase());
+				}
+				
+				// Let's try to establish SFTP connection....
+				// Create sftp client to host ...
+				data.sftpclient = new SFTPClient(InetAddress.getByName(realServerName), Const.toInt(realServerPort, 22), 
+						realUsername, realKeyFilename, realPassPhrase);
+				
+				// connection successfully established
+				if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "SFTPPUT.Log.OpenedConnection",realServerName,realServerPort,realUsername));
+				
+				
+				// Set compression
+				data.sftpclient.setCompression(meta.getCompression());
+				
+				// Set proxy?
+				String realProxyHost= environmentSubstitute(meta.getProxyHost());
+				if(!Const.isEmpty(realProxyHost)) {
+					// Set proxy
+					data.sftpclient.setProxy(realProxyHost, 
+							environmentSubstitute(meta.getProxyPort()), 
+							environmentSubstitute(meta.getProxyUsername()), environmentSubstitute(meta.getProxyPassword()),
+							meta.getProxyType());
+				}
+				
+				// login to ftp host ...
+				data.sftpclient.login(realPassword);
+            
+			
+			}
+			catch(Exception e)
+			{
+				throw new KettleException(BaseMessages.getString(PKG, "SFTPPUT.Error.Connection"), e);
+			}
+	        
+            
             // Let's perform some checks
             // Sourcefilename field
             String sourceFilenameFieldName= environmentSubstitute(meta.getSourceFileNameFieldName());
@@ -167,26 +229,27 @@ public class SFTPPut extends BaseStep implements StepInterface
 				inputStream = KettleVFS.getInputStream(file);
 			}
 			
-
-			if(meta.getAfterFTPS() == JobEntrySFTPPUT.AFTER_FTPSPUT_MOVE)
+			if(file!=null)
 			{
-				String realDestationFolder = getInputRowMeta().getString(r, data.indexOfMoveToFolderFieldName);
-				
-				if(Const.isEmpty(realDestationFolder))
+				if(meta.getAfterFTPS() == JobEntrySFTPPUT.AFTER_FTPSPUT_MOVE)
 				{
-					// Move to destination folder is empty
-					throw new KettleStepException(BaseMessages.getString(PKG, "SFTPPut.Error.MoveToDestinationFolderIsEmpty"));
-				}
-				
-				destinationFolder=KettleVFS.getFileObject(realDestationFolder);
-				
-				if(!destinationFolder.exists())
-				{
-					// We can not find folder
-					throw new KettleStepException(BaseMessages.getString(PKG, "SFTPPut.Error.CanNotFindFolder", realDestationFolder));
+					String realDestationFolder = getInputRowMeta().getString(r, data.indexOfMoveToFolderFieldName);
+					
+					if(Const.isEmpty(realDestationFolder))
+					{
+						// Move to destination folder is empty
+						throw new KettleStepException(BaseMessages.getString(PKG, "SFTPPut.Error.MoveToDestinationFolderIsEmpty"));
+					}
+					
+					destinationFolder=KettleVFS.getFileObject(realDestationFolder);
+					
+					if(!destinationFolder.exists())
+					{
+						// We can not find folder
+						throw new KettleStepException(BaseMessages.getString(PKG, "SFTPPut.Error.CanNotFindFolder", realDestationFolder));
+					}
 				}
 			}
-			
 			
 			
 			// move to spool dir ...
@@ -200,9 +263,12 @@ public class SFTPPut extends BaseStep implements StepInterface
 			data.sftpclient.put(inputStream, destinationFilename);
 			
 			
-			// We successfully uploaded the file
-			// what's next ...
-			finishTheJob(file, sourceData, destinationFolder); 
+			if(file!=null)
+			{
+				// We successfully uploaded the file
+				// what's next ...
+				finishTheJob(file, sourceData, destinationFolder); 
+			}
 			
 			putRow(getInputRowMeta(), r);     // copy row to possible alternate rowset(s).
 	
@@ -333,57 +399,7 @@ public class SFTPPut extends BaseStep implements StepInterface
 		{
 			try
 			{
-				// String substitution..
-		        String realServerName      = environmentSubstitute(meta.getServerName());
-		        String realServerPort      = environmentSubstitute(meta.getServerPort());
-		        String realUsername        = environmentSubstitute(meta.getUserName());
-		        String realPassword        = Encr.decryptPasswordOptionallyEncrypted(environmentSubstitute(meta.getPassword()));
-		        String realKeyFilename	= null;
-		        String realPassPhrase	= null;
 				
-				if(meta.isUseKeyFile())
-				{
-					// We must have here a private keyfilename
-					realKeyFilename = environmentSubstitute(meta.getKeyFilename());
-					if(Const.isEmpty(realKeyFilename))
-					{
-						// Error..Missing keyfile
-						logError(BaseMessages.getString(PKG, "SFTPPut.Error.KeyFileMissing"));
-						return false;
-					}
-					if(!KettleVFS.fileExists(realKeyFilename))
-					{
-						// Error.. can not reach keyfile
-						logError(BaseMessages.getString(PKG, "SFTPPut.Error.KeyFileNotFound", realKeyFilename));
-						return false;
-					}
-					realPassPhrase =environmentSubstitute(meta.getKeyPassPhrase());
-				}
-				
-				// Let's try to establish SFTP connection....
-				// Create sftp client to host ...
-				data.sftpclient = new SFTPClient(InetAddress.getByName(realServerName), Const.toInt(realServerPort, 22), 
-						realUsername, realKeyFilename, realPassPhrase);
-				
-				// connection successfully established
-				if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "SFTPPUT.Log.OpenedConnection",realServerName,realServerPort,realUsername));
-				
-				
-				// Set compression
-				data.sftpclient.setCompression(meta.getCompression());
-				
-				// Set proxy?
-				String realProxyHost= environmentSubstitute(meta.getProxyHost());
-				if(!Const.isEmpty(realProxyHost)) {
-					// Set proxy
-					data.sftpclient.setProxy(realProxyHost, 
-							environmentSubstitute(meta.getProxyPort()), 
-							environmentSubstitute(meta.getProxyUsername()), environmentSubstitute(meta.getProxyPassword()),
-							meta.getProxyType());
-				}
-				
-				// login to ftp host ...
-				data.sftpclient.login(realPassword);
 			}
 			catch(Exception e)
 			{

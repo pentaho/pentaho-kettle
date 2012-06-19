@@ -44,6 +44,8 @@ public class SFTPPutData extends BaseStepData implements StepDataInterface
 	public int indexOfRemoteDirectory;
 	// Index of movetofolder
 	public int indexOfMoveToFolderFieldName;
+	// index of remote filename
+	public int indexOfRemoteFilename;
 	
 	/**
 	 * 
@@ -54,6 +56,7 @@ public class SFTPPutData extends BaseStepData implements StepDataInterface
 		this.indexOfSourceFileFieldName=-1;
 		this.indexOfRemoteDirectory=-1;
 		this.indexOfMoveToFolderFieldName=-1;
+		this.indexOfRemoteFilename=-1;
 	}
 
 }

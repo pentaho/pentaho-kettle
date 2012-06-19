@@ -85,6 +85,7 @@ public class SFTPPutMeta extends BaseStepMeta implements StepMetaInterface
     private String destinationfolderFieldName;
     private boolean createDestinationFolder;
 	private int afterFTPS;
+	private String remoteFilenameFieldName;
     
     
 	public SFTPPutMeta()
@@ -138,7 +139,7 @@ public class SFTPPutMeta extends BaseStepMeta implements StepMetaInterface
 			}
 			 destinationfolderFieldName          = XMLHandler.getTagValue(stepnode, "destinationfolderFieldName");
 	         createDestinationFolder = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "createdestinationfolder") );	            
-	         
+	         remoteFilenameFieldName        = XMLHandler.getTagValue(stepnode, "remoteFilenameFieldName");
 		}
 		catch(Exception e)
 		{
@@ -165,6 +166,7 @@ public class SFTPPutMeta extends BaseStepMeta implements StepMetaInterface
     	afterFTPS=JobEntrySFTPPUT.AFTER_FTPSPUT_NOTHING;
 		destinationfolderFieldName=null;
 		createDestinationFolder=false;
+		remoteFilenameFieldName=null;
 	}
 
 	public String getXML()
@@ -193,7 +195,7 @@ public class SFTPPutMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("      ").append(XMLHandler.addTagValue("aftersftpput",JobEntrySFTPPUT.getAfterSFTPPutCode(getAfterFTPS())));
 		retval.append("      ").append(XMLHandler.addTagValue("destinationfolderFieldName",   destinationfolderFieldName));
         retval.append("      ").append(XMLHandler.addTagValue("createdestinationfolder",     createDestinationFolder));
-        
+        retval.append("      ").append(XMLHandler.addTagValue("remoteFilenameFieldName",   remoteFilenameFieldName));
         
 		return retval.toString();
 	}
@@ -232,6 +234,7 @@ public class SFTPPutMeta extends BaseStepMeta implements StepMetaInterface
 			}
 			destinationfolderFieldName            = rep.getJobEntryAttributeString(id_step, "destinationfolderFieldName");
 			createDestinationFolder = rep.getJobEntryAttributeBoolean(id_step, "createdestinationfolder");
+			remoteFilenameFieldName           = rep.getJobEntryAttributeString(id_step, "remoteFilenameFieldName");
 		}
 		catch(Exception e)
 		{
@@ -266,7 +269,7 @@ public class SFTPPutMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveJobEntryAttribute(id_step, getObjectId(), "createRemoteFolder",   createRemoteFolder);
 			rep.saveJobEntryAttribute(id_step, getObjectId(), "destinationfolderFieldName",        destinationfolderFieldName);
 			rep.saveJobEntryAttribute(id_step, getObjectId(), "createdestinationfolder",        createDestinationFolder);
-			
+			rep.saveJobEntryAttribute(id_step, getObjectId(), "remoteFilenameFieldName",        remoteFilenameFieldName);
 			
 		}
 		catch(Exception e)
@@ -523,6 +526,14 @@ public class SFTPPutMeta extends BaseStepMeta implements StepMetaInterface
     public String getDestinationFolderFieldName()
     {
     	return destinationfolderFieldName;
+    }
+    public String getRemoteFilenameFieldName()
+    {
+    	return remoteFilenameFieldName;
+    }
+    public void setRemoteFilenameFieldName(String value)
+    {
+    	remoteFilenameFieldName=value;
     }
     @Override
 	public boolean supportsErrorHandling()
