@@ -44,6 +44,7 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import javax.mail.util.ByteArrayDataSource;
 
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSelectInfo;
@@ -275,46 +276,70 @@ public class Mail extends BaseStep implements StepInterface
 				}  
 			}	
 			
-			// Dynamic Zipfilename
-			if (meta.isZipFilenameDynamic()){
-				// cache the position of the attached source filename field			
-				if (data.indexOfDynamicZipFilename<0){	
-					String realZipFilename=meta.getDynamicZipFilenameField();
-					data.indexOfDynamicZipFilename =data.previousRowMeta.indexOfValue(realZipFilename);
-					if (data.indexOfDynamicZipFilename<0)
-						throw new KettleException(BaseMessages.getString(PKG, "Mail.Exception.CouldnotSourceAttachedZipFilenameField",realZipFilename)); //$NON-NLS-1$ //$NON-NLS-2$
-				}  
-			}
-			data.zipFileLimit=Const.toLong(environmentSubstitute(meta.getZipLimitSize()), 0);
-			if(data.zipFileLimit>0) data.zipFileLimit=data.zipFileLimit*1048576; // Mo
+
+			if(meta.isAttachContentFromField()) {
+				// We are dealing with file content directly loaded from file
+				// and not physical file
+				String attachedContentField= meta.getAttachContentField();
+				if(Const.isEmpty(attachedContentField)) {
+					// Empty Field
+					throw new KettleException(BaseMessages.getString(PKG, "Mail.Exception.AttachedContentFieldEmpty")); 
+				}
+				data.indexOfAttachedContent=data.previousRowMeta.indexOfValue(attachedContentField);
+				if (data.indexOfComment<0)
+					throw new KettleException(BaseMessages.getString(PKG, "Mail.Exception.CouldnotFindAttachedContentField",attachedContentField)); //$NON-NLS-1$ //$NON-NLS-2$
+				// Attached content filename
+				String attachedContentFileNameField= meta.getAttachContentFileNameField();
+				if(Const.isEmpty(attachedContentFileNameField)) {
+					// Empty Field
+					throw new KettleException(BaseMessages.getString(PKG, "Mail.Exception.AttachedContentFileNameFieldEmpty")); 
+				}
+				data.IndexOfAttachedFilename=data.previousRowMeta.indexOfValue(attachedContentFileNameField);
+				if (data.indexOfComment<0)
+					throw new KettleException(BaseMessages.getString(PKG, "Mail.Exception.CouldnotFindAttachedContentFileNameField",attachedContentFileNameField)); //$NON-NLS-1$ //$NON-NLS-2$
 			
-			if(!meta.isZipFilenameDynamic()) data.ZipFilename=environmentSubstitute(meta.getZipFilename());
-			 
-			
-			// Attached files
-			if(meta.isDynamicFilename()){
-				// cache the position of the attached source filename field			
-				if (data.indexOfSourceFilename<0){	
-					String realSourceattachedFilename=meta.getDynamicFieldname();
-					data.indexOfSourceFilename =data.previousRowMeta.indexOfValue(realSourceattachedFilename);
-					if (data.indexOfSourceFilename<0)
-						throw new KettleException(BaseMessages.getString(PKG, "Mail.Exception.CouldnotSourceAttachedFilenameField",realSourceattachedFilename)); //$NON-NLS-1$ //$NON-NLS-2$
-				}  
+			}else {
 				
-				// cache the position of the attached wildcard field		
-				if(!Const.isEmpty(meta.getSourceWildcard())){
-					if (data.indexOfSourceWildcard<0){	
-						String realSourceattachedWildcard=meta.getDynamicWildcard();
-						data.indexOfSourceWildcard =data.previousRowMeta.indexOfValue(realSourceattachedWildcard);
-						if (data.indexOfSourceWildcard<0)
-							throw new KettleException(BaseMessages.getString(PKG, "Mail.Exception.CouldnotSourceAttachedWildcard",realSourceattachedWildcard)); //$NON-NLS-1$ //$NON-NLS-2$
+				// Dynamic Zipfilename
+				if (meta.isZipFilenameDynamic()){
+					// cache the position of the attached source filename field			
+					if (data.indexOfDynamicZipFilename<0){	
+						String realZipFilename=meta.getDynamicZipFilenameField();
+						data.indexOfDynamicZipFilename =data.previousRowMeta.indexOfValue(realZipFilename);
+						if (data.indexOfDynamicZipFilename<0)
+							throw new KettleException(BaseMessages.getString(PKG, "Mail.Exception.CouldnotSourceAttachedZipFilenameField",realZipFilename)); //$NON-NLS-1$ //$NON-NLS-2$
 					}  
-				}		
-			}else
-			{
-				// static attached filenames
-				data.realSourceFileFoldername=environmentSubstitute(meta.getSourceFileFoldername()) ; 
-				data.realSourceWildcard=environmentSubstitute(meta.getSourceWildcard()) ; 
+				}
+				data.zipFileLimit=Const.toLong(environmentSubstitute(meta.getZipLimitSize()), 0);
+				if(data.zipFileLimit>0) data.zipFileLimit=data.zipFileLimit*1048576; // Mo
+				
+				if(!meta.isZipFilenameDynamic()) data.ZipFilename=environmentSubstitute(meta.getZipFilename());
+				 
+				
+				// Attached files
+				if(meta.isDynamicFilename()){
+					// cache the position of the attached source filename field			
+					if (data.indexOfSourceFilename<0){	
+						String realSourceattachedFilename=meta.getDynamicFieldname();
+						data.indexOfSourceFilename =data.previousRowMeta.indexOfValue(realSourceattachedFilename);
+						if (data.indexOfSourceFilename<0)
+							throw new KettleException(BaseMessages.getString(PKG, "Mail.Exception.CouldnotSourceAttachedFilenameField",realSourceattachedFilename)); //$NON-NLS-1$ //$NON-NLS-2$
+					}  
+					
+					// cache the position of the attached wildcard field		
+					if(!Const.isEmpty(meta.getSourceWildcard())){
+						if (data.indexOfSourceWildcard<0){	
+							String realSourceattachedWildcard=meta.getDynamicWildcard();
+							data.indexOfSourceWildcard =data.previousRowMeta.indexOfValue(realSourceattachedWildcard);
+							if (data.indexOfSourceWildcard<0)
+								throw new KettleException(BaseMessages.getString(PKG, "Mail.Exception.CouldnotSourceAttachedWildcard",realSourceattachedWildcard)); //$NON-NLS-1$ //$NON-NLS-2$
+						}  
+					}		
+				}else {
+					// static attached filenames
+					data.realSourceFileFoldername=environmentSubstitute(meta.getSourceFileFoldername()) ; 
+					data.realSourceWildcard=environmentSubstitute(meta.getSourceWildcard()) ; 
+				}
 			}
 			
 			// check embedded images
@@ -571,10 +596,15 @@ public class Mail extends BaseStep implements StepInterface
 	
 	      data.parts.addBodyPart(part1);
 	      
-	      // attached files
-	      if(meta.isDynamicFilename()) setAttachedFilesList(r, log);
-	      else setAttachedFilesList(null,log);
-	      
+	      if(meta.isAttachContentFromField()) {
+	    	  // attache file content
+	    	  addAttachedContent(data.previousRowMeta.getString(r,data.IndexOfAttachedFilename), 
+		    		  data.previousRowMeta.getString(r,data.indexOfAttachedContent));
+	      }else {
+	    	  // attached files
+	    	  if(meta.isDynamicFilename()) setAttachedFilesList(r, log);
+	    	  else setAttachedFilesList(null,log);
+	      }
 
 	      // add embedded images
 	      addImagePart();
@@ -765,6 +795,19 @@ public class Mail extends BaseStep implements StepInterface
           // add the part with the file in the BodyPart();
           data.parts.addBodyPart(files);
           if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "Mail.Log.AttachedFile",fds.getName()));
+          
+	  }
+	  private void addAttachedContent(String filename, String fileContent) throws Exception
+	  {
+		  // create a data source
+		  
+		  MimeBodyPart mbp = new MimeBodyPart();
+          // get a data Handler to manipulate this file type;
+		  mbp.setDataHandler(new DataHandler(new ByteArrayDataSource(fileContent.getBytes(), "application/x-any")));
+          // include the file in the data source
+		  mbp.setFileName(filename);
+          // add the part with the file in the BodyPart();
+          data.parts.addBodyPart(mbp);
           
 	  }
 	  private void addImagePart() throws Exception

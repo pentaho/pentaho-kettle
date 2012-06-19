@@ -83,6 +83,9 @@ public class MailData extends BaseStepData implements StepDataInterface
 	
 	public HashSet<MimeBodyPart> embeddedMimePart;
 	
+	public int indexOfAttachedContent;
+	public int IndexOfAttachedFilename;
+	
 	/**
 	 * 
 	 */
@@ -111,7 +114,9 @@ public class MailData extends BaseStepData implements StepDataInterface
 		embeddedMimePart=null;
 		nrEmbeddedImages=0;
 		nrattachedFiles=0;
-		
+		indexOfAttachedContent=-1;
+		IndexOfAttachedFilename=-1;
 	}
+
 
 }

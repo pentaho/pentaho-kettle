@@ -139,9 +139,18 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 	  /** The reply to addresses */
 	  private String replyToAddresses;
 	  
-	  public String embeddedimages[];
+	  private String embeddedimages[];
 
-	  public String contentids[];
+	  private String contentids[];
+	  
+	  /** Flag : attach file from content defined in a field **/
+	  private boolean attachContentFromField;
+	  
+	  /** file content field name **/
+	  private String attachContentField;
+	  
+	  /** filename content field **/
+	  private String attachContentFileNameField;
 	  
 	public MailMeta()
 	{
@@ -181,6 +190,10 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
       setisDynamicFilename("Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "isFilenameDynamic")));
       setDynamicFieldname(XMLHandler.getTagValue(stepnode, "dynamicFieldname"));
       setDynamicWildcard(XMLHandler.getTagValue(stepnode, "dynamicWildcard"));
+      setAttachContentFromField("Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "attachContentFromField")));
+      setAttachContentField(XMLHandler.getTagValue(stepnode, "attachContentField"));
+      setAttachContentFileNameField(XMLHandler.getTagValue(stepnode, "attachContentFileNameField"));
+      
       setDynamicZipFilenameField(XMLHandler.getTagValue(stepnode, "dynamicZipFilename"));
       setSourceFileFoldername(XMLHandler.getTagValue(stepnode, "sourcefilefoldername"));
       setSourceWildcard(XMLHandler.getTagValue(stepnode, "sourcewildcard"));
@@ -248,6 +261,10 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 	    retval.append("      ").append(XMLHandler.addTagValue("include_subfolders", this.includeSubFolders));
 	    retval.append("      ").append(XMLHandler.addTagValue("zipFilenameDynamic", this.zipFilenameDynamic));
 	    retval.append("      ").append(XMLHandler.addTagValue("isFilenameDynamic",this.isFilenameDynamic));
+	    retval.append("      ").append(XMLHandler.addTagValue("attachContentFromField",this.attachContentFromField));
+	    retval.append("      ").append(XMLHandler.addTagValue("attachContentField", this.attachContentField));
+	    retval.append("      ").append(XMLHandler.addTagValue("attachContentFileNameField", this.attachContentFileNameField));
+	    
 	    retval.append("      ").append(XMLHandler.addTagValue("dynamicFieldname", this.dynamicFieldname));
 	    retval.append("      ").append(XMLHandler.addTagValue("dynamicWildcard", this.dynamicWildcard));
 	    retval.append("      ").append(XMLHandler.addTagValue("dynamicZipFilename", this.dynamicZipFilename));
@@ -391,6 +408,19 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 	  {
 		  this.isFilenameDynamic = isdynamic;
 	  }
+	  public void setAttachContentFromField(boolean attachContentFromField)
+	  {
+		  this.attachContentFromField = attachContentFromField;
+	  }
+	  public void setAttachContentField(String attachContentField)
+	  {
+		  this.attachContentField = attachContentField;
+	  }
+	  public void setAttachContentFileNameField(String attachContentFileNameField)
+	  {
+		  this.attachContentFileNameField = attachContentFileNameField;
+	  }
+	  
 	  public void  setDynamicWildcard(String dynamicwildcard)
 	  {
 		this.dynamicWildcard  =dynamicwildcard;
@@ -448,8 +478,20 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 	  {
 	    return this.isFilenameDynamic;
 	  }
-
+	  public boolean isAttachContentFromField()
+	  {
+	    return this.attachContentFromField;
+	  }
 	  
+	  public String getAttachContentField()
+	  {
+	    return this.attachContentField;
+	  }
+	  
+	  public String getAttachContentFileNameField()
+	  {
+	    return this.attachContentFileNameField;
+	  }
 	  
 	  public void setContactPerson(String person)
 	  {
@@ -783,7 +825,10 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 			 this.includeSubFolders = rep.getStepAttributeBoolean(id_step, "include_subfolders");
 			 this.zipFilenameDynamic = rep.getStepAttributeBoolean(id_step, "zipFilenameDynamic");
 		      
-		      
+		     this.attachContentFromField = rep.getStepAttributeBoolean(id_step, "attachContentFromField");
+		     this.attachContentField = rep.getStepAttributeString(id_step, "attachContentField");
+		     this.attachContentFileNameField = rep.getStepAttributeString(id_step, "attachContentFileNameField");
+		     
 			 this.isFilenameDynamic = rep.getStepAttributeBoolean(id_step, "isFilenameDynamic");
 			 this.dynamicFieldname = rep.getStepAttributeString(id_step, "dynamicFieldname");
 		     this.dynamicWildcard = rep.getStepAttributeString(id_step, "dynamicWildcard");
@@ -854,7 +899,11 @@ public class MailMeta extends BaseStepMeta implements StepMetaInterface
 	      rep.saveStepAttribute(id_transformation, id_step, "include_date", this.includeDate);
 	      rep.saveStepAttribute(id_transformation, id_step, "include_subfolders", this.includeSubFolders);
 	      rep.saveStepAttribute(id_transformation, id_step, "zipFilenameDynamic", this.zipFilenameDynamic);
-
+	      
+	      rep.saveStepAttribute(id_transformation, id_step, "attachContentFromField", attachContentFromField);
+	      rep.saveStepAttribute(id_transformation, id_step, "attachContentField", this.attachContentField);
+	      rep.saveStepAttribute(id_transformation, id_step, "attachContentFileNameField", this.attachContentFileNameField);
+	      
 	      rep.saveStepAttribute(id_transformation, id_step, "isFilenameDynamic", isFilenameDynamic);
 	      rep.saveStepAttribute(id_transformation, id_step, "dynamicFieldname", dynamicFieldname);
 	      rep.saveStepAttribute(id_transformation, id_step, "dynamicWildcard", dynamicWildcard);
