@@ -1486,6 +1486,20 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SFTPPut</tooltip>
 		<iconfile>ui/images/SFP.png</iconfile>
 	</step> 
+	<step id="PGPEncryptStream">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.PGPEncryptStream</description>
+		<classname>org.pentaho.di.trans.steps.pgpencryptstream.PGPEncryptStreamMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Cryptography</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.PGPEncryptStream</tooltip>
+		<iconfile>ui/images/GPGEncrypt.png</iconfile>
+	</step> 
+	<step id="PGPDecryptStream">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.PGPDecryptStream</description>
+		<classname>org.pentaho.di.trans.steps.pgpdecryptstream.PGPDecryptStreamMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Cryptography</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.PGPDecryptStream</tooltip>
+		<iconfile>ui/images/GPGDecrypt.png</iconfile>
+	</step> 
 
 
 
