@@ -78,7 +78,8 @@ public class JobEntryPGPDecryptFilesDialog extends JobEntryDialog implements Job
 	
 	private static final String[] FILETYPES = new String[] 
 	{
-			BaseMessages.getString(PKG, "JobPGPDecryptFiles.Filetype.All") };
+			BaseMessages.getString(PKG, "JobPGPDecryptFiles.Filetype.All") 
+	};
 	
 	private Label        wlName;
 	private Text         wName;

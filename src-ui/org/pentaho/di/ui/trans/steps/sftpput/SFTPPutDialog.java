@@ -201,7 +201,11 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
 	private CCombo wDestinationFolderFieldName;
 	private FormData fdlDestinationFolderFieldName, fdDestinationFolderFieldName;
 	
-    
+	private Label        wlRemoteFileName;
+	private CCombo      wRemoteFileName;
+	private FormData     fdlRemoteFileName, fdRemoteFileName;
+
+	
 	private SFTPClient sftpclient = null;
 
 	public SFTPPutDialog(Shell parent, Object in, TransMeta tr, String sname)
@@ -764,7 +768,24 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
 			}
 		}
 		);
-
+		
+		wDestinationFolderFieldName.addFocusListener(new FocusListener()
+        {
+            public void focusLost(org.eclipse.swt.events.FocusEvent e)
+            {
+            }
+        
+            public void focusGained(org.eclipse.swt.events.FocusEvent e)
+            {
+                Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+                shell.setCursor(busy);
+                getFields();
+                shell.setCursor(null);
+                busy.dispose();
+            }
+        }
+    );
+	
        
        // Create destination folder if necessary ...
        wlCreateDestinationFolder = new Label(wSourceFiles, SWT.RIGHT);
@@ -829,6 +850,26 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
 		fdRemoteDirectory.right= new FormAttachment(100, -margin);
 		wRemoteDirectory.setLayoutData(fdRemoteDirectory);
 		
+		wRemoteDirectory.addFocusListener(new FocusListener()
+        {
+            public void focusLost(org.eclipse.swt.events.FocusEvent e)
+            {
+            }
+        
+            public void focusGained(org.eclipse.swt.events.FocusEvent e)
+            {
+                Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+                shell.setCursor(busy);
+                getFields();
+                shell.setCursor(null);
+                busy.dispose();
+            }
+        }
+    );
+	
+
+				
+				
 		// CreateRemoteFolder files after retrieval...
 		wlCreateRemoteFolder=new Label(wTargetFiles, SWT.RIGHT);
 		wlCreateRemoteFolder.setText(BaseMessages.getString(PKG, "SFTPPUT.CreateRemoteFolderFiles.Label"));
@@ -853,6 +894,45 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
 				transMeta.setChanged();
 			}
 		});
+		
+		// Remote filename
+		 wlRemoteFileName=new Label(wTargetFiles, SWT.RIGHT);
+			wlRemoteFileName.setText(BaseMessages.getString(PKG, "SFTPPUT.RemoteFilename.Label"));
+			props.setLook(wlRemoteFileName);
+			fdlRemoteFileName=new FormData();
+			fdlRemoteFileName.left = new FormAttachment(0, 0);
+			fdlRemoteFileName.top  = new FormAttachment(wCreateRemoteFolder, margin);
+			fdlRemoteFileName.right= new FormAttachment(middle, -margin);
+			wlRemoteFileName.setLayoutData(fdlRemoteFileName);
+			
+			// Target (remote) folder
+			wRemoteFileName=new CCombo(wTargetFiles, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
+			props.setLook(wRemoteFileName);
+			wRemoteFileName.setToolTipText(BaseMessages.getString(PKG, "SFTPPUT.RemoteFilename.Tooltip"));
+	        wRemoteFileName.addModifyListener(lsMod);
+			fdRemoteFileName=new FormData();
+			fdRemoteFileName.left = new FormAttachment(middle, 0);
+			fdRemoteFileName.top  = new FormAttachment(wCreateRemoteFolder, margin);
+			fdRemoteFileName.right= new FormAttachment(100, -margin);
+			wRemoteFileName.setLayoutData(fdRemoteFileName);
+			
+			wRemoteFileName.addFocusListener(new FocusListener()
+	        {
+	            public void focusLost(org.eclipse.swt.events.FocusEvent e)
+	            {
+	            }
+	        
+	            public void focusGained(org.eclipse.swt.events.FocusEvent e)
+	            {
+	                Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+	                shell.setCursor(busy);
+	                getFields();
+	                shell.setCursor(null);
+	                busy.dispose();
+	            }
+	        }
+	    );
+		
 		
 	     fdTargetFiles = new FormData();
 	     fdTargetFiles.left = new FormAttachment(0, margin);
@@ -923,7 +1003,8 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
 	    wUserName.addSelectionListener( lsDef );
 	    wPassword.addSelectionListener( lsDef );
 	    wRemoteDirectory.addSelectionListener( lsDef );
-
+	    wRemoteFileName.addSelectionListener( lsDef );
+	    
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
 		wTabFolder.setSelection(0);	
@@ -974,6 +1055,7 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
 		wAfterFTPPut.setText(JobEntrySFTPPUT.getAfterSFTPPutDesc(input.getAfterFTPS()));
 		wDestinationFolderFieldName.setText(Const.NVL(input.getDestinationFolderFieldName(), ""));
 		wCreateDestinationFolder.setSelection(input.isCreateDestinationFolder());
+		wRemoteFileName.setText(Const.NVL(input.getRemoteFilenameFieldName(), ""));
 	}
 	
 	private void cancel()
@@ -1013,6 +1095,7 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
 		input.setCreateDestinationFolder(wCreateDestinationFolder.getSelection());
 		input.setDestinationFolderFieldName(wDestinationFolderFieldName.getText());
 		input.setInputStream(wInputIsStream.getSelection());
+		input.setRemoteFilenameFieldName(wRemoteFileName.getText());
 		
 		dispose();
 	}
@@ -1129,13 +1212,27 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
 		try
 		{
 			String source=wSourceFileNameField.getText();
+			String rep=wRemoteDirectory.getText();
+			String after= wDestinationFolderFieldName.getText();
+			String remote= wRemoteFileName.getText();
 			
 			wSourceFileNameField.removeAll();
+			wRemoteDirectory.removeAll();
+			wDestinationFolderFieldName.removeAll();
+			wRemoteFileName.removeAll();
 			RowMetaInterface r = transMeta.getPrevStepFields(stepname);
 			if (r!=null)
 			{
-				wSourceFileNameField.setItems(r.getFieldNames());
+				String[] fields=r.getFieldNames();
+				wSourceFileNameField.setItems(fields);
+				wRemoteDirectory.setItems(fields);
+				wDestinationFolderFieldName.setItems(fields);
+				wRemoteFileName.setItems(fields);
+				
 				if(source!=null) wSourceFileNameField.setText(source);
+				if(rep!=null)  wRemoteDirectory.setText(rep);
+				if(after!=null)  wDestinationFolderFieldName.setText(after); 
+				if(remote!=null)  wRemoteFileName.setText(remote);
 			}
 		}
 		catch(KettleException ke)
@@ -1166,5 +1263,11 @@ public class SFTPPutDialog extends BaseStepDialog implements StepDialogInterface
 	   {
 		   wAddFilenameToResult.setSelection(false);
 	   }
+	   wlAfterFTPPut.setEnabled(!wInputIsStream.getSelection());
+	   wAfterFTPPut.setEnabled(!wInputIsStream.getSelection());
+	   wDestinationFolderFieldName.setEnabled(!wInputIsStream.getSelection());
+	   wlDestinationFolderFieldName.setEnabled(!wInputIsStream.getSelection());
+	   wlCreateDestinationFolder.setEnabled(!wInputIsStream.getSelection());
+	   wCreateDestinationFolder.setEnabled(!wInputIsStream.getSelection());
    }
 }
