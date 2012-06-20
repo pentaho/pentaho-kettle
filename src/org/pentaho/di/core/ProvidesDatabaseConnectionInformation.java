@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.trans.step;
+package org.pentaho.di.core;
 
 import org.pentaho.di.core.database.DatabaseMeta;
 
@@ -31,7 +31,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
  * @author jamesdixon
  *
  */
-public interface TableFrontingStep {
+public interface ProvidesDatabaseConnectionInformation {
 
 	/**
 	 * Returns the database meta for this step
@@ -50,5 +50,13 @@ public interface TableFrontingStep {
 	 * @return
 	 */
 	public String getSchemaName();
+
+  /**
+   * Provides a way for this object to return a custom message when database connection information is incomplete or missing.
+   * If this returns {@code null} a default message will be displayed for missing information.
+   *
+   * @return A friendly message that describes that database connection information is missing and, potentially, why.
+   */
+  public String getMissingDatabaseConnectionInformationMessage();
 	
 }
