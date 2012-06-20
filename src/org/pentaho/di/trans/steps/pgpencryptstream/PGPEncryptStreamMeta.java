@@ -72,6 +72,12 @@ public class PGPEncryptStreamMeta extends BaseStepMeta implements StepMetaInterf
     /** function result: new value name */
     private String       resultfieldname;
     
+    /** Flag: keyname is dynamic **/
+    private boolean keynameInField;
+    
+    /** keyname fieldname **/
+    private String keynameFieldName;
+    
     public PGPEncryptStreamMeta()
     {
         super(); // allocate BaseStepMeta
@@ -100,6 +106,36 @@ public class PGPEncryptStreamMeta extends BaseStepMeta implements StepMetaInterf
     public void setStreamField(String streamfield)
     {
         this.streamfield = streamfield;
+    }
+    /**
+     * @return Returns the keynameFieldName.
+     */
+    public String getKeynameFieldName()
+    {
+        return keynameFieldName;
+    }
+
+    /**
+     * @param keynameFieldName The keynameFieldName to set.
+     */
+    public void setKeynameFieldName(String keynameFieldName)
+    {
+        this.keynameFieldName = keynameFieldName;
+    }
+    /**
+     * @return Returns the keynameInField.
+     */
+    public boolean isKeynameInField()
+    {
+        return keynameInField;
+    }
+
+    /**
+     * @param keynameInField The keynameInField to set.
+     */
+    public void setKeynameInField(boolean keynameInField)
+    {
+        this.keynameInField = keynameInField;
     }
 
     /**
@@ -156,6 +192,8 @@ public class PGPEncryptStreamMeta extends BaseStepMeta implements StepMetaInterf
         streamfield=null;
         keyname=null;
         gpglocation=null;
+        keynameInField=false;
+        keynameFieldName=null;
     }
 	
 	public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface info[], StepMeta nextStep, VariableSpace space) throws KettleStepException
@@ -175,6 +213,8 @@ public class PGPEncryptStreamMeta extends BaseStepMeta implements StepMetaInterf
         StringBuffer retval = new StringBuffer();
         retval.append("    " + XMLHandler.addTagValue("gpglocation", gpglocation));
         retval.append("    " + XMLHandler.addTagValue("keyname", keyname));
+        retval.append("    " + XMLHandler.addTagValue("keynameInField", keynameInField));
+        retval.append("    " + XMLHandler.addTagValue("keynameFieldName", keynameFieldName));
         retval.append("    " + XMLHandler.addTagValue("streamfield", streamfield)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    " + XMLHandler.addTagValue("resultfieldname", resultfieldname)); //$NON-NLS-1$ //$NON-NLS-2$
         return retval.toString();
@@ -187,6 +227,9 @@ public class PGPEncryptStreamMeta extends BaseStepMeta implements StepMetaInterf
     	{
     		gpglocation = XMLHandler.getTagValue(stepnode, "gpglocation");
     		keyname = XMLHandler.getTagValue(stepnode, "keyname");
+    		
+    	    keynameInField  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "keynameInField"));
+    	    keynameFieldName = XMLHandler.getTagValue(stepnode, "keynameFieldName");
 			streamfield = XMLHandler.getTagValue(stepnode, "streamfield"); //$NON-NLS-1$
             resultfieldname = XMLHandler.getTagValue(stepnode, "resultfieldname"); 
         }
@@ -203,6 +246,8 @@ public class PGPEncryptStreamMeta extends BaseStepMeta implements StepMetaInterf
 		{
     		gpglocation = rep.getStepAttributeString(id_step, "gpglocation");
     		keyname = rep.getStepAttributeString(id_step, "keyname");
+    		keynameInField  = rep.getStepAttributeBoolean(id_step, "keynameInField");   
+    		keynameFieldName = rep.getStepAttributeString(id_step, "keynameFieldName");
     		streamfield = rep.getStepAttributeString(id_step, "streamfield"); //$NON-NLS-1$
             resultfieldname = rep.getStepAttributeString(id_step, "resultfieldname"); //$NON-NLS-1$ 
         }
@@ -218,6 +263,8 @@ public class PGPEncryptStreamMeta extends BaseStepMeta implements StepMetaInterf
         {
         	rep.saveStepAttribute(id_transformation, id_step, "gpglocation", gpglocation);
         	rep.saveStepAttribute(id_transformation, id_step, "keyname", keyname);
+        	rep.saveStepAttribute(id_transformation, id_step, "keynameInField", keynameInField);
+        	rep.saveStepAttribute(id_transformation, id_step, "keynameFieldName", keynameFieldName);
             rep.saveStepAttribute(id_transformation, id_step, "streamfield", streamfield); //$NON-NLS-1$
             rep.saveStepAttribute(id_transformation, id_step, "resultfieldname", resultfieldname); //$NON-NLS-1$
         }

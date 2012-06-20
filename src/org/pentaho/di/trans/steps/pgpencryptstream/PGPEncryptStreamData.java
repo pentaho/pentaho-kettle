@@ -43,6 +43,7 @@ public class PGPEncryptStreamData extends BaseStepData implements StepDataInterf
 	
 	public GPG gpg;
     public String keyName;
+    public int indexOfKeyName;
     
 	/**
 	 * 
@@ -53,6 +54,7 @@ public class PGPEncryptStreamData extends BaseStepData implements StepDataInterf
 		this.indexOfField=-1;
 		this.gpg=null;
 		this.keyName=null;
+		this.indexOfKeyName=-1;
 	}
 
 }

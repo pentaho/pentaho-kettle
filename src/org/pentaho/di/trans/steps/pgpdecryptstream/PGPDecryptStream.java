@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.pgpdecryptstream;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.i18n.BaseMessages;
@@ -90,12 +91,29 @@ public class PGPDecryptStream extends BaseStep implements StepInterface
 				}
 				
 				
-        		// Check is passphrase is provided
-				data.passPhrase = environmentSubstitute(meta.getPassphrase());
-				
-				if (Const.isEmpty(data.passPhrase))
+				if(meta.isPassphraseFromField())
 				{
-					throw new KettleException(BaseMessages.getString(PKG, "PGPDecryptStream.Error.PassphraseMissing"));
+					// Passphrase from field
+					String fieldname= meta.getPassphraseFieldName();
+					if (Const.isEmpty(fieldname))
+					{
+						throw new KettleException(BaseMessages.getString(PKG, "PGPDecryptStream.Error.PassphraseFieldMissing"));
+					}
+					data.indexOfPassphraseField =data.previousRowMeta.indexOfValue(fieldname);
+					if (data.indexOfPassphraseField<0)
+					{
+						// The field is unreachable !
+						throw new KettleException(BaseMessages.getString(PKG, "PGPDecryptStream.Exception.CouldnotFindField",fieldname)); //$NON-NLS-1$ //$NON-NLS-2$
+					}
+				}
+				else
+				{
+	        		// Check is passphrase is provided
+					data.passPhrase=Encr.decryptPasswordOptionallyEncrypted(environmentSubstitute(meta.getPassphrase()));
+					if (Const.isEmpty(data.passPhrase))
+					{
+						throw new KettleException(BaseMessages.getString(PKG, "PGPDecryptStream.Error.PassphraseMissing"));
+					}
 				}
 				
 				// cache the position of the field			
@@ -117,6 +135,14 @@ public class PGPDecryptStream extends BaseStep implements StepInterface
     			outputRow[i] = r[i];
     		}
     		
+    		if(meta.isPassphraseFromField())
+    		{
+    			data.passPhrase= data.previousRowMeta.getString(r,data.indexOfPassphraseField);
+    			if (Const.isEmpty(data.passPhrase))
+				{
+					throw new KettleException(BaseMessages.getString(PKG, "PGPDecryptStream.Error.PassphraseMissing"));
+				}
+    		}
         	// get stream, data to decrypt
         	String encryptedData= data.previousRowMeta.getString(r,data.indexOfField);
         	

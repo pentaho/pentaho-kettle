@@ -39,6 +39,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
@@ -80,6 +81,19 @@ public class PGPDecryptStreamDialog extends BaseStepDialog implements StepDialog
 	private FormData fdbbGpgExe;
 	
 	private PGPDecryptStreamMeta input;
+	
+	private Group wGPGGroup;
+	private FormData fdGPGGroup;
+	
+	
+	private Button       wPassphraseFromField;
+	private FormData     fdPassphraseFromField,fdlPassphraseFromField;
+	private Label        wlPassphraseFromField;
+	
+	private Label        wlPassphraseFieldName;
+	private CCombo       wPassphraseFieldName;
+	private FormData     fdlPassphraseFieldName, fdPassphraseFieldName;	
+
 	
 	private static final String[] FILETYPES = new String[] 
 	{
@@ -140,9 +154,22 @@ public class PGPDecryptStreamDialog extends BaseStepDialog implements StepDialog
 		fdStepname.top  = new FormAttachment(0, margin);
 		fdStepname.right= new FormAttachment(100, 0);
 		wStepname.setLayoutData(fdStepname);
+		
+		///////////////////////////////// 
+		// START OF GPG Fields GROUP  //
+		///////////////////////////////// 
+
+		wGPGGroup = new Group(shell, SWT.SHADOW_NONE);
+		props.setLook(wGPGGroup);
+		wGPGGroup.setText(BaseMessages.getString(PKG, "PGPDecryptStreamDialog.GPGGroup.Label"));
+		
+		FormLayout GPGGroupgroupLayout = new FormLayout();
+		GPGGroupgroupLayout.marginWidth = 10;
+		GPGGroupgroupLayout.marginHeight = 10;
+		wGPGGroup.setLayout(GPGGroupgroupLayout);
 
 		// GPGLocation fieldname ...
-		wlGPGLocation=new Label(shell, SWT.RIGHT);
+		wlGPGLocation=new Label(wGPGGroup, SWT.RIGHT);
 		wlGPGLocation.setText(BaseMessages.getString(PKG, "PGPDecryptStreamDialog.GPGLocationField.Label")); //$NON-NLS-1$
  		props.setLook(wlGPGLocation);
 		fdlGPGLocation=new FormData();
@@ -153,7 +180,7 @@ public class PGPDecryptStreamDialog extends BaseStepDialog implements StepDialog
 		
 
 		// Browse Source files button ...
-		wbbGpgExe=new Button(shell, SWT.PUSH| SWT.CENTER);
+		wbbGpgExe=new Button(wGPGGroup, SWT.PUSH| SWT.CENTER);
 		props.setLook(wbbGpgExe);
 		wbbGpgExe.setText(BaseMessages.getString(PKG, "PGPDecryptStreamDialog.BrowseFiles.Label"));
 		fdbbGpgExe=new FormData();
@@ -184,7 +211,7 @@ public class PGPDecryptStreamDialog extends BaseStepDialog implements StepDialog
 			);
 		
 
-		wGPGLocation=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wGPGLocation=new TextVar(transMeta, wGPGGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		wGPGLocation.setToolTipText(BaseMessages.getString(PKG, "PGPDecryptStreamDialog.GPGLocationField.Tooltip"));
  		props.setLook(wGPGLocation);
 		wGPGLocation.addModifyListener(lsMod);
@@ -196,7 +223,7 @@ public class PGPDecryptStreamDialog extends BaseStepDialog implements StepDialog
 		
 		
 		// Passphrase fieldname ...
-		wlPassphrase=new Label(shell, SWT.RIGHT);
+		wlPassphrase=new Label(wGPGGroup, SWT.RIGHT);
 		wlPassphrase.setText(BaseMessages.getString(PKG, "PGPDecryptStreamDialog.PassphraseField.Label")); //$NON-NLS-1$
  		props.setLook(wlPassphrase);
 		fdlPassphrase=new FormData();
@@ -205,7 +232,7 @@ public class PGPDecryptStreamDialog extends BaseStepDialog implements StepDialog
 		fdlPassphrase.top  = new FormAttachment(wGPGLocation, margin);
 		wlPassphrase.setLayoutData(fdlPassphrase);
 
-		wPassphrase=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wPassphrase=new TextVar(transMeta, wGPGGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		wPassphrase.setToolTipText(BaseMessages.getString(PKG, "PGPDecryptStreamDialog.PassphraseField.Tooltip"));
  		props.setLook(wPassphrase);
 		wPassphrase.addModifyListener(lsMod);
@@ -215,6 +242,81 @@ public class PGPDecryptStreamDialog extends BaseStepDialog implements StepDialog
 		fdPassphrase.right= new FormAttachment(100, 0);
 		wPassphrase.setLayoutData(fdPassphrase);
 		
+
+
+		wlPassphraseFromField=new Label(wGPGGroup, SWT.RIGHT);
+		wlPassphraseFromField.setText(BaseMessages.getString(PKG, "PGPDecryptStreamDialog.PassphraseFromField.Label"));
+ 		props.setLook(wlPassphraseFromField);
+		fdlPassphraseFromField=new FormData();
+		fdlPassphraseFromField.left = new FormAttachment(0, 0);
+		fdlPassphraseFromField.top  = new FormAttachment(wPassphrase, margin);
+		fdlPassphraseFromField.right= new FormAttachment(middle, -margin);
+		wlPassphraseFromField.setLayoutData(fdlPassphraseFromField);
+		wPassphraseFromField=new Button(wGPGGroup, SWT.CHECK );
+ 		props.setLook(wPassphraseFromField);
+		wPassphraseFromField.setToolTipText(BaseMessages.getString(PKG, "PGPDecryptStreamDialog.PassphraseFromField.Tooltip"));
+		fdPassphraseFromField=new FormData();
+		fdPassphraseFromField.left = new FormAttachment(middle, 0);
+		fdPassphraseFromField.top  = new FormAttachment(wPassphrase, margin);
+		wPassphraseFromField.setLayoutData(fdPassphraseFromField);
+		
+		wPassphraseFromField.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					PassphraseFromField();
+				}
+			}
+		);
+			
+
+		// Passphrase field
+		wlPassphraseFieldName=new Label(wGPGGroup, SWT.RIGHT);
+		wlPassphraseFieldName.setText(BaseMessages.getString(PKG, "PGPDecryptStreamDialog.PassphraseFieldName.Label")); //$NON-NLS-1$
+ 		props.setLook(wlPassphraseFieldName);
+		fdlPassphraseFieldName=new FormData();
+		fdlPassphraseFieldName.left = new FormAttachment(0, 0);
+		fdlPassphraseFieldName.right= new FormAttachment(middle, -margin);
+		fdlPassphraseFieldName.top  = new FormAttachment(wPassphraseFromField, margin);
+		wlPassphraseFieldName.setLayoutData(fdlPassphraseFieldName);
+
+		wPassphraseFieldName=new CCombo(wGPGGroup, SWT.BORDER | SWT.READ_ONLY);
+ 		props.setLook(wPassphraseFieldName);
+		wPassphraseFieldName.addModifyListener(lsMod);
+		fdPassphraseFieldName=new FormData();
+		fdPassphraseFieldName.left = new FormAttachment(middle, 0);
+		fdPassphraseFieldName.top  = new FormAttachment(wPassphraseFromField, margin);
+		fdPassphraseFieldName.right= new FormAttachment(100, -margin);
+		wPassphraseFieldName.setLayoutData(fdPassphraseFieldName);
+		wPassphraseFieldName.addFocusListener(new FocusListener()
+        {
+            public void focusLost(org.eclipse.swt.events.FocusEvent e)
+            {
+            }
+        
+            public void focusGained(org.eclipse.swt.events.FocusEvent e)
+            {
+                Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+                shell.setCursor(busy);
+                get();
+                shell.setCursor(null);
+                busy.dispose();
+            }
+        }
+    );
+			
+		
+		fdGPGGroup = new FormData();
+		fdGPGGroup.left = new FormAttachment(0, margin);
+		fdGPGGroup.top = new FormAttachment(wStepname, margin);
+		fdGPGGroup.right = new FormAttachment(100, -margin);
+		wGPGGroup.setLayoutData(fdGPGGroup);
+		
+		///////////////////////////////// 
+		// END OF GPG GROUP  //
+		///////////////////////////////// 
+		
+		
 		// Stream field
 		wlStreamFieldName=new Label(shell, SWT.RIGHT);
 		wlStreamFieldName.setText(BaseMessages.getString(PKG, "PGPDecryptStreamDialog.StreamFieldName.Label")); //$NON-NLS-1$
@@ -222,7 +324,7 @@ public class PGPDecryptStreamDialog extends BaseStepDialog implements StepDialog
 		fdlStreamFieldName=new FormData();
 		fdlStreamFieldName.left = new FormAttachment(0, 0);
 		fdlStreamFieldName.right= new FormAttachment(middle, -margin);
-		fdlStreamFieldName.top  = new FormAttachment(wPassphrase, margin);
+		fdlStreamFieldName.top  = new FormAttachment(wGPGGroup, 2*margin);
 		wlStreamFieldName.setLayoutData(fdlStreamFieldName);
 		
 		
@@ -231,7 +333,7 @@ public class PGPDecryptStreamDialog extends BaseStepDialog implements StepDialog
 		wStreamFieldName.addModifyListener(lsMod);
 		fdStreamFieldName=new FormData();
 		fdStreamFieldName.left = new FormAttachment(middle, 0);
-		fdStreamFieldName.top  = new FormAttachment(wPassphrase, margin);
+		fdStreamFieldName.top  = new FormAttachment(wGPGGroup, 2*margin);
 		fdStreamFieldName.right= new FormAttachment(100, -margin);
 		wStreamFieldName.setLayoutData(fdStreamFieldName);
 		wStreamFieldName.addFocusListener(new FocusListener()
@@ -250,8 +352,7 @@ public class PGPDecryptStreamDialog extends BaseStepDialog implements StepDialog
             }
         }
     );
-		
-		
+
 		// Result fieldname ...
 		wlResult=new Label(shell, SWT.RIGHT);
 		wlResult.setText(BaseMessages.getString(PKG, "PGPDecryptStreamDialog.ResultField.Label")); //$NON-NLS-1$
@@ -303,7 +404,7 @@ public class PGPDecryptStreamDialog extends BaseStepDialog implements StepDialog
 		setSize();
 		
 		getData();
-
+		PassphraseFromField();
 		input.setChanged(changed);
 
 		shell.open();
@@ -323,6 +424,8 @@ public class PGPDecryptStreamDialog extends BaseStepDialog implements StepDialog
 		if (input.getStreamField() !=null)   wStreamFieldName.setText(input.getStreamField());
 		if (input.getResultFieldName()!=null)   wResult.setText(input.getResultFieldName());
 		if (input.getPassphrase() !=null)   wPassphrase.setText(input.getPassphrase());
+		input.setPassphraseFromField(input.isPassphraseFromField());
+		if (input.getPassphraseFieldName() !=null)   wPassphraseFieldName.setText(input.getPassphraseFieldName());
 		wStepname.selectAll();
 	}
 	
@@ -340,22 +443,36 @@ public class PGPDecryptStreamDialog extends BaseStepDialog implements StepDialog
 		input.setGPGPLocation(wGPGLocation.getText() );
 		input.setPassphrase(wPassphrase.getText() );
 		input.setResultfieldname(wResult.getText() );
+		input.setPassphraseFromField(wPassphraseFromField.getSelection());
+		input.setPassphraseFieldName(wPassphraseFieldName.getText());
 		stepname = wStepname.getText(); // return value
 		
 		dispose();
+	}
+	private void PassphraseFromField()
+	{
+		wlPassphrase.setEnabled(!wPassphraseFromField.getSelection());
+		wPassphrase.setEnabled(!wPassphraseFromField.getSelection());
+		wlPassphraseFromField.setEnabled(wPassphraseFromField.getSelection());
+		wPassphraseFromField.setEnabled(wPassphraseFromField.getSelection());
 	}
 	 private void get()
 	 {
 		 if(!gotPreviousFields) {
 		 try{
 	            String fieldvalue=wStreamFieldName.getText();
+	            String passphrasefieldvalue=wPassphraseFieldName.getText();
 	            wStreamFieldName.removeAll();
+	            wPassphraseFieldName.removeAll();
 				RowMetaInterface r = transMeta.getPrevStepFields(stepname);
 				if (r!=null)
 				{
-					wStreamFieldName.setItems(r.getFieldNames());
+					String[] fields=r.getFieldNames();
+					wStreamFieldName.setItems(fields);
+					wPassphraseFieldName.setItems(fields);
 				}
 				if(fieldvalue!=null) wStreamFieldName.setText(fieldvalue);
+				if(passphrasefieldvalue!=null) wPassphraseFieldName.setText(passphrasefieldvalue);
 				gotPreviousFields=true;
 		 }catch(KettleException ke){
 				new ErrorDialog(shell, BaseMessages.getString(PKG, "PGPDecryptStreamDialog.FailedToGetFields.DialogTitle"), BaseMessages.getString(PKG, "PGPDecryptStreamDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$

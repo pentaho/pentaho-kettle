@@ -89,13 +89,30 @@ public class PGPEncryptStream extends BaseStep implements StepInterface
 					throw new KettleException(BaseMessages.getString(PKG, "PGPEncryptStream.Error.DataStreamFieldMissing"));
 				}
 				
-				
-        		// Check is keyname is provided
-				data.keyName = environmentSubstitute(meta.getKeyName());
-				
-				if (Const.isEmpty(data.keyName))
+				if(meta.isKeynameInField())
 				{
-					throw new KettleException(BaseMessages.getString(PKG, "PGPEncryptStream.Error.KeyNameMissing"));
+					// keyname will be extracted from a field
+					String keyField= meta.getKeynameFieldName();
+					if(Const.isEmpty(keyField))
+					{
+						throw new KettleException(BaseMessages.getString(PKG, "PGPEncryptStream.Error.KeyNameFieldMissing"));
+					}
+					data.indexOfKeyName= data.previousRowMeta.indexOfValue(keyField);
+					if (data.indexOfKeyName<0)
+					{
+						// The field is unreachable !
+						throw new KettleException(BaseMessages.getString(PKG, "PGPEncryptStream.Exception.CouldnotFindField",meta.getStreamField())); //$NON-NLS-1$ //$NON-NLS-2$
+					}
+				}
+				else
+				{
+	        		// Check is keyname is provided
+					data.keyName = environmentSubstitute(meta.getKeyName());
+					
+					if (Const.isEmpty(data.keyName))
+					{
+						throw new KettleException(BaseMessages.getString(PKG, "PGPEncryptStream.Error.KeyNameMissing"));
+					}
 				}
 				
 				// cache the position of the field			
@@ -115,6 +132,17 @@ public class PGPEncryptStream extends BaseStep implements StepInterface
     		for (int i = 0; i < data.NrPrevFields; i++)
     		{
     			outputRow[i] = r[i];
+    		}
+    		
+    		// get keyname if needed
+    		if(meta.isKeynameInField())
+    		{
+    			// get keyname
+    			data.keyName=data.previousRowMeta.getString(r,data.indexOfKeyName);
+    			if (Const.isEmpty(data.keyName))
+				{
+					throw new KettleException(BaseMessages.getString(PKG, "PGPEncryptStream.Error.KeyNameMissing"));
+				}
     		}
     		
         	// get stream, data to encrypt

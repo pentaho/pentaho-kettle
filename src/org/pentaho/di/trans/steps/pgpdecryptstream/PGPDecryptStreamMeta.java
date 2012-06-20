@@ -30,6 +30,7 @@ import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -66,6 +67,12 @@ public class PGPDecryptStreamMeta extends BaseStepMeta implements StepMetaInterf
 	/** passhrase  **/
 	private String passhrase;
 	
+	/** Flag : passphrase from field **/
+	private boolean passphraseFromField;
+	
+	/** passphrase fieldname**/
+	private String passphraseFieldName;
+	
     /** dynamic stream filed */
     private String       streamfield;
     
@@ -101,7 +108,37 @@ public class PGPDecryptStreamMeta extends BaseStepMeta implements StepMetaInterf
     {
         this.streamfield = streamfield;
     }
+    /**
+     * @return Returns the passphraseFieldName.
+     */
+    public String getPassphraseFieldName()
+    {
+        return passphraseFieldName;
+    }
 
+    /**
+     * @param passphraseFieldName The passphraseFieldName to set.
+     */
+    public void setPassphraseFieldName(String passphraseFieldName)
+    {
+        this.passphraseFieldName = passphraseFieldName;
+    }
+
+    /**
+     * @return Returns the passphraseFromField.
+     */
+    public boolean isPassphraseFromField()
+    {
+        return passphraseFromField;
+    }
+
+    /**
+     * @param passphraseFromField The passphraseFromField to set.
+     */
+    public void setPassphraseFromField(boolean passphraseFromField)
+    {
+        this.passphraseFromField = passphraseFromField;
+    }
     /**
      * @return Returns the resultName.
      */
@@ -174,9 +211,11 @@ public class PGPDecryptStreamMeta extends BaseStepMeta implements StepMetaInterf
     {
         StringBuffer retval = new StringBuffer();
         retval.append("    " + XMLHandler.addTagValue("gpglocation", gpglocation));
-        retval.append("    " + XMLHandler.addTagValue("passhrase", passhrase));
+        retval.append("    ").append(XMLHandler.addTagValue("passhrase", Encr.encryptPasswordIfNotUsingVariables(passhrase)));
         retval.append("    " + XMLHandler.addTagValue("streamfield", streamfield)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    " + XMLHandler.addTagValue("resultfieldname", resultfieldname)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    " + XMLHandler.addTagValue("passphraseFromField", passphraseFromField));
+        retval.append("    " + XMLHandler.addTagValue("passphraseFieldName", passphraseFieldName));
         return retval.toString();
     }
 
@@ -186,9 +225,11 @@ public class PGPDecryptStreamMeta extends BaseStepMeta implements StepMetaInterf
     	try
     	{
     		gpglocation = XMLHandler.getTagValue(stepnode, "gpglocation");
-    		passhrase = XMLHandler.getTagValue(stepnode, "passhrase");
+    		passhrase=Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(stepnode, "passhrase"));
 			streamfield = XMLHandler.getTagValue(stepnode, "streamfield"); //$NON-NLS-1$
             resultfieldname = XMLHandler.getTagValue(stepnode, "resultfieldname"); 
+            passphraseFromField  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "passphraseFromField"));
+    	    passphraseFieldName = XMLHandler.getTagValue(stepnode, "passphraseFieldName");
         }
         catch (Exception e)
         {
@@ -202,9 +243,12 @@ public class PGPDecryptStreamMeta extends BaseStepMeta implements StepMetaInterf
     	try
 		{
     		gpglocation = rep.getStepAttributeString(id_step, "gpglocation");
-    		passhrase = rep.getStepAttributeString(id_step, "passhrase");
+    		passhrase              = Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString (id_step, "passhrase") );	
+			
     		streamfield = rep.getStepAttributeString(id_step, "streamfield"); //$NON-NLS-1$
             resultfieldname = rep.getStepAttributeString(id_step, "resultfieldname"); //$NON-NLS-1$ 
+        	passphraseFromField  = rep.getStepAttributeBoolean(id_step, "passphraseFromField");   
+    		passphraseFieldName = rep.getStepAttributeString(id_step, "passphraseFieldName");
         }
         catch (Exception e)
         {
@@ -217,9 +261,11 @@ public class PGPDecryptStreamMeta extends BaseStepMeta implements StepMetaInterf
         try
         {
         	rep.saveStepAttribute(id_transformation, id_step, "gpglocation", gpglocation);
-        	rep.saveStepAttribute(id_transformation, id_step, "passhrase", passhrase);
+        	rep.saveStepAttribute(id_transformation, id_step, "passhrase", Encr.encryptPasswordIfNotUsingVariables(passhrase));
             rep.saveStepAttribute(id_transformation, id_step, "streamfield", streamfield); //$NON-NLS-1$
             rep.saveStepAttribute(id_transformation, id_step, "resultfieldname", resultfieldname); //$NON-NLS-1$
+          	rep.saveStepAttribute(id_transformation, id_step, "passphraseFromField", passphraseFromField);
+        	rep.saveStepAttribute(id_transformation, id_step, "passphraseFieldName", passphraseFieldName);
         }
         catch (Exception e)
         {
