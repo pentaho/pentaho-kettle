@@ -25,11 +25,7 @@ package org.pentaho.di.trans.steps.tableoutput;
 import java.util.List;
 import java.util.Map;
 
-import org.pentaho.di.core.CheckResult;
-import org.pentaho.di.core.CheckResultInterface;
-import org.pentaho.di.core.Const;
-import org.pentaho.di.core.Counter;
-import org.pentaho.di.core.SQLStatement;
+import org.pentaho.di.core.*;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleDatabaseException;
@@ -61,13 +57,13 @@ import org.w3c.dom.Node;
  * @author Matt Casters
  * @since  2-jun-2003
  */
-public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
+public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface, ProvidesDatabaseConnectionInformation
 {
 	private static Class<?> PKG = TableOutputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	private DatabaseMeta databaseMeta;
-    private String       schemaName;
-	private String       tablename;
+  private String       schemaName;
+	private String       tableName;
 	private String       commitSize;
 	private boolean      truncateTable;
 	private boolean      ignoreErrors;
@@ -322,21 +318,43 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
     }
 
     /**
-     * @return Returns the tablename.
+     * @return the table name
      */
+    public String getTableName()
+    {
+      return tableName;
+    }
+
+    /**
+     * Assign the table name to write to.
+     *
+     * @param tableName The table name to set
+     */
+    public void setTableName(String tableName)
+    {
+      this.tableName = tableName;
+    }
+
+    /**
+     * @return Returns the tablename.
+     * @deprecated Use {@link #getTableName()}
+     */
+    @Deprecated
     public String getTablename()
     {
-        return tablename;
+        return getTableName();
     }
-    
+
     /**
      * @param tablename The tablename to set.
+     * @deprecated Use {@link #setTableName(String)}
      */
+    @Deprecated
     public void setTablename(String tablename)
     {
-        this.tablename = tablename;
+        setTableName(tablename);
     }
-    
+
     /**
      * @return Returns the truncate table flag.
      */
@@ -409,7 +427,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 			String con     = XMLHandler.getTagValue(stepnode, "connection");
 			databaseMeta   = DatabaseMeta.findDatabase(databases, con);
             schemaName     = XMLHandler.getTagValue(stepnode, "schema");
-			tablename      = XMLHandler.getTagValue(stepnode, "table");
+			tableName = XMLHandler.getTagValue(stepnode, "table");
 			commitSize     = XMLHandler.getTagValue(stepnode, "commit");
 			truncateTable  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "truncate"));
 			ignoreErrors   = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "ignore_errors"));
@@ -452,7 +470,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 	public void setDefault()
 	{
 		databaseMeta = null;
-		tablename      = "";
+		tableName = "";
 		commitSize = "1000";
         
         partitioningEnabled = false;
@@ -471,7 +489,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 		
 		retval.append("    "+XMLHandler.addTagValue("connection",     databaseMeta==null?"":databaseMeta.getName()));
         retval.append("    "+XMLHandler.addTagValue("schema",         schemaName));
-		retval.append("    "+XMLHandler.addTagValue("table",          tablename));
+		retval.append("    "+XMLHandler.addTagValue("table", tableName));
 		retval.append("    "+XMLHandler.addTagValue("commit",         commitSize));
 		retval.append("    "+XMLHandler.addTagValue("truncate",       truncateTable));
 		retval.append("    "+XMLHandler.addTagValue("ignore_errors",  ignoreErrors));
@@ -510,7 +528,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);  //$NON-NLS-1$
             schemaName         =   rep.getStepAttributeString (id_step, "schema");
-			tablename          =   rep.getStepAttributeString (id_step, "table");
+			tableName =   rep.getStepAttributeString (id_step, "table");
 			long commitSizeInt =   rep.getStepAttributeInteger(id_step, "commit");
 			commitSize         =   rep.getStepAttributeString(id_step, "commit");
 			if (Const.isEmpty(commitSize)) {
@@ -559,7 +577,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			rep.saveDatabaseMetaStepAttribute(id_transformation, id_step, "id_connection", databaseMeta);
             rep.saveStepAttribute(id_transformation, id_step, "schema",          schemaName);
-			rep.saveStepAttribute(id_transformation, id_step, "table",       	 tablename);
+			rep.saveStepAttribute(id_transformation, id_step, "table", tableName);
 			rep.saveStepAttribute(id_transformation, id_step, "commit",          commitSize);
 			rep.saveStepAttribute(id_transformation, id_step, "truncate",        truncateTable);
 			rep.saveStepAttribute(id_transformation, id_step, "ignore_errors",   ignoreErrors);
@@ -626,9 +644,9 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "TableOutputMeta.CheckResult.ConnectionOk"), stepMeta);
 				remarks.add(cr);
 
-				if (!Const.isEmpty(tablename))
+				if (!Const.isEmpty(tableName))
 				{
-                    String schemaTable = databaseMeta.getQuotedSchemaTableCombination(db.environmentSubstitute(schemaName), db.environmentSubstitute(tablename));
+                    String schemaTable = databaseMeta.getQuotedSchemaTableCombination(db.environmentSubstitute(schemaName), db.environmentSubstitute(tableName));
 					// Check if this table exists...
 					if (db.checkTableExists(schemaTable))
 					{
@@ -822,7 +840,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 											transMeta.getName(),
 											stepMeta.getName(),
 											databaseMeta.getDatabaseName(),
-											tablename,
+        tableName,
 											"",
 											"",
 											"",
@@ -842,7 +860,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 												transMeta.getName(),
 												stepMeta.getName(),
 												databaseMeta.getDatabaseName(),
-												tablename,
+          tableName,
 												v.getName(),
 												v.getName(),
                                                 v!=null?v.getOrigin():"?",
@@ -867,7 +885,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			if (prev!=null && prev.size()>0)
 			{
-				if (!Const.isEmpty(tablename))
+				if (!Const.isEmpty(tableName))
 				{
 					Database db = new Database(loggingObject, databaseMeta);
 					db.shareVariablesWith(transMeta);
@@ -875,7 +893,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 					{
 						db.connect();
 						
-                        String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tablename);
+                        String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
                         String cr_table = db.getDDL(schemaTable, prev, tk, use_autoinc, pk);
 						
 						// Empty string means: nothing to do: set it to null...
@@ -912,7 +930,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 
     public RowMetaInterface getRequiredFields(VariableSpace space) throws KettleException
     {
-    	String realTableName = space.environmentSubstitute(tablename);
+    	String realTableName = space.environmentSubstitute(tableName);
     	String realSchemaName = space.environmentSubstitute(schemaName);
     	
         if (databaseMeta!=null)
@@ -1024,5 +1042,13 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
       } else {
         return true;
       }
-    }      
+    }
+
+    @Override
+    public String getMissingDatabaseConnectionInformationMessage()
+    {
+      // Use default connection missing message
+      return null;
+    }
+
 }
