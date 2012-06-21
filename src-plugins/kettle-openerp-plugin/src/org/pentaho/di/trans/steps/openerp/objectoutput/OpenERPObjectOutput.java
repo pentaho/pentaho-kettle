@@ -22,6 +22,7 @@ import java.util.HashMap;
 
 import org.apache.xmlrpc.XmlRpcException;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.openerp.core.OpenERPHelper;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -81,7 +82,7 @@ public class OpenERPObjectOutput extends BaseStep implements StepInterface {
 			try{
 				// Prepare output meta
 				data.outputRowMeta = getInputRowMeta().clone();
-	            meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+	      meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
 	            
 				prepareFieldList();
 				
@@ -104,7 +105,7 @@ public class OpenERPObjectOutput extends BaseStep implements StepInterface {
 		// Prepare output row
 		Object[] outputRow = new Object[data.outputRowMeta.size()];
         for (int i=0; i< getInputRowMeta().size();i++)
-            outputRow[i] = inputRow[i];
+            outputRow[i] = inputRow[i]; // Don't convert to normal storage.  Send it through as is.
         
 		String row = "";
 		try {
@@ -112,11 +113,11 @@ public class OpenERPObjectOutput extends BaseStep implements StepInterface {
 			
 			// If ID field was mapped in the filter, use it.  Otherwise try and find it from cache.
 			if (idIndex >= 0)
-				updateRow.put("id", inputRow[idIndex]);
+				updateRow.put("id", this.getInputValue(inputRow, idIndex));
 			else{
 				String combinedKey = "";
 				for (int i : readRowIndex)
-					combinedKey += SEPARATOR + (inputRow[i] == null ? "" : inputRow[i]);
+					combinedKey += SEPARATOR + (inputRow[i] == null ? "" : this.getInputValue(inputRow,i));
 				if (filterRowCache.containsKey(combinedKey))
 					updateRow.put("id", filterRowCache.get(combinedKey));
 				else 
@@ -124,7 +125,7 @@ public class OpenERPObjectOutput extends BaseStep implements StepInterface {
 			}
 			
 			for (int i = 0; i < meta.getModelFields().length; i++)
-				updateRow.put(meta.getModelFields()[i], inputRow[this.index[i]]);
+			  updateRow.put(meta.getModelFields()[i], this.getInputValue(inputRow, this.index[i]));
 				
 			// The import function does not return the ID field once complete
 			// We have to call the create function for each row, to return the ID
@@ -152,6 +153,11 @@ public class OpenERPObjectOutput extends BaseStep implements StepInterface {
 		}
 
 		return true;
+	}
+	
+	//  Returns the normal storage (Native java) representation of the object (vs binary string etc). 
+	private Object getInputValue(Object[] inputRow, int index) throws KettleValueException{
+	  return this.getInputRowMeta().getValueMeta(index).convertToNormalStorageType(inputRow[index]);
 	}
 
 	private void CommitBatch() throws Exception{

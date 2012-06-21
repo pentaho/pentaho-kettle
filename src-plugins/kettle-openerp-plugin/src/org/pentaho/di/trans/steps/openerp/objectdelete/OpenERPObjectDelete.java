@@ -74,7 +74,9 @@ public class OpenERPObjectDelete extends BaseStep implements StepInterface {
 
 		String row = "";
 		try {
-			data.batchRows.add(Integer.parseInt(inputRow[idIndex].toString()));
+		  // Why not use the getInteger function on the valueMeta?  Because it returns a long and the 
+		  // OpenERP XMLRPC interface doesn't support extended attributes (that includes long values).
+		  data.batchRows.add(Integer.parseInt(this.getInputRowMeta().getValueMeta(idIndex).getString(inputRow[idIndex])));
 
 			if (data.batchRows.size() == meta.getCommitBatchSize())
 				CommitBatch();
