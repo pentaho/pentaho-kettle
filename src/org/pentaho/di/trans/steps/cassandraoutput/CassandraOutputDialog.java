@@ -29,6 +29,8 @@ import org.apache.cassandra.thrift.InvalidRequestException;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -39,6 +41,7 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
@@ -48,6 +51,7 @@ import org.eclipse.swt.widgets.Text;
 import org.pentaho.cassandra.CassandraColumnMetaData;
 import org.pentaho.cassandra.CassandraConnection;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Props;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
@@ -65,7 +69,6 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
  * Dialog class for the CassandraOutput step
  * 
  * @author Mark Hall (mhall{[at]}pentaho{[dot]}com)
- * @version $Revision$
  */
 public class CassandraOutputDialog extends BaseStepDialog implements
     StepDialogInterface {
@@ -78,6 +81,11 @@ public class CassandraOutputDialog extends BaseStepDialog implements
   /** various UI bits and pieces for the dialog */
   private Label m_stepnameLabel;
   private Text m_stepnameText;
+  
+  private CTabFolder m_wTabFolder;
+  private CTabItem m_connectionTab;
+  private CTabItem m_writeTab;
+  private CTabItem m_schemaTab;
   
   private Label m_hostLab;
   private TextVar m_hostText;
@@ -114,6 +122,11 @@ public class CassandraOutputDialog extends BaseStepDialog implements
   private CCombo m_keyFieldCombo;
   
   private Button m_getFieldsBut;
+
+  private Label m_schemaHostLab;
+  private TextVar m_schemaHostText;
+  private Label m_schemaPortLab;
+  private TextVar m_schemaPortText;
   
   private Label m_createColumnFamilyLab;
   private Button m_createColumnFamilyBut;
@@ -198,8 +211,27 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     fd.right = new FormAttachment(100, 0);
     m_stepnameText.setLayoutData(fd);
     
+    
+    m_wTabFolder = new CTabFolder(shell, SWT.BORDER);
+    props.setLook(m_wTabFolder, Props.WIDGET_STYLE_TAB);
+    m_wTabFolder.setSimple(false);
+    
+    // start of the connection tab
+    m_connectionTab = new CTabItem(m_wTabFolder, SWT.BORDER);
+    m_connectionTab.setText(BaseMessages.
+        getString(PKG, "CassandraOutputDialog.Tab.Connection"));
+    
+    Composite wConnectionComp = new Composite(m_wTabFolder, SWT.NONE);
+    props.setLook(wConnectionComp);
+    
+    FormLayout connectionLayout = new FormLayout();
+    connectionLayout.marginWidth  = 3;
+    connectionLayout.marginHeight = 3;
+    wConnectionComp.setLayout(connectionLayout);
+    
+    
     // host line
-    m_hostLab = new Label(shell, SWT.RIGHT);
+    m_hostLab = new Label(wConnectionComp, SWT.RIGHT);
     props.setLook(m_hostLab);
     m_hostLab.setText(BaseMessages.getString(PKG, 
         "CassandraOutputDialog.Hostname.Label"));
@@ -209,7 +241,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     fd.right = new FormAttachment(middle, -margin);
     m_hostLab.setLayoutData(fd);
     
-    m_hostText = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+    m_hostText = new TextVar(transMeta, wConnectionComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
     props.setLook(m_hostText);
     m_hostText.addModifyListener(new ModifyListener() {
       public void modifyText(ModifyEvent e) {
@@ -224,7 +256,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     m_hostText.setLayoutData(fd);
     
     // port line
-    m_portLab = new Label(shell, SWT.RIGHT);
+    m_portLab = new Label(wConnectionComp, SWT.RIGHT);
     props.setLook(m_portLab);
     m_portLab.setText(BaseMessages.getString(PKG, 
         "CassandraOutputDialog.Port.Label"));
@@ -234,7 +266,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     fd.right = new FormAttachment(middle, -margin);
     m_portLab.setLayoutData(fd);
     
-    m_portText = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+    m_portText = new TextVar(transMeta, wConnectionComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
     props.setLook(m_portText);
     m_portText.addModifyListener(new ModifyListener() {
       public void modifyText(ModifyEvent e) {
@@ -249,7 +281,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     m_portText.setLayoutData(fd);
     
     // socket timeout line
-    m_socketTimeoutLab = new Label(shell, SWT.RIGHT);
+    m_socketTimeoutLab = new Label(wConnectionComp, SWT.RIGHT);
     props.setLook(m_socketTimeoutLab);
     m_socketTimeoutLab.setText(BaseMessages.getString(PKG, 
         "CassandraOutputDialog.SocketTimeout.Label"));
@@ -259,7 +291,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     fd.right = new FormAttachment(middle, -margin);
     m_socketTimeoutLab.setLayoutData(fd);
     
-    m_socketTimeoutText = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+    m_socketTimeoutText = new TextVar(transMeta, wConnectionComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
     props.setLook(m_socketTimeoutText);
     m_socketTimeoutText.addModifyListener(new ModifyListener() {
       public void modifyText(ModifyEvent e) {
@@ -274,7 +306,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     m_socketTimeoutText.setLayoutData(fd);
     
     // username line
-    m_userLab = new Label(shell, SWT.RIGHT);
+    m_userLab = new Label(wConnectionComp, SWT.RIGHT);
     props.setLook(m_userLab);
     m_userLab.setText(BaseMessages.getString(PKG, 
         "CassandraOutputDialog.User.Label"));
@@ -284,7 +316,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     fd.right = new FormAttachment(middle, -margin);
     m_userLab.setLayoutData(fd);
     
-    m_userText = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+    m_userText = new TextVar(transMeta, wConnectionComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
     props.setLook(m_userText);
     m_userText.addModifyListener(new ModifyListener() {
       public void modifyText(ModifyEvent e) {
@@ -299,7 +331,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     m_userText.setLayoutData(fd);
     
     // password line
-    m_passLab = new Label(shell, SWT.RIGHT);
+    m_passLab = new Label(wConnectionComp, SWT.RIGHT);
     props.setLook(m_passLab);
     m_passLab.setText(BaseMessages.getString(PKG, 
         "CassandraOutputDialog.Password.Label"));
@@ -309,7 +341,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     fd.right = new FormAttachment(middle, -margin);
     m_passLab.setLayoutData(fd);
     
-    m_passText = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+    m_passText = new TextVar(transMeta, wConnectionComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
     props.setLook(m_passText);
     m_passText.setEchoChar('*');
     // If the password contains a variable, don't hide it.
@@ -329,7 +361,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     
     
     // keyspace line
-    m_keyspaceLab = new Label(shell, SWT.RIGHT);
+    m_keyspaceLab = new Label(wConnectionComp, SWT.RIGHT);
     props.setLook(m_keyspaceLab);
     m_keyspaceLab.setText(BaseMessages.getString(PKG, 
         "CassandraOutputDialog.Keyspace.Label"));
@@ -339,7 +371,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     fd.right = new FormAttachment(middle, -margin);
     m_keyspaceLab.setLayoutData(fd);
     
-    m_keyspaceText = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+    m_keyspaceText = new TextVar(transMeta, wConnectionComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
     props.setLook(m_keyspaceText);
     m_keyspaceText.addModifyListener(new ModifyListener() {
       public void modifyText(ModifyEvent e) {
@@ -353,23 +385,46 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     fd.left = new FormAttachment(middle, 0);
     m_keyspaceText.setLayoutData(fd);
     
+    fd = new FormData();
+    fd.left = new FormAttachment(0, 0);
+    fd.top = new FormAttachment(0, 0);
+    fd.right = new FormAttachment(100, 0);
+    fd.bottom = new FormAttachment(100, 0);
+    wConnectionComp.setLayoutData(fd);
+    
+    wConnectionComp.layout();
+    m_connectionTab.setControl(wConnectionComp);
+    
+    
+    // --- start of the write tab ---
+    m_writeTab = new CTabItem(m_wTabFolder, SWT.NONE);
+    m_writeTab.setText(BaseMessages.getString(PKG, "CassandraOutputDialog.Tab.Write"));
+    Composite wWriteComp = new Composite(m_wTabFolder, SWT.NONE);
+    props.setLook(wWriteComp);
+    
+    FormLayout writeLayout = new FormLayout();
+    writeLayout.marginWidth  = 3;
+    writeLayout.marginHeight = 3;
+    wWriteComp.setLayout(writeLayout);
+    
+    
     // column family line
-    m_columnFamilyLab = new Label(shell, SWT.RIGHT);
+    m_columnFamilyLab = new Label(wWriteComp, SWT.RIGHT);
     props.setLook(m_columnFamilyLab);
     m_columnFamilyLab.setText(BaseMessages.getString(PKG, 
         "CassandraOutputDialog.ColumnFamily.Label"));
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
-    fd.top = new FormAttachment(m_keyspaceText, margin);
+    fd.top = new FormAttachment(0, 0);
     fd.right = new FormAttachment(middle, -margin);
     m_columnFamilyLab.setLayoutData(fd);
     
-    m_getColumnFamiliesBut = new Button(shell, SWT.PUSH | SWT.CENTER);
+    m_getColumnFamiliesBut = new Button(wWriteComp, SWT.PUSH | SWT.CENTER);
     props.setLook(m_getColumnFamiliesBut);
     m_getColumnFamiliesBut.setText(BaseMessages.getString(PKG, "CassandraOutputDialog.GetColFam.Button"));
     fd = new FormData();
     fd.right = new FormAttachment(100, 0);
-    fd.top = new FormAttachment(m_keyspaceText, 0);
+    fd.top = new FormAttachment(0, 0);
     m_getColumnFamiliesBut.setLayoutData(fd);
     m_getColumnFamiliesBut.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent e) {
@@ -377,7 +432,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
       }
     });
     
-    m_columnFamilyCombo = new CCombo(shell, SWT.BORDER);
+    m_columnFamilyCombo = new CCombo(wWriteComp, SWT.BORDER);
     props.setLook(m_columnFamilyCombo);
     m_columnFamilyCombo.addModifyListener(new ModifyListener() {
       public void modifyText(ModifyEvent e) {
@@ -387,12 +442,12 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     m_columnFamilyCombo.addModifyListener(lsMod);
     fd = new FormData();
     fd.right = new FormAttachment(m_getColumnFamiliesBut, -margin);
-    fd.top = new FormAttachment(m_keyspaceText, margin);
+    fd.top = new FormAttachment(0, margin);
     fd.left = new FormAttachment(middle, 0);
     m_columnFamilyCombo.setLayoutData(fd);
     
     // consistency line
-    m_consistencyLab = new Label(shell, SWT.RIGHT);
+    m_consistencyLab = new Label(wWriteComp, SWT.RIGHT);
     props.setLook(m_consistencyLab);
     m_consistencyLab.setText(BaseMessages.getString(PKG, 
         "CassandraOutputDialog.Consistency.Label"));
@@ -404,7 +459,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     m_consistencyLab.setToolTipText(BaseMessages.getString(PKG, 
       "CassandraOutputDialog.Consistency.Label.TipText"));
     
-    m_consistencyText = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+    m_consistencyText = new TextVar(transMeta, wWriteComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
     props.setLook(m_consistencyText);
     m_consistencyText.addModifyListener(new ModifyListener() {
       public void modifyText(ModifyEvent e) {
@@ -419,7 +474,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     m_consistencyText.setLayoutData(fd);
     
     // batch size line
-    m_batchSizeLab = new Label(shell, SWT.RIGHT);
+    m_batchSizeLab = new Label(wWriteComp, SWT.RIGHT);
     props.setLook(m_batchSizeLab);
     m_batchSizeLab.setText(BaseMessages.getString(PKG, 
         "CassandraOutputDialog.BatchSize.Label"));
@@ -431,7 +486,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     m_batchSizeLab.setToolTipText(BaseMessages.getString(PKG, 
       "CassandraOutputDialog.BatchSize.TipText"));
     
-    m_batchSizeText = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+    m_batchSizeText = new TextVar(transMeta, wWriteComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
     props.setLook(m_batchSizeText);
     m_batchSizeText.addModifyListener(new ModifyListener() {
       public void modifyText(ModifyEvent e) {
@@ -446,7 +501,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     m_batchSizeText.setLayoutData(fd);
     
     // batch insert timeout
-    m_batchInsertTimeoutLab = new Label(shell, SWT.RIGHT);
+    m_batchInsertTimeoutLab = new Label(wWriteComp, SWT.RIGHT);
     props.setLook(m_batchInsertTimeoutLab);
     m_batchInsertTimeoutLab.setText(BaseMessages.
         getString(PKG, "CassandraOutputDialog.BatchInsertTimeout.Label"));
@@ -458,7 +513,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     m_batchInsertTimeoutLab.setToolTipText(BaseMessages.getString(PKG, 
         "CassandraOutputDialog.BatchInsertTimeout.TipText"));
     
-    m_batchInsertTimeoutText = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+    m_batchInsertTimeoutText = new TextVar(transMeta, wWriteComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
     props.setLook(m_batchInsertTimeoutText);
     m_batchInsertTimeoutText.addModifyListener(new ModifyListener() {
       public void modifyText(ModifyEvent e) {
@@ -474,7 +529,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     m_batchInsertTimeoutText.setLayoutData(fd);
     
     // sub-batch size
-    m_subBatchSizeLab = new Label(shell, SWT.RIGHT);
+    m_subBatchSizeLab = new Label(wWriteComp, SWT.RIGHT);
     props.setLook(m_subBatchSizeLab);
     m_subBatchSizeLab.setText(BaseMessages.getString(PKG, 
     "CassandraOutputDialog.SubBatchSize.Label"));
@@ -486,7 +541,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     fd.right = new FormAttachment(middle, -margin);
     m_subBatchSizeLab.setLayoutData(fd);
     
-    m_subBatchSizeText = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+    m_subBatchSizeText = new TextVar(transMeta, wWriteComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
     props.setLook(m_subBatchSizeText);
     m_subBatchSizeText.addModifyListener(new ModifyListener() {
       public void modifyText(ModifyEvent e) {
@@ -503,7 +558,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     
     
     // key field line
-    m_keyFieldLab = new Label(shell, SWT.RIGHT);
+    m_keyFieldLab = new Label(wWriteComp, SWT.RIGHT);
     props.setLook(m_keyFieldLab);
     m_keyFieldLab.setText(BaseMessages.getString(PKG, 
         "CassandraOutputDialog.KeyField.Label"));
@@ -513,7 +568,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     fd.right = new FormAttachment(middle, -margin);
     m_keyFieldLab.setLayoutData(fd);
     
-    m_getFieldsBut = new Button(shell, SWT.PUSH | SWT.CENTER);
+    m_getFieldsBut = new Button(wWriteComp, SWT.PUSH | SWT.CENTER);
     props.setLook(m_getFieldsBut);
     m_getFieldsBut.setText(BaseMessages.getString(PKG, "CassandraOutputDialog.GetFields.Button"));
     fd = new FormData();
@@ -527,7 +582,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
       }
     });
     
-    m_keyFieldCombo = new CCombo(shell, SWT.BORDER);
+    m_keyFieldCombo = new CCombo(wWriteComp, SWT.BORDER);
     m_keyFieldCombo.addModifyListener(new ModifyListener() {
       public void modifyText(ModifyEvent e) {
         m_keyFieldCombo.setToolTipText(transMeta.environmentSubstitute(m_keyFieldCombo.getText()));
@@ -538,10 +593,105 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     fd.right = new FormAttachment(m_getFieldsBut, -margin);
     fd.top = new FormAttachment(m_subBatchSizeText, margin);
     fd.left = new FormAttachment(middle, 0);
-    m_keyFieldCombo.setLayoutData(fd);    
+    m_keyFieldCombo.setLayoutData(fd);
+        
+    fd = new FormData();
+    fd.left = new FormAttachment(0, 0);
+    fd.top = new FormAttachment(0, 0);
+    fd.right = new FormAttachment(100, 0);
+    fd.bottom = new FormAttachment(100, 0);
+    wWriteComp.setLayoutData(fd);
+    
+    wWriteComp.layout();
+    m_writeTab.setControl(wWriteComp);
+    
+    // show schema button
+    m_showSchemaBut = new Button(wWriteComp, SWT.PUSH);
+    m_showSchemaBut.setText(BaseMessages.
+        getString(PKG, "CassandraOutputDialog.Schema.Button"));
+    props.setLook(m_showSchemaBut);
+    fd = new FormData();
+//  fd.left = new FormAttachment(middle, 0);
+    fd.right = new FormAttachment(100, 0);
+    // fd.top = new FormAttachment(m_useCompressionBut, margin);
+    fd.bottom = new FormAttachment(100, -margin*2);
+    m_showSchemaBut.setLayoutData(fd);
+    m_showSchemaBut.addSelectionListener(new SelectionAdapter() {
+      public void widgetSelected(SelectionEvent e) {
+        popupSchemaInfo();
+      }
+    });
+    
+    
+    // ---- start of the schema options tab ----
+    m_schemaTab = new CTabItem(m_wTabFolder, SWT.NONE);
+    m_schemaTab.setText(BaseMessages.getString(PKG, "CassandraOutputData.Tab.Schema"));
+    
+    Composite wSchemaComp = new Composite(m_wTabFolder, SWT.NONE);
+    props.setLook(wSchemaComp);
+    
+    FormLayout schemaLayout = new FormLayout();
+    schemaLayout.marginWidth  = 3;
+    schemaLayout.marginHeight = 3;
+    wSchemaComp.setLayout(schemaLayout);
+    
+    // schema host line
+    m_schemaHostLab = new Label(wSchemaComp, SWT.RIGHT);
+    props.setLook(m_schemaHostLab);
+    m_schemaHostLab.setText(BaseMessages.
+        getString(PKG, "CassandraOutputDialog.SchemaHostname.Label"));
+    m_schemaHostLab.setToolTipText(BaseMessages.
+        getString(PKG, "CassandraOutputDialog.SchemaHostname.TipText"));
+    fd = new FormData();
+    fd.left = new FormAttachment(0, 0);
+    fd.top = new FormAttachment(0, margin);
+    fd.right = new FormAttachment(middle, -margin);
+    m_schemaHostLab.setLayoutData(fd);
+    
+    m_schemaHostText = new TextVar(transMeta, wSchemaComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+    props.setLook(m_schemaHostText);
+    m_schemaHostText.addModifyListener(new ModifyListener() {
+      public void modifyText(ModifyEvent e) {
+        m_schemaHostText.setToolTipText(transMeta.
+            environmentSubstitute(m_schemaHostText.getText()));
+      }
+    });
+    m_schemaHostText.addModifyListener(lsMod);
+    fd = new FormData();
+    fd.right = new FormAttachment(100, 0);
+    fd.top = new FormAttachment(0, margin);
+    fd.left = new FormAttachment(middle, 0);
+    m_schemaHostText.setLayoutData(fd);
+    
+    // schema port line
+    m_schemaPortLab = new Label(wSchemaComp, SWT.RIGHT);
+    props.setLook(m_schemaPortLab);
+    m_schemaPortLab.setText(BaseMessages.
+        getString(PKG, "CassandraOutputDialog.SchemaPort.Label"));
+    fd = new FormData();
+    fd.left = new FormAttachment(0, 0);
+    fd.top = new FormAttachment(m_schemaHostText, margin);
+    fd.right = new FormAttachment(middle, -margin);
+    m_schemaPortLab.setLayoutData(fd);
+    
+    m_schemaPortText = new TextVar(transMeta, wSchemaComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+    props.setLook(m_schemaPortText);
+    m_schemaPortText.addModifyListener(new ModifyListener() {
+      public void modifyText(ModifyEvent e) {
+        m_schemaPortText.setToolTipText(transMeta.
+            environmentSubstitute(m_schemaPortText.getText()));
+      }
+    });
+    m_schemaPortText.addModifyListener(lsMod);
+    fd = new FormData();
+    fd.right = new FormAttachment(100, 0);
+    fd.top = new FormAttachment(m_schemaHostText, margin);
+    fd.left = new FormAttachment(middle, 0);
+    m_schemaPortText.setLayoutData(fd);
+    
     
     // create column family line
-    m_createColumnFamilyLab = new Label(shell, SWT.RIGHT);
+    m_createColumnFamilyLab = new Label(wSchemaComp, SWT.RIGHT);
     props.setLook(m_createColumnFamilyLab);
     m_createColumnFamilyLab.setText(BaseMessages.getString(PKG, 
         "CassandraOutputDialog.CreateColumnFamily.Label"));
@@ -549,17 +699,17 @@ public class CassandraOutputDialog extends BaseStepDialog implements
         "CassandraOutputDialog.CreateColumnFamily.TipText"));
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
-    fd.top = new FormAttachment(m_keyFieldCombo, margin);
+    fd.top = new FormAttachment(m_schemaPortText, margin);
     fd.right = new FormAttachment(middle, -margin);
     m_createColumnFamilyLab.setLayoutData(fd);
     
-    m_createColumnFamilyBut = new Button(shell, SWT.CHECK);
+    m_createColumnFamilyBut = new Button(wSchemaComp, SWT.CHECK);
     m_createColumnFamilyBut.setToolTipText(BaseMessages.getString(PKG, 
       "CassandraOutputDialog.CreateColumnFamily.TipText"));
     props.setLook(m_createColumnFamilyBut);
     fd = new FormData();
     fd.right = new FormAttachment(100, 0);
-    fd.top = new FormAttachment(m_keyFieldCombo, margin);
+    fd.top = new FormAttachment(m_schemaPortText, margin);
     fd.left = new FormAttachment(middle, 0);
     m_createColumnFamilyBut.setLayoutData(fd);
     m_createColumnFamilyBut.addSelectionListener(new SelectionAdapter() {
@@ -569,7 +719,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     });    
     
     // truncate column family line
-    m_truncateColumnFamilyLab = new Label(shell, SWT.RIGHT);
+    m_truncateColumnFamilyLab = new Label(wSchemaComp, SWT.RIGHT);
     props.setLook(m_truncateColumnFamilyLab);
     m_truncateColumnFamilyLab.setText(BaseMessages.getString(PKG, 
         "CassandraOutputDialog.TruncateColumnFamily.Label"));
@@ -581,7 +731,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     fd.right = new FormAttachment(middle, -margin);
     m_truncateColumnFamilyLab.setLayoutData(fd);
     
-    m_truncateColumnFamilyBut = new Button(shell, SWT.CHECK);
+    m_truncateColumnFamilyBut = new Button(wSchemaComp, SWT.CHECK);
     m_truncateColumnFamilyBut.setToolTipText(BaseMessages.getString(PKG, 
       "CassandraOutputDialog.TruncateColumnFamily.TipText"));
     props.setLook(m_truncateColumnFamilyBut);
@@ -597,7 +747,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     });    
     
     // update column family meta data line
-    m_updateColumnFamilyMetaDataLab = new Label(shell, SWT.RIGHT);
+    m_updateColumnFamilyMetaDataLab = new Label(wSchemaComp, SWT.RIGHT);
     props.setLook(m_updateColumnFamilyMetaDataLab);
     m_updateColumnFamilyMetaDataLab.setText(BaseMessages.getString(PKG, 
         "CassandraOutputDialog.UpdateColumnFamilyMetaData.Label"));
@@ -609,7 +759,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     fd.right = new FormAttachment(middle, -margin);
     m_updateColumnFamilyMetaDataLab.setLayoutData(fd);
     
-    m_updateColumnFamilyMetaDataBut = new Button(shell, SWT.CHECK);
+    m_updateColumnFamilyMetaDataBut = new Button(wSchemaComp, SWT.CHECK);
     m_updateColumnFamilyMetaDataBut.setToolTipText(BaseMessages.getString(PKG, 
       "CassandraOutputDialog.UpdateColumnFamilyMetaData.TipText"));
     props.setLook(m_updateColumnFamilyMetaDataBut);
@@ -625,7 +775,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     });    
     
     // insert fields not in meta line
-    m_insertFieldsNotInColumnFamMetaLab = new Label(shell, SWT.RIGHT);
+    m_insertFieldsNotInColumnFamMetaLab = new Label(wSchemaComp, SWT.RIGHT);
     props.setLook(m_insertFieldsNotInColumnFamMetaLab);
     m_insertFieldsNotInColumnFamMetaLab.setText(BaseMessages.getString(PKG, 
         "CassandraOutputDialog.InsertFieldsNotInColumnFamMetaData.Label"));
@@ -637,7 +787,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     fd.right = new FormAttachment(middle, -margin);
     m_insertFieldsNotInColumnFamMetaLab.setLayoutData(fd);
     
-    m_insertFieldsNotInColumnFamMetaBut = new Button(shell, SWT.CHECK);
+    m_insertFieldsNotInColumnFamMetaBut = new Button(wSchemaComp, SWT.CHECK);
     m_insertFieldsNotInColumnFamMetaBut.setToolTipText(BaseMessages.getString(PKG, 
       "CassandraOutputDialog.InsertFieldsNotInColumnFamMetaData.TipText"));
     props.setLook(m_insertFieldsNotInColumnFamMetaBut);
@@ -654,7 +804,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     
     
     // compression check box
-    m_compressionLab = new Label(shell, SWT.RIGHT);
+    m_compressionLab = new Label(wSchemaComp, SWT.RIGHT);
     props.setLook(m_compressionLab);
     m_compressionLab.setText(BaseMessages.getString(PKG, 
         "CassandraOutputDialog.UseCompression.Label"));
@@ -666,7 +816,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     fd.right = new FormAttachment(middle, -margin);
     m_compressionLab.setLayoutData(fd);
     
-    m_useCompressionBut = new Button(shell, SWT.CHECK);
+    m_useCompressionBut = new Button(wSchemaComp, SWT.CHECK);
     props.setLook(m_useCompressionBut);
     m_useCompressionBut.setToolTipText(BaseMessages.getString(PKG, 
       "CassandraOutputDialog.UseCompression.TipText"));
@@ -679,38 +829,41 @@ public class CassandraOutputDialog extends BaseStepDialog implements
       public void widgetSelected(SelectionEvent e) {
         m_currentMeta.setChanged();
       }
-    });    
-    
-    // show schema button
-    m_showSchemaBut = new Button(shell, SWT.PUSH);
-    m_showSchemaBut.setText(BaseMessages.
-        getString(PKG, "CassandraOutputDialog.Schema.Button"));
-    props.setLook(m_showSchemaBut);
-    fd = new FormData();
-//  fd.left = new FormAttachment(middle, 0);
-    fd.right = new FormAttachment(100, 0);
-    fd.top = new FormAttachment(m_useCompressionBut, margin);
-    m_showSchemaBut.setLayoutData(fd);
-    m_showSchemaBut.addSelectionListener(new SelectionAdapter() {
-      public void widgetSelected(SelectionEvent e) {
-        popupSchemaInfo();
-      }
-    });
+    });        
     
     // Apriori CQL button
-    m_aprioriCQLBut = new Button(shell, SWT.PUSH | SWT.CENTER);
+    m_aprioriCQLBut = new Button(wSchemaComp, SWT.PUSH | SWT.CENTER);
     props.setLook(m_aprioriCQLBut);
     m_aprioriCQLBut.setText(BaseMessages.getString(PKG, 
         "CassandraOutputDialog.CQL.Button"));
     fd = new FormData();
-    fd.right = new FormAttachment(m_showSchemaBut, 0);
-    fd.top = new FormAttachment(m_useCompressionBut, margin);
+    fd.right = new FormAttachment(100, 0);
+    fd.bottom = new FormAttachment(100, -margin*2);
     m_aprioriCQLBut.setLayoutData(fd);
     m_aprioriCQLBut.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent e) {
         popupCQLEditor(lsMod);
       }
     });
+        
+    
+    fd = new FormData();
+    fd.left = new FormAttachment(0, 0);
+    fd.top = new FormAttachment(0, 0);
+    fd.right = new FormAttachment(100, 0);
+    fd.bottom = new FormAttachment(100, 0);
+    wSchemaComp.setLayoutData(fd);
+    
+    wSchemaComp.layout();
+    m_schemaTab.setControl(wSchemaComp);
+    
+    
+    fd = new FormData();
+    fd.left = new FormAttachment(0, 0);
+    fd.top = new FormAttachment(m_stepnameText, margin);
+    fd.right = new FormAttachment(100, 0);
+    fd.bottom = new FormAttachment(100, -50);
+    m_wTabFolder.setLayoutData(fd);
     
     
     // Buttons inherited from BaseStepDialog
@@ -721,7 +874,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
     
     setButtonPositions(new Button[] { wOK, wCancel }, 
-                       margin, m_showSchemaBut);
+                       margin, m_wTabFolder);
     
     
     // Add listeners
@@ -755,6 +908,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
         }
       });
     
+    m_wTabFolder.setSelection(0);    
     setSize();
     
     getData();    
@@ -852,6 +1006,8 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     stepname = m_stepnameText.getText();
     m_currentMeta.setCassandraHost(m_hostText.getText());
     m_currentMeta.setCassandraPort(m_portText.getText());
+    m_currentMeta.setSchemaHost(m_schemaHostText.getText());
+    m_currentMeta.setSchemaPort(m_schemaPortText.getText());
     m_currentMeta.setSocketTimeout(m_socketTimeoutText.getText());
     m_currentMeta.setUsername(m_userText.getText());
     m_currentMeta.setPassword(m_passText.getText());
@@ -897,7 +1053,6 @@ public class CassandraOutputDialog extends BaseStepDialog implements
 
     CassandraConnection conn = null;
     try {
-//      CassandraInputMeta tempMeta = (CassandraInputMeta)m_currentMeta.clone();
       String hostS = transMeta.environmentSubstitute(m_hostText.getText());
       String portS = transMeta.environmentSubstitute(m_portText.getText());
       String userS = m_userText.getText();
@@ -906,9 +1061,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
         userS = transMeta.environmentSubstitute(userS);
         passS = transMeta.environmentSubstitute(passS);
       }
-      String keyspaceS = transMeta.environmentSubstitute(m_keyspaceText.getText());
-//        tempMeta.setCassandraHost(hostS); tempMeta.setCassandraPort(portS);
-//      tempMeta.setCassandraKeyspace(keyspaceS);                    
+      String keyspaceS = transMeta.environmentSubstitute(m_keyspaceText.getText());                    
       
       conn = CassandraOutputData.
         getCassandraConnection(hostS, Integer.parseInt(portS), userS, passS);
@@ -932,10 +1085,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
       if (!CassandraColumnMetaData.columnFamilyExists(conn, colFam)) {
         throw new Exception("The column family '" + colFam + "' does not " +
             "seem to exist in the keyspace '" + keyspaceS);
-      }
-      
-/*          tempMeta.getFields(outputF, stepname, null, null, transMeta);
-      String colFam = outputF.getValueMeta(0).getName(); */
+      }      
       
       CassandraColumnMetaData cassMeta = new CassandraColumnMetaData(conn, colFam);
       String schemaDescription = cassMeta.getSchemaDescription();
@@ -964,6 +1114,14 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     
     if (!Const.isEmpty(m_currentMeta.getCassandraPort())) {
       m_portText.setText(m_currentMeta.getCassandraPort());
+    }
+    
+    if (!Const.isEmpty(m_currentMeta.getSchemaHost())) {
+      m_schemaHostText.setText(m_currentMeta.getSchemaHost());
+    }
+    
+    if (!Const.isEmpty(m_currentMeta.getSchemaPort())) {
+      m_schemaPortText.setText(m_currentMeta.getSchemaPort());
     }
     
     if (!Const.isEmpty(m_currentMeta.getSocketTimeout())) {
