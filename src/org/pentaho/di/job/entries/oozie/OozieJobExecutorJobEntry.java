@@ -112,7 +112,7 @@ public class OozieJobExecutorJobEntry extends AbstractJobEntry<OozieJobExecutorC
     }
 
     // path to oozie workflow properties file
-    if(StringUtil.isEmpty(config.getOozieWorkflowConfig())) {
+    if(config.getModeAsEnum() == JobEntryMode.QUICK_SETUP && StringUtil.isEmpty(config.getOozieWorkflowConfig())) {
       messages.add(BaseMessages.getString(OozieJobExecutorJobEntry.class, "ValidationMessages.Missing.Workflow.Properties"));
     } else {
       // make sure the path to the properties file is valid
@@ -160,8 +160,7 @@ public class OozieJobExecutorJobEntry extends AbstractJobEntry<OozieJobExecutorC
   public static Properties getProperties(OozieJobExecutorConfig config, VariableSpace variableSpace) throws KettleFileException, IOException {
     Properties jobProps = null;
     if(config.getModeAsEnum() == JobEntryMode.ADVANCED_LIST
-        && config.getWorkflowProperties() != null
-        && config.getWorkflowProperties().size() > 0) {
+        && config.getWorkflowProperties() != null) {
       jobProps = new Properties();
       for (PropertyEntry propertyEntry : config.getWorkflowProperties()) {
         if(propertyEntry.getKey() != null) {

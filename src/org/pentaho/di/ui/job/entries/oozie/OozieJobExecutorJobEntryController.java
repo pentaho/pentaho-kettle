@@ -90,20 +90,11 @@ public class OozieJobExecutorJobEntryController extends AbstractJobEntryControll
       if(config.getWorkflowProperties() != null) {
         config.getWorkflowProperties().clear();
       }
-      try {
-        if(jobEntry != null && config != null) {
-          Properties props = jobEntry.getProperties(config);
-          for (Map.Entry<Object, Object> prop : props.entrySet()) {
-            if(prop.getKey() instanceof String && prop.getValue() instanceof String) {
-              PropertyEntry pEntry = new PropertyEntry((prop.getKey()).toString(), prop.getValue().toString());
-              advancedArguments.add(pEntry);
-            }
-          }
-        }
-      } catch (Exception e) {
-        // could not read in the props...
-      }
+      preFillAdvancedArgs();
     } else {
+      if(advancedArguments.size() == 0 && !StringUtil.isEmpty(config.getOozieWorkflowConfig())) {
+        preFillAdvancedArgs();
+      }
       // advanced mode was used to modify/create properties
       // save the args out...
       ArrayList<PropertyEntry> m = new ArrayList<PropertyEntry>(advancedArguments);
@@ -111,6 +102,22 @@ public class OozieJobExecutorJobEntryController extends AbstractJobEntryControll
     }
 
     config.setMode(jobEntryMode);
+  }
+
+  private void preFillAdvancedArgs() {
+    try {
+      if(jobEntry != null && config != null) {
+        Properties props = jobEntry.getProperties(config);
+        for (Map.Entry<Object, Object> prop : props.entrySet()) {
+          if(prop.getKey() instanceof String && prop.getValue() instanceof String) {
+            PropertyEntry pEntry = new PropertyEntry((prop.getKey()).toString(), prop.getValue().toString());
+            advancedArguments.add(pEntry);
+          }
+        }
+      }
+    } catch (Exception e) {
+      // could not read in the props...
+    }
   }
 
   /**
