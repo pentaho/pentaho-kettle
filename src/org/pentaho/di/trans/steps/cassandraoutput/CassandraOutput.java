@@ -29,6 +29,7 @@ import org.pentaho.cassandra.CassandraColumnMetaData;
 import org.pentaho.cassandra.CassandraConnection;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -43,7 +44,6 @@ import org.pentaho.di.trans.step.StepMetaInterface;
  * column family meta data.
  * 
  * @author Mark Hall (mhall{[at]}pentaho{[dot]}com)
- * @version $Revision$
  */
 public class CassandraOutput extends BaseStep implements StepInterface {
   
@@ -86,162 +86,180 @@ public class CassandraOutput extends BaseStep implements StepInterface {
   protected int m_batchSplitFactor = 10;
 
   protected void initialize(StepMetaInterface smi, StepDataInterface sdi) 
-    throws KettleException {
+  throws KettleException {
 
-      m_meta = (CassandraOutputMeta)smi;
-      m_data = (CassandraOutputData)sdi;
-      
-      first = false;
-      m_rowsSeen = 0;
+    m_meta = (CassandraOutputMeta)smi;
+    m_data = (CassandraOutputData)sdi;
 
-      // Get the connection to Cassandra
-      String hostS = environmentSubstitute(m_meta.getCassandraHost());
-      String portS = environmentSubstitute(m_meta.getCassandraPort());
-      String userS = m_meta.getUsername();
-      String passS = m_meta.getPassword();
-      String batchTimeoutS = environmentSubstitute(m_meta.getCQLBatchInsertTimeout());
-      String batchSplitFactor = environmentSubstitute(m_meta.getCQLSubBatchSize());      
+    first = false;
+    m_rowsSeen = 0;
 
-      if (!Const.isEmpty(userS) && !Const.isEmpty(passS)) {
-        userS = environmentSubstitute(userS);
-        passS = environmentSubstitute(passS);
+    // Get the connection to Cassandra
+    String hostS = environmentSubstitute(m_meta.getCassandraHost());
+    String portS = environmentSubstitute(m_meta.getCassandraPort());
+    String userS = m_meta.getUsername();
+    String passS = m_meta.getPassword();
+    String batchTimeoutS = environmentSubstitute(m_meta.getCQLBatchInsertTimeout());
+    String batchSplitFactor = environmentSubstitute(m_meta.getCQLSubBatchSize());
+    String schemaHostS = environmentSubstitute(m_meta.getSchemaHost());
+    String schemaPortS = environmentSubstitute(m_meta.getSchemaPort());
+    if (Const.isEmpty(schemaHostS)) {
+      schemaHostS = hostS;
+    }
+    if (Const.isEmpty(schemaPortS)) {
+      schemaPortS = portS;
+    }
+
+    if (!Const.isEmpty(userS) && !Const.isEmpty(passS)) {
+      userS = environmentSubstitute(userS);
+      passS = environmentSubstitute(passS);
+    }
+    String keyspaceS = environmentSubstitute(m_meta.getCassandraKeyspace());
+    m_columnFamilyName = environmentSubstitute(m_meta.getColumnFamilyName());
+    String keyField = environmentSubstitute(m_meta.getKeyField());
+
+    try {
+
+      if (!Const.isEmpty(batchTimeoutS)) {
+        try {
+          m_cqlBatchInsertTimeout = Integer.parseInt(batchTimeoutS);
+          if (m_cqlBatchInsertTimeout < 500) {
+            logBasic(BaseMessages.getString(CassandraOutputMeta.PKG, 
+                "CassandraOutput.Message.MinimumTimeout"));
+            m_cqlBatchInsertTimeout = 500;
+          }
+        } catch (NumberFormatException e) {
+          logError(BaseMessages.getString(CassandraOutputMeta.PKG, 
+              "CassandraOutput.Error.CantParseTimeout"));
+          m_cqlBatchInsertTimeout = 10000;
+        }
       }
-      String keyspaceS = environmentSubstitute(m_meta.getCassandraKeyspace());
-      m_columnFamilyName = environmentSubstitute(m_meta.getColumnFamilyName());
-      String keyField = environmentSubstitute(m_meta.getKeyField());
+
+      if (!Const.isEmpty(batchSplitFactor)) {
+        try {
+          m_batchSplitFactor = Integer.parseInt(batchSplitFactor);
+        } catch (NumberFormatException e) {
+          logError(BaseMessages.getString(CassandraOutputMeta.PKG, 
+              "CassandraOutput.Error.CantParseSubBatchSize"));
+        }
+      }
+
+      if (Const.isEmpty(hostS) || Const.isEmpty(portS) || Const.isEmpty(keyspaceS)) {
+        throw new KettleException(BaseMessages.getString(CassandraOutputMeta.PKG, 
+            "CassandraOutput.Error.MissingConnectionDetails"));
+      }
+
+      if (Const.isEmpty(m_columnFamilyName)) {
+        throw new KettleException(BaseMessages.getString(CassandraOutputMeta.PKG, 
+            "CassandraOutput.Error.NoColumnFamilySpecified"));
+      }      
+
+      if (Const.isEmpty(keyField)) {
+        throw new KettleException(BaseMessages.getString(CassandraOutputMeta.PKG, 
+            "CassandraOutput.Error.NoIncomingKeySpecified"));
+      }
+
+      // check that the specified key field is present in the incoming data
+      m_keyIndex = getInputRowMeta().indexOfValue(keyField);
+      if (m_keyIndex < 0) {
+        throw new KettleException(BaseMessages.getString(CassandraOutputMeta.PKG, 
+            "CassandraOutput.Error.CantFindKeyField", keyField));
+      }
+
+      logBasic(BaseMessages.getString(CassandraOutputMeta.PKG, 
+          "CassandraOutput.Message.ConnectingForSchemaOperations", schemaHostS, 
+          schemaPortS, keyspaceS));
+      CassandraConnection connection = null;        
 
       try {
+        connection = openConnection(true);
 
-        if (!Const.isEmpty(batchTimeoutS)) {
-          try {
-            m_cqlBatchInsertTimeout = Integer.parseInt(batchTimeoutS);
-            if (m_cqlBatchInsertTimeout < 500) {
-              logBasic("Using minimum batch insert timeout of 500 milliseconds");
-              m_cqlBatchInsertTimeout = 500;
-            }
-          } catch (NumberFormatException e) {
-            logError("Can't parse batch insert timeout - setting to 10,000");
-            m_cqlBatchInsertTimeout = 10000;
-          }
-        }
-
-        if (!Const.isEmpty(batchSplitFactor)) {
-          try {
-            m_batchSplitFactor = Integer.parseInt(batchSplitFactor);
-          } catch (NumberFormatException e) {
-            logError("Can't parse sub batch size - setting to 10");
-          }
-        }
-
-        if (Const.isEmpty(hostS) || Const.isEmpty(portS) || Const.isEmpty(keyspaceS)) {
-          throw new KettleException("Some connection details are missing!!");
-        }
-
-        if (Const.isEmpty(m_columnFamilyName)) {
-          throw new KettleException("No column family (table) has been specified!");
-        }      
-
-        if (Const.isEmpty(keyField)) {
-          throw new KettleException("The incoming field to use as the key for inserting " +
-          "has not been specified!");
-        }
-
-        // check that the specified key field is present in the incoming data
-        m_keyIndex = getInputRowMeta().indexOfValue(keyField);
-        if (m_keyIndex < 0) {
-          throw new KettleException("Can't find key field '" + keyField + "' in the incoming " +
-            "data!");
-        }
-
-        logBasic("Connecting to Cassandra node at '" + hostS + ":" + portS + "' using " +
-            "keyspace '" + keyspaceS +"'...");
-        CassandraConnection connection = null;        
-
-        try {
-          connection = openConnection();
-
-          if (!CassandraColumnMetaData.columnFamilyExists(connection, m_columnFamilyName)) {
-            if (m_meta.getCreateColumnFamily()) {
-              // create the column family (table)
-              boolean result = CassandraOutputData.createColumnFamily(connection, m_columnFamilyName, getInputRowMeta(), m_keyIndex, 
-                  m_meta.getUseCompression());
-              if (!result) {
-                throw new KettleException("Need at least one incoming field apart from the key!");
-              }
-            } else {
-              throw new KettleException("Column family '" + m_columnFamilyName + "' does not" +
-                  " exist in keyspace '" + keyspaceS + "'. Turn on the " +
-                  "create column family option if you want " +
-                  "to have this column family created automatically " +
-              "using the incoming field meta data.");
-            }
-          }                
-
-
-          // get the column family meta data
-
-          logBasic("Getting meta data for column family '" + m_columnFamilyName + "'");
-          m_cassandraMeta = new CassandraColumnMetaData(connection, m_columnFamilyName);
-
-          // check that we have at least one incoming field apart from the key
-          if (CassandraOutputData.numFieldsToBeWritten(m_columnFamilyName, getInputRowMeta(), 
-              m_keyIndex, m_cassandraMeta, m_meta.getInsertFieldsNotInMeta()) < 2) {
-            throw new KettleException("Must insert at least one other field apart from the key!");
-          }
-
-
-
-          // output (downstream) is the same as input
-          m_data.setOutputRowMeta(getInputRowMeta());
-
-          String batchSize = environmentSubstitute(m_meta.getBatchSize());
-          if (!Const.isEmpty(batchSize)) {
-            try {
-              m_batchSize = Integer.parseInt(batchSize);
-            } catch (NumberFormatException e) {
-              logError("Can't parse batch size - setting to 100");
-              m_batchSize = 100;
-            }                        
-          } else {
-            throw new KettleException("No batch size set!");
-          }
-
-          if (m_meta.getUpdateCassandraMeta()) {
-            // Update cassandra meta data for unknown incoming fields?
-
-            CassandraOutputData.updateCassandraMeta(connection, m_columnFamilyName, 
-                getInputRowMeta(), m_keyIndex, m_cassandraMeta);
-          }
-
-          // Truncate (remove all data from) column family first?
-          if (m_meta.getTruncateColumnFamily()) {
-            CassandraOutputData.truncateColumnFamily(connection, m_columnFamilyName);
-
-          }
-
-          // Try to execute any apriori CQL commands?
-          if (!Const.isEmpty(m_meta.getAprioriCQL())) {
-            String aprioriCQL = environmentSubstitute(m_meta.getAprioriCQL());
-            logBasic("Executing the following CQL prior to writing to column family '" 
-                + m_columnFamilyName + "'\n\n" + aprioriCQL);
-            CassandraOutputData.executeAprioriCQL(connection, aprioriCQL, log, 
+        if (!CassandraColumnMetaData.columnFamilyExists(connection, m_columnFamilyName)) {
+          if (m_meta.getCreateColumnFamily()) {
+            // create the column family (table)
+            boolean result = CassandraOutputData.createColumnFamily(connection, 
+                m_columnFamilyName, getInputRowMeta(), m_keyIndex, 
                 m_meta.getUseCompression());
+            if (!result) {
+              throw new KettleException(BaseMessages.getString(CassandraOutputMeta.PKG, 
+                  "CassandraOutput.Error.NeedAtLeastOneFieldAppartFromKey"));
+            }
+          } else {
+            throw new KettleException(BaseMessages.getString(CassandraOutputMeta.PKG, 
+                "CassandraOutput.Error.ColumnFamilyDoesNotExist", 
+                m_columnFamilyName, keyspaceS));                  
           }
-        } finally {
-          if (connection != null) {
-            closeConnection(connection);
-            connection = null;
-          }
+        }                
+
+
+        // get the column family meta data
+
+        logBasic(BaseMessages.getString(CassandraOutputMeta.PKG, 
+        "CassandraOutput.Message.GettingMetaData"));              
+        m_cassandraMeta = new CassandraColumnMetaData(connection, m_columnFamilyName);
+
+        // check that we have at least one incoming field apart from the key
+        if (CassandraOutputData.numFieldsToBeWritten(m_columnFamilyName, getInputRowMeta(), 
+            m_keyIndex, m_cassandraMeta, m_meta.getInsertFieldsNotInMeta()) < 2) {
+          throw new KettleException(BaseMessages.getString(CassandraOutputMeta.PKG, 
+              "CassandraOutput.Error.NeedAtLeastOneFieldAppartFromKey"));
         }
 
-        m_consistency = environmentSubstitute(m_meta.getConsistency());      
-        m_batchInsert = CassandraOutputData.newBatch(m_batchSize, m_consistency);
-        m_batch = new ArrayList<Object[]>();
+        // output (downstream) is the same as input
+        m_data.setOutputRowMeta(getInputRowMeta());
 
+        String batchSize = environmentSubstitute(m_meta.getBatchSize());
+        if (!Const.isEmpty(batchSize)) {
+          try {
+            m_batchSize = Integer.parseInt(batchSize);
+          } catch (NumberFormatException e) {
+            logError(BaseMessages.getString(CassandraOutputMeta.PKG, 
+                "CassandraOutput.Error.CantParseBatchSize"));
+            m_batchSize = 100;
+          }                        
+        } else {
+          throw new KettleException(BaseMessages.getString(CassandraOutputMeta.PKG, 
+              "CassandraOutput.Error.NoBatchSizeSet"));
+        }
 
-      } catch (Exception ex) {
-        logError("A problem occurred durining initialization of the step", ex);
+        if (m_meta.getUpdateCassandraMeta()) {
+          // Update cassandra meta data for unknown incoming fields?
+
+          CassandraOutputData.updateCassandraMeta(connection, m_columnFamilyName, 
+              getInputRowMeta(), m_keyIndex, m_cassandraMeta);
+        }
+
+        // Truncate (remove all data from) column family first?
+        if (m_meta.getTruncateColumnFamily()) {
+          CassandraOutputData.truncateColumnFamily(connection, m_columnFamilyName);
+
+        }
+
+        // Try to execute any apriori CQL commands?
+        if (!Const.isEmpty(m_meta.getAprioriCQL())) {
+          String aprioriCQL = environmentSubstitute(m_meta.getAprioriCQL());
+          logBasic(BaseMessages.getString(CassandraOutputMeta.PKG, 
+              "CassandraOutput.Message.ExecutingAprioriCQL", m_columnFamilyName, aprioriCQL));
+
+          CassandraOutputData.executeAprioriCQL(connection, aprioriCQL, log, 
+              m_meta.getUseCompression());
+        }
+      } finally {
+        if (connection != null) {
+          closeConnection(connection);
+          connection = null;
+        }
       }
+
+      m_consistency = environmentSubstitute(m_meta.getConsistency());      
+      m_batchInsert = CassandraOutputData.newBatch(m_batchSize, m_consistency);
+      m_batch = new ArrayList<Object[]>();
+
+
+    } catch (Exception ex) {
+      logError(BaseMessages.getString(CassandraOutputMeta.PKG,
+          "CassandraOutput.Error.InitializationProblem"), ex);
+    }
   }
   
   public boolean processRow(StepMetaInterface smi, StepDataInterface sdi)
@@ -259,8 +277,6 @@ public class CassandraOutput extends BaseStep implements StepInterface {
       m_batchInsert = null;
       m_batch = null;
       
-      // clean up/close connections
-//      closeConnection();
       setOutputDone();
       return false;
     }
@@ -284,7 +300,8 @@ public class CassandraOutput extends BaseStep implements StepInterface {
     try {
       doBatch(m_batch);
     } catch (Exception e) {      
-      logError("Commit failed - " + m_batchInsert.toString(), e);
+      logError(BaseMessages.getString(CassandraOutputMeta.PKG, 
+          "CassandraOutput.Error.CommitFailed", m_batchInsert.toString(), e));          
       throw new KettleException(e.fillInStackTrace());
     }
     
@@ -296,12 +313,14 @@ public class CassandraOutput extends BaseStep implements StepInterface {
   protected void doBatch(List<Object[]> batch) throws Exception {
     // stopped?
     if (isStopped()) {
-      logDebug("Stopped, skipping batch...");
+      logDebug(BaseMessages.getString(CassandraOutputMeta.PKG, 
+          "CassandraOutput.Message.StoppedSkippingBatch"));
       return;
     }
     // ignore empty batch
     if (batch == null || batch.isEmpty()) {
-      logDebug("Empty batch, skipping processing...");
+      logDebug(BaseMessages.getString(CassandraOutputMeta.PKG, 
+          "CassandraOutput.Message.SkippingEmptyBatch"));
       return;
     }
     // construct CQL and commit
@@ -319,20 +338,20 @@ public class CassandraOutput extends BaseStep implements StepInterface {
       }
       CassandraOutputData.completeBatch(m_batchInsert);
       // commit
-      connection = openConnection();
-      logDetailed("Committing batch to column family '" 
-          + m_columnFamilyName + "' (" + size + " rows)");
-      // CassandraOutputData.commitBatch(m_batchInsert, connection,
-      // m_meta.getUseCompression(), m_connTimeout);
+      connection = openConnection(false);
+      logDetailed(BaseMessages.getString(CassandraOutputMeta.PKG, 
+          "CassandraOutput.Message.CommittingBatch", m_columnFamilyName, "" + size));
+
       CassandraOutputData.commitBatch(m_batchInsert, connection,
           m_meta.getUseCompression(), m_cqlBatchInsertTimeout);
     } catch (Exception e) {
       closeConnection(connection);
       connection = null;
-      logDetailed(
-          "Failed to insert batch (" + size + " rows) - "
-          + e.getMessage(), e);
-      logDetailed("Will now try splitting into sub-batches...");
+      logDetailed(BaseMessages.getString(CassandraOutputMeta.PKG, 
+          "CassandraOutput.Error.FailedToInsertBatch", "" + size), e);
+
+      logDetailed(BaseMessages.getString(CassandraOutputMeta.PKG, 
+          "CassandraOutput.Message.WillNowTrySplittingIntoSubBatches"));
       
       // is it possible to divide and conquer?
       if (size == 1) {
@@ -378,13 +397,21 @@ public class CassandraOutput extends BaseStep implements StepInterface {
     super.setStopped(stopped);    
   }
   
-  protected CassandraConnection openConnection() throws KettleException {
+  protected CassandraConnection openConnection(boolean forSchemaChanges) throws KettleException {
     // Get the connection to Cassandra
     String hostS = environmentSubstitute(m_meta.getCassandraHost());
     String portS = environmentSubstitute(m_meta.getCassandraPort());
     String userS = m_meta.getUsername();
     String passS = m_meta.getPassword();
     String timeoutS = environmentSubstitute(m_meta.getSocketTimeout());         
+    String schemaHostS = environmentSubstitute(m_meta.getSchemaHost());
+    String schemaPortS = environmentSubstitute(m_meta.getSchemaPort());
+    if (Const.isEmpty(schemaHostS)) {
+      schemaHostS = hostS;
+    }
+    if (Const.isEmpty(schemaPortS)) {
+      schemaPortS = portS;
+    }
     
     if (!Const.isEmpty(userS) && !Const.isEmpty(passS)) {
       userS = environmentSubstitute(userS);
@@ -396,17 +423,29 @@ public class CassandraOutput extends BaseStep implements StepInterface {
     
     try {
       if (Const.isEmpty(timeoutS)) {
-        connection = CassandraOutputData.getCassandraConnection(hostS, 
-            Integer.parseInt(portS), userS, passS);
+        if (forSchemaChanges) {
+          connection = CassandraOutputData.getCassandraConnection(schemaHostS, 
+              Integer.parseInt(schemaPortS), userS, passS);
+        } else {
+          connection = CassandraOutputData.getCassandraConnection(hostS, 
+              Integer.parseInt(portS), userS, passS);
+        }
       } else {
         int sockTimeout = 30000;
         try {
           sockTimeout = Integer.parseInt(timeoutS);
         } catch (NumberFormatException e) {
-          logError("Can't parse socket timeout - setting to 30,000");
+          logError(BaseMessages.getString(CassandraOutputMeta.PKG, 
+              "CassandraOutput.Error.CantParseSocketTimeout"));
         }
-        connection = CassandraOutputData.getCassandraConnection(hostS, 
-            Integer.parseInt(portS), userS, passS, sockTimeout);
+        
+        if (forSchemaChanges) {
+          connection = CassandraOutputData.getCassandraConnection(schemaHostS, 
+              Integer.parseInt(schemaPortS), userS, passS, sockTimeout);
+        } else {
+          connection = CassandraOutputData.getCassandraConnection(hostS, 
+              Integer.parseInt(portS), userS, passS, sockTimeout);
+        }
       }
       connection.setKeyspace(keyspaceS);
     } catch (Exception ex) {
@@ -419,7 +458,8 @@ public class CassandraOutput extends BaseStep implements StepInterface {
   
   protected void closeConnection(CassandraConnection conn) {
     if (conn != null) {
-      logBasic("Closing connection...");
+      logBasic(BaseMessages.getString(CassandraOutputMeta.PKG, 
+          "CassandraOutput.Message.ClosingConnection"));
       conn.close();
     }
   }    

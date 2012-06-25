@@ -55,7 +55,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
  * family's meta data and constructing a batch insert CQL statement.
  * 
  * @author Mark Hall (mhall{[at]}pentaho{[dot]}com)
- * @version $Revision$
  */
 public class CassandraOutputData extends BaseStepData implements
     StepDataInterface {

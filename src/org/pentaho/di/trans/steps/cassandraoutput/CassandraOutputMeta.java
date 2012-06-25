@@ -25,7 +25,6 @@ package org.pentaho.di.trans.steps.cassandraoutput;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -43,7 +42,6 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
@@ -55,11 +53,12 @@ import org.w3c.dom.Node;
  * column family meta data.
  * 
  * @author Mark Hall (mhall{[at]}pentaho{[dot]}com)
- * @version $Revision$
  */
 @Step(id = "CassandraOutput", image = "Cassandra.png", name = "Cassandra Output", description="Writes to a Cassandra table", categoryDescription="Big Data")
 public class CassandraOutputMeta extends BaseStepMeta implements
     StepMetaInterface {
+  
+  protected static final Class<?> PKG = CassandraOutputMeta.class;
   
   /** The host to contact */
   protected String m_cassandraHost = "localhost";
@@ -75,6 +74,12 @@ public class CassandraOutputMeta extends BaseStepMeta implements
   
   /** The keyspace (database) to use */
   protected String m_cassandraKeyspace;
+  
+  /** The cassandra node to put schema updates through */
+  protected String m_schemaHost;
+  
+  /** The port of the cassandra node for schema updates */
+  protected String m_schemaPort;
   
   /** The column family (table) to write to */
   protected String m_columnFamily = "";
@@ -138,6 +143,42 @@ public class CassandraOutputMeta extends BaseStepMeta implements
    * example, to create secondary indexes on columns in a column family. 
    */
   protected String m_aprioriCQL = "";
+  
+  /**
+   * Set the host for sending schema updates to
+   * 
+   * @param s the host for sending schema updates to
+   */
+  public void setSchemaHost(String s) {
+    m_schemaHost = s;
+  }
+  
+  /**
+   * Set the host for sending schema updates to
+   * 
+   * @return the host for sending schema updates to
+   */
+  public String getSchemaHost() {
+    return m_schemaHost;
+  }
+  
+  /**
+   * Set the port for the schema update host
+   * 
+   * @param p port for the schema update host
+   */
+  public void setSchemaPort(String p) {
+    m_schemaPort = p;
+  }
+  
+  /**
+   * Get the port for the schema update host
+   * 
+   * @return port for the schema update host
+   */
+  public String getSchemaPort() {
+    return m_schemaPort;
+  }
   
   /**
    * Set how many sub-batches a batch should be split into when an insert times
@@ -510,6 +551,16 @@ public class CassandraOutputMeta extends BaseStepMeta implements
           m_cassandraPort));
     }
     
+    if (!Const.isEmpty(m_schemaHost)) {
+      retval.append("\n    ").append(XMLHandler.addTagValue("schema_host", 
+          m_schemaHost));
+    }
+    
+    if (!Const.isEmpty(m_schemaPort)) {
+      retval.append("\n    ").append(XMLHandler.addTagValue("schema_port", 
+          m_schemaPort));
+    }
+    
     if (!Const.isEmpty(m_socketTimeout)) {
       retval.append("\n    ").append(XMLHandler.addTagValue("socket_timeout", 
           m_socketTimeout));
@@ -592,6 +643,8 @@ public class CassandraOutputMeta extends BaseStepMeta implements
       Map<String, Counter> counters) throws KettleXMLException {
     m_cassandraHost = XMLHandler.getTagValue(stepnode, "cassandra_host");
     m_cassandraPort = XMLHandler.getTagValue(stepnode, "cassandra_port");
+    m_schemaHost = XMLHandler.getTagValue(stepnode, "schema_host");
+    m_schemaPort = XMLHandler.getTagValue(stepnode, "schema_port");
     m_socketTimeout = XMLHandler.getTagValue(stepnode, "socket_timeout");
     m_username = XMLHandler.getTagValue(stepnode, "username");
     m_password = XMLHandler.getTagValue(stepnode, "password");
@@ -621,6 +674,8 @@ public class CassandraOutputMeta extends BaseStepMeta implements
       Map<String, Counter> counters) throws KettleException {
     m_cassandraHost = rep.getStepAttributeString(id_step, 0, "cassandra_host");
     m_cassandraPort = rep.getStepAttributeString(id_step, 0, "cassandra_port");
+    m_schemaHost = rep.getStepAttributeString(id_step, 0, "schema_host");
+    m_schemaPort = rep.getStepAttributeString(id_step, 0, "schema_port");
     m_socketTimeout = rep.getStepAttributeString(id_step, 0, "socket_timeout");
     m_username = rep.getStepAttributeString(id_step, 0, "username");
     m_password = rep.getStepAttributeString(id_step, 0, "password");
@@ -654,6 +709,16 @@ public class CassandraOutputMeta extends BaseStepMeta implements
     if (!Const.isEmpty(m_cassandraPort)) {
       rep.saveStepAttribute(id_transformation, id_step, 0, "cassandra_port",
           m_cassandraPort);
+    }
+    
+    if (!Const.isEmpty(m_schemaHost)) {
+      rep.saveStepAttribute(id_transformation, id_step, 0, "schema_host",
+          m_schemaHost);
+    }
+
+    if (!Const.isEmpty(m_schemaPort)) {
+      rep.saveStepAttribute(id_transformation, id_step, 0, "schema_port",
+          m_schemaPort);
     }
     
     if (!Const.isEmpty(m_socketTimeout)) {
@@ -767,6 +832,8 @@ public class CassandraOutputMeta extends BaseStepMeta implements
   public void setDefault() {
     m_cassandraHost = "localhost";
     m_cassandraPort = "9160";
+    m_schemaHost = "localhost";
+    m_schemaPort = "9160";
     m_columnFamily = "";
     m_batchSize = "100";
     m_useCompression = false;
@@ -776,23 +843,12 @@ public class CassandraOutputMeta extends BaseStepMeta implements
     m_aprioriCQL = "";
   }
   
-  /**
-   * Get the UI for this step.
-   *
-   * @param shell a <code>Shell</code> value
-   * @param meta a <code>StepMetaInterface</code> value
-   * @param transMeta a <code>TransMeta</code> value
-   * @param name a <code>String</code> value
-   * @return a <code>StepDialogInterface</code> value
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.BaseStepMeta#getDialogClassName()
    */
-  public StepDialogInterface getDialog(Shell shell, 
-                                       StepMetaInterface meta,
-                                       TransMeta transMeta, 
-                                       String name) {
-   
-
-   return new CassandraOutputDialog(shell, meta, transMeta, name);
-  }
+  public String getDialogClassName() {
+    return "org.pentaho.di.trans.steps.cassandraoutput.CassandraOutputDialog";
+  }  
   
   public boolean supportsErrorHandling() {
     return true;
