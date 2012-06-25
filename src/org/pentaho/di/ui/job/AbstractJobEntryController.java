@@ -22,6 +22,7 @@ package org.pentaho.di.ui.job;
 
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.MessageBox;
@@ -34,6 +35,7 @@ import org.pentaho.di.job.AbstractJobEntry;
 import org.pentaho.di.job.BlockableJobConfig;
 import org.pentaho.di.job.JobEntryMode;
 import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.entries.oozie.OozieJobExecutorJobEntry;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
@@ -202,6 +204,10 @@ public abstract class AbstractJobEntryController<C extends BlockableJobConfig, E
     return;
   }
 
+  protected boolean showConfirmationDialog(String title, String message) {
+    return MessageDialog.openConfirm(getShell(), title, message);
+  }
+
   /**
    * Show an information dialog with the title and message provided.
    *
@@ -319,22 +325,40 @@ public abstract class AbstractJobEntryController<C extends BlockableJobConfig, E
     this.jobMeta = jobMeta;
   }
 
+  public JobEntryMode getJobEntryMode() {
+    return jobEntryMode;
+  }
+
   /**
    * Toggle between Advanced and Basic configuration modes
    */
   public void toggleMode() {
-    JobEntryMode prev = jobEntryMode;
-    jobEntryMode = (jobEntryMode == JobEntryMode.ADVANCED_LIST ? JobEntryMode.QUICK_SETUP : JobEntryMode.ADVANCED_LIST);
-    XulDeck deck = (XulDeck) getXulDomContainer().getDocumentRoot().getElementById(getModeDeckElementId());
-    deck.setSelectedIndex(deck.getSelectedIndex() == 0 ? 1 : 0);
+    JobEntryMode mode = (jobEntryMode == JobEntryMode.ADVANCED_LIST ? JobEntryMode.QUICK_SETUP : JobEntryMode.ADVANCED_LIST);
+    setMode(mode);
+  }
 
+  protected void setMode(JobEntryMode mode) {
+
+    // if switching from Advanced to Quick mode, warn the user that any changes made in Advanced mode will be lost
+    if(this.jobEntryMode == JobEntryMode.ADVANCED_LIST && mode == JobEntryMode.QUICK_SETUP) {
+      boolean confirmed = showConfirmationDialog(BaseMessages.getString(OozieJobExecutorJobEntry.class, "JobExecutor.Confirm.Toggle.Quick.Mode.Title"),
+          BaseMessages.getString(OozieJobExecutorJobEntry.class, "JobExecutor.Confirm.Toggle.Quick.Mode.Message"));
+      if (!confirmed) {
+        return;
+      }
+    }
+
+    JobEntryMode opposite = mode == JobEntryMode.QUICK_SETUP ? JobEntryMode.ADVANCED_LIST : JobEntryMode.QUICK_SETUP;
+    this.jobEntryMode = mode;
+    XulDeck deck = (XulDeck) getXulDomContainer().getDocumentRoot().getElementById(getModeDeckElementId());
+
+    deck.setSelectedIndex(mode == JobEntryMode.QUICK_SETUP ? 0 : 1);
     // Synchronize the model every time we swap modes so the UI is always up to date. This is required since we don't
     // set argument item values directly or listen for their changes
     syncModel();
 
     // Swap the label on the button
-    setModeToggleLabel(prev);   // the label should display the inverse of the current mode
-
+    setModeToggleLabel(opposite);
   }
 
   /**

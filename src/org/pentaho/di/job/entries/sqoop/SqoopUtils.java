@@ -22,19 +22,15 @@
 
 package org.pentaho.di.job.entries.sqoop;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.mapred.JobTracker;
-import org.apache.log4j.Appender;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.job.ArgumentWrapper;
+import org.pentaho.di.job.CommandLineArgument;
 import org.pentaho.di.job.JobEntryMode;
 
 import java.io.IOException;
@@ -400,7 +396,7 @@ public class SqoopUtils {
    * Determine the display name for the command line argument.
    *
    * @param anno Command line argument
-   * @return {@link org.pentaho.di.job.entries.sqoop.CommandLineArgument#displayName()} or, if not set, {@link org.pentaho.di.job.entries.sqoop.CommandLineArgument#name()}
+   * @return {@link org.pentaho.di.job.CommandLineArgument#displayName()} or, if not set, {@link org.pentaho.di.job.CommandLineArgument#name()}
    */
   public static String getDisplayName(CommandLineArgument anno) {
     return StringUtil.isEmpty(anno.displayName()) ? anno.name() : anno.displayName();

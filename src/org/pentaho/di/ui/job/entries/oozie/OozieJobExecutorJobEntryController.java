@@ -22,23 +22,24 @@ package org.pentaho.di.ui.job.entries.oozie;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.BlockableJobConfig;
-import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.*;
 import org.pentaho.di.job.entries.oozie.OozieJobExecutorConfig;
 import org.pentaho.di.job.entries.oozie.OozieJobExecutorJobEntry;
 import org.pentaho.di.ui.job.AbstractJobEntryController;
-import org.pentaho.di.job.JobEntryMode;
 import org.pentaho.ui.xul.XulDomContainer;
+import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
+import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.stereotype.Bindable;
+import org.pentaho.ui.xul.util.AbstractModelList;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * User: RFellows
@@ -51,6 +52,13 @@ public class OozieJobExecutorJobEntryController extends AbstractJobEntryControll
   public static final String ERROR_BROWSING_DIRECTORY = "ErrorBrowsingDirectory";
   public static final String FILE_FILTER_NAMES_PROPERTIES = "FileFilterNames.Properties";
   public static final String MODE_TOGGLE_LABEL = "mode-toggle-label";
+  public static final String ADVANCED_TABLE = "advanced-table";
+  public static final String CHILDREN = "children";
+  public static final String ELEMENTS = "elements";
+
+  protected AbstractModelList<PropertyEntry> advancedArguments;
+  private transient boolean advancedArgumentsChanged = false;
+  protected XulTree variablesTree = null;
 
   /**
    * The text for the Quick Setup/Advanced Options mode toggle (label)
@@ -59,16 +67,66 @@ public class OozieJobExecutorJobEntryController extends AbstractJobEntryControll
 
   public OozieJobExecutorJobEntryController(JobMeta jobMeta, XulDomContainer container, OozieJobExecutorJobEntry jobEntry, BindingFactory bindingFactory) {
     super(jobMeta, container, jobEntry, bindingFactory);
+    advancedArguments = new AbstractModelList<PropertyEntry>();
+
+    if(jobEntry.getJobConfig().getWorkflowProperties().size() > 0) {
+      advancedArguments.addAll(jobEntry.getJobConfig().getWorkflowProperties());
+    }
+
   }
 
   @Override
   protected void beforeInit() {
-    setModeToggleLabel(JobEntryMode.ADVANCED_LIST);
+    setMode(jobEntry.getJobConfig().getModeAsEnum());
+    variablesTree = (XulTree) container.getDocumentRoot().getElementById(ADVANCED_TABLE);
   }
 
   @Override
   protected void syncModel() {
-    // no custom model syncing needed, bindings are enough
+
+    if(!shouldUseAdvancedProperties()) {
+      // sync properties to advanced args
+      advancedArguments.clear();
+      if(config.getWorkflowProperties() != null) {
+        config.getWorkflowProperties().clear();
+      }
+      try {
+        if(jobEntry != null && config != null) {
+          Properties props = jobEntry.getProperties(config);
+          for (Map.Entry<Object, Object> prop : props.entrySet()) {
+            if(prop.getKey() instanceof String && prop.getValue() instanceof String) {
+              PropertyEntry pEntry = new PropertyEntry((prop.getKey()).toString(), prop.getValue().toString());
+              advancedArguments.add(pEntry);
+            }
+          }
+        }
+      } catch (Exception e) {
+        // could not read in the props...
+      }
+    } else {
+      // advanced mode was used to modify/create properties
+      // save the args out...
+      ArrayList<PropertyEntry> m = new ArrayList<PropertyEntry>(advancedArguments);
+      config.setWorkflowProperties(m);
+    }
+
+    config.setMode(jobEntryMode);
+  }
+
+  /**
+   * Determines if the advanced properties should be used instead of the quick-setup defined workflow properties file
+   * @return
+   */
+  protected boolean shouldUseAdvancedProperties() {
+    return jobEntryMode == JobEntryMode.ADVANCED_LIST;
+  }
+
+  /**
+   * make this available for unit testing
+   * @param mode
+   */
+  protected void setJobEntryMode(JobEntryMode mode) {
+    this.jobEntryMode = mode;
   }
 
   @Override
@@ -81,7 +139,6 @@ public class OozieJobExecutorJobEntryController extends AbstractJobEntryControll
     bindings.add(bindingFactory.createBinding(config, BlockableJobConfig.BLOCKING_POLLING_INTERVAL, BlockableJobConfig.BLOCKING_POLLING_INTERVAL, VALUE));
 
     BindingConvertor<String, Boolean> string2BooleanConvertor = new BindingConvertor<String, Boolean>() {
-
       @Override
       public String targetToSource(Boolean aBoolean) {
         String val = aBoolean.toString();
@@ -102,6 +159,68 @@ public class OozieJobExecutorJobEntryController extends AbstractJobEntryControll
     // only enable the polling interval text box is blocking is checked
     bindings.add(bindingFactory.createBinding(config, BlockableJobConfig.BLOCKING_EXECUTION, BlockableJobConfig.BLOCKING_POLLING_INTERVAL, "!disabled", string2BooleanConvertor));
 
+    BindingConvertor<AbstractModelList<PropertyEntry>, Collection<PropertyEntry>> propsChangedBindingConvertor = new BindingConvertor<AbstractModelList<PropertyEntry>, Collection<PropertyEntry>>() {
+      @Override
+      public Collection<PropertyEntry> sourceToTarget(AbstractModelList<PropertyEntry> propertyEntries) {
+        // user has modified the properties in advanced mode, set the flag...
+        advancedArgumentsChanged = true;
+        return propertyEntries;
+      }
+      @Override
+      public AbstractModelList<PropertyEntry> targetToSource(Collection<PropertyEntry> propertyEntries) {
+        // one-way convertor, don't need this
+        return null;
+      }
+    };
+
+    bindings.add(bindingFactory.createBinding(advancedArguments, CHILDREN, variablesTree, ELEMENTS, propsChangedBindingConvertor));
+
+  }
+
+  @Bindable
+  public void addNewProperty() {
+    advancedArgumentsChanged = true;
+    advancedArguments.add(new PropertyEntry("key", "value"));
+  }
+
+  @Bindable
+  public void removeProperty() {
+    advancedArgumentsChanged = true;
+    Collection<PropertyEntry> selected = variablesTree.getSelectedItems();
+    for (PropertyEntry pe : selected) {
+      try {
+        advancedArguments.remove(pe);
+      } catch (Exception e) {
+        // The implementation of the SwtTree selection model is buggy. if you have an item (row) selected
+        // but a field is in edit mode and try to remove the item, we get a failure (sometimes).
+        // just set the children manually in this case to make sure we are in sync.
+        variablesTree.setElements(advancedArguments);
+      }
+    }
+  }
+
+
+  /**
+   * Accept and apply the changes made in the dialog. Also, close the dialog
+   */
+  @Override
+  @Bindable
+  public void accept() {
+    syncModel();
+    super.accept();
+  }
+  public AbstractModelList<PropertyEntry> getAdvancedArguments() {
+    return advancedArguments;
+  }
+
+  public void setAdvancedArguments(AbstractModelList<PropertyEntry> advancedArguments) {
+    advancedArgumentsChanged = true;
+    this.advancedArguments = advancedArguments;
+  }
+
+  @Bindable
+  public boolean isAdvancedArgumentsChanged() {
+    return advancedArgumentsChanged;
   }
 
   @Override
@@ -148,6 +267,7 @@ public class OozieJobExecutorJobEntryController extends AbstractJobEntryControll
    */
   @Bindable
   public void testSettings() {
+    syncModel();
     List<String> warnings = jobEntry.getValidationWarnings(getConfig());
     if (!warnings.isEmpty()) {
       StringBuilder sb = new StringBuilder();

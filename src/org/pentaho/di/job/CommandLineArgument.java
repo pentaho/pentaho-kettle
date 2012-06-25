@@ -20,15 +20,38 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.job.entries.sqoop;
+package org.pentaho.di.job;
 
 import java.lang.annotation.*;
 
 /**
- * Denotes a field is a password and must be encrypted when serialized. This must be placed on a {@link String} field.
+ * Marks a field as a command line argument.
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
-public @interface Password {
+public @interface CommandLineArgument {
+  /**
+   * @return the name of the command line argument (full name), e.g. --table
+   */
+  String name();
+
+  /**
+   * Optional String to be used when displaying this field in a list.
+   *
+   * @return the friendly display name to be shown to a user instead of the {@link #name()}
+   */
+  String displayName() default "";
+
+  /**
+   * @return description of the command line argument
+   */
+  String description() default "";
+
+  /**
+   * Arguments either have values to be included or represent a boolean setting/flag. This is to denote a flag
+   *
+   * @return true if this argument represents a flag or switch.
+   */
+  boolean flag() default false;
 }

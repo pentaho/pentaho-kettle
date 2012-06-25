@@ -207,11 +207,13 @@ public abstract class AbstractJobEntry<T extends BlockableJobConfig> extends Job
       if (Spoon.getInstance().getActiveJob() != null) {
         return Spoon.getInstance().getActiveJob();
       } else {
-        return new Variables();
+        if(variables != null) return variables;
+        else return new Variables();
       }
     } catch (NullPointerException npe) {
       // probably in unit testing mode, without init'ing spoon
-      return new Variables();
+      if(variables != null) return variables;
+      else return new Variables();
     }
   }
 

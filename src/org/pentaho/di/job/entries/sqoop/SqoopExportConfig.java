@@ -22,6 +22,8 @@
 
 package org.pentaho.di.job.entries.sqoop;
 
+import org.pentaho.di.job.CommandLineArgument;
+
 /**
  * Configuration for a Sqoop Export
  */

@@ -8,7 +8,7 @@
         resizable="true"
         appicon="ui/images/spoon.ico"
         width="650"
-        height="400"
+        height="600"
         buttons=""
         buttonalign="center"
         onload="controller.init()">
@@ -27,63 +27,77 @@
         </grid>
     </vbox>
     <vbox flex="1">
+        <grid>
+            <columns>
+                <column/>
+                <column flex="1"/>
+            </columns>
+            <rows>
+                <row>
+                    <hbox padding="5">
+                        <label value="${Oozie.JobExecutor.OozieUrl.Label}" />
+                    </hbox>
+                    <!-- Wrap with an hbox so all components align -->
+                    <hbox flex="1" padding="5">
+                        <textbox pen:customclass="variabletextbox" id="oozieUrl" flex="1"/>
+                    </hbox>
+                </row>
+                <row>
+                    <hbox padding="5">
+                        <label value="${Oozie.JobExecutor.Enable.Blocking.Label}" />
+                    </hbox>
+                    <hbox padding="5">
+                        <checkbox id="blockingExecution" />
+                    </hbox>
+                </row>
+                <row>
+                    <hbox padding="5">
+                        <label value="${Oozie.JobExecutor.Enable.Polling.Interval.Label}" />
+                    </hbox>
+                    <hbox padding="5" flex="1">
+                        <textbox pen:customclass="variabletextbox" id="blockingPollingInterval" width="100"/>
+                    </hbox>
+                </row>
+            </rows>
+        </grid>
         <deck id="modeDeck" flex="1">
-            <vbox id="quickSetupPanel">
-                <groupbox>
-                    <caption label="${Oozie.JobExecutor.Source.Group}"/>
-                    <grid>
-                        <columns>
-                            <column/>
-                            <column flex="1"/>
-                        </columns>
-                        <rows>
-                            <row>
-                                <hbox padding="5">
-                                    <label value="${Oozie.JobExecutor.OozieUrl.Label}" />
-                                </hbox>
-                                <!-- Wrap with an hbox so all components align -->
-                                <hbox flex="1" padding="5">
-                                    <textbox pen:customclass="variabletextbox" id="oozieUrl" flex="1"/>
-                                </hbox>
-                            </row>
-                            <row>
-                                <hbox padding="5">
-                                    <label value="${Oozie.JobExecutor.Workflow.Properties.Label}"/>
-                                </hbox>
-                                <!-- Wrap with an hbox so all components align -->
-                                <hbox flex="1" padding="5">
-                                    <textbox pen:customclass="variabletextbox" id="oozieWorkflowConfig" flex="1"/>
-                                    <button label="${Oozie.JobExecutor.Browse.Workflow.Config.Label}" onclick="controller.browseWorkflowConfig()"/>
-                                </hbox>
-                            </row>
-                            <row>
-                                <hbox padding="5">
-                                    <label value="${Oozie.JobExecutor.Enable.Blocking.Label}" />
-                                </hbox>
-                                <hbox padding="5">
-                                    <checkbox id="blockingExecution" />
-                                </hbox>
-                            </row>
-                            <row>
-                                <hbox padding="5">
-                                    <label value="${Oozie.JobExecutor.Enable.Polling.Interval.Label}" />
-                                </hbox>
-                                <hbox padding="5" flex="1">
-                                    <textbox pen:customclass="variabletextbox" id="blockingPollingInterval" width="100"/>
-                                </hbox>
-                            </row>
-                        </rows>
-                    </grid>
-                </groupbox>
+            <vbox id="quickSetupPanel" flex="1">
+                <grid flex="1">
+                    <columns>
+                        <column/>
+                        <column flex="1"/>
+                    </columns>
+                    <rows>
+                        <row>
+                            <hbox padding="5">
+                                <label value="${Oozie.JobExecutor.Workflow.Properties.Label}"/>
+                            </hbox>
+                            <!-- Wrap with an hbox so all components align -->
+                            <hbox flex="1" padding="5">
+                                <textbox pen:customclass="variabletextbox" id="oozieWorkflowConfig" flex="1"/>
+                                <button label="${Oozie.JobExecutor.Browse.Workflow.Config.Label}" onclick="controller.browseWorkflowConfig()"/>
+                            </hbox>
+                        </row>
+                    </rows>
+                </grid>
             </vbox>
             <vbox id="advancedOptionsPanel" flex="1">
-                <tree id="advanced-table" hidecolumnpicker="true" autocreatenewrows="false" flex="1">
-                    <treecols>
-                        <treecol id="name-col" editable="false" flex="1" label="${Oozie.JobExecutor.AdvancedTable.Column.Name.Label}" pen:binding="displayName"/>
-                        <treecol id="value-col" editable="true" flex="1" label="${Oozie.JobExecutor.AdvancedTable.Column.Value.Label}" pen:binding="value"/>
-                    </treecols>
-                    <treechildren />
-                </tree>
+                <groupbox padding="8" flex="1">
+                    <caption label="${Oozie.JobExecutor.Workflow.Properties.Label}" />
+                    <vbox padding="0" spacing="0" flex="1">
+                        <tree id="advanced-table" hidecolumnpicker="true" autocreatenewrows="false" flex="1">
+                            <treecols>
+                                <treecol id="name-col" editable="true" flex="1" label="${Oozie.JobExecutor.AdvancedTable.Column.Name.Label}" pen:binding="key"/>
+                                <treecol id="value-col" editable="true" flex="1" label="${Oozie.JobExecutor.AdvancedTable.Column.Value.Label}" pen:binding="value"/>
+                            </treecols>
+                            <treechildren />
+                        </tree>
+                        <hbox padding="0">
+                            <button label="${Oozie.JobExecutor.Add.Property.Label}" onclick="controller.addNewProperty()" />
+                            <button label="${Oozie.JobExecutor.Remove.Property.Label}" onclick="controller.removeProperty()" />
+                        </hbox>
+                    </vbox>
+                </groupbox>
             </vbox>
         </deck>
         <pen:include src="button-bar.xul"/>

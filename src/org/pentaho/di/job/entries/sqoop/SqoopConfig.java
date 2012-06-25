@@ -23,8 +23,7 @@
 package org.pentaho.di.job.entries.sqoop;
 
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.BlockableJobConfig;
-import org.pentaho.di.job.JobEntryMode;
+import org.pentaho.di.job.*;
 import org.pentaho.ui.xul.XulEventSource;
 import org.pentaho.ui.xul.util.AbstractModelList;
 
