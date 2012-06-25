@@ -82,8 +82,15 @@
                 </grid>
             </vbox>
             <vbox id="advancedOptionsPanel" flex="1">
-                <groupbox padding="8" flex="1">
-                    <caption label="${Oozie.JobExecutor.Workflow.Properties.Label}" />
+                <vbox padding="5" flex="1">
+                    <hbox padding="0" spacing="0">
+                        <label value="${Oozie.JobExecutor.Workflow.Properties.Label}" />
+                        <spacer flex="1"/>
+                        <hbox padding="2">
+                            <button image="../../../../../../../../../ui/images/Add.png" onclick="controller.addNewProperty()" />
+                            <button image="../../../../../../../../../ui/images/generic-delete.png" onclick="controller.removeProperty()" />
+                        </hbox>
+                    </hbox>
                     <vbox padding="0" spacing="0" flex="1">
                         <tree id="advanced-table" hidecolumnpicker="true" autocreatenewrows="false" flex="1">
                             <treecols>
@@ -92,12 +99,8 @@
                             </treecols>
                             <treechildren />
                         </tree>
-                        <hbox padding="0">
-                            <button label="${Oozie.JobExecutor.Add.Property.Label}" onclick="controller.addNewProperty()" />
-                            <button label="${Oozie.JobExecutor.Remove.Property.Label}" onclick="controller.removeProperty()" />
-                        </hbox>
                     </vbox>
-                </groupbox>
+                </vbox>
             </vbox>
         </deck>
         <pen:include src="button-bar.xul"/>
