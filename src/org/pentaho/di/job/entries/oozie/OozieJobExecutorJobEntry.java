@@ -28,14 +28,19 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.annotations.JobEntry;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.AbstractJobEntry;
+import org.pentaho.di.job.JobEntryMode;
 import org.pentaho.di.job.JobEntryUtils;
+import org.pentaho.di.job.PropertyEntry;
 import org.pentaho.di.job.entry.JobEntryInterface;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.ConnectException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
@@ -94,7 +99,11 @@ public class OozieJobExecutorJobEntry extends AbstractJobEntry<OozieJobExecutorC
         oozieClient.getProtocolUrl();
         oozieClient.validateWSVersion();
       } catch (OozieClientException e) {
-        if(e.getErrorCode().equals(HTTP_ERROR_CODE_404) || e.getCause() != null && e.getCause() instanceof MalformedURLException) {
+        if(e.getErrorCode().equals(HTTP_ERROR_CODE_404) ||
+            (e.getCause() != null && (
+                e.getCause() instanceof MalformedURLException ||
+                e.getCause() instanceof ConnectException)
+           )) {
           messages.add(BaseMessages.getString(OozieJobExecutorJobEntry.class, "ValidationMessages.Invalid.Oozie.URL"));
         } else {
           messages.add(BaseMessages.getString(OozieJobExecutorJobEntry.class, "ValidationMessages.Incompatible.Oozie.Versions", oozieClient.getClientBuildVersion()));
@@ -133,15 +142,36 @@ public class OozieJobExecutorJobEntry extends AbstractJobEntry<OozieJobExecutorC
     return messages;
   }
 
-  protected Properties getProperties(OozieJobExecutorConfig config) throws KettleFileException, IOException {
-    InputStreamReader reader = new InputStreamReader(KettleVFS.getInputStream(variables.environmentSubstitute(config.getOozieWorkflowConfig())));
-    Properties jobProps = PropertiesUtils.readProperties(reader, 100*1024);
+  public Properties getPropertiesFromFile(OozieJobExecutorConfig config) throws IOException, KettleFileException {
+    return getPropertiesFromFile(config, getVariableSpace());
+  }
+  public static Properties getPropertiesFromFile(OozieJobExecutorConfig config, VariableSpace variableSpace) throws IOException, KettleFileException {
+    InputStreamReader reader = new InputStreamReader(KettleVFS.getInputStream(variableSpace.environmentSubstitute(config.getOozieWorkflowConfig())));
 
-    // make sure we supply the current user name
-    if(!jobProps.containsKey(USER_NAME)) {
-      jobProps.setProperty(USER_NAME, variables.environmentSubstitute("${" + USER_NAME + "}"));
+    Properties jobProps = new Properties(); //PropertiesUtils.readProperties(reader, 100*1024);
+    jobProps.load(reader);
+    return jobProps;
+  }
+
+  public Properties getProperties(OozieJobExecutorConfig config) throws KettleFileException, IOException {
+    return getProperties(config, getVariableSpace());
+  }
+
+  public static Properties getProperties(OozieJobExecutorConfig config, VariableSpace variableSpace) throws KettleFileException, IOException {
+    Properties jobProps = null;
+    if(config.getModeAsEnum() == JobEntryMode.ADVANCED_LIST
+        && config.getWorkflowProperties() != null
+        && config.getWorkflowProperties().size() > 0) {
+      jobProps = new Properties();
+      for (PropertyEntry propertyEntry : config.getWorkflowProperties()) {
+        if(propertyEntry.getKey() != null) {
+          String value = propertyEntry.getValue() == null ? "" : propertyEntry.getValue();
+          jobProps.setProperty(propertyEntry.getKey(), variableSpace.environmentSubstitute(value));
+        }
+      }
+    } else {
+      jobProps = getPropertiesFromFile(config, variableSpace);
     }
-
     return jobProps;
   }
 
@@ -155,14 +185,29 @@ public class OozieJobExecutorJobEntry extends AbstractJobEntry<OozieJobExecutorC
         try {
           oozieClient.validateWSVersion();
         } catch (OozieClientException e) {
+
           setJobResultFailed(jobResult);
-          logError(BaseMessages.getString(OozieJobExecutorJobEntry.class, "Oozie.JobExecutor.ERROR.InvalidWSVersion", oozieClient.getClientBuildVersion()), e);
+
+          if(e.getErrorCode().equals(HTTP_ERROR_CODE_404) ||
+              (e.getCause() != null && (
+                  e.getCause() instanceof MalformedURLException ||
+                      e.getCause() instanceof ConnectException)
+              )) {
+            logError(BaseMessages.getString(OozieJobExecutorJobEntry.class, "ValidationMessages.Invalid.Oozie.URL"), e);
+          } else {
+            logError(BaseMessages.getString(OozieJobExecutorJobEntry.class, "ValidationMessages.Incompatible.Oozie.Versions", oozieClient.getClientBuildVersion()), e);
+          }
         }
 
         String jobId = null;
 
         try {
           Properties jobProps = getProperties(jobConfig);
+
+          // make sure we supply the current user name
+          if(!jobProps.containsKey(USER_NAME)) {
+            jobProps.setProperty(USER_NAME, getVariableSpace().environmentSubstitute("${" + USER_NAME + "}"));
+          }
 
           jobId = oozieClient.run(jobProps);
           if (JobEntryUtils.asBoolean(getJobConfig().getBlockingExecution(), variables)) {

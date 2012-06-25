@@ -25,21 +25,26 @@ import org.apache.oozie.client.OozieClientException;
 import org.apache.oozie.client.WorkflowAction;
 import org.apache.oozie.client.WorkflowJob;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
+import org.pentaho.di.job.JobEntryMode;
+import org.pentaho.di.job.PropertyEntry;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.w3c.dom.Document;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -47,6 +52,11 @@ import static org.junit.Assert.assertTrue;
  * Date: 6/5/12
  */
 public class OozieJobExecutorJobEntryTest {
+
+  @BeforeClass
+  public static void init() throws Exception {
+    KettleEnvironment.init();
+  }
 
   @Test
   public void testLoadXml() throws Exception {
@@ -73,6 +83,40 @@ public class OozieJobExecutorJobEntryTest {
     assertEquals(jobConfig.getOozieWorkflow(), jobConfig2.getOozieWorkflow());
     assertEquals(jobConfig.getOozieWorkflowConfig(), jobConfig2.getOozieWorkflowConfig());
     assertEquals(jobConfig.getOozieUrl(), jobConfig2.getOozieUrl());
+  }
+
+  @Test
+  public void testLoadXml_customProps() throws Exception {
+
+    OozieJobExecutorJobEntry jobEntry = new OozieJobExecutorJobEntry();
+    OozieJobExecutorConfig jobConfig = new OozieJobExecutorConfig();
+
+    jobConfig.setOozieWorkflow("hdfs://localhost:9000/user/test-user/oozie/workflow.xml");
+    jobConfig.setOozieWorkflowConfig("file:///User/test-user/oozie/job.properties");
+    jobConfig.setOozieUrl("http://localhost:11000/oozie");
+
+    ArrayList<PropertyEntry> props = new ArrayList<PropertyEntry>();
+    props.add(new PropertyEntry("testProp", "testValue"));
+    jobConfig.setWorkflowProperties(props);
+
+    jobEntry.setJobConfig(jobConfig);
+
+    JobEntryCopy jec = new JobEntryCopy(jobEntry);
+    jec.setLocation(0, 0);
+    String xml = jec.getXML();
+
+    Document d = XMLHandler.loadXMLString(xml);
+
+    OozieJobExecutorJobEntry jobEntry2 = new OozieJobExecutorJobEntry();
+    jobEntry2.loadXML(d.getDocumentElement(), null, null, null);
+
+    OozieJobExecutorConfig jobConfig2 = jobEntry2.getJobConfig();
+    assertEquals(jobConfig.getOozieWorkflow(), jobConfig2.getOozieWorkflow());
+    assertEquals(jobConfig.getOozieWorkflowConfig(), jobConfig2.getOozieWorkflowConfig());
+    assertEquals(jobConfig.getOozieUrl(), jobConfig2.getOozieUrl());
+
+    assertNotNull(jobConfig2.getWorkflowProperties());
+    assertEquals("testValue", jobConfig2.getWorkflowProperties().get(0).getValue());
   }
 
   @Test
@@ -150,7 +194,7 @@ public class OozieJobExecutorJobEntryTest {
 
     // file is a props file & can be parsed into Properties object
     assertEquals(1, warnings.size());
-    assertTrue(warnings.get(0).startsWith("App Path setting not found in Workflow Properties file"));
+    assertTrue(warnings.get(0).startsWith("App Path setting not found in Workflow Properties"));
   }
 
   @Test
@@ -222,11 +266,9 @@ public class OozieJobExecutorJobEntryTest {
   public void testGetProperties() throws Exception {
     OozieJobExecutorConfig config = new OozieJobExecutorConfig();
     config.setOozieWorkflowConfig("test-src/job.properties");
-    OozieJobExecutorJobEntry je = new OozieJobExecutorJobEntry();
-    Properties props = je.getProperties(config);
+    Properties props = OozieJobExecutorJobEntry.getProperties(config, new Variables());
 
-    assertTrue("user.name was not added", props.containsKey("user.name"));
-    assertEquals(7, props.size());
+    assertEquals(6, props.size());
   }
   @Test
   public void testGetProperties_VariableizedWorkflowPath() throws Exception {
@@ -236,8 +278,27 @@ public class OozieJobExecutorJobEntryTest {
     je.setVariable("propertiesFile", "test-src/job.properties");
 
     Properties props = je.getProperties(config);
-    assertTrue("user.name was not added", props.containsKey("user.name"));
-    assertEquals(7, props.size());
+    assertEquals(6, props.size());
+  }
+
+  @Test
+  public void testGetProperties_fromAdvancedProperties() throws Exception {
+    OozieJobExecutorConfig config = new OozieJobExecutorConfig();
+
+    ArrayList<PropertyEntry> advancedProps = new ArrayList<PropertyEntry>();
+    advancedProps.add(new PropertyEntry("prop1", "value1"));
+    advancedProps.add(new PropertyEntry("prop2", "value2"));
+    advancedProps.add(new PropertyEntry("prop3", "value3"));
+
+    config.setOozieWorkflowConfig("test-src/job.properties");
+    config.setWorkflowProperties(advancedProps);
+    config.setMode(JobEntryMode.ADVANCED_LIST);
+
+    // make sure our properties are the advanced ones, not read in from the workflow config file
+    Properties props = OozieJobExecutorJobEntry.getProperties(config, new Variables());
+
+    assertTrue("Advanced properties were not used", props.containsKey("prop1"));
+    assertEquals(3, props.size());
   }
 
   private TestOozieClient getFailingTestOozieClient() {
