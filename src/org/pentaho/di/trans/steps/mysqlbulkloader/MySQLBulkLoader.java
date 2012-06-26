@@ -293,17 +293,21 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
 
 	private void closeOutput() throws Exception 
 	{
-		// Close the fifo file...
-		//
-		data.fifoStream.close();
-		data.fifoStream=null;
+		if (data.fifoStream!=null) {
+			// Close the fifo file...
+			//
+			data.fifoStream.close();
+			data.fifoStream=null;
+		}
 
-        // wait for the INSERT statement to finish and check for any
-        // error and/or warning...
-        data.sqlRunner.join();
-        SqlRunner sqlRunner = data.sqlRunner;
-        data.sqlRunner = null;
-        sqlRunner.checkExcn();
+		if (data.sqlRunner !=null) {
+	        // wait for the INSERT statement to finish and check for any
+	        // error and/or warning...
+	        data.sqlRunner.join();
+	        SqlRunner sqlRunner = data.sqlRunner;
+	        data.sqlRunner = null;
+	        sqlRunner.checkExcn();
+		}
 	}
 
 	private void writeRowToBulk(RowMetaInterface rowMeta, Object[] r) throws KettleException {
