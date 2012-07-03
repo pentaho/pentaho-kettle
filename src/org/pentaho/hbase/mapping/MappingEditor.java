@@ -84,8 +84,6 @@ import org.pentaho.di.ui.core.widget.TextVar;
  * to be installed on the HBase nodes. 
  * 
  * @author Mark Hall (mhall{[at]}pentaho{[dot]}com)
- * @version $Revision$
- *
  */
 public class MappingEditor extends Composite implements ConfigurationProducer {
   
@@ -133,7 +131,6 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
   public MappingEditor(Shell shell, Composite parent, ConfigurationProducer configProducer, 
       FieldProducer fieldProducer, int tableViewStyle, boolean allowTableCreate, 
       PropsUI props, TransMeta transMeta) {
-//    super(parent, SWT.NO_BACKGROUND | SWT.NO_FOCUS | SWT.NO_MERGE_PAINTS);
     super(parent, SWT.NONE);
     
     m_shell = shell;
@@ -155,10 +152,7 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
     int margin = Const.MARGIN;
     
     FormLayout controlLayout = new FormLayout();
-    /*controlLayout.marginLeft = 0;
-    controlLayout.marginRight = 0;
-    controlLayout.marginTop = 0;
-    controlLayout.marginBottom = 0; */
+
     controlLayout.marginWidth = 3;
     controlLayout.marginHeight = 3;
     
@@ -217,15 +211,7 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
       fd.top = new FormAttachment(0, margin);
     }
     fd.right = new FormAttachment(middle, -margin);
-    tableNameLab.setLayoutData(fd);
-    
-/*    m_existingTableNamesBut = new Button(this, SWT.PUSH | SWT.CENTER);
-    props.setLook(m_existingTableNamesBut);
-    m_existingTableNamesBut.setText("Get existing table names");
-    fd = new FormData();
-    fd.right = new FormAttachment(100, 0);
-    fd.top = new FormAttachment(0, 0);
-    m_existingTableNamesBut.setLayoutData(fd); */
+    tableNameLab.setLayoutData(fd);    
     
     m_existingTableNamesCombo = new CCombo(this, SWT.BORDER);
     props.setLook(m_existingTableNamesCombo);
@@ -251,22 +237,13 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
     fd.left = new FormAttachment(0, 0);
     fd.top = new FormAttachment(m_existingTableNamesCombo, margin);
     fd.right = new FormAttachment(middle, -margin);
-    mappingNameLab.setLayoutData(fd);
-    
-    /*m_existingMappingNamesBut = new Button(this, SWT.PUSH | SWT.CENTER);
-    props.setLook(m_existingMappingNamesBut);
-    m_existingMappingNamesBut.setText("Get mapping names");
-    fd = new FormData();
-    fd.right = new FormAttachment(100, 0);
-    fd.top = new FormAttachment(m_existingTableNamesCombo, 0);
-    m_existingMappingNamesBut.setLayoutData(fd); */
+    mappingNameLab.setLayoutData(fd);    
     
     m_existingMappingNamesCombo = new CCombo(this, SWT.BORDER);
     props.setLook(m_existingMappingNamesCombo);
     fd = new FormData();
     fd.left = new FormAttachment(middle, 0);
     fd.top = new FormAttachment(m_existingTableNamesCombo, margin);
-    //fd.right = new FormAttachment(m_existingMappingNamesBut, -margin);
     fd.right = new FormAttachment(100, 0);
     m_existingMappingNamesCombo.setLayoutData(fd);
     
@@ -355,6 +332,7 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
     m_saveBut = new Button(this, SWT.PUSH | SWT.CENTER);
     props.setLook(m_saveBut);
     m_saveBut.setText(Messages.getString("MappingDialog.SaveMapping"));
+    m_saveBut.setToolTipText(Messages.getString("MappingDialog.SaveMapping.TipText"));
     fd = new FormData();
     fd.left = new FormAttachment(0, margin);
     fd.bottom = new FormAttachment(100, -margin*2);
@@ -411,16 +389,9 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
         public void widgetSelected(SelectionEvent e) {
           populateTableWithTupleTemplate();
         }
-      });
-      
-/*      colinf[0].setReadOnly(true);
-      colinf[1].setReadOnly(true);
-      colinf[2].setReadOnly(true); 
-      colinf[4].setReadOnly(true); */
+      });      
     }
-    
-    
-    
+            
     m_fieldsView = new TableView(transMeta, this, 
         tableViewStyle,
         colinf, 1, null, props);
@@ -430,12 +401,7 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
     fd.bottom= new FormAttachment(m_saveBut, -margin*2);
     fd.left  = new FormAttachment(0, 0);
     fd.right = new FormAttachment(100, 0);
-    m_fieldsView.setLayoutData(fd);
-    
-    
-    // --
-    //layout();
-    //pack();    
+    m_fieldsView.setLayoutData(fd);            
   }
   
   private void populateTableWithTupleTemplate() {
@@ -598,7 +564,6 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
         !m_connectionProblem) {
       String existingName = m_existingTableNamesCombo.getText();
       m_existingTableNamesCombo.removeAll();
-      //m_existingMappingNamesCombo.removeAll();
       try  {
         Configuration conf = m_configProducer.getHBaseConnection();
         MappingAdmin.checkHBaseAvailable(conf);
@@ -747,14 +712,7 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
         }
       }
     }
-/*    if (nrNonEmpty == 5 && m_fieldsView.getNonEmpty(0).getText(1).equals("KEY") &&
-        m_fieldsView.getNonEmpty(1).getText(1).equals("Family") &&
-        m_fieldsView.getNonEmpty(2).getText(1).equals("Column") &&
-        m_fieldsView.getNonEmpty(3).getText(1).equals("Value") && 
-        m_fieldsView.getNonEmpty(4).getText(1).equals("Timestamp")) {
-      isTupleMapping = true;
-      theMapping.setTupleMapping(true);
-    } */
+
     if (tupleIdCount == 5) {
       isTupleMapping = true;
       theMapping.setTupleMapping(true);
@@ -806,11 +764,7 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
       String indexedVals = null;
       if (!Const.isEmpty(item.getText(6))) {
         indexedVals = item.getText(6);
-      }/* else {
-        if (!isKey && type != null && type.equalsIgnoreCase("String")) {
-          missingIndexedValues.add(item.getText(0));
-        }
-      }*/
+      }
       
       // only add if we have all data and its all correct
       if (isKey && !moreThanOneKey) {
@@ -940,7 +894,6 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
 
       try {
         HBaseAdmin admin = new HBaseAdmin(conf);
-        //String tableName = m_existingTableNamesCombo.getText().trim();
         if (!admin.tableExists(tableName)) {
           boolean result = MessageDialog.openConfirm(m_shell, "Create table", 
               "Table \"" + tableName + "\" does not exist. Create it?");
@@ -976,7 +929,6 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
           
           HTableDescriptor tableDescription = new HTableDescriptor(tableName);
           for (String familyName : families) {
-            //HColumnDescriptor colDescriptor = new HColumnDescriptor(familyName);
             HColumnDescriptor colDescriptor = new HColumnDescriptor(Bytes.toBytes(familyName),
                 HColumnDescriptor.DEFAULT_VERSIONS, compression, 
                 HColumnDescriptor.DEFAULT_IN_MEMORY,
@@ -1015,11 +967,7 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
             + Messages.getString("MappingDialog.Info.Message3.MappingExists"));
         if (!result) {
           return;
-        }
-        
-        // TODO possibly check for consistency against any other mappings
-        // for this table?
-        
+        }                
       }
       // finally add the mapping.
       m_admin.putMapping(theMapping, true);
@@ -1109,50 +1057,7 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
           m_admin.getMapping(tableName, 
               m_existingMappingNamesCombo.getText().trim());
         
-        setMapping(mapping);
-        
-        /*m_fieldsView.clearAll();
-        
-        // do the key first
-        TableItem keyItem = new TableItem(m_fieldsView.table, SWT.NONE);
-        keyItem.setText(1, mapping.getKeyName());
-        keyItem.setText(2, "Y");
-        keyItem.setText(5, mapping.getKeyType().toString());
-        
-        // the rest of the fields in the mapping
-        Map<String, HBaseValueMeta> mappedFields = mapping.getMappedColumns();
-        for (String alias : mappedFields.keySet()) {
-          HBaseValueMeta vm = mappedFields.get(alias);
-          TableItem item = new TableItem(m_fieldsView.table, SWT.NONE);
-          item.setText(1, alias);
-          item.setText(2, "N");
-          item.setText(3, vm.getColumnFamily());
-          item.setText(4, vm.getColumnName());
-          
-          if (vm.isInteger()) {
-            if (vm.getIsLongOrDouble()) {
-              item.setText(5, "Long");
-            } else {
-              item.setText(5, "Integer");
-            }
-          } else if (vm.isNumber()) {
-            if (vm.getIsLongOrDouble()) {
-              item.setText(5, "Double");
-            } else {
-              item.setText(5, "Float");
-            }
-          }  else {
-            item.setText(5, vm.getTypeDesc());
-          }
-          
-          if (vm.getStorageType() == ValueMetaInterface.STORAGE_TYPE_INDEXED) {
-            item.setText(6, HBaseValueMeta.objectIndexValuesToString(vm.getIndex()));
-          }
-        }
-        
-        m_fieldsView.removeEmptyRows();
-        m_fieldsView.setRowNums();
-        m_fieldsView.optWidth(true); */
+        setMapping(mapping);        
       }
 
     } catch (IOException ex) {

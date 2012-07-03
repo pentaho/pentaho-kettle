@@ -30,7 +30,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
-import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -52,7 +51,6 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
@@ -68,11 +66,11 @@ import org.w3c.dom.Node;
  * details on the meta data format.
  * 
  * @author Mark Hall (mhall{[at]}pentaho{[dot]}com)
- * @version $Revision$
- *
  */
 @Step(id = "HBaseInput", image = "HB.png", name = "HBase Input", description="Reads data from a HBase table according to a mapping", categoryDescription="Big Data")
 public class HBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
+  
+  protected static Class<?> PKG = HBaseInputMeta.class;
   
   /** comma separated list of hosts that the zookeeper quorum is running on */
   protected String m_zookeeperHosts;
@@ -114,6 +112,27 @@ public class HBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
    * otherwise all filters have to return true before the row is output
    */
   protected boolean m_matchAnyFilter;
+  
+  /** The mapping to use if we are not loading one dynamically at runtime from HBase itself */
+  protected Mapping m_mapping;
+  
+  /**
+   * Set the mapping to use for decoding the row
+   * 
+   * @param m the mapping to use
+   */
+  public void setMapping(Mapping m) {
+    m_mapping = m;
+  }
+  
+  /**
+   * Get the mapping to use for decoding the row
+   * 
+   * @return the mapping to use
+   */
+  public Mapping getMapping() {
+    return m_mapping;
+  }
   
   /**
    * Set the list of hosts that the zookeeper quorum is running on.
@@ -455,6 +474,10 @@ public class HBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append("\n    ").append(XMLHandler.addTagValue("match_any_filter", 
         m_matchAnyFilter));
     
+    if (m_mapping != null) {
+      retval.append(m_mapping.getXML());
+    }
+    
     return retval.toString();
   }  
 
@@ -539,6 +562,13 @@ public class HBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
         m_filters.add(ColumnFilter.getFilter(filterNode));
       }
     }
+    
+    Mapping tempMapping = new Mapping();
+    if (tempMapping.loadXML(stepnode)) {
+      m_mapping = tempMapping;
+    } else {
+      m_mapping = null;
+    }
   }
 
   public void saveRep(Repository rep, ObjectId id_transformation,
@@ -612,6 +642,10 @@ public class HBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
     
     rep.saveStepAttribute(id_transformation, id_step, 0, "match_any_filter", 
         m_matchAnyFilter);
+    
+    if (m_mapping != null) {
+      m_mapping.saveRep(rep, id_transformation, id_step);
+    }
   }
 
   public void readRep(Repository rep, ObjectId id_step,
@@ -689,6 +723,13 @@ public class HBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
         m_filters.add(ColumnFilter.getFilter(rep, i, id_step));
       }
     }
+    
+    Mapping tempMapping = new Mapping();
+    if (tempMapping.readRep(rep, id_step)) {
+      m_mapping = tempMapping;
+    } else {
+      m_mapping = null;
+    }
   }
 
   public void check(List<CheckResultInterface> remarks, TransMeta transMeta,
@@ -728,50 +769,56 @@ public class HBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
       "connection details)!");
     }
 
-    if (Const.isEmpty(m_sourceTableName) || Const.isEmpty(m_sourceMappingName)) {
+    if (m_mapping == null && 
+        (Const.isEmpty(m_sourceTableName) || Const.isEmpty(m_sourceMappingName))) {
       throw new KettleStepException("No output fields available (missing table " +
       "mapping details)!");
     }
 
     if (m_cachedMapping == null) {
       // cache the mapping information
-      Configuration conf = null;
-      URL coreConf = null;
-      URL defaultConf = null;
-      String zookeeperHosts = null;
-      String zookeeperPort = null;
-      
-      try {
-        if (!Const.isEmpty(m_coreConfigURL)) {
-          coreConf = HBaseInputData.stringToURL(space.environmentSubstitute(m_coreConfigURL));
-        }
-        if (!Const.isEmpty((m_defaultConfigURL))) {
-          defaultConf = HBaseInputData.stringToURL(space.environmentSubstitute(m_defaultConfigURL));
-        }
-        if (!Const.isEmpty(m_zookeeperHosts)) {
-          zookeeperHosts = space.environmentSubstitute(m_zookeeperHosts);
-        }
-        if (!Const.isEmpty(m_zookeeperPort)) {
-          zookeeperPort = space.environmentSubstitute(zookeeperPort);
-        }
-        conf = HBaseInputData.getHBaseConnection(zookeeperHosts, zookeeperPort, 
-            coreConf, defaultConf);            
-      } catch (IOException ex) {
-        throw new KettleStepException(ex.getMessage(), ex);
-      }
-      
-      MappingAdmin mappingAdmin = null;
-      try {
-        mappingAdmin = new MappingAdmin(conf);
-      } catch (Exception ex) {
-        throw new KettleStepException(ex.getMessage(), ex);
-      }
+      if (m_mapping != null) {
+        m_cachedMapping = m_mapping;
+      } else {
 
-      try {
-        m_cachedMapping = 
-          mappingAdmin.getMapping(m_sourceTableName, m_sourceMappingName);
-      } catch (IOException ex) {
-        throw new KettleStepException(ex.getMessage(), ex);
+        Configuration conf = null;
+        URL coreConf = null;
+        URL defaultConf = null;
+        String zookeeperHosts = null;
+        String zookeeperPort = null;
+
+        try {
+          if (!Const.isEmpty(m_coreConfigURL)) {
+            coreConf = HBaseInputData.stringToURL(space.environmentSubstitute(m_coreConfigURL));
+          }
+          if (!Const.isEmpty((m_defaultConfigURL))) {
+            defaultConf = HBaseInputData.stringToURL(space.environmentSubstitute(m_defaultConfigURL));
+          }
+          if (!Const.isEmpty(m_zookeeperHosts)) {
+            zookeeperHosts = space.environmentSubstitute(m_zookeeperHosts);
+          }
+          if (!Const.isEmpty(m_zookeeperPort)) {
+            zookeeperPort = space.environmentSubstitute(zookeeperPort);
+          }
+          conf = HBaseInputData.getHBaseConnection(zookeeperHosts, zookeeperPort, 
+              coreConf, defaultConf);            
+        } catch (IOException ex) {
+          throw new KettleStepException(ex.getMessage(), ex);
+        }
+
+        MappingAdmin mappingAdmin = null;
+        try {
+          mappingAdmin = new MappingAdmin(conf);
+        } catch (Exception ex) {
+          throw new KettleStepException(ex.getMessage(), ex);
+        }
+
+        try {
+          m_cachedMapping = 
+            mappingAdmin.getMapping(m_sourceTableName, m_sourceMappingName);
+        } catch (IOException ex) {
+          throw new KettleStepException(ex.getMessage(), ex);
+        }
       }
     }
   }
@@ -825,21 +872,10 @@ public class HBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
   }
   
-  /**
-   * Get the UI for this step.
-   *
-   * @param shell a <code>Shell</code> value
-   * @param meta a <code>StepMetaInterface</code> value
-   * @param transMeta a <code>TransMeta</code> value
-   * @param name a <code>String</code> value
-   * @return a <code>StepDialogInterface</code> value
+  /* (non-Javadoc)
+   * @see org.pentaho.di.trans.step.BaseStepMeta#getDialogClassName()
    */
-  public StepDialogInterface getDialog(Shell shell, 
-                                       StepMetaInterface meta,
-                                       TransMeta transMeta, 
-                                       String name) {
-
-    return new HBaseInputDialog(shell, meta, transMeta, name);
+  public String getDialogClassName() {
+    return "org.pentaho.di.trans.steps.hbaseinput.HBaseInputDialog";
   }
-  
 }

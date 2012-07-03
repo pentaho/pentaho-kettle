@@ -65,6 +65,7 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.hbase.mapping.ConfigurationProducer;
 import org.pentaho.hbase.mapping.FieldProducer;
+import org.pentaho.hbase.mapping.Mapping;
 import org.pentaho.hbase.mapping.MappingAdmin;
 import org.pentaho.hbase.mapping.MappingEditor;
 
@@ -72,8 +73,6 @@ import org.pentaho.hbase.mapping.MappingEditor;
  * Dialog class for HBaseOutput
  * 
  * @author Mark Hall (mhall{[at]}pentaho{[dot]}com)
- * @version $Revision$
- *
  */
 public class HBaseOutputDialog extends BaseStepDialog implements
   StepDialogInterface, ConfigurationProducer, FieldProducer {
@@ -406,11 +405,10 @@ public class HBaseOutputDialog extends BaseStepDialog implements
     fd.right = new FormAttachment(100, 0);
     fd.top = new FormAttachment(m_defaultConfigText, 0);
     m_mappedTableNamesBut.setLayoutData(fd);        
-    // TODO tip text
 
     m_mappedTableNamesCombo = new CCombo(wConfigComp, SWT.BORDER);
     props.setLook(m_mappedTableNamesCombo);
-    // TODO set tool tip
+
     m_mappedTableNamesCombo.addModifyListener(new ModifyListener() {
       public void modifyText(ModifyEvent e) {
         m_currentMeta.setChanged();
@@ -468,7 +466,6 @@ public class HBaseOutputDialog extends BaseStepDialog implements
     fd.right = new FormAttachment(100, 0);
     fd.top = new FormAttachment(m_mappedTableNamesCombo, 0);
     m_mappingNamesBut.setLayoutData(fd);
-    // TODO tip text
 
     m_mappingNamesBut.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent e) {
@@ -478,7 +475,7 @@ public class HBaseOutputDialog extends BaseStepDialog implements
 
     m_mappingNamesCombo = new CCombo(wConfigComp, SWT.BORDER);
     props.setLook(m_mappingNamesCombo);
-    // TODO set tool tip
+
     m_mappingNamesCombo.addModifyListener(new ModifyListener() {
       public void modifyText(ModifyEvent e) {
         m_currentMeta.setChanged();
@@ -659,6 +656,14 @@ public class HBaseOutputDialog extends BaseStepDialog implements
     
     updateMetaConnectionDetails(m_currentMeta);
     
+    if (Const.isEmpty(m_mappingNamesCombo.getText())) {
+      Mapping toSet = m_mappingEditor.getMapping(false);
+      m_currentMeta.setMapping(toSet);
+    } else {
+      // we're going to use a mapping stored in HBase - null out any stored mapping
+      m_currentMeta.setMapping(null);
+    }
+    
     if (!m_originalMeta.equals(m_currentMeta)) {
       m_currentMeta.setChanged();
       changed = m_currentMeta.hasChanged();
@@ -714,6 +719,11 @@ public class HBaseOutputDialog extends BaseStepDialog implements
     if (!Const.isEmpty(m_currentMeta.getWriteBufferSize())) {
       m_writeBufferSizeText.setText(m_currentMeta.getWriteBufferSize());
     }    
+    
+    if (Const.isEmpty(m_currentMeta.getTargetMappingName()) && 
+        m_currentMeta.getMapping() != null) {
+      m_mappingEditor.setMapping(m_currentMeta.getMapping());
+    }
   }
 
   public Configuration getHBaseConnection() throws IOException {
@@ -817,5 +827,4 @@ public class HBaseOutputDialog extends BaseStepDialog implements
     updateMetaConnectionDetails(m_configurationMeta);
     return m_configurationMeta.getXML();
   }
-
 }

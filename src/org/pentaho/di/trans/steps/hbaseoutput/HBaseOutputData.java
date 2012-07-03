@@ -39,8 +39,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
  * for details on the meta data format.
  * 
  * @author Mark Hall (mhall{[at]}pentaho{[dot]}com)
- * @version $Revision$
- *
  */
 public class HBaseOutputData extends BaseStepData implements StepDataInterface {
 

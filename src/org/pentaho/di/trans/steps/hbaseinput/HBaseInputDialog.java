@@ -76,6 +76,11 @@ import org.pentaho.hbase.mapping.Mapping;
 import org.pentaho.hbase.mapping.MappingAdmin;
 import org.pentaho.hbase.mapping.MappingEditor;
 
+/**
+ * Dialog class for HBaseInput
+ * 
+ * @author Mark Hall (mhall{[at]}pentaho{[dot]}com)
+ */
 public class HBaseInputDialog extends BaseStepDialog implements
     StepDialogInterface, ConfigurationProducer {
   
@@ -439,17 +444,15 @@ public class HBaseInputDialog extends BaseStepDialog implements
     fd.right = new FormAttachment(100, 0);
     fd.top = new FormAttachment(m_defaultConfigText, 0);
     m_mappedTableNamesBut.setLayoutData(fd);        
-    // TODO tip text
     
     m_mappedTableNamesCombo = new CCombo(wConfigComp, SWT.BORDER);
     props.setLook(m_mappedTableNamesCombo);
-    // TODO set tool tip
+
     m_mappedTableNamesCombo.addModifyListener(new ModifyListener() {
       public void modifyText(ModifyEvent e) {
         m_currentMeta.setChanged();
         m_mappedTableNamesCombo.
           setToolTipText(transMeta.environmentSubstitute(m_mappedTableNamesCombo.getText()));
-//        checkKeyInformation(true);
       }
     });
     m_mappedTableNamesCombo.addSelectionListener(new SelectionAdapter() {
@@ -501,7 +504,6 @@ public class HBaseInputDialog extends BaseStepDialog implements
     fd.right = new FormAttachment(100, 0);
     fd.top = new FormAttachment(m_mappedTableNamesCombo, 0);
     m_mappingNamesBut.setLayoutData(fd);
-    // TODO tip text
     
     m_mappingNamesBut.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent e) {
@@ -511,7 +513,7 @@ public class HBaseInputDialog extends BaseStepDialog implements
     
     m_mappingNamesCombo = new CCombo(wConfigComp, SWT.BORDER);
     props.setLook(m_mappingNamesCombo);
-    // TODO set tool tip
+
     m_mappingNamesCombo.addModifyListener(new ModifyListener() {
       public void modifyText(ModifyEvent e) {
         m_currentMeta.setChanged();
@@ -591,31 +593,7 @@ public class HBaseInputDialog extends BaseStepDialog implements
     fd.left = new FormAttachment(middle, 0);
     fd.top = new FormAttachment(m_keyStopText, margin);
     m_scanCacheText.setLayoutData(fd);
-    
-    // key as a column
-/*    Label includeKeyLab = new Label(wConfigComp, SWT.RIGHT);
-    includeKeyLab.setText(Messages.getString("HBaseInputDialog.IncludeKey.Label"));
-    props.setLook(includeKeyLab);
-    fd = new FormData();
-    fd.left = new FormAttachment(0, 0);
-    fd.top = new FormAttachment(m_keyStopText, margin);
-    fd.right = new FormAttachment(middle, -margin);
-    includeKeyLab.setLayoutData(fd);
-    
-    m_includeKey = new Button(wConfigComp, SWT.CHECK);
-    props.setLook(m_includeKey);
-    fd = new FormData();
-    fd.right = new FormAttachment(100, 0);
-    fd.left = new FormAttachment(middle, 0);
-    fd.top = new FormAttachment(m_keyStopText, margin);
-    m_includeKey.setLayoutData(fd);
-    m_includeKey.addSelectionListener(new SelectionAdapter() {
-      public void widgetSelected(SelectionEvent e) {
-        m_currentMeta.setChanged();
-      }
-    }); */
-    
-    
+        
     m_getKeyInfoBut = new Button(wConfigComp, SWT.PUSH);
     m_getKeyInfoBut.setText("Get Key/Fields Info");
     props.setLook(m_getKeyInfoBut);
@@ -792,8 +770,6 @@ public class HBaseInputDialog extends BaseStepDialog implements
 
     final ColumnInfo[] colinf2 = new ColumnInfo[] {
         new ColumnInfo(Messages.getString("HBaseInputDialog.Filters.FIELD_ALIAS") + "     ", ColumnInfo.COLUMN_TYPE_CCOMBO, false),
-        /*new ColumnInfo(Messages.getString("HBaseInputDialog.Filters.FIELD_FAMILY"), ColumnInfo.COLUMN_TYPE_TEXT, false),
-        new ColumnInfo(Messages.getString("HBaseInputDialog.Filters.FIELD_NAME"), ColumnInfo.COLUMN_TYPE_TEXT, false),*/
         new ColumnInfo(Messages.getString("HBaseInputDialog.Filters.FIELD_TYPE"), ColumnInfo.COLUMN_TYPE_TEXT, false),
         new ColumnInfo(Messages.getString("HBaseInputDialog.Filters.FIELD_OPERATOR"), ColumnInfo.COLUMN_TYPE_CCOMBO, false), 
         new ColumnInfo(Messages.getString("HBaseInputDialog.Filters.FIELD_COMPARISON"), ColumnInfo.COLUMN_TYPE_TEXT, false),
@@ -801,8 +777,6 @@ public class HBaseInputDialog extends BaseStepDialog implements
         new ColumnInfo(Messages.getString("HBaseInputDialog.Filters.FIELD_SIGNED"), ColumnInfo.COLUMN_TYPE_CCOMBO, false), };
 
     colinf2[0].setReadOnly(false);
-/*    colinf2[1].setReadOnly(true);
-    colinf2[2].setReadOnly(true); */
     colinf2[1].setReadOnly(false);
     colinf2[2].setReadOnly(true);
     colinf2[3].setReadOnly(false);
@@ -894,12 +868,7 @@ public class HBaseInputDialog extends BaseStepDialog implements
     wFilterComp.layout();
     m_wFilterTab.setControl(wFilterComp);            
     // -----
-    
-    
-    
-    
-    
-    
+                        
     
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
@@ -1017,7 +986,7 @@ public class HBaseInputDialog extends BaseStepDialog implements
     meta.setCoreConfigURL(m_coreConfigText.getText());    
     meta.setDefaulConfigURL(m_defaultConfigText.getText());
     meta.setSourceTableName(m_mappedTableNamesCombo.getText());
-    meta.setSourceMappingName(m_mappingNamesCombo.getText());
+    meta.setSourceMappingName(m_mappingNamesCombo.getText());    
   }
   
   protected void ok() {
@@ -1032,9 +1001,7 @@ public class HBaseInputDialog extends BaseStepDialog implements
     m_currentMeta.setKeyStartValue(m_keyStartText.getText());
     m_currentMeta.setKeyStopValue(m_keyStopText.getText());
     m_currentMeta.setScannerCacheSize(m_scanCacheText.getText());
-    m_currentMeta.setMatchAnyFilter(m_matchAnyBut.getSelection());
-    
-//    m_currentMeta.setOutputKeyAsField(m_includeKey.getSelection());
+    m_currentMeta.setMatchAnyFilter(m_matchAnyBut.getSelection());    
     
     int numNonEmpty = m_fieldsView.nrNonEmpty();
     if (numNonEmpty > 0) {
@@ -1048,9 +1015,6 @@ public class HBaseInputDialog extends BaseStepDialog implements
         String column = item.getText(4).trim();
         String type = item.getText(5).trim();
         String format = item.getText(6).trim();
-//        String indexed = item.getText(7).trim();
-/*        String tableName = item.getText(7);
-        String mappingName = item.getText(8); */
 
         HBaseValueMeta vm = new HBaseValueMeta(family + HBaseValueMeta.SEPARATOR +
             column + HBaseValueMeta.SEPARATOR + alias, 
@@ -1099,6 +1063,14 @@ public class HBaseInputDialog extends BaseStepDialog implements
       m_currentMeta.setColumnFilters(filters);
     } else {
       m_currentMeta.setColumnFilters(null);
+    }
+    
+    if (Const.isEmpty(m_mappingNamesCombo.getText())) {
+      Mapping toSet = m_mappingEditor.getMapping(false);
+      m_currentMeta.setMapping(toSet);
+    } else {
+      // we're going to use a mapping stored in HBase - null out any stored mapping
+      m_currentMeta.setMapping(null);
     }
     
     if (!m_originalMeta.equals(m_currentMeta)) {
@@ -1155,9 +1127,7 @@ public class HBaseInputDialog extends BaseStepDialog implements
     }
     
     m_matchAnyBut.setSelection(m_currentMeta.getMatchAnyFilter());
-    m_matchAllBut.setSelection(!m_currentMeta.getMatchAnyFilter());
-    
-//    m_includeKey.setSelection(m_currentMeta.getOutputKeyAsField());
+    m_matchAllBut.setSelection(!m_currentMeta.getMatchAnyFilter());    
     
     // do the key and columns
     checkKeyInformation(true, false);
@@ -1189,6 +1159,11 @@ public class HBaseInputDialog extends BaseStepDialog implements
       m_filtersView.removeEmptyRows();
       m_filtersView.setRowNums();
       m_filtersView.optWidth(true);
+    }
+    
+    if (Const.isEmpty(m_currentMeta.getSourceMappingName()) && 
+        m_currentMeta.getMapping() != null) {
+      m_mappingEditor.setMapping(m_currentMeta.getMapping());
     }
   }
   
@@ -1225,26 +1200,23 @@ public class HBaseInputDialog extends BaseStepDialog implements
   }
   
   private void checkKeyInformation(boolean quiet, boolean readFieldsFromMapping) {
-    if ((!Const.isEmpty(m_coreConfigText.getText()) || 
+    boolean displayFieldsEmbeddedMapping = 
+      ((m_currentMeta.getMapping() != null && Const.isEmpty(m_mappingNamesCombo.getText())));
+    boolean displayFieldsMappingFromHBase = 
+      (!Const.isEmpty(m_coreConfigText.getText()) || 
           !Const.isEmpty(m_zookeeperQuorumText.getText())) && 
         !Const.isEmpty(m_mappedTableNamesCombo.getText()) &&
-        !Const.isEmpty(m_mappingNamesCombo.getText())) {
+        !Const.isEmpty(m_mappingNamesCombo.getText());
+          
+    
+    if (displayFieldsEmbeddedMapping || displayFieldsMappingFromHBase) {
       try {
         m_indexedLookup = new HashMap<String, String>();
         
-        MappingAdmin admin = new MappingAdmin();
-/*        URL coreConf = null;
-        URL defaultConf = null;
-        
-        if (!Const.isEmpty(m_coreConfigText.getText())) {
-          coreConf = HBaseInputData.stringToURL(transMeta.
-              environmentSubstitute(m_coreConfigText.getText()));
+        MappingAdmin admin = null;
+        if (displayFieldsMappingFromHBase) {
+          admin = new MappingAdmin();
         }
-        
-        if (!Const.isEmpty(m_defaultConfigText.getText())) {
-          defaultConf = HBaseInputData.stringToURL(transMeta.
-              environmentSubstitute(m_defaultConfigText.getText()));
-        } */
         
         Mapping current = null;
         Map<String, HBaseValueMeta> mappedColumns = null;
@@ -1252,17 +1224,15 @@ public class HBaseInputDialog extends BaseStepDialog implements
         String keyType = null;
         boolean filterAliasesDone = false;
         try {
-          //Configuration connection = HBaseInputData.getHBaseConnection(coreConf, defaultConf);
-          Configuration connection = getHBaseConnection();
-          admin.setConnection(connection);
-          
-          // set the admin on the mapping editor
-          //m_mappingEditor.setMappingAdmin(admin);
-
-          current = 
-            admin.getMapping(transMeta.environmentSubstitute(m_mappedTableNamesCombo.getText()), 
-                transMeta.environmentSubstitute(m_mappingNamesCombo.getText()));
-          
+          if (displayFieldsMappingFromHBase) {
+            Configuration connection = getHBaseConnection();
+            admin.setConnection(connection);
+            current = 
+              admin.getMapping(transMeta.environmentSubstitute(m_mappedTableNamesCombo.getText()), 
+                  transMeta.environmentSubstitute(m_mappingNamesCombo.getText()));
+          } else {
+            current = m_currentMeta.getMapping();
+          }          
           
           // Key information
           keyName = current.getKeyName();
@@ -1300,13 +1270,10 @@ public class HBaseInputDialog extends BaseStepDialog implements
         
         // Fields information
         m_fieldsView.clearAll(false);
-//        boolean keyDone = false;
+
         if (current != null &&  readFieldsFromMapping) {
           TableItem item = new TableItem(m_fieldsView.table, SWT.NONE);
-//          item.setTableName(current.getTableName());
-//          item.setMappingName(current.getMappingName());
           item.setText(1, keyName);
-  //        item.setKey(true);
           item.setText(2, "Y");
           item.setText(7, "N");
           if (current.getKeyType() == Mapping.KeyType.DATE ||
@@ -1322,9 +1289,8 @@ public class HBaseInputDialog extends BaseStepDialog implements
           } else {
             item.setText(5, ValueMeta.getTypeDesc(ValueMetaInterface.TYPE_BINARY));
           }
-  //        keyDone = true;
-          // get all the fields from the mapping
           
+          // get all the fields from the mapping          
           for (String alias : mappedColumns.keySet()) {
             HBaseValueMeta column = mappedColumns.get(alias);
             String aliasS = column.getAlias();
@@ -1334,8 +1300,6 @@ public class HBaseInputDialog extends BaseStepDialog implements
             String format = column.getConversionMask();
 
             item = new TableItem(m_fieldsView.table, SWT.NONE);
-//            item.setTableName(column.getTableName());
-//            item.setMappingName(column.getMappingName());
             if (column.getStorageType() == ValueMetaInterface.STORAGE_TYPE_INDEXED) {
               String valuesString = HBaseValueMeta.objectIndexValuesToString(column.getIndex());
               //                item.setIndexedItems(valuesString);
@@ -1362,9 +1326,7 @@ public class HBaseInputDialog extends BaseStepDialog implements
           // user has selected some fields from the mapping to output
           List<String> filterAliasNames = new ArrayList<String>(); 
           for (HBaseValueMeta column : m_currentMeta.getOutputFields()) {
-            TableItem item = new TableItem(m_fieldsView.table, SWT.NONE);
-//            item.setTableName(column.getTableName());
-//            item.setMappingName(column.getMappingName());            
+            TableItem item = new TableItem(m_fieldsView.table, SWT.NONE);            
             
             String aliasS = column.getAlias();
             String type = column.getTypeDesc();
@@ -1372,7 +1334,6 @@ public class HBaseInputDialog extends BaseStepDialog implements
             item.setText(5, type);                     
             
             if (column.isKey()) {
-  //            item.setKey(true);
               item.setText(2, "Y");
               item.setText(7, "N");
               
@@ -1396,7 +1357,7 @@ public class HBaseInputDialog extends BaseStepDialog implements
 
             if (column.getStorageType() == ValueMetaInterface.STORAGE_TYPE_INDEXED) {              
               String valuesString = HBaseValueMeta.objectIndexValuesToString(column.getIndex());
-//              item.setIndexedItems(valuesString);
+
               m_indexedLookup.put(aliasS, valuesString);
               item.setText(7, "Y");
             } else {
@@ -1445,29 +1406,14 @@ public class HBaseInputDialog extends BaseStepDialog implements
     
     try {
       MappingAdmin admin = new MappingAdmin();
-      /*URL coreConf = null;
-      URL defaultConf = null;
-      
-      if (!Const.isEmpty(m_coreConfigText.getText())) {
-        coreConf = HBaseInputData.stringToURL(transMeta.
-            environmentSubstitute(m_coreConfigText.getText()));        
-      }
-      
-      if (!Const.isEmpty(m_defaultConfigText.getText())) {
-        defaultConf = HBaseInputData.
-          stringToURL(transMeta.environmentSubstitute(m_defaultConfigText.getText()));
-      } */
   
       Configuration connection = getHBaseConnection();
-//      Configuration connection = HBaseInputData.getHBaseConnection(coreConf, defaultConf);
       admin.setConnection(connection);
       Set<String> tableNames = admin.getMappedTables();
 
       for (String s : tableNames) {
         m_mappedTableNamesCombo.add(s);
-      }
-
-      
+      }      
     } catch (Exception e) {
       new ErrorDialog(shell, Messages.getString("HBaseInputDialog.ErrorMessage." +
       		"UnableToConnect"),
@@ -1482,21 +1428,8 @@ public class HBaseInputDialog extends BaseStepDialog implements
     if (!Const.isEmpty(m_mappedTableNamesCombo.getText())) {
       try {      
         MappingAdmin admin = new MappingAdmin();
-        /*URL coreConf = null;
-        URL defaultConf = null;
-
-        if (!Const.isEmpty(m_coreConfigText.getText())) {
-          coreConf = HBaseInputData.stringToURL(transMeta.
-              environmentSubstitute(m_coreConfigText.getText()));
-        }
-
-        if (!Const.isEmpty(m_defaultConfigText.getText())) {
-          defaultConf = HBaseInputData.stringToURL(transMeta.
-              environmentSubstitute(m_defaultConfigText.getText()));
-        } */
 
         Configuration connection = getHBaseConnection();
-        //Configuration connection = HBaseInputData.getHBaseConnection(coreConf, defaultConf);
         admin.setConnection(connection);
         
         List<String> mappingNames = admin.

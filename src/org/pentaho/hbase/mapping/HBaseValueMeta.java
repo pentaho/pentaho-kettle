@@ -52,8 +52,6 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  * byte-wise comparison). 
  * 
  * @author Mark Hall (mhall{[at]}pentaho{[dot]}com)
- * @version $Revision$
- *
  */
 public class HBaseValueMeta extends ValueMeta {
   public static final String SEPARATOR = ",";
@@ -665,9 +663,7 @@ public class HBaseValueMeta extends ValueMeta {
   public static Object decodeColumnValue(byte[] rawColValue, 
       HBaseValueMeta columnMeta) throws KettleException {
 
-//    System.err.println(":::: Column type for " +columnMeta.getAlias() + "  " + columnMeta.getTypeDesc());
-    // just return null if this column doesn't have a value for the row
-    
+    // just return null if this column doesn't have a value for the row    
     if (rawColValue == null) {
       return null;
     }
@@ -761,9 +757,7 @@ public class HBaseValueMeta extends ValueMeta {
       if (result == null) {
         throw new KettleException("Unable to de-serialize Object from raw " +
         "column value.");
-      }
-      
-//      System.out.println(":::::::::::: Deserialized " + result.toString());
+      }      
       
       return result;
     }
@@ -882,24 +876,7 @@ public class HBaseValueMeta extends ValueMeta {
     // rather than have the comparator delegate to us so that HBase
     // installations don't have to drag in the Kettle libraries just
     // so that our comparator can be used.
-    return DeserializedBooleanComparator.decodeBoolFromString(rawEncoded);
-    
-/*    String tempString = Bytes.toString(rawEncoded);
-    if (tempString.equalsIgnoreCase("Y") || tempString.equalsIgnoreCase("N") ||
-        tempString.equalsIgnoreCase("YES") || tempString.equalsIgnoreCase("NO") ||
-        tempString.equalsIgnoreCase("TRUE") || tempString.equalsIgnoreCase("FALSE") ||
-        tempString.equalsIgnoreCase("T") || tempString.equalsIgnoreCase("F") ||
-        tempString.equalsIgnoreCase("1") || tempString.equalsIgnoreCase("0")) {
-
-      return Boolean.valueOf(tempString.equalsIgnoreCase("Y") || 
-          tempString.equalsIgnoreCase("YES") ||
-          tempString.equalsIgnoreCase("TRUE") ||
-          tempString.equalsIgnoreCase("T") ||
-          tempString.equalsIgnoreCase("1"));
-    }
-
-    // not identifiable from a string
-    return null; */
+    return DeserializedBooleanComparator.decodeBoolFromString(rawEncoded);    
   }  
 
   public static Boolean decodeBoolFromNumber(byte[] rawEncoded) {
@@ -908,51 +885,7 @@ public class HBaseValueMeta extends ValueMeta {
     // rather than have the comparator delegate to us so that HBase
     // installations don't have to drag in the Kettle libraries just
     // so that our comparator can be used.
-    return DeserializedBooleanComparator.decodeBoolFromNumber(rawEncoded);
-    
-/*    if (rawEncoded.length == Bytes.SIZEOF_BYTE) {
-      byte val = rawEncoded[0];
-      if (val == 0 || val == 1) {
-        return new Boolean(val == 1);
-      }
-    }
-
-    if (rawEncoded.length == Bytes.SIZEOF_SHORT) {
-      short tempShort = Bytes.toShort(rawEncoded);
-
-      if (tempShort == 0 || tempShort == 1) {
-        return new Boolean(tempShort == 1);
-      }
-    }
-
-    if (rawEncoded.length == Bytes.SIZEOF_INT || 
-        rawEncoded.length == Bytes.SIZEOF_FLOAT) {
-      int tempInt = Bytes.toInt(rawEncoded);
-      if (tempInt == 1 || tempInt == 0) {
-        return new Boolean(tempInt == 1);
-      }
-
-      float tempFloat = Bytes.toFloat(rawEncoded);
-      if (tempFloat == 0.0f || tempFloat == 1.0f) {
-        return new Boolean(tempFloat == 1.0f);
-      }
-    }
-
-    if (rawEncoded.length == Bytes.SIZEOF_LONG ||
-        rawEncoded.length == Bytes.SIZEOF_DOUBLE) {
-      long tempLong = Bytes.toLong(rawEncoded);
-      if (tempLong == 0L || tempLong == 1L) {
-        return new Boolean(tempLong == 1L);
-      }
-
-      double tempDouble = Bytes.toDouble(rawEncoded);
-      if (tempDouble == 0.0 || tempDouble == 1.0) {
-        return new Boolean(tempDouble == 1.0);
-      }
-    }
-
-    // not identifiable from a number
-    return null; */
+    return DeserializedBooleanComparator.decodeBoolFromNumber(rawEncoded);    
   }
   
   /**
