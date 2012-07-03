@@ -1127,10 +1127,7 @@ public class HBaseInputDialog extends BaseStepDialog implements
     }
     
     m_matchAnyBut.setSelection(m_currentMeta.getMatchAnyFilter());
-    m_matchAllBut.setSelection(!m_currentMeta.getMatchAnyFilter());    
-    
-    // do the key and columns
-    checkKeyInformation(true, false);
+    m_matchAllBut.setSelection(!m_currentMeta.getMatchAnyFilter());        
     
     // filters
     if (m_currentMeta.getColumnFilters() != null && 
@@ -1165,6 +1162,9 @@ public class HBaseInputDialog extends BaseStepDialog implements
         m_currentMeta.getMapping() != null) {
       m_mappingEditor.setMapping(m_currentMeta.getMapping());
     }
+    
+    // do the key and columns
+    checkKeyInformation(true, false);
   }
   
   public Configuration getHBaseConnection() throws IOException {
@@ -1201,7 +1201,7 @@ public class HBaseInputDialog extends BaseStepDialog implements
   
   private void checkKeyInformation(boolean quiet, boolean readFieldsFromMapping) {
     boolean displayFieldsEmbeddedMapping = 
-      ((m_currentMeta.getMapping() != null && Const.isEmpty(m_mappingNamesCombo.getText())));
+      ((m_mappingEditor.getMapping(false) != null && Const.isEmpty(m_mappingNamesCombo.getText())));
     boolean displayFieldsMappingFromHBase = 
       (!Const.isEmpty(m_coreConfigText.getText()) || 
           !Const.isEmpty(m_zookeeperQuorumText.getText())) && 
@@ -1231,7 +1231,7 @@ public class HBaseInputDialog extends BaseStepDialog implements
               admin.getMapping(transMeta.environmentSubstitute(m_mappedTableNamesCombo.getText()), 
                   transMeta.environmentSubstitute(m_mappingNamesCombo.getText()));
           } else {
-            current = m_currentMeta.getMapping();
+            current = m_mappingEditor.getMapping(false);
           }          
           
           // Key information
