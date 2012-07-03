@@ -55,7 +55,8 @@ public class SpoonPerspectiveManager {
   private XulDeck deck;
   private SpoonPerspective activePerspective;
   private XulDomContainer domContainer;
-  
+  private boolean forcePerspective = false;
+    
   private static class SpoonPerspectiveComparator implements Comparator<SpoonPerspective> {
     public int compare(SpoonPerspective o1, SpoonPerspective o2) {
       return o1.getId().compareTo(o2.getId());
@@ -144,6 +145,11 @@ public class SpoonPerspectiveManager {
    */
   public void activatePerspective(Class<? extends SpoonPerspective> clazz) throws KettleException{
 
+	  
+	if(this.forcePerspective) {
+		// we are currently prevented from switching perspectives
+		return;
+	}
     SpoonPerspective sp = perspectives.get(clazz);
     if(sp == null){
       throw new KettleException("Could not locate perspective by class: "+clazz);
@@ -194,6 +200,22 @@ public class SpoonPerspectiveManager {
    */
   public SpoonPerspective getActivePerspective(){
     return activePerspective;
+  }
+  
+  /**
+   * Returns whether this perspective manager is prevented from switching perspectives
+   */
+  public boolean isForcePerspective() {
+	return forcePerspective;
+  }
+
+  /**
+   * Sets whether this perspective manager is prevented from switching perspectives.
+   * This is used when a startup perspective is requested on the command line parameter
+   * to prevent other perpsectives from openeing.
+   */
+  public void setForcePerspective(boolean forcePerspective) {
+	this.forcePerspective = forcePerspective;
   }
   
 }
