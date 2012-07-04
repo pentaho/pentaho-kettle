@@ -661,7 +661,8 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
     }
   }
   
-  public Mapping getMapping(boolean checkForMissingTableAndMapping) {
+  public Mapping getMapping(boolean performChecksAndShowGUIErrorDialog, 
+      List<String> problems) {
     String tableName = "";
     if (!Const.isEmpty(m_existingTableNamesCombo.getText().trim())) {
       tableName = m_existingTableNamesCombo.getText().trim();
@@ -671,20 +672,27 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
       }
     }
     
-    if (checkForMissingTableAndMapping && 
-        (Const.isEmpty(m_existingTableNamesCombo.getText().trim()) ||
+    // empty table name or mapping name does not force an abort
+    if (performChecksAndShowGUIErrorDialog && 
+        (Const.isEmpty(m_existingMappingNamesCombo.getText().trim()) ||
         Const.isEmpty(tableName))) {
       MessageDialog.openError(m_shell, 
           Messages.getString("MappingDialog.Error.Title.MissingTableMappingName"),
           Messages.getString("MappingDialog.Error.Message.MissingTableMappingName"));
+      if (problems != null) {
+        problems.add(Messages.getString("MappingDialog.Error.Message.MissingTableMappingName"));
+      }
       return null;
     }
     
     // do we have any non-empty rows in the table?
-    if (m_fieldsView.nrNonEmpty() == 0) {
+    if (m_fieldsView.nrNonEmpty() == 0 && performChecksAndShowGUIErrorDialog) {
       MessageDialog.openError(m_shell, 
           Messages.getString("MappingDialog.Error.Title.NoFieldsDefined"), 
           Messages.getString("MappingDialog.Error.Message.NoFieldsDefined"));
+      if (problems != null) {
+        problems.add(Messages.getString("MappingDialog.Error.Message.NoFieldsDefined"));
+      }
       return null;
     }
     // do we have a key defined in the table?
@@ -771,25 +779,40 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
         if (Const.isEmpty(alias)) {
           // pop up an error dialog - key must have an alias because it does not
           // belong to a column family or have a column name
-          MessageDialog.openError(m_shell, 
-              Messages.getString("MappingDialog.Error.Title.NoAliasForKey"),
-              Messages.getString("MappingDialog.Error.Message.NoAliasForKey"));
+          if (performChecksAndShowGUIErrorDialog) {
+            MessageDialog.openError(m_shell, 
+                Messages.getString("MappingDialog.Error.Title.NoAliasForKey"),
+                Messages.getString("MappingDialog.Error.Message.NoAliasForKey"));
+          }
+          if (problems != null) {
+            problems.add(Messages.getString("MappingDialog.Error.Message.NoAliasForKey"));
+          }
           return null;
         }
         
         if (Const.isEmpty(type)) {
           // pop up an error dialog - must have a type for the key
-          MessageDialog.openError(m_shell, 
-              Messages.getString("MappingDialog.Error.Title.NoTypeForKey"),
-              Messages.getString("MappingDialog.Error.Message.NoTypeForKey"));
+          if (performChecksAndShowGUIErrorDialog) {
+            MessageDialog.openError(m_shell, 
+                Messages.getString("MappingDialog.Error.Title.NoTypeForKey"),
+                Messages.getString("MappingDialog.Error.Message.NoTypeForKey"));
+          }
+          if (problems != null) {
+            problems.add(Messages.getString("MappingDialog.Error.Message.NoTypeForKey"));
+          }
           return null;
         }
         
         if (moreThanOneKey) {
           // popup an error and then return
-          MessageDialog.openError(m_shell, 
-              Messages.getString("MappingDialog.Error.Title.MoreThanOneKey"),
-              Messages.getString("MappingDialog.Error.Message.MoreThanOneKey"));
+          if (performChecksAndShowGUIErrorDialog) {
+            MessageDialog.openError(m_shell, 
+                Messages.getString("MappingDialog.Error.Title.MoreThanOneKey"),
+                Messages.getString("MappingDialog.Error.Message.MoreThanOneKey"));
+          }
+          if (problems != null) {
+            problems.add(Messages.getString("MappingDialog.Error.Message.MoreThanOneKey"));
+          }
           return null;
         }
         
@@ -811,6 +834,9 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
           String combinedName = family + HBaseValueMeta.SEPARATOR + colName;
           if (!Const.isEmpty(alias)) {
             combinedName += (HBaseValueMeta.SEPARATOR + alias);
+          } else {
+            // just use the column name as the alias
+            combinedName += (HBaseValueMeta.SEPARATOR + colName);
           }
           HBaseValueMeta vm = new HBaseValueMeta(combinedName, 0, -1, -1);
           try {
@@ -830,12 +856,19 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
           } catch (Exception ex) {
             // popup an error if this family:column is already in the mapping and
             // then return.
-            MessageDialog.openError(m_shell, 
-                Messages.getString("MappingDialog.Error.Title.DuplicateColumn"), 
-                Messages.getString("MappingDialog.Error.Message1.DuplicateColumn") +
-                family + HBaseValueMeta.SEPARATOR + colName + 
-                Messages.getString("MappingDialog.Error.Message2.DuplicateColumn"));
-            ex.printStackTrace();
+            if (performChecksAndShowGUIErrorDialog) {
+              MessageDialog.openError(m_shell, 
+                  Messages.getString("MappingDialog.Error.Title.DuplicateColumn"), 
+                  Messages.getString("MappingDialog.Error.Message1.DuplicateColumn") +
+                  family + HBaseValueMeta.SEPARATOR + colName + 
+                  Messages.getString("MappingDialog.Error.Message2.DuplicateColumn"));
+            }
+            if (problems != null) {
+              problems.add(Messages.getString("MappingDialog.Error.Message1.DuplicateColumn") +
+                  family + HBaseValueMeta.SEPARATOR + colName + 
+                  Messages.getString("MappingDialog.Error.Message2.DuplicateColumn"));
+            }
+
             return null;
           }
         }
@@ -844,9 +877,14 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
     
     // now check for any errors in our Lists
     if (!keyDefined) {
-      MessageDialog.openError(m_shell,
-          Messages.getString("MappingDialog.Error.Title.NoKeyDefined"), 
-          Messages.getString("MappingDialog.Error.Message.NoKeyDefined"));
+      if (performChecksAndShowGUIErrorDialog) {
+        MessageDialog.openError(m_shell,
+            Messages.getString("MappingDialog.Error.Title.NoKeyDefined"), 
+            Messages.getString("MappingDialog.Error.Message.NoKeyDefined"));
+      }
+      if (problems != null) {
+        problems.add(Messages.getString("MappingDialog.Error.Message.NoKeyDefined"));
+      }
       return null;
     }
     
@@ -867,10 +905,15 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
         buff.append(Messages.getString("MappingDialog.Error.Message.TypeIssue") + ":\n");
         buff.append(missingTypes.toString()).append("\n\n");
       }
-      
-      MessageDialog.openError(m_shell, 
-          Messages.getString("MappingDialog.Error.Title.IssuesPreventingSaving"), 
-          buff.toString());
+     
+      if (performChecksAndShowGUIErrorDialog) {
+        MessageDialog.openError(m_shell, 
+            Messages.getString("MappingDialog.Error.Title.IssuesPreventingSaving"), 
+            buff.toString());
+      }
+      if (problems != null) {
+        problems.add(buff.toString());
+      }
       return null;
     }
     
@@ -879,7 +922,7 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
   
   private void saveMapping() {
 
-    Mapping theMapping = getMapping(true);
+    Mapping theMapping = getMapping(true, null);
     if (theMapping == null) {
       // some problem with the mapping (user will have been informed via dialog)
       return;

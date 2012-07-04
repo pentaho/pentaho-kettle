@@ -31,6 +31,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.hadoop.conf.Configuration;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
@@ -61,10 +62,12 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.ComboValuesSelectionListener;
 import org.pentaho.di.ui.core.widget.TableView;
@@ -1066,7 +1069,28 @@ public class HBaseInputDialog extends BaseStepDialog implements
     }
     
     if (Const.isEmpty(m_mappingNamesCombo.getText())) {
-      Mapping toSet = m_mappingEditor.getMapping(false);
+      List<String> problems = new ArrayList<String>();
+      
+      Mapping toSet = m_mappingEditor.getMapping(false, problems);
+      if (problems.size() > 0) {
+        StringBuffer p = new StringBuffer();
+        for (String s : problems) {
+          p.append(s).append("\n");
+        }
+        MessageDialog md = new MessageDialog(shell, 
+            BaseMessages.getString(HBaseInputMeta.PKG, "HBaseInputDialog.Error.IssuesWithMapping.Title"),
+        null, BaseMessages.getString(HBaseInputMeta.PKG, "HBaseInputDialog.Error.IssuesWithMapping") 
+        + ":\n\n" 
+        + p.toString(), MessageDialog.WARNING,
+        new String[] {BaseMessages.getString(HBaseInputMeta.PKG, "HBaseInputDialog.Error.IssuesWithMapping.ButtonOK"), 
+          BaseMessages.getString(HBaseInputMeta.PKG, "HBaseInputDialog.Error.IssuesWithMapping.ButtonCancel")}, 
+          0);
+        MessageDialog.setDefaultImage(GUIResource.getInstance().getImageSpoon());
+        int idx = md.open() & 0xFF;
+        if (idx == 1 || idx == 255 /* 255 = escape pressed */) {
+          return; // Cancel
+        }
+      }
       m_currentMeta.setMapping(toSet);
     } else {
       // we're going to use a mapping stored in HBase - null out any stored mapping
@@ -1201,7 +1225,7 @@ public class HBaseInputDialog extends BaseStepDialog implements
   
   private void checkKeyInformation(boolean quiet, boolean readFieldsFromMapping) {
     boolean displayFieldsEmbeddedMapping = 
-      ((m_mappingEditor.getMapping(false) != null && Const.isEmpty(m_mappingNamesCombo.getText())));
+      ((m_mappingEditor.getMapping(false, null) != null && Const.isEmpty(m_mappingNamesCombo.getText())));
     boolean displayFieldsMappingFromHBase = 
       (!Const.isEmpty(m_coreConfigText.getText()) || 
           !Const.isEmpty(m_zookeeperQuorumText.getText())) && 
@@ -1231,7 +1255,7 @@ public class HBaseInputDialog extends BaseStepDialog implements
               admin.getMapping(transMeta.environmentSubstitute(m_mappedTableNamesCombo.getText()), 
                   transMeta.environmentSubstitute(m_mappingNamesCombo.getText()));
           } else {
-            current = m_mappingEditor.getMapping(false);
+            current = m_mappingEditor.getMapping(false, null);
           }          
           
           // Key information
