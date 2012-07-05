@@ -22,6 +22,10 @@
 
 package org.pentaho.di.trans.steps.hbaserowdecoder;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
@@ -53,6 +57,7 @@ import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.hbase.mapping.Mapping;
 import org.pentaho.hbase.mapping.MappingEditor;
@@ -327,7 +332,27 @@ public class HBaseRowDecoderDialog extends BaseStepDialog implements
     
     m_currentMeta.setIncomingKeyField(m_incomingKeyCombo.getText());
     m_currentMeta.setIncomingResultField(m_incomingResultCombo.getText());
-    Mapping mapping = m_mappingEditor.getMapping(false);
+    List<String> problems = new ArrayList<String>();
+    Mapping mapping = m_mappingEditor.getMapping(false, problems);
+    if (problems.size() > 0) {
+      StringBuffer p = new StringBuffer();
+      for (String s : problems) {
+        p.append(s).append("\n");
+      }
+      MessageDialog md = new MessageDialog(shell, 
+          BaseMessages.getString(PKG, "HBaseRowDecoderDialog.Error.IssuesWithMapping.Title"),
+      null, BaseMessages.getString(PKG, "HBaseRowDecoderDialog.Error.IssuesWithMapping") 
+      + ":\n\n" 
+      + p.toString(), MessageDialog.WARNING,
+      new String[] {BaseMessages.getString(PKG, "HBaseRowDecoderDialog.Error.IssuesWithMapping.ButtonOK"), 
+        BaseMessages.getString(PKG, "HBaseRowDecoderDialog.Error.IssuesWithMapping.ButtonCancel")}, 
+        0);
+      MessageDialog.setDefaultImage(GUIResource.getInstance().getImageSpoon());
+      int idx = md.open() & 0xFF;
+      if (idx == 1 || idx == 255 /* 255 = escape pressed */) {
+        return; // Cancel
+      }
+    }
     if (mapping != null) {
       m_currentMeta.setMapping(mapping);
     }

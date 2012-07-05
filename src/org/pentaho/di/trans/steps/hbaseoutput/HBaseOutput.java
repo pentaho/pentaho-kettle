@@ -34,6 +34,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -52,8 +53,6 @@ import org.pentaho.hbase.mapping.MappingAdmin;
  * for details on the meta data format.
  * 
  * @author Mark Hall (mhall{[at]}pentaho{[dot]}com)
- * @version $Revision$
- *
  */
 public class HBaseOutput extends BaseStep implements StepInterface {
   
@@ -97,22 +96,24 @@ public class HBaseOutput extends BaseStep implements StepInterface {
       if (m_targetTable != null) {
         if (!m_targetTable.isAutoFlush()) {
           try {
-            logBasic("Flushing write buffer...");
+            logBasic(BaseMessages.getString(HBaseOutputMeta.PKG, 
+                "HBaseOutput.FlushingWriteBuffer"));
             m_targetTable.flushCommits();
           } catch (IOException e) {        
             e.printStackTrace();
-            throw new KettleException("A problem occurred whilst flushing buffered " +
-                "data: " + e.getMessage(), e);
+            throw new KettleException(BaseMessages.getString(HBaseOutputMeta.PKG, 
+                "HBaseOutput.Error.ProblemFlushingBufferedData", e.getMessage()), e);
           }
         }
 
         try {
-          logBasic("Closing connection to target table.");
+          logBasic(BaseMessages.getString(HBaseOutputMeta.PKG, 
+              "HBaseOutput.ClosingConnectionToTable"));
           m_targetTable.close();
         } catch (IOException e) {
           e.printStackTrace();
-          throw new KettleException("A problem occurred when closing the connection " +
-              "the target table: " + e.getMessage(), e);
+          throw new KettleException(BaseMessages.getString(HBaseOutputMeta.PKG, 
+              "HBaseOutput.Error.ProblemWhenClosingConnection", e.getMessage()), e);
         }
       }
       
@@ -127,7 +128,8 @@ public class HBaseOutput extends BaseStep implements StepInterface {
       
       // Get the connection to HBase
       try {
-        logBasic("Connecting to HBase...");
+        logBasic(BaseMessages.getString(HBaseOutputMeta.PKG, "HBaseOutput.ConnectingToHBase"));
+
         m_connection = HBaseOutputData.
           getHBaseConnection(environmentSubstitute(m_meta.getZookeeperHosts()),
               environmentSubstitute(m_meta.getZookeeperPort()),
@@ -137,14 +139,15 @@ public class HBaseOutput extends BaseStep implements StepInterface {
               stringToURL(environmentSubstitute(m_meta.getDefaultConfigURL())));
       } catch (IOException ex) {
         ex.printStackTrace();
-        throw new KettleException("Unable to obtain a connection to HBase: "
-            + ex.getMessage(), ex);
+        throw new KettleException(BaseMessages.getString(HBaseOutputMeta.PKG, 
+            "HBaseOutput.Error.UnableToObtainConnection", ex.getMessage()), ex);
       }
       try {
         m_mappingAdmin = new MappingAdmin(m_connection);
       } catch (Exception ex) {
         ex.printStackTrace();
-        throw new KettleException("Unable to create a MappingAdmin connection", ex);
+        throw new KettleException(BaseMessages.getString(HBaseOutputMeta.PKG, 
+            "HBaseOutput.Error.UnableToObtainConnection", ex.getMessage()), ex);
       }
       
       // check on the existence and readiness of the target table
@@ -153,45 +156,54 @@ public class HBaseOutput extends BaseStep implements StepInterface {
         admin = new HBaseAdmin(m_connection);
       } catch (Exception ex) {
         ex.printStackTrace();
-        throw new KettleException("Unable to obtain a connection to HBase: " 
-            + ex.getMessage());
+        throw new KettleException(BaseMessages.getString(HBaseOutputMeta.PKG, 
+            "HBaseOutput.Error.UnableToObtainConnection", ex.getMessage()), ex);
       }
 
       String targetName = environmentSubstitute(m_meta.getTargetTableName());
       if (Const.isEmpty(targetName)) {
-        throw new KettleException("No target table specified!");
+        throw new KettleException(BaseMessages.getString(HBaseOutputMeta.PKG, 
+            "HBaseOutput.Error.NoTargetTableSpecified"));
       }
       try {
         if (!admin.tableExists(targetName)) {          
-          throw new KettleException("Target table \"" + targetName + "\" does not exist!");
+          throw new KettleException(BaseMessages.getString(HBaseOutputMeta.PKG, 
+              "HBaseOutput.Error.TargetTableDoesNotExist", targetName));
         }
       
         if (admin.isTableDisabled(targetName) || !admin.isTableAvailable(targetName)) {
-          throw new KettleException("Target table \"" + targetName + "\" is not available!");          
+          throw new KettleException(BaseMessages.getString(HBaseOutputMeta.PKG, 
+              "HBaseOutput.Error.TargetTableIsNotAvailable", targetName));
         }
       } catch (IOException ex) {
         ex.printStackTrace();
-        throw new KettleException("A problem occurred when trying to check " +
-        		"availablility/readyness of target table \"" 
-            + targetName + "\": " + ex.getMessage(), ex);
+        throw new KettleException(BaseMessages.getString(HBaseOutputMeta.PKG, 
+            "HBaseOutput.Error.ProblemWhenCheckingAvailReadiness", targetName, ex.getMessage()), ex);
       }
       
       // Get mapping details for the target table
-      try {
-        logBasic("Retrieving mapping details for target table.");
-        m_tableMapping = m_mappingAdmin.getMapping(
-            environmentSubstitute(m_meta.getTargetTableName()), 
-            environmentSubstitute(m_meta.getTargetMappingName()));
-        m_columnsMappedByAlias = m_tableMapping.getMappedColumns();
-      } catch (IOException ex) {
-        ex.printStackTrace();
-        throw new KettleException("Problem getting mapping inforation: " 
-            + ex.getMessage(), ex);
+
+      if (m_meta.getMapping() != null && Const.isEmpty(m_meta.getTargetMappingName())) {
+        m_tableMapping = m_meta.getMapping();
+      } else {
+        try {
+          logBasic(BaseMessages.getString(HBaseOutputMeta.PKG, 
+              "HBaseOutput.RetrievingMappingDetails"));
+
+          m_tableMapping = m_mappingAdmin.getMapping(
+              environmentSubstitute(m_meta.getTargetTableName()), 
+              environmentSubstitute(m_meta.getTargetMappingName()));
+        } catch (IOException ex) {
+          ex.printStackTrace();
+          throw new KettleException(BaseMessages.getString(HBaseOutputMeta.PKG, 
+              "HBaseOutput.Error.ProblemGettingMappingInfo", ex.getMessage()), ex);
+        }
       }
+      m_columnsMappedByAlias = m_tableMapping.getMappedColumns();
       
       if (m_tableMapping.isTupleMapping()) {
-        throw new KettleException("HBaseOutput can't write using a " +
-        		"<key, family, column, value, time stamp> tuple mapping!");
+        throw new KettleException(BaseMessages.getString(HBaseOutputMeta.PKG, 
+            "HBaseOutput.Error.CantWriteUsingATupleMapping"));
       }
       
       // check that all incoming fields are in the mapping.
@@ -213,39 +225,41 @@ public class HBaseOutput extends BaseStep implements StepInterface {
         } else {
           HBaseValueMeta hvm = m_columnsMappedByAlias.get(inName.trim());
           if (hvm == null) {
-            throw new KettleException("Can't find incoming field \"" + inName
-                + "\" defined in the mapping +\"" + m_tableMapping.getMappingName() 
-                + "\"");
+            throw new KettleException(BaseMessages.getString(HBaseOutputMeta.PKG, 
+                "HBaseOutput.Error.CantFindIncomingField", inName, m_tableMapping.getMappingName()));
           }
         }
       }
       
       if (!incomingKey) {
-        throw new KettleException("The table key \"" + m_tableMapping.getKeyName()
-            + "\" defined in mapping \"" + m_tableMapping.getMappingName() + "\""
-            + " does not seem to be present in the incoming fields.");
+        throw new KettleException(BaseMessages.getString(HBaseOutputMeta.PKG, 
+            "HBaseOutput.Error.TableKeyNotPresentInIncomingFields", 
+            m_tableMapping.getKeyName(), m_tableMapping.getMappingName()));
       }      
       
       try {
-        logBasic("Connecting to target table...");
-        m_targetTable = new HTable(m_connection, m_tableMapping.getTableName());
+        logBasic(BaseMessages.getString(HBaseOutputMeta.PKG, 
+            "HBaseOutput.ConnectingToTargetTable"));
+        m_targetTable = new HTable(m_connection, targetName);
         
         // set a write buffer size (and disable auto flush)
         if (!Const.isEmpty(m_meta.getWriteBufferSize())) {
           long writeBuffer = Long.parseLong(
               environmentSubstitute(m_meta.getWriteBufferSize()));
           
-          logBasic("Setting the write buffer to " + writeBuffer + " bytes.");
+          logBasic(BaseMessages.getString(HBaseOutputMeta.PKG, 
+              "HBaseOutput.SettingWriteBuffer", writeBuffer));
           if (m_meta.getDisableWriteToWAL()) {
-            logBasic("Disabling write to WAL.");
+            logBasic(BaseMessages.getString(HBaseOutputMeta.PKG, 
+                "HBaseOutput.DisablingWriteToWAL"));
           }
           m_targetTable.setWriteBufferSize(writeBuffer);
           m_targetTable.setAutoFlush(false);
         }
       } catch (IOException e) {
         e.printStackTrace();
-        throw new KettleException("Problem connecting to target table: " 
-            + e.getMessage(), e);
+        throw new KettleException(BaseMessages.getString(HBaseOutputMeta.PKG, 
+            "HBaseOutput.Error.ProblemConnectingToTargetTable", e.getMessage()), e);
       }
       
       // output (downstream) is the same as input
@@ -259,12 +273,13 @@ public class HBaseOutput extends BaseStep implements StepInterface {
     // key must not be missing!
     ValueMetaInterface keyvm = getInputRowMeta().getValueMeta(m_incomingKeyIndex);
     if (keyvm.isNull(r[m_incomingKeyIndex])) {
+      String errorDescriptions = BaseMessages.getString(HBaseOutputMeta.PKG,
+          "HBaseOutput.Error.IncomingRowHasNullKeyValue");
       if (getStepMeta().isDoingErrorHandling()) {
-        String errorDescriptions = "Incoming row has null key value";
         String errorFields = m_tableMapping.getKeyName();
         putError(getInputRowMeta(), r, 1, errorDescriptions, errorFields, "HBaaseOutput001");
       } else {      
-        throw new KettleException("Incoming row has null key value!");
+        throw new KettleException(errorDescriptions);
       }
     }
     
@@ -299,14 +314,14 @@ public class HBaseOutput extends BaseStep implements StepInterface {
     try {
       m_targetTable.put(p);
     } catch (IOException e) {
+      String errorDescriptions = BaseMessages.getString(HBaseOutputMeta.PKG, 
+          "HBaseOutput.Error.ProblemInsertingRowIntoHBase", e.getMessage());
       if (getStepMeta().isDoingErrorHandling()) {
-        String errorDescriptions = "Problem inserting row into HBase: " + e.getMessage();
         String errorFields = "Unknown";
         putError(getInputRowMeta(), r, 1, errorDescriptions, errorFields, "HBaseOutput002");
       } else {
         e.printStackTrace();
-        throw new KettleException("Problem inserting row into HBase: " 
-            + e.getMessage());
+        throw new KettleException(errorDescriptions);
       }
     }
     
@@ -334,22 +349,24 @@ public class HBaseOutput extends BaseStep implements StepInterface {
       if (m_targetTable != null) {
         if (!m_targetTable.isAutoFlush()) {
           try {
-            logBasic("Flushing write buffer...");
+            logBasic(BaseMessages.getString(HBaseOutputMeta.PKG, 
+                "HBaseOutput.FlushingWriteBuffer"));
             m_targetTable.flushCommits();
           } catch (IOException e) {        
             e.printStackTrace();
-            logError("A problem occurred whilst flushing buffered " +
-                "data: " + e.getMessage(), e);
+            logError(BaseMessages.getString(HBaseOutputMeta.PKG, 
+                "HBaseOutput.FlushingWriteBuffer", e.getMessage()), e);
           }
         }
 
         try {
-          logBasic("Closing connection to target table.");
+          logBasic(BaseMessages.getString(HBaseOutputMeta.PKG, 
+              "HBaseOutput.ClosingConnectionToTargetTable"));
           m_targetTable.close();
         } catch (IOException e) {
           e.printStackTrace();
-          logError("A problem occurred when closing the connection " +
-              "the target table: " + e.getMessage(), e);
+          logError(BaseMessages.getString(HBaseOutputMeta.PKG, 
+              "HBaseOutput.Error.ProblemWhenClosingConnection", e.getMessage()), e);
         }
       }
     }

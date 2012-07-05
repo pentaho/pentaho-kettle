@@ -72,8 +72,6 @@ import org.pentaho.hbase.mapping.MappingAdmin;
  * details on the meta data format.
  * 
  * @author Mark Hall (mhall{[at]}pentaho{[dot]}com)
- * @version $Revision$
- *
  */
 public class HBaseInput extends BaseStep implements StepInterface {
   
@@ -128,12 +126,14 @@ public class HBaseInput extends BaseStep implements StepInterface {
             HBaseInputData.
               stringToURL(environmentSubstitute(m_meta.getDefaultConfigURL())));
       } catch (IOException ex) {
-        throw new KettleException("Unable to obtain a connection to HBase.", ex);
+        throw new KettleException(BaseMessages.getString(HBaseInputMeta.PKG, 
+            "HBaseInput.Error.UnableToObtainConnection"), ex);
       }
       try {
         m_mappingAdmin = new MappingAdmin(m_connection);
       } catch (Exception ex) {
-        throw new KettleException("Unable to create a MappingAdmin connection", ex);
+        throw new KettleException(BaseMessages.getString(HBaseInputMeta.PKG, 
+            "HBaseInput.Error.UnableToCreateAMappingAdminConnection"), ex);
       }
       
       // check on the existence and readiness of the target table
@@ -141,36 +141,48 @@ public class HBaseInput extends BaseStep implements StepInterface {
       try {
         admin = new HBaseAdmin(m_connection);
       } catch (Exception ex) {
-        throw new KettleException("Unable to obtain a connection to HBase.", ex);
+        throw new KettleException(BaseMessages.getString(HBaseInputMeta.PKG, 
+          "HBaseInput.Error.UnableToObtainConnection"), ex);
       }
 
       String sourceName = environmentSubstitute(m_meta.getSourceTableName());
       if (StringUtil.isEmpty(sourceName)) {
-        throw new KettleException(BaseMessages.getString(getClass(), "HBaseInput.TableName.Missing"));
+        throw new KettleException(BaseMessages.getString(HBaseInputMeta.PKG, 
+            "HBaseInput.TableName.Missing"));
       }
       try {
         if (!admin.tableExists(sourceName)) {
-          throw new KettleException("Source table \"" + sourceName + "\" does not exist!");
+          throw new KettleException(BaseMessages.getString(HBaseInputMeta.PKG, 
+              "HBaseInput.Error.SourceTableDoesNotExist", sourceName));              
         }
       
         if (admin.isTableDisabled(sourceName) || !admin.isTableAvailable(sourceName)) {
-          throw new KettleException("Source table \"" + sourceName + "\" is not available!");          
+          throw new KettleException(BaseMessages.getString(HBaseInputMeta.PKG, 
+              "HBaseInput.Error.SourceTableIsNotAvailable", sourceName));
         }
       } catch (IOException ex) {
-        throw new KettleException("A problem occurred when trying to check " +
-                        "availablility/readyness of source table \"" 
-            + sourceName + "\"", ex);
+        throw new KettleException(BaseMessages.getString(HBaseInputMeta.PKG, 
+            "HBaseInput.Error.AvailabilityReadinessProblem", sourceName), ex);
       }
       
-      // Get mapping details for the source table
-      try {
-        m_tableMapping = m_mappingAdmin.getMapping(
-            environmentSubstitute(m_meta.getSourceTableName()), 
-            environmentSubstitute(m_meta.getSourceMappingName()));
-        m_columnsMappedByAlias = m_tableMapping.getMappedColumns();
-      } catch (IOException ex) {
-        throw new KettleException(ex.getMessage(), ex);
+      if (m_meta.getMapping() != null && Const.isEmpty(m_meta.getSourceMappingName())) {
+        // use embedded mapping
+        m_tableMapping = m_meta.getMapping();
+      } else {
+        // Otherwise get mapping details for the source table from HBase
+        if (Const.isEmpty(m_meta.getSourceMappingName())) {
+          throw new KettleException(BaseMessages.getString(HBaseInputMeta.PKG, 
+              "HBaseInput.Error.NoMappingName"));
+        }
+        try {
+          m_tableMapping = m_mappingAdmin.getMapping(
+              environmentSubstitute(m_meta.getSourceTableName()), 
+              environmentSubstitute(m_meta.getSourceMappingName()));
+        } catch (IOException ex) {
+          throw new KettleException(ex.getMessage(), ex);
+        }
       }
+      m_columnsMappedByAlias = m_tableMapping.getMappedColumns();
       
       if (m_tableMapping.isTupleMapping()) {
         m_tupleHandler = new HBaseRowToKettleTuple();
@@ -190,10 +202,10 @@ public class HBaseInput extends BaseStep implements StepInterface {
         for (HBaseValueMeta vm : m_userOutputColumns) {
           if (!vm.isKey()) {
             if (m_columnsMappedByAlias.get(vm.getAlias()) == null) {
-              throw new KettleException("Unable to find user-selected column " +
-                  "\"" + vm.getAlias() + "\" in the table mapping \""
-                  + m_tableMapping.getTableName() + HBaseValueMeta.SEPARATOR 
-                  + m_tableMapping.getMappingName() + "\"");
+              throw new KettleException(BaseMessages.getString(HBaseInputMeta.PKG, 
+                  "HBaseInput.Error.UnableToFindUserSelectedColumn", vm.getAlias(), 
+                  m_tableMapping.getTableName() + HBaseValueMeta.SEPARATOR 
+                  + m_tableMapping.getMappingName()));                  
             }
           } else {
             dateOrNumberConversionMaskForKey = vm.getConversionMask();
@@ -233,8 +245,8 @@ public class HBaseInput extends BaseStep implements StepInterface {
                 Date d = sdf.parse(keyStartS);
                 keyLowerBound = HBaseValueMeta.encodeKeyValue(d, m_tableMapping.getKeyType());
               } catch (ParseException e) {
-                throw new KettleException("Unable to parse lower bound key value \""
-                    + keyStartS + "\"");
+                throw new KettleException(BaseMessages.getString(HBaseInputMeta.PKG, 
+                    "HBaseInput.Error.UnableToParseLowerBoundKeyValue", keyStartS), e);
               }
             } else {
               // Number type
@@ -246,8 +258,8 @@ public class HBaseInput extends BaseStep implements StepInterface {
                 num = df.parse(keyStartS);
                 keyLowerBound = HBaseValueMeta.encodeKeyValue(num, m_tableMapping.getKeyType());
               } catch (ParseException e) {
-                throw new KettleException("Unable to parse lower bound key value \""
-                    + keyStartS + "\"");
+                throw new KettleException(BaseMessages.getString(HBaseInputMeta.PKG, 
+                    "HBaseInput.Error.UnableToParseLowerBoundKeyValue", keyStartS), e);
               }
             }
           } else {
@@ -290,8 +302,8 @@ public class HBaseInput extends BaseStep implements StepInterface {
                   Date d = sdf.parse(keyStopS);
                   keyUpperBound = HBaseValueMeta.encodeKeyValue(d, m_tableMapping.getKeyType());
                 } catch (ParseException e) {
-                  throw new KettleException("Unable to parse upper bound key value \""
-                      + keyStopS + "\"", e);
+                  throw new KettleException(BaseMessages.getString(HBaseInputMeta.PKG, 
+                      "HBaseInput.Error.UnableToParseUpperBoundKeyValue", keyStopS), e);
                 }
               } else {
                 // Number type
@@ -303,8 +315,8 @@ public class HBaseInput extends BaseStep implements StepInterface {
                   num = df.parse(keyStopS);
                   keyUpperBound = HBaseValueMeta.encodeKeyValue(num, m_tableMapping.getKeyType());
                 } catch (ParseException e) {
-                  throw new KettleException("Unable to parse upper bound key value \""
-                      + keyStopS + "\"", e);
+                  throw new KettleException(BaseMessages.getString(HBaseInputMeta.PKG, 
+                      "HBaseInput.Error.UnableToParseUpperBoundKeyValue", keyStopS), e);
                 }
               }              
             } else {
@@ -348,19 +360,8 @@ public class HBaseInput extends BaseStep implements StepInterface {
                 Bytes.toBytesBinary(qualifier) : Bytes.toBytes(qualifier));
           }
         }
-      } else {
-/*        // all the columns in the mapping
-        Set<String> aliasSet = m_columnsMappedByAlias.keySet();
+      }      
 
-        for (String name : aliasSet) {
-          HBaseValueMeta currentCol = m_columnsMappedByAlias.get(name);
-          String colFamilyName = currentCol.getColumnFamily();
-          String qualifier = currentCol.getColumnName();
-          s.addColumn(Bytes.toBytes(colFamilyName), Bytes.toBytes(qualifier));
-        } */
-      }
-      
-                  
       // set any filters
       if (m_meta.getColumnFilters() != null && m_meta.getColumnFilters().size() > 0) {
         FilterList fl = null;
@@ -374,8 +375,8 @@ public class HBaseInput extends BaseStep implements StepInterface {
           String fieldAliasS = environmentSubstitute(cf.getFieldAlias());
           HBaseValueMeta mappedCol = m_columnsMappedByAlias.get(fieldAliasS);
           if (mappedCol == null) {
-            throw new KettleException("Column filter \"" + fieldAliasS 
-                + "\" is not in the mapping!");
+            throw new KettleException(BaseMessages.getString(HBaseInputMeta.PKG, 
+                "HBaseInput.Error.ColumnFilterIsNotInTheMapping", fieldAliasS));
           }
           
           // check the type (if set in the ColumnFilter) against the type
@@ -383,11 +384,9 @@ public class HBaseInput extends BaseStep implements StepInterface {
           String fieldTypeS = environmentSubstitute(cf.getFieldType());
           if (!Const.isEmpty(fieldTypeS)) {
             if (!mappedCol.getHBaseTypeDesc().equalsIgnoreCase(fieldTypeS)) {
-              throw new KettleException("Type (" + fieldTypeS 
-                  + ") of column filter for \""
-                  + fieldAliasS + "\" does not match type specified " 
-                  + "for this field in the mapping (" 
-                  + mappedCol.getHBaseTypeDesc() + ")");
+              throw new KettleException(BaseMessages.getString(HBaseInputMeta.PKG, 
+                  "HBaseInput.Error.FieldTypeMismatch", fieldTypeS, fieldAliasS, 
+                  mappedCol.getHBaseTypeDesc()));
             }
           }
           
@@ -456,7 +455,6 @@ public class HBaseInput extends BaseStep implements StepInterface {
               }                            
 
               if (!cf.getSignedComparison()) {
-                //    comparisonRaw = Bytes.toBytes(compI);
                 SingleColumnValueFilter scf = 
                   new SingleColumnValueFilter(family, qualifier, comp, comparisonRaw);
                 scf.setFilterIfMissing(true);
@@ -527,7 +525,6 @@ public class HBaseInput extends BaseStep implements StepInterface {
                 continue;
               }
             
-              // System.err.println("::::::::::::: Here " + decodedB);
               DeserializedBooleanComparator comparator = 
                 new DeserializedBooleanComparator(decodedB.booleanValue());
               SingleColumnValueFilter scf = 
@@ -557,7 +554,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
       }
       
       try {
-        m_sourceTable = new HTable(m_connection, m_tableMapping.getTableName());
+        m_sourceTable = new HTable(m_connection, sourceName);
         m_resultSet = m_sourceTable.getScanner(s); 
       } catch (IOException e) {
         throw new KettleException(e.getMessage(), e);
@@ -580,8 +577,8 @@ public class HBaseInput extends BaseStep implements StepInterface {
       try {
         m_sourceTable.close();
       } catch (IOException e) {
-        throw new KettleException("Problem closing connection to HBase table: " 
-            + e.getMessage(), e);
+        throw new KettleException(BaseMessages.getString(HBaseInputMeta.PKG, 
+            "HBaseInput.Error.ProblemClosingConnection", e.getMessage()), e);
       }
       setOutputDone();
       return false;
@@ -596,7 +593,6 @@ public class HBaseInput extends BaseStep implements StepInterface {
     // User-selected output columns?
     if (m_userOutputColumns != null && m_userOutputColumns.size() > 0) {
       if (m_tableMapping.isTupleMapping()) {
-//        List<Object[]> hrowToKettleRow = m_data.hbaseRowToKettleTupleMode(r, m_tableMapping, m_userOutputColumns);
         List<Object[]> hrowToKettleRow = m_tupleHandler.hbaseRowToKettleTupleMode(r, m_tableMapping, 
               m_userOutputColumns, m_data.getOutputRowMeta());
         for (Object[] tuple : hrowToKettleRow) {
@@ -614,8 +610,6 @@ public class HBaseInput extends BaseStep implements StepInterface {
             String colFamilyName = currentCol.getColumnFamily();
             String qualifier = currentCol.getColumnName();
 
-            //          System.out.println("Processing qualifier: " + qualifier);
-
             boolean binaryColName = false;
             if (qualifier.startsWith("@@@binary@@@")) {
               qualifier = qualifier.replace("@@@binary@@@", "");
@@ -627,13 +621,14 @@ public class HBaseInput extends BaseStep implements StepInterface {
                 (binaryColName) ? Bytes.toBytesBinary(qualifier) : Bytes.toBytes(qualifier));
 
             if (kv == null) {
-              System.out.println("Unable to look up qualifier " + qualifier);
+              System.out.println(BaseMessages.getString(HBaseInputMeta.PKG, 
+                  "HBaseInput.Error.UnableToLookupQualifier", qualifier));
             }
 
             int outputIndex = m_data.getOutputRowMeta().indexOfValue(currentCol.getAlias());
             if (outputIndex < 0) {
-              throw new KettleException("HBase column \"" + currentCol.getAlias() 
-                  + "\" doesn't seem to be defined in the output");
+              throw new KettleException(BaseMessages.getString(HBaseInputMeta.PKG, 
+                  "HBaseInput.Error.ColumnNotDefinedInOutput", currentCol.getAlias()));
             }
 
             Object decodedVal = HBaseValueMeta.decodeColumnValue(kv, currentCol);      
@@ -645,8 +640,6 @@ public class HBaseInput extends BaseStep implements StepInterface {
 
       // all the columns in the mapping
       if (m_tableMapping.isTupleMapping()) {
-        /*List<Object[]> hrowToKettleRow = 
-          m_data.hbaseRowToKettleTupleMode(r, m_tableMapping, m_columnsMappedByAlias); */
         List<Object[]> hrowToKettleRow = 
           m_tupleHandler.hbaseRowToKettleTupleMode(r, m_tableMapping, 
               m_columnsMappedByAlias, m_data.getOutputRowMeta());
@@ -682,8 +675,8 @@ public class HBaseInput extends BaseStep implements StepInterface {
 
           int outputIndex = m_data.getOutputRowMeta().indexOfValue(name);
           if (outputIndex < 0) {
-            throw new KettleException("HBase column \"" + name + "\" doesn't seem " +
-            "to be defined in the output");
+            throw new KettleException(BaseMessages.getString(HBaseInputMeta.PKG, 
+                "HBaseInput.Error.ColumnNotDefinedInOutput", name));
           }
 
           Object decodedVal = HBaseValueMeta.decodeColumnValue(kv, currentCol);      
@@ -695,16 +688,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
     // output the row
     putRow(m_data.getOutputRowMeta(), outputRowData);    
     return true;
-  }
-  
-  // TODO handle error rows (see CsvInput). Unexpected lengths of values in columns
-  // perhaps could be sent to the error stream somehow.
-  
-  // Do we need this??
-  /*
-  public boolean isWaitingForData() {
-    return true;
-  } */
+  }  
   
   /* (non-Javadoc)
    * @see org.pentaho.di.trans.step.BaseStep#setStopped(boolean)
@@ -717,16 +701,16 @@ public class HBaseInput extends BaseStep implements StepInterface {
 
     if (stopped) {
       if (m_resultSet != null) {
-        logBasic("Closing connection...");
+        logBasic(BaseMessages.getString(HBaseInputMeta.PKG, 
+            "HBaseInput.ClosingConnection"));
         m_resultSet.close();
         try {
           m_sourceTable.close();
         } catch (IOException e) {
-          logError("A problem occurred while closing connection to HBase: " 
-              + e.getMessage(), e);
+          logError(BaseMessages.getString(HBaseInputMeta.PKG, 
+              "HBaseInput.Error.ProblemClosingConnection1", e.getMessage()));
         }
       }
     }
   }
-  
 }

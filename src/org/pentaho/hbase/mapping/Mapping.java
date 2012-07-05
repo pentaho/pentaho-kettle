@@ -67,8 +67,6 @@ import org.w3c.dom.Node;
  * deserializing as a BigNumber object. 
  * 
  * @author Mark Hall (mhall{[at]}pentaho{[dot]}com)
- * @version $Revision$
- *
  */
 public class Mapping {
   protected String m_tableName = "";
@@ -147,14 +145,7 @@ public class Mapping {
 
     m_keyName = keyName;
     m_keyType = keyType;
-  }
-  
-  /*public Mapping(String tableName, String mappingName, 
-      String keyName, KeyType keyType, Map<String, HBaseValueMeta> cols) {
-    this(tableName, mappingName, keyName, keyType);
-    
-    setMappedColumns(cols);
-  }*/
+  }  
   
   /**
    * Add a column to this mapping
@@ -346,7 +337,7 @@ public class Mapping {
   
   public void saveRep(Repository rep, ObjectId id_transformation, ObjectId id_step)
     throws KettleException {
-    if (Const.isEmpty(getMappingName())) {
+    if (Const.isEmpty(getKeyName())) {
       return; // No mapping information defined
     }
     
@@ -385,7 +376,7 @@ public class Mapping {
   public String getXML() {
     StringBuffer retval = new StringBuffer();
     
-    if (Const.isEmpty(getMappingName())) {
+    if (Const.isEmpty(getKeyName())) {
       return ""; // nothing defined
     }
     
@@ -435,12 +426,12 @@ public class Mapping {
     return retval.toString();
   }
   
-  public void loadXML(Node stepnode) throws KettleXMLException {
+  public boolean loadXML(Node stepnode) throws KettleXMLException {
     stepnode = XMLHandler.getSubNode(stepnode, "mapping");
     
     if (stepnode == null || 
         Const.isEmpty(XMLHandler.getTagValue(stepnode, "key"))) {
-      return; // no mapping info in XML
+      return false; // no mapping info in XML
     }
     
     setMappingName(XMLHandler.getTagValue(stepnode, "mapping_name"));
@@ -448,7 +439,6 @@ public class Mapping {
     
     String keyName = XMLHandler.getTagValue(stepnode, "key");
     if (keyName.indexOf(',') > 0) {
-      System.out.println("******** This is a tuple mapping **********");
       setTupleMapping(true);
       setKeyName(keyName.substring(0, keyName.indexOf(',')));
       if (keyName.indexOf(',') != keyName.length() - 1) {
@@ -505,11 +495,13 @@ public class Mapping {
         }
       }
     }
+    
+    return true;
   }
   
-  public void readRep(Repository rep, ObjectId id_step) throws KettleException {
-    if (Const.isEmpty(rep.getStepAttributeString(id_step, 0, "mapping_name"))) {
-      return; // No mapping information in the repository
+  public boolean readRep(Repository rep, ObjectId id_step) throws KettleException {
+    if (Const.isEmpty(rep.getStepAttributeString(id_step, 0, "key"))) {
+      return false; // No mapping information in the repository
     }
     
     setMappingName(rep.getStepAttributeString(id_step, 0, "mapping_name"));
@@ -570,6 +562,8 @@ public class Mapping {
         }        
       }
     }    
+    
+    return true;
   }
   
   /**
