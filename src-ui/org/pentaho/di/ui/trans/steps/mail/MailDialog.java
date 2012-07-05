@@ -2794,5 +2794,9 @@ public class MailDialog extends BaseStepDialog implements StepDialogInterface
 	{
 		wOriginFiles.setEnabled(!wisattachContentField.getSelection());
 		wZipGroup.setEnabled(!wisattachContentField.getSelection());
+		wlattachContentField.setEnabled(wisattachContentField.getSelection());
+		wattachContentField.setEnabled(wisattachContentField.getSelection());
+		wlattachContentFileNameField.setEnabled(wisattachContentField.getSelection());
+		wattachContentFileNameField.setEnabled(wisattachContentField.getSelection());
 	}
 }
