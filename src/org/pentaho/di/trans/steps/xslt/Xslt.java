@@ -223,7 +223,7 @@ public class Xslt extends BaseStep implements StepInterface
 			}
 			
 			// Get the template from the cache
-	  		Transformer transformer = data.getTemplate(data.xslfilename, meta.isXSLFieldIsAFile());
+	  		Transformer transformer = data.getTemplate(data.xslfilename, data.xslIsAfile);
 	  	
 	  		// Do we need to set output properties?
 	  	 	if(data.setOutputProperties) {
