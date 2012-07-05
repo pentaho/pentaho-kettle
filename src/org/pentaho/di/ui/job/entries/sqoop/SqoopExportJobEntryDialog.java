@@ -40,7 +40,7 @@ import org.pentaho.ui.xul.binding.BindingFactory;
  *
  * @see org.pentaho.di.job.entries.sqoop.SqoopExportJobEntry
  */
-public class SqoopExportJobEntryDialog extends AbstractSqoopJobEntryDialog<SqoopExportConfig> {
+public class SqoopExportJobEntryDialog extends AbstractSqoopJobEntryDialog<SqoopExportConfig, SqoopExportJobEntry> {
 
   public SqoopExportJobEntryDialog(Shell parent, JobEntryInterface jobEntry, Repository rep, JobMeta jobMeta) throws XulException, InvocationTargetException {
     super(parent, jobEntry, rep, jobMeta);
@@ -57,7 +57,7 @@ public class SqoopExportJobEntryDialog extends AbstractSqoopJobEntryDialog<Sqoop
   }
 
   @Override
-  protected AbstractSqoopJobEntryController<SqoopExportConfig> createController(XulDomContainer container, AbstractSqoopJobEntry<SqoopExportConfig> jobEntry, BindingFactory bindingFactory) {
+  protected SqoopExportJobEntryController createController(XulDomContainer container, SqoopExportJobEntry jobEntry, BindingFactory bindingFactory) {
     return new SqoopExportJobEntryController(jobMeta, container, jobEntry, bindingFactory);
   }
 }

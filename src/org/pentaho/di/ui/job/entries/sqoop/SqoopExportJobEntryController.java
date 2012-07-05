@@ -29,6 +29,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.sqoop.AbstractSqoopJobEntry;
 import org.pentaho.di.job.entries.sqoop.SqoopExportConfig;
+import org.pentaho.di.job.entries.sqoop.SqoopExportJobEntry;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingFactory;
@@ -42,9 +43,9 @@ import static org.pentaho.di.job.entries.sqoop.SqoopExportConfig.EXPORT_DIR;
 /**
  * Controller for the Sqoop Export Dialog.
  */
-public class SqoopExportJobEntryController extends AbstractSqoopJobEntryController<SqoopExportConfig> {
+public class SqoopExportJobEntryController extends AbstractSqoopJobEntryController<SqoopExportConfig, SqoopExportJobEntry> {
 
-  public SqoopExportJobEntryController(JobMeta jobMeta, XulDomContainer container, AbstractSqoopJobEntry<SqoopExportConfig> sqoopJobEntry, BindingFactory bindingFactory) {
+  public SqoopExportJobEntryController(JobMeta jobMeta, XulDomContainer container, SqoopExportJobEntry sqoopJobEntry, BindingFactory bindingFactory) {
     super(jobMeta, container, sqoopJobEntry, bindingFactory);
   }
 
@@ -76,5 +77,12 @@ public class SqoopExportJobEntryController extends AbstractSqoopJobEntryControll
     } catch (KettleFileException e) {
       getJobEntry().logError(BaseMessages.getString(AbstractSqoopJobEntry.class, "ErrorBrowsingDirectory"), e);
     }
+  }
+
+  @Override
+  public void accept() {
+    // Set the database meta based on the current database
+    jobEntry.setDatabaseMeta(jobMeta.findDatabase(config.getDatabase()));
+    super.accept();
   }
 }

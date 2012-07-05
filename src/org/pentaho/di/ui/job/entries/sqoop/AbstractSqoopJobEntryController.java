@@ -57,7 +57,7 @@ import static org.pentaho.di.job.entries.sqoop.SqoopConfig.*;
  * @param <S> Type of Sqoop configuration object this controller depends upon. Must match the configuration object the
  *            job entry expects.
  */
-public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> extends AbstractJobEntryController<S, AbstractSqoopJobEntry<S>> {
+public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig, E extends AbstractSqoopJobEntry<S>> extends AbstractJobEntryController<S, E> {
 
   public static final String SELECTED_DATABASE_CONNECTION = "selectedDatabaseConnection";
   public static final String MODE_TOGGLE_LABEL = "modeToggleLabel";
@@ -111,7 +111,7 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig> ext
    * @param jobEntry        Job entry the dialog is being created for
    * @param bindingFactory  Binding factory to generate bindings
    */
-  public AbstractSqoopJobEntryController(JobMeta jobMeta, XulDomContainer container, AbstractSqoopJobEntry<S> jobEntry, BindingFactory bindingFactory) {
+  public AbstractSqoopJobEntryController(JobMeta jobMeta, XulDomContainer container, E jobEntry, BindingFactory bindingFactory) {
     super(jobMeta, container, jobEntry, bindingFactory);
     this.config = (S) jobEntry.getJobConfig().clone();
     this.advancedArguments = new AbstractModelList<ArgumentWrapper>();

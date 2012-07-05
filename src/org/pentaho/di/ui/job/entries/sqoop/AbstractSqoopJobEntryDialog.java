@@ -51,7 +51,7 @@ import java.util.ResourceBundle;
  * @param <S> Type of Sqoop configuration object this dialog depends upon. Must match the configuration object the
  *            job entry expects.
  */
-public abstract class AbstractSqoopJobEntryDialog<S extends SqoopConfig> extends JobEntryDialog implements JobEntryDialogInterface {
+public abstract class AbstractSqoopJobEntryDialog<S extends SqoopConfig, E extends AbstractSqoopJobEntry<S>> extends JobEntryDialog implements JobEntryDialogInterface {
 
   protected ResourceBundle bundle = new ResourceBundle() {
     @Override
@@ -66,12 +66,12 @@ public abstract class AbstractSqoopJobEntryDialog<S extends SqoopConfig> extends
   };
 
   private XulDomContainer container;
-  private AbstractSqoopJobEntryController<S> controller;
+  private AbstractSqoopJobEntryController<S, E> controller;
 
   @SuppressWarnings("unchecked")
   protected AbstractSqoopJobEntryDialog(Shell parent, JobEntryInterface jobEntry, Repository rep, JobMeta jobMeta) throws XulException {
     super(parent, jobEntry, rep, jobMeta);
-    init(AbstractSqoopJobEntry.class.cast(jobEntry));
+    init((E) jobEntry);
   }
 
   /**
@@ -92,14 +92,14 @@ public abstract class AbstractSqoopJobEntryDialog<S extends SqoopConfig> extends
    * @param bindingFactory Binding factory to create bindings with
    * @return Controller capable of handling requests for this dialog
    */
-  protected abstract AbstractSqoopJobEntryController<S> createController(XulDomContainer container, AbstractSqoopJobEntry<S> jobEntry, BindingFactory bindingFactory);
+  protected abstract AbstractSqoopJobEntryController<S, E> createController(XulDomContainer container, E jobEntry, BindingFactory bindingFactory);
 
   /**
    * Initialize this dialog for the job entry instance provided.
    *
    * @param jobEntry The job entry this dialog supports.
    */
-  protected void init(AbstractSqoopJobEntry<S> jobEntry) throws XulException {
+  protected void init(E jobEntry) throws XulException {
     SwtXulLoader swtXulLoader = new SwtXulLoader();
     // Register the settings manager so dialog position and size is restored
     swtXulLoader.setSettingsManager(XulSpoonSettingsManager.getInstance());

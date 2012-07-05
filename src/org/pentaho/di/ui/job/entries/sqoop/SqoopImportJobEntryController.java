@@ -29,6 +29,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entries.sqoop.AbstractSqoopJobEntry;
 import org.pentaho.di.job.entries.sqoop.SqoopImportConfig;
+import org.pentaho.di.job.entries.sqoop.SqoopImportJobEntry;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingFactory;
@@ -41,9 +42,9 @@ import static org.pentaho.di.job.entries.sqoop.SqoopImportConfig.TARGET_DIR;
 /**
  * Controller for the Sqoop Import Dialog.
  */
-public class SqoopImportJobEntryController extends AbstractSqoopJobEntryController<SqoopImportConfig> {
+public class SqoopImportJobEntryController extends AbstractSqoopJobEntryController<SqoopImportConfig, SqoopImportJobEntry> {
 
-  public SqoopImportJobEntryController(JobMeta jobMeta, XulDomContainer container, AbstractSqoopJobEntry<SqoopImportConfig> sqoopJobEntry, BindingFactory bindingFactory) {
+  public SqoopImportJobEntryController(JobMeta jobMeta, XulDomContainer container, SqoopImportJobEntry sqoopJobEntry, BindingFactory bindingFactory) {
     super(jobMeta, container, sqoopJobEntry, bindingFactory);
   }
 
