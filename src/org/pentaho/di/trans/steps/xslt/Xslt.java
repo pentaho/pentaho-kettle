@@ -223,7 +223,7 @@ public class Xslt extends BaseStep implements StepInterface
 			}
 			
 			// Get the template from the cache
-	  		Transformer transformer = data.getTemplate(data.xslfilename, meta.isXSLFieldIsAFile());
+	  		Transformer transformer = data.getTemplate(data.xslfilename, data.xslIsAfile);
 	  	
 	  		// Do we need to set output properties?
 	  	 	if(data.setOutputProperties) {
@@ -241,7 +241,7 @@ public class Xslt extends BaseStep implements StepInterface
 	  		// Prepare output stream
 	  	    StreamResult result = new StreamResult(new StringWriter());	
 	  	    // transform xml source
-	  	  transformer.transform(source, result);
+	  	    transformer.transform(source, result);
 			
 			String xmlString = result.getWriter().toString();	
 	  		if(log.isDetailed()) {
@@ -283,6 +283,8 @@ public class Xslt extends BaseStep implements StepInterface
 		data=(XsltData)sdi;		
 		if (super.init(smi, sdi))
 		{
+			// Specify weither or not we have to deal with XSL filename
+			data.xslIsAfile= (meta.useXSLField() && meta.isXSLFieldIsAFile()) || (!meta.useXSLField());
 		    // Add init code here.
 		    return true;
 		}

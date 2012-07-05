@@ -23,7 +23,6 @@
 package org.pentaho.di.trans.steps.xslt;
 
 import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Properties;
@@ -63,6 +62,7 @@ public class XsltData extends BaseStepData implements StepDataInterface
 	
 	public Properties outputProperties;
 	public boolean setOutputProperties;
+	public boolean xslIsAfile;
 	
 	/**
 	 * 
@@ -96,7 +96,7 @@ public class XsltData extends BaseStepData implements StepDataInterface
 		try {
 			if(isAfile) {
 				file=KettleVFS.getFileObject(xslSource);
-		  		xslInputStream = new FileInputStream(file.getName().getPathDecoded());
+		  		xslInputStream = KettleVFS.getInputStream(file);
 			}else {
 				xslInputStream = new ByteArrayInputStream(xslSource.getBytes("UTF-8")); 
 			}
