@@ -147,7 +147,7 @@ public class SFTPPut extends BaseStep implements StepInterface
             
             // Let's perform some checks
             // Sourcefilename field
-            String sourceFilenameFieldName= environmentSubstitute(meta.getSourceFileNameFieldName());
+            String sourceFilenameFieldName= environmentSubstitute(meta.getSourceFileFieldName());
             
             if(Const.isEmpty(sourceFilenameFieldName)) {
             	// source filename field is missing

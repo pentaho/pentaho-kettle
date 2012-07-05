@@ -66,8 +66,8 @@ public class SFTPPutMeta extends BaseStepMeta implements StepMetaInterface
 	private String serverPort;
 	private String userName;
 	private String password;
+	private String sourceFileFieldName;
 	private String remoteDirectoryFieldName;
-	private String sourceFileNameDirectory;
 	private boolean addFilenameResut;
 	private boolean inputIsStream;
 	private boolean usekeyfilename;
@@ -113,8 +113,8 @@ public class SFTPPutMeta extends BaseStepMeta implements StepMetaInterface
 			serverPort      = XMLHandler.getTagValue(stepnode, "serverport");
 			userName        = XMLHandler.getTagValue(stepnode, "username");
 			password        = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue(stepnode, "password") );
+			sourceFileFieldName  = XMLHandler.getTagValue(stepnode, "sourceFileFieldName");
 			remoteDirectoryFieldName   = XMLHandler.getTagValue(stepnode, "remoteDirectoryFieldName");
-			sourceFileNameDirectory  = XMLHandler.getTagValue(stepnode, "sourceFileNameDirectory");
 
 			inputIsStream    = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "inputIsStream") );
 			addFilenameResut    = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "addFilenameResut") );
@@ -178,8 +178,8 @@ public class SFTPPutMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("      ").append(XMLHandler.addTagValue("serverport",   serverPort));
 		retval.append("      ").append(XMLHandler.addTagValue("username",     userName));
 		retval.append("      ").append(XMLHandler.addTagValue("password",     Encr.encryptPasswordIfNotUsingVariables(password)));
+		retval.append("      ").append(XMLHandler.addTagValue("sourceFileFieldName", sourceFileFieldName));
 		retval.append("      ").append(XMLHandler.addTagValue("remoteDirectoryFieldName", remoteDirectoryFieldName));
-		retval.append("      ").append(XMLHandler.addTagValue("sourceFileNameDirectory", sourceFileNameDirectory));
 		retval.append("      ").append(XMLHandler.addTagValue("inputIsStream", inputIsStream));
 		retval.append("      ").append(XMLHandler.addTagValue("addFilenameResut", addFilenameResut));
 		retval.append("      ").append(XMLHandler.addTagValue("usekeyfilename",       usekeyfilename));
@@ -204,37 +204,37 @@ public class SFTPPutMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			serverName      = rep.getJobEntryAttributeString(id_step, "servername");
-			serverPort = rep.getJobEntryAttributeString(id_step, "serverport");
+			serverName      = rep.getStepAttributeString(id_step, "servername");
+			serverPort = rep.getStepAttributeString(id_step, "serverport");
 
-			userName        = rep.getJobEntryAttributeString(id_step, "username");
-			password        = Encr.decryptPasswordOptionallyEncrypted( rep.getJobEntryAttributeString(id_step, "password") );
-			remoteDirectoryFieldName   = rep.getJobEntryAttributeString(id_step, "sourceFileNameDirectory");
-			sourceFileNameDirectory  = rep.getJobEntryAttributeString(id_step, "localdirectory");
-			inputIsStream          = rep.getJobEntryAttributeBoolean(id_step, "inputIsStream");
-			addFilenameResut          = rep.getJobEntryAttributeBoolean(id_step, "addFilenameResut");
+			userName        = rep.getStepAttributeString(id_step, "username");
+			password        = Encr.decryptPasswordOptionallyEncrypted( rep.getStepAttributeString(id_step, "password") );
+			sourceFileFieldName  = rep.getStepAttributeString(id_step, "sourceFileFieldName");
+			remoteDirectoryFieldName   = rep.getStepAttributeString(id_step, "remoteDirectoryFieldName");
+			inputIsStream          = rep.getStepAttributeBoolean(id_step, "inputIsStream");
+			addFilenameResut          = rep.getStepAttributeBoolean(id_step, "addFilenameResut");
 			
-			usekeyfilename          = rep.getJobEntryAttributeBoolean(id_step, "usekeyfilename");
-			keyfilename   = rep.getJobEntryAttributeString(id_step, "keyfilename");
-		    keyfilepass        = Encr.decryptPasswordOptionallyEncrypted(rep.getJobEntryAttributeString(id_step, "keyfilepass"));
-			compression   = rep.getJobEntryAttributeString(id_step, "compression");
-			proxyType   = rep.getJobEntryAttributeString(id_step, "proxyType");
-			proxyHost   = rep.getJobEntryAttributeString(id_step, "proxyHost");
-			proxyPort   = rep.getJobEntryAttributeString(id_step, "proxyPort");
-			proxyUsername   = rep.getJobEntryAttributeString(id_step, "proxyUsername");
-			proxyPassword        = Encr.decryptPasswordOptionallyEncrypted(rep.getJobEntryAttributeString(id_step, "proxyPassword"));
+			usekeyfilename          = rep.getStepAttributeBoolean(id_step, "usekeyfilename");
+			keyfilename   = rep.getStepAttributeString(id_step, "keyfilename");
+		    keyfilepass        = Encr.decryptPasswordOptionallyEncrypted(rep.getStepAttributeString(id_step, "keyfilepass"));
+			compression   = rep.getStepAttributeString(id_step, "compression");
+			proxyType   = rep.getStepAttributeString(id_step, "proxyType");
+			proxyHost   = rep.getStepAttributeString(id_step, "proxyHost");
+			proxyPort   = rep.getStepAttributeString(id_step, "proxyPort");
+			proxyUsername   = rep.getStepAttributeString(id_step, "proxyUsername");
+			proxyPassword        = Encr.decryptPasswordOptionallyEncrypted(rep.getStepAttributeString(id_step, "proxyPassword"));
 
-			createRemoteFolder          = rep.getJobEntryAttributeBoolean(id_step, "createRemoteFolder");
+			createRemoteFolder          = rep.getStepAttributeBoolean(id_step, "createRemoteFolder");
 			
-			boolean remove          = rep.getJobEntryAttributeBoolean(id_step, "remove");
-			setAfterFTPS(JobEntrySFTPPUT.getAfterSFTPPutByCode(Const.NVL(rep.getJobEntryAttributeString(id_step,"aftersftpput"), "")));
+			boolean remove          = rep.getStepAttributeBoolean(id_step, "remove");
+			setAfterFTPS(JobEntrySFTPPUT.getAfterSFTPPutByCode(Const.NVL(rep.getStepAttributeString(id_step,"aftersftpput"), "")));
 			if(remove && getAfterFTPS()==JobEntrySFTPPUT.AFTER_FTPSPUT_NOTHING)
 			{
 				setAfterFTPS(JobEntrySFTPPUT.AFTER_FTPSPUT_DELETE);
 			}
-			destinationfolderFieldName            = rep.getJobEntryAttributeString(id_step, "destinationfolderFieldName");
-			createDestinationFolder = rep.getJobEntryAttributeBoolean(id_step, "createdestinationfolder");
-			remoteFilenameFieldName           = rep.getJobEntryAttributeString(id_step, "remoteFilenameFieldName");
+			destinationfolderFieldName            = rep.getStepAttributeString(id_step, "destinationfolderFieldName");
+			createDestinationFolder = rep.getStepAttributeBoolean(id_step, "createdestinationfolder");
+			remoteFilenameFieldName           = rep.getStepAttributeString(id_step, "remoteFilenameFieldName");
 		}
 		catch(Exception e)
 		{
@@ -246,30 +246,30 @@ public class SFTPPutMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			rep.saveJobEntryAttribute(id_step, getObjectId(), "servername",      serverName);
-			rep.saveJobEntryAttribute(id_step, getObjectId(), "serverport",      serverPort);
-			rep.saveJobEntryAttribute(id_step, getObjectId(), "username",        userName);
-			rep.saveJobEntryAttribute(id_step, getObjectId(), "password",        Encr.encryptPasswordIfNotUsingVariables(password));
-			rep.saveJobEntryAttribute(id_step, getObjectId(), "remoteDirectoryFieldName",    remoteDirectoryFieldName);
-			rep.saveJobEntryAttribute(id_step, getObjectId(), "sourceFileNameDirectory", sourceFileNameDirectory);
-			rep.saveJobEntryAttribute(id_step, getObjectId(), "inputIsStream",   inputIsStream);
-			rep.saveJobEntryAttribute(id_step, getObjectId(), "addFilenameResut",   addFilenameResut);
+			rep.saveStepAttribute(id_transformation, id_step, "servername",      serverName);
+			rep.saveStepAttribute(id_transformation, id_step, "serverport",      serverPort);
+			rep.saveStepAttribute(id_transformation, id_step, "username",        userName);
+			rep.saveStepAttribute(id_transformation, id_step, "password",        Encr.encryptPasswordIfNotUsingVariables(password));
+			rep.saveStepAttribute(id_transformation, id_step, "sourceFileFieldName", sourceFileFieldName);
+			rep.saveStepAttribute(id_transformation, id_step, "remoteDirectoryFieldName",    remoteDirectoryFieldName);
+			rep.saveStepAttribute(id_transformation, id_step, "inputIsStream",   inputIsStream);
+			rep.saveStepAttribute(id_transformation, id_step, "addFilenameResut",   addFilenameResut);
 			
-			rep.saveJobEntryAttribute(id_step, getObjectId(), "usekeyfilename",          usekeyfilename);
-			rep.saveJobEntryAttribute(id_step, getObjectId(), "keyfilename",        keyfilename);
-			rep.saveJobEntryAttribute(id_step, getObjectId(), "keyfilepass",        Encr.encryptPasswordIfNotUsingVariables(keyfilepass));
-			rep.saveJobEntryAttribute(id_step, getObjectId(), "compression",        compression);
-			rep.saveJobEntryAttribute(id_step, getObjectId(), "proxyType",        proxyType);
-			rep.saveJobEntryAttribute(id_step, getObjectId(), "proxyHost",        proxyHost);
-			rep.saveJobEntryAttribute(id_step, getObjectId(), "proxyPort",        proxyPort);
-			rep.saveJobEntryAttribute(id_step, getObjectId(), "proxyUsername",    proxyUsername);
-			rep.saveJobEntryAttribute(id_step, getObjectId(), "proxyPassword",      Encr.encryptPasswordIfNotUsingVariables(proxyPassword));
-			rep.saveJobEntryAttribute(id_step, getObjectId(),"aftersftpput", JobEntrySFTPPUT.getAfterSFTPPutCode(getAfterFTPS()));
+			rep.saveStepAttribute(id_transformation, id_step, "usekeyfilename",          usekeyfilename);
+			rep.saveStepAttribute(id_transformation, id_step, "keyfilename",        keyfilename);
+			rep.saveStepAttribute(id_transformation, id_step, "keyfilepass",        Encr.encryptPasswordIfNotUsingVariables(keyfilepass));
+			rep.saveStepAttribute(id_transformation, id_step, "compression",        compression);
+			rep.saveStepAttribute(id_transformation, id_step, "proxyType",        proxyType);
+			rep.saveStepAttribute(id_transformation, id_step, "proxyHost",        proxyHost);
+			rep.saveStepAttribute(id_transformation, id_step, "proxyPort",        proxyPort);
+			rep.saveStepAttribute(id_transformation, id_step, "proxyUsername",    proxyUsername);
+			rep.saveStepAttribute(id_transformation, id_step, "proxyPassword",      Encr.encryptPasswordIfNotUsingVariables(proxyPassword));
+			rep.saveStepAttribute(id_transformation, id_step,"aftersftpput", JobEntrySFTPPUT.getAfterSFTPPutCode(getAfterFTPS()));
 		
-			rep.saveJobEntryAttribute(id_step, getObjectId(), "createRemoteFolder",   createRemoteFolder);
-			rep.saveJobEntryAttribute(id_step, getObjectId(), "destinationfolderFieldName",        destinationfolderFieldName);
-			rep.saveJobEntryAttribute(id_step, getObjectId(), "createdestinationfolder",        createDestinationFolder);
-			rep.saveJobEntryAttribute(id_step, getObjectId(), "remoteFilenameFieldName",        remoteFilenameFieldName);
+			rep.saveStepAttribute(id_transformation, id_step, "createRemoteFolder",   createRemoteFolder);
+			rep.saveStepAttribute(id_transformation, id_step, "destinationfolderFieldName",        destinationfolderFieldName);
+			rep.saveStepAttribute(id_transformation, id_step, "createdestinationfolder",        createDestinationFolder);
+			rep.saveStepAttribute(id_transformation, id_step, "remoteFilenameFieldName",        remoteFilenameFieldName);
 			
 		}
 		catch(Exception e)
@@ -508,14 +508,15 @@ public class SFTPPutMeta extends BaseStepMeta implements StepMetaInterface
     {
     	this.remoteDirectoryFieldName=value;
     }
-    public void setSourceFileNameFieldName(String value)
+    
+    public void setSourceFileFieldName(String value)
     {
-    	this.sourceFileNameDirectory=value;
+    	this.sourceFileFieldName=value;
     }
     
-    public String getSourceFileNameFieldName()
+    public String getSourceFileFieldName()
     {
-    	return sourceFileNameDirectory;
+    	return sourceFileFieldName;
     }
     
     public void setDestinationFolderFieldName(String value)
