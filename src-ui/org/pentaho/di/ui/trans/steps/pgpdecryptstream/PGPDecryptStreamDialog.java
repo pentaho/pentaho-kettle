@@ -77,6 +77,7 @@ public class PGPDecryptStreamDialog extends BaseStepDialog implements StepDialog
 	private TextVar      wResult;
 	private FormData    fdResult,fdlResult;
 	private Label       wlResult;
+	
 	private Button wbbGpgExe;
 	private FormData fdbbGpgExe;
 	
@@ -424,7 +425,7 @@ public class PGPDecryptStreamDialog extends BaseStepDialog implements StepDialog
 		if (input.getStreamField() !=null)   wStreamFieldName.setText(input.getStreamField());
 		if (input.getResultFieldName()!=null)   wResult.setText(input.getResultFieldName());
 		if (input.getPassphrase() !=null)   wPassphrase.setText(input.getPassphrase());
-		input.setPassphraseFromField(input.isPassphraseFromField());
+		wPassphraseFromField.setSelection(input.isPassphraseFromField());
 		if (input.getPassphraseFieldName() !=null)   wPassphraseFieldName.setText(input.getPassphraseFieldName());
 		wStepname.selectAll();
 	}

@@ -291,18 +291,25 @@ public class PGPDecryptStreamMeta extends BaseStepMeta implements StepMetaInterf
             error_message = BaseMessages.getString(PKG, "PGPDecryptStreamMeta.CheckResult.GPGLocationOK"); //$NON-NLS-1$
             cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
         }
-        if (Const.isEmpty(passhrase))
+        if(isPassphraseFromField())
         {
-            error_message = BaseMessages.getString(PKG, "PGPDecryptStreamMeta.CheckResult.PassphraseMissing"); //$NON-NLS-1$
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
-            remarks.add(cr);
+        	// check dynamic passphrase
         }
         else
         {
-            error_message = BaseMessages.getString(PKG, "PGPDecryptStreamMeta.CheckResult.PassphraseOK"); //$NON-NLS-1$
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
+        	// Check static passphrase
+        	if (Const.isEmpty(passhrase))
+	        {
+	            error_message = BaseMessages.getString(PKG, "PGPDecryptStreamMeta.CheckResult.PassphraseMissing"); //$NON-NLS-1$
+	            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
+	            remarks.add(cr);
+	        }
+	        else
+	        {
+	            error_message = BaseMessages.getString(PKG, "PGPDecryptStreamMeta.CheckResult.PassphraseOK"); //$NON-NLS-1$
+	            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
+	        }
         }
-          
         if (Const.isEmpty(resultfieldname))
         {
             error_message = BaseMessages.getString(PKG, "PGPDecryptStreamMeta.CheckResult.ResultFieldMissing"); //$NON-NLS-1$

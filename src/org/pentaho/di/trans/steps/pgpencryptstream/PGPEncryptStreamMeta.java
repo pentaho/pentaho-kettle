@@ -292,18 +292,24 @@ public class PGPEncryptStreamMeta extends BaseStepMeta implements StepMetaInterf
             error_message = BaseMessages.getString(PKG, "PGPEncryptStreamMeta.CheckResult.GPGLocationOK"); //$NON-NLS-1$
             cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
         }
-        if (Const.isEmpty(keyname))
+        if(isKeynameInField())
         {
-            error_message = BaseMessages.getString(PKG, "PGPEncryptStreamMeta.CheckResult.KeyNameMissing"); //$NON-NLS-1$
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
-            remarks.add(cr);
+        	
         }
         else
         {
-            error_message = BaseMessages.getString(PKG, "PGPEncryptStreamMeta.CheckResult.KeyNameOK"); //$NON-NLS-1$
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
-        }
-          
+	        if (Const.isEmpty(keyname))
+	        {
+	            error_message = BaseMessages.getString(PKG, "PGPEncryptStreamMeta.CheckResult.KeyNameMissing"); //$NON-NLS-1$
+	            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
+	            remarks.add(cr);
+	        }
+	        else
+	        {
+	            error_message = BaseMessages.getString(PKG, "PGPEncryptStreamMeta.CheckResult.KeyNameOK"); //$NON-NLS-1$
+	            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
+	        }
+        } 
         if (Const.isEmpty(resultfieldname))
         {
             error_message = BaseMessages.getString(PKG, "PGPEncryptStreamMeta.CheckResult.ResultFieldMissing"); //$NON-NLS-1$

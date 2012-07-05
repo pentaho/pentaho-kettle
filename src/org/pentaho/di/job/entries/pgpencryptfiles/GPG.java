@@ -55,7 +55,7 @@ public class GPG {
 	
 	private LogChannelInterface	log;
 
-	private final String gnuPGCommand = "--batch --armor --output -";
+	private final String gnuPGCommand = "--batch --armor ";
 	
 	/** gpg program location **/
 	private String	gpgexe="/usr/local/bin/gpg";
@@ -452,7 +452,7 @@ public class GPG {
 	 */
 	public String encrypt (String plainText, String keyID) 
 	throws KettleException {
-		return execGnuPG ("-r " + keyID + " --encrypt", plainText, false);
+		return execGnuPG ("-r \"" + keyID + "\" --encrypt " , plainText, false);
 
 	}
 	
@@ -470,7 +470,7 @@ public class GPG {
 		try {
 			createTempFile (plainText);
 			
-			return execGnuPG ("-r " + userID + " --passphrase-fd 0 -se " + getTempFileName(), passPhrase, false);
+			return execGnuPG ("-r \"" + userID + "\" --passphrase-fd 0 -se \"" + getTempFileName() +"\"", passPhrase, false);
 		}finally {
 			
 			deleteTempFile();
@@ -492,7 +492,7 @@ public class GPG {
 			
 			createTempFile (stringToSign);
 		
-			retval= execGnuPG ("--passphrase-fd 0 --sign " + getTempFileName(), passPhrase, false);
+			retval= execGnuPG ("--passphrase-fd 0 --sign \"" + getTempFileName() + "\"", passPhrase, false);
 
 		} finally {
 			deleteTempFile();
@@ -513,7 +513,7 @@ public class GPG {
 		try {
 			createTempFile (cryptedText);
 		
-			return execGnuPG ("--passphrase-fd 0 --decrypt " + getTempFileName(), passPhrase, false);
+			return execGnuPG ("--passphrase-fd 0 --decrypt \"" + getTempFileName() +"\"", passPhrase, false);
 		}finally {
 			deleteTempFile();
 		}
