@@ -22,6 +22,7 @@
 
 package org.pentaho.di.job.entries.sqoop;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -43,12 +44,16 @@ import org.w3c.dom.Document;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public class SqoopExportJobEntryTest {
+
+  @BeforeClass
+  public static void init() throws KettleException {
+    KettleEnvironment.init();
+  }
 
   @Test
   public void conditionalsForUIInteractions() {
@@ -71,6 +76,7 @@ public class SqoopExportJobEntryTest {
     SqoopExportConfig config = new SqoopExportConfig();
     String connectValue = "jdbc:mysql://localhost:3306/test";
     String myPassword = "my-password";
+    DatabaseMeta databaseMeta = new DatabaseMeta("test database", "H2", null, null, null, null, null, null);
 
     config.setJobEntryName("testing");
     config.setBlockingExecution("false");
@@ -78,6 +84,8 @@ public class SqoopExportJobEntryTest {
     config.setConnect(connectValue);
     config.setExportDir("/test-export");
     config.setPassword(myPassword);
+
+    config.setDatabase(databaseMeta.getName());
 
     je.setJobConfig(config);
 
@@ -90,7 +98,7 @@ public class SqoopExportJobEntryTest {
     Document d = XMLHandler.loadXMLString(xml);
 
     SqoopExportJobEntry je2 = new SqoopExportJobEntry();
-    je2.loadXML(d.getDocumentElement(), null, null, null);
+    je2.loadXML(d.getDocumentElement(), Collections.singletonList(databaseMeta), null, null);
 
     SqoopExportConfig config2 = je2.getJobConfig();
     assertEquals(config.getJobEntryName(), config2.getJobEntryName());
@@ -99,6 +107,10 @@ public class SqoopExportJobEntryTest {
     assertEquals(config.getConnect(), config2.getConnect());
     assertEquals(config.getExportDir(), config2.getExportDir());
     assertEquals(config.getPassword(), config2.getPassword());
+    assertEquals(config.getDatabase(), config2.getDatabase());
+
+    assertNotNull(je2.getDatabaseMeta());
+    assertEquals(databaseMeta.getName(), je2.getDatabaseMeta().getName());
   }
 
   @Test
@@ -106,6 +118,7 @@ public class SqoopExportJobEntryTest {
     SqoopExportJobEntry je = new SqoopExportJobEntry();
     SqoopExportConfig config = new SqoopExportConfig();
     String connectValue = "jdbc:mysql://localhost:3306/test";
+    DatabaseMeta meta = new DatabaseMeta("test database", "H2", null, null, null, null, null, null);
 
     config.setJobEntryName("testing");
     config.setBlockingExecution("${blocking}");
@@ -113,6 +126,7 @@ public class SqoopExportJobEntryTest {
     config.setConnect(connectValue);
     config.setExportDir("/test-export");
     config.setPassword("my-password");
+    config.setDatabase(meta.getName());
 
     je.setJobConfig(config);
 
@@ -143,7 +157,7 @@ public class SqoopExportJobEntryTest {
 
       // Load it back into a new job entry
       SqoopExportJobEntry je2 = new SqoopExportJobEntry();
-      je2.loadRep(repository, id_job, null, null);
+      je2.loadRep(repository, id_job, Collections.singletonList(meta), null);
 
       // Make sure all settings we set are properly loaded
       SqoopExportConfig config2 = je2.getJobConfig();
@@ -153,10 +167,25 @@ public class SqoopExportJobEntryTest {
       assertEquals(config.getConnect(), config2.getConnect());
       assertEquals(config.getExportDir(), config2.getExportDir());
       assertEquals(config.getPassword(), config2.getPassword());
+
+      assertNotNull(je2.getDatabaseMeta());
+      assertEquals(meta.getName(), je2.getDatabaseMeta().getName());
     } finally {
       // Delete test database
       new File(filename+".h2.db").delete();
       new File(filename+".trace.db").delete();
     }
+  }
+
+  @Test
+  public void getDatabaseMeta() throws KettleException {
+    SqoopExportJobEntry entry = new SqoopExportJobEntry();
+    DatabaseMeta meta = new DatabaseMeta("test", "H2", null, null, null, null, null, null);
+
+    assertNull(entry.getDatabaseMeta());
+
+    entry.setDatabaseMeta(meta);
+
+    assertEquals(meta, entry.getDatabaseMeta());
   }
 }

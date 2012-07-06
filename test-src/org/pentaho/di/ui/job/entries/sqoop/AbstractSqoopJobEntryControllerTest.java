@@ -49,7 +49,7 @@ import static org.junit.Assert.*;
 
 public class AbstractSqoopJobEntryControllerTest {
 
-  private class TestSqoopJobEntryController extends AbstractSqoopJobEntryController<SqoopConfig> {
+  private class TestSqoopJobEntryController extends AbstractSqoopJobEntryController<SqoopConfig, AbstractSqoopJobEntry<SqoopConfig>> {
     private XulDeck modeDeck;
     private XulDeck advancedModeDeck;
     private XulButton advancedListButton;
