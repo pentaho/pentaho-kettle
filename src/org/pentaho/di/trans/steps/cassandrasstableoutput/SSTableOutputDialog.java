@@ -61,17 +61,17 @@ import org.pentaho.di.ui.trans.step.BaseStepDialog;
  * @author Mark Hall (mhall{[at]}pentaho{[dot]}com)
  */
 public class SSTableOutputDialog extends BaseStepDialog implements
-StepDialogInterface {
+    StepDialogInterface {
 
   private static final Class<?> PKG = SSTableOutputMeta.class;
 
-  private SSTableOutputMeta m_currentMeta;
-  private SSTableOutputMeta m_originalMeta;
+  private final SSTableOutputMeta m_currentMeta;
+  private final SSTableOutputMeta m_originalMeta;
 
   /** various UI bits and pieces for the dialog */
   private Label m_stepnameLabel;
   private Text m_stepnameText;
-  
+
   private Label m_yamlLab;
   private Button m_yamlBut;
   private TextVar m_yamlText;
@@ -94,8 +94,7 @@ StepDialogInterface {
 
   private Button m_getFieldsBut;
 
-  public SSTableOutputDialog(Shell parent, Object in, TransMeta tr,
-      String name) {
+  public SSTableOutputDialog(Shell parent, Object in, TransMeta tr, String name) {
 
     super(parent, (BaseStepMeta) in, tr, name);
 
@@ -108,8 +107,7 @@ StepDialogInterface {
     Shell parent = getParent();
     Display display = parent.getDisplay();
 
-    shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MIN
-        | SWT.MAX);
+    shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MIN | SWT.MAX);
 
     props.setLook(shell);
     setShellImage(shell, m_currentMeta);
@@ -128,8 +126,8 @@ StepDialogInterface {
     formLayout.marginHeight = Const.FORM_MARGIN;
 
     shell.setLayout(formLayout);
-    shell.setText(BaseMessages.getString(PKG,
-    "SSTableOutputDialog.Shell.Title"));
+    shell.setText(BaseMessages
+        .getString(PKG, "SSTableOutputDialog.Shell.Title"));
 
     int middle = props.getMiddlePct();
     int margin = Const.MARGIN;
@@ -137,7 +135,7 @@ StepDialogInterface {
     // Stepname line
     m_stepnameLabel = new Label(shell, SWT.RIGHT);
     m_stepnameLabel.setText(BaseMessages.getString(PKG,
-    "SSTableOutputDialog.StepName.Label"));
+        "SSTableOutputDialog.StepName.Label"));
     props.setLook(m_stepnameLabel);
 
     FormData fd = new FormData();
@@ -156,26 +154,29 @@ StepDialogInterface {
     fd.top = new FormAttachment(0, margin);
     fd.right = new FormAttachment(100, 0);
     m_stepnameText.setLayoutData(fd);
-    
+
     // yaml file line
     m_yamlLab = new Label(shell, SWT.RIGHT);
     props.setLook(m_yamlLab);
-    m_yamlLab.setText(BaseMessages.getString(PKG, "SSTableOutputDialog.YAML.Label"));
+    m_yamlLab.setText(BaseMessages.getString(PKG,
+        "SSTableOutputDialog.YAML.Label"));
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
     fd.top = new FormAttachment(m_stepnameText, margin);
     fd.right = new FormAttachment(middle, -margin);
     m_yamlLab.setLayoutData(fd);
-    
+
     m_yamlBut = new Button(shell, SWT.PUSH | SWT.CENTER);
     props.setLook(m_yamlBut);
-    m_yamlBut.setText(BaseMessages.getString(PKG, "SSTableOutputDialog.YAML.Button"));
+    m_yamlBut.setText(BaseMessages.getString(PKG,
+        "SSTableOutputDialog.YAML.Button"));
     fd = new FormData();
     fd.right = new FormAttachment(100, 0);
     fd.top = new FormAttachment(m_stepnameText, margin);
     m_yamlBut.setLayoutData(fd);
-    
+
     m_yamlBut.addSelectionListener(new SelectionAdapter() {
+      @Override
       public void widgetSelected(SelectionEvent e) {
         FileDialog dialog = new FileDialog(shell, SWT.OPEN);
         String[] extensions = null;
@@ -183,32 +184,31 @@ StepDialogInterface {
 
         extensions = new String[2];
         filterNames = new String[2];
-        
+
         extensions[0] = "*.yaml";
-        filterNames[0] = 
-          BaseMessages.getString(PKG, "SSTableOutputDialog.FileType.YAML");
+        filterNames[0] = BaseMessages.getString(PKG,
+            "SSTableOutputDialog.FileType.YAML");
 
         extensions[1] = "*";
-        filterNames[1] = 
-          BaseMessages.getString(PKG, "System.FileType.AllFiles");
+        filterNames[1] = BaseMessages
+            .getString(PKG, "System.FileType.AllFiles");
 
         dialog.setFilterExtensions(extensions);
 
         if (dialog.open() != null) {
-          m_yamlText.setText(dialog.getFilterPath() 
-              + System.getProperty("file.separator")
-              + dialog.getFileName());
+          m_yamlText.setText(dialog.getFilterPath()
+              + System.getProperty("file.separator") + dialog.getFileName());
         }
       }
     });
-    
+
     m_yamlText = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT
         | SWT.BORDER);
     props.setLook(m_yamlText);
     m_yamlText.addModifyListener(new ModifyListener() {
       public void modifyText(ModifyEvent e) {
-        m_yamlText.setToolTipText(transMeta
-            .environmentSubstitute(m_yamlText.getText()));
+        m_yamlText.setToolTipText(transMeta.environmentSubstitute(m_yamlText
+            .getText()));
       }
     });
     m_yamlText.addModifyListener(lsMod);
@@ -222,22 +222,24 @@ StepDialogInterface {
     m_directoryLab = new Label(shell, SWT.RIGHT);
     props.setLook(m_directoryLab);
     m_directoryLab.setText(BaseMessages.getString(PKG,
-    "SSTableOutputDialog.Directory.Label"));
+        "SSTableOutputDialog.Directory.Label"));
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
     fd.top = new FormAttachment(m_yamlText, margin);
     fd.right = new FormAttachment(middle, -margin);
     m_directoryLab.setLayoutData(fd);
-    
+
     m_directoryBut = new Button(shell, SWT.PUSH | SWT.CENTER);
     props.setLook(m_directoryBut);
-    m_directoryBut.setText(BaseMessages.getString(PKG, "SSTableOutputDialog.Directory.Button"));
+    m_directoryBut.setText(BaseMessages.getString(PKG,
+        "SSTableOutputDialog.Directory.Button"));
     fd = new FormData();
     fd.right = new FormAttachment(100, 0);
     fd.top = new FormAttachment(m_yamlText, margin);
     m_directoryBut.setLayoutData(fd);
-    
+
     m_directoryBut.addSelectionListener(new SelectionAdapter() {
+      @Override
       public void widgetSelected(SelectionEvent e) {
         FileDialog dialog = new FileDialog(shell, SWT.OPEN);
         String[] extensions = null;
@@ -247,19 +249,17 @@ StepDialogInterface {
         filterNames = new String[1];
 
         extensions[0] = "*";
-        filterNames[0] = 
-          BaseMessages.getString(PKG, "System.FileType.AllFiles");
+        filterNames[0] = BaseMessages
+            .getString(PKG, "System.FileType.AllFiles");
 
         dialog.setFilterExtensions(extensions);
 
         if (dialog.open() != null) {
-          m_directoryText.setText(dialog.getFilterPath() 
-              + System.getProperty("file.separator")
-              + dialog.getFileName());
+          m_directoryText.setText(dialog.getFilterPath()
+              + System.getProperty("file.separator") + dialog.getFileName());
         }
       }
     });
-    
 
     m_directoryText = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT
         | SWT.BORDER);
@@ -281,7 +281,7 @@ StepDialogInterface {
     m_keyspaceLab = new Label(shell, SWT.RIGHT);
     props.setLook(m_keyspaceLab);
     m_keyspaceLab.setText(BaseMessages.getString(PKG,
-    "SSTableOutputDialog.Keyspace.Label"));
+        "SSTableOutputDialog.Keyspace.Label"));
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
     fd.top = new FormAttachment(m_directoryText, margin);
@@ -308,15 +308,15 @@ StepDialogInterface {
     m_columnFamilyLab = new Label(shell, SWT.RIGHT);
     props.setLook(m_columnFamilyLab);
     m_columnFamilyLab.setText(BaseMessages.getString(PKG,
-    "SSTableOutputDialog.ColumnFamily.Label"));
+        "SSTableOutputDialog.ColumnFamily.Label"));
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
     fd.top = new FormAttachment(m_keyspaceText, margin);
     fd.right = new FormAttachment(middle, -margin);
     m_columnFamilyLab.setLayoutData(fd);
 
-    m_columnFamilyText = new TextVar(transMeta, shell, SWT.SINGLE
-        | SWT.LEFT | SWT.BORDER);
+    m_columnFamilyText = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT
+        | SWT.BORDER);
     props.setLook(m_columnFamilyText);
     m_columnFamilyText.addModifyListener(new ModifyListener() {
       public void modifyText(ModifyEvent e) {
@@ -335,7 +335,7 @@ StepDialogInterface {
     m_keyFieldLab = new Label(shell, SWT.RIGHT);
     props.setLook(m_keyFieldLab);
     m_keyFieldLab.setText(BaseMessages.getString(PKG,
-    "SSTableOutputDialog.KeyField.Label"));
+        "SSTableOutputDialog.KeyField.Label"));
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
     fd.top = new FormAttachment(m_columnFamilyText, margin);
@@ -345,13 +345,14 @@ StepDialogInterface {
     m_getFieldsBut = new Button(shell, SWT.PUSH | SWT.CENTER);
     props.setLook(m_getFieldsBut);
     m_getFieldsBut.setText(BaseMessages.getString(PKG,
-    "SSTableOutputDialog.GetFields.Button"));
+        "SSTableOutputDialog.GetFields.Button"));
     fd = new FormData();
     fd.right = new FormAttachment(100, 0);
     fd.top = new FormAttachment(m_columnFamilyText, 0);
     m_getFieldsBut.setLayoutData(fd);
 
     m_getFieldsBut.addSelectionListener(new SelectionAdapter() {
+      @Override
       public void widgetSelected(SelectionEvent e) {
         setupFieldsCombo();
       }
@@ -375,15 +376,15 @@ StepDialogInterface {
     m_bufferSizeLab = new Label(shell, SWT.RIGHT);
     props.setLook(m_bufferSizeLab);
     m_bufferSizeLab.setText(BaseMessages.getString(PKG,
-    "SSTableOutputDialog.BufferSize.Label"));
+        "SSTableOutputDialog.BufferSize.Label"));
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
     fd.top = new FormAttachment(m_keyFieldCombo, margin);
     fd.right = new FormAttachment(middle, -margin);
     m_bufferSizeLab.setLayoutData(fd);
 
-    m_bufferSizeText = new TextVar(transMeta, shell, SWT.SINGLE
-        | SWT.LEFT | SWT.BORDER);
+    m_bufferSizeText = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT
+        | SWT.BORDER);
     props.setLook(m_bufferSizeText);
     m_bufferSizeText.addModifyListener(new ModifyListener() {
       public void modifyText(ModifyEvent e) {
@@ -405,8 +406,7 @@ StepDialogInterface {
     wCancel = new Button(shell, SWT.PUSH);
     wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
 
-    setButtonPositions(new Button[] { wOK, wCancel }, margin,
-        m_bufferSizeText);
+    setButtonPositions(new Button[] { wOK, wCancel }, margin, m_bufferSizeText);
 
     // Add listeners
     lsCancel = new Listener() {
@@ -425,6 +425,7 @@ StepDialogInterface {
     wOK.addListener(SWT.Selection, lsOK);
 
     lsDef = new SelectionAdapter() {
+      @Override
       public void widgetDefaultSelected(SelectionEvent e) {
         ok();
       }
@@ -434,6 +435,7 @@ StepDialogInterface {
 
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener(new ShellAdapter() {
+      @Override
       public void shellClosed(ShellEvent e) {
         cancel();
       }
@@ -463,15 +465,9 @@ StepDialogInterface {
         RowMetaInterface row = transMeta.getPrevStepFields(stepMeta);
 
         if (row.size() == 0) {
-          MessageDialog
-          .openError(
-              shell,
-              BaseMessages
-              .getString(PKG,
-              "SSTableOutputData.Message.NoIncomingFields.Title"),
-              BaseMessages
-              .getString(PKG,
-              "SSTableOutputData.Message.NoIncomingFields"));
+          MessageDialog.openError(shell, BaseMessages.getString(PKG,
+              "SSTableOutputData.Message.NoIncomingFields.Title"), BaseMessages
+              .getString(PKG, "SSTableOutputData.Message.NoIncomingFields"));
 
           return;
         }
@@ -483,9 +479,8 @@ StepDialogInterface {
         }
       } catch (KettleException ex) {
         MessageDialog.openError(shell, BaseMessages.getString(PKG,
-        "SSTableOutputData.Message.NoIncomingFields.Title"),
-        BaseMessages.getString(PKG,
-        "SSTableOutputData.Message.NoIncomingFields"));
+            "SSTableOutputData.Message.NoIncomingFields.Title"), BaseMessages
+            .getString(PKG, "SSTableOutputData.Message.NoIncomingFields"));
       }
     }
   }
@@ -519,7 +514,7 @@ StepDialogInterface {
   }
 
   protected void getData() {
-    
+
     if (!Const.isEmpty(m_currentMeta.getYamlPath())) {
       m_yamlText.setText(m_currentMeta.getYamlPath());
     }

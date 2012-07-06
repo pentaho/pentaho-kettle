@@ -29,24 +29,25 @@ import java.net.URL;
 import org.apache.hadoop.conf.Configuration;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
 /**
- * Class providing an input step for reading data from an HBase table
- * according to meta data mapping info stored in a separate HBase table
- * called "pentaho_mappings". See org.pentaho.hbase.mapping.Mapping for
- * details on the meta data format.
+ * Class providing an input step for reading data from an HBase table according
+ * to meta data mapping info stored in a separate HBase table called
+ * "pentaho_mappings". See org.pentaho.hbase.mapping.Mapping for details on the
+ * meta data format.
  * 
  * @author Mark Hall (mhall{[at]}pentaho{[dot]}com)
  * @version $Revision$
- *
+ * 
  */
 public class HBaseInputData extends BaseStepData implements StepDataInterface {
-  
+
   /** The output data format */
   protected RowMetaInterface m_outputRowMeta;
-    
+
   /**
    * Get the output row format
    * 
@@ -55,7 +56,7 @@ public class HBaseInputData extends BaseStepData implements StepDataInterface {
   public RowMetaInterface getOutputRowMeta() {
     return m_outputRowMeta;
   }
-  
+
   /**
    * Set the output row format
    * 
@@ -64,57 +65,58 @@ public class HBaseInputData extends BaseStepData implements StepDataInterface {
   public void setOutputRowMeta(RowMetaInterface rmi) {
     m_outputRowMeta = rmi;
   }
-  
+
   /**
-   * Get a configured connection to HBase. A connection can be obtained via
-   * a list of host(s) that zookeeper is running on or via the hbase-site.xml
-   * (and optionally hbase-default.xml) file.
+   * Get a configured connection to HBase. A connection can be obtained via a
+   * list of host(s) that zookeeper is running on or via the hbase-site.xml (and
+   * optionally hbase-default.xml) file.
    * 
    * @param zookeeperHosts a comma separated list of hosts that zookeeper is
-   * running on
-   * @param zookeeperPort an (optional) port that zookeeper is listening on. If not
-   * specified, then the default for zookeeper is used
+   *          running on
+   * @param zookeeperPort an (optional) port that zookeeper is listening on. If
+   *          not specified, then the default for zookeeper is used
    * @param coreConfig URL to the hbase-site.xml (may be null)
    * @param defaultConfig URL to the hbase-default.xml (may be null)
    * @return a Configuration object that can be used ot access HBase.
    * @throws IOException if a problem occurs.
    */
-  public static Configuration getHBaseConnection(String zookeeperHosts, 
-      String zookeeperPort, URL coreConfig, URL defaultConfig) 
-    throws IOException {
+  public static Configuration getHBaseConnection(String zookeeperHosts,
+      String zookeeperPort, URL coreConfig, URL defaultConfig)
+      throws IOException {
     Configuration con = new Configuration();
-    
+
     if (defaultConfig != null) {
       con.addResource(defaultConfig);
     } else {
       // hopefully it's in the classpath
       con.addResource("hbase-default.xml");
     }
-    
+
     if (coreConfig != null) {
       con.addResource(coreConfig);
     } else {
       // hopefully it's in the classpath
       con.addResource("hbase-site.xml");
-    } 
-    
+    }
+
     if (!Const.isEmpty(zookeeperHosts)) {
       // override default and site with this
       con.set("hbase.zookeeper.quorum", zookeeperHosts);
     }
-    
+
     if (!Const.isEmpty(zookeeperPort)) {
       try {
         int port = Integer.parseInt(zookeeperPort);
         con.setInt("hbase.zookeeper.property.clientPort", port);
-      } catch (NumberFormatException e) { 
-        System.err.println("Unable to parse zookeeper port, using default");
+      } catch (NumberFormatException e) {
+        System.err.println(BaseMessages.getString(HBaseInputMeta.PKG,
+            "HBaseInput.Error.UnableToParseZookeeperPort"));
       }
     }
-    
-    return con;    
+
+    return con;
   }
-  
+
   /**
    * Utility method to covert a string to a URL object.
    * 
@@ -124,17 +126,17 @@ public class HBaseInputData extends BaseStepData implements StepDataInterface {
    */
   public static URL stringToURL(String pathOrURL) throws MalformedURLException {
     URL result = null;
-    
+
     if (!Const.isEmpty(pathOrURL)) {
-      if (pathOrURL.toLowerCase().startsWith("http://") ||
-          pathOrURL.toLowerCase().startsWith("file://")) {
+      if (pathOrURL.toLowerCase().startsWith("http://")
+          || pathOrURL.toLowerCase().startsWith("file://")) {
         result = new URL(pathOrURL);
       } else {
         String c = "file://" + pathOrURL;
         result = new URL(c);
       }
     }
-    
+
     return result;
-  }  
+  }
 }
