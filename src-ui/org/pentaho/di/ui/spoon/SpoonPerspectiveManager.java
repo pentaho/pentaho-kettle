@@ -64,9 +64,18 @@ public class SpoonPerspectiveManager {
   private XulDeck deck;
   private SpoonPerspective activePerspective;
   private XulDomContainer domContainer;
+  private boolean forcePerspective = false;
+  private String startupPerspective = null;
 
+  public String getStartupPerspective() {
+	return startupPerspective;
+}
 
-  protected static class SpoonPerspectiveComparator implements Comparator<SpoonPerspective> {
+public void setStartupPerspective(String startupPerspective) {
+	this.startupPerspective = startupPerspective;
+}
+
+protected static class SpoonPerspectiveComparator implements Comparator<SpoonPerspective> {
     public int compare(SpoonPerspective o1, SpoonPerspective o2) {
       return o1.getId().compareTo(o2.getId());
     }
@@ -157,6 +166,11 @@ public class SpoonPerspectiveManager {
    */
   public void activatePerspective(Class<? extends SpoonPerspective> clazz) throws KettleException{
 
+	  
+	if(this.forcePerspective) {
+		// we are currently prevented from switching perspectives
+		return;
+	}
     SpoonPerspective sp = perspectives.get(clazz);
     if(sp == null){
       throw new KettleException("Could not locate perspective by class: "+clazz);
@@ -209,6 +223,22 @@ public class SpoonPerspectiveManager {
     return activePerspective;
   }
 
+  /**
+   * Returns whether this perspective manager is prevented from switching perspectives
+   */
+  public boolean isForcePerspective() {
+	return forcePerspective;
+  }
+
+  /**
+   * Sets whether this perspective manager is prevented from switching perspectives.
+   * This is used when a startup perspective is requested on the command line parameter
+   * to prevent other perpsectives from openeing.
+   */
+  public void setForcePerspective(boolean forcePerspective) {
+	this.forcePerspective = forcePerspective;
+  }
+
   public void removePerspective(SpoonPerspective per) {
     perspectives.remove(per);
     orderedPerspectives.remove(per);
@@ -228,13 +258,15 @@ public class SpoonPerspectiveManager {
 
   private List<SpoonPerspective> installedPerspectives = new ArrayList<SpoonPerspective>();
 
-  public void initialize(){
+  public void initialize() {
     XulToolbar mainToolbar = (XulToolbar) domContainer.getDocumentRoot().getElementById("main-toolbar");
     SwtDeck deck = (SwtDeck) domContainer.getDocumentRoot().getElementById("canvas-deck");
 
 
     boolean firstBtn = true;
     int y = 0;
+    int perspectiveIdx = 0;
+    Class<? extends SpoonPerspective> perClass = null;
 
     for (SpoonPerspective per : SpoonPerspectiveManager.getInstance().getPerspectives()) {
       if(installedPerspectives.contains(per)){
@@ -243,6 +275,11 @@ public class SpoonPerspectiveManager {
       }
       String name = per.getDisplayName(LanguageChoice.getInstance().getDefaultLocale());
       InputStream in = per.getPerspectiveIcon();
+      if( this.startupPerspective != null && per.getId().equals(this.startupPerspective)) {
+        // we have a startup perspective. Hold onto the index and the class
+        perspectiveIdx = y;
+        perClass = per.getClass();
+      }
 
       SwtToolbarbutton btn = null;
       try {
@@ -256,7 +293,7 @@ public class SpoonPerspectiveManager {
       btn.setOnclick("spoon.loadPerspective(" + y + ")");
       btn.setId("perspective-btn-" + per.getId());
       mainToolbar.addChild(btn);
-      if (firstBtn) {
+      if ((firstBtn && this.startupPerspective == null) || (perspectiveIdx == y)) {
         btn.setSelected(true);
         firstBtn = false;
       }
@@ -290,7 +327,17 @@ public class SpoonPerspectiveManager {
       y++;
       installedPerspectives.add(per);
     }
-    deck.setSelectedIndex(0);
+    deck.setSelectedIndex(perspectiveIdx);
+    if(perClass != null) {
+      // activate the startup perspective
+      try {
+		activatePerspective(perClass);
+	    // stop other perspectives from opening
+        SpoonPerspectiveManager.getInstance().setForcePerspective(true);
+	  } catch (KettleException e) {
+		// TODO Auto-generated catch block
+	  }
+    }
 
   }
 

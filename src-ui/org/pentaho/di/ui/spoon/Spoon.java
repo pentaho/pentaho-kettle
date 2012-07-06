@@ -558,6 +558,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       // remember...
 
       staticSpoon = new Spoon(display);
+      // pull the startup perspective id from the command line options and hand it to Spoon
+      String pId = null;
+      StringBuffer perspectiveIdBuff = Spoon.getCommandLineOption(commandLineOptions, "perspective").getArgument();
+      pId = perspectiveIdBuff.toString();
+      if( !pId.equals("") ) {
+      	SpoonPerspectiveManager.getInstance().setStartupPerspective( pId );
+      }
       staticSpoon.init(null);
       SpoonFactory.setSpoonInstance(staticSpoon);
       staticSpoon.setDestroy(true);
@@ -7000,6 +7007,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     //
     enableMenus();
 
+    // enable perspective switching
+    SpoonPerspectiveManager.getInstance().setForcePerspective(false);
+    
     if (props.showTips()) {
       TipsDialog tip = new TipsDialog(shell);
       tip.open();
@@ -7083,7 +7093,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         new CommandLineOption("file", "The filename (Transformation in XML) to launch", new StringBuffer()),
         new CommandLineOption("level", "The logging level (Basic, Detailed, Debug, Rowlevel, Error, Nothing)",
             new StringBuffer()), new CommandLineOption("logfile", "The logging file to write to", new StringBuffer()),
-        new CommandLineOption("log", "The logging file to write to (deprecated)", new StringBuffer(), false, true), };
+        new CommandLineOption("log", "The logging file to write to (deprecated)", new StringBuffer(), false, true),
+        new CommandLineOption("perspective", "The perspective to start in", new StringBuffer(), false, true)};
 
     // start with the default logger until we find out otherwise
     //
