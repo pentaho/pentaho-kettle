@@ -23,9 +23,17 @@
 package org.pentaho.di.core.row;
 
 
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
+
 import junit.framework.TestCase;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.trans.steps.calculator.CalculatorMetaFunction;
 
 /**
  * Not yet completely finished.
@@ -35,6 +43,9 @@ import org.pentaho.di.core.exception.KettleValueException;
  */
 public class ValueDataUtilTest extends TestCase
 {
+	private static String yyyy_MM_dd = "yyyy-MM-dd";
+	private enum DateCalc {WORKING_DAYS, DATE_DIFF}; 
+	
     /**
      * @deprecated Use {@link Const#ltrim(String)} instead
      * @throws KettleValueException
@@ -122,5 +133,446 @@ public class ValueDataUtilTest extends TestCase
     	assertEquals("", ValueDataUtil.rightTrim(" "));
     	assertEquals("", ValueDataUtil.rightTrim("  "));
     	assertEquals("", ValueDataUtil.rightTrim("   "));    	    	
-    }    
+    }
+
+    public void testDateDiff_A_GT_B() {
+    	Object daysDiff = calculate("2010-05-12", "2010-01-01", ValueMetaInterface.TYPE_DATE, CalculatorMetaFunction.CALC_DATE_DIFF);
+    	assertEquals(new Long(131), (Long)daysDiff);
+    }
+
+    public void testDateDiff_A_LT_B() {
+    	Object daysDiff = calculate("2010-12-31", "2011-02-10", ValueMetaInterface.TYPE_DATE, CalculatorMetaFunction.CALC_DATE_DIFF);
+    	assertEquals(new Long(-41), (Long)daysDiff);
+    }
+
+    public void testWorkingDaysDays_A_GT_B() {
+    	Object daysDiff = calculate("2010-05-12", "2010-01-01", ValueMetaInterface.TYPE_DATE, CalculatorMetaFunction.CALC_DATE_WORKING_DIFF);
+    	assertEquals(new Long(93), (Long)daysDiff);
+    }
+
+    public void testWorkingDaysDays_A_LT_B() {
+    	Object daysDiff = calculate("2010-12-31", "2011-02-10", ValueMetaInterface.TYPE_DATE, CalculatorMetaFunction.CALC_DATE_WORKING_DIFF);
+    	assertEquals(new Long(-29), (Long)daysDiff);
+    }
+    
+    public void testAdd() {
+    	
+    	//  Test Kettle number types
+    	assertEquals(Double.valueOf("3.0"), calculate("1", "2", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_ADD));
+    	assertEquals(Double.valueOf("0.0"), calculate("2", "-2", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_ADD));
+    	assertEquals(Double.valueOf("30.0"), calculate("10", "20", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_ADD));
+    	assertEquals(Double.valueOf("-50.0"), calculate("-100", "50", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_ADD));
+
+        //  Test Kettle Integer (Java Long) types
+    	assertEquals(Long.valueOf("3"), calculate("1", "2", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_ADD));
+    	assertEquals(Long.valueOf("0"), calculate("2", "-2", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_ADD));
+    	assertEquals(Long.valueOf("30"), calculate("10", "20", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_ADD));
+    	assertEquals(Long.valueOf("-50"), calculate("-100", "50", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_ADD));
+
+       //  Test Kettle big Number types
+    	assertEquals(0, new BigDecimal("2.0").compareTo((BigDecimal)calculate("1", "1", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_ADD)));
+    	assertEquals(0, new BigDecimal("0.0").compareTo((BigDecimal)calculate("2", "-2", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_ADD)));
+    	assertEquals(0, new BigDecimal("30.0").compareTo((BigDecimal)calculate("10", "20", ValueMetaInterface.TYPE_BIGNUMBER,  CalculatorMetaFunction.CALC_ADD)));
+    	assertEquals(0, new BigDecimal("-50.0").compareTo((BigDecimal)calculate("-100", "50", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_ADD)));
+    }
+   
+    public void testAdd3() {
+    	
+    	//  Test Kettle number types
+    	assertEquals(Double.valueOf("6.0"), calculate("1", "2", "3", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_ADD3));
+    	assertEquals(Double.valueOf("10.0"), calculate("2", "-2", "10", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_ADD3));
+    	assertEquals(Double.valueOf("27.0"), calculate("10", "20", "-3", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_ADD3));
+    	assertEquals(Double.valueOf("-55.0"), calculate("-100", "50", "-5", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_ADD3));
+
+        //  Test Kettle Integer (Java Long) types
+    	assertEquals(Long.valueOf("3"), calculate("1", "1", "1", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_ADD3));
+    	assertEquals(Long.valueOf("10"), calculate("2", "-2", "10", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_ADD3));
+    	assertEquals(Long.valueOf("27"), calculate("10", "20", "-3", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_ADD3));
+    	assertEquals(Long.valueOf("-55"), calculate("-100", "50", "-5", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_ADD3));
+
+       //  Test Kettle big Number types
+    	assertEquals(0, new BigDecimal("6.0").compareTo((BigDecimal)calculate("1", "2", "3", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_ADD3)));
+    	assertEquals(0, new BigDecimal("10.0").compareTo((BigDecimal)calculate("2", "-2", "10", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_ADD3)));
+    	assertEquals(0, new BigDecimal("27.0").compareTo((BigDecimal)calculate("10", "20", "-3", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_ADD3)));
+    	assertEquals(0, new BigDecimal("-55.0").compareTo((BigDecimal)calculate("-100", "50", "-5", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_ADD3)));
+    }
+
+    public void testSubtract() {
+    	
+    	//  Test Kettle number types
+    	assertEquals(Double.valueOf("10.0"), calculate("20", "10", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_SUBTRACT));
+    	assertEquals(Double.valueOf("-10.0"), calculate("10", "20", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_SUBTRACT));
+    	
+    	//  Test Kettle Integer (Java Long) types
+    	assertEquals(Long.valueOf("10"), calculate("20", "10", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_SUBTRACT));
+    	assertEquals(Long.valueOf("-10"), calculate("10", "20", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_SUBTRACT));
+    	
+    	//  Test Kettle big Number types
+    	assertEquals(0, new BigDecimal("10").compareTo((BigDecimal)calculate("20", "10", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_SUBTRACT)));
+    	assertEquals(0, new BigDecimal("-10").compareTo((BigDecimal)calculate("10", "20", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_SUBTRACT)));   	
+    }
+    
+    public void testDivide() {
+    	
+    	//  Test Kettle number types
+    	assertEquals(Double.valueOf("2.0"), calculate("2", "1", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_DIVIDE));
+    	assertEquals(Double.valueOf("2.0"), calculate("4", "2", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_DIVIDE));
+    	assertEquals(Double.valueOf("0.5"), calculate("10", "20", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_DIVIDE));
+    	assertEquals(Double.valueOf("2.0"), calculate("100", "50", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_DIVIDE));
+
+        //  Test Kettle Integer (Java Long) types
+    	assertEquals(Long.valueOf("2"), calculate("2", "1", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_DIVIDE));
+    	assertEquals(Long.valueOf("2"), calculate("4", "2", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_DIVIDE));
+    	assertEquals(Long.valueOf("0"), calculate("10", "20", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_DIVIDE));
+    	assertEquals(Long.valueOf("2"), calculate("100", "50", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_DIVIDE));
+
+       //  Test Kettle big Number types
+    	assertEquals(BigDecimal.valueOf(Long.valueOf("2")), calculate("2", "1", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_DIVIDE));
+    	assertEquals(BigDecimal.valueOf(Long.valueOf("2")), calculate("4", "2", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_DIVIDE));
+    	assertEquals(BigDecimal.valueOf(Double.valueOf("0.5")), calculate("10", "20", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_DIVIDE));
+    	assertEquals(BigDecimal.valueOf(Long.valueOf("2")), calculate("100", "50", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_DIVIDE));
+    }
+    
+    public void testPercent1() {
+    	
+    	//  Test Kettle number types
+    	assertEquals(Double.valueOf("10.0"), calculate("10", "100", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_PERCENT_1));
+    	assertEquals(Double.valueOf("100.0"), calculate("2", "2", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_PERCENT_1));
+    	assertEquals(Double.valueOf("50.0"), calculate("10", "20", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_PERCENT_1));
+    	assertEquals(Double.valueOf("200.0"), calculate("100", "50", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_PERCENT_1));
+
+        //  Test Kettle Integer (Java Long) types
+    	assertEquals(Long.valueOf("10"), calculate("10", "100", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_PERCENT_1));
+    	assertEquals(Long.valueOf("100"), calculate("2", "2", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_PERCENT_1));
+    	assertEquals(Long.valueOf("50"), calculate("10", "20", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_PERCENT_1));
+    	assertEquals(Long.valueOf("200"), calculate("100", "50", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_PERCENT_1));
+
+        //  Test Kettle big Number types
+    	assertEquals(BigDecimal.valueOf(Long.valueOf("10")), calculate("10", "100", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_PERCENT_1));
+    	assertEquals(BigDecimal.valueOf(Long.valueOf("100")), calculate("2", "2", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_PERCENT_1));
+    	assertEquals(BigDecimal.valueOf(Long.valueOf("50")), calculate("10", "20", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_PERCENT_1));
+    	assertEquals(BigDecimal.valueOf(Long.valueOf("200")), calculate("100", "50", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_PERCENT_1));	
+    }
+    
+    public void testPercent2() {
+    	
+    	//  Test Kettle number types
+    	assertEquals(Double.valueOf("0.99"), calculate("1", "1", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_PERCENT_2));
+    	assertEquals(Double.valueOf("1.96"), calculate("2", "2", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_PERCENT_2));
+    	assertEquals(Double.valueOf("8.0"), calculate("10", "20", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_PERCENT_2));
+    	assertEquals(Double.valueOf("50.0"), calculate("100", "50", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_PERCENT_2));
+
+        //  Test Kettle Integer (Java Long) types
+    	assertEquals(Long.valueOf("1"), calculate("1", "1", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_PERCENT_2));
+    	assertEquals(Long.valueOf("2"), calculate("2", "2", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_PERCENT_2));
+    	assertEquals(Long.valueOf("8"), calculate("10", "20", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_PERCENT_2));
+    	assertEquals(Long.valueOf("50"), calculate("100", "50", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_PERCENT_2));
+
+        //  Test Kettle big Number types
+    	assertEquals(BigDecimal.valueOf(Double.valueOf("0.99")), calculate("1", "1", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_PERCENT_2));
+    	assertEquals(BigDecimal.valueOf(Double.valueOf("1.99")), calculate("2", "2", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_PERCENT_2));
+    	assertEquals(BigDecimal.valueOf(Double.valueOf("9.995")), calculate("10", "20", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_PERCENT_2));
+    	assertEquals(BigDecimal.valueOf(Double.valueOf("99.98")), calculate("100", "50", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_PERCENT_2));	
+    }
+    
+    public void testPercent3() {
+    	
+    	//  Test Kettle number types
+    	assertEquals(Double.valueOf("1.01"), calculate("1", "1", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_PERCENT_3));
+    	assertEquals(Double.valueOf("2.04"), calculate("2", "2", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_PERCENT_3));
+    	assertEquals(Double.valueOf("12.0"), calculate("10", "20", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_PERCENT_3));
+    	assertEquals(Double.valueOf("150.0"), calculate("100", "50", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_PERCENT_3));
+
+        //  Test Kettle Integer (Java Long) types
+    	assertEquals(Long.valueOf("1"), calculate("1", "1", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_PERCENT_3));
+    	assertEquals(Long.valueOf("2"), calculate("2", "2", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_PERCENT_3));
+    	assertEquals(Long.valueOf("12"), calculate("10", "20", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_PERCENT_3));
+    	assertEquals(Long.valueOf("150"), calculate("100", "50", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_PERCENT_3));
+
+        //  Test Kettle big Number types
+    	assertEquals(0, new BigDecimal("1.01").compareTo((BigDecimal)calculate("1", "1", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_PERCENT_3)));
+    	assertEquals(0, new BigDecimal("2.01").compareTo((BigDecimal)calculate("2", "2", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_PERCENT_3)));
+    	assertEquals(0, new BigDecimal("10.005").compareTo((BigDecimal)calculate("10", "20", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_PERCENT_3)));
+    	assertEquals(0, new BigDecimal("100.02").compareTo((BigDecimal)calculate("100", "50", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_PERCENT_3)));	
+    }
+    
+    public void testCombination1() {
+    	
+    	//  Test Kettle number types
+    	assertEquals(Double.valueOf("2.0"), calculate("1", "1", "1", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_COMBINATION_1));
+    	assertEquals(Double.valueOf("22.0"), calculate("2", "2", "10", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_COMBINATION_1));
+    	assertEquals(Double.valueOf("70.0"), calculate("10", "20", "3", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_COMBINATION_1));
+    	assertEquals(Double.valueOf("350"), calculate("100", "50", "5", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_COMBINATION_1));
+
+        //  Test Kettle Integer (Java Long) types
+    	assertEquals(Long.valueOf("2"), calculate("1", "1", "1", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_COMBINATION_1));
+    	assertEquals(Long.valueOf("22"), calculate("2", "2", "10", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_COMBINATION_1));
+    	assertEquals(Long.valueOf("70"), calculate("10", "20", "3", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_COMBINATION_1));
+    	assertEquals(Long.valueOf("350"), calculate("100", "50", "5", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_COMBINATION_1));
+
+        //  Test Kettle big Number types    	
+    	assertEquals(0, new BigDecimal("2.0").compareTo((BigDecimal)calculate("1", "1", "1", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_COMBINATION_1)));
+    	assertEquals(0, new BigDecimal("22.0").compareTo((BigDecimal)calculate("2", "2", "10", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_COMBINATION_1)));
+    	assertEquals(0, new BigDecimal("70.0").compareTo((BigDecimal)calculate("10", "20", "3", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_COMBINATION_1)));
+    	assertEquals(0, new BigDecimal("350.0").compareTo((BigDecimal)calculate("100", "50", "5", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_COMBINATION_1)));	
+    }
+
+    public void testCombination2() {
+    	
+    	//  Test Kettle number types
+    	assertEquals(Double.valueOf("1.4142135623730951"), calculate("1", "1", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_COMBINATION_2));
+    	assertEquals(Double.valueOf("2.8284271247461903"), calculate("2", "2", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_COMBINATION_2));
+    	assertEquals(Double.valueOf("22.360679774997898"), calculate("10", "20", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_COMBINATION_2));
+    	assertEquals(Double.valueOf("111.80339887498948"), calculate("100", "50", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_COMBINATION_2));
+
+        //  Test Kettle Integer (Java Long) types
+    	assertEquals(Long.valueOf("1"), calculate("1", "1", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_COMBINATION_2));
+    	assertEquals(Long.valueOf("2"), calculate("2", "2", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_COMBINATION_2));
+    	assertEquals(Long.valueOf("10"), calculate("10", "20", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_COMBINATION_2));
+    	assertEquals(Long.valueOf("100"), calculate("100", "50", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_COMBINATION_2));
+
+        //  Test Kettle big Number types
+    	assertEquals(0, new BigDecimal("1.4142135623730951").compareTo((BigDecimal)calculate("1", "1", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_COMBINATION_2)));
+    	assertEquals(0, new BigDecimal("2.8284271247461903").compareTo((BigDecimal)calculate("2", "2", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_COMBINATION_2)));
+    	assertEquals(0, new BigDecimal("22.360679774997898").compareTo((BigDecimal)calculate("10", "20", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_COMBINATION_2)));
+    	assertEquals(0, new BigDecimal("111.80339887498948").compareTo((BigDecimal)calculate("100", "50", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_COMBINATION_2)));	
+    }
+    
+    public void testRound2() {
+    	
+    	//  Test Kettle number types
+    	assertEquals(Double.valueOf("1.0"), calculate("1", "1", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_ROUND_2));
+    	assertEquals(Double.valueOf("2.1"), calculate("2.06", "1", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_ROUND_2));
+    	assertEquals(Double.valueOf("103.0"), calculate("103.01", "1", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_ROUND_2));
+    	assertEquals(Double.valueOf("12.35"), calculate("12.346", "2", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_ROUND_2));
+
+        //  Test Kettle Integer (Java Long) types
+    	assertEquals(Long.valueOf("1"), calculate("1", "1", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_ROUND_2));
+    	assertEquals(Long.valueOf("2"), calculate("2", "2", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_ROUND_2));
+    	assertEquals(Long.valueOf("103"), calculate("103", "3", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_ROUND_2));
+    	assertEquals(Long.valueOf("12"), calculate("12", "4", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_ROUND_2));
+
+        //  Test Kettle big Number types
+    	assertEquals(BigDecimal.valueOf(Double.valueOf("1.0")), calculate("1", "1", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_ROUND_2));
+    	assertEquals(BigDecimal.valueOf(Double.valueOf("2.1")), calculate("2.06", "1", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_ROUND_2));
+    	assertEquals(BigDecimal.valueOf(Double.valueOf("103.0")), calculate("103.01", "1", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_ROUND_2));
+    	assertEquals(BigDecimal.valueOf(Double.valueOf("12.35")), calculate("12.346", "2", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_ROUND_2));	
+    }
+
+    public void testNVL() {
+    	
+    	//  Test Kettle number types
+    	assertEquals(Double.valueOf("1.0"), calculate("1", "", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_NVL));
+    	assertEquals(Double.valueOf("2.0"), calculate("", "2", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_NVL));
+    	assertEquals(Double.valueOf("10.0"), calculate("10", "20", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_NVL));
+    	assertEquals(null, calculate("", "", ValueMetaInterface.TYPE_NUMBER, CalculatorMetaFunction.CALC_NVL));
+
+    	//  Test Kettle string types
+    	assertEquals("1", calculate("1", "", ValueMetaInterface.TYPE_STRING, CalculatorMetaFunction.CALC_NVL));
+    	assertEquals("2", calculate("", "2", ValueMetaInterface.TYPE_STRING, CalculatorMetaFunction.CALC_NVL));
+    	assertEquals("10", calculate("10", "20", ValueMetaInterface.TYPE_STRING, CalculatorMetaFunction.CALC_NVL));
+    	assertEquals(null, calculate("", "", ValueMetaInterface.TYPE_STRING, CalculatorMetaFunction.CALC_NVL));
+
+        //  Test Kettle Integer (Java Long) types
+    	assertEquals(Long.valueOf("1"), calculate("1", "", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_NVL));
+    	assertEquals(Long.valueOf("2"), calculate("", "2", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_NVL));
+    	assertEquals(Long.valueOf("10"), calculate("10", "20", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_NVL));
+    	assertEquals(null, calculate("", "", ValueMetaInterface.TYPE_INTEGER, CalculatorMetaFunction.CALC_NVL));
+
+        //  Test Kettle big Number types
+    	assertEquals(0, new BigDecimal("1").compareTo((BigDecimal)calculate("1", "", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_NVL)));
+    	assertEquals(0, new BigDecimal("2").compareTo((BigDecimal)calculate("", "2", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_NVL)));
+    	assertEquals(0, new BigDecimal("10").compareTo((BigDecimal)calculate("10", "20", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_NVL)));
+    	assertEquals(null, calculate("", "", ValueMetaInterface.TYPE_BIGNUMBER, CalculatorMetaFunction.CALC_NVL));
+    	
+    	//  boolean
+    	assertEquals(true, calculate("true", "", ValueMetaInterface.TYPE_BOOLEAN, CalculatorMetaFunction.CALC_NVL));
+    	assertEquals(false, calculate("", "false", ValueMetaInterface.TYPE_BOOLEAN, CalculatorMetaFunction.CALC_NVL));
+    	assertEquals(false, calculate("false", "true", ValueMetaInterface.TYPE_BOOLEAN, CalculatorMetaFunction.CALC_NVL));
+    	assertEquals(null, calculate("", "", ValueMetaInterface.TYPE_BOOLEAN, CalculatorMetaFunction.CALC_NVL));
+
+        //  Test Kettle date
+    	SimpleDateFormat simpleDateFormat = new SimpleDateFormat(yyyy_MM_dd);
+    	
+    	try {
+    		assertEquals(simpleDateFormat.parse("2012-04-11"), calculate("2012-04-11", "", ValueMetaInterface.TYPE_DATE, CalculatorMetaFunction.CALC_NVL));
+    		assertEquals(simpleDateFormat.parse("2012-11-04"), calculate("", "2012-11-04", ValueMetaInterface.TYPE_DATE, CalculatorMetaFunction.CALC_NVL));
+    		assertEquals(simpleDateFormat.parse("1965-07-01"), calculate("1965-07-01", "1967-04-11", ValueMetaInterface.TYPE_DATE, CalculatorMetaFunction.CALC_NVL));
+    		assertNull(calculate("", "", ValueMetaInterface.TYPE_DATE, CalculatorMetaFunction.CALC_NVL));
+
+    	}
+    	catch (ParseException pe) {
+    		fail(pe.getMessage());
+    	}
+    	//assertEquals(0, calculate("", "2012-11-04", ValueMetaInterface.TYPE_DATE, CalculatorMetaFunction.CALC_NVL)));
+    	//assertEquals(0, calculate("2012-11-04", "2010-04-11", ValueMetaInterface.TYPE_DATE, CalculatorMetaFunction.CALC_NVL)));
+    	//assertEquals(null, calculate("", "", ValueMetaInterface.TYPE_DATE, CalculatorMetaFunction.CALC_NVL));
+    	
+    	
+    	//  binary
+    	ValueMeta stringValueMeta = new ValueMeta("string", ValueMeta.TYPE_STRING);
+    	try {
+    		byte[] data = stringValueMeta.getBinary("101");
+    		byte[] calculated = (byte[])calculate("101", "", ValueMetaInterface.TYPE_BINARY, CalculatorMetaFunction.CALC_NVL);
+    		assertTrue(Arrays.equals(data, calculated));
+    		
+    		data = stringValueMeta.getBinary("011");
+    		calculated = (byte[])calculate("", "011", ValueMetaInterface.TYPE_BINARY, CalculatorMetaFunction.CALC_NVL);
+    		assertTrue(Arrays.equals(data, calculated));
+    		
+    		data = stringValueMeta.getBinary("110");
+    		calculated = (byte[])calculate("110", "011", ValueMetaInterface.TYPE_BINARY, CalculatorMetaFunction.CALC_NVL);
+    		assertTrue(Arrays.equals(data, calculated));
+    		
+    		calculated = (byte[])calculate("", "", ValueMetaInterface.TYPE_BINARY, CalculatorMetaFunction.CALC_NVL);
+    		assertNull(calculated);
+    		
+    		//assertEquals(binaryValueMeta.convertData(new ValueMeta("dummy", ValueMeta.TYPE_STRING), "101"), 
+    			//	     calculate("101", "", ValueMetaInterface.TYPE_BINARY, CalculatorMetaFunction.CALC_NVL));
+    	} 
+    	catch (KettleValueException kve) {
+    		fail(kve.getMessage());
+    	}
+    }
+    
+    private Object calculate(String string_dataA, String string_dataB, int valueMetaInterfaceType, int calculatorMetaFunction) {
+    	return calculate(string_dataA, string_dataB, null, valueMetaInterfaceType, calculatorMetaFunction);
+    }
+
+    private Object calculate(String string_dataA, String string_dataB, String string_dataC, int valueMetaInterfaceType, int calculatorMetaFunction)  {    	
+    	
+    	try {
+    		
+	    	//  
+	    	ValueMeta parameterValueMeta = new ValueMeta("parameter", ValueMeta.TYPE_STRING); 
+	    	
+	    	//  We create the meta information for 
+	    	ValueMeta valueMetaA = createValueMeta("data_A", valueMetaInterfaceType);
+	    	ValueMeta valueMetaB = createValueMeta("data_B", valueMetaInterfaceType);
+	    	ValueMeta valueMetaC = createValueMeta("data_C", valueMetaInterfaceType);
+	    	
+	    	Object dataA = null;
+	    	Object dataB = null;
+	    	Object dataC = null;
+	    	
+	    	if (valueMetaInterfaceType == ValueMetaInterface.TYPE_NUMBER) {
+	    		dataA = (!Const.isEmpty(string_dataA)?Double.valueOf(string_dataA):null);
+	    		dataB = (!Const.isEmpty(string_dataB)?Double.valueOf(string_dataB):null);
+	    		dataC = (!Const.isEmpty(string_dataC)?Double.valueOf(string_dataC):null);
+	    	}
+	    	else if (valueMetaInterfaceType == ValueMetaInterface.TYPE_INTEGER) {
+	    		dataA = (!Const.isEmpty(string_dataA)?Long.valueOf(string_dataA):null);
+	    		dataB = (!Const.isEmpty(string_dataB)?Long.valueOf(string_dataB):null);
+	    		dataC = (!Const.isEmpty(string_dataC)?Long.valueOf(string_dataC):null);
+	    	}
+	    	else if (valueMetaInterfaceType == ValueMetaInterface.TYPE_DATE) {
+	    		SimpleDateFormat simpleDateFormat = new SimpleDateFormat(yyyy_MM_dd);
+	    		try {
+	    			dataA = (!Const.isEmpty(string_dataA)?simpleDateFormat.parse(string_dataA):null);
+	    			dataB = (!Const.isEmpty(string_dataB)?simpleDateFormat.parse(string_dataB):null);
+	    			dataC = (!Const.isEmpty(string_dataC)?simpleDateFormat.parse(string_dataC):null);
+	    		}
+	    		catch (ParseException pe) {
+	    			fail(pe.getMessage());
+	    			return null;
+	    		}
+	    	}
+	    	else if (valueMetaInterfaceType == ValueMetaInterface.TYPE_BIGNUMBER) {
+	    		dataA = (!Const.isEmpty(string_dataA)?BigDecimal.valueOf(Double.valueOf(string_dataA)):null);
+	    		dataB = (!Const.isEmpty(string_dataB)?BigDecimal.valueOf(Double.valueOf(string_dataB)):null);
+	    		dataC = (!Const.isEmpty(string_dataC)?BigDecimal.valueOf(Double.valueOf(string_dataC)):null);
+	    	}
+	    	else if(valueMetaInterfaceType == ValueMetaInterface.TYPE_STRING) {
+	    		dataA = (!Const.isEmpty(string_dataA)?string_dataA:null);
+	    		dataB = (!Const.isEmpty(string_dataB)?string_dataB:null);
+	    		dataC = (!Const.isEmpty(string_dataC)?string_dataC:null);
+	    	}
+	    	else if(valueMetaInterfaceType == ValueMetaInterface.TYPE_BINARY) {
+	    		ValueMeta binaryValueMeta = new ValueMeta("binary_data", ValueMeta.TYPE_BINARY);
+	    		
+	    		dataA = (!Const.isEmpty(string_dataA)?binaryValueMeta.convertData(parameterValueMeta, string_dataA):null);
+	    		dataB = (!Const.isEmpty(string_dataB)?binaryValueMeta.convertData(parameterValueMeta, string_dataB):null);
+	    		dataC = (!Const.isEmpty(string_dataC)?binaryValueMeta.convertData(parameterValueMeta, string_dataC):null);
+	    	}
+	    	else if(valueMetaInterfaceType == ValueMetaInterface.TYPE_BOOLEAN) {
+	    		if (!Const.isEmpty(string_dataA)) {
+	    			dataA = (string_dataA.equalsIgnoreCase("true")?true:false);
+	    		}
+	    		else {
+	    			dataA = null;	
+	    		}
+	    		if (!Const.isEmpty(string_dataB)) {
+	    			dataB = (string_dataB.equalsIgnoreCase("true")?true:false);
+	    		}
+	    		else {
+	    			dataB = null;	
+	    		}
+	    		if (!Const.isEmpty(string_dataC)) {
+	    			dataC = (string_dataC.equalsIgnoreCase("true")?true:false);
+	    		}
+	    		else {
+	    			dataC = null;
+	    		}
+	    	}
+	    	else {
+	    		fail("Invalid ValueMetaInterface type.");
+	    		return null;
+	    	}
+	    	
+    		if (calculatorMetaFunction == CalculatorMetaFunction.CALC_ADD) {
+    			return ValueDataUtil.plus(valueMetaA, dataA, valueMetaB, dataB);
+    		}
+    		if (calculatorMetaFunction == CalculatorMetaFunction.CALC_ADD3) {
+    			return ValueDataUtil.plus3(valueMetaA, dataA, valueMetaB, dataB, valueMetaC, dataC);
+    		}    		
+    		if (calculatorMetaFunction == CalculatorMetaFunction.CALC_SUBTRACT) {
+    			return ValueDataUtil.minus(valueMetaA, dataA, valueMetaB, dataB);
+    		}
+    		else if (calculatorMetaFunction == CalculatorMetaFunction.CALC_DIVIDE) {
+    			return ValueDataUtil.divide(valueMetaA, dataA, valueMetaB, dataB);
+    		}
+    		else if (calculatorMetaFunction == CalculatorMetaFunction.CALC_PERCENT_1) {
+    			return ValueDataUtil.percent1(valueMetaA, dataA, valueMetaB, dataB);
+    		}
+    		else if (calculatorMetaFunction == CalculatorMetaFunction.CALC_PERCENT_2) {
+    			return ValueDataUtil.percent2(valueMetaA, dataA, valueMetaB, dataB);
+    		}
+    		else if (calculatorMetaFunction == CalculatorMetaFunction.CALC_PERCENT_3) {
+    			return ValueDataUtil.percent3(valueMetaA, dataA, valueMetaB, dataB);
+    		}   
+    		else if (calculatorMetaFunction == CalculatorMetaFunction.CALC_COMBINATION_1) {
+    			return ValueDataUtil.combination1(valueMetaA, dataA, valueMetaB, dataB, valueMetaC, dataC);
+    		}
+    		else if (calculatorMetaFunction == CalculatorMetaFunction.CALC_COMBINATION_2) {
+    			return ValueDataUtil.combination2(valueMetaA, dataA, valueMetaB, dataB);
+    		}
+    		else if (calculatorMetaFunction == CalculatorMetaFunction.CALC_ROUND_2) {
+    			return ValueDataUtil.round(valueMetaA, dataA, valueMetaB, dataB);
+    		}
+    		else if (calculatorMetaFunction == CalculatorMetaFunction.CALC_NVL) {
+    			return ValueDataUtil.nvl(valueMetaA, dataA, valueMetaB, dataB);
+    		}
+    		else if (calculatorMetaFunction == CalculatorMetaFunction.CALC_DATE_DIFF) {
+    			return ValueDataUtil.DateDiff(valueMetaA, dataA, valueMetaB, dataB, "");
+    		}
+    		else if (calculatorMetaFunction == CalculatorMetaFunction.CALC_DATE_WORKING_DIFF) {
+    			return ValueDataUtil.DateWorkingDiff(valueMetaA, dataA, valueMetaB, dataB);
+    		}
+    		else {
+    			fail("Invalid CalculatorMetaFunction specified.");
+    			return null;
+    		}
+	    }
+	    catch (KettleValueException kve) {
+	    	fail(kve.getMessage());
+	    	return null;
+	    }
+    }
+        
+    private ValueMeta createValueMeta(String name, int valueType) {
+    	ValueMeta valueMeta = new ValueMeta();
+    	valueMeta.setName(name);
+    	valueMeta.setType(valueType);
+    	return valueMeta;	
+    }
 }
