@@ -490,7 +490,6 @@ public class CassandraColumnMetaData {
       return cassandraString;
     }
     case ValueMetaInterface.TYPE_DATE:
-      // return vm.getInteger(value).toString();
       DateType d = DateType.instance;
       Date toConvert = vm.getDate(value);
       ByteBuffer decomposed = d.decompose(toConvert);
@@ -728,7 +727,6 @@ public class CassandraColumnMetaData {
     ByteBuffer key = row.bufferForKey();
 
     if (m_keyValidator.indexOf("BytesType") > 0) {
-      // return aCol.getValue(); // raw bytes
       return row.getKey();
     }
 
@@ -747,7 +745,6 @@ public class CassandraColumnMetaData {
     ByteBuffer key = row.bufferForKey();
 
     if (m_keyValidator.indexOf("BytesType") > 0) {
-      // return aCol.getValue(); // raw bytes
       return row.getKey();
     }
 
@@ -755,24 +752,10 @@ public class CassandraColumnMetaData {
   }
 
   public String getColumnName(Column aCol) throws KettleException {
-    // byte[] colName = aCol.getName();
-    // ByteBuffer b = ByteBuffer.wrap(colName);
-    // System.out.println("Number of bytes in col name " + colName.length);
     ByteBuffer b = aCol.bufferForName();
 
     String decodedColName = getColumnValue(b, m_columnComparator).toString();
-    // String decodedColName = "A column";
-
-    // String decodedColName = new String(colName,
-    // Charset.forName(m_columnNameEncoding));
-
-    // assmue that any columns that are not in the schema contain values that
-    // are compatible with the default column validator
-
-    // if (m_columnMeta.containsKey(decodedColName)) {
     return decodedColName;
-    // }
-    // return null;
   }
 
   private Object getColumnValue(ByteBuffer valueBuff, String decoder)
