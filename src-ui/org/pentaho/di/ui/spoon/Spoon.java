@@ -8197,6 +8197,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     public void hideSplash() {
        if (splash!=null) {
           splash.hide();
+          splash.dispose();
+          splash = null;
        }
     }
     
