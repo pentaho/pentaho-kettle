@@ -235,5 +235,8 @@ public class JaninoMeta extends BaseStepMeta implements StepMetaInterface
 		return new JaninoData();
 	}
 
+	public boolean supportsErrorHandling(){
+		return true;
+	}
 
 }
