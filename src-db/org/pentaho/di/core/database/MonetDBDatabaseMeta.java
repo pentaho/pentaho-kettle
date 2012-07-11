@@ -63,6 +63,7 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 		reservedWordAlt.add("CLOB");
 		reservedWordAlt.add("BLOB");
 		reservedWordAlt.add("DECIMAL");
+		reservedWordAlt.add("DEC");
 		reservedWordAlt.add("NUMERIC");
 		reservedWordAlt.add("TINYINT");
 		reservedWordAlt.add("SMALLINT");
