@@ -22,29 +22,30 @@
 
 package org.pentaho.di.job.entries.sqoop;
 
-import org.apache.hadoop.conf.Configuration;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.log4j.Appender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.sqoop.Sqoop;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseInterface;
-import org.pentaho.di.core.database.HiveDatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.hadoop.HadoopConfigurationRegistry;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.AbstractJobEntry;
 import org.pentaho.di.job.JobEntryUtils;
 import org.pentaho.di.job.LoggingProxy;
 import org.pentaho.di.job.entry.JobEntryInterface;
-import org.pentaho.hadoop.jobconf.HadoopConfigurer;
-import org.pentaho.hadoop.jobconf.HadoopConfigurerFactory;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.pentaho.hadoop.shim.ConfigurationException;
+import org.pentaho.hadoop.shim.HadoopConfiguration;
+import org.pentaho.hadoop.shim.api.Configuration;
+import org.pentaho.hadoop.shim.spi.HadoopShim;
+import org.pentaho.hadoop.shim.spi.SqoopShim;
 
 /**
  * Base class for all Sqoop job entries.
@@ -90,7 +91,9 @@ public abstract class AbstractSqoopJobEntry<S extends SqoopConfig> extends Abstr
   protected final S createJobConfig() {
     S config = buildSqoopConfig();
     try {
-      SqoopUtils.configureConnectionInformation(config, new Configuration());
+      HadoopShim shim = HadoopConfigurationRegistry.getInstance().getActiveConfiguration().getHadoopShim();
+      Configuration hadoopConfig = shim.createConfiguration();
+      SqoopUtils.configureConnectionInformation(config, shim, hadoopConfig);
     } catch (Exception ex) {
       // Error loading connection information from Hadoop Configuration. Just log the error and leave the configuration as is.
       logError(BaseMessages.getString(AbstractSqoopJobEntry.class, "ErrorLoadingHadoopConnectionInformation"), ex);
@@ -182,41 +185,52 @@ public abstract class AbstractSqoopJobEntry<S extends SqoopConfig> extends Abstr
   }
 
   /**
+   * @param shim Hadoop shim to load configuration from
    * @return the Hadoop configuration object for this Sqoop execution
    */
-  protected Configuration getHadoopConfiguration() {
-    return new Configuration();
+  protected Configuration getHadoopConfiguration(HadoopShim shim) {
+    return shim.createConfiguration();
   }
 
   @Override
-  protected Runnable getExecutionRunnable(final Result jobResult) {
-    Runnable runnable = new Runnable() {
-      @Override
-      public void run() {
-        executeSqoop(getJobConfig(), getHadoopConfiguration(), jobResult);
-      }
-    };
-    return runnable;
+  protected Runnable getExecutionRunnable(final Result jobResult) throws KettleException {
+    try {
+      HadoopConfiguration activeConfig = HadoopConfigurationRegistry.getInstance().getActiveConfiguration();
+      final HadoopShim hadoopShim = activeConfig.getHadoopShim();
+      final SqoopShim sqoopShim = activeConfig.getSqoopShim();
+      
+      Runnable runnable = new Runnable() {
+        @Override
+        public void run() {
+          executeSqoop(hadoopShim, sqoopShim, getJobConfig(), getHadoopConfiguration(hadoopShim), jobResult);
+        }
+      };
+      return runnable;
+    } catch (ConfigurationException ex) {
+      throw new KettleException(ex);
+    }
   }
 
   /**
    * Executes Sqoop using the provided configuration objects. The {@code jobResult} will accurately reflect the completed
    * execution state when finished.
    *
+   * @param hadoopShim Hadoop Shim to use
+   * @param sqoopShim Sqoop Shim to use
    * @param config       Sqoop configuration settings
    * @param hadoopConfig Hadoop configuration settings. This will be additionally configured using {@link #configure(org.apache.hadoop.conf.Configuration)}.
    * @param jobResult    Result to update based on feedback from the Sqoop tool
    */
-  protected void executeSqoop(SqoopConfig config, Configuration hadoopConfig, Result jobResult) {
+  protected void executeSqoop(HadoopShim hadoopShim, SqoopShim shim, SqoopConfig config, Configuration hadoopConfig, Result jobResult) {
     // Make sure Sqoop throws exceptions instead of returning a status of 1
-    System.setProperty(Sqoop.SQOOP_RETHROW_PROPERTY, "true");
+    System.setProperty("sqoop.throwOnError", "true");
 
     attachLoggingAppenders();
     try {
-      configure(hadoopConfig);
+      configure(hadoopShim, config, hadoopConfig);
       List<String> args = SqoopUtils.getCommandLineArgs(config, getVariables());
       args.add(0, getToolName()); // push the tool command-line argument on the top of the args list
-      int result = Sqoop.runTool(args.toArray(new String[args.size()]), hadoopConfig);
+      int result = shim.runTool(args.toArray(new String[args.size()]), hadoopConfig);
       if (result != 0) {
         setJobResultFailed(jobResult);
       }
@@ -230,21 +244,19 @@ public abstract class AbstractSqoopJobEntry<S extends SqoopConfig> extends Abstr
 
   /**
    * Configure the Hadoop environment
-   * TODO Move this to HadoopConfigurerFactory
    *
-   * @param conf
+   * @param shim Hadoop Shim
+   * @param sqoopConfig Sqoop configuration settings
+   * @param conf Hadoop configuration
    * @throws org.pentaho.di.core.exception.KettleException
    *
    */
-  public void configure(Configuration conf) throws KettleException {
+  public void configure(HadoopShim shim, SqoopConfig sqoopConfig, Configuration conf) throws KettleException {
     try {
-      HadoopConfigurer configurer = HadoopConfigurerFactory.getConfigurer("generic"); // TODO The default should be handled by the factory
       List<String> messages = new ArrayList<String>();
-
-      SqoopConfig sqoopConfig = getJobConfig();
-      configurer.configure(sqoopConfig.getNamenodeHost(), sqoopConfig.getNamenodePort(),
-        sqoopConfig.getJobtrackerHost(), sqoopConfig.getJobtrackerPort(),
-        conf, messages);
+      shim.configureConnectionInformation(sqoopConfig.getNamenodeHost(), sqoopConfig.getNamenodePort(),
+          sqoopConfig.getJobtrackerHost(), sqoopConfig.getJobtrackerPort(),
+          conf, messages);
       for (String m : messages) {
         logBasic(m);
       }

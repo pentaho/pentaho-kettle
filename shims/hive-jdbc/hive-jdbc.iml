@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="FacetManager">
+    <facet type="IvyIDEA" name="IvyIDEA">
+      <configuration ivyFile="$MODULE_DIR$/ivy.xml" useProjectSettings="false" useCustomIvySettings="true" ivySettingsFile="$MODULE_DIR$/ivysettings.xml" onlyResolveSelectedConfigs="false">
+        <propertiesSettings>
+          <propertiesFiles includeProjectLevelPropertiesFiles="true">
+            <fileName>$MODULE_DIR$/build.properties</fileName>
+          </propertiesFiles>
+        </propertiesSettings>
+      </configuration>
+    </facet>
+  </component>
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/test-src" isTestSource="true" />
+      <excludeFolder url="file://$MODULE_DIR$/bin" />
+      <excludeFolder url="file://$MODULE_DIR$/dev-lib" />
+      <excludeFolder url="file://$MODULE_DIR$/dist" />
+      <excludeFolder url="file://$MODULE_DIR$/lib" />
+      <excludeFolder url="file://$MODULE_DIR$/test-lib" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library">
+      <library name="IvyIDEA">
+        <CLASSES>
+          <root url="jar://$USER_HOME$/.ivy2/cache/org.apache.hadoop.hive/hive-jdbc/jars/hive-jdbc-0.7.0-pentaho-SNAPSHOT.jar!/" />
+          <root url="jar://$USER_HOME$/.ivy2/cache/org.apache.hadoop/hadoop-core/jars/hadoop-core-0.20.0.jar!/" />
+          <root url="jar://$USER_HOME$/.ivy2/cache/commons-logging/commons-logging/jars/commons-logging-1.1.1.jar!/" />
+          <root url="jar://$USER_HOME$/.ivy2/cache/org.apache.hadoop.hive/hive-exec/jars/hive-exec-0.7.0-pentaho-SNAPSHOT.jar!/" />
+          <root url="jar://$USER_HOME$/.ivy2/cache/org.apache.hadoop.hive/hive-metastore/jars/hive-metastore-0.7.0-pentaho-SNAPSHOT.jar!/" />
+          <root url="jar://$USER_HOME$/.ivy2/cache/org.apache.hadoop.hive/hive-service/jars/hive-service-0.7.0-pentaho-SNAPSHOT.jar!/" />
+          <root url="jar://$USER_HOME$/.ivy2/cache/com.facebook.fb303/fb303/jars/fb303-3.0.3.jar!/" />
+          <root url="jar://$USER_HOME$/.ivy2/cache/log4j/log4j/jars/log4j-1.2.14.jar!/" />
+          <root url="jar://$USER_HOME$/.ivy2/cache/xerces/xercesImpl/jars/xercesImpl-2.9.1.jar!/" />
+          <root url="jar://$USER_HOME$/.ivy2/cache/xml-apis/xml-apis/jars/xml-apis-1.3.04.jar!/" />
+          <root url="jar://$USER_HOME$/.ivy2/cache/pentaho-kettle/kettle-db/jars/kettle-db-4.4.0-SNAPSHOT.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+  </component>
+</module>
+

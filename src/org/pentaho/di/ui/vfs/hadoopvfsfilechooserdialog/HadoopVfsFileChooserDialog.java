@@ -46,7 +46,6 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.hadoop.HadoopSpoonPlugin;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.hdfs.vfs.HDFSFileObject;
 import org.pentaho.vfs.ui.CustomVfsUiPanel;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
@@ -260,7 +259,7 @@ public class HadoopVfsFileChooserDialog extends CustomVfsUiPanel {
   }
 
   private void initializeConnectionPanel() {
-    if (initialFile != null && initialFile instanceof HDFSFileObject) {
+    if (initialFile != null && initialFile.getName().getScheme().equals(HadoopSpoonPlugin.HDFS_SCHEME)) {
       // populate the server and port fields
       try {
         GenericFileName genericFileName = (GenericFileName) initialFile.getFileSystem().getRoot().getName();

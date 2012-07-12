@@ -22,7 +22,17 @@
 
 package org.pentaho.di.job.entries.sqoop;
 
-import org.apache.hadoop.conf.Configuration;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.beans.PropertyChangeEvent;
+import java.io.IOException;
+import java.util.List;
+import java.util.Set;
+
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -31,12 +41,6 @@ import org.pentaho.di.job.ArgumentWrapper;
 import org.pentaho.di.job.CommandLineArgument;
 import org.pentaho.di.job.JobEntryMode;
 import org.pentaho.di.job.entries.helper.PersistentPropertyChangeListener;
-
-import java.beans.PropertyChangeEvent;
-import java.io.IOException;
-import java.util.*;
-
-import static org.junit.Assert.*;
 
 public class SqoopUtilsTest {
   private static class MockConfig extends SqoopConfig {
@@ -52,40 +56,6 @@ public class SqoopUtilsTest {
       this.test = test;
       pcs.firePropertyChange("test", old, this.test);
     }
-  }
-
-  @Test(timeout = 10000)
-  public void configureConnectionInformation() {
-    SqoopConfig config = new SqoopConfig() {
-    };
-
-    Configuration c = new Configuration();
-    c.set("fs.default.name", "localhost:54310");
-    c.set("mapred.job.tracker", "anotherhost:54311");
-    SqoopUtils.configureConnectionInformation(config, c);
-
-    assertEquals("localhost", config.getNamenodeHost());
-    assertEquals("54310", config.getNamenodePort());
-
-    assertEquals("anotherhost", config.getJobtrackerHost());
-    assertEquals("54311", config.getJobtrackerPort());
-  }
-
-  @Test
-  public void configureConnectionInformation_local() {
-    SqoopConfig config = new SqoopConfig() {
-    };
-
-    Configuration c = new Configuration();
-    c.set("fs.default.name", "local");
-    c.set("mapred.job.tracker", "local");
-    SqoopUtils.configureConnectionInformation(config, c);
-
-    assertNull(config.getNamenodeHost());
-    assertNull(config.getNamenodePort());
-
-    assertNull(config.getJobtrackerHost());
-    assertNull(config.getJobtrackerPort());
   }
 
   @Test

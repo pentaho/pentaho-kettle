@@ -243,8 +243,9 @@ public abstract class AbstractJobEntry<T extends BlockableJobConfig> extends Job
    *
    * @param jobResult Job result for the execution to use
    * @return
+   * @throws KettleException error obtaining execution runnable
    */
-  protected abstract Runnable getExecutionRunnable(final Result jobResult);
+  protected abstract Runnable getExecutionRunnable(final Result jobResult) throws KettleException;
 
   /**
    * Handle any clean up required when our execution thread encounters an unexpected {@link Exception}.

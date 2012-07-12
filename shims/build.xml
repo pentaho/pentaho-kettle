@@ -1,0 +1,133 @@
+<!--===========================================================================
+  This is the build file for the collection of Shims modules to provide support
+  for multiple versions of Hadoop on the same set of compiled bits.
+  
+  See ../build-res/subfloor.xml for more details
+============================================================================-->
+<project name="big-data-plugin-shims" basedir="." default="build-all">
+
+  <description>
+    This builds all modules within this directory (specifically as declared by
+    ${modules}).
+  </description>
+
+  <!-- Set up the base directory for the main plugin project -->
+  <property name="plugin.base.dir" value="${basedir}/.." />
+  <!-- Include the plugin's build.properties so subfloor can initialize (required properties) -->
+  <property file="${plugin.base.dir}/build.properties" />
+  <import file="${plugin.base.dir}/build-res/subfloor.xml" />
+
+  <!-- This file inherits from the open assembly project -->
+  <property name="assembly.dir" location="assembly" />
+
+  <property file="${assembly.dir}/override.properties" />
+  <property file="${assembly.dir}/assembly.properties" />
+
+  <!-- These are the modules this script should build -->
+  <property name="modules" value="api,hive-jdbc,hadoop-20,cdh4,mapr" />
+  <!-- Every non-api shim module. These will be compiled/resolved after api and locator. -->
+  <property name="shim-non-api-modules" value="hive-jdbc,hadoop-20,cdh4,mapr" />
+
+  <target name="init" depends="install-antcontrib" />
+
+  <!-- Build all modules in the correct order and publish them locally -->
+  <target name="build-all" depends="init">
+    <ant antfile="build.xml" dir="api" inheritall="false">
+      <target name="clean-all" />
+      <target name="resolve" />
+      <target name="publish-local" />
+    </ant>
+    <ant antfile="build.xml" dir="locator" inheritall="false">
+      <target name="clean-all" />
+      <target name="resolve" />
+      <target name="publish-local" />
+    </ant>
+    <for list="${shim-non-api-modules}" param="module" trim="true">
+      <sequential>
+        <ant antfile="build.xml" dir="@{module}" inheritall="false">
+          <target name="clean-all" />
+          <target name="resolve" />
+          <target name="dist" />
+        </ant>
+      </sequential>
+    </for>
+  </target>
+
+  <!-- Runs "clean-all" on the modules defined in the property "modules" -->
+  <target name="clean-all" depends="init">
+    <for list="${modules}" param="module" trim="true">
+      <sequential>
+        <ant antfile="build.xml" dir="@{module}" inheritall="false" target="clean-all" />
+      </sequential>
+    </for>
+  </target>
+
+  <!-- Clean all the modules defined in the property "modules" -->
+  <target name="clean" depends="init">
+    <for list="${modules}" param="module" trim="true">
+      <sequential>
+        <ant antfile="build.xml" dir="@{module}" inheritall="false" target="clean" />
+      </sequential>
+    </for>
+  </target>
+
+  <!-- Clean all the modules defined in the property "modules" -->
+  <target name="jar" depends="init">
+    <for list="${modules}" param="module" trim="true">
+      <sequential>
+        <ant antfile="build.xml" dir="@{module}" inheritall="false">
+          <target name="jar" />
+        </ant>
+      </sequential>
+    </for>
+  </target>
+	
+  <!-- All following targets are wrappers for all modules -->
+  <target name="resolve" depends="init">
+    <for list="${modules}" param="module" trim="true">
+      <sequential>
+        <ant antfile="build.xml" dir="@{module}" inheritall="false" target="resolve" />
+      </sequential>
+    </for>
+  </target>
+  
+  <target name="test" depends="init">
+    <for list="${modules}" param="module" trim="true">
+      <sequential>
+        <ant antfile="build.xml" dir="@{module}" inheritall="false" target="test" />
+      </sequential>
+    </for>
+  </target>
+
+  <target name="cobertura" depends="init">
+    <for list="${modules}" param="module" trim="true">
+      <sequential>
+        <ant antfile="build.xml" dir="@{module}" inheritall="false" target="cobertura" />
+      </sequential>
+    </for>
+  </target>
+
+  <target name="publish-local" depends="init">
+    <for list="${modules}" param="module" trim="true">
+      <sequential>
+        <ant antfile="build.xml" dir="@{module}" inheritall="false" target="publish-local" />
+      </sequential>
+    </for>
+  </target>
+
+  <target name="publish" depends="init">
+    <for list="${modules}" param="module" trim="true">
+      <sequential>
+        <ant antfile="build.xml" dir="@{module}" inheritall="false" target="publish" />
+      </sequential>
+    </for>
+  </target>
+
+  <target name="dist" depends="init">
+    <for list="${modules}" param="module" trim="true">
+      <sequential>
+        <ant antfile="build.xml" dir="@{module}" inheritall="false" target="dist" />
+      </sequential>
+    </for>
+  </target>
+</project>

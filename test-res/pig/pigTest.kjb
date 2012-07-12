@@ -63,7 +63,6 @@
       <name>bin</name>
       <description/>
       <type>HadoopPigScriptExecutorPlugin</type>
-    <hadoop_distribution>generic</hadoop_distribution>
     <hdfs_hostname>hadoop-vm3</hdfs_hostname>
     <hdfs_port>8020</hdfs_port>
     <jobtracker_hostname>hadoop-vm3</jobtracker_hostname>

@@ -66,8 +66,6 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.job.dialog.JobDialog;
 import org.pentaho.di.ui.job.entry.JobEntryDialog;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.hadoop.jobconf.HadoopConfigurer;
-import org.pentaho.hadoop.jobconf.HadoopConfigurerFactory;
 
 /**
  * Job entry dialog for the PigScriptExecutor -  job entry that executes 
@@ -87,8 +85,6 @@ public class JobEntryPigScriptExecutorDialog extends JobEntryDialog implements
   private boolean m_backupChanged;
   
   private Text m_wName;
-  
-  private CCombo m_distroCombo;
 
   private Label m_hdfsLab;
   private TextVar m_hdfsHostname;
@@ -172,46 +168,6 @@ public class JobEntryPigScriptExecutorDialog extends JobEntryDialog implements
     fd.right = new FormAttachment(100, 0);
     m_wName.setLayoutData(fd);
     
-    // distro line
-    Label distroLab = new Label(shell, SWT.RIGHT);
-    props.setLook(distroLab);
-    distroLab.setText(BaseMessages.getString(PKG, 
-    "JobEntryPigScriptExecutor.HadoopDistribution.Label"));
-    fd = new FormData();
-    fd.left = new FormAttachment(0, 0);
-    fd.top = new FormAttachment(m_wName, margin);
-    fd.right = new FormAttachment(middle, -margin);
-    distroLab.setLayoutData(fd);
-    
-    m_distroCombo = new CCombo(shell, SWT.BORDER);
-    props.setLook(m_distroCombo);
-    m_distroCombo.setEditable(false);
-    
-    m_isMapR = false;
-    try {
-      // auto detected first
-      HadoopConfigurer auto = HadoopConfigurerFactory.locateConfigurer();
-
-      if (auto != null) {
-        m_distroCombo.add(auto.distributionName());
-        if (auto.distributionName().equals("MapR")) {
-          m_isMapR = true;
-        }
-      } else {
-        List<HadoopConfigurer> available = HadoopConfigurerFactory.getAvailableConfigurers();
-        for (HadoopConfigurer config : available) {
-          m_distroCombo.add(config.distributionName());
-        }
-      }
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    }
-    fd = new FormData();
-    fd.left = new FormAttachment(middle, 0);
-    fd.top = new FormAttachment(m_wName, margin);
-    fd.right = new FormAttachment(100, 0);
-    m_distroCombo.setLayoutData(fd);
-    
     // hdfs line
     m_hdfsLab = new Label(shell, SWT.RIGHT);
     props.setLook(m_hdfsLab);
@@ -219,7 +175,7 @@ public class JobEntryPigScriptExecutorDialog extends JobEntryDialog implements
         "JobEntryPigScriptExecutor.HDFSHostname.Label"));
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
-    fd.top = new FormAttachment(m_distroCombo, margin);
+    fd.top = new FormAttachment(m_wName, margin);
     fd.right = new FormAttachment(middle, -margin);
     m_hdfsLab.setLayoutData(fd);
     
@@ -235,7 +191,7 @@ public class JobEntryPigScriptExecutorDialog extends JobEntryDialog implements
     });
     fd = new FormData();
     fd.right = new FormAttachment(100, 0);
-    fd.top = new FormAttachment(m_distroCombo, margin);
+    fd.top = new FormAttachment(m_wName, margin);
     fd.left = new FormAttachment(middle, 0);
     m_hdfsHostname.setLayoutData(fd);
     
@@ -566,13 +522,6 @@ public class JobEntryPigScriptExecutorDialog extends JobEntryDialog implements
   protected void getData() {
     m_wName.setText(Const.NVL(m_jobEntry.getName(), ""));
     
-    if (m_distroCombo.indexOf(m_jobEntry.getHadoopDistribution()) >= 0) {
-      m_distroCombo.select(m_distroCombo.indexOf(m_jobEntry.getHadoopDistribution()));
-    } else {
-      m_distroCombo.select(0);
-    }
-    
-    m_distroCombo.setText(m_jobEntry.getHadoopDistribution());
     if (!Const.isEmpty(m_jobEntry.getHDFSHostname())) {
       m_hdfsHostname.setText(m_jobEntry.getHDFSHostname());
     }
@@ -617,7 +566,6 @@ public class JobEntryPigScriptExecutorDialog extends JobEntryDialog implements
     }
     
     m_jobEntry.setName(m_wName.getText());
-    m_jobEntry.setHadoopDistribution(m_distroCombo.getText());
     
     m_jobEntry.setHDFSHostname(m_hdfsHostname.getText());
     m_jobEntry.setHDFSPort(m_hdfsPort.getText());

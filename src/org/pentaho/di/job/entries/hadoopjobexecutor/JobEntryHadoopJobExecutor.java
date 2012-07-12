@@ -29,19 +29,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.mapred.FileInputFormat;
-import org.apache.hadoop.mapred.FileOutputFormat;
-import org.apache.hadoop.mapred.InputFormat;
-import org.apache.hadoop.mapred.JobClient;
-import org.apache.hadoop.mapred.JobConf;
-import org.apache.hadoop.mapred.Mapper;
-import org.apache.hadoop.mapred.OutputFormat;
-import org.apache.hadoop.mapred.Reducer;
-import org.apache.hadoop.mapred.RunningJob;
-import org.apache.hadoop.mapred.TaskCompletionEvent;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
@@ -50,6 +38,7 @@ import org.pentaho.di.core.annotations.JobEntry;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.hadoop.HadoopConfigurationRegistry;
 import org.pentaho.di.core.logging.Log4jFileAppender;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -59,8 +48,12 @@ import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.ui.job.entries.hadoopjobexecutor.UserDefinedItem;
-import org.pentaho.hadoop.jobconf.HadoopConfigurer;
-import org.pentaho.hadoop.jobconf.HadoopConfigurerFactory;
+import org.pentaho.hadoop.shim.api.Configuration;
+import org.pentaho.hadoop.shim.api.fs.FileSystem;
+import org.pentaho.hadoop.shim.api.fs.Path;
+import org.pentaho.hadoop.shim.api.mapred.RunningJob;
+import org.pentaho.hadoop.shim.api.mapred.TaskCompletionEvent;
+import org.pentaho.hadoop.shim.spi.HadoopShim;
 import org.w3c.dom.Node;
 
 @JobEntry(id = "HadoopJobExecutorPlugin", name = "Hadoop Job Executor", categoryDescription = "Big Data", description = "Execute MapReduce jobs in Hadoop", image = "HDE.png")
@@ -103,8 +96,6 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
 
   private List<UserDefinedItem> userDefined = new ArrayList<UserDefinedItem>();
   
-  private String hadoopDistribution = "generic";
-
   public String getHadoopJobName() {
     return hadoopJobName;
   }
@@ -289,26 +280,13 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
     this.numReduceTasks = numReduceTasks;
   }
   
-  public void setHadoopDistribution(String hadoopDistro) {
-    hadoopDistribution = hadoopDistro;
-  }
-  
-  public String getHadoopDistribution() {
-    return hadoopDistribution;
-  }
-
+  @SuppressWarnings("deprecation")
   public Result execute(Result result, int arg1) throws KettleException {
     result.setNrErrors(0);
     
     Log4jFileAppender appender = null;
     String logFileName = "pdi-" + this.getName(); //$NON-NLS-1$
 
-    String hadoopDistro = System.getProperty("hadoop.distribution.name", hadoopDistribution);
-    hadoopDistro = environmentSubstitute(hadoopDistro);
-    if (Const.isEmpty(hadoopDistro)) {
-      hadoopDistro = "generic";
-    }
-    
     try
     {
       appender = LogWriter.createFileAppender(logFileName, true, false);
@@ -400,10 +378,11 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
         if (log.isDetailed())
           logDetailed(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.AdvancedMode"));
 
+        HadoopShim shim = HadoopConfigurationRegistry.getInstance().getActiveConfiguration().getHadoopShim();
+        Configuration conf = shim.createConfiguration();
+        FileSystem fs = shim.getFileSystem(conf);
         URL[] urls = new URL[] { resolvedJarUrl };
-        URLClassLoader loader = new URLClassLoader(urls, getClass().getClassLoader());
-
-        JobConf conf = new JobConf();
+        URLClassLoader loader = new URLClassLoader(urls, shim.getClass().getClassLoader());
         String hadoopJobNameS = environmentSubstitute(hadoopJobName);
         conf.setJobName(hadoopJobNameS);
 
@@ -414,28 +393,28 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
 
         if(mapperClass != null) {
           String mapperClassS = environmentSubstitute(mapperClass);
-          Class<? extends Mapper> mapper = (Class<? extends Mapper>) loader.loadClass(mapperClassS);
+          Class<?> mapper = loader.loadClass(mapperClassS);
           conf.setMapperClass(mapper);
         }
         if(combinerClass != null) {
           String combinerClassS = environmentSubstitute(combinerClass);
-          Class<? extends Reducer> combiner = (Class<? extends Reducer>) loader.loadClass(combinerClassS);
+          Class<?> combiner = loader.loadClass(combinerClassS);
           conf.setCombinerClass(combiner);
         }
         if(reducerClass != null) {
           String reducerClassS = environmentSubstitute(reducerClass);
-          Class<? extends Reducer> reducer = (Class<? extends Reducer>) loader.loadClass(reducerClassS);
+          Class<?> reducer = loader.loadClass(reducerClassS);
           conf.setReducerClass(reducer);
         }
 
         if(inputFormatClass != null) {
           String inputFormatClassS = environmentSubstitute(inputFormatClass);
-          Class<? extends InputFormat> inputFormat = (Class<? extends InputFormat>) loader.loadClass(inputFormatClassS);
+          Class<?> inputFormat = loader.loadClass(inputFormatClassS);
           conf.setInputFormat(inputFormat);
         }
         if(outputFormatClass != null) {
           String outputFormatClassS = environmentSubstitute(outputFormatClass);
-          Class<? extends OutputFormat> outputFormat = (Class<? extends OutputFormat>) loader.loadClass(outputFormatClassS);
+          Class<?> outputFormat = loader.loadClass(outputFormatClassS);
           conf.setOutputFormat(outputFormat);
         }
 
@@ -444,32 +423,8 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
         String jobTrackerHostnameS = environmentSubstitute(jobTrackerHostname);
         String jobTrackerPortS = environmentSubstitute(jobTrackerPort);
         
-        // See if we can auto detect the distribution first
-        HadoopConfigurer configurer = HadoopConfigurerFactory.locateConfigurer();
-        
-        if (configurer == null) {
-          // go with what has been selected by the user
-          configurer = HadoopConfigurerFactory.getConfigurer(hadoopDistro);
-          
-          // if the user-specified distribution is detectable, make sure it is still
-          // the current distribution!
-          if (configurer != null && configurer.isDetectable()) {
-            if (!configurer.isAvailable()) {
-              throw new KettleException(BaseMessages.getString(PKG, 
-                  "JobEntryHadoopJobExecutor.Error.DistroNoLongerPresent", configurer.distributionName()));
-            }
-          }
-        }
-        if (configurer == null) {
-          throw new KettleException(BaseMessages.
-              getString(PKG, "JobEntryHadoopJobExecutor.Error.UnknownHadoopDistribution", 
-                  hadoopDistro));
-        }
-        logBasic(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.Message.DistroConfigMessage", 
-            configurer.distributionName()));
-        
         List<String> configMessages = new ArrayList<String>();
-        configurer.configure(hdfsHostnameS, hdfsPortS, 
+        shim.configureConnectionInformation(hdfsHostnameS, hdfsPortS, 
             jobTrackerHostnameS, jobTrackerPortS, conf, configMessages);
         for (String m : configMessages) {
           logBasic(m);
@@ -479,14 +434,13 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
         String[] inputPathParts = inputPathS.split(",");
         List<Path> paths = new ArrayList<Path>();
         for (String path : inputPathParts) {
-          paths.add(new Path(configurer.getFilesystemURL() + path));
+          paths.add(fs.asPath(conf.getDefaultFileSystemURL(), path));
         }
         Path[] finalPaths = paths.toArray(new Path[paths.size()]);
         
-        //FileInputFormat.setInputPaths(conf, new Path(configurer.getFilesystemURL() + inputPathS));
-        FileInputFormat.setInputPaths(conf, finalPaths);
+        conf.setInputPaths(finalPaths);
         String outputPathS = environmentSubstitute(outputPath);
-        FileOutputFormat.setOutputPath(conf, new Path(configurer.getFilesystemURL() + outputPathS));
+        conf.setOutputPath(fs.asPath(conf.getDefaultFileSystemURL(), outputPathS));
 
         // process user defined values
         for (UserDefinedItem item : userDefined) {
@@ -498,7 +452,7 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
         }
 
         String workingDirectoryS = environmentSubstitute(workingDirectory);
-        conf.setWorkingDirectory(new Path(configurer.getFilesystemURL() + workingDirectoryS));
+        conf.setWorkingDirectory(conf.getDefaultFileSystemURL() + workingDirectoryS);
         conf.setJar(jarUrl);
 
         String numMapTasksS = environmentSubstitute(numMapTasks);
@@ -521,8 +475,7 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
         conf.setNumMapTasks(numM);
         conf.setNumReduceTasks(numR);
 
-        JobClient jobClient = new JobClient(conf);
-        RunningJob runningJob = jobClient.submitJob(conf);
+        RunningJob runningJob = shim.submitJob(conf);
         
         String loggingIntervalS = environmentSubstitute(loggingInterval);
         int logIntv = 60;
@@ -608,13 +561,13 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
 
       switch(tcEvents[i].getTaskStatus()) {
         case KILLED: {
-          logError(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.TaskDetails", TaskCompletionEvent.Status.KILLED, tcEvents[i].getTaskAttemptId().getTaskID().getId(), tcEvents[i].getTaskAttemptId().getId(), tcEvents[i].getEventId(), diagsOutput)); //$NON-NLS-1$
+          logError(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.TaskDetails", TaskCompletionEvent.Status.KILLED, tcEvents[i].getTaskAttemptId(), tcEvents[i].getTaskAttemptId(), tcEvents[i].getEventId(), diagsOutput)); //$NON-NLS-1$
         }break;
         case FAILED: {
-          logError(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.TaskDetails", TaskCompletionEvent.Status.FAILED, tcEvents[i].getTaskAttemptId().getTaskID().getId(), tcEvents[i].getTaskAttemptId().getId(), tcEvents[i].getEventId(), diagsOutput)); //$NON-NLS-1$
+          logError(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.TaskDetails", TaskCompletionEvent.Status.FAILED, tcEvents[i].getTaskAttemptId(), tcEvents[i].getTaskAttemptId(), tcEvents[i].getEventId(), diagsOutput)); //$NON-NLS-1$
         }break;
         case SUCCEEDED: {
-          logDetailed(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.TaskDetails", TaskCompletionEvent.Status.SUCCEEDED, tcEvents[i].getTaskAttemptId().getTaskID().getId(), tcEvents[i].getTaskAttemptId().getId(), tcEvents[i].getEventId(), diagsOutput)); //$NON-NLS-1$
+          logDetailed(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.TaskDetails", TaskCompletionEvent.Status.SUCCEEDED, tcEvents[i].getTaskAttemptId(), tcEvents[i].getTaskAttemptId(), tcEvents[i].getEventId(), diagsOutput)); //$NON-NLS-1$
         }break;
       }
     }
@@ -633,9 +586,6 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
   public void loadXML(Node entrynode, List<DatabaseMeta> databases, List<SlaveServer> slaveServers, Repository rep) throws KettleXMLException {
     super.loadXML(entrynode, databases, slaveServers);
     hadoopJobName = XMLHandler.getTagValue(entrynode, "hadoop_job_name");
-    if (!Const.isEmpty(XMLHandler.getTagValue(entrynode, "hadoop_distribution"))) {
-      hadoopDistribution = XMLHandler.getTagValue(entrynode, "hadoop_distribution");
-    }
     
     isSimple = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "simple"));
     jarUrl = XMLHandler.getTagValue(entrynode, "jar_url");
@@ -686,7 +636,6 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
     StringBuffer retval = new StringBuffer(1024);
     retval.append(super.getXML());
     retval.append("      ").append(XMLHandler.addTagValue("hadoop_job_name", hadoopJobName));
-    retval.append("      ").append(XMLHandler.addTagValue("hadoop_distribution", hadoopDistribution));
 
     retval.append("      ").append(XMLHandler.addTagValue("simple", isSimple));
     retval.append("      ").append(XMLHandler.addTagValue("jar_url", jarUrl));
@@ -733,10 +682,6 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
       super.loadRep(rep, id_jobentry, databases, slaveServers);
       
       setHadoopJobName(rep.getJobEntryAttributeString(id_jobentry, "hadoop_job_name"));
-      
-      if (!Const.isEmpty(rep.getJobEntryAttributeString(id_jobentry, "hadoop_distribution"))) {
-        setHadoopDistribution(rep.getJobEntryAttributeString(id_jobentry, "hadoop_distribution"));
-      }
       
       setSimple(rep.getJobEntryAttributeBoolean(id_jobentry, "simple"));
 
@@ -789,8 +734,6 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
       super.saveRep(rep, id_job);
       
       rep.saveJobEntryAttribute(id_job, getObjectId(),"hadoop_job_name", hadoopJobName); //$NON-NLS-1$
-      
-      rep.saveJobEntryAttribute(id_job, getObjectId(),"hadoop_distribution", hadoopDistribution); //$NON-NLS-1$
       
       rep.saveJobEntryAttribute(id_job, getObjectId(),"simple", isSimple); //$NON-NLS-1$
 

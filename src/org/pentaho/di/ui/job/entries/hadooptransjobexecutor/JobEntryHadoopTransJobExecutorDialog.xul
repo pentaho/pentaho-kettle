@@ -248,14 +248,6 @@
     					</columns>
     					<rows>
     						<row>
-					        	<label value="${JobEntryHadoopTransJobExecutor.HadoopDistribution.Label}" />
-					        	<menulist id="hadoop-distribution">
-									<menupopup>
-										<menuitem label="${JobEntryHadoopTransJobExecutor.HadoopDistribution.Generic}" />
-									</menupopup>
-								</menulist>
-					        </row>
-    						<row>
     							<label value="${JobEntryHadoopTransJobExecutor.ModeAdvanced.Tab.Paths.WorkingDirectory.Label}" />
     							<textbox pen:customclass="variabletextbox" id="working-dir" flex="1" multiline="false"/>
     						</row>

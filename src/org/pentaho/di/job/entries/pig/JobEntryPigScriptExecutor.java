@@ -22,14 +22,8 @@
 
 package org.pentaho.di.job.entries.pig;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.io.StringReader;
-import java.io.StringWriter;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -37,15 +31,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.hadoop.conf.Configuration;
 import org.apache.log4j.Logger;
 import org.apache.log4j.WriterAppender;
-import org.apache.pig.ExecType;
-import org.apache.pig.PigServer;
-import org.apache.pig.backend.hadoop.datastorage.ConfigurationUtil;
-import org.apache.pig.impl.util.PropertiesUtil;
-import org.apache.pig.tools.grunt.GruntParser;
-import org.apache.pig.tools.parameters.ParameterSubstitutionPreprocessor;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
@@ -54,6 +41,7 @@ import org.pentaho.di.core.annotations.JobEntry;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.hadoop.HadoopConfigurationRegistry;
 import org.pentaho.di.core.logging.Log4jFileAppender;
 import org.pentaho.di.core.logging.Log4jKettleLayout;
 import org.pentaho.di.core.logging.LogWriter;
@@ -63,8 +51,11 @@ import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
-import org.pentaho.hadoop.jobconf.HadoopConfigurer;
-import org.pentaho.hadoop.jobconf.HadoopConfigurerFactory;
+import org.pentaho.hadoop.shim.HadoopConfiguration;
+import org.pentaho.hadoop.shim.api.Configuration;
+import org.pentaho.hadoop.shim.spi.HadoopShim;
+import org.pentaho.hadoop.shim.spi.PigShim;
+import org.pentaho.hadoop.shim.spi.PigShim.ExecutionMode;
 import org.w3c.dom.Node;
 
 /**
@@ -103,8 +94,6 @@ public class JobEntryPigScriptExecutor extends JobEntryBase implements Cloneable
   /** Parameters for the script */
   protected HashMap<String, String> m_params = new HashMap<String, String>();
   
-  protected String m_hadoopDistribution = "generic";    
-  
   /**
    * An extended PrintWriter that sends output to Kettle's logging
    * 
@@ -142,7 +131,6 @@ public class JobEntryPigScriptExecutor extends JobEntryBase implements Cloneable
   public String getXML() {
     StringBuffer retval = new StringBuffer();
     retval.append(super.getXML());
-    retval.append("    ").append(XMLHandler.addTagValue("hadoop_distribution", m_hadoopDistribution));
     retval.append("    ").append(XMLHandler.addTagValue("hdfs_hostname", m_hdfsHostname));
     retval.append("    ").append(XMLHandler.addTagValue("hdfs_port", m_hdfsPort));
     retval.append("    ").append(XMLHandler.addTagValue("jobtracker_hostname", m_jobTrackerHostname));
@@ -175,10 +163,6 @@ public class JobEntryPigScriptExecutor extends JobEntryBase implements Cloneable
       List<SlaveServer> slaveServers, Repository repository) throws KettleXMLException {
     super.loadXML(entrynode, databases, slaveServers);
     
-    if (!Const.isEmpty(XMLHandler.getTagValue(entrynode, "hadoop_distribution"))) {
-      m_hadoopDistribution = XMLHandler.getTagValue(entrynode, "hadoop_distribution");
-    }
-    
     m_hdfsHostname = XMLHandler.getTagValue(entrynode, "hdfs_hostname");
     m_hdfsPort = XMLHandler.getTagValue(entrynode, "hdfs_port");
     m_jobTrackerHostname = XMLHandler.getTagValue(entrynode, "jobtracker_hostname");
@@ -210,10 +194,6 @@ public class JobEntryPigScriptExecutor extends JobEntryBase implements Cloneable
     if (rep != null) {
       super.loadRep(rep, id_jobentry, databases, slaveServers);
       
-      if (!Const.isEmpty(rep.getJobEntryAttributeString(id_jobentry, "hadoop_distribution"))) {
-        setHadoopDistribution(rep.getJobEntryAttributeString(id_jobentry, "hadoop_distribution"));
-      }
-      
       setHDFSHostname(rep.getJobEntryAttributeString(id_jobentry, "hdfs_hostname"));
       setHDFSPort(rep.getJobEntryAttributeString(id_jobentry, "hdfs_port"));
       setJobTrackerHostname(rep.getJobEntryAttributeString(id_jobentry, "jobtracker_hostname"));
@@ -244,7 +224,6 @@ public class JobEntryPigScriptExecutor extends JobEntryBase implements Cloneable
     if (rep != null) {
       super.saveRep(rep, id_job);
       
-      rep.saveJobEntryAttribute(id_job, getObjectId(), "hadoop_distribution", m_hadoopDistribution);
       rep.saveJobEntryAttribute(id_job, getObjectId(), "hdfs_hostname", m_hdfsHostname);
       rep.saveJobEntryAttribute(id_job, getObjectId(), "hdfs_port", m_hdfsPort);
       rep.saveJobEntryAttribute(id_job, getObjectId(), "jobtracker_hostname", m_jobTrackerHostname);
@@ -422,37 +401,12 @@ public class JobEntryPigScriptExecutor extends JobEntryBase implements Cloneable
     return m_params;
   }
   
-  /**
-   * Set the hadoop distribution to configure for
-   * 
-   * @param hadoopDistro the hadoop distro to configure for
-   */
-  public void setHadoopDistribution(String hadoopDistro) {
-    m_hadoopDistribution = hadoopDistro;
-  }
-  
-  /**
-   * Get the hadoop distro to configure for.
-   * 
-   * @return the hadoop distro to configure for
-   */
-  public String getHadoopDistribution() {
-    return m_hadoopDistribution;
-  }
-  
-
   /* (non-Javadoc)
    * @see org.pentaho.di.job.entry.JobEntryInterface#execute(org.pentaho.di.core.Result, int)
    */
   public Result execute(final Result result, int arg1) throws KettleException {
     
     result.setNrErrors(0);
-    
-    String hadoopDistro = System.getProperty("hadoop.distribution.name", m_hadoopDistribution);
-    hadoopDistro = environmentSubstitute(hadoopDistro);
-    if (Const.isEmpty(hadoopDistro)) {
-      hadoopDistro = "generic";
-    }
     
     // Set up an appender that will send all pig log messages to Kettle's log
     // via logBasic().
@@ -490,28 +444,18 @@ public class JobEntryPigScriptExecutor extends JobEntryBase implements Cloneable
       } else {
         scriptU = new URL(scriptFileS);
       }
-      
-      // See if we can auto detect the distribution first
-      HadoopConfigurer configurer = HadoopConfigurerFactory.locateConfigurer();
 
-      if (configurer == null) {
-        // go with what has been selected by the user or generic
-        configurer = HadoopConfigurerFactory.getConfigurer(hadoopDistro);
-        if (configurer.distributionName().equals("MapR") && m_localExecution) {
-          throw new KettleException(BaseMessages.getString(PKG, 
-              "JobEntryPigScriptExecutor.Warning.MapRLocalExecution"));
-        }
+      HadoopConfiguration active = HadoopConfigurationRegistry.getInstance().getActiveConfiguration();
+      HadoopShim hadoopShim = active.getHadoopShim();
+      final PigShim pigShim = active.getPigShim();
+      // Make sure we can execute locally if desired
+      if (m_localExecution && !pigShim.isLocalExecutionSupported()) {
+        throw new KettleException(BaseMessages.getString(PKG, 
+            "JobEntryPigScriptExecutor.Warning.LocalExecution"));
       }
-      if (configurer == null) {
-        throw new KettleException(BaseMessages.
-            getString(PKG, "JobEntryPigScriptExecutor.Error.UnknownHadoopDistribution", 
-                hadoopDistro));
-      }
-      logBasic(BaseMessages.getString(PKG, "JobEntryPigScriptExecutor.Message.DistroConfigMessage", 
-          configurer.distributionName()));
       
       // configure for connection to hadoop
-      Configuration conf = new Configuration(true);
+      Configuration conf = hadoopShim.createConfiguration();
       if (!m_localExecution) {
         String hdfsHost = environmentSubstitute(m_hdfsHostname);
         String hdfsP = environmentSubstitute(m_hdfsPort);
@@ -519,19 +463,15 @@ public class JobEntryPigScriptExecutor extends JobEntryBase implements Cloneable
         String jobTP = environmentSubstitute(m_jobTrackerPort);
         
         List<String> configMessages = new ArrayList<String>();
-        configurer.configure(hdfsHost, hdfsP, 
+        hadoopShim.configureConnectionInformation(hdfsHost, hdfsP, 
             jobTrackerHost, jobTP, conf, configMessages);
         for (String m : configMessages) {
           logBasic(m);
         }        
       }
       
-      Properties properties = new Properties();
-      PropertiesUtil.loadDefaultProperties(properties);
-      if (!m_localExecution) {
-        properties.putAll(ConfigurationUtil.toProperties(conf));
-      }
-      
+      final Properties properties = new Properties();
+      pigShim.configure(properties, m_localExecution ? null : conf);
 
       // transform the map type to list type which can been accepted by ParameterSubstitutionPreprocessor                                           
       List<String> paramList = new ArrayList<String>();
@@ -545,24 +485,11 @@ public class JobEntryPigScriptExecutor extends JobEntryBase implements Cloneable
         }
       }
       
-      final InputStream inStream = scriptU.openStream();
-      // do parameter substitution                                                                                                                  
-      ParameterSubstitutionPreprocessor psp = new ParameterSubstitutionPreprocessor(50);
-      StringWriter writer = new StringWriter();
-      psp.genSubstitutedFile(new BufferedReader(new InputStreamReader(inStream)),
-                             writer,
-                             paramList.size() > 0 ? paramList.toArray(new String[0]) : null, null);
-      
-      PigServer pigServer = 
-        new PigServer((m_localExecution ? ExecType.LOCAL : ExecType.MAPREDUCE), 
-            properties);
-      final GruntParser grunt = new GruntParser(new StringReader(writer.toString()));
-      grunt.setInteractive(false);
-      grunt.setParams(pigServer);
+      final String pigScript = pigShim.substituteParameters(scriptU, paramList);
+      final ExecutionMode execMode = (m_localExecution ? ExecutionMode.LOCAL : ExecutionMode.MAPREDUCE);
       
       if (m_enableBlocking) {
-        int[] executionStatus = null;
-        executionStatus = grunt.parseStopOnError(false);
+        int[] executionStatus = pigShim.executeScript(pigScript, execMode, properties);
         logBasic(BaseMessages.getString(PKG, 
           "JobEntryPigScriptExecutor.JobCompletionStatus", 
           "" + executionStatus[0], "" + executionStatus[1]));
@@ -584,7 +511,7 @@ public class JobEntryPigScriptExecutor extends JobEntryBase implements Cloneable
         Thread runThread = new Thread() {
           public void run() {
             try {
-              int[] executionStatus = grunt.parseStopOnError(false);
+              int[] executionStatus = pigShim.executeScript(pigScript, execMode, properties);
               logBasic(BaseMessages.getString(PKG, 
                   "JobEntryPigScriptExecutor.JobCompletionStatus", 
                   "" + executionStatus[0], "" + executionStatus[1]));              
@@ -594,15 +521,10 @@ public class JobEntryPigScriptExecutor extends JobEntryBase implements Cloneable
               result.setNrErrors(1);
               result.setResult(false);
             } finally {
-              try {
-                removeAppender(fa, ptk);
-                if (fa != null) {
-                  ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_LOG, fa.getFile(), parentJob.getJobname(), getName());
-                  result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
-                }
-                inStream.close();                
-              } catch (IOException e) {
-                //e.printStackTrace();
+              removeAppender(fa, ptk);
+              if (fa != null) {
+                ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_LOG, fa.getFile(), parentJob.getJobname(), getName());
+                result.getResultFiles().put(resultFile.getFile().toString(), resultFile);
               }
             }
           }

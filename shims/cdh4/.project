@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>pentaho-hadoop-shims-cdh4</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>org.eclipse.jdt.core.javabuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>org.eclipse.jdt.core.javanature</nature>
+		<nature>org.apache.ivyde.eclipse.ivynature</nature>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>src-common</name>
+			<type>2</type>
+			<location>/Users/jordan/dev/pentaho/big-data-plugin/shims/common/src</location>
+		</link>
+		<link>
+			<name>src-mapred</name>
+			<type>2</type>
+			<location>/Users/jordan/dev/pentaho/big-data-plugin/shims/common/src-mapred</location>
+		</link>
+		<link>
+			<name>test-src-common</name>
+			<type>2</type>
+			<location>/Users/jordan/dev/pentaho/big-data-plugin/shims/common/test-src</location>
+		</link>
+	</linkedResources>
+</projectDescription>

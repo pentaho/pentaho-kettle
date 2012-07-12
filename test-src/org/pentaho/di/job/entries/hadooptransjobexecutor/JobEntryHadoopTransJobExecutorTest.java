@@ -22,24 +22,40 @@
 
 package org.pentaho.di.job.entries.hadooptransjobexecutor;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
 import org.apache.commons.vfs.FileObject;
-import org.apache.hadoop.mapred.JobConf;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
-import org.pentaho.di.core.plugins.*;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.plugins.Plugin;
+import org.pentaho.di.core.plugins.PluginInterface;
+import org.pentaho.di.core.plugins.PluginMainClassType;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.job.Job;
+import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.steps.hadoopenter.HadoopEnterMeta;
 import org.pentaho.di.trans.steps.hadoopexit.HadoopExitMeta;
-
-import java.util.*;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
+import org.pentaho.hadoop.shim.HadoopConfiguration;
+import org.pentaho.hadoop.shim.api.Configuration;
+import org.pentaho.hadoop.shim.common.CommonHadoopShim;
+import org.pentaho.hadoop.shim.common.ConfigurationProxy;
+import org.pentaho.hadoop.shim.spi.HadoopShim;
 
 // TODO Refactor JobEntryHadoopTransJobExecutor so it can be tested better than this pseudo-integration test
 public class JobEntryHadoopTransJobExecutorTest {
@@ -67,7 +83,11 @@ public class JobEntryHadoopTransJobExecutorTest {
   @Test
   public void invalidMapperStepNames() throws Throwable {
     Job job = new Job();
-    JobEntryHadoopTransJobExecutor executor = new JobEntryHadoopTransJobExecutor();
+    JobEntryHadoopTransJobExecutor executor = new JobEntryHadoopTransJobExecutor() {
+      protected HadoopConfiguration getHadoopConfiguration() throws org.pentaho.hadoop.shim.ConfigurationException {
+        return new HadoopConfiguration("test", "test", new CommonHadoopShim(), null, null, null);
+      };
+    };
     executor.setParentJob(job);
     executor.setHadoopJobName("hadoop job name");
 
@@ -102,7 +122,7 @@ public class JobEntryHadoopTransJobExecutorTest {
   @Test
   public void getProperty() throws Throwable {
     JobEntryHadoopTransJobExecutor executor = new JobEntryHadoopTransJobExecutor();
-    JobConf conf = new JobConf();
+    Configuration conf = new ConfigurationProxy();
     Properties p = new Properties();
 
     String propertyName = "property";
@@ -115,7 +135,7 @@ public class JobEntryHadoopTransJobExecutorTest {
   @Test
   public void getProperty_overridden() throws Throwable {
     JobEntryHadoopTransJobExecutor executor = new JobEntryHadoopTransJobExecutor();
-    JobConf conf = new JobConf();
+    Configuration conf = new ConfigurationProxy();
     Properties p = new Properties();
 
     String propertyName = "property";
@@ -128,7 +148,7 @@ public class JobEntryHadoopTransJobExecutorTest {
   @Test
   public void getProperty_default() throws Throwable {
     JobEntryHadoopTransJobExecutor executor = new JobEntryHadoopTransJobExecutor();
-    JobConf conf = new JobConf();
+    Configuration conf = new ConfigurationProxy();
     Properties p = new Properties();
 
     String propertyName = "property";
@@ -140,7 +160,8 @@ public class JobEntryHadoopTransJobExecutorTest {
   @Test
   public void findAdditionalPluginFolders() throws Throwable {
     JobEntryHadoopTransJobExecutor executor = new JobEntryHadoopTransJobExecutor();
-    JobConf conf = new JobConf();
+    Configuration conf = new ConfigurationProxy();
+    HadoopShim shim = new CommonHadoopShim();
     Properties p = new Properties();
     
     // Fake out the "plugins" directory for the project's root directory
@@ -148,7 +169,7 @@ public class JobEntryHadoopTransJobExecutorTest {
 
     p.setProperty(JobEntryHadoopTransJobExecutor.PENTAHO_MAPREDUCE_PROPERTY_ADDITIONAL_PLUGINS, "src, bin   ,  invalid");
     
-    List<FileObject> pluginFolders = executor.findAdditionalPluginFolders(conf, p);
+    List<FileObject> pluginFolders = executor.findAdditionalPluginFolders(shim, conf, p);
     assertEquals(2, pluginFolders.size());
     assertEquals(KettleVFS.getFileObject("./src"), pluginFolders.get(0));
     assertEquals(KettleVFS.getFileObject("./bin"), pluginFolders.get(1));
@@ -158,7 +179,7 @@ public class JobEntryHadoopTransJobExecutorTest {
   public void useDistributedCache() throws Throwable {
     JobEntryHadoopTransJobExecutor executor = new JobEntryHadoopTransJobExecutor();
 
-    JobConf conf = new JobConf();
+    Configuration conf = new ConfigurationProxy();
     Properties p = new Properties();
 
     // Default
@@ -181,4 +202,17 @@ public class JobEntryHadoopTransJobExecutorTest {
     p.setProperty(JobEntryHadoopTransJobExecutor.PENTAHO_MAPREDUCE_PROPERTY_USE_DISTRIBUTED_CACHE, Boolean.toString(false));
     assertTrue(executor.useDistributedCache(conf, p));
   }
+
+  @Test
+  public void verifyTransMetaBadOutputFields() throws IOException, KettleException {
+    try {
+     TransMeta transMeta = new TransMeta("./test-res/bad-output-fields.ktr");
+     
+     JobEntryHadoopTransJobExecutor.verifyTransMeta(transMeta, "Injector", "Output");
+      fail("Should have thrown an exception");
+    } catch (KettleException e) {
+      assertTrue("Test for KettleException", e.getMessage().contains("outKey or outValue is not defined in output stream"));
+    }
+  }
+
 }

@@ -1,7 +1,10 @@
 bin/
 dist/
 lib/
+lib-provided/
 stage-pmr/
 test-lib/
 eclipse-bin/
 override.properties
+.settings/
+/dev-lib

@@ -22,17 +22,6 @@
 
 package org.pentaho.di.job.entries.sqoop;
 
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.mapred.JobTracker;
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.util.StringUtil;
-import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.ArgumentWrapper;
-import org.pentaho.di.job.CommandLineArgument;
-import org.pentaho.di.job.JobEntryMode;
-
 import java.io.IOException;
 import java.io.StreamTokenizer;
 import java.io.StringReader;
@@ -40,8 +29,26 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.net.URI;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
+
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.gui.JobTracker;
+import org.pentaho.di.core.util.StringUtil;
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.job.ArgumentWrapper;
+import org.pentaho.di.job.CommandLineArgument;
+import org.pentaho.di.job.JobEntryMode;
+import org.pentaho.hadoop.shim.api.Configuration;
+import org.pentaho.hadoop.shim.api.fs.FileSystem;
+import org.pentaho.hadoop.shim.spi.HadoopShim;
 
 /**
  * Collection of utility methods used to support integration with Apache Sqoop.
@@ -74,19 +81,24 @@ public class SqoopUtils {
    * @param config Sqoop configuration to update
    * @param c      Hadoop configuration to parse connection information from
    */
-  public static void configureConnectionInformation(SqoopConfig config, Configuration c) {
-    URI namenode = FileSystem.getDefaultUri(c);
-    if (namenode != null) {
-      config.setNamenodeHost(namenode.getHost());
-      if (namenode.getPort() != -1) {
-        config.setNamenodePort(String.valueOf(namenode.getPort()));
+  public static void configureConnectionInformation(SqoopConfig config, HadoopShim shim, Configuration c) {
+    String[] namenodeInfo = shim.getNamenodeConnectionInfo(c);
+    if (namenodeInfo != null) {
+      if (namenodeInfo[0] != null) {
+        config.setNamenodeHost(namenodeInfo[0]);
+      }
+      if (!"-1".equals(namenodeInfo[1])) {
+        config.setNamenodePort(namenodeInfo[1]);
       }
     }
-
-    if (!"local".equals(c.get("mapred.job.tracker", "local"))) {
-      InetSocketAddress jobtracker = JobTracker.getAddress(c);
-      config.setJobtrackerHost(jobtracker.getHostName());
-      config.setJobtrackerPort(String.valueOf(jobtracker.getPort()));
+    String[] jobtrackerInfo = shim.getJobtrackerConnectionInfo(c);
+    if (jobtrackerInfo != null) {
+      if (jobtrackerInfo[0] != null) {
+        config.setJobtrackerHost(jobtrackerInfo[0]);
+      }
+      if (jobtrackerInfo[1] != null) {
+        config.setJobtrackerPort(jobtrackerInfo[1]);
+      }
     }
   }
 

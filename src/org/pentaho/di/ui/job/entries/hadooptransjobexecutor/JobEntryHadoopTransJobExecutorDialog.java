@@ -38,7 +38,6 @@ import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulRunner;
 import org.pentaho.ui.xul.binding.Binding.Type;
-import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
 import org.pentaho.ui.xul.binding.DefaultBindingFactory;
 import org.pentaho.ui.xul.components.XulTextbox;
@@ -90,8 +89,6 @@ public class JobEntryHadoopTransJobExecutorDialog extends JobEntryDialog impleme
     bf = new DefaultBindingFactory();
     bf.setDocument(container.getDocumentRoot());
     bf.setBindingType(Type.BI_DIRECTIONAL);
-    
-    bf.createBinding("hadoop-distribution", "selectedItem", controller, JobEntryHadoopTransJobExecutorController.HADOOP_DISTRIBUTION); //$NON-NLS-1$ //$NON-NLS-2$ 
     
     bf.createBinding("mapper-storage-type", "selectedItem", controller, JobEntryHadoopTransJobExecutorController.MAPPER_STORAGE_TYPE); //$NON-NLS-1$ //$NON-NLS-2$ 
     bf.createBinding("combiner-storage-type", "selectedItem", controller, JobEntryHadoopTransJobExecutorController.COMBINER_STORAGE_TYPE); //$NON-NLS-1$ //$NON-NLS-2$ 

@@ -1,0 +1,15 @@
+<!--===========================================================================
+  This is the build file for the Hadoop MapR Shim modules.
+  
+  See ../build-res/subfloor.xml for more details
+============================================================================-->
+<project name="pentaho-hadoop-shims-mapr" basedir="." default="dist"
+  xmlns:ivy="antlib:org.apache.ivy.ant" >
+  
+  <description>
+    This build file is used to create the Hadoop MapR Shim module for the Big Data plugin
+    and is based off Subfloor (../build-res/subfloor.xml)
+  </description>
+
+  <import file="../common-shims-build.xml"/>
+</project>

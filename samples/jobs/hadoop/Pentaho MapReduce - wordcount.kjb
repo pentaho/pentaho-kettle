@@ -39,7 +39,6 @@
       <description/>
       <type>HadoopTransJobExecutorPlugin</type>
       <hadoop_job_name>Pentaho MapReduce (Wordcount)</hadoop_job_name>
-      <hadoop_distribution>generic</hadoop_distribution>
       <map_trans_repo_dir/>
       <map_trans_repo_file/>
       <map_trans_repo_reference/>

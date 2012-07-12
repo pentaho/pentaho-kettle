@@ -22,21 +22,21 @@
 
 package org.pentaho.di.job.entries.sqoop;
 
-import org.apache.hadoop.conf.Configuration;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.Test;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.HiveDatabaseMeta;
 import org.pentaho.di.core.database.MySQLDatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.job.Job;
-
-import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import org.pentaho.hadoop.shim.api.Configuration;
+import org.pentaho.hadoop.shim.spi.HadoopShim;
+import org.pentaho.hadoop.shim.spi.SqoopShim;
 
 public class AbstractSqoopJobEntryTest {
 
@@ -54,7 +54,7 @@ public class AbstractSqoopJobEntryTest {
     }
 
     @Override
-    protected void executeSqoop(SqoopConfig config, Configuration hadoopConfig, Result jobResult) {
+    protected void executeSqoop(HadoopShim hadoopShim, SqoopShim sqoopShim, SqoopConfig config, Configuration hadoopConfig, Result jobResult) {
       // Don't actually execute sqoop, just block for the requested time
       try {
         Thread.sleep(waitTime);

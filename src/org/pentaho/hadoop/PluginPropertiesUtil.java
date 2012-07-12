@@ -34,9 +34,11 @@ import java.io.IOException;
 import java.util.Properties;
 
 /**
- * Utility for working with pentaho-mapreduce.properties
+ * Utility for working with plugin.properties
  */
 public class PluginPropertiesUtil {
+  public static final String PLUGIN_PROPERTIES_FILE = "plugin.properties";
+  
   /**
    * Loads a properties file from the plugin directory for the plugin interface provided
    *
@@ -46,7 +48,7 @@ public class PluginPropertiesUtil {
    * @throws FileSystemException
    * @throws IOException
    */
-  public Properties loadPluginProperties(PluginInterface plugin, String relativeName) throws KettleFileException, IOException {
+  protected Properties loadProperties(PluginInterface plugin, String relativeName) throws KettleFileException, IOException {
     if (plugin == null) {
       throw new NullPointerException();
     }
@@ -57,5 +59,17 @@ public class PluginPropertiesUtil {
     Properties p = new Properties();
     p.load(KettleVFS.getInputStream(propFile));
     return p;
+  }
+  
+  /**
+   * Loads the plugin properties file for the plugin interface provided
+   * 
+   * @param plugin
+   * @return Properties file for plugin
+   * @throws KettleFileException
+   * @throws IOException
+   */
+  public Properties loadPluginProperties(PluginInterface plugin) throws KettleFileException, IOException {
+    return loadProperties(plugin, PLUGIN_PROPERTIES_FILE);
   }
 }

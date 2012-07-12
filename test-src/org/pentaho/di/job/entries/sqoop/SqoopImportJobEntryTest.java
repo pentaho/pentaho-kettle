@@ -22,7 +22,16 @@
 
 package org.pentaho.di.job.entries.sqoop;
 
-import org.apache.hadoop.conf.Configuration;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.util.ArrayList;
+
 import org.apache.log4j.Logger;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
@@ -40,14 +49,10 @@ import org.pentaho.di.repository.RepositoryMeta;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepositoryCreationHelper;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepositoryMeta;
+import org.pentaho.hadoop.shim.api.Configuration;
+import org.pentaho.hadoop.shim.common.CommonHadoopShim;
+import org.pentaho.hadoop.shim.spi.HadoopShim;
 import org.w3c.dom.Document;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.util.ArrayList;
-
-import static org.junit.Assert.*;
 
 public class SqoopImportJobEntryTest {
 
@@ -169,10 +174,11 @@ public class SqoopImportJobEntryTest {
   @Test
   public void configure() throws KettleException {
     SqoopImportJobEntry je = new SqoopImportJobEntry();
-
-    Configuration conf = new Configuration();
+    SqoopConfig sqoopConfig = je.getJobConfig();
+    HadoopShim shim = new CommonHadoopShim();
+    Configuration conf = shim.createConfiguration();
     try {
-      je.configure(conf);
+      je.configure(shim, sqoopConfig, conf);
       fail("Expected exception");
     } catch (KettleException ex) {
       if (!ex.getMessage().contains("hdfs host")) {
@@ -183,7 +189,7 @@ public class SqoopImportJobEntryTest {
 
     je.getJobConfig().setNamenodeHost("localhost");
     try {
-      je.configure(conf);
+      je.configure(shim, sqoopConfig, conf);
       fail("Expected exception");
     } catch (KettleException ex) {
       if (!ex.getMessage().contains("job tracker")) {
@@ -195,7 +201,7 @@ public class SqoopImportJobEntryTest {
     je.getJobConfig().setNamenodePort("54310");
     je.getJobConfig().setJobtrackerHost("anotherhost");
     je.getJobConfig().setJobtrackerPort("54311");
-    je.configure(conf);
+    je.configure(shim, sqoopConfig, conf);
 
     assertEquals("localhost", je.getJobConfig().getNamenodeHost());
     assertEquals("54310", je.getJobConfig().getNamenodePort());

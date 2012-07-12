@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
+  <info organisation="${ivy.artifact.group}" module="${package.id}" revision="${project.revision}" />
+  <configurations>
+    <conf name="default" />
+  </configurations>
+
+  <publications>
+    <artifact name="${package.id}" type="zip" />
+  </publications>
+
+  <dependencies defaultconf="default->default">
+  </dependencies>
+</ivy-module>

@@ -22,12 +22,12 @@
 
 package org.pentaho.di.job.entries.hadooptransjobexecutor;
 
-import com.thoughtworks.xstream.XStream;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Properties;
+
 import org.apache.commons.vfs.FileObject;
-import org.apache.hadoop.fs.FileSystem;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.NullWritable;
-import org.apache.hadoop.mapred.*;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -38,6 +38,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.hadoop.HadoopConfigurationRegistry;
 import org.pentaho.di.core.logging.Log4jFileAppender;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.plugins.JobEntryPluginType;
@@ -64,24 +65,26 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.hadoopexit.HadoopExitMeta;
 import org.pentaho.di.ui.job.entries.hadoopjobexecutor.UserDefinedItem;
 import org.pentaho.hadoop.PluginPropertiesUtil;
-import org.pentaho.hadoop.jobconf.HadoopConfigurer;
-import org.pentaho.hadoop.jobconf.HadoopConfigurerFactory;
-import org.pentaho.hadoop.mapreduce.*;
-import org.pentaho.hadoop.mapreduce.converter.TypeConverterFactory;
+import org.pentaho.hadoop.mapreduce.InKeyValueOrdinals;
+import org.pentaho.hadoop.mapreduce.OutKeyValueOrdinals;
+import org.pentaho.hadoop.shim.ConfigurationException;
+import org.pentaho.hadoop.shim.HadoopConfiguration;
+import org.pentaho.hadoop.shim.api.Configuration;
+import org.pentaho.hadoop.shim.api.fs.FileSystem;
+import org.pentaho.hadoop.shim.api.fs.Path;
+import org.pentaho.hadoop.shim.api.mapred.RunningJob;
+import org.pentaho.hadoop.shim.api.mapred.TaskCompletionEvent;
+import org.pentaho.hadoop.shim.api.mapred.TaskCompletionEvent.Status;
+import org.pentaho.hadoop.shim.spi.HadoopShim;
 import org.w3c.dom.Node;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import com.thoughtworks.xstream.XStream;
 
 @SuppressWarnings("deprecation")
 @JobEntry(id = "HadoopTransJobExecutorPlugin", name = "Pentaho MapReduce", categoryDescription = "Big Data", description = "Execute Transformation Based MapReduce Jobs in Hadoop", image = "HDT.png")
 public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Cloneable, JobEntryInterface {
 
   private static Class<?> PKG = JobEntryHadoopTransJobExecutor.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
-
-  private DistributedCacheUtil dcUtil;
 
   private String hadoopJobName;
 
@@ -137,8 +140,6 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
   private String numMapTasks = "1";
   private String numReduceTasks = "1";
   
-  private String hadoopDistribution = "generic";
-
   private List<UserDefinedItem> userDefined = new ArrayList<UserDefinedItem>();
   
   public static final String PENTAHO_MAPREDUCE_PROPERTY_USE_DISTRIBUTED_CACHE = "pmr.use.distributed.cache";
@@ -148,7 +149,6 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
   public static final String PENTAHO_MAPREDUCE_PROPERTY_ADDITIONAL_PLUGINS = "pmr.kettle.additional.plugins";
 
   public JobEntryHadoopTransJobExecutor() throws Throwable {
-    dcUtil = new DistributedCacheUtil();
     reducingSingleThreaded = true;
     combiningSingleThreaded = true;
   }
@@ -457,14 +457,6 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
     this.numReduceTasks = numReduceTasks;
   }
   
-  public void setHadoopDistribution(String hadoopDistro) {
-    hadoopDistribution = hadoopDistro;
-  }
-  
-  public String getHadoopDistribution() {
-    return hadoopDistribution;
-  }
-  
   private static final TransMeta loadTransMeta(VariableSpace space, Repository rep, String filename, ObjectId transformationId, String repositoryDir, String repositoryFile) throws KettleException {
     
     TransMeta transMeta = null;
@@ -495,12 +487,6 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
     Log4jFileAppender appender = null;
     String logFileName = "pdi-" + this.getName(); //$NON-NLS-1$
 
-    String hadoopDistro = System.getProperty("hadoop.distribution.name", hadoopDistribution);
-    hadoopDistro = environmentSubstitute(hadoopDistro);
-    if (Const.isEmpty(hadoopDistro)) {
-      hadoopDistro = "generic";
-    }        
-    
     try
     {
       appender = LogWriter.createFileAppender(logFileName, true, false);
@@ -511,11 +497,13 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
       logError(BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.FailedToOpenLogFile", logFileName, e.toString())); //$NON-NLS-1$
       logError(Const.getStackTracker(e));
     }
-
+    
     try {
-      ClassLoader loader = getClass().getClassLoader();
 
-      JobConf conf = new JobConf();
+      HadoopConfiguration hadoopConfig = getHadoopConfiguration();
+      HadoopShim shim = hadoopConfig.getHadoopShim();
+      ClassLoader loader = shim.getClass().getClassLoader();
+      Configuration conf = shim.createConfiguration();
       String hadoopJobNameS = environmentSubstitute(hadoopJobName);
       conf.setJobName(hadoopJobNameS);
 
@@ -536,17 +524,17 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
       conf.set("transformation-map-input-stepname", mapInputStepNameS); //$NON-NLS-1$
       conf.set("transformation-map-output-stepname", mapOutputStepNameS); //$NON-NLS-1$
       
-      conf.set(PentahoMapReduceBase.STRING_COMBINE_SINGLE_THREADED, combiningSingleThreaded ? "true" : "false");
+      conf.set(Configuration.STRING_COMBINE_SINGLE_THREADED, combiningSingleThreaded ? "true" : "false");
       
       // Pass the single threaded reduction to the configuration...
       //
-      conf.set(PentahoMapReduceBase.STRING_REDUCE_SINGLE_THREADED, reducingSingleThreaded ? "true" : "false");
+      conf.set(Configuration.STRING_REDUCE_SINGLE_THREADED, reducingSingleThreaded ? "true" : "false");
       
       if (getSuppressOutputOfMapKey()) {
-        conf.setMapOutputKeyClass(NullWritable.class);
+        conf.setMapOutputKeyClass(shim.getHadoopWritableCompatibleClass(null));
       }
       if (getSuppressOutputOfMapValue()) {
-        conf.setMapOutputValueClass(NullWritable.class);
+        conf.setMapOutputValueClass(shim.getHadoopWritableCompatibleClass(null));
       }
       
       // auto configure the output mapper key and value classes
@@ -566,7 +554,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
               throw new KettleException(BaseMessages.getString(PKG, 
                   "JobEntryHadoopTransJobExecutor.NoMapOutputKeyDefined.Error"));
             }
-            Class<?> hadoopWritableKey = TypeConverterFactory.getWritableForKettleType(keyVM);
+            Class<?> hadoopWritableKey = shim.getHadoopWritableCompatibleClass(keyVM);
             conf.setMapOutputKeyClass(hadoopWritableKey);
             logDebug(BaseMessages.getString(PKG, 
                 "JobEntryHadoopTransJobExecutor.Message.MapOutputKeyMessage", 
@@ -578,7 +566,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
               throw new KettleException(BaseMessages.getString(PKG, 
                 "JobEntryHadoopTransJobExecutor.NoMapOutputValueDefined.Error"));
             }
-            Class<?> hadoopWritableValue = TypeConverterFactory.getWritableForKettleType(valueVM);
+            Class<?> hadoopWritableValue = shim.getHadoopWritableCompatibleClass(valueVM);
             conf.setMapOutputValueClass(hadoopWritableValue);
             logDebug(BaseMessages.getString(PKG, 
                 "JobEntryHadoopTransJobExecutor.Message.MapOutputValueMessage", 
@@ -601,7 +589,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
         String combinerOutputStepNameS = environmentSubstitute(combinerOutputStepName);
         conf.set("transformation-combiner-input-stepname", combinerInputStepNameS); //$NON-NLS-1$
         conf.set("transformation-combiner-output-stepname", combinerOutputStepNameS); //$NON-NLS-1$
-        conf.setCombinerClass(GenericTransCombiner.class);
+        conf.setCombinerClass(shim.getPentahoMapReduceCombinerClass());
 
         try {
           verifyTransMeta(transMeta, combinerInputStepNameS, combinerOutputStepNameS);
@@ -626,7 +614,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
         String reduceOutputStepNameS = environmentSubstitute(reduceOutputStepName);
         conf.set("transformation-reduce-input-stepname", reduceInputStepNameS); //$NON-NLS-1$
         conf.set("transformation-reduce-output-stepname", reduceOutputStepNameS); //$NON-NLS-1$
-        conf.setReducerClass(GenericTransReduce.class);
+        conf.setReducerClass(shim.getPentahoMapReduceReducerClass());
 
         try {
           verifyTransMeta(transMeta, reduceInputStepNameS, reduceOutputStepNameS);
@@ -635,10 +623,10 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
         }
         
         if (getSuppressOutputOfKey()) {
-          conf.setOutputKeyClass(NullWritable.class);
+          conf.setOutputKeyClass(shim.getHadoopWritableCompatibleClass(null));
         }
         if (getSuppressOutputOfValue()) {
-          conf.setOutputValueClass(NullWritable.class);
+          conf.setOutputValueClass(shim.getHadoopWritableCompatibleClass(null));
         }
         
         // auto configure the output reduce key and value classes
@@ -658,7 +646,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
                 throw new KettleException(BaseMessages.getString(PKG, 
                     "JobEntryHadoopTransJobExecutor.NoOutputKeyDefined.Error"));
               }
-              Class<?> hadoopWritableKey = TypeConverterFactory.getWritableForKettleType(keyVM);
+              Class<?> hadoopWritableKey = shim.getHadoopWritableCompatibleClass(keyVM);
               conf.setOutputKeyClass(hadoopWritableKey);
               logDebug(BaseMessages.getString(PKG, 
                   "JobEntryHadoopTransJobExecutor.Message.OutputKeyMessage", 
@@ -670,7 +658,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
                 throw new KettleException(BaseMessages.getString(PKG, 
                   "JobEntryHadoopTransJobExecutor.NoOutputValueDefined.Error"));
               }
-              Class<?> hadoopWritableValue = TypeConverterFactory.getWritableForKettleType(valueVM);
+              Class<?> hadoopWritableValue = shim.getHadoopWritableCompatibleClass(valueVM);
               conf.setOutputValueClass(hadoopWritableValue);
               logDebug(BaseMessages.getString(PKG, 
                   "JobEntryHadoopTransJobExecutor.Message.OutputValueMessage", 
@@ -681,18 +669,16 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
         }
       }            
 
-      conf.setMapRunnerClass(PentahoMapRunnable.class);
+      conf.setMapRunnerClass(shim.getPentahoMapReduceMapRunnerClass());
 
       if(inputFormatClass != null) {
         String inputFormatClassS = environmentSubstitute(inputFormatClass);
-        @SuppressWarnings({ "rawtypes", "unchecked" })
-        Class<? extends InputFormat> inputFormat = (Class<? extends InputFormat>) loader.loadClass(inputFormatClassS);
+        Class<?> inputFormat = loader.loadClass(inputFormatClassS);
         conf.setInputFormat(inputFormat);
       }
       if(outputFormatClass != null) {
         String outputFormatClassS = environmentSubstitute(outputFormatClass);
-        @SuppressWarnings({ "rawtypes", "unchecked" })
-        Class<? extends OutputFormat> outputFormat = (Class<? extends OutputFormat>) loader.loadClass(outputFormatClassS);
+        Class<?> outputFormat = loader.loadClass(outputFormatClassS);
         conf.setOutputFormat(outputFormat);
       }
 
@@ -701,49 +687,25 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
       String jobTrackerHostnameS = environmentSubstitute(jobTrackerHostname);
       String jobTrackerPortS = environmentSubstitute(jobTrackerPort);
       
-      // See if we can auto detect the distribution first
-      HadoopConfigurer configurer = HadoopConfigurerFactory.locateConfigurer();
-      
-      if (configurer == null) {        
-        // go with what has been selected by the user
-        configurer = HadoopConfigurerFactory.getConfigurer(hadoopDistro);
-        
-        // if the user-specified distribution is detectable, make sure it is still
-        // the current distribution!
-        if (configurer != null && configurer.isDetectable()) {
-          if (!configurer.isAvailable()) {
-            throw new KettleException(BaseMessages.getString(PKG, 
-                "JobEntryHadoopTransJobExecutor.Error.DistroNoLongerPresent", configurer.distributionName()));
-          }
-        }
-      }
-      if (configurer == null) {
-        throw new KettleException(BaseMessages.
-            getString(PKG, "JobEntryHadoopTransJobExecutor.Error.UnknownHadoopDistribution", 
-                hadoopDistro));
-      }
-      
-      logBasic(BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.Message.DistroConfigMessage", 
-          configurer.distributionName()));
-      
       List<String> configMessages = new ArrayList<String>();
-      configurer.configure(hdfsHostnameS, hdfsPortS, 
+      shim.configureConnectionInformation(hdfsHostnameS, hdfsPortS, 
           jobTrackerHostnameS, jobTrackerPortS, conf, configMessages);
       for (String m : configMessages) {
         logBasic(m);
       }            
 
+      FileSystem fs = shim.getFileSystem(conf);
       String inputPathS = environmentSubstitute(inputPath);
       String[] inputPathParts = inputPathS.split(",");
       List<Path> paths = new ArrayList<Path>();
       for (String path : inputPathParts) {
-        paths.add(new Path(configurer.getFilesystemURL() + path));
+        paths.add(fs.asPath(conf.getDefaultFileSystemURL(), path));
       }
       Path[] finalPaths = paths.toArray(new Path[paths.size()]);
 
-      final Path outputPathPath = new Path(configurer.getFilesystemURL() + environmentSubstitute(outputPath));
-      FileInputFormat.setInputPaths(conf, finalPaths);
-      FileOutputFormat.setOutputPath(conf, outputPathPath);
+      final Path outputPathPath = fs.asPath(conf.getDefaultFileSystemURL(), environmentSubstitute(outputPath));
+      conf.setInputPaths(finalPaths);
+      conf.setOutputPath(outputPathPath);
 
       // process user defined values
       for (UserDefinedItem item : userDefined) {
@@ -754,9 +716,8 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
         }
       }
 
-      String workingDirectoryS = environmentSubstitute(workingDirectory);
-      conf.setWorkingDirectory(new Path(configurer.getFilesystemURL() + workingDirectoryS));
-      conf.setJarByClass(PentahoMapRunnable.class);
+      conf.setWorkingDirectory(environmentSubstitute(workingDirectory));
+      conf.setJarByClass(shim.getPentahoMapReduceMapRunnerClass());
       
       String numMapTasksS = environmentSubstitute(numMapTasks);
       try {
@@ -793,8 +754,6 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
       //  we now tell the job what level of logging this job is running at
       conf.setStrings("logLevel", this.getLogLevel().toString());
 
-      FileSystem fs = FileSystem.get(conf);
-
       if(isCleanOutputPath()) {
         if (log.isBasic()) {
           logBasic(BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.CleaningOutputPath", outputPathPath.toUri().toString()));
@@ -827,18 +786,18 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
           if (!installPath.endsWith(Const.FILE_SEPARATOR)) {
             installPath += Const.FILE_SEPARATOR;
           }
-          Path kettleEnvInstallDir = new Path(installPath + installId);
+          Path kettleEnvInstallDir = fs.asPath(installPath, installId);
           PluginInterface plugin = getPluginInterface();
           FileObject pmrLibArchive = KettleVFS.getFileObject(plugin.getPluginDirectory().getPath() + Const.FILE_SEPARATOR + getProperty(conf, pmrProperties, PENTAHO_MAPREDUCE_PROPERTY_PMR_LIBRARIES_ARCHIVE_FILE, null));
           // Make sure the version we're attempting to use is installed
-          if (dcUtil.isKettleEnvironmentInstalledAt(fs, kettleEnvInstallDir)) {
+          if (shim.getDistributedCacheUtil().isKettleEnvironmentInstalledAt(fs, kettleEnvInstallDir)) {
             logDetailed(BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.UsingKettleInstallationFrom", kettleEnvInstallDir.toUri().getPath()));
           } else {
             // Load additional plugin folders as requested
-            List<FileObject> additionalPluginFolders = findAdditionalPluginFolders(conf, pmrProperties);
-            installKettleEnvironment(pmrLibArchive, fs, kettleEnvInstallDir, additionalPluginFolders);
+            List<FileObject> additionalPluginFolders = findAdditionalPluginFolders(shim, conf, pmrProperties);
+            installKettleEnvironment(shim, pmrLibArchive, fs, kettleEnvInstallDir, additionalPluginFolders);
           }
-          configureWithKettleEnvironment(conf, fs, kettleEnvInstallDir);
+          configureWithKettleEnvironment(shim, conf, fs, kettleEnvInstallDir);
         } catch (Exception ex) {
           result.setStopped(true);
           result.setNrErrors(1);
@@ -848,8 +807,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
         }
       }
       
-      JobClient jobClient = new JobClient(conf);
-      RunningJob runningJob = jobClient.submitJob(conf);
+      RunningJob runningJob = shim.submitJob(conf);
       
       String loggingIntervalS = environmentSubstitute(loggingInterval);
       int logIntv = 60;
@@ -896,7 +854,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
       result.setStopped(true);
       result.setNrErrors(1);
       result.setResult(false);
-      logError(t.getMessage(), t);
+      logError(Const.NVL(t.getMessage(), ""), t);
     }
     
     if (appender != null)
@@ -909,6 +867,17 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
     }
     
     return result;
+  }
+
+  /**
+   * Get the {@link HadoopConfiguration} to use when executing. This is by default loaded from
+   * {@link HadoopConfigurationRegistry}.
+   * 
+   * @return a valid Hadoop configuration
+   * @throws ConfigurationException Error locating a valid hadoop configuration
+   */
+  protected HadoopConfiguration getHadoopConfiguration() throws ConfigurationException {
+    return HadoopConfigurationRegistry.getInstance().getActiveConfiguration();
   }
 
   /**
@@ -933,16 +902,19 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
         }
       }
 
-      switch(tcEvents[i].getTaskStatus()) {
-        case KILLED: {
-          logError(BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.TaskDetails", TaskCompletionEvent.Status.KILLED, tcEvents[i].getTaskAttemptId().getTaskID().getId(), tcEvents[i].getTaskAttemptId().getId(), tcEvents[i].getEventId(), diagsOutput)); //$NON-NLS-1$
-        }break;
-        case FAILED: {
-          logError(BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.TaskDetails", TaskCompletionEvent.Status.FAILED, tcEvents[i].getTaskAttemptId().getTaskID().getId(), tcEvents[i].getTaskAttemptId().getId(), tcEvents[i].getEventId(), diagsOutput)); //$NON-NLS-1$
-        }break;
-        case SUCCEEDED: {
-          logDetailed(BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.TaskDetails", TaskCompletionEvent.Status.SUCCEEDED, tcEvents[i].getTaskAttemptId().getTaskID().getId(), tcEvents[i].getTaskAttemptId().getId(), tcEvents[i].getEventId(), diagsOutput)); //$NON-NLS-1$
-        }break;
+      Status status = tcEvents[i].getTaskStatus();
+      switch(status) {
+        case KILLED:
+        case FAILED:
+        case TIPFAILED:
+          logError(BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.TaskDetails", status, tcEvents[i].getTaskAttemptId(), tcEvents[i].getTaskAttemptId(), tcEvents[i].getEventId(), diagsOutput)); //$NON-NLS-1$
+          break;
+        case SUCCEEDED:
+        case OBSOLETE:
+          logDetailed(BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.TaskDetails", TaskCompletionEvent.Status.SUCCEEDED, tcEvents[i].getTaskAttemptId(), tcEvents[i].getTaskAttemptId(), tcEvents[i].getEventId(), diagsOutput)); //$NON-NLS-1$
+          break;
+        default:
+          logError(BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.TaskDetails", "UNKNOWN", tcEvents[i].getTaskAttemptId(), tcEvents[i].getTaskAttemptId(), tcEvents[i].getEventId(), diagsOutput)); //$NON-NLS-1$
       }
     }
     return tcEvents.length;
@@ -955,7 +927,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
    * @param pmrProperties Properties to check for the property
    * @return {@code true} if either {@code conf} or {@code pmrProperties} contains {@code PENTAHO_MAPREDUCE_PROPERTY_USE_DISTRIBUTED_CACHE}
    */
-  public boolean useDistributedCache(JobConf conf, Properties pmrProperties) {
+  public boolean useDistributedCache(Configuration conf, Properties pmrProperties) {
     return Boolean.parseBoolean(getProperty(conf, pmrProperties, PENTAHO_MAPREDUCE_PROPERTY_USE_DISTRIBUTED_CACHE, Boolean.toString(true)));
   }
 
@@ -963,20 +935,21 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
    * Find plugin folders declared in the property {@code PENTAHO_MAPREDUCE_PROPERTY_ADDITIONAL_PLUGINS} to be included
    * as part of the Kettle Environment copied into DFS for use with Pentaho MapReduce.
    *
+   * @param shim Hadoop Shim to work with
    * @param conf Configuration to check for the property
    * @param pmrProperties Properties to check for the property if not found in {@code conf}
    * @return List of file objects that point to the plugin directories that are declared as "additional required plugins"
    * for the Kettle Environment Pentaho MapReduce will run within.
    * @throws KettleFileException
    */
-  public List<FileObject> findAdditionalPluginFolders(JobConf conf, Properties pmrProperties) throws KettleFileException {
+  public List<FileObject> findAdditionalPluginFolders(HadoopShim shim, Configuration conf, Properties pmrProperties) throws Exception {
     List<FileObject> additionalPluginFolders = new ArrayList<FileObject>();
     String additionalPluginNames = getProperty(conf, pmrProperties, PENTAHO_MAPREDUCE_PROPERTY_ADDITIONAL_PLUGINS, null);
     if (!Const.isEmpty(additionalPluginNames)) {
       for(String pluginName : additionalPluginNames.split(",")) {
         pluginName = pluginName.trim();
         if (!Const.isEmpty(pluginName)) {
-          FileObject pluginFolder = dcUtil.findPluginFolder(pluginName);
+          FileObject pluginFolder = shim.getDistributedCacheUtil().findPluginFolder(pluginName);
           if (pluginFolder != null) {
             additionalPluginFolders.add(pluginFolder);
           }
@@ -996,19 +969,19 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
    * @param defaultValue Default value to use if no property by the given name could be found in {@code conf} or {@code properties}
    * @return Value of {@code propertyName}
    */
-  public String getProperty(JobConf conf, Properties properties, String propertyName, String defaultValue) {
+  public String getProperty(Configuration conf, Properties properties, String propertyName, String defaultValue) {
     String fromConf = conf.get(propertyName);
     return !Const.isEmpty(fromConf) ? fromConf : properties.getProperty(propertyName, defaultValue);
   }
 
   /**
-   * @return The pentaho-mapreduce.properties from the plugin installation directory
+   * @return The plugin.properties from the plugin installation directory
    * @throws KettleFileException
    * @throws IOException
    */
   public Properties loadPMRProperties() throws KettleFileException, IOException {
     PluginInterface plugin = getPluginInterface();
-    return new PluginPropertiesUtil().loadPluginProperties(plugin, "pentaho-mapreduce.properties");
+    return new PluginPropertiesUtil().loadPluginProperties(plugin);
   }
 
   /**
@@ -1022,6 +995,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
   /**
    * Install the Kettle environment, packaged in {@code pmrLibArchive} into the destination within the file systme provided.
    *
+   * @param shim Hadoop Shim to work with
    * @param pmrLibArchive Archive that contains the libraries required to run Pentaho MapReduce (Kettle's dependencies)
    * @param fs File system to install the Kettle environment into
    * @param destination Destination path within {@code fs} to install into
@@ -1029,7 +1003,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
    * @throws KettleException
    * @throws IOException
    */
-  public void installKettleEnvironment(FileObject pmrLibArchive, FileSystem fs, Path destination, List<FileObject> additionalPlugins) throws KettleException, IOException {
+  public void installKettleEnvironment(HadoopShim shim, FileObject pmrLibArchive, FileSystem fs, Path destination, List<FileObject> additionalPlugins) throws Exception {
     if (pmrLibArchive == null) {
       throw new KettleException(BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.UnableToLocateArchive", pmrLibArchive));
     }
@@ -1037,7 +1011,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
     logBasic(BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.InstallingKettleAt", destination));
 
     FileObject bigDataPluginFolder = KettleVFS.getFileObject(getPluginInterface().getPluginDirectory().getPath());
-    dcUtil.installKettleEnvironment(pmrLibArchive, fs, destination, bigDataPluginFolder, additionalPlugins);
+    shim.getDistributedCacheUtil().installKettleEnvironment(pmrLibArchive, fs, destination, bigDataPluginFolder, additionalPlugins);
     
     logBasic(BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.InstallationOfKettleSuccessful", destination));
   }
@@ -1046,19 +1020,20 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
    * Configure the provided configuration to use the Distributed Cache backed by the Kettle Environment installed at the
    * installation directory provided.
    *
+   * @param shim Hadoop Shim to work with
    * @param conf Configuration to update
    * @param fs File system that contains the Kettle environment to use
    * @param kettleEnvInstallDir Kettle environment installation path
    * @throws IOException
    * @throws KettleException
    */
-  private void configureWithKettleEnvironment(JobConf conf, FileSystem fs, Path kettleEnvInstallDir) throws IOException, KettleException {
-    if (!dcUtil.isKettleEnvironmentInstalledAt(fs, kettleEnvInstallDir)) {
+  private void configureWithKettleEnvironment(HadoopShim shim, Configuration conf, FileSystem fs, Path kettleEnvInstallDir) throws Exception {
+    if (!shim.getDistributedCacheUtil().isKettleEnvironmentInstalledAt(fs, kettleEnvInstallDir)) {
       throw new KettleException(BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.KettleInstallationMissingFrom", kettleEnvInstallDir.toUri().getPath()));
     }
 
     logBasic(BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.ConfiguringJobWithKettleAt", kettleEnvInstallDir.toUri().getPath()));
-    dcUtil.configureWithKettleEnvironment(conf, fs, kettleEnvInstallDir);
+    shim.getDistributedCacheUtil().configureWithKettleEnvironment(conf, fs, kettleEnvInstallDir);
   }
 
   /**
@@ -1087,7 +1062,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
     
     // Verify that the key and value fields are found
     //
-    PentahoMapReduceBase.InKeyValueOrdinals inOrdinals = new PentahoMapReduceBase.InKeyValueOrdinals(injectorRowMeta);
+    InKeyValueOrdinals inOrdinals = new InKeyValueOrdinals(injectorRowMeta);
     if(inOrdinals.getKeyOrdinal() < 0 || inOrdinals.getValueOrdinal() < 0) {
       throw new KettleException("key or value is not defined in input step");
     }
@@ -1136,7 +1111,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
       // Any other step: verify that the outKey and outValue fields exist...
       //
       RowMetaInterface outputRowMeta = transMeta.getStepFields(outputStepMeta);
-      PentahoMapReduceBase.OutKeyValueOrdinals outOrdinals = new PentahoMapReduceBase.OutKeyValueOrdinals(outputRowMeta);
+      OutKeyValueOrdinals outOrdinals = new OutKeyValueOrdinals(outputRowMeta);
       if (outOrdinals.getKeyOrdinal() < 0 || outOrdinals.getValueOrdinal() < 0) {
         throw new KettleException("outKey or outValue is not defined in output stream"); //$NON-NLS-1$
       }
@@ -1179,10 +1154,6 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
     super.loadXML(entrynode, databases, slaveServers);
     hadoopJobName = XMLHandler.getTagValue(entrynode, "hadoop_job_name"); //$NON-NLS-1$
     
-    if (!Const.isEmpty(XMLHandler.getTagValue(entrynode, "hadoop_distribution"))) {
-      hadoopDistribution = XMLHandler.getTagValue(entrynode, "hadoop_distribution"); //$NON-NLS-1$
-    }
-
     mapRepositoryDir = XMLHandler.getTagValue(entrynode, "map_trans_repo_dir"); //$NON-NLS-1$
     mapRepositoryFile = XMLHandler.getTagValue(entrynode, "map_trans_repo_file"); //$NON-NLS-1$
     String mapTransId = XMLHandler.getTagValue(entrynode, "map_trans_repo_reference"); //$NON-NLS-1$
@@ -1271,7 +1242,6 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
     StringBuffer retval = new StringBuffer(1024);
     retval.append(super.getXML());
     retval.append("      ").append(XMLHandler.addTagValue("hadoop_job_name", hadoopJobName)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("      ").append(XMLHandler.addTagValue("hadoop_distribution", hadoopDistribution)); //$NON-NLS-1$ //$NON-NLS-2$
     
     retval.append("      ").append(XMLHandler.addTagValue("map_trans_repo_dir", mapRepositoryDir)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("      ").append(XMLHandler.addTagValue("map_trans_repo_file", mapRepositoryFile)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -1340,10 +1310,6 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
     if(rep != null) {
       setHadoopJobName(rep.getJobEntryAttributeString(id_jobentry, "hadoop_job_name")); //$NON-NLS-1$
      
-      if (!Const.isEmpty(rep.getJobEntryAttributeString(id_jobentry, "hadoop_distribution"))) {
-        setHadoopDistribution(rep.getJobEntryAttributeString(id_jobentry, "hadoop_distribution")); //$NON-NLS-1$
-      }
-      
       setMapRepositoryDir(rep.getJobEntryAttributeString(id_jobentry, "map_trans_repo_dir")); //$NON-NLS-1$
       setMapRepositoryFile(rep.getJobEntryAttributeString(id_jobentry, "map_trans_repo_file")); //$NON-NLS-1$
       String mapTransId = rep.getJobEntryAttributeString(id_jobentry, "map_trans_repo_reference"); //$NON-NLS-1$
@@ -1425,8 +1391,6 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
   public void saveRep(Repository rep, ObjectId id_job) throws KettleException {
     if(rep != null) {
       rep.saveJobEntryAttribute(id_job, getObjectId(),"hadoop_job_name", hadoopJobName); //$NON-NLS-1$
-      
-      rep.saveJobEntryAttribute(id_job, getObjectId(),"hadoop_distribution", hadoopDistribution); //$NON-NLS-1$
       
       rep.saveJobEntryAttribute(id_job, getObjectId(),"map_trans_repo_dir", mapRepositoryDir); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getObjectId(),"map_trans_repo_file", mapRepositoryFile); //$NON-NLS-1$

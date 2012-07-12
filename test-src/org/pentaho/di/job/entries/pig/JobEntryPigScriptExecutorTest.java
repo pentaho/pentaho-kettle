@@ -1,26 +1,29 @@
 package org.pentaho.di.job.entries.pig;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
-
-import java.io.Reader;
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.io.InputStreamReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.Arrays;
+import java.util.List;
 
-import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.job.Job;
+import org.junit.Before;
+import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.hadoop.HadoopConfigurationRegistry;
+import org.pentaho.di.job.Job;
+import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.entry.JobEntryCopy;
+import org.pentaho.hadoop.shim.ConfigurationException;
+import org.pentaho.hadoop.shim.HadoopConfiguration;
+import org.pentaho.hadoop.shim.common.CommonHadoopShim;
+import org.pentaho.hadoop.shim.common.CommonPigShim;
+import org.pentaho.hadoop.shim.common.CommonSqoopShim;
+import org.pentaho.hadoop.shim.spi.HadoopConfigurationProvider;
 
 public class JobEntryPigScriptExecutorTest {
 
@@ -50,9 +53,35 @@ public class JobEntryPigScriptExecutorTest {
 
   @Test
   public void testRegressionTutorialLocal() throws IOException, KettleException {
+    HadoopConfigurationRegistry.setHadoopConfigurationProvider(new HadoopConfigurationProvider() {
+      
+      HadoopConfiguration config = new HadoopConfiguration("test", "test", new CommonHadoopShim(), new CommonSqoopShim(), new CommonPigShim(), null);
+      
+      @Override
+      public boolean hasConfiguration(String id) {
+        return true;
+      }
+      
+      @Override
+      public List<? extends HadoopConfiguration> getConfigurations() {
+        return Arrays.asList(config);
+      }
+      
+      @Override
+      public HadoopConfiguration getConfiguration(String id) throws ConfigurationException {
+        return config;
+      }
+      
+      @Override
+      public HadoopConfiguration getActiveConfiguration() throws ConfigurationException {
+        return config;
+      }
+    });
+    
     System.setProperty("KETTLE_PLUGIN_CLASSES", "org.pentaho.di.job.entries.pig.JobEntryPigScriptExecutor");
     KettleEnvironment.init();
     JobMeta meta = new JobMeta("test-res/pig/pigTest.kjb", null);
+    
     Job job = new Job(null, meta);
 
     job.start();

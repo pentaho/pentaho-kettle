@@ -1,0 +1,295 @@
+<!--===========================================================================
+  This is the common build file for all shim implementation projects. This
+  requires the api project to be jar'd up first; it is directly referenced.
+  
+  See ../build-res/subfloor.xml for more details
+============================================================================-->
+<project name="common-shims-build" xmlns:ivy="antlib:org.apache.ivy.ant">
+  <import file="../build-res/subfloor-pkg.xml" />
+
+  <property name="common.dir" value="../common" />
+
+  <property name="api.dist.dir" value="../api/dist" description="Distrbution directory for the api project. This is where the api jar will be referenced from." />
+  <property name="lib.provided.dir" value="lib-provided" description="Ivy dependencies of 'provided' configuration are placed here"/>
+  <property name="src.common.dir" value="${common.dir}/src" description="Source files that are common to all shims"/>
+  <property name="classes.common-mapred.dir" value="${bin.dir}/classes-mapred" description="Common mapred source files are compiled into here" />
+  <property name="src.common-mapred.dir" value="${common.dir}/src-mapred" description="Common mapred sources" />
+  <property name="testsrc.common.dir" value="${common.dir}/test-src" description="Common test sources" />
+  <property name="package.common.resdir" value="${common.dir}/package-res" description="Common package resources" />
+  <property name="mapred.artifact.name" value="${ivy.artifact.id}-mapred-${project.revision}.jar" description="Name of the mapred jar file to create"/>
+
+  <!-- Setup the compile classpath to include the provided jars and the api jar -->
+  <path id="classpath">
+    <fileset dir="${devlib.dir}">
+      <include name="**/*.jar" />
+    </fileset>
+    <fileset dir="${lib.dir}">
+      <include name="**/*.jar" />
+    </fileset>
+    <fileset file="${api.dist.dir}/pentaho-hadoop-shims-api-${project.revision}.jar"/>
+    <fileset dir="${lib.provided.dir}">
+      <include name="**/*.jar" />
+    </fileset>
+  </path>
+
+  <!-- Setup the classpath used for testing to include the provided jars -->
+  <path id="test.classpath">
+    <fileset dir="${devlib.dir}">
+      <include name="**/*.jar" />
+    </fileset>
+    <fileset dir="${lib.dir}">
+      <include name="**/*.jar" />
+    </fileset>
+    <fileset file="${api.dist.dir}/pentaho-hadoop-shims-api-${project.revision}.jar"/>
+    <fileset dir="${lib.provided.dir}">
+      <include name="**/*.jar" />
+    </fileset>
+    <fileset dir="${testlib.dir}">
+      <include name="**/*.jar" />
+    </fileset>
+    <pathelement path="${testclasses.dir}" />
+    <pathelement path="${classes.dir}" />
+    <pathelement path="${classes.common-mapred.dir}" />
+  </path>
+
+  <!-- override init so we can create our mapred.classes.dir -->
+  <target name="init" depends="subfloor.init">
+    <mkdir dir="${classes.common-mapred.dir}" />
+  </target>
+
+  <!-- 
+  resolve related targets so we can resolve "provided" jars separate from 
+  normal ones so they don't get automatically packaged in with the archives.
+  -->
+  <target name="clean-jars" depends="subfloor.clean-jars">
+    <delete dir="${lib.provided.dir}"/>
+  </target>
+
+  <!-- Resolve provided dependencies to a separate directory -->
+  <target name="resolve-default" depends="subfloor.resolve-default">
+    <ivy:resolve file="${ivyfile}" conf="default" />
+    <ivy:retrieve conf="provided" pattern="${lib.provided.dir}/[module]-[revision](-[classifier]).[ext]" symlink="${ivy.use.symlinks.internal}" />
+  </target>
+
+  <!-- Override compile.compile to include common source -->
+  <target name="compile.compile" depends="init, compile-mapred">
+    <javac destdir="${classes.dir}"
+           debug="${javac.debug}"
+           deprecation="${javac.deprecation}"
+           fork="true"
+           memorymaximumsize="${javac.maxmemory}"
+           source="${javac.source}"
+           target="${javac.target}">
+      <classpath>
+        <path refid="classpath" />
+        <path location="${classes.common-mapred.dir}" />
+      </classpath>
+      <src path="${src.dir}" />
+      <src path="${src.common.dir}" />
+    </javac>
+  </target>
+
+  <!-- Compile the mapreduce source into a separate output directory so it can be independently packaged -->
+  <target name="compile-mapred" depends="init">
+    <javac destdir="${classes.common-mapred.dir}"
+           debug="${javac.debug}"
+           deprecation="${javac.deprecation}"
+           fork="true"
+           source="${javac.source}"
+           target="${javac.target}">
+      <classpath>
+        <path refid="classpath"/>
+      </classpath>
+      <src path="${src.common-mapred.dir}" />
+    </javac>
+    <copy todir="${classes.common-mapred.dir}" flatten="false">
+      <fileset dir="${src.common-mapred.dir}" excludes="**/*.java" />
+    </copy>
+  </target>
+
+  <!-- Copy additional resources into bin directory -->
+  <target name="compile.res_copy" depends="subfloor.compile.res_copy">
+    <if>
+      <not>
+        <isset property="jar.include.source" />
+      </not>
+      <then>
+        <copy todir="${classes.dir}" flatten="false">
+          <fileset dir="${src.common.dir}" excludes="**/*.java" />
+          <fileset dir="${src.common-mapred.dir}" excludes="**/*.java" />
+        </copy>
+      </then>
+    </if>
+  </target>
+
+  <!-- Compile the common tests too -->
+  <target name="compile-tests" depends="subfloor.compile-tests">
+    <javac destdir="${testclasses.dir}"
+           debug="true"
+           optimize="false"
+           source="${javac.source}"
+           target="${javac.target}"
+           fork="true">
+      <src path="${testsrc.common.dir}" />
+      <classpath refid="test.classpath" />
+    </javac>
+
+    <!-- Copy the non-java files from the source directory to the test classes directory -->
+    <copy todir="${testclasses.dir}">
+      <fileset dir="${testsrc.dir}">
+        <exclude name="**/*.java" />
+      </fileset>
+      <fileset dir="${testsrc.common.dir}">
+        <exclude name="**/*.java" />
+      </fileset>
+    </copy>
+  </target>
+
+  <!-- Instrument the mapred classes too -->
+  <target name="cobertura.instrument-classes" depends="cobertura.clean-instrumented-classes,install-cobertura,compile">
+    <cobertura-instrument todir="${instrumented.classes.dir}" datafile="${cobertura.data.dir}/cobertura.ser">
+      <ignore regex="org.apache.log4j.*" />
+      <fileset dir="${classes.dir}">
+        <!--
+          Instrument all the application classes, but
+          don't instrument the test classes.
+        -->
+        <include name="**/*.class" />
+        <exclude name="**/*Test.class" />
+      </fileset>
+      <fileset dir="${classes.common-mapred.dir}">
+        <!--
+          Instrument all the application classes, but
+          don't instrument the test classes.
+        -->
+        <include name="**/*.class" />
+        <exclude name="**/*Test.class" />
+      </fileset>
+    </cobertura-instrument>
+  </target>
+
+  <!-- Run normal and common tests -->
+  <target name="test" depends="compile,compile-tests,init-test-reports" description="Compiles and runs unit tests">
+    <junit maxmemory="${junit.maxmemory}"
+           fork="yes"
+           failureProperty="test.failed"
+           haltonfailure="${junit.haltonfailure}"
+           printsummary="yes">
+      <sysproperty key="java.awt.headless" value="${headless.unittest}" />
+      
+      <syspropertyset>
+        <propertyref prefix="junit.sysprop." />
+        <mapper type="glob" from="junit.sysprop.*" to="*"/>
+      </syspropertyset>
+      
+      <classpath refid="test.classpath" />
+      <formatter type="xml" />
+      <test name="${testcase}" todir="${testreports.xml.dir}" if="testcase" />
+      <batchtest fork="yes" todir="${testreports.xml.dir}" unless="testcase">
+        <fileset dir="${testsrc.dir}" casesensitive="yes">
+          <include name="**/*Test.java" />
+        </fileset>
+        <fileset dir="${testsrc.common.dir}" casesensitive="yes">
+          <include name="**/*Test.java" />
+        </fileset>
+      </batchtest>
+    </junit>
+
+    <junitreport todir="${testreports.html.dir}">
+      <fileset dir="${testreports.xml.dir}">
+        <include name="TEST-*.xml" />
+      </fileset>
+      <report format="frames" todir="${testreports.html.dir}" />
+    </junitreport>
+  </target>
+
+  <!-- Run normal and common tests -->
+  <target name="cobertura.test-instrumented"
+          depends="init-test-reports,install-cobertura,compile,compile-tests,cobertura.instrument-classes">
+    <mkdir dir="${instrumented.classes.dir}" />
+    <path id="cobertura.classpath">
+      <fileset dir="${subfloor.resources.dir}/cobertura">
+        <include name="*.jar" />
+      </fileset>
+    </path>
+    <junit fork="yes"
+           maxmemory="${junit.maxmemory}"
+           failureProperty="test.failed"
+           haltonfailure="${junit.haltonfailure}">
+      <sysproperty key="java.awt.headless" value="${headless.unittest}" />
+
+      <!-- Specify the name of the coverage data file to use. -->
+      <sysproperty key="net.sourceforge.cobertura.datafile" file="${cobertura.data.dir}/cobertura.ser" />
+
+      <syspropertyset>
+        <propertyref prefix="junit.sysprop." />
+        <mapper type="glob" from="junit.sysprop.*" to="*"/>
+      </syspropertyset>
+      
+      <!--
+        Note the classpath order: instrumented classes are before the
+        original (uninstrumented) classes.  This is important.
+      -->
+      <classpath location="${instrumented.classes.dir}" />
+      <classpath location="${classes.dir}" />
+      <classpath location="${classes.common-mapred.dir}" />
+      <classpath location="${testclasses.dir}" />
+      <classpath refid="test.classpath" />
+      <classpath refid="cobertura.classpath" />
+
+      <formatter type="xml" />
+      <test name="${testcase}" todir="${testreports.xml.dir}" if="testcase" />
+      <batchtest todir="${testreports.xml.dir}" unless="testcase">
+        <fileset dir="${testsrc.dir}" casesensitive="yes">
+          <include name="**/*Test.java" />
+        </fileset>
+        <!-- <fileset dir="${testsrc.common.dir}" casesensitive="yes">
+          <include name="**/*Test.java" />
+        </fileset> -->
+      </batchtest>
+    </junit>
+
+    <junitreport todir="${testreports.html.dir}">
+      <fileset dir="${testreports.xml.dir}">
+        <include name="TEST-*.xml" />
+      </fileset>
+      <report format="frames" todir="${testreports.html.dir}" />
+    </junitreport>
+  </target>
+
+  <!-- override jar.main so we can jar up our mapred stuff too -->
+  <target name="jar" depends="subfloor-pkg.jar,jar-mapred"/>
+
+  <!-- Jar the mapreduce libraries separately to reduce the payload when submitting
+  MapReduce jobs to hadoop -->
+  <target name="jar-mapred" depends="compile-mapred,generate.manifest">
+    <jar destfile="${dist.dir}/${mapred.artifact.name}" manifest="${dist.manifest.file}">
+      <fileset dir="${classes.common-mapred.dir}" />
+    </jar>
+  </target>
+
+  <!-- Override assemble.copy-libs to put our jar in the root of the package -->
+  <target name="assemble.copy-libs">
+    <copy todir="${approot.stage.dir}/lib">
+      <fileset dir="${lib.dir}" />
+<!--         <!- - Exclude "provided" dependencies - ->
+        <exclude name="pentaho-hadoop-shims-api-*"/>
+        <exclude name="junit*" />
+        <exclude name="log4j*" />
+      </fileset>
+ -->      <fileset file="${dist.dir}/${mapred.artifact.name}" />
+    </copy>
+    <copy todir="${approot.stage.dir}">
+      <fileset file="${dist.dir}/${ivy.artifact.id}-${project.revision}.jar" />
+    </copy>
+  </target>
+
+  <!-- override assemble to copy common package resources into the staging directory -->
+  <target name="assemble" depends="subfloor-pkg.assemble">
+    <!-- Copy common package resources over as well -->
+    <copy todir="${approot.stage.dir}" overwrite="true">
+      <fileset dir="${package.common.resdir}" />
+    </copy>
+  </target>
+
+</project>

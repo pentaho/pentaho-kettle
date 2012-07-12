@@ -18,13 +18,11 @@
 	<!-- Import the common_build.xml file which contains all the default tasks -->	
 	<import file="build-res/subfloor-pkg.xml"/>
 
-  <property name="mapred.src.dir" value="${basedir}/src-mapred" description="MapReduce source code directory"/>
-  <property name="mapred.classes.dir" value="${bin.dir}/mapreduce-classes"
-            description="Classes compiled from src-mapred are placed here"/>
-  <property name="mapred.artifact.name" value="${ivy.artifact.id}-mapred-${project.revision}.jar" description="Name of the mapred jar file to create"/>
-
   <property name="stage.pmr.dir" value="${basedir}/stage-pmr"/>
   <property name="pmr.archive.name" value="pentaho-mapreduce-libraries"/>
+  
+  <property name="resolve.shims.dir" value="${bin.dir}/shims"/>
+  <property name="stage.shims.dir" value="${stage.dir}/${ivy.artifact.id}/hadoop-configurations"/>
   
 	<property name="pdi-with-plugin"
 					value="pdi-ce-big-data"
@@ -40,85 +38,12 @@
     <property name="package-samples.artifact.pomfile"
                 value="package-samples-pom.xml"
                 description="The Maven pom file defining dependencies of the package" />
-	
-
-  <!-- override init so we can create our mapred.classes.dir -->
-  <target name="init" depends="subfloor.init">
-    <mkdir dir="${mapred.classes.dir}" />
-  </target>
-
-  <!-- override the test classpath to include our mapred classes -->
-  <path id="test.classpath">
-    <fileset dir="${devlib.dir}">
-      <include name="**/*.jar" />
-    </fileset>
-    <fileset dir="${lib.dir}">
-      <include name="**/*.jar" />
-    </fileset>
-    <fileset dir="${testlib.dir}">
-      <include name="**/*.jar" />
-    </fileset>
-    <pathelement path="${testclasses.dir}" />
-    <pathelement path="${classes.dir}" />
-    <pathelement path="${mapred.classes.dir}"/>
-  </path>
-
-	<!-- override compile.compile to include custom classpath and do resource copying -->
-	<target name="compile.compile" depends="compile-mapred">
-	  <javac destdir="${classes.dir}"
-	         debug="${javac.debug}"
-	         deprecation="${javac.deprecation}"
-	         fork="true"
-	         source="${javac.source}"
-	         target="${javac.target}">
-	    <classpath>
-	      <path refid="classpath" />
-        <path location="${mapred.classes.dir}"/>
-	    </classpath>
-	    <src path="${src.dir}" />
-	  </javac>
-	</target>
   
-  <target name="compile-mapred" depends="init">
-    <javac destdir="${mapred.classes.dir}"
-           debug="${javac.debug}"
-           deprecation="${javac.deprecation}"
-           fork="true"
-           source="${javac.source}"
-           target="${javac.target}">
-      <classpath>
-        <path refid="classpath"/>
-      </classpath>
-      <src path="${mapred.src.dir}"/>
-    </javac>
-    <copy todir="${mapred.classes.dir}" flatten="false">
-      <fileset dir="${mapred.src.dir}" excludes="**/*.java" />
-    </copy>
-  </target>
-  
-  <!-- override jar.main so we can jar up our mapred stuff too -->
-  <target name="jar" depends="subfloor-pkg.jar,jar-mapred"/>
-
-  <target name="jar-mapred" depends="compile-mapred,generate.manifest">
-    <jar destfile="${dist.dir}/${mapred.artifact.name}" manifest="${dist.manifest.file}">
-      <fileset dir="${mapred.classes.dir}" />
-    </jar>
-  </target>
-
-  <target name="cobertura.instrument-classes" depends="subfloor.cobertura.instrument-classes">
-    <cobertura-instrument todir="${instrumented.classes.dir}" datafile="${cobertura.data.dir}/cobertura.ser">
-      <ignore regex="org.apache.log4j.*" />
-      <fileset dir="${mapred.classes.dir}">
-        <!--
-          Instrument all the application classes, but
-          don't instrument the test classes.
-        -->
-        <include name="**/*.class" />
-        <exclude name="**/*Test.class" />
-      </fileset>
-
-    </cobertura-instrument>
-  </target>
+  <!--
+    AS STATED ABOVE, THE ONLY TASKS THAT SHOULD EXIST IN THIS BUILD FILE ARE
+    THE TASKS THAT NEED TO DIFFER FROM THE DEFAULT IMPLEMENTATION OF THE TASKS
+    FOUND IN subfloor.xml.
+  --> 
 
   <target name="resolve" depends="subfloor.resolve,resolve-pmr"/>
 
@@ -131,11 +56,17 @@
     <ivy:resolve file="${ivyfile}" conf="default" />
     <ivy:retrieve conf="pmr" pattern="${stage.pmr.dir}/lib/[module]-[revision](-[classifier]).[ext]" symlink="true" />
   </target>
+  
+  <target name="resolve-hadoop-shims" depends="install-ivy">
+    <delete dir="${resolve.shims.dir}"/>
+    <ivy:resolve file="${ivyfile}" conf="default" />
+    <ivy:retrieve conf="shim" pattern="${resolve.shims.dir}/[module]-[revision](-[classifier]).[ext]" symlink="true" />
+  </target>
 
-	<target name="dist-noresolve" depends="jar,hbase-custom-comparators-jar,jar-mapred,package" description="Builds and packages the application" />
-	<target name="dist" depends="resolve,jar,hbase-custom-comparators-jar,jar-mapred,package" description="Builds and packages the application" />
+	<target name="dist-noresolve" depends="jar,hbase-custom-comparators-jar,package" description="Builds and packages the application" />
+	<target name="dist" depends="build-shims,resolve,jar,hbase-custom-comparators-jar,package" description="Builds and packages the application" />
 
-  <target name="clean-all" depends="subfloor.clean-all,clean-pmr" />
+  <target name="clean-all" depends="subfloor.clean-all,clean-pmr,clean-all-shims" />
 
 	<target name="clean-dist">
 		<delete dir="${dist.dir}" />
@@ -143,17 +74,70 @@
 		<delete dir="${platform.unzip.dir}" />
 	</target>
 
-    <!--
-      AS STATED ABOVE, THE ONLY TASKS THAT SHOULD EXIST IN THIS BUILD FILE ARE
-      THE TASKS THAT NEED TO DIFFER FROM THE DEFAULT IMPLEMENTATION OF THE TASKS
-      FOUND IN subfloor.xml.
-    --> 
-  
+  <target name="clean-all-shims" description="Clean all shim projects">
+    <ant antfile="shims/build.xml" inheritall="false" target="clean-all" />
+  </target>
+
+  <!-- Build all the shim modules -->
+  <target name="build-shims" description="Build all shim projects via shims/build.xml build-all">
+    <ant antfile="shims/build.xml" inheritall="false">
+      <target name="build-all" />
+      <target name="publish-local" />
+    </ant>
+  </target>
+
+  <!-- Publish all the shim modules -->
+  <target name="publish-shims" depends="build-shims" description="Builds all shim projects and publishes them">
+    <ant antfile="shims/build.xml" target="publish" inheritall="false"/>
+  </target>
+
+  <!-- Test all the shim modules -->
+  <target name="test-shims" depends="build-shims" description="Tests all shim projects">
+    <ant antfile="shims/build.xml" target="test" inheritall="false"/>
+  </target>
+
+  <!-- Generate code coverage for the shim modules -->
+  <target name="cobertura-shims" depends="build-shims" description="Run cobertura on all shim projects">
+    <ant antfile="shims/build.xml" target="cobertura" inheritall="false"/>
+  </target>
+
+  <!-- HACK! Include the Hadoop 0.20.x compatible mapred jar on the test
+  classpath so we can properly test the MapReduce implementation without having 
+  to publish the special mapred jar just for the sake of depending on it here
+  for our tests. In reality, we should publish that jar and properly depend on it via Ivy -->
+  <path id="test.classpath">
+    <fileset dir="${devlib.dir}">
+      <include name="**/*.jar" />
+    </fileset>
+    <fileset dir="${lib.dir}">
+      <include name="**/*.jar" />
+    </fileset>
+    <fileset dir="${testlib.dir}">
+      <include name="**/*.jar" />
+    </fileset>
+    <pathelement path="${testclasses.dir}" />
+    <pathelement path="${classes.dir}" />
+    <pathelement path="${basedir}/shims/hadoop-20/bin/classes-mapred"/>
+  </path>
+
   <target name="assemble.init">
     <mkdir dir="${stage.dir}" />
     <mkdir dir="${stage.dir}/${ivy.artifact.id}" />
   </target>
 
+  <!-- Assemble the Hadoop Shim zips by first resolving them then extracting them
+       into the package stage directory at hadoop-configurations/.
+    -->
+  <target name="assemble-hadoop-shims" depends="resolve-hadoop-shims">
+    <delete dir="${stage.shims.dir}"/>
+    <!-- <mkdir dir="${stage.shims.dir}"/> -->
+    <unzip dest="${stage.shims.dir}">
+      <fileset dir="${resolve.shims.dir}">
+        <include name="*.zip"/>
+      </fileset>
+    </unzip>
+  </target>
+  
   <!-- Assemble all libraries required for Pentaho MapReduce into the ${pmr.archive.name}.zip file in the staging directory -->
   <target name="assemble-pmr-libraries">
     <!-- Archive must contain a top level lib/ directory -->
@@ -162,7 +146,7 @@
     </zip>
   </target>
 	
-	  <target name="assemble.copy-libs" depends="assemble-pmr-libraries">
+	  <target name="assemble.copy-libs" depends="assemble-pmr-libraries,assemble-hadoop-shims">
 	    <copy todir="${stage.dir}/${ivy.artifact.id}/lib">
 	      <fileset dir="${lib.dir}">
 			<exclude name="kettle-*.jar" />
@@ -180,15 +164,14 @@
 			<exclude name="commons-lang*.jar" />
 			<exclude name="commons-logging*.jar" />
 			<exclude name="commons-vfs*.jar" />
-			<exclude name="pentaho-hdfs-vfs*.jar" />
-			<exclude name="pentaho-s3-vfs*.jar" />
+			<!-- <exclude name="pentaho-hdfs-vfs*.jar" /> -->
+			<!-- <exclude name="pentaho-s3-vfs*.jar" /> -->
 			<exclude name="pentaho-vfs-browser*.jar" />
 			<exclude name="scannotation*.jar" />
 			<exclude name="dom4j*.jar" />	      	
 			<exclude name="jface*.jar" />	      	
 			<exclude name="x86*.jar" />	      	
           </fileset>
-        <fileset file="${dist.dir}/${mapred.artifact.name}" />
 	    </copy>
 	    <copy todir="${stage.dir}/${ivy.artifact.id}">
 	      <fileset file="${dist.dir}/${ivy.artifact.id}-${project.revision}.jar" />
@@ -229,7 +212,7 @@
 		</zip>
 	</target>
 	
-	<target name="install-plugin" depends="jar,package">
+	<target name="install-plugin" depends="jar,package" description="Build the plugin and extract it into ${kettle.dist.dir}/plugins">
 		<!-- Install the plugin -->
 		<delete dir="${kettle.dist.dir}/plugins/pentaho-big-data-plugin"/>
 		<unzip dest="${kettle.dist.dir}/plugins">

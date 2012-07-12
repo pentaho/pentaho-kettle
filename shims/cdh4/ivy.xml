@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
+  <info organisation="${ivy.artifact.group}" module="${ivy.artifact.id}" revision="${project.revision}" />
+
+  <configurations>
+    <conf name="default" />
+    <conf name="zip" />
+    <conf name="test" visibility="private" />
+    <conf name="provided" />
+  </configurations>
+
+  <publications>
+    <artifact name="${ivy.artifact.id}" type="jar" conf="default" />
+    <artifact name="${package.id}" type="zip" conf="zip" />
+  </publications>
+
+  <dependencies defaultconf="default->default">
+    <dependency conf="provided->default" org="pentaho" name="pentaho-hadoop-shims-api" rev="${project.revision}" changing="true"/>
+    <dependency conf="provided->default" org="pentaho-kettle" name="kettle-core" rev="${dependency.kettle.revision}" changing="true"/>
+    <dependency conf="provided->default" org="pentaho-kettle" name="kettle-engine" rev="${dependency.kettle.revision}" changing="true"/>
+
+    <dependency conf="provided->default" org="com.thoughtworks.xstream" name="xstream" rev="${dependency.xstream.revision}" transitive="false"/>
+    <dependency conf="provided->default" org="log4j" name="log4j" rev="1.2.14" />
+    <dependency conf="provided->default" org="commons-lang" name="commons-lang" rev="${dependency.commons-lang.revision}" transitive="false"/>
+
+    <dependency org="pentaho" name="pentaho-hdfs-vfs" rev="${dependency.pentaho-hdfs-vfs.revision}" transitive="false" changing="true"/>
+    <dependency org="org.apache.hadoop" name="hadoop-client" rev="${dependency.hadoop.revision}"/>
+    <!-- Our modified Hive driver (need to include it until changes are accepted into main Hive project) -->
+    <dependency org="org.apache.hive" name="hive-jdbc" rev="${dependency.hive-jdbc.revision}" changing="true" transitive="false"/>
+    <!-- The rest of the Hive dependencies -->
+    <dependency org="org.apache.hive" name="hive-common" rev="${dependency.cloudera-hive-jdbc.revision}" changing="true"/>
+    <dependency org="org.apache.hive" name="hive-builtins" rev="${dependency.cloudera-hive-jdbc.revision}" changing="true"/>
+    <dependency org="org.apache.hive" name="hive-exec" rev="${dependency.cloudera-hive-jdbc.revision}" changing="true"/>
+    <dependency org="org.apache.hive" name="hive-service" rev="${dependency.cloudera-hive-jdbc.revision}" changing="true"/>
+    <dependency org="org.apache.hive" name="hive-serde" rev="${dependency.cloudera-hive-jdbc.revision}" changing="true"/>
+    <dependency org="org.apache.hive" name="hive-metastore" rev="${dependency.cloudera-hive-jdbc.revision}" changing="true"/>
+
+    <dependency org="org.apache.hbase" name="hbase" rev="${dependency.apache-hbase.revision}" transitive="false" />
+    <dependency org="org.apache.zookeeper" name="zookeeper" rev="${dependency.apache-zookeeper.revision}" transitive="false" />
+    <dependency org="org.apache.sqoop" name="sqoop" rev="${dependency.apache-sqoop.revision}" changing="true" transitive="false"/>
+    <dependency org="org.apache.pig" name="pig" rev="${dependency.pig.revision}" transitive="false" />
+
+    <dependency conf="test->default" org="junit" name="junit" rev="4.5"/>
+    <dependency conf="test->default" org="org.safehaus.jug" name="jug-lgpl" rev="2.0.0" />
+
+    <!-- Exclude log4j from default libraries - it's brought in transitively through many of the Hadoop dependencies and should not be included -->
+    <exclude org="log4j" module="log4j" conf="default" />
+    <!-- Exclude antlr. Hive brings in a version that's not compatible with Pig. -->
+    <exclude org="org.antlr" conf="default" />
+  </dependencies>
+</ivy-module>
