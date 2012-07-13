@@ -54,10 +54,10 @@ import org.w3c.dom.Node;
  */
 @Step(id = "SSTableOutput", image = "Cassandra.png", name = "SSTable Output", description = "Writes to a filesystem directory as a Cassandra SSTable", categoryDescription = "Big Data")
 public class SSTableOutputMeta extends BaseStepMeta implements
-StepMetaInterface {
-  
+    StepMetaInterface {
+
   protected static final Class<?> PKG = SSTableOutputMeta.class;
-  
+
   /** The path to the yaml file */
   protected String m_yamlPath;
 
@@ -75,7 +75,7 @@ StepMetaInterface {
 
   /** Size (MB) of write buffer */
   protected String bufferSize = "16";
-  
+
   /**
    * Get the path the the yaml file
    * 
@@ -84,7 +84,7 @@ StepMetaInterface {
   public String getYamlPath() {
     return m_yamlPath;
   }
-  
+
   /**
    * Set the path the the yaml file
    * 
@@ -115,8 +115,7 @@ StepMetaInterface {
   /**
    * Set the keyspace (db) to use
    * 
-   * @param keyspace
-   *            the keyspace to use
+   * @param keyspace the keyspace to use
    */
   public void setCassandraKeyspace(String keyspace) {
     cassandraKeyspace = keyspace;
@@ -134,8 +133,7 @@ StepMetaInterface {
   /**
    * Set the column family (table) to write to
    * 
-   * @param colFam
-   *            the name of the column family to write to
+   * @param colFam the name of the column family to write to
    */
   public void setColumnFamilyName(String colFam) {
     columnFamily = colFam;
@@ -153,8 +151,7 @@ StepMetaInterface {
   /**
    * Set the incoming field to use as the key for inserts
    * 
-   * @param keyField
-   *            the name of the incoming field to use as the key
+   * @param keyField the name of the incoming field to use as the key
    */
   public void setKeyField(String keyField) {
     this.keyField = keyField;
@@ -193,9 +190,10 @@ StepMetaInterface {
     return true;
   }
 
+  @Override
   public String getXML() {
     StringBuffer retval = new StringBuffer();
-    
+
     if (!Const.isEmpty(m_yamlPath)) {
       retval.append("\n    ").append(
           XMLHandler.addTagValue("yaml_path", m_yamlPath));
@@ -208,14 +206,12 @@ StepMetaInterface {
 
     if (!Const.isEmpty(cassandraKeyspace)) {
       retval.append("\n    ").append(
-          XMLHandler.addTagValue("cassandra_keyspace",
-              cassandraKeyspace));
+          XMLHandler.addTagValue("cassandra_keyspace", cassandraKeyspace));
     }
 
     if (!Const.isEmpty(cassandraKeyspace)) {
       retval.append("\n    ").append(
-          XMLHandler.addTagValue("cassandra_keyspace",
-              cassandraKeyspace));
+          XMLHandler.addTagValue("cassandra_keyspace", cassandraKeyspace));
     }
 
     if (!Const.isEmpty(columnFamily)) {
@@ -240,8 +236,7 @@ StepMetaInterface {
       Map<String, Counter> counters) throws KettleXMLException {
     m_yamlPath = XMLHandler.getTagValue(stepnode, "yaml_path");
     directory = XMLHandler.getTagValue(stepnode, "output_directory");
-    cassandraKeyspace = XMLHandler.getTagValue(stepnode,
-    "cassandra_keyspace");
+    cassandraKeyspace = XMLHandler.getTagValue(stepnode, "cassandra_keyspace");
     columnFamily = XMLHandler.getTagValue(stepnode, "column_family");
     keyField = XMLHandler.getTagValue(stepnode, "key_field");
     bufferSize = XMLHandler.getTagValue(stepnode, "buffer_size_mb");
@@ -249,11 +244,11 @@ StepMetaInterface {
 
   public void readRep(Repository rep, ObjectId id_step,
       List<DatabaseMeta> databases, Map<String, Counter> counters)
-  throws KettleException {
+      throws KettleException {
     m_yamlPath = rep.getStepAttributeString(id_step, 0, "yaml_path");
     directory = rep.getStepAttributeString(id_step, 0, "output_directory");
     cassandraKeyspace = rep.getStepAttributeString(id_step, 0,
-    "cassandra_keyspace");
+        "cassandra_keyspace");
     columnFamily = rep.getStepAttributeString(id_step, 0, "column_family");
     keyField = rep.getStepAttributeString(id_step, 0, "key_field");
     bufferSize = rep.getStepAttributeString(id_step, 0, "buffer_size_mb");
@@ -263,18 +258,17 @@ StepMetaInterface {
       ObjectId id_step) throws KettleException {
 
     if (!Const.isEmpty(m_yamlPath)) {
-      rep.saveStepAttribute(id_transformation, id_step,
-          "yaml_path", m_yamlPath);
+      rep.saveStepAttribute(id_transformation, id_step, "yaml_path", m_yamlPath);
     }
-    
+
     if (!Const.isEmpty(directory)) {
-      rep.saveStepAttribute(id_transformation, id_step,
-          "output_directory", directory);
+      rep.saveStepAttribute(id_transformation, id_step, "output_directory",
+          directory);
     }
 
     if (!Const.isEmpty(cassandraKeyspace)) {
-      rep.saveStepAttribute(id_transformation, id_step,
-          "cassandra_keyspace", cassandraKeyspace);
+      rep.saveStepAttribute(id_transformation, id_step, "cassandra_keyspace",
+          cassandraKeyspace);
     }
 
     if (!Const.isEmpty(columnFamily)) {
@@ -283,8 +277,7 @@ StepMetaInterface {
     }
 
     if (!Const.isEmpty(keyField)) {
-      rep.saveStepAttribute(id_transformation, id_step, "key_field",
-          keyField);
+      rep.saveStepAttribute(id_transformation, id_step, "key_field", keyField);
     }
 
     if (!Const.isEmpty(bufferSize)) {
@@ -306,8 +299,8 @@ StepMetaInterface {
       remarks.add(cr);
     } else {
       cr = new CheckResult(CheckResult.TYPE_RESULT_OK,
-          "Step is connected to previous one, receiving "
-          + prev.size() + " fields", stepMeta);
+          "Step is connected to previous one, receiving " + prev.size()
+              + " fields", stepMeta);
       remarks.add(cr);
     }
 
@@ -324,11 +317,11 @@ StepMetaInterface {
   }
 
   public StepInterface getStep(StepMeta stepMeta,
-      StepDataInterface stepDataInterface, int copyNr,
-      TransMeta transMeta, Trans trans) {
+      StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
+      Trans trans) {
 
-    return new SSTableOutput(stepMeta, stepDataInterface, copyNr,
-        transMeta, trans);
+    return new SSTableOutput(stepMeta, stepDataInterface, copyNr, transMeta,
+        trans);
   }
 
   public StepDataInterface getStepData() {
@@ -340,10 +333,13 @@ StepMetaInterface {
     bufferSize = "16";
     columnFamily = "";
   }
-  
-  /* (non-Javadoc)
+
+  /*
+   * (non-Javadoc)
+   * 
    * @see org.pentaho.di.trans.step.BaseStepMeta#getDialogClassName()
    */
+  @Override
   public String getDialogClassName() {
     return "org.pentaho.di.trans.steps.cassandrasstableoutput.SSTableOutputDialog";
   }

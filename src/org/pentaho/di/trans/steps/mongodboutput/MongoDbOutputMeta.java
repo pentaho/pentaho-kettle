@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -45,71 +44,71 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
 
 /**
- * Class providing an output step for writing data to a MongoDB collection. Supports
- * insert, truncate, upsert, multi-update (update all matching docs) and modifier 
- * update (update only certain fields) operations. Can also create and drop indexes
- * based on one or more fields.
+ * Class providing an output step for writing data to a MongoDB collection.
+ * Supports insert, truncate, upsert, multi-update (update all matching docs)
+ * and modifier update (update only certain fields) operations. Can also create
+ * and drop indexes based on one or more fields.
  * 
  * @author Mark Hall (mhall{[at]}pentaho{[dot]}com)
- * @version $Revision$
  */
-@Step(id = "MongoDbOutput", image = "MongoDB.png", name = "MongoDb Output", description="Writes to a Mongo DB collection", categoryDescription="Big Data")
+@Step(id = "MongoDbOutput", image = "MongoDB.png", name = "MongoDb Output", description = "Writes to a Mongo DB collection", categoryDescription = "Big Data")
 public class MongoDbOutputMeta extends BaseStepMeta implements
     StepMetaInterface {
-  
-  private static Class<?> PKG = MongoDbOutputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
-  
+
+  private static Class<?> PKG = MongoDbOutputMeta.class; // for i18n purposes,
+                                                         // needed by
+                                                         // Translator2!!
+                                                         // $NON-NLS-1$
+
   /**
    * Class encapsulating paths to document fields
    * 
    * @author Mark Hall (mhall{[at]}pentaho{[dot]}com)
    */
   public static class MongoField {
-    
+
     /** Incoming Kettle field name */
     public String m_incomingFieldName = "";
-    
-    /** 
+
+    /**
      * Dot separated path to the corresponding mongo field
      */
     public String m_mongoDocPath = "";
-    
+
     protected List<String> m_pathList;
     protected List<String> m_tempPathList;
-    
+
     /**
      * Whether to use the incoming field name as the mongo field key name. If
      * false then the user must supply the terminating field/key name.
      */
     public boolean m_useIncomingFieldNameAsMongoFieldName;
-    
+
     /** Whether this field is used in the query for an update operation */
     public boolean m_updateMatchField;
-    
-    /** 
-     * Ignored if not doing a modifier update since all
-     * mongo paths are involved in a standard upsert. If null/empty then
-     * this field is not being updated in the modifier update case.
+
+    /**
+     * Ignored if not doing a modifier update since all mongo paths are involved
+     * in a standard upsert. If null/empty then this field is not being updated
+     * in the modifier update case.
      * 
-     * $set
-     * $inc
-     * $push - append value to array (or set to [value] if field doesn't exist)
+     * $set $inc $push - append value to array (or set to [value] if field
+     * doesn't exist)
      * 
      * (support any others?)
      */
     public String m_modifierUpdateOperation = "N/A";
-    
+
     public void init(VariableSpace vars) {
       String path = vars.environmentSubstitute(m_mongoDocPath);
       m_pathList = new ArrayList<String>();
-      
+
       if (!Const.isEmpty(path)) {
         String[] parts = path.split("\\.");
         for (String p : parts) {
@@ -118,7 +117,7 @@ public class MongoDbOutputMeta extends BaseStepMeta implements
       }
       m_tempPathList = new ArrayList<String>(m_pathList);
     }
-    
+
     public void reset() {
       if (m_tempPathList.size() > 0) {
         m_tempPathList.clear();
@@ -126,90 +125,93 @@ public class MongoDbOutputMeta extends BaseStepMeta implements
       m_tempPathList.addAll(m_pathList);
     }
   }
-  
+
   /**
    * Class encapsulating index definitions
    * 
    * @author Mark Hall (mhall{[at]}pentaho{[dot]}com)
    */
   public static class MongoIndex {
-    
+
     /**
-     * Dot notation for accessing a fields - e.g. person.address.street. Can also
-     * specify entire embedded documents as an index (rather than a primitive key) -
-     * e.g. person.address.
+     * Dot notation for accessing a fields - e.g. person.address.street. Can
+     * also specify entire embedded documents as an index (rather than a
+     * primitive key) - e.g. person.address.
      * 
-     * Multiple fields are comma-separated followed by an optional "direction" indicator
-     * for the index (1 or -1). If omitted, direction is assumed to be 1.
+     * Multiple fields are comma-separated followed by an optional "direction"
+     * indicator for the index (1 or -1). If omitted, direction is assumed to be
+     * 1.
      */
     public String m_pathToFields = "";
-    
+
     /** whether to drop this index - default is create */
     public boolean m_drop;
-    
-    // other options unique, sparse    
+
+    // other options unique, sparse
     public boolean m_unique;
     public boolean m_sparse;
-    
+
+    @Override
     public String toString() {
       StringBuffer buff = new StringBuffer();
-      buff.append(m_pathToFields + " (unique = " 
+      buff.append(m_pathToFields + " (unique = "
           + new Boolean(m_unique).toString() + " sparse = "
           + new Boolean(m_sparse).toString() + ")");
-      
+
       return buff.toString();
     }
   }
-  
+
   /** Hostname/IP address of mongo server */
   protected String m_hostname = "localhost";
-  
-  /** Port that mongo is listening on */ 
+
+  /** Port that mongo is listening on */
   protected String m_port = "27017";
-  
+
   /** The DB to use */
   protected String m_dbName;
-  
+
   /** The collection to use */
   protected String m_collection;
-  
+
   /** Whether to truncate the collection */
   protected boolean m_truncate;
-  
+
   /** Username for authentication */
   protected String m_username;
-  
+
   /** Password for authentication */
   protected String m_password;
-  
-  /** True if upserts are to be performed */ 
+
+  /** True if upserts are to be performed */
   protected boolean m_upsert;
-  
-  /** whether to update all records that match during an upsert or just the first */ 
+
+  /**
+   * whether to update all records that match during an upsert or just the first
+   */
   protected boolean m_multi;
-  
-  /** 
-   * Modifier update involves updating only some fields and is
-   * efficient because of low network overhead. Is also particularly
-   * efficient for $incr operations since the queried object does
-   * not have to be returned in order to increment the field and then
-   * saved again.
+
+  /**
+   * Modifier update involves updating only some fields and is efficient because
+   * of low network overhead. Is also particularly efficient for $incr
+   * operations since the queried object does not have to be returned in order
+   * to increment the field and then saved again.
    * 
-   * If modifier update is false, then the standard update/insert operation
-   * is performed which involves replacing the matched object with
-   * a new object involving all the user-defined mongo paths
+   * If modifier update is false, then the standard update/insert operation is
+   * performed which involves replacing the matched object with a new object
+   * involving all the user-defined mongo paths
    */
   protected boolean m_modifierUpdate;
-  
+
   /** The batch size for inserts */
   protected String m_batchInsertSize = "100";
-  
+
   /** The list of paths to document fields for incoming kettle values */
   protected List<MongoField> m_mongoFields;
-  
+
   /** The list of index definitions (if any) */
   protected List<MongoIndex> m_mongoIndexes;
-  
+
   public void setDefault() {
     m_hostname = "localhost";
     m_port = "27017";
@@ -220,7 +222,7 @@ public class MongoDbOutputMeta extends BaseStepMeta implements
     m_truncate = false;
     m_batchInsertSize = "100";
   }
-  
+
   /**
    * Set the list of document paths
    * 
@@ -229,7 +231,7 @@ public class MongoDbOutputMeta extends BaseStepMeta implements
   public void setMongoFields(List<MongoField> mongoFields) {
     m_mongoFields = mongoFields;
   }
-  
+
   /**
    * Get the list of document paths
    * 
@@ -238,7 +240,7 @@ public class MongoDbOutputMeta extends BaseStepMeta implements
   public List<MongoField> getMongoFields() {
     return m_mongoFields;
   }
-  
+
   /**
    * Set the list of document indexes for creation/dropping
    * 
@@ -247,7 +249,7 @@ public class MongoDbOutputMeta extends BaseStepMeta implements
   public void setMongoIndexes(List<MongoIndex> mongoIndexes) {
     m_mongoIndexes = mongoIndexes;
   }
-  
+
   /**
    * Get the list of document indexes for creation/dropping
    * 
@@ -256,7 +258,7 @@ public class MongoDbOutputMeta extends BaseStepMeta implements
   public List<MongoIndex> getMongoIndexes() {
     return m_mongoIndexes;
   }
-  
+
   /**
    * Set the hostname of the mongo server
    * 
@@ -265,7 +267,7 @@ public class MongoDbOutputMeta extends BaseStepMeta implements
   public void setHostname(String host) {
     m_hostname = host;
   }
-  
+
   /**
    * Get the hostname of the mongo server
    * 
@@ -274,7 +276,7 @@ public class MongoDbOutputMeta extends BaseStepMeta implements
   public String getHostname() {
     return m_hostname;
   }
-  
+
   /**
    * Set the port that the server is listening on
    * 
@@ -283,7 +285,7 @@ public class MongoDbOutputMeta extends BaseStepMeta implements
   public void setPort(String port) {
     m_port = port;
   }
-  
+
   /**
    * Get the port that the server is listening on
    * 
@@ -292,7 +294,7 @@ public class MongoDbOutputMeta extends BaseStepMeta implements
   public String getPort() {
     return m_port;
   }
-  
+
   /**
    * Set the database name to use
    * 
@@ -301,7 +303,7 @@ public class MongoDbOutputMeta extends BaseStepMeta implements
   public void setDBName(String db) {
     m_dbName = db;
   }
-  
+
   /**
    * Get the database name to use
    * 
@@ -310,7 +312,7 @@ public class MongoDbOutputMeta extends BaseStepMeta implements
   public String getDBName() {
     return m_dbName;
   }
-  
+
   /**
    * Set the collection to use
    * 
@@ -319,7 +321,7 @@ public class MongoDbOutputMeta extends BaseStepMeta implements
   public void setCollection(String collection) {
     m_collection = collection;
   }
-  
+
   /**
    * Get the collection to use
    * 
@@ -328,7 +330,7 @@ public class MongoDbOutputMeta extends BaseStepMeta implements
   public String getCollection() {
     return m_collection;
   }
-  
+
   /**
    * Set the username to authenticate with
    * 
@@ -337,7 +339,7 @@ public class MongoDbOutputMeta extends BaseStepMeta implements
   public void setUsername(String username) {
     m_username = username;
   }
-  
+
   /**
    * Get the username to authenticate with
    * 
@@ -346,7 +348,7 @@ public class MongoDbOutputMeta extends BaseStepMeta implements
   public String getUsername() {
     return m_username;
   }
-  
+
   /**
    * Set the password to authenticate with
    * 
@@ -355,7 +357,7 @@ public class MongoDbOutputMeta extends BaseStepMeta implements
   public void setPassword(String password) {
     m_password = password;
   }
-  
+
   /**
    * Get the password to authenticate with
    * 
@@ -364,7 +366,7 @@ public class MongoDbOutputMeta extends BaseStepMeta implements
   public String getPassword() {
     return m_password;
   }
-  
+
   /**
    * Set whether to upsert rather than insert
    * 
@@ -373,7 +375,7 @@ public class MongoDbOutputMeta extends BaseStepMeta implements
   public void setUpsert(boolean upsert) {
     m_upsert = upsert;
   }
-  
+
   /**
    * Get whether to upsert rather than insert
    * 
@@ -382,17 +384,18 @@ public class MongoDbOutputMeta extends BaseStepMeta implements
   public boolean getUpsert() {
     return m_upsert;
   }
-  
+
   /**
    * Set whether the upsert should update all matching records rather than just
    * the first.
    * 
-   * @param multi true if all matching records get updated when each row is upserted
+   * @param multi true if all matching records get updated when each row is
+   *          upserted
    */
   public void setMulti(boolean multi) {
     m_multi = multi;
   }
-  
+
   /**
    * Get whether the upsert should update all matching records rather than just
    * the first.
@@ -402,47 +405,47 @@ public class MongoDbOutputMeta extends BaseStepMeta implements
   public boolean getMulti() {
     return m_multi;
   }
-  
+
   /**
    * Set whether the upsert operation is a modifier update - i.e where only
-   * specified fields in each document get modified rather than a whole document replace.
+   * specified fields in each document get modified rather than a whole document
+   * replace.
    * 
    * @param u true if the upsert operation is to be a modifier update
    */
   public void setModifierUpdate(boolean u) {
     m_modifierUpdate = u;
   }
-  
+
   /**
    * Get whether the upsert operation is a modifier update - i.e where only
-   * specified fields in each document get modified rather than a whole document replace.
+   * specified fields in each document get modified rather than a whole document
+   * replace.
    * 
    * @return true if the upsert operation is to be a modifier update
    */
   public boolean getModifierUpdate() {
     return m_modifierUpdate;
   }
-  
+
   /**
    * Set whether to truncate the collection before inserting
    * 
-   * @param truncate true if the all records in the collection are to be
-   * deleted
+   * @param truncate true if the all records in the collection are to be deleted
    */
   public void setTruncate(boolean truncate) {
     m_truncate = truncate;
   }
-  
+
   /**
    * Get whether to truncate the collection before inserting
    * 
-   * @return true if the all records in the collection are to be
-   * deleted
+   * @return true if the all records in the collection are to be deleted
    */
   public boolean getTruncate() {
     return m_truncate;
   }
-  
+
   /**
    * Get the batch insert size
    * 
@@ -451,7 +454,7 @@ public class MongoDbOutputMeta extends BaseStepMeta implements
   public String getBatchInsertSize() {
     return m_batchInsertSize;
   }
-  
+
   /**
    * Set the batch insert size
    * 
@@ -462,9 +465,9 @@ public class MongoDbOutputMeta extends BaseStepMeta implements
   }
 
   public void check(List<CheckResultInterface> remarks, TransMeta transMeta,
-      StepMeta stepMeta, RowMetaInterface prev, String[] input, String[] output,
-      RowMetaInterface info) {
-    
+      StepMeta stepMeta, RowMetaInterface prev, String[] input,
+      String[] output, RowMetaInterface info) {
+
     CheckResult cr;
 
     if ((prev == null) || (prev.size() == 0)) {
@@ -473,8 +476,8 @@ public class MongoDbOutputMeta extends BaseStepMeta implements
       remarks.add(cr);
     } else {
       cr = new CheckResult(CheckResult.TYPE_RESULT_OK,
-          "Step is connected to previous one, receiving " + prev.size() +
-          " fields", stepMeta);
+          "Step is connected to previous one, receiving " + prev.size()
+              + " fields", stepMeta);
       remarks.add(cr);
     }
 
@@ -494,92 +497,105 @@ public class MongoDbOutputMeta extends BaseStepMeta implements
   public StepInterface getStep(StepMeta stepMeta,
       StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta,
       Trans trans) {
-    
-    return new MongoDbOutput(stepMeta, stepDataInterface, copyNr,
-        transMeta, trans);
+
+    return new MongoDbOutput(stepMeta, stepDataInterface, copyNr, transMeta,
+        trans);
   }
 
   public StepDataInterface getStepData() {
     return new MongoDbOutputData();
   }
-  
+
+  @Override
   public String getXML() {
     StringBuffer retval = new StringBuffer();
-    
+
     if (!Const.isEmpty(m_hostname)) {
-      retval.append("\n    ").append(XMLHandler.addTagValue("mongo_host", 
-          m_hostname));
+      retval.append("\n    ").append(
+          XMLHandler.addTagValue("mongo_host", m_hostname));
     }
     if (!Const.isEmpty(m_port)) {
-      retval.append("\n    ").append(XMLHandler.addTagValue("mongo_port", 
-          m_port));            
-    }    
+      retval.append("\n    ").append(
+          XMLHandler.addTagValue("mongo_port", m_port));
+    }
     if (!Const.isEmpty(m_username)) {
-      retval.append("\n    ").append(XMLHandler.addTagValue("mongo_user", 
-          m_username));
+      retval.append("\n    ").append(
+          XMLHandler.addTagValue("mongo_user", m_username));
     }
     if (!Const.isEmpty(m_password)) {
-      retval.append("\n    ").append(XMLHandler.addTagValue("mongo_password", 
-          Encr.encryptPasswordIfNotUsingVariables(m_password)));
+      retval.append("\n    ").append(
+          XMLHandler.addTagValue("mongo_password",
+              Encr.encryptPasswordIfNotUsingVariables(m_password)));
     }
     if (!Const.isEmpty(m_dbName)) {
-      retval.append("\n    ").append(XMLHandler.addTagValue("mongo_db", 
-          m_dbName));
+      retval.append("\n    ").append(
+          XMLHandler.addTagValue("mongo_db", m_dbName));
     }
     if (!Const.isEmpty(m_collection)) {
-      retval.append("\n    ").append(XMLHandler.addTagValue("mongo_collection", 
-          m_collection));
+      retval.append("\n    ").append(
+          XMLHandler.addTagValue("mongo_collection", m_collection));
     }
     if (!Const.isEmpty(m_batchInsertSize)) {
-      retval.append("\n    ").append(XMLHandler.addTagValue("batch_insert_size", 
-          m_batchInsertSize));
-    }    
-    
-    retval.append("\n    ").append(XMLHandler.
-        addTagValue("truncate", m_truncate));
-    retval.append("\n    ").append(XMLHandler.
-        addTagValue("upsert", m_upsert));
-    retval.append("\n    ").append(XMLHandler.
-        addTagValue("multi", m_multi));
-    retval.append("\n    ").append(XMLHandler.
-        addTagValue("modifier_update", m_modifierUpdate));
-    
+      retval.append("\n    ").append(
+          XMLHandler.addTagValue("batch_insert_size", m_batchInsertSize));
+    }
+
+    retval.append("\n    ").append(
+        XMLHandler.addTagValue("truncate", m_truncate));
+    retval.append("\n    ").append(XMLHandler.addTagValue("upsert", m_upsert));
+    retval.append("\n    ").append(XMLHandler.addTagValue("multi", m_multi));
+    retval.append("\n    ").append(
+        XMLHandler.addTagValue("modifier_update", m_modifierUpdate));
+
     if (m_mongoFields != null && m_mongoFields.size() > 0) {
       retval.append("\n    ").append(XMLHandler.openTag("mongo_fields"));
-      
+
       for (MongoField field : m_mongoFields) {
         retval.append("\n      ").append(XMLHandler.openTag("mongo_field"));
-        
-        retval.append("\n         ").append(XMLHandler.addTagValue("incoming_field_name", field.m_incomingFieldName));
-        retval.append("\n         ").append(XMLHandler.addTagValue("mongo_doc_path", field.m_mongoDocPath));
-        retval.append("\n         ").append(XMLHandler.addTagValue("use_incoming_field_name_as_mongo_field_name", 
-            field.m_useIncomingFieldNameAsMongoFieldName));
-        retval.append("\n         ").append(XMLHandler.addTagValue("update_match_field", field.m_updateMatchField));
-        retval.append("\n         ").append(XMLHandler.addTagValue("modifier_update_operation", field.m_modifierUpdateOperation));
-        
-        retval.append("\n      ").append(XMLHandler.closeTag("mongo_field"));        
+
+        retval.append("\n         ").append(
+            XMLHandler.addTagValue("incoming_field_name",
+                field.m_incomingFieldName));
+        retval.append("\n         ").append(
+            XMLHandler.addTagValue("mongo_doc_path", field.m_mongoDocPath));
+        retval.append("\n         ").append(
+            XMLHandler.addTagValue(
+                "use_incoming_field_name_as_mongo_field_name",
+                field.m_useIncomingFieldNameAsMongoFieldName));
+        retval.append("\n         ").append(
+            XMLHandler.addTagValue("update_match_field",
+                field.m_updateMatchField));
+        retval.append("\n         ").append(
+            XMLHandler.addTagValue("modifier_update_operation",
+                field.m_modifierUpdateOperation));
+
+        retval.append("\n      ").append(XMLHandler.closeTag("mongo_field"));
       }
-      
+
       retval.append("\n    ").append(XMLHandler.closeTag("mongo_fields"));
     }
-    
+
     if (m_mongoIndexes != null && m_mongoIndexes.size() > 0) {
       retval.append("\n    ").append(XMLHandler.openTag("mongo_indexes"));
-      
+
       for (MongoIndex index : m_mongoIndexes) {
         retval.append("\n      ").append(XMLHandler.openTag("mongo_index"));
-        
-        retval.append("\n         ").append(XMLHandler.addTagValue("path_to_fields", index.m_pathToFields));
-        retval.append("\n         ").append(XMLHandler.addTagValue("drop", index.m_drop));
-        retval.append("\n         ").append(XMLHandler.addTagValue("unique", index.m_unique));
-        retval.append("\n         ").append(XMLHandler.addTagValue("sparse", index.m_sparse));
-        
+
+        retval.append("\n         ").append(
+            XMLHandler.addTagValue("path_to_fields", index.m_pathToFields));
+        retval.append("\n         ").append(
+            XMLHandler.addTagValue("drop", index.m_drop));
+        retval.append("\n         ").append(
+            XMLHandler.addTagValue("unique", index.m_unique));
+        retval.append("\n         ").append(
+            XMLHandler.addTagValue("sparse", index.m_sparse));
+
         retval.append("\n      ").append(XMLHandler.closeTag("mongo_index"));
       }
-      
+
       retval.append("\n    ").append(XMLHandler.closeTag("mongo_indexes"));
     }
-    
+
     return retval.toString();
   }
 
@@ -593,59 +609,61 @@ public class MongoDbOutputMeta extends BaseStepMeta implements
     m_dbName = XMLHandler.getTagValue(stepnode, "mongo_db");
     m_collection = XMLHandler.getTagValue(stepnode, "mongo_collection");
     m_batchInsertSize = XMLHandler.getTagValue(stepnode, "batch_insert_size");
-    
-    m_truncate = XMLHandler.getTagValue(stepnode, "truncate").
-      equalsIgnoreCase("Y");
-    m_upsert = XMLHandler.getTagValue(stepnode, "upsert").
-      equalsIgnoreCase("Y");
-    m_multi = XMLHandler.getTagValue(stepnode, "multi").
-      equalsIgnoreCase("Y");
-    m_modifierUpdate = XMLHandler.getTagValue(stepnode, "modifier_update").
-      equalsIgnoreCase("Y");
-    
+
+    m_truncate = XMLHandler.getTagValue(stepnode, "truncate").equalsIgnoreCase(
+        "Y");
+    m_upsert = XMLHandler.getTagValue(stepnode, "upsert").equalsIgnoreCase("Y");
+    m_multi = XMLHandler.getTagValue(stepnode, "multi").equalsIgnoreCase("Y");
+    m_modifierUpdate = XMLHandler.getTagValue(stepnode, "modifier_update")
+        .equalsIgnoreCase("Y");
+
     Node fields = XMLHandler.getSubNode(stepnode, "mongo_fields");
     if (fields != null && XMLHandler.countNodes(fields, "mongo_field") > 0) {
-      int nrfields = XMLHandler.countNodes(fields, "mongo_field");      
+      int nrfields = XMLHandler.countNodes(fields, "mongo_field");
       m_mongoFields = new ArrayList<MongoField>();
-      
+
       for (int i = 0; i < nrfields; i++) {
         Node fieldNode = XMLHandler.getSubNodeByNr(fields, "mongo_field", i);
-        
+
         MongoField newField = new MongoField();
-        newField.m_incomingFieldName = XMLHandler.getTagValue(fieldNode, "incoming_field_name");
-        newField.m_mongoDocPath = XMLHandler.getTagValue(fieldNode, "mongo_doc_path");
-        newField.m_useIncomingFieldNameAsMongoFieldName = 
-          XMLHandler.getTagValue(fieldNode, "use_incoming_field_name_as_mongo_field_name").
-            equalsIgnoreCase("Y");
-        newField.m_updateMatchField = 
-          XMLHandler.getTagValue(fieldNode, "update_match_field").equalsIgnoreCase("Y");
-        
-        newField.m_modifierUpdateOperation = XMLHandler.getTagValue(fieldNode, 
+        newField.m_incomingFieldName = XMLHandler.getTagValue(fieldNode,
+            "incoming_field_name");
+        newField.m_mongoDocPath = XMLHandler.getTagValue(fieldNode,
+            "mongo_doc_path");
+        newField.m_useIncomingFieldNameAsMongoFieldName = XMLHandler
+            .getTagValue(fieldNode,
+                "use_incoming_field_name_as_mongo_field_name")
+            .equalsIgnoreCase("Y");
+        newField.m_updateMatchField = XMLHandler.getTagValue(fieldNode,
+            "update_match_field").equalsIgnoreCase("Y");
+
+        newField.m_modifierUpdateOperation = XMLHandler.getTagValue(fieldNode,
             "modifier_update_operation");
-        
+
         m_mongoFields.add(newField);
       }
     }
-    
+
     fields = XMLHandler.getSubNode(stepnode, "mongo_indexes");
     if (fields != null && XMLHandler.countNodes(fields, "mongo_index") > 0) {
       int nrfields = XMLHandler.countNodes(fields, "mongo_index");
-      
+
       m_mongoIndexes = new ArrayList<MongoIndex>();
-      
+
       for (int i = 0; i < nrfields; i++) {
         Node fieldNode = XMLHandler.getSubNodeByNr(fields, "mongo_index", i);
-        
+
         MongoIndex newIndex = new MongoIndex();
-        
-        newIndex.m_pathToFields = XMLHandler.getTagValue(fieldNode, "path_to_fields");
-        newIndex.m_drop = 
-          XMLHandler.getTagValue(fieldNode, "drop").equalsIgnoreCase("Y");
-        newIndex.m_unique = 
-          XMLHandler.getTagValue(fieldNode, "unique").equalsIgnoreCase("Y");
-        newIndex.m_sparse = 
-          XMLHandler.getTagValue(fieldNode, "sparse").equalsIgnoreCase("Y");
-        
+
+        newIndex.m_pathToFields = XMLHandler.getTagValue(fieldNode,
+            "path_to_fields");
+        newIndex.m_drop = XMLHandler.getTagValue(fieldNode, "drop")
+            .equalsIgnoreCase("Y");
+        newIndex.m_unique = XMLHandler.getTagValue(fieldNode, "unique")
+            .equalsIgnoreCase("Y");
+        newIndex.m_sparse = XMLHandler.getTagValue(fieldNode, "sparse")
+            .equalsIgnoreCase("Y");
+
         m_mongoIndexes.add(newIndex);
       }
     }
@@ -654,60 +672,60 @@ public class MongoDbOutputMeta extends BaseStepMeta implements
   public void readRep(Repository rep, ObjectId id_step,
       List<DatabaseMeta> databases, Map<String, Counter> counters)
       throws KettleException {
-    
+
     m_hostname = rep.getStepAttributeString(id_step, 0, "mongo_host");
     m_port = rep.getStepAttributeString(id_step, 0, "mongo_port");
     m_username = rep.getStepAttributeString(id_step, 0, "mongo_user");
     m_password = rep.getStepAttributeString(id_step, 0, "mongo_password");
     m_dbName = rep.getStepAttributeString(id_step, 0, "mongo_db");
     m_collection = rep.getStepAttributeString(id_step, 0, "mongo_collection");
-    m_batchInsertSize = rep.getStepAttributeString(id_step, 0, "batch_insert_size");
-    
+    m_batchInsertSize = rep.getStepAttributeString(id_step, 0,
+        "batch_insert_size");
+
     m_truncate = rep.getStepAttributeBoolean(id_step, 0, "truncate");
     m_upsert = rep.getStepAttributeBoolean(id_step, 0, "upsert");
     m_multi = rep.getStepAttributeBoolean(id_step, 0, "multi");
-    m_modifierUpdate = rep.getStepAttributeBoolean(id_step, 0, "modifier_update");
-    
+    m_modifierUpdate = rep.getStepAttributeBoolean(id_step, 0,
+        "modifier_update");
+
     int nrfields = rep.countNrStepAttributes(id_step, "incoming_field_name");
-    
+
     if (nrfields > 0) {
       m_mongoFields = new ArrayList<MongoField>();
-      
+
       for (int i = 0; i < nrfields; i++) {
         MongoField newField = new MongoField();
-        
-        newField.m_incomingFieldName = 
-          rep.getStepAttributeString(id_step, i, "incoming_field_name");
-        newField.m_mongoDocPath = 
-          rep.getStepAttributeString(id_step, i, "mongo_doc_path");
-        
-        newField.m_useIncomingFieldNameAsMongoFieldName = 
-          rep.getStepAttributeBoolean(id_step, i, "use_incoming_field_name_as_mongo_field_name");
-        newField.m_updateMatchField = 
-          rep.getStepAttributeBoolean(id_step, i, "update_match_field");
-        newField.m_modifierUpdateOperation = 
-          rep.getStepAttributeString(id_step, i, "modifier_update_operation");
-        
+
+        newField.m_incomingFieldName = rep.getStepAttributeString(id_step, i,
+            "incoming_field_name");
+        newField.m_mongoDocPath = rep.getStepAttributeString(id_step, i,
+            "mongo_doc_path");
+
+        newField.m_useIncomingFieldNameAsMongoFieldName = rep
+            .getStepAttributeBoolean(id_step, i,
+                "use_incoming_field_name_as_mongo_field_name");
+        newField.m_updateMatchField = rep.getStepAttributeBoolean(id_step, i,
+            "update_match_field");
+        newField.m_modifierUpdateOperation = rep.getStepAttributeString(
+            id_step, i, "modifier_update_operation");
+
         m_mongoFields.add(newField);
       }
     }
-    
+
     nrfields = rep.countNrStepAttributes(id_step, "path_to_fields");
     if (nrfields > 0) {
       m_mongoIndexes = new ArrayList<MongoIndex>();
-      
+
       for (int i = 0; i < nrfields; i++) {
         MongoIndex newIndex = new MongoIndex();
-        
-        newIndex.m_pathToFields = 
-          rep.getStepAttributeString(id_step, i, "path_to_fields");
-        newIndex.m_drop = 
-          rep.getStepAttributeBoolean(id_step, i, "drop");
-        newIndex.m_unique = 
-          rep.getStepAttributeBoolean(id_step, i, "unique");
-        newIndex.m_sparse = 
-          rep.getStepAttributeBoolean(id_step, i, "sparse");
-        
+
+        newIndex.m_pathToFields = rep.getStepAttributeString(id_step, i,
+            "path_to_fields");
+        newIndex.m_drop = rep.getStepAttributeBoolean(id_step, i, "drop");
+        newIndex.m_unique = rep.getStepAttributeBoolean(id_step, i, "unique");
+        newIndex.m_sparse = rep.getStepAttributeBoolean(id_step, i, "sparse");
+
         m_mongoIndexes.add(newIndex);
       }
     }
@@ -715,17 +733,16 @@ public class MongoDbOutputMeta extends BaseStepMeta implements
 
   public void saveRep(Repository rep, ObjectId id_transformation,
       ObjectId id_step) throws KettleException {
-    
+
     if (!Const.isEmpty(m_hostname)) {
-      rep.saveStepAttribute(id_transformation, id_step, 0, "mongo_host", 
+      rep.saveStepAttribute(id_transformation, id_step, 0, "mongo_host",
           m_hostname);
     }
     if (!Const.isEmpty(m_port)) {
-      rep.saveStepAttribute(id_transformation, id_step, 0, "mongo_port", 
-          m_port);
+      rep.saveStepAttribute(id_transformation, id_step, 0, "mongo_port", m_port);
     }
     if (!Const.isEmpty(m_username)) {
-      rep.saveStepAttribute(id_transformation, id_step, 0, "mongo_user", 
+      rep.saveStepAttribute(id_transformation, id_step, 0, "mongo_user",
           m_username);
     }
     if (!Const.isEmpty(m_password)) {
@@ -733,75 +750,64 @@ public class MongoDbOutputMeta extends BaseStepMeta implements
           Encr.encryptPasswordIfNotUsingVariables(m_password));
     }
     if (!Const.isEmpty(m_dbName)) {
-      rep.saveStepAttribute(id_transformation, id_step, 0, "mongo_db", 
-          m_dbName);
+      rep.saveStepAttribute(id_transformation, id_step, 0, "mongo_db", m_dbName);
     }
     if (!Const.isEmpty(m_collection)) {
-      rep.saveStepAttribute(id_transformation, id_step, 0, "mongo_collection", 
+      rep.saveStepAttribute(id_transformation, id_step, 0, "mongo_collection",
           m_collection);
     }
     if (!Const.isEmpty(m_batchInsertSize)) {
-      rep.saveStepAttribute(id_transformation, id_step, 0, "batch_insert_size", 
+      rep.saveStepAttribute(id_transformation, id_step, 0, "batch_insert_size",
           m_batchInsertSize);
     }
-    
-    rep.saveStepAttribute(id_transformation, id_step, 0, "truncate",
-        m_truncate);
-    rep.saveStepAttribute(id_transformation, id_step, 0, "upsert",
-        m_upsert);
-    rep.saveStepAttribute(id_transformation, id_step, 0, "multi",
-        m_multi);
+
+    rep.saveStepAttribute(id_transformation, id_step, 0, "truncate", m_truncate);
+    rep.saveStepAttribute(id_transformation, id_step, 0, "upsert", m_upsert);
+    rep.saveStepAttribute(id_transformation, id_step, 0, "multi", m_multi);
     rep.saveStepAttribute(id_transformation, id_step, 0, "modifier_update",
         m_modifierUpdate);
-    
+
     if (m_mongoFields != null && m_mongoFields.size() > 0) {
       for (int i = 0; i < m_mongoFields.size(); i++) {
         MongoField field = m_mongoFields.get(i);
-        
-        rep.saveStepAttribute(id_transformation, id_step, i, "incoming_field_name", 
-            field.m_incomingFieldName);
-        rep.saveStepAttribute(id_transformation, id_step, i, "mongo_doc_path", 
+
+        rep.saveStepAttribute(id_transformation, id_step, i,
+            "incoming_field_name", field.m_incomingFieldName);
+        rep.saveStepAttribute(id_transformation, id_step, i, "mongo_doc_path",
             field.m_mongoDocPath);
-        rep.saveStepAttribute(id_transformation, id_step, i, "use_incoming_field_name_as_mongo_field_name", 
+        rep.saveStepAttribute(id_transformation, id_step, i,
+            "use_incoming_field_name_as_mongo_field_name",
             field.m_useIncomingFieldNameAsMongoFieldName);
-        rep.saveStepAttribute(id_transformation, id_step, i, "update_match_field", 
-            field.m_updateMatchField);
-        rep.saveStepAttribute(id_transformation, id_step, i, "modifier_update_operation", 
-            field.m_modifierUpdateOperation);
+        rep.saveStepAttribute(id_transformation, id_step, i,
+            "update_match_field", field.m_updateMatchField);
+        rep.saveStepAttribute(id_transformation, id_step, i,
+            "modifier_update_operation", field.m_modifierUpdateOperation);
       }
     }
-    
+
     if (m_mongoIndexes != null && m_mongoIndexes.size() > 0) {
       for (int i = 0; i < m_mongoIndexes.size(); i++) {
         MongoIndex mongoIndex = m_mongoIndexes.get(i);
-        
-        rep.saveStepAttribute(id_transformation, id_step, i, "path_to_fields", 
+
+        rep.saveStepAttribute(id_transformation, id_step, i, "path_to_fields",
             mongoIndex.m_pathToFields);
-        rep.saveStepAttribute(id_transformation, id_step, i, "drop", 
+        rep.saveStepAttribute(id_transformation, id_step, i, "drop",
             mongoIndex.m_drop);
-        rep.saveStepAttribute(id_transformation, id_step, i, "unique", 
+        rep.saveStepAttribute(id_transformation, id_step, i, "unique",
             mongoIndex.m_unique);
-        rep.saveStepAttribute(id_transformation, id_step, i, "sparse", 
+        rep.saveStepAttribute(id_transformation, id_step, i, "sparse",
             mongoIndex.m_sparse);
       }
     }
   }
-  
-  /**
-   * Get the UI for this step.
-   *
-   * @param shell a <code>Shell</code> value
-   * @param meta a <code>StepMetaInterface</code> value
-   * @param transMeta a <code>TransMeta</code> value
-   * @param name a <code>String</code> value
-   * @return a <code>StepDialogInterface</code> value
-   */
-  public StepDialogInterface getDialog(Shell shell, 
-                                       StepMetaInterface meta,
-                                       TransMeta transMeta, 
-                                       String name) {
-   
 
-   return new MongoDbOutputDialog(shell, meta, transMeta, name);
+  /*
+   * (non-Javadoc)
+   * 
+   * @see org.pentaho.di.trans.step.BaseStepMeta#getDialogClassName()
+   */
+  @Override
+  public String getDialogClassName() {
+    return "org.pentaho.di.trans.steps.mongodboutput.MongoDbOutputDialog";
   }
 }

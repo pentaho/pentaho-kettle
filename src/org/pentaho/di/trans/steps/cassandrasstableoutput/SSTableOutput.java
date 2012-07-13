@@ -48,9 +48,8 @@ public class SSTableOutput extends BaseStep implements StepInterface {
   protected SSTableOutputMeta m_meta;
   protected SSTableOutputData m_data;
 
-  public SSTableOutput(StepMeta stepMeta,
-      StepDataInterface stepDataInterface, int copyNr,
-      TransMeta transMeta, Trans trans) {
+  public SSTableOutput(StepMeta stepMeta, StepDataInterface stepDataInterface,
+      int copyNr, TransMeta transMeta, Trans trans) {
 
     super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
   }
@@ -81,39 +80,39 @@ public class SSTableOutput extends BaseStep implements StepInterface {
 
   /** List of field names (optimization) */
   private String[] fieldNames;
-  
+
   /** List of field indices (optimization) */
   private int[] fieldValueIndices;
 
   private void initialize(StepMetaInterface smi, StepDataInterface sdi)
-  throws Exception {
+      throws Exception {
     first = false;
     rowsSeen = 0;
     m_meta = (SSTableOutputMeta) smi;
     m_data = (SSTableOutputData) sdi;
     inputMetadata = getInputRowMeta();
-    
+
     String yamlPath = environmentSubstitute(m_meta.getYamlPath());
     if (Const.isEmpty(yamlPath)) {
-      throw new Exception(BaseMessages.getString(SSTableOutputMeta.PKG, 
+      throw new Exception(BaseMessages.getString(SSTableOutputMeta.PKG,
           "SSTableOutput.Error.NoPathToYAML"));
     }
-    logBasic(BaseMessages.getString(SSTableOutputMeta.PKG, 
+    logBasic(BaseMessages.getString(SSTableOutputMeta.PKG,
         "SSTableOutput.Message.YAMLPath", yamlPath));
-    
+
     System.setProperty("cassandra.config", "file:" + yamlPath);
-    
+
     directory = environmentSubstitute(m_meta.getDirectory());
     keyspace = environmentSubstitute(m_meta.getCassandraKeyspace());
     columnFamily = environmentSubstitute(m_meta.getColumnFamilyName());
     keyField = environmentSubstitute(m_meta.getKeyField());
     bufferSize = environmentSubstitute(m_meta.getBufferSize());
     if (Const.isEmpty(columnFamily)) {
-      throw new KettleException(BaseMessages.getString(SSTableOutputMeta.PKG, 
+      throw new KettleException(BaseMessages.getString(SSTableOutputMeta.PKG,
           "SSTableOutput.Error.NoColumnFamilySpecified"));
     }
     if (Const.isEmpty(keyField)) {
-      throw new KettleException(BaseMessages.getString(SSTableOutputMeta.PKG, 
+      throw new KettleException(BaseMessages.getString(SSTableOutputMeta.PKG,
           "SSTableOutput.Error.NoKeySpecified"));
     }
     // what are the fields? where are they?
@@ -135,8 +134,9 @@ public class SSTableOutput extends BaseStep implements StepInterface {
     writer.init();
   }
 
+  @Override
   public boolean processRow(StepMetaInterface smi, StepDataInterface sdi)
-    throws KettleException {
+      throws KettleException {
     // still processing?
     if (isStopped()) {
       return false;
@@ -164,16 +164,18 @@ public class SSTableOutput extends BaseStep implements StepInterface {
       // write it
       writer.processRow(record);
     } catch (Exception e) {
-      logError(BaseMessages.getString(SSTableOutputMeta.PKG, "SSTableOutput.Error.FailedToProcessRow"), e);
+      logError(BaseMessages.getString(SSTableOutputMeta.PKG,
+          "SSTableOutput.Error.FailedToProcessRow"), e);
       // single error row - found it!
       putError(getInputRowMeta(), r, 1L, e.getMessage(), null,
-      "ERR_SSTABLE_OUTPUT_01");
+          "ERR_SSTABLE_OUTPUT_01");
     }
 
     // error will occur after adding it
     return true;
   }
 
+  @Override
   public void setStopped(boolean stopped) {
     super.setStopped(stopped);
     if (stopped) {
@@ -188,7 +190,7 @@ public class SSTableOutput extends BaseStep implements StepInterface {
         writer = null;
       } catch (Exception e) {
         // YUM!!
-        logError(BaseMessages.getString(SSTableOutputMeta.PKG, 
+        logError(BaseMessages.getString(SSTableOutputMeta.PKG,
             "SSTableOutput.Error.FailedToCloseWriter"), e);
       }
     }

@@ -69,35 +69,35 @@ import org.pentaho.hbase.mapping.MappingEditor;
  */
 public class HBaseRowDecoderDialog extends BaseStepDialog implements
     StepDialogInterface {
-  
+
   private static final Class<?> PKG = HBaseRowDecoderMeta.class;
-  
+
   /** various UI bits and pieces for the dialog */
   private Label m_stepnameLabel;
   private Text m_stepnameText;
-  
+
   // The tabs of the dialog
   private CTabFolder m_wTabFolder;
-  private CTabItem m_wConfigTab;    
+  private CTabItem m_wConfigTab;
   private CTabItem m_editorTab;
-  
+
   private CCombo m_incomingKeyCombo;
   private CCombo m_incomingResultCombo;
-  
+
   // mapping editor composite
   private MappingEditor m_mappingEditor;
-  
-  private HBaseRowDecoderMeta m_currentMeta;
-  private HBaseRowDecoderMeta m_originalMeta;
-  
-  public HBaseRowDecoderDialog(Shell parent, Object in, 
-      TransMeta tr, String name) {
-    
-    super(parent, (BaseStepMeta)in, tr, name);
-    
-    m_currentMeta = (HBaseRowDecoderMeta)in;
-    m_originalMeta = (HBaseRowDecoderMeta)m_currentMeta.clone();
-    
+
+  private final HBaseRowDecoderMeta m_currentMeta;
+  private final HBaseRowDecoderMeta m_originalMeta;
+
+  public HBaseRowDecoderDialog(Shell parent, Object in, TransMeta tr,
+      String name) {
+
+    super(parent, (BaseStepMeta) in, tr, name);
+
+    m_currentMeta = (HBaseRowDecoderMeta) in;
+    m_originalMeta = (HBaseRowDecoderMeta) m_currentMeta.clone();
+
   }
 
   public String open() {
@@ -105,18 +105,17 @@ public class HBaseRowDecoderDialog extends BaseStepDialog implements
     Shell parent = getParent();
     Display display = parent.getDisplay();
 
-    shell = 
-      new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MIN | SWT.MAX);
+    shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MIN | SWT.MAX);
 
     props.setLook(shell);
     setShellImage(shell, m_currentMeta);
 
     // used to listen to a text field (m_wStepname)
     ModifyListener lsMod = new ModifyListener() {
-        public void modifyText(ModifyEvent e) {
-          m_currentMeta.setChanged();
-        }
-      };
+      public void modifyText(ModifyEvent e) {
+        m_currentMeta.setChanged();
+      }
+    };
 
     changed = m_currentMeta.hasChanged();
 
@@ -125,15 +124,16 @@ public class HBaseRowDecoderDialog extends BaseStepDialog implements
     formLayout.marginHeight = Const.FORM_MARGIN;
 
     shell.setLayout(formLayout);
-    shell.setText(BaseMessages.getString(PKG, "HBaseRowDecoderDialog.Shell.Title"));
+    shell.setText(BaseMessages.getString(PKG,
+        "HBaseRowDecoderDialog.Shell.Title"));
 
     int middle = props.getMiddlePct();
     int margin = Const.MARGIN;
-    
+
     // Stepname line
     m_stepnameLabel = new Label(shell, SWT.RIGHT);
-    m_stepnameLabel.
-      setText(BaseMessages.getString(PKG, "HBaseRowDecoderDialog.StepName.Label"));
+    m_stepnameLabel.setText(BaseMessages.getString(PKG,
+        "HBaseRowDecoderDialog.StepName.Label"));
     props.setLook(m_stepnameLabel);
 
     FormData fd = new FormData();
@@ -145,42 +145,42 @@ public class HBaseRowDecoderDialog extends BaseStepDialog implements
     m_stepnameText.setText(stepname);
     props.setLook(m_stepnameText);
     m_stepnameText.addModifyListener(lsMod);
-    
+
     // format the text field
     fd = new FormData();
     fd.left = new FormAttachment(middle, 0);
     fd.top = new FormAttachment(0, margin);
     fd.right = new FormAttachment(100, 0);
     m_stepnameText.setLayoutData(fd);
-    
-    
+
     m_wTabFolder = new CTabFolder(shell, SWT.BORDER);
     props.setLook(m_wTabFolder, Props.WIDGET_STYLE_TAB);
     m_wTabFolder.setSimple(false);
-    
+
     // Start of the config tab
     m_wConfigTab = new CTabItem(m_wTabFolder, SWT.NONE);
-    m_wConfigTab.
-      setText(BaseMessages.getString(PKG, "HBaseRowDecoderDialog.ConfigTab.TabTitle"));
-    
+    m_wConfigTab.setText(BaseMessages.getString(PKG,
+        "HBaseRowDecoderDialog.ConfigTab.TabTitle"));
+
     Composite wConfigComp = new Composite(m_wTabFolder, SWT.NONE);
     props.setLook(wConfigComp);
-    
+
     FormLayout configLayout = new FormLayout();
-    configLayout.marginWidth  = 3;
+    configLayout.marginWidth = 3;
     configLayout.marginHeight = 3;
     wConfigComp.setLayout(configLayout);
-    
+
     // incoming key field line
     Label inKeyLab = new Label(wConfigComp, SWT.RIGHT);
-    inKeyLab.setText(BaseMessages.getString(PKG, "HBaseRowDecoderDialog.KeyField.Label"));
+    inKeyLab.setText(BaseMessages.getString(PKG,
+        "HBaseRowDecoderDialog.KeyField.Label"));
     props.setLook(inKeyLab);
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
     fd.top = new FormAttachment(0, margin);
     fd.right = new FormAttachment(middle, -margin);
     inKeyLab.setLayoutData(fd);
-    
+
     m_incomingKeyCombo = new CCombo(wConfigComp, SWT.BORDER);
     props.setLook(m_incomingKeyCombo);
     fd = new FormData();
@@ -188,25 +188,26 @@ public class HBaseRowDecoderDialog extends BaseStepDialog implements
     fd.top = new FormAttachment(0, margin);
     fd.right = new FormAttachment(100, 0);
     m_incomingKeyCombo.setLayoutData(fd);
-    
+
     m_incomingKeyCombo.addModifyListener(new ModifyListener() {
       public void modifyText(ModifyEvent e) {
         m_currentMeta.setChanged();
-        m_incomingKeyCombo.setToolTipText(transMeta.
-            environmentSubstitute(m_incomingKeyCombo.getText()));
+        m_incomingKeyCombo.setToolTipText(transMeta
+            .environmentSubstitute(m_incomingKeyCombo.getText()));
       }
     });
-    
+
     // incoming result line
     Label inResultLab = new Label(wConfigComp, SWT.RIGHT);
-    inResultLab.setText(BaseMessages.getString(PKG, "HBaseRowDecoderDialog.ResultField.Label"));
+    inResultLab.setText(BaseMessages.getString(PKG,
+        "HBaseRowDecoderDialog.ResultField.Label"));
     props.setLook(inResultLab);
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
     fd.top = new FormAttachment(m_incomingKeyCombo, margin);
     fd.right = new FormAttachment(middle, -margin);
     inResultLab.setLayoutData(fd);
-    
+
     m_incomingResultCombo = new CCombo(wConfigComp, SWT.BORDER);
     props.setLook(m_incomingResultCombo);
     fd = new FormData();
@@ -214,122 +215,116 @@ public class HBaseRowDecoderDialog extends BaseStepDialog implements
     fd.top = new FormAttachment(m_incomingKeyCombo, margin);
     fd.right = new FormAttachment(100, 0);
     m_incomingResultCombo.setLayoutData(fd);
-    
+
     m_incomingResultCombo.addModifyListener(new ModifyListener() {
       public void modifyText(ModifyEvent e) {
         m_currentMeta.setChanged();
-        m_incomingResultCombo.setToolTipText(transMeta.
-            environmentSubstitute(m_incomingResultCombo.getText()));
+        m_incomingResultCombo.setToolTipText(transMeta
+            .environmentSubstitute(m_incomingResultCombo.getText()));
       }
     });
-    
+
     populateFieldsCombo();
-    
-    
+
     wConfigComp.layout();
     m_wConfigTab.setControl(wConfigComp);
-    
-    // --- mapping editor tab    
+
+    // --- mapping editor tab
     m_editorTab = new CTabItem(m_wTabFolder, SWT.NONE);
-    m_editorTab.
-      setText(BaseMessages.getString(PKG, "HBaseRowDecoderDialog.MappingEditorTab.TabTitle"));
-    
+    m_editorTab.setText(BaseMessages.getString(PKG,
+        "HBaseRowDecoderDialog.MappingEditorTab.TabTitle"));
+
     m_mappingEditor = new MappingEditor(shell, m_wTabFolder, null, null,
         SWT.FULL_SELECTION | SWT.MULTI, false, props, transMeta);
-    
+
     fd = new FormData();
     fd.top = new FormAttachment(0, 0);
     fd.left = new FormAttachment(0, 0);
-    fd.bottom= new FormAttachment(100, -margin*2);    
-    fd.right = new FormAttachment(100, 0);    
+    fd.bottom = new FormAttachment(100, -margin * 2);
+    fd.right = new FormAttachment(100, 0);
     m_mappingEditor.setLayoutData(fd);
-    
+
     m_mappingEditor.layout();
     m_editorTab.setControl(m_mappingEditor);
-    
-    
-    
-    
+
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
     fd.top = new FormAttachment(m_stepnameText, margin);
     fd.right = new FormAttachment(100, 0);
     fd.bottom = new FormAttachment(100, -50);
     m_wTabFolder.setLayoutData(fd);
-    
-    
+
     // Buttons inherited from BaseStepDialog
     wOK = new Button(shell, SWT.PUSH);
     wOK.setText(BaseMessages.getString(PKG, "System.Button.OK"));
-    
-    wCancel=new Button(shell, SWT.PUSH);
+
+    wCancel = new Button(shell, SWT.PUSH);
     wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel"));
-    
-    setButtonPositions(new Button[] { wOK, wCancel }, 
-                       margin, m_wTabFolder);
-    
-    
+
+    setButtonPositions(new Button[] { wOK, wCancel }, margin, m_wTabFolder);
+
     // Add listeners
     lsCancel = new Listener() {
-        public void handleEvent(Event e) {
-          cancel();
-        }
-      };
-      
+      public void handleEvent(Event e) {
+        cancel();
+      }
+    };
+
     lsOK = new Listener() {
-        public void handleEvent(Event e) {
-          ok();
-        }
-      };
+      public void handleEvent(Event e) {
+        ok();
+      }
+    };
 
     wCancel.addListener(SWT.Selection, lsCancel);
     wOK.addListener(SWT.Selection, lsOK);
-    
+
     lsDef = new SelectionAdapter() {
-        public void widgetDefaultSelected(SelectionEvent e) {
-          ok();
-        }
-      };
-    
+      @Override
+      public void widgetDefaultSelected(SelectionEvent e) {
+        ok();
+      }
+    };
+
     m_stepnameText.addSelectionListener(lsDef);
-    
+
     // Detect X or ALT-F4 or something that kills this window...
     shell.addShellListener(new ShellAdapter() {
-        public void shellClosed(ShellEvent e) {
-          cancel();
-        }
-      });
-    
-    
-    m_wTabFolder.setSelection(0);    
+      @Override
+      public void shellClosed(ShellEvent e) {
+        cancel();
+      }
+    });
+
+    m_wTabFolder.setSelection(0);
     setSize();
-    
+
     getData();
-    
+
     shell.open();
     while (!shell.isDisposed()) {
       if (!display.readAndDispatch()) {
         display.sleep();
       }
     }
-      
+
     return stepname;
   }
-  
+
   protected void cancel() {
     stepname = null;
     m_currentMeta.setChanged(changed);
-    
+
     dispose();
   }
-  
+
   protected void ok() {
     if (Const.isEmpty(m_stepnameText.getText())) {
       return;
     }
-    
+
     stepname = m_stepnameText.getText();
-    
+
     m_currentMeta.setIncomingKeyField(m_incomingKeyCombo.getText());
     m_currentMeta.setIncomingResultField(m_incomingResultCombo.getText());
     List<String> problems = new ArrayList<String>();
@@ -339,14 +334,22 @@ public class HBaseRowDecoderDialog extends BaseStepDialog implements
       for (String s : problems) {
         p.append(s).append("\n");
       }
-      MessageDialog md = new MessageDialog(shell, 
-          BaseMessages.getString(PKG, "HBaseRowDecoderDialog.Error.IssuesWithMapping.Title"),
-      null, BaseMessages.getString(PKG, "HBaseRowDecoderDialog.Error.IssuesWithMapping") 
-      + ":\n\n" 
-      + p.toString(), MessageDialog.WARNING,
-      new String[] {BaseMessages.getString(PKG, "HBaseRowDecoderDialog.Error.IssuesWithMapping.ButtonOK"), 
-        BaseMessages.getString(PKG, "HBaseRowDecoderDialog.Error.IssuesWithMapping.ButtonCancel")}, 
-        0);
+      MessageDialog md = new MessageDialog(
+          shell,
+          BaseMessages.getString(PKG,
+              "HBaseRowDecoderDialog.Error.IssuesWithMapping.Title"),
+          null,
+          BaseMessages.getString(PKG,
+              "HBaseRowDecoderDialog.Error.IssuesWithMapping")
+              + ":\n\n"
+              + p.toString(),
+          MessageDialog.WARNING,
+          new String[] {
+              BaseMessages.getString(PKG,
+                  "HBaseRowDecoderDialog.Error.IssuesWithMapping.ButtonOK"),
+              BaseMessages.getString(PKG,
+                  "HBaseRowDecoderDialog.Error.IssuesWithMapping.ButtonCancel") },
+          0);
       MessageDialog.setDefaultImage(GUIResource.getInstance().getImageSpoon());
       int idx = md.open() & 0xFF;
       if (idx == 1 || idx == 255 /* 255 = escape pressed */) {
@@ -356,36 +359,36 @@ public class HBaseRowDecoderDialog extends BaseStepDialog implements
     if (mapping != null) {
       m_currentMeta.setMapping(mapping);
     }
-    
+
     if (!m_originalMeta.equals(m_currentMeta)) {
       m_currentMeta.setChanged();
       changed = m_currentMeta.hasChanged();
     }
-    
+
     dispose();
   }
-  
+
   protected void getData() {
     if (!Const.isEmpty(m_currentMeta.getIncomingKeyField())) {
       m_incomingKeyCombo.setText(m_currentMeta.getIncomingKeyField());
     }
-    
+
     if (!Const.isEmpty(m_currentMeta.getIncomingResultField())) {
       m_incomingResultCombo.setText(m_currentMeta.getIncomingResultField());
     }
-    
+
     if (m_currentMeta.getMapping() != null) {
       m_mappingEditor.setMapping(m_currentMeta.getMapping());
     }
   }
-  
+
   private void populateFieldsCombo() {
     StepMeta stepMeta = transMeta.findStep(stepname);
     String currentKey = m_incomingKeyCombo.getText();
     String currentResult = m_incomingResultCombo.getText();
     int keyIndex = -1;
     int valueIndex = -1;
-    
+
     if (stepMeta != null) {
       try {
         RowMetaInterface rowMeta = transMeta.getPrevStepFields(stepMeta);
@@ -400,13 +403,13 @@ public class HBaseRowDecoderDialog extends BaseStepDialog implements
             } else if (fieldName.equalsIgnoreCase("value")) {
               valueIndex = i;
             }
-            
+
             m_incomingKeyCombo.add(fieldName);
             m_incomingResultCombo.add(fieldName);
           }
-          
+
           if (!Const.isEmpty(currentKey)) {
-            m_incomingKeyCombo.setText(currentKey);            
+            m_incomingKeyCombo.setText(currentKey);
           } else if (keyIndex >= 0) {
             // auto set key field
             m_incomingKeyCombo.select(keyIndex);
@@ -420,7 +423,6 @@ public class HBaseRowDecoderDialog extends BaseStepDialog implements
         }
       } catch (KettleException ex) {
       }
-    }    
+    }
   }
-
 }
