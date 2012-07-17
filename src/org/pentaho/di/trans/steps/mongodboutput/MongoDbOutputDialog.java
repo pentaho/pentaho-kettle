@@ -630,13 +630,18 @@ public class MongoDbOutputDialog extends BaseStepDialog implements
             ColumnInfo.COLUMN_TYPE_CCOMBO, false),
         new ColumnInfo(BaseMessages.getString(PKG,
             "MongoDbOutputDialog.Fields.ModifierUpdateOperation"),
-            ColumnInfo.COLUMN_TYPE_CCOMBO, false), };
+            ColumnInfo.COLUMN_TYPE_CCOMBO, false),
+        new ColumnInfo(BaseMessages.getString(PKG,
+            "MongoDbOutputDialog.Fields.ModifierApplyPolicy"),
+            ColumnInfo.COLUMN_TYPE_CCOMBO, false) };
 
     colInf[2].setComboValues(new String[] { "Y", "N" });
     colInf[2].setReadOnly(true);
     colInf[3].setComboValues(new String[] { "Y", "N" });
     colInf[3].setReadOnly(true);
     colInf[4].setComboValues(new String[] { "N/A", "$set", "$inc", "$push" });
+    colInf[5]
+        .setComboValues(new String[] { "Insert&Update", "Insert", "Update" });
 
     // get fields but
     m_getFieldsBut = new Button(wFieldsComp, SWT.PUSH | SWT.CENTER);
@@ -894,6 +899,7 @@ public class MongoDbOutputDialog extends BaseStepDialog implements
         String useIncoming = item.getText(3).trim();
         String updateMatch = item.getText(4).trim();
         String modifierOp = item.getText(5).trim();
+        String modifierPolicy = item.getText(6).trim();
 
         MongoDbOutputMeta.MongoField newField = new MongoDbOutputMeta.MongoField();
         newField.m_incomingFieldName = incoming;
@@ -906,6 +912,7 @@ public class MongoDbOutputDialog extends BaseStepDialog implements
         } else {
           newField.m_modifierUpdateOperation = modifierOp;
         }
+        newField.m_modifierOperationApplyPolicy = modifierPolicy;
         mongoFields.add(newField);
       }
 
@@ -953,6 +960,7 @@ public class MongoDbOutputDialog extends BaseStepDialog implements
             field.m_useIncomingFieldNameAsMongoFieldName ? "Y" : "N", ""));
         item.setText(4, Const.NVL(field.m_updateMatchField ? "Y" : "N", ""));
         item.setText(5, Const.NVL(field.m_modifierUpdateOperation, ""));
+        item.setText(6, Const.NVL(field.m_modifierOperationApplyPolicy, ""));
       }
 
       m_mongoFieldsView.removeEmptyRows();
@@ -1025,7 +1033,8 @@ public class MongoDbOutputDialog extends BaseStepDialog implements
 
         if (!Const.isEmpty(username) || !Const.isEmpty(realPass)) {
           if (!theDB.authenticate(username, realPass.toCharArray())) {
-            throw new Exception("Unable to authenticate to database!");
+            throw new Exception(BaseMessages.getString(PKG,
+                "MongoDbOutput.Messages.Error.UnableToAuthenticate"));
           }
         }
 
@@ -1100,6 +1109,92 @@ public class MongoDbOutputDialog extends BaseStepDialog implements
     }
   }
 
+  private static enum Element {
+    OPEN_BRACE, CLOSE_BRACE, OPEN_BRACKET, CLOSE_BRACKET, COMMA
+  };
+
+  private static void pad(StringBuffer toPad, int numBlanks) {
+    for (int i = 0; i < numBlanks; i++) {
+      toPad.append(' ');
+    }
+  }
+
+  /**
+   * Format JSON document structure for printing to the preview dialog
+   * 
+   * @param toFormat the document to format
+   * @return a String containing the formatted document structure
+   */
+  public static String prettyPrintDocStructure(String toFormat) {
+    StringBuffer result = new StringBuffer();
+    int indent = 0;
+    String source = toFormat.replaceAll("[ ]*,", ",");
+    Element next = Element.OPEN_BRACE;
+
+    while (source.length() > 0) {
+      source = source.trim();
+      String toIndent = "";
+      int minIndex = Integer.MAX_VALUE;
+      char targetChar = '{';
+      if (source.indexOf('{') > -1 && source.indexOf('{') < minIndex) {
+        next = Element.OPEN_BRACE;
+        minIndex = source.indexOf('{');
+        targetChar = '{';
+      }
+      if (source.indexOf('}') > -1 && source.indexOf('}') < minIndex) {
+        next = Element.CLOSE_BRACE;
+        minIndex = source.indexOf('}');
+        targetChar = '}';
+      }
+      if (source.indexOf('[') > -1 && source.indexOf('[') < minIndex) {
+        next = Element.OPEN_BRACKET;
+        minIndex = source.indexOf('[');
+        targetChar = '[';
+      }
+      if (source.indexOf(']') > -1 && source.indexOf(']') < minIndex) {
+        next = Element.CLOSE_BRACKET;
+        minIndex = source.indexOf(']');
+        targetChar = ']';
+      }
+      if (source.indexOf(',') > -1 && source.indexOf(',') < minIndex) {
+        next = Element.COMMA;
+        minIndex = source.indexOf(',');
+        targetChar = ',';
+      }
+
+      if (minIndex == 0) {
+        if (next == Element.CLOSE_BRACE || next == Element.CLOSE_BRACKET) {
+          indent -= 2;
+        }
+        pad(result, indent);
+        String comma = "";
+        int offset = 1;
+        if (source.length() >= 2 && source.charAt(1) == ',') {
+          comma = ",";
+          offset = 2;
+        }
+        result.append(targetChar).append(comma).append("\n");
+        source = source.substring(offset, source.length());
+      } else {
+        pad(result, indent);
+        if (next == Element.CLOSE_BRACE || next == Element.CLOSE_BRACKET) {
+          toIndent = source.substring(0, minIndex);
+          source = source.substring(minIndex, source.length());
+        } else {
+          toIndent = source.substring(0, minIndex + 1);
+          source = source.substring(minIndex + 1, source.length());
+        }
+        result.append(toIndent.trim()).append("\n");
+      }
+
+      if (next == Element.OPEN_BRACE || next == Element.OPEN_BRACKET) {
+        indent += 2;
+      }
+    }
+
+    return result.toString();
+  }
+
   private void previewDocStruct() {
     List<MongoDbOutputMeta.MongoField> mongoFields = tableToMongoFieldList();
 
@@ -1165,14 +1260,36 @@ public class MongoDbOutputDialog extends BaseStepDialog implements
     MongoDbOutputData.MongoTopLevel topLevelStruct = MongoDbOutputData
         .checkTopLevelConsistency(mongoFields, vs);
     for (MongoDbOutputMeta.MongoField m : mongoFields) {
+      m.m_modifierOperationApplyPolicy = "Insert&Update";
       m.init(vs);
     }
     try {
-      DBObject result = MongoDbOutputData.kettleRowToMongo(mongoFields, r,
-          dummyRow, vs, topLevelStruct);
+      String toDisplay = "";
+      String windowTitle = BaseMessages.getString(PKG,
+          "MongoDbOutputDialog.PreviewDocStructure.Title");
+      if (!m_currentMeta.getModifierUpdate()) {
+        DBObject result = MongoDbOutputData.kettleRowToMongo(mongoFields, r,
+            dummyRow, vs, topLevelStruct);
+        toDisplay = prettyPrintDocStructure(result.toString());
+      } else {
+        DBObject query = MongoDbOutputData.getQueryObject(mongoFields, r,
+            dummyRow, vs, topLevelStruct);
+        DBObject modifier = new MongoDbOutputData().getModifierUpdateObject(
+            mongoFields, r, dummyRow, vs, topLevelStruct);
+        toDisplay = BaseMessages.getString(PKG,
+            "MongoDbOutputDialog.PreviewModifierUpdate.Heading1")
+            + ":\n\n"
+            + prettyPrintDocStructure(query.toString())
+            + BaseMessages.getString(PKG,
+                "MongoDbOutputDialog.PreviewModifierUpdate.Heading2")
+            + ":\n\n"
+            + prettyPrintDocStructure(modifier.toString());
+        windowTitle = BaseMessages.getString(PKG,
+            "MongoDbOutputDialog.PreviewModifierUpdate.Title");
+      }
 
       ShowMessageDialog smd = new ShowMessageDialog(shell, SWT.ICON_INFORMATION
-          | SWT.OK, "Output Mongo document structure", result.toString(), true);
+          | SWT.OK, windowTitle, toDisplay, true);
       smd.open();
     } catch (Exception ex) {
       logError(

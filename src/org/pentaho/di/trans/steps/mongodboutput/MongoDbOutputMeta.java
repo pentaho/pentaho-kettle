@@ -104,6 +104,25 @@ public class MongoDbOutputMeta extends BaseStepMeta implements
      * (support any others?)
      */
     public String m_modifierUpdateOperation = "N/A";
+    
+    /** 
+     * If a modifier opp, whether to apply on insert, update or both. Insert or 
+     * update require knowing whether matching record(s) exist, so require 
+     * the overhead of a find().limit(1) query for each row. The motivation 
+     * for this is to allow a single document's structure to be created and 
+     * developed over multiple kettle rows. E.g. say a document is to contain an array 
+     * of records 
+     * where each record in the array itself has a field with is an array. The $push 
+     * operator specifies the terminal array to add an element to via the dot
+     * notation. This terminal array will be created if it does not already exist 
+     * in the target document; however, it will not create the intermediate array 
+     * (i.e. the first array in the path). To do this requires a $set operation 
+     * that is executed only on insert (i.e. if the target document does not 
+     * exist). Whereas the $push operation should occur only on updates. A single 
+     * operation can't combine these two as it will result in a conflict (since they
+     * operate on the same array).
+     */
+    public String m_modifierOperationApplyPolicy = "Insert&Update";
 
     public void init(VariableSpace vars) {
       String path = vars.environmentSubstitute(m_mongoDocPath);
@@ -568,6 +587,9 @@ public class MongoDbOutputMeta extends BaseStepMeta implements
         retval.append("\n         ").append(
             XMLHandler.addTagValue("modifier_update_operation",
                 field.m_modifierUpdateOperation));
+        retval.append("\n         ").append(
+            XMLHandler.addTagValue("modifier_policy",
+                field.m_modifierOperationApplyPolicy));
 
         retval.append("\n      ").append(XMLHandler.closeTag("mongo_field"));
       }
@@ -639,6 +661,11 @@ public class MongoDbOutputMeta extends BaseStepMeta implements
 
         newField.m_modifierUpdateOperation = XMLHandler.getTagValue(fieldNode,
             "modifier_update_operation");
+        String policy = XMLHandler.getTagValue(fieldNode,
+            "modifier_policy");
+        if (!Const.isEmpty(policy)) {
+          newField.m_modifierOperationApplyPolicy = policy;
+        }
 
         m_mongoFields.add(newField);
       }
@@ -708,6 +735,11 @@ public class MongoDbOutputMeta extends BaseStepMeta implements
             "update_match_field");
         newField.m_modifierUpdateOperation = rep.getStepAttributeString(
             id_step, i, "modifier_update_operation");
+        String policy = rep.getStepAttributeString(
+            id_step, i, "modifier_policy");
+        if (!Const.isEmpty(policy)) {
+          newField.m_modifierOperationApplyPolicy = policy;
+        }
 
         m_mongoFields.add(newField);
       }
@@ -782,6 +814,8 @@ public class MongoDbOutputMeta extends BaseStepMeta implements
             "update_match_field", field.m_updateMatchField);
         rep.saveStepAttribute(id_transformation, id_step, i,
             "modifier_update_operation", field.m_modifierUpdateOperation);
+        rep.saveStepAttribute(id_transformation, id_step, i,
+            "modifier_policy", field.m_modifierOperationApplyPolicy);
       }
     }
 
