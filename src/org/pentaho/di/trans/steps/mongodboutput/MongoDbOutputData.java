@@ -365,7 +365,6 @@ public class MongoDbOutputData extends BaseStepData implements
 
         if (!vm.isNull(row[index])) {
           hasNonNullUpdateValues = true;
-          // updateField.add(field);
 
           // modifier update objects have fields using "dot" notation to reach
           // into embedded documents
