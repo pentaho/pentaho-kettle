@@ -193,7 +193,8 @@ public class MongoDbOutput extends BaseStep implements StepInterface {
 
       if (m_meta.getUpsert()) {
         DBObject updateQuery = MongoDbOutputData.getQueryObject(
-            m_meta.getMongoFields(), getInputRowMeta(), row, this);
+            m_meta.getMongoFields(), getInputRowMeta(), row, this,
+            m_mongoTopLevelStructure);
 
         if (log.isDebug()) {
           logDebug(BaseMessages.getString(PKG,
@@ -211,9 +212,14 @@ public class MongoDbOutput extends BaseStep implements StepInterface {
             insertUpdate = MongoDbOutputData.kettleRowToMongo(
                 m_meta.getMongoFields(), getInputRowMeta(), row, this,
                 m_mongoTopLevelStructure);
+            if (log.isDebug()) {
+              logDebug(BaseMessages.getString(PKG,
+                  "MongoDbOutput.Messages.Debug.InsertUpsertObject",
+                  insertUpdate));
+            }
           } else {
             // specific field update or insert
-            insertUpdate = MongoDbOutputData.getModifierUpdateObject(
+            insertUpdate = m_data.getModifierUpdateObject(
                 m_meta.getMongoFields(), getInputRowMeta(), row, this,
                 m_mongoTopLevelStructure);
             if (log.isDebug()) {
