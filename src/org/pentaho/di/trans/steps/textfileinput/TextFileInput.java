@@ -1375,7 +1375,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 		}
 		catch (Exception e)
 		{
-		  String errorMsg = "Couldn't close file : " + data.filename + " --> " + e.toString(); 
+		  String errorMsg = "Couldn't close file : " + data.file.getName().getFriendlyURI() + " --> " + e.toString(); 
 			logError(errorMsg);
 			if(failAfterBadFile(errorMsg)){//( !meta.isSkipBadFiles() || data.isLastFile  ){
 			stopAll();
@@ -1458,7 +1458,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 				resultFile.setComment("File was read by an Text File input step");
 				addResultFile(resultFile);
 			}
-			if(log.isBasic()) logBasic("Opening file: " + data.filename);
+			if(log.isBasic()) logBasic("Opening file: " + data.file.getName().getFriendlyURI());
 
 			data.fr = KettleVFS.getInputStream(data.file);
 			data.dataErrorLineHandler.handleFile(data.file);
@@ -1595,7 +1595,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 		}
 		catch (Exception e)
 		{
-		    String errorMsg = "Couldn't open file #" + data.filenr + " : " + data.filename + " --> " + e.toString(); 
+		    String errorMsg = "Couldn't open file #" + data.filenr + " : " + data.file.getName().getFriendlyURI() + " --> " + e.toString(); 
 			logError(errorMsg);
 			if(failAfterBadFile(errorMsg)){ //!meta.isSkipBadFiles()) stopAll();
 			  stopAll();
