@@ -145,8 +145,16 @@ public class GetVariableMeta extends BaseStepMeta implements StepMetaInterface
 				
 		for (int i=0;i<count;i++)
 		{
-			retval.fieldName[i] = fieldName[i];
+			retval.fieldName[i] 	 = fieldName[i];
 			retval.variableString[i] = variableString[i];
+			retval.fieldType[i] 	 = fieldType[i];
+			retval.fieldFormat[i] 	 = fieldFormat[i];
+			retval.currency[i] 		 = currency[i];
+			retval.decimal[i] 		 = decimal[i];
+			retval.group[i] 		 = group[i];
+			retval.fieldLength[i] 	 = fieldLength[i];
+			retval.fieldPrecision[i] = fieldPrecision[i];
+			retval.trimType[i] 		 = trimType[i];
 		}
 		
 		return retval;
