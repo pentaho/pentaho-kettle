@@ -16,7 +16,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.RowMetaAndData;
@@ -59,6 +61,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 	
 	private DimensionLookupMeta meta;	
 	private DimensionLookupData data;
+	private Map<String, Integer> columnLookupMap = new HashMap<String, Integer>();
 	
 	public DimensionLookup(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
 	{
@@ -243,7 +246,18 @@ public class DimensionLookup extends BaseStep implements StepInterface
       if (data.datefieldnr < 0) {
         return getTrans().getCurrentDate(); // start of transformation...
       } else {
-        return data.inputRowMeta.getDate(row, data.datefieldnr);  // Date field in the input row
+        Date rtn = data.inputRowMeta.getDate(row, data.datefieldnr);  // Date field in the input row
+        if (rtn != null) {
+          return rtn;
+        } else {
+          String inputRowMetaStringMeta = null;
+          try {
+            inputRowMetaStringMeta = data.inputRowMeta.toStringMeta();
+          } catch (Exception ex) {
+            inputRowMetaStringMeta = "No row input meta"; //$NON-NLS-1$
+          }
+          throw new KettleStepException(BaseMessages.getString(PKG, "DimensionLookup.Exception.NullDimensionUpdatedDate", inputRowMetaStringMeta)); //$NON-NLS-1$ 
+        }
       }
     }
 
@@ -554,15 +568,40 @@ public class DimensionLookup extends BaseStep implements StepInterface
         boolean insert = false;
         boolean identical = true;
         boolean punch = false;
-
+        Integer returnRowColNum = null;
+        String findColumn = null;
         for (int i = 0; i < meta.getFieldStream().length; i++) {
           if (data.fieldnrs[i] >= 0) {
             // Only compare real fields, not last updated row, last version, etc
             //
             ValueMetaInterface v1 = data.outputRowMeta.getValueMeta(data.fieldnrs[i]);
             Object valueData1 = row[data.fieldnrs[i]];
-            ValueMetaInterface v2 = data.returnRowMeta.getValueMeta(i + 2);
-            Object valueData2 = returnRow[i + 2];
+            findColumn = meta.getFieldLookup()[i];
+            // find the returnRowMeta based on the field in the fieldLookup list
+            ValueMetaInterface v2 = null;
+            Object valueData2 = null;
+            // First look it up in column map
+            returnRowColNum = columnLookupMap.get(findColumn);
+            if (returnRowColNum == null) {
+                // It hasn't been found yet - search the list and make sure we're comparing
+                // the right column to the right column.
+                for (int j=2; j<data.returnRowMeta.size(); j++) { // starting at 2 because I know that 0 and 1 are poked in by Kettle.
+                  v2 = data.returnRowMeta.getValueMeta(j);
+                  if ( (v2.getName() != null) && (v2.getName().equals(findColumn)) ) {
+                    columnLookupMap.put(findColumn, j);
+                    valueData2 = returnRow[j];
+                    break;
+                  } else {
+                    v2 = null;
+                  }
+                }
+            } else {
+              v2 = data.returnRowMeta.getValueMeta(returnRowColNum);
+              valueData2 = returnRow[returnRowColNum];
+            }
+            if (v2 == null) {
+              throw new KettleStepException(BaseMessages.getString(PKG, "DimensionLookup.Exception.ErrorDetectedInComparingFields")); //$NON-NLS-1$
+            }
 
             try {
               cmp = v1.compare(valueData1, v2, valueData2);
