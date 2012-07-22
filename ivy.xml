@@ -215,6 +215,7 @@
     <dependency org="com.google.gdata" name="gdata-core" rev="1.0" transitive="false" conf="pmr->default"/>
     <dependency org="com.google.gdata" name="google-collect" rev="1.0-rc1" transitive="false" conf="pmr->default"/>
     <dependency org="com.google.code.findbugs" name="jsr305" rev="1.3.9" transitive="false" conf="pmr->default"/>
+    <dependency org="org.safehaus.jug" name="jug-lgpl" rev="2.0.0" transitive="false" conf="pmr->default"/>
 
     <!-- olap -->
     <dependency org="pentaho" name="mondrian" rev="${dependency.mondrian.revision}" changing="true" conf="pmr->default">
