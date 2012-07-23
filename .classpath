@@ -205,20 +205,10 @@
 	<classpathentry kind="lib" path="libext/mondrian/javacc.jar"/>
 	<classpathentry kind="lib" path="libext/mondrian/olap4j-1.0.1.500.jar"/>
 	<classpathentry kind="lib" path="libext/mondrian/olap4j-xmla-1.0.1.500.jar"/>
-	<classpathentry kind="lib" path="libext/bigdata/hadoop-core-0.20.2.jar"/>
-	<classpathentry kind="lib" path="libext/bigdata/pentaho-hadoop-snappy-0.0.1-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="libext/bigdata/zookeeper-3.3.2.jar"/>
+	<classpathentry kind="lib" path="libext/pentaho/pentaho-hadoop-snappy-0.0.1-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/slf4j-api-1.6.1.jar"/>
 	<classpathentry kind="lib" path="libext/slf4j-log4j12-1.6.1.jar"/>
-	<classpathentry kind="lib" path="libext/bigdata/hbase-0.90.3.jar"/>
 	<classpathentry kind="lib" path="libext/jackcess-1.2.4.jar"/>
-	<classpathentry kind="lib" path="libext/bigdata/hive/hive-exec-0.7.0-pentaho-1.0.1.jar"/>
-	<classpathentry kind="lib" path="libext/bigdata/hive/hive-metastore-0.7.0-pentaho-1.0.1.jar"/>
-	<classpathentry kind="lib" path="libext/bigdata/hive/hive-service-0.7.0-pentaho-1.0.1.jar"/>
-	<classpathentry kind="lib" path="libext/bigdata/hive/libfb303.jar"/>
-	<classpathentry kind="lib" path="libext/bigdata/hive/libthrift.jar"/>
-	<classpathentry kind="lib" path="libext/bigdata/JDBC/hive-jdbc-0.7.0-pentaho-1.0.1.jar"/>
-	<classpathentry kind="lib" path="libext/bigdata/pentaho-hdfs-vfs-TRUNK-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/libbase-1.2.4.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-s3-vfs-TRUNK-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-vfs-browser-TRUNK-SNAPSHOT.jar"/>
