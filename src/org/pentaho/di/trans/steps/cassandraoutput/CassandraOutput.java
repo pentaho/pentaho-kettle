@@ -22,9 +22,12 @@
 
 package org.pentaho.di.trans.steps.cassandraoutput;
 
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
+import org.apache.cassandra.thrift.Mutation;
 import org.pentaho.cassandra.CassandraColumnMetaData;
 import org.pentaho.cassandra.CassandraConnection;
 import org.pentaho.di.core.Const;
@@ -60,8 +63,11 @@ public class CassandraOutput extends BaseStep implements StepInterface {
   /** Column meta data and schema information */
   protected CassandraColumnMetaData m_cassandraMeta;
 
+  /** Holds batch mutate for Thrift-based IO */
+  protected Map<ByteBuffer, Map<String, List<Mutation>>> m_thriftBatch;
+
   /** Holds batch insert CQL statement */
-  protected StringBuilder m_batchInsert;
+  protected StringBuilder m_batchInsertCQL;
 
   /** Current batch of rows to insert */
   protected List<Object[]> m_batch;
@@ -85,6 +91,9 @@ public class CassandraOutput extends BaseStep implements StepInterface {
 
   /** Default batch split factor */
   protected int m_batchSplitFactor = 10;
+
+  /** Whether to use Thrift for IO or not */
+  protected boolean m_useThriftIO;
 
   protected void initialize(StepMetaInterface smi, StepDataInterface sdi)
       throws KettleException {
@@ -204,7 +213,7 @@ public class CassandraOutput extends BaseStep implements StepInterface {
         // get the column family meta data
 
         logBasic(BaseMessages.getString(CassandraOutputMeta.PKG,
-            "CassandraOutput.Message.GettingMetaData"));
+            "CassandraOutput.Message.GettingMetaData", m_columnFamilyName));
         m_cassandraMeta = new CassandraColumnMetaData(connection,
             m_columnFamilyName);
 
@@ -249,6 +258,8 @@ public class CassandraOutput extends BaseStep implements StepInterface {
 
         }
 
+        m_useThriftIO = m_meta.getUseThriftIO();
+
         // Try to execute any apriori CQL commands?
         if (!Const.isEmpty(m_meta.getAprioriCQL())) {
           String aprioriCQL = environmentSubstitute(m_meta.getAprioriCQL());
@@ -267,7 +278,8 @@ public class CassandraOutput extends BaseStep implements StepInterface {
       }
 
       m_consistency = environmentSubstitute(m_meta.getConsistency());
-      m_batchInsert = CassandraOutputData.newBatch(m_batchSize, m_consistency);
+      m_batchInsertCQL = CassandraOutputData.newCQLBatch(m_batchSize,
+          m_consistency);
       m_batch = new ArrayList<Object[]>();
 
     } catch (Exception ex) {
@@ -289,8 +301,9 @@ public class CassandraOutput extends BaseStep implements StepInterface {
       if (m_rowsSeen > 0) {
         doBatch();
       }
-      m_batchInsert = null;
+      m_batchInsertCQL = null;
       m_batch = null;
+      m_thriftBatch = null;
 
       setOutputDone();
       return false;
@@ -316,7 +329,7 @@ public class CassandraOutput extends BaseStep implements StepInterface {
       doBatch(m_batch);
     } catch (Exception e) {
       logError(BaseMessages.getString(CassandraOutputMeta.PKG,
-          "CassandraOutput.Error.CommitFailed", m_batchInsert.toString(), e));
+          "CassandraOutput.Error.CommitFailed", m_batchInsertCQL.toString(), e));
       throw new KettleException(e.fillInStackTrace());
     }
 
@@ -338,19 +351,32 @@ public class CassandraOutput extends BaseStep implements StepInterface {
           "CassandraOutput.Message.SkippingEmptyBatch"));
       return;
     }
-    // construct CQL and commit
+    // construct CQL/thrift batch and commit
     CassandraConnection connection = null;
     int size = batch.size();
     try {
-      // construct CQL
-      m_batchInsert = CassandraOutputData.newBatch(m_batchSize, m_consistency);
+      if (m_useThriftIO) {
+        m_thriftBatch = CassandraOutputData.newThriftBatch(size);
+      } else {
+        // construct CQL
+        m_batchInsertCQL = CassandraOutputData.newCQLBatch(m_batchSize,
+            m_consistency);
+      }
       int rowsAdded = 0;
       for (Object[] r : batch) {
         // add the row to the batch
-        if (CassandraOutputData.addRowToBatch(m_batchInsert,
-            m_columnFamilyName, getInputRowMeta(), m_keyIndex, r,
-            m_cassandraMeta, m_meta.getInsertFieldsNotInMeta(), log)) {
-          rowsAdded++;
+        if (m_useThriftIO) {
+          if (CassandraOutputData.addRowToThriftBatch(m_thriftBatch,
+              m_columnFamilyName, getInputRowMeta(), m_keyIndex, r,
+              m_cassandraMeta, m_meta.getInsertFieldsNotInMeta(), log)) {
+            rowsAdded++;
+          }
+        } else {
+          if (CassandraOutputData.addRowToCQLBatch(m_batchInsertCQL,
+              m_columnFamilyName, getInputRowMeta(), m_keyIndex, r,
+              m_cassandraMeta, m_meta.getInsertFieldsNotInMeta(), log)) {
+            rowsAdded++;
+          }
         }
       }
       if (rowsAdded == 0) {
@@ -358,15 +384,24 @@ public class CassandraOutput extends BaseStep implements StepInterface {
             "CassandraOutput.Message.SkippingEmptyBatch"));
         return;
       }
-      CassandraOutputData.completeBatch(m_batchInsert);
+
+      if (!m_useThriftIO) {
+        CassandraOutputData.completeCQLBatch(m_batchInsertCQL);
+      }
+
       // commit
       connection = openConnection(false);
       logDetailed(BaseMessages.getString(CassandraOutputMeta.PKG,
           "CassandraOutput.Message.CommittingBatch", m_columnFamilyName, ""
               + size));
 
-      CassandraOutputData.commitBatch(m_batchInsert, connection,
-          m_meta.getUseCompression(), m_cqlBatchInsertTimeout);
+      if (m_useThriftIO) {
+        CassandraOutputData.commitThriftBatch(m_thriftBatch, m_consistency,
+            connection, m_cqlBatchInsertTimeout);
+      } else {
+        CassandraOutputData.commitCQLBatch(m_batchInsertCQL, connection,
+            m_meta.getUseCompression(), m_cqlBatchInsertTimeout);
+      }
     } catch (Exception e) {
       closeConnection(connection);
       connection = null;
