@@ -699,7 +699,11 @@ public class CsvInput extends BaseStep implements StepInterface
 				}
 				
 				// OK, move on to the next field...
-				if( !newLineFound) 
+				// PDI-8187: Before we increment, we should check to see if the while condition is about to fail.
+				//  this will prevent the endBuffer from being incremented twice (once by this block and once in the
+				//  do-while loop below) and possibly skipping a newline character. This can occur if there is an 
+				//  empty column at the end of the row (see the Jira case for details)
+				if( !newLineFound && outputIndex<meta.getInputFields().length) 
 				{
 					data.endBuffer++;
 					data.totalBytesRead++;
