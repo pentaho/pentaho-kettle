@@ -1619,7 +1619,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 							Database depdb = new Database(this, depcon);
 							try
 							{
-                        depdb.connect();
+								depdb.connect();
 							   depdb.setCommit(logCommitSize);
 
 								String sql = "SELECT MAX("+td.getFieldname()+") FROM "+td.getTablename(); //$NON-NLS-1$ //$NON-NLS-2$
@@ -1855,12 +1855,28 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	protected void writeLogChannelInformation() throws KettleException {
 		Database db = null;
 		ChannelLogTable channelLogTable = transMeta.getChannelLogTable();
+		
+		// PDI-7070: If parent trans or job has the same channel logging info, don't duplicate log entries
+		Trans t = getParentTrans();
+		if(t != null) {
+			if(channelLogTable.equals(t.getTransMeta().getChannelLogTable())) 
+				return;
+		}
+		
+		Job j = getParentJob();
+		
+		if(j != null) {
+			if(channelLogTable.equals(j.getJobMeta().getChannelLogTable())) 
+				return;
+		}
+		// end PDI-7070
+		
 		try {
 			db = new Database(this, channelLogTable.getDatabaseMeta());
 			db.shareVariablesWith(this);
-         db.connect();
+			db.connect();
 			db.setCommit(logCommitSize);
-
+			
 			List<LoggingHierarchy> loggingHierarchyList = getLoggingHierarchy();
 			for (LoggingHierarchy loggingHierarchy : loggingHierarchyList) {
 				db.writeLogRecord(channelLogTable, LogStatus.START, loggingHierarchy, null);
@@ -1883,7 +1899,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		try {
 			db = new Database(this, stepLogTable.getDatabaseMeta());
 			db.shareVariablesWith(this);
-         db.connect();
+			db.connect();
 			db.setCommit(logCommitSize);
 			
 			for (StepMetaDataCombi combi : steps) {
@@ -1969,7 +1985,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 				if (transLogTableDatabaseConnection==null) {
 					ldb = new Database(this, logcon);
 					ldb.shareVariablesWith(this);
-               ldb.connect();
+					ldb.connect();
 					ldb.setCommit(logCommitSize);
 					transLogTableDatabaseConnection=ldb;
 				} else {
@@ -2019,7 +2035,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		try {
 			ldb = new Database(this, performanceLogTable.getDatabaseMeta());
 			ldb.shareVariablesWith(this);
-         ldb.connect();
+			ldb.connect();
 			ldb.setCommit(logCommitSize);
 
 			// Write to the step performance log table...

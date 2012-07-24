@@ -147,13 +147,24 @@ abstract class BaseLogTable {
 	 */
 	public DatabaseMeta getDatabaseMeta() {
 		
+		String name = getActualConnectionName();
+		if (name == null) return null;
+		
+		return databasesInterface.findDatabase(name);
+	}
+	
+	/**
+	 * @return the connectionName
+	 */
+	public String getActualConnectionName() {
 		String name = space.environmentSubstitute(connectionName);
 		if (Const.isEmpty(name)) {
 			name = space.getVariable(getConnectionNameVariable());
 		}
-		if (Const.isEmpty(name)) return null;
-		
-		return databasesInterface.findDatabase(name);
+		if (Const.isEmpty(name)) 
+			return null;
+		else
+			return name;
 	}
 	
 	/**
@@ -437,4 +448,24 @@ abstract class BaseLogTable {
   
       return buffer.append(Const.CR + status.getStatus().toUpperCase() + Const.CR).toString();
     }
+
+    // PDI-7070: implement equals for comparison of job/trans log table to its parent log table
+	@Override
+	public boolean equals(Object obj) {
+		if(obj == null || !(obj instanceof BaseLogTable)) return false;
+		BaseLogTable blt = (BaseLogTable)obj;		
+		
+		// Get actual names for comparison
+		String cName = this.getActualConnectionName();		
+		String sName = this.getActualSchemaName();
+		String tName = this.getActualTableName();
+		
+		return ((cName == null ? blt.getActualConnectionName() == null : 
+			cName.equals(blt.getActualConnectionName())) &&
+				(sName == null ? blt.getActualSchemaName() == null : 
+					sName.equals(blt.getActualSchemaName())) &&
+				(tName == null ? blt.getActualTableName() == null : 
+					tName.equals(blt.getActualTableName())));				
+	}   
+    
 }
