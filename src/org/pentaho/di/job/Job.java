@@ -821,7 +821,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       String schemaAndTable = jobMeta.getJobLogTable().getDatabaseMeta().getQuotedSchemaTableCombination(schemaName, tableName);
       Database ldb = new Database(this, logcon);
       ldb.shareVariablesWith(this);
-        ldb.connect();
+      ldb.connect();
       ldb.setCommit(logCommitSize);
 
       try {
@@ -1002,6 +1002,16 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 	protected void writeLogChannelInformation() throws KettleException {
 		Database db = null;
 		ChannelLogTable channelLogTable = jobMeta.getChannelLogTable();
+		
+		// PDI-7070: If parent job has the same channel logging info, don't duplicate log entries
+		Job j = getParentJob();
+		
+		if(j != null) {
+			if(channelLogTable.equals(j.getJobMeta().getChannelLogTable())) 
+				return;
+		}
+		// end PDI-7070
+		
 		try {
 			db = new Database(this, channelLogTable.getDatabaseMeta());
 			db.shareVariablesWith(this);

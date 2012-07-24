@@ -1854,6 +1854,22 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	protected void writeLogChannelInformation() throws KettleException {
 		Database db = null;
 		ChannelLogTable channelLogTable = transMeta.getChannelLogTable();
+		
+		// PDI-7070: If parent trans or job has the same channel logging info, don't duplicate log entries
+		Trans t = getParentTrans();
+		if(t != null) {
+			if(channelLogTable.equals(t.getTransMeta().getChannelLogTable())) 
+				return;
+		}
+		
+		Job j = getParentJob();
+		
+		if(j != null) {
+			if(channelLogTable.equals(j.getJobMeta().getChannelLogTable())) 
+				return;
+		}
+		// end PDI-7070
+		
 		try {
 			db = new Database(this, channelLogTable.getDatabaseMeta());
 			db.shareVariablesWith(this);
@@ -2020,7 +2036,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 			ldb.shareVariablesWith(this);
 			ldb.connect();
 			ldb.setCommit(logCommitSize);
-			
+
 			// Write to the step performance log table...
 			//
 			RowMetaInterface rowMeta = performanceLogTable.getLogRecord(LogStatus.START, null, null).getRowMeta();
