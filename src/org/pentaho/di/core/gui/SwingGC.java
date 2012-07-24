@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
+import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
 
 import org.jfree.text.TextUtilities;
@@ -211,38 +212,48 @@ public class SwingGC implements GCInterface {
 	}
 	
 	private BufferedImage getImageIcon(String fileName) throws KettleException {
-	  InputStream inputStream=null;
+		InputStream inputStream=null;
+		BufferedImage image=null;
 		try {
-		  BufferedImage image = ImageIO.read(new File(fileName));
-		  if (image==null) {
-		    image = ImageIO.read(new File("/"+fileName));
-		  }
-		  if (image==null) {
-        inputStream = getClass().getResourceAsStream(fileName);
-        if (inputStream==null) {
-          inputStream = getClass().getResourceAsStream("/"+fileName);
-        }
-        if (inputStream==null) {
-          throw new KettleException("Unable to load image from file : '"+fileName+"'");
-        }
-        image = ImageIO.read(inputStream);
-		  }
-		  
-      WaitingImageObserver observer = new WaitingImageObserver(image);
-      observer.waitImageLoaded();
-      
-			return image;
-		} catch(Throwable e) {
-			throw new KettleException("Unable to load image from file : '"+fileName+"'", e);
-		} finally {
-		  if (inputStream!=null) {
-		    try {
-          inputStream.close();
-        } catch (IOException e) {
-          throw new KettleException("Unable to close image reading stream", e);
-        }
-		  }
+			
+			image = ImageIO.read(new File(fileName));
+			if (image==null) {
+				image = ImageIO.read(new File("/"+fileName));
+			}
+		}  //  we fail silently as the images may be available in a jar
+		catch (IIOException iioe) {}
+		catch (IOException ioe) {}
+		
+		if (image==null) {
+			try {
+				inputStream = getClass().getResourceAsStream(fileName);
+				if (inputStream==null) {
+					inputStream = getClass().getResourceAsStream("/"+fileName);
+				}
+				if (inputStream==null) {
+					throw new KettleException("Unable to load image from classpath : '"+fileName+"'");
+				}
+				image = ImageIO.read(inputStream);
+			}
+			catch (IOException ioe) {
+				throw new KettleException("Unable to close image reading stream", ioe);
+			}
+			finally {
+			   if (inputStream!=null) {
+	  			   try {
+			          inputStream.close();
+	  			   }
+	  			   catch (IOException e) {
+	  		          throw new KettleException("Unable to close image reading stream", e);
+	  		       }
+			   }
+		    }
 		}
+		
+		WaitingImageObserver observer = new WaitingImageObserver(image);
+		observer.waitImageLoaded();
+      
+		return image;
 	}
 
 	public void dispose() {
