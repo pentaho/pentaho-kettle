@@ -22,14 +22,11 @@
 
 package org.pentaho.di.trans.steps.hbaseoutput;
 
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.client.HBaseAdmin;
-import org.apache.hadoop.hbase.client.HTable;
-import org.apache.hadoop.hbase.client.Put;
-import org.apache.hadoop.hbase.util.Bytes;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -45,6 +42,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.hbase.mapping.HBaseValueMeta;
 import org.pentaho.hbase.mapping.Mapping;
 import org.pentaho.hbase.mapping.MappingAdmin;
+import org.pentaho.hbase.shim.HBaseAdmin;
 
 /**
  * Class providing an output step for writing data to an HBase table according
@@ -66,7 +64,7 @@ public class HBaseOutput extends BaseStep implements StepInterface {
   }
 
   /** Configuration object for connecting to HBase */
-  protected Configuration m_connection;
+  protected HBaseAdmin m_hbAdmin;
 
   /** The mapping admin object for interacting with mapping information */
   protected MappingAdmin m_mappingAdmin;
@@ -77,8 +75,8 @@ public class HBaseOutput extends BaseStep implements StepInterface {
   /** Information from the mapping */
   protected Map<String, HBaseValueMeta> m_columnsMappedByAlias;
 
-  /** Table object for the table to write to */
-  protected HTable m_targetTable;
+  /** True if the target table has been connected to successfully */
+  protected boolean m_targetTableActive = false;
 
   /** Index of the key in the incoming fields */
   protected int m_incomingKeyIndex;
@@ -94,29 +92,29 @@ public class HBaseOutput extends BaseStep implements StepInterface {
 
       // clean up/close connections etc.
       // target table will be null if we haven't seen any input
-      if (m_targetTable != null) {
-        if (!m_targetTable.isAutoFlush()) {
-          try {
+      if (m_hbAdmin != null && m_targetTableActive) {
+        try {
+          if (m_hbAdmin.targetTableIsAutoFlush()) {
             logBasic(BaseMessages.getString(HBaseOutputMeta.PKG,
                 "HBaseOutput.FlushingWriteBuffer"));
-            m_targetTable.flushCommits();
-          } catch (IOException e) {
-            throw new KettleException(
-                BaseMessages.getString(HBaseOutputMeta.PKG,
-                    "HBaseOutput.Error.ProblemFlushingBufferedData",
-                    e.getMessage()), e);
+            m_hbAdmin.flushCommitsTargetTable();
           }
+        } catch (Exception ex) {
+          throw new KettleException(
+              BaseMessages.getString(HBaseOutputMeta.PKG,
+                  "HBaseOutput.Error.ProblemFlushingBufferedData",
+                  ex.getMessage()), ex);
         }
 
         try {
           logBasic(BaseMessages.getString(HBaseOutputMeta.PKG,
               "HBaseOutput.ClosingConnectionToTable"));
-          m_targetTable.close();
-        } catch (IOException e) {
+          m_hbAdmin.closeTargetTable();
+        } catch (Exception ex) {
           throw new KettleException(
               BaseMessages.getString(HBaseOutputMeta.PKG,
                   "HBaseOutput.Error.ProblemWhenClosingConnection",
-                  e.getMessage()), e);
+                  ex.getMessage()), ex);
         }
       }
 
@@ -134,49 +132,48 @@ public class HBaseOutput extends BaseStep implements StepInterface {
         logBasic(BaseMessages.getString(HBaseOutputMeta.PKG,
             "HBaseOutput.ConnectingToHBase"));
 
-        m_connection = HBaseOutputData.getHBaseConnection(
+        List<String> connectionMessages = new ArrayList<String>();
+        m_hbAdmin = HBaseOutputData.getHBaseConnection(
             environmentSubstitute(m_meta.getZookeeperHosts()),
-            environmentSubstitute(m_meta.getZookeeperPort()), HBaseOutputData
-                .stringToURL(environmentSubstitute(m_meta.getCoreConfigURL())),
-            HBaseOutputData.stringToURL(environmentSubstitute(m_meta
-                .getDefaultConfigURL())));
-      } catch (IOException ex) {
+            environmentSubstitute(m_meta.getZookeeperPort()),
+            environmentSubstitute(m_meta.getCoreConfigURL()),
+            environmentSubstitute(m_meta.getDefaultConfigURL()),
+            connectionMessages);
+
+        if (connectionMessages.size() > 0) {
+          for (String m : connectionMessages) {
+            logBasic(m);
+          }
+        }
+      } catch (Exception ex) {
         throw new KettleException(BaseMessages.getString(HBaseOutputMeta.PKG,
             "HBaseOutput.Error.UnableToObtainConnection", ex.getMessage()), ex);
       }
       try {
-        m_mappingAdmin = new MappingAdmin(m_connection);
+        m_mappingAdmin = new MappingAdmin(m_hbAdmin);
       } catch (Exception ex) {
         throw new KettleException(BaseMessages.getString(HBaseOutputMeta.PKG,
             "HBaseOutput.Error.UnableToObtainConnection", ex.getMessage()), ex);
       }
 
       // check on the existence and readiness of the target table
-      HBaseAdmin admin = null;
-      try {
-        admin = new HBaseAdmin(m_connection);
-      } catch (Exception ex) {
-        throw new KettleException(BaseMessages.getString(HBaseOutputMeta.PKG,
-            "HBaseOutput.Error.UnableToObtainConnection", ex.getMessage()), ex);
-      }
-
       String targetName = environmentSubstitute(m_meta.getTargetTableName());
       if (Const.isEmpty(targetName)) {
         throw new KettleException(BaseMessages.getString(HBaseOutputMeta.PKG,
             "HBaseOutput.Error.NoTargetTableSpecified"));
       }
       try {
-        if (!admin.tableExists(targetName)) {
+        if (!m_hbAdmin.tableExists(targetName)) {
           throw new KettleException(BaseMessages.getString(HBaseOutputMeta.PKG,
               "HBaseOutput.Error.TargetTableDoesNotExist", targetName));
         }
 
-        if (admin.isTableDisabled(targetName)
-            || !admin.isTableAvailable(targetName)) {
+        if (m_hbAdmin.isTableDisabled(targetName)
+            || !m_hbAdmin.isTableAvailable(targetName)) {
           throw new KettleException(BaseMessages.getString(HBaseOutputMeta.PKG,
               "HBaseOutput.Error.TargetTableIsNotAvailable", targetName));
         }
-      } catch (IOException ex) {
+      } catch (Exception ex) {
         throw new KettleException(BaseMessages.getString(HBaseOutputMeta.PKG,
             "HBaseOutput.Error.ProblemWhenCheckingAvailReadiness", targetName,
             ex.getMessage()), ex);
@@ -195,7 +192,7 @@ public class HBaseOutput extends BaseStep implements StepInterface {
           m_tableMapping = m_mappingAdmin.getMapping(
               environmentSubstitute(m_meta.getTargetTableName()),
               environmentSubstitute(m_meta.getTargetMappingName()));
-        } catch (IOException ex) {
+        } catch (Exception ex) {
           throw new KettleException(BaseMessages.getString(HBaseOutputMeta.PKG,
               "HBaseOutput.Error.ProblemGettingMappingInfo", ex.getMessage()),
               ex);
@@ -243,8 +240,8 @@ public class HBaseOutput extends BaseStep implements StepInterface {
       try {
         logBasic(BaseMessages.getString(HBaseOutputMeta.PKG,
             "HBaseOutput.ConnectingToTargetTable"));
-        m_targetTable = new HTable(m_connection, targetName);
 
+        Properties tableProps = new Properties();
         // set a write buffer size (and disable auto flush)
         if (!Const.isEmpty(m_meta.getWriteBufferSize())) {
           long writeBuffer = Long.parseLong(environmentSubstitute(m_meta
@@ -252,14 +249,17 @@ public class HBaseOutput extends BaseStep implements StepInterface {
 
           logBasic(BaseMessages.getString(HBaseOutputMeta.PKG,
               "HBaseOutput.SettingWriteBuffer", writeBuffer));
+          tableProps.setProperty(HBaseAdmin.HTABLE_WRITE_BUFFER_SIZE_KEY, ""
+              + writeBuffer);
+
           if (m_meta.getDisableWriteToWAL()) {
             logBasic(BaseMessages.getString(HBaseOutputMeta.PKG,
                 "HBaseOutput.DisablingWriteToWAL"));
           }
-          m_targetTable.setWriteBufferSize(writeBuffer);
-          m_targetTable.setAutoFlush(false);
         }
-      } catch (IOException e) {
+        m_hbAdmin.newTargetTable(targetName, tableProps);
+        m_targetTableActive = true;
+      } catch (Exception e) {
         throw new KettleException(
             BaseMessages.getString(HBaseOutputMeta.PKG,
                 "HBaseOutput.Error.ProblemConnectingToTargetTable",
@@ -271,7 +271,6 @@ public class HBaseOutput extends BaseStep implements StepInterface {
     }
 
     // Put the data
-    Put p = null;
 
     // first deal with the key
     // key must not be missing!
@@ -292,9 +291,11 @@ public class HBaseOutput extends BaseStep implements StepInterface {
     byte[] encodedKey = HBaseValueMeta.encodeKeyValue(r[m_incomingKeyIndex],
         keyvm, m_tableMapping.getKeyType());
 
-    p = new Put(encodedKey);
-    if (m_meta.getDisableWriteToWAL()) {
-      p.setWriteToWAL(false);
+    try {
+      m_hbAdmin.newTargetTablePut(encodedKey, !m_meta.getDisableWriteToWAL());
+    } catch (Exception ex) {
+      throw new KettleException(BaseMessages.getString(HBaseOutputMeta.PKG,
+          "HBaseOutput.Error.UnableToSetTargetTable"), ex);
     }
 
     // now encode the rest of the fields. Nulls do not get inserted of course
@@ -314,16 +315,20 @@ public class HBaseOutput extends BaseStep implements StepInterface {
         }
         byte[] encoded = HBaseValueMeta.encodeColumnValue(r[i], current,
             hbaseColMeta);
-        p.add(
-            Bytes.toBytes(columnFamily),
-            (binaryColName) ? Bytes.toBytesBinary(columnName) : Bytes
-                .toBytes(columnName), encoded);
+
+        try {
+          m_hbAdmin.addColumnToTargetPut(columnFamily, columnName,
+              binaryColName, encoded);
+        } catch (Exception ex) {
+          throw new KettleException(BaseMessages.getString(HBaseOutputMeta.PKG,
+              "HBaseOutput.Error.UnableToAddColumnToTargetTablePut"), ex);
+        }
       }
     }
 
     try {
-      m_targetTable.put(p);
-    } catch (IOException e) {
+      m_hbAdmin.executeTargetTablePut();
+    } catch (Exception e) {
       String errorDescriptions = BaseMessages.getString(HBaseOutputMeta.PKG,
           "HBaseOutput.Error.ProblemInsertingRowIntoHBase", e.getMessage());
       if (getStepMeta().isDoingErrorHandling()) {
@@ -357,28 +362,29 @@ public class HBaseOutput extends BaseStep implements StepInterface {
     super.setStopped(stopped);
 
     if (stopped) {
-      if (m_targetTable != null) {
-        if (!m_targetTable.isAutoFlush()) {
-          try {
+      if (m_hbAdmin != null && m_targetTableActive) {
+        try {
+          if (m_hbAdmin.targetTableIsAutoFlush()) {
             logBasic(BaseMessages.getString(HBaseOutputMeta.PKG,
                 "HBaseOutput.FlushingWriteBuffer"));
-            m_targetTable.flushCommits();
-          } catch (IOException e) {
-            logError(BaseMessages.getString(HBaseOutputMeta.PKG,
-                "HBaseOutput.FlushingWriteBuffer", e.getMessage()), e);
+            m_hbAdmin.flushCommitsTargetTable();
           }
-        }
-
-        try {
-          logBasic(BaseMessages.getString(HBaseOutputMeta.PKG,
-              "HBaseOutput.ClosingConnectionToTargetTable"));
-          m_targetTable.close();
-        } catch (IOException e) {
+        } catch (Exception ex) {
           logError(
               BaseMessages.getString(HBaseOutputMeta.PKG,
-                  "HBaseOutput.Error.ProblemWhenClosingConnection",
-                  e.getMessage()), e);
+                  "HBaseOutput.Error.ProblemFlushingBufferedData",
+                  ex.getMessage()), ex);
         }
+      }
+
+      try {
+        logBasic(BaseMessages.getString(HBaseOutputMeta.PKG,
+            "HBaseOutput.ClosingConnectionToTable"));
+        m_hbAdmin.closeTargetTable();
+      } catch (Exception ex) {
+        logError(BaseMessages.getString(HBaseOutputMeta.PKG,
+            "HBaseOutput.Error.ProblemWhenClosingConnection", ex.getMessage()),
+            ex);
       }
     }
   }

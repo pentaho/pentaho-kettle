@@ -22,23 +22,14 @@
 
 package org.pentaho.hbase.mapping;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.HColumnDescriptor;
-import org.apache.hadoop.hbase.HTableDescriptor;
-import org.apache.hadoop.hbase.MasterNotRunningException;
-import org.apache.hadoop.hbase.ZooKeeperConnectionException;
-import org.apache.hadoop.hbase.client.HBaseAdmin;
-import org.apache.hadoop.hbase.io.hfile.Compression;
-import org.apache.hadoop.hbase.util.Bytes;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -70,6 +61,7 @@ import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.ComboValuesSelectionListener;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
+import org.pentaho.hbase.shim.HBaseAdmin;
 
 /**
  * A re-usable composite for creating and editing table mappings for HBase. Also
@@ -389,7 +381,6 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
       m_getFieldsBut.setText(Messages
           .getString("MappingDialog.GetIncomingFields"));
       fd = new FormData();
-      // fd.left = new FormAttachment(0, margin);
       fd.right = new FormAttachment(100, 0);
       fd.bottom = new FormAttachment(100, -margin * 2);
       m_getFieldsBut.setLayoutData(fd);
@@ -409,7 +400,6 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
       m_keyValueTupleBut.setToolTipText(Messages
           .getString("MappingDialog.KeyValueTemplate.TipText"));
       fd = new FormData();
-      // fd.left = new FormAttachment(0, margin);
       fd.right = new FormAttachment(100, 0);
       fd.bottom = new FormAttachment(100, -margin * 2);
       m_keyValueTupleBut.setLayoutData(fd);
@@ -597,32 +587,24 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
       String existingName = m_existingTableNamesCombo.getText();
       m_existingTableNamesCombo.removeAll();
       try {
-        Configuration conf = m_configProducer.getHBaseConnection();
-        MappingAdmin.checkHBaseAvailable(conf);
+        HBaseAdmin hbAdmin = m_configProducer.getHBaseConnection();
+        hbAdmin.checkHBaseAvailable();
 
         m_admin = new MappingAdmin();
-        m_admin.setConnection(conf);
+        m_admin.setConnection(hbAdmin);
 
-        HBaseAdmin admin = new HBaseAdmin(conf);
-        HTableDescriptor[] tables = admin.listTables();
+        List<String> tables = hbAdmin.listTableNames();
 
-        for (int i = 0; i < tables.length; i++) {
-          String currentTableName = tables[i].getNameAsString();
+        for (String currentTableName : tables) {
           m_existingTableNamesCombo.add(currentTableName);
         }
         // restore any previous value
         if (!Const.isEmpty(existingName)) {
           m_existingTableNamesCombo.setText(existingName);
         }
-      } catch (MasterNotRunningException m) {
+      } catch (Exception e) {
         m_connectionProblem = true;
-        showConnectionErrorDialog(m);
-      } catch (ZooKeeperConnectionException z) {
-        m_connectionProblem = true;
-        showConnectionErrorDialog(z);
-      } catch (Exception ex) {
-        m_connectionProblem = true;
-        showConnectionErrorDialog(ex);
+        showConnectionErrorDialog(e);
       }
     }
   }
@@ -681,7 +663,7 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
         }
       }
       return;
-    } catch (IOException ex) {
+    } catch (Exception ex) {
       MessageDialog.openError(m_shell, Messages
           .getString("MappingDialog.Error.Title.DeleteMapping"), Messages
           .getString("MappingDialog.Error.Message.DeleteMappingIO",
@@ -993,11 +975,10 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
     if (m_allowTableCreate) {
       // check for existence of the table. If table doesn't exist
       // prompt for creation
-      Configuration conf = m_admin.getConnection();
+      HBaseAdmin hbAdmin = m_admin.getConnection();
 
       try {
-        HBaseAdmin admin = new HBaseAdmin(conf);
-        if (!admin.tableExists(tableName)) {
+        if (!hbAdmin.tableExists(tableName)) {
           boolean result = MessageDialog.openConfirm(m_shell, "Create table",
               "Table \"" + tableName + "\" does not exist. Create it?");
 
@@ -1022,8 +1003,10 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
           }
 
           // do we have additional parameters supplied in the table name field
-          String compression = Compression.Algorithm.NONE.getName();
-          String bloomFilter = "NONE";
+          // String compression = Compression.Algorithm.NONE.getName();
+          String compression = null;
+          // String bloomFilter = "NONE";
+          String bloomFilter = null;
           String[] opts = m_existingTableNamesCombo.getText().trim().split("@");
           if (opts.length > 1) {
             compression = opts[1];
@@ -1032,23 +1015,27 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
             }
           }
 
-          HTableDescriptor tableDescription = new HTableDescriptor(tableName);
-          for (String familyName : families) {
-            HColumnDescriptor colDescriptor = new HColumnDescriptor(
-                Bytes.toBytes(familyName), HColumnDescriptor.DEFAULT_VERSIONS,
-                compression, HColumnDescriptor.DEFAULT_IN_MEMORY,
-                HColumnDescriptor.DEFAULT_BLOCKCACHE,
-                HColumnDescriptor.DEFAULT_TTL, bloomFilter);
-            tableDescription.addFamily(colDescriptor);
+          Properties creationProps = new Properties();
+          if (compression != null) {
+            creationProps.setProperty(
+                HBaseAdmin.COL_DESCRIPTOR_COMPRESSION_KEY, compression);
+          }
+          if (bloomFilter != null) {
+            creationProps.setProperty(
+                HBaseAdmin.COL_DESCRIPTOR_BLOOM_FILTER_KEY, bloomFilter);
+          }
+          List<String> familyList = new ArrayList<String>();
+          for (String fam : families) {
+            familyList.add(fam);
           }
 
           // create the table
-          admin.createTable(tableDescription);
+          hbAdmin.createTable(tableName, familyList, creationProps);
 
           // refresh the table combo
           populateTableCombo(true);
         }
-      } catch (IOException ex) {
+      } catch (Exception ex) {
         new ErrorDialog(m_shell,
             Messages.getString("MappingDialog.Error.Title.ErrorCreatingTable"),
             Messages
@@ -1087,7 +1074,7 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
               + Messages.getString("MappingDialog.Info.Message2.MappingSaved")
               + tableName
               + Messages.getString("MappingDialog.Info.Message3.MappingSaved"));
-    } catch (IOException ex) {
+    } catch (Exception ex) {
       // inform the user via popup
       new ErrorDialog(m_shell,
           Messages.getString("MappingDialog.Error.Title.ErrorSaving"),
@@ -1167,7 +1154,7 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
         setMapping(mapping);
       }
 
-    } catch (IOException ex) {
+    } catch (Exception ex) {
       // inform the user via popup
       new ErrorDialog(
           m_shell,
@@ -1201,20 +1188,11 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
         }
 
         // now get family information for this table
-        Configuration conf = m_admin.getConnection();
-        HBaseAdmin admin = new HBaseAdmin(conf);
+        HBaseAdmin hbAdmin = m_admin.getConnection();
 
-        if (admin.tableExists(tableName)) {
-          HTableDescriptor descriptor = admin.getTableDescriptor(Bytes
-              .toBytes(tableName));
-
-          Collection<HColumnDescriptor> families = descriptor.getFamilies();
-          String[] familyNames = new String[families.size()];
-          int i = 0;
-          for (HColumnDescriptor d : families) {
-            familyNames[i++] = d.getNameAsString();
-          }
-
+        if (hbAdmin.tableExists(tableName)) {
+          List<String> colFams = hbAdmin.getTableFamiles(tableName);
+          String[] familyNames = colFams.toArray(new String[1]);
           m_familyCI.setComboValues(familyNames);
         } else {
           m_familyCI.setComboValues(new String[] { "" });
@@ -1229,8 +1207,8 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
     }
   }
 
-  public Configuration getHBaseConnection() throws IOException {
-    Configuration conf = null;
+  public HBaseAdmin getHBaseConnection() throws Exception {
+    HBaseAdmin conf = null;
     String zookeeperHosts = null;
     String zookeeperPort = null;
 
@@ -1245,7 +1223,7 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
     }
 
     conf = HBaseInputData.getHBaseConnection(zookeeperHosts, zookeeperPort,
-        null, null);
+        null, null, null);
 
     return conf;
   }

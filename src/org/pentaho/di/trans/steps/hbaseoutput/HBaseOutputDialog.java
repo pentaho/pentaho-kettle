@@ -22,13 +22,10 @@
 
 package org.pentaho.di.trans.steps.hbaseoutput;
 
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.hadoop.conf.Configuration;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -72,6 +69,7 @@ import org.pentaho.hbase.mapping.FieldProducer;
 import org.pentaho.hbase.mapping.Mapping;
 import org.pentaho.hbase.mapping.MappingAdmin;
 import org.pentaho.hbase.mapping.MappingEditor;
+import org.pentaho.hbase.shim.HBaseAdmin;
 
 /**
  * Dialog class for HBaseOutput
@@ -768,22 +766,25 @@ public class HBaseOutputDialog extends BaseStepDialog implements
     }
   }
 
-  public Configuration getHBaseConnection() throws IOException {
-    Configuration conf = null;
+  public HBaseAdmin getHBaseConnection() throws Exception {
+    /* Configuration conf = null; */
+    HBaseAdmin conf = null;
 
-    URL coreConf = null;
-    URL defaultConf = null;
-    String zookeeperHosts = null;
-    String zookeeperPort = null;
+    /*
+     * URL coreConf = null; URL defaultConf = null;
+     */
+    String coreConf = "";
+    String defaultConf = "";
+    String zookeeperHosts = "";
+    String zookeeperPort = "";
 
     if (!Const.isEmpty(m_coreConfigText.getText())) {
-      coreConf = HBaseOutputData.stringToURL(transMeta
-          .environmentSubstitute(m_coreConfigText.getText()));
+      coreConf = transMeta.environmentSubstitute(m_coreConfigText.getText());
     }
 
     if (!Const.isEmpty(m_defaultConfigText.getText())) {
-      defaultConf = HBaseOutputData.stringToURL(transMeta
-          .environmentSubstitute(m_defaultConfigText.getText()));
+      defaultConf = transMeta.environmentSubstitute(m_defaultConfigText
+          .getText());
     }
 
     if (!Const.isEmpty(m_zookeeperQuorumText.getText())) {
@@ -797,7 +798,7 @@ public class HBaseOutputDialog extends BaseStepDialog implements
     }
 
     conf = HBaseOutputData.getHBaseConnection(zookeeperHosts, zookeeperPort,
-        coreConf, defaultConf);
+        coreConf, defaultConf, null);
 
     return conf;
   }
@@ -808,7 +809,7 @@ public class HBaseOutputDialog extends BaseStepDialog implements
     try {
       MappingAdmin admin = new MappingAdmin();
 
-      Configuration connection = getHBaseConnection();
+      HBaseAdmin connection = getHBaseConnection();
       admin.setConnection(connection);
       Set<String> tableNames = admin.getMappedTables();
 
@@ -833,7 +834,7 @@ public class HBaseOutputDialog extends BaseStepDialog implements
       try {
         MappingAdmin admin = new MappingAdmin();
 
-        Configuration connection = getHBaseConnection();
+        HBaseAdmin connection = getHBaseConnection();
         admin.setConnection(connection);
 
         List<String> mappingNames = admin
