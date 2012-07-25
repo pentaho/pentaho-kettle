@@ -70,6 +70,8 @@ public class DimensionLookup extends BaseStep implements StepInterface
 	
 	private DimensionLookupMeta meta;	
 	private DimensionLookupData data;
+  int[] columnLookupArray = null;
+
 	
 	public DimensionLookup(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
 	{
@@ -254,7 +256,19 @@ public class DimensionLookup extends BaseStep implements StepInterface
       if (data.datefieldnr < 0) {
         return getTrans().getCurrentDate(); // start of transformation...
       } else {
-        return data.inputRowMeta.getDate(row, data.datefieldnr);  // Date field in the input row
+        Date rtn = data.inputRowMeta.getDate(row, data.datefieldnr);  // Date field in the input row
+        if (rtn != null) {
+          return rtn;
+        } else {
+          // Fix for PDI-4816
+          String inputRowMetaStringMeta = null;
+          try {
+            inputRowMetaStringMeta = data.inputRowMeta.toStringMeta();
+          } catch (Exception ex) {
+            inputRowMetaStringMeta = "No row input meta"; //$NON-NLS-1$
+          }
+          throw new KettleStepException(BaseMessages.getString(PKG, "DimensionLookup.Exception.NullDimensionUpdatedDate", inputRowMetaStringMeta)); //$NON-NLS-1$ 
+        }
       }
     }
 
@@ -566,14 +580,55 @@ public class DimensionLookup extends BaseStep implements StepInterface
         boolean identical = true;
         boolean punch = false;
 
+        // Column lookup array - initialize to all -1
+        if (columnLookupArray == null) {
+          columnLookupArray = new int[meta.getFieldStream().length];
+          for (int i=0; i<columnLookupArray.length; i++) {
+            columnLookupArray[i] = -1;
+          }
+        }
+        // Integer returnRowColNum = null;
+        int returnRowColNum = -1;
+        String findColumn = null;
         for (int i = 0; i < meta.getFieldStream().length; i++) {
           if (data.fieldnrs[i] >= 0) {
             // Only compare real fields, not last updated row, last version, etc
             //
             ValueMetaInterface v1 = data.outputRowMeta.getValueMeta(data.fieldnrs[i]);
             Object valueData1 = row[data.fieldnrs[i]];
-            ValueMetaInterface v2 = data.returnRowMeta.getValueMeta(i + 2);
-            Object valueData2 = returnRow[i + 2];
+            findColumn = meta.getFieldLookup()[i];
+            // find the returnRowMeta based on the field in the fieldLookup list
+            ValueMetaInterface v2 = null;
+            Object valueData2 = null;
+            // Fix for PDI-8122
+            // See if it's already been computed.
+            returnRowColNum = columnLookupArray[i];
+            if (returnRowColNum == -1) {
+                // It hasn't been found yet - search the list and make sure we're comparing
+                // the right column to the right column.
+                for (int j=2; j<data.returnRowMeta.size(); j++) { // starting at 2 because I know that 0 and 1 are poked in by Kettle.
+                  v2 = data.returnRowMeta.getValueMeta(j);
+                if ( (v2.getName() != null) && (v2.getName().equals(findColumn)) ) { // is this the right column?
+                  columnLookupArray[i] = j; // yes - record the "j" into the columnLookupArray at [i] for the next time through the loop
+                  valueData2 = returnRow[j]; // get the valueData2 for comparison
+                  break; // get outta here.
+                  } else {
+                  // Reset to null because otherwise, we'll get a false finding at the end.
+                  // This could be optimized to use a temporary variable to avoid the repeated set if necessary
+                  // but it will never be as slow as the database lookup anyway
+                    v2 = null;
+                  }
+                }
+            } else {
+              // We have a value in the columnLookupArray - use the value stored there.
+              v2 = data.returnRowMeta.getValueMeta(returnRowColNum);
+              valueData2 = returnRow[returnRowColNum];
+            }
+            if (v2 == null) {
+              // If we made it here, then maybe someone tweaked the XML in the transformation
+              // and we're matching a stream column to a column that doesn't really exist. Throw an exception.
+              throw new KettleStepException(BaseMessages.getString(PKG, "DimensionLookup.Exception.ErrorDetectedInComparingFields")); //$NON-NLS-1$
+            }
 
             try {
               cmp = v1.compare(valueData1, v2, valueData2);
