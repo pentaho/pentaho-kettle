@@ -379,8 +379,20 @@ public class CassandraOutputData extends BaseStepData implements
       return false;
     }
     ValueMetaInterface keyMeta = inputMeta.getValueMeta(keyIndex);
+    ByteBuffer keyBuff = cassandraMeta.kettleValueToByteBuffer(keyMeta,
+        row[keyIndex], true);
 
-    List<Mutation> mutList = new ArrayList<Mutation>();
+    Map<String, List<Mutation>> mapCF = thriftBatch.get(keyBuff);
+    List<Mutation> mutList = null;
+
+    // check to see if we have already got some mutations for this key in
+    // the batch
+    if (mapCF != null) {
+      mutList = mapCF.get(colFamilyName);
+    } else {
+      mapCF = new HashMap<String, List<Mutation>>(1);
+      mutList = new ArrayList<Mutation>();
+    }
 
     for (int i = 0; i < inputMeta.size(); i++) {
       if (i != keyIndex) {
@@ -409,12 +421,9 @@ public class CassandraOutputData extends BaseStepData implements
     }
 
     // column family name -> mutations
-    Map<String, List<Mutation>> mapCF = new HashMap<String, List<Mutation>>(1);
     mapCF.put(colFamilyName, mutList);
 
     // row key -> column family - > mutations
-    ByteBuffer keyBuff = cassandraMeta.kettleValueToByteBuffer(keyMeta,
-        row[keyIndex], true);
     thriftBatch.put(keyBuff, mapCF);
 
     return true;
