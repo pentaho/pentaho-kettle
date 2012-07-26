@@ -70,25 +70,22 @@ public class JobEntryResult implements Cloneable, Comparator<JobEntryResult>, Co
 	{
         this();
 		if (result!=null) 
-        { 
-            this.result = (Result) result.clone();
-            
-            // prevent excessive memory consumption!
-            // PDI-4721
-            //
-            this.result.setLogText(null); 
-            this.result.setRows(null);
-        }
-        else 
-        { 
-            this.result = null;
-        }
+    { 
+      // lightClone doesn't bother cloning all the rows.
+      this.result = (Result) result.lightClone();
+      this.result.setLogText(null); 
+      // this.result.setRows(null);
+    }
+    else 
+    { 
+        this.result = null;
+    }
 		this.logChannelId = logChannelId;
-        this.comment = comment;
-        this.reason = reason;
-        this.jobEntryName = jobEntryName;
-        this.jobEntryNr = jobEntryNr;
-        this.jobEntryFilename = jobEntryFilename;
+    this.comment = comment;
+    this.reason = reason;
+    this.jobEntryName = jobEntryName;
+    this.jobEntryNr = jobEntryNr;
+    this.jobEntryFilename = jobEntryFilename;
 	}
 	
 	@Deprecated

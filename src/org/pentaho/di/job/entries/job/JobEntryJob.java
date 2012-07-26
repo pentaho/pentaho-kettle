@@ -843,7 +843,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
           // Remote execution...
           //
           JobExecutionConfiguration jobExecutionConfiguration = new JobExecutionConfiguration();
-          jobExecutionConfiguration.setPreviousResult(result.clone());
+          jobExecutionConfiguration.setPreviousResult(result.lightClone()); // lightClone() because rows are overwritten in next line.
           jobExecutionConfiguration.getPreviousResult().setRows(sourceRows);
           jobExecutionConfiguration.setArgumentStrings(args);
           jobExecutionConfiguration.setVariables(this);

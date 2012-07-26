@@ -97,7 +97,32 @@ public class Result implements Cloneable
 		this.entryNr=nr;
 	}
 	
-	public Result clone()
+  public Result lightClone() {
+    // This light-weight clone doesn't clone rows
+    try
+    {
+      Result result = (Result)super.clone();
+      result.setRows(null);
+      if (resultFiles!=null)
+      {
+        Map<String, ResultFile> clonedFiles = new ConcurrentHashMap<String, ResultFile>();
+        Collection<ResultFile> files = resultFiles.values();
+        for (ResultFile file : files)
+        {
+            clonedFiles.put(file.getFile().toString(), file.clone());
+        }
+        result.setResultFiles(clonedFiles);
+      }
+      return result;
+    }
+    catch(CloneNotSupportedException e)
+    {
+      return null;
+    }
+      
+  }
+
+  public Result clone()
 	{
 		try
 		{
