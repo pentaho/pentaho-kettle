@@ -145,6 +145,9 @@ public class CassandraOutputMeta extends BaseStepMeta implements
    */
   protected String m_aprioriCQL = "";
 
+  /** Use thrift IO-based batch mutate instead of CQL? */
+  protected boolean m_useThriftIO = false;
+
   /**
    * Set the host for sending schema updates to
    * 
@@ -532,6 +535,24 @@ public class CassandraOutputMeta extends BaseStepMeta implements
     return m_aprioriCQL;
   }
 
+  /**
+   * Set whether to use Thrift IO-based batch mutate instead of batch CQL.
+   * 
+   * @param useThrift true if Thrift IO is to be used rather than CQL.
+   */
+  public void setUseThriftIO(boolean useThrift) {
+    m_useThriftIO = useThrift;
+  }
+
+  /**
+   * Get whether to use Thrift IO-based batch mutate instead of batch CQL.
+   * 
+   * @return true if Thrift IO is to be used rather than CQL.
+   */
+  public boolean getUseThriftIO() {
+    return m_useThriftIO;
+  }
+
   @Override
   public String getXML() {
     StringBuffer retval = new StringBuffer();
@@ -634,6 +655,9 @@ public class CassandraOutputMeta extends BaseStepMeta implements
           XMLHandler.addTagValue("apriori_cql", m_aprioriCQL));
     }
 
+    retval.append("\n    ").append(
+        XMLHandler.addTagValue("use_thrift_io", m_useThriftIO));
+
     return retval.toString();
   }
 
@@ -667,6 +691,11 @@ public class CassandraOutputMeta extends BaseStepMeta implements
         "truncate_column_family").equalsIgnoreCase("Y");
 
     m_aprioriCQL = XMLHandler.getTagValue(stepnode, "apriori_cql");
+
+    String useThrift = XMLHandler.getTagValue(stepnode, "use_thrift_io");
+    if (!Const.isEmpty(useThrift)) {
+      m_useThriftIO = useThrift.equalsIgnoreCase("Y");
+    }
   }
 
   public void readRep(Repository rep, ObjectId id_step,
@@ -705,6 +734,8 @@ public class CassandraOutputMeta extends BaseStepMeta implements
         "truncate_column_family");
 
     m_aprioriCQL = rep.getStepAttributeString(id_step, 0, "apriori_cql");
+
+    m_useThriftIO = rep.getStepAttributeBoolean(id_step, 0, "use_thrift_io");
   }
 
   public void saveRep(Repository rep, ObjectId id_transformation,
@@ -794,6 +825,9 @@ public class CassandraOutputMeta extends BaseStepMeta implements
       rep.saveStepAttribute(id_transformation, id_step, 0, "apriori_cql",
           m_aprioriCQL);
     }
+
+    rep.saveStepAttribute(id_transformation, id_step, 0, "use_thrift_io",
+        m_useThriftIO);
   }
 
   public void check(List<CheckResultInterface> remarks, TransMeta transMeta,

@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.UUID;
 
 import org.apache.cassandra.config.ConfigurationException;
 import org.apache.cassandra.db.marshal.AbstractType;
@@ -62,6 +63,7 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 
 /**
  * Class encapsulating read-only schema information for a column family. Has
@@ -72,6 +74,9 @@ import org.pentaho.di.core.row.ValueMetaInterface;
  * @version $Revision$
  */
 public class CassandraColumnMetaData {
+
+  protected static final Class<?> PKG = CassandraColumnMetaData.class;
+
   public static final String UTF8 = "UTF-8";
 
   /** Name of the column family this meta data refers to */
@@ -140,8 +145,9 @@ public class CassandraColumnMetaData {
     if (keySpace != null) {
       colFams = keySpace.getCf_defs();
     } else {
-      throw new Exception("Unable to get meta data on keyspace '"
-          + conn.m_keyspaceName + "'");
+      throw new Exception(BaseMessages.getString(PKG,
+          "CassandraColumnMetaData.Error.UnableToGetMetaDataForKeyspace",
+          conn.m_keyspaceName));
     }
 
     // look for the requested column family
@@ -209,8 +215,9 @@ public class CassandraColumnMetaData {
     }
 
     if (colDefs == null) {
-      throw new Exception("Unable to find requested column family '"
-          + m_columnFamilyName + "' in keyspace '" + conn.m_keyspaceName + "'");
+      throw new Exception(BaseMessages.getString(PKG,
+          "CassandraColumnMetaData.Error.UnableToFindRequestedColumnFamily",
+          m_columnFamilyName, conn.m_keyspaceName));
     }
 
     m_columnNameEncoding = m_columnComparator;
@@ -323,8 +330,9 @@ public class CassandraColumnMetaData {
     if (keySpace != null) {
       colFams = keySpace.getCf_defs();
     } else {
-      throw new Exception("Unable to get meta data on keyspace '"
-          + conn.m_keyspaceName + "'");
+      throw new Exception(BaseMessages.getString(PKG,
+          "CassandraColumnMetaData.Error.UnableToGetMetaDataForKeyspace",
+          conn.m_keyspaceName));
     }
 
     // look for the requested column family
@@ -355,8 +363,9 @@ public class CassandraColumnMetaData {
     if (keySpace != null) {
       colFams = keySpace.getCf_defs();
     } else {
-      throw new Exception("Unable to get meta data on keyspace '"
-          + conn.m_keyspaceName + "'");
+      throw new Exception(BaseMessages.getString(PKG,
+          "CassandraColumnMetaData.Error.UnableToGetMetaDataForKeyspace",
+          conn.m_keyspaceName));
     }
 
     List<String> colFamNames = new ArrayList<String>();
@@ -497,12 +506,125 @@ public class CassandraColumnMetaData {
       return escapeSingleQuotes(cassandraFormattedDateString);
     case ValueMetaInterface.TYPE_BINARY:
     case ValueMetaInterface.TYPE_SERIALIZABLE:
-      throw new KettleValueException("Can't convert binary/serializable data "
-          + "to CQL-compatible values"); // What to do here??? TODO
+      throw new KettleValueException(BaseMessages.getString(PKG,
+          "CassandraColumnMetaData.Error.CantConvertBinaryToCQL"));
     }
 
-    throw new KettleValueException("Not sure how to encode " + vm.toString()
-        + " to" + " CQL-compatible values");
+    throw new KettleValueException(BaseMessages.getString(PKG,
+        "CassandraColumnMetaData.Error.CantConvertType", vm.getName(),
+        vm.getTypeDesc()));
+  }
+
+  /**
+   * Static utility to decompose a Kettle value to a ByteBuffer. Note - does not
+   * check if the kettle value is null.
+   * 
+   * @param vm the ValueMeta for the Kettle value
+   * @param value the actual Kettle value
+   * @return a ByteBuffer encapsulating the bytes for the decomposed value
+   * @throws KettleException if a problem occurs
+   */
+  public ByteBuffer kettleValueToByteBuffer(ValueMetaInterface vm,
+      Object value, boolean isKey) throws KettleException {
+
+    String fullTransCoder = m_defaultValidationClass;
+
+    // check the key first
+    if (isKey) {
+      fullTransCoder = m_keyValidator;
+    } else {
+      fullTransCoder = m_columnMeta.get(vm.getName());
+      if (fullTransCoder == null) {
+        // use default if not in column meta data
+        fullTransCoder = m_defaultValidationClass;
+      }
+    }
+
+    String transCoder = fullTransCoder;
+
+    // if it's a composite type make sure that we check only against the
+    // primary type
+    if (transCoder.indexOf('(') > 0) {
+      transCoder = transCoder.substring(0, transCoder.indexOf('('));
+    }
+
+    ByteBuffer decomposed = null;
+    if (transCoder.indexOf("UTF8Type") > 0) {
+      UTF8Type u = UTF8Type.instance;
+      decomposed = u.decompose(vm.getString(value));
+    } else if (transCoder.indexOf("AsciiType") > 0) {
+      AsciiType at = AsciiType.instance;
+      decomposed = at.decompose(vm.getString(value));
+    } else if (transCoder.indexOf("LongType") > 0) {
+      LongType lt = LongType.instance;
+      decomposed = lt.decompose(vm.getInteger(value));
+    } else if (transCoder.indexOf("DoubleType") > 0) {
+      DoubleType dt = DoubleType.instance;
+      decomposed = dt.decompose(vm.getNumber(value));
+    } else if (transCoder.indexOf("DateType") > 0) {
+      DateType dt = DateType.instance;
+      decomposed = dt.decompose(vm.getDate(value));
+    } else if (transCoder.indexOf("IntegerType") > 0) {
+      IntegerType it = IntegerType.instance;
+      decomposed = it.decompose(vm.getBigNumber(value).toBigInteger());
+    } else if (transCoder.indexOf("FloatType") > 0) {
+      FloatType ft = FloatType.instance;
+      decomposed = ft.decompose(vm.getNumber(value).floatValue());
+    } else if (transCoder.indexOf("LexicalUUIDType") > 0) {
+      LexicalUUIDType lt = LexicalUUIDType.instance;
+      UUID uuid = UUID.fromString((vm.getString(value)));
+      decomposed = lt.decompose(uuid);
+    } else if (transCoder.indexOf("UUIDType") > 0) {
+      UUIDType ut = UUIDType.instance;
+      UUID uuid = UUID.fromString((vm.getString(value)));
+      decomposed = ut.decompose(uuid);
+    } else if (transCoder.indexOf("BooleanType") > 0) {
+      BooleanType bt = BooleanType.instance;
+      decomposed = bt.decompose(vm.getBoolean(value));
+    } else if (transCoder.indexOf("Int32Type") > 0) {
+      Int32Type it = Int32Type.instance;
+      decomposed = it.decompose(vm.getInteger(value).intValue());
+    } else if (transCoder.indexOf("DecimalType") > 0) {
+      DecimalType dt = DecimalType.instance;
+      decomposed = dt.decompose(vm.getBigNumber(value));
+    } else if (transCoder.indexOf("DynamicCompositeType") > 0) {
+      AbstractType serializer = null;
+      if (vm.isString()) {
+        try {
+          serializer = TypeParser.parse(fullTransCoder);
+          decomposed = ((DynamicCompositeType) serializer).fromString(vm
+              .getString(value));
+
+        } catch (ConfigurationException e) {
+          throw new KettleException(e.getMessage(), e);
+        }
+      } else {
+        throw new KettleException(BaseMessages.getString(PKG,
+            "CassandraColumnMetaData.Error.CantConvertTypeThrift",
+            vm.getTypeDesc(), fullTransCoder));
+      }
+    } else if (transCoder.indexOf("CompositeType") > 0) {
+      AbstractType serializer = null;
+      if (vm.isString()) {
+        try {
+          serializer = TypeParser.parse(fullTransCoder);
+          decomposed = ((CompositeType) serializer).fromString(vm.toString());
+        } catch (ConfigurationException e) {
+          throw new KettleException(e.getMessage(), e);
+        }
+      } else {
+        throw new KettleException(BaseMessages.getString(PKG,
+            "CassandraColumnMetaData.Error.CantConvertTypeThrift",
+            vm.getTypeDesc(), fullTransCoder));
+      }
+    }
+
+    if (decomposed == null) {
+      throw new KettleException(BaseMessages.getString(PKG,
+          "CassandraColumnMetaData.Error.UnableToConvertValue", vm.getName()));
+    }
+
+    return decomposed;
   }
 
   protected static String escapeSingleQuotes(String source) {
@@ -521,7 +643,6 @@ public class CassandraColumnMetaData {
    */
   public ByteBuffer columnNameToByteBuffer(String colName)
       throws KettleException {
-    // TODO
 
     AbstractType serializer = null;
     String fullEncoder = m_columnComparator;
@@ -841,8 +962,9 @@ public class CassandraColumnMetaData {
     }
 
     if (deserializer == null) {
-      throw new KettleException("Can't find deserializer for type '"
-          + fullDecoder + "'");
+      throw new KettleException(BaseMessages.getString(PKG,
+          "CassandraColumnMetaData.Error.CantFindADeserializerForType",
+          fullDecoder));
     }
 
     result = deserializer.compose(valueBuff);

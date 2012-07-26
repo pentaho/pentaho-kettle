@@ -124,6 +124,9 @@ public class CassandraOutputDialog extends BaseStepDialog implements
 
   private Button m_getFieldsBut;
 
+  private Label m_useThriftIOLab;
+  private Button m_useThriftIOCheck;
+
   private Label m_schemaHostLab;
   private TextVar m_schemaHostText;
   private Label m_schemaPortLab;
@@ -614,6 +617,28 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     fd.left = new FormAttachment(middle, 0);
     m_keyFieldCombo.setLayoutData(fd);
 
+    m_useThriftIOLab = new Label(wWriteComp, SWT.RIGHT);
+    props.setLook(m_useThriftIOLab);
+    m_useThriftIOLab.setText(BaseMessages.getString(PKG,
+        "CassandraOutputDialog.UseThriftIO.Label"));
+    m_useThriftIOLab.setToolTipText(BaseMessages.getString(PKG,
+        "CassandraOutputDialog.UseThriftIO.TipText"));
+    fd = new FormData();
+    fd.left = new FormAttachment(0, 0);
+    fd.top = new FormAttachment(m_keyFieldCombo, margin);
+    fd.right = new FormAttachment(middle, -margin);
+    m_useThriftIOLab.setLayoutData(fd);
+
+    m_useThriftIOCheck = new Button(wWriteComp, SWT.CHECK);
+    m_useThriftIOCheck.setToolTipText(BaseMessages.getString(PKG,
+        "CassandraOutputDialog.UseThriftIO.TipText"));
+    props.setLook(m_useThriftIOCheck);
+    fd = new FormData();
+    fd.right = new FormAttachment(100, 0);
+    fd.top = new FormAttachment(m_keyFieldCombo, margin);
+    fd.left = new FormAttachment(middle, 0);
+    m_useThriftIOCheck.setLayoutData(fd);
+
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
     fd.top = new FormAttachment(0, 0);
@@ -1061,6 +1086,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
         .getSelection());
     m_currentMeta.setUseCompression(m_useCompressionBut.getSelection());
     m_currentMeta.setAprioriCQL(m_aprioriCQL);
+    m_currentMeta.setUseThriftIO(m_useThriftIOCheck.getSelection());
 
     if (!m_originalMeta.equals(m_currentMeta)) {
       m_currentMeta.setChanged();
@@ -1218,6 +1244,7 @@ public class CassandraOutputDialog extends BaseStepDialog implements
     m_insertFieldsNotInColumnFamMetaBut.setSelection(m_currentMeta
         .getInsertFieldsNotInMeta());
     m_useCompressionBut.setSelection(m_currentMeta.getUseCompression());
+    m_useThriftIOCheck.setSelection(m_currentMeta.getUseThriftIO());
 
     m_aprioriCQL = m_currentMeta.getAprioriCQL();
     if (m_aprioriCQL == null) {

@@ -26,15 +26,21 @@ import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.zip.Deflater;
 
 import org.apache.cassandra.thrift.CfDef;
+import org.apache.cassandra.thrift.Column;
 import org.apache.cassandra.thrift.ColumnDef;
+import org.apache.cassandra.thrift.ColumnOrSuperColumn;
 import org.apache.cassandra.thrift.Compression;
+import org.apache.cassandra.thrift.ConsistencyLevel;
 import org.apache.cassandra.thrift.InvalidRequestException;
 import org.apache.cassandra.thrift.KsDef;
+import org.apache.cassandra.thrift.Mutation;
 import org.apache.cassandra.thrift.SchemaDisagreementException;
 import org.apache.cassandra.thrift.TimedOutException;
 import org.apache.cassandra.thrift.UnavailableException;
@@ -112,6 +118,11 @@ public class CassandraOutputData extends BaseStepData implements
     return new CassandraConnection(host, port, username, password, timeout);
   }
 
+  public static Map<ByteBuffer, Map<String, List<Mutation>>> newThriftBatch(
+      int numRows) {
+    return new HashMap<ByteBuffer, Map<String, List<Mutation>>>(numRows);
+  }
+
   /**
    * Begin a new batch cql statement
    * 
@@ -121,7 +132,7 @@ public class CassandraOutputData extends BaseStepData implements
    * 
    * @return a StringBuilder initialized for the batch.
    */
-  public static StringBuilder newBatch(int numRows, String consistency) {
+  public static StringBuilder newCQLBatch(int numRows, String consistency) {
 
     // make a stab at a reasonable initial capacity
     StringBuilder batch = new StringBuilder(numRows * 80);
@@ -141,7 +152,7 @@ public class CassandraOutputData extends BaseStepData implements
    * 
    * @param batch the StringBuilder batch to complete
    */
-  public static void completeBatch(StringBuilder batch) {
+  public static void completeCQLBatch(StringBuilder batch) {
     batch.append("APPLY BATCH");
   }
 
@@ -156,7 +167,7 @@ public class CassandraOutputData extends BaseStepData implements
    * @throws Exception if a problem occurs
    */
   @SuppressWarnings("deprecation")
-  public static void commitBatch(final StringBuilder batch,
+  public static void commitCQLBatch(final StringBuilder batch,
       final CassandraConnection conn, final boolean compressCQL,
       final int timeout) throws Exception {
 
@@ -193,7 +204,72 @@ public class CassandraOutputData extends BaseStepData implements
           t.stop();
         } catch (Exception ex) {/* YUM! */
         }
-        throw new KettleException("Timeout reached waiting for commit.");
+        throw new KettleException(BaseMessages.getString(
+            CassandraOutputMeta.PKG, "CassandraOutput.Error.TimeoutReached"));
+      }
+      // wait
+      Thread.sleep(100);
+    }
+    // was there a problem?
+    if (e[0] != null) {
+      throw e[0];
+    }
+  }
+
+  /**
+   * Commit the thrift batch
+   * 
+   * @param thriftBatch the batch to commit
+   * @param consistency the consistency level to use
+   * @param conn the connection to use
+   * @param timeout number of milliseconds to wait for connection to time out
+   * 
+   * @throws Exception if a problem occurs
+   */
+  @SuppressWarnings("deprecation")
+  public static void commitThriftBatch(
+      final Map<ByteBuffer, Map<String, List<Mutation>>> thriftBatch,
+      final String consistency, final CassandraConnection conn,
+      final int timeout) throws Exception {
+
+    ConsistencyLevel levelToUse = ConsistencyLevel.ANY;
+    if (!Const.isEmpty(consistency)) {
+      try {
+        levelToUse = ConsistencyLevel.valueOf(consistency);
+      } catch (IllegalArgumentException ex) {
+      }
+    }
+    final ConsistencyLevel fLevelToUse = levelToUse;
+
+    // do commit in separate thread to be able to monitor timeout
+    long start = System.currentTimeMillis();
+    long time = System.currentTimeMillis() - start;
+    final Exception[] e = new Exception[1];
+    final AtomicBoolean done = new AtomicBoolean(false);
+    Thread t = new Thread(new Runnable() {
+      public void run() {
+        try {
+          conn.getClient().batch_mutate(thriftBatch, fLevelToUse);
+        } catch (Exception ex) {
+          e[0] = ex;
+        } finally {
+          done.set(true);
+        }
+      }
+    });
+    t.start();
+
+    // wait for it to complete
+    while (!done.get()) {
+      time = System.currentTimeMillis() - start;
+      if (timeout > 0 && time > timeout) {
+        try {
+          // try to kill it!
+          t.stop();
+        } catch (Exception ex) {
+        }
+        throw new KettleException(BaseMessages.getString(
+            CassandraOutputMeta.PKG, "CassandraOutput.Error.TimeoutReached"));
       }
       // wait
       Thread.sleep(100);
@@ -212,8 +288,8 @@ public class CassandraOutputData extends BaseStepData implements
    * @param compressCQL true if the CQL should be compressed
    * @throws Exception if a problem occurs
    */
-  public static void commitBatch(StringBuilder batch, CassandraConnection conn,
-      boolean compressCQL) throws Exception {
+  public static void commitCQLBatch(StringBuilder batch,
+      CassandraConnection conn, boolean compressCQL) throws Exception {
 
     // compress the batch if necessary
     byte[] toSend = null;
@@ -229,32 +305,18 @@ public class CassandraOutputData extends BaseStepData implements
   }
 
   /**
-   * converts a kettle row to CQL insert statement and adds it to the batch
+   * Checks for null row key and rows with no non-null values
    * 
-   * @param batch StringBuilder for collecting the batch CQL
-   * @param colFamilyName the name of the column family (table) to insert into
-   * @param inputMeta Kettle input row meta data
-   * @param keyIndex the index of the incoming field to use as the key for
-   *          inserting
-   * @param row the Kettle row
-   * @param cassandraMeta meta data on the columns in the cassandra column
-   *          family (table)
-   * @param insertFieldsNotInMetaData true if any Kettle fields that are not in
-   *          the Cassandra column family (table) meta data are to be inserted.
-   *          This is irrelevant if the user has opted to have the step
-   *          initially update the Cassandra meta data for incoming fields that
-   *          are not known about.
-   * 
-   * @return true if the row was added to the batch
-   * 
-   * @throws KettleException if the key is null in the incoming row
+   * @param inputMeta the input row meta
+   * @param keyIndex the index of the key field in the incoming row data
+   * @param row the row to check
+   * @param log logging
+   * @return true if the row is OK
+   * @throws KettleException if a problem occurs
    */
-  public static boolean addRowToBatch(StringBuilder batch,
-      String colFamilyName, RowMetaInterface inputMeta, int keyIndex,
-      Object[] row, CassandraColumnMetaData cassandraMeta,
-      boolean insertFieldsNotInMetaData, LogChannelInterface log)
+  protected static boolean preAddChecks(RowMetaInterface inputMeta,
+      int keyIndex, Object[] row, LogChannelInterface log)
       throws KettleException {
-
     // check the key first
     ValueMetaInterface keyMeta = inputMeta.getValueMeta(keyIndex);
     if (keyMeta.isNull(row[keyIndex])) {
@@ -279,9 +341,126 @@ public class CassandraOutputData extends BaseStepData implements
       log.logError(BaseMessages.getString(CassandraOutputMeta.PKG,
           "CassandraOutput.Error.SkippingRowNoNonNullValues",
           keyMeta.getString(row[keyIndex])));
+    }
 
+    return ok;
+  }
+
+  /**
+   * Adds a kettle row to a thrift-based batch (builds the map of keys to
+   * mutations).
+   * 
+   * @param thriftBatch the map of keys to mutations
+   * @param colFamilyName the name of the column family (table) to insert into
+   * @param inputMeta Kettle input row meta data
+   * @param keyIndex the index of the incoming field to use as the key for
+   *          inserting
+   * @param row the Kettle row
+   * @param cassandraMeta meta data on the columns in the cassandra column
+   *          family (table)
+   * @param insertFieldsNotInMetaData true if any Kettle fields that are not in
+   *          the Cassandra column family (table) meta data are to be inserted.
+   *          This is irrelevant if the user has opted to have the step
+   *          initially update the Cassandra meta data for incoming fields that
+   *          are not known about.
+   * 
+   * @return true if the row was added to the batch
+   * 
+   * @throws KettleException if a problem occurs
+   */
+  public static boolean addRowToThriftBatch(
+      Map<ByteBuffer, Map<String, List<Mutation>>> thriftBatch,
+      String colFamilyName, RowMetaInterface inputMeta, int keyIndex,
+      Object[] row, CassandraColumnMetaData cassandraMeta,
+      boolean insertFieldsNotInMetaData, LogChannelInterface log)
+      throws KettleException {
+
+    if (!preAddChecks(inputMeta, keyIndex, row, log)) {
       return false;
     }
+    ValueMetaInterface keyMeta = inputMeta.getValueMeta(keyIndex);
+    ByteBuffer keyBuff = cassandraMeta.kettleValueToByteBuffer(keyMeta,
+        row[keyIndex], true);
+
+    Map<String, List<Mutation>> mapCF = thriftBatch.get(keyBuff);
+    List<Mutation> mutList = null;
+
+    // check to see if we have already got some mutations for this key in
+    // the batch
+    if (mapCF != null) {
+      mutList = mapCF.get(colFamilyName);
+    } else {
+      mapCF = new HashMap<String, List<Mutation>>(1);
+      mutList = new ArrayList<Mutation>();
+    }
+
+    for (int i = 0; i < inputMeta.size(); i++) {
+      if (i != keyIndex) {
+        ValueMetaInterface colMeta = inputMeta.getValueMeta(i);
+        String colName = colMeta.getName();
+        if (!cassandraMeta.columnExistsInSchema(colName)
+            && !insertFieldsNotInMetaData) {
+          continue;
+        }
+
+        // don't insert if null!
+        if (colMeta.isNull(row[i])) {
+          continue;
+        }
+
+        Column col = new Column(cassandraMeta.columnNameToByteBuffer(colName));
+        col = col.setValue(cassandraMeta.kettleValueToByteBuffer(colMeta,
+            row[i], false));
+        col = col.setTimestamp(System.currentTimeMillis());
+        ColumnOrSuperColumn cosc = new ColumnOrSuperColumn();
+        cosc.setColumn(col);
+        Mutation mut = new Mutation();
+        mut.setColumn_or_supercolumn(cosc);
+        mutList.add(mut);
+      }
+    }
+
+    // column family name -> mutations
+    mapCF.put(colFamilyName, mutList);
+
+    // row key -> column family - > mutations
+    thriftBatch.put(keyBuff, mapCF);
+
+    return true;
+  }
+
+  /**
+   * converts a kettle row to CQL insert statement and adds it to the batch
+   * 
+   * @param batch StringBuilder for collecting the batch CQL
+   * @param colFamilyName the name of the column family (table) to insert into
+   * @param inputMeta Kettle input row meta data
+   * @param keyIndex the index of the incoming field to use as the key for
+   *          inserting
+   * @param row the Kettle row
+   * @param cassandraMeta meta data on the columns in the cassandra column
+   *          family (table)
+   * @param insertFieldsNotInMetaData true if any Kettle fields that are not in
+   *          the Cassandra column family (table) meta data are to be inserted.
+   *          This is irrelevant if the user has opted to have the step
+   *          initially update the Cassandra meta data for incoming fields that
+   *          are not known about.
+   * 
+   * @return true if the row was added to the batch
+   * 
+   * @throws KettleException if a problem occurs
+   */
+  public static boolean addRowToCQLBatch(StringBuilder batch,
+      String colFamilyName, RowMetaInterface inputMeta, int keyIndex,
+      Object[] row, CassandraColumnMetaData cassandraMeta,
+      boolean insertFieldsNotInMetaData, LogChannelInterface log)
+      throws KettleException {
+
+    if (!preAddChecks(inputMeta, keyIndex, row, log)) {
+      return false;
+    }
+
+    ValueMetaInterface keyMeta = inputMeta.getValueMeta(keyIndex);
 
     batch.append("INSERT INTO ").append(colFamilyName).append(" (KEY");
 
@@ -397,7 +576,8 @@ public class CassandraOutputData extends BaseStepData implements
     if (keySpace != null) {
       colFams = keySpace.getCf_defs();
     } else {
-      throw new Exception("Unable to get meta data on keyspace.");
+      throw new Exception(BaseMessages.getString(CassandraOutputMeta.PKG,
+          "CassandraOutput.Error.UnableToGetKeyspaceMetaData"));
     }
 
     // look for the requested column family
@@ -412,8 +592,8 @@ public class CassandraOutputData extends BaseStepData implements
     }
 
     if (colFamDefToUpdate == null) {
-      throw new Exception("Can't update meta data - unable to find "
-          + "column family '" + colFamilyName + "'");
+      throw new Exception(BaseMessages.getString(CassandraOutputMeta.PKG,
+          "CassandraOutput.Error.CantUpdateMetaData", colFamilyName));
     }
 
     String comment = colFamDefToUpdate.getComment();
