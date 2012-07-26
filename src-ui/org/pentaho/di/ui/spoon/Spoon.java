@@ -934,7 +934,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
   public VfsFileChooserDialog getVfsFileChooserDialog(FileObject rootFile, FileObject initialFile) {
     if (vfsFileChooserDialog == null) {
-      vfsFileChooserDialog = new VfsFileChooserDialog(shell, rootFile, initialFile);
+      vfsFileChooserDialog = new VfsFileChooserDialog(shell, KettleVFS.getInstance().getFileSystemManager(), rootFile, initialFile);
     }
     vfsFileChooserDialog.setRootFile(rootFile);
     vfsFileChooserDialog.setInitialFile(initialFile);
