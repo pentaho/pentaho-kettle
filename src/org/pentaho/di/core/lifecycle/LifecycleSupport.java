@@ -26,14 +26,18 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.plugins.LifecyclePluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.i18n.BaseMessages;
 
-public class LifecycleSupport implements LifecycleListener
+public class LifecycleSupport
 {
+  private static Class<?> PKG = Const.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
 	private Set<LifecycleListener> lifeListeners;
 
 	public LifecycleSupport()
@@ -50,6 +54,43 @@ public class LifecycleSupport implements LifecycleListener
         }
 	}
 
+  /**
+   * Execute all known listener's {@link #onEnvironmentInit()} methods. If an 
+   * invocation throws a {@link LifecycleException} is severe this method will 
+   * re-throw the exception.
+   * 
+   * @throws LifecycleException if any listener throws a severe Lifecycle Exception or any {@link Throwable}.
+   */
+  public void onEnvironmentInit() throws KettleException {
+    for (LifecycleListener listener : lifeListeners) {
+      try {
+        listener.onEnvironmentInit();
+      } catch (LifecycleException ex) {
+        String message = BaseMessages.getString(PKG, "LifecycleSupport.ErrorInvokingLifecycleListener", listener);
+        if (ex.isSevere()) {
+          throw new KettleException(message, ex);
+        }
+        // Not a severe error so let's simply log it and continue invoking the others
+        LogChannel.GENERAL.logError(message, ex);
+      } catch (Throwable t) {
+        throw new KettleException(BaseMessages.getString(PKG, "LifecycleSupport.ErrorInvokingLifecycleListener",
+            listener), t);
+      }
+    }
+  }
+
+  public void onEnvironmentShutdown()
+	{
+    for (LifecycleListener listener : lifeListeners) {
+      try {
+        listener.onEnvironmentShutdown();
+      } catch (Throwable t) {
+        // Log the error and continue invoking other listeners
+        LogChannel.GENERAL.logError(BaseMessages.getString(PKG, "LifecycleSupport.ErrorInvokingLifecycleListener", listener), t);
+      }
+    }
+	}
+	
 	public void onStart(LifeEventHandler handler) throws LifecycleException
 	{
 		for (LifecycleListener listener : lifeListeners)
