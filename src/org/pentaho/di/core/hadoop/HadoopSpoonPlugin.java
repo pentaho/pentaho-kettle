@@ -69,6 +69,13 @@ public class HadoopSpoonPlugin implements LifecycleListener, GUIOption {
   public void onExit(LifeEventHandler arg0) throws LifecycleException {
   }
 
+  @Override
+  public void onEnvironmentInit() throws LifecycleException {
+  }
+
+  public void onEnvironmentShutdown() {
+  }
+
   public String getLabelText() {
     return null;
   }
