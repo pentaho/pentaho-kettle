@@ -922,7 +922,7 @@
 			</classpath>
 			
 			<formatter type="xml"/>
-			
+		  	<test todir="${junit}" name="org.pentaho.di.core.KettleEnvironmentTest" haltonerror="true" />
 		  	<test todir="${junit}" name="org.pentaho.di.compatibility.ValueBigNumberTest" haltonerror="false" />
 		  	<test todir="${junit}" name="org.pentaho.di.compatibility.ValueBooleanTest" haltonerror="false" />
 		  	<test todir="${junit}" name="org.pentaho.di.compatibility.ValueDateTest" haltonerror="false" />

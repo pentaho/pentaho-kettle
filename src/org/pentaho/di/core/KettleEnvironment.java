@@ -28,6 +28,8 @@ import java.io.IOException;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
+import org.pentaho.di.core.lifecycle.LifecycleException;
+import org.pentaho.di.core.lifecycle.LifecycleSupport;
 import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.plugins.CartePluginType;
@@ -92,12 +94,38 @@ public class KettleEnvironment {
 			// Also read the list of variables.
 			//
 			KettleVariablesList.init();
+
+			// Initialize the Lifecycle Listeners
+			//
+			initLifecycleListeners();
 						
 			initialized = true;
 		}
 	}
-	
-	public static void createKettleHome() {
+
+	/**
+	 * Alert all Lifecycle plugins that the Kettle environment is being initialized.
+	 * @throws KettleException when a lifecycle listener throws an exception
+	 */
+	private static void initLifecycleListeners() throws KettleException {
+	  final LifecycleSupport s = new LifecycleSupport();
+    s.onEnvironmentInit();
+
+	   // Register a shutdown hook to invoke the listener's onExit() methods 
+    Runtime.getRuntime().addShutdownHook(new Thread() {
+      public void run() {
+        try {
+          s.onEnvironmentShutdown();
+        } catch (Throwable t) {
+          System.err.println(BaseMessages.getString(PKG, "LifecycleSupport.ErrorInvokingKettleEnvironmentShutdownListeners"));
+          t.printStackTrace();
+        }
+      };
+    });
+
+  }
+
+  public static void createKettleHome() {
 
 		// Try to create the directory...
 		//
