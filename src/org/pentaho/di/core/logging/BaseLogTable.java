@@ -124,11 +124,13 @@ abstract class BaseLogTable {
 			//
 			if (id!=null) {
   			LogTableField field = findField(id);
-  			field.setFieldName(attributeInterface.getAttributeString(getLogTableCode()+PROP_LOG_TABLE_FIELD_NAME+i));
-  			field.setEnabled(attributeInterface.getAttributeBoolean(getLogTableCode()+PROP_LOG_TABLE_FIELD_ENABLED+i));
-        if (field.isSubjectAllowed()) {
-          field.setSubject(attributeInterface.getAttributeString(getLogTableCode()+PROP_LOG_TABLE_FIELD_SUBJECT+i)); 
-        }
+  			if (field!=null) {
+    			field.setFieldName(attributeInterface.getAttributeString(getLogTableCode()+PROP_LOG_TABLE_FIELD_NAME+i));
+    			field.setEnabled(attributeInterface.getAttributeBoolean(getLogTableCode()+PROP_LOG_TABLE_FIELD_ENABLED+i));
+          if (field.isSubjectAllowed()) {
+            field.setSubject(attributeInterface.getAttributeString(getLogTableCode()+PROP_LOG_TABLE_FIELD_SUBJECT+i)); 
+          }
+  			}
 			}
 		}
 	}
