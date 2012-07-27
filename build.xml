@@ -954,7 +954,8 @@
 			<test todir="${junit}" name="org.pentaho.di.repository.KettleDatabaseRepositoryTest" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.repository.KettleFileRepositoryTest" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.repository.RepositoryImportExporterApiTest" haltonerror="false" />
-			<test todir="${junit}" name="org.pentaho.di.core.sql.IifFunctionTest.SQLConditionTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.core.sql.IifFunctionTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.core.sql.SQLConditionTest" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.core.sql.SQLFieldsTest" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.core.sql.SQLFieldTest" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.core.sql.SQLTest" haltonerror="false" />
