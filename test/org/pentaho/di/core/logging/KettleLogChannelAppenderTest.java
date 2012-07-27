@@ -22,15 +22,19 @@
 
 package org.pentaho.di.core.logging;
 
-import org.apache.log4j.*;
-import org.apache.log4j.spi.LoggingEvent;
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.apache.log4j.Appender;
+import org.apache.log4j.Layout;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
+import org.apache.log4j.spi.LoggingEvent;
+import org.junit.Test;
 
 public class KettleLogChannelAppenderTest {
   /**
@@ -206,6 +210,27 @@ public class KettleLogChannelAppenderTest {
 
     public List<MessageObject> getErrorMessages() {
       return error;
+    }
+
+    @Override
+    public boolean isGatheringMetrics() {
+      return false;
+    }
+
+    @Override
+    public void setGatheringMetrics(boolean gatheringMetrics) {
+    }
+
+    @Override
+    public void snap(MetricsInterface metric, long... value) {
+      // TODO Auto-generated method stub
+      
+    }
+
+    @Override
+    public void snap(MetricsInterface metric, String subject, long... value) {
+      // TODO Auto-generated method stub
+      
     }
   }
 

@@ -81,6 +81,8 @@ public class GetPreviewTableProgressDialog
 				{
 					db.connect();
 					
+					if (limit>0) db.setQueryLimit(limit);
+					
 					rows =  db.getFirstRows(tableName, limit, new ProgressMonitorAdapter(monitor));
           rowMeta = db.getReturnRowMeta();
 				}

@@ -30,6 +30,7 @@ import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.net.SocketTimeoutException;
 import java.nio.charset.Charset;
+import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -1748,6 +1749,77 @@ public class ValueMeta implements ValueMetaInterface
             throw new KettleValueException(toString()+" : I don't know how to convert a boolean to binary.");
         case TYPE_SERIALIZABLE:
             throw new KettleValueException(toString()+" : I don't know how to convert a serializable to binary.");
+            
+        default: 
+            throw new KettleValueException(toString()+" : Unknown type "+type+" specified.");
+        }
+    }
+    
+    public Timestamp getTimestamp(Object object) throws KettleValueException
+    {
+        if (object==null) // NULL 
+        {
+            return null;
+        }
+        switch(type)
+        {
+        case TYPE_TIMESTAMP:
+            switch(storageType)
+            {
+            case STORAGE_TYPE_NORMAL:         return (Timestamp)object;
+            case STORAGE_TYPE_BINARY_STRING:  return (Timestamp)convertBinaryStringToNativeType((byte[])object);
+            case STORAGE_TYPE_INDEXED:        return (Timestamp)index[((Integer)object).intValue()];  
+            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
+            }
+        case TYPE_DATE:
+            switch(storageType)
+            {
+            case STORAGE_TYPE_NORMAL:         { new Timestamp(((Date)object).getTime()); }
+            case STORAGE_TYPE_BINARY_STRING:  { Date date = (Date)convertBinaryStringToNativeType((byte[])object);  if (date==null) return null; else return new Timestamp(date.getTime()); }
+            case STORAGE_TYPE_INDEXED:        { Date date = (Date)index[((Integer)object).intValue()]; if (date==null) return null; else return new Timestamp(date.getTime()); }
+            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
+            }
+        case TYPE_STRING:
+            switch(storageType)
+            {
+            case STORAGE_TYPE_NORMAL:         { Date date = convertStringToDate( (String)object ); if (date==null) return null; else return new Timestamp(date.getTime()); }
+            case STORAGE_TYPE_BINARY_STRING:  { Date date = convertStringToDate( (String)convertBinaryStringToNativeType((byte[])object) );  if (date==null) return null; else return new Timestamp(date.getTime()); }
+            case STORAGE_TYPE_INDEXED:        { Date date = convertStringToDate( (String) index[((Integer)object).intValue()] );  if (date==null) return null; else return new Timestamp(date.getTime()); }
+            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
+            }
+        case TYPE_NUMBER:
+            // The time in nanoseconds gets converted to a Timestamp
+            switch(storageType)
+            {
+            case STORAGE_TYPE_NORMAL:         { long ns = ((Double)object).longValue(); Timestamp ts = new Timestamp(ns/1000000); ts.setNanos((int)(ns%1000000)); return ts; }
+            case STORAGE_TYPE_BINARY_STRING:  { long ns = ((Double)convertBinaryStringToNativeType((byte[])object) ).longValue(); Timestamp ts = new Timestamp(ns/1000000); ts.setNanos((int)(ns%1000000)); return ts; }
+            case STORAGE_TYPE_INDEXED:        { long ns = ((Double)index[((Integer)object).intValue()]).longValue(); Timestamp ts = new Timestamp(ns/1000000); ts.setNanos((int)(ns%1000000)); return ts; }
+            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
+            }
+        case TYPE_INTEGER:
+          // The time in nanoseconds gets converted to a Timestamp
+            switch(storageType)
+            {
+            case STORAGE_TYPE_NORMAL:         { long ns = (Long)object; Timestamp ts = new Timestamp(ns/1000000); ts.setNanos((int)(ns%1000000)); return ts; }
+            case STORAGE_TYPE_BINARY_STRING:  { long ns = (Long)convertBinaryStringToNativeType((byte[])object); Timestamp ts = new Timestamp(ns/1000000); ts.setNanos((int)(ns%1000000)); return ts; }
+            case STORAGE_TYPE_INDEXED:        { long ns = (Long)index[((Integer)object).intValue()]; Timestamp ts = new Timestamp(ns/1000000); ts.setNanos((int)(ns%1000000)); return ts; }
+            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
+            }
+        case TYPE_BIGNUMBER:
+          // The time in nanoseconds gets converted to a Timestamp
+            switch(storageType)
+            {
+            case STORAGE_TYPE_NORMAL:         { long ns = ((BigDecimal)object).longValue(); Timestamp ts = new Timestamp(ns/1000000); ts.setNanos((int)(ns%1000000)); return ts; }
+            case STORAGE_TYPE_BINARY_STRING:  { long ns = ((BigDecimal)convertBinaryStringToNativeType((byte[])object)).longValue(); Timestamp ts = new Timestamp(ns/1000000); ts.setNanos((int)(ns%1000000)); return ts; }
+            case STORAGE_TYPE_INDEXED:        { long ns = ((BigDecimal)index[((Integer)object).intValue()]).longValue(); Timestamp ts = new Timestamp(ns/1000000); ts.setNanos((int)(ns%1000000)); return ts; }
+            default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
+            }
+        case TYPE_BOOLEAN:
+            throw new KettleValueException(toString()+" : I don't know how to convert a boolean to a date.");
+        case TYPE_BINARY:
+            throw new KettleValueException(toString()+" : I don't know how to convert a binary value to date.");
+        case TYPE_SERIALIZABLE:
+            throw new KettleValueException(toString()+" : I don't know how to convert a serializable value to date.");
             
         default: 
             throw new KettleValueException(toString()+" : Unknown type "+type+" specified.");

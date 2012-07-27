@@ -69,7 +69,10 @@ public interface ValueMetaInterface extends Cloneable
     /** Value type indicating that the value contains binary data: BLOB, CLOB, ... */
     public static final int TYPE_BINARY      = 8;
 
-    public static final String[] typeCodes = new String[] { "-", "Number", "String", "Date", "Boolean", "Integer", "BigNumber", "Serializable", "Binary", }; 
+    /** Value type indicating that the value contains a nano-second precision time and date */
+    public static final int TYPE_TIMESTAMP   = 9;
+
+    public static final String[] typeCodes = new String[] { "-", "Number", "String", "Date", "Boolean", "Integer", "BigNumber", "Serializable", "Binary", "Timestamp", }; 
 
     
     
@@ -295,6 +298,9 @@ public interface ValueMetaInterface extends Cloneable
 
     /** Convert the supplied data to binary data */
     public byte[] getBinary(Object object) throws KettleValueException;
+
+    /** Convert the supplied data to a time-stamp (nanosecond precision)*/
+    public java.sql.Timestamp getTimestamp(Object object) throws KettleValueException;
 
     /**
      * @return a copy of this value meta object

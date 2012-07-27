@@ -73,7 +73,10 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
 		LOGDATE("LOGDATE"),
 		DEPDATE("DEPDATE"),
 		REPLAYDATE("REPLAYDATE"),
-		LOG_FIELD("LOG_FIELD");
+		LOG_FIELD("LOG_FIELD"),
+    EXECUTING_SERVER("EXECUTING_SERVER"),
+    EXECUTING_USER("EXECUTING_USER"),
+    ;
 		
 		private String id;
 		private ID(String id) {
@@ -207,6 +210,8 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
 		table.fields.add( new LogTableField(ID.DEPDATE.id, true, false, "DEPDATE", BaseMessages.getString(PKG, "TransLogTable.FieldName.DepDate"), BaseMessages.getString(PKG, "TransLogTable.FieldDescription.DepDate"), ValueMetaInterface.TYPE_DATE, -1) );
 		table.fields.add( new LogTableField(ID.REPLAYDATE.id, true, false, "REPLAYDATE", BaseMessages.getString(PKG, "TransLogTable.FieldName.ReplayDate"), BaseMessages.getString(PKG, "TransLogTable.FieldDescription.ReplayDate"), ValueMetaInterface.TYPE_DATE, -1) );
 		table.fields.add( new LogTableField(ID.LOG_FIELD.id, true, false, "LOG_FIELD", BaseMessages.getString(PKG, "TransLogTable.FieldName.LogField"), BaseMessages.getString(PKG, "TransLogTable.FieldDescription.LogField"), ValueMetaInterface.TYPE_STRING, DatabaseMeta.CLOB_LENGTH) );
+    table.fields.add( new LogTableField(ID.EXECUTING_SERVER.id, true, false, "EXECUTING_SERVER", BaseMessages.getString(PKG, "TransLogTable.FieldName.ExecutingServer"), BaseMessages.getString(PKG, "TransLogTable.FieldDescription.ExecutingServer"), ValueMetaInterface.TYPE_STRING, 255) );
+    table.fields.add( new LogTableField(ID.EXECUTING_USER.id, true, false, "EXECUTING_USER", BaseMessages.getString(PKG, "TransLogTable.FieldName.ExecutingUser"), BaseMessages.getString(PKG, "TransLogTable.FieldDescription.ExecutingUser"), ValueMetaInterface.TYPE_STRING, 255) );
 		
 		table.findField(ID.ID_BATCH).setKey(true);
 		table.findField(ID.LOGDATE).setLogDateField(true);
@@ -368,9 +373,11 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
 						case ENDDATE: value = trans.getEndDate(); break;
 						case DEPDATE: value = trans.getDepDate(); break;
 						case REPLAYDATE: value = trans.getCurrentDate(); break;
-                        case LOG_FIELD: 
-                          value = getLogBuffer(trans, trans.getLogChannelId(), status, logSizeLimit);
-                          break;
+            case LOG_FIELD: 
+              value = getLogBuffer(trans, trans.getLogChannelId(), status, logSizeLimit);
+              break;
+            case EXECUTING_SERVER: value = trans.getExecutingServer(); break;
+            case EXECUTING_USER: value = trans.getExecutingUser(); break;
 						}
 					}
 

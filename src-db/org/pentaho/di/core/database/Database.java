@@ -77,6 +77,7 @@ import org.pentaho.di.core.logging.LogTableField;
 import org.pentaho.di.core.logging.LogTableInterface;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.logging.Metrics;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -103,7 +104,7 @@ import org.pentaho.di.repository.RepositoryDirectory;
 public class Database implements VariableSpace, LoggingObjectInterface
 {
 	private static Class<?> PKG = Database.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
-
+	
 	private DatabaseMeta databaseMeta;
 	
 	private int    rowlimit;
@@ -198,6 +199,9 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		log=new LogChannel(this, parentObject);
 		this.containerObjectId = log.getContainerObjectId();
 		this.logLevel = log.getLogLevel();
+		if (parentObject!=null) {
+		  log.setGatheringMetrics(parentObject.isGatheringMetrics());
+		}
 
 		pstmt = null;
 		rowMeta = null;
@@ -287,9 +291,13 @@ public class Database implements VariableSpace, LoggingObjectInterface
 
     public synchronized void connect(String group, String partitionId) throws KettleDatabaseException
     {
+      try {
+        
+        log.snap(Metrics.METRIC_DATABASE_CONNECT_START, databaseMeta.getName());
+        
         // Before anything else, let's see if we already have a connection defined for this group/partition!
         // The group is called after the thread-name of the transformation or job that is running
-        // The name of that threadname is expected to be unique (it is in Kettle)
+        // The name of that thread name is expected to be unique (it is in Kettle)
         // So the deal is that if there is another thread using that, we go for it. 
         // 
         if (!Const.isEmpty(group))
@@ -322,6 +330,9 @@ public class Database implements VariableSpace, LoggingObjectInterface
             // Proceed with a normal connect
             normalConnect(partitionId);
         }
+      } finally {
+        log.snap(Metrics.METRIC_DATABASE_CONNECT_START, databaseMeta.getName());
+      }
     }
     
 	/**
@@ -609,19 +620,21 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		}
 	}
 	
-    /**
-     * Cancel the open/running queries on the database connection
-     * @throws KettleDatabaseException
-     */
-	public void cancelQuery() throws KettleDatabaseException
-	{
-	  // Canceling statements only if we're not streaming results on MySQL
-	  //
-	  if (databaseMeta.isMySQLVariant() && databaseMeta.isStreamingResults()) return;
+  /**
+   * Cancel the open/running queries on the database connection
+   * 
+   * @throws KettleDatabaseException
+   */
+  public void cancelQuery() throws KettleDatabaseException {
+    // Canceling statements only if we're not streaming results on MySQL with the v3 driver
+    //
+    if (databaseMeta.isMySQLVariant() && databaseMeta.isStreamingResults() && getDatabaseMetaData().getDriverMajorVersion()==3) {
+      return;
+    }
 
-        cancelStatement(pstmt);
-        cancelStatement(sel_stmt);
-	}
+    cancelStatement(pstmt);
+    cancelStatement(sel_stmt);
+  }
     
     /**
      * Cancel an open/running SQL statement 
@@ -1879,43 +1892,46 @@ public class Database implements VariableSpace, LoggingObjectInterface
 	public ResultSet openQuery(String sql, RowMetaInterface params, Object[] data, int fetch_mode, boolean lazyConversion) throws KettleDatabaseException
 	{
 		ResultSet res;
-		String debug = "Start";
 		
 		// Create a Statement
 		try
 		{
+		  log.snap(Metrics.METRIC_DATABASE_OPEN_QUERY_START, databaseMeta.getName());
 			if (params!=null)
 			{
-				debug = "P create prepared statement (con==null? "+(connection==null)+")";
+			  log.snap(Metrics.METRIC_DATABASE_PREPARE_SQL_START, databaseMeta.getName());
 				pstmt = connection.prepareStatement(databaseMeta.stripCR(sql), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
-				debug = "P Set values";
-				setValues(params, data); // set the dates etc!
-				if (canWeSetFetchSize(pstmt) )  
-				{
-					debug = "P Set fetchsize";
-                    int fs = Const.FETCH_SIZE<=pstmt.getMaxRows()?pstmt.getMaxRows():Const.FETCH_SIZE;
-                    
-                    if (databaseMeta.isMySQLVariant() && databaseMeta.isStreamingResults()) {
-                        pstmt.setFetchSize(Integer.MIN_VALUE);
-                    } else { 
-                        pstmt.setFetchSize(fs); 
-                    }
+        log.snap(Metrics.METRIC_DATABASE_PREPARE_SQL_STOP, databaseMeta.getName());
+				
+        log.snap(Metrics.METRIC_DATABASE_SQL_VALUES_START, databaseMeta.getName());
+        setValues(params, data); // set the dates etc!
+        log.snap(Metrics.METRIC_DATABASE_SQL_VALUES_STOP, databaseMeta.getName());
+        
+        if (canWeSetFetchSize(pstmt)) {
+          int fs = Const.FETCH_SIZE <= pstmt.getMaxRows() ? pstmt.getMaxRows() : Const.FETCH_SIZE;
 
-					debug = "P Set fetch direction";
-					pstmt.setFetchDirection(fetch_mode);
-				} 
-				debug = "P Set max rows";
-				if (rowlimit>0 && databaseMeta.supportsSetMaxRows()) pstmt.setMaxRows(rowlimit);
-				debug = "exec query";
-				res = pstmt.executeQuery();
+          if (databaseMeta.isMySQLVariant() && databaseMeta.isStreamingResults() && getDatabaseMetaData().getDriverMajorVersion()==3) {
+            pstmt.setFetchSize(Integer.MIN_VALUE);
+          } else {
+            pstmt.setFetchSize(fs);
+          }
+
+          pstmt.setFetchDirection(fetch_mode);
+        }
+
+        if (rowlimit>0 && databaseMeta.supportsSetMaxRows()) pstmt.setMaxRows(rowlimit);
+				
+        log.snap(Metrics.METRIC_DATABASE_EXECUTE_SQL_START, databaseMeta.getName());
+        res = pstmt.executeQuery();
+        log.snap(Metrics.METRIC_DATABASE_EXECUTE_SQL_STOP, databaseMeta.getName());
 			}
 			else
 			{
-				debug = "create statement";
+        log.snap(Metrics.METRIC_DATABASE_CREATE_SQL_START, databaseMeta.getName());
 				sel_stmt = connection.createStatement();
-                if (canWeSetFetchSize(sel_stmt)) 
+        log.snap(Metrics.METRIC_DATABASE_CREATE_SQL_STOP, databaseMeta.getName());
+        if (canWeSetFetchSize(sel_stmt)) 
 				{
-					debug = "Set fetchsize";
                     int fs = Const.FETCH_SIZE<=sel_stmt.getMaxRows()?sel_stmt.getMaxRows():Const.FETCH_SIZE;
                     if (databaseMeta.getDatabaseInterface() instanceof MySQLDatabaseMeta && databaseMeta.isStreamingResults())
                     {
@@ -1925,34 +1941,29 @@ public class Database implements VariableSpace, LoggingObjectInterface
                     {
                         sel_stmt.setFetchSize(fs);
                     }
-					debug = "Set fetch direction";
 					sel_stmt.setFetchDirection(fetch_mode);
 				} 
-				debug = "Set max rows";
 				if (rowlimit>0 && databaseMeta.supportsSetMaxRows()) sel_stmt.setMaxRows(rowlimit);
 
-				debug = "exec query";
+        log.snap(Metrics.METRIC_DATABASE_EXECUTE_SQL_START, databaseMeta.getName());
 				res=sel_stmt.executeQuery(databaseMeta.stripCR(sql));
+        log.snap(Metrics.METRIC_DATABASE_EXECUTE_SQL_STOP, databaseMeta.getName());
 			}
-			debug = "openQuery : get rowinfo";
             
-            // MySQL Hack only. It seems too much for the cursor type of operation on MySQL, to have another cursor opened
-            // to get the length of a String field.  So, on MySQL, we ingore the length of Strings in result rows.
-            // 
-			rowMeta = getRowInfo(res.getMetaData(), databaseMeta.getDatabaseInterface() instanceof MySQLDatabaseMeta, lazyConversion);
+      // MySQL Hack only. It seems too much for the cursor type of operation on MySQL, to have another cursor opened
+      // to get the length of a String field.  So, on MySQL, we ingore the length of Strings in result rows.
+      //
+			rowMeta = getRowInfo(res.getMetaData(), databaseMeta.isMySQLVariant(), lazyConversion);
 		}
 		catch(SQLException ex)
 		{
-			// log.logError("ERROR executing ["+sql+"]");
-			// log.logError("ERROR in part: ["+debug+"]");
-			// printSQLException(ex);
-            throw new KettleDatabaseException("An error occurred executing SQL: "+Const.CR+sql, ex);
+		  throw new KettleDatabaseException("An error occurred executing SQL: "+Const.CR+sql, ex);
 		}
 		catch(Exception e)
 		{
-			log.logError("ERROR executing query: "+e.toString());
-			log.logError("ERROR in part: "+debug);
-            throw new KettleDatabaseException("An error occurred executing SQL in part ["+debug+"]:"+Const.CR+sql, e);
+      throw new KettleDatabaseException("An error occurred executing SQL:"+Const.CR+sql, e);
+		} finally {
+      log.snap(Metrics.METRIC_DATABASE_OPEN_QUERY_STOP, databaseMeta.getName());
 		}
 
 		return res;
@@ -1970,52 +1981,54 @@ public class Database implements VariableSpace, LoggingObjectInterface
     public ResultSet openQuery(PreparedStatement ps, RowMetaInterface params, Object[] data) throws KettleDatabaseException
 	{
 		ResultSet res;
-		String debug = "Start";
 		
 		// Create a Statement
 		try
 		{
-			debug = "OQ Set values";
+		  log.snap(Metrics.METRIC_DATABASE_OPEN_QUERY_START, databaseMeta.getName());
+
+      log.snap(Metrics.METRIC_DATABASE_SQL_VALUES_START, databaseMeta.getName());
 			setValues(params, data, ps); // set the parameters!
+      log.snap(Metrics.METRIC_DATABASE_SQL_VALUES_STOP, databaseMeta.getName());
 			
 			if (canWeSetFetchSize(ps)) 
 			{
-				debug = "OQ Set fetchsize";
-                int fs = Const.FETCH_SIZE<=ps.getMaxRows()?ps.getMaxRows():Const.FETCH_SIZE;
-                if (databaseMeta.getDatabaseInterface() instanceof MySQLDatabaseMeta && databaseMeta.isStreamingResults())
-                {
-                    ps.setFetchSize(Integer.MIN_VALUE);
-                }
-                else
-                {
-                    ps.setFetchSize(fs);
-                }
+        int fs = Const.FETCH_SIZE<=ps.getMaxRows()?ps.getMaxRows():Const.FETCH_SIZE;
+        if (databaseMeta.isMySQLVariant() && databaseMeta.isStreamingResults() && getDatabaseMetaData().getDriverMajorVersion()==3)
+        {
+            ps.setFetchSize(Integer.MIN_VALUE);
+        }
+        else
+        {
+            ps.setFetchSize(fs);
+        }
 				
-				debug = "OQ Set fetch direction";
 				ps.setFetchDirection(ResultSet.FETCH_FORWARD);
 			} 
 			
-			debug = "OQ Set max rows";
 			if (rowlimit>0 && databaseMeta.supportsSetMaxRows()) ps.setMaxRows(rowlimit);
-			
-			debug = "OQ exec query";
-			res = ps.executeQuery();
 
-			debug = "OQ getRowInfo()";
-			// rowinfo = getRowInfo(res.getMetaData());
-            
-             // MySQL Hack only. It seems too much for the cursor type of operation on MySQL, to have another cursor opened
-            // to get the length of a String field.  So, on MySQL, we ignore the length of Strings in result rows.
-            // 
-            rowMeta = getRowInfo(res.getMetaData(), databaseMeta.getDatabaseInterface() instanceof MySQLDatabaseMeta, false);
+      log.snap(Metrics.METRIC_DATABASE_EXECUTE_SQL_START, databaseMeta.getName());
+			res = ps.executeQuery();
+      log.snap(Metrics.METRIC_DATABASE_EXECUTE_SQL_STOP, databaseMeta.getName());
+
+      // MySQL Hack only. It seems too much for the cursor type of operation on MySQL, to have another cursor opened
+      // to get the length of a String field.  So, on MySQL, we ignore the length of Strings in result rows.
+      // 
+      log.snap(Metrics.METRIC_DATABASE_GET_ROW_META_START, databaseMeta.getName());
+      rowMeta = getRowInfo(res.getMetaData(), databaseMeta.isMySQLVariant(), false);
+      log.snap(Metrics.METRIC_DATABASE_GET_ROW_META_STOP, databaseMeta.getName());
 		}
 		catch(SQLException ex)
 		{
-			throw new KettleDatabaseException("ERROR executing query in part["+debug+"]", ex);
+			throw new KettleDatabaseException("ERROR executing query", ex);
 		}
 		catch(Exception e)
 		{
-			throw new KettleDatabaseException("ERROR executing query in part["+debug+"]", e);
+			throw new KettleDatabaseException("ERROR executing query", e);
+		} 
+		finally {
+      log.snap(Metrics.METRIC_DATABASE_OPEN_QUERY_STOP, databaseMeta.getName());
 		}
 
 		return res;
@@ -2326,6 +2339,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 			try
 			{
 				preparedStatement = connection.prepareStatement(databaseMeta.stripCR(sql), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
+				preparedStatement.setMaxRows(1);
 				ResultSetMetaData rsmd = preparedStatement.getMetaData();
 				fields = getRowInfo(rsmd, false, false);
 			}
@@ -2376,7 +2390,8 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		{
 			if (inform==null 
 					// Hack for MSSQL jtds 1.2 when using xxx NOT IN yyy we have to use a prepared statement (see BugID 3214)
-					&& databaseMeta.getDatabaseInterface() instanceof MSSQLServerDatabaseMeta )
+					&& ( databaseMeta.getDatabaseInterface() instanceof MSSQLServerDatabaseMeta || databaseMeta.getDatabaseInterface() instanceof KettleDatabaseMeta) 
+			   )
 			{
 				sel_stmt = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
 				
@@ -2447,44 +2462,50 @@ public class Database implements VariableSpace, LoggingObjectInterface
 	 */
 	private RowMetaInterface getRowInfo(ResultSetMetaData rm, boolean ignoreLength, boolean lazyConversion) throws KettleDatabaseException
 	{
-        if (rm==null) {
-        	throw new KettleDatabaseException("No result set metadata available to retrieve row metadata!");
-        }
+	  try {
+      log.snap(Metrics.METRIC_DATABASE_GET_ROW_META_START, databaseMeta.getName());
+	    
+      if (rm==null) {
+      	throw new KettleDatabaseException("No result set metadata available to retrieve row metadata!");
+      }
 		
-		rowMeta = new RowMeta();
-		
-		try
-		{
-			// TODO If we do lazy conversion, we need to find out about the encoding
-			//
-            int fieldNr = 1;
-			int nrcols=rm.getColumnCount();	
-			for (int i=1;i<=nrcols;i++)
-			{
-				String name;
-				if (databaseMeta.isMySQLVariant() && getDatabaseMetaData().getDriverMajorVersion()>3) {
-				  name = new String(rm.getColumnLabel(i));
-				} else {
-				  name = new String(rm.getColumnName(i));
-				}
-                
-                // Check the name, sometimes it's empty.
-                //
-                if (Const.isEmpty(name) || Const.onlySpaces(name))
-                {
-                    name = "Field"+fieldNr;
-                    fieldNr++;
-                }
-                
-				ValueMetaInterface v = getValueFromSQLType(name, rm, i, ignoreLength, lazyConversion);
-				rowMeta.addValueMeta(v);			
-			}
-			return rowMeta;
-		}
-		catch(SQLException ex)
-		{
-			throw new KettleDatabaseException("Error getting row information from database: ", ex);
-		}
+  		rowMeta = new RowMeta();
+  		
+  		try
+  		{
+  			// TODO If we do lazy conversion, we need to find out about the encoding
+  			//
+              int fieldNr = 1;
+  			int nrcols=rm.getColumnCount();	
+  			for (int i=1;i<=nrcols;i++)
+  			{
+  				String name;
+  				if (databaseMeta.isMySQLVariant() && getDatabaseMetaData().getDriverMajorVersion()>3) {
+  				  name = new String(rm.getColumnLabel(i));
+  				} else {
+  				  name = new String(rm.getColumnName(i));
+  				}
+                  
+                  // Check the name, sometimes it's empty.
+                  //
+                  if (Const.isEmpty(name) || Const.onlySpaces(name))
+                  {
+                      name = "Field"+fieldNr;
+                      fieldNr++;
+                  }
+                  
+  				ValueMetaInterface v = getValueFromSQLType(name, rm, i, ignoreLength, lazyConversion);
+  				rowMeta.addValueMeta(v);			
+  			}
+  			return rowMeta;
+  		}
+  		catch(SQLException ex)
+  		{
+  			throw new KettleDatabaseException("Error getting row information from database: ", ex);
+  		}
+	  } finally {
+      log.snap(Metrics.METRIC_DATABASE_GET_ROW_META_STOP, databaseMeta.getName());
+	  }
 	}
 
 	private ValueMetaInterface getValueFromSQLType(String name, ResultSetMetaData rm, int index, boolean ignoreLength, boolean lazyConversion) throws SQLException
@@ -2830,6 +2851,8 @@ public class Database implements VariableSpace, LoggingObjectInterface
    */
   public Object[] getRow(ResultSet rs, ResultSetMetaData dummy, RowMetaInterface rowInfo) throws KettleDatabaseException {
     try {
+      // log.snap(Metrics.METRIC_DATABASE_GET_ROW_START, databaseMeta.getName());
+
       int nrcols = rowInfo.size();
       Object[] data = RowDataUtil.allocateRowData(nrcols);
 
@@ -2846,6 +2869,8 @@ public class Database implements VariableSpace, LoggingObjectInterface
       return data;
     } catch (Exception ex) {
       throw new KettleDatabaseException("Couldn't get row from result set", ex);
+    } finally {
+      // log.snap(Metrics.METRIC_DATABASE_GET_ROW_STOP, databaseMeta.getName());
     }
   }
 
@@ -2889,59 +2914,53 @@ public class Database implements VariableSpace, LoggingObjectInterface
 	                      String gets[], String rename[], String orderby,
 	                      boolean checkForMultipleResults) throws KettleDatabaseException
 	{
-        String table = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
-        
-		String sql = "SELECT ";
-		
-		for (int i=0;i<gets.length;i++)
-		{
-			if (i!=0) sql += ", ";
-			sql += databaseMeta.quoteField(gets[i]);
-			if (rename!=null && rename[i]!=null && !gets[i].equalsIgnoreCase(rename[i]))
-			{
-				sql+=" AS "+databaseMeta.quoteField(rename[i]);
-			}
-		}
+    try {
+      log.snap(Metrics.METRIC_DATABASE_SET_LOOKUP_START, databaseMeta.getName());
 
-		sql += " FROM "+table+" WHERE ";
+      String table = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
 
-		for (int i=0;i<codes.length;i++)
-		{
-			if (i!=0) sql += " AND ";
-			sql += databaseMeta.quoteField(codes[i]);
-			if ("BETWEEN".equalsIgnoreCase(condition[i]))
-			{
-				sql+=" BETWEEN ? AND ? ";
-			}
-			else
-			if ("IS NULL".equalsIgnoreCase(condition[i]) || "IS NOT NULL".equalsIgnoreCase(condition[i]))
-			{
-				sql+=" "+condition[i]+" ";
-			}
-			else
-			{
-				sql+=" "+condition[i]+" ? ";
-			}
-		}
+      String sql = "SELECT ";
 
-		if (orderby!=null && orderby.length()!=0)
-		{
-			sql += " ORDER BY "+orderby;
-		}
+      for (int i = 0; i < gets.length; i++) {
+        if (i != 0)
+          sql += ", ";
+        sql += databaseMeta.quoteField(gets[i]);
+        if (rename != null && rename[i] != null && !gets[i].equalsIgnoreCase(rename[i])) {
+          sql += " AS " + databaseMeta.quoteField(rename[i]);
+        }
+      }
 
-		try
-		{
-			if(log.isDetailed()) log.logDetailed("Setting preparedStatement to ["+sql+"]");
-			prepStatementLookup=connection.prepareStatement(databaseMeta.stripCR(sql));
-			if (!checkForMultipleResults && databaseMeta.supportsSetMaxRows())
-			{
-				prepStatementLookup.setMaxRows(1); // alywas get only 1 line back!
-			}
-		}
-		catch(SQLException ex) 
-		{
-			throw new KettleDatabaseException("Unable to prepare statement for update ["+sql+"]", ex);
-		}
+      sql += " FROM " + table + " WHERE ";
+
+      for (int i = 0; i < codes.length; i++) {
+        if (i != 0)
+          sql += " AND ";
+        sql += databaseMeta.quoteField(codes[i]);
+        if ("BETWEEN".equalsIgnoreCase(condition[i])) {
+          sql += " BETWEEN ? AND ? ";
+        } else if ("IS NULL".equalsIgnoreCase(condition[i]) || "IS NOT NULL".equalsIgnoreCase(condition[i])) {
+          sql += " " + condition[i] + " ";
+        } else {
+          sql += " " + condition[i] + " ? ";
+        }
+      }
+
+      if (orderby != null && orderby.length() != 0) {
+        sql += " ORDER BY " + orderby;
+      }
+
+      try {
+        if (log.isDetailed()) log.logDetailed("Setting preparedStatement to [" + sql + "]");
+        prepStatementLookup = connection.prepareStatement(databaseMeta.stripCR(sql));
+        if (!checkForMultipleResults && databaseMeta.supportsSetMaxRows()) {
+          prepStatementLookup.setMaxRows(1); // alywas get only 1 line back!
+        }
+      } catch (SQLException ex) {
+        throw new KettleDatabaseException("Unable to prepare statement for update [" + sql + "]", ex);
+      }
+    } finally {
+      log.snap(Metrics.METRIC_DATABASE_SET_LOOKUP_STOP, databaseMeta.getName());
+    }
 	}
 
     public boolean prepareUpdate(String table, String codes[], String condition[], String sets[])
@@ -2952,53 +2971,51 @@ public class Database implements VariableSpace, LoggingObjectInterface
 	// Lookup certain fields in a table
 	public boolean prepareUpdate(String schemaName, String tableName, String codes[], String condition[], String sets[])
 	{
-		StringBuffer sql = new StringBuffer(128);
+    try {
+      log.snap(Metrics.METRIC_DATABASE_PREPARE_UPDATE_START, databaseMeta.getName());
 
-        String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
-        
-		sql.append("UPDATE ").append(schemaTable).append(Const.CR).append("SET ");
+      StringBuffer sql = new StringBuffer(128);
 
-		for (int i=0;i<sets.length;i++)
-		{
-			if (i!=0) sql.append(",   ");
-			sql.append(databaseMeta.quoteField(sets[i]));
-			sql.append(" = ?").append(Const.CR);
-		}
+      String schemaTable = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
 
-		sql.append("WHERE ");
+      sql.append("UPDATE ").append(schemaTable).append(Const.CR).append("SET ");
 
-		for (int i=0;i<codes.length;i++)
-		{
-			if (i!=0) sql.append("AND   ");
-			sql.append(databaseMeta.quoteField(codes[i]));
-			if ("BETWEEN".equalsIgnoreCase(condition[i]))
-			{
-				sql.append(" BETWEEN ? AND ? ");
-			}
-			else
-			if ("IS NULL".equalsIgnoreCase(condition[i]) || "IS NOT NULL".equalsIgnoreCase(condition[i]))
-			{
-				sql.append(' ').append(condition[i]).append(' ');
-			}
-			else
-			{
-				sql.append(' ').append(condition[i]).append(" ? ");
-			}
-		}
+      for (int i = 0; i < sets.length; i++) {
+        if (i != 0)
+          sql.append(",   ");
+        sql.append(databaseMeta.quoteField(sets[i]));
+        sql.append(" = ?").append(Const.CR);
+      }
 
-		try
-		{
-			String s = sql.toString();
-			if(log.isDetailed()) log.logDetailed("Setting update preparedStatement to ["+s+"]");
-			prepStatementUpdate=connection.prepareStatement(databaseMeta.stripCR(s));
-		}
-		catch(SQLException ex) 
-		{
-			printSQLException(ex);
-			return false;
-		}
+      sql.append("WHERE ");
 
-		return true;
+      for (int i = 0; i < codes.length; i++) {
+        if (i != 0)
+          sql.append("AND   ");
+        sql.append(databaseMeta.quoteField(codes[i]));
+        if ("BETWEEN".equalsIgnoreCase(condition[i])) {
+          sql.append(" BETWEEN ? AND ? ");
+        } else if ("IS NULL".equalsIgnoreCase(condition[i]) || "IS NOT NULL".equalsIgnoreCase(condition[i])) {
+          sql.append(' ').append(condition[i]).append(' ');
+        } else {
+          sql.append(' ').append(condition[i]).append(" ? ");
+        }
+      }
+
+      try {
+        String s = sql.toString();
+        if (log.isDetailed())
+          log.logDetailed("Setting update preparedStatement to [" + s + "]");
+        prepStatementUpdate = connection.prepareStatement(databaseMeta.stripCR(s));
+      } catch (SQLException ex) {
+        printSQLException(ex);
+        return false;
+      }
+
+      return true;
+    } finally {
+      log.snap(Metrics.METRIC_DATABASE_PREPARE_UPDATE_STOP, databaseMeta.getName());
+    }
 	}
 
 
@@ -3024,6 +3041,9 @@ public class Database implements VariableSpace, LoggingObjectInterface
      */
     public boolean prepareDelete(String schemaName, String tableName, String codes[], String condition[])
     {
+      try {
+        log.snap(Metrics.METRIC_DATABASE_PREPARE_DELETE_START, databaseMeta.getName());
+      
         String sql;
 
         String table = databaseMeta.getQuotedSchemaTableCombination(schemaName, tableName);
@@ -3061,74 +3081,101 @@ public class Database implements VariableSpace, LoggingObjectInterface
         }
 
         return true;
+      } finally {
+        log.snap(Metrics.METRIC_DATABASE_PREPARE_DELETE_STOP, databaseMeta.getName());
+      }
     }
 
-    public void setProcLookup(String proc, String arg[], String argdir[], int argtype[], String returnvalue, int returntype)
-		throws KettleDatabaseException
-	{
-		String sql;
-		int pos=0;
-		
-		sql = "{ ";
-		if (returnvalue!=null && returnvalue.length()!=0)
-		{
-			sql+="? = ";
-		}
-		sql+="call "+proc+" ";
-		
-		if (arg.length>0) sql+="(";
-		
-		for (int i=0;i<arg.length;i++)
-		{
-			if (i!=0) sql += ", ";
-			sql += " ?";
-		}
-		
-		if (arg.length>0) sql+=")"; 
-		
-		sql+="}";
-		
-		try
-		{
-			if(log.isDetailed()) log.logDetailed("DBA setting callableStatement to ["+sql+"]");
-			cstmt=connection.prepareCall(sql);
-			pos=1;
-			if (!Const.isEmpty(returnvalue))
-			{
-				switch(returntype)
-				{
-				case ValueMetaInterface.TYPE_NUMBER    : cstmt.registerOutParameter(pos, java.sql.Types.DOUBLE); break;
-                case ValueMetaInterface.TYPE_BIGNUMBER : cstmt.registerOutParameter(pos, java.sql.Types.DECIMAL); break;
-				case ValueMetaInterface.TYPE_INTEGER   : cstmt.registerOutParameter(pos, java.sql.Types.BIGINT); break;
-				case ValueMetaInterface.TYPE_STRING    : cstmt.registerOutParameter(pos, java.sql.Types.VARCHAR);	break;
-				case ValueMetaInterface.TYPE_DATE      : cstmt.registerOutParameter(pos, java.sql.Types.TIMESTAMP); break;
-				case ValueMetaInterface.TYPE_BOOLEAN   : cstmt.registerOutParameter(pos, java.sql.Types.BOOLEAN); break;
-				default: break;
-				}
-				pos++;
-			}
-			for (int i=0;i<arg.length;i++)
-			{
-				if (argdir[i].equalsIgnoreCase("OUT") || argdir[i].equalsIgnoreCase("INOUT"))
-				{
-					switch(argtype[i])
-					{
-					case ValueMetaInterface.TYPE_NUMBER    : cstmt.registerOutParameter(i+pos, java.sql.Types.DOUBLE); break;
-                    case ValueMetaInterface.TYPE_BIGNUMBER : cstmt.registerOutParameter(i+pos, java.sql.Types.DECIMAL); break;
-					case ValueMetaInterface.TYPE_INTEGER   : cstmt.registerOutParameter(i+pos, java.sql.Types.BIGINT); break;
-					case ValueMetaInterface.TYPE_STRING    : cstmt.registerOutParameter(i+pos, java.sql.Types.VARCHAR); break;
-					case ValueMetaInterface.TYPE_DATE      : cstmt.registerOutParameter(i+pos, java.sql.Types.TIMESTAMP); break;
-					case ValueMetaInterface.TYPE_BOOLEAN   : cstmt.registerOutParameter(i+pos, java.sql.Types.BOOLEAN); break;
-					default: break;
-					}
-				} 
-			}
-		}
-		catch(SQLException ex)
-		{
-			throw new KettleDatabaseException("Unable to prepare database procedure call", ex);
-		}
-	}
+  public void setProcLookup(String proc, String arg[], String argdir[], int argtype[], String returnvalue, int returntype) throws KettleDatabaseException {
+    try {
+      log.snap(Metrics.METRIC_DATABASE_PREPARE_DBPROC_START, databaseMeta.getName());
+      String sql;
+      int pos = 0;
+
+      sql = "{ ";
+      if (returnvalue != null && returnvalue.length() != 0) {
+        sql += "? = ";
+      }
+      sql += "call " + proc + " ";
+
+      if (arg.length > 0)
+        sql += "(";
+
+      for (int i = 0; i < arg.length; i++) {
+        if (i != 0)
+          sql += ", ";
+        sql += " ?";
+      }
+
+      if (arg.length > 0)
+        sql += ")";
+
+      sql += "}";
+
+      try {
+        if (log.isDetailed())
+          log.logDetailed("DBA setting callableStatement to [" + sql + "]");
+        cstmt = connection.prepareCall(sql);
+        pos = 1;
+        if (!Const.isEmpty(returnvalue)) {
+          switch (returntype) {
+          case ValueMetaInterface.TYPE_NUMBER:
+            cstmt.registerOutParameter(pos, java.sql.Types.DOUBLE);
+            break;
+          case ValueMetaInterface.TYPE_BIGNUMBER:
+            cstmt.registerOutParameter(pos, java.sql.Types.DECIMAL);
+            break;
+          case ValueMetaInterface.TYPE_INTEGER:
+            cstmt.registerOutParameter(pos, java.sql.Types.BIGINT);
+            break;
+          case ValueMetaInterface.TYPE_STRING:
+            cstmt.registerOutParameter(pos, java.sql.Types.VARCHAR);
+            break;
+          case ValueMetaInterface.TYPE_DATE:
+            cstmt.registerOutParameter(pos, java.sql.Types.TIMESTAMP);
+            break;
+          case ValueMetaInterface.TYPE_BOOLEAN:
+            cstmt.registerOutParameter(pos, java.sql.Types.BOOLEAN);
+            break;
+          default:
+            break;
+          }
+          pos++;
+        }
+        for (int i = 0; i < arg.length; i++) {
+          if (argdir[i].equalsIgnoreCase("OUT") || argdir[i].equalsIgnoreCase("INOUT")) {
+            switch (argtype[i]) {
+            case ValueMetaInterface.TYPE_NUMBER:
+              cstmt.registerOutParameter(i + pos, java.sql.Types.DOUBLE);
+              break;
+            case ValueMetaInterface.TYPE_BIGNUMBER:
+              cstmt.registerOutParameter(i + pos, java.sql.Types.DECIMAL);
+              break;
+            case ValueMetaInterface.TYPE_INTEGER:
+              cstmt.registerOutParameter(i + pos, java.sql.Types.BIGINT);
+              break;
+            case ValueMetaInterface.TYPE_STRING:
+              cstmt.registerOutParameter(i + pos, java.sql.Types.VARCHAR);
+              break;
+            case ValueMetaInterface.TYPE_DATE:
+              cstmt.registerOutParameter(i + pos, java.sql.Types.TIMESTAMP);
+              break;
+            case ValueMetaInterface.TYPE_BOOLEAN:
+              cstmt.registerOutParameter(i + pos, java.sql.Types.BOOLEAN);
+              break;
+            default:
+              break;
+            }
+          }
+        }
+      } catch (SQLException ex) {
+        throw new KettleDatabaseException("Unable to prepare database procedure call", ex);
+      }
+    } finally {
+      log.snap(Metrics.METRIC_DATABASE_PREPARE_DBPROC_STOP, databaseMeta.getName());
+    }
+
+  }
 
 	public Object[] getLookup() throws KettleDatabaseException
 	{
@@ -3145,54 +3192,52 @@ public class Database implements VariableSpace, LoggingObjectInterface
         return getLookup(ps, false);
     }
 
-	public Object[] getLookup(PreparedStatement ps, boolean failOnMultipleResults) throws KettleDatabaseException
-	{
-        ResultSet res = null;
-		try
-		{
-			res = ps.executeQuery();
-			
-			rowMeta = getRowInfo(res.getMetaData(), false, false);
-			
-			Object[] ret = getRow(res);
-			
-            if (failOnMultipleResults)
-            {
-                if (ret != null && res.next()) 
-                {
-                	// if the previous row was null, there's no reason to try res.next() again.
-                	// on DB2 this will even cause an exception (because of the buggy DB2 JDBC driver).
-                    throw new KettleDatabaseException("Only 1 row was expected as a result of a lookup, and at least 2 were found!");
-                }
-            }			
-			return ret;
-		}
-		catch(SQLException ex) 
-		{
-			throw new KettleDatabaseException("Error looking up row in database", ex);
-		}
-        finally
-        {
-            try
-            {
-                if (res!=null) res.close(); // close resultset!
-            }
-            catch(SQLException e)
-            {
-                throw new KettleDatabaseException("Unable to close resultset after looking up data", e);
-            }
+  public Object[] getLookup(PreparedStatement ps, boolean failOnMultipleResults) throws KettleDatabaseException {
+    ResultSet res = null;
+    try {
+      log.snap(Metrics.METRIC_DATABASE_GET_LOOKUP_START, databaseMeta.getName());
+      res = ps.executeQuery();
+
+      rowMeta = getRowInfo(res.getMetaData(), false, false);
+
+      Object[] ret = getRow(res);
+
+      if (failOnMultipleResults) {
+        if (ret != null && res.next()) {
+          // if the previous row was null, there's no reason to try res.next()
+          // again.
+          // on DB2 this will even cause an exception (because of the buggy DB2
+          // JDBC driver).
+          throw new KettleDatabaseException("Only 1 row was expected as a result of a lookup, and at least 2 were found!");
         }
-	}
+      }
+      return ret;
+    } catch (SQLException ex) {
+      throw new KettleDatabaseException("Error looking up row in database", ex);
+    } finally {
+      try {
+        if (res != null)
+          res.close(); // close resultset!
+      } catch (SQLException e) {
+        throw new KettleDatabaseException("Unable to close resultset after looking up data", e);
+      } finally {
+        log.snap(Metrics.METRIC_DATABASE_GET_LOOKUP_STOP, databaseMeta.getName());
+      }
+    }
+  }
 	
 	public DatabaseMetaData getDatabaseMetaData() throws KettleDatabaseException
 	{
 		try
 		{
+      log.snap(Metrics.METRIC_DATABASE_GET_DBMETA_START, databaseMeta.getName());
 			if (dbmd==null) dbmd = connection.getMetaData(); // Only get the metadata once!
 		}
 		catch(Exception e)
 		{
 			throw new KettleDatabaseException("Unable to get database metadata from this database connection", e);
+		} finally {
+      log.snap(Metrics.METRIC_DATABASE_GET_DBMETA_STOP, databaseMeta.getName());
 		}
 		
 		return dbmd;
@@ -5083,5 +5128,15 @@ public class Database implements VariableSpace, LoggingObjectInterface
 				if(bis!=null) bis.close();
 			}catch(Exception e) {};
 		}
+	}
+	
+	@Override
+	public boolean isGatheringMetrics() {
+	  return log.isGatheringMetrics();
+	}
+	
+	@Override
+	public void setGatheringMetrics(boolean gatheringMetrics) {
+	  log.setGatheringMetrics(gatheringMetrics);
 	}
 }

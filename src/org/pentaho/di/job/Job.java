@@ -76,6 +76,7 @@ import org.pentaho.di.job.entries.special.JobEntrySpecial;
 import org.pentaho.di.job.entries.trans.JobEntryTrans;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.IUser;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.ObjectRevision;
 import org.pentaho.di.repository.Repository;
@@ -171,6 +172,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
   
   private JobEntryCopy startJobEntryCopy;
 
+  private String executingServer;
+  private String executingUser;
+  
     public Job(String name, String file, String args[]) {
         this();
         jobMeta = new JobMeta();
@@ -352,7 +356,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     {
 		finished.set(false);
 		stopped.set(false);
-
+		captureSystemEnvironment();
+		
         log.logMinimal(BaseMessages.getString(PKG, "Job.Comment.JobStarted"));
 
         // Start the tracking...
@@ -425,7 +430,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 		finished.set(false);
         active.set(true);
         initialized.set(true);
-
+        captureSystemEnvironment();
+        
         // Where do we start?
         JobEntryCopy startpoint;
 
@@ -1712,5 +1718,55 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    */
   public void setStartJobEntryCopy(JobEntryCopy startJobEntryCopy) {
     this.startJobEntryCopy = startJobEntryCopy;
+  }
+
+  /**
+   * @return the executingServer
+   */
+  public String getExecutingServer() {
+    return executingServer;
+  }
+
+  /**
+   * @param executingServer the executingServer to set
+   */
+  public void setExecutingServer(String executingServer) {
+    this.executingServer = executingServer;
+  }
+
+  /**
+   * @return the executingUser
+   */
+  public String getExecutingUser() {
+    return executingUser;
+  }
+
+  /**
+   * @param executingUser the executingUser to set
+   */
+  public void setExecutingUser(String executingUser) {
+    this.executingUser = executingUser;
+  }
+  
+  public void captureSystemEnvironment() {
+    // Capture the executing user and server name... 
+    setExecutingUser(System.getProperty("user.name"));
+    if (rep!=null) {
+      IUser userInfo = rep.getUserInfo();
+      if (userInfo!=null) {
+        setExecutingUser(userInfo.getLogin());
+      }
+    }
+    setExecutingServer(Const.getHostname());
+  }
+ 
+  @Override
+  public boolean isGatheringMetrics() {
+    return log.isGatheringMetrics();
+  }
+  
+  @Override
+  public void setGatheringMetrics(boolean gatheringMetrics) {
+    log.setGatheringMetrics(gatheringMetrics);
   }
 }

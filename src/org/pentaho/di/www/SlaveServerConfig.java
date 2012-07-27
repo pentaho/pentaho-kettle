@@ -24,7 +24,9 @@ package org.pentaho.di.www;
 
 import java.net.SocketException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
@@ -32,6 +34,7 @@ import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.jdbc.TransDataService;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
@@ -48,8 +51,9 @@ public class SlaveServerConfig {
   public static final String XML_TAG_SEQUENCES = "sequences"; //$NON-NLS-1$
 	public static final String XML_TAG_AUTOSEQUENCE = "autosequence"; //$NON-NLS-1$
   public static final String XML_TAG_AUTO_CREATE= "autocreate"; //$NON-NLS-1$
+  public static final String XML_TAG_SERVICES= "services"; //$NON-NLS-1$
+  public static final String XML_TAG_SERVICE= "service"; //$NON-NLS-1$
 
-	
 	private List<SlaveServer> masters;
 	
 	private SlaveServer slaveServer;
@@ -73,11 +77,14 @@ public class SlaveServerConfig {
 	
 	private boolean automaticCreationAllowed;
 	
+	private Map<String, TransDataService> servicesMap;
+	
 	public SlaveServerConfig() {
 		masters=new ArrayList<SlaveServer>();
 		databases=new ArrayList<DatabaseMeta>();
 		slaveSequences=new ArrayList<SlaveSequence>();
 		automaticCreationAllowed=false;
+		servicesMap = new HashMap<String, TransDataService>();
 	}
 	
 	public SlaveServerConfig(SlaveServer slaveServer) {
@@ -126,6 +133,16 @@ public class SlaveServerConfig {
           xml.append(XMLHandler.addTagValue(XML_TAG_AUTO_CREATE, automaticCreationAllowed));
           xml.append(XMLHandler.closeTag(XML_TAG_AUTOSEQUENCE));
         }
+
+        xml.append(XMLHandler.openTag(XML_TAG_SERVICES));
+        
+        for (TransDataService service : servicesMap.values()) {
+          xml.append(XMLHandler.openTag(XML_TAG_SERVICE));
+          xml.append(service.getXML());
+          xml.append(XMLHandler.closeTag(XML_TAG_SERVICE));
+        }
+        xml.append(XMLHandler.closeTag(XML_TAG_SERVICES));
+
         
         xml.append(XMLHandler.closeTag(XML_TAG));
         
@@ -170,6 +187,13 @@ public class SlaveServerConfig {
     if (autoSequenceNode!=null) {
       autoSequence = new SlaveSequence(autoSequenceNode, databases);
       automaticCreationAllowed="Y".equalsIgnoreCase(XMLHandler.getTagValue(autoSequenceNode, XML_TAG_AUTO_CREATE));
+    }
+    
+    Node servicesNode = XMLHandler.getSubNode(node, XML_TAG_SERVICES);
+    List<Node> servicesNodes = XMLHandler.getNodes(servicesNode, XML_TAG_SERVICE);
+    for (Node serviceNode : servicesNodes) {
+      TransDataService service = new TransDataService(serviceNode);
+      servicesMap.put(service.getName(), service);
     }
 	}
 	
@@ -415,6 +439,20 @@ public class SlaveServerConfig {
    */
   public void setAutomaticCreationAllowed(boolean automaticCreationAllowed) {
     this.automaticCreationAllowed = automaticCreationAllowed;
+  }
+
+  /**
+   * @return the servicesMap
+   */
+  public Map<String, TransDataService> getServicesMap() {
+    return servicesMap;
+  }
+
+  /**
+   * @param servicesMap the servicesMap to set
+   */
+  public void setServicesMap(Map<String, TransDataService> servicesMap) {
+    this.servicesMap = servicesMap;
   }
   
   

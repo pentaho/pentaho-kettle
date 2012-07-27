@@ -87,6 +87,9 @@ public class TransExecutionConfigurationDialog extends Dialog
     private Button wPostTransformation;
     private Button wStartExecution;
     private Button wShowTransformations;
+
+    private Button wGatherMetrics;
+
     private CCombo wRemoteHost;
     private Label wlRemoteHost;
     private Text wReplayDate;
@@ -298,30 +301,41 @@ public class TransExecutionConfigurationDialog extends Dialog
         wSafeMode.setToolTipText(BaseMessages.getString(PKG, "TransExecutionConfigurationDialog.SafeMode.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
         props.setLook(wSafeMode);
         FormData fdSafeMode = new FormData();
-        fdSafeMode.left  = new FormAttachment( 50, margin);
+        fdSafeMode.left  = new FormAttachment(props.getMiddlePct(), margin);
         fdSafeMode.right = new FormAttachment(100, 0);
         fdSafeMode.top   = new FormAttachment(0, 0);
         wSafeMode.setLayoutData(fdSafeMode);
         wSafeMode.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { enableFields(); }});
+
+        wGatherMetrics = new Button(gDetails, SWT.CHECK);
+        wGatherMetrics.setText(BaseMessages.getString(PKG, "TransExecutionConfigurationDialog.GatherMetrics.Label")); //$NON-NLS-1$
+        wGatherMetrics.setToolTipText(BaseMessages.getString(PKG, "TransExecutionConfigurationDialog.GatherMetrics.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
+        props.setLook(wGatherMetrics);
+        FormData fdGatherMetrics = new FormData();
+        fdGatherMetrics.left  = new FormAttachment(props.getMiddlePct(), margin);
+        fdGatherMetrics.right = new FormAttachment(100, 0);
+        fdGatherMetrics.top   = new FormAttachment(wSafeMode, margin);
+        wGatherMetrics.setLayoutData(fdGatherMetrics);
+        wGatherMetrics.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { enableFields(); }});
 
         wClearLog = new Button(gDetails, SWT.CHECK);
         wClearLog.setText(BaseMessages.getString(PKG, "TransExecutionConfigurationDialog.ClearLog.Label")); //$NON-NLS-1$
         wClearLog.setToolTipText(BaseMessages.getString(PKG, "TransExecutionConfigurationDialog.ClearLog.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
         props.setLook(wClearLog);
         FormData fdClearLog = new FormData();
-        fdClearLog.left  = new FormAttachment( 50, margin);
+        fdClearLog.left  = new FormAttachment(props.getMiddlePct(), margin);
         fdClearLog.right = new FormAttachment(100, 0);
-        fdClearLog.top   = new FormAttachment(wSafeMode, margin);
+        fdClearLog.top   = new FormAttachment(wGatherMetrics, margin);
         wClearLog.setLayoutData(fdClearLog);
         wClearLog.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { enableFields(); }});
 
-        wlLogLevel = new Label(gDetails, SWT.LEFT);
+        wlLogLevel = new Label(gDetails, SWT.RIGHT);
         props.setLook(wlLogLevel);
         wlLogLevel.setText(BaseMessages.getString(PKG, "TransExecutionConfigurationDialog.LogLevel.Label")); //$NON-NLS-1$
         wlLogLevel.setToolTipText(BaseMessages.getString(PKG, "TransExecutionConfigurationDialog.LogLevel.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
         FormData fdlLogLevel = new FormData();
         fdlLogLevel.left  = new FormAttachment(0, 0);
-        fdlLogLevel.right = new FormAttachment(50, 0);
+        fdlLogLevel.right = new FormAttachment(props.getMiddlePct(), 0);
         fdlLogLevel.top   = new FormAttachment(wClearLog, margin);
         wlLogLevel.setLayoutData(fdlLogLevel);
 
@@ -329,20 +343,20 @@ public class TransExecutionConfigurationDialog extends Dialog
         wLogLevel.setToolTipText(BaseMessages.getString(PKG, "TransExecutionConfigurationDialog.LogLevel.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
         props.setLook(wLogLevel);
         FormData fdLogLevel = new FormData();
-        fdLogLevel.left  = new FormAttachment(50, margin);
+        fdLogLevel.left  = new FormAttachment(props.getMiddlePct(), margin);
         fdLogLevel.right = new FormAttachment(100, 0);
         fdLogLevel.top   = new FormAttachment(wClearLog, margin);
         wLogLevel.setLayoutData(fdLogLevel);
         wLogLevel.setItems(LogLevel.getLogLevelDescriptions());
 
         // ReplayDate
-        wlReplayDate = new Label(gDetails, SWT.LEFT);
+        wlReplayDate = new Label(gDetails, SWT.RIGHT);
         props.setLook(wlReplayDate);
         wlReplayDate.setText(BaseMessages.getString(PKG, "TransExecutionConfigurationDialog.ReplayDate.Label")); //$NON-NLS-1$
         wlReplayDate.setToolTipText(BaseMessages.getString(PKG, "TransExecutionConfigurationDialog.ReplayDate.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
         FormData fdlReplayDate = new FormData();
         fdlReplayDate.left   = new FormAttachment(0, 0);
-        fdlReplayDate.right  = new FormAttachment(50, 0);
+        fdlReplayDate.right  = new FormAttachment(props.getMiddlePct(), 0);
         fdlReplayDate.top    = new FormAttachment(wLogLevel, margin);
         wlReplayDate.setLayoutData(fdlReplayDate);
 
@@ -350,7 +364,7 @@ public class TransExecutionConfigurationDialog extends Dialog
         props.setLook(wReplayDate);
         wReplayDate.setToolTipText(BaseMessages.getString(PKG, "TransExecutionConfigurationDialog.ReplayDate.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
         FormData fdReplayDate = new FormData();
-        fdReplayDate.left   = new FormAttachment(50, margin);
+        fdReplayDate.left   = new FormAttachment(props.getMiddlePct(), margin);
         fdReplayDate.right  = new FormAttachment(100, 0);
         fdReplayDate.top    = new FormAttachment(wLogLevel, margin);
         wReplayDate.setLayoutData(fdReplayDate);
@@ -561,6 +575,7 @@ public class TransExecutionConfigurationDialog extends Dialog
         wShowTransformations.setSelection(configuration.isClusterShowingTransformation());
         wRemoteHost.setText( configuration.getRemoteServer()==null ? "" : configuration.getRemoteServer().toString() );
         wPassExport.setSelection(configuration.isPassingExport());
+        wGatherMetrics.setSelection(configuration.isGatheringMetrics());
         
         wLogLevel.select( configuration.getLogLevel().getLevel() );
         if (configuration.getReplayDate()!=null) wReplayDate.setText(simpleDateFormat.format(configuration.getReplayDate()));
@@ -607,6 +622,7 @@ public class TransExecutionConfigurationDialog extends Dialog
             configuration.setSafeModeEnabled(wSafeMode.getSelection() );
             configuration.setClearingLog(wClearLog.getSelection());
             configuration.setLogLevel( LogLevel.values()[wLogLevel.getSelectionIndex()] );
+            configuration.setGatheringMetrics(wGatherMetrics.getSelection());
             
             // The lower part of the dialog...
             getInfoParameters();

@@ -181,7 +181,7 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
 
   private void addLogTableTabs() {
 
-    models = new TransHistoryModel[transMeta.getLogTables().size()];
+    models = new TransHistoryModel[4];
     for (int i = 0; i < models.length; i++) {
       models[i] = new TransHistoryModel();
       models[i].logTable = transMeta.getLogTables().get(i);

@@ -336,6 +336,10 @@ public class CalculatorMetaFunction implements Cloneable
         this.groupingSymbol = groupingSymbol;
         this.currencySymbol = currencySymbol;
     }
+    
+    public CalculatorMetaFunction() {
+      // all null
+    }
 
     public boolean equals(Object obj)
     {       

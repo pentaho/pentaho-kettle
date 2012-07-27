@@ -234,7 +234,7 @@ public class TableOutput extends BaseStep implements StepInterface
             }
             
             Object partitioningValueData = rowMeta.getDate(r, data.indexOfPartitioningField); 
-            tableName=environmentSubstitute(meta.getTablename())+"_"+data.dateFormater.format((Date)partitioningValueData);
+            tableName=environmentSubstitute(meta.getTableName())+"_"+data.dateFormater.format((Date)partitioningValueData);
             insertRowData = r;
         }
         else
@@ -617,12 +617,12 @@ public class TableOutput extends BaseStep implements StepInterface
           data.db.setCommit(data.commitSize);
   
           if (!meta.isPartitioningEnabled() && !meta.isTableNameInField()) {
-            data.tableName = environmentSubstitute(meta.getTablename());
+            data.tableName = environmentSubstitute(meta.getTableName());
   
             // Only the first one truncates in a non-partitioned step copy
             //
             if (meta.truncateTable() && ((getCopy() == 0 && getUniqueStepNrAcrossSlaves() == 0) || !Const.isEmpty(getPartitionID()))) {
-              data.db.truncateTable(environmentSubstitute(meta.getSchemaName()), environmentSubstitute(meta.getTablename()));
+              data.db.truncateTable(environmentSubstitute(meta.getSchemaName()), environmentSubstitute(meta.getTableName()));
             }
           }
   

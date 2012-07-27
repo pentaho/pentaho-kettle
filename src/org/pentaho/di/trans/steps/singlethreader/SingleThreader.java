@@ -162,7 +162,11 @@ public class SingleThreader extends BaseStep implements StepInterface
         // Pass down the safe mode flag to the mapping...
         //
         data.mappingTrans.setSafeModeEnabled(getTrans().isSafeModeEnabled());
-        
+
+        // Pass down the metrics gathering flag to the mapping...
+        //
+        data.mappingTrans.setGatheringMetrics(getTrans().isGatheringMetrics());
+
         // Also set the name of this step in the mapping transformation for logging purposes
         //
         data.mappingTrans.setMappingStepName(getStepname());

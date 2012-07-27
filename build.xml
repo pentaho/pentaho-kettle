@@ -69,9 +69,9 @@
 	  	<echo>Compiling Kettle CORE...</echo>
         <javac fork="true"
             destdir="${classes-core}"
-            target="5"
-            source="5"
-            deprecation="true"
+            target="6"
+            source="6"
+            deprecation="off"
             debug="${debug}"
             optimize="${optimize}"
             memorymaximumsize="256m"
@@ -101,8 +101,8 @@
 	  	<echo>Compiling Kettle DB...</echo>
       <javac fork="true"
           destdir="${classes-db}"
-          target="5"
-          source="5"
+          target="6"
+          source="6"
           deprecation="true"
           debug="${debug}"
           optimize="${optimize}"
@@ -123,8 +123,8 @@
 	  	<echo>Compiling Kettle DB...</echo>
       <javac fork="true"
         destdir="${classes-dbdialog}"
-        target="5"
-        source="5"
+        target="6"
+        source="6"
         deprecation="true"
         debug="${debug}"
         optimize="${optimize}"
@@ -147,8 +147,8 @@
 	  	<echo>Compiling Kettle...</echo>
         <javac fork="true"
             destdir="${classes}"
-            target="5"
-            source="5"
+            target="6"
+            source="6"
             deprecation="true"
             debug="${debug}"
             optimize="${optimize}"
@@ -169,8 +169,8 @@
 	  	<echo>Compiling the Kettle JDBC driver...</echo>
       <javac fork="true"
           destdir="${classes-jdbc}"
-          target="5"
-          source="5"
+          target="6"
+          source="6"
           deprecation="true"
           debug="${debug}"
           optimize="${optimize}"
@@ -193,8 +193,8 @@
 	  	<echo>Compiling Kettle UI...</echo>
 	    <javac 
 	    	   destdir="${classes-ui}"
-	    	   target="5"
-	    	   source="5"
+	    	   target="6"
+	    	   source="6"
 	           deprecation="true"
 	    	   debug="${debug}"
                optimize="${optimize}"
@@ -236,8 +236,8 @@
 		    <javac fork="true"
 		    	   srcdir="${test}" 
 		    	   destdir="${testClasses}"
-		    	   target="5"
-		    	   source="5"
+		    	   target="6"
+		    	   source="6"
 		           deprecation="true"
 		    	   debug="true"
 	        	   includeantruntime="false"
@@ -1337,8 +1337,8 @@
 	      		<mkdir dir="src-plugins/@{plugin}/bin/classes"/>
 			    <javac 
 			    	   destdir="src-plugins/@{plugin}/bin/classes"
-			    	   target="5"
-			    	   source="5"
+			    	   target="6"
+			    	   source="6"
 			           deprecation="true"
 			    	   debug="${debug}"
 			    	   memorymaximumsize="256M"
@@ -1434,8 +1434,8 @@
 	      		<mkdir dir="src-plugins/@{plugin}/bin/test-classes"/>
 			    <javac 
 			    	   destdir="src-plugins/@{plugin}/bin/test-classes"
-			    	   target="5"
-			    	   source="5"
+			    	   target="6"
+			    	   source="6"
 			           deprecation="true"
 			    	   debug="${debug}"
 			    	   memorymaximumsize="256M"

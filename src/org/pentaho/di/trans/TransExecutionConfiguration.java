@@ -80,6 +80,8 @@ public class TransExecutionConfiguration implements Cloneable
     
     private Result previousResult;
     private Repository repository;
+    
+    private boolean gatheringMetrics;
 
     public TransExecutionConfiguration()
     {
@@ -533,6 +535,7 @@ public class TransExecutionConfiguration implements Cloneable
         xml.append("    ").append(XMLHandler.addTagValue("safe_mode", safeModeEnabled));
         xml.append("    ").append(XMLHandler.addTagValue("log_level", logLevel.getCode()));
         xml.append("    ").append(XMLHandler.addTagValue("clear_log", clearingLog));
+        xml.append("    ").append(XMLHandler.addTagValue("gather_metrics", gatheringMetrics));
         
         // The source rows...
         //
@@ -626,6 +629,7 @@ public class TransExecutionConfiguration implements Cloneable
         safeModeEnabled = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "safe_mode"));
         logLevel = LogLevel.getLogLevelForCode( XMLHandler.getTagValue(trecNode, "log_level") );
         clearingLog = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "clear_log"));
+        gatheringMetrics = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "gather_metrics"));
         
         Node resultNode = XMLHandler.getSubNode(trecNode, Result.XML_TAG);
         if (resultNode!=null)
@@ -758,4 +762,18 @@ public class TransExecutionConfiguration implements Cloneable
 	public void setPassingExport(boolean passingExport) {
 		this.passingExport = passingExport;
 	}
+
+  /**
+   * @return the gatheringMetrics
+   */
+  public boolean isGatheringMetrics() {
+    return gatheringMetrics;
+  }
+
+  /**
+   * @param gatheringMetrics the gatheringMetrics to set
+   */
+  public void setGatheringMetrics(boolean gatheringMetrics) {
+    this.gatheringMetrics = gatheringMetrics;
+  }
 }

@@ -22,6 +22,7 @@
 
 package org.pentaho.di.core.logging;
 
+
 public interface LogChannelInterface {
 
   /**
@@ -79,5 +80,26 @@ public interface LogChannelInterface {
 
   public void logError(String message, Object... arguments);
 
+  public boolean isGatheringMetrics();
 
+  public void setGatheringMetrics(boolean gatheringMetrics);
+    
+  /**
+   * Add a maximum snapshot to the metrics system for this log channel at the time of invocation.
+   * This will look up the maximum value in the metrics and replace it if the new value is higher. The snapshot date will be retained in that case.
+   * 
+   * @param metric The metric to use (ex. connect to a database) 
+   * @param value the value to store
+   */
+  public void snap(MetricsInterface metric, long...value);
+
+  /**
+   * Add a maximum snapshot to the metrics system for this log channel at the time of invocation.
+   * This will look up the maximum value in the metrics and replace it if the new value is higher. The snapshot date will be retained in that case.
+   * 
+   * @param metric The metric to use (ex. connect to a database) 
+   * @param subject The subject (ex. the name of the database) 
+   * @param value the value to store
+   */
+  public void snap(MetricsInterface metric, String subject, long...value);
 }

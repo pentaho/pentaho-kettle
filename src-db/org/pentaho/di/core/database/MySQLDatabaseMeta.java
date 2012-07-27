@@ -442,6 +442,13 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
   public boolean supportsErrorHandlingOnBatchUpdates() {
     return true;
   }
+
+  @Override
+  public boolean isRequiringTransactionsOnQueries()
+  {
+    return false;
+  }
+
 }
 
 

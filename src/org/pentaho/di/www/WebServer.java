@@ -106,7 +106,7 @@ public class WebServer
     public void startServer() throws Exception
     {
         server = new Server();
-
+        
         Constraint constraint = new Constraint();
         constraint.setName(Constraint.__BASIC_AUTH);;
         constraint.setRoles( new String[] { Constraint.ANY_ROLE } );

@@ -267,6 +267,10 @@ public class Mapping extends BaseStep implements StepInterface
     //
     data.mappingTrans.setSafeModeEnabled(getTrans().isSafeModeEnabled());
 
+    // Pass down the metrics gathering flag:
+    //
+    data.mappingTrans.setGatheringMetrics(getTrans().isGatheringMetrics());
+    
     // Also set the name of this step in the mapping transformation for logging
     // purposes
     //

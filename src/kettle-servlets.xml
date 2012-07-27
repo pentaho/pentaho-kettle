@@ -47,5 +47,10 @@
   <!-- Sequence generation ... -->
 
   <servlet id="nextSequence"> <description>Get the next block of values for a sequence</description> <classname>org.pentaho.di.www.NextSequenceValueServlet</classname> </servlet>
+
+  <!-- The SQL data service (SQL)... -->
+  
+  <servlet id="sql"> <description>Get data from a transformation data service using SQL</description> <classname>org.pentaho.di.www.TransDataServlet</classname> </servlet>
+  <servlet id="listServices"> <description>List all the available data service</description> <classname>org.pentaho.di.www.ListDataServicesServlet</classname> </servlet>
   
 </servlets>

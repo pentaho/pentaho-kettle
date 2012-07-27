@@ -624,4 +624,14 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   public Object loadReferencedObject(int index, Repository rep, VariableSpace space) throws KettleException {
     return null;
   }
+  
+  @Override
+  public boolean isGatheringMetrics() {
+    return log.isGatheringMetrics();
+  }
+  
+  @Override
+  public void setGatheringMetrics(boolean gatheringMetrics) {
+    log.setGatheringMetrics(gatheringMetrics);
+  }
 }

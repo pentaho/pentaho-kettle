@@ -38,6 +38,10 @@ import java.util.Map;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.Metrics;
+import org.pentaho.di.core.metrics.MetricsDuration;
+import org.pentaho.di.core.metrics.MetricsUtil;
 import org.pentaho.di.core.row.RowBuffer;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -54,7 +58,8 @@ import org.pentaho.di.i18n.BaseMessages;
  *
  */
 public class PluginRegistry {
-	private static Class<?> PKG = PluginRegistry.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+
+  private static Class<?> PKG = PluginRegistry.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	private static PluginRegistry pluginRegistry;
 	
@@ -70,6 +75,9 @@ public class PluginRegistry {
   private Map<Class<? extends PluginTypeInterface>, List<PluginTypeListener>> listeners = new HashMap<Class<? extends PluginTypeInterface>, List<PluginTypeListener>>();
   private static List<PluginRegistryExtension> extensions = new ArrayList<PluginRegistryExtension>();
 
+  public static LogChannelInterface log = new LogChannel("PluginRegistry", true);
+
+  
 	/**
 	 * Initialize the registry, keep private to keep this a singleton 
 	 */
@@ -416,27 +424,39 @@ public class PluginRegistry {
 
       final PluginRegistry registry = getInstance();
 
-      long start = System.currentTimeMillis();
+      log.snap(Metrics.METRIC_PLUGIN_REGISTRY_REGISTER_EXTENSIONS_START);
+      
       // Find pluginRegistry extensions
       try {
         registry.registerType(PluginRegistryPluginType.getInstance());
         List<PluginInterface> plugins = registry.getPlugins(PluginRegistryPluginType.class);
         for(PluginInterface extensionPlugin : plugins){
+          log.snap(Metrics.METRIC_PLUGIN_REGISTRY_REGISTER_EXTENSION_START, extensionPlugin.getName());
           PluginRegistryExtension extension = (PluginRegistryExtension) registry.loadClass(extensionPlugin);
           extensions.add(extension);
+          log.snap(Metrics.METRIC_PLUGIN_REGISTRY_REGISTER_EXTENSIONS_STOP, extensionPlugin.getName()     );
         }
       } catch (KettlePluginException e) {
         e.printStackTrace();
       }
-      long end = System.currentTimeMillis();
-      System.out.println("Registration of plugin extension points: "+(end-start)+" ms");
-
-      start = System.currentTimeMillis();
+      log.snap(Metrics.METRIC_PLUGIN_REGISTRY_REGISTER_EXTENSIONS_STOP);
+      
+      
+      log.snap(Metrics.METRIC_PLUGIN_REGISTRY_PLUGIN_REGISTRATION_START);
       for (final PluginTypeInterface pluginType : pluginTypes) {
+        log.snap(Metrics.METRIC_PLUGIN_REGISTRY_PLUGIN_TYPE_REGISTRATION_START, pluginType.getName());
         registry.registerType(pluginType);
+        log.snap(Metrics.METRIC_PLUGIN_REGISTRY_PLUGIN_TYPE_REGISTRATION_STOP, pluginType.getName());
       }
-      end = System.currentTimeMillis();
-      System.out.println("Registeration of plugin types : "+(end-start)+" ms");
+      log.snap(Metrics.METRIC_PLUGIN_REGISTRY_PLUGIN_REGISTRATION_STOP);
+      
+      System.out.println(MetricsUtil.getDuration(log.getLogChannelId(), Metrics.METRIC_PLUGIN_REGISTRY_REGISTER_EXTENSIONS_START.getDescription()).get(0));
+      System.out.println(MetricsUtil.getDuration(log.getLogChannelId(), Metrics.METRIC_PLUGIN_REGISTRY_PLUGIN_REGISTRATION_START.getDescription()).get(0));
+      long total=0;
+      for (MetricsDuration duration : MetricsUtil.getDuration(log.getLogChannelId(), Metrics.METRIC_PLUGIN_REGISTRY_PLUGIN_TYPE_REGISTRATION_START.getDescription())) {
+        total+=duration.getDuration();
+        System.out.println("   - "+duration.toString()+"          Total="+total);
+      }
       
       // Clear the jar file cache so that we don't waste memory...
       //

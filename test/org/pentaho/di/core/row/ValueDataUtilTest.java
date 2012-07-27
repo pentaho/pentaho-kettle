@@ -27,7 +27,6 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Date;
 
 import junit.framework.TestCase;
 
@@ -44,7 +43,7 @@ import org.pentaho.di.trans.steps.calculator.CalculatorMetaFunction;
 public class ValueDataUtilTest extends TestCase
 {
 	private static String yyyy_MM_dd = "yyyy-MM-dd";
-	private enum DateCalc {WORKING_DAYS, DATE_DIFF}; 
+	// private enum DateCalc {WORKING_DAYS, DATE_DIFF}; 
 	
     /**
      * @deprecated Use {@link Const#ltrim(String)} instead

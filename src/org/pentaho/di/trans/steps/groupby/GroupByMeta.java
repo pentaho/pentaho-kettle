@@ -77,33 +77,35 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
   public static final int    TYPE_GROUP_STANDARD_DEVIATION = 13;
   public static final int    TYPE_GROUP_CONCAT_STRING      = 14;
   public static final int    TYPE_GROUP_COUNT_DISTINCT     = 15;	
+  public static final int    TYPE_GROUP_COUNT_ANY          = 16;
 
 	public static final String typeGroupCode[] =  /* WARNING: DO NOT TRANSLATE THIS. WE ARE SERIOUS, DON'T TRANSLATE! */ 
 		{
-			"-", "SUM", "AVERAGE", "MIN", "MAX", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ 
-			"COUNT_ALL", "CONCAT_COMMA", "FIRST", "LAST", "FIRST_INCL_NULL", //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ 
-			"LAST_INCL_NULL", "CUM_SUM", "CUM_AVG", "STD_DEV","CONCAT_STRING",	 //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-			"COUNT_DISTINCT", //$NON-NLS-1$
+			"-", "SUM", "AVERAGE", "MIN", "MAX",  
+			"COUNT_ALL", "CONCAT_COMMA", "FIRST", "LAST", "FIRST_INCL_NULL",  
+			"LAST_INCL_NULL", "CUM_SUM", "CUM_AVG", "STD_DEV","CONCAT_STRING",
+			"COUNT_DISTINCT", "COUNT_ANY",
 		};
 
 	public static final String typeGroupLongDesc[] = 
 		{
-			"-",                                                                     //$NON-NLS-1$ 
-            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.SUM"),                 //$NON-NLS-1$ 
-            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.AVERAGE"),             //$NON-NLS-1$ 
-            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.MIN"),                 //$NON-NLS-1$ 
-            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.MAX"),                 //$NON-NLS-1$ 
-            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.CONCAT_ALL"),          //$NON-NLS-1$ 
-            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.CONCAT_COMMA"),        //$NON-NLS-1$ 
-            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.FIRST"),               //$NON-NLS-1$ 
-            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.LAST"), 	             //$NON-NLS-1$ 
-            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.FIRST_INCL_NULL"),     //$NON-NLS-1$ 
-            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.LAST_INCL_NULL"),      //$NON-NLS-1$ 
-            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.CUMUMALTIVE_SUM"),     //$NON-NLS-1$ 
-            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.CUMUMALTIVE_AVERAGE"), //$NON-NLS-1$ 
-            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.STANDARD_DEVIATION"),  //$NON-NLS-1$ 
-            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.CONCAT_STRING"),  		//$NON-NLS-1$ 
-            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.COUNT_DISTINCT"),     //$NON-NLS-1$
+			"-",                                                                      
+            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.SUM"),  
+            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.AVERAGE"), 
+            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.MIN"), 
+            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.MAX"), 
+            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.CONCAT_ALL"), 
+            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.CONCAT_COMMA"), 
+            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.FIRST"), 
+            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.LAST"), 
+            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.FIRST_INCL_NULL"), 
+            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.LAST_INCL_NULL"), 
+            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.CUMUMALTIVE_SUM"), 
+            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.CUMUMALTIVE_AVERAGE"), 
+            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.STANDARD_DEVIATION"), 
+            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.CONCAT_STRING"), 
+            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.COUNT_DISTINCT"),
+            BaseMessages.getString(PKG, "GroupByMeta.TypeGroupLongDesc.COUNT_ANY"),
 		};
 
 	
@@ -334,7 +336,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 				subjectField[i]    = XMLHandler.getTagValue(fnode, "subject");		 //$NON-NLS-1$
 				aggregateType[i]   = getType(XMLHandler.getTagValue(fnode, "type"));	 //$NON-NLS-1$
 				
-				if (aggregateType[i]==TYPE_GROUP_COUNT_ALL || aggregateType[i]==TYPE_GROUP_COUNT_DISTINCT) {
+				if (aggregateType[i]==TYPE_GROUP_COUNT_ALL || aggregateType[i]==TYPE_GROUP_COUNT_DISTINCT || aggregateType[i]==TYPE_GROUP_COUNT_ANY) {
 					hasNumberOfValues = true;
 				}
 				
@@ -423,7 +425,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 		for (int i=0;i<subjectField.length;i++)
 		{
 			ValueMetaInterface subj = r.searchValueMeta(subjectField[i]);
-			if (subj!=null)
+			if (subj!=null || aggregateType[i]==TYPE_GROUP_COUNT_ANY)
 			{
 				String value_name = aggregateField[i];
 				int value_type = ValueMetaInterface.TYPE_NONE;
@@ -443,6 +445,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 					case TYPE_GROUP_MIN                : 
 					case TYPE_GROUP_MAX                : value_type = subj.getType(); break;
 					case TYPE_GROUP_COUNT_DISTINCT     :
+          case TYPE_GROUP_COUNT_ANY          :
 					case TYPE_GROUP_COUNT_ALL          : value_type = ValueMetaInterface.TYPE_INTEGER; break;
                     case TYPE_GROUP_CONCAT_COMMA       : value_type = ValueMetaInterface.TYPE_STRING; break;
                     case TYPE_GROUP_STANDARD_DEVIATION : value_type = ValueMetaInterface.TYPE_NUMBER; break;
@@ -458,7 +461,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 					precision=-1;
 					length=-1;
 				}
-				else if (aggregateType[i]==TYPE_GROUP_COUNT_ALL || aggregateType[i]==TYPE_GROUP_COUNT_DISTINCT)
+				else if (aggregateType[i]==TYPE_GROUP_COUNT_ALL || aggregateType[i]==TYPE_GROUP_COUNT_DISTINCT || aggregateType[i]==TYPE_GROUP_COUNT_ANY )
                 {
                     length    = ValueMetaInterface.DEFAULT_INTEGER_LENGTH;
                     precision = 0;
@@ -569,7 +572,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 				subjectField[i]   = rep.getStepAttributeString(id_step, i, "aggregate_subject"); //$NON-NLS-1$
 				aggregateType[i]      = getType( rep.getStepAttributeString(id_step, i, "aggregate_type") ); //$NON-NLS-1$
 				
-				if (aggregateType[i]==TYPE_GROUP_COUNT_ALL || aggregateType[i]==TYPE_GROUP_COUNT_DISTINCT) {
+				if (aggregateType[i]==TYPE_GROUP_COUNT_ALL || aggregateType[i]==TYPE_GROUP_COUNT_DISTINCT || aggregateType[i]==TYPE_GROUP_COUNT_ANY) {
 					hasNumberOfValues = true;
 				}
 				valueField[i]   = rep.getStepAttributeString(id_step, i, "aggregate_value_field"); //$NON-NLS-1$

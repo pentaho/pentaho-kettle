@@ -339,7 +339,7 @@ public class InfobrightLoaderDialog extends BaseStepDialog implements StepDialog
     }
     dataFormatSelect.setText(meta.getInfobrightProductType());
     targetSchemaText.setText(Const.NVL(meta.getSchemaName(), ""));
-    targetTableText.setText(Const.NVL(meta.getTablename(), ""));
+    targetTableText.setText(Const.NVL(meta.getTableName(), ""));
     charsetSelect.setText(meta.getCharset().name());
     agentPortText.setText(Integer.toString(meta.getAgentPort()));
     debugFileText.setText(Const.NVL(meta.getDebugFile(), ""));
@@ -356,7 +356,7 @@ public class InfobrightLoaderDialog extends BaseStepDialog implements StepDialog
       stepname = wStepname.getText(); // return value
       meta.setDatabaseMeta( transMeta.findDatabase(serverConnection.getText()) );
       meta.setSchemaName(targetSchemaText.getText());
-      meta.setTablename(targetTableText.getText());
+      meta.setTableName(targetTableText.getText());
       meta.setDataFormat(DataFormat.valueForDisplayName(dataFormatSelect.getText()));
       String charsetName = charsetSelect.getText();
       Charset charset2 = ("".equals(charsetName) ?

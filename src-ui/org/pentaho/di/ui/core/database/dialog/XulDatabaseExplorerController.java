@@ -443,8 +443,7 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
       }
 
     } catch (Exception e) {
-      logger.info(e);
-      e.printStackTrace();
+      new ErrorDialog(shell, "Error", "Unexpected explorer error:", e);
     }
   }
 

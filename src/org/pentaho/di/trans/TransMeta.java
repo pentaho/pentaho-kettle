@@ -76,6 +76,7 @@ import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LogTableInterface;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
+import org.pentaho.di.core.logging.MetricsLogTable;
 import org.pentaho.di.core.logging.PerformanceLogTable;
 import org.pentaho.di.core.logging.StepLogTable;
 import org.pentaho.di.core.logging.TransLogTable;
@@ -172,11 +173,11 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 
     protected String              filename;
 
-    protected TransLogTable       transLogTable;
-    protected PerformanceLogTable performanceLogTable;
-    protected ChannelLogTable     channelLogTable;
-    protected StepLogTable     	stepLogTable;
-
+  protected TransLogTable                      transLogTable;
+  protected PerformanceLogTable                performanceLogTable;
+  protected ChannelLogTable                    channelLogTable;
+  protected StepLogTable                       stepLogTable;
+  protected MetricsLogTable                    metricsLogTable;
 
     protected int                 sizeRowset;
 
@@ -513,6 +514,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         performanceLogTable = PerformanceLogTable.getDefault(this, this);
         channelLogTable = ChannelLogTable.getDefault(this, this);
         stepLogTable = StepLogTable.getDefault(this, this);
+        metricsLogTable = MetricsLogTable.getDefault(this, this);
         
         sizeRowset     = Const.ROWS_IN_ROWSET;
         sleepTimeEmpty = Const.TIMEOUT_GET_MILLIS;
@@ -2118,6 +2120,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         retval.append(performanceLogTable.getXML());
         retval.append(channelLogTable.getXML());
         retval.append(stepLogTable.getXML());
+        retval.append(metricsLogTable.getXML());
         
         retval.append("    </log>").append(Const.CR); //$NON-NLS-1$
         retval.append("    <maxdate>").append(Const.CR); //$NON-NLS-1$
@@ -2674,6 +2677,10 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 				if (stepLogNode!=null) {
 					stepLogTable.loadXML(stepLogNode, databases);
 				}
+        Node metricsLogNode = XMLHandler.getSubNode(logNode, MetricsLogTable.XML_TAG);
+        if (metricsLogNode!=null) {
+          metricsLogTable.loadXML(metricsLogNode, databases);
+        }
 			}
 
 
@@ -5905,6 +5912,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 		logTables.add(stepLogTable);
 		logTables.add(performanceLogTable);
 		logTables.add(channelLogTable);
+    logTables.add(metricsLogTable);
 		return logTables;
 	}
 
@@ -5987,5 +5995,29 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     for (StepMeta stepMeta : steps) {
       stepMeta.getStepMetaInterface().lookupRepositoryReferences(repository);
     }
+  }
+
+  /**
+   * @return the metricsLogTable
+   */
+  public MetricsLogTable getMetricsLogTable() {
+    return metricsLogTable;
+  }
+
+  /**
+   * @param metricsLogTable the metricsLogTable to set
+   */
+  public void setMetricsLogTable(MetricsLogTable metricsLogTable) {
+    this.metricsLogTable = metricsLogTable;
+  }
+  
+  @Override
+  public boolean isGatheringMetrics() {
+    return log.isGatheringMetrics();
+  }
+  
+  @Override
+  public void setGatheringMetrics(boolean gatheringMetrics) {
+    log.setGatheringMetrics(gatheringMetrics);
   }
 }

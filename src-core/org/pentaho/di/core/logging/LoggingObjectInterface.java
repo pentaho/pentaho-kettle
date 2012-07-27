@@ -91,4 +91,15 @@ public interface LoggingObjectInterface {
 	 * @return The registration date of this logging object.  Null if it's not registered.
 	 */
 	public Date getRegistrationDate();
+	
+	/**
+	 * @return true if this logging object is gathering kettle metrics during execution
+	 */
+	public boolean isGatheringMetrics();
+	
+	/**
+	 * Enable of disable kettle metrics gathering during execution
+	 * @param gatheringMetrics set to true to enable metrics gathering during execution. 
+	 */
+	public void setGatheringMetrics(boolean gatheringMetrics);
 }

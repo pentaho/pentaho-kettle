@@ -72,7 +72,10 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
 		LOGDATE("LOGDATE"),
 		DEPDATE("DEPDATE"),
 		REPLAYDATE("REPLAYDATE"),
-		LOG_FIELD("LOG_FIELD");
+    LOG_FIELD("LOG_FIELD"),
+    EXECUTING_SERVER("EXECUTING_SERVER"),
+    EXECUTING_USER("EXECUTING_USER"),
+    ;
 		
 		private String id;
 		private ID(String id) {
@@ -170,7 +173,9 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
 		table.fields.add( new LogTableField(ID.DEPDATE.id, true, false, "DEPDATE", BaseMessages.getString(PKG, "JobLogTable.FieldName.DepDate"), BaseMessages.getString(PKG, "JobLogTable.FieldDescription.DepDate"), ValueMetaInterface.TYPE_DATE, -1) );
 		table.fields.add( new LogTableField(ID.REPLAYDATE.id, true, false, "REPLAYDATE", BaseMessages.getString(PKG, "JobLogTable.FieldName.ReplayDate"), BaseMessages.getString(PKG, "JobLogTable.FieldDescription.ReplayDate"), ValueMetaInterface.TYPE_DATE, -1) );
 		table.fields.add( new LogTableField(ID.LOG_FIELD.id, true, false, "LOG_FIELD", BaseMessages.getString(PKG, "JobLogTable.FieldName.LogField"), BaseMessages.getString(PKG, "JobLogTable.FieldDescription.LogField"), ValueMetaInterface.TYPE_STRING, DatabaseMeta.CLOB_LENGTH) );
-		
+    table.fields.add( new LogTableField(ID.EXECUTING_SERVER.id, true, false, "EXECUTING_SERVER", BaseMessages.getString(PKG, "JobLogTable.FieldName.ExecutingServer"), BaseMessages.getString(PKG, "JobLogTable.FieldDescription.ExecutingServer"), ValueMetaInterface.TYPE_STRING, 255) );
+    table.fields.add( new LogTableField(ID.EXECUTING_USER.id, true, false, "EXECUTING_USER", BaseMessages.getString(PKG, "JobLogTable.FieldName.ExecutingUser"), BaseMessages.getString(PKG, "JobLogTable.FieldDescription.ExecutingUser"), ValueMetaInterface.TYPE_STRING, 255) );
+
 		table.findField(ID.ID_JOB).setKey(true);
 		table.findField(ID.LOGDATE).setLogDateField(true);
 		table.findField(ID.LOG_FIELD).setLogField(true);
@@ -305,9 +310,11 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
 						case ENDDATE: value = job.getEndDate(); break;
 						case DEPDATE: value = job.getDepDate(); break;
 						case REPLAYDATE: value = job.getCurrentDate(); break;
-                        case LOG_FIELD: 
-                          value = getLogBuffer(job, job.getLogChannelId(), status, logSizeLimit);
-                          break;
+            case LOG_FIELD: 
+              value = getLogBuffer(job, job.getLogChannelId(), status, logSizeLimit);
+              break;
+            case EXECUTING_SERVER: value = job.getExecutingServer(); break;
+            case EXECUTING_USER: value = job.getExecutingUser(); break;
 						}
 					}
 

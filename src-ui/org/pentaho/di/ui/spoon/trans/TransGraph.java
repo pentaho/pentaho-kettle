@@ -3422,6 +3422,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             log.logMinimal(BaseMessages.getString(PKG, "TransLog.Log.LaunchingTransformation") + trans.getTransMeta().getName() + "]..."); //$NON-NLS-1$ //$NON-NLS-2$
             
             trans.setSafeModeEnabled(executionConfiguration.isSafeModeEnabled());
+            trans.setGatheringMetrics(executionConfiguration.isGatheringMetrics());
 
             // Launch the step preparation in a different thread. 
             // That way Spoon doesn't block anymore and that way we can follow the progress of the initialization
@@ -3523,6 +3524,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         trans = new Trans(transMeta);
         trans.setSafeModeEnabled(executionConfiguration.isSafeModeEnabled());
         trans.setPreview(true);
+        trans.setGatheringMetrics(executionConfiguration.isGatheringMetrics());
         trans.prepareExecution(args);
         trans.setRepository(spoon.rep);
 

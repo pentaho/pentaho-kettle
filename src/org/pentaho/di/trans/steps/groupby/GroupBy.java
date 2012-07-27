@@ -114,7 +114,11 @@ public class GroupBy extends BaseStep implements StepInterface
 			
 			for (int i=0;i<meta.getSubjectField().length;i++)
 			{
-				data.subjectnrs[i] = data.inputRowMeta.indexOfValue(meta.getSubjectField()[i]);
+			  if (meta.getAggregateType()[i]==GroupByMeta.TYPE_GROUP_COUNT_ANY) {
+			    data.subjectnrs[i]=0;
+			  } else {
+			    data.subjectnrs[i] = data.inputRowMeta.indexOfValue(meta.getSubjectField()[i]);
+			  }
 				if (data.subjectnrs[i]<0)
 				{
 					logError(BaseMessages.getString(PKG, "GroupBy.Log.AggregateSubjectFieldCouldNotFound",meta.getSubjectField()[i])); //$NON-NLS-1$ //$NON-NLS-2$
@@ -497,6 +501,9 @@ public class GroupBy extends BaseStep implements StepInterface
 						data.counts[i]++;
 					}
 					break;
+        case GroupByMeta.TYPE_GROUP_COUNT_ANY      :
+          data.counts[i]++;
+          break;
 				case GroupByMeta.TYPE_GROUP_MIN            :
 				  if(subjMeta.isSortedDescending()) {
 				    // Account for negation in ValueMeta.compare() - See PDI-2302
@@ -592,6 +599,7 @@ public class GroupBy extends BaseStep implements StepInterface
                     v=new Double(0.0);
                     break;
 				case GroupByMeta.TYPE_GROUP_COUNT_DISTINCT  :
+        case GroupByMeta.TYPE_GROUP_COUNT_ANY       :
 				case GroupByMeta.TYPE_GROUP_COUNT_ALL       :
                     vMeta = new ValueMeta(meta.getAggregateField()[i], ValueMetaInterface.TYPE_INTEGER);
                     v=new Long(0L);                   
@@ -620,7 +628,8 @@ public class GroupBy extends BaseStep implements StepInterface
 			}
             
             if (meta.getAggregateType()[i]!=GroupByMeta.TYPE_GROUP_COUNT_ALL && 
-                meta.getAggregateType()[i]!=GroupByMeta.TYPE_GROUP_COUNT_DISTINCT)
+                meta.getAggregateType()[i]!=GroupByMeta.TYPE_GROUP_COUNT_DISTINCT &&
+                meta.getAggregateType()[i]!=GroupByMeta.TYPE_GROUP_COUNT_ANY)
             {
             	vMeta.setLength(subjMeta.getLength(), subjMeta.getPrecision());
             }
@@ -684,6 +693,7 @@ public class GroupBy extends BaseStep implements StepInterface
                     		ag=ValueDataUtil.divide(data.aggMeta.getValueMeta(i), ag, 
                     				new ValueMeta("c",ValueMetaInterface.TYPE_INTEGER), new Long(data.counts[i])); 
                     		break;  //$NON-NLS-1$
+                    case GroupByMeta.TYPE_GROUP_COUNT_ANY      : 
                     case GroupByMeta.TYPE_GROUP_COUNT_ALL      : ag=new Long(data.counts[i]); break;
                     case GroupByMeta.TYPE_GROUP_COUNT_DISTINCT : break;
                     case GroupByMeta.TYPE_GROUP_MIN            : break; 

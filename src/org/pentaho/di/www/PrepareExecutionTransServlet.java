@@ -112,6 +112,7 @@ public class PrepareExecutionTransServlet extends BaseHttpServlet implements Car
         trans.getTransMeta().setArguments(executionConfiguration.getArgumentStrings());
         trans.setReplayDate(executionConfiguration.getReplayDate());
         trans.setSafeModeEnabled(executionConfiguration.isSafeModeEnabled());
+        trans.setGatheringMetrics(executionConfiguration.isGatheringMetrics());
         trans.injectVariables(executionConfiguration.getVariables());
 
         try {

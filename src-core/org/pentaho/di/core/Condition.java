@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import org.pentaho.di.core.exception.KettleValueException;
@@ -69,7 +70,8 @@ public class Condition implements Cloneable, XMLInterface
 	public static final int OPERATOR_AND_NOT    = 5;
 	public static final int OPERATOR_XOR        = 6;
 
-	public static final String[] functions = new String[] { "=", "<>", "<", "<=", ">", ">=", "REGEXP", "IS NULL", "IS NOT NULL", "IN LIST", "CONTAINS", "STARTS WITH", "ENDS WITH" };
+	public static final String[] functions = new String[] { 
+	  "=", "<>", "<", "<=", ">", ">=", "REGEXP", "IS NULL", "IS NOT NULL", "IN LIST", "CONTAINS", "STARTS WITH", "ENDS WITH", "LIKE", "TRUE",  };
 	
 	public static final int FUNC_EQUAL         = 0;
 	public static final int FUNC_NOT_EQUAL     = 1;
@@ -84,6 +86,8 @@ public class Condition implements Cloneable, XMLInterface
 	public static final int FUNC_CONTAINS      = 10;
 	public static final int FUNC_STARTS_WITH   = 11;
 	public static final int FUNC_ENDS_WITH     = 12;
+  public static final int FUNC_LIKE          = 13;
+  public static final int FUNC_TRUE          = 14;
 
 	//
 	// These parameters allow for:
@@ -105,7 +109,7 @@ public class Condition implements Cloneable, XMLInterface
 	private int left_fieldnr;
 	private int right_fieldnr;
 	
-	private ArrayList<Condition> list;
+	private List<Condition> list;
 
     private String right_string;
 
@@ -379,175 +383,211 @@ public class Condition implements Cloneable, XMLInterface
 		right_fieldnr = -2;
 	}
 	
-	//
-	// Evaluate the condition...
-	//
-	public boolean evaluate(RowMetaInterface rowMeta, Object[] r)
-	{
-	    // Start of evaluate
-		boolean retval = false;
+  /**
+      Evaluate the condition...
+      @param rowMeta the row metadata
+      @param r the row data
+      @return true if the condition evaluates to true.
+  **/
+  public boolean evaluate(RowMetaInterface rowMeta, Object[] r) {
+    // Start of evaluate
+    boolean retval = false;
+
+    // If we have 0 items in the list, evaluate the current condition
+    // Otherwise, evaluate all sub-conditions
+    //
+    try {
+      if (isAtomic()) {
         
-		// If we have 0 items in the list, evaluate the current condition
-		// Otherwise, evaluate all sub-conditions
-		//
-	    try
-	    {
-			if (isAtomic())
-			{
-			    // Get fieldnrs left value
-                //
-				// Check out the fieldnrs if we don't have them...
-				if (left_valuename!=null  && left_valuename.length()>0  && left_fieldnr<-1)  left_fieldnr = rowMeta.indexOfValue(left_valuename);
-                
-			    // Get fieldnrs right value
-                //
-				if (right_valuename!=null && right_valuename.length()>0 && right_fieldnr<-1) right_fieldnr = rowMeta.indexOfValue(right_valuename);
-				
-			    // Get fieldnrs left field
-                ValueMetaInterface fieldMeta = null;
-				Object field=null;
-				if (left_fieldnr>=0) 
-                {
-                    fieldMeta = rowMeta.getValueMeta(left_fieldnr);
-                    field = r[left_fieldnr];
-// JIRA PDI-38
-//                  if (field==null)
-//                  {
-//                      throw new KettleException("Unable to find field ["+left_valuename+"] in the input row!");
-//                  }
-                }
-				else
-					return false; //no fields to evaluate
-				
-			    // Get fieldnrs right exact
-                ValueMetaInterface fieldMeta2 = right_exact!=null ? right_exact.getValueMeta() : null;
-				Object field2 = right_exact!=null ? right_exact.getValueData() : null;
-				if (field2==null && right_fieldnr>=0) 
-                {
-                    fieldMeta2 = rowMeta.getValueMeta(right_fieldnr);
-                    field2 = r[right_fieldnr];
-//                  JIRA PDI-38                    
-//                  if (field2==null)
-//                  {
-//                      throw new KettleException("Unable to find field ["+right_valuename+"] in the input row!");
-//                  }
-                }
-                
-//              if (field==null)
-//              {
-//                  throw new KettleException("Unable to find value for field ["+left_valuename+"] in the input row!");
-//              }
+        if (function==FUNC_TRUE) return true;
+        
+        // Get fieldnrs left value
+        //
+        // Check out the fieldnrs if we don't have them...
+        if (left_valuename != null && left_valuename.length() > 0 && left_fieldnr < -1)
+          left_fieldnr = rowMeta.indexOfValue(left_valuename);
 
-//              This condition goes too as field2 can indeed be null, just not fieldMeta2
-//              if (field2==null && function!=FUNC_NULL && function!=FUNC_NOT_NULL)
-//              {
-//                  throw new KettleException("Unable to find value for field ["+right_valuename+"] in the input row!");
-//              }
+        // Get fieldnrs right value
+        //
+        if (right_valuename != null && right_valuename.length() > 0 && right_fieldnr < -1)
+          right_fieldnr = rowMeta.indexOfValue(right_valuename);
 
-                // Evaluate
-				switch(function)
-				{
-					case FUNC_EQUAL         : retval = (fieldMeta.compare(field, fieldMeta2, field2)==0); break;
-					case FUNC_NOT_EQUAL     : retval = (fieldMeta.compare(field, fieldMeta2, field2)!=0); break;
-					case FUNC_SMALLER       : retval = (fieldMeta.compare(field, fieldMeta2, field2)< 0); break;
-					case FUNC_SMALLER_EQUAL : retval = (fieldMeta.compare(field, fieldMeta2, field2)<=0); break;
-					case FUNC_LARGER        : retval = (fieldMeta.compare(field, fieldMeta2, field2)> 0); break;
-					case FUNC_LARGER_EQUAL  : retval = (fieldMeta.compare(field, fieldMeta2, field2)>=0); break;
-					case FUNC_REGEXP        :
-                        if (fieldMeta.isNull(field) || field2==null)
-                        {
-                            retval = false;
-                        }
-                        else
-                        {
-                            retval = Pattern.matches(fieldMeta2.getCompatibleString(field2), fieldMeta.getCompatibleString(field));
-                        }
-                        break;
-					case FUNC_NULL          : retval = (fieldMeta.isNull(field));           break;
-					case FUNC_NOT_NULL      : retval = (!fieldMeta.isNull(field));          break;
-					case FUNC_IN_LIST		:
-							if (inList==null) {
-								inList = Const.splitString(fieldMeta2.getString(field2), ';');
-								Arrays.sort(inList);
-							}
-							String searchString = fieldMeta.getCompatibleString(field);
-							int inIndex = -1;
-							if (searchString != null ) {
-								inIndex = Arrays.binarySearch(inList, searchString);
-							}
-							retval = Boolean.valueOf(inIndex>=0); 
-							break;
-					case FUNC_CONTAINS      : 
-                        retval = fieldMeta.getCompatibleString(field)!=null?fieldMeta.getCompatibleString(field).indexOf(fieldMeta2.getCompatibleString(field2))>=0:false; 
-                        break;
-					case FUNC_STARTS_WITH   : 
-                        retval = fieldMeta.getCompatibleString(field)!=null?fieldMeta.getCompatibleString(field).startsWith(fieldMeta2.getCompatibleString(field2)):false; 
-                        break;
-					case FUNC_ENDS_WITH     : 
-                        String string = fieldMeta.getCompatibleString(field); 
-                        if (!Const.isEmpty(string))
-                        {
-                            if (right_string==null && field2!=null) right_string=fieldMeta2.getCompatibleString(field2);
-                            if (right_string!=null)
-                            {
-                                retval = string.endsWith(fieldMeta2.getCompatibleString(field2));
-                            }
-                            else
-                            {
-                                retval = false;
-                            }
-                        }
-                        else
-                        {
-                            retval = false;
-                        }
-                        break;
-					default: break;
-				}
-				
-				// Only NOT makes sense, the rest doesn't, so ignore!!!!
-                // Optionally negate
-                //
-				if (isNegated()) retval=!retval;
-			}
-			else
-			{
-			    // Composite : get first
-				Condition cb0 = list.get(0);
-				retval = cb0.evaluate(rowMeta, r);
-				
-				// Loop over the conditions listed below.
-				// 
-				for (int i=1;i<list.size();i++)
-				{
-				    // Composite : #i
-                    // Get right hand condition
-					Condition cb = list.get(i);
-					
-					// Evaluate the right hand side of the condition cb.evaluate() within the switch statement 
-					// because the condition may be short-circuited due to the left hand side (retval)
-					switch (cb.getOperator()) 
-					{
-					case Condition.OPERATOR_OR      : retval = retval || cb.evaluate(rowMeta, r); break;
-					case Condition.OPERATOR_AND     : retval = retval && cb.evaluate(rowMeta, r); break;
-					case Condition.OPERATOR_OR_NOT  : retval = retval || ( !cb.evaluate(rowMeta, r) ); break;
-					case Condition.OPERATOR_AND_NOT : retval = retval && ( !cb.evaluate(rowMeta, r) ); break;
-					case Condition.OPERATOR_XOR     : retval = retval ^ cb.evaluate(rowMeta, r); break;
-					default: break;
-					}
-				}
+        // Get fieldnrs left field
+        ValueMetaInterface fieldMeta = null;
+        Object field = null;
+        if (left_fieldnr >= 0) {
+          fieldMeta = rowMeta.getValueMeta(left_fieldnr);
+          field = r[left_fieldnr];
+          // JIRA PDI-38
+          // if (field==null)
+          // {
+          // throw new
+          // KettleException("Unable to find field ["+left_valuename+"] in the input row!");
+          // }
+        } else
+          return false; // no fields to evaluate
 
-                // Composite: optionally negate
-				if (isNegated()) retval=!retval;
-			}
-	    }
-	    catch(Exception e)
-	    {
-            throw new RuntimeException("Unexpected error evaluation condition ["+toString()+"]", e);            
-	    }
-		
-        return retval;
-	}
+        // Get fieldnrs right exact
+        ValueMetaInterface fieldMeta2 = right_exact != null ? right_exact.getValueMeta() : null;
+        Object field2 = right_exact != null ? right_exact.getValueData() : null;
+        if (field2 == null && right_fieldnr >= 0) {
+          fieldMeta2 = rowMeta.getValueMeta(right_fieldnr);
+          field2 = r[right_fieldnr];
+          // JIRA PDI-38
+          // if (field2==null)
+          // {
+          // throw new
+          // KettleException("Unable to find field ["+right_valuename+"] in the input row!");
+          // }
+        }
+
+        // if (field==null)
+        // {
+        // throw new
+        // KettleException("Unable to find value for field ["+left_valuename+"] in the input row!");
+        // }
+
+        // This condition goes too as field2 can indeed be null, just not
+        // fieldMeta2
+        // if (field2==null && function!=FUNC_NULL && function!=FUNC_NOT_NULL)
+        // {
+        // throw new
+        // KettleException("Unable to find value for field ["+right_valuename+"] in the input row!");
+        // }
+
+        // Evaluate
+        switch (function) {
+        case FUNC_EQUAL:
+          retval = (fieldMeta.compare(field, fieldMeta2, field2) == 0);
+          break;
+        case FUNC_NOT_EQUAL:
+          retval = (fieldMeta.compare(field, fieldMeta2, field2) != 0);
+          break;
+        case FUNC_SMALLER:
+          retval = (fieldMeta.compare(field, fieldMeta2, field2) < 0);
+          break;
+        case FUNC_SMALLER_EQUAL:
+          retval = (fieldMeta.compare(field, fieldMeta2, field2) <= 0);
+          break;
+        case FUNC_LARGER:
+          retval = (fieldMeta.compare(field, fieldMeta2, field2) > 0);
+          break;
+        case FUNC_LARGER_EQUAL:
+          retval = (fieldMeta.compare(field, fieldMeta2, field2) >= 0);
+          break;
+        case FUNC_REGEXP:
+          if (fieldMeta.isNull(field) || field2 == null) {
+            retval = false;
+          } else {
+            retval = Pattern.matches(fieldMeta2.getCompatibleString(field2), fieldMeta.getCompatibleString(field));
+          }
+          break;
+        case FUNC_NULL:
+          retval = (fieldMeta.isNull(field));
+          break;
+        case FUNC_NOT_NULL:
+          retval = (!fieldMeta.isNull(field));
+          break;
+        case FUNC_IN_LIST:
+          if (inList == null) {
+            inList = Const.splitString(fieldMeta2.getString(field2), ';');
+            Arrays.sort(inList);
+          }
+          String searchString = fieldMeta.getCompatibleString(field);
+          int inIndex = -1;
+          if (searchString != null) {
+            inIndex = Arrays.binarySearch(inList, searchString);
+          }
+          retval = Boolean.valueOf(inIndex >= 0);
+          break;
+        case FUNC_CONTAINS:
+          retval = fieldMeta.getCompatibleString(field) != null ? fieldMeta.getCompatibleString(field).indexOf(fieldMeta2.getCompatibleString(field2)) >= 0 : false;
+          break;
+        case FUNC_STARTS_WITH:
+          retval = fieldMeta.getCompatibleString(field) != null ? fieldMeta.getCompatibleString(field).startsWith(fieldMeta2.getCompatibleString(field2)) : false;
+          break;
+        case FUNC_ENDS_WITH:
+          String string = fieldMeta.getCompatibleString(field);
+          if (!Const.isEmpty(string)) {
+            if (right_string == null && field2 != null)
+              right_string = fieldMeta2.getCompatibleString(field2);
+            if (right_string != null) {
+              retval = string.endsWith(fieldMeta2.getCompatibleString(field2));
+            } else {
+              retval = false;
+            }
+          } else {
+            retval = false;
+          }
+          break;
+        case FUNC_LIKE:
+          // Converts to a regular expression
+          // TODO: optimize the patterns and String replacements
+          //
+          if (fieldMeta.isNull(field) || field2 == null) {
+            retval = false;
+          } else {
+            String regex = fieldMeta2.getCompatibleString(field2);
+            regex = regex.replace("%", ".*");
+            regex = regex.replace("?", ".");
+            retval = Pattern.matches(regex, fieldMeta.getCompatibleString(field));
+          }
+        default:
+          break;
+        }
+
+        // Only NOT makes sense, the rest doesn't, so ignore!!!!
+        // Optionally negate
+        //
+        if (isNegated())
+          retval = !retval;
+      } else {
+        // Composite : get first
+        Condition cb0 = list.get(0);
+        retval = cb0.evaluate(rowMeta, r);
+
+        // Loop over the conditions listed below.
+        //
+        for (int i = 1; i < list.size(); i++) {
+          // Composite : #i
+          // Get right hand condition
+          Condition cb = list.get(i);
+
+          // Evaluate the right hand side of the condition cb.evaluate() within
+          // the switch statement
+          // because the condition may be short-circuited due to the left hand
+          // side (retval)
+          switch (cb.getOperator()) {
+          case Condition.OPERATOR_OR:
+            retval = retval || cb.evaluate(rowMeta, r);
+            break;
+          case Condition.OPERATOR_AND:
+            retval = retval && cb.evaluate(rowMeta, r);
+            break;
+          case Condition.OPERATOR_OR_NOT:
+            retval = retval || (!cb.evaluate(rowMeta, r));
+            break;
+          case Condition.OPERATOR_AND_NOT:
+            retval = retval && (!cb.evaluate(rowMeta, r));
+            break;
+          case Condition.OPERATOR_XOR:
+            retval = retval ^ cb.evaluate(rowMeta, r);
+            break;
+          default:
+            break;
+          }
+        }
+
+        // Composite: optionally negate
+        if (isNegated())
+          retval = !retval;
+      }
+    } catch (Exception e) {
+      throw new RuntimeException("Unexpected error evaluation condition [" + toString() + "]", e);
+    }
+
+    return retval;
+  }
 	
 	public void addCondition(Condition cb)
 	{
@@ -616,9 +656,49 @@ public class Condition implements Cloneable, XMLInterface
 				setFunction(c.getFunction());
 				setRightValuename(c.getRightValuename());
 				setRightExact(c.getRightExact());
-				setNegated(c.isNegated());
+				setNegated(isNegated()^c.isNegated());
 			}
 		}
+	}
+	
+	/**
+	 * This method moves up atomic conditions if there is only one sub-condition.
+	 *    
+	 * @return true if there was a simplification.
+	 */
+	public boolean simplify() {
+	  
+	  if (nrConditions()==1) {
+	    Condition condition = getCondition(0);
+	    if (condition.isAtomic()) {
+	      return simplify(condition, this);
+	    }
+	  }
+	  
+	  boolean changed = false;
+	  for (int i=0;i<nrConditions();i++) {
+	    Condition condition = getCondition(i);
+	    changed|=condition.simplify();
+	    if (i==0) condition.setOperator(OPERATOR_NONE);
+  	}
+	  return changed;
+	}
+	
+	private boolean simplify(Condition condition, Condition parent) {
+	  // If condition is atomic 
+	  // AND
+	  // if parent only contain a single child: simplify
+	  //
+	  if (condition.isAtomic() && parent.nrConditions()==1) {
+  	  parent.setLeftValuename(condition.getLeftValuename());
+      parent.setFunction(condition.getFunction());
+      parent.setRightValuename(condition.getRightValuename());
+      parent.setRightExact(condition.getRightExact());
+      parent.setNegated(condition.isNegated()^parent.isNegated());
+      parent.list.clear();
+      return true;
+	  }
+	  return false;
 	}
 	
 	public int nrConditions()
@@ -647,8 +727,6 @@ public class Condition implements Cloneable, XMLInterface
 		
 		if (isAtomic())
 		{
-			//retval+="<ATOMIC "+level+", "+show_negate+", "+show_operator+">";
-
 			for (int i=0;i<level;i++) retval+="  ";
 			
 			if (show_operator && getOperator()!=OPERATOR_NONE)
@@ -669,18 +747,23 @@ public class Condition implements Cloneable, XMLInterface
 			{
 				retval+="      ";
 			}
-			retval+=left_valuename+" "+getFunctionDesc();
-			if (function != FUNC_NULL && function != FUNC_NOT_NULL)
-			{
-				if ( right_valuename != null )
-				{
-					retval+=" "+right_valuename;
-				}
-				else
-				{
-					retval+=" ["+( getRightExactString()==null?"":getRightExactString() )+"]";
-				}
-			}
+
+	     if (function==FUNC_TRUE) {
+	       retval += " TRUE";
+	     } else {
+  			retval+=left_valuename+" "+getFunctionDesc();
+  			if (function != FUNC_NULL && function != FUNC_NOT_NULL)
+  			{
+  				if ( right_valuename != null )
+  				{
+  					retval+=" "+right_valuename;
+  				}
+  				else
+  				{
+  					retval+=" ["+( getRightExactString()==null?"":getRightExactString() )+"]";
+  				}
+  			}
+	    }
 
 			if (isNegated() && ( show_negate || level>0 )) retval+=" )";
 
@@ -759,6 +842,10 @@ public class Condition implements Cloneable, XMLInterface
 		retval+=indent2+XMLHandler.closeTag(XML_TAG)+Const.CR;
 
 		return retval;
+	}
+	
+	public Condition(String xml) throws KettleXMLException {
+	  this(XMLHandler.loadXMLString(xml, Condition.XML_TAG));
 	}
 
 	/**
@@ -841,6 +928,10 @@ public class Condition implements Cloneable, XMLInterface
 				subc.getUsedFields(fields);
 			}
 		}
+	}
+	
+	public List<Condition> getChildren() {
+	  return list;
 	}
 }
 

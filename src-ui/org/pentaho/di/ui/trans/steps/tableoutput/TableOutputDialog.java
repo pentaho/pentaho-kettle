@@ -969,7 +969,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 			
 			// refresh data
 			input.setDatabaseMeta(transMeta.findDatabase(wConnection.getText()) );
-			input.setTablename(transMeta.environmentSubstitute(wTable.getText()));
+			input.setTableName(transMeta.environmentSubstitute(wTable.getText()));
 			StepMetaInterface stepMetaInterface = stepMeta.getStepMetaInterface();
 			try {
 				targetFields = stepMetaInterface.getRequiredFields(transMeta);
@@ -1254,7 +1254,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 	public void getData()
 	{
         if (input.getSchemaName() != null) wSchema.setText(input.getSchemaName());
-		if (input.getTablename() != null) wTable.setText(input.getTablename());
+		if (input.getTableName() != null) wTable.setText(input.getTableName());
 		if (input.getDatabaseMeta() != null) wConnection.setText(input.getDatabaseMeta().getName());
 		
         wTruncate.setSelection( input.truncateTable() );
@@ -1305,7 +1305,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 	private void getInfo(TableOutputMeta info)
 	{
         info.setSchemaName( wSchema.getText() );
-		info.setTablename( wTable.getText() );
+		info.setTableName( wTable.getText() );
 		info.setDatabaseMeta(  transMeta.findDatabase(wConnection.getText()) );
 		info.setCommitSize( wCommit.getText() );
 		info.setTruncateTable( wTruncate.getSelection() );

@@ -75,6 +75,8 @@ public class JobExecutionConfiguration implements Cloneable
     private String startCopyName;
     private int startCopyNr;
     
+    private boolean gatheringMetrics;
+    
     public JobExecutionConfiguration()
     {
     	executingLocally = true;
@@ -382,6 +384,8 @@ public class JobExecutionConfiguration implements Cloneable
         xml.append("    ").append(XMLHandler.addTagValue("start_copy_name", startCopyName));
         xml.append("    ").append(XMLHandler.addTagValue("start_copy_nr", startCopyNr));
 
+        xml.append("    ").append(XMLHandler.addTagValue("gather_metrics", gatheringMetrics));
+
         // The source rows...
         //
         if (previousResult!=null)
@@ -465,6 +469,8 @@ public class JobExecutionConfiguration implements Cloneable
         startCopyName = XMLHandler.getTagValue(trecNode, "start_copy_name");
         startCopyNr = Const.toInt(XMLHandler.getTagValue(trecNode, "start_copy_nr"), 0);
         
+        gatheringMetrics = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "gather_metrics"));
+
         Node resultNode = XMLHandler.getSubNode(trecNode, Result.XML_TAG);
         if (resultNode!=null)
         {
@@ -616,4 +622,17 @@ public class JobExecutionConfiguration implements Cloneable
     this.startCopyNr = startCopyNr;
   }
 
+  /**
+   * @return the gatheringMetrics
+   */
+  public boolean isGatheringMetrics() {
+    return gatheringMetrics;
+  }
+
+  /**
+   * @param gatheringMetrics the gatheringMetrics to set
+   */
+  public void setGatheringMetrics(boolean gatheringMetrics) {
+    this.gatheringMetrics = gatheringMetrics;
+  }
 }

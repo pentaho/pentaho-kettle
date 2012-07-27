@@ -36,7 +36,8 @@ public class SimpleLoggingObject implements LoggingObjectInterface {
 	private LogLevel logLevel = DefaultLogLevel.getLogLevel();
 	private String containerObjectId;
 	private Date registrationDate;
-
+  private boolean gatheringMetrics;
+  
 	/**
 	 * @param objectName
 	 * @param loggingObjectType
@@ -149,5 +150,19 @@ public class SimpleLoggingObject implements LoggingObjectInterface {
    */
   public void setRegistrationDate(Date registrationDate) {
     this.registrationDate = registrationDate;
+  }
+
+  /**
+   * @return the gatheringMetrics
+   */
+  public boolean isGatheringMetrics() {
+    return gatheringMetrics;
+  }
+
+  /**
+   * @param gatheringMetrics the gatheringMetrics to set
+   */
+  public void setGatheringMetrics(boolean gatheringMetrics) {
+    this.gatheringMetrics = gatheringMetrics;
   }
 }

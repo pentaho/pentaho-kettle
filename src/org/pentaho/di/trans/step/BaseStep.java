@@ -31,6 +31,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -1906,7 +1907,8 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
     RowSet inputFull = null;
     RowSet inputEmpty = null;
     synchronized(getInputRowSets()) {
-      for (RowSet rowSet : getInputRowSets()) {
+      for (Iterator<RowSet> iterator = getInputRowSets().iterator() ; iterator.hasNext(); ) {
+        RowSet rowSet = iterator.next();
         if (rowSet.size() == transMeta.getSizeRowset()) { 
           inputFull = rowSet;
         } else if (rowSet.size() == 0) {
@@ -1923,7 +1925,8 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
         int inputSize=0;
         int totalSize = combi.step.getInputRowSets().size()*transMeta.getSizeRowset();
         synchronized(combi.step.getInputRowSets()) {
-          for (RowSet rowSet : combi.step.getInputRowSets()) {
+          for (Iterator<RowSet> iterator = getInputRowSets().iterator() ; iterator.hasNext(); ) {
+            RowSet rowSet = iterator.next();
             inputSize+=rowSet.size();
           }
         }
@@ -3160,5 +3163,15 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    */
   public Date getRegistrationDate() {
     return null;
+  }
+  
+  @Override
+  public boolean isGatheringMetrics() {
+    return log.isGatheringMetrics();
+  }
+  
+  @Override
+  public void setGatheringMetrics(boolean gatheringMetrics) {
+    log.setGatheringMetrics(gatheringMetrics);
   }
 }

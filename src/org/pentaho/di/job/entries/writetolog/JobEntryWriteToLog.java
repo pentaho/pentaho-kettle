@@ -21,13 +21,10 @@
  ******************************************************************************/
 
 package org.pentaho.di.job.entries.writetolog;
-import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.addOkRemark;
-
 import java.util.Date;
 import java.util.List;
 
 import org.pentaho.di.cluster.SlaveServer;
-import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -41,7 +38,6 @@ import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.ObjectId;
@@ -220,6 +216,16 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
     public Date getRegistrationDate() {
       return null;
     }
+    
+    @Override
+    public boolean isGatheringMetrics() {
+      return log.isGatheringMetrics();
+    }
+    
+    @Override
+    public void setGatheringMetrics(boolean gatheringMetrics) {
+      log.setGatheringMetrics(gatheringMetrics);
+    }
 	}
 
 	/**
@@ -328,13 +334,4 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
 		logsubject=logsubjectin;
 	
 	}
-	
-	 @Override
-	  public void check(List<CheckResultInterface> remarks, JobMeta jobMeta)
-	  {
-	    addOkRemark(this, "LogMessage", remarks); //$NON-NLS-1$
-	    addOkRemark(this, "LogSubject", remarks); //$NON-NLS-1$
-	  }
-	
-	 
 }

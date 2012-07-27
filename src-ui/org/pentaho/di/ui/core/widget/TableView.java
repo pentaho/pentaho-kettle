@@ -175,6 +175,8 @@ public class TableView extends Composite
     
     private VariableSpace variables;
     
+  private boolean showingBlueNullValues;
+    
 	public TableView(VariableSpace space, Composite parent, int style, ColumnInfo[] columnInfo, int nrRows, ModifyListener lsm, PropsUI pr)
 	{
 		this(space, parent, style, columnInfo, nrRows, false, lsm, pr);
@@ -1217,7 +1219,9 @@ public class TableView extends Composite
                 for (int j=0;j<table.getColumnCount();j++)
                 {
                     String data = item.getText(j);
-                    // ValueMetaInterface targetValueMeta = rowMeta.getValueMeta(j+2);
+                    if (GUIResource.getInstance().getColorBlue().equals(item.getForeground(j))) {
+                      data=null;
+                    }
                     ValueMetaInterface sourceValueMeta = sourceRowMeta.getValueMeta(j+2);
                     r[j+2] = sourceValueMeta.convertDataUsingConversionMetaData(data);
                 }
@@ -1269,6 +1273,12 @@ public class TableView extends Composite
                 for (int j=2;j<r.length;j++)
                 {
                     String string = conversionRowMeta.getString(r, j);
+                    if (showingBlueNullValues && string==null) {
+                      string="<null>"; 
+                      item.setForeground(j-2, GUIResource.getInstance().getColorBlue());
+                    } else {
+                      item.setForeground(j-2, GUIResource.getInstance().getColorBlack());
+                    }
                     if (string!=null) item.setText(j-2, string);
                 }
             }
@@ -3042,4 +3052,18 @@ public class TableView extends Composite
 			lsFocusText.focusLost(null);
 		}
 	}
+
+  /**
+   * @return the showingBlueNullValues
+   */
+  public boolean isShowingBlueNullValues() {
+    return showingBlueNullValues;
+  }
+
+  /**
+   * @param showingBlueNullValues the showingBlueNullValues to set
+   */
+  public void setShowingBlueNullValues(boolean showingBlueNullValues) {
+    this.showingBlueNullValues = showingBlueNullValues;
+  }
 };

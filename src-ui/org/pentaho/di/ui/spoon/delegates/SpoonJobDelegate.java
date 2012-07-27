@@ -667,7 +667,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 						String tostepname = BaseMessages.getString(PKG, "Spoon.RipDB.Monitor.ToStep.Name") + tables[i] + "]"; //$NON-NLS-1$ //$NON-NLS-2$
 						TableOutputMeta toi = new TableOutputMeta();
 						toi.setDatabaseMeta(targetDbInfo);
-						toi.setTablename(tables[i]);
+						toi.setTableName(tables[i]);
 						toi.setCommitSize(100);
 						toi.setTruncateTable(true);
 	

@@ -302,7 +302,8 @@ public class PreviewRowsDialog {
     }
 
     wFields = new TableView(variables, shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, 0, null, props);
-
+    wFields.setShowingBlueNullValues(true);
+    
     fdFields = new FormData();
     fdFields.left = new FormAttachment(0, 0);
     fdFields.top = new FormAttachment(wlFields, margin);

@@ -400,6 +400,7 @@ public class TableOutputTest extends TestCase
 	/**
 	 * Test case for normal table output case. 
 	 */
+    @SuppressWarnings("deprecation")
     public void testTableOutputNormal() throws Exception
     {
         KettleEnvironment.init();
@@ -583,6 +584,7 @@ public class TableOutputTest extends TestCase
 	/**
 	 * Test case for commitSize see PDI2733 in JIRA.
 	 */
+    @SuppressWarnings("deprecation")
     public void testTableOutputJIRA2733() throws Exception
     {
         KettleEnvironment.init();

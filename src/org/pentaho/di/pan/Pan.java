@@ -73,7 +73,7 @@ public class Pan {
 
     // The options:
     StringBuffer optionRepname, optionUsername, optionPassword, optionTransname, optionDirname, optionFilename, optionLoglevel;
-    StringBuffer optionLogfile, optionLogfileOld, optionListdir, optionListtrans, optionListrep, optionExprep, optionNorep, optionSafemode, optionVersion, optionJarFilename, optionListParam;
+    StringBuffer optionLogfile, optionLogfileOld, optionListdir, optionListtrans, optionListrep, optionExprep, optionNorep, optionSafemode, optionVersion, optionJarFilename, optionListParam, optionMetrics;
     NamedParams optionParams = new NamedParamsDefault();
     
     CommandLineOption maxLogLinesOption = new CommandLineOption("maxloglines", BaseMessages.getString(PKG, "Pan.CmdLine.MaxLogLines"), new StringBuffer()); //$NON-NLS-1$ //$NON-NLS-2$
@@ -98,6 +98,7 @@ public class Pan {
         new CommandLineOption("jarfile", BaseMessages.getString(PKG, "Pan.ComdLine.JarFile"), optionJarFilename = new StringBuffer(), false, true),
         new CommandLineOption("param", BaseMessages.getString(PKG, "Pan.ComdLine.Param"), optionParams, false),
         new CommandLineOption("listparam", BaseMessages.getString(PKG, "Pan.ComdLine.ListParam"), optionListParam = new StringBuffer(), true, false),
+        new CommandLineOption("metrics", BaseMessages.getString(PKG, "Pan.ComdLine.Metrics"), optionMetrics = new StringBuffer(), true, false),
         maxLogLinesOption,
         maxLogTimeoutOption };
 
@@ -385,6 +386,11 @@ public class Pan {
       // See if we want to run in safe mode:
       if ("Y".equalsIgnoreCase(optionSafemode.toString())) {
         trans.setSafeModeEnabled(true);
+      }
+
+      // Enable kettle metric gathering if required:
+      if ("Y".equalsIgnoreCase(optionMetrics.toString())) {
+        trans.setGatheringMetrics(true);
       }
 
       // List the parameters defined in this transformation

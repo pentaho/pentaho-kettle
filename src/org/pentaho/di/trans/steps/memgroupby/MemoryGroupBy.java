@@ -43,7 +43,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.steps.groupby.GroupByMeta;
 import org.pentaho.di.trans.steps.memgroupby.MemoryGroupByData.HashEntry;
 
 
@@ -99,7 +98,11 @@ public class MemoryGroupBy extends BaseStep implements StepInterface
 
 			for (int i=0;i<meta.getSubjectField().length;i++)
 			{
-				data.subjectnrs[i] = data.inputRowMeta.indexOfValue(meta.getSubjectField()[i]);
+			  if (meta.getAggregateType()[i]==MemoryGroupByMeta.TYPE_GROUP_COUNT_ANY) {
+          data.subjectnrs[i]=0;
+        } else {
+          data.subjectnrs[i] = data.inputRowMeta.indexOfValue(meta.getSubjectField()[i]);
+        }
 				if (data.subjectnrs[i]<0)
 				{
 					logError(BaseMessages.getString(PKG, "MemoryGroupBy.Log.AggregateSubjectFieldCouldNotFound",meta.getSubjectField()[i])); //$NON-NLS-1$ //$NON-NLS-2$
@@ -271,6 +274,9 @@ public class MemoryGroupBy extends BaseStep implements StepInterface
 						aggregate.counts[i]++;
 					}
 					break;
+        case MemoryGroupByMeta.TYPE_GROUP_COUNT_ANY      :
+          aggregate.counts[i]++;
+          break;
 				case MemoryGroupByMeta.TYPE_GROUP_MIN            :
 					if (subjMeta.compare(subj,valueMeta,value)<0) {
 						aggregate.agg[i]=subj; 
@@ -359,6 +365,7 @@ public class MemoryGroupBy extends BaseStep implements StepInterface
                     v=new Double(0.0);
                     break;
 				case MemoryGroupByMeta.TYPE_GROUP_COUNT_DISTINCT  :
+        case MemoryGroupByMeta.TYPE_GROUP_COUNT_ANY  :
 				case MemoryGroupByMeta.TYPE_GROUP_COUNT_ALL       :
                     vMeta = new ValueMeta(meta.getAggregateField()[i], ValueMetaInterface.TYPE_INTEGER);
                     v=new Long(0L);                   
@@ -386,7 +393,8 @@ public class MemoryGroupBy extends BaseStep implements StepInterface
 			}
             
             if (meta.getAggregateType()[i]!=MemoryGroupByMeta.TYPE_GROUP_COUNT_ALL && 
-                meta.getAggregateType()[i]!=MemoryGroupByMeta.TYPE_GROUP_COUNT_DISTINCT)
+                meta.getAggregateType()[i]!=MemoryGroupByMeta.TYPE_GROUP_COUNT_DISTINCT &&
+                meta.getAggregateType()[i]!=MemoryGroupByMeta.TYPE_GROUP_COUNT_ANY)
             {
             	vMeta.setLength(subjMeta.getLength(), subjMeta.getPrecision());
             }
@@ -434,6 +442,7 @@ public class MemoryGroupBy extends BaseStep implements StepInterface
                     		ag=ValueDataUtil.divide(data.aggMeta.getValueMeta(i), ag, 
                     				new ValueMeta("c",ValueMetaInterface.TYPE_INTEGER), new Long(aggregate.counts[i])); 
                     		break;  //$NON-NLS-1$
+                    case MemoryGroupByMeta.TYPE_GROUP_COUNT_ANY      : 
                     case MemoryGroupByMeta.TYPE_GROUP_COUNT_ALL      : ag=new Long(aggregate.counts[i]); break;
                     case MemoryGroupByMeta.TYPE_GROUP_COUNT_DISTINCT : break;
                     case MemoryGroupByMeta.TYPE_GROUP_MIN            : break; 
@@ -442,8 +451,8 @@ public class MemoryGroupBy extends BaseStep implements StepInterface
                     	double sum = (Double)ag / aggregate.counts[i];
                     	ag = Double.valueOf( Math.sqrt( sum ) );
                     	break;
-                    case GroupByMeta.TYPE_GROUP_CONCAT_COMMA:;
-                    case GroupByMeta.TYPE_GROUP_CONCAT_STRING: 
+                    case MemoryGroupByMeta.TYPE_GROUP_CONCAT_COMMA:;
+                    case MemoryGroupByMeta.TYPE_GROUP_CONCAT_STRING: 
                         ag = ((StringBuilder) ag).toString();
                         break;
                     default: break;

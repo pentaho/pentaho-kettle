@@ -705,8 +705,11 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     loadSettings();
 
     transExecutionConfiguration = new TransExecutionConfiguration();
+    transExecutionConfiguration.setGatheringMetrics(true);
     transPreviewExecutionConfiguration = new TransExecutionConfiguration();
+    transPreviewExecutionConfiguration.setGatheringMetrics(true);
     transDebugExecutionConfiguration = new TransExecutionConfiguration();
+    transDebugExecutionConfiguration.setGatheringMetrics(true);
 
     jobExecutionConfiguration = new JobExecutionConfiguration();
 

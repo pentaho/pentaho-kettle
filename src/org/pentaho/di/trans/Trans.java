@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -68,12 +69,19 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LoggingHierarchy;
+import org.pentaho.di.core.logging.LoggingMetric;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.LoggingRegistry;
+import org.pentaho.di.core.logging.Metrics;
+import org.pentaho.di.core.logging.MetricsLogTable;
+import org.pentaho.di.core.logging.MetricsRegistry;
 import org.pentaho.di.core.logging.PerformanceLogTable;
 import org.pentaho.di.core.logging.StepLogTable;
 import org.pentaho.di.core.logging.TransLogTable;
+import org.pentaho.di.core.metrics.MetricsDuration;
+import org.pentaho.di.core.metrics.MetricsSnapshotInterface;
+import org.pentaho.di.core.metrics.MetricsUtil;
 import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
@@ -128,9 +136,9 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 {
 	private static Class<?> PKG = Trans.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-    public static final String REPLAY_DATE_FORMAT = "yyyy/MM/dd HH:mm:ss"; //$NON-NLS-1$
-    
-	private LogChannelInterface log;
+  public static final String REPLAY_DATE_FORMAT = "yyyy/MM/dd HH:mm:ss"; //$NON-NLS-1$
+
+  private LogChannelInterface log;
 	private LogLevel logLevel = LogLevel.BASIC;
 	private String containerObjectId;
 	private int logCommitSize=10;
@@ -265,7 +273,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   private PrintWriter servletPrintWriter;
 
   private ArrayBlockingQueue<Object> transFinishedBlockingQueue;
-	
+  
+  private String executingServer;
+  private String executingUser;
+  
 	public Trans() {
 		finished = new AtomicBoolean(false);
 	    paused = new AtomicBoolean(false);
@@ -406,121 +417,124 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
      */
     public void prepareExecution(String[] arguments) throws KettleException
     {
-        preparing=true;
-		startDate = null;
-        running = false;
+      preparing=true;
+      startDate = null;
+      running = false;
 
-        transListeners.clear();
+      log.snap(Metrics.METRIC_TRANSFORMATION_EXECUTION_START);
+      log.snap(Metrics.METRIC_TRANSFORMATION_INIT_START);
+      
+      transListeners.clear();
         
-		//
-		// Set the arguments on the transformation...
-		//
-		if (arguments!=null) transMeta.setArguments(arguments);
-		
-		activateParameters();
-		transMeta.activateParameters();
-
-		if (transMeta.getName()==null)
-		{
-			if (transMeta.getFilename()!=null)
-			{
-				log.logBasic(BaseMessages.getString(PKG, "Trans.Log.DispacthingStartedForFilename",transMeta.getFilename())); //$NON-NLS-1$ //$NON-NLS-2$
-			}
-		}
-		else
-		{
-			log.logBasic(BaseMessages.getString(PKG, "Trans.Log.DispacthingStartedForTransformation",transMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$
-		}
-
-		if (transMeta.getArguments()!=null)
-		{
-		    if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.NumberOfArgumentsDetected", String.valueOf(transMeta.getArguments().length) )); //$NON-NLS-1$
-		}
-
-		if (isSafeModeEnabled())
-		{
-		    if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.SafeModeIsEnabled",transMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$
-		}
-
-		if (getReplayDate() != null) {
-			SimpleDateFormat df = new SimpleDateFormat(REPLAY_DATE_FORMAT);
-			log.logBasic(BaseMessages.getString(PKG, "Trans.Log.ThisIsAReplayTransformation") //$NON-NLS-1$
-					+ df.format(getReplayDate()));
-		} else {
-		    if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.ThisIsNotAReplayTransformation")); //$NON-NLS-1$
-		}
-
-		// setInternalKettleVariables(this);  --> Let's not do this, when running without file, for example remote, it spoils the fun
-
-    // extra check to see if the servlet print writer has some value in case folks want to test it locally...
-    //
-    if (servletPrintWriter==null) {
-      servletPrintWriter = new PrintWriter(new OutputStreamWriter(System.out));
-    }
-		
-		// Keep track of all the row sets and allocated steps
-		//
-		steps	 = new ArrayList<StepMetaDataCombi>();
-		rowsets	 = new ArrayList<RowSet>();
-
-		//
-		// Sort the steps & hops for visual pleasure...
-		//
-		if (isMonitored())
-		{
-			transMeta.sortStepsNatural();
-		}
-
-		List<StepMeta> hopsteps=transMeta.getTransHopSteps(false);
-
-		if(log.isDetailed()) 
-		{
-			log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.FoundDefferentSteps",String.valueOf(hopsteps.size())));	 //$NON-NLS-1$ //$NON-NLS-2$
-			log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.AllocatingRowsets")); //$NON-NLS-1$
-		}
-		// First allocate all the rowsets required!
-		// Note that a mapping doesn't receive ANY input or output rowsets...
-		//
-		for (int i=0;i<hopsteps.size();i++)
-		{
-			StepMeta thisStep=hopsteps.get(i);
-			if (thisStep.isMapping()) continue; // handled and allocated by the mapping step itself.
-			
-			if(log.isDetailed()) 
-				log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.AllocateingRowsetsForStep",String.valueOf(i),thisStep.getName())); //$NON-NLS-1$ //$NON-NLS-2$
-
-			List<StepMeta> nextSteps = transMeta.findNextSteps(thisStep);
-			int nrTargets = nextSteps.size();
-
-			for (int n=0;n<nrTargets;n++)
-			{
-				// What's the next step?
-				StepMeta nextStep = nextSteps.get(n);
-				if (nextStep.isMapping()) continue; // handled and allocated by the mapping step itself.
-				
-                // How many times do we start the source step?
-                int thisCopies = thisStep.getCopies();
-
-                // How many times do we start the target step?
-                int nextCopies = nextStep.getCopies();
-                
-                // Are we re-partitioning?
-                boolean repartitioning = !thisStep.isPartitioned() && nextStep.isPartitioned();
-                
-                int nrCopies;
-                if(log.isDetailed()) 
-                	log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.copiesInfo",String.valueOf(thisCopies),String.valueOf(nextCopies))); //$NON-NLS-1$ //$NON-NLS-2$
-				int dispatchType;
-				     if (thisCopies==1 && nextCopies==1) { dispatchType=TYPE_DISP_1_1; nrCopies = 1; }
-				else if (thisCopies==1 && nextCopies >1) { dispatchType=TYPE_DISP_1_N; nrCopies = nextCopies; }
-				else if (thisCopies >1 && nextCopies==1) { dispatchType=TYPE_DISP_N_1; nrCopies = thisCopies; }
-				else if (thisCopies==nextCopies && !repartitioning)         { dispatchType=TYPE_DISP_N_N; nrCopies = nextCopies; } // > 1!
-				else                                     { dispatchType=TYPE_DISP_N_M; nrCopies = nextCopies; } // Allocate a rowset for each destination step
-
-				// Allocate the rowsets
-				//
-                if (dispatchType!=TYPE_DISP_N_M)
-                {
+  		//
+  		// Set the arguments on the transformation...
+  		//
+  		if (arguments!=null) transMeta.setArguments(arguments);
+  		
+  		activateParameters();
+  		transMeta.activateParameters();
+  
+  		if (transMeta.getName()==null)
+  		{
+  			if (transMeta.getFilename()!=null)
+  			{
+  				log.logBasic(BaseMessages.getString(PKG, "Trans.Log.DispacthingStartedForFilename",transMeta.getFilename())); //$NON-NLS-1$ //$NON-NLS-2$
+  			}
+  		}
+  		else
+  		{
+  			log.logBasic(BaseMessages.getString(PKG, "Trans.Log.DispacthingStartedForTransformation",transMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$
+  		}
+  
+  		if (transMeta.getArguments()!=null)
+  		{
+  		    if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.NumberOfArgumentsDetected", String.valueOf(transMeta.getArguments().length) )); //$NON-NLS-1$
+  		}
+  
+  		if (isSafeModeEnabled())
+  		{
+  		    if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.SafeModeIsEnabled",transMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$
+  		}
+  
+  		if (getReplayDate() != null) {
+  			SimpleDateFormat df = new SimpleDateFormat(REPLAY_DATE_FORMAT);
+  			log.logBasic(BaseMessages.getString(PKG, "Trans.Log.ThisIsAReplayTransformation") //$NON-NLS-1$
+  					+ df.format(getReplayDate()));
+  		} else {
+  		    if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.ThisIsNotAReplayTransformation")); //$NON-NLS-1$
+  		}
+  
+  		// setInternalKettleVariables(this);  --> Let's not do this, when running without file, for example remote, it spoils the fun
+  
+      // extra check to see if the servlet print writer has some value in case folks want to test it locally...
+      //
+      if (servletPrintWriter==null) {
+        servletPrintWriter = new PrintWriter(new OutputStreamWriter(System.out));
+      }
+  		
+  		// Keep track of all the row sets and allocated steps
+  		//
+  		steps	 = new ArrayList<StepMetaDataCombi>();
+  		rowsets	 = new ArrayList<RowSet>();
+  
+  		//
+  		// Sort the steps & hops for visual pleasure...
+  		//
+  		if (isMonitored())
+  		{
+  			transMeta.sortStepsNatural();
+  		}
+  
+  		List<StepMeta> hopsteps=transMeta.getTransHopSteps(false);
+  
+  		if(log.isDetailed()) 
+  		{
+  			log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.FoundDefferentSteps",String.valueOf(hopsteps.size())));	 //$NON-NLS-1$ //$NON-NLS-2$
+  			log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.AllocatingRowsets")); //$NON-NLS-1$
+  		}
+  		// First allocate all the rowsets required!
+  		// Note that a mapping doesn't receive ANY input or output rowsets...
+  		//
+  		for (int i=0;i<hopsteps.size();i++)
+  		{
+  			StepMeta thisStep=hopsteps.get(i);
+  			if (thisStep.isMapping()) continue; // handled and allocated by the mapping step itself.
+  			
+  			if(log.isDetailed()) 
+  				log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.AllocateingRowsetsForStep",String.valueOf(i),thisStep.getName())); //$NON-NLS-1$ //$NON-NLS-2$
+  
+  			List<StepMeta> nextSteps = transMeta.findNextSteps(thisStep);
+  			int nrTargets = nextSteps.size();
+  
+  			for (int n=0;n<nrTargets;n++)
+  			{
+  				// What's the next step?
+  				StepMeta nextStep = nextSteps.get(n);
+  				if (nextStep.isMapping()) continue; // handled and allocated by the mapping step itself.
+  				
+                  // How many times do we start the source step?
+                  int thisCopies = thisStep.getCopies();
+  
+                  // How many times do we start the target step?
+                  int nextCopies = nextStep.getCopies();
+                  
+                  // Are we re-partitioning?
+                  boolean repartitioning = !thisStep.isPartitioned() && nextStep.isPartitioned();
+                  
+                  int nrCopies;
+                  if(log.isDetailed()) 
+                  	log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.copiesInfo",String.valueOf(thisCopies),String.valueOf(nextCopies))); //$NON-NLS-1$ //$NON-NLS-2$
+  				int dispatchType;
+  				     if (thisCopies==1 && nextCopies==1) { dispatchType=TYPE_DISP_1_1; nrCopies = 1; }
+  				else if (thisCopies==1 && nextCopies >1) { dispatchType=TYPE_DISP_1_N; nrCopies = nextCopies; }
+  				else if (thisCopies >1 && nextCopies==1) { dispatchType=TYPE_DISP_N_1; nrCopies = thisCopies; }
+  				else if (thisCopies==nextCopies && !repartitioning)         { dispatchType=TYPE_DISP_N_N; nrCopies = nextCopies; } // > 1!
+  				else                                     { dispatchType=TYPE_DISP_N_M; nrCopies = nextCopies; } // Allocate a rowset for each destination step
+  
+  				// Allocate the rowsets
+  				//
+          if (dispatchType!=TYPE_DISP_N_M)
+          {
     				for (int c=0;c<nrCopies;c++)
     				{
     					RowSet rowSet;
@@ -638,8 +652,12 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 					// Save the step too
 					combi.step = step;
 
+					// Pass logging level and metrics gathering down to the step level.
+					///
 					if(combi.step instanceof LoggingObjectInterface) {
-					  combi.step.getLogChannel().setLogLevel(logLevel);
+					  LogChannelInterface logChannel = combi.step.getLogChannel();
+					  logChannel.setLogLevel(logLevel);
+					  logChannel.setGatheringMetrics(log.isGatheringMetrics());					  
 					}
 					
 					// Add to the bunch...
@@ -650,21 +668,21 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 			}
 		}
         
-        // Now we need to verify if certain rowsets are not meant to be for error handling...
-        // Loop over the steps and for every step verify the output rowsets
-        // If a rowset is going to a target step in the steps error handling metadata, set it to the errorRowSet.
-        // The input rowsets are already in place, so the next step just accepts the rows.
-        // Metadata wise we need to do the same trick in TransMeta
-        //
-        for (int s=0;s<steps.size();s++)
+    // Now we need to verify if certain rowsets are not meant to be for error handling...
+    // Loop over the steps and for every step verify the output rowsets
+    // If a rowset is going to a target step in the steps error handling metadata, set it to the errorRowSet.
+    // The input rowsets are already in place, so the next step just accepts the rows.
+    // Metadata wise we need to do the same trick in TransMeta
+    //
+    for (int s=0;s<steps.size();s++)
+    {
+        StepMetaDataCombi combi = steps.get(s);
+        if (combi.stepMeta.isDoingErrorHandling())
         {
-            StepMetaDataCombi combi = steps.get(s);
-            if (combi.stepMeta.isDoingErrorHandling())
-            {
-            	combi.step.identifyErrorOutput();
-            	
-            }
+        	combi.step.identifyErrorOutput();
+        	
         }
+    }
 
 		// Now (optionally) write start log record!
     // Make sure we synchronize appropriately to avoid duplicate batch IDs.
@@ -677,156 +695,163 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       beginProcessing();
     }
 
-        // Set the partition-to-rowset mapping
-        //
-        for (int i=0;i<steps.size();i++)
-        {
-            StepMetaDataCombi sid = steps.get(i);
+    // Set the partition-to-rowset mapping
+    //
+    for (int i = 0; i < steps.size(); i++) {
+      StepMetaDataCombi sid = steps.get(i);
 
-            StepMeta stepMeta = sid.stepMeta;
-            StepInterface baseStep = sid.step;
+      StepMeta stepMeta = sid.stepMeta;
+      StepInterface baseStep = sid.step;
 
-            baseStep.setPartitioned(stepMeta.isPartitioned());
-            
-            // Now let's take a look at the source and target relation
-            //
-            // If this source step is not partitioned, and the target step is: it means we need to re-partition the incoming data.
-            // If both steps are partitioned on the same method and schema, we don't need to re-partition
-            // If both steps are partitioned on a different method or schema, we need to re-partition as well.
-            // If both steps are not partitioned, we don't need to re-partition
-            //
-            boolean isThisPartitioned = stepMeta.isPartitioned();
-            PartitionSchema thisPartitionSchema = null;
-            if (isThisPartitioned) thisPartitionSchema = stepMeta.getStepPartitioningMeta().getPartitionSchema();
-            
-            boolean isNextPartitioned = false;
-            StepPartitioningMeta nextStepPartitioningMeta = null;
-            PartitionSchema nextPartitionSchema = null;
+      baseStep.setPartitioned(stepMeta.isPartitioned());
 
-            List<StepMeta> nextSteps = transMeta.findNextSteps(stepMeta);
-            int nrNext = nextSteps.size();
-	        for (int p=0;p<nrNext;p++)
-	        {
-	            StepMeta nextStep = nextSteps.get(p);
-	            if (nextStep.isPartitioned()) 
-	            {
-	            	isNextPartitioned = true;
-	            	nextStepPartitioningMeta = nextStep.getStepPartitioningMeta(); 
-	                nextPartitionSchema = nextStepPartitioningMeta.getPartitionSchema();
-	            }
-	        }
-            
-            baseStep.setRepartitioning(StepPartitioningMeta.PARTITIONING_METHOD_NONE);
-            
-        	// If the next step is partitioned differently, set re-partitioning, when running locally.
-        	//
-            if ( (!isThisPartitioned && isNextPartitioned ) || (isThisPartitioned && isNextPartitioned && !thisPartitionSchema.equals(nextPartitionSchema)) ) {
-            	baseStep.setRepartitioning(nextStepPartitioningMeta.getMethodType());
-            }
-            
-            // For partitioning to a set of remove steps (repartitioning from a master to a set or remote output steps)
-            //
-            StepPartitioningMeta targetStepPartitioningMeta = baseStep.getStepMeta().getTargetStepPartitioningMeta();
-            if (targetStepPartitioningMeta!=null) {
-              baseStep.setRepartitioning(targetStepPartitioningMeta.getMethodType());
-            }
+      // Now let's take a look at the source and target relation
+      //
+      // If this source step is not partitioned, and the target step is: it
+      // means we need to re-partition the incoming data.
+      // If both steps are partitioned on the same method and schema, we don't
+      // need to re-partition
+      // If both steps are partitioned on a different method or schema, we need
+      // to re-partition as well.
+      // If both steps are not partitioned, we don't need to re-partition
+      //
+      boolean isThisPartitioned = stepMeta.isPartitioned();
+      PartitionSchema thisPartitionSchema = null;
+      if (isThisPartitioned)
+        thisPartitionSchema = stepMeta.getStepPartitioningMeta().getPartitionSchema();
+
+      boolean isNextPartitioned = false;
+      StepPartitioningMeta nextStepPartitioningMeta = null;
+      PartitionSchema nextPartitionSchema = null;
+
+      List<StepMeta> nextSteps = transMeta.findNextSteps(stepMeta);
+      int nrNext = nextSteps.size();
+      for (int p = 0; p < nrNext; p++) {
+        StepMeta nextStep = nextSteps.get(p);
+        if (nextStep.isPartitioned()) {
+          isNextPartitioned = true;
+          nextStepPartitioningMeta = nextStep.getStepPartitioningMeta();
+          nextPartitionSchema = nextStepPartitioningMeta.getPartitionSchema();
         }
+      }
 
-        preparing=false;
-        initializing = true;
+      baseStep.setRepartitioning(StepPartitioningMeta.PARTITIONING_METHOD_NONE);
 
-        if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.InitialisingSteps", String.valueOf(steps.size()))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+      // If the next step is partitioned differently, set re-partitioning, when
+      // running locally.
+      //
+      if ((!isThisPartitioned && isNextPartitioned) || (isThisPartitioned && isNextPartitioned && !thisPartitionSchema.equals(nextPartitionSchema))) {
+        baseStep.setRepartitioning(nextStepPartitioningMeta.getMethodType());
+      }
 
-        StepInitThread initThreads[] = new StepInitThread[steps.size()];
-        Thread[] threads = new Thread[steps.size()];
+      // For partitioning to a set of remove steps (repartitioning from a master
+      // to a set or remote output steps)
+      //
+      StepPartitioningMeta targetStepPartitioningMeta = baseStep.getStepMeta().getTargetStepPartitioningMeta();
+      if (targetStepPartitioningMeta != null) {
+        baseStep.setRepartitioning(targetStepPartitioningMeta.getMethodType());
+      }
+    }
 
-        // Initialize all the threads...
-        //
-		for (int i=0;i<steps.size();i++)
-		{
-			final StepMetaDataCombi sid=steps.get(i);
-            
-            // Do the init code in the background!
-            // Init all steps at once, but ALL steps need to finish before we can continue properly!
-			initThreads[i] = new StepInitThread(sid, log);
-            
-            // Put it in a separate thread!
-			threads[i] = new Thread(initThreads[i]);
-            threads[i].setName("init of "+sid.stepname+"."+sid.copy+" ("+threads[i].getName()+")");
-            threads[i].start();
-		}
-        
-        for (int i=0; i < threads.length;i++)
-        {
-            try {
-                threads[i].join();
-            } catch(Exception ex) {
-                log.logError("Error with init thread: " + ex.getMessage(), ex.getMessage());
-                log.logError(Const.getStackTracker(ex));
-            }
+    preparing = false;
+    initializing = true;
+
+    if (log.isDetailed())
+      log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.InitialisingSteps", String.valueOf(steps.size()))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+    StepInitThread initThreads[] = new StepInitThread[steps.size()];
+    Thread[] threads = new Thread[steps.size()];
+
+    // Initialize all the threads...
+    //
+    for (int i = 0; i < steps.size(); i++) {
+      final StepMetaDataCombi sid = steps.get(i);
+
+      // Do the init code in the background!
+      // Init all steps at once, but ALL steps need to finish before we can
+      // continue properly!
+      //
+      initThreads[i] = new StepInitThread(sid, log);
+      initThreads[i].getCombi().step.getLogChannel().snap(Metrics.METRIC_STEP_INIT_START);
+
+      // Put it in a separate thread!
+      //
+      threads[i] = new Thread(initThreads[i]);
+      threads[i].setName("init of " + sid.stepname + "." + sid.copy + " (" + threads[i].getName() + ")");
+      threads[i].start();
+    }
+
+    for (int i = 0; i < threads.length; i++) {
+      try {
+        threads[i].join();
+      } catch (Exception ex) {
+        log.logError("Error with init thread: " + ex.getMessage(), ex.getMessage());
+        log.logError(Const.getStackTracker(ex));
+      }
+    }
+
+    initializing = false;
+    boolean ok = true;
+
+    // All step are initialized now: see if there was one that didn't do it
+    // correctly!
+    //
+    for (int i = 0; i < initThreads.length; i++) {
+      StepMetaDataCombi combi = initThreads[i].getCombi();
+      if (!initThreads[i].isOk()) {
+        log.logError(BaseMessages.getString(PKG, "Trans.Log.StepFailedToInit", combi.stepname + "." + combi.copy));
+        combi.data.setStatus(StepExecutionStatus.STATUS_STOPPED);
+        ok = false;
+      } else {
+        combi.data.setStatus(StepExecutionStatus.STATUS_IDLE);
+        if (log.isDetailed())
+          log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.StepInitialized", combi.stepname + "." + combi.copy));
+      }
+      combi.step.getLogChannel().snap(Metrics.METRIC_STEP_INIT_STOP);
+    }
+
+    if (!ok) {
+      // Halt the other threads as well, signal end-of-the line to the outside
+      // world...
+      // Also explicitly call dispose() to clean up resources opened during
+      // init();
+      //
+      for (int i = 0; i < initThreads.length; i++) {
+        StepMetaDataCombi combi = initThreads[i].getCombi();
+
+        // Dispose will overwrite the status, but we set it back right after
+        // this.
+        combi.step.dispose(combi.meta, combi.data);
+
+        if (initThreads[i].isOk()) {
+          combi.data.setStatus(StepExecutionStatus.STATUS_HALTED);
+        } else {
+          combi.data.setStatus(StepExecutionStatus.STATUS_STOPPED);
         }
-        
-        initializing=false;
-        boolean ok = true;
-        
-        // All step are initialized now: see if there was one that didn't do it correctly!
-        for (int i=0;i<initThreads.length;i++)
-        {
-            StepMetaDataCombi combi = initThreads[i].getCombi();
-            if (!initThreads[i].isOk()) 
-            {
-                log.logError(BaseMessages.getString(PKG, "Trans.Log.StepFailedToInit", combi.stepname+"."+combi.copy));
-                combi.data.setStatus(StepExecutionStatus.STATUS_STOPPED);
-                ok=false;
-            }
-            else
-            {
-                combi.data.setStatus(StepExecutionStatus.STATUS_IDLE);
-                if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.StepInitialized", combi.stepname+"."+combi.copy));
-            }
-        }
-        
-		if (!ok)
-		{
-            // Halt the other threads as well, signal end-of-the line to the outside world...
-            // Also explicitly call dispose() to clean up resources opened during init();
-            //
-            for (int i=0;i<initThreads.length;i++)
-            {
-                StepMetaDataCombi combi = initThreads[i].getCombi();
-                
-                // Dispose will overwrite the status, but we set it back right after this.
-                combi.step.dispose(combi.meta, combi.data);
-                
-                if (initThreads[i].isOk()) 
-                {
-                    combi.data.setStatus(StepExecutionStatus.STATUS_HALTED);
-                }
-                else
-                {
-                    combi.data.setStatus(StepExecutionStatus.STATUS_STOPPED);
-                }
-            }
-            
-            // Just for safety, fire the trans finished listeners...
-            //
-            fireTransFinishedListeners();
-            
-            // Flag the transformation as finished
-            //
-            finished.set(true);
-            
-            // Pass along the log during preview.  Otherwise it becomes hard to see what went wrong.
-            //
-            if (preview) {
-            	String logText = CentralLogStore.getAppender().getBuffer(getLogChannelId(), true).toString();
-            	throw new KettleException(BaseMessages.getString(PKG, "Trans.Log.FailToInitializeAtLeastOneStep")+Const.CR+logText); //$NON-NLS-1
-            } else {
-            	throw new KettleException(BaseMessages.getString(PKG, "Trans.Log.FailToInitializeAtLeastOneStep")+Const.CR); //$NON-NLS-1
-            }
-		}
-        
-        readyToStart=true;
+      }
+
+      // Just for safety, fire the trans finished listeners...
+      //
+      fireTransFinishedListeners();
+
+      // Flag the transformation as finished
+      //
+      finished.set(true);
+
+      // Pass along the log during preview. Otherwise it becomes hard to see
+      // what went wrong.
+      //
+      if (preview) {
+        String logText = CentralLogStore.getAppender().getBuffer(getLogChannelId(), true).toString();
+        throw new KettleException(BaseMessages.getString(PKG, "Trans.Log.FailToInitializeAtLeastOneStep") + Const.CR + logText); //$NON-NLS-1
+      } else {
+        throw new KettleException(BaseMessages.getString(PKG, "Trans.Log.FailToInitializeAtLeastOneStep") + Const.CR); //$NON-NLS-1
+      }
+    }
+   
+    log.snap(Metrics.METRIC_TRANSFORMATION_INIT_STOP);
+
+    readyToStart=true;
 	}
 
     /**
@@ -834,226 +859,238 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
      * Before you start the threads, you can add RowListeners to them.
      * @throws KettleException in case there is a communication error with a remote output socket.
      */
-    public void startThreads() throws KettleException
-    {
-      // Now prepare to start all the threads...
-    	// 
-    	nrOfFinishedSteps=0;
-    	nrOfActiveSteps=0;
-    	
-        for (int i=0;i<steps.size();i++)
-        {
-            final StepMetaDataCombi sid = steps.get(i);
-            sid.step.markStart();
-            sid.step.initBeforeStart();
-            
-            // also attach a Step Listener to detect when we're done...
+  public void startThreads() throws KettleException {
+    // Now prepare to start all the threads...
+    //
+    nrOfFinishedSteps = 0;
+    nrOfActiveSteps = 0;
+
+    for (int i = 0; i < steps.size(); i++) {
+      final StepMetaDataCombi sid = steps.get(i);
+      sid.step.markStart();
+      sid.step.initBeforeStart();
+
+      // also attach a Step Listener to detect when we're done...
+      //
+      StepListener stepListener = new StepListener() {
+        public void stepActive(Trans trans, StepMeta stepMeta, StepInterface step) {
+          nrOfActiveSteps++;
+          if (nrOfActiveSteps == 1) {
+            // Transformation goes from in-active to active...
             //
-            StepListener stepListener = new StepListener() 
-	            {
-                    public void stepActive(Trans trans, StepMeta stepMeta, StepInterface step) {
-                      nrOfActiveSteps++;
-                      if (nrOfActiveSteps==1) {
-                        // Transformation goes from in-active to active...
-                        //
-                        for (TransListener listener : transListeners) {
-                          listener.transActive(Trans.this);
-                        }
-                      }
-                    }
-            
-                    public void stepIdle(Trans trans, StepMeta stepMeta, StepInterface step) {
-                      nrOfActiveSteps--;
-                      if (nrOfActiveSteps==0) {
-                        // Transformation goes from active to in-active...
-                        //
-                        for (TransListener listener : transListeners) {
-                          listener.transIdle(Trans.this);
-                        }                        
-                      }
-                    }
-
-					public void stepFinished(Trans trans, StepMeta stepMeta, StepInterface step) {
-						synchronized (Trans.this) {
-							nrOfFinishedSteps++;
-													
-							if (nrOfFinishedSteps>=steps.size()) {						
-								// Set the finished flag
-								//
-								finished.set(true);
-								
-								// Grab the performance statistics one last time (if enabled)
-								//
-								addStepPerformanceSnapShot();
-								
-						        if (transMeta.isUsingUniqueConnections()) {
-						            trans.closeUniqueDatabaseConnections(getResult());
-						        }
-						        
-								try {
-									fireTransFinishedListeners();
-								} catch(Exception e) {
-									step.setErrors(step.getErrors()+1L);
-									log.logError(getName()+" : "+BaseMessages.getString(PKG, "Trans.Log.UnexpectedErrorAtTransformationEnd"), e); //$NON-NLS-1$ //$NON-NLS-2$
-								}
-							}
-							
-							// If a step fails with an error, we want to kill/stop the others too...
-							//
-							if (step.getErrors()>0) {
-	
-								log.logMinimal(getName(), BaseMessages.getString(PKG, "Trans.Log.TransformationDetectedErrors")); //$NON-NLS-1$ //$NON-NLS-2$
-								log.logMinimal(getName(), BaseMessages.getString(PKG, "Trans.Log.TransformationIsKillingTheOtherSteps")); //$NON-NLS-1$
-	
-								killAllNoWait();
-							}
-						}
-					}
-				};
-			sid.step.addStepListener(stepListener);
+            for (TransListener listener : transListeners) {
+              listener.transActive(Trans.this);
+            }
+          }
         }
 
-    	if (transMeta.isCapturingStepPerformanceSnapShots()) 
-    	{
-    		stepPerformanceSnapshotSeqNr = new AtomicInteger(0);
-    		stepPerformanceSnapShots = new ConcurrentHashMap<String, List<StepPerformanceSnapShot>>();
-    		
-    		// Calculate the maximum number of snapshots to be kept in memory
-    		//
-    		String limitString = environmentSubstitute(transMeta.getStepPerformanceCapturingSizeLimit());
-        if (Const.isEmpty(limitString)) {
-          limitString = EnvUtil.getSystemProperty(Const.KETTLE_STEP_PERFORMANCE_SNAPSHOT_LIMIT);
+        public void stepIdle(Trans trans, StepMeta stepMeta, StepInterface step) {
+          nrOfActiveSteps--;
+          if (nrOfActiveSteps == 0) {
+            // Transformation goes from active to in-active...
+            //
+            for (TransListener listener : transListeners) {
+              listener.transIdle(Trans.this);
+            }
+          }
         }
-        stepPerformanceSnapshotSizeLimit = Const.toInt(limitString, 0);
-        
-    		// Set a timer to collect the performance data from the running threads...
-    		//
-    		stepPerformanceSnapShotTimer = new Timer("stepPerformanceSnapShot Timer: " + transMeta.getName());
-    		TimerTask timerTask = new TimerTask() {
-				public void run() {
-				  if (!isFinished()) {
-					addStepPerformanceSnapShot();
-				  }
-				}
-			};
-    		stepPerformanceSnapShotTimer.schedule(timerTask, 100, transMeta.getStepPerformanceCapturingDelay());
-    	}
-    	
-        // Now start a thread to monitor the running transformation...
-        //
-        finished.set(false);
-        paused.set(false);
-        stopped.set(false);
 
-        transFinishedBlockingQueue = new ArrayBlockingQueue<Object>(10);
+        public void stepFinished(Trans trans, StepMeta stepMeta, StepInterface step) {
+          synchronized (Trans.this) {
+            nrOfFinishedSteps++;
 
-		TransListener transListener = new TransAdapter() {
-				public void transFinished(Trans trans) {
-					
-					// First of all, stop the performance snapshot timer if there is is one...
-					//
-					if (transMeta.isCapturingStepPerformanceSnapShots() && stepPerformanceSnapShotTimer!=null) 
-					{
-						stepPerformanceSnapShotTimer.cancel();
-					}
-					
-					finished.set(true);
-					running=false; // no longer running
+            if (nrOfFinishedSteps >= steps.size()) {
+              // Set the finished flag
+              //
+              finished.set(true);
 
-			    // Signal for the the waitUntilFinished blocker...
-			    //
-					transFinishedBlockingQueue.add(new Object());
-				}
-			};
-		addTransListener(transListener);
-		
-        running=true;
-        
-        switch(transMeta.getTransformationType()) {
-        case Normal:
-        	
-	        // Now start all the threads...
-	    	//
-	        for (int i=0;i<steps.size();i++)
-	        {
-	        	StepMetaDataCombi combi = steps.get(i);
-	        	RunThread runThread = new RunThread(combi);
-	        	Thread thread = new Thread(runThread);
-	        	thread.setName(getName()+" - "+combi.stepname);
-	        	thread.start();
-	        }
-	        break;
-	    
-        case SerialSingleThreaded:
-        	new Thread(new Runnable() {
-				public void run() {
-					try {
-						// Always disable thread priority management, it will always slow us down...
-						//
-						for (StepMetaDataCombi combi : steps) {
-							combi.step.setUsingThreadPriorityManagment(false);
-						}
-						
-						//
-			        	// This is a single threaded version...
-			        	//
-						
-						// Sort the steps from start to finish...
-						//
-						Collections.sort(steps, new Comparator<StepMetaDataCombi>() {
-							public int compare(StepMetaDataCombi c1, StepMetaDataCombi c2) {
-								
-								boolean c1BeforeC2 = transMeta.findPrevious(c2.stepMeta, c1.stepMeta);
-								if (c1BeforeC2) {
-									return -1;
-								} else {
-									return 1;
-								}
-							}
-						});
-						
-			        	boolean[] stepDone = new boolean[steps.size()];
-			        	int nrDone = 0;
-			        	while (nrDone<steps.size() && !isStopped()) {
-			        		for (int i=0;i<steps.size() && !isStopped();i++) {
-			        			StepMetaDataCombi combi = steps.get(i);
-			        			if (!stepDone[i]) {
-			        				// if (combi.step.canProcessOneRow() || !combi.step.isRunning()) {
-				        				boolean cont = combi.step.processRow(combi.meta, combi.data);
-				        				if (!cont) {
-				        					stepDone[i] = true;
-				        					nrDone++;
-				        				}
-			        				// }
-			        			}
-			        		}
-			        	}
-					} catch(Exception e) {
-						errors.addAndGet(1);
-						log.logError("Error executing single threaded", e);
-					} finally {
-						for (int i=0;i<steps.size();i++) {
-		        			StepMetaDataCombi combi = steps.get(i);
-							combi.step.dispose(combi.meta, combi.data);
-							combi.step.markStop();
-						}
-					}
-				}
-			}).start();
-			break;
-			
-        case SingleThreaded :
-          // Don't do anything, this needs to be handled by the transformation executor!
-          //
-          break;
+              // Grab the performance statistics one last time (if enabled)
+              //
+              addStepPerformanceSnapShot();
 
-        	
+              if (transMeta.isUsingUniqueConnections()) {
+                trans.closeUniqueDatabaseConnections(getResult());
+              }
+
+              try {
+                fireTransFinishedListeners();
+              } catch (Exception e) {
+                step.setErrors(step.getErrors() + 1L);
+                log.logError(getName() + " : " + BaseMessages.getString(PKG, "Trans.Log.UnexpectedErrorAtTransformationEnd"), e); //$NON-NLS-1$ //$NON-NLS-2$
+              }
+            }
+
+            // If a step fails with an error, we want to kill/stop the others
+            // too...
+            //
+            if (step.getErrors() > 0) {
+
+              log.logMinimal(getName(), BaseMessages.getString(PKG, "Trans.Log.TransformationDetectedErrors")); //$NON-NLS-1$ //$NON-NLS-2$
+              log.logMinimal(getName(), BaseMessages.getString(PKG, "Trans.Log.TransformationIsKillingTheOtherSteps")); //$NON-NLS-1$
+
+              killAllNoWait();
+            }
+          }
         }
-        
-        
-        
-        if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.TransformationHasAllocated",String.valueOf(steps.size()),String.valueOf(rowsets.size()))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+      };
+      sid.step.addStepListener(stepListener);
     }
+
+    if (transMeta.isCapturingStepPerformanceSnapShots()) {
+      stepPerformanceSnapshotSeqNr = new AtomicInteger(0);
+      stepPerformanceSnapShots = new ConcurrentHashMap<String, List<StepPerformanceSnapShot>>();
+
+      // Calculate the maximum number of snapshots to be kept in memory
+      //
+      String limitString = environmentSubstitute(transMeta.getStepPerformanceCapturingSizeLimit());
+      if (Const.isEmpty(limitString)) {
+        limitString = EnvUtil.getSystemProperty(Const.KETTLE_STEP_PERFORMANCE_SNAPSHOT_LIMIT);
+      }
+      stepPerformanceSnapshotSizeLimit = Const.toInt(limitString, 0);
+
+      // Set a timer to collect the performance data from the running threads...
+      //
+      stepPerformanceSnapShotTimer = new Timer("stepPerformanceSnapShot Timer: " + transMeta.getName());
+      TimerTask timerTask = new TimerTask() {
+        public void run() {
+          if (!isFinished()) {
+            addStepPerformanceSnapShot();
+          }
+        }
+      };
+      stepPerformanceSnapShotTimer.schedule(timerTask, 100, transMeta.getStepPerformanceCapturingDelay());
+    }
+
+    // Now start a thread to monitor the running transformation...
+    //
+    finished.set(false);
+    paused.set(false);
+    stopped.set(false);
+
+    transFinishedBlockingQueue = new ArrayBlockingQueue<Object>(10);
+
+    TransListener transListener = new TransAdapter() {
+      public void transFinished(Trans trans) {
+
+        // First of all, stop the performance snapshot timer if there is is
+        // one...
+        //
+        if (transMeta.isCapturingStepPerformanceSnapShots() && stepPerformanceSnapShotTimer != null) {
+          stepPerformanceSnapShotTimer.cancel();
+        }
+
+        finished.set(true);
+        running = false; // no longer running
+        
+        log.snap(Metrics.METRIC_TRANSFORMATION_EXECUTION_STOP);
+
+        // If the user ran with metrics gathering enabled and a metrics logging table is configured, add another listener... 
+        //
+        MetricsLogTable metricsLogTable = transMeta.getMetricsLogTable();
+        if (metricsLogTable.isDefined()) {
+          try {
+            writeMetricsInformation();
+          } catch(Exception e) {
+            log.logError("Error writing metrics information", e);
+            errors.incrementAndGet();
+          }
+        }
+
+
+        // Signal for the the waitUntilFinished blocker...
+        //
+        transFinishedBlockingQueue.add(new Object());
+      }
+    };
+    addTransListener(transListener);
+
+    running = true;
+
+    switch (transMeta.getTransformationType()) {
+    case Normal:
+
+      // Now start all the threads...
+      //
+      for (int i = 0; i < steps.size(); i++) {
+        StepMetaDataCombi combi = steps.get(i);
+        RunThread runThread = new RunThread(combi);
+        Thread thread = new Thread(runThread);
+        thread.setName(getName() + " - " + combi.stepname);
+        thread.start();
+      }
+      break;
+
+    case SerialSingleThreaded:
+      new Thread(new Runnable() {
+        public void run() {
+          try {
+            // Always disable thread priority management, it will always slow us
+            // down...
+            //
+            for (StepMetaDataCombi combi : steps) {
+              combi.step.setUsingThreadPriorityManagment(false);
+            }
+
+            //
+            // This is a single threaded version...
+            //
+
+            // Sort the steps from start to finish...
+            //
+            Collections.sort(steps, new Comparator<StepMetaDataCombi>() {
+              public int compare(StepMetaDataCombi c1, StepMetaDataCombi c2) {
+
+                boolean c1BeforeC2 = transMeta.findPrevious(c2.stepMeta, c1.stepMeta);
+                if (c1BeforeC2) {
+                  return -1;
+                } else {
+                  return 1;
+                }
+              }
+            });
+
+            boolean[] stepDone = new boolean[steps.size()];
+            int nrDone = 0;
+            while (nrDone < steps.size() && !isStopped()) {
+              for (int i = 0; i < steps.size() && !isStopped(); i++) {
+                StepMetaDataCombi combi = steps.get(i);
+                if (!stepDone[i]) {
+                  // if (combi.step.canProcessOneRow() ||
+                  // !combi.step.isRunning()) {
+                  boolean cont = combi.step.processRow(combi.meta, combi.data);
+                  if (!cont) {
+                    stepDone[i] = true;
+                    nrDone++;
+                  }
+                  // }
+                }
+              }
+            }
+          } catch (Exception e) {
+            errors.addAndGet(1);
+            log.logError("Error executing single threaded", e);
+          } finally {
+            for (int i = 0; i < steps.size(); i++) {
+              StepMetaDataCombi combi = steps.get(i);
+              combi.step.dispose(combi.meta, combi.data);
+              combi.step.markStop();
+            }
+          }
+        }
+      }).start();
+      break;
+
+    case SingleThreaded:
+      // Don't do anything, this needs to be handled by the transformation
+      // executor!
+      //
+      break;
+
+    }
+
+    if (log.isDetailed())
+      log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.TransformationHasAllocated", String.valueOf(steps.size()), String.valueOf(rowsets.size()))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+  }
     
     /**
      * 	Fire the listeners (if any are registered)
@@ -1793,15 +1830,15 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
                 //
                 ChannelLogTable channelLogTable = transMeta.getChannelLogTable();
                 if (channelLogTable.isDefined()) {
-                    addTransListener(new TransAdapter() {
-    					public void transFinished(Trans trans) throws KettleException {
-    						try {
-    							writeLogChannelInformation();
-    						} catch(KettleException e) {
-    							throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.UnableToPerformLoggingAtTransEnd"), e);
-    						}
-    					}
-    				});
+                  addTransListener(new TransAdapter() {
+                    public void transFinished(Trans trans) throws KettleException {
+                      try {
+                        writeLogChannelInformation();
+                      } catch (KettleException e) {
+                        throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.UnableToPerformLoggingAtTransEnd"), e);
+                      }
+                    }
+                  });
                 }
                 
                 // See if we need to write the step performance records at intervals too...
@@ -1914,6 +1951,61 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		}
 		
 	}
+	
+	 protected synchronized void writeMetricsInformation() throws KettleException {
+	   //       
+	   System.out.println(MetricsUtil.getDuration(log.getLogChannelId(), Metrics.METRIC_PLUGIN_REGISTRY_REGISTER_EXTENSIONS_START.getDescription()).get(0));
+     System.out.println(MetricsUtil.getDuration(log.getLogChannelId(), Metrics.METRIC_PLUGIN_REGISTRY_PLUGIN_REGISTRATION_START.getDescription()).get(0));
+     long total=0;
+     for (MetricsDuration duration : MetricsUtil.getDuration(log.getLogChannelId(), Metrics.METRIC_PLUGIN_REGISTRY_PLUGIN_TYPE_REGISTRATION_START.getDescription())) {
+       total+=duration.getDuration();
+       System.out.println("   - "+duration.toString()+"  Total="+total);
+     }
+	   
+	   
+	    Database db = null;
+	    MetricsLogTable metricsLogTable = transMeta.getMetricsLogTable();
+	    try {
+	      db = new Database(this, metricsLogTable.getDatabaseMeta());
+	      db.shareVariablesWith(this);
+	      db.connect();
+	      db.setCommit(logCommitSize);
+
+        List<String> logChannelIds = LoggingRegistry.getInstance().getLogChannelChildren(getLogChannelId());
+        for (String logChannelId : logChannelIds) {
+          Deque<MetricsSnapshotInterface> snapshotList = MetricsRegistry.getInstance().getSnapshotLists().get(logChannelId);
+          if (snapshotList!=null) {
+            synchronized (snapshotList) {
+              Iterator<MetricsSnapshotInterface> iterator = snapshotList.iterator();
+              while (iterator.hasNext()) {
+                MetricsSnapshotInterface snapshot = iterator.next();
+                db.writeLogRecord(metricsLogTable, LogStatus.START, new LoggingMetric(batchId, snapshot), null);
+              }
+            }
+          }
+  
+          Map<String, MetricsSnapshotInterface> snapshotMap = MetricsRegistry.getInstance().getSnapshotMaps().get(logChannelId);
+          if (snapshotMap!=null) {
+            synchronized (snapshotMap) {
+              Iterator<MetricsSnapshotInterface> iterator = snapshotMap.values().iterator();
+              while (iterator.hasNext()) {
+                MetricsSnapshotInterface snapshot = iterator.next();
+                db.writeLogRecord(metricsLogTable, LogStatus.START, new LoggingMetric(batchId, snapshot), null);
+              }
+            }
+          }
+        }
+	      
+	      // Also time-out the log records in here...
+	      //
+	      db.cleanupLogRecords(metricsLogTable);
+	    } catch(Exception e) {
+	      throw new KettleException(BaseMessages.getString(PKG, "Trans.Exception.UnableToWriteMetricsInformationToLogTable"), e);
+	    } finally {
+	      if (!db.isAutoCommit()) db.commit(true);
+	      db.disconnect();
+	    }
+	  }
 
 	public Result getResult()
 	{
@@ -3739,5 +3831,47 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
   
   public PrintWriter getServletPrintWriter() {
     return servletPrintWriter;
+  }
+
+  /**
+   * @return the executingServer
+   */
+  public String getExecutingServer() {
+    return executingServer;
+  }
+
+  /**
+   * @param executingServer the executingServer to set
+   */
+  public void setExecutingServer(String executingServer) {
+    this.executingServer = executingServer;
+  }
+
+  /**
+   * @return the executingUser
+   */
+  public String getExecutingUser() {
+    return executingUser;
+  }
+
+  /**
+   * @param executingUser the executingUser to set
+   */
+  public void setExecutingUser(String executingUser) {
+    this.executingUser = executingUser;
+  }
+
+  /**
+   * @return the gatheringMetrics
+   */
+  public boolean isGatheringMetrics() {
+    return log.isGatheringMetrics();
+  }
+
+  /**
+   * @param gatheringMetrics the gatheringMetrics to set
+   */
+  public void setGatheringMetrics(boolean gatheringMetrics) {
+    log.setGatheringMetrics(gatheringMetrics);
   }
 }

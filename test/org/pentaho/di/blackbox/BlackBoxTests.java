@@ -35,6 +35,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -69,6 +70,8 @@ public class BlackBoxTests {
 
 	@BeforeClass
 	public static void setupBlackbox() {
+	  
+	  Locale.setDefault(Locale.US);
 		
 		// set the locale to English so that log file comparisons work
 		GlobalMessages.setLocale(EnvUtil.createLocale("en-US")); //$NON-NLS-1$

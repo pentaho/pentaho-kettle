@@ -48,6 +48,8 @@ public class LoggingObject implements LoggingObjectInterface {
 	
 	private Date registrationDate;
 	
+	private boolean gatheringMetrics;
+	
 	public LoggingObject(Object object) {
 		if (object instanceof LoggingObjectInterface) grabLoggingObjectInformation((LoggingObjectInterface)object);
 		else grabObjectInformation(object);
@@ -320,5 +322,19 @@ public class LoggingObject implements LoggingObjectInterface {
    */
   public void setRegistrationDate(Date registrationDate) {
     this.registrationDate = registrationDate;
+  }
+
+  /**
+   * @return the gatheringMetrics
+   */
+  public boolean isGatheringMetrics() {
+    return gatheringMetrics;
+  }
+
+  /**
+   * @param gatheringMetrics the gatheringMetrics to set
+   */
+  public void setGatheringMetrics(boolean gatheringMetrics) {
+    this.gatheringMetrics = gatheringMetrics;
   }
 }

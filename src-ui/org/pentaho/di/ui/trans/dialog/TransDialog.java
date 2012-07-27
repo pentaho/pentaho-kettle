@@ -59,6 +59,7 @@ import org.pentaho.di.core.logging.ChannelLogTable;
 import org.pentaho.di.core.logging.LogStatus;
 import org.pentaho.di.core.logging.LogTableField;
 import org.pentaho.di.core.logging.LogTableInterface;
+import org.pentaho.di.core.logging.MetricsLogTable;
 import org.pentaho.di.core.logging.PerformanceLogTable;
 import org.pentaho.di.core.logging.StepLogTable;
 import org.pentaho.di.core.logging.TransLogTable;
@@ -98,6 +99,7 @@ public class TransDialog extends Dialog
     public static final int	LOG_INDEX_STEP	       = 1;
     public static final int	LOG_INDEX_PERFORMANCE  = 2;
     public static final int	LOG_INDEX_CHANNEL      = 3;
+    public static final int LOG_INDEX_METRICS      = 4;
 	
 	private static Class<?> PKG = TransDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
@@ -213,7 +215,9 @@ public class TransDialog extends Dialog
 	private PerformanceLogTable	performanceLogTable;
 	private ChannelLogTable	channelLogTable;
 	private StepLogTable stepLogTable;
-	private DatabaseDialog databaseDialog;
+  private MetricsLogTable metricsLogTable;
+
+  private DatabaseDialog databaseDialog;
 	private SelectionAdapter	lsModSel;
   private TextVar wStepPerfMaxSize;
 	
@@ -241,6 +245,7 @@ public class TransDialog extends Dialog
         performanceLogTable = (PerformanceLogTable) transMeta.getPerformanceLogTable().clone();
         channelLogTable = (ChannelLogTable) transMeta.getChannelLogTable().clone();
         stepLogTable = (StepLogTable) transMeta.getStepLogTable().clone();
+        metricsLogTable = (MetricsLogTable) transMeta.getMetricsLogTable().clone();
     }
 
 
@@ -731,6 +736,7 @@ public class TransDialog extends Dialog
         wLogTypeList.add(BaseMessages.getString(PKG, "TransDialog.LogTableType.Step")); // Index 1
         wLogTypeList.add(BaseMessages.getString(PKG, "TransDialog.LogTableType.Performance")); // Index 2
         wLogTypeList.add(BaseMessages.getString(PKG, "TransDialog.LogTableType.LoggingChannels")); // Index 3
+        wLogTypeList.add(BaseMessages.getString(PKG, "TransDialog.LogTableType.Metrics")); // Index 3
         
         FormData fdLogTypeList = new FormData();
         fdLogTypeList.left = new FormAttachment(0, 0);
@@ -788,6 +794,7 @@ public class TransDialog extends Dialog
 			case LOG_INDEX_PERFORMANCE : getPerformanceLogTableOptions(); break;
 			case LOG_INDEX_CHANNEL     : getChannelLogTableOptions(); break;
 			case LOG_INDEX_STEP        : getStepLogTableOptions(); break;
+      case LOG_INDEX_METRICS     : getMetricsLogTableOptions(); break;
 			default: break;
 			}
     		
@@ -802,9 +809,10 @@ public class TransDialog extends Dialog
 			case LOG_INDEX_PERFORMANCE : showPerformanceLogTableOptions(); break;
 			case LOG_INDEX_CHANNEL     : showChannelLogTableOptions(); break;
 			case LOG_INDEX_STEP        : showStepLogTableOptions(); break;
+      case LOG_INDEX_METRICS     : showMetricsLogTableOptions(); break;
 			default: break;
 			}
-    	}
+    }
 	}
 
 	private void getTransLogTableOptions() {
@@ -1225,6 +1233,27 @@ public class TransDialog extends Dialog
 		}
 	}
 
+  private void getMetricsLogTableOptions() {
+
+    if (previousLogTableIndex == LOG_INDEX_METRICS) {
+
+      // The connection...
+      //
+      metricsLogTable.setConnectionName(wLogconnection.getText());
+      metricsLogTable.setSchemaName(wLogSchema.getText());
+      metricsLogTable.setTableName(wLogTable.getText());
+      metricsLogTable.setTimeoutInDays(wLogTimeout.getText());
+
+      for (int i = 0; i < metricsLogTable.getFields().size(); i++) {
+        TableItem item = wOptionFields.table.getItem(i);
+
+        LogTableField field = metricsLogTable.getFields().get(i);
+        field.setEnabled(item.getChecked());
+        field.setFieldName(item.getText(1));
+      }
+    }
+  }
+
 	
 	private void showChannelLogTableOptions() {
 		
@@ -1320,6 +1349,100 @@ public class TransDialog extends Dialog
 		wLogComp.layout(true, true);
 	}
 
+	 private void showMetricsLogTableOptions() {
+	    
+	    previousLogTableIndex=LOG_INDEX_METRICS;
+	    
+	    addDBSchemaTableLogOptions(metricsLogTable);
+	    
+      // The log timeout in days
+      //
+      Label wlLogTimeout = new Label(wLogOptionsComposite, SWT.RIGHT);
+      wlLogTimeout.setText(BaseMessages.getString(PKG, "TransDialog.LogTimeout.Label")); //$NON-NLS-1$
+      wlLogTimeout.setToolTipText(BaseMessages.getString(PKG, "TransDialog.LogTimeout.Tooltip")); //$NON-NLS-1$
+      props.setLook(wlLogTimeout);
+      FormData fdlLogTimeout = new FormData();
+      fdlLogTimeout.left = new FormAttachment(0, 0);
+      fdlLogTimeout.right= new FormAttachment(middle, -margin);
+      fdlLogTimeout.top  = new FormAttachment(wLogTable, margin);
+      wlLogTimeout.setLayoutData(fdlLogTimeout);
+      wLogTimeout=new TextVar(transMeta, wLogOptionsComposite, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+      wLogTimeout.setToolTipText(BaseMessages.getString(PKG, "TransDialog.LogTimeout.Tooltip")); //$NON-NLS-1$
+      props.setLook(wLogTimeout);
+      wLogTimeout.addModifyListener(lsMod);
+      FormData fdLogTimeout = new FormData();
+      fdLogTimeout.left = new FormAttachment(middle, 0);
+      fdLogTimeout.top  = new FormAttachment(wLogTable, margin);
+      fdLogTimeout.right= new FormAttachment(100, 0);
+      wLogTimeout.setLayoutData(fdLogTimeout);
+      wLogTimeout.setText(Const.NVL(channelLogTable.getTimeoutInDays(), ""));
+	        
+	        // Add the fields grid...
+	        //
+	    Label wlFields = new Label(wLogOptionsComposite, SWT.NONE);
+	    wlFields.setText(BaseMessages.getString(PKG, "TransDialog.TransLogTable.Fields.Label")); //$NON-NLS-1$
+	    props.setLook(wlFields);
+	    FormData fdlFields = new FormData();
+	    fdlFields.left = new FormAttachment(0, 0);
+	    fdlFields.top  = new FormAttachment(wLogTimeout, margin*2);
+	    wlFields.setLayoutData(fdlFields);
+	    
+	    final java.util.List<LogTableField> fields = metricsLogTable.getFields();
+	    final int nrRows=fields.size();
+	    
+	    ColumnInfo[] colinf=new ColumnInfo[] {
+	      new ColumnInfo(BaseMessages.getString(PKG, "TransDialog.TransLogTable.Fields.FieldName"), ColumnInfo.COLUMN_TYPE_TEXT, false ), //$NON-NLS-1$
+	      new ColumnInfo(BaseMessages.getString(PKG, "TransDialog.TransLogTable.Fields.Description"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+	    };
+	    
+	    FieldDisabledListener disabledListener = new FieldDisabledListener() {
+	      
+	      public boolean isFieldDisabled(int rowNr) {
+	        if (rowNr>=0 && rowNr<fields.size()) {
+	          LogTableField field = fields.get(rowNr);
+	          return field.isSubjectAllowed();
+	        } else {
+	          return true;
+	        }
+	      }
+	    };
+	    
+	    colinf[1].setDisabledListener(disabledListener);
+	    
+	    wOptionFields=new TableView(transMeta, wLogOptionsComposite, 
+	                  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.CHECK, // add a check to the left... 
+	                  colinf, 
+	                  nrRows,  
+	                  true,
+	                  lsMod,
+	                  props
+	                  );      
+	    
+	    wOptionFields.setSortable(false);
+	    
+	    for (int i=0;i<fields.size();i++) {
+	      LogTableField field = fields.get(i);
+	      TableItem item = wOptionFields.table.getItem(i);
+	      item.setChecked(field.isEnabled());
+	      item.setText(new String[] { "", Const.NVL(field.getFieldName(), ""), Const.NVL(field.getDescription(), "") });
+	    }
+	    
+	    wOptionFields.table.getColumn(0).setText(BaseMessages.getString(PKG, "TransDialog.TransLogTable.Fields.Enabled"));
+	        
+	    FormData fdOptionFields = new FormData();
+	    fdOptionFields.left = new FormAttachment(0, 0);
+	    fdOptionFields.top  = new FormAttachment(wlFields, margin);
+	    fdOptionFields.right  = new FormAttachment(100, 0);
+	    fdOptionFields.bottom = new FormAttachment(100, 0);
+	    wOptionFields.setLayoutData(fdOptionFields);
+	    
+	    wOptionFields.optWidth(true);
+
+	    wOptionFields.layout();
+	    wLogOptionsComposite.layout(true, true);
+	    wLogComp.layout(true, true);
+	  }
+	
 	private void getStepLogTableOptions() {
 		
 		if (previousLogTableIndex==LOG_INDEX_STEP) {
@@ -2036,6 +2159,7 @@ public class TransDialog extends Dialog
 		transMeta.setPerformanceLogTable(performanceLogTable);
 		transMeta.setChannelLogTable(channelLogTable);
 		transMeta.setStepLogTable(stepLogTable);
+    transMeta.setMetricsLogTable(metricsLogTable);
 		
 		// transMeta.setStepPerformanceLogTable(wStepLogtable.getText());
 		transMeta.setMaxDateConnection(transMeta.findDatabase(wMaxdateconnection.getText()));
@@ -2234,7 +2358,7 @@ public class TransDialog extends Dialog
 
 		    boolean allOK = true;
 		  
-			for (LogTableInterface logTable : new LogTableInterface[] { transLogTable, performanceLogTable, channelLogTable, stepLogTable, } ) {
+			for (LogTableInterface logTable : new LogTableInterface[] { transLogTable, performanceLogTable, channelLogTable, stepLogTable, metricsLogTable, } ) {
 				if (logTable.getDatabaseMeta()!=null && !Const.isEmpty(logTable.getTableName())) {
 					// OK, we have something to work with!
 					//
@@ -2300,6 +2424,7 @@ public class TransDialog extends Dialog
 		getPerformanceLogTableOptions();
 		getChannelLogTableOptions();
 		getStepLogTableOptions();
+    getMetricsLogTableOptions();
 	}
 
     public boolean isSharedObjectsFileChanged()
@@ -2315,9 +2440,6 @@ public class TransDialog extends Dialog
 	private void setCurrentTab(Tabs currentTab){
 	  
 	  switch (currentTab) {
-		case TRANS_TAB:
-			wTabFolder.setSelection(wTransTab);
-			break;
 		case PARAM_TAB:
 			wTabFolder.setSelection(wParamTab);
 			break;
@@ -2336,6 +2458,11 @@ public class TransDialog extends Dialog
 		case MONITOR_TAB:
 			wTabFolder.setSelection(wMonitorTab);
 			break;
+			
+		case TRANS_TAB:
+    default:
+      wTabFolder.setSelection(wTransTab);
+      break;
 		}
 	}
 }

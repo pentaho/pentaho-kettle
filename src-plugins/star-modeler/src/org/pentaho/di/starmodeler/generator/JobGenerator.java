@@ -396,7 +396,7 @@ public class JobGenerator {
       TableOutputMeta meta = (TableOutputMeta) stepMeta.getStepMetaInterface();
       meta.setDatabaseMeta(databaseMeta);
       String phTable = ConceptUtil.getString(logicalTable, DefaultIDs.LOGICAL_TABLE_PHYSICAL_TABLE_NAME);
-      meta.setTablename(phTable);
+      meta.setTableName(phTable);
     }
     
     return transMeta;
@@ -416,7 +416,7 @@ public class JobGenerator {
       TableOutputMeta meta = (TableOutputMeta) stepMeta.getStepMetaInterface();
       meta.setDatabaseMeta(databaseMeta);
       String phTable = ConceptUtil.getString(logicalTable, DefaultIDs.LOGICAL_TABLE_PHYSICAL_TABLE_NAME);
-      meta.setTablename(phTable);
+      meta.setTableName(phTable);
     }
     
     return transMeta;

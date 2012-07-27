@@ -719,7 +719,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	public JobMeta(InputStream inputStream, Repository rep, OverwritePrompter prompter) throws KettleXMLException {
-	  loadXML(XMLHandler.loadXMLFile(inputStream, null, false, false), rep, prompter);
+	  Document doc = XMLHandler.loadXMLFile(inputStream, null, false, false);
+	  loadXML(XMLHandler.getSubNode(doc, JobMeta.XML_TAG), rep, prompter);
 	}
 
   /**
@@ -2828,5 +2829,14 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
    */
   public void setRepository(Repository repository) {
     this.repository = repository;
+  }
+  
+  @Override
+  public boolean isGatheringMetrics() {
+    return false;
+  }
+  
+  @Override
+  public void setGatheringMetrics(boolean gatheringMetrics) {
   }
 }
