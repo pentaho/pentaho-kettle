@@ -40,8 +40,6 @@ import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.Metrics;
-import org.pentaho.di.core.metrics.MetricsDuration;
-import org.pentaho.di.core.metrics.MetricsUtil;
 import org.pentaho.di.core.row.RowBuffer;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -450,6 +448,7 @@ public class PluginRegistry {
       }
       log.snap(Metrics.METRIC_PLUGIN_REGISTRY_PLUGIN_REGISTRATION_STOP);
       
+      /*
       System.out.println(MetricsUtil.getDuration(log.getLogChannelId(), Metrics.METRIC_PLUGIN_REGISTRY_REGISTER_EXTENSIONS_START.getDescription()).get(0));
       System.out.println(MetricsUtil.getDuration(log.getLogChannelId(), Metrics.METRIC_PLUGIN_REGISTRY_PLUGIN_REGISTRATION_START.getDescription()).get(0));
       long total=0;
@@ -457,6 +456,7 @@ public class PluginRegistry {
         total+=duration.getDuration();
         System.out.println("   - "+duration.toString()+"          Total="+total);
       }
+      */
       
       // Clear the jar file cache so that we don't waste memory...
       //
