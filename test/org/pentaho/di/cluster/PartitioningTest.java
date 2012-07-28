@@ -143,7 +143,7 @@ public class PartitioningTest extends BaseCluster {
       long nrErrors = Trans.monitorClusteredTransformation(new LogChannel("cluster unit test <testParallelFileReadOnMaster>"), transSplitter, null, 1);
       assertEquals(0L, nrErrors);
       
-      String goldenData = "000;16\n001;17\n002;17\n003;17\n004;17\n005;16";
+      String goldenData = "0;16\n1;17\n2;17\n3;17\n4;17\n5;16";
       String filename = "${java.io.tmpdir}/partitioning-repartitioning-on-cluster3.txt";
       String result = loadFileContent(transMeta, filename);
       assertEqualsIgnoreWhitespacesAndCase(goldenData, result);
