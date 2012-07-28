@@ -169,6 +169,29 @@
     </attributes>
   </connection>
   <connection>
+    <name>Kettle 8084</name>
+    <server>localhost</server>
+    <type>KettleThin</type>
+    <access>Native</access>
+    <database>kettle</database>
+    <port>8084</port>
+    <username>cluster</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb1aa265cd86aac8</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>EXTRA_OPTION_KettleThin.debugtrans</code><attribute>gen.ktr</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>8084</attribute></attribute>
+      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
+      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>Y</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
     <name>LogDB</name>
     <server/>
     <type>H2</type>
@@ -671,8 +694,8 @@
         <type>Number</type>
         <format/>
         <currency/>
-        <decimal/>
-        <group/>
+        <decimal>,</decimal>
+        <group>.</group>
         <length>-1</length>
         <precision>-1</precision>
         <set_empty_string>N</set_empty_string>
