@@ -103,18 +103,7 @@ public class TransDataServlet extends BaseHttpServlet implements CartePluginInte
     
     // Parse the variables in the request header...
     //
-    Map<String, String> parameters = new HashMap<String, String>();
-    Enumeration<?> headerNames = request.getHeaderNames();
-    while (headerNames.hasMoreElements()) {
-      String headerName = (String)headerNames.nextElement();
-      if (headerName.startsWith("PARAMETER_")) {
-        String parameterName = headerName.substring("PARAMETER_".length()); 
-        String value = request.getHeader(headerName);
-        if (!Const.isEmpty(parameterName)) {
-          parameters.put(parameterName, Const.NVL(value, ""));
-        }
-      }
-    }
+    Map<String, String> parameters = getParametersFromRequestHeader(request);
     
     try {
       // Execute the SQL using a few transformations...
@@ -213,6 +202,23 @@ public class TransDataServlet extends BaseHttpServlet implements CartePluginInte
     finally {
       System.out.println("bytes written: "+dataSize);
     }
+  }
+
+  public static Map<String, String> getParametersFromRequestHeader(HttpServletRequest request) {
+    Map<String, String> parameters = new HashMap<String, String>();
+    Enumeration<?> headerNames = request.getHeaderNames();
+    while (headerNames.hasMoreElements()) {
+      String headerName = (String) headerNames.nextElement();
+      if (headerName.startsWith("PARAMETER_")) {
+        String parameterName = headerName.substring("PARAMETER_".length());
+        String value = request.getHeader(headerName);
+        if (!Const.isEmpty(parameterName)) {
+          parameters.put(parameterName, Const.NVL(value, ""));
+        }
+      }
+    }
+
+    return parameters;
   }
 
   public String toString() {

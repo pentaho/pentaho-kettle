@@ -89,7 +89,7 @@ public class ThinResultSet implements ResultSet {
 
         method.setDoAuthentication(true);
         method.addRequestHeader(new Header("Content-Type", "binary/jdbc"));
-        method.addRequestHeader(new Header("SQL", sql));
+        method.addRequestHeader(new Header("SQL", ThinUtil.stripNewlines(sql)));
         method.addRequestHeader(new Header("MaxRows", Integer.toString(statement.getMaxRows())));
         method.getParams().setParameter("http.socket.timeout", new Integer(0));
         

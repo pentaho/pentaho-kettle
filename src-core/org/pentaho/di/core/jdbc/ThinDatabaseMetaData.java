@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.pentaho.di.cluster.HttpUtil;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -15,6 +16,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -26,7 +28,7 @@ public class ThinDatabaseMetaData implements DatabaseMetaData {
 
   public ThinDatabaseMetaData(ThinConnection connection) {
     this.connection = connection;
-    serviceUrl = connection.getSlaveBaseAddress()+"/listServices";
+    serviceUrl = connection.getService()+"/listServices/";
   }
   
   @Override
@@ -110,8 +112,108 @@ public class ThinDatabaseMetaData implements DatabaseMetaData {
   }
 
   @Override
-  public ResultSet getColumns(String arg0, String arg1, String arg2, String arg3) throws SQLException {
-    // TODO: get column lists for all services
+  public ResultSet getColumns(String catalog, String schemaPattern, String tableNamePattern, String columnNamePattern) throws SQLException {
+    
+    try {
+
+      // Get the service information from the remote server...
+      //
+      List<ThinServiceInformation> services = getServiceInformation();
+      
+      RowMetaInterface rowMeta = new RowMeta();
+      rowMeta.addValueMeta(new ValueMeta("TABLE_CAT", ValueMetaInterface.TYPE_STRING)); // null
+      rowMeta.addValueMeta(new ValueMeta("TABLE_SCHEM", ValueMetaInterface.TYPE_STRING)); // null
+      rowMeta.addValueMeta(new ValueMeta("TABLE_NAME", ValueMetaInterface.TYPE_STRING));
+      rowMeta.addValueMeta(new ValueMeta("COLUMN_NAME", ValueMetaInterface.TYPE_STRING));
+      rowMeta.addValueMeta(new ValueMeta("DATA_TYPE", ValueMetaInterface.TYPE_INTEGER));
+      rowMeta.addValueMeta(new ValueMeta("TYPE_NAME", ValueMetaInterface.TYPE_STRING));
+      rowMeta.addValueMeta(new ValueMeta("COLUMN_SIZE", ValueMetaInterface.TYPE_INTEGER)); // length
+      rowMeta.addValueMeta(new ValueMeta("BUFFER_LENGTH", ValueMetaInterface.TYPE_INTEGER)); // not used
+      rowMeta.addValueMeta(new ValueMeta("DECIMAL_DIGITS", ValueMetaInterface.TYPE_INTEGER)); // precision
+      rowMeta.addValueMeta(new ValueMeta("NUM_PREC_RADIX", ValueMetaInterface.TYPE_INTEGER)); // Radix, typically either 10 or 2
+      rowMeta.addValueMeta(new ValueMeta("NULLABLE", ValueMetaInterface.TYPE_INTEGER)); // columnsNullableUnknown
+      rowMeta.addValueMeta(new ValueMeta("REMARKS", ValueMetaInterface.TYPE_STRING));
+      rowMeta.addValueMeta(new ValueMeta("COLUMN_DEF", ValueMetaInterface.TYPE_STRING)); // default value, null
+      rowMeta.addValueMeta(new ValueMeta("SQL_DATA_TYPE", ValueMetaInterface.TYPE_INTEGER)); // unused
+      rowMeta.addValueMeta(new ValueMeta("SQL_DATATIME_SUB", ValueMetaInterface.TYPE_INTEGER)); // unused
+      rowMeta.addValueMeta(new ValueMeta("CHAR_OCTET_LENGTH", ValueMetaInterface.TYPE_INTEGER)); // max string length in bytes
+      rowMeta.addValueMeta(new ValueMeta("ORDINAL_POSITION", ValueMetaInterface.TYPE_INTEGER)); // column position, 1 based 
+      rowMeta.addValueMeta(new ValueMeta("IS_NULLABLE", ValueMetaInterface.TYPE_STRING)); // empty string: nobody knows
+      rowMeta.addValueMeta(new ValueMeta("SCOPE_CATALOG", ValueMetaInterface.TYPE_STRING)); // null
+      rowMeta.addValueMeta(new ValueMeta("SCOPE_SCHEMA", ValueMetaInterface.TYPE_STRING)); // null
+      rowMeta.addValueMeta(new ValueMeta("SCOPE_TABLE", ValueMetaInterface.TYPE_STRING)); // null
+      rowMeta.addValueMeta(new ValueMeta("SOURCE_DATA_TYPE", ValueMetaInterface.TYPE_STRING)); // Kettle source data type description
+
+      List<Object[]> rows = new ArrayList<Object[]>();
+      for (ThinServiceInformation service : services) {
+        
+        if (Const.isEmpty(tableNamePattern) || service.getName().equalsIgnoreCase(tableNamePattern)) { 
+          int ordinal=1;
+          for (ValueMetaInterface valueMeta : service.getServiceFields().getValueMetaList()) {
+            if (Const.isEmpty(columnNamePattern) || valueMeta.getName().equalsIgnoreCase(columnNamePattern)) {
+              Object[] row = RowDataUtil.allocateRowData(rowMeta.size());
+              int index=0;
+              row[index++] = null; // TABLE_CAT - TYPE_STRING
+              row[index++] = null; // TABLE_SCHEM - TYPE_STRING
+              row[index++] = service.getName(); // TABLE_NAME - TYPE_STRING
+              row[index++] = valueMeta.getName(); // COLUMN_NAME - TYPE_STRING
+              row[index++] = Long.valueOf(getSqlType(valueMeta)); // DATA_TYPE - TYPE_INTEGER
+              row[index++] = getSqlTypeDesc(valueMeta); // TYPE_NAME - TYPE_STRING
+              row[index++] = Long.valueOf(valueMeta.getLength()); // COLUMN_SIZE - TYPE_INTEGER
+              row[index++] = null; // BUFFER_LENGTH
+              row[index++] = Long.valueOf(valueMeta.getPrecision()); // DECIMAL_DIGITS
+              row[index++] = Long.valueOf(10); // NUM_PREC_RADIX
+              row[index++] = DatabaseMetaData.columnNullableUnknown; // NULLABLE
+              row[index++] = valueMeta.getComments(); // REMARKS
+              row[index++] = null; // COLUMN_DEF
+              row[index++] = null; // SQL_DATA_TYPE
+              row[index++] = null; // SQL_DATATIME_SUB_
+              row[index++] = Long.valueOf(valueMeta.getLength()); // CHAR_OCTET_LENGTH
+              row[index++] = Long.valueOf(ordinal); // ORDINAL_POSITION
+              row[index++] = ""; // IS_NULLABLE
+              row[index++] = null; // SCOPE_CATALOG
+              row[index++] = null; // SCOPE_SCHEMA
+              row[index++] = null; // SCOPE_TABLE
+              row[index++] = valueMeta.getTypeDesc(); // SOURCE_DATA_TYPE
+              rows.add(row);
+            }
+            ordinal++;
+          }
+        }
+      }
+
+      return new RowsResultSet(rowMeta, rows);
+    } catch(Exception e) {
+      LogChannel.GENERAL.logError("Error getting services list from server", e);
+      throw new SQLException(e);
+    }   
+  }
+
+  private int getSqlType(ValueMetaInterface valueMeta) {
+    switch(valueMeta.getType()) {
+    case ValueMetaInterface.TYPE_STRING: return java.sql.Types.VARCHAR;
+    case ValueMetaInterface.TYPE_DATE: return java.sql.Types.TIMESTAMP;
+    case ValueMetaInterface.TYPE_INTEGER: return java.sql.Types.BIGINT; // TODO: for metadata we don't want a long?
+    case ValueMetaInterface.TYPE_BIGNUMBER: return java.sql.Types.DECIMAL;
+    case ValueMetaInterface.TYPE_NUMBER: return java.sql.Types.DOUBLE;
+    case ValueMetaInterface.TYPE_BOOLEAN: return java.sql.Types.BOOLEAN;
+    case ValueMetaInterface.TYPE_TIMESTAMP: return java.sql.Types.TIMESTAMP;
+    case ValueMetaInterface.TYPE_BINARY: return java.sql.Types.BLOB;
+    }
+    return java.sql.Types.VARCHAR;
+  }
+
+  private String getSqlTypeDesc(ValueMetaInterface valueMeta) {
+    switch(valueMeta.getType()) {
+    case ValueMetaInterface.TYPE_STRING: return "VARCHAR";
+    case ValueMetaInterface.TYPE_DATE: return "TIMESTAMP";
+    case ValueMetaInterface.TYPE_INTEGER: return "BIGINT"; // TODO: for metadata we don't want a long?
+    case ValueMetaInterface.TYPE_NUMBER: return "DOUBLE";
+    case ValueMetaInterface.TYPE_BIGNUMBER: return "DECIMAL";
+    case ValueMetaInterface.TYPE_BOOLEAN: return "BOOLEAN";
+    case ValueMetaInterface.TYPE_TIMESTAMP: return "TIMESTAMP";
+    case ValueMetaInterface.TYPE_BINARY: return "BLOB";
+    }
     return null;
   }
 
@@ -409,12 +511,46 @@ public class ThinDatabaseMetaData implements DatabaseMetaData {
   public ResultSet getTableTypes() throws SQLException {
     return null;
   }
+  
+  public List<ThinServiceInformation> getServiceInformation() throws SQLException {
+    try {
+      String xml = HttpUtil.execService(LogChannel.GENERAL, new Variables(),
+          connection.getHostname(), connection.getPort(), connection.getWebAppName(), 
+          serviceUrl, connection.getUsername(), connection.getPassword(), 
+          connection.getProxyHostname(), connection.getProxyPort(), connection.getNonProxyHosts()
+         );
+  
+      List<ThinServiceInformation> services = new ArrayList<ThinServiceInformation>();
+      
+      Document doc = XMLHandler.loadXMLString(xml);
+      Node servicesNode = XMLHandler.getSubNode(doc, "services");
+      List<Node> serviceNodes = XMLHandler.getNodes(servicesNode, "service");
+      for (Node serviceNode : serviceNodes) {
+        
+        String name = XMLHandler.getTagValue(serviceNode, "name");
+        Node rowMetaNode = XMLHandler.getSubNode(serviceNode, RowMeta.XML_META_TAG);
+        RowMetaInterface serviceFields = new RowMeta(rowMetaNode);
+        ThinServiceInformation service = new ThinServiceInformation(name, serviceFields);
+        services.add(service);
+      }
+      
+      return services;
+    } catch(Exception e) {
+      throw new SQLException("Unable to get service information from server", e);
+    }
+
+  }
+  
 
   @Override
   public ResultSet getTables(String arg0, String arg1, String arg2, String[] arg3) throws SQLException {
     
     try {
-      String xml = ThinUtil.getStringFromService(connection.getSlaveBaseAddress()+"/listServices", connection);
+
+      // Get the service information from the remote server...
+      //
+      List<ThinServiceInformation> services = getServiceInformation();
+      
       RowMetaInterface rowMeta = new RowMeta();
       rowMeta.addValueMeta(new ValueMeta("TABLE_NAME", ValueMetaInterface.TYPE_STRING));
       rowMeta.addValueMeta(new ValueMeta("TABLE_CAT", ValueMetaInterface.TYPE_STRING));
@@ -426,23 +562,19 @@ public class ThinDatabaseMetaData implements DatabaseMetaData {
       rowMeta.addValueMeta(new ValueMeta("TYPE_NAME", ValueMetaInterface.TYPE_STRING));
       rowMeta.addValueMeta(new ValueMeta("SELF_REFERENCING_COL_NAME", ValueMetaInterface.TYPE_STRING));
       rowMeta.addValueMeta(new ValueMeta("REF_GENERATION", ValueMetaInterface.TYPE_STRING));
-      
-      Document doc = XMLHandler.loadXMLString(xml);
-      Node servicesNode = XMLHandler.getSubNode(doc, "services");
-      List<Node> serviceNodes = XMLHandler.getNodes(servicesNode, "service");
+
       List<Object[]> rows = new ArrayList<Object[]>();
-      for (Node serviceNode : serviceNodes) {
+      for (ThinServiceInformation service : services) {
         Object[] row = RowDataUtil.allocateRowData(rowMeta.size());
-        row[0] = XMLHandler.getTagValue(serviceNode, "name");
+        row[0] = service.getName();
         rows.add(row);
       }
-      
+
       return new RowsResultSet(rowMeta, rows);
     } catch(Exception e) {
       LogChannel.GENERAL.logError("Error getting services list from server", e);
       throw new SQLException(e);
     }
-    
   }
 
   @Override
@@ -456,8 +588,8 @@ public class ThinDatabaseMetaData implements DatabaseMetaData {
   }
 
   @Override
-  public ResultSet getUDTs(String arg0, String arg1, String arg2, int[] arg3) throws SQLException {
-    return null;
+  public ResultSet getUDTs(String catalog, String schemaPattern, String typeNamePattern, int[] types) throws SQLException {
+    return new RowsResultSet(new RowMeta(), new ArrayList<Object[]>());
   }
 
   @Override

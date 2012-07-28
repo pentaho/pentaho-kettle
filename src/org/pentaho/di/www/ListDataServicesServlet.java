@@ -23,6 +23,7 @@
 package org.pentaho.di.www;
 
 import java.io.IOException;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -30,8 +31,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.pentaho.di.core.jdbc.ThinDriver;
 import org.pentaho.di.core.jdbc.TransDataService;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.trans.TransMeta;
 
 /**
  * This servlet allows a user to get data from a "service" which is a transformation step.
@@ -65,9 +68,12 @@ public class ListDataServicesServlet extends BaseHttpServlet implements CartePlu
       return;
     }
 
-    if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "GetStatusServlet.StatusRequested"));
+    if (log.isDebug()) logDebug(BaseMessages.getString(PKG, "LisDataServicesServlet.ListRequested"));
     response.setStatus(HttpServletResponse.SC_OK);
 
+    Map<String, String> parameters = TransDataServlet.getParametersFromRequestHeader(request);
+    
+    
     response.setContentType("text/xml");
 
     response.getWriter().println(XMLHandler.getXMLHeader());
@@ -75,6 +81,24 @@ public class ListDataServicesServlet extends BaseHttpServlet implements CartePlu
     for (TransDataService service : transformationMap.getSlaveServerConfig().getServicesMap().values()) {
       response.getWriter().println(XMLHandler.openTag(XML_TAG_SERVICE));
       response.getWriter().println(XMLHandler.addTagValue("name", service.getName()));
+      
+      // Also include the row layout of the service step.
+      //
+      try {
+        
+        TransMeta transMeta = new TransMeta(service.getFileName());
+        for (String name : parameters.keySet()) {
+          transMeta.setParameterValue(name, parameters.get(name));
+        }
+        transMeta.activateParameters();
+        RowMetaInterface serviceFields = transMeta.getStepFields( service.getServiceStepName() );
+        response.getWriter().println(serviceFields.getMetaXML());
+        
+      } catch(Exception e) {
+        // Don't include details
+        log.logError("Unable to get fields for service "+service.getName()+", transformation: "+service.getFileName());
+      }
+      
       response.getWriter().println(XMLHandler.closeTag(XML_TAG_SERVICE));
     }
     response.getWriter().println(XMLHandler.closeTag(XML_TAG_SERVICES));

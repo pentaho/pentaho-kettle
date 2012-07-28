@@ -204,7 +204,6 @@ public class ThinConnection implements Connection {
 
   @Override
   public DatabaseMetaData getMetaData() throws SQLException {
-    // TODO
     return new ThinDatabaseMetaData(this);
   }
 
