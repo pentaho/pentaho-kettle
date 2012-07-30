@@ -328,6 +328,7 @@ public class MetaInject extends BaseStep implements StepInterface {
     if (super.init(smi, sdi)) {
       try {
         data.transMeta = MetaInjectMeta.loadTransformationMeta(meta, getTrans().getRepository(), this);
+        data.transMeta.copyVariablesFrom(this);
 
         // Get a mapping between the step name and the injection...
         //
