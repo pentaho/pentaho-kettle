@@ -19,6 +19,9 @@ public class KettleLifecyclePluginType extends BasePluginType implements PluginT
 
   private KettleLifecyclePluginType() {
     super(KettleLifecyclePlugin.class, "KETTLE LIFECYCLE LISTENERS", "Kettle Lifecycle Listener Plugin Type");
+    // We must call populate folders so PluginRegistry will look in the correct 
+    // locations for plugins (jars with annotations)
+    populateFolders(null);
   }
 
   public static synchronized KettleLifecyclePluginType getInstance() {
