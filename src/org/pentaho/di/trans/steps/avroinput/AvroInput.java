@@ -229,7 +229,7 @@ public class AvroInput extends BaseStep implements StepInterface {
             "AvroInput.Message.ClosingFile"));
         m_data.close();
       } catch (IOException ex) {
-        ex.printStackTrace();
+        logError(ex.getMessage(), ex);
       }
     }
   }
