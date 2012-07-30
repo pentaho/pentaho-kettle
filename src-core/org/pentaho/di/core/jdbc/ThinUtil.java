@@ -1,9 +1,19 @@
 package org.pentaho.di.core.jdbc;
 
+import java.math.BigDecimal;
 import java.sql.SQLException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
+import org.pentaho.di.core.exception.KettleSQLException;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.pms.util.Const;
 
 public class ThinUtil {
   
@@ -76,5 +86,235 @@ public class ThinUtil {
     default:
       throw new SQLException("Don't know how to handle SQL Type: "+sqlType+", with name: "+valueName);
     }
+  }
+  
+  public static ValueMetaAndData attemptDateValueExtraction(String string) {
+    if (string.length()>2 && string.startsWith("[") && string.endsWith("]")) {
+      String unquoted=string.substring(1, string.length()-1);
+      if (unquoted.length()>=9 && unquoted.charAt(4)=='/' && unquoted.charAt(7)=='/') {
+        Date date = XMLHandler.stringToDate(unquoted);
+        String format = "yyyy/MM/dd HH:mm:ss.SSS";
+        if (date==null) {
+          try {
+            date = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").parse(unquoted);
+            format = "yyyy/MM/dd HH:mm:ss";
+          } catch(ParseException e1) {
+            try {
+              date = new SimpleDateFormat("yyyy/MM/dd").parse(unquoted);
+              format = "yyyy/MM/dd";
+            } catch (ParseException e2) {
+              date=null;
+            }
+          }
+        }
+        if (date!=null) {
+          ValueMetaInterface valueMeta = new ValueMeta("iif-date", ValueMetaInterface.TYPE_DATE);
+          valueMeta.setConversionMask(format);
+          return new ValueMetaAndData(valueMeta, date);
+       
+        } 
+      }
+    }
+    return null;
+  }
+  
+  public static ValueMetaAndData attemptIntegerValueExtraction(String string) {
+    // Try an Integer
+    if (!string.contains(".")) {
+      try {
+        long l = Long.parseLong(string);
+        if (Long.toString(l).equals(string)) {
+          ValueMetaAndData value = new ValueMetaAndData();
+          ValueMetaInterface valueMeta = new ValueMeta("Constant", ValueMetaInterface.TYPE_INTEGER);
+          valueMeta.setConversionMask("0");
+          valueMeta.setConversionMask("0.#");
+          valueMeta.setGroupingSymbol(null);
+          value.setValueMeta(valueMeta);
+          value.setValueData(Long.valueOf(l));
+          return value;
+        }
+      } catch(NumberFormatException e) {
+      }
+    }
+    return null;
+  }
+
+  public static ValueMetaAndData attemptNumberValueExtraction(String string) {
+    // Try a Number
+    try {
+      double d = Double.parseDouble(string);
+      if (Double.toString(d).equals(string)) {
+        ValueMetaAndData value = new ValueMetaAndData();
+        ValueMetaInterface valueMeta = new ValueMeta("Constant", ValueMetaInterface.TYPE_NUMBER);
+        valueMeta.setConversionMask("0.#");
+        valueMeta.setGroupingSymbol(null);
+        valueMeta.setDecimalSymbol(".");
+        value.setValueMeta(valueMeta);
+        value.setValueData(Double.valueOf(d));
+        return value;
+      }
+    } catch(NumberFormatException e) {
+    }
+    return null;
+  }
+
+  public static ValueMetaAndData attemptBigNumberValueExtraction(String string) {
+    // Try a BigNumber
+    try {
+      BigDecimal d = new BigDecimal(string);
+      if (d.toString().equals(string)) {
+        ValueMetaAndData value = new ValueMetaAndData();
+        value.setValueMeta(new ValueMeta("Constant", ValueMetaInterface.TYPE_BIGNUMBER));
+        value.setValueData(d);
+        return value;
+      }
+    } catch(NumberFormatException e) {
+    }
+    return null;
+  }
+
+  public static ValueMetaAndData attemptStringValueExtraction(String string) {
+    if (string.startsWith("'") && string.endsWith("'")) {
+      String s = string.substring(1, string.length()-1);
+      ValueMetaAndData value = new ValueMetaAndData();
+      value.setValueMeta(new ValueMeta("Constant", ValueMetaInterface.TYPE_STRING));
+      value.setValueData(s);
+      return value;
+    }
+    return null;
+  }
+
+  public static ValueMetaAndData attemptBooleanValueExtraction(String string) {
+    // Try an Integer
+    if ("TRUE".equalsIgnoreCase(string) || "FALSE".equalsIgnoreCase(string)) {
+      ValueMetaAndData value = new ValueMetaAndData();
+      value.setValueMeta(new ValueMeta("Constant", ValueMetaInterface.TYPE_BOOLEAN));
+      value.setValueData(Boolean.valueOf( "TRUE".equalsIgnoreCase(string) ));
+      return value;
+    }
+    return null;
+  }
+
+  public static ValueMetaAndData extractConstant(String string) {
+    // Try a date
+    //
+    ValueMetaAndData value = attemptDateValueExtraction(string);
+    if (value!=null) return value;
+    
+    // String
+    value = attemptStringValueExtraction(string);
+    if (value!=null) return value;
+
+    // Boolean
+    value = attemptBooleanValueExtraction(string);
+    if (value!=null) return value;
+
+    // Integer
+    value = attemptIntegerValueExtraction(string);
+    if (value!=null) return value;
+
+    // Number
+    value = attemptNumberValueExtraction(string);
+    if (value!=null) return value;
+
+    // Number
+    value = attemptBigNumberValueExtraction(string);
+    if (value!=null) return value;
+    
+    return null;
+  }
+  
+  public static String stripQuoteTableAlias(String field, String tableAliasPrefix) {
+    if (field.toUpperCase().startsWith((tableAliasPrefix+".").toUpperCase())) {
+      return ThinUtil.stripQuotes(field.substring(tableAliasPrefix.length()+1), '"');
+    } else {
+      return ThinUtil.stripQuotes(Const.trim(field), '"');
+    }
+  }
+  
+  public static int skipChars(String sql, int index, char...skipChars) throws KettleSQLException {
+    // Skip over double quotes and quotes
+    char c = sql.charAt(index);
+    boolean count=false;
+    for (char skipChar : skipChars) {
+      if (c==skipChar) {
+        char nextChar = skipChar;
+        if (skipChar=='(') { nextChar = ')'; count=true; }
+        if (skipChar=='{') { nextChar = '}'; count=true; }
+        if (skipChar=='[') { nextChar = ']'; count=true; }
+        
+        if (count) {
+          index = findNextBracket(sql, skipChar, nextChar, index);
+        } else {
+          index = findNext(sql, nextChar, index);
+        }
+        if (index>=sql.length()) break;
+        c = sql.charAt(index);
+      }
+    }
+
+    return index;
+  }
+
+  public static int findNext(String sql, char nextChar, int index) throws KettleSQLException {
+    int quoteIndex=index;
+    index++;
+    while (index<sql.length() && sql.charAt(index)!=nextChar) index++;
+    if (index+1>sql.length()) {
+      throw new KettleSQLException("No closing "+nextChar+" found, starting at location "+quoteIndex+" in : ["+sql+"]");
+    }
+    index++;
+    return index;
+  }
+  
+  public static int findNextBracket(String sql, char skipChar, char nextChar, int index) throws KettleSQLException {
+    
+    int counter=0;
+    for (int i=index;i<sql.length();i++) {
+      i=skipChars(sql, i, '\''); // skip quotes
+      char c = sql.charAt(i);
+      if (c==skipChar) counter++;
+      if (c==nextChar) counter--;
+      if (counter==0) {
+        return i;
+      }
+    }
+    
+    throw new KettleSQLException("No closing "+nextChar+" bracket found for "+skipChar+" at location "+index+" in : ["+sql+"]");
+  }
+    
+  public static String stripQuotes(String string, char...quoteChars) {
+    StringBuilder builder = new StringBuilder(string);
+    for (char quoteChar : quoteChars) {
+      if (builder.length()>0 && builder.charAt(0)==quoteChar && builder.charAt(builder.length()-1)==quoteChar) {
+        builder.deleteCharAt(builder.length()-1);
+        builder.deleteCharAt(0);
+      }
+    }
+    return builder.toString();
+  }
+
+  public static List<String> splitClause(String fieldClause, char splitChar, char...skipChars) throws KettleSQLException {
+    List<String> strings = new ArrayList<String>();
+    int startIndex = 0;
+    for (int index=0 ; index < fieldClause.length();index++) {
+      index = ThinUtil.skipChars(fieldClause, index, skipChars);
+      if (index>=fieldClause.length()) {
+        strings.add( fieldClause.substring(startIndex) );
+        startIndex=-1;
+        break;
+      }
+      if (fieldClause.charAt(index)==splitChar) {
+        strings.add( fieldClause.substring(startIndex, index) );
+        while (index<fieldClause.length() && fieldClause.charAt(index)==splitChar) index++;
+        startIndex=index;
+        index--;
+      }
+    }
+    if (startIndex>=0) {
+      strings.add( fieldClause.substring(startIndex) );
+    }
+    
+    return strings;
   }
 }

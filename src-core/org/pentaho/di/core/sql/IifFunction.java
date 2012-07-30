@@ -2,10 +2,12 @@ package org.pentaho.di.core.sql;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleSQLException;
+import org.pentaho.di.core.jdbc.ThinUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaAndData;
 
 public class IifFunction {
+  private String tableAlias;
   private String conditionClause;
   private SQLCondition sqlCondition;
   private RowMetaInterface serviceFields;
@@ -17,14 +19,15 @@ public class IifFunction {
   private ValueMetaAndData falseValue;
   private boolean falseField;
   
-  public IifFunction(String conditionClause, String trueValueString, String falseValueString, RowMetaInterface serviceFields) throws KettleSQLException {
+  public IifFunction(String tableAlias, String conditionClause, String trueValueString, String falseValueString, RowMetaInterface serviceFields) throws KettleSQLException {
+    this.tableAlias = tableAlias;
     this.conditionClause = conditionClause;
     this.trueValueString = trueValueString;
     this.falseValueString = falseValueString;
     this.serviceFields = serviceFields;
 
     // Parse the SQL
-    this.sqlCondition = new SQLCondition(conditionClause, serviceFields);
+    this.sqlCondition = new SQLCondition(tableAlias, conditionClause, serviceFields);
     
     // rudimentary string, date, number, integer determination
     //
@@ -37,10 +40,10 @@ public class IifFunction {
       return null;
     }
     
-    ValueMetaAndData value = SQLCondition.attemptDateValueExtraction(string);
+    ValueMetaAndData value = ThinUtil.attemptDateValueExtraction(string);
     if (value!=null) return value;
     
-    value = SQLCondition.attemptStringValueExtraction(string);
+    value = ThinUtil.attemptStringValueExtraction(string);
     if (value!=null) return value;
     
     // See if it's a field...
@@ -55,16 +58,16 @@ public class IifFunction {
       return new ValueMetaAndData(serviceFields.getValueMeta(index), null);
     }
 
-    value = SQLCondition.attemptBooleanValueExtraction(string);
+    value = ThinUtil.attemptBooleanValueExtraction(string);
     if (value!=null) return value;
 
-    value = SQLCondition.attemptIntegerValueExtraction(string);
+    value = ThinUtil.attemptIntegerValueExtraction(string);
     if (value!=null) return value;
 
-    value = SQLCondition.attemptNumberValueExtraction(string);
+    value = ThinUtil.attemptNumberValueExtraction(string);
     if (value!=null) return value;
 
-    value = SQLCondition.attemptBigNumberValueExtraction(string);
+    value = ThinUtil.attemptBigNumberValueExtraction(string);
     if (value!=null) return value;
 
     throw new KettleSQLException("Unable to determine value data type for string: ["+string+"]");
@@ -131,6 +134,13 @@ public class IifFunction {
    */
   public boolean isTrueField() {
     return trueField;
+  }
+
+  /**
+   * @return the tableAlias
+   */
+  public String getTableAlias() {
+    return tableAlias;
   }
   
 }

@@ -122,7 +122,8 @@ public class SQLTest extends TestCase {
     assertEquals(1, selectFields.size());
     SQLField countField = selectFields.get(0);
     assertTrue(countField.isCountStar());
-    assertEquals("count(*)", countField.getField());
+    assertEquals("*", countField.getField());
+    assertEquals("NrOfRows", countField.getAlias());
     
     assertNull(sql.getGroupClause());
     assertNotNull(sql.getGroupFields());

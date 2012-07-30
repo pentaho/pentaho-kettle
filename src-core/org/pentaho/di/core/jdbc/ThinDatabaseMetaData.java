@@ -11,7 +11,6 @@ import java.util.List;
 
 import org.pentaho.di.cluster.HttpUtil;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -189,7 +188,6 @@ public class ThinDatabaseMetaData implements DatabaseMetaData {
 
       return new RowsResultSet(rowMeta, rows);
     } catch(Exception e) {
-      LogChannel.GENERAL.logError("Error getting services list from server", e);
       throw new SQLException(e);
     }   
   }
@@ -481,7 +479,7 @@ public class ThinDatabaseMetaData implements DatabaseMetaData {
   
   public List<ThinServiceInformation> getServiceInformation() throws SQLException {
     try {
-      String xml = HttpUtil.execService(LogChannel.GENERAL, new Variables(),
+      String xml = HttpUtil.execService(new Variables(),
           connection.getHostname(), connection.getPort(), connection.getWebAppName(), 
           serviceUrl, connection.getUsername(), connection.getPassword(), 
           connection.getProxyHostname(), connection.getProxyPort(), connection.getNonProxyHosts()
@@ -590,7 +588,6 @@ public class ThinDatabaseMetaData implements DatabaseMetaData {
 
       return new RowsResultSet(rowMeta, rows);
     } catch(Exception e) {
-      LogChannel.GENERAL.logError("Error getting services list from server", e);
       throw new SQLException(e);
     }
   }

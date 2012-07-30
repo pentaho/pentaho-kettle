@@ -1,7 +1,10 @@
 package org.pentaho.di.core.sql;
 
+import java.util.List;
+
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleSQLException;
+import org.pentaho.di.core.jdbc.ThinUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 
@@ -10,7 +13,9 @@ public class SQL {
   
   private RowMetaInterface rowMeta;
 
+  private String serviceClause;
   private String serviceName;
+  private String serviceAlias;
 
   private String selectClause;
   private SQLFields selectFields;
@@ -68,36 +73,14 @@ public class SQL {
      */
     //
     selectClause = findClause(sql, "SELECT", "FROM");
-    serviceName = findClause(sql, "FROM", "WHERE", "GROUP BY", "ORDER BY");    
+    serviceClause = findClause(sql, "FROM", "WHERE", "GROUP BY", "ORDER BY");
+    parseServiceClause();
     whereClause = findClause(sql, "WHERE", "GROUP BY", "ORDER BY");
     groupClause = findClause(sql, "GROUP BY", "HAVING", "ORDER BY");
     havingClause = findClause(sql, "HAVING", "ORDER BY");
     orderClause = findClause(sql, "ORDER BY");
   }
-  
-  public void parse(RowMetaInterface rowMeta) throws KettleSQLException {
-    
-    // Now do the actual parsing and interpreting of the SQL, map it to the service row metadata
-    
-    this.rowMeta = rowMeta;
 
-    selectFields = new SQLFields(rowMeta, selectClause);
-    if (!Const.isEmpty(whereClause)) {
-      whereCondition = new SQLCondition(whereClause, rowMeta);
-    }
-    if (!Const.isEmpty(groupClause)) {
-      groupFields = new SQLFields(rowMeta, groupClause);
-    } else {
-      groupFields = new SQLFields(new RowMeta(), null);
-    }
-    if (!Const.isEmpty(havingClause)) {
-      havingCondition = new SQLCondition(havingClause, rowMeta, selectFields);
-    }
-    if (!Const.isEmpty(orderClause)) {
-      orderFields = new SQLFields(rowMeta, orderClause, true, selectFields);
-    }
-  }
-  
   public static String findClause(String sqlString, String startClause, String...endClauses) throws KettleSQLException {
     if (Const.isEmpty(sqlString)) return null;
     
@@ -105,7 +88,7 @@ public class SQL {
     
     int startIndex=0;
     while (startIndex<sql.length()) {
-      startIndex = skipChars(sql, startIndex, '"', '\'');
+      startIndex = ThinUtil.skipChars(sql, startIndex, '"', '\'');
       if (sql.substring(startIndex).startsWith(startClause.toUpperCase())) {
         break;
       }
@@ -122,7 +105,7 @@ public class SQL {
       
       int index=startIndex;
       while (index<sql.length()) {
-        index = skipChars(sql, index, '"', '\'');
+        index = ThinUtil.skipChars(sql, index, '"', '\'');
 
         // See if the end-clause is present at this location.
         //
@@ -135,69 +118,57 @@ public class SQL {
     return Const.trim( sqlString.substring(startIndex, endIndex) );
   }
 
-  public static int skipChars(String sql, int index, char...skipChars) throws KettleSQLException {
-    // Skip over double quotes and quotes
-    char c = sql.charAt(index);
-    boolean count=false;
-    for (char skipChar : skipChars) {
-      if (c==skipChar) {
-        char nextChar = skipChar;
-        if (skipChar=='(') { nextChar = ')'; count=true; }
-        if (skipChar=='{') { nextChar = '}'; count=true; }
-        if (skipChar=='[') { nextChar = ']'; count=true; }
-        
-        if (count) {
-          index = findNextBracket(sql, skipChar, nextChar, index);
-        } else {
-          index = findNext(sql, nextChar, index);
-        }
-        if (index>=sql.length()) break;
-        c = sql.charAt(index);
-      }
-    }
-
-    return index;
-  }
-
-  public static int findNext(String sql, char nextChar, int index) throws KettleSQLException {
-    int quoteIndex=index;
-    index++;
-    while (index<sql.length() && sql.charAt(index)!=nextChar) index++;
-    if (index+1>sql.length()) {
-      throw new KettleSQLException("No closing "+nextChar+" found, starting at location "+quoteIndex+" in : ["+sql+"]");
-    }
-    index++;
-    return index;
-  }
-  
-  public static int findNextBracket(String sql, char skipChar, char nextChar, int index) throws KettleSQLException {
-    
-    int counter=0;
-    for (int i=index;i<sql.length();i++) {
-      i=skipChars(sql, i, '\''); // skip quotes
-      char c = sql.charAt(i);
-      if (c==skipChar) counter++;
-      if (c==nextChar) counter--;
-      if (counter==0) {
-        return i;
-      }
+  private void parseServiceClause() throws KettleSQLException {
+    if (Const.isEmpty(serviceClause)) {
+      serviceName = "dual";
+      return;
     }
     
-    throw new KettleSQLException("No closing "+nextChar+" bracket found for "+skipChar+" at location "+index+" in : ["+sql+"]");
-  }
-  
-  
-  public static String stripQuotes(String string, char...quoteChars) {
-    StringBuilder builder = new StringBuilder(string);
-    for (char quoteChar : quoteChars) {
-      if (builder.length()>0 && builder.charAt(0)==quoteChar && builder.charAt(builder.length()-1)==quoteChar) {
-        builder.deleteCharAt(builder.length()-1);
-        builder.deleteCharAt(0);
+    List<String> parts = ThinUtil.splitClause(serviceClause, ' ', '"');
+    if (parts.size()>=1) {
+      serviceName = parts.get(0);
+    }
+    if (parts.size()==2) {
+      serviceAlias = parts.get(1);
+    }
+    if (parts.size()==3) {
+      
+      if (parts.get(1).equalsIgnoreCase("AS")) {
+        serviceAlias=parts.get(2);
+      } else {
+        throw new KettleSQLException("AS expected in from clause: "+serviceClause);
       }
     }
-    return builder.toString();
+    if (parts.size()>3) {
+      throw new KettleSQLException("Found "+parts.size()+" parts for the FROM clause when only a table name and optionally an alias is supported: "+serviceClause);
+    }
+    
+    serviceAlias = Const.NVL(serviceAlias, serviceName);
   }
 
+  public void parse(RowMetaInterface rowMeta) throws KettleSQLException {
+    
+    // Now do the actual parsing and interpreting of the SQL, map it to the service row metadata
+    
+    this.rowMeta = rowMeta;
+
+    selectFields = new SQLFields(serviceAlias, rowMeta, selectClause);
+    if (!Const.isEmpty(whereClause)) {
+      whereCondition = new SQLCondition(serviceAlias, whereClause, rowMeta);
+    }
+    if (!Const.isEmpty(groupClause)) {
+      groupFields = new SQLFields(serviceAlias, rowMeta, groupClause);
+    } else {
+      groupFields = new SQLFields(serviceAlias, new RowMeta(), null);
+    }
+    if (!Const.isEmpty(havingClause)) {
+      havingCondition = new SQLCondition(serviceAlias, havingClause, rowMeta, selectFields);
+    }
+    if (!Const.isEmpty(orderClause)) {
+      orderFields = new SQLFields(serviceAlias, rowMeta, orderClause, true, selectFields);
+    }
+  }
+  
   public String getSqlString() {
     return sqlString;
   }
@@ -370,6 +341,11 @@ public class SQL {
   public void setHavingCondition(SQLCondition havingCondition) {
     this.havingCondition = havingCondition;
   }
+  
+ 
+  
+  
+  
   
   
 }

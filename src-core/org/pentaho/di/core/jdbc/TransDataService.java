@@ -19,6 +19,8 @@ public class TransDataService implements XMLInterface {
   private String repositoryId;
   
   private String serviceStepName;
+  
+  private boolean dual;
 
   public TransDataService() {
     this(null, null, null, null, null);
@@ -134,6 +136,20 @@ public class TransDataService implements XMLInterface {
    */
   public void setServiceStepName(String serviceStepName) {
     this.serviceStepName = serviceStepName;
+  }
+
+  /**
+   * @return the dual
+   */
+  public boolean isDual() {
+    return dual;
+  }
+
+  /**
+   * @param dual the dual to set
+   */
+  public void setDual(boolean dual) {
+    this.dual = dual;
   }
   
   

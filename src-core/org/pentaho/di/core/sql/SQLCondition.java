@@ -1,33 +1,31 @@
 package org.pentaho.di.core.sql;
 
-import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.regex.Pattern;
 
 import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleSQLException;
+import org.pentaho.di.core.jdbc.ThinUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.xml.XMLHandler;
 
 public class SQLCondition {
+  private String tableAlias;
   RowMetaInterface serviceFields;
   private Condition condition;
   private String conditionClause;
   private SQLFields selectFields;
 
-  public SQLCondition(String conditionSql, RowMetaInterface serviceFields) throws KettleSQLException {
-    this(conditionSql, serviceFields, null);
+  public SQLCondition(String tableAlias, String conditionSql, RowMetaInterface serviceFields) throws KettleSQLException {
+    this(tableAlias, conditionSql, serviceFields, null);
   }
   
-  public SQLCondition(String conditionSql, RowMetaInterface serviceFields, SQLFields selectFields) throws KettleSQLException {
+  public SQLCondition(String tableAlias, String conditionSql, RowMetaInterface serviceFields, SQLFields selectFields) throws KettleSQLException {
+    this.tableAlias = tableAlias;
     this.conditionClause = conditionSql;
     this.serviceFields = serviceFields;
     this.selectFields = selectFields;
@@ -70,7 +68,7 @@ public class SQLCondition {
   private int searchForString(String clause, String string, int startIndex) throws KettleSQLException {
     int index = startIndex;
     while (index<clause.length()) {
-      index=SQL.skipChars(clause, index, '\'', '(');
+      index=ThinUtil.skipChars(clause, index, '\'', '(');
       if (index+string.length()>clause.length()) return -1; // done.
       if (clause.substring(index).toUpperCase().startsWith(string.toUpperCase())) return index;
       index++;
@@ -121,7 +119,7 @@ public class SQLCondition {
           // Grab the string
           //
           int startParamIndex = cleaned.indexOf('(')+1;
-          int endParamIndex = SQL.skipChars(cleaned, startParamIndex, '(', '\'');
+          int endParamIndex = ThinUtil.skipChars(cleaned, startParamIndex, '(', '\'');
           String quotedParameter = Const.trim(cleaned.substring(startParamIndex, endParamIndex));
           if (quotedParameter.startsWith("'") && quotedParameter.endsWith("'")) {
             String parameterName = quotedParameter.substring(1, quotedParameter.length()-1);
@@ -206,7 +204,7 @@ public class SQLCondition {
   }
 
   private Condition parseAtomicCondition(String clause) throws KettleSQLException {
- // First split on spaces...
+    // First split on spaces...
     //
     List<String> strings = splitConditionClause(clause);
     if (strings.size()>3) {
@@ -230,8 +228,18 @@ public class SQLCondition {
       }
     }
     
+    // Remove the optional table alias prefix from the left field
+    //
+    left = ThinUtil.stripQuoteTableAlias(left, tableAlias);
+    
     String operatorString = strings.get(1);
     String right = strings.get(2);
+    
+    // If it's another column name, remove possible table alias prefix.
+    //
+    right = ThinUtil.stripQuoteTableAlias(right, tableAlias);
+    
+    
     ValueMetaAndData value = null;
     
     int function = Condition.getFunction(operatorString);
@@ -240,7 +248,7 @@ public class SQLCondition {
       //
       String trimmed = Const.trim(right);
       String partClause = trimmed.substring(1, trimmed.length()-1);
-      List<String> parts = SQLUtil.splitClause(partClause, ',', '\'');
+      List<String> parts = ThinUtil.splitClause(partClause, ',', '\'');
       StringBuilder valueString = new StringBuilder();
       for (String part : parts) {
         part = Const.trim(part);
@@ -256,7 +264,7 @@ public class SQLCondition {
       }
       value = new ValueMetaAndData(new ValueMeta("constant-in-list", ValueMetaInterface.TYPE_STRING), valueString.toString());
     } else {
-      value = extractConstant(right);
+      value = ThinUtil.extractConstant(right);
     }
     
     
@@ -295,7 +303,7 @@ public class SQLCondition {
     };
     int index=0;
     while (index<clause.length()) {
-      index = SQL.skipChars(clause, index, '\'', '"' );
+      index = ThinUtil.skipChars(clause, index, '\'', '"' );
       for (String operator : operators) {
         if (index<=clause.length()-operator.length()) {
           if (clause.substring(index).toUpperCase().startsWith(operator)) {
@@ -318,134 +326,6 @@ public class SQLCondition {
     }
     
     return strings;
-  }
-  
-  public static ValueMetaAndData attemptDateValueExtraction(String string) {
-    if (string.length()>2 && string.startsWith("[") && string.endsWith("]")) {
-      String unquoted=string.substring(1, string.length()-1);
-      if (unquoted.length()>=9 && unquoted.charAt(4)=='/' && unquoted.charAt(7)=='/') {
-        Date date = XMLHandler.stringToDate(unquoted);
-        String format = "yyyy/MM/dd HH:mm:ss.SSS";
-        if (date==null) {
-          try {
-            date = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").parse(unquoted);
-            format = "yyyy/MM/dd HH:mm:ss";
-          } catch(ParseException e1) {
-            try {
-              date = new SimpleDateFormat("yyyy/MM/dd").parse(unquoted);
-              format = "yyyy/MM/dd";
-            } catch (ParseException e2) {
-              date=null;
-            }
-          }
-        }
-        if (date!=null) {
-          ValueMetaInterface valueMeta = new ValueMeta("iif-date", ValueMetaInterface.TYPE_DATE);
-          valueMeta.setConversionMask(format);
-          return new ValueMetaAndData(valueMeta, date);
-       
-        } 
-      }
-    }
-    return null;
-  }
-  
-  public static ValueMetaAndData attemptIntegerValueExtraction(String string) {
-    // Try an Integer
-    if (!string.contains(".")) {
-      try {
-        long l = Long.parseLong(string);
-        if (Long.toString(l).equals(string)) {
-          ValueMetaAndData value = new ValueMetaAndData();
-          value.setValueMeta(new ValueMeta("Constant", ValueMetaInterface.TYPE_INTEGER));
-          value.setValueData(Long.valueOf(l));
-          return value;
-        }
-      } catch(NumberFormatException e) {
-      }
-    }
-    return null;
-  }
-
-  public static ValueMetaAndData attemptNumberValueExtraction(String string) {
-    // Try a Number
-    try {
-      double d = Double.parseDouble(string);
-      if (Double.toString(d).equals(string)) {
-        ValueMetaAndData value = new ValueMetaAndData();
-        value.setValueMeta(new ValueMeta("Constant", ValueMetaInterface.TYPE_NUMBER));
-        value.setValueData(Double.valueOf(d));
-        return value;
-      }
-    } catch(NumberFormatException e) {
-    }
-    return null;
-  }
-
-  public static ValueMetaAndData attemptBigNumberValueExtraction(String string) {
-    // Try a BigNumber
-    try {
-      BigDecimal d = new BigDecimal(string);
-      if (d.toString().equals(string)) {
-        ValueMetaAndData value = new ValueMetaAndData();
-        value.setValueMeta(new ValueMeta("Constant", ValueMetaInterface.TYPE_BIGNUMBER));
-        value.setValueData(d);
-        return value;
-      }
-    } catch(NumberFormatException e) {
-    }
-    return null;
-  }
-
-  public static ValueMetaAndData attemptStringValueExtraction(String string) {
-    if (string.startsWith("'") && string.endsWith("'")) {
-      String s = string.substring(1, string.length()-1);
-      ValueMetaAndData value = new ValueMetaAndData();
-      value.setValueMeta(new ValueMeta("Constant", ValueMetaInterface.TYPE_STRING));
-      value.setValueData(s);
-      return value;
-    }
-    return null;
-  }
-
-  public static ValueMetaAndData attemptBooleanValueExtraction(String string) {
-    // Try an Integer
-    if ("TRUE".equalsIgnoreCase(string) || "FALSE".equalsIgnoreCase(string)) {
-      ValueMetaAndData value = new ValueMetaAndData();
-      value.setValueMeta(new ValueMeta("Constant", ValueMetaInterface.TYPE_BOOLEAN));
-      value.setValueData(Boolean.valueOf( "TRUE".equalsIgnoreCase(string) ));
-      return value;
-    }
-    return null;
-  }
-
-  private ValueMetaAndData extractConstant(String string) {
-    // Try a date
-    //
-    ValueMetaAndData value = attemptDateValueExtraction(string);
-    if (value!=null) return value;
-    
-    // String
-    value = attemptStringValueExtraction(string);
-    if (value!=null) return value;
-
-    // Boolean
-    value = SQLCondition.attemptBooleanValueExtraction(string);
-    if (value!=null) return value;
-
-    // Integer
-    value = attemptIntegerValueExtraction(string);
-    if (value!=null) return value;
-
-    // Number
-    value = attemptNumberValueExtraction(string);
-    if (value!=null) return value;
-
-    // Number
-    value = attemptBigNumberValueExtraction(string);
-    if (value!=null) return value;
-    
-    return null;
   }
 
   /**
@@ -499,5 +379,12 @@ public class SQLCondition {
    */
   public SQLFields getSelectFields() {
     return selectFields;
+  }
+
+  /**
+   * @return the tableAlias
+   */
+  public String getTableAlias() {
+    return tableAlias;
   }  
 }

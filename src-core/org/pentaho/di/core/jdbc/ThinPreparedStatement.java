@@ -27,7 +27,6 @@ import java.util.List;
 import org.pentaho.di.core.exception.KettleSQLException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.di.core.sql.SQL;
 
 public class ThinPreparedStatement extends ThinStatement implements PreparedStatement {
   
@@ -50,7 +49,7 @@ public class ThinPreparedStatement extends ThinStatement implements PreparedStat
     
       int index=0;
       while (index<sql.length()) {
-        index = SQL.skipChars(sql, index, '\'', '"');
+        index = ThinUtil.skipChars(sql, index, '\'', '"');
         if (index<sql.length()) {
           if (sql.charAt(index)=='?') {
             // placeholder found.

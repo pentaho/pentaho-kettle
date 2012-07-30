@@ -13,22 +13,20 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.lang.StringUtils;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.encryption.Encr;
-import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.i18n.BaseMessages;
 
 public class HttpUtil {
-  private static Class<?> PKG = HttpUtil.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
-
-
-  public static String execService(LogChannelInterface log, VariableSpace space, String hostname, String port, String webAppName, String serviceAndArguments, String username, String password, String proxyHostname, String proxyPort, String nonProxyHosts) throws Exception
+  
+  public static String execService(VariableSpace space, String hostname, String port, String webAppName, String serviceAndArguments, String username, String password, String proxyHostname, String proxyPort, String nonProxyHosts) throws Exception
   {
       // Prepare HTTP get
       // 
       HttpClient client = SlaveConnectionManager.getInstance().createHttpClient();
       addCredentials(client, space, hostname, port, webAppName, username, password);
       addProxy(client, space, hostname, proxyHostname, proxyPort, nonProxyHosts);
-      HttpMethod method = new GetMethod(constructUrl(space, hostname, port, webAppName, serviceAndArguments));
+      String urlString = constructUrl(space, hostname, port, webAppName, serviceAndArguments);
+      HttpMethod method = new GetMethod(urlString);
       
       // Execute request
       // 
@@ -38,10 +36,10 @@ public class HttpUtil {
       try
       {
           int result = client.executeMethod(method);
+          if (result!=200) {
+            throw new KettleException("Response code "+result+" received while querying "+urlString);
+          }
           
-          // The status code
-          log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseStatus", Integer.toString(result))); //$NON-NLS-1$
-
           // the response
           //
           inputStream = method.getResponseBodyAsStream();
@@ -52,9 +50,6 @@ public class HttpUtil {
           while ( (c=bufferedInputStream.read())!=-1) bodyBuffer.append((char)c);
 
           String body = bodyBuffer.toString();
-          
-          log.logDetailed(BaseMessages.getString(PKG, "SlaveServer.DETAILED_FinishedReading", Integer.toString(body.getBytes().length))); //$NON-NLS-1$
-          log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseBody",body)); //$NON-NLS-1$
           
           return body;
       }
@@ -69,7 +64,6 @@ public class HttpUtil {
 
           // Release current connection to the connection pool once you are done
           method.releaseConnection();            
-          log.logDetailed(BaseMessages.getString(PKG, "SlaveServer.DETAILED_ExecutedService", serviceAndArguments, hostname) ); //$NON-NLS-1$
       }
 
   }

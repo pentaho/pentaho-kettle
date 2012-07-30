@@ -20,9 +20,9 @@ public class SQLConditionTest extends TestCase {
     
     // Correctness of the next statement is tested in SQLFieldsTest
     //
-    SQLFields fields = new SQLFields(rowMeta, fieldsClause);
+    SQLFields fields = new SQLFields("Service", rowMeta, fieldsClause);
 
-    SQLCondition sqlCondition = new SQLCondition(conditionClause, rowMeta, fields);
+    SQLCondition sqlCondition = new SQLCondition("Service", conditionClause, rowMeta, fields);
     Condition condition = sqlCondition.getCondition();
     
     assertNotNull(condition);
@@ -41,9 +41,9 @@ public class SQLConditionTest extends TestCase {
     
     // Correctness of the next statement is tested in SQLFieldsTest
     //
-    SQLFields fields = new SQLFields(rowMeta, fieldsClause);
+    SQLFields fields = new SQLFields("Service", rowMeta, fieldsClause);
 
-    SQLCondition sqlCondition = new SQLCondition(conditionClause, rowMeta, fields);
+    SQLCondition sqlCondition = new SQLCondition("Service", conditionClause, rowMeta, fields);
     Condition condition = sqlCondition.getCondition();
     
     assertNotNull(condition);
@@ -62,9 +62,9 @@ public class SQLConditionTest extends TestCase {
     
     // Correctness of the next statement is tested in SQLFieldsTest
     //
-    SQLFields fields = new SQLFields(rowMeta, fieldsClause);
+    SQLFields fields = new SQLFields("Service", rowMeta, fieldsClause);
 
-    SQLCondition sqlCondition = new SQLCondition(conditionClause, rowMeta, fields);
+    SQLCondition sqlCondition = new SQLCondition("Service", conditionClause, rowMeta, fields);
     Condition condition = sqlCondition.getCondition();
     
     assertNotNull(condition);
@@ -83,9 +83,9 @@ public class SQLConditionTest extends TestCase {
     
     // Correctness of the next statement is tested in SQLFieldsTest
     //
-    SQLFields fields = new SQLFields(rowMeta, fieldsClause);
+    SQLFields fields = new SQLFields("Service", rowMeta, fieldsClause);
 
-    SQLCondition sqlCondition = new SQLCondition(conditionClause, rowMeta, fields);
+    SQLCondition sqlCondition = new SQLCondition("Service", conditionClause, rowMeta, fields);
     Condition condition = sqlCondition.getCondition();
     
     assertNotNull(condition);
@@ -104,9 +104,9 @@ public class SQLConditionTest extends TestCase {
     
     // Correctness of the next statement is tested in SQLFieldsTest
     //
-    SQLFields fields = new SQLFields(rowMeta, fieldsClause);
+    SQLFields fields = new SQLFields("Service", rowMeta, fieldsClause);
 
-    SQLCondition sqlCondition = new SQLCondition(conditionClause, rowMeta, fields);
+    SQLCondition sqlCondition = new SQLCondition("Service", conditionClause, rowMeta, fields);
     Condition condition = sqlCondition.getCondition();
     
     assertNotNull(condition);
@@ -125,9 +125,9 @@ public class SQLConditionTest extends TestCase {
     
     // Correctness of the next statement is tested in SQLFieldsTest
     //
-    SQLFields fields = new SQLFields(rowMeta, fieldsClause);
+    SQLFields fields = new SQLFields("Service", rowMeta, fieldsClause);
 
-    SQLCondition sqlCondition = new SQLCondition(conditionClause, rowMeta, fields);
+    SQLCondition sqlCondition = new SQLCondition("Service", conditionClause, rowMeta, fields);
     Condition condition = sqlCondition.getCondition();
     
     assertNotNull(condition);
@@ -146,9 +146,9 @@ public class SQLConditionTest extends TestCase {
     
     // Correctness of the next statement is tested in SQLFieldsTest
     //
-    SQLFields fields = new SQLFields(rowMeta, fieldsClause);
+    SQLFields fields = new SQLFields("Service", rowMeta, fieldsClause);
 
-    SQLCondition sqlCondition = new SQLCondition(conditionClause, rowMeta, fields);
+    SQLCondition sqlCondition = new SQLCondition("Service", conditionClause, rowMeta, fields);
     Condition condition = sqlCondition.getCondition();
     
     assertNotNull(condition);
@@ -167,9 +167,9 @@ public class SQLConditionTest extends TestCase {
     
     // Correctness of the next statement is tested in SQLFieldsTest
     //
-    SQLFields fields = new SQLFields(rowMeta, fieldsClause);
+    SQLFields fields = new SQLFields("Service", rowMeta, fieldsClause);
 
-    SQLCondition sqlCondition = new SQLCondition(conditionClause, rowMeta, fields);
+    SQLCondition sqlCondition = new SQLCondition("Service", conditionClause, rowMeta, fields);
     Condition condition = sqlCondition.getCondition();
     
     assertNotNull(condition);
@@ -188,9 +188,9 @@ public class SQLConditionTest extends TestCase {
     
     // Correctness of the next statement is tested in SQLFieldsTest
     //
-    SQLFields fields = new SQLFields(rowMeta, fieldsClause);
+    SQLFields fields = new SQLFields("Service", rowMeta, fieldsClause);
 
-    SQLCondition sqlCondition = new SQLCondition(conditionClause, rowMeta, fields);
+    SQLCondition sqlCondition = new SQLCondition("Service", conditionClause, rowMeta, fields);
     Condition condition = sqlCondition.getCondition();
     
     assertNotNull(condition);
@@ -209,9 +209,9 @@ public class SQLConditionTest extends TestCase {
     
     // Correctness of the next statement is tested in SQLFieldsTest
     //
-    SQLFields fields = new SQLFields(rowMeta, fieldsClause);
+    SQLFields fields = new SQLFields("Service", rowMeta, fieldsClause);
 
-    SQLCondition sqlCondition = new SQLCondition(conditionClause, rowMeta, fields);
+    SQLCondition sqlCondition = new SQLCondition("Service", conditionClause, rowMeta, fields);
     Condition condition = sqlCondition.getCondition();
     
     assertNotNull(condition);
@@ -230,9 +230,9 @@ public class SQLConditionTest extends TestCase {
     
     // Correctness of the next statement is tested in SQLFieldsTest
     //
-    SQLFields fields = new SQLFields(rowMeta, fieldsClause);
+    SQLFields fields = new SQLFields("Service", rowMeta, fieldsClause);
 
-    SQLCondition sqlCondition = new SQLCondition(conditionClause, rowMeta, fields);
+    SQLCondition sqlCondition = new SQLCondition("Service", conditionClause, rowMeta, fields);
     Condition condition = sqlCondition.getCondition();
     
     assertNotNull(condition);
@@ -251,9 +251,9 @@ public class SQLConditionTest extends TestCase {
     
     // Correctness of the next statement is tested in SQLFieldsTest
     //
-    SQLFields fields = new SQLFields(rowMeta, fieldsClause);
+    SQLFields fields = new SQLFields("Service", rowMeta, fieldsClause);
 
-    SQLCondition sqlCondition = new SQLCondition(conditionClause, rowMeta, fields);
+    SQLCondition sqlCondition = new SQLCondition("Service", conditionClause, rowMeta, fields);
     Condition condition = sqlCondition.getCondition();
     
     assertNotNull(condition);
@@ -273,9 +273,9 @@ public class SQLConditionTest extends TestCase {
     
     // Correctness of the next statement is tested in SQLFieldsTest
     //
-    SQLFields fields = new SQLFields(rowMeta, fieldsClause);
+    SQLFields fields = new SQLFields("Service", rowMeta, fieldsClause);
 
-    SQLCondition sqlCondition = new SQLCondition(conditionClause, rowMeta, fields);
+    SQLCondition sqlCondition = new SQLCondition("Service", conditionClause, rowMeta, fields);
     Condition condition = sqlCondition.getCondition();
     
     assertNotNull(condition);
@@ -294,9 +294,9 @@ public class SQLConditionTest extends TestCase {
     
     // Correctness of the next statement is tested in SQLFieldsTest
     //
-    SQLFields fields = new SQLFields(rowMeta, fieldsClause);
+    SQLFields fields = new SQLFields("Service", rowMeta, fieldsClause);
 
-    SQLCondition sqlCondition = new SQLCondition(conditionClause, rowMeta, fields);
+    SQLCondition sqlCondition = new SQLCondition("Service", conditionClause, rowMeta, fields);
     Condition condition = sqlCondition.getCondition();
     
     assertNotNull(condition);
@@ -318,9 +318,9 @@ public class SQLConditionTest extends TestCase {
     
     // Correctness of the next statement is tested in SQLFieldsTest
     //
-    SQLFields fields = new SQLFields(rowMeta, fieldsClause);
+    SQLFields fields = new SQLFields("Service", rowMeta, fieldsClause);
 
-    SQLCondition sqlCondition = new SQLCondition(conditionClause, rowMeta, fields);
+    SQLCondition sqlCondition = new SQLCondition("Service", conditionClause, rowMeta, fields);
     Condition condition = sqlCondition.getCondition();
     
     assertNotNull(condition);
@@ -349,9 +349,9 @@ public class SQLConditionTest extends TestCase {
     
     // Correctness of the next statement is tested in SQLFieldsTest
     //
-    SQLFields fields = new SQLFields(rowMeta, fieldsClause);
+    SQLFields fields = new SQLFields("Service", rowMeta, fieldsClause);
 
-    SQLCondition sqlCondition = new SQLCondition(conditionClause, rowMeta, fields);
+    SQLCondition sqlCondition = new SQLCondition("Service", conditionClause, rowMeta, fields);
     Condition condition = sqlCondition.getCondition();
     
     assertNotNull(condition);
@@ -380,9 +380,9 @@ public class SQLConditionTest extends TestCase {
     
     // Correctness of the next statement is tested in SQLFieldsTest
     //
-    SQLFields fields = new SQLFields(rowMeta, fieldsClause);
+    SQLFields fields = new SQLFields("Service", rowMeta, fieldsClause);
 
-    SQLCondition sqlCondition = new SQLCondition(conditionClause, rowMeta, fields);
+    SQLCondition sqlCondition = new SQLCondition("Service", conditionClause, rowMeta, fields);
     Condition condition = sqlCondition.getCondition();
     
     assertNotNull(condition);
@@ -428,9 +428,9 @@ public class SQLConditionTest extends TestCase {
     
     // Correctness of the next statement is tested in SQLFieldsTest
     //
-    SQLFields fields = new SQLFields(rowMeta, fieldsClause);
+    SQLFields fields = new SQLFields("Service", rowMeta, fieldsClause);
 
-    SQLCondition sqlCondition = new SQLCondition(conditionClause, rowMeta, fields);
+    SQLCondition sqlCondition = new SQLCondition("Service", conditionClause, rowMeta, fields);
     Condition condition = sqlCondition.getCondition();
     
     assertNotNull(condition);
@@ -477,9 +477,9 @@ public class SQLConditionTest extends TestCase {
     
     // Correctness of the next statement is tested in SQLFieldsTest
     //
-    SQLFields fields = new SQLFields(rowMeta, fieldsClause);
+    SQLFields fields = new SQLFields("Service", rowMeta, fieldsClause);
 
-    SQLCondition sqlCondition = new SQLCondition(conditionClause, rowMeta, fields);
+    SQLCondition sqlCondition = new SQLCondition("Service", conditionClause, rowMeta, fields);
     Condition condition = sqlCondition.getCondition();
     
     assertNotNull(condition);
@@ -522,9 +522,9 @@ public class SQLConditionTest extends TestCase {
     
     // Correctness of the next statement is tested in SQLFieldsTest
     //
-    SQLFields fields = new SQLFields(rowMeta, fieldsClause);
+    SQLFields fields = new SQLFields("Service", rowMeta, fieldsClause);
 
-    SQLCondition sqlCondition = new SQLCondition(conditionClause, rowMeta, fields);
+    SQLCondition sqlCondition = new SQLCondition("Service", conditionClause, rowMeta, fields);
     Condition condition = sqlCondition.getCondition();
     
     assertNotNull(condition);
@@ -544,9 +544,9 @@ public class SQLConditionTest extends TestCase {
     
     // Correctness of the next statement is tested in SQLFieldsTest
     //
-    SQLFields fields = new SQLFields(rowMeta, fieldsClause);
+    SQLFields fields = new SQLFields("Service", rowMeta, fieldsClause);
 
-    SQLCondition sqlCondition = new SQLCondition(conditionClause, rowMeta, fields);
+    SQLCondition sqlCondition = new SQLCondition("Service", conditionClause, rowMeta, fields);
     Condition condition = sqlCondition.getCondition();
     
     assertNotNull(condition);
@@ -576,9 +576,9 @@ public class SQLConditionTest extends TestCase {
     
     // Correctness of the next statement is tested in SQLFieldsTest
     //
-    SQLFields fields = new SQLFields(rowMeta, fieldsClause);
+    SQLFields fields = new SQLFields("Service", rowMeta, fieldsClause);
 
-    SQLCondition sqlCondition = new SQLCondition(conditionClause, rowMeta, fields);
+    SQLCondition sqlCondition = new SQLCondition("Service", conditionClause, rowMeta, fields);
     Condition condition = sqlCondition.getCondition();
     
     assertNotNull(condition);
@@ -622,9 +622,9 @@ public class SQLConditionTest extends TestCase {
     
     // Correctness of the next statement is tested in SQLFieldsTest
     //
-    SQLFields fields = new SQLFields(rowMeta, fieldsClause);
+    SQLFields fields = new SQLFields("Service", rowMeta, fieldsClause);
 
-    SQLCondition sqlCondition = new SQLCondition(conditionClause, rowMeta, fields);
+    SQLCondition sqlCondition = new SQLCondition("Service", conditionClause, rowMeta, fields);
     Condition condition = sqlCondition.getCondition();
     
     assertNotNull(condition);
@@ -655,9 +655,9 @@ public class SQLConditionTest extends TestCase {
     
     // Correctness of the next statement is tested in SQLFieldsTest
     //
-    SQLFields fields = new SQLFields(rowMeta, fieldsClause);
+    SQLFields fields = new SQLFields("Service", rowMeta, fieldsClause);
 
-    SQLCondition sqlCondition = new SQLCondition(conditionClause, rowMeta, fields);
+    SQLCondition sqlCondition = new SQLCondition("Service", conditionClause, rowMeta, fields);
     Condition condition = sqlCondition.getCondition();
     
     assertNotNull(condition);
@@ -705,9 +705,9 @@ public class SQLConditionTest extends TestCase {
     
     // Correctness of the next statement is tested in SQLFieldsTest
     //
-    SQLFields fields = new SQLFields(rowMeta, fieldsClause);
+    SQLFields fields = new SQLFields("Service", rowMeta, fieldsClause);
 
-    SQLCondition sqlCondition = new SQLCondition(conditionClause, rowMeta, fields);
+    SQLCondition sqlCondition = new SQLCondition("Service", conditionClause, rowMeta, fields);
     Condition condition = sqlCondition.getCondition();
     
     assertNotNull(condition);
@@ -727,9 +727,9 @@ public class SQLConditionTest extends TestCase {
     
     // Correctness of the next statement is tested in SQLFieldsTest
     //
-    SQLFields fields = new SQLFields(rowMeta, fieldsClause);
+    SQLFields fields = new SQLFields("Service", rowMeta, fieldsClause);
 
-    SQLCondition sqlCondition = new SQLCondition(conditionClause, rowMeta, fields);
+    SQLCondition sqlCondition = new SQLCondition("Service", conditionClause, rowMeta, fields);
     Condition condition = sqlCondition.getCondition();
     
     assertNotNull(condition);

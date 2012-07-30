@@ -23,6 +23,7 @@ import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.filterrows.FilterRowsMeta;
 import org.pentaho.di.trans.steps.injector.InjectorMeta;
 import org.pentaho.di.trans.steps.memgroupby.MemoryGroupByMeta;
+import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta;
 import org.pentaho.di.trans.steps.samplerows.SampleRowsMeta;
 import org.pentaho.di.trans.steps.selectvalues.SelectMetadataChange;
 import org.pentaho.di.trans.steps.selectvalues.SelectValuesMeta;
@@ -54,14 +55,32 @@ public class SqlTransMeta {
     transMeta.setName(SqlTransExecutor.calculateTransname(sql, false));
     xLocation = 50;
     
-    // Add an injector where we will pump in the rows from the service transformation.
-    //
-    StepMeta injectorStep = generateInjectorStep();
-    transMeta.addStep(injectorStep);
-    injectorStepName = injectorStep.getName();
-    StepMeta lastStep = injectorStep;
+    StepMeta firstStep;
+    if (Const.isEmpty(sql.getServiceName()) || "dual".equalsIgnoreCase(sql.getServiceName())) {
 
-    // Add a UDJC to calculate possible IIF functions...
+      // Generate 1 empty row
+      //
+      firstStep = generateEmptyRowStep();
+      
+    } else {
+    
+      // Add an injector where we will pump in the rows from the service transformation.
+      //
+      firstStep = generateInjectorStep();
+    }
+    transMeta.addStep(firstStep);
+    injectorStepName = firstStep.getName();
+    StepMeta lastStep = firstStep;
+        
+    // Add possible constants to the rows...
+    //
+    List<SQLField> constFields = sql.getSelectFields().getConstantFields();
+    if (!constFields.isEmpty()) {
+      StepMeta constStep = generateConstStep(constFields);
+      lastStep = addToTrans(constStep, transMeta, lastStep);
+    }
+
+    // Add filters, constants, calculator steps to calculate possible IIF functions...
     //
     List<SQLField> iifFields = sql.getSelectFields().getIifFunctionFields();
     for (SQLField iifField : iifFields) {
@@ -77,11 +96,11 @@ public class SqlTransMeta {
 
     // We optionally need to aggregate the data
     //
-    List<SQLField> fields = sql.getSelectFields().getFields();
-    if ((sql.getGroupFields()!=null && !sql.getGroupFields().isEmpty()) ||
-        (fields.size()==1 && fields.get(0).isCountStar()) // COUNT(*) has no Group By
-       ) {
-      StepMeta groupStep = generateGroupByStep();
+    List<SQLField> aggFields = sql.getSelectFields().getAggregateFields();
+    List<SQLField> groupFields = sql.getGroupFields().getFields();
+    
+    if (aggFields.size()>0 || groupFields.size()>0) {
+      StepMeta groupStep = generateGroupByStep(aggFields, groupFields);
       lastStep = addToTrans(groupStep, transMeta, lastStep);
     }
     
@@ -132,6 +151,19 @@ public class SqlTransMeta {
     return transMeta;
   }
   
+  private StepMeta generateEmptyRowStep() {
+    RowGeneratorMeta meta = new RowGeneratorMeta();
+    meta.allocate(0);
+    meta.setRowLimit("1");
+    
+    StepMeta stepMeta = new StepMeta("dual", meta);
+    stepMeta.setLocation(xLocation, 50);
+    xLocation+=100;
+    stepMeta.setDraw(true);
+    return stepMeta;
+  
+  }
+
   private StepMeta addToTrans(StepMeta sortStep, TransMeta transMeta, StepMeta lastStep) {
     transMeta.addStep(sortStep);
     transMeta.addTransHop(new TransHopMeta(lastStep, sortStep));
@@ -305,10 +337,30 @@ public class SqlTransMeta {
     return stepMeta;
   }
   
-  private StepMeta generateGroupByStep() throws KettleException {
-    List<SQLField> groupFields = sql.getGroupFields().getNonAggregateFields();
-    List<SQLField> aggFields = sql.getSelectFields().getAggregateFields();
-
+  private StepMeta generateConstStep(List<SQLField> fields) throws KettleException {
+    ConstantMeta meta = new ConstantMeta();
+    meta.allocate(fields.size());
+    for (int i=0;i<fields.size();i++) {
+      SQLField field = fields.get(i);
+      ValueMetaInterface valueMeta = field.getValueMeta();
+      meta.getFieldName()[i] = Const.NVL(field.getAlias(), field.getField());
+      meta.getFieldFormat()[i] = valueMeta.getConversionMask();
+      meta.getFieldType()[i] = valueMeta.getTypeDesc();
+      meta.getFieldLength()[i] = valueMeta.getLength();
+      meta.getFieldPrecision()[i] = valueMeta.getPrecision();
+      meta.getDecimal()[i] = valueMeta.getDecimalSymbol();
+      meta.getGroup()[i] = valueMeta.getGroupingSymbol();
+      meta.getValue()[i] = valueMeta.getString(field.getValueData());
+    }
+    
+    StepMeta stepMeta = new StepMeta("Constants", meta);
+    stepMeta.setLocation(xLocation, 50);
+    xLocation+=100;
+    stepMeta.setDraw(true);
+    return stepMeta;
+  }
+  
+  private StepMeta generateGroupByStep(List<SQLField> aggFields, List<SQLField> groupFields) throws KettleException {
     MemoryGroupByMeta meta = new MemoryGroupByMeta();
     meta.allocate(groupFields.size(), aggFields.size());
     
@@ -324,7 +376,7 @@ public class SqlTransMeta {
     for (int i=0;i<aggFields.size();i++) {
       SQLField field = aggFields.get(i);
       meta.getAggregateField()[i] = Const.NVL(field.getAlias(), field.getField());
-      meta.getSubjectField()[i] = field.getField();
+      meta.getSubjectField()[i] = Const.NVL(field.getAlias(), field.getField());
       int agg = 0;
       switch(field.getAggregation()) {
       case SUM: agg = MemoryGroupByMeta.TYPE_GROUP_SUM; break;

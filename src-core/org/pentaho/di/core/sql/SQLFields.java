@@ -5,10 +5,12 @@ import java.util.List;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleSQLException;
+import org.pentaho.di.core.jdbc.ThinUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class SQLFields {
+  private String tableAlias;
   private RowMetaInterface serviceFields;
   private String fieldsClause;
   private List<SQLField> fields;
@@ -16,15 +18,16 @@ public class SQLFields {
 
   private boolean distinct;
 
-  public SQLFields(RowMetaInterface serviceFields, String fieldsClause) throws KettleSQLException {
-    this(serviceFields, fieldsClause, false);
+  public SQLFields(String tableAlias, RowMetaInterface serviceFields, String fieldsClause) throws KettleSQLException {
+    this(tableAlias, serviceFields, fieldsClause, false);
   }
   
-  public SQLFields(RowMetaInterface serviceFields, String fieldsClause, boolean orderClause) throws KettleSQLException {
-    this(serviceFields, fieldsClause, orderClause, null);
+  public SQLFields(String tableAlias, RowMetaInterface serviceFields, String fieldsClause, boolean orderClause) throws KettleSQLException {
+    this(tableAlias, serviceFields, fieldsClause, orderClause, null);
   }
   
-  public SQLFields(RowMetaInterface serviceFields, String fieldsClause, boolean orderClause, SQLFields selectFields) throws KettleSQLException {
+  public SQLFields(String tableAlias, RowMetaInterface serviceFields, String fieldsClause, boolean orderClause, SQLFields selectFields) throws KettleSQLException {
+    this.tableAlias = tableAlias;
     this.serviceFields = serviceFields;
     this.fieldsClause = fieldsClause;
     this.selectFields = selectFields;
@@ -46,7 +49,7 @@ public class SQLFields {
     List<String> strings = new ArrayList<String>();
     int startIndex = 0;
     for (int index=0 ; index < fieldsClause.length();index++) {
-      index = SQL.skipChars(fieldsClause, index, '"', '\'', '(');
+      index = ThinUtil.skipChars(fieldsClause, index, '"', '\'', '(');
       if (index>=fieldsClause.length()) {
         strings.add( fieldsClause.substring(startIndex) );
         startIndex=-1;
@@ -65,15 +68,15 @@ public class SQLFields {
     //
     fields.clear();
     for (String string : strings) {
-      String fieldString = Const.trim(string);
+      String fieldString = ThinUtil.stripQuoteTableAlias(Const.trim(string), tableAlias);
       if ("*".equals(fieldString)) {
         // Add all service fields  
         //
         for (ValueMetaInterface valueMeta : serviceFields.getValueMetaList()) {
-          fields.add(new SQLField(valueMeta.getName(), serviceFields, orderClause, selectFields));
+          fields.add(new SQLField(tableAlias, valueMeta.getName(), serviceFields, orderClause, selectFields));
         }
       } else {
-        fields.add(new SQLField(fieldString, serviceFields, orderClause, selectFields));
+        fields.add(new SQLField(tableAlias, fieldString, serviceFields, orderClause, selectFields));
       }
     }
   }
@@ -187,16 +190,39 @@ public class SQLFields {
     List<SQLField> list = new ArrayList<SQLField>();
     
     for (SQLField field : fields) {
-      if (field.getIif()==null && field.getAggregation()==null) list.add(field);
+      if (field.getIif()==null && field.getAggregation()==null && field.getValueData()==null) {
+        list.add(field);
+      }
     }
     
     return list;
   }
 
+  public List<SQLField> getConstantFields() {
+    List<SQLField> list = new ArrayList<SQLField>();
+    
+    for (SQLField field : fields) {
+      if (field.getValueMeta()!=null && field.getValueData()!=null) {
+        list.add(field);
+      }
+    }
+    
+    return list;
+  }
+
+  
   /**
    * @return the distinct
    */
   public boolean isDistinct() {
     return distinct;
   }
+
+  /**
+   * @return the tableAlias
+   */
+  public String getTableAlias() {
+    return tableAlias;
+  }
+
 }

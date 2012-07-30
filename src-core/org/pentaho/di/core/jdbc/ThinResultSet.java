@@ -34,7 +34,6 @@ import org.pentaho.di.cluster.SlaveConnectionManager;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleEOFException;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.Variables;
@@ -145,7 +144,7 @@ public class ThinResultSet implements ResultSet {
     if (!stopped.get()) {
       stopped.set(true);
       try {
-        String reply = HttpUtil.execService(LogChannel.GENERAL, new Variables(), 
+        String reply = HttpUtil.execService(new Variables(), 
             connection.getHostname(), connection.getPort(), connection.getWebAppName(), 
             connection.getService()+"/stopTrans"+"/?name="+URLEncoder.encode(serviceTransName, "UTF-8")+"&id="+Const.NVL(serviceObjectId, "")+"&xml=Y",
             connection.getUsername(), connection.getPassword(), 
@@ -658,7 +657,7 @@ public class ThinResultSet implements ResultSet {
 
   @Override
   public Object getObject(int index) throws SQLException {
-    return currentRow[index];
+    return currentRow[index-1];
   }
 
   @Override

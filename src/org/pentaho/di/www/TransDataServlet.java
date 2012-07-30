@@ -159,8 +159,11 @@ public class TransDataServlet extends BaseHttpServlet implements CartePluginInte
       //
       TransMeta serviceTransMeta = executor.getGenTransMeta();
       Trans serviceTrans = executor.getServiceTrans();
-      TransConfiguration serviceTransConfiguration = new TransConfiguration(serviceTransMeta, new TransExecutionConfiguration());
-      transformationMap.addTransformation(serviceTransMeta.getName(), serviceContainerObjectId, serviceTrans, serviceTransConfiguration);
+      if (serviceTrans!=null) {
+        // not dual
+        TransConfiguration serviceTransConfiguration = new TransConfiguration(serviceTransMeta, new TransExecutionConfiguration());
+        transformationMap.addTransformation(serviceTransMeta.getName(), serviceContainerObjectId, serviceTrans, serviceTransConfiguration);
+      }
 
       // And the generated transformation...
       //

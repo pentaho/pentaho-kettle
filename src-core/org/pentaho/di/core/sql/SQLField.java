@@ -3,12 +3,15 @@ package org.pentaho.di.core.sql;
 import java.util.List;
 
 import org.pentaho.di.core.exception.KettleSQLException;
+import org.pentaho.di.core.jdbc.ThinUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.pms.util.Const;
 
 public class SQLField {
+  private String             tableAlias;
   private String             field;
   private String             alias;
   private SQLAggregation     aggregation;
@@ -19,6 +22,7 @@ public class SQLField {
   private boolean            ascending;
   private String             expression;
   private SQLFields          selectFields;
+  private Object             valueData;
   
   // IIF function hack
   //
@@ -30,37 +34,39 @@ public class SQLField {
    * @param aggregation
    * @param valueMeta
    */
-  public SQLField(String field, String alias, SQLAggregation aggregation, ValueMetaInterface valueMeta) {
+  public SQLField(String tableAlias, String field, String alias, SQLAggregation aggregation, ValueMetaInterface valueMeta) {
+    this.tableAlias = tableAlias;
     this.field = field;
     this.alias = alias;
     this.aggregation = aggregation;
     this.valueMeta = valueMeta;
   }
 
-  public SQLField(String fieldClause, RowMetaInterface serviceFields) throws KettleSQLException {
-    this(fieldClause, serviceFields, false);
+  public SQLField(String tableAlias, String fieldClause, RowMetaInterface serviceFields) throws KettleSQLException {
+    this(tableAlias, fieldClause, serviceFields, false);
   }
 
-  public SQLField(String fieldClause, RowMetaInterface serviceFields, boolean orderField) throws KettleSQLException {
-    this(fieldClause, serviceFields, orderField, null);
+  public SQLField(String tableAlias, String fieldClause, RowMetaInterface serviceFields, boolean orderField) throws KettleSQLException {
+    this(tableAlias, fieldClause, serviceFields, orderField, null);
   }
   
-  public SQLField(String fieldClause, RowMetaInterface serviceFields, boolean orderField, SQLFields selectFields) throws KettleSQLException {
+  public SQLField(String tableAlias, String fieldClause, RowMetaInterface serviceFields, boolean orderField, SQLFields selectFields) throws KettleSQLException {
+    this.tableAlias = tableAlias;
     this.orderField = orderField;
     this.selectFields = selectFields;
     
     // The field clause is in the form: <field or aggregate> [as] [alias]
     // Fields can be quoted with "
     //
-    List<String> strings = SQLUtil.splitClause(fieldClause, ' ', '"', '(');
+    List<String> strings = ThinUtil.splitClause(fieldClause, ' ', '"', '(');
     
     if (strings.size()==0) {
       throw new KettleSQLException("Unable to find a valid field");
     }
-
+    
     if (strings.size()>=1) {
       String value = strings.get(0);
-      field = SQL.stripQuotes(Const.trim(value), '"');
+      field = ThinUtil.stripQuoteTableAlias(value, tableAlias);
       expression = field;
 
     if (orderField) {
@@ -96,7 +102,8 @@ public class SQLField {
             if (closeIndex<0) {
               throw new KettleSQLException("No closing bracket found after keyword ["+aggregation.getKeyWord()+"]");
             }
-            field = SQL.stripQuotes(Const.trim( value.substring(openIndex+1, closeIndex)) , '"');
+            field = ThinUtil.stripQuotes(Const.trim( value.substring(openIndex+1, closeIndex)) , '"');
+            field = ThinUtil.stripQuoteTableAlias(field, tableAlias);
             break;
           }
         }
@@ -107,7 +114,6 @@ public class SQLField {
           //
           if ("*".equals(field)) {
             countStar=true;
-            field=expression; // count(*) in this case
           }
           
           // COUNT(DISTINCT foo)
@@ -115,20 +121,24 @@ public class SQLField {
           if (field.toUpperCase().startsWith("DISTINCT ")) {
             int lastSpaceIndex = field.lastIndexOf(' ');
             field = field.substring(lastSpaceIndex+1);
+            field = ThinUtil.stripQuoteTableAlias(field, tableAlias);
+            
             countDistinct=true;
           }
+          
+          alias = Const.NVL(alias, expression);
           
         }
 
         if (strings.size()==2) {
-          alias = SQL.stripQuotes(Const.trim(strings.get(1)), '"'); 
+          alias = ThinUtil.stripQuotes(Const.trim(strings.get(1)), '"'); 
         }
         // Uses the "AS" word in between
         if (strings.size()==3) { 
           if (!"as".equalsIgnoreCase(strings.get(1))) {
             throw new KettleSQLException("AS keyword expected between the field and the alias in field clause: ["+fieldClause+"]");
           }
-          alias = SQL.stripQuotes(Const.trim(strings.get(2)), '"'); 
+          alias = ThinUtil.stripQuotes(Const.trim(strings.get(2)), '"'); 
         }
       }
     }
@@ -165,24 +175,33 @@ public class SQLField {
       //
       if (field.startsWith("IIF(")) {
         String arguments = field.substring(4, field.length()-1); // skip the closing bracket too
-        List<String> argsList = SQLUtil.splitClause(arguments, ',', '\'', '(');
+        List<String> argsList = ThinUtil.splitClause(arguments, ',', '\'', '(');
         if (argsList.size()!=3) {
           throw new KettleSQLException("The IIF function requires exactly 3 arguments");
         }
-        iif = new IifFunction(Const.trim(argsList.get(0)), Const.trim(argsList.get(1)), Const.trim(argsList.get(2)), serviceFields);
+        iif = new IifFunction(tableAlias, Const.trim(argsList.get(0)), Const.trim(argsList.get(1)), Const.trim(argsList.get(2)), serviceFields);
         
       } else {
         if (valueMeta==null) {
           valueMeta = serviceFields.searchValueMeta(field);
         }
         
-        if (valueMeta==null) {       
-          throw new KettleSQLException("The field with name ["+field+"] could not be found in the service output");
+        if (valueMeta==null) {
+          
+          // OK, field is not a service field nor an aggregate, not IIF
+          // See if it's a constant value...
+          //
+          ValueMetaAndData vmad = ThinUtil.extractConstant(field);
+          if (vmad!=null) {
+            valueMeta = vmad.getValueMeta();
+            valueData = vmad.getValueData();
+          } else {
+            throw new KettleSQLException("The field with name ["+field+"] could not be found in the service output");
+          }
         }
       }
     }
-  }
-  
+  }  
   
   /**
    * @return the name
@@ -347,6 +366,41 @@ public class SQLField {
    */
   public IifFunction getIif() {
     return iif;
+  }
+
+  /**
+   * @return the valueData
+   */
+  public Object getValueData() {
+    return valueData;
+  }
+
+  /**
+   * @param valueData the valueData to set
+   */
+  public void setValueData(Object valueData) {
+    this.valueData = valueData;
+  }
+
+  /**
+   * @param iif the iif to set
+   */
+  public void setIif(IifFunction iif) {
+    this.iif = iif;
+  }
+
+  /**
+   * @return the tableAlias
+   */
+  public String getTableAlias() {
+    return tableAlias;
+  }
+
+  /**
+   * @param tableAlias the tableAlias to set
+   */
+  public void setTableAlias(String tableAlias) {
+    this.tableAlias = tableAlias;
   }
 
 }

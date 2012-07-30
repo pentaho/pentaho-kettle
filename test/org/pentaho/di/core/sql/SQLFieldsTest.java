@@ -15,7 +15,7 @@ public class SQLFieldsTest extends TestCase {
     
     String fieldsClause= "A, B";
     
-    SQLFields fromFields = new SQLFields(rowMeta, fieldsClause);
+    SQLFields fromFields = new SQLFields("Service", rowMeta, fieldsClause);
     assertFalse(fromFields.isDistinct());
     
     assertEquals(2, fromFields.getFields().size());
@@ -38,7 +38,7 @@ public class SQLFieldsTest extends TestCase {
     
     String fieldsClause= "A as foo, B";
     
-    SQLFields fromFields = new SQLFields(rowMeta, fieldsClause);
+    SQLFields fromFields = new SQLFields("Service", rowMeta, fieldsClause);
     assertFalse(fromFields.isDistinct());
     
     assertEquals(2, fromFields.getFields().size());
@@ -61,7 +61,7 @@ public class SQLFieldsTest extends TestCase {
     
     String fieldsClause= "A, sum( B ) as \"Total sales\"";
     
-    SQLFields fromFields = new SQLFields(rowMeta, fieldsClause);
+    SQLFields fromFields = new SQLFields("Service", rowMeta, fieldsClause);
     assertFalse(fromFields.isDistinct());
 
     assertEquals(2, fromFields.getFields().size());
@@ -84,7 +84,7 @@ public class SQLFieldsTest extends TestCase {
     
     String fieldsClause= "DISTINCT A as foo, B as bar";
     
-    SQLFields fromFields = new SQLFields(rowMeta, fieldsClause);
+    SQLFields fromFields = new SQLFields("Service", rowMeta, fieldsClause);
     assertTrue(fromFields.isDistinct());
     
     assertEquals(2, fromFields.getFields().size());
@@ -107,7 +107,30 @@ public class SQLFieldsTest extends TestCase {
     
     String fieldsClause= "*";
     
-    SQLFields fromFields = new SQLFields(rowMeta, fieldsClause);
+    SQLFields fromFields = new SQLFields("Service", rowMeta, fieldsClause);
+    assertFalse(fromFields.isDistinct());
+    
+    assertEquals(2, fromFields.getFields().size());
+    
+    SQLField field = fromFields.getFields().get(0);
+    assertEquals("A", field.getName());
+    assertNull(field.getAlias());
+    assertNotNull("The service data type was not discovered", field.getValueMeta());
+    assertEquals("A", field.getValueMeta().getName().toUpperCase());
+
+    field = fromFields.getFields().get(1);
+    assertEquals("B", field.getName());
+    assertNull(field.getAlias());
+    assertNotNull("The service data type was not discovered", field.getValueMeta());
+    assertEquals("B", field.getValueMeta().getName().toUpperCase());
+  }
+  
+  public void testSqlFromFields05Alias() throws KettleSQLException {
+    RowMetaInterface rowMeta = generateTestRowMeta();
+    
+    String fieldsClause= "Service.*";
+    
+    SQLFields fromFields = new SQLFields("Service", rowMeta, fieldsClause);
     assertFalse(fromFields.isDistinct());
     
     assertEquals(2, fromFields.getFields().size());
@@ -130,7 +153,7 @@ public class SQLFieldsTest extends TestCase {
     
     String fieldsClause= "*, *";
     
-    SQLFields fromFields = new SQLFields(rowMeta, fieldsClause);
+    SQLFields fromFields = new SQLFields("Service", rowMeta, fieldsClause);
     assertFalse(fromFields.isDistinct());
     
     assertEquals(4, fromFields.getFields().size());

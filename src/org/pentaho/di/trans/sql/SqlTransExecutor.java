@@ -11,6 +11,7 @@ import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.jdbc.TransDataService;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.sql.SQL;
 import org.pentaho.di.repository.Repository;
@@ -84,21 +85,29 @@ public class SqlTransExecutor {
     sql = new SQL(sqlQuery);
     serviceName = sql.getServiceName();
     
-    service = findService(serviceName);
-    if (service==null) {
-      throw new KettleException("Unable to find service with name '"+service+"' and SQL: "+sqlQuery);
-    }
+    // Dual
+    if (Const.isEmpty(serviceName) || "dual".equalsIgnoreCase(serviceName)) {
+      service = new TransDataService("dual", null, null, null, null);
+      service.setDual(true);
+      serviceFields = new RowMeta(); // nothing to report from dual
+    } else {
+      service = findService(serviceName);
+      
+      if (service==null) {
+        throw new KettleException("Unable to find service with name '"+service+"' and SQL: "+sqlQuery);
+      }
 
-    // TODO: allow for repository transformation loading...
-    //
-    serviceTransMeta = loadTransMeta(repository);
-    serviceTransMeta.setName(calculateTransname(sql, true));
-    serviceTransMeta.activateParameters();
-    
-    // The dummy step called "Output" provides the output fields...
-    //
-    serviceStepName = service.getServiceStepName();
-    serviceFields = serviceTransMeta.getStepFields(serviceStepName);
+      // TODO: allow for repository transformation loading...
+      //
+      serviceTransMeta = loadTransMeta(repository);
+      serviceTransMeta.setName(calculateTransname(sql, true));
+      serviceTransMeta.activateParameters();
+      
+      // The dummy step called "Output" provides the output fields...
+      //
+      serviceStepName = service.getServiceStepName();
+      serviceFields = serviceTransMeta.getStepFields(serviceStepName);
+    }
   }
 
   private TransDataService findService(String name) {
@@ -128,22 +137,25 @@ public class SqlTransExecutor {
     //
     sql.parse(serviceFields);
 
-    // Parameters: see which ones are defined in the SQL
-    //
-    Map<String, String> conditionParameters = new HashMap<String, String>();
-    if (sql.getWhereCondition()!=null) {
-      extractConditionParameters(sql.getWhereCondition().getCondition(), conditionParameters);
+    if (!service.isDual()) {
+      // Parameters: see which ones are defined in the SQL
+      //
+      Map<String, String> conditionParameters = new HashMap<String, String>();
+      if (sql.getWhereCondition()!=null) {
+        extractConditionParameters(sql.getWhereCondition().getCondition(), conditionParameters);
+      }
+      parameters.putAll(conditionParameters); // overwrite the defaults for this query
+      
+      for (String name : conditionParameters.keySet()) {
+        serviceTransMeta.setParameterValue(name, conditionParameters.get(name));
+      }
+      serviceTransMeta.activateParameters();
+      
+      // Prepare the execution of this service transformation
+      //
+      serviceTrans = new Trans(serviceTransMeta);
+      serviceTrans.prepareExecution(null);
     }
-    parameters.putAll(conditionParameters); // overwrite the defaults for this query
-    for (String name : conditionParameters.keySet()) {
-      serviceTransMeta.setParameterValue(name, conditionParameters.get(name));
-    }
-    serviceTransMeta.activateParameters();
-    
-    // Prepare the execution of this service transformation
-    //
-    serviceTrans = new Trans(serviceTransMeta);
-    serviceTrans.prepareExecution(null);
     
     // Generate a transformation
     //
@@ -155,37 +167,39 @@ public class SqlTransExecutor {
     genTrans = new Trans(genTransMeta);
     genTrans.prepareExecution(null);
 
-    // This is where we will inject the rows from the service transformation step
-    //
-    final RowProducer rowProducer = genTrans.addRowProducer(sqlTransMeta.getInjectorStepName(), 0);
-
-    // Now connect the 2 transformations with listeners and injector
-    //
-    StepInterface serviceStep = serviceTrans.findRunThread(serviceStepName);
-    serviceStep.addRowListener(new RowAdapter() { @Override
-    public void rowWrittenEvent(RowMetaInterface rowMeta, Object[] row) throws KettleStepException {
-      // Simply pass along the row to the other transformation (to the Injector step)
+    if (!service.isDual()) {
+      // This is where we will inject the rows from the service transformation step
       //
-      LogChannelInterface log = serviceTrans.getLogChannel();
-      try {
-        if (log.isRowLevel()) {
-          log.logRowlevel("Passing along row: "+rowMeta.getString(row));
+      final RowProducer rowProducer = genTrans.addRowProducer(sqlTransMeta.getInjectorStepName(), 0);
+  
+      // Now connect the 2 transformations with listeners and injector
+      //
+      StepInterface serviceStep = serviceTrans.findRunThread(serviceStepName);
+      serviceStep.addRowListener(new RowAdapter() { @Override
+      public void rowWrittenEvent(RowMetaInterface rowMeta, Object[] row) throws KettleStepException {
+        // Simply pass along the row to the other transformation (to the Injector step)
+        //
+        LogChannelInterface log = serviceTrans.getLogChannel();
+        try {
+          if (log.isRowLevel()) {
+            log.logRowlevel("Passing along row: "+rowMeta.getString(row));
+          }
+        } catch (KettleValueException e) {
         }
-      } catch (KettleValueException e) {
-      }
-
-      rowProducer.putRow(rowMeta, row);
-    } });
+  
+        rowProducer.putRow(rowMeta, row);
+      } });
     
-    // Let the other transformation know when there are no more rows
-    //
-    serviceTrans.addTransListener(new TransAdapter() {
-      @Override
-      public void transFinished(Trans trans) throws KettleException {
-        rowProducer.finished();
-      }
-    });
-    
+      // Let the other transformation know when there are no more rows
+      //
+      serviceTrans.addTransListener(new TransAdapter() {
+        @Override
+        public void transFinished(Trans trans) throws KettleException {
+          rowProducer.finished();
+        }
+      });
+    }
+      
     // Give back the eventual result rows...
     //
     StepInterface resultStep = genTrans.findRunThread(sqlTransMeta.getResultStepName());
@@ -198,7 +212,9 @@ public class SqlTransExecutor {
     // Start both transformations
     //
     genTrans.startThreads();
-    serviceTrans.startThreads();   
+    if (!service.isDual()) {
+      serviceTrans.startThreads();   
+    }
   }
   
   private TransMeta loadTransMeta(Repository repository) throws KettleException {
@@ -222,7 +238,9 @@ public class SqlTransExecutor {
   }
 
   public void waitUntilFinished() {
-    serviceTrans.waitUntilFinished();
+    if (!service.isDual()) {
+      serviceTrans.waitUntilFinished();
+    }
     genTrans.waitUntilFinished();
   }
 
