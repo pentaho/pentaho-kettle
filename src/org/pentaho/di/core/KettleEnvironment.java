@@ -35,6 +35,7 @@ import org.pentaho.di.core.plugins.CartePluginType;
 import org.pentaho.di.core.plugins.DatabasePluginType;
 import org.pentaho.di.core.plugins.ImportRulePluginType;
 import org.pentaho.di.core.plugins.JobEntryPluginType;
+import org.pentaho.di.core.plugins.KettleLifecyclePluginType;
 import org.pentaho.di.core.plugins.LifecyclePluginType;
 import org.pentaho.di.core.plugins.PartitionerPluginType;
 import org.pentaho.di.core.plugins.PluginRegistry;
@@ -86,6 +87,7 @@ public class KettleEnvironment {
 			PluginRegistry.addPluginType(RepositoryPluginType.getInstance());
 			PluginRegistry.addPluginType(DatabasePluginType.getInstance());
 			PluginRegistry.addPluginType(LifecyclePluginType.getInstance());
+			PluginRegistry.addPluginType(KettleLifecyclePluginType.getInstance());
       PluginRegistry.addPluginType(ImportRulePluginType.getInstance());
       PluginRegistry.addPluginType(CartePluginType.getInstance());
 			PluginRegistry.init();

@@ -10,12 +10,11 @@ import java.lang.reflect.Field;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.Test;
-import org.pentaho.di.core.annotations.LifecyclePlugin;
+import org.pentaho.di.core.annotations.KettleLifecyclePlugin;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.lifecycle.LifeEventHandler;
+import org.pentaho.di.core.lifecycle.KettleLifecycleListener;
 import org.pentaho.di.core.lifecycle.LifecycleException;
-import org.pentaho.di.core.lifecycle.LifecycleListener;
-import org.pentaho.di.core.plugins.LifecyclePluginType;
+import org.pentaho.di.core.plugins.KettleLifecyclePluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 
@@ -28,8 +27,8 @@ public class KettleEnvironmentTest {
   private static final AtomicBoolean environmentInitCalled = new AtomicBoolean(false);
   private static final String pluginId = "MockLifecycleListener";
 
-  @LifecyclePlugin(id = pluginId)
-  public static class MockLifecycleListener implements LifecycleListener {
+  @KettleLifecyclePlugin(id = pluginId)
+  public static class MockLifecycleListener implements KettleLifecycleListener {
     @Override
     public void onEnvironmentInit() throws LifecycleException {
       environmentInitCalled.set(true);
@@ -38,17 +37,9 @@ public class KettleEnvironmentTest {
     @Override
     public void onEnvironmentShutdown() {
     }
-
-    @Override
-    public void onStart(LifeEventHandler handler) throws LifecycleException {
-    }
-
-    @Override
-    public void onExit(LifeEventHandler handler) throws LifecycleException {
-    }
   }
 
-  @LifecyclePlugin(id = pluginId)
+  @KettleLifecyclePlugin(id = pluginId)
   public static class FailingMockLifecycleListener extends MockLifecycleListener {
     @Override
     public void onEnvironmentInit() throws LifecycleException {
@@ -56,7 +47,7 @@ public class KettleEnvironmentTest {
     }
   }
 
-  @LifecyclePlugin(id = pluginId)
+  @KettleLifecyclePlugin(id = pluginId)
   public static class SevereFailingMockLifecycleListener extends MockLifecycleListener {
     @Override
     public void onEnvironmentInit() throws LifecycleException {
@@ -64,7 +55,7 @@ public class KettleEnvironmentTest {
     }
   }
   
-  @LifecyclePlugin(id = pluginId)
+  @KettleLifecyclePlugin(id = pluginId)
   public static class ThrowableFailingMockLifecycleListener extends MockLifecycleListener {
     @Override
     public void onEnvironmentInit() throws LifecycleException {
@@ -90,8 +81,8 @@ public class KettleEnvironmentTest {
     System.setProperty(Const.KETTLE_PLUGIN_CLASSES, MockLifecycleListener.class.getName());
     KettleEnvironment.init();
 
-    PluginInterface pi = PluginRegistry.getInstance().findPluginWithId(LifecyclePluginType.class, pluginId);
-    MockLifecycleListener l = (MockLifecycleListener) PluginRegistry.getInstance().loadClass(pi, LifecycleListener.class);
+    PluginInterface pi = PluginRegistry.getInstance().findPluginWithId(KettleLifecyclePluginType.class, pluginId);
+    MockLifecycleListener l = (MockLifecycleListener) PluginRegistry.getInstance().loadClass(pi, KettleLifecycleListener.class);
     assertNotNull("Test plugin not registered properly", l);
 
     assertTrue(environmentInitCalled.get());
@@ -108,8 +99,8 @@ public class KettleEnvironmentTest {
     System.setProperty(Const.KETTLE_PLUGIN_CLASSES, FailingMockLifecycleListener.class.getName());
     KettleEnvironment.init();
     
-    PluginInterface pi = PluginRegistry.getInstance().findPluginWithId(LifecyclePluginType.class, pluginId);
-    MockLifecycleListener l = (MockLifecycleListener) PluginRegistry.getInstance().loadClass(pi, LifecycleListener.class);
+    PluginInterface pi = PluginRegistry.getInstance().findPluginWithId(KettleLifecyclePluginType.class, pluginId);
+    MockLifecycleListener l = (MockLifecycleListener) PluginRegistry.getInstance().loadClass(pi, KettleLifecycleListener.class);
     assertNotNull("Test plugin not registered properly", l);
 
     assertTrue(environmentInitCalled.get());
