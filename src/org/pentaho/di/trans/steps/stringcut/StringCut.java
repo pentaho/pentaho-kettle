@@ -97,13 +97,17 @@ public class StringCut extends BaseStep implements StepInterface {
 		System.arraycopy(row, 0, RowData, 0, rowMeta.size());
 		int length = meta.getFieldInStream().length;
 
+		int j=0; // Index into "new fields" area, past the first {data.inputFieldsNr} records
 		for (int i = 0; i < length; i++) {
 				String valueIn=getInputRowMeta().getString(row, data.inStreamNrs[i]);
-				String value=CutString(valueIn, data.cutFrom[i], data.cutTo[i]);
-				if(Const.isEmpty(data.outStreamNrs[i])) 
+				String value=CutString(valueIn, data.cutFrom[i], data.cutTo[i]);			
+				if(Const.isEmpty(data.outStreamNrs[i])) {
 					RowData[data.inStreamNrs[i]]=value;
-				else
-					RowData[data.inputFieldsNr+i]=value;	
+				}
+				else {
+					RowData[data.inputFieldsNr + j]=value;
+					j++;
+				}
 		}
 		return RowData;
 	}
