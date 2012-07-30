@@ -19,6 +19,7 @@ import java.sql.SQLException;
 import java.sql.SQLXML;
 import java.sql.Time;
 import java.sql.Timestamp;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -27,8 +28,6 @@ import org.pentaho.di.core.exception.KettleSQLException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.sql.SQL;
-
-import com.ibm.icu.text.SimpleDateFormat;
 
 public class ThinPreparedStatement extends ThinStatement implements PreparedStatement {
   
