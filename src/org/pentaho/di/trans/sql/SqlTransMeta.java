@@ -375,8 +375,9 @@ public class SqlTransMeta {
     //
     for (int i=0;i<aggFields.size();i++) {
       SQLField field = aggFields.get(i);
+      ValueMetaInterface valueMeta = field.getValueMeta();
       meta.getAggregateField()[i] = Const.NVL(field.getAlias(), field.getField());
-      meta.getSubjectField()[i] = Const.NVL(field.getAlias(), field.getField());
+      meta.getSubjectField()[i] = valueMeta.getName();
       int agg = 0;
       switch(field.getAggregation()) {
       case SUM: agg = MemoryGroupByMeta.TYPE_GROUP_SUM; break;
