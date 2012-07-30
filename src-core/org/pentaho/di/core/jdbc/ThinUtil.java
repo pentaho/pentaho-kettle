@@ -127,7 +127,6 @@ public class ThinUtil {
           ValueMetaAndData value = new ValueMetaAndData();
           ValueMetaInterface valueMeta = new ValueMeta("Constant", ValueMetaInterface.TYPE_INTEGER);
           valueMeta.setConversionMask("0");
-          valueMeta.setConversionMask("0.#");
           valueMeta.setGroupingSymbol(null);
           value.setValueMeta(valueMeta);
           value.setValueData(Long.valueOf(l));

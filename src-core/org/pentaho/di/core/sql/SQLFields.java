@@ -79,6 +79,8 @@ public class SQLFields {
         fields.add(new SQLField(tableAlias, fieldString, serviceFields, orderClause, selectFields));
       }
     }
+    
+    indexFields();
   }
   
   public List<SQLField> getFields() {
@@ -164,6 +166,13 @@ public class SQLFields {
    */
   public void setFields(List<SQLField> fields) {
     this.fields = fields;
+    indexFields();
+  }
+
+  private void indexFields() {
+    for (int i=0;i<fields.size();i++) {
+      fields.get(i).setFieldIndex(i);
+    }
   }
 
   /**

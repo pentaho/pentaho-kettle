@@ -24,9 +24,11 @@ public class SQLField {
   private SQLFields          selectFields;
   private Object             valueData;
   
-  // IIF function hack
-  //
+  /** IIF function hack */
   private IifFunction iif;
+  
+  /** To easily figure out to which index in the select this field belongs */
+  private int fieldIndex;
 
   /**
    * @param field
@@ -401,6 +403,20 @@ public class SQLField {
    */
   public void setTableAlias(String tableAlias) {
     this.tableAlias = tableAlias;
+  }
+
+  /**
+   * @return the fieldIndex
+   */
+  public int getFieldIndex() {
+    return fieldIndex;
+  }
+
+  /**
+   * @param fieldIndex the fieldIndex to set
+   */
+  public void setFieldIndex(int fieldIndex) {
+    this.fieldIndex = fieldIndex;
   }
 
 }
