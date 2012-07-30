@@ -447,6 +447,10 @@ public class PluginRegistry {
 			
 			LogChannel.GENERAL.logDetailed("Registered "+registry.getPlugins(pluginType.getClass()).size()+" plugins of type '"+pluginType.getName()+"' in "+(System.currentTimeMillis()-startScan)+"ms.");
 		}
+		
+    // Clear the jar file cache so that we don't waste memory...
+    //
+    JarFileCache.getInstance().clear();
 	}
 
 	/**
