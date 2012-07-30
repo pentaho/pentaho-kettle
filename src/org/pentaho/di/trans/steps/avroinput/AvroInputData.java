@@ -1139,11 +1139,8 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
       outputRowData = RowDataUtil.allocateRowData(m_outputRowMeta.size());
     } else {
       // make sure we allocate enough space for the new fields
-      Object[] temp = outputRowData;
-      outputRowData = RowDataUtil.allocateRowData(m_outputRowMeta.size());
-      for (int i = 0; i < temp.length; i++) {
-        outputRowData[i] = temp[i];
-      }
+      outputRowData = RowDataUtil.resizeArray(outputRowData,
+          m_outputRowMeta.size());
     }
 
     // get the normal (non expansion-related fields)
@@ -1238,11 +1235,10 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
           // incoming avro field null? - all decoded fields are null
           if (fieldMeta.isNull(incoming[m_fieldToDecodeIndex])) {
             Object[][] result = new Object[1][];
-            result[0] = RowDataUtil.allocateRowData(m_outputRowMeta.size());
-            // just copy all incoming field values over
-            for (int i = 0; i < incoming.length; i++) {
-              result[0][i] = incoming[i];
-            }
+            // just resize the existing incoming array (if necessary) and return
+            // the incoming values
+            result[0] = RowDataUtil.resizeArray(incoming,
+                m_outputRowMeta.size());
             return result;
           }
 
