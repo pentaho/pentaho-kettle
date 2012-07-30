@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.RowIdLifetime;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.pentaho.di.cluster.HttpUtil;
@@ -22,6 +23,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 public class ThinDatabaseMetaData implements DatabaseMetaData {
+  
+  public static final String SCHEMA_NAME_KETTLE = "Kettle";
 
   private ThinConnection connection;
   private String serviceUrl;
@@ -114,6 +117,8 @@ public class ThinDatabaseMetaData implements DatabaseMetaData {
   @Override
   public ResultSet getColumns(String catalog, String schemaPattern, String tableNamePattern, String columnNamePattern) throws SQLException {
     
+    System.out.println("getColumns("+catalog+", "+schemaPattern+", "+tableNamePattern+", "+columnNamePattern+")");
+    
     try {
 
       // Get the service information from the remote server...
@@ -157,8 +162,8 @@ public class ThinDatabaseMetaData implements DatabaseMetaData {
               row[index++] = null; // TABLE_SCHEM - TYPE_STRING
               row[index++] = service.getName(); // TABLE_NAME - TYPE_STRING
               row[index++] = valueMeta.getName(); // COLUMN_NAME - TYPE_STRING
-              row[index++] = Long.valueOf(getSqlType(valueMeta)); // DATA_TYPE - TYPE_INTEGER
-              row[index++] = getSqlTypeDesc(valueMeta); // TYPE_NAME - TYPE_STRING
+              row[index++] = Long.valueOf(ThinUtil.getSqlType(valueMeta)); // DATA_TYPE - TYPE_INTEGER
+              row[index++] = ThinUtil.getSqlTypeDesc(valueMeta); // TYPE_NAME - TYPE_STRING
               row[index++] = Long.valueOf(valueMeta.getLength()); // COLUMN_SIZE - TYPE_INTEGER
               row[index++] = null; // BUFFER_LENGTH
               row[index++] = Long.valueOf(valueMeta.getPrecision()); // DECIMAL_DIGITS
@@ -187,34 +192,6 @@ public class ThinDatabaseMetaData implements DatabaseMetaData {
       LogChannel.GENERAL.logError("Error getting services list from server", e);
       throw new SQLException(e);
     }   
-  }
-
-  private int getSqlType(ValueMetaInterface valueMeta) {
-    switch(valueMeta.getType()) {
-    case ValueMetaInterface.TYPE_STRING: return java.sql.Types.VARCHAR;
-    case ValueMetaInterface.TYPE_DATE: return java.sql.Types.TIMESTAMP;
-    case ValueMetaInterface.TYPE_INTEGER: return java.sql.Types.BIGINT; // TODO: for metadata we don't want a long?
-    case ValueMetaInterface.TYPE_BIGNUMBER: return java.sql.Types.DECIMAL;
-    case ValueMetaInterface.TYPE_NUMBER: return java.sql.Types.DOUBLE;
-    case ValueMetaInterface.TYPE_BOOLEAN: return java.sql.Types.BOOLEAN;
-    case ValueMetaInterface.TYPE_TIMESTAMP: return java.sql.Types.TIMESTAMP;
-    case ValueMetaInterface.TYPE_BINARY: return java.sql.Types.BLOB;
-    }
-    return java.sql.Types.VARCHAR;
-  }
-
-  private String getSqlTypeDesc(ValueMetaInterface valueMeta) {
-    switch(valueMeta.getType()) {
-    case ValueMetaInterface.TYPE_STRING: return "VARCHAR";
-    case ValueMetaInterface.TYPE_DATE: return "TIMESTAMP";
-    case ValueMetaInterface.TYPE_INTEGER: return "BIGINT"; // TODO: for metadata we don't want a long?
-    case ValueMetaInterface.TYPE_NUMBER: return "DOUBLE";
-    case ValueMetaInterface.TYPE_BIGNUMBER: return "DECIMAL";
-    case ValueMetaInterface.TYPE_BOOLEAN: return "BOOLEAN";
-    case ValueMetaInterface.TYPE_TIMESTAMP: return "TIMESTAMP";
-    case ValueMetaInterface.TYPE_BINARY: return "BLOB";
-    }
-    return null;
   }
 
   @Override
@@ -468,16 +445,6 @@ public class ThinDatabaseMetaData implements DatabaseMetaData {
   }
 
   @Override
-  public ResultSet getSchemas() throws SQLException {
-    return null;
-  }
-
-  @Override
-  public ResultSet getSchemas(String arg0, String arg1) throws SQLException {
-    return null;
-  }
-
-  @Override
   public String getSearchStringEscape() throws SQLException {
     return null;
   }
@@ -541,9 +508,46 @@ public class ThinDatabaseMetaData implements DatabaseMetaData {
 
   }
   
+  @Override
+  public ResultSet getSchemas() throws SQLException {
+    return getSchemas(null, null);
+  }
 
   @Override
-  public ResultSet getTables(String arg0, String arg1, String arg2, String[] arg3) throws SQLException {
+  public ResultSet getSchemas(String catalog, String schemaPattern) throws SQLException {
+    RowMetaInterface rowMeta = new RowMeta();
+    rowMeta.addValueMeta(new ValueMeta("TABLE_NAME", ValueMetaInterface.TYPE_STRING));
+    rowMeta.addValueMeta(new ValueMeta("TABLE_CAT", ValueMetaInterface.TYPE_STRING));
+    
+    Object[] row = RowDataUtil.allocateRowData(rowMeta.size());
+    int index=0;
+    row[index++] = SCHEMA_NAME_KETTLE; // TABLE_SCHEM
+    row[index++] = null; // TABLE_CAT
+    
+    List<Object[]> rows = new ArrayList<Object[]>();
+
+    if (Const.isEmpty(schemaPattern) || SCHEMA_NAME_KETTLE.equalsIgnoreCase(schemaPattern)) { 
+      rows.add(row);
+    }
+    
+    return new RowsResultSet(rowMeta, rows);
+  }
+  
+
+  @Override
+  public ResultSet getTables(String catalog, String schemaPattern, String tableNamePattern, String[] types) throws SQLException {
+    
+    if (!Const.isEmpty(types) && Const.indexOfString("TABLE", types)<0) {
+      System.out.println("-------------> Requesting table types: "+Arrays.toString(types));
+      System.out.println("-------------> We only serve up table information, it's all we have!");
+      return new RowsResultSet(new RowMeta(), new ArrayList<Object[]>());
+    }
+    
+    if (Const.isEmpty(tableNamePattern)) {
+      System.out.println("-------------> Listing all tables!");
+    } else {
+      System.out.println("-------------> Looking for table "+tableNamePattern);
+    }
     
     try {
 
@@ -552,9 +556,9 @@ public class ThinDatabaseMetaData implements DatabaseMetaData {
       List<ThinServiceInformation> services = getServiceInformation();
       
       RowMetaInterface rowMeta = new RowMeta();
-      rowMeta.addValueMeta(new ValueMeta("TABLE_NAME", ValueMetaInterface.TYPE_STRING));
       rowMeta.addValueMeta(new ValueMeta("TABLE_CAT", ValueMetaInterface.TYPE_STRING));
       rowMeta.addValueMeta(new ValueMeta("TABLE_SCHEM", ValueMetaInterface.TYPE_STRING));
+      rowMeta.addValueMeta(new ValueMeta("TABLE_NAME", ValueMetaInterface.TYPE_STRING));
       rowMeta.addValueMeta(new ValueMeta("TABLE_TYPE", ValueMetaInterface.TYPE_STRING));
       rowMeta.addValueMeta(new ValueMeta("REMARKS", ValueMetaInterface.TYPE_STRING));
       rowMeta.addValueMeta(new ValueMeta("TYPE_CAT", ValueMetaInterface.TYPE_STRING));
@@ -565,10 +569,24 @@ public class ThinDatabaseMetaData implements DatabaseMetaData {
 
       List<Object[]> rows = new ArrayList<Object[]>();
       for (ThinServiceInformation service : services) {
-        Object[] row = RowDataUtil.allocateRowData(rowMeta.size());
-        row[0] = service.getName();
-        rows.add(row);
+        if (Const.isEmpty(tableNamePattern) || service.getName().equalsIgnoreCase(tableNamePattern)) {
+          Object[] row = RowDataUtil.allocateRowData(rowMeta.size());
+          int index=0;
+          row[index++] = null; // TABLE_CAT
+          row[index++] = SCHEMA_NAME_KETTLE; // TABLE_SCHEM
+          row[index++] = service.getName(); // TABLE_NAME
+          row[index++] = "TABLE"; // TABLE_TYPE
+          row[index++] = null; // REMARKS
+          row[index++] = null; // TYPE_CAT
+          row[index++] = null; // TYPE_SCHEM
+          row[index++] = null; // TYPE_NAME
+          row[index++] = null; // SELF_REFERENCING_COL_NAME
+          row[index++] = null; // REF_GENERATION
+          rows.add(row);
+        }
       }
+
+      System.out.println("-------------> Found "+rows.size()+" tables for the rows resultset.");
 
       return new RowsResultSet(rowMeta, rows);
     } catch(Exception e) {

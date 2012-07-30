@@ -133,8 +133,7 @@ public class ThinResultSet implements ResultSet {
          close();
       }
     } catch(Exception e) {
-      LogChannel.GENERAL.logError("Error opening resultset", e);
-      throw new SQLException("Unable to get open query for SQL: "+sql, e);
+      throw new SQLException("Unable to get open query for SQL: "+sql+Const.CR+Const.getStackTracker(e), e);
     } 
   }
 

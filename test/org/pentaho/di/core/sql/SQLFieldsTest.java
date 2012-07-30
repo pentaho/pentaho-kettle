@@ -101,6 +101,64 @@ public class SQLFieldsTest extends TestCase {
     assertNotNull("The service data type was not discovered", field.getValueMeta());
     assertEquals("B", field.getValueMeta().getName().toUpperCase());
   }
+  
+  public void testSqlFromFields05() throws KettleSQLException {
+    RowMetaInterface rowMeta = generateTestRowMeta();
+    
+    String fieldsClause= "*";
+    
+    SQLFields fromFields = new SQLFields(rowMeta, fieldsClause);
+    assertFalse(fromFields.isDistinct());
+    
+    assertEquals(2, fromFields.getFields().size());
+    
+    SQLField field = fromFields.getFields().get(0);
+    assertEquals("A", field.getName());
+    assertNull(field.getAlias());
+    assertNotNull("The service data type was not discovered", field.getValueMeta());
+    assertEquals("A", field.getValueMeta().getName().toUpperCase());
+
+    field = fromFields.getFields().get(1);
+    assertEquals("B", field.getName());
+    assertNull(field.getAlias());
+    assertNotNull("The service data type was not discovered", field.getValueMeta());
+    assertEquals("B", field.getValueMeta().getName().toUpperCase());
+  }
+
+  public void testSqlFromFields06() throws KettleSQLException {
+    RowMetaInterface rowMeta = generateTestRowMeta();
+    
+    String fieldsClause= "*, *";
+    
+    SQLFields fromFields = new SQLFields(rowMeta, fieldsClause);
+    assertFalse(fromFields.isDistinct());
+    
+    assertEquals(4, fromFields.getFields().size());
+    
+    SQLField field = fromFields.getFields().get(0);
+    assertEquals("A", field.getName());
+    assertNull(field.getAlias());
+    assertNotNull("The service data type was not discovered", field.getValueMeta());
+    assertEquals("A", field.getValueMeta().getName().toUpperCase());
+
+    field = fromFields.getFields().get(1);
+    assertEquals("B", field.getName());
+    assertNull(field.getAlias());
+    assertNotNull("The service data type was not discovered", field.getValueMeta());
+    assertEquals("B", field.getValueMeta().getName().toUpperCase());
+    
+    field = fromFields.getFields().get(2);
+    assertEquals("A", field.getName());
+    assertNull(field.getAlias());
+    assertNotNull("The service data type was not discovered", field.getValueMeta());
+    assertEquals("A", field.getValueMeta().getName().toUpperCase());
+
+    field = fromFields.getFields().get(3);
+    assertEquals("B", field.getName());
+    assertNull(field.getAlias());
+    assertNotNull("The service data type was not discovered", field.getValueMeta());
+    assertEquals("B", field.getValueMeta().getName().toUpperCase());
+  }
 
   
   private RowMetaInterface generateTestRowMeta() {

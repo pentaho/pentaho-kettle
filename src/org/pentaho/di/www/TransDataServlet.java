@@ -108,7 +108,7 @@ public class TransDataServlet extends BaseHttpServlet implements CartePluginInte
     try {
       // Execute the SQL using a few transformations...
       //
-      final SqlTransExecutor executor = new SqlTransExecutor(sqlQuery, getTransformationMap().getSlaveServerConfig().getServicesMap(), parameters);
+      final SqlTransExecutor executor = new SqlTransExecutor(sqlQuery, getTransformationMap().getSlaveServerConfig().getServices(), parameters);
             
       // First write the service name and the metadata
       //

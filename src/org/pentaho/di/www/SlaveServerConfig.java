@@ -24,9 +24,7 @@ package org.pentaho.di.www;
 
 import java.net.SocketException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
@@ -77,14 +75,14 @@ public class SlaveServerConfig {
 	
 	private boolean automaticCreationAllowed;
 	
-	private Map<String, TransDataService> servicesMap;
+	private List<TransDataService> services;
 	
 	public SlaveServerConfig() {
 		masters=new ArrayList<SlaveServer>();
 		databases=new ArrayList<DatabaseMeta>();
 		slaveSequences=new ArrayList<SlaveSequence>();
 		automaticCreationAllowed=false;
-		servicesMap = new HashMap<String, TransDataService>();
+		services = new ArrayList<TransDataService>();
 	}
 	
 	public SlaveServerConfig(SlaveServer slaveServer) {
@@ -136,7 +134,7 @@ public class SlaveServerConfig {
 
         xml.append(XMLHandler.openTag(XML_TAG_SERVICES));
         
-        for (TransDataService service : servicesMap.values()) {
+        for (TransDataService service : services) {
           xml.append(XMLHandler.openTag(XML_TAG_SERVICE));
           xml.append(service.getXML());
           xml.append(XMLHandler.closeTag(XML_TAG_SERVICE));
@@ -193,7 +191,7 @@ public class SlaveServerConfig {
     List<Node> servicesNodes = XMLHandler.getNodes(servicesNode, XML_TAG_SERVICE);
     for (Node serviceNode : servicesNodes) {
       TransDataService service = new TransDataService(serviceNode);
-      servicesMap.put(service.getName(), service);
+      services.add(service);
     }
 	}
 	
@@ -442,17 +440,17 @@ public class SlaveServerConfig {
   }
 
   /**
-   * @return the servicesMap
+   * @return the services
    */
-  public Map<String, TransDataService> getServicesMap() {
-    return servicesMap;
+  public List<TransDataService> getServices() {
+    return services;
   }
 
   /**
-   * @param servicesMap the servicesMap to set
+   * @param services the services to set
    */
-  public void setServicesMap(Map<String, TransDataService> servicesMap) {
-    this.servicesMap = servicesMap;
+  public void setServices(List<TransDataService> services) {
+    this.services = services;
   }
   
   

@@ -1,9 +1,8 @@
 package org.pentaho.di.core.sql;
 
 import java.sql.ResultSet;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import junit.framework.TestCase;
 
@@ -57,7 +56,7 @@ public class TransDataServletTest extends TestCase {
     slaveServer = new SlaveServer("test-localhost-8585-master", "127.0.0.1", "8686", "cluster", "cluster", null, null, null, true);
     SlaveServerConfig slaveServerConfig = new SlaveServerConfig();
     slaveServerConfig.setSlaveServer(slaveServer);
-    slaveServerConfig.setServicesMap(getServicesMap());
+    slaveServerConfig.setServices(getServicesMap());
     slaveServerConfig.setJoining(false);
     
     carteLauncher = new CarteLauncher(slaveServerConfig);
@@ -79,10 +78,10 @@ public class TransDataServletTest extends TestCase {
     return carteLauncher;
   }
 
-  private Map<String, TransDataService> getServicesMap() {
-    Map<String, TransDataService> servicesMap = new HashMap<String, TransDataService>();
+  private List<TransDataService> getServicesMap() {
+    List<TransDataService> servicesMap = new ArrayList<TransDataService>();
     TransDataService service = new TransDataService("Service", "testfiles/sql-transmeta-test-data.ktr", null, null, "Output");
-    servicesMap.put(service.getName(), service);
+    servicesMap.add(service);
     return servicesMap;
   }
 

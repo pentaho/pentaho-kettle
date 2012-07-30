@@ -1,6 +1,7 @@
 package org.pentaho.di.trans.sql;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.pentaho.di.core.Condition;
@@ -32,7 +33,7 @@ public class SqlTransExecutor {
   private Trans genTrans;
   
   private RowMetaInterface serviceFields;
-  private Map<String, TransDataService> servicesMap;
+  private List<TransDataService> services;
   private String serviceName;
   private TransDataService service;
   private SQL sql;
@@ -44,34 +45,34 @@ public class SqlTransExecutor {
   /**
    * Create a new SqlTransExecutor without parameters
    * @param sqlQuery
-   * @param servicesMap
+   * @param services
    * @throws KettleException 
    */
-  public SqlTransExecutor(String sqlQuery, Map<String, TransDataService> servicesMap) throws KettleException {
-    this(sqlQuery, servicesMap, new HashMap<String, String>(), null, 0);
+  public SqlTransExecutor(String sqlQuery, List<TransDataService> services) throws KettleException {
+    this(sqlQuery, services, new HashMap<String, String>(), null, 0);
   }
   
   
   /**
    * @param sqlQuery
-   * @param servicesMap
+   * @param services
    * @param parameters
    * 
    * @throws KettleException 
    */
-  public SqlTransExecutor(String sqlQuery, Map<String, TransDataService> servicesMap, Map<String, String> parameters) throws KettleException {
-    this(sqlQuery, servicesMap, parameters, null, 0);
+  public SqlTransExecutor(String sqlQuery, List<TransDataService> services, Map<String, String> parameters) throws KettleException {
+    this(sqlQuery, services, parameters, null, 0);
   }
   
   /**
    * @param sqlQuery
-   * @param servicesMap
+   * @param services
    * @param repository
    * @throws KettleException 
    */
-  public SqlTransExecutor(String sqlQuery, Map<String, TransDataService> servicesMap, Map<String, String> parameters, Repository repository, int rowLimit) throws KettleException {
+  public SqlTransExecutor(String sqlQuery, List<TransDataService> services, Map<String, String> parameters, Repository repository, int rowLimit) throws KettleException {
     this.sqlQuery = sqlQuery;
-    this.servicesMap = servicesMap;
+    this.services = services;
     this.parameters = parameters;
     this.repository = repository;
     this.rowLimit = rowLimit;
@@ -83,7 +84,7 @@ public class SqlTransExecutor {
     sql = new SQL(sqlQuery);
     serviceName = sql.getServiceName();
     
-    service = servicesMap.get(serviceName);
+    service = findService(serviceName);
     if (service==null) {
       throw new KettleException("Unable to find service with name '"+service+"' and SQL: "+sqlQuery);
     }
@@ -99,6 +100,14 @@ public class SqlTransExecutor {
     serviceStepName = service.getServiceStepName();
     serviceFields = serviceTransMeta.getStepFields(serviceStepName);
   }
+
+  private TransDataService findService(String name) {
+    for (TransDataService s : services) {
+      if (s.getName().equalsIgnoreCase(name)) return s;
+    }
+    return null;
+  }
+
 
   private void extractConditionParameters(Condition condition, Map<String, String> map) {
 
@@ -309,18 +318,18 @@ public class SqlTransExecutor {
 
 
   /**
-   * @return the servicesMap
+   * @return the services
    */
-  public Map<String, TransDataService> getServicesMap() {
-    return servicesMap;
+  public List<TransDataService> getServices() {
+    return services;
   }
 
 
   /**
    * @param servicesMap the servicesMap to set
    */
-  public void setServicesMap(Map<String, TransDataService> servicesMap) {
-    this.servicesMap = servicesMap;
+  public void setServices(List<TransDataService> services) {
+    this.services = services;
   }
 
 

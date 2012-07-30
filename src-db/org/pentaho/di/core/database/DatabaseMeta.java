@@ -2553,7 +2553,7 @@ public class DatabaseMeta
 		return databaseInterface.isSystemTable(tableName);
 	}
 
-	private boolean supportsNewLinesInSQL() {
+  private boolean supportsNewLinesInSQL() {
 		return databaseInterface.supportsNewLinesInSQL();
 	}
 

@@ -78,7 +78,7 @@ public class ListDataServicesServlet extends BaseHttpServlet implements CartePlu
 
     response.getWriter().println(XMLHandler.getXMLHeader());
     response.getWriter().println(XMLHandler.openTag(XML_TAG_SERVICES));
-    for (TransDataService service : transformationMap.getSlaveServerConfig().getServicesMap().values()) {
+    for (TransDataService service : transformationMap.getSlaveServerConfig().getServices()) {
       response.getWriter().println(XMLHandler.openTag(XML_TAG_SERVICE));
       response.getWriter().println(XMLHandler.addTagValue("name", service.getName()));
       

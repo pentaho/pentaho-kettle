@@ -8,10 +8,10 @@ import java.sql.Statement;
 
 public class ThinStatement implements Statement {
 
-  private ThinConnection connection;
-  private ThinResultSet resultSet;
+  protected ThinConnection connection;
+  protected ThinResultSet resultSet;
   
-  private int maxRows;
+  protected int maxRows;
   
   public ThinStatement(ThinConnection connection, int resultSetType, int resultSetConcurrency) {
     this(connection);

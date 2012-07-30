@@ -79,42 +79,42 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 {
 	private static Class<?> PKG = TableInputMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	private CCombo       wConnection;
+  private CCombo          wConnection;
 
-	private Label        wlSQL;
-	private StyledTextComp         wSQL;
-	private FormData     fdlSQL, fdSQL;
+  private Label           wlSQL;
+  private StyledTextComp  wSQL;
+  private FormData        fdlSQL, fdSQL;
 
-	private Label        wlDatefrom;
-	private CCombo       wDatefrom;
-	private FormData     fdlDatefrom, fdDatefrom;
-    private Listener     lsDateform;
+  private Label           wlDatefrom;
+  private CCombo          wDatefrom;
+  private FormData        fdlDatefrom, fdDatefrom;
+  private Listener        lsDatefrom;
 
-	private Label        wlLimit;
-	private TextVar      wLimit;
-	private FormData     fdlLimit, fdLimit;
-    
-    private Label        wlEachRow;
-    private Button       wEachRow;
-    private FormData     fdlEachRow, fdEachRow; 
+  private Label           wlLimit;
+  private TextVar         wLimit;
+  private FormData        fdlLimit, fdLimit;
 
-    private Label        wlVariables;
-    private Button       wVariables;
-    private FormData     fdlVariables, fdVariables; 
+  private Label           wlEachRow;
+  private Button          wEachRow;
+  private FormData        fdlEachRow, fdEachRow;
 
-    private Label        wlLazyConversion;
-    private Button       wLazyConversion;
-    private FormData     fdlLazyConversion, fdLazyConversion; 
+  private Label           wlVariables;
+  private Button          wVariables;
+  private FormData        fdlVariables, fdVariables;
 
-	private Button wbTable;
-	private FormData fdbTable;
-	private Listener lsbTable;
+  private Label           wlLazyConversion;
+  private Button          wLazyConversion;
+  private FormData        fdlLazyConversion, fdLazyConversion;
 
-	private TableInputMeta input;
-	private boolean changedInDialog;
-	
-	private Label        wlPosition;
-	private FormData     fdlPosition;
+  private Button          wbTable;
+  private FormData        fdbTable;
+  private Listener        lsbTable;
+
+  private TableInputMeta  input;
+  private boolean         changedInDialog;
+
+  private Label           wlPosition;
+  private FormData        fdlPosition;
 	
 	public TableInputDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
@@ -176,12 +176,12 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 		wConnection.addModifyListener(lsMod);
 
 		// Some buttons
-		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
-        wPreview=new Button(shell, SWT.PUSH);
-        wPreview.setText(BaseMessages.getString(PKG, "System.Button.Preview")); //$NON-NLS-1$
-		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
+    wOK = new Button(shell, SWT.PUSH);
+    wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
+    wPreview = new Button(shell, SWT.PUSH);
+    wPreview.setText(BaseMessages.getString(PKG, "System.Button.Preview")); //$NON-NLS-1$
+    wCancel = new Button(shell, SWT.PUSH);
+    wCancel.setText(BaseMessages.getString(PKG, "System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wPreview, wCancel }, margin, null);
 
@@ -203,200 +203,244 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 		fdLimit.bottom = new FormAttachment(wOK, -2*margin);
 		wLimit.setLayoutData(fdLimit);
 
-        // Execute for each row?
-        wlEachRow = new Label(shell, SWT.RIGHT);
-        wlEachRow.setText(BaseMessages.getString(PKG, "TableInputDialog.ExecuteForEachRow")); //$NON-NLS-1$
-        props.setLook(wlEachRow);
-        fdlEachRow = new FormData();
-        fdlEachRow.left = new FormAttachment(0, 0);
-        fdlEachRow.right = new FormAttachment(middle, -margin);
-        fdlEachRow.bottom = new FormAttachment(wLimit, -margin);
-        wlEachRow.setLayoutData(fdlEachRow);
-        wEachRow = new Button(shell, SWT.CHECK);
-        props.setLook(wEachRow);
-        fdEachRow = new FormData();
-        fdEachRow.left = new FormAttachment(middle, 0);
-        fdEachRow.right = new FormAttachment(100, 0);
-        fdEachRow.bottom = new FormAttachment(wLimit, -margin);
-        wEachRow.setLayoutData(fdEachRow);
-        SelectionAdapter lsSelMod = new SelectionAdapter()
-        {
-            public void widgetSelected(SelectionEvent arg0)
-            {
-                input.setChanged();
-            }
-        };
-        wEachRow.addSelectionListener(lsSelMod);
+    // Execute for each row?
+    wlEachRow = new Label(shell, SWT.RIGHT);
+    wlEachRow.setText(BaseMessages.getString(PKG, "TableInputDialog.ExecuteForEachRow")); //$NON-NLS-1$
+    props.setLook(wlEachRow);
+    fdlEachRow = new FormData();
+    fdlEachRow.left = new FormAttachment(0, 0);
+    fdlEachRow.right = new FormAttachment(middle, -margin);
+    fdlEachRow.bottom = new FormAttachment(wLimit, -margin);
+    wlEachRow.setLayoutData(fdlEachRow);
+    wEachRow = new Button(shell, SWT.CHECK);
+    props.setLook(wEachRow);
+    fdEachRow = new FormData();
+    fdEachRow.left = new FormAttachment(middle, 0);
+    fdEachRow.right = new FormAttachment(100, 0);
+    fdEachRow.bottom = new FormAttachment(wLimit, -margin);
+    wEachRow.setLayoutData(fdEachRow);
+    SelectionAdapter lsSelMod = new SelectionAdapter() {
+      public void widgetSelected(SelectionEvent arg0) {
+        input.setChanged();
+      }
+    };
+    wEachRow.addSelectionListener(lsSelMod);
 
 
+    // Read date from...
+    wlDatefrom = new Label(shell, SWT.RIGHT);
+    wlDatefrom.setText(BaseMessages.getString(PKG, "TableInputDialog.InsertDataFromStep")); //$NON-NLS-1$
+    props.setLook(wlDatefrom);
+    fdlDatefrom = new FormData();
+    fdlDatefrom.left = new FormAttachment(0, 0);
+    fdlDatefrom.right = new FormAttachment(middle, -margin);
+    fdlDatefrom.bottom = new FormAttachment(wEachRow, -margin);
+    wlDatefrom.setLayoutData(fdlDatefrom);
+    wDatefrom = new CCombo(shell, SWT.BORDER);
+    props.setLook(wDatefrom);
 
-		// Read date from...
-		wlDatefrom=new Label(shell, SWT.RIGHT);
-		wlDatefrom.setText(BaseMessages.getString(PKG, "TableInputDialog.InsertDataFromStep")); //$NON-NLS-1$
- 		props.setLook(wlDatefrom);
-		fdlDatefrom=new FormData();
-		fdlDatefrom.left = new FormAttachment(0, 0);
-		fdlDatefrom.right= new FormAttachment(middle, -margin);
-		fdlDatefrom.bottom = new FormAttachment(wEachRow, -margin);
-		wlDatefrom.setLayoutData(fdlDatefrom);
-		wDatefrom=new CCombo(shell, SWT.BORDER );
- 		props.setLook(wDatefrom);
+    List<StepMeta> previousSteps = transMeta.findPreviousSteps(transMeta.findStep(stepname));
+    for (StepMeta stepMeta : previousSteps) {
+      wDatefrom.add(stepMeta.getName());
+    }
 
- 		List<StepMeta> previousSteps = transMeta.findPreviousSteps(transMeta.findStep(stepname));
- 		for (StepMeta stepMeta : previousSteps) {
-			wDatefrom.add(stepMeta.getName());
-		}
-		
-		wDatefrom.addModifyListener(lsMod);
-		fdDatefrom=new FormData();
-		fdDatefrom.left = new FormAttachment(middle, 0);
-		fdDatefrom.right= new FormAttachment(100, 0);
-		fdDatefrom.bottom = new FormAttachment(wEachRow, -margin);
-		wDatefrom.setLayoutData(fdDatefrom);
+    wDatefrom.addModifyListener(lsMod);
+    fdDatefrom = new FormData();
+    fdDatefrom.left = new FormAttachment(middle, 0);
+    fdDatefrom.right = new FormAttachment(100, 0);
+    fdDatefrom.bottom = new FormAttachment(wEachRow, -margin);
+    wDatefrom.setLayoutData(fdDatefrom);
 
-        // Replace variables in SQL?
-		//
-        wlVariables = new Label(shell, SWT.RIGHT);
-        wlVariables.setText(BaseMessages.getString(PKG, "TableInputDialog.ReplaceVariables")); //$NON-NLS-1$
-        props.setLook(wlVariables);
-        fdlVariables = new FormData();
-        fdlVariables.left = new FormAttachment(0, 0);
-        fdlVariables.right = new FormAttachment(middle, -margin);
-        fdlVariables.bottom = new FormAttachment(wDatefrom, -margin);
-        wlVariables.setLayoutData(fdlVariables);
-        wVariables = new Button(shell, SWT.CHECK);
-        props.setLook(wVariables);
-        fdVariables = new FormData();
-        fdVariables.left = new FormAttachment(middle, 0);
-        fdVariables.right = new FormAttachment(100, 0);
-        fdVariables.bottom = new FormAttachment(wDatefrom, -margin);
-        wVariables.setLayoutData(fdVariables);
-        wVariables.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { input.setChanged();setSQLToolTip(); } });
+    // Replace variables in SQL?
+    //
+    wlVariables = new Label(shell, SWT.RIGHT);
+    wlVariables.setText(BaseMessages.getString(PKG, "TableInputDialog.ReplaceVariables")); //$NON-NLS-1$
+    props.setLook(wlVariables);
+    fdlVariables = new FormData();
+    fdlVariables.left = new FormAttachment(0, 0);
+    fdlVariables.right = new FormAttachment(middle, -margin);
+    fdlVariables.bottom = new FormAttachment(wDatefrom, -margin);
+    wlVariables.setLayoutData(fdlVariables);
+    wVariables = new Button(shell, SWT.CHECK);
+    props.setLook(wVariables);
+    fdVariables = new FormData();
+    fdVariables.left = new FormAttachment(middle, 0);
+    fdVariables.right = new FormAttachment(100, 0);
+    fdVariables.bottom = new FormAttachment(wDatefrom, -margin);
+    wVariables.setLayoutData(fdVariables);
+    wVariables.addSelectionListener(new SelectionAdapter() {
+      public void widgetSelected(SelectionEvent arg0) {
+        input.setChanged();
+        setSQLToolTip();
+      }
+    });
 
-        // Lazy conversion?
-		//
-        wlLazyConversion = new Label(shell, SWT.RIGHT);
-        wlLazyConversion.setText(BaseMessages.getString(PKG, "TableInputDialog.LazyConversion")); //$NON-NLS-1$
-        props.setLook(wlLazyConversion);
-        fdlLazyConversion = new FormData();
-        fdlLazyConversion.left = new FormAttachment(0, 0);
-        fdlLazyConversion.right = new FormAttachment(middle, -margin);
-        fdlLazyConversion.bottom = new FormAttachment(wVariables, -margin);
-        wlLazyConversion.setLayoutData(fdlLazyConversion);
-        wLazyConversion = new Button(shell, SWT.CHECK);
-        props.setLook(wLazyConversion);
-        fdLazyConversion = new FormData();
-        fdLazyConversion.left = new FormAttachment(middle, 0);
-        fdLazyConversion.right = new FormAttachment(100, 0);
-        fdLazyConversion.bottom = new FormAttachment(wVariables, -margin);
-        wLazyConversion.setLayoutData(fdLazyConversion);
-        wLazyConversion.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { input.setChanged();setSQLToolTip(); } });
+    // Lazy conversion?
+    //
+    wlLazyConversion = new Label(shell, SWT.RIGHT);
+    wlLazyConversion.setText(BaseMessages.getString(PKG, "TableInputDialog.LazyConversion")); //$NON-NLS-1$
+    props.setLook(wlLazyConversion);
+    fdlLazyConversion = new FormData();
+    fdlLazyConversion.left = new FormAttachment(0, 0);
+    fdlLazyConversion.right = new FormAttachment(middle, -margin);
+    fdlLazyConversion.bottom = new FormAttachment(wVariables, -margin);
+    wlLazyConversion.setLayoutData(fdlLazyConversion);
+    wLazyConversion = new Button(shell, SWT.CHECK);
+    props.setLook(wLazyConversion);
+    fdLazyConversion = new FormData();
+    fdLazyConversion.left = new FormAttachment(middle, 0);
+    fdLazyConversion.right = new FormAttachment(100, 0);
+    fdLazyConversion.bottom = new FormAttachment(wVariables, -margin);
+    wLazyConversion.setLayoutData(fdLazyConversion);
+    wLazyConversion.addSelectionListener(new SelectionAdapter() {
+      public void widgetSelected(SelectionEvent arg0) {
+        input.setChanged();
+        setSQLToolTip();
+      }
+    });
 
-		wlPosition=new Label(shell, SWT.NONE); 
-		props.setLook(wlPosition);
-		fdlPosition=new FormData();
-		fdlPosition.left  = new FormAttachment(0,0);
-		fdlPosition.right = new FormAttachment(100, 0);
-		fdlPosition.bottom = new FormAttachment(wLazyConversion, -margin);
-		wlPosition.setLayoutData(fdlPosition);
-		
-		
-		// Table line...
-		wlSQL=new Label(shell, SWT.NONE);
-		wlSQL.setText(BaseMessages.getString(PKG, "TableInputDialog.SQL")); //$NON-NLS-1$
- 		props.setLook(wlSQL);
-		fdlSQL=new FormData();
-		fdlSQL.left = new FormAttachment(0, 0);
-		fdlSQL.top  = new FormAttachment(wConnection, margin*2);
-		wlSQL.setLayoutData(fdlSQL);
+    wlPosition = new Label(shell, SWT.NONE);
+    props.setLook(wlPosition);
+    fdlPosition = new FormData();
+    fdlPosition.left = new FormAttachment(0, 0);
+    fdlPosition.right = new FormAttachment(100, 0);
+    fdlPosition.bottom = new FormAttachment(wLazyConversion, -margin);
+    wlPosition.setLayoutData(fdlPosition);
 
-		wbTable=new Button(shell, SWT.PUSH| SWT.CENTER);
- 		props.setLook(wbTable);
-		wbTable.setText(BaseMessages.getString(PKG, "TableInputDialog.GetSQLAndSelectStatement")); //$NON-NLS-1$
-		fdbTable=new FormData();
-		fdbTable.right = new FormAttachment(100, 0);
-		fdbTable.top   = new FormAttachment(wConnection, margin*2);
-		wbTable.setLayoutData(fdbTable);
+    // Table line...
+    wlSQL = new Label(shell, SWT.NONE);
+    wlSQL.setText(BaseMessages.getString(PKG, "TableInputDialog.SQL")); //$NON-NLS-1$
+    props.setLook(wlSQL);
+    fdlSQL = new FormData();
+    fdlSQL.left = new FormAttachment(0, 0);
+    fdlSQL.top = new FormAttachment(wConnection, margin * 2);
+    wlSQL.setLayoutData(fdlSQL);
 
-		wSQL=new StyledTextComp(transMeta, shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
- 		props.setLook(wSQL, Props.WIDGET_STYLE_FIXED);
-		wSQL.addModifyListener(lsMod);
-		fdSQL=new FormData();
-		fdSQL.left  = new FormAttachment(0, 0);
-		fdSQL.top   = new FormAttachment(wbTable, margin );
-		fdSQL.right = new FormAttachment(100, -2*margin);
-		fdSQL.bottom= new FormAttachment(wlPosition, -margin );
-		wSQL.setLayoutData(fdSQL);
-		wSQL.addModifyListener(new ModifyListener()
-            {
-                public void modifyText(ModifyEvent arg0)
-                {
-                    setSQLToolTip();
-                    setPosition(); 
-                }
-            }
-        );
+    wbTable = new Button(shell, SWT.PUSH | SWT.CENTER);
+    props.setLook(wbTable);
+    wbTable.setText(BaseMessages.getString(PKG, "TableInputDialog.GetSQLAndSelectStatement")); //$NON-NLS-1$
+    fdbTable = new FormData();
+    fdbTable.right = new FormAttachment(100, 0);
+    fdbTable.top = new FormAttachment(wConnection, margin * 2);
+    wbTable.setLayoutData(fdbTable);
 
-		
-		wSQL.addKeyListener(new KeyAdapter(){
-			public void keyPressed(KeyEvent e) { setPosition(); }
-			public void keyReleased(KeyEvent e) { setPosition(); }
-			} 
-		);
-		wSQL.addFocusListener(new FocusAdapter(){
-			public void focusGained(FocusEvent e) { setPosition(); }
-			public void focusLost(FocusEvent e) { setPosition(); }
-			}
-		);
-		wSQL.addMouseListener(new MouseAdapter(){
-			public void mouseDoubleClick(MouseEvent e) { setPosition(); }
-			public void mouseDown(MouseEvent e) { setPosition(); }
-			public void mouseUp(MouseEvent e) { setPosition(); }
-			}
-		);
-		
-		// Text Higlighting
-		wSQL.addLineStyleListener(new SQLValuesHighlight());
-		
-		// Add listeners
-		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel();  } };
-        lsPreview  = new Listener() { public void handleEvent(Event e) { preview(); } };
-		lsOK       = new Listener() { public void handleEvent(Event e) { ok();      } };
-		lsbTable   = new Listener() { public void handleEvent(Event e) { getSQL();  } };
-        lsDateform = new Listener() { public void handleEvent(Event e) { setFags(); } };
-        
-		wCancel.addListener  (SWT.Selection, lsCancel);
-        wPreview.addListener (SWT.Selection, lsPreview);
-		wOK.addListener      (SWT.Selection, lsOK    );
-		wbTable.addListener  (SWT.Selection, lsbTable);
-        wDatefrom.addListener(SWT.Selection, lsDateform);
-        wDatefrom.addListener(SWT.FocusOut,  lsDateform);
+    wSQL = new StyledTextComp(transMeta, shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL, "");
+    props.setLook(wSQL, Props.WIDGET_STYLE_FIXED);
+    wSQL.addModifyListener(lsMod);
+    fdSQL = new FormData();
+    fdSQL.left = new FormAttachment(0, 0);
+    fdSQL.top = new FormAttachment(wbTable, margin);
+    fdSQL.right = new FormAttachment(100, -2 * margin);
+    fdSQL.bottom = new FormAttachment(wlPosition, -margin);
+    wSQL.setLayoutData(fdSQL);
+    wSQL.addModifyListener(new ModifyListener() {
+      public void modifyText(ModifyEvent arg0) {
+        setSQLToolTip();
+        setPosition();
+      }
+    });
 
-		
-		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
-		
-		wStepname.addSelectionListener( lsDef );
-		wLimit.addSelectionListener( lsDef );
-		
-		
-		// Detect X or ALT-F4 or something that kills this window...
-		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { checkCancel(e); } } );
-		
-		getData();
-		changedInDialog = false; // for prompting if dialog is simply closed
-		input.setChanged(changed);
+    wSQL.addKeyListener(new KeyAdapter() {
+      public void keyPressed(KeyEvent e) {
+        setPosition();
+      }
 
-		// Set the shell size, based upon previous time...
-		setSize();
-		
-		shell.open();
-		while (!shell.isDisposed())
-		{
-				if (!display.readAndDispatch()) display.sleep();
-		}
-		return stepname;
-	}
-public void setPosition(){
+      public void keyReleased(KeyEvent e) {
+        setPosition();
+      }
+    });
+    wSQL.addFocusListener(new FocusAdapter() {
+      public void focusGained(FocusEvent e) {
+        setPosition();
+      }
+
+      public void focusLost(FocusEvent e) {
+        setPosition();
+      }
+    });
+    wSQL.addMouseListener(new MouseAdapter() {
+      public void mouseDoubleClick(MouseEvent e) {
+        setPosition();
+      }
+
+      public void mouseDown(MouseEvent e) {
+        setPosition();
+      }
+
+      public void mouseUp(MouseEvent e) {
+        setPosition();
+      }
+    });
+
+    // Text Higlighting
+    wSQL.addLineStyleListener(new SQLValuesHighlight());
+
+    // Add listeners
+    lsCancel = new Listener() {
+      public void handleEvent(Event e) {
+        cancel();
+      }
+    };
+    lsPreview = new Listener() {
+      public void handleEvent(Event e) {
+        preview();
+      }
+    };
+    lsOK = new Listener() {
+      public void handleEvent(Event e) {
+        ok();
+      }
+    };
+    lsbTable = new Listener() {
+      public void handleEvent(Event e) {
+        getSQL();
+      }
+    };
+    lsDatefrom = new Listener() {
+      public void handleEvent(Event e) {
+        setFlags();
+      }
+    };
+
+    wCancel.addListener(SWT.Selection, lsCancel);
+    wPreview.addListener(SWT.Selection, lsPreview);
+    wOK.addListener(SWT.Selection, lsOK);
+    wbTable.addListener(SWT.Selection, lsbTable);
+    wDatefrom.addListener(SWT.Selection, lsDatefrom);
+    wDatefrom.addListener(SWT.FocusOut, lsDatefrom);
+
+    lsDef = new SelectionAdapter() {
+      public void widgetDefaultSelected(SelectionEvent e) {
+        ok();
+      }
+    };
+
+    wStepname.addSelectionListener(lsDef);
+    wLimit.addSelectionListener(lsDef);
+
+    // Detect X or ALT-F4 or something that kills this window...
+    shell.addShellListener(new ShellAdapter() {
+      public void shellClosed(ShellEvent e) {
+        checkCancel(e);
+      }
+    });
+
+    getData();
+    changedInDialog = false; // for prompting if dialog is simply closed
+    input.setChanged(changed);
+
+    // Set the shell size, based upon previous time...
+    setSize();
+
+    shell.open();
+    while (!shell.isDisposed()) {
+      if (!display.readAndDispatch())
+        display.sleep();
+    }
+    return stepname;
+  }
+
+  public void setPosition(){
 		
 		String scr = wSQL.getText();
 		int linenr = wSQL.getLineAtOffset(wSQL.getCaretOffset())+1;
@@ -412,105 +456,91 @@ public void setPosition(){
 		wlPosition.setText(BaseMessages.getString(PKG, "TableInputDialog.Position.Label",""+linenr,""+colnr));
 
 	}
-	protected void setSQLToolTip()
-    {
-       if (wVariables.getSelection())
-       {
-           wSQL.setToolTipText(transMeta.environmentSubstitute(wSQL.getText()));
-       }
+  
+  protected void setSQLToolTip() {
+    if (wVariables.getSelection()) {
+      wSQL.setToolTipText(transMeta.environmentSubstitute(wSQL.getText()));
+    }
+  }
+
+  /**
+   * Copy information from the meta-data input to the dialog fields.
+   */
+  public void getData() {
+    if (input.getSQL() != null)
+      wSQL.setText(input.getSQL());
+    if (input.getDatabaseMeta() != null)
+      wConnection.setText(input.getDatabaseMeta().getName());
+    wLimit.setText(Const.NVL(input.getRowLimit(), "")); //$NON-NLS-1$
+
+    StreamInterface infoStream = input.getStepIOMeta().getInfoStreams().get(0);
+    if (infoStream.getStepMeta() != null) {
+      wDatefrom.setText(infoStream.getStepname());
+      wEachRow.setSelection(input.isExecuteEachInputRow());
+    } else {
+      wEachRow.setEnabled(false);
+      wlEachRow.setEnabled(false);
     }
 
-    /**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
-		if (input.getSQL() != null) wSQL.setText(input.getSQL());
-		if (input.getDatabaseMeta() != null) wConnection.setText(input.getDatabaseMeta().getName());
-		wLimit.setText(Const.NVL(input.getRowLimit(), "")); //$NON-NLS-1$
-		
-	    StreamInterface infoStream = input.getStepIOMeta().getInfoStreams().get(0);
-	    if (infoStream.getStepMeta()!=null)
-        {
-            wDatefrom.setText(infoStream.getStepname());
-            wEachRow.setSelection(input.isExecuteEachInputRow());
-        }
-        else
-        {
-            wEachRow.setEnabled(false);
-            wlEachRow.setEnabled(false);
-        }
-        
-        wVariables.setSelection(input.isVariableReplacementActive());
-        wLazyConversion.setSelection(input.isLazyConversionActive());
-               
-		wStepname.selectAll();
-        setSQLToolTip();
-	}
-	
-	private void checkCancel(ShellEvent e)
-	{
-		if (changedInDialog)
-		{
-			int save = JobGraph.showChangedWarning(shell, wStepname.getText());
-			if (save == SWT.CANCEL)
-			{
-				e.doit = false;
-			}
-			else if (save == SWT.YES)
-			{
-				ok();
-			}
-			else
-			{
-				cancel();
-			}
-		}
-		else
-		{
-			cancel();
-		}
-	}
+    wVariables.setSelection(input.isVariableReplacementActive());
+    wLazyConversion.setSelection(input.isLazyConversionActive());
 
-	private void cancel()
-	{
-		stepname=null;
-		input.setChanged(changed);
-		dispose();
-	}
-	
-    private void getInfo(TableInputMeta meta, boolean preview)
-    {
-        meta.setSQL(preview && !Const.isEmpty(wSQL.getSelectionText())?wSQL.getSelectionText():wSQL.getText());
-        meta.setDatabaseMeta( transMeta.findDatabase(wConnection.getText()) );
-        meta.setRowLimit( wLimit.getText() );
-        StreamInterface infoStream = input.getStepIOMeta().getInfoStreams().get(0);
-        infoStream.setStepMeta( transMeta.findStep( wDatefrom.getText() ) );
-        meta.setExecuteEachInputRow(wEachRow.getSelection());
-        meta.setVariableReplacementActive(wVariables.getSelection());
-        meta.setLazyConversionActive(wLazyConversion.getSelection());
+    wStepname.selectAll();
+    setSQLToolTip();
+    setFlags();
+  }
+
+  private void checkCancel(ShellEvent e) {
+    if (changedInDialog) {
+      int save = JobGraph.showChangedWarning(shell, wStepname.getText());
+      if (save == SWT.CANCEL) {
+        e.doit = false;
+      } else if (save == SWT.YES) {
+        ok();
+      } else {
+        cancel();
+      }
+    } else {
+      cancel();
     }
+  }
+
+  private void cancel() {
+    stepname = null;
+    input.setChanged(changed);
+    dispose();
+  }
+	
+  private void getInfo(TableInputMeta meta, boolean preview) {
+    meta.setSQL(preview && !Const.isEmpty(wSQL.getSelectionText()) ? wSQL.getSelectionText() : wSQL.getText());
+    meta.setDatabaseMeta(transMeta.findDatabase(wConnection.getText()));
+    meta.setRowLimit(wLimit.getText());
+    StreamInterface infoStream = input.getStepIOMeta().getInfoStreams().get(0);
+    infoStream.setStepMeta(transMeta.findStep(wDatefrom.getText()));
+    meta.setExecuteEachInputRow(wEachRow.getSelection());
+    meta.setVariableReplacementActive(wVariables.getSelection());
+    meta.setLazyConversionActive(wLazyConversion.getSelection());
+  }
     
-	private void ok()
-	{
-		if (Const.isEmpty(wStepname.getText())) return;
+  private void ok() {
+    if (Const.isEmpty(wStepname.getText()))
+      return;
 
-		stepname = wStepname.getText(); // return value
-		// copy info to TextFileInputMeta class (input)
-        
-        getInfo(input, false);
-        
-		if (input.getDatabaseMeta()==null)
-		{
-			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage(BaseMessages.getString(PKG, "TableInputDialog.SelectValidConnection")); //$NON-NLS-1$
-			mb.setText(BaseMessages.getString(PKG, "TableInputDialog.DialogCaptionError")); //$NON-NLS-1$
-			mb.open();
-			return;
-		}
-		
-		dispose();
-	}
+    stepname = wStepname.getText(); // return value
+    // copy info to TextFileInputMeta class (input)
+
+    getInfo(input, false);
+
+    if (input.getDatabaseMeta() == null) {
+      MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
+      mb.setMessage(BaseMessages.getString(PKG, "TableInputDialog.SelectValidConnection")); //$NON-NLS-1$
+      mb.setText(BaseMessages.getString(PKG, "TableInputDialog.DialogCaptionError")); //$NON-NLS-1$
+      mb.open();
+      return;
+    }
+
+    dispose();
+  }
 	
 	private void getSQL()
 	{
@@ -583,69 +613,59 @@ public void setPosition(){
 					
 	}
 	
-    private void setFags()
-    {
-        if (wDatefrom.getText() != null && wDatefrom.getText().length() > 0)
-        {
-            // The foreach check box... 
-            wEachRow.setEnabled(true);
-            wlEachRow.setEnabled(true);
-            
-            // The preview button...
-            wPreview.setEnabled(false);
-        }
-        else
-        {
-            // The foreach check box... 
-            wEachRow.setEnabled(false);
-            wEachRow.setSelection(false);
-            wlEachRow.setEnabled(false);
-            
-            // The preview button...
-            wPreview.setEnabled(true);
-        }
-        
+  private void setFlags() {
+    if (!Const.isEmpty(wDatefrom.getText())) {
+      // The foreach check box...
+      wEachRow.setEnabled(true);
+      wlEachRow.setEnabled(true);
+
+      // The preview button...
+      wPreview.setEnabled(false);
+    } else {
+      // The foreach check box...
+      wEachRow.setEnabled(false);
+      wEachRow.setSelection(false);
+      wlEachRow.setEnabled(false);
+
+      // The preview button...
+      wPreview.setEnabled(true);
     }
 
-    /**
-     * Preview the data generated by this step.
-     * This generates a transformation using this step & a dummy and previews it.
-     *
-     */
-    private void preview()
-    {
-        // Create the table input reader step...
-        TableInputMeta oneMeta = new TableInputMeta();
-        getInfo(oneMeta, true);
-        
-        TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname.getText());
-        
-        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), BaseMessages.getString(PKG, "TableInputDialog.EnterPreviewSize"), BaseMessages.getString(PKG, "TableInputDialog.NumberOfRowsToPreview")); //$NON-NLS-1$ //$NON-NLS-2$
-        int previewSize = numberDialog.open();
-        if (previewSize>0)
-        {
-            TransPreviewProgressDialog progressDialog = new TransPreviewProgressDialog(shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
-            progressDialog.open();
+  }
 
-            Trans trans = progressDialog.getTrans();
-            String loggingText = progressDialog.getLoggingText();
+  /**
+   * Preview the data generated by this step. This generates a transformation
+   * using this step & a dummy and previews it.
+   * 
+   */
+  private void preview() {
+    // Create the table input reader step...
+    TableInputMeta oneMeta = new TableInputMeta();
+    getInfo(oneMeta, true);
 
-            if (!progressDialog.isCancelled())
-            {
-                if (trans.getResult()!=null && trans.getResult().getNrErrors()>0)
-                {
-                	EnterTextDialog etd = new EnterTextDialog(shell, BaseMessages.getString(PKG, "System.Dialog.PreviewError.Title"),  
-                			BaseMessages.getString(PKG, "System.Dialog.PreviewError.Message"), loggingText, true );
-                	etd.setReadOnly();
-                	etd.open();
-                } 
-                else
-                {
-                    PreviewRowsDialog prd =new PreviewRowsDialog(shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta(wStepname.getText()), progressDialog.getPreviewRows(wStepname.getText()), loggingText);
-                    prd.open();
-                }
-            }
-            
+    TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname.getText());
+
+    EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), BaseMessages.getString(PKG, "TableInputDialog.EnterPreviewSize"), BaseMessages.getString(PKG, "TableInputDialog.NumberOfRowsToPreview")); //$NON-NLS-1$ //$NON-NLS-2$
+    int previewSize = numberDialog.open();
+    if (previewSize > 0) {
+      TransPreviewProgressDialog progressDialog = new TransPreviewProgressDialog(shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize });
+      progressDialog.open();
+
+      Trans trans = progressDialog.getTrans();
+      String loggingText = progressDialog.getLoggingText();
+
+      if (!progressDialog.isCancelled()) {
+        if (trans.getResult() != null && trans.getResult().getNrErrors() > 0) {
+          EnterTextDialog etd = new EnterTextDialog(shell, BaseMessages.getString(PKG, "System.Dialog.PreviewError.Title"), BaseMessages.getString(PKG, "System.Dialog.PreviewError.Message"), loggingText, true);
+          etd.setReadOnly();
+          etd.open();
+        } else {
+          PreviewRowsDialog prd = new PreviewRowsDialog(shell, transMeta, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRowsMeta(wStepname.getText()), progressDialog.getPreviewRows(wStepname.getText()), loggingText);
+          prd.open();
         }
+      }
+
     }
+  }
+  
 }

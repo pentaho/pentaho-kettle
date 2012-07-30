@@ -3,9 +3,7 @@ package org.pentaho.di.core.sql;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import junit.framework.TestCase;
 
@@ -19,11 +17,11 @@ import org.pentaho.di.trans.step.RowAdapter;
 
 public class SqlTransMetaTest extends TestCase {
 
-  private Map<String, TransDataService> getServicesMap() {
-    Map<String, TransDataService> servicesMap = new HashMap<String, TransDataService>();
+  private List<TransDataService> getServicesMap() {
+    List<TransDataService> services = new ArrayList<TransDataService>();
     TransDataService service = new TransDataService("Service", "testfiles/sql-transmeta-test-data.ktr", null, null, "Output");
-    servicesMap.put(service.getName(), service);
-    return servicesMap;
+    services.add(service);
+    return services;
   }
   
   public void test01_BasicSelectFrom() throws Exception {

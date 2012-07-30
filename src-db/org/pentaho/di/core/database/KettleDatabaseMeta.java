@@ -126,7 +126,7 @@ of database.
 	 * @return true if the database supports retrieval of query metadata from a prepared statement.  False if the query needs to be executed first.
 	 */
 	public boolean supportsPreparedStatementMetadataRetrieval() {
-		return false;
+		return true;
 	}
 
   @Override

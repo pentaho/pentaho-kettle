@@ -77,7 +77,9 @@ public class RowsResultSet implements ResultSet {
 
   @Override
   public int findColumn(String name) throws SQLException {
-    return rowMeta.indexOfValue(name)+1;
+    int index = rowMeta.indexOfValue(name)+1;
+    System.out.println("findColumn("+name+") --> "+index);
+    return index;
   }
 
   @Override
@@ -438,6 +440,7 @@ public class RowsResultSet implements ResultSet {
         lastNull=true;
       }
       lastNull=false;
+      System.out.println("getString("+index+") --> "+string);
       return string;
     } catch(Exception e) { 
       throw new SQLException(e);
@@ -1045,7 +1048,9 @@ public class RowsResultSet implements ResultSet {
   @Override
   public boolean next() throws SQLException {
     currentIndex++;
-    return currentIndex<rows.size();
+    boolean result = currentIndex<rows.size();
+    System.out.println("next() --> "+result);
+    return result;
   }
 
   @Override
@@ -1063,6 +1068,7 @@ public class RowsResultSet implements ResultSet {
     currentIndex+=rows;
     return true;
   }
+
 
   @Override
   public boolean rowDeleted() throws SQLException {
