@@ -476,6 +476,8 @@ public class Rest extends BaseStep implements StepInterface
                 data.mediaType =MediaType.APPLICATION_ATOM_XML_TYPE;
             } else if(applicationType.equals(RestMeta.APPLICATION_TYPE_SVG_XML)) {
             	data.mediaType =MediaType.APPLICATION_SVG_XML_TYPE;
+            } else if (applicationType.equals(RestMeta.APPLICATION_TYPE_TEXT_XML)) {
+              data.mediaType =MediaType.TEXT_XML_TYPE;
             } else {
                 data.mediaType =MediaType.TEXT_PLAIN_TYPE;
             }
