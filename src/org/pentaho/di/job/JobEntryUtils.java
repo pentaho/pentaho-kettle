@@ -51,7 +51,6 @@ public class JobEntryUtils {
     }
   }
 
-  @SuppressWarnings("deprecation")
   public static void attachAppenderTo(Appender appender, LogLevel logLevel, Map<String, Level> logLevelCache, String... logNames) {
     for (String logName : logNames) {
       Logger logger = findLogger(logName);
