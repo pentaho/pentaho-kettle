@@ -186,6 +186,17 @@ public class SQLField {
       } else {
         if (valueMeta==null) {
           valueMeta = serviceFields.searchValueMeta(field);
+          if (orderField && selectFields!=null) {
+            // See if this isn't an aliased select field that we're ordering on
+            //
+            for (SQLField selectField : selectFields.getFields()) {
+              if (field.equalsIgnoreCase(selectField.getAlias())) {
+                valueMeta = selectField.getValueMeta();
+                break;
+              }
+            }
+            
+          }
         }
         
         if (valueMeta==null) {
