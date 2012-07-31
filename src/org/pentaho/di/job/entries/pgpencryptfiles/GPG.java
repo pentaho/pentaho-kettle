@@ -132,7 +132,7 @@ public class GPG {
 			}
 			// The file exists
 			if(!file.getType().equals(FileType.FILE)) {
-				throw new KettleException(BaseMessages.getString(PKG, "GPG.GPGNotAFile"));
+				throw new KettleException(BaseMessages.getString(PKG, "GPG.GPGNotAFile", getGpgExeFile()));
 			}
 			
 			// Ok we have a real file
@@ -140,7 +140,7 @@ public class GPG {
 			this.gpgexe= KettleVFS.getFilename(file);
 			
 		}catch(Exception e) {
-			throw new KettleException(BaseMessages.getString(PKG, "GPG.ErrorCheckingGPGFile"), e);
+			throw new KettleException(BaseMessages.getString(PKG, "GPG.ErrorCheckingGPGFile", getGpgExeFile()), e);
 		}finally {
 			try {
 				if(file!=null) file.close();
@@ -514,11 +514,11 @@ public class GPG {
 			createTempFile (cryptedText);
 		
 			return execGnuPG ("--passphrase-fd 0 --decrypt \"" + getTempFileName() +"\"", passPhrase, false);
+
 		}finally {
 			deleteTempFile();
 		}
 	}
-	
 	/**
 	 * Create a unique temporary file when needed by one of the main methods.
 	 * The file handle is store in tmpFile object var.
