@@ -1436,5 +1436,12 @@
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SecretKeyGenerator</tooltip>
 		<iconfile>ui/images/SCG.png</iconfile>
+	</step>
+	<step id="TypeExitEdi2XmlStep">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.Edi2Xml</description>
+		<classname>org.pentaho.di.trans.steps.edi2xml.Edi2XmlMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Utility</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Edi2Xml</tooltip>
+		<iconfile>ui/images/EDI2XML.png</iconfile>
 	</step> 
 </steps>

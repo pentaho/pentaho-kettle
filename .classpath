@@ -92,7 +92,6 @@
 	<classpathentry exported="true" kind="lib" path="libext/webservices/xalan-2.4.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/secondstring.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/webservices/wstx-asl-3.2.9.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/rules/antlr-runtime-3.1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/rules/drools-api-5.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/rules/drools-compiler-5.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/rules/drools-core-5.0.1.jar"/>
@@ -244,5 +243,6 @@
 	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-wizard-core-3.9.0-GA.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-swt-3.3-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/js.jar"/>
+	<classpathentry kind="lib" path="libext/antlr-3.4-complete.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
