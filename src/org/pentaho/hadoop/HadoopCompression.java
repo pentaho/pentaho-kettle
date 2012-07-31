@@ -32,15 +32,36 @@ import java.lang.reflect.Method;
  * reading/writing.
  * 
  * @author Mark Hall (mhall{[at]}pentaho{[dot]}com)
- * @version $Revision$
  */
 public class HadoopCompression {
-  
-  public static String SNAPPY_CODEC_CLASS = "org.apache.hadoop.io.compress.SnappyCodec";
-  public static final String IO_COMPRESSION_CODEC_SNAPPY_BUFFERSIZE_KEY =
-    "io.compression.codec.snappy.buffersize";
-  public static final int IO_COMPRESSION_CODEC_SNAPPY_DEFAULT_BUFFERSIZE =
-    256 * 1024;
+
+  public static final int IO_COMPRESSION_CODEC_SNAPPY_DEFAULT_BUFFERSIZE = 256 * 1024;
+
+  private static final String HADOOP_CONFIG_UTIL_CLASS = "org.apache.hadoop.hive.jdbc.HadoopConfigurationUtil";
+
+  private static final String GET_ACTIVE_CONFIGURATION_METHOD = "getActiveConfiguration";
+
+  private static final String GET_SNAPPY_SHIM = "getSnappyShim";
+
+  /**
+   * Locate the Snappy Shim for the active Hadoop Configuration via the Hadoop Configuration Util
+   * @return A {@link org.pentaho.hadoop.shim.spi.SnappyShim} to interact with Snappy
+   * @throws Exception Error locating a valid Snappy shim:
+   * <p>
+   *   <ul>
+   *     <li>{@link org.pentaho.hadoop.hive.jdbc.HadoopConfigurationUtil} could not be located</li>
+   *     <li>No active Hadoop configuration</li>
+   *     <li>Active Hadoop configuration doesn't support Snappy</li>
+   *   </ul>
+   * </p>
+   */
+  private static Object getActiveSnappyShim() throws Exception {
+    Class<?> hadoopConfigUtilClass = Class.forName(HADOOP_CONFIG_UTIL_CLASS);
+    Method getActiveConfiguration = hadoopConfigUtilClass.getMethod(GET_ACTIVE_CONFIGURATION_METHOD);
+    Object hadoopConfiguration = getActiveConfiguration.invoke(null);
+    Method getSnappyShim = hadoopConfiguration.getClass().getMethod(GET_SNAPPY_SHIM);
+    return getSnappyShim.invoke(hadoopConfiguration);
+  }
 
   /**
    * Tests whether hadoop-snappy (not to be confused with other java-based
@@ -51,16 +72,9 @@ public class HadoopCompression {
    */
   public static boolean isHadoopSnappyAvailable() {
     try {
-      Object snappyCodec = Class.forName(SNAPPY_CODEC_CLASS).newInstance();
-      Class<?> confClass = Class.forName("org.apache.hadoop.conf.Configuration").newInstance().getClass();
-      Class<?>[] paramClass = new Class[1];
-      paramClass[0] = confClass;
-
-      Method m = snappyCodec.getClass().getMethod("isNativeSnappyLoaded", paramClass);
-      Object aConf = Class.forName("org.apache.hadoop.conf.Configuration").newInstance();
-      Object result = m.invoke(snappyCodec, aConf);
-
-      return ((Boolean)result).booleanValue();
+      Object snappyShim = getActiveSnappyShim();
+      Method m = snappyShim.getClass().getMethod("isHadoopSnappyAvailable");
+      return ((Boolean) m.invoke(snappyShim)).booleanValue();
     } catch (Exception ex) {
       return false;
     }
@@ -91,33 +105,14 @@ public class HadoopCompression {
    * @throws Exception if snappy is not available or an error occurs during
    * reflection
    */
-  public static InputStream getSnappyInputStream(int bufferSize, InputStream in) 
-    throws Exception {
+  public static InputStream getSnappyInputStream(int bufferSize, InputStream in) throws Exception {
     if (!isHadoopSnappyAvailable()) {
       throw new Exception("Hadoop-snappy does not seem to be available");
     }
 
-    Object snappyCodec = Class.forName(SNAPPY_CODEC_CLASS).newInstance();
-    Class<?> confClass = Class.forName("org.apache.hadoop.conf.Configuration").newInstance().getClass();
-    Class<?>[] paramClass = new Class[1];
-    paramClass[0] = confClass;
-    
-    Object newConf = Class.forName("org.apache.hadoop.conf.Configuration").newInstance();
-
-    Object[] args = new Object[2];
-    args[0] = IO_COMPRESSION_CODEC_SNAPPY_BUFFERSIZE_KEY;
-    args[1] = "" + bufferSize;
-    Method cm = confClass.getMethod("set", new Class[] {String.class, String.class});
-    cm.invoke(newConf, args);
-    
-    Method m = snappyCodec.getClass().getMethod("setConf", paramClass);
-    m.invoke(snappyCodec, newConf);
-
-    paramClass[0] = Class.forName("java.io.InputStream");
-    m = snappyCodec.getClass().getMethod("createInputStream", paramClass);
-    Object result = m.invoke(snappyCodec, in);
-
-    return (InputStream)result;
+    Object snappyShim = getActiveSnappyShim();
+    Method getSnappyInputStream = snappyShim.getClass().getMethod("getSnappyInputStream", int.class, InputStream.class);
+    return (InputStream) getSnappyInputStream.invoke(snappyShim, bufferSize, in);
   }
 
   /**
@@ -134,7 +129,7 @@ public class HadoopCompression {
   public OutputStream getSnappyOutputStream(OutputStream out) throws Exception {
     return getSnappyOutputStream(IO_COMPRESSION_CODEC_SNAPPY_DEFAULT_BUFFERSIZE, out);
   }
-  
+
   /**
    * Gets an OutputStream that uses the snappy codec and 
    * wraps the supplied base output stream.
@@ -147,53 +142,14 @@ public class HadoopCompression {
    * @throws Exception if snappy is not available or an error occurs during
    * reflection
    */
-  public static OutputStream getSnappyOutputStream(int bufferSize, OutputStream out)
-    throws Exception {
+  public static OutputStream getSnappyOutputStream(int bufferSize, OutputStream out) throws Exception {
     if (!isHadoopSnappyAvailable()) {
       throw new Exception("Hadoop-snappy does not seem to be available");
     }
-    
-    Object snappyCodec = Class.forName(SNAPPY_CODEC_CLASS).newInstance();    
-    Class<?> confClass = Class.forName("org.apache.hadoop.conf.Configuration").newInstance().getClass();
-    Class<?>[] paramClass = new Class[1];
-    paramClass[0] = confClass;
-    
-    Object newConf = Class.forName("org.apache.hadoop.conf.Configuration").newInstance();    
-    
-    Object[] args = new Object[2];
-    args[0] = IO_COMPRESSION_CODEC_SNAPPY_BUFFERSIZE_KEY;
-    args[1] = "" + bufferSize;
-    Method cm = confClass.getMethod("set", new Class[] {String.class, String.class});
-    cm.invoke(newConf, args);
-    
-    Method m = snappyCodec.getClass().getMethod("setConf", paramClass);
-    m.invoke(snappyCodec, newConf);
-    
-    paramClass[0] = Class.forName("java.io.OutputStream");
-    m = snappyCodec.getClass().getMethod("createOutputStream", paramClass);
-    Object result = m.invoke(snappyCodec, out);
-    
-    return (OutputStream)result;
-  }
 
-  public static void main(String[] args) {
-    try {
-      FileInputStream fis = new FileInputStream(args[0]);
-      //      Object newConf = Class.forName("org.apache.hadoop.conf.Configuration");    
-      InputStream cis = HadoopCompression.getSnappyInputStream(1024 * 256, fis);
-      BufferedInputStream bis = new BufferedInputStream(cis);
-      InputStreamReader isr = new InputStreamReader(bis);
-
-      // String tempLine = null;
-
-      int c = 0;
-
-      while ((c = isr.read()) >=0) {
-        System.out.print((char)c);
-      }      
-      isr.close();
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    }
+    Object snappyShim = getActiveSnappyShim();
+    Method getSnappyOutputStream = snappyShim.getClass().getMethod("getSnappyOutputStream", int.class,
+        OutputStream.class);
+    return (OutputStream) getSnappyOutputStream.invoke(snappyShim, bufferSize, out);
   }
 }
