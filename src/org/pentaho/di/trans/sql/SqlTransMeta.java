@@ -133,14 +133,14 @@ public class SqlTransMeta {
     if (sql.getSelectFields().isDistinct()) {
       // Add a Unique Rows By HashSet step
       //
-      StepMeta filterStep = generateUniqueStep();
+      StepMeta filterStep = generateUniqueStep(transMeta.getStepFields(lastStep));
       lastStep = addToTrans(filterStep, transMeta, lastStep);
     }
     
     // We also may need to order the data...
     //
     if (sql.getOrderFields()!=null && !sql.getOrderFields().isEmpty()) {
-      StepMeta sortStep = generateSortStep(transMeta, lastStep);
+      StepMeta sortStep = generateSortStep(transMeta.getStepFields(lastStep));
       lastStep = addToTrans(sortStep, transMeta, lastStep);
     }
 
@@ -316,13 +316,17 @@ public class SqlTransMeta {
     return stepMeta;
   }
   
-  private StepMeta generateUniqueStep() {
+  private StepMeta generateUniqueStep(RowMetaInterface rowMeta) {
     SQLFields fields = sql.getSelectFields();
     MemoryGroupByMeta meta = new MemoryGroupByMeta();
     meta.allocate(fields.getFields().size(), 0);
     for (int i=0;i<fields.getFields().size();i++) {
       SQLField field = fields.getFields().get(i);
-      meta.getGroupField()[i] = Const.NVL(field.getAlias(), field.getField());
+      if (!Const.isEmpty(field.getAlias()) && rowMeta.searchValueMeta(field.getAlias())!=null) {
+        meta.getGroupField()[i] = field.getAlias();
+      } else {
+        meta.getGroupField()[i] = field.getField();
+      }
     }
     
     StepMeta stepMeta = new StepMeta("DISTINCT", meta);
@@ -425,10 +429,9 @@ public class SqlTransMeta {
     return stepMeta;
   }
 
-  private StepMeta generateSortStep(TransMeta transMeta, StepMeta lastStep) throws KettleException {
-    RowMetaInterface rowMeta = transMeta.getStepFields(lastStep);
-    
+  private StepMeta generateSortStep(RowMetaInterface rowMeta) throws KettleException {
     List<SQLField> fields = sql.getOrderFields().getFields();
+    List<SQLField> selectFields = sql.getSelectFields().getFields();
 
     SortRowsMeta meta = new SortRowsMeta();
     meta.allocate(fields.size());
@@ -437,7 +440,18 @@ public class SqlTransMeta {
       
       ValueMetaInterface valueMeta = rowMeta.searchValueMeta(sqlField.getField());
       if (valueMeta==null) {
-        valueMeta = rowMeta.searchValueMeta(sqlField.getAlias());
+        // This could be an alias used in an order by clause.
+        // In that case, we need to find the correct original name in the selectFields...
+        //
+        SQLField selectField = SQLField.searchSQLFieldByFieldOrAlias(selectFields, sqlField.getField());
+        if (selectField!=null) {
+          // Yep, verify this original name...
+          //
+          valueMeta = rowMeta.searchValueMeta(selectField.getField());
+        } else {
+          valueMeta = rowMeta.searchValueMeta(sqlField.getAlias());
+        }
+        
       }
       if (valueMeta==null) {
         throw new KettleException("Unable to find field to sort on: "+sqlField.getField()+" nor the alias: "+sqlField.getAlias());
