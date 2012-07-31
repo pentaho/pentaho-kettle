@@ -142,7 +142,7 @@ public class SwitchCase extends BaseStep implements StepInterface
         // Determine the output rowset to use...
         //
         RowSet rowSet = null;
-        if (data.inputValueMeta.isNull(lookupData)) {
+        if (lookupData == null) {
         	rowSet = data.nullRowSet;
         } else {
         	rowSet = data.outputMap.get(lookupData);
