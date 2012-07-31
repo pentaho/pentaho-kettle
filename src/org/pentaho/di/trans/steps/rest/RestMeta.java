@@ -65,7 +65,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface
 
 	public static final String[] APPLICATION_TYPES = new String []{
 		"TEXT PLAIN", "XML", "JSON", "OCTET STREAM", "XHTML", "FORM URLENCODED",
-		"ATOM XML", "SVG XML"
+		"ATOM XML", "SVG XML", "TEXT XML"
 	};
 	public static final String APPLICATION_TYPE_TEXT_PLAIN = "TEXT PLAIN";
 	public static final String APPLICATION_TYPE_XML = "XML";
@@ -75,6 +75,7 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface
 	public static final String APPLICATION_TYPE_FORM_URLENCODED = "FORM URLENCODED";
 	public static final String APPLICATION_TYPE_ATOM_XML = "ATOM XML";
 	public static final String APPLICATION_TYPE_SVG_XML = "SVG XML";
+  public static final String APPLICATION_TYPE_TEXT_XML = "TEXT XML";
 	
 	private String applicationType;
 	
