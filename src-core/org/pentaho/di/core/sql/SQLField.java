@@ -183,6 +183,14 @@ public class SQLField {
         }
         iif = new IifFunction(tableAlias, Const.trim(argsList.get(0)), Const.trim(argsList.get(1)), Const.trim(argsList.get(2)), serviceFields);
         
+      } else if (field.toUpperCase().startsWith("CASE WHEN ") && field.toUpperCase().endsWith("END")) {
+        // Same as IIF but with a different format.
+        //
+        String condition = Const.trim(ThinUtil.findClause(field, "WHEN", "THEN"));
+        String trueClause = Const.trim(ThinUtil.findClause(field, "THEN", "ELSE"));
+        String falseClause = Const.trim(ThinUtil.findClause(field, "ELSE", "END"));
+        iif = new IifFunction(tableAlias, condition, trueClause, falseClause, serviceFields);
+        
       } else {
         if (valueMeta==null) {
           valueMeta = serviceFields.searchValueMeta(field);
@@ -195,7 +203,6 @@ public class SQLField {
                 break;
               }
             }
-            
           }
         }
         
@@ -430,4 +437,12 @@ public class SQLField {
     this.fieldIndex = fieldIndex;
   }
 
+  public static SQLField searchSQLFieldByFieldOrAlias(List<SQLField> fields, String name) {
+    for (SQLField field : fields) {
+      if (name.equalsIgnoreCase(field.getField()) || name.equalsIgnoreCase(field.getAlias()) ) {
+        return field;
+      }
+    }
+    return null;
+  }
 }

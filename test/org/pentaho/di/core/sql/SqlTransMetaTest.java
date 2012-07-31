@@ -300,7 +300,7 @@ public class SqlTransMetaTest extends TestCase {
   public void test09_SelectFromGroupMaxHaving() throws Exception {
     KettleEnvironment.init();
     
-    String sqlQuery = "SELECT Country, MAX(products_sold) max_count FROM Service GROUP BY Country HAVING MAX(products_sold) > 10 ORDER BY MAX(products_sold) DESC";
+    String sqlQuery = "SELECT Country, MAX(products_sold) max_count FROM Service GROUP BY Country HAVING MAX(products_sold) > 10 ORDER BY max_count DESC";
     
     SqlTransExecutor executor = new SqlTransExecutor(sqlQuery, getServicesMap());
 
@@ -391,4 +391,40 @@ public class SqlTransMetaTest extends TestCase {
     assertEquals("B", rows.get(rowNr).getString("Category", null));
     assertEquals(8142, Math.round(rows.get(rowNr).getNumber("Sales", -1.0)));
   }
+  
+  
+  public void test11_NotSelectedHaving() throws Exception {
+    KettleEnvironment.init();
+    
+    String sqlQuery = "select \"Service\".\"Category\" as \"c0\", \"Service\".\"Country\" as \"c1\" from \"Service\" as \"Service\" where (\"Service\".\"Category\" = 'A') group by \"Service\".\"Category\", \"Service\".\"Country\" having (NOT((sum(\"Service\".\"sales_amount\") is null)) OR NOT((sum(\"Service\".\"products_sold\") is null)) ) order by CASE WHEN \"Service\".\"Category\" IS NULL THEN 1 ELSE 0 END, \"Service\".\"Category\" ASC, CASE WHEN \"Service\".\"Country\" IS NULL THEN 1 ELSE 0 END";
+    
+    SqlTransExecutor executor = new SqlTransExecutor(sqlQuery, getServicesMap());
+
+    final List<RowMetaAndData> rows = new ArrayList<RowMetaAndData>();
+    
+    // collect the eventual result rows...
+    //
+    executor.executeQuery(new RowAdapter() { @Override
+    public void rowWrittenEvent(RowMetaInterface rowMeta, Object[] row) throws KettleStepException {
+      rows.add(new RowMetaAndData(rowMeta, row));
+    } });
+    
+    // Save to temp file for checking
+    //
+    File file = new File("/tmp/gen.ktr");
+    FileOutputStream fos = new FileOutputStream(file);
+    fos.write(org.pentaho.di.core.xml.XMLHandler.getXMLHeader().getBytes("UTF-8"));
+    fos.write(executor.getGenTransMeta().getXML().getBytes("UTF-8"));
+    fos.close();
+    
+        
+    // Now the generated transformation is waiting for input so we
+    // can start the service transformation
+    //
+    executor.waitUntilFinished();
+    
+    assertEquals(4, rows.size());
+    
+  }
+
 }

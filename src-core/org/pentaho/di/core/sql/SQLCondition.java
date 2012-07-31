@@ -386,5 +386,49 @@ public class SQLCondition {
    */
   public String getTableAlias() {
     return tableAlias;
-  }  
+  }
+
+  /**
+   * Extract the list of having fields from this having condition
+   * @param aggFields 
+   * @param rowMeta 
+   * @return
+   * @throws KettleSQLException 
+   */
+  public List<SQLField> extractHavingFields(List<SQLField> selectFields, List<SQLField> aggFields, RowMetaInterface rowMeta) throws KettleSQLException {
+    List<SQLField> list = new ArrayList<SQLField>();
+    
+    // Get a list of all the lowest level field names and see if we can parse them as aggregation fields
+    //
+    List<String> expressions = new ArrayList<String>();
+    addExpressions(condition, expressions);
+    
+    for (String expression : expressions) {
+      // See if we already specified the aggregation in the Select clause, let's aggregate twice.
+      //
+      SQLField aggField = SQLField.searchSQLFieldByFieldOrAlias(aggFields, expression);
+      if (aggField==null) {
+        
+        SQLField field = new SQLField(tableAlias, expression, serviceFields);
+        if (field.getAggregation()!=null) {
+          field.setField(expression);
+          list.add(field);
+        }
+      }
+    }
+    
+    return list;
+  } 
+  
+  private void addExpressions(Condition condition, List<String> expressions) {
+    if (condition.isAtomic()) {
+      if (!expressions.contains(condition.getLeftValuename())) {
+        expressions.add(condition.getLeftValuename());
+      }
+    } else {
+      for (Condition child : condition.getChildren()) {
+        addExpressions(child, expressions);
+      }
+    }
+  }
 }

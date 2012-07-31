@@ -25,7 +25,6 @@ import org.pentaho.di.trans.steps.injector.InjectorMeta;
 import org.pentaho.di.trans.steps.memgroupby.MemoryGroupByMeta;
 import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta;
 import org.pentaho.di.trans.steps.samplerows.SampleRowsMeta;
-import org.pentaho.di.trans.steps.selectvalues.SelectMetadataChange;
 import org.pentaho.di.trans.steps.selectvalues.SelectValuesMeta;
 import org.pentaho.di.trans.steps.sort.SortRowsMeta;
 
@@ -81,6 +80,7 @@ public class SqlTransMeta {
     }
 
     // Add filters, constants, calculator steps to calculate possible IIF functions...
+    // This block is for the IIF methods in the SELECT clause
     //
     List<SQLField> iifFields = sql.getSelectFields().getIifFunctionFields();
     for (SQLField iifField : iifFields) {
@@ -97,19 +97,28 @@ public class SqlTransMeta {
     // We optionally need to aggregate the data
     //
     List<SQLField> aggFields = sql.getSelectFields().getAggregateFields();
+    if (sql.getHavingCondition()!=null) {
+      List<SQLField> havingFields = sql.getHavingCondition().extractHavingFields(
+          sql.getSelectFields().getFields(),
+          aggFields,
+          transMeta.getStepFields(lastStep));
+      aggFields.addAll(havingFields);
+    }
     List<SQLField> groupFields = sql.getGroupFields().getFields();
     
     if (aggFields.size()>0 || groupFields.size()>0) {
       StepMeta groupStep = generateGroupByStep(aggFields, groupFields);
       lastStep = addToTrans(groupStep, transMeta, lastStep);
     }
-    
-    // We need only the fields from the select clause, rename if needed
-    // In case we're using a group by clause this is done automatically.
+
+    // Add filters, constants, calculator steps to calculate possible IIF functions...
+    // This block is for the IIF methods in the ORDER clause
     //
-    if (!sql.getSelectFields().hasAggregates() && sql.getSelectFields().getRegularFields().size()>0) {
-      StepMeta selectStep = generateSelectStep();
-      lastStep = addToTrans(selectStep, transMeta, lastStep);
+    if (sql.getOrderFields()!=null) {
+      iifFields = sql.getOrderFields().getIifFunctionFields();
+      for (SQLField iifField : iifFields) {
+        lastStep = generateIifStep(iifField, transMeta, lastStep);
+      }
     }
 
     // Finally there might be a having clause, which is another filter...
@@ -131,10 +140,18 @@ public class SqlTransMeta {
     // We also may need to order the data...
     //
     if (sql.getOrderFields()!=null && !sql.getOrderFields().isEmpty()) {
-      StepMeta sortStep = generateSortStep();
+      StepMeta sortStep = generateSortStep(transMeta, lastStep);
       lastStep = addToTrans(sortStep, transMeta, lastStep);
     }
-    
+
+    // We need only the fields from the select clause, rename if needed
+    // In case we're using a group by clause this is done automatically.
+    //
+    if (!sql.getSelectFields().hasAggregates() && sql.getSelectFields().getRegularFields().size()>0) {
+      StepMeta selectStep = generateSelectStep();
+      lastStep = addToTrans(selectStep, transMeta, lastStep);
+    }
+
     // If there is a row limit specified, adhere to it but do not block the transformation from being executed.
     //
     if (rowLimit>0) {
@@ -408,14 +425,25 @@ public class SqlTransMeta {
     return stepMeta;
   }
 
-  private StepMeta generateSortStep() {
+  private StepMeta generateSortStep(TransMeta transMeta, StepMeta lastStep) throws KettleException {
+    RowMetaInterface rowMeta = transMeta.getStepFields(lastStep);
+    
     List<SQLField> fields = sql.getOrderFields().getFields();
 
     SortRowsMeta meta = new SortRowsMeta();
     meta.allocate(fields.size());
     for (int i=0;i<fields.size();i++) {
       SQLField sqlField = fields.get(i);
-      meta.getFieldName()[i] = Const.NVL(sqlField.getAlias(), sqlField.getField());
+      
+      ValueMetaInterface valueMeta = rowMeta.searchValueMeta(sqlField.getField());
+      if (valueMeta==null) {
+        valueMeta = rowMeta.searchValueMeta(sqlField.getAlias());
+      }
+      if (valueMeta==null) {
+        throw new KettleException("Unable to find field to sort on: "+sqlField.getField()+" nor the alias: "+sqlField.getAlias());
+      }
+      
+      meta.getFieldName()[i] = valueMeta.getName();
       meta.getAscending()[i] = sqlField.isAscending();
       meta.getCaseSensitive()[i] = true;
     }
@@ -436,13 +464,11 @@ public class SqlTransMeta {
     List<SQLField> fields = sql.getSelectFields().getRegularFields();
 
     SelectValuesMeta meta = new SelectValuesMeta();
-    meta.allocate(0, 0, fields.size());
+    meta.allocate(fields.size(), 0, 0);
     for (int i=0;i<fields.size();i++) {
       SQLField sqlField = fields.get(i);
-      SelectMetadataChange change = new SelectMetadataChange(meta);
-      change.setName(sqlField.getField());
-      change.setRename(sqlField.getAlias());
-      meta.getMeta()[i] = change;
+      meta.getSelectName()[i] = sqlField.getField(); 
+      meta.getSelectRename()[i] = sqlField.getAlias();
     }
     
     StepMeta stepMeta = new StepMeta("Select values", meta);

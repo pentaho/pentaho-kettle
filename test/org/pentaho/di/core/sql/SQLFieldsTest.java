@@ -1,17 +1,14 @@
 package org.pentaho.di.core.sql;
 
-import org.pentaho.di.core.exception.KettleSQLException;
-import org.pentaho.di.core.row.RowMeta;
-import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaInterface;
-
 import junit.framework.TestCase;
+
+import org.pentaho.di.core.exception.KettleSQLException;
+import org.pentaho.di.core.row.RowMetaInterface;
 
 public class SQLFieldsTest extends TestCase {
   
   public void testSqlFromFields01() throws KettleSQLException {
-    RowMetaInterface rowMeta = generateTestRowMeta();
+    RowMetaInterface rowMeta = SQLTest.generateTest2RowMeta();
     
     String fieldsClause= "A, B";
     
@@ -34,7 +31,7 @@ public class SQLFieldsTest extends TestCase {
   }
   
   public void testSqlFromFields02() throws KettleSQLException {
-    RowMetaInterface rowMeta = generateTestRowMeta();
+    RowMetaInterface rowMeta = SQLTest.generateTest2RowMeta();
     
     String fieldsClause= "A as foo, B";
     
@@ -57,7 +54,7 @@ public class SQLFieldsTest extends TestCase {
   }
 
   public void testSqlFromFields03() throws KettleSQLException {
-    RowMetaInterface rowMeta = generateTestRowMeta();
+    RowMetaInterface rowMeta = SQLTest.generateTest2RowMeta();
     
     String fieldsClause= "A, sum( B ) as \"Total sales\"";
     
@@ -80,7 +77,7 @@ public class SQLFieldsTest extends TestCase {
   }
   
   public void testSqlFromFields04() throws KettleSQLException {
-    RowMetaInterface rowMeta = generateTestRowMeta();
+    RowMetaInterface rowMeta = SQLTest.generateTest2RowMeta();
     
     String fieldsClause= "DISTINCT A as foo, B as bar";
     
@@ -103,7 +100,7 @@ public class SQLFieldsTest extends TestCase {
   }
   
   public void testSqlFromFields05() throws KettleSQLException {
-    RowMetaInterface rowMeta = generateTestRowMeta();
+    RowMetaInterface rowMeta = SQLTest.generateTest2RowMeta();
     
     String fieldsClause= "*";
     
@@ -126,7 +123,7 @@ public class SQLFieldsTest extends TestCase {
   }
   
   public void testSqlFromFields05Alias() throws KettleSQLException {
-    RowMetaInterface rowMeta = generateTestRowMeta();
+    RowMetaInterface rowMeta = SQLTest.generateTest2RowMeta();
     
     String fieldsClause= "Service.*";
     
@@ -149,7 +146,7 @@ public class SQLFieldsTest extends TestCase {
   }
 
   public void testSqlFromFields06() throws KettleSQLException {
-    RowMetaInterface rowMeta = generateTestRowMeta();
+    RowMetaInterface rowMeta = SQLTest.generateTest2RowMeta();
     
     String fieldsClause= "*, *";
     
@@ -181,13 +178,5 @@ public class SQLFieldsTest extends TestCase {
     assertNull(field.getAlias());
     assertNotNull("The service data type was not discovered", field.getValueMeta());
     assertEquals("B", field.getValueMeta().getName().toUpperCase());
-  }
-
-  
-  private RowMetaInterface generateTestRowMeta() {
-    RowMetaInterface rowMeta = new RowMeta();
-    rowMeta.addValueMeta(new ValueMeta("A", ValueMetaInterface.TYPE_STRING, 50));
-    rowMeta.addValueMeta(new ValueMeta("B", ValueMetaInterface.TYPE_INTEGER, 7));
-    return rowMeta;
   }
 }

@@ -226,6 +226,8 @@ public class ThinUtil {
   public static String stripQuoteTableAlias(String field, String tableAliasPrefix) {
     if (field.toUpperCase().startsWith((tableAliasPrefix+".").toUpperCase())) {
       return ThinUtil.stripQuotes(field.substring(tableAliasPrefix.length()+1), '"');
+    } else if (field.toUpperCase().startsWith(("\""+tableAliasPrefix+"\".").toUpperCase())) {
+      return ThinUtil.stripQuotes(field.substring(tableAliasPrefix.length()+3), '"');
     } else {
       return ThinUtil.stripQuotes(Const.trim(field), '"');
     }
@@ -285,12 +287,24 @@ public class ThinUtil {
   public static String stripQuotes(String string, char...quoteChars) {
     StringBuilder builder = new StringBuilder(string);
     for (char quoteChar : quoteChars) {
-      if (builder.length()>0 && builder.charAt(0)==quoteChar && builder.charAt(builder.length()-1)==quoteChar) {
-        builder.deleteCharAt(builder.length()-1);
-        builder.deleteCharAt(0);
+      if (countQuotes(builder.toString(), quoteChar)==2) {
+        if (builder.length()>0 && builder.charAt(0)==quoteChar && builder.charAt(builder.length()-1)==quoteChar) {
+          // If there are quotes in between, don't do it...
+          //
+          builder.deleteCharAt(builder.length()-1);
+          builder.deleteCharAt(0);
+        }
       }
     }
     return builder.toString();
+  }
+  
+  private static int countQuotes(String string, char quoteChar) {
+    int count=0;
+    for (int i=0;i<string.length();i++) {
+      if (string.charAt(i)==quoteChar) count++;
+    }
+    return count;
   }
 
   public static List<String> splitClause(String fieldClause, char splitChar, char...skipChars) throws KettleSQLException {
@@ -303,7 +317,15 @@ public class ThinUtil {
         startIndex=-1;
         break;
       }
-      if (fieldClause.charAt(index)==splitChar) {
+      // The CASE-WHEN-THEN-ELSE-END Hack // TODO: factor out
+      // 
+      if (fieldClause.substring(index).toUpperCase().startsWith("CASE WHEN ")) {
+        // If we see CASE-WHEN then we skip to END
+        //
+        index = skipOverClause(fieldClause, index, " END");
+      }
+      
+      if (index<fieldClause.length() && fieldClause.charAt(index)==splitChar) {
         strings.add( fieldClause.substring(startIndex, index) );
         while (index<fieldClause.length() && fieldClause.charAt(index)==splitChar) index++;
         startIndex=index;
@@ -315,5 +337,54 @@ public class ThinUtil {
     }
     
     return strings;
+  }
+  
+  private static int skipOverClause(String fieldClause, int index, String clause) throws KettleSQLException {
+    while (index<fieldClause.length()) {
+      index=skipChars(fieldClause, index, '\'', '"');
+      if (fieldClause.substring(index).toUpperCase().startsWith(clause.toUpperCase())) {
+        return index+clause.length();
+      }
+      index++;
+    }
+    return fieldClause.length();
+  }
+
+
+  public static String findClause(String sqlString, String startClause, String...endClauses) throws KettleSQLException {
+    if (Const.isEmpty(sqlString)) return null;
+    
+    String sql = sqlString.toUpperCase();
+    
+    int startIndex=0;
+    while (startIndex<sql.length()) {
+      startIndex = ThinUtil.skipChars(sql, startIndex, '"', '\'');
+      if (sql.substring(startIndex).startsWith(startClause.toUpperCase())) {
+        break;
+      }
+      startIndex++;
+    }
+    
+    if (startIndex<0 || startIndex>=sql.length()) return null;
+    
+    startIndex+=startClause.length()+1;
+    if (endClauses.length==0) return sql.substring(startIndex);
+    
+    int endIndex=sql.length();
+    for (String endClause : endClauses) {
+      
+      int index=startIndex;
+      while (index<sql.length()) {
+        index = ThinUtil.skipChars(sql, index, '"', '\'');
+
+        // See if the end-clause is present at this location.
+        //
+        if (sql.substring(index).startsWith(endClause.toUpperCase())) {
+          if (index<endIndex) endIndex=index;
+        }
+        index++;
+      }
+    }
+    return Const.trim( sqlString.substring(startIndex, endIndex) );
   }
 }

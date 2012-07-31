@@ -72,50 +72,13 @@ public class SQL {
      * 
      */
     //
-    selectClause = findClause(sql, "SELECT", "FROM");
-    serviceClause = findClause(sql, "FROM", "WHERE", "GROUP BY", "ORDER BY");
+    selectClause = ThinUtil.findClause(sql, "SELECT", "FROM");
+    serviceClause = ThinUtil.findClause(sql, "FROM", "WHERE", "GROUP BY", "ORDER BY");
     parseServiceClause();
-    whereClause = findClause(sql, "WHERE", "GROUP BY", "ORDER BY");
-    groupClause = findClause(sql, "GROUP BY", "HAVING", "ORDER BY");
-    havingClause = findClause(sql, "HAVING", "ORDER BY");
-    orderClause = findClause(sql, "ORDER BY");
-  }
-
-  public static String findClause(String sqlString, String startClause, String...endClauses) throws KettleSQLException {
-    if (Const.isEmpty(sqlString)) return null;
-    
-    String sql = sqlString.toUpperCase();
-    
-    int startIndex=0;
-    while (startIndex<sql.length()) {
-      startIndex = ThinUtil.skipChars(sql, startIndex, '"', '\'');
-      if (sql.substring(startIndex).startsWith(startClause.toUpperCase())) {
-        break;
-      }
-      startIndex++;
-    }
-    
-    if (startIndex<0 || startIndex>=sql.length()) return null;
-    
-    startIndex+=startClause.length()+1;
-    if (endClauses.length==0) return sql.substring(startIndex);
-    
-    int endIndex=sql.length();
-    for (String endClause : endClauses) {
-      
-      int index=startIndex;
-      while (index<sql.length()) {
-        index = ThinUtil.skipChars(sql, index, '"', '\'');
-
-        // See if the end-clause is present at this location.
-        //
-        if (sql.substring(index).startsWith(endClause.toUpperCase())) {
-          if (index<endIndex) endIndex=index;
-        }
-        index++;
-      }
-    }
-    return Const.trim( sqlString.substring(startIndex, endIndex) );
+    whereClause = ThinUtil.findClause(sql, "WHERE", "GROUP BY", "ORDER BY");
+    groupClause = ThinUtil.findClause(sql, "GROUP BY", "HAVING", "ORDER BY");
+    havingClause = ThinUtil.findClause(sql, "HAVING", "ORDER BY");
+    orderClause = ThinUtil.findClause(sql, "ORDER BY");
   }
 
   private void parseServiceClause() throws KettleSQLException {
@@ -126,15 +89,15 @@ public class SQL {
     
     List<String> parts = ThinUtil.splitClause(serviceClause, ' ', '"');
     if (parts.size()>=1) {
-      serviceName = parts.get(0);
+      serviceName = ThinUtil.stripQuotes(parts.get(0), '"');
     }
     if (parts.size()==2) {
-      serviceAlias = parts.get(1);
+      serviceAlias = ThinUtil.stripQuotes(parts.get(1), '"');
     }
     if (parts.size()==3) {
       
       if (parts.get(1).equalsIgnoreCase("AS")) {
-        serviceAlias=parts.get(2);
+        serviceAlias=ThinUtil.stripQuotes(parts.get(2), '"');
       } else {
         throw new KettleSQLException("AS expected in from clause: "+serviceClause);
       }

@@ -1,19 +1,16 @@
 package org.pentaho.di.core.sql;
 
+import junit.framework.TestCase;
+
 import org.pentaho.di.core.Condition;
 import org.pentaho.di.core.exception.KettleSQLException;
-import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
-import org.pentaho.di.core.row.ValueMeta;
-import org.pentaho.di.core.row.ValueMetaInterface;
-
-import junit.framework.TestCase;
 
 public class SQLConditionTest extends TestCase {
   
   
   public void testCondition01() throws KettleSQLException {
-    RowMetaInterface rowMeta = generateTestRowMeta();
+    RowMetaInterface rowMeta = SQLTest.generateTest4RowMeta();
     
     String fieldsClause= "A, B";
     String conditionClause = "A = 'FOO'";
@@ -34,7 +31,7 @@ public class SQLConditionTest extends TestCase {
   }
 
   public void testCondition02() throws KettleSQLException {
-    RowMetaInterface rowMeta = generateTestRowMeta();
+    RowMetaInterface rowMeta = SQLTest.generateTest4RowMeta();
     
     String fieldsClause= "A, B";
     String conditionClause = "B > 123";
@@ -55,7 +52,7 @@ public class SQLConditionTest extends TestCase {
   }
   
   public void testCondition03() throws KettleSQLException {
-    RowMetaInterface rowMeta = generateTestRowMeta();
+    RowMetaInterface rowMeta = SQLTest.generateTest4RowMeta();
     
     String fieldsClause= "A, B";
     String conditionClause = "B < 123";
@@ -76,7 +73,7 @@ public class SQLConditionTest extends TestCase {
   }
   
   public void testCondition04() throws KettleSQLException {
-    RowMetaInterface rowMeta = generateTestRowMeta();
+    RowMetaInterface rowMeta = SQLTest.generateTest4RowMeta();
     
     String fieldsClause= "A, B";
     String conditionClause = "B >= 123";
@@ -97,7 +94,7 @@ public class SQLConditionTest extends TestCase {
   }
   
   public void testCondition05() throws KettleSQLException {
-    RowMetaInterface rowMeta = generateTestRowMeta();
+    RowMetaInterface rowMeta = SQLTest.generateTest4RowMeta();
     
     String fieldsClause= "A, B";
     String conditionClause = "B => 123";
@@ -118,7 +115,7 @@ public class SQLConditionTest extends TestCase {
   }
   
   public void testCondition06() throws KettleSQLException {
-    RowMetaInterface rowMeta = generateTestRowMeta();
+    RowMetaInterface rowMeta = SQLTest.generateTest4RowMeta();
     
     String fieldsClause= "A, B";
     String conditionClause = "B <= 123";
@@ -139,7 +136,7 @@ public class SQLConditionTest extends TestCase {
   }
 
   public void testCondition07() throws KettleSQLException {
-    RowMetaInterface rowMeta = generateTestRowMeta();
+    RowMetaInterface rowMeta = SQLTest.generateTest4RowMeta();
     
     String fieldsClause= "A, B";
     String conditionClause = "B >= 123";
@@ -160,7 +157,7 @@ public class SQLConditionTest extends TestCase {
   }
 
   public void testCondition08() throws KettleSQLException {
-    RowMetaInterface rowMeta = generateTestRowMeta();
+    RowMetaInterface rowMeta = SQLTest.generateTest4RowMeta();
     
     String fieldsClause= "A, B";
     String conditionClause = "B => 123";
@@ -181,7 +178,7 @@ public class SQLConditionTest extends TestCase {
   }
   
   public void testCondition09() throws KettleSQLException {
-    RowMetaInterface rowMeta = generateTestRowMeta();
+    RowMetaInterface rowMeta = SQLTest.generateTest4RowMeta();
     
     String fieldsClause= "A, B";
     String conditionClause = "B <> 123";
@@ -202,7 +199,7 @@ public class SQLConditionTest extends TestCase {
   }
   
   public void testCondition10() throws KettleSQLException {
-    RowMetaInterface rowMeta = generateTestRowMeta();
+    RowMetaInterface rowMeta = SQLTest.generateTest4RowMeta();
     
     String fieldsClause= "A, B";
     String conditionClause = "B IN (1, 2, 3, 4)";
@@ -223,7 +220,7 @@ public class SQLConditionTest extends TestCase {
   }
   
   public void testCondition11() throws KettleSQLException {
-    RowMetaInterface rowMeta = generateTestRowMeta();
+    RowMetaInterface rowMeta = SQLTest.generateTest4RowMeta();
     
     String fieldsClause= "A, B";
     String conditionClause = "A IN ( 'foo' , 'bar' )";
@@ -244,7 +241,7 @@ public class SQLConditionTest extends TestCase {
   }
   
   public void testCondition12() throws KettleSQLException {
-    RowMetaInterface rowMeta = generateTestRowMeta();
+    RowMetaInterface rowMeta = SQLTest.generateTest4RowMeta();
     
     String fieldsClause= "A, B";
     String conditionClause = "A REGEX 'foo.*bar'";
@@ -266,7 +263,7 @@ public class SQLConditionTest extends TestCase {
 
   
   public void testCondition13() throws KettleSQLException {
-    RowMetaInterface rowMeta = generateTestRowMeta();
+    RowMetaInterface rowMeta = SQLTest.generateTest4RowMeta();
     
     String fieldsClause= "A, B";
     String conditionClause = "A LIKE 'foo%'";
@@ -287,7 +284,7 @@ public class SQLConditionTest extends TestCase {
   }
 
   public void testCondition14() throws KettleSQLException {
-    RowMetaInterface rowMeta = generateTestRowMeta();
+    RowMetaInterface rowMeta = SQLTest.generateTest4RowMeta();
     
     String fieldsClause= "A, B";
     String conditionClause = "A LIKE 'foo??bar'";
@@ -311,7 +308,7 @@ public class SQLConditionTest extends TestCase {
   // Now the more complex AND/OR/NOT situations...
   //
   public void testCondition15() throws KettleSQLException {
-    RowMetaInterface rowMeta = generateTestRowMeta();
+    RowMetaInterface rowMeta = SQLTest.generateTest4RowMeta();
     
     String fieldsClause= "A, B";
     String conditionClause = "A='Foo' AND B>5";
@@ -342,7 +339,7 @@ public class SQLConditionTest extends TestCase {
   }
   
   public void testCondition16() throws KettleSQLException {
-    RowMetaInterface rowMeta = generateTestRowMeta();
+    RowMetaInterface rowMeta = SQLTest.generateTest4RowMeta();
     
     String fieldsClause= "A, B";
     String conditionClause = "( A='Foo' ) AND ( B>5 )";
@@ -373,7 +370,7 @@ public class SQLConditionTest extends TestCase {
   }
   
   public void testCondition17() throws KettleSQLException {
-    RowMetaInterface rowMeta = generateTestRowMeta();
+    RowMetaInterface rowMeta = SQLTest.generateTest4RowMeta();
     
     String fieldsClause= "A, B, C, D";
     String conditionClause = "A='Foo' AND B>5 AND C='foo' AND D=123";
@@ -421,7 +418,7 @@ public class SQLConditionTest extends TestCase {
    * @throws KettleSQLException
    */
   public void testCondition18() throws KettleSQLException {
-    RowMetaInterface rowMeta = generateTestRowMeta();
+    RowMetaInterface rowMeta = SQLTest.generateTest4RowMeta();
     
     String fieldsClause= "A, B, C, D";
     String conditionClause = "A='Foo' OR B>5 AND C='foo' OR D=123";
@@ -470,7 +467,7 @@ public class SQLConditionTest extends TestCase {
   }
   
   public void testCondition19() throws KettleSQLException {
-    RowMetaInterface rowMeta = generateTestRowMeta();
+    RowMetaInterface rowMeta = SQLTest.generateTest4RowMeta();
     
     String fieldsClause= "A, B";
     String conditionClause = "A LIKE '%AL%' AND ( B LIKE '15%' OR C IS NULL )";
@@ -515,7 +512,7 @@ public class SQLConditionTest extends TestCase {
   }
  
   public void testCondition20() throws KettleSQLException {
-    RowMetaInterface rowMeta = generateTestRowMeta();
+    RowMetaInterface rowMeta = SQLTest.generateTest4RowMeta();
     
     String fieldsClause= "A, B";
     String conditionClause = "NOT ( A = 'FOO' )";
@@ -537,7 +534,7 @@ public class SQLConditionTest extends TestCase {
   }
 
   public void testCondition21() throws KettleSQLException {
-    RowMetaInterface rowMeta = generateTestRowMeta();
+    RowMetaInterface rowMeta = SQLTest.generateTest4RowMeta();
     
     String fieldsClause= "A, B";
     String conditionClause = "A='Foo' AND NOT ( B>5 )";
@@ -569,7 +566,7 @@ public class SQLConditionTest extends TestCase {
   }
   
   public void testCondition22() throws KettleSQLException {
-    RowMetaInterface rowMeta = generateTestRowMeta();
+    RowMetaInterface rowMeta = SQLTest.generateTest4RowMeta();
     
     String fieldsClause= "A, B, C";
     String conditionClause = "A='Foo' AND NOT ( B>5 OR C='AAA' ) ";
@@ -615,7 +612,7 @@ public class SQLConditionTest extends TestCase {
   // Brackets, quotes...
   //
   public void testCondition23() throws KettleSQLException {
-    RowMetaInterface rowMeta = generateTestRowMeta();
+    RowMetaInterface rowMeta = SQLTest.generateTest4RowMeta();
     
     String fieldsClause= "A, B";
     String conditionClause = "( A LIKE '(AND' ) AND ( B>5 )";
@@ -648,7 +645,7 @@ public class SQLConditionTest extends TestCase {
   // Brackets, quotes...
   //
   public void testCondition24() throws KettleSQLException {
-    RowMetaInterface rowMeta = generateTestRowMeta();
+    RowMetaInterface rowMeta = SQLTest.generateTest4RowMeta();
     
     String fieldsClause= "A, B";
     String conditionClause = "( A LIKE '(AND' ) AND ( ( B>5 ) OR ( B=3 ) )";
@@ -698,7 +695,7 @@ public class SQLConditionTest extends TestCase {
   //
   
   public void testCondition25() throws KettleSQLException {
-    RowMetaInterface rowMeta = generateTestRowMeta();
+    RowMetaInterface rowMeta = SQLTest.generateTest4RowMeta();
     
     String fieldsClause= "A, B";
     String conditionClause = "PARAMETER('param')='FOO'";
@@ -720,7 +717,7 @@ public class SQLConditionTest extends TestCase {
   }
  
   public void testCondition26() throws KettleSQLException {
-    RowMetaInterface rowMeta = generateTestRowMeta();
+    RowMetaInterface rowMeta = SQLTest.generateTest4RowMeta();
     
     String fieldsClause= "A, B";
     String conditionClause = "A='Foo' AND B>5 OR PARAMETER('par')='foo'";
@@ -758,12 +755,15 @@ public class SQLConditionTest extends TestCase {
     assertEquals("foo", param.getRightExactString());
   }
   
-  private RowMetaInterface generateTestRowMeta() {
-    RowMetaInterface rowMeta = new RowMeta();
-    rowMeta.addValueMeta(new ValueMeta("A", ValueMetaInterface.TYPE_STRING, 50));
-    rowMeta.addValueMeta(new ValueMeta("B", ValueMetaInterface.TYPE_INTEGER, 7));
-    rowMeta.addValueMeta(new ValueMeta("C", ValueMetaInterface.TYPE_STRING, 50));
-    rowMeta.addValueMeta(new ValueMeta("D", ValueMetaInterface.TYPE_INTEGER, 7));
-    return rowMeta;
+  public void testCondition27() throws Exception {
+    
+    RowMetaInterface rowMeta = SQLTest.generateServiceRowMeta();
+    String fieldsClause = "\"Service\".\"Category\" as \"c0\", \"Service\".\"Country\" as \"c1\"";
+    SQLFields fields = new SQLFields("Service", rowMeta, fieldsClause);
+
+    String conditionClause = "(NOT((sum(\"Service\".\"sales_amount\") is null)) OR NOT((sum(\"Service\".\"products_sold\") is null)) )";
+    SQLCondition sqlCondition = new SQLCondition("Service", conditionClause, rowMeta, fields);
+    Condition condition = sqlCondition.getCondition();
+    assertNotNull(condition);
   }
 }
