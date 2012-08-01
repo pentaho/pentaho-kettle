@@ -861,7 +861,10 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
     m_jsonEncoded = jsonEncoded;
     m_newFieldOffset = newFieldOffset;
     m_inStream = null;
-    m_normalFields = fields;
+    m_normalFields = new ArrayList<AvroInputMeta.AvroField>();
+    for (AvroInputMeta.AvroField f : fields) {
+      m_normalFields.add(f);
+    }
     m_fieldToDecodeIndex = m_outputRowMeta.indexOfValue(fieldNameToDecode);
 
     if (Const.isEmpty(readerSchemaFile)) {
@@ -910,7 +913,10 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
       int newFieldOffset) throws KettleException {
 
     m_newFieldOffset = newFieldOffset;
-    m_normalFields = fields;
+    m_normalFields = new ArrayList<AvroInputMeta.AvroField>();
+    for (AvroInputMeta.AvroField f : fields) {
+      m_normalFields.add(f);
+    }
     m_inStream = null;
     m_jsonEncoded = jsonEncoded;
 
@@ -985,7 +991,7 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
     init();
   }
 
-  private void init() throws KettleException {
+  protected void init() throws KettleException {
     // what top-level structure are we using?
     if (m_schemaToUse.getType() == Schema.Type.RECORD) {
       m_topLevelRecord = new GenericData.Record(m_schemaToUse);
@@ -1131,6 +1137,10 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
     // than a field
     if (outputRowData == null) {
       outputRowData = RowDataUtil.allocateRowData(m_outputRowMeta.size());
+    } else {
+      // make sure we allocate enough space for the new fields
+      outputRowData = RowDataUtil.resizeArray(outputRowData,
+          m_outputRowMeta.size());
     }
 
     // get the normal (non expansion-related fields)
@@ -1149,7 +1159,8 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
       outputRowData[f.m_outputIndex] = value;
     }
 
-    // copy normal fields over to each expansion row (if necessary)
+    // copy normal fields and existing incoming over to each expansion row (if
+    // necessary)
     if (m_expansionHandler == null) {
       result[0] = outputRowData;
     } else if (m_normalFields.size() > 0 || m_newFieldOffset > 0) {
@@ -1165,7 +1176,6 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
           row[f.m_outputIndex] = outputRowData[f.m_outputIndex];
         }
       }
-
     }
 
     return result;
@@ -1225,11 +1235,10 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
           // incoming avro field null? - all decoded fields are null
           if (fieldMeta.isNull(incoming[m_fieldToDecodeIndex])) {
             Object[][] result = new Object[1][];
-            result[0] = RowDataUtil.allocateRowData(m_outputRowMeta.size());
-            // just copy all incoming field values over
-            for (int i = 0; i < incoming.length; i++) {
-              result[0][i] = incoming[i];
-            }
+            // just resize the existing incoming array (if necessary) and return
+            // the incoming values
+            result[0] = RowDataUtil.resizeArray(incoming,
+                m_outputRowMeta.size());
             return result;
           }
 
