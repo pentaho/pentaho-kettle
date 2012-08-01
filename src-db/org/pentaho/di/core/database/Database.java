@@ -24,7 +24,6 @@ package org.pentaho.di.core.database;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.StringReader;
@@ -1466,7 +1465,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		prepStatementInsert = null;
 	}
 	
-		/**
+	/**
 	 * Close the passed prepared statement.
 	 * This object's "written" property is passed to the
 	 * method that does the execute and commit.
@@ -1625,9 +1624,14 @@ public class Database implements VariableSpace, LoggingObjectInterface
 		return execStatement(sql, null, null);
 	}
 	
-	public Result execStatement(String sql, RowMetaInterface params, Object[] data) throws KettleDatabaseException
+	public Result execStatement(String rawsql, RowMetaInterface params, Object[] data) throws KettleDatabaseException
 	{
         Result result = new Result();
+        
+        // Replace existing code with a class that removes comments from the raw SQL.
+        //  The SqlCommentScrubber respects single-quoted strings, so if a double-dash or a multiline comment appears
+        //  in a single-quoted string, it will be treated as a string instead of comments.
+        String sql = SqlCommentScrubber.removeComments(rawsql).trim();        		
 		try
 		{
             boolean resultSet;
@@ -1649,7 +1653,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
                 count = stmt.getUpdateCount();
 				stmt.close();
 			}
-      String upperSql = sql.toUpperCase();
+			String upperSql = sql.toUpperCase();
             if (resultSet)
             {
                 // the result is a resultset, but we don't do anything with it!
@@ -1687,39 +1691,6 @@ public class Database implements VariableSpace, LoggingObjectInterface
         return result;
 	}
 	
-/**
- * scrubDoubleHyphenComments remove the comment from the sql string. The reason for this operation is not every database support the -- comments
- * You can now use -- ant any position in the line and it will comment everything in the line after that point	
- * @param scripts
- * @return scrubed sql string 
- */
-	private String scrubDoubleHyphenComments(String scripts) {
-	  final String DOUBLE_HYPHEN = "--";
-	  boolean done = false;
-	  BufferedReader reader = new BufferedReader(new StringReader(scripts));
-	  StringBuffer returnBuffer = new StringBuffer();
-	  while(!done) {
-	    try {
-        String line = reader.readLine();
-        if(line != null) {
-          if(line.length() > 0) {
-        	if(returnBuffer.length()>0) returnBuffer.append(" "); // add a space between appended lines
-            int index = line.indexOf(DOUBLE_HYPHEN);
-            if( index >= 0) {
-              returnBuffer.append(line.substring(0, index));
-            } else {
-              returnBuffer.append(line);
-            }
-          }
-        } else {
-          done = true;
-        }
-      } catch (IOException e) {
-          return scripts;
-      }
-	  }
-	  return returnBuffer.toString();
-	}
 
 	   /**
 	    * Execute a series of SQL statements, separated by ;
@@ -1760,44 +1731,16 @@ public class Database implements VariableSpace, LoggingObjectInterface
  {
        Result result = new Result();
        
-   // Deleting all the -- comment from the string
-   String all = scrubDoubleHyphenComments(script);
+   // Deleting all the single-line and multi-line comments from the string
+   String all = SqlCommentScrubber.removeComments(script);//scrubDoubleHyphenComments(script);
    
-   int from=0;
-   int to=0;
-   int length = all.length();
+   String[] statements = all.split(";");
+   String stat;
    int nrstats = 0;
-     
-   while (to<length)
-   {
-     char c = all.charAt(to);
-     if (c=='"')
-     {
-       c=' ';
-       while (++to<length && ((c=all.charAt(to))!='"'));
-     }
-     else
-     if (c=='\'') // skip until next '
-     {
-       c=' ';
-       while (++to<length && ((c=all.charAt(to))!='\''));
-     }
-
-     if (c==';' || to>=length-1) // end of statement
-     {
-       if (to>=length-1) to++; // grab last char also!
+   
+   for(int i=0;i<statements.length;i++) {
                
-               String stat;
-               if (to<=length) stat = all.substring(from, to);
-               else stat = all.substring(from);
-               
-               // If it ends with a ; remove that ;
-               // Oracle for example can't stand it when this happens...
-               if (stat.length()>0 && stat.charAt(stat.length()-1)==';')
-               {
-                   stat = stat.substring(0,stat.length()-1);
-               }
-               
+	   stat = statements[i];
        if (!Const.onlySpaces(stat))
        {
          String sql=Const.trim(stat);
@@ -1813,18 +1756,18 @@ public class Database implements VariableSpace, LoggingObjectInterface
              rs = openQuery(sql, params, data);
              if (rs!=null)
              {
-                               Object[] row = getRow(rs);
+               Object[] row = getRow(rs);
                while (row!=null)
                {
                  result.setNrLinesRead(result.getNrLinesRead()+1);
                  if (log.isDetailed()) log.logDetailed(rowMeta.getString(row));
-                                   row = getRow(rs);
+                 row = getRow(rs);
                }
                
              }
              else
              {
-                  if (log.isDebug()) log.logDebug("Error executing query: "+Const.CR+sql);
+            	 if (log.isDebug()) log.logDebug("Error executing query: "+Const.CR+sql);
              }
            } catch (KettleValueException e) {
              throw new KettleDatabaseException(e); // just pass the error upwards.
@@ -1837,32 +1780,25 @@ public class Database implements VariableSpace, LoggingObjectInterface
              }
              catch (SQLException ex )
              {
-                  if (log.isDebug()) log.logDebug("Error closing query: "+Const.CR+sql);
+            	 if (log.isDebug()) log.logDebug("Error closing query: "+Const.CR+sql);
              }
            }           
          }
-                   else // any kind of statement
-                   {
-                     if(log.isDetailed()) log.logDetailed("launch DDL statement: "+Const.CR+sql);
+         else // any kind of statement
+         {
+           if(log.isDetailed()) log.logDetailed("launch DDL statement: "+Const.CR+sql);
 
-                       // A DDL statement
-                       nrstats++;
-                       Result res = execStatement(sql, params, data);
-                       result.add(res);
-                   }
+            // A DDL statement
+            nrstats++;
+            Result res = execStatement(sql, params, data);
+            result.add(res);
+         }
        }
-       to++;
-       from=to;
-     }
-     else 
-     {
-       to++;
-     }
    }
-   
+
    if(log.isDetailed()) log.logDetailed(nrstats+" statement"+(nrstats==1?"":"s")+" executed");
        
-       return result;
+   return result;
  }
 
 
