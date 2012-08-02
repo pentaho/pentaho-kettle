@@ -173,10 +173,10 @@ public class StringEvaluatorTest extends TestCase {
   }
 
   public void testCustomNumberFormats() {
-    List<String> dates = Arrays.asList(new String[] {"MM/dd/yyyy"});
-    List<String> numbers = Arrays.asList(new String[] {"#"});
+    Locale orig = Locale.getDefault();
+    Locale.setDefault(Locale.US);
 
-    StringEvaluator eval = new StringEvaluator(true, numbers, dates);
+    StringEvaluator eval = new StringEvaluator();
     String[] goodValues = new String[]{ "200.00", "999.99", "4,309.88" };
     String[] badValues = new String[]{ "9 00", "$30.00", "3.999,00" };
 
@@ -185,15 +185,17 @@ public class StringEvaluatorTest extends TestCase {
     }
     assertEquals(goodValues.length, eval.getCount());
     StringEvaluationResult result = eval.getAdvicedResult();
-    assertEquals("Not a number detetected", result.getConversionMeta().getType(), ValueMetaInterface.TYPE_NUMBER);
+    assertEquals("Not a number detetected", result.getConversionMeta().getTypeDesc(), "Number");
 
-    eval = new StringEvaluator(true, numbers, dates);
+    eval = new StringEvaluator();
     for (String value : badValues) {
       eval.evaluateString(value);
     }
     assertEquals(badValues.length, eval.getCount());
     result = eval.getAdvicedResult();
     assertFalse("Number detetected", result.getConversionMeta().getType() == ValueMetaInterface.TYPE_NUMBER);
+    
+    Locale.setDefault(orig);
   }
 
   public void testDeterminePrecision() {

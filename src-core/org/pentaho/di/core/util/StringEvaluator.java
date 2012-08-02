@@ -24,7 +24,13 @@ package org.pentaho.di.core.util;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -51,10 +57,10 @@ public class StringEvaluator {
 	
 	private ValueMetaInterface stringMeta;
 
-  private List<String> dateFormats;
-  private List<String> numberFormats;
-
-  private static final List<String> DEFAULT_NUMBER_FORMATS = Arrays.asList(new String[] {
+  private String[] dateFormats;
+  private String[] numberFormats;
+  
+  private static final String[] DEFAULT_NUMBER_FORMATS = new String[] {
     "#,###,###.#",
     "#.#",
     " #.#",
@@ -66,13 +72,25 @@ public class StringEvaluator {
     "#.00000",
     "#.000000",
     " #.0#",
-  });
-
+  };
+  
+  static {
+    
+  }
+  
+  public StringEvaluator() {
+    this(true);
+  }
+  
   public StringEvaluator(boolean tryTrimming) {
-    this(tryTrimming, DEFAULT_NUMBER_FORMATS, Arrays.asList(Const.getDateFormats()));
+    this(tryTrimming, DEFAULT_NUMBER_FORMATS, Const.getDateFormats());
 	}
-	
+
   public StringEvaluator(boolean tryTrimming, List<String> numberFormats, List<String> dateFormats) {
+    this(tryTrimming, numberFormats.toArray(new String[numberFormats.size()]), dateFormats.toArray(new String[dateFormats.size()]));
+  }
+  
+  public StringEvaluator(boolean tryTrimming, String[] numberFormats, String[] dateFormats) {
     this.tryTrimming = tryTrimming;
 
     values = new HashSet<String>();
@@ -306,11 +324,11 @@ public class StringEvaluator {
 		
 	}
 
-  public List<String> getDateFormats() {
+  public String[] getDateFormats() {
     return dateFormats;
   }
 
-  public List<String> getNumberFormats() {
+  public String[] getNumberFormats() {
     return numberFormats;
   }
 
@@ -433,8 +451,8 @@ public class StringEvaluator {
     } else {
       return 0;
     }
-
   }
+
 
 
   /**
