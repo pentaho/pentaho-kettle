@@ -27,13 +27,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import junit.framework.TestCase;
+
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 import org.pentaho.di.trans.steps.tableoutput.TableOutputMeta;
-import org.pentaho.di.ui.repository.dialog.RepositoryRevisionBrowserDialogInterface;
-
-import junit.framework.TestCase;
 
 public class PluginRegistryTest extends TestCase
 {
@@ -147,15 +146,15 @@ public class PluginRegistryTest extends TestCase
 		assertNotNull(object);
 		assertTrue(object instanceof TableInputMeta);
 
-		// The same but now explicitely asking for the main class
+		// The same but now explicitly asking for the main class
 		//
 		Object object2 = registry.loadClass(tableOutputPlugin, TableOutputMeta.class);
 		assertNotNull(object2);
 		assertTrue(object2 instanceof TableOutputMeta);
 
 		try {
-			registry.loadClass(tableInputPlugin, RepositoryRevisionBrowserDialogInterface.class);
-			fail("A repository browser plugin class type can't be used when loading a step class");
+			registry.loadClass(tableInputPlugin, String.class);
+			fail("A String class type can't be used when loading a step class");
 		} catch(Exception e) {
 			// OK!
 		}
