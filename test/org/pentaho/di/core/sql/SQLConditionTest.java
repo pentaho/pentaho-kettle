@@ -777,6 +777,5 @@ public class SQLConditionTest extends TestCase {
     SQLCondition sqlCondition = new SQLCondition("Service", conditionClause, rowMeta, fields);
     Condition condition = sqlCondition.getCondition();
     assertNotNull(condition);
-  }
-  
+  }  
 }

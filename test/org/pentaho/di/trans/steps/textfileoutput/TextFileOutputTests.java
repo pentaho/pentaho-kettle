@@ -80,6 +80,7 @@ public class TextFileOutputTests extends TestCase {
         rowGeneratorMeta.setFieldPrecision(new int[]{-1, -1, -1});
         rowGeneratorMeta.setGroup(new String[]{"", "", ""});
         rowGeneratorMeta.setDecimal(new String[]{"", "", ""});
+        rowGeneratorMeta.setCurrency(new String[]{"", "", ""});
         rowGeneratorMeta.setFieldFormat(new String[]{"", "", ""});
         rowGeneratorMeta.setRowLimit("10");
         

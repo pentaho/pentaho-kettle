@@ -51,7 +51,7 @@ public class NormalExecutionTest extends TestCase {
   /**
    * Mock {@link RowListener} that totals the number of events.  Can be stopped with {@code close()}.
    */
-  private class CountingRowListener extends RowAdapter {
+  protected class CountingRowListener extends RowAdapter {
     private Long error;
 
     private Long written;
@@ -158,7 +158,7 @@ public class NormalExecutionTest extends TestCase {
   public void testWaitUntilFinished() throws Exception {
     // The number of rows we'll pump through our RowProducer.
     final Long ROWS = 10L;
-    final int ITERATIONS = 100000;
+    final int ITERATIONS = 100;
     
     // Load transformation
     TransMeta transMeta = new TransMeta("testfiles/NormalExecutionTest - WaitUntilFinished.ktr"); //$NON-NLS-1$
@@ -196,7 +196,9 @@ public class NormalExecutionTest extends TestCase {
       countingListener.setListening(false);
       
       assertTrue(trans.isFinished());
-      
+
+      /*
+
       // Make sure we collect all output so we can report how long it actually took
       long start = System.currentTimeMillis();
       while (countingListener.getWritten() + countingListener.getIgnoredWritten() != ROWS) {
@@ -212,6 +214,7 @@ public class NormalExecutionTest extends TestCase {
       System.out.println("Rows ignored (written): " + countingListener.getIgnoredWritten()); //$NON-NLS-1$
       System.out.println("Rows ignored (error)  : " + countingListener.getIgnoredError()); //$NON-NLS-1$
       System.out.println("Had to wait " + (end - start) + "ms for all data to be received by the row listener."); //$NON-NLS-1$ //$NON-NLS-2$
+      */
       
       assertEquals("Incorrect number of read rows received", ROWS, countingListener.getRead()); //$NON-NLS-1$
       assertEquals("Incorrect number of written rows received", ROWS, countingListener.getWritten()); //$NON-NLS-1$

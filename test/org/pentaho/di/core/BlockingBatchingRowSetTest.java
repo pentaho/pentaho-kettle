@@ -22,6 +22,9 @@
 
 package org.pentaho.di.core;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import junit.framework.TestCase;
 
 import org.pentaho.di.core.row.RowMeta;
@@ -65,31 +68,28 @@ public class BlockingBatchingRowSetTest extends TestCase {
 
     RowMetaInterface rm = createRowMetaInterface();
 
-    Object[] r1 = new Object[] { new Long(1L) };
-    Object[] r2 = new Object[] { new Long(2L) };
-    Object[] r3 = new Object[] { new Long(3L) };
+    List<Object[]> rows = new ArrayList<Object[]>();
+    for (int i=0;i<5;i++) {
+      rows.add(new Object[] { new Long(i), });
+    }
 
     assertEquals(0, set.size());
-
-    // Add first row. State 1
-    //
-    set.putRow(rm, r1);
-    assertEquals(1, set.size());
-
-    // Add another row. State: 1 2
-    //
-    set.putRow(rm, r2);
-    assertEquals(2, set.size());
 
     // Pop off row.  This should return null (no row available: has a timeout)
     //
     Object[] r = set.getRow();
     assertNull(r);
     
-    // Add another row. State: 2 3
+    // Add rows. set doesn't report rows, batches them
+    // this batching row set has 2 buffers with 2 rows, the 5th row will cause the rows to be exposed.
     //
-    set.putRow(rm, r3);
-    assertEquals(3, set.size());
+    int index=0;
+    while(index<4) {
+      set.putRow(rm, rows.get(index++));
+      assertEquals(0, set.size());
+    }
+    set.putRow(rm, rows.get(index++));
+    assertEquals(5, set.size());
 
     // Signal done...
     //
@@ -100,21 +100,18 @@ public class BlockingBatchingRowSetTest extends TestCase {
     //
     r = set.getRow();
     assertNotNull(r);
-    assertEquals(2, set.size());
-    assertEquals(r[0], r1[0]);
+    assertEquals(rows.get(0), r);
 
     // Get a row back...
     //
     r = set.getRow();
     assertNotNull(r);
-    assertEquals(1, set.size());
-    assertEquals(r[0], r2[0]);
+    assertEquals(rows.get(1), r);
 
     // Get a row back...
     //
     r = set.getRow();
     assertNotNull(r);
-    assertEquals(0, set.size());
-    assertEquals(r[0], r3[0]);
+    assertEquals(rows.get(2), r);
  }
 }

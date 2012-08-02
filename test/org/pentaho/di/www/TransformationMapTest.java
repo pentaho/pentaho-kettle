@@ -59,14 +59,14 @@ public class TransformationMapTest extends TestCase {
 		// Test memory, look up A-E again
 		//
 		assertEquals(40000, map.allocateServerSocketPort(40000, "host1", "id1", "trans1", "slave-1", "source1", "0", "slave-2", "target1", "0").getPort());
-		assertEquals(40000, map.allocateServerSocketPort(40000, "host2", "id1", "trans1", "slave-2", "source1", "0", "slave-3", "target1", "0").getPort());
+		assertEquals(40000, map.allocateServerSocketPort(40000, "host2", "id2", "trans1", "slave-2", "source1", "0", "slave-3", "target1", "0").getPort());
 		assertEquals(40001, map.allocateServerSocketPort(40000, "host1", "id1", "trans1", "slave-2", "source1", "0", "slave-3", "target1", "0").getPort());
 		assertEquals(40002, map.allocateServerSocketPort(40000, "host1", "id2", "trans2", "slave-2", "source1", "0", "slave-3", "target1", "0").getPort());
 		assertEquals(40003, map.allocateServerSocketPort(40000, "host1", "id2", "trans2", "slave-2", "source1", "1", "slave-3", "target1", "1").getPort());
 
-		// Ignore the carte object ID!
+		// Do not ignore the carte object ID, since parallel clustering should be possible!
 		//
-    assertEquals(40000, map.allocateServerSocketPort(40000, "host1", "id2", "trans1", "slave-1", "source1", "0", "slave-2", "target1", "0").getPort());
+    assertEquals(40004, map.allocateServerSocketPort(40004, "host1", "id2", "trans1", "slave-1", "source1", "0", "slave-2", "target1", "0").getPort());
 
 		// Remove 40002 from the map...
 		//
