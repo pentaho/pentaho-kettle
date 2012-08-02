@@ -23,6 +23,8 @@ package org.pentaho.di.repository;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.Hashtable;
 
 import junit.framework.TestSuite;
@@ -40,6 +42,7 @@ import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepository;
+import org.pentaho.di.repository.kdr.KettleDatabaseRepositoryCreationHelper;
 import org.pentaho.di.repository.kdr.KettleDatabaseRepositoryMeta;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepMeta;
@@ -62,6 +65,7 @@ public class RepositoryUnitTest extends TestSuite {
     protected static KettleDatabaseRepository repository;
     protected static DatabaseMeta connection;
     protected static PluginRegistry registry;
+    protected static String filename; // The H2 database backing file
     
 	/**
 	 * setUpBeforeClass is a method called once before all tests are run. For this test suite,
@@ -76,28 +80,28 @@ public class RepositoryUnitTest extends TestSuite {
 		KettleEnvironment.init();
 		
 		registry = PluginRegistry.getInstance();
-	    UserInfo userInfo;
-
-	    repositoryMeta = new KettleDatabaseRepositoryMeta();
-	    repositoryMeta.setName("Kettle Database Repository");
-	    repositoryMeta.setDescription("Kettle database test repository");
-	    
-	    connection = new DatabaseMeta();
-	    connection.setDatabaseType("MySQL");
-	    connection.setHostname("dev-ju1");
-	    connection.setDBName("unit_test_db_repo");
-	    connection.setDBPort("3306");
-	    connection.setUsername("root");
-	    connection.setPassword("password");
-	    
-	    repositoryMeta.setConnection(connection);
-	        
-	    userInfo = new UserInfo("admin", "admin", "Administrator", "The system administrator", true);
-	    
-	    repository = new KettleDatabaseRepository();
-	    repository.init(repositoryMeta);
-	    repository.connect(userInfo.getLogin(), userInfo.getPassword());
 		
+		filename = File.createTempFile("kdrtest", "").getAbsolutePath();
+		
+		System.out.println("Using file '"+filename+"' as a H2 database repository");
+	    
+	    try {
+	      DatabaseMeta databaseMeta = new DatabaseMeta("H2Repo", "H2", "JDBC", null, filename, null, null, null);
+	      repositoryMeta = new KettleDatabaseRepositoryMeta("KettleDatabaseRepository", "H2Repo", "H2 Repository", databaseMeta);
+	      repository = new KettleDatabaseRepository();
+	      repository.init(repositoryMeta);
+	      repository.connectionDelegate.connect(true, true);
+	      KettleDatabaseRepositoryCreationHelper helper = new KettleDatabaseRepositoryCreationHelper(repository);
+	      helper.createRepositorySchema(null, false, new ArrayList<String>(), false);
+	      
+	      // Reconnect as admin
+	      repository.disconnect();
+	      repository.connect("admin", "admin");
+	      
+	    } catch(Exception e) {
+	        e.printStackTrace();
+	        throw new KettleException("Error during database repository unit testing", e);
+	    }		
 	}
 
 	/**
@@ -108,7 +112,14 @@ public class RepositoryUnitTest extends TestSuite {
 	 */
 	@AfterClass
 	public static void tearDownAfterClass() throws Exception {
-		if(repository != null) repository.disconnect();
+		if(repository != null) {
+			
+			// Disconnect and remove the H2 database file
+		    repository.disconnect();
+		      
+			new File(filename+".h2.db").delete();
+	        new File(filename+".trace.db").delete();
+		}
 	}
 
 	/**
