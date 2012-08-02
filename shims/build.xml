@@ -25,7 +25,7 @@
 
   <!-- These are the modules this script should build -->
   <property name="modules" value="api,hive-jdbc,hadoop-20,cdh4,mapr" />
-  <!-- Every non-api shim module. These will be compiled/resolved after api and locator. -->
+  <!-- Every non-api shim module. These will be compiled/resolved after api. -->
   <property name="shim-non-api-modules" value="hive-jdbc,hadoop-20,cdh4,mapr" />
 
   <target name="init" depends="install-antcontrib" />
@@ -33,11 +33,6 @@
   <!-- Build all modules in the correct order and publish them locally -->
   <target name="build-all" depends="init">
     <ant antfile="build.xml" dir="api" inheritall="false">
-      <target name="clean-all" />
-      <target name="resolve" />
-      <target name="publish-local" />
-    </ant>
-    <ant antfile="build.xml" dir="locator" inheritall="false">
       <target name="clean-all" />
       <target name="resolve" />
       <target name="publish-local" />
