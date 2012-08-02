@@ -150,7 +150,7 @@ public class SQLCondition {
           
           // See if this elementary block is a NOT ( ) construct
           //
-          if (Pattern.matches("^NOT\\s*\\(.*\\)$", cleaned)) {
+          if (Pattern.matches("^NOT\\s*\\(.*\\)$", cleaned.toUpperCase())) {
             negation = true;
             cleaned = Const.trim(cleaned.substring(3));
           }

@@ -40,6 +40,20 @@ public class TransDataServletTest extends TestCase {
     stopServer();
   }
   
+  public void test02_NoData() throws Exception {
+    startServer();
+    database.connect();
+    
+    ResultSet resultSet = database.openQuery("SELECT * FROM Service WHERE Country = 'NoCountry'");
+    List<Object[]> rows = database.getRows(resultSet, 0, null);
+    RowMetaInterface rowMeta = database.getReturnRowMeta();
+    assertNotNull(rowMeta);
+    assertEquals(0, rows.size());
+    
+    database.disconnect();
+    stopServer();
+  }
+  
   /**
    * Test query:
    *          select "Service"."Category" as "c0", "Service"."Country" as "c1" 
@@ -51,7 +65,7 @@ public class TransDataServletTest extends TestCase {
    * @throws Exception
    */
   
-  public void test02_MondrianQuery() throws Exception {
+  public void test03_MondrianQuery() throws Exception {
     startServer();
     database.connect();
     
@@ -60,7 +74,7 @@ public class TransDataServletTest extends TestCase {
     List<Object[]> rows = database.getRows(resultSet, 0, null);
     RowMetaInterface rowMeta = database.getReturnRowMeta();
     assertNotNull(rowMeta);
-    assertEquals(8, rows.size());
+    assertEquals(6, rows.size());
     
     database.disconnect();
     stopServer();

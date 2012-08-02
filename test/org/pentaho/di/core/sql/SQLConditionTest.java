@@ -766,4 +766,17 @@ public class SQLConditionTest extends TestCase {
     Condition condition = sqlCondition.getCondition();
     assertNotNull(condition);
   }
+  
+  public void testCondition28() throws Exception {
+    
+    RowMetaInterface rowMeta = SQLTest.generateServiceRowMeta();
+    String fieldsClause = "\"Service\".\"Category\" as \"c0\", \"Service\".\"Country\" as \"c1\" from \"Service\" as \"Service\"";
+    SQLFields fields = new SQLFields("Service", rowMeta, fieldsClause);
+
+    String conditionClause = "((not (\"Service\".\"Country\" = 'Belgium') or (\"Service\".\"Country\" is null)))";
+    SQLCondition sqlCondition = new SQLCondition("Service", conditionClause, rowMeta, fields);
+    Condition condition = sqlCondition.getCondition();
+    assertNotNull(condition);
+  }
+  
 }
