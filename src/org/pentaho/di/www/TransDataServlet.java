@@ -39,12 +39,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.jdbc.ThinConnection;
 import org.pentaho.di.core.jdbc.ThinDriver;
-import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -130,6 +128,7 @@ public class TransDataServlet extends BaseHttpServlet implements CartePluginInte
       // TODO: allow global repository configuration in the services config file
       //
       final AtomicInteger rowCounter = new AtomicInteger(0);
+      final AtomicBoolean wroteRowMeta = new AtomicBoolean(false);
       
       executor.executeQuery(new RowAdapter() { @Override
       public void rowWrittenEvent(RowMetaInterface rowMeta, Object[] row) throws KettleStepException {
@@ -140,6 +139,7 @@ public class TransDataServlet extends BaseHttpServlet implements CartePluginInte
           if (firstRow.get()) {
             firstRow.set(false);
             rowMeta.writeMeta(dos);
+            wroteRowMeta.set(true);
           }
           rowMeta.writeData(dos, row);
           if (maxRows>0 && rowCounter.incrementAndGet()>maxRows) {
@@ -189,14 +189,17 @@ public class TransDataServlet extends BaseHttpServlet implements CartePluginInte
       
       executor.waitUntilFinished();
       
-      // see if there's been an error
+      // Check if no row metadata was written.  The client is still going to expect it...
+      // Since we know it, we'll pass it.
       //
-      Trans trans = executor.getGenTrans();
-      Result result = executor.getGenTrans().getResult();
-      if (result.getNrErrors()>0) {
-        String logText = CentralLogStore.getAppender().getBuffer(trans.getLogChannelId(), false).toString();
-        throw new KettleException("Error executing transformation, log:"+Const.CR+logText);
+      if (!wroteRowMeta.get()) {
+        RowMetaInterface stepFields = executor.getGenTransMeta().getStepFields(executor.getResultStepName());
+        stepFields.writeMeta(dos);
       }
+      
+      // The client has to come back to the GetTransStatus servlet to check for errors
+      // So that's all we do here...
+      //
       
     } catch(Exception e) {
       log.logError("Error executing SQL query: "+sqlQuery, e);

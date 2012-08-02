@@ -1,5 +1,6 @@
 package org.pentaho.di.trans.sql;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -42,6 +43,8 @@ public class SqlTransExecutor {
   private RowMetaInterface resultStepFields;
   private int rowLimit;
   private Map<String, String> parameters;
+  private List<String> parameterNames;
+  private String resultStepName;
 
   /**
    * Create a new SqlTransExecutor without parameters
@@ -157,10 +160,16 @@ public class SqlTransExecutor {
       serviceTrans.prepareExecution(null);
     }
     
+    parameterNames = new ArrayList<String>();
+    for (String parameterName : serviceTransMeta.listParameters()) {
+      parameterNames.add(parameterName);
+    }
+    
     // Generate a transformation
     //
     SqlTransMeta sqlTransMeta = new SqlTransMeta(sql, rowLimit);
     genTransMeta = sqlTransMeta.generateTransMeta();
+    resultStepName = sqlTransMeta.getResultStepName();
     
     // Prepare execution of the generated transformation
     //
@@ -356,5 +365,21 @@ public class SqlTransExecutor {
    */
   public SQL getSql() {
     return sql;
+  }
+
+
+  /**
+   * @return the parameterNames
+   */
+  public List<String> getParameterNames() {
+    return parameterNames;
+  }
+
+
+  /**
+   * @return the resultStepName
+   */
+  public String getResultStepName() {
+    return resultStepName;
   }
 }

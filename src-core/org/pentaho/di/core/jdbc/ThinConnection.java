@@ -30,6 +30,7 @@ public class ThinConnection implements Connection {
   public static final String ARG_PROXYPORT =  "proxyport"; 
   public static final String ARG_NONPROXYHOSTS = "nonproxyhosts";
   public static final String ARG_DEBUGTRANS = "debugtrans";
+  public static final String ARG_DEBUGLOG = "debuglog";
   
   private String url;
   private String slaveBaseAddress;
@@ -45,6 +46,7 @@ public class ThinConnection implements Connection {
   private String nonProxyHosts;
   
   private String debugTransFilename;
+  private boolean debuggingRemoteLog;
 
   private String service;
   
@@ -102,6 +104,7 @@ public class ThinConnection implements Connection {
       proxyPort= arguments.get(ARG_PROXYPORT);
       nonProxyHosts= arguments.get(ARG_NONPROXYHOSTS);
       debugTransFilename = arguments.get(ARG_DEBUGTRANS);
+      debuggingRemoteLog = "true".equalsIgnoreCase(arguments.get(ARG_DEBUGLOG));
       
       // Try to get a status from the carte server to see if the connection works...
       //
@@ -476,6 +479,13 @@ public class ThinConnection implements Connection {
    */
   public String getDebugTransFilename() {
     return debugTransFilename;
+  }
+
+  /**
+   * @return the debuggingRemoteLog
+   */
+  public boolean isDebuggingRemoteLog() {
+    return debuggingRemoteLog;
   }
 
 }

@@ -2013,6 +2013,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
 		Result result = new Result();
 		result.setNrErrors(errors.longValue());
+		result.setResult(errors.longValue()==0);
 		TransLogTable transLogTable = transMeta.getTransLogTable();
 
 		for (int i=0;i<steps.size();i++)

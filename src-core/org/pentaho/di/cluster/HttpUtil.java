@@ -1,9 +1,13 @@
 package org.pentaho.di.cluster;
 
 import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.zip.GZIPInputStream;
 
+import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
@@ -125,6 +129,27 @@ public class HttpUtil {
       client.getState().setCredentials(AuthScope.ANY, creds);
       client.getParams().setAuthenticationPreemptive(true);      
     }
+  }
+
+  public static String decodeBase64ZippedString(String loggingString64) throws IOException {
+    byte[] bytes = new byte[] {};
+    if (loggingString64!=null) bytes = Base64.decodeBase64(loggingString64.getBytes());
+    if (bytes.length>0)
+    {
+        ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
+        GZIPInputStream gzip = new GZIPInputStream(bais);
+        int c;
+        StringBuffer buffer = new StringBuffer();
+        while ( (c=gzip.read())!=-1) buffer.append((char)c);
+        gzip.close();
+        
+        return buffer.toString();
+    }
+    else
+    {
+        return "";
+    }
+
   }
   
 }

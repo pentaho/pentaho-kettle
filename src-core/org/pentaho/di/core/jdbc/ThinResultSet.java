@@ -32,13 +32,17 @@ import org.apache.commons.httpclient.methods.GetMethod;
 import org.pentaho.di.cluster.HttpUtil;
 import org.pentaho.di.cluster.SlaveConnectionManager;
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleEOFException;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.www.WebResult;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 public class ThinResultSet implements ResultSet {
   
@@ -195,9 +199,52 @@ public class ThinResultSet implements ResultSet {
   @Override
   public void clearWarnings() throws SQLException {
   }
+  
+  private void checkTransStatus(String transformationName, String transformationObjectId) throws SQLException {
+    try {
+      String xml = HttpUtil.execService(new Variables(), 
+          connection.getHostname(), connection.getPort(), connection.getWebAppName(), 
+          connection.getService()+"/transStatus/?name="+URLEncoder.encode(transformationName, "UTF-8")+"&id="+Const.NVL(transformationObjectId, "")+"&xml=Y", 
+          connection.getUsername(), connection.getPassword(), connection.getProxyHostname(), connection.getProxyPort(), connection.getNonProxyHosts()
+        );
+      Document doc = XMLHandler.loadXMLString(xml);
+      Node resultNode = XMLHandler.getSubNode(doc, "transstatus", "result");
+      Result result = new Result(resultNode);
+      String loggingString64 = XMLHandler.getNodeValue(XMLHandler.getSubNode(doc, "transstatus", "logging_string"));
+      String log = HttpUtil.decodeBase64ZippedString(loggingString64);
+
+      // Check for errors
+      //
+      if (!result.getResult() || result.getNrErrors()>0) {
+        throw new KettleException("The SQL query transformation failed with the following log text:"+Const.CR+log);
+      }
+
+      // See if the transformation was stopped remotely
+      //
+      boolean stopped = "Stopped".equalsIgnoreCase(XMLHandler.getTagValue(doc, "transstatus", "status_desc"));
+      if (stopped) {
+        throw new KettleException("The SQL query transformation was stopped.  Logging text: "+Const.CR+log);
+      }
+
+      // All OK, only log the remote logging text if requested.
+      //
+      if (connection.isDebuggingRemoteLog()) {
+        LogChannel.GENERAL.logBasic(log); 
+      }
+      
+    } catch(Exception e) {
+      throw new SQLException("Couldn't validate correct execution of SQL query for transformation ["+transformationName+"]", e);
+    }
+
+  }
 
   @Override
   public void close() throws SQLException {
+    
+    // Before we close this connection, let's verify if we got all records...
+    //
+    checkTransStatus(sqlTransName, sqlObjectId);
+    
     currentRow = null;
     dataInputStream = null;
     if (method!=null) {

@@ -88,7 +88,7 @@ public class SQLCondition {
       parentCondition = c;
     }
     
-    // First we find bracket pairs, then AND, then OR
+    // First we find bracket pairs, then OR, then AND
     //
     // C='foo' AND ( A=5 OR B=6 )
     // ( A=4 OR B=3 ) AND ( A=5 OR B=6 )
@@ -98,17 +98,17 @@ public class SQLCondition {
     // First try to split by OR, leaving grouped AND blocks.
     // e.g. A OR B AND C OR D --> A OR ( B AND C ) OR D --> A, B AND C, D
     //
-    String andOperatorString = " OR ";
-    int andConditionOperator = Condition.OPERATOR_OR;
-    int lastIndex = splitByOperator(clause, parentCondition, andOperatorString, andConditionOperator);
+    String orOperatorString = " OR ";
+    int orConditionOperator = Condition.OPERATOR_OR;
+    int lastIndex = splitByOperator(clause, parentCondition, orOperatorString, orConditionOperator);
     if (lastIndex==0) {
       
       // No AND operator(s) found, now we can look for OR operators in the clause...
       // Try to split by OR
       //
-      String orOperatorString = " AND ";
-      int orConditionOperator = Condition.OPERATOR_AND;
-      lastIndex = splitByOperator(clause, parentCondition, orOperatorString, orConditionOperator);
+      String andOperatorString = " AND ";
+      int andConditionOperator = Condition.OPERATOR_AND;
+      lastIndex = splitByOperator(clause, parentCondition, andOperatorString, andConditionOperator);
       if (lastIndex==0) {
         String cleaned = Const.trim(clause);
         boolean negation = false;
@@ -132,7 +132,7 @@ public class SQLCondition {
               // A PARAMETER() function in the where clause always returns true
               //
               Condition subCondition = new Condition(parameterName, Condition.FUNC_TRUE, parameterName, new ValueMetaAndData(new ValueMeta("string", ValueMetaInterface.TYPE_STRING), Const.NVL(parameterValue, "")));
-              subCondition.setOperator(andConditionOperator);
+              subCondition.setOperator(orConditionOperator);
               parentCondition.addCondition(subCondition);
               
               if (Const.isEmpty(parameterName)) {
@@ -170,7 +170,7 @@ public class SQLCondition {
             // Atomic condition
             //
             Condition subCondition = parseAtomicCondition(cleaned);
-            subCondition.setOperator(andConditionOperator);
+            subCondition.setOperator(orConditionOperator);
             parentCondition.addCondition(subCondition);
           }
         }
@@ -264,6 +264,27 @@ public class SQLCondition {
       }
       value = new ValueMetaAndData(new ValueMeta("constant-in-list", ValueMetaInterface.TYPE_STRING), valueString.toString());
     } else {
+      
+      // Mondrian, analyzer CONTAINS hack: 
+      //  '%' || 'string' || '%'  --> '%string%' 
+      //
+      String prefix = "'%'";
+      String suffix = "'%'";
+      if (right.startsWith(prefix) && right.endsWith(suffix)) {
+        int leftOrIndex=right.indexOf("||");
+        if (leftOrIndex>0) {
+          int rightOrIndex = right.indexOf("||", leftOrIndex+2);
+          if (rightOrIndex>0) {
+            String raw = Const.trim(right.substring(leftOrIndex+2, rightOrIndex));
+            if (raw.startsWith("'") && raw.endsWith("'")) {
+              right = "'%"+raw.substring(1, raw.length()-1)+"%'";
+            }
+            
+          }
+        }
+        
+      }
+      
       value = ThinUtil.extractConstant(right);
     }
     
@@ -285,7 +306,7 @@ public class SQLCondition {
   private List<String> splitConditionClause(String clause) throws KettleSQLException {
     List<String> strings = new ArrayList<String>();
     
-    String[] operators = new String[] { "<>", ">=", "=>", "<=", "=<", "<", ">", "=", " REGEX ", " IN ", " IS NOT NULL", " IS NULL", " LIKE" }; 
+    String[] operators = new String[] { "<>", ">=", "=>", "<=", "=<", "<", ">", "=", " REGEX ", " IN ", " IS NOT NULL", " IS NULL", " LIKE", "CONTAINS " }; 
     int[] functions = new int[] { 
         Condition.FUNC_NOT_EQUAL,
         Condition.FUNC_LARGER_EQUAL,
@@ -300,7 +321,8 @@ public class SQLCondition {
         Condition.FUNC_NOT_NULL,
         Condition.FUNC_NULL,
         Condition.FUNC_LIKE,
-    };
+        Condition.FUNC_CONTAINS,
+      };
     int index=0;
     while (index<clause.length()) {
       index = ThinUtil.skipChars(clause, index, '\'', '"' );

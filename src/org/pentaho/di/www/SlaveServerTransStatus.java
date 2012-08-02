@@ -22,13 +22,11 @@
 
 package org.pentaho.di.www;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.zip.GZIPInputStream;
 
-import org.apache.commons.codec.binary.Base64;
+import org.pentaho.di.cluster.HttpUtil;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
@@ -139,26 +137,11 @@ public class SlaveServerTransStatus
         // This is a Base64 encoded GZIP compressed stream of data.
         try
         {
-            byte[] bytes = new byte[] {};
-            if (loggingString64!=null) bytes = Base64.decodeBase64(loggingString64.getBytes());
-            if (bytes.length>0)
-            {
-                ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
-                GZIPInputStream gzip = new GZIPInputStream(bais);
-                int c;
-                StringBuffer buffer = new StringBuffer();
-                while ( (c=gzip.read())!=-1) buffer.append((char)c);
-                gzip.close();
-                loggingString = buffer.toString();
-            }
-            else
-            {
-                loggingString="";
-            }
+          loggingString = HttpUtil.decodeBase64ZippedString(loggingString64);
         }
         catch(IOException e)
         {
-            loggingString = "Unable to decode logging from remote server : "+e.toString()+Const.CR+Const.getStackTracker(e);
+          loggingString = "Unable to decode logging from remote server : "+e.toString()+Const.CR+Const.getStackTracker(e);
         }
         
         // get the result object, if there is any...
