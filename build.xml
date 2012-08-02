@@ -1005,7 +1005,7 @@
 			<test todir="${junit}" name="org.pentaho.di.trans.steps.valuemapper.ValueMapperTest" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.trans.TransSingleThreadTest" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.trans.WordCountSingleThreadTest" haltonerror="false" />
-			<test todir="${junit}" name="org.pentaho.di.repository.RepositoryUnitTest" haltonerror="false" />  
+			<!--<test todir="${junit}" name="org.pentaho.di.repository.RepositoryUnitTest" haltonerror="false" /> -->
 
 		</junit>
 	</target>
