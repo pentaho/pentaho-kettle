@@ -1038,6 +1038,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 				field.setName( rep.getStepAttributeString (id_step, i, "field_name") );
 				field.setXPath( rep.getStepAttributeString (id_step, i, "field_xpath") );
 				field.setElementType( GetXMLDataField.getElementTypeByCode( rep.getStepAttributeString (id_step, i, "element_type") ));
+				field.setResultType( GetXMLDataField.getResultTypeByCode( rep.getStepAttributeString (id_step, i, "result_type") ) );
 				field.setType( ValueMeta.getType( rep.getStepAttributeString (id_step, i, "field_type") ) );
 				field.setFormat( rep.getStepAttributeString (id_step, i, "field_format") );
 				field.setCurrencySymbol( rep.getStepAttributeString (id_step, i, "field_currency") );
@@ -1109,6 +1110,7 @@ public class GetXMLDataMeta extends BaseStepMeta implements StepMetaInterface
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",          field.getName());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_xpath",         field.getXPath());
 				rep.saveStepAttribute(id_transformation, id_step, i, "element_type",        field.getElementTypeCode());
+				rep.saveStepAttribute(id_transformation, id_step, i, "result_type",         field.getResultTypeCode());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_type",          field.getTypeDesc());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_format",        field.getFormat());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_currency",      field.getCurrencySymbol());

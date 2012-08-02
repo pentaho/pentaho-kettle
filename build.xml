@@ -848,7 +848,7 @@
 			</classpath>
 			
 			<formatter type="xml"/>
-		  	<test todir="${junit}" name="org.pentaho.di.core.KettleEnvironmentTest" haltonerror="true" />
+				<test todir="${junit}" name="org.pentaho.di.core.KettleEnvironmentTest" haltonerror="true" />
 		  	<test todir="${junit}" name="org.pentaho.di.core.logging.KettleLogChannelAppenderTest" haltonerror="true" />
 		  	<test todir="${junit}" name="org.pentaho.di.compatibility.ValueBigNumberTest" haltonerror="false" />
 		  	<test todir="${junit}" name="org.pentaho.di.compatibility.ValueBooleanTest" haltonerror="false" />
@@ -859,6 +859,7 @@
 			<test todir="${junit}" name="org.pentaho.di.compatibility.ValueTest" haltonerror="false" />
 		  	<test todir="${junit}" name="org.pentaho.di.core.database.DatabaseTest" haltonerror="false" />
 		  	<test todir="${junit}" name="org.pentaho.di.core.database.SelectCountTests" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.core.database.SqlCommentScrubberTest" haltonerror="false" />
 		  	<test todir="${junit}" name="org.pentaho.di.core.database.SQLStatementParserTest" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.core.database.ReleaseSavePointTest" haltonerror="false" />
 		  	<test todir="${junit}" name="org.pentaho.di.core.encryption.EncrTest" haltonerror="false" />
@@ -960,42 +961,51 @@
 			
 			<formatter type="xml"/>
 			
-		  	<test todir="${junit}" name="org.pentaho.di.trans.HopTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.HopTest" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.trans.RowProducerTest" haltonerror="false" />
-		  	<test todir="${junit}" name="org.pentaho.di.trans.steps.addsequence.AddSequenceTest" haltonerror="false" />
-		  	<test todir="${junit}" name="org.pentaho.di.trans.steps.append.AppendTest" haltonerror="false" />
-		  	<test todir="${junit}" name="org.pentaho.di.trans.steps.blockingstep.BlockingStepTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.addsequence.AddSequenceTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.append.AppendTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.blockingstep.BlockingStepTest" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.trans.steps.checksum.CheckSumTest" haltonerror="false" />
-  			<test todir="${junit}" name="org.pentaho.di.trans.steps.combinationlookup.CombinationLookupTest" haltonerror="false" />
-  			<test todir="${junit}" name="org.pentaho.di.trans.steps.constant.ConstantTest" haltonerror="false" />
-  			<test todir="${junit}" name="org.pentaho.di.trans.steps.csvinput.CsvInput1Test" haltonerror="false" />
-  			<test todir="${junit}" name="org.pentaho.di.trans.steps.csvinput.CsvInput2Test" haltonerror="false" />
-  			<test todir="${junit}" name="org.pentaho.di.trans.steps.databaselookup.DatabaseLookupTest" haltonerror="false" />
-  			<test todir="${junit}" name="org.pentaho.di.trans.steps.detectlastrow.DetectLastRowStepTest" haltonerror="false" />
-  			<test todir="${junit}" name="org.pentaho.di.trans.steps.excelinput.JxlWorkBookTest" haltonerror="false" />
-  			<test todir="${junit}" name="org.pentaho.di.trans.steps.excelinput.OdsWorkBookTest" haltonerror="false" />
-  			<test todir="${junit}" name="org.pentaho.di.trans.steps.excelinput.PoiWorkBookTest" haltonerror="false" />
-  			<test todir="${junit}" name="org.pentaho.di.trans.steps.getxmldata.GetXMLDataTest" haltonerror="false" />
-  			<test todir="${junit}" name="org.pentaho.di.trans.steps.injector.InjectorTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.combinationlookup.CombinationLookupTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.constant.ConstantTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.csvinput.CsvInput1Test" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.csvinput.CsvInput2Test" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.csvinput.CsvInput3Test" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.databaselookup.DatabaseLookupTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.detectlastrow.DetectLastRowStepTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.excelinput.JxlWorkBookTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.excelinput.OdsWorkBookTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.excelinput.PoiWorkBookTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.getvariable.GetVariableMetaTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.getxmldata.GetXMLDataTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.injector.InjectorTest" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.trans.steps.insertupdate.InsertUpdateTest" haltonerror="false" />
-  			<test todir="${junit}" name="org.pentaho.di.trans.steps.mapping.RunMapping" haltonerror="false" />
-        	<test todir="${junit}" name="org.pentaho.di.trans.steps.mapping.MappingTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.janino.JaninoStepTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.jsonoutput.JsonOutputTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.mailvalidator.MailValidationTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.mapping.MappingTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.mapping.RunMapping" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.trans.steps.metainject.MetaInjectTest" haltonerror="false" />
-  			<test todir="${junit}" name="org.pentaho.di.trans.steps.nullif.NullIfTest" haltonerror="false" />
-  			<test todir="${junit}" name="org.pentaho.di.trans.steps.numberrange.NumberRangeRuleTest" haltonerror="false" />
-  			<test todir="${junit}" name="org.pentaho.di.trans.steps.numberrange.NumberRangeSetTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.nullif.NullIfTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.numberrange.NumberRangeRuleTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.numberrange.NumberRangeSetTest" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.trans.steps.regexeval.RegexEvalTest" haltonerror="false" />
-  			<test todir="${junit}" name="org.pentaho.di.trans.steps.rowgenerator.RowGeneratorTest" haltonerror="false" />
-  			<test todir="${junit}" name="org.pentaho.di.trans.steps.scriptvalues_mod.JavaScriptSpecialTest" haltonerror="false" />
-  			<test todir="${junit}" name="org.pentaho.di.trans.steps.scriptvalues_mod.JavaScriptStringTest" haltonerror="false" />
-  			<test todir="${junit}" name="org.pentaho.di.trans.steps.sort.SortRowsTest" haltonerror="false" />
-  			<test todir="${junit}" name="org.pentaho.di.trans.steps.tableoutput.TableOutputTest" haltonerror="false" />
-  			<test todir="${junit}" name="org.pentaho.di.trans.steps.tableinput.TableInputTest" haltonerror="false" />
-        	<test todir="${junit}" name="org.pentaho.di.trans.steps.textfileinput.TextFileInputTests" haltonerror="false" />
-		  	<test todir="${junit}" name="org.pentaho.di.trans.steps.unique.UniqueRowsTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.rowgenerator.RowGeneratorTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.scriptvalues_mod.JavaScriptSpecialTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.scriptvalues_mod.JavaScriptStringTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.scriptvalues_mod.OptimizationLevelTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.sort.SortRowsTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.stringcut.StringCutTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.tableinput.TableInputTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.tableoutput.TableOutputTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.textfileinput.TextFileInputTests" haltonerror="false" />
+		    <test todir="${junit}" name="org.pentaho.di.trans.steps.unique.UniqueRowsTest" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.trans.steps.update.UpdateTest" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.trans.steps.valuemapper.ValueMapperTest" haltonerror="false" />
-			<test todir="${junit}" name="org.pentaho.di.trans.steps.janino.JaninoStepTest" haltonerror="false" />			
+			<test todir="${junit}" name="org.pentaho.di.trans.TransSingleThreadTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.WordCountSingleThreadTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.repository.RepositoryUnitTest" haltonerror="false" />  
 
 		</junit>
 	</target>
