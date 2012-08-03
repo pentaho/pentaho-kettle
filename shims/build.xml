@@ -24,9 +24,9 @@
   <property file="${assembly.dir}/assembly.properties" />
 
   <!-- These are the modules this script should build -->
-  <property name="modules" value="api,hive-jdbc,hadoop-20,cdh4,mapr" />
+  <property name="modules" value="api,hive-jdbc,hadoop-20,cdh3,cdh4,mapr" />
   <!-- Every non-api shim module. These will be compiled/resolved after api. -->
-  <property name="shim-non-api-modules" value="hive-jdbc,hadoop-20,cdh4,mapr" />
+  <property name="shim-non-api-modules" value="hive-jdbc,hadoop-20,cdh3,cdh4,mapr" />
 
   <target name="init" depends="install-antcontrib" />
 

@@ -20,24 +20,29 @@
  *
  ******************************************************************************/
 
-package org.pentaho.hadoop.shim.common;
+package org.pentaho.hadoop.shim.cdh3;
 
-import org.pentaho.hadoop.shim.api.Configuration;
-import org.pentaho.hadoop.shim.spi.SqoopShim;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.io.compress.SnappyCodec;
+import org.pentaho.hadoop.shim.common.CommonSnappyShim;
 
-import com.cloudera.sqoop.Sqoop;
-
-public class CommonSqoopShim implements SqoopShim {
-
-  @Override
-  public int runTool(String[] args, Configuration c) {
+public class SnappyShim extends CommonSnappyShim {
+  /**
+   * Tests whether hadoop-snappy (not to be confused with other java-based
+   * snappy implementations such as jsnappy or snappy-java) plus the 
+   * native snappy libraries are available.
+   * 
+   * @return true if hadoop-snappy is available on the classpath
+   */
+  public boolean isHadoopSnappyAvailable() {
     ClassLoader cl = Thread.currentThread().getContextClassLoader();
     Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
     try {
-      return Sqoop.runTool(args, ShimUtils.asConfiguration(c));
+      return SnappyCodec.isNativeSnappyLoaded(new Configuration());
+    } catch (Throwable t) {
+      return false;
     } finally {
       Thread.currentThread().setContextClassLoader(cl);
     }
   }
-
 }

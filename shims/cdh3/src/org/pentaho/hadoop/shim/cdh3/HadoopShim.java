@@ -20,24 +20,18 @@
  *
  ******************************************************************************/
 
-package org.pentaho.hadoop.shim.common;
+package org.pentaho.hadoop.shim.cdh3;
 
-import org.pentaho.hadoop.shim.api.Configuration;
-import org.pentaho.hadoop.shim.spi.SqoopShim;
+import org.pentaho.hadoop.shim.common.CommonHadoopShim;
 
-import com.cloudera.sqoop.Sqoop;
-
-public class CommonSqoopShim implements SqoopShim {
-
+public class HadoopShim extends CommonHadoopShim {
   @Override
-  public int runTool(String[] args, Configuration c) {
-    ClassLoader cl = Thread.currentThread().getContextClassLoader();
-    Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
-    try {
-      return Sqoop.runTool(args, ShimUtils.asConfiguration(c));
-    } finally {
-      Thread.currentThread().setContextClassLoader(cl);
-    }
+  protected String getDefaultNamenodePort() {
+    return "8020";
   }
-
+  
+  @Override
+  protected String getDefaultJobtrackerPort() {
+    return "8021";
+  }
 }
