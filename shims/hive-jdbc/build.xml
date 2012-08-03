@@ -1,6 +1,6 @@
 <!--===========================================================================
-  This is the build file for the collection of Shims modules to provide support
-  for multiple versions of Hadoop on the same set of compiled bits.
+  This is the build file for the Hive JDBC Shim Driver to provide support
+  for multiple versions of Hive on the same set of compiled bits.
   
   See ../build-res/subfloor.xml for more details
 ============================================================================-->
@@ -8,7 +8,7 @@
   xmlns:ivy="antlib:org.apache.ivy.ant" >
   
   <description>
-    This build file is used to create the Shims modules for the Big Data plugin
+    This build file is used to create the Hive JDBC Shim module for the Big Data plugin
     and is based off Subfloor (../build-res/subfloor.xml)
   </description>
 
