@@ -88,7 +88,7 @@
   </target>
 
   <!-- Publish all the shim modules -->
-  <target name="publish-shims" description="Builds all shim projects and publishes them. build-shims should be called previous to this.">
+  <target name="publish-shims" description="Publishes all shim projects. build-shims should be called previous to this.">
     <ant antfile="shims/build.xml" target="publish" inheritall="false"/>
   </target>
 
