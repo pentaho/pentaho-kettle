@@ -2566,7 +2566,9 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             {
                 Node stepErrorMetaNode = XMLHandler.getSubNodeByNr(errorHandlingNode, StepErrorMeta.XML_TAG, i);
                 StepErrorMeta stepErrorMeta = new StepErrorMeta(this, stepErrorMetaNode, steps);
-                stepErrorMeta.getSourceStep().setStepErrorMeta(stepErrorMeta); // a bit of a trick, I know.
+                if (stepErrorMeta.getSourceStep()!=null) {
+                	stepErrorMeta.getSourceStep().setStepErrorMeta(stepErrorMeta); // a bit of a trick, I know.
+                }
             }
 
             // Have all StreamValueLookups, etc. reference the correct source steps...
