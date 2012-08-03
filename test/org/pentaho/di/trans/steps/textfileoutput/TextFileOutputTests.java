@@ -22,10 +22,13 @@
 
 package org.pentaho.di.trans.steps.textfileoutput;
 
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
+
 import junit.framework.TestCase;
 
+import org.junit.Test;
 import org.pentaho.di.TestFailedException;
 import org.pentaho.di.TestUtilities;
 import org.pentaho.di.core.Const;
@@ -37,6 +40,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.trans.RowStepCollector;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
@@ -45,6 +49,8 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.dummytrans.DummyTransMeta;
 import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 /**
  * This class was a "copy and modification" of Kettle's 
@@ -194,6 +200,61 @@ public class TextFileOutputTests extends TestCase {
 
         return rowMetaInterface;
     }
+    
+    private static String getXML1() {
+		String xml1 = 
+			"  <step>" +
+			"    <name>Text file output</name>" +
+			"    <type>TextFileOutput</type>" +
+			"    <description/>" +
+			"    <distribute>Y</distribute>" +
+			"    <copies>1</copies>" +
+			"         <partitioning>" +
+			"           <method>none</method>" +
+			"           <schema_name/>" +
+			"           </partitioning>" +
+			"    <separator>;</separator>" +
+			"    <enclosure>&quot;</enclosure>" +
+			"    <enclosure_forced>N</enclosure_forced>" +
+			"    <enclosure_fix_disabled>N</enclosure_fix_disabled>" +
+			"    <header>Y</header>" +
+			"    <footer>N</footer>" +
+			"    <format>DOS</format>" +
+			"    <compression>None</compression>" +
+			"    <encoding/>" +
+			"    <endedLine/>" +
+			"    <fileNameInField>N</fileNameInField>" +
+			"    <fileNameField/>" +
+			"    <file>" +
+			"      <name>file</name>" +
+			"      <is_command>N</is_command>" +
+			"      <servlet_output>N</servlet_output>" +
+			"      <do_not_open_new_file_init>N</do_not_open_new_file_init>" +
+			"      <extention>txt</extention>" +
+			"      <append>N</append>" +
+			"      <split>N</split>" +
+			"      <haspartno>N</haspartno>" +
+			"      <add_date>N</add_date>" +
+			"      <add_time>N</add_time>" +
+			"      <SpecifyFormat>N</SpecifyFormat>" +
+			"      <date_time_format/>" +
+			"      <add_to_result_filenames>Y</add_to_result_filenames>" +
+			"      <pad>N</pad>" +
+			"      <fast_dump>N</fast_dump>" +
+			"      <splitevery>0</splitevery>" +
+			"    </file>" +
+			"    <fields>" +
+			"    </fields>" +
+			"     <cluster_schema/>" +
+			" <remotesteps>   <input>   </input>   <output>   </output> </remotesteps>    <GUI>" +
+			"      <xloc>183</xloc>" +
+			"      <yloc>66</yloc>" +
+			"      <draw>Y</draw>" +
+			"      </GUI>" +
+			"    </step>";
+		
+		return xml1;
+	}
 
     private StepMeta createTextFileOutputStep(String name, String textFileName, PluginRegistry registry) {
         
@@ -279,7 +340,7 @@ public class TextFileOutputTests extends TestCase {
      *            for being non-null (some systems maybe canonize names differently 
      *            than we input).                       
      */
-
+    @Test
     public void testTextFileOutput1() throws Exception {
         KettleEnvironment.init();
         
@@ -344,5 +405,39 @@ public class TextFileOutputTests extends TestCase {
         catch (TestFailedException tfe) {
             fail(tfe.getMessage());
         }
+    }
+    
+    /**
+     * Tests the default setting of createparentfolder to true by creating a new TextFileOutputMeta and 
+     * verifying that createparentfolder is true
+     * @throws Exception
+     */
+    @Test
+    public void testTextFileOutput2() throws Exception {
+        KettleEnvironment.init();
+        
+        TextFileOutputMeta textFileOutputMeta = new TextFileOutputMeta();
+        assertTrue(textFileOutputMeta.isCreateParentFolder());
+        textFileOutputMeta.setDefault();
+        assertTrue(textFileOutputMeta.isCreateParentFolder());
+    }
+    
+    /**
+     * Tests the default setting of createparentfolder to true by creating a new TextFileOutputMeta using 
+     * a sample XML step (from a real transformation) and verifying that createparentfolder is true
+     * @throws Exception
+     */
+    @Test
+    public void testTextFileOutput3() throws Exception {
+        KettleEnvironment.init();
+        
+        // Create a new transformation from the same XML file
+        //
+        ByteArrayInputStream xmlStream = new ByteArrayInputStream(getXML1().getBytes("UTF-8"));
+        Document doc = XMLHandler.loadXMLFile(xmlStream, null, false, false);
+        Node stepnode = XMLHandler.getSubNode(doc, "step");
+        TextFileOutputMeta textFileOutputMeta = new TextFileOutputMeta();
+        textFileOutputMeta.loadXML(stepnode, null,null);
+        assertTrue(textFileOutputMeta.isCreateParentFolder());
     }
 }
