@@ -243,9 +243,9 @@
         <fileset dir="${testsrc.dir}" casesensitive="yes">
           <include name="**/*Test.java" />
         </fileset>
-        <!-- <fileset dir="${testsrc.common.dir}" casesensitive="yes">
+        <fileset dir="${testsrc.common.dir}" casesensitive="yes">
           <include name="**/*Test.java" />
-        </fileset> -->
+        </fileset>
       </batchtest>
     </junit>
 
