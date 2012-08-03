@@ -81,8 +81,8 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
   /** Whether to push the output into the output of a servlet with the executeTrans Carte/DI-Server servlet */
   private  boolean servletOutput;
 
-    /** Flag: create parent folder */
-    private boolean createparentfolder;
+    /** Flag: create parent folder, default to true */
+    private boolean createparentfolder = true;
 
 	/** The file extention in case of a generated filename */
 	private  String  extension;
@@ -691,7 +691,11 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
             } else {
             	disableEnclosureFix = "Y".equalsIgnoreCase(sDisableEnclosureFix);
             }
-            createparentfolder = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "create_parent_folder"));
+            
+            // Default createparentfolder to true if the tag is missing
+            String createParentFolderTagValue = XMLHandler.getTagValue(stepnode, "create_parent_folder");
+            createparentfolder = (createParentFolderTagValue==null) ? true : "Y".equalsIgnoreCase(createParentFolderTagValue);
+            
 			headerEnabled    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "header"));
 			footerEnabled    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "footer"));
 			fileFormat       = XMLHandler.getTagValue(stepnode, "format");
@@ -788,7 +792,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 
 	public void setDefault()
 	{
-		createparentfolder=false;
+		createparentfolder=true;  // Default createparentfolder to true
 		separator  = ";";
 		enclosure  = "\"";
 		specifyingFormat=false;
@@ -801,7 +805,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 		fileCompression  = fileCompressionTypeCodes[FILE_COMPRESSION_TYPE_NONE];
 		fileName         = "file";
 		fileAsCommand    = false;
-    servletOutput    = false;
+		servletOutput    = false;
 		doNotOpenNewFileInit =false;
 		extension        = "txt";
 		stepNrInFilename = false;
