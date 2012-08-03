@@ -22,9 +22,9 @@
 
 package org.pentaho.di.trans.steps.splitfieldtorows;
 
-
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.SimpleTokenizer;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -98,7 +98,6 @@ public class SplitFieldToRows extends BaseStep implements StepInterface
 			}
 			
 			data.splitMeta = rowMeta.getValueMeta(data.fieldnr);
-			data.realDelimiter=environmentSubstitute(meta.getDelimiter());
 		}
 		
 		String originalString = data.splitMeta.getString(rowData[data.fieldnr]);
@@ -108,38 +107,17 @@ public class SplitFieldToRows extends BaseStep implements StepInterface
 		
 		if(meta.includeRowNumber() && meta.resetRowNumber()) data.rownr=1L;
 		
-		if (meta.isDelimiterRegex()){
-			// regex
-			String[] parts = originalString.split(data.realDelimiter);
-			for (String string : parts) {
-
-				Object[] outputRow = RowDataUtil.createResizedCopy(rowData, data.outputRowMeta.size());
-				outputRow[rowMeta.size()] = string;
-				// Include row number in output?
-				if(meta.includeRowNumber()){
-					outputRow[rowMeta.size()+1]=data.rownr;
-				}
-				putRow(data.outputRowMeta, outputRow);
-				data.rownr ++;
-				
+		String[] splitStrings = data.delimiterPattern.split(originalString);
+		for (String string: splitStrings) {
+			Object[] outputRow = RowDataUtil.createResizedCopy(rowData, data.outputRowMeta.size());
+			outputRow[rowMeta.size()] = string;
+			// Include row number in output?
+			if(meta.includeRowNumber()){
+				outputRow[rowMeta.size()+1]=data.rownr;
 			}
-			
-		}
-		else{
-			// non-regex
-			SimpleTokenizer tokenizer = new SimpleTokenizer(originalString, data.realDelimiter, true);
-			while (tokenizer.hasMoreTokens()) {
-				Object[] outputRow = RowDataUtil.createResizedCopy(rowData, data.outputRowMeta.size());
-				outputRow[rowMeta.size()] = tokenizer.nextToken();
-				// Include row number in output?
-				if(meta.includeRowNumber()){
-					outputRow[rowMeta.size()+1]=data.rownr;
-				}
-				putRow(data.outputRowMeta, outputRow);
-				data.rownr ++;
-			}
-			
-		}
+			putRow(data.outputRowMeta, outputRow);
+			data.rownr ++;
+		}		
 		
 		
 		return true;
@@ -182,6 +160,20 @@ public class SplitFieldToRows extends BaseStep implements StepInterface
 		if (super.init(smi, sdi))
 		{
 			data.rownr = 1L;
+			
+			try {
+			    if (meta.isDelimiterRegex()) {
+			    	data.delimiterPattern = Pattern.compile(environmentSubstitute(meta.getDelimiter()));
+			    }
+			    else {
+			    	data.delimiterPattern = Pattern.compile(Pattern.quote(environmentSubstitute(meta.getDelimiter())));
+			    }
+			}
+	    	catch (PatternSyntaxException pse) {
+	    		log.logError(pse.getMessage());
+	    		throw pse;
+	    	}
+	    		
 		    return true;
 		}
 		return false;

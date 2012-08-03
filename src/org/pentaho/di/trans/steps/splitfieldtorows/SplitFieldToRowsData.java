@@ -23,6 +23,7 @@
 package org.pentaho.di.trans.steps.splitfieldtorows;
 
 
+import java.util.regex.Pattern;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
@@ -33,14 +34,14 @@ public class SplitFieldToRowsData extends BaseStepData implements StepDataInterf
 	public int fieldnr;
 	public RowMetaInterface outputRowMeta;
 	public ValueMetaInterface splitMeta;
-	public String realDelimiter;
     public long      rownr;
+    public Pattern delimiterPattern;
     
     
 	public SplitFieldToRowsData()
 	{
 		super();
-		realDelimiter=null;
+		delimiterPattern = null;
 	}
 
 }
