@@ -28,6 +28,7 @@ import java.util.List;
 
 import junit.framework.TestCase;
 
+import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.exception.KettleValueException;
@@ -37,11 +38,13 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.RowStepCollector;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransHopMeta;
 import org.pentaho.di.trans.TransMeta;
+import org.pentaho.di.trans.step.StepErrorMeta;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
@@ -54,7 +57,8 @@ import org.pentaho.di.trans.steps.uniquerows.UniqueRowsMeta;
 /**
  * Test class for the Unique step.
  * 
- * TODO: These tests only cover the case (in)sensitive comparison of a single key field.
+ * These tests only cover the case (in)sensitive comparison of a single key field, and 
+ *  to ensure the first row is not treated as both duplicate and unique.
  *
  * @author Daniel Einspanjer
  */
@@ -78,7 +82,7 @@ public class UniqueRowsTest extends TestCase
 		return rm;
 	}
 
-    
+
     public List<RowMetaAndData> createData()
     {
         List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();    
@@ -97,6 +101,44 @@ public class UniqueRowsTest extends TestCase
 
         return list;
     }
+    
+    public List<RowMetaAndData> createDataAllUnique()
+    {
+        List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();    
+        
+        RowMetaInterface rm = createRowMetaInterface();
+        
+        Object[] r1 = new Object[] { "A" };
+        Object[] r2 = new Object[] { "B" };
+        Object[] r3 = new Object[] { "C" };
+        Object[] r4 = new Object[] { "D" };
+        
+        list.add(new RowMetaAndData(rm, r1));
+        list.add(new RowMetaAndData(rm, r2));
+        list.add(new RowMetaAndData(rm, r3));
+        list.add(new RowMetaAndData(rm, r4));
+
+        return list;
+    }
+    
+    public List<RowMetaAndData> createResultDataAllUnique()
+    {
+        List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();    
+        
+        RowMetaInterface rm = createRowMetaInterface();
+        
+        Object[] r1 = new Object[] { "A" };
+        Object[] r2 = new Object[] { "B" };
+        Object[] r3 = new Object[] { "C" };
+        Object[] r4 = new Object[] { "D" };
+        
+        list.add(new RowMetaAndData(rm, r1));
+        list.add(new RowMetaAndData(rm, r2));
+        list.add(new RowMetaAndData(rm, r3));
+        list.add(new RowMetaAndData(rm, r4));
+
+        return list;
+    } 
     
     public List<RowMetaAndData> createResultDataCaseSensitiveNoPreviousSort()
     {
@@ -753,4 +795,113 @@ public class UniqueRowsTest extends TestCase
         List<RowMetaAndData> resultRows = dummyRc.getRowsWritten();
         checkRows(createResultDataSortCaseInsensitiveUniqueCaseInsensitive(), resultRows);
     }   
+    
+    @Test
+    public void testAllUnique() throws Exception
+    {
+        KettleEnvironment.init();
+
+        //
+        // Create a new transformation...
+        //
+        TransMeta transMeta = new TransMeta();
+        transMeta.setName("uniquerowstest");
+        
+        PluginRegistry registry = PluginRegistry.getInstance();            
+
+        // 
+        // create an injector step...
+        //
+        String injectorStepname = "injector step";
+        InjectorMeta im = new InjectorMeta();
+        
+        // Set the information of the injector.                
+        String injectorPid = registry.getPluginId(StepPluginType.class, im);
+        StepMeta injectorStep = new StepMeta(injectorPid, injectorStepname, (StepMetaInterface)im);
+        transMeta.addStep(injectorStep);
+
+        // 
+        // Create a unique rows step
+        //
+        String uniqueRowsStepname = "unique rows step";            
+        UniqueRowsMeta urm = new UniqueRowsMeta();
+        urm.setCompareFields(new String[] {"KEY"});
+        urm.setCaseInsensitive(new boolean[] {true});
+        urm.setRejectDuplicateRow(true);
+
+        String uniqueRowsStepPid = registry.getPluginId(StepPluginType.class, urm);
+        StepMeta uniqueRowsStep = new StepMeta(uniqueRowsStepPid, uniqueRowsStepname, (StepMetaInterface)urm);
+        uniqueRowsStep.setDistributes(false);
+        transMeta.addStep(uniqueRowsStep);            
+
+        transMeta.addTransHop(new TransHopMeta(injectorStep, uniqueRowsStep));        
+        
+        // 
+        // Create a dummy step to receive the unique rows
+        //
+        String dummyStepname1 = "dummy step";            
+        DummyTransMeta dm1 = new DummyTransMeta();
+
+        String dummyPid1 = registry.getPluginId(StepPluginType.class, dm1);
+        StepMeta dummyStep1 = new StepMeta(dummyPid1, dummyStepname1, (StepMetaInterface)dm1);
+        transMeta.addStep(dummyStep1);                              
+
+        transMeta.addTransHop(new TransHopMeta(uniqueRowsStep, dummyStep1));
+        
+        // 
+        // Create a dummy step to receive the duplicate rows (errors)
+        //
+        String dummyStepname2 = "dummy step2";            
+        DummyTransMeta dm2 = new DummyTransMeta();
+
+        String dummyPid2 = registry.getPluginId(StepPluginType.class, dm2);
+        StepMeta dummyStep2 = new StepMeta(dummyPid2, dummyStepname2, (StepMetaInterface)dm2);
+        transMeta.addStep(dummyStep2);                              
+
+        // Set up error (aka duplicates) handling info 
+        StepErrorMeta stepErrorMeta = new StepErrorMeta(new Variables(), uniqueRowsStep);
+        stepErrorMeta.setTargetStep( dummyStep2 );
+        stepErrorMeta.setEnabled( true );
+        stepErrorMeta.setNrErrorsValuename( "numErrors" );
+        stepErrorMeta.setErrorDescriptionsValuename( "duplicates" );
+        stepErrorMeta.setErrorFieldsValuename( "KEY" );
+        stepErrorMeta.setErrorCodesValuename( "errorCodes" );
+        stepErrorMeta.setMaxErrors("9999");
+        stepErrorMeta.setMaxPercentErrors("");
+        stepErrorMeta.setMinPercentRows("");
+        uniqueRowsStep.setStepErrorMeta(stepErrorMeta);
+        transMeta.addTransHop(new TransHopMeta(uniqueRowsStep, dummyStep2));
+        
+        // Now execute the transformation...
+        Trans trans = new Trans(transMeta);
+
+        trans.prepareExecution(null);
+                
+        StepInterface si = trans.getStepInterface(dummyStepname1, 0);
+        RowStepCollector dummyRc1 = new RowStepCollector();
+        si.addRowListener(dummyRc1);
+        
+        StepInterface si2 = trans.getStepInterface(dummyStepname2, 0);
+        RowStepCollector dummyRc2 = new RowStepCollector();
+        si2.addRowListener(dummyRc2);
+        
+        RowProducer rp = trans.addRowProducer(injectorStepname, 0);
+        trans.startThreads();
+        
+        // add rows
+        List<RowMetaAndData> inputList = createDataAllUnique();
+        for ( RowMetaAndData rm : inputList )
+        {
+            rp.putRow(rm.getRowMeta(), rm.getData());
+        }   
+        rp.finished();
+ 
+        trans.waitUntilFinished();   
+                                     
+        List<RowMetaAndData> resultRows = dummyRc1.getRowsWritten();
+        checkRows(createResultDataAllUnique(), resultRows);
+        
+        List<RowMetaAndData> errorRows = dummyRc2.getRowsWritten();
+        assertEquals(errorRows.size(),0); // There should be no duplicates for this test
+    }
 }

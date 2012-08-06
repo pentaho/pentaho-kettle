@@ -73,7 +73,8 @@ public class UniqueRows extends BaseStep implements StepInterface
     }
 
     if (first) {
-      first = false;
+      // Don't set first to false here like we normally do, because it is being checked outside the 
+      // if(first) block to determine whether to send the row as a duplicate.
       data.inputRowMeta = getInputRowMeta().clone();
       data.compareRowMeta = getInputRowMeta().clone();
       data.outputRowMeta = getInputRowMeta().clone();
@@ -135,6 +136,7 @@ public class UniqueRows extends BaseStep implements StepInterface
       if (log.isBasic())
         logBasic(BaseMessages.getString(PKG, "UniqueRows.Log.LineNumber") + getLinesRead()); //$NON-NLS-1$
     }
+    first = false;
     return true;
   }
   
