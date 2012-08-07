@@ -31,9 +31,11 @@ import org.pentaho.hadoop.shim.spi.PentahoHadoopShim;
 import org.pentaho.hadoop.shim.spi.PigShim;
 import org.pentaho.hadoop.shim.spi.SnappyShim;
 import org.pentaho.hadoop.shim.spi.SqoopShim;
+import org.pentaho.hbase.shim.spi.HBaseShim;
 
 /**
- * A collection of Hadoop shim implementations for interactive with a Hadoop cluster.
+ * A collection of Hadoop shim implementations for interactive with a Hadoop
+ * cluster.
  */
 public class HadoopConfiguration {
   private static final Class<?> PKG = HadoopConfiguration.class;
@@ -47,7 +49,8 @@ public class HadoopConfiguration {
   private List<PentahoHadoopShim> availableShims;
 
   /**
-   * Create a new Hadoop configuration with the provided shims. Only 
+   * Create a new Hadoop configuration with the provided shims. Only
+   * 
    * @param identifier Unique identifier for this configuration
    * @param name Friendly name for this configuration
    * @param hadoopShim Hadoop shim
@@ -101,8 +104,10 @@ public class HadoopConfiguration {
 
   /**
    * Retrieve the Sqoop shim for this configuration if it's available
+   * 
    * @return the Sqoop shim
-   * @throws ConfigurationException No Sqoop shim available for this configuration
+   * @throws ConfigurationException No Sqoop shim available for this
+   *           configuration
    */
   public SqoopShim getSqoopShim() throws ConfigurationException {
     return getShim(SqoopShim.class);
@@ -110,6 +115,7 @@ public class HadoopConfiguration {
 
   /**
    * Retrieve the Pig shim for this configuration if it's available
+   * 
    * @return the Pig shim
    * @throws ConfigurationException No Pig shim available for this configuration
    */
@@ -119,8 +125,10 @@ public class HadoopConfiguration {
 
   /**
    * Retrieve the Snappy shim for this configuration if it's available
+   * 
    * @return the Snappy shim
-   * @throws ConfigurationException No Snappy shim available for this configuration
+   * @throws ConfigurationException No Snappy shim available for this
+   *           configuration
    */
   public SnappyShim getSnappyShim() throws ConfigurationException {
     return getShim(SnappyShim.class);
@@ -142,6 +150,17 @@ public class HadoopConfiguration {
       }
     }
     throw new ConfigurationException(BaseMessages.getString(PKG, "Error.UnsupportedShim", getName(), shimType.getSimpleName()));
+  }
+
+  /**
+   * Retrieve the HBase shim for this configuration if it's available
+   * 
+   * @return the HBase shim
+   * @throws ConfigurationException No HBase shim available for this
+   *           configuration
+   */
+  public HBaseShim getHBaseShim() throws ConfigurationException {
+    return getShim(HBaseShim.class);
   }
 
   /**

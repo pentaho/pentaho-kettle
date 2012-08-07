@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.hbase.mapping;
+package org.pentaho.hbase.shim.api;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -31,14 +31,16 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Iterator;
+import java.util.ServiceLoader;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.hbase.shim.HBaseAdmin;
-import org.pentaho.hbase.shim.HBaseBytesUtil;
+import org.pentaho.hbase.shim.spi.HBaseBytesUtilShim;
+import org.pentaho.hbase.shim.spi.HBaseShim;
 
 /**
  * Class that extends ValueMeta to add a few fields specific to HBase and a
@@ -72,7 +74,7 @@ public class HBaseValueMeta extends ValueMeta {
 
   protected boolean m_isKey;
 
-  protected static HBaseBytesUtil s_bytesUtil;
+  protected static HBaseBytesUtilShim s_bytesUtil;
 
   /**
    * In HBase, for filtering on unsigned columns, we need to know if a number is
@@ -80,6 +82,21 @@ public class HBaseValueMeta extends ValueMeta {
    * right number of bytes for a lexical comparison to work properly
    */
   protected boolean m_isLongOrDouble = true;
+
+  protected static void initBytesUtil() {
+    if (s_bytesUtil == null) {
+      try {
+        ServiceLoader<HBaseShim> loader = ServiceLoader.load(HBaseShim.class,
+            HBaseValueMeta.class.getClassLoader());
+        Iterator<HBaseShim> iter = loader.iterator();
+        HBaseShim hbaseShim = iter.next();
+
+        s_bytesUtil = hbaseShim.getBytesUtil();
+      } catch (Exception ex) {
+        throw new RuntimeException(ex);
+      }
+    }
+  }
 
   public HBaseValueMeta(String name, int type, int length, int precision)
       throws IllegalArgumentException {
@@ -108,14 +125,7 @@ public class HBaseValueMeta extends ValueMeta {
     } else {
       setAlias(parts[2]);
     }
-
-    try {
-      if (s_bytesUtil == null) {
-        s_bytesUtil = HBaseAdmin.getBytesUtil();
-      }
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    }
+    initBytesUtil();
   }
 
   /**
@@ -376,6 +386,7 @@ public class HBaseValueMeta extends ValueMeta {
    */
   public static byte[] encodeKeyValue(Object keyValue, Mapping.KeyType keyType)
       throws KettleException {
+    initBytesUtil();
 
     if (keyType == Mapping.KeyType.STRING) {
       return encodeKeyValue((String) keyValue, keyType);
@@ -456,9 +467,9 @@ public class HBaseValueMeta extends ValueMeta {
    */
   public static byte[] encodeKeyValue(String keyValue, Mapping.KeyType keyType)
       throws KettleException {
-    // if keyValue is null, we assume that the smallest possible value is wanted
+    initBytesUtil();
 
-    // Mapping.KeyType keyType = tableMapping.getKeyType();
+    // if keyValue is null, we assume that the smallest possible value is wanted
 
     if (keyType == Mapping.KeyType.STRING) {
       if (Const.isEmpty(keyValue)) {
@@ -541,6 +552,7 @@ public class HBaseValueMeta extends ValueMeta {
    */
   public static Object decodeKeyValue(byte[] rawKey, Mapping tableMapping)
       throws KettleException {
+    initBytesUtil();
 
     Mapping.KeyType keyType = tableMapping.getKeyType();
 
@@ -594,6 +606,7 @@ public class HBaseValueMeta extends ValueMeta {
   public static byte[] encodeColumnValue(Object columnValue,
       ValueMetaInterface colMeta, HBaseValueMeta mappingColMeta)
       throws KettleException {
+    initBytesUtil();
 
     byte[] encoded = null;
     switch (mappingColMeta.getType()) {
@@ -662,6 +675,7 @@ public class HBaseValueMeta extends ValueMeta {
    */
   public static Object decodeColumnValue(byte[] rawColValue,
       HBaseValueMeta columnMeta) throws KettleException {
+    initBytesUtil();
 
     // just return null if this column doesn't have a value for the row
     if (rawColValue == null) {
@@ -810,6 +824,7 @@ public class HBaseValueMeta extends ValueMeta {
    * @return the big decimal as a BigDecimal object
    */
   public static BigDecimal decodeBigDecimal(byte[] rawEncoded) {
+    initBytesUtil();
 
     // try string first
     String tempString = s_bytesUtil.toString(rawEncoded);
@@ -872,6 +887,8 @@ public class HBaseValueMeta extends ValueMeta {
    *         array of bytes.
    */
   public static Boolean decodeBoolFromString(byte[] rawEncoded) {
+    initBytesUtil();
+
     String tempString = s_bytesUtil.toString(rawEncoded);
     if (tempString.equalsIgnoreCase("Y") || tempString.equalsIgnoreCase("N")
         || tempString.equalsIgnoreCase("YES")
@@ -900,6 +917,8 @@ public class HBaseValueMeta extends ValueMeta {
    *         array of bytes.
    */
   public static Boolean decodeBoolFromNumber(byte[] rawEncoded) {
+    initBytesUtil();
+
     if (rawEncoded.length == s_bytesUtil.getSizeOfByte()) {
       byte val = rawEncoded[0];
       if (val == 0 || val == 1) {

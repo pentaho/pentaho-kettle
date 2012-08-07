@@ -61,7 +61,9 @@ import org.pentaho.di.ui.core.widget.ColumnInfo;
 import org.pentaho.di.ui.core.widget.ComboValuesSelectionListener;
 import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
-import org.pentaho.hbase.shim.HBaseAdmin;
+import org.pentaho.hbase.shim.api.HBaseValueMeta;
+import org.pentaho.hbase.shim.api.Mapping;
+import org.pentaho.hbase.shim.spi.HBaseShim;
 
 /**
  * A re-usable composite for creating and editing table mappings for HBase. Also
@@ -587,7 +589,7 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
       String existingName = m_existingTableNamesCombo.getText();
       m_existingTableNamesCombo.removeAll();
       try {
-        HBaseAdmin hbAdmin = m_configProducer.getHBaseConnection();
+        HBaseShim hbAdmin = m_configProducer.getHBaseConnection();
         hbAdmin.checkHBaseAvailable();
 
         m_admin = new MappingAdmin();
@@ -975,7 +977,7 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
     if (m_allowTableCreate) {
       // check for existence of the table. If table doesn't exist
       // prompt for creation
-      HBaseAdmin hbAdmin = m_admin.getConnection();
+      HBaseShim hbAdmin = m_admin.getConnection();
 
       try {
         if (!hbAdmin.tableExists(tableName)) {
@@ -1018,11 +1020,11 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
           Properties creationProps = new Properties();
           if (compression != null) {
             creationProps.setProperty(
-                HBaseAdmin.COL_DESCRIPTOR_COMPRESSION_KEY, compression);
+                HBaseShim.COL_DESCRIPTOR_COMPRESSION_KEY, compression);
           }
           if (bloomFilter != null) {
             creationProps.setProperty(
-                HBaseAdmin.COL_DESCRIPTOR_BLOOM_FILTER_KEY, bloomFilter);
+                HBaseShim.COL_DESCRIPTOR_BLOOM_FILTER_KEY, bloomFilter);
           }
           List<String> familyList = new ArrayList<String>();
           for (String fam : families) {
@@ -1188,7 +1190,7 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
         }
 
         // now get family information for this table
-        HBaseAdmin hbAdmin = m_admin.getConnection();
+        HBaseShim hbAdmin = m_admin.getConnection();
 
         if (hbAdmin.tableExists(tableName)) {
           List<String> colFams = hbAdmin.getTableFamiles(tableName);
@@ -1207,8 +1209,8 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
     }
   }
 
-  public HBaseAdmin getHBaseConnection() throws Exception {
-    HBaseAdmin conf = null;
+  public HBaseShim getHBaseConnection() throws Exception {
+    HBaseShim conf = null;
     String zookeeperHosts = null;
     String zookeeperPort = null;
 

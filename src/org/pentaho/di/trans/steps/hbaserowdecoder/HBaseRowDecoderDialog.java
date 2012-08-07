@@ -59,8 +59,8 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
-import org.pentaho.hbase.mapping.Mapping;
 import org.pentaho.hbase.mapping.MappingEditor;
+import org.pentaho.hbase.shim.api.Mapping;
 
 /**
  * UI dialog for the HBase row decoder step

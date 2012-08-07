@@ -29,13 +29,15 @@ import java.util.NavigableMap;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.hadoop.HadoopConfigurationRegistry;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.hbase.mapping.HBaseValueMeta;
-import org.pentaho.hbase.mapping.Mapping;
-import org.pentaho.hbase.shim.HBaseAdmin;
-import org.pentaho.hbase.shim.HBaseBytesUtil;
+import org.pentaho.hadoop.shim.HadoopConfiguration;
+import org.pentaho.hbase.shim.api.HBaseValueMeta;
+import org.pentaho.hbase.shim.api.Mapping;
+import org.pentaho.hbase.shim.spi.HBaseBytesUtilShim;
+import org.pentaho.hbase.shim.spi.HBaseShim;
 
 /**
  * Class for decoding HBase rows to a <key, family, column, value, time stamp>
@@ -80,11 +82,15 @@ public class HBaseRowToKettleTuple {
 
   protected List<HBaseValueMeta> m_tupleColsFromAliasMap;
 
-  protected HBaseBytesUtil m_bytesUtil;
+  protected HBaseBytesUtilShim m_bytesUtil;
 
   public HBaseRowToKettleTuple() {
     try {
-      m_bytesUtil = HBaseAdmin.getBytesUtil();
+      HadoopConfiguration active = HadoopConfigurationRegistry.getInstance()
+          .getActiveConfiguration();
+      HBaseShim hbaseShim = active.getHBaseShim();
+
+      m_bytesUtil = hbaseShim.getBytesUtil();
     } catch (Exception ex) {
       ex.printStackTrace();
     }
@@ -116,9 +122,8 @@ public class HBaseRowToKettleTuple {
    * @return a list of Kettle rows in tuple format
    * @throws KettleException if a problem occurs
    */
-  public List<Object[]> hbaseRowToKettleTupleMode(Object hRow,
-      HBaseAdmin admin, Mapping mapping,
-      Map<String, HBaseValueMeta> tupleColsMappedByAlias,
+  public List<Object[]> hbaseRowToKettleTupleMode(Object hRow, HBaseShim admin,
+      Mapping mapping, Map<String, HBaseValueMeta> tupleColsMappedByAlias,
       RowMetaInterface outputRowMeta) throws KettleException {
 
     if (m_decodedTuples == null) {
@@ -153,8 +158,8 @@ public class HBaseRowToKettleTuple {
    * @return a list of Kettle rows in tuple format
    * @throws KettleException if a problem occurs
    */
-  public List<Object[]> hbaseRowToKettleTupleMode(Object hRow,
-      HBaseAdmin admin, Mapping mapping, List<HBaseValueMeta> tupleCols,
+  public List<Object[]> hbaseRowToKettleTupleMode(Object hRow, HBaseShim admin,
+      Mapping mapping, List<HBaseValueMeta> tupleCols,
       RowMetaInterface outputRowMeta) throws KettleException {
 
     if (m_decodedTuples == null) {

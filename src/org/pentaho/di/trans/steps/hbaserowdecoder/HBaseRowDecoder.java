@@ -26,6 +26,7 @@ import java.util.List;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.hadoop.HadoopConfigurationRegistry;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
@@ -36,10 +37,11 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.hadoop.shim.HadoopConfiguration;
 import org.pentaho.hbase.HBaseRowToKettleTuple;
-import org.pentaho.hbase.mapping.HBaseValueMeta;
-import org.pentaho.hbase.mapping.Mapping;
-import org.pentaho.hbase.shim.HBaseAdmin;
+import org.pentaho.hbase.shim.api.HBaseValueMeta;
+import org.pentaho.hbase.shim.api.Mapping;
+import org.pentaho.hbase.shim.spi.HBaseShim;
 
 /**
  * Step for decoding incoming HBase row objects using a supplied mapping. Can be
@@ -83,7 +85,7 @@ public class HBaseRowDecoder extends BaseStep implements StepInterface {
    * Administrative connection to HBase (used just for the utility routines for
    * extracting info from HBase row objects)
    */
-  protected HBaseAdmin m_hbAdmin;
+  protected HBaseShim m_hbAdmin;
 
   @Override
   public boolean processRow(StepMetaInterface smi, StepDataInterface sdi)
@@ -103,10 +105,12 @@ public class HBaseRowDecoder extends BaseStep implements StepInterface {
       m_data = (HBaseRowDecoderData) sdi;
 
       try {
-        m_hbAdmin = HBaseAdmin.createHBaseAdmin();
+        HadoopConfiguration active = HadoopConfigurationRegistry.getInstance()
+            .getActiveConfiguration();
+        m_hbAdmin = active.getHBaseShim();
 
         // no configuration needed here because we don't need access to the
-        // actual database, just a few utility routines from HBaseAdmin for
+        // actual database, just a few utility routines from HBaseShim for
         // decoding row objects handed to us by the table input format
       } catch (Exception ex) {
         throw new KettleException(ex.getMessage(), ex);

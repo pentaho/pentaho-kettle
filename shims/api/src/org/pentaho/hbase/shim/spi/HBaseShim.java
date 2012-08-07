@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.hbase.shim;
+package org.pentaho.hbase.shim.spi;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -29,10 +29,11 @@ import java.util.NavigableMap;
 import java.util.Properties;
 
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.trans.steps.hbaseinput.ColumnFilter;
-import org.pentaho.hbase.mapping.HBaseValueMeta;
+import org.pentaho.hadoop.shim.spi.PentahoHadoopShim;
+import org.pentaho.hbase.shim.api.ColumnFilter;
+import org.pentaho.hbase.shim.api.HBaseValueMeta;
 
-public abstract class HBaseAdmin {
+public abstract class HBaseShim implements PentahoHadoopShim {
 
   // constant connection keys
   public static final String DEFAULTS_KEY = "hbase.default";
@@ -61,6 +62,14 @@ public abstract class HBaseAdmin {
 
   // constant HTable writing keys
   public static final String HTABLE_WRITE_BUFFER_SIZE_KEY = "htable.writeBufferSize";
+
+  /**
+   * Method for getting a byte utility implementation
+   * 
+   * @return
+   * @throws Exception
+   */
+  public abstract HBaseBytesUtilShim getBytesUtil() throws Exception;
 
   /**
    * Configure the HBase connection using the supplied connection properties
@@ -448,28 +457,10 @@ public abstract class HBaseAdmin {
    * @return a concrete implementation of the HBaseAdmin API
    * @throws Exception if a problem occurs
    */
-  public static HBaseAdmin createHBaseAdmin() throws Exception {
+  public static HBaseShim createHBaseAdmin() throws Exception {
 
-    return (HBaseAdmin) Class.forName(
-        "org.pentaho.hbase.shim.DefaultHBaseAdmin").newInstance();
-  }
-
-  /** Utilities for encoding/decoding values */
-  protected static HBaseBytesUtil s_bytesUtil;
-
-  /**
-   * Static factory method for getting a byte utility implementation
-   * 
-   * @return
-   * @throws Exception
-   */
-  public static HBaseBytesUtil getBytesUtil() throws Exception {
-    if (s_bytesUtil == null) {
-      s_bytesUtil = (HBaseBytesUtil) Class.forName(
-          "org.pentaho.hbase.shim.DefaultHBaseBytesUtil").newInstance();
-    }
-
-    return s_bytesUtil;
+    return (HBaseShim) Class
+        .forName("org.pentaho.hbase.shim.DefaultHBaseAdmin").newInstance();
   }
 
   /**

@@ -51,10 +51,11 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.hbase.mapping.HBaseValueMeta;
-import org.pentaho.hbase.mapping.Mapping;
 import org.pentaho.hbase.mapping.MappingAdmin;
-import org.pentaho.hbase.shim.HBaseAdmin;
+import org.pentaho.hbase.shim.api.ColumnFilter;
+import org.pentaho.hbase.shim.api.HBaseValueMeta;
+import org.pentaho.hbase.shim.api.Mapping;
+import org.pentaho.hbase.shim.spi.HBaseShim;
 import org.w3c.dom.Node;
 
 /**
@@ -818,9 +819,9 @@ public class HBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
       } else {
 
         // Configuration conf = null;
-        HBaseAdmin conf = null;
+        HBaseShim conf = null;
         try {
-          conf = HBaseAdmin.createHBaseAdmin();
+          conf = HBaseShim.createHBaseAdmin();
         } catch (Exception ex) {
           throw new KettleStepException(ex);
         }

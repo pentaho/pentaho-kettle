@@ -44,7 +44,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.hbase.mapping.Mapping;
+import org.pentaho.hbase.shim.api.Mapping;
 import org.w3c.dom.Node;
 
 /**

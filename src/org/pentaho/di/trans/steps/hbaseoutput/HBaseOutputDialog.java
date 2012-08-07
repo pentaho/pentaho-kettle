@@ -66,10 +66,10 @@ import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.hbase.mapping.ConfigurationProducer;
 import org.pentaho.hbase.mapping.FieldProducer;
-import org.pentaho.hbase.mapping.Mapping;
 import org.pentaho.hbase.mapping.MappingAdmin;
 import org.pentaho.hbase.mapping.MappingEditor;
-import org.pentaho.hbase.shim.HBaseAdmin;
+import org.pentaho.hbase.shim.api.Mapping;
+import org.pentaho.hbase.shim.spi.HBaseShim;
 
 /**
  * Dialog class for HBaseOutput
@@ -766,9 +766,9 @@ public class HBaseOutputDialog extends BaseStepDialog implements
     }
   }
 
-  public HBaseAdmin getHBaseConnection() throws Exception {
+  public HBaseShim getHBaseConnection() throws Exception {
     /* Configuration conf = null; */
-    HBaseAdmin conf = null;
+    HBaseShim conf = null;
 
     /*
      * URL coreConf = null; URL defaultConf = null;
@@ -809,7 +809,7 @@ public class HBaseOutputDialog extends BaseStepDialog implements
     try {
       MappingAdmin admin = new MappingAdmin();
 
-      HBaseAdmin connection = getHBaseConnection();
+      HBaseShim connection = getHBaseConnection();
       admin.setConnection(connection);
       Set<String> tableNames = admin.getMappedTables();
 
@@ -834,7 +834,7 @@ public class HBaseOutputDialog extends BaseStepDialog implements
       try {
         MappingAdmin admin = new MappingAdmin();
 
-        HBaseAdmin connection = getHBaseConnection();
+        HBaseShim connection = getHBaseConnection();
         admin.setConnection(connection);
 
         List<String> mappingNames = admin

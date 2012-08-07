@@ -20,9 +20,9 @@
  *
  ******************************************************************************/
 
-package org.pentaho.hbase.shim;
+package org.pentaho.hbase.shim.spi;
 
-public interface HBaseBytesUtil {
+public interface HBaseBytesUtilShim {
 
   int getSizeOfFloat();
 

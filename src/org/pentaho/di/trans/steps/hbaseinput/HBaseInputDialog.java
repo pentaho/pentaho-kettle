@@ -71,11 +71,12 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.trans.step.BaseStepDialog;
 import org.pentaho.hbase.mapping.ConfigurationProducer;
-import org.pentaho.hbase.mapping.HBaseValueMeta;
-import org.pentaho.hbase.mapping.Mapping;
 import org.pentaho.hbase.mapping.MappingAdmin;
 import org.pentaho.hbase.mapping.MappingEditor;
-import org.pentaho.hbase.shim.HBaseAdmin;
+import org.pentaho.hbase.shim.api.ColumnFilter;
+import org.pentaho.hbase.shim.api.HBaseValueMeta;
+import org.pentaho.hbase.shim.api.Mapping;
+import org.pentaho.hbase.shim.spi.HBaseShim;
 
 /**
  * Dialog class for HBaseInput
@@ -1222,8 +1223,8 @@ public class HBaseInputDialog extends BaseStepDialog implements
     checkKeyInformation(true, false);
   }
 
-  public HBaseAdmin getHBaseConnection() throws Exception {
-    HBaseAdmin conf = null;
+  public HBaseShim getHBaseConnection() throws Exception {
+    HBaseShim conf = null;
 
     String coreConf = "";
     String defaultConf = "";
@@ -1279,7 +1280,7 @@ public class HBaseInputDialog extends BaseStepDialog implements
         boolean filterAliasesDone = false;
         try {
           if (displayFieldsMappingFromHBase) {
-            HBaseAdmin connection = getHBaseConnection();
+            HBaseShim connection = getHBaseConnection();
             admin.setConnection(connection);
             current = admin.getMapping(transMeta
                 .environmentSubstitute(m_mappedTableNamesCombo.getText()),
@@ -1496,7 +1497,7 @@ public class HBaseInputDialog extends BaseStepDialog implements
     try {
       MappingAdmin admin = new MappingAdmin();
 
-      HBaseAdmin connection = getHBaseConnection();
+      HBaseShim connection = getHBaseConnection();
       admin.setConnection(connection);
       Set<String> tableNames = admin.getMappedTables();
 
@@ -1521,7 +1522,7 @@ public class HBaseInputDialog extends BaseStepDialog implements
     if (!Const.isEmpty(m_mappedTableNamesCombo.getText())) {
       try {
         MappingAdmin admin = new MappingAdmin();
-        HBaseAdmin connection = getHBaseConnection();
+        HBaseShim connection = getHBaseConnection();
         admin.setConnection(connection);
 
         List<String> mappingNames = admin

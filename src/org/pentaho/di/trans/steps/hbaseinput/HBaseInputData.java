@@ -28,10 +28,12 @@ import java.util.List;
 import java.util.Properties;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.hadoop.HadoopConfigurationRegistry;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.hbase.shim.HBaseAdmin;
+import org.pentaho.hadoop.shim.HadoopConfiguration;
+import org.pentaho.hbase.shim.spi.HBaseShim;
 
 /**
  * Class providing an input step for reading data from an HBase table according
@@ -78,28 +80,30 @@ public class HBaseInputData extends BaseStepData implements StepDataInterface {
    * @return an administrative connection to HBase
    * @throws Exception if a problem occurs
    */
-  public static HBaseAdmin getHBaseConnection(String zookeeperHosts,
+  public static HBaseShim getHBaseConnection(String zookeeperHosts,
       String zookeeperPort, String siteConfig, String defaultConfig,
       List<String> logging) throws Exception {
 
     Properties connProps = new Properties();
     if (!Const.isEmpty(zookeeperHosts)) {
-      connProps.setProperty(HBaseAdmin.ZOOKEEPER_QUORUM_KEY, zookeeperHosts);
+      connProps.setProperty(HBaseShim.ZOOKEEPER_QUORUM_KEY, zookeeperHosts);
     }
     if (!Const.isEmpty(zookeeperPort)) {
-      connProps.setProperty(HBaseAdmin.ZOOKEEPER_PORT_KEY, zookeeperPort);
+      connProps.setProperty(HBaseShim.ZOOKEEPER_PORT_KEY, zookeeperPort);
     }
     if (!Const.isEmpty(siteConfig)) {
-      connProps.setProperty(HBaseAdmin.SITE_KEY, siteConfig);
+      connProps.setProperty(HBaseShim.SITE_KEY, siteConfig);
     }
     if (!Const.isEmpty(defaultConfig)) {
-      connProps.setProperty(HBaseAdmin.DEFAULTS_KEY, defaultConfig);
+      connProps.setProperty(HBaseShim.DEFAULTS_KEY, defaultConfig);
     }
 
-    HBaseAdmin admin = HBaseAdmin.createHBaseAdmin();
-    admin.configureConnection(connProps, logging);
+    HadoopConfiguration active = HadoopConfigurationRegistry.getInstance()
+        .getActiveConfiguration();
+    HBaseShim hbaseShim = active.getHBaseShim();
+    hbaseShim.configureConnection(connProps, logging);
 
-    return admin;
+    return hbaseShim;
   }
 
   /**

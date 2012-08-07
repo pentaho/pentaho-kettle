@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.trans.steps.hbaseinput;
+package org.pentaho.hbase.shim.api;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;

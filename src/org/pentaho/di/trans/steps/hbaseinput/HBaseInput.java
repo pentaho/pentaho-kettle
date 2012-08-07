@@ -45,10 +45,11 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.hbase.HBaseRowToKettleTuple;
-import org.pentaho.hbase.mapping.HBaseValueMeta;
-import org.pentaho.hbase.mapping.Mapping;
 import org.pentaho.hbase.mapping.MappingAdmin;
-import org.pentaho.hbase.shim.HBaseAdmin;
+import org.pentaho.hbase.shim.api.ColumnFilter;
+import org.pentaho.hbase.shim.api.HBaseValueMeta;
+import org.pentaho.hbase.shim.api.Mapping;
+import org.pentaho.hbase.shim.spi.HBaseShim;
 
 /**
  * Class providing an input step for reading data from an HBase table according
@@ -70,7 +71,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
   }
 
   /** Admin object for interacting with HBase */
-  protected HBaseAdmin m_hbAdmin;
+  protected HBaseShim m_hbAdmin;
 
   /** The mapping admin object for interacting with mapping information */
   protected MappingAdmin m_mappingAdmin;

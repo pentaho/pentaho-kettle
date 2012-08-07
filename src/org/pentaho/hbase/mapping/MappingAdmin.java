@@ -37,9 +37,13 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.hadoop.HadoopConfigurationRegistry;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.hbase.shim.HBaseAdmin;
-import org.pentaho.hbase.shim.HBaseBytesUtil;
+import org.pentaho.hadoop.shim.HadoopConfiguration;
+import org.pentaho.hbase.shim.api.HBaseValueMeta;
+import org.pentaho.hbase.shim.api.Mapping;
+import org.pentaho.hbase.shim.spi.HBaseBytesUtilShim;
+import org.pentaho.hbase.shim.spi.HBaseShim;
 
 /**
  * Class for managing a mapping table in HBase. Has routines for creating the
@@ -58,10 +62,10 @@ public class MappingAdmin {
    */
 
   /** Admin object */
-  protected HBaseAdmin m_admin;
+  protected HBaseShim m_admin;
 
   /** Byte utils */
-  protected HBaseBytesUtil m_bytesUtil;
+  protected HBaseBytesUtilShim m_bytesUtil;
 
   /** Name of the mapping table (might make this configurable at some stage) */
   protected String m_mappingTableName = "pentaho_mappings";
@@ -80,7 +84,10 @@ public class MappingAdmin {
    */
   public MappingAdmin() {
     try {
-      m_bytesUtil = HBaseAdmin.getBytesUtil();
+      HadoopConfiguration active = HadoopConfigurationRegistry.getInstance()
+          .getActiveConfiguration();
+      HBaseShim hbaseShim = active.getHBaseShim();
+      m_bytesUtil = hbaseShim.getBytesUtil();
     } catch (Exception ex) {
       // catastrophic failure if we can't obtain a concrete implementation
       throw new RuntimeException(ex);
@@ -97,7 +104,7 @@ public class MappingAdmin {
    *           setConnection(conf); }
    */
 
-  public MappingAdmin(HBaseAdmin conn) {
+  public MappingAdmin(HBaseShim conn) {
     this();
     setConnection(conn);
   }
@@ -112,7 +119,7 @@ public class MappingAdmin {
    *           m_connection = con; m_admin = new HBaseAdmin(m_connection); }
    */
 
-  public void setConnection(HBaseAdmin conn) {
+  public void setConnection(HBaseShim conn) {
     m_admin = conn;
   }
 
@@ -134,7 +141,7 @@ public class MappingAdmin {
    *         public Configuration getConnection() { return m_connection; }
    */
 
-  public HBaseAdmin getConnection() {
+  public HBaseShim getConnection() {
     return m_admin;
   }
 
@@ -175,7 +182,7 @@ public class MappingAdmin {
     m_admin.createTable("MarksTestTable", colFamilies, null);
 
     Properties props = new Properties();
-    props.setProperty(HBaseAdmin.HTABLE_WRITE_BUFFER_SIZE_KEY, ""
+    props.setProperty(HBaseShim.HTABLE_WRITE_BUFFER_SIZE_KEY, ""
         + (1024 * 1024 * 12));
     m_admin.newTargetTable("MarksTestTable", props);
 
@@ -813,7 +820,7 @@ public class MappingAdmin {
       String tableName = "MarksTestTable";
       String mappingName = "MarksTestMapping";
       MappingAdmin admin = new MappingAdmin();
-      admin.setConnection(HBaseAdmin.createHBaseAdmin());
+      admin.setConnection(HBaseShim.createHBaseAdmin());
 
       if (args.length == 0 || args[0].equalsIgnoreCase("-h")
           || args[0].endsWith("help")) {

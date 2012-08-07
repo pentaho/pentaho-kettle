@@ -39,10 +39,10 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.hbase.mapping.HBaseValueMeta;
-import org.pentaho.hbase.mapping.Mapping;
 import org.pentaho.hbase.mapping.MappingAdmin;
-import org.pentaho.hbase.shim.HBaseAdmin;
+import org.pentaho.hbase.shim.api.HBaseValueMeta;
+import org.pentaho.hbase.shim.api.Mapping;
+import org.pentaho.hbase.shim.spi.HBaseShim;
 
 /**
  * Class providing an output step for writing data to an HBase table according
@@ -64,7 +64,7 @@ public class HBaseOutput extends BaseStep implements StepInterface {
   }
 
   /** Configuration object for connecting to HBase */
-  protected HBaseAdmin m_hbAdmin;
+  protected HBaseShim m_hbAdmin;
 
   /** The mapping admin object for interacting with mapping information */
   protected MappingAdmin m_mappingAdmin;
@@ -249,7 +249,7 @@ public class HBaseOutput extends BaseStep implements StepInterface {
 
           logBasic(BaseMessages.getString(HBaseOutputMeta.PKG,
               "HBaseOutput.SettingWriteBuffer", writeBuffer));
-          tableProps.setProperty(HBaseAdmin.HTABLE_WRITE_BUFFER_SIZE_KEY, ""
+          tableProps.setProperty(HBaseShim.HTABLE_WRITE_BUFFER_SIZE_KEY, ""
               + writeBuffer);
 
           if (m_meta.getDisableWriteToWAL()) {

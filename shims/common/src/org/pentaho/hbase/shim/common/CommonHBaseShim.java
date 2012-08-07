@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.hbase.shim;
+package org.pentaho.hbase.shim.common;
 
 import java.net.MalformedURLException;
 import java.text.DecimalFormat;
@@ -53,10 +53,10 @@ import org.apache.hadoop.hbase.io.hfile.Compression;
 import org.apache.hadoop.hbase.regionserver.StoreFile.BloomType;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.trans.steps.hbaseinput.ColumnFilter;
-import org.pentaho.hbase.mapping.DeserializedBooleanComparator;
-import org.pentaho.hbase.mapping.DeserializedNumericComparator;
-import org.pentaho.hbase.mapping.HBaseValueMeta;
+import org.pentaho.hbase.shim.api.ColumnFilter;
+import org.pentaho.hbase.shim.api.HBaseValueMeta;
+import org.pentaho.hbase.shim.spi.HBaseBytesUtilShim;
+import org.pentaho.hbase.shim.spi.HBaseShim;
 
 /**
  * Concrete implementation of HBaseAdmin suitable for use with Apache HBase
@@ -64,9 +64,11 @@ import org.pentaho.hbase.mapping.HBaseValueMeta;
  * 
  * @author Mark Hall (mhall{[at]}pentaho{[dot]}com)
  */
-public class DefaultHBaseAdmin extends HBaseAdmin {
+public class CommonHBaseShim extends HBaseShim {
 
-  private static Class<?> PKG = DefaultHBaseAdmin.class;
+  private static Class<?> PKG = CommonHBaseShim.class;
+
+  protected static final String BYTES_UTIL_IMPL = "org.pentaho.hbase.shim.common.CommonHBaseBytesUtil";
 
   protected Configuration m_config = null;
   protected org.apache.hadoop.hbase.client.HBaseAdmin m_admin;
@@ -78,11 +80,11 @@ public class DefaultHBaseAdmin extends HBaseAdmin {
   protected HTable m_targetTable;
   protected Put m_currentTargetPut;
 
-  protected HBaseBytesUtil m_bytesUtil;
+  protected HBaseBytesUtilShim m_bytesUtil;
 
-  public DefaultHBaseAdmin() {
+  public CommonHBaseShim() {
     try {
-      m_bytesUtil = getBytesUtil();
+      getBytesUtil();
     } catch (Exception ex) {
       throw new RuntimeException(ex);
     }
@@ -112,7 +114,7 @@ public class DefaultHBaseAdmin extends HBaseAdmin {
       }
     } catch (MalformedURLException e) {
       throw new IllegalArgumentException(BaseMessages.getString(PKG,
-          "DefaultHBaseAdmin.Error.MalformedConfigURL"));
+          "CommonHBaseShim.Error.MalformedConfigURL"));
     }
 
     if (!isEmpty(zookeeperQuorum)) {
@@ -126,7 +128,7 @@ public class DefaultHBaseAdmin extends HBaseAdmin {
       } catch (NumberFormatException e) {
         if (logMessages != null) {
           logMessages.add(BaseMessages.getString(PKG,
-              "DefaultHBaseAdmin.Error.UnableToParseZookeeperPort"));
+              "CommonHBaseShim.Error.UnableToParseZookeeperPort"));
         }
       }
     }
@@ -134,10 +136,20 @@ public class DefaultHBaseAdmin extends HBaseAdmin {
     m_admin = new org.apache.hadoop.hbase.client.HBaseAdmin(m_config);
   }
 
+  @Override
+  public HBaseBytesUtilShim getBytesUtil() throws Exception {
+    if (m_bytesUtil == null) {
+      m_bytesUtil = (HBaseBytesUtilShim) Class.forName(BYTES_UTIL_IMPL)
+          .newInstance();
+    }
+
+    return m_bytesUtil;
+  }
+
   protected void checkConfiguration() throws Exception {
     if (m_admin == null) {
       throw new Exception(BaseMessages.getString(PKG,
-          "DefaultHBaseAdmin.Error.ConnectionHasNotBeenConfigured"));
+          "CommonHBaseShim.Error.ConnectionHasNotBeenConfigured"));
     }
   }
 
@@ -255,14 +267,14 @@ public class DefaultHBaseAdmin extends HBaseAdmin {
   protected void checkSourceTable() throws Exception {
     if (m_sourceTable == null) {
       throw new Exception(BaseMessages.getString(PKG,
-          "DefaultHBaseAdmin.Error.NoSourceTable"));
+          "CommonHBaseShim.Error.NoSourceTable"));
     }
   }
 
   protected void checkSourceScan() throws Exception {
     if (m_sourceScan == null) {
       throw new Exception(BaseMessages.getString(PKG,
-          "DefaultHBaseAdmin.Error.NoSourceScan"));
+          "CommonHBaseShim.Error.NoSourceScan"));
     }
   }
 
@@ -517,14 +529,13 @@ public class DefaultHBaseAdmin extends HBaseAdmin {
   protected void checkResultSet() throws Exception {
     if (m_resultSet == null) {
       throw new Exception(BaseMessages.getString(PKG,
-          "DefaultHBaseAdmin.Error.NoCurrentResultSet"));
+          "CommonHBaseShim.Error.NoCurrentResultSet"));
     }
   }
 
   protected void checkForCurrentResultSetRow() throws Exception {
     if (m_currentResultSetRow == null) {
-      throw new Exception(BaseMessages.getString(PKG,
-          "DefaultHBaseAdmin.Error."));
+      throw new Exception(BaseMessages.getString(PKG, "CommonHBaseShim.Error."));
     }
   }
 
@@ -561,7 +572,7 @@ public class DefaultHBaseAdmin extends HBaseAdmin {
   public byte[] getRowKey(Object aRow) throws Exception {
     if (!checkForHBaseRow(aRow)) {
       throw new Exception(BaseMessages.getString(PKG,
-          "DefaultHBaseAdmin.Error.ObjectIsNotAnHBaseRow"));
+          "CommonHBaseShim.Error.ObjectIsNotAnHBaseRow"));
     }
 
     return ((Result) aRow).getRow();
@@ -583,7 +594,7 @@ public class DefaultHBaseAdmin extends HBaseAdmin {
 
     if (!checkForHBaseRow(aRow)) {
       throw new Exception(BaseMessages.getString(PKG,
-          "DefaultHBaseAdmin.Error.ObjectIsNotAnHBaseRow"));
+          "CommonHBaseShim.Error.ObjectIsNotAnHBaseRow"));
     }
 
     byte[] result = ((Result) aRow).getValue(
@@ -611,7 +622,7 @@ public class DefaultHBaseAdmin extends HBaseAdmin {
 
     if (!checkForHBaseRow(aRow)) {
       throw new Exception(BaseMessages.getString(PKG,
-          "DefaultHBaseAdmin.Error.ObjectIsNotAnHBaseRow"));
+          "CommonHBaseShim.Error.ObjectIsNotAnHBaseRow"));
     }
 
     return ((Result) aRow).getFamilyMap(m_bytesUtil.toBytes(familyName));
@@ -632,7 +643,7 @@ public class DefaultHBaseAdmin extends HBaseAdmin {
       Object aRow) throws Exception {
     if (!checkForHBaseRow(aRow)) {
       throw new Exception(BaseMessages.getString(PKG,
-          "DefaultHBaseAdmin.Error.ObjectIsNotAnHBaseRow"));
+          "CommonHBaseShim.Error.ObjectIsNotAnHBaseRow"));
     }
 
     return ((Result) aRow).getMap();
@@ -657,7 +668,7 @@ public class DefaultHBaseAdmin extends HBaseAdmin {
   protected void checkTargetPut() throws Exception {
     if (m_currentTargetPut == null) {
       throw new Exception(BaseMessages.getString(PKG,
-          "DefaultHBaseAdmin.Error.NoTargetTable"));
+          "CommonHBaseShim.Error.NoTargetTable"));
     }
   }
 

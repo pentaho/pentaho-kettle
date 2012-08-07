@@ -20,11 +20,12 @@
  *
  ******************************************************************************/
 
-package org.pentaho.hbase.shim;
+package org.pentaho.hbase.shim.common;
 
 import org.apache.hadoop.hbase.util.Bytes;
+import org.pentaho.hbase.shim.spi.HBaseBytesUtilShim;
 
-public class DefaultHBaseBytesUtil implements HBaseBytesUtil {
+public class CommonHBaseBytesUtil implements HBaseBytesUtilShim {
 
   public int getSizeOfFloat() {
     return Bytes.SIZEOF_FLOAT;

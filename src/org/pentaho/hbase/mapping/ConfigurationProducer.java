@@ -22,7 +22,7 @@
 
 package org.pentaho.hbase.mapping;
 
-import org.pentaho.hbase.shim.HBaseAdmin;
+import org.pentaho.hbase.shim.spi.HBaseShim;
 
 /**
  * Interface to something that can produce a connection to HBase
@@ -40,7 +40,7 @@ public interface ConfigurationProducer {
    *         connection to HBase
    * @throws Exception if the connection can't be supplied for some reason
    */
-  HBaseAdmin getHBaseConnection() throws Exception;
+  HBaseShim getHBaseConnection() throws Exception;
 
   String getCurrentConfiguration();
 }
