@@ -977,6 +977,7 @@
 			<test todir="${junit}" name="org.pentaho.di.trans.steps.excelinput.JxlWorkBookTest" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.trans.steps.excelinput.OdsWorkBookTest" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.trans.steps.excelinput.PoiWorkBookTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.execsqlrow.ExecSQLRowTest" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.trans.steps.getvariable.GetVariableMetaTest" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.trans.steps.getxmldata.GetXMLDataTest" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.trans.steps.injector.InjectorTest" haltonerror="false" />
@@ -1000,7 +1001,7 @@
 			<test todir="${junit}" name="org.pentaho.di.trans.steps.tableinput.TableInputTest" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.trans.steps.tableoutput.TableOutputTest" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.trans.steps.textfileinput.TextFileInputTests" haltonerror="false" />
-		    <test todir="${junit}" name="org.pentaho.di.trans.steps.unique.UniqueRowsTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.unique.UniqueRowsTest" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.trans.steps.update.UpdateTest" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.trans.steps.valuemapper.ValueMapperTest" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.trans.TransSingleThreadTest" haltonerror="false" />
