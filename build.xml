@@ -1020,7 +1020,8 @@
   			<test todir="${junit}" name="org.pentaho.di.trans.steps.excelinput.JxlWorkBookTest" haltonerror="false" />
   			<test todir="${junit}" name="org.pentaho.di.trans.steps.excelinput.OdsWorkBookTest" haltonerror="false" />
   			<test todir="${junit}" name="org.pentaho.di.trans.steps.excelinput.PoiWorkBookTest" haltonerror="false" />
-  			<test todir="${junit}" name="org.pentaho.di.trans.steps.getxmldata.GetXMLDataTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.execsqlrow.ExecSQLRowTest" haltonerror="false" />
+			<test todir="${junit}" name="org.pentaho.di.trans.steps.getxmldata.GetXMLDataTest" haltonerror="false" />
   			<test todir="${junit}" name="org.pentaho.di.trans.steps.injector.InjectorTest" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.trans.steps.insertupdate.InsertUpdateTest" haltonerror="false" />
 			<test todir="${junit}" name="org.pentaho.di.trans.steps.janino.JaninoStepTest" haltonerror="false" />

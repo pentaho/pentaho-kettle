@@ -26,6 +26,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.ValueMeta;
@@ -163,8 +164,12 @@ public class ExecSQLRow extends BaseStep implements StepInterface
 	        {
 		        if (!data.db.isAutoCommit())
 		        {
-		        	if(meta.getCommitSize()==1) data.db.commit();
-		        	else if (getLinesWritten()%meta.getCommitSize()==0)   data.db.commit();
+		        	if(meta.getCommitSize()==1) {
+		        		data.db.commit();
+		        	}
+		        	else if (getLinesWritten() % meta.getCommitSize()==0) {
+		        		data.db.commit();
+		        	}
 		        }
 	        }
 			
@@ -206,7 +211,31 @@ public class ExecSQLRow extends BaseStep implements StepInterface
 
         if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "ExecSQLRow.Log.FinishingReadingQuery")); //$NON-NLS-1$
      
-        if( data.db!=null) data.db.disconnect();
+        if( data.db!=null) {
+        	try
+	        {
+	            if (!data.db.isAutoCommit())
+	            {
+	                if (getErrors()==0)
+	                {
+	                    data.db.commit();
+	                }
+	                else
+	                {
+	                    data.db.rollback();                    
+	                }
+	            }
+	        }
+	        catch(KettleDatabaseException e)
+	        {
+	            logError(BaseMessages.getString(PKG, "Update.Log.UnableToCommitUpdateConnection")+data.db+"] :"+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+	            setErrors(1);
+	        }
+	        finally
+	        {
+	            data.db.disconnect();
+	        }
+        }
 
 
 		super.dispose(smi, sdi);
@@ -249,7 +278,7 @@ public class ExecSQLRow extends BaseStep implements StepInterface
 
                 if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "ExecSQLRow.Log.ConnectedToDB")); //$NON-NLS-1$
 
-                if(meta.getCommitSize()>1) data.db.setCommit(meta.getCommitSize());
+                if(meta.getCommitSize()>=1) data.db.setCommit(meta.getCommitSize());
                 return true;
             }
             catch(KettleException e)
