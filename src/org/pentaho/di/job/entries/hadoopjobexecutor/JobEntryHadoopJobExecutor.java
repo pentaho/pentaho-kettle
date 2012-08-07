@@ -314,6 +314,8 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
       if (log.isDetailed())
         logDetailed(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.ResolvedJar", resolvedJarUrl.toExternalForm()));
 
+      HadoopShim shim = HadoopConfigurationRegistry.getInstance().getActiveConfiguration().getHadoopShim();
+      
       if (isSimple) {
   /*      final AtomicInteger taskCount = new AtomicInteger(0);
         final AtomicInteger successCount = new AtomicInteger(0);
@@ -321,7 +323,7 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
         
         if (log.isDetailed())
           logDetailed(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.SimpleMode"));
-        List<Class<?>> classesWithMains = JarUtility.getClassesInJarWithMain(resolvedJarUrl.toExternalForm(), getClass().getClassLoader());        
+        List<Class<?>> classesWithMains = JarUtility.getClassesInJarWithMain(resolvedJarUrl.toExternalForm(), shim.getClass().getClassLoader());        
         for (final Class<?> clazz : classesWithMains) {
           Runnable r = new Runnable() {
             public void run() {
@@ -378,7 +380,6 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
         if (log.isDetailed())
           logDetailed(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.AdvancedMode"));
 
-        HadoopShim shim = HadoopConfigurationRegistry.getInstance().getActiveConfiguration().getHadoopShim();
         Configuration conf = shim.createConfiguration();
         FileSystem fs = shim.getFileSystem(conf);
         URL[] urls = new URL[] { resolvedJarUrl };
