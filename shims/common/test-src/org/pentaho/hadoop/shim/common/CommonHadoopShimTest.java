@@ -27,7 +27,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,8 +39,8 @@ import org.pentaho.hadoop.mapreduce.GenericTransReduce;
 import org.pentaho.hadoop.mapreduce.PentahoMapRunnable;
 import org.pentaho.hadoop.shim.ConfigurationException;
 import org.pentaho.hadoop.shim.HadoopConfiguration;
+import org.pentaho.hadoop.shim.HadoopConfigurationFileSystemManager;
 import org.pentaho.hadoop.shim.api.Configuration;
-import org.pentaho.hadoop.shim.api.HadoopConfigurationFileSystemManager;
 import org.pentaho.hadoop.shim.spi.HadoopConfigurationProvider;
 
 public class CommonHadoopShimTest {

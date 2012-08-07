@@ -35,6 +35,9 @@ public class HadoopConfiguration {
 
   private String name;
 
+  /**
+   * TODO Create a list of shims and a lookup API to get implementations
+   */
   private HadoopShim hadoopShim;
 
   private SqoopShim sqoopShim;

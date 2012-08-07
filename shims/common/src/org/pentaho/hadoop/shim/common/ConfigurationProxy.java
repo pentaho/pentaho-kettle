@@ -42,6 +42,13 @@ import org.apache.hadoop.mapred.Reducer;
 public class ConfigurationProxy extends org.apache.hadoop.mapred.JobConf implements
     org.pentaho.hadoop.shim.api.Configuration {
   
+  /*
+   * Wrap the call to {@link super#setMapperClass(Class)} to avoid generic type
+   * mismatches. We do not expose {@link org.apache.hadoop.mapred.*} classes through
+   * the API or provide proxies for them. This pattern is used for many of the
+   * class setter methods in this implementation.
+   */
+
   @Override
   public void setMapperClass(Class c) {
     super.setMapperClass((Class<? extends Mapper>) c);

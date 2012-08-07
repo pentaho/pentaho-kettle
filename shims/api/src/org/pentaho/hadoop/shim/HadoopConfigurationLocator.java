@@ -40,8 +40,9 @@ import org.apache.commons.vfs.FileSelector;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileType;
 import org.apache.commons.vfs.impl.DefaultFileSystemManager;
+import org.apache.log4j.Logger;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.hadoop.shim.api.ActiveHadoopConfigurationLocator;
-import org.pentaho.hadoop.shim.api.HadoopConfigurationFileSystemManager;
 import org.pentaho.hadoop.shim.spi.HadoopConfigurationProvider;
 import org.pentaho.hadoop.shim.spi.HadoopShim;
 import org.pentaho.hadoop.shim.spi.PigShim;
@@ -53,6 +54,8 @@ import org.pentaho.hadoop.shim.spi.SqoopShim;
  * is not thread-safe. This loads Hadoop configurations from a VFS FileSystem.
  */
 public class HadoopConfigurationLocator implements HadoopConfigurationProvider {
+  private static final String JAR_EXTENSION = ".jar";
+
   private static final String CONFIG_PROPERTIES_FILE = "config.properties";
 
   private static final String CONFIG_PROPERTY_IGNORE_CLASSES = "ignore.classes";
@@ -64,6 +67,10 @@ public class HadoopConfigurationLocator implements HadoopConfigurationProvider {
   private static final String CONFIG_PROPERTY_NAME = "name";
 
   private static final URL[] EMPTY_URL_ARRAY = new URL[0];
+
+  private static final Class<?> PKG = HadoopConfigurationLocator.class;
+  
+  private Logger logger = Logger.getLogger(getClass());
 
   /**
    * Currently known shim configurations
@@ -122,7 +129,7 @@ public class HadoopConfigurationLocator implements HadoopConfigurationProvider {
     configurations = new HashMap<String, HadoopConfiguration>();
     try {
       if (!baseDir.exists()) {
-        throw new ConfigurationException("Hadoop configurations directory does not exist: " + baseDir.getURL());
+        throw new ConfigurationException(BaseMessages.getString(PKG, "Error.HadoopConfigurationDirectoryDoesNotExist", baseDir.getURL()));
       }
       for (FileObject f : baseDir.findFiles(new FileSelector() {
         @Override
@@ -141,13 +148,20 @@ public class HadoopConfigurationLocator implements HadoopConfigurationProvider {
             configurations.put(config.getIdentifier(), config);
           }
         } catch (ConfigurationException ex) {
-          System.err.println("Unable to load Hadoop Configuration from " + f.getURL());
-          ex.printStackTrace();
+          // Log the error and continue loading additional configurations. A single
+          // configuration could error out for many reasons. At least one Hadoop
+          // configuration we ship with will fail (MapR) if the client libraries
+          // are not installed so this is to prevent at least that case from
+          // taking down the configuration locator.
+          logger.warn(BaseMessages.getString(PKG, "Error.UnableToLoadConfigurationFrom.WithDebugDisclaimer", f.getURL()));
+          // Log the stacktrace if debug logging is enabled
+          if (logger.isDebugEnabled()) {
+            logger.debug(BaseMessages.getString(PKG, "Error.UnableToLoadConfigurationFrom", f.getURL()), ex);
+          }
         }
       }
     } catch (FileSystemException ex) {
-      throw new ConfigurationException(
-          "Error loading Hadoop configurations from " + baseDir.getName().getFriendlyURI(), ex);
+      throw new ConfigurationException(BaseMessages.getString(PKG, "Error.UnableToLoadConfigurations", baseDir.getName().getFriendlyURI()), ex);
     }
   }
 
@@ -163,7 +177,7 @@ public class HadoopConfigurationLocator implements HadoopConfigurationProvider {
     FileObject[] jars = path.findFiles(new FileSelector() {
       @Override
       public boolean includeFile(FileSelectInfo info) throws Exception {
-        return info.getFile().getName().getBaseName().endsWith(".jar");
+        return info.getFile().getName().getBaseName().endsWith(JAR_EXTENSION);
       }
 
       @Override
@@ -181,7 +195,7 @@ public class HadoopConfigurationLocator implements HadoopConfigurationProvider {
 
   private void checkInitialized() {
     if (!initialized) {
-      throw new RuntimeException("locator not initialized");
+      throw new RuntimeException(BaseMessages.getString(PKG, "Error.LocatorNotInitialized"));
     }
   }
 
@@ -228,7 +242,7 @@ public class HadoopConfigurationLocator implements HadoopConfigurationProvider {
 
       return new HadoopConfigurationClassLoader(jars.toArray(EMPTY_URL_ARRAY), parent, ignoredClasses);
     } catch (Exception ex) {
-      throw new ConfigurationException("Could not create class loader", ex);
+      throw new ConfigurationException(BaseMessages.getString(PKG, "Error.CreatingClassLoader"), ex);
     }
   }
 
@@ -258,7 +272,7 @@ public class HadoopConfigurationLocator implements HadoopConfigurationProvider {
         }
       } catch (Exception e) {
         // Log invalid path
-        System.err.println("Invalid classpath entry, ignoring '" + path + "'");
+        logger.error(BaseMessages.getString(PKG, "Error.InvalidClasspathEntry", path));
       }
     }
     return urls;
@@ -279,11 +293,10 @@ public class HadoopConfigurationLocator implements HadoopConfigurationProvider {
         configurationProperties.putAll(loadProperties(configFile));
       }
     } catch (Exception ex) {
-      throw new ConfigurationException("Unable to load configuration properties from " + CONFIG_PROPERTIES_FILE);
+      throw new ConfigurationException(BaseMessages.getString(PKG, "Error.UnableToLoadConfigurationProperties", CONFIG_PROPERTIES_FILE));
     }
 
     try {
-      registerNativeLibraryPaths(configurationProperties.getProperty(CONFIG_PROPERTY_LIBRARY_PATH));
       // Parse all URLs from an optional classpath from the configuration file
       List<URL> classpathElements = parseURLs(folder, configurationProperties.getProperty(CONFIG_PROPERTY_CLASSPATH));
 
@@ -304,6 +317,7 @@ public class HadoopConfigurationLocator implements HadoopConfigurationProvider {
         // No shim, no plugin!
         return null;
       }
+
       SqoopShim sqoopShim = locateServiceImpl(cl, SqoopShim.class);
       PigShim pigShim = locateServiceImpl(cl, PigShim.class);
       SnappyShim snappyShim = locateServiceImpl(cl, SnappyShim.class);
@@ -311,10 +325,14 @@ public class HadoopConfigurationLocator implements HadoopConfigurationProvider {
       String name = configurationProperties.getProperty(CONFIG_PROPERTY_NAME, id);
 
       HadoopConfiguration config = new HadoopConfiguration(id, name, hadoopShim, sqoopShim, pigShim, snappyShim);
+
+      // Register native libraries after everything else has been loaded successfully
+      registerNativeLibraryPaths(configurationProperties.getProperty(CONFIG_PROPERTY_LIBRARY_PATH));
+
       hadoopShim.onLoad(config, fsm);
       return config;
     } catch (Throwable t) {
-      throw new ConfigurationException("Error loading cluster configuration", t);
+      throw new ConfigurationException(BaseMessages.getString(PKG, "Error.LoadingConfiguration"), t);
     }
   }
 
@@ -329,7 +347,7 @@ public class HadoopConfigurationLocator implements HadoopConfigurationProvider {
     for (String path : paths.split(",")) {
       boolean successful = registerNativeLibraryPath(path);
       if (!successful) {
-        System.err.println("Unable to register library path: " + path);
+        logger.error(BaseMessages.getString(PKG, "Error.RegisteringLibraryPath", path));
       }
     }
   }
@@ -406,7 +424,7 @@ public class HadoopConfigurationLocator implements HadoopConfigurationProvider {
     checkInitialized();
     HadoopConfiguration config = configurations.get(id);
     if (config == null) {
-      throw new ConfigurationException("Unknown Hadoop configuration: " + id);
+      throw new ConfigurationException(BaseMessages.getString(PKG, "Error.UnknownHadoopConfiguration", id));
     }
     return config;
   }

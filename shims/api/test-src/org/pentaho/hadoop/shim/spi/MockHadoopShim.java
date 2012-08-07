@@ -28,9 +28,9 @@ import java.util.List;
 
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.hadoop.shim.HadoopConfiguration;
+import org.pentaho.hadoop.shim.HadoopConfigurationFileSystemManager;
 import org.pentaho.hadoop.shim.api.Configuration;
 import org.pentaho.hadoop.shim.api.DistributedCacheUtil;
-import org.pentaho.hadoop.shim.api.HadoopConfigurationFileSystemManager;
 import org.pentaho.hadoop.shim.api.fs.FileSystem;
 import org.pentaho.hadoop.shim.api.mapred.RunningJob;
 import org.pentaho.hadoop.shim.spi.HadoopShim;

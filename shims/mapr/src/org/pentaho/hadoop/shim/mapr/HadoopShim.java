@@ -25,10 +25,11 @@ package org.pentaho.hadoop.shim.mapr;
 import java.util.List;
 
 import org.pentaho.hadoop.shim.HadoopConfiguration;
+import org.pentaho.hadoop.shim.HadoopConfigurationFileSystemManager;
 import org.pentaho.hadoop.shim.api.Configuration;
-import org.pentaho.hadoop.shim.api.HadoopConfigurationFileSystemManager;
 import org.pentaho.hadoop.shim.common.CommonHadoopShim;
 import org.pentaho.hdfs.vfs.MapRFileProvider;
+import org.pentaho.hdfs.vfs.MapRFileSystem;
 
 public class HadoopShim extends CommonHadoopShim {
 
@@ -77,7 +78,7 @@ public class HadoopShim extends CommonHadoopShim {
     String jobTracker = MFS_SCHEME + jobtrackerHost;
     conf.set("fs.default.name", fsDefaultName);
     conf.set("mapred.job.tracker", jobTracker);
-    conf.set("fs.maprfs.impl", "com.mapr.fs.MapRFileSystem");
+    conf.set("fs.maprfs.impl", MapRFileSystem.class.getName());
   }
 
   @Override

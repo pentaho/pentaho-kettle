@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.hadoop.shim.api;
+package org.pentaho.hadoop.shim;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,12 +28,16 @@ import java.util.Map;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.impl.DefaultFileSystemManager;
 import org.apache.commons.vfs.provider.FileProvider;
-import org.pentaho.hadoop.shim.ActiveHadoopShimFileProvider;
-import org.pentaho.hadoop.shim.ConfigurationException;
-import org.pentaho.hadoop.shim.HadoopConfiguration;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.hadoop.shim.spi.HadoopConfigurationProvider;
-
+/**
+ * TODO COmment this guy!
+ * @author jordan
+ *
+ */
 public class HadoopConfigurationFileSystemManager {
+  
+  private static final Class<?> PKG = HadoopConfigurationFileSystemManager.class;
   
   private HadoopConfigurationProvider configProvider;
   private DefaultFileSystemManager delegate;
@@ -76,7 +80,7 @@ public class HadoopConfigurationFileSystemManager {
       providersByConfiguration.put(config, providersForConfig);
     }
     if (providersForConfig.containsKey(scheme)) {
-      throw new FileSystemException("Scheme already registered: " + scheme);
+      throw new FileSystemException(BaseMessages.getString(PKG, "Error.SchemeAlreadyRegistered", scheme));
     }
     providersForConfig.put(scheme, p);
 
@@ -100,7 +104,7 @@ public class HadoopConfigurationFileSystemManager {
       p = providers.get(scheme);
     }
     if (p == null) {
-      throw new FileSystemException("Unsupported scheme for Hadoop configuration " + config.getName() + ": " + scheme);
+      throw new FileSystemException(BaseMessages.getString(PKG, "Unsupported scheme for Hadoop configuration", config.getName(), scheme));
     }
     return p;
   }

@@ -40,9 +40,9 @@ import org.pentaho.hadoop.mapreduce.GenericTransReduce;
 import org.pentaho.hadoop.mapreduce.PentahoMapRunnable;
 import org.pentaho.hadoop.mapreduce.converter.TypeConverterFactory;
 import org.pentaho.hadoop.shim.HadoopConfiguration;
+import org.pentaho.hadoop.shim.HadoopConfigurationFileSystemManager;
 import org.pentaho.hadoop.shim.api.Configuration;
 import org.pentaho.hadoop.shim.api.DistributedCacheUtil;
-import org.pentaho.hadoop.shim.api.HadoopConfigurationFileSystemManager;
 import org.pentaho.hadoop.shim.api.fs.FileSystem;
 import org.pentaho.hadoop.shim.api.mapred.RunningJob;
 import org.pentaho.hadoop.shim.common.fs.FileSystemProxy;
@@ -165,10 +165,16 @@ public class CommonHadoopShim implements HadoopShim {
 
   @Override
   public RunningJob submitJob(Configuration c) throws IOException {
-    @SuppressWarnings("deprecation")
-    JobConf conf = ShimUtils.asConfiguration(c);
-    JobClient jobClient = new JobClient(conf);
-    return new RunningJobProxy(jobClient.submitJob(conf));
+    ClassLoader cl = Thread.currentThread().getContextClassLoader();
+    Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+    try {
+      @SuppressWarnings("deprecation")
+      JobConf conf = ShimUtils.asConfiguration(c);
+      JobClient jobClient = new JobClient(conf);
+      return new RunningJobProxy(jobClient.submitJob(conf));
+    } finally {
+      Thread.currentThread().setContextClassLoader(cl);
+    }
   }
 
   @Override

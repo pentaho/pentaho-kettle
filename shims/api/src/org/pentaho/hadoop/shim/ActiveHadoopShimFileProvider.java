@@ -32,7 +32,6 @@ import org.apache.commons.vfs.FileSystemConfigBuilder;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemOptions;
 import org.apache.commons.vfs.provider.FileProvider;
-import org.pentaho.hadoop.shim.api.HadoopConfigurationFileSystemManager;
 
 /**
  * Proxies the active {@link HadoopConfiguration}'s {@link FileProvider}. This

@@ -28,9 +28,9 @@ import java.util.List;
 
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.hadoop.shim.HadoopConfiguration;
+import org.pentaho.hadoop.shim.HadoopConfigurationFileSystemManager;
 import org.pentaho.hadoop.shim.api.Configuration;
 import org.pentaho.hadoop.shim.api.DistributedCacheUtil;
-import org.pentaho.hadoop.shim.api.HadoopConfigurationFileSystemManager;
 import org.pentaho.hadoop.shim.api.fs.FileSystem;
 import org.pentaho.hadoop.shim.api.mapred.RunningJob;
 
@@ -41,7 +41,7 @@ import org.pentaho.hadoop.shim.api.mapred.RunningJob;
  * 
  * @author Jordan Ganoff (jganoff@pentaho.com)
  */
-public interface HadoopShim {
+public interface HadoopShim extends PentahoVariantShim {
 
   /**
    * Retrieve a JDBC driver capable of querying Hive for the version of Hadoop
@@ -134,33 +134,41 @@ public interface HadoopShim {
    * @return A handle to the running job which can be used to track progress
    */
   RunningJob submitJob(Configuration c) throws IOException;
-
+  
   /**
    * Determine the Hadoop writable type to pass Kettle type back to Hadoop as.
    *
    * @param kettleType Value meta to look up compatible Hadoop Writable class.
    * @return Java type to convert {@code kettleType} to when sending data back to Hadoop.
+   * @deprecated To be replaced with a cleaner API for executing Pentaho MapReduce. Use with care.
    */
+  @Deprecated
   Class<?> getHadoopWritableCompatibleClass(ValueMetaInterface kettleType);
 
   /**
    * Get the {@link Class} to use for the Combiner in a Pentaho MapReduce job.
    * 
    * @return the class to use for the Combiner in a Pentaho MapReduce job
+   * @deprecated To be replaced with a cleaner API for executing Pentaho MapReduce. Use with care.
    */
+  @Deprecated
   Class<?> getPentahoMapReduceCombinerClass();
 
   /**
    * Get the {@link Class} to use for the Reducer in a Pentaho MapReduce job.
    * 
    * @return the class to use for the Reducer in a Pentaho MapReduce job
+   * @deprecated To be replaced with a cleaner API for executing Pentaho MapReduce. Use with care.
    */
+  @Deprecated
   Class<?> getPentahoMapReduceReducerClass();
 
   /**
    * Get the {@link Class} to use for the MapRunner in a Pentaho MapReduce job.
    * 
    * @return the class to use for the MapRunner in a Pentaho MapReduce job
+   * @deprecated To be replaced with a cleaner API for executing Pentaho MapReduce. Use with care.
    */
+  @Deprecated
   Class<?> getPentahoMapReduceMapRunnerClass();
 }

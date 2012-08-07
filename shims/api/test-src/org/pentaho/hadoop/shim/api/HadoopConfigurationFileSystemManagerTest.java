@@ -35,6 +35,7 @@ import org.apache.commons.vfs.provider.FileProvider;
 import org.junit.Test;
 import org.pentaho.hadoop.shim.ConfigurationException;
 import org.pentaho.hadoop.shim.HadoopConfiguration;
+import org.pentaho.hadoop.shim.HadoopConfigurationFileSystemManager;
 import org.pentaho.hadoop.shim.MockHadoopConfigurationProvider;
 import org.pentaho.hadoop.shim.spi.HadoopConfigurationProvider;
 import org.pentaho.hadoop.shim.spi.MockHadoopShim;
@@ -131,7 +132,7 @@ public class HadoopConfigurationFileSystemManagerTest {
       fsm.addProvider(config, scheme, "two", provider2);
       fail("Expected exception");
     } catch (FileSystemException ex) {
-      assertTrue(ex.getMessage().contains("Scheme already registered: scheme"));
+      assertTrue(ex.getMessage(), ex.getMessage().contains("Scheme already registered: scheme"));
     }
     fsm.addProvider(config, scheme2, "two", provider2);
 
