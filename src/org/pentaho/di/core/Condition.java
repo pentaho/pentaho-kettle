@@ -466,7 +466,7 @@ public class Condition implements Cloneable, XMLInterface
 					case FUNC_NULL          : retval = (fieldMeta.isNull(field));           break;
 					case FUNC_NOT_NULL      : retval = (!fieldMeta.isNull(field));          break;
 					case FUNC_IN_LIST		:
-							if (inList==null) {
+							if (inList==null || right_fieldnr>=0) { //performance reason: create the array first or again when it is against a field and not a constant
 								inList = Const.splitString(fieldMeta2.getString(field2), ';');
 								Arrays.sort(inList);
 							}
