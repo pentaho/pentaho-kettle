@@ -90,24 +90,12 @@ public class HadoopConfigurationClassLoader extends URLClassLoader {
     // Check for a previously loaded class
     Class<?> c = findLoadedClass(name);
     if (c == null) {
-      // If the class hasn't already been loaded check the system loader first
-      // to prevent overriding core classes
-      //      try {
-      //        ClassLoader system = getSystemClassLoader();
-      //        if (system != null) {
-      //          c = system.loadClass(name);
-      //        }
-      //      } catch (ClassNotFoundException ex) {
-      //        // Ignore
-      //      }
-      if (c == null) {
-        // If the class couldn't be loaded from the system loader load it from ourself
-        try {
-          c = findClass(name);
-        } catch (ClassNotFoundException ex) {
-          // If we still haven't found the class check the parent class loader
-          c = Class.forName(name, false, getParent());
-        }
+      // Try to load it from ourself first
+      try {
+        c = findClass(name);
+      } catch (ClassNotFoundException ex) {
+        // If we can't find the class check the parent class loader
+        c = Class.forName(name, false, getParent());
       }
     }
     // Resolve the class as needed
@@ -120,10 +108,6 @@ public class HadoopConfigurationClassLoader extends URLClassLoader {
   @Override
   public URL getResource(String name) {
     URL url = null;
-    ClassLoader system = getSystemClassLoader();
-    if (system != null) {
-      url = system.getResource(name);
-    }
     if (url == null) {
       url = findResource(name);
     }
