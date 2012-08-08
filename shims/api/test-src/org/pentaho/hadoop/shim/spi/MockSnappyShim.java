@@ -25,9 +25,16 @@ package org.pentaho.hadoop.shim.spi;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.pentaho.hadoop.shim.ShimVersion;
 import org.pentaho.hadoop.shim.spi.SnappyShim;
 
 public class MockSnappyShim implements SnappyShim {
+
+  @Override
+  public ShimVersion getVersion() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
   @Override
   public boolean isHadoopSnappyAvailable() {

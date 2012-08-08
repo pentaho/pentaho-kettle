@@ -39,11 +39,17 @@ import org.apache.pig.impl.util.PropertiesUtil;
 import org.apache.pig.tools.grunt.GruntParser;
 import org.apache.pig.tools.parameters.ParameterSubstitutionPreprocessor;
 import org.apache.pig.tools.parameters.ParseException;
+import org.pentaho.hadoop.shim.ShimVersion;
 import org.pentaho.hadoop.shim.api.Configuration;
 import org.pentaho.hadoop.shim.spi.PigShim;
 
 public class CommonPigShim implements PigShim {
   private static final String[] EMPTY_STRING_ARRAY = new String[0];
+
+  @Override
+  public ShimVersion getVersion() {
+    return new ShimVersion(1, 0);
+  }
 
   @Override
   public boolean isLocalExecutionSupported() {

@@ -31,6 +31,7 @@ import org.pentaho.hadoop.shim.HadoopConfiguration;
 import org.pentaho.hadoop.shim.HadoopConfigurationFileSystemManager;
 import org.pentaho.hadoop.shim.api.Configuration;
 import org.pentaho.hadoop.shim.api.DistributedCacheUtil;
+import org.pentaho.hadoop.shim.api.Required;
 import org.pentaho.hadoop.shim.api.fs.FileSystem;
 import org.pentaho.hadoop.shim.api.mapred.RunningJob;
 
@@ -41,7 +42,8 @@ import org.pentaho.hadoop.shim.api.mapred.RunningJob;
  * 
  * @author Jordan Ganoff (jganoff@pentaho.com)
  */
-public interface HadoopShim extends PentahoVariantShim {
+@Required
+public interface HadoopShim extends PentahoHadoopShim {
 
   /**
    * Retrieve a JDBC driver capable of querying Hive for the version of Hadoop

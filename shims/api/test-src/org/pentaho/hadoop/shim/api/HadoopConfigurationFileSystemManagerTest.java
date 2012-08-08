@@ -56,7 +56,7 @@ public class HadoopConfigurationFileSystemManagerTest {
   public void addProvider() throws Exception {
     String scheme = "scheme";
     DefaultFileSystemManager def = new DefaultFileSystemManager();
-    HadoopConfiguration config = new HadoopConfiguration("id", "name", new MockHadoopShim(), null, null, null);
+    HadoopConfiguration config = new HadoopConfiguration("id", "name", new MockHadoopShim());
     HadoopConfigurationProvider configProvider = new MockHadoopConfigurationProvider();
     HadoopConfigurationFileSystemManager fsm = new HadoopConfigurationFileSystemManager(configProvider, def);
     FileProvider provider = new MockFileProvider();
@@ -70,7 +70,7 @@ public class HadoopConfigurationFileSystemManagerTest {
   public void getActiveFileProvider() throws Exception {
     String scheme = "scheme";
     DefaultFileSystemManager def = new DefaultFileSystemManager();
-    HadoopConfiguration config = new HadoopConfiguration("id", "name", new MockHadoopShim(), null, null, null);
+    HadoopConfiguration config = new HadoopConfiguration("id", "name", new MockHadoopShim());
     HadoopConfigurationProvider configProvider = new MockHadoopConfigurationProvider(Arrays.asList(config),
         config.getIdentifier());
     HadoopConfigurationFileSystemManager fsm = new HadoopConfigurationFileSystemManager(configProvider, def);
@@ -97,8 +97,8 @@ public class HadoopConfigurationFileSystemManagerTest {
   public void getActiveFileProvider_multipleProviders() throws Exception {
     String scheme = "scheme";
     DefaultFileSystemManager def = new DefaultFileSystemManager();
-    HadoopConfiguration config1 = new HadoopConfiguration("1", "one", new MockHadoopShim(), null, null, null);
-    HadoopConfiguration config2 = new HadoopConfiguration("2", "two", new MockHadoopShim(), null, null, null);
+    HadoopConfiguration config1 = new HadoopConfiguration("1", "one", new MockHadoopShim());
+    HadoopConfiguration config2 = new HadoopConfiguration("2", "two", new MockHadoopShim());
     HadoopConfigurationProvider configProvider = new MockHadoopConfigurationProvider(Arrays.asList(config1, config2),
         config2.getIdentifier());
     HadoopConfigurationFileSystemManager fsm = new HadoopConfigurationFileSystemManager(configProvider, def);
@@ -121,7 +121,7 @@ public class HadoopConfigurationFileSystemManagerTest {
     String scheme = "scheme";
     String scheme2 = "scheme2";
     DefaultFileSystemManager def = new DefaultFileSystemManager();
-    HadoopConfiguration config = new HadoopConfiguration("1", "one", new MockHadoopShim(), null, null, null);
+    HadoopConfiguration config = new HadoopConfiguration("1", "one", new MockHadoopShim());
     HadoopConfigurationProvider configProvider = new MockHadoopConfigurationProvider(Arrays.asList(config),
         config.getIdentifier());
     HadoopConfigurationFileSystemManager fsm = new HadoopConfigurationFileSystemManager(configProvider, def);
@@ -148,7 +148,7 @@ public class HadoopConfigurationFileSystemManagerTest {
   @Test(expected = FileSystemException.class)
   public void invalidSchemeForConfig_unregistered_config() throws Exception {
     DefaultFileSystemManager def = new DefaultFileSystemManager();
-    HadoopConfiguration config = new HadoopConfiguration("id", "name", new MockHadoopShim(), null, null, null);
+    HadoopConfiguration config = new HadoopConfiguration("id", "name", new MockHadoopShim());
     HadoopConfigurationProvider configProvider = new MockHadoopConfigurationProvider();
     HadoopConfigurationFileSystemManager fsm = new HadoopConfigurationFileSystemManager(configProvider, def);
     fsm.getFileProvider(config, "invalid");
@@ -157,7 +157,7 @@ public class HadoopConfigurationFileSystemManagerTest {
   @Test(expected = FileSystemException.class)
   public void invalidSchemeForConfig_unregistered_scheme() throws Exception {
     DefaultFileSystemManager def = new DefaultFileSystemManager();
-    HadoopConfiguration config = new HadoopConfiguration("id", "name", new MockHadoopShim(), null, null, null);
+    HadoopConfiguration config = new HadoopConfiguration("id", "name", new MockHadoopShim());
     HadoopConfigurationProvider configProvider = new MockHadoopConfigurationProvider();
     HadoopConfigurationFileSystemManager fsm = new HadoopConfigurationFileSystemManager(configProvider, def);
     fsm.addProvider(config, "scheme", "alias", new MockFileProvider());

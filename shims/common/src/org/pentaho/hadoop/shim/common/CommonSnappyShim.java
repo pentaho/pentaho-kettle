@@ -27,6 +27,7 @@ import java.io.OutputStream;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.compress.SnappyCodec;
+import org.pentaho.hadoop.shim.ShimVersion;
 import org.pentaho.hadoop.shim.spi.SnappyShim;
 
 /**
@@ -42,6 +43,11 @@ public abstract class CommonSnappyShim implements SnappyShim {
 
   public static final String IO_COMPRESSION_CODEC_SNAPPY_BUFFERSIZE_KEY = "io.compression.codec.snappy.buffersize";
   public static final int IO_COMPRESSION_CODEC_SNAPPY_BUFFERSIZE_DEFAULT = 256 * 1024;
+
+  @Override
+  public ShimVersion getVersion() {
+    return new ShimVersion(1, 0);
+  }
 
   /**
    * Gets a CompressionInputStream that uses the snappy codec and 

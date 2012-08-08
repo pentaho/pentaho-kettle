@@ -22,12 +22,19 @@
 
 package org.pentaho.hadoop.shim.common;
 
+import org.pentaho.hadoop.shim.ShimVersion;
 import org.pentaho.hadoop.shim.api.Configuration;
 import org.pentaho.hadoop.shim.spi.SqoopShim;
 
 import com.cloudera.sqoop.Sqoop;
 
+@SuppressWarnings("deprecation")
 public class CommonSqoopShim implements SqoopShim {
+
+  @Override
+  public ShimVersion getVersion() {
+    return new ShimVersion(1, 0);
+  }
 
   @Override
   public int runTool(String[] args, Configuration c) {

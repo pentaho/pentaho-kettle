@@ -25,7 +25,7 @@ package org.pentaho.hadoop.shim.spi;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public interface SnappyShim {
+public interface SnappyShim extends PentahoHadoopShim {
   /**
    * Tests whether hadoop-snappy (not to be confused with other java-based
    * snappy implementations such as jsnappy or snappy-java) plus the 

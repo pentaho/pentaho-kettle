@@ -22,9 +22,16 @@
 
 package org.pentaho.hadoop.shim.spi;
 
+import org.pentaho.hadoop.shim.ShimVersion;
 import org.pentaho.hadoop.shim.api.Configuration;
 
 public class MockSqoopShim implements SqoopShim {
+
+  @Override
+  public ShimVersion getVersion() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
   @Override
   public int runTool(String[] args, Configuration c) {

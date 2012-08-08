@@ -41,6 +41,7 @@ import org.pentaho.hadoop.mapreduce.PentahoMapRunnable;
 import org.pentaho.hadoop.mapreduce.converter.TypeConverterFactory;
 import org.pentaho.hadoop.shim.HadoopConfiguration;
 import org.pentaho.hadoop.shim.HadoopConfigurationFileSystemManager;
+import org.pentaho.hadoop.shim.ShimVersion;
 import org.pentaho.hadoop.shim.api.Configuration;
 import org.pentaho.hadoop.shim.api.DistributedCacheUtil;
 import org.pentaho.hadoop.shim.api.fs.FileSystem;
@@ -54,6 +55,11 @@ import org.pentaho.hdfs.vfs.HDFSFileProvider;
 public class CommonHadoopShim implements HadoopShim {
 
   private DistributedCacheUtil dcUtil = new org.pentaho.hadoop.shim.common.DistributedCacheUtil();
+
+  @Override
+  public ShimVersion getVersion() {
+    return new ShimVersion(1, 0);
+  }
 
   @Override
   public String getHadoopVersion() {

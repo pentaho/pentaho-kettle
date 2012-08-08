@@ -33,7 +33,7 @@ import org.pentaho.hadoop.shim.api.Configuration;
  * 
  * @author Jordan Ganoff (jganoff@pentaho.com)
  */
-public interface PigShim {
+public interface PigShim extends PentahoHadoopShim {
   /**
    * Possible execution modes for executing a Pig Script
    */

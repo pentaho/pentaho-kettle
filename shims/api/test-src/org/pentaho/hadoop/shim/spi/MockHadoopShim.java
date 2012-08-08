@@ -29,6 +29,7 @@ import java.util.List;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.hadoop.shim.HadoopConfiguration;
 import org.pentaho.hadoop.shim.HadoopConfigurationFileSystemManager;
+import org.pentaho.hadoop.shim.ShimVersion;
 import org.pentaho.hadoop.shim.api.Configuration;
 import org.pentaho.hadoop.shim.api.DistributedCacheUtil;
 import org.pentaho.hadoop.shim.api.fs.FileSystem;
@@ -36,6 +37,12 @@ import org.pentaho.hadoop.shim.api.mapred.RunningJob;
 import org.pentaho.hadoop.shim.spi.HadoopShim;
 
 public class MockHadoopShim implements HadoopShim {
+
+  @Override
+  public ShimVersion getVersion() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
   @Override
   public void onLoad(HadoopConfiguration config, HadoopConfigurationFileSystemManager fsm) throws Exception {

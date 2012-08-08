@@ -26,9 +26,16 @@ import java.net.URL;
 import java.util.List;
 import java.util.Properties;
 
+import org.pentaho.hadoop.shim.ShimVersion;
 import org.pentaho.hadoop.shim.api.Configuration;
 
 public class MockPigShim implements PigShim {
+
+  @Override
+  public ShimVersion getVersion() {
+    // TODO Auto-generated method stub
+    return null;
+  }
 
   @Override
   public boolean isLocalExecutionSupported() {

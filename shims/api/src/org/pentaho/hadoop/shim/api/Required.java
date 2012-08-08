@@ -20,21 +20,22 @@
  *
  ******************************************************************************/
 
-package org.pentaho.hadoop.shim.spi;
+package org.pentaho.hadoop.shim.api;
 
-import org.pentaho.hadoop.shim.api.Configuration;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
+import org.pentaho.hadoop.shim.spi.PentahoHadoopShim;
 
 /**
- * Provides a simple abstraction for executing a Sqoop tool.
- * 
- * @author Jordan Ganoff (jganoff@pentaho.com)
+ * Denotes a {@link PentahoHadoopShim} is required to be provided by a Hadoop
+ * Configuration. If a Hadoop Configuration does not supply a shim implementation
+ * that is required it is not a valid configuration.
+ *
  */
-public interface SqoopShim extends PentahoHadoopShim {
-  /**
-   * Execute Sqoop with the provided arguments and configuration. This entry-point 
-   * parses the correct SqoopTool to use from the args.
-   * 
-   * @see org.apache.sqoop.Sqoop#runTool(String[], org.apache.hadoop.conf.Configuration)
-   */
-  int runTool(String[] args, Configuration c);
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+public @interface Required {
+
 }
