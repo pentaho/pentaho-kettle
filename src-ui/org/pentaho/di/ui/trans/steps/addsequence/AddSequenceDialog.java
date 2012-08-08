@@ -208,6 +208,7 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 			{
                 wUseCounter.setSelection(!wUseDatabase.getSelection());
 				enableFields();
+				input.setChanged();
 			}
 		}
 	);
@@ -321,12 +322,12 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 			{
                 wUseDatabase.setSelection(!wUseCounter.getSelection());
 				enableFields();
+				input.setChanged();
 			}
 		}
 	);
-
-
-        // CounterName line
+		
+  // CounterName line
         wlCounterName=new Label(gCounter, SWT.RIGHT);
         wlCounterName.setText(BaseMessages.getString(PKG, "AddSequenceDialog.CounterName.Label")); //$NON-NLS-1$
         props.setLook(wlCounterName);

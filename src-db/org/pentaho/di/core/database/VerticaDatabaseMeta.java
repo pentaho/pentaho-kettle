@@ -306,4 +306,32 @@ public class VerticaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
   public String getExtraOptionSeparator() {
     return "&";
   }
+  
+  /**
+   * @return true if the database supports sequences
+   */
+  public boolean supportsSequences()
+  {
+	return true;
+  }
+  
+  /**
+   * Get the SQL to get the next value of a sequence. (Vertica version) 
+   * @param sequenceName The sequence name
+   * @return the SQL to get the next value of a sequence.
+   */
+  public String getSQLCurrentSequenceValue(String sequenceName)
+  {
+      return  "SELECT currval('"+sequenceName+"')";
+  }
+  
+  /**
+   * Get the SQL to get the next value of a sequence.
+   * @param sequenceName The sequence name
+   * @return the SQL to get the next value of a sequence.
+   */
+  public String getSQLNextSequenceValue(String sequenceName)
+  {
+	  return "SELECT nextval('"+sequenceName+"')";
+  }
 }
