@@ -195,7 +195,8 @@ public class HBaseRowToKettleTuple {
     } catch (Exception ex) {
       throw new KettleException(ex);
     }
-    Object decodedKey = HBaseValueMeta.decodeKeyValue(rawKey, mapping);
+    Object decodedKey = HBaseValueMeta.decodeKeyValue(rawKey, mapping,
+        m_bytesUtil);
 
     NavigableMap<byte[], NavigableMap<byte[], NavigableMap<Long, byte[]>>> rowData = null;
     try {
@@ -242,7 +243,7 @@ public class HBaseRowToKettleTuple {
           if (m_colNameIndex != -1) {
             HBaseValueMeta colNameMeta = tupleCols.get(m_colNameIndex);
             Object decodedColName = HBaseValueMeta.decodeColumnValue(colName,
-                colNameMeta);
+                colNameMeta, m_bytesUtil);
             newTuple[m_colNameIndex] = decodedColName;
           }
 
@@ -250,7 +251,7 @@ public class HBaseRowToKettleTuple {
           if (m_valueIndex != -1) {
             HBaseValueMeta colValueMeta = tupleCols.get(m_valueIndex);
             Object decodedValue = HBaseValueMeta.decodeColumnValue(
-                mostRecentColVal.getValue(), colValueMeta);
+                mostRecentColVal.getValue(), colValueMeta, m_bytesUtil);
             newTuple[m_valueIndex] = decodedValue;
           }
 
@@ -272,7 +273,8 @@ public class HBaseRowToKettleTuple {
         Object decodedFamily = null;
         if (m_familyIndex != -1) {
           HBaseValueMeta colFamMeta = tupleCols.get(m_familyIndex);
-          decodedFamily = HBaseValueMeta.decodeColumnValue(family, colFamMeta);
+          decodedFamily = HBaseValueMeta.decodeColumnValue(family, colFamMeta,
+              m_bytesUtil);
         }
 
         NavigableMap<byte[], NavigableMap<Long, byte[]>> colMap = rowData
@@ -300,7 +302,7 @@ public class HBaseRowToKettleTuple {
           if (m_colNameIndex != -1) {
             HBaseValueMeta colNameMeta = tupleCols.get(m_colNameIndex);
             Object decodedColName = HBaseValueMeta.decodeColumnValue(colName,
-                colNameMeta);
+                colNameMeta, m_bytesUtil);
             newTuple[m_colNameIndex] = decodedColName;
           }
 
@@ -308,7 +310,7 @@ public class HBaseRowToKettleTuple {
           if (m_valueIndex != -1) {
             HBaseValueMeta colValueMeta = tupleCols.get(m_valueIndex);
             Object decodedValue = HBaseValueMeta.decodeColumnValue(
-                mostRecentColVal.getValue(), colValueMeta);
+                mostRecentColVal.getValue(), colValueMeta, m_bytesUtil);
             newTuple[m_valueIndex] = decodedValue;
           }
 

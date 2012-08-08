@@ -497,7 +497,8 @@ public class CommonHBaseShim extends HBaseShim {
         // temporarily encode it so that we can use the utility routine in
         // HBaseValueMeta
         byte[] tempEncoded = m_bytesUtil.toBytes(comparisonString);
-        Boolean decodedB = HBaseValueMeta.decodeBoolFromString(tempEncoded);
+        Boolean decodedB = HBaseValueMeta.decodeBoolFromString(tempEncoded,
+            m_bytesUtil);
         // skip if we can't parse the comparison value
         if (decodedB == null) {
           return;

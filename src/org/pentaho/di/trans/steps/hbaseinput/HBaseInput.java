@@ -49,6 +49,7 @@ import org.pentaho.hbase.mapping.MappingAdmin;
 import org.pentaho.hbase.shim.api.ColumnFilter;
 import org.pentaho.hbase.shim.api.HBaseValueMeta;
 import org.pentaho.hbase.shim.api.Mapping;
+import org.pentaho.hbase.shim.spi.HBaseBytesUtilShim;
 import org.pentaho.hbase.shim.spi.HBaseShim;
 
 /**
@@ -72,6 +73,9 @@ public class HBaseInput extends BaseStep implements StepInterface {
 
   /** Admin object for interacting with HBase */
   protected HBaseShim m_hbAdmin;
+
+  /** Byte utilities */
+  protected HBaseBytesUtilShim m_bytesUtil;
 
   /** The mapping admin object for interacting with mapping information */
   protected MappingAdmin m_mappingAdmin;
@@ -109,6 +113,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
             environmentSubstitute(m_meta.getCoreConfigURL()),
             environmentSubstitute(m_meta.getDefaultConfigURL()),
             connectionMessages);
+        m_bytesUtil = m_hbAdmin.getBytesUtil();
 
         if (connectionMessages.size() > 0) {
           for (String m : connectionMessages) {
@@ -219,7 +224,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
         if (m_tableMapping.getKeyType() == Mapping.KeyType.BINARY) {
           // assume we have a hex encoded string
           keyLowerBound = HBaseValueMeta.encodeKeyValue(keyStartS,
-              m_tableMapping.getKeyType());
+              m_tableMapping.getKeyType(), m_bytesUtil);
         } else if (m_tableMapping.getKeyType() != Mapping.KeyType.STRING) {
           // allow a conversion mask in the start key field to override any
           // specified for
@@ -239,7 +244,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
               try {
                 Date d = sdf.parse(keyStartS);
                 keyLowerBound = HBaseValueMeta.encodeKeyValue(d,
-                    m_tableMapping.getKeyType());
+                    m_tableMapping.getKeyType(), m_bytesUtil);
               } catch (ParseException e) {
                 throw new KettleException(BaseMessages.getString(
                     HBaseInputMeta.PKG,
@@ -255,7 +260,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
               try {
                 num = df.parse(keyStartS);
                 keyLowerBound = HBaseValueMeta.encodeKeyValue(num,
-                    m_tableMapping.getKeyType());
+                    m_tableMapping.getKeyType(), m_bytesUtil);
               } catch (ParseException e) {
                 throw new KettleException(BaseMessages.getString(
                     HBaseInputMeta.PKG,
@@ -266,12 +271,12 @@ public class HBaseInput extends BaseStep implements StepInterface {
           } else {
             // just try it as a string
             keyLowerBound = HBaseValueMeta.encodeKeyValue(keyStartS,
-                m_tableMapping.getKeyType());
+                m_tableMapping.getKeyType(), m_bytesUtil);
           }
         } else {
           // it is a string
           keyLowerBound = HBaseValueMeta.encodeKeyValue(keyStartS,
-              m_tableMapping.getKeyType());
+              m_tableMapping.getKeyType(), m_bytesUtil);
         }
 
         if (!Const.isEmpty(m_meta.getKeyStopValue())) {
@@ -281,7 +286,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
           if (m_tableMapping.getKeyType() == Mapping.KeyType.BINARY) {
             // assume we have a hex encoded string
             keyUpperBound = HBaseValueMeta.encodeKeyValue(keyStopS,
-                m_tableMapping.getKeyType());
+                m_tableMapping.getKeyType(), m_bytesUtil);
           } else if (m_tableMapping.getKeyType() != Mapping.KeyType.STRING) {
 
             // allow a conversion mask in the stop key field to override any
@@ -301,7 +306,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
                 try {
                   Date d = sdf.parse(keyStopS);
                   keyUpperBound = HBaseValueMeta.encodeKeyValue(d,
-                      m_tableMapping.getKeyType());
+                      m_tableMapping.getKeyType(), m_bytesUtil);
                 } catch (ParseException e) {
                   throw new KettleException(BaseMessages.getString(
                       HBaseInputMeta.PKG,
@@ -317,7 +322,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
                 try {
                   num = df.parse(keyStopS);
                   keyUpperBound = HBaseValueMeta.encodeKeyValue(num,
-                      m_tableMapping.getKeyType());
+                      m_tableMapping.getKeyType(), m_bytesUtil);
                 } catch (ParseException e) {
                   throw new KettleException(BaseMessages.getString(
                       HBaseInputMeta.PKG,
@@ -328,12 +333,12 @@ public class HBaseInput extends BaseStep implements StepInterface {
             } else {
               // just try it as a string
               keyUpperBound = HBaseValueMeta.encodeKeyValue(keyStopS,
-                  m_tableMapping.getKeyType());
+                  m_tableMapping.getKeyType(), m_bytesUtil);
             }
           } else {
             // it is a string
             keyUpperBound = HBaseValueMeta.encodeKeyValue(keyStopS,
-                m_tableMapping.getKeyType());
+                m_tableMapping.getKeyType(), m_bytesUtil);
           }
         }
       }
@@ -475,7 +480,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
               throw new KettleException(e);
             }
             Object decodedKey = HBaseValueMeta.decodeKeyValue(rawKey,
-                m_tableMapping);
+                m_tableMapping, m_bytesUtil);
             int keyIndex = m_data.getOutputRowMeta().indexOfValue(
                 currentCol.getAlias());
             outputRowData[keyIndex] = decodedKey;
@@ -508,7 +513,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
             }
 
             Object decodedVal = HBaseValueMeta.decodeColumnValue(
-                (kv == null) ? null : kv, currentCol);
+                (kv == null) ? null : kv, currentCol, m_bytesUtil);
 
             outputRowData[outputIndex] = decodedVal;
           }
@@ -537,7 +542,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
         }
 
         Object decodedKey = HBaseValueMeta.decodeKeyValue(rawKey,
-            m_tableMapping);
+            m_tableMapping, m_bytesUtil);
         int keyIndex = m_data.getOutputRowMeta().indexOfValue(
             m_tableMapping.getKeyName());
         outputRowData[keyIndex] = decodedKey;
@@ -572,7 +577,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
           }
 
           Object decodedVal = HBaseValueMeta.decodeColumnValue(
-              (kv == null) ? null : kv, currentCol);
+              (kv == null) ? null : kv, currentCol, m_bytesUtil);
 
           outputRowData[outputIndex] = decodedVal;
         }

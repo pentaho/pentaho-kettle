@@ -41,6 +41,7 @@ import org.pentaho.hadoop.shim.HadoopConfiguration;
 import org.pentaho.hbase.HBaseRowToKettleTuple;
 import org.pentaho.hbase.shim.api.HBaseValueMeta;
 import org.pentaho.hbase.shim.api.Mapping;
+import org.pentaho.hbase.shim.spi.HBaseBytesUtilShim;
 import org.pentaho.hbase.shim.spi.HBaseShim;
 
 /**
@@ -87,6 +88,9 @@ public class HBaseRowDecoder extends BaseStep implements StepInterface {
    */
   protected HBaseShim m_hbAdmin;
 
+  /** Bytes util */
+  protected HBaseBytesUtilShim m_bytesUtil;
+
   @Override
   public boolean processRow(StepMetaInterface smi, StepDataInterface sdi)
       throws KettleException {
@@ -108,6 +112,7 @@ public class HBaseRowDecoder extends BaseStep implements StepInterface {
         HadoopConfiguration active = HadoopConfigurationRegistry.getInstance()
             .getActiveConfiguration();
         m_hbAdmin = active.getHBaseShim();
+        m_bytesUtil = m_hbAdmin.getBytesUtil();
 
         // no configuration needed here because we don't need access to the
         // actual database, just a few utility routines from HBaseShim for
@@ -190,7 +195,7 @@ public class HBaseRowDecoder extends BaseStep implements StepInterface {
               "HBaseRowDecoder.Error.UnableToGetRowKey"), ex);
         }
         Object decodedKey = HBaseValueMeta.decodeKeyValue(rowKey,
-            m_tableMapping);
+            m_tableMapping, m_bytesUtil);
         outputRowData[0] = decodedKey;
 
         for (int i = 0; i < m_outputColumns.length; i++) {
@@ -209,7 +214,7 @@ public class HBaseRowDecoder extends BaseStep implements StepInterface {
           }
 
           Object decodedVal = HBaseValueMeta.decodeColumnValue(
-              (kv == null) ? null : kv, current);
+              (kv == null) ? null : kv, current, m_bytesUtil);
           outputRowData[i + 1] = decodedVal;
         }
 

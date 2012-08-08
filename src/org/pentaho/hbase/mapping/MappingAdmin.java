@@ -195,9 +195,8 @@ public class MappingAdmin {
     Calendar c2 = new GregorianCalendar();
     c2.set(1970, 2, 1);
     for (long key = -500; key < 20000; key++) {
-      m_admin.newTargetTablePut(
-          HBaseValueMeta.encodeKeyValue(new Long(key), Mapping.KeyType.LONG),
-          false);
+      m_admin.newTargetTablePut(HBaseValueMeta.encodeKeyValue(new Long(key),
+          Mapping.KeyType.LONG, m_bytesUtil), false);
 
       // unsigned (positive) integer column
       m_admin.addColumnToTargetPut("Family1", "first_integer_column", false,

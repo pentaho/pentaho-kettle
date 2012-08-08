@@ -42,6 +42,7 @@ import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.hbase.mapping.MappingAdmin;
 import org.pentaho.hbase.shim.api.HBaseValueMeta;
 import org.pentaho.hbase.shim.api.Mapping;
+import org.pentaho.hbase.shim.spi.HBaseBytesUtilShim;
 import org.pentaho.hbase.shim.spi.HBaseShim;
 
 /**
@@ -65,6 +66,9 @@ public class HBaseOutput extends BaseStep implements StepInterface {
 
   /** Configuration object for connecting to HBase */
   protected HBaseShim m_hbAdmin;
+
+  /** Byte utilities */
+  protected HBaseBytesUtilShim m_bytesUtil;
 
   /** The mapping admin object for interacting with mapping information */
   protected MappingAdmin m_mappingAdmin;
@@ -139,6 +143,7 @@ public class HBaseOutput extends BaseStep implements StepInterface {
             environmentSubstitute(m_meta.getCoreConfigURL()),
             environmentSubstitute(m_meta.getDefaultConfigURL()),
             connectionMessages);
+        m_bytesUtil = m_hbAdmin.getBytesUtil();
 
         if (connectionMessages.size() > 0) {
           for (String m : connectionMessages) {
@@ -289,7 +294,7 @@ public class HBaseOutput extends BaseStep implements StepInterface {
     }
 
     byte[] encodedKey = HBaseValueMeta.encodeKeyValue(r[m_incomingKeyIndex],
-        keyvm, m_tableMapping.getKeyType());
+        keyvm, m_tableMapping.getKeyType(), m_bytesUtil);
 
     try {
       m_hbAdmin.newTargetTablePut(encodedKey, !m_meta.getDisableWriteToWAL());
@@ -314,7 +319,7 @@ public class HBaseOutput extends BaseStep implements StepInterface {
           binaryColName = true;
         }
         byte[] encoded = HBaseValueMeta.encodeColumnValue(r[i], current,
-            hbaseColMeta);
+            hbaseColMeta, m_bytesUtil);
 
         try {
           m_hbAdmin.addColumnToTargetPut(columnFamily, columnName,
