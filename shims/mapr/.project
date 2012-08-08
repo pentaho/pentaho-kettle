@@ -19,17 +19,17 @@
 		<link>
 			<name>src-common</name>
 			<type>2</type>
-			<location>/Users/jordan/dev/pentaho/big-data-plugin/shims/common/src</location>
+			<location>PARENT-1-PROJECT_LOC/common/src</location>
 		</link>
 		<link>
 			<name>src-mapred</name>
 			<type>2</type>
-			<location>/Users/jordan/dev/pentaho/big-data-plugin/shims/common/src-mapred</location>
+			<location>PARENT-1-PROJECT_LOC/common/src-mapred</location>
 		</link>
 		<link>
 			<name>test-src-common</name>
 			<type>2</type>
-			<location>/Users/jordan/dev/pentaho/big-data-plugin/shims/common/test-src</location>
+			<location>PARENT-1-PROJECT_LOC/common/test-src</location>
 		</link>
 	</linkedResources>
 </projectDescription>
