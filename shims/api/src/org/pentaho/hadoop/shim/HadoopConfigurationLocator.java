@@ -43,8 +43,10 @@ import org.apache.commons.vfs.impl.DefaultFileSystemManager;
 import org.apache.log4j.Logger;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.hadoop.shim.api.ActiveHadoopConfigurationLocator;
+import org.pentaho.hadoop.shim.api.Required;
 import org.pentaho.hadoop.shim.spi.HadoopConfigurationProvider;
 import org.pentaho.hadoop.shim.spi.HadoopShim;
+import org.pentaho.hadoop.shim.spi.PentahoHadoopShim;
 import org.pentaho.hadoop.shim.spi.PigShim;
 import org.pentaho.hadoop.shim.spi.SnappyShim;
 import org.pentaho.hadoop.shim.spi.SqoopShim;
@@ -71,6 +73,20 @@ public class HadoopConfigurationLocator implements HadoopConfigurationProvider {
   private static final Class<?> PKG = HadoopConfigurationLocator.class;
   
   private Logger logger = Logger.getLogger(getClass());
+  
+  /**
+   * This is a set of shim classes to load from each Hadoop configuration.
+   * TODO Externalize this list so we may configure it per installation
+   */
+  @SuppressWarnings("unchecked")
+  private static final Class<? extends PentahoHadoopShim>[] SHIM_TYPES = new Class[] {
+    HadoopShim.class,
+    PigShim.class,
+    SnappyShim.class,
+    SqoopShim.class
+  };
+
+  private static final PentahoHadoopShim[] EMPTY_SHIM_ARRAY = new PentahoHadoopShim[0];
 
   /**
    * Currently known shim configurations
@@ -311,20 +327,28 @@ public class HadoopConfigurationLocator implements HadoopConfigurationProvider {
       // API classes we're using
       ClassLoader cl = createConfigurationLoader(folder, getClass().getClassLoader(), classpathElements, ignoredClasses);
 
+      // Treat the Hadoop shim special. It is absolutely required for a Hadoop configuration.
+      HadoopShim hadoopShim = null;
+      List<PentahoHadoopShim> shims = new ArrayList<PentahoHadoopShim>();
       // Attempt to locate a shim within this folder
-      HadoopShim hadoopShim = locateServiceImpl(cl, HadoopShim.class);
-      if (hadoopShim == null) {
-        // No shim, no plugin!
-        return null;
+      for (Class<? extends PentahoHadoopShim> shimType : SHIM_TYPES) {
+        PentahoHadoopShim s = locateServiceImpl(cl, shimType);
+        if (s == null && shimType.getAnnotation(Required.class) != null) {
+          logger.warn(BaseMessages.getString(PKG, "Error.MissingRequiredShim", shimType.getSimpleName()));
+          // Do not continue to load the configuration if we are missing a required shim
+          return null;
+        }
+        if (HadoopShim.class.isAssignableFrom(shimType)) {
+          hadoopShim = (HadoopShim) s;
+        } else {
+          shims.add(s);
+        }
       }
 
-      SqoopShim sqoopShim = locateServiceImpl(cl, SqoopShim.class);
-      PigShim pigShim = locateServiceImpl(cl, PigShim.class);
-      SnappyShim snappyShim = locateServiceImpl(cl, SnappyShim.class);
       String id = folder.getName().getBaseName();
       String name = configurationProperties.getProperty(CONFIG_PROPERTY_NAME, id);
 
-      HadoopConfiguration config = new HadoopConfiguration(id, name, hadoopShim, sqoopShim, pigShim, snappyShim);
+      HadoopConfiguration config = new HadoopConfiguration(id, name, hadoopShim, shims.toArray(EMPTY_SHIM_ARRAY));
 
       // Register native libraries after everything else has been loaded successfully
       registerNativeLibraryPaths(configurationProperties.getProperty(CONFIG_PROPERTY_LIBRARY_PATH));
