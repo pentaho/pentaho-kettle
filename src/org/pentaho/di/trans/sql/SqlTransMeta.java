@@ -107,7 +107,7 @@ public class SqlTransMeta {
     List<SQLField> groupFields = sql.getGroupFields().getFields();
     
     if (aggFields.size()>0 || groupFields.size()>0) {
-      StepMeta groupStep = generateGroupByStep(aggFields, groupFields);
+      StepMeta groupStep = generateGroupByStep(aggFields, groupFields, transMeta.getStepFields(lastStep));
       lastStep = addToTrans(groupStep, transMeta, lastStep);
     }
 
@@ -381,7 +381,7 @@ public class SqlTransMeta {
     return stepMeta;
   }
   
-  private StepMeta generateGroupByStep(List<SQLField> aggFields, List<SQLField> groupFields) throws KettleException {
+  private StepMeta generateGroupByStep(List<SQLField> aggFields, List<SQLField> groupFields, RowMetaInterface inputFields) throws KettleException {
     MemoryGroupByMeta meta = new MemoryGroupByMeta();
     meta.allocate(groupFields.size(), aggFields.size());
     
@@ -398,7 +398,29 @@ public class SqlTransMeta {
       SQLField field = aggFields.get(i);
       ValueMetaInterface valueMeta = field.getValueMeta();
       meta.getAggregateField()[i] = Const.NVL(field.getAlias(), field.getField());
-      meta.getSubjectField()[i] = field.getValueData()==null ? valueMeta.getName() : "Constant_"+field.getFieldIndex()+"_"+field.getField();
+      
+      String subjectField;
+      if (field.getValueData()==null) {
+        // No constant value to aggregate
+        //
+        if (valueMeta==null) {
+          // No specific value to aggregate (count(*))
+          // In that case just take the first field in the input stream.
+          //
+          if (inputFields.size()==0) {
+            throw new KettleException("No field fields found to aggregate on.");
+          }
+          subjectField = inputFields.getValueMeta(0).getName();
+        } else {
+          subjectField = valueMeta.getName();
+        }
+      } else {
+        // A constant field to aggregate.
+        //
+        subjectField = "Constant_"+field.getFieldIndex()+"_"+field.getField();
+      }
+      
+      meta.getSubjectField()[i] = subjectField;
       int agg = 0;
       switch(field.getAggregation()) {
       case SUM: agg = MemoryGroupByMeta.TYPE_GROUP_SUM; break;

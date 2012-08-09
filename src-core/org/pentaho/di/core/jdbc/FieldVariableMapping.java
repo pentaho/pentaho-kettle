@@ -2,29 +2,32 @@ package org.pentaho.di.core.jdbc;
 
 import java.util.List;
 
+import org.pentaho.di.core.Const;
+
 public class FieldVariableMapping {
   
   public enum MappingType {
-    SQL, // convert SQL for one field 
-    DIRECT, // convert field value in where clause to a single String value
-    SQL_ALL, // convert the whole where clause condition into a SQL condition.
+    FIELDMAP, // Helper mapping to map output fields to SQL columns
+    SQL_WHERE, // generates the where clause condition into a SQL condition.
+    JSON_QUERY, // generates the JSON query (MongoDB mainly)
     ;
     
     public static MappingType getMappingType(String typeString) {
       try {
         return valueOf(typeString);
       } catch (Exception e) {
-        return DIRECT;
+        return FIELDMAP;
       }
     }
   }
   
   private String fieldName;
+  private String targetName;
   private String variableName;
   private MappingType mappingType;
   
   public FieldVariableMapping() {
-    mappingType=MappingType.DIRECT;
+    mappingType=MappingType.FIELDMAP;
   }
 
   /**
@@ -32,8 +35,9 @@ public class FieldVariableMapping {
    * @param variableName
    * @param mappingType
    */
-  public FieldVariableMapping(String fieldName, String variableName, MappingType mappingType) {
+  public FieldVariableMapping(String fieldName, String targetName, String variableName, MappingType mappingType) {
     this.fieldName = fieldName;
+    this.targetName = targetName;
     this.variableName = variableName;
     this.mappingType = mappingType;
   }
@@ -46,7 +50,7 @@ public class FieldVariableMapping {
    */
   public static FieldVariableMapping findFieldVariableMappingByFieldName(List<FieldVariableMapping> mappings, String fieldName) {
     for (FieldVariableMapping mapping : mappings) {
-      if (mapping.getFieldName().equalsIgnoreCase(fieldName)) {
+      if (!Const.isEmpty(mapping.getFieldName()) && mapping.getFieldName().equalsIgnoreCase(fieldName)) {
         return mapping;
       }
     }
@@ -94,6 +98,20 @@ public class FieldVariableMapping {
    */
   public void setMappingType(MappingType mappingType) {
     this.mappingType = mappingType;
+  }
+
+  /**
+   * @return the targetName
+   */
+  public String getTargetName() {
+    return targetName;
+  }
+
+  /**
+   * @param targetName the targetName to set
+   */
+  public void setTargetName(String targetName) {
+    this.targetName = targetName;
   }
   
   

@@ -574,11 +574,14 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       //
       try {
         staticSpoon.lifecycleSupport.onStart(staticSpoon);
-      } catch (LifecycleException e) {
-        // if severe, we have to quit
-        MessageBox box = new MessageBox(staticSpoon.shell, (e.isSevere() ? SWT.ICON_ERROR : SWT.ICON_WARNING) | SWT.OK);
+      } catch (Throwable e) {
+        
+        new ErrorDialog(staticSpoon.shell, "Error", "Error starting lifecycle listener", e);
+        
+        /* MessageBox box = new MessageBox(staticSpoon.shell, (e.isSevere() ? SWT.ICON_ERROR : SWT.ICON_WARNING) | SWT.OK);
         box.setMessage(e.getMessage());
         box.open();
+        */
       }
 
       OsHelper.customizeWindow();

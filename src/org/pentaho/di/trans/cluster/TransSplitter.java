@@ -546,10 +546,22 @@ public class TransSplitter
                                   //
                                 int port = getPort(clusterSchema, sourceSlaveServer, slaveStep.getName(), sourceCopyNr, masterSlaveServer, masterStep.getName(), masterStepCopyNr);
 
-                                        RemoteStep remoteMasterStep = new RemoteStep(sourceSlaveServer.getHostname(), masterSlaveServer.getHostname(), Integer.toString(port), slaveStep.getName(), sourceCopyNr, masterStep.getName(), masterStepCopyNr, sourceSlaveServer.getName(), masterSlaveServer.getName(), socketsBufferSize, compressingSocketStreams);
+                                        RemoteStep remoteMasterStep = new RemoteStep(
+                                            sourceSlaveServer.getHostname(), masterSlaveServer.getHostname(), Integer.toString(port), 
+                                            slaveStep.getName(), sourceCopyNr, masterStep.getName(), masterStepCopyNr, 
+                                            sourceSlaveServer.getName(), masterSlaveServer.getName(), 
+                                            socketsBufferSize, compressingSocketStreams,
+                                            originalTransformation.getStepFields(previousStep)
+                                            );
                                         masterStep.getRemoteInputSteps().add(remoteMasterStep);
 
-                                        RemoteStep remoteSlaveStep = new RemoteStep(sourceSlaveServer.getHostname(), masterSlaveServer.getHostname(), Integer.toString(port), slaveStep.getName(), sourceCopyNr, masterStep.getName(), masterStepCopyNr, sourceSlaveServer.getName(), masterSlaveServer.getName(), socketsBufferSize, compressingSocketStreams);
+                                        RemoteStep remoteSlaveStep = new RemoteStep(
+                                            sourceSlaveServer.getHostname(), masterSlaveServer.getHostname(), Integer.toString(port), 
+                                            slaveStep.getName(), sourceCopyNr, masterStep.getName(), masterStepCopyNr, 
+                                            sourceSlaveServer.getName(), masterSlaveServer.getName(), 
+                                            socketsBufferSize, compressingSocketStreams,
+                                            originalTransformation.getStepFields(previousStep)
+                                            );
                                         slaveStep.getRemoteOutputSteps().add(remoteSlaveStep);
                                         
                                         // OK, create a partition number for the target step in the partition distribution...
@@ -670,10 +682,22 @@ public class TransSplitter
                                         //
                                 int port = getPort(clusterSchema, masterSlaveServer, sourceStep.getName(), masterStepCopyNr, targetSlaveServer, referenceStep.getName(), targetCopyNr);
 
-                                        RemoteStep remoteMasterStep = new RemoteStep(masterSlaveServer.getHostname(), targetSlaveServer.getHostname(), Integer.toString(port), sourceStep.getName(), masterStepCopyNr, referenceStep.getName(), targetCopyNr, masterSlaveServer.getName(), targetSlaveServer.getName(), socketsBufferSize, compressingSocketStreams);
+                                        RemoteStep remoteMasterStep = new RemoteStep(
+                                            masterSlaveServer.getHostname(), targetSlaveServer.getHostname(), Integer.toString(port), 
+                                            sourceStep.getName(), masterStepCopyNr, referenceStep.getName(), targetCopyNr, 
+                                            masterSlaveServer.getName(), targetSlaveServer.getName(), 
+                                            socketsBufferSize, compressingSocketStreams,
+                                            originalTransformation.getStepFields(previousStep)
+                                            );
                                         sourceStep.getRemoteOutputSteps().add(remoteMasterStep);
 
-                                        RemoteStep remoteSlaveStep = new RemoteStep(masterSlaveServer.getHostname(), targetSlaveServer.getHostname(), Integer.toString(port), sourceStep.getName(), masterStepCopyNr, referenceStep.getName(), targetCopyNr, masterSlaveServer.getName(), targetSlaveServer.getName(), socketsBufferSize, compressingSocketStreams);
+                                        RemoteStep remoteSlaveStep = new RemoteStep(
+                                            masterSlaveServer.getHostname(), targetSlaveServer.getHostname(), Integer.toString(port), 
+                                            sourceStep.getName(), masterStepCopyNr, referenceStep.getName(), targetCopyNr, 
+                                            masterSlaveServer.getName(), targetSlaveServer.getName(), 
+                                            socketsBufferSize, compressingSocketStreams,
+                                            originalTransformation.getStepFields(previousStep)
+                                            );
                                         targetStep.getRemoteInputSteps().add(remoteSlaveStep);
                                         
                                         // OK, create a partition number for the target step in the partition distribution...
@@ -862,14 +886,26 @@ public class TransSplitter
                                                   // That's why it's OK to generate all combinations.
                                                   //
                                                 int outPort = getPort(clusterSchema, targetSlaveServer, sourceStep.getName(), sourceCopyNr, sourceSlaveServer, targetStep.getName(), targetCopyNr);
-                                                RemoteStep remoteOutputStep = new RemoteStep( targetSlaveServer.getHostname(), sourceSlaveServer.getHostname(), Integer.toString(outPort), sourceStep.getName(), sourceCopyNr, targetStep.getName(), targetCopyNr, targetSlaveServer.getName(), sourceSlaveServer.getName(), socketsBufferSize, compressingSocketStreams);
+                                                RemoteStep remoteOutputStep = new RemoteStep( 
+                                                    targetSlaveServer.getHostname(), sourceSlaveServer.getHostname(), Integer.toString(outPort), 
+                                                    sourceStep.getName(), sourceCopyNr, targetStep.getName(), targetCopyNr, 
+                                                    targetSlaveServer.getName(), sourceSlaveServer.getName(), 
+                                                    socketsBufferSize, compressingSocketStreams,
+                                                    originalTransformation.getStepFields(previousStep)
+                                                    );
                                                 sourceStep.getRemoteOutputSteps().add(remoteOutputStep);
       
                                                 // OK, so the source step is sending rows out on the reserved ports
                                                 // What we need to do now is link all the OTHER slaves up to them.
                                                 //
                                                 int inPort = getPort(clusterSchema, sourceSlaveServer, sourceStep.getName(), sourceCopyNr, targetSlaveServer, targetStep.getName(), targetCopyNr);
-                                                RemoteStep remoteInputStep = new RemoteStep( sourceSlaveServer.getHostname(), targetSlaveServer.getHostname(), Integer.toString(inPort), sourceStep.getName(), sourceCopyNr, targetStep.getName(), targetCopyNr, sourceSlaveServer.getName(), targetSlaveServer.getName(), socketsBufferSize, compressingSocketStreams );
+                                                RemoteStep remoteInputStep = new RemoteStep( 
+                                                    sourceSlaveServer.getHostname(), targetSlaveServer.getHostname(), Integer.toString(inPort), 
+                                                    sourceStep.getName(), sourceCopyNr, targetStep.getName(), targetCopyNr, 
+                                                    sourceSlaveServer.getName(), targetSlaveServer.getName(), 
+                                                    socketsBufferSize, compressingSocketStreams,
+                                                    originalTransformation.getStepFields(previousStep)
+                                                    );
                                                 targetStep.getRemoteInputSteps().add(remoteInputStep);
                                                   }
                                               // OK, save the partition number for the target step in the partition distribution...

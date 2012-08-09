@@ -107,11 +107,26 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 
   protected BufferedOutputStream bufferedOutputStream;
 
-	/**
-	 * @param hostname
-	 * @param port
-	 */
-	public RemoteStep(String hostname, String remoteHostname, String port, String sourceStep, int sourceStepCopyNr, String targetStep, int targetStepCopyNr, String sourceSlaveServerName, String targetSlaveServerName, int bufferSize, boolean compressingStreams) {
+  protected RowMetaInterface rowMeta;
+
+  /**
+   * @param hostname
+   * @param remoteHostname
+   * @param port
+   * @param sourceStep
+   * @param sourceStepCopyNr
+   * @param targetStep
+   * @param targetStepCopyNr
+   * @param sourceSlaveServerName
+   * @param targetSlaveServerName
+   * @param bufferSize
+   * @param compressingStreams
+   * @param rowMeta The expected row layout to pass through this step. (input or output)
+   */
+	public RemoteStep(String hostname, String remoteHostname, String port, String sourceStep, int sourceStepCopyNr, 
+	    String targetStep, int targetStepCopyNr, 
+	    String sourceSlaveServerName, String targetSlaveServerName, int bufferSize, boolean compressingStreams,
+	    RowMetaInterface rowMeta) {
 		super();
 		this.hostname = hostname;
 		this.remoteHostname = remoteHostname;
@@ -125,6 +140,8 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 		
 		this.sourceSlaveServerName = sourceSlaveServerName;
 		this.targetSlaveServerName = targetSlaveServerName;
+		
+		this.rowMeta = rowMeta;
 		
 		if (sourceStep.equals(targetStep) && sourceStepCopyNr==targetStepCopyNr) {
 			throw new RuntimeException("The source and target step/copy can't be the same for a remote step definition.");
@@ -159,13 +176,19 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 		xml.append(XMLHandler.addTagValue("source_slave_server_name", sourceSlaveServerName, false));
 		xml.append(XMLHandler.addTagValue("target_slave_server_name", targetSlaveServerName, false));
 
-
-		
+		if (rowMeta!=null) {
+		  try {
+		    xml.append(rowMeta.getMetaXML());
+		  } catch(IOException e) {
+		    throw new RuntimeException("Unexpected error encountered, probably encoding/decoding base64 data", e);
+		  }
+		}
+		 		
 		xml.append(XMLHandler.closeTag(XML_TAG));
 		return xml.toString();
 	}
 	
-	public RemoteStep(Node node) {
+	public RemoteStep(Node node) throws KettleException {
 		
 		hostname = XMLHandler.getTagValue(node, "hostname");
 		remoteHostname = XMLHandler.getTagValue(node, "remote_hostname");
@@ -180,6 +203,13 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 		
 		sourceSlaveServerName = XMLHandler.getTagValue(node, "source_slave_server_name");
 		targetSlaveServerName = XMLHandler.getTagValue(node, "target_slave_server_name");
+		
+		Node rowMetaNode = XMLHandler.getSubNode(node, RowMeta.XML_META_TAG);
+		if (rowMetaNode==null) {
+		  rowMeta = new RowMeta();
+		} else {
+		  rowMeta = new RowMeta(rowMetaNode);
+		}
 	}
 	
 	@Override
@@ -779,4 +809,12 @@ public class RemoteStep implements Cloneable, XMLInterface, Comparable<RemoteSte
 			super.finalize();
 		}
 	}
+
+  public RowMetaInterface getRowMeta() {
+    return rowMeta;
+  }
+  
+  public void setRowMeta(RowMetaInterface rowMeta) {
+    this.rowMeta = rowMeta;
+  }
 }

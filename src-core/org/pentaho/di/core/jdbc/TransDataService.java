@@ -89,9 +89,10 @@ public class TransDataService implements XMLInterface {
     List<Node> nodes = XMLHandler.getNodes(XMLHandler.getSubNode(serviceNode, XML_TAG_VARIABLE_MAPS), XML_TAG_VARIABLE_MAP);
     for (Node node : nodes) {
       String field = XMLHandler.getTagValue(node, "field");
+      String target = XMLHandler.getTagValue(node, "target");
       String variable = XMLHandler.getTagValue(node, "variable");
       MappingType mappingType = FieldVariableMapping.MappingType.getMappingType( XMLHandler.getTagValue(node, "type") );
-      map.add( new FieldVariableMapping(field, variable, mappingType) );
+      map.add( new FieldVariableMapping(field, target, variable, mappingType) );
     }
     
     return map;

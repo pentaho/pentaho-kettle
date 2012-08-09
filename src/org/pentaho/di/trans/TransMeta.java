@@ -114,6 +114,7 @@ import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.step.BaseStep;
+import org.pentaho.di.trans.step.RemoteStep;
 import org.pentaho.di.trans.step.StepErrorMeta;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
@@ -1731,7 +1732,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         // Resume the regular program...
 
         if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "TransMeta.Log.FromStepALookingAtPreviousStep", stepMeta.getName(), String.valueOf(findNrPrevSteps(stepMeta)) )); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        for (int i = 0; i < findNrPrevSteps(stepMeta); i++)
+        int nrPrevious = findNrPrevSteps(stepMeta);
+        for (int i = 0; i < nrPrevious; i++)
         {
             StepMeta prevStepMeta = findPrevStep(stepMeta, i);
 
@@ -1760,6 +1762,21 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
                     }
                 }
             }
+        }
+        
+        if (nrPrevious==0 && stepMeta.getRemoteInputSteps().size()>0) {
+          // Also check the remote input steps (clustering)
+          // Typically, if there are any, row is still empty at this point
+          // We'll also be at a starting point in the transformation
+          //
+          for (RemoteStep remoteStep : stepMeta.getRemoteInputSteps()) {
+            RowMetaInterface inputFields = remoteStep.getRowMeta();
+            for (ValueMetaInterface inputField : inputFields.getValueMetaList()) {
+              if (row.searchValueMeta(inputField.getName())==null) {
+                row.addValueMeta(inputField);
+              }
+            }
+          }
         }
         
         // Finally, see if we need to add/modify/delete fields with this step "name"
@@ -1842,6 +1859,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
                 }
             }
         }
+        
         return row;
     }
 

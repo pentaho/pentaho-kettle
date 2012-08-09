@@ -1,8 +1,12 @@
 package org.pentaho.di.trans.sql;
 
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.pentaho.di.core.Condition;
@@ -16,6 +20,8 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaAndData;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.sql.SQL;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.RowProducer;
@@ -47,6 +53,9 @@ public class SqlTransExecutor {
   private Map<String, String> parameters;
   private List<String> parameterNames;
   private String resultStepName;
+  private DecimalFormat sqlNumericFormat;
+  private SimpleDateFormat sqlDateFormat;
+  private SimpleDateFormat jsonDateFormat;
 
   /**
    * Create a new SqlTransExecutor without parameters
@@ -83,6 +92,14 @@ public class SqlTransExecutor {
     this.repository = repository;
     this.rowLimit = rowLimit;
     
+    
+    sqlNumericFormat = new DecimalFormat("0.#");
+    sqlNumericFormat.setDecimalFormatSymbols(new DecimalFormatSymbols(Locale.US));
+    sqlNumericFormat.setGroupingUsed(false);
+
+    sqlDateFormat = new SimpleDateFormat("'\"'yyyy/MM/dd HH:mm:ss'\"'");
+    jsonDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'"); //  "2010-01-01T00:00:00Z"
+    
     prepareExecution();
   }
   
@@ -107,11 +124,6 @@ public class SqlTransExecutor {
       serviceTransMeta = loadTransMeta(repository);
       serviceTransMeta.setName(calculateTransname(sql, true));
       
-      // Activate parameters determined through the field-variable mapping
-      // This is push-down optimization version 1.0
-      //
-      setAutomaticParameterValues();
-      
       serviceTransMeta.activateParameters();
       
       // The dummy step called "Output" provides the output fields...
@@ -121,40 +133,180 @@ public class SqlTransExecutor {
     }
   }
 
-  private void setAutomaticParameterValues() throws UnknownParamException {
+  private void setAutomaticParameterValues() throws UnknownParamException, KettleValueException {
+    if (sql.getWhereCondition()==null) {
+      return; // nothing to do here.
+    }
     Condition condition = sql.getWhereCondition().getCondition();
-    List<Condition> atomicConditions = new ArrayList<Condition>();
-    extractAtomicConditions(condition, atomicConditions);
     
     for (FieldVariableMapping mapping : service.getFieldVariableMappings()) {
       
       switch(mapping.getMappingType()) {
-      case SQL_ALL:
+      case SQL_WHERE:
         {
-          String sql = convertConditionToSql(condition);
+          String sql = "WHERE "+convertConditionToSql(condition);
           serviceTransMeta.setParameterValue(mapping.getVariableName(), sql);
         }
         break;
-      case SQL:
+      case JSON_QUERY:
         {
-          for (Condition atomicCondition : atomicConditions) {
-            
-          }
-          
+          String json = "{ "+convertConditionToJson(condition)+" }";
+          serviceTransMeta.setParameterValue(mapping.getVariableName(), json);
         }
-        
-        
-      }
+        break;
+     }
     }
   }
 
-  private String convertConditionToSql(Condition condition) {
-    // TODO Auto-generated method stub
-    return null;
+  private String convertAtomicConditionToSql(Condition atomicCondition) throws KettleValueException {
+    StringBuilder sql = new StringBuilder();
+    
+    String fieldName = atomicCondition.getLeftValuename();
+    FieldVariableMapping mapping = FieldVariableMapping.findFieldVariableMappingByFieldName(service.getFieldVariableMappings(), atomicCondition.getLeftValuename());
+    if (mapping!=null) {
+      fieldName=mapping.getTargetName();
+    }
+    sql.append(fieldName).append(" ");
+    
+    switch(atomicCondition.getFunction()) {
+    case Condition.FUNC_EQUAL: sql.append("="); break;
+    case Condition.FUNC_NOT_EQUAL: sql.append("<>"); break;
+    case Condition.FUNC_LARGER: sql.append(">"); break;
+    case Condition.FUNC_LARGER_EQUAL: sql.append(">="); break;
+    case Condition.FUNC_SMALLER: sql.append("<"); break;
+    case Condition.FUNC_SMALLER_EQUAL: sql.append("<="); break;
+    case Condition.FUNC_NULL: sql.append("IS NULL"); break;
+    case Condition.FUNC_NOT_NULL: sql.append("IS NOT NULL"); break;
+    case Condition.FUNC_CONTAINS: sql.append("LIKE"); break;
+    }
+    sql.append(" ");
+    sql.append(getAtomicConditionRightSql(atomicCondition));
+    
+    return sql.toString();
+  }
+  
+  private String getAtomicConditionRightSql(Condition atomicCondition) throws KettleValueException {
+    ValueMetaAndData right = atomicCondition.getRightExact();
+    if (right==null) {
+      // right value
+      // 
+      String rightName = atomicCondition.getRightValuename(); 
+      FieldVariableMapping mapping = FieldVariableMapping.findFieldVariableMappingByFieldName(service.getFieldVariableMappings(), atomicCondition.getRightValuename());
+      if (mapping!=null) {
+        rightName = mapping.getVariableName();
+      }
+      return rightName;
+    }
+    if (right.getValueMeta().isNull(right.getValueData())) {
+      return "NULL";
+    }
+    switch(right.getValueMeta().getType()) {
+    case ValueMetaInterface.TYPE_STRING: 
+      return "'"+right.toString()+"'";
+    case ValueMetaInterface.TYPE_NUMBER: 
+    case ValueMetaInterface.TYPE_INTEGER: 
+    case ValueMetaInterface.TYPE_BIGNUMBER: 
+        return sqlNumericFormat.format(right.getValueMeta().convertToNormalStorageType(right.getValueData()));
+    case ValueMetaInterface.TYPE_DATE: 
+      return sqlDateFormat.format(right.getValueMeta().getDate(right.getValueData()));
+    case ValueMetaInterface.TYPE_BOOLEAN:
+      return right.getValueMeta().getBoolean(right.getValueData()) ? "TRUE" : "FALSE";
+    default:
+      throw new KettleValueException("Unsupported conversion of value from "+right.getValueMeta().toStringMeta()+" to SQL");
+    }
   }
 
 
-  private void extractAtomicConditions(Condition condition, List<Condition> atomicConditions) {
+  protected String convertConditionToSql(Condition condition) throws KettleValueException {
+    if (condition.isAtomic()) {
+      return convertAtomicConditionToSql(condition);
+    }
+    StringBuilder sql = new StringBuilder();
+    if (condition.isNegated()) {
+      sql.append("NOT(");
+    }
+    for (int i=0;i<condition.nrConditions();i++) {
+      Condition c = condition.getCondition(i);
+      if (i>0) {
+        sql.append(" ").append(c.getOperatorDesc());
+      }
+      sql.append("(");
+      sql.append(convertConditionToSql(c));
+      sql.append(")");
+    }
+    
+    if (condition.isNegated()) {
+      sql.append(")");
+    }
+    return sql.toString();
+  }
+  
+  private String convertAtomicConditionToJson(Condition atomicCondition) throws KettleValueException {
+    StringBuilder sql = new StringBuilder();
+    
+    if (atomicCondition.getRightValuename()!=null) {
+      throw new KettleValueException("Converting a condition that compares 2 fields is not yet supported in a JSON query");
+    }
+    
+    String fieldName = atomicCondition.getLeftValuename();
+    FieldVariableMapping mapping = FieldVariableMapping.findFieldVariableMappingByFieldName(service.getFieldVariableMappings(), atomicCondition.getLeftValuename());
+    if (mapping!=null) {
+      fieldName=mapping.getTargetName();
+    }
+    
+    switch(atomicCondition.getFunction()) {
+    case Condition.FUNC_EQUAL: sql.append("'").append(fieldName).append("' : ").append(getJsonString(atomicCondition.getRightExact())); break;
+    case Condition.FUNC_NOT_EQUAL: sql.append("'").append(fieldName).append("' : { '$ne' : ").append(getJsonString(atomicCondition.getRightExact())).append(" }"); break;
+    case Condition.FUNC_LARGER: sql.append(">"); sql.append("'").append(fieldName).append("' : { '$gt' : ").append(getJsonString(atomicCondition.getRightExact())).append(" }"); break;
+    case Condition.FUNC_LARGER_EQUAL: sql.append(">"); sql.append("'").append(fieldName).append("' : { '$gte' : ").append(getJsonString(atomicCondition.getRightExact())).append(" }"); break;
+    case Condition.FUNC_SMALLER: sql.append("<"); sql.append(">"); sql.append("'").append(fieldName).append("' : { '$lt' : ").append(getJsonString(atomicCondition.getRightExact())).append(" }"); break;
+    case Condition.FUNC_SMALLER_EQUAL: sql.append("<="); sql.append(">"); sql.append("'").append(fieldName).append("' : { '$lte' : ").append(getJsonString(atomicCondition.getRightExact())).append(" }"); break;
+    case Condition.FUNC_NULL: sql.append("IS NULL"); sql.append(">"); sql.append("'").append(fieldName).append("' : \"\""); break;
+    case Condition.FUNC_NOT_NULL: sql.append("'").append(fieldName).append("' : { '$ne' : ").append("\"\"").append(" }"); break;
+    case Condition.FUNC_CONTAINS: sql.append("'").append(fieldName).append("' : { '$regex' : '.*").append(atomicCondition.getRightExactString()).append(".*', '$options' : 'i' }"); break;
+    }
+    
+    return sql.toString();
+  }
+  
+  protected String getJsonString(ValueMetaAndData v) throws KettleValueException {
+    ValueMetaInterface meta = v.getValueMeta();
+    Object data = v.getValueData();
+    
+    switch(meta.getType()) {
+    case ValueMetaInterface.TYPE_STRING: return '"'+meta.getString(data)+'"';
+    case ValueMetaInterface.TYPE_NUMBER: return sqlNumericFormat.format(meta.getNumber(data));
+    case ValueMetaInterface.TYPE_INTEGER: return sqlNumericFormat.format(meta.getInteger(data));
+    case ValueMetaInterface.TYPE_BIGNUMBER: return sqlNumericFormat.format(meta.getBigNumber(data));
+    case ValueMetaInterface.TYPE_DATE: return "{ $date : \""+jsonDateFormat.format(meta.getBigNumber(data))+"\" }";
+    default:
+      throw new KettleValueException("Converting data type "+meta.toStringMeta()+" to a JSON value is not yet supported");
+    }
+  }
+  
+  protected String convertConditionToJson(Condition condition) throws KettleValueException {
+    if (condition.isAtomic()) {
+      return convertAtomicConditionToJson(condition);
+    }
+    StringBuilder sql = new StringBuilder();
+    if (condition.isNegated()) {
+      throw new KettleValueException("Negated conditions can't be converted to JSON");
+    }
+
+    for (int i=0;i<condition.nrConditions();i++) {
+      Condition c = condition.getCondition(i);
+      if (i>0) {
+        sql.append(", ");
+      }
+      sql.append(convertConditionToJson(c));
+    }
+    
+    return sql.toString();
+  }
+  
+
+
+  protected void extractAtomicConditions(Condition condition, List<Condition> atomicConditions) {
     if (condition.isAtomic()) {
       atomicConditions.add(condition);
     } else {
@@ -191,7 +343,7 @@ public class SqlTransExecutor {
     // Continue parsing of the SQL, map to fields, extract conditions, parameters, ...
     //
     sql.parse(serviceFields);
-
+    
     if (!service.isDual()) {
       // Parameters: see which ones are defined in the SQL
       //
@@ -204,6 +356,12 @@ public class SqlTransExecutor {
       for (String name : conditionParameters.keySet()) {
         serviceTransMeta.setParameterValue(name, conditionParameters.get(name));
       }
+      
+      // Activate parameters determined through the field-variable mapping
+      // This is push-down optimization version 1.0
+      //
+      setAutomaticParameterValues();
+      
       serviceTransMeta.activateParameters();
       
       // Prepare the execution of this service transformation
