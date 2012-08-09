@@ -116,12 +116,14 @@ public class LoggingRegistry {
 		//
 		if (loggingSource.getParent()!=null) {
 		  String parentLogChannelId = loggingSource.getParent().getLogChannelId();
-		  List<String> parentChildren = childrenMap.get(parentLogChannelId);
-		  if (parentChildren==null) {
-		    parentChildren = new ArrayList<String>();
-		    childrenMap.put(parentLogChannelId, parentChildren);
+		  if (parentLogChannelId!=null) {
+  		  List<String> parentChildren = childrenMap.get(parentLogChannelId);
+  		  if (parentChildren==null) {
+  		    parentChildren = new ArrayList<String>();
+  		    childrenMap.put(parentLogChannelId, parentChildren);
+  		  }
+  		  parentChildren.add(logChannelId);
 		  }
-		  parentChildren.add(logChannelId);		  
 		}
 		
 		lastModificationTime = new Date();
