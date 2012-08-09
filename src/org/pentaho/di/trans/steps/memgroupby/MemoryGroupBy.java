@@ -192,7 +192,28 @@ public class MemoryGroupBy extends BaseStep implements StepInterface
       }
       putRow(data.outputRowMeta, outputRowData);
     }
-
+    
+    // What if we always need to give back one row?
+    // This means we give back 0 for count all, count distinct, null for everything else
+    //
+    if (data.map.isEmpty() && meta.isAlwaysGivingBackOneRow()) {
+      Object[] outputRowData = RowDataUtil.allocateRowData(data.outputRowMeta.size());
+      int index = 0;
+      for (int i = 0; i < data.groupMeta.size(); i++) {
+        outputRowData[index++] = null;
+      }
+      for (int i = 0; i < data.aggMeta.size(); i++) {
+        if (meta.getAggregateType()[i] == MemoryGroupByMeta.TYPE_GROUP_COUNT_ALL ||
+            meta.getAggregateType()[i] == MemoryGroupByMeta.TYPE_GROUP_COUNT_ANY ||
+            meta.getAggregateType()[i] == MemoryGroupByMeta.TYPE_GROUP_COUNT_DISTINCT
+            ) {
+          outputRowData[index++] = Long.valueOf(0L);
+        } else {
+          outputRowData[index++] = null;
+        }
+      }
+      putRow(data.outputRowMeta, outputRowData);
+    }
   }
 
   // Calculate the aggregates in the row...
