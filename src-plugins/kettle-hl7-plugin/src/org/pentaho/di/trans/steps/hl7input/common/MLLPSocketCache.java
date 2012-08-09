@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.job.Job;
-import org.pentaho.di.job.JobListener;
+import org.pentaho.di.job.JobAdapter;
 
 import ca.uhn.hl7v2.protocol.StreamSource;
 import ca.uhn.hl7v2.protocol.impl.MLLPTransport;
@@ -42,7 +42,7 @@ public class MLLPSocketCache {
     transport.connect();
     
     final MLLPSocketCacheEntry entry = new MLLPSocketCacheEntry(serverSocket, streamSource, transport);
-    entry.setJobListener(new JobListener() {
+    entry.setJobListener(new JobAdapter() {
       
       @Override
       public void jobFinished(Job job) throws KettleException {

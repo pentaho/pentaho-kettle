@@ -64,7 +64,7 @@ public class JobEntryJobRunner implements Runnable
             
             // This JobEntryRunner is a replacement for the Job thread.
             // The job thread is never started because we simply want to wait for the result.
-            
+      job.fireJobStartListeners(); // Fire the start listeners
 			result = job.execute(entryNr+1, result);
 		}
 		catch(KettleException e)
@@ -77,7 +77,7 @@ public class JobEntryJobRunner implements Runnable
 		finally 
 		{
             try {
-                job.fireJobListeners();
+                job.fireJobFinishListeners();
             } catch(KettleException e) {
                 result.setNrErrors(1);
                 result.setResult(false);

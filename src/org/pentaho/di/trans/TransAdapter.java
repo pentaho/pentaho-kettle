@@ -33,6 +33,10 @@ import org.pentaho.di.core.exception.KettleException;
  */
 public class TransAdapter implements TransListener {
 
+  public void transStarted(Trans trans) throws KettleException {
+    
+  }
+  
   public void transActive(Trans trans) {
   }
 

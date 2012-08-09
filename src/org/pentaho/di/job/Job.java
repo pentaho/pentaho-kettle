@@ -311,6 +311,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
             
             // Run the job
             //
+            fireJobStartListeners();
             result = execute(); 
 		}
 		catch(Throwable je)
@@ -332,7 +333,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 		finally
 		{
 			try {
-				fireJobListeners();
+				fireJobFinishListeners();
 			} catch(KettleException e) {
 				result.setNrErrors(1);
 				result.setResult(false);
@@ -456,12 +457,23 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 	 * 
 	 * @see JobListener#jobFinished(Job)
 	 */
-	public void fireJobListeners() throws KettleException {
+	public void fireJobFinishListeners() throws KettleException {
 		for (JobListener jobListener : jobListeners) {
 			jobListener.jobFinished(this);
 		}
 	}
 	
+	/**
+   * Call all the jobStarted method for each listener.<br>
+   * 
+   * @see JobListener#jobStarted(Job)
+   */
+  public void fireJobStartListeners() throws KettleException {
+    for (JobListener jobListener : jobListeners) {
+      jobListener.jobStarted(this);
+    }
+  }
+  
 	/**
 	 * Execute a job entry recursively and move to the next job entry automatically.<br>
 	 * Uses a back-tracking algorithm.<br>
@@ -876,7 +888,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
           };
           timer.schedule(timerTask, intervalInSeconds * 1000, intervalInSeconds * 1000);
 
-          addJobListener(new JobListener() {
+          addJobListener(new JobAdapter() {
             public void jobFinished(Job job) {
               timer.cancel();
             }
@@ -886,7 +898,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         // Add a listener at the end of the job to take of writing the final job
         // log record...
         //
-        addJobListener(new JobListener() {
+        addJobListener(new JobAdapter() {
           public void jobFinished(Job job) {
             try {
               endProcessing();
@@ -908,7 +920,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     //
     JobEntryLogTable jobEntryLogTable = jobMeta.getJobEntryLogTable();
     if (jobEntryLogTable.isDefined()) {
-        addJobListener(new JobListener() {
+        addJobListener(new JobAdapter() {
             public void jobFinished(Job job) throws KettleException {
                 try {
                     writeJobEntryLogInformation();
@@ -925,7 +937,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     //
     ChannelLogTable channelLogTable = jobMeta.getChannelLogTable();
     if (channelLogTable.isDefined()) {
-      addJobListener(new JobListener() {
+      addJobListener(new JobAdapter() {
 
         public void jobFinished(Job job) throws KettleException {
           try {
