@@ -292,6 +292,7 @@ public class HadoopConfigurationLocatorTest {
         logEvents.add(event);
       }
     });
+    logger.setLevel(Level.DEBUG);
 
     locator.init(root, new MockActiveHadoopConfigurationLocator(), new DefaultFileSystemManager());
     assertEquals(0, locator.getConfigurations().size());
