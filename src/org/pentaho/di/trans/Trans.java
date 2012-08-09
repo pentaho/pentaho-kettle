@@ -908,10 +908,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
               //
               addStepPerformanceSnapShot();
 
-              if (transMeta.isUsingUniqueConnections()) {
-                trans.closeUniqueDatabaseConnections(getResult());
-              }
-
               try {
                 fireTransFinishedListeners();
               } catch (Exception e) {
@@ -996,6 +992,12 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
           }
         }
 
+        // Close the unique connections when running database transactionally.
+        // This will commit or roll back the transaction based on the result of this transformation.
+        //
+        if (transMeta.isUsingUniqueConnections()) {
+          trans.closeUniqueDatabaseConnections(getResult());
+        }
 
         // Signal for the the waitUntilFinished blocker...
         //
@@ -1096,7 +1098,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
      * 	Fire the listeners (if any are registered)
 	 *	
      */
-    protected void fireTransFinishedListeners() throws KettleException {
+  protected void fireTransFinishedListeners() throws KettleException {
     	
 		for (TransListener transListener : transListeners)
 		{
@@ -2176,58 +2178,54 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		return lastSeqNr+1;
 	}
 
-	private void closeUniqueDatabaseConnections(Result result) {
+  private void closeUniqueDatabaseConnections(Result result) {
 
-		// First we get all the database connections ...
-		//
-		DatabaseConnectionMap map = DatabaseConnectionMap.getInstance();
-		List<Database> databaseList = new ArrayList<Database>(map.getMap().values());
-        for (Database database : databaseList) {
-        	if (database.getConnectionGroup().equals(getThreadName())) {
-        		try
-        		{
-        		  // This database connection belongs to this transformation.
-              // Let's roll it back if there is an error...
+    // First we get all the database connections ...
+    //
+    DatabaseConnectionMap map = DatabaseConnectionMap.getInstance();
+    synchronized (map) {
+      List<Database> databaseList = new ArrayList<Database>(map.getMap().values());
+      for (Database database : databaseList) {
+        if (database.getConnectionGroup().equals(getThreadName())) {
+          try {
+            // This database connection belongs to this transformation.
+            // Let's roll it back if there is an error...
+            //
+            if (result.getNrErrors() > 0) {
+              try {
+                database.rollback(true);
+                log.logBasic(BaseMessages.getString(PKG, "Trans.Exception.TransactionsRolledBackOnConnection", database.toString()));
+              } catch (Exception e) {
+                throw new KettleDatabaseException(BaseMessages.getString(PKG, "Trans.Exception.ErrorRollingBackUniqueConnection", database.toString()), e);
+              }
+            } else {
+              try {
+                database.commit(true);
+                log.logBasic(BaseMessages.getString(PKG, "Trans.Exception.TransactionsCommittedOnConnection", database.toString()));
+              } catch (Exception e) {
+                throw new KettleDatabaseException(BaseMessages.getString(PKG, "Trans.Exception.ErrorCommittingUniqueConnection", database.toString()), e);
+              }
+            }
+          } catch (Exception e) {
+            log.logError(BaseMessages.getString(PKG, "Trans.Exception.ErrorHandlingTransformationTransaction", database.toString()), e);
+            result.setNrErrors(result.getNrErrors() + 1);
+          } finally {
+            try {
+              // This database connection belongs to this transformation.
+              database.closeConnectionOnly();
+            } catch (Exception e) {
+              log.logError(BaseMessages.getString(PKG, "Trans.Exception.ErrorHandlingTransformationTransaction", database.toString()), e);
+              result.setNrErrors(result.getNrErrors() + 1);
+            } finally {
+              // Remove the database from the list...
               //
-              if (result.getNrErrors()>0) {
-                try {
-                  database.rollback(true);
-                  log.logBasic(BaseMessages.getString(PKG, "Trans.Exception.TransactionsRolledBackOnConnection", database.toString()));
-                }
-                catch(Exception e) {
-                  throw new KettleDatabaseException(BaseMessages.getString(PKG, "Trans.Exception.ErrorRollingBackUniqueConnection", database.toString()), e);
-                }
-              }
-              else {
-                try {
-                  database.commit(true);
-                  log.logBasic(BaseMessages.getString(PKG, "Trans.Exception.TransactionsCommittedOnConnection", database.toString()));
-                }
-                catch(Exception e) {
-                  throw new KettleDatabaseException(BaseMessages.getString(PKG, "Trans.Exception.ErrorCommittingUniqueConnection", database.toString()), e);
-                }
-              }
-        		}
-        		catch(Exception e) {
-        			log.logError(BaseMessages.getString(PKG, "Trans.Exception.ErrorHandlingTransformationTransaction", database.toString()), e);
-        			result.setNrErrors(result.getNrErrors()+1);
-        		}
-        		finally {
-        		  try {
-        		    // This database connection belongs to this transformation.
-                database.closeConnectionOnly();
-        		  } catch(Exception e) {
-                log.logError(BaseMessages.getString(PKG, "Trans.Exception.ErrorHandlingTransformationTransaction", database.toString()), e);
-                result.setNrErrors(result.getNrErrors()+1);
-        		  } finally {
-                // Remove the database from the list...
-                //
-                map.removeConnection(database.getConnectionGroup(), database.getPartitionId(), database);
-        		  }
-        		}
-        	}
+              map.removeConnection(database.getConnectionGroup(), database.getPartitionId(), database);
+            }
+          }
         }
-	}
+      }
+    }
+  }
 
 	public StepInterface findRunThread(String stepname)
 	{

@@ -26,6 +26,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -198,7 +199,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     active = new AtomicBoolean(false);
     stopped = new AtomicBoolean(false);
     jobTracker = new JobTracker(jobMeta);
-    jobEntryResults = new ArrayList<JobEntryResult>();
+    jobEntryResults = new LinkedList<JobEntryResult>();
     initialized = new AtomicBoolean(false);
     finished = new AtomicBoolean(false);
     errors = new AtomicInteger(0);
@@ -573,8 +574,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
     // Only keep the last X job entry results in memory
     //
-    if (maxJobEntriesLogged>0 && jobEntryResults.size()>maxJobEntriesLogged) {
-      jobEntryResults.remove(0); // Remove the oldest.
+    if (maxJobEntriesLogged>0 && jobEntryResults.size()>maxJobEntriesLogged+50) {
+      jobEntryResults = jobEntryResults.subList(50, jobEntryResults.size()); // Remove the oldest.
     }
     
 			

@@ -61,6 +61,15 @@ public class Metrics implements MetricsInterface {
   public static Metrics METRIC_STEP_INIT_START= new Metrics(MetricsSnapshotType.START, "METRIC_STEP_INIT", "Initialize a step");
   public static Metrics METRIC_STEP_INIT_STOP= new Metrics(MetricsSnapshotType.STOP, "METRIC_STEP_INIT", "Initialize a step");
 
+  // Logging back-end
+  //
+  public static Metrics METRIC_CENTRAL_LOG_STORE_TIMEOUT_CLEAN_TIME = new Metrics(MetricsSnapshotType.SUM, "METRIC_CENTRAL_LOG_STORE_TIMEOUT_CLEAN_TIME", "Time consumed removing old log records (ms)");
+  public static Metrics METRIC_CENTRAL_LOG_STORE_TIMEOUT_CLEAN_COUNT = new Metrics(MetricsSnapshotType.COUNT, "METRIC_CENTRAL_LOG_STORE_TIMEOUT_CLEAN_COUNT", "Number of times removed old log records");
+  public static Metrics METRIC_LOGGING_REGISTRY_CLEAN_TIME = new Metrics(MetricsSnapshotType.SUM, "METRIC_LOGGING_REGISTRY_CLEAN_TIME", "Time consumed removing old log registry entries (ms)");
+  public static Metrics METRIC_LOGGING_REGISTRY_CLEAN_COUNT = new Metrics(MetricsSnapshotType.COUNT, "METRIC_LOGGING_REGISTRY_CLEAN_COUNT", "Number of times removed old log registry entries");
+  public static Metrics METRIC_LOGGING_REGISTRY_GET_CHILDREN_TIME = new Metrics(MetricsSnapshotType.SUM, "METRIC_LOGGING_REGISTRY_GET_CHILDREN_TIME", "Time consumed getting log registry children (ms)");
+  public static Metrics METRIC_LOGGING_REGISTRY_GET_CHILDREN_COUNT = new Metrics(MetricsSnapshotType.COUNT, "METRIC_LOGGING_REGISTRY_GET_CHILDREN_COUNT", "Number of times retrieved log registry children");
+
   
   private String code;
   private String description;

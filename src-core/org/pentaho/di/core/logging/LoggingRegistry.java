@@ -47,8 +47,16 @@ public class LoggingRegistry {
 	
 	private static LoggingRegistry registry;
 	
-	private Map<String,LoggingObjectInterface> map;
+	/**
+	 * The map that links the log channel ID to the logging objects themselves
+	 */
+	private Map<String, LoggingObjectInterface> map;
 	
+	/**
+   * The map that contains the direct log channel children for a log channel
+   */
+  private Map<String, List<String>> childrenMap;
+  
 	private Date lastModificationTime;
 	
 	private int maxSize;
@@ -56,6 +64,8 @@ public class LoggingRegistry {
 	
 	private LoggingRegistry() {
 		map = new ConcurrentHashMap<String, LoggingObjectInterface>();	
+    childrenMap = new ConcurrentHashMap<String, List<String>>();
+    
 		lastModificationTime = new Date();
 		maxSize = Const.toInt(EnvUtil.getSystemProperty(Const.KETTLE_MAX_LOGGING_REGISTRY_SIZE), DEFAULT_MAX_SIZE);
 	}
@@ -100,36 +110,57 @@ public class LoggingRegistry {
 		loggingSource.setLogChannelId(logChannelId);
 
 		map.put(logChannelId, loggingSource);
+		
+		
+		// See if we need to update the parent's list of children
+		//
+		if (loggingSource.getParent()!=null) {
+		  String parentLogChannelId = loggingSource.getParent().getLogChannelId();
+		  List<String> parentChildren = childrenMap.get(parentLogChannelId);
+		  if (parentChildren==null) {
+		    parentChildren = new ArrayList<String>();
+		    childrenMap.put(parentLogChannelId, parentChildren);
+		  }
+		  parentChildren.add(logChannelId);		  
+		}
+		
 		lastModificationTime = new Date();
 		loggingSource.setRegistrationDate(lastModificationTime);
 		
 		// Validate that we're not leaking references.  If the size of the map becomes too large we opt to remove the oldest...
 		//
-		if (maxSize>0 && map.size()>maxSize) {
+		if (maxSize>0 && map.size()>maxSize+1000) {
 		  
-		  // If this didn't work we retry when it gets out of hand...
+      long cleanStart = System.currentTimeMillis();
+		  
+		  // Remove 250 and trim it back to maxSize
 		  //
-		  if (map.size()>maxSize+250) {
-  		  // Remove 250 and trim it back to maxSize
-  		  //
-  		  List<LoggingObjectInterface> all = new ArrayList<LoggingObjectInterface>(map.values());
-  		  Collections.sort(all, new Comparator<LoggingObjectInterface>() {
-  		    @Override
-  		    public int compare(LoggingObjectInterface o1, LoggingObjectInterface o2) {
-  		      if (o1==null && o2!=null) return -1;
-            if (o1!=null && o2==null) return 1;
-            if (o1==null && o2==null) return 0;
-  		      return o1.getRegistrationDate().compareTo(o2.getRegistrationDate());
-  		    }
-        });
-  		  
-  		  // Remove 250 entries...
-  		  //
-  		  for (int i=0;i<250;i++) {
-  		    LoggingObjectInterface toRemove = all.get(i);
-  		    map.remove(toRemove.getLogChannelId());
-  		  }
+		  List<LoggingObjectInterface> all = new ArrayList<LoggingObjectInterface>(map.values());
+		  Collections.sort(all, new Comparator<LoggingObjectInterface>() {
+		    @Override
+		    public int compare(LoggingObjectInterface o1, LoggingObjectInterface o2) {
+		      if (o1==null && o2!=null) return -1;
+          if (o1!=null && o2==null) return 1;
+          if (o1==null && o2==null) return 0;
+		      return o1.getRegistrationDate().compareTo(o2.getRegistrationDate());
+		    }
+      });
+		  
+		  // Remove 1000 entries...
+		  //
+		  for (int i=0;i<1000;i++) {
+		    LoggingObjectInterface toRemove = all.get(i);
+		    map.remove(toRemove.getLogChannelId());
+
+		    // Remove the children map as well, won't be found anyway.
+		    //
+		    childrenMap.remove(toRemove.getLogChannelId());
 		  }
+
+      long cleanEnd = System.currentTimeMillis();
+      LogChannel.GENERAL.snap(Metrics.METRIC_LOGGING_REGISTRY_CLEAN_TIME, cleanEnd-cleanStart);
+      LogChannel.GENERAL.snap(Metrics.METRIC_LOGGING_REGISTRY_CLEAN_COUNT);
+      // System.out.println("------->>>>> Cleaned out old logging registry entries: "+(cleanEnd-cleanStart)+"ms");
 		}
 		
 		return logChannelId;
@@ -177,11 +208,8 @@ public class LoggingRegistry {
 		if (parentLogChannelId==null) {
 			return null;
 		}
-		List<String> list = new ArrayList<String>();
-		getLogChannelChildren(list, parentLogChannelId);
-		if (!list.contains(parentLogChannelId)) {
-			list.add(parentLogChannelId);
-		}
+		List<String> list = getLogChannelChildren(new ArrayList<String>(), parentLogChannelId);
+		list.add(parentLogChannelId);
 		return list;
 	}
 
@@ -189,56 +217,39 @@ public class LoggingRegistry {
 	 * In a situation where you have a job or transformation, you want to get a list of ALL the children where the parent is the channel ID.
 	 * 
 	 * @param parentLogChannelId The parent log channel ID
-	 * @return the list of child channel ID
+	 * @return the list of child channel ID, not including the parent.
 	 */
 	private List<String> getLogChannelChildren(List<String> children, String parentLogChannelId) {
-		
-		List<String> list = new ArrayList<String>();
-		
-		
 
-		// Get all the direct children of this parent
-		//
-		Iterator<LoggingObjectInterface> mapIterator = map.values().iterator();
-		while(mapIterator.hasNext()) {
-			LoggingObjectInterface loggingObject = mapIterator.next();
-			if (loggingObject.getLogChannelId().equals(parentLogChannelId)) {
-				continue; // not this one!
-			}
-			
-			LoggingObjectInterface parent = loggingObject.getParent(); 
-			if (parent!=null && parent.getLogChannelId()!=null) {
-				// object has a parent, this is a candidate
-				//
-				if (parent.getLogChannelId().equals(parentLogChannelId)) {
-					String childId = loggingObject.getLogChannelId();
-					
-					// We don't really want duplicates...
-					//
-					if (!list.contains(childId)) {
-						list.add(childId);
-					}
-				}
-			}
-		}
-		
-		// Now for all these children, get the children too...
-		//
-		
-		for (String childId : new ArrayList<String>(list)) {
-			getLogChannelChildren(list, childId);
-		}
-		
-		// Add all the entries in list to children, again, avoid duplicates
-		//
-		Iterator<String> listIterator = list.iterator();
-		while(listIterator.hasNext()) {
-			String id = listIterator.next();
-			if (!children.contains(id)) {
-				children.add(id);
-			}
-		}
+	  long getStart = System.currentTimeMillis();
 
+	  synchronized(childrenMap) {
+  		List<String> list = childrenMap.get(parentLogChannelId);
+  		if (list==null) {
+  		  list = new ArrayList<String>();
+  		  // This is the only place where we'll add something: at the bottom of the tree.
+  		  // This means that we won't have to do duplicate detection anymore.
+  		  //
+		    children.add(parentLogChannelId);
+  		  return list;
+  		}
+  		
+  		Iterator<String> kids = list.iterator();
+  		while (kids.hasNext()) {
+  		  String logChannelId = kids.next();
+
+  		  // Search deeper into the tree...
+  		  //
+        getLogChannelChildren(children, logChannelId);
+  		}
+  		
+	  }
+		
+    long getStop = System.currentTimeMillis();
+
+    LogChannel.GENERAL.snap(Metrics.METRIC_LOGGING_REGISTRY_GET_CHILDREN_TIME, getStop-getStart);
+    LogChannel.GENERAL.snap(Metrics.METRIC_LOGGING_REGISTRY_GET_CHILDREN_COUNT);
+    
 		return children;
 	}
 	

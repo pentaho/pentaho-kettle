@@ -22,7 +22,7 @@
 
 package org.pentaho.di.core.gui;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
@@ -63,7 +63,7 @@ public class JobTracker {
       this.jobFilename = jobMeta.getFilename();
     }
 
-    jobTrackers = new ArrayList<JobTracker>();
+    jobTrackers = new LinkedList<JobTracker>();
     maxChildren = Const.toInt(EnvUtil.getSystemProperty(Const.KETTLE_MAX_JOB_TRACKER_SIZE), 5000);
   }
 
@@ -77,12 +77,12 @@ public class JobTracker {
       this.jobFilename = jobMeta.getFilename();
     }
 
-    jobTrackers = new ArrayList<JobTracker>();
+    jobTrackers = new LinkedList<JobTracker>();
     this.maxChildren = maxChildren;
   }
 
   /**
-   * Creates a jobtracker with a single result (max 1000 children are kept)
+   * Creates a jobtracker with a single result (maxChildren children are kept)
    * 
    * @param jobMeta the job metadata to keep track of
    * @param result the job entry result to track.
@@ -106,7 +106,9 @@ public class JobTracker {
 
   public void addJobTracker(JobTracker jobTracker) {
     jobTrackers.add(jobTracker);
-    if (jobTrackers.size()>maxChildren) jobTrackers.remove(0);
+    if (jobTrackers.size()>maxChildren+50) {
+      jobTrackers = jobTrackers.subList(50, jobTrackers.size());
+    }
   }
 
   public JobTracker getJobTracker(int i) {

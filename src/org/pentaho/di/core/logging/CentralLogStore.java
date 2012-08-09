@@ -65,6 +65,7 @@ public class CentralLogStore {
 					if (maxLogTimeoutMinutes>0) {
 						long minTimeBoundary = new Date().getTime() - maxLogTimeoutMinutes*60*1000;
 						synchronized(appender) {
+						  long cleanStart = System.currentTimeMillis();
 							Iterator<BufferLine> i = appender.getBufferIterator();
 							while (i.hasNext()) {
 								BufferLine bufferLine = i.next();
@@ -75,6 +76,9 @@ public class CentralLogStore {
 									break;
 								}
 							}
+              long cleanEnd = System.currentTimeMillis();
+              LogChannel.GENERAL.snap(Metrics.METRIC_CENTRAL_LOG_STORE_TIMEOUT_CLEAN_TIME, cleanEnd-cleanStart);
+              LogChannel.GENERAL.snap(Metrics.METRIC_CENTRAL_LOG_STORE_TIMEOUT_CLEAN_COUNT);
 						}
 					}
 					busy.set(false);

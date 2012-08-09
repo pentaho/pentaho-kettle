@@ -10,8 +10,10 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.jdbc.FieldVariableMapping;
 import org.pentaho.di.core.jdbc.TransDataService;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.sql.SQL;
@@ -90,7 +92,7 @@ public class SqlTransExecutor {
     
     // Dual
     if (Const.isEmpty(serviceName) || "dual".equalsIgnoreCase(serviceName)) {
-      service = new TransDataService("dual", null, null, null, null);
+      service = new TransDataService("dual");
       service.setDual(true);
       serviceFields = new RowMeta(); // nothing to report from dual
     } else {
@@ -104,6 +106,12 @@ public class SqlTransExecutor {
       //
       serviceTransMeta = loadTransMeta(repository);
       serviceTransMeta.setName(calculateTransname(sql, true));
+      
+      // Activate parameters determined through the field-variable mapping
+      // This is push-down optimization version 1.0
+      //
+      setAutomaticParameterValues();
+      
       serviceTransMeta.activateParameters();
       
       // The dummy step called "Output" provides the output fields...
@@ -112,6 +120,50 @@ public class SqlTransExecutor {
       serviceFields = serviceTransMeta.getStepFields(serviceStepName);
     }
   }
+
+  private void setAutomaticParameterValues() throws UnknownParamException {
+    Condition condition = sql.getWhereCondition().getCondition();
+    List<Condition> atomicConditions = new ArrayList<Condition>();
+    extractAtomicConditions(condition, atomicConditions);
+    
+    for (FieldVariableMapping mapping : service.getFieldVariableMappings()) {
+      
+      switch(mapping.getMappingType()) {
+      case SQL_ALL:
+        {
+          String sql = convertConditionToSql(condition);
+          serviceTransMeta.setParameterValue(mapping.getVariableName(), sql);
+        }
+        break;
+      case SQL:
+        {
+          for (Condition atomicCondition : atomicConditions) {
+            
+          }
+          
+        }
+        
+        
+      }
+    }
+  }
+
+  private String convertConditionToSql(Condition condition) {
+    // TODO Auto-generated method stub
+    return null;
+  }
+
+
+  private void extractAtomicConditions(Condition condition, List<Condition> atomicConditions) {
+    if (condition.isAtomic()) {
+      atomicConditions.add(condition);
+    } else {
+      for (Condition sub : condition.getChildren()) {
+        extractAtomicConditions(sub, atomicConditions);
+      }
+    }
+  }
+
 
   private TransDataService findService(String name) {
     for (TransDataService s : services) {
