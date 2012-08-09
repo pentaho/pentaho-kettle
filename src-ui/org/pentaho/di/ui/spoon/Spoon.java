@@ -514,19 +514,16 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     try {
       // Bootstrap Kettle
       //
-      //  We start Sleak if the VM argument RUN_SLEAK was provided
       Display display = null;
       if (System.getProperties().containsKey("SLEAK")) {
-         DeviceData data = new DeviceData();
-         data.tracking = true;
-         display = new Display(data);
-         Sleak sleak = new Sleak();
-         sleak.open();
+      	DeviceData data = new DeviceData();
+        data.tracking = true;
+        display = new Display(data);
       }
       else {
-         display = new Display();
+      	display = new Display();
       }
-
+   
       // The core plugin types don't know about UI classes. Add them in now
       // before the PluginRegistry inits.
       splash = new Splash(display);
@@ -625,6 +622,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   }
 
   public Spoon(Display d, Repository rep) {
+	  
+	Boolean useSleak = System.getProperties().containsKey("SLEAK");
     log = new LogChannel(APP_NAME);
     SpoonFactory.setSpoonInstance(this);
     setRepository(rep);
@@ -633,7 +632,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       display = d;
       destroy = false;
     } else {
-      display = new Display();
+      if (useSleak) {
+        DeviceData data = new DeviceData();
+        data.tracking = true;
+        display = new Display(data);
+      } else {
+    	display = new Display();
+      }
       destroy = true;
     }
 
@@ -645,6 +650,16 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     shell.setText(APPL_TITLE);
     staticSpoon = this;
 
+    if (useSleak) {
+  		Sleak sleak = new Sleak ();
+  		Shell sleakShell = new Shell(display);
+  		sleakShell.setText ("S-Leak");
+  		org.eclipse.swt.graphics.Point size = sleakShell.getSize();
+  		sleakShell.setSize (size.x / 2, size.y / 2);
+  		sleak.create(sleakShell);
+  		sleakShell.open();
+     }
+    
     try {
       JndiUtil.initJNDI();
     } catch (Exception e) {
