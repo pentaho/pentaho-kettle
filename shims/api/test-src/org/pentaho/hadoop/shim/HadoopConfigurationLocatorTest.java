@@ -24,8 +24,13 @@ package org.pentaho.hadoop.shim;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.lang.reflect.Field;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.commons.vfs.AllFileSelector;
@@ -34,6 +39,16 @@ import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileType;
 import org.apache.commons.vfs.VFS;
 import org.apache.commons.vfs.impl.DefaultFileSystemManager;
+import org.apache.log4j.Appender;
+import org.apache.log4j.AppenderSkeleton;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Layout;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.spi.ErrorHandler;
+import org.apache.log4j.spi.Filter;
+import org.apache.log4j.spi.LoggingEvent;
+import org.apache.log4j.varia.NullAppender;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
@@ -113,11 +128,41 @@ public class HadoopConfigurationLocatorTest {
 
     assertEquals(1, locator.getConfigurations().size());
   }
+  
+  @Test
+  public void hasConfiguration() throws Exception {
+    HadoopConfigurationLocator locator = new HadoopConfigurationLocator();
+    locator.init(VFS.getManager().resolveFile(HADOOP_CONFIGURATIONS_PATH), new MockActiveHadoopConfigurationLocator(),
+        new DefaultFileSystemManager());
+
+    assertTrue(locator.hasConfiguration("a"));
+  }
 
   @Test(expected = RuntimeException.class)
   public void hasConfiguration_not_intialized() {
     HadoopConfigurationLocator locator = new HadoopConfigurationLocator();
     locator.hasConfiguration(null);
+  }
+
+  @Test
+  public void getConfiguration() throws Exception {
+    HadoopConfigurationLocator locator = new HadoopConfigurationLocator();
+    locator.init(VFS.getManager().resolveFile(HADOOP_CONFIGURATIONS_PATH), new MockActiveHadoopConfigurationLocator(),
+        new DefaultFileSystemManager());
+
+    HadoopConfiguration a = locator.getConfiguration("a");
+    assertNotNull(a);
+    assertEquals("a", a.getIdentifier());
+    assertEquals("Test Configuration A", a.getName());
+  }
+
+  @Test(expected = ConfigurationException.class)
+  public void getConfiguration_unknown_id() throws Exception {
+    HadoopConfigurationLocator locator = new HadoopConfigurationLocator();
+    locator.init(VFS.getManager().resolveFile(HADOOP_CONFIGURATIONS_PATH), new MockActiveHadoopConfigurationLocator(),
+        new DefaultFileSystemManager());
+    
+    locator.getConfiguration("unknown");
   }
 
   @Test(expected = RuntimeException.class)
@@ -132,6 +177,17 @@ public class HadoopConfigurationLocatorTest {
     locator.getConfigurations();
   }
 
+  @Test
+  public void getActiveConfiguration() throws Exception {
+    HadoopConfigurationLocator locator = new HadoopConfigurationLocator();
+    locator.init(VFS.getManager().resolveFile(HADOOP_CONFIGURATIONS_PATH), new MockActiveHadoopConfigurationLocator("a"),
+        new DefaultFileSystemManager());
+
+    HadoopConfiguration a = locator.getActiveConfiguration();
+    assertNotNull(a);
+  }
+  
+  
   @Test(expected = RuntimeException.class)
   public void getActiveConfiguration_not_intialized() throws ConfigurationException {
     HadoopConfigurationLocator locator = new HadoopConfigurationLocator();
@@ -206,5 +262,59 @@ public class HadoopConfigurationLocatorTest {
     ClassLoader cl = locator.createConfigurationLoader(root, getClass().getClassLoader(), null);
     
     assertNotNull(cl.getResource("config.properties"));
+  }
+  
+  @Test
+  public void findHadoopConfigurations_errorLoadingHadoopConfig() throws Exception {
+    FileObject root = VFS.getManager().resolveFile(HADOOP_CONFIGURATIONS_PATH);
+    HadoopConfigurationLocator locator = new HadoopConfigurationLocator() {
+      protected HadoopConfiguration loadHadoopConfiguration(FileObject folder) throws ConfigurationException {
+        throw new ConfigurationException("test");
+      };
+    };
+
+    // In addition to simply failing make sure we are logging succinct messages to WARN and verbose to DEBUG
+    Logger logger = Logger.getLogger(locator.getClass());
+    final List<LoggingEvent> logEvents = new ArrayList<LoggingEvent>();
+    logger.addAppender(new AppenderSkeleton() {
+      
+      @Override
+      public boolean requiresLayout() {
+        return false;
+      }
+      
+      @Override
+      public void close() {
+      }
+      
+      @Override
+      protected void append(LoggingEvent event) {
+        logEvents.add(event);
+      }
+    });
+
+    locator.init(root, new MockActiveHadoopConfigurationLocator(), new DefaultFileSystemManager());
+    assertEquals(0, locator.getConfigurations().size());
+    assertEquals(2, logEvents.size());
+    assertEquals(Level.WARN, logEvents.get(0).getLevel());
+    assertEquals("Unable to load Hadoop Configuration from \"" + root.getURL() + "/a\". For more information enable debug logging.", logEvents.get(0).getMessage());
+    assertNull(logEvents.get(0).getThrowableInformation());
+    assertEquals(Level.DEBUG, logEvents.get(1).getLevel());
+    assertEquals("Unable to load Hadoop Configuration from \"" + root.getURL() + "/a\".", logEvents.get(1).getMessage());
+    assertNotNull(logEvents.get(1).getThrowableInformation());
+  }
+
+  @Test
+  public void parseURLs() throws Exception {
+    HadoopConfigurationLocator locator = new HadoopConfigurationLocator();
+    FileObject root = VFS.getManager().resolveFile(HADOOP_CONFIGURATIONS_PATH);
+    
+    List<URL> urls = locator.parseURLs(root, "a,b");
+    assertEquals(3, urls.size());
+    assertEquals(root.getURL().toURI().resolve("hadoop-configurations/a/"), urls.get(0).toURI());
+    assertEquals(root.getURL().toURI().resolve("hadoop-configurations/a/a-config.jar"), urls.get(1).toURI());
+    // Non-folders (and in this case something that doesn't exist, will not have a / appended. It will be treated like a file reference
+    assertEquals(root.getURL().toURI().resolve("hadoop-configurations/b"), urls.get(2).toURI());
+    
   }
 }

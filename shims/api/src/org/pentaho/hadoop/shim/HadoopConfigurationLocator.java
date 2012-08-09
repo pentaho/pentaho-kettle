@@ -52,8 +52,8 @@ import org.pentaho.hadoop.shim.spi.SnappyShim;
 import org.pentaho.hadoop.shim.spi.SqoopShim;
 
 /**
- * Singleton that knows how to load Hadoop configurations from disk. This class
- * is not thread-safe. This loads Hadoop configurations from a VFS FileSystem.
+ * A file-based Hadoop configuration provider that knows how to load Hadoop 
+ * configurations from a VFS file system. This class is not thread-safe.
  */
 public class HadoopConfigurationLocator implements HadoopConfigurationProvider {
   private static final String JAR_EXTENSION = ".jar";
@@ -301,7 +301,7 @@ public class HadoopConfigurationLocator implements HadoopConfigurationProvider {
    * @return A Hadoop configuration for the folder provided or null if none is found.
    * @throws ConfigurationException Error when loading the Hadoop configuration.
    */
-  private HadoopConfiguration loadHadoopConfiguration(FileObject folder) throws ConfigurationException {
+  protected HadoopConfiguration loadHadoopConfiguration(FileObject folder) throws ConfigurationException {
     Properties configurationProperties = new Properties();
     try {
       FileObject configFile = folder.getChild(CONFIG_PROPERTIES_FILE);
