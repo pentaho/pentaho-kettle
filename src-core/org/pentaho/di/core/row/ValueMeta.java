@@ -2603,13 +2603,14 @@ public class ValueMeta implements ValueMetaInterface
         
         case STORAGE_TYPE_BINARY_STRING:
             {
-            	// Save the storage meta data...
+            	// Load the storage meta data...
             	//
-            	Node storageMetaNode = XMLHandler.getSubNode(node, "storage-meta");
-            	if (storageMetaNode!=null)
-            	{
-            		storageMetadata = new ValueMeta(storageMetaNode);
-            	}
+              Node storageMetaNode = XMLHandler.getSubNode(node, "storage-meta");
+              Node storageValueMetaNode = XMLHandler.getSubNode(storageMetaNode, XML_META_TAG);
+              if (storageValueMetaNode!=null)
+              {
+                storageMetadata = new ValueMeta(storageValueMetaNode);
+              }
             }
             break;
             
