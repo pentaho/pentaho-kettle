@@ -14,4 +14,20 @@
 
   <!-- Import the common_build.xml file which contains all the default tasks -->
   <import file="../../build-res/subfloor.xml"/>
+
+  <!-- Override the test.classpath of Subfloor until CM-354 is fixed. We need to
+  include our overridden classes before the classes in the library jars (HiveDriver) -->
+  <path id="test.classpath">
+      <pathelement path="${testclasses.dir}" />
+      <pathelement path="${classes.dir}" />
+      <fileset dir="${devlib.dir}">
+        <include name="**/*.jar" />
+      </fileset>
+      <fileset dir="${lib.dir}">
+        <include name="**/*.jar" />
+      </fileset>
+      <fileset dir="${testlib.dir}">
+        <include name="**/*.jar" />
+      </fileset>
+    </path>
 </project>

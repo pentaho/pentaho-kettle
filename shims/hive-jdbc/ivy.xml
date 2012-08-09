@@ -13,11 +13,12 @@
 
   <dependencies>
     <dependency conf="test->default" org="junit" name="junit" rev="4.5"/>
-    <dependency conf="test->default" org="org.apache.hadoop.hive" name="hive-jdbc" rev="${dependency.hive-jdbc.revision}"/>
-    <dependency conf="test->default" org="pentaho-kettle" name="kettle-engine" rev="${dependency.kettle.revision}"/>
-    <dependency conf="test->default" org="pentaho-kettle" name="kettle-core" rev="${dependency.kettle.revision}"/>
-    <dependency conf="test->default" org="pentaho-kettle" name="kettle-db" rev="${dependency.kettle.revision}"/>
-    <dependency conf="test->default" org="${ivy.artifact.group}" name="pentaho-hadoop-shims-api" rev="${project.revision}" />
+    <dependency conf="test->default" org="org.apache.hadoop.hive" name="hive-jdbc" rev="${dependency.hive-jdbc.revision}" changing="true" />
+    <dependency conf="test->default" org="pentaho-kettle" name="kettle-engine" rev="${dependency.kettle.revision}" changing="true" />
+    <dependency conf="test->default" org="pentaho-kettle" name="kettle-core" rev="${dependency.kettle.revision}" changing="true" />
+    <dependency conf="test->default" org="pentaho-kettle" name="kettle-db" rev="${dependency.kettle.revision}" changing="true" />
+    <dependency conf="test->default" org="${ivy.artifact.group}" name="pentaho-hadoop-shims-api" rev="${project.revision}" changing="true" />
+    <dependency conf="test->default" org="${ivy.artifact.group}" name="pentaho-hadoop-shims-api-test" rev="${project.revision}" changing="true" />
     
   </dependencies>
 </ivy-module>
