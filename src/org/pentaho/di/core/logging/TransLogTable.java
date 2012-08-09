@@ -140,7 +140,9 @@ public class TransLogTable extends BaseLogTable implements Cloneable, LogTableIn
 			Node fieldNode = XMLHandler.getSubNodeByNr(node, BaseLogTable.XML_TAG, i);
 			String id = XMLHandler.getTagValue(fieldNode, "id") ;
 			LogTableField field = findField(id);
-			if (field==null) field = fields.get(i);
+			if (field==null && i<fields.size()) {
+			  field = fields.get(i);
+			}
 			if (field!=null) {
 				field.setFieldName( XMLHandler.getTagValue(fieldNode, "name") );
 				field.setEnabled( "Y".equalsIgnoreCase(XMLHandler.getTagValue(fieldNode, "enabled")) );
