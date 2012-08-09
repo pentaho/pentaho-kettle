@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,10 +15,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.hadoop.HadoopConfigurationRegistry;
+import org.pentaho.di.core.hadoop.HadoopConfigurationBootstrap;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobMeta;
-import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.hadoop.shim.ConfigurationException;
 import org.pentaho.hadoop.shim.HadoopConfiguration;
 import org.pentaho.hadoop.shim.common.CommonHadoopShim;
@@ -52,8 +52,8 @@ public class JobEntryPigScriptExecutorTest {
   }
 
   @Test
-  public void testRegressionTutorialLocal() throws IOException, KettleException {
-    HadoopConfigurationRegistry.setHadoopConfigurationProvider(new HadoopConfigurationProvider() {
+  public void testRegressionTutorialLocal() throws Exception {
+    HadoopConfigurationProvider provider = new HadoopConfigurationProvider() {
       
       HadoopConfiguration config = new HadoopConfiguration("test", "test", new CommonHadoopShim(), new CommonSqoopShim(), new CommonPigShim(), null);
       
@@ -76,7 +76,11 @@ public class JobEntryPigScriptExecutorTest {
       public HadoopConfiguration getActiveConfiguration() throws ConfigurationException {
         return config;
       }
-    });
+    };
+    
+    Field providerField = HadoopConfigurationBootstrap.class.getDeclaredField("provider");
+    providerField.setAccessible(true);
+    providerField.set(null, provider);
     
     System.setProperty("KETTLE_PLUGIN_CLASSES", "org.pentaho.di.job.entries.pig.JobEntryPigScriptExecutor");
     KettleEnvironment.init();

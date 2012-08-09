@@ -40,92 +40,75 @@ public class MockHadoopShim implements HadoopShim {
 
   @Override
   public ShimVersion getVersion() {
-    // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public void onLoad(HadoopConfiguration config, HadoopConfigurationFileSystemManager fsm) throws Exception {
-    // TODO Auto-generated method stub
-
   }
 
   @Override
   public String[] getNamenodeConnectionInfo(Configuration c) {
-    // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public String[] getJobtrackerConnectionInfo(Configuration c) {
-    // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public String getHadoopVersion() {
-    // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public Configuration createConfiguration() {
-    // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public FileSystem getFileSystem(Configuration conf) throws IOException {
-    // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public Driver getHiveJdbcDriver() {
-    // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public void configureConnectionInformation(String namenodeHost, String namenodePort, String jobtrackerHost,
       String jobtrackerPort, Configuration conf, List<String> logMessages) throws Exception {
-    // TODO Auto-generated method stub
-
   }
 
   @Override
   public DistributedCacheUtil getDistributedCacheUtil() {
-    // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public RunningJob submitJob(Configuration c) throws IOException {
-    // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public Class<?> getHadoopWritableCompatibleClass(ValueMetaInterface kettleType) {
-    // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public Class<?> getPentahoMapReduceCombinerClass() {
-    // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public Class<?> getPentahoMapReduceReducerClass() {
-    // TODO Auto-generated method stub
     return null;
   }
 
   @Override
   public Class<?> getPentahoMapReduceMapRunnerClass() {
-    // TODO Auto-generated method stub
     return null;
   }
 

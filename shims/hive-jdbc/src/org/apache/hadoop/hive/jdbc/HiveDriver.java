@@ -33,7 +33,7 @@ import java.util.Properties;
 /**
  * <p>
  * This is proxy driver for the Hive JDBC Driver available through the current
- * active Hadoop configuration as defined by org.pentaho.di.core.hadoop.HadoopConfigurationRegistry.
+ * active Hadoop configuration.
  * </p>
  * <p>
  * This driver is named exactly the same as the official Apache Hive driver
@@ -42,7 +42,7 @@ import java.util.Properties;
  * </p>
  * <p>
  * This class uses reflection to attempt to find the Big Data Plugin and load
- * the HadoopConfigurationRegistry so we have access to the Hive JDBC driver
+ * the HadoopConfigurationBootstrap so we have access to the Hive JDBC driver
  * that is compatible with the currently selected Hadoop configuration. All
  * operations are delegated to the current active Hadoop configuration's Hive
  * JDBC driver via HadoopConfiguration#getHiveJdbcDriver.
@@ -54,8 +54,15 @@ import java.util.Properties;
  * </p>
  */
 public class HiveDriver implements java.sql.Driver {
-  // public Driver HadoopShim#getHiveJdbcDriver()
-  private static Method getHiveJdbcDriver;
+  /**
+   * Method name of {@link org.pentaho.hadoop.shim.spi.HadoopShim#getHiveJdbcDriver()}
+   */
+  private static final String METHOD_GET_HIVE_JDBC_DRIVER = "getHiveJdbcDriver";
+
+  /**
+   * Utility for resolving Hadoop configurations dynamically.
+   */
+  private HadoopConfigurationUtil util;
 
   // Register ourself with the JDBC Driver Manager
   static {
@@ -66,13 +73,26 @@ public class HiveDriver implements java.sql.Driver {
     }
   }
 
+  /**
+   * Create a new Hive driver with the default configuration utility.
+   */
+  public HiveDriver() {
+    this(new HadoopConfigurationUtil());
+  }
+
+  public HiveDriver(HadoopConfigurationUtil util) {
+    if (util == null) {
+      throw new NullPointerException();
+    }
+    this.util = util;
+  }
+
   protected Driver getActiveDriver() throws SQLException {
     Driver driver = null;
     try {
-      Object shim = HadoopConfigurationUtil.getActiveHadoopShim();
-      if (getHiveJdbcDriver == null) {
-        getHiveJdbcDriver = shim.getClass().getMethod("getHiveJdbcDriver");
-      }
+      Object shim = util.getActiveHadoopShim();
+      // public Driver HadoopShim#getHiveJdbcDriver()
+      Method getHiveJdbcDriver = shim.getClass().getMethod(METHOD_GET_HIVE_JDBC_DRIVER);
       driver = (Driver) getHiveJdbcDriver.invoke(shim);
     } catch (Exception ex) {
       throw new SQLException("Unable to load Hive JDBC driver for the currently active Hadoop configuration", ex);

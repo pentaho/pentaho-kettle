@@ -31,7 +31,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.plugins.JobEntryPluginType;
 import org.pentaho.di.core.plugins.KettleLifecyclePluginType;
 import org.pentaho.di.core.plugins.Plugin;
 import org.pentaho.di.core.plugins.PluginInterface;
@@ -55,7 +54,8 @@ public class HadoopConfigurationUtilTest {
 
   @Test
   public void getBigDataPluginClassLoader() throws Exception {
-    ClassLoader cl = HadoopConfigurationUtil.findBigDataPluginClassLoader();
+    HadoopConfigurationUtil util = new HadoopConfigurationUtil();
+    ClassLoader cl = util.findBigDataPluginClassLoader();
     assertNotNull(cl);
   }
 

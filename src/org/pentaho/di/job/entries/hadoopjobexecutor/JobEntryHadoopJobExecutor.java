@@ -38,7 +38,7 @@ import org.pentaho.di.core.annotations.JobEntry;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.hadoop.HadoopConfigurationRegistry;
+import org.pentaho.di.core.hadoop.HadoopConfigurationBootstrap;
 import org.pentaho.di.core.logging.Log4jFileAppender;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -314,7 +314,7 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
       if (log.isDetailed())
         logDetailed(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.ResolvedJar", resolvedJarUrl.toExternalForm()));
 
-      HadoopShim shim = HadoopConfigurationRegistry.getInstance().getActiveConfiguration().getHadoopShim();
+      HadoopShim shim = HadoopConfigurationBootstrap.getHadoopConfigurationProvider().getActiveConfiguration().getHadoopShim();
       
       if (isSimple) {
   /*      final AtomicInteger taskCount = new AtomicInteger(0);

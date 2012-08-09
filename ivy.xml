@@ -42,16 +42,16 @@
       
     <dependency org="pentaho" name="pentaho-hadoop-shims-api" rev="${project.revision}" transitive="false" conf="pmr->default;default->default"/>
     
-    <dependency conf="shim->default" org="pentaho" name="pentaho-hadoop-shims-hadoop-20-package" rev="${project.revision}">
+    <dependency conf="shim->default" org="pentaho" name="pentaho-hadoop-shims-hadoop-20-package" rev="${project.revision}" changing="true">
       <artifact name="pentaho-hadoop-shims-hadoop-20-package" type="zip"/>
     </dependency>
-    <dependency conf="shim->default" org="pentaho" name="pentaho-hadoop-shims-cdh3-package" rev="${project.revision}">
+    <dependency conf="shim->default" org="pentaho" name="pentaho-hadoop-shims-cdh3-package" rev="${project.revision}" changing="true">
       <artifact name="pentaho-hadoop-shims-cdh3-package" type="zip"/>
     </dependency>
-    <dependency conf="shim->default" org="pentaho" name="pentaho-hadoop-shims-cdh4-package" rev="${project.revision}">
+    <dependency conf="shim->default" org="pentaho" name="pentaho-hadoop-shims-cdh4-package" rev="${project.revision}" changing="true">
       <artifact name="pentaho-hadoop-shims-cdh4-package" type="zip"/>
     </dependency>
-    <dependency conf="shim->default" org="pentaho" name="pentaho-hadoop-shims-mapr-package" rev="${project.revision}">
+    <dependency conf="shim->default" org="pentaho" name="pentaho-hadoop-shims-mapr-package" rev="${project.revision}" changing="true">
       <artifact name="pentaho-hadoop-shims-mapr-package" type="zip"/>
     </dependency>
     
@@ -112,7 +112,8 @@
     <dependency org="commons-httpclient" name="commons-httpclient" rev="3.0.1" conf="test->default"/>
     <dependency org="org.safehaus.jug" name="jug-lgpl" rev="2.0.0" transitive="false" conf="test->default"/>
     <dependency org="com.h2database" name="h2" rev="1.3.166" conf="test->default" />
-    <dependency org="pentaho" name="pentaho-hadoop-shims-hadoop-20" rev="${project.revision}" conf="test->default"/>
+    <dependency org="pentaho" name="pentaho-hadoop-shims-api-test" rev="${project.revision}" conf="test->default" changing="true" />
+    <dependency org="pentaho" name="pentaho-hadoop-shims-hadoop-20" rev="${project.revision}" conf="test->default" changing="true" />
 
     <!--                                                                                              -->
     <!--                                                                                              -->

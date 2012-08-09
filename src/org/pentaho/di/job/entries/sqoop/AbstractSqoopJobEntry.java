@@ -34,7 +34,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.hadoop.HadoopConfigurationRegistry;
+import org.pentaho.di.core.hadoop.HadoopConfigurationBootstrap;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.AbstractJobEntry;
@@ -91,7 +91,7 @@ public abstract class AbstractSqoopJobEntry<S extends SqoopConfig> extends Abstr
   protected final S createJobConfig() {
     S config = buildSqoopConfig();
     try {
-      HadoopShim shim = HadoopConfigurationRegistry.getInstance().getActiveConfiguration().getHadoopShim();
+      HadoopShim shim = HadoopConfigurationBootstrap.getHadoopConfigurationProvider().getActiveConfiguration().getHadoopShim();
       Configuration hadoopConfig = shim.createConfiguration();
       SqoopUtils.configureConnectionInformation(config, shim, hadoopConfig);
     } catch (Exception ex) {
@@ -195,7 +195,7 @@ public abstract class AbstractSqoopJobEntry<S extends SqoopConfig> extends Abstr
   @Override
   protected Runnable getExecutionRunnable(final Result jobResult) throws KettleException {
     try {
-      HadoopConfiguration activeConfig = HadoopConfigurationRegistry.getInstance().getActiveConfiguration();
+      HadoopConfiguration activeConfig = HadoopConfigurationBootstrap.getHadoopConfigurationProvider().getActiveConfiguration();
       final HadoopShim hadoopShim = activeConfig.getHadoopShim();
       final SqoopShim sqoopShim = activeConfig.getSqoopShim();
       

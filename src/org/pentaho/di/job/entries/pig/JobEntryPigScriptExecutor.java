@@ -41,7 +41,7 @@ import org.pentaho.di.core.annotations.JobEntry;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
-import org.pentaho.di.core.hadoop.HadoopConfigurationRegistry;
+import org.pentaho.di.core.hadoop.HadoopConfigurationBootstrap;
 import org.pentaho.di.core.logging.Log4jFileAppender;
 import org.pentaho.di.core.logging.Log4jKettleLayout;
 import org.pentaho.di.core.logging.LogWriter;
@@ -445,7 +445,7 @@ public class JobEntryPigScriptExecutor extends JobEntryBase implements Cloneable
         scriptU = new URL(scriptFileS);
       }
 
-      HadoopConfiguration active = HadoopConfigurationRegistry.getInstance().getActiveConfiguration();
+      HadoopConfiguration active = HadoopConfigurationBootstrap.getHadoopConfigurationProvider().getActiveConfiguration();
       HadoopShim hadoopShim = active.getHadoopShim();
       final PigShim pigShim = active.getPigShim();
       // Make sure we can execute locally if desired
