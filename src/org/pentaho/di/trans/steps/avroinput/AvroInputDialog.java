@@ -208,7 +208,6 @@ public class AvroInputDialog extends BaseStepDialog implements
         "AvroInputDialog.FileSource.Label"));
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
-    // fd.top = new FormAttachment(m_avroFilenameText, margin);
     fd.top = new FormAttachment(0, margin);
     fd.right = new FormAttachment(middle, -margin);
     fileSourceL.setLayoutData(fd);
@@ -236,7 +235,6 @@ public class AvroInputDialog extends BaseStepDialog implements
         "AvroInputDialog.FieldSource.Label"));
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
-    // fd.top = new FormAttachment(m_avroFilenameText, margin);
     fd.top = new FormAttachment(m_sourceInFileBut, margin);
     fd.right = new FormAttachment(middle, -margin);
     fieldSourceL.setLayoutData(fd);
@@ -264,7 +262,6 @@ public class AvroInputDialog extends BaseStepDialog implements
         "AvroInputDialog.SchemaFilename.Label"));
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
-    // fd.top = new FormAttachment(m_avroFilenameText, margin);
     fd.top = new FormAttachment(m_sourceInFieldBut, margin);
     fd.right = new FormAttachment(middle, -margin);
     schemaL.setLayoutData(fd);
@@ -502,9 +499,7 @@ public class AvroInputDialog extends BaseStepDialog implements
         "AvroInputDialog.Button.GetFields"));
     props.setLook(m_getFields);
     fd = new FormData();
-    // fd.top = new FormAttachment(m_fieldsView, margin);
     fd.right = new FormAttachment(100, 0);
-    // fd.bottom = new FormAttachment(wOK, -margin * 2);
     fd.bottom = new FormAttachment(100, 0);
     m_getFields.setLayoutData(fd);
     m_getFields.addSelectionListener(new SelectionAdapter() {
@@ -519,9 +514,7 @@ public class AvroInputDialog extends BaseStepDialog implements
     wPreview.setText(BaseMessages.getString(PKG, "System.Button.Preview"));
     props.setLook(wPreview);
     fd = new FormData();
-    // fd.top = new FormAttachment(m_fieldsView, margin);
     fd.right = new FormAttachment(m_getFields, margin);
-    // fd.bottom = new FormAttachment(wOK, -margin * 2);
     fd.bottom = new FormAttachment(100, 0);
     wPreview.setLayoutData(fd);
     wPreview.addSelectionListener(new SelectionAdapter() {
@@ -599,8 +592,6 @@ public class AvroInputDialog extends BaseStepDialog implements
     fd = new FormData();
     fd.right = new FormAttachment(100, 0);
     fd.bottom = new FormAttachment(100, -margin * 2);
-    // fd.top = new FormAttachment(0, 0);
-    // fd.left = new FormAttachment(0, margin);
     m_getLookupFieldsBut.setLayoutData(fd);
 
     m_getLookupFieldsBut.addSelectionListener(new SelectionAdapter() {
