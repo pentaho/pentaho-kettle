@@ -424,7 +424,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       log.snap(Metrics.METRIC_TRANSFORMATION_EXECUTION_START);
       log.snap(Metrics.METRIC_TRANSFORMATION_INIT_START);
       
-      transListeners.clear();
         
   		//
   		// Set the arguments on the transformation...
@@ -864,6 +863,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     //
     nrOfFinishedSteps = 0;
     nrOfActiveSteps = 0;
+    	fireTransStartedListeners();
 
     for (int i = 0; i < steps.size(); i++) {
       final StepMetaDataCombi sid = steps.get(i);
@@ -1104,6 +1104,18 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		{
 			transListener.transFinished(this);
 		}
+	}
+    
+    /**
+     *  Fire the listeners (if any are registered)
+   *  
+     */
+    protected void fireTransStartedListeners() throws KettleException {
+      
+    for (TransListener transListener : transListeners)
+    {
+      transListener.transStarted(this);
+    }
 
 	}
     

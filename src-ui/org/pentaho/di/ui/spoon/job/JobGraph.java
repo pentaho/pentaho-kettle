@@ -112,7 +112,7 @@ import org.pentaho.di.job.JobEntryListener;
 import org.pentaho.di.job.JobEntryResult;
 import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobHopMeta;
-import org.pentaho.di.job.JobListener;
+import org.pentaho.di.job.JobAdapter;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.JobPainter;
 import org.pentaho.di.job.entries.job.JobEntryJob;
@@ -3261,7 +3261,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
             jobGridDelegate.jobTracker = job.getJobTracker();
 
             // Attach a listener to notify us that the transformation has finished.
-            job.addJobListener(new JobListener() {
+            job.addJobListener(new JobAdapter() {
               public void jobFinished(Job job) {
                 JobGraph.this.jobFinished();
               }

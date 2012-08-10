@@ -224,7 +224,7 @@ public class JobExecutor extends BaseStep implements StepInterface
       result.setNrErrors(1);
     } finally {
       try {
-        data.executorJob.fireJobListeners();
+        data.executorJob.fireJobFinishListeners();
       } catch(KettleException e) {
           result.setNrErrors(1);
           result.setResult(false);

@@ -34,13 +34,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.job.JobConfiguration;
 import org.pentaho.di.job.JobExecutionConfiguration;
-import org.pentaho.di.job.JobListener;
+import org.pentaho.di.job.JobAdapter;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.repository.Repository;
 
@@ -145,7 +146,7 @@ public class AddJobServlet extends BaseHttpServlet implements CartePluginInterfa
       // Make sure to disconnect from the repository when the job finishes.
       // 
       if (repository != null) {
-        job.addJobListener(new JobListener() {
+        job.addJobListener(new JobAdapter() {
           public void jobFinished(Job job) {
             repository.disconnect();
           }
