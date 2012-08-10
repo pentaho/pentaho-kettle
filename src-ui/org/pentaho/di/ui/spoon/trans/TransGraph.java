@@ -876,26 +876,27 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 					break;
 
 				}
-			} else {
-			  // A hop? --> enable/disable
-			  //
-			  TransHopMeta hop = findHop(real.x, real.y);
-			  if (hop!=null) {
-		        TransHopMeta before = (TransHopMeta) hop.clone();
-		        hop.setEnabled(!hop.isEnabled());
-		        TransHopMeta after = (TransHopMeta) hop.clone();
-		        spoon.addUndoChange(transMeta, new TransHopMeta[] { before }, new TransHopMeta[] { after }, new int[] { transMeta.indexOfTransHop(hop) });
-			    redraw();
-			  } else {
-				// No area-owner & no hop means : background click:
-				//
-				startHopStep = null;
-				if (!control) {
-					selectionRegion = new org.pentaho.di.core.gui.Rectangle(real.x, real.y, 0, 0);
-				}
-				redraw();
-			  }
-			}
+      } else {
+        // A hop? --> enable/disable
+        //
+        TransHopMeta hop = findHop(real.x, real.y);
+        if (hop != null) {
+          TransHopMeta before = (TransHopMeta) hop.clone();
+          hop.setEnabled(!hop.isEnabled());
+          TransHopMeta after = (TransHopMeta) hop.clone();
+          spoon.addUndoChange(transMeta, new TransHopMeta[] { before }, new TransHopMeta[] { after }, new int[] { transMeta.indexOfTransHop(hop) });
+          redraw();
+          spoon.setShellText();
+        } else {
+          // No area-owner & no hop means : background click:
+          //
+          startHopStep = null;
+          if (!control) {
+            selectionRegion = new org.pentaho.di.core.gui.Rectangle(real.x, real.y, 0, 0);
+          }
+          redraw();
+        }
+      }
 		}
 	}
 
