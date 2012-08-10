@@ -908,8 +908,8 @@ public class ValueDataUtil
         {
           if (dataA!=null && dataB!=null)
           {
-            Date startDate = metaB.getDate(dataB);
-            Date endDate = metaA.getDate(dataA);
+              Date startDate = metaA.getDate(dataA);
+              Date endDate = metaB.getDate(dataB);
 
   			Calendar stDateCal = Calendar.getInstance();
   			Calendar endDateCal = Calendar.getInstance();
@@ -933,8 +933,8 @@ public class ValueDataUtil
         {
         	 if (dataA!=null && dataB!=null)
              {
-        		Date fromDate = metaB.getDate(dataB);
-             	Date toDate=metaA.getDate(dataA);
+        		Date fromDate = metaA.getDate(dataA) ;
+             	Date toDate=metaB.getDate(dataB);
              	boolean singminus=false;
              	
  				if (fromDate.after(toDate)) {
