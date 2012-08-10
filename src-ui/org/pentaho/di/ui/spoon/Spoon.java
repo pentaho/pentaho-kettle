@@ -8222,4 +8222,13 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
           splash.show();
        }
     }
+
+    /**
+     * Hides or shows the main toolbar
+     * @param visible
+     */
+    public void setMainToolbarVisible( boolean visible ) {
+    	mainToolbar.setVisible(visible);
+    }
+    
 }
