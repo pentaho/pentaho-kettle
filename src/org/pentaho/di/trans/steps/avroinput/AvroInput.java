@@ -40,56 +40,60 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 
 /**
- * Class providing an input step for reading data from an Avro serialized file. 
- * Handles both container files (where the schema is serialized into the file) and 
- * schemaless files. In the case of the later, the user must supply a schema in order 
- * to read objects from the file. In the case of the former, a schema can be optionally 
- * supplied.
+ * Class providing an input step for reading data from an Avro serialized file.
+ * Handles both container files (where the schema is serialized into the file)
+ * and schemaless files. In the case of the later, the user must supply a schema
+ * in order to read objects from the file. In the case of the former, a schema
+ * can be optionally supplied.
  * 
- * Currently supports Avro records, arrays, maps and primitive types. Paths use the "dot" 
- * notation and "$" indicates the root of the object. Arrays and maps are accessed via "[]" 
- * and differ only in that array elements are accessed via zero-based integer indexes and 
- * map values are accessed by string keys.
+ * Currently supports Avro records, arrays, maps and primitive types. Paths use
+ * the "dot" notation and "$" indicates the root of the object. Arrays and maps
+ * are accessed via "[]" and differ only in that array elements are accessed via
+ * zero-based integer indexes and map values are accessed by string keys.
  * 
  * @author Mark Hall (mhall{[at]}pentaho{[dot]}com)
  * @version $Revision$
  */
 public class AvroInput extends BaseStep implements StepInterface {
-  
+
   protected AvroInputMeta m_meta;
-  protected AvroInputData m_data;  
-  
-  public AvroInput(StepMeta stepMeta, StepDataInterface stepDataInterface, 
+  protected AvroInputData m_data;
+
+  public AvroInput(StepMeta stepMeta, StepDataInterface stepDataInterface,
       int copyNr, TransMeta transMeta, Trans trans) {
-    
-    super(stepMeta, stepDataInterface, copyNr, transMeta, trans);    
+
+    super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
   }
-  
-  /* (non-Javadoc)
-   * @see org.pentaho.di.trans.step.BaseStep#processRow(org.pentaho.di.trans.step.StepMetaInterface, org.pentaho.di.trans.step.StepDataInterface)
+
+  /*
+   * (non-Javadoc)
+   * 
+   * @see
+   * org.pentaho.di.trans.step.BaseStep#processRow(org.pentaho.di.trans.step
+   * .StepMetaInterface, org.pentaho.di.trans.step.StepDataInterface)
    */
-  public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) 
-    throws KettleException {
-    
+  @Override
+  public boolean processRow(StepMetaInterface smi, StepDataInterface sdi)
+      throws KettleException {
+
     Object[] currentInputRow = getRow();
-    
-    
+
     if (first) {
       first = false;
-      
-      m_data = (AvroInputData)sdi;
-      m_meta = (AvroInputMeta)smi;
-      
+
+      m_data = (AvroInputData) sdi;
+      m_meta = (AvroInputMeta) smi;
+
       if (Const.isEmpty(m_meta.getFilename()) && !m_meta.getAvroInField()) {
-        throw new KettleException(BaseMessages.
-            getString(AvroInputMeta.PKG, "AvroInput.Error.NoAvroFileSpecified"));
-      }                  
+        throw new KettleException(BaseMessages.getString(AvroInputMeta.PKG,
+            "AvroInput.Error.NoAvroFileSpecified"));
+      }
 
       String readerSchema = m_meta.getSchemaFilename();
       readerSchema = environmentSubstitute(readerSchema);
       String avroFieldName = m_meta.getAvroFieldName();
       avroFieldName = environmentSubstitute(avroFieldName);
-      
+
       // setup the output row meta
       RowMetaInterface outRowMeta = null;
       outRowMeta = getInputRowMeta();
@@ -101,53 +105,54 @@ public class AvroInput extends BaseStep implements StepInterface {
 
       int newFieldOffset = outRowMeta.size();
       m_data.setOutputRowMeta(outRowMeta);
-      m_meta.getFields(m_data.getOutputRowMeta(), getStepname(), null, null, this);
-      
+      m_meta.getFields(m_data.getOutputRowMeta(), getStepname(), null, null,
+          this);
+
       // initialize substitution fields
-      if (m_meta.getLookupFields() != null && m_meta.getLookupFields().size() > 0) {
+      if (m_meta.getLookupFields() != null
+          && m_meta.getLookupFields().size() > 0) {
         for (AvroInputMeta.LookupField f : m_meta.getLookupFields()) {
           f.init(getInputRowMeta(), this);
         }
       }
-      
+
       if (m_meta.getAvroInField()) {
-        if (m_meta.getLookupFields() != null && m_meta.getLookupFields().size() > 0) {
-//          System.out.println("---------- about to initialize from field decoding....");
-        }
         // initialize for reading from a field
-        m_data.initializeFromFieldDecoding(avroFieldName, readerSchema, 
-            m_meta.getAvroFields(), m_meta.getAvroIsJsonEncoded(), newFieldOffset);
-        if (m_meta.getLookupFields() != null && m_meta.getLookupFields().size() > 0) {
-//          System.out.println("Initialization done...");
-        }
+        m_data.initializeFromFieldDecoding(avroFieldName, readerSchema,
+            m_meta.getAvroFields(), m_meta.getAvroIsJsonEncoded(),
+            newFieldOffset);
       } else {
         // initialize for reading from a file
-        FileObject fileObject = KettleVFS.getFileObject(m_meta.getFilename(), getTransMeta());      
-        m_data.establishFileType(fileObject, readerSchema, m_meta.getAvroFields(), 
-            m_meta.getAvroIsJsonEncoded(), newFieldOffset);
+        FileObject fileObject = KettleVFS.getFileObject(m_meta.getFilename(),
+            getTransMeta());
+        m_data.establishFileType(fileObject, readerSchema,
+            m_meta.getAvroFields(), m_meta.getAvroIsJsonEncoded(),
+            newFieldOffset);
       }
-    }    
-    
+    }
+
     if (!m_meta.getAvroInField()) {
       currentInputRow = null;
     } else {
       if (currentInputRow != null) {
         // set variables lookup values
-        if (m_meta.getLookupFields() != null && m_meta.getLookupFields().size() > 0) {
+        if (m_meta.getLookupFields() != null
+            && m_meta.getLookupFields().size() > 0) {
           for (AvroInputMeta.LookupField f : m_meta.getLookupFields()) {
             f.setVariable(this, currentInputRow);
           }
         }
       }
     }
-        
-    Object [][] outputRow = null;
+
+    Object[][] outputRow = null;
     try {
       outputRow = m_data.avroObjectToKettle(currentInputRow, this);
     } catch (Exception ex) {
       if (getStepMeta().isDoingErrorHandling()) {
-        String errorDescriptions = "An error occurred while decoding an avro object: " 
-          + ex.getMessage();
+        String errorDescriptions = BaseMessages.getString(AvroInputMeta.PKG,
+            "AvroInput.Error.ProblemDecodingAvroObject", ex.getMessage());
+
         String errorFields = "";
         RowMetaInterface rowMeta = null;
         Object[] currentRow = new Object[0];
@@ -159,35 +164,35 @@ public class AvroInput extends BaseStep implements StepInterface {
           errorFields = "Data read from file";
           rowMeta = m_data.getOutputRowMeta();
         }
-        putError(rowMeta, currentRow, 1, errorDescriptions, errorFields, "AvroInput001");
-        
+        putError(rowMeta, currentRow, 1, errorDescriptions, errorFields,
+            "AvroInput001");
+
         if (checkFeedback(getProcessed())) {
-          logBasic(BaseMessages.getString(AvroInputMeta.PKG, "AvroInput.Message.CheckFeedback", 
-              getProcessed()));
-//          logBasic("Read " + getProcessed() + " rows from Avro file");
+          logBasic(BaseMessages.getString(AvroInputMeta.PKG,
+              "AvroInput.Message.CheckFeedback", getProcessed()));
         }
-        
+
         return true;
       } else {
         throw new KettleException(ex.getMessage(), ex);
       }
     }
     if (outputRow != null) {
-      // there may be more than one row if the paths contain an array/map expansion
+      // there may be more than one row if the paths contain an array/map
+      // expansion
       for (int i = 0; i < outputRow.length; i++) {
         putRow(m_data.getOutputRowMeta(), outputRow[i]);
 
-
         if (log.isRowLevel()) {
-          log.logRowlevel(toString(), "Outputted row #" + getProcessed() 
+          log.logRowlevel(toString(), "Outputted row #" + getProcessed()
               + " : " + outputRow);
         }
       }
     } else {
       if (!m_meta.getAvroInField()) {
         try {
-          logBasic(BaseMessages.getString(AvroInputMeta.PKG, 
-          "AvroInput.Message.ClosingFile"));
+          logBasic(BaseMessages.getString(AvroInputMeta.PKG,
+              "AvroInput.Message.ClosingFile"));
           m_data.close();
         } catch (IOException ex) {
           throw new KettleException(ex.getMessage(), ex);
@@ -195,31 +200,33 @@ public class AvroInput extends BaseStep implements StepInterface {
       }
       setOutputDone();
       return false;
-    }    
-    
-    if (checkFeedback(getProcessed())) {
-      logBasic(BaseMessages.getString(AvroInputMeta.PKG, "AvroInput.Message.CheckFeedback", 
-          getProcessed()));
-//      logBasic("Read " + getProcessed() + " rows from Avro file");
     }
-    
+
+    if (checkFeedback(getProcessed())) {
+      logBasic(BaseMessages.getString(AvroInputMeta.PKG,
+          "AvroInput.Message.CheckFeedback", getProcessed()));
+    }
+
     return true;
-  }  
-  
-  /* (non-Javadoc)
+  }
+
+  /*
+   * (non-Javadoc)
+   * 
    * @see org.pentaho.di.trans.step.BaseStep#setStopped(boolean)
    */
+  @Override
   public void setStopped(boolean stopped) {
     if (isStopped() && stopped == true) {
       return;
     }
-    
+
     super.setStopped(stopped);
-    
+
     if (stopped && !m_meta.getAvroInField()) {
       try {
-        logBasic(BaseMessages.getString(AvroInputMeta.PKG, 
-          "AvroInput.Message.ClosingFile"));
+        logBasic(BaseMessages.getString(AvroInputMeta.PKG,
+            "AvroInput.Message.ClosingFile"));
         m_data.close();
       } catch (IOException ex) {
         ex.printStackTrace();
