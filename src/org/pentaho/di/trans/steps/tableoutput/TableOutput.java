@@ -149,7 +149,7 @@ public class TableOutput extends BaseStep implements StepInterface
 		return true;
 	}
 
-	private Object[] writeToTable(RowMetaInterface rowMeta, Object[] r) throws KettleException
+	protected Object[] writeToTable(RowMetaInterface rowMeta, Object[] r) throws KettleException
 	{
         
 		if (r==null) // Stop: last line or error encountered 
@@ -719,4 +719,20 @@ public class TableOutput extends BaseStep implements StepInterface
         }        
 	}
 
+	/**
+	 * Allows subclasses of TableOuput to get hold of the step meta
+	 * @return
+	 */
+	protected TableOutputMeta getMeta() {
+		return meta;
+	}
+
+	/**
+	 * Allows subclasses of TableOutput to get hold of the data object
+	 * @return
+	 */
+	protected TableOutputData getData() {
+		return data;
+	}
+	
 }
