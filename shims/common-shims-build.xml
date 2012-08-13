@@ -17,6 +17,7 @@
   <property name="testsrc.common.dir" value="${common.dir}/test-src" description="Common test sources" />
   <property name="package.common.resdir" value="${common.dir}/package-res" description="Common package resources" />
   <property name="mapred.artifact.name" value="${ivy.artifact.id}-mapred-${project.revision}.jar" description="Name of the mapred jar file to create"/>
+  <property name="hbase-comparators.artifact.name" value="${ivy.artifact.id}-hbase-comparators-${project.revision}.jar" description="Name of the mapred jar file to create"/>
 
   <!-- Setup the compile classpath to include the provided jars and the api jar -->
   <path id="classpath">
@@ -258,13 +259,19 @@
   </target>
 
   <!-- override jar.main so we can jar up our mapred stuff too -->
-  <target name="jar" depends="subfloor-pkg.jar,jar-mapred"/>
+  <target name="jar" depends="subfloor-pkg.jar,jar-mapred,jar-hbase-comparators"/>
 
   <!-- Jar the mapreduce libraries separately to reduce the payload when submitting
   MapReduce jobs to hadoop -->
   <target name="jar-mapred" depends="compile-mapred,generate.manifest">
     <jar destfile="${dist.dir}/${mapred.artifact.name}" manifest="${dist.manifest.file}">
       <fileset dir="${classes.common-mapred.dir}" />
+    </jar>
+  </target>
+
+  <target name="jar-hbase-comparators" depends="compile.compile">
+    <jar destfile="${dist.dir}/${hbase-comparators.artifact.name}" manifest="${dist.manifest.file}">
+      <fileset dir="${classes.dir}" includes="**/*Comparator*"/>
     </jar>
   </target>
 
