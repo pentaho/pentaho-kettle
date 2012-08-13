@@ -28,11 +28,8 @@ import java.io.IOException;
 
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
-import org.pentaho.di.core.lifecycle.LifecycleException;
-import org.pentaho.di.core.lifecycle.LifecycleSupport;
+import org.pentaho.di.core.lifecycle.KettleLifecycleSupport;
 import org.pentaho.di.core.logging.CentralLogStore;
-import org.pentaho.di.core.logging.LogChannel;
-import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.plugins.DatabasePluginType;
 import org.pentaho.di.core.plugins.ImportRulePluginType;
@@ -110,7 +107,7 @@ public class KettleEnvironment {
 	 * @throws KettleException when a lifecycle listener throws an exception
 	 */
 	private static void initLifecycleListeners() throws KettleException {
-	  final LifecycleSupport s = new LifecycleSupport();
+	  final KettleLifecycleSupport s = new KettleLifecycleSupport();
     s.onEnvironmentInit();
 
 	   // Register a shutdown hook to invoke the listener's onExit() methods 
