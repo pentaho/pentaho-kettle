@@ -152,7 +152,7 @@ public class HBaseRowDecoder extends BaseStep implements StepInterface {
         throw new KettleException(BaseMessages.getString(PKG,
             "HBaseRowDecoder.Error.UnableToFindHBaseKey", inKey));
       }
-      if (!(inputRow[m_keyInIndex] instanceof org.apache.hadoop.hbase.io.ImmutableBytesWritable)) {
+      if (!m_hbAdmin.isImmutableBytesWritable(inputRow[m_keyInIndex])) {
         throw new KettleException(BaseMessages.getString(PKG,
             "HBaseRowDecoder.Error.NotImmutableBytesWritable",
             m_meta.getIncomingKeyField()));

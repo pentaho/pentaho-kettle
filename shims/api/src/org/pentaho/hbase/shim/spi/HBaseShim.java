@@ -452,6 +452,13 @@ public abstract class HBaseShim implements PentahoHadoopShim {
   public abstract void closeTargetTable() throws Exception;
 
   /**
+   * Determines if the object is an {@link org.apache.hadoop.hbase.io.ImmutableBytesWritable}.
+   *
+   * @return {@code true} if {@code o} is an {@link org.apache.hadoop.hbase.io.ImmutableBytesWritable}.
+  */
+  public abstract boolean isImmutableBytesWritable(Object o);
+
+  /**
    * Static factory method for getting an HBaseAdmin implementation
    * 
    * @return a concrete implementation of the HBaseAdmin API

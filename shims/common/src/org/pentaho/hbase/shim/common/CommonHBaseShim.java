@@ -49,6 +49,7 @@ import org.apache.hadoop.hbase.filter.RegexStringComparator;
 import org.apache.hadoop.hbase.filter.SingleColumnValueFilter;
 import org.apache.hadoop.hbase.filter.SubstringComparator;
 import org.apache.hadoop.hbase.filter.WritableByteArrayComparable;
+import org.apache.hadoop.hbase.io.ImmutableBytesWritable;
 import org.apache.hadoop.hbase.io.hfile.Compression;
 import org.apache.hadoop.hbase.regionserver.StoreFile.BloomType;
 import org.pentaho.di.core.variables.VariableSpace;
@@ -801,5 +802,10 @@ public class CommonHBaseShim extends HBaseShim {
       m_sourceTable.close();
       m_sourceTable = null;
     }
+  }
+
+  @Override
+  public boolean isImmutableBytesWritable(Object o) {
+    return o instanceof ImmutableBytesWritable;
   }
 }
