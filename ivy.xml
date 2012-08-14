@@ -245,6 +245,7 @@
     <exclude org="commons-logging" module="commons-logging" conf="pmr"/>
     <exclude org="commons-net" module="commons-net" conf="pmr"/>
     <exclude org="log4j" module="log4j" conf="pmr"/>
+    <exclude org="org.eclipse.jdt" module="core" />
 
     <!--                                       END SECTION                                            -->
     <!--                                                                                              -->
