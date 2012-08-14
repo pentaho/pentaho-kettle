@@ -93,7 +93,7 @@ public class DistributedCacheUtilTest {
     FileObject test = KettleVFS.getFileObject("bin/test/deleteDirectoryTest");
     test.createFolder();
 
-    DistributedCacheUtil ch = new DistributedCacheUtil();
+    DistributedCacheUtilImpl ch = new DistributedCacheUtilImpl();
     ch.deleteDirectory(test);
     try {
       assertFalse(test.exists());
@@ -108,7 +108,7 @@ public class DistributedCacheUtilTest {
 
   @Test
   public void extract_invalid_archive() throws Exception {
-    DistributedCacheUtil ch = new DistributedCacheUtil();
+    DistributedCacheUtilImpl ch = new DistributedCacheUtilImpl();
 
     try {
       ch.extract(KettleVFS.getFileObject("bogus"), null);
@@ -120,7 +120,7 @@ public class DistributedCacheUtilTest {
 
   @Test
   public void extract_destination_exists() throws Exception {
-    DistributedCacheUtil ch = new DistributedCacheUtil();
+    DistributedCacheUtilImpl ch = new DistributedCacheUtilImpl();
 
     FileObject archive = KettleVFS.getFileObject(getClass().getResource("/pentaho-mapreduce-sample.jar").toURI().getPath());
 
@@ -133,7 +133,7 @@ public class DistributedCacheUtilTest {
 
   @Test
   public void extractToTemp() throws Exception {
-    DistributedCacheUtil ch = new DistributedCacheUtil();
+    DistributedCacheUtilImpl ch = new DistributedCacheUtilImpl();
 
     FileObject archive = KettleVFS.getFileObject(getClass().getResource("/pentaho-mapreduce-sample.jar").toURI().getPath());
     FileObject extracted = ch.extractToTemp(archive);
@@ -151,7 +151,7 @@ public class DistributedCacheUtilTest {
 
   @Test
   public void extractToTemp_missing_archive() throws Exception {
-    DistributedCacheUtil ch = new DistributedCacheUtil();
+    DistributedCacheUtilImpl ch = new DistributedCacheUtilImpl();
 
     try {
       ch.extractToTemp(null);
@@ -163,7 +163,7 @@ public class DistributedCacheUtilTest {
 
   @Test
   public void findFiles_vfs() throws Exception {
-    DistributedCacheUtil ch = new DistributedCacheUtil();
+    DistributedCacheUtilImpl ch = new DistributedCacheUtilImpl();
 
     FileObject testFolder = createTestFolderWithContent();
 
@@ -184,7 +184,7 @@ public class DistributedCacheUtilTest {
   public void findFiles_vfs_hdfs() throws Exception {
 
     // Stage files then make sure we can find them in HDFS
-    DistributedCacheUtil ch = new DistributedCacheUtil();
+    DistributedCacheUtilImpl ch = new DistributedCacheUtilImpl();
     Configuration conf = new Configuration();
     FileSystem fs = getLocalFileSystem(conf);
     HDFSFileSystem.setMockHDFSFileSystem(fs);
@@ -215,7 +215,7 @@ public class DistributedCacheUtilTest {
 
   @Test
   public void findFiles_hdfs_native() throws Exception {
-    DistributedCacheUtil ch = new DistributedCacheUtil();
+    DistributedCacheUtilImpl ch = new DistributedCacheUtilImpl();
 
     // Copy the contents of test folder
     FileObject source = createTestFolderWithContent();
@@ -255,7 +255,7 @@ public class DistributedCacheUtilTest {
    * @param expectedDirCount  Expected number of directories to exist in the destiation once staged
    * @throws Exception
    */
-  private void stageForCacheTester(DistributedCacheUtil ch, FileObject source, FileSystem fs, Path root, Path dest, int expectedFileCount, int expectedDirCount) throws Exception {
+  private void stageForCacheTester(DistributedCacheUtilImpl ch, FileObject source, FileSystem fs, Path root, Path dest, int expectedFileCount, int expectedDirCount) throws Exception {
     try {
       ch.stageForCache(source, fs, dest, true);
 
@@ -274,7 +274,7 @@ public class DistributedCacheUtilTest {
 
   @Test
   public void stageForCache() throws Exception {
-    DistributedCacheUtil ch = new DistributedCacheUtil();
+    DistributedCacheUtilImpl ch = new DistributedCacheUtilImpl();
 
     // Copy the contents of test folder
     FileObject source = createTestFolderWithContent();
@@ -294,7 +294,7 @@ public class DistributedCacheUtilTest {
 
   @Test
   public void stageForCache_missing_source() throws Exception {
-    DistributedCacheUtil ch = new DistributedCacheUtil();
+    DistributedCacheUtilImpl ch = new DistributedCacheUtilImpl();
 
     Configuration conf = new Configuration();
     FileSystem fs = getLocalFileSystem(conf);
@@ -305,13 +305,13 @@ public class DistributedCacheUtilTest {
       ch.stageForCache(bogusSource, fs, dest, true);
       fail("expected exception when source does not exist");
     } catch (KettleFileException ex) {
-      assertEquals(BaseMessages.getString(DistributedCacheUtil.class, "DistributedCacheUtil.SourceDoesNotExist", bogusSource), ex.getMessage().trim());
+      assertEquals(BaseMessages.getString(DistributedCacheUtilImpl.class, "DistributedCacheUtil.SourceDoesNotExist", bogusSource), ex.getMessage().trim());
     }
   }
 
   @Test
   public void stageForCache_destination_no_overwrite() throws Exception {
-    DistributedCacheUtil ch = new DistributedCacheUtil();
+    DistributedCacheUtilImpl ch = new DistributedCacheUtilImpl();
 
     Configuration conf = new Configuration();
     FileSystem fs = getLocalFileSystem(conf);
@@ -338,7 +338,7 @@ public class DistributedCacheUtilTest {
 
   @Test
   public void stageForCache_destination_exists() throws Exception {
-    DistributedCacheUtil ch = new DistributedCacheUtil();
+    DistributedCacheUtilImpl ch = new DistributedCacheUtilImpl();
 
     Configuration conf = new Configuration();
     FileSystem fs = getLocalFileSystem(conf);
@@ -360,7 +360,7 @@ public class DistributedCacheUtilTest {
 
   @Test
   public void addCachedFilesToClasspath() throws IOException {
-    DistributedCacheUtil ch = new DistributedCacheUtil();
+    DistributedCacheUtilImpl ch = new DistributedCacheUtilImpl();
     Configuration conf = new Configuration();
 
     List<Path> files = Arrays.asList(new Path("a"), new Path("b"), new Path("c"));
@@ -377,7 +377,7 @@ public class DistributedCacheUtilTest {
 
   @Test
   public void ispmrInstalledAt() throws IOException {
-    DistributedCacheUtil ch = new DistributedCacheUtil();
+    DistributedCacheUtilImpl ch = new DistributedCacheUtilImpl();
 
     Configuration conf = new Configuration();
     FileSystem fs = getLocalFileSystem(conf);
@@ -385,7 +385,7 @@ public class DistributedCacheUtilTest {
     Path root = new Path("bin/test/ispmrInstalledAt");
     Path lib = new Path(root, "lib");
     Path plugins = new Path(root, "plugins");
-    Path bigDataPlugin = new Path(plugins, DistributedCacheUtil.PENTAHO_BIG_DATA_PLUGIN_FOLDER_NAME);
+    Path bigDataPlugin = new Path(plugins, DistributedCacheUtilImpl.PENTAHO_BIG_DATA_PLUGIN_FOLDER_NAME);
 
     Path lockFile = ch.getLockFileAt(root);
     try {
@@ -410,7 +410,7 @@ public class DistributedCacheUtilTest {
 
   @Test
   public void installKettleEnvironment_missing_arguments() throws Exception {
-    DistributedCacheUtil ch = new DistributedCacheUtil();
+    DistributedCacheUtilImpl ch = new DistributedCacheUtilImpl();
 
     try {
       ch.installKettleEnvironment(null, (org.pentaho.hadoop.shim.api.fs.FileSystem) null, null, null, null);
@@ -436,7 +436,7 @@ public class DistributedCacheUtilTest {
 
   @Test
   public void installKettleEnvironment() throws Exception {
-    DistributedCacheUtil ch = new DistributedCacheUtil();
+    DistributedCacheUtilImpl ch = new DistributedCacheUtilImpl();
 
     Configuration conf = new Configuration();
     FileSystem fs = getLocalFileSystem(conf);
@@ -444,7 +444,7 @@ public class DistributedCacheUtilTest {
     // This "empty pmr" contains a lib/ folder but with no content
     FileObject pmrArchive = KettleVFS.getFileObject(getClass().getResource("/empty-pmr.zip").toURI().getPath());
 
-    FileObject bigDataPluginDir = createTestFolderWithContent(DistributedCacheUtil.PENTAHO_BIG_DATA_PLUGIN_FOLDER_NAME);
+    FileObject bigDataPluginDir = createTestFolderWithContent(DistributedCacheUtilImpl.PENTAHO_BIG_DATA_PLUGIN_FOLDER_NAME);
 
     Path root = new Path("bin/test/installKettleEnvironment");
     try {
@@ -458,7 +458,7 @@ public class DistributedCacheUtilTest {
 
   @Test
   public void installKettleEnvironment_additional_plugins() throws Exception {
-    DistributedCacheUtil ch = new DistributedCacheUtil();
+    DistributedCacheUtilImpl ch = new DistributedCacheUtilImpl();
 
     Configuration conf = new Configuration();
     FileSystem fs = getLocalFileSystem(conf);
@@ -466,7 +466,7 @@ public class DistributedCacheUtilTest {
     // This "empty pmr" contains a lib/ folder but with no content
     FileObject pmrArchive = KettleVFS.getFileObject(getClass().getResource("/empty-pmr.zip").toURI().getPath());
 
-    FileObject bigDataPluginDir = createTestFolderWithContent(DistributedCacheUtil.PENTAHO_BIG_DATA_PLUGIN_FOLDER_NAME);
+    FileObject bigDataPluginDir = createTestFolderWithContent(DistributedCacheUtilImpl.PENTAHO_BIG_DATA_PLUGIN_FOLDER_NAME);
     FileObject samplePluginDir = createTestFolderWithContent("sample-plugin");
 
     Path root = new Path("bin/test/installKettleEnvironment");
@@ -483,7 +483,7 @@ public class DistributedCacheUtilTest {
 
   @Test
   public void stagePluginsForCache() throws Exception {
-    DistributedCacheUtil ch = new DistributedCacheUtil();
+    DistributedCacheUtilImpl ch = new DistributedCacheUtilImpl();
 
     Configuration conf = new Configuration();
     FileSystem fs = getLocalFileSystem(conf);
@@ -507,7 +507,7 @@ public class DistributedCacheUtilTest {
 
   @Test
   public void configureWithpmr() throws Exception {
-    DistributedCacheUtil ch = new DistributedCacheUtil();
+    DistributedCacheUtilImpl ch = new DistributedCacheUtilImpl();
 
     Configuration conf = new Configuration();
     FileSystem fs = getLocalFileSystem(conf);
@@ -515,7 +515,7 @@ public class DistributedCacheUtilTest {
     // This "empty pmr" contains a lib/ folder and some empty kettle-*.jar files but no actual content
     FileObject pmrArchive = KettleVFS.getFileObject(getClass().getResource("/empty-pmr.zip").toURI().getPath());
 
-    FileObject bigDataPluginDir = createTestFolderWithContent(DistributedCacheUtil.PENTAHO_BIG_DATA_PLUGIN_FOLDER_NAME);
+    FileObject bigDataPluginDir = createTestFolderWithContent(DistributedCacheUtilImpl.PENTAHO_BIG_DATA_PLUGIN_FOLDER_NAME);
 
     Path root = new Path("bin/test/installKettleEnvironment");
     try {
@@ -549,7 +549,7 @@ public class DistributedCacheUtilTest {
 
   @Test
   public void findPluginFolder() throws Exception {
-    DistributedCacheUtil util = new DistributedCacheUtil();
+    DistributedCacheUtilImpl util = new DistributedCacheUtilImpl();
 
     // Fake out the "plugins" directory for the project's root directory
     System.setProperty(Const.PLUGIN_BASE_FOLDERS_PROP, KettleVFS.getFileObject(".").getURL().toURI().getPath());
@@ -562,7 +562,7 @@ public class DistributedCacheUtilTest {
 
   @Test
   public void addFilesToClassPath() throws IOException {
-    DistributedCacheUtil util = new DistributedCacheUtil();
+    DistributedCacheUtilImpl util = new DistributedCacheUtilImpl();
     Path p1 = new Path("/testing1");
     Path p2 = new Path("/testing2");
     Configuration conf = new Configuration();
@@ -573,7 +573,7 @@ public class DistributedCacheUtilTest {
 
   @Test
   public void addFilesToClassPath_custom_path_separator() throws IOException {
-    DistributedCacheUtil util = new DistributedCacheUtil();
+    DistributedCacheUtilImpl util = new DistributedCacheUtilImpl();
     Path p1 = new Path("/testing1");
     Path p2 = new Path("/testing2");
     Configuration conf = new Configuration();

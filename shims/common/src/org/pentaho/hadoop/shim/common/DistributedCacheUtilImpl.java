@@ -51,7 +51,7 @@ import java.util.zip.ZipInputStream;
 /**
  * Utility to work with Hadoop's Distributed Cache
  */
-public class DistributedCacheUtil implements org.pentaho.hadoop.shim.api.DistributedCacheUtil {
+public class DistributedCacheUtilImpl implements org.pentaho.hadoop.shim.api.DistributedCacheUtil {
   /**
    * Default buffer size when compressing/uncompressing files.
    */
@@ -157,7 +157,7 @@ public class DistributedCacheUtil implements org.pentaho.hadoop.shim.api.Distrib
     }
     for (FileObject localPluginDir : pluginDirectories) {
       if (!localPluginDir.exists()) {
-        throw new KettleFileException(BaseMessages.getString(DistributedCacheUtil.class, "DistributedCacheUtil.PluginDirectoryNotFound", localPluginDir));
+        throw new KettleFileException(BaseMessages.getString(DistributedCacheUtilImpl.class, "DistributedCacheUtil.PluginDirectoryNotFound", localPluginDir));
       }
       Path pluginDir = new Path(pluginsDir, localPluginDir.getName().getBaseName());
       if (!overwrite && fs.exists(pluginDir)) {
@@ -271,7 +271,7 @@ public class DistributedCacheUtil implements org.pentaho.hadoop.shim.api.Distrib
    */
   public void stageForCache(FileObject source, FileSystem fs, Path dest, boolean overwrite) throws IOException, KettleFileException {
     if (!source.exists()) {
-      throw new KettleFileException(BaseMessages.getString(DistributedCacheUtil.class, "DistributedCacheUtil.SourceDoesNotExist", source));
+      throw new KettleFileException(BaseMessages.getString(DistributedCacheUtilImpl.class, "DistributedCacheUtil.SourceDoesNotExist", source));
     }
 
     if (fs.exists(dest)) {
@@ -279,7 +279,7 @@ public class DistributedCacheUtil implements org.pentaho.hadoop.shim.api.Distrib
         // It is a directory, clear it out
         fs.delete(dest, true);
       } else {
-        throw new KettleFileException(BaseMessages.getString(DistributedCacheUtil.class, "DistributedCacheUtil.DestinationExists", dest.toUri().getPath()));
+        throw new KettleFileException(BaseMessages.getString(DistributedCacheUtilImpl.class, "DistributedCacheUtil.DestinationExists", dest.toUri().getPath()));
       }
     }
 
@@ -302,6 +302,7 @@ public class DistributedCacheUtil implements org.pentaho.hadoop.shim.api.Distrib
    * @throws KettleFileException
    * @throws FileSystemException
    */
+  @SuppressWarnings("unchecked")
   public List<String> findFiles(FileObject root, final String extension) throws FileSystemException {
     FileObject[] files = root.findFiles(new FileSelector() {
       @Override
@@ -369,7 +370,7 @@ public class DistributedCacheUtil implements org.pentaho.hadoop.shim.api.Distrib
    * @return Directory the zip was extracted into
    * @throws IOException
    * @throws KettleFileException
-   * @see DistributedCacheUtil#extract(org.apache.commons.vfs.FileObject, org.apache.commons.vfs.FileObject)
+   * @see DistributedCacheUtilImpl#extract(org.apache.commons.vfs.FileObject, org.apache.commons.vfs.FileObject)
    */
   public FileObject extractToTemp(FileObject archive) throws IOException, KettleFileException {
     if (archive == null) {

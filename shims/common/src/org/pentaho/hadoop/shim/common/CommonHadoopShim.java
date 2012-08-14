@@ -54,7 +54,7 @@ import org.pentaho.hdfs.vfs.HDFSFileProvider;
 @SuppressWarnings("deprecation")
 public class CommonHadoopShim implements HadoopShim {
 
-  private DistributedCacheUtil dcUtil = new org.pentaho.hadoop.shim.common.DistributedCacheUtil();
+  private DistributedCacheUtil dcUtil = new org.pentaho.hadoop.shim.common.DistributedCacheUtilImpl();
 
   @Override
   public ShimVersion getVersion() {
