@@ -25,6 +25,7 @@ package org.pentaho.di.trans;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LogChannelInterface;
@@ -311,6 +312,9 @@ public class SingleThreadedTransExecutor {
           while(once || (rowSet.size()>0 && !stepDone)) {
             once=false;
             stepDone = !combi.step.processRow(combi.meta, combi.data);
+            if(combi.step.getErrors() > 0) {
+            	  return false;
+              }
           }
         }        
 
@@ -326,6 +330,9 @@ public class SingleThreadedTransExecutor {
         if (rowSets.size()==0) {
           while (!stepDone && !trans.isStopped()) {
             stepDone = !combi.step.processRow(combi.meta, combi.data);
+            if(combi.step.getErrors() > 0) {
+            	  return false;
+              }
           }
         } else {
           // Since we can't be sure that the step actually reads from the row sets where we measure rows, 
@@ -340,6 +347,9 @@ public class SingleThreadedTransExecutor {
           //
           for (int i=0;i<nrRows;i++) {
               stepDone = !combi.step.processRow(combi.meta, combi.data);
+              if(combi.step.getErrors() > 0) {
+            	  return false;
+              }
           }
         }
         
@@ -364,6 +374,18 @@ public class SingleThreadedTransExecutor {
     int total=0;
     for (RowSet rowSet : rowSets) total+=rowSet.size();
     return total;
+  }
+  
+  public long getErrors() {
+	  return trans.getErrors();
+  }
+  
+  public Result getResult() {
+	  return trans.getResult();
+  }
+  
+  public boolean isStopped() {
+	  return trans.isStopped();
   }
 
   public void dispose() throws KettleException {
