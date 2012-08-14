@@ -29,11 +29,9 @@ import java.util.NavigableMap;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.hadoop.HadoopConfigurationRegistry;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.hadoop.shim.HadoopConfiguration;
 import org.pentaho.hbase.shim.api.HBaseValueMeta;
 import org.pentaho.hbase.shim.api.Mapping;
 import org.pentaho.hbase.shim.spi.HBaseBytesUtilShim;
@@ -84,16 +82,11 @@ public class HBaseRowToKettleTuple {
 
   protected HBaseBytesUtilShim m_bytesUtil;
 
-  public HBaseRowToKettleTuple() {
-    try {
-      HadoopConfiguration active = HadoopConfigurationRegistry.getInstance()
-          .getActiveConfiguration();
-      HBaseShim hbaseShim = active.getHBaseShim();
-
-      m_bytesUtil = hbaseShim.getBytesUtil();
-    } catch (Exception ex) {
-      ex.printStackTrace();
+  public HBaseRowToKettleTuple(HBaseBytesUtilShim bytesUtil) {
+    if (bytesUtil == null) {
+      throw new NullPointerException();
     }
+    m_bytesUtil = bytesUtil;
   }
 
   public void reset() {

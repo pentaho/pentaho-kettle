@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Properties;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.hadoop.HadoopConfigurationRegistry;
+import org.pentaho.di.core.hadoop.HadoopConfigurationBootstrap;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -98,7 +98,7 @@ public class HBaseInputData extends BaseStepData implements StepDataInterface {
       connProps.setProperty(HBaseShim.DEFAULTS_KEY, defaultConfig);
     }
 
-    HadoopConfiguration active = HadoopConfigurationRegistry.getInstance()
+    HadoopConfiguration active = HadoopConfigurationBootstrap.getHadoopConfigurationProvider()
         .getActiveConfiguration();
     HBaseShim hbaseShim = active.getHBaseShim();
     hbaseShim.configureConnection(connProps, logging);

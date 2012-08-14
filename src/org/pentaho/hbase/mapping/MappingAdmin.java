@@ -37,7 +37,7 @@ import java.util.Set;
 import java.util.TreeMap;
 
 import org.pentaho.di.core.Const;
-import org.pentaho.di.core.hadoop.HadoopConfigurationRegistry;
+import org.pentaho.di.core.hadoop.HadoopConfigurationBootstrap;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.hadoop.shim.HadoopConfiguration;
 import org.pentaho.hbase.shim.api.HBaseValueMeta;
@@ -84,7 +84,7 @@ public class MappingAdmin {
    */
   public MappingAdmin() {
     try {
-      HadoopConfiguration active = HadoopConfigurationRegistry.getInstance()
+      HadoopConfiguration active = HadoopConfigurationBootstrap.getHadoopConfigurationProvider()
           .getActiveConfiguration();
       HBaseShim hbaseShim = active.getHBaseShim();
       m_bytesUtil = hbaseShim.getBytesUtil();

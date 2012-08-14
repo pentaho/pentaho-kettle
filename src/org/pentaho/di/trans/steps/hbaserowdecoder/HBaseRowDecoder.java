@@ -26,7 +26,7 @@ import java.util.List;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.hadoop.HadoopConfigurationRegistry;
+import org.pentaho.di.core.hadoop.HadoopConfigurationBootstrap;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
@@ -109,7 +109,7 @@ public class HBaseRowDecoder extends BaseStep implements StepInterface {
       m_data = (HBaseRowDecoderData) sdi;
 
       try {
-        HadoopConfiguration active = HadoopConfigurationRegistry.getInstance()
+        HadoopConfiguration active = HadoopConfigurationBootstrap.getHadoopConfigurationProvider()
             .getActiveConfiguration();
         m_hbAdmin = active.getHBaseShim();
         m_bytesUtil = m_hbAdmin.getBytesUtil();
@@ -129,7 +129,7 @@ public class HBaseRowDecoder extends BaseStep implements StepInterface {
       }
 
       if (m_tableMapping.isTupleMapping()) {
-        m_tupleHandler = new HBaseRowToKettleTuple();
+        m_tupleHandler = new HBaseRowToKettleTuple(m_bytesUtil);
       }
 
       m_outputColumns = new HBaseValueMeta[m_tableMapping.getMappedColumns()

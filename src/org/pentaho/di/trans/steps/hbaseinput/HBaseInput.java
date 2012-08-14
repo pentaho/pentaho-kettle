@@ -177,7 +177,7 @@ public class HBaseInput extends BaseStep implements StepInterface {
       m_columnsMappedByAlias = m_tableMapping.getMappedColumns();
 
       if (m_tableMapping.isTupleMapping()) {
-        m_tupleHandler = new HBaseRowToKettleTuple();
+        m_tupleHandler = new HBaseRowToKettleTuple(m_bytesUtil);
       }
 
       // conversion mask to use for user specified key values in range scan.

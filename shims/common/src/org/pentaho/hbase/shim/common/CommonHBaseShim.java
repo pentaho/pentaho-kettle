@@ -53,6 +53,7 @@ import org.apache.hadoop.hbase.io.hfile.Compression;
 import org.apache.hadoop.hbase.regionserver.StoreFile.BloomType;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.hadoop.shim.ShimVersion;
 import org.pentaho.hbase.shim.api.ColumnFilter;
 import org.pentaho.hbase.shim.api.HBaseValueMeta;
 import org.pentaho.hbase.shim.spi.HBaseBytesUtilShim;
@@ -67,8 +68,6 @@ import org.pentaho.hbase.shim.spi.HBaseShim;
 public class CommonHBaseShim extends HBaseShim {
 
   private static Class<?> PKG = CommonHBaseShim.class;
-
-  protected static final String BYTES_UTIL_IMPL = "org.pentaho.hbase.shim.common.CommonHBaseBytesUtil";
 
   protected Configuration m_config = null;
   protected org.apache.hadoop.hbase.client.HBaseAdmin m_admin;
@@ -89,58 +88,67 @@ public class CommonHBaseShim extends HBaseShim {
       throw new RuntimeException(ex);
     }
   }
+  
+  @Override
+  public ShimVersion getVersion() {
+    return new ShimVersion(1, 0);
+  }
 
   @Override
   public void configureConnection(Properties connProps, List<String> logMessages)
       throws Exception {
-
-    String defaultConfig = connProps.getProperty(DEFAULTS_KEY);
-    String siteConfig = connProps.getProperty(SITE_KEY);
-    String zookeeperQuorum = connProps.getProperty(ZOOKEEPER_QUORUM_KEY);
-    String zookeeperPort = connProps.getProperty(ZOOKEEPER_PORT_KEY);
-
-    m_config = new Configuration();
+    ClassLoader cl = Thread.currentThread().getContextClassLoader();
+    Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
     try {
-      if (!isEmpty(defaultConfig)) {
-        m_config.addResource(stringToURL(defaultConfig));
-      } else {
-        m_config.addResource("hbase-default.xml");
-      }
-
-      if (!isEmpty(siteConfig)) {
-        m_config.addResource(stringToURL(siteConfig));
-      } else {
-        m_config.addResource("hbase-site.xml");
-      }
-    } catch (MalformedURLException e) {
-      throw new IllegalArgumentException(BaseMessages.getString(PKG,
-          "CommonHBaseShim.Error.MalformedConfigURL"));
-    }
-
-    if (!isEmpty(zookeeperQuorum)) {
-      m_config.set(ZOOKEEPER_QUORUM_KEY, zookeeperQuorum);
-    }
-
-    if (!isEmpty(zookeeperPort)) {
+      String defaultConfig = connProps.getProperty(DEFAULTS_KEY);
+      String siteConfig = connProps.getProperty(SITE_KEY);
+      String zookeeperQuorum = connProps.getProperty(ZOOKEEPER_QUORUM_KEY);
+      String zookeeperPort = connProps.getProperty(ZOOKEEPER_PORT_KEY);
+  
+      m_config = new Configuration();
       try {
-        int port = Integer.parseInt(zookeeperPort);
-        m_config.setInt(ZOOKEEPER_PORT_KEY, port);
-      } catch (NumberFormatException e) {
-        if (logMessages != null) {
-          logMessages.add(BaseMessages.getString(PKG,
-              "CommonHBaseShim.Error.UnableToParseZookeeperPort"));
+        if (!isEmpty(defaultConfig)) {
+          m_config.addResource(stringToURL(defaultConfig));
+        } else {
+          m_config.addResource("hbase-default.xml");
+        }
+  
+        if (!isEmpty(siteConfig)) {
+          m_config.addResource(stringToURL(siteConfig));
+        } else {
+          m_config.addResource("hbase-site.xml");
+        }
+      } catch (MalformedURLException e) {
+        throw new IllegalArgumentException(BaseMessages.getString(PKG,
+            "CommonHBaseShim.Error.MalformedConfigURL"));
+      }
+  
+      if (!isEmpty(zookeeperQuorum)) {
+        m_config.set(ZOOKEEPER_QUORUM_KEY, zookeeperQuorum);
+      }
+  
+      if (!isEmpty(zookeeperPort)) {
+        try {
+          int port = Integer.parseInt(zookeeperPort);
+          m_config.setInt(ZOOKEEPER_PORT_KEY, port);
+        } catch (NumberFormatException e) {
+          if (logMessages != null) {
+            logMessages.add(BaseMessages.getString(PKG,
+                "CommonHBaseShim.Error.UnableToParseZookeeperPort"));
+          }
         }
       }
+  
+      m_admin = new org.apache.hadoop.hbase.client.HBaseAdmin(m_config);
+    } finally {
+      Thread.currentThread().setContextClassLoader(cl);
     }
-
-    m_admin = new org.apache.hadoop.hbase.client.HBaseAdmin(m_config);
   }
 
   @Override
   public HBaseBytesUtilShim getBytesUtil() throws Exception {
     if (m_bytesUtil == null) {
-      m_bytesUtil = (HBaseBytesUtilShim) Class.forName(BYTES_UTIL_IMPL)
-          .newInstance();
+      m_bytesUtil = new CommonHBaseBytesUtil();
     }
 
     return m_bytesUtil;
@@ -156,8 +164,13 @@ public class CommonHBaseShim extends HBaseShim {
   @Override
   public void checkHBaseAvailable() throws Exception {
     checkConfiguration();
-
-    org.apache.hadoop.hbase.client.HBaseAdmin.checkHBaseAvailable(m_config);
+    ClassLoader cl = Thread.currentThread().getContextClassLoader();
+    Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+    try {
+      org.apache.hadoop.hbase.client.HBaseAdmin.checkHBaseAvailable(m_config);
+    } finally {
+      Thread.currentThread().setContextClassLoader(cl);
+    }
   }
 
   @Override
@@ -566,6 +579,11 @@ public class CommonHBaseShim extends HBaseShim {
 
   @Override
   public boolean checkForHBaseRow(Object rowToCheck) {
+    System.out.println("Checking for HBase row: " + rowToCheck);
+    System.out.println("Checking for HBase row (CL): " + (rowToCheck == null ? null : rowToCheck.getClass().getClassLoader()));
+    System.out.println("My CL                      : " + getClass().getClassLoader());
+    System.out.println("Result CL                  : " + Result.class.getClassLoader());
+    System.out.println("Result is assignable?      : " + Result.class.isAssignableFrom(rowToCheck.getClass()));
     return (rowToCheck instanceof Result);
   }
 

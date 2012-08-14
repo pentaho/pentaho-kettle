@@ -56,17 +56,6 @@
     </dependency>
     
     <dependency org="commons-httpclient" name="commons-httpclient" rev="${dependency.commons-httpclient.revision}" />
-    <dependency org="org.apache.hadoop" name="hadoop-core" rev="${dependency.pentaho-hadoop.revision}" transitive="true" conf="default->default"
-      changing="false">
-      <exclude org="junit"/>
-      <exclude org="ant"/>
-    </dependency>
-    <dependency org="org.apache.hbase" name="hbase" rev="${dependency.apache-hbase.revision}" transitive="false" conf="default->default"
-      changing="false" />
-    <dependency org="org.apache.zookeeper" name="zookeeper" rev="${dependency.apache-zookeeper.revision}" transitive="false" conf="default->default"
-      changing="false" />
-    <!-- <dependency org="org.apache.pig" name="pig" rev="${dependency.pig.revision}" transitive="false" conf="default->default"
-      changing="false"/> -->
     
     <dependency org="org.apache.oozie" name="oozie-core" rev="${dependency.apache-oozie.revision}" changing="true" transitive="false"/>
     <dependency org="org.apache.oozie" name="oozie-client" rev="${dependency.apache-oozie.revision}" changing="true" transitive="false"/>
@@ -150,12 +139,6 @@
     <dependency org="net.sf.saxon" name="saxon-dom" rev="9.1.0.8" conf="pmr->default"/>
     <dependency org="rhino" name="js" rev="1.7R1" conf="pmr->default"/>
     <dependency org="com.thoughtworks.xstream" name="xstream" rev="${dependency.xstream.revision}" conf="pmr->default"/>
-    <dependency org="org.apache.hbase" name="hbase" rev="${dependency.apache-hbase.revision}" transitive="false"
-                conf="pmr->default"
-                changing="false"/>
-    <dependency org="org.apache.zookeeper" name="zookeeper" rev="${dependency.apache-zookeeper.revision}"
-                transitive="false" conf="pmr->default"
-                changing="false"/>
 
     <!--  external lib/xml dependencies -->
     <dependency org="jaxen" name="jaxen" rev="1.1" transitive="false" conf="pmr->default"/>
