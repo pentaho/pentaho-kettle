@@ -72,8 +72,9 @@ public class SingleThreader extends BaseStep implements StepInterface
 		Object[] row = getRow();
 		if (row==null) {
 		  if (data.batchCount>0) {
-		    data.executor.oneIteration();
+			  return execOneIteration(); 
 		  }
+		    
 		  setOutputDone();
 		  return false;
 		}
@@ -95,7 +96,7 @@ public class SingleThreader extends BaseStep implements StepInterface
 		if (countWindow || timeWindow) {
 		  data.batchCount=0;
 
-		  boolean more = data.executor.oneIteration();
+		  boolean more = execOneIteration();
 		  if (!more) {
 		    setOutputDone();
 		    return false;
@@ -103,6 +104,26 @@ public class SingleThreader extends BaseStep implements StepInterface
 		  data.startTime=System.currentTimeMillis();
 		}
 		return true;
+	}
+
+	private boolean execOneIteration() {
+		boolean more = false;
+		try {
+		  more = data.executor.oneIteration();
+		  if (data.executor.isStopped() || data.executor.getErrors()>0) {
+			  setErrors(1);
+		      stopAll();
+		      logError(BaseMessages.getString(PKG, "SingleThreader.Log.ErrorOccurredInSubTransformation"));
+		      return false;
+		  }
+		} catch(Exception e) {
+		    
+		    setErrors(1L);
+		    stopAll();
+		    logError(BaseMessages.getString(PKG, "SingleThreader.Log.ErrorOccurredInSubTransformation"));
+		    return false;
+		}
+		return more;
 	}
 
 	private void passParameters() throws KettleException {
