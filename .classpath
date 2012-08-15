@@ -223,26 +223,27 @@
 	<classpathentry kind="lib" path="libext/reporting/libserializer-1.2.4.jar"/>
 	<classpathentry kind="lib" path="libext/reporting/libswing-1.2.6.jar"/>
 	<classpathentry kind="lib" path="libext/reporting/libxml-1.2.4.jar"/>
-	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-core-3.9.0-GA.jar"/>
+	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-core-3.9.1-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/mondrian/mondrian-3.4.1.jar"/>
 	<classpathentry kind="lib" path="libext/reporting/pentaho-metadata-3.4.5.jar"/>
-	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-3.9.0-GA.jar"/>
-	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-drill-down-3.9.0-GA.jar"/>
-	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-hibernate-3.9.0-GA.jar"/>
-	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-kettle-3.9.0-GA.jar"/>
-	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-mondrian-3.9.0-GA.jar"/>
-	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-olap4j-3.9.0-GA.jar"/>
-	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-pmd-3.9.0-GA.jar"/>
-	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-reportdesigner-parser-3.9.0-GA.jar"/>
-	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-sampledata-3.9.0-GA.jar"/>
-	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-scripting-3.9.0-GA.jar"/>
-	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-toc-3.9.0-GA.jar"/>
-	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-xpath-3.9.0-GA.jar"/>
-	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-legacy-charts-3.9.0-GA.jar"/>
-	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-legacy-functions-3.9.0-GA.jar"/>
-	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-wizard-core-3.9.0-GA.jar"/>
+	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-3.9.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-drill-down-3.9.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-hibernate-3.9.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-kettle-3.9.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-mondrian-3.9.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-olap4j-3.9.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-pmd-3.9.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-reportdesigner-parser-3.9.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-sampledata-3.9.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-scripting-3.9.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-toc-3.9.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-classic-extensions-xpath-3.9.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-legacy-charts-3.9.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-legacy-functions-3.9.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libext/reporting/pentaho-reporting-engine-wizard-core-3.9.1-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-swt-3.3-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/js.jar"/>
 	<classpathentry kind="lib" path="libext/antlr-3.4-complete.jar"/>
+	<classpathentry kind="lib" path="libext/JDBC/vertica_4.1.17_jdk_5.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
