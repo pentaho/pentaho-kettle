@@ -31,6 +31,8 @@ import static org.junit.Assert.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.vfs.FileSystemException;
+import org.apache.commons.vfs.VFS;
 import org.apache.commons.vfs.impl.DefaultFileSystemManager;
 import org.apache.hadoop.util.VersionInfo;
 import org.junit.Test;
@@ -40,8 +42,10 @@ import org.pentaho.hadoop.mapreduce.PentahoMapRunnable;
 import org.pentaho.hadoop.shim.ConfigurationException;
 import org.pentaho.hadoop.shim.HadoopConfiguration;
 import org.pentaho.hadoop.shim.HadoopConfigurationFileSystemManager;
+import org.pentaho.hadoop.shim.MockHadoopConfigurationProvider;
 import org.pentaho.hadoop.shim.api.Configuration;
 import org.pentaho.hadoop.shim.spi.HadoopConfigurationProvider;
+import org.pentaho.hadoop.shim.spi.HadoopShim;
 
 public class CommonHadoopShimTest {
 
@@ -212,7 +216,7 @@ public class CommonHadoopShimTest {
     assertFalse(fsm.hasProvider("hdfs"));
 
     CommonHadoopShim shim = new CommonHadoopShim();
-    HadoopConfiguration config = new HadoopConfiguration("id", "name", shim, null, null, null);
+    HadoopConfiguration config = new HadoopConfiguration(VFS.getManager().resolveFile("ram:///"), "id", "name", shim, null, null, null);
 
     shim.onLoad(config, fsm);
     assertTrue(fsm.hasProvider("hdfs"));
@@ -220,8 +224,12 @@ public class CommonHadoopShimTest {
   }
   
   @Test
-  public void getDistributedCacheUtil() {
-    assertNotNull(new CommonHadoopShim().getDistributedCacheUtil());
+  public void getDistributedCacheUtil() throws Exception {
+    HadoopShim shim = new CommonHadoopShim();
+    assertNull(shim.getDistributedCacheUtil());
+    
+    shim.onLoad(new HadoopConfiguration(VFS.getManager().resolveFile("ram:///"), "id", "name", shim), new HadoopConfigurationFileSystemManager(new MockHadoopConfigurationProvider(), new DefaultFileSystemManager()));
+    assertNotNull(shim.getDistributedCacheUtil());
   }
   
   @Test

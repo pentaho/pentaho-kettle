@@ -268,8 +268,8 @@ public class HadoopConfigurationLocator implements HadoopConfigurationProvider {
       if (root == null || !FileType.FOLDER.equals(root.getType())) {
         throw new IllegalArgumentException("root must be a folder: " + root);
       }
-      // Find all jar files in the
-      List<URL> jars = findJarsIn(root, 2);
+      // Find all jar files in the configuration, at most 2 folders deep
+      List<URL> jars = findJarsIn(root, 3);
 
       // Add the root of the configuration
       jars.add(0, new URL(root.getURL().toExternalForm() + "/"));
@@ -378,7 +378,7 @@ public class HadoopConfigurationLocator implements HadoopConfigurationProvider {
       String name = configurationProperties.getProperty(CONFIG_PROPERTY_NAME,
           id);
 
-      HadoopConfiguration config = new HadoopConfiguration(id, name, hadoopShim, shims.toArray(EMPTY_SHIM_ARRAY));
+      HadoopConfiguration config = new HadoopConfiguration(folder, id, name, hadoopShim, shims.toArray(EMPTY_SHIM_ARRAY));
 
       // Register native libraries after everything else has been loaded successfully
       registerNativeLibraryPaths(configurationProperties.getProperty(CONFIG_PROPERTY_LIBRARY_PATH));

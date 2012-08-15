@@ -34,6 +34,7 @@ import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemConfigBuilder;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemOptions;
+import org.apache.commons.vfs.VFS;
 import org.apache.commons.vfs.impl.DefaultFileSystemManager;
 import org.apache.commons.vfs.provider.FileProvider;
 import org.junit.Test;
@@ -69,7 +70,7 @@ public class ActiveHadoopShimFileProviderTest {
   public void createFileSystem() throws FileSystemException {
     final AtomicBoolean called = new AtomicBoolean(false);
     String scheme = "scheme";
-    HadoopConfiguration config = new HadoopConfiguration("id", "name", new MockHadoopShim(), null, null, null);
+    HadoopConfiguration config = new HadoopConfiguration(VFS.getManager().resolveFile("ram:///"), "id", "name", new MockHadoopShim(), null, null, null);
     FileProvider provider = new MockFileProvider() {
       @Override
       public FileObject createFileSystem(String scheme, FileObject file, FileSystemOptions fileSystemOptions)
@@ -90,7 +91,7 @@ public class ActiveHadoopShimFileProviderTest {
   public void findFile() throws FileSystemException {
     final AtomicBoolean called = new AtomicBoolean(false);
     String scheme = "scheme";
-    HadoopConfiguration config = new HadoopConfiguration("id", "name", new MockHadoopShim(), null, null, null);
+    HadoopConfiguration config = new HadoopConfiguration(VFS.getManager().resolveFile("ram:///"), "id", "name", new MockHadoopShim(), null, null, null);
     FileProvider provider = new MockFileProvider() {
       @Override
       public FileObject findFile(FileObject baseFile, String uri, FileSystemOptions fileSystemOptions)
@@ -111,7 +112,7 @@ public class ActiveHadoopShimFileProviderTest {
   public void getCapabilities() throws FileSystemException {
     final AtomicBoolean called = new AtomicBoolean(false);
     String scheme = "scheme";
-    HadoopConfiguration config = new HadoopConfiguration("id", "name", new MockHadoopShim(), null, null, null);
+    HadoopConfiguration config = new HadoopConfiguration(VFS.getManager().resolveFile("ram:///"), "id", "name", new MockHadoopShim(), null, null, null);
     FileProvider provider = new MockFileProvider() {
       @Override
       public Collection<Capability> getCapabilities() {
@@ -131,7 +132,7 @@ public class ActiveHadoopShimFileProviderTest {
   public void getConfigBuilder() throws FileSystemException {
     final AtomicBoolean called = new AtomicBoolean(false);
     String scheme = "scheme";
-    HadoopConfiguration config = new HadoopConfiguration("id", "name", new MockHadoopShim(), null, null, null);
+    HadoopConfiguration config = new HadoopConfiguration(VFS.getManager().resolveFile("ram:///"), "id", "name", new MockHadoopShim(), null, null, null);
     FileProvider provider = new MockFileProvider() {
       @Override
       public FileSystemConfigBuilder getConfigBuilder() {
@@ -151,7 +152,7 @@ public class ActiveHadoopShimFileProviderTest {
   public void parseUri() throws FileSystemException {
     final AtomicBoolean called = new AtomicBoolean(false);
     String scheme = "scheme";
-    HadoopConfiguration config = new HadoopConfiguration("id", "name", new MockHadoopShim(), null, null, null);
+    HadoopConfiguration config = new HadoopConfiguration(VFS.getManager().resolveFile("ram:///"), "id", "name", new MockHadoopShim(), null, null, null);
     FileProvider provider = new MockFileProvider() {
       @Override
       public FileName parseUri(FileName root, String uri) throws FileSystemException {

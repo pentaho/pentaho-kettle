@@ -11,6 +11,7 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.vfs.VFS;
 import org.junit.Before;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
@@ -55,7 +56,7 @@ public class JobEntryPigScriptExecutorTest {
   public void testRegressionTutorialLocal() throws Exception {
     HadoopConfigurationProvider provider = new HadoopConfigurationProvider() {
       
-      HadoopConfiguration config = new HadoopConfiguration("test", "test", new CommonHadoopShim(), new CommonSqoopShim(), new CommonPigShim(), null);
+      HadoopConfiguration config = new HadoopConfiguration(VFS.getManager().resolveFile("ram:///"), "test", "test", new CommonHadoopShim(), new CommonSqoopShim(), new CommonPigShim());
       
       @Override
       public boolean hasConfiguration(String id) {

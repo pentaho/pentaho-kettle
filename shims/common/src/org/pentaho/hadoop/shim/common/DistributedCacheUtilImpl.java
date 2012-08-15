@@ -22,7 +22,25 @@
 
 package org.pentaho.hadoop.shim.common;
 
-import org.apache.commons.vfs.*;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.regex.Pattern;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
+import org.apache.commons.vfs.AllFileSelector;
+import org.apache.commons.vfs.FileDepthSelector;
+import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSelectInfo;
+import org.apache.commons.vfs.FileSelector;
+import org.apache.commons.vfs.FileSystemException;
+import org.apache.commons.vfs.FileType;
+import org.apache.commons.vfs.FileTypeSelector;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.filecache.DistributedCache;
 import org.apache.hadoop.fs.FileStatus;
@@ -36,36 +54,43 @@ import org.pentaho.di.core.plugins.PluginFolder;
 import org.pentaho.di.core.plugins.PluginFolderInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
-
-import java.io.IOException;
-import java.io.OutputStream;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.regex.Pattern;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
+import org.pentaho.hadoop.shim.HadoopConfiguration;
 
 /**
  * Utility to work with Hadoop's Distributed Cache
  */
 public class DistributedCacheUtilImpl implements org.pentaho.hadoop.shim.api.DistributedCacheUtil {
+  
+  /**
+   * Path within the installation directory to deploy libraries
+   */
+  private static final String PATH_LIB = "lib";
+
+  /**
+   * Pentaho MapReduce library path within a Hadoop configuration
+   */
+  private static final String PATH_PMR = "pmr";
+
+  /**
+   * Client-only library path within a Hadoop configuration
+   */
+  private static final String PATH_CLIENT = "client";
+
+  /**
+   * Path within the installation directory to deploy plugins
+   */
+  private static final String PATH_PLUGINS = "plugins";
+
   /**
    * Default buffer size when compressing/uncompressing files.
    */
   private static final int DEFAULT_BUFFER_SIZE = 8192;
 
   /**
-   * Pattern to match files ending in ".jar"
-   */
-  private static final Pattern JAR_FILES = Pattern.compile(".*\\.jar$");
-  /**
    * Pattern to match all files that are not in the lib/ directory. Matches any string that does not contain /lib
    */
   private static final Pattern NOT_LIB_FILES = Pattern.compile("^((?!/lib).)*$");
-
+  
   /**
    * Default permission for cached files
    * <p/>
@@ -77,6 +102,18 @@ public class DistributedCacheUtilImpl implements org.pentaho.hadoop.shim.api.Dis
    * Name of the Big Data Plugin folder
    */
   public static final String PENTAHO_BIG_DATA_PLUGIN_FOLDER_NAME = "pentaho-big-data-plugin";
+  
+  /**
+   * The Hadoop Configuration this Distributed Cache Utility is part of
+   */
+  private HadoopConfiguration configuration;
+  
+  public DistributedCacheUtilImpl(HadoopConfiguration configuration) {
+    if (configuration == null) {
+      throw new NullPointerException();
+    }
+    this.configuration = configuration;
+  }
 
   /**
    * Creates the path to a lock file within the provided directory
@@ -100,9 +137,9 @@ public class DistributedCacheUtilImpl implements org.pentaho.hadoop.shim.api.Dis
   public boolean isKettleEnvironmentInstalledAt(FileSystem fs, Path root) throws IOException {
     // These directories must exist
     Path[] directories = new Path[]{
-        new Path(root, "lib"),
-        new Path(root, "plugins"),
-        new Path(new Path(root, "plugins"), PENTAHO_BIG_DATA_PLUGIN_FOLDER_NAME)
+        new Path(root, PATH_LIB),
+        new Path(root, PATH_PLUGINS),
+        new Path(new Path(root, PATH_PLUGINS), PENTAHO_BIG_DATA_PLUGIN_FOLDER_NAME)
     };
     // This file must not exist
     Path lock = getLockFileAt(root);
@@ -134,18 +171,66 @@ public class DistributedCacheUtilImpl implements org.pentaho.hadoop.shim.api.Dis
     fs.create(lockFile, true);
 
     stageForCache(extracted, fs, destination, true);
-
-    List<FileObject> pluginsDirectories = new ArrayList<FileObject>();
-    pluginsDirectories.add(bigDataPlugin);
+    
+    stageBigDataPlugin(fs, destination, bigDataPlugin);
+  
+//    List<FileObject> pluginsDirectories = new ArrayList<FileObject>();
+//    pluginsDirectories.add(bigDataPlugin);
     if (additionalPluginDirectories != null && !additionalPluginDirectories.isEmpty()) {
-      pluginsDirectories.addAll(additionalPluginDirectories);
+      stagePluginsForCache(fs, new Path(destination, PATH_PLUGINS), true, additionalPluginDirectories);
+//      pluginsDirectories.addAll(additionalPluginDirectories);
     }
-
-    stagePluginsForCache(fs, new Path(destination, "plugins"), true, pluginsDirectories);
 
     // Delete the lock file now that we're done. It is intentional that we're not doing this in a try/finally. If the
     // staging fails for some reason we require the user to forcibly overwrite the (partial) installation
     fs.delete(lockFile, true);
+  }
+
+  /**
+   * Move files from the source folder to the destination folder, overwriting any files that may already exist there.
+   * 
+   * @param fs File system to write to
+   * @param dest Destination to move source file/folder into
+   * @param pluginFolder Big Data plugin folder
+   * @throws KettleFileException
+   * @throws IOException
+   */
+  private void stageBigDataPlugin(FileSystem fs, Path dest, FileObject pluginFolder) throws KettleFileException, IOException {
+    Path pluginsDir = new Path(dest, PATH_PLUGINS);
+    Path libDir = new Path(dest, PATH_LIB);
+    Path bigDataPluginDir = new Path(pluginsDir, pluginFolder.getName().getBaseName());
+
+    // Stage everything except the hadoop-configurations and pmr libraries
+    for (FileObject f : pluginFolder.findFiles(new FileDepthSelector(1, 1))) {
+      if (   !"hadoop-configurations".equals(f.getName().getBaseName())
+          && !"pentaho-mapreduce-libraries.zip".equals(f.getName().getBaseName())) {
+        stageForCache(f, fs, new Path(bigDataPluginDir, f.getName().getBaseName()), true);
+      }
+    }
+
+    // Stage the current Hadoop configuration without its client-only or pmr libraries (these will be copied into the lib dir)
+    Path hadoopConfigDir = new Path(new Path(bigDataPluginDir, "hadoop-configurations"), configuration.getIdentifier());
+    for (FileObject f : configuration.getLocation().findFiles(new FileSelector() {
+      @Override
+      public boolean includeFile(FileSelectInfo info) throws Exception {
+        return FileType.FILE.equals(info.getFile().getType());
+      }
+      @Override
+      public boolean traverseDescendents(FileSelectInfo info) throws Exception {
+        String name = info.getFile().getName().getBaseName();
+        return !((PATH_PMR.equals(name) || PATH_CLIENT.equals(name)) && 
+            PATH_LIB.equals(info.getFile().getParent().getName().getBaseName()));
+      }
+    })) {
+      // Create relative path to write to
+      String relPath = configuration.getLocation().getName().getRelativeName(f.getName());
+      stageForCache(f, fs, new Path(hadoopConfigDir, relPath), true);
+    }
+
+    // Stage all pmr libraries for the Hadoop configuration into the root library path for the Kettle environment
+    for (FileObject f : configuration.getLocation().resolveFile(PATH_LIB).resolveFile(PATH_PMR).findFiles(new FileTypeSelector(FileType.FILE))) {
+      stageForCache(f, fs, new Path(libDir, f.getName().getBaseName()), true);
+    }
   }
 
   public void stagePluginsForCache(FileSystem fs, Path pluginsDir, boolean overwrite, List<FileObject> pluginDirectories) throws KettleFileException, IOException {
@@ -179,8 +264,9 @@ public class DistributedCacheUtilImpl implements org.pentaho.hadoop.shim.api.Dis
    * @throws IOException
    */
   public void configureWithKettleEnvironment(Configuration conf, FileSystem fs, Path kettleInstallDir) throws KettleFileException, IOException {
-    Path libDir = new Path(kettleInstallDir, "lib");
-    List<Path> libraryJars = findFiles(fs, libDir, JAR_FILES);
+    Path libDir = new Path(kettleInstallDir, PATH_LIB);
+    // Add all files to the classpath found in the lib directory
+    List<Path> libraryJars = findFiles(fs, libDir, null);
     addCachedFilesToClasspath(libraryJars, conf);
 
     List<Path> nonLibFiles = findFiles(fs, kettleInstallDir, NOT_LIB_FILES);

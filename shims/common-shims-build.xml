@@ -11,6 +11,8 @@
 
   <property name="api.dist.dir" value="../api/dist" description="Distrbution directory for the api project. This is where the api jar will be referenced from." />
   <property name="lib.provided.dir" value="lib-provided" description="Ivy dependencies of 'provided' configuration are placed here"/>
+  <property name="lib.pmr.dir" value="lib/pmr" description="Ivy dependencies of 'pmr' configuration are placed here. Placed under lib/ so they are packaged that way."/>
+  <property name="lib.client.dir" value="lib/client" description="Ivy dependencies of 'client' configuration are placed here. Placed under lib/ so they are packaged that way."/>
   <property name="src.common.dir" value="${common.dir}/src" description="Source files that are common to all shims"/>
   <property name="classes.common-mapred.dir" value="${bin.dir}/classes-mapred" description="Common mapred source files are compiled into here" />
   <property name="src.common-mapred.dir" value="${common.dir}/src-mapred" description="Common mapred sources" />
@@ -68,8 +70,12 @@
 
   <!-- Resolve provided dependencies to a separate directory -->
   <target name="resolve-default" depends="subfloor.resolve-default">
-    <ivy:resolve file="${ivyfile}" conf="default" />
+    <ivy:resolve file="${ivyfile}" conf="provided" />
     <ivy:retrieve conf="provided" pattern="${lib.provided.dir}/[module]-[revision](-[classifier]).[ext]" symlink="${ivy.use.symlinks.internal}" />
+    <ivy:resolve file="${ivyfile}" conf="pmr" />
+    <ivy:retrieve conf="pmr" pattern="${lib.pmr.dir}/[module]-[revision](-[classifier]).[ext]" symlink="${ivy.use.symlinks.internal}" />
+    <ivy:resolve file="${ivyfile}" conf="client" />
+    <ivy:retrieve conf="client" pattern="${lib.client.dir}/[module]-[revision](-[classifier]).[ext]" symlink="${ivy.use.symlinks.internal}" />
   </target>
 
   <!-- Override compile.compile to include common source -->

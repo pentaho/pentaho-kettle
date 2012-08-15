@@ -580,11 +580,6 @@ public class CommonHBaseShim extends HBaseShim {
 
   @Override
   public boolean checkForHBaseRow(Object rowToCheck) {
-    System.out.println("Checking for HBase row: " + rowToCheck);
-    System.out.println("Checking for HBase row (CL): " + (rowToCheck == null ? null : rowToCheck.getClass().getClassLoader()));
-    System.out.println("My CL                      : " + getClass().getClassLoader());
-    System.out.println("Result CL                  : " + Result.class.getClassLoader());
-    System.out.println("Result is assignable?      : " + Result.class.isAssignableFrom(rowToCheck.getClass()));
     return (rowToCheck instanceof Result);
   }
 
@@ -806,6 +801,8 @@ public class CommonHBaseShim extends HBaseShim {
 
   @Override
   public boolean isImmutableBytesWritable(Object o) {
+    // For this to work the context class loader must be able to load 
+    // ImmutableBytesWritable.class from the same CL as o.getClass() was loaded from
     return o instanceof ImmutableBytesWritable;
   }
 }

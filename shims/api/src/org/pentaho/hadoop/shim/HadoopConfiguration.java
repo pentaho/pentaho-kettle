@@ -25,6 +25,7 @@ package org.pentaho.hadoop.shim;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.hadoop.shim.spi.HadoopShim;
 import org.pentaho.hadoop.shim.spi.PentahoHadoopShim;
@@ -44,6 +45,11 @@ public class HadoopConfiguration {
 
   private String name;
   
+  /**
+   * Root directory for this configuration
+   */
+  private FileObject location;
+  
   private HadoopShim hadoopShim;
   
   private List<PentahoHadoopShim> availableShims;
@@ -51,6 +57,7 @@ public class HadoopConfiguration {
   /**
    * Create a new Hadoop configuration with the provided shims. Only
    * 
+   * @param location Location where this configuration resides
    * @param identifier Unique identifier for this configuration
    * @param name Friendly name for this configuration
    * @param hadoopShim Hadoop shim
@@ -58,10 +65,11 @@ public class HadoopConfiguration {
    * @throws NullPointerException when {@code identifier}, {@code name}.
    * @throws NullPointerException when {@code identifier}, {@code name}, or {@code hadoopShim} are {@code null}
    */
-  public HadoopConfiguration(String identifier, String name, HadoopShim hadoopShim, PentahoHadoopShim... shims) {
-    if (identifier == null || name == null || hadoopShim == null) {
+  public HadoopConfiguration(FileObject location, String identifier, String name, HadoopShim hadoopShim, PentahoHadoopShim... shims) {
+    if (location == null || identifier == null || name == null || hadoopShim == null) {
       throw new NullPointerException();
     }
+    this.location = location;
     this.identifier = identifier;
     this.name = name;
     this.hadoopShim = hadoopShim;
@@ -70,17 +78,22 @@ public class HadoopConfiguration {
     availableShims = new ArrayList<PentahoHadoopShim>();
     // Add the hadoop shim to the list so we don't have to handle it special in getShim()
     availableShims.add(hadoopShim);
-    if (shims != null) {
-      for (PentahoHadoopShim shim : shims) {
-        if (shim == null) {
-          // Skip null shims
-          continue;
-        }
-        availableShims.add(shim);
+    for (PentahoHadoopShim shim : shims) {
+      if (shim == null) {
+        // Skip null shims
+        continue;
       }
+      availableShims.add(shim);
     }
   }
 
+  /**
+   * @return the location (root directory) of this Hadoop configuration
+   */
+  public FileObject getLocation() {
+    return location;
+  }
+  
   /**
    * @return this configuration's identifier
    */
