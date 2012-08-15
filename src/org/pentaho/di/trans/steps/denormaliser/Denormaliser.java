@@ -74,15 +74,7 @@ public class Denormaliser extends BaseStep implements StepInterface
 		Object[] r=getRow();    // get row!
 		if (r==null)  // no more input to be expected...
 		{
-			// Don't forget the last set of rows...
-			if (data.previous!=null) 
-			{
-                // deNormalise(data.previous); --> That would overdo it.
-				//
-                Object[] outputRowData = buildResult(data.inputRowMeta, data.previous);
-				putRow(data.outputRowMeta, outputRowData);
-			}
-
+		  handleLastRow();
 			setOutputDone();
 			return false;
 		}
@@ -202,7 +194,18 @@ public class Denormaliser extends BaseStep implements StepInterface
 		return true;
 	}
 	
-	private Object[] buildResult(RowMetaInterface rowMeta, Object[] rowData) throws KettleValueException
+	private void handleLastRow() throws KettleException {
+    // Don't forget the last set of rows...
+    if (data.previous!=null) 
+    {
+      // deNormalise(data.previous); --> That would over-do it.
+      //
+      Object[] outputRowData = buildResult(data.inputRowMeta, data.previous);
+      putRow(data.outputRowMeta, outputRowData);
+    }
+  }
+
+  private Object[] buildResult(RowMetaInterface rowMeta, Object[] rowData) throws KettleValueException
     {
 		// Deleting objects: we need to create a new object array
 		// It's useless to call RowDataUtil.resizeArray
@@ -405,6 +408,12 @@ public class Denormaliser extends BaseStep implements StepInterface
             return true;
 		}
 		return false;
+	}
+	
+	@Override
+	public void batchComplete() throws KettleException {
+	  handleLastRow();
+	  data.previous=null;
 	}
 	
 }
