@@ -37,7 +37,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.VFS;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
@@ -162,7 +161,7 @@ public class HadoopConfigurationBootstrapTest {
     final String CONFIGS_PATH = "hadoop-configs-go-here";
     ramRoot.resolveFile(CONFIGS_PATH).createFolder();
 
-    HadoopConfiguration c = new HadoopConfiguration("test", "test", new MockHadoopShim());
+    HadoopConfiguration c = new HadoopConfiguration(ramRoot, "test", "test", new MockHadoopShim());
     final HadoopConfigurationProvider provider = new MockHadoopConfigurationProvider(Arrays.asList(c), "test");
 
     HadoopConfigurationBootstrap b = new HadoopConfigurationBootstrap() {
@@ -196,7 +195,7 @@ public class HadoopConfigurationBootstrapTest {
     final String CONFIGS_PATH = "hadoop-configs-go-here";
     ramRoot.resolveFile(CONFIGS_PATH).createFolder();
 
-    HadoopConfiguration c = new HadoopConfiguration("test", "test", new MockHadoopShim());
+    HadoopConfiguration c = new HadoopConfiguration(ramRoot, "test", "test", new MockHadoopShim());
     final HadoopConfigurationProvider provider = new MockHadoopConfigurationProvider(Arrays.asList(c), "invalid");
 
     HadoopConfigurationBootstrap b = new HadoopConfigurationBootstrap() {
@@ -235,7 +234,7 @@ public class HadoopConfigurationBootstrapTest {
     final String CONFIGS_PATH = "hadoop-configs-go-here";
     ramRoot.resolveFile(CONFIGS_PATH).createFolder();
 
-    HadoopConfiguration c = new HadoopConfiguration("test", "test", new MockHadoopShim());
+    HadoopConfiguration c = new HadoopConfiguration(ramRoot, "test", "test", new MockHadoopShim());
     final HadoopConfigurationProvider provider = new MockHadoopConfigurationProvider(Arrays.asList(c), "test") {
       public HadoopConfiguration getActiveConfiguration() throws ConfigurationException {
         throw new NullPointerException();

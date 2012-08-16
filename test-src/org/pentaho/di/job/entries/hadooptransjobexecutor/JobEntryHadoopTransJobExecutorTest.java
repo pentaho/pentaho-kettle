@@ -35,6 +35,8 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.VFS;
+import org.apache.commons.vfs.impl.DefaultFileSystemManager;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.Const;
@@ -51,7 +53,10 @@ import org.pentaho.di.job.Job;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.steps.hadoopenter.HadoopEnterMeta;
 import org.pentaho.di.trans.steps.hadoopexit.HadoopExitMeta;
+import org.pentaho.hadoop.shim.ConfigurationException;
 import org.pentaho.hadoop.shim.HadoopConfiguration;
+import org.pentaho.hadoop.shim.HadoopConfigurationFileSystemManager;
+import org.pentaho.hadoop.shim.MockHadoopConfigurationProvider;
 import org.pentaho.hadoop.shim.api.Configuration;
 import org.pentaho.hadoop.shim.common.CommonHadoopShim;
 import org.pentaho.hadoop.shim.common.ConfigurationProxy;
@@ -84,8 +89,12 @@ public class JobEntryHadoopTransJobExecutorTest {
   public void invalidMapperStepNames() throws Throwable {
     Job job = new Job();
     JobEntryHadoopTransJobExecutor executor = new JobEntryHadoopTransJobExecutor() {
-      protected HadoopConfiguration getHadoopConfiguration() throws org.pentaho.hadoop.shim.ConfigurationException {
-        return new HadoopConfiguration("test", "test", new CommonHadoopShim(), null, null, null);
+      protected HadoopConfiguration getHadoopConfiguration() throws ConfigurationException {
+        try {
+          return new HadoopConfiguration(VFS.getManager().resolveFile("ram:///"), "test", "test", new CommonHadoopShim());
+        } catch (Exception ex) {
+          throw new ConfigurationException("Error creating mock hadoop configuration", ex);
+        }
       };
     };
     executor.setParentJob(job);
@@ -162,6 +171,8 @@ public class JobEntryHadoopTransJobExecutorTest {
     JobEntryHadoopTransJobExecutor executor = new JobEntryHadoopTransJobExecutor();
     Configuration conf = new ConfigurationProxy();
     HadoopShim shim = new CommonHadoopShim();
+    HadoopConfiguration config = new HadoopConfiguration(VFS.getManager().resolveFile("ram:///"), "test", "test", shim);
+    shim.onLoad(config, new HadoopConfigurationFileSystemManager(new MockHadoopConfigurationProvider(), new DefaultFileSystemManager()));
     Properties p = new Properties();
     
     // Fake out the "plugins" directory for the project's root directory

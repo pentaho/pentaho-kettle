@@ -11,12 +11,15 @@
 
   <property name="api.dist.dir" value="../api/dist" description="Distrbution directory for the api project. This is where the api jar will be referenced from." />
   <property name="lib.provided.dir" value="lib-provided" description="Ivy dependencies of 'provided' configuration are placed here"/>
+  <property name="lib.pmr.dir" value="lib/pmr" description="Ivy dependencies of 'pmr' configuration are placed here. Placed under lib/ so they are packaged that way."/>
+  <property name="lib.client.dir" value="lib/client" description="Ivy dependencies of 'client' configuration are placed here. Placed under lib/ so they are packaged that way."/>
   <property name="src.common.dir" value="${common.dir}/src" description="Source files that are common to all shims"/>
   <property name="classes.common-mapred.dir" value="${bin.dir}/classes-mapred" description="Common mapred source files are compiled into here" />
   <property name="src.common-mapred.dir" value="${common.dir}/src-mapred" description="Common mapred sources" />
   <property name="testsrc.common.dir" value="${common.dir}/test-src" description="Common test sources" />
   <property name="package.common.resdir" value="${common.dir}/package-res" description="Common package resources" />
   <property name="mapred.artifact.name" value="${ivy.artifact.id}-mapred-${project.revision}.jar" description="Name of the mapred jar file to create"/>
+  <property name="hbase-comparators.artifact.name" value="${ivy.artifact.id}-hbase-comparators-${project.revision}.jar" description="Name of the mapred jar file to create"/>
 
   <!-- Setup the compile classpath to include the provided jars and the api jar -->
   <path id="classpath">
@@ -67,8 +70,12 @@
 
   <!-- Resolve provided dependencies to a separate directory -->
   <target name="resolve-default" depends="subfloor.resolve-default">
-    <ivy:resolve file="${ivyfile}" conf="default" />
+    <ivy:resolve file="${ivyfile}" conf="provided" />
     <ivy:retrieve conf="provided" pattern="${lib.provided.dir}/[module]-[revision](-[classifier]).[ext]" symlink="${ivy.use.symlinks.internal}" />
+    <ivy:resolve file="${ivyfile}" conf="pmr" />
+    <ivy:retrieve conf="pmr" pattern="${lib.pmr.dir}/[module]-[revision](-[classifier]).[ext]" symlink="${ivy.use.symlinks.internal}" />
+    <ivy:resolve file="${ivyfile}" conf="client" />
+    <ivy:retrieve conf="client" pattern="${lib.client.dir}/[module]-[revision](-[classifier]).[ext]" symlink="${ivy.use.symlinks.internal}" />
   </target>
 
   <!-- Override compile.compile to include common source -->
@@ -258,7 +265,7 @@
   </target>
 
   <!-- override jar.main so we can jar up our mapred stuff too -->
-  <target name="jar" depends="subfloor-pkg.jar,jar-mapred"/>
+  <target name="jar" depends="subfloor-pkg.jar,jar-mapred,jar-hbase-comparators"/>
 
   <!-- Jar the mapreduce libraries separately to reduce the payload when submitting
   MapReduce jobs to hadoop -->
@@ -268,19 +275,21 @@
     </jar>
   </target>
 
+  <target name="jar-hbase-comparators" depends="compile.compile">
+    <jar destfile="${dist.dir}/${hbase-comparators.artifact.name}" manifest="${dist.manifest.file}">
+      <fileset dir="${classes.dir}" includes="**/*Comparator*"/>
+    </jar>
+  </target>
+
   <!-- Override assemble.copy-libs to put our jar in the root of the package -->
   <target name="assemble.copy-libs">
     <copy todir="${approot.stage.dir}/lib">
       <fileset dir="${lib.dir}" />
-<!--         <!- - Exclude "provided" dependencies - ->
-        <exclude name="pentaho-hadoop-shims-api-*"/>
-        <exclude name="junit*" />
-        <exclude name="log4j*" />
-      </fileset>
- -->      <fileset file="${dist.dir}/${mapred.artifact.name}" />
+      <fileset file="${dist.dir}/${mapred.artifact.name}" />
     </copy>
     <copy todir="${approot.stage.dir}">
       <fileset file="${dist.dir}/${ivy.artifact.id}-${project.revision}.jar" />
+      <fileset file="${dist.dir}/${hbase-comparators.artifact.name}" />
     </copy>
   </target>
 

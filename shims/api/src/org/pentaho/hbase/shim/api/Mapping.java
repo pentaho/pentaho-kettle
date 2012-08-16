@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.hbase.mapping;
+package org.pentaho.hbase.shim.api;
 
 import java.util.HashMap;
 import java.util.Map;

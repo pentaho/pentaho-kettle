@@ -20,27 +20,43 @@
  *
  ******************************************************************************/
 
-package org.pentaho.hbase.mapping;
+package org.pentaho.hbase.shim.spi;
 
-import org.pentaho.hbase.shim.spi.HBaseShim;
+public interface HBaseBytesUtilShim {
 
-/**
- * Interface to something that can produce a connection to HBase
- * 
- * @author Mark Hall (mhall{[at]}penthao{[dot]}com)
- * @version $Revision$
- * 
- */
-public interface ConfigurationProducer {
+  int getSizeOfFloat();
 
-  /**
-   * Get a configuration object encapsulating connection information for HBase
-   * 
-   * @return a HBaseAdmin object for interacting with the currently configured
-   *         connection to HBase
-   * @throws Exception if the connection can't be supplied for some reason
-   */
-  HBaseShim getHBaseConnection() throws Exception;
+  int getSizeOfDouble();
 
-  String getCurrentConfiguration();
+  int getSizeOfInt();
+
+  int getSizeOfLong();
+
+  int getSizeOfShort();
+
+  int getSizeOfByte();
+
+  byte[] toBytes(String aString);
+
+  byte[] toBytes(int anInt);
+
+  byte[] toBytes(long aLong);
+
+  byte[] toBytes(float aFloat);
+
+  byte[] toBytes(double aDouble);
+
+  byte[] toBytesBinary(String value);
+
+  String toString(byte[] value);
+
+  long toLong(byte[] value);
+
+  int toInt(byte[] value);
+
+  float toFloat(byte[] value);
+
+  double toDouble(byte[] value);
+
+  short toShort(byte[] value);
 }

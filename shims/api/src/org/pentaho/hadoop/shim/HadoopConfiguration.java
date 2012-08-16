@@ -25,15 +25,18 @@ package org.pentaho.hadoop.shim;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.hadoop.shim.spi.HadoopShim;
 import org.pentaho.hadoop.shim.spi.PentahoHadoopShim;
 import org.pentaho.hadoop.shim.spi.PigShim;
 import org.pentaho.hadoop.shim.spi.SnappyShim;
 import org.pentaho.hadoop.shim.spi.SqoopShim;
+import org.pentaho.hbase.shim.spi.HBaseShim;
 
 /**
- * A collection of Hadoop shim implementations for interactive with a Hadoop cluster.
+ * A collection of Hadoop shim implementations for interactive with a Hadoop
+ * cluster.
  */
 public class HadoopConfiguration {
   private static final Class<?> PKG = HadoopConfiguration.class;
@@ -42,12 +45,19 @@ public class HadoopConfiguration {
 
   private String name;
   
+  /**
+   * Root directory for this configuration
+   */
+  private FileObject location;
+  
   private HadoopShim hadoopShim;
   
   private List<PentahoHadoopShim> availableShims;
 
   /**
-   * Create a new Hadoop configuration with the provided shims. Only 
+   * Create a new Hadoop configuration with the provided shims. Only
+   * 
+   * @param location Location where this configuration resides
    * @param identifier Unique identifier for this configuration
    * @param name Friendly name for this configuration
    * @param hadoopShim Hadoop shim
@@ -55,10 +65,11 @@ public class HadoopConfiguration {
    * @throws NullPointerException when {@code identifier}, {@code name}.
    * @throws NullPointerException when {@code identifier}, {@code name}, or {@code hadoopShim} are {@code null}
    */
-  public HadoopConfiguration(String identifier, String name, HadoopShim hadoopShim, PentahoHadoopShim... shims) {
-    if (identifier == null || name == null || hadoopShim == null) {
+  public HadoopConfiguration(FileObject location, String identifier, String name, HadoopShim hadoopShim, PentahoHadoopShim... shims) {
+    if (location == null || identifier == null || name == null || hadoopShim == null) {
       throw new NullPointerException();
     }
+    this.location = location;
     this.identifier = identifier;
     this.name = name;
     this.hadoopShim = hadoopShim;
@@ -67,17 +78,22 @@ public class HadoopConfiguration {
     availableShims = new ArrayList<PentahoHadoopShim>();
     // Add the hadoop shim to the list so we don't have to handle it special in getShim()
     availableShims.add(hadoopShim);
-    if (shims != null) {
-      for (PentahoHadoopShim shim : shims) {
-        if (shim == null) {
-          // Skip null shims
-          continue;
-        }
-        availableShims.add(shim);
+    for (PentahoHadoopShim shim : shims) {
+      if (shim == null) {
+        // Skip null shims
+        continue;
       }
+      availableShims.add(shim);
     }
   }
 
+  /**
+   * @return the location (root directory) of this Hadoop configuration
+   */
+  public FileObject getLocation() {
+    return location;
+  }
+  
   /**
    * @return this configuration's identifier
    */
@@ -101,8 +117,10 @@ public class HadoopConfiguration {
 
   /**
    * Retrieve the Sqoop shim for this configuration if it's available
+   * 
    * @return the Sqoop shim
-   * @throws ConfigurationException No Sqoop shim available for this configuration
+   * @throws ConfigurationException No Sqoop shim available for this
+   *           configuration
    */
   public SqoopShim getSqoopShim() throws ConfigurationException {
     return getShim(SqoopShim.class);
@@ -110,6 +128,7 @@ public class HadoopConfiguration {
 
   /**
    * Retrieve the Pig shim for this configuration if it's available
+   * 
    * @return the Pig shim
    * @throws ConfigurationException No Pig shim available for this configuration
    */
@@ -119,8 +138,10 @@ public class HadoopConfiguration {
 
   /**
    * Retrieve the Snappy shim for this configuration if it's available
+   * 
    * @return the Snappy shim
-   * @throws ConfigurationException No Snappy shim available for this configuration
+   * @throws ConfigurationException No Snappy shim available for this
+   *           configuration
    */
   public SnappyShim getSnappyShim() throws ConfigurationException {
     return getShim(SnappyShim.class);
@@ -142,6 +163,17 @@ public class HadoopConfiguration {
       }
     }
     throw new ConfigurationException(BaseMessages.getString(PKG, "Error.UnsupportedShim", getName(), shimType.getSimpleName()));
+  }
+
+  /**
+   * Retrieve the HBase shim for this configuration if it's available
+   * 
+   * @return the HBase shim
+   * @throws ConfigurationException No HBase shim available for this
+   *           configuration
+   */
+  public HBaseShim getHBaseShim() throws ConfigurationException {
+    return getShim(HBaseShim.class);
   }
 
   /**

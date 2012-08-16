@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.hbase.mapping;
+package org.pentaho.hbase.shim.common;
 
 import java.io.DataInput;
 import java.io.DataOutput;

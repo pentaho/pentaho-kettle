@@ -22,14 +22,11 @@
 
 package org.pentaho.di.trans.steps.hbaseinput;
 
-import java.io.IOException;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.hadoop.conf.Configuration;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -54,9 +51,11 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.hbase.mapping.HBaseValueMeta;
-import org.pentaho.hbase.mapping.Mapping;
 import org.pentaho.hbase.mapping.MappingAdmin;
+import org.pentaho.hbase.shim.api.ColumnFilter;
+import org.pentaho.hbase.shim.api.HBaseValueMeta;
+import org.pentaho.hbase.shim.api.Mapping;
+import org.pentaho.hbase.shim.spi.HBaseShim;
 import org.w3c.dom.Node;
 
 /**
@@ -819,20 +818,36 @@ public class HBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
         m_cachedMapping = m_mapping;
       } else {
 
-        Configuration conf = null;
-        URL coreConf = null;
-        URL defaultConf = null;
+        // Configuration conf = null;
+        HBaseShim conf = null;
+        try {
+          conf = HBaseShim.createHBaseAdmin();
+        } catch (Exception ex) {
+          throw new KettleStepException(ex);
+        }
+        /*
+         * URL coreConf = null; URL defaultConf = null;
+         */
+        String coreConf = null;
+        String defaultConf = null;
         String zookeeperHosts = null;
         String zookeeperPort = null;
 
         try {
           if (!Const.isEmpty(m_coreConfigURL)) {
-            coreConf = HBaseInputData.stringToURL(space
-                .environmentSubstitute(m_coreConfigURL));
+            /*
+             * coreConf = HBaseInputData.stringToURL(space
+             * .environmentSubstitute(m_coreConfigURL));
+             */
+            coreConf = space.environmentSubstitute(m_coreConfigURL);
           }
           if (!Const.isEmpty((m_defaultConfigURL))) {
-            defaultConf = HBaseInputData.stringToURL(space
-                .environmentSubstitute(m_defaultConfigURL));
+            /*
+             * defaultConf = HBaseInputData.stringToURL(space
+             * .environmentSubstitute(m_defaultConfigURL));
+             */
+
+            defaultConf = space.environmentSubstitute(m_defaultConfigURL);
           }
           if (!Const.isEmpty(m_zookeeperHosts)) {
             zookeeperHosts = space.environmentSubstitute(m_zookeeperHosts);
@@ -840,9 +855,19 @@ public class HBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
           if (!Const.isEmpty(m_zookeeperPort)) {
             zookeeperPort = space.environmentSubstitute(zookeeperPort);
           }
+
+          List<String> forLogging = new ArrayList<String>();
           conf = HBaseInputData.getHBaseConnection(zookeeperHosts,
-              zookeeperPort, coreConf, defaultConf);
-        } catch (IOException ex) {
+              zookeeperPort, coreConf, defaultConf, forLogging);
+
+          for (String m : forLogging) {
+            logBasic(m);
+          }
+          /*
+           * conf = HBaseInputData.getHBaseConnection(zookeeperHosts,
+           * zookeeperPort, coreConf, defaultConf);
+           */
+        } catch (Exception ex) {
           throw new KettleStepException(ex.getMessage(), ex);
         }
 
@@ -856,7 +881,7 @@ public class HBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
         try {
           m_cachedMapping = mappingAdmin.getMapping(m_sourceTableName,
               m_sourceMappingName);
-        } catch (IOException ex) {
+        } catch (Exception ex) {
           throw new KettleStepException(ex.getMessage(), ex);
         }
       }

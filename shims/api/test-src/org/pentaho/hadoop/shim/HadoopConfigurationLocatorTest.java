@@ -127,6 +127,7 @@ public class HadoopConfigurationLocatorTest {
         new DefaultFileSystemManager());
 
     assertEquals(1, locator.getConfigurations().size());
+    assertEquals(VFS.getManager().resolveFile(HADOOP_CONFIGURATIONS_PATH).resolveFile("a"), locator.getConfiguration("a").getLocation());
   }
   
   @Test

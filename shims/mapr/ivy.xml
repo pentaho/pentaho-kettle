@@ -7,6 +7,8 @@
     <conf name="zip" />
     <conf name="test" visibility="private" />
     <conf name="provided" />
+    <conf name="pmr" />
+    <conf name="client" />
   </configurations>
 
   <publications>
@@ -28,6 +30,9 @@
     <dependency conf="default" org="pentaho" name="pentaho-hdfs-vfs" rev="${dependency.pentaho-hdfs-vfs.revision}" transitive="false" changing="true"/>
     <dependency conf="default" org="pentaho" name="pentaho-hadoop-snappy" rev="${dependency.pentaho-hadoop-snappy.revision}" changing="true"/>
 
+    <dependency conf="pmr->default" org="org.apache.hbase" name="hbase" rev="${dependency.apache-hbase.revision}" transitive="false"/>
+    <dependency conf="pmr->default" org="org.apache.zookeeper" name="zookeeper" rev="${dependency.apache-zookeeper.revision}" transitive="false"/>
+
     <dependency org="pentaho" name="pentaho-hadoop-shims-api" rev="${project.revision}" changing="true"/>
     <dependency org="pentaho-kettle" name="kettle-core" rev="${dependency.kettle.revision}" changing="true"/>
     <dependency org="pentaho-kettle" name="kettle-engine" rev="${dependency.kettle.revision}" changing="true"/>
@@ -40,10 +45,9 @@
       <exclude org="junit"/>
       <exclude org="ant"/>
     </dependency>
-    <dependency org="org.apache.hbase" name="hbase" rev="${dependency.apache-hbase.revision}" transitive="false" />
-    <dependency org="org.apache.zookeeper" name="zookeeper" rev="${dependency.apache-zookeeper.revision}" transitive="false" />
 
     <dependency conf="test->default" org="junit" name="junit" rev="4.5"/>
     <dependency conf="test->default" org="org.safehaus.jug" name="jug-lgpl" rev="2.0.0" />
+    <dependency conf="test->default" org="pentaho" name="pentaho-hadoop-shims-api-test" rev="${project.revision}" changing="true"/>
   </dependencies>
 </ivy-module>
