@@ -37,6 +37,7 @@ import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.logging.LoggingRegistry;
 import org.pentaho.di.core.plugins.*;
+import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.trans.TransConfiguration;
 import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
@@ -49,6 +50,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -60,7 +62,8 @@ public class PentahoMapReduceIntegrationTest {
   private boolean debug = false;
   
   @Before
-  public void setup() {
+  public void setup() throws KettleException {
+    KettleEnvironment.init();
   }
   
   @After
@@ -760,5 +763,37 @@ public class PentahoMapReduceIntegrationTest {
 
     assertEquals(jobConf.getOutputKeyClass(), reducer.getOutClassK());
     assertEquals(jobConf.getOutputValueClass(), reducer.getOutClassV());
+  }
+
+  @Test
+  public void testTaskIdExtraction() throws Exception {
+    JobConf conf = createJobConf("./test-res/wordcount-mapper.ktr", "./test-res/wordcount-reducer.ktr",
+        "./test-res/wordcount-reducer.ktr");
+    conf.set("mapred.task.id", "job_201208090841_0133");
+    PentahoMapRunnable mapRunnable = new PentahoMapRunnable();
+    
+    mapRunnable.configure(conf);
+    
+    Field variableSpaceField = PentahoMapRunnable.class.getDeclaredField("variableSpace");
+    variableSpaceField.setAccessible(true);
+    VariableSpace variableSpace = (VariableSpace) variableSpaceField.get(mapRunnable);
+    String s = variableSpace.getVariable("Internal.Hadoop.NodeNumber");
+    assertEquals("133", s);
+  }
+
+  @Test
+  public void testTaskIdExtraction_over_10000() throws Exception {
+    JobConf conf = createJobConf("./test-res/wordcount-mapper.ktr", "./test-res/wordcount-reducer.ktr",
+        "./test-res/wordcount-reducer.ktr");
+    conf.set("mapred.task.id", "job_201208090841_013302");
+    PentahoMapRunnable mapRunnable = new PentahoMapRunnable();
+    
+    mapRunnable.configure(conf);
+    
+    Field variableSpaceField = PentahoMapRunnable.class.getDeclaredField("variableSpace");
+    variableSpaceField.setAccessible(true);
+    VariableSpace variableSpace = (VariableSpace) variableSpaceField.get(mapRunnable);
+    String s = variableSpace.getVariable("Internal.Hadoop.NodeNumber");
+    assertEquals("13302", s);
   }
 }
