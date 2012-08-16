@@ -61,7 +61,7 @@
   
   <target name="resolve-hadoop-shims" depends="install-ivy">
     <delete dir="${resolve.shims.dir}"/>
-    <ivy:resolve file="${ivyfile}" conf="default" />
+    <ivy:resolve file="${ivyfile}" conf="shim" />
     <ivy:retrieve conf="shim" pattern="${resolve.shims.dir}/[module]-[revision](-[classifier]).[ext]" symlink="true" />
   </target>
 
