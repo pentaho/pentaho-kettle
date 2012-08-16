@@ -40,6 +40,13 @@ public class PluginPropertiesUtil {
   public static final String PLUGIN_PROPERTIES_FILE = "plugin.properties";
   
   /**
+   * Placeholder for the version string that is replaced during the ant build process.
+   * This is mangled here so we have something to compare against to determine if
+   * the replacement has occured.
+   */
+  private static final String VERSION_PLACEHOLDER = "@" + "VERSION@";
+  
+  /**
    * Loads a properties file from the plugin directory for the plugin interface provided
    *
    * @param plugin
@@ -71,5 +78,16 @@ public class PluginPropertiesUtil {
    */
   public Properties loadPluginProperties(PluginInterface plugin) throws KettleFileException, IOException {
     return loadProperties(plugin, PLUGIN_PROPERTIES_FILE);
+  }
+  
+  /**
+   * @return the version of this plugin or {@code null} if not set during the ant build process
+   */
+  public String getVersion() {
+    // This value is replaced during the ant build process (task: compile.pre)
+    String version = "@VERSION@";
+    return VERSION_PLACEHOLDER.equals(version)
+        ? null
+        : version;
   }
 }

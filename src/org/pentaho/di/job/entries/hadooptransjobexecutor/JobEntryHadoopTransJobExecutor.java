@@ -781,7 +781,14 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
             throw new IllegalArgumentException(BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.KettleHdfsInstallDirMissing"));
           }
           if (Const.isEmpty(installId)) {
+            String pluginVersion = new PluginPropertiesUtil().getVersion();
+
             installId = Const.VERSION;
+            if (pluginVersion != null) {
+              installId = installId + "-" + pluginVersion;
+            }
+
+            installId = installId + "-" + hadoopConfig.getIdentifier();
           }
           if (!installPath.endsWith(Const.FILE_SEPARATOR)) {
             installPath += Const.FILE_SEPARATOR;

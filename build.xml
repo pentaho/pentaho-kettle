@@ -24,6 +24,8 @@
   <property name="resolve.shims.dir" value="${bin.dir}/shims"/>
   <property name="stage.shims.dir" value="${stage.dir}/${ivy.artifact.id}/hadoop-configurations"/>
   
+  <property name="prepared.src.dir" value="${bin.dir}/prepared-src"/>
+  
 	<property name="pdi-with-plugin"
 					value="pdi-ce-big-data"
 					description="Name of the pdi distribution with Big Data plugin"/>
@@ -261,4 +263,31 @@
 	<target name="package" depends="subfloor-pkg.package">
 		<zip destfile="${dist.dir}/${ivy.artifact.id}-samples-${project.revision}.zip" basedir="${samples.dir}" />
 	</target>
+
+  <!-- Override compile.pre and compile.compile so we can inject ${project.version} into PluginPropertiesUtil -->
+  <target name="compile.pre">
+    <!-- Update the @VERSION@ string in PluginPropertiesUtil -->
+    <echo>Replacing @VERSION@ in ${src.dir}/org/pentaho/hadoop/PluginPropertiesUtil.java</echo>
+    <copy todir="${prepared.src.dir}/org/pentaho/hadoop" file="${src.dir}/org/pentaho/hadoop/PluginPropertiesUtil.java" />
+    <replace file="${prepared.src.dir}/org/pentaho/hadoop/PluginPropertiesUtil.java" token="@VERSION@" value="${project.revision}" />
+  </target>
+
+  <!-- Build the prepared source after the normal source so we can replace the non-instrumented classes -->
+  <target name="compile.compile" depends="subfloor.compile.compile">
+    <echo>Building prepared source</echo>
+    <delete file="${classes.dir}/org/pentaho/hadoop/PluginPropertiesUtil.class"/>
+    <javac destdir="${classes.dir}"
+           includeAntRuntime="false"
+           debug="${javac.debug}"
+           deprecation="${javac.deprecation}"
+           fork="true"
+           memorymaximumsize="${javac.maxmemory}"
+           source="${javac.source}"
+           target="${javac.target}">
+      <classpath>
+        <path refid="classpath" />
+      </classpath>
+      <src path="${prepared.src.dir}" />
+    </javac>
+  </target>
 </project>
