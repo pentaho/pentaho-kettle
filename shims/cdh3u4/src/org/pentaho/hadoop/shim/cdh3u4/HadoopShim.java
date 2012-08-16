@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.hadoop.shim.cdh3;
+package org.pentaho.hadoop.shim.cdh3u4;
 
 import org.pentaho.hadoop.shim.common.CommonHadoopShim;
 

@@ -45,8 +45,8 @@
     <dependency conf="shim->default" org="pentaho" name="pentaho-hadoop-shims-hadoop-20-package" rev="${project.revision}" changing="true">
       <artifact name="pentaho-hadoop-shims-hadoop-20-package" type="zip"/>
     </dependency>
-    <dependency conf="shim->default" org="pentaho" name="pentaho-hadoop-shims-cdh3-package" rev="${project.revision}" changing="true">
-      <artifact name="pentaho-hadoop-shims-cdh3-package" type="zip"/>
+    <dependency conf="shim->default" org="pentaho" name="pentaho-hadoop-shims-cdh3u4-package" rev="${project.revision}" changing="true">
+      <artifact name="pentaho-hadoop-shims-cdh3u4-package" type="zip"/>
     </dependency>
     <dependency conf="shim->default" org="pentaho" name="pentaho-hadoop-shims-cdh4-package" rev="${project.revision}" changing="true">
       <artifact name="pentaho-hadoop-shims-cdh4-package" type="zip"/>

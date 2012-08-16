@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.hadoop.shim.cdh3;
+package org.pentaho.hadoop.shim.cdh3u4;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.compress.SnappyCodec;
