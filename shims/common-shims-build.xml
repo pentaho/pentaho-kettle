@@ -285,15 +285,11 @@
   <target name="assemble.copy-libs">
     <copy todir="${approot.stage.dir}/lib">
       <fileset dir="${lib.dir}" />
-<!--         <!- - Exclude "provided" dependencies - ->
-        <exclude name="pentaho-hadoop-shims-api-*"/>
-        <exclude name="junit*" />
-        <exclude name="log4j*" />
-      </fileset>
- -->      <fileset file="${dist.dir}/${mapred.artifact.name}" />
+      <fileset file="${dist.dir}/${mapred.artifact.name}" />
     </copy>
     <copy todir="${approot.stage.dir}">
       <fileset file="${dist.dir}/${ivy.artifact.id}-${project.revision}.jar" />
+      <fileset file="${dist.dir}/${hbase-comparators.artifact.name}" />
     </copy>
   </target>
 
