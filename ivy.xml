@@ -40,7 +40,7 @@
     <dependency org="pentaho" name="pentaho-xul-swt" rev="${dependency.pentaho-xul.revision}" transitive="false" conf="default->default"
       changing="true" />
       
-    <dependency org="pentaho" name="pentaho-hadoop-shims-api" rev="${project.revision}" transitive="false" conf="pmr->default;default->default"/>
+    <dependency org="pentaho" name="pentaho-hadoop-shims-api" rev="${project.revision}" transitive="false" conf="pmr->default;default->default" changing="true"/>
     
     <dependency conf="shim->default" org="pentaho" name="pentaho-hadoop-shims-hadoop-20-package" rev="${project.revision}" changing="true">
       <artifact name="pentaho-hadoop-shims-hadoop-20-package" type="zip"/>
