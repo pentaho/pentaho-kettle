@@ -32,6 +32,8 @@ import org.pentaho.hadoop.shim.common.CommonSqoopShim;
 import org.pentaho.hadoop.shim.spi.PigShim;
 import org.pentaho.hadoop.shim.spi.SqoopShim;
 import org.pentaho.hadoop.shim.spi.SnappyShim;
+import org.pentaho.hbase.shim.common.CommonHBaseShim;
+import org.pentaho.hbase.shim.spi.HBaseShim;
 
 /**
  * Validate that our Shim service providers have been registered properly
@@ -78,4 +80,13 @@ public class ShimRegistrationTest {
     assertTrue(org.pentaho.hadoop.shim.cdh4.SnappyShim.class.isAssignableFrom(s.getClass()));
   }
 
+  /**
+   * Make sure we've registered our HBase Shim
+   */
+  @Test
+  public void hbaseShimRegistered() {
+    ServiceLoader<HBaseShim> l = ServiceLoader.load(HBaseShim.class);
+    HBaseShim s = l.iterator().next();
+    assertTrue(CommonHBaseShim.class.isAssignableFrom(s.getClass()));
+  }
 }
