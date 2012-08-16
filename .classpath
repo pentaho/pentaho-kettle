@@ -244,6 +244,5 @@
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-xul-swt-3.3-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/js.jar"/>
 	<classpathentry kind="lib" path="libext/antlr-3.4-complete.jar"/>
-	<classpathentry kind="lib" path="libext/JDBC/vertica_4.1.17_jdk_5.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
