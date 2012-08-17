@@ -107,25 +107,6 @@
   <!-- Perform cobertura shim coverage in addition to our coverage -->
   <target name="cobertura" depends="cobertura-shims,subfloor.cobertura" />
 
-  <!-- HACK! Include the Hadoop 0.20.x compatible mapred jar on the test
-  classpath so we can properly test the MapReduce implementation without having 
-  to publish the special mapred jar just for the sake of depending on it here
-  for our tests. In reality, we should publish that jar and properly depend on it via Ivy -->
-  <path id="test.classpath">
-    <fileset dir="${devlib.dir}">
-      <include name="**/*.jar" />
-    </fileset>
-    <fileset dir="${lib.dir}">
-      <include name="**/*.jar" />
-    </fileset>
-    <fileset dir="${testlib.dir}">
-      <include name="**/*.jar" />
-    </fileset>
-    <pathelement path="${testclasses.dir}" />
-    <pathelement path="${classes.dir}" />
-    <pathelement path="${basedir}/shims/hadoop-20/bin/classes-mapred"/>
-  </path>
-
   <target name="assemble.init">
     <mkdir dir="${stage.dir}" />
     <mkdir dir="${stage.dir}/${ivy.artifact.id}" />

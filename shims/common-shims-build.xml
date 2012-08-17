@@ -18,7 +18,8 @@
   <property name="src.common-mapred.dir" value="${common.dir}/src-mapred" description="Common mapred sources" />
   <property name="testsrc.common.dir" value="${common.dir}/test-src" description="Common test sources" />
   <property name="package.common.resdir" value="${common.dir}/package-res" description="Common package resources" />
-  <property name="mapred.artifact.name" value="${ivy.artifact.id}-mapred-${project.revision}.jar" description="Name of the mapred jar file to create"/>
+  <property name="ivy.artifact.mapred.id" value="${ivy.artifact.id}-mapred" description="Name of artifact id for the mapred jar" />
+  <property name="mapred.artifact.name" value="${ivy.artifact.mapred.id}-${project.revision}.jar" description="Name of the mapred jar file to create"/>
   <property name="hbase-comparators.artifact.name" value="${ivy.artifact.id}-hbase-comparators-${project.revision}.jar" description="Name of the mapred jar file to create"/>
 
   <!-- Setup the compile classpath to include the provided jars and the api jar -->
@@ -300,5 +301,18 @@
       <fileset dir="${package.common.resdir}" />
     </copy>
   </target>
-
+  
+  <!-- Publish the mapred jar as well -->
+  <target name="publish-local-nojar.post">
+    <antcall target="publish-local-nojar.internal">
+      <param name="ivy.artifact.id" value="${ivy.artifact.mapred.id}"/>
+    </antcall>
+  </target>
+  
+  <!-- Publish the mapred jar as well -->
+  <target name="publish-nojar" depends="subfloor.publish-nojar">
+    <antcall target="publish-nojar.internal">
+      <param name="ivy.artifact.id" value="${ivy.artifact.mapred.id}"/>
+    </antcall>
+  </target>
 </project>
