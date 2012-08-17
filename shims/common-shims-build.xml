@@ -308,6 +308,11 @@
       <param name="ivy.artifact.id" value="${ivy.artifact.mapred.id}"/>
     </antcall>
   </target>
+
+  <!-- Build the mapred source jar that is required when publishing to a non-local repository -->
+  <target name="source.jar" depends="subfloor.source.jar">
+    <jar jarfile="${dist.dir}/${ivy.artifact.mapred.id}-${project.revision}-sources.jar" basedir="${src.common-mapred.dir}" />
+  </target>
   
   <!-- Publish the mapred jar as well -->
   <target name="publish-nojar" depends="subfloor.publish-nojar">
