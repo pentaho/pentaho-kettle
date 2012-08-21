@@ -409,7 +409,6 @@ public class JobEntrySimpleEval extends JobEntryBase implements Cloneable, JobEn
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "fieldname",  fieldname);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "variablename",  variablename);
 			rep.saveJobEntryAttribute(id_job, getObjectId(),"fieldtype", getFieldTypeCode(fieldtype));
-			rep.saveJobEntryAttribute(id_job, getObjectId(), "fieldtype",  fieldtype);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "mask",  mask);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "comparevalue",  comparevalue);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "minvalue",  minvalue);
