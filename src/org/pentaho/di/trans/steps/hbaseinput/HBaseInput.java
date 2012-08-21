@@ -50,7 +50,7 @@ import org.pentaho.hbase.shim.api.ColumnFilter;
 import org.pentaho.hbase.shim.api.HBaseValueMeta;
 import org.pentaho.hbase.shim.api.Mapping;
 import org.pentaho.hbase.shim.spi.HBaseBytesUtilShim;
-import org.pentaho.hbase.shim.spi.HBaseShim;
+import org.pentaho.hbase.shim.spi.HBaseConnection;
 
 /**
  * Class providing an input step for reading data from an HBase table according
@@ -71,8 +71,8 @@ public class HBaseInput extends BaseStep implements StepInterface {
     super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
   }
 
-  /** Admin object for interacting with HBase */
-  protected HBaseShim m_hbAdmin;
+  /** Connection/admin object for interacting with HBase */
+  protected HBaseConnection m_hbAdmin;
 
   /** Byte utilities */
   protected HBaseBytesUtilShim m_bytesUtil;

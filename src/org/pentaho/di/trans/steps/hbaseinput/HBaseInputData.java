@@ -33,6 +33,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.hadoop.shim.HadoopConfiguration;
+import org.pentaho.hbase.shim.spi.HBaseConnection;
 import org.pentaho.hbase.shim.spi.HBaseShim;
 
 /**
@@ -80,30 +81,32 @@ public class HBaseInputData extends BaseStepData implements StepDataInterface {
    * @return an administrative connection to HBase
    * @throws Exception if a problem occurs
    */
-  public static HBaseShim getHBaseConnection(String zookeeperHosts,
+  public static HBaseConnection getHBaseConnection(String zookeeperHosts,
       String zookeeperPort, String siteConfig, String defaultConfig,
       List<String> logging) throws Exception {
 
     Properties connProps = new Properties();
     if (!Const.isEmpty(zookeeperHosts)) {
-      connProps.setProperty(HBaseShim.ZOOKEEPER_QUORUM_KEY, zookeeperHosts);
+      connProps.setProperty(HBaseConnection.ZOOKEEPER_QUORUM_KEY,
+          zookeeperHosts);
     }
     if (!Const.isEmpty(zookeeperPort)) {
-      connProps.setProperty(HBaseShim.ZOOKEEPER_PORT_KEY, zookeeperPort);
+      connProps.setProperty(HBaseConnection.ZOOKEEPER_PORT_KEY, zookeeperPort);
     }
     if (!Const.isEmpty(siteConfig)) {
-      connProps.setProperty(HBaseShim.SITE_KEY, siteConfig);
+      connProps.setProperty(HBaseConnection.SITE_KEY, siteConfig);
     }
     if (!Const.isEmpty(defaultConfig)) {
-      connProps.setProperty(HBaseShim.DEFAULTS_KEY, defaultConfig);
+      connProps.setProperty(HBaseConnection.DEFAULTS_KEY, defaultConfig);
     }
 
-    HadoopConfiguration active = HadoopConfigurationBootstrap.getHadoopConfigurationProvider()
-        .getActiveConfiguration();
+    HadoopConfiguration active = HadoopConfigurationBootstrap
+        .getHadoopConfigurationProvider().getActiveConfiguration();
     HBaseShim hbaseShim = active.getHBaseShim();
-    hbaseShim.configureConnection(connProps, logging);
+    HBaseConnection conn = hbaseShim.getHBaseConnection();
+    conn.configureConnection(connProps, logging);
 
-    return hbaseShim;
+    return conn;
   }
 
   /**

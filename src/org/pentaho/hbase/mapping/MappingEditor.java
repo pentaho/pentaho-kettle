@@ -63,7 +63,7 @@ import org.pentaho.di.ui.core.widget.TableView;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.hbase.shim.api.HBaseValueMeta;
 import org.pentaho.hbase.shim.api.Mapping;
-import org.pentaho.hbase.shim.spi.HBaseShim;
+import org.pentaho.hbase.shim.spi.HBaseConnection;
 
 /**
  * A re-usable composite for creating and editing table mappings for HBase. Also
@@ -589,7 +589,7 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
       String existingName = m_existingTableNamesCombo.getText();
       m_existingTableNamesCombo.removeAll();
       try {
-        HBaseShim hbAdmin = m_configProducer.getHBaseConnection();
+        HBaseConnection hbAdmin = m_configProducer.getHBaseConnection();
         hbAdmin.checkHBaseAvailable();
 
         m_admin = new MappingAdmin();
@@ -977,7 +977,7 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
     if (m_allowTableCreate) {
       // check for existence of the table. If table doesn't exist
       // prompt for creation
-      HBaseShim hbAdmin = m_admin.getConnection();
+      HBaseConnection hbAdmin = m_admin.getConnection();
 
       try {
         if (!hbAdmin.tableExists(tableName)) {
@@ -1020,11 +1020,11 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
           Properties creationProps = new Properties();
           if (compression != null) {
             creationProps.setProperty(
-                HBaseShim.COL_DESCRIPTOR_COMPRESSION_KEY, compression);
+                HBaseConnection.COL_DESCRIPTOR_COMPRESSION_KEY, compression);
           }
           if (bloomFilter != null) {
             creationProps.setProperty(
-                HBaseShim.COL_DESCRIPTOR_BLOOM_FILTER_KEY, bloomFilter);
+                HBaseConnection.COL_DESCRIPTOR_BLOOM_FILTER_KEY, bloomFilter);
           }
           List<String> familyList = new ArrayList<String>();
           for (String fam : families) {
@@ -1190,7 +1190,7 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
         }
 
         // now get family information for this table
-        HBaseShim hbAdmin = m_admin.getConnection();
+        HBaseConnection hbAdmin = m_admin.getConnection();
 
         if (hbAdmin.tableExists(tableName)) {
           List<String> colFams = hbAdmin.getTableFamiles(tableName);
@@ -1209,8 +1209,8 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
     }
   }
 
-  public HBaseShim getHBaseConnection() throws Exception {
-    HBaseShim conf = null;
+  public HBaseConnection getHBaseConnection() throws Exception {
+    HBaseConnection conf = null;
     String zookeeperHosts = null;
     String zookeeperPort = null;
 

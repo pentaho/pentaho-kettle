@@ -76,7 +76,7 @@ import org.pentaho.hbase.mapping.MappingEditor;
 import org.pentaho.hbase.shim.api.ColumnFilter;
 import org.pentaho.hbase.shim.api.HBaseValueMeta;
 import org.pentaho.hbase.shim.api.Mapping;
-import org.pentaho.hbase.shim.spi.HBaseShim;
+import org.pentaho.hbase.shim.spi.HBaseConnection;
 
 /**
  * Dialog class for HBaseInput
@@ -1223,8 +1223,8 @@ public class HBaseInputDialog extends BaseStepDialog implements
     checkKeyInformation(true, false);
   }
 
-  public HBaseShim getHBaseConnection() throws Exception {
-    HBaseShim conf = null;
+  public HBaseConnection getHBaseConnection() throws Exception {
+    HBaseConnection conf = null;
 
     String coreConf = "";
     String defaultConf = "";
@@ -1280,7 +1280,7 @@ public class HBaseInputDialog extends BaseStepDialog implements
         boolean filterAliasesDone = false;
         try {
           if (displayFieldsMappingFromHBase) {
-            HBaseShim connection = getHBaseConnection();
+            HBaseConnection connection = getHBaseConnection();
             admin.setConnection(connection);
             current = admin.getMapping(transMeta
                 .environmentSubstitute(m_mappedTableNamesCombo.getText()),
@@ -1497,7 +1497,7 @@ public class HBaseInputDialog extends BaseStepDialog implements
     try {
       MappingAdmin admin = new MappingAdmin();
 
-      HBaseShim connection = getHBaseConnection();
+      HBaseConnection connection = getHBaseConnection();
       admin.setConnection(connection);
       Set<String> tableNames = admin.getMappedTables();
 
@@ -1522,7 +1522,7 @@ public class HBaseInputDialog extends BaseStepDialog implements
     if (!Const.isEmpty(m_mappedTableNamesCombo.getText())) {
       try {
         MappingAdmin admin = new MappingAdmin();
-        HBaseShim connection = getHBaseConnection();
+        HBaseConnection connection = getHBaseConnection();
         admin.setConnection(connection);
 
         List<String> mappingNames = admin

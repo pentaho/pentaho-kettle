@@ -42,6 +42,7 @@ import org.pentaho.hbase.HBaseRowToKettleTuple;
 import org.pentaho.hbase.shim.api.HBaseValueMeta;
 import org.pentaho.hbase.shim.api.Mapping;
 import org.pentaho.hbase.shim.spi.HBaseBytesUtilShim;
+import org.pentaho.hbase.shim.spi.HBaseConnection;
 import org.pentaho.hbase.shim.spi.HBaseShim;
 
 /**
@@ -86,7 +87,7 @@ public class HBaseRowDecoder extends BaseStep implements StepInterface {
    * Administrative connection to HBase (used just for the utility routines for
    * extracting info from HBase row objects)
    */
-  protected HBaseShim m_hbAdmin;
+  protected HBaseConnection m_hbAdmin;
 
   /** Bytes util */
   protected HBaseBytesUtilShim m_bytesUtil;
@@ -109,9 +110,11 @@ public class HBaseRowDecoder extends BaseStep implements StepInterface {
       m_data = (HBaseRowDecoderData) sdi;
 
       try {
-        HadoopConfiguration active = HadoopConfigurationBootstrap.getHadoopConfigurationProvider()
-            .getActiveConfiguration();
-        m_hbAdmin = active.getHBaseShim();
+        HadoopConfiguration active = HadoopConfigurationBootstrap
+            .getHadoopConfigurationProvider().getActiveConfiguration();
+        HBaseShim hbShim = active.getHBaseShim();
+
+        m_hbAdmin = hbShim.getHBaseConnection();
         m_bytesUtil = m_hbAdmin.getBytesUtil();
 
         // no configuration needed here because we don't need access to the
