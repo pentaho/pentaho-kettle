@@ -640,7 +640,9 @@ public class TextFileOutput extends BaseStep implements StepInterface
               data.fos = KettleVFS.getOutputStream(filename, getTransMeta(), meta.isFileAppended());
             }
             data.zip = new ZipOutputStream(data.fos);
-            File entry = new File(filename);
+            // The filename has the ZIP extension and refers to the top-level filename. Thus we
+            // need to add the intended extension to the ZipEntry.
+            File entry = new File(filename+"."+meta.getExtension());
             ZipEntry zipentry = new ZipEntry(entry.getName());
             zipentry.setComment("Compressed by Kettle");
             data.zip.putNextEntry(zipentry);
@@ -685,7 +687,6 @@ public class TextFileOutput extends BaseStep implements StepInterface
     } catch (Exception e) {
       throw new KettleException("Error opening new file : " + e.toString());
     }
-    // System.out.println("end of newFile(), splitnr="+splitnr);
 
     data.splitnr++;
 
@@ -707,10 +708,18 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		{			
 			if ( data.writer != null )
 			{
-				if(log.isDebug()) logDebug("Closing output stream");
-			    data.writer.close();
-			    if(log.isDebug()) logDebug("Closed output stream");
-			}			
+				data.writer.flush();
+				
+				// If writing a ZIP or GZIP file not from a command, do not close the writer or else
+				// the closing of the ZipOutputStream below will throw an "already closed" exception.
+				// Rather than checking for compression types, it is easier to check for cmdProc != null
+				// because if that check fails, we know we will get into the ZIP/GZIP processing below.
+				if(data.cmdProc != null) {
+					if(log.isDebug()) logDebug("Closing output stream");
+				    data.writer.close();
+				    if(log.isDebug()) logDebug("Closed output stream");
+				}
+			}
 			data.writer = null;
 			if (data.cmdProc != null)
 			{
@@ -720,6 +729,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				// otherwise you get "Too many open files, java.io.IOException" after a lot of iterations
 				try {
 					data.cmdProc.getErrorStream().close();
+					data.cmdProc.getOutputStream().flush();
 					data.cmdProc.getOutputStream().close();				
 					data.cmdProc.getInputStream().close();
 				} catch (IOException e) {
@@ -733,6 +743,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				if(log.isDebug()) logDebug("Closing normal file ...");
 				if (FILE_COMPRESSION_TYPE_ZIP.equals(meta.getFileCompression()))
 				{
+					data.zip.flush();
 					data.zip.closeEntry();
 					data.zip.finish();
 					data.zip.close();
@@ -741,7 +752,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				{
 					data.gzip.finish();
 				}
-                if (data.fos!=null)
+				if (data.fos!=null)
                 {
                     data.fos.close();
                     data.fos=null;

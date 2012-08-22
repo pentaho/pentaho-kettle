@@ -1485,7 +1485,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		if (input.getFileFormat()!=null) {
 			wFormat.select(0); // default if not found: CR+LF
 			for (int i=0;i<TextFileOutputMeta.formatMapperLineTerminator.length;i++) {
-				if(input.getFileFormat().equals(TextFileOutputMeta.formatMapperLineTerminator[i])) wFormat.select(i);
+				if(input.getFileFormat().equalsIgnoreCase(TextFileOutputMeta.formatMapperLineTerminator[i])) wFormat.select(i);
 			}
 		}
 		if (input.getFileCompression()!=null) wCompression.setText(input.getFileCompression());
