@@ -38,7 +38,8 @@ import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
 
 /**
  * The interface that any transformation step or plugin needs to implement.
- * 
+ * <p>
+ * @@MoreInformationSDK-DOC-doc14 
  * Created on 12-AUG-2004
  *
  * @author Matt

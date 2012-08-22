@@ -23,13 +23,15 @@
 package org.pentaho.di.core.row;
 
 /**
- * 
- * We use this class to do row manipulations like add, delete, resize, etc.
+ * This class of static methods can be used to manipulate rows: add, delete, resize, etc...
  * That way, when we want to go for a metadata driven system with 
  * hiding deletes, over sized arrays etc, we can change these methods to find occurrences.
+ * <p>
+ * For example, a step adding a field to the row should always call
+ * <pre>    <a href="">public static Object[] resizeArray(Object[] objects, int newSize)</a></i></pre>
+ * which will either physically resize the array or return the original row, in case it was over-allocated and has enough slots. If a step needs to create new rows from scratch, it should use allocateRowData() which will return a somewhat over-allocated object array to fit the desired number of fields.
  * 
  * @author Matt
- *
  */
 public class RowDataUtil {
 	public static int OVER_ALLOCATE_SIZE = 10;

@@ -28,10 +28,10 @@ import org.pentaho.di.repository.Repository;
 /**
  * This interface is used to launch Step Dialogs.
  * All dialogs that implement this simple interface can be opened by Spoon.
- * 
+ * <p>
+ * @@SDK-DOC-doc14
  * @author Matt
  * @since 4-aug-2004
- * 
  */
 public interface StepDialogInterface 
 {
