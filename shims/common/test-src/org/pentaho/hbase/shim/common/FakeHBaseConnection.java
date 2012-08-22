@@ -3,11 +3,13 @@ package org.pentaho.hbase.shim.common;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.NavigableMap;
 import java.util.Properties;
 import java.util.Set;
+import java.util.SortedMap;
 import java.util.TreeMap;
 
 import org.apache.hadoop.hbase.util.Bytes;
@@ -16,9 +18,9 @@ import org.pentaho.hadoop.shim.ShimVersion;
 import org.pentaho.hbase.shim.api.ColumnFilter;
 import org.pentaho.hbase.shim.api.HBaseValueMeta;
 import org.pentaho.hbase.shim.spi.HBaseBytesUtilShim;
-import org.pentaho.hbase.shim.spi.HBaseShim;
+import org.pentaho.hbase.shim.spi.HBaseConnection;
 
-public class FakeHBaseAdmin extends HBaseShim {
+public class FakeHBaseConnection extends HBaseConnection {
 
   protected HBaseBytesUtilShim m_bytesUtil;
 
@@ -62,6 +64,26 @@ public class FakeHBaseAdmin extends HBaseShim {
     public boolean getAvailable() {
       return m_available;
     }
+
+    public SortedMap<byte[], NavigableMap<byte[], NavigableMap<byte[], NavigableMap<Long, byte[]>>>> getRows(
+        byte[] startKey, byte[] stopKey) {
+      SortedMap<byte[], NavigableMap<byte[], NavigableMap<byte[], NavigableMap<Long, byte[]>>>> subMap = null;
+      if (startKey == null && stopKey == null) {
+        return m_table; // full table
+      }
+
+      if (stopKey == null) {
+        Map.Entry<byte[], NavigableMap<byte[], NavigableMap<byte[], NavigableMap<Long, byte[]>>>> lastE = m_table
+            .lastEntry();
+        byte[] upperKey = lastE.getKey();
+
+        subMap = m_table.subMap(startKey, upperKey);
+      }
+
+      subMap = m_table.subMap(startKey, stopKey);
+
+      return subMap;
+    }
   }
 
   protected class Scan {
@@ -96,6 +118,34 @@ public class FakeHBaseAdmin extends HBaseShim {
     public void addColumn(byte[] colFamName, byte[] colName) {
       m_cols.add(new ScanCol(colFamName, colName));
     }
+
+    public ResultScanner getScanner(String tableName) {
+      FakeTable table = m_db.get(tableName);
+      if (table == null) {
+        return null;
+      }
+
+      SortedMap<byte[], NavigableMap<byte[], NavigableMap<byte[], NavigableMap<Long, byte[]>>>> subMap = table
+          .getRows(m_startKey, m_stopKey);
+
+      return new ResultScanner(this, subMap);
+    }
+  }
+
+  protected class ResultScanner {
+    protected Scan m_scan;
+    protected SortedMap<byte[], NavigableMap<byte[], NavigableMap<byte[], NavigableMap<Long, byte[]>>>> m_rows;
+    protected Iterator<NavigableMap<byte[], NavigableMap<byte[], NavigableMap<Long, byte[]>>>> m_rowIterator;
+
+    public ResultScanner(
+        Scan scan,
+        SortedMap<byte[], NavigableMap<byte[], NavigableMap<byte[], NavigableMap<Long, byte[]>>>> rows) {
+      m_scan = scan;
+      m_rows = rows;
+      m_rowIterator = m_rows.values().iterator();
+    }
+
+    // TODO next() method with respect to the scan's columns (if any)
   }
 
   protected Map<String, FakeTable> m_db = new HashMap<String, FakeTable>();
@@ -104,7 +154,7 @@ public class FakeHBaseAdmin extends HBaseShim {
   protected String m_targetTable;
   protected Scan m_sourceScan;
 
-  public FakeHBaseAdmin() {
+  public FakeHBaseConnection() {
     try {
       getBytesUtil();
     } catch (Exception ex) {
