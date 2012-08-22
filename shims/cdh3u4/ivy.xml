@@ -51,5 +51,15 @@
     <exclude org="log4j" module="log4j" conf="default" />
     <!-- Exclude antlr. Hive brings in a version that's not compatible with Pig. -->
     <exclude org="org.antlr" conf="default" />
+    <!-- Exclude additional jars we don't want pulled in. We don't need these at runtime. -->
+    <exclude org="junit"/>
+    <exclude org="ant"/>
+    <exclude org="org.eclipse.jdt" module="core"/>
+    <exclude org="tomcat"/>
+    <exclude org="org.mortbay.jetty"/>
+    <exclude org="hsqldb" module="hsqldb"/>
+    <!-- Don't resolve any pom files -->
+    <exclude type="pom"/>
+   
   </dependencies>
 </ivy-module>
