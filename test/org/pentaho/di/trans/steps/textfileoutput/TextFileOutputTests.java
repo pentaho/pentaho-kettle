@@ -22,9 +22,18 @@
 
 package org.pentaho.di.trans.steps.textfileoutput;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import junit.framework.TestCase;
 
@@ -53,13 +62,12 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 /**
- * This class was a "copy and modification" of Kettle's 
- * CsvInput1Test.  I added comments as I was learning 
- * the architecture of the class.
- * 
- * @author sflatley
+ * This class tests the functionality of the TextFileOutput step.
  */
 public class TextFileOutputTests extends TestCase {
+	
+	private static final String SEPARATOR = ";";
+	private static final String EXTENSION = "txt";
            
     /**
      * Creates a row generator step for this class..
@@ -143,6 +151,25 @@ public class TextFileOutputTests extends TestCase {
         list.add(new RowMetaAndData(rowMetaInterface, r8));
         list.add(new RowMetaAndData(rowMetaInterface, r9));
         list.add(new RowMetaAndData(rowMetaInterface, r10));
+        return list;
+    }
+    
+    /**
+     * Create result data for test case 1.  Each Object array in
+     * element in list should mirror the data written by the row generator
+     * created by the createRowGenerator method.
+     * 
+     * @return list of metadata/data couples of how the result should look like.
+     */
+    public List<RowMetaAndData> createResultDataFromObjects(Object[][] objs) {
+        List<RowMetaAndData> list = new ArrayList<RowMetaAndData>();
+
+        RowMetaInterface rowMetaInterface = createResultRowMetaInterface();
+
+        for(Object[] o : objs) {
+        	list.add(new RowMetaAndData(rowMetaInterface, o));
+        }
+        
         return list;
     }
     
@@ -256,7 +283,7 @@ public class TextFileOutputTests extends TestCase {
 		return xml1;
 	}
 
-    private StepMeta createTextFileOutputStep(String name, String textFileName, PluginRegistry registry) {
+    private StepMeta createTextFileOutputStep(String name, String textFileName, String compression, PluginRegistry registry) {
         
         // Create a Text File Output step
         String testFileOutputName = name;
@@ -313,10 +340,11 @@ public class TextFileOutputTests extends TestCase {
         
         //  We need a file name so we will generate a temp file       
         textFileOutputMeta.setFileName(textFileName);
-        textFileOutputMeta.setExtension(".txt");
+        textFileOutputMeta.setFileNameInField(false);
+        textFileOutputMeta.setExtension(EXTENSION);
         textFileOutputMeta.setEnclosure("\"");
-        textFileOutputMeta.setFileCompression("None");        
-        textFileOutputMeta.setSeparator(";"); 
+        textFileOutputMeta.setFileCompression(compression);        
+        textFileOutputMeta.setSeparator(SEPARATOR); 
         textFileOutputMeta.setFileFormat(TestUtilities.getFileFormat());
         textFileOutputMeta.setAddToResultFiles(false);
         textFileOutputMeta.setNewline(TestUtilities.getEndOfLineCharacters());
@@ -366,7 +394,7 @@ public class TextFileOutputTests extends TestCase {
         //  create the text file output step
         //    but first lets get a filename
         String textFileName = TestUtilities.createEmptyTempFile("testTextFileOutput1");
-        StepMeta textFileOutputStep = createTextFileOutputStep("text file output step", textFileName, registry);
+        StepMeta textFileOutputStep = createTextFileOutputStep("text file output step", textFileName, "None",registry);
         transMeta.addStep(textFileOutputStep);
 
         //  create a TransHopMeta for textFileOutputStep and add it to the transMeta
@@ -440,4 +468,284 @@ public class TextFileOutputTests extends TestCase {
         textFileOutputMeta.loadXML(stepnode, null,null);
         assertTrue(textFileOutputMeta.isCreateParentFolder());
     }
+    
+    /**
+     * Tests the ZIP output capability of the TextFileOutput step
+     * @throws Exception
+     */
+    @Test
+    public void testTextFileOutput4() throws Exception {
+        KettleEnvironment.init();
+        
+     // Create a new transformation...
+        //
+        TransMeta transMeta = new TransMeta();
+        transMeta.setName("testTextFileOutput4");
+        PluginRegistry registry = PluginRegistry.getInstance();
+        
+        //  create an injector step
+        String injectorStepName = "injector step";
+        StepMeta injectorStep = TestUtilities.createInjectorStep(injectorStepName, registry);
+        transMeta.addStep(injectorStep);        
+        
+        // create a row generator step
+        StepMeta rowGeneratorStep = createRowGeneratorStep("Create rows for testTextFileOutput4", registry);
+        transMeta.addStep(rowGeneratorStep);
+        
+        //  create a TransHopMeta for injector and add it to the transMeta
+        TransHopMeta hop_injectory_rowGenerator = new TransHopMeta(injectorStep, rowGeneratorStep);
+        transMeta.addTransHop(hop_injectory_rowGenerator);
+       
+        //  create the text file output step with ZIP compression
+        //    but first lets get a filename
+        String textFileName = "testTextFileOutput4";
+        String textFileOutputStepName = "text file output step";
+        StepMeta textFileOutputStep = createTextFileOutputStep(textFileOutputStepName, textFileName, "Zip", registry);
+        transMeta.addStep(textFileOutputStep);
+
+        //  create a TransHopMeta for textFileOutputStep and add it to the transMeta
+        TransHopMeta hop_RowGenerator_outputTextFile = new TransHopMeta(rowGeneratorStep, textFileOutputStep);
+        transMeta.addTransHop(hop_RowGenerator_outputTextFile);
+
+        // Now execute the transformation...
+        Trans trans = new Trans(transMeta);
+        trans.prepareExecution(null);
+        
+        //  Create a row collector and add it to the dummy step interface
+        StepInterface dummyStepInterface = trans.getStepInterface(textFileOutputStepName, 0);
+        RowStepCollector dummyRowCollector = new RowStepCollector();
+        dummyStepInterface.addRowListener(dummyRowCollector);
+
+        trans.startThreads();
+        trans.waitUntilFinished();
+
+        // Compare the results
+	    List<RowMetaAndData> resultRows = dummyRowCollector.getRowsWritten();
+	    Object[][] rows = new Object[10][3];
+	    File f = new File(textFileName+".zip");
+	    f.deleteOnExit();
+	    try {
+	        ZipFile zf = new ZipFile(f);
+	        int zipEntryCount = 0;
+	        Enumeration<? extends ZipEntry> entries = zf.entries();
+	
+	        while (entries.hasMoreElements()) {
+	          ZipEntry ze = (ZipEntry) entries.nextElement();
+	          zipEntryCount++;
+	          BufferedReader input = new BufferedReader(
+	                  new InputStreamReader(zf.getInputStream(ze)));
+	          
+	          int rowCount = 0;
+	          try {
+	        	  String inputLine = input.readLine();
+	        	  while(inputLine != null) {
+	        		  String[] columns = inputLine.split(";");
+	        		  if(columns.length != 3) fail("Expected 3 columns, got "+columns.length);
+	        		  rows[rowCount][0] = Long.parseLong(columns[0].trim());
+	        		  rows[rowCount][1] = columns[1];
+	        		  rows[rowCount][2] = columns[2];
+	        		  inputLine = input.readLine();
+	        	  }
+	          }
+	          catch(IOException ioe) {}
+	          
+	        }
+	        
+	        zf.close();
+	        assertEquals(zipEntryCount,1);
+	        
+	      } catch (IOException e) {
+	        fail(e.getLocalizedMessage());
+	      }
+	     
+	    List<RowMetaAndData> goldenImageRows = createResultDataFromObjects(rows);
+        
+        try {
+            TestUtilities.checkRows(goldenImageRows, resultRows);
+        }
+        catch (TestFailedException tfe) {
+            fail(tfe.getMessage());
+        }
+    }
+
+	/**
+	 * Tests the GZIP output capability of the TextFileOutput step
+	 * @throws Exception
+	 */
+	@Test
+	public void testTextFileOutput5() throws Exception {
+	    KettleEnvironment.init();
+	    
+	 // Create a new transformation...
+	    //
+	    TransMeta transMeta = new TransMeta();
+	    transMeta.setName("testTextFileOutput5");
+	    PluginRegistry registry = PluginRegistry.getInstance();
+	    
+	    //  create an injector step
+	    String injectorStepName = "injector step";
+	    StepMeta injectorStep = TestUtilities.createInjectorStep(injectorStepName, registry);
+	    transMeta.addStep(injectorStep);        
+	    
+	    // create a row generator step
+	    StepMeta rowGeneratorStep = createRowGeneratorStep("Create rows for testTextFileOutput5", registry);
+	    transMeta.addStep(rowGeneratorStep);
+	    
+	    //  create a TransHopMeta for injector and add it to the transMeta
+	    TransHopMeta hop_injectory_rowGenerator = new TransHopMeta(injectorStep, rowGeneratorStep);
+	    transMeta.addTransHop(hop_injectory_rowGenerator);
+	
+	    //  create the text file output step with GZIP compression
+	    //    but first lets get a filename
+	    String textFileName = "testTextFileOutput5";
+	    String textFileOutputStepName = "text file output step";
+	    StepMeta textFileOutputStep = createTextFileOutputStep(textFileOutputStepName, textFileName, "GZip", registry);
+	    transMeta.addStep(textFileOutputStep);
+	
+	    //  create a TransHopMeta for textFileOutputStep and add it to the transMeta
+	    TransHopMeta hop_RowGenerator_outputTextFile = new TransHopMeta(rowGeneratorStep, textFileOutputStep);
+	    transMeta.addTransHop(hop_RowGenerator_outputTextFile);
+	
+	    // Now execute the transformation...
+	    Trans trans = new Trans(transMeta);
+	    trans.prepareExecution(null);
+	    
+	    //  Create a row collector and add it to the dummy step interface
+	    StepInterface dummyStepInterface = trans.getStepInterface(textFileOutputStepName, 0);
+	    RowStepCollector dummyRowCollector = new RowStepCollector();
+	    dummyStepInterface.addRowListener(dummyRowCollector);
+	
+	    trans.startThreads();
+	    trans.waitUntilFinished();
+	
+	    //Compare the results
+	    List<RowMetaAndData> resultRows = dummyRowCollector.getRowsWritten();
+	    Object[][] rows = new Object[10][3];
+	    File f = new File(textFileName+"."+EXTENSION+".gz");
+	    f.deleteOnExit();
+	    try {
+	    	FileInputStream fin = new FileInputStream(f);
+	    	GZIPInputStream gzis = new GZIPInputStream(fin);
+	        InputStreamReader xover = new InputStreamReader(gzis);
+	        BufferedReader input = new BufferedReader(xover);
+	                    
+	        int rowCount = 0;
+	        try {
+	    	  String inputLine = input.readLine();
+	    	  while(inputLine != null) {
+	    		  String[] columns = inputLine.split(";");
+	    		  if(columns.length != 3) fail("Expected 3 columns, got "+columns.length);
+	    		  rows[rowCount][0] = Long.parseLong(columns[0].trim());
+	    		  rows[rowCount][1] = columns[1];
+	    		  rows[rowCount][2] = columns[2];
+	    		  inputLine = input.readLine();
+	    	  }
+	        }
+	        catch(IOException ioe) {}
+	          
+	        fin.close();
+	        
+	      } catch (IOException e) {
+	        fail(e.getLocalizedMessage());
+	      }
+	     
+	    List<RowMetaAndData> goldenImageRows = createResultDataFromObjects(rows);
+	    
+	    try {
+	        TestUtilities.checkRows(goldenImageRows, resultRows);
+	    }
+	    catch (TestFailedException tfe) {
+	        fail(tfe.getMessage());
+	    }
+	}
+
+	/**
+	 * Tests the normal output capability of the TextFileOutput step
+	 * @throws Exception
+	 */
+	@Test
+	public void testTextFileOutput6() throws Exception {
+	    KettleEnvironment.init();
+	    
+	 // Create a new transformation...
+	    //
+	    TransMeta transMeta = new TransMeta();
+	    transMeta.setName("testTextFileOutput6");
+	    PluginRegistry registry = PluginRegistry.getInstance();
+	    
+	    //  create an injector step
+	    String injectorStepName = "injector step";
+	    StepMeta injectorStep = TestUtilities.createInjectorStep(injectorStepName, registry);
+	    transMeta.addStep(injectorStep);        
+	    
+	    // create a row generator step
+	    StepMeta rowGeneratorStep = createRowGeneratorStep("Create rows for testTextFileOutput5", registry);
+	    transMeta.addStep(rowGeneratorStep);
+	    
+	    //  create a TransHopMeta for injector and add it to the transMeta
+	    TransHopMeta hop_injectory_rowGenerator = new TransHopMeta(injectorStep, rowGeneratorStep);
+	    transMeta.addTransHop(hop_injectory_rowGenerator);
+	
+	    //  create the text file output step with no compression
+	    //    but first lets get a filename
+	    String textFileName = "testTextFileOutput6";
+	    String textFileOutputStepName = "text file output step";
+	    StepMeta textFileOutputStep = createTextFileOutputStep(textFileOutputStepName, textFileName, "None", registry);
+	    transMeta.addStep(textFileOutputStep);
+	
+	    //  create a TransHopMeta for textFileOutputStep and add it to the transMeta
+	    TransHopMeta hop_RowGenerator_outputTextFile = new TransHopMeta(rowGeneratorStep, textFileOutputStep);
+	    transMeta.addTransHop(hop_RowGenerator_outputTextFile);
+	
+	    // Now execute the transformation...
+	    Trans trans = new Trans(transMeta);
+	    trans.prepareExecution(null);
+	    
+	    //  Create a row collector and add it to the dummy step interface
+	    StepInterface dummyStepInterface = trans.getStepInterface(textFileOutputStepName, 0);
+	    RowStepCollector dummyRowCollector = new RowStepCollector();
+	    dummyStepInterface.addRowListener(dummyRowCollector);
+	
+	    trans.startThreads();
+	    trans.waitUntilFinished();
+	
+	    //Compare the results
+	    List<RowMetaAndData> resultRows = dummyRowCollector.getRowsWritten();
+	    Object[][] rows = new Object[10][3];
+	    File f = new File(textFileName+"."+EXTENSION);
+	    f.deleteOnExit();
+	    try {
+	    	FileInputStream fin = new FileInputStream(f);
+	    	InputStreamReader xover = new InputStreamReader(fin);
+	        BufferedReader input = new BufferedReader(xover);
+	                    
+	        int rowCount = 0;
+	        try {
+	    	  String inputLine = input.readLine();
+	    	  while(inputLine != null) {
+	    		  String[] columns = inputLine.split(";");
+	    		  if(columns.length != 3) fail("Expected 3 columns, got "+columns.length);
+	    		  rows[rowCount][0] = Long.parseLong(columns[0].trim());
+	    		  rows[rowCount][1] = columns[1];
+	    		  rows[rowCount][2] = columns[2];
+	    		  inputLine = input.readLine();
+	    	  }
+	        }
+	        catch(IOException ioe) {}
+	          
+	        fin.close();
+	        
+	      } catch (IOException e) {
+	        fail(e.getLocalizedMessage());
+	      }
+	     
+	    List<RowMetaAndData> goldenImageRows = createResultDataFromObjects(rows);
+	    
+	    try {
+	        TestUtilities.checkRows(goldenImageRows, resultRows);
+	    }
+	    catch (TestFailedException tfe) {
+	        fail(tfe.getMessage());
+	    }
+	}
 }
