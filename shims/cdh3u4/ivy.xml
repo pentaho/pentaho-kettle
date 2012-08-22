@@ -52,7 +52,7 @@
     <!-- Exclude antlr. Hive brings in a version that's not compatible with Pig. -->
     <exclude org="org.antlr" conf="default" />
     <!-- Exclude additional jars we don't want pulled in. We don't need these at runtime. -->
-    <exclude org="junit"/>
+    <exclude org="junit" conf="default"/>
     <exclude org="ant"/>
     <exclude org="org.eclipse.jdt" module="core"/>
     <exclude org="tomcat"/>
