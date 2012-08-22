@@ -35,7 +35,7 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.hbase.shim.api.HBaseValueMeta;
 import org.pentaho.hbase.shim.api.Mapping;
 import org.pentaho.hbase.shim.spi.HBaseBytesUtilShim;
-import org.pentaho.hbase.shim.spi.HBaseShim;
+import org.pentaho.hbase.shim.spi.HBaseConnection;
 
 /**
  * Class for decoding HBase rows to a <key, family, column, value, time stamp>
@@ -115,8 +115,9 @@ public class HBaseRowToKettleTuple {
    * @return a list of Kettle rows in tuple format
    * @throws KettleException if a problem occurs
    */
-  public List<Object[]> hbaseRowToKettleTupleMode(Object hRow, HBaseShim admin,
-      Mapping mapping, Map<String, HBaseValueMeta> tupleColsMappedByAlias,
+  public List<Object[]> hbaseRowToKettleTupleMode(Object hRow,
+      HBaseConnection admin, Mapping mapping,
+      Map<String, HBaseValueMeta> tupleColsMappedByAlias,
       RowMetaInterface outputRowMeta) throws KettleException {
 
     if (m_decodedTuples == null) {
@@ -151,8 +152,8 @@ public class HBaseRowToKettleTuple {
    * @return a list of Kettle rows in tuple format
    * @throws KettleException if a problem occurs
    */
-  public List<Object[]> hbaseRowToKettleTupleMode(Object hRow, HBaseShim admin,
-      Mapping mapping, List<HBaseValueMeta> tupleCols,
+  public List<Object[]> hbaseRowToKettleTupleMode(Object hRow,
+      HBaseConnection admin, Mapping mapping, List<HBaseValueMeta> tupleCols,
       RowMetaInterface outputRowMeta) throws KettleException {
 
     if (m_decodedTuples == null) {

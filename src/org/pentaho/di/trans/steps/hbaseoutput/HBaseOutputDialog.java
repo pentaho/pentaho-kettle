@@ -69,7 +69,7 @@ import org.pentaho.hbase.mapping.FieldProducer;
 import org.pentaho.hbase.mapping.MappingAdmin;
 import org.pentaho.hbase.mapping.MappingEditor;
 import org.pentaho.hbase.shim.api.Mapping;
-import org.pentaho.hbase.shim.spi.HBaseShim;
+import org.pentaho.hbase.shim.spi.HBaseConnection;
 
 /**
  * Dialog class for HBaseOutput
@@ -766,9 +766,9 @@ public class HBaseOutputDialog extends BaseStepDialog implements
     }
   }
 
-  public HBaseShim getHBaseConnection() throws Exception {
+  public HBaseConnection getHBaseConnection() throws Exception {
     /* Configuration conf = null; */
-    HBaseShim conf = null;
+    HBaseConnection conf = null;
 
     /*
      * URL coreConf = null; URL defaultConf = null;
@@ -809,7 +809,7 @@ public class HBaseOutputDialog extends BaseStepDialog implements
     try {
       MappingAdmin admin = new MappingAdmin();
 
-      HBaseShim connection = getHBaseConnection();
+      HBaseConnection connection = getHBaseConnection();
       admin.setConnection(connection);
       Set<String> tableNames = admin.getMappedTables();
 
@@ -834,7 +834,7 @@ public class HBaseOutputDialog extends BaseStepDialog implements
       try {
         MappingAdmin admin = new MappingAdmin();
 
-        HBaseShim connection = getHBaseConnection();
+        HBaseConnection connection = getHBaseConnection();
         admin.setConnection(connection);
 
         List<String> mappingNames = admin

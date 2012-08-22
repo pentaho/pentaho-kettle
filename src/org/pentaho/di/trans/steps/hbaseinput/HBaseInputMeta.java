@@ -55,7 +55,7 @@ import org.pentaho.hbase.mapping.MappingAdmin;
 import org.pentaho.hbase.shim.api.ColumnFilter;
 import org.pentaho.hbase.shim.api.HBaseValueMeta;
 import org.pentaho.hbase.shim.api.Mapping;
-import org.pentaho.hbase.shim.spi.HBaseShim;
+import org.pentaho.hbase.shim.spi.HBaseConnection;
 import org.w3c.dom.Node;
 
 /**
@@ -817,17 +817,7 @@ public class HBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
       if (m_mapping != null) {
         m_cachedMapping = m_mapping;
       } else {
-
-        // Configuration conf = null;
-        HBaseShim conf = null;
-        try {
-          conf = HBaseShim.createHBaseAdmin();
-        } catch (Exception ex) {
-          throw new KettleStepException(ex);
-        }
-        /*
-         * URL coreConf = null; URL defaultConf = null;
-         */
+        HBaseConnection conf = null;
         String coreConf = null;
         String defaultConf = null;
         String zookeeperHosts = null;
@@ -835,18 +825,9 @@ public class HBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
 
         try {
           if (!Const.isEmpty(m_coreConfigURL)) {
-            /*
-             * coreConf = HBaseInputData.stringToURL(space
-             * .environmentSubstitute(m_coreConfigURL));
-             */
             coreConf = space.environmentSubstitute(m_coreConfigURL);
           }
           if (!Const.isEmpty((m_defaultConfigURL))) {
-            /*
-             * defaultConf = HBaseInputData.stringToURL(space
-             * .environmentSubstitute(m_defaultConfigURL));
-             */
-
             defaultConf = space.environmentSubstitute(m_defaultConfigURL);
           }
           if (!Const.isEmpty(m_zookeeperHosts)) {
@@ -863,10 +844,6 @@ public class HBaseInputMeta extends BaseStepMeta implements StepMetaInterface {
           for (String m : forLogging) {
             logBasic(m);
           }
-          /*
-           * conf = HBaseInputData.getHBaseConnection(zookeeperHosts,
-           * zookeeperPort, coreConf, defaultConf);
-           */
         } catch (Exception ex) {
           throw new KettleStepException(ex.getMessage(), ex);
         }

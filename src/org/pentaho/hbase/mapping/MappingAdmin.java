@@ -43,6 +43,7 @@ import org.pentaho.hadoop.shim.HadoopConfiguration;
 import org.pentaho.hbase.shim.api.HBaseValueMeta;
 import org.pentaho.hbase.shim.api.Mapping;
 import org.pentaho.hbase.shim.spi.HBaseBytesUtilShim;
+import org.pentaho.hbase.shim.spi.HBaseConnection;
 import org.pentaho.hbase.shim.spi.HBaseShim;
 
 /**
@@ -62,7 +63,7 @@ public class MappingAdmin {
    */
 
   /** Admin object */
-  protected HBaseShim m_admin;
+  protected HBaseConnection m_admin;
 
   /** Byte utils */
   protected HBaseBytesUtilShim m_bytesUtil;
@@ -84,10 +85,10 @@ public class MappingAdmin {
    */
   public MappingAdmin() {
     try {
-      HadoopConfiguration active = HadoopConfigurationBootstrap.getHadoopConfigurationProvider()
-          .getActiveConfiguration();
+      HadoopConfiguration active = HadoopConfigurationBootstrap
+          .getHadoopConfigurationProvider().getActiveConfiguration();
       HBaseShim hbaseShim = active.getHBaseShim();
-      m_bytesUtil = hbaseShim.getBytesUtil();
+      m_bytesUtil = hbaseShim.getHBaseConnection().getBytesUtil();
     } catch (Exception ex) {
       // catastrophic failure if we can't obtain a concrete implementation
       throw new RuntimeException(ex);
@@ -99,12 +100,8 @@ public class MappingAdmin {
    * 
    * @param conf a configuration object containing connection information
    * @throws Exception if a problem occurs
-   * 
-   *           public MappingAdmin(Configuration conf) throws Exception {
-   *           setConnection(conf); }
    */
-
-  public MappingAdmin(HBaseShim conn) {
+  public MappingAdmin(HBaseConnection conn) {
     this();
     setConnection(conn);
   }
@@ -114,34 +111,17 @@ public class MappingAdmin {
    * 
    * @param con a configuration object containing connection information.
    * @throws Exception if a problem occurs
-   * 
-   *           public void setConnection(Configuration con) throws Exception {
-   *           m_connection = con; m_admin = new HBaseAdmin(m_connection); }
    */
-
-  public void setConnection(HBaseShim conn) {
+  public void setConnection(HBaseConnection conn) {
     m_admin = conn;
   }
-
-  /**
-   * Just use whatever can be loaded from the classpath for the connection
-   * 
-   * @throws Exception
-   * 
-   *           public void setUseDefaultConnection() throws Exception {
-   *           m_connection = HBaseConfiguration.create(); m_admin = new
-   *           HBaseAdmin(m_connection); }
-   */
 
   /**
    * Get the configuration being used for the connection
    * 
    * @return the configuration encapsulating connection information
-   * 
-   *         public Configuration getConnection() { return m_connection; }
    */
-
-  public HBaseShim getConnection() {
+  public HBaseConnection getConnection() {
     return m_admin;
   }
 
@@ -182,7 +162,7 @@ public class MappingAdmin {
     m_admin.createTable("MarksTestTable", colFamilies, null);
 
     Properties props = new Properties();
-    props.setProperty(HBaseShim.HTABLE_WRITE_BUFFER_SIZE_KEY, ""
+    props.setProperty(HBaseConnection.HTABLE_WRITE_BUFFER_SIZE_KEY, ""
         + (1024 * 1024 * 12));
     m_admin.newTargetTable("MarksTestTable", props);
 
@@ -818,8 +798,17 @@ public class MappingAdmin {
     try {
       String tableName = "MarksTestTable";
       String mappingName = "MarksTestMapping";
+      HadoopConfiguration active = HadoopConfigurationBootstrap
+          .getHadoopConfigurationProvider().getActiveConfiguration();
+      HBaseShim hbaseShim = active.getHBaseShim();
+      HBaseConnection conn = hbaseShim.getHBaseConnection();
+
+      Properties connProps = new Properties();
+      connProps.setProperty(HBaseConnection.ZOOKEEPER_QUORUM_KEY, "localhost");
+      conn.configureConnection(connProps, null);
+
       MappingAdmin admin = new MappingAdmin();
-      admin.setConnection(HBaseShim.createHBaseAdmin());
+      admin.setConnection(conn);
 
       if (args.length == 0 || args[0].equalsIgnoreCase("-h")
           || args[0].endsWith("help")) {
