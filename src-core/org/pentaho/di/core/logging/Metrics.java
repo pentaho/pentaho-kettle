@@ -36,8 +36,10 @@ public class Metrics implements MetricsInterface {
   public static Metrics METRIC_DATABASE_GET_LOOKUP_STOP = new Metrics(MetricsSnapshotType.STOP, "METRIC_DATABASE_GET_LOOKUP", "Get lookup");
   public static Metrics METRIC_DATABASE_GET_DBMETA_START = new Metrics(MetricsSnapshotType.START, "METRIC_DATABASE_GET_DBMETA", "Get DB metadata");
   public static Metrics METRIC_DATABASE_GET_DBMETA_STOP = new Metrics(MetricsSnapshotType.STOP, "METRIC_DATABASE_GET_DBMETA", "Get DB metadata");
-  public static Metrics METRIC_DATABASE_GET_ROW_START = new Metrics(MetricsSnapshotType.START, "METRIC_DATABASE_GET_ROW", "Get row from DB");
-  public static Metrics METRIC_DATABASE_GET_ROW_STOP = new Metrics(MetricsSnapshotType.STOP, "METRIC_DATABASE_GET_ROW", "Get row from DB");
+  public static Metrics METRIC_DATABASE_GET_ROW_COUNT = new Metrics(MetricsSnapshotType.SUM, "METRIC_DATABASE_GET_ROW_COUNT", "Get row from DB (count)");
+  public static Metrics METRIC_DATABASE_GET_ROW_SUM_TIME = new Metrics(MetricsSnapshotType.SUM, "METRIC_DATABASE_GET_ROW_SUM_TIME", "Get row from DB (total time)");
+  public static Metrics METRIC_DATABASE_GET_ROW_MIN_TIME = new Metrics(MetricsSnapshotType.SUM, "METRIC_DATABASE_GET_ROW_MIN_TIME", "Get row from DB (min time)");
+  public static Metrics METRIC_DATABASE_GET_ROW_MAX_TIME = new Metrics(MetricsSnapshotType.SUM, "METRIC_DATABASE_GET_ROW_MAX_TIME", "Get row from DB (max time)");
   
   // Plugin registry...
   //

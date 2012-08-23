@@ -15,10 +15,10 @@ public class MetricsUtil {
   /**
    * Calculates the durations between the START and STOP snapshots for a given metric description
    * @param logChannelId the id of the log channel to investigate
-   * @param description the metric code
+   * @param metricsCode the metric code
    * @return the duration in ms
    */
-  public static List<MetricsDuration> getDuration(String logChannelId, String description) {
+  public static List<MetricsDuration> getDuration(String logChannelId, String metricsCode) {
     List<MetricsDuration> durations = new ArrayList<MetricsDuration>();
     
     Deque<MetricsSnapshotInterface> metrics = MetricsRegistry.getInstance().getSnapshotList(logChannelId);
@@ -27,16 +27,16 @@ public class MetricsUtil {
     Iterator<MetricsSnapshotInterface> iterator = metrics.iterator();
     while (iterator.hasNext()) {
       MetricsSnapshotInterface snapshot = iterator.next();
-      if (snapshot.getMetric().getDescription().equalsIgnoreCase(description)) {
+      if (snapshot.getMetric().getCode().equalsIgnoreCase(metricsCode)) {
         if (snapshot.getMetric().getType() == MetricsSnapshotType.START) {
           if (start!=null) {
             // We didn't find a stop for the previous start so add it with a null duration
-            durations.add(new MetricsDuration(start.getDate(), description, snapshot.getSubject(), logChannelId, null));
+            durations.add(new MetricsDuration(start.getDate(), snapshot.getMetric().getDescription(), snapshot.getSubject(), logChannelId, null));
           }
           start = snapshot;
         } else {
           long duration = snapshot.getDate().getTime() - start.getDate().getTime();
-          durations.add(new MetricsDuration(start.getDate(), description, snapshot.getSubject(), logChannelId, duration));
+          durations.add(new MetricsDuration(start.getDate(), snapshot.getMetric().getDescription(), snapshot.getSubject(), logChannelId, duration));
           start=null;
         }
       }
