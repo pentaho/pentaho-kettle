@@ -400,13 +400,13 @@ public class SpoonSlave extends Composite implements TabItemInterface {
     if (item.getData("transStatus") != null) {
       SlaveServerTransStatus transStatus = (SlaveServerTransStatus) item.getData("transStatus");
       try {
-        log.logDetailed("Getting transformation status for [{0}] on server [{1}]", transStatus.getTransName(), SpoonSlave.this.slaveServer);
+        if(log.isDetailed()) log.logDetailed("Getting transformation status for [{0}] on server [{1}]", transStatus.getTransName(), SpoonSlave.this.slaveServer);
 
         Integer lastLine = lastLineMap.get(transStatus.getId());
         int lastLineNr = lastLine == null ? 0 : lastLine.intValue();
 
         SlaveServerTransStatus ts = SpoonSlave.this.slaveServer.getTransStatus(transStatus.getTransName(), transStatus.getId(), lastLineNr);
-        log.logDetailed("Finished receiving transformation status for [{0}] from server [{1}]", transStatus.getTransName(), SpoonSlave.this.slaveServer);
+        if(log.isDetailed()) log.logDetailed("Finished receiving transformation status for [{0}] from server [{1}]", transStatus.getTransName(), SpoonSlave.this.slaveServer);
         List<StepStatus> stepStatusList = ts.getStepStatusList();
         transStatus.setStepStatusList(stepStatusList);
 
@@ -444,14 +444,14 @@ public class SpoonSlave extends Composite implements TabItemInterface {
     } else if (item.getData("jobStatus") != null) {
       SlaveServerJobStatus jobStatus = (SlaveServerJobStatus) item.getData("jobStatus");
       try {
-        log.logDetailed("Getting job status for [{0}] on server [{1}]", jobStatus.getJobName(), slaveServer);
+        if(log.isDetailed()) log.logDetailed("Getting job status for [{0}] on server [{1}]", jobStatus.getJobName(), slaveServer);
 
         Integer lastLine = lastLineMap.get(jobStatus.getId());
         int lastLineNr = lastLine == null ? 0 : lastLine.intValue();
 
         SlaveServerJobStatus ts = slaveServer.getJobStatus(jobStatus.getJobName(), jobStatus.getId(), lastLineNr);
 
-        log.logDetailed("Finished receiving job status for [{0}] from server [{1}]", jobStatus.getJobName(), slaveServer);
+        if(log.isDetailed()) log.logDetailed("Finished receiving job status for [{0}] from server [{1}]", jobStatus.getJobName(), slaveServer);
 
         lastLineMap.put(jobStatus.getId(), ts.getLastLoggingLineNr());
         String logging = loggingMap.get(jobStatus.getId());
@@ -759,7 +759,7 @@ public class SpoonSlave extends Composite implements TabItemInterface {
       return;
     refreshBusy = true;
 
-    log.logDetailed("Refresh");
+    if(log.isDetailed()) log.logDetailed("Refresh");
 
     transParentItem.removeAll();
     jobParentItem.removeAll();

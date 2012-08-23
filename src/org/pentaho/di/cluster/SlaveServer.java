@@ -174,6 +174,10 @@ public class SlaveServer  extends ChangedFlag
         this.log = new LogChannel(this);
 
     }
+    
+    public LogChannelInterface getLogChannel() {
+		return log;
+	}
 
     public String getXML()
     {
@@ -397,7 +401,7 @@ public class SlaveServer  extends ChangedFlag
         // Prepare HTTP put
         // 
         String urlString = constructUrl(service);
-        log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ConnectingTo", urlString)); //$NON-NLS-1$
+        if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ConnectingTo", urlString)); //$NON-NLS-1$
         PostMethod postMethod = new PostMethod(urlString);
         
         // Request content will be retrieved directly from the input stream
@@ -432,7 +436,7 @@ public class SlaveServer  extends ChangedFlag
             int result = client.executeMethod(post);
             
             // The status code
-            log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseStatus", Integer.toString(result))); //$NON-NLS-1$
+            if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseStatus", Integer.toString(result))); //$NON-NLS-1$
             
             // the response
             //
@@ -459,7 +463,7 @@ public class SlaveServer  extends ChangedFlag
             String body = bodyBuffer.toString();
 
             // String body = post.getResponseBodyAsString(); 
-            log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseBody",body)); //$NON-NLS-1$
+            if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseBody",body)); //$NON-NLS-1$
             
             return body;
         } catch (Exception e) {
@@ -477,7 +481,7 @@ public class SlaveServer  extends ChangedFlag
             
             // Release current connection to the connection pool once you are done
             post.releaseConnection();
-            log.logDetailed(BaseMessages.getString(PKG, "SlaveServer.DETAILED_SentXmlToService", service, environmentSubstitute(hostname))); //$NON-NLS-1$
+            if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "SlaveServer.DETAILED_SentXmlToService", service, environmentSubstitute(hostname))); //$NON-NLS-1$
         }
     }
 
@@ -497,7 +501,7 @@ public class SlaveServer  extends ChangedFlag
     	}
 
         String urlString = constructUrl(serviceUrl);
-        log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ConnectingTo", urlString)); //$NON-NLS-1$
+        if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ConnectingTo", urlString)); //$NON-NLS-1$
 
         PutMethod putMethod = new PutMethod(urlString);
         
@@ -528,7 +532,7 @@ public class SlaveServer  extends ChangedFlag
               int result = client.executeMethod(putMethod);
               
               // The status code
-              log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseStatus", Integer.toString(result))); //$NON-NLS-1$
+              if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseStatus", Integer.toString(result))); //$NON-NLS-1$
               
               // the response
               inputStream = putMethod.getResponseBodyAsStream();
@@ -554,7 +558,7 @@ public class SlaveServer  extends ChangedFlag
               
   
               // String body = post.getResponseBodyAsString(); 
-              log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseBody",body)); //$NON-NLS-1$
+              if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseBody",body)); //$NON-NLS-1$
               
               return body;
           }
@@ -569,7 +573,7 @@ public class SlaveServer  extends ChangedFlag
 
               // Release current connection to the connection pool once you are done
               putMethod.releaseConnection();
-              log.logDetailed(BaseMessages.getString(PKG, "SlaveServer.DETAILED_SentExportToService", AddExportServlet.CONTEXT_PATH, environmentSubstitute(hostname))); //$NON-NLS-1$
+              if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "SlaveServer.DETAILED_SentExportToService", AddExportServlet.CONTEXT_PATH, environmentSubstitute(hostname))); //$NON-NLS-1$
           }
         } finally {
           try {
@@ -651,7 +655,7 @@ public class SlaveServer  extends ChangedFlag
             int result = client.executeMethod(method);
             
             // The status code
-            log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseStatus", Integer.toString(result))); //$NON-NLS-1$
+            if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseStatus", Integer.toString(result))); //$NON-NLS-1$
 
             // the response
             //
@@ -664,8 +668,8 @@ public class SlaveServer  extends ChangedFlag
 
             String body = bodyBuffer.toString();
             
-            log.logDetailed(BaseMessages.getString(PKG, "SlaveServer.DETAILED_FinishedReading", Integer.toString(body.getBytes().length))); //$NON-NLS-1$
-            log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseBody",body)); //$NON-NLS-1$
+            if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "SlaveServer.DETAILED_FinishedReading", Integer.toString(body.getBytes().length))); //$NON-NLS-1$
+            if(log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "SlaveServer.DEBUG_ResponseBody",body)); //$NON-NLS-1$
             
             return body;
         }
@@ -680,7 +684,7 @@ public class SlaveServer  extends ChangedFlag
 
             // Release current connection to the connection pool once you are done
             method.releaseConnection();            
-            log.logDetailed(BaseMessages.getString(PKG, "SlaveServer.DETAILED_ExecutedService", service, hostname) ); //$NON-NLS-1$
+            if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "SlaveServer.DETAILED_ExecutedService", service, hostname) ); //$NON-NLS-1$
         }
 
     }

@@ -3598,6 +3598,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       executionConfiguration.getVariables().putAll(vars);
       slaveServer.injectVariables(executionConfiguration.getVariables());
       
+      slaveServer.getLogChannel().setLogLevel(executionConfiguration.getLogLevel());
+      
 			if (executionConfiguration.isPassingExport()) {
 				
 				// First export the job...
