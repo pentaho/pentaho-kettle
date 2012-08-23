@@ -214,6 +214,10 @@ public class HadoopFileOutputDialog extends BaseStepDialog implements StepDialog
 	private Button       wSpecifyFormat;
 	private FormData     fdlSpecifyFormat, fdSpecifyFormat;
 	
+	private Label        wlCreateParentFolder;
+	private Button       wCreateParentFolder;
+	private FormData     fdlCreateParentFolder, fdCreateParentFolder;
+	
 	private ColumnInfo[] colinf;
 
     private Map<String, Integer> inputFields;
@@ -319,13 +323,41 @@ public class HadoopFileOutputDialog extends BaseStepDialog implements StepDialog
 		fdFilename.right= new FormAttachment(wbFilename, -margin);
 		wFilename.setLayoutData(fdFilename);
 		
+		
+		// Create Parent Folder
+		wlCreateParentFolder=new Label(wFileComp, SWT.RIGHT);
+		wlCreateParentFolder.setText(BaseMessages.getString(BASE_PKG, "TextFileOutputDialog.CreateParentFolder.Label"));
+ 		props.setLook(wlCreateParentFolder);
+		fdlCreateParentFolder=new FormData();
+		fdlCreateParentFolder.left = new FormAttachment(0, 0);
+		fdlCreateParentFolder.top  = new FormAttachment(wFilename, margin);
+		fdlCreateParentFolder.right= new FormAttachment(middle, -margin);
+		wlCreateParentFolder.setLayoutData(fdlCreateParentFolder);
+		wCreateParentFolder=new Button(wFileComp, SWT.CHECK );
+		wCreateParentFolder.setToolTipText(BaseMessages.getString(BASE_PKG, "TextFileOutputDialog.CreateParentFolder.Tooltip"));
+ 		props.setLook(wCreateParentFolder);
+		fdCreateParentFolder=new FormData();
+		fdCreateParentFolder.left = new FormAttachment(middle, 0);
+		fdCreateParentFolder.top  = new FormAttachment(wFilename, margin);
+		fdCreateParentFolder.right= new FormAttachment(100, 0);
+		wCreateParentFolder.setLayoutData(fdCreateParentFolder);
+		wCreateParentFolder.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					input.setChanged();
+				}
+			}
+		);
+		
+		
 		// Open new File at Init
 		wlDoNotOpenNewFileInit=new Label(wFileComp, SWT.RIGHT);
 		wlDoNotOpenNewFileInit.setText(BaseMessages.getString(BASE_PKG, "TextFileOutputDialog.DoNotOpenNewFileInit.Label"));
  		props.setLook(wlDoNotOpenNewFileInit);
 		fdlDoNotOpenNewFileInit=new FormData();
 		fdlDoNotOpenNewFileInit.left = new FormAttachment(0, 0);
-		fdlDoNotOpenNewFileInit.top  = new FormAttachment(wFilename, margin);
+		fdlDoNotOpenNewFileInit.top  = new FormAttachment(wCreateParentFolder, margin);
 		fdlDoNotOpenNewFileInit.right= new FormAttachment(middle, -margin);
 		wlDoNotOpenNewFileInit.setLayoutData(fdlDoNotOpenNewFileInit);
 		wDoNotOpenNewFileInit=new Button(wFileComp, SWT.CHECK );
@@ -333,7 +365,7 @@ public class HadoopFileOutputDialog extends BaseStepDialog implements StepDialog
  		props.setLook(wDoNotOpenNewFileInit);
 		fdDoNotOpenNewFileInit=new FormData();
 		fdDoNotOpenNewFileInit.left = new FormAttachment(middle, 0);
-		fdDoNotOpenNewFileInit.top  = new FormAttachment(wFilename, margin);
+		fdDoNotOpenNewFileInit.top  = new FormAttachment(wCreateParentFolder, margin);
 		fdDoNotOpenNewFileInit.right= new FormAttachment(100, 0);
 		wDoNotOpenNewFileInit.setLayoutData(fdDoNotOpenNewFileInit);
 		wDoNotOpenNewFileInit.addSelectionListener(new SelectionAdapter() 
@@ -344,6 +376,8 @@ public class HadoopFileOutputDialog extends BaseStepDialog implements StepDialog
 				}
 			}
 		);
+		
+		
 		
 		/*next Lines*/
 		// FileNameInField line
@@ -1218,6 +1252,7 @@ public class HadoopFileOutputDialog extends BaseStepDialog implements StepDialog
 		
 		getData();
 		activeFileNameField();
+		enableParentFolder();
 		input.setChanged(changed);
 		
 		shell.open();
@@ -1345,6 +1380,7 @@ public class HadoopFileOutputDialog extends BaseStepDialog implements StepDialog
 	{
 		if (input.getFileName()  != null) wFilename.setText(input.getFileName());
 		wDoNotOpenNewFileInit.setSelection(input.isDoNotOpenNewFileInit());
+		wCreateParentFolder.setSelection(input.isCreateParentFolder());
 		if (input.getExtension() != null) wExtension.setText(input.getExtension());
 		if (input.getSeparator() !=null) wSeparator.setText(input.getSeparator());
 		if (input.getEnclosure() !=null) wEnclosure.setText(input.getEnclosure());
@@ -1412,6 +1448,7 @@ public class HadoopFileOutputDialog extends BaseStepDialog implements StepDialog
 	{
 		tfoi.setFileName(   wFilename.getText() );
 		tfoi.setDoNotOpenNewFileInit(wDoNotOpenNewFileInit.getSelection() );
+		tfoi.setCreateParentFolder(wCreateParentFolder.getSelection());
 		tfoi.setFileFormat( wFormat.getText() );
 		tfoi.setFileCompression( wCompression.getText() );
         tfoi.setEncoding( wEncoding.getText() );
@@ -1559,5 +1596,11 @@ public class HadoopFileOutputDialog extends BaseStepDialog implements StepDialog
 	public String toString()
 	{
 		return this.getClass().getName();
+	}
+	
+	private void enableParentFolder()
+	{
+		wlCreateParentFolder.setEnabled(true);
+		wCreateParentFolder.setEnabled(true);
 	}
 }
