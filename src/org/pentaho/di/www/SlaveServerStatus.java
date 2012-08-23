@@ -140,7 +140,7 @@ public class SlaveServerStatus
         String cpuCoresStr = XMLHandler.getTagValue(statusNode, "cpu_cores");
         cpuCores = Const.toInt(cpuCoresStr, -1);
         String cpuProcessTimeStr = XMLHandler.getTagValue(statusNode, "cpu_process_time");
-        cpuProcessTime = Const.isEmpty(cpuProcessTimeStr) ? null : Long.valueOf(cpuProcessTimeStr);
+        cpuProcessTime = Const.isEmpty(cpuProcessTimeStr) ? 0L : Long.valueOf(cpuProcessTimeStr);
         
         uptime = Const.toLong(XMLHandler.getTagValue(statusNode, "uptime"), -1);
         threadCount = Const.toInt(XMLHandler.getTagValue(statusNode, "thread_count"), -1);

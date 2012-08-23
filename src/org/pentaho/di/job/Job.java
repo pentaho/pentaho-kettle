@@ -1422,6 +1422,9 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 		if (Const.isEmpty(jobMeta.getName()))
 			throw new KettleException(BaseMessages.getString(PKG, "Job.Log.UniqueJobName"));
 
+		// Align logging levels between execution configuration and remote server
+		slaveServer.getLogChannel().setLogLevel(executionConfiguration.getLogLevel());
+		
 		try
 		{
 			// Inject certain internal variables to make it more intuitive. 
