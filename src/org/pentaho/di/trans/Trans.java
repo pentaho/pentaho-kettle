@@ -1968,10 +1968,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	
 	 protected synchronized void writeMetricsInformation() throws KettleException {
 	   //       
-	   System.out.println(MetricsUtil.getDuration(log.getLogChannelId(), Metrics.METRIC_PLUGIN_REGISTRY_REGISTER_EXTENSIONS_START.getDescription()).get(0));
-     System.out.println(MetricsUtil.getDuration(log.getLogChannelId(), Metrics.METRIC_PLUGIN_REGISTRY_PLUGIN_REGISTRATION_START.getDescription()).get(0));
+	   System.out.println(MetricsUtil.getDuration(log.getLogChannelId(), Metrics.METRIC_PLUGIN_REGISTRY_REGISTER_EXTENSIONS_START).get(0));
+     System.out.println(MetricsUtil.getDuration(log.getLogChannelId(), Metrics.METRIC_PLUGIN_REGISTRY_PLUGIN_REGISTRATION_START).get(0));
      long total=0;
-     for (MetricsDuration duration : MetricsUtil.getDuration(log.getLogChannelId(), Metrics.METRIC_PLUGIN_REGISTRY_PLUGIN_TYPE_REGISTRATION_START.getDescription())) {
+     for (MetricsDuration duration : MetricsUtil.getDuration(log.getLogChannelId(), Metrics.METRIC_PLUGIN_REGISTRY_PLUGIN_TYPE_REGISTRATION_START)) {
        total+=duration.getDuration();
        System.out.println("   - "+duration.toString()+"  Total="+total);
      }

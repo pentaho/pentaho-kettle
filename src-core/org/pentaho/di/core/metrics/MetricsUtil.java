@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.pentaho.di.core.logging.Metrics;
 import org.pentaho.di.core.logging.MetricsInterface;
 import org.pentaho.di.core.logging.MetricsRegistry;
 
@@ -18,7 +19,7 @@ public class MetricsUtil {
    * @param metricsCode the metric code
    * @return the duration in ms
    */
-  public static List<MetricsDuration> getDuration(String logChannelId, String metricsCode) {
+  public static List<MetricsDuration> getDuration(String logChannelId, Metrics metric) {
     List<MetricsDuration> durations = new ArrayList<MetricsDuration>();
     
     Deque<MetricsSnapshotInterface> metrics = MetricsRegistry.getInstance().getSnapshotList(logChannelId);
@@ -27,7 +28,7 @@ public class MetricsUtil {
     Iterator<MetricsSnapshotInterface> iterator = metrics.iterator();
     while (iterator.hasNext()) {
       MetricsSnapshotInterface snapshot = iterator.next();
-      if (snapshot.getMetric().getCode().equalsIgnoreCase(metricsCode)) {
+      if (snapshot.getMetric().equals(metric)) {
         if (snapshot.getMetric().getType() == MetricsSnapshotType.START) {
           if (start!=null) {
             // We didn't find a stop for the previous start so add it with a null duration
@@ -54,6 +55,8 @@ public class MetricsUtil {
         agg.setDuration(agg.getDuration()+duration.getDuration());
       }
     }
+    
+    // If we already have 
     
     return new ArrayList<MetricsDuration>( map.values() );
   }
@@ -100,4 +103,41 @@ public class MetricsUtil {
     
     return new ArrayList<MetricsDuration>( map.values() );
   }
+
+  public static List<MetricsSnapshotInterface> getResultsList(Metrics metric) {
+    List<MetricsSnapshotInterface> snapshots = new ArrayList<MetricsSnapshotInterface>();
+
+    Map<String, Map<String, MetricsSnapshotInterface>> snapshotMaps = MetricsRegistry.getInstance().getSnapshotMaps();
+    Iterator<Map<String, MetricsSnapshotInterface>> mapsIterator = snapshotMaps.values().iterator();
+    while (mapsIterator.hasNext()) {
+      Map<String, MetricsSnapshotInterface> map = mapsIterator.next();
+      Iterator<MetricsSnapshotInterface> snapshotIterator = map.values().iterator();
+      while (snapshotIterator.hasNext()) {
+        MetricsSnapshotInterface snapshot = snapshotIterator.next();
+        if (snapshot.getMetric().equals(metric)) {
+          snapshots.add(snapshot);
+        }
+      }
+    }
+    
+    return snapshots;
+  }
+  
+  public static Long getResult(Metrics metric) {
+    Map<String, Map<String, MetricsSnapshotInterface>> snapshotMaps = MetricsRegistry.getInstance().getSnapshotMaps();
+    Iterator<Map<String, MetricsSnapshotInterface>> mapsIterator = snapshotMaps.values().iterator();
+    while (mapsIterator.hasNext()) {
+      Map<String, MetricsSnapshotInterface> map = mapsIterator.next();
+      Iterator<MetricsSnapshotInterface> snapshotIterator = map.values().iterator();
+      while (snapshotIterator.hasNext()) {
+        MetricsSnapshotInterface snapshot = snapshotIterator.next();
+        if (snapshot.getMetric().equals(metric)) {
+          return snapshot.getValue();
+        }
+      }
+    }
+    
+    return null;
+  }
+
 }

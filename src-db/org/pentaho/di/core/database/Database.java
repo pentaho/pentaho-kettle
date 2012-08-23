@@ -2787,6 +2787,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
    */
   public Object[] getRow(ResultSet rs, ResultSetMetaData dummy, RowMetaInterface rowInfo) throws KettleDatabaseException {
     long startTime = System.currentTimeMillis();
+    
     try {
       
       int nrcols = rowInfo.size();
@@ -2806,11 +2807,13 @@ public class Database implements VariableSpace, LoggingObjectInterface
     } catch (Exception ex) {
       throw new KettleDatabaseException("Couldn't get row from result set", ex);
     } finally {
-      long time = System.currentTimeMillis()-startTime;
-      log.snap(Metrics.METRIC_DATABASE_GET_ROW_SUM_TIME, databaseMeta.getName(), time);
-      log.snap(Metrics.METRIC_DATABASE_GET_ROW_MIN_TIME, databaseMeta.getName(), time);
-      log.snap(Metrics.METRIC_DATABASE_GET_ROW_MAX_TIME, databaseMeta.getName(), time);
-      log.snap(Metrics.METRIC_DATABASE_GET_ROW_COUNT, databaseMeta.getName());
+      if (log.isGatheringMetrics()) {
+        long time = System.currentTimeMillis()-startTime;
+        log.snap(Metrics.METRIC_DATABASE_GET_ROW_SUM_TIME, databaseMeta.getName(), time);
+        log.snap(Metrics.METRIC_DATABASE_GET_ROW_MIN_TIME, databaseMeta.getName(), time);
+        log.snap(Metrics.METRIC_DATABASE_GET_ROW_MAX_TIME, databaseMeta.getName(), time);
+        log.snap(Metrics.METRIC_DATABASE_GET_ROW_COUNT, databaseMeta.getName());
+      }
     }
   }
 
