@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.NavigableMap;
 import java.util.Properties;
 import java.util.Set;
@@ -119,6 +120,10 @@ public class FakeHBaseConnection extends HBaseConnection {
       m_cols.add(new ScanCol(colFamName, colName));
     }
 
+    public List<ScanCol> getColumns() {
+      return m_cols;
+    }
+
     public ResultScanner getScanner(String tableName) {
       FakeTable table = m_db.get(tableName);
       if (table == null) {
@@ -130,22 +135,139 @@ public class FakeHBaseConnection extends HBaseConnection {
 
       return new ResultScanner(this, subMap);
     }
+
+    /**
+     * Takes a full row and returns a Result encapsulating a reduced row (i.e.
+     * containing only the columns specified for this scan). If no columns are
+     * specified then the full row is encapsulated in the Result.
+     * 
+     * @param rowKey the key of the full row
+     * @param fullRow the row itself
+     * @return
+     */
+    public Result columnLimitedRow(
+        byte[] rowKey,
+        NavigableMap<byte[], NavigableMap<byte[], NavigableMap<Long, byte[]>>> fullRow) {
+
+      if (getColumns() == null || getColumns().size() == 0) {
+        return new Result(rowKey, fullRow);
+      }
+
+      NavigableMap<byte[], NavigableMap<byte[], NavigableMap<Long, byte[]>>> colLimited = new TreeMap<byte[], NavigableMap<byte[], NavigableMap<Long, byte[]>>>();
+
+      for (ScanCol col : m_cols) {
+        // family first - look for this in the full row
+        NavigableMap<byte[], NavigableMap<Long, byte[]>> colsForFam = fullRow
+            .get(col.m_colFamName);
+
+        if (colsForFam != null) {
+          // now look for the column
+          NavigableMap<Long, byte[]> theCol = colsForFam.get(col.m_colName);
+
+          if (theCol != null) {
+            // now add it
+            NavigableMap<byte[], NavigableMap<Long, byte[]>> resultCols = colLimited
+                .get(col.m_colFamName);
+            if (resultCols == null) {
+              resultCols = new TreeMap<byte[], NavigableMap<Long, byte[]>>();
+              // store this new map of columns in the family map
+              colLimited.put(col.m_colFamName, resultCols);
+            }
+
+            // add the column itself to this family's map of columns
+            resultCols.put(col.m_colName, theCol);
+          }
+        }
+      }
+
+      return new Result(rowKey, colLimited);
+    }
+  }
+
+  protected class Result {
+    protected byte[] m_rowKey;
+    protected NavigableMap<byte[], NavigableMap<byte[], NavigableMap<Long, byte[]>>> m_row;
+
+    public Result(
+        byte[] rowKey,
+        NavigableMap<byte[], NavigableMap<byte[], NavigableMap<Long, byte[]>>> row) {
+      m_rowKey = rowKey;
+      m_row = row;
+    }
+
+    /**
+     * Return the row key
+     * 
+     * @return the row key
+     */
+    public byte[] getRow() {
+      return m_rowKey;
+    }
+
+    public byte[] getValue(byte[] colFam, byte[] colName) {
+      NavigableMap<byte[], NavigableMap<Long, byte[]>> colMapForFam = m_row
+          .get(colFam);
+      if (colMapForFam == null) {
+        return null;
+      }
+
+      NavigableMap<Long, byte[]> versionsOfCol = colMapForFam.get(colName);
+      if (versionsOfCol == null) {
+        return null;
+      }
+
+      return versionsOfCol.lastEntry().getValue();
+    }
+
+    public NavigableMap<byte[], NavigableMap<byte[], NavigableMap<Long, byte[]>>> getMap() {
+      return m_row;
+    }
+
+    public NavigableMap<byte[], byte[]> getFamilyMap(byte[] colFamily) {
+      NavigableMap<byte[], NavigableMap<Long, byte[]>> famMap = m_row
+          .get(colFamily);
+
+      if (famMap == null) {
+        return null;
+      }
+
+      TreeMap<byte[], byte[]> famMapLatestVals = new TreeMap<byte[], byte[]>();
+      Set<Map.Entry<byte[], NavigableMap<Long, byte[]>>> es = famMap.entrySet();
+      for (Map.Entry<byte[], NavigableMap<Long, byte[]>> e : es) {
+        famMapLatestVals.put(e.getKey(), e.getValue().lastEntry().getValue());
+      }
+
+      return famMapLatestVals;
+    }
   }
 
   protected class ResultScanner {
     protected Scan m_scan;
     protected SortedMap<byte[], NavigableMap<byte[], NavigableMap<byte[], NavigableMap<Long, byte[]>>>> m_rows;
-    protected Iterator<NavigableMap<byte[], NavigableMap<byte[], NavigableMap<Long, byte[]>>>> m_rowIterator;
+    protected Iterator<Entry<byte[], NavigableMap<byte[], NavigableMap<byte[], NavigableMap<Long, byte[]>>>>> m_rowIterator;
 
     public ResultScanner(
         Scan scan,
         SortedMap<byte[], NavigableMap<byte[], NavigableMap<byte[], NavigableMap<Long, byte[]>>>> rows) {
       m_scan = scan;
       m_rows = rows;
-      m_rowIterator = m_rows.values().iterator();
+      m_rowIterator = m_rows.entrySet().iterator();
     }
 
-    // TODO next() method with respect to the scan's columns (if any)
+    public Result next() {
+      Entry<byte[], NavigableMap<byte[], NavigableMap<byte[], NavigableMap<Long, byte[]>>>> nextR = m_rowIterator
+          .next();
+
+      if (nextR == null) {
+        return null;
+      }
+
+      // TODO create new navigable map structure containing only the scan
+      // columns
+      Result r = m_scan.columnLimitedRow(nextR.getKey(), nextR.getValue());
+
+      return r;
+    }
   }
 
   protected Map<String, FakeTable> m_db = new HashMap<String, FakeTable>();
@@ -153,6 +275,8 @@ public class FakeHBaseConnection extends HBaseConnection {
   protected String m_sourceTable;
   protected String m_targetTable;
   protected Scan m_sourceScan;
+  protected ResultScanner m_resultSet;
+  protected Result m_currentResultSetRow;
 
   public FakeHBaseConnection() {
     try {
@@ -315,35 +439,37 @@ public class FakeHBaseConnection extends HBaseConnection {
 
   @Override
   public void flushCommitsTargetTable() throws Exception {
-    // TODO Auto-generated method stub
-
   }
 
   @Override
-  public byte[] getResultSetCurrentRowColumnLatest(String arg0, String arg1,
-      boolean arg2) throws Exception {
-    // TODO Auto-generated method stub
-    return null;
+  public byte[] getResultSetCurrentRowColumnLatest(String colFamilyName,
+      String colName, boolean colNameIsBinary) throws Exception {
+
+    return m_currentResultSetRow.getValue(
+        m_bytesUtil.toBytes(colFamilyName),
+        colNameIsBinary ? m_bytesUtil.toBytesBinary(colName) : m_bytesUtil
+            .toBytes(colName));
   }
 
   @Override
   public NavigableMap<byte[], byte[]> getResultSetCurrentRowFamilyMap(
-      String arg0) throws Exception {
-    // TODO Auto-generated method stub
-    return null;
+      String familyName) throws Exception {
+    return m_currentResultSetRow.getFamilyMap(m_bytesUtil.toBytes(familyName));
   }
 
   @Override
   public byte[] getResultSetCurrentRowKey() throws Exception {
-    // TODO Auto-generated method stub
-    return null;
+    checkSourceScan();
+    checkResultSet();
+    checkForCurrentResultSetRow();
+
+    return m_currentResultSetRow.getRow();
   }
 
   @Override
   public NavigableMap<byte[], NavigableMap<byte[], NavigableMap<Long, byte[]>>> getResultSetCurrentRowMap()
       throws Exception {
-    // TODO Auto-generated method stub
-    return null;
+    return m_currentResultSetRow.getMap();
   }
 
   @Override
@@ -485,6 +611,18 @@ public class FakeHBaseConnection extends HBaseConnection {
   protected void checkSourceScan() throws Exception {
     if (m_sourceScan == null) {
       throw new Exception("No source scan defined!");
+    }
+  }
+
+  protected void checkResultSet() throws Exception {
+    if (m_resultSet == null) {
+      throw new Exception("No current result set!");
+    }
+  }
+
+  protected void checkForCurrentResultSetRow() throws Exception {
+    if (m_currentResultSetRow == null) {
+      throw new Exception("No current resut set row available!");
     }
   }
 }
