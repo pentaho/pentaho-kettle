@@ -1109,34 +1109,36 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
       setTopLevelStructure(m_defaultTopLevelObject);
     }
 
+    Object[] cached = null;
     if (useCache) {
-      Object[] cached = m_schemaCache.get(schemaKey);
+      cached = m_schemaCache.get(schemaKey);
+    }
 
-      if (cached == null) {
-        Schema toUse = null;
-        if (m_schemaFieldIsPath) {
-          // load the schema from disk
-          toUse = loadSchema(schemaKey);
-        } else {
-          // use the supplied schema
-          Schema.Parser p = new Schema.Parser();
-          toUse = p.parse(schemaKey);
-        }
-        m_schemaToUse = toUse;
-        m_datumReader = new GenericDatumReader(toUse);
-        initTopLevelStructure(toUse, false);
-        if (useCache) {
-          Object[] schemaInfo = new Object[2];
-          schemaInfo[0] = m_datumReader;
-          schemaInfo[1] = (m_topLevelArray != null) ? m_topLevelArray
-              : ((m_topLevelArray != null) ? m_topLevelArray : m_topLevelMap);
-          m_schemaCache.put(schemaKey, schemaInfo);
-        }
+    if (!useCache || cached == null) {
+      Schema toUse = null;
+      if (m_schemaFieldIsPath) {
+        // load the schema from disk
+        toUse = loadSchema(schemaKey);
       } else {
-        m_datumReader = (GenericDatumReader) cached[0];
-        m_schemaToUse = m_datumReader.getSchema();
-        setTopLevelStructure(cached[1]);
+        // use the supplied schema
+        Schema.Parser p = new Schema.Parser();
+        toUse = p.parse(schemaKey);
       }
+      m_schemaToUse = toUse;
+      m_datumReader = new GenericDatumReader(toUse);
+      initTopLevelStructure(toUse, false);
+      if (useCache) {
+        Object[] schemaInfo = new Object[2];
+        schemaInfo[0] = m_datumReader;
+        schemaInfo[1] = (m_topLevelArray != null) ? m_topLevelArray
+            : ((m_topLevelArray != null) ? m_topLevelArray : m_topLevelMap);
+        m_schemaCache.put(schemaKey, schemaInfo);
+      }
+    } else if (useCache) {
+      // got one from the cache
+      m_datumReader = (GenericDatumReader) cached[0];
+      m_schemaToUse = m_datumReader.getSchema();
+      setTopLevelStructure(cached[1]);
     }
   }
 
