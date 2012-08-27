@@ -24,7 +24,9 @@ package org.pentaho.di.ui.trans.steps.tableinput;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -34,6 +36,8 @@ import org.eclipse.swt.custom.LineStyleListener;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.graphics.Color;
+import org.pentaho.di.core.Const;
+import org.pentaho.di.core.database.SqlScriptStatement;
 import org.pentaho.di.ui.core.gui.GUIResource;
 
 public class SQLValuesHighlight implements LineStyleListener {
@@ -55,14 +59,18 @@ public class SQLValuesHighlight implements LineStyleListener {
 	public static final int FUNCTIONS=	8;
 
 	public static final int MAXIMUM_TOKEN= 9;
+	
+	private List<SqlScriptStatement> scriptStatements;
 
 	public SQLValuesHighlight() {
 		initializeColors();
+    scriptStatements = new ArrayList<SqlScriptStatement>();
 		scanner = new JavaScanner();
 	}
 	
 	public SQLValuesHighlight(String[] strArrSQLFunctions) {
 		initializeColors();
+    scriptStatements = new ArrayList<SqlScriptStatement>();
 		scanner = new JavaScanner();
 		scanner.setSQLKeywords(strArrSQLFunctions);
 		scanner.initializeSQLFunctions();
@@ -163,6 +171,33 @@ public class SQLValuesHighlight implements LineStyleListener {
 			}
 			token= scanner.nextToken();
 		}
+		
+		// See which backgrounds to color...
+		//
+    if (scriptStatements!=null) {
+      for (SqlScriptStatement statement : scriptStatements) {
+        // Leave non-executed statements alone.
+        //
+        StyleRange styleRange = new StyleRange();
+        styleRange.start = statement.getFromIndex();
+        styleRange.length = statement.getToIndex()-statement.getFromIndex();
+  
+        if (statement.isComplete()) {
+          if (statement.isOk()) {
+            //        GUIResource.getInstance().getColor(63, 127, 95),  // green
+
+            styleRange.background = GUIResource.getInstance().getColor(244,238,224); // honey dew
+          } else {
+            styleRange.background = GUIResource.getInstance().getColor(250,235,215); // Antique White
+          }
+        } else {
+          styleRange.background = GUIResource.getInstance().getColorWhite();
+        }
+        
+        styles.add(styleRange);
+      }
+    }  
+		
 		event.styles = new StyleRange[styles.size()];
 		styles.copyInto(event.styles);
 	}
@@ -324,7 +359,11 @@ public class SQLValuesHighlight implements LineStyleListener {
 			this.kfKeywords = kfKeywords;
 		}
 		
-		void initializeSQLFunctions(){
+		public String[] getSQLKeywords() {
+      return kfKeywords;
+    }
+    
+		public void initializeSQLFunctions(){
 			kfKeys = new Hashtable<String, Integer>();
 			Integer k = new Integer(FUNCTIONS);
 			for (int i= 0; i < kfKeywords.length; i++)
@@ -460,4 +499,27 @@ public class SQLValuesHighlight implements LineStyleListener {
 				fPos--;
 		}
 	}
+
+  /**
+   * @return the scriptStatements
+   */
+  public List<SqlScriptStatement> getScriptStatements() {
+    return scriptStatements;
+  }
+
+  /**
+   * @param scriptStatements the scriptStatements to set
+   */
+  public void setScriptStatements(List<SqlScriptStatement> scriptStatements) {
+    this.scriptStatements = scriptStatements;
+  }
+
+  public void addKeyWords(String[] reservedWords) {
+    if (Const.isEmpty(reservedWords)) return;
+    
+    // List<String> keywords = new ArrayList<String>(Arrays.asList(scanner.getSQLKeywords()));
+    // keywords.addAll(Arrays.asList(reservedWords));
+    scanner.setSQLKeywords(reservedWords);
+    scanner.initializeSQLFunctions();
+  }
 }

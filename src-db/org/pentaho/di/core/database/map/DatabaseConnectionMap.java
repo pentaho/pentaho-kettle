@@ -24,6 +24,7 @@ package org.pentaho.di.core.database.map;
 
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
@@ -46,6 +47,7 @@ import org.pentaho.di.core.database.Database;
 public class DatabaseConnectionMap
 {
     private Map<String,Database> map;
+    private AtomicInteger transactionId; 
     
     private static DatabaseConnectionMap connectionMap;
     
@@ -59,6 +61,7 @@ public class DatabaseConnectionMap
     private DatabaseConnectionMap()
     {
         map = new Hashtable<String,Database>();
+        transactionId = new AtomicInteger(0);
     }
     
     public synchronized void storeDatabase(String connectionGroup, String partitionID, Database database)
@@ -96,4 +99,8 @@ public class DatabaseConnectionMap
     public Map<String, Database> getMap() {
 		return map;
 	}
+    
+  public String getNextTransactionId() {
+    return Integer.toString( transactionId.incrementAndGet() );
+  }
 }

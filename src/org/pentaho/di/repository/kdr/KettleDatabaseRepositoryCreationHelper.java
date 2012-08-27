@@ -1461,6 +1461,7 @@ public class KettleDatabaseRepositoryCreationHelper {
         table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_PASS_BATCH_ID, ValueMetaInterface.TYPE_BOOLEAN, 0, 0));
         table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_USE_LOGFIELD, ValueMetaInterface.TYPE_BOOLEAN, 0, 0));
         table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_SHARED_FILE, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0)); // 255 max length for now.
+        table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_UNIQUE_CONNECTIONS, ValueMetaInterface.TYPE_BOOLEAN, 0, 0));
 
         sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_JOB_ID_JOB, false);
 		if (!Const.isEmpty(sql)) // Doesn't exist: create the table...

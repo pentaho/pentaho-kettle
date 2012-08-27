@@ -229,6 +229,7 @@ public class KettleDatabaseRepositoryBase {
 	public static final String FIELD_JOB_PASS_BATCH_ID = "PASS_BATCH_ID";
 	public static final String FIELD_JOB_USE_LOGFIELD = "USE_LOGFIELD";
 	public static final String FIELD_JOB_SHARED_FILE = "SHARED_FILE";
+  public static final String FIELD_JOB_UNIQUE_CONNECTIONS = "UNIQUE_CONNECTIONS";
 
 	public static final String TABLE_R_LOGLEVEL               = "R_LOGLEVEL";
 	public static final String FIELD_LOGLEVEL_ID_LOGLEVEL = "ID_LOGLEVEL";

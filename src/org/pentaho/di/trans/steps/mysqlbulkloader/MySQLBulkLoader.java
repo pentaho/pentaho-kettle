@@ -125,7 +125,7 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
             {
                 synchronized (getTrans())
                 {
-                    data.db.connect(getTrans().getThreadName(), getPartitionID());
+                    data.db.connect(getTrans().getTransactionId(), getPartitionID());
                 }
             } else
             {

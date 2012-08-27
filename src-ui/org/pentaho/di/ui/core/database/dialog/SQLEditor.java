@@ -49,7 +49,9 @@ import org.pentaho.di.core.Props;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.PartitionDatabaseMeta;
+import org.pentaho.di.core.database.SqlScriptStatement;
 import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
@@ -103,6 +105,10 @@ public class SQLEditor
 	private Shell parentShell;
 	
 	private VariableSpace variables;
+
+  private List<SqlScriptStatement> statements;
+
+  private SQLValuesHighlight highlight;
 	
     public SQLEditor(Shell parent, int style, DatabaseMeta ci, DBCache dbc, String sql)
     {
@@ -185,7 +191,9 @@ public class SQLEditor
 		
 		
 		// SQL Higlighting
-		wScript.addLineStyleListener(new SQLValuesHighlight());
+		highlight = new SQLValuesHighlight();
+		highlight.addKeyWords(connection.getReservedWords());
+		wScript.addLineStyleListener(highlight);
 
 		wlPosition=new Label(shell, SWT.NONE);
 		wlPosition.setText(BaseMessages.getString(PKG, "SQLEditor.LineNr.Label", "0"));
@@ -293,112 +301,116 @@ public class SQLEditor
 		dispose();
 	}
 	
-	private void exec()
-	{
-		DatabaseMeta ci = connection;
-		if (ci==null) return;
+  private void exec() {
+    DatabaseMeta ci = connection;
+    if (ci == null)
+      return;
 
-        StringBuffer message = new StringBuffer();
+    StringBuffer message = new StringBuffer();
 
-		Database db = new Database(loggingObject, ci);
-        boolean first = true;
-        PartitionDatabaseMeta[] partitioningInformation = ci.getPartitioningInformation();
-        
-        for (int partitionNr=0;first || (partitioningInformation!=null && partitionNr<partitioningInformation.length) ; partitionNr++)
-        {
-            first = false;
-            String partitionId = null;
-            if (partitioningInformation!=null && partitioningInformation.length>0)
-            {
-                partitionId = partitioningInformation[partitionNr].getPartitionId();
+    Database db = new Database(loggingObject, ci);
+    boolean first = true;
+    PartitionDatabaseMeta[] partitioningInformation = ci.getPartitioningInformation();
+
+    for (int partitionNr = 0; first || (partitioningInformation != null && partitionNr < partitioningInformation.length); partitionNr++) {
+      first = false;
+      String partitionId = null;
+      if (partitioningInformation != null && partitioningInformation.length > 0) {
+        partitionId = partitioningInformation[partitionNr].getPartitionId();
+      }
+      try {
+        db.connect(partitionId);
+        String sqlScript = Const.isEmpty(wScript.getSelectionText()) ? wScript.getText() : wScript.getSelectionText();
+
+        // Multiple statements in the script need to be split into individual
+        // executable statements
+        statements = ci.getDatabaseInterface().getSqlScriptStatements(sqlScript + Const.CR);
+
+        int nrstats = 0;
+        for (SqlScriptStatement sql : statements) {
+          if (sql.isQuery()) {
+            // A Query
+            log.logDetailed("launch SELECT statement: " + Const.CR + sql);
+
+            nrstats++;
+            try {
+              List<Object[]> rows = db.getRows(sql.getStatement(), 1000);
+              RowMetaInterface rowMeta = db.getReturnRowMeta();
+              if (rows.size() > 0) {
+                PreviewRowsDialog prd = new PreviewRowsDialog(shell, ci, SWT.NONE, BaseMessages.getString(PKG, "SQLEditor.ResultRows.Title", Integer.toString(nrstats)), rowMeta, rows);
+                prd.open();
+              } else {
+                MessageBox mb = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK);
+                mb.setMessage(BaseMessages.getString(PKG, "SQLEditor.NoRows.Message", sql));
+                mb.setText(BaseMessages.getString(PKG, "SQLEditor.NoRows.Title"));
+                mb.open();
+              }
+            } catch (KettleDatabaseException dbe) {
+              new ErrorDialog(shell, BaseMessages.getString(PKG, "SQLEditor.ErrorExecSQL.Title"), BaseMessages.getString(PKG, "SQLEditor.ErrorExecSQL.Message", sql), dbe);
             }
-            try
-            {
-    			db.connect(partitionId);
-    			String sqlScript=Const.isEmpty(wScript.getSelectionText())?wScript.getText():wScript.getSelectionText();
-    			
-          // Multiple statements in the script need to be split into individual executable statements
-    			List<String> statements = ci.getDatabaseInterface().parseStatements(sqlScript + Const.CR);
-    			
-    	    int nrstats = 0;
-    			for(String sql : statements) {
-						if (sql.toUpperCase().startsWith("SELECT"))
-						{
-							// A Query
-							log.logDetailed("launch SELECT statement: "+Const.CR+sql);
-							
-							nrstats++;
-							try
-							{
-								List<Object[]> rows = db.getRows(sql, 1000);
-                                RowMetaInterface rowMeta = db.getReturnRowMeta();
-								if (rows.size()>0)
-								{
-									PreviewRowsDialog prd = new PreviewRowsDialog(shell, ci, SWT.NONE, BaseMessages.getString(PKG, "SQLEditor.ResultRows.Title", Integer.toString(nrstats)), rowMeta, rows);
-									prd.open();
-								}
-								else
-								{
-									MessageBox mb = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK);
-									mb.setMessage(BaseMessages.getString(PKG, "SQLEditor.NoRows.Message", sql));
-									mb.setText(BaseMessages.getString(PKG, "SQLEditor.NoRows.Title"));
-									mb.open();
-								}
-							}
-							catch(KettleDatabaseException dbe)
-							{
-								new ErrorDialog(shell, BaseMessages.getString(PKG, "SQLEditor.ErrorExecSQL.Title"), BaseMessages.getString(PKG, "SQLEditor.ErrorExecSQL.Message", sql), dbe);
-							}
-						}
-						else
-						{
-							log.logDetailed("launch DDL statement: "+Const.CR+sql);
+          } else {
+            log.logDetailed("launch DDL statement: " + Const.CR + sql);
 
-							// A DDL statement
-							nrstats++;
-							try
-							{
-							    log.logDetailed("Executing SQL: "+Const.CR+sql);
-								db.execStatement(sql);
-                                message.append(BaseMessages.getString(PKG, "SQLEditor.Log.SQLExecuted", sql));
-                                message.append(Const.CR);
-                                
-								// Clear the database cache, in case we're using one...
-								if (dbcache!=null) dbcache.clear(ci.getName());
-							}
-							catch(Exception dbe)
-							{
-                                String error = BaseMessages.getString(PKG, "SQLEditor.Log.SQLExecError", sql, dbe.toString());
-                                message.append(error).append(Const.CR);
-								ErrorDialog dialog = new ErrorDialog(shell, BaseMessages.getString(PKG, "SQLEditor.ErrorExecSQL.Title"), error, dbe, true);
-								if (dialog.isCancelled()) {
-									break;
-								}
-							}
-						}
-					}
-          message.append(BaseMessages.getString(PKG, "SQLEditor.Log.StatsExecuted", Integer.toString(nrstats)));
-          if (partitionId!=null)
-              message.append(BaseMessages.getString(PKG, "SQLEditor.Log.OnPartition", partitionId));
-          message.append(Const.CR);
-    		}
-    		catch(KettleDatabaseException dbe)
-    		{
-    			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-                String error = BaseMessages.getString(PKG, "SQLEditor.Error.CouldNotConnect.Message", (connection==null ? "" : connection.getName()), dbe.getMessage());
-                message.append(error).append(Const.CR);
-    			mb.setMessage(error);
-    			mb.setText(BaseMessages.getString(PKG, "SQLEditor.Error.CouldNotConnect.Title"));
-    			mb.open(); 
-    		}
-    		finally
-    		{
-    			db.disconnect();
-    		}
+            // A DDL statement
+            nrstats++;
+            int startLogLine = CentralLogStore.getLastBufferLineNr();
+            try {
+
+              log.logDetailed("Executing SQL: " + Const.CR + sql);
+              db.execStatement(sql.getStatement());
+
+              message.append(BaseMessages.getString(PKG, "SQLEditor.Log.SQLExecuted", sql));
+              message.append(Const.CR);
+
+              // Clear the database cache, in case we're using one...
+              if (dbcache != null)
+                dbcache.clear(ci.getName());
+
+              // mark the statement in green in the dialog...
+              //
+              sql.setOk(true);
+            } catch (Exception dbe) {
+              sql.setOk(false);
+              String error = BaseMessages.getString(PKG, "SQLEditor.Log.SQLExecError", sql, dbe.toString());
+              message.append(error).append(Const.CR);
+              ErrorDialog dialog = new ErrorDialog(shell, BaseMessages.getString(PKG, "SQLEditor.ErrorExecSQL.Title"), error, dbe, true);
+              if (dialog.isCancelled()) {
+                break;
+              }
+            } finally {
+              int endLogLine = CentralLogStore.getLastBufferLineNr();
+              sql.setLoggingText(CentralLogStore.getAppender().getLogBufferFromTo(db.getLogChannelId(), true, startLogLine, endLogLine).toString());
+              sql.setComplete(true);
+              refreshExecutionResults();
+            }
+          }
         }
-        
-        EnterTextDialog dialog = new EnterTextDialog(shell, BaseMessages.getString(PKG, "SQLEditor.Result.Title"),
-            BaseMessages.getString(PKG, "SQLEditor.Result.Message"), message.toString(), true);
-        dialog.open();
-	}
+        message.append(BaseMessages.getString(PKG, "SQLEditor.Log.StatsExecuted", Integer.toString(nrstats)));
+        if (partitionId != null)
+          message.append(BaseMessages.getString(PKG, "SQLEditor.Log.OnPartition", partitionId));
+        message.append(Const.CR);
+      } catch (KettleDatabaseException dbe) {
+        MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
+        String error = BaseMessages.getString(PKG, "SQLEditor.Error.CouldNotConnect.Message", (connection == null ? "" : connection.getName()), dbe.getMessage());
+        message.append(error).append(Const.CR);
+        mb.setMessage(error);
+        mb.setText(BaseMessages.getString(PKG, "SQLEditor.Error.CouldNotConnect.Title"));
+        mb.open();
+      } finally {
+        db.disconnect();
+        refreshExecutionResults();
+      }
+    }
+
+    EnterTextDialog dialog = new EnterTextDialog(shell, BaseMessages.getString(PKG, "SQLEditor.Result.Title"), BaseMessages.getString(PKG, "SQLEditor.Result.Message"), message.toString(), true);
+    dialog.open();
+  }
+
+	/**
+	 * During or after an execution we will mark regions of the SQL editor dialog in green or red.
+	 */
+  protected void refreshExecutionResults() {
+    highlight.setScriptStatements(statements);
+    wScript.redraw();
+  }
 }

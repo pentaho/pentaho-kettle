@@ -27,6 +27,7 @@ import org.pentaho.di.core.spreadsheet.KWorkbook;
 import org.pentaho.di.trans.steps.excelinput.jxl.XLSWorkbook;
 import org.pentaho.di.trans.steps.excelinput.ods.OdfWorkbook;
 import org.pentaho.di.trans.steps.excelinput.poi.PoiWorkbook;
+import org.pentaho.di.trans.steps.excelinput.poisax.SaxPoiWorkbook;
 
 public class WorkbookFactory {
   
@@ -34,6 +35,7 @@ public class WorkbookFactory {
     switch(type) {
     case JXL: return new XLSWorkbook(filename, encoding);
     case POI: return new PoiWorkbook(filename, encoding); // encoding is not used, perhaps detected automatically?
+    case SAX_POI: return new SaxPoiWorkbook(filename, encoding); // encoding is not used, perhaps detected automatically?
     case ODS: return new OdfWorkbook(filename, encoding); // encoding is not used, perhaps detected automatically?
     default: throw new KettleException("Sorry, spreadsheet type "+type.getDescription()+" is not yet supported");
     }

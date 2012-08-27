@@ -175,4 +175,11 @@ public class BlockingBatchingRowSet extends BaseRowSet implements Comparable<Row
     }
     putArray.clear();
   }
+
+  @Override
+  public void clear() {
+    putArray.clear();
+    getArray.clear();
+    done.set(false);
+  }
 }

@@ -380,7 +380,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
 			{
 				dbchecked = new Database(this, connection);	
 				dbchecked.shareVariablesWith(this);
-				dbchecked.connect();
+				dbchecked.connect(parentJob.getTransactionId(), null);
 			}
 			finally
 			{
@@ -510,7 +510,7 @@ public class JobEntryWaitForSQL extends JobEntryBase implements Cloneable, JobEn
 		db.shareVariablesWith(this);
 		try
 		{
-			db.connect();
+			db.connect(parentJob.getTransactionId(), null);
 			if(iscustomSQL)
 			{
 				countStatement=customSQL;

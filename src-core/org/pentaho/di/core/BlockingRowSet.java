@@ -121,4 +121,11 @@ public class BlockingRowSet extends BaseRowSet implements Comparable<RowSet>, Ro
     public int size() {
     	return queArray.size();
     }
+    
+    @Override
+    public void clear() {
+      queArray.clear();
+      done.set(false);
+    }
+
 }

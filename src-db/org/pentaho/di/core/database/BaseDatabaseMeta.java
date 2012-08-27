@@ -27,6 +27,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
@@ -1583,7 +1584,23 @@ public abstract class BaseDatabaseMeta implements Cloneable
    * @return List of parsed SQL statements to be executed separately.
    */
   public List<String> parseStatements(String sqlScript) {
+    
+    List<SqlScriptStatement> scriptStatements = getSqlScriptStatements(sqlScript);
     List<String> statements = new ArrayList<String>();
+    for (SqlScriptStatement scriptStatement : scriptStatements) {
+      statements.add(scriptStatement.getStatement());
+    }
+    return statements;
+  }
+  
+  /**
+   * Parse the statements in the provided SQL script, provide more information about where each was found in the script.
+   * 
+   * @param sqlScript Raw SQL Script to be parsed into executable statements.
+   * @return List of SQL script statements to be executed separately.
+   */
+  public List<SqlScriptStatement> getSqlScriptStatements(String sqlScript) {
+    List<SqlScriptStatement> statements = new ArrayList<SqlScriptStatement>();
     String all = sqlScript;
     int from = 0;
     int to = 0;
@@ -1670,7 +1687,8 @@ public abstract class BaseDatabaseMeta implements Cloneable
 
         String stat = all.substring(from, to);
         if (!onlySpaces(stat)) {
-          statements.add(Const.trim(stat));
+          String s = Const.trim(stat);
+          statements.add( new SqlScriptStatement(s, from, to, s.toUpperCase().startsWith("SELECT")) );
         }
         to++;
         from = to;
@@ -1909,4 +1927,48 @@ public abstract class BaseDatabaseMeta implements Cloneable
   public boolean supportsErrorHandling() {
     return true;
   }
+
+  public String getSQLValue(ValueMetaInterface valueMeta, Object valueData, String dateFormat) throws KettleValueException {
+    
+    StringBuilder ins = new StringBuilder();
+    
+    if (valueMeta.isNull(valueData)) {
+      ins.append("null");
+    } else {
+      // Normal cases...
+      //
+      switch(valueMeta.getType()) {
+      case ValueMetaInterface.TYPE_BOOLEAN:
+      case ValueMetaInterface.TYPE_STRING:
+        String string = valueMeta.getString(valueData);
+        // Have the database dialect do the quoting.
+        // This also adds the single quotes around the string (thanks to PostgreSQL)
+        //
+        string = quoteSQLString(string);
+        ins.append(string) ;
+        break;
+      case ValueMetaInterface.TYPE_DATE:
+        Date date = valueMeta.getDate(valueData);
+        
+        if (Const.isEmpty(dateFormat)) {
+          ins.append("'" +  valueMeta.getString(valueData)+ "'") ;
+        } else {
+          try  {
+            java.text.SimpleDateFormat formatter  = new java.text.SimpleDateFormat(dateFormat);
+            ins.append("'" + formatter.format(date)+ "'") ;
+          } catch(Exception e) { 
+            throw new KettleValueException("Error : ", e);
+          }
+        }
+        break;
+      default:
+        ins.append( valueMeta.getString(valueData)) ;
+        break;
+      }
+    }
+    
+    return ins.toString();
+  }
+  
+  
 } 

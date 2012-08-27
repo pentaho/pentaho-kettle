@@ -651,4 +651,13 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
     return loadSingleThreadedTransMeta(this, rep, space);
   }
 
+  @Override
+  public boolean supportsErrorHandling() {
+    return true;
+  }
+  
+  @Override
+  public boolean excludeFromCopyDistributeVerification() {
+    return true;
+  }
 }

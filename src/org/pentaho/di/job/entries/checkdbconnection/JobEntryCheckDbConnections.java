@@ -248,7 +248,7 @@ public class JobEntryCheckDbConnections extends JobEntryBase implements Cloneabl
 			db.shareVariablesWith(this);
 	    	try
             {
-    		  db.connect();
+    		  db.connect(parentJob.getTransactionId(), null);
     		  
     		  if(isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobEntryCheckDbConnections.Connected", connections[i].getDatabaseName(),connections[i].getName()));
     		  

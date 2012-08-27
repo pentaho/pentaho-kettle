@@ -432,7 +432,7 @@ public class JobEntryMssqlBulkLoad extends JobEntryBase implements Cloneable, Jo
 						db.shareVariablesWith(this);
 						try
 						{
-							db.connect();
+							db.connect(parentJob.getTransactionId(), null);
 							// Get schemaname
 							String realSchemaname = environmentSubstitute(schemaname);
 							// Get tablename

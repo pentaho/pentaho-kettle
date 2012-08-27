@@ -382,7 +382,7 @@ public class TransHistoryDelegate extends SpoonDelegate implements XulEventHandl
       String fields[] = wFields.get(tabIndex).getItem(idx);
       String dateString = fields[13];
       Date replayDate = XMLHandler.stringToDate(dateString);
-      spoon.executeTransformation(transGraph.getManagedObject(), true, false, false, false, false, replayDate, false);
+      spoon.executeTransformation(transGraph.getManagedObject(), true, false, false, false, false, replayDate, false, spoon.getTransExecutionConfiguration().getLogLevel());
     }
   }
 

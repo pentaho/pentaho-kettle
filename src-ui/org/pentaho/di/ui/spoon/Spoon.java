@@ -1450,15 +1450,15 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   }
 
   public void executeTransformation() {
-    executeTransformation(getActiveTransformation(), true, false, false, false, false, null, false);
+    executeTransformation(getActiveTransformation(), true, false, false, false, false, transExecutionConfiguration.getReplayDate(), false, transExecutionConfiguration.getLogLevel());
   }
 
   public void previewTransformation() {
-    executeTransformation(getActiveTransformation(), true, false, false, true, false, null, true);
+    executeTransformation(getActiveTransformation(), true, false, false, true, false, transDebugExecutionConfiguration.getReplayDate(), true, transDebugExecutionConfiguration.getLogLevel());
   }
 
   public void debugTransformation() {
-    executeTransformation(getActiveTransformation(), true, false, false, false, true, null, true);
+    executeTransformation(getActiveTransformation(), true, false, false, false, true, transPreviewExecutionConfiguration.getReplayDate(), true, transPreviewExecutionConfiguration.getLogLevel());
   }
 
   public void checkTrans() {
@@ -7616,7 +7616,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
     TransMeta transMeta = getActiveTransformation();
     if (transMeta != null)
-      executeTransformation(transMeta, local, remote, cluster, preview, debug, replayDate, safe);
+      executeTransformation(transMeta, local, remote, cluster, preview, debug, replayDate, safe, transExecutionConfiguration.getLogLevel());
 
     JobMeta jobMeta = getActiveJob();
     if (jobMeta != null)
@@ -7625,14 +7625,14 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   }
 
   public void executeTransformation(final TransMeta transMeta, final boolean local, final boolean remote,
-      final boolean cluster, final boolean preview, final boolean debug, final Date replayDate, final boolean safe) {
+      final boolean cluster, final boolean preview, final boolean debug, final Date replayDate, final boolean safe, final LogLevel logLevel) {
     new Thread() {
       public void run() {
         getDisplay().asyncExec(new Runnable() {
           public void run() {
             try {
               delegates.trans
-                  .executeTransformation(transMeta, local, remote, cluster, preview, debug, replayDate, safe);
+                  .executeTransformation(transMeta, local, remote, cluster, preview, debug, replayDate, safe, logLevel);
             } catch (Exception e) {
               new ErrorDialog(shell, "Execute transformation", "There was an error during transformation execution", e);
             }

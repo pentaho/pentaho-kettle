@@ -22,6 +22,8 @@
 
 package org.pentaho.di.trans.steps.singlethreader;
 
+import java.util.List;
+
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.SingleThreadedTransExecutor;
@@ -52,7 +54,10 @@ public class SingleThreaderData extends BaseStepData implements StepDataInterfac
   public long startTime;
   public StepMeta injectStepMeta;
   public StepMeta retrieveStepMeta;
-
+  public List<Object[]> errorBuffer;
+  public int lastLogLine;
+  
+  
   /**
 	 * 
 	 */

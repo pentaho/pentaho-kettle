@@ -323,6 +323,10 @@ public class Database implements VariableSpace, LoggingObjectInterface
                 lookup.setOpened(lookup.getOpened()+1); // if this counter hits 0 again, close the connection.
                 copy = lookup.getOpened();
             }
+
+            // If we have a connection group or transaction ID, disable auto commit!
+            //
+            setAutoCommit(false);
         }
         else
         {

@@ -131,6 +131,8 @@ public class JobDialog extends Dialog
     private Button       wBatchTrans;
     private FormData     fdlBatchTrans, fdBatchTrans;
 
+    private Button       wUniqueConnections;
+    
 	private Button wOK, wSQL, wCancel;
 	private Listener lsOK, lsSQL, lsCancel;
 
@@ -1295,6 +1297,25 @@ public class JobDialog extends Dialog
 		}
 		);
 
+    Label wlUniqueConnections = new Label(wSettingsComp, SWT.RIGHT);
+    wlUniqueConnections.setText(BaseMessages.getString(PKG, "JobDialog.UniqueConnections.Label"));
+    props.setLook(wlUniqueConnections);
+    FormData fdlUniqueConnections = new FormData();
+    fdlUniqueConnections.left = new FormAttachment(0, 0);
+    fdlUniqueConnections.top  = new FormAttachment(wSharedObjectsFile, margin);
+    fdlUniqueConnections.right= new FormAttachment(middle, -margin);
+    wlUniqueConnections.setLayoutData(fdlUniqueConnections);
+    wUniqueConnections=new Button(wSettingsComp, SWT.CHECK);
+    props.setLook(wUniqueConnections);
+    wUniqueConnections.setToolTipText(BaseMessages.getString(PKG, "JobDialog.UniqueConnections.Tooltip"));
+    FormData fdUniqueConnections = new FormData();
+    fdUniqueConnections.left = new FormAttachment(middle, 0);
+    fdUniqueConnections.top  = new FormAttachment(wSharedObjectsFile, margin);
+    fdUniqueConnections.right= new FormAttachment(100, 0);
+    wUniqueConnections.setLayoutData(fdUniqueConnections);
+
+		
+		
 		FormData fdLogComp = new FormData();
 		fdLogComp.left  = new FormAttachment(0, 0);
 		fdLogComp.top   = new FormAttachment(0, 0);
@@ -1345,6 +1366,8 @@ public class JobDialog extends Dialog
 				wModDate.setText    ( jobMeta.getModifiedDate().toString() );
 	
 		wBatchTrans.setSelection(jobMeta.isBatchIdPassed());
+		wUniqueConnections.setSelection(jobMeta.isUsingUniqueConnections());
+    
 
 		// The named parameters
 		String[] parameters = jobMeta.listParameters();
@@ -1429,7 +1452,7 @@ public class JobDialog extends Dialog
 		        
 		// Clear and add parameters
 		jobMeta.eraseParameters();
-    	int nrNonEmptyFields = wParamFields.nrNonEmpty(); 
+    int nrNonEmptyFields = wParamFields.nrNonEmpty(); 
 		for (int i=0;i<nrNonEmptyFields;i++)
 		{
 			TableItem item = wParamFields.getNonEmpty(i);
@@ -1443,6 +1466,7 @@ public class JobDialog extends Dialog
         
         jobMeta.setBatchIdPassed( wBatchTrans.getSelection() );
         jobMeta.setSharedObjectsFile( wSharedObjectsFile.getText() );
+        jobMeta.setUsingUniqueConnections( wUniqueConnections.getSelection() );
 
         if (newDirectory!=null) 
         {

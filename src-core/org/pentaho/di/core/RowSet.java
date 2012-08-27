@@ -136,8 +136,13 @@ public interface RowSet {
 	 */
 	public abstract void setRemoteSlaveServerName(String remoteSlaveServerName);
 
-    /**
-     * @return true if this row set is blocking.
-     */
-    public abstract boolean isBlocking();
+  /**
+   * @return true if this row set is blocking.
+   */
+  public abstract boolean isBlocking();
+
+  /**
+   * Clear this rowset: remove all rows and remove the "done" flag.
+   */
+  public abstract void clear();
 }

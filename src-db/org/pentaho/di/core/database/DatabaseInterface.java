@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.pentaho.di.core.exception.KettleDatabaseException;
+import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.repository.ObjectId;
@@ -880,6 +881,14 @@ public interface DatabaseInterface extends Cloneable
   public List<String> parseStatements(String sqlScript);
 
   /**
+   * Parse the statements in the provided SQL script, provide more information about where each was found in the script.
+   * 
+   * @param sqlScript Raw SQL Script to be parsed into executable statements.
+   * @return List of SQL script statements to be executed separately.
+   */
+  public List<SqlScriptStatement> getSqlScriptStatements(String sqlScript);
+  
+  /**
    * @return true if the database is a MySQL variant, like MySQL 5.1, InfiniDB, InfoBright, and so on.
    */
   public boolean isMySQLVariant();  
@@ -949,4 +958,16 @@ public interface DatabaseInterface extends Cloneable
    *         Returns false for certain databases (SQLite) that invalidate a prepared statement or even the complete connection when an error occurs. 
    */
   public boolean supportsErrorHandling();
+  
+  /**
+   * Convert a value in the SQL equivalent.  
+   * For example, convert String "Pentaho" into 'Pentaho' or into Oracle date format TO_DATE('2012/08/16 15:36:59', 'YYYY/MM/DD HH24:MI:SS')
+   * 
+   * @param valueMeta The description of the value.  The date format used is taken from this value unless dateFormat is specified (not null or empty)
+   * @param valueData The data to convert.
+   * @return The value SQL clause
+   * @throws KettleValueException in case there is a data conversion error.
+   */
+  public String getSQLValue(ValueMetaInterface valueMeta, Object valueData, String dateFormat) throws KettleValueException;
+
 }

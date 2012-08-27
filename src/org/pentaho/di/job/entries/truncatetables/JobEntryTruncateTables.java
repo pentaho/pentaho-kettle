@@ -265,7 +265,7 @@ public class JobEntryTruncateTables extends JobEntryBase implements Cloneable, J
 			db.shareVariablesWith(this);
 			try
 			{
-				db.connect();
+				db.connect(parentJob.getTransactionId(), null);
 			    if (argFromPrevious && rows != null) // Copy the input row to the (command line) arguments
 			    {
 

@@ -14,6 +14,7 @@ import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class SQLCondition {
+  
   private String tableAlias;
   RowMetaInterface serviceFields;
   private Condition condition;

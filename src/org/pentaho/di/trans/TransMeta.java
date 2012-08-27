@@ -65,6 +65,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.UndoInterface;
+import org.pentaho.di.core.listeners.ContentChangedListener;
 import org.pentaho.di.core.listeners.FilenameChangedListener;
 import org.pentaho.di.core.listeners.NameChangedListener;
 import org.pentaho.di.core.logging.ChannelLogTable;
@@ -3085,10 +3086,12 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      */
     public void setChanged(boolean ch)
     {
-        if (ch)
+        if (ch) {
         	setChanged();
-        else
+        	fireContentChangedListeners();
+        } else {
         	clearChanged();
+        }
     }
 
     /**
@@ -3797,6 +3800,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     private long prevCount;
 
 	private ObjectRevision	objectVersion;
+
+  private List<ContentChangedListener> contentChangedListeners;
 
     /**
      * Put the steps in a more natural order: from start to finish. For the moment, we ignore splits and joins. Splits
@@ -5728,6 +5733,17 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 		filenameChangedListeners.remove(listener);
 	}
 	
+  public void addContentChangedListener(ContentChangedListener listener) {
+    if (contentChangedListeners == null) {
+      contentChangedListeners = new ArrayList<ContentChangedListener>();
+    }
+    contentChangedListeners.add(listener);
+  }
+
+  public void removeContentChangedListener(ContentChangedListener listener) {
+    contentChangedListeners.remove(listener);
+  }
+
 	private boolean nameChanged(String oldFilename, String newFilename) {
 		if (oldFilename==null && newFilename==null) return false;
 		if (oldFilename==null && newFilename!=null) return true;
@@ -5753,6 +5769,14 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
 			}
 		}
 	}
+
+  protected void fireContentChangedListeners() {
+    if (contentChangedListeners != null) {
+      for (ContentChangedListener listener : contentChangedListeners) {
+        listener.contentChanged(this);
+      }
+    }
+  }
 
 	public void activateParameters() {
 		String[] keys = listParameters();

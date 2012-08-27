@@ -170,5 +170,9 @@ public class RowProducerTest extends TestCase {
     public boolean isBlocking() {
       return true;
     }
+
+    public void clear() {
+      throw new UnsupportedOperationException();
+    }
   }
 }

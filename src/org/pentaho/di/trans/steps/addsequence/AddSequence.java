@@ -163,7 +163,7 @@ public class AddSequence extends BaseStep implements StepInterface
 				{
 					if (getTransMeta().isUsingUniqueConnections()) 
 					{
-						synchronized (getTrans()) { data.getDb().connect(getTrans().getThreadName(), getPartitionID()); }
+						synchronized (getTrans()) { data.getDb().connect(getTrans().getTransactionId(), getPartitionID()); }
 					} 
 					else 
 					{

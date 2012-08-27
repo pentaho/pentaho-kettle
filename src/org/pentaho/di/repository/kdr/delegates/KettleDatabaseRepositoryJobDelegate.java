@@ -306,7 +306,9 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 	
 					jobMeta.setModifiedUser( jobRow.getString(KettleDatabaseRepository.FIELD_JOB_MODIFIED_USER, null) ); //$NON-NLS-1$
 					jobMeta.setModifiedDate( jobRow.getDate(KettleDatabaseRepository.FIELD_JOB_MODIFIED_DATE, new Date()) ); //$NON-NLS-1$
-	
+
+	        jobMeta.setUsingUniqueConnections( jobRow.getBoolean(KettleDatabaseRepository.FIELD_JOB_UNIQUE_CONNECTIONS, false) ); //$NON-NLS-1$
+					
 					long id_logdb = jobRow.getInteger(KettleDatabaseRepository.FIELD_JOB_ID_DATABASE_LOG, 0); //$NON-NLS-1$
 					if (id_logdb > 0) {
 						// Get the logconnection
@@ -792,17 +794,16 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_CREATED_DATE, ValueMetaInterface.TYPE_DATE), jobMeta.getCreatedDate());
 		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_MODIFIED_USER, ValueMetaInterface.TYPE_STRING), jobMeta.getModifiedUser());
 		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_MODIFIED_DATE, ValueMetaInterface.TYPE_DATE), jobMeta.getModifiedDate());
-        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_PASS_BATCH_ID, ValueMetaInterface.TYPE_BOOLEAN), jobMeta.isBatchIdPassed());
-        table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_SHARED_FILE, ValueMetaInterface.TYPE_STRING), jobMeta.getSharedObjectsFile());
+    table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_PASS_BATCH_ID, ValueMetaInterface.TYPE_BOOLEAN), jobMeta.isBatchIdPassed());
+    table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_SHARED_FILE, ValueMetaInterface.TYPE_STRING), jobMeta.getSharedObjectsFile());
+    table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOB_UNIQUE_CONNECTIONS, ValueMetaInterface.TYPE_BOOLEAN), jobMeta.isUsingUniqueConnections());
         
-        repository.connectionDelegate.getDatabase().prepareInsert(table.getRowMeta(), KettleDatabaseRepository.TABLE_R_JOB);
+    repository.connectionDelegate.getDatabase().prepareInsert(table.getRowMeta(), KettleDatabaseRepository.TABLE_R_JOB);
 		repository.connectionDelegate.getDatabase().setValuesInsert(table);
 		repository.connectionDelegate.getDatabase().insertRow();
-        if (log.isDebug()) log.logDebug("Inserted new record into table "+quoteTable(KettleDatabaseRepository.TABLE_R_JOB)+" with data : " + table);
-        repository.connectionDelegate.getDatabase().closeInsert();
+    if (log.isDebug()) log.logDebug("Inserted new record into table "+quoteTable(KettleDatabaseRepository.TABLE_R_JOB)+" with data : " + table);
+    repository.connectionDelegate.getDatabase().closeInsert();
 		
-        
-        
 		// Save the logging connection link...
 		if (jobMeta.getJobLogTable().getDatabaseMeta()!=null) {
 			repository.insertJobEntryDatabase(jobMeta.getObjectId(), null, jobMeta.getJobLogTable().getDatabaseMeta().getObjectId());

@@ -260,7 +260,8 @@ public class JobEntrySQL extends JobEntryBase implements Cloneable, JobEntryInte
 			try
 			{
 				String mySQL = null;
-				db.connect();
+			  db.connect(parentJob.getTransactionId(), null);
+
 				if(sqlfromfile)
 				{
 					if(sqlfilename==null)

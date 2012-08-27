@@ -600,7 +600,7 @@ public class TableOutput extends BaseStep implements StepInterface
   
           if (getTransMeta().isUsingUniqueConnections()) {
             synchronized (getTrans()) {
-              data.db.connect(getTrans().getThreadName(), getPartitionID());
+              data.db.connect(getTrans().getTransactionId(), getPartitionID());
             }
           } else {
             data.db.connect(getPartitionID());

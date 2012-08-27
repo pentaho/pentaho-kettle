@@ -30,6 +30,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -43,6 +44,11 @@ import java.util.zip.GZIPOutputStream;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.vfs.FileObject;
@@ -1174,6 +1180,18 @@ public class XMLHandler
     public static final String closeTag(String tag)
     {
         return "</"+tag+">";
+    }
+
+    public static String formatNode(Node node) throws KettleXMLException {
+      StringWriter sw = new StringWriter();
+      try {
+        Transformer t = TransformerFactory.newInstance().newTransformer();
+        t.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+        t.transform(new DOMSource(node), new StreamResult(sw));
+      } catch(Exception e) {
+        throw new KettleXMLException("Unable to format Node as XML", e);
+      }
+      return sw.toString();
     }
 
     

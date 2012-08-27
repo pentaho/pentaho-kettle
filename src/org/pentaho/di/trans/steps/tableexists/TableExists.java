@@ -163,7 +163,7 @@ public class TableExists extends BaseStep implements StepInterface
             {
                 if (getTransMeta().isUsingUniqueConnections())
                 {
-                    synchronized (getTrans()) { data.db.connect(getTrans().getThreadName(), getPartitionID()); }
+                    synchronized (getTrans()) { data.db.connect(getTrans().getTransactionId(), getPartitionID()); }
                 }
                 else
                 {

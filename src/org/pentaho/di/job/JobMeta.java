@@ -51,6 +51,7 @@ import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.gui.OverwritePrompter;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.UndoInterface;
+import org.pentaho.di.core.listeners.ContentChangedListener;
 import org.pentaho.di.core.listeners.FilenameChangedListener;
 import org.pentaho.di.core.listeners.NameChangedListener;
 import org.pentaho.di.core.logging.ChannelLogTable;
@@ -214,6 +215,10 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
     protected Repository repository;
     
 	protected ObjectRevision objectRevision;
+
+  private List<ContentChangedListener> contentChangedListeners;
+
+  private boolean usingUniqueConnections;
 	
 	public JobMeta() {
 		clear();
@@ -486,12 +491,14 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
     this.databases = databases;
 	}
 
-	public void setChanged(boolean ch) {
-		if (ch)
-			setChanged();
-		else
-			clearChanged();
-	}
+  public void setChanged(boolean ch) {
+    if (ch) {
+      setChanged();
+    } else {
+      clearChanged();
+    }
+    fireContentChangedListeners(ch);
+  }
 
 	public void clearChanged() {
 		changedEntries = false;
@@ -599,6 +606,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		retval.append("  ").append(XMLHandler.addTagValue("created_date", XMLHandler.date2string(created_date))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		retval.append("  ").append(XMLHandler.addTagValue("modified_user", modifiedUser)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("  ").append(XMLHandler.addTagValue("modified_date", XMLHandler.date2string(modifiedDate))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+    retval.append("  ").append(XMLHandler.addTagValue("unique_connections", usingUniqueConnections)); //$NON-NLS-1$ //$NON-NLS-2$
 
         retval.append("    ").append(XMLHandler.openTag(XML_TAG_PARAMETERS)).append(Const.CR); //$NON-NLS-1$
         String[] parameters = listParameters();
@@ -830,6 +839,10 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 				modifiedDate = XMLHandler.stringToDate(modDate);
 			}
 
+			// Is this job database transactional?
+			//
+      usingUniqueConnections = "Y".equalsIgnoreCase( XMLHandler.getTagValue(jobnode, "unique_connections") ); //$NON-NLS-1$
+      
 			// Load the default list of databases
 			// Read objects from the shared XML file & the repository
 			try {
@@ -2581,6 +2594,18 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		filenameChangedListeners.remove(listener);
 	}
 	
+  public void addContentChangedListener(ContentChangedListener listener) {
+    if (contentChangedListeners == null) {
+      contentChangedListeners = new ArrayList<ContentChangedListener>();
+    }
+    contentChangedListeners.add(listener);
+  }
+
+  public void removeContentChangedListener(ContentChangedListener listener) {
+    contentChangedListeners.remove(listener);
+  }
+
+	
 	private boolean nameChanged(String oldFilename, String newFilename) {
 		if (oldFilename==null && newFilename==null) return false;
 		if (oldFilename==null && newFilename!=null) return true;
@@ -2607,6 +2632,20 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		}
 	}
 	
+	protected void fireContentChangedListeners(boolean ch) {
+    if (contentChangedListeners!=null) {
+      if (ch) {
+        for (ContentChangedListener listener : contentChangedListeners) {
+          listener.contentChanged(this);
+        }
+      } else {
+        for (ContentChangedListener listener : contentChangedListeners) {
+          listener.contentSafe(this);
+        }
+      }
+	  }
+  }
+  
 	public void activateParameters() {
 		String[] keys = listParameters();
 		
@@ -2838,5 +2877,21 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
   
   @Override
   public void setGatheringMetrics(boolean gatheringMetrics) {
+  }
+  
+  /**
+   * @return the usingUniqueConnections
+   */
+  public boolean isUsingUniqueConnections()
+  {
+      return usingUniqueConnections;
+  }
+
+  /**
+   * @param usingUniqueConnections the usingUniqueConnections to set
+   */
+  public void setUsingUniqueConnections(boolean usingUniqueConnections)
+  {
+      this.usingUniqueConnections = usingUniqueConnections;
   }
 }

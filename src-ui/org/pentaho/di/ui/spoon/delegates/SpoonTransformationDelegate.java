@@ -40,7 +40,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.SpoonInterface;
-import org.pentaho.di.core.logging.DefaultLogLevel;
+import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.TransLogTable;
 import org.pentaho.di.core.undo.TransAction;
 import org.pentaho.di.i18n.BaseMessages;
@@ -762,7 +762,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 
 	public void executeTransformation(final TransMeta transMeta, 
 			final boolean local, final boolean remote, final boolean cluster, final boolean preview, final boolean debug, 
-			final Date replayDate, final boolean safe) throws KettleException {
+			final Date replayDate, final boolean safe, LogLevel logLevel) throws KettleException {
 		
 		if (transMeta == null) {
 			return;
@@ -881,7 +881,7 @@ public class SpoonTransformationDelegate extends SpoonDelegate
 		executionConfiguration.getUsedArguments(transMeta, spoon.getArguments());
 		executionConfiguration.setReplayDate(replayDate);
 
-		executionConfiguration.setLogLevel(DefaultLogLevel.getLogLevel());
+		executionConfiguration.setLogLevel(logLevel);
 
 		boolean execConfigAnswer = true;
 		

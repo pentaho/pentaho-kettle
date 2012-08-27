@@ -405,4 +405,15 @@ public class SingleThreadedTransExecutor {
     
     
   }
+  
+  public Trans getTrans() {
+    return trans;
+  }
+
+  /**
+   * Clear the error in the transformation, clear all the rows from all the row sets...
+   */
+  public void clearError() {
+    trans.clearError();
+  }
 }

@@ -401,7 +401,7 @@ public class LucidDBStreamingLoader extends BaseStep implements StepInterface {
         // Connect to the database
         if (getTransMeta().isUsingUniqueConnections()) {
           synchronized (getTrans()) {
-            data.db.connect(getTrans().getThreadName(), getPartitionID());
+            data.db.connect(getTrans().getTransactionId(), getPartitionID());
           }
         } else {
           data.db.connect(getPartitionID());

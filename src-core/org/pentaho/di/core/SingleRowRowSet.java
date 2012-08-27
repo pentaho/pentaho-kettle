@@ -64,4 +64,11 @@ public class SingleRowRowSet extends BaseRowSet implements Comparable<RowSet>, R
 	public int size() {
 		return row==null ? 0 : 1;
 	}
+	
+  @Override
+  public void clear() {
+    row = null;
+    done.set(false);
+  }
+
 }

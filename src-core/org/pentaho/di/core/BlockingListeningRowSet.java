@@ -143,4 +143,11 @@ public class BlockingListeningRowSet extends BaseRowSet implements Comparable<Ro
     public boolean isBlocking() {
       return blocking.get();
     }
+    
+    @Override
+    public void clear() {
+      queArray.clear();
+      done.set(false);
+    }
+
 }

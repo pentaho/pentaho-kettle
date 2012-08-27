@@ -60,10 +60,11 @@ public class JobEntryJobRunner implements Runnable
 	{
 		try
 		{
-            if (job.isStopped() || job.getParentJob()!=null && job.getParentJob().isStopped()) return;
+      if (job.isStopped() || job.getParentJob()!=null && job.getParentJob().isStopped()) return;
             
-            // This JobEntryRunner is a replacement for the Job thread.
-            // The job thread is never started because we simply want to wait for the result.
+      // This JobEntryRunner is a replacement for the Job thread.
+      // The job thread is never started because we simply want to wait for the result.
+      //
       job.fireJobStartListeners(); // Fire the start listeners
 			result = job.execute(entryNr+1, result);
 		}
@@ -76,14 +77,14 @@ public class JobEntryJobRunner implements Runnable
 		}
 		finally 
 		{
-            try {
-                job.fireJobFinishListeners();
-            } catch(KettleException e) {
-                result.setNrErrors(1);
-                result.setResult(false);
-                log.logError(BaseMessages.getString(PKG, "Job.Log.ErrorExecJob", e.getMessage()), e);
-            }
-        }
+      try {
+        job.fireJobFinishListeners();
+      } catch (KettleException e) {
+        result.setNrErrors(1);
+        result.setResult(false);
+        log.logError(BaseMessages.getString(PKG, "Job.Log.ErrorExecJob", e.getMessage()), e);
+      }
+    }
 		finished=true;
 	}
 	

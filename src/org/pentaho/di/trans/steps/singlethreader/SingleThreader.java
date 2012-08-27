@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.SingleThreadedTransExecutor;
@@ -90,6 +91,10 @@ public class SingleThreader extends BaseStep implements StepInterface
 		data.rowProducer.putRow(getInputRowMeta(), row);
 		data.batchCount++;
 		
+		if (getStepMeta().isDoingErrorHandling()) {
+		  data.errorBuffer.add(row);
+		}
+		
 		boolean countWindow = data.batchSize>0 && data.batchCount>=data.batchSize;
 		boolean timeWindow = data.batchTime>0 && (System.currentTimeMillis()-data.startTime)>data.batchTime;
 		
@@ -111,22 +116,41 @@ public class SingleThreader extends BaseStep implements StepInterface
 		try {
 		  more = data.executor.oneIteration();
 		  if (data.executor.isStopped() || data.executor.getErrors()>0) {
-			  setErrors(1);
-		      stopAll();
-		      logError(BaseMessages.getString(PKG, "SingleThreader.Log.ErrorOccurredInSubTransformation"));
-		      return false;
+		    return handleError();
 		  }
 		} catch(Exception e) {
-		    
 		    setErrors(1L);
 		    stopAll();
 		    logError(BaseMessages.getString(PKG, "SingleThreader.Log.ErrorOccurredInSubTransformation"));
 		    return false;
+		} finally {
+      data.errorBuffer.clear();
 		}
 		return more;
 	}
+	
+	private boolean handleError() throws KettleStepException {
+	  if (getStepMeta().isDoingErrorHandling()) {
+	    int lastLogLine = CentralLogStore.getLastBufferLineNr(); 
+	    StringBuffer logText = CentralLogStore.getAppender().getBuffer(data.mappingTrans.getLogChannelId(), false, data.lastLogLine);
+	    data.lastLogLine = lastLogLine;
+	    
+	    for (Object[] row : data.errorBuffer) {
+	      putError(getInputRowMeta(), row, 1L, logText.toString(), null, "STR-001");
+	    }
+	    
+	    data.executor.clearError();
+	    
+	    return true; // continue
+	  } else {
+      setErrors(1);
+      stopAll();
+      logError(BaseMessages.getString(PKG, "SingleThreader.Log.ErrorOccurredInSubTransformation"));
+      return false; // stop running
+	  }
+  }
 
-	private void passParameters() throws KettleException {
+  private void passParameters() throws KettleException {
 	  
 	  String[] parameters;
 	  String[] parameterValues;
@@ -288,7 +312,10 @@ public class SingleThreader extends BaseStep implements StepInterface
           // sub-transformation threads, etc.
           //
           prepareMappingExecution();
-          //
+          
+          if (getStepMeta().isDoingErrorHandling()) {
+            data.errorBuffer = new ArrayList<Object[]>();
+          }
           
           // That's all for now...
           //

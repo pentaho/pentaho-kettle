@@ -229,7 +229,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
 	private boolean safeModeEnabled;
 
+	  @Deprecated
     private String threadName;
+	  
+	  private String transactionId;
     
     private boolean preparing;
     private boolean initializing;
@@ -285,8 +288,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		transListeners = new ArrayList<TransListener>();
         transStoppedListeners = new ArrayList<TransStoppedListener>();
 
-		// This is needed for e.g. database 'unique' connections.
-        threadName = Thread.currentThread().getName();
+        // Get a valid transactionId in case we run database transactional.
+        transactionId = calculateTransactionId();
+        threadName = transactionId; /// backward compatibility but deprecated!
+        
         errors = new AtomicInteger(0);
         
         stepPerformanceSnapshotSeqNr = new AtomicInteger(0);
@@ -296,7 +301,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         activeSubjobs = new HashMap<String, Job>();
 	}
 
-	/**
+  /**
 	 * Initialize a transformation from transformation meta-data defined in memory
 	 * @param transMeta the transformation meta-data to use.
 	 */
@@ -321,6 +326,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 		initializeVariablesFrom(transMeta);
 		copyParametersFrom(transMeta);
 		transMeta.activateParameters();
+		
+    // Get a valid transactionId in case we run database transactional.
+    transactionId = calculateTransactionId();
+    threadName = transactionId; /// backward compatibility but deprecated!
 	}
 
 	public void setParent(LoggingObjectInterface parent){
@@ -392,6 +401,10 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 			transMeta.copyParametersFrom(this);
 			transMeta.activateParameters();		
 	    this.setDefaultLogCommitSize();
+	    
+      // Get a valid transactionId in case we run database transactional.
+      transactionId = calculateTransactionId();
+      threadName = transactionId; /// backward compatibility but deprecated!
 		}
 		catch(KettleException e)
 		{
@@ -2191,6 +2204,18 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 	}
 
   private void closeUniqueDatabaseConnections(Result result) {
+    
+    // Don't close any connections if the parent job is using the same transaction
+    // 
+    if (parentJob!=null && transactionId!=null && parentJob.getTransactionId()!=null && transactionId.equals(parentJob.getTransactionId())) {
+      return;
+    }
+
+    // Don't close any connections if the parent transformation is using the same transaction
+    // 
+    if (parentTrans!=null && transactionId!=null && parentTrans.getTransactionId()!=null && transactionId.equals(parentTrans.getTransactionId())) {
+      return;
+    }
 
     // First we get all the database connections ...
     //
@@ -2537,6 +2562,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       this.logLevel = parentJob.getLogLevel();
       this.log.setLogLevel(logLevel);
       this.parentJob = parentJob;
+      
+      transactionId = calculateTransactionId();
     }
 
     /**
@@ -2634,6 +2661,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     /**
      * @return the threadName
+     * @deprecated please use getTransactionId() instead
      */
     public String getThreadName()
     {
@@ -2642,6 +2670,7 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
 
     /**
      * @param threadName the threadName to set
+     * @deprecated please use setTransactionId() instead
      */
     public void setThreadName(String threadName)
     {
@@ -3723,6 +3752,8 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     this.logLevel = parentTrans.getLogLevel();
     this.log.setLogLevel(logLevel);
 		this.parentTrans = parentTrans;
+		
+    transactionId = calculateTransactionId();
 	}
 
 	/**
@@ -3886,5 +3917,50 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
    */
   public void setGatheringMetrics(boolean gatheringMetrics) {
     log.setGatheringMetrics(gatheringMetrics);
+  }
+
+  /**
+   * Clear the error in the transformation, clear all the rows from all the row sets, to make sure the transformation can continue with other data. 
+   * This is intended for use when running single threaded.
+   */
+  public void clearError() {
+    stopped.set(false);
+    errors.set(0);
+    finished.set(false);
+    for (StepMetaDataCombi combi : steps) {
+      StepInterface step = combi.step;
+      for (RowSet rowSet : step.getInputRowSets()) {
+        rowSet.clear();
+      }
+      step.setStopped(false);
+    }
+  }
+
+  /**
+   * @return the transactionId
+   */
+  public String getTransactionId() {
+    return transactionId;
+  }
+
+  /**
+   * @param transactionId the transactionId to set
+   */
+  public void setTransactionId(String transactionId) {
+    this.transactionId = transactionId;
+  }
+
+  public String calculateTransactionId() {
+    if (getTransMeta()!=null && getTransMeta().isUsingUniqueConnections()) {
+      if (parentJob!=null && parentJob.getJobMeta().isUsingUniqueConnections()) {
+        return parentJob.getTransactionId();
+      } else if (parentTrans!=null && parentTrans.getTransMeta().isUsingUniqueConnections()) {
+        return parentTrans.getTransactionId();
+      } else {
+        return DatabaseConnectionMap.getInstance().getNextTransactionId();
+      }
+    } else {
+      return Thread.currentThread().getName();
+    }
   }
 }

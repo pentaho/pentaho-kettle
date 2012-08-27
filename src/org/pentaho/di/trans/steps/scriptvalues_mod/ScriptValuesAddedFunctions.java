@@ -463,7 +463,7 @@ public class ScriptValuesAddedFunctions extends ScriptableObject {
 	    		try{
 	    			 if (scm.getTransMeta().isUsingUniqueConnections())
 	                 {
-	                     synchronized (scm.getTrans()) { db.connect(scm.getTrans().getThreadName(), scm.getPartitionID()); }
+	                     synchronized (scm.getTrans()) { db.connect(scm.getTrans().getTransactionId(), scm.getPartitionID()); }
 	                 }
 	                 else
 	                 {

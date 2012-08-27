@@ -42,6 +42,7 @@ import org.pentaho.di.core.Result;
 import org.pentaho.di.core.RowMetaAndData;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.database.map.DatabaseConnectionMap;
 import org.pentaho.di.core.exception.KettleDatabaseException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleJobException;
@@ -175,6 +176,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
   private String executingServer;
   private String executingUser;
+  
+  private String transactionId;
   
     public Job(String name, String file, String args[]) {
         this();
@@ -347,76 +350,86 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 	}
 
 	
-	/**
-	 * Execute a job without previous results.  This is a job entry point (not recursive)<br>
-	 * <br>
-	 * @return the result of the execution
-	 * 
-	 * @throws KettleException
-	 */
-	private Result execute() throws KettleException
-    {
-		finished.set(false);
-		stopped.set(false);
-		captureSystemEnvironment();
-		
-        log.logMinimal(BaseMessages.getString(PKG, "Job.Comment.JobStarted"));
+  /**
+   * Execute a job without previous results. This is a job entry point (not
+   * recursive)<br>
+   * <br>
+   * 
+   * @return the result of the execution
+   * 
+   * @throws KettleException
+   */
+  private Result execute() throws KettleException {
+    finished.set(false);
+    stopped.set(false);
+    captureSystemEnvironment();
 
-        // Start the tracking...
-        JobEntryResult jerStart = new JobEntryResult(null, null, BaseMessages.getString(PKG, "Job.Comment.JobStarted"), BaseMessages.getString(PKG, "Job.Reason.Started"), null, 0, null);
-        jobTracker.addJobTracker(new JobTracker(jobMeta, jerStart));
+    // Calculate the transaction ID prior to execution
+    //
+    transactionId = calculateTransactionId();
 
-        active.set(true);
+    log.logMinimal(BaseMessages.getString(PKG, "Job.Comment.JobStarted"));
 
-        // Where do we start?
-        JobEntryCopy startpoint;
-        
-        // synchronize this to a parent job if needed.
-        //
-        Object syncObject=this;
-        if (parentJob!=null) syncObject=parentJob; // parallel execution in a job
-        synchronized(syncObject) {
-          beginProcessing();
-        }
+    // Start the tracking...
+    JobEntryResult jerStart = new JobEntryResult(null, null, BaseMessages.getString(PKG, "Job.Comment.JobStarted"), BaseMessages.getString(PKG, "Job.Reason.Started"), null, 0, null);
+    jobTracker.addJobTracker(new JobTracker(jobMeta, jerStart));
 
-        if (startJobEntryCopy==null) {
-          startpoint = jobMeta.findJobEntry(JobMeta.STRING_SPECIAL_START, 0, false);
-        } else {
-          startpoint = startJobEntryCopy;
-        }
-        if (startpoint == null) { throw new KettleJobException(BaseMessages.getString(PKG, "Job.Log.CounldNotFindStartingPoint")); }
-        
-        Result res = null;
-        JobEntryResult jerEnd = null;
-        
-        if (startpoint.isStart()) {
-          // Perform optional looping in the special Start job entry...
-          //
-          long iteration=0;
-          boolean isFirst = true;
-          JobEntrySpecial jes = (JobEntrySpecial) startpoint.getEntry();
-          while ( (jes.isRepeat() || isFirst) && !isStopped()) {
-              isFirst = false;
-              res = execute(0, null, startpoint, null, BaseMessages.getString(PKG, "Job.Reason.Started"));
-              if (iteration>0 && (iteration%500)==0) {
-                System.out.println("other 500 iterations: "+iteration);
-              }
-              iteration++;
-          }
-          jerEnd = new JobEntryResult(res, jes.getLogChannelId(), BaseMessages.getString(PKG, "Job.Comment.JobFinished"), BaseMessages.getString(PKG, "Job.Reason.Finished"), null, 0, null);
-        } else {
-          res = execute(0, null, startpoint, null, BaseMessages.getString(PKG, "Job.Reason.Started"));
-          jerEnd = new JobEntryResult(res, startpoint.getEntry().getLogChannel().getLogChannelId(), BaseMessages.getString(PKG, "Job.Comment.JobFinished"), BaseMessages.getString(PKG, "Job.Reason.Finished"), null, 0, null);
-        }
-        // Save this result...
-        jobTracker.addJobTracker(new JobTracker(jobMeta, jerEnd));
-        log.logMinimal(BaseMessages.getString(PKG, "Job.Comment.JobFinished"));
-        
-        active.set(false);
-        finished.set(true);
-        
-		return res;
+    active.set(true);
+
+    // Where do we start?
+    JobEntryCopy startpoint;
+
+    // synchronize this to a parent job if needed.
+    //
+    Object syncObject = this;
+    if (parentJob != null) {
+      syncObject = parentJob; // parallel execution in a job
     }
+    
+    synchronized (syncObject) {
+      beginProcessing();
+    }
+
+    if (startJobEntryCopy == null) {
+      startpoint = jobMeta.findJobEntry(JobMeta.STRING_SPECIAL_START, 0, false);
+    } else {
+      startpoint = startJobEntryCopy;
+    }
+    if (startpoint == null) {
+      throw new KettleJobException(BaseMessages.getString(PKG, "Job.Log.CounldNotFindStartingPoint"));
+    }
+
+    Result res = null;
+    JobEntryResult jerEnd = null;
+
+    if (startpoint.isStart()) {
+      // Perform optional looping in the special Start job entry...
+      //
+      long iteration = 0;
+      boolean isFirst = true;
+      JobEntrySpecial jes = (JobEntrySpecial) startpoint.getEntry();
+      while ((jes.isRepeat() || isFirst) && !isStopped()) {
+        isFirst = false;
+        res = execute(0, null, startpoint, null, BaseMessages.getString(PKG, "Job.Reason.Started"));
+        if (iteration > 0 && (iteration % 500) == 0) {
+          System.out.println("other 500 iterations: " + iteration);
+        }
+        iteration++;
+      }
+      jerEnd = new JobEntryResult(res, jes.getLogChannelId(), BaseMessages.getString(PKG, "Job.Comment.JobFinished"), BaseMessages.getString(PKG, "Job.Reason.Finished"), null, 0, null);
+    } else {
+      res = execute(0, null, startpoint, null, BaseMessages.getString(PKG, "Job.Reason.Started"));
+      jerEnd = new JobEntryResult(res, startpoint.getEntry().getLogChannel().getLogChannelId(), BaseMessages.getString(PKG, "Job.Comment.JobFinished"), BaseMessages.getString(PKG, "Job.Reason.Finished"), null, 0, null);
+    }
+    // Save this result...
+    jobTracker.addJobTracker(new JobTracker(jobMeta, jerEnd));
+    log.logMinimal(BaseMessages.getString(PKG, "Job.Comment.JobFinished"));
+
+    active.set(false);
+    finished.set(true);
+
+    return res;
+  }
 
 	/**
 	 * Execute a job with previous results passed in.<br>
@@ -434,6 +447,10 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         initialized.set(true);
         captureSystemEnvironment();
         
+        // Calculate the transaction ID prior to execution
+        //
+        transactionId = calculateTransactionId();
+
         // Where do we start?
         JobEntryCopy startpoint;
 
@@ -954,6 +971,19 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
         }
       });
     }
+    
+    // If the job is running database transactional with unique connections, close them at the end...
+    //
+    if (jobMeta.isUsingUniqueConnections()) {
+      addJobListener(new JobAdapter() {
+        @Override
+        public void jobFinished(Job job) throws KettleException {
+          
+          job.closeUniqueDatabaseConnections();
+        }
+      });
+    }
+    
 
     return true;
   }
@@ -1784,5 +1814,88 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
   @Override
   public void setGatheringMetrics(boolean gatheringMetrics) {
     log.setGatheringMetrics(gatheringMetrics);
+  }
+  
+  private void closeUniqueDatabaseConnections() {
+    
+    // Don't close any connections if the parent job is using the same transaction
+    // 
+    if (parentJob!=null && transactionId!=null && parentJob.getTransactionId()!=null && transactionId.equals(parentJob.getTransactionId())) {
+      return;
+    }
+    
+    // First we get all the database connections ...
+    //
+    DatabaseConnectionMap map = DatabaseConnectionMap.getInstance();
+    synchronized (map) {
+      List<Database> databaseList = new ArrayList<Database>(map.getMap().values());
+      for (Database database : databaseList) {
+        if (database.getConnectionGroup().equals(getTransactionId())) {
+          try {
+            // This database connection belongs to this transformation.
+            // Let's roll it back if there is an error...
+            //
+            if (result.getNrErrors() > 0) {
+              try {
+                database.rollback(true);
+                log.logBasic(BaseMessages.getString(PKG, "Job.Exception.TransactionsRolledBackOnConnection", database.toString()));
+              } catch (Exception e) {
+                throw new KettleDatabaseException(BaseMessages.getString(PKG, "Job.Exception.ErrorRollingBackUniqueConnection", database.toString()), e);
+              }
+            } else {
+              try {
+                database.commit(true);
+                log.logBasic(BaseMessages.getString(PKG, "Job.Exception.TransactionsCommittedOnConnection", database.toString()));
+              } catch (Exception e) {
+                throw new KettleDatabaseException(BaseMessages.getString(PKG, "Job.Exception.ErrorCommittingUniqueConnection", database.toString()), e);
+              }
+            }
+          } catch (Exception e) {
+            log.logError(BaseMessages.getString(PKG, "Job.Exception.ErrorHandlingJobTransaction", database.toString()), e);
+            result.setNrErrors(result.getNrErrors() + 1);
+          } finally {
+            try {
+              // This database connection belongs to this transformation.
+              database.closeConnectionOnly();
+            } catch (Exception e) {
+              log.logError(BaseMessages.getString(PKG, "Job.Exception.ErrorHandlingJobTransaction", database.toString()), e);
+              result.setNrErrors(result.getNrErrors() + 1);
+            } finally {
+              // Remove the database from the list...
+              //
+              map.removeConnection(database.getConnectionGroup(), database.getPartitionId(), database);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  /**
+   * @return the transactionId
+   */
+  public String getTransactionId() {
+    return transactionId;
+  }
+
+  /**
+   * @param transactionId the transactionId to set
+   */
+  public void setTransactionId(String transactionId) {
+    this.transactionId = transactionId;
+  }
+
+  public String calculateTransactionId() {
+    if (getJobMeta()!=null && getJobMeta().isUsingUniqueConnections()) {
+      if (parentJob!=null && parentJob.getJobMeta().isUsingUniqueConnections()) {
+        return parentJob.getTransactionId();
+      } else if (parentLoggingObject!=null && (parentLoggingObject instanceof Trans) && ((Trans)parentLoggingObject).getTransMeta().isUsingUniqueConnections() ){
+        return ((Trans)parentLoggingObject).getTransactionId();
+      } else {
+        return DatabaseConnectionMap.getInstance().getNextTransactionId();
+      }
+    } else {
+      return null;
+    }
   }
 }

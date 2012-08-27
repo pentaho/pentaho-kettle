@@ -309,7 +309,7 @@ public class JobEntryEvalTableContent extends JobEntryBase implements Cloneable,
 			db.shareVariablesWith(this);
 			try
 			{
-				db.connect();
+				db.connect(parentJob.getTransactionId(), null);
 				
 		        if(iscustomSQL)
 		        {

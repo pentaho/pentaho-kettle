@@ -198,7 +198,7 @@ public class JobEntryTableExists extends JobEntryBase implements Cloneable, JobE
 			db.shareVariablesWith(this);
 			try
 			{
-				db.connect();
+				db.connect(parentJob.getTransactionId(), null);
                 String realTablename = environmentSubstitute(tablename);
                 String realSchemaname = environmentSubstitute(schemaname);
                 if(!Const.isEmpty(realSchemaname))

@@ -262,7 +262,7 @@ public class JobEntryColumnsExist extends JobEntryBase implements Cloneable, Job
                 else
                 	realTablename = db.getDatabaseMeta().quoteField(realTablename);
                 
-				db.connect();
+				db.connect(parentJob.getTransactionId(), null);
 
 				if (db.checkTableExists(realTablename))
 				{

@@ -911,7 +911,7 @@ public class RowMeta implements RowMetaInterface
     public RowMeta(Node node) throws KettleException {
     	this();
     	
-		int nrValues = XMLHandler.countNodes(node, ValueMeta.XML_META_TAG); 
+    int nrValues = XMLHandler.countNodes(node, ValueMeta.XML_META_TAG); 
 		for (int i=0;i<nrValues;i++)
 		{
 			addValueMeta( new ValueMeta(XMLHandler.getSubNodeByNr(node, ValueMeta.XML_META_TAG, i)) );

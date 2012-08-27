@@ -66,4 +66,11 @@ public class QueueRowSet extends BaseRowSet implements Comparable<RowSet>, RowSe
 	public int size() {
 		return buffer.size();
 	}
+	
+  @Override
+  public void clear() {
+    buffer.clear();
+    done.set(false);
+  }
+
 }

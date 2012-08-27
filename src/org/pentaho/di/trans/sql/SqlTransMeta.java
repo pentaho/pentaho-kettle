@@ -385,6 +385,10 @@ public class SqlTransMeta {
     MemoryGroupByMeta meta = new MemoryGroupByMeta();
     meta.allocate(groupFields.size(), aggFields.size());
     
+    // See if we need to always return a row or not (0 rows counted scenario)
+    //
+    boolean returnRow = false;
+    
     // The grouping fields
     //
     for (int i=0;i<groupFields.size();i++) {
@@ -435,6 +439,7 @@ public class SqlTransMeta {
           // Count a particular field
           agg = MemoryGroupByMeta.TYPE_GROUP_COUNT_ALL;
         }
+        returnRow=true;
         break;
       case AVG: agg = MemoryGroupByMeta.TYPE_GROUP_AVERAGE; break;
       default:
@@ -442,6 +447,8 @@ public class SqlTransMeta {
       }
       meta.getAggregateType()[i] = agg;
     }
+    
+    meta.setAlwaysGivingBackOneRow(returnRow);
 
     StepMeta stepMeta = new StepMeta("Group by", meta);
     stepMeta.setLocation(xLocation, 50);
