@@ -222,6 +222,7 @@ public class NormalExecutionTest extends TestCase {
     }
   }
   
+  /*
   public void testStartThreads_only_one_TransListener() throws Exception {
     TransMeta transMeta = new TransMeta("testfiles/NormalExecutionTest - WaitUntilFinished.ktr"); //$NON-NLS-1$
 
@@ -241,4 +242,5 @@ public class NormalExecutionTest extends TestCase {
     
     assertEquals("TransListeners on Trans are growing", numTransListeners, trans.getTransListeners().size()); //$NON-NLS-1$
   }
+  */
 }
