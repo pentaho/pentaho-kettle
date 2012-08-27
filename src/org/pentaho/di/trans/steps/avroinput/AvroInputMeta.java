@@ -518,6 +518,30 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
   /** Holds the source field name (if decoding from an incoming field) */
   protected String m_avroFieldName = "";
 
+  /**
+   * True if the schema to be used to decode an incoming Avro object is
+   * contained in an incoming field (only applies when m_avroInField == true)
+   */
+  protected boolean m_schemaInField;
+
+  /**
+   * The name of the source field holding the avro schema (either the JSON
+   * schema itself or a path to the schema on disk.
+   */
+  protected String m_schemaFieldName;
+
+  /**
+   * True if the value in the incoming schema field is actual a path to the
+   * schema on disk (rather than the actual schema itself)
+   */
+  protected boolean m_schemaInFieldIsPath;
+
+  /**
+   * True if schemas read from incoming fields are to be cached in memory for
+   * speed
+   */
+  protected boolean m_cacheSchemasInMemory;
+
   /** The fields to emit */
   protected List<AvroField> m_fields;
 
@@ -560,6 +584,88 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
    */
   public String getAvroFieldName() {
     return m_avroFieldName;
+  }
+
+  /**
+   * Set whether the schema to use for decoding incoming Avro objects is
+   * contained in an incoming field
+   * 
+   * @param s true if the schema to use for decoding incoming objects is itself
+   *          in an incoming field
+   */
+  public void setSchemaInField(boolean s) {
+    m_schemaInField = s;
+  }
+
+  /**
+   * Get whether the schema to use for decoding incoming Avro objects is
+   * contained in an incoming field
+   * 
+   * @return true if the schema to use for decoding incoming objects is itself
+   *         in an incoming field
+   */
+  public boolean getSchemaInField() {
+    return m_schemaInField;
+  }
+
+  /**
+   * Set the name of the incoming field that contains the schema to use.
+   * 
+   * @param fn the name of the incoming field that holds the schema to use
+   */
+  public void setSchemaFieldName(String fn) {
+    m_schemaFieldName = fn;
+  }
+
+  /**
+   * Get the name of the incoming field that contains the schema to use.
+   * 
+   * @return the name of the incoming field that holds the schema to use
+   */
+  public String getSchemaFieldName() {
+    return m_schemaFieldName;
+  }
+
+  /**
+   * Set whether the incoming schema field value contains a path to a schema on
+   * disk.
+   * 
+   * @param p true if the incoming schema field value is actually a path to an
+   *          on disk schema file.
+   */
+  public void setSchemaInFieldIsPath(boolean p) {
+    m_schemaInFieldIsPath = p;
+  }
+
+  /**
+   * Get whether the incoming schema field value contains a path to a schema on
+   * disk.
+   * 
+   * @return true if the incoming schema field value is actually a path to an on
+   *         disk schema file.
+   */
+  public boolean getSchemaInFieldIsPath() {
+    return m_schemaInFieldIsPath;
+  }
+
+  /**
+   * Set whether to cache schemas in memory when they are being supplied via an
+   * incoming field.
+   * 
+   * @param c true if schemas are to be cached in memory.
+   */
+  public void setCacheSchemasInMemory(boolean c) {
+    m_cacheSchemasInMemory = true;
+  }
+
+  /**
+   * Get whether to cache schemas in memory when they are being supplied via an
+   * incoming field.
+   * 
+   * @return true if schemas are to be cached in memory.
+   */
+  public boolean getCacheSchemasInMemory() {
+    return m_cacheSchemasInMemory;
   }
 
   /**
@@ -825,6 +931,21 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
           XMLHandler.addTagValue("avro_field_name", m_avroFieldName));
     }
 
+    retval.append("\n    ").append(
+        XMLHandler.addTagValue("schema_in_field", m_schemaInField));
+
+    if (!Const.isEmpty(m_schemaFieldName)) {
+      retval.append("\n    ").append(
+          XMLHandler.addTagValue("schema_field_name", m_schemaFieldName));
+    }
+
+    retval.append("\n    ").append(
+        XMLHandler
+            .addTagValue("schema_in_field_is_path", m_schemaInFieldIsPath));
+
+    retval.append("\n    ").append(
+        XMLHandler.addTagValue("cache_schemas", m_cacheSchemasInMemory));
+
     if (m_fields != null && m_fields.size() > 0) {
       retval.append("\n    ").append(XMLHandler.openTag("avro_fields"));
 
@@ -892,6 +1013,23 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
     }
     m_avroFieldName = XMLHandler.getTagValue(stepnode, "avro_field_name");
 
+    String schemaInField = XMLHandler.getTagValue(stepnode, "schema_in_field");
+    if (!Const.isEmpty(schemaInField)) {
+      m_schemaInField = schemaInField.equalsIgnoreCase("Y");
+    }
+    m_schemaFieldName = XMLHandler.getTagValue(stepnode, "schema_field_name");
+
+    String schemaInFieldIsPath = XMLHandler.getTagValue(stepnode,
+        "schema_in_field_is_path");
+    if (!Const.isEmpty(schemaInFieldIsPath)) {
+      m_schemaInFieldIsPath = schemaInFieldIsPath.equalsIgnoreCase("Y");
+    }
+
+    String cacheSchemas = XMLHandler.getTagValue(stepnode, "cache_schemas");
+    if (!Const.isEmpty(cacheSchemas)) {
+      m_cacheSchemasInMemory = schemaInFieldIsPath.equalsIgnoreCase("Y");
+    }
+
     Node fields = XMLHandler.getSubNode(stepnode, "avro_fields");
     if (fields != null && XMLHandler.countNodes(fields, "avro_field") > 0) {
       int nrfields = XMLHandler.countNodes(fields, "avro_field");
@@ -955,6 +1093,15 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
 
     m_avroInField = rep.getStepAttributeBoolean(id_step, 0, "avro_in_field");
     m_avroFieldName = rep.getStepAttributeString(id_step, 0, "avro_field_name");
+
+    m_schemaInField = rep
+        .getStepAttributeBoolean(id_step, 0, "schema_in_field");
+    m_schemaFieldName = rep.getStepAttributeString(id_step, 0,
+        "schema_field_name");
+    m_schemaInFieldIsPath = rep.getStepAttributeBoolean(id_step, 0,
+        "schema_in_field_is_path");
+    m_cacheSchemasInMemory = rep.getStepAttributeBoolean(id_step, 0,
+        "cache_schemas");
 
     int nrfields = rep.countNrStepAttributes(id_step, "field_name");
     if (nrfields > 0) {
@@ -1027,6 +1174,17 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
       rep.saveStepAttribute(id_transformation, id_step, 0, "avro_field_name",
           m_avroFieldName);
     }
+
+    rep.saveStepAttribute(id_transformation, id_step, 0, "schema_in_field",
+        m_schemaInField);
+    if (!Const.isEmpty(m_schemaFieldName)) {
+      rep.saveStepAttribute(id_transformation, id_step, 0, "schema_field_name",
+          m_schemaFieldName);
+    }
+    rep.saveStepAttribute(id_transformation, id_step, 0,
+        "schema_in_field_is_path", m_schemaInFieldIsPath);
+    rep.saveStepAttribute(id_transformation, id_step, 0, "cache_schemas",
+        m_cacheSchemasInMemory);
 
     if (m_fields != null && m_fields.size() > 0) {
       for (int i = 0; i < m_fields.size(); i++) {

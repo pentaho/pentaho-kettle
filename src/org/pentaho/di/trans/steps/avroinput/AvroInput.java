@@ -94,6 +94,9 @@ public class AvroInput extends BaseStep implements StepInterface {
       String avroFieldName = m_meta.getAvroFieldName();
       avroFieldName = environmentSubstitute(avroFieldName);
 
+      String schemaFieldName = m_meta.getSchemaFieldName();
+      schemaFieldName = environmentSubstitute(schemaFieldName);
+
       // setup the output row meta
       RowMetaInterface outRowMeta = null;
       outRowMeta = getInputRowMeta();
@@ -120,7 +123,8 @@ public class AvroInput extends BaseStep implements StepInterface {
         // initialize for reading from a field
         m_data.initializeFromFieldDecoding(avroFieldName, readerSchema,
             m_meta.getAvroFields(), m_meta.getAvroIsJsonEncoded(),
-            newFieldOffset);
+            newFieldOffset, m_meta.getSchemaInField(), schemaFieldName,
+            m_meta.getSchemaInFieldIsPath(), m_meta.getCacheSchemasInMemory());
       } else {
         // initialize for reading from a file
         FileObject fileObject = KettleVFS.getFileObject(m_meta.getFilename(),
@@ -137,7 +141,8 @@ public class AvroInput extends BaseStep implements StepInterface {
       if (currentInputRow != null) {
         // set variables lookup values
         if (m_meta.getLookupFields() != null
-            && m_meta.getLookupFields().size() > 0) {
+            && m_meta.getLookupFields().size() > 0 && getInputRowMeta() != null
+            && currentInputRow != null) {
           for (AvroInputMeta.LookupField f : m_meta.getLookupFields()) {
             f.setVariable(this, currentInputRow);
           }

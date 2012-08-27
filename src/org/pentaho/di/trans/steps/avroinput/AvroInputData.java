@@ -78,8 +78,25 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
    */
   protected Schema m_writerSchema;
 
-  /** The final schema to use for extracting values */
+  /** The schema to use for extracting values */
   protected Schema m_schemaToUse;
+
+  /**
+   * The default schema to use (in the case where the schema is in an incoming
+   * field and a particular row has a null (or unparsable/unavailable) schema
+   */
+  protected Schema m_defaultSchema;
+
+  /** The default datum reader (constructed with the default schema) */
+  protected GenericDatumReader m_defaultDatumReader;
+  protected Object m_defaultTopLevelObject;
+
+  /**
+   * Schema cache. Map of strings (actual schema or path to schema) to two
+   * element array. Element 0 = GenericDatumReader configured with schema; 2 =
+   * top level structure object to use.
+   */
+  protected Map<String, Object[]> m_schemaCache = new HashMap<String, Object[]>();
 
   /** True if the data to be decoded is json rather than binary */
   protected boolean m_jsonEncoded;
@@ -104,6 +121,24 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
 
   /** If decoding from an incoming field, this holds its index */
   protected int m_fieldToDecodeIndex = -1;
+
+  /** True if schema is in an incoming field */
+  protected boolean m_schemaInField;
+
+  /**
+   * If decoding from an incoming field and schema is in an incoming field, then
+   * this holds the schema field's index
+   */
+  protected int m_schemaFieldIndex = -1;
+
+  /**
+   * True if the schema field contains a path to a schema rather than the schema
+   * itself
+   */
+  protected boolean m_schemaFieldIsPath;
+
+  /** True if schemas read from incoming fields are to be cached in memory */
+  protected boolean m_cacheSchemas;
 
   /** Factory for obtaining a decoder */
   protected DecoderFactory m_factory;
@@ -851,31 +886,55 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
    * @param jsonEncoded true if the data is JSON encoded
    * @param newFieldOffset offset in the outgoing row format for extracted
    *          fields from any incoming kettle fields
+   * @param schemaInField true if the schema to use on a row-by-row basis is
+   *          contained in an incoming field value
+   * @param schemaFieldName the name of the incoming field containing the schema
+   * @param schemaFieldIsPath true if the incoming schema field values are
+   *          actually paths to schemas rather than the schema itself
+   * @param cacheSchemas true if schemas read from field values are to be cached
+   *          in memory
    * @throws KettleException
    */
   public void initializeFromFieldDecoding(String fieldNameToDecode,
       String readerSchemaFile, List<AvroInputMeta.AvroField> fields,
-      boolean jsonEncoded, int newFieldOffset) throws KettleException {
+      boolean jsonEncoded, int newFieldOffset, boolean schemaInField,
+      String schemaFieldName, boolean schemaFieldIsPath, boolean cacheSchemas)
+      throws KettleException {
 
     m_decodingFromField = true;
     m_jsonEncoded = jsonEncoded;
     m_newFieldOffset = newFieldOffset;
     m_inStream = null;
     m_normalFields = new ArrayList<AvroInputMeta.AvroField>();
+    m_cacheSchemas = cacheSchemas;
+    m_schemaInField = schemaInField;
+
     for (AvroInputMeta.AvroField f : fields) {
       m_normalFields.add(f);
     }
     m_fieldToDecodeIndex = m_outputRowMeta.indexOfValue(fieldNameToDecode);
+
+    if (schemaInField) {
+      m_schemaFieldIndex = m_outputRowMeta.indexOfValue(schemaFieldName);
+      if (m_schemaFieldIndex < 0) {
+        // TODO externalize
+        throw new KettleException(
+            "Unable to find schema field in incoming row structure!");
+      }
+      m_schemaFieldIsPath = schemaFieldIsPath;
+    }
 
     if (Const.isEmpty(readerSchemaFile)) {
       throw new KettleException(BaseMessages.getString(AvroInputMeta.PKG,
           "AvroInput.Error.NoSchemaProvided"));
     }
     m_schemaToUse = loadSchema(readerSchemaFile);
+    m_defaultSchema = m_schemaToUse;
 
     m_factory = new DecoderFactory();
 
     m_datumReader = new GenericDatumReader(m_schemaToUse);
+    m_defaultDatumReader = m_datumReader;
 
     init();
   }
@@ -930,6 +989,7 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
     // load and handle reader schema....
     if (!Const.isEmpty(readerSchemaFile)) {
       m_schemaToUse = loadSchema(readerSchemaFile);
+      m_defaultSchema = m_schemaToUse;
     } else if (jsonEncoded) {
       throw new KettleException(BaseMessages.getString(AvroInputMeta.PKG,
           "AvroInput.Error.NoSchemaProvided"));
@@ -986,24 +1046,113 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
         m_decoder = m_factory.binaryDecoder(m_inStream, null);
       }
       m_datumReader = new GenericDatumReader(m_schemaToUse);
+      m_defaultDatumReader = m_datumReader;
     }
 
     init();
   }
 
-  protected void init() throws KettleException {
+  protected void initTopLevelStructure(Schema schema, boolean setDefault)
+      throws KettleException {
     // what top-level structure are we using?
-    if (m_schemaToUse.getType() == Schema.Type.RECORD) {
-      m_topLevelRecord = new GenericData.Record(m_schemaToUse);
-    } else if (m_schemaToUse.getType() == Schema.Type.ARRAY) {
-      m_topLevelArray = new GenericData.Array(1, m_schemaToUse); // capacity,
-                                                                 // schema
-    } else if (m_schemaToUse.getType() == Schema.Type.MAP) {
+    if (schema.getType() == Schema.Type.RECORD) {
+      m_topLevelRecord = new GenericData.Record(schema);
+      if (setDefault) {
+        m_defaultTopLevelObject = m_topLevelRecord;
+      }
+    } else if (schema.getType() == Schema.Type.ARRAY) {
+      m_topLevelArray = new GenericData.Array(1, schema); // capacity,
+                                                          // schema
+      if (setDefault) {
+        m_defaultTopLevelObject = m_topLevelArray;
+      }
+    } else if (schema.getType() == Schema.Type.MAP) {
       m_topLevelMap = new HashMap<Utf8, Object>();
+      if (setDefault) {
+        m_defaultTopLevelObject = m_topLevelMap;
+      }
     } else {
       throw new KettleException(BaseMessages.getString(AvroInputMeta.PKG,
           "AvroInput.Error.UnsupportedTopLevelStructure"));
     }
+  }
+
+  protected void setTopLevelStructure(Object topLevel) {
+    if (topLevel instanceof GenericData.Record) {
+      m_topLevelRecord = (GenericData.Record) topLevel;
+      m_topLevelArray = null;
+      m_topLevelMap = null;
+    } else if (topLevel instanceof GenericData.Array) {
+      m_topLevelArray = (GenericData.Array<?>) topLevel;
+      m_topLevelRecord = null;
+      m_topLevelMap = null;
+    } else {
+      m_topLevelMap = (HashMap<Utf8, Object>) topLevel;
+      m_topLevelRecord = null;
+      m_topLevelArray = null;
+    }
+  }
+
+  protected void setSchemaToUse(String schemaKey, boolean useCache)
+      throws KettleException {
+
+    if (Const.isEmpty(schemaKey)) {
+      // switch to default
+      if (m_defaultDatumReader == null) {
+        // no key, no default schema - can't continue with this row
+        // TODO externalize
+        throw new KettleException(
+            "Incoming schema is missing and no default is set - can't process this row");
+      }
+      m_datumReader = m_defaultDatumReader;
+      m_schemaToUse = m_datumReader.getSchema();
+      setTopLevelStructure(m_defaultTopLevelObject);
+    }
+
+    if (useCache) {
+      Object[] cached = m_schemaCache.get(schemaKey);
+
+      if (cached == null) {
+        Schema toUse = null;
+        if (m_schemaFieldIsPath) {
+          // load the schema from disk
+          toUse = loadSchema(schemaKey);
+        } else {
+          // use the supplied schema
+          Schema.Parser p = new Schema.Parser();
+          toUse = p.parse(schemaKey);
+        }
+        m_schemaToUse = toUse;
+        m_datumReader = new GenericDatumReader(toUse);
+        initTopLevelStructure(toUse, false);
+        if (useCache) {
+          Object[] schemaInfo = new Object[2];
+          schemaInfo[0] = m_datumReader;
+          schemaInfo[1] = (m_topLevelArray != null) ? m_topLevelArray
+              : ((m_topLevelArray != null) ? m_topLevelArray : m_topLevelMap);
+          m_schemaCache.put(schemaKey, schemaInfo);
+        }
+      } else {
+        m_datumReader = (GenericDatumReader) cached[0];
+        m_schemaToUse = m_datumReader.getSchema();
+        setTopLevelStructure(cached[1]);
+      }
+    }
+  }
+
+  protected void init() throws KettleException {
+    initTopLevelStructure(m_schemaToUse, true);
+
+    /*
+     * // what top-level structure are we using? if (m_schemaToUse.getType() ==
+     * Schema.Type.RECORD) { m_topLevelRecord = new
+     * GenericData.Record(m_schemaToUse); } else if (m_schemaToUse.getType() ==
+     * Schema.Type.ARRAY) { m_topLevelArray = new GenericData.Array(1,
+     * m_schemaToUse); // capacity, // schema } else if (m_schemaToUse.getType()
+     * == Schema.Type.MAP) { m_topLevelMap = new HashMap<Utf8, Object>(); } else
+     * { throw new KettleException(BaseMessages.getString(AvroInputMeta.PKG,
+     * "AvroInput.Error.UnsupportedTopLevelStructure")); }
+     */
 
     // any fields specified by the user, or do we need to read all leaves
     // from the schema?
@@ -1240,6 +1389,16 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
             result[0] = RowDataUtil.resizeArray(incoming,
                 m_outputRowMeta.size());
             return result;
+          }
+
+          // if necessary, set the current datum reader and top level structure
+          // for the incoming schema
+          if (m_schemaInField) {
+            ValueMetaInterface schemaMeta = m_outputRowMeta
+                .getValueMeta(m_schemaFieldIndex);
+            String schemaToUse = schemaMeta
+                .getString(incoming[m_schemaFieldIndex]);
+            setSchemaToUse(schemaToUse, m_cacheSchemas);
           }
 
           if (m_jsonEncoded) {
