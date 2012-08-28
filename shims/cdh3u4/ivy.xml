@@ -35,7 +35,9 @@
     <dependency org="org.apache.hive" name="hive-jdbc" rev="${dependency.hive-jdbc.revision}" changing="true" transitive="false"/>
     <!-- The rest of the Hive dependencies -->
     <dependency org="org.apache.hadoop.hive" name="hive-common" rev="${dependency.cloudera-hive-jdbc.revision}" changing="true"/>
-    <dependency org="org.apache.hadoop.hive" name="hive-exec" rev="${dependency.cloudera-hive-jdbc.revision}" changing="true"/>
+    <dependency org="org.apache.hadoop.hive" name="hive-exec" rev="${dependency.cloudera-hive-jdbc.revision}" changing="true">
+        <exclude org="org.apache.hadoop" name="hadoop-core"/>
+    </dependency>
     <dependency org="org.apache.hadoop.hive" name="hive-service" rev="${dependency.cloudera-hive-jdbc.revision}" changing="true"/>
     <dependency org="org.apache.hadoop.hive" name="hive-serde" rev="${dependency.cloudera-hive-jdbc.revision}" changing="true"/>
     <dependency org="org.apache.hadoop.hive" name="hive-metastore" rev="${dependency.cloudera-hive-jdbc.revision}" changing="true"/>
@@ -51,5 +53,15 @@
     <exclude org="log4j" module="log4j" conf="default" />
     <!-- Exclude antlr. Hive brings in a version that's not compatible with Pig. -->
     <exclude org="org.antlr" conf="default" />
+    <!-- Exclude additional jars we don't want pulled in. We don't need these at runtime. -->
+    <exclude org="junit" conf="default"/>
+    <exclude org="ant"/>
+    <exclude org="org.eclipse.jdt" module="core"/>
+    <exclude org="tomcat"/>
+    <exclude org="org.mortbay.jetty"/>
+    <exclude org="hsqldb" module="hsqldb"/>
+    <!-- Don't resolve any pom files -->
+    <exclude type="pom"/>
+   
   </dependencies>
 </ivy-module>
