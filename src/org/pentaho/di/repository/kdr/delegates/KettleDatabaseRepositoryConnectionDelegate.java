@@ -65,7 +65,7 @@ public class KettleDatabaseRepositoryConnectionDelegate extends KettleDatabaseRe
 
 	public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject("Database repository", LoggingObjectType.REPOSITORY, null);
 
-    public static final int REQUIRED_MAJOR_VERSION = 4;
+    public static final int REQUIRED_MAJOR_VERSION = 5;
     public static final int REQUIRED_MINOR_VERSION = 0;
 
 	protected final static int[] KEY_POSITIONS = new int[] {0, 1, 2};
