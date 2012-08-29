@@ -28,6 +28,7 @@ import org.pentaho.hadoop.shim.HadoopConfiguration;
 import org.pentaho.hadoop.shim.HadoopConfigurationFileSystemManager;
 import org.pentaho.hadoop.shim.api.Configuration;
 import org.pentaho.hadoop.shim.common.CommonHadoopShim;
+import org.pentaho.hadoop.shim.common.DistributedCacheUtilImpl;
 import org.pentaho.hdfs.vfs.MapRFileProvider;
 import org.pentaho.hdfs.vfs.MapRFileSystem;
 
@@ -46,7 +47,7 @@ public class HadoopShim extends CommonHadoopShim {
   public String[] getJobtrackerConnectionInfo(Configuration c) {
     return EMPTY_CONNECTION_INFO;
   }
-  
+
   @Override
   public void configureConnectionInformation(String namenodeHost, String namenodePort, String jobtrackerHost,
       String jobtrackerPort, Configuration conf, List<String> logMessages) throws Exception {
@@ -84,5 +85,6 @@ public class HadoopShim extends CommonHadoopShim {
   @Override
   public void onLoad(HadoopConfiguration config, HadoopConfigurationFileSystemManager fsm) throws Exception {
     fsm.addProvider(config, MapRFileProvider.SCHEME, config.getIdentifier(), new MapRFileProvider());
+    setDistributedCacheUtil(new DistributedCacheUtilImpl(config));
   }
 }
