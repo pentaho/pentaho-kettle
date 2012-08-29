@@ -79,7 +79,7 @@ public class HadoopShim extends CommonHadoopShim {
     String jobTracker = MFS_SCHEME + jobtrackerHost;
     conf.set("fs.default.name", fsDefaultName);
     conf.set("mapred.job.tracker", jobTracker);
-    conf.set("fs.maprfs.impl", MapRFileSystem.class.getName());
+    conf.set("fs.maprfs.impl", MapRFileProvider.FS_MAPR_IMPL);
   }
 
   @Override
