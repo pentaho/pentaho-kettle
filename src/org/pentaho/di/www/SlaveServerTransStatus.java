@@ -95,14 +95,9 @@ public class SlaveServerTransStatus
         xml.append(XMLHandler.addTagValue("first_log_line_nr", firstLoggingLineNr));          
         xml.append(XMLHandler.addTagValue("last_log_line_nr", lastLoggingLineNr));          
 
-        if (result!=null)
-        {
-        	try {
-				String resultXML = result.getXML();
-				xml.append(resultXML);
-			} catch (IOException e) {
-				throw new KettleException("Unable to serialize result object as XML", e);
-			}
+        if (result != null) {
+          String resultXML = result.getXML();
+          xml.append(resultXML);
         }
 
         xml.append(XMLHandler.addTagValue("logging_string", XMLHandler.buildCDATA(loggingString)));          

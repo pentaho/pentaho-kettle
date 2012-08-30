@@ -74,6 +74,8 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 	private ObjectId id;
 
 	private JobMeta	parentJobMeta;
+	
+	private boolean checkpoint;
 
 	public JobEntryCopy()
 	{
@@ -97,6 +99,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 		retval.append("      ").append(XMLHandler.addTagValue("nr", nr));
 		retval.append("      ").append(XMLHandler.addTagValue("xloc", location.x));
 		retval.append("      ").append(XMLHandler.addTagValue("yloc", location.y));
+    retval.append("      ").append(XMLHandler.addTagValue("checkpoint", checkpoint));
 
 		retval.append("      ").append(XMLHandler.closeTag(XML_TAG)).append(Const.CR);
 		return retval.toString();
@@ -128,6 +131,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 				int x = Const.toInt(XMLHandler.getTagValue(entrynode, "xloc"), 0);
 				int y = Const.toInt(XMLHandler.getTagValue(entrynode, "yloc"), 0);
 				setLocation(x, y);
+        setCheckpoint("Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "checkpoint")));
 			}
 		} catch (Throwable e)
 		{
@@ -162,6 +166,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 		if (jobEntryCopy.location != null)
 			location = new Point(jobEntryCopy.location.x, jobEntryCopy.location.y);
 		launchingInParallel = jobEntryCopy.launchingInParallel;
+		checkpoint = jobEntryCopy.checkpoint;
 		draw = jobEntryCopy.draw;
 
 		id = jobEntryCopy.id;
@@ -415,4 +420,18 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 	public void setParentJobMeta(JobMeta parentJobMeta) {
 		this.parentJobMeta = parentJobMeta;
 	}
+
+  /**
+   * @return the checkpoint
+   */
+  public boolean isCheckpoint() {
+    return checkpoint;
+  }
+
+  /**
+   * @param checkpoint the checkpoint to set
+   */
+  public void setCheckpoint(boolean checkpoint) {
+    this.checkpoint = checkpoint;
+  }
 }

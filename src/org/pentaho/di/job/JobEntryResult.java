@@ -51,6 +51,8 @@ public class JobEntryResult implements Cloneable, Comparator<JobEntryResult>, Co
     private Date   logDate;
 	private String	jobEntryFilename;
 	private String logChannelId;
+	
+	private boolean checkpoint;
 
 	/**
 	 * Creates a new empty job entry result...
@@ -237,5 +239,19 @@ public class JobEntryResult implements Cloneable, Comparator<JobEntryResult>, Co
 	public String getLogChannelId() {
       return logChannelId;
 	}
+
+  /**
+   * @return the checkpoint
+   */
+  public boolean isCheckpoint() {
+    return checkpoint;
+  }
+
+  /**
+   * @param checkpoint the checkpoint to set
+   */
+  public void setCheckpoint(boolean checkpoint) {
+    this.checkpoint = checkpoint;
+  }
 }
 

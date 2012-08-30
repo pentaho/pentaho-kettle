@@ -432,11 +432,11 @@ public class Result implements Cloneable
     
     /**
      * @return This Result object serialized as XML
-     * @throws IOException 
      */
-    public String getXML() throws IOException
+    public String getXML()
     {
-    	StringBuffer xml = new StringBuffer();
+      try {
+        StringBuffer xml = new StringBuffer();
     	
         xml.append(XMLHandler.openTag(XML_TAG));
         
@@ -488,6 +488,9 @@ public class Result implements Cloneable
         xml.append(XMLHandler.closeTag(XML_TAG));
         
         return xml.toString();
+      } catch(IOException e) {
+        throw new RuntimeException("Unexpected error encoding job result as XML", e);
+      }
     }
     
     public Result(Node node) throws KettleException

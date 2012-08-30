@@ -115,6 +115,7 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
 				int locy = (int) r.getInteger("GUI_LOCATION_Y", 0);
 				boolean isdrawn = r.getBoolean("GUI_DRAW", false);
 				boolean isparallel = r.getBoolean("PARALLEL", false);
+        boolean checkpoint = r.getBoolean("CHECKPOINT", false);
 
 				// Do we have the jobentry already?
 				//
@@ -164,6 +165,7 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
 				jobEntryCopy.setLocation(locx, locy);
 				jobEntryCopy.setDrawn(isdrawn);
 				jobEntryCopy.setLaunchingInParallel(isparallel);
+				jobEntryCopy.setCheckpoint(checkpoint);
 				
 				return jobEntryCopy;
 			} else {
@@ -214,7 +216,7 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
 			// Save the entry copy..
 			//
 			copy.setObjectId(insertJobEntryCopy(id_job, id_jobentry, id_jobentry_type, copy.getNr(), copy.getLocation().x,
-					copy.getLocation().y, copy.isDrawn(), copy.isLaunchingInParallel()));
+					copy.getLocation().y, copy.isDrawn(), copy.isLaunchingInParallel(), copy.isCheckpoint()));
 			
 		} catch (KettleDatabaseException dbe) {
 			throw new KettleException("Unable to save job entry copy to the repository, id_job=" + id_job, dbe);
@@ -247,7 +249,8 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
 		return id;
 	}
 
-	public synchronized ObjectId insertJobEntryCopy(ObjectId id_job, ObjectId id_jobentry, ObjectId id_jobentry_type, int nr, long gui_location_x, long gui_location_y, boolean gui_draw, boolean parallel) throws KettleException {
+	public synchronized ObjectId insertJobEntryCopy(ObjectId id_job, ObjectId id_jobentry, ObjectId id_jobentry_type, int nr, 
+	    long gui_location_x, long gui_location_y, boolean gui_draw, boolean parallel, boolean checkpoint) throws KettleException {
 		ObjectId id = repository.connectionDelegate.getNextJobEntryCopyID();
 
 		RowMetaAndData table = new RowMetaAndData();
@@ -261,6 +264,7 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
 		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_GUI_LOCATION_Y, ValueMetaInterface.TYPE_INTEGER), new Long(gui_location_y));
 		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_GUI_DRAW, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(gui_draw));
 		table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_PARALLEL, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(parallel));
+    table.addValue(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_CHECKPOINT, ValueMetaInterface.TYPE_BOOLEAN), Boolean.valueOf(checkpoint));
 
 		repository.connectionDelegate.getDatabase().prepareInsert(table.getRowMeta(), KettleDatabaseRepository.TABLE_R_JOBENTRY_COPY);
 		repository.connectionDelegate.getDatabase().setValuesInsert(table);

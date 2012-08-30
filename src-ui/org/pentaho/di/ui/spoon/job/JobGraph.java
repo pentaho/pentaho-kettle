@@ -1676,6 +1676,20 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
     
   }
 
+  public void editEntryCheckpoint() {
+
+    JobEntryCopy je = getJobEntry();
+    JobEntryCopy jeOld = (JobEntryCopy) je.clone_deep();
+
+    je.setCheckpoint(!je.isCheckpoint());
+    JobEntryCopy jeNew = (JobEntryCopy) je.clone_deep();
+
+    spoon.addUndoChange(jobMeta, new JobEntryCopy[] { jeOld }, new JobEntryCopy[] { jeNew }, new int[] { jobMeta.indexOfJobEntry(jeNew) });
+    jobMeta.setChanged();
+
+    spoon.refreshGraph();
+  }  
+  
   public void duplicateEntry() throws KettleException {
     if (!canDup(jobEntry)) {
       JobGraph.showOnlyStartOnceMessage(spoon.getShell());
@@ -1744,6 +1758,9 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
         String[] referencedObjects = jobEntry.getEntry().getReferencedObjectDescriptions();
         boolean[] enabledObjects = jobEntry.getEntry().isReferencedObjectEnabled();
         launchMenu.setDisabled(Const.isEmpty(referencedObjects));
+        
+        item = (XulMenuitem) doc.getElementById("job-graph-entry-checkpoint");
+        item.setDisabled(!jobMeta.getCheckpointLogTable().isDefined());
         
         List<XulComponent> childNodes = launchMenu.getChildNodes();
         for (XulComponent childNode : childNodes) {
@@ -2123,12 +2140,18 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
 			}
 			break;
 
-		case JOB_HOP_PARALLEL_ICON:
+	 case JOB_HOP_PARALLEL_ICON:
 			hi = (JobHopMeta) areaOwner.getOwner();
 			tip.append(BaseMessages.getString(PKG, "JobGraph.Hop.Tooltip.Parallel", hi.getFromEntry().getName(), Const.CR));
 			tipImage = GUIResource.getInstance().getImageParallelHop();
 			break;
 
+    case JOB_ENTRY_CHECKPOINT:
+      JobEntryCopy jobEntryCopy = (JobEntryCopy) areaOwner.getOwner();
+      tip.append(BaseMessages.getString(PKG, "JobGraph.JobEntry.Tooltip.Checkpoint", hi.getFromEntry().toString(), Const.CR));
+      tipImage = GUIResource.getInstance().getImageCheckpoint();
+      break;
+	      
 		case JOB_ENTRY_MINI_ICON_INPUT:
 			tip.append(BaseMessages.getString(PKG, "JobGraph.EntryInputConnector.Tooltip"));
 			tipImage = GUIResource.getInstance().getImageHopInput();
@@ -2156,7 +2179,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
 		case JOB_ENTRY_RESULT_FAILURE:
 		case JOB_ENTRY_RESULT_SUCCESS:
 			JobEntryResult jobEntryResult = (JobEntryResult) areaOwner.getOwner();
-			JobEntryCopy jobEntryCopy = (JobEntryCopy) areaOwner.getParent();
+			jobEntryCopy = (JobEntryCopy) areaOwner.getParent();
 			Result result = jobEntryResult.getResult();
 			tip.append("'").append(jobEntryCopy.getName()).append("' ");
 			if (result.getResult()) {
@@ -2200,6 +2223,11 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
 				}
 			}
 			break;
+			
+	  case JOB_ENTRY_RESULT_CHECKPOINT:
+	    tip.append("The job started here since this is the furthest checkpoint that was reached last time the transformation was executed.");
+	    tipImage = GUIResource.getInstance().getImageCheckpoint();
+	    break;
 		}
 	}
 

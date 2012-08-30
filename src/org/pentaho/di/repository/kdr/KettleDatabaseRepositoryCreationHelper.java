@@ -1644,6 +1644,7 @@ public class KettleDatabaseRepositoryCreationHelper {
 		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_GUI_LOCATION_Y, ValueMetaInterface.TYPE_INTEGER, 6, 0));
 		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_GUI_DRAW, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
 		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_PARALLEL, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+    table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_CHECKPOINT, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
 		sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOBENTRY_COPY, false);
 
 		if (!Const.isEmpty(sql)) // Doesn't exist: create the table...

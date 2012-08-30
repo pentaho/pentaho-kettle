@@ -77,8 +77,9 @@ public interface LogTableInterface {
 	 * @param subject The subject object to log
 	 * @param parent The parent object to log
 	 * @return The log record to write
+	 * @throws in case there is a problem with the log record creation (incorrect settings, ...)
 	 */
-	public RowMetaAndData getLogRecord(LogStatus status, Object subject, Object parent);
+	public RowMetaAndData getLogRecord(LogStatus status, Object subject, Object parent) throws KettleException;
 	
 	public String getLogTableType();
 	

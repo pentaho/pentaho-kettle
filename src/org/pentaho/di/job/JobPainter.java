@@ -222,12 +222,20 @@ public class JobPainter extends BasePainter {
 			Result result = jobEntryResult.getResult();
 			int iconX = x + iconsize - 7;
 			int iconY = y - 7;
-			if (result.getResult()) {
-				gc.drawImage(EImage.TRUE, iconX, iconY);
-				areaOwners.add(new AreaOwner(AreaType.JOB_ENTRY_RESULT_SUCCESS, iconX, iconY, iconsize, iconsize, offset, jobEntryCopy, jobEntryResult));
+			
+			// Draw an execution result on the top right corner...
+			//
+			if (jobEntryResult.isCheckpoint()) {
+        gc.drawImage(EImage.CHECKPOINT, iconX, iconY);
+        areaOwners.add(new AreaOwner(AreaType.JOB_ENTRY_RESULT_CHECKPOINT, iconX, iconY, iconsize, iconsize, offset, jobEntryCopy, jobEntryResult));
 			} else {
-				gc.drawImage(EImage.FALSE, x + iconsize, y - 5 );
-				areaOwners.add(new AreaOwner(AreaType.JOB_ENTRY_RESULT_FAILURE, iconX, iconY, iconsize, iconsize,  offset, jobEntryCopy, jobEntryResult));
+  			if (result.getResult()) {
+  				gc.drawImage(EImage.TRUE, iconX, iconY);
+  				areaOwners.add(new AreaOwner(AreaType.JOB_ENTRY_RESULT_SUCCESS, iconX, iconY, iconsize, iconsize, offset, jobEntryCopy, jobEntryResult));
+  			} else {
+  				gc.drawImage(EImage.FALSE, x + iconsize, y - 5 );
+  				areaOwners.add(new AreaOwner(AreaType.JOB_ENTRY_RESULT_FAILURE, iconX, iconY, iconsize, iconsize,  offset, jobEntryCopy, jobEntryResult));
+  			}
 			}
 		}
 		
@@ -434,95 +442,107 @@ public class JobPainter extends BasePainter {
     }
 
 
-    private void drawArrow(int x1, int y1, int x2, int y2, double theta, int size, double factor, JobHopMeta jobHop, Object startObject, Object endObject) 
-    {
- 		int mx, my;
-		int x3;
-		int y3;
-		int x4;
-		int y4;
-		int a, b, dist;
-		double angle;
+  private void drawArrow(int x1, int y1, int x2, int y2, double theta, int size, double factor, JobHopMeta jobHop, Object startObject, Object endObject) {
+    int mx, my;
+    int x3;
+    int y3;
+    int x4;
+    int y4;
+    int a, b, dist;
+    double angle;
 
-		// gc.setLineWidth(1);
-		// WuLine(gc, black, x1, y1, x2, y2);
+    // gc.setLineWidth(1);
+    // WuLine(gc, black, x1, y1, x2, y2);
 
-		gc.drawLine(x1, y1, x2, y2);
+    gc.drawLine(x1, y1, x2, y2);
 
-		// What's the distance between the 2 points?
-		a = Math.abs(x2 - x1);
-		b = Math.abs(y2 - y1);
-		dist = (int) Math.sqrt(a * a + b * b);
+    // What's the distance between the 2 points?
+    a = Math.abs(x2 - x1);
+    b = Math.abs(y2 - y1);
+    dist = (int) Math.sqrt(a * a + b * b);
 
-        // determine factor (position of arrow to left side or right side
-        // 0-->100%)
-        if (factor<0)
-        {
-	        if (dist >= 2 * iconsize)
-	             factor = 1.3;
-	        else
-	             factor = 1.2;
+    // determine factor (position of arrow to left side or right side
+    // 0-->100%)
+    if (factor < 0) {
+      if (dist >= 2 * iconsize)
+        factor = 1.3;
+      else
+        factor = 1.2;
+    }
+
+    // in between 2 points
+    mx = (int) (x1 + factor * (x2 - x1) / 2);
+    my = (int) (y1 + factor * (y2 - y1) / 2);
+
+    // calculate points for arrowhead
+    angle = Math.atan2(y2 - y1, x2 - x1) + Math.PI;
+
+    x3 = (int) (mx + Math.cos(angle - theta) * size);
+    y3 = (int) (my + Math.sin(angle - theta) * size);
+
+    x4 = (int) (mx + Math.cos(angle + theta) * size);
+    y4 = (int) (my + Math.sin(angle + theta) * size);
+
+    gc.switchForegroundBackgroundColors();
+    gc.fillPolygon(new int[] { mx, my, x3, y3, x4, y4 });
+    gc.switchForegroundBackgroundColors();
+
+    // Display an icon above the hop...
+    //
+    factor = 0.8;
+
+    // in between 2 points
+    mx = (int) (x1 + factor * (x2 - x1) / 2) - 8;
+    my = (int) (y1 + factor * (y2 - y1) / 2) - 8;
+
+    if (jobHop != null) {
+      EImage hopsIcon;
+      if (jobHop.isUnconditional()) {
+        hopsIcon = EImage.UNCONDITIONAL;
+      } else {
+        if (jobHop.getEvaluation()) {
+          hopsIcon = EImage.TRUE;
+        } else {
+          hopsIcon = EImage.FALSE;
         }
+      }
 
-		// in between 2 points
-		mx = (int) (x1 + factor * (x2 - x1) / 2);
-		my = (int) (y1 + factor * (y2 - y1) / 2);
+      Point bounds = gc.getImageBounds(hopsIcon);
+      gc.drawImage(hopsIcon, mx, my);
+      if (!shadow) {
+        areaOwners.add(new AreaOwner(AreaType.JOB_HOP_ICON, mx, my, bounds.x, bounds.y, offset, subject, jobHop));
+      }
 
-		// calculate points for arrowhead
-		angle = Math.atan2(y2 - y1, x2 - x1) + Math.PI;
+      if (jobHop.getFromEntry().isLaunchingInParallel()) {
 
-		x3 = (int) (mx + Math.cos(angle - theta) * size);
-		y3 = (int) (my + Math.sin(angle - theta) * size);
+        factor = 1;
 
-		x4 = (int) (mx + Math.cos(angle + theta) * size);
-		y4 = (int) (my + Math.sin(angle + theta) * size);
+        // in between 2 points
+        mx = (int) (x1 + factor * (x2 - x1) / 2) - 8;
+        my = (int) (y1 + factor * (y2 - y1) / 2) - 8;
 
-		gc.switchForegroundBackgroundColors();
-		gc.fillPolygon(new int[] { mx, my, x3, y3, x4, y4 });
-		gc.switchForegroundBackgroundColors();
-		
-		// Display an icon above the hop...
-		//
-		factor = 0.8;
+        hopsIcon = EImage.PARALLEL;
+        gc.drawImage(hopsIcon, mx, my);
+        if (!shadow) {
+          areaOwners.add(new AreaOwner(AreaType.JOB_HOP_PARALLEL_ICON, mx, my, bounds.x, bounds.y, offset, subject, jobHop));
+        }
+      }
+      
+      if (jobMeta.getCheckpointLogTable().isDefined() && jobHop.getFromEntry().isCheckpoint()) {
+        factor = 0.5;
 
-		// in between 2 points
-		mx = (int) (x1 + factor * (x2 - x1) / 2) - 8;
-		my = (int) (y1 + factor * (y2 - y1) / 2) - 8;
+        // in between 2 points
+        mx = (int) (x1 + factor * (x2 - x1) / 2) - 8;
+        my = (int) (y1 + factor * (y2 - y1) / 2) - 8;
 
-		if (jobHop!=null) {
-			EImage hopsIcon;
-			if (jobHop.isUnconditional()) {
-				hopsIcon = EImage.UNCONDITIONAL;
-			} else {
-				if (jobHop.getEvaluation()) {
-					hopsIcon = EImage.TRUE;
-				} else {
-					hopsIcon = EImage.FALSE;
-				}
-			}
-	
-			Point bounds = gc.getImageBounds(hopsIcon);
-			gc.drawImage(hopsIcon, mx, my);
-			if (!shadow) {
-				areaOwners.add(new AreaOwner(AreaType.JOB_HOP_ICON, mx, my, bounds.x, bounds.y, offset, subject, jobHop));
-			}
-			
-			if (jobHop.getFromEntry().isLaunchingInParallel()) {
-	
-				factor = 1;
-	
-				// in between 2 points
-				mx = (int) (x1 + factor * (x2 - x1) / 2) - 8;
-				my = (int) (y1 + factor * (y2 - y1) / 2) - 8;
-	
-				hopsIcon = EImage.PARALLEL;
-				gc.drawImage(hopsIcon, mx, my);
-				if (!shadow) {
-					areaOwners.add(new AreaOwner(AreaType.JOB_HOP_PARALLEL_ICON, mx, my, bounds.x, bounds.y, offset, subject, jobHop));
-				}
-			}	
-		}
-	}
+        hopsIcon = EImage.CHECKPOINT;
+        gc.drawImage(hopsIcon, mx, my);
+        if (!shadow) {
+          areaOwners.add(new AreaOwner(AreaType.JOB_ENTRY_CHECKPOINT, mx, my, bounds.x, bounds.y, offset, subject, jobHop.getFromEntry()));
+        }
+      }
+    }
+  }
 
 	/**
 	 * @return the mouseOverEntries

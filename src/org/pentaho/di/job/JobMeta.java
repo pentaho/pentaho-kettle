@@ -55,6 +55,7 @@ import org.pentaho.di.core.listeners.ContentChangedListener;
 import org.pentaho.di.core.listeners.FilenameChangedListener;
 import org.pentaho.di.core.listeners.NameChangedListener;
 import org.pentaho.di.core.logging.ChannelLogTable;
+import org.pentaho.di.core.logging.CheckpointLogTable;
 import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.core.logging.JobEntryLogTable;
 import org.pentaho.di.core.logging.JobLogTable;
@@ -157,6 +158,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	protected JobLogTable jobLogTable;
 	protected JobEntryLogTable jobEntryLogTable;
 	protected ChannelLogTable channelLogTable;
+  protected CheckpointLogTable checkpointLogTable;
 
 	protected List<TransAction> undo;
 
@@ -246,6 +248,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		jobLogTable = JobLogTable.getDefault(this, this);
 		channelLogTable = ChannelLogTable.getDefault(this, this);
 		jobEntryLogTable = JobEntryLogTable.getDefault(this, this);
+    checkpointLogTable = CheckpointLogTable.getDefault(this, this);
 		
 		arguments = null;
 
@@ -651,6 +654,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		retval.append(jobLogTable.getXML());		
 		retval.append(jobEntryLogTable.getXML());		
 		retval.append(channelLogTable.getXML());		
+    retval.append(checkpointLogTable.getXML());    
         
 		retval.append("   ").append(XMLHandler.addTagValue("pass_batchid", batchIdPassed)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("   ").append(XMLHandler.addTagValue("shared_objects_file", sharedObjectsFile)); // $NON-NLS-1$
@@ -958,7 +962,11 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			if (jobEntryLogNode!=null) {
 				jobEntryLogTable.loadXML(jobEntryLogNode, databases);
 			}
-
+      Node checkpointLogNode = XMLHandler.getSubNode(jobnode, CheckpointLogTable.XML_TAG);
+      if (checkpointLogNode!=null) {
+        checkpointLogTable.loadXML(checkpointLogNode, databases);
+      }
+			
 			batchIdPassed = "Y".equalsIgnoreCase(XMLHandler.getTagValue(jobnode, "pass_batchid")); //$NON-NLS-1$ //$NON-NLS-2$
 
 			/*
@@ -2809,6 +2817,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		logTables.add(jobLogTable);
 		logTables.add(jobEntryLogTable);
 		logTables.add(channelLogTable);
+    logTables.add(checkpointLogTable);
 		return logTables;
 	}
 	
@@ -2893,5 +2902,19 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
   public void setUsingUniqueConnections(boolean usingUniqueConnections)
   {
       this.usingUniqueConnections = usingUniqueConnections;
+  }
+
+  /**
+   * @return the checkpointLogTable
+   */
+  public CheckpointLogTable getCheckpointLogTable() {
+    return checkpointLogTable;
+  }
+
+  /**
+   * @param checkpointLogTable the checkpointLogTable to set
+   */
+  public void setCheckpointLogTable(CheckpointLogTable checkpointLogTable) {
+    this.checkpointLogTable = checkpointLogTable;
   }
 }

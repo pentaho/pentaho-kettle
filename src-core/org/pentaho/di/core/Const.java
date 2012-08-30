@@ -591,6 +591,21 @@ public class Const
 	 * The name of the variable that defines the log channel log table by default for all transformations and jobs
 	 */
 	public static final String	KETTLE_CHANNEL_LOG_TABLE	= "KETTLE_CHANNEL_LOG_TABLE";
+	
+  /**
+   * The name of the variable that defines the checkpoint log database by default for all jobs
+   */
+  public static final String  KETTLE_CHECKPOINT_LOG_DB = "KETTLE_CHECKPOINT_LOG_DB";
+
+  /**
+   * The name of the variable that defines the checkpoint log schema by default for all jobs
+   */
+  public static final String  KETTLE_CHECKPOINT_LOG_SCHEMA = "KETTLE_CHECKPOINT_LOG_SCHEMA";
+
+  /**
+   * The name of the variable that defines the checkpoint log table by default for all jobs
+   */
+  public static final String  KETTLE_CHECKPOINT_LOG_TABLE  = "KETTLE_CHECKPOINT_LOG_TABLE";
 
 	/**
 	 * Name of the environment variable to set the location of the shared object file (xml) for transformations and jobs

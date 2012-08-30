@@ -75,6 +75,7 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
     LOG_FIELD("LOG_FIELD"),
     EXECUTING_SERVER("EXECUTING_SERVER"),
     EXECUTING_USER("EXECUTING_USER"),
+    START_JOB_ENTRY("START_JOB_ENTRY"),
     ;
 		
 		private String id;
@@ -175,6 +176,7 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
 		table.fields.add( new LogTableField(ID.LOG_FIELD.id, true, false, "LOG_FIELD", BaseMessages.getString(PKG, "JobLogTable.FieldName.LogField"), BaseMessages.getString(PKG, "JobLogTable.FieldDescription.LogField"), ValueMetaInterface.TYPE_STRING, DatabaseMeta.CLOB_LENGTH) );
     table.fields.add( new LogTableField(ID.EXECUTING_SERVER.id, true, false, "EXECUTING_SERVER", BaseMessages.getString(PKG, "JobLogTable.FieldName.ExecutingServer"), BaseMessages.getString(PKG, "JobLogTable.FieldDescription.ExecutingServer"), ValueMetaInterface.TYPE_STRING, 255) );
     table.fields.add( new LogTableField(ID.EXECUTING_USER.id, true, false, "EXECUTING_USER", BaseMessages.getString(PKG, "JobLogTable.FieldName.ExecutingUser"), BaseMessages.getString(PKG, "JobLogTable.FieldDescription.ExecutingUser"), ValueMetaInterface.TYPE_STRING, 255) );
+    table.fields.add( new LogTableField(ID.START_JOB_ENTRY.id, true, false, "START_JOB_ENTRY", BaseMessages.getString(PKG, "JobLogTable.FieldName.StartingJobEntry"), BaseMessages.getString(PKG, "JobLogTable.FieldDescription.StartingJobEntry"), ValueMetaInterface.TYPE_STRING, 255) );
 
 		table.findField(ID.ID_JOB).setKey(true);
 		table.findField(ID.LOGDATE).setLogDateField(true);
@@ -315,6 +317,7 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
               break;
             case EXECUTING_SERVER: value = job.getExecutingServer(); break;
             case EXECUTING_USER: value = job.getExecutingUser(); break;
+            case START_JOB_ENTRY: value = job.getCheckpointJobEntry()!=null ? job.getCheckpointJobEntry().getName() : null; break;
 						}
 					}
 
@@ -350,48 +353,46 @@ public class JobLogTable extends BaseLogTable implements Cloneable, LogTableInte
 		return Const.KETTLE_JOB_LOG_TABLE;
 	}
 
-    public List<RowMetaInterface> getRecommendedIndexes() {
-      List<RowMetaInterface> indexes = new ArrayList<RowMetaInterface>();
-      
-      // First index : ID_JOB if any is used.
-      //
-      if (isBatchIdUsed()) {
-        RowMetaInterface batchIndex = new RowMeta();
-        LogTableField keyField = getKeyField();
-        
-        ValueMetaInterface keyMeta = new ValueMeta(keyField.getFieldName(), keyField.getDataType());
-        keyMeta.setLength(keyField.getLength());
-        batchIndex.addValueMeta(keyMeta);
-        
-        indexes.add(batchIndex);
-      }
-      
-      // The next index includes : ERRORS, STATUS, JOBNAME:
-      
-      RowMetaInterface lookupIndex = new RowMeta();
-      LogTableField errorsField = findField(ID.ERRORS);
-      if (errorsField!=null) {
-        ValueMetaInterface valueMeta = new ValueMeta(errorsField.getFieldName(), errorsField.getDataType());
-        valueMeta.setLength(errorsField.getLength());
-        lookupIndex.addValueMeta(valueMeta);
-      }
-      LogTableField statusField = findField(ID.STATUS);
-      if (statusField!=null) {
-        ValueMetaInterface valueMeta = new ValueMeta(statusField.getFieldName(), statusField.getDataType());
-        valueMeta.setLength(statusField.getLength());
-        lookupIndex.addValueMeta(valueMeta);
-      }
-      LogTableField transNameField = findField(ID.JOBNAME);
-      if (transNameField!=null) {
-        ValueMetaInterface valueMeta = new ValueMeta(transNameField.getFieldName(), transNameField.getDataType());
-        valueMeta.setLength(transNameField.getLength());
-        lookupIndex.addValueMeta(valueMeta);
-      }
-      
-      indexes.add(lookupIndex);
-      
-      return indexes;
+  public List<RowMetaInterface> getRecommendedIndexes() {
+    List<RowMetaInterface> indexes = new ArrayList<RowMetaInterface>();
+
+    // First index : ID_JOB if any is used.
+    //
+    if (isBatchIdUsed()) {
+      RowMetaInterface batchIndex = new RowMeta();
+      LogTableField keyField = getKeyField();
+
+      ValueMetaInterface keyMeta = new ValueMeta(keyField.getFieldName(), keyField.getDataType());
+      keyMeta.setLength(keyField.getLength());
+      batchIndex.addValueMeta(keyMeta);
+
+      indexes.add(batchIndex);
+    }
+
+    // The next index includes : ERRORS, STATUS, JOBNAME:
+
+    RowMetaInterface lookupIndex = new RowMeta();
+    LogTableField errorsField = findField(ID.ERRORS);
+    if (errorsField != null) {
+      ValueMetaInterface valueMeta = new ValueMeta(errorsField.getFieldName(), errorsField.getDataType());
+      valueMeta.setLength(errorsField.getLength());
+      lookupIndex.addValueMeta(valueMeta);
+    }
+    LogTableField statusField = findField(ID.STATUS);
+    if (statusField != null) {
+      ValueMetaInterface valueMeta = new ValueMeta(statusField.getFieldName(), statusField.getDataType());
+      valueMeta.setLength(statusField.getLength());
+      lookupIndex.addValueMeta(valueMeta);
+    }
+    LogTableField transNameField = findField(ID.JOBNAME);
+    if (transNameField != null) {
+      ValueMetaInterface valueMeta = new ValueMeta(transNameField.getFieldName(), transNameField.getDataType());
+      valueMeta.setLength(transNameField.getLength());
+      lookupIndex.addValueMeta(valueMeta);
+    }
+
+    indexes.add(lookupIndex);
+
+    return indexes;
   }
-
-
 }

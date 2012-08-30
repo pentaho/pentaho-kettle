@@ -23,6 +23,8 @@
 package org.pentaho.di.job;
 
 import java.net.URLEncoder;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -50,6 +52,7 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.gui.JobTracker;
 import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.ChannelLogTable;
+import org.pentaho.di.core.logging.CheckpointLogTable;
 import org.pentaho.di.core.logging.DefaultLogLevel;
 import org.pentaho.di.core.logging.HasLogChannelInterface;
 import org.pentaho.di.core.logging.JobEntryLogTable;
@@ -59,6 +62,7 @@ import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LogLevel;
 import org.pentaho.di.core.logging.LogStatus;
+import org.pentaho.di.core.logging.LogTableField;
 import org.pentaho.di.core.logging.LoggingHierarchy;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
@@ -67,11 +71,14 @@ import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
 import org.pentaho.di.core.parameters.UnknownParamException;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
 import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.entries.job.JobEntryJob;
 import org.pentaho.di.job.entries.special.JobEntrySpecial;
@@ -91,6 +98,7 @@ import org.pentaho.di.www.AddJobServlet;
 import org.pentaho.di.www.SocketRepository;
 import org.pentaho.di.www.StartJobServlet;
 import org.pentaho.di.www.WebResult;
+import org.w3c.dom.Node;
 
 
 /**
@@ -104,93 +112,116 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 {
 	private static Class<?> PKG = Job.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	public static final String	CONFIGURATION_IN_EXPORT_FILENAME	= "__job_execution_configuration__.xml";
-	
-	private LogChannelInterface log;
-	private LogLevel logLevel = DefaultLogLevel.getLogLevel();
-	private String containerObjectId;
-	private JobMeta jobMeta;
-	private int logCommitSize=10;
-	private Repository rep;
-    private AtomicInteger errors;
+  public static final String               CONFIGURATION_IN_EXPORT_FILENAME = "__job_execution_configuration__.xml";
 
-	private VariableSpace variables = new Variables();
-	
-    /** The job that's launching this (sub-) job. This gives us access to the whole chain, including the parent variables, etc. */
-    private Job parentJob;
-    
-    /** The parent logging interface to reference */
-    private LoggingObjectInterface parentLoggingObject;
-    
-	/**
-	 * Keep a list of the job entries that were executed. org.pentaho.di.core.logging.CentralLogStore.getInstance()
-	 */
-	private JobTracker jobTracker;
-	
-	/** A flat list of results in THIS job, in the order of execution of job entries */
-	private List<JobEntryResult> jobEntryResults;
-	
-	private Date      startDate, endDate, currentDate, logDate, depDate;
-	
-	private AtomicBoolean active;
+  private LogChannelInterface              log;
+  private LogLevel                         logLevel                         = DefaultLogLevel.getLogLevel();
+  private String                           containerObjectId;
+  private JobMeta                          jobMeta;
+  private int                              logCommitSize                    = 10;
+  private Repository                       rep;
+  private AtomicInteger                    errors;
 
-	private AtomicBoolean stopped;
-    
-    private long    batchId;
-    
-    /** This is the batch ID that is passed from job to job to transformation, if nothing is passed, it's the job's batch id */
-    private long    passedBatchId;
-    
-    /**
-     * The rows that were passed onto this job by a previous transformation.  
-     * These rows are passed onto the first job entry in this job (on the result object)
-     */
-    private List<RowMetaAndData> sourceRows;
-    
-    /**
-     * The result of the job, after execution.
-     */
-    private Result result;
-    private AtomicBoolean initialized;
-    
-    private boolean interactive;
-    
-    private List<JobListener> jobListeners;
-    
-    private List<JobEntryListener> jobEntryListeners;
-    
-	private Map<JobEntryCopy, JobEntryTrans> activeJobEntryTransformations;
-	private Map<JobEntryCopy, JobEntryJob>   activeJobEntryJobs;
+  private VariableSpace                    variables                        = new Variables();
 
-    /**
-     * Parameters of the job.
-     */
-    private NamedParams namedParams = new NamedParamsDefault();
-    
-    private AtomicBoolean finished;
-	private SocketRepository	socketRepository;
+  /**
+   * The job that's launching this (sub-) job. This gives us access to the whole
+   * chain, including the parent variables, etc.
+   */
+  private Job                              parentJob;
 
-  private int maxJobEntriesLogged;
+  /** The parent logging interface to reference */
+  private LoggingObjectInterface           parentLoggingObject;
+
+  /**
+   * Keep a list of the job entries that were executed.
+   * org.pentaho.di.core.logging.CentralLogStore.getInstance()
+   */
+  private JobTracker                       jobTracker;
+
+  /**
+   * A flat list of results in THIS job, in the order of execution of job
+   * entries
+   */
+  private List<JobEntryResult>             jobEntryResults;
+
+  private Date                             startDate, endDate, currentDate, logDate, depDate;
+
+  private AtomicBoolean                    active;
+
+  private AtomicBoolean                    stopped;
+
+  private long                             batchId;
+
+  /**
+   * This is the batch ID that is passed from job to job to transformation, if
+   * nothing is passed, it's the job's batch id
+   */
+  private long                             passedBatchId;
+
+  /**
+   * The rows that were passed onto this job by a previous transformation. These
+   * rows are passed onto the first job entry in this job (on the result object)
+   */
+  private List<RowMetaAndData>             sourceRows;
+
+  /**
+   * The result of the job, after execution.
+   */
+  private Result                           result;
+  private AtomicBoolean                    initialized;
+
+  private boolean                          interactive;
+
+  private List<JobListener>                jobListeners;
+
+  private List<JobEntryListener>           jobEntryListeners;
+
+  private Map<JobEntryCopy, JobEntryTrans> activeJobEntryTransformations;
+  private Map<JobEntryCopy, JobEntryJob>   activeJobEntryJobs;
+
+  /**
+   * Parameters of the job.
+   */
+  private NamedParams                      namedParams                      = new NamedParamsDefault();
+
+  private AtomicBoolean                    finished;
+  private SocketRepository                 socketRepository;
+
+  private int                              maxJobEntriesLogged;
+
+  private JobEntryCopy                     startJobEntryCopy;
+
+  private String                           executingServer;
+  private String                           executingUser;
+
+  private String                           transactionId;
   
-  private JobEntryCopy startJobEntryCopy;
+  private long                             runId;
+  
+  private int                              runAttemptNr;
+  
+  private Date                             runStartDate;
+  
+  private JobEntryCopy                     checkpointJobEntry;
 
-  private String executingServer;
-  private String executingUser;
-  
-  private String transactionId;
-  
-    public Job(String name, String file, String args[]) {
-        this();
-        jobMeta = new JobMeta();
-        if (name != null)
-            setName(name + " (" + super.getName() + ")");
-        jobMeta.setName(name);
-        jobMeta.setFilename(file);
-        jobMeta.setArguments(args);
-    
-        init();
-        this.log = new LogChannel(this);
-    }
+  private Result checkpointResult;
+
+  private Map<String,String> checkpointParameters;
+
+  public Job(String name, String file, String args[]) {
+    this();
+    jobMeta = new JobMeta();
+
+    if (name != null)
+      setName(name + " (" + super.getName() + ")");
+    jobMeta.setName(name);
+    jobMeta.setFilename(file);
+    jobMeta.setArguments(args);
+
+    init();
+    this.log = new LogChannel(this);
+  }
     
   public void init() {
     jobListeners = new ArrayList<JobListener>();
@@ -323,7 +354,7 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 		}
 		catch(Throwable je)
 		{
-			log.logError(BaseMessages.getString(PKG, "Job.Log.ErrorExecJob", je));
+			log.logError(BaseMessages.getString(PKG, "Job.Log.ErrorExecJob", je.getMessage()), je);
             // log.logError(Const.getStackTracker(je));
             //
             // we don't have result object because execute() threw a curve-ball.
@@ -431,48 +462,47 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     return res;
   }
 
-	/**
-	 * Execute a job with previous results passed in.<br>
-	 * <br>
-	 * Execute called by JobEntryJob: don't clear the jobEntryResults.
-	 * @param nr The job entry number
-	 * @param result the result of the previous execution
-	 * @return Result of the job execution
-	 * @throws KettleJobException
-	 */
-	public Result execute(int nr, Result result) throws KettleException
-	{
-		finished.set(false);
-        active.set(true);
-        initialized.set(true);
-        captureSystemEnvironment();
-        
-        // Calculate the transaction ID prior to execution
-        //
-        transactionId = calculateTransactionId();
+  /**
+   * Execute a job with previous results passed in.<br>
+   * <br>
+   * Execute called by JobEntryJob: don't clear the jobEntryResults.
+   * 
+   * @param nr
+   *          The job entry number
+   * @param result
+   *          the result of the previous execution
+   * @return Result of the job execution
+   * @throws KettleJobException
+   */
+  public Result execute(int nr, Result result) throws KettleException {
+    finished.set(false);
+    active.set(true);
+    initialized.set(true);
+    captureSystemEnvironment();
 
-        // Where do we start?
-        JobEntryCopy startpoint;
+    // Calculate the transaction ID prior to execution
+    //
+    transactionId = calculateTransactionId();
 
-        // Perhaps there is already a list of input rows available?
-        if (getSourceRows()!=null)
-        {
-            result.setRows(getSourceRows());
-        }
-        
-        startpoint = jobMeta.findJobEntry(JobMeta.STRING_SPECIAL_START, 0, false);
-        if (startpoint == null) 
-        {
-            throw new KettleJobException(BaseMessages.getString(PKG, "Job.Log.CounldNotFindStartingPoint"));
-        }
+    // Where do we start?
+    JobEntryCopy startpoint;
 
+    // Perhaps there is already a list of input rows available?
+    if (getSourceRows() != null) {
+      result.setRows(getSourceRows());
+    }
 
-		Result res =  execute(nr, result, startpoint, null, BaseMessages.getString(PKG, "Job.Reason.StartOfJobentry"));
-		
-        active.set(false);
-        
-		return res;
-	}
+    startpoint = jobMeta.findJobEntry(JobMeta.STRING_SPECIAL_START, 0, false);
+    if (startpoint == null) {
+      throw new KettleJobException(BaseMessages.getString(PKG, "Job.Log.CounldNotFindStartingPoint"));
+    }
+
+    Result res = execute(nr, result, startpoint, null, BaseMessages.getString(PKG, "Job.Reason.StartOfJobentry"));
+
+    active.set(false);
+
+    return res;
+  }
 	
 	/**
 	 * Sets the finished flag.<b>
@@ -497,117 +527,161 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     }
   }
   
-	/**
-	 * Execute a job entry recursively and move to the next job entry automatically.<br>
-	 * Uses a back-tracking algorithm.<br>
-	 * 
-	 * @param nr
-	 * @param prev_result
-	 * @param jobEntryCopy
-	 * @param previous
-	 * @param reason
-	 * @return
-	 * @throws KettleException
-	 */
-	private Result execute(final int nr, Result prev_result, final JobEntryCopy jobEntryCopy, JobEntryCopy previous, String reason) throws KettleException
-	{
-		Result res = null;
-       
-		if (stopped.get())
-		{
-			res=new Result(nr);
-			res.stopped=true;
-			return res;
-		}
-		
-		if(log.isDetailed()) log.logDetailed("exec("+nr+", "+(prev_result!=null?prev_result.getNrErrors():0)+", "+(jobEntryCopy!=null?jobEntryCopy.toString():"null")+")");
-		
-		// What entry is next?
-		JobEntryInterface jobEntryInterface = jobEntryCopy.getEntry();
-		jobEntryInterface.getLogChannel().setLogLevel(logLevel);
+  /**
+   * Execute a job entry recursively and move to the next job entry
+   * automatically.<br>
+   * Uses a back-tracking algorithm.<br>
+   * 
+   * @param nr
+   * @param prev_result
+   * @param jobEntryCopy
+   * @param previous
+   * @param reason
+   * @return
+   * @throws KettleException
+   */
+  private Result execute(final int nr, Result prev_result, final JobEntryCopy jobEntryCopy, JobEntryCopy previous, String reason) throws KettleException {
+    Result res = null;
 
-        // Track the fact that we are going to launch the next job entry...
-        JobEntryResult jerBefore = new JobEntryResult(null, null, BaseMessages.getString(PKG, "Job.Comment.JobStarted"), reason, jobEntryCopy.getName(), jobEntryCopy.getNr(), environmentSubstitute(jobEntryCopy.getEntry().getFilename()));
-        jobTracker.addJobTracker(new JobTracker(jobMeta, jerBefore));
-
-        Result prevResult = null;
-        if ( prev_result != null )
-        {
-            prevResult = (Result)prev_result.clone();
-        }
-        else
-        {
-            prevResult = new Result();
-        }
-
-        ClassLoader cl = Thread.currentThread().getContextClassLoader();
-        Thread.currentThread().setContextClassLoader(jobEntryInterface.getClass().getClassLoader());
-        // Execute this entry...
-        JobEntryInterface cloneJei = (JobEntryInterface)jobEntryInterface.clone();
-        ((VariableSpace)cloneJei).copyVariablesFrom(this);
-        cloneJei.setRepository(rep);
-        cloneJei.setParentJob(this);
-        final long start = System.currentTimeMillis();
-                
-        cloneJei.getLogChannel().logDetailed("Starting job entry");
-        for (JobEntryListener jobEntryListener : jobEntryListeners) {
-        	jobEntryListener.beforeExecution(this, jobEntryCopy, cloneJei);
-        }
-        if (interactive) {
-			if (jobEntryCopy.isTransformation()) {
-				getActiveJobEntryTransformations().put(jobEntryCopy, (JobEntryTrans)cloneJei);
-			}
-			if (jobEntryCopy.isJob()) {
-				getActiveJobEntryJobs().put(jobEntryCopy, (JobEntryJob)cloneJei);
-			}
-        }
-        final Result result = cloneJei.execute(prevResult, nr);
-        final long end = System.currentTimeMillis();
-        if (interactive) {
-			if (jobEntryCopy.isTransformation()) {
-				getActiveJobEntryTransformations().remove(jobEntryCopy);
-			}
-			if (jobEntryCopy.isJob()) {
-				getActiveJobEntryJobs().remove(jobEntryCopy);
-			}
-        }
-
-        if (cloneJei instanceof JobEntryTrans)
-        {
-        	String throughput = result.getReadWriteThroughput((int)((end-start) / 1000));
-        	if (throughput != null) {
-        		log.logMinimal(throughput);
-        	}
-        }
-        for (JobEntryListener jobEntryListener : jobEntryListeners) {
-        	jobEntryListener.afterExecution(this, jobEntryCopy, cloneJei, result);
-        }
-
-        Thread.currentThread().setContextClassLoader(cl);
-		addErrors((int)result.getNrErrors());
-		
-		// Also capture the logging text after the execution...
-		//
-		Log4jBufferAppender appender = CentralLogStore.getAppender();
-		StringBuffer logTextBuffer = appender.getBuffer(cloneJei.getLogChannel().getLogChannelId(), false);
-		result.setLogText( logTextBuffer.toString() );
-		
-    // Save this result as well...
-    //
-    JobEntryResult jerAfter = new JobEntryResult(result, cloneJei.getLogChannel().getLogChannelId(), 
-        BaseMessages.getString(PKG, "Job.Comment.JobFinished"), null, jobEntryCopy.getName(), jobEntryCopy.getNr(), 
-        environmentSubstitute(jobEntryCopy.getEntry().getFilename())
-        );
-    jobTracker.addJobTracker(new JobTracker(jobMeta, jerAfter));
-    jobEntryResults.add(jerAfter);
-
-    // Only keep the last X job entry results in memory
-    //
-    if (maxJobEntriesLogged>0 && jobEntryResults.size()>maxJobEntriesLogged+50) {
-      jobEntryResults = jobEntryResults.subList(50, jobEntryResults.size()); // Remove the oldest.
+    if (stopped.get()) {
+      res = new Result(nr);
+      res.stopped = true;
+      return res;
     }
     
-			
+    // if we didn't have a previous result, create one, otherwise, copy the content...
+    //
+    final Result result;
+    Result prevResult = null;
+    if (prev_result != null) {
+      prevResult = (Result) prev_result.clone();
+    } else {
+      prevResult = new Result();
+    }
+
+    // See if we found a checkpoint from a previous execution...
+    //
+    if (checkpointJobEntry!=null && checkpointJobEntry==jobEntryCopy) {
+      CheckpointLogTable checkpointLogTable = jobMeta.getCheckpointLogTable();
+      
+      // Yes, we need to restore the previous checkpoint results at this point...
+      //
+      result = prevResult = checkpointResult;
+      
+      // Do we need to restore the parameter values?
+      //
+      if ("Y".equalsIgnoreCase(environmentSubstitute(checkpointLogTable.getSaveParameters()))) {
+        for (String name : checkpointParameters.keySet()) {
+          setParameterValue(name, checkpointParameters.get(name));
+        }
+      }
+      
+      // Do we need to keep the result rows from the checkpoint?
+      //
+      if (!"Y".equalsIgnoreCase(environmentSubstitute(checkpointLogTable.getSaveResultRows()))) {
+        prevResult.getRows().clear();
+      }
+
+      // Do we need to keep the result files from the checkpoint?
+      //
+      if (!"Y".equalsIgnoreCase(environmentSubstitute(checkpointLogTable.getSaveResultFiles()))) {
+        prevResult.getResultFiles().clear();
+      }
+      
+      // Add some basic results logging
+      //
+      JobEntryResult jerCheckpoint = new JobEntryResult(result, getLogChannel().getLogChannelId(), 
+          BaseMessages.getString(PKG, "Job.Comment.JobRestartAtCheckpoint"), null, jobEntryCopy.getName(), jobEntryCopy.getNr(), environmentSubstitute(jobEntryCopy.getEntry().getFilename()));
+      jerCheckpoint.setCheckpoint(true);
+      jobTracker.addJobTracker(new JobTracker(jobMeta, jerCheckpoint));
+      jobEntryResults.add(jerCheckpoint);
+      
+      log.logBasic("Restarting from checkpoint job entry: "+checkpointJobEntry.toString());
+
+    } else {
+      if (log.isDetailed())
+        log.logDetailed("exec(" + nr + ", " + (prev_result != null ? prev_result.getNrErrors() : 0) + ", " + (jobEntryCopy != null ? jobEntryCopy.toString() : "null") + ")");
+  
+      // Which entry is next?
+      JobEntryInterface jobEntryInterface = jobEntryCopy.getEntry();
+      jobEntryInterface.getLogChannel().setLogLevel(logLevel);
+  
+      // Track the fact that we are going to launch the next job entry...
+      JobEntryResult jerBefore = new JobEntryResult(null, null, BaseMessages.getString(PKG, "Job.Comment.JobStarted"), reason, jobEntryCopy.getName(), jobEntryCopy.getNr(), environmentSubstitute(jobEntryCopy.getEntry().getFilename()));
+      jobTracker.addJobTracker(new JobTracker(jobMeta, jerBefore));
+  
+      ClassLoader cl = Thread.currentThread().getContextClassLoader();
+      Thread.currentThread().setContextClassLoader(jobEntryInterface.getClass().getClassLoader());
+      // Execute this entry...
+      JobEntryInterface cloneJei = (JobEntryInterface) jobEntryInterface.clone();
+      ((VariableSpace) cloneJei).copyVariablesFrom(this);
+      cloneJei.setRepository(rep);
+      cloneJei.setParentJob(this);
+      final long start = System.currentTimeMillis();
+  
+      cloneJei.getLogChannel().logDetailed("Starting job entry");
+      for (JobEntryListener jobEntryListener : jobEntryListeners) {
+        jobEntryListener.beforeExecution(this, jobEntryCopy, cloneJei);
+      }
+      if (interactive) {
+        if (jobEntryCopy.isTransformation()) {
+          getActiveJobEntryTransformations().put(jobEntryCopy, (JobEntryTrans) cloneJei);
+        }
+        if (jobEntryCopy.isJob()) {
+          getActiveJobEntryJobs().put(jobEntryCopy, (JobEntryJob) cloneJei);
+        }
+      }
+      result = cloneJei.execute(prevResult, nr);
+      final long end = System.currentTimeMillis();
+      if (interactive) {
+        if (jobEntryCopy.isTransformation()) {
+          getActiveJobEntryTransformations().remove(jobEntryCopy);
+        }
+        if (jobEntryCopy.isJob()) {
+          getActiveJobEntryJobs().remove(jobEntryCopy);
+        }
+      }
+  
+      if (cloneJei instanceof JobEntryTrans) {
+        String throughput = result.getReadWriteThroughput((int) ((end - start) / 1000));
+        if (throughput != null) {
+          log.logMinimal(throughput);
+        }
+      }
+      for (JobEntryListener jobEntryListener : jobEntryListeners) {
+        jobEntryListener.afterExecution(this, jobEntryCopy, cloneJei, result);
+      }
+  
+      Thread.currentThread().setContextClassLoader(cl);
+      addErrors((int) result.getNrErrors());
+  
+      // Also capture the logging text after the execution...
+      //
+      Log4jBufferAppender appender = CentralLogStore.getAppender();
+      StringBuffer logTextBuffer = appender.getBuffer(cloneJei.getLogChannel().getLogChannelId(), false);
+      result.setLogText(logTextBuffer.toString());
+  
+      // Save this result as well...
+      //
+      JobEntryResult jerAfter = new JobEntryResult(result, cloneJei.getLogChannel().getLogChannelId(), BaseMessages.getString(PKG, "Job.Comment.JobFinished"), null, jobEntryCopy.getName(), jobEntryCopy.getNr(), environmentSubstitute(jobEntryCopy
+          .getEntry().getFilename()));
+      jobTracker.addJobTracker(new JobTracker(jobMeta, jerAfter));
+      jobEntryResults.add(jerAfter);
+  
+      // Only keep the last X job entry results in memory
+      //
+      if (maxJobEntriesLogged > 0 && jobEntryResults.size() > maxJobEntriesLogged + 50) {
+        // Remove the oldest.
+        jobEntryResults = jobEntryResults.subList(50, jobEntryResults.size()); 
+      }
+  
+      // If this is a checkpoint, write to the checkpoint log table
+      //
+      if (jobEntryCopy.isCheckpoint() && jobMeta.getCheckpointLogTable().isDefined()) {
+        writeCheckpointInformation(jobEntryCopy, result);
+      }
+    }
+
     // Try all next job entries.
     //
     // Keep track of all the threads we fired in case of parallel execution...
@@ -620,160 +694,186 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 
     // Launch only those where the hop indicates true or false
     //
-		int nrNext = jobMeta.findNrNextJobEntries(jobEntryCopy);
-		for (int i=0;i<nrNext && !isStopped();i++)
-		{
-			// The next entry is...
-			final JobEntryCopy nextEntry = jobMeta.findNextJobEntry(jobEntryCopy, i);
-			
-			// See if we need to execute this...
-			final JobHopMeta hi = jobMeta.findJobHop(jobEntryCopy, nextEntry);
+    int nrNext = jobMeta.findNrNextJobEntries(jobEntryCopy);
+    for (int i = 0; i < nrNext && !isStopped(); i++) {
+      // The next entry is...
+      final JobEntryCopy nextEntry = jobMeta.findNextJobEntry(jobEntryCopy, i);
 
-			// The next comment...
-			final String nextComment;
-			if (hi.isUnconditional()) 
-			{
-				nextComment = BaseMessages.getString(PKG, "Job.Comment.FollowedUnconditional");
-			}
-			else
-			{
-				if (result.getResult())
-                {
-					nextComment = BaseMessages.getString(PKG, "Job.Comment.FollowedSuccess");
-                }
-				else
-                {
-					nextComment = BaseMessages.getString(PKG, "Job.Comment.FollowedFailure");
-                }
-			}
+      // See if we need to execute this...
+      final JobHopMeta hi = jobMeta.findJobHop(jobEntryCopy, nextEntry);
 
-			// 
-			// If the link is unconditional, execute the next job entry (entries).
-			// If the start point was an evaluation and the link color is correct: green or red, execute the next job entry...
-			//
-			if (  hi.isUnconditional() || ( jobEntryCopy.evaluates() && ( ! ( hi.getEvaluation() ^ result.getResult() ) ) ) ) 
-			{				
-				// Start this next step!
-				if(log.isBasic()) log.logBasic(BaseMessages.getString(PKG, "Job.Log.StartingEntry",nextEntry.getName()));
-                
-                // Pass along the previous result, perhaps the next job can use it...
-                // However, set the number of errors back to 0 (if it should be reset)
-				// When an evaluation is executed the errors e.g. should not be reset.
-				if ( nextEntry.resetErrorsBeforeExecution() )
-				{
-                    result.setNrErrors(0);
-				}
-                
-                // Now execute!
-				// 
-            	// if (we launch in parallel, fire the execution off in a new thread...
-            	//
-            	if (jobEntryCopy.isLaunchingInParallel())
-            	{
-            		threadEntries.add(nextEntry);
-            		
-            		Runnable runnable = new Runnable() {
-            			public void run() {
-            				try {
-            					Result threadResult = execute(nr+1, result, nextEntry, jobEntryCopy, nextComment);
-            					threadResults.add(threadResult);
-            				}
-            				catch(Throwable e)
-                            {
-                            	log.logError(Const.getStackTracker(e));
-                            	threadExceptions.add(new KettleException(BaseMessages.getString(PKG, "Job.Log.UnexpectedError",nextEntry.toString()), e));
-                            	Result threadResult = new Result();
-                            	threadResult.setResult(false);
-                            	threadResult.setNrErrors(1L);
-                            	threadResults.add(threadResult);
-                            }
-            			}
-            		};
-            		Thread thread = new Thread(runnable);
-            		threads.add(thread);
-            		thread.start();
-            		if(log.isBasic()) log.logBasic(BaseMessages.getString(PKG, "Job.Log.LaunchedJobEntryInParallel",nextEntry.getName()));
-            	}
-            	else
-            	{
-                    try
-                    {
-	            		// Same as before: blocks until it's done
-	            		//
-	            		res = execute(nr+1, result, nextEntry, jobEntryCopy, nextComment);
-                    }
-                    catch(Throwable e)
-                    {
-                    	log.logError(Const.getStackTracker(e));
-                    	throw new KettleException(BaseMessages.getString(PKG, "Job.Log.UnexpectedError",nextEntry.toString()), e);
-                    }
-                    if(log.isBasic()) log.logBasic(BaseMessages.getString(PKG, "Job.Log.FinishedJobEntry",nextEntry.getName(),res.getResult()+""));
-            	}
-			}
-		}
-		
-		// OK, if we run in parallel, we need to wait for all the job entries to finish...
-		//
-		if (jobEntryCopy.isLaunchingInParallel())
-		{
-			for (int i=0;i<threads.size();i++)
-			{
-				Thread thread = threads.get(i);
-				JobEntryCopy nextEntry = threadEntries.get(i);
-				
-				try 
-				{
-					thread.join();
-				} 
-				catch (InterruptedException e) 
-				{
-	                log.logError(jobMeta.toString(), BaseMessages.getString(PKG, "Job.Log.UnexpectedErrorWhileWaitingForJobEntry",nextEntry.getName()));
-	                threadExceptions.add(new KettleException(BaseMessages.getString(PKG, "Job.Log.UnexpectedErrorWhileWaitingForJobEntry",nextEntry.getName()), e));
-				}
-			}
-			// if(log.isBasic()) log.logBasic(BaseMessages.getString(PKG, "Job.Log.FinishedJobEntry",startpoint.getName(),res.getResult()+""));
-		}
-		
-		// Perhaps we don't have next steps??
-		// In this case, return the previous result.
-		if (res==null)
-		{
-			res=prevResult;
-		}
+      // The next comment...
+      final String nextComment;
+      if (hi.isUnconditional()) {
+        nextComment = BaseMessages.getString(PKG, "Job.Comment.FollowedUnconditional");
+      } else {
+        if (result.getResult()) {
+          nextComment = BaseMessages.getString(PKG, "Job.Comment.FollowedSuccess");
+        } else {
+          nextComment = BaseMessages.getString(PKG, "Job.Comment.FollowedFailure");
+        }
+      }
 
-		// See if there where any errors in the parallel execution
-		//
-		if (threadExceptions.size()>0) 
-		{
-			res.setResult(false);
-			res.setNrErrors(threadExceptions.size());
-			
-			for (KettleException e : threadExceptions) 
-			{
-				log.logError(jobMeta.toString(), e.getMessage(), e);
-			}
-			
-			// Now throw the first Exception for good measure...
-			//
-			throw threadExceptions.get(0);
-		}
-		
-		// In parallel execution, we aggregate all the results, simply add them to the previous result...
-		//
-		for (Result threadResult : threadResults)
-		{
-			res.add(threadResult);
-		}
-		
-		// If there have been errors, logically, we need to set the result to "false"...
-		//
-		if (res.getNrErrors()>0) {
-			res.setResult(false);
-		}
-		
-		return res;
-	}
+      //
+      // If the link is unconditional, execute the next job entry (entries).
+      // If the start point was an evaluation and the link color is correct:
+      // green or red, execute the next job entry...
+      //
+      if (hi.isUnconditional() || (jobEntryCopy.evaluates() && (!(hi.getEvaluation() ^ result.getResult())))) {
+        // Start this next step!
+        if (log.isBasic())
+          log.logBasic(BaseMessages.getString(PKG, "Job.Log.StartingEntry", nextEntry.getName()));
+
+        // Pass along the previous result, perhaps the next job can use it...
+        // However, set the number of errors back to 0 (if it should be reset)
+        // When an evaluation is executed the errors e.g. should not be reset.
+        if (nextEntry.resetErrorsBeforeExecution()) {
+          result.setNrErrors(0);
+        }
+
+        // Now execute!
+        //
+        // if (we launch in parallel, fire the execution off in a new thread...
+        //
+        if (jobEntryCopy.isLaunchingInParallel()) {
+          threadEntries.add(nextEntry);
+
+          Runnable runnable = new Runnable() {
+            public void run() {
+              try {
+                Result threadResult = execute(nr + 1, result, nextEntry, jobEntryCopy, nextComment);
+                threadResults.add(threadResult);
+              } catch (Throwable e) {
+                log.logError(Const.getStackTracker(e));
+                threadExceptions.add(new KettleException(BaseMessages.getString(PKG, "Job.Log.UnexpectedError", nextEntry.toString()), e));
+                Result threadResult = new Result();
+                threadResult.setResult(false);
+                threadResult.setNrErrors(1L);
+                threadResults.add(threadResult);
+              }
+            }
+          };
+          Thread thread = new Thread(runnable);
+          threads.add(thread);
+          thread.start();
+          if (log.isBasic())
+            log.logBasic(BaseMessages.getString(PKG, "Job.Log.LaunchedJobEntryInParallel", nextEntry.getName()));
+        } else {
+          try {
+            // Same as before: blocks until it's done
+            //
+            res = execute(nr + 1, result, nextEntry, jobEntryCopy, nextComment);
+          } catch (Throwable e) {
+            log.logError(Const.getStackTracker(e));
+            throw new KettleException(BaseMessages.getString(PKG, "Job.Log.UnexpectedError", nextEntry.toString()), e);
+          }
+          if (log.isBasic())
+            log.logBasic(BaseMessages.getString(PKG, "Job.Log.FinishedJobEntry", nextEntry.getName(), res.getResult() + ""));
+        }
+      }
+    }
+
+    // OK, if we run in parallel, we need to wait for all the job entries to
+    // finish...
+    //
+    if (jobEntryCopy.isLaunchingInParallel()) {
+      for (int i = 0; i < threads.size(); i++) {
+        Thread thread = threads.get(i);
+        JobEntryCopy nextEntry = threadEntries.get(i);
+
+        try {
+          thread.join();
+        } catch (InterruptedException e) {
+          log.logError(jobMeta.toString(), BaseMessages.getString(PKG, "Job.Log.UnexpectedErrorWhileWaitingForJobEntry", nextEntry.getName()));
+          threadExceptions.add(new KettleException(BaseMessages.getString(PKG, "Job.Log.UnexpectedErrorWhileWaitingForJobEntry", nextEntry.getName()), e));
+        }
+      }
+      // if(log.isBasic()) log.logBasic(BaseMessages.getString(PKG,
+      // "Job.Log.FinishedJobEntry",startpoint.getName(),res.getResult()+""));
+    }
+
+    // Perhaps we don't have next steps??
+    // In this case, return the previous result.
+    if (res == null) {
+      res = prevResult;
+    }
+
+    // See if there where any errors in the parallel execution
+    //
+    if (threadExceptions.size() > 0) {
+      res.setResult(false);
+      res.setNrErrors(threadExceptions.size());
+
+      for (KettleException e : threadExceptions) {
+        log.logError(jobMeta.toString(), e.getMessage(), e);
+      }
+
+      // Now throw the first Exception for good measure...
+      //
+      throw threadExceptions.get(0);
+    }
+
+    // In parallel execution, we aggregate all the results, simply add them to
+    // the previous result...
+    //
+    for (Result threadResult : threadResults) {
+      res.add(threadResult);
+    }
+
+    // If there have been errors, logically, we need to set the result to
+    // "false"...
+    //
+    if (res.getNrErrors() > 0) {
+      res.setResult(false);
+    }
+
+    return res;
+  }
 	
+  private void writeCheckpointInformation(JobEntryCopy jobEntryCopy, Result result) throws KettleException {
+    Database db = null;
+    CheckpointLogTable checkpointLogTable = jobMeta.getCheckpointLogTable();
+    
+    // Keep track in the job itself so everyone knows about this
+    //
+    setCheckpointJobEntry(jobEntryCopy);
+    
+    try {
+      db = new Database(this, checkpointLogTable.getDatabaseMeta());
+      db.shareVariablesWith(this);
+      db.connect();
+      db.setCommit(logCommitSize);
+
+      LogStatus logStatus = LogStatus.RUNNING;
+      
+      // First run ever, look up a new value for the run ID.
+      //
+      if (runId<0) {
+        runId = checkpointLogTable.getDatabaseMeta().getNextBatchId(db, 
+            checkpointLogTable.getSchemaName(), 
+            checkpointLogTable.getTableName(), 
+            checkpointLogTable.getKeyField().getFieldName()
+           );
+        
+        // This is the first attempt to run this job
+        // 
+        logStatus = LogStatus.START;
+      }
+      
+      db.writeLogRecord(checkpointLogTable, logStatus, result, this);
+      
+      // Also time-out the log records in here...
+      //
+      db.cleanupLogRecords(checkpointLogTable);
+
+    } catch(Exception e) {
+      throw new KettleException(BaseMessages.getString(PKG, "Job.Exception.UnableToWriteCheckpointInformationToLogTable"), e);
+    } finally {
+      if (!db.isAutoCommit()) db.commit(true);
+      db.disconnect();
+    }
+  }
+
     /**
      Wait until this job has finished.
     */
@@ -984,11 +1084,198 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       });
     }
     
+    // See if we need to start at an alternate location in the job based on the information from the run ID
+    //
+    if (jobMeta.getCheckpointLogTable().isDefined()) {
+      // Look up information from the previous attempt
+      //
+      lookupCheckpoint();
+      
+      // Make sure to write the attempt information
+      //
+      if (runAttemptNr>1) {
+        writeCheckpointInformation(checkpointJobEntry, checkpointResult);
+      }
+      
+      // At the end of the job, if everything ran without error, clear the job entry name from the checkpoint table.
+      // That way we know next time around we can grab a new run ID for this job.
+      //
+      addJobListener(new JobAdapter() {
+        @Override
+        public void jobFinished(Job job) throws KettleException {
+          // Clear the checkpoint information in the checkpoint table
+          // But only in case everything ran without error in the job.
+          //
+          if (result!=null && result.getResult() && result.getNrErrors()==0) {
+            checkpointJobEntry=null;
+            writeCheckpointInformation(null, result);
+          }
+
+        }
+      });
+    }
+    
 
     return true;
   }
 	
-	//
+	protected void lookupCheckpoint() throws KettleException {
+	  
+	  // Set some defaults regardless of lookup...
+	  //
+	  runId = -1;
+	  
+	  // Take start of this transformation if we have nothing else.
+	  // This will be logged by the checkpoints later on.
+	  //
+	  runStartDate = getLogDate();
+	  
+	  // No job entry to restart from by default: use the Start job entry
+	  //
+	  checkpointJobEntry = null; 
+
+	  // This is the first attempt by default
+	  //
+    runAttemptNr=1;
+
+	  // Now look up some data in the check point log table...
+	  //
+	  CheckpointLogTable logTable = jobMeta.getCheckpointLogTable();
+	  String namespace = Const.NVL(getParameterValue(logTable.getNamespaceParameter()), "-");
+	  DatabaseMeta dbMeta = logTable.getDatabaseMeta();
+	  String schemaTable = dbMeta.getQuotedSchemaTableCombination(logTable.getActualSchemaName(), logTable.getActualTableName());
+	  Database db=null;
+	  try {
+      db = new Database(this, dbMeta);
+      db.shareVariablesWith(this);
+      db.connect();
+      db.setCommit(logCommitSize);
+      
+      // The fields to retrieve
+      //
+      LogTableField idJobRunField = logTable.getKeyField();
+      String idJobRunFieldName = dbMeta.quoteField(idJobRunField.getFieldName());
+      LogTableField jobRunStartDateField = logTable.getJobRunStartDateField();
+      String jobRunStartDateFieldName = dbMeta.quoteField(jobRunStartDateField.getFieldName());
+      LogTableField checkpointNameField = logTable.getCheckpointNameField();
+      String checkpointNameFieldName = dbMeta.quoteField(checkpointNameField.getFieldName());
+      LogTableField checkpointNrField = logTable.getCheckpointCopyNrField();
+      String checkpointNrFieldName = dbMeta.quoteField(checkpointNrField.getFieldName());
+      LogTableField attemptNrField = logTable.getAttemptNrField();
+      String attemptNrFieldName = dbMeta.quoteField(attemptNrField.getFieldName());
+      LogTableField resultXmlField = logTable.getResultXmlField();
+      String resultXmlFieldName = dbMeta.quoteField(resultXmlField.getFieldName());
+      LogTableField parameterXmlField = logTable.getParameterXmlField();
+      String parameterXmlFieldName = dbMeta.quoteField(parameterXmlField.getFieldName());
+      
+      // The parameters values to pass
+      //
+      RowMetaAndData pars = new RowMetaAndData();
+
+      LogTableField jobNameField = logTable.getNameField();
+      String jobNameFieldName = dbMeta.quoteField(jobNameField.getFieldName());
+      pars.addValue(idJobRunFieldName, ValueMetaInterface.TYPE_STRING, jobMeta.getName());
+      LogTableField namespaceField = logTable.getNamespaceField();
+      String namespaceFieldName = dbMeta.quoteField(namespaceField.getFieldName());
+      pars.addValue(namespaceFieldName, ValueMetaInterface.TYPE_STRING, namespace);
+      
+      String sql = "SELECT "+idJobRunFieldName+", "+jobRunStartDateFieldName+", "+checkpointNameFieldName+", "+checkpointNrFieldName+", "+attemptNrFieldName+", "+resultXmlFieldName+", "+parameterXmlFieldName;
+      sql+=" FROM "+schemaTable;
+      sql+=" WHERE "+jobNameFieldName+" = ? AND "+namespaceFieldName+" = ? ";
+      sql+=" AND "+checkpointNrFieldName+" IS NOT NULL"; // nulled at the successful end of the job so we don't need these rows.
+      
+      // Grab the matching rows, if more than one matches just grab the first...
+      //
+      PreparedStatement statement = db.prepareSQL(sql);
+      ResultSet resultSet = db.openQuery(statement, pars.getRowMeta(), pars.getData());
+      Object[] rowData = db.getRow(resultSet);
+
+      // If there is no checkpoint found, call it a day
+      //
+      if (rowData==null) {
+        return;
+      }
+      RowMetaInterface rowMeta = db.getReturnRowMeta();
+      
+      // Get the data from the row
+      //
+      int index=0;
+      Long lookupRunId = rowMeta.getInteger(rowData, index++);
+      Date jobRunStartDate = rowMeta.getDate(rowData, index++);
+      String checkpointName = rowMeta.getString(rowData, index++);
+      Long checkpointNr = rowMeta.getInteger(rowData, index++);
+      Long attemptNr = rowMeta.getInteger(rowData, index++);
+      String resultXml = rowMeta.getString(rowData, index++);
+      String parameterXml = rowMeta.getString(rowData, index++);
+      
+      // Do some basic checks on the table data...
+      //
+      if (lookupRunId==null || jobRunStartDate==null || checkpointName==null || checkpointNr==null || attemptNr==null || resultXml==null || parameterXml==null) {
+        // Nothing to checkpoint to, call it quits.
+        //
+        return;
+      }
+      
+      // See if the retry period hasn't expired...
+      //
+      int retryPeriodInMinutes = Const.toInt(environmentSubstitute(logTable.getRunRetryPeriod()), -1);
+      if (retryPeriodInMinutes>0) {
+        long maxTime = runStartDate.getTime()+retryPeriodInMinutes*60*1000;
+        if (getStartDate().getTime() > maxTime) {
+          // retry period expired
+          throw new KettleException("Retry period exceeded, please reset job ["+jobMeta.getName()+"] for namespace ["+namespace+"]");
+        }
+      }
+      
+      // Verify the max number of retries / attempts...
+      //
+      int maxAttempts = Const.toInt(environmentSubstitute(logTable.getMaxNrRetries()), -1);
+      if (maxAttempts>0) {
+        if (attemptNr+1>maxAttempts) {
+          throw new KettleException("The job checkpoint system has reached the maximum number or retries after "+attemptNr+" attempts");
+        }
+      }
+      
+      // All OK, now pass the looked up data to the job
+      //
+      runStartDate = jobRunStartDate;
+      runId = lookupRunId;
+      runAttemptNr=attemptNr.intValue()+1;
+      checkpointJobEntry = jobMeta.findJobEntry(checkpointName, checkpointNr.intValue(), false);
+      if (checkpointJobEntry==null) {
+        throw new KettleException("Unable to find checkpoint job entry with name ["+checkpointName+"] and copy number ["+checkpointNr+"]");
+      }
+      
+      // We start at the checkpoint job entry (this is skipped though)
+      //
+      startJobEntryCopy = checkpointJobEntry;
+      
+      // The result
+      //
+      checkpointResult = new Result(XMLHandler.loadXMLString(resultXml, Result.XML_TAG));
+      checkpointParameters = extractParameters(parameterXml);
+
+	  } catch(Exception e) {
+	    throw new KettleException("Unable to look up checkpoint information in the check point log table", e);
+	  } finally {
+	    if (db!=null) {
+	      db.disconnect();
+	    }
+	  }  
+  }
+
+  private Map<String, String> extractParameters(String parameterXml) throws KettleException {
+    Map<String, String> map = new HashMap<String, String>();
+    List<Node> parameterNodes = XMLHandler.getNodes(XMLHandler.loadXMLString(parameterXml, "pars"), "par");
+    for (Node parameterNode : parameterNodes) {
+      String name = XMLHandler.getTagValue(parameterNode, "name");
+      String value = XMLHandler.getTagValue(parameterNode, "value");
+      map.put(name,  value);
+    }
+    return map;
+  }
+
+  //
 	// Handle logging at end
 	private boolean endProcessing() throws KettleJobException
 	{
@@ -1897,5 +2184,89 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     } else {
       return null;
     }
+  }
+
+  /**
+   * @return the runId
+   */
+  public long getRunId() {
+    return runId;
+  }
+
+  /**
+   * @param runId the runId to set
+   */
+  public void setRunId(long runId) {
+    this.runId = runId;
+  }
+
+  /**
+   * @return the runAttemptNr
+   */
+  public int getRunAttemptNr() {
+    return runAttemptNr;
+  }
+
+  /**
+   * @param runAttemptNr the runAttemptNr to set
+   */
+  public void setRunAttemptNr(int runAttemptNr) {
+    this.runAttemptNr = runAttemptNr;
+  }
+
+  /**
+   * @return the runStartDate
+   */
+  public Date getRunStartDate() {
+    return runStartDate;
+  }
+
+  /**
+   * @param runStartDate the runStartDate to set
+   */
+  public void setRunStartDate(Date runStartDate) {
+    this.runStartDate = runStartDate;
+  }
+
+  /**
+   * @return the checkpointJobEntry
+   */
+  public JobEntryCopy getCheckpointJobEntry() {
+    return checkpointJobEntry;
+  }
+
+  /**
+   * @param checkpointJobEntry the checkpointJobEntry to set
+   */
+  public void setCheckpointJobEntry(JobEntryCopy checkpointJobEntry) {
+    this.checkpointJobEntry = checkpointJobEntry;
+  }
+
+  /**
+   * @return the checkpointResult
+   */
+  public Result getCheckpointResult() {
+    return checkpointResult;
+  }
+
+  /**
+   * @param checkpointResult the checkpointResult to set
+   */
+  public void setCheckpointResult(Result checkpointResult) {
+    this.checkpointResult = checkpointResult;
+  }
+
+  /**
+   * @return the checkpointParameters
+   */
+  public Map<String, String> getCheckpointParameters() {
+    return checkpointParameters;
+  }
+
+  /**
+   * @param checkpointParameters the checkpointParameters to set
+   */
+  public void setCheckpointParameters(Map<String, String> checkpointParameters) {
+    this.checkpointParameters = checkpointParameters;
   }
 }

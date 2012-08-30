@@ -265,6 +265,7 @@ public class KettleDatabaseRepositoryBase {
 	public static final String FIELD_JOBENTRY_COPY_GUI_LOCATION_Y = "GUI_LOCATION_Y";
 	public static final String FIELD_JOBENTRY_COPY_GUI_DRAW = "GUI_DRAW";
 	public static final String FIELD_JOBENTRY_COPY_PARALLEL = "PARALLEL";
+  public static final String FIELD_JOBENTRY_COPY_CHECKPOINT = "CHECKPOINT";
 
 	public static final String TABLE_R_JOBENTRY_TYPE          = "R_JOBENTRY_TYPE";
 	public static final String FIELD_JOBENTRY_TYPE_ID_JOBENTRY_TYPE = "ID_JOBENTRY_TYPE";

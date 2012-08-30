@@ -191,4 +191,8 @@ public class CheckBoxVar extends Composite
 	    else 
 	    	wText.setText("");
 	}
+
+  public TextVar getTextVar() {
+    return wText;
+  }
 }

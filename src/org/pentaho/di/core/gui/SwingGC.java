@@ -80,6 +80,8 @@ public class SwingGC implements GCInterface {
 
   private static BufferedImage  imageLoadBalance;
 
+  private static BufferedImage  imageCheckpoint;
+
 	private static BufferedImage	imageParallelHop;
 
 	private static BufferedImage	imageUnconditionalHop;
@@ -194,7 +196,8 @@ public class SwingGC implements GCInterface {
     	imageArrow = getImageIcon(BasePropertyHandler.getProperty("ArrowIcon_image"));
     	imageCopyHop = getImageIcon(BasePropertyHandler.getProperty("CopyHop_image"));
       imageLoadBalance = getImageIcon(BasePropertyHandler.getProperty("LoadBalance_image"));
-    	imageParallelHop = getImageIcon(BasePropertyHandler.getProperty("ParallelHop_image"));
+      imageCheckpoint = getImageIcon(BasePropertyHandler.getProperty("CheckeredFlag_image"));
+      imageParallelHop = getImageIcon(BasePropertyHandler.getProperty("ParallelHop_image"));
     	imageUnconditionalHop = getImageIcon(BasePropertyHandler.getProperty("UnconditionalHop_image"));
     	imageStart = getImageIcon(BasePropertyHandler.getProperty("STR_image"));
     	imageDummy = getImageIcon(BasePropertyHandler.getProperty("DUM_image"));
@@ -325,6 +328,7 @@ public class SwingGC implements GCInterface {
 		case ARROW: return imageArrow;
 		case COPY_ROWS: return imageCopyHop;
     case LOAD_BALANCE: return imageLoadBalance;
+    case CHECKPOINT: return imageCheckpoint;
 		case PARALLEL: return imageParallelHop;
 		case UNCONDITIONAL: return imageUnconditionalHop;
 		case BUSY: return imageBusy;

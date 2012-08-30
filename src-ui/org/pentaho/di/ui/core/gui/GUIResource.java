@@ -299,6 +299,8 @@ public class GUIResource
     private Image imageInject;
     private Image imageBalance;
 
+    private Image imageCheckpoint;
+
     /**
      * Same result as <code>new Image(display, 16, 16)</code>.
      */
@@ -520,6 +522,7 @@ public class GUIResource
 		    imageEmpty16x16.dispose();
 		    imageInject.dispose();
         imageBalance.dispose();
+        imageCheckpoint.dispose();
         
 		    disposeImage(imageNoteSmall);
 		    disposeImage(imageColor);
@@ -766,6 +769,7 @@ public class GUIResource
     imageBusy = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Busy_image")); // , "ui/images/busy.png
     imageInject = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Inject_image")); // , "ui/images/inject.png
     imageBalance = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("LoadBalance_image")); // , "ui/images/scales.png
+    imageCheckpoint = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("CheckeredFlag_image")); // , "ui/images/scales.png
     
     imageEmpty16x16 = new Image(display, 16, 16);
     
@@ -1931,5 +1935,9 @@ public class GUIResource
 	public void setImageSpoonHigh(Image imageSpoonHigh) {
 		this.imageSpoonHigh = imageSpoonHigh;
 	}
+
+  public Image getImageCheckpoint() {
+    return imageCheckpoint;
+  }
 
 }
