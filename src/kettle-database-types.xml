@@ -209,5 +209,10 @@
     <description>Vertica</description>
     <classname>org.pentaho.di.core.database.VerticaDatabaseMeta</classname>
   </database-type>
+  
+  <database-type id="VERTICA5">
+    <description>Vertica 5+</description>
+    <classname>org.pentaho.di.core.database.Vertica5DatabaseMeta</classname>
+  </database-type>
  
  </database-types>
