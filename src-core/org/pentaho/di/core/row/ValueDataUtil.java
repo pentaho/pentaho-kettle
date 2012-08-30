@@ -1045,6 +1045,48 @@ public class ValueDataUtil
         throw new KettleValueException("The 'dayOfMonth' function only works with dates");
     }
     
+    public static Object hourOfDay(ValueMetaInterface metaA, Object dataA) throws KettleValueException
+    {
+        if (dataA==null) return null;
+
+        if (metaA.isDate())
+        {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime( metaA.getDate(dataA) );
+            return new Long( calendar.get(Calendar.HOUR_OF_DAY) );
+        }
+        
+        throw new KettleValueException("The 'hourOfDay' function only works with dates");
+    }
+    
+    public static Object minuteOfHour(ValueMetaInterface metaA, Object dataA) throws KettleValueException
+    {
+        if (dataA==null) return null;
+
+        if (metaA.isDate())
+        {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime( metaA.getDate(dataA) );
+            return new Long( calendar.get(Calendar.MINUTE) );
+        }
+        
+        throw new KettleValueException("The 'minuteOfHour' function only works with dates");
+    }
+    
+    public static Object secondOfMinute(ValueMetaInterface metaA, Object dataA) throws KettleValueException
+    {
+        if (dataA==null) return null;
+
+        if (metaA.isDate())
+        {
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime( metaA.getDate(dataA) );
+            return new Long( calendar.get(Calendar.SECOND) );
+        }
+        
+        throw new KettleValueException("The 'secondOfMinute' function only works with dates");
+    }
+    
     public static Object dayOfWeek(ValueMetaInterface metaA, Object dataA) throws KettleValueException
     {
         if (dataA==null) return null;
