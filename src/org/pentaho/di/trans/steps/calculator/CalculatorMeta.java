@@ -411,6 +411,15 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
             case CalculatorMetaFunction.CALC_FLOOR              :  // ROUND( A )
                 defaultResultType = ValueMetaInterface.TYPE_INTEGER;
                 break;
+            case CalculatorMetaFunction.CALC_HOUR_OF_DAY		:
+            	defaultResultType = ValueMetaInterface.TYPE_INTEGER;
+            	break;
+            case CalculatorMetaFunction.CALC_MINUTE_OF_HOUR		:
+            	defaultResultType = ValueMetaInterface.TYPE_INTEGER;
+            	break;
+            case CalculatorMetaFunction.CALC_SECOND_OF_MINUTE	:
+            	defaultResultType = ValueMetaInterface.TYPE_INTEGER;
+            	break;
             default:
                 break;
             }

@@ -120,6 +120,9 @@ public class CalculatorMetaFunction implements Cloneable
   public static final int 	CALC_DATE_DIFF_SEC  			 = 77;
   public static final int 	CALC_DATE_DIFF_MN  				 = 78;
   public static final int 	CALC_DATE_DIFF_HR  				 = 79;
+  public static final int	CALC_HOUR_OF_DAY				 = 80;
+  public static final int	CALC_MINUTE_OF_HOUR				 = 81;
+  public static final int	CALC_SECOND_OF_MINUTE			 = 82;
    
     public static final String calc_desc[] = 
         { 
@@ -203,6 +206,9 @@ public class CalculatorMetaFunction implements Cloneable
             "DATE_DIFF_SEC",
             "DATE_DIFF_MN",
             "DATE_DIFF_HR",
+            "HOUR_OF_DAY",
+            "MINUTE_OF_HOUR",
+            "SECOND_OF_MINUTE",
         };
     
     public static final String calcLongDesc[] = 
@@ -287,6 +293,9 @@ public class CalculatorMetaFunction implements Cloneable
             BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.DateDiffSec"),
             BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.DateDiffMn"),
             BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.DateDiffHr"),
+            BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.HourOfDay"),
+            BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.MinuteOfHour"),
+            BaseMessages.getString(PKG, "CalculatorMetaFunction.CalcFunctions.SecondOfMinute"),
         };
    
     private String fieldName;

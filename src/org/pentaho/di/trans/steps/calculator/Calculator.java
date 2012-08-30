@@ -733,6 +733,24 @@ public class Calculator extends BaseStep implements StepInterface
                     resultType=ValueMetaInterface.TYPE_INTEGER;
                 }
                 break;
+                case CalculatorMetaFunction.CALC_HOUR_OF_DAY			:
+                {
+                	calcData[index] = ValueDataUtil.hourOfDay(metaA, dataA);
+                	resultType=ValueMetaInterface.TYPE_INTEGER;
+                }
+                break;
+                case CalculatorMetaFunction.CALC_MINUTE_OF_HOUR			:
+                {
+                	calcData[index] = ValueDataUtil.minuteOfHour(metaA, dataA);
+                	resultType=ValueMetaInterface.TYPE_INTEGER;
+                }
+                break;
+                case CalculatorMetaFunction.CALC_SECOND_OF_MINUTE		:
+                {
+                	calcData[index] = ValueDataUtil.secondOfMinute(metaA, dataA);
+                	resultType=ValueMetaInterface.TYPE_INTEGER;
+                }
+                break;
                 default:
                     throw new KettleValueException(BaseMessages.getString(PKG, "Calculator.Log.UnknownCalculationType")+fn.getCalcType());
                 }
