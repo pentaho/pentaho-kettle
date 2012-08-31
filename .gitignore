@@ -8,3 +8,5 @@ eclipse-bin/
 override.properties
 .settings/
 /dev-lib
+/pdi-null
+/pdi-bin

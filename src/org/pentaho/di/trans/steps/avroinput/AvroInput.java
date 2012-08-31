@@ -110,7 +110,8 @@ public class AvroInput extends BaseStep implements StepInterface {
 
       // initialize substitution fields
       if (m_meta.getLookupFields() != null
-          && m_meta.getLookupFields().size() > 0) {
+          && m_meta.getLookupFields().size() > 0 && getInputRowMeta() != null
+          && currentInputRow != null) {
         for (AvroInputMeta.LookupField f : m_meta.getLookupFields()) {
           f.init(getInputRowMeta(), this);
         }

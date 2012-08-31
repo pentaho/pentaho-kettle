@@ -35,10 +35,12 @@ import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.JobTracker;
 import org.apache.hadoop.util.VersionInfo;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.hadoop.mapreduce.GenericTransCombiner;
 import org.pentaho.hadoop.mapreduce.GenericTransReduce;
 import org.pentaho.hadoop.mapreduce.PentahoMapRunnable;
 import org.pentaho.hadoop.mapreduce.converter.TypeConverterFactory;
+import org.pentaho.hadoop.shim.ConfigurationException;
 import org.pentaho.hadoop.shim.HadoopConfiguration;
 import org.pentaho.hadoop.shim.HadoopConfigurationFileSystemManager;
 import org.pentaho.hadoop.shim.ShimVersion;
@@ -55,7 +57,7 @@ import org.pentaho.hdfs.vfs.HDFSFileProvider;
 public class CommonHadoopShim implements HadoopShim {
 
   private DistributedCacheUtil dcUtil;
-
+  
   @Override
   public ShimVersion getVersion() {
     return new ShimVersion(1, 0);
@@ -69,7 +71,7 @@ public class CommonHadoopShim implements HadoopShim {
   @Override
   public void onLoad(HadoopConfiguration config, HadoopConfigurationFileSystemManager fsm) throws Exception {
     fsm.addProvider(config, "hdfs", config.getIdentifier(), new HDFSFileProvider());
-    dcUtil = new DistributedCacheUtilImpl(config);
+    setDistributedCacheUtil(new DistributedCacheUtilImpl(config));
   }
   
   @Override
@@ -98,9 +100,19 @@ public class CommonHadoopShim implements HadoopShim {
   public FileSystem getFileSystem(Configuration conf) throws IOException {
     return new FileSystemProxy(org.apache.hadoop.fs.FileSystem.get(ShimUtils.asConfiguration(conf)));
   }
-  
+
+  public void setDistributedCacheUtil(DistributedCacheUtil dcUtil) {
+    if (dcUtil == null) {
+      throw new NullPointerException();
+    }
+    this.dcUtil = dcUtil;
+  }
+
   @Override
-  public DistributedCacheUtil getDistributedCacheUtil() {
+  public DistributedCacheUtil getDistributedCacheUtil() throws ConfigurationException {
+    if (dcUtil == null) {
+      throw new ConfigurationException(BaseMessages.getString(CommonHadoopShim.class, "CommonHadoopShim.DistributedCacheUtilMissing"));
+    }
     return dcUtil;
   }
   

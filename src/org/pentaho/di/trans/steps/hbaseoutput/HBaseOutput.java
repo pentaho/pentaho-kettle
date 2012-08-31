@@ -98,7 +98,7 @@ public class HBaseOutput extends BaseStep implements StepInterface {
       // target table will be null if we haven't seen any input
       if (m_hbAdmin != null && m_targetTableActive) {
         try {
-          if (m_hbAdmin.targetTableIsAutoFlush()) {
+          if (!m_hbAdmin.targetTableIsAutoFlush()) {
             logBasic(BaseMessages.getString(HBaseOutputMeta.PKG,
                 "HBaseOutput.FlushingWriteBuffer"));
             m_hbAdmin.flushCommitsTargetTable();
@@ -114,6 +114,7 @@ public class HBaseOutput extends BaseStep implements StepInterface {
           logBasic(BaseMessages.getString(HBaseOutputMeta.PKG,
               "HBaseOutput.ClosingConnectionToTable"));
           m_hbAdmin.closeTargetTable();
+          m_targetTableActive = false;
         } catch (Exception ex) {
           throw new KettleException(
               BaseMessages.getString(HBaseOutputMeta.PKG,
@@ -369,7 +370,7 @@ public class HBaseOutput extends BaseStep implements StepInterface {
     if (stopped) {
       if (m_hbAdmin != null && m_targetTableActive) {
         try {
-          if (m_hbAdmin.targetTableIsAutoFlush()) {
+          if (!m_hbAdmin.targetTableIsAutoFlush()) {
             logBasic(BaseMessages.getString(HBaseOutputMeta.PKG,
                 "HBaseOutput.FlushingWriteBuffer"));
             m_hbAdmin.flushCommitsTargetTable();
@@ -386,6 +387,7 @@ public class HBaseOutput extends BaseStep implements StepInterface {
         logBasic(BaseMessages.getString(HBaseOutputMeta.PKG,
             "HBaseOutput.ClosingConnectionToTable"));
         m_hbAdmin.closeTargetTable();
+        m_targetTableActive = false;
       } catch (Exception ex) {
         logError(BaseMessages.getString(HBaseOutputMeta.PKG,
             "HBaseOutput.Error.ProblemWhenClosingConnection", ex.getMessage()),
