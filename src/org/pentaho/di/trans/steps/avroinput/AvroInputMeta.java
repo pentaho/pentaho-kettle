@@ -111,7 +111,13 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
 
     public boolean init(RowMetaInterface inRowMeta, VariableSpace space) {
 
-      m_resolvedFieldName = space.environmentSubstitute(m_fieldName);
+      if (inRowMeta == null) {
+        m_isValid = false;
+        return false;
+      }
+
+      m_resolvedFieldName = (space != null) ? space
+          .environmentSubstitute(m_fieldName) : m_fieldName;
 
       m_inputIndex = inRowMeta.indexOfValue(m_resolvedFieldName);
       if (m_inputIndex < 0) {
@@ -309,12 +315,14 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
      * 
      * @param map the map to process
      * @param s the current schema at this point in the path
+     * @param ignoreMissing true if null is to be returned for user fields that
+     *          don't appear in the schema
      * @return the field value or null for out-of-bounds array indexes,
      *         non-existent map keys or unsupported avro types.
      * @throws KettleException if a problem occurs
      */
-    public Object convertToKettleValue(Map<Utf8, Object> map, Schema s)
-        throws KettleException {
+    public Object convertToKettleValue(Map<Utf8, Object> map, Schema s,
+        boolean ignoreMissing) throws KettleException {
 
       if (map == null) {
         return null;
@@ -352,11 +360,14 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
 
       // what have we got?
       if (valueType.getType() == Schema.Type.RECORD) {
-        return convertToKettleValue((GenericData.Record) value, valueType);
+        return convertToKettleValue((GenericData.Record) value, valueType,
+            ignoreMissing);
       } else if (valueType.getType() == Schema.Type.ARRAY) {
-        return convertToKettleValue((GenericData.Array) value, valueType);
+        return convertToKettleValue((GenericData.Array) value, valueType,
+            ignoreMissing);
       } else if (valueType.getType() == Schema.Type.MAP) {
-        return convertToKettleValue((Map<Utf8, Object>) value, valueType);
+        return convertToKettleValue((Map<Utf8, Object>) value, valueType,
+            ignoreMissing);
       } else {
         // assume a primitive
         return getPrimitive(value, valueType);
@@ -368,12 +379,14 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
      * 
      * @param array the array to process
      * @param s the current schema at this point in the path
+     * @param ignoreMissing true if null is to be returned for user fields that
+     *          don't appear in the schema
      * @return the field value or null for out-of-bounds array indexes,
      *         non-existent map keys or unsupported avro types.
      * @throws KettleException if a problem occurs
      */
-    public Object convertToKettleValue(GenericData.Array array, Schema s)
-        throws KettleException {
+    public Object convertToKettleValue(GenericData.Array array, Schema s,
+        boolean ignoreMissing) throws KettleException {
 
       if (array == null) {
         return null;
@@ -422,11 +435,14 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
 
       // what have we got?
       if (elementType.getType() == Schema.Type.RECORD) {
-        return convertToKettleValue((GenericData.Record) element, elementType);
+        return convertToKettleValue((GenericData.Record) element, elementType,
+            ignoreMissing);
       } else if (elementType.getType() == Schema.Type.ARRAY) {
-        return convertToKettleValue((GenericData.Array) element, elementType);
+        return convertToKettleValue((GenericData.Array) element, elementType,
+            ignoreMissing);
       } else if (elementType.getType() == Schema.Type.MAP) {
-        return convertToKettleValue((Map<Utf8, Object>) element, elementType);
+        return convertToKettleValue((Map<Utf8, Object>) element, elementType,
+            ignoreMissing);
       } else {
         // assume a primitive until we handle fixed types
         return getPrimitive(element, elementType);
@@ -438,12 +454,14 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
      * 
      * @param record the record to process
      * @param s the current schema at this point in the path
+     * @param ignoreMissing true if null is to be returned for user fields that
+     *          don't appear in the schema
      * @return the field value or null for out-of-bounds array indexes,
      *         non-existent map keys or unsupported avro types.
      * @throws KettleException if a problem occurs
      */
-    public Object convertToKettleValue(GenericData.Record record, Schema s)
-        throws KettleException {
+    public Object convertToKettleValue(GenericData.Record record, Schema s,
+        boolean ignoreMissing) throws KettleException {
 
       if (record == null) {
         return null;
@@ -470,7 +488,7 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
 
       // part is a named field of the record
       Schema.Field fieldS = s.getField(part);
-      if (fieldS == null) {
+      if (fieldS == null && !ignoreMissing) {
         throw new KettleException(BaseMessages.getString(PKG,
             "AvroInput.Error.NonExistentField", part));
       }
@@ -491,11 +509,14 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
 
       // what have we got?
       if (fieldT == Schema.Type.RECORD) {
-        return convertToKettleValue((GenericData.Record) field, fieldSchema);
+        return convertToKettleValue((GenericData.Record) field, fieldSchema,
+            ignoreMissing);
       } else if (fieldT == Schema.Type.ARRAY) {
-        return convertToKettleValue((GenericData.Array) field, fieldSchema);
+        return convertToKettleValue((GenericData.Array) field, fieldSchema,
+            ignoreMissing);
       } else if (fieldT == Schema.Type.MAP) {
-        return convertToKettleValue((Map<Utf8, Object>) field, fieldSchema);
+        return convertToKettleValue((Map<Utf8, Object>) field, fieldSchema,
+            ignoreMissing);
       } else {
         // assume primitive until we handle fixed types
         return getPrimitive(field, fieldSchema);
@@ -541,6 +562,12 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
    * speed
    */
   protected boolean m_cacheSchemasInMemory;
+
+  /**
+   * True if null should be output if a specified field is not present in the
+   * Avro schema (otherwise an exception is raised)
+   */
+  protected boolean m_dontComplainAboutMissingFields;
 
   /** The fields to emit */
   protected List<AvroField> m_fields;
@@ -655,7 +682,7 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
    * @param c true if schemas are to be cached in memory.
    */
   public void setCacheSchemasInMemory(boolean c) {
-    m_cacheSchemasInMemory = true;
+    m_cacheSchemasInMemory = c;
   }
 
   /**
@@ -758,6 +785,26 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
    */
   public void setLookupFields(List<LookupField> lookups) {
     m_lookups = lookups;
+  }
+
+  /**
+   * Set whether null is to be output if a user-supplied field path does not
+   * exist in the Avro schema being used. Otherwise, an exception is raised
+   * 
+   * @param c true to ignore missing fields
+   */
+  public void setDontComplainAboutMissingFields(boolean c) {
+    m_dontComplainAboutMissingFields = c;
+  }
+
+  /**
+   * Get whether null is to be output if a user-supplied field path does not
+   * exist in the Avro schema being used. Otherwise, an exception is raised
+   * 
+   * @return true to ignore missing fields
+   */
+  public boolean getDontComplainAboutMissingFields() {
+    return m_dontComplainAboutMissingFields;
   }
 
   /*
@@ -946,6 +993,10 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
     retval.append("\n    ").append(
         XMLHandler.addTagValue("cache_schemas", m_cacheSchemasInMemory));
 
+    retval.append("\n    ").append(
+        XMLHandler.addTagValue("ignore_missing_fields",
+            m_dontComplainAboutMissingFields));
+
     if (m_fields != null && m_fields.size() > 0) {
       retval.append("\n    ").append(XMLHandler.openTag("avro_fields"));
 
@@ -1027,7 +1078,13 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
 
     String cacheSchemas = XMLHandler.getTagValue(stepnode, "cache_schemas");
     if (!Const.isEmpty(cacheSchemas)) {
-      m_cacheSchemasInMemory = schemaInFieldIsPath.equalsIgnoreCase("Y");
+      m_cacheSchemasInMemory = cacheSchemas.equalsIgnoreCase("Y");
+    }
+
+    String ignoreMissing = XMLHandler.getTagValue(stepnode,
+        "ignore_missing_fields");
+    if (!Const.isEmpty(ignoreMissing)) {
+      m_dontComplainAboutMissingFields = ignoreMissing.equalsIgnoreCase("Y");
     }
 
     Node fields = XMLHandler.getSubNode(stepnode, "avro_fields");
@@ -1102,6 +1159,8 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
         "schema_in_field_is_path");
     m_cacheSchemasInMemory = rep.getStepAttributeBoolean(id_step, 0,
         "cache_schemas");
+    m_dontComplainAboutMissingFields = rep.getStepAttributeBoolean(id_step,
+        "ignore_missing_fields");
 
     int nrfields = rep.countNrStepAttributes(id_step, "field_name");
     if (nrfields > 0) {
@@ -1185,6 +1244,8 @@ public class AvroInputMeta extends BaseStepMeta implements StepMetaInterface {
         "schema_in_field_is_path", m_schemaInFieldIsPath);
     rep.saveStepAttribute(id_transformation, id_step, 0, "cache_schemas",
         m_cacheSchemasInMemory);
+    rep.saveStepAttribute(id_transformation, id_step, 0,
+        "ignore_missing_fields", m_dontComplainAboutMissingFields);
 
     if (m_fields != null && m_fields.size() > 0) {
       for (int i = 0; i < m_fields.size(); i++) {

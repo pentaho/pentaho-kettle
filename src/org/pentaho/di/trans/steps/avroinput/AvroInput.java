@@ -113,7 +113,8 @@ public class AvroInput extends BaseStep implements StepInterface {
 
       // initialize substitution fields
       if (m_meta.getLookupFields() != null
-          && m_meta.getLookupFields().size() > 0) {
+          && m_meta.getLookupFields().size() > 0 && getInputRowMeta() != null
+          && currentInputRow != null) {
         for (AvroInputMeta.LookupField f : m_meta.getLookupFields()) {
           f.init(getInputRowMeta(), this);
         }
@@ -121,17 +122,21 @@ public class AvroInput extends BaseStep implements StepInterface {
 
       if (m_meta.getAvroInField()) {
         // initialize for reading from a field
-        m_data.initializeFromFieldDecoding(avroFieldName, readerSchema,
-            m_meta.getAvroFields(), m_meta.getAvroIsJsonEncoded(),
-            newFieldOffset, m_meta.getSchemaInField(), schemaFieldName,
-            m_meta.getSchemaInFieldIsPath(), m_meta.getCacheSchemasInMemory());
+        if (getInputRowMeta() != null) {
+          m_data.initializeFromFieldDecoding(avroFieldName, readerSchema,
+              m_meta.getAvroFields(), m_meta.getAvroIsJsonEncoded(),
+              newFieldOffset, m_meta.getSchemaInField(), schemaFieldName,
+              m_meta.getSchemaInFieldIsPath(),
+              m_meta.getCacheSchemasInMemory(),
+              m_meta.getDontComplainAboutMissingFields(), log);
+        }
       } else {
         // initialize for reading from a file
         FileObject fileObject = KettleVFS.getFileObject(m_meta.getFilename(),
             getTransMeta());
         m_data.establishFileType(fileObject, readerSchema,
             m_meta.getAvroFields(), m_meta.getAvroIsJsonEncoded(),
-            newFieldOffset);
+            newFieldOffset, m_meta.getDontComplainAboutMissingFields(), log);
       }
     }
 
@@ -141,8 +146,7 @@ public class AvroInput extends BaseStep implements StepInterface {
       if (currentInputRow != null) {
         // set variables lookup values
         if (m_meta.getLookupFields() != null
-            && m_meta.getLookupFields().size() > 0 && getInputRowMeta() != null
-            && currentInputRow != null) {
+            && m_meta.getLookupFields().size() > 0) {
           for (AvroInputMeta.LookupField f : m_meta.getLookupFields()) {
             f.setVariable(this, currentInputRow);
           }
@@ -152,7 +156,9 @@ public class AvroInput extends BaseStep implements StepInterface {
 
     Object[][] outputRow = null;
     try {
-      outputRow = m_data.avroObjectToKettle(currentInputRow, this);
+      if (!m_meta.getAvroInField() || getInputRowMeta() != null) {
+        outputRow = m_data.avroObjectToKettle(currentInputRow, this);
+      }
     } catch (Exception ex) {
       if (getStepMeta().isDoingErrorHandling()) {
         String errorDescriptions = BaseMessages.getString(AvroInputMeta.PKG,
