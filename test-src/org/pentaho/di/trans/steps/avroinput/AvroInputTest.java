@@ -20,6 +20,7 @@ import org.apache.avro.io.DecoderFactory;
 import org.apache.avro.util.Utf8;
 import org.junit.Test;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -65,10 +66,25 @@ public class AvroInputTest {
       + "{\"name\": \"emails\", \"type\": {\"type\": \"array\", \"items\": \"string\"}}"
       + "]" + "}";
 
+  protected static String s_schemaTopLevelRecord2 = "{"
+      + "\"type\": \"record\","
+      + "\"name\": \"Person\","
+      + "\"fields\": ["
+      + "{\"name\": \"name\", \"type\": \"string\"},"
+      + "{\"name\": \"age\", \"type\": \"int\"},"
+      + "{\"name\": \"nickname\", \"type\": \"string\"},"
+      + "{\"name\": \"emails\", \"type\": {\"type\": \"array\", \"items\": \"string\"}}"
+      + "]" + "}";
+
   protected static String[] s_jsonDataTopLevelRecord = new String[] {
       "{\"name\":\"bob\",\"age\":20,\"emails\":[\"here is an email\",\"and another one\"]}",
       "{\"name\":\"fred\",\"age\":25,\"emails\":[\"hi there bob\",\"good to see you!\",\"Yarghhh!\"]}",
       "{\"name\":\"zaphod\",\"age\":254,\"emails\":[\"I'm from beetlejuice\",\"yeah yeah yeah\"]}" };
+
+  protected static String[] s_jsonDataTopLevelRecord2 = new String[] {
+      "{\"name\":\"bob\",\"age\":20,\"nickname\":\"goofy\",\"emails\":[\"here is an email\",\"and another one\"]}",
+      "{\"name\":\"fred\",\"age\":25,\"nickname\":\"mickey\",\"emails\":[\"hi there bob\",\"good to see you!\",\"Yarghhh!\"]}",
+      "{\"name\":\"zaphod\",\"age\":254,\"nickname\":\"donald\",\"emails\":[\"I'm from beetlejuice\",\"yeah yeah yeah\"]}" };
 
   protected static String s_schemaTopLevelRecordWithUnion = "{"
       + "\"type\": \"record\","
@@ -136,7 +152,7 @@ public class AvroInputTest {
       field.init(0); // output index isn't needed for the test
       field.reset(new Variables());
 
-      Object result = field.convertToKettleValue(topLevel, schema);
+      Object result = field.convertToKettleValue(topLevel, schema, false);
 
       assertTrue(result != null);
       assertTrue(result instanceof Long);
@@ -170,11 +186,493 @@ public class AvroInputTest {
       field.init(0); // output index isn't needed for the test
       field.reset(new Variables());
 
-      Object result = field.convertToKettleValue(topLevel, schema);
+      Object result = field.convertToKettleValue(topLevel, schema, false);
 
       assertTrue(result != null);
       assertTrue(result instanceof String);
       assertEquals(result.toString(), actualVals[i++]);
+    }
+  }
+
+  @Test
+  public void testDecodeUsingSchemaInIncomingField() throws KettleException {
+    Schema.Parser parser = new Schema.Parser();
+    Schema defaultSchema = parser.parse(s_schemaTopLevelRecord);
+
+    // Decoder decoder;
+    DecoderFactory factory = new DecoderFactory();
+
+    GenericData.Record topLevel = new GenericData.Record(defaultSchema);
+    GenericDatumReader reader = new GenericDatumReader(defaultSchema);
+
+    List<AvroInputMeta.AvroField> paths = new ArrayList<AvroInputMeta.AvroField>();
+    AvroInputMeta.AvroField field = new AvroInputMeta.AvroField();
+    field.m_fieldName = "test";
+    field.m_fieldPath = "$.name";
+    field.m_kettleType = ValueMeta.getAllTypes()[ValueMetaInterface.TYPE_STRING];
+    paths.add(field);
+
+    Object[] incomingKettleRow = new Object[2];
+    VariableSpace space = new Variables();
+    RowMetaInterface outputMeta = new RowMeta();
+    ValueMetaInterface vm = new ValueMeta();
+    vm.setName("IncomingAvro");
+    vm.setOrigin("Dummy");
+    vm.setType(ValueMetaInterface.TYPE_STRING);
+    outputMeta.addValueMeta(vm);
+    vm = new ValueMeta();
+    vm.setName("SchemaToUse");
+    vm.setOrigin("Dummy");
+    vm.setType(ValueMetaInterface.TYPE_STRING);
+    outputMeta.addValueMeta(vm);
+
+    vm = new ValueMeta();
+    vm.setName(field.m_fieldName);
+    vm.setOrigin("Dummy");
+    vm.setType(ValueMetaInterface.TYPE_STRING);
+    outputMeta.addValueMeta(vm);
+
+    AvroInputData data = new AvroInputData();
+    data.m_normalFields = paths;
+    data.m_decodingFromField = true;
+    data.m_jsonEncoded = true;
+    data.m_newFieldOffset = 2;
+    data.m_inStream = null;
+    data.m_fieldToDecodeIndex = 0;
+    data.m_schemaToUse = defaultSchema;
+    data.m_defaultSchema = defaultSchema;
+    data.m_topLevelRecord = topLevel;
+    data.m_factory = factory;
+    data.m_datumReader = reader;
+    data.m_defaultDatumReader = reader;
+    data.m_outputRowMeta = outputMeta;
+    data.m_schemaInField = true;
+    data.m_schemaFieldIndex = 1;
+    data.m_log = new LogChannel(this);
+    data.init();
+
+    String[] expectedNames = { "bob", "fred", "zaphod" };
+    int count = 0;
+    for (String row : s_jsonDataTopLevelRecord) {
+      incomingKettleRow[0] = row;
+      incomingKettleRow[1] = s_schemaTopLevelRecord;
+
+      Object[][] result = data.avroObjectToKettle(incomingKettleRow, space);
+      assertTrue(result != null);
+      assertTrue(result.length == 1); // one output row
+      assertEquals(result[0][2].toString(), expectedNames[count]);
+      count++;
+    }
+  }
+
+  @Test
+  public void testDecodeUsingSchemaInIncomingFieldIncompatibleSchema()
+      throws KettleException {
+    Schema.Parser parser = new Schema.Parser();
+    Schema defaultSchema = parser.parse(s_schemaTopLevelRecord);
+
+    // Decoder decoder;
+    DecoderFactory factory = new DecoderFactory();
+
+    GenericData.Record topLevel = new GenericData.Record(defaultSchema);
+    GenericDatumReader reader = new GenericDatumReader(defaultSchema);
+
+    List<AvroInputMeta.AvroField> paths = new ArrayList<AvroInputMeta.AvroField>();
+    AvroInputMeta.AvroField field = new AvroInputMeta.AvroField();
+    field.m_fieldName = "test";
+    field.m_fieldPath = "$.name";
+    field.m_kettleType = ValueMeta.getAllTypes()[ValueMetaInterface.TYPE_STRING];
+    paths.add(field);
+
+    Object[] incomingKettleRow = new Object[2];
+    VariableSpace space = new Variables();
+    RowMetaInterface outputMeta = new RowMeta();
+    ValueMetaInterface vm = new ValueMeta();
+    vm.setName("IncomingAvro");
+    vm.setOrigin("Dummy");
+    vm.setType(ValueMetaInterface.TYPE_STRING);
+    outputMeta.addValueMeta(vm);
+    vm = new ValueMeta();
+    vm.setName("SchemaToUse");
+    vm.setOrigin("Dummy");
+    vm.setType(ValueMetaInterface.TYPE_STRING);
+    outputMeta.addValueMeta(vm);
+
+    vm = new ValueMeta();
+    vm.setName(field.m_fieldName);
+    vm.setOrigin("Dummy");
+    vm.setType(ValueMetaInterface.TYPE_STRING);
+    outputMeta.addValueMeta(vm);
+
+    AvroInputData data = new AvroInputData();
+    data.m_normalFields = paths;
+    data.m_decodingFromField = true;
+    data.m_jsonEncoded = true;
+    data.m_newFieldOffset = 2;
+    data.m_inStream = null;
+    data.m_fieldToDecodeIndex = 0;
+    data.m_schemaToUse = defaultSchema;
+    data.m_defaultSchema = defaultSchema;
+    data.m_topLevelRecord = topLevel;
+    data.m_factory = factory;
+    data.m_datumReader = reader;
+    data.m_defaultDatumReader = reader;
+    data.m_outputRowMeta = outputMeta;
+    data.m_schemaInField = true;
+    data.m_schemaFieldIndex = 1;
+    data.m_log = new LogChannel(this);
+    data.init();
+
+    String[] expectedNames = { "bob", "fred", "zaphod" };
+    int count = 0;
+    String row = s_jsonDataTopLevelRecord[0];
+    incomingKettleRow[0] = row;
+    incomingKettleRow[1] = s_schemaTopLevelRecord2;
+
+    try {
+      Object[][] result = data.avroObjectToKettle(incomingKettleRow, space);
+      fail("Was expecting an exception as the schema supplied is incompatible with the data");
+    } catch (Exception ex) {
+    }
+  }
+
+  @Test
+  public void testDecodeUsingSchemaInIncomingFieldCacheSchemas()
+      throws KettleException {
+    Schema.Parser parser = new Schema.Parser();
+    Schema defaultSchema = parser.parse(s_schemaTopLevelRecord);
+
+    // Decoder decoder;
+    DecoderFactory factory = new DecoderFactory();
+
+    GenericData.Record topLevel = new GenericData.Record(defaultSchema);
+    GenericDatumReader reader = new GenericDatumReader(defaultSchema);
+
+    List<AvroInputMeta.AvroField> paths = new ArrayList<AvroInputMeta.AvroField>();
+    AvroInputMeta.AvroField field = new AvroInputMeta.AvroField();
+    field.m_fieldName = "test";
+    field.m_fieldPath = "$.name";
+    field.m_kettleType = ValueMeta.getAllTypes()[ValueMetaInterface.TYPE_STRING];
+    paths.add(field);
+
+    Object[] incomingKettleRow = new Object[2];
+    VariableSpace space = new Variables();
+    RowMetaInterface outputMeta = new RowMeta();
+    ValueMetaInterface vm = new ValueMeta();
+    vm.setName("IncomingAvro");
+    vm.setOrigin("Dummy");
+    vm.setType(ValueMetaInterface.TYPE_STRING);
+    outputMeta.addValueMeta(vm);
+    vm = new ValueMeta();
+    vm.setName("SchemaToUse");
+    vm.setOrigin("Dummy");
+    vm.setType(ValueMetaInterface.TYPE_STRING);
+    outputMeta.addValueMeta(vm);
+
+    vm = new ValueMeta();
+    vm.setName(field.m_fieldName);
+    vm.setOrigin("Dummy");
+    vm.setType(ValueMetaInterface.TYPE_STRING);
+    outputMeta.addValueMeta(vm);
+
+    AvroInputData data = new AvroInputData();
+    data.m_normalFields = paths;
+    data.m_decodingFromField = true;
+    data.m_jsonEncoded = true;
+    data.m_newFieldOffset = 2;
+    data.m_inStream = null;
+    data.m_fieldToDecodeIndex = 0;
+    data.m_schemaToUse = defaultSchema;
+    data.m_defaultSchema = defaultSchema;
+    data.m_topLevelRecord = topLevel;
+    data.m_factory = factory;
+    data.m_datumReader = reader;
+    data.m_defaultDatumReader = reader;
+    data.m_outputRowMeta = outputMeta;
+    data.m_cacheSchemas = true;
+    data.m_schemaInField = true;
+    data.m_schemaFieldIndex = 1;
+    data.m_log = new LogChannel(this);
+    data.init();
+
+    String[] expectedNames = { "bob", "fred", "zaphod" };
+    int count = 0;
+    for (String row : s_jsonDataTopLevelRecord) {
+      incomingKettleRow[0] = row;
+      incomingKettleRow[1] = s_schemaTopLevelRecord;
+
+      Object[][] result = data.avroObjectToKettle(incomingKettleRow, space);
+      assertTrue(result != null);
+      assertTrue(result.length == 1); // one output row
+      assertEquals(result[0][2].toString(), expectedNames[count]);
+      count++;
+    }
+
+    // should be just one entry in the cache since all rows have the same schema
+    assertTrue(data.m_schemaCache != null);
+    assertTrue(data.m_schemaCache.size() == 1);
+  }
+
+  @Test
+  public void testDecodeUsingSchemaInIncomingFieldTwoDifferentSchemas()
+      throws KettleException {
+    Schema.Parser parser = new Schema.Parser();
+    Schema defaultSchema = parser.parse(s_schemaTopLevelRecord);
+
+    // Decoder decoder;
+    DecoderFactory factory = new DecoderFactory();
+
+    GenericData.Record topLevel = new GenericData.Record(defaultSchema);
+    GenericDatumReader reader = new GenericDatumReader(defaultSchema);
+
+    List<AvroInputMeta.AvroField> paths = new ArrayList<AvroInputMeta.AvroField>();
+    AvroInputMeta.AvroField field = new AvroInputMeta.AvroField();
+    field.m_fieldName = "test";
+    field.m_fieldPath = "$.name";
+    field.m_kettleType = ValueMeta.getAllTypes()[ValueMetaInterface.TYPE_STRING];
+    paths.add(field);
+
+    Object[] incomingKettleRow = new Object[2];
+    VariableSpace space = new Variables();
+    RowMetaInterface outputMeta = new RowMeta();
+    ValueMetaInterface vm = new ValueMeta();
+    vm.setName("IncomingAvro");
+    vm.setOrigin("Dummy");
+    vm.setType(ValueMetaInterface.TYPE_STRING);
+    outputMeta.addValueMeta(vm);
+    vm = new ValueMeta();
+    vm.setName("SchemaToUse");
+    vm.setOrigin("Dummy");
+    vm.setType(ValueMetaInterface.TYPE_STRING);
+    outputMeta.addValueMeta(vm);
+
+    vm = new ValueMeta();
+    vm.setName(field.m_fieldName);
+    vm.setOrigin("Dummy");
+    vm.setType(ValueMetaInterface.TYPE_STRING);
+    outputMeta.addValueMeta(vm);
+
+    AvroInputData data = new AvroInputData();
+    data.m_normalFields = paths;
+    data.m_decodingFromField = true;
+    data.m_jsonEncoded = true;
+    data.m_newFieldOffset = 2;
+    data.m_inStream = null;
+    data.m_fieldToDecodeIndex = 0;
+    data.m_schemaToUse = defaultSchema;
+    data.m_defaultSchema = defaultSchema;
+    data.m_topLevelRecord = topLevel;
+    data.m_factory = factory;
+    data.m_datumReader = reader;
+    data.m_defaultDatumReader = reader;
+    data.m_outputRowMeta = outputMeta;
+    data.m_schemaInField = true;
+    data.m_schemaFieldIndex = 1;
+    data.m_log = new LogChannel(this);
+    data.init();
+
+    String[] expectedNames = { "bob", "fred", "zaphod" };
+    for (int i = 0; i < 3; i++) {
+      String row = null;
+      String schema = null;
+
+      // first schema for first and last row
+      if (i == 0 || i == 2) {
+        row = s_jsonDataTopLevelRecord[i];
+        schema = s_schemaTopLevelRecord;
+      } else {
+        row = s_jsonDataTopLevelRecord2[i];
+        schema = s_schemaTopLevelRecord2;
+      }
+
+      incomingKettleRow[0] = row;
+      incomingKettleRow[1] = schema;
+
+      Object[][] result = data.avroObjectToKettle(incomingKettleRow, space);
+      assertTrue(result != null);
+      assertTrue(result.length == 1); // one output row
+      assertEquals(result[0][2].toString(), expectedNames[i]);
+    }
+  }
+
+  @Test
+  public void testDecodeUsingSchemaInIncomingFieldTwoDifferentSchemasDontComplainAboutMissingField()
+      throws KettleException {
+    Schema.Parser parser = new Schema.Parser();
+    Schema defaultSchema = parser.parse(s_schemaTopLevelRecord);
+
+    // Decoder decoder;
+    DecoderFactory factory = new DecoderFactory();
+
+    GenericData.Record topLevel = new GenericData.Record(defaultSchema);
+    GenericDatumReader reader = new GenericDatumReader(defaultSchema);
+
+    List<AvroInputMeta.AvroField> paths = new ArrayList<AvroInputMeta.AvroField>();
+    AvroInputMeta.AvroField field = new AvroInputMeta.AvroField();
+    field.m_fieldName = "test";
+    field.m_fieldPath = "$.name";
+    field.m_kettleType = ValueMeta.getAllTypes()[ValueMetaInterface.TYPE_STRING];
+    paths.add(field);
+
+    AvroInputMeta.AvroField field2 = new AvroInputMeta.AvroField();
+    field2.m_fieldName = "test2";
+    field2.m_fieldPath = "$.nickname";
+    field2.m_kettleType = ValueMeta.getAllTypes()[ValueMetaInterface.TYPE_STRING];
+    paths.add(field2);
+
+    Object[] incomingKettleRow = new Object[2];
+    VariableSpace space = new Variables();
+    RowMetaInterface outputMeta = new RowMeta();
+    ValueMetaInterface vm = new ValueMeta();
+    vm.setName("IncomingAvro");
+    vm.setOrigin("Dummy");
+    vm.setType(ValueMetaInterface.TYPE_STRING);
+    outputMeta.addValueMeta(vm);
+    vm = new ValueMeta();
+    vm.setName("SchemaToUse");
+    vm.setOrigin("Dummy");
+    vm.setType(ValueMetaInterface.TYPE_STRING);
+    outputMeta.addValueMeta(vm);
+
+    vm = new ValueMeta();
+    vm.setName(field.m_fieldName);
+    vm.setOrigin("Dummy");
+    vm.setType(ValueMetaInterface.TYPE_STRING);
+    outputMeta.addValueMeta(vm);
+    vm = new ValueMeta();
+    vm.setName(field2.m_fieldName);
+    vm.setOrigin("Dummy");
+    vm.setType(ValueMetaInterface.TYPE_STRING);
+    outputMeta.addValueMeta(vm);
+
+    AvroInputData data = new AvroInputData();
+    data.m_normalFields = paths;
+    data.m_decodingFromField = true;
+    data.m_jsonEncoded = true;
+    data.m_newFieldOffset = 2;
+    data.m_inStream = null;
+    data.m_fieldToDecodeIndex = 0;
+    data.m_schemaToUse = defaultSchema;
+    data.m_defaultSchema = defaultSchema;
+    data.m_topLevelRecord = topLevel;
+    data.m_factory = factory;
+    data.m_datumReader = reader;
+    data.m_defaultDatumReader = reader;
+    data.m_outputRowMeta = outputMeta;
+    data.m_schemaInField = true;
+    data.m_schemaFieldIndex = 1;
+    data.m_dontComplainAboutMissingFields = true;
+    data.m_log = new LogChannel(this);
+    data.init();
+
+    String[] expectedNames = { "bob", "fred", "zaphod" };
+    for (int i = 0; i < 3; i++) {
+      String row = null;
+      String schema = null;
+
+      // first schema for first and last row
+      if (i == 0 || i == 2) {
+        row = s_jsonDataTopLevelRecord[i];
+        schema = s_schemaTopLevelRecord;
+      } else {
+        row = s_jsonDataTopLevelRecord2[i];
+        schema = s_schemaTopLevelRecord2;
+      }
+
+      incomingKettleRow[0] = row;
+      incomingKettleRow[1] = schema;
+
+      Object[][] result = data.avroObjectToKettle(incomingKettleRow, space);
+      assertTrue(result != null);
+      assertTrue(result.length == 1); // one output row
+      assertEquals(result[0][2].toString(), expectedNames[i]);
+
+      if (i == 1) {
+        assertEquals(result[0][3].toString(), "mickey");
+      } else {
+        // nickname field does not exist in the first schema - result should be
+        // null
+        assertTrue(result[0][3] == null);
+      }
+    }
+  }
+
+  @Test
+  public void testDecodeUsingSchemaInIncomingFieldFallbackToDefaultSchema()
+      throws KettleException {
+    Schema.Parser parser = new Schema.Parser();
+    Schema defaultSchema = parser.parse(s_schemaTopLevelRecord);
+
+    // Decoder decoder;
+    DecoderFactory factory = new DecoderFactory();
+
+    GenericData.Record topLevel = new GenericData.Record(defaultSchema);
+    GenericDatumReader reader = new GenericDatumReader(defaultSchema);
+
+    List<AvroInputMeta.AvroField> paths = new ArrayList<AvroInputMeta.AvroField>();
+    AvroInputMeta.AvroField field = new AvroInputMeta.AvroField();
+    field.m_fieldName = "test";
+    field.m_fieldPath = "$.name";
+    field.m_kettleType = ValueMeta.getAllTypes()[ValueMetaInterface.TYPE_STRING];
+    paths.add(field);
+
+    Object[] incomingKettleRow = new Object[2];
+    VariableSpace space = new Variables();
+    RowMetaInterface outputMeta = new RowMeta();
+    ValueMetaInterface vm = new ValueMeta();
+    vm.setName("IncomingAvro");
+    vm.setOrigin("Dummy");
+    vm.setType(ValueMetaInterface.TYPE_STRING);
+    outputMeta.addValueMeta(vm);
+    vm = new ValueMeta();
+    vm.setName("SchemaToUse");
+    vm.setOrigin("Dummy");
+    vm.setType(ValueMetaInterface.TYPE_STRING);
+    outputMeta.addValueMeta(vm);
+
+    vm = new ValueMeta();
+    vm.setName(field.m_fieldName);
+    vm.setOrigin("Dummy");
+    vm.setType(ValueMetaInterface.TYPE_STRING);
+    outputMeta.addValueMeta(vm);
+
+    AvroInputData data = new AvroInputData();
+    data.m_normalFields = paths;
+    data.m_decodingFromField = true;
+    data.m_jsonEncoded = true;
+    data.m_newFieldOffset = 2;
+    data.m_inStream = null;
+    data.m_fieldToDecodeIndex = 0;
+    data.m_schemaToUse = defaultSchema;
+    data.m_defaultSchema = defaultSchema;
+    data.m_topLevelRecord = topLevel;
+    data.m_factory = factory;
+    data.m_datumReader = reader;
+    data.m_defaultDatumReader = reader;
+    data.m_outputRowMeta = outputMeta;
+    data.m_schemaInField = true;
+    data.m_schemaFieldIndex = 1;
+    data.m_log = new LogChannel(this);
+    data.init();
+
+    int count = 0;
+    String[] expectedNames = { "bob", "fred", "zaphod" };
+    for (String row : s_jsonDataTopLevelRecord) {
+      incomingKettleRow[0] = row;
+
+      // no incoming schema for row 2 - should successfully fall back to the
+      // default schema
+      if (count == 1) {
+        incomingKettleRow[1] = null;
+      } else {
+        incomingKettleRow[1] = s_schemaTopLevelRecord;
+      }
+
+      Object[][] result = data.avroObjectToKettle(incomingKettleRow, space);
+      assertTrue(result != null);
+      assertTrue(result.length == 1); // one output row
+      assertEquals(result[0][2].toString(), expectedNames[count]);
+      count++;
     }
   }
 
@@ -277,7 +775,7 @@ public class AvroInputTest {
     field.reset(new Variables());
 
     try {
-      Object result = field.convertToKettleValue(topLevel, schema);
+      Object result = field.convertToKettleValue(topLevel, schema, false);
       fail("Was expecting an exception as $.nonExistent.notThere does not exist in the schma");
     } catch (Exception ex) {
       assertTrue(ex.getMessage().contains(
@@ -313,7 +811,7 @@ public class AvroInputTest {
       field.init(0); // output index isn't needed for the test
       field.reset(new Variables());
 
-      Object result = field.convertToKettleValue(topLevel, schema);
+      Object result = field.convertToKettleValue(topLevel, schema, false);
 
       assertTrue(result != null);
       assertTrue(result instanceof String);
@@ -349,7 +847,7 @@ public class AvroInputTest {
       field.init(0); // output index isn't needed for the test
       field.reset(new Variables());
 
-      Object result = field.convertToKettleValue(topLevel, schema);
+      Object result = field.convertToKettleValue(topLevel, schema, false);
       assertTrue(result == null);
     }
   }
@@ -377,7 +875,7 @@ public class AvroInputTest {
     field.init(0); // output index isn't needed for the test
     field.reset(new org.pentaho.di.core.variables.Variables());
 
-    Object result = field.convertToKettleValue(topLevel, schema);
+    Object result = field.convertToKettleValue(topLevel, schema, false);
 
     assertTrue(result != null);
     assertTrue(result instanceof Long);
@@ -410,7 +908,7 @@ public class AvroInputTest {
     field.init(0); // output index isn't needed for the test
     field.reset(new org.pentaho.di.core.variables.Variables());
 
-    Object result = field.convertToKettleValue(topLevel, schema);
+    Object result = field.convertToKettleValue(topLevel, schema, false);
 
     assertTrue(result != null);
     assertTrue(result instanceof String);
@@ -440,7 +938,7 @@ public class AvroInputTest {
     field.init(0); // output index isn't needed for the test
     field.reset(new org.pentaho.di.core.variables.Variables());
 
-    Object result = field.convertToKettleValue(topLevel, schema);
+    Object result = field.convertToKettleValue(topLevel, schema, false);
 
     assertTrue(result == null);
   }
@@ -470,7 +968,7 @@ public class AvroInputTest {
       field.init(0); // output index isn't needed for the test
       field.reset(new Variables());
 
-      Object result = field.convertToKettleValue(topLevel, schema);
+      Object result = field.convertToKettleValue(topLevel, schema, false);
 
       if (i != 2) {
         assertTrue(result != null);
@@ -512,7 +1010,7 @@ public class AvroInputTest {
     reader.read(topLevel, decoder);
 
     Object[][] result = expansion.convertToKettleValues(topLevel, schema,
-        new Variables());
+        new Variables(), false);
 
     assertTrue(result != null);
     assertTrue(result.length == 3);
@@ -526,5 +1024,16 @@ public class AvroInputTest {
       assertTrue(result[i][0] != null);
       assertTrue(expectedNames.contains(result[i][0]));
     }
+  }
+
+  @Test
+  public void testLookupFieldInitializationNoRowMetaAvailable() {
+    AvroInputMeta.LookupField lf = new AvroInputMeta.LookupField();
+
+    lf.m_fieldName = "TestField";
+    lf.m_variableName = "TestVar";
+    VariableSpace space = new Variables();
+
+    assert (lf.init(null, space) == false);
   }
 }

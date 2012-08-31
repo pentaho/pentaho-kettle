@@ -44,7 +44,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
@@ -94,6 +93,8 @@ public class AvroInputDialog extends BaseStepDialog implements
 
   private CTabFolder m_wTabFolder;
   private CTabItem m_wSourceTab;
+  private CTabItem m_wSchemaTab;
+  private CTabItem m_wFieldsTab;
   private CTabItem m_wVarsTab;
 
   /** various UI bits and pieces for the dialog */
@@ -102,6 +103,16 @@ public class AvroInputDialog extends BaseStepDialog implements
 
   private Button m_sourceInFileBut;
   private Button m_sourceInFieldBut;
+
+  private Label m_defaultSchemaL;
+
+  private Button m_schemaInFieldBut;
+  private Label m_schemaInFieldIsPathL;
+  private Button m_schemaInFieldIsPathBut;
+  private Label m_cacheSchemasL;
+  private Button m_cacheSchemasBut;
+  private Label m_schemaFieldNameL;
+  private CCombo m_schemaFieldNameText;
 
   private TextVar m_avroFilenameText;
   private Button m_avroFileBrowse;
@@ -112,6 +123,7 @@ public class AvroInputDialog extends BaseStepDialog implements
 
   private Button m_jsonEncodedBut;
 
+  private Button m_missingFieldsBut;
   private Button m_getFields;
   private TableView m_fieldsView;
 
@@ -193,16 +205,8 @@ public class AvroInputDialog extends BaseStepDialog implements
     sourceLayout.marginHeight = 3;
     wSourceComp.setLayout(sourceLayout);
 
-    // etched in group to hold first three widgets
-    Group sourceGroup = new Group(wSourceComp, SWT.SHADOW_ETCHED_IN);
-    FormLayout sourceGLayout = new FormLayout();
-    sourceGLayout.marginWidth = 3;
-    sourceGLayout.marginHeight = 3;
-    sourceGroup.setLayout(sourceGLayout);
-    props.setLook(sourceGroup);
-
     // source in file line
-    Label fileSourceL = new Label(sourceGroup, SWT.RIGHT);
+    Label fileSourceL = new Label(wSourceComp, SWT.RIGHT);
     props.setLook(fileSourceL);
     fileSourceL.setText(BaseMessages.getString(PKG,
         "AvroInputDialog.FileSource.Label"));
@@ -212,7 +216,7 @@ public class AvroInputDialog extends BaseStepDialog implements
     fd.right = new FormAttachment(middle, -margin);
     fileSourceL.setLayoutData(fd);
 
-    m_sourceInFileBut = new Button(sourceGroup, SWT.CHECK);
+    m_sourceInFileBut = new Button(wSourceComp, SWT.CHECK);
     props.setLook(m_sourceInFileBut);
     fd = new FormData();
     fd.right = new FormAttachment(100, 0);
@@ -224,12 +228,13 @@ public class AvroInputDialog extends BaseStepDialog implements
       @Override
       public void widgetSelected(SelectionEvent e) {
         m_currentMeta.setChanged();
+        m_sourceInFieldBut.setSelection(!m_sourceInFileBut.getSelection());
         checkWidgets();
       }
     });
 
     // source in field line
-    Label fieldSourceL = new Label(sourceGroup, SWT.RIGHT);
+    Label fieldSourceL = new Label(wSourceComp, SWT.RIGHT);
     props.setLook(fieldSourceL);
     fieldSourceL.setText(BaseMessages.getString(PKG,
         "AvroInputDialog.FieldSource.Label"));
@@ -239,7 +244,7 @@ public class AvroInputDialog extends BaseStepDialog implements
     fd.right = new FormAttachment(middle, -margin);
     fieldSourceL.setLayoutData(fd);
 
-    m_sourceInFieldBut = new Button(sourceGroup, SWT.CHECK);
+    m_sourceInFieldBut = new Button(wSourceComp, SWT.CHECK);
     props.setLook(m_sourceInFieldBut);
     fd = new FormData();
     fd.right = new FormAttachment(100, 0);
@@ -251,105 +256,10 @@ public class AvroInputDialog extends BaseStepDialog implements
       @Override
       public void widgetSelected(SelectionEvent e) {
         m_currentMeta.setChanged();
+        m_sourceInFileBut.setSelection(!m_sourceInFieldBut.getSelection());
         checkWidgets();
       }
     });
-
-    // schema filename line
-    Label schemaL = new Label(sourceGroup, SWT.RIGHT);
-    props.setLook(schemaL);
-    schemaL.setText(BaseMessages.getString(PKG,
-        "AvroInputDialog.SchemaFilename.Label"));
-    fd = new FormData();
-    fd.left = new FormAttachment(0, 0);
-    fd.top = new FormAttachment(m_sourceInFieldBut, margin);
-    fd.right = new FormAttachment(middle, -margin);
-    schemaL.setLayoutData(fd);
-    schemaL.setToolTipText(BaseMessages.getString(PKG,
-        "AvroInputDialog.SchemaFilename.TipText"));
-
-    m_schemaFileBrowse = new Button(sourceGroup, SWT.PUSH | SWT.CENTER);
-    props.setLook(m_schemaFileBrowse);
-    m_schemaFileBrowse.setText(BaseMessages.getString(PKG,
-        "AvroInputDialog.Button.FileBrowse"));
-    fd = new FormData();
-    fd.right = new FormAttachment(100, 0);
-    fd.top = new FormAttachment(m_sourceInFieldBut, 0);
-    m_schemaFileBrowse.setLayoutData(fd);
-
-    // add listener to pop up VFS browse dialog
-    m_schemaFileBrowse.addSelectionListener(new SelectionAdapter() {
-      @Override
-      public void widgetSelected(SelectionEvent e) {
-        try {
-          String[] fileFilters = new String[] { "*" };
-          String[] fileFilterNames = new String[] { BaseMessages.getString(
-              TextFileInputMeta.class, "System.FileType.AllFiles") };
-
-          // get current file
-          FileObject rootFile = null;
-          FileObject initialFile = null;
-          FileObject defaultInitialFile = null;
-
-          if (m_schemaFilenameText.getText() != null) {
-            String fname = transMeta.environmentSubstitute(m_schemaFilenameText
-                .getText());
-
-            if (!Const.isEmpty(fname)) {
-              initialFile = KettleVFS.getFileObject(fname);
-              rootFile = initialFile.getFileSystem().getRoot();
-            } else {
-              defaultInitialFile = KettleVFS.getFileObject(Spoon.getInstance()
-                  .getLastFileOpened());
-            }
-          } else {
-            defaultInitialFile = KettleVFS.getFileObject("file:///c:/");
-          }
-
-          if (rootFile == null) {
-            rootFile = defaultInitialFile.getFileSystem().getRoot();
-          }
-
-          VfsFileChooserDialog fileChooserDialog = Spoon.getInstance()
-              .getVfsFileChooserDialog(rootFile, initialFile);
-          fileChooserDialog.defaultInitialFile = defaultInitialFile;
-          FileObject selectedFile = fileChooserDialog.open(shell, null,
-              HadoopSpoonPlugin.HDFS_SCHEME, true, null, fileFilters,
-              fileFilterNames, VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE);
-
-          if (selectedFile != null) {
-            m_schemaFilenameText.setText(selectedFile.getURL().toString());
-          }
-        } catch (Exception ex) {
-          logError(BaseMessages.getString(PKG,
-              "AvroInputDialog.Error.KettleFileException"), ex);
-          new ErrorDialog(shell, stepname, BaseMessages.getString(PKG,
-              "AvroInputDialog.Error.KettleFileException"), ex);
-        }
-      }
-    });
-
-    m_schemaFilenameText = new TextVar(transMeta, sourceGroup, SWT.SIMPLE
-        | SWT.LEFT | SWT.BORDER);
-    props.setLook(m_schemaFilenameText);
-    m_schemaFilenameText.addModifyListener(new ModifyListener() {
-      public void modifyText(ModifyEvent e) {
-        m_currentMeta.setChanged();
-        m_avroFilenameText.setToolTipText(transMeta
-            .environmentSubstitute(m_schemaFilenameText.getText()));
-      }
-    });
-    fd = new FormData();
-    fd.left = new FormAttachment(middle, 0);
-    fd.top = new FormAttachment(m_sourceInFieldBut, margin);
-    fd.right = new FormAttachment(m_schemaFileBrowse, -margin);
-    m_schemaFilenameText.setLayoutData(fd);
-
-    FormData sourceGD = new FormData();
-    sourceGD.top = new FormAttachment(0, margin);
-    sourceGD.right = new FormAttachment(100, -margin);
-    sourceGD.left = new FormAttachment(0, margin);
-    sourceGroup.setLayoutData(sourceGD);
 
     // filename line
     Label filenameL = new Label(wSourceComp, SWT.RIGHT);
@@ -358,7 +268,7 @@ public class AvroInputDialog extends BaseStepDialog implements
         "AvroInputDialog.Filename.Label"));
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
-    fd.top = new FormAttachment(sourceGroup, margin);
+    fd.top = new FormAttachment(m_sourceInFieldBut, margin);
     fd.right = new FormAttachment(middle, -margin);
     filenameL.setLayoutData(fd);
 
@@ -368,7 +278,7 @@ public class AvroInputDialog extends BaseStepDialog implements
         "AvroInputDialog.Button.FileBrowse"));
     fd = new FormData();
     fd.right = new FormAttachment(100, 0);
-    fd.top = new FormAttachment(sourceGroup, 0);
+    fd.top = new FormAttachment(m_sourceInFieldBut, 0);
     m_avroFileBrowse.setLayoutData(fd);
 
     // add listener to pop up VFS browse dialog
@@ -435,21 +345,20 @@ public class AvroInputDialog extends BaseStepDialog implements
     });
     fd = new FormData();
     fd.left = new FormAttachment(middle, 0);
-    fd.top = new FormAttachment(sourceGroup, margin);
+    fd.top = new FormAttachment(m_sourceInFieldBut, margin);
     fd.right = new FormAttachment(m_avroFileBrowse, -margin);
     m_avroFilenameText.setLayoutData(fd);
 
     Label avroFieldNameL = new Label(wSourceComp, SWT.RIGHT);
     props.setLook(avroFieldNameL);
-    avroFieldNameL.setText("Avro field to decode from");
+    avroFieldNameL.setText(BaseMessages.getString(PKG,
+        "AvroInputDialog.AvroField.Label"));
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
     fd.top = new FormAttachment(m_avroFilenameText, margin);
     fd.right = new FormAttachment(middle, -margin);
     avroFieldNameL.setLayoutData(fd);
 
-    // m_avroFieldNameText = new TextVar(transMeta, wSourceComp, SWT.SIMPLE |
-    // SWT.LEFT | SWT.BORDER);
     m_avroFieldNameText = new CCombo(wSourceComp, SWT.BORDER);
     props.setLook(m_avroFieldNameText);
     m_avroFieldNameText.addModifyListener(new ModifyListener() {
@@ -464,7 +373,6 @@ public class AvroInputDialog extends BaseStepDialog implements
     fd.top = new FormAttachment(m_avroFilenameText, margin);
     fd.right = new FormAttachment(100, 0);
     m_avroFieldNameText.setLayoutData(fd);
-    populateFieldsCombo();
 
     // json encoded check box
     Label jsonL = new Label(wSourceComp, SWT.RIGHT);
@@ -493,8 +401,251 @@ public class AvroInputDialog extends BaseStepDialog implements
       }
     });
 
+    fd = new FormData();
+    fd.left = new FormAttachment(0, 0);
+    fd.top = new FormAttachment(0, 0);
+    fd.right = new FormAttachment(100, 0);
+    fd.bottom = new FormAttachment(100, 0);
+    wSourceComp.setLayoutData(fd);
+    wSourceComp.layout();
+    m_wSourceTab.setControl(wSourceComp);
+
+    // -- start of the schema tab
+    m_wSchemaTab = new CTabItem(m_wTabFolder, SWT.NONE);
+    m_wSchemaTab.setText(BaseMessages.getString(PKG,
+        "AvroInputDialog.SchemaTab.Title"));
+    Composite wSchemaComp = new Composite(m_wTabFolder, SWT.NONE);
+    props.setLook(wSchemaComp);
+
+    FormLayout schemaLayout = new FormLayout();
+    schemaLayout.marginWidth = 3;
+    schemaLayout.marginHeight = 3;
+    wSchemaComp.setLayout(schemaLayout);
+
+    // schema filename line
+    m_defaultSchemaL = new Label(wSchemaComp, SWT.RIGHT);
+    props.setLook(m_defaultSchemaL);
+    m_defaultSchemaL.setText(BaseMessages.getString(PKG,
+        "AvroInputDialog.SchemaFilename.Label"));
+    fd = new FormData();
+    fd.left = new FormAttachment(0, 0);
+    fd.top = new FormAttachment(0, margin);
+    fd.right = new FormAttachment(middle, -margin);
+    m_defaultSchemaL.setLayoutData(fd);
+    m_defaultSchemaL.setToolTipText(BaseMessages.getString(PKG,
+        "AvroInputDialog.SchemaFilename.TipText"));
+
+    m_schemaFileBrowse = new Button(wSchemaComp, SWT.PUSH | SWT.CENTER);
+    props.setLook(m_schemaFileBrowse);
+    m_schemaFileBrowse.setText(BaseMessages.getString(PKG,
+        "AvroInputDialog.Button.FileBrowse"));
+    fd = new FormData();
+    fd.right = new FormAttachment(100, 0);
+    fd.top = new FormAttachment(0, 0);
+    m_schemaFileBrowse.setLayoutData(fd);
+
+    // add listener to pop up VFS browse dialog
+    m_schemaFileBrowse.addSelectionListener(new SelectionAdapter() {
+      @Override
+      public void widgetSelected(SelectionEvent e) {
+        try {
+          String[] fileFilters = new String[] { "*" };
+          String[] fileFilterNames = new String[] { BaseMessages.getString(
+              TextFileInputMeta.class, "System.FileType.AllFiles") };
+
+          // get current file
+          FileObject rootFile = null;
+          FileObject initialFile = null;
+          FileObject defaultInitialFile = null;
+
+          if (m_schemaFilenameText.getText() != null) {
+            String fname = transMeta.environmentSubstitute(m_schemaFilenameText
+                .getText());
+
+            if (!Const.isEmpty(fname)) {
+              initialFile = KettleVFS.getFileObject(fname);
+              rootFile = initialFile.getFileSystem().getRoot();
+            } else {
+              defaultInitialFile = KettleVFS.getFileObject(Spoon.getInstance()
+                  .getLastFileOpened());
+            }
+          } else {
+            defaultInitialFile = KettleVFS.getFileObject("file:///c:/");
+          }
+
+          if (rootFile == null) {
+            rootFile = defaultInitialFile.getFileSystem().getRoot();
+          }
+
+          VfsFileChooserDialog fileChooserDialog = Spoon.getInstance()
+              .getVfsFileChooserDialog(rootFile, initialFile);
+          fileChooserDialog.defaultInitialFile = defaultInitialFile;
+          FileObject selectedFile = fileChooserDialog.open(shell, null,
+              HadoopSpoonPlugin.HDFS_SCHEME, true, null, fileFilters,
+              fileFilterNames, VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE);
+
+          if (selectedFile != null) {
+            m_schemaFilenameText.setText(selectedFile.getURL().toString());
+          }
+        } catch (Exception ex) {
+          logError(BaseMessages.getString(PKG,
+              "AvroInputDialog.Error.KettleFileException"), ex);
+          new ErrorDialog(shell, stepname, BaseMessages.getString(PKG,
+              "AvroInputDialog.Error.KettleFileException"), ex);
+        }
+      }
+    });
+
+    m_schemaFilenameText = new TextVar(transMeta, wSchemaComp, SWT.SIMPLE
+        | SWT.LEFT | SWT.BORDER);
+    props.setLook(m_schemaFilenameText);
+    m_schemaFilenameText.addModifyListener(new ModifyListener() {
+      public void modifyText(ModifyEvent e) {
+        m_currentMeta.setChanged();
+        m_avroFilenameText.setToolTipText(transMeta
+            .environmentSubstitute(m_schemaFilenameText.getText()));
+      }
+    });
+    fd = new FormData();
+    fd.left = new FormAttachment(middle, 0);
+    fd.top = new FormAttachment(0, margin);
+    fd.right = new FormAttachment(m_schemaFileBrowse, -margin);
+    m_schemaFilenameText.setLayoutData(fd);
+
+    // Schema in field line
+    Label schemaInFieldL = new Label(wSchemaComp, SWT.RIGHT);
+    props.setLook(schemaInFieldL);
+    schemaInFieldL.setText(BaseMessages.getString(PKG,
+        "AvroInputDialog.SchemaInField.Label"));
+    fd = new FormData();
+    fd.left = new FormAttachment(0, 0);
+    fd.top = new FormAttachment(m_schemaFilenameText, margin);
+    fd.right = new FormAttachment(middle, -margin);
+    schemaInFieldL.setLayoutData(fd);
+
+    m_schemaInFieldBut = new Button(wSchemaComp, SWT.CHECK);
+    props.setLook(m_schemaInFieldBut);
+    fd = new FormData();
+    fd.right = new FormAttachment(100, 0);
+    fd.left = new FormAttachment(middle, 0);
+    fd.top = new FormAttachment(m_schemaFilenameText, margin);
+    m_schemaInFieldBut.setLayoutData(fd);
+
+    m_schemaInFieldBut.addSelectionListener(new SelectionAdapter() {
+      @Override
+      public void widgetSelected(SelectionEvent e) {
+        m_currentMeta.setChanged();
+        checkWidgets();
+      }
+    });
+
+    // schema is path line
+    m_schemaInFieldIsPathL = new Label(wSchemaComp, SWT.RIGHT);
+    props.setLook(m_schemaInFieldIsPathL);
+    m_schemaInFieldIsPathL.setText(BaseMessages.getString(PKG,
+        "AvroInputDialog.SchemaInFieldIsPath.Label"));
+    fd = new FormData();
+    fd.left = new FormAttachment(0, 0);
+    fd.top = new FormAttachment(m_schemaInFieldBut, margin);
+    fd.right = new FormAttachment(middle, -margin);
+    m_schemaInFieldIsPathL.setLayoutData(fd);
+
+    m_schemaInFieldIsPathBut = new Button(wSchemaComp, SWT.CHECK);
+    props.setLook(m_schemaInFieldIsPathBut);
+    fd = new FormData();
+    fd.right = new FormAttachment(100, 0);
+    fd.left = new FormAttachment(middle, 0);
+    fd.top = new FormAttachment(m_schemaInFieldBut, margin);
+    m_schemaInFieldIsPathBut.setLayoutData(fd);
+
+    // cache schemas line
+    m_cacheSchemasL = new Label(wSchemaComp, SWT.RIGHT);
+    props.setLook(m_cacheSchemasL);
+    m_cacheSchemasL.setText(BaseMessages.getString(PKG,
+        "AvroInputDialog.CacheSchemas.Label"));
+    fd = new FormData();
+    fd.left = new FormAttachment(0, 0);
+    fd.top = new FormAttachment(m_schemaInFieldIsPathBut, margin);
+    fd.right = new FormAttachment(middle, -margin);
+    m_cacheSchemasL.setLayoutData(fd);
+
+    m_cacheSchemasBut = new Button(wSchemaComp, SWT.CHECK);
+    props.setLook(m_cacheSchemasBut);
+    fd = new FormData();
+    fd.right = new FormAttachment(100, 0);
+    fd.left = new FormAttachment(middle, 0);
+    fd.top = new FormAttachment(m_schemaInFieldIsPathBut, margin);
+    m_cacheSchemasBut.setLayoutData(fd);
+
+    // schema field name line
+    m_schemaFieldNameL = new Label(wSchemaComp, SWT.RIGHT);
+    props.setLook(m_schemaFieldNameL);
+    m_schemaFieldNameL.setText(BaseMessages.getString(PKG,
+        "AvroInputDialog.SchemaFieldName.Label"));
+    fd = new FormData();
+    fd.left = new FormAttachment(0, 0);
+    fd.top = new FormAttachment(m_cacheSchemasBut, margin);
+    fd.right = new FormAttachment(middle, -margin);
+    m_schemaFieldNameL.setLayoutData(fd);
+
+    m_schemaFieldNameText = new CCombo(wSchemaComp, SWT.BORDER);
+    props.setLook(m_schemaFieldNameText);
+    m_schemaFieldNameText.addModifyListener(new ModifyListener() {
+      public void modifyText(ModifyEvent e) {
+        m_currentMeta.setChanged();
+        m_schemaFieldNameText.setToolTipText(transMeta
+            .environmentSubstitute(m_schemaFieldNameText.getText()));
+      }
+    });
+    fd = new FormData();
+    fd.left = new FormAttachment(middle, 0);
+    fd.top = new FormAttachment(m_cacheSchemasBut, margin);
+    fd.right = new FormAttachment(100, 0);
+    m_schemaFieldNameText.setLayoutData(fd);
+
+    fd = new FormData();
+    fd.left = new FormAttachment(0, 0);
+    fd.top = new FormAttachment(0, 0);
+    fd.right = new FormAttachment(100, 0);
+    fd.bottom = new FormAttachment(100, 0);
+    wSchemaComp.setLayoutData(fd);
+
+    wSchemaComp.layout();
+    m_wSchemaTab.setControl(wSchemaComp);
+
+    // -- start of the fields tab
+    m_wFieldsTab = new CTabItem(m_wTabFolder, SWT.NONE);
+    m_wFieldsTab.setText(BaseMessages.getString(PKG,
+        "AvroInputDialog.FieldsTab.Title"));
+    Composite wFieldsComp = new Composite(m_wTabFolder, SWT.NONE);
+    props.setLook(wFieldsComp);
+
+    FormLayout fieldsLayout = new FormLayout();
+    fieldsLayout.marginWidth = 3;
+    fieldsLayout.marginHeight = 3;
+    wFieldsComp.setLayout(fieldsLayout);
+
+    // missing fields button
+    Label missingFieldsLab = new Label(wFieldsComp, SWT.RIGHT);
+    props.setLook(missingFieldsLab);
+    missingFieldsLab.setText(BaseMessages.getString(PKG,
+        "AvroInputDialog.MissingFields.Label"));
+    fd = new FormData();
+    fd.left = new FormAttachment(0, 0);
+    fd.top = new FormAttachment(0, margin);
+    fd.right = new FormAttachment(middle, -margin);
+    missingFieldsLab.setLayoutData(fd);
+
+    m_missingFieldsBut = new Button(wFieldsComp, SWT.CHECK);
+    props.setLook(m_missingFieldsBut);
+    fd = new FormData();
+    fd.right = new FormAttachment(100, 0);
+    fd.left = new FormAttachment(middle, 0);
+    fd.top = new FormAttachment(0, margin);
+    m_missingFieldsBut.setLayoutData(fd);
+
     // get fields button
-    m_getFields = new Button(wSourceComp, SWT.PUSH);
+    m_getFields = new Button(wFieldsComp, SWT.PUSH);
     m_getFields.setText(BaseMessages.getString(PKG,
         "AvroInputDialog.Button.GetFields"));
     props.setLook(m_getFields);
@@ -510,7 +661,7 @@ public class AvroInputDialog extends BaseStepDialog implements
       }
     });
 
-    wPreview = new Button(wSourceComp, SWT.PUSH | SWT.CENTER);
+    wPreview = new Button(wFieldsComp, SWT.PUSH | SWT.CENTER);
     wPreview.setText(BaseMessages.getString(PKG, "System.Button.Preview"));
     props.setLook(wPreview);
     fd = new FormData();
@@ -541,11 +692,11 @@ public class AvroInputDialog extends BaseStepDialog implements
 
     colinf[2].setComboValues(ValueMeta.getTypes());
 
-    m_fieldsView = new TableView(transMeta, wSourceComp, SWT.FULL_SELECTION
+    m_fieldsView = new TableView(transMeta, wFieldsComp, SWT.FULL_SELECTION
         | SWT.MULTI, colinf, 1, lsMod, props);
 
     fd = new FormData();
-    fd.top = new FormAttachment(m_jsonEncodedBut, margin * 2);
+    fd.top = new FormAttachment(m_missingFieldsBut, margin * 2);
     fd.bottom = new FormAttachment(m_getFields, -margin * 2);
     fd.left = new FormAttachment(0, 0);
     fd.right = new FormAttachment(100, 0);
@@ -556,9 +707,10 @@ public class AvroInputDialog extends BaseStepDialog implements
     fd.top = new FormAttachment(0, 0);
     fd.right = new FormAttachment(100, 0);
     fd.bottom = new FormAttachment(100, 0);
-    wSourceComp.setLayoutData(fd);
-    wSourceComp.layout();
-    m_wSourceTab.setControl(wSourceComp);
+    wFieldsComp.setLayoutData(fd);
+
+    wFieldsComp.layout();
+    m_wFieldsTab.setControl(wFieldsComp);
 
     // -- start of the variables tab
     m_wVarsTab = new CTabItem(m_wTabFolder, SWT.NONE);
@@ -611,14 +763,6 @@ public class AvroInputDialog extends BaseStepDialog implements
     fd.right = new FormAttachment(100, 0);
     m_lookupView.setLayoutData(fd);
 
-    /*
-     * Button tempBut = new Button(wVarsComp, SWT.PUSH);
-     * tempBut.setText("Here is a button"); props.setLook(tempBut); fd = new
-     * FormData(); fd.right = new FormAttachment(100, 0); fd.left = new
-     * FormAttachment(middle, 0); fd.top = new FormAttachment(m_lookupView,
-     * margin); tempBut.setLayoutData(fd);
-     */
-
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
     fd.top = new FormAttachment(0, 0);
@@ -635,6 +779,8 @@ public class AvroInputDialog extends BaseStepDialog implements
     fd.right = new FormAttachment(100, 0);
     fd.bottom = new FormAttachment(100, -50);
     m_wTabFolder.setLayoutData(fd);
+
+    populateFieldsCombo();
 
     // Buttons inherited from BaseStepDialog
     wOK = new Button(shell, SWT.PUSH);
@@ -724,6 +870,13 @@ public class AvroInputDialog extends BaseStepDialog implements
     avroMeta.setAvroIsJsonEncoded(m_jsonEncodedBut.getSelection());
     avroMeta.setAvroInField(m_sourceInFieldBut.getSelection());
     avroMeta.setAvroFieldName(m_avroFieldNameText.getText());
+
+    avroMeta.setSchemaInField(m_schemaInFieldBut.getSelection());
+    avroMeta.setSchemaInFieldIsPath(m_schemaInFieldIsPathBut.getSelection());
+    avroMeta.setCacheSchemasInMemory(m_cacheSchemasBut.getSelection());
+    avroMeta.setSchemaFieldName(m_schemaFieldNameText.getText());
+    avroMeta.setDontComplainAboutMissingFields(m_missingFieldsBut
+        .getSelection());
 
     int numNonEmpty = m_fieldsView.nrNonEmpty();
     if (numNonEmpty > 0) {
@@ -880,6 +1033,16 @@ public class AvroInputDialog extends BaseStepDialog implements
       m_sourceInFileBut.setSelection(true);
     }
 
+    m_schemaInFieldBut.setSelection(m_currentMeta.getSchemaInField());
+    m_schemaInFieldIsPathBut.setSelection(m_currentMeta
+        .getSchemaInFieldIsPath());
+    m_cacheSchemasBut.setSelection(m_currentMeta.getCacheSchemasInMemory());
+    m_missingFieldsBut.setSelection(m_currentMeta
+        .getDontComplainAboutMissingFields());
+    if (!Const.isEmpty(m_currentMeta.getSchemaFieldName())) {
+      m_schemaFieldNameText.setText(m_currentMeta.getSchemaFieldName());
+    }
+
     // fields
     if (m_currentMeta.getAvroFields() != null
         && m_currentMeta.getAvroFields().size() > 0) {
@@ -896,29 +1059,41 @@ public class AvroInputDialog extends BaseStepDialog implements
 
   private void checkWidgets() {
     boolean sifile = m_sourceInFileBut.getSelection();
-    // if (m_sourceInFileBut.getSelection()) {
-    m_sourceInFieldBut.setEnabled(!sifile);
-
-    if (sifile) {
-      m_sourceInFieldBut.setSelection(!sifile);
-    }
-    m_avroFieldNameText.setEnabled(!sifile);
 
     m_avroFilenameText.setEnabled(sifile);
-    // }
+    m_avroFileBrowse.setEnabled(sifile);
 
     boolean sifield = m_sourceInFieldBut.getSelection();
-    // if (m_sourceInFieldBut.getSelection()) {
     if (sifield) {
       m_sourceInFileBut.setSelection(!sifield);
     }
-    m_sourceInFileBut.setEnabled(!sifield);
     m_avroFilenameText.setEnabled(!sifield);
+    m_avroFileBrowse.setEnabled(!sifield);
 
     m_avroFieldNameText.setEnabled(sifield);
     // }
 
     wPreview.setEnabled(m_sourceInFileBut.getSelection());
+
+    if (sifile) {
+      m_schemaInFieldBut.setSelection(false);
+    }
+    m_schemaInFieldBut.setEnabled(!sifile);
+
+    boolean sField = m_schemaInFieldBut.getSelection();
+    m_schemaInFieldIsPathL.setEnabled(sField);
+    m_schemaInFieldIsPathBut.setEnabled(sField);
+    m_cacheSchemasL.setEnabled(sField);
+    m_cacheSchemasBut.setEnabled(sField);
+    m_schemaFieldNameL.setEnabled(sField);
+    m_schemaFieldNameText.setEnabled(sField);
+    if (sField) {
+      m_defaultSchemaL.setText(BaseMessages.getString(PKG,
+          "AvroInputDialog.DefaultSchemaFilename.Label"));
+    } else {
+      m_defaultSchemaL.setText(BaseMessages.getString(PKG,
+          "AvroInputDialog.SchemaFilename.Label"));
+    }
   }
 
   private void preview() {
@@ -987,14 +1162,18 @@ public class AvroInputDialog extends BaseStepDialog implements
         RowMetaInterface rowMeta = transMeta.getPrevStepFields(stepMeta);
         if (rowMeta != null && rowMeta.size() > 0) {
           m_avroFieldNameText.removeAll();
+          m_schemaFieldNameText.removeAll();
           for (int i = 0; i < rowMeta.size(); i++) {
             ValueMetaInterface vm = rowMeta.getValueMeta(i);
             String fieldName = vm.getName();
             m_avroFieldNameText.add(fieldName);
+            m_schemaFieldNameText.add(fieldName);
           }
         }
       } catch (KettleException ex) {
-        // TODO
+        new ErrorDialog(shell, BaseMessages.getString(PKG,
+            "System.Dialog.GetFieldsFailed.Title"), BaseMessages.getString(PKG,
+            "System.Dialog.GetFieldsFailed.Message"), ex);
       }
     }
   }

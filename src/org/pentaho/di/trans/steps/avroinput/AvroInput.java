@@ -94,6 +94,9 @@ public class AvroInput extends BaseStep implements StepInterface {
       String avroFieldName = m_meta.getAvroFieldName();
       avroFieldName = environmentSubstitute(avroFieldName);
 
+      String schemaFieldName = m_meta.getSchemaFieldName();
+      schemaFieldName = environmentSubstitute(schemaFieldName);
+
       // setup the output row meta
       RowMetaInterface outRowMeta = null;
       outRowMeta = getInputRowMeta();
@@ -119,16 +122,21 @@ public class AvroInput extends BaseStep implements StepInterface {
 
       if (m_meta.getAvroInField()) {
         // initialize for reading from a field
-        m_data.initializeFromFieldDecoding(avroFieldName, readerSchema,
-            m_meta.getAvroFields(), m_meta.getAvroIsJsonEncoded(),
-            newFieldOffset);
+        if (getInputRowMeta() != null) {
+          m_data.initializeFromFieldDecoding(avroFieldName, readerSchema,
+              m_meta.getAvroFields(), m_meta.getAvroIsJsonEncoded(),
+              newFieldOffset, m_meta.getSchemaInField(), schemaFieldName,
+              m_meta.getSchemaInFieldIsPath(),
+              m_meta.getCacheSchemasInMemory(),
+              m_meta.getDontComplainAboutMissingFields(), log);
+        }
       } else {
         // initialize for reading from a file
         FileObject fileObject = KettleVFS.getFileObject(m_meta.getFilename(),
             getTransMeta());
         m_data.establishFileType(fileObject, readerSchema,
             m_meta.getAvroFields(), m_meta.getAvroIsJsonEncoded(),
-            newFieldOffset);
+            newFieldOffset, m_meta.getDontComplainAboutMissingFields(), log);
       }
     }
 
@@ -148,7 +156,9 @@ public class AvroInput extends BaseStep implements StepInterface {
 
     Object[][] outputRow = null;
     try {
-      outputRow = m_data.avroObjectToKettle(currentInputRow, this);
+      if (!m_meta.getAvroInField() || getInputRowMeta() != null) {
+        outputRow = m_data.avroObjectToKettle(currentInputRow, this);
+      }
     } catch (Exception ex) {
       if (getStepMeta().isDoingErrorHandling()) {
         String errorDescriptions = BaseMessages.getString(AvroInputMeta.PKG,
