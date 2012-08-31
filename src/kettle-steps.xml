@@ -1443,12 +1443,19 @@
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Utility</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Edi2Xml</tooltip>
 		<iconfile>ui/images/EDI2XML.png</iconfile>
-	</step> 
-	<step id="SASInput">
+	</step>
+	 	<step id="SASInput">
 		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.SASInput</description>
 		<classname>org.pentaho.di.trans.steps.sasinput.SasInputMeta</classname>
 		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SASInput</tooltip>
 		<iconfile>ui/images/SASInput.png</iconfile>
 	</step> 
+	<step id="ConcatFields">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.ConcatFields</description>
+		<classname>org.pentaho.di.trans.steps.concatfields.ConcatFieldsMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.ConcatFields</tooltip>
+		<iconfile>ui/images/ConcatFields.png</iconfile>
+	</step>
 </steps>
