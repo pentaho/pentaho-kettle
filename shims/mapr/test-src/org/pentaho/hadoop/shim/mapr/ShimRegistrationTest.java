@@ -1,4 +1,3 @@
-package org.pentaho.hadoop.shim.mapr;
 /*******************************************************************************
  *
  * Pentaho Big Data
@@ -21,6 +20,7 @@ package org.pentaho.hadoop.shim.mapr;
  *
  ******************************************************************************/
 
+package org.pentaho.hadoop.shim.mapr;
 
 import static org.junit.Assert.assertTrue;
 

@@ -22,6 +22,7 @@
 
 package org.pentaho.hadoop.shim.common;
 
+import static org.junit.Assert.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -36,6 +37,7 @@ import org.apache.commons.vfs.VFS;
 import org.apache.commons.vfs.impl.DefaultFileSystemManager;
 import org.apache.hadoop.util.VersionInfo;
 import org.junit.Test;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.hadoop.mapreduce.GenericTransCombiner;
 import org.pentaho.hadoop.mapreduce.GenericTransReduce;
 import org.pentaho.hadoop.mapreduce.PentahoMapRunnable;
@@ -226,10 +228,26 @@ public class CommonHadoopShimTest {
   @Test
   public void getDistributedCacheUtil() throws Exception {
     HadoopShim shim = new CommonHadoopShim();
-    assertNull(shim.getDistributedCacheUtil());
-    
+    try {
+      shim.getDistributedCacheUtil();
+      fail("expected exception");
+    } catch (ConfigurationException ex) {
+      assertEquals(ex.getMessage(), BaseMessages.getString(CommonHadoopShim.class, "CommonHadoopShim.DistributedCacheUtilMissing"));
+    }
+
     shim.onLoad(new HadoopConfiguration(VFS.getManager().resolveFile("ram:///"), "id", "name", shim), new HadoopConfigurationFileSystemManager(new MockHadoopConfigurationProvider(), new DefaultFileSystemManager()));
     assertNotNull(shim.getDistributedCacheUtil());
+  }
+  
+  @Test
+  public void setDistributedCacheUtil_null() {
+    CommonHadoopShim shim = new CommonHadoopShim();
+    try {
+      shim.setDistributedCacheUtil(null);
+      fail("expected exception");
+    } catch (NullPointerException ex) {
+      assertNotNull(ex);
+    }
   }
   
   @Test

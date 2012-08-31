@@ -27,6 +27,7 @@ import java.sql.Driver;
 import java.util.List;
 
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.hadoop.shim.ConfigurationException;
 import org.pentaho.hadoop.shim.HadoopConfiguration;
 import org.pentaho.hadoop.shim.HadoopConfigurationFileSystemManager;
 import org.pentaho.hadoop.shim.api.Configuration;
@@ -126,8 +127,9 @@ public interface HadoopShim extends PentahoHadoopShim {
   /**
    * Get the utility for manipulating files stored in the Distributed Cache.
    * @return the distributed cache utility
+   * @throws ConfigurationException Error retrieving the distributed cache util 
    */
-  DistributedCacheUtil getDistributedCacheUtil();
+  DistributedCacheUtil getDistributedCacheUtil() throws ConfigurationException;
 
   /**
    * Submit a MapReduce job based off the provided configuration.
