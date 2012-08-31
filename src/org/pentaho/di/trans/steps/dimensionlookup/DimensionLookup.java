@@ -596,7 +596,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
             //
             ValueMetaInterface v1 = data.outputRowMeta.getValueMeta(data.fieldnrs[i]);
             Object valueData1 = row[data.fieldnrs[i]];
-            findColumn = meta.getFieldLookup()[i];
+            findColumn = meta.getFieldStream()[i];
             // find the returnRowMeta based on the field in the fieldLookup list
             ValueMetaInterface v2 = null;
             Object valueData2 = null;
@@ -604,21 +604,21 @@ public class DimensionLookup extends BaseStep implements StepInterface
             // See if it's already been computed.
             returnRowColNum = columnLookupArray[i];
             if (returnRowColNum == -1) {
-                // It hasn't been found yet - search the list and make sure we're comparing
-                // the right column to the right column.
-                for (int j=2; j<data.returnRowMeta.size(); j++) { // starting at 2 because I know that 0 and 1 are poked in by Kettle.
-                  v2 = data.returnRowMeta.getValueMeta(j);
-                if ( (v2.getName() != null) && (v2.getName().equals(findColumn)) ) { // is this the right column?
+              // It hasn't been found yet - search the list and make sure we're comparing
+              // the right column to the right column.
+              for (int j=2; j<data.returnRowMeta.size(); j++) { // starting at 2 because I know that 0 and 1 are poked in by Kettle.
+                v2 = data.returnRowMeta.getValueMeta(j);
+                if ( (v2.getName() != null) && (v2.getName().equalsIgnoreCase(findColumn)) ) { // is this the right column?
                   columnLookupArray[i] = j; // yes - record the "j" into the columnLookupArray at [i] for the next time through the loop
                   valueData2 = returnRow[j]; // get the valueData2 for comparison
                   break; // get outta here.
-                  } else {
+                } else {
                   // Reset to null because otherwise, we'll get a false finding at the end.
                   // This could be optimized to use a temporary variable to avoid the repeated set if necessary
                   // but it will never be as slow as the database lookup anyway
-                    v2 = null;
-                  }
+                  v2 = null;
                 }
+              }
             } else {
               // We have a value in the columnLookupArray - use the value stored there.
               v2 = data.returnRowMeta.getValueMeta(returnRowColNum);
@@ -627,7 +627,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
             if (v2 == null) {
               // If we made it here, then maybe someone tweaked the XML in the transformation
               // and we're matching a stream column to a column that doesn't really exist. Throw an exception.
-              throw new KettleStepException(BaseMessages.getString(PKG, "DimensionLookup.Exception.ErrorDetectedInComparingFields")); //$NON-NLS-1$
+              throw new KettleStepException(BaseMessages.getString(PKG, "DimensionLookup.Exception.ErrorDetectedInComparingFields", meta.getFieldStream()[i])); //$NON-NLS-1$
             }
 
             try {

@@ -1761,6 +1761,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
         
         item = (XulMenuitem) doc.getElementById("job-graph-entry-checkpoint");
         item.setDisabled(!jobMeta.getCheckpointLogTable().isDefined());
+        item.setSelected(jobEntry.isCheckpoint());
         
         List<XulComponent> childNodes = launchMenu.getChildNodes();
         for (XulComponent childNode : childNodes) {
@@ -3192,22 +3193,23 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
   }
 
   public synchronized void startJob(JobExecutionConfiguration executionConfiguration) throws KettleException {
-    if (job == null || job.isFinished() && !job.isActive()) // Not running, start the transformation...
+    
+    // If the job is not running, start the transformation...
+    //
+    if (job == null || job.isFinished() && !job.isActive()) 
     {
       // Auto save feature...
+      //
       if (jobMeta.hasChanged()) {
         if (spoon.props.getAutoSave()) {
-        	if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "JobLog.Log.AutoSaveFileBeforeRunning")); //$NON-NLS-1$
+          if (log.isDetailed())
+            log.logDetailed(BaseMessages.getString(PKG, "JobLog.Log.AutoSaveFileBeforeRunning")); //$NON-NLS-1$
           System.out.println(BaseMessages.getString(PKG, "JobLog.Log.AutoSaveFileBeforeRunning2")); //$NON-NLS-1$
           spoon.saveToFile(jobMeta);
         } else {
-          MessageDialogWithToggle md = new MessageDialogWithToggle(
-              shell,
-              BaseMessages.getString(PKG, "JobLog.Dialog.SaveChangedFile.Title"), //$NON-NLS-1$
-              null,
-              BaseMessages.getString(PKG, "JobLog.Dialog.SaveChangedFile.Message") + Const.CR + BaseMessages.getString(PKG, "JobLog.Dialog.SaveChangedFile.Message2") + Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
-              MessageDialog.QUESTION, new String[] {
-                  BaseMessages.getString(PKG, "System.Button.Yes"), BaseMessages.getString(PKG, "System.Button.No") }, //$NON-NLS-1$ //$NON-NLS-2$
+          MessageDialogWithToggle md = new MessageDialogWithToggle(shell, BaseMessages.getString(PKG, "JobLog.Dialog.SaveChangedFile.Title"), //$NON-NLS-1$
+              null, BaseMessages.getString(PKG, "JobLog.Dialog.SaveChangedFile.Message") + Const.CR + BaseMessages.getString(PKG, "JobLog.Dialog.SaveChangedFile.Message2") + Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
+              MessageDialog.QUESTION, new String[] { BaseMessages.getString(PKG, "System.Button.Yes"), BaseMessages.getString(PKG, "System.Button.No") }, //$NON-NLS-1$ //$NON-NLS-2$
               0, BaseMessages.getString(PKG, "JobLog.Dialog.SaveChangedFile.Toggle"), //$NON-NLS-1$
               spoon.props.getAutoSave());
           int answer = md.open();
@@ -3218,77 +3220,83 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
         }
       }
 
-      if (((jobMeta.getName() != null && jobMeta.getObjectId() != null && spoon.rep != null) || // Repository available & name / id set
-          (jobMeta.getFilename() != null && spoon.rep == null) // No repository & filename set
+      // Is the repository available & name / id set?
+      // Is there a filename set and no repository available?
+      //
+      if (((jobMeta.getName() != null && jobMeta.getObjectId() != null && spoon.rep != null) || 
+          (jobMeta.getFilename() != null && spoon.rep == null)
           )
           && !jobMeta.hasChanged() // Didn't change
       ) {
         if (job == null || (job != null && !job.isActive())) {
           try {
-        	  
-        	// Make sure we clear the log before executing again...
-        	//
+
+            // Make sure we clear the log before executing again...
+            //
             if (executionConfiguration.isClearingLog()) {
-            	jobLogDelegate.clearLog();
+              jobLogDelegate.clearLog();
+            }
+
+            // Also make sure to clear the old log entries in the central log
+            // store & registry
+            //
+            if (job != null) {
+              CentralLogStore.discardLines(job.getLogChannelId(), true);
             }
             
-            // Also make sure to clear the old log entries in the central log store & registry 
+            // Ignore checkpoints if this is asked...
             //
-			if (job!=null) {
-				CentralLogStore.discardLines(job.getLogChannelId(), true);
-			}
-			
-			JobMeta runJobMeta;
-			
-			if (spoon.rep!=null) {
-				runJobMeta = spoon.rep.loadJob(jobMeta.getName(), jobMeta.getRepositoryDirectory(), null, null);  // reads last version
-			} else {
-			  runJobMeta = new JobMeta(jobMeta.getFilename(), null, null);
-			}
+            job.setIgnoringCheckpoints(executionConfiguration.isIgnoringCheckpoint());
+
+            JobMeta runJobMeta;
+
+            if (spoon.rep != null) {
+              runJobMeta = spoon.rep.loadJob(jobMeta.getName(), jobMeta.getRepositoryDirectory(), null, null);
+            } else {
+              runJobMeta = new JobMeta(jobMeta.getFilename(), null, null);
+            }
 
             String spoonObjectId = UUID.randomUUID().toString();
             SimpleLoggingObject spoonLoggingObject = new SimpleLoggingObject("SPOON", LoggingObjectType.SPOON, null);
             spoonLoggingObject.setContainerObjectId(spoonObjectId);
             spoonLoggingObject.setLogLevel(executionConfiguration.getLogLevel());
-			job = new Job(spoon.rep, runJobMeta, spoonLoggingObject);
-			
-			job.setLogLevel(executionConfiguration.getLogLevel());
+            job = new Job(spoon.rep, runJobMeta, spoonLoggingObject);
+
+            job.setLogLevel(executionConfiguration.getLogLevel());
             // job = new Job(jobMeta.getName(), jobMeta.getFilename(), null);
-            // job.open(spoon.rep, jobMeta.getFilename(), jobMeta.getName(), jobMeta.getRepositoryDirectory().getPath(), spoon);
+            // job.open(spoon.rep, jobMeta.getFilename(), jobMeta.getName(),
+            // jobMeta.getRepositoryDirectory().getPath(), spoon);
             job.getJobMeta().setArguments(jobMeta.getArguments());
             job.shareVariablesWith(jobMeta);
             job.setInteractive(true);
-            
+
             // Add job entry listeners
             //
             job.addJobEntryListener(createRefreshJobEntryListener());
-              
+
             // If there is an alternative start job entry, pass it to the job
             //
             if (!Const.isEmpty(executionConfiguration.getStartCopyName())) {
-              JobEntryCopy startJobEntryCopy = runJobMeta.findJobEntry(
-                  executionConfiguration.getStartCopyName(), 
-                  executionConfiguration.getStartCopyNr(), 
-                  false
-                 );
+              JobEntryCopy startJobEntryCopy = runJobMeta.findJobEntry(executionConfiguration.getStartCopyName(), executionConfiguration.getStartCopyNr(), false);
               job.setStartJobEntryCopy(startJobEntryCopy);
             }
-            
+
             // Set the named parameters
             Map<String, String> paramMap = executionConfiguration.getParams();
             Set<String> keys = paramMap.keySet();
-            for ( String key : keys )  {
-            	job.getJobMeta().setParameterValue(key, Const.NVL(paramMap.get(key), ""));
-            } 
+            for (String key : keys) {
+              job.getJobMeta().setParameterValue(key, Const.NVL(paramMap.get(key), ""));
+            }
             job.getJobMeta().activateParameters();
-            
+
             log.logMinimal(BaseMessages.getString(PKG, "JobLog.Log.StartingJob")); //$NON-NLS-1$
             job.start();
             jobGridDelegate.previousNrItems = -1;
             // Link to the new jobTracker!
             jobGridDelegate.jobTracker = job.getJobTracker();
 
-            // Attach a listener to notify us that the transformation has finished.
+            // Attach a listener to notify us that the transformation has
+            // finished.
             job.addJobListener(new JobAdapter() {
               public void jobFinished(Job job) {
                 JobGraph.this.jobFinished();
@@ -3299,9 +3307,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
             //
             addAllTabs();
           } catch (KettleException e) {
-            new ErrorDialog(
-                shell,
-                BaseMessages.getString(PKG, "JobLog.Dialog.CanNotOpenJob.Title"), BaseMessages.getString(PKG, "JobLog.Dialog.CanNotOpenJob.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, BaseMessages.getString(PKG, "JobLog.Dialog.CanNotOpenJob.Title"), BaseMessages.getString(PKG, "JobLog.Dialog.CanNotOpenJob.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
             job = null;
           }
         } else {

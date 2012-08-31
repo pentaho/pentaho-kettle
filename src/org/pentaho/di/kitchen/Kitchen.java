@@ -77,34 +77,33 @@ public class Kitchen
 		Job            job      = null;
 		
 		StringBuffer optionRepname, optionUsername, optionPassword, optionJobname, optionDirname, optionFilename, optionLoglevel;
-        StringBuffer optionLogfile, optionLogfileOld, optionListdir, optionListjobs, optionListrep, optionNorep, optionVersion, optionListParam, optionExport;
+        StringBuffer optionLogfile, optionLogfileOld, optionListdir, optionListjobs, optionListrep, optionNorep, optionVersion, optionListParam, optionExport, optionIgnoreCheckpoint;
         NamedParams optionParams = new NamedParamsDefault();
 
     CommandLineOption maxLogLinesOption = new CommandLineOption("maxloglines", BaseMessages.getString(PKG, "Kitchen.CmdLine.MaxLogLines"), new StringBuffer()); //$NON-NLS-1$ //$NON-NLS-2$
     CommandLineOption maxLogTimeoutOption = new CommandLineOption("maxlogtimeout", BaseMessages.getString(PKG, "Kitchen.CmdLine.MaxLogTimeout"), new StringBuffer()); //$NON-NLS-1$ //$NON-NLS-2$
         
-		CommandLineOption options[] = new CommandLineOption[] 
-            {
-			    new CommandLineOption("rep", BaseMessages.getString(PKG, "Kitchen.CmdLine.RepName"), optionRepname=new StringBuffer()),
-			    new CommandLineOption("user", BaseMessages.getString(PKG, "Kitchen.CmdLine.RepUsername"), optionUsername=new StringBuffer()),
-			    new CommandLineOption("pass", BaseMessages.getString(PKG, "Kitchen.CmdLine.RepPassword"), optionPassword=new StringBuffer()),
-			    new CommandLineOption("job", BaseMessages.getString(PKG, "Kitchen.CmdLine.RepJobName") , optionJobname=new StringBuffer()),
-			    new CommandLineOption("dir", BaseMessages.getString(PKG, "Kitchen.CmdLine.RepDir"), optionDirname=new StringBuffer()),
-			    new CommandLineOption("file", BaseMessages.getString(PKG, "Kitchen.CmdLine.XMLJob"), optionFilename=new StringBuffer()),
-			    new CommandLineOption("level", BaseMessages.getString(PKG, "Kitchen.CmdLine.LogLevel"), optionLoglevel=new StringBuffer()),
-			    new CommandLineOption("logfile", BaseMessages.getString(PKG, "Kitchen.CmdLine.LogFile"), optionLogfile=new StringBuffer()),
-			    new CommandLineOption("log", BaseMessages.getString(PKG, "Kitchen.CmdLine.LogFileOld"), optionLogfileOld=new StringBuffer(), false, true),
-			    new CommandLineOption("listdir", BaseMessages.getString(PKG, "Kitchen.CmdLine.ListDir"), optionListdir=new StringBuffer(), true, false),
-			    new CommandLineOption("listjobs", BaseMessages.getString(PKG, "Kitchen.CmdLine.ListJobsDir"), optionListjobs=new StringBuffer(), true, false),
-			    new CommandLineOption("listrep", BaseMessages.getString(PKG, "Kitchen.CmdLine.ListAvailableReps"), optionListrep=new StringBuffer(), true, false),
-		        new CommandLineOption("norep", BaseMessages.getString(PKG, "Kitchen.CmdLine.NoRep"), optionNorep=new StringBuffer(), true, false),
-                new CommandLineOption("version", BaseMessages.getString(PKG, "Kitchen.CmdLine.Version") , optionVersion=new StringBuffer(), true, false),
-                new CommandLineOption("param", BaseMessages.getString(PKG, "Kitchen.ComdLine.Param") , optionParams, false),
-		        new CommandLineOption("listparam", BaseMessages.getString(PKG, "Kitchen.ComdLine.ListParam"), optionListParam=new StringBuffer(), true, false),
-		        new CommandLineOption("export", BaseMessages.getString(PKG, "Kitchen.ComdLine.Export"), optionExport=new StringBuffer(), true, false),
-		        maxLogLinesOption,
-		        maxLogTimeoutOption,
-            };
+    CommandLineOption options[] = new CommandLineOption[] { 
+        new CommandLineOption("rep", BaseMessages.getString(PKG, "Kitchen.CmdLine.RepName"), optionRepname = new StringBuffer()),
+        new CommandLineOption("user", BaseMessages.getString(PKG, "Kitchen.CmdLine.RepUsername"), optionUsername = new StringBuffer()),
+        new CommandLineOption("pass", BaseMessages.getString(PKG, "Kitchen.CmdLine.RepPassword"), optionPassword = new StringBuffer()),
+        new CommandLineOption("job", BaseMessages.getString(PKG, "Kitchen.CmdLine.RepJobName"), optionJobname = new StringBuffer()),
+        new CommandLineOption("dir", BaseMessages.getString(PKG, "Kitchen.CmdLine.RepDir"), optionDirname = new StringBuffer()),
+        new CommandLineOption("file", BaseMessages.getString(PKG, "Kitchen.CmdLine.XMLJob"), optionFilename = new StringBuffer()),
+        new CommandLineOption("level", BaseMessages.getString(PKG, "Kitchen.CmdLine.LogLevel"), optionLoglevel = new StringBuffer()),
+        new CommandLineOption("logfile", BaseMessages.getString(PKG, "Kitchen.CmdLine.LogFile"), optionLogfile = new StringBuffer()),
+        new CommandLineOption("log", BaseMessages.getString(PKG, "Kitchen.CmdLine.LogFileOld"), optionLogfileOld = new StringBuffer(), false, true),
+        new CommandLineOption("listdir", BaseMessages.getString(PKG, "Kitchen.CmdLine.ListDir"), optionListdir = new StringBuffer(), true, false),
+        new CommandLineOption("listjobs", BaseMessages.getString(PKG, "Kitchen.CmdLine.ListJobsDir"), optionListjobs = new StringBuffer(), true, false),
+        new CommandLineOption("listrep", BaseMessages.getString(PKG, "Kitchen.CmdLine.ListAvailableReps"), optionListrep = new StringBuffer(), true, false),
+        new CommandLineOption("norep", BaseMessages.getString(PKG, "Kitchen.CmdLine.NoRep"), optionNorep = new StringBuffer(), true, false),
+        new CommandLineOption("version", BaseMessages.getString(PKG, "Kitchen.CmdLine.Version"), optionVersion = new StringBuffer(), true, false),
+        new CommandLineOption("param", BaseMessages.getString(PKG, "Kitchen.ComdLine.Param"), optionParams, false),
+        new CommandLineOption("listparam", BaseMessages.getString(PKG, "Kitchen.ComdLine.ListParam"), optionListParam = new StringBuffer(), true, false),
+        new CommandLineOption("export", BaseMessages.getString(PKG, "Kitchen.ComdLine.Export"), optionExport = new StringBuffer(), true, false),
+        new CommandLineOption("ignorecp", BaseMessages.getString(PKG, "Kitchen.ComdLine.IgnoreCheckpoint"), optionIgnoreCheckpoint = new StringBuffer(), true, false), 
+        maxLogLinesOption, 
+        maxLogTimeoutOption, };
 
 		if (args.size()==0 ) 
 		{
@@ -378,6 +377,12 @@ public class Kitchen
         // stop right here...
         //
         exitJVM(7); // same as the other list options
+      }
+      
+      // Make sure to ignore a reached checkpoint in case the user asks about it.
+      //
+      if ("Y".equalsIgnoreCase(optionIgnoreCheckpoint.toString())) {
+        job.setIgnoringCheckpoints(true);
       }
 
       job.start();

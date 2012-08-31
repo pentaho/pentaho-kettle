@@ -395,14 +395,21 @@ public class Const
     /** The job directory */
     public static final String INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY = INTERNAL_VARIABLE_PREFIX+".Job.Repository.Directory";
 
+    /** The job run ID */
+    public static final String INTERNAL_VARIABLE_JOB_RUN_ID = INTERNAL_VARIABLE_PREFIX+".Job.Run.ID";
+
+    /** The job run attempt nr */
+    public static final String INTERNAL_VARIABLE_JOB_RUN_ATTEMPTNR = INTERNAL_VARIABLE_PREFIX+".Job.Run.AttemptNr";
+
 	/** 
-	 * All the internal job variables
+	 * All the internal transformation variables
 	 */
 	public static final String[] INTERNAL_TRANS_VARIABLES = new String[] { 
         		Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY,
         		Const.INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME,
         		Const.INTERNAL_VARIABLE_TRANSFORMATION_NAME,
         		Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY,
+            
         };
 	
 	/** 
@@ -413,7 +420,9 @@ public class Const
         		Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME,
         		Const.INTERNAL_VARIABLE_JOB_NAME,
         		Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY,
-        };
+        		Const.INTERNAL_VARIABLE_JOB_RUN_ID,
+        		Const.INTERNAL_VARIABLE_JOB_RUN_ATTEMPTNR,
+       };
 	
     /** The transformation filename directory */
     public static final String INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY = INTERNAL_VARIABLE_PREFIX+".Transformation.Filename.Directory";

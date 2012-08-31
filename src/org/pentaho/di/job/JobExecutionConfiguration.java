@@ -76,6 +76,7 @@ public class JobExecutionConfiguration implements Cloneable
     private int startCopyNr;
     
     private boolean gatheringMetrics;
+    private boolean ignoringCheckpoint;
     
     public JobExecutionConfiguration()
     {
@@ -385,6 +386,7 @@ public class JobExecutionConfiguration implements Cloneable
         xml.append("    ").append(XMLHandler.addTagValue("start_copy_nr", startCopyNr));
 
         xml.append("    ").append(XMLHandler.addTagValue("gather_metrics", gatheringMetrics));
+        xml.append("    ").append(XMLHandler.addTagValue("ignore_checkpoint", ignoringCheckpoint));
 
         // The source rows...
         //
@@ -470,6 +472,7 @@ public class JobExecutionConfiguration implements Cloneable
         startCopyNr = Const.toInt(XMLHandler.getTagValue(trecNode, "start_copy_nr"), 0);
         
         gatheringMetrics = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "gather_metrics"));
+        ignoringCheckpoint =  "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "ignore_checkpoint"));
 
         Node resultNode = XMLHandler.getSubNode(trecNode, Result.XML_TAG);
         if (resultNode!=null)
@@ -634,5 +637,19 @@ public class JobExecutionConfiguration implements Cloneable
    */
   public void setGatheringMetrics(boolean gatheringMetrics) {
     this.gatheringMetrics = gatheringMetrics;
+  }
+
+  /**
+   * @return true if saved checkpoints need to be ignored during execution (force start from the beginning).
+   */
+  public boolean isIgnoringCheckpoint() {
+    return ignoringCheckpoint;
+  }
+
+  /**
+   * @param ignoringCheckpoint set to true if saved checkpoints need to be ignored during execution (force start from the beginning)
+   */
+  public void setIgnoringCheckpoint(boolean ignoringCheckpoint) {
+    this.ignoringCheckpoint = ignoringCheckpoint;
   }
 }

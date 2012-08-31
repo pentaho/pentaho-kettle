@@ -208,6 +208,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
   private Result checkpointResult;
 
   private Map<String,String> checkpointParameters;
+  
+  private boolean ignoringCheckpoints;
 
   public Job(String name, String file, String args[]) {
     this();
@@ -566,6 +568,8 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
       
       // Yes, we need to restore the previous checkpoint results at this point...
       //
+      checkpointResult.setResult(true);
+      checkpointResult.setNrErrors(0);
       result = prevResult = checkpointResult;
       
       // Do we need to restore the parameter values?
@@ -1121,147 +1125,160 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
 	
 	protected void lookupCheckpoint() throws KettleException {
 	  
-	  // Set some defaults regardless of lookup...
-	  //
-	  runId = -1;
-	  
-	  // Take start of this transformation if we have nothing else.
-	  // This will be logged by the checkpoints later on.
-	  //
-	  runStartDate = getLogDate();
-	  
-	  // No job entry to restart from by default: use the Start job entry
-	  //
-	  checkpointJobEntry = null; 
-
-	  // This is the first attempt by default
-	  //
-    runAttemptNr=1;
-
-	  // Now look up some data in the check point log table...
-	  //
-	  CheckpointLogTable logTable = jobMeta.getCheckpointLogTable();
-	  String namespace = Const.NVL(getParameterValue(logTable.getNamespaceParameter()), "-");
-	  DatabaseMeta dbMeta = logTable.getDatabaseMeta();
-	  String schemaTable = dbMeta.getQuotedSchemaTableCombination(logTable.getActualSchemaName(), logTable.getActualTableName());
-	  Database db=null;
 	  try {
-      db = new Database(this, dbMeta);
-      db.shareVariablesWith(this);
-      db.connect();
-      db.setCommit(logCommitSize);
+  	  // Set some defaults regardless of lookup...
+  	  //
+  	  runId = -1;
+  	  
+  	  // Take start of this transformation if we have nothing else.
+  	  // This will be logged by the checkpoints later on.
+  	  //
+  	  runStartDate = getLogDate();
+  	  
+  	  // No job entry to restart from by default: use the Start job entry
+  	  //
+  	  checkpointJobEntry = null; 
+  
+  	  // This is the first attempt by default
+  	  //
+      runAttemptNr=1;
       
-      // The fields to retrieve
+      // If we don't want to use a previous checkpoint, pretend we didn't find it.
       //
-      LogTableField idJobRunField = logTable.getKeyField();
-      String idJobRunFieldName = dbMeta.quoteField(idJobRunField.getFieldName());
-      LogTableField jobRunStartDateField = logTable.getJobRunStartDateField();
-      String jobRunStartDateFieldName = dbMeta.quoteField(jobRunStartDateField.getFieldName());
-      LogTableField checkpointNameField = logTable.getCheckpointNameField();
-      String checkpointNameFieldName = dbMeta.quoteField(checkpointNameField.getFieldName());
-      LogTableField checkpointNrField = logTable.getCheckpointCopyNrField();
-      String checkpointNrFieldName = dbMeta.quoteField(checkpointNrField.getFieldName());
-      LogTableField attemptNrField = logTable.getAttemptNrField();
-      String attemptNrFieldName = dbMeta.quoteField(attemptNrField.getFieldName());
-      LogTableField resultXmlField = logTable.getResultXmlField();
-      String resultXmlFieldName = dbMeta.quoteField(resultXmlField.getFieldName());
-      LogTableField parameterXmlField = logTable.getParameterXmlField();
-      String parameterXmlFieldName = dbMeta.quoteField(parameterXmlField.getFieldName());
-      
-      // The parameters values to pass
-      //
-      RowMetaAndData pars = new RowMetaAndData();
-
-      LogTableField jobNameField = logTable.getNameField();
-      String jobNameFieldName = dbMeta.quoteField(jobNameField.getFieldName());
-      pars.addValue(idJobRunFieldName, ValueMetaInterface.TYPE_STRING, jobMeta.getName());
-      LogTableField namespaceField = logTable.getNamespaceField();
-      String namespaceFieldName = dbMeta.quoteField(namespaceField.getFieldName());
-      pars.addValue(namespaceFieldName, ValueMetaInterface.TYPE_STRING, namespace);
-      
-      String sql = "SELECT "+idJobRunFieldName+", "+jobRunStartDateFieldName+", "+checkpointNameFieldName+", "+checkpointNrFieldName+", "+attemptNrFieldName+", "+resultXmlFieldName+", "+parameterXmlFieldName;
-      sql+=" FROM "+schemaTable;
-      sql+=" WHERE "+jobNameFieldName+" = ? AND "+namespaceFieldName+" = ? ";
-      sql+=" AND "+checkpointNrFieldName+" IS NOT NULL"; // nulled at the successful end of the job so we don't need these rows.
-      
-      // Grab the matching rows, if more than one matches just grab the first...
-      //
-      PreparedStatement statement = db.prepareSQL(sql);
-      ResultSet resultSet = db.openQuery(statement, pars.getRowMeta(), pars.getData());
-      Object[] rowData = db.getRow(resultSet);
-
-      // If there is no checkpoint found, call it a day
-      //
-      if (rowData==null) {
+      if (isIgnoringCheckpoints()) {
         return;
       }
-      RowMetaInterface rowMeta = db.getReturnRowMeta();
-      
-      // Get the data from the row
-      //
-      int index=0;
-      Long lookupRunId = rowMeta.getInteger(rowData, index++);
-      Date jobRunStartDate = rowMeta.getDate(rowData, index++);
-      String checkpointName = rowMeta.getString(rowData, index++);
-      Long checkpointNr = rowMeta.getInteger(rowData, index++);
-      Long attemptNr = rowMeta.getInteger(rowData, index++);
-      String resultXml = rowMeta.getString(rowData, index++);
-      String parameterXml = rowMeta.getString(rowData, index++);
-      
-      // Do some basic checks on the table data...
-      //
-      if (lookupRunId==null || jobRunStartDate==null || checkpointName==null || checkpointNr==null || attemptNr==null || resultXml==null || parameterXml==null) {
-        // Nothing to checkpoint to, call it quits.
+  
+  	  // Now look up some data in the check point log table...
+  	  //
+  	  CheckpointLogTable logTable = jobMeta.getCheckpointLogTable();
+  	  String namespace = Const.NVL(getParameterValue(logTable.getNamespaceParameter()), "-");
+  	  DatabaseMeta dbMeta = logTable.getDatabaseMeta();
+  	  String schemaTable = dbMeta.getQuotedSchemaTableCombination(logTable.getActualSchemaName(), logTable.getActualTableName());
+  	  Database db=null;
+  	  try {
+        db = new Database(this, dbMeta);
+        db.shareVariablesWith(this);
+        db.connect();
+        db.setCommit(logCommitSize);
+        
+        // The fields to retrieve
         //
-        return;
-      }
-      
-      // See if the retry period hasn't expired...
-      //
-      int retryPeriodInMinutes = Const.toInt(environmentSubstitute(logTable.getRunRetryPeriod()), -1);
-      if (retryPeriodInMinutes>0) {
-        long maxTime = runStartDate.getTime()+retryPeriodInMinutes*60*1000;
-        if (getStartDate().getTime() > maxTime) {
-          // retry period expired
-          throw new KettleException("Retry period exceeded, please reset job ["+jobMeta.getName()+"] for namespace ["+namespace+"]");
+        LogTableField idJobRunField = logTable.getKeyField();
+        String idJobRunFieldName = dbMeta.quoteField(idJobRunField.getFieldName());
+        LogTableField jobRunStartDateField = logTable.getJobRunStartDateField();
+        String jobRunStartDateFieldName = dbMeta.quoteField(jobRunStartDateField.getFieldName());
+        LogTableField checkpointNameField = logTable.getCheckpointNameField();
+        String checkpointNameFieldName = dbMeta.quoteField(checkpointNameField.getFieldName());
+        LogTableField checkpointNrField = logTable.getCheckpointCopyNrField();
+        String checkpointNrFieldName = dbMeta.quoteField(checkpointNrField.getFieldName());
+        LogTableField attemptNrField = logTable.getAttemptNrField();
+        String attemptNrFieldName = dbMeta.quoteField(attemptNrField.getFieldName());
+        LogTableField resultXmlField = logTable.getResultXmlField();
+        String resultXmlFieldName = dbMeta.quoteField(resultXmlField.getFieldName());
+        LogTableField parameterXmlField = logTable.getParameterXmlField();
+        String parameterXmlFieldName = dbMeta.quoteField(parameterXmlField.getFieldName());
+        
+        // The parameters values to pass
+        //
+        RowMetaAndData pars = new RowMetaAndData();
+  
+        LogTableField jobNameField = logTable.getNameField();
+        String jobNameFieldName = dbMeta.quoteField(jobNameField.getFieldName());
+        pars.addValue(idJobRunFieldName, ValueMetaInterface.TYPE_STRING, jobMeta.getName());
+        LogTableField namespaceField = logTable.getNamespaceField();
+        String namespaceFieldName = dbMeta.quoteField(namespaceField.getFieldName());
+        pars.addValue(namespaceFieldName, ValueMetaInterface.TYPE_STRING, namespace);
+        
+        String sql = "SELECT "+idJobRunFieldName+", "+jobRunStartDateFieldName+", "+checkpointNameFieldName+", "+checkpointNrFieldName+", "+attemptNrFieldName+", "+resultXmlFieldName+", "+parameterXmlFieldName;
+        sql+=" FROM "+schemaTable;
+        sql+=" WHERE "+jobNameFieldName+" = ? AND "+namespaceFieldName+" = ? ";
+        sql+=" AND "+checkpointNrFieldName+" IS NOT NULL"; // nulled at the successful end of the job so we don't need these rows.
+        
+        // Grab the matching rows, if more than one matches just grab the first...
+        //
+        PreparedStatement statement = db.prepareSQL(sql);
+        ResultSet resultSet = db.openQuery(statement, pars.getRowMeta(), pars.getData());
+        Object[] rowData = db.getRow(resultSet);
+  
+        // If there is no checkpoint found, call it a day
+        //
+        if (rowData==null) {
+          return;
         }
-      }
-      
-      // Verify the max number of retries / attempts...
-      //
-      int maxAttempts = Const.toInt(environmentSubstitute(logTable.getMaxNrRetries()), -1);
-      if (maxAttempts>0) {
-        if (attemptNr+1>maxAttempts) {
-          throw new KettleException("The job checkpoint system has reached the maximum number or retries after "+attemptNr+" attempts");
+        RowMetaInterface rowMeta = db.getReturnRowMeta();
+        
+        // Get the data from the row
+        //
+        int index=0;
+        Long lookupRunId = rowMeta.getInteger(rowData, index++);
+        Date jobRunStartDate = rowMeta.getDate(rowData, index++);
+        String checkpointName = rowMeta.getString(rowData, index++);
+        Long checkpointNr = rowMeta.getInteger(rowData, index++);
+        Long attemptNr = rowMeta.getInteger(rowData, index++);
+        String resultXml = rowMeta.getString(rowData, index++);
+        String parameterXml = rowMeta.getString(rowData, index++);
+        
+        // Do some basic checks on the table data...
+        //
+        if (lookupRunId==null || jobRunStartDate==null || checkpointName==null || checkpointNr==null || attemptNr==null || resultXml==null || parameterXml==null) {
+          // Nothing to checkpoint to, call it quits.
+          //
+          return;
         }
-      }
-      
-      // All OK, now pass the looked up data to the job
-      //
-      runStartDate = jobRunStartDate;
-      runId = lookupRunId;
-      runAttemptNr=attemptNr.intValue()+1;
-      checkpointJobEntry = jobMeta.findJobEntry(checkpointName, checkpointNr.intValue(), false);
-      if (checkpointJobEntry==null) {
-        throw new KettleException("Unable to find checkpoint job entry with name ["+checkpointName+"] and copy number ["+checkpointNr+"]");
-      }
-      
-      // We start at the checkpoint job entry (this is skipped though)
-      //
-      startJobEntryCopy = checkpointJobEntry;
-      
-      // The result
-      //
-      checkpointResult = new Result(XMLHandler.loadXMLString(resultXml, Result.XML_TAG));
-      checkpointParameters = extractParameters(parameterXml);
-
-	  } catch(Exception e) {
-	    throw new KettleException("Unable to look up checkpoint information in the check point log table", e);
+        
+        // See if the retry period hasn't expired...
+        //
+        int retryPeriodInMinutes = Const.toInt(environmentSubstitute(logTable.getRunRetryPeriod()), -1);
+        if (retryPeriodInMinutes>0) {
+          long maxTime = runStartDate.getTime()+retryPeriodInMinutes*60*1000;
+          if (getStartDate().getTime() > maxTime) {
+            // retry period expired
+            throw new KettleException("Retry period exceeded, please reset job ["+jobMeta.getName()+"] for namespace ["+namespace+"]");
+          }
+        }
+        
+        // Verify the max number of retries / attempts...
+        //
+        int maxAttempts = Const.toInt(environmentSubstitute(logTable.getMaxNrRetries()), -1);
+        if (maxAttempts>0) {
+          if (attemptNr+1>maxAttempts) {
+            throw new KettleException("The job checkpoint system has reached the maximum number or retries after "+attemptNr+" attempts");
+          }
+        }
+        
+        // All OK, now pass the looked up data to the job
+        //
+        runStartDate = jobRunStartDate;
+        runId = lookupRunId;
+        runAttemptNr=attemptNr.intValue()+1;
+        checkpointJobEntry = jobMeta.findJobEntry(checkpointName, checkpointNr.intValue(), false);
+        if (checkpointJobEntry==null) {
+          throw new KettleException("Unable to find checkpoint job entry with name ["+checkpointName+"] and copy number ["+checkpointNr+"]");
+        }
+        
+        // We start at the checkpoint job entry (this is skipped though)
+        //
+        startJobEntryCopy = checkpointJobEntry;
+        
+        // The result
+        //
+        checkpointResult = new Result(XMLHandler.loadXMLString(resultXml, Result.XML_TAG));
+        checkpointParameters = extractParameters(parameterXml);
+  
+  	  } catch(Exception e) {
+  	    throw new KettleException("Unable to look up checkpoint information in the check point log table", e);
+  	  } finally {
+  	    if (db!=null) {
+  	      db.disconnect();
+  	    }
+  	  }
 	  } finally {
-	    if (db!=null) {
-	      db.disconnect();
-	    }
-	  }  
+	    // Set variables
+	    //
+	    setVariable(Const.INTERNAL_VARIABLE_JOB_RUN_ID, Long.toString(runId));
+      setVariable(Const.INTERNAL_VARIABLE_JOB_RUN_ATTEMPTNR, Long.toString(runAttemptNr));
+	  }
   }
 
   private Map<String, String> extractParameters(String parameterXml) throws KettleException {
@@ -2268,5 +2285,19 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    */
   public void setCheckpointParameters(Map<String, String> checkpointParameters) {
     this.checkpointParameters = checkpointParameters;
+  }
+
+  /**
+   * @return the ignoringCheckpoints
+   */
+  public boolean isIgnoringCheckpoints() {
+    return ignoringCheckpoints;
+  }
+
+  /**
+   * @param ignoringCheckpoints the ignoringCheckpoints to set
+   */
+  public void setIgnoringCheckpoints(boolean ignoringCheckpoints) {
+    this.ignoringCheckpoints = ignoringCheckpoints;
   }
 }

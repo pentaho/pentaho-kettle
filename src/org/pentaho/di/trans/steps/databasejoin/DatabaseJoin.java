@@ -180,7 +180,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 			else
 			{
 
-				logError(BaseMessages.getString(PKG, "DatabaseJoin.Log.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "DatabaseJoin.Log.ErrorInStepRunning")+e.getMessage(), e); //$NON-NLS-1$
 				setErrors(1);
 				stopAll();
 				setOutputDone();  // signal end to receiver(s)
@@ -251,7 +251,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 			}
 			catch(KettleException e)
 			{
-				logError(BaseMessages.getString(PKG, "DatabaseJoin.Log.DatabaseError")+e.getMessage()); //$NON-NLS-1$
+				logError(BaseMessages.getString(PKG, "DatabaseJoin.Log.DatabaseError")+e.getMessage(), e); //$NON-NLS-1$
 				if (data.db!=null) {
                 	data.db.disconnect();
 				}

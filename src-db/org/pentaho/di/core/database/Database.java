@@ -1914,7 +1914,7 @@ public class Database implements VariableSpace, LoggingObjectInterface
         return databaseMeta.isFetchSizeSupported() && 
             ( statement.getMaxRows()>0 || 
               databaseMeta.getDatabaseInterface() instanceof PostgreSQLDatabaseMeta || 
-              ( databaseMeta.getDatabaseInterface() instanceof MySQLDatabaseMeta && databaseMeta.isStreamingResults() ) 
+              ( databaseMeta.isMySQLVariant() && databaseMeta.isStreamingResults() ) 
             );     
     }
     

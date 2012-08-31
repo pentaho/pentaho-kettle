@@ -101,6 +101,7 @@ public class JobExecutionConfigurationDialog extends Dialog
     private CCombo wLogLevel;
     private Button wSafeMode;
     private Button wClearLog;
+    private Button wIgnoreCheckpoint;
 
     private Label wlReplayDate;
     private Text wReplayDate;
@@ -257,6 +258,17 @@ public class JobExecutionConfigurationDialog extends Dialog
         fdSafeMode.top   = new FormAttachment(0, 0);
         wSafeMode.setLayoutData(fdSafeMode);
         wSafeMode.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { enableFields(); }});
+
+        wIgnoreCheckpoint = new Button(gDetails, SWT.CHECK);
+        wIgnoreCheckpoint.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.IgnoreCheckpoint.Label")); //$NON-NLS-1$
+        wIgnoreCheckpoint.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.IgnoreCheckpoint.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
+        props.setLook(wIgnoreCheckpoint);
+        FormData fdIgnoreCheckpoint = new FormData();
+        fdIgnoreCheckpoint.left  = new FormAttachment(0,0);
+        fdIgnoreCheckpoint.right = new FormAttachment(50, 0);
+        fdIgnoreCheckpoint.top   = new FormAttachment(0, 0);
+        wIgnoreCheckpoint.setLayoutData(fdIgnoreCheckpoint);
+        wIgnoreCheckpoint.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { enableFields(); }});
 
         wClearLog = new Button(gDetails, SWT.CHECK);
         wClearLog.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.ClearLog.Label")); //$NON-NLS-1$
@@ -543,6 +555,7 @@ public class JobExecutionConfigurationDialog extends Dialog
     {
         wExecLocal.setSelection(configuration.isExecutingLocally());
         wExecRemote.setSelection(configuration.isExecutingRemotely());
+        wIgnoreCheckpoint.setSelection(configuration.isIgnoringCheckpoint());
         wSafeMode.setSelection(configuration.isSafeModeEnabled());
         wClearLog.setSelection(configuration.isClearingLog());
         wRemoteHost.setText( configuration.getRemoteServer()==null ? "" : configuration.getRemoteServer().toString() );
@@ -572,6 +585,7 @@ public class JobExecutionConfigurationDialog extends Dialog
         {
             configuration.setExecutingLocally(wExecLocal.getSelection());
             configuration.setExecutingRemotely(wExecRemote.getSelection());
+            configuration.setIgnoringCheckpoint(wIgnoreCheckpoint.getSelection());
             
             // Remote data
             //
