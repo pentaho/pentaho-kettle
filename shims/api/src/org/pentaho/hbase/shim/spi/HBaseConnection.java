@@ -29,15 +29,14 @@ import java.util.NavigableMap;
 import java.util.Properties;
 
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.hadoop.shim.spi.PentahoHadoopShim;
 import org.pentaho.hbase.shim.api.ColumnFilter;
 import org.pentaho.hbase.shim.api.HBaseValueMeta;
 
 public abstract class HBaseConnection {
-  
+
   // version key
   public static final String HBASE_VERSION_KEY = "hbase.defaults.for.version";
-  
+
   // constant connection keys
   public static final String DEFAULTS_KEY = "hbase.default";
   public static final String SITE_KEY = "hbase.site";
@@ -455,23 +454,13 @@ public abstract class HBaseConnection {
   public abstract void closeTargetTable() throws Exception;
 
   /**
-   * Determines if the object is an {@link org.apache.hadoop.hbase.io.ImmutableBytesWritable}.
-   *
-   * @return {@code true} if {@code o} is an {@link org.apache.hadoop.hbase.io.ImmutableBytesWritable}.
-  */
-  public abstract boolean isImmutableBytesWritable(Object o);
-
-  /**
-   * Static factory method for getting an HBaseAdmin implementation
+   * Determines if the object is an
+   * {@link org.apache.hadoop.hbase.io.ImmutableBytesWritable}.
    * 
-   * @return a concrete implementation of the HBaseAdmin API
-   * @throws Exception if a problem occurs
+   * @return {@code true} if {@code o} is an
+   *         {@link org.apache.hadoop.hbase.io.ImmutableBytesWritable}.
    */
-  public static HBaseShim createHBaseAdmin() throws Exception {
-
-    return (HBaseShim) Class
-        .forName("org.pentaho.hbase.shim.DefaultHBaseAdmin").newInstance();
-  }
+  public abstract boolean isImmutableBytesWritable(Object o);
 
   /**
    * Utility method to covert a string to a URL object.
