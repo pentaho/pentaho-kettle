@@ -214,7 +214,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		}
 	}
 
-	private void writeRowToFile(RowMetaInterface rowMeta, Object[] r) throws KettleStepException
+	protected void writeRowToFile(RowMetaInterface rowMeta, Object[] r) throws KettleStepException
 	{
 		try
 		{	
@@ -477,7 +477,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		return positions;
 	}
 
-	private boolean writeEndedLine()
+	protected boolean writeEndedLine()
 	{
 		boolean retval=false;
 		try
@@ -502,7 +502,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		return retval;
 	}
 	
-	private boolean writeHeader()
+	protected boolean writeHeader()
 	{
 		boolean retval=false;
 		RowMetaInterface r=data.outputRowMeta;

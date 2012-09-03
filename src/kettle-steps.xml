@@ -1500,7 +1500,13 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.PGPDecryptStream</tooltip>
 		<iconfile>ui/images/GPGDecrypt.png</iconfile>
 	</step> 
-
+	<step id="ConcatFields">
+		<description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.ConcatFields</description>
+		<classname>org.pentaho.di.trans.steps.concatfields.ConcatFieldsMeta</classname>
+		<category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
+		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.ConcatFields</tooltip>
+		<iconfile>ui/images/ConcatFields.png</iconfile>
+	</step>
 
 
 	
