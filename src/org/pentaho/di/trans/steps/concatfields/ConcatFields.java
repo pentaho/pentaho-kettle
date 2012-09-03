@@ -22,8 +22,11 @@
 
 package org.pentaho.di.trans.steps.concatfields;
 
+import java.io.UnsupportedEncodingException;
+
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
+import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -62,8 +65,15 @@ public class ConcatFields extends TextFileOutput implements StepInterface
 
 		if (r != null && first) {
 			first = false;
+			
 			data.outputRowMeta = getInputRowMeta().clone();
 			meta.getFields(data.outputRowMeta, getStepname(), null, null, this);
+			
+			// the field precisions and lengths are altered! see TextFileOutputMeta.getFields().
+			// otherwise trim(), padding etc. will not work
+			data.inputRowMetaModified = getInputRowMeta().clone();
+			meta.getFieldsModifyInput(data.inputRowMetaModified, getStepname(), null, null, this);
+			
 			data.posTargetField=data.outputRowMeta.indexOfValue(meta.getTargetFieldName());
 			if (data.posTargetField < 0) {
 				throw new KettleStepException("Field [" + meta.getTargetFieldName() + "] couldn't be found in the output stream!");
@@ -81,9 +91,20 @@ public class ConcatFields extends TextFileOutput implements StepInterface
 
 			data.fieldnrs = new int[meta.getOutputFields().length];
 			for (int i = 0; i < meta.getOutputFields().length; i++) {
-				data.fieldnrs[i] = data.outputRowMeta.indexOfValue(meta.getOutputFields()[i].getName());
+				data.fieldnrs[i] = data.inputRowMetaModified.indexOfValue(meta.getOutputFields()[i].getName());
 				if (data.fieldnrs[i] < 0) {
 					throw new KettleStepException("Field [" + meta.getOutputFields()[i].getName() + "] couldn't be found in the input stream!");
+				}
+			}
+			// prepare for re-map when removeSelectedFields
+			if(meta.isRemoveSelectedFields()) {
+				data.remainingFieldsInputOutputMapping = new int[data.outputRowMeta.size()-1]; //-1: don't need the new target field
+				String[] fieldNames = data.outputRowMeta.getFieldNames();
+				for (int i=0; i < fieldNames.length-1; i++) { //-1: don't search the new target field
+					data.remainingFieldsInputOutputMapping[i]=data.inputRowMetaModified.indexOfValue(fieldNames[i]);
+					if (data.remainingFieldsInputOutputMapping[i] < 0) {
+						throw new KettleStepException("Remaining Field [" + fieldNames[i] + "] couldn't be found in the input stream!");
+					}
 				}
 			}
 		}
@@ -121,7 +142,7 @@ public class ConcatFields extends TextFileOutput implements StepInterface
 		}
 
 		// instead of writing to file, writes it to a stream
-		writeRowToFile(data.outputRowMeta, r);
+		writeRowToFile(data.inputRowMetaModified, r);
 		putRowFromStream(r);
 
 		if (checkFeedback(getLinesOutput()))
@@ -130,21 +151,46 @@ public class ConcatFields extends TextFileOutput implements StepInterface
 		return result;
 	}
 	
-	// reads the row from the stream, flushs and call putRow() 
+	// reads the row from the stream, flushs, add target field and call putRow() 
 	private void putRowFromStream(Object[] r) throws KettleStepException{
-		Object[] row = r;
-		byte[] binary=((ConcatFieldsOutputStream)data.writer).read();
-		if(row==null) { // special condition of header/footer/split
-			if(binary==null) return; // nothing to do here
-			row=new Object[data.outputRowMeta.size()];
-		}
-		// TODO we may think of testing Lazy Conversion and may need to check the right encoding 
-		if (binary!=null) {
-			row[data.posTargetField]=new String(binary);
+
+		byte[] targetBinary=((ConcatFieldsOutputStream)data.writer).read();
+		if(r==null && targetBinary==null) return;  // special condition of header/footer/split
+
+		Object[] outputRowData = null;
+		if(!meta.isRemoveSelectedFields()) {
+			// reserve room for the target field
+			outputRowData = RowDataUtil.resizeArray(r, data.outputRowMeta.size());
 		} else {
-			row[data.posTargetField]=null;
+			// reserve room for the target field and re-map the fields
+			outputRowData = new Object[data.outputRowMeta.size()+RowDataUtil.OVER_ALLOCATE_SIZE];
+			if (r!=null) {
+				//re-map the fields
+				for (int i=0; i < data.remainingFieldsInputOutputMapping.length; i++) { // BTW: the new target field is not here
+					outputRowData[i]=r[data.remainingFieldsInputOutputMapping[i]];
+				}
+			}
 		}
-		putRow(data.outputRowMeta, row); // in case we want it to go further...		
+
+		// add target field
+		if(outputRowData==null) { // special condition of header/footer/split
+			outputRowData=new Object[data.outputRowMeta.size()];
+		}
+		if (targetBinary!=null) {
+			if(!data.hasEncoding) {
+				outputRowData[data.posTargetField]=new String(targetBinary);
+			} else { // handle encoding
+				try {
+					outputRowData[data.posTargetField]=new String(targetBinary, meta.getEncoding());
+				} catch (UnsupportedEncodingException e) {
+					throw new KettleStepException("Unsupported encoding: "+meta.getEncoding());
+				}
+			}
+		} else {
+			outputRowData[data.posTargetField]=null;
+		}
+		
+		putRow(data.outputRowMeta, outputRowData);		
 	}
 
 	@Override

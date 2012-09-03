@@ -22,6 +22,7 @@
 
 package org.pentaho.di.trans.steps.concatfields;
 
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.steps.textfileoutput.TextFileOutputData;
 
@@ -34,6 +35,8 @@ import org.pentaho.di.trans.steps.textfileoutput.TextFileOutputData;
 public class ConcatFieldsData extends TextFileOutputData implements StepDataInterface
 {
 	public int posTargetField;
+	public int remainingFieldsInputOutputMapping[];
+    public RowMetaInterface inputRowMetaModified; // the field precisions and lengths are altered! see TextFileOutputMeta.getFields().
 	
 	public ConcatFieldsData()
 	{

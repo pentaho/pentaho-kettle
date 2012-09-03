@@ -99,33 +99,47 @@ public class ConcatFieldsMeta extends TextFileOutputMeta  implements StepMetaInt
 	public void setDefault()
 	{
 		super.setDefault();
+		// overwrite header
+		super.setHeaderEnabled(false);
+		// set default for new properties specific to the concat fields
 		targetFieldName="";
 		targetFieldLength=0;
 		removeSelectedFields=false;
 	}
 
+	public void getFieldsModifyInput(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
+	{
+		// the field precisions and lengths are altered! see TextFileOutputMeta.getFields().
+		super.getFields(row, name, info, nextStep, space);
+	}
+	
 	@Override
 	public void getFields(RowMetaInterface row, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{
 		// do not call the super class from TextFileOutputMeta since it modifies the source meta data
+		// see getFieldsModifyInput() instead
 		
 		// remove selected fields from the stream when true
 		if(removeSelectedFields) {
-			for (int i=0;i<getOutputFields().length;i++)
-			{
-			    TextFileField field = getOutputFields()[i];
-				try {
-					row.removeValueMeta(field.getName());
-				} catch (KettleValueException e) {
-					// just ignore exceptions since missing fields are handled in the ConcatFields class
+			if(getOutputFields().length>0) {
+				for (int i=0;i<getOutputFields().length;i++)
+				{
+				    TextFileField field = getOutputFields()[i];
+					try {
+						row.removeValueMeta(field.getName());
+					} catch (KettleValueException e) {
+						// just ignore exceptions since missing fields are handled in the ConcatFields class
+					}
 				}
+			} else { // no output fields selected, take them all, remove them all
+				row.clear();
 			}
 		}
 		
 		// add targetFieldName
         ValueMetaInterface vValue = new ValueMeta(targetFieldName, ValueMetaInterface.TYPE_STRING, targetFieldLength, 0);
         vValue.setOrigin(name);
-        //vValue.setStorageType(ValueMetaInterface.STORAGE_TYPE_BINARY_STRING);
+        if(!Const.isEmpty(getEncoding())) vValue.setStringEncoding(getEncoding());
         row.addValueMeta(vValue);		
 	}
 	
