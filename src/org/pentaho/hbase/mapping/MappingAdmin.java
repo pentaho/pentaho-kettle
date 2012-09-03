@@ -106,6 +106,11 @@ public class MappingAdmin {
     setConnection(conn);
   }
 
+  public MappingAdmin(HBaseConnection conn, HBaseBytesUtilShim bytesUtil) {
+    m_bytesUtil = bytesUtil;
+    setConnection(conn);
+  }
+
   /**
    * Set the connection to use
    * 
