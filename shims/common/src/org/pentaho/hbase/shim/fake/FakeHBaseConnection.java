@@ -38,7 +38,6 @@ public class FakeHBaseConnection extends HBaseConnection {
      */
     public int compareTo(byte[] buffer1, int offset1, int length1,
         byte[] buffer2, int offset2, int length2) {
-      // Bring WritableComparator code local
       int end1 = offset1 + length1;
       int end2 = offset2 + length2;
       for (int i = offset1, j = offset2; i < end1 && j < end2; i++, j++) {
@@ -171,12 +170,26 @@ public class FakeHBaseConnection extends HBaseConnection {
             .lastEntry();
         byte[] upperKey = lastE.getKey();
 
-        subMap = m_table.subMap(startKey, upperKey);
+        BytesComparator comp = new BytesComparator();
+        if (comp.compare(startKey, upperKey) != 0) {
+          subMap = m_table.subMap(startKey, upperKey);
+        } else {
+          subMap = m_table.subMap(startKey, true, upperKey, true);
+        }
+      } else {
+        BytesComparator comp = new BytesComparator();
+        if (comp.compare(startKey, stopKey) == 0) {
+          subMap = m_table.subMap(startKey, true, stopKey, true);
+        } else {
+          subMap = m_table.subMap(startKey, stopKey);
+        }
       }
 
-      subMap = m_table.subMap(startKey, stopKey);
-
       return subMap;
+    }
+
+    public void deleteRow(byte[] rowKey) {
+      m_table.remove(rowKey);
     }
   }
 
@@ -186,7 +199,7 @@ public class FakeHBaseConnection extends HBaseConnection {
     protected byte[] m_value;
 
     public Col(byte[] colFamName, byte[] colName, byte[] value) {
-      m_colFamName = colName;
+      m_colFamName = colFamName;
       m_colName = colName;
       m_value = value;
     }
@@ -379,6 +392,10 @@ public class FakeHBaseConnection extends HBaseConnection {
     }
 
     public Result next() {
+      if (!m_rowIterator.hasNext()) {
+        return null;
+      }
+
       Entry<byte[], NavigableMap<byte[], NavigableMap<byte[], NavigableMap<Long, byte[]>>>> nextR = m_rowIterator
           .next();
 
@@ -558,9 +575,15 @@ public class FakeHBaseConnection extends HBaseConnection {
   }
 
   @Override
-  public void executeTargetTableDelete(byte[] arg0) throws Exception {
-    // TODO Auto-generated method stub
+  public void executeTargetTableDelete(byte[] rowKey) throws Exception {
+    checkTargetTable();
 
+    FakeTable table = m_db.get(m_targetTable);
+    if (table == null) {
+      throw new Exception("Target table is null!!");
+    }
+
+    table.deleteRow(rowKey);
   }
 
   @Override
