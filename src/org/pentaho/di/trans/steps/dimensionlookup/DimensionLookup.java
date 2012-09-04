@@ -596,7 +596,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
             //
             ValueMetaInterface v1 = data.outputRowMeta.getValueMeta(data.fieldnrs[i]);
             Object valueData1 = row[data.fieldnrs[i]];
-            findColumn = meta.getFieldLookup()[i];
+            findColumn = meta.getFieldStream()[i];
             // find the returnRowMeta based on the field in the fieldLookup list
             ValueMetaInterface v2 = null;
             Object valueData2 = null;
