@@ -215,7 +215,114 @@ public class SQLTest extends TestCase {
     assertEquals(1, orderFields.size());
   }
   
+
+  /**
+   * Tests schema.table format
+   * 
+   * @throws KettleSQLException
+   */
+  public void testSql09() throws KettleSQLException {
+    RowMetaInterface rowMeta = generateServiceRowMeta();
     
+    String sqlString = "SELECT Category, Country, products_sold, sales_amount FROM Kettle.Service";
+    
+    SQL sql = new SQL(ThinUtil.stripNewlines(sqlString));
+    
+    assertEquals("Kettle", sql.getNamespace());
+    assertEquals("Service", sql.getServiceName());
+    sql.parse(rowMeta);
+    
+    assertFalse(sql.getSelectFields().isDistinct());
+    List<SQLField> selectFields = sql.getSelectFields().getFields();
+    assertEquals(4, selectFields.size());
+    assertEquals("Category",      selectFields.get(0).getField());
+    assertEquals("Country",       selectFields.get(1).getField());
+    assertEquals("products_sold", selectFields.get(2).getField());
+    assertEquals("sales_amount",  selectFields.get(3).getField()); 
+  }
+
+  /**
+   * Tests schema."table" format
+   * 
+   * @throws KettleSQLException
+   */
+  public void testSql10() throws KettleSQLException {
+    RowMetaInterface rowMeta = generateServiceRowMeta();
+    
+    String sqlString = "SELECT Category, Country, products_sold, sales_amount FROM Kettle.\"Service\"";
+    
+    SQL sql = new SQL(ThinUtil.stripNewlines(sqlString));
+    
+    assertEquals("Kettle", sql.getNamespace());
+    assertEquals("Service", sql.getServiceName());
+    sql.parse(rowMeta);
+    
+    assertFalse(sql.getSelectFields().isDistinct());
+    List<SQLField> selectFields = sql.getSelectFields().getFields();
+    assertEquals(4, selectFields.size());
+    assertEquals("Category",      selectFields.get(0).getField());
+    assertEquals("Country",       selectFields.get(1).getField());
+    assertEquals("products_sold", selectFields.get(2).getField());
+    assertEquals("sales_amount",  selectFields.get(3).getField()); 
+  }
+  
+  /**
+   * Tests "schema".table format
+   * 
+   * @throws KettleSQLException
+   */
+  public void testSql11() throws KettleSQLException {
+    RowMetaInterface rowMeta = generateServiceRowMeta();
+    
+    String sqlString = "SELECT Category, Country, products_sold, sales_amount FROM \"Kettle\".Service";
+    
+    SQL sql = new SQL(ThinUtil.stripNewlines(sqlString));
+    
+    assertEquals("Kettle", sql.getNamespace());
+    assertEquals("Service", sql.getServiceName());
+    sql.parse(rowMeta);
+    
+    assertFalse(sql.getSelectFields().isDistinct());
+    List<SQLField> selectFields = sql.getSelectFields().getFields();
+    assertEquals(4, selectFields.size());
+    assertEquals("Category",      selectFields.get(0).getField());
+    assertEquals("Country",       selectFields.get(1).getField());
+    assertEquals("products_sold", selectFields.get(2).getField());
+    assertEquals("sales_amount",  selectFields.get(3).getField()); 
+  }
+
+  /**
+   * Tests "schema"."table" format
+   * 
+   * @throws KettleSQLException
+   */
+  public void testSql12() throws KettleSQLException {
+    RowMetaInterface rowMeta = generateServiceRowMeta();
+    
+    String sqlString = "SELECT Category, Country, products_sold, sales_amount FROM \"Kettle\".\"Service\"";
+    
+    SQL sql = new SQL(ThinUtil.stripNewlines(sqlString));
+    
+    assertEquals("Kettle", sql.getNamespace());
+    assertEquals("Service", sql.getServiceName());
+    sql.parse(rowMeta);
+    
+    assertFalse(sql.getSelectFields().isDistinct());
+    List<SQLField> selectFields = sql.getSelectFields().getFields();
+    assertEquals(4, selectFields.size());
+    assertEquals("Category",      selectFields.get(0).getField());
+    assertEquals("Country",       selectFields.get(1).getField());
+    assertEquals("products_sold", selectFields.get(2).getField());
+    assertEquals("sales_amount",  selectFields.get(3).getField()); 
+  }
+  
+  
+  
+  
+  
+  
+  
+  
   public static RowMetaInterface generateTest2RowMeta() {
     RowMetaInterface rowMeta = new RowMeta();
     rowMeta.addValueMeta(new ValueMeta("A", ValueMetaInterface.TYPE_STRING, 50));

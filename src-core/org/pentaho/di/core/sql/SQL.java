@@ -14,6 +14,7 @@ public class SQL {
   private RowMetaInterface rowMeta;
 
   private String serviceClause;
+  private String namespace;
   private String serviceName;
   private String serviceAlias;
 
@@ -89,8 +90,23 @@ public class SQL {
     
     List<String> parts = ThinUtil.splitClause(serviceClause, ' ', '"');
     if (parts.size()>=1) {
-      serviceName = ThinUtil.stripQuotes(parts.get(0), '"');
+      // The service name is in the first part/
+      // However, it can be in format Namespace.Service (Schema.Table)
+      // 
+      List<String> list = ThinUtil.splitClause(parts.get(0), '.', '"');
+      if (list.size()==1) {
+        namespace = null;
+        serviceName = ThinUtil.stripQuotes(list.get(0), '"');
+      }
+      if (list.size()==2) {
+        namespace = ThinUtil.stripQuotes(list.get(0), '"');
+        serviceName = ThinUtil.stripQuotes(list.get(1), '"');
+      }
+      if (list.size()>2) {
+        throw new KettleSQLException("Too many parts detected in table name specification ["+serviceClause+"]");
+      }
     }
+
     if (parts.size()==2) {
       serviceAlias = ThinUtil.stripQuotes(parts.get(1), '"');
     }
@@ -303,6 +319,13 @@ public class SQL {
    */
   public void setHavingCondition(SQLCondition havingCondition) {
     this.havingCondition = havingCondition;
+  }
+
+  /**
+   * @return the namespace
+   */
+  public String getNamespace() {
+    return namespace;
   }
   
  
