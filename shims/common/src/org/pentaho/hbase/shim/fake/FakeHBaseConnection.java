@@ -24,7 +24,7 @@ import org.pentaho.hbase.shim.spi.HBaseConnection;
 
 public class FakeHBaseConnection extends HBaseConnection {
 
-  protected class BytesComparator implements Comparator<byte[]> {
+  public static class BytesComparator implements Comparator<byte[]> {
     /**
      * Lexographically compare two arrays.
      * 
