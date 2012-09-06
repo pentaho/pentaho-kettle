@@ -1350,7 +1350,7 @@ public class ValueMeta implements ValueMetaInterface
             case TYPE_SERIALIZABLE:
                 switch(storageType)
                 {
-                case STORAGE_TYPE_NORMAL:         string = object.toString();  break; // just go for the default toString()
+                case STORAGE_TYPE_NORMAL:         string = object==null ? null : object.toString(); break; // just go for the default toString()
                 case STORAGE_TYPE_BINARY_STRING:  string = convertBinaryStringToString((byte[])object); break;
                 case STORAGE_TYPE_INDEXED:        string = object==null ? null : index[((Integer)object).intValue()].toString();  break; // just go for the default toString()
                 default: throw new KettleValueException(toString()+" : Unknown storage type "+storageType+" specified.");
