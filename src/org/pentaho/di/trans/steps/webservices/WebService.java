@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.webservices;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
@@ -62,6 +63,7 @@ import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.ByteArrayRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
+import org.pentaho.di.cluster.SlaveConnectionManager;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -90,7 +92,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import com.ctc.wstx.exc.WstxParsingException;
-import java.io.InputStreamReader;
 
 public class WebService extends BaseStep implements StepInterface
 {
@@ -105,7 +106,7 @@ public class WebService extends BaseStep implements StepInterface
 
     private int nbRowProcess;
 
-    private long requestTime;
+    protected long requestTime;
 
     private SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
 
@@ -380,7 +381,7 @@ public class WebService extends BaseStep implements StepInterface
         }
         String vURLService = wsdl.getServiceEndpoint();
         
-        HttpClient vHttpClient = new HttpClient();
+        HttpClient vHttpClient = SlaveConnectionManager.getInstance().createHttpClient();
         PostMethod vHttpMethod = new PostMethod(vURLService);
         HostConfiguration vHostConfiguration = new HostConfiguration();
 

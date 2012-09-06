@@ -31,6 +31,7 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.auth.AuthenticationException;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.pentaho.di.cluster.SlaveConnectionManager;
 
 /**
  * HTTP
@@ -78,7 +79,7 @@ public class HTTPProtocol {
     public String get(String urlAsString, String username, String password) 
         throws MalformedURLException, IOException, AuthenticationException {
         
-        HttpClient httpClient = new HttpClient();
+        HttpClient httpClient = SlaveConnectionManager.getInstance().createHttpClient();
         GetMethod getMethod = new GetMethod(urlAsString);        
         httpClient.getParams().setAuthenticationPreemptive(true);
         Credentials defaultcreds = new UsernamePasswordCredentials(username, password);

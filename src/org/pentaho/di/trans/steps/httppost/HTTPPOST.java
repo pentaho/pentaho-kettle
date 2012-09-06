@@ -36,6 +36,7 @@ import org.apache.commons.httpclient.UsernamePasswordCredentials;
 import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.InputStreamRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
+import org.pentaho.di.cluster.SlaveConnectionManager;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -89,7 +90,7 @@ public class HTTPPOST extends BaseStep implements StepInterface
       		
             // Prepare HTTP POST
             // 
-            HttpClient HTTPPOSTclient = new HttpClient();
+            HttpClient HTTPPOSTclient = SlaveConnectionManager.getInstance().createHttpClient();
             PostMethod post = new PostMethod(data.realUrl);
             //post.setFollowRedirects(false); 
             
