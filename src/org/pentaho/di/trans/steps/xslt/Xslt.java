@@ -283,6 +283,8 @@ public class Xslt extends BaseStep implements StepInterface
 		data=(XsltData)sdi;		
 		if (super.init(smi, sdi))
 		{
+			// Specify weither or not we have to deal with XSL filename
+			data.xslIsAfile= (meta.useXSLField() && meta.isXSLFieldIsAFile()) || (!meta.useXSLField());
 		    // Add init code here.
 		    return true;
 		}
