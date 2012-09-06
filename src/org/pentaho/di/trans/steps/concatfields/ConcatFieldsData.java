@@ -37,6 +37,10 @@ public class ConcatFieldsData extends TextFileOutputData implements StepDataInte
 	public int posTargetField;
 	public int remainingFieldsInputOutputMapping[];
     public RowMetaInterface inputRowMetaModified; // the field precisions and lengths are altered! see TextFileOutputMeta.getFields().
+	public String stringSeparator;
+	public String stringEnclosure;
+	public String[] stringNullValue;    
+	public int targetFieldLengthFastDataDump; //for fast data dump (StringBuilder size)
 	
 	public ConcatFieldsData()
 	{

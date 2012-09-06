@@ -71,7 +71,8 @@ public class ConcatFieldsOutputStream extends OutputStream
 	}
 
 	public void flush() throws IOException {
-		streamdata=null;		
+		// do nothing here since TextFileOutput calls this flush every 4K
+	
 	}
 
 	public void close() throws IOException {

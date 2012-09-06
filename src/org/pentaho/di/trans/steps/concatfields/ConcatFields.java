@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.concatfields;
 
 import java.io.UnsupportedEncodingException;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
@@ -96,6 +97,17 @@ public class ConcatFields extends TextFileOutput implements StepInterface
 					throw new KettleStepException("Field [" + meta.getOutputFields()[i].getName() + "] couldn't be found in the input stream!");
 				}
 			}
+			
+			// prepare for fast data dump (StringBuilder size)
+			data.targetFieldLengthFastDataDump=meta.getTargetFieldLength();
+			if (data.targetFieldLengthFastDataDump<=0) { // try it as a guess: 50 * size
+				if(meta.getOutputFields().length==0) {
+					data.targetFieldLengthFastDataDump=50*getInputRowMeta().size();
+				} else {
+					data.targetFieldLengthFastDataDump=50*meta.getOutputFields().length;
+				}
+			}
+			
 			// prepare for re-map when removeSelectedFields
 			if(meta.isRemoveSelectedFields()) {
 				data.remainingFieldsInputOutputMapping = new int[data.outputRowMeta.size()-1]; //-1: don't need the new target field
@@ -109,7 +121,7 @@ public class ConcatFields extends TextFileOutput implements StepInterface
 			}
 		}
 
-		if ((r == null && data.outputRowMeta != null && meta.isFooterEnabled()) || (r != null && getLinesOutput() > 0 && meta.getSplitEvery() > 0 && ((getLinesOutput() + 1) % meta.getSplitEvery()) == 0)) {
+		if ((r == null && data.outputRowMeta != null && meta.isFooterEnabled()) || (r != null && getLinesWritten() > 0 && meta.getSplitEvery() > 0 && ((getLinesWritten() + 1) % meta.getSplitEvery()) == 0)) {
 			if (data.outputRowMeta != null) {
 				if (meta.isFooterEnabled()) {
 					writeHeader();
@@ -138,15 +150,18 @@ public class ConcatFields extends TextFileOutput implements StepInterface
 			}
 
 			setOutputDone();
+			setLinesOutput(0); // we have to tweak it, no output here
 			return false;
 		}
 
-		// instead of writing to file, writes it to a stream
-		writeRowToFile(data.inputRowMetaModified, r);
-		putRowFromStream(r);
-
-		if (checkFeedback(getLinesOutput()))
-			logBasic("linenr " + getLinesOutput());
+		if(!meta.isFastDump()) {
+			// instead of writing to file, writes it to a stream
+			writeRowToFile(data.inputRowMetaModified, r);
+			setLinesOutput(0); // we have to tweak it, no output here
+			putRowFromStream(r);
+		} else { // fast data dump
+			putRowFastDataDump(r);
+		}
 
 		return result;
 	}
@@ -157,20 +172,7 @@ public class ConcatFields extends TextFileOutput implements StepInterface
 		byte[] targetBinary=((ConcatFieldsOutputStream)data.writer).read();
 		if(r==null && targetBinary==null) return;  // special condition of header/footer/split
 
-		Object[] outputRowData = null;
-		if(!meta.isRemoveSelectedFields()) {
-			// reserve room for the target field
-			outputRowData = RowDataUtil.resizeArray(r, data.outputRowMeta.size());
-		} else {
-			// reserve room for the target field and re-map the fields
-			outputRowData = new Object[data.outputRowMeta.size()+RowDataUtil.OVER_ALLOCATE_SIZE];
-			if (r!=null) {
-				//re-map the fields
-				for (int i=0; i < data.remainingFieldsInputOutputMapping.length; i++) { // BTW: the new target field is not here
-					outputRowData[i]=r[data.remainingFieldsInputOutputMapping[i]];
-				}
-			}
-		}
+		Object[] outputRowData = prepareOutputRow(r);
 
 		// add target field
 		if(outputRowData==null) { // special condition of header/footer/split
@@ -193,6 +195,63 @@ public class ConcatFields extends TextFileOutput implements StepInterface
 		putRow(data.outputRowMeta, outputRowData);		
 	}
 
+	// concat as a fast data dump (no formatting) and call putRow()
+	// this method is only called from a normal line, never from header/footer/split stuff  
+	private void putRowFastDataDump(Object[] r) throws KettleStepException{
+
+		Object[] outputRowData = prepareOutputRow(r);
+
+		StringBuilder targetString=new StringBuilder(data.targetFieldLengthFastDataDump); // use a good capacity
+
+		if (meta.getOutputFields()==null || meta.getOutputFields().length==0) {
+			// all values in stream
+			for (int i=0; i<getInputRowMeta().size(); i++)
+			{
+				if (i>0) targetString.append(data.stringSeparator);
+				concatFieldFastDataDump(targetString, r[i], ""); // "": no specific null value defined
+			}
+		} else {
+			for (int i=0; i<data.fieldnrs.length; i++) {
+				if (i>0) targetString.append(data.stringSeparator);
+				concatFieldFastDataDump(targetString, r[data.fieldnrs[i]], data.stringNullValue[i]);
+			}
+		}
+
+		outputRowData[data.posTargetField]=new String(targetString);
+		
+		putRow(data.outputRowMeta, outputRowData);		
+	}
+    	
+    private void concatFieldFastDataDump(StringBuilder targetField, Object valueData, String nullString) {
+
+    	if(meta.isEnclosureForced()) targetField.append(data.stringEnclosure);
+    	if (valueData!=null) {
+    		targetField.append(valueData);
+    	} else {
+    		targetField.append(nullString);
+    	}
+    	if(meta.isEnclosureForced()) targetField.append(data.stringEnclosure);
+    }
+
+	// reserve room for the target field and eventually re-map the fields
+	private Object[] prepareOutputRow(Object[] r) {
+		Object[] outputRowData = null;
+		if(!meta.isRemoveSelectedFields()) {
+			// reserve room for the target field
+			outputRowData = RowDataUtil.resizeArray(r, data.outputRowMeta.size());
+		} else {
+			// reserve room for the target field and re-map the fields
+			outputRowData = new Object[data.outputRowMeta.size()+RowDataUtil.OVER_ALLOCATE_SIZE];
+			if (r!=null) {
+				//re-map the fields
+				for (int i=0; i < data.remainingFieldsInputOutputMapping.length; i++) { // BTW: the new target field is not here
+					outputRowData[i]=r[data.remainingFieldsInputOutputMapping[i]];
+				}
+			}
+		}
+		return outputRowData;
+	}
+	
 	@Override
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
 	{
@@ -203,9 +262,32 @@ public class ConcatFields extends TextFileOutput implements StepInterface
 		meta.setDoNotOpenNewFileInit(true); // do not open a file in init
 		
 		data.writer = new ConcatFieldsOutputStream();
+		
+		initStringDataFields();
 
 		return super.init(smi, sdi);
 	}
+	
+	// init separator,enclosure, null values for fast data dump
+	private void initStringDataFields()
+	{
+		data.stringSeparator = "";
+		data.stringEnclosure = "";
+		
+		if (!Const.isEmpty(meta.getSeparator())) data.stringSeparator= environmentSubstitute(meta.getSeparator());
+		if (!Const.isEmpty(meta.getEnclosure())) data.stringEnclosure = environmentSubstitute(meta.getEnclosure());
+
+		data.stringNullValue = new String[meta.getOutputFields().length];
+		for (int i=0;i<meta.getOutputFields().length;i++)
+		{
+			data.stringNullValue[i] = "";
+			String nullString = meta.getOutputFields()[i].getNullString();
+			if (!Const.isEmpty(nullString)) 
+			{
+				data.stringNullValue[i] = nullString;
+			}
+		}
+	}	
 
 	@Override
 	public void dispose(StepMetaInterface smi, StepDataInterface sdi) {

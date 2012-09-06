@@ -643,10 +643,11 @@ public class ConcatFieldsDialog extends BaseStepDialog implements StepDialogInte
 			public void widgetSelected(SelectionEvent e) 
 			{
 				input.setChanged();
+				setFlags();
 			}
 		}
 				);
-
+		
 		// Split Every line
 		wlSplitEvery=new Label(wContentComp, SWT.RIGHT);
 		wlSplitEvery.setText(BaseMessages.getString(PKG, "ConcatFieldsDialog.SplitEvery.Label"));
@@ -788,6 +789,21 @@ public class ConcatFieldsDialog extends BaseStepDialog implements StepDialogInte
 		Const.sortStrings(fieldNames);
 		colinf[0].setComboValues(fieldNames);
 	}
+	
+	protected void setFlags() {
+		// disable a couple of options when running in Fast Data Dump mode
+		//
+		boolean isNotFastDataDump=!wFastDump.getSelection();
+
+		wDisableEnclosureFix.setEnabled(isNotFastDataDump);
+		wlDisableEnclosureFix.setEnabled(isNotFastDataDump);
+
+		wEncoding.setEnabled(isNotFastDataDump);
+		wlEncoding.setEnabled(isNotFastDataDump);
+
+		wPad.setEnabled(isNotFastDataDump);
+		wlPad.setEnabled(isNotFastDataDump);
+	}
 
 	private void setEncodings()
 	{
@@ -858,6 +874,7 @@ public class ConcatFieldsDialog extends BaseStepDialog implements StepDialogInte
 		}
 
 		wFields.optWidth(true);
+		setFlags();
 		wStepname.selectAll();
 	}
 
