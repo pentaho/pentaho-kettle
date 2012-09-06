@@ -62,6 +62,7 @@ import org.apache.commons.httpclient.auth.AuthScope;
 import org.apache.commons.httpclient.methods.ByteArrayRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
+import org.pentaho.di.cluster.SlaveConnectionManager;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
@@ -380,7 +381,7 @@ public class WebService extends BaseStep implements StepInterface
         }
         String vURLService = wsdl.getServiceEndpoint();
         
-        HttpClient vHttpClient = new HttpClient();
+        HttpClient vHttpClient = SlaveConnectionManager.getInstance().createHttpClient();
         PostMethod vHttpMethod = new PostMethod(vURLService);
         HostConfiguration vHostConfiguration = new HostConfiguration();
 
