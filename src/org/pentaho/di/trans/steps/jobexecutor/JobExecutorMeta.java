@@ -524,7 +524,7 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
     return targetSteps.toArray(new String[targetSteps.size()]);
   }
 
-  public synchronized static final JobMeta loadMappingMeta(JobExecutorMeta executorMeta, Repository rep, VariableSpace space) throws KettleException {
+  public synchronized static final JobMeta loadJobMeta(JobExecutorMeta executorMeta, Repository rep, VariableSpace space) throws KettleException {
     JobMeta mappingJobMeta = null;
     
     switch(executorMeta.getSpecificationMethod()) {
@@ -569,7 +569,11 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
       break;
     }
     
+ // Pass some important information to the mapping transformation metadata:
+    //
     mappingJobMeta.copyVariablesFrom(space);
+    mappingJobMeta.setRepository(rep); 
+    mappingJobMeta.setFilename(mappingJobMeta.getFilename());
     
     return mappingJobMeta;
   }
@@ -632,7 +636,7 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
       //
       // First load the executor job metadata...
       //
-      JobMeta executorJobMeta = loadMappingMeta(this, repository, space);
+      JobMeta executorJobMeta = loadJobMeta(this, repository, space);
 
       // Also go down into the mapping transformation and export the files
       // there. (mapping recursively down)
@@ -1278,7 +1282,7 @@ public class JobExecutorMeta extends BaseStepMeta implements StepMetaInterface, 
    * @throws KettleException
    */
   public Object loadReferencedObject(int index, Repository rep, VariableSpace space) throws KettleException {
-    return loadMappingMeta(this, rep, space);
+    return loadJobMeta(this, rep, space);
   }
   
 }

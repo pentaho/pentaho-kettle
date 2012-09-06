@@ -320,6 +320,13 @@ public class SingleThreaderMeta extends BaseStepMeta implements StepMetaInterfac
       mappingTransMeta = rep.loadTransformation(mappingMeta.getTransObjectId(), null);
       break;
     }
+    
+    // Pass some important information to the mapping transformation metadata:
+    //
+    mappingTransMeta.copyVariablesFrom(space);
+    mappingTransMeta.setRepository(rep); 
+    mappingTransMeta.setFilename(mappingTransMeta.getFilename());
+    
     return mappingTransMeta;
   }
 

@@ -343,7 +343,9 @@ public class SqlTransExecutor {
     // Continue parsing of the SQL, map to fields, extract conditions, parameters, ...
     //
     sql.parse(serviceFields);
-    
+
+    parameterNames = new ArrayList<String>();
+
     if (!service.isDual()) {
       // Parameters: see which ones are defined in the SQL
       //
@@ -368,11 +370,10 @@ public class SqlTransExecutor {
       //
       serviceTrans = new Trans(serviceTransMeta);
       serviceTrans.prepareExecution(null);
-    }
-    
-    parameterNames = new ArrayList<String>();
-    for (String parameterName : serviceTransMeta.listParameters()) {
-      parameterNames.add(parameterName);
+
+      for (String parameterName : serviceTransMeta.listParameters()) {
+        parameterNames.add(parameterName);
+      }
     }
     
     // Generate a transformation

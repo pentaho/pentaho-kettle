@@ -635,7 +635,11 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface, HasR
       break;
     }
     
+    // Pass some important information to the mapping transformation metadata:
+    //
     mappingTransMeta.copyVariablesFrom(space);
+    mappingTransMeta.setRepository(rep); 
+    mappingTransMeta.setFilename(mappingTransMeta.getFilename());
     
     return mappingTransMeta;
   }

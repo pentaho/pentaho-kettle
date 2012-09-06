@@ -368,7 +368,7 @@ public class JobExecutor extends BaseStep implements StepInterface
         //
         meta.setRepository(getTransMeta().getRepository());
 
-        data.executorJobMeta = JobExecutorMeta.loadMappingMeta(meta, meta.getRepository(), this);
+        data.executorJobMeta = JobExecutorMeta.loadJobMeta(meta, meta.getRepository(), this);
         data.executorJobMeta.setArguments(getTransMeta().getArguments());
         
         // Do we have a job at all?
