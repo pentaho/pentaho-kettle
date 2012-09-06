@@ -84,7 +84,7 @@ public class SharedObjects
         public boolean equals(Object obj)
         {
             SharedEntry sharedEntry = (SharedEntry) obj;
-            return className.equals(sharedEntry.className) && objectName.equals(objectName);
+            return className.equals(sharedEntry.className) && objectName.equalsIgnoreCase(objectName);
         }
         
         public int hashCode()
@@ -280,4 +280,34 @@ public class SharedObjects
 	public void setFilename(String filename) {
 		this.filename = filename;
 	}
+	
+  /**
+   * Return the shared object with the given class and name
+   * @param clazz The class of the shared object
+   * @param objectName the name of the object
+   * @return The shared object or null if none was found.
+   */
+  public SharedObjectInterface getSharedObject(Class<SharedObjectInterface> clazz, String objectName) {
+    return getSharedObject(clazz.getName(), objectName);   
+  }
+  
+  /**
+   * Return the shared object with the given class name and object name
+   * @param clasName The class name of the shared object
+   * @param objectName the name of the object
+   * @return The shared object or null if none was found.
+   */
+  public SharedObjectInterface getSharedObject(String className, String objectName) {
+    SharedEntry entry = new SharedEntry(className, objectName);
+    return objectsMap.get(entry);   
+  }
+
+  /**
+   * Get the shared database with the specified name
+   * @param name The name of the shared database
+   * @return The database or null if nothing was found.
+   */
+  public DatabaseMeta getSharedDatabase(String name) {
+    return (DatabaseMeta)getSharedObject(DatabaseMeta.class.getName(), name);
+  }
 }
