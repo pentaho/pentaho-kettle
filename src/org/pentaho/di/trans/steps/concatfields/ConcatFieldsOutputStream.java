@@ -48,7 +48,7 @@ public class ConcatFieldsOutputStream extends OutputStream
 			byte[] tmp = new byte[streamdata.length + b.length];
 			System.arraycopy(streamdata, 0, tmp, 0, streamdata.length);
 			System.arraycopy(b, 0, tmp, streamdata.length, b.length);
-			// no copy tmp back to streamdata
+			// now copy tmp back to streamdata
 			streamdata=new byte[tmp.length];
 			System.arraycopy(tmp, 0, streamdata, 0, tmp.length);
 		}
@@ -65,9 +65,17 @@ public class ConcatFieldsOutputStream extends OutputStream
 	
 	@Override
 	public void write(int b) throws IOException {
-		// really does nothing, never called from TextFileOutput
-		// in case it gets used, throw an exeption:
-		throw new IOException("ConcatFieldsOutputStream.write(int b) is not implemented");
+		if (streamdata==null) {
+			streamdata=new byte[1];
+			streamdata[0]=(byte)b;
+		} else {
+			byte[] tmp = new byte[streamdata.length + 1];
+			System.arraycopy(streamdata, 0, tmp, 0, streamdata.length);
+			tmp[tmp.length-1]=(byte)b;
+			// now copy tmp back to streamdata
+			streamdata=new byte[tmp.length];
+			System.arraycopy(tmp, 0, streamdata, 0, tmp.length);
+		}
 	}
 
 	public void flush() throws IOException {
