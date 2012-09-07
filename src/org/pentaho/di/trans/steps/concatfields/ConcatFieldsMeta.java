@@ -25,6 +25,8 @@ package org.pentaho.di.trans.steps.concatfields;
 import java.util.List;
 import java.util.Map;
 
+import org.pentaho.di.core.CheckResult;
+import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -37,6 +39,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.Trans;
@@ -58,6 +61,8 @@ import org.w3c.dom.Node;
  */
 public class ConcatFieldsMeta extends TextFileOutputMeta  implements StepMetaInterface
 {
+	
+	private static Class<?> PKG = ConcatFieldsMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 	
 	// have a different namespace in repository in contrast to the TextFileOutput
 	private static final String ConcatFieldsNodeNameSpace = "ConcatFields"; 
@@ -136,6 +141,10 @@ public class ConcatFieldsMeta extends TextFileOutputMeta  implements StepMetaInt
 			}
 		}
 		
+		// Check Target Field Name
+		if (Const.isEmpty(targetFieldName)) {
+			throw new KettleStepException(BaseMessages.getString(PKG, "ConcatFieldsMeta.CheckResult.TargetFieldNameMissing"));
+		}
 		// add targetFieldName
         ValueMetaInterface vValue = new ValueMeta(targetFieldName, ValueMetaInterface.TYPE_STRING, targetFieldLength, 0);
         vValue.setOrigin(name);
@@ -183,6 +192,57 @@ public class ConcatFieldsMeta extends TextFileOutputMeta  implements StepMetaInt
 		rep.saveStepAttribute(id_transformation, id_step, ConcatFieldsNodeNameSpace+"targetFieldName", targetFieldName);
 		rep.saveStepAttribute(id_transformation, id_step, ConcatFieldsNodeNameSpace+"targetFieldLength", targetFieldLength);
 		rep.saveStepAttribute(id_transformation, id_step, ConcatFieldsNodeNameSpace+"removeSelectedFields", removeSelectedFields);
+	}
+	
+	@Override
+	public void check(List<CheckResultInterface> remarks, TransMeta transMeta, StepMeta stepinfo, RowMetaInterface prev, String input[], String output[], RowMetaInterface info)
+	{
+		CheckResult cr;
+
+		// Check Target Field Name
+		if (Const.isEmpty(targetFieldName)) {
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, BaseMessages.getString(PKG, "ConcatFieldsMeta.CheckResult.TargetFieldNameMissing"), stepinfo);
+			remarks.add(cr);
+		}
+
+		// Check Target Field Length when Fast Data Dump
+		if (targetFieldLength<=0 && isFastDump()) {
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_WARNING, BaseMessages.getString(PKG, "ConcatFieldsMeta.CheckResult.TargetFieldLengthMissingFastDataDump"), stepinfo);
+			remarks.add(cr);
+		}
+		
+		// Check output fields
+		if (prev!=null && prev.size()>0)
+		{
+			cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ConcatFieldsMeta.CheckResult.FieldsReceived", ""+prev.size()), stepinfo);
+			remarks.add(cr);
+			
+			String  error_message="";
+			boolean error_found=false;
+			
+			// Starting from selected fields in ...
+			for (int i=0;i<getOutputFields().length;i++)
+			{
+				int idx = prev.indexOfValue(getOutputFields()[i].getName());
+				if (idx<0)
+				{
+					error_message+="\t\t"+getOutputFields()[i].getName()+Const.CR;
+					error_found=true;
+				} 
+			}
+			if (error_found) 
+			{
+				error_message= BaseMessages.getString(PKG, "ConcatFieldsMeta.CheckResult.FieldsNotFound", error_message);
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_ERROR, error_message, stepinfo);
+				remarks.add(cr);
+			}
+			else
+			{
+				cr = new CheckResult(CheckResultInterface.TYPE_RESULT_OK, BaseMessages.getString(PKG, "ConcatFieldsMeta.CheckResult.AllFieldsFound"), stepinfo);
+				remarks.add(cr);
+			}
+		}
+		
 	}
 
 	@Override
