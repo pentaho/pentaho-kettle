@@ -1686,6 +1686,7 @@ public class TransDialog extends Dialog
         wlShowFeedback.setLayoutData(fdlShowFeedback);
         wShowFeedback=new Button(wMiscComp, SWT.CHECK);
         props.setLook(wShowFeedback);
+        wShowFeedback.addSelectionListener(lsModSel);
         FormData fdShowFeedback = new FormData();
         fdShowFeedback.left = new FormAttachment(middle, 0);
         fdShowFeedback.top  = new FormAttachment(wSizeRowset, margin);
@@ -1703,6 +1704,7 @@ public class TransDialog extends Dialog
         wlFeedbackSize.setLayoutData(fdlFeedbackSize);
         wFeedbackSize=new Text(wMiscComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wFeedbackSize);
+        wFeedbackSize.addModifyListener(lsMod);
         FormData fdFeedbackSize = new FormData();
         fdFeedbackSize.left = new FormAttachment(middle, 0);
         fdFeedbackSize.right= new FormAttachment(100, -margin);
