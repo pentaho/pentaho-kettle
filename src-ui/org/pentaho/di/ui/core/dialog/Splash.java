@@ -210,10 +210,12 @@ public class Splash {
   }
 
   public void hide() {
-    splash.setVisible(false);
+	  if (!splash.isDisposed())
+		  splash.setVisible(false);
   }
 
   public void show() {
-    splash.setVisible(true);
+	  if (!splash.isDisposed())
+		  splash.setVisible(true);
   }
 }
