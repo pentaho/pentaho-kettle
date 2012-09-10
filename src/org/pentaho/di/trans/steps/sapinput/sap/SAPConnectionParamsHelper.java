@@ -28,12 +28,12 @@ public class SAPConnectionParamsHelper {
 	
 	public static SAPConnectionParams getFromDatabaseMeta(DatabaseMeta sapConnection) {
 		String name = sapConnection.getName();
-		String host = sapConnection.getHostname();
-		String sysnr = sapConnection.getAttributes().getProperty(
-				"SAPSystemNumber");
-		String client = sapConnection.getAttributes().getProperty("SAPClient");
-		String user = sapConnection.getUsername();
-		String password = sapConnection.getPassword();
+		String host = sapConnection.environmentSubstitute(sapConnection.getHostname());
+		String sysnr = sapConnection.environmentSubstitute(sapConnection.getAttributes().getProperty(
+				"SAPSystemNumber"));
+		String client = sapConnection.environmentSubstitute(sapConnection.getAttributes().getProperty("SAPClient"));
+		String user = sapConnection.environmentSubstitute(sapConnection.getUsername());
+		String password = sapConnection.environmentSubstitute(sapConnection.getPassword());
 		String lang = "";
 		return new SAPConnectionParams(name, host, sysnr, client, user,
 				password, lang);
