@@ -7,6 +7,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.junit.Test;
+import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.hbase.shim.api.HBaseValueMeta;
 import org.pentaho.hbase.shim.api.Mapping;
 import org.pentaho.hbase.shim.common.CommonHBaseBytesUtil;
@@ -186,6 +188,156 @@ public class HBaseValueMetaTest {
         Mapping.KeyType.UNSIGNED_DATE, bu);
     assertTrue(result != null);
     assertEquals(bu.toLong(result), time);
+  }
+
+  @Test
+  public void testEncodeKeyValueUnsignedInteger() throws Exception {
+    CommonHBaseBytesUtil bu = new CommonHBaseBytesUtil();
+    Integer testVal = new Integer(42);
+
+    byte[] result = HBaseValueMeta.encodeKeyValue(testVal,
+        Mapping.KeyType.UNSIGNED_INTEGER, bu);
+    assertTrue(result != null);
+    assertEquals(bu.toInt(result), 42);
+  }
+
+  @Test
+  public void testEncodeKeyValueSignedInteger() throws Exception {
+    CommonHBaseBytesUtil bu = new CommonHBaseBytesUtil();
+    Integer testVal = new Integer(-42);
+
+    byte[] result = HBaseValueMeta.encodeKeyValue(testVal,
+        Mapping.KeyType.INTEGER, bu);
+    assertTrue(result != null);
+    int resultInt = bu.toInt(result);
+    resultInt ^= (1 << 31);
+    assertEquals(resultInt, -42);
+  }
+
+  @Test
+  public void testEncodeKeyValueSignedLong() throws Exception {
+    CommonHBaseBytesUtil bu = new CommonHBaseBytesUtil();
+    Long testVal = new Long(-42L);
+
+    byte[] result = HBaseValueMeta.encodeKeyValue(testVal,
+        Mapping.KeyType.LONG, bu);
+    assertTrue(result != null);
+
+    long longResult = bu.toLong(result);
+    longResult ^= (1L << 63);
+
+    assertEquals(longResult, -42L);
+  }
+
+  @Test
+  public void testEncodeKeyValueSignedDate() throws Exception {
+    CommonHBaseBytesUtil bu = new CommonHBaseBytesUtil();
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    Date aDate = sdf.parse("1969-08-28");
+    long negTime = aDate.getTime();
+
+    byte[] result = HBaseValueMeta.encodeKeyValue(aDate, Mapping.KeyType.DATE,
+        bu);
+
+    assertTrue(result != null);
+    long timeResult = bu.toLong(result);
+    timeResult ^= (1L << 63);
+
+    assertEquals(timeResult, negTime);
+  }
+
+  @Test
+  public void testEncodeColumnValueString() throws Exception {
+    String value = "My test value";
+    ValueMetaInterface valMeta = new ValueMeta("TestString",
+        ValueMetaInterface.TYPE_STRING);
+
+    HBaseValueMeta mappingMeta = new HBaseValueMeta("famliy1"
+        + HBaseValueMeta.SEPARATOR + "testcol" + HBaseValueMeta.SEPARATOR
+        + "anAlias", ValueMetaInterface.TYPE_STRING, -1, -1);
+
+    CommonHBaseBytesUtil bu = new CommonHBaseBytesUtil();
+    byte[] encoded = HBaseValueMeta.encodeColumnValue(value, valMeta,
+        mappingMeta, bu);
+
+    assertTrue(encoded != null);
+    assertEquals(bu.toString(encoded), value);
+  }
+
+  @Test
+  public void testEncodeColumnValueLong() throws Exception {
+    Long value = new Long(42);
+    ValueMetaInterface valMeta = new ValueMeta("TestLong",
+        ValueMetaInterface.TYPE_INTEGER);
+
+    HBaseValueMeta mappingMeta = new HBaseValueMeta("famliy1"
+        + HBaseValueMeta.SEPARATOR + "testcol" + HBaseValueMeta.SEPARATOR
+        + "anAlias", ValueMetaInterface.TYPE_INTEGER, -1, -1);
+    mappingMeta.setIsLongOrDouble(true);
+    CommonHBaseBytesUtil bu = new CommonHBaseBytesUtil();
+    byte[] encoded = HBaseValueMeta.encodeColumnValue(value, valMeta,
+        mappingMeta, bu);
+
+    assertTrue(encoded != null);
+    assertEquals(encoded.length, bu.getSizeOfLong());
+    assertEquals(bu.toLong(encoded), value.longValue());
+  }
+
+  @Test
+  public void testEncodeColumnValueInteger() throws Exception {
+    Long value = new Long(42);
+    ValueMetaInterface valMeta = new ValueMeta("TestLong",
+        ValueMetaInterface.TYPE_INTEGER);
+
+    HBaseValueMeta mappingMeta = new HBaseValueMeta("famliy1"
+        + HBaseValueMeta.SEPARATOR + "testcol" + HBaseValueMeta.SEPARATOR
+        + "anAlias", ValueMetaInterface.TYPE_INTEGER, -1, -1);
+    mappingMeta.setIsLongOrDouble(false);
+    CommonHBaseBytesUtil bu = new CommonHBaseBytesUtil();
+    byte[] encoded = HBaseValueMeta.encodeColumnValue(value, valMeta,
+        mappingMeta, bu);
+
+    assertTrue(encoded != null);
+    assertEquals(encoded.length, bu.getSizeOfInt());
+    assertEquals(bu.toInt(encoded), value.intValue());
+  }
+
+  @Test
+  public void testEncodeColumnValueDouble() throws Exception {
+    Double value = new Double(42.0);
+    ValueMetaInterface valMeta = new ValueMeta("TestLong",
+        ValueMetaInterface.TYPE_NUMBER);
+
+    HBaseValueMeta mappingMeta = new HBaseValueMeta("famliy1"
+        + HBaseValueMeta.SEPARATOR + "testcol" + HBaseValueMeta.SEPARATOR
+        + "anAlias", ValueMetaInterface.TYPE_NUMBER, -1, -1);
+    mappingMeta.setIsLongOrDouble(true);
+    CommonHBaseBytesUtil bu = new CommonHBaseBytesUtil();
+    byte[] encoded = HBaseValueMeta.encodeColumnValue(value, valMeta,
+        mappingMeta, bu);
+
+    assertTrue(encoded != null);
+    assertEquals(encoded.length, bu.getSizeOfDouble());
+    assertEquals(bu.toDouble(encoded), value.doubleValue(), 0.0001);
+  }
+
+  @Test
+  public void testEncodeColumnValueFloat() throws Exception {
+    Double value = new Double(42.0);
+    ValueMetaInterface valMeta = new ValueMeta("TestLong",
+        ValueMetaInterface.TYPE_NUMBER);
+
+    HBaseValueMeta mappingMeta = new HBaseValueMeta("famliy1"
+        + HBaseValueMeta.SEPARATOR + "testcol" + HBaseValueMeta.SEPARATOR
+        + "anAlias", ValueMetaInterface.TYPE_NUMBER, -1, -1);
+    mappingMeta.setIsLongOrDouble(false);
+    CommonHBaseBytesUtil bu = new CommonHBaseBytesUtil();
+    byte[] encoded = HBaseValueMeta.encodeColumnValue(value, valMeta,
+        mappingMeta, bu);
+
+    assertTrue(encoded != null);
+    assertEquals(encoded.length, bu.getSizeOfFloat());
+    assertEquals(bu.toFloat(encoded), value.floatValue(), 0.0001f);
   }
 
   public static void main(String[] args) {
