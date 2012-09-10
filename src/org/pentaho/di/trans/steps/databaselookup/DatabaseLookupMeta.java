@@ -580,7 +580,7 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
             failingOnMultipleResults =      rep.getStepAttributeBoolean(id_step, "fail_on_multiple");  //$NON-NLS-1$
             eatingRowOnLookupFailure =      rep.getStepAttributeBoolean(id_step, "eat_row_on_failure");  //$NON-NLS-1$
             
-			int nrkeys   = rep.countNrStepAttributes(id_step, "lookup_key_name"); //$NON-NLS-1$
+			int nrkeys   = rep.countNrStepAttributes(id_step, "lookup_key_field"); //$NON-NLS-1$
 			int nrvalues = rep.countNrStepAttributes(id_step, "return_value_name"); //$NON-NLS-1$
 			
 			allocate(nrkeys, nrvalues);
