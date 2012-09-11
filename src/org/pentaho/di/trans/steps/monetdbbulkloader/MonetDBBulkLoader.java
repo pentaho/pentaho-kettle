@@ -364,21 +364,25 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 		    			line.write(data.quote);
 		    			// we have to convert to strings to escape '\'s
 	    				String str = valueMeta.getString(valueData);
-	    				// escape any backslashes
-		    			str = str.replace("\\", "\\\\");
-		    			if(meta.isAutoStringWidths()) {
-		    				int len = valueMeta.getLength();
-		    				if( len < 1 ) {
-		    					len = MonetDBDatabaseMeta.DEFAULT_VARCHAR_LENGTH;
-		    				}
-		    				if( str.length() > len ) {
-		    					// TODO log this event
-		    					str = str.substring(0, len);
-		    				}
-		    				line.write(str.getBytes(meta.getEncoding()));
-		    			} else {
-		    				line.write(str.getBytes(meta.getEncoding()));
-		    			}
+	    				if( str == null ) {
+	    					line.write("null".getBytes());
+	    				} else {
+		    				// escape any backslashes
+			    			str = str.replace("\\", "\\\\");
+			    			if(meta.isAutoStringWidths()) {
+			    				int len = valueMeta.getLength();
+			    				if( len < 1 ) {
+			    					len = MonetDBDatabaseMeta.DEFAULT_VARCHAR_LENGTH;
+			    				}
+			    				if( str.length() > len ) {
+			    					// TODO log this event
+			    					str = str.substring(0, len);
+			    				}
+			    				line.write(str.getBytes(meta.getEncoding()));
+			    			} else {
+			    				line.write(str.getBytes(meta.getEncoding()));
+			    			}
+	    				}
 		    			line.write(data.quote);
 		    			break;
 		    		case ValueMetaInterface.TYPE_INTEGER:
