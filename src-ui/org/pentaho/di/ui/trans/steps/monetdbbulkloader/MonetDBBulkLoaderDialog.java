@@ -23,6 +23,7 @@
 package org.pentaho.di.ui.trans.steps.monetdbbulkloader;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +31,6 @@ import java.util.Set;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
@@ -45,6 +45,9 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
+import org.pentaho.di.ui.core.widget.ComboVar;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
@@ -58,6 +61,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.SourceToTargetMapping;
 import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -69,6 +73,7 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.monetdbbulkloader.MonetDBBulkLoaderMeta;
+import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.database.dialog.DatabaseExplorerDialog;
 import org.pentaho.di.ui.core.database.dialog.SQLEditor;
 import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
@@ -89,8 +94,8 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 {
 	private static Class<?> PKG = MonetDBBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	private CCombo				wConnection;
-
+	private ComboVar   		    wConnection;
+	
     private Label               wlSchema;
     private TextVar             wSchema;
     private FormData            fdlSchema, fdSchema;
@@ -99,7 +104,6 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 	private Button				wbTable;
 	private TextVar				wTable;
 	private FormData			fdlTable, fdbTable, fdTable;
-
 	private Label				wlMClientPath;
 	private Button				wbMClientPath;
 	private TextVar				wMClientPath;
@@ -226,7 +230,7 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 		wStepname.setLayoutData(fdStepname);
 
 		// Connection line
-		wConnection = addConnectionLine(shell, wStepname, middle, margin);
+		wConnection = addConnectionLine(shell, wStepname, middle, margin, null, transMeta);
 		if (input.getDatabaseMeta()==null && transMeta.nrDatabases()==1) wConnection.select(0);
 		wConnection.addModifyListener(lsMod);
 
@@ -740,8 +744,11 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
         String[] fieldNames= (String[]) entries.toArray(new String[entries.size()]);
         Const.sortStrings(fieldNames);
         // return fields
-        ciReturn[1].setComboValues(fieldNames);
+        if( ciReturn != null ) {
+        	ciReturn[1].setComboValues(fieldNames);
+        }
     }
+	
 	protected void getInfo(MonetDBBulkLoaderMeta inf)
 	{
 		int nrfields = wReturn.nrNonEmpty();
@@ -768,6 +775,7 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 		inf.setTruncate(wTruncate.getSelection());
 		inf.setAutoSchema(false);
 		inf.setAutoStringWidths(false);
+		inf.setDbConnectionName(wConnection.getText());
 //		inf.setAutoSchema(wAutoSchema.getSelection());
 //		inf.setAutoStringWidths(wAutoStringWidths.getSelection());
 
@@ -781,14 +789,14 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 		// Get the information for the dialog into the input structure.
 		getInfo(input);
 
-		if (input.getDatabaseMeta() == null)
+/*		if (input.getDatabaseMeta() == null)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
 			mb.setMessage(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
 			mb.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
 			mb.open();
 		}
-
+*/
 		dispose();
 	}
 
@@ -796,7 +804,7 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 	{
 		DatabaseMeta inf = null;
 		// New class: SelectTableDialog
-		int connr = wConnection.getSelectionIndex();
+		int connr = wConnection.getCComboWidget().getSelectionIndex();
 		if (connr >= 0)
 			inf = transMeta.getDatabase(connr);
 
@@ -968,7 +976,7 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 
 			String name = stepname; // new name might not yet be linked to other steps!
 
-			SQLStatement sql = info.getTableDdl(transMeta, name, false, null);
+			SQLStatement sql = info.getTableDdl(transMeta, name, false, null, false);
 			if (!sql.hasError())
 			{
 				if (sql.hasSQL())
@@ -999,4 +1007,127 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 					BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.CouldNotBuildSQL.DialogMessage"), ke); //$NON-NLS-1$
 		}
 	}
+	
+    public ComboVar addConnectionLine(Composite parent, Control previous, int middle, int margin, 
+    	      final Class<? extends DatabaseInterface> databaseType, final TransMeta transMeta) {
+	    final ComboVar wConnection;
+	    final FormData fdlConnection, fdbConnection, fdeConnection, fdConnection;
+
+	    wConnection = new ComboVar(transMeta, parent, SWT.BORDER );
+	    props.setLook(wConnection);
+
+	    addDatabases(wConnection, null);
+
+	    Label wlConnection = new Label(parent, SWT.RIGHT);
+	    wlConnection.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Connection.Label")); //$NON-NLS-1$
+	    props.setLook(wlConnection);
+	    fdlConnection = new FormData();
+	    fdlConnection.left = new FormAttachment(0, 0);
+	    fdlConnection.right = new FormAttachment(middle, -margin);
+	    if (previous != null)
+	      fdlConnection.top = new FormAttachment(previous, margin);
+	    else
+	      fdlConnection.top = new FormAttachment(0, 0);
+	    wlConnection.setLayoutData(fdlConnection);
+
+	    // 
+	    // NEW button
+	    //
+	    Button wbnConnection = new Button(parent, SWT.RIGHT);
+	    wbnConnection.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.NewConnectionButton.Label")); //$NON-NLS-1$
+	    wbnConnection.addSelectionListener(new SelectionAdapter() {
+	      public void widgetSelected(SelectionEvent e) {
+	        DatabaseMeta databaseMeta = new DatabaseMeta();
+	        databaseMeta.shareVariablesWith(transMeta);
+	        DatabaseDialog cid = getDatabaseDialog(shell);
+	        cid.setDatabaseMeta(databaseMeta);
+	        cid.setModalDialog(true);
+	        if (cid.open() != null) {
+	          transMeta.addDatabase(databaseMeta);
+	          wConnection.removeAll();
+	          addDatabases(wConnection, databaseType);
+	          selectDatabase(wConnection, databaseMeta.getName());
+	        }
+	      }
+	    });
+	    fdbConnection = new FormData();
+	    fdbConnection.right = new FormAttachment(100, 0);
+	    if (previous != null)
+	      fdbConnection.top = new FormAttachment(previous, margin);
+	    else
+	      fdbConnection.top = new FormAttachment(0, 0);
+	    wbnConnection.setLayoutData(fdbConnection);
+
+	    //
+	    // Edit button
+	    //
+	    Button wbeConnection = new Button(parent, SWT.RIGHT);
+	    wbeConnection.setText(BaseMessages.getString(PKG, "BaseStepDialog.EditConnectionButton.Label")); //$NON-NLS-1$
+	    wbeConnection.addSelectionListener(new SelectionAdapter() {
+	      public void widgetSelected(SelectionEvent e) {
+	        DatabaseMeta databaseMeta = transMeta.findDatabase(wConnection.getText());
+	        if (databaseMeta != null) {
+	          databaseMeta.shareVariablesWith(transMeta);
+	          
+	          DatabaseDialog cid = getDatabaseDialog(shell);
+	          cid.setDatabaseMeta(databaseMeta);
+	          cid.setModalDialog(true);
+	          if (cid.open() != null) {
+	            wConnection.removeAll();
+	            addDatabases(wConnection, null);
+	            selectDatabase(wConnection, databaseMeta.getName());
+	          }
+	        }
+	      }
+	    });
+	    fdeConnection = new FormData();
+	    fdeConnection.right = new FormAttachment(wbnConnection, -margin);
+	    if (previous != null)
+	      fdeConnection.top = new FormAttachment(previous, margin);
+	    else
+	      fdeConnection.top = new FormAttachment(0, 0);
+	    wbeConnection.setLayoutData(fdeConnection);
+
+	    //
+	    // what's left of the line: combo box
+	    //
+	    fdConnection = new FormData();
+	    fdConnection.left = new FormAttachment(middle, 0);
+	    if (previous != null)
+	      fdConnection.top = new FormAttachment(previous, margin);
+	    else
+	      fdConnection.top = new FormAttachment(0, 0);
+	    fdConnection.right = new FormAttachment(wbeConnection, -margin);
+	    wConnection.setLayoutData(fdConnection);
+
+	    return wConnection;
+	  }
+
+    public void addDatabases(ComboVar wConnection, Class<? extends DatabaseInterface> databaseType) {
+	   for (int i = 0; i < transMeta.nrDatabases(); i++) {
+	       DatabaseMeta ci = transMeta.getDatabase(i);
+	       if (databaseType==null || ci.getDatabaseInterface().getClass().equals(databaseType)) {
+	    	  wConnection.add(ci.getName());
+	      }
+	   }
+	   //  Add the metaDBConnectionName if we have it 
+	   //  and it is already not added to the list in wConnection.
+	   if (!Const.isEmpty(input.getDbConnectionName())) {
+		   String[] arrayDatabaseList = wConnection.getItems();
+		   if (arrayDatabaseList == null) {
+			   List<String> databaseNameList = Arrays.asList(arrayDatabaseList);
+			   if (!databaseNameList.contains(input.getDbConnectionName())) {
+				   wConnection.add(input.getDbConnectionName());
+			   }
+		   }
+	   }
+    }
+    
+    public void selectDatabase(ComboVar wConnection, String name) {
+        int idx = wConnection.getCComboWidget().indexOf(name);
+        if (idx >= 0) {
+          wConnection.select(idx);
+        }
+      }
+	
 }
