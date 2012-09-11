@@ -2,7 +2,9 @@ package org.pentaho.hbase;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -286,7 +288,7 @@ public class HBaseValueMetaTest {
   @Test
   public void testEncodeColumnValueInteger() throws Exception {
     Long value = new Long(42);
-    ValueMetaInterface valMeta = new ValueMeta("TestLong",
+    ValueMetaInterface valMeta = new ValueMeta("TestInt",
         ValueMetaInterface.TYPE_INTEGER);
 
     HBaseValueMeta mappingMeta = new HBaseValueMeta("famliy1"
@@ -305,7 +307,7 @@ public class HBaseValueMetaTest {
   @Test
   public void testEncodeColumnValueDouble() throws Exception {
     Double value = new Double(42.0);
-    ValueMetaInterface valMeta = new ValueMeta("TestLong",
+    ValueMetaInterface valMeta = new ValueMeta("TestDouble",
         ValueMetaInterface.TYPE_NUMBER);
 
     HBaseValueMeta mappingMeta = new HBaseValueMeta("famliy1"
@@ -324,7 +326,7 @@ public class HBaseValueMetaTest {
   @Test
   public void testEncodeColumnValueFloat() throws Exception {
     Double value = new Double(42.0);
-    ValueMetaInterface valMeta = new ValueMeta("TestLong",
+    ValueMetaInterface valMeta = new ValueMeta("TestFloat",
         ValueMetaInterface.TYPE_NUMBER);
 
     HBaseValueMeta mappingMeta = new HBaseValueMeta("famliy1"
@@ -340,12 +342,321 @@ public class HBaseValueMetaTest {
     assertEquals(bu.toFloat(encoded), value.floatValue(), 0.0001f);
   }
 
-  public static void main(String[] args) {
-    try {
-      HBaseValueMetaTest test = new HBaseValueMetaTest();
-      test.testDecodeKeyValueSignedDate();
-    } catch (Exception ex) {
-      ex.printStackTrace();
+  @Test
+  public void testEncodeColumnValueDate() throws Exception {
+    Date value = new Date();
+    ValueMetaInterface valMeta = new ValueMeta("TestDate",
+        ValueMetaInterface.TYPE_DATE);
+
+    HBaseValueMeta mappingMeta = new HBaseValueMeta("famliy1"
+        + HBaseValueMeta.SEPARATOR + "testcol" + HBaseValueMeta.SEPARATOR
+        + "anAlias", ValueMetaInterface.TYPE_DATE, -1, -1);
+
+    CommonHBaseBytesUtil bu = new CommonHBaseBytesUtil();
+    byte[] encoded = HBaseValueMeta.encodeColumnValue(value, valMeta,
+        mappingMeta, bu);
+
+    assertTrue(encoded != null);
+    assertEquals(encoded.length, bu.getSizeOfLong());
+    assertEquals(bu.toLong(encoded), value.getTime());
+  }
+
+  @Test
+  public void testEncodeColumnValueBoolean() throws Exception {
+    Boolean value = new Boolean(true);
+    ValueMetaInterface valMeta = new ValueMeta("TestBool",
+        ValueMetaInterface.TYPE_BOOLEAN);
+
+    HBaseValueMeta mappingMeta = new HBaseValueMeta("famliy1"
+        + HBaseValueMeta.SEPARATOR + "testcol" + HBaseValueMeta.SEPARATOR
+        + "anAlias", ValueMetaInterface.TYPE_BOOLEAN, -1, -1);
+
+    CommonHBaseBytesUtil bu = new CommonHBaseBytesUtil();
+    byte[] encoded = HBaseValueMeta.encodeColumnValue(value, valMeta,
+        mappingMeta, bu);
+
+    assertTrue(encoded != null);
+    assertEquals(encoded.length, 1);
+    assertEquals(bu.toString(encoded), "Y");
+  }
+
+  @Test
+  public void testEncodeColumnValueBigNumber() throws Exception {
+    BigDecimal value = new BigDecimal(42);
+    ValueMetaInterface valMeta = new ValueMeta("TestBigNum",
+        ValueMetaInterface.TYPE_BIGNUMBER);
+
+    HBaseValueMeta mappingMeta = new HBaseValueMeta("famliy1"
+        + HBaseValueMeta.SEPARATOR + "testcol" + HBaseValueMeta.SEPARATOR
+        + "anAlias", ValueMetaInterface.TYPE_BIGNUMBER, -1, -1);
+
+    CommonHBaseBytesUtil bu = new CommonHBaseBytesUtil();
+    byte[] encoded = HBaseValueMeta.encodeColumnValue(value, valMeta,
+        mappingMeta, bu);
+
+    assertTrue(encoded != null);
+    assertEquals(bu.toString(encoded), value.toString());
+  }
+
+  @Test
+  public void testEncodeColumnValueSerializable() throws Exception {
+    String value = "Hi there bob!";
+    ValueMetaInterface valMeta = new ValueMeta("TestSerializable",
+        ValueMetaInterface.TYPE_STRING);
+
+    HBaseValueMeta mappingMeta = new HBaseValueMeta("famliy1"
+        + HBaseValueMeta.SEPARATOR + "testcol" + HBaseValueMeta.SEPARATOR
+        + "anAlias", ValueMetaInterface.TYPE_SERIALIZABLE, -1, -1);
+
+    CommonHBaseBytesUtil bu = new CommonHBaseBytesUtil();
+    byte[] encoded = HBaseValueMeta.encodeColumnValue(value, valMeta,
+        mappingMeta, bu);
+
+    byte[] reference = HBaseValueMeta.encodeObject(value);
+
+    assertTrue(encoded != null);
+    assertEquals(encoded.length, reference.length);
+    assertEquals(HBaseValueMeta.decodeObject(encoded), value);
+  }
+
+  @Test
+  public void testEncodeColumnValueBinary() throws Exception {
+    byte[] value = new String("Hi there bob!").getBytes();
+    ValueMetaInterface valMeta = new ValueMeta("TestBinary",
+        ValueMetaInterface.TYPE_BINARY);
+
+    HBaseValueMeta mappingMeta = new HBaseValueMeta("famliy1"
+        + HBaseValueMeta.SEPARATOR + "testcol" + HBaseValueMeta.SEPARATOR
+        + "anAlias", ValueMetaInterface.TYPE_BINARY, -1, -1);
+
+    CommonHBaseBytesUtil bu = new CommonHBaseBytesUtil();
+    byte[] encoded = HBaseValueMeta.encodeColumnValue(value, valMeta,
+        mappingMeta, bu);
+
+    assertTrue(encoded != null);
+    assertEquals(encoded.length, value.length);
+    for (int i = 0; i < encoded.length; i++) {
+      assertEquals(encoded[i], value[i]);
     }
+  }
+
+  @Test
+  public void testDecodeColumnValueString() throws Exception {
+    String value = "Hi there bob";
+    CommonHBaseBytesUtil bu = new CommonHBaseBytesUtil();
+    byte[] encoded = bu.toBytes(value);
+
+    HBaseValueMeta mappingMeta = new HBaseValueMeta("famliy1"
+        + HBaseValueMeta.SEPARATOR + "testcol" + HBaseValueMeta.SEPARATOR
+        + "anAlias", ValueMetaInterface.TYPE_STRING, -1, -1);
+
+    Object decoded = HBaseValueMeta.decodeColumnValue(encoded, mappingMeta, bu);
+
+    assertTrue(decoded != null);
+    assertEquals(decoded, value);
+  }
+
+  @Test
+  public void testDecodeColumnValueStringIndexedStorage() throws Exception {
+    String value = "Value2";
+    CommonHBaseBytesUtil bu = new CommonHBaseBytesUtil();
+    byte[] encoded = bu.toBytes(value);
+
+    HBaseValueMeta mappingMeta = new HBaseValueMeta("famliy1"
+        + HBaseValueMeta.SEPARATOR + "testcol" + HBaseValueMeta.SEPARATOR
+        + "anAlias", ValueMetaInterface.TYPE_STRING, -1, -1);
+    mappingMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_INDEXED);
+    Object[] legalVals = new Object[] { "Value1", "Value2", "Value3" };
+    mappingMeta.setIndex(legalVals);
+
+    Object decoded = HBaseValueMeta.decodeColumnValue(encoded, mappingMeta, bu);
+
+    assertTrue(decoded != null);
+    assertEquals(decoded, new Integer(1));
+  }
+
+  @Test
+  public void testDecodeColumnValueStringIndexedStorageIllegalValue()
+      throws Exception {
+    String value = "Bogus";
+    CommonHBaseBytesUtil bu = new CommonHBaseBytesUtil();
+    byte[] encoded = bu.toBytes(value);
+
+    HBaseValueMeta mappingMeta = new HBaseValueMeta("famliy1"
+        + HBaseValueMeta.SEPARATOR + "testcol" + HBaseValueMeta.SEPARATOR
+        + "anAlias", ValueMetaInterface.TYPE_STRING, -1, -1);
+    mappingMeta.setStorageType(ValueMetaInterface.STORAGE_TYPE_INDEXED);
+    Object[] legalVals = new Object[] { "Value1", "Value2", "Value3" };
+    mappingMeta.setIndex(legalVals);
+
+    try {
+      Object decoded = HBaseValueMeta.decodeColumnValue(encoded, mappingMeta,
+          bu);
+      fail("Was expecting an exception because the supplied value is not in "
+          + "the list of indexed values");
+    } catch (Exception ex) {
+    }
+  }
+
+  @Test
+  public void testDecodeColumnValueFloat() throws Exception {
+    float value = 42f;
+    CommonHBaseBytesUtil bu = new CommonHBaseBytesUtil();
+    byte[] encoded = bu.toBytes(value);
+
+    HBaseValueMeta mappingMeta = new HBaseValueMeta("famliy1"
+        + HBaseValueMeta.SEPARATOR + "testcol" + HBaseValueMeta.SEPARATOR
+        + "anAlias", ValueMetaInterface.TYPE_NUMBER, -1, -1);
+
+    Object decoded = HBaseValueMeta.decodeColumnValue(encoded, mappingMeta, bu);
+    assertTrue(decoded != null);
+    assertTrue(decoded instanceof Double);
+    assertEquals(decoded, new Double(42));
+  }
+
+  @Test
+  public void testDecodeColumnValueDouble() throws Exception {
+    double value = 42;
+    CommonHBaseBytesUtil bu = new CommonHBaseBytesUtil();
+    byte[] encoded = bu.toBytes(value);
+
+    HBaseValueMeta mappingMeta = new HBaseValueMeta("famliy1"
+        + HBaseValueMeta.SEPARATOR + "testcol" + HBaseValueMeta.SEPARATOR
+        + "anAlias", ValueMetaInterface.TYPE_NUMBER, -1, -1);
+
+    Object decoded = HBaseValueMeta.decodeColumnValue(encoded, mappingMeta, bu);
+    assertTrue(decoded != null);
+    assertTrue(decoded instanceof Double);
+    assertEquals(decoded, new Double(42));
+  }
+
+  @Test
+  public void testDecodeColumnValueInteger() throws Exception {
+    int value = 42;
+    CommonHBaseBytesUtil bu = new CommonHBaseBytesUtil();
+    byte[] encoded = bu.toBytes(value);
+
+    HBaseValueMeta mappingMeta = new HBaseValueMeta("famliy1"
+        + HBaseValueMeta.SEPARATOR + "testcol" + HBaseValueMeta.SEPARATOR
+        + "anAlias", ValueMetaInterface.TYPE_INTEGER, -1, -1);
+
+    Object decoded = HBaseValueMeta.decodeColumnValue(encoded, mappingMeta, bu);
+    assertTrue(decoded != null);
+    assertTrue(decoded instanceof Long);
+    assertEquals(decoded, new Long(42));
+  }
+
+  @Test
+  public void testDecodeColumnValueLong() throws Exception {
+    long value = 42;
+    CommonHBaseBytesUtil bu = new CommonHBaseBytesUtil();
+    byte[] encoded = bu.toBytes(value);
+
+    HBaseValueMeta mappingMeta = new HBaseValueMeta("famliy1"
+        + HBaseValueMeta.SEPARATOR + "testcol" + HBaseValueMeta.SEPARATOR
+        + "anAlias", ValueMetaInterface.TYPE_INTEGER, -1, -1);
+
+    Object decoded = HBaseValueMeta.decodeColumnValue(encoded, mappingMeta, bu);
+    assertTrue(decoded != null);
+    assertTrue(decoded instanceof Long);
+    assertEquals(decoded, new Long(42));
+  }
+
+  @Test
+  public void testDecodeColumnValueBooleanAsString() throws Exception {
+    String value = "TRUE";
+    CommonHBaseBytesUtil bu = new CommonHBaseBytesUtil();
+    byte[] encoded = bu.toBytes(value);
+
+    HBaseValueMeta mappingMeta = new HBaseValueMeta("famliy1"
+        + HBaseValueMeta.SEPARATOR + "testcol" + HBaseValueMeta.SEPARATOR
+        + "anAlias", ValueMetaInterface.TYPE_BOOLEAN, -1, -1);
+
+    Object decoded = HBaseValueMeta.decodeColumnValue(encoded, mappingMeta, bu);
+    assertTrue(decoded != null);
+    assertTrue(decoded instanceof Boolean);
+    assertEquals(decoded, new Boolean(true));
+  }
+
+  @Test
+  public void testDecodeColumnValueBooleanAsInteger() throws Exception {
+    Integer value = 0;
+    CommonHBaseBytesUtil bu = new CommonHBaseBytesUtil();
+    byte[] encoded = bu.toBytes(value);
+
+    HBaseValueMeta mappingMeta = new HBaseValueMeta("famliy1"
+        + HBaseValueMeta.SEPARATOR + "testcol" + HBaseValueMeta.SEPARATOR
+        + "anAlias", ValueMetaInterface.TYPE_BOOLEAN, -1, -1);
+
+    Object decoded = HBaseValueMeta.decodeColumnValue(encoded, mappingMeta, bu);
+    assertTrue(decoded != null);
+    assertTrue(decoded instanceof Boolean);
+    assertEquals(decoded, new Boolean(false));
+  }
+
+  @Test
+  public void testDecodeColumnValueBigDecimal() throws Exception {
+    BigDecimal bd = new BigDecimal(42);
+    String value = bd.toString();
+
+    CommonHBaseBytesUtil bu = new CommonHBaseBytesUtil();
+    byte[] encoded = bu.toBytes(value);
+
+    HBaseValueMeta mappingMeta = new HBaseValueMeta("famliy1"
+        + HBaseValueMeta.SEPARATOR + "testcol" + HBaseValueMeta.SEPARATOR
+        + "anAlias", ValueMetaInterface.TYPE_BIGNUMBER, -1, -1);
+
+    Object decoded = HBaseValueMeta.decodeColumnValue(encoded, mappingMeta, bu);
+    assertTrue(decoded != null);
+    assertTrue(decoded instanceof BigDecimal);
+    assertEquals(decoded, bd);
+  }
+
+  @Test
+  public void testDecodeColumnValueSerializable() throws Exception {
+    byte[] value = HBaseValueMeta.encodeObject(new String("Hi there bob!"));
+    CommonHBaseBytesUtil bu = new CommonHBaseBytesUtil();
+
+    HBaseValueMeta mappingMeta = new HBaseValueMeta("famliy1"
+        + HBaseValueMeta.SEPARATOR + "testcol" + HBaseValueMeta.SEPARATOR
+        + "anAlias", ValueMetaInterface.TYPE_SERIALIZABLE, -1, -1);
+
+    Object decoded = HBaseValueMeta.decodeColumnValue(value, mappingMeta, bu);
+
+    assertTrue(decoded != null);
+    assertTrue(decoded instanceof String);
+    assertEquals(decoded, "Hi there bob!");
+  }
+
+  @Test
+  public void testDecodeColumnValueDate() throws Exception {
+    Date value = new Date();
+    CommonHBaseBytesUtil bu = new CommonHBaseBytesUtil();
+    byte[] encoded = bu.toBytes(value.getTime());
+
+    HBaseValueMeta mappingMeta = new HBaseValueMeta("famliy1"
+        + HBaseValueMeta.SEPARATOR + "testcol" + HBaseValueMeta.SEPARATOR
+        + "anAlias", ValueMetaInterface.TYPE_DATE, -1, -1);
+
+    Object decoded = HBaseValueMeta.decodeColumnValue(encoded, mappingMeta, bu);
+    assertTrue(decoded != null);
+    assertTrue(decoded instanceof Date);
+    assertEquals(decoded, value);
+  }
+
+  @Test
+  public void testDecodeColumnValueBinary() throws Exception {
+    CommonHBaseBytesUtil bu = new CommonHBaseBytesUtil();
+    byte[] value = new String("Hi there bob!").getBytes();
+
+    HBaseValueMeta mappingMeta = new HBaseValueMeta("famliy1"
+        + HBaseValueMeta.SEPARATOR + "testcol" + HBaseValueMeta.SEPARATOR
+        + "anAlias", ValueMetaInterface.TYPE_BINARY, -1, -1);
+
+    Object decoded = HBaseValueMeta.decodeColumnValue(value, mappingMeta, bu);
+
+    assertTrue(decoded != null);
+    assertTrue(decoded instanceof byte[]);
+    assertEquals(new String((byte[]) decoded), "Hi there bob!");
   }
 }
