@@ -445,7 +445,7 @@ public class TableOutputTest extends TestCase
             String outputname = "output to [" + target_table + "]";
             TableOutputMeta tom = new TableOutputMeta();
             tom.setDatabaseMeta(transMeta.findDatabase("db"));
-            tom.setTablename(target_table);
+            tom.setTableName(target_table);
 
             String fromid = registry.getPluginId(StepPluginType.class, tom);
             StepMeta fromstep = new StepMeta(fromid, outputname, (StepMetaInterface)tom);
@@ -632,7 +632,7 @@ public class TableOutputTest extends TestCase
             String outputname = "output to [" + target_table3 + "]";
             TableOutputMeta tom = new TableOutputMeta();
             tom.setDatabaseMeta(transMeta.findDatabase("db"));
-            tom.setTablename(target_table3);
+            tom.setTableName(target_table3);
             tom.setTruncateTable(true);
             tom.setUseBatchUpdate(true);
 

@@ -14,7 +14,6 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.monetdbbulkloader.MonetDBBulkLoader;
 import org.pentaho.di.trans.steps.monetdbbulkloader.MonetDBBulkLoaderMeta;
-import org.pentaho.di.ui.spoon.Spoon;
 
 public class MonetDBAgileMartMeta extends MonetDBBulkLoaderMeta {
 
@@ -52,7 +51,7 @@ public class MonetDBAgileMartMeta extends MonetDBBulkLoaderMeta {
 	
 	protected void setupDatabaseMeta() {
 
-		if( this.getDatabaseMeta() == null && Spoon.getInstance() != null ) {
+		if( this.getDatabaseMeta() == null ) {
 			if( getParentStepMeta() != null ) {
 				TransMeta transMeta = getParentStepMeta().getParentTransMeta();
 				if( transMeta != null ) {

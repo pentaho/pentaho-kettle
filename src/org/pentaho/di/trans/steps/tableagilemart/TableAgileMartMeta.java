@@ -13,7 +13,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.tableoutput.TableOutputMeta;
-import org.pentaho.di.ui.spoon.Spoon;
 
 @Step(id = "TableAgileMart", image = "plugins/steps/MonetDBAgileMartPlugin/icon.png", name = "Table Agile Mart", description="Table Agile Mart", categoryDescription="Agile BI")
 public class TableAgileMartMeta extends TableOutputMeta {
@@ -56,10 +55,14 @@ public class TableAgileMartMeta extends TableOutputMeta {
 	
 	protected void setupDatabaseMeta() {
 
-		if( this.getDatabaseMeta() == null && Spoon.getInstance() != null ) {
-			this.setDatabaseMeta( Spoon.getInstance().getActiveTransformation().findDatabase(getStringProperty("AgileBIDatabase", "AgileBI")) );
+		if( this.getDatabaseMeta() == null ) {
+			if( getParentStepMeta() != null ) {
+				TransMeta transMeta = getParentStepMeta().getParentTransMeta();
+				if( transMeta != null ) {
+					setDatabaseMeta(transMeta.findDatabase(transMeta.environmentSubstitute(getStringProperty("AgileBIDatabase", "AgileBI"))));
+				}
+			}
 		}
-		
 	}
 	
 	public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta, Trans trans)

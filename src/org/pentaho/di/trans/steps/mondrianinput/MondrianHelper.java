@@ -118,7 +118,7 @@ public class MondrianHelper {
 		}
 		
         query = connection.parseQuery(queryString);
-        result = connection.execute(query);
+        result = connection.execute((Object) query);
     }
     
     public void close() {
