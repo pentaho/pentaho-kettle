@@ -32,6 +32,7 @@ import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.database.MonetDBDatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -52,6 +53,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.core.ProvidesDatabaseConnectionInformation;
 import org.w3c.dom.Node;
 
 
@@ -60,11 +62,14 @@ import org.w3c.dom.Node;
  * 
  * @author Sven Boden
  */
-public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
+public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface, ProvidesDatabaseConnectionInformation
 {
 	private static Class<?> PKG = MonetDBBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-    /** what's the schema for the target? */
+	/**  The database connection name **/
+    private String dbConnectionName;
+	
+	/** what's the schema for the target? */
     private String schemaName;
 
     /** what's the table for the target? */
@@ -139,6 +144,14 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
      * @return Returns the database.
      */
     public DatabaseMeta getDatabaseMeta()
+    {
+        return databaseMeta;
+    }
+
+    /**
+     * @return Returns the database.
+     */
+    public DatabaseMeta getDatabaseMeta(MonetDBBulkLoader loader)
     {
         return databaseMeta;
     }
@@ -232,12 +245,12 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 	{
 		try
 		{
-			String con     = XMLHandler.getTagValue(stepnode, "connection");   //$NON-NLS-1$
-			databaseMeta   = DatabaseMeta.findDatabase(databases, con);
+			dbConnectionName     = XMLHandler.getTagValue(stepnode, "connection");   //$NON-NLS-1$
+			databaseMeta   = DatabaseMeta.findDatabase(databases, dbConnectionName);
 
 			bufferSize = XMLHandler.getTagValue(stepnode, "buffer_size");       //$NON-NLS-1$
 
-            schemaName     = XMLHandler.getTagValue(stepnode, "schema");       //$NON-NLS-1$
+			schemaName     = XMLHandler.getTagValue(stepnode, "schema");       //$NON-NLS-1$
 			tableName      = XMLHandler.getTagValue(stepnode, "table");        //$NON-NLS-1$
 			
 			mClientPath         = XMLHandler.getTagValue(stepnode, "mclient_path");       //$NON-NLS-1$
@@ -246,6 +259,7 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 			truncate       = "Y".equals(XMLHandler.getTagValue(stepnode, "truncate"));         //$NON-NLS-1$
 			autoSchema     = "Y".equals(XMLHandler.getTagValue(stepnode, "auto_schema"));         //$NON-NLS-1$
 			autoStringWidths = "Y".equals(XMLHandler.getTagValue(stepnode, "auto_string_widths"));         //$NON-NLS-1$
+			
 
 			int nrvalues = XMLHandler.countNodes(stepnode, "mapping");      //$NON-NLS-1$
 			allocate(nrvalues);
@@ -287,7 +301,7 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 	{
         StringBuffer retval = new StringBuffer(300);
 
-		retval.append("    ").append(XMLHandler.addTagValue("connection",   databaseMeta==null?"":databaseMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		retval.append("    ").append(XMLHandler.addTagValue("connection",   dbConnectionName)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		retval.append("    ").append(XMLHandler.addTagValue("buffer_size",  bufferSize));     //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    ").append(XMLHandler.addTagValue("schema",       schemaName));    //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("table",        tableName));     //$NON-NLS-1$ //$NON-NLS-2$
@@ -317,6 +331,7 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 		{
 			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);
      		bufferSize     =      rep.getStepAttributeString(id_step, "buffer_size");         //$NON-NLS-1$
+     		dbConnectionName =      rep.getStepAttributeString(id_step,  "db_connection_name");         //$NON-NLS-1$
             schemaName     =      rep.getStepAttributeString(id_step,  "schema");         //$NON-NLS-1$
 			tableName      =      rep.getStepAttributeString(id_step,  "table");          //$NON-NLS-1$
 			mClientPath    =      rep.getStepAttributeString(id_step,  "mclient_path");         //$NON-NLS-1$
@@ -351,6 +366,7 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 		{
 			rep.saveDatabaseMetaStepAttribute(id_transformation, id_step, "id_connection", databaseMeta);
 			rep.saveStepAttribute(id_transformation, id_step, "buffer_size",     bufferSize);     //$NON-NLS-1$
+			 rep.saveStepAttribute(id_transformation, id_step, "db_connection_name",          dbConnectionName);    //$NON-NLS-1$
             rep.saveStepAttribute(id_transformation, id_step, "schema",          schemaName);    //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "table",           tableName);     //$NON-NLS-1$
 			
@@ -526,18 +542,18 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 		}
 	}
 
-	public SQLStatement getTableDdl( TransMeta transMeta, String stepname, boolean autoSchema, MonetDBBulkLoaderData data ) throws KettleException
+	public SQLStatement getTableDdl( TransMeta transMeta, String stepname, boolean autoSchema, MonetDBBulkLoaderData data, boolean safeMode ) throws KettleException
 	{
 
 			String name = stepname; // new name might not yet be linked to other steps!
 			StepMeta stepMeta = new StepMeta(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.StepMeta.Title"), name, this); //$NON-NLS-1$
 			RowMetaInterface prev = transMeta.getPrevStepFields(stepname);
 
-			SQLStatement sql = getSQLStatements(transMeta, stepMeta, prev, autoSchema, data);
+			SQLStatement sql = getSQLStatements(transMeta, stepMeta, prev, autoSchema, data, safeMode);
 			return sql;
 	}	
 
-	public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, boolean autoSchema, MonetDBBulkLoaderData data) throws KettleStepException
+	public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, boolean autoSchema, MonetDBBulkLoaderData data, boolean safeMode) throws KettleStepException
 	{
 		SQLStatement retval = new SQLStatement(stepMeta.getName(), databaseMeta, null); // default: nothing to do!
 
@@ -586,7 +602,7 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 	                
 				if (!Const.isEmpty(tableName))
 				{
-                    Database db = new Database(loggingObject, databaseMeta);
+					Database db = new Database(loggingObject, databaseMeta);
                     db.shareVariablesWith(transMeta);
 					try
 					{
@@ -594,7 +610,8 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 
                         String schemaTable = databaseMeta.getQuotedSchemaTableCombination(transMeta.environmentSubstitute(schemaName), 
                         		                                                          transMeta.environmentSubstitute(tableName));                        
-						String cr_table = db.getDDL(schemaTable,
+                        MonetDBDatabaseMeta.safeModeLocal.set(safeMode);
+                        String cr_table = db.getDDL(schemaTable,
 													tableFields,
 													null,
 													false,
@@ -608,6 +625,10 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 					catch(KettleException e)
 					{
 						retval.setError(BaseMessages.getString(PKG, "MonetDBBulkLoaderMeta.GetSQL.ErrorOccurred")+e.getMessage()); //$NON-NLS-1$
+					}
+					finally {
+						db.disconnect();
+						MonetDBDatabaseMeta.safeModeLocal.remove();
 					}
 				}
 				else
@@ -794,6 +815,26 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 	 */
 	public String getMClientPath() {
 		return mClientPath;
+	}
+
+	@Override
+	public String getMissingDatabaseConnectionInformationMessage() {
+		// TODO
+		return null;
+	}
+	
+	/**
+	 * @param database connection name to set
+	 */
+	public void setDbConnectionName(String dbConnectionName) {
+		this.dbConnectionName = dbConnectionName;
+	}
+	
+	/**
+	 * @return the database connection name
+	 */
+	public String getDbConnectionName() {
+		return this.dbConnectionName;
 	}
 
 }
