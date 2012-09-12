@@ -24,6 +24,7 @@ package org.pentaho.di.trans.step;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.Metrics;
 import org.pentaho.di.i18n.BaseMessages;
 
 public class RunThread implements Runnable {
@@ -46,6 +47,8 @@ public class RunThread implements Runnable {
 		try
 		{
 			step.setRunning(true);
+			step.getLogChannel().snap(Metrics.METRIC_STEP_EXECUTION_START);
+			
 			if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "System.Log.StartingToRun")); //$NON-NLS-1$
 
 			while (step.processRow(meta, data) && !step.isStopped());
@@ -79,6 +82,7 @@ public class RunThread implements Runnable {
 		finally
 		{
 			step.dispose(meta, data);
+      step.getLogChannel().snap(Metrics.METRIC_STEP_EXECUTION_STOP);
 			try {
 	            long li = step.getLinesInput();
 	            long lo = step.getLinesOutput();

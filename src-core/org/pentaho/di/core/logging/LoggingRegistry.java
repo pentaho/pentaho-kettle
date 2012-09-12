@@ -85,7 +85,7 @@ public class LoggingRegistry {
 	 * @param int The logging level for this logging source
 	 * @return a new ID (UUID)
 	 */
-	public String registerLoggingSource(Object object) {
+	public synchronized String registerLoggingSource(Object object) {
 		
 		// recalc max size: see PDI-7270
 		maxSize = Const.toInt(EnvUtil.getSystemProperty(Const.KETTLE_MAX_LOGGING_REGISTRY_SIZE), DEFAULT_MAX_SIZE);
@@ -210,7 +210,9 @@ public class LoggingRegistry {
 		if (parentLogChannelId==null) {
 			return null;
 		}
-		List<String> list = getLogChannelChildren(new ArrayList<String>(), parentLogChannelId);
+		List<String> list = new ArrayList<String>();
+		
+		getLogChannelChildren(list, parentLogChannelId);
 		list.add(parentLogChannelId);
 		return list;
 	}
@@ -218,41 +220,34 @@ public class LoggingRegistry {
 	/**
 	 * In a situation where you have a job or transformation, you want to get a list of ALL the children where the parent is the channel ID.
 	 * 
+	 * @param children the list of children that is maintained
 	 * @param parentLogChannelId The parent log channel ID
-	 * @return the list of child channel ID, not including the parent.
+	 * 
 	 */
-	private List<String> getLogChannelChildren(List<String> children, String parentLogChannelId) {
-
-	  long getStart = System.currentTimeMillis();
+	private void getLogChannelChildren(List<String> children, String parentLogChannelId) {
 
 	  synchronized(childrenMap) {
   		List<String> list = childrenMap.get(parentLogChannelId);
   		if (list==null) {
-  		  list = new ArrayList<String>();
-  		  // This is the only place where we'll add something: at the bottom of the tree.
-  		  // This means that we won't have to do duplicate detection anymore.
+  		  // Nothing to add 
   		  //
-		    children.add(parentLogChannelId);
-  		  return list;
-  		}
-  		
-  		Iterator<String> kids = list.iterator();
-  		while (kids.hasNext()) {
-  		  String logChannelId = kids.next();
-
-  		  // Search deeper into the tree...
+  		} else {
+    		// Add all the children
   		  //
-        getLogChannelChildren(children, logChannelId);
+    		Iterator<String> kids = list.iterator();
+    		while (kids.hasNext()) {
+    		  String logChannelId = kids.next();
+    		  
+    		  // Search deeper into the tree...
+    		  //
+          getLogChannelChildren(children, logChannelId);
+          
+          // Also add the kid
+          //
+          children.add(logChannelId);
+    		}
   		}
-  		
-	  }
-		
-    long getStop = System.currentTimeMillis();
-
-    LogChannel.GENERAL.snap(Metrics.METRIC_LOGGING_REGISTRY_GET_CHILDREN_TIME, getStop-getStart);
-    LogChannel.GENERAL.snap(Metrics.METRIC_LOGGING_REGISTRY_GET_CHILDREN_COUNT);
-    
-		return children;
+	  }		
 	}
 	
 	public Date getLastModificationTime() {
@@ -297,5 +292,16 @@ public class LoggingRegistry {
       }
       map.remove(logChannelId);
     }
+  }
+  
+  /**
+   * Find the parent log channel ID of the given log channel ID
+   * @param logChannelId The log channel ID to get the parent for.
+   * @return The parent log channel ID.
+   */
+  public String getParentLogChannelId(String logChannelId) {
+    LoggingObjectInterface loggingObject = getLoggingObject(logChannelId);
+    if (loggingObject==null || loggingObject.getParent()==null) return null;
+    return loggingObject.getParent().getLogChannelId();
   }
 }

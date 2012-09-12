@@ -7,6 +7,7 @@ import org.pentaho.di.core.util.StringUtil;
 
 public class MetricsDuration {
   private Date   date;
+  private Date   endDate;
   private String description;
   private String subject;
   private String logChannelId;
@@ -38,6 +39,7 @@ public class MetricsDuration {
     this.logChannelId = logChannelId;
     this.duration = duration;
     this.count = count;
+    this.endDate = new Date(date.getTime()+duration);
   }
   
 
@@ -139,5 +141,19 @@ public class MetricsDuration {
     } else {
       count=Long.valueOf(count+1);
     }
+  }
+
+  /**
+   * @return the endDate
+   */
+  public Date getEndDate() {
+    return endDate;
+  }
+
+  /**
+   * @param endDate the endDate to set
+   */
+  public void setEndDate(Date endDate) {
+    this.endDate = endDate;
   }
 }

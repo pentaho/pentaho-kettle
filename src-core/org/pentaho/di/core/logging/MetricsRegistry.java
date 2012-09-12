@@ -73,8 +73,6 @@ public class MetricsRegistry {
   public Deque<MetricsSnapshotInterface> getSnapshotList(String logChannelId) {
     Deque<MetricsSnapshotInterface> list = snapshotLists.get(logChannelId);
     if (list==null) {
-      
-      
       list = new ArrayDeque<MetricsSnapshotInterface>();
       snapshotLists.put(logChannelId, list);
     }

@@ -300,6 +300,9 @@ public class GUIResource
     private Image imageBalance;
 
     private Image imageCheckpoint;
+    
+    private Image imageGantt;
+    
 
     /**
      * Same result as <code>new Image(display, 16, 16)</code>.
@@ -523,6 +526,7 @@ public class GUIResource
 		    imageInject.dispose();
         imageBalance.dispose();
         imageCheckpoint.dispose();
+        imageGantt.dispose();
         
 		    disposeImage(imageNoteSmall);
 		    disposeImage(imageColor);
@@ -770,6 +774,7 @@ public class GUIResource
     imageInject = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Inject_image")); // , "ui/images/inject.png
     imageBalance = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("LoadBalance_image")); // , "ui/images/scales.png
     imageCheckpoint = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("CheckeredFlag_image")); // , "ui/images/scales.png
+    imageGantt = ImageUtil.getImageAsResource(display, BasePropertyHandler.getProperty("Gantt_image")); // , "ui/images/gantt.png
     
     imageEmpty16x16 = new Image(display, 16, 16);
     
@@ -1938,6 +1943,10 @@ public class GUIResource
 
   public Image getImageCheckpoint() {
     return imageCheckpoint;
+  }
+
+  public Image getImageGantt() {
+    return imageGantt;
   }
 
 }

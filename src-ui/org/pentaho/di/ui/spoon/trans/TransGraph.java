@@ -320,6 +320,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
   public TransPerfDelegate transPerfDelegate;
 
+  public TransMetricsDelegate transMetricsDelegate;
+
   /** A map that keeps track of which log line was written by which step */
   private Map<StepMeta, String> stepLogMap;
 
@@ -379,6 +381,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     transGridDelegate = new TransGridDelegate(spoon, this);
     transHistoryDelegate = new TransHistoryDelegate(spoon, this);
     transPerfDelegate = new TransPerfDelegate(spoon, this);
+    transMetricsDelegate = new TransMetricsDelegate(spoon, this);
 
     try {
       XulLoader loader = new SwtXulLoader();
@@ -445,8 +448,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       menuMap.put("trans-graph-background", (XulMenupopup) getXulDomContainer().getDocumentRoot().getElementById("trans-graph-background"));  //$NON-NLS-1$//$NON-NLS-2$
       menuMap.put("trans-graph-note", (XulMenupopup) getXulDomContainer().getDocumentRoot().getElementById("trans-graph-note")); //$NON-NLS-1$ //$NON-NLS-2$
     } catch (Throwable t) {
-      // TODO log this
-      t.printStackTrace();
+      log.logError("Error parsing XUL XML", t);
     }
 
     toolTip = new DefaultToolTip(canvas, ToolTip.NO_RECREATE, true);
@@ -3478,6 +3480,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     transLogDelegate.addTransLog();
     transGridDelegate.addTransGrid();
     transPerfDelegate.addTransPerf();
+    transMetricsDelegate.addTransMetrics();
     
     if (tabItemSelection!=null) {
       extraViewTabFolder.setSelection(tabItemSelection);

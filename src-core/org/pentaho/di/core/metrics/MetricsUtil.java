@@ -7,6 +7,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.logging.LoggingRegistry;
 import org.pentaho.di.core.logging.Metrics;
 import org.pentaho.di.core.logging.MetricsInterface;
 import org.pentaho.di.core.logging.MetricsRegistry;
@@ -61,6 +63,21 @@ public class MetricsUtil {
     return new ArrayList<MetricsDuration>( map.values() );
   }
   
+  public static List<MetricsDuration> getAllDurations(String parentLogChannelId) {
+    List<MetricsDuration> durations = new ArrayList<MetricsDuration>();
+
+    System.out.println("-------------------------------------------");
+
+    List<String> logChannelIds = LoggingRegistry.getInstance().getLogChannelChildren(parentLogChannelId);
+    for (String logChannelId : logChannelIds) {
+      LoggingObjectInterface object = LoggingRegistry.getInstance().getLoggingObject(logChannelId);
+      System.out.println(object.getObjectName());
+      durations.addAll(getDurations(logChannelId));
+    }
+    
+    return durations;
+  }
+  
   /**
    * Calculates the durations between the START and STOP snapshots per metric description and subject (if any)
    * @param logChannelId the id of the log channel to investigate
@@ -82,11 +99,12 @@ public class MetricsUtil {
       MetricsSnapshotInterface lastSnapshot = last.get(key);
       if (lastSnapshot==null) {
         lastSnapshot = snapshot;
+        last.put(key, lastSnapshot);
       } else {
         // If we have a START-STOP range, calculate the duration and add it to the duration map...
         //
         MetricsInterface metric = lastSnapshot.getMetric();
-        if (metric.getType()==MetricsSnapshotType.START && metric.getType()==MetricsSnapshotType.STOP) {
+        if (metric.getType()==MetricsSnapshotType.START && snapshot.getMetric().getType()==MetricsSnapshotType.STOP) {
           long extraDuration = snapshot.getDate().getTime() - lastSnapshot.getDate().getTime();
           
           MetricsDuration metricsDuration = map.get(key);
@@ -95,10 +113,13 @@ public class MetricsUtil {
           } else {
             metricsDuration.setDuration(metricsDuration.getDuration()+extraDuration);
             metricsDuration.incrementCount();
+            if (metricsDuration.getEndDate().getTime()<snapshot.getDate().getTime()) {
+              metricsDuration.setEndDate(snapshot.getDate());
+            }
           }
+          map.put(key, metricsDuration);
         }
       }
-      last.put(key, lastSnapshot);
     }
     
     return new ArrayList<MetricsDuration>( map.values() );
