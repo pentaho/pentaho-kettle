@@ -159,6 +159,19 @@ public class HBaseValueMetaTest {
   }
 
   @Test
+  public void testEncodeKeyValueHexKeyAsBinary() throws Exception {
+    CommonHBaseBytesUtil bu = new CommonHBaseBytesUtil();
+    String testVal = "\\x00\\x04";
+
+    byte[] result = HBaseValueMeta.encodeKeyValue(testVal,
+        Mapping.KeyType.BINARY, bu);
+
+    assertTrue(result != null);
+    assertTrue(result.length == 2);
+    assertEquals(result[1], 4);
+  }
+
+  @Test
   public void testEncodeKeyValueString() throws Exception {
     CommonHBaseBytesUtil bu = new CommonHBaseBytesUtil();
     String testVal = "Blah";
