@@ -125,7 +125,6 @@ public class JobEntryHadoopJobExecutorDialog extends JobEntryDialog implements J
     bf.createBinding("hdfs-port", "value", controller.getAdvancedConfiguration(), AdvancedConfiguration.HDFS_PORT); //$NON-NLS-1$ //$NON-NLS-2$ 
     bf.createBinding("job-tracker-hostname", "value", controller.getAdvancedConfiguration(), AdvancedConfiguration.JOB_TRACKER_HOSTNAME); //$NON-NLS-1$ //$NON-NLS-2$ 
     bf.createBinding("job-tracker-port", "value", controller.getAdvancedConfiguration(), AdvancedConfiguration.JOB_TRACKER_PORT); //$NON-NLS-1$ //$NON-NLS-2$ 
-    bf.createBinding("working-dir", "value", controller.getAdvancedConfiguration(), AdvancedConfiguration.WORKING_DIRECTORY); //$NON-NLS-1$ //$NON-NLS-2$ 
 
     ((XulRadio) container.getDocumentRoot().getElementById("simpleRadioButton")).setSelected(this.jobEntry.isSimple()); //$NON-NLS-1$
     ((XulRadio) container.getDocumentRoot().getElementById("advancedRadioButton")).setSelected(!this.jobEntry.isSimple()); //$NON-NLS-1$

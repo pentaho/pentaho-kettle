@@ -88,8 +88,6 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
   private String inputFormatClass;
   private String outputFormatClass;
 
-  private String workingDirectory;
-
   private String hdfsHostname;
   private String hdfsPort;
 
@@ -195,14 +193,6 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
 
   public void setOutputFormatClass(String outputFormatClass) {
     this.outputFormatClass = outputFormatClass;
-  }
-
-  public String getWorkingDirectory() {
-    return workingDirectory;
-  }
-
-  public void setWorkingDirectory(String workingDirectory) {
-    this.workingDirectory = workingDirectory;
   }
 
   public String getHdfsHostname() {
@@ -515,8 +505,6 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
           }
         }
 
-        String workingDirectoryS = environmentSubstitute(workingDirectory);
-        conf.setWorkingDirectory(conf.getDefaultFileSystemURL() + workingDirectoryS);
         conf.setJar(jarUrl);
 
         String numMapTasksS = environmentSubstitute(numMapTasks);
@@ -714,7 +702,6 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
     numMapTasks = XMLHandler.getTagValue(entrynode, "num_map_tasks");
     //numReduceTasks = Integer.parseInt(XMLHandler.getTagValue(entrynode, "num_reduce_tasks"));
     numReduceTasks = XMLHandler.getTagValue(entrynode, "num_reduce_tasks");
-    workingDirectory = XMLHandler.getTagValue(entrynode, "working_dir");
 
     // How many user defined elements?
     userDefined = new ArrayList<UserDefinedItem>();
@@ -761,7 +748,6 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
     retval.append("      ").append(XMLHandler.addTagValue("job_tracker_port", jobTrackerPort));
     retval.append("      ").append(XMLHandler.addTagValue("num_map_tasks", numMapTasks));
     retval.append("      ").append(XMLHandler.addTagValue("num_reduce_tasks", numReduceTasks));
-    retval.append("      ").append(XMLHandler.addTagValue("working_dir", workingDirectory));
 
     retval.append("      <user_defined_list>").append(Const.CR);
     if (userDefined != null) {
@@ -811,8 +797,6 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
       setNumMapTasks(rep.getJobEntryAttributeString(id_jobentry, "num_map_tasks"));
 //      setNumReduceTasks(new Long(rep.getJobEntryAttributeInteger(id_jobentry, "num_reduce_tasks")).intValue());
       setNumReduceTasks(rep.getJobEntryAttributeString(id_jobentry, "num_reduce_tasks"));
-      setWorkingDirectory(rep.getJobEntryAttributeString(id_jobentry, "working_dir"));
-
       
       int argnr = rep.countNrJobEntryAttributes(id_jobentry, "user_defined_name");//$NON-NLS-1$
       if(argnr > 0) {
@@ -863,7 +847,6 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
       rep.saveJobEntryAttribute(id_job, getObjectId(),"job_tracker_port", jobTrackerPort); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getObjectId(),"num_map_tasks", numMapTasks); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getObjectId(),"num_reduce_tasks", numReduceTasks); //$NON-NLS-1$
-      rep.saveJobEntryAttribute(id_job, getObjectId(),"working_dir", workingDirectory); //$NON-NLS-1$
 
       if (userDefined != null) {
         for (int i = 0; i < userDefined.size(); i++) {

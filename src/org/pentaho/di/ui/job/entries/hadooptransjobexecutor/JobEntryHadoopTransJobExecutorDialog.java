@@ -143,7 +143,6 @@ public class JobEntryHadoopTransJobExecutorDialog extends JobEntryDialog impleme
     bf.createBinding("hdfs-port", "value", controller, JobEntryHadoopTransJobExecutorController.HDFS_PORT); //$NON-NLS-1$ //$NON-NLS-2$ 
     bf.createBinding("job-tracker-hostname", "value", controller, JobEntryHadoopTransJobExecutorController.JOB_TRACKER_HOSTNAME); //$NON-NLS-1$ //$NON-NLS-2$ 
     bf.createBinding("job-tracker-port", "value", controller, JobEntryHadoopTransJobExecutorController.JOB_TRACKER_PORT); //$NON-NLS-1$ //$NON-NLS-2$ 
-    bf.createBinding("working-dir", "value", controller, JobEntryHadoopTransJobExecutorController.WORKING_DIRECTORY); //$NON-NLS-1$ //$NON-NLS-2$ 
 
     XulTree variablesTree = (XulTree) container.getDocumentRoot().getElementById("fields-table"); //$NON-NLS-1$
     bf.setBindingType(Type.ONE_WAY);

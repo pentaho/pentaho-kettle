@@ -118,16 +118,6 @@ public interface Configuration {
   void setJar(String url);
 
   /**
-   * Set the current working directory for the default file system.
-   * 
-   * @param dir the new current working directory.
-   * @deprecated This should not be required by any of our client code and is to be removed
-   * @see org.apache.hadoop.mapred.JobConf#setWorkingDirectory(Path)
-   */
-  @Deprecated
-  void setWorkingDirectory(String dir);
-
-  /**
    * Provide a hint to Hadoop for the number of map tasks to start for the
    * MapReduce job submitted with this configuration.
    * 
