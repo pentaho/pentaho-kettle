@@ -128,6 +128,8 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
     jobEntry.setSimple(isSimple);
     jobEntry.setJarUrl(jarUrl);
     jobEntry.setCmdLineArgs(sConf.getCommandLineArgs());
+    jobEntry.setSimpleBlocking(sConf.isSimpleBlocking());
+    jobEntry.setSimpleLoggingInterval(sConf.getSimpleLoggingInterval());
     // advanced config
     jobEntry.setBlocking(aConf.isBlocking());
     jobEntry.setLoggingInterval(aConf.getLoggingInterval());
@@ -163,6 +165,8 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
       setSimple(jobEntry.isSimple());
       setJarUrl(jobEntry.getJarUrl());            
       sConf.setCommandLineArgs(jobEntry.getCmdLineArgs());
+      sConf.setSimpleBlocking(jobEntry.isSimpleBlocking());
+      sConf.setSimpleLoggingInterval(jobEntry.getSimpleLoggingInterval());
       // advanced config
       userDefined.clear();
       if (jobEntry.getUserDefined() != null) {
@@ -210,6 +214,8 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
       tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("num-reduce-tasks");
       tempBox.setVariableSpace(varSpace);
       tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("logging-interval");
+      tempBox.setVariableSpace(varSpace);
+      tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("simple-logging-interval");
       tempBox.setVariableSpace(varSpace);
       
       aConf.setBlocking(jobEntry.isBlocking());
@@ -364,6 +370,10 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
     firePropertyChange(JobEntryHadoopJobExecutorController.IS_SIMPLE, previousVal, newVal);
   }
 
+  public void invertSimpleBlocking() {
+    sConf.setSimpleBlocking(!sConf.isSimpleBlocking());
+  }
+
   public void invertBlocking() {
     aConf.setBlocking(!aConf.isBlocking());
   }
@@ -378,8 +388,12 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
 
   public class SimpleConfiguration extends XulEventSourceAdapter {
     public static final String CMD_LINE_ARGS = "commandLineArgs"; //$NON-NLS-1$
+    public static final String BLOCKING = "simpleBlocking"; //$NON-NLS-1$
+    public static final String LOGGING_INTERVAL = "simpleLoggingInterval"; //$NON-NLS-1$
 
     private String cmdLineArgs;
+    private boolean simpleBlocking;
+    private String simpleLoggingInterval = "60";
 
     public String getCommandLineArgs() {
       return cmdLineArgs;
@@ -392,6 +406,26 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
       this.cmdLineArgs = cmdLineArgs;
 
       firePropertyChange(SimpleConfiguration.CMD_LINE_ARGS, previousVal, newVal);
+    }
+
+    public boolean isSimpleBlocking() {
+      return simpleBlocking;
+    }
+
+    public void setSimpleBlocking(boolean simpleBlocking) {
+      boolean old = this.simpleBlocking;
+      this.simpleBlocking = simpleBlocking;
+      firePropertyChange(SimpleConfiguration.BLOCKING, old, this.simpleBlocking);
+    }
+
+    public String getSimpleLoggingInterval() {
+      return simpleLoggingInterval;
+    }
+
+    public void setSimpleLoggingInterval(String simpleLoggingInterval) {
+      String old = this.simpleLoggingInterval;
+      this.simpleLoggingInterval = simpleLoggingInterval;
+      firePropertyChange(SimpleConfiguration.LOGGING_INTERVAL, old, this.simpleLoggingInterval);
     }
   }
 

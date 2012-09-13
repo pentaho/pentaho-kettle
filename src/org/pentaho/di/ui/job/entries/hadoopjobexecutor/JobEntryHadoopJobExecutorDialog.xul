@@ -50,14 +50,29 @@
 	</vbox>
 	
 	<vbox id="simple-configuration" hidden="true">
-	<!--	<label value="${JobEntryHadoopJobExecutor.ModeSimple.AssumptionsText.Label}"/> -->
-		<hbox>
-			<label value="${JobEntryHadoopJobExecutor.ModeSimple.CommandLineArguments.Label}"/>
-			<textbox pen:customclass="variabletextbox" id="command-line-arguments" flex="1" multiline="false"/>
-		</hbox>
+	 <grid>
+	   <columns>
+	     <column />
+	     <column flex="1" />
+     </columns>
+	   <rows>
+	     <row>
+        <label value="${JobEntryHadoopJobExecutor.ModeSimple.CommandLineArguments.Label}"/>
+        <textbox pen:customclass="variabletextbox" id="command-line-arguments" flex="1" multiline="false"/>
+	     </row>
+	     <row>
+        <label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Blocking.Label}" />
+        <checkbox id="simple-blocking" flex="1" command="jobEntryController.invertSimpleBlocking()"/>
+	     </row>
+	     <row>
+        <label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Logging.Interval.Label}" />
+        <textbox pen:customclass="variabletextbox" id="simple-logging-interval" width="80" flex="1" multiline="false"/>
+	     </row>
+     </rows>
+   </grid>
 	</vbox>
 	
-	<vbox id="advanced-configuration" hidden="true">
+	<vbox id="advanced-configuration" hidden="true" flex="1">
 		<tabbox>
 			<tabs>
 				<tab label="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Classes.Label}"/>
