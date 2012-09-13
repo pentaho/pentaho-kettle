@@ -24,11 +24,16 @@ package org.pentaho.di.job.entries.hadoopjobexecutor;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
@@ -59,7 +64,13 @@ import org.w3c.dom.Node;
 @JobEntry(id = "HadoopJobExecutorPlugin", name = "Hadoop Job Executor", categoryDescription = "Big Data", description = "Execute MapReduce jobs in Hadoop", image = "HDE.png")
 public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable, JobEntryInterface {
 
+  private static SecurityManagerStack smStack = new SecurityManagerStack();
+  
+  private static final String DEFAULT_LOGGING_INTERVAL = "60";
+
   private static Class<?> PKG = JobEntryHadoopJobExecutor.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
+
+  private JarUtility util = new JarUtility();
 
   private String hadoopJobName;
 
@@ -89,7 +100,9 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
   private String outputPath;
 
   private boolean blocking;
-  private String loggingInterval = "60"; // 60 seconds default
+  private String loggingInterval = DEFAULT_LOGGING_INTERVAL; // 60 seconds default
+  private boolean simpleBlocking;
+  private String simpleLoggingInterval = loggingInterval;
 
   private String numMapTasks = "1";
   private String numReduceTasks = "1";
@@ -249,7 +262,7 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
   }
 
   public String getLoggingInterval() {
-    return loggingInterval;
+    return loggingInterval == null ? DEFAULT_LOGGING_INTERVAL : loggingInterval;
   }
 
   public void setLoggingInterval(String loggingInterval) {
@@ -279,9 +292,20 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
   public void setNumReduceTasks(String numReduceTasks) {
     this.numReduceTasks = numReduceTasks;
   }
-  
-  @SuppressWarnings("deprecation")
-  public Result execute(Result result, int arg1) throws KettleException {
+
+  /**
+   * Restore the security manager if we're done executing all our threads.
+   * @param counter Thread counter
+   * @param nesm Security Manager we set
+   */
+  private void restoreSecurityManager(AtomicInteger counter, NoExitSecurityManager nesm) {
+    if (counter.decrementAndGet() == 0) {
+      // Restore the cached security manager after all threads have completed
+      smStack.removeSecurityManager(nesm);
+    }
+  }
+
+  public Result execute(final Result result, int arg1) throws KettleException {
     result.setNrErrors(0);
     
     Log4jFileAppender appender = null;
@@ -309,73 +333,112 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
         resolvedJarUrl = new URL(jarUrlS);
       }
       
-      final String cmdLineArgsS = environmentSubstitute(cmdLineArgs);
-
       if (log.isDetailed())
         logDetailed(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.ResolvedJar", resolvedJarUrl.toExternalForm()));
 
       HadoopShim shim = HadoopConfigurationBootstrap.getHadoopConfigurationProvider().getActiveConfiguration().getHadoopShim();
       
       if (isSimple) {
-  /*      final AtomicInteger taskCount = new AtomicInteger(0);
-        final AtomicInteger successCount = new AtomicInteger(0);
-        final AtomicInteger failedCount = new AtomicInteger(0); */
-        
-        if (log.isDetailed())
+        String simpleLoggingIntervalS = environmentSubstitute(getSimpleLoggingInterval());
+        int simpleLogInt = 60;
+        try {
+          simpleLogInt = Integer.parseInt(simpleLoggingIntervalS, 10);
+        } catch (NumberFormatException e) {
+          logError(BaseMessages.getString(PKG, "ErrorParsingLogInterval", simpleLoggingIntervalS, simpleLogInt));
+        }
+
+        final Class<?> mainClass = util.getMainClassFromManifest(resolvedJarUrl, shim.getClass().getClassLoader());
+
+        if (log.isDetailed()) {
           logDetailed(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.SimpleMode"));
-        List<Class<?>> classesWithMains = JarUtility.getClassesInJarWithMain(resolvedJarUrl.toExternalForm(), shim.getClass().getClassLoader());        
-        for (final Class<?> clazz : classesWithMains) {
-          Runnable r = new Runnable() {
-            public void run() {
-              try {
-                final ClassLoader cl = Thread.currentThread().getContextClassLoader();
+        }
+        List<Class<?>> classesWithMains = new ArrayList<Class<?>>();
+        if (mainClass == null) {
+          classesWithMains.addAll(util.getClassesInJarWithMain(resolvedJarUrl.toExternalForm(), shim.getClass().getClassLoader()));
+        } else {
+          classesWithMains.add(mainClass);
+        }
+        final AtomicInteger threads = new AtomicInteger(classesWithMains.size());
+        final NoExitSecurityManager nesm = new NoExitSecurityManager(System.getSecurityManager());
+        smStack.setSecurityManager(nesm);
+        try {
+          for (final Class<?> clazz : classesWithMains) {
+            Runnable r = new Runnable() {
+              public void run() {
                 try {
-//                  taskCount.incrementAndGet();
-                  Thread.currentThread().setContextClassLoader(clazz.getClassLoader());
-                  Method mainMethod = clazz.getMethod("main", new Class[] { String[].class });
-                  Object[] args = (cmdLineArgsS != null) ? new Object[] { cmdLineArgsS.split(" ") } : new Object[0];
-                  mainMethod.invoke(null, args);
-                } finally {
-                  Thread.currentThread().setContextClassLoader(cl);
-//                  successCount.incrementAndGet();
-//                  taskCount.decrementAndGet();
+                  try {
+                    executeMainMethod(clazz);
+                  } finally {
+                    restoreSecurityManager(threads, nesm);
+                  }
+                } catch (NoExitSecurityManager.NoExitSecurityException ex) {
+                  // Only log if we're blocking and waiting for this to complete
+                  if (simpleBlocking) {
+                    logExitStatus(result, clazz, ex);
+                  }
+                } catch (InvocationTargetException ex) {
+                  if (ex.getTargetException() instanceof NoExitSecurityManager.NoExitSecurityException) {
+                    // Only log if we're blocking and waiting for this to complete
+                    if (simpleBlocking) {
+                      logExitStatus(result, clazz,
+                          (NoExitSecurityManager.NoExitSecurityException) ex.getTargetException());
+                    }
+                  } else {
+                    throw new RuntimeException(ex);
+                  }
+                } catch (Exception ex) {
+                  throw new RuntimeException(ex);
                 }
-              } catch (Throwable ignored) {
-                // skip, try the next one
-//                logError(ignored.getMessage());
-//                failedCount.incrementAndGet();
-                ignored.printStackTrace();
+              }
+            };
+            Thread t = new Thread(r);
+	          t.setDaemon(true);
+	          t.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+              @Override
+              public void uncaughtException(Thread t, Throwable e) {
+                restoreSecurityManager(threads, nesm);
+                if (simpleBlocking) {
+                  // Only log if we're blocking and waiting for this to complete
+                  logError(BaseMessages.getString(JobEntryHadoopJobExecutor.class, "JobEntryHadoopJobExecutor.ErrorExecutingClass", clazz.getName()), e);
+                  result.setResult(false);
+                }
+              }
+            });
+            nesm.addBlockedThread(t);
+            t.start();
+            if (simpleBlocking) {
+              // wait until the thread is done
+              do {
+                logDetailed(BaseMessages.getString(JobEntryHadoopJobExecutor.class, "JobEntryHadoopJobExecutor.Blocking", clazz.getName()));
+                t.join(simpleLogInt * 1000);
+              } while(!parentJob.isStopped() && t.isAlive());
+              if (t.isAlive()) {
+                // Kill thread if it's still running. The job must have been stopped.
+                t.interrupt();
               }
             }
-          };
-          Thread t = new Thread(r);
-          t.start();
-        }                
-
-        // uncomment to implement blocking
-        /* if (blocking) {
-          while (taskCount.get() > 0 && !parentJob.isStopped()) {
-            Thread.sleep(1000);
+	        }
+        } finally {
+          // If we're not performing simple blocking spawn a watchdog thread to restore the security manager when all threads are complete
+          if (!simpleBlocking) {
+            Runnable threadWatchdog = new Runnable() {
+              @Override
+              public void run() {
+                while (threads.get() > 0) {
+                  try {
+                    Thread.sleep(100);
+                  } catch (InterruptedException e) {
+                    /* ignore */
+                  }
+                }
+                restoreSecurityManager(threads, nesm);
+              }
+            };
+            Thread watchdog = new Thread(threadWatchdog);
+            watchdog.setDaemon(true);
+            watchdog.start();
           }
-
-          if (!parentJob.isStopped()) {
-            result.setResult(successCount.get() > 0);
-            result.setNrErrors((successCount.get() > 0) ? 0 : 1);
-          } else {
-            // we can't really know at this stage if 
-            // the hadoop job will finish successfully 
-            // because we have to stop now
-            result.setResult(true); // look on the bright side of life :-)...
-            result.setNrErrors(0);
-          }
-        } else { */
-          // non-blocking - just set success equal to no failures arising
-          // from invocation
-//          result.setResult(failedCount.get() == 0);
-//          result.setNrErrors(failedCount.get());
-        result.setResult(true);
-        result.setNrErrors(0);
-       /* } */
+        }
       } else {
         if (log.isDetailed())
           logDetailed(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.AdvancedMode"));
@@ -478,13 +541,12 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
 
         RunningJob runningJob = shim.submitJob(conf);
         
-        String loggingIntervalS = environmentSubstitute(loggingInterval);
+        String loggingIntervalS = environmentSubstitute(getLoggingInterval());
         int logIntv = 60;
         try {
           logIntv = Integer.parseInt(loggingIntervalS);
         } catch (NumberFormatException e) {
-          logError("Can't parse logging interval '" + loggingIntervalS + "'. Setting " +
-          "logging interval to 60");
+          logError(BaseMessages.getString(PKG, "ErrorParsingLogInterval", loggingIntervalS, logIntv));
         }
         if (blocking) {
           try {
@@ -575,6 +637,44 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
     return tcEvents.length;
   }
 
+  /**
+   * Log the status of an attempt to exit the JVM while executing the provided class' main method.
+   *
+   * @param result Result to update with failure condition if exit status code was not 0
+   * @param mainClass Main class we were executing
+   * @param ex Exception caught while executing the class provided
+   */
+  private void logExitStatus(Result result, Class<?> mainClass, NoExitSecurityManager.NoExitSecurityException ex) {
+    // Only error if exit code is not 0
+    if (ex.getStatus() != 0) {
+      result.setStopped(true);
+      result.setNrErrors(1);
+      result.setResult(false);
+      logError(BaseMessages.getString(PKG, "JobEntryHadoopJobExecutor.FailedToExecuteClass", mainClass.getName(), ex.getStatus()));
+    }
+  }
+
+  /**
+   * Execute the main method of the provided class with the current command line arguments.
+   *
+   * @param clazz Class with main method to execute
+   * @throws NoSuchMethodException
+   * @throws IllegalAccessException
+   * @throws InvocationTargetException
+   */
+  protected void executeMainMethod(Class<?> clazz) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException {
+    final ClassLoader cl = Thread.currentThread().getContextClassLoader();
+    try {
+      Thread.currentThread().setContextClassLoader(clazz.getClassLoader());
+      Method mainMethod = clazz.getMethod("main", new Class[] { String[].class });
+      String commandLineArgs = environmentSubstitute(cmdLineArgs);
+      Object[] args = (commandLineArgs != null) ? new Object[] { commandLineArgs.split(" ") } : new Object[0];
+      mainMethod.invoke(null, args);
+    } finally {
+      Thread.currentThread().setContextClassLoader(cl);
+    }
+  }
+
   public void printJobStatus(RunningJob runningJob) throws IOException {
     if (log.isBasic()) {
       float setupPercent = runningJob.setupProgress() * 100f;
@@ -591,11 +691,9 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
     isSimple = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "simple"));
     jarUrl = XMLHandler.getTagValue(entrynode, "jar_url");
     cmdLineArgs = XMLHandler.getTagValue(entrynode, "command_line_args");
+    simpleBlocking = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "simple_blocking"));
     blocking = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "blocking"));
-    /*try {
-      loggingInterval = Integer.parseInt(XMLHandler.getTagValue(entrynode, "logging_interval"));
-    } catch (NumberFormatException nfe) {
-    } */
+    simpleLoggingInterval = XMLHandler.getTagValue(entrynode, "simple_logging_interval");
     loggingInterval = XMLHandler.getTagValue(entrynode, "logging_interval");
 
     mapperClass = XMLHandler.getTagValue(entrynode, "mapper_class");
@@ -641,8 +739,10 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
     retval.append("      ").append(XMLHandler.addTagValue("simple", isSimple));
     retval.append("      ").append(XMLHandler.addTagValue("jar_url", jarUrl));
     retval.append("      ").append(XMLHandler.addTagValue("command_line_args", cmdLineArgs));
+    retval.append("      ").append(XMLHandler.addTagValue("simple_blocking", simpleBlocking));
     retval.append("      ").append(XMLHandler.addTagValue("blocking", blocking));
     retval.append("      ").append(XMLHandler.addTagValue("logging_interval", loggingInterval));
+    retval.append("      ").append(XMLHandler.addTagValue("simple_logging_interval", simpleLoggingInterval));
     retval.append("      ").append(XMLHandler.addTagValue("hadoop_job_name", hadoopJobName));
 
     retval.append("      ").append(XMLHandler.addTagValue("mapper_class", mapperClass));
@@ -688,8 +788,9 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
 
       setJarUrl(rep.getJobEntryAttributeString(id_jobentry, "jar_url"));
       setCmdLineArgs(rep.getJobEntryAttributeString(id_jobentry, "command_line_args"));
+      setSimpleBlocking(rep.getJobEntryAttributeBoolean(id_jobentry, "simple_blocking"));
       setBlocking(rep.getJobEntryAttributeBoolean(id_jobentry, "blocking"));
-      //setLoggingInterval(new Long(rep.getJobEntryAttributeInteger(id_jobentry, "logging_interval")).intValue());
+      setSimpleLoggingInterval(rep.getJobEntryAttributeString(id_jobentry, "simple_logging_interval"));
       setLoggingInterval(rep.getJobEntryAttributeString(id_jobentry, "logging_interval"));
 
       setMapperClass(rep.getJobEntryAttributeString(id_jobentry, "mapper_class"));
@@ -740,7 +841,9 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
 
       rep.saveJobEntryAttribute(id_job, getObjectId(),"jar_url", jarUrl); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getObjectId(),"command_line_args", cmdLineArgs); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(),"simple_blocking", simpleBlocking); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getObjectId(),"blocking", blocking); //$NON-NLS-1$
+      rep.saveJobEntryAttribute(id_job, getObjectId(),"simple_logging_interval", simpleLoggingInterval); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getObjectId(),"logging_interval", loggingInterval); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getObjectId(),"hadoop_job_name", hadoopJobName); //$NON-NLS-1$
 
@@ -787,4 +890,19 @@ public class JobEntryHadoopJobExecutor extends JobEntryBase implements Cloneable
     return true;
   }
 
+  public String getSimpleLoggingInterval() {
+    return simpleLoggingInterval == null ? DEFAULT_LOGGING_INTERVAL : simpleLoggingInterval;
+  }
+
+  public void setSimpleLoggingInterval(String simpleLoggingInterval) {
+    this.simpleLoggingInterval = simpleLoggingInterval;
+  }
+
+  public boolean isSimpleBlocking() {
+    return simpleBlocking;
+  }
+
+  public void setSimpleBlocking(boolean simpleBlocking) {
+    this.simpleBlocking = simpleBlocking;
+  }
 }

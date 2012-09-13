@@ -24,19 +24,62 @@ package org.pentaho.di.job.entries.hadoopjobexecutor;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
+import java.util.jar.Manifest;
 
+/**
+ * Utility class for working with Jar files in the context of configuring
+ * MapReduce jobs.
+ */
 public class JarUtility {
 
-  public static List<Class<?>> getClassesInJarWithMain(String jarUrl, ClassLoader parentClassloader) throws MalformedURLException {
+  /**
+   * Get the Main-Class declaration from a Jar's manifest.
+   * 
+   * @param jarUrl URL to the Jar file
+   * @param parentClassLoader Class loader to delegate to when loading classes outside the jar.
+   * @return Class defined by Main-Class manifest attribute, {@code null} if not defined.
+   * @throws IOException Error opening jar file
+   * @throws ClassNotFoundException Error locating the main class as defined in the manifest
+   */
+  public Class<?> getMainClassFromManifest(URL jarUrl, ClassLoader parentClassLoader) throws IOException, ClassNotFoundException {
+    if (jarUrl == null || parentClassLoader == null) {
+      throw new NullPointerException();
+    }
+    JarFile jarFile;
+    try {
+      jarFile = new JarFile(new File(jarUrl.toURI()));
+    } catch (URISyntaxException ex) {
+      throw new IOException("Error locating jar: " + jarUrl);
+    } catch(IOException ex) {
+      throw new IOException("Error opening job jar: " + jarUrl, ex);
+    }
+    try {
+      Manifest manifest = jarFile.getManifest();
+      String className = manifest == null ? null : manifest.getMainAttributes().getValue("Main-Class");
+      if (className != null) {
+        URLClassLoader cl = new URLClassLoader(new URL[] {jarUrl}, parentClassLoader);
+        return cl.loadClass(className);
+      } else {
+        return null;
+      }
+    } finally {
+      jarFile.close();
+    }
+  }
+  
+  public List<Class<?>> getClassesInJarWithMain(String jarUrl, ClassLoader parentClassloader) throws MalformedURLException {
     ArrayList<Class<?>> mainClasses = new ArrayList<Class<?>>();
     List<Class<?>> allClasses = JarUtility.getClassesInJar(jarUrl, parentClassloader);
     for (Class<?> clazz : allClasses) {
