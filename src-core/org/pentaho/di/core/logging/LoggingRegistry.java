@@ -210,9 +210,7 @@ public class LoggingRegistry {
 		if (parentLogChannelId==null) {
 			return null;
 		}
-		List<String> list = new ArrayList<String>();
-		
-		getLogChannelChildren(list, parentLogChannelId);
+        List<String> list = getLogChannelChildren(new ArrayList<String>(), parentLogChannelId);
 		list.add(parentLogChannelId);
 		return list;
 	}
@@ -222,32 +220,34 @@ public class LoggingRegistry {
 	 * 
 	 * @param children the list of children that is maintained
 	 * @param parentLogChannelId The parent log channel ID
-	 * 
+     * @return the list of child channel ID, not including the parent.
 	 */
-	private void getLogChannelChildren(List<String> children, String parentLogChannelId) {
+    private List<String> getLogChannelChildren(List<String> children, String parentLogChannelId) {
 
 	  synchronized(childrenMap) {
   		List<String> list = childrenMap.get(parentLogChannelId);
   		if (list==null) {
-  		  // Nothing to add 
+        list = new ArrayList<String>();
+        // This is the only place where we'll add something: at the bottom of the tree.
+        // This means that we won't have to do duplicate detection anymore.
   		  //
-  		} else {
-    		// Add all the children
-  		  //
+        children.add(parentLogChannelId);
+        return list;
+      }
+      
     		Iterator<String> kids = list.iterator();
     		while (kids.hasNext()) {
     		  String logChannelId = kids.next();
     		  
     		  // Search deeper into the tree...
     		  //
-          getLogChannelChildren(children, logChannelId);
-          
-          // Also add the kid
-          //
+        if(getLogChannelChildren(children, logChannelId) != null) {
           children.add(logChannelId);
     		}
   		}
 	  }		
+
+    return children;
 	}
 	
 	public Date getLastModificationTime() {
