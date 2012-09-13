@@ -102,7 +102,7 @@ public class LoggingRegistry {
       // Return the previous log channel ID
       //
       return found.getLogChannelId();
-    }
+    	}
 
     // Nothing was found, generate a new ID and store it in the registry...
     //
@@ -120,10 +120,10 @@ public class LoggingRegistry {
         List<String> parentChildren = childrenMap.get(parentLogChannelId);
         if (parentChildren==null) {
           parentChildren = new ArrayList<String>();
-          childrenMap.put(parentLogChannelId, parentChildren);
+        	  childrenMap.put(parentLogChannelId, parentChildren);
+          }
+        	parentChildren.add(logChannelId);
         }
-        parentChildren.add(logChannelId);
-      }
     }
     
     lastModificationTime = new Date();
@@ -230,10 +230,11 @@ public class LoggingRegistry {
       Iterator<String> kids = list.iterator();
       while (kids.hasNext()) {
         String logChannelId = kids.next();
-
         // Search deeper into the tree...
         //
-        getLogChannelChildren(children, logChannelId);
+        if(getLogChannelChildren(children, logChannelId) != null) {
+        	children.add(logChannelId);
+        }
       }
       
     }
