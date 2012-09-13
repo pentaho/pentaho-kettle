@@ -1188,15 +1188,18 @@ public class HadoopFileOutputDialog extends BaseStepDialog implements StepDialog
 						if (wFilename.getText()!=null) {
 							String fileName = transMeta.environmentSubstitute(wFilename.getText());
 							if(fileName != null && !fileName.equals("")) {
-								initialFile = KettleVFS.getFileObject(fileName);
-                                rootFile = initialFile.getFileSystem().getRoot();
-							} else {
-								initialFile = KettleVFS.getFileObject(Spoon.getInstance().getLastFileOpened());
+							  try {
+							    initialFile = KettleVFS.getFileObject(fileName);
+							    rootFile = initialFile.getFileSystem().getRoot();
+							    defaultInitialFile = initialFile;
+							  } catch (KettleFileException ex) {
+							    // Ignore, unable to obtain initial file, use default
+							  }
 							}
 						}
 						
-						defaultInitialFile = KettleVFS.getFileObject("file:///c:/");
             if (rootFile == null) {
+              defaultInitialFile = KettleVFS.getFileObject(Spoon.getInstance().getLastFileOpened());
               rootFile = defaultInitialFile.getFileSystem().getRoot();
               initialFile = defaultInitialFile;
             }
