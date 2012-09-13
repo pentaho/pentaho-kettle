@@ -77,10 +77,16 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
   private TextVar   wDelimiter;
   private TextVar   wCharSet;
   private TextVar   wErrorFile;
+  private TextVar   wBufferSize;
+  private TextVar   wMaxErrors;
   private Button  wContinueOnError;
   private Button  wUseStandardConversion;
+  private Button  wUseAuthentication;
   private Button  wUseDynamicVNode;
   private Button  wUseSSV;
+  private Button  wEscapeSpecialChars;
+  private Button  wUseVwload;
+  private Button  wTruncateTable;
 
   /**
    * List of ColumnInfo that should have the field names of the selected database table
@@ -222,7 +228,7 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
     FormData fdFields=new FormData();
     fdFields.left  = new FormAttachment(0, 0);
     fdFields.top   = new FormAttachment(wlFields, margin);
-    fdFields.right = new FormAttachment(wGetFields, -margin);
+    fdFields.right = new FormAttachment(wDoMapping, -margin);
     fdFields.bottom= new FormAttachment(wOK, -2 * margin);
     wFields.setLayoutData(fdFields);
 
@@ -271,16 +277,23 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
                 }
             }
         );
-    wDelimiter = addStandardTextVar(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.Delimiter.Label"), wUseSSV);
+    wEscapeSpecialChars = addStandardCheckBox(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.EscapeSpecialChars.Label"), wUseSSV);
+    wUseVwload = addStandardCheckBox(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.UseVwload.Label"), wEscapeSpecialChars);
+    wTruncateTable = addStandardCheckBox(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.TruncateTable.Label"), wUseVwload);
+    wDelimiter = addStandardTextVar(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.Delimiter.Label"), wTruncateTable);
     wCharSet = addStandardTextVar(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.Charset.Label"), wDelimiter);
-    wUseStandardConversion = addStandardCheckBox(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.UseStandardConversion.Label"), wCharSet);
+    wBufferSize = addStandardTextVar(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.BufferSize.Label"), wCharSet);
+    wUseStandardConversion = addStandardCheckBox(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.UseStandardConversion.Label"), wBufferSize);
     wUseStandardConversion.addSelectionListener(lsSelMod);
-    wContinueOnError = addStandardCheckBox(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.ContinueOnError.Label"), wUseStandardConversion);
+    wUseAuthentication = addStandardCheckBox(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.UseAuthentication.Label"), wUseStandardConversion);
+    wUseAuthentication.addSelectionListener(lsSelMod);
+    wContinueOnError = addStandardCheckBox(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.ContinueOnError.Label"), wUseAuthentication);
     wContinueOnError.addSelectionListener(lsSelMod);
     wErrorFile = addStandardTextVar(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.ErrorFile.Label"), wContinueOnError);
     wErrorFile.addModifyListener(lsMod);
     //standard is disabled
     wErrorFile.setEnabled(false);
+    wMaxErrors = addStandardTextVar(BaseMessages.getString(PKG, "IngresVectorwiseLoaderDialog.MaxErrors.Label"), wErrorFile);
     wContinueOnError.addSelectionListener(
             new SelectionAdapter()
             {
@@ -288,15 +301,17 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
                 {
                     if (wContinueOnError.getSelection())  {
                       wErrorFile.setEnabled(true);
+                      wMaxErrors.setEnabled(true);
                     }else{
                       wErrorFile.setEnabled(false);
+                      wMaxErrors.setEnabled(false);
                     }
                 }
             }
         );
    
     
-    return wErrorFile;
+    return wMaxErrors;
   }
 
   protected CCombo addStandardSelect(String labelMessageKey, Control prevControl, String[] choices) {
@@ -333,6 +348,7 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
   protected Button addStandardCheckBox(String labelMessageKey, Control prevControl) {
       Label label = addStandardLabel(labelMessageKey, prevControl);
       Button targetControl = new Button(shell, SWT.CHECK);
+      props.setLook(targetControl);
       targetControl.addSelectionListener(new SelectionAdapter() {
         public void widgetSelected(SelectionEvent e) {
           input.setChanged();
@@ -460,19 +476,25 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
     wFifoFile.setText(Const.NVL(input.getFifoFileName(), ""));
     wSqlPath.setText(Const.NVL(input.getSqlPath(), ""));
     wUseSSV.setSelection(input.isUseSSV());
+    wEscapeSpecialChars.setSelection(input.isEscapingSpecialCharacters());
+    wUseVwload.setSelection(input.isUsingVwload());
+    wTruncateTable.setSelection(input.isTruncatingTable());
     if(input.isUseSSV()){
       wDelimiter.setEnabled(false);
     }
     wDelimiter.setText(Const.NVL(input.getDelimiter(), ""));   //$NON-NLS-1$
     wCharSet.setText(Const.NVL(input.getEncoding(), ""));   //$NON-NLS-1$
+    wBufferSize.setText(Const.NVL(input.getBufferSize(), ""));   //$NON-NLS-1$
     
     wUseStandardConversion.setSelection(input.isUseStandardConversion());
+    wUseAuthentication.setSelection(input.isUseAuthentication());
     wUseDynamicVNode.setSelection(input.isUseDynamicVNode());
     wContinueOnError.setSelection(input.isContinueOnError());
     wErrorFile.setText(Const.NVL(input.getErrorFileName(),""));
     if(input.isContinueOnError()){
       wErrorFile.setEnabled(true);
     }
+    wMaxErrors.setText(Const.NVL(input.getMaxNrErrors(),""));
     
 
     for (int i=0; i<input.getFieldDatabase().length; i++)
@@ -495,12 +517,17 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
     input.setFifoFileName(wFifoFile.getText());
     input.setSqlPath(wSqlPath.getText());
     input.setUseSSV(wUseSSV.getSelection());
+    input.setEscapingSpecialCharacters(wEscapeSpecialChars.getSelection());
+    input.setUsingVwload(wUseVwload.getSelection());
+    input.setTruncatingTable(wTruncateTable.getSelection());
     input.setDelimiter( wDelimiter.getText() );
     input.setEncoding( wCharSet.getText() );
+    input.setBufferSize( wBufferSize.getText() );
     input.setUseStandardConversion(wUseStandardConversion.getSelection());
     input.setContinueOnError(wContinueOnError.getSelection());
     input.setErrorFileName(wErrorFile.getText());
     input.setUseDynamicVNode(wUseDynamicVNode.getSelection());
+    input.setMaxNrErrors(wMaxErrors.getText());
 
     int nrRows = wFields.nrNonEmpty();        
     input.allocate(nrRows);      
