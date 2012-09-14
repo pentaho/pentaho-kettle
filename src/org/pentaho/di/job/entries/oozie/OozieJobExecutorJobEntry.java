@@ -139,6 +139,18 @@ public class OozieJobExecutorJobEntry extends AbstractJobEntry<OozieJobExecutorC
       }
     }
 
+    boolean pollingIntervalValid = false;
+    try {
+      long pollingInterval = JobEntryUtils.asLong(config.getBlockingPollingInterval(), variables);
+      pollingIntervalValid = pollingInterval > 0;
+    } catch (Exception ex) {
+      // ignore, polling interval is not valid
+    }
+    if (!pollingIntervalValid) {
+      messages.add(BaseMessages.getString(OozieJobExecutorJobEntry.class,
+          "ValidationMessages.Invalid.PollingInterval"));
+    } 
+
     return messages;
   }
 
