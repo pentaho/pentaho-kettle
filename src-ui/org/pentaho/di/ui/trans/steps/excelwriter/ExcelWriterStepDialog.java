@@ -97,6 +97,10 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 	private CCombo wExtension;
 	private FormData fdlExtension, fdExtension;
 
+	private Label wlStreamData;
+	private Button wStreamData;
+	private FormData fdlStreamData, fdStreamData;
+	
 	private Label wlAddStepnr;
 	private Button wAddStepnr;
 	private FormData fdlAddStepnr, fdAddStepnr;
@@ -375,13 +379,34 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 		fdExtension.right = new FormAttachment(wbFilename, -margin);
 		wExtension.setLayoutData(fdExtension);
 
+    wlStreamData = new Label(fileGroup, SWT.RIGHT);
+    wlStreamData.setText(BaseMessages.getString(PKG, "ExcelWriterDialog.StreamData.Label"));
+    props.setLook(wlStreamData);
+    fdlStreamData = new FormData();
+    fdlStreamData.left = new FormAttachment(0, 0);
+    fdlStreamData.top = new FormAttachment(wExtension, margin);
+    fdlStreamData.right = new FormAttachment(middle, -margin);
+    wlStreamData.setLayoutData(fdlStreamData);
+    wStreamData = new Button(fileGroup, SWT.CHECK);
+    props.setLook(wStreamData);
+    fdStreamData = new FormData();
+    fdStreamData.left = new FormAttachment(middle, 0);
+    fdStreamData.top = new FormAttachment(wExtension, margin);
+    fdStreamData.right = new FormAttachment(100, 0);
+    wStreamData.setLayoutData(fdStreamData);
+    wStreamData.addSelectionListener(new SelectionAdapter() {
+      public void widgetSelected(SelectionEvent e) {
+        input.setChanged();
+      }
+    });
+		
 		// split every x rows
 		wlSplitEvery = new Label(fileGroup, SWT.RIGHT);
 		wlSplitEvery.setText(BaseMessages.getString(PKG, "ExcelWriterDialog.SplitEvery.Label"));
 		props.setLook(wlSplitEvery);
 		fdlSplitEvery = new FormData();
 		fdlSplitEvery.left = new FormAttachment(0, 0);
-		fdlSplitEvery.top = new FormAttachment(wExtension, margin);
+		fdlSplitEvery.top = new FormAttachment(wStreamData, margin);
 		fdlSplitEvery.right = new FormAttachment(middle, -margin);
 		wlSplitEvery.setLayoutData(fdlSplitEvery);
 		wSplitEvery = new Text(fileGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -390,7 +415,7 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 		wSplitEvery.setToolTipText(BaseMessages.getString(PKG, "ExcelWriterDialog.SplitEvery.Tooltip"));
 		fdSplitEvery = new FormData();
 		fdSplitEvery.left = new FormAttachment(middle, 0);
-		fdSplitEvery.top = new FormAttachment(wExtension, margin);
+		fdSplitEvery.top = new FormAttachment(wStreamData, margin);
 		fdSplitEvery.right = new FormAttachment(100, 0);
 		wSplitEvery.setLayoutData(fdSplitEvery);
 
@@ -1542,6 +1567,7 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 
 		}
 
+    wStreamData.setSelection(input.isStreamingData());
 		wSplitEvery.setText("" + input.getSplitEvery());
 		wEmptyRows.setText("" + input.getAppendEmpty());
 		wSkipRows.setText("" + input.getAppendOffset());
@@ -1643,6 +1669,7 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 
 	private void getInfo(ExcelWriterStepMeta tfoi) {
 		tfoi.setFileName(wFilename.getText());
+    tfoi.setStreamingData(wStreamData.getSelection());
 		tfoi.setDoNotOpenNewFileInit(wDoNotOpenNewFileInit.getSelection());
 		tfoi.setAppendOmitHeader(wOmitHeader.getSelection());
 		tfoi.setExtension((String) wExtension.getData(wExtension.getText()));
@@ -1737,9 +1764,11 @@ public class ExcelWriterStepDialog extends BaseStepDialog implements StepDialogI
 		if (wExtension.getSelectionIndex() == 0) {
 			wPassword.setEnabled(wProtectSheet.getSelection());
 			wProtectedBy.setEnabled(wProtectSheet.getSelection());
+			wStreamData.setEnabled(false);
 		} else {
 			wPassword.setEnabled(false);
 			wProtectedBy.setEnabled(false);
+      wStreamData.setEnabled(true);
 		}
 	}
 

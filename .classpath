@@ -12,7 +12,7 @@
 	<classpathentry kind="src" path="src-plugins/kettle-palo-plugin/src"/>
 	<classpathentry kind="src" path="src-plugins/kettle-openerp-plugin/src"/>
 	<classpathentry kind="src" path="src-jdbc"/>
-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="lib" path="libext/js.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/mail-1.4.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/javadbf.jar" sourcepath="/javadbf/javadbf"/>
@@ -288,5 +288,6 @@
 	<classpathentry kind="lib" path="libext/poi/poi-ooxml-3.8-20120326.jar"/>
 	<classpathentry kind="lib" path="libext/poi/poi-ooxml-schemas-3.8-20120326.jar"/>
 	<classpathentry kind="lib" path="libext/eobjects/SassyReader-0.5.jar"/>
+	<classpathentry kind="lib" path="libext/pentaho/pentaho-metadata-TRUNK-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

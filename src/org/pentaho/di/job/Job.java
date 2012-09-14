@@ -67,6 +67,7 @@ import org.pentaho.di.core.logging.LoggingHierarchy;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.LoggingRegistry;
+import org.pentaho.di.core.logging.Metrics;
 import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.NamedParams;
 import org.pentaho.di.core.parameters.NamedParamsDefault;
@@ -393,75 +394,81 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
    * @throws KettleException
    */
   private Result execute() throws KettleException {
-    finished.set(false);
-    stopped.set(false);
-    captureSystemEnvironment();
-
-    // Calculate the transaction ID prior to execution
-    //
-    transactionId = calculateTransactionId();
-
-    log.logMinimal(BaseMessages.getString(PKG, "Job.Comment.JobStarted"));
-
-    // Start the tracking...
-    JobEntryResult jerStart = new JobEntryResult(null, null, BaseMessages.getString(PKG, "Job.Comment.JobStarted"), BaseMessages.getString(PKG, "Job.Reason.Started"), null, 0, null);
-    jobTracker.addJobTracker(new JobTracker(jobMeta, jerStart));
-
-    active.set(true);
-
-    // Where do we start?
-    JobEntryCopy startpoint;
-
-    // synchronize this to a parent job if needed.
-    //
-    Object syncObject = this;
-    if (parentJob != null) {
-      syncObject = parentJob; // parallel execution in a job
-    }
-    
-    synchronized (syncObject) {
-      beginProcessing();
-    }
-
-    if (startJobEntryCopy == null) {
-      startpoint = jobMeta.findJobEntry(JobMeta.STRING_SPECIAL_START, 0, false);
-    } else {
-      startpoint = startJobEntryCopy;
-    }
-    if (startpoint == null) {
-      throw new KettleJobException(BaseMessages.getString(PKG, "Job.Log.CounldNotFindStartingPoint"));
-    }
-
-    Result res = null;
-    JobEntryResult jerEnd = null;
-
-    if (startpoint.isStart()) {
-      // Perform optional looping in the special Start job entry...
+    try {
+      log.snap(Metrics.METRIC_JOB_START);
+      
+      finished.set(false);
+      stopped.set(false);
+      captureSystemEnvironment();
+  
+      // Calculate the transaction ID prior to execution
       //
-      long iteration = 0;
-      boolean isFirst = true;
-      JobEntrySpecial jes = (JobEntrySpecial) startpoint.getEntry();
-      while ((jes.isRepeat() || isFirst) && !isStopped()) {
-        isFirst = false;
-        res = execute(0, null, startpoint, null, BaseMessages.getString(PKG, "Job.Reason.Started"));
-        if (iteration > 0 && (iteration % 500) == 0) {
-          System.out.println("other 500 iterations: " + iteration);
-        }
-        iteration++;
+      transactionId = calculateTransactionId();
+  
+      log.logMinimal(BaseMessages.getString(PKG, "Job.Comment.JobStarted"));
+  
+      // Start the tracking...
+      JobEntryResult jerStart = new JobEntryResult(null, null, BaseMessages.getString(PKG, "Job.Comment.JobStarted"), BaseMessages.getString(PKG, "Job.Reason.Started"), null, 0, null);
+      jobTracker.addJobTracker(new JobTracker(jobMeta, jerStart));
+  
+      active.set(true);
+  
+      // Where do we start?
+      JobEntryCopy startpoint;
+  
+      // synchronize this to a parent job if needed.
+      //
+      Object syncObject = this;
+      if (parentJob != null) {
+        syncObject = parentJob; // parallel execution in a job
       }
-      jerEnd = new JobEntryResult(res, jes.getLogChannelId(), BaseMessages.getString(PKG, "Job.Comment.JobFinished"), BaseMessages.getString(PKG, "Job.Reason.Finished"), null, 0, null);
-    } else {
-      res = execute(0, null, startpoint, null, BaseMessages.getString(PKG, "Job.Reason.Started"));
-      jerEnd = new JobEntryResult(res, startpoint.getEntry().getLogChannel().getLogChannelId(), BaseMessages.getString(PKG, "Job.Comment.JobFinished"), BaseMessages.getString(PKG, "Job.Reason.Finished"), null, 0, null);
+      
+      synchronized (syncObject) {
+        beginProcessing();
+      }
+  
+      if (startJobEntryCopy == null) {
+        startpoint = jobMeta.findJobEntry(JobMeta.STRING_SPECIAL_START, 0, false);
+      } else {
+        startpoint = startJobEntryCopy;
+      }
+      if (startpoint == null) {
+        throw new KettleJobException(BaseMessages.getString(PKG, "Job.Log.CounldNotFindStartingPoint"));
+      }
+  
+      Result res = null;
+      JobEntryResult jerEnd = null;
+  
+      if (startpoint.isStart()) {
+        // Perform optional looping in the special Start job entry...
+        //
+        long iteration = 0;
+        boolean isFirst = true;
+        JobEntrySpecial jes = (JobEntrySpecial) startpoint.getEntry();
+        while ((jes.isRepeat() || isFirst) && !isStopped()) {
+          isFirst = false;
+          res = execute(0, null, startpoint, null, BaseMessages.getString(PKG, "Job.Reason.Started"));
+          if (iteration > 0 && (iteration % 500) == 0) {
+            System.out.println("other 500 iterations: " + iteration);
+          }
+          iteration++;
+        }
+        jerEnd = new JobEntryResult(res, jes.getLogChannelId(), BaseMessages.getString(PKG, "Job.Comment.JobFinished"), BaseMessages.getString(PKG, "Job.Reason.Finished"), null, 0, null);
+      } else {
+        res = execute(0, null, startpoint, null, BaseMessages.getString(PKG, "Job.Reason.Started"));
+        jerEnd = new JobEntryResult(res, startpoint.getEntry().getLogChannel().getLogChannelId(), BaseMessages.getString(PKG, "Job.Comment.JobFinished"), BaseMessages.getString(PKG, "Job.Reason.Finished"), null, 0, null);
+      }
+      // Save this result...
+      jobTracker.addJobTracker(new JobTracker(jobMeta, jerEnd));
+      log.logMinimal(BaseMessages.getString(PKG, "Job.Comment.JobFinished"));
+  
+      active.set(false);
+      finished.set(true);
+  
+      return res;
+    } finally {
+      log.snap(Metrics.METRIC_JOB_STOP);
     }
-    // Save this result...
-    jobTracker.addJobTracker(new JobTracker(jobMeta, jerEnd));
-    log.logMinimal(BaseMessages.getString(PKG, "Job.Comment.JobFinished"));
-
-    active.set(false);
-    finished.set(true);
-
-    return res;
   }
 
   /**
@@ -635,7 +642,10 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
           getActiveJobEntryJobs().put(jobEntryCopy, (JobEntryJob) cloneJei);
         }
       }
+      log.snap(Metrics.METRIC_JOBENTRY_START, cloneJei.toString());
       result = cloneJei.execute(prevResult, nr);
+      log.snap(Metrics.METRIC_JOBENTRY_STOP, cloneJei.toString());
+      
       final long end = System.currentTimeMillis();
       if (interactive) {
         if (jobEntryCopy.isTransformation()) {

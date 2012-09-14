@@ -6,6 +6,7 @@ import java.util.List;
 import org.pentaho.di.core.gui.GCInterface;
 import org.pentaho.di.core.gui.GCInterface.EColor;
 import org.pentaho.di.core.gui.GCInterface.EFont;
+import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.gui.Rectangle;
 import org.pentaho.di.core.metrics.MetricsDuration;
 
@@ -49,7 +50,24 @@ public class MetricsPainter {
     double pixelsPerMs = (double)width/((double)(periodEnd-periodStart));
     int barHeight = ((height-10)/durations.size())-2;
     
-    int y=2;
+    
+    // Draw some lines in the background.
+    //
+    long periodInMs = periodEnd - periodStart;
+    int timeLineDistance = ((int)Math.pow(10, (int)(periodInMs/5000)))*50;
+    
+    for (int time=timeLineDistance;time<periodInMs;time+=timeLineDistance) {
+      int x = (int)(time * pixelsPerMs);
+      gc.setForeground(EColor.LIGHTGRAY);
+      gc.drawLine(x, 0, x, height);
+      String marker=Integer.toString(time);
+      Point point = gc.textExtent(marker);
+      gc.setForeground(EColor.DARKGRAY);
+      gc.drawText(marker, x-(point.x/2), 0, true);
+    }
+    
+    
+    int y=14;
     
     // Draw the durations...
     //
@@ -76,8 +94,9 @@ public class MetricsPainter {
         message+=" "+duration.getCount()+" calls, avg="+(duration.getDuration()/duration.getCount());
       }
       
-      gc.setFont(EFont.SMALL);
-      gc.drawText(message, x+2, y+2, true);
+      gc.setFont(EFont.GRAPH);
+      gc.textExtent(message);
+      gc.drawText(message, x+4, y+4, true);
       
       y+=barHeight+2;
     }

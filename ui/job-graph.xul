@@ -36,6 +36,8 @@
       command="jobgraph.editEntryDescription()" />
     <menuitem id="job-graph-entry-parallel" type="checkbox" label="${JobGraph.PopupMenu.JobEntry.LaunchParallel}"
       command="jobgraph.editEntryParallel()" />
+    <menuitem id="job-graph-entry-checkpoint" type="checkbox" label="${JobGraph.PopupMenu.JobEntry.Checkpoint}"
+      command="jobgraph.editEntryCheckpoint()" />
     <menuseparator />
     <menuitem id="job-graph-entry-duplicate" label="${JobGraph.PopupMenu.JobEntry.Duplicate}" command="jobgraph.duplicateEntry()" />
     <menuitem id="job-graph-entry-copy" acceltext="CTRL-C" accesskey="ctrl-c" label="${JobGraph.PopupMenu.JobEntry.CopyToClipboard}" command="jobgraph.copyEntry()" />

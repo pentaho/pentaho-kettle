@@ -73,6 +73,13 @@ public class Metrics implements MetricsInterface {
   public static Metrics METRIC_LOGGING_REGISTRY_GET_CHILDREN_TIME = new Metrics(MetricsSnapshotType.SUM, "METRIC_LOGGING_REGISTRY_GET_CHILDREN_TIME", "Time consumed getting log registry children (ms)");
   public static Metrics METRIC_LOGGING_REGISTRY_GET_CHILDREN_COUNT = new Metrics(MetricsSnapshotType.COUNT, "METRIC_LOGGING_REGISTRY_GET_CHILDREN_COUNT", "Number of times retrieved log registry children");
 
+  // Job
+  //
+  public static Metrics METRIC_JOB_START = new Metrics(MetricsSnapshotType.START, "METRIC_JOB_EXECUTION", "Execute a job");
+  public static Metrics METRIC_JOB_STOP  = new Metrics(MetricsSnapshotType.STOP,  "METRIC_JOB_EXECUTION", "Execute a job");
+  public static Metrics METRIC_JOBENTRY_START = new Metrics(MetricsSnapshotType.START, "METRIC_JOBENTRY_EXECUTION", "Execute a job entry");
+  public static Metrics METRIC_JOBENTRY_STOP  = new Metrics(MetricsSnapshotType.STOP,  "METRIC_JOBENTRY_EXECUTION", "Execute a job entry");
+
   
   private String code;
   private String description;

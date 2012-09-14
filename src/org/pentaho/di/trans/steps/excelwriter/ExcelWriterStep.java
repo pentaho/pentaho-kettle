@@ -46,6 +46,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellUtil;
 import org.apache.poi.ss.util.CellReference;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.pentaho.di.core.Const;
@@ -664,9 +665,12 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
 
 			// file is guaranteed to be in place now
 			if (meta.getExtension().equalsIgnoreCase("xlsx")) {
-				data.wb = new XSSFWorkbook(KettleVFS.getInputStream(data.file));
-			} else {
-				data.wb = new HSSFWorkbook(KettleVFS.getInputStream(data.file));
+			  XSSFWorkbook xssfWorkbook = new XSSFWorkbook(KettleVFS.getInputStream(data.file));
+			  if (meta.isStreamingData()) {
+				data.wb = new SXSSFWorkbook(xssfWorkbook, 100);
+			  } else {
+			    data.wb = xssfWorkbook;
+			  }
 			}
 
 			int existingActiveSheetIndex = data.wb.getActiveSheetIndex();

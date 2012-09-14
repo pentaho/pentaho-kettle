@@ -20,7 +20,7 @@
  *
  ******************************************************************************/
 
-package org.pentaho.di.ui.spoon.trans;
+package org.pentaho.di.ui.spoon.job;
 
 import java.util.Collections;
 import java.util.Comparator;
@@ -66,14 +66,14 @@ import org.pentaho.di.ui.spoon.SWTGC;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.spoon.delegates.SpoonDelegate;
 
-public class TransMetricsDelegate extends SpoonDelegate {
+public class JobMetricsDelegate extends SpoonDelegate {
 	private static Class<?> PKG = Spoon.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
 	// private static final LogWriter log = LogWriter.getInstance();
 
-	private TransGraph transGraph;
+	private JobGraph jobGraph;
 
-	private CTabItem transMetricsTab;
+	private CTabItem jobMetricsTab;
 	
 	private Canvas canvas;
 	private Image image;
@@ -87,34 +87,34 @@ public class TransMetricsDelegate extends SpoonDelegate {
 	
 	/**
 	 * @param spoon
-	 * @param transGraph
+	 * @param jobGraph
 	 */
-	public TransMetricsDelegate(Spoon spoon, TransGraph transGraph) {
+	public JobMetricsDelegate(Spoon spoon, JobGraph jobGraph) {
 		super(spoon);
-		this.transGraph = transGraph;
+		this.jobGraph = jobGraph;
 	}
 	
-	public void addTransMetrics() {
+	public void addJobMetrics() {
 		// First, see if we need to add the extra view...
 		//
-		if (transGraph.extraViewComposite==null || transGraph.extraViewComposite.isDisposed()) {
-			transGraph.addExtraView();
+		if (jobGraph.extraViewComposite==null || jobGraph.extraViewComposite.isDisposed()) {
+			jobGraph.addExtraView();
 		} else {
-			if (transMetricsTab!=null && !transMetricsTab.isDisposed()) {
+			if (jobMetricsTab!=null && !jobMetricsTab.isDisposed()) {
 				// just set this one active and get out...
 				//
-				transGraph.extraViewTabFolder.setSelection(transMetricsTab);
+				jobGraph.extraViewTabFolder.setSelection(jobMetricsTab);
 				return; 
 			}
 		}
 		
 		// Add a transMetricsTab : displays the metrics information in a graphical way...
 		//
-		transMetricsTab = new CTabItem(transGraph.extraViewTabFolder, SWT.NONE );
-		transMetricsTab.setImage(GUIResource.getInstance().getImageGantt());
-		transMetricsTab.setText(BaseMessages.getString(PKG, "Spoon.TransGraph.MetricsTab.Name"));
+		jobMetricsTab = new CTabItem(jobGraph.extraViewTabFolder, SWT.NONE );
+		jobMetricsTab.setImage(GUIResource.getInstance().getImageGantt());
+		jobMetricsTab.setText(BaseMessages.getString(PKG, "Spoon.JobGraph.MetricsTab.Name"));
 
-    sMetricsComposite = new ScrolledComposite(transGraph.extraViewTabFolder, SWT.V_SCROLL | SWT.H_SCROLL );
+    sMetricsComposite = new ScrolledComposite(jobGraph.extraViewTabFolder, SWT.V_SCROLL | SWT.H_SCROLL );
     sMetricsComposite.setLayout(new FillLayout());
     
 		// Create a composite, slam everything on there like it was in the history tab.
@@ -133,11 +133,11 @@ public class TransMetricsDelegate extends SpoonDelegate {
     sMetricsComposite.setMinWidth(800);
     sMetricsComposite.setMinHeight(500);
 		
-		transMetricsTab.setControl(sMetricsComposite);
+		jobMetricsTab.setControl(sMetricsComposite);
 		
-		transGraph.extraViewTabFolder.setSelection(transMetricsTab);
+		jobGraph.extraViewTabFolder.setSelection(jobMetricsTab);
 		
-		transGraph.extraViewTabFolder.addSelectionListener(new SelectionAdapter() {
+		jobGraph.extraViewTabFolder.addSelectionListener(new SelectionAdapter() {
 				
 				public void widgetSelected(SelectionEvent arg0) {
 					layoutMetricsComposite();
@@ -198,7 +198,7 @@ public class TransMetricsDelegate extends SpoonDelegate {
     
     // Refresh automatically every 5 seconds as well.
     //
-    final Timer timer = new Timer("TransMetricsDelegate Timer");
+    final Timer timer = new Timer("JobMetricsDelegate Timer");
     timer.schedule(new TimerTask() {
       public void run() {
         updateGraph();
@@ -207,7 +207,7 @@ public class TransMetricsDelegate extends SpoonDelegate {
 
     // When the tab is closed, we remove the update timer
     //
-    transMetricsTab.addDisposeListener(new DisposeListener() {
+    jobMetricsTab.addDisposeListener(new DisposeListener() {
       public void widgetDisposed(DisposeEvent arg0) {
         timer.cancel();
       }
@@ -250,22 +250,22 @@ public class TransMetricsDelegate extends SpoonDelegate {
     // toolbar.getButtonById("trans-show-log");
     // ToolItem toolBarButton = (ToolItem) showLogXulButton.getNativeObject();
 
-    if (transMetricsTab == null || transMetricsTab.isDisposed()) {
-      addTransMetrics();
+    if (jobMetricsTab == null || jobMetricsTab.isDisposed()) {
+      addJobMetrics();
     } else {
-      transMetricsTab.dispose();
+      jobMetricsTab.dispose();
 
-      transGraph.checkEmptyExtraView();
+      jobGraph.checkEmptyExtraView();
     }
   }
     
     
 	private void updateGraph() {
 		
-		transGraph.getDisplay().asyncExec(new Runnable() {		
+		jobGraph.getDisplay().asyncExec(new Runnable() {		
 			public void run() {
-				if (metricsComposite!=null && !metricsComposite.isDisposed() && canvas!=null && !canvas.isDisposed() && transMetricsTab!=null && !transMetricsTab.isDisposed()) {
-					if (transMetricsTab.isShowing()) {
+				if (metricsComposite!=null && !metricsComposite.isDisposed() && canvas!=null && !canvas.isDisposed() && jobMetricsTab!=null && !jobMetricsTab.isDisposed()) {
+					if (jobMetricsTab.isShowing()) {
 						canvas.update();
 					}
 				}
@@ -279,7 +279,7 @@ public class TransMetricsDelegate extends SpoonDelegate {
 		Rectangle bounds = canvas.getBounds();
 		if (bounds.width<=0 || bounds.height<=0) return;
 
-		if (transGraph.trans==null) {
+		if (jobGraph.job==null) {
 		  image = null;
 		  return;
 		}
@@ -291,7 +291,7 @@ public class TransMetricsDelegate extends SpoonDelegate {
 		}
 		lastRefreshTime=System.currentTimeMillis();
 		
-		List<MetricsDuration> durations = MetricsUtil.getAllDurations(transGraph.trans.getLogChannelId());
+		List<MetricsDuration> durations = MetricsUtil.getAllDurations(jobGraph.job.getLogChannelId());
 		
 		// Sort the metrics.
 	  Collections.sort(durations, new Comparator<MetricsDuration>() {
@@ -329,10 +329,10 @@ public class TransMetricsDelegate extends SpoonDelegate {
 	}
 
 	/**
-	 * @return the trans Metrics Tab
+	 * @return the jobMetricsTab
 	 */
-	public CTabItem getTransMetricsTab() {
-		return transMetricsTab;
+	public CTabItem getJobMetricsTab() {
+		return jobMetricsTab;
 	}
 
 	/**

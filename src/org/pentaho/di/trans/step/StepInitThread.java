@@ -24,6 +24,7 @@ package org.pentaho.di.trans.step;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.Metrics;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
@@ -59,6 +60,8 @@ public class StepInitThread implements Runnable
         
         try
         {
+            combi.step.getLogChannel().snap(Metrics.METRIC_STEP_INIT_START);
+
             if (combi.step.init(combi.meta, combi.data))
             {
                 combi.data.setStatus(StepExecutionStatus.STATUS_IDLE);
@@ -74,6 +77,8 @@ public class StepInitThread implements Runnable
         {
             log.logError(BaseMessages.getString(PKG, "Trans.Log.ErrorInitializingStep", combi.step.getStepname())); //$NON-NLS-1$ //$NON-NLS-2$
             log.logError(Const.getStackTracker(e));
+        } finally {
+          combi.step.getLogChannel().snap(Metrics.METRIC_STEP_INIT_STOP);
         }
         
         finished=true;

@@ -147,6 +147,9 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
 
 	/** Flag : auto size columns? */
 	private boolean autosizecolums;
+	
+	/** Do we need to stream data to handle very large files? */
+	private boolean streamingData;
 
 	public ExcelWriterStepMeta() {
 		super();
@@ -596,6 +599,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
 			date_time_format = XMLHandler.getTagValue(stepnode, "file", "date_time_format");
 
 			autosizecolums = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "autosizecolums"));
+      streamingData = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "stream_data"));
 			protectsheet = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "protect_sheet"));
 			password = Encr.decryptPasswordOptionallyEncrypted(XMLHandler.getTagValue(stepnode, "file", "password"));
 			protectedBy = XMLHandler.getTagValue(stepnode, "file", "protected_by");
@@ -653,6 +657,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
 	public void setDefault() {
 		
 		autosizecolums = false;
+    streamingData = false;
 		headerEnabled = true;
 		footerEnabled = false;
 		fileName = "file";
@@ -790,6 +795,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
 		retval.append("      ").append(XMLHandler.addTagValue("date_time_format", date_time_format));
 		retval.append("      ").append(XMLHandler.addTagValue("sheetname", sheetname));
 		retval.append("      ").append(XMLHandler.addTagValue("autosizecolums", autosizecolums));
+    retval.append("      ").append(XMLHandler.addTagValue("stream_data", streamingData));
 		retval.append("      ").append(XMLHandler.addTagValue("protect_sheet", protectsheet));
 		retval.append("      ").append(XMLHandler.addTagValue("password", Encr.encryptPasswordIfNotUsingVariables(password)));
 		retval.append("      ").append(XMLHandler.addTagValue("protected_by", protectedBy));
@@ -863,6 +869,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
 			date_time_format = rep.getStepAttributeString(id_step, "date_time_format");
 
 			autosizecolums = rep.getStepAttributeBoolean(id_step, "autosizecolums");
+      streamingData = rep.getStepAttributeBoolean(id_step, "stream_data");
 			protectsheet = rep.getStepAttributeBoolean(id_step, "protect_sheet");
 			password = Encr.decryptPasswordOptionallyEncrypted(rep.getStepAttributeString(id_step, "password"));
 			protectedBy = rep.getStepAttributeString(id_step, "protected_by");
@@ -926,6 +933,7 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
 			rep.saveStepAttribute(id_transformation, id_step, "date_time_format", date_time_format);
 
 			rep.saveStepAttribute(id_transformation, id_step, "autosizecolums", autosizecolums);
+      rep.saveStepAttribute(id_transformation, id_step, "stream_data", streamingData);
 			rep.saveStepAttribute(id_transformation, id_step, "protect_sheet", protectsheet);
 			rep.saveStepAttribute(id_transformation, id_step, "protected_by", protectedBy);
 			rep.saveStepAttribute(id_transformation, id_step, "password", Encr.encryptPasswordIfNotUsingVariables(password));
@@ -1033,4 +1041,18 @@ public class ExcelWriterStepMeta extends BaseStepMeta implements StepMetaInterfa
 	public String[] getUsedLibraries() {
 		return new String[0];
 	}
+
+  /**
+   * @return the streamingData
+   */
+  public boolean isStreamingData() {
+    return streamingData;
+  }
+
+  /**
+   * @param streamingData the streamingData to set
+   */
+  public void setStreamingData(boolean streamingData) {
+    this.streamingData = streamingData;
+  }
 }

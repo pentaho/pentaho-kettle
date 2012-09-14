@@ -95,7 +95,6 @@ public class JobExecutionConfigurationDialog extends Dialog
     private TableView wVariables;
     
     private Group gDetails;
-
     
     private Label wlLogLevel;
     private CCombo wLogLevel;
@@ -108,6 +107,8 @@ public class JobExecutionConfigurationDialog extends Dialog
     
     private CCombo wStartCopy;
 
+    private Button wGatherMetrics;
+    
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 
     public JobExecutionConfigurationDialog(Shell parent, JobExecutionConfiguration configuration, JobMeta jobMeta)
@@ -248,28 +249,43 @@ public class JobExecutionConfigurationDialog extends Dialog
         gDetails.setBackground(shell.getBackground()); // the default looks ugly
         gDetails.setLayoutData(fdDetails);
 
-        wSafeMode = new Button(gDetails, SWT.CHECK);
-        wSafeMode.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.SafeMode.Label")); //$NON-NLS-1$
-        wSafeMode.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.SafeMode.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
-        props.setLook(wSafeMode);
-        FormData fdSafeMode = new FormData();
-        fdSafeMode.left  = new FormAttachment(50, margin);
-        fdSafeMode.right = new FormAttachment(100, 0);
-        fdSafeMode.top   = new FormAttachment(0, 0);
-        wSafeMode.setLayoutData(fdSafeMode);
-        wSafeMode.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { enableFields(); }});
-
+        // Top left
         wIgnoreCheckpoint = new Button(gDetails, SWT.CHECK);
         wIgnoreCheckpoint.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.IgnoreCheckpoint.Label")); //$NON-NLS-1$
         wIgnoreCheckpoint.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.IgnoreCheckpoint.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
         props.setLook(wIgnoreCheckpoint);
         FormData fdIgnoreCheckpoint = new FormData();
+        fdIgnoreCheckpoint.top   = new FormAttachment(0, 0);
         fdIgnoreCheckpoint.left  = new FormAttachment(0,0);
         fdIgnoreCheckpoint.right = new FormAttachment(50, 0);
-        fdIgnoreCheckpoint.top   = new FormAttachment(0, 0);
         wIgnoreCheckpoint.setLayoutData(fdIgnoreCheckpoint);
         wIgnoreCheckpoint.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { enableFields(); }});
 
+        // Top right
+        wSafeMode = new Button(gDetails, SWT.CHECK);
+        wSafeMode.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.SafeMode.Label")); //$NON-NLS-1$
+        wSafeMode.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.SafeMode.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
+        props.setLook(wSafeMode);
+        FormData fdSafeMode = new FormData();
+        fdSafeMode.top   = new FormAttachment(0, 0);
+        fdSafeMode.left  = new FormAttachment(50, margin);
+        fdSafeMode.right = new FormAttachment(100, 0);
+        wSafeMode.setLayoutData(fdSafeMode);
+        wSafeMode.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { enableFields(); }});
+
+        // Second on the left
+        wGatherMetrics = new Button(gDetails, SWT.CHECK);
+        wGatherMetrics.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.GatherMetrics.Label")); //$NON-NLS-1$
+        wGatherMetrics.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.GatherMetrics.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
+        props.setLook(wGatherMetrics);
+        FormData fdGatherMetrics = new FormData();
+        fdGatherMetrics.left  = new FormAttachment(0, 0);
+        fdGatherMetrics.right = new FormAttachment(100, 0);
+        fdGatherMetrics.top   = new FormAttachment(wSafeMode, margin);
+        wGatherMetrics.setLayoutData(fdGatherMetrics);
+        wGatherMetrics.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { enableFields(); }});
+
+        // Second on the right
         wClearLog = new Button(gDetails, SWT.CHECK);
         wClearLog.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.ClearLog.Label")); //$NON-NLS-1$
         wClearLog.setToolTipText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.ClearLog.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -281,6 +297,7 @@ public class JobExecutionConfigurationDialog extends Dialog
         wClearLog.setLayoutData(fdClearLog);
         wClearLog.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { enableFields(); }});
         
+        // 3rd line : logging level
         wlLogLevel = new Label(gDetails, SWT.LEFT);
         props.setLook(wlLogLevel);
         wlLogLevel.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.LogLevel.Label")); //$NON-NLS-1$
@@ -301,7 +318,7 @@ public class JobExecutionConfigurationDialog extends Dialog
         wLogLevel.setLayoutData(fdLogLevel);
         wLogLevel.setItems(LogLevel.getLogLevelDescriptions());
         
-        // ReplayDate
+        // 4th line: ReplayDate
         wlReplayDate = new Label(gDetails, SWT.LEFT);
         props.setLook(wlReplayDate);
         wlReplayDate.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.ReplayDate.Label")); //$NON-NLS-1$
@@ -321,6 +338,7 @@ public class JobExecutionConfigurationDialog extends Dialog
         fdReplayDate.top    = new FormAttachment(wLogLevel, margin);
         wReplayDate.setLayoutData(fdReplayDate);
 
+        // 5th line: Start copy
         Label wlStartCopy = new Label(gDetails, SWT.LEFT);
         props.setLook(wlStartCopy);
         wlStartCopy.setText(BaseMessages.getString(PKG, "JobExecutionConfigurationDialog.StartCopy.Label")); //$NON-NLS-1$
@@ -562,6 +580,7 @@ public class JobExecutionConfigurationDialog extends Dialog
         wPassExport.setSelection(configuration.isPassingExport());
         wLogLevel.select( DefaultLogLevel.getLogLevel().getLevel() );
         if (configuration.getReplayDate()!=null) wReplayDate.setText(simpleDateFormat.format(configuration.getReplayDate()));
+        wGatherMetrics.setSelection(configuration.isGatheringMetrics());
 
         String startCopy = "";
         if (!Const.isEmpty(configuration.getStartCopyName())) {
@@ -626,6 +645,9 @@ public class JobExecutionConfigurationDialog extends Dialog
             getInfoParameters();
             getInfoVariables();
             getInfoArguments();
+            
+            // Metrics
+            configuration.setGatheringMetrics(wGatherMetrics.getSelection());
         }
         catch(Exception e)
         {

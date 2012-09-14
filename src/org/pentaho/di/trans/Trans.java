@@ -784,7 +784,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
       // continue properly!
       //
       initThreads[i] = new StepInitThread(sid, log);
-      initThreads[i].getCombi().step.getLogChannel().snap(Metrics.METRIC_STEP_INIT_START);
 
       // Put it in a separate thread!
       //
@@ -819,7 +818,6 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         if (log.isDetailed())
           log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.StepInitialized", combi.stepname + "." + combi.copy));
       }
-      combi.step.getLogChannel().snap(Metrics.METRIC_STEP_INIT_STOP);
     }
 
     if (!ok) {

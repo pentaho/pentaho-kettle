@@ -265,6 +265,9 @@ public class JobGraph extends AbstractGraph implements XulEventHandler, Redrawab
 
   public JobGridDelegate jobGridDelegate;
 
+  public JobMetricsDelegate jobMetricsDelegate;
+
+  
   private Composite mainComposite;
 
   private List<RefreshListener> refreshListeners;
@@ -310,6 +313,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
     jobLogDelegate = new JobLogDelegate(spoon, this);
     jobHistoryDelegate = new JobHistoryDelegate(spoon, this);
     jobGridDelegate = new JobGridDelegate(spoon, this);
+    jobMetricsDelegate = new JobMetricsDelegate(spoon, this);
 
     refreshListeners = new ArrayList<RefreshListener>();
     
@@ -3134,6 +3138,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
     jobHistoryDelegate.addJobHistory();
     jobLogDelegate.addJobLog();
     jobGridDelegate.addJobGrid();
+    jobMetricsDelegate.addJobMetrics();
     
     if (tabItemSelection!=null) {
     	extraViewTabFolder.setSelection(tabItemSelection);
@@ -3244,10 +3249,6 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
               CentralLogStore.discardLines(job.getLogChannelId(), true);
             }
             
-            // Ignore checkpoints if this is asked...
-            //
-            job.setIgnoringCheckpoints(executionConfiguration.isIgnoringCheckpoint());
-
             JobMeta runJobMeta;
 
             if (spoon.rep != null) {
@@ -3263,13 +3264,15 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
             job = new Job(spoon.rep, runJobMeta, spoonLoggingObject);
 
             job.setLogLevel(executionConfiguration.getLogLevel());
-            // job = new Job(jobMeta.getName(), jobMeta.getFilename(), null);
-            // job.open(spoon.rep, jobMeta.getFilename(), jobMeta.getName(),
-            // jobMeta.getRepositoryDirectory().getPath(), spoon);
             job.getJobMeta().setArguments(jobMeta.getArguments());
             job.shareVariablesWith(jobMeta);
             job.setInteractive(true);
+            job.setGatheringMetrics(executionConfiguration.isGatheringMetrics());
 
+            // Ignore checkpoints if this is asked...
+            //
+            job.setIgnoringCheckpoints(executionConfiguration.isIgnoringCheckpoint());
+            
             // Add job entry listeners
             //
             job.addJobEntryListener(createRefreshJobEntryListener());
