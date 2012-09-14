@@ -381,17 +381,18 @@ public class HBaseOutput extends BaseStep implements StepInterface {
                   "HBaseOutput.Error.ProblemFlushingBufferedData",
                   ex.getMessage()), ex);
         }
-      }
 
-      try {
-        logBasic(BaseMessages.getString(HBaseOutputMeta.PKG,
-            "HBaseOutput.ClosingConnectionToTable"));
-        m_hbAdmin.closeTargetTable();
-        m_targetTableActive = false;
-      } catch (Exception ex) {
-        logError(BaseMessages.getString(HBaseOutputMeta.PKG,
-            "HBaseOutput.Error.ProblemWhenClosingConnection", ex.getMessage()),
-            ex);
+        try {
+          logBasic(BaseMessages.getString(HBaseOutputMeta.PKG,
+              "HBaseOutput.ClosingConnectionToTable"));
+          m_hbAdmin.closeTargetTable();
+          m_targetTableActive = false;
+        } catch (Exception ex) {
+          logError(
+              BaseMessages.getString(HBaseOutputMeta.PKG,
+                  "HBaseOutput.Error.ProblemWhenClosingConnection",
+                  ex.getMessage()), ex);
+        }
       }
     }
   }
