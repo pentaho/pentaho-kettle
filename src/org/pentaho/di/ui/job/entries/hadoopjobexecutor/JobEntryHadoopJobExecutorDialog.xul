@@ -134,10 +134,6 @@
     					</columns>
     					<rows>
     						<row>
-    							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Paths.WorkingDirectory.Label}" />
-    							<textbox pen:customclass="variabletextbox" id="working-dir" flex="1" multiline="false"/>
-    						</row>
-    						<row>
     							<label value="${JobEntryHadoopJobExecutor.ModeAdvanced.Tab.Paths.HDFSHostname.Label}" />
     							<textbox pen:customclass="variabletextbox" id="hdfs-hostname" flex="1" multiline="false"/>
     						</row>

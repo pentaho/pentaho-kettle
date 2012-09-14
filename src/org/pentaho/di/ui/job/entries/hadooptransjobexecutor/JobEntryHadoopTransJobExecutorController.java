@@ -81,7 +81,6 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
   public static final String OUTPUT_VALUE_CLASS = "outputValueClass"; //$NON-NLS-1$
   public static final String INPUT_FORMAT_CLASS = "inputFormatClass"; //$NON-NLS-1$
   public static final String OUTPUT_FORMAT_CLASS = "outputFormatClass"; //$NON-NLS-1$
-  public static final String WORKING_DIRECTORY = "workingDirectory"; //$NON-NLS-1$
   public static final String INPUT_PATH = "inputPath"; //$NON-NLS-1$
   public static final String OUTPUT_PATH = "outputPath"; //$NON-NLS-1$
   public static final String CLEAN_OUTPUT_PATH = "cleanOutputPath"; //$NON-NLS-1$
@@ -111,7 +110,6 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
   private String inputFormatClass;
   private String outputFormatClass;
 
-  private String workingDirectory;
   private String hdfsHostname;
   private String hdfsPort;
   private String jobTrackerHostname;
@@ -206,8 +204,6 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
     this.inputFormatClass = ((Text) tempBox.getTextControl()).getText();
     tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("classes-output-format");
     this.outputFormatClass = ((Text) tempBox.getTextControl()).getText();
-    tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("working-dir");
-    this.workingDirectory = ((Text) tempBox.getTextControl()).getText();
     tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("hdfs-hostname");
     this.hdfsHostname = ((Text) tempBox.getTextControl()).getText();
     tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("hdfs-port");
@@ -349,7 +345,6 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
     jobEntry.setNumMapTasks(getNumMapTasks());
     jobEntry.setNumReduceTasks(getNumReduceTasks());
     jobEntry.setUserDefined(userDefined);
-    jobEntry.setWorkingDirectory(getWorkingDirectory());
 
     jobEntry.setChanged();
 
@@ -395,8 +390,6 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
       tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("classes-input-format");
       tempBox.setVariableSpace(varSpace);
       tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("classes-output-format");
-      tempBox.setVariableSpace(varSpace);
-      tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("working-dir");
       tempBox.setVariableSpace(varSpace);
       tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("hdfs-hostname");
       tempBox.setVariableSpace(varSpace);
@@ -537,7 +530,6 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
       setJobTrackerPort(jobEntry.getJobTrackerPort());
       setNumMapTasks(jobEntry.getNumMapTasks());
       setNumReduceTasks(jobEntry.getNumReduceTasks());
-      setWorkingDirectory(jobEntry.getWorkingDirectory());
     }
   }
   
@@ -1050,18 +1042,6 @@ public class JobEntryHadoopTransJobExecutorController extends AbstractXulEventHa
 
     this.outputFormatClass = outputFormatClass;
     firePropertyChange(OUTPUT_FORMAT_CLASS, previousVal, newVal);
-  }
-
-  public String getWorkingDirectory() {
-    return workingDirectory;
-  }
-
-  public void setWorkingDirectory(String workingDirectory) {
-    String previousVal = this.workingDirectory;
-    String newVal = workingDirectory;
-
-    this.workingDirectory = workingDirectory;
-    firePropertyChange(WORKING_DIRECTORY, previousVal, newVal);
   }
 
   public String getHdfsHostname() {
