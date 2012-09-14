@@ -109,11 +109,21 @@ public class HadoopExitMeta extends BaseStepMeta implements StepMetaInterface {
   public void getFields(RowMetaInterface rowMeta, String origin, RowMetaInterface[] info, StepMeta nextStep,
       VariableSpace space) throws KettleStepException {
     
+    ValueMetaInterface key = rowMeta.searchValueMeta(getOutKeyFieldname());
+    ValueMetaInterface value = rowMeta.searchValueMeta(getOutValueFieldname());
+
+    if (key == null) {
+      throw new KettleStepException(BaseMessages.getString(PKG, "Error.InvalidKeyField", getOutKeyFieldname()));
+    }
+    if (value == null) {
+      throw new KettleStepException(BaseMessages.getString(PKG, "Error.InvalidValueField", getOutValueFieldname()));
+    }
+
     // The output consists of 2 fields: outKey and outValue
     // The data types rely on the input data type so we look those up
     //
-    ValueMetaInterface keyMeta = rowMeta.searchValueMeta(getOutKeyFieldname()).clone();
-    ValueMetaInterface valueMeta = rowMeta.searchValueMeta(getOutValueFieldname()).clone();
+    ValueMetaInterface keyMeta = key.clone();
+    ValueMetaInterface valueMeta = value.clone();
     
     keyMeta.setName("outKey");
     valueMeta.setName("outValue");
