@@ -20,12 +20,21 @@
 
 package org.pentaho.di.job.entries.oozie;
 
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Properties;
+
 import org.apache.oozie.client.OozieClient;
 import org.apache.oozie.client.OozieClientException;
 import org.apache.oozie.client.WorkflowAction;
 import org.apache.oozie.client.WorkflowJob;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
@@ -39,13 +48,6 @@ import org.pentaho.di.job.JobEntryMode;
 import org.pentaho.di.job.PropertyEntry;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.w3c.dom.Document;
-
-import java.util.*;
-
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 
 /**
  * User: RFellows
@@ -198,7 +200,7 @@ public class OozieJobExecutorJobEntryTest {
   }
 
   @Test
-  public void testGetValidationWarnings_everythingIsGood() throws Exception {
+  public void testGetValidationWarnings_invalidPort() throws Exception {
     OozieJobExecutorJobEntry je = new TestOozieJobExecutorJobEntry(getSucceedingTestOozieClient());
 
     OozieJobExecutorConfig config = new OozieJobExecutorConfig();
@@ -206,6 +208,31 @@ public class OozieJobExecutorJobEntryTest {
     config.setOozieWorkflowConfig("test-src/job.properties");
     config.setJobEntryName("name");
 
+    config.setBlockingPollingInterval("-100");
+    List<String> warnings = je.getValidationWarnings(config);
+    assertEquals(1, warnings.size());
+    assertEquals(BaseMessages.getString(OozieJobExecutorJobEntry.class, "ValidationMessages.Invalid.PollingInterval"), warnings.get(0));
+
+    config.setBlockingPollingInterval("0");
+    warnings = je.getValidationWarnings(config);
+    assertEquals(1, warnings.size());
+    assertEquals(BaseMessages.getString(OozieJobExecutorJobEntry.class, "ValidationMessages.Invalid.PollingInterval"), warnings.get(0));
+
+    config.setBlockingPollingInterval("asdf");
+    warnings = je.getValidationWarnings(config);
+    assertEquals(1, warnings.size());
+    assertEquals(BaseMessages.getString(OozieJobExecutorJobEntry.class, "ValidationMessages.Invalid.PollingInterval"), warnings.get(0));
+  }
+
+  @Test
+  public void testGetValidationWarnings_everythingIsGood() throws Exception {
+    OozieJobExecutorJobEntry je = new TestOozieJobExecutorJobEntry(getSucceedingTestOozieClient());
+    
+    OozieJobExecutorConfig config = new OozieJobExecutorConfig();
+    config.setOozieUrl("http://localhost:11000/oozie");             // don't worry if it isn't running, we fake out our test connection to it anyway
+    config.setOozieWorkflowConfig("test-src/job.properties");
+    config.setJobEntryName("name");
+    
     List<String> warnings = je.getValidationWarnings(config);
 
     assertEquals(0, warnings.size());

@@ -43,8 +43,12 @@ public class BytesWritableToByteArrayConverterTest {
   public void convert() throws Exception {
     BytesWritableToByteArrayConverter c = new BytesWritableToByteArrayConverter();
     byte[] expected = "testing".getBytes();
-
-    assertEquals(expected, c.convert(null, new BytesWritable(expected)));
+    byte[] converted = c.convert(null, new BytesWritable(expected));
+        
+    assertEquals(expected.length, converted.length);
+    for (int i = 0; i < expected.length; i++) {
+      assertEquals(expected[i], converted[i]);
+    }    
 
     try {
       c.convert(null, null);
@@ -52,5 +56,15 @@ public class BytesWritableToByteArrayConverterTest {
     } catch (NullPointerException ex) {
       // Expected
     }
+  }
+  
+  @Test
+  public void testConvertFreshArray() throws Exception {
+    BytesWritableToByteArrayConverter c = new BytesWritableToByteArrayConverter();
+    byte[] expected = "testing".getBytes();
+    byte[] converted = c.convert(null, new BytesWritable(expected));
+    
+    // arrays should be two separate objects
+    assertTrue(expected != converted);
   }
 }

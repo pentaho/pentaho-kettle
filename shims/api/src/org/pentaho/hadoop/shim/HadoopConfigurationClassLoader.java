@@ -67,7 +67,7 @@ public class HadoopConfigurationClassLoader extends URLClassLoader {
    * @return {@code true} if the class should be ignored by this class loader
    */
   protected boolean ignoreClass(String name) {
-    if (loadClassesFromParent.contains(name)) {
+    if (name == null || loadClassesFromParent.contains(name)) {
       return true;
     }
     for (String prefix : loadClassesFromParent) {

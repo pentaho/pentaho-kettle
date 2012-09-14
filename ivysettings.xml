@@ -19,6 +19,7 @@
       </dual>
       <resolver ref="public" />
       <ibiblio name="java-net-maven2" root="http://download.java.net/maven/2/" m2compatible="true" />
+      <ibiblio name="jboss" m2compatible="true" root="https://repository.jboss.org/nexus/content/groups/public" pattern="[organisation]/[module]/[revision]/[artifact]-[revision](-[classifier]).[ext]" />
     </chain>
   </resolvers>
   <caches lockStrategy="artifact-lock" resolutionCacheDir="${ivy.default.ivy.user.dir}/resol-cache${env.EXECUTOR_NUMBER}" />

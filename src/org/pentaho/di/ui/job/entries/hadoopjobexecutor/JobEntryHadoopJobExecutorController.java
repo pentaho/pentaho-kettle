@@ -105,8 +105,6 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
     aConf.inputFormatClass = ((Text) tempBox.getTextControl()).getText();
     tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("classes-output-format");
     aConf.outputFormatClass = ((Text) tempBox.getTextControl()).getText();
-    tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("working-dir");
-    aConf.workingDirectory = ((Text) tempBox.getTextControl()).getText();
     tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("hdfs-hostname");
     aConf.hdfsHostname = ((Text) tempBox.getTextControl()).getText();
     tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("hdfs-port");
@@ -128,6 +126,8 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
     jobEntry.setSimple(isSimple);
     jobEntry.setJarUrl(jarUrl);
     jobEntry.setCmdLineArgs(sConf.getCommandLineArgs());
+    jobEntry.setSimpleBlocking(sConf.isSimpleBlocking());
+    jobEntry.setSimpleLoggingInterval(sConf.getSimpleLoggingInterval());
     // advanced config
     jobEntry.setBlocking(aConf.isBlocking());
     jobEntry.setLoggingInterval(aConf.getLoggingInterval());
@@ -147,7 +147,6 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
     jobEntry.setNumMapTasks(aConf.getNumMapTasks());
     jobEntry.setNumReduceTasks(aConf.getNumReduceTasks());
     jobEntry.setUserDefined(userDefined);
-    jobEntry.setWorkingDirectory(aConf.getWorkingDirectory());
 
     jobEntry.setChanged();
 
@@ -163,6 +162,8 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
       setSimple(jobEntry.isSimple());
       setJarUrl(jobEntry.getJarUrl());            
       sConf.setCommandLineArgs(jobEntry.getCmdLineArgs());
+      sConf.setSimpleBlocking(jobEntry.isSimpleBlocking());
+      sConf.setSimpleLoggingInterval(jobEntry.getSimpleLoggingInterval());
       // advanced config
       userDefined.clear();
       if (jobEntry.getUserDefined() != null) {
@@ -195,8 +196,6 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
       tempBox.setVariableSpace(varSpace);
       tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("classes-output-format");
       tempBox.setVariableSpace(varSpace);
-      tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("working-dir");
-      tempBox.setVariableSpace(varSpace);
       tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("hdfs-hostname");
       tempBox.setVariableSpace(varSpace);
       tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("hdfs-port");
@@ -210,6 +209,8 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
       tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("num-reduce-tasks");
       tempBox.setVariableSpace(varSpace);
       tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("logging-interval");
+      tempBox.setVariableSpace(varSpace);
+      tempBox = (ExtTextbox) getXulDomContainer().getDocumentRoot().getElementById("simple-logging-interval");
       tempBox.setVariableSpace(varSpace);
       
       aConf.setBlocking(jobEntry.isBlocking());
@@ -229,7 +230,6 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
       aConf.setJobTrackerPort(jobEntry.getJobTrackerPort());
       aConf.setNumMapTasks(jobEntry.getNumMapTasks());
       aConf.setNumReduceTasks(jobEntry.getNumReduceTasks());
-      aConf.setWorkingDirectory(jobEntry.getWorkingDirectory());
     }
   }
 
@@ -364,6 +364,10 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
     firePropertyChange(JobEntryHadoopJobExecutorController.IS_SIMPLE, previousVal, newVal);
   }
 
+  public void invertSimpleBlocking() {
+    sConf.setSimpleBlocking(!sConf.isSimpleBlocking());
+  }
+
   public void invertBlocking() {
     aConf.setBlocking(!aConf.isBlocking());
   }
@@ -378,8 +382,12 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
 
   public class SimpleConfiguration extends XulEventSourceAdapter {
     public static final String CMD_LINE_ARGS = "commandLineArgs"; //$NON-NLS-1$
+    public static final String BLOCKING = "simpleBlocking"; //$NON-NLS-1$
+    public static final String LOGGING_INTERVAL = "simpleLoggingInterval"; //$NON-NLS-1$
 
     private String cmdLineArgs;
+    private boolean simpleBlocking;
+    private String simpleLoggingInterval = "60";
 
     public String getCommandLineArgs() {
       return cmdLineArgs;
@@ -393,6 +401,26 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
 
       firePropertyChange(SimpleConfiguration.CMD_LINE_ARGS, previousVal, newVal);
     }
+
+    public boolean isSimpleBlocking() {
+      return simpleBlocking;
+    }
+
+    public void setSimpleBlocking(boolean simpleBlocking) {
+      boolean old = this.simpleBlocking;
+      this.simpleBlocking = simpleBlocking;
+      firePropertyChange(SimpleConfiguration.BLOCKING, old, this.simpleBlocking);
+    }
+
+    public String getSimpleLoggingInterval() {
+      return simpleLoggingInterval;
+    }
+
+    public void setSimpleLoggingInterval(String simpleLoggingInterval) {
+      String old = this.simpleLoggingInterval;
+      this.simpleLoggingInterval = simpleLoggingInterval;
+      firePropertyChange(SimpleConfiguration.LOGGING_INTERVAL, old, this.simpleLoggingInterval);
+    }
   }
 
   public class AdvancedConfiguration extends XulEventSourceAdapter {
@@ -403,7 +431,6 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
     public static final String REDUCER_CLASS = "reducerClass"; //$NON-NLS-1$
     public static final String INPUT_FORMAT_CLASS = "inputFormatClass"; //$NON-NLS-1$
     public static final String OUTPUT_FORMAT_CLASS = "outputFormatClass"; //$NON-NLS-1$
-    public static final String WORKING_DIRECTORY = "workingDirectory"; //$NON-NLS-1$
     public static final String INPUT_PATH = "inputPath"; //$NON-NLS-1$
     public static final String OUTPUT_PATH = "outputPath"; //$NON-NLS-1$
     public static final String BLOCKING = "blocking"; //$NON-NLS-1$
@@ -423,7 +450,6 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
     private String inputFormatClass;
     private String outputFormatClass;
 
-    private String workingDirectory;
     private String hdfsHostname;
     private String hdfsPort;
     private String jobTrackerHostname;
@@ -519,18 +545,6 @@ public class JobEntryHadoopJobExecutorController extends AbstractXulEventHandler
 
       this.outputFormatClass = outputFormatClass;
       firePropertyChange(AdvancedConfiguration.OUTPUT_FORMAT_CLASS, previousVal, newVal);
-    }
-
-    public String getWorkingDirectory() {
-      return workingDirectory;
-    }
-
-    public void setWorkingDirectory(String workingDirectory) {
-      String previousVal = this.workingDirectory;
-      String newVal = workingDirectory;
-
-      this.workingDirectory = workingDirectory;
-      firePropertyChange(AdvancedConfiguration.WORKING_DIRECTORY, previousVal, newVal);
     }
 
     public String getHdfsHostname() {

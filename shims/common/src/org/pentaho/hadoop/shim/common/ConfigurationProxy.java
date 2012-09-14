@@ -38,7 +38,7 @@ import org.apache.hadoop.mapred.Reducer;
  * and thus the deprecation warning can be safely ignored.
  * </p>
  */
-@SuppressWarnings({ "deprecation", "unchecked", "rawtypes" })
+@SuppressWarnings({ "unchecked", "rawtypes" })
 public class ConfigurationProxy extends org.apache.hadoop.mapred.JobConf implements
     org.pentaho.hadoop.shim.api.Configuration {
   
@@ -99,11 +99,5 @@ public class ConfigurationProxy extends org.apache.hadoop.mapred.JobConf impleme
   @Override
   public void setOutputPath(org.pentaho.hadoop.shim.api.fs.Path path) {
     FileOutputFormat.setOutputPath(this, ShimUtils.asPath(path));
-  }
-  
-  @Override
-  @Deprecated
-  public void setWorkingDirectory(String dir) {
-    super.setWorkingDirectory(new Path(getDefaultFileSystemURL(), dir));
   }
 }

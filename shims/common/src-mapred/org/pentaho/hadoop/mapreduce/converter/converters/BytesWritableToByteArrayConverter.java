@@ -38,6 +38,6 @@ public class BytesWritableToByteArrayConverter implements ITypeConverter<BytesWr
 
   @Override
   public byte[] convert(ValueMetaInterface meta, BytesWritable obj) throws TypeConversionException {
-    return obj.getBytes();
+    return obj.getBytes().clone();
   }
 }
