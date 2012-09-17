@@ -22,6 +22,7 @@
 
 package org.pentaho.hadoop.shim;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -136,5 +137,24 @@ public class HadoopConfigurationClassLoader extends URLClassLoader {
         return parentResources.nextElement();
       }
     };
+  }
+
+  /**
+   * Generates a "java.class.path" compatible String representing the class path
+   * available through this class loader.
+   * 
+   * @return A "java.class.path" compatible String
+   */
+  public String generateClassPathString() {
+    StringBuilder sb = new StringBuilder();
+
+    for (URL url : getURLs()) {
+      if (sb.length() != 0) {
+        sb.append(File.pathSeparator);
+      }
+      sb.append(url.getFile());
+    }
+
+    return sb.toString();
   }
 }
