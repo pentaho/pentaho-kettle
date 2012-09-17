@@ -624,8 +624,11 @@ public class TextFileOutput extends BaseStep implements StepInterface
         new Thread(stderrLogger).start();
       } else {
 
-        // Check for parent folder
-        createParentFolder(filename);
+        // Check for parent folder creation only if the user asks for it
+        //
+        if (meta.isCreateParentFolder()) {
+          createParentFolder(filename);
+        }
 
         OutputStream outputStream;
 
