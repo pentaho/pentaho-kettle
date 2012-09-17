@@ -225,6 +225,19 @@ public class AbstractSqoopJobEntryControllerTest {
   }
 
   @Test
+  public void setSelectedDatabaseConnection_suppressing_events() {
+    AbstractSqoopJobEntryController controller = new TestSqoopJobEntryController();
+    controller.suppressEventHandling = true;
+
+    DatabaseItem test = new DatabaseItem("test");
+    DatabaseMeta database = new DatabaseMeta(test.getName(), "MYSQL", null, null, null, null, null, null);
+    controller.getJobMeta().addDatabase(database);
+    controller.setSelectedDatabaseConnection(test);
+
+    assertNull(controller.getConfig().getDatabase());
+  }
+  
+  @Test
   public void updateDatabaseItemsList() {
     AbstractSqoopJobEntryController controller = new TestSqoopJobEntryController();
 
