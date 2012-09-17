@@ -40,6 +40,7 @@ import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileSystemException;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
@@ -57,9 +58,11 @@ import org.pentaho.di.trans.step.StepDataInterface;
  * leaf fields to kettle values.
  * 
  * @author Mark Hall (mhall{[at]}pentaho{[dot]}com)
- * @version $Revision$
  */
 public class AvroInputData extends BaseStepData implements StepDataInterface {
+
+  /** For logging */
+  protected LogChannelInterface m_log;
 
   /** The output data format */
   protected RowMetaInterface m_outputRowMeta;
@@ -78,8 +81,25 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
    */
   protected Schema m_writerSchema;
 
-  /** The final schema to use for extracting values */
+  /** The schema to use for extracting values */
   protected Schema m_schemaToUse;
+
+  /**
+   * The default schema to use (in the case where the schema is in an incoming
+   * field and a particular row has a null (or unparsable/unavailable) schema
+   */
+  protected Schema m_defaultSchema;
+
+  /** The default datum reader (constructed with the default schema) */
+  protected GenericDatumReader m_defaultDatumReader;
+  protected Object m_defaultTopLevelObject;
+
+  /**
+   * Schema cache. Map of strings (actual schema or path to schema) to two
+   * element array. Element 0 = GenericDatumReader configured with schema; 2 =
+   * top level structure object to use.
+   */
+  protected Map<String, Object[]> m_schemaCache = new HashMap<String, Object[]>();
 
   /** True if the data to be decoded is json rather than binary */
   protected boolean m_jsonEncoded;
@@ -104,6 +124,30 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
 
   /** If decoding from an incoming field, this holds its index */
   protected int m_fieldToDecodeIndex = -1;
+
+  /** True if schema is in an incoming field */
+  protected boolean m_schemaInField;
+
+  /**
+   * If decoding from an incoming field and schema is in an incoming field, then
+   * this holds the schema field's index
+   */
+  protected int m_schemaFieldIndex = -1;
+
+  /**
+   * True if the schema field contains a path to a schema rather than the schema
+   * itself
+   */
+  protected boolean m_schemaFieldIsPath;
+
+  /** True if schemas read from incoming fields are to be cached in memory */
+  protected boolean m_cacheSchemas;
+
+  /**
+   * True if null should be output for a field if it is not present in the
+   * schema being used (otherwise an exeption is raised)
+   */
+  protected boolean m_dontComplainAboutMissingFields;
 
   /** Factory for obtaining a decoder */
   protected DecoderFactory m_factory;
@@ -245,12 +289,14 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
      * @param map the map to process
      * @param s the current schema at this point in the path
      * @param space environment variables
+     * @param ignoreMissing true if null is to be returned for user fields that
+     *          don't appear in the schema
      * @return an array of Kettle rows corresponding to the expanded map/array
      *         and containing all leaf values as defined in the paths
      * @throws KettleException if a problem occurs
      */
     public Object[][] convertToKettleValues(Map<Utf8, Object> map, Schema s,
-        VariableSpace space) throws KettleException {
+        VariableSpace space, boolean ignoreMissing) throws KettleException {
 
       if (map == null) {
         return null;
@@ -292,13 +338,13 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
             // what have we got
             if (valueType.getType() == Schema.Type.RECORD) {
               result[i][sf.m_outputIndex] = sf.convertToKettleValue(
-                  (GenericData.Record) value, valueType);
+                  (GenericData.Record) value, valueType, ignoreMissing);
             } else if (valueType.getType() == Schema.Type.ARRAY) {
               result[i][sf.m_outputIndex] = sf.convertToKettleValue(
-                  (GenericData.Array) value, valueType);
+                  (GenericData.Array) value, valueType, ignoreMissing);
             } else if (valueType.getType() == Schema.Type.MAP) {
               result[i][sf.m_outputIndex] = sf.convertToKettleValue(
-                  (Map<Utf8, Object>) value, valueType);
+                  (Map<Utf8, Object>) value, valueType, ignoreMissing);
             } else {
               // assume a primitive
               result[i][sf.m_outputIndex] = sf.getPrimitive(value, valueType);
@@ -328,13 +374,13 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
         // what have we got?
         if (valueType.getType() == Schema.Type.RECORD) {
           return convertToKettleValues((GenericData.Record) value, valueType,
-              space);
+              space, ignoreMissing);
         } else if (valueType.getType() == Schema.Type.ARRAY) {
           return convertToKettleValues((GenericData.Array) value, valueType,
-              space);
+              space, ignoreMissing);
         } else if (valueType.getType() == Schema.Type.MAP) {
           return convertToKettleValues((Map<Utf8, Object>) value, valueType,
-              space);
+              space, ignoreMissing);
         } else {
           // we should never have a primitive at this point. If we are
           // extracting a
@@ -353,12 +399,14 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
      * @param array the array to process
      * @param s the current schema at this point in the path
      * @param space environment variables
+     * @param ignoreMissing true if null is to be returned for user fields that
+     *          don't appear in the schema
      * @return an array of Kettle rows corresponding to the expanded map/array
      *         and containing all leaf values as defined in the paths
      * @throws KettleException if a problem occurs
      */
     public Object[][] convertToKettleValues(GenericData.Array array, Schema s,
-        VariableSpace space) throws KettleException {
+        VariableSpace space, boolean ignoreMissing) throws KettleException {
 
       if (array == null) {
         return null;
@@ -399,13 +447,13 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
             // what have we got
             if (elementType.getType() == Schema.Type.RECORD) {
               result[i][sf.m_outputIndex] = sf.convertToKettleValue(
-                  (GenericData.Record) value, elementType);
+                  (GenericData.Record) value, elementType, ignoreMissing);
             } else if (elementType.getType() == Schema.Type.ARRAY) {
               result[i][sf.m_outputIndex] = sf.convertToKettleValue(
-                  (GenericData.Array) value, elementType);
+                  (GenericData.Array) value, elementType, ignoreMissing);
             } else if (elementType.getType() == Schema.Type.MAP) {
               result[i][sf.m_outputIndex] = sf.convertToKettleValue(
-                  (Map<Utf8, Object>) value, elementType);
+                  (Map<Utf8, Object>) value, elementType, ignoreMissing);
             } else {
               // assume a primitive
               result[i][sf.m_outputIndex] = sf.getPrimitive(value, elementType);
@@ -441,13 +489,13 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
         // what have we got?
         if (elementType.getType() == Schema.Type.RECORD) {
           return convertToKettleValues((GenericData.Record) value, elementType,
-              space);
+              space, ignoreMissing);
         } else if (elementType.getType() == Schema.Type.ARRAY) {
           return convertToKettleValues((GenericData.Array) value, elementType,
-              space);
+              space, ignoreMissing);
         } else if (elementType.getType() == Schema.Type.MAP) {
           return convertToKettleValues((Map<Utf8, Object>) value, elementType,
-              space);
+              space, ignoreMissing);
         } else {
           // we should never have a primitive at this point. If we are
           // extracting a
@@ -466,12 +514,15 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
      * @param record the record to process
      * @param s the current schema at this point in the path
      * @param space environment variables
+     * @param ignoreMissing true if null is to be returned for user fields that
+     *          don't appear in the schema
      * @return an array of Kettle rows corresponding to the expanded map/array
      *         and containing all leaf values as defined in the paths
      * @throws KettleException if a problem occurs
      */
     public Object[][] convertToKettleValues(GenericData.Record record,
-        Schema s, VariableSpace space) throws KettleException {
+        Schema s, VariableSpace space, boolean ignoreMissing)
+        throws KettleException {
 
       if (record == null) {
         return null;
@@ -507,14 +558,14 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
       // what have we got?
       if (fieldS.schema().getType() == Schema.Type.RECORD) {
         return convertToKettleValues((GenericData.Record) field,
-            fieldS.schema(), space);
+            fieldS.schema(), space, ignoreMissing);
       } else if (fieldS.schema().getType() == Schema.Type.ARRAY) {
         return convertToKettleValues((GenericData.Array) field,
-            fieldS.schema(), space);
+            fieldS.schema(), space, ignoreMissing);
       } else if (fieldS.schema().getType() == Schema.Type.MAP) {
 
         return convertToKettleValues((Map<Utf8, Object>) field,
-            fieldS.schema(), space);
+            fieldS.schema(), space, ignoreMissing);
       } else {
         // primitives will always be handled by the subField delegates, so we
         // should'nt
@@ -851,31 +902,68 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
    * @param jsonEncoded true if the data is JSON encoded
    * @param newFieldOffset offset in the outgoing row format for extracted
    *          fields from any incoming kettle fields
+   * @param schemaInField true if the schema to use on a row-by-row basis is
+   *          contained in an incoming field value
+   * @param schemaFieldName the name of the incoming field containing the schema
+   * @param schemaFieldIsPath true if the incoming schema field values are
+   *          actually paths to schemas rather than the schema itself
+   * @param cacheSchemas true if schemas read from field values are to be cached
+   *          in memory
+   * @param ingoreMissing true if null is to be output for fields not found in
+   *          the schema
+   * @param log for logging
    * @throws KettleException
    */
   public void initializeFromFieldDecoding(String fieldNameToDecode,
       String readerSchemaFile, List<AvroInputMeta.AvroField> fields,
-      boolean jsonEncoded, int newFieldOffset) throws KettleException {
+      boolean jsonEncoded, int newFieldOffset, boolean schemaInField,
+      String schemaFieldName, boolean schemaFieldIsPath, boolean cacheSchemas,
+      boolean ignoreMissing, LogChannelInterface log) throws KettleException {
 
+    m_log = log;
     m_decodingFromField = true;
     m_jsonEncoded = jsonEncoded;
     m_newFieldOffset = newFieldOffset;
     m_inStream = null;
     m_normalFields = new ArrayList<AvroInputMeta.AvroField>();
+    m_cacheSchemas = cacheSchemas;
+    m_schemaInField = schemaInField;
+    m_dontComplainAboutMissingFields = ignoreMissing;
+
     for (AvroInputMeta.AvroField f : fields) {
       m_normalFields.add(f);
     }
     m_fieldToDecodeIndex = m_outputRowMeta.indexOfValue(fieldNameToDecode);
 
-    if (Const.isEmpty(readerSchemaFile)) {
-      throw new KettleException(BaseMessages.getString(AvroInputMeta.PKG,
-          "AvroInput.Error.NoSchemaProvided"));
+    if (schemaInField) {
+      m_schemaFieldIndex = m_outputRowMeta.indexOfValue(schemaFieldName);
+      if (m_schemaFieldIndex < 0) {
+        throw new KettleException(BaseMessages.getString(AvroInputMeta.PKG,
+            "AvroInput.Error.UnableToFindIncommingSchemaField"));
+      }
+      m_schemaFieldIsPath = schemaFieldIsPath;
     }
-    m_schemaToUse = loadSchema(readerSchemaFile);
+
+    if (Const.isEmpty(readerSchemaFile)) {
+      if (!schemaInField) {
+        throw new KettleException(BaseMessages.getString(AvroInputMeta.PKG,
+            "AvroInput.Error.NoSchemaSupplied"));
+      } else {
+        if (m_log.isBasic()) {
+          m_log.logBasic(BaseMessages.getString(AvroInputMeta.PKG,
+              "AvroInput.Message.NoDefaultSchemaWarning"));
+        }
+      }
+    }
+
+    if (!Const.isEmpty(readerSchemaFile)) {
+      m_schemaToUse = loadSchema(readerSchemaFile);
+      m_defaultSchema = m_schemaToUse;
+      m_datumReader = new GenericDatumReader(m_schemaToUse);
+      m_defaultDatumReader = m_datumReader;
+    }
 
     m_factory = new DecoderFactory();
-
-    m_datumReader = new GenericDatumReader(m_schemaToUse);
 
     init();
   }
@@ -906,12 +994,17 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
    * @param jsonEncoded true if the data is JSON encoded
    * @param newFieldOffset offset in the outgoing row format for extracted
    *          fields from any incoming kettle fields
+   * @param ignoreMissing if true output null for fields that don't appear in
+   *          the schema
+   * @param log the logger to use
    * @throws KettleException if a problem occurs
    */
   public void establishFileType(FileObject avroFile, String readerSchemaFile,
       List<AvroInputMeta.AvroField> fields, boolean jsonEncoded,
-      int newFieldOffset) throws KettleException {
+      int newFieldOffset, boolean ignoreMissing, LogChannelInterface log)
+      throws KettleException {
 
+    m_log = log;
     m_newFieldOffset = newFieldOffset;
     m_normalFields = new ArrayList<AvroInputMeta.AvroField>();
     for (AvroInputMeta.AvroField f : fields) {
@@ -919,6 +1012,7 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
     }
     m_inStream = null;
     m_jsonEncoded = jsonEncoded;
+    m_dontComplainAboutMissingFields = ignoreMissing;
 
     try {
       m_inStream = KettleVFS.getInputStream(avroFile);
@@ -930,6 +1024,7 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
     // load and handle reader schema....
     if (!Const.isEmpty(readerSchemaFile)) {
       m_schemaToUse = loadSchema(readerSchemaFile);
+      m_defaultSchema = m_schemaToUse;
     } else if (jsonEncoded) {
       throw new KettleException(BaseMessages.getString(AvroInputMeta.PKG,
           "AvroInput.Error.NoSchemaProvided"));
@@ -986,29 +1081,158 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
         m_decoder = m_factory.binaryDecoder(m_inStream, null);
       }
       m_datumReader = new GenericDatumReader(m_schemaToUse);
+      m_defaultDatumReader = m_datumReader;
     }
 
     init();
   }
 
-  protected void init() throws KettleException {
+  protected void initTopLevelStructure(Schema schema, boolean setDefault)
+      throws KettleException {
     // what top-level structure are we using?
-    if (m_schemaToUse.getType() == Schema.Type.RECORD) {
-      m_topLevelRecord = new GenericData.Record(m_schemaToUse);
-    } else if (m_schemaToUse.getType() == Schema.Type.ARRAY) {
-      m_topLevelArray = new GenericData.Array(1, m_schemaToUse); // capacity,
-                                                                 // schema
-    } else if (m_schemaToUse.getType() == Schema.Type.MAP) {
+    if (schema.getType() == Schema.Type.RECORD) {
+      m_topLevelRecord = new GenericData.Record(schema);
+      if (setDefault) {
+        m_defaultTopLevelObject = m_topLevelRecord;
+      }
+    } else if (schema.getType() == Schema.Type.ARRAY) {
+      m_topLevelArray = new GenericData.Array(1, schema); // capacity,
+                                                          // schema
+      if (setDefault) {
+        m_defaultTopLevelObject = m_topLevelArray;
+      }
+    } else if (schema.getType() == Schema.Type.MAP) {
       m_topLevelMap = new HashMap<Utf8, Object>();
+      if (setDefault) {
+        m_defaultTopLevelObject = m_topLevelMap;
+      }
     } else {
       throw new KettleException(BaseMessages.getString(AvroInputMeta.PKG,
           "AvroInput.Error.UnsupportedTopLevelStructure"));
     }
+  }
 
-    // any fields specified by the user, or do we need to read all leaves
-    // from the schema?
+  protected void setTopLevelStructure(Object topLevel) {
+    if (topLevel instanceof GenericData.Record) {
+      m_topLevelRecord = (GenericData.Record) topLevel;
+      m_topLevelArray = null;
+      m_topLevelMap = null;
+    } else if (topLevel instanceof GenericData.Array) {
+      m_topLevelArray = (GenericData.Array<?>) topLevel;
+      m_topLevelRecord = null;
+      m_topLevelMap = null;
+    } else {
+      m_topLevelMap = (HashMap<Utf8, Object>) topLevel;
+      m_topLevelRecord = null;
+      m_topLevelArray = null;
+    }
+  }
+
+  protected void setSchemaToUse(String schemaKey, boolean useCache,
+      VariableSpace space) throws KettleException {
+
+    if (Const.isEmpty(schemaKey)) {
+      // switch to default
+      if (m_defaultDatumReader == null) {
+        // no key, no default schema - can't continue with this row
+        throw new KettleException(BaseMessages.getString(AvroInputMeta.PKG,
+            "AvroInput.Error.IncommingSchemaIsMissingAndNoDefault"));
+      }
+      if (m_log.isDetailed()) {
+        m_log.logDetailed(BaseMessages.getString(AvroInputMeta.PKG,
+            "AvroInput.Message.IncommingSchemaIsMissing"));
+      }
+      m_datumReader = m_defaultDatumReader;
+      m_schemaToUse = m_datumReader.getSchema();
+      setTopLevelStructure(m_defaultTopLevelObject);
+      return;
+    } else {
+      schemaKey = schemaKey.trim();
+      schemaKey = space.environmentSubstitute(schemaKey);
+    }
+
+    Object[] cached = null;
+    if (useCache) {
+      cached = m_schemaCache.get(schemaKey);
+      if (m_log.isDetailed() && cached != null) {
+        m_log.logDetailed(BaseMessages.getString(AvroInputMeta.PKG,
+            "AvroInput.Message.UsingCachedSchema", schemaKey));
+      }
+    }
+
+    if (!useCache || cached == null) {
+      Schema toUse = null;
+      if (m_schemaFieldIsPath) {
+        // load the schema from disk
+        if (m_log.isDetailed()) {
+          m_log.logDetailed(BaseMessages.getString(AvroInputMeta.PKG,
+              "AvroInput.Message.LoadingSchema", schemaKey));
+        }
+        try {
+          toUse = loadSchema(schemaKey);
+        } catch (KettleException ex) {
+          // fall back to default (if possible)
+          if (m_defaultDatumReader != null) {
+            if (m_log.isBasic()) {
+              m_log.logBasic(BaseMessages
+                  .getString(AvroInputMeta.PKG,
+                      "AvroInput.Message.FailedToLoadSchmeaUsingDefault",
+                      schemaKey));
+            }
+            m_datumReader = m_defaultDatumReader;
+            m_schemaToUse = m_datumReader.getSchema();
+            setTopLevelStructure(m_defaultTopLevelObject);
+            return;
+          } else {
+            throw new KettleException(BaseMessages.getString(AvroInputMeta.PKG,
+                "AvroInput.Error.CantLoadIncommingSchemaAndNoDefault",
+                schemaKey));
+          }
+        }
+      } else {
+        // use the supplied schema
+        if (m_log.isDetailed()) {
+          m_log.logDetailed(BaseMessages.getString(AvroInputMeta.PKG,
+              "AvroInput.Message.ParsingSchema", schemaKey));
+        }
+        Schema.Parser p = new Schema.Parser();
+        toUse = p.parse(schemaKey);
+      }
+      m_schemaToUse = toUse;
+      m_datumReader = new GenericDatumReader(toUse);
+      initTopLevelStructure(toUse, false);
+      if (useCache) {
+        Object[] schemaInfo = new Object[2];
+        schemaInfo[0] = m_datumReader;
+        schemaInfo[1] = (m_topLevelArray != null) ? m_topLevelArray
+            : ((m_topLevelRecord != null) ? m_topLevelRecord : m_topLevelMap);
+        if (m_log.isDetailed()) {
+          m_log.logDetailed(BaseMessages.getString(AvroInputMeta.PKG,
+              "AvroInput.Message.StoringSchemaInCache"));
+        }
+        m_schemaCache.put(schemaKey, schemaInfo);
+      }
+    } else if (useCache) {
+      // got one from the cache
+      m_datumReader = (GenericDatumReader) cached[0];
+      m_schemaToUse = m_datumReader.getSchema();
+      setTopLevelStructure(cached[1]);
+    }
+  }
+
+  protected void init() throws KettleException {
+    if (m_schemaToUse != null) {
+      initTopLevelStructure(m_schemaToUse, true);
+      // any fields specified by the user, or do we need to read all leaves
+      // from the schema?
+      if (m_normalFields == null || m_normalFields.size() == 0) {
+        m_normalFields = getLeafFields(m_schemaToUse);
+      }
+    }
+
     if (m_normalFields == null || m_normalFields.size() == 0) {
-      m_normalFields = getLeafFields(m_schemaToUse);
+      throw new KettleException(BaseMessages.getString(AvroInputMeta.PKG,
+          "AvroInput.Error.NoFieldPathsDefined"));
     }
 
     m_expansionHandler = checkFieldPaths(m_normalFields, m_outputRowMeta);
@@ -1121,13 +1345,13 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
 
       if (m_schemaToUse.getType() == Schema.Type.RECORD) {
         result = m_expansionHandler.convertToKettleValues(m_topLevelRecord,
-            m_schemaToUse, space);
+            m_schemaToUse, space, m_dontComplainAboutMissingFields);
       } else if (m_schemaToUse.getType() == Schema.Type.ARRAY) {
         result = m_expansionHandler.convertToKettleValues(m_topLevelArray,
-            m_schemaToUse, space);
+            m_schemaToUse, space, m_dontComplainAboutMissingFields);
       } else {
         result = m_expansionHandler.convertToKettleValues(m_topLevelMap,
-            m_schemaToUse, space);
+            m_schemaToUse, space, m_dontComplainAboutMissingFields);
       }
     } else {
       result = new Object[1][];
@@ -1149,11 +1373,14 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
       f.reset(space);
 
       if (m_schemaToUse.getType() == Schema.Type.RECORD) {
-        value = f.convertToKettleValue(m_topLevelRecord, m_schemaToUse);
+        value = f.convertToKettleValue(m_topLevelRecord, m_schemaToUse,
+            m_dontComplainAboutMissingFields);
       } else if (m_schemaToUse.getType() == Schema.Type.ARRAY) {
-        value = f.convertToKettleValue(m_topLevelArray, m_schemaToUse);
+        value = f.convertToKettleValue(m_topLevelArray, m_schemaToUse,
+            m_dontComplainAboutMissingFields);
       } else {
-        value = f.convertToKettleValue(m_topLevelMap, m_schemaToUse);
+        value = f.convertToKettleValue(m_topLevelMap, m_schemaToUse,
+            m_dontComplainAboutMissingFields);
       }
 
       outputRowData[f.m_outputIndex] = value;
@@ -1240,6 +1467,16 @@ public class AvroInputData extends BaseStepData implements StepDataInterface {
             result[0] = RowDataUtil.resizeArray(incoming,
                 m_outputRowMeta.size());
             return result;
+          }
+
+          // if necessary, set the current datum reader and top level structure
+          // for the incoming schema
+          if (m_schemaInField) {
+            ValueMetaInterface schemaMeta = m_outputRowMeta
+                .getValueMeta(m_schemaFieldIndex);
+            String schemaToUse = schemaMeta
+                .getString(incoming[m_schemaFieldIndex]);
+            setSchemaToUse(schemaToUse, m_cacheSchemas, space);
           }
 
           if (m_jsonEncoded) {
