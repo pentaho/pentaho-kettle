@@ -291,6 +291,11 @@ public class JobMetricsDelegate extends SpoonDelegate {
 		}
 		lastRefreshTime=System.currentTimeMillis();
 		
+    if (image!=null) {
+      image.dispose(); // prevent out of memory...
+      image=null;
+    }
+    
 		List<MetricsDuration> durations = MetricsUtil.getAllDurations(jobGraph.job.getLogChannelId());
 		
 		// Sort the metrics.
@@ -323,6 +328,10 @@ public class JobMetricsDelegate extends SpoonDelegate {
     // sMetricsComposite.setMinWidth(bounds.width);
     sMetricsComposite.layout(true, true);
 	  
+    // close shop on the SWT GC side.
+    //
+    gc.dispose();
+    
 		// Draw the image on the canvas...
 		//
 		canvas.redraw();

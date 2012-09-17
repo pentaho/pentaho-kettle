@@ -54,7 +54,13 @@ public class MetricsPainter {
     // Draw some lines in the background.
     //
     long periodInMs = periodEnd - periodStart;
-    int timeLineDistance = ((int)Math.pow(10, (int)(periodInMs/5000)))*50;
+    int log10 = (int)Math.log10(periodInMs);
+    
+    // 150 --> 2
+    // 1243 --> 3
+    // 
+    
+    int timeLineDistance = (int)Math.pow(10, log10-1);
     
     for (int time=timeLineDistance;time<periodInMs;time+=timeLineDistance) {
       int x = (int)(time * pixelsPerMs);

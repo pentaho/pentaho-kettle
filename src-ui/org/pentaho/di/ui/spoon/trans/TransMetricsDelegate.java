@@ -84,6 +84,8 @@ public class TransMetricsDelegate extends SpoonDelegate {
 
   private List<MetricsDrawArea> drawAreas;
 
+  protected int numberOfPaints;
+
 	
 	/**
 	 * @param spoon
@@ -131,7 +133,7 @@ public class TransMetricsDelegate extends SpoonDelegate {
     sMetricsComposite.setExpandHorizontal(true);
     sMetricsComposite.setExpandVertical(true);
     sMetricsComposite.setMinWidth(800);
-    sMetricsComposite.setMinHeight(500);
+    sMetricsComposite.setMinHeight(400);
 		
 		transMetricsTab.setControl(sMetricsComposite);
 		
@@ -188,6 +190,9 @@ public class TransMetricsDelegate extends SpoonDelegate {
 
       public void paintControl(PaintEvent event) {
 
+        numberOfPaints++;
+        if ((numberOfPaints%10)==0) System.out.println("!!!!!! paints="+numberOfPaints);
+        
         refreshImage(event.gc);
 
         if (image != null && !image.isDisposed()) {
@@ -290,7 +295,11 @@ public class TransMetricsDelegate extends SpoonDelegate {
 		  return;
 		}
 		lastRefreshTime=System.currentTimeMillis();
-		
+	
+		if (image!=null) {
+		  image.dispose(); // prevent out of memory...
+		  image=null;
+		}
 		List<MetricsDuration> durations = MetricsUtil.getAllDurations(transGraph.trans.getLogChannelId());
 		
 		// Sort the metrics.
@@ -326,6 +335,10 @@ public class TransMetricsDelegate extends SpoonDelegate {
 		// Draw the image on the canvas...
 		//
 		canvas.redraw();
+		
+		// close shop on the SWT GC side.
+		//
+		gc.dispose();
 	}
 
 	/**
