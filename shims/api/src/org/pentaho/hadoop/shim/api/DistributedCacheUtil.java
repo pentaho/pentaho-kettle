@@ -47,15 +47,6 @@ public interface DistributedCacheUtil {
   boolean isKettleEnvironmentInstalledAt(FileSystem fs, Path kettleEnvInstallDir) throws IOException;
 
   /**
-   * Find the location of the directory for a plugin.
-   * 
-   * @param pluginName Name of Kettle plugin
-   * @return Plugin directory location in VFS
-   * @throws Exception Invalid plugin, error locating plugin directory
-   */
-  FileObject findPluginFolder(String pluginName) throws Exception;
-
-  /**
    * Configure the configuration object to use the Kettle environment staged in the 
    * file system and path provided.
    *  
@@ -74,10 +65,11 @@ public interface DistributedCacheUtil {
    * @param fs File system to write to
    * @param destination Directory to stage environment into
    * @param bigDataPluginFolder Location of the big data plugin to stage into the Kettle environment
-   * @param additionalPlugins Any additional plugin folders we should stage
+   * @param additionalPlugins Comma-separated list of directory paths relative to a root Kettle plugin 
+   *                          folder representing directories that should be copied into the installation
    * @throws Exception Error staging the Kettle environment
    */
   void installKettleEnvironment(FileObject pmrLibArchive, FileSystem fs, Path destination,
-      FileObject bigDataPluginFolder, List<FileObject> additionalPlugins) throws Exception;
+      FileObject bigDataPluginFolder, String additionalPlugins) throws Exception;
 
 }
