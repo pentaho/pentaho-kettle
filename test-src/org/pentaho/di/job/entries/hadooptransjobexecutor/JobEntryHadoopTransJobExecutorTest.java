@@ -30,16 +30,12 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.VFS;
-import org.apache.commons.vfs.impl.DefaultFileSystemManager;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.pentaho.di.core.Const;
 import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.exception.KettleException;
@@ -48,19 +44,15 @@ import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginMainClassType;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
-import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.job.Job;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.steps.hadoopenter.HadoopEnterMeta;
 import org.pentaho.di.trans.steps.hadoopexit.HadoopExitMeta;
 import org.pentaho.hadoop.shim.ConfigurationException;
 import org.pentaho.hadoop.shim.HadoopConfiguration;
-import org.pentaho.hadoop.shim.HadoopConfigurationFileSystemManager;
-import org.pentaho.hadoop.shim.MockHadoopConfigurationProvider;
 import org.pentaho.hadoop.shim.api.Configuration;
 import org.pentaho.hadoop.shim.common.CommonHadoopShim;
 import org.pentaho.hadoop.shim.common.ConfigurationProxy;
-import org.pentaho.hadoop.shim.spi.HadoopShim;
 
 // TODO Refactor JobEntryHadoopTransJobExecutor so it can be tested better than this pseudo-integration test
 public class JobEntryHadoopTransJobExecutorTest {
@@ -164,26 +156,6 @@ public class JobEntryHadoopTransJobExecutorTest {
     String value = "default-value";
 
     assertEquals(value, executor.getProperty(conf, p, propertyName, value));
-  }
-  
-  @Test
-  public void findAdditionalPluginFolders() throws Throwable {
-    JobEntryHadoopTransJobExecutor executor = new JobEntryHadoopTransJobExecutor();
-    Configuration conf = new ConfigurationProxy();
-    HadoopShim shim = new CommonHadoopShim();
-    HadoopConfiguration config = new HadoopConfiguration(VFS.getManager().resolveFile("ram:///"), "test", "test", shim);
-    shim.onLoad(config, new HadoopConfigurationFileSystemManager(new MockHadoopConfigurationProvider(), new DefaultFileSystemManager()));
-    Properties p = new Properties();
-    
-    // Fake out the "plugins" directory for the project's root directory
-    System.setProperty(Const.PLUGIN_BASE_FOLDERS_PROP, KettleVFS.getFileObject(".").getURL().toURI().getPath());
-
-    p.setProperty(JobEntryHadoopTransJobExecutor.PENTAHO_MAPREDUCE_PROPERTY_ADDITIONAL_PLUGINS, "src, bin   ,  invalid");
-    
-    List<FileObject> pluginFolders = executor.findAdditionalPluginFolders(shim, conf, p);
-    assertEquals(2, pluginFolders.size());
-    assertEquals(KettleVFS.getFileObject("./src"), pluginFolders.get(0));
-    assertEquals(KettleVFS.getFileObject("./bin"), pluginFolders.get(1));
   }
 
   @Test

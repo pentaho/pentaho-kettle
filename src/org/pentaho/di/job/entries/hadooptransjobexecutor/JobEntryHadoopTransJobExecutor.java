@@ -121,8 +121,6 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
   private String inputFormatClass;
   private String outputFormatClass;
 
-  private String workingDirectory;
-
   private String hdfsHostname;
   private String hdfsPort;
 
@@ -351,14 +349,6 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
 
   public void setOutputFormatClass(String outputFormatClass) {
     this.outputFormatClass = outputFormatClass;
-  }
-
-  public String getWorkingDirectory() {
-    return workingDirectory;
-  }
-
-  public void setWorkingDirectory(String workingDirectory) {
-    this.workingDirectory = workingDirectory;
   }
 
   public String getHdfsHostname() {
@@ -716,7 +706,6 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
         }
       }
 
-      conf.setWorkingDirectory(environmentSubstitute(workingDirectory));
       conf.setJarByClass(shim.getPentahoMapReduceMapRunnerClass());
       
       String numMapTasksS = environmentSubstitute(numMapTasks);
@@ -801,8 +790,8 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
             logDetailed(BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.UsingKettleInstallationFrom", kettleEnvInstallDir.toUri().getPath()));
           } else {
             // Load additional plugin folders as requested
-            List<FileObject> additionalPluginFolders = findAdditionalPluginFolders(shim, conf, pmrProperties);
-            installKettleEnvironment(shim, pmrLibArchive, fs, kettleEnvInstallDir, additionalPluginFolders);
+            String additionalPluginNames = getProperty(conf, pmrProperties, PENTAHO_MAPREDUCE_PROPERTY_ADDITIONAL_PLUGINS, null);
+            installKettleEnvironment(shim, pmrLibArchive, fs, kettleEnvInstallDir, additionalPluginNames);
           }
           configureWithKettleEnvironment(shim, conf, fs, kettleEnvInstallDir);
         } catch (Exception ex) {
@@ -939,34 +928,6 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
   }
 
   /**
-   * Find plugin folders declared in the property {@code PENTAHO_MAPREDUCE_PROPERTY_ADDITIONAL_PLUGINS} to be included
-   * as part of the Kettle Environment copied into DFS for use with Pentaho MapReduce.
-   *
-   * @param shim Hadoop Shim to work with
-   * @param conf Configuration to check for the property
-   * @param pmrProperties Properties to check for the property if not found in {@code conf}
-   * @return List of file objects that point to the plugin directories that are declared as "additional required plugins"
-   * for the Kettle Environment Pentaho MapReduce will run within.
-   * @throws KettleFileException
-   */
-  public List<FileObject> findAdditionalPluginFolders(HadoopShim shim, Configuration conf, Properties pmrProperties) throws Exception {
-    List<FileObject> additionalPluginFolders = new ArrayList<FileObject>();
-    String additionalPluginNames = getProperty(conf, pmrProperties, PENTAHO_MAPREDUCE_PROPERTY_ADDITIONAL_PLUGINS, null);
-    if (!Const.isEmpty(additionalPluginNames)) {
-      for(String pluginName : additionalPluginNames.split(",")) {
-        pluginName = pluginName.trim();
-        if (!Const.isEmpty(pluginName)) {
-          FileObject pluginFolder = shim.getDistributedCacheUtil().findPluginFolder(pluginName);
-          if (pluginFolder != null) {
-            additionalPluginFolders.add(pluginFolder);
-          }
-        }
-      }
-    }
-    return additionalPluginFolders;
-  }
-
-  /**
    * Gets a property from the configuration. If it is missing it will load it from the properties provided. If it cannot 
    * be found there the default value provided will be used.
    *
@@ -1010,7 +971,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
    * @throws KettleException
    * @throws IOException
    */
-  public void installKettleEnvironment(HadoopShim shim, FileObject pmrLibArchive, FileSystem fs, Path destination, List<FileObject> additionalPlugins) throws Exception {
+  public void installKettleEnvironment(HadoopShim shim, FileObject pmrLibArchive, FileSystem fs, Path destination, String additionalPlugins) throws Exception {
     if (pmrLibArchive == null) {
       throw new KettleException(BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.UnableToLocateArchive", pmrLibArchive));
     }
@@ -1228,7 +1189,6 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
     jobTrackerPort = XMLHandler.getTagValue(entrynode, "job_tracker_port"); //$NON-NLS-1$
     numMapTasks = XMLHandler.getTagValue(entrynode, "num_map_tasks"); //$NON-NLS-1$
     numReduceTasks = XMLHandler.getTagValue(entrynode, "num_reduce_tasks"); //$NON-NLS-1$
-    workingDirectory = XMLHandler.getTagValue(entrynode, "working_dir"); //$NON-NLS-1$
 
     // How many user defined elements?
     userDefined = new ArrayList<UserDefinedItem>();
@@ -1296,7 +1256,6 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
     retval.append("      ").append(XMLHandler.addTagValue("job_tracker_port", jobTrackerPort)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("      ").append(XMLHandler.addTagValue("num_map_tasks", numMapTasks)); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("      ").append(XMLHandler.addTagValue("num_reduce_tasks", numReduceTasks)); //$NON-NLS-1$ //$NON-NLS-2$
-    retval.append("      ").append(XMLHandler.addTagValue("working_dir", workingDirectory)); //$NON-NLS-1$ //$NON-NLS-2$
 
     retval.append("      <user_defined_list>").append(Const.CR); //$NON-NLS-1$
     if (userDefined != null) {
@@ -1375,7 +1334,6 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
       } else {
         setNumReduceTasks(rep.getJobEntryAttributeString(id_jobentry, "num_reduce_tasks"));
       }
-      setWorkingDirectory(rep.getJobEntryAttributeString(id_jobentry, "working_dir")); //$NON-NLS-1$
 
       int argnr = rep.countNrJobEntryAttributes(id_jobentry, "user_defined_name");//$NON-NLS-1$
       if(argnr > 0) {
@@ -1444,7 +1402,6 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
       rep.saveJobEntryAttribute(id_job, getObjectId(),"job_tracker_port", jobTrackerPort); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getObjectId(),"num_map_tasks", numMapTasks); //$NON-NLS-1$
       rep.saveJobEntryAttribute(id_job, getObjectId(),"num_reduce_tasks", numReduceTasks); //$NON-NLS-1$
-      rep.saveJobEntryAttribute(id_job, getObjectId(),"working_dir", workingDirectory); //$NON-NLS-1$
 
       if (userDefined != null) {
         for (int i = 0; i < userDefined.size(); i++) {

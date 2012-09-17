@@ -75,7 +75,6 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig, E e
   // or other user-driven events.
   protected boolean suppressEventHandling = false;
 
-
   /**
    * The text for the Quick Setup/Advanced Options mode toggle (label).
    */
@@ -281,25 +280,32 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig, E e
    * @param selectedDatabaseConnection Database item to select
    */
   public void setSelectedDatabaseConnection(DatabaseItem selectedDatabaseConnection) {
-    DatabaseItem old = this.selectedDatabaseConnection;
-    this.selectedDatabaseConnection = selectedDatabaseConnection;
-    DatabaseMeta databaseMeta = this.selectedDatabaseConnection == null ? null : jobMeta.findDatabase(this.selectedDatabaseConnection.getName());
-    boolean validDatabaseSelected = databaseMeta != null;
-    setDatabaseInteractionButtonsDisabled(!validDatabaseSelected);
-    updateDatabaseItemsList();
-    // If the selected database changes update the config
-    if (!suppressEventHandling && (old == null && this.selectedDatabaseConnection != null || !old.equals(this.selectedDatabaseConnection))) {
-      if (validDatabaseSelected) {
-        try {
-          getConfig().setConnectionInfo(databaseMeta.getName(), databaseMeta.getURL(), databaseMeta.getUsername(), databaseMeta.getPassword());
-        } catch (KettleDatabaseException ex) {
-          jobEntry.logError(BaseMessages.getString(AbstractSqoopJobEntry.class, "ErrorConfiguringDatabaseConnection"), ex);
-        }
-      } else {
-        getConfig().copyConnectionInfoFromAdvanced();
+    if (!suppressEventHandling) {
+      DatabaseItem old = this.selectedDatabaseConnection;
+      this.selectedDatabaseConnection = selectedDatabaseConnection;
+      DatabaseMeta databaseMeta = this.selectedDatabaseConnection == null ? null : jobMeta.findDatabase(this.selectedDatabaseConnection.getName());
+      boolean validDatabaseSelected = databaseMeta != null;
+      setDatabaseInteractionButtonsDisabled(!validDatabaseSelected);
+      suppressEventHandling = true;
+      try {
+        updateDatabaseItemsList();
+      } finally {
+        suppressEventHandling = false;
       }
+      // If the selected database changes update the config
+      if (old == null && this.selectedDatabaseConnection != null || !old.equals(this.selectedDatabaseConnection)) {
+        if (validDatabaseSelected) {
+          try {
+            getConfig().setConnectionInfo(databaseMeta.getName(), databaseMeta.getURL(), databaseMeta.getUsername(), databaseMeta.getPassword());
+          } catch (KettleDatabaseException ex) {
+            jobEntry.logError(BaseMessages.getString(AbstractSqoopJobEntry.class, "ErrorConfiguringDatabaseConnection"), ex);
+          }
+        } else {
+          getConfig().copyConnectionInfoFromAdvanced();
+        }
+      }
+      firePropertyChange("selectedDatabaseConnection", old, this.selectedDatabaseConnection);
     }
-    firePropertyChange("selectedDatabaseConnection", old, this.selectedDatabaseConnection);
   }
 
   /**
@@ -394,7 +400,12 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig, E e
       if (isNew) {
         jobMeta.addDatabase(getDatabaseDialog().getDatabaseMeta());
       }
-      populateDatabases();
+      suppressEventHandling = true;
+      try {
+        populateDatabases();
+      } finally {
+        suppressEventHandling = false;
+      }
       setSelectedDatabaseConnection(createDatabaseItem(getDatabaseDialog().getDatabaseMeta().getName()));
     }
   }

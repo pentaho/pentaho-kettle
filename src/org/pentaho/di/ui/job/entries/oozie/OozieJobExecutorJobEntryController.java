@@ -20,17 +20,25 @@
 
 package org.pentaho.di.ui.job.entries.oozie;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.*;
+import org.pentaho.di.job.BlockableJobConfig;
+import org.pentaho.di.job.JobEntryMode;
+import org.pentaho.di.job.JobMeta;
+import org.pentaho.di.job.PropertyEntry;
 import org.pentaho.di.job.entries.oozie.OozieJobExecutorConfig;
 import org.pentaho.di.job.entries.oozie.OozieJobExecutorJobEntry;
 import org.pentaho.di.ui.job.AbstractJobEntryController;
 import org.pentaho.ui.xul.XulDomContainer;
-import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.binding.Binding;
 import org.pentaho.ui.xul.binding.BindingConvertor;
 import org.pentaho.ui.xul.binding.BindingFactory;
@@ -38,8 +46,6 @@ import org.pentaho.ui.xul.containers.XulTree;
 import org.pentaho.ui.xul.stereotype.Bindable;
 import org.pentaho.ui.xul.util.AbstractModelList;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
-
-import java.util.*;
 
 /**
  * User: RFellows
@@ -90,7 +96,6 @@ public class OozieJobExecutorJobEntryController extends AbstractJobEntryControll
       if(config.getWorkflowProperties() != null) {
         config.getWorkflowProperties().clear();
       }
-      preFillAdvancedArgs();
     } else {
       if(advancedArguments.size() == 0 && !StringUtil.isEmpty(config.getOozieWorkflowConfig())) {
         preFillAdvancedArgs();

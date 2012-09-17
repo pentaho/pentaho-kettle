@@ -29,6 +29,7 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Properties;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -55,6 +56,7 @@ import org.pentaho.di.core.plugins.PluginFolderInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.hadoop.shim.HadoopConfiguration;
+import org.pentaho.hadoop.shim.spi.HadoopShim;
 
 /**
  * Utility to work with Hadoop's Distributed Cache
@@ -153,7 +155,7 @@ public class DistributedCacheUtilImpl implements org.pentaho.hadoop.shim.api.Dis
     return !fs.exists(lock);
   }
 
-  public void installKettleEnvironment(FileObject pmrArchive, FileSystem fs, Path destination, FileObject bigDataPlugin, List<FileObject> additionalPluginDirectories) throws IOException, KettleFileException {
+  public void installKettleEnvironment(FileObject pmrArchive, FileSystem fs, Path destination, FileObject bigDataPlugin, String additionalPlugins) throws IOException, KettleFileException {
     if (pmrArchive == null) {
       throw new NullPointerException("pmrArchive is required");
     }
@@ -173,12 +175,9 @@ public class DistributedCacheUtilImpl implements org.pentaho.hadoop.shim.api.Dis
     stageForCache(extracted, fs, destination, true);
     
     stageBigDataPlugin(fs, destination, bigDataPlugin);
-  
-//    List<FileObject> pluginsDirectories = new ArrayList<FileObject>();
-//    pluginsDirectories.add(bigDataPlugin);
-    if (additionalPluginDirectories != null && !additionalPluginDirectories.isEmpty()) {
-      stagePluginsForCache(fs, new Path(destination, PATH_PLUGINS), true, additionalPluginDirectories);
-//      pluginsDirectories.addAll(additionalPluginDirectories);
+
+    if (!Const.isEmpty(additionalPlugins)) {
+      stagePluginsForCache(fs, new Path(destination, PATH_PLUGINS), additionalPlugins);
     }
 
     // Delete the lock file now that we're done. It is intentional that we're not doing this in a try/finally. If the
@@ -233,23 +232,32 @@ public class DistributedCacheUtilImpl implements org.pentaho.hadoop.shim.api.Dis
     }
   }
 
-  public void stagePluginsForCache(FileSystem fs, Path pluginsDir, boolean overwrite, List<FileObject> pluginDirectories) throws KettleFileException, IOException {
-    if (pluginDirectories == null) {
-      throw new IllegalArgumentException("plugins required");
+  /**
+   * Stage a comma-separated list of plugin folders into a directory in HDFS.
+   * 
+   * @param fs File System to write to
+   * @param pluginsDir Root plugins directory in HDFS to copy folders into
+   * @param pluginFolderNames Comma-separated list of plugin folders to copy. These are relative to a root Kettle plugin folder (as defined by {@link Const#PLUGIN_BASE_FOLDERS_PROP})
+   * @throws KettleFileException Error locating a plugin folder
+   * @throws IOException Error copying
+   */
+  public void stagePluginsForCache(FileSystem fs, Path pluginsDir, String pluginFolderNames) throws KettleFileException, IOException {
+    if (pluginFolderNames == null) {
+      throw new IllegalArgumentException("pluginFolderNames required");
     }
     if (!fs.exists(pluginsDir)) {
       fs.mkdirs(pluginsDir);
     }
-    for (FileObject localPluginDir : pluginDirectories) {
-      if (!localPluginDir.exists()) {
-        throw new KettleFileException(BaseMessages.getString(DistributedCacheUtilImpl.class, "DistributedCacheUtil.PluginDirectoryNotFound", localPluginDir));
+    for (String localPluginPath : pluginFolderNames.split(",")) {
+      localPluginPath.trim();
+      Object[] localFileTuple = findPluginFolder(localPluginPath);
+      if (localFileTuple == null || !((FileObject) localFileTuple[0]).exists()) {
+        throw new KettleFileException(BaseMessages.getString(DistributedCacheUtilImpl.class, "DistributedCacheUtil.PluginDirectoryNotFound", localPluginPath));
       }
-      Path pluginDir = new Path(pluginsDir, localPluginDir.getName().getBaseName());
-      if (!overwrite && fs.exists(pluginDir)) {
-        // skip installing this plugin, it already exists
-        continue;
-      }
-      stageForCache(localPluginDir, fs, pluginDir, true);
+      FileObject localFile = (FileObject) localFileTuple[0];
+      String relativePath = (String) localFileTuple[1];
+      Path pluginDir = new Path(pluginsDir, relativePath);
+      stageForCache(localFile, fs, pluginDir, true);
     }
   }
 
@@ -532,10 +540,10 @@ public class DistributedCacheUtilImpl implements org.pentaho.hadoop.shim.api.Dis
    * Attempts to find a plugin's installation folder on disk within all known plugin folder locations
    *
    * @param pluginFolderName Name of plugin folder
-   * @return Location of the first plugin folder found as a direct descendant of one of the known plugin folder locations
+   * @return Tuple of [(FileObject) Location of the first plugin folder found as a direct descendant of one of the known plugin folder locations, (String) Relative path from parent]
    * @throws KettleFileException Error getting plugin folders
    */
-  public FileObject findPluginFolder(final String pluginFolderName) throws KettleFileException {
+  protected Object[] findPluginFolder(final String pluginFolderName) throws KettleFileException {
     List<PluginFolderInterface> pluginFolders = PluginFolder.populateFolders(null);
     if (pluginFolders != null) {
       for(PluginFolderInterface pluginFolder : pluginFolders) {
@@ -563,7 +571,7 @@ public class DistributedCacheUtilImpl implements org.pentaho.hadoop.shim.api.Dis
               }
             });
             if (files != null && files.length > 0) {
-              return files[0]; // Return the first match
+              return new Object[] {files[0], folder.getName().getRelativeName(files[0].getName())}; // Return the first match
             }
           }
         } catch (FileSystemException ex) {
@@ -603,7 +611,7 @@ public class DistributedCacheUtilImpl implements org.pentaho.hadoop.shim.api.Dis
   @Override
   public void installKettleEnvironment(FileObject pmrLibArchive, org.pentaho.hadoop.shim.api.fs.FileSystem fs,
       org.pentaho.hadoop.shim.api.fs.Path destination, FileObject bigDataPluginFolder,
-      List<FileObject> additionalPlugins) throws KettleFileException, IOException {
+      String additionalPlugins) throws KettleFileException, IOException {
     installKettleEnvironment(pmrLibArchive, ShimUtils.asFileSystem(fs), ShimUtils.asPath(destination), bigDataPluginFolder, additionalPlugins);
     
   }

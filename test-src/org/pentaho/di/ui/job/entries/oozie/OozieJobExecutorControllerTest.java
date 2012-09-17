@@ -111,12 +111,26 @@ public class OozieJobExecutorControllerTest {
   }
 
   @Test
-  public void testSyncModel_simpleScenario() throws Exception {
+  public void testSyncModel_quickSetupMode() throws Exception {
     assertEquals(0, controller.getAdvancedArguments().size());
 
     // set the props file, sync the model... should have equal amounts of elements
     OozieJobExecutorConfig config = getGoodConfig();
     controller.setConfig(config);
+    controller.setJobEntryMode(JobEntryMode.QUICK_SETUP);
+    assertEquals(0, controller.getAdvancedArguments().size());
+    controller.syncModel();
+    assertEquals(0, controller.getAdvancedArguments().size());
+  }
+  
+  @Test
+  public void testSyncModel_advancedMode() throws Exception {
+    assertEquals(0, controller.getAdvancedArguments().size());
+
+    // set the props file, sync the model... should have equal amounts of elements
+    OozieJobExecutorConfig config = getGoodConfig();
+    controller.setConfig(config);
+    controller.setJobEntryMode(JobEntryMode.ADVANCED_LIST);
     Properties props = OozieJobExecutorJobEntry.getProperties(config, new Variables());
 
     assertFalse(props.size() == controller.getAdvancedArguments().size());
@@ -129,9 +143,9 @@ public class OozieJobExecutorControllerTest {
     OozieJobExecutorConfig config = getGoodConfig();
     controller.setConfig(config);
     Properties props = OozieJobExecutorJobEntry.getProperties(config, new Variables());
-    controller.syncModel();
-
     controller.setJobEntryMode(JobEntryMode.ADVANCED_LIST);
+
+    controller.syncModel();
 
     controller.addNewProperty();
     controller.syncModel();
@@ -163,9 +177,9 @@ public class OozieJobExecutorControllerTest {
     OozieJobExecutorConfig config = getGoodConfig();
     controller.setConfig(config);
     Properties props = OozieJobExecutorJobEntry.getProperties(config, new Variables());
-    controller.syncModel();
-
     controller.setJobEntryMode(JobEntryMode.ADVANCED_LIST);
+
+    controller.syncModel();
 
     String key = controller.getAdvancedArguments().get(0).getKey();
     AbstractModelList<PropertyEntry> advanced = controller.getAdvancedArguments();

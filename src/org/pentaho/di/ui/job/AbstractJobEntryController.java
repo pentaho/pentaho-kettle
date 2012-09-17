@@ -101,6 +101,8 @@ public abstract class AbstractJobEntryController<C extends BlockableJobConfig, E
    */
   public JobEntryInterface open() {
     XulDialog dialog = (XulDialog) container.getDocumentRoot().getElementById(getDialogElementId());
+    // Update the Variable Space so the latest are available when the dialog is show (for test evaluation)
+    jobEntry.copyVariablesFrom(jobMeta);
     dialog.show();
     return jobEntry;
   }
