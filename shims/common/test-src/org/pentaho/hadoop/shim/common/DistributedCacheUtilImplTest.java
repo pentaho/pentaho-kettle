@@ -38,12 +38,12 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.vfs.AllFileSelector;
 import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.VFS;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.ContentSummary;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.fs.permission.FsPermission;
+import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.Const;
@@ -61,11 +61,23 @@ import org.pentaho.hdfs.vfs.HDFSFileSystem;
 public class DistributedCacheUtilImplTest {
 
   private static HadoopConfiguration TEST_CONFIG;
+  private static String PLUGIN_BASE = null;
   
   @BeforeClass
   public static void setup() throws Exception {
     // Create some Hadoop configuration specific pmr libraries
     TEST_CONFIG = new HadoopConfiguration(createTestHadoopConfiguration("bin/test/" + DistributedCacheUtilImplTest.class.getSimpleName()), "test-config", "name", new MockHadoopShim());
+    
+    PLUGIN_BASE = System.getProperty(Const.PLUGIN_BASE_FOLDERS_PROP);
+    // Fake out the "plugins" directory for the project's root directory
+    System.setProperty(Const.PLUGIN_BASE_FOLDERS_PROP, KettleVFS.getFileObject(".").getURL().toURI().getPath());
+  }
+
+  @AfterClass
+  public static void teardown() {
+    if (PLUGIN_BASE != null) {
+      System.setProperty(Const.PLUGIN_BASE_FOLDERS_PROP, PLUGIN_BASE);
+    }
   }
 
   private FileSystem getLocalFileSystem(Configuration conf) throws IOException {
@@ -496,16 +508,15 @@ public class DistributedCacheUtilImplTest {
     FileObject pmrArchive = KettleVFS.getFileObject(getClass().getResource("/empty-pmr.zip").toURI().getPath());
 
     FileObject bigDataPluginDir = createTestFolderWithContent(DistributedCacheUtilImpl.PENTAHO_BIG_DATA_PLUGIN_FOLDER_NAME);
-    FileObject samplePluginDir = createTestFolderWithContent("sample-plugin");
-
+    String pluginName = "additional-plugin";
+    FileObject pluginDir = createTestFolderWithContent(pluginName);
     Path root = new Path("bin/test/installKettleEnvironment");
     try {
-      ch.installKettleEnvironment(pmrArchive, fs, root, bigDataPluginDir, Arrays.asList(samplePluginDir));
+      ch.installKettleEnvironment(pmrArchive, fs, root, bigDataPluginDir, "bin/test/" + pluginName);
       assertTrue(ch.isKettleEnvironmentInstalledAt(fs, root));
-      assertTrue(fs.exists(new Path(root, "plugins/sample-plugin")));
+      assertTrue(fs.exists(new Path(root, "plugins/bin/test/" + pluginName)));
     } finally {
       bigDataPluginDir.delete(new AllFileSelector());
-      samplePluginDir.delete(new AllFileSelector());
       fs.delete(root, true);
     }
   }
@@ -522,8 +533,8 @@ public class DistributedCacheUtilImplTest {
     FileObject pluginDir = createTestFolderWithContent();
 
     try {
-      ch.stagePluginsForCache(fs, pluginsDir, true, Arrays.asList(pluginDir));
-      Path pluginInstallPath = new Path(pluginsDir, pluginDir.getURL().toURI().getPath());
+      ch.stagePluginsForCache(fs, pluginsDir, "bin/test/sample-folder");
+      Path pluginInstallPath = new Path(pluginsDir, "bin/test/sample-folder");
       assertTrue(fs.exists(pluginInstallPath));
       ContentSummary summary = fs.getContentSummary(pluginInstallPath);
       assertEquals(6, summary.getFileCount());
@@ -532,6 +543,18 @@ public class DistributedCacheUtilImplTest {
       pluginDir.delete(new AllFileSelector());
       fs.delete(pluginsDir, true);
     }
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void stagePluginsForCache_no_folders() throws Exception {
+    DistributedCacheUtilImpl ch = new DistributedCacheUtilImpl(TEST_CONFIG);
+    ch.stagePluginsForCache(getLocalFileSystem(new Configuration()), new Path("bin/test/plugins-installation-dir"), null);
+  }
+
+  @Test(expected = KettleFileException.class)
+  public void stagePluginsForCache_invalid_folder() throws Exception {
+    DistributedCacheUtilImpl ch = new DistributedCacheUtilImpl(TEST_CONFIG);
+    ch.stagePluginsForCache(getLocalFileSystem(new Configuration()), new Path("bin/test/plugins-installation-dir"), "bin/bogus-plugin-name");
   }
 
   @Test

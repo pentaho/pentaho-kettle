@@ -790,8 +790,8 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
             logDetailed(BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.UsingKettleInstallationFrom", kettleEnvInstallDir.toUri().getPath()));
           } else {
             // Load additional plugin folders as requested
-            List<FileObject> additionalPluginFolders = findAdditionalPluginFolders(shim, conf, pmrProperties);
-            installKettleEnvironment(shim, pmrLibArchive, fs, kettleEnvInstallDir, additionalPluginFolders);
+            String additionalPluginNames = getProperty(conf, pmrProperties, PENTAHO_MAPREDUCE_PROPERTY_ADDITIONAL_PLUGINS, null);
+            installKettleEnvironment(shim, pmrLibArchive, fs, kettleEnvInstallDir, additionalPluginNames);
           }
           configureWithKettleEnvironment(shim, conf, fs, kettleEnvInstallDir);
         } catch (Exception ex) {
@@ -928,34 +928,6 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
   }
 
   /**
-   * Find plugin folders declared in the property {@code PENTAHO_MAPREDUCE_PROPERTY_ADDITIONAL_PLUGINS} to be included
-   * as part of the Kettle Environment copied into DFS for use with Pentaho MapReduce.
-   *
-   * @param shim Hadoop Shim to work with
-   * @param conf Configuration to check for the property
-   * @param pmrProperties Properties to check for the property if not found in {@code conf}
-   * @return List of file objects that point to the plugin directories that are declared as "additional required plugins"
-   * for the Kettle Environment Pentaho MapReduce will run within.
-   * @throws KettleFileException
-   */
-  public List<FileObject> findAdditionalPluginFolders(HadoopShim shim, Configuration conf, Properties pmrProperties) throws Exception {
-    List<FileObject> additionalPluginFolders = new ArrayList<FileObject>();
-    String additionalPluginNames = getProperty(conf, pmrProperties, PENTAHO_MAPREDUCE_PROPERTY_ADDITIONAL_PLUGINS, null);
-    if (!Const.isEmpty(additionalPluginNames)) {
-      for(String pluginName : additionalPluginNames.split(",")) {
-        pluginName = pluginName.trim();
-        if (!Const.isEmpty(pluginName)) {
-          FileObject pluginFolder = shim.getDistributedCacheUtil().findPluginFolder(pluginName);
-          if (pluginFolder != null) {
-            additionalPluginFolders.add(pluginFolder);
-          }
-        }
-      }
-    }
-    return additionalPluginFolders;
-  }
-
-  /**
    * Gets a property from the configuration. If it is missing it will load it from the properties provided. If it cannot 
    * be found there the default value provided will be used.
    *
@@ -999,7 +971,7 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
    * @throws KettleException
    * @throws IOException
    */
-  public void installKettleEnvironment(HadoopShim shim, FileObject pmrLibArchive, FileSystem fs, Path destination, List<FileObject> additionalPlugins) throws Exception {
+  public void installKettleEnvironment(HadoopShim shim, FileObject pmrLibArchive, FileSystem fs, Path destination, String additionalPlugins) throws Exception {
     if (pmrLibArchive == null) {
       throw new KettleException(BaseMessages.getString(PKG, "JobEntryHadoopTransJobExecutor.UnableToLocateArchive", pmrLibArchive));
     }
