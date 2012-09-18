@@ -40,6 +40,37 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.w3c.dom.Node;
 
 
+/**
+ * ValueMetaInterface objects are used to determine the characteristics of the row fields.
+ * They are typically obtained from a RowMetaInterface object, which is acquired by a call to getInputRowMeta().
+ * The getType() method returns one of the static constants declared by ValueMetaInterface to indicate the PDI field type.
+ * Each field type maps to a corresponding native Java type for the actual value.
+ * <p>
+ * <b>PDI Field Type / Java Mapping</b>
+ * <p>
+ * <Table border="1">
+ *  <tr><th>PDI data type</th><th>Type constant</th><th>Java data type</th><th>Description</th></tr>
+ *  <tr><td>String</td><td>TYPE_STRING</td><td>java.lang.String</td><td>A variable (unlimited) length text encoded in UTF-8 (Unicode)</td></tr>
+ *  <tr><td>Integer</td><td>TYPE_INTEGER</td><td>java.lang.Long</td><td>A signed long (64-bit) integer</td></tr>
+ *  <tr><td>Number</td><td>TYPE_NUMBER</td><td>java.lang.Double</td><td>A double precision floating point value</td></tr>
+ *  <tr><td>Big Number</td><td>TYPE_BIGNUMBER</td><td>java.math.BigDecimal</td><td>An arbitrary (unlimited) precision number</td></tr>
+ *  <tr><td>Date</td><td>TYPE_DATE</td><td>java.util.Date</td><td>A date-time value with millisecond precision</td></tr>
+ *  <tr><td>Boolean</td><td>TYPE_BOOLEAN</td><td>java.lang.Boolean</td><td>A boolean value (true or false)</td></tr>
+ *  <tr><td>Binary</td><td>TYPE_BINARY</td><td>java.lang.byte[</td><td>An array of bytes that contain any type of binary data.</td></tr>
+ * </Table>
+ * <p>
+ * <b>Storage Types</b>
+ * <p>
+ * In addition to the data type of a field, the storage type (getStorageType()/setStorageType()) is used to interpret the actual 
+ * field value in a row array.
+ * <p>
+ * <Table border="1">
+ *  <tr><th>Type constant</th><th>Actual field data type</th><th>Interpretation</th><tr> 
+ *  <tr><td>STORAGE_TYPE_NORMAL</td><td>As listed above</td><td>The value in the row array is of the type listed in the data type table above and represents the field&#39;s value directly.
+ *  <tr><td>STORAGE_TYPE_BINARY_STRING</td><td>java.lang.byte[]</td><td>The field has been created using the &ldquo;Lazy conversion&rdquo; feature. This means it is a non-altered sequence of bytes as read from an external medium (usually a file). 
+ *  <tr><td>STORAGE_TYPE_INDEXED</td><td>java.lang.Integer</td><td>The row value is an integer index into a fixed array of possible values. The ValueMetaInterface object maintains the set of possible values in getIndex()/setIndex(). 
+ *  </Table>
+ */
 public interface ValueMetaInterface extends Cloneable
 {
     /** Value type indicating that the value has no type set */
@@ -72,6 +103,7 @@ public interface ValueMetaInterface extends Cloneable
     /** Value type indicating that the value contains a nano-second precision time and date */
     public static final int TYPE_TIMESTAMP   = 9;
 
+    /** The Constant typeCodes. */
     public static final String[] typeCodes = new String[] { "-", "Number", "String", "Date", "Boolean", "Integer", "BigNumber", "Serializable", "Binary", "Timestamp", }; 
 
     
@@ -85,6 +117,7 @@ public interface ValueMetaInterface extends Cloneable
     /** The storage type is indexed.  This means that the value is a simple integer index referencing the values in getIndex() */
     public static final int STORAGE_TYPE_INDEXED       =  2; 
     
+    /** The Constant storageTypeCodes. */
     public static final String[] storageTypeCodes = new String[] { "normal", "binary-string", "indexed", };
     
     
@@ -97,6 +130,7 @@ public interface ValueMetaInterface extends Cloneable
     /** Indicating that the rows are sorted descending on this key */
     public static final int SORT_TYPE_DESCENDING = 2;
     
+    /** The Constant sortTypeCodes. */
     public static final String[] sortTypeCodes = new String[] { "none", "ascending", "descending", };
     
     
@@ -116,56 +150,250 @@ public interface ValueMetaInterface extends Cloneable
     /** Default integer length for hardcoded metadata integers */
     public static final int DEFAULT_INTEGER_LENGTH = 10;
 
+    /**
+     * Gets the name.
+     *
+     * @return the name
+     */
     public String   getName();
+    
+    /**
+     * Sets the name.
+     *
+     * @param name the new name
+     */
     public void     setName(String name);
     
+    /**
+     * Gets the length.
+     *
+     * @return the length
+     */
     public int      getLength();
+    
+    /**
+     * Sets the length.
+     *
+     * @param length the new length
+     */
     public void     setLength(int length);
     
+    /**
+     * Gets the precision.
+     *
+     * @return the precision
+     */
     public int      getPrecision();
+    
+    /**
+     * Sets the precision.
+     *
+     * @param precision the new precision
+     */
     public void     setPrecision(int precision);
     
+    /**
+     * Sets the length.
+     *
+     * @param length the length
+     * @param precision the precision
+     */
     public void     setLength(int length, int precision);
     
+    /**
+     * Gets the origin.
+     *
+     * @return the origin
+     */
     public String   getOrigin();
+    
+    /**
+     * Sets the origin.
+     *
+     * @param origin the new origin
+     */
     public void     setOrigin(String origin);
     
+    /**
+     * Gets the comments.
+     * @return the comments
+     */
     public String   getComments();
+    
+    /**
+     * Sets the comments for the object implementing the interface.
+     *
+     * @param comments the new comments
+     */
     public void     setComments(String comments);
     
+    /**
+     * Gets the type.
+     *
+     * @return the type
+     */
     public int      getType();
+    
+    /**
+     * Sets the type.
+     *
+     * @param type the new type
+     */
     public void     setType(int type);
 
+    /**
+     * Gets the storage type.
+     *
+     * @return the storage type
+     */
     public int      getStorageType();
+    
+    /**
+     * Sets the storage type.
+     *
+     * @param storageType the new storage type
+     */
     public void     setStorageType(int storageType);
     
+    /**
+     * Gets the trim type.
+     *
+     * @return the trim type
+     */
     public int      getTrimType();
+    
+    /**
+     * Sets the trim type.
+     *
+     * @param trimType the new trim type
+     */
     public void     setTrimType(int trimType);
 
+    /**
+     * Gets the index.
+     *
+     * @return the index
+     */
     public Object[] getIndex();
+    
+    /**
+     * Sets the index.
+     *
+     * @param index the new index
+     */
     public void     setIndex(Object[] index);
     
+    /**
+     * Checks if is storage normal.
+     *
+     * @return true, if is storage normal
+     */
     public boolean isStorageNormal();
+    
+    /**
+     * Checks if is storage indexed.
+     *
+     * @return true, if is storage indexed
+     */
     public boolean  isStorageIndexed();
+    
+    /**
+     * Checks if is storage binary string.
+     *
+     * @return true, if is storage binary string
+     */
     public boolean isStorageBinaryString();
     
+    /**
+     * Gets the conversion mask.
+     *
+     * @return the conversion mask
+     */
     public String   getConversionMask();
+    
+    /**
+     * Sets the conversion mask.
+     *
+     * @param conversionMask the new conversion mask
+     */
     public void     setConversionMask(String conversionMask);
     
+    /**
+     * Gets the decimal symbol.
+     *
+     * @return the decimal symbol
+     */
     public String getDecimalSymbol();
+    
+    /**
+     * Sets the decimal symbol.
+     *
+     * @param decimalSymbol the new decimal symbol
+     */
     public void setDecimalSymbol(String decimalSymbol);
 
+    /**
+     * Gets the grouping symbol.
+     *
+     * @return the grouping symbol
+     */
     public String getGroupingSymbol();
+    
+    /**
+     * Sets the grouping symbol.
+     *
+     * @param groupingSymbol the new grouping symbol
+     */
     public void setGroupingSymbol(String groupingSymbol);
     
+    /**
+     * Gets the currency symbol.
+     *
+     * @return the currency symbol
+     */
     public String getCurrencySymbol();
+    
+    /**
+     * Sets the currency symbol.
+     *
+     * @param currencySymbol the new currency symbol
+     */
     public void setCurrencySymbol(String currencySymbol);
     
+    /**
+     * Gets the date format.
+     *
+     * @return the date format
+     */
     public SimpleDateFormat getDateFormat();
+    
+    /**
+     * Gets the decimal format.
+     *
+     * @return the decimal format
+     */
     public DecimalFormat getDecimalFormat();
+    
+    /**
+     * Gets the decimal format.
+     *
+     * @param useBigDecimal the use big decimal
+     * @return the decimal format
+     */
     public DecimalFormat getDecimalFormat(boolean useBigDecimal);
 
+    /**
+     * Gets the string encoding.
+     *
+     * @return the string encoding
+     */
     public String   getStringEncoding();
+    
+    /**
+     * Sets the string encoding.
+     *
+     * @param stringEncoding the new string encoding
+     */
     public void     setStringEncoding(String stringEncoding);
     
 	/**
@@ -183,61 +411,80 @@ public interface ValueMetaInterface extends Cloneable
     public boolean isNull(Object data) throws KettleValueException;
     
     /**
+     * Returns a true of the value object is case insensitive, false if it is case sensitive,
      * @return the caseInsensitive
      */
     public boolean isCaseInsensitive();
     
     /**
+     * Sets whether or not the value object is case sensitive.
+     * This information is useful if the value is involved in string comparisons.
      * @param caseInsensitive the caseInsensitive to set
      */
     public void setCaseInsensitive(boolean caseInsensitive);
     
     /**
+     * Returns whether or not the value should be sorted in descending order.
      * @return the sortedDescending
      */
     public boolean isSortedDescending();
 
     /**
+     * Sets whether or not the value should be set in a descending order.
      * @param sortedDescending the sortedDescending to set
      */
     public void setSortedDescending(boolean sortedDescending);
     
     /**
+     * Returns true if output padding is enabled (padding to specified length).
      * @return true if output padding is enabled (padding to specified length)
      */
     public boolean isOutputPaddingEnabled();
     
     /**
+     * Set to true if output padding is to be enabled (padding to specified length).
      * @param outputPaddingEnabled Set to true if output padding is to be enabled (padding to specified length)
      */
     public void setOutputPaddingEnabled(boolean outputPaddingEnabled);
     
     /**
+     * Returns true if this is a large text field (CLOB, TEXT) with arbitrary length.
      * @return true if this is a large text field (CLOB, TEXT) with arbitrary length.
      */
     public boolean isLargeTextField();
     
     /**
+     * Set to true if the this is to be a large text field (CLOB, TEXT) with arbitrary length.
      * @param largeTextField Set to true if this is to be a large text field (CLOB, TEXT) with arbitrary length.
      */
     public void setLargeTextField(boolean largeTextField);
     
     /**
-     * @return true if the the date formatting (parsing) is to be lenient
+     * Returns true of the date format is leniant, false if it is strict. 
+     * <br/>See also {@link setDateFormatLenient(boolean)}
+     * @return true if the the date formatting (parsing) is to be lenient.
+     * 
      */
     public boolean isDateFormatLenient();
     
     /**
-     * @param dateFormatLenient true if the the date formatting (parsing) is to be set to lenient
+     * Set to true if the date formatting (parsing) is to be set to lenient.
+     * Being lenient means that the "date format" is tolerant to some formatting errors.
+     * For example, a month specified as "15" will be interpreted as "March": 
+     * <br/><pre>     15 - (December = 12) = 3 = March.</pre>
+     * Set to false for stricter formatting validation.
+     * @param dateFormatLenient true if the the date formatting (parsing) is to be set to lenient.
      */
     public void setDateFormatLenient(boolean dateFormatLenient);
     
     /**
+     * Returns the locale from the date format.
      * @return the date format locale
      */
     public Locale getDateFormatLocale();
     
     /**
+     * Sets the locale of the date format.
      * @param dateFormatLocale the date format locale to set
      */
     public void setDateFormatLocale(Locale dateFormatLocale);
@@ -248,28 +495,107 @@ public interface ValueMetaInterface extends Cloneable
      */
 
     public int    getOriginalColumnType(); 
+    
+    /**
+     * Sets the original column type.
+     *
+     * @param originalColumnType the new original column type
+     */
     public void	  setOriginalColumnType(int originalColumnType);
 
+    /**
+     * Gets the original column type name.
+     *
+     * @return the original column type name
+     */
     public String getOriginalColumnTypeName(); 
+    
+    /**
+     * Sets the original column type name.
+     *
+     * @param originalColumnTypeName the new original column type name
+     */
     public void	  setOriginalColumnTypeName(String originalColumnTypeName);
    
+    /**
+     * Gets the original precision.
+     *
+     * @return the original precision
+     */
     public int    getOriginalPrecision(); 
+    
+    /**
+     * Sets the original precision.
+     *
+     * @param originalPrecision the new original precision
+     */
     public void	  setOriginalPrecision(int originalPrecision);
 
+    /**
+     * Gets the original scale.
+     *
+     * @return the original scale
+     */
     public int    getOriginalScale(); 
+    
+    /**
+     * Sets the original scale.
+     *
+     * @param originalScale the new original scale
+     */
     public void	  setOriginalScale(int originalScale);
 
+    /**
+     * Checks if is original auto increment.
+     *
+     * @return true, if is original auto increment
+     */
     public boolean isOriginalAutoIncrement(); 
+    
+    /**
+     * Sets the original auto increment.
+     *
+     * @param originalAutoIncrement the new original auto increment
+     */
     public void	  setOriginalAutoIncrement(boolean originalAutoIncrement);
 
+    /**
+     * Checks if is original nullable.
+     *
+     * @return the int
+     */
     public int    isOriginalNullable(); 
+    
+    /**
+     * Sets the original nullable.
+     *
+     * @param originalNullable the new original nullable
+     */
     public void	  setOriginalNullable(int originalNullable);
 
+    /**
+     * Checks if is original signed.
+     *
+     * @return true, if is original signed
+     */
     public boolean isOriginalSigned(); 
+    
+    /**
+     * Sets the original signed.
+     *
+     * @param originalSigned the new original signed
+     */
     public void	  setOriginalSigned(boolean originalSigned);
     
     /* Conversion methods */
     
+    /**
+     * Clone value data.
+     *
+     * @param object the object
+     * @return the object
+     * @throws KettleValueException the kettle value exception
+     */
     public Object cloneValueData(Object object) throws KettleValueException;
 
     /** Convert the supplied data to a String compatible with version 2.5. */
@@ -308,7 +634,7 @@ public interface ValueMetaInterface extends Cloneable
     public ValueMetaInterface clone();
     
     /**
-     * Checks wheter or not the value is a String.
+     * Checks whether or not the value is a String.
      * @return true if the value is a String.
      */
     public boolean isString();
@@ -521,12 +847,14 @@ public interface ValueMetaInterface extends Cloneable
     public Object getValueData(Value value) throws KettleValueException;
     
 	/**
-	 * @return the storage Meta data that is needed for internal conversion from BinaryString or String to the specified type.
+	 * Returns the storage Meta data that is needed for internal conversion from BinaryString or String to the specified type.
 	 *         This storage Meta data object survives cloning and should travel through the transformation unchanged as long as the data type remains the same.
+	 * @return the storage Meta data that is needed for internal conversion from BinaryString or String to the specified type.
 	 */
 	public ValueMetaInterface getStorageMetadata();
 	
 	/**
+	 * Sets the storage meta data.
 	 * @param storageMetadata the storage Meta data that is needed for internal conversion from BinaryString or String to the specified type.
 	 *         This storage Meta data object survives cloning and should travel through the transformation unchanged as long as the data type remains the same.
 	 */
@@ -546,14 +874,16 @@ public interface ValueMetaInterface extends Cloneable
 	public void setConversionMetadata(ValueMetaInterface conversionMetadata);
 	
 	/**
+	 * Returns an XML representation of the row metadata.
 	 * @return an XML representation of the row metadata
 	 * @throws IOException Thrown in case there is an (Base64/GZip) decoding problem
 	 */
 	public String getMetaXML() throws IOException;
 	
 	/**
+	 * Returns an XML representation of the row data.
 	 * @param value The data to serialize as XML
-	 * @return an xML representation of the row data
+	 * @return an XML representation of the row data
 	 * @throws IOException Thrown in case there is an (Base64/GZip) decoding problem
 	 */
 	public String getDataXML(Object value) throws IOException;
@@ -568,17 +898,20 @@ public interface ValueMetaInterface extends Cloneable
 	public Object getValue(Node node) throws KettleException;
 	
 	/**
+	 * Returns the number of binary string to native data type conversions done with this object conversions
 	 * @return the number of binary string to native data type conversions done with this object conversions
 	 */
 	public long getNumberOfBinaryStringConversions();
 
 	/**
+	 * Returns the number of binary string to native data type done with this object conversions to set.
 	 * @param numberOfBinaryStringConversions the number of binary string to native data type done with this object conversions to set
 	 */
 	public void setNumberOfBinaryStringConversions(long numberOfBinaryStringConversions);
 	
 	/**
-	 * @return true if the data type requires a real copy. Usually a binary or Serializable object
+	 * Returns true if the data type requires a real copy. Usually a binary or Serializable object.
+	 * @return boolean
 	 */
 	public boolean requiresRealClone();
 	

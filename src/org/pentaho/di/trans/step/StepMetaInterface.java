@@ -50,7 +50,100 @@ import org.w3c.dom.Node;
 
 /**
  * This interface allows custom steps to talk to Kettle. 
- * 
+ * The StepMetaInterface is the main Java interface that a plugin implements. 
+ * The responsibilities of the implementing class are listed below:
+ * <p><ul>
+ * <li><b>Keep track of the step settings</b></br>
+ * The implementing class typically keeps track of step settings using private fields with corresponding getters and setters. 
+ * The dialog class implementing StepDialogInterface is using the getters and setters to copy the user supplied configuration 
+ * in and out of the dialog.
+ * <p>
+ * The following interface methods also fall into the area of maintaining settings:
+ * <p>
+ * <i><a href="#setDefault()">void setDefault()</a></i>
+ * <p>
+ * This method is called every time a new step is created and should allocate or set the step configuration to sensible defaults. 
+ * The values set here will be used by Spoon when a new step is created. This is often a good place to ensure that the step&#8217;s settings 
+ * are initialized to non-null values. Null values can be cumbersome to deal with in serialization and dialog population, so most PDI 
+ * step implementations stick to non-null values for all step settings.
+ * <p>
+ * <i><a href="#clone()">public Object clone()</a></i>
+ * <p>
+ * This method is called when a step is duplicated in Spoon. It needs to return a deep copy of this step meta object. 
+ * It is essential that the implementing class creates proper deep copies if the step configuration is stored in modifiable objects, 
+ * such as lists or custom helper objects. See org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta.clone() 
+ * for an example on creating a deep copy.
+ * <p>
+ * </li>
+ * <li>
+ * <b>Serialize step settings</b><br/>
+ * The plugin needs to be able to serialize its settings to both XML and a PDI repository. The interface methods are as follows.
+ * <p>
+ * <i><a href="#getXML()">public String getXML()</a></i>
+ * <p>
+ * This method is called by PDI whenever a step needs to serialize its settings to XML. It is called when saving a transformation in Spoon. 
+ * The method returns an XML string, containing the serialized step settings. The string contains a series of XML tags, typically one tag 
+ * per setting. The helper class org.pentaho.di.core.xml.XMLHandler is typically used to construct the XML string.
+ * <p>
+ * <i><a href="#loadXML(org.w3c.dom.Node, java.util.List, java.util.Map)">public void loadXML(...)</a></i>
+ * <p>
+ * This method is called by PDI whenever a step needs to read its settings from XML. The XML node containing the step’s settings is passed 
+ * in as an argument. Again, the helper class org.pentaho.di.core.xml.XMLHandler is typically used to conveniently read the step settings from the XML node.
+ * <p>
+ * <i><a href="#saveRep(org.pentaho.di.repository.Repository, org.pentaho.di.repository.ObjectId, org.pentaho.di.repository.ObjectId)">public void saveRep(...)</a></i>
+ * <p>
+ * This method is called by PDI whenever a step needs to save its settings to a PDI repository. The repository object passed in as the first 
+ * argument provides a convenient set of methods for serializing step settings. The transformation id and step id passed in should be used by 
+ * the step as identifiers when calling the repository serialization methods.
+ * <p>
+ * <i><a href="#readRep(org.pentaho.di.repository.Repository, org.pentaho.di.repository.ObjectId, java.util.List, java.util.Map)">public void readRep(...)</a></i>
+ * <p>
+ * This method is called by PDI whenever a step needs to read its configuration from a PDI repository. The step id given in the arguments should be used as the identifier when using the repositories serialization methods.
+ * <p>
+ * </li>
+ * <li>
+ * <b>Provide instances of other plugin classes</b><br/>
+ * The StepMetaInterface plugin class is the main class tying in with the rest of PDI architecture. It is responsible for supplying instances of 
+ * the other plugin classes implementing StepDialogInterface, StepInterface and StepDataInterface. The following methods cover these responsibilities. 
+ * Each of the method&#8217;s implementation is typically constructing a new instance of the corresponding class forwarding the passed in arguments to the 
+ * constructor. The methods are as follows.
+ * <p>
+ * public StepDialogInterface getDialog(...)<br/>
+ * public StepInterface getStep(...)<br/>
+ * public StepDataInterface getStepData()<br/>
+ * <p>
+ * Each of the above methods returns a new instance of the plugin class implementing StepDialogInterface, StepInterface and StepDataInterface. 
+ * </li>
+ * <li>
+ * <b>Report the step&#8217;s changes to the row stream</b>
+ * PDI needs to know how a step affects the row structure. A step may be adding or removing fields, as well as modifying the metadata of a field. 
+ * The method implementing this aspect of a step plugin is getFields().
+ * <p>
+ * <i><a href="#getFields(org.pentaho.di.core.row.RowMetaInterface, java.lang.String, org.pentaho.di.core.row.RowMetaInterface[], org.pentaho.di.trans.step.StepMeta, org.pentaho.di.core.variables.VariableSpace)">public void getFields(...)</a></i>
+ * <p>
+ * Given a description of the input rows, the plugin needs to modify it to match the structure for its output fields. The implementation modifies 
+ * the passed in RowMetaInterface object to reflect any changes to the row stream. Typically a step adds fields to the row structure, which is done 
+ * by creating ValueMeta objects (PDI&#8217;s default implementation of ValueMetaInterface), and appending them to the RowMetaInterface object. The section 
+ * Working with Fields goes into deeper detail on ValueMetaInterface. 
+ * </li>
+ * <li>
+ * <b>Validate step settings</b><br>
+ * Spoon supports a &#8220;validate transformation&#8221; feature, which triggers a self-check of all steps.  PDI invokes the check() method of each 
+ * step on the canvas allowing each step to validate its settings.
+ * <p>
+ * <i><a href="#check(java.util.List, org.pentaho.di.trans.TransMeta, org.pentaho.di.trans.step.StepMeta, org.pentaho.di.core.row.RowMetaInterface, java.lang.String[], java.lang.String[], org.pentaho.di.core.row.RowMetaInterface)">public void check()</a></i>
+ * <p>
+ * Each step has the opportunity to validate its settings and verify that the configuration given by the user is reasonable. In addition 
+ * to that a step typically checks if it is connected to preceding or following steps, if the nature of the step requires that kind of connection. 
+ * An input step may expect to not have a preceding step for example. The check method passes in a list of check remarks that the method should 
+ * append its validation results to. Spoon then displays the list of remarks collected from the steps, allowing the user to take corrective action 
+ * in case of validation warnings or errors.
+ * </li>
+ * Given a description of the input rows, the plugin needs to modify it to match the structure for its output fields. The implementation modifies 
+ * the passed in RowMetaInterface object to reflect any changes to the row stream. Typically a step adds fields to the row structure, which is 
+ * done by creating ValueMeta objects (PDI&#8217;s default implementation of ValueMetaInterface), and appending them to the RowMetaInterface object. 
+ * The section Working with Fields goes into deeper detail on ValueMetaInterface. 
+ * </ul>
  * @since 4-aug-2004
  * @author Matt
  */

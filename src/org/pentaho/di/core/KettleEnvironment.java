@@ -44,16 +44,46 @@ import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.i18n.BaseMessages;
 
+/**
+ * The KettleEnvironment class contains settings and properties for all of Kettle. Initialization of the 
+ * environment is done by calling the init() method, which reads in properties file(s), registers plugins,
+ * etc. Initialization should be performed once at application startup; for example, Spoon's main() method
+ * calls KettleEnvironment.init() in order to prepare the environment for usage by Spoon.
+ */
 public class KettleEnvironment {
 
 	private static Class<?> PKG = Const.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
+	/** Indicates whether the Kettle environment has been initialized. */
 	private static Boolean initialized;
 	
+	/**
+	 * Initializes the Kettle environment. This method will attempt to configure Simple JNDI, 
+	 * by simply calling init(true).
+	 * 
+	 * @see KettleEnvironment#init(boolean)
+	 *
+	 * @throws KettleException Any errors that occur during initialization will throw a KettleException.
+	 */
 	public static void init() throws KettleException {
 	  init(true);
 	}
 	
+	/**
+	 * Initializes the Kettle environment. This method performs the following operations:
+	 * 
+	 *  - Creates a Kettle "home" directory if it does not already exist
+	 *  - Reads in the kettle.properties file
+	 *  - Initializes the logging back-end
+	 *  - Sets the console log level to debug
+	 *  - If specified by parameter, configures Simple JNDI
+	 *  - Registers the native types and the plugins for the various plugin types
+	 *  - Reads the list of variables
+	 *  - Initializes the Lifecycle listeners   
+	 *
+	 * @param simpleJndi true to configure Simple JNDI, false otherwise
+	 * @throws KettleException Any errors that occur during initialization will throw a KettleException.
+	 */
 	public static void init(boolean simpleJndi) throws KettleException {
 		if (initialized==null) {
 			
@@ -126,6 +156,9 @@ public class KettleEnvironment {
 
   }
 
+  /**
+   * Creates the kettle home area, which is a directory containing a default kettle.properties file
+   */
   public static void createKettleHome() {
 
 		// Try to create the directory...
@@ -146,6 +179,11 @@ public class KettleEnvironment {
 		}
 	}
 	
+	/**
+	 * Creates the default kettle properties file, containing the standard header.
+	 *
+	 * @param directory the directory
+	 */
 	private static void createDefaultKettleProperties(String directory) {
 		
 		String kpFile = directory+Const.FILE_SEPARATOR+Const.KETTLE_PROPERTIES;
@@ -178,10 +216,20 @@ public class KettleEnvironment {
 	}
 
 
+	/**
+	 * Checks if the Kettle environment has been initialized.
+	 *
+	 * @return true if initialized, false otherwise
+	 */
 	public static boolean isInitialized() {
 		if (initialized==null) return false; else return true;
 	}
 	
+	/**
+	 * Loads the plugin registry.
+	 *
+	 * @throws KettlePluginException if any errors are encountered while loading the plugin registry.
+	 */
 	public void loadPluginRegistry() throws KettlePluginException {
 		
 	}

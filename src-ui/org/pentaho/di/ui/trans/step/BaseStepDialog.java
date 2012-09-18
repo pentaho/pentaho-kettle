@@ -81,55 +81,84 @@ import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ComboVar;
 import org.pentaho.di.ui.core.widget.TableView;
 
+/**
+ * This class provides functionality common to Step Dialogs.
+ */
 public class BaseStepDialog extends Dialog {
+  
+  /** The package name used for internationalization */
   private static Class<?> PKG = StepInterface.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
+  /** The logging object interface for this dialog. */
   public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject("Step dialog", LoggingObjectType.STEPDIALOG, null);
 
+  /** The variable bindings for this dialog. */
   protected static VariableSpace variables = new Variables();
 
+  /** The step name. */
   protected String stepname;
 
+  /** The Step name label. */
   protected Label wlStepname;
 
+  /** The Step name UI component. */
   protected Text wStepname;
 
+  /** The FormData for the step name and its label. */
   protected FormData fdlStepname, fdStepname;
 
+  /** Common dialog buttons. */
   protected Button wOK, wGet, wPreview, wSQL, wCreate, wCancel;
 
+  /** FormData for the common dialog buttons. */
   protected FormData fdOK, fdGet, fdPreview, fdSQL, fdCreate, fdCancel;
 
+  /** Listeners for the common dialog buttons. */
   protected Listener lsOK, lsGet, lsPreview, lsSQL, lsCreate, lsCancel;
 
+  /** The metadata for the associated transformation. */
   protected TransMeta transMeta;
 
+  /** A reference to the shell. */
   protected Shell shell;
 
+  /** A listener adapter for default widget selection. */
   protected SelectionAdapter lsDef;
 
+  /** A listener for dialog resizing. */
   protected Listener lsResize;
 
+  /** Whether the dialog (and its backup) have changed. */
   protected boolean changed, backupChanged;
 
+  /** The base step meta. */
   protected StepMetaInterface baseStepMeta;
 
+  /** The UI properties. */
   protected PropsUI props;
 
+  /** The associated repository. */
   protected Repository repository;
 
+  /** The step meta for this dialog. */
   protected StepMeta stepMeta;
 
+  /** The log channel for this dialog. */
   protected LogChannel log;
   
+  /** A constant indicating a center button alignment. */
   protected static final int BUTTON_ALIGNMENT_CENTER = 0;
 
+  /** A constant indicating a left button alignment. */
   protected static final int BUTTON_ALIGNMENT_LEFT = 1;
 
+  /** A constant indicating a right button alignment. */
   protected static final int BUTTON_ALIGNMENT_RIGHT = 2;
 
+  /** The button alignment (defaults to center). */
   protected static int buttonAlignment = BUTTON_ALIGNMENT_CENTER;
   
+  /** A reference to a database dialog. */
   protected DatabaseDialog databaseDialog;
   
   static {
@@ -137,6 +166,14 @@ public class BaseStepDialog extends Dialog {
     buttonAlignment = getButtonAlignment();
   }
 
+  /**
+   * Instantiates a new base step dialog.
+   *
+   * @param parent the parent shell
+   * @param baseStepMeta the associated base step metadata
+   * @param transMeta the associated transformation metadata
+   * @param stepname the step name
+   */
   public BaseStepDialog(Shell parent, BaseStepMeta baseStepMeta, TransMeta transMeta, String stepname) {
     super(parent, SWT.NONE);
 
@@ -149,6 +186,14 @@ public class BaseStepDialog extends Dialog {
     this.props = PropsUI.getInstance();
   }
 
+  /**
+   * Instantiates a new base step dialog.
+   *
+   * @param parent the parent shell
+   * @param baseStepMeta the associated base step metadata
+   * @param transMeta the associated transformation metadata
+   * @param stepname the step name
+   */
   public BaseStepDialog(Shell parent, StepMetaInterface baseStepMeta, TransMeta transMeta, String stepname){
      super(parent, SWT.NONE);
 
@@ -160,11 +205,25 @@ public class BaseStepDialog extends Dialog {
     this.backupChanged = baseStepMeta.hasChanged();
     this.props = PropsUI.getInstance();
   }
-
+  
+  /**
+   * Instantiates a new base step dialog.
+   *
+   * @param parent the parent shell
+   * @param nr the number of rows
+   * @param in the base step metadata
+   * @param tr the transformation metadata
+   */
   public BaseStepDialog(Shell parent, int nr, BaseStepMeta in, TransMeta tr) {
     this(parent, in, tr, null);
   }
 
+  /**
+   * Sets the shell image.
+   *
+   * @param shell the shell
+   * @param stepMetaInterface the step meta interface
+   */
   public void setShellImage(Shell shell, StepMetaInterface stepMetaInterface) {
     try {
       String id = PluginRegistry.getInstance().getPluginId(StepPluginType.class, stepMetaInterface);
@@ -175,6 +234,9 @@ public class BaseStepDialog extends Dialog {
     }
   }
 
+  /**
+   * Dispose this dialog.
+   */
   public void dispose() {
     WindowProperty winprop = new WindowProperty(shell);
     props.setScreen(winprop);
@@ -188,6 +250,13 @@ public class BaseStepDialog extends Dialog {
     setSize(shell);
   }
 
+  /**
+   * Sets the button positions.
+   *
+   * @param buttons the buttons
+   * @param margin the margin between buttons
+   * @param lastControl the last control
+   */
   protected void setButtonPositions(Button buttons[], int margin, Control lastControl) {
     BaseStepDialog.positionBottomButtons(shell, buttons, margin, lastControl);
   }
@@ -200,8 +269,10 @@ public class BaseStepDialog extends Dialog {
    * property with the key <code>Button_Position</code> and has the valid values
    * of <code>left, center, right</code> with <code>center</code> being the default.
    * 
+   * @param composite the composite
    * @param buttons The buttons to position.
    * @param margin The margin between the buttons in pixels
+   * @param lastControl the last control
    */
   public static final void positionBottomButtons(Composite composite, Button buttons[], int margin, Control lastControl) {
     // Determine the largest button in the array
@@ -258,6 +329,13 @@ public class BaseStepDialog extends Dialog {
     }
   }
   
+  /**
+   * Gets the table views.
+   *
+   * @param parentControl the parent control
+   * @param tableViews the table views
+   * @return the table views
+   */
   private static final void getTableViews(Control parentControl, List<TableView> tableViews)
   {
 	if (parentControl instanceof TableView) 
@@ -314,7 +392,8 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Creats a default FormData object with the top / bottom / and left set (this is done to 
-   * cut down on repetative code lines
+   * cut down on repetative code lines.
+   *
    * @param button the button to which this form data will be applied
    * @param width the width of the button
    * @param margin the margin between buttons
@@ -333,7 +412,8 @@ public class BaseStepDialog extends Dialog {
   }
 
   /**
-   * Aligns the buttons as left-aligned on the dialog
+   * Aligns the buttons as left-aligned on the dialog.
+   *
    * @param buttons the array of buttons to align
    * @param width the standardized width of all the buttons  
    * @param margin the margin between buttons
@@ -357,7 +437,8 @@ public class BaseStepDialog extends Dialog {
   }
 
   /**
-   * Aligns the buttons as right-aligned on the dialog
+   * Aligns the buttons as right-aligned on the dialog.
+   *
    * @param buttons the array of buttons to align
    * @param width the standardized width of all the buttons  
    * @param margin the margin between buttons
@@ -381,7 +462,8 @@ public class BaseStepDialog extends Dialog {
   }
 
   /**
-   * Aligns the buttons as centered on the dialog
+   * Aligns the buttons as centered on the dialog.
+   *
    * @param buttons the array of buttons to align
    * @param width the standardized width of all the buttons  
    * @param margin the margin between buttons
@@ -421,6 +503,12 @@ public class BaseStepDialog extends Dialog {
     }
   }
 
+  /**
+   * Gets the modify listener tooltip text.
+   *
+   * @param textField the text field
+   * @return the modify listener tooltip text
+   */
   public static final ModifyListener getModifyListenerTooltipText(final Text textField) {
     return new ModifyListener() {
       public void modifyText(ModifyEvent e) {
@@ -430,10 +518,21 @@ public class BaseStepDialog extends Dialog {
     };
   }
 
+  /**
+   * Adds the databases to the Combo Box component.
+   *
+   * @param wConnection the Combo Box component
+   */
   public void addDatabases(CCombo wConnection) {
 	  addDatabases(wConnection, null);
   }
 
+  /**
+   * Adds the databases with the specified type to the Combo Box component.
+   *
+   * @param wConnection the Combo Box component
+   * @param databaseType the database type
+   */
   public void addDatabases(CCombo wConnection, Class<? extends DatabaseInterface> databaseType) {
     for (int i = 0; i < transMeta.nrDatabases(); i++) {
       DatabaseMeta ci = transMeta.getDatabase(i);
@@ -444,6 +543,12 @@ public class BaseStepDialog extends Dialog {
     }
   }
 
+  /**
+   * Selects the database with the specified name in the Combo Box component.
+   *
+   * @param wConnection the Combo Box component
+   * @param name the name of the database to select
+   */
   public void selectDatabase(CCombo wConnection, String name) {
     int idx = wConnection.indexOf(name);
     if (idx >= 0) {
@@ -451,19 +556,64 @@ public class BaseStepDialog extends Dialog {
     }
   }
 
+  /**
+   * Adds the connection line.
+   *
+   * @param parent the parent UI component
+   * @param previous the previous UI component
+   * @param middle the middle
+   * @param margin the margin
+   * @return the the Combo Box component for the given parameters
+   */
   public CCombo addConnectionLine(Composite parent, Control previous, int middle, int margin) {
 	  return addConnectionLine(parent, previous, middle, margin, null);
 	  }
 
+  /**
+   * Adds the connection line.
+   *
+   * @param parent the parent UI component
+   * @param previous the previous UI component
+   * @param middle the middle
+   * @param margin the margin
+   * @param databaseType the database type
+   * @return the Combo Box component for the given parameters
+   */
   public CCombo addConnectionLine(Composite parent, Control previous, int middle, int margin, Class<? extends DatabaseInterface> databaseType) {
     return addConnectionLine(parent, previous, middle, margin, new Label(parent, SWT.RIGHT), new Button(parent,
             SWT.PUSH), new Button(parent, SWT.PUSH), new Button(parent, SWT.PUSH), databaseType);
   }
 
+  /**
+   * Adds the connection line.
+   *
+   * @param parent the parent UI component
+   * @param previous the previous UI component
+   * @param middle the middle
+   * @param margin the margin
+   * @param wlConnection the connection label
+   * @param wbnConnection the "new connection" button
+   * @param wbeConnection the "edit connection" button
+   * @return the Combo Box component for the given parameters
+   */
   public CCombo addConnectionLine(Composite parent, Control previous, int middle, int margin, final Label wlConnection,
 		  final Button wbwConnection, final Button wbnConnection, final Button wbeConnection) {
 	  return addConnectionLine(parent, previous, middle, margin, wlConnection, wbwConnection, wbnConnection, wbeConnection, null);
   }
+  
+  /**
+   * Adds the connection line.
+   *
+   * @param parent the parent UI component
+   * @param previous the previous UI component
+   * @param middle the middle
+   * @param margin the margin
+   * @param wlConnection the connection label
+   * @param wbnConnection the "new connection" button
+   * @param wbeConnection the "edit connection" button
+   * @param databaseType the database type
+   * @return the Combo Box component for the given parameters
+   */
   public CCombo addConnectionLine(Composite parent, Control previous, int middle, int margin, final Label wlConnection,
 		  final Button wbwConnection , final Button wbnConnection, final Button wbeConnection, final Class<? extends DatabaseInterface> databaseType) {
     final CCombo wConnection;
@@ -581,6 +731,12 @@ public class BaseStepDialog extends Dialog {
     return wConnection;
   }
   
+  /**
+   * Gets the database dialog.
+   *
+   * @param shell the shell
+   * @return the database dialog
+   */
   protected DatabaseDialog getDatabaseDialog(Shell shell){
     if(databaseDialog == null){
       databaseDialog = new DatabaseDialog(shell);
@@ -588,6 +744,9 @@ public class BaseStepDialog extends Dialog {
     return databaseDialog;
   }
 
+  /**
+   * Store screen size.
+   */
   public void storeScreenSize() {
     props.setScreen(new WindowProperty(shell));
   }
@@ -597,6 +756,8 @@ public class BaseStepDialog extends Dialog {
   }
 
   /**
+   * Gets the repository associated with this dialog.
+   *
    * @return Returns the repository.
    */
   public Repository getRepository() {
@@ -604,12 +765,22 @@ public class BaseStepDialog extends Dialog {
   }
 
   /**
+   * Sets the repository associated with this dialog.
+   *
    * @param repository The repository to set.
    */
   public void setRepository(Repository repository) {
     this.repository = repository;
   }
 
+  /**
+   * Sets the minimal shell height.
+   *
+   * @param shell the shell
+   * @param controls the controls to measure
+   * @param margin the margin between the components
+   * @param extra the extra padding
+   */
   public static void setMinimalShellHeight(Shell shell, Control[] controls, int margin, int extra) {
     int height = 0;
 
@@ -621,10 +792,23 @@ public class BaseStepDialog extends Dialog {
     shell.setSize(shell.getBounds().width, height);
   }
 
+  /**
+   * Sets the size of this dialog with respect to the given shell.
+   *
+   * @param shell the new size
+   */
   public static void setSize(Shell shell) {
     setSize(shell, -1, -1, true);
   }
 
+  /**
+   * Sets the size of this dialog with respect to the given parameters.
+   *
+   * @param shell the shell
+   * @param minWidth the minimum width
+   * @param minHeight the minimum height
+   * @param packIt true to pack the dialog components, false otherwise
+   */
   public static void setSize(Shell shell, int minWidth, int minHeight, boolean packIt) {
     PropsUI props = PropsUI.getInstance();
 
@@ -660,6 +844,11 @@ public class BaseStepDialog extends Dialog {
     }
   }
 
+  /**
+   * Sets the traverse order for the given controls.
+   *
+   * @param controls the new traverse order
+   */
   public static final void setTraverseOrder(final Control[] controls) {
     for (int i = 0; i < controls.length; i++) {
       final int controlNr = i;
@@ -703,14 +892,16 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Gets unused fields from previous steps and inserts them as rows into a table view.
-   * @param r
-   * @param fields
-   * @param i
-   * @param js the column in the table view to match with the names of the fields, checks for existance if >0 
-   * @param nameColumn
-   * @param j
-   * @param lengthColumn
-   * @param listener
+   *
+   * @param transMeta the transformation metadata
+   * @param stepMeta the step metadata
+   * @param tableView the table view
+   * @param keyColumn the key column
+   * @param nameColumn the name column
+   * @param dataTypeColumn the data type column
+   * @param lengthColumn the length column
+   * @param precisionColumn the precision column
+   * @param listener a listener for tables insert events
    */
   public static final void getFieldsFromPrevious(TransMeta transMeta, StepMeta stepMeta, TableView tableView,
       int keyColumn, int nameColumn[], int dataTypeColumn[], int lengthColumn, int precisionColumn,
@@ -730,6 +921,7 @@ public class BaseStepDialog extends Dialog {
 
   /**
    * Gets unused fields from previous steps and inserts them as rows into a table view.
+   *
    * @param row the input fields
    * @param tableView the table view to modify
    * @param keyColumn the column in the table view to match with the names of the fields, checks for existance if >0 
@@ -824,9 +1016,10 @@ public class BaseStepDialog extends Dialog {
   
   /**
    * Gets fields from previous steps and populate a ComboVar.
-   * @param comboVar the comboVar to populate
-   * @param TransMeta the source transformation
-   * @param StepMeta the source step 
+   *
+   * @param comboVar the Combo Box (with Variables) to populate
+   * @param transMeta the transformation metadata
+   * @param stepMeta the step metadata
    */
   public static final void getFieldsFromPrevious(ComboVar comboVar,TransMeta transMeta,StepMeta stepMeta)
 	 {
@@ -878,22 +1071,130 @@ public class BaseStepDialog extends Dialog {
 		}
 	}
 
+    /**
+     * Checks if the log level is basic.
+     *
+     * @return true, if the log level is basic, false otherwise
+     */
     public boolean isBasic() { return log.isBasic(); }
+    
+    /**
+     * Checks if the log level is detailed.
+     *
+     * @return true, if the log level is detailed, false otherwise
+     */
     public boolean isDetailed() { return log.isDetailed(); }
+    
+    /**
+     * Checks if the log level is debug.
+     *
+     * @return true, if the log level is debug, false otherwise
+     */
     public boolean isDebug() { return log.isDebug(); }
+    
+    /**
+     * Checks if the log level is row level.
+     *
+     * @return true, if the log level is row level, false otherwise
+     */
     public boolean isRowLevel() { return log.isRowLevel(); }
+    
+    /**
+     * Log the message at a minimal logging level.
+     *
+     * @param message the message to log
+     */
     public void logMinimal(String message) { log.logMinimal(message); }
+    
+    /**
+     * Log the message with arguments at a minimal logging level.
+     *
+     * @param message the message
+     * @param arguments the arguments
+     */
     public void logMinimal(String message, Object...arguments) { log.logMinimal(message, arguments); }
+    
+    /**
+     * Log the message at a basic logging level.
+     *
+     * @param message the message
+     */
     public void logBasic(String message) { log.logBasic(message); }
+    
+    /**
+     * Log the message with arguments at a basic logging level.
+     *
+     * @param message the message
+     * @param arguments the arguments
+     */
     public void logBasic(String message, Object...arguments) { log.logBasic(message, arguments); }
+    
+    /**
+     * Log the message at a detailed logging level.
+     *
+     * @param message the message
+     */
     public void logDetailed(String message) { log.logDetailed(message); }
+    
+    /**
+     * Log the message with arguments at a detailed logging level.
+     *
+     * @param message the message
+     * @param arguments the arguments
+     */
     public void logDetailed(String message, Object...arguments) { log.logDetailed(message, arguments); }
+    
+    /**
+     * Log the message at a debug logging level.
+     *
+     * @param message the message
+     */
     public void logDebug(String message) { log.logDebug(message); }
+    
+    /**
+     * Log the message with arguments at a debug logging level.
+     *
+     * @param message the message
+     * @param arguments the arguments
+     */
     public void logDebug(String message, Object...arguments) { log.logDebug(message, arguments); }
+    
+    /**
+     * Log the message at a rowlevel logging level.
+     *
+     * @param message the message
+     */
     public void logRowlevel(String message) { log.logRowlevel(message); }
+    
+    /**
+     * Log the message with arguments at a rowlevel logging level.
+     *
+     * @param message the message
+     * @param arguments the arguments
+     */
     public void logRowlevel(String message, Object...arguments) { log.logRowlevel(message, arguments); }
+    
+    /**
+     * Log the message at a error logging level.
+     *
+     * @param message the message
+     */
     public void logError(String message) { log.logError(message); } 
+    
+    /**
+     * Log the message with the associated Throwable object at a error logging level.
+     *
+     * @param message the message
+     * @param e the e
+     */
     public void logError(String message, Throwable e) { log.logError(message, e); }
+    
+    /**
+     * Log the message with arguments at a error logging level.
+     *
+     * @param message the message
+     * @param arguments the arguments
+     */
     public void logError(String message, Object...arguments) { log.logError(message, arguments); }
     
 

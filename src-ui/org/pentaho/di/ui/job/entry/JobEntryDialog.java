@@ -47,20 +47,49 @@ import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.database.wizard.CreateDatabaseWizard;
 
+/**
+ * The JobEntryDialog class is responsible for constructing and opening the settings dialog for the job entry. 
+ * Whenever the user opens the job entry settings in Spoon, it will instantiate the dialog class passing in 
+ * the JobEntryInterface object and call the <pre>open()</pre> method on the dialog. SWT is the native windowing environment
+ * of Spoon, and it is typically the framework used for implementing job entry dialogs. 
+ */
 public class JobEntryDialog extends Dialog {
+	
+	/** The package name, used for internationalization. */
 	private static Class<?> PKG = StepInterface.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
+	/** The loggingObject for the dialog */
 	public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject("Job entry dialog", LoggingObjectType.JOBENTRYDIALOG, null);
 
+	/** A reference to the job entry interface */
 	protected JobEntryInterface jobEntryInt;
+	
+	/** The repository */
 	protected Repository rep;
+	
+	/** The job metadata object. */
 	protected JobMeta jobMeta;
+	
+	/** A reference to the shell object */
 	protected Shell shell;
+	
+	/** A reference to the properties user interface */
 	protected PropsUI props;
+    
+    /** A reference to the parent shell */
     protected Shell parent;
 
+    /** A reference to a database dialog */
     protected DatabaseDialog databaseDialog;
 	
+    /**
+     * Instantiates a new job entry dialog.
+     *
+     * @param parent the parent shell
+     * @param jobEntry the job entry interface
+     * @param rep the repository
+     * @param jobMeta the job metadata object
+     */
     public JobEntryDialog(Shell parent, JobEntryInterface jobEntry, Repository rep, JobMeta jobMeta)
     {
         super(parent, SWT.NONE);
@@ -73,6 +102,11 @@ public class JobEntryDialog extends Dialog {
     }
  
 
+  /**
+   * Gets the database dialog.
+   *
+   * @return the database dialog
+   */
   private DatabaseDialog getDatabaseDialog(){
     if(databaseDialog != null){
       return databaseDialog;
@@ -81,11 +115,32 @@ public class JobEntryDialog extends Dialog {
     return databaseDialog;
   }
   
+  /**
+   * Adds the connection line for the given parent and previous control, and returns a combo box UI component
+   *
+   * @param parent the parent composite object
+   * @param previous the previous control 
+   * @param middle the middle
+   * @param margin the margin
+   * @return the combo box UI component
+   */
   public CCombo addConnectionLine(Composite parent, Control previous, int middle, int margin) {
     return addConnectionLine(parent, previous, middle, margin, new Label(parent, SWT.RIGHT)
     , new Button(parent, SWT.PUSH), new Button(parent, SWT.PUSH), new Button(parent, SWT.PUSH));
   }
   
+  /**
+   * Adds the connection line for the given parent and previous control, and returns a combo box UI component
+   *
+   * @param parent the parent composite object
+   * @param previous the previous control
+   * @param middle the middle
+   * @param margin the margin
+   * @param wlConnection the connection label
+   * @param wbnConnection the "new connection" button
+   * @param wbeConnection the "edit connection" button
+   * @return the combo box UI component
+   */
   public CCombo addConnectionLine(Composite parent, Control previous, int middle, int margin, final Label wlConnection,
       final Button wbwConnection, final Button wbnConnection, final Button wbeConnection) {
     final CCombo wConnection;
@@ -200,6 +255,11 @@ public class JobEntryDialog extends Dialog {
     return wConnection;
   }
   
+  /**
+   * Adds the databases from the job metadata to the combo box.
+   *
+   * @param wConnection the w connection
+   */
   public void addDatabases(CCombo wConnection) {
     for (int i = 0; i < jobMeta.nrDatabases(); i++) {
       DatabaseMeta ci = jobMeta.getDatabase(i);
@@ -207,6 +267,12 @@ public class JobEntryDialog extends Dialog {
     }
   }
 
+  /**
+   * Selects a database from the combo box
+   *
+   * @param wConnection the combo box list of connections
+   * @param name the name
+   */
   public void selectDatabase(CCombo wConnection, String name) {
     int idx = wConnection.indexOf(name);
     if (idx >= 0) {

@@ -62,11 +62,15 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 
-/*
- * Created on 19-June-2003
- *
+/**
+ * This class is responsible for implementing common functionality regarding step meta, such as logging.
+ * All Kettle steps have an extension of this where private fields have been added with public accessors.
+ * <p>
+ * For example, the "Text File Output" step's TextFileOutputMeta class extends BaseStepMeta by adding fields
+ * for the output file name, compression, file format, etc...
+ * <p>
+ * @created 19-June-2003
  */
-
 public class BaseStepMeta implements Cloneable, StepAttributesInterface
 {
 	public static final LoggingObjectInterface loggingObject = new SimpleLoggingObject("Step metadata", LoggingObjectType.STEPMETA, null);
@@ -85,6 +89,9 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface
     
     protected StepIOMetaInterface ioMeta;
 	
+	/**
+	 * Instantiates a new base step meta.
+	 */
 	public BaseStepMeta()
 	{
 		changed    = false; 
@@ -95,6 +102,9 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface
 		}
 	}
 	
+	/* (non-Javadoc)
+	 * @see java.lang.Object#clone()
+	 */
 	public Object clone()
 	{
 		try
@@ -108,21 +118,39 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface
 		}
 	}
 	
+	/**
+	 * Sets the changed.
+	 *
+	 * @param ch the new changed
+	 */
 	public void setChanged(boolean ch)
 	{
 		changed=ch;
 	}
 
+	/**
+	 * Sets the changed.
+	 */
 	public void setChanged()
 	{
 		changed=true;
 	}
 	
+	/**
+	 * Checks for changed.
+	 *
+	 * @return true, if successful
+	 */
 	public boolean hasChanged()
 	{
 		return changed;
 	}
 	
+	/**
+	 * Gets the table fields.
+	 *
+	 * @return the table fields
+	 */
 	public RowMetaInterface getTableFields()
 	{
 		return null;
@@ -154,6 +182,17 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface
 	 * @param info Fields used as extra lookup information
 	 * 
 	 * @return The fields that are being put out by this step.
+	 */
+	/**
+	 * Gets the fields.
+	 *
+	 * @param inputRowMeta the input row meta
+	 * @param name the name
+	 * @param info the info
+	 * @param nextStep the next step
+	 * @param space the space
+	 * @return the fields
+	 * @throws KettleStepException the kettle step exception
 	 */
 	public void getFields(RowMetaInterface inputRowMeta, String name, RowMetaInterface[] info, StepMeta nextStep, VariableSpace space) throws KettleStepException
 	{
@@ -310,6 +349,16 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface
       return references;
     }
     
+    /**
+     * Export resources.
+     *
+     * @param space the space
+     * @param definitions the definitions
+     * @param resourceNamingInterface the resource naming interface
+     * @param repository the repository
+     * @return the string
+     * @throws KettleException the kettle exception
+     */
     public String exportResources(VariableSpace space, Map<String, ResourceDefinition> definitions, ResourceNamingInterface resourceNamingInterface, Repository repository) throws KettleException {
     	return null;
     }
@@ -339,10 +388,20 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface
     	return className;
     }
 
+    /**
+     * Gets the parent step meta.
+     *
+     * @return the parent step meta
+     */
     public StepMeta getParentStepMeta() {
 		return parentStepMeta;
 	}
     
+    /**
+     * Sets the parent step meta.
+     *
+     * @param parentStepMeta the new parent step meta
+     */
     public void setParentStepMeta(StepMeta parentStepMeta) {
 		this.parentStepMeta = parentStepMeta;
 	}
@@ -356,6 +415,11 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface
     protected ArrayList<KettleAttributeInterface> attributes;
     
     // Late init to prevent us from logging blank step names, etc.
+    /**
+     * Gets the log.
+     *
+     * @return the log
+     */
     public LogChannelInterface getLog() {
     	if (log==null) {
     		log = new LogChannel(this);
@@ -363,54 +427,202 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface
     	return log;
     }
     
+    /**
+     * Checks if is basic.
+     *
+     * @return true, if is basic
+     */
     public boolean isBasic() { return getLog().isBasic(); }
+    
+    /**
+     * Checks if is detailed.
+     *
+     * @return true, if is detailed
+     */
     public boolean isDetailed() { return getLog().isDetailed(); }
+    
+    /**
+     * Checks if is debug.
+     *
+     * @return true, if is debug
+     */
     public boolean isDebug() { return getLog().isDebug(); }
+    
+    /**
+     * Checks if is row level.
+     *
+     * @return true, if is row level
+     */
     public boolean isRowLevel() { return getLog().isRowLevel(); }
+    
+    /**
+     * Log minimal.
+     *
+     * @param message the message
+     */
     public void logMinimal(String message) { getLog().logMinimal(message); }
+    
+    /**
+     * Log minimal.
+     *
+     * @param message the message
+     * @param arguments the arguments
+     */
     public void logMinimal(String message, Object...arguments) { getLog().logMinimal(message, arguments); }
+    
+    /**
+     * Log basic.
+     *
+     * @param message the message
+     */
     public void logBasic(String message) { getLog().logBasic(message); }
+    
+    /**
+     * Log basic.
+     *
+     * @param message the message
+     * @param arguments the arguments
+     */
     public void logBasic(String message, Object...arguments) { getLog().logBasic(message, arguments); }
+    
+    /**
+     * Log detailed.
+     *
+     * @param message the message
+     */
     public void logDetailed(String message) { getLog().logDetailed(message); }
+    
+    /**
+     * Log detailed.
+     *
+     * @param message the message
+     * @param arguments the arguments
+     */
     public void logDetailed(String message, Object...arguments) { getLog().logDetailed(message, arguments); }
+    
+    /**
+     * Log debug.
+     *
+     * @param message the message
+     */
     public void logDebug(String message) { getLog().logDebug(message); }
+    
+    /**
+     * Log debug.
+     *
+     * @param message the message
+     * @param arguments the arguments
+     */
     public void logDebug(String message, Object...arguments) { getLog().logDebug(message, arguments); }
+    
+    /**
+     * Log rowlevel.
+     *
+     * @param message the message
+     */
     public void logRowlevel(String message) { getLog().logRowlevel(message); }
+    
+    /**
+     * Log rowlevel.
+     *
+     * @param message the message
+     * @param arguments the arguments
+     */
     public void logRowlevel(String message, Object...arguments) { getLog().logRowlevel(message, arguments); }
+    
+    /**
+     * Log error.
+     *
+     * @param message the message
+     */
     public void logError(String message) { getLog().logError(message); } 
+    
+    /**
+     * Log error.
+     *
+     * @param message the message
+     * @param e the e
+     */
     public void logError(String message, Throwable e) { getLog().logError(message, e); }
+    
+    /**
+     * Log error.
+     *
+     * @param message the message
+     * @param arguments the arguments
+     */
     public void logError(String message, Object...arguments) { getLog().logError(message, arguments); }
 
 
 
+	/**
+	 * Gets the log channel id.
+	 *
+	 * @return the log channel id
+	 */
 	public String getLogChannelId() {
 		return null;
 	}
 
+	/**
+	 * Gets the name.
+	 *
+	 * @return the name
+	 */
 	public String getName() {
 		return null;
 	}
 
+	/**
+	 * Gets the object copy.
+	 *
+	 * @return the object copy
+	 */
 	public String getObjectCopy() {
 		return null;
 	}
 
+	/**
+	 * Gets the object id.
+	 *
+	 * @return the object id
+	 */
 	public ObjectId getObjectId() {
 		return null;
 	}
 
+	/**
+	 * Gets the object revision.
+	 *
+	 * @return the object revision
+	 */
 	public ObjectRevision getObjectRevision() {
 		return null;
 	}
 
+	/**
+	 * Gets the object type.
+	 *
+	 * @return the object type
+	 */
 	public LoggingObjectType getObjectType() {
 		return null;
 	}
 
+	/**
+	 * Gets the parent.
+	 *
+	 * @return the parent
+	 */
 	public LoggingObjectInterface getParent() {
 		return null;
 	}
 
+	/**
+	 * Gets the repository directory.
+	 *
+	 * @return the repository directory
+	 */
 	public RepositoryDirectory getRepositoryDirectory() {
 		return null;
 	}
@@ -442,6 +654,9 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface
 	public void handleStreamSelection(StreamInterface stream) {
 	}
 	
+	/**
+	 * Reset step io meta.
+	 */
 	public void resetStepIoMeta() {
 		ioMeta=null;
 	}
@@ -461,6 +676,13 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface
       return null;
     }
 
+    /**
+     * Find parent entry.
+     *
+     * @param entries the entries
+     * @param key the key
+     * @return the step injection meta entry
+     */
     protected StepInjectionMetaEntry findParentEntry(List<StepInjectionMetaEntry> entries, String key) {
       for (StepInjectionMetaEntry look : entries) {
         if (look.getKey().equals(key)) return look;
@@ -470,6 +692,13 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface
       return null;
     }
     
+    /**
+     * Creates the entry.
+     *
+     * @param attr the attr
+     * @param PKG the pkg
+     * @return the step injection meta entry
+     */
     protected StepInjectionMetaEntry createEntry(KettleAttributeInterface attr, Class<?> PKG) {
       return new StepInjectionMetaEntry(attr.getKey(), attr.getType(), BaseMessages.getString(PKG, attr.getDescription()));
     }
@@ -496,6 +725,11 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface
       return entries;
     }
     
+    /**
+     * Load step attributes.
+     *
+     * @throws KettleException the kettle exception
+     */
     protected void loadStepAttributes() throws KettleException {
       try {
         InputStream inputStream = getClass().getResourceAsStream(STEP_ATTRIBUTES_FILE);
@@ -522,6 +756,9 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface
       }
     }
 
+    /* (non-Javadoc)
+     * @see org.pentaho.di.trans.step.StepAttributesInterface#findParent(java.util.List, java.lang.String)
+     */
     public KettleAttributeInterface findParent(List<KettleAttributeInterface> attributes, String parentId) {
       if (Const.isEmpty(parentId)) {
         return null;
@@ -534,6 +771,9 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface
       return null;
     }
     
+    /* (non-Javadoc)
+     * @see org.pentaho.di.trans.step.StepAttributesInterface#findAttribute(java.lang.String)
+     */
     public KettleAttributeInterface findAttribute(String key) {
       for (KettleAttributeInterface attribute : attributes) {
         if (attribute.getKey().equals(key)) {
@@ -543,19 +783,31 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface
       return null;
     }
     
+    /* (non-Javadoc)
+     * @see org.pentaho.di.trans.step.StepAttributesInterface#getXmlCode(java.lang.String)
+     */
     public String getXmlCode(String attributeKey) {
       return findAttribute(attributeKey).getXmlCode();
     }
 
+    /* (non-Javadoc)
+     * @see org.pentaho.di.trans.step.StepAttributesInterface#getRepCode(java.lang.String)
+     */
     public String getRepCode(String attributeKey) {
       KettleAttributeInterface attr = findAttribute(attributeKey);
       return Const.isEmpty(attr.getRepCode())?attr.getXmlCode():attr.getRepCode();
     }
     
+    /* (non-Javadoc)
+     * @see org.pentaho.di.trans.step.StepAttributesInterface#getDescription(java.lang.String)
+     */
     public String getDescription(String attributeKey) {
       return findAttribute(attributeKey).getDescription();
     }
 
+    /* (non-Javadoc)
+     * @see org.pentaho.di.trans.step.StepAttributesInterface#getTooltip(java.lang.String)
+     */
     public String getTooltip(String attributeKey) {
       return findAttribute(attributeKey).getTooltip();
     }
@@ -591,6 +843,7 @@ public class BaseStepMeta implements Cloneable, StepAttributesInterface
     public boolean[] isReferencedObjectEnabled() {
       return null;
     }
+    
     /**
      * Load the referenced object
      * @param meta The metadata that references 
