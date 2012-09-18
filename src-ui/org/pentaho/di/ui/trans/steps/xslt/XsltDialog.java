@@ -483,7 +483,7 @@ public class XsltDialog extends BaseStepDialog implements StepDialogInterface
 	     fdlOutputProperties.top  = new FormAttachment(0, margin);
 	     wlOutputProperties.setLayoutData(fdlOutputProperties);
 
-	     final int OutputPropertiesRows=input.getParameterField().length;
+	     final int OutputPropertiesRows=input.getOutputPropertyName().length;
 		
 		 colinf=new ColumnInfo[] { 
 		  new ColumnInfo(BaseMessages.getString(PKG, "XsltDialog.ColumnInfo.OutputProperties.Name"),      ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
