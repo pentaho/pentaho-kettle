@@ -25,9 +25,9 @@ package org.pentaho.di.trans.step;
 import org.pentaho.di.i18n.BaseMessages;
 
 /**
- * The base class for the StepDataInterface. 
- * It contains the methods to set and retrieve the status of the step data.
-
+ * This class is the base class for the StepDataInterface and 
+ * contains the methods to set and retrieve the status of the step data.
+ * 
  * @author Matt
  * @since 20-jan-2005
  */

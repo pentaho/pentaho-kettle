@@ -28,11 +28,6 @@ import org.pentaho.di.trans.step.StepPartitioningMeta;
 
 /**
  * Implements common functionality needed by partitioner plugins.
- *
- * <p>
- * [[[PARTITIONING-WIKI]]]
- * <p>
- * [[[SDK-DOC-doc38]]]
  */
 public abstract class BasePartitioner implements Partitioner {
 

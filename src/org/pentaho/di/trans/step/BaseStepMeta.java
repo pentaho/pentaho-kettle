@@ -62,8 +62,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 
-// TODO: Auto-generated Javadoc
-// 
 /**
  * This class is responsible for implementing common functionality regarding step meta, such as logging.
  * All Kettle steps have an extension of this where private fields have been added with public accessors.

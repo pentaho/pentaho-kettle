@@ -25,11 +25,14 @@ package org.pentaho.di.trans.step;
 import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
 
 /**
- * Provides a method to set step execution status and to get status.
+ * This defines the basic interface for the data used by a thread.
  * This will allow us to stop execution of threads and restart them later on
  * without loosing track of the situation.
  * Typically the StepDataInterface implementing class will contain result sets,
  * temporary data, caching indexes, etc.
+ * 
+ * @author Matt
+ * @since 20-jan-2005
  */
 public interface StepDataInterface
 {
