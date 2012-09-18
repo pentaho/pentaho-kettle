@@ -170,12 +170,8 @@ public class FakeHBaseConnection extends HBaseConnection {
             .lastEntry();
         byte[] upperKey = lastE.getKey();
 
-        BytesComparator comp = new BytesComparator();
-        if (comp.compare(startKey, upperKey) != 0) {
-          subMap = m_table.subMap(startKey, upperKey);
-        } else {
-          subMap = m_table.subMap(startKey, true, upperKey, true);
-        }
+        // with no stop key specified we return the last row inclusive
+        subMap = m_table.subMap(startKey, true, upperKey, true);
       } else {
         BytesComparator comp = new BytesComparator();
         if (comp.compare(startKey, stopKey) == 0) {

@@ -317,8 +317,9 @@ public class MappingAdmin {
           Mapping.KeyType.LONG, m_bytesUtil), false);
 
       // unsigned (positive) integer column
+
       m_admin.addColumnToTargetPut("Family1", "first_unsigned_int_column",
-          false, m_bytesUtil.toBytes((int) key / 10));
+          false, m_bytesUtil.toBytes((key < 0 ? (int) -key : key) / 10));
 
       // String column
       m_admin.addColumnToTargetPut("Family1", "first_string_column", false,
@@ -339,12 +340,12 @@ public class MappingAdmin {
       if (d < 0.5) {
         signedInt = -signedInt;
       }
-      m_admin.addColumnToTargetPut("Family2", ",first_signed_int_column",
-          false, m_bytesUtil.toBytes(signedInt));
+      m_admin.addColumnToTargetPut("Family2", "first_signed_int_column", false,
+          m_bytesUtil.toBytes(signedInt));
 
       // unsigned (positive) float column
       float f = r.nextFloat() * 1000.0f;
-      m_admin.addColumnToTargetPut("Family2", ",first_unsigned_float_column",
+      m_admin.addColumnToTargetPut("Family2", "first_unsigned_float_column",
           false, m_bytesUtil.toBytes(f));
 
       // signed float column
