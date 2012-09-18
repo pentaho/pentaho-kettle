@@ -107,11 +107,12 @@ public class MultiMergeJoin extends BaseStep implements StepInterface
                 }
                 data.rows[i] = getRowFrom(data.rowSets[i]);
                 if (data.rows[i] == null) {
-                	data.metas[i] = data.rowSets[i].getRowMeta();
+                  data.metas[i] = getTransMeta().getStepFields(infoStreams.get(i).getStepname());
                 } else {
-                    data.queueEntries[i].row = data.rows[i];                       
-                	  data.metas[i]=getTransMeta().getStepFields(infoStreams.get(i).getStepname());
+                  data.queueEntries[i].row = data.rows[i];                       
+                  data.metas[i]=data.rowSets[i].getRowMeta();
                 }
+
                 data.rowLengths[i] = data.metas[i].size();
             }
             
