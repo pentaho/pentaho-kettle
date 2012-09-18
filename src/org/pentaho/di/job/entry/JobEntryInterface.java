@@ -72,13 +72,13 @@ import org.w3c.dom.Node;
  *       typically used to construct the XML string.<br/>
  *       <br/>
  *       <a href="#loadXML(org.w3c.dom.Node, java.util.List, java.util.List, org.pentaho.di.repository.Repository)">
- *       <code>public void loadXML(…)</code></a></br>
+ *       <code>public void loadXML(...)</code></a></br>
  *       This method is called by PDI whenever a job entry needs to read its settings from XML. The XML node containing
- *       the job entry’s settings is passed in as an argument. Again, the helper class org.pentaho.di.core.xml.XMLHandler
+ *       the job entry's settings is passed in as an argument. Again, the helper class org.pentaho.di.core.xml.XMLHandler
  *       is typically used to conveniently read the settings from the XML node.<br/>
  *       <br/>
  *       <a href="#saveRep(org.pentaho.di.repository.Repository, org.pentaho.di.repository.ObjectId)">
- *       <code>public void saveRep(…)</code></a><br/>
+ *       <code>public void saveRep(...)</code></a><br/>
  *       This method is called by PDI whenever a job entry needs to save its settings to a PDI repository. The repository
  *       object passed in as the first argument provides a convenient set of methods for serializing job entry settings. 
  *       When calling repository serialization methods, job id and job entry id are required. The job id is passed in to
@@ -86,7 +86,7 @@ import org.w3c.dom.Node;
  *       base class.<br/>
  *       <br/> 
  *       <a href="#loadRep(org.pentaho.di.repository.Repository, org.pentaho.di.repository.ObjectId, java.util.List, java.util.List)">
- *       <code>public void loadRep(…)</code></a><br/>
+ *       <code>public void loadRep(...)</code></a><br/>
  *       This method is called by PDI whenever a job entry needs to read its configuration from a PDI repository. The 
  *       job entry id given in the arguments should be used as the identifier when using the repository's serialization
  *       methods.<br/>
@@ -277,7 +277,7 @@ public interface JobEntryInterface
 
 	/**
 	 * This method is called by PDI whenever a job entry needs to read its settings from XML. The XML node containing
-	 * the job entry’s settings is passed in as an argument. Again, the helper class org.pentaho.di.core.xml.XMLHandler
+	 * the job entry's settings is passed in as an argument. Again, the helper class org.pentaho.di.core.xml.XMLHandler
 	 * is typically used to conveniently read the settings from the XML node.
 	 *
 	 * @param entrynode the top-level XML node

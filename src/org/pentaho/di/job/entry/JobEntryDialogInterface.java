@@ -34,13 +34,13 @@ package org.pentaho.di.job.entry;
  * If the dialog is confirmed:<br/>
  * <ul>
  * <li>The JobEntryInterface object must be updated to reflect the new settings</li>
- * <li>If the user changed any settings, the JobEntryInterface object’s “changed” flag must be set to true</li>
+ * <li>If the user changed any settings, the JobEntryInterface object's "changed" flag must be set to true</li>
  * <li>open() must return the JobEntryInterface object</li>
  * </ul><br/>
  * If the dialog is cancelled:<br/>
  * <ul>
  * <li>The JobEntryInterface object must not be changed</li>
- * <li>The JobEntryInterface object’s “changed” flag must be set to the value it had at the time the dialog opened</li>
+ * <li>The JobEntryInterface object's "changed" flag must be set to the value it had at the time the dialog opened</li>
  * <li>open() must return null</li>
  * </ul>
  * 
