@@ -57,29 +57,6 @@ public class HBaseInputTest {
     return ma;
   }
 
-  protected void createAMapping(MappingAdmin ma, boolean overwrite)
-      throws Exception {
-    Mapping aMapping = new Mapping("TestTable", "TestMapping", "TestTableKey",
-        Mapping.KeyType.UNSIGNED_LONG);
-
-    HBaseValueMeta vm = new HBaseValueMeta("Family1" + HBaseValueMeta.SEPARATOR
-        + "Col1" + HBaseValueMeta.SEPARATOR + "Col1",
-        ValueMetaInterface.TYPE_STRING, -1, -1);
-
-    aMapping.addMappedColumn(vm, false);
-    vm = new HBaseValueMeta("Family1" + HBaseValueMeta.SEPARATOR + "Col2"
-        + HBaseValueMeta.SEPARATOR + "Col2", ValueMetaInterface.TYPE_STRING,
-        -1, -1);
-    aMapping.addMappedColumn(vm, false);
-
-    vm = new HBaseValueMeta("Family2" + HBaseValueMeta.SEPARATOR + "Col3"
-        + HBaseValueMeta.SEPARATOR + "Col3", ValueMetaInterface.TYPE_INTEGER,
-        -1, -1);
-    aMapping.addMappedColumn(vm, false);
-
-    ma.putMapping(aMapping, overwrite);
-  }
-
   protected RowMetaInterface configureRowMeta(Mapping mapping,
       List<HBaseValueMeta> subsetOfCols) {
     RowMeta rowMeta = new RowMeta();
@@ -125,7 +102,6 @@ public class HBaseInputTest {
     FakeHBaseConnection conn = new FakeHBaseConnection();
 
     MappingAdmin ma = initMappingAdmin(conn);
-    // createAMapping(ma, false);
     ma.createTestTable();
     assertTrue(conn.tableExists("MarksTestTable"));
     ma.createTestMapping();
@@ -170,7 +146,6 @@ public class HBaseInputTest {
     FakeHBaseConnection conn = new FakeHBaseConnection();
 
     MappingAdmin ma = initMappingAdmin(conn);
-    // createAMapping(ma, false);
     ma.createTestTable();
     assertTrue(conn.tableExists("MarksTestTable"));
     ma.createTestMapping();
@@ -227,7 +202,6 @@ public class HBaseInputTest {
     FakeHBaseConnection conn = new FakeHBaseConnection();
 
     MappingAdmin ma = initMappingAdmin(conn);
-    // createAMapping(ma, false);
     ma.createTestTable();
     assertTrue(conn.tableExists("MarksTestTable"));
     ma.createTestMapping();
@@ -276,7 +250,6 @@ public class HBaseInputTest {
     FakeHBaseConnection conn = new FakeHBaseConnection();
 
     MappingAdmin ma = initMappingAdmin(conn);
-    // createAMapping(ma, false);
     ma.createTestTable();
     assertTrue(conn.tableExists("MarksTestTable"));
     ma.createTestMapping();
@@ -329,7 +302,6 @@ public class HBaseInputTest {
     FakeHBaseConnection conn = new FakeHBaseConnection();
 
     MappingAdmin ma = initMappingAdmin(conn);
-    // createAMapping(ma, false);
     ma.createTestTable();
     assertTrue(conn.tableExists("MarksTestTable"));
     ma.createTestMapping();
