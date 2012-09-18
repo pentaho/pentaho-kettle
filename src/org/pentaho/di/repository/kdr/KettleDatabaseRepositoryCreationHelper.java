@@ -446,7 +446,7 @@ public class KettleDatabaseRepositoryCreationHelper {
         	}            
             try
             {
-                indexname = "IDX_" + schemaTable.substring(2) + "_AK";
+                indexname = "IDX_" +schemaTable.replace(databaseMeta.getStartQuote(), "").replace(databaseMeta.getEndQuote(),"") + "_AK";
                 keyfield = new String[] { KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_ID_DATABASE, KettleDatabaseRepository.FIELD_DATABASE_ATTRIBUTE_CODE, };
                 if (!database.checkIndexExists(schemaTable, keyfield))
                 {
@@ -496,7 +496,7 @@ public class KettleDatabaseRepositoryCreationHelper {
         	
 			try
 			{
-				indexname = "IDX_" + schemaTable.substring(2) + "_AK";
+				indexname = "IDX_" + schemaTable.replace(databaseMeta.getStartQuote(), "").replace(databaseMeta.getEndQuote(),"") + "_AK";
 				keyfield = new String[] { KettleDatabaseRepository.FIELD_DIRECTORY_ID_DIRECTORY_PARENT, KettleDatabaseRepository.FIELD_DIRECTORY_DIRECTORY_NAME };
 				if (!database.checkIndexExists(schemaTable, keyfield))
 				{
@@ -1192,7 +1192,7 @@ public class KettleDatabaseRepositoryCreationHelper {
 
 			try
 			{
-				indexname = "IDX_" + schemaTable.substring(2) + "_LOOKUP";
+				indexname = "IDX_" + schemaTable.replace(databaseMeta.getStartQuote(), "").replace(databaseMeta.getEndQuote(),"") + "_LOOKUP";
 				keyfield = new String[] { KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_ID_STEP, KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_CODE, KettleDatabaseRepository.FIELD_STEP_ATTRIBUTE_NR, };
 				if (!database.checkIndexExists(schemaTable, keyfield))
 				{
@@ -1244,7 +1244,7 @@ public class KettleDatabaseRepositoryCreationHelper {
 
 			try
 			{
-				indexname = "IDX_" + schemaTable.substring(2) + "_LU1";
+				indexname = "IDX_" + schemaTable.replace(databaseMeta.getStartQuote(), "").replace(databaseMeta.getEndQuote(),"") + "_LU1";
 				keyfield = new String[] { KettleDatabaseRepository.FIELD_STEP_DATABASE_ID_TRANSFORMATION, };
 				if (!database.checkIndexExists(schemaTable, keyfield))
 				{
@@ -1264,7 +1264,7 @@ public class KettleDatabaseRepositoryCreationHelper {
 
 			try
 			{
-				indexname = "IDX_" + schemaTable.substring(2) + "_LU2";
+				indexname = "IDX_" + schemaTable.replace(databaseMeta.getStartQuote(), "").replace(databaseMeta.getEndQuote(),"") + "_LU2";
 				keyfield = new String[] { KettleDatabaseRepository.FIELD_STEP_DATABASE_ID_DATABASE, };
 				if (!database.checkIndexExists(schemaTable, keyfield))
 				{
@@ -1509,7 +1509,7 @@ public class KettleDatabaseRepositoryCreationHelper {
 
 			try
 			{
-				indexname = "IDX_" + schemaTable.substring(2) + "_LU1";
+				indexname = "IDX_" + schemaTable.replace(databaseMeta.getStartQuote(), "").replace(databaseMeta.getEndQuote(),"") + "_LU1";
 				keyfield = new String[] { KettleDatabaseRepository.FIELD_JOBENTRY_DATABASE_ID_JOB, };
 				if (!database.checkIndexExists(schemaTable, keyfield))
 				{
@@ -1529,7 +1529,7 @@ public class KettleDatabaseRepositoryCreationHelper {
 
 			try
 			{
-				indexname = "IDX_" + schemaTable.substring(2) + "_LU2";
+				indexname = "IDX_" + schemaTable.replace(databaseMeta.getStartQuote(), "").replace(databaseMeta.getEndQuote(),"") + "_LU2";
 				keyfield = new String[] { KettleDatabaseRepository.FIELD_JOBENTRY_DATABASE_ID_DATABASE, };
 				if (!database.checkIndexExists(schemaTable, keyfield))
 				{
@@ -1691,7 +1691,7 @@ public class KettleDatabaseRepositoryCreationHelper {
 
 			try
 			{
-				indexname = "IDX_" + schemaTable.substring(2) + "_LOOKUP";
+				indexname = "IDX_" + schemaTable.replace(databaseMeta.getStartQuote(), "").replace(databaseMeta.getEndQuote(),"") + "_LOOKUP";
 				keyfield = new String[] { KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_ID_JOBENTRY_ATTRIBUTE, KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_CODE, KettleDatabaseRepository.FIELD_JOBENTRY_ATTRIBUTE_NR, };
 	
 				if (!database.checkIndexExists(schemaTable, keyfield))
