@@ -8231,4 +8231,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     	mainToolbar.setVisible(visible);
     }
     
+	public String getStartupPerspective() {
+		return startupPerspective;
+	}
+    
 }
