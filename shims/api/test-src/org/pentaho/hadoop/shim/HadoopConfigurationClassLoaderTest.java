@@ -24,8 +24,10 @@ package org.pentaho.hadoop.shim;
 
 import static org.junit.Assert.*;
 
+import java.io.File;
 import java.net.URL;
 
+import org.apache.commons.vfs.VFS;
 import org.junit.Test;
 
 public class HadoopConfigurationClassLoaderTest {
@@ -48,5 +50,20 @@ public class HadoopConfigurationClassLoaderTest {
     assertTrue(hccl.ignoreClass("org.apache.log4j.Logger"));
     assertFalse(hccl.ignoreClass("bogus"));
     assertTrue(hccl.ignoreClass(null));
+  }
+  
+  @Test
+  public void generateClassPahtString_single() throws Exception {
+    URL workingDir = new File(".").toURI().toURL();
+    HadoopConfigurationClassLoader hccl = new HadoopConfigurationClassLoader(new URL[] { workingDir }, getClass().getClassLoader());
+    assertEquals(workingDir.getFile(), hccl.generateClassPathString());    
+  }
+
+  @Test
+  public void generateClassPahtString_multiple() throws Exception {
+    URL workingDir = new File(".").toURI().toURL();
+    URL srcDir = new File("src").toURI().toURL();
+    HadoopConfigurationClassLoader hccl = new HadoopConfigurationClassLoader(new URL[] { workingDir, srcDir }, getClass().getClassLoader());
+    assertEquals(workingDir.getFile() + File.pathSeparator + srcDir.getFile(), hccl.generateClassPathString());    
   }
 }

@@ -35,7 +35,7 @@ public class CommonSqoopShim implements SqoopShim {
   public ShimVersion getVersion() {
     return new ShimVersion(1, 0);
   }
-
+  
   @Override
   public int runTool(String[] args, Configuration c) {
     ClassLoader cl = Thread.currentThread().getContextClassLoader();

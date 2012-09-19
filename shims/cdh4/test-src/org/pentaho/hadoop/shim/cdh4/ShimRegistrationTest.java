@@ -67,7 +67,7 @@ public class ShimRegistrationTest {
   public void sqoopShimRegistered() {
     ServiceLoader<SqoopShim> l = ServiceLoader.load(SqoopShim.class);
     SqoopShim s = l.iterator().next();
-    assertTrue(CommonSqoopShim.class.isAssignableFrom(s.getClass()));
+    assertTrue(org.pentaho.hadoop.shim.cdh4.ClassPathModifyingSqoopShim.class.equals(s.getClass()));
   }
   
   /**
