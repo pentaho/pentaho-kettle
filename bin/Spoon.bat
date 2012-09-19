@@ -18,7 +18,9 @@ if %KETTLE_DIR:~-1%==\ set KETTLE_DIR=%KETTLE_DIR:~0,-1%
 
 cd %KETTLE_DIR%
 
-set PENTAHO_JAVA=javaw
+REM Special console/debug options when called from SpoonConsole.bat or SpoonDebug.bat
+if "%SPOON_CONSOLE%"=="1" set PENTAHO_JAVA=java
+if not "%SPOON_CONSOLE%"=="1" set PENTAHO_JAVA=javaw
 set IS64BITJAVA=0
 
 call "%~dp0set-pentaho-env.bat"
@@ -97,5 +99,10 @@ REM ***************
 REM ** Run...    **
 REM ***************
 
+REM Eventually call java instead of javaw and do not run in a separate window
+if not "%SPOON_CONSOLE%"=="1" set SPOON_START_OPTION=start "Spoon"
+
 @echo on
-start "Spoon" "%_PENTAHO_JAVA%" %OPT% -jar launcher\launcher.jar -lib ..\%LIBSPATH% %_cmdline%
+%SPOON_START_OPTION% "%_PENTAHO_JAVA%" %OPT% -jar launcher\launcher.jar -lib ..\%LIBSPATH% %_cmdline%
+@echo off
+if "%SPOON_PAUSE%"=="1" pause
