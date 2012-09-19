@@ -148,6 +148,12 @@ public class MappingAdmin {
     return m_mappingTableName;
   }
 
+  /**
+   * Creates a test mapping (in standard format) called "MarksTestMapping" for a
+   * test table called "MarksTestTable"
+   * 
+   * @throws Exception if a problem occurs
+   */
   public void createTestMapping() throws Exception {
     String keyName = "MyKey";
     String tableName = "MarksTestTable";
@@ -281,9 +287,97 @@ public class MappingAdmin {
     putMapping(testMapping, false);
   }
 
-  // create a test table in the same format as the test mapping
+  /**
+   * Creates a test mapping (in tuple format) called "MarksTestTupleMapping" for
+   * a test table called "MarksTestTupleTable"
+   * 
+   * @throws Exception if a problem occurs
+   */
+  public void createTestTupleMapping() throws Exception {
+    String keyName = "KEY";
+    String tableName = "MarksTestTupleTable";
+    String mappingName = "MarksTestTupleMapping";
+
+    Mapping.KeyType keyType = Mapping.KeyType.UNSIGNED_LONG;
+    Mapping testMapping = new Mapping(tableName, mappingName, keyName, keyType);
+    testMapping.setTupleMapping(true);
+    String family = "";
+    String colName = "";
+
+    String combined = family + HBaseValueMeta.SEPARATOR + colName;
+    HBaseValueMeta vm = new HBaseValueMeta(combined + HBaseValueMeta.SEPARATOR
+        + "Family", ValueMetaInterface.TYPE_STRING, -1, -1);
+    testMapping.addMappedColumn(vm, true);
+    vm = new HBaseValueMeta(combined + HBaseValueMeta.SEPARATOR + "Column",
+        ValueMetaInterface.TYPE_STRING, -1, -1);
+    testMapping.addMappedColumn(vm, true);
+    vm = new HBaseValueMeta(combined + HBaseValueMeta.SEPARATOR + "Value",
+        ValueMetaInterface.TYPE_STRING, -1, -1);
+    testMapping.addMappedColumn(vm, true);
+    vm = new HBaseValueMeta(combined + HBaseValueMeta.SEPARATOR + "Timestamp",
+        ValueMetaInterface.TYPE_INTEGER, -1, -1);
+    vm.setIsLongOrDouble(true);
+    testMapping.addMappedColumn(vm, true);
+
+    putMapping(testMapping, false);
+  }
+
+  /**
+   * Creates a test table called "MarksTestTupleTable"
+   * 
+   * @throws Exception if a problem occurs
+   */
+  public void createTupleTestTable() throws Exception {
+    // create a test table in the same format as the test tuple mapping
+    if (m_admin == null) {
+      throw new IOException("No connection exists yet!");
+    }
+
+    if (m_admin.tableExists("MarksTestTupleTable")) {
+      // drop/delete the table and re-create
+      m_admin.disableTable("MarksTestTupleTable");
+      m_admin.deleteTable("MarksTestTupleTable");
+    }
+
+    List<String> colFamilies = new ArrayList<String>();
+    colFamilies.add("Family1");
+    colFamilies.add("Family2");
+    m_admin.createTable("MarksTestTupleTable", colFamilies, null);
+
+    Properties props = new Properties();
+    props.setProperty(HBaseConnection.HTABLE_WRITE_BUFFER_SIZE_KEY, ""
+        + (1024 * 1024 * 12));
+    m_admin.newTargetTable("MarksTestTupleTable", props);
+
+    for (long key = 1; key < 500; key++) {
+      m_admin.newTargetTablePut(HBaseValueMeta.encodeKeyValue(new Long(key),
+          Mapping.KeyType.UNSIGNED_LONG, m_bytesUtil), false);
+
+      // 20 columns every second row (all columns are string)
+      for (int i = 0; i < 10 * ((key % 2) + 1); i++) {
+        if (i < 10) {
+          m_admin.addColumnToTargetPut("Family1", "string_col" + i, false,
+              m_bytesUtil.toBytes("StringValue_" + key));
+        } else {
+          m_admin.addColumnToTargetPut("Family2", "string_col" + i, false,
+              m_bytesUtil.toBytes("StringValue_" + key));
+        }
+
+        m_admin.executeTargetTablePut();
+      }
+    }
+    m_admin.flushCommitsTargetTable();
+    m_admin.closeTargetTable();
+  }
+
+  /**
+   * Creates a test table called "MarksTestTable"
+   * 
+   * @throws Exception if a problem occurs
+   */
   public void createTestTable() throws Exception {
 
+    // create a test table in the same format as the test mapping
     if (m_admin == null) {
       throw new IOException("No connection exists yet!");
     }

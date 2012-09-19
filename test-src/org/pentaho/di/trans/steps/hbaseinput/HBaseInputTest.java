@@ -38,6 +38,7 @@ import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.variables.Variables;
+import org.pentaho.hbase.HBaseRowToKettleTuple;
 import org.pentaho.hbase.mapping.MappingAdmin;
 import org.pentaho.hbase.shim.api.HBaseValueMeta;
 import org.pentaho.hbase.shim.api.Mapping;
@@ -342,10 +343,68 @@ public class HBaseInputTest {
     assertEquals(new Long(50), decodedRow[0]);
   }
 
+  @Test
+  public void testTableScanTupleMapping() throws Exception {
+    FakeHBaseConnection conn = new FakeHBaseConnection();
+
+    MappingAdmin ma = initMappingAdmin(conn);
+    ma.createTupleTestTable();
+    assertTrue(conn.tableExists("MarksTestTupleTable"));
+    ma.createTestTupleMapping();
+    assertTrue(ma.mappingExists("MarksTestTupleTable", "MarksTestTupleMapping"));
+
+    CommonHBaseBytesUtil bu = new CommonHBaseBytesUtil();
+    HBaseRowToKettleTuple tupleHandler = new HBaseRowToKettleTuple(bu);
+    Mapping tableMapping = ma.getMapping("MarksTestTupleTable",
+        "MarksTestTupleMapping");
+    assertTrue(tableMapping != null);
+
+    conn.newSourceTable("MarksTestTupleTable");
+    VariableSpace vars = new Variables();
+
+    HBaseInputData.initializeScan(conn, bu, tableMapping, null, null, null,
+        null, null, vars);
+
+    RowMetaInterface outputRowMeta = configureRowMeta(tableMapping, null);
+    conn.executeSourceTableScan();
+
+    int count = 1;
+    List<Object[]> decodedRows = null;
+    int expectedNumEvenTupleRows = 10;
+    int expectedNumOddTupleRows = 20;
+    int expectedNumColsPerRow = RowDataUtil.OVER_ALLOCATE_SIZE + 5; // 5 cols in
+                                                                    // a tuple
+                                                                    // mapping
+    while (conn.resultSetNextRow()) {
+      decodedRows = HBaseInputData.getTupleOutputRows(conn, null,
+          tableMapping.getMappedColumns(), tableMapping, tupleHandler,
+          outputRowMeta, bu);
+
+      assertTrue(decodedRows != null);
+      assertTrue(decodedRows.size() > 0);
+
+      // check the key of the first hbase row
+      if (count == 1) {
+        assertEquals(new Long(1), decodedRows.get(0)[0]);
+        assertEquals(expectedNumColsPerRow, decodedRows.get(0).length);
+      }
+
+      // check how many kettle rows this turned into
+      if (count % 2 == 0) {
+        assertEquals(expectedNumEvenTupleRows, decodedRows.size());
+      } else {
+        assertEquals(expectedNumOddTupleRows, decodedRows.size());
+      }
+      count++;
+    }
+
+    assertEquals(500, count);
+  }
+
   public static void main(String[] args) {
     try {
       HBaseInputTest test = new HBaseInputTest();
-      test.testFullTableScanSubsetOfColsInMapping();
+      test.testTableScanTupleMapping();
     } catch (Exception ex) {
       ex.printStackTrace();
     }
