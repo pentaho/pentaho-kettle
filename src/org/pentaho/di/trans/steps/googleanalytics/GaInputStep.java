@@ -28,6 +28,7 @@ import java.net.URL;
 import java.util.List;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
@@ -203,7 +204,8 @@ public class GaInputStep extends BaseStep implements StepInterface {
 		}
 		
 		if (!Const.isEmpty(meta.getGaApiKey())){
-			query.setStringCustomParameter("key", environmentSubstitute(meta.getGaApiKey()));	
+			// allow to use optionally encrypted environment variables
+			query.setStringCustomParameter("key", Encr.decryptPasswordOptionallyEncrypted(environmentSubstitute(meta.getGaApiKey())));	
 		}
 
 		return query;
@@ -225,7 +227,8 @@ public class GaInputStep extends BaseStep implements StepInterface {
 			}
 			
 			String email = environmentSubstitute(meta.getGaEmail());
-			String pass = environmentSubstitute(meta.getGaPassword());
+			// allow to use optionally encrypted environment variables
+			String pass = Encr.decryptPasswordOptionallyEncrypted(environmentSubstitute(meta.getGaPassword()));
 
 			AnalyticsService analyticsService = new AnalyticsService(environmentSubstitute(meta.getGaAppName()));
 			
