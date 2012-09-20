@@ -39,18 +39,57 @@ public interface RepositoryElementInterface extends RepositoryObjectInterface {
   public RepositoryDirectoryInterface getRepositoryDirectory();
   public void setRepositoryDirectory(RepositoryDirectoryInterface repositoryDirectory);
 	
+   /**
+    * Gets the name of the repository object.
+    */
 	public String getName();
+	
+	/**
+	 * Sets the name of the repository object.
+	 * @param name
+	 */
 	public void setName(String name);
 
+	/**
+	 * Gets the description of the repository object.
+	 * @return
+	 */
 	public String getDescription();
+	
+	/**
+	 * Sets the description of the repository object.
+	 * @param description
+	 */
 	public void setDescription(String description);
 
+    /**
+     * Gets the database ID in the repository for this object.
+     * @return the database ID in the repository for this object
+     */
 	public ObjectId getObjectId();
+	
+    /**
+     * Sets the database ID in the repository for this object.
+     * @return the database ID in the repository for this object
+     */
 	public void setObjectId(ObjectId id);
-			
+		
+	/**
+	 * Gets the repository element type for this object.
+	 * @return the repository element type for this object
+	 */
 	public RepositoryObjectType getRepositoryElementType();
 	
-  public ObjectRevision getObjectRevision();	
+	/**
+	 * Gets the object revision.
+	 * @return the object revision
+	 */
+    public ObjectRevision getObjectRevision();
+  
+	/**
+	 * Sets the object revision.
+	 * @param objectRevision
+	 */
 	public void setObjectRevision(ObjectRevision objectRevision);
 
 }
