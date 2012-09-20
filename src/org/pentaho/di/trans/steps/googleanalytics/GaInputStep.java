@@ -203,7 +203,7 @@ public class GaInputStep extends BaseStep implements StepInterface {
 		}
 		
 		if (!Const.isEmpty(meta.getGaApiKey())){
-			query.setStringCustomParameter("key", meta.getGaApiKey());	
+			query.setStringCustomParameter("key", environmentSubstitute(meta.getGaApiKey()));	
 		}
 
 		return query;
