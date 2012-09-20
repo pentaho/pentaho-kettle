@@ -97,11 +97,15 @@ import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
 import org.pentaho.di.trans.HasDatabasesInterface;
 import org.pentaho.di.trans.HasSlaveServersInterface;
+import org.pentaho.di.trans.TransMeta;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 /**
- * Defines a Job and provides methods to load, save, verify, etc.
+ * The definition of a PDI job is represented by a JobMeta object. It is typically loaded from a .kjb file, 
+ * a PDI repository, or it is generated dynamically. The declared parameters of the job definition are then 
+ * queried using listParameters() and assigned values using calls to setParameterValue(..).
+ * JobMeta provides methods to load, save, verify, etc.
  * 
  * @author Matt
  * @since 11-08-2003
@@ -117,6 +121,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
 	private static final String XML_TAG_SLAVESERVERS = "slaveservers"; //$NON-NLS-1$
 	
+	/** A constant specifying the repository element type as a Job. */
 	public static final RepositoryObjectType REPOSITORY_ELEMENT_TYPE = RepositoryObjectType.JOB;
 
 	protected ObjectId objectId;
@@ -164,25 +169,36 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 
 	protected int undo_position;
 
+	/** Constant = 1 **/
 	public static final int TYPE_UNDO_CHANGE = 1;
 
+	/** Constant = 2 **/
 	public static final int TYPE_UNDO_NEW = 2;
 
+	/** Constant = 3  **/
 	public static final int TYPE_UNDO_DELETE = 3;
 
+	/** Constant = 4 **/	
 	public static final int TYPE_UNDO_POSITION = 4;
 
+	/** Constant = "SPECIAL" **/
 	public static final String STRING_SPECIAL = "SPECIAL"; //$NON-NLS-1$
 
+	/** Constant = "START"  **/
 	public static final String STRING_SPECIAL_START = "START"; //$NON-NLS-1$
 
+	/** Constant = "DUMMY"  **/
 	public static final String STRING_SPECIAL_DUMMY = "DUMMY"; //$NON-NLS-1$
 
+	/** Constant = "OK"  **/
 	public static final String STRING_SPECIAL_OK = "OK"; //$NON-NLS-1$
 
+	/** Constant = "ERROR"  **/
 	public static final String STRING_SPECIAL_ERROR = "ERROR"; //$NON-NLS-1$
 
-	// Remember the size and position of the different windows...
+	/**
+	 *  List of booleans indicating whether or not to remember the size and position of the different windows...
+	 */
 	public boolean max[] = new boolean[1];
 
 	private String created_user, modifiedUser;
@@ -237,7 +253,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	/**
-	 * Clear.
+	 * Clears or reinitializes many of the JobMeta properties.
 	 */
 	public void clear() {
 		setName( null );
@@ -384,16 +400,29 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
         }
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	/**
+     * Compares this job's meta-data to the specified job's meta-data. This
+     * method simply calls compare(this, o)
+     *
+     * @param o the o
+     * @return the int
+     * @see #compare(JobMeta, JobMeta)
+     * @see java.lang.Comparable#compareTo(java.lang.Object)
 	 */
 	public int compareTo(JobMeta o) {
 		return compare(this, o);
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 */
+    /**
+     * Checks whether this job's meta-data object is equal to the specified object. If
+     * the specified object is not an instance of JobMeta, false is returned. Otherwise the method
+     * returns whether a call to compare() indicates equality (i.e. compare(this, (JobMeta)obj)==0).
+     *
+     * @param obj the obj
+     * @return true, if successful
+     * @see #compare(JobMeta, JobMeta)
+     * @see java.lang.Object#equals(java.lang.Object)
+     */
 	public boolean equals(Object obj) {
 		if (!(obj instanceof JobMeta))
 			return false;
@@ -401,19 +430,24 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		return compare(this, (JobMeta) obj) == 0;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#clone()
-	 */
+    /**
+     * Clones the job meta-data object.
+     *
+     * @return a clone of the job meta-data object
+     * @see java.lang.Object#clone()
+     */
 	public Object clone() {
 		return realClone(true);
 	}
 
-	/**
-	 * Real clone.
-	 *
-	 * @param doClear the do clear
-	 * @return the object
-	 */
+    /**
+     * Perform a real clone of the job meta-data object, including cloning all lists
+     * and copying all values. If the doClear parameter is true, the clone will be cleared of 
+     * ALL values before the copy. If false, only the copied fields will be cleared.
+     *
+     * @param doClear Whether to clear all of the clone's data before copying from the source object
+     * @return a real clone of the calling object
+     */
 	public Object realClone(boolean doClear) {
 		try {
 			JobMeta jobMeta = (JobMeta) super.clone();
@@ -475,6 +509,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	/**
+	 * Gets the directory.
 	 * @return Returns the directory.
 	 */
 	public RepositoryDirectoryInterface getRepositoryDirectory() {
@@ -482,6 +517,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	/**
+	 * Sets the directory.
 	 * @param directory
 	 *            The directory to set.
 	 */
@@ -490,7 +526,9 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		setInternalKettleVariables();
 	}
 
-	/* (non-Javadoc)
+	/**
+	 * Gets the filename.
+	 * @return filename
 	 * @see org.pentaho.di.core.EngineMetaInterface#getFilename()
 	 */
 	public String getFilename() {
@@ -528,6 +566,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	/**
+	 * Returns a list of the databases.
+	 * 
 	 * @return Returns the databases.
 	 */
 	public List<DatabaseMeta> getDatabases() {
@@ -548,6 +588,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	/**
+	 * Sets the databases.
 	 * @param databases
 	 *            The databases to set.
 	 */
@@ -566,9 +607,10 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			clearChanged();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.pentaho.di.core.changed.ChangedFlag#clearChanged()
-	 */
+    /**
+     * Clears the different changed flags of the job.
+     *
+     */
 	public void clearChanged() {
 		changedEntries = false;
 		changedHops = false;
@@ -646,21 +688,32 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		return LastUsedFile.FILE_TYPE_JOB;
 	}
 
-	/* (non-Javadoc)
+	/**
+	 * Gets the job filter names.
+	 *
+	 * @return the filter names
 	 * @see org.pentaho.di.core.EngineMetaInterface#getFilterNames()
 	 */
 	public String[] getFilterNames() {
 		return Const.getJobFilterNames();
 	}
 
-	/* (non-Javadoc)
-	 * @see org.pentaho.di.core.EngineMetaInterface#getFilterExtensions()
-	 */
+    /**
+     * Gets the job filter extensions. For JobMeta, this method returns
+     * the value of {@link Const.STRING_JOB_FILTER_EXT}
+     *
+     * @return the filter extensions
+     * @see org.pentaho.di.core.EngineMetaInterface#getFilterExtensions()
+     */
 	public String[] getFilterExtensions() {
 		return Const.STRING_JOB_FILTER_EXT;
 	}
 
-	/* (non-Javadoc)
+    /**
+     * Gets the default extension for a job. For JobMeta, this method returns
+     * the value of {@link Const#STRING_JOB_DEFAULT_EXT}
+     *
+     * @return the default extension
 	 * @see org.pentaho.di.core.EngineMetaInterface#getDefaultExtension()
 	 */
 	public String getDefaultExtension() {
@@ -2261,6 +2314,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 	
     /**
+     * Gets a list of all selected notes.
      * @return A list of all the selected notes.
      */
     public List<NotePadMeta> getSelectedNotes()
@@ -2318,9 +2372,12 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		return null;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
+    /**
+     * Gets a textual representation of the job. If its name has been set, it will be returned,
+     * otherwise the classname is returned.
+     *
+     * @return the textual representation of the job.
+     */
 	public String toString() {
         if (!Const.isEmpty(filename)) {
         	if (Const.isEmpty(name)) {
@@ -2347,6 +2404,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	/**
+	 * Gets the boolean value of batch id passed.
 	 * @return Returns the batchIdPassed.
 	 */
 	public boolean isBatchIdPassed() {
@@ -2354,6 +2412,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	/**
+	 * Sets the batch id passed.
 	 * @param batchIdPassed
 	 *            The batchIdPassed to set.
 	 */
@@ -2412,6 +2471,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	/**
+	 * Gets the arguments used for this job.
+	 * 
 	 * @return Returns the arguments.
 	 */
 	public String[] getArguments() {
@@ -2419,6 +2480,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	/**
+	 * Sets the arguments.
 	 * @param arguments
 	 *            The arguments to set.
 	 */
@@ -2563,6 +2625,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	/**
+	 * Gets the shared objects file.
 	 * @return the sharedObjectsFile
 	 */
 	public String getSharedObjectsFile() {
@@ -2570,6 +2633,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	/**
+	 * Sets the shared objects file.
 	 * @param sharedObjectsFile
 	 *            the sharedObjectsFile to set
 	 */
@@ -2578,6 +2642,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	/**
+	 * Sets the user who last modified the job.
 	 * @param modifiedUser
 	 *            The modifiedUser to set.
 	 */
@@ -2586,6 +2651,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	/**
+	 * Gets the user who last modified the job.
 	 * @return Returns the modifiedUser.
 	 */
 	public String getModifiedUser() {
@@ -2593,6 +2659,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	/**
+	 * Sets the date the job was modified.
 	 * @param modifiedDate
 	 *            The modifiedDate to set.
 	 */
@@ -2601,6 +2668,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	/**
+	 * Gets the date the job was last modified.
 	 * @return Returns the modifiedDate.
 	 */
 	public Date getModifiedDate() {
@@ -2608,6 +2676,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	/**
+	 * Gets the description of the job.
+	 * 
 	 * @return The description of the job
 	 */
 	public String getDescription() {
@@ -2615,6 +2685,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	/**
+	 * Gets the extended description of the job.
+	 * 
 	 * @return The extended description of the job
 	 */
 	public String getExtendedDescription() {
@@ -2622,6 +2694,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	/**
+	 * Gets the version of the job.
+	 * 
 	 * @return The version of the job
 	 */
 	public String getJobversion() {
@@ -2629,7 +2703,9 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	/**
-	 * Get the status of the job
+	 * Gets the status of the job.
+	 * 
+	 * @return the status of the job
 	 */
 	public int getJobstatus() {
 		return jobStatus;
@@ -2676,6 +2752,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	/**
+	 * Gets the date the job was created.
+	 * 
 	 * @return Returns the createdDate.
 	 */
 	public Date getCreatedDate() {
@@ -2699,6 +2777,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	/**
+	 * Gets the user by whom the job was created.
+	 * 
 	 * @return Returns the createdUser.
 	 */
 	public String getCreatedUser() {
@@ -2828,8 +2908,10 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		return variables.environmentSubstitute(aString);
 	}
 
-	/* (non-Javadoc)
-	 * @see org.pentaho.di.core.variables.VariableSpace#environmentSubstitute(java.lang.String[])
+	
+
+    /* (non-javadoc)
+     * @see org.pentaho.di.core.variables.VariableSpace#environmentSubstitute(java.lang.String[])
 	 */
 	public String[] environmentSubstitute(String aString[]) {
 		return variables.environmentSubstitute(aString);
@@ -2841,7 +2923,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	public VariableSpace getParentVariableSpace() {
 		return variables.getParentVariableSpace();
 	}
-
+	
 	/* (non-Javadoc)
 	 * @see org.pentaho.di.core.variables.VariableSpace#setParentVariableSpace(org.pentaho.di.core.variables.VariableSpace)
 	 */
@@ -3056,6 +3138,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	/**
+	 * Gets a list of slave servers.
 	 * @return the slaveServer list
 	 */
 	public List<SlaveServer> getSlaveServers() {
@@ -3063,6 +3146,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	/**
+	 * Sets the slave servers.
 	 * @param slaveServers
 	 *            the slaveServers to set
 	 */
@@ -3082,6 +3166,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	/**
+	 * Gets an array of slave server names.
 	 * @return An array list slave server names
 	 */
 	public String[] getSlaveServerNames() {
@@ -3124,6 +3209,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	/**
+	 * Gets the shared objects.
 	 * @return the sharedObjects
 	 */
 	public SharedObjects getSharedObjects() {
@@ -3131,6 +3217,7 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	/**
+	 * Sets the shared objects.
 	 * @param sharedObjects the sharedObjects to set
 	 */
 	public void setSharedObjects(SharedObjects sharedObjects) {
@@ -3431,14 +3518,18 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
     this.logLevel = logLevel;
   }
   
-  /**
-	 * @return the channelLogTable
+	/**
+	 * Gets the channel log table for the job.
+	 *
+	 * @return the channel log table for the job.
 	 */
 	public ChannelLogTable getChannelLogTable() {
 		return channelLogTable;
 	}
 
 	/**
+	 * Sets the channel log table for the job.
+	 * 
 	 * @param channelLogTable the channelLogTable to set
 	 */
 	public void setChannelLogTable(ChannelLogTable channelLogTable) {
@@ -3446,6 +3537,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	/**
+	 * Gets the job entry log table.
+	 * 
 	 * @return the jobEntryLogTable
 	 */
 	public JobEntryLogTable getJobEntryLogTable() {
@@ -3453,6 +3546,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 	}
 
 	/**
+	 * Sets the job entry log table.
+	 * 
 	 * @param jobEntryLogTable the jobEntryLogTable to set
 	 */
 	public void setJobEntryLogTable(JobEntryLogTable jobEntryLogTable) {
@@ -3472,7 +3567,11 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 		return logTables;
 	}
 	
-	/* (non-Javadoc)
+	/**
+	 * Checks whether the job can be saved. For JobMeta, this method always 
+	 * returns true
+	 *
+	 * @return true
 	 * @see org.pentaho.di.core.EngineMetaInterface#canSave()
 	 */
 	public boolean canSave() {
@@ -3480,6 +3579,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
   }
 
   /**
+   * Gets the container object id.
+   * 
    * @return the carteObjectId
    */
   public String getContainerObjectId() {
@@ -3487,6 +3588,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
   }
 
   /**
+   * Sets the carte object id.
+   * 
    * @param containerObjectId the execution container Object id to set
    */
   public void setCarteObjectId(String containerObjectId) {
@@ -3494,16 +3597,19 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
   }
 
   /**
-   * Stub
+   * Gets the registration date for the transformation. For jobMeta, this method always 
+   * returns null.
+   *
+   * @return null
    */
   public Date getRegistrationDate() {
     return null;
   }
   
   /**
-   * Checks for repository references.
+   * Checks whether the job has repository references.
    *
-   * @return true, if successful
+   * @return true if the job has repository references, false otherwise
    */
   public boolean hasRepositoryReferences() {
     for (JobEntryCopy copy : jobcopies) {
@@ -3525,6 +3631,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
   }
 
   /**
+   * Gets the repository.
+   * 
    * @return the repository
    */
   public Repository getRepository() {
@@ -3532,6 +3640,8 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
   }
 
   /**
+   * Sets the repository.
+   * 
    * @param repository the repository to set
    */
   public void setRepository(Repository repository) {

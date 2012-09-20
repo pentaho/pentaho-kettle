@@ -63,21 +63,35 @@ public class ChangedFlag implements ChangedFlagInterface
 			lobs[i].update(this, arg);
 	}
 
+    /**
+     * Sets this as being changed.
+     */
 	public void setChanged()
 	{
 		changed.set(true);
 	}
 	
+    /**
+     * Sets whether or not this has changed.
+     * @param ch true if you want to mark this as changed, false otherwise
+     */
 	public void setChanged(boolean b)
 	{
 		changed.set(b);
 	}
 
+    /**
+     * Clears the changed flags.
+     */
 	public void clearChanged()
 	{
 		changed.set(false);
 	}
 
+    /**
+     * Checks whether or not this has changed.
+     * @return true if the this has changed, false otherwise
+     */
 	public synchronized boolean hasChanged()
 	{
 		return changed.get();
