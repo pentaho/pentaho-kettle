@@ -59,7 +59,7 @@ import org.w3c.dom.Node;
    ,"BaseStep.Category.Validation"
    ,"BaseStep.Category.Statistics"
    ,"BaseStep.Category.BigData"
-   ,"BaseStep.Category.AgileBI"   
+   ,"BaseStep.Category.Agile"   
    ,"BaseStep.Category.DataQuality"
    ,"BaseStep.Category.Cryptography"   
    ,"BaseStep.Category.Palo"
