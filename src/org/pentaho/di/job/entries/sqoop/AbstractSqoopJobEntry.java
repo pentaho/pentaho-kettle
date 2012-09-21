@@ -221,7 +221,7 @@ public abstract class AbstractSqoopJobEntry<S extends SqoopConfig> extends Abstr
    * @param hadoopConfig Hadoop configuration settings. This will be additionally configured using {@link #configure(org.apache.hadoop.conf.Configuration)}.
    * @param jobResult    Result to update based on feedback from the Sqoop tool
    */
-  protected void executeSqoop(HadoopShim hadoopShim, SqoopShim shim, SqoopConfig config, Configuration hadoopConfig, Result jobResult) {
+  protected void executeSqoop(HadoopShim hadoopShim, SqoopShim shim, S config, Configuration hadoopConfig, Result jobResult) {
     // Make sure Sqoop throws exceptions instead of returning a status of 1
     System.setProperty("sqoop.throwOnError", "true");
 
@@ -251,7 +251,7 @@ public abstract class AbstractSqoopJobEntry<S extends SqoopConfig> extends Abstr
    * @throws org.pentaho.di.core.exception.KettleException
    *
    */
-  public void configure(HadoopShim shim, SqoopConfig sqoopConfig, Configuration conf) throws KettleException {
+  public void configure(HadoopShim shim, S sqoopConfig, Configuration conf) throws KettleException {
     try {
       List<String> messages = new ArrayList<String>();
       shim.configureConnectionInformation(sqoopConfig.getNamenodeHost(), sqoopConfig.getNamenodePort(),

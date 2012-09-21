@@ -23,6 +23,9 @@
 package org.pentaho.di.job.entries.sqoop;
 
 import org.pentaho.di.core.annotations.JobEntry;
+import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.hadoop.shim.api.Configuration;
+import org.pentaho.hadoop.shim.spi.HadoopShim;
 
 /**
  * Provides a way to orchestrate <a href="http://sqoop.apache.org/">Sqoop</a> imports.
@@ -48,5 +51,16 @@ public class SqoopImportJobEntry extends AbstractSqoopJobEntry<SqoopImportConfig
   @Override
   protected String getToolName() {
     return "import";
+  }
+  
+  @Override
+  public void configure(HadoopShim shim, SqoopImportConfig sqoopConfig, Configuration conf) throws KettleException {
+    super.configure(shim, sqoopConfig, conf);
+    if (sqoopConfig.getHbaseZookeeperQuorum() != null) {
+      conf.set("hbase.zookeeper.quorum", sqoopConfig.getHbaseZookeeperQuorum());
+    }
+    if (sqoopConfig.getHbaseZookeeperClientPort() != null) {
+      conf.set("hbase.zookeeper.property.clientPort", sqoopConfig.getHbaseZookeeperClientPort());
+    }
   }
 }
