@@ -60,8 +60,9 @@
     <exclude org="tomcat"/>
     <exclude org="org.mortbay.jetty"/>
     <exclude org="hsqldb" module="hsqldb"/>
+    <exclude org="com.google.guava" module="guava" />
+    <exclude conf="client" org="org.apache.hadoop.thirdparty.guava" module="guava" />
     <!-- Don't resolve any pom files -->
     <exclude type="pom"/>
-   
   </dependencies>
 </ivy-module>
