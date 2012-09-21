@@ -12,6 +12,7 @@ import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.monetdbbulkloader.MonetDBBulkLoader;
 import org.pentaho.di.trans.steps.monetdbbulkloader.MonetDBBulkLoaderData;
 import org.pentaho.di.trans.steps.monetdbbulkloader.MonetDBBulkLoaderMeta;
@@ -34,10 +35,17 @@ public class MonetDBAgileMart extends MonetDBBulkLoader implements TableManager 
 	}
 
 	@Override
+	public boolean init(StepMetaInterface smi, StepDataInterface sdi) {
+		
+		MonetDBBulkLoaderMeta stepMeta=(MonetDBBulkLoaderMeta)smi;
+		stepMeta.setAutoSchema(true);
+		stepMeta.setAutoStringWidths(true);
+		stepMeta.setTruncate(true);
+		return super.init(smi, sdi);
+	}	
+	
+	@Override
 	public boolean execute(MonetDBBulkLoaderMeta meta, boolean wait) throws KettleException {
-		meta.setAutoSchema(true);
-		meta.setAutoStringWidths(true);
-		meta.setTruncate(true);
 
 		rowLimit = ((MonetDBAgileMartMeta) meta).getRowLimit();
 		rowsWritten = 0;
@@ -51,6 +59,29 @@ public class MonetDBAgileMart extends MonetDBBulkLoader implements TableManager 
    		if (log.isDetailed()) logDetailed("MonetDBAgileMart Auto Adjust Schema flag: "+meta.isAutoSchema() );
    		if (log.isDetailed()) logDetailed("MonetDBAgileMart Auto String Length flag: "+meta.isAutoStringWidths() );
 		
+		if (log.isDetailed()) logDetailed("Creating commands" );
+		if(  meta.isAutoSchema() || meta.isTruncate() ) {
+	        try 
+	        {
+        		Runtime rt = Runtime.getRuntime();
+            	String cmd = createCommandLine(meta, false);
+	            if( meta.isAutoSchema() ) {
+	            	autoAdjustSchema( meta, rt, cmd );
+	            } else {
+	                if( meta.isTruncate() ) {
+	                	truncateTable( rt, cmd );
+	                }
+	            }
+	        }
+	        catch ( Exception ex )
+	        {
+	           	throw new KettleException("Error while generating MonetDB commands", ex);
+	        }
+		}
+		if( !meta.isAutoSchema() ) {
+			meta.updateFields(getTransMeta(), getStepname(), data);
+		}
+   		
 		return super.execute(meta, wait);
 	}
 
@@ -126,7 +157,7 @@ public class MonetDBAgileMart extends MonetDBBulkLoader implements TableManager 
 		try {
 			Runtime rt = Runtime.getRuntime();
 			String cmd = createCommandLine(meta, false);
-			autoAdjustSchema( rt, cmd );
+			autoAdjustSchema( meta, rt, cmd );
 			return true;
 		} catch (KettleException e) {
 			setMessage("Could not adjust schema for table: "+meta.getTableName() );

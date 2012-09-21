@@ -553,6 +553,35 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 			return sql;
 	}	
 
+	public RowMetaInterface updateFields( TransMeta transMeta, String stepname, MonetDBBulkLoaderData data ) throws KettleStepException {
+
+		RowMetaInterface prev = transMeta.getPrevStepFields(stepname);
+		return updateFields( prev, data );
+	}
+	
+	public RowMetaInterface updateFields( RowMetaInterface prev, MonetDBBulkLoaderData data ) {
+    	// update the field table from the fields coming from the previous step
+		RowMetaInterface tableFields = new RowMeta();
+		List<ValueMetaInterface> fields = prev.getValueMetaList();
+    	fieldTable = new String[fields.size()];
+    	fieldStream = new String[fields.size()];
+    	fieldFormatOk = new boolean[fields.size()];
+    	int idx = 0;
+    	for( ValueMetaInterface field: fields) {
+            ValueMetaInterface tableField = field.clone();
+            tableFields.addValueMeta(tableField);
+            fieldTable[idx] = field.getName();
+            fieldStream[idx] = field.getName();
+            fieldFormatOk[idx] = true;
+    	}
+    	
+		data.keynrs = new int[getFieldStream().length];
+		for (int i=0;i<data.keynrs.length;i++) {
+			data.keynrs[i] = i;
+		}                
+        return tableFields;
+	}
+	
 	public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, boolean autoSchema, MonetDBBulkLoaderData data, boolean safeMode) throws KettleStepException
 	{
 		SQLStatement retval = new SQLStatement(stepMeta.getName(), databaseMeta, null); // default: nothing to do!
@@ -562,42 +591,23 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 			if (prev!=null && prev.size()>0)
 			{
                 // Copy the row
-                RowMetaInterface tableFields = new RowMeta();
+                RowMetaInterface tableFields;
 
                 if( autoSchema ) {
-                	// update the field table from the fields coming from the previous step
-                	List<ValueMetaInterface> fields = prev.getValueMetaList();
-                	fieldTable = new String[fields.size()];
-                	fieldStream = new String[fields.size()];
-                	fieldFormatOk = new boolean[fields.size()];
-                	int idx = 0;
-                	for( ValueMetaInterface field: fields) {
-                        ValueMetaInterface tableField = field.clone();
-                        tableFields.addValueMeta(tableField);
-                        fieldTable[idx] = field.getName();
-                        fieldStream[idx] = field.getName();
-                        fieldFormatOk[idx] = true;
-                	}
-                	
-    				data.keynrs = new int[getFieldStream().length];
-    				for (int i=0;i<data.keynrs.length;i++) {
-    					data.keynrs[i] = i;
-    				}                } else {
-	                // Now change the field names
-	                for (int i=0;i<fieldTable.length;i++)
-	                {
-	                    ValueMetaInterface v = prev.searchValueMeta(fieldStream[i]);
-	                    if (v!=null)
-	                    {
-	                        ValueMetaInterface tableField = v.clone();
-	                        tableField.setName(fieldTable[i]);
-	                        tableFields.addValueMeta(tableField);
-	                    }
-	                    else
-	                    {
-	                        throw new KettleStepException("Unable to find field ["+fieldStream[i]+"] in the input rows");
-	                    }
-	                }
+                	tableFields = updateFields( prev, data );
+                } else {
+                	tableFields = new RowMeta();
+                    // Now change the field names
+                    for (int i=0;i<fieldTable.length;i++)
+                    {
+                        ValueMetaInterface v = prev.searchValueMeta(fieldStream[i]);
+                        if (v!=null)
+                        {
+                            ValueMetaInterface tableField = v.clone();
+                            tableField.setName(fieldTable[i]);
+                            tableFields.addValueMeta(tableField);
+                        }
+                    }
                 }
 	                
 				if (!Const.isEmpty(tableName))
