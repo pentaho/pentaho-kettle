@@ -68,9 +68,9 @@ public class RandomCreditCardNumberGenerator {
 	 * 
 	 * www.darkcoding.net
 	 * 
-	 * De : Graham King <graham (at) gkgk dot org> 
-	 * À : samatar hassan <sahass78 (at) yahoo dot fr>
-	 * Envoyé le : Mer 8 décembre 2010, 22h 30min 55s
+	 * From : Graham King <graham (at) gkgk dot org> 
+	 * To : samatar hassan <sahass78 (at) yahoo dot fr>
+	 * Envoye le : Mer 8 decembre 2010, 22h 30min 55s
 	 * Objet : Re: CreditCardNumberGenerator LGPL grant - Pentaho data Integration
 	 * Hi Samatar,
 	 * Thanks for getting in touch. Yes, I am happy to grant Pentaho Data
