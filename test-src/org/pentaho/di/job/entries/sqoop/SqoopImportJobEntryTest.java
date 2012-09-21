@@ -81,6 +81,7 @@ public class SqoopImportJobEntryTest {
     config.setConnect(connectValue);
     config.setTargetDir("/test-import-target");
     config.setPassword(myPassword);
+    config.setHbaseZookeeperQuorum("test-zookeeper-host");
 
     je.setJobConfig(config);
 
@@ -102,6 +103,7 @@ public class SqoopImportJobEntryTest {
     assertEquals(config.getConnect(), config2.getConnect());
     assertEquals(config.getTargetDir(), config2.getTargetDir());
     assertEquals(config.getPassword(), config2.getPassword());
+    assertEquals(config.getHbaseZookeeperQuorum(), config2.getHbaseZookeeperQuorum());
   }
 
   @Test
@@ -115,6 +117,7 @@ public class SqoopImportJobEntryTest {
     config.setBlockingPollingInterval("100");
     config.setConnect(connectValue);
     config.setTargetDir("/test-import-target");
+    config.setHbaseZookeeperQuorum("test-zookeeper-host");
 
     je.setJobConfig(config);
 
@@ -154,6 +157,7 @@ public class SqoopImportJobEntryTest {
       assertEquals(config.getBlockingPollingInterval(), config2.getBlockingPollingInterval());
       assertEquals(config.getConnect(), config2.getConnect());
       assertEquals(config.getTargetDir(), config2.getTargetDir());
+      assertEquals(config.getHbaseZookeeperQuorum(), config2.getHbaseZookeeperQuorum());
     } finally {
       // Delete test database
       new File(filename+".h2.db").delete();
@@ -174,7 +178,7 @@ public class SqoopImportJobEntryTest {
   @Test
   public void configure() throws KettleException {
     SqoopImportJobEntry je = new SqoopImportJobEntry();
-    SqoopConfig sqoopConfig = je.getJobConfig();
+    SqoopImportConfig sqoopConfig = je.getJobConfig();
     HadoopShim shim = new CommonHadoopShim();
     Configuration conf = shim.createConfiguration();
     try {
