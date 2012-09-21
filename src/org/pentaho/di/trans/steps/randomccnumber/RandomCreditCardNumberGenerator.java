@@ -3,6 +3,10 @@
  * Pentaho Data Integration
  *
  * Copyright (C) 2002-2012 by Pentaho : http://www.pentaho.com
+ * 
+ * This file is dual-licensed under the Apache Software License V2 and is
+ * also available under the terms of the GNU Lesser GPL version 2.1 as provided
+ * for by the author of the algorithm below (Dr. Graham King).
  *
  *******************************************************************************
  *
@@ -18,6 +22,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
+ ******************************************************************************/
+/******************************************************************************
+ * Copyright (c) 2006 Graham King and 2007 Pentaho Corporation.  All rights reserved. 
+ * This software was developed by Pentaho Corporation and is provided under the terms 
+ * of the GNU Lesser General Public License, Version 2.1. You may not use 
+ * this file except in compliance with the license. If you need a copy of the license, 
+ * please go to http://www.gnu.org/licenses/lgpl-2.1.txt. The Original Code is Pentaho 
+ * Data Integration.  The Initial Developer is samatar Hassan.
+ *
+ * Software distributed under the GNU Lesser Public License is distributed on an "AS IS" 
+ * basis, WITHOUT WARRANTY OF ANY KIND, either express or  implied. Please refer to 
+ * the license for the specific language governing your rights and limitations.
  ******************************************************************************/
 
 package org.pentaho.di.trans.steps.randomccnumber;
@@ -51,6 +67,18 @@ public class RandomCreditCardNumberGenerator {
 	 * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 	 * 
 	 * www.darkcoding.net
+	 * 
+	 * De : Graham King <graham (at) gkgk dot org> 
+	 * À : samatar hassan <sahass78 (at) yahoo dot fr>
+	 * Envoyé le : Mer 8 décembre 2010, 22h 30min 55s
+	 * Objet : Re: CreditCardNumberGenerator LGPL grant - Pentaho data Integration
+	 * Hi Samatar,
+	 * Thanks for getting in touch. Yes, I am happy to grant Pentaho Data
+	 * Integration an LGPL exception, meaning that solely for inclusion in
+	 * Pentaho Data Integration, the credit card code hosted at
+	 * darkcoding.net can be considered LGPL licensed.
+	 * All the best,
+	 * Graham 
 	 */
 	private static Class<?> PKG = RandomCCNumberGeneratorMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
