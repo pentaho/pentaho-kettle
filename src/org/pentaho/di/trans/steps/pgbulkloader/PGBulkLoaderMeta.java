@@ -29,6 +29,7 @@ import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
+import org.pentaho.di.core.ProvidesDatabaseConnectionInformation;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -60,7 +61,7 @@ import org.w3c.dom.Node;
  * 
  * @author Sven Boden (originally)
  */
-public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
+public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface, ProvidesDatabaseConnectionInformation
 {
 	private static Class<?> PKG = PGBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
@@ -736,5 +737,11 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void setEnclosure(String enclosure) {
 		this.enclosure = enclosure;
+	}
+
+	@Override
+	public String getMissingDatabaseConnectionInformationMessage() {
+		// TODO Auto-generated method stub
+		return null;
 	}	
 }
