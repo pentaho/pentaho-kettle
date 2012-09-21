@@ -400,13 +400,4 @@ public class HBaseInputTest {
 
     assertEquals(500, count);
   }
-
-  public static void main(String[] args) {
-    try {
-      HBaseInputTest test = new HBaseInputTest();
-      test.testTableScanTupleMapping();
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    }
-  }
 }

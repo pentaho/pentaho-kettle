@@ -213,21 +213,4 @@ public class MappingAdminTest {
 
     assertFalse(ma.mappingExists("TestTable", "TestMapping"));
   }
-
-  public static void main(String[] args) {
-    try {
-      MappingAdminTest test = new MappingAdminTest();
-      test.testCreateMappingTable();
-      test.testCreateMappingTableTwice();
-      test.testAddMapping();
-      test.testRetrieveMapping();
-      test.testRetrieveNonExistentMapping();
-      test.testGetMappedTables();
-      test.testGetMappingNames();
-      test.testAddMappingTwiceNoOverwrite();
-      test.testAddMappingTwiceOverwrite();
-    } catch (Exception ex) {
-      ex.printStackTrace();
-    }
-  }
 }

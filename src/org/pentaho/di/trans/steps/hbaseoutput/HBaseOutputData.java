@@ -25,14 +25,21 @@ package org.pentaho.di.trans.steps.hbaseoutput;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.hadoop.HadoopConfigurationBootstrap;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.hadoop.shim.HadoopConfiguration;
+import org.pentaho.hbase.shim.api.HBaseValueMeta;
+import org.pentaho.hbase.shim.api.Mapping;
+import org.pentaho.hbase.shim.spi.HBaseBytesUtilShim;
 import org.pentaho.hbase.shim.spi.HBaseConnection;
 import org.pentaho.hbase.shim.spi.HBaseShim;
 
@@ -95,6 +102,86 @@ public class HBaseOutputData extends BaseStepData implements StepDataInterface {
     conn.configureConnection(connProps, logging);
 
     return conn;
+  }
+
+  /**
+   * Sets up a new target table put operation using the connection shim
+   * 
+   * @param inRowMeta the incoming kettle row meta data
+   * @param keyIndex the index of the key in the incoming row structure
+   * @param kettleRow the current incoming kettle row
+   * @param tableMapping the HBase table mapping to use
+   * @param bu the byte util shim to use for conversion to and from byte arrays
+   * @param hbAdmin the connection shim
+   * @param writeToWAL true if the write ahead log should be written to
+   * @return false if the key is null (missing) for the current incoming kettle
+   *         row
+   * @throws Exception if a problem occurs when initializing the new put
+   *           operation
+   */
+  public static boolean initializeNewPut(RowMetaInterface inRowMeta,
+      int keyIndex, Object[] kettleRow, Mapping tableMapping,
+      HBaseBytesUtilShim bu, HBaseConnection hbAdmin, boolean writeToWAL)
+      throws Exception {
+
+    ValueMetaInterface keyvm = inRowMeta.getValueMeta(keyIndex);
+
+    if (keyvm.isNull(kettleRow[keyIndex])) {
+      return false;
+    }
+
+    byte[] encodedKey = HBaseValueMeta.encodeKeyValue(kettleRow[keyIndex],
+        keyvm, tableMapping.getKeyType(), bu);
+
+    hbAdmin.newTargetTablePut(encodedKey, writeToWAL);
+
+    return true;
+  }
+
+  /**
+   * Adds those incoming kettle field values that are defined in the table
+   * mapping for the current row to the target table put operation
+   * 
+   * @param inRowMeta the incoming kettle row meta data
+   * @param kettleRow the current incoming kettle row
+   * @param keyIndex the index of the key in the incoming row structure
+   * @param columnsMappedByAlias the columns in the table mapping
+   * @param hbAdmin the connection shim
+   * @param bu the byte util shim to use for conversion to and from byte arrays
+   * @throws KettleException if a problem occurs when adding a column to the put
+   *           operation
+   */
+  public static void addColumnsToPut(RowMetaInterface inRowMeta,
+      Object[] kettleRow, int keyIndex,
+      Map<String, HBaseValueMeta> columnsMappedByAlias,
+      HBaseConnection hbAdmin, HBaseBytesUtilShim bu) throws KettleException {
+
+    for (int i = 0; i < inRowMeta.size(); i++) {
+      ValueMetaInterface current = inRowMeta.getValueMeta(i);
+      if (i != keyIndex && !current.isNull(kettleRow[i])) {
+        HBaseValueMeta hbaseColMeta = columnsMappedByAlias.get(current
+            .getName());
+        String columnFamily = hbaseColMeta.getColumnFamily();
+        String columnName = hbaseColMeta.getColumnName();
+
+        boolean binaryColName = false;
+        if (columnName.startsWith("@@@binary@@@")) {
+          // assume hex encoded column name
+          columnName = columnName.replace("@@@binary@@@", "");
+          binaryColName = true;
+        }
+        byte[] encoded = HBaseValueMeta.encodeColumnValue(kettleRow[i],
+            current, hbaseColMeta, bu);
+
+        try {
+          hbAdmin.addColumnToTargetPut(columnFamily, columnName, binaryColName,
+              encoded);
+        } catch (Exception ex) {
+          throw new KettleException(BaseMessages.getString(HBaseOutputMeta.PKG,
+              "HBaseOutput.Error.UnableToAddColumnToTargetTablePut"), ex);
+        }
+      }
+    }
   }
 
   public static URL stringToURL(String pathOrURL) throws MalformedURLException {

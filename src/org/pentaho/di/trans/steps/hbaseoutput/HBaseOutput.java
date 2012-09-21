@@ -277,60 +277,31 @@ public class HBaseOutput extends BaseStep implements StepInterface {
     }
 
     // Put the data
-
-    // first deal with the key
-    // key must not be missing!
-    ValueMetaInterface keyvm = getInputRowMeta().getValueMeta(
-        m_incomingKeyIndex);
-    if (keyvm.isNull(r[m_incomingKeyIndex])) {
-      String errorDescriptions = BaseMessages.getString(HBaseOutputMeta.PKG,
-          "HBaseOutput.Error.IncomingRowHasNullKeyValue");
-      if (getStepMeta().isDoingErrorHandling()) {
-        String errorFields = m_tableMapping.getKeyName();
-        putError(getInputRowMeta(), r, 1, errorDescriptions, errorFields,
-            "HBaaseOutput001");
-      } else {
-        throw new KettleException(errorDescriptions);
-      }
-    }
-
-    byte[] encodedKey = HBaseValueMeta.encodeKeyValue(r[m_incomingKeyIndex],
-        keyvm, m_tableMapping.getKeyType(), m_bytesUtil);
-
     try {
-      m_hbAdmin.newTargetTablePut(encodedKey, !m_meta.getDisableWriteToWAL());
+      // key must not be null
+      if (!HBaseOutputData.initializeNewPut(getInputRowMeta(),
+          m_incomingKeyIndex, r, m_tableMapping, m_bytesUtil, m_hbAdmin,
+          !m_meta.getDisableWriteToWAL())) {
+        String errorDescriptions = BaseMessages.getString(HBaseOutputMeta.PKG,
+            "HBaseOutput.Error.IncomingRowHasNullKeyValue");
+        if (getStepMeta().isDoingErrorHandling()) {
+          String errorFields = m_tableMapping.getKeyName();
+          putError(getInputRowMeta(), r, 1, errorDescriptions, errorFields,
+              "HBaaseOutput001");
+
+          return true;
+        } else {
+          throw new KettleException(errorDescriptions);
+        }
+      }
     } catch (Exception ex) {
       throw new KettleException(BaseMessages.getString(HBaseOutputMeta.PKG,
           "HBaseOutput.Error.UnableToSetTargetTable"), ex);
     }
 
     // now encode the rest of the fields. Nulls do not get inserted of course
-    for (int i = 0; i < getInputRowMeta().size(); i++) {
-      ValueMetaInterface current = getInputRowMeta().getValueMeta(i);
-      if (i != m_incomingKeyIndex && !current.isNull(r[i])) {
-        HBaseValueMeta hbaseColMeta = m_columnsMappedByAlias.get(current
-            .getName());
-        String columnFamily = hbaseColMeta.getColumnFamily();
-        String columnName = hbaseColMeta.getColumnName();
-
-        boolean binaryColName = false;
-        if (columnName.startsWith("@@@binary@@@")) {
-          // assume hex encoded column name
-          columnName = columnName.replace("@@@binary@@@", "");
-          binaryColName = true;
-        }
-        byte[] encoded = HBaseValueMeta.encodeColumnValue(r[i], current,
-            hbaseColMeta, m_bytesUtil);
-
-        try {
-          m_hbAdmin.addColumnToTargetPut(columnFamily, columnName,
-              binaryColName, encoded);
-        } catch (Exception ex) {
-          throw new KettleException(BaseMessages.getString(HBaseOutputMeta.PKG,
-              "HBaseOutput.Error.UnableToAddColumnToTargetTablePut"), ex);
-        }
-      }
-    }
+    HBaseOutputData.addColumnsToPut(getInputRowMeta(), r, m_incomingKeyIndex,
+        m_columnsMappedByAlias, m_hbAdmin, m_bytesUtil);
 
     try {
       m_hbAdmin.executeTargetTablePut();
