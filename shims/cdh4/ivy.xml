@@ -28,7 +28,6 @@
     <dependency conf="client->default" org="org.apache.hadoop" name="hadoop-client" rev="${dependency.hadoop.revision}"/>
 
     <dependency conf="pmr->default" org="org.apache.hbase" name="hbase" rev="${dependency.apache-hbase.revision}" transitive="false"/>
-    <dependency conf="pmr->default" org="org.apache.zookeeper" name="zookeeper" rev="${dependency.apache-zookeeper.revision}" transitive="false"/>
 
     <dependency org="pentaho" name="pentaho-hdfs-vfs" rev="${dependency.pentaho-hdfs-vfs.revision}" transitive="false" changing="true"/>
     <!-- Our modified Hive driver (need to include it until changes are accepted into main Hive project) -->
