@@ -22,7 +22,10 @@
 
 package org.pentaho.di.job.entries.sqoop;
 
+import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.job.ArgumentWrapper;
 import org.pentaho.di.job.CommandLineArgument;
+import org.pentaho.ui.xul.util.AbstractModelList;
 
 /**
  * Configuration for a Sqoop Import
@@ -70,6 +73,8 @@ public class SqoopImportConfig extends SqoopConfig {
   public static final String HBASE_CREATE_TABLE = "hbaseCreateTable";
   public static final String HBASE_ROW_KEY = "hbaseRowKey";
   public static final String HBASE_TABLE = "hbaseTable";
+  public static final String HBASE_ZOOKEEPER_QUORUM = "hbaseZookeeperQuorum";
+  public static final String HBASE_ZOOKEEPER_CLIENT_PORT = "hbaseZookeeperClientPort";
 
   // Import control arguments
   @CommandLineArgument(name = "target-dir")
@@ -148,6 +153,10 @@ public class SqoopImportConfig extends SqoopConfig {
   private String hbaseRowKey;
   @CommandLineArgument(name = "hbase-table")
   private String hbaseTable;
+
+  // Non command line arguments for configuring HBase connection information
+  private String hbaseZookeeperQuorum;
+  private String hbaseZookeeperClientPort;
 
   public String getTargetDir() {
     return targetDir;
@@ -497,5 +506,51 @@ public class SqoopImportConfig extends SqoopConfig {
     String old = this.hbaseTable;
     this.hbaseTable = hbaseTable;
     pcs.firePropertyChange(HBASE_TABLE, old, this.hbaseTable);
+  }
+  
+  public String getHbaseZookeeperQuorum() {
+    return hbaseZookeeperQuorum;
+  }
+  
+  public void setHbaseZookeeperQuorum(String hbaseZookeeperQuorum) {
+    String old = this.hbaseZookeeperQuorum;
+    this.hbaseZookeeperQuorum = hbaseZookeeperQuorum;
+    pcs.firePropertyChange(HBASE_ZOOKEEPER_QUORUM, old, this.hbaseZookeeperQuorum);
+  }
+  
+  public String getHbaseZookeeperClientPort() {
+    return hbaseZookeeperClientPort;
+  }
+  
+  public void setHbaseZookeeperClientPort(String hbaseZookeeperClientPort) {
+    String old = this.hbaseZookeeperClientPort;
+    this.hbaseZookeeperClientPort = hbaseZookeeperClientPort;
+    pcs.firePropertyChange(HBASE_ZOOKEEPER_CLIENT_PORT, old, this.hbaseZookeeperClientPort);
+  }
+  
+  @Override
+  public AbstractModelList<ArgumentWrapper> getAdvancedArgumentsList() {
+    AbstractModelList<ArgumentWrapper> items = super.getAdvancedArgumentsList();
+
+    // Simple O(N) list walk to find the last index of HBase properties so we can
+    // group the zookeeper properties with them
+    int index = items.size();
+    int i = 0;
+    for (; i < items.size(); i ++) {
+      if (items.get(i).getName().startsWith("hbase")) {
+        index = i + 1; // Add after this guy
+      }
+    }
+
+    try {
+      items.add(index, new ArgumentWrapper(HBASE_ZOOKEEPER_QUORUM, BaseMessages.getString(getClass(), "HBaseZookeeperQuorum.Label"), false, this,
+          getClass().getMethod("getHbaseZookeeperQuorum"), getClass().getMethod("setHbaseZookeeperQuorum", String.class)));
+      items.add(index + 1, new ArgumentWrapper(HBASE_ZOOKEEPER_CLIENT_PORT, BaseMessages.getString(getClass(), "HBaseZookeeperClientPort.Label"), false, this,
+          getClass().getMethod("getHbaseZookeeperClientPort"), getClass().getMethod("setHbaseZookeeperClientPort", String.class)));
+    } catch (NoSuchMethodException ex) {
+      throw new RuntimeException(ex);
+    }
+
+    return items;
   }
 }
