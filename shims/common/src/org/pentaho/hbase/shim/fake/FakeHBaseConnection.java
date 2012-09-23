@@ -36,6 +36,14 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.pentaho.di.core.variables.VariableSpace;
+import org.pentaho.hadoop.shim.ShimVersion;
+import org.pentaho.hbase.shim.api.ColumnFilter;
+import org.pentaho.hbase.shim.api.HBaseValueMeta;
+import org.pentaho.hbase.shim.common.CommonHBaseBytesUtil;
+import org.pentaho.hbase.shim.spi.HBaseBytesUtilShim;
+import org.pentaho.hbase.shim.spi.HBaseConnection;
+
 import org.pentaho.hbase.shim.common.CommonHBaseBytesUtil;
 
 /**
