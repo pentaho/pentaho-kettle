@@ -2337,7 +2337,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             item.setDisabled(!stepMeta.supportsErrorHandling());
             
            
-          ConstUI.displayMenu((Menu)menu.getManagedObject(), canvas);
+          ConstUI.displayMenu(menu, canvas);
         }
       } else {
         final TransHopMeta hi = findHop(x, y);
@@ -2355,7 +2355,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
               }
             }
 
-            ConstUI.displayMenu((Menu)menu.getManagedObject(), canvas);
+            ConstUI.displayMenu(menu, canvas);
           }
         } else {
           // Clicked on the background: maybe we hit a note?
@@ -2365,7 +2365,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
             XulMenupopup menu = menuMap.get("trans-graph-note"); //$NON-NLS-1$
             if (menu != null) {
-              ConstUI.displayMenu((Menu)menu.getManagedObject(), canvas);
+              ConstUI.displayMenu(menu, canvas);
             }
           } else {
             XulMenupopup menu = menuMap.get("trans-graph-background"); //$NON-NLS-1$
@@ -2375,7 +2375,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
               if (item != null) {
                 item.setDisabled(clipcontent == null);
               }
-              ConstUI.displayMenu((Menu)menu.getManagedObject(), canvas);
+              ConstUI.displayMenu(menu, canvas);
             }
 
           }

@@ -387,7 +387,7 @@ public class SpoonDBDelegate extends SpoonDelegate
       String tostepname = BaseMessages.getString(PKG, "Spoon.Message.Note.WriteToTable", tablename);
       TableOutputMeta toi = new TableOutputMeta();
       toi.setDatabaseMeta(targetDBInfo);
-      toi.setTablename(tablename);
+      toi.setTableName(tablename);
       toi.setCommitSize(200);
       toi.setTruncateTable(true);
 

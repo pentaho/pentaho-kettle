@@ -1760,7 +1760,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
           item.setSelected(jobEntry.isLaunchingInParallel());
         }
 
-        ConstUI.displayMenu((Menu)menu.getManagedObject(), canvas);
+        ConstUI.displayMenu(menu, canvas);
       }
 
     } else // Clear the menu
@@ -1816,7 +1816,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
             else
               miDisHop.setLabel(BaseMessages.getString(PKG, "JobGraph.PopupMenu.Hop.Enable")); //$NON-NLS-1$
           }
-          ConstUI.displayMenu((Menu)menu.getManagedObject(), canvas);
+          ConstUI.displayMenu(menu, canvas);
         }
 
       } else {
@@ -1826,7 +1826,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
         if (ni != null) {
           XulMenupopup menu = (XulMenupopup) doc.getElementById("job-graph-note");
           if (menu != null) {
-            ConstUI.displayMenu((Menu)menu.getManagedObject(), canvas);
+            ConstUI.displayMenu(menu, canvas);
           }
         } else {
           XulMenupopup menu = (XulMenupopup) doc.getElementById("job-graph-background");
@@ -1837,7 +1837,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
               item.setDisabled(clipcontent == null);
             }
 
-            ConstUI.displayMenu((Menu)menu.getManagedObject(), canvas);
+            ConstUI.displayMenu(menu, canvas);
           }
         }
       }

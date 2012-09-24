@@ -48,8 +48,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.vfs.FileObject;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
+import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.jface.window.DefaultToolTip;
 import org.eclipse.jface.window.ToolTip;
 import org.eclipse.jface.wizard.Wizard;
@@ -100,7 +102,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Sash;
 import org.eclipse.swt.widgets.Shell;
@@ -289,9 +290,11 @@ import org.pentaho.ui.xul.containers.XulMenupopup;
 import org.pentaho.ui.xul.containers.XulToolbar;
 import org.pentaho.ui.xul.containers.XulVbox;
 import org.pentaho.ui.xul.impl.XulEventHandler;
+import org.pentaho.ui.xul.jface.tags.ApplicationWindowLocal;
+import org.pentaho.ui.xul.jface.tags.JfaceMenuitem;
+import org.pentaho.ui.xul.jface.tags.JfaceMenupopup;
 import org.pentaho.ui.xul.swt.SwtXulLoader;
 import org.pentaho.ui.xul.swt.tags.SwtDeck;
-import org.pentaho.ui.xul.swt.tags.SwtMenupopup;
 import org.pentaho.ui.xul.swt.tags.SwtToolbarbutton;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 import org.pentaho.xul.swt.tab.TabItem;
@@ -307,8 +310,8 @@ import org.w3c.dom.Node;
  * @author Matt
  * @since 16-may-2003, i18n at 07-Feb-2006, redesign 01-Dec-2006
  */
-public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterface, OverwritePrompter, PDIObserver,
-    LifeEventHandler, XulEventSource, XulEventHandler {
+public class Spoon extends ApplicationWindow implements AddUndoPositionInterface, TabListener, SpoonInterface, OverwritePrompter, PDIObserver,
+    LifeEventHandler, XulEventSource, XulEventHandler, Listener {
 
   private static Class<?> PKG = Spoon.class;
 
@@ -503,6 +506,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   // the id of the perspective to start in, if any
   protected String startupPerspective = null;
 
+  private CommandLineOption[] commandLineOptions;  
+  
   /**
    * This is the main procedure for Spoon.
    * 
@@ -514,12 +519,19 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     try {
       // Bootstrap Kettle
       //
+          //  We start Sleak if the VM argument RUN_SLEAK was provided
       Display display = null;
       if (System.getProperties().containsKey("SLEAK")) {
       	DeviceData data = new DeviceData();
         data.tracking = true;
         display = new Display(data);
-      }
+             Sleak sleak = new Sleak();
+  		Shell sleakShell = new Shell(display);
+  		sleakShell.setText ("S-Leak");
+  		org.eclipse.swt.graphics.Point size = sleakShell.getSize();
+  		sleakShell.setSize (size.x / 2, size.y / 2);
+  		sleak.create(sleakShell);
+  		sleakShell.open();      }
       else {
       	display = new Display();
       }
@@ -546,32 +558,31 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
       // remember...
 
-      staticSpoon = new Spoon(display);
+          staticSpoon = new Spoon((Display) null);
+          staticSpoon.commandLineOptions = commandLineOptions;
       // pull the startup perspective id from the command line options and hand it to Spoon
       String pId = null;
       StringBuffer perspectiveIdBuff = Spoon.getCommandLineOption(commandLineOptions, "perspective").getArgument();
       pId = perspectiveIdBuff.toString();
       if( !pId.equals("") ) {
-      	staticSpoon.startupPerspective = pId;
+      	Spoon.staticSpoon.startupPerspective = pId;
       }
-      staticSpoon.init(null);
       SpoonFactory.setSpoonInstance(staticSpoon);
       staticSpoon.setDestroy(true);
       GUIFactory.setThreadDialogs(new ThreadGuiResources());
 
-      // listeners
-      //
-      try {
-        staticSpoon.lifecycleSupport.onStart(staticSpoon);
-      } catch (LifecycleException e) {
-        // if severe, we have to quit
-        MessageBox box = new MessageBox(staticSpoon.shell, (e.isSevere() ? SWT.ICON_ERROR : SWT.ICON_WARNING) | SWT.OK);
-        box.setMessage(e.getMessage());
-        box.open();
-      }
+          staticSpoon.setArguments(args.toArray(new String[args.size()]));
 
-      staticSpoon.setArguments(args.toArray(new String[args.size()]));
-      staticSpoon.start(commandLineOptions);
+          staticSpoon.start();
+/*          
+          // app.start() blocks, so we need to start it in a new thread.
+          Display.getDefault().syncExec(new Runnable() {
+              @Override
+              public void run() {
+                  staticSpoon.start();
+              }
+          });
+*/
     } catch (Throwable t) {
       // avoid calls to Messages i18n method getString() in this block
       // We do this to (hopefully) also catch Out of Memory Exceptions
@@ -622,44 +633,24 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
   }
 
   public Spoon(Display d, Repository rep) {
+	  super(null);
 	  
-	Boolean useSleak = System.getProperties().containsKey("SLEAK");
+	  this.addMenuBar();
+	  
     log = new LogChannel(APP_NAME);
     SpoonFactory.setSpoonInstance(this);
     setRepository(rep);
-
-    if (d != null) {
-      display = d;
-      destroy = false;
-    } else {
-      if (useSleak) {
-        DeviceData data = new DeviceData();
-        data.tracking = true;
-        display = new Display(data);
-      } else {
-    	display = new Display();
-      }
-      destroy = true;
-    }
 
     props = PropsUI.getInstance();
 
     sharedObjectsFileMap = new Hashtable<String, SharedObjects>();
 
-    shell = new Shell(display);
-    shell.setText(APPL_TITLE);
+    Thread uiThread= Thread.currentThread();
+    
+    display = Display.findDisplay(uiThread);
+    
     staticSpoon = this;
 
-    if (useSleak) {
-  		Sleak sleak = new Sleak ();
-  		Shell sleakShell = new Shell(display);
-  		sleakShell.setText ("S-Leak");
-  		org.eclipse.swt.graphics.Point size = sleakShell.getSize();
-  		sleakShell.setSize (size.x / 2, size.y / 2);
-  		sleak.create(sleakShell);
-  		sleakShell.open();
-     }
-    
     try {
       JndiUtil.initJNDI();
     } catch (Exception e) {
@@ -731,6 +722,8 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       xulLoader.setOuterContext(shell);
       xulLoader.setSettingsManager(XulSpoonSettingsManager.getInstance());
 
+	  ApplicationWindowLocal.setApplicationWindow(this);
+      
       mainSpoonContainer = xulLoader.loadXul(XUL_FILE_MAIN, new XulSpoonResourceBundle());
 
       bf = new DefaultBindingFactory();
@@ -954,10 +947,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     } catch (KettleException e) {
       log.logError("Error loading perspective", e);
     }
-  }
-
-  public Shell getShell() {
-    return shell;
   }
 
   public static Spoon getInstance() {
@@ -1208,13 +1197,16 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     esd.open();
   }
 
-  public void open() {
-    shell.open();
+  public void openSpoon() {
+    shell = getShell();
+    shell.setText(APPL_TITLE);
     mainComposite.setRedraw(true);
     mainComposite.setVisible(false);
     mainComposite.setVisible(true);
     mainComposite.redraw();
 
+    shell.getDisplay().addListener(SWT.Close, this);
+    
     // Perhaps the transformation contains elements at startup?
     refreshTree(); // Do a complete refresh then...
 
@@ -1589,7 +1581,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         accessText = null;
       }
 
-      XulMenuitem miFileLast = ((SwtMenupopup) recentFilesPopup).createNewMenuitem();
+      XulMenuitem miFileLast = ((JfaceMenupopup) recentFilesPopup).createNewMenuitem();
 
       // shorten the filename if necessary
       int targetLength = 40;
@@ -1613,11 +1605,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       miFileLast.setAccesskey(accessKey);
 
       if (lastUsedFile.isTransformation()) {
-        MenuItem item = (MenuItem) miFileLast.getManagedObject();
-        item.setImage(GUIResource.getInstance().getImageTransGraph());
+    	  ((JfaceMenuitem) miFileLast).setImage(GUIResource.getInstance().getImageTransGraph());
       } else if (lastUsedFile.isJob()) {
-        MenuItem item = (MenuItem) miFileLast.getManagedObject();
-        item.setImage(GUIResource.getInstance().getImageJobGraph());
+    	  ((JfaceMenuitem) miFileLast).setImage(GUIResource.getInstance().getImageJobGraph());
       }
       miFileLast.setCommand("spoon.lastFileSelect('" + i + "')");
     }
@@ -2787,7 +2777,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
     }
     if (spoonMenu != null) {
-      ConstUI.displayMenu((org.eclipse.swt.widgets.Menu) spoonMenu.getManagedObject(), tree);
+      ConstUI.displayMenu(spoonMenu, tree);
     } else
       tree.setMenu(null);
   }
@@ -4315,9 +4305,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       box.open();
     }
 
-    if (exit)
-      dispose();
-
+    if (exit) {
+    	close();
+    }
     return exit;
   }
 
@@ -5972,8 +5962,21 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     if(mainSpoonContainer != null) {
       doc = mainSpoonContainer.getDocumentRoot();
       if(doc != null) {
-        XulMenu menu = (XulMenu) doc.getElementById("action");
-        menu.setVisible(etlPerspective);
+
+    	if( etlPerspective ) {
+	    	((XulMenu) doc.getElementById("file")).setVisible(etlPerspective);
+	        ((XulMenu) doc.getElementById("edit")).setVisible(etlPerspective);
+	        ((XulMenu) doc.getElementById("view")).setVisible(etlPerspective);
+	        ((XulMenu) doc.getElementById("action")).setVisible(etlPerspective);
+	        ((XulMenu) doc.getElementById("tools")).setVisible(etlPerspective);
+	        ((XulMenu) doc.getElementById("help")).setVisible(etlPerspective);
+	        
+	        ((XulMenuitem) doc.getElementById("help-tip")).setVisible(etlPerspective);
+	        ((XulMenuitem) doc.getElementById("help-welcome")).setVisible(etlPerspective);
+	        ((XulMenuitem) doc.getElementById("help-step-plugins")).setVisible(etlPerspective);
+	        ((XulMenuitem) doc.getElementById("help-jobentry-plugins")).setVisible(etlPerspective);
+	        
+    	}
         // Only enable certain menu-items if we need to.
         disableMenuItem(doc, "file-new-database", disableTransMenu && disableJobMenu || !isRepositoryRunning);
         disableMenuItem(doc, "file-save", disableTransMenu && disableJobMenu && disableMetaMenu || disableSave);
@@ -6034,6 +6037,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         
         SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.MENUS_REFRESHED);
 
+    	MenuManager menuManager = getMenuBarManager();
+    	menuManager.updateAll(true);
+        
         // What steps & plugins to show?
         refreshCoreObjects();
 
@@ -6977,10 +6983,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     //
     handleStartOptions(options);
     
-    // Open the spoon application
-    //
-    open();
-    
     // Load the last loaded files
     //
     loadLastUsedFiles();
@@ -7000,6 +7002,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     }
     if (splash != null) {
       splash.dispose();
+      splash = null;
     }
 
     //  If we are a MILESTONE or RELEASE_CANDIDATE    
@@ -7012,7 +7015,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
           .getString(PKG, "Spoon.Warning.DevelopmentRelease.Message", Const.CR, Const.VERSION));
       dialog.open();
     }
+  }
 
+  private void waitForDispose() {
     boolean retryAfterError = false; // Enable the user to retry and
     // continue after fatal error
     do {
@@ -7020,8 +7025,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
       // it will loop forever after
       // closing Spoon
       try {
-
-        while (!isDisposed()) {
+        while (getShell() != null && !getShell().isDisposed()) {
           if (!readAndDispatch())
             sleep();
         }
@@ -7043,7 +7047,9 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
           // anyting more here
         }
       }
-    } while (retryAfterError);
+    } 
+    while (retryAfterError);
+    if (!display.isDisposed()) display.update();
     dispose();
     if (log.isBasic())
       log.logBasic(APP_NAME + " " + BaseMessages.getString(PKG, "Spoon.Log.AppHasEnded"));// " has ended."
@@ -7851,9 +7857,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
 
     final StringBuffer answer = new StringBuffer("N");
 
-    display.syncExec(new Runnable() {
-
-      public void run() {
         int flags = SWT.OK;
         if (allowCancel) {
           flags |= SWT.CANCEL;
@@ -7870,7 +7873,7 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
             break;
         }
 
-        Shell shell = new Shell(display);
+//        Shell shell = super.createShell();
         MessageBox mb = new MessageBox(shell, flags);
         // Set the Body Message
         mb.setMessage(message);
@@ -7879,8 +7882,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
         if (mb.open() == SWT.OK) {
           answer.setCharAt(0, 'Y');
         }
-      }
-    });
 
     return "Y".equalsIgnoreCase(answer.toString());
   }
@@ -8212,8 +8213,6 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     public void hideSplash() {
        if (splash!=null) {
           splash.hide();
-          splash.dispose();
-          splash = null;
        }
     }
     
@@ -8231,8 +8230,80 @@ public class Spoon implements AddUndoPositionInterface, TabListener, SpoonInterf
     	mainToolbar.setVisible(visible);
     }
     
+    public void setMenuBarVisible( boolean visible ) {
+    	mainSpoonContainer.getDocumentRoot().getElementById("edit").setVisible(visible);
+    	mainSpoonContainer.getDocumentRoot().getElementById("file").setVisible(visible);
+    	mainSpoonContainer.getDocumentRoot().getElementById("view").setVisible(visible);
+    	mainSpoonContainer.getDocumentRoot().getElementById("action").setVisible(visible);
+    	mainSpoonContainer.getDocumentRoot().getElementById("tools").setVisible(visible);
+    	mainSpoonContainer.getDocumentRoot().getElementById("help").setVisible(visible);
+    	
+    	MenuManager menuManager = getMenuBarManager();
+    	menuManager.getMenu().setVisible(visible);
+    	menuManager.updateAll(true);
+    }
+    
+    @Override
+    protected Control createContents(Composite parent) {
+
+    		shell = getShell();
+
+        init(null);
+        
+        openSpoon();
+
+        // listeners
+        //
+        try {
+        	lifecycleSupport.onStart(this);
+        } catch (LifecycleException e) {
+          // if severe, we have to quit
+          MessageBox box = new MessageBox(shell, (e.isSevere() ? SWT.ICON_ERROR : SWT.ICON_WARNING) | SWT.OK);
+          box.setMessage(e.getMessage());
+          box.open();
+        }
+
+        try {
+            start(commandLineOptions);
+  	} catch (KettleException e) {
+          MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+          box.setMessage(e.getMessage());
+          box.open();
+  	}
+        getMenuBarManager().updateAll(true);
+        
+        return parent;
+    }
+     
+    public void start() {
+        // We store the UI thread for the getDisplay() method
+        setBlockOnOpen(false);
+        try {
+        	open();
+        	waitForDispose();
+//        	runEventLoop2(getShell());
+        } catch (Throwable e) {
+        	e.printStackTrace();
+        }
+        System.out.println("stopping");
+    }
+    
+	@Override
+	public void handleEvent(Event event) {
+		if( event.type == SWT.Close ) {
+			// time to shut down, the window close button has been pressed
+	        try {
+	        	event.doit = quitFile();
+	          } catch (KettleException e1) {
+	            // TODO Auto-generated catch block
+	            e1.printStackTrace();
+	          }
+	          SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.SHUTDOWN);
+		}
+		
+	}    
+	
 	public String getStartupPerspective() {
 		return startupPerspective;
 	}
-    
 }
