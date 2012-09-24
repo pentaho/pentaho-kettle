@@ -463,7 +463,14 @@ public class GPLoad extends BaseStep implements StepInterface
 	            }
 	            
 	         }
-	         return KettleVFS.getFilename(fileObject);
+	      
+	         //  if Windows is the OS
+	         if (Const.getOS().startsWith("Windows")) {
+	             return addQuotes(pathToFile);
+	         }
+	         else  {
+	        	 return KettleVFS.getFilename(fileObject);
+	         }
 	      }
 	      catch (FileSystemException fsex) 
 	      {
@@ -483,33 +490,43 @@ public class GPLoad extends BaseStep implements StepInterface
 	 * 
 	 * @throws KettleException Upon any exception
 	 */
-	public String createCommandLine(GPLoadMeta meta, boolean password) throws KettleException
-	{
-	   StringBuffer sbCommandLine = new StringBuffer(300);
+	public String createCommandLine(GPLoadMeta meta, boolean password) throws KettleException {
+
+		StringBuffer sbCommandLine = new StringBuffer(300);
 	   
-	   //  get path to the executable
-	   sbCommandLine.append(getPath(meta.getGploadPath(), BaseMessages.getString(PKG, "GPLoad.Exception.GPLoadPathMisssing"), true));
-	   
-	   //  get the path to the control file
-	   sbCommandLine.append(" -f ");
-	   sbCommandLine.append(getPath(meta.getControlFile(), BaseMessages.getString(PKG, "GPLoad.Exception.ControlFilePathMissing"), false));
-	   
-	   //  get the path to the log file, if specified
-	   String logfile = meta.getLogFile();
-	   if (!Const.isEmpty(logfile)) {
-   	  sbCommandLine.append(" -l ");
-	     sbCommandLine.append(getPath(meta.getLogFile(), BaseMessages.getString(PKG, "GPLoad.Exception.LogFilePathMissing"), false));
-	   } 
-	   return sbCommandLine.toString(); 
+	    if (Const.getOS().startsWith("Windows")) { 
+	    	sbCommandLine.append("cmd /c ");
+	    }
+		   
+		//  get path to the executable
+	    sbCommandLine.append(getPath(meta.getGploadPath(), BaseMessages.getString(PKG, "GPLoad.Exception.GPLoadPathMisssing"), true));
+		   
+		//  get the path to the control file
+	    sbCommandLine.append(" -f ");
+	    sbCommandLine.append(getPath(meta.getControlFile(), BaseMessages.getString(PKG, "GPLoad.Exception.ControlFilePathMissing"), false));
+		   
+		//  get the path to the log file, if specified
+		String logfile = meta.getLogFile();
+		if (!Const.isEmpty(logfile)) {
+			sbCommandLine.append(" -l ");
+			sbCommandLine.append(getPath(meta.getLogFile(), BaseMessages.getString(PKG, "GPLoad.Exception.LogFilePathMissing"), false));
+		}
+  	    return sbCommandLine.toString();
 	}
 	
 	public boolean execute(GPLoadMeta meta, boolean wait) throws KettleException
 	{
+		String commandLine = null;
         Runtime rt = Runtime.getRuntime();
+        int gpLoadExitVal = 0;
 
-        try  
-        {
-            gploadProcess = rt.exec(createCommandLine(meta, true));
+        try  { 
+        	
+        	commandLine = createCommandLine(meta, true);
+        	logBasic("Executing: "+commandLine);
+
+        	gploadProcess = rt.exec(commandLine);
+            
             // any error message?
             StreamLogger errorLogger = new 
                 StreamLogger(gploadProcess.getErrorStream(), "ERROR");
@@ -525,14 +542,20 @@ public class GPLoad extends BaseStep implements StepInterface
             if ( wait ) 
             {
                 // any error???
-            	int exitVal = gploadProcess.waitFor();
-				logBasic(BaseMessages.getString(PKG, "GPLoad.Log.ExitValuePsqlPath", "" + exitVal)); //$NON-NLS-1$
+            	gpLoadExitVal = gploadProcess.waitFor();
+				logBasic(BaseMessages.getString(PKG, "GPLoad.Log.ExitValuePsqlPath", "" + gpLoadExitVal)); //$NON-NLS-1$
+                if (gpLoadExitVal != -0) {
+                	throw new KettleException(BaseMessages.getString(PKG, "GPLoad.Log.ExitValuePsqlPath", "" + gpLoadExitVal)); //$NON-NLS-1$)
+                }
             }
+        }
+        catch (KettleException ke) {
+        	throw ke;
         }
         catch ( Exception ex )
         {
         	// Don't throw the message upwards, the message contains the password.
-        	throw new KettleException("Error while executing \'" + createCommandLine(meta, false) + "\'");
+        	throw new KettleException("Error while executing \'" + commandLine + "\'. Exit value = " + gpLoadExitVal);
         }
         
         return true;
@@ -699,4 +722,17 @@ public class GPLoad extends BaseStep implements StepInterface
 	       }
 	    }
 	}	
+	
+	/**
+	 * Adds quotes to the passed string if the OS is Windows and there is at least one space .
+	 * @param string
+	 * @return
+	 */
+	private String addQuotes(String string) {
+		if (Const.getOS().startsWith("Windows") && string.indexOf(" ") != -1) {
+			string = "\"" + string + "\"";			
+		}
+		return string;
+	}
+	
 }
