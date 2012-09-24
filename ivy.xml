@@ -106,6 +106,7 @@
     <dependency org="pentaho" name="pentaho-hadoop-shims-hadoop-20" rev="${project.revision}" conf="test->default" changing="true" />
     <dependency org="pentaho" name="pentaho-hadoop-shims-hadoop-20-mapred" rev="${project.revision}" conf="test->default" changing="true" />
     <dependency org="org.jboss.shrinkwrap" name="shrinkwrap-impl-base" rev="1.0.0-alpha-12" conf="test->default" />
+    <dependency org="org.eclipse.equinox" name="common" rev="3.3.0-v20070426" changing="false" conf="test->default" transitive="false" />
 
     <!--                                                                                              -->
     <!--                                                                                              -->
