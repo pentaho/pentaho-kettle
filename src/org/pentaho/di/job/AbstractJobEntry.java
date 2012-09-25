@@ -203,18 +203,10 @@ public abstract class AbstractJobEntry<T extends BlockableJobConfig> extends Job
   }
 
   public VariableSpace getVariableSpace() {
-    try {
-      if (Spoon.getInstance().getActiveJob() != null) {
-        return Spoon.getInstance().getActiveJob();
-      } else {
-        if(variables != null) return variables;
-        else return new Variables();
-      }
-    } catch (NullPointerException npe) {
-      // probably in unit testing mode, without init'ing spoon
-      if(variables != null) return variables;
-      else return new Variables();
-    }
+    // These variables must be set on this job entry prior to retrieval.
+    // Today this happens as part of job execution via the Kettle job execution engine
+    // or in the controller's open() method.
+    return variables;
   }
 
   /**
