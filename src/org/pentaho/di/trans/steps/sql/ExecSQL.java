@@ -141,7 +141,6 @@ public class ExecSQL extends BaseStep implements StepInterface
 				{
 					if(i==0) 
 					{
-						System.out.println("---------------------------->");
 						// Define parameters meta
 						data.paramsMeta = new RowMeta();
 					}
