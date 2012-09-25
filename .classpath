@@ -21,16 +21,13 @@
 	<classpathentry exported="true" kind="lib" path="libext/commons/commons-codec-1.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/commons/commons-collections-3.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/commons/commons-dbcp-1.2.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/commons/commons-fileupload-1.0.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/commons/commons-fileupload-1.2.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/commons/commons-httpclient-3.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/commons/commons-logging-1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/commons/commons-net-1.4.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/commons/commons-pool-1.3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/web/simple-jndi-0.11.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/JDBC/db2jcc_license_cu.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/JDBC/db2jcc.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/JDBC/hsqldb.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/JDBC/ifxjdbc.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/JDBC/interclient.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/JDBC/jaybird-full-2.1.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/JDBC/jt400.jar"/>
@@ -57,10 +54,10 @@
 	<classpathentry exported="true" kind="lib" path="libext/feeds/georss-rome-0.9.8.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/feeds/jdom.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/feeds/feed4j.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/feeds/nekohtml.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/feeds/nekohtml-1.9.7.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/feeds/xml-apis-1.4.01.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/salesforce/axis.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/salesforce/jaxrpc.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/salesforce/jaxrpc-api-1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/janino.jar" sourcepath="libext-src/janino-2.5.16-src.zip"/>
 	<classpathentry exported="true" kind="lib" path="libext/SNMP4J.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/jcifs-1.3.3.jar"/>
@@ -124,25 +121,25 @@
 	<classpathentry exported="true" kind="lib" path="libext/reporting/axis2-adb-1.4.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/axis2-kernel-1.4.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/barbecue-1.5-beta1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/batik-awt-util-1.6.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/batik-bridge-1.6.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/batik-css-1.6.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/batik-dom-1.6.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/batik-ext-1.6.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/batik-gui-util-1.6.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/batik-gvt-1.6.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/batik-parser-1.6.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/batik-script-1.6.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/batik-svg-dom-1.6.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/batik-util-1.6.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/batik-xml-1.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/reporting/batik-awt-util-1.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/reporting/batik-bridge-1.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/reporting/batik-css-1.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/reporting/batik-dom-1.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/reporting/batik-ext-1.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/reporting/batik-gui-util-1.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/reporting/batik-gvt-1.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/reporting/batik-parser-1.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/reporting/batik-script-1.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/reporting/batik-svg-dom-1.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/reporting/batik-util-1.7.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/reporting/batik-xml-1.7.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/bcmail-jdk14-138.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/bcprov-jdk14-138.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/bsf-2.4.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/bsh-1.3.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/cglib-nodep-2.1_3.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/ehcache-core-2.0.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/groovy-all-1.5.6.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/reporting/groovy-all-1.8.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/hibernate-3.2.6.ga.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/itext-2.1.7.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/itext-rtf-2.1.7.jar"/>
@@ -151,18 +148,17 @@
 	<classpathentry exported="true" kind="lib" path="libext/reporting/jmi-200507110943.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/jmiutils-200507110943.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/joda-time-1.6.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/jta-1.0.1B.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/reporting/jta-1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/mdrapi-200507110943.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/nbmdr-200507110943-custom.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/openide-util-200507110943.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/oro-2.0.8.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/wsdl4j-qname-1.6.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/xpp3_min-1.1.4c.jar"/>
-	<classpathentry kind="lib" path="libext/mondrian/eigenbase-properties-1.1.0.10924.jar"/>
-	<classpathentry kind="lib" path="libext/mondrian/eigenbase-resgen-1.3.0.13768.jar"/>
-	<classpathentry kind="lib" path="libext/mondrian/eigenbase-xom-1.3.0.13768.jar"/>
+	<classpathentry kind="lib" path="libext/mondrian/eigenbase-properties-1.1.2.jar"/>
+	<classpathentry kind="lib" path="libext/mondrian/eigenbase-resgen-1.3.1.jar"/>
+	<classpathentry kind="lib" path="libext/mondrian/eigenbase-xom-1.3.1.jar"/>
 	<classpathentry kind="lib" path="libext/mondrian/javacup-10k.jar"/>
-	<classpathentry kind="lib" path="libext/reporting/antlr-2.7.6.jar"/>
 	<classpathentry kind="lib" path="libext/reporting/avalon-framework-4.1.3.jar"/>
 	<classpathentry kind="lib" path="libext/reporting/mof-200507110943.jar"/>
 	<classpathentry kind="lib" path="libext/reporting/pentaho-cwm-1.5.4.jar"/>
@@ -195,7 +191,7 @@
 	<classpathentry kind="lib" path="libext/elasticsearch/lucene-queries-3.1.0.jar"/>
 	<classpathentry kind="lib" path="libext/reporting/pentaho-connections-2.2.3.jar"/>
 	<classpathentry kind="lib" path="libext/mondrian/javacc.jar"/>
-	<classpathentry kind="lib" path="libext/mondrian/olap4j-1.0.1.500.jar"/>
+	<classpathentry kind="lib" path="libext/mondrian/olap4j-1.0.1.539.jar"/>
 	<classpathentry kind="lib" path="libext/mondrian/olap4j-xmla-1.0.1.500.jar"/>
 	<classpathentry kind="lib" path="libext/slf4j-api-1.6.1.jar"/>
 	<classpathentry kind="lib" path="libext/slf4j-log4j12-1.6.1.jar"/>
@@ -246,6 +242,5 @@
 	<classpathentry kind="lib" path="libext/jersey/jersey-client-1.13.jar"/>
 	<classpathentry kind="lib" path="libext/jersey/jersey-core-1.13.jar"/>
 	<classpathentry kind="lib" path="libext/jersey/jersey-json-1.13.jar"/>
-	<classpathentry kind="lib" path="libext/jersey/jersey-multipart-1.13.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
