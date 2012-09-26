@@ -200,6 +200,11 @@ public class ExecSQL extends BaseStep implements StepInterface
 					int pos = data.markerPositions.get(i);
 					String replaceValue = valueMeta.getString(valueData);
 					replaceValue = Const.NVL(replaceValue, "");
+					if (meta.isQuoteString() && (valueMeta.getType()==ValueMetaInterface.TYPE_STRING)) {
+						// Have the database dialect do the quoting.
+						// This also adds the quotes around the string
+						replaceValue = meta.getDatabaseMeta().quoteSQLString(replaceValue);
+					}					
 					buf.replace(pos, pos + 1, replaceValue); 
 				}
 				sql = buf.toString();

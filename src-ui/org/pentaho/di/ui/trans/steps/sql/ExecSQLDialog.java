@@ -131,7 +131,11 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
     private Label        wlVariables;
     private Button       wVariables;
     private FormData     fdlVariables, fdVariables; 
-    
+
+    private Label        wlQuoteString;
+    private Button       wQuoteString;
+    private FormData     fdlQuoteString, fdQuoteString; 
+
 	private ExecSQLMeta input;
 	private boolean changedInDialog;
 	
@@ -386,10 +390,58 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 		wlVariables = new Label(shell, SWT.RIGHT);
 		wlVariables.setText(BaseMessages.getString(PKG, "ExecSQLDialog.ReplaceVariables")); //$NON-NLS-1$
 		wlVariables.pack();
+		wlQuoteString = new Label(shell, SWT.RIGHT);
+		wlQuoteString.setText(BaseMessages.getString(PKG, "ExecSQLDialog.QuoteString.Label")); //$NON-NLS-1$
+		wlQuoteString.pack();
 		Rectangle rEachRow = wlEachRow.getBounds();
 		Rectangle rSingleStatement = wlSingleStatement.getBounds();
 		Rectangle rVariables = wlVariables.getBounds();
-		int width = Math.max(Math.max(rEachRow.width, rSingleStatement.width), rVariables.width) + 30;
+		Rectangle rQuoteString = wlQuoteString.getBounds();
+		int width = Math.max(Math.max(Math.max(rEachRow.width, rSingleStatement.width), rVariables.width), rQuoteString.width) + 30;
+
+		// Setup the "Quote String" label and checkbox
+		//
+		props.setLook(wlQuoteString);
+		fdlQuoteString = new FormData();
+		fdlQuoteString.left = new FormAttachment(0, margin);
+		fdlQuoteString.right = new FormAttachment(0, width);
+		fdlQuoteString.bottom = new FormAttachment(wlFields, -2*margin);
+		wlQuoteString.setLayoutData(fdlQuoteString);
+		wQuoteString = new Button(shell, SWT.CHECK);
+		props.setLook(wQuoteString);
+		wQuoteString.setToolTipText(BaseMessages.getString(PKG, "ExecSQLDialog.QuoteString.Tooltip")); //$NON-NLS-1$
+		fdQuoteString = new FormData();
+		fdQuoteString.left = new FormAttachment(wlQuoteString, margin);
+		fdQuoteString.bottom = new FormAttachment(wlFields, -2*margin);
+		fdQuoteString.right = new FormAttachment(middle, 0);
+		wQuoteString.setLayoutData(fdQuoteString);
+
+		// Setup the "Bind parameters" label and checkbox
+		//
+	    wlSetParams = new Label(this.shell, SWT.RIGHT);
+	    wlSetParams.setText(BaseMessages.getString(PKG, "ExecSQLDialog.SetParams.Label"));
+	    props.setLook(this.wlSetParams);
+	    fdlSetParams = new FormData();
+	    fdlSetParams.left = new FormAttachment(0, margin);
+	    fdlSetParams.bottom = new FormAttachment(wQuoteString, -margin);
+	    fdlSetParams.right = new FormAttachment(0, width);
+	    wlSetParams.setLayoutData(this.fdlSetParams);
+	    wSetParams = new Button(shell, SWT.CHECK);
+	    props.setLook(this.wSetParams);
+	    wSetParams.setToolTipText(BaseMessages.getString(PKG, "ExecSQLDialog.SetParams.Tooltip"));
+	    fdSetParams = new FormData();
+	    fdSetParams.left = new FormAttachment(wlSetParams, margin);
+	    fdSetParams.bottom = new FormAttachment(wQuoteString, -margin);
+	    fdSetParams.right = new FormAttachment(middle, 0);
+	    wSetParams.setLayoutData(fdSetParams);
+	    wSetParams.addSelectionListener(new SelectionAdapter()
+	    {
+	      public void widgetSelected(SelectionEvent e)
+	      {
+		    setExecutedSetParams();
+	        input.setChanged();
+	      }
+	    });
 
 		// Setup the "variable substitution" label and checkbox
 		//
@@ -397,13 +449,13 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 		fdlVariables = new FormData();
 		fdlVariables.left = new FormAttachment(0, margin);
 		fdlVariables.right = new FormAttachment(0, width);
-		fdlVariables.bottom = new FormAttachment(wlFields, -2*margin);
+		fdlVariables.bottom = new FormAttachment(wSetParams, -margin);
 		wlVariables.setLayoutData(fdlVariables);
 		wVariables = new Button(shell, SWT.CHECK);
 		props.setLook(wVariables);
 		fdVariables = new FormData();
 		fdVariables.left = new FormAttachment(wlVariables, margin);
-		fdVariables.bottom = new FormAttachment(wlFields, -2*margin);
+		fdVariables.bottom = new FormAttachment(wSetParams, -margin);
 		fdVariables.right = new FormAttachment(middle, 0);
 		wVariables.setLayoutData(fdVariables);
 		// wVariables.addSelectionListener(new SelectionAdapter() { public void
@@ -440,31 +492,6 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 		fdEachRow.bottom = new FormAttachment(wSingleStatement, -margin);
 		fdEachRow.right = new FormAttachment(middle, 0);
 		wEachRow.setLayoutData(fdEachRow);
-		
-	    wlSetParams = new Label(this.shell, SWT.RIGHT);
-	    wlSetParams.setText(BaseMessages.getString(PKG, "ExecSQLDialog.SetParams.Label"));
-	    props.setLook(this.wlSetParams);
-	    fdlSetParams = new FormData();
-	    fdlSetParams.left = new FormAttachment(0, margin);
-	    fdlSetParams.bottom = new FormAttachment(wEachRow, -margin);
-	    fdlSetParams.right = new FormAttachment(0, width);
-	    wlSetParams.setLayoutData(this.fdlSetParams);
-	    wSetParams = new Button(shell, SWT.CHECK);
-	    props.setLook(this.wSetParams);
-	    wSetParams.setToolTipText(BaseMessages.getString(PKG, "ExecSQLDialog.SetParams.Tooltip"));
-	    fdSetParams = new FormData();
-	    fdSetParams.left = new FormAttachment(wlSetParams, margin);
-	    fdSetParams.bottom = new FormAttachment(wEachRow, -margin);
-	    fdSetParams.right = new FormAttachment(middle, 0);
-	    wSetParams.setLayoutData(fdSetParams);
-	    wSetParams.addSelectionListener(new SelectionAdapter()
-	    {
-	      public void widgetSelected(SelectionEvent e)
-	      {
-	        input.setChanged();
-	      }
-	    });
-
 
 		// Position label under the SQL editor
 		//
@@ -473,7 +500,7 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 		fdlPosition = new FormData();
 		fdlPosition.left = new FormAttachment(0, 0);
 		fdlPosition.right = new FormAttachment(100, 0);
-		fdlPosition.bottom= new FormAttachment(wSetParams, -2*margin); //2 times since we deal with bottom instead of top
+		fdlPosition.bottom= new FormAttachment(wEachRow, -2*margin); //2 times since we deal with bottom instead of top
 		wlPosition.setLayoutData(fdlPosition);
 
 		// Finally, the SQL editor takes up all other space between the position and the SQL label  
@@ -546,6 +573,7 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 	        ExecSQLDialog.this.input.setChanged();
 	      }
 	    });
+
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(new ShellAdapter() {
 			public void shellClosed(ShellEvent e) {
@@ -578,8 +606,26 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 	    {
 	    	 wSetParams.setSelection(wEachRow.getSelection());
 	    }
+	    wlQuoteString.setEnabled(wEachRow.getSelection());
+	    wQuoteString.setEnabled(wEachRow.getSelection());
+	    if(!wEachRow.getSelection())
+	    {
+	    	wQuoteString.setSelection(wEachRow.getSelection());
+	    }
+
 	  }
 
+	  private void setExecutedSetParams()
+	  {
+		wlQuoteString.setEnabled(!wSetParams.getSelection());
+	    wQuoteString.setEnabled(!wSetParams.getSelection());
+	    if(wSetParams.getSelection())
+	    {
+	    	wQuoteString.setSelection(!wSetParams.getSelection());
+	    }
+
+	  }
+	  
 	public void setPosition(){
 		
 		String scr = wSQL.getText();
@@ -625,6 +671,7 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 		wEachRow.setSelection(input.isExecutedEachInputRow());
 		wSingleStatement.setSelection(input.isSingleStatement());
 		wVariables.setSelection(input.isReplaceVariables());
+		wQuoteString.setSelection(input.isQuoteString());
 
 		if (input.getUpdateField() != null)
 			wUpdateField.setText(input.getUpdateField());
@@ -688,6 +735,7 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 		input.setExecutedEachInputRow(wEachRow.getSelection());
 		input.setSingleStatement(wSingleStatement.getSelection());
 		input.setVariableReplacementActive(wVariables.getSelection());
+		input.setQuoteString(wQuoteString.getSelection());
 	    input.setParams(wSetParams.getSelection());
 		input.setInsertField(wInsertField.getText());
 		input.setUpdateField(wUpdateField.getText());
