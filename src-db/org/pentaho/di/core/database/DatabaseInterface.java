@@ -851,6 +851,7 @@ public interface DatabaseInterface extends Cloneable
 	public String getSQLListOfSequences();
 
 	/**
+	 * Adds quotes around the string according to the database dialect and also escapes special characters like CR, LF and the quote character itself.
 	 * @param string
 	 * @return A string that is properly quoted for use in a SQL statement (insert, update, delete, etc)
 	 */
