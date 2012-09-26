@@ -1149,8 +1149,8 @@ public class XMLInputStreamDialog extends BaseStepDialog implements StepDialogIn
 		TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(transMeta, oneMeta, wStepname.getText());
 
 		EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props.getDefaultPreviewSize(), BaseMessages
-				.getString(PKG, "System.Dialog..PreviewSize.DialogTitle"), BaseMessages.getString(PKG,
-				"System.Dialog..PreviewSize.DialogMessage"));
+				.getString(PKG, "XMLInputStreamDialog.Dialog.EnterPreviewSize.Title"), BaseMessages.getString(PKG,
+				"XMLInputStreamDialog.Dialog.EnterPreviewSize.Message"));
 		int previewSize = numberDialog.open();
 		if (previewSize > 0) {
 			TransPreviewProgressDialog progressDialog = new TransPreviewProgressDialog(shell, previewMeta,
