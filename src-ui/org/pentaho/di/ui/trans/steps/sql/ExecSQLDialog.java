@@ -449,7 +449,7 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 	    fdlSetParams.bottom = new FormAttachment(wEachRow, -margin);
 	    fdlSetParams.right = new FormAttachment(0, width);
 	    wlSetParams.setLayoutData(this.fdlSetParams);
-	    wSetParams = new Button(this.shell, 32);
+	    wSetParams = new Button(shell, SWT.CHECK);
 	    props.setLook(this.wSetParams);
 	    wSetParams.setToolTipText(BaseMessages.getString(PKG, "ExecSQLDialog.SetParams.Tooltip"));
 	    fdSetParams = new FormData();
@@ -473,7 +473,7 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
 		fdlPosition = new FormData();
 		fdlPosition.left = new FormAttachment(0, 0);
 		fdlPosition.right = new FormAttachment(100, 0);
-		fdlPosition.bottom= new FormAttachment(wSetParams, -margin);
+		fdlPosition.bottom= new FormAttachment(wSetParams, -2*margin); //2 times since we deal with bottom instead of top
 		wlPosition.setLayoutData(fdlPosition);
 
 		// Finally, the SQL editor takes up all other space between the position and the SQL label  
