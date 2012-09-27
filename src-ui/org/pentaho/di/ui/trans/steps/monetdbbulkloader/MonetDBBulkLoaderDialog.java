@@ -804,10 +804,13 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 	{
 		DatabaseMeta inf = null;
 		// New class: SelectTableDialog
-		int connr = wConnection.getCComboWidget().getSelectionIndex();
-		if (connr >= 0)
+		int connr = 0;
+		if( wConnection != null && wConnection.getCComboWidget() != null ) {
+			connr = wConnection.getCComboWidget().getSelectionIndex();
+		}
+		if (connr >= 0) {
 			inf = transMeta.getDatabase(connr);
-
+		}
 		if (inf != null)
 		{
 			if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Log.LookingAtConnection") + inf.toString()); //$NON-NLS-1$
