@@ -22,16 +22,11 @@
 
 package org.pentaho.amazon.s3;
 
-import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileSystemOptions;
 import org.eclipse.swt.widgets.Shell;
-import org.pentaho.amazon.AmazonSpoonPlugin;
-import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.core.vfs.KettleVFS;
-import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.di.ui.vfs.VfsFileChooserHelper;
+import org.pentaho.s3.vfs.S3FileProvider;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
 /**
@@ -42,14 +37,14 @@ public class S3VfsFileChooserHelper extends VfsFileChooserHelper {
 
   public S3VfsFileChooserHelper(Shell shell, VfsFileChooserDialog fileChooserDialog, VariableSpace variableSpace) {
     super(shell, fileChooserDialog, variableSpace);
-    setDefaultScheme(AmazonSpoonPlugin.S3_SCHEME);
-    setSchemeRestriction(AmazonSpoonPlugin.S3_SCHEME);
+    setDefaultScheme(S3FileProvider.SCHEME);
+    setSchemeRestriction(S3FileProvider.SCHEME);
   }
 
   public S3VfsFileChooserHelper(Shell shell, VfsFileChooserDialog fileChooserDialog, VariableSpace variableSpace, FileSystemOptions fileSystemOptions) {
     super(shell, fileChooserDialog, variableSpace, fileSystemOptions);
-    setDefaultScheme(AmazonSpoonPlugin.S3_SCHEME);
-    setSchemeRestriction(AmazonSpoonPlugin.S3_SCHEME);
+    setDefaultScheme(S3FileProvider.SCHEME);
+    setSchemeRestriction(S3FileProvider.SCHEME);
   }
 
   @Override

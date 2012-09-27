@@ -32,7 +32,6 @@ import java.util.StringTokenizer;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.amazon.AbstractAmazonJobEntry;
-import org.pentaho.amazon.AmazonSpoonPlugin;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
@@ -48,15 +47,15 @@ import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
-import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.s3.vfs.S3FileProvider;
 import org.w3c.dom.Node;
 
-import com.amazonaws.auth.AWSCredentials;
 import com.amazonaws.services.elasticmapreduce.AmazonElasticMapReduceClient;
 import com.amazonaws.services.elasticmapreduce.model.AddJobFlowStepsRequest;
+import com.amazonaws.services.elasticmapreduce.model.BootstrapActionConfig;
 import com.amazonaws.services.elasticmapreduce.model.DescribeJobFlowsRequest;
 import com.amazonaws.services.elasticmapreduce.model.DescribeJobFlowsResult;
 import com.amazonaws.services.elasticmapreduce.model.HadoopJarStepConfig;
@@ -66,7 +65,6 @@ import com.amazonaws.services.elasticmapreduce.model.RunJobFlowRequest;
 import com.amazonaws.services.elasticmapreduce.model.RunJobFlowResult;
 import com.amazonaws.services.elasticmapreduce.model.ScriptBootstrapActionConfig;
 import com.amazonaws.services.elasticmapreduce.model.StepConfig;
-import com.amazonaws.services.elasticmapreduce.model.BootstrapActionConfig;
 import com.amazonaws.services.elasticmapreduce.model.TerminateJobFlowsRequest;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3Client;
@@ -141,11 +139,11 @@ public class AmazonHiveJobExecutor extends AbstractAmazonJobEntry implements Clo
 
       // Prepare staging S3 URL for Hive script file.
       String stagingS3qUrl = "";
-      if (qUrl.startsWith(AmazonSpoonPlugin.S3_SCHEME + "://")) { //$NON-NLS-1$
+      if (qUrl.startsWith(S3FileProvider.SCHEME + "://")) { //$NON-NLS-1$
 
         // If the .q file is in S3, its staging S3 URL is s3://{bucketname}/{path}
         if (qUrl.indexOf("@s3") > 0) { //$NON-NLS-1$
-          stagingS3qUrl = AmazonSpoonPlugin.S3_SCHEME + "://" + qUrl.substring(qUrl.indexOf("@s3") + 4); //$NON-NLS-1$ //$NON-NLS-1$
+          stagingS3qUrl = S3FileProvider.SCHEME + "://" + qUrl.substring(qUrl.indexOf("@s3") + 4); //$NON-NLS-1$ //$NON-NLS-1$
         } else {
           stagingS3qUrl = qUrl;
         }
@@ -314,7 +312,7 @@ public class AmazonHiveJobExecutor extends AbstractAmazonJobEntry implements Clo
     // Set a log URL.
     String logUrl = stagingDir;
     if (stagingDir.indexOf("@s3") > 0) { //$NON-NLS-1$
-      logUrl = AmazonSpoonPlugin.S3_SCHEME + "://" + stagingDir.substring(stagingDir.indexOf("@s3") + 4); //$NON-NLS-1$ //$NON-NLS-1$
+      logUrl = S3FileProvider.SCHEME + "://" + stagingDir.substring(stagingDir.indexOf("@s3") + 4); //$NON-NLS-1$ //$NON-NLS-1$
     }
     runJobFlowRequest.setLogUri(logUrl);
     
@@ -629,9 +627,9 @@ public class AmazonHiveJobExecutor extends AbstractAmazonJobEntry implements Clo
    */
   public String buildFilename(String filename) {
     filename = environmentSubstitute(filename);
-    if (filename.startsWith(AmazonSpoonPlugin.S3_SCHEME)) {
-      String authPart = filename.substring(AmazonSpoonPlugin.S3_SCHEME.length() + 3, filename.indexOf("@s3")).replaceAll("\\+", "%2B").replaceAll("/", "%2F"); //$NON-NLS-1$ //$NON-NLS-1$ //$NON-NLS-1$
-      filename = AmazonSpoonPlugin.S3_SCHEME + "://" + authPart + "@s3" + filename.substring(filename.indexOf("@s3") + 3); //$NON-NLS-1$ //$NON-NLS-1$ //$NON-NLS-1$
+    if (filename.startsWith(S3FileProvider.SCHEME)) {
+      String authPart = filename.substring(S3FileProvider.SCHEME.length() + 3, filename.indexOf("@s3")).replaceAll("\\+", "%2B").replaceAll("/", "%2F"); //$NON-NLS-1$ //$NON-NLS-1$ //$NON-NLS-1$
+      filename = S3FileProvider.SCHEME + "://" + authPart + "@s3" + filename.substring(filename.indexOf("@s3") + 3); //$NON-NLS-1$ //$NON-NLS-1$ //$NON-NLS-1$
     }
     return filename;
   }
@@ -642,10 +640,10 @@ public class AmazonHiveJobExecutor extends AbstractAmazonJobEntry implements Clo
    *    otherwise VFS will have trouble in parsing the filename.
    */
   public String buildFullS3Url(String filename) {
-    if (filename.startsWith(AmazonSpoonPlugin.S3_SCHEME + "://") && !(filename.startsWith(AmazonSpoonPlugin.S3_SCHEME + ":///"))) { //$NON-NLS-1$ //$NON-NLS-1$
+    if (filename.startsWith(S3FileProvider.SCHEME + "://") && !(filename.startsWith(S3FileProvider.SCHEME + ":///"))) { //$NON-NLS-1$ //$NON-NLS-1$
       String authPart = accessKey + ":" + secretKey; //$NON-NLS-1$
       authPart = authPart.replaceAll("\\+", "%2B").replaceAll("/", "%2F"); //$NON-NLS-1$ //$NON-NLS-1$
-      filename = AmazonSpoonPlugin.S3_SCHEME + "://" + authPart + "@s3" + filename.substring(5); //$NON-NLS-1$ //$NON-NLS-1$
+      filename = S3FileProvider.SCHEME + "://" + authPart + "@s3" + filename.substring(5); //$NON-NLS-1$ //$NON-NLS-1$
     }
     return filename;
   }
