@@ -77,14 +77,6 @@ public class IngresDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	}
 
 	/**
-	 * @see DatabaseInterface#getSchemaTableCombination(java.lang.String, java.lang.String)
-	 */
-	public String getSchemaTableCombination(String schema_name, String table_part)
-	{
-		return table_part;
-	}
-	
-	/**
 	 * @return true if the database supports bitmap indexes
 	 */
 	public boolean supportsBitmapIndex()
