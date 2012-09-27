@@ -219,9 +219,11 @@ public class SecretKeyGenerator extends BaseStep implements StepInterface {
 
 	public void dispose(StepMetaInterface smi, StepDataInterface sdi) {
 		super.dispose(smi, sdi);
-		int nr = data.cryptoTrans.length;
-		for(int i=0; i<nr; i++) {
-			data.cryptoTrans[i].close();
+		if(data.cryptoTrans!=null) {
+			int nr = data.cryptoTrans.length;
+			for(int i=0; i<nr; i++) {
+				data.cryptoTrans[i].close();
+			}
 		}
 	}
 

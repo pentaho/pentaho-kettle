@@ -251,7 +251,7 @@ public class SymmetricCryptoTrans extends BaseStep implements StepInterface
 	    meta = (SymmetricCryptoTransMeta)smi;
 	    data = (SymmetricCryptoTransData)sdi;
 
-        data.Crypt.close();
+        if(data.Crypt!=null) data.Crypt.close();
         
 
 	    super.dispose(smi, sdi);
