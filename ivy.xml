@@ -98,6 +98,7 @@
     <dependency org="commons-io" name="commons-io" rev="1.4" transitive="false" conf="test->default" />
     <dependency org="org.apache.hadoop" name="hadoop-core" rev="${dependency.pentaho-hadoop.revision}" transitive="false" conf="test->default"/>
     <dependency org="org.apache.hadoop" name="hadoop-test" rev="${dependency.pentaho-hadoop.revision}" transitive="false" conf="test->default" changing="false" />
+    <dependency org="org.apache.hbase" name="hbase" rev="${dependency.apache-hbase.revision}" transitive="false" conf="test->default"/>
     <dependency org="org.apache.hadoop" name="hadoop-examples" rev="${dependency.pentaho-hadoop.revision}" transitive="false" conf="test->default" changing="false" />
     <dependency org="commons-httpclient" name="commons-httpclient" rev="3.0.1" conf="test->default"/>
     <dependency org="org.safehaus.jug" name="jug-lgpl" rev="2.0.0" transitive="false" conf="test->default"/>

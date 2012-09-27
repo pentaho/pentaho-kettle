@@ -22,18 +22,12 @@
 
 package org.pentaho.di.trans.steps.hbaseinput;
 
-import java.text.DecimalFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.i18n.BaseMessages;
@@ -46,7 +40,6 @@ import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.hbase.HBaseRowToKettleTuple;
 import org.pentaho.hbase.mapping.MappingAdmin;
-import org.pentaho.hbase.shim.api.ColumnFilter;
 import org.pentaho.hbase.shim.api.HBaseValueMeta;
 import org.pentaho.hbase.shim.api.Mapping;
 import org.pentaho.hbase.shim.spi.HBaseBytesUtilShim;
@@ -213,233 +206,55 @@ public class HBaseInput extends BaseStep implements StepInterface {
         throw new KettleException(BaseMessages.getString(HBaseInputMeta.PKG,
             "HBaseInput.Error.UnableToSetSourceTableForScan"), ex);
       }
-      byte[] keyLowerBound = null;
-      byte[] keyUpperBound = null;
 
-      // Set up the scan
-      if (!Const.isEmpty(m_meta.getKeyStartValue())) {
-        String keyStartS = environmentSubstitute(m_meta.getKeyStartValue());
-        String convM = dateOrNumberConversionMaskForKey;
-
-        if (m_tableMapping.getKeyType() == Mapping.KeyType.BINARY) {
-          // assume we have a hex encoded string
-          keyLowerBound = HBaseValueMeta.encodeKeyValue(keyStartS,
-              m_tableMapping.getKeyType(), m_bytesUtil);
-        } else if (m_tableMapping.getKeyType() != Mapping.KeyType.STRING) {
-          // allow a conversion mask in the start key field to override any
-          // specified for
-          // the key in the user specified fields
-          String[] parts = keyStartS.split("@");
-          if (parts.length == 2) {
-            keyStartS = parts[0];
-            convM = parts[1];
-          }
-
-          if (!Const.isEmpty(convM) && convM.length() > 0) {
-
-            if (m_tableMapping.getKeyType() == Mapping.KeyType.DATE
-                || m_tableMapping.getKeyType() == Mapping.KeyType.UNSIGNED_DATE) {
-              SimpleDateFormat sdf = new SimpleDateFormat();
-              sdf.applyPattern(convM);
-              try {
-                Date d = sdf.parse(keyStartS);
-                keyLowerBound = HBaseValueMeta.encodeKeyValue(d,
-                    m_tableMapping.getKeyType(), m_bytesUtil);
-              } catch (ParseException e) {
-                throw new KettleException(BaseMessages.getString(
-                    HBaseInputMeta.PKG,
-                    "HBaseInput.Error.UnableToParseLowerBoundKeyValue",
-                    keyStartS), e);
-              }
-            } else {
-              // Number type
-              // Double/Float or Long/Integer
-              DecimalFormat df = new DecimalFormat();
-              df.applyPattern(convM);
-              Number num = null;
-              try {
-                num = df.parse(keyStartS);
-                keyLowerBound = HBaseValueMeta.encodeKeyValue(num,
-                    m_tableMapping.getKeyType(), m_bytesUtil);
-              } catch (ParseException e) {
-                throw new KettleException(BaseMessages.getString(
-                    HBaseInputMeta.PKG,
-                    "HBaseInput.Error.UnableToParseLowerBoundKeyValue",
-                    keyStartS), e);
-              }
-            }
-          } else {
-            // just try it as a string
-            keyLowerBound = HBaseValueMeta.encodeKeyValue(keyStartS,
-                m_tableMapping.getKeyType(), m_bytesUtil);
-          }
-        } else {
-          // it is a string
-          keyLowerBound = HBaseValueMeta.encodeKeyValue(keyStartS,
-              m_tableMapping.getKeyType(), m_bytesUtil);
-        }
-
-        if (!Const.isEmpty(m_meta.getKeyStopValue())) {
-          String keyStopS = environmentSubstitute(m_meta.getKeyStopValue());
-          convM = dateOrNumberConversionMaskForKey;
-
-          if (m_tableMapping.getKeyType() == Mapping.KeyType.BINARY) {
-            // assume we have a hex encoded string
-            keyUpperBound = HBaseValueMeta.encodeKeyValue(keyStopS,
-                m_tableMapping.getKeyType(), m_bytesUtil);
-          } else if (m_tableMapping.getKeyType() != Mapping.KeyType.STRING) {
-
-            // allow a conversion mask in the stop key field to override any
-            // specified for
-            // the key in the user specified fields
-            String[] parts = keyStopS.split("@");
-            if (parts.length == 2) {
-              keyStopS = parts[0];
-              convM = parts[1];
-            }
-
-            if (!Const.isEmpty(convM) && convM.length() > 0) {
-              if (m_tableMapping.getKeyType() == Mapping.KeyType.DATE
-                  || m_tableMapping.getKeyType() == Mapping.KeyType.UNSIGNED_DATE) {
-                SimpleDateFormat sdf = new SimpleDateFormat();
-                sdf.applyPattern(convM);
-                try {
-                  Date d = sdf.parse(keyStopS);
-                  keyUpperBound = HBaseValueMeta.encodeKeyValue(d,
-                      m_tableMapping.getKeyType(), m_bytesUtil);
-                } catch (ParseException e) {
-                  throw new KettleException(BaseMessages.getString(
-                      HBaseInputMeta.PKG,
-                      "HBaseInput.Error.UnableToParseUpperBoundKeyValue",
-                      keyStopS), e);
-                }
-              } else {
-                // Number type
-                // Double/Float or Long/Integer
-                DecimalFormat df = new DecimalFormat();
-                df.applyPattern(convM);
-                Number num = null;
-                try {
-                  num = df.parse(keyStopS);
-                  keyUpperBound = HBaseValueMeta.encodeKeyValue(num,
-                      m_tableMapping.getKeyType(), m_bytesUtil);
-                } catch (ParseException e) {
-                  throw new KettleException(BaseMessages.getString(
-                      HBaseInputMeta.PKG,
-                      "HBaseInput.Error.UnableToParseUpperBoundKeyValue",
-                      keyStopS), e);
-                }
-              }
-            } else {
-              // just try it as a string
-              keyUpperBound = HBaseValueMeta.encodeKeyValue(keyStopS,
-                  m_tableMapping.getKeyType(), m_bytesUtil);
-            }
-          } else {
-            // it is a string
-            keyUpperBound = HBaseValueMeta.encodeKeyValue(keyStopS,
-                m_tableMapping.getKeyType(), m_bytesUtil);
-          }
-        }
-      }
-
-      int cacheSize = 0;
-
-      // set any user-specified scanner caching
-      if (!Const.isEmpty(m_meta.getScannerCacheSize())) {
-        String temp = environmentSubstitute(m_meta.getScannerCacheSize());
-        cacheSize = Integer.parseInt(temp);
-
-        logBasic(BaseMessages.getString(HBaseInputMeta.PKG,
-            "HBaseInput.Message.SettingScannerCaching", cacheSize));
-      }
-      try {
-        m_hbAdmin.newSourceTableScan(keyLowerBound, keyUpperBound, cacheSize);
-      } catch (Exception ex) {
-        throw new KettleException(BaseMessages.getString(HBaseInputMeta.PKG,
-            "HBaseInput.Error.UnableToConfigureSourceTableScan"), ex);
-      }
+      HBaseInputData.initializeScan(m_hbAdmin, m_bytesUtil, m_tableMapping,
+          dateOrNumberConversionMaskForKey, m_meta.getKeyStartValue(),
+          m_meta.getKeyStopValue(), m_meta.getScannerCacheSize(), log, this);
 
       // LIMIT THE SCAN TO JUST THE COLUMNS IN THE MAPPING
       // User-selected output columns?
       if (m_userOutputColumns != null && m_userOutputColumns.size() > 0
           && !m_tableMapping.isTupleMapping()) {
-        for (HBaseValueMeta currentCol : m_userOutputColumns) {
-          if (!currentCol.isKey()) {
-            String colFamilyName = currentCol.getColumnFamily();
-            String qualifier = currentCol.getColumnName();
 
-            boolean binaryColName = false;
-            if (qualifier.startsWith("@@@binary@@@")) {
-              qualifier = qualifier.replace("@@@binary@@@", "");
-              binaryColName = true;
-            }
-
-            try {
-              m_hbAdmin
-                  .addColumnToScan(colFamilyName, qualifier, binaryColName);
-            } catch (Exception ex) {
-              throw new KettleException(BaseMessages.getString(
-                  HBaseInputMeta.PKG,
-                  "HBaseInput.Error.UnableToAddColumnToScan"), ex);
-            }
-          }
-        }
+        HBaseInputData.setScanColumns(m_hbAdmin, m_userOutputColumns,
+            m_tableMapping);
       }
 
       // set any filters
       if (m_meta.getColumnFilters() != null
           && m_meta.getColumnFilters().size() > 0) {
 
-        for (ColumnFilter cf : m_meta.getColumnFilters()) {
-          String fieldAliasS = environmentSubstitute(cf.getFieldAlias());
-          HBaseValueMeta mappedCol = m_columnsMappedByAlias.get(fieldAliasS);
-          if (mappedCol == null) {
-            throw new KettleException(BaseMessages.getString(
-                HBaseInputMeta.PKG,
-                "HBaseInput.Error.ColumnFilterIsNotInTheMapping", fieldAliasS));
-          }
-
-          // check the type (if set in the ColumnFilter) against the type
-          // of this field in the mapping
-          String fieldTypeS = environmentSubstitute(cf.getFieldType());
-          if (!Const.isEmpty(fieldTypeS)) {
-            if (!mappedCol.getHBaseTypeDesc().equalsIgnoreCase(fieldTypeS)) {
-              throw new KettleException(BaseMessages.getString(
-                  HBaseInputMeta.PKG, "HBaseInput.Error.FieldTypeMismatch",
-                  fieldTypeS, fieldAliasS, mappedCol.getHBaseTypeDesc()));
-            }
-          }
-
-          try {
-            m_hbAdmin.addColumnFilterToScan(cf, mappedCol, this,
-                m_meta.getMatchAnyFilter());
-          } catch (Exception ex) {
-            throw new KettleException(BaseMessages.getString(
-                HBaseInputMeta.PKG,
-                "HBaseInput.Error.UnableToAddColumnFilterToScan"), ex);
-          }
+        if (m_tableMapping.isTupleMapping()) {
+          logBasic(BaseMessages.getString(HBaseInputMeta.PKG,
+              "HBaseInput.Error.FiltersNotApplicableWithTupleMapping"));
+        } else {
+          HBaseInputData.setScanFilters(m_hbAdmin, m_meta.getColumnFilters(),
+              m_meta.getMatchAnyFilter(), m_columnsMappedByAlias, this);
         }
       }
 
-      try {
-        m_hbAdmin.executeSourceTableScan();
-      } catch (Exception e) {
-        throw new KettleException(BaseMessages.getString(HBaseInputMeta.PKG,
-            "HBaseInput.Error.UnableToExecuteSourceTableScan"), e);
-      }
+      if (!isStopped()) {
+        try {
+          m_hbAdmin.executeSourceTableScan();
+        } catch (Exception e) {
+          throw new KettleException(BaseMessages.getString(HBaseInputMeta.PKG,
+              "HBaseInput.Error.UnableToExecuteSourceTableScan"), e);
+        }
 
-      // set up the output fields (using the mapping)
-      m_data.setOutputRowMeta(new RowMeta());
-      m_meta.getFields(m_data.getOutputRowMeta(), getStepname(), null, null,
-          this);
+        // set up the output fields (using the mapping)
+        m_data.setOutputRowMeta(new RowMeta());
+        m_meta.getFields(m_data.getOutputRowMeta(), getStepname(), null, null,
+            this);
+      }
     }
 
     boolean hasNext = false;
-    try {
-      hasNext = m_hbAdmin.resultSetNextRow();
-    } catch (Exception e) {
-      throw new KettleException(e.getMessage(), e);
+    if (!isStopped()) {
+      try {
+        hasNext = m_hbAdmin.resultSetNextRow();
+      } catch (Exception e) {
+        throw new KettleException(e.getMessage(), e);
+      }
     }
 
     if (!hasNext) {
@@ -453,140 +268,22 @@ public class HBaseInput extends BaseStep implements StepInterface {
       return false;
     }
 
-    int size = (m_userOutputColumns != null && m_userOutputColumns.size() > 0) ? m_userOutputColumns
-        .size() : m_tableMapping.getMappedColumns().keySet().size() + 1; // + 1
-                                                                         // for
-                                                                         // the
-                                                                         // key
-    Object[] outputRowData = RowDataUtil.allocateRowData(size);
+    if (m_tableMapping.isTupleMapping()) {
+      List<Object[]> tupleRows = m_data.getTupleOutputRows(m_hbAdmin,
+          m_userOutputColumns, m_columnsMappedByAlias, m_tableMapping,
+          m_tupleHandler, m_data.getOutputRowMeta(), m_bytesUtil);
 
-    // User-selected output columns?
-    if (m_userOutputColumns != null && m_userOutputColumns.size() > 0) {
-      if (m_tableMapping.isTupleMapping()) {
-        List<Object[]> hrowToKettleRow = m_tupleHandler
-            .hbaseRowToKettleTupleMode(null, m_hbAdmin, m_tableMapping,
-                m_userOutputColumns, m_data.getOutputRowMeta());
-        for (Object[] tuple : hrowToKettleRow) {
-          putRow(m_data.getOutputRowMeta(), tuple);
-        }
-        return true;
-      } else {
-        for (HBaseValueMeta currentCol : m_userOutputColumns) {
-          if (currentCol.isKey()) {
-            byte[] rawKey = null;
-            try {
-              rawKey = m_hbAdmin.getResultSetCurrentRowKey();
-            } catch (Exception e) {
-              throw new KettleException(e);
-            }
-            Object decodedKey = HBaseValueMeta.decodeKeyValue(rawKey,
-                m_tableMapping, m_bytesUtil);
-            int keyIndex = m_data.getOutputRowMeta().indexOfValue(
-                currentCol.getAlias());
-            outputRowData[keyIndex] = decodedKey;
-          } else {
-            String colFamilyName = currentCol.getColumnFamily();
-            String qualifier = currentCol.getColumnName();
-
-            boolean binaryColName = false;
-            if (qualifier.startsWith("@@@binary@@@")) {
-              qualifier = qualifier.replace("@@@binary@@@", "");
-              // assume hex encoded
-              binaryColName = true;
-            }
-
-            byte[] kv = null;
-            try {
-              kv = m_hbAdmin.getResultSetCurrentRowColumnLatest(colFamilyName,
-                  qualifier, binaryColName);
-            } catch (Exception e) {
-              throw new KettleException(e);
-            }
-
-            int outputIndex = m_data.getOutputRowMeta().indexOfValue(
-                currentCol.getAlias());
-            if (outputIndex < 0) {
-              throw new KettleException(BaseMessages.getString(
-                  HBaseInputMeta.PKG,
-                  "HBaseInput.Error.ColumnNotDefinedInOutput",
-                  currentCol.getAlias()));
-            }
-
-            Object decodedVal = HBaseValueMeta.decodeColumnValue(
-                (kv == null) ? null : kv, currentCol, m_bytesUtil);
-
-            outputRowData[outputIndex] = decodedVal;
-          }
-        }
+      for (Object[] tuple : tupleRows) {
+        putRow(m_data.getOutputRowMeta(), tuple);
       }
+      return true;
     } else {
-
-      // all the columns in the mapping
-      if (m_tableMapping.isTupleMapping()) {
-        List<Object[]> hrowToKettleRow = m_tupleHandler
-            .hbaseRowToKettleTupleMode(null, m_hbAdmin, m_tableMapping,
-                m_columnsMappedByAlias, m_data.getOutputRowMeta());
-
-        for (Object[] tuple : hrowToKettleRow) {
-          putRow(m_data.getOutputRowMeta(), tuple);
-        }
-        return true;
-      } else {
-
-        // do the key first
-        byte[] rawKey = null;
-        try {
-          rawKey = m_hbAdmin.getResultSetCurrentRowKey();
-        } catch (Exception e) {
-          throw new KettleException(e);
-        }
-
-        Object decodedKey = HBaseValueMeta.decodeKeyValue(rawKey,
-            m_tableMapping, m_bytesUtil);
-        int keyIndex = m_data.getOutputRowMeta().indexOfValue(
-            m_tableMapping.getKeyName());
-        outputRowData[keyIndex] = decodedKey;
-
-        Set<String> aliasSet = m_columnsMappedByAlias.keySet();
-
-        for (String name : aliasSet) {
-          HBaseValueMeta currentCol = m_columnsMappedByAlias.get(name);
-          String colFamilyName = currentCol.getColumnFamily();
-          String qualifier = currentCol.getColumnName();
-
-          boolean binaryColName = false;
-          if (qualifier.startsWith("@@@binary@@@")) {
-            qualifier = qualifier.replace("@@@binary@@@", "");
-            // assume hex encoded
-            binaryColName = true;
-          }
-
-          byte[] kv = null;
-          try {
-            kv = m_hbAdmin.getResultSetCurrentRowColumnLatest(colFamilyName,
-                qualifier, binaryColName);
-          } catch (Exception e) {
-            throw new KettleException(e);
-          }
-
-          int outputIndex = m_data.getOutputRowMeta().indexOfValue(name);
-          if (outputIndex < 0) {
-            throw new KettleException(BaseMessages.getString(
-                HBaseInputMeta.PKG,
-                "HBaseInput.Error.ColumnNotDefinedInOutput", name));
-          }
-
-          Object decodedVal = HBaseValueMeta.decodeColumnValue(
-              (kv == null) ? null : kv, currentCol, m_bytesUtil);
-
-          outputRowData[outputIndex] = decodedVal;
-        }
-      }
+      Object[] outRowData = m_data.getOutputRow(m_hbAdmin, m_userOutputColumns,
+          m_columnsMappedByAlias, m_tableMapping, m_data.getOutputRowMeta(),
+          m_bytesUtil);
+      putRow(m_data.getOutputRowMeta(), outRowData);
+      return true;
     }
-
-    // output the row
-    putRow(m_data.getOutputRowMeta(), outputRowData);
-    return true;
   }
 
   /*
