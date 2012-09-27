@@ -804,7 +804,7 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 	{
 		DatabaseMeta inf = null;
 		// New class: SelectTableDialog
-		int connr = 0;
+		int connr = -1;
 		if( wConnection != null && wConnection.getCComboWidget() != null ) {
 			connr = wConnection.getCComboWidget().getSelectionIndex();
 		}
