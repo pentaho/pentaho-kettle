@@ -86,7 +86,7 @@ public class SymmetricCryptoMeta {
 	 * 
 	 * @throws KettleDatabaseException when the type could not be found or referenced.
 	 */
-	private static final SymmetricCryptoInterface findSymmetricCryptoInterface(String cryptograhname) 
+	private static final synchronized SymmetricCryptoInterface findSymmetricCryptoInterface(String cryptograhname) 
 	throws CryptoException {
 		SymmetricCryptoInterface di[] = getSymmetricCryptoInterfaces();
 		for (int i=0;i<di.length;i++) {
@@ -99,7 +99,7 @@ public class SymmetricCryptoMeta {
 	}
 
 
-	public static final SymmetricCryptoInterface[] getSymmetricCryptoInterfaces() {
+	public static final synchronized SymmetricCryptoInterface[] getSymmetricCryptoInterfaces() {
 		if (allSymmetricCryptoInterface!=null) return allSymmetricCryptoInterface;
 		
 		Class<?> ic[] = SymmetricCryptoInterface.implementingClasses;
