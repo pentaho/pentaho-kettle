@@ -44,6 +44,7 @@ import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.tags.ExtTextbox;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.spoon.Spoon;
+import org.pentaho.s3.vfs.S3FileProvider;
 import org.pentaho.ui.xul.components.XulTextbox;
 import org.pentaho.ui.xul.containers.XulDialog;
 import org.pentaho.ui.xul.impl.AbstractXulEventHandler;
@@ -177,7 +178,7 @@ public abstract class AbstractAmazonJobExecutorController extends AbstractXulEve
     if (StringUtil.isEmpty(getSecretKey())) {
       validationErrors += BaseMessages.getString(PKG, MSG_AMAZON_ELASTIC_MAP_REDUCE_JOB_EXECUTOR_SECRET_KEY_ERROR) + "\n";
     }
-    String s3Protocol = AmazonSpoonPlugin.S3_SCHEME + "://";
+    String s3Protocol = S3FileProvider.SCHEME + "://";
     String sdir = getVariableSpace().environmentSubstitute(stagingDir);
     if (StringUtil.isEmpty(getStagingDir())) {
       validationErrors += BaseMessages.getString(PKG, MSG_AMAZON_ELASTIC_MAP_REDUCE_JOB_EXECUTOR_STAGING_DIR_ERROR) + "\n";

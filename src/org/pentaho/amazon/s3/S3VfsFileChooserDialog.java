@@ -40,6 +40,7 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
+import org.pentaho.amazon.AmazonS3FileSystemBootstrap;
 import org.pentaho.amazon.AmazonSpoonPlugin;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
@@ -52,6 +53,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.spoon.Spoon;
 import org.pentaho.s3.vfs.S3FileObject;
+import org.pentaho.s3.vfs.S3FileProvider;
 import org.pentaho.vfs.ui.CustomVfsUiPanel;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 
@@ -106,7 +108,7 @@ public class S3VfsFileChooserDialog extends CustomVfsUiPanel {
   private StaticUserAuthenticator userAuthenticator = null;
 
   public S3VfsFileChooserDialog(VfsFileChooserDialog vfsFileChooserDialog, FileObject rootFile, FileObject initialFile) {
-    super(AmazonSpoonPlugin.S3_SCHEME, AmazonSpoonPlugin.S3_SCHEME_DISPLAY_TEXT, vfsFileChooserDialog, SWT.NONE);
+    super(S3FileProvider.SCHEME, AmazonS3FileSystemBootstrap.getS3FileSystemDisplayText(), vfsFileChooserDialog, SWT.NONE);
 
     this.vfsFileChooserDialog = vfsFileChooserDialog;
     this.rootFile = rootFile;
@@ -280,7 +282,7 @@ public class S3VfsFileChooserDialog extends CustomVfsUiPanel {
    * @TODO: relocate to a s3 helper class or similar
    */
   public String buildS3FileSystemUrlString() {
-    return AmazonSpoonPlugin.S3_SCHEME + "://s3/";
+    return S3FileProvider.SCHEME + "://s3/";
   }
 
   @Override
