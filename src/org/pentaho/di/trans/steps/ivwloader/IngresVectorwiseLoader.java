@@ -486,6 +486,10 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
             //
             String string = valueMeta.getString(valueData);
             if (string != null) {
+            	
+            	if (meta.isEscapingSpecialCharacters() && valueMeta.isString()) {
+            		string = replace(string, new String[]{ "\n", "\r", }, new String[] { "\\n", "\\r", });
+            	}
               // support of SSV feature
               //
               if (meta.isUseSSV()) {
@@ -494,19 +498,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
                 //
                 if (meta.isEscapingSpecialCharacters() && valueMeta.isString()) {
 
-                  StringBuilder builder = new StringBuilder(string);
-                  String[] escapeStrings = new String[] { "\"", "\n", "\r", };
-                  String[] replaceStrings = new String[] { "\\\"", "\\n", "\\r", };
-                  for (int e = 0; e < escapeStrings.length; e++) {
-                    String chr = escapeStrings[e];
-                    String rep = replaceStrings[e];
-                    int idx = builder.indexOf(chr, 0);
-                    while (idx > 0) {
-                      builder.replace(idx, idx + chr.length(), rep);
-                      idx = builder.indexOf(chr, idx + rep.length());
-                    }
-                  }
-                  string = builder.toString();
+                	string = replace(string, new String[] { "\"" }, new String[] { "\\\"" });
                 }
                 write(data.doubleQuote);
                 write(data.getBytes(string));
@@ -749,4 +741,20 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
     }
     return true;
   }
+  
+  private String replace(String string, String[] searchStrings, String[] replaceStrings) {
+		StringBuilder builder = new StringBuilder(string);
+	    for (int e = 0; e < Math.min(searchStrings.length,replaceStrings.length); e++) {
+	      String chr = searchStrings[e];
+	      String rep = replaceStrings[e];
+	      int idx = builder.indexOf(chr, 0);
+	      while (idx > 0) {
+	        builder.replace(idx, idx + chr.length(), rep);
+	        idx = builder.indexOf(chr, idx + rep.length());
+	      }
+	    }
+	    return builder.toString();
+	}
+
 }
+
