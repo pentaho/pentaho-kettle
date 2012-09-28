@@ -55,7 +55,6 @@
 	<classpathentry exported="true" kind="lib" path="libext/feeds/jdom.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/feeds/feed4j.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/feeds/nekohtml-1.9.7.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/feeds/xml-apis-1.4.01.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/salesforce/axis.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/salesforce/jaxrpc-api-1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/janino.jar" sourcepath="libext-src/janino-2.5.16-src.zip"/>
@@ -240,5 +239,6 @@
 	<classpathentry kind="lib" path="libext/jersey/jersey-client-1.13.jar"/>
 	<classpathentry kind="lib" path="libext/jersey/jersey-core-1.13.jar"/>
 	<classpathentry kind="lib" path="libext/jersey/jersey-json-1.13.jar"/>
+	<classpathentry kind="lib" path="libext/feeds/xml-apis-2.0.2.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
