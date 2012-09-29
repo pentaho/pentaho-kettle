@@ -149,6 +149,16 @@ public class LoggingObject implements LoggingObjectInterface {
 		
 		if (parentObject instanceof LoggingObjectInterface) {
 		  parent = (LoggingObjectInterface)parentObject;
+		  
+      // See if the parent is already in the logging registry.
+      // This prevents the logging registry from hanging onto Trans and Job objects that would continue to consume memory
+      //
+      if (parent.getLogChannelId()!=null) {
+        LoggingObjectInterface parentLoggingObject = LoggingRegistry.getInstance().getLoggingObject(parent.getLogChannelId());
+        if (parentLoggingObject!=null) {
+          parent = parentLoggingObject;
+        }
+      }
 		  return;
 		}
 		
