@@ -70,6 +70,8 @@ import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.DisposeEvent;
+import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MenuDetectEvent;
@@ -311,7 +313,7 @@ import org.w3c.dom.Node;
  * @since 16-may-2003, i18n at 07-Feb-2006, redesign 01-Dec-2006
  */
 public class Spoon extends ApplicationWindow implements AddUndoPositionInterface, TabListener, SpoonInterface, OverwritePrompter, PDIObserver,
-    LifeEventHandler, XulEventSource, XulEventHandler, Listener {
+    LifeEventHandler, XulEventSource, XulEventHandler, DisposeListener {
 
   private static Class<?> PKG = Spoon.class;
 
@@ -507,6 +509,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   protected String startupPerspective = null;
 
   private CommandLineOption[] commandLineOptions;  
+  
+  private boolean quitFileCalled = false;
   
   /**
    * This is the main procedure for Spoon.
@@ -823,12 +827,12 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       shell.pack();
       shell.setMaximized(true); // Default = maximized!
     }
-
+/* This code is called too late, the shell has already been disposed by the time this event fires
     // In case someone dares to press the [X] in the corner ;-)
     shell.addShellListener(new ShellAdapter() {
       public void shellClosed(ShellEvent e) {
         try {
-          e.doit = quitFile();
+          e.doit = quitFile( false );
         } catch (KettleException e1) {
           // TODO Auto-generated catch block
           e1.printStackTrace();
@@ -836,7 +840,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.SHUTDOWN);
       }
     });
-
+*/
     layout = new FormLayout();
     layout.marginWidth = 0;
     layout.marginHeight = 0;
@@ -1205,7 +1209,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     mainComposite.setVisible(true);
     mainComposite.redraw();
 
-    shell.getDisplay().addListener(SWT.Close, this);
+    shell.addDisposeListener(this);
     
     // Perhaps the transformation contains elements at startup?
     refreshTree(); // Do a complete refresh then...
@@ -4215,15 +4219,16 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
   }
 
-  public boolean quitFile() throws KettleException {
-    if (log.isDetailed())
+  public boolean quitFile( boolean canCancel ) throws KettleException {
+
+	  if (log.isDetailed())
       log.logDetailed(BaseMessages.getString(PKG, "Spoon.Log.QuitApplication"));// "Quit application."
 
     boolean exit = true;
 
     saveSettings();
 
-    if (props.showExitWarning()) {
+    if (props.showExitWarning() && canCancel ) {
       // Display message: are you sure you want to exit?
       //
       MessageDialogWithToggle md = new MessageDialogWithToggle(shell, BaseMessages.getString(PKG, "System.Warning"),// "Warning!"
@@ -4242,6 +4247,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         return false; // No selected: don't exit!
     }
 
+	  if( quitFileCalled ) {
+		  return true;
+	  }
+	  quitFileCalled = true;
+    
     // Check all tabs to see if we can close them...
     //
     List<TabMapEntry> list = delegates.tabs.getTabs();
@@ -4269,7 +4279,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       }
     }
 
-    if (exit) // we have asked about it all and we're still here. Now close
+    if (exit || !canCancel ) // we have asked about it all and we're still here. Now close
     // all the tabs, stop the running transformations
     {
       for (TabMapEntry mapEntry : list) {
@@ -6286,6 +6296,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
   }
 
   public void saveSettings() {
+	  if(shell.isDisposed()) {
+		  // we cannot save the settings, it's too late
+		  return;
+	  }
+	  
     WindowProperty winprop = new WindowProperty(shell);
     winprop.setName(APPL_TITLE);
     props.setScreen(winprop);
@@ -8287,19 +8302,17 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         }
         System.out.println("stopping");
     }
-    
+
 	@Override
-	public void handleEvent(Event event) {
-		if( event.type == SWT.Close ) {
+	public void widgetDisposed(DisposeEvent event) {
 			// time to shut down, the window close button has been pressed
 	        try {
-	        	event.doit = quitFile();
+	        	quitFile(false);
+	        	//event.doit = quitFile();
 	          } catch (KettleException e1) {
 	            // TODO Auto-generated catch block
 	            e1.printStackTrace();
 	          }
-	          SpoonPluginManager.getInstance().notifyLifecycleListeners(SpoonLifeCycleEvent.SHUTDOWN);
-		}
 		
 	}    
 	
