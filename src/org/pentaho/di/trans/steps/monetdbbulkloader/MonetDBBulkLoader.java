@@ -519,6 +519,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 		  		// mclient is still running, this is a good thing
 		  	}
     	} catch (Exception e) {
+    		log.logError("Could not execute MonetDB mclient command: "+command);
     	}
 	  	return holder;
 	}
