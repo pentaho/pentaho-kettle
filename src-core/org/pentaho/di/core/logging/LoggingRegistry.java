@@ -131,7 +131,7 @@ public class LoggingRegistry {
     
     // Validate that we're not leaking references.  If the size of the map becomes too large we opt to remove the oldest...
     //
-    if (maxSize>0 && map.size()>maxSize+1000) {
+    if (maxSize>0 && map.size()>maxSize) {
       
       // Remove 250 and trim it back to maxSize
       //
@@ -148,7 +148,8 @@ public class LoggingRegistry {
       
       // Remove 1000 entries...
       //
-      for (int i=0;i<1000;i++) {
+      int cutCount = maxSize < 1000 ? maxSize : 1000;
+      for (int i=0;i<cutCount;i++) {
         LoggingObjectInterface toRemove = all.get(i);
         map.remove(toRemove.getLogChannelId());
 
