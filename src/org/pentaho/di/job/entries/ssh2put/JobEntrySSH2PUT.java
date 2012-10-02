@@ -1104,6 +1104,7 @@ public class JobEntrySSH2PUT extends JobEntryBase implements Cloneable, JobEntry
     		}catch (Exception e)
     		{
     			logError(BaseMessages.getString(PKG, "JobSSH2PUT.Log.Error.CreatingRemoteFolder",foldername));
+    			logError(e.getMessage());
     		}
     	}
     	return retval;
