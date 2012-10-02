@@ -506,7 +506,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         logChannelFileWriter = new LogChannelFileWriter(this.getLogChannelId(), KettleVFS.getFileObject(realLogFilename), setAppendLogfile);
         logChannelFileWriter.startLogging();
       } catch (KettleException e) {
-        logError("Unable to open log file [" + getLogFilename() + "] : ");
+        logError("Unable to open file appender for file [" + getLogFilename() + "] : " + e.toString());
         logError(Const.getStackTracker(e));
         result.setNrErrors(1);
         result.setResult(false);
@@ -890,7 +890,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 break;
               }
             } catch (Exception e1) {
-              logError("Unable to contact slave server [" + remoteSlaveServer + "] to verify the status of job [" + jobMeta.getName() + "]");
+              logError("Unable to contact slave server [" + remoteSlaveServer + "] to verify the status of job [" + jobMeta.getName() + "]", e1);
               oneResult.setNrErrors(1L);
               break; // Stop looking too, chances are too low the server will
                      // come back on-line
@@ -921,7 +921,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 remoteSlaveServer.stopJob(jobMeta.getName(), carteObjectId);
               }
             } catch (Exception e1) {
-              logError("Unable to contact slave server [" + remoteSlaveServer + "] to stop job [" + jobMeta.getName() + "]");
+              logError("Unable to contact slave server [" + remoteSlaveServer + "] to stop job [" + jobMeta.getName() + "]", e1);
               oneResult.setNrErrors(1L);
               break; // Stop looking too, chances are too low the server will
                      // come back on-line
