@@ -133,6 +133,11 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 	private Button     wDoMapping;
 	private FormData   fdDoMapping;
 
+  private Label       wlStopOnError;
+  private Button      wStopOnError;
+  private FormData    fdlStopOnError, fdStopOnError;
+
+	
 	private PGBulkLoaderMeta	input;
 	
     private static final String[] ALL_FILETYPES = new String[] {
@@ -366,6 +371,32 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 		fdDelimiter.top = new FormAttachment(wEnclosure, margin);
 		fdDelimiter.right = new FormAttachment(100, 0);
 		wDelimiter.setLayoutData(fdDelimiter);
+
+    // Stop on Error line
+    wlStopOnError = new Label(shell, SWT.RIGHT);
+    wlStopOnError.setText(BaseMessages.getString(PKG, "PGBulkLoaderDialog.StopOnError.Label")); //$NON-NLS-1$
+    props.setLook(wlStopOnError);
+    fdlStopOnError = new FormData();
+    fdlStopOnError.left = new FormAttachment(0, 0);
+    fdlStopOnError.top = new FormAttachment(wDelimiter, margin);
+    fdlStopOnError.right = new FormAttachment(middle, -margin);
+    wlStopOnError.setLayoutData(fdlStopOnError);
+    wStopOnError = new Button(shell, SWT.CHECK);
+    props.setLook(wStopOnError);
+    fdStopOnError = new FormData();
+    fdStopOnError.left = new FormAttachment(middle, 0);
+    fdStopOnError.top = new FormAttachment(wDelimiter, margin);
+    fdStopOnError.right = new FormAttachment(100, 0);
+    wStopOnError.setLayoutData(fdStopOnError);        
+
+    wStopOnError.addSelectionListener(new SelectionAdapter() 
+          {
+            public void widgetSelected(SelectionEvent e) 
+            {
+            input.setChanged();
+          }
+          }
+        );
 		
 		// THE BUTTONS
 		wOK = new Button(shell, SWT.PUSH);
@@ -383,7 +414,7 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
  		props.setLook(wlReturn);
 		fdlReturn = new FormData();
 		fdlReturn.left = new FormAttachment(0, 0);
-		fdlReturn.top = new FormAttachment(wDelimiter, margin);
+		fdlReturn.top = new FormAttachment(wStopOnError, margin);
 		wlReturn.setLayoutData(fdlReturn);
 
 		int UpInsCols = 3;
@@ -420,7 +451,7 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 		fdReturn = new FormData();
 		fdReturn.left = new FormAttachment(0, 0);
 		fdReturn.top = new FormAttachment(wlReturn, margin);
-		fdReturn.right = new FormAttachment(wGetLU, -margin);
+		fdReturn.right = new FormAttachment(wDoMapping, -margin);  // fix margin error
 		fdReturn.bottom = new FormAttachment(wOK, -2*margin);
 		wReturn.setLayoutData(fdReturn);
 		
@@ -513,11 +544,12 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 		lsDef = new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
 
 		wStepname.addSelectionListener(lsDef);
-        wSchema.addSelectionListener(lsDef);
-        wTable.addSelectionListener(lsDef);
-        wDbNameOverride.addSelectionListener(lsDef);
-        wEnclosure.addSelectionListener(lsDef);
-        wDelimiter.addSelectionListener(lsDef);
+    wSchema.addSelectionListener(lsDef);
+    wTable.addSelectionListener(lsDef);
+    wDbNameOverride.addSelectionListener(lsDef);
+    wEnclosure.addSelectionListener(lsDef);
+    wDelimiter.addSelectionListener(lsDef);
+    wStopOnError.addSelectionListener(lsDef);
 
 
 		// Detect X or ALT-F4 or something that kills this window...
@@ -603,11 +635,12 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 				wConnection.setText(transMeta.getDatabase(0).getName());
 			}
 		}
-        if (input.getSchemaName() != null) wSchema.setText(input.getSchemaName());
+    if (input.getSchemaName() != null) wSchema.setText(input.getSchemaName());
 		if (input.getTableName() != null) wTable.setText(input.getTableName());
 		if (input.getPsqlpath() != null) wPsqlPath.setText(input.getPsqlpath());
 		if (input.getDelimiter() != null) wDelimiter.setText(input.getDelimiter());
 		if (input.getEnclosure() != null) wEnclosure.setText(input.getEnclosure());
+		wStopOnError.setSelection(input.isStopOnError());
 		if (input.getDbNameOverride() != null ) wDbNameOverride.setText(input.getDbNameOverride());
 		
 		String action = input.getLoadAction();
@@ -786,6 +819,7 @@ public class PGBulkLoaderDialog extends BaseStepDialog implements StepDialogInte
 		inf.setPsqlpath( wPsqlPath.getText() );
 		inf.setDelimiter( wDelimiter.getText() );
 		inf.setEnclosure( wEnclosure.getText() );
+		inf.setStopOnError( wStopOnError.getSelection() );
 
 		/*
 		/*

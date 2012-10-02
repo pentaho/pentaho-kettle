@@ -97,6 +97,9 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 	/** The enclosure to use for loading */
 	private String enclosure;
 	
+	/** Stop On Error */
+  private boolean stopOnError;
+  
 	/*
 	 * Do not translate following values!!! They are will end up in the job export.
 	 */
@@ -113,7 +116,7 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 	public static final int NR_DATE_MASK_PASS_THROUGH   = 0;
 	public static final int NR_DATE_MASK_DATE           = 1;
 	public static final int NR_DATE_MASK_DATETIME       = 2;
-	
+  
 	public PGBulkLoaderMeta()
 	{
 		super();
@@ -245,6 +248,7 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 			loadAction     = XMLHandler.getTagValue(stepnode, "load_action");  //$NON-NLS-1$			
 			PsqlPath         = XMLHandler.getTagValue(stepnode, "PsqlPath");       //$NON-NLS-1$
 			dbNameOverride = XMLHandler.getTagValue(stepnode, "dbname_override");  //$NON-NLS-1$
+      stopOnError    = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "stop_on_error")); //$NON-NLS-1$
 
 			int nrvalues = XMLHandler.countNodes(stepnode, "mapping");      //$NON-NLS-1$
 			allocate(nrvalues);
@@ -290,22 +294,23 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 		dbNameOverride = "";
 		delimiter = ";";
 		enclosure = "\"";
+		stopOnError = false;
 		int nrvalues = 0;
 		allocate(nrvalues);
 	}
 
 	public String getXML()
 	{
-        StringBuffer retval = new StringBuffer(300);
-
+    StringBuffer retval = new StringBuffer(300);
 		retval.append("    ").append(XMLHandler.addTagValue("connection",      databaseMeta==null?"":databaseMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-        retval.append("    ").append(XMLHandler.addTagValue("schema",          schemaName));    //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("table",           tableName));     //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("load_action",     loadAction));    //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("PsqlPath",        PsqlPath));        //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("dbname_override", dbNameOverride));      //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("enclosure",       enclosure));        //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("    ").append(XMLHandler.addTagValue("schema",          schemaName));     //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("table",           tableName));      //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("load_action",     loadAction));     //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("PsqlPath",        PsqlPath));       //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("dbname_override", dbNameOverride)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("enclosure",       enclosure));      //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("delimiter",       delimiter));      //$NON-NLS-1$ //$NON-NLS-2$
+    retval.append("    ").append(XMLHandler.addTagValue("stop_on_error",   stopOnError));    //$NON-NLS-1$ //$NON-NLS-2$
 		
 		for (int i=0;i<fieldTable.length;i++)
 		{
@@ -325,14 +330,15 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);  //$NON-NLS-1$
-            schemaName     =      rep.getStepAttributeString(id_step,  "schema");         //$NON-NLS-1$
+      schemaName     =      rep.getStepAttributeString(id_step,  "schema");         //$NON-NLS-1$
 			tableName      =      rep.getStepAttributeString(id_step,  "table");          //$NON-NLS-1$
 			loadAction     =      rep.getStepAttributeString(id_step,  "load_action");    //$NON-NLS-1$
-			PsqlPath         =      rep.getStepAttributeString(id_step,  "PsqlPath");         //$NON-NLS-1$
+			PsqlPath       =      rep.getStepAttributeString(id_step,  "PsqlPath");         //$NON-NLS-1$
+      stopOnError    =      rep.getStepAttributeBoolean(id_step,  "stop_on_error");    //$NON-NLS-1$
 
 			dbNameOverride =      rep.getStepAttributeString(id_step,  "dbname_override");//$NON-NLS-1$			
-         enclosure = rep.getStepAttributeString(id_step, "enclosure");//$NON-NLS-1$
-         delimiter = rep.getStepAttributeString(id_step, "delimiter");//$NON-NLS-1$
+      enclosure = rep.getStepAttributeString(id_step, "enclosure");//$NON-NLS-1$
+      delimiter = rep.getStepAttributeString(id_step, "delimiter");//$NON-NLS-1$
 
 			int nrvalues = rep.countNrStepAttributes(id_step, "stream_name");             //$NON-NLS-1$
 
@@ -358,15 +364,16 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			rep.saveDatabaseMetaStepAttribute(id_transformation, id_step, "id_connection", databaseMeta);
 
-            rep.saveStepAttribute(id_transformation, id_step, "schema",          schemaName);    //$NON-NLS-1$
+      rep.saveStepAttribute(id_transformation, id_step, "schema",          schemaName);    //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "table",           tableName);     //$NON-NLS-1$
 			
 			rep.saveStepAttribute(id_transformation, id_step, "load_action",     loadAction);    //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "PsqlPath",          PsqlPath);        //$NON-NLS-1$
 
 			rep.saveStepAttribute(id_transformation, id_step, "dbname_override", dbNameOverride);//$NON-NLS-1$
-         rep.saveStepAttribute(id_transformation, id_step, "enclosure", enclosure);//$NON-NLS-1$
-         rep.saveStepAttribute(id_transformation, id_step, "delimiter", delimiter);//$NON-NLS-1$
+      rep.saveStepAttribute(id_transformation, id_step, "enclosure", enclosure);//$NON-NLS-1$
+      rep.saveStepAttribute(id_transformation, id_step, "delimiter", delimiter);//$NON-NLS-1$
+      rep.saveStepAttribute(id_transformation, id_step, "stop_on_error", stopOnError);//$NON-NLS-1$
 
 			for (int i=0;i<fieldTable.length;i++)
 			{
@@ -736,5 +743,14 @@ public class PGBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void setEnclosure(String enclosure) {
 		this.enclosure = enclosure;
-	}	
+	}
+	
+	public boolean isStopOnError() {
+	  return this.stopOnError;
+	}
+	
+	public void setStopOnError(Boolean value) {
+	  this.stopOnError = value;
+	}
+	
 }
