@@ -671,6 +671,8 @@ public class ExcelWriterStep extends BaseStep implements StepInterface {
 			  } else {
 			    data.wb = xssfWorkbook;
 			  }
+			} else {
+			  data.wb = new HSSFWorkbook(KettleVFS.getInputStream(data.file));
 			}
 
 			int existingActiveSheetIndex = data.wb.getActiveSheetIndex();
