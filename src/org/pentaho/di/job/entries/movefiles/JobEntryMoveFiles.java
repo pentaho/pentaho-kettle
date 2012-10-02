@@ -748,7 +748,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 					short_filename=getMoveDestinationFilename(short_filename,"ddMMyyyy_HHmmssSSS");
 				}catch (Exception e)
 				{
-					logError(BaseMessages.getString(PKG, BaseMessages.getString(PKG, "JobMoveFiles.Error.GettingFilename",short_filename)));
+					logError(BaseMessages.getString(PKG, BaseMessages.getString(PKG, "JobMoveFiles.Error.GettingFilename",short_filename)), e);
 					return retval;
 				}
 				
@@ -779,7 +779,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 					short_filename=getMoveDestinationFilename(short_filename,null);
 				}catch (Exception e)
 				{
-					logError(BaseMessages.getString(PKG, BaseMessages.getString(PKG, "JobMoveFiles.Error.GettingFilename",short_filename)));
+					logError(BaseMessages.getString(PKG, BaseMessages.getString(PKG, "JobMoveFiles.Error.GettingFilename",short_filename)), e);
 					return retval;
 				}
 				
@@ -1028,7 +1028,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
     		return true;
 		}
 		catch (Exception e) {
-			logError(BaseMessages.getString(PKG, "JobMoveFiles.Log.CanNotCreateParentFolder",folder.getName().toString()));
+			logError(BaseMessages.getString(PKG, "JobMoveFiles.Log.CanNotCreateParentFolder",folder.getName().toString()), e);
 			
 		}
 		 finally {

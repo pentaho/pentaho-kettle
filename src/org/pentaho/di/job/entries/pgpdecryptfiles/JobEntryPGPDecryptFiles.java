@@ -766,7 +766,7 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
 						short_filename=getMoveDestinationFilename(short_filename,"ddMMyyyy_HHmmssSSS");
 					}catch (Exception e)
 					{
-						logError(BaseMessages.getString(PKG, "JobPGPDecryptFiles.Error.GettingFilename",short_filename));
+						logError(BaseMessages.getString(PKG, "JobPGPDecryptFiles.Error.GettingFilename",short_filename), e);
 						return retval;
 					}
 					
@@ -796,7 +796,7 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
 					try{
 						short_filename=getMoveDestinationFilename(short_filename,null);
 					}catch (Exception e) {
-						logError(BaseMessages.getString(PKG, "JobPGPDecryptFiles.Error.GettingFilename",short_filename));
+						logError(BaseMessages.getString(PKG, "JobPGPDecryptFiles.Error.GettingFilename",short_filename), e);
 						return retval;
 					}
 					
@@ -1035,7 +1035,7 @@ public class JobEntryPGPDecryptFiles extends JobEntryBase implements Cloneable, 
     		return true;
 		}
 		catch (Exception e) {
-			logError(BaseMessages.getString(PKG, "JobPGPDecryptFiles.Log.CanNotCreateParentFolder",folder.getName().toString()));
+			logError(BaseMessages.getString(PKG, "JobPGPDecryptFiles.Log.CanNotCreateParentFolder",folder.getName().toString()), e);
 			
 		}
 		 finally {

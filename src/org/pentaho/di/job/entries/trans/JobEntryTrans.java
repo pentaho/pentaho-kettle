@@ -965,7 +965,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 						} 
                 		catch (Exception e1) {
                 			
-							logError(BaseMessages.getString(PKG, "JobTrans.Error.UnableContactSlaveServer",""+remoteSlaveServer,transMeta.getName()));
+							logError(BaseMessages.getString(PKG, "JobTrans.Error.UnableContactSlaveServer",""+remoteSlaveServer,transMeta.getName()), e1);
 							result.setNrErrors(result.getNrErrors()+1L);
 							break; // Stop looking too, chances are too low the server will come back on-line
 						}

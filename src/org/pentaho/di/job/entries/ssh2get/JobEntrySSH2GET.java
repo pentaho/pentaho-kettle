@@ -1091,8 +1091,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 				if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobSSH2GET.Log.DeletedFile",filename));
 			}catch (Exception e)
 			{
-				logError(BaseMessages.getString(PKG, "JobSSH2GET.Log.Error.CanNotDeleteRemoteFile",filename));
-        logError(e.getMessage());
+				logError(BaseMessages.getString(PKG, "JobSSH2GET.Log.Error.CanNotDeleteRemoteFile",filename), e);
 			}
 			
 		}
@@ -1106,8 +1105,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 				if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobSSH2GET.Log.DeletedFile",filename));
 			}catch (Exception e)
 			{
-				logError(BaseMessages.getString(PKG, "JobSSH2GET.Log.Error.MovedFile",filename,destinationFolder));
-        logError(e.getMessage());
+				logError(BaseMessages.getString(PKG, "JobSSH2GET.Log.Error.MovedFile",filename,destinationFolder), e);
 			}
 		
 		}
@@ -1328,7 +1326,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
     		return true;
 		}
 		catch (Exception e) {
-			logError(BaseMessages.getString(PKG, "JobSSH2GET.Log.CanNotCreateFolder", folder.toString()));
+			logError(BaseMessages.getString(PKG, "JobSSH2GET.Log.CanNotCreateFolder", folder.toString()), e);
 			
 		}
 		 finally {
@@ -1364,7 +1362,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
     			
     		}catch (Exception e)
     		{
-    			logError(BaseMessages.getString(PKG, "JobSSH2GET.Log.Error.CreatingRemoteFolder",foldername));
+    			logError(BaseMessages.getString(PKG, "JobSSH2GET.Log.Error.CreatingRemoteFolder",foldername), e);
     		}
     	}
     	return retval;

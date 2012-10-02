@@ -673,8 +673,7 @@ public class JobEntryCopyFiles extends JobEntryBase implements Cloneable, JobEnt
     		return true;
 		}
 		catch (Exception e) {
-			logError("Couldn't created parent folder "+ folder.getName());
-			
+			logError("Couldn't created parent folder "+ folder.getName(), e);
 		}
 		 finally {
          	if ( folder != null )

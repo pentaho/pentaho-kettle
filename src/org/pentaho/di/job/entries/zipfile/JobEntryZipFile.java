@@ -257,7 +257,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
       }
       result = true;
     } catch (Exception e) {
-      logError(BaseMessages.getString(PKG, "JobEntryZipFile.CanNotCreateFolder", "" + parentfolder.getName()));
+      logError(BaseMessages.getString(PKG, "JobEntryZipFile.CanNotCreateFolder", "" + parentfolder.getName()), e);
     } finally {
       if (parentfolder != null) {
         try {
@@ -759,7 +759,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
           }
         } catch (Exception e) {
           SanityControlOK = false;
-          logError(BaseMessages.getString(PKG, "JobZipFiles.ErrorGettingMoveToFolder.Label", realMovetodirectory));
+          logError(BaseMessages.getString(PKG, "JobZipFiles.ErrorGettingMoveToFolder.Label", realMovetodirectory), e);
         } finally {
           if (moveToDirectory != null) {
             realMovetodirectory = KettleVFS.getFilename(moveToDirectory);
@@ -817,7 +817,7 @@ public class JobEntryZipFile extends JobEntryBase implements Cloneable, JobEntry
           }
         }
       } catch (Exception e) {
-        logError("Erreur during process!");
+        logError("Erreur during process!", e);
       }
     } else if (!isfromprevious) {
       if (!Const.isEmpty(sourcedirectory)) {
