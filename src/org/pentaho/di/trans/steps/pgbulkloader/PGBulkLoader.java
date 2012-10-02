@@ -191,6 +191,10 @@ public class PGBulkLoader extends BaseStep implements StepInterface
            sb.append(" -p ");
            sb.append(portnum);
            
+           if (meta.isStopOnError()) {
+             sb.append(" -v ON_ERROR_STOP=1");
+           }
+           
            // Database Name
            // 
            String dns  = environmentSubstitute(Const.NVL(dm.getDatabaseName(), ""));
@@ -275,6 +279,9 @@ public class PGBulkLoader extends BaseStep implements StepInterface
 				//
             	int exitVal = data.psqlProcess.waitFor();
 				logBasic(BaseMessages.getString(PKG, "GPBulkLoader.Log.ExitValuePsqlPath", "" + exitVal)); //$NON-NLS-1$
+            	if (meta.isStopOnError() && exitVal != 0) { // If we're supposed to stop on exception, then this is where.
+            	  throw new KettleException(BaseMessages.getString(PKG, "PGBulkLoader.Exception.ExitValueNotZero", exitVal)); //$NON-NLS-1$
+            	}
             }
             else {
                logBasic(BaseMessages.getString(PKG, "PGBulkLoader.Log.NullInputAndOrPSQLProcess"));
