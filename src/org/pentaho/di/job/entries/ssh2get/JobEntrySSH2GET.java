@@ -1092,6 +1092,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 			}catch (Exception e)
 			{
 				logError(BaseMessages.getString(PKG, "JobSSH2GET.Log.Error.CanNotDeleteRemoteFile",filename));
+        logError(e.getMessage());
 			}
 			
 		}
@@ -1106,6 +1107,7 @@ public class JobEntrySSH2GET extends JobEntryBase implements Cloneable, JobEntry
 			}catch (Exception e)
 			{
 				logError(BaseMessages.getString(PKG, "JobSSH2GET.Log.Error.MovedFile",filename,destinationFolder));
+        logError(e.getMessage());
 			}
 		
 		}
