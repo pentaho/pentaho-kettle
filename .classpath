@@ -234,11 +234,10 @@
 	<classpathentry kind="lib" path="libext/reporting/libsparkline-1.2-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/reporting/libswing-1.2-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="libext/reporting/libxml-1.2-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="libext/jersey/jersey-apache-client-1.14.jar"/>
-	<classpathentry kind="lib" path="libext/jersey/jersey-bundle-1.13.jar"/>
-	<classpathentry kind="lib" path="libext/jersey/jersey-client-1.13.jar"/>
-	<classpathentry kind="lib" path="libext/jersey/jersey-core-1.13.jar"/>
-	<classpathentry kind="lib" path="libext/jersey/jersey-json-1.13.jar"/>
+	<classpathentry kind="lib" path="libext/jersey/jersey-apache-client-1.7.jar"/>
+	<classpathentry kind="lib" path="libext/jersey/jersey-client-1.7.jar"/>
+	<classpathentry kind="lib" path="libext/jersey/jersey-core-1.7.jar"/>
+	<classpathentry kind="lib" path="libext/jersey/jersey-json-1.7.jar"/>
 	<classpathentry kind="lib" path="libext/feeds/xml-apis-2.0.2.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
