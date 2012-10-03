@@ -45,7 +45,7 @@
           </menupopup>
         </menu>
         <menuseparator id="file-separator-4"/>
-        <menuitem id="file-quit" label="${Spoon.Menu.File.Quit}" command="spoon.quitFile()" />        
+        <menuitem id="file-quit" label="${Spoon.Menu.File.Quit}" command="spoon.quitFile(true)" />        
       </menupopup>
     </menu>
     
