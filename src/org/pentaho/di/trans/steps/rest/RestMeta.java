@@ -553,8 +553,8 @@ public class RestMeta extends BaseStepMeta implements StepMetaInterface
             trustStorePassword = rep.getStepAttributeString(id_step, "trustStorePassword");
             
             preemptive =      rep.getStepAttributeBoolean (id_step, "preemptive");
-            int nrheaders = rep.countNrStepAttributes(id_step, "header"); //$NON-NLS-1$
-            int nrparams = rep.countNrStepAttributes(id_step, "parameter"); //$NON-NLS-1$
+            int nrheaders = rep.countNrStepAttributes(id_step, "header_field"); //$NON-NLS-1$
+            int nrparams = rep.countNrStepAttributes(id_step, "parameter_field"); //$NON-NLS-1$
             allocate(nrheaders, nrparams);
 
             for (int i = 0; i < nrheaders; i++)
