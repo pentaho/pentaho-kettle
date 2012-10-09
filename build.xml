@@ -141,7 +141,6 @@
 			<exclude name="metro-*.jar" />
 			<exclude name="log4j-*.jar" />
 			<exclude name="jface*.jar" />
-			<exclude name="jets3t-*.jar" />
 			<exclude name="hadoop-*.jar" />
 			<exclude name="hbase-*.jar" />
 			<exclude name="zookeeper-*.jar" />
@@ -151,8 +150,6 @@
 			<exclude name="commons-lang*.jar" />
 			<exclude name="commons-logging*.jar" />
 			<exclude name="commons-vfs*.jar" />
-			<!-- <exclude name="pentaho-hdfs-vfs*.jar" /> -->
-			<!-- <exclude name="pentaho-s3-vfs*.jar" /> -->
 			<exclude name="pentaho-vfs-browser*.jar" />
 			<exclude name="scannotation*.jar" />
 			<exclude name="dom4j*.jar" />	      	
