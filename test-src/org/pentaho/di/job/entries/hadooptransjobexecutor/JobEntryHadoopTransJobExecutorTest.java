@@ -27,6 +27,8 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import static org.easymock.EasyMock.*;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,6 +36,8 @@ import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.vfs.VFS;
+import org.easymock.EasyMock;
+import org.easymock.internal.matchers.Any;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.pentaho.di.core.KettleEnvironment;
@@ -45,6 +49,8 @@ import org.pentaho.di.core.plugins.PluginMainClassType;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.job.Job;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.steps.hadoopenter.HadoopEnterMeta;
 import org.pentaho.di.trans.steps.hadoopexit.HadoopExitMeta;
@@ -198,4 +204,123 @@ public class JobEntryHadoopTransJobExecutorTest {
     }
   }
 
+  @Test
+  public void loadRep_num_map_tasks_null() throws Throwable {
+    JobEntryHadoopTransJobExecutor exec = new JobEntryHadoopTransJobExecutor();
+    Repository rep = createNiceMock(Repository.class);
+    ObjectId oid = createMock(ObjectId.class);
+    
+    expect(rep.getJobEntryAttributeString(oid, "num_map_tasks")).andReturn(null);
+    replay(rep);
+    
+    exec.loadRep(rep, oid, null, null);
+    verify(rep);
+    
+    assertEquals(null, exec.getNumMapTasks());
+  }
+
+  @Test
+  public void loadRep_num_map_tasks_empty() throws Throwable {
+    JobEntryHadoopTransJobExecutor exec = new JobEntryHadoopTransJobExecutor();
+    Repository rep = createNiceMock(Repository.class);
+    ObjectId oid = createMock(ObjectId.class);
+    
+    expect(rep.getJobEntryAttributeString(oid, "num_map_tasks")).andReturn("");
+    replay(rep);
+    
+    exec.loadRep(rep, oid, null, null);
+    verify(rep);
+    
+    assertEquals("", exec.getNumMapTasks());
+  }
+
+  @Test
+  public void loadRep_num_map_tasks_variable() throws Throwable {
+    JobEntryHadoopTransJobExecutor exec = new JobEntryHadoopTransJobExecutor();
+    Repository rep = createNiceMock(Repository.class);
+    ObjectId oid = createMock(ObjectId.class);
+    
+    expect(rep.getJobEntryAttributeString(oid, "num_map_tasks")).andReturn("${test}");
+    replay(rep);
+    
+    exec.loadRep(rep, oid, null, null);
+    verify(rep);
+    
+    assertEquals("${test}", exec.getNumMapTasks());
+  }
+
+  @Test
+  public void loadRep_num_map_tasks_number() throws Throwable {
+    JobEntryHadoopTransJobExecutor exec = new JobEntryHadoopTransJobExecutor();
+    Repository rep = createNiceMock(Repository.class);
+    ObjectId oid = createMock(ObjectId.class);
+    
+    expect(rep.getJobEntryAttributeString(oid, "num_map_tasks")).andReturn("5");
+    replay(rep);
+    
+    exec.loadRep(rep, oid, null, null);
+    verify(rep);
+    
+    assertEquals("5", exec.getNumMapTasks());
+  }
+
+  @Test
+  public void loadRep_num_reduce_tasks_null() throws Throwable {
+    JobEntryHadoopTransJobExecutor exec = new JobEntryHadoopTransJobExecutor();
+    Repository rep = createNiceMock(Repository.class);
+    ObjectId oid = createMock(ObjectId.class);
+    
+    expect(rep.getJobEntryAttributeString(oid, "num_reduce_tasks")).andReturn(null);
+    replay(rep);
+    
+    exec.loadRep(rep, oid, null, null);
+    verify(rep);
+    
+    assertEquals(null, exec.getNumReduceTasks());
+  }
+
+  @Test
+  public void loadRep_num_reduce_tasks_empty() throws Throwable {
+    JobEntryHadoopTransJobExecutor exec = new JobEntryHadoopTransJobExecutor();
+    Repository rep = createNiceMock(Repository.class);
+    ObjectId oid = createMock(ObjectId.class);
+    
+    expect(rep.getJobEntryAttributeString(oid, "num_reduce_tasks")).andReturn("");
+    replay(rep);
+    
+    exec.loadRep(rep, oid, null, null);
+    verify(rep);
+    
+    assertEquals("", exec.getNumReduceTasks());
+  }
+
+  @Test
+  public void loadRep_num_reduce_tasks_variable() throws Throwable {
+    JobEntryHadoopTransJobExecutor exec = new JobEntryHadoopTransJobExecutor();
+    Repository rep = createNiceMock(Repository.class);
+    ObjectId oid = createMock(ObjectId.class);
+    
+    expect(rep.getJobEntryAttributeString(oid, "num_reduce_tasks")).andReturn("${test}");
+    replay(rep);
+    
+    exec.loadRep(rep, oid, null, null);
+    verify(rep);
+    
+    assertEquals("${test}", exec.getNumReduceTasks());
+  }
+
+  @Test
+  public void loadRep_num_reduce_tasks_number() throws Throwable {
+    JobEntryHadoopTransJobExecutor exec = new JobEntryHadoopTransJobExecutor();
+    Repository rep = createNiceMock(Repository.class);
+    ObjectId oid = createMock(ObjectId.class);
+    
+    expect(rep.getJobEntryAttributeString(oid, "num_reduce_tasks")).andReturn("5");
+    replay(rep);
+    
+    exec.loadRep(rep, oid, null, null);
+    verify(rep);
+    
+    assertEquals("5", exec.getNumReduceTasks());
+  }
 }

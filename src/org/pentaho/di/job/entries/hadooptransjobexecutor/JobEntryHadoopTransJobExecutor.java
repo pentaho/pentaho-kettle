@@ -1322,18 +1322,8 @@ public class JobEntryHadoopTransJobExecutor extends JobEntryBase implements Clon
       setHdfsPort(rep.getJobEntryAttributeString(id_jobentry, "hdfs_port")); //$NON-NLS-1$
       setJobTrackerHostname(rep.getJobEntryAttributeString(id_jobentry, "job_tracker_hostname")); //$NON-NLS-1$
       setJobTrackerPort(rep.getJobEntryAttributeString(id_jobentry, "job_tracker_port")); //$NON-NLS-1$
-      long mapTasks = rep.getJobEntryAttributeInteger(id_jobentry, "num_map_tasks");
-      if (mapTasks>0) {
-        setNumMapTasks(Long.toString(mapTasks));
-      } else {
-        setNumMapTasks(rep.getJobEntryAttributeString(id_jobentry, "num_map_tasks"));
-      }
-      long reduceTasks = rep.getJobEntryAttributeInteger(id_jobentry, "num_reduce_tasks");
-      if (reduceTasks>0) {
-        setNumReduceTasks(Long.toString(reduceTasks));
-      } else {
-        setNumReduceTasks(rep.getJobEntryAttributeString(id_jobentry, "num_reduce_tasks"));
-      }
+      setNumMapTasks(rep.getJobEntryAttributeString(id_jobentry, "num_map_tasks"));
+      setNumReduceTasks(rep.getJobEntryAttributeString(id_jobentry, "num_reduce_tasks"));
 
       int argnr = rep.countNrJobEntryAttributes(id_jobentry, "user_defined_name");//$NON-NLS-1$
       if(argnr > 0) {

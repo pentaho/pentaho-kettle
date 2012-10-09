@@ -95,6 +95,7 @@
     <dependency org="com.thoughtworks.xstream" name="xstream" rev="${dependency.xstream.revision}" />
 
     <dependency org="junit" name="junit" rev="4.5" conf="test->default" />
+    <dependency org="org.easymock" name="easymock" rev="3.0" conf="test->default"/>
     <dependency org="commons-io" name="commons-io" rev="1.4" transitive="false" conf="test->default" />
     <dependency org="org.apache.hadoop" name="hadoop-core" rev="${dependency.pentaho-hadoop.revision}" transitive="false" conf="test->default"/>
     <dependency org="org.apache.hadoop" name="hadoop-test" rev="${dependency.pentaho-hadoop.revision}" transitive="false" conf="test->default" changing="false" />
