@@ -68,7 +68,7 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
     {
         if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE)
         {
-        	if (!Const.isEmpty(port)) {
+        	if (Const.isEmpty(port)) {
         		return "jdbc:monetdb://"+hostname+"/"+databaseName;
         	} else {
         		return "jdbc:monetdb://"+hostname+":"+port+"/"+databaseName;
