@@ -43,8 +43,10 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Props;
+import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.hadoop.HadoopSpoonPlugin;
 import org.pentaho.di.core.logging.LogChannel;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.vfs.ui.CustomVfsUiPanel;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
@@ -225,8 +227,8 @@ public class HadoopVfsFileChooserDialog extends CustomVfsUiPanel {
 
         FileObject root = rootFile;
         try {
-          root = vfsFileChooserDialog.rootFile.getFileSystem().getFileSystemManager().resolveFile(buildHadoopFileSystemUrlString());
-        } catch (FileSystemException e1) {
+          root = KettleVFS.getFileObject(buildHadoopFileSystemUrlString());
+        } catch (KettleFileException e1) {
           // TODO - MessageBox
           e1.printStackTrace();
         }
