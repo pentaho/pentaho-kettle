@@ -12,51 +12,6 @@
   <modified_date>2010&#47;07&#47;12 13:45:27.737</modified_date>
     <parameters>
     </parameters>
-  <connection>
-    <name>myconnections</name>
-    <server>localhost</server>
-    <type>HYPERSONIC</type>
-    <access>Native</access>
-    <database>sampledata</database>
-    <port>9001</port>
-    <username>sa</username>
-    <password>Encrypted </password>
-    <servername/>
-    <data_tablespace>af</data_tablespace>
-    <index_tablespace>sdaf</index_tablespace>
-    <attributes>
-      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
-      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
-      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
-      <attribute><code>PORT_NUMBER</code><attribute>9001</attribute></attribute>
-      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
-      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>N</attribute></attribute>
-      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
-    </attributes>
-  </connection>
-  <connection>
-    <name>mysql</name>
-    <server>localhost</server>
-    <type>MYSQL</type>
-    <access>Native</access>
-    <database>stock_market</database>
-    <port>3306</port>
-    <username>root</username>
-    <password>Encrypted 2be98afc86aa7f2e4bb18bd63c99dbdde</password>
-    <servername/>
-    <data_tablespace>af</data_tablespace>
-    <index_tablespace>sdaf</index_tablespace>
-    <attributes>
-      <attribute><code>FORCE_IDENTIFIERS_TO_LOWERCASE</code><attribute>N</attribute></attribute>
-      <attribute><code>FORCE_IDENTIFIERS_TO_UPPERCASE</code><attribute>N</attribute></attribute>
-      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
-      <attribute><code>PORT_NUMBER</code><attribute>3306</attribute></attribute>
-      <attribute><code>QUOTE_ALL_FIELDS</code><attribute>N</attribute></attribute>
-      <attribute><code>STREAM_RESULTS</code><attribute>Y</attribute></attribute>
-      <attribute><code>SUPPORTS_BOOLEAN_DATA_TYPE</code><attribute>N</attribute></attribute>
-      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
-    </attributes>
-  </connection>
     <slaveservers>
     </slaveservers>
 <job-log-table><connection/>
@@ -87,8 +42,10 @@
       <simple>Y</simple>
       <jar_url>.&#47;samples&#47;jobs&#47;hadoop&#47;pentaho-mapreduce-sample.jar</jar_url>
       <command_line_args>--input=&#47;wordcount&#47;input --output=&#47;wordcount&#47;output --hdfsHost=hadoop-server:8020 --jobTrackerHost=hadoop-server:8021</command_line_args>
+      <simple_blocking>Y</simple_blocking>
       <blocking>Y</blocking>
       <logging_interval>5</logging_interval>
+      <simple_logging_interval>1</simple_logging_interval>
       <hadoop_job_name>PDI Hadoop - WordCount - Simple</hadoop_job_name>
       <mapper_class>org.pentaho.hadoop.sample.wordcount.WordCountMapper</mapper_class>
       <combiner_class>org.pentaho.hadoop.sample.wordcount.WordCountReducer</combiner_class>
@@ -105,7 +62,6 @@
       <job_tracker_port>8021</job_tracker_port>
       <num_map_tasks>2</num_map_tasks>
       <num_reduce_tasks>1</num_reduce_tasks>
-      <working_dir>&#47;tmp&#47;wordcount</working_dir>
       <user_defined_list>
         <user_defined>
           <name>pentaho.hadoop.property.name1</name>
