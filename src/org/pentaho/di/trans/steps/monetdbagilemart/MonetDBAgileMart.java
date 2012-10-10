@@ -8,6 +8,7 @@ package org.pentaho.di.trans.steps.monetdbagilemart;
 import org.pentaho.di.core.TableManager;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
@@ -20,6 +21,8 @@ import org.pentaho.di.trans.steps.tableagilemart.AgileMartUtil;
 
 public class MonetDBAgileMart extends MonetDBBulkLoader implements TableManager {
 
+	private static Class<?> PKG = MonetDBAgileMartMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+	
 	private long rowLimit = -1;
 	private long bufferLimit = -1;
 	
@@ -124,8 +127,8 @@ public class MonetDBAgileMart extends MonetDBBulkLoader implements TableManager 
 			return true;
 		} catch (KettleException e) {
 			MonetDBBulkLoaderMeta meta = getMeta();
-			setMessage( "Could not flush buffer to table: "+meta.getTableName() );
-			log.logError("Could not flush buffer to  table: "+meta.getTableName(), e);
+			setMessage( BaseMessages.getString(PKG, "MonetDBAgileMart.Log.FlushError", meta.getTableName(), this.getMessage() ) );
+			log.logError(BaseMessages.getString(PKG, "MonetDBAgileMart.Log.FlushError", meta.getTableName(), this.getMessage() ), e);
 		}
 		return false;
 	}
@@ -138,8 +141,8 @@ public class MonetDBAgileMart extends MonetDBBulkLoader implements TableManager 
 			truncateTable( rt, cmd );
 			return true;
 		} catch (KettleException e) {
-			setMessage( "Could not truncate table: "+meta.getTableName() );
-			log.logError("Could not flush buffer to MonetDB table: "+meta.getTableName(), e);
+			setMessage( BaseMessages.getString(PKG, "MonetDBAgileMart.Log.TruncateError", meta.getTableName(), this.getMessage() ) );
+			log.logError(BaseMessages.getString(PKG, "MonetDBAgileMart.Log.TruncateError", meta.getTableName(), this.getMessage() ), e);
 		}
 		return false;
 	}	
@@ -160,8 +163,8 @@ public class MonetDBAgileMart extends MonetDBBulkLoader implements TableManager 
 			autoAdjustSchema( meta, rt, cmd );
 			return true;
 		} catch (KettleException e) {
-			setMessage("Could not adjust schema for table: "+meta.getTableName() );
-			log.logError("Could not adjust schema for table: "+meta.getTableName(), e);
+			setMessage( BaseMessages.getString(PKG, "MonetDBAgileMart.Log.SchemaError", meta.getTableName(), this.getMessage() ) );
+			log.logError(BaseMessages.getString(PKG, "MonetDBAgileMart.Log.SchemaError", meta.getTableName(), this.getMessage() ), e);
 		}
 		return false;
 	}
@@ -174,8 +177,8 @@ public class MonetDBAgileMart extends MonetDBBulkLoader implements TableManager 
 			dropTable( rt, cmd );
 			return true;
 		} catch (KettleException e) {
-			setMessage("Could not drop table: "+meta.getTableName() );
-			log.logError("Could not drop MonetDB table: "+meta.getTableName(), e);
+			setMessage( BaseMessages.getString(PKG, "MonetDBAgileMart.Log.DropError", meta.getTableName(), this.getMessage() ) );
+			log.logError(BaseMessages.getString(PKG, "MonetDBAgileMart.Log.DropError", meta.getTableName(), this.getMessage() ), e);
 		}
 		return false;
 	}

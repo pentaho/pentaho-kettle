@@ -589,42 +589,46 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
     			this.message = "";
      		  	if (log.isDetailed()) logDetailed("Trying: "+cmd);
      		  	holder.stdIn.write(cmd.getBytes());
+    			holder.stdIn.flush();
+    			holder.stdIn.close();
+     		    // wait for the process to finish and check for any error...
+     		  	try {
+          		   int exitVal = holder.process.waitFor();
+         		   byte buffer[] = new byte[4096];
+         		  holder.stdOut.read(buffer);
+         		   this.message = new String(buffer);
+         		   logBasic(BaseMessages.getString(PKG, "MonetDBBulkLoader.Log.ExitValuePsqlPath", "" + exitVal)); //$NON-NLS-1$
+        		   if( exitVal != 0 ) {
+        			   logError(BaseMessages.getString(PKG, "MonetDBBulkLoader.Log.ExitMessage",message)); //$NON-NLS-1$
+        		   } else {
+        			   logDebug(BaseMessages.getString(PKG, "MonetDBBulkLoader.Log.ExitMessage",message)); //$NON-NLS-1$
+        		   }
+         		   if( exitVal != 0 ) {
+         	     		throw new KettleException("An error occurred executing a statement");
+         		   }
+     		  	} catch(Exception e) {
+     	     		// can we get an error message
+     	     		if( holder != null && holder.stdOut != null ) {
+     	      		   byte buffer[] = new byte[4096];
+     	     		   try {
+     	     			  holder.stdOut.read(buffer);
+     		     		   this.message = new String(buffer);
+     		     		   logError(BaseMessages.getString(PKG, "MonetDBBulkLoader.Log.ExitMessage", new String(buffer))); //$NON-NLS-1$
+     	     		   } catch (IOException e1) {
+     					// well we tried
+     	     		   }
+     	     		}
+     	     		throw new KettleException("An error occurred writing data to the mclient process", e);
+     	     	}
+
   		   } else {
   			   this.message = statement.getError();
   			   logError(statement.getError());
   	     		throw new KettleException("An error occurred creating SQL statement");
   		   }
  		  	 		   
-			holder.stdIn.flush();
-			holder.stdIn.close();
- 		    // wait for the process to finish and check for any error...
-
- 		   int exitVal = holder.process.waitFor();
- 		   byte buffer[] = new byte[4096];
- 		  holder.stdOut.read(buffer);
- 		   this.message = new String(buffer);
- 		   logBasic(BaseMessages.getString(PKG, "MonetDBBulkLoader.Log.ExitValuePsqlPath", "" + exitVal)); //$NON-NLS-1$
-		   if( exitVal != 0 ) {
-			   logError(BaseMessages.getString(PKG, "MonetDBBulkLoader.Log.ExitMessage",message)); //$NON-NLS-1$
-		   } else {
-			   logDebug(BaseMessages.getString(PKG, "MonetDBBulkLoader.Log.ExitMessage",message)); //$NON-NLS-1$
-		   }
- 		   if( exitVal != 0 ) {
- 	     		throw new KettleException("An error occurred executing a statement");
- 		   }
      	}
      	catch(Exception e) {
-     		// can we get an error message
-     		if( holder != null && holder.stdOut != null ) {
-      		   byte buffer[] = new byte[4096];
-     		   try {
-     			  holder.stdOut.read(buffer);
-	     		   this.message = new String(buffer);
-	     		   logError(BaseMessages.getString(PKG, "MonetDBBulkLoader.Log.ExitMessage", new String(buffer))); //$NON-NLS-1$
-     		   } catch (IOException e1) {
-				// well we tried
-     		   }
-     		}
      		throw new KettleException("An error occurred writing data to the mclient process", e);
      	}		
 		if (log.isDetailed()) logDetailed("Successfull");

@@ -127,7 +127,7 @@ public class MonetDBAgileMartDialog extends MonetDBBulkLoaderDialog implements S
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Shell.Title")); //$NON-NLS-1$
+		shell.setText(BaseMessages.getString(PKG, "MonetDBAgileMartDialog.Shell.Title")); //$NON-NLS-1$
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
