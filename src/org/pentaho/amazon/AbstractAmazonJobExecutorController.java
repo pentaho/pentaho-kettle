@@ -304,6 +304,10 @@ public abstract class AbstractAmazonJobExecutorController extends AbstractXulEve
     return browse(fileFilters, fileFilterNames, fileUri, opts, VfsFileChooserDialog.VFS_DIALOG_OPEN_DIRECTORY);
   }
   public FileObject browse(String[] fileFilters, String[] fileFilterNames, String fileUri, FileSystemOptions opts, int fileDialogMode) throws KettleException, FileSystemException {
+    return browse(fileFilters, fileFilterNames, fileUri, opts, fileDialogMode, false);
+  }
+  public FileObject browse(String[] fileFilters, String[] fileFilterNames, String fileUri, FileSystemOptions opts, int fileDialogMode, boolean showFileScheme) throws KettleException, FileSystemException {
+    getFileChooserHelper().setShowFileScheme(showFileScheme);
     return getFileChooserHelper().browse(fileFilters, fileFilterNames, fileUri, opts, fileDialogMode);
   }
 

@@ -103,7 +103,7 @@ public class AmazonHiveJobExecutorController extends AbstractAmazonJobExecutorCo
 
     FileSystemOptions opts = getFileSystemOptions();
 
-    FileObject selectedFile = browse(fileFilters, fileFilterNames, getVariableSpace().environmentSubstitute(qUrl), opts, VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE);
+    FileObject selectedFile = browse(fileFilters, fileFilterNames, getVariableSpace().environmentSubstitute(qUrl), opts, VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE, true);
     if (selectedFile != null) {
       setQUrl(selectedFile.getName().getURI());
     }

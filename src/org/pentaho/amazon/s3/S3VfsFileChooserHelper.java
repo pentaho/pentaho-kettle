@@ -51,10 +51,4 @@ public class S3VfsFileChooserHelper extends VfsFileChooserHelper {
   protected boolean returnsUserAuthenticatedFileObjects() {
     return true;
   }
-
-  @Override
-  public boolean showFileScheme() {
-    return false;
-  }
-
 }

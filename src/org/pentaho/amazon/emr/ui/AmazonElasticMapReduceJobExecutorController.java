@@ -63,7 +63,7 @@ public class AmazonElasticMapReduceJobExecutorController extends AbstractAmazonJ
 
     FileSystemOptions opts = getFileSystemOptions();
 
-    FileObject selectedFile = browse(fileFilters, fileFilterNames, getVariableSpace().environmentSubstitute(jarUrl), opts, VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE);
+    FileObject selectedFile = browse(fileFilters, fileFilterNames, getVariableSpace().environmentSubstitute(jarUrl), opts, VfsFileChooserDialog.VFS_DIALOG_OPEN_FILE, true);
     if (selectedFile != null) {
       setJarUrl(selectedFile.getName().getURI());
     }
