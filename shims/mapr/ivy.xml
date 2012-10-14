@@ -18,7 +18,7 @@
 
   <dependencies defaultconf="provided->default">
     <!-- Our modified Hive driver (need to include it until changes are accepted into main Hive project) -->
-    <dependency conf="default" org="org.apache.hive" name="hive-jdbc" rev="${dependency.hive-jdbc.revision}" changing="true" />
+    <dependency conf="default" org="org.apache.hadoop.hive" name="hive-jdbc" rev="${dependency.hive-jdbc.revision}" changing="true" />
     <dependency conf="default" org="org.apache.hadoop.hive" name="hive-exec" rev="${dependency.hive-jdbc.revision}" changing="true"/>
     <dependency conf="default" org="org.apache.hadoop.hive" name="hive-service" rev="${dependency.hive-jdbc.revision}" changing="true"/>
     <dependency conf="default" org="org.apache.hadoop.hive" name="hive-metastore" rev="${dependency.hive-jdbc.revision}" changing="true"/>
