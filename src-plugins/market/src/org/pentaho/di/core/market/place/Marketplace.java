@@ -68,7 +68,7 @@ public class Marketplace implements XMLInterface {
   public static final List<Marketplace> getDefaultMarketplaces() {
     List<Marketplace> marketplaces = new ArrayList<Marketplace>();
     marketplaces.add( new Marketplace("Pentaho Data Integration Marketplace", 
-            "http://s3.amazonaws.com/kettle/market.xml"));
+            "http://localhost:8080/marketplace.xml"));
     return marketplaces;
   }
   

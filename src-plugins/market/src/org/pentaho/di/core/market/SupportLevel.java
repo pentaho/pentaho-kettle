@@ -10,7 +10,7 @@ import org.pentaho.di.core.market.SupportLevel;
 public enum SupportLevel {
   // Supported by ...
   //
-  PROFESSIONALY_SUPPORTED("Professionally supported"),
+  PROFESSIONALLY_SUPPORTED("Professionally supported"),
   
   // Supported by the community
   //

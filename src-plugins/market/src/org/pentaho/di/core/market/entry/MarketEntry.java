@@ -1,5 +1,7 @@
 package org.pentaho.di.core.market.entry;
 
+import java.util.List;
+
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.market.SupportLevel;
 import org.pentaho.di.core.xml.XMLHandler;
@@ -99,7 +101,6 @@ public class MarketEntry implements XMLInterface {
   public int hashCode() {
     return id.hashCode();
   }
-
   @Override
   public String getXML() throws KettleException {
     StringBuilder xml = new StringBuilder();
@@ -109,21 +110,29 @@ public class MarketEntry implements XMLInterface {
     xml.append(XMLHandler.addTagValue("type", type.toString(), false));
     xml.append(XMLHandler.addTagValue("name", name, false));
     xml.append(XMLHandler.addTagValue("description", description, false));
+    
+    // for now, support a single version
+    
+    xml.append(XMLHandler.openTag("versions"));
+    xml.append(XMLHandler.openTag("version"));
     xml.append(XMLHandler.addTagValue("version", version, false));
+    xml.append(XMLHandler.addTagValue("min_parent_version", minPdiVersion, false));
+    xml.append(XMLHandler.addTagValue("max_parent_version", maxPdiVersion, false));
+    xml.append(XMLHandler.addTagValue("package_url", packageUrl, false));
+    xml.append(XMLHandler.addTagValue("source_url", sourceUrl, false));
+    xml.append(XMLHandler.closeTag("version"));
+    xml.append(XMLHandler.closeTag("versions"));
+    
     xml.append(XMLHandler.addTagValue("author", author, false));
     xml.append(XMLHandler.addTagValue("documentation_url", documentationUrl, false));
-    xml.append(XMLHandler.addTagValue("source_url", sourceUrl, false));
     xml.append(XMLHandler.addTagValue("forum_url", forumUrl, false));
     xml.append(XMLHandler.addTagValue("cases_url", casesUrl, false));
-    xml.append(XMLHandler.addTagValue("package_url", packageUrl, false));
     xml.append(XMLHandler.addTagValue("license_name", licenseName, false));
     xml.append(XMLHandler.addTagValue("license_text", licenseText, false));
     xml.append(XMLHandler.addTagValue("support_level", supportLevel.toString(), false));
     xml.append(XMLHandler.addTagValue("support_message", supportMessage, false));
     xml.append(XMLHandler.addTagValue("support_organization", supportOrganization, false));
     xml.append(XMLHandler.addTagValue("support_url", supportUrl, false));
-    xml.append(XMLHandler.addTagValue("min_pdi_version", minPdiVersion, false));
-    xml.append(XMLHandler.addTagValue("max_pdi_version", maxPdiVersion, false));
     xml.append(XMLHandler.closeTag(XML_TAG));
     return xml.toString();
   }
@@ -134,21 +143,33 @@ public class MarketEntry implements XMLInterface {
     type = MarketEntryType.getMarketEntryType(XMLHandler.getTagValue(node, "type"));
     name = XMLHandler.getTagValue(node, "name");
     description = XMLHandler.getTagValue(node, "description");
-    version = XMLHandler.getTagValue(node, "version");
     author = XMLHandler.getTagValue(node, "author");
+
+    // for now read the first version from the metadata
+    
+    List<Node> versionsNodes = XMLHandler.getNodes(node, "versions");
+    for (Node versionsNode : versionsNodes) {
+      List<Node> versionNodes = XMLHandler.getNodes(versionsNode, "version");
+      for (Node versionNode : versionNodes) {
+        version = XMLHandler.getTagValue(versionNode, "version");
+        packageUrl = XMLHandler.getTagValue(versionNode, "package_url");
+        sourceUrl = XMLHandler.getTagValue(versionNode, "source_url");
+        minPdiVersion = XMLHandler.getTagValue(versionNode, "min_parent_version");
+        maxPdiVersion = XMLHandler.getTagValue(versionNode, "max_parent_version");
+        break;
+      }
+      break;
+    }
+    
     documentationUrl = XMLHandler.getTagValue(node, "documentation_url");
-    sourceUrl = XMLHandler.getTagValue(node, "source_url");
     forumUrl = XMLHandler.getTagValue(node, "forum_url");
     casesUrl = XMLHandler.getTagValue(node, "cases_url");
-    packageUrl = XMLHandler.getTagValue(node, "package_url");
     licenseName = XMLHandler.getTagValue(node, "license_name");
     licenseText = XMLHandler.getTagValue(node, "license_text");
     supportLevel = SupportLevel.getSupportLevel(XMLHandler.getTagValue(node, "support_level"));
     supportMessage = XMLHandler.getTagValue(node, "support_message");
     supportOrganization = XMLHandler.getTagValue(node, "support_organization");
     supportUrl = XMLHandler.getTagValue(node, "support_url");
-    minPdiVersion = XMLHandler.getTagValue(node, "min_pdi_version");
-    maxPdiVersion = XMLHandler.getTagValue(node, "max_pdi_version");
   }
   
   /**

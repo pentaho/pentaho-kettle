@@ -15,7 +15,7 @@ import org.pentaho.di.core.xml.XMLHandler;
 public class MarketEntryTest extends TestCase {
   
   private static final String name = "Pentaho Data Integration Marketplace";
-  private static final String entriesUrl = "http://s3.amazonaws.com/kettle/market.xml";
+  private static final String entriesUrl = "https://raw.github.com/pentaho/marketplace-metadata/master/marketplace.xml";
 
   public void testMarketplaceCreation() throws Exception {
     Marketplace place = new Marketplace(name, entriesUrl);

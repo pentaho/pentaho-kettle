@@ -14,6 +14,7 @@ public enum MarketEntryType {
   Repository,
   ImportRule,
   Mixed,
+  Platform,
   ;
   
   public static MarketEntryType getMarketEntryType(String code) {

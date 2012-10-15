@@ -28,7 +28,7 @@ public class MarketplaceTest extends TestCase {
   private static final String packageUrl = "http://wiki.pentaho.com/download/attachments/23531011/DummyPlugin.zip";
   private static final String licenseName = "Apache License 2.0";
   private static final String licenseText = "For more details see: http://www.apache.org/licenses/LICENSE-2.0.html";
-  private static final SupportLevel supportLevel = SupportLevel.PROFESSIONALY_SUPPORTED;
+  private static final SupportLevel supportLevel = SupportLevel.PROFESSIONALLY_SUPPORTED;
   private static final String supportMessage = "Supported by a Pentaho Data Integration Enterprise Edition support contract.";
   private static final String supportOrganization = "Pentaho";
   private static final String supportUrl = "http://www.pentaho.com/services/support/pdi";
