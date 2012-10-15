@@ -43,6 +43,7 @@ import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
+import org.pentaho.di.core.hadoop.HadoopConfigurationBootstrap;
 import org.pentaho.di.core.logging.Log4jFileAppender;
 import org.pentaho.di.core.logging.LogWriter;
 import org.pentaho.di.core.util.StringUtil;
@@ -53,12 +54,14 @@ import org.pentaho.di.job.entries.hadoopjobexecutor.JarUtility;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
+import org.pentaho.hadoop.shim.spi.HadoopShim;
 import org.w3c.dom.Node;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.lang.reflect.Method;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -73,20 +76,19 @@ public class AmazonElasticMapReduceJobExecutor extends AbstractAmazonJobEntry im
   public AmazonElasticMapReduceJobExecutor() {
   }
   
-  public String getMainClass(String localJarUrl) throws Exception {
-    List<Class<?>> classesWithMains = util.getClassesInJarWithMain(localJarUrl, getClass().getClassLoader());
+  public String getMainClass(URL localJarUrl) throws Exception {
+    HadoopShim shim = HadoopConfigurationBootstrap.getHadoopConfigurationProvider().getActiveConfiguration().getHadoopShim();
 
-    for (final Class<?> clazz : classesWithMains) {
-      try {
-        Method mainMethod = clazz.getMethod("main", new Class[] { String[].class });
-        if (mainMethod != null) {
-          return clazz.getName();
-        }
-      } catch (Throwable ignored) {
-        // skip, try the next one
+    final Class<?> mainClass = util.getMainClassFromManifest(localJarUrl, shim.getClass().getClassLoader());
+    if (mainClass != null) {
+      return mainClass.getName();
+    } else {
+      List<Class<?>> classesWithMains = util.getClassesInJarWithMain(localJarUrl.toExternalForm(), shim.getClass().getClassLoader());
+      if (!classesWithMains.isEmpty()) {
+        return classesWithMains.get(0).getName();
       }
     }
-    throw new RuntimeException("Could not find main class in: " + localJarUrl);
+    throw new RuntimeException("Could not find main class in: " + localJarUrl.toExternalForm());
   }
 
   public Result execute(Result result, int arg1) throws KettleException {
@@ -111,7 +113,7 @@ public class AmazonElasticMapReduceJobExecutor extends AbstractAmazonJobEntry im
       tmpFile.deleteOnExit();
       FileOutputStream tmpFileOut = new FileOutputStream(tmpFile);
       IOUtils.copy(jarFile.getContent().getInputStream(), tmpFileOut);
-      String localJarUrl = tmpFile.toURI().toURL().toExternalForm();
+      URL localJarUrl = tmpFile.toURI().toURL();
 
       // find main class in jar
       String mainClass = getMainClass(localJarUrl);
