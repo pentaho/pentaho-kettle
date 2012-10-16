@@ -149,7 +149,7 @@ import org.pentaho.di.trans.steps.tableinput.TableInputMeta;
 import org.pentaho.di.ui.core.ConstUI;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.dialog.DialogClosedListener;
-import org.pentaho.di.ui.core.dialog.EnterNumberDialog;
+import org.pentaho.di.ui.core.dialog.EnterStringDialog;
 import org.pentaho.di.ui.core.dialog.EnterTextDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.dialog.PreviewRowsDialog;
@@ -2046,14 +2046,13 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     selectedSteps = null;
     String tt = BaseMessages.getString(PKG, "TransGraph.Dialog.NrOfCopiesOfStep.Title"); //$NON-NLS-1$
     String mt = BaseMessages.getString(PKG, "TransGraph.Dialog.NrOfCopiesOfStep.Message"); //$NON-NLS-1$
-    EnterNumberDialog nd = new EnterNumberDialog(shell, getCurrentStep().getCopies(), tt, mt);
-    int cop = nd.open();
-    if (cop >= 0) {
-      if (cop == 0)
-        cop = 1;
-
-      if (!multipleOK) {
-        cop = 1;
+    EnterStringDialog nd = new EnterStringDialog(shell, getCurrentStep().getCopiesString(), tt, mt, true, transMeta);
+    String cop = nd.open();
+    if (!Const.isEmpty(cop)) {
+      
+      int copies = Const.toInt(transMeta.environmentSubstitute(cop), -1);
+      if (copies>1 && !multipleOK) {
+        cop = "1";
 
         MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_WARNING);
         mb.setMessage(BaseMessages.getString(PKG, "TransGraph.Dialog.MultipleCopiesAreNotAllowedHere.Message")); //$NON-NLS-1$
@@ -2062,10 +2061,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
       }
 
-      if (getCurrentStep().getCopies() != cop) {
-        getCurrentStep().setCopies(cop);
-        spoon.refreshGraph();
-      }
+      getCurrentStep().setCopiesString(cop);
+      spoon.refreshGraph();
     }
   }
 

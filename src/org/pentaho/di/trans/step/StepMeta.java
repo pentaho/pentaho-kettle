@@ -81,25 +81,25 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 	public static final String STRING_ID_MAPPING_INPUT   = "MappingInput";
 	public static final String STRING_ID_MAPPING_OUTPUT  = "MappingOutput";
     
-    private String        stepid;   // --> StepPlugin.id
+  private String        stepid;   // --> StepPlugin.id
 	private String        stepname;
 	private StepMetaInterface stepMetaInterface;
 	private boolean       selected;
 	private boolean       distributes;
   private boolean       loadBalancing;
-	private int           copies;
+  private String        copiesString;
 	private Point         location;
 	private boolean       drawstep;
 	private String        description;
 	private boolean       terminator;
 	
-    private StepPartitioningMeta stepPartitioningMeta;
-    private StepPartitioningMeta targetStepPartitioningMeta;
-    
-    private ClusterSchema        clusterSchema;
-    private String               clusterSchemaName; // temporary to resolve later.
-    
-    private StepErrorMeta stepErrorMeta;
+  private StepPartitioningMeta stepPartitioningMeta;
+  private StepPartitioningMeta targetStepPartitioningMeta;
+  
+  private ClusterSchema        clusterSchema;
+  private String               clusterSchemaName; // temporary to resolve later.
+  
+  private StepErrorMeta stepErrorMeta;
     
 	// OK, we need to explain to this running step that we expect input from remote steps.
 	// This only happens when the previous step "repartitions". (previous step has different
@@ -118,46 +118,46 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 	
 	private TransMeta parentTransMeta;
 
+	private Integer copiesCache = null;
+	
     
-    /**
-     * @param stepid The ID of the step: this is derived information, you can also use the constructor without stepid.
-     *               This constructor will be deprecated soon.
-     * @param stepname The name of the new step
-     * @param stepMetaInterface The step metadata interface to use (TextFileInputMeta, etc)
-     */
-    public StepMeta(String stepid, String stepname, StepMetaInterface stepMetaInterface)
-    {
-        this(stepname, stepMetaInterface);
-        if (this.stepid==null) this.stepid = stepid;
+  /**
+   * @param stepid The ID of the step: this is derived information, you can also use the constructor without stepid.
+   *               This constructor will be deprecated soon.
+   * @param stepname The name of the new step
+   * @param stepMetaInterface The step metadata interface to use (TextFileInputMeta, etc)
+   */
+  public StepMeta(String stepid, String stepname, StepMetaInterface stepMetaInterface)
+  {
+      this(stepname, stepMetaInterface);
+      if (this.stepid==null) this.stepid = stepid;
+  }
+    
+  /**
+   * @param stepname The name of the new step
+   * @param stepMetaInterface The step metadata interface to use (TextFileInputMeta, etc)
+   */
+  public StepMeta(String stepname, StepMetaInterface stepMetaInterface) {
+    if (stepMetaInterface != null) {
+      this.stepid = PluginRegistry.getInstance().getPluginId(StepPluginType.class, stepMetaInterface);
     }
-    
-    /**
-     * @param stepname The name of the new step
-     * @param stepMetaInterface The step metadata interface to use (TextFileInputMeta, etc)
-     */
-	public StepMeta(String stepname, StepMetaInterface stepMetaInterface)
-	{
-        if (stepMetaInterface!=null)
-        {
-            this.stepid = PluginRegistry.getInstance().getPluginId(StepPluginType.class, stepMetaInterface);
-        }
-		this.stepname          = stepname;
-		setStepMetaInterface( stepMetaInterface );
-        
-		selected    = false;
-		distributes  = true;
-		copies      = 1;
-		location    = new Point(0,0);
-		drawstep    = false;
-		description = null;
-        stepPartitioningMeta = new StepPartitioningMeta();
-        // targetStepPartitioningMeta = new StepPartitioningMeta();
-        
-        clusterSchema = null; // non selected by default.
+    this.stepname = stepname;
+    setStepMetaInterface(stepMetaInterface);
 
-        remoteInputSteps = new ArrayList<RemoteStep>();
-        remoteOutputSteps = new ArrayList<RemoteStep>();
-	}
+    selected = false;
+    distributes = true;
+    copiesString = "1";
+    location = new Point(0, 0);
+    drawstep = false;
+    description = null;
+    stepPartitioningMeta = new StepPartitioningMeta();
+    // targetStepPartitioningMeta = new StepPartitioningMeta();
+
+    clusterSchema = null; // non selected by default.
+
+    remoteInputSteps = new ArrayList<RemoteStep>();
+    remoteOutputSteps = new ArrayList<RemoteStep>();
+  }
         
 	public StepMeta()
 	{
@@ -179,7 +179,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 		retval.append("    ").append(XMLHandler.addTagValue("description", description) ); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("distribute",  distributes) ); //$NON-NLS-1$ //$NON-NLS-2$
     retval.append("    ").append(XMLHandler.addTagValue("loadbalance", loadBalancing) ); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("copies",      copies) ); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("copies",      copiesString) ); //$NON-NLS-1$ //$NON-NLS-2$
         
         retval.append( stepPartitioningMeta.getXML() );
         if (targetStepPartitioningMeta!=null) {
@@ -261,7 +261,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 			
 			/* Handle info general to all step types...*/
 			description    = XMLHandler.getTagValue(stepnode, "description"); //$NON-NLS-1$
-			copies         = Const.toInt(XMLHandler.getTagValue(stepnode, "copies"), 1); //$NON-NLS-1$
+			copiesString   = XMLHandler.getTagValue(stepnode, "copies"); //$NON-NLS-1$
 			String sdistri = XMLHandler.getTagValue(stepnode, "distribute"); //$NON-NLS-1$
 			distributes     = "Y".equalsIgnoreCase(sdistri); //$NON-NLS-1$
 			if (sdistri==null) distributes=true; // default=distribute
@@ -377,8 +377,9 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 	 */
 	public void setCopies(int c)
 	{
-		if (copies!=c) setChanged();
-		copies=c;
+		setChanged();
+		copiesString=Integer.toString(c);
+		copiesCache=c;
 	}
 	
 	/**
@@ -390,16 +391,28 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
 	{
 		// If the step is partitioned, that's going to determine the number of copies, nothing else...
 		//
-        if (isPartitioned() && getStepPartitioningMeta().getPartitionSchema()!=null)
+    if (isPartitioned() && getStepPartitioningMeta().getPartitionSchema()!=null)
+    {
+        List<String> partitionIDs = getStepPartitioningMeta().getPartitionSchema().getPartitionIDs();
+        if (partitionIDs!=null && partitionIDs.size()>0) // these are the partitions the step can "reach"
         {
-            List<String> partitionIDs = getStepPartitioningMeta().getPartitionSchema().getPartitionIDs();
-            if (partitionIDs!=null && partitionIDs.size()>0) // these are the partitions the step can "reach"
-            {
-                return partitionIDs.size();
-            }
+            return partitionIDs.size();
         }
+    }
 
-		return copies;
+    if (copiesCache!=null) {
+      return copiesCache.intValue();
+    }
+
+    if (parentTransMeta!=null) {
+      // Return -1 to indicate that the variable or string value couldn't be converted to number
+      //
+      copiesCache = Const.toInt(parentTransMeta.environmentSubstitute(copiesString), -1);
+    } else {
+      copiesCache = Const.toInt(copiesString, 1);
+    }
+    
+		return copiesCache;
 	}
 
 	public void drawStep()
@@ -487,7 +500,8 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
         }
         this.selected = stepMeta.selected;
         this.distributes = stepMeta.distributes;
-        this.copies = stepMeta.copies;
+        this.copiesString = stepMeta.copiesString;
+        this.copiesCache = null; // force re-calculation
         if (stepMeta.location!=null)
         {
             this.location = new Point(stepMeta.location.x, stepMeta.location.y);
@@ -904,7 +918,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
   }
 
   public void setParentTransMeta(TransMeta parentTransMeta) {
-	this.parentTransMeta = parentTransMeta;
+    this.parentTransMeta = parentTransMeta;
   }
   
   public TransMeta getParentTransMeta() {
@@ -926,5 +940,20 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable<
       this.loadBalancing = loadBalancing;
       setChanged();
     }
+  }
+
+  /**
+   * @return the copiesString
+   */
+  public String getCopiesString() {
+    return copiesString;
+  }
+
+  /**
+   * @param copiesString the copiesString to set
+   */
+  public void setCopiesString(String copiesString) {
+    this.copiesString = copiesString;
+    copiesCache = null;
   }
 }

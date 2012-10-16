@@ -108,14 +108,14 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
 			{
 				// These are the jobentry_copy fields...
 				//
-				ObjectId id_jobentry = new LongObjectId( r.getInteger("ID_JOBENTRY", 0) );
-				ObjectId id_jobentry_type = new LongObjectId( r.getInteger("ID_JOBENTRY_TYPE", 0) );
-				jobEntryCopy.setNr((int) r.getInteger("NR", 0));
-				int locx = (int) r.getInteger("GUI_LOCATION_X", 0);
-				int locy = (int) r.getInteger("GUI_LOCATION_Y", 0);
-				boolean isdrawn = r.getBoolean("GUI_DRAW", false);
-				boolean isparallel = r.getBoolean("PARALLEL", false);
-        boolean checkpoint = r.getBoolean("CHECKPOINT", false);
+				ObjectId id_jobentry = new LongObjectId( r.getInteger(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOBENTRY, 0) );
+				ObjectId id_jobentry_type = new LongObjectId( r.getInteger(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_ID_JOBENTRY_TYPE, 0) );
+				jobEntryCopy.setNr((int) r.getInteger(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_NR, 0));
+				int locx = (int) r.getInteger(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_GUI_LOCATION_X, 0);
+				int locy = (int) r.getInteger(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_GUI_LOCATION_Y, 0);
+				boolean isdrawn = r.getBoolean(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_GUI_DRAW, false);
+				boolean isparallel = r.getBoolean(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_PARALLEL, false);
+        boolean checkpoint = r.getBoolean(KettleDatabaseRepository.FIELD_JOBENTRY_COPY_CHECKPOINT, false);
 
 				// Do we have the jobentry already?
 				//
@@ -128,7 +128,7 @@ public class KettleDatabaseRepositoryJobEntryDelegate extends KettleDatabaseRepo
 					RowMetaAndData rt = getJobEntryType( new LongObjectId(id_jobentry_type) );
 					if (rt != null)
 					{
-						String jet_code = rt.getString("CODE", null);
+						String jet_code = rt.getString(KettleDatabaseRepository.FIELD_JOBENTRY_TYPE_CODE, null);
 
 						PluginRegistry registry = PluginRegistry.getInstance();;
 						PluginInterface jobPlugin = registry.findPluginWithId(JobEntryPluginType.class, jet_code);

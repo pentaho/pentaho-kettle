@@ -1146,6 +1146,7 @@ public class KettleDatabaseRepositoryCreationHelper {
 		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_GUI_LOCATION_X, ValueMetaInterface.TYPE_INTEGER, 6, 0));
 		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_GUI_LOCATION_Y, ValueMetaInterface.TYPE_INTEGER, 6, 0));
 		table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_GUI_DRAW, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+    table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_STEP_COPIES_STRING, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_CODE_LENGTH, 0));
 		sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_STEP_ID_STEP, false);
 
 		if (!Const.isEmpty(sql)) // Doesn't exists: create the table...

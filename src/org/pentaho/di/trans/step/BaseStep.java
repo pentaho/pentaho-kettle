@@ -323,7 +323,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
 	/**
 	 * Keeps track of the number of rows read for input deadlock verification.
 	 */
-	private long deadLockCounter;
+	protected long deadLockCounter;
 	
 	/**
      * This is the base step that forms that basis for all steps. You can derive from this class to implement your own
@@ -1970,12 +1970,14 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
       
       // Verify deadlocks!
       //
+      /*
       if (rowData==null) {
         if (getInputRowSets().size()>1 && getLinesRead()==deadLockCounter) {
           verifyInputDeadLock();
         }
         deadLockCounter=getLinesRead();
       }
+      */
     }
 
     // Still nothing: no more rows to be had?
@@ -2025,7 +2027,7 @@ public class BaseStep implements VariableSpace, StepInterface, LoggingObjectInte
    *
    * @throws KettleStepException
    */
-  private void verifyInputDeadLock() throws KettleStepException {
+  protected void verifyInputDeadLock() throws KettleStepException {
     RowSet inputFull = null;
     RowSet inputEmpty = null;
     synchronized(getInputRowSets()) {

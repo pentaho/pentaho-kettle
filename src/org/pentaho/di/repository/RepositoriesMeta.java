@@ -167,6 +167,18 @@ public class RepositoriesMeta
 		return null;
 	}
 	
+  public RepositoryMeta findRepositoryById(String id)
+  {
+    for (int i=0;i<nrRepositories();i++)
+    {
+      RepositoryMeta ri = getRepository(i);
+      if (ri.getId().equalsIgnoreCase(id)) {
+        return ri;
+      }
+    }
+    return null;
+  }
+	
 	// We read the repositories from the file:
 	// 
 	public boolean readData() throws KettleException

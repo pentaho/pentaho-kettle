@@ -86,8 +86,8 @@ public class LoggingRegistry {
 	 * @return a new ID (UUID)
 	 */
 	public synchronized String registerLoggingSource(Object object) {
-		
-		// recalc max size: see PDI-7270
+	  
+	  // recalc max size: see PDI-7270
 		maxSize = Const.toInt(EnvUtil.getSystemProperty(Const.KETTLE_MAX_LOGGING_REGISTRY_SIZE), DEFAULT_MAX_SIZE);
 
 		// Extract the core logging information from the object itself, including the hierarchy.
@@ -110,8 +110,7 @@ public class LoggingRegistry {
 		loggingSource.setLogChannelId(logChannelId);
 
 		map.put(logChannelId, loggingSource);
-		
-		
+				
 		// See if we need to update the parent's list of children
 		//
 		if (loggingSource.getParent()!=null) {

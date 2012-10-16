@@ -92,10 +92,19 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
     		job = getJobMap().getJob(entry);
     	}
     } else {
-    	// Take the ID into account!
-    	//
-    	entry = new CarteObjectEntry(jobName, id);
-    	job = getJobMap().getJob(entry);
+      // Actually, just providing the ID should be enough to identify the job
+      //
+      if (Const.isEmpty(jobName)) {
+      	// Take the ID into account!
+      	//
+        job = getJobMap().findJob(id);
+      } else {
+        entry = new CarteObjectEntry(jobName, id);
+        job = getJobMap().getJob(entry);
+        if (job!=null) {
+          jobName = job.getName();
+        }
+      }
     }
     
     if (job != null) {
@@ -139,7 +148,7 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
         out.println("<HEAD>");
         out.println("<TITLE>" + BaseMessages.getString(PKG, "GetJobStatusServlet.KettleJobStatus") + "</TITLE>");
         out.println("<META http-equiv=\"Refresh\" content=\"10;url=" + convertContextPath(GetJobStatusServlet.CONTEXT_PATH) + "?name="
-            + URLEncoder.encode(jobName, "UTF-8") + "&id="+id+"\">");
+            + URLEncoder.encode(Const.NVL(jobName, ""), "UTF-8") + "&id="+id+"\">");
         out.println("<META http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\">");
         out.println("</HEAD>");
         out.println("<BODY>");
@@ -151,7 +160,7 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
               + BaseMessages.getString(PKG, "TransStatusServlet.TransStatus") + "</th> </tr>");
 
           out.print("<tr>");
-          out.print("<td>" + jobName + "</td>");
+          out.print("<td>" + Const.NVL(jobName, "")+ "</td>");
           out.print("<td>" + status + "</td>");
           out.print("</tr>");
           out.print("</table>");
@@ -159,22 +168,22 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
           out.print("<p>");
 
           if (job.isFinished()) {
-            out.print("<a href=\"" + convertContextPath(StartJobServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(jobName, "UTF-8") + "&id="+id+"\">"
+            out.print("<a href=\"" + convertContextPath(StartJobServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(Const.NVL(jobName, ""), "UTF-8") + "&id="+id+"\">"
                 + BaseMessages.getString(PKG, "GetJobStatusServlet.StartJob") + "</a>");
             out.print("<p>");
           } else {
-            out.print("<a href=\"" + convertContextPath(StopJobServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(jobName, "UTF-8") + "&id="+id+"\">"
+            out.print("<a href=\"" + convertContextPath(StopJobServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(Const.NVL(jobName, ""), "UTF-8") + "&id="+id+"\">"
                 + BaseMessages.getString(PKG, "GetJobStatusServlet.StopJob") + "</a>");
             out.print("<p>");
           }
 
           out.println("<p>");
 
-          out.print("<a href=\"" + convertContextPath(GetJobStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(jobName, "UTF-8") + "&xml=y&id="+id+"\">"
+          out.print("<a href=\"" + convertContextPath(GetJobStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(Const.NVL(jobName, ""), "UTF-8") + "&xml=y&id="+id+"\">"
               + BaseMessages.getString(PKG, "TransStatusServlet.ShowAsXml") + "</a><br>");
           out.print("<a href=\"" + convertContextPath(GetStatusServlet.CONTEXT_PATH) + "\">"
               + BaseMessages.getString(PKG, "TransStatusServlet.BackToStatusPage") + "</a><br>");
-          out.print("<p><a href=\"" + convertContextPath(GetJobStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(jobName, "UTF-8") + "&id="+id+"\">"
+          out.print("<p><a href=\"" + convertContextPath(GetJobStatusServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(Const.NVL(jobName, ""), "UTF-8") + "&id="+id+"\">"
               + BaseMessages.getString(PKG, "TransStatusServlet.Refresh") + "</a>");
 
           // Put the logging below that.

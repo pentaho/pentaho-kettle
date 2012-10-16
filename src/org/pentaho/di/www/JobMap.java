@@ -149,4 +149,19 @@ public class JobMap {
     this.slaveServerConfig = slaveServerConfig;
   }
 
+  /**
+   * Find a job using the container/carte object ID.
+   * 
+   * @param id the container/carte object ID
+   * @return The job if it's found, null if the ID couldn't be found in the job map.
+   */
+  public Job findJob(String id) {
+    for (Job job : jobMap.values()) {
+      if (job.getContainerObjectId().equals(id)) {
+        return job;
+      }
+    }
+    return null;
+  }
+
 }

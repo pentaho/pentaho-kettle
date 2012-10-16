@@ -30,6 +30,7 @@ import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.encryption.Encr;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.jdbc.TransDataService;
@@ -38,14 +39,20 @@ import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
+import org.pentaho.di.core.plugins.PluginRegistry;
+import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
+import org.pentaho.di.repository.RepositoriesMeta;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.repository.RepositoryMeta;
 import org.w3c.dom.Node;
 
 public class SlaveServerConfig {
 	public static final String XML_TAG = "slave_config"; //$NON-NLS-1$
 	public static final String XML_TAG_MASTERS = "masters"; //$NON-NLS-1$
 
+	public static final String XML_TAG_REPOSITORY = "repository"; //$NON-NLS-1$
   public static final String XML_TAG_SEQUENCES = "sequences"; //$NON-NLS-1$
 	public static final String XML_TAG_AUTOSEQUENCE = "autosequence"; //$NON-NLS-1$
   public static final String XML_TAG_AUTO_CREATE= "autocreate"; //$NON-NLS-1$
@@ -77,6 +84,11 @@ public class SlaveServerConfig {
 	
 	private List<TransDataService> services;
 	
+	private Repository repository;
+	private RepositoryMeta repositoryMeta;
+	private String repositoryUsername;
+	private String repositoryPassword;
+	
 	public SlaveServerConfig() {
 		masters=new ArrayList<SlaveServer>();
 		databases=new ArrayList<DatabaseMeta>();
@@ -98,53 +110,60 @@ public class SlaveServerConfig {
 	
 	public String getXML() {
 		
-        StringBuffer xml = new StringBuffer();
-        
-        xml.append(XMLHandler.openTag(XML_TAG));
+    StringBuffer xml = new StringBuffer();
+    
+    xml.append(XMLHandler.openTag(XML_TAG));
 
-        for (SlaveServer slaveServer : masters) {
-        	xml.append(slaveServer.getXML());
-        }
-        
-        XMLHandler.addTagValue("report_to_masters", reportingToMasters);
-        
-        if (slaveServer!=null) {
-        	xml.append(slaveServer.getXML());
-        }
+    for (SlaveServer slaveServer : masters) {
+    	xml.append(slaveServer.getXML());
+    }
+    
+    XMLHandler.addTagValue("report_to_masters", reportingToMasters);
+    
+    if (slaveServer!=null) {
+    	xml.append(slaveServer.getXML());
+    }
 
-        XMLHandler.addTagValue("joining", joining);
-        XMLHandler.addTagValue("max_log_lines", maxLogLines);
-        XMLHandler.addTagValue("max_log_timeout_minutes", maxLogTimeoutMinutes);
-        XMLHandler.addTagValue("object_timeout_minutes", objectTimeoutMinutes);
-        
-        xml.append(XMLHandler.openTag(XML_TAG_SEQUENCES));
-        for (SlaveSequence slaveSequence : slaveSequences) {
-          xml.append(XMLHandler.openTag(SlaveSequence.XML_TAG));
-          xml.append(slaveSequence.getXML());
-          xml.append(XMLHandler.closeTag(SlaveSequence.XML_TAG));
-        }
-        xml.append(XMLHandler.closeTag(XML_TAG_SEQUENCES));
-        
-        if (autoSequence!=null) {
-          xml.append(XMLHandler.openTag(XML_TAG_AUTOSEQUENCE));
-          xml.append(autoSequence.getXML());
-          xml.append(XMLHandler.addTagValue(XML_TAG_AUTO_CREATE, automaticCreationAllowed));
-          xml.append(XMLHandler.closeTag(XML_TAG_AUTOSEQUENCE));
-        }
+    XMLHandler.addTagValue("joining", joining);
+    XMLHandler.addTagValue("max_log_lines", maxLogLines);
+    XMLHandler.addTagValue("max_log_timeout_minutes", maxLogTimeoutMinutes);
+    XMLHandler.addTagValue("object_timeout_minutes", objectTimeoutMinutes);
+    
+    xml.append(XMLHandler.openTag(XML_TAG_SEQUENCES));
+    for (SlaveSequence slaveSequence : slaveSequences) {
+      xml.append(XMLHandler.openTag(SlaveSequence.XML_TAG));
+      xml.append(slaveSequence.getXML());
+      xml.append(XMLHandler.closeTag(SlaveSequence.XML_TAG));
+    }
+    xml.append(XMLHandler.closeTag(XML_TAG_SEQUENCES));
+    
+    if (autoSequence!=null) {
+      xml.append(XMLHandler.openTag(XML_TAG_AUTOSEQUENCE));
+      xml.append(autoSequence.getXML());
+      xml.append(XMLHandler.addTagValue(XML_TAG_AUTO_CREATE, automaticCreationAllowed));
+      xml.append(XMLHandler.closeTag(XML_TAG_AUTOSEQUENCE));
+    }
 
-        xml.append(XMLHandler.openTag(XML_TAG_SERVICES));
-        
-        for (TransDataService service : services) {
-          xml.append(XMLHandler.openTag(XML_TAG_SERVICE));
-          xml.append(service.getXML());
-          xml.append(XMLHandler.closeTag(XML_TAG_SERVICE));
-        }
-        xml.append(XMLHandler.closeTag(XML_TAG_SERVICES));
+    xml.append(XMLHandler.openTag(XML_TAG_SERVICES));
+    
+    for (TransDataService service : services) {
+      xml.append(XMLHandler.openTag(XML_TAG_SERVICE));
+      xml.append(service.getXML());
+      xml.append(XMLHandler.closeTag(XML_TAG_SERVICE));
+    }
+    xml.append(XMLHandler.closeTag(XML_TAG_SERVICES));
 
-        
-        xml.append(XMLHandler.closeTag(XML_TAG));
-        
-        return xml.toString();
+    if (repositoryMeta!=null) {
+      xml.append(XMLHandler.openTag(XML_TAG_REPOSITORY));
+      xml.append("  ").append(XMLHandler.addTagValue("id", repositoryMeta.getId()));
+      xml.append("  ").append(XMLHandler.addTagValue("username", repositoryUsername));
+      xml.append("  ").append(XMLHandler.addTagValue("password", Encr.encryptPasswordIfNotUsingVariables(repositoryPassword)));
+      xml.append(XMLHandler.closeTag(XML_TAG_REPOSITORY));
+    }
+    
+    xml.append(XMLHandler.closeTag(XML_TAG));
+    
+    return xml.toString();
 	}
 	
 	public SlaveServerConfig(LogChannelInterface log, Node node) throws KettleXMLException {
@@ -193,9 +212,38 @@ public class SlaveServerConfig {
       TransDataService service = new TransDataService(serviceNode);
       services.add(service);
     }
+
+    Node repositoryNode = XMLHandler.getSubNode(node, XML_TAG_REPOSITORY);
+    String repositoryId = XMLHandler.getTagValue(repositoryNode, "name");
+    repositoryUsername = XMLHandler.getTagValue(repositoryNode, "username");
+    repositoryPassword = XMLHandler.getTagValue(repositoryNode, "password");
+    if (!Const.isEmpty(repositoryId)) {
+      openRepository(repositoryId);
+    }
+
 	}
 	
-	public void readAutoSequences() throws KettleException {
+	private void openRepository(String repositoryId) throws KettleXMLException {
+    try {
+      
+      RepositoriesMeta repositoriesMeta = new RepositoriesMeta();
+      repositoriesMeta.readData();
+      repositoryMeta = repositoriesMeta.findRepository( repositoryId );
+      PluginRegistry registry = PluginRegistry.getInstance();
+      repository = registry.loadClass(
+             RepositoryPluginType.class,
+             repositoryMeta,
+             Repository.class
+        );
+      repository.init(repositoryMeta);
+      repository.connect(repositoryUsername, repositoryPassword);
+      
+    } catch(Exception e) {
+      throw new KettleXMLException(e);
+    }
+  }
+
+  public void readAutoSequences() throws KettleException {
 	  if (autoSequence==null) return;
 	  
 	  Database database = null;
@@ -451,6 +499,62 @@ public class SlaveServerConfig {
    */
   public void setServices(List<TransDataService> services) {
     this.services = services;
+  }
+
+  /**
+   * @return the repository
+   */
+  public Repository getRepository() {
+    return repository;
+  }
+
+  /**
+   * @param repository the repository to set
+   */
+  public void setRepository(Repository repository) {
+    this.repository = repository;
+  }
+
+  /**
+   * @return the repositoryMeta
+   */
+  public RepositoryMeta getRepositoryMeta() {
+    return repositoryMeta;
+  }
+
+  /**
+   * @param repositoryMeta the repositoryMeta to set
+   */
+  public void setRepositoryMeta(RepositoryMeta repositoryMeta) {
+    this.repositoryMeta = repositoryMeta;
+  }
+
+  /**
+   * @return the repositoryUsername
+   */
+  public String getRepositoryUsername() {
+    return repositoryUsername;
+  }
+
+  /**
+   * @param repositoryUsername the repositoryUsername to set
+   */
+  public void setRepositoryUsername(String repositoryUsername) {
+    this.repositoryUsername = repositoryUsername;
+  }
+
+  /**
+   * @return the repositoryPassword
+   */
+  public String getRepositoryPassword() {
+    return repositoryPassword;
+  }
+
+  /**
+   * @param repositoryPassword the repositoryPassword to set
+   */
+  public void setRepositoryPassword(String repositoryPassword) {
+    this.repositoryPassword = repositoryPassword;
   }
   
   

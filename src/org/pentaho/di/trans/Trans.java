@@ -538,288 +538,315 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     }
 
 
-    /**
-     * Prepares the transformation for execution. This includes setting the arguments and parameters as well
-     * as preparing and tracking the steps and hops in the transformation.
-     * 
-     * @param arguments the arguments to use for this transformation
-     * @throws KettleException in case the transformation could not be prepared (initialized)
-     */
-    public void prepareExecution(String[] arguments) throws KettleException
-    {
-      preparing=true;
-      startDate = null;
-      running = false;
+  /**
+   * Prepares the transformation for execution. This includes setting the
+   * arguments and parameters as well as preparing and tracking the steps and
+   * hops in the transformation.
+   * 
+   * @param arguments
+   *          the arguments to use for this transformation
+   * @throws KettleException
+   *           in case the transformation could not be prepared (initialized)
+   */
+  public void prepareExecution(String[] arguments) throws KettleException {
+    preparing = true;
+    startDate = null;
+    running = false;
 
-      log.snap(Metrics.METRIC_TRANSFORMATION_EXECUTION_START);
-      log.snap(Metrics.METRIC_TRANSFORMATION_INIT_START);
-      
-        
-  		//
-  		// Set the arguments on the transformation...
-  		//
-  		if (arguments!=null) transMeta.setArguments(arguments);
-  		
-  		activateParameters();
-  		transMeta.activateParameters();
-  
-  		if (transMeta.getName()==null)
-  		{
-  			if (transMeta.getFilename()!=null)
-  			{
-  				log.logBasic(BaseMessages.getString(PKG, "Trans.Log.DispacthingStartedForFilename",transMeta.getFilename())); //$NON-NLS-1$ //$NON-NLS-2$
-  			}
-  		}
-  		else
-  		{
-  			log.logBasic(BaseMessages.getString(PKG, "Trans.Log.DispacthingStartedForTransformation",transMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$
-  		}
-  
-  		if (transMeta.getArguments()!=null)
-  		{
-  		    if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.NumberOfArgumentsDetected", String.valueOf(transMeta.getArguments().length) )); //$NON-NLS-1$
-  		}
-  
-  		if (isSafeModeEnabled())
-  		{
-  		    if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.SafeModeIsEnabled",transMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$
-  		}
-  
-  		if (getReplayDate() != null) {
-  			SimpleDateFormat df = new SimpleDateFormat(REPLAY_DATE_FORMAT);
-  			log.logBasic(BaseMessages.getString(PKG, "Trans.Log.ThisIsAReplayTransformation") //$NON-NLS-1$
-  					+ df.format(getReplayDate()));
-  		} else {
-  		    if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.ThisIsNotAReplayTransformation")); //$NON-NLS-1$
-  		}
-  
-  		// setInternalKettleVariables(this);  --> Let's not do this, when running without file, for example remote, it spoils the fun
-  
-      // extra check to see if the servlet print writer has some value in case folks want to test it locally...
-      //
-      if (servletPrintWriter==null) {
-        servletPrintWriter = new PrintWriter(new OutputStreamWriter(System.out));
-      }
-  		
-  		// Keep track of all the row sets and allocated steps
-  		//
-  		steps	 = new ArrayList<StepMetaDataCombi>();
-  		rowsets	 = new ArrayList<RowSet>();
-  
-  		//
-  		// Sort the steps & hops for visual pleasure...
-  		//
-  		if (isMonitored())
-  		{
-  			transMeta.sortStepsNatural();
-  		}
-  
-  		List<StepMeta> hopsteps=transMeta.getTransHopSteps(false);
-  
-  		if(log.isDetailed()) 
-  		{
-  			log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.FoundDefferentSteps",String.valueOf(hopsteps.size())));	 //$NON-NLS-1$ //$NON-NLS-2$
-  			log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.AllocatingRowsets")); //$NON-NLS-1$
-  		}
-  		// First allocate all the rowsets required!
-  		// Note that a mapping doesn't receive ANY input or output rowsets...
-  		//
-  		for (int i=0;i<hopsteps.size();i++)
-  		{
-  			StepMeta thisStep=hopsteps.get(i);
-  			if (thisStep.isMapping()) continue; // handled and allocated by the mapping step itself.
-  			
-  			if(log.isDetailed()) 
-  				log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.AllocateingRowsetsForStep",String.valueOf(i),thisStep.getName())); //$NON-NLS-1$ //$NON-NLS-2$
-  
-  			List<StepMeta> nextSteps = transMeta.findNextSteps(thisStep);
-  			int nrTargets = nextSteps.size();
-  
-  			for (int n=0;n<nrTargets;n++)
-  			{
-  				// What's the next step?
-  				StepMeta nextStep = nextSteps.get(n);
-  				if (nextStep.isMapping()) continue; // handled and allocated by the mapping step itself.
-  				
-                  // How many times do we start the source step?
-                  int thisCopies = thisStep.getCopies();
-  
-                  // How many times do we start the target step?
-                  int nextCopies = nextStep.getCopies();
-                  
-                  // Are we re-partitioning?
-                  boolean repartitioning = !thisStep.isPartitioned() && nextStep.isPartitioned();
-                  
-                  int nrCopies;
-                  if(log.isDetailed()) 
-                  	log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.copiesInfo",String.valueOf(thisCopies),String.valueOf(nextCopies))); //$NON-NLS-1$ //$NON-NLS-2$
-  				int dispatchType;
-  				     if (thisCopies==1 && nextCopies==1) { dispatchType=TYPE_DISP_1_1; nrCopies = 1; }
-  				else if (thisCopies==1 && nextCopies >1) { dispatchType=TYPE_DISP_1_N; nrCopies = nextCopies; }
-  				else if (thisCopies >1 && nextCopies==1) { dispatchType=TYPE_DISP_N_1; nrCopies = thisCopies; }
-  				else if (thisCopies==nextCopies && !repartitioning)         { dispatchType=TYPE_DISP_N_N; nrCopies = nextCopies; } // > 1!
-  				else                                     { dispatchType=TYPE_DISP_N_M; nrCopies = nextCopies; } // Allocate a rowset for each destination step
-  
-  				// Allocate the rowsets
-  				//
-          if (dispatchType!=TYPE_DISP_N_M)
-          {
-    				for (int c=0;c<nrCopies;c++)
-    				{
-    					RowSet rowSet;
-    					switch(transMeta.getTransformationType()) {
-    					case Normal:
-    					  // This is a temporary patch until the batching rowset has proven to be working in all situations.
-    					  // Currently there are stalling problems when dealing with small amounts of rows.
-    					  //
-    					  Boolean batchingRowSet = ValueMeta.convertStringToBoolean(System.getProperty(Const.KETTLE_BATCHING_ROWSET));
-    					  if (batchingRowSet!=null && batchingRowSet.booleanValue()) {
-    					    rowSet = new BlockingBatchingRowSet(transMeta.getSizeRowset());    					    
-    					  } else {
-    					    rowSet = new BlockingRowSet(transMeta.getSizeRowset());
-    					  }
-    					  break;
-    					  
-    					case SerialSingleThreaded: 
-    					  rowSet = new SingleRowRowSet(); 
-    					  break;
-    					  
-              case SingleThreaded: 
-                rowSet = new QueueRowSet(); 
-                break;
-                
-    					default: 
-    					  throw new KettleException("Unhandled transformation type: "+transMeta.getTransformationType());
-    					}
-    						
-    					switch(dispatchType)
-    					{
-    					case TYPE_DISP_1_1: rowSet.setThreadNameFromToCopy(thisStep.getName(), 0, nextStep.getName(), 0); break;
-    					case TYPE_DISP_1_N: rowSet.setThreadNameFromToCopy(thisStep.getName(), 0, nextStep.getName(), c); break;
-    					case TYPE_DISP_N_1: rowSet.setThreadNameFromToCopy(thisStep.getName(), c, nextStep.getName(), 0); break;
-    					case TYPE_DISP_N_N: rowSet.setThreadNameFromToCopy(thisStep.getName(), c, nextStep.getName(), c); break;
-                        }
-    					rowsets.add(rowSet);
-    					if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.TransformationAllocatedNewRowset",rowSet.toString())); //$NON-NLS-1$ //$NON-NLS-2$
-    				}
-                }
-                else
-                {
-                    // For each N source steps we have M target steps
-                    //
-                    // From each input step we go to all output steps.
-                    // This allows maximum flexibility for re-partitioning, distribution...
-                    for (int s=0;s<thisCopies;s++)
-                    {
-                        for (int t=0;t<nextCopies;t++)
-                        {
-                            BlockingRowSet rowSet=new BlockingRowSet(transMeta.getSizeRowset());
-                            rowSet.setThreadNameFromToCopy(thisStep.getName(), s, nextStep.getName(), t);
-                            rowsets.add(rowSet);
-                            if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.TransformationAllocatedNewRowset",rowSet.toString())); //$NON-NLS-1$ //$NON-NLS-2$
-                        }
-                    }
-                }
-			}
-			log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.AllocatedRowsets",String.valueOf(rowsets.size()),String.valueOf(i),thisStep.getName())+" "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-		}
+    log.snap(Metrics.METRIC_TRANSFORMATION_EXECUTION_START);
+    log.snap(Metrics.METRIC_TRANSFORMATION_INIT_START);
 
-		if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.AllocatingStepsAndStepData")); //$NON-NLS-1$
-        
-		// Allocate the steps & the data...
-		//
-		for (int i=0;i<hopsteps.size();i++)
-		{
-			StepMeta stepMeta=hopsteps.get(i);
-			String stepid = stepMeta.getStepID();
-
-			if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.TransformationIsToAllocateStep",stepMeta.getName(),stepid)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-
-			// How many copies are launched of this step?
-			int nrCopies=stepMeta.getCopies();
-
-            if (log.isDebug()) log.logDebug(BaseMessages.getString(PKG, "Trans.Log.StepHasNumberRowCopies",String.valueOf(nrCopies))); //$NON-NLS-1$
-
-			// At least run once...
-			for (int c=0;c<nrCopies;c++)
-			{
-				// Make sure we haven't started it yet!
-				if (!hasStepStarted(stepMeta.getName(), c))
-				{
-					StepMetaDataCombi combi = new StepMetaDataCombi();
-
-					combi.stepname = stepMeta.getName();
-					combi.copy     = c;
-
-					// The meta-data
-                    combi.stepMeta = stepMeta;
-					combi.meta = stepMeta.getStepMetaInterface();
-
-					// Allocate the step data
-					StepDataInterface data = combi.meta.getStepData();
-					combi.data = data;
-
-					// Allocate the step
-					StepInterface step=combi.meta.getStep(stepMeta, data, c, transMeta, this);
-                    
-					// Copy the variables of the transformation to the step...
-					// don't share. Each copy of the step has its own variables.
-					// 
-					step.initializeVariablesFrom(this);
-					step.setUsingThreadPriorityManagment(transMeta.isUsingThreadPriorityManagment());
-					
-                    // If the step is partitioned, set the partitioning ID and some other things as well...
-                    if (stepMeta.isPartitioned())
-                    {
-                    	List<String> partitionIDs = stepMeta.getStepPartitioningMeta().getPartitionSchema().getPartitionIDs();
-                        if (partitionIDs!=null && partitionIDs.size()>0) 
-                        {
-                        	step.setPartitionID(partitionIDs.get(c)); // Pass the partition ID to the step
-                        }
-                    }
-
-					// Save the step too
-					combi.step = step;
-
-					// Pass logging level and metrics gathering down to the step level.
-					///
-					if(combi.step instanceof LoggingObjectInterface) {
-					  LogChannelInterface logChannel = combi.step.getLogChannel();
-					  logChannel.setLogLevel(logLevel);
-					  logChannel.setGatheringMetrics(log.isGatheringMetrics());					  
-					}
-					
-					// Add to the bunch...
-					steps.add(combi);
-
-					if(log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.TransformationHasAllocatedANewStep",stepMeta.getName(),String.valueOf(c))); //$NON-NLS-1$ //$NON-NLS-2$
-				}
-			}
-		}
-        
-    // Now we need to verify if certain rowsets are not meant to be for error handling...
-    // Loop over the steps and for every step verify the output rowsets
-    // If a rowset is going to a target step in the steps error handling metadata, set it to the errorRowSet.
-    // The input rowsets are already in place, so the next step just accepts the rows.
-    // Metadata wise we need to do the same trick in TransMeta
     //
-    for (int s=0;s<steps.size();s++)
-    {
-        StepMetaDataCombi combi = steps.get(s);
-        if (combi.stepMeta.isDoingErrorHandling())
-        {
-        	combi.step.identifyErrorOutput();
-        	
-        }
+    // Set the arguments on the transformation...
+    //
+    if (arguments != null)
+      transMeta.setArguments(arguments);
+
+    activateParameters();
+    transMeta.activateParameters();
+
+    if (transMeta.getName() == null) {
+      if (transMeta.getFilename() != null) {
+        log.logBasic(BaseMessages.getString(PKG, "Trans.Log.DispacthingStartedForFilename", transMeta.getFilename())); //$NON-NLS-1$ //$NON-NLS-2$
+      }
+    } else {
+      log.logBasic(BaseMessages.getString(PKG, "Trans.Log.DispacthingStartedForTransformation", transMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$
     }
 
-		// Now (optionally) write start log record!
+    if (transMeta.getArguments() != null) {
+      if (log.isDetailed())
+        log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.NumberOfArgumentsDetected", String.valueOf(transMeta.getArguments().length))); //$NON-NLS-1$
+    }
+
+    if (isSafeModeEnabled()) {
+      if (log.isDetailed())
+        log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.SafeModeIsEnabled", transMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$
+    }
+
+    if (getReplayDate() != null) {
+      SimpleDateFormat df = new SimpleDateFormat(REPLAY_DATE_FORMAT);
+      log.logBasic(BaseMessages.getString(PKG, "Trans.Log.ThisIsAReplayTransformation") //$NON-NLS-1$
+          + df.format(getReplayDate()));
+    } else {
+      if (log.isDetailed())
+        log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.ThisIsNotAReplayTransformation")); //$NON-NLS-1$
+    }
+
+    // setInternalKettleVariables(this); --> Let's not do this, when running
+    // without file, for example remote, it spoils the fun
+
+    // extra check to see if the servlet print writer has some value in case
+    // folks want to test it locally...
+    //
+    if (servletPrintWriter == null) {
+      servletPrintWriter = new PrintWriter(new OutputStreamWriter(System.out));
+    }
+
+    // Keep track of all the row sets and allocated steps
+    //
+    steps = new ArrayList<StepMetaDataCombi>();
+    rowsets = new ArrayList<RowSet>();
+
+    //
+    // Sort the steps & hops for visual pleasure...
+    //
+    if (isMonitored()) {
+      transMeta.sortStepsNatural();
+    }
+
+    List<StepMeta> hopsteps = transMeta.getTransHopSteps(false);
+
+    if (log.isDetailed()) {
+      log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.FoundDefferentSteps", String.valueOf(hopsteps.size()))); //$NON-NLS-1$ //$NON-NLS-2$
+      log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.AllocatingRowsets")); //$NON-NLS-1$
+    }
+    // First allocate all the rowsets required!
+    // Note that a mapping doesn't receive ANY input or output rowsets...
+    //
+    for (int i = 0; i < hopsteps.size(); i++) {
+      StepMeta thisStep = hopsteps.get(i);
+      if (thisStep.isMapping())
+        continue; // handled and allocated by the mapping step itself.
+
+      if (log.isDetailed())
+        log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.AllocateingRowsetsForStep", String.valueOf(i), thisStep.getName())); //$NON-NLS-1$ //$NON-NLS-2$
+
+      List<StepMeta> nextSteps = transMeta.findNextSteps(thisStep);
+      int nrTargets = nextSteps.size();
+
+      for (int n = 0; n < nrTargets; n++) {
+        // What's the next step?
+        StepMeta nextStep = nextSteps.get(n);
+        if (nextStep.isMapping())
+          continue; // handled and allocated by the mapping step itself.
+
+        // How many times do we start the source step?
+        int thisCopies = thisStep.getCopies();
+        
+        if (thisCopies<0) {
+          // This can only happen if a variable is used that didn't resolve to a positive integer value
+          //
+          throw new KettleException(BaseMessages.getString(PKG, "Trans.Log.StepCopiesNotCorrectlyDefined", thisStep.getCopiesString(), thisStep.getName()));
+        }
+
+        // How many times do we start the target step?
+        int nextCopies = nextStep.getCopies();
+
+        // Are we re-partitioning?
+        boolean repartitioning = !thisStep.isPartitioned() && nextStep.isPartitioned();
+
+        int nrCopies;
+        if (log.isDetailed())
+          log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.copiesInfo", String.valueOf(thisCopies), String.valueOf(nextCopies))); //$NON-NLS-1$ //$NON-NLS-2$
+        int dispatchType;
+        if (thisCopies == 1 && nextCopies == 1) {
+          dispatchType = TYPE_DISP_1_1;
+          nrCopies = 1;
+        } else if (thisCopies == 1 && nextCopies > 1) {
+          dispatchType = TYPE_DISP_1_N;
+          nrCopies = nextCopies;
+        } else if (thisCopies > 1 && nextCopies == 1) {
+          dispatchType = TYPE_DISP_N_1;
+          nrCopies = thisCopies;
+        } else if (thisCopies == nextCopies && !repartitioning) {
+          dispatchType = TYPE_DISP_N_N;
+          nrCopies = nextCopies;
+        } // > 1!
+        else {
+          dispatchType = TYPE_DISP_N_M;
+          nrCopies = nextCopies;
+        } // Allocate a rowset for each destination step
+
+        // Allocate the rowsets
+        //
+        if (dispatchType != TYPE_DISP_N_M) {
+          for (int c = 0; c < nrCopies; c++) {
+            RowSet rowSet;
+            switch (transMeta.getTransformationType()) {
+            case Normal:
+              // This is a temporary patch until the batching rowset has proven
+              // to be working in all situations.
+              // Currently there are stalling problems when dealing with small
+              // amounts of rows.
+              //
+              Boolean batchingRowSet = ValueMeta.convertStringToBoolean(System.getProperty(Const.KETTLE_BATCHING_ROWSET));
+              if (batchingRowSet != null && batchingRowSet.booleanValue()) {
+                rowSet = new BlockingBatchingRowSet(transMeta.getSizeRowset());
+              } else {
+                rowSet = new BlockingRowSet(transMeta.getSizeRowset());
+              }
+              break;
+
+            case SerialSingleThreaded:
+              rowSet = new SingleRowRowSet();
+              break;
+
+            case SingleThreaded:
+              rowSet = new QueueRowSet();
+              break;
+
+            default:
+              throw new KettleException("Unhandled transformation type: " + transMeta.getTransformationType());
+            }
+
+            switch (dispatchType) {
+            case TYPE_DISP_1_1:
+              rowSet.setThreadNameFromToCopy(thisStep.getName(), 0, nextStep.getName(), 0);
+              break;
+            case TYPE_DISP_1_N:
+              rowSet.setThreadNameFromToCopy(thisStep.getName(), 0, nextStep.getName(), c);
+              break;
+            case TYPE_DISP_N_1:
+              rowSet.setThreadNameFromToCopy(thisStep.getName(), c, nextStep.getName(), 0);
+              break;
+            case TYPE_DISP_N_N:
+              rowSet.setThreadNameFromToCopy(thisStep.getName(), c, nextStep.getName(), c);
+              break;
+            }
+            rowsets.add(rowSet);
+            if (log.isDetailed())
+              log.logDetailed(BaseMessages.getString(PKG, "Trans.TransformationAllocatedNewRowset", rowSet.toString())); //$NON-NLS-1$ //$NON-NLS-2$
+          }
+        } else {
+          // For each N source steps we have M target steps
+          //
+          // From each input step we go to all output steps.
+          // This allows maximum flexibility for re-partitioning,
+          // distribution...
+          for (int s = 0; s < thisCopies; s++) {
+            for (int t = 0; t < nextCopies; t++) {
+              BlockingRowSet rowSet = new BlockingRowSet(transMeta.getSizeRowset());
+              rowSet.setThreadNameFromToCopy(thisStep.getName(), s, nextStep.getName(), t);
+              rowsets.add(rowSet);
+              if (log.isDetailed())
+                log.logDetailed(BaseMessages.getString(PKG, "Trans.TransformationAllocatedNewRowset", rowSet.toString())); //$NON-NLS-1$ //$NON-NLS-2$
+            }
+          }
+        }
+      }
+      log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.AllocatedRowsets", String.valueOf(rowsets.size()), String.valueOf(i), thisStep.getName()) + " "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+    }
+
+    if (log.isDetailed())
+      log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.AllocatingStepsAndStepData")); //$NON-NLS-1$
+
+    // Allocate the steps & the data...
+    //
+    for (int i = 0; i < hopsteps.size(); i++) {
+      StepMeta stepMeta = hopsteps.get(i);
+      String stepid = stepMeta.getStepID();
+
+      if (log.isDetailed())
+        log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.TransformationIsToAllocateStep", stepMeta.getName(), stepid)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+      // How many copies are launched of this step?
+      int nrCopies = stepMeta.getCopies();
+
+      if (log.isDebug())
+        log.logDebug(BaseMessages.getString(PKG, "Trans.Log.StepHasNumberRowCopies", String.valueOf(nrCopies))); //$NON-NLS-1$
+
+      // At least run once...
+      for (int c = 0; c < nrCopies; c++) {
+        // Make sure we haven't started it yet!
+        if (!hasStepStarted(stepMeta.getName(), c)) {
+          StepMetaDataCombi combi = new StepMetaDataCombi();
+
+          combi.stepname = stepMeta.getName();
+          combi.copy = c;
+
+          // The meta-data
+          combi.stepMeta = stepMeta;
+          combi.meta = stepMeta.getStepMetaInterface();
+
+          // Allocate the step data
+          StepDataInterface data = combi.meta.getStepData();
+          combi.data = data;
+
+          // Allocate the step
+          StepInterface step = combi.meta.getStep(stepMeta, data, c, transMeta, this);
+
+          // Copy the variables of the transformation to the step...
+          // don't share. Each copy of the step has its own variables.
+          //
+          step.initializeVariablesFrom(this);
+          step.setUsingThreadPriorityManagment(transMeta.isUsingThreadPriorityManagment());
+
+          // If the step is partitioned, set the partitioning ID and some other
+          // things as well...
+          if (stepMeta.isPartitioned()) {
+            List<String> partitionIDs = stepMeta.getStepPartitioningMeta().getPartitionSchema().getPartitionIDs();
+            if (partitionIDs != null && partitionIDs.size() > 0) {
+              step.setPartitionID(partitionIDs.get(c)); // Pass the partition ID
+                                                        // to the step
+            }
+          }
+
+          // Save the step too
+          combi.step = step;
+
+          // Pass logging level and metrics gathering down to the step level.
+          // /
+          if (combi.step instanceof LoggingObjectInterface) {
+            LogChannelInterface logChannel = combi.step.getLogChannel();
+            logChannel.setLogLevel(logLevel);
+            logChannel.setGatheringMetrics(log.isGatheringMetrics());
+          }
+
+          // Add to the bunch...
+          steps.add(combi);
+
+          if (log.isDetailed())
+            log.logDetailed(BaseMessages.getString(PKG, "Trans.Log.TransformationHasAllocatedANewStep", stepMeta.getName(), String.valueOf(c))); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+      }
+    }
+
+    // Now we need to verify if certain rowsets are not meant to be for error
+    // handling...
+    // Loop over the steps and for every step verify the output rowsets
+    // If a rowset is going to a target step in the steps error handling
+    // metadata, set it to the errorRowSet.
+    // The input rowsets are already in place, so the next step just accepts the
+    // rows.
+    // Metadata wise we need to do the same trick in TransMeta
+    //
+    for (int s = 0; s < steps.size(); s++) {
+      StepMetaDataCombi combi = steps.get(s);
+      if (combi.stepMeta.isDoingErrorHandling()) {
+        combi.step.identifyErrorOutput();
+
+      }
+    }
+
+    // Now (optionally) write start log record!
     // Make sure we synchronize appropriately to avoid duplicate batch IDs.
     //
-    Object syncObject=this;
-    if (parentJob!=null) syncObject=parentJob; // parallel execution in a job
-    if (parentTrans!=null)  syncObject=parentTrans; // multiple sub-transformations
-    synchronized(syncObject) {
+    Object syncObject = this;
+    if (parentJob != null)
+      syncObject = parentJob; // parallel execution in a job
+    if (parentTrans != null)
+      syncObject = parentTrans; // multiple sub-transformations
+    synchronized (syncObject) {
       calculateBatchIdAndDateRange();
       beginProcessing();
     }
@@ -975,11 +1002,11 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
         throw new KettleException(BaseMessages.getString(PKG, "Trans.Log.FailToInitializeAtLeastOneStep") + Const.CR); //$NON-NLS-1
       }
     }
-   
+
     log.snap(Metrics.METRIC_TRANSFORMATION_INIT_STOP);
 
-    readyToStart=true;
-	}
+    readyToStart = true;
+  }
 
     /**
      * Starts the threads prepared by prepareThreads().  Before you start the threads, you can add RowListeners

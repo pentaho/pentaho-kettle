@@ -193,10 +193,11 @@ public class KettleDatabaseRepositoryBase {
 	public static final String FIELD_STEP_DESCRIPTION = "DESCRIPTION";
 	public static final String FIELD_STEP_ID_STEP_TYPE = "ID_STEP_TYPE";
 	public static final String FIELD_STEP_DISTRIBUTE = "DISTRIBUTE";
-	public static final String FIELD_STEP_COPIES = "COPIES";
+  public static final String FIELD_STEP_COPIES = "COPIES";
 	public static final String FIELD_STEP_GUI_LOCATION_X = "GUI_LOCATION_X";
 	public static final String FIELD_STEP_GUI_LOCATION_Y = "GUI_LOCATION_Y";
 	public static final String FIELD_STEP_GUI_DRAW = "GUI_DRAW";
+  public static final String FIELD_STEP_COPIES_STRING = "COPIES_STRING";
 
 	public static final String TABLE_R_STEP_ATTRIBUTE         = "R_STEP_ATTRIBUTE";
 	public static final String FIELD_STEP_ATTRIBUTE_ID_STEP_ATTRIBUTE = "ID_STEP_ATTRIBUTE";
