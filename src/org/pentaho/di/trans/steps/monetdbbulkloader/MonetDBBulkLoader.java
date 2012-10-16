@@ -352,6 +352,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 	    				} else {
 		    				// escape any backslashes
 			    			str = str.replace("\\", "\\\\");
+			    			str = str.replace("\"", "\\\"");
 			    			if(meta.isAutoStringWidths()) {
 			    				int len = valueMeta.getLength();
 			    				if( len < 1 ) {
