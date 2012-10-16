@@ -719,6 +719,7 @@ public class TransPainter extends BasePainter
             //gc.fillRectangle(x - 11, y - 11, textExtent.x+2, textExtent.y+2);
             // gc.drawRectangle(x - 11, y - 11, textExtent.x+2, textExtent.y+2);
             gc.drawText(copies, x - textExtent.x/2, y - textExtent.y , false);
+            areaOwners.add(new AreaOwner(AreaType.STEP_COPIES_TEXT, x - textExtent.x/2, y - textExtent.y, textExtent.x, textExtent.y, offset, transMeta, stepMeta));
         }
         
         // If there was an error during the run, the map "stepLogMap" is not empty and not null.  

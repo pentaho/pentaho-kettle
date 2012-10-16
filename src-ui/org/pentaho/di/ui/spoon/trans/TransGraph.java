@@ -877,6 +877,9 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 					redraw();
 					break;
 
+				case STEP_COPIES_TEXT:
+				  copies((StepMeta) areaOwner.getOwner());
+				  break;
 				}
       } else {
         // A hop? --> enable/disable
@@ -2040,13 +2043,17 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     spoon.refreshGraph();
     spoon.refreshTree();
   }
-
+  
   public void copies() {
-    final boolean multipleOK = checkNumberOfCopies(transMeta, getCurrentStep());
+    copies(getCurrentStep());
+  }
+
+  public void copies(StepMeta stepMeta) {
+    final boolean multipleOK = checkNumberOfCopies(transMeta, stepMeta);
     selectedSteps = null;
     String tt = BaseMessages.getString(PKG, "TransGraph.Dialog.NrOfCopiesOfStep.Title"); //$NON-NLS-1$
     String mt = BaseMessages.getString(PKG, "TransGraph.Dialog.NrOfCopiesOfStep.Message"); //$NON-NLS-1$
-    EnterStringDialog nd = new EnterStringDialog(shell, getCurrentStep().getCopiesString(), tt, mt, true, transMeta);
+    EnterStringDialog nd = new EnterStringDialog(shell, stepMeta.getCopiesString(), tt, mt, true, transMeta);
     String cop = nd.open();
     if (!Const.isEmpty(cop)) {
       
@@ -2061,7 +2068,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
       }
 
-      getCurrentStep().setCopiesString(cop);
+      stepMeta.setCopiesString(cop);
       spoon.refreshGraph();
     }
   }
