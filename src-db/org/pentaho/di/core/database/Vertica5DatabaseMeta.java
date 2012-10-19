@@ -49,4 +49,11 @@ public class Vertica5DatabaseMeta extends VerticaDatabaseMeta
 
 	}
 	
+	/**
+	 * @return false as the database does not support timestamp to date conversion.
+	 */
+	@Override
+	public boolean supportsTimeStampToDateConversion()   {
+	    return false;
+	}
 }
