@@ -334,4 +334,12 @@ public class VerticaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
   {
 	  return "SELECT nextval('"+sequenceName+"')";
   }
+  
+  /**
+   * @return false as the database does not support timestamp to date conversion.
+   */
+  @Override
+  public boolean supportsTimeStampToDateConversion()   {
+      return false;
+  }
 }
