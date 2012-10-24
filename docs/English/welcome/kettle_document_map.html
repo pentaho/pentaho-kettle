@@ -500,7 +500,7 @@ function MM_callJS(jsStr) { //v2.0
       <td><img src="images/clr.gif" width="18" height="10"></td>
       <td><table width="144" border="0" cellspacing="0" cellpadding="0">
           <tr>
-            <td><div id="whatsnew"><span title="What's new in Pentaho Data Integration 4.2"><a href="javascript:showDiv3()">What's <br />
+            <td><div id="whatsnew"><span title="What's new in Pentaho Data Integration 4.4"><a href="javascript:showDiv3()">What's <br />
                 New</a></span></div></td>
           </tr>
         </table></td>
@@ -600,6 +600,7 @@ Pentaho offers a variety of professional support plans designed to help you to o
                   <li><a href="http://pentahomusings.blogspot.com/" class="external" rel="external">Tom Barber</a></li>
                   <li><a href="http://blog.devdonkey.org/" class="external" rel="external">Luc Boudreau</a></li>
                   <li><a href="http://pedroalves-bi.blogspot.com/" class="external" rel="external">Pedro Alves</a></li>
+                  <li><a href="http://funpdi.blogspot.com/" class="external" rel="external">Matt Burgess</a></li>
                 </ul></td>
             </tr>
           </table>
@@ -613,7 +614,7 @@ Pentaho offers a variety of professional support plans designed to help you to o
     <div class="popup"> <a href="javascript:hideDiv()"><img src="images/icon_close.png" alt="Close" class="cntrl" border="0" width="28" height="31"/></a>
       <h3>Samples</h3>
       <div style="float:right; margin: 0 0 0 30px;"><img src="images/sample_file_import.png"></div>
-      <p>Sample Job, Mapping, and Tranformation files are available in the Pentaho Data Integration installation directory.</p>
+      <p>Sample Job, Mapping, and Transformation files are available in the Pentaho Data Integration installation directory.</p>
       <p>To view the samples, use the File/Import from an XML File and navigate to <br>
         ...data-integration\samples.</p>
     </div>
@@ -654,9 +655,9 @@ document.all.hideshow.style.visibility = 'visible';
   <div class="popup_block">
     <div class="popup"> <a href="javascript:hideDiv2()"><img src="images/icon_close.png" alt="Close" class="cntrl" border="0" width="28" height="31"/></a>
       <h3>Getting Started</h3>
-      <div style="float:right; margin: 0 0 0 30px;"><img src="images/getting_started_file.png"></div>
+      <div style="float:right; margin: 0 0 0 30px;"><img src="images/pdi_thumbnail.png"></div>
       <p>To view the Getting Started Guide, open the PDF document found in<br>
-        ...pdi-ee/getting_started_with_pdi.pdf</p>
+        ...data-integration/docs/English/ getting_started_with_pdi.pdf</p>
     </div>
   </div>
 </div>
@@ -665,9 +666,9 @@ document.all.hideshow.style.visibility = 'visible';
   <div class="popup_block">
     <div class="popup"> <a href="javascript:hideDiv3()"><img src="images/icon_close.png" alt="Close" class="cntrl" border="0" width="28" height="31"/></a>
       <h3>What's New</h3>
-      <div style="float:right; margin: 0 0 0 30px;"><img src="images/whats_new_file.png"></div>
-      <p>To view the What's new in Pentaho Data Integration Enterprise Edition 4.2, open the PDF document found in<br>
-        \data-integration\docs\English\whats_new_in_pdi_42.pdf</p>
+      <div style="float:right; margin: 0 0 0 30px;"><img src="images/pdi_thumbnail.png"></div>
+      <p>To view the What's new in Pentaho Data Integration Enterprise Edition 4.4, open the PDF document found in<br>
+        ...data-integration/docs/English/ pdi_whats_new.pdf</p>
     </div>
   </div>
 </div>
@@ -722,7 +723,7 @@ function hideDiv3() {
 
 function showDiv3() {
   if (navigator.platform != null && navigator.platform.indexOf("Win") >= 0) {
-    window.open('../whats_new_in_pdi_42.pdf');
+    window.open('../pdi_whats_new.pdf');
     return;
   }
   if (document.getElementById) { // DOM3 = IE5, NS6 
