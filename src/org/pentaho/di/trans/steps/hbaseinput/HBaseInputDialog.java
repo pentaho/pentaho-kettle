@@ -33,8 +33,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -450,26 +448,6 @@ public class HBaseInputDialog extends BaseStepDialog implements
         m_currentMeta.setChanged();
         m_mappedTableNamesCombo.setToolTipText(transMeta
             .environmentSubstitute(m_mappedTableNamesCombo.getText()));
-      }
-    });
-    m_mappedTableNamesCombo.addSelectionListener(new SelectionAdapter() {
-      @Override
-      public void widgetSelected(SelectionEvent e) {
-        setupMappingNamesForTable(true);
-      }
-
-      @Override
-      public void widgetDefaultSelected(SelectionEvent e) {
-        setupMappingNamesForTable(true);
-      }
-    });
-    m_mappedTableNamesCombo.addFocusListener(new FocusListener() {
-      public void focusGained(FocusEvent e) {
-
-      }
-
-      public void focusLost(FocusEvent e) {
-        setupMappingNamesForTable(true);
       }
     });
 
@@ -1250,6 +1228,12 @@ public class HBaseInputDialog extends BaseStepDialog implements
           .getText());
     }
 
+    if (Const.isEmpty(zookeeperHosts) && Const.isEmpty(coreConf)
+        && Const.isEmpty(defaultConf)) {
+      throw new Exception(BaseMessages.getString(HBaseInputMeta.PKG,
+          "MappingDialog.Error.Message.CantConnectNoConnectionDetailsProvided"));
+    }
+
     conf = HBaseInputData.getHBaseConnection(zookeeperHosts, zookeeperPort,
         coreConf, defaultConf, null);
 
@@ -1279,7 +1263,7 @@ public class HBaseInputDialog extends BaseStepDialog implements
         String keyType = null;
         boolean filterAliasesDone = false;
         try {
-          if (displayFieldsMappingFromHBase) {
+          if (displayFieldsMappingFromHBase && readFieldsFromMapping) {
             HBaseConnection connection = getHBaseConnection();
             admin.setConnection(connection);
             current = admin.getMapping(transMeta
