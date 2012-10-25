@@ -92,6 +92,7 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
 
   // table name line
   protected CCombo m_existingTableNamesCombo;
+  protected Button m_getTableNames;
   protected boolean m_familiesInvalidated;
 
   // mapping name line
@@ -209,16 +210,36 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
     fd.right = new FormAttachment(middle, -margin);
     tableNameLab.setLayoutData(fd);
 
+    m_getTableNames = new Button(this, SWT.PUSH | SWT.CENTER);
+    props.setLook(m_getTableNames);
+    m_getTableNames.setText(Messages
+        .getString("MappingDialog.TableName.GetTableNames"));
+    fd = new FormData();
+    fd.right = new FormAttachment(100, 0);
+    if (showConnectWidgets) {
+      fd.top = new FormAttachment(m_zookeeperPortText, 0);
+    } else {
+      fd.top = new FormAttachment(0, 0);
+    }
+    m_getTableNames.setLayoutData(fd);
+
+    m_getTableNames.addSelectionListener(new SelectionAdapter() {
+      @Override
+      public void widgetSelected(SelectionEvent e) {
+        populateTableCombo(false);
+      }
+    });
+
     m_existingTableNamesCombo = new CCombo(this, SWT.BORDER);
     props.setLook(m_existingTableNamesCombo);
     fd = new FormData();
     fd.left = new FormAttachment(middle, 0);
+    fd.right = new FormAttachment(m_getTableNames, -margin);
     if (showConnectWidgets) {
       fd.top = new FormAttachment(m_zookeeperPortText, margin);
     } else {
       fd.top = new FormAttachment(0, margin);
     }
-    fd.right = new FormAttachment(100, 0);
     m_existingTableNamesCombo.setLayoutData(fd);
 
     // allow or disallow table creation by enabling/disabling the ability
@@ -232,7 +253,7 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
     props.setLook(tableNameLab);
     fd = new FormData();
     fd.left = new FormAttachment(0, 0);
-    fd.top = new FormAttachment(m_existingTableNamesCombo, margin);
+    fd.top = new FormAttachment(m_getTableNames, 0);
     fd.right = new FormAttachment(middle, -margin);
     mappingNameLab.setLayoutData(fd);
 
@@ -240,7 +261,7 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
     props.setLook(m_existingMappingNamesCombo);
     fd = new FormData();
     fd.left = new FormAttachment(middle, 0);
-    fd.top = new FormAttachment(m_existingTableNamesCombo, margin);
+    fd.top = new FormAttachment(m_getTableNames, 0);
     fd.right = new FormAttachment(100, 0);
     m_existingMappingNamesCombo.setLayoutData(fd);
 
@@ -267,7 +288,7 @@ public class MappingEditor extends Composite implements ConfigurationProducer {
 
     m_existingTableNamesCombo.addFocusListener(new FocusListener() {
       public void focusGained(FocusEvent e) {
-        populateTableCombo(false);
+        // populateTableCombo(false);
       }
 
       public void focusLost(FocusEvent e) {

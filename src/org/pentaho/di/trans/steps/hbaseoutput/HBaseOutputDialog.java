@@ -31,8 +31,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -425,26 +423,6 @@ public class HBaseOutputDialog extends BaseStepDialog implements
             .environmentSubstitute(m_mappedTableNamesCombo.getText()));
       }
     });
-    m_mappedTableNamesCombo.addSelectionListener(new SelectionAdapter() {
-      @Override
-      public void widgetSelected(SelectionEvent e) {
-        setupMappingNamesForTable(true);
-      }
-
-      @Override
-      public void widgetDefaultSelected(SelectionEvent e) {
-        setupMappingNamesForTable(true);
-      }
-    });
-    m_mappedTableNamesCombo.addFocusListener(new FocusListener() {
-      public void focusGained(FocusEvent e) {
-
-      }
-
-      public void focusLost(FocusEvent e) {
-        setupMappingNamesForTable(true);
-      }
-    });
 
     fd = new FormData();
     fd.left = new FormAttachment(middle, 0);
@@ -795,6 +773,12 @@ public class HBaseOutputDialog extends BaseStepDialog implements
     if (!Const.isEmpty(m_zookeeperPortText.getText())) {
       zookeeperPort = transMeta.environmentSubstitute(m_zookeeperPortText
           .getText());
+    }
+
+    if (Const.isEmpty(zookeeperHosts) && Const.isEmpty(coreConf)
+        && Const.isEmpty(defaultConf)) {
+      throw new Exception(BaseMessages.getString(HBaseOutputMeta.PKG,
+          "MappingDialog.Error.Message.CantConnectNoConnectionDetailsProvided"));
     }
 
     conf = HBaseOutputData.getHBaseConnection(zookeeperHosts, zookeeperPort,
