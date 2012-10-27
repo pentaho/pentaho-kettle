@@ -547,6 +547,10 @@ public abstract class BasePluginType implements PluginTypeInterface{
 	      } catch(Exception e) {
 	        // Ignore for now, don't know if it's even possible.
 	        LogChannel.GENERAL.logError("Unexpected error registering jar plugin file: "+jarFilePlugin.getJarFile(), e);
+	      } finally {
+	        if (urlClassLoader != null && urlClassLoader instanceof KettleURLClassLoader) {
+	          ((KettleURLClassLoader)urlClassLoader).closeClassLoader();
+	        }
 	      }
 	    }
 	  }
