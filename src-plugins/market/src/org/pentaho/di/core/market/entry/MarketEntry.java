@@ -1,3 +1,25 @@
+/*******************************************************************************
+ *
+ * Pentaho Data Integration
+ *
+ * Copyright (C) 2002-2012 by Pentaho : http://www.pentaho.com
+ *
+ *******************************************************************************
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ *
+ *    http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ ******************************************************************************/
+
 package org.pentaho.di.core.market.entry;
 
 import java.util.List;
@@ -36,6 +58,11 @@ public class MarketEntry implements XMLInterface {
   private String supportUrl;
   private String minPdiVersion;
   private String maxPdiVersion;
+  
+  private transient boolean installed;
+  private transient String installedBranch;
+  private transient String installedVersion;
+  private transient String installedBuildId;  
   
   private transient String marketPlaceName;
 
@@ -451,4 +478,44 @@ public class MarketEntry implements XMLInterface {
   public void setMaxPdiVersion(String maxPdiVersion) {
     this.maxPdiVersion = maxPdiVersion;
   }
+  
+  public boolean isInstalled() {
+    return installed;
+  }
+
+  public void setInstalled(boolean installed) {
+      this.installed = installed;
+  }
+  
+  public String getInstalledBranch() {
+      return installedBranch;
+  }
+  
+  public void setInstalledBranch(String installedBranch) {
+      this.installedBranch = installedBranch;
+  }
+
+
+  /**
+   * @return the installedBuildId
+   */
+  public String getInstalledBuildId() {
+      return installedBuildId;
+  }
+
+  /**
+   * @param installedBuildId the installedBuildId to set
+   */
+  public void setInstalledBuildId(String installedBuildId) {
+      this.installedBuildId = installedBuildId;
+  }
+
+  public String getInstalledVersion() {
+    return installedVersion;
+  }
+  
+  public void setInstalledVersion(String installedVersion) {
+      this.installedVersion = installedVersion;
+  }
+  
 }

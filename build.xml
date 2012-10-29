@@ -1390,6 +1390,14 @@
 		  		<copy todir="src-plugins/@{plugin}/bin/stage/@{plugin}">
 		  			<fileset dir="src-plugins/@{plugin}/res" includes="**/*" excludes="**/.vpn"/>
 	  			</copy>
+	  			
+	  		    <!-- Update the version.xml with the current version of this plugin -->
+	  		    <if>
+	  		      <available file="$src-plugins/@{plugin}/bin/stage/@{plugin}/version.xml" />
+	  		      <then>
+		  		    <replace file="src-plugins/@{plugin}/bin/stage/@{plugin}/version.xml" token="@TRUNK@" value="${project.revision}"/>
+	  		      </then>
+	  		    </if>
 			</sequential>
 	  	</for>
 	</target>
