@@ -210,12 +210,12 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig, E e
    */
   protected void populateDatabases() {
     databaseConnections.clear();
-    updateDatabaseItemsList();
     for (DatabaseMeta dbMeta : jobMeta.getDatabases()) {
       if (jobEntry.isDatabaseSupported(dbMeta.getDatabaseInterface().getClass())) {
         databaseConnections.add(new DatabaseItem(dbMeta.getName()));
       }
     }
+    updateDatabaseItemsList();
   }
 
   /**
@@ -292,19 +292,18 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig, E e
       } finally {
         suppressEventHandling = false;
       }
-      // If the selected database changes update the config
-      if (old == null && this.selectedDatabaseConnection != null || !old.equals(this.selectedDatabaseConnection)) {
-        if (validDatabaseSelected) {
-          try {
-            getConfig().setConnectionInfo(databaseMeta.getName(), databaseMeta.getURL(), databaseMeta.getUsername(), databaseMeta.getPassword());
-          } catch (KettleDatabaseException ex) {
-            jobEntry.logError(BaseMessages.getString(AbstractSqoopJobEntry.class, "ErrorConfiguringDatabaseConnection"), ex);
-          }
-        } else {
-          getConfig().copyConnectionInfoFromAdvanced();
+      // Always update the database info in case something more than the name changes (we can only tell if database names change via DatabaseItem)
+      if (validDatabaseSelected) {
+        try {
+          getConfig().setConnectionInfo(databaseMeta.getName(), databaseMeta.getURL(), databaseMeta.getUsername(), databaseMeta.getPassword());
+        } catch (KettleDatabaseException ex) {
+          jobEntry.logError(BaseMessages.getString(AbstractSqoopJobEntry.class, "ErrorConfiguringDatabaseConnection"), ex);
         }
+      } else {
+        getConfig().copyConnectionInfoFromAdvanced();
       }
-      firePropertyChange("selectedDatabaseConnection", old, this.selectedDatabaseConnection);
+      // Always fire a property change
+      firePropertyChange("selectedDatabaseConnection", null, this.selectedDatabaseConnection);
     }
   }
 
@@ -315,7 +314,7 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig, E e
   protected void updateDatabaseItemsList() {
     if (this.selectedDatabaseConnection == null || NO_DATABASE.equals(this.selectedDatabaseConnection)) {
       if (!databaseConnections.contains(NO_DATABASE)) {
-        databaseConnections.add(0, NO_DATABASE);
+        databaseConnections.add(NO_DATABASE);
       }
     } else {
       if (databaseConnections.contains(NO_DATABASE)) {
@@ -326,7 +325,7 @@ public abstract class AbstractSqoopJobEntryController<S extends SqoopConfig, E e
       getConfig().getUsernameFromAdvanced() != null ||
       getConfig().getPasswordFromAdvanced() != null) {
       if (!databaseConnections.contains(USE_ADVANCED_OPTIONS)) {
-        databaseConnections.add(0, USE_ADVANCED_OPTIONS);
+        databaseConnections.add(USE_ADVANCED_OPTIONS);
       }
     } else {
       if (databaseConnections.contains(USE_ADVANCED_OPTIONS)) {

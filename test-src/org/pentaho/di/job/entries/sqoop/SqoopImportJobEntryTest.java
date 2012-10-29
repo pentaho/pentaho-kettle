@@ -107,6 +107,50 @@ public class SqoopImportJobEntryTest {
   }
 
   @Test
+  public void saveLoadTest_xml_advanced_options() throws KettleXMLException {
+    SqoopImportJobEntry je = new SqoopImportJobEntry();
+    SqoopImportConfig config = new SqoopImportConfig();
+    String connectValue = "jdbc:mysql://localhost:3306/test";
+    String myPassword = "my-password";
+    
+    config.setJobEntryName("testing");
+    config.setBlockingExecution("false");
+    config.setBlockingPollingInterval("100");
+    config.setConnect(connectValue);
+    config.setTargetDir("/test-import-target");
+    config.setPassword(myPassword);
+    config.setHbaseZookeeperQuorum("test-zookeeper-host");
+    
+    config.copyConnectionInfoToAdvanced();
+    
+    je.setJobConfig(config);
+    
+    JobEntryCopy jec = new JobEntryCopy(je);
+    jec.setLocation(0, 0);
+    String xml = jec.getXML();
+    
+    assertTrue("Password not encrypted upon save to xml", !xml.contains(myPassword));
+    
+    Document d = XMLHandler.loadXMLString(xml);
+    
+    SqoopImportJobEntry je2 = new SqoopImportJobEntry();
+    je2.loadXML(d.getDocumentElement(), null, null, null);
+    
+    SqoopImportConfig config2 = je2.getJobConfig();
+    assertEquals(config.getJobEntryName(), config2.getJobEntryName());
+    assertEquals(config.getBlockingExecution(), config2.getBlockingExecution());
+    assertEquals(config.getBlockingPollingInterval(), config2.getBlockingPollingInterval());
+    assertEquals(config.getConnect(), config2.getConnect());
+    assertEquals(config.getTargetDir(), config2.getTargetDir());
+    assertEquals(config.getPassword(), config2.getPassword());
+    assertEquals(config.getHbaseZookeeperQuorum(), config2.getHbaseZookeeperQuorum());
+    
+    assertEquals(config.getConnectFromAdvanced(), config2.getConnectFromAdvanced());
+    assertEquals(config.getUsernameFromAdvanced(), config2.getUsernameFromAdvanced());
+    assertEquals(config.getPasswordFromAdvanced(), config2.getPasswordFromAdvanced());
+  }
+
+  @Test
   public void saveLoadTest_rep() throws KettleException, IOException {
     SqoopImportJobEntry je = new SqoopImportJobEntry();
     SqoopImportConfig config = new SqoopImportConfig();
@@ -158,6 +202,70 @@ public class SqoopImportJobEntryTest {
       assertEquals(config.getConnect(), config2.getConnect());
       assertEquals(config.getTargetDir(), config2.getTargetDir());
       assertEquals(config.getHbaseZookeeperQuorum(), config2.getHbaseZookeeperQuorum());
+    } finally {
+      // Delete test database
+      new File(filename+".h2.db").delete();
+      new File(filename+".trace.db").delete();
+    }
+  }
+
+  @Test
+  public void saveLoadTest_rep_advanced_options() throws KettleException, IOException {
+    SqoopImportJobEntry je = new SqoopImportJobEntry();
+    SqoopImportConfig config = new SqoopImportConfig();
+    String connectValue = "jdbc:mysql://localhost:3306/test";
+    
+    config.setJobEntryName("testing");
+    config.setBlockingExecution("false");
+    config.setBlockingPollingInterval("100");
+    config.setConnect(connectValue);
+    config.setTargetDir("/test-import-target");
+    config.setHbaseZookeeperQuorum("test-zookeeper-host");
+    config.copyConnectionInfoToAdvanced();
+    
+    je.setJobConfig(config);
+    
+    KettleEnvironment.init();
+    String filename = File.createTempFile(getClass().getSimpleName() + "-import-dbtest", "").getAbsolutePath();
+    
+    try {
+      DatabaseMeta databaseMeta = new DatabaseMeta("H2Repo", "H2", "JDBC", null, filename, null, null, null);
+      RepositoryMeta repositoryMeta = new KettleDatabaseRepositoryMeta("KettleDatabaseRepository", "H2Repo", "H2 Repository", databaseMeta);
+      KettleDatabaseRepository repository = new KettleDatabaseRepository();
+      repository.init(repositoryMeta);
+      repository.connectionDelegate.connect(true, true);
+      KettleDatabaseRepositoryCreationHelper helper = new KettleDatabaseRepositoryCreationHelper(repository);
+      helper.createRepositorySchema(null, false, new ArrayList<String>(), false);
+      repository.disconnect();
+      
+      // Test connecting...
+      //
+      repository.connect("admin", "admin");
+      assertTrue(repository.isConnected());
+      
+      // A job entry must have an ID if we're going to save it to a repository
+      je.setObjectId(new LongObjectId(1));
+      ObjectId id_job = new LongObjectId(1);
+      
+      // Save the original job entry into the repository
+      je.saveRep(repository, id_job);
+      
+      // Load it back into a new job entry
+      SqoopImportJobEntry je2 = new SqoopImportJobEntry();
+      je2.loadRep(repository, id_job, null, null);
+      
+      // Make sure all settings we set are properly loaded
+      SqoopImportConfig config2 = je2.getJobConfig();
+      assertEquals(config.getJobEntryName(), config2.getJobEntryName());
+      assertEquals(config.getBlockingExecution(), config2.getBlockingExecution());
+      assertEquals(config.getBlockingPollingInterval(), config2.getBlockingPollingInterval());
+      assertEquals(config.getConnect(), config2.getConnect());
+      assertEquals(config.getTargetDir(), config2.getTargetDir());
+      assertEquals(config.getHbaseZookeeperQuorum(), config2.getHbaseZookeeperQuorum());
+      
+      assertEquals(config.getConnectFromAdvanced(), config2.getConnectFromAdvanced());
+      assertEquals(config.getUsernameFromAdvanced(), config2.getUsernameFromAdvanced());
+      assertEquals(config.getPasswordFromAdvanced(), config2.getPasswordFromAdvanced());
     } finally {
       // Delete test database
       new File(filename+".h2.db").delete();
