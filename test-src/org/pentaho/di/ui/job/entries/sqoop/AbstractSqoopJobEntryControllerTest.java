@@ -143,8 +143,8 @@ public class AbstractSqoopJobEntryControllerTest {
     controller.getJobMeta().addDatabase(new DatabaseMeta(test.getName(), "MYSQL", null, null, null, null, null, null));
     controller.populateDatabases();
     assertEquals(2, controller.getDatabaseConnections().size());
-    assertEquals(controller.NO_DATABASE, controller.getDatabaseConnections().get(0));
-    assertEquals(test, controller.getDatabaseConnections().get(1));
+    assertEquals(test, controller.getDatabaseConnections().get(0));
+    assertEquals(controller.NO_DATABASE, controller.getDatabaseConnections().get(1));
 
     // Setting a selected database should remove the NO_DATABASE option
     controller.setSelectedDatabaseConnection(test);
@@ -254,8 +254,8 @@ public class AbstractSqoopJobEntryControllerTest {
     controller.updateDatabaseItemsList();
 
     assertEquals(2, controller.getDatabaseConnections().size());
-    assertEquals(controller.USE_ADVANCED_OPTIONS, controller.getDatabaseConnections().get(0));
-    assertEquals(test, controller.getDatabaseConnections().get(1));
+    assertEquals(test, controller.getDatabaseConnections().get(0));
+    assertEquals(controller.USE_ADVANCED_OPTIONS, controller.getDatabaseConnections().get(1));
 
     controller.getConfig().setConnectFromAdvanced(null);
     controller.updateDatabaseItemsList();
