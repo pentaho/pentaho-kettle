@@ -30,10 +30,13 @@ import java.util.Map;
 import org.apache.log4j.Appender;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.database.DatabaseInterface;
+import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.hadoop.HadoopConfigurationBootstrap;
 import org.pentaho.di.core.util.StringUtil;
 import org.pentaho.di.i18n.BaseMessages;
@@ -41,11 +44,14 @@ import org.pentaho.di.job.AbstractJobEntry;
 import org.pentaho.di.job.JobEntryUtils;
 import org.pentaho.di.job.LoggingProxy;
 import org.pentaho.di.job.entry.JobEntryInterface;
+import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.repository.Repository;
 import org.pentaho.hadoop.shim.ConfigurationException;
 import org.pentaho.hadoop.shim.HadoopConfiguration;
 import org.pentaho.hadoop.shim.api.Configuration;
 import org.pentaho.hadoop.shim.spi.HadoopShim;
 import org.pentaho.hadoop.shim.spi.SqoopShim;
+import org.w3c.dom.Node;
 
 /**
  * Base class for all Sqoop job entries.
@@ -99,6 +105,26 @@ public abstract class AbstractSqoopJobEntry<S extends SqoopConfig> extends Abstr
       logError(BaseMessages.getString(AbstractSqoopJobEntry.class, "ErrorLoadingHadoopConnectionInformation"), ex);
     }
     return config;
+  }
+  
+  @Override
+  public void loadXML(Node node, List<DatabaseMeta> databaseMetas, List<SlaveServer> slaveServers, Repository repository)
+      throws KettleXMLException {
+    super.loadXML(node, databaseMetas, slaveServers, repository);
+    // sync up the advanced configuration if no database type is set
+    if (getJobConfig().getDatabase() == null) {
+      getJobConfig().copyConnectionInfoToAdvanced();
+    }
+  }
+  
+  @Override
+  public void loadRep(Repository rep, ObjectId id_jobentry, List<DatabaseMeta> databases, List<SlaveServer> slaveServers)
+      throws KettleException {
+    super.loadRep(rep, id_jobentry, databases, slaveServers);
+    // sync up the advanced configuration if no database type is set
+    if (getJobConfig().getDatabase() == null) {
+      getJobConfig().copyConnectionInfoToAdvanced();
+    }
   }
 
   /**
