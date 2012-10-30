@@ -352,6 +352,9 @@ public class MarketplaceDialog extends Dialog {
   private void addLeftLabel(Composite composite, String string, Control lastControl) {
     Label label = new Label(composite, SWT.RIGHT);
     props.setLook(label);
+    if (string == null) {
+      string = "null";
+    }
     label.setText(string);
     label.setFont(GUIResource.getInstance().getFontBold());
     FormData fdLabel = new FormData();
@@ -368,6 +371,9 @@ public class MarketplaceDialog extends Dialog {
   private Control addRightLabel(Composite composite, String string, Control lastControl) {
     Label label = new Label(composite, SWT.LEFT);
     props.setLook(label);
+    if (string == null) {
+      string = "null";
+    }
     label.setText(string);
     FormData fdLabel = new FormData();
     if (lastControl!=null) {
