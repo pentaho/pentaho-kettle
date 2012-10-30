@@ -7872,23 +7872,27 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 
     final StringBuffer answer = new StringBuffer("N");
 
+    display.syncExec(new Runnable() {
+
+      @Override
+      public void run() {
+
         int flags = SWT.OK;
         if (allowCancel) {
           flags |= SWT.CANCEL;
         }
         switch (type) {
-          case Const.INFO:
-            flags |= SWT.ICON_INFORMATION;
-            break;
-          case Const.ERROR:
-            flags |= SWT.ICON_ERROR;
-            break;
-          case Const.WARNING:
-            flags |= SWT.ICON_WARNING;
-            break;
+        case Const.INFO:
+          flags |= SWT.ICON_INFORMATION;
+          break;
+        case Const.ERROR:
+          flags |= SWT.ICON_ERROR;
+          break;
+        case Const.WARNING:
+          flags |= SWT.ICON_WARNING;
+          break;
         }
 
-//        Shell shell = super.createShell();
         MessageBox mb = new MessageBox(shell, flags);
         // Set the Body Message
         mb.setMessage(message);
@@ -7897,6 +7901,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         if (mb.open() == SWT.OK) {
           answer.setCharAt(0, 'Y');
         }
+      }
+    });
 
     return "Y".equalsIgnoreCase(answer.toString());
   }
