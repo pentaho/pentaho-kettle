@@ -94,7 +94,7 @@ public class MonetDBAgileMart extends MonetDBBulkLoader implements TableManager 
 			// we are done, ignore any new rows
 			AgileMartUtil util = new AgileMartUtil();
 			util.updateMetadata( getMeta(), rowsWritten );
-			throw new KettleException("Row limit exceeded");
+			throw new MonetDBRowLimitException("Row limit exceeded");
 		}
 		MonetDBBulkLoaderData data = getData();
 		if (bufferLimit==data.bufferIndex || log.isDebug() ) {
@@ -105,7 +105,7 @@ public class MonetDBAgileMart extends MonetDBBulkLoader implements TableManager 
     		}
     		if( rowsWritten >= rowLimit ) {
     			// we are done, stop the transformation
-    			throw new KettleException("Row limit exceeded");
+    			throw new MonetDBRowLimitException("Row limit exceeded");
     		}
     	}
 		addRowToBuffer(rowMeta, r);
