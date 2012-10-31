@@ -98,7 +98,15 @@ public class CommonHadoopShim implements HadoopShim {
   
   @Override
   public FileSystem getFileSystem(Configuration conf) throws IOException {
-    return new FileSystemProxy(org.apache.hadoop.fs.FileSystem.get(ShimUtils.asConfiguration(conf)));
+    // Set the context class loader when instantiating the configuration
+    // since org.apache.hadoop.conf.Configuration uses it to load resources
+    ClassLoader cl = Thread.currentThread().getContextClassLoader();
+    Thread.currentThread().setContextClassLoader(getClass().getClassLoader());
+    try {
+      return new FileSystemProxy(org.apache.hadoop.fs.FileSystem.get(ShimUtils.asConfiguration(conf)));
+    } finally {
+      Thread.currentThread().setContextClassLoader(cl);
+    }
   }
 
   public void setDistributedCacheUtil(DistributedCacheUtil dcUtil) {
