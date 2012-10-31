@@ -47,6 +47,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.monetdbagilemart.MonetDBRowLimitException;
 import org.pentaho.di.trans.steps.tableagilemart.AgileMartUtil;
 
 
@@ -303,8 +304,13 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 
 			return true;
 		}
-		catch(Exception e)
-		{
+    catch(MonetDBRowLimitException me) {
+      // we need to stop processing and clean up
+      logDebug(me.getMessage());
+      stopAll();
+      setOutputDone();
+      return true;
+    } catch(Exception e) {
 			logError(BaseMessages.getString(PKG, "MonetDBBulkLoader.Log.ErrorInStep"), e); //$NON-NLS-1$
 			setErrors(1);
 			stopAll();
@@ -352,7 +358,8 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 	    				} else {
 		    				// escape any backslashes
 			    			str = str.replace("\\", "\\\\");
-			    			if(meta.isAutoStringWidths()) {
+                str = str.replace("\"", "\\\"");
+                if(meta.isAutoStringWidths()) {
 			    				int len = valueMeta.getLength();
 			    				if( len < 1 ) {
 			    					len = MonetDBDatabaseMeta.DEFAULT_VARCHAR_LENGTH;
