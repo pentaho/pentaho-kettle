@@ -408,7 +408,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 		    				if( value == null ) {
 		    					line.write("null".getBytes());
 		    				} else {
-		    					if( value ) {
+		    					if( value.booleanValue() ) {
 		    						line.write("Y".getBytes());
 		    					} else {
 		    						line.write("N".getBytes());
