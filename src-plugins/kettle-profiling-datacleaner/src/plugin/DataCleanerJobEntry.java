@@ -141,6 +141,8 @@ public class DataCleanerJobEntry extends JobEntryBase implements JobEntryInterfa
         retval.append("      ").append(XMLHandler.addTagValue("output_type", configuration.getOutputType().toString()));
         retval.append("      ").append(
                 XMLHandler.addTagValue("output_file_in_result", configuration.isOutputFileInResult()));
+        retval.append("      ").append(
+                XMLHandler.addTagValue("additional_arguments", configuration.getAdditionalArguments()));
 
         return retval.toString();
     }
@@ -160,6 +162,8 @@ public class DataCleanerJobEntry extends JobEntryBase implements JobEntryInterfa
                 configuration.setOutputFileInResult(false);
             }
 
+            configuration.setAdditionalArguments(XMLHandler.getTagValue(entrynode, "additional_arguments"));
+
         } catch (KettleXMLException xe) {
             throw new KettleXMLException("Unable to load job entry from XML node", xe);
         }
@@ -174,6 +178,7 @@ public class DataCleanerJobEntry extends JobEntryBase implements JobEntryInterfa
         rep.saveJobEntryAttribute(id_job, getObjectId(), "output_file", configuration.getOutputFilename());
         rep.saveJobEntryAttribute(id_job, getObjectId(), "output_type", configuration.getOutputType().toString());
         rep.saveJobEntryAttribute(id_job, getObjectId(), "output_file_in_result", configuration.isOutputFileInResult());
+        rep.saveJobEntryAttribute(id_job, getObjectId(), "additional_arguments", configuration.getAdditionalArguments());
     }
 
     @Override
@@ -188,5 +193,6 @@ public class DataCleanerJobEntry extends JobEntryBase implements JobEntryInterfa
                 "output_type")));
         configuration
                 .setOutputFileInResult(rep.getJobEntryAttributeBoolean(id_jobentry, "output_file_in_result", true));
+        configuration.setAdditionalArguments(rep.getJobEntryAttributeString(id_jobentry, "additional_arguments"));
     }
 }
