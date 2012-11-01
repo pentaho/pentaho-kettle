@@ -403,16 +403,18 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 		    			}
 		    			break;
 		    		case ValueMetaInterface.TYPE_BOOLEAN:
-		    			if (valueMeta.isStorageBinaryString() && meta.getFieldFormatOk()[i]) {
-		    				line.write((byte[])valueData);
-		    			} else {
-		    				Boolean value = valueMeta.getBoolean(valueData);
+	    				{
+	    					Boolean value = valueMeta.getBoolean(valueData);
 		    				if( value == null ) {
 		    					line.write("null".getBytes());
 		    				} else {
-		    					line.write(Boolean.toString(value).getBytes());
+		    					if( value ) {
+		    						line.write("Y".getBytes());
+		    					} else {
+		    						line.write("N".getBytes());
+		    					}
 		    				}
-		    			}
+	    				}
 		    			break;
 		    		case ValueMetaInterface.TYPE_NUMBER:
 		    			if (valueMeta.isStorageBinaryString() && meta.getFieldFormatOk()[i]) {
