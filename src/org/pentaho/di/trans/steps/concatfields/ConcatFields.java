@@ -276,8 +276,10 @@ public class ConcatFields extends TextFileOutput implements StepInterface
 		data.writer = new ConcatFieldsOutputStream();
 		
 		initStringDataFields();
-
-		return super.init(smi, sdi);
+		
+		boolean rv=super.init(smi, sdi); // calls also initBinaryDataFields();
+		data.binaryNewline = new byte[] {}; // tweak the CR/LF handling
+		return rv;
 	}
 	
 	// init separator,enclosure, null values for fast data dump
