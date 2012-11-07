@@ -31,12 +31,11 @@ import java.util.Map;
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.annotations.CarteServlet;
-import org.pentaho.di.core.annotations.Step;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.www.CartePluginInterface;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -46,7 +45,7 @@ import org.w3c.dom.Node;
  * @author matt
  *
  */
-@PluginMainClassType(StepMetaInterface.class)
+@PluginMainClassType(CartePluginInterface.class)
 @PluginAnnotationType(CarteServlet.class)
 public class CartePluginType extends BasePluginType implements PluginTypeInterface {
 	
@@ -134,37 +133,37 @@ public class CartePluginType extends BasePluginType implements PluginTypeInterfa
 
   @Override
   protected String extractCategory(Annotation annotation) {
-    return ((Step) annotation).categoryDescription();
+    return "";
   }
 
   @Override
   protected String extractDesc(Annotation annotation) {
-    return ((Step) annotation).description();
+    return ((CarteServlet) annotation).description();
   }
 
   @Override
   protected String extractID(Annotation annotation) {
-    return ((Step) annotation).id();
+    return ((CarteServlet) annotation).id();
   }
 
   @Override
   protected String extractName(Annotation annotation) {
-    return ((Step) annotation).name();
+    return ((CarteServlet) annotation).name();
   }
   
   @Override
   protected String extractImageFile(Annotation annotation) {
-    return ((Step) annotation).image();
+    return "";
   }
   
   @Override
   protected boolean extractSeparateClassLoader(Annotation annotation) {
-    return ((Step) annotation).isSeparateClassLoaderNeeded();
+    return ((CarteServlet) annotation).isSeparateClassLoaderNeeded();
   }
 
   @Override
   protected String extractI18nPackageName(Annotation annotation) {
-    return ((Step) annotation).i18nPackageName();
+    return ((CarteServlet) annotation).i18nPackageName();
   }
 
   @Override
