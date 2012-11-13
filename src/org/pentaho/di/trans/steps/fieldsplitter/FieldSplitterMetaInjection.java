@@ -198,23 +198,25 @@ public class FieldSplitterMetaInjection implements StepMetaInjectionInterface {
 
     // Pass the grid to the step metadata
     //
-    meta.allocate(splits.size());
-    for (int i = 0; i < splits.size(); i++) {
-      Split split = splits.get(i);
-
-      meta.getFieldName()[i] = split.name;
-      meta.getFieldID()[i] = split.id;
-      meta.getFieldRemoveID()[i] = split.removeId;
-      meta.getFieldType()[i] = split.dataType;
-      meta.getFieldFormat()[i] = split.format;
-      meta.getFieldGroup()[i] = split.grouping;
-      meta.getFieldDecimal()[i] = split.decimal;
-      meta.getFieldCurrency()[i] = split.currency;
-      meta.getFieldLength()[i] = split.length;
-      meta.getFieldPrecision()[i] = split.precision;
-      meta.getFieldNullIf()[i] = split.nullIf;
-      meta.getFieldIfNull()[i] = split.ifNull;
-      meta.getFieldTrimType()[i] = split.trimType;
+    if (splits.size()>0) {
+      meta.allocate(splits.size());
+      for (int i = 0; i < splits.size(); i++) {
+        Split split = splits.get(i);
+  
+        meta.getFieldName()[i] = split.name;
+        meta.getFieldID()[i] = split.id;
+        meta.getFieldRemoveID()[i] = split.removeId;
+        meta.getFieldType()[i] = split.dataType;
+        meta.getFieldFormat()[i] = split.format;
+        meta.getFieldGroup()[i] = split.grouping;
+        meta.getFieldDecimal()[i] = split.decimal;
+        meta.getFieldCurrency()[i] = split.currency;
+        meta.getFieldLength()[i] = split.length;
+        meta.getFieldPrecision()[i] = split.precision;
+        meta.getFieldNullIf()[i] = split.nullIf;
+        meta.getFieldIfNull()[i] = split.ifNull;
+        meta.getFieldTrimType()[i] = split.trimType;
+      }
     }
   }
 
