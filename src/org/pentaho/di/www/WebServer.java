@@ -35,6 +35,7 @@ import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
 import org.mortbay.jetty.bio.SocketConnector;
 import org.mortbay.jetty.handler.ContextHandlerCollection;
+import org.mortbay.jetty.handler.ResourceHandler;
 import org.mortbay.jetty.plus.jaas.JAASUserRealm;
 import org.mortbay.jetty.security.Constraint;
 import org.mortbay.jetty.security.ConstraintMapping;
@@ -50,225 +51,235 @@ import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.i18n.BaseMessages;
 
+import com.sun.jersey.spi.container.servlet.ServletContainer;
 
+public class WebServer {
+  private static Class<?> PKG = WebServer.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
 
-public class WebServer
-{
-	private static Class<?> PKG = WebServer.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+  private LogChannelInterface log;
 
-    private LogChannelInterface log;
+  public static final int PORT = 80;
+
+  private Server server;
+
+  private TransformationMap transformationMap;
+  private JobMap jobMap;
+  private List<SlaveServerDetection> detections;
+  private SocketRepository socketRepository;
+
+  private String hostname;
+  private int port;
+
+  private Timer slaveMonitoringTimer;
+
+  public WebServer(LogChannelInterface log, TransformationMap transformationMap, JobMap jobMap, SocketRepository socketRepository,
+      List<SlaveServerDetection> detections, String hostname, int port, boolean join) throws Exception {
+    this.log = log;
+    this.transformationMap = transformationMap;
+    this.jobMap = jobMap;
+    this.socketRepository = socketRepository;
+    this.detections = detections;
+    this.hostname = hostname;
+    this.port = port;
+
+    startServer();
+
+    // Start the monitoring of the registered slave servers...
+    //
+    startSlaveMonitoring();
+
+    if (join) {
+      server.join();
+    }
+  }
+
+  public WebServer(LogChannelInterface log, TransformationMap transformationMap, JobMap jobMap, SocketRepository socketRepository,
+      List<SlaveServerDetection> slaveServers, String hostname, int port) throws Exception {
+    this(log, transformationMap, jobMap, socketRepository, slaveServers, hostname, port, true);
+  }
+
+  public Server getServer() {
+    return server;
+  }
+
+  public void startServer() throws Exception {
+    server = new Server();
+
+    Constraint constraint = new Constraint();
+    constraint.setName(Constraint.__BASIC_AUTH);
+    ;
+    constraint.setRoles(new String[] { Constraint.ANY_ROLE });
+    constraint.setAuthenticate(true);
+
+    ConstraintMapping constraintMapping = new ConstraintMapping();
+    constraintMapping.setConstraint(constraint);
+    constraintMapping.setPathSpec("/*");
+
+    // Set up the security handler, optionally with JAAS
+    //
+    SecurityHandler securityHandler = new SecurityHandler();
+
+    if (System.getProperty("loginmodulename") != null && System.getProperty("java.security.auth.login.config") != null) {
+      JAASUserRealm jaasRealm = new JAASUserRealm("Kettle");
+      jaasRealm.setLoginModuleName(System.getProperty("loginmodulename"));
+      securityHandler.setUserRealm(jaasRealm);
+    } else {
+      // See if there is a kettle.pwd file in the KETTLE_HOME directory:
+      //
+      File homePwdFile = new File(Const.getKettleCartePasswordFile());
+      if (homePwdFile.exists()) {
+        securityHandler.setUserRealm(new HashUserRealm("Kettle", Const.getKettleCartePasswordFile()));
+      } else {
+        securityHandler.setUserRealm(new HashUserRealm("Kettle", Const.getKettleLocalCartePasswordFile()));
+      }
+    }
+
+    securityHandler.setConstraintMappings(new ConstraintMapping[] { constraintMapping });
+
+    // Add all the servlets defined in kettle-servlets.xml ...
+    //
+    ContextHandlerCollection contexts = new ContextHandlerCollection();
+
+    // Root
+    //
+    Context root = new Context(contexts, GetRootServlet.CONTEXT_PATH, Context.SESSIONS);
+    GetRootServlet rootServlet = new GetRootServlet();
+    rootServlet.setJettyMode(true);
+    root.addServlet(new ServletHolder(rootServlet), "/*");
+
+    PluginRegistry pluginRegistry = PluginRegistry.getInstance();
+    List<PluginInterface> plugins = pluginRegistry.getPlugins(CartePluginType.class);
+    for (PluginInterface plugin : plugins) {
+
+      CartePluginInterface servlet = (CartePluginInterface) pluginRegistry.loadClass(plugin);
+      servlet.setup(transformationMap, jobMap, socketRepository, detections);
+      servlet.setJettyMode(true);
+
+      Context servletContext = new Context(contexts, servlet.getContextPath(), Context.SESSIONS);
+      ServletHolder servletHolder = new ServletHolder((Servlet) servlet);
+      servletContext.addServlet(servletHolder, "/*");
+    }
+
+    // setup jersey (REST)
+    ServletHolder jerseyServletHolder = new ServletHolder(ServletContainer.class);
+    jerseyServletHolder.setInitParameter("com.sun.jersey.config.property.resourceConfigClass", "com.sun.jersey.api.core.PackagesResourceConfig");
+    jerseyServletHolder.setInitParameter("com.sun.jersey.config.property.packages", "org.pentaho.di.www.jaxrs");
+    root.addServlet(jerseyServletHolder, "/api/*");
+
+    // setup static resource serving
+    // ResourceHandler mobileResourceHandler = new ResourceHandler();
+    // mobileResourceHandler.setWelcomeFiles(new String[]{"index.html"});  
+    // mobileResourceHandler.setResourceBase(getClass().getClassLoader().getResource("org/pentaho/di/www/mobile").toExternalForm());    
+    // Context mobileContext = new Context(contexts, "/mobile", Context.SESSIONS);
+    // mobileContext.setHandler(mobileResourceHandler);
     
-    public  static final int PORT = 80;
+    // add all handlers/contexts to server
+    server.setHandlers(new Handler[] { securityHandler, contexts });
 
-    private Server             server;
-    
-    private TransformationMap  transformationMap;
-	private JobMap             jobMap;
-	private List<SlaveServerDetection>  detections;
-	private SocketRepository   socketRepository;
-	
-    private String hostname;
-    private int port;
+    // Start execution
+    createListeners();
 
-    private Timer slaveMonitoringTimer;
+    server.start();
+  }
 
-    public WebServer(LogChannelInterface log, TransformationMap transformationMap, JobMap jobMap, SocketRepository socketRepository, List<SlaveServerDetection> detections, String hostname, int port, boolean join) throws Exception
-    {
-    	this.log = log;
-        this.transformationMap = transformationMap;
-        this.jobMap = jobMap;
-        this.socketRepository = socketRepository;
-        this.detections = detections;
-        this.hostname = hostname;
-        this.port = port;
+  public void stopServer() {
+    try {
+      if (server != null) {
 
-        startServer();
-        
-        // Start the monitoring of the registered slave servers...
+        // Stop the monitoring timer
         //
-        startSlaveMonitoring();
-        
-        if (join) {
-            server.join();
+        if (slaveMonitoringTimer != null) {
+          slaveMonitoringTimer.cancel();
+          slaveMonitoringTimer = null;
         }
-    }
 
-	public WebServer(LogChannelInterface log, TransformationMap transformationMap, JobMap jobMap, SocketRepository socketRepository, List<SlaveServerDetection> slaveServers, String hostname, int port) throws Exception
-    {
-      this(log, transformationMap, jobMap, socketRepository, slaveServers, hostname, port, true);
-    }
-
-    public Server getServer()
-    {
-        return server;
-    }
-
-    public void startServer() throws Exception
-    {
-        server = new Server();
-        
-        Constraint constraint = new Constraint();
-        constraint.setName(Constraint.__BASIC_AUTH);;
-        constraint.setRoles( new String[] { Constraint.ANY_ROLE } );
-        constraint.setAuthenticate(true);
-        
-        ConstraintMapping constraintMapping = new ConstraintMapping();
-        constraintMapping.setConstraint(constraint);
-        constraintMapping.setPathSpec("/*");
-
-        // Set up the security handler, optionally with JAAS
+        // Clean up all the server sockets...
         //
-        SecurityHandler securityHandler = new SecurityHandler();
-        
-        if(System.getProperty("loginmodulename") != null && System.getProperty("java.security.auth.login.config") != null){
-        	JAASUserRealm jaasRealm = new JAASUserRealm("Kettle");
-        	jaasRealm.setLoginModuleName(System.getProperty("loginmodulename"));
-        	securityHandler.setUserRealm(jaasRealm);
-        } else {
-        	// See if there is a kettle.pwd file in the KETTLE_HOME directory:
-        	//
-        	File homePwdFile = new File(Const.getKettleCartePasswordFile());
-        	if (homePwdFile.exists()) {
-        		securityHandler.setUserRealm(new HashUserRealm("Kettle", Const.getKettleCartePasswordFile()));
-        	} else {
-        		securityHandler.setUserRealm(new HashUserRealm("Kettle", Const.getKettleLocalCartePasswordFile()));
-        	}
+        socketRepository.closeAll();
+
+        // Stop the server...
+        //
+        server.stop();
+      }
+    } catch (Exception e) {
+      log.logError(BaseMessages.getString(PKG, "WebServer.Error.FailedToStop.Title"), BaseMessages.getString(PKG, "WebServer.Error.FailedToStop.Msg", "" + e));
+    }
+  }
+
+  private void createListeners() {
+    SocketConnector connector = new SocketConnector();
+    connector.setPort(port);
+    connector.setHost(hostname);
+    connector.setName(BaseMessages.getString(PKG, "WebServer.Log.KettleHTTPListener", hostname));
+    log.logBasic(BaseMessages.getString(PKG, "WebServer.Log.CreateListener", hostname, "" + port));
+
+    server.setConnectors(new Connector[] { connector });
+  }
+
+  /**
+   * @return the hostname
+   */
+  public String getHostname() {
+    return hostname;
+  }
+
+  /**
+   * @param hostname
+   *          the hostname to set
+   */
+  public void setHostname(String hostname) {
+    this.hostname = hostname;
+  }
+
+  /**
+   * @return the slave server detections
+   */
+  public List<SlaveServerDetection> getDetections() {
+    return detections;
+  }
+
+  /**
+   * This method registers a timer to check up on all the registered slave servers every X seconds.<br>
+   */
+  private void startSlaveMonitoring() {
+    slaveMonitoringTimer = new Timer("WebServer Timer");
+    TimerTask timerTask = new TimerTask() {
+
+      public void run() {
+        for (SlaveServerDetection slaveServerDetection : detections) {
+          SlaveServer slaveServer = slaveServerDetection.getSlaveServer();
+
+          // See if we can get a status...
+          //
+          try {
+            // TODO: consider making this lighter or retaining more information...
+            slaveServer.getStatus(); // throws the exception
+            slaveServerDetection.setActive(true);
+            slaveServerDetection.setLastActiveDate(new Date());
+          } catch (Exception e) {
+            slaveServerDetection.setActive(false);
+            slaveServerDetection.setLastInactiveDate(new Date());
+
+            // TODO: kick it out after a configurable period of time...
+          }
         }
-        
-        securityHandler.setConstraintMappings(new ConstraintMapping[]{constraintMapping});
-               
-        // Add all the servlets defined in kettle-servlets.xml ...
-        //
-        ContextHandlerCollection contexts = new ContextHandlerCollection();
-        
-        // Root
-        //
-        Context root = new Context(contexts, GetRootServlet.CONTEXT_PATH, Context.SESSIONS);
-        GetRootServlet rootServlet = new GetRootServlet();
-        rootServlet.setJettyMode(true);
-        root.addServlet(new ServletHolder(rootServlet), "/*");
-        
-        PluginRegistry pluginRegistry = PluginRegistry.getInstance();
-        List<PluginInterface> plugins = pluginRegistry.getPlugins(CartePluginType.class);
-        for (PluginInterface plugin : plugins) {
+      }
+    };
+    slaveMonitoringTimer.schedule(timerTask, 20000, 20000);
+  }
 
-          CartePluginInterface servlet = (CartePluginInterface) pluginRegistry.loadClass(plugin);
-          servlet.setup(transformationMap, jobMap, socketRepository, detections);
-          servlet.setJettyMode(true);
-          
-          Context servletContext = new Context(contexts, servlet.getContextPath(), Context.SESSIONS);
-          ServletHolder servletHolder = new ServletHolder((Servlet)servlet);
-          servletContext.addServlet(servletHolder, "/*");
-        }
-        
-        server.setHandlers(new Handler[] { securityHandler, contexts });
+  /**
+   * @return the socketRepository
+   */
+  public SocketRepository getSocketRepository() {
+    return socketRepository;
+  }
 
-        // Start execution
-        createListeners();
-        
-        server.start();
-    }
-
-    public void stopServer() {
-		try {
-			if (server != null) {
-			  
-			  // Stop the monitoring timer
-			  //
-			  if (slaveMonitoringTimer!=null) {
-			    slaveMonitoringTimer.cancel();
-			    slaveMonitoringTimer = null;
-			  }
-			  
-				// Clean up all the server sockets...
-				//
-				socketRepository.closeAll();
-
-				// Stop the server...
-				//
-				server.stop();
-			}
-		} catch (Exception e) {
-			log.logError(BaseMessages.getString(PKG, "WebServer.Error.FailedToStop.Title"), BaseMessages.getString(PKG, "WebServer.Error.FailedToStop.Msg", "" + e));
-		}
-	}
-    
-    private void createListeners() 
-    {
-        SocketConnector connector = new SocketConnector();
-        connector.setPort(port);
-        connector.setHost(hostname);
-        connector.setName(BaseMessages.getString(PKG, "WebServer.Log.KettleHTTPListener",hostname));
-        log.logBasic(BaseMessages.getString(PKG, "WebServer.Log.CreateListener",hostname,""+port));
-
-        server.setConnectors( new Connector[] { connector });
-    }
-
-    /**
-     * @return the hostname
-     */
-    public String getHostname()
-    {
-        return hostname;
-    }
-
-    /**
-     * @param hostname the hostname to set
-     */
-    public void setHostname(String hostname)
-    {
-        this.hostname = hostname;
-    }
-
-	/**
-	 * @return the slave server detections
-	 */
-	public List<SlaveServerDetection> getDetections() {
-		return detections;
-	}
-
-	/**
-	 * This method registers a timer to check up on all the registered slave servers every X seconds.<br>
-	 */
-    private void startSlaveMonitoring() {
-  		slaveMonitoringTimer = new Timer("WebServer Timer");
-  		TimerTask timerTask = new TimerTask() {
-		
-			public void run() {
-				for (SlaveServerDetection slaveServerDetection : detections) {
-					SlaveServer slaveServer = slaveServerDetection.getSlaveServer();
-					
-					// See if we can get a status...
-					//
-					try {
-						// TODO: consider making this lighter or retaining more information...
-						slaveServer.getStatus(); // throws the exception
-						slaveServerDetection.setActive(true);
-						slaveServerDetection.setLastActiveDate(new Date());
-					} catch(Exception e) {
-						slaveServerDetection.setActive(false);
-						slaveServerDetection.setLastInactiveDate(new Date());
-						
-						// TODO: kick it out after a configurable period of time...
-					}
-				}
-			}
-		};
-		slaveMonitoringTimer.schedule(timerTask, 20000, 20000);
-	}
-
-	/**
-	 * @return the socketRepository
-	 */
-	public SocketRepository getSocketRepository() {
-		return socketRepository;
-	}
-
-	/**
-	 * @param socketRepository the socketRepository to set
-	 */
-	public void setSocketRepository(SocketRepository socketRepository) {
-		this.socketRepository = socketRepository;
-	}
+  /**
+   * @param socketRepository
+   *          the socketRepository to set
+   */
+  public void setSocketRepository(SocketRepository socketRepository) {
+    this.socketRepository = socketRepository;
+  }
 }
-

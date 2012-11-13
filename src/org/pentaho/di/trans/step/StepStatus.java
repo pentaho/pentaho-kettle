@@ -24,11 +24,14 @@ package org.pentaho.di.trans.step;
 
 import java.text.DecimalFormat;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.pentaho.di.core.exception.KettleXMLException;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+@XmlRootElement
 public class StepStatus
 {
     public static final String XML_TAG = "stepstatus";
@@ -48,6 +51,9 @@ public class StepStatus
     private String priority;
     private boolean stopped;
     private boolean paused;
+    
+    public StepStatus() {
+    }
     
     public StepStatus(StepInterface baseStep)
     {

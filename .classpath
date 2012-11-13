@@ -48,7 +48,6 @@
 	<classpathentry exported="true" kind="lib" path="libext/jaxen-1.1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/JDBC/monetdb-1.7-jdbc.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/jxl.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/web/servlet-api-2.5-6.1.9.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/trilead-ssh2-build213.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/feeds/georss-rome-0.9.8.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/feeds/jdom.jar"/>
@@ -69,9 +68,6 @@
 	<classpathentry exported="true" kind="lib" path="libext/spring/spring-context-2.5.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/spring/spring-context-support-2.5.6.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/pentaho/libbase-TRUNK-SNAPSHOT.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/web/jetty-6.1.21.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/web/jetty-plus-6.1.21.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/web/jetty-util-6.1.21.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/junit-4.7.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/commons/commons-io-1.4.jar"/>
 	<classpathentry exported="true" kind="lib" path="test/libext/jetty-servlet-tester-6.1.21.jar"/>
@@ -286,5 +282,13 @@
 	<classpathentry kind="lib" path="libext/poi/poi-ooxml-schemas-3.8-20120326.jar"/>
 	<classpathentry kind="lib" path="libext/eobjects/SassyReader-0.5.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-metadata-TRUNK-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="libext/jersey/jersey-json-1.7.jar"/>
+	<classpathentry kind="lib" path="libext/jersey/jersey-multipart-1.7.jar"/>
+	<classpathentry kind="lib" path="libext/jersey/jersey-server-1.7.jar"/>
+	<classpathentry kind="lib" path="libext/jersey/jersey-servlet-1.11.jar"/>
+	<classpathentry kind="lib" path="libext/web/jetty-6.1.21.jar"/>
+	<classpathentry kind="lib" path="libext/web/jetty-plus-6.1.21.jar"/>
+	<classpathentry kind="lib" path="libext/web/jetty-util-6.1.21.jar"/>
+	<classpathentry kind="lib" path="libext/web/servlet-api-2.5-6.1.9.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

@@ -25,7 +25,6 @@ package org.pentaho.di.www;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.UUID;
 
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.cluster.SlaveServer;
@@ -34,16 +33,12 @@ import org.pentaho.di.core.KettleEnvironment;
 import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LogChannelInterface;
-import org.pentaho.di.core.logging.LoggingObjectType;
-import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
-import org.pentaho.di.trans.TransConfiguration;
-import org.pentaho.di.trans.TransExecutionConfiguration;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransPreviewFactory;
 import org.pentaho.di.trans.steps.rowgenerator.RowGeneratorMeta;
@@ -56,30 +51,21 @@ public class Carte
 
 	private WebServer webServer;
 	private SlaveServerConfig config;
-	private LogChannelInterface log;
 
 	public Carte(final SlaveServerConfig config) throws Exception {
+	  
 		this.config = config;
 
-		this.log = new LogChannel("Carte");
-		
 		boolean allOK=true;
 		
-        final TransformationMap transformationMap = new TransformationMap();
+	  LogChannelInterface log =CarteSingleton.getInstance().getLog();
+		
+        final TransformationMap transformationMap = CarteSingleton.getInstance().getTransformationMap();
         transformationMap.setSlaveServerConfig(config);
-        final JobMap jobMap = new JobMap();
+        final JobMap jobMap = CarteSingleton.getInstance().getJobMap();
         jobMap.setSlaveServerConfig(config);
         List<SlaveServerDetection> detections = Collections.synchronizedList(new ArrayList<SlaveServerDetection>());
-        SocketRepository socketRepository = new SocketRepository(log);
-        
-        Trans trans = generateTestTransformation();
-        
-        String carteObjectId = UUID.randomUUID().toString();
-        SimpleLoggingObject servletLoggingObject = new SimpleLoggingObject("Carte", LoggingObjectType.CARTE, null);
-        servletLoggingObject.setContainerObjectId(carteObjectId);
-        servletLoggingObject.setLogLevel(log.getLogLevel());
-
-        transformationMap.addTransformation(trans.getName(), carteObjectId, trans, new TransConfiguration(trans.getTransMeta(), new TransExecutionConfiguration()));
+        SocketRepository socketRepository = CarteSingleton.getInstance().getSocketRepository();
         
     	SlaveServer slaveServer = config.getSlaveServer();
         
@@ -120,8 +106,8 @@ public class Carte
         }
         
         // If we need to time out finished or idle objects, we should create a timer in the background to clean
-        //
-        CarteSingleton.installPurgeTimer(config, log, transformationMap, jobMap);
+        // this is done automatically now
+        //CarteSingleton.installPurgeTimer(config, log, transformationMap, jobMap);
 
         if (allOK) {
         	this.webServer = new WebServer(log, transformationMap, jobMap, socketRepository, detections, hostname, port, config.isJoining());
@@ -213,7 +199,6 @@ public class Carte
         transMeta.setUsingThreadPriorityManagment(false);
 
         return new Trans(transMeta);
-        
     }
 
 	/**

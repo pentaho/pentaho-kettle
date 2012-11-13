@@ -55,6 +55,7 @@ public class CarteSingleton {
   private static CarteSingleton carte;
 
   private LogChannelInterface log;
+
   private TransformationMap transformationMap;
   private JobMap jobMap;
   private List<SlaveServerDetection> detections;
@@ -273,5 +274,8 @@ public class CarteSingleton {
   public static void setSlaveServerConfig(SlaveServerConfig slaveServerConfig) {
     CarteSingleton.slaveServerConfig = slaveServerConfig;
   }
-
+  
+  public LogChannelInterface getLog() {
+    return log;
+  }
 }

@@ -28,6 +28,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
 import org.pentaho.di.core.row.RowMeta;
@@ -59,6 +61,7 @@ import org.w3c.dom.Node;
  * @author Matt
  * @since 05-11-2003
  */
+@XmlRootElement
 public class Result implements Cloneable
 {
 	

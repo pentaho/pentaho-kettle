@@ -24,15 +24,21 @@ package org.pentaho.di.www;
 
 import java.util.Comparator;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * A carte object entry in the transformation or job maps
  * 
  * @author matt
  *
  */
+@XmlRootElement
 public class CarteObjectEntry implements Comparator<CarteObjectEntry>, Comparable<CarteObjectEntry> {
 	private String name;
 	private String id;
+	
+	public CarteObjectEntry() {
+  }
 	
 	public CarteObjectEntry(String name, String id) {
 		this.name = name;
