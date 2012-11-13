@@ -55,6 +55,7 @@ import org.pentaho.di.trans.step.BaseStepMeta;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
+import org.pentaho.di.trans.step.StepMetaInjectionInterface;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.w3c.dom.Node;
 
@@ -733,13 +734,22 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public void allocate(int nrfiles, int nrfields)
 	{
-		fileName   = new String [nrfiles];
-		fileMask   = new String [nrfiles];
-		excludeFileMask = new String[nrfiles];
-		fileRequired = new String[nrfiles];
-		includeSubFolders = new String[nrfiles];   
-		inputFields = new AccessInputField[nrfields];        
+	  allocateFiles(nrfiles);
+	  allocateFields(nrfields);
 	}
+	
+	public void allocateFiles(int nrfiles) {
+    fileName   = new String [nrfiles];
+    fileMask   = new String [nrfiles];
+    excludeFileMask = new String[nrfiles];
+    fileRequired = new String[nrfiles];
+    includeSubFolders = new String[nrfiles];   
+	}
+	
+	public void allocateFields(int nrfields) {
+    inputFields = new AccessInputField[nrfields];        
+	}
+	
 	
 	@Override
 	public void setDefault()
@@ -1276,5 +1286,10 @@ public class AccessInputMeta extends BaseStepMeta implements StepMetaInterface
 		if(o!=null)  valueMetaData.setValueData(o);
 		
 		return valueMetaData;
+	}
+	
+	@Override
+	public StepMetaInjectionInterface getStepMetaInjectionInterface() {
+	  return new AccessInputMetaInjection(this);
 	}
 }
