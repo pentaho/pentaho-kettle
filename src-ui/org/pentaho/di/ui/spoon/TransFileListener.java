@@ -49,7 +49,7 @@ public class TransFileListener implements FileListener {
         try
         {
             TransMeta transMeta = new TransMeta();
-            transMeta.loadXML(transNode, spoon.getRepository(), true, new Variables(), new OverwritePrompter() {
+            transMeta.loadXML(transNode, fname, spoon.getRepository(), true, new Variables(), new OverwritePrompter() {
 			
             	public boolean overwritePrompt(String message, String rememberText, String rememberPropertyName) {
             		MessageDialogWithToggle.setDefaultImage(GUIResource.getInstance().getImageSpoon());

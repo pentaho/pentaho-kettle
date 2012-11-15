@@ -2773,10 +2773,6 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         
         if (doc != null)
         {
-            // Clear the transformation
-            clearUndo();
-            clear();
-
             // Root node:
             Node transnode = XMLHandler.getSubNode(doc, XML_TAG); //$NON-NLS-1$
             
@@ -2785,9 +2781,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             }
 
             // Load from this node...
-            loadXML(transnode, rep, setInternalVariables, parentVariableSpace, prompter);
+            loadXML(transnode, fname, rep, setInternalVariables, parentVariableSpace, prompter);
 
-            setFilename(fname);
         }
         else
         {
@@ -2863,6 +2858,22 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
      */
     public void loadXML(Node transnode, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace, OverwritePrompter prompter ) throws KettleXMLException
     {
+    	loadXML(transnode, null, rep, setInternalVariables, parentVariableSpace, prompter);
+    }
+    
+    /**
+     * Parses an XML DOM (starting at the specified Node) that describes the transformation.
+     *
+     * @param transnode The XML node to load from
+     * @param fname The filename
+     * @param rep The repository to load the default list of database connections from (null if no repository is available)
+     * @param setInternalVariables true if you want to set the internal variables based on this transformation information
+     * @param parentVariableSpace the parent variable space to use during TransMeta construction
+     * @param prompter the changed/replace listener or null if there is none
+     * @throws KettleXMLException if any errors occur during parsing of the specified file
+     */
+    public void loadXML(Node transnode, String fname, Repository rep, boolean setInternalVariables, VariableSpace parentVariableSpace, OverwritePrompter prompter ) throws KettleXMLException
+    {
         Props props = null;
         if (Props.isInitialized())
         {
@@ -2874,8 +2885,13 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         try
         {
             // Clear the transformation
-            clearUndo();
             clear();
+            
+            // If we are not using a repository, we are getting the transformation from a file
+            // Set the filename here so it can be used in variables for ALL aspects of the transformation FIX: PDI-8890
+            if(null == rep) {
+            	setFilename(fname);
+            }
             
             // Read all the database connections from the repository to make sure that we don't overwrite any there by loading from XML.
             try

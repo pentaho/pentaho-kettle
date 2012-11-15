@@ -42,7 +42,7 @@ public class JobFileListener implements FileListener {
         try
         {
             JobMeta jobMeta = new JobMeta();
-            jobMeta.loadXML(jobNode, spoon.getRepository(), spoon);
+            jobMeta.loadXML(jobNode, fname, spoon.getRepository(), spoon);
             jobMeta.setRepositoryDirectory(spoon.getDefaultSaveLocation(jobMeta));
             spoon.setJobMetaVariables(jobMeta);
             spoon.getProperties().addLastFile(LastUsedFile.FILE_TYPE_JOB, fname, null, false, null);
