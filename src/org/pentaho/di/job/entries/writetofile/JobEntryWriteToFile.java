@@ -26,14 +26,11 @@ import static org.pentaho.di.job.entry.validator.AndValidator.putValidators;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.andValidator;
 import static org.pentaho.di.job.entry.validator.JobEntryValidatorUtils.notBlankValidator;
 
-
-import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.util.List;
 
 import org.apache.commons.vfs.FileObject;
-import org.w3c.dom.Node;
-
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -51,8 +48,9 @@ import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
-import org.pentaho.di.resource.ResourceReference;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
+import org.pentaho.di.resource.ResourceReference;
+import org.w3c.dom.Node;
 
 
 
@@ -203,20 +201,21 @@ public class JobEntryWriteToFile extends JobEntryBase implements Cloneable, JobE
 			String encoding = environmentSubstitute(getEncoding());
 			
             OutputStreamWriter osw=null;
-            FileOutputStream  fos=null;
+            OutputStream os = null;
 			try {
 				
 				// Create parent folder if needed
 				createParentFolder(realFilename);
 				
-				// if uploaded file not exist, create a new one
-				fos = new FileOutputStream (realFilename, isAppendFile());
+				// Create / open file for writing
+				os = KettleVFS.getOutputStream(realFilename, isAppendFile());
+				
 				if(Const.isEmpty(encoding)) {
 					if(isDebug()) logDebug(BaseMessages.getString(PKG, "JobWriteToFile.Log.WritingToFile", realFilename));
-					osw = new OutputStreamWriter(fos);
+					osw = new OutputStreamWriter(os);
 				}else {
 					if(isDebug()) logDebug(BaseMessages.getString(PKG, "JobWriteToFile.Log.WritingToFileWithEncoding", realFilename, encoding));
-					osw = new OutputStreamWriter(fos, encoding);
+					osw = new OutputStreamWriter(os, encoding);
 				}
 				osw.write(content); 
 	
@@ -232,10 +231,10 @@ public class JobEntryWriteToFile extends JobEntryBase implements Cloneable, JobE
             			osw.close();
             		} catch ( Exception ex ) {};
             	}
-            	if ( fos != null ) {
+            	if ( os != null ) {
             		try { 
-            			fos.flush();
-            			fos.close();
+            			os.flush();
+            			os.close();
             		} catch ( Exception ex ) {};
             	}
             }			
