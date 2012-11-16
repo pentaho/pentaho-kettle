@@ -1226,12 +1226,13 @@ public class KettleFileRepository implements Repository {
       }
       
       String filePath = fileObject.getParent().getName().getPath();
-      String dirPath = repositoryMeta.getBaseDirectory().length()<=filePath.length() ? filePath.substring(repositoryMeta.getBaseDirectory().length()) : "/";
+      final FileObject baseDirObject = KettleVFS.getFileObject(repositoryMeta.getBaseDirectory());
+      final int baseDirObjectPathLength = baseDirObject.getName().getPath().length();
+      final String dirPath = baseDirObjectPathLength <= filePath.length() ? filePath.substring(baseDirObjectPathLength) : "/";
       RepositoryDirectoryInterface directory = loadRepositoryDirectoryTree().findDirectory(dirPath);
       Date lastModified = new Date(fileObject.getContent().getLastModifiedTime());
           
-      return new RepositoryObject(objectId, name, directory, "-", lastModified, objectType, "", false);
-      
+      return new RepositoryObject(objectId, name, directory, "-", lastModified, objectType, "", false);      
     } catch(Exception e) {
       throw new KettleException("Unable to get object information for object with id="+objectId, e);
     }
