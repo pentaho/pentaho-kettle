@@ -55,6 +55,9 @@
 		<!-- unzip pentaho-big-data-plugin and samples -->
 		<unzip src="${pentaho-big-data-plugin.dist.dir}/pentaho-big-data-plugin-${dependency.pentaho-big-data-plugin.revision}.zip" dest="${pdice.repackage.basedir}/data-integration/plugins" overwrite="true"/>
 		<unzip src="${pentaho-big-data-plugin.dist.dir}/pentaho-big-data-plugin-samples-${dependency.pentaho-big-data-plugin.revision}.zip" dest="${pdice.repackage.basedir}/data-integration/samples" overwrite="true"/>
+  	  
+  	<!-- One off for 4.4.0-CE build, this plugin needs to be in the 'data-integration/plugins/spoon' directory, not just 'data-integration/plugins' -->
+  	<move file="${pdice.repackage.basedir}/data-integration/plugins/market" todir="${pdice.repackage.basedir}/data-integration/plugins/spoon"/>
   				
   	</target>	
 
