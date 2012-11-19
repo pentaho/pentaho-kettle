@@ -109,6 +109,14 @@
     <iconfile>ui/images/TOP.png</iconfile>
   </step>
 
+  <step id="TableAgileMart">
+    <description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.TableAgileMart</description>
+    <classname>org.pentaho.di.trans.steps.tableagilemart.TableAgileMartMeta</classname>
+    <category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Agile</category>
+    <tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.TableAgileMart</tooltip>
+    <iconfile>ui/images/TOP.png</iconfile>
+  </step>
+
   <step id="InfobrightOutput">
     <description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.InfobrightOutput</description>
     <classname>org.pentaho.di.trans.steps.infobrightoutput.InfobrightLoaderMeta</classname>
@@ -757,6 +765,14 @@
     <iconfile>ui/images/OBL.png</iconfile>
   </step>
 
+  <step id="MonetDBAgileMart">
+    <description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.MonetDBAgileMart</description>
+    <classname>org.pentaho.di.trans.steps.monetdbagilemart.MonetDBAgileMartMeta</classname>
+    <category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Agile</category>
+    <tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.MonetDBAgileMart</tooltip>
+    <iconfile>ui/images/OBL.png</iconfile>
+  </step>
+  
   <step id="MailValidator">
     <description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.MailValidator</description>
     <classname>org.pentaho.di.trans.steps.mailvalidator.MailValidatorMeta</classname>
@@ -1093,6 +1109,14 @@
     <iconfile>ui/images/GNR.png</iconfile>
   </step>
 
+  <step id="Script">
+    <description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.Script</description>
+    <classname>org.pentaho.di.trans.steps.script.ScriptMeta</classname>
+    <category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Experimental</category>
+    <tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Script</tooltip>
+    <iconfile>ui/images/SCR_mod.png</iconfile>
+  </step>
+	
   <step id="TeraFast,TeraFastPlugin">
     <description>i18n:org.pentaho.di.trans.step:BaseStep.TypeLongDesc.TeraFast</description>
     <classname>org.pentaho.di.trans.steps.terafast.TeraFastMeta</classname>
@@ -1507,7 +1531,4 @@
 		<tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.ConcatFields</tooltip>
 		<iconfile>ui/images/ConcatFields.png</iconfile>
 	</step>
-
-
-	
 </steps>

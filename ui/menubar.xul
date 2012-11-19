@@ -24,15 +24,15 @@
           command="spoon.tabCloseSelected()" />
         <menuitem id="file-close-all" acceltext="SHIFT-CTRL-W" accesskey="shift-ctrl-w" label="${Spoon.Menu.File.Close.All}" command="spoon.closeAllFiles()" />
 
-        <menuseparator />
+        <menuseparator id="file-separator-1"/>
         <menuitem id="file-save" acceltext="CTRL-S" accesskey="ctrl-s" label="${Spoon.Menu.File.Save}" command="spoon.saveFile()" />
         <menuitem id="file-save-as" label="${Spoon.Menu.File.SaveAs}" command="spoon.saveFileAs()" />
         <menuitem id="file-save-as-vfs" label="${Spoon.Menu.File.SaveAsVFS}" command="spoon.saveXMLFileToVfs()" />
         <!-- <menuitem id="file-publish" label="${Spoon.Menu.File.Publish}"/> -->
-        <menuseparator />
+        <menuseparator id="file-separator-2"/>
         <menuitem id="file-print" label="${Spoon.Menu.File.Print}" command="spoon.printFile()" />
 
-        <menuseparator />
+        <menuseparator id="file-separator-3"/>
         <menuitem id="file-import-from-xml" acceltext="CTRL-I" accesskey="ctrl-i" label="${Spoon.Menu.File.Import}"
           command="spoon.importFile()" />
         <menu id="file-export" label="${Spoon.Menu.File.Export.Popup}" >
@@ -44,8 +44,8 @@
             -->
           </menupopup>
         </menu>
-        <menuseparator />
-        <menuitem id="file-quit" label="${Spoon.Menu.File.Quit}" command="spoon.quitFile()" />        
+        <menuseparator id="file-separator-4"/>
+        <menuitem id="file-quit" label="${Spoon.Menu.File.Quit}" command="spoon.quitFile(true)" />        
       </menupopup>
     </menu>
     
@@ -89,7 +89,7 @@
     
     <menu id="view" label="${Spoon.Menu.View}">
       <menupopup id="view-popup">
-        <menu label="${Spoon.Menu.View.Perspectives}">
+        <menu id="view-perspectives" label="${Spoon.Menu.View.Perspectives}">
           <menupopup id="view-perspectives-popup">
             <menuitem label="${Spoon.Perspectives.Main.MenuItem.Label}"
               command="spoon.loadPerspective('001-spoon-jobs')"/>
@@ -178,7 +178,7 @@
       <menupopup id="help-popup">
         <menuitem id="help-tip" label="${Spoon.Menu.Help.Tip}" command="spoon.showTips()" />
         <menuitem id="help-welcome" label="${Spoon.Menu.Help.Welcome}" command="spoon.showWelcomePage()" />
-        <menuseparator />
+        <menuseparator id="help-separator-1"/>
         <menuitem id="help-step-plugins" label="${Spoon.Menu.StepPlugins}" command="spoon.helpShowStepPlugins()" />
         <menuitem id="help-jobentry-plugins" label="${Spoon.Menu.JobEntryPlugins}" command="spoon.helpShowJobEntryPlugins()" />
         <menuitem id="help-about" label="${Spoon.Menu.About}" command="spoon.helpAbout()" />

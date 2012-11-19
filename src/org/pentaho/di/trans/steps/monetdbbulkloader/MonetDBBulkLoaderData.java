@@ -29,7 +29,6 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.StreamLogger;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
-import org.postgresql.PGConnection;
 
 /**
  * Stores data for the GPBulkLoader step.
@@ -55,7 +54,7 @@ public class MonetDBBulkLoaderData extends BaseStepData implements StepDataInter
 	public byte[] separator;
 	public byte[] newline;
 
-	public PGConnection pgdb;
+//	public PGConnection pgdb;
 	
 	public ValueMetaInterface monetDateMeta;
 	public ValueMetaInterface monetNumberMeta;

@@ -29,6 +29,7 @@ import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
+import org.pentaho.di.core.ProvidesDatabaseConnectionInformation;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -72,7 +73,7 @@ import org.w3c.dom.Node;
  * Created on 24-oct-2007<br>
  * @author Matt Casters<br>
  */
-public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
+public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface, ProvidesDatabaseConnectionInformation
 {
 	private static Class<?> PKG = MySQLBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
@@ -860,5 +861,11 @@ public class MySQLBulkLoaderMeta extends BaseStepMeta implements StepMetaInterfa
   public void setLocalFile(boolean localFile) {
     this.localFile = localFile;
   }
+
+@Override
+public String getMissingDatabaseConnectionInformationMessage() {
+	// TODO Auto-generated method stub
+	return null;
+}
 
 }

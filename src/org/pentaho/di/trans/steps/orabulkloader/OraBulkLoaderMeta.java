@@ -30,6 +30,7 @@ import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
+import org.pentaho.di.core.ProvidesDatabaseConnectionInformation;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -61,7 +62,7 @@ import org.w3c.dom.Node;
  * 
  * @author Sven Boden
  */
-public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
+public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface, ProvidesDatabaseConnectionInformation
 {
 	private static Class<?> PKG = OraBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 	
@@ -1091,4 +1092,10 @@ public class OraBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
   public void setParallel(boolean parallel) {
     this.parallel = parallel;
   }	
+
+@Override
+public String getMissingDatabaseConnectionInformationMessage() {
+	// TODO Auto-generated method stub
+	return null;
+}	
 }

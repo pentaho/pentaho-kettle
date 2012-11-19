@@ -34,6 +34,11 @@ import org.pentaho.di.core.row.ValueMetaInterface;
 
 public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
+
+    public static ThreadLocal<Boolean> safeModeLocal = new ThreadLocal<Boolean>();
+		
+	public static final int DEFAULT_VARCHAR_LENGTH = 100;
+	
 	public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };

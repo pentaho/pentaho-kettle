@@ -23,6 +23,7 @@
 package org.pentaho.di.ui.trans.steps.monetdbbulkloader;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +31,6 @@ import java.util.Set;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
@@ -45,6 +45,9 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
+import org.pentaho.di.ui.core.widget.ComboVar;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
@@ -58,6 +61,7 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.SourceToTargetMapping;
 import org.pentaho.di.core.database.Database;
+import org.pentaho.di.core.database.DatabaseInterface;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -69,6 +73,7 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.monetdbbulkloader.MonetDBBulkLoaderMeta;
+import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.database.dialog.DatabaseExplorerDialog;
 import org.pentaho.di.ui.core.database.dialog.SQLEditor;
 import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
@@ -89,8 +94,8 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 {
 	private static Class<?> PKG = MonetDBBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	private CCombo				wConnection;
-
+	private ComboVar   		    wConnection;
+	
     private Label               wlSchema;
     private TextVar             wSchema;
     private FormData            fdlSchema, fdSchema;
@@ -118,6 +123,18 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
     private Combo               wEncoding;
     private FormData            fdlEncoding, fdEncoding;
 
+    private Label               wlTruncate;
+    private Button              wTruncate;
+    private FormData            fdlTruncate, fdTruncate;
+/*
+    private Label               wlAutoSchema;
+    private Button              wAutoSchema;
+    private FormData            fdlAutoSchema, fdAutoSchema;
+
+    private Label               wlAutoStringWidths;
+    private Button              wAutoStringWidths;
+    private FormData            fdlAutoStringWidths, fdAutoStringWidths;
+*/
     private Label               wlReturn;
     private TableView           wReturn;
     private FormData            fdlReturn, fdReturn;
@@ -214,7 +231,7 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 		wStepname.setLayoutData(fdStepname);
 
 		// Connection line
-		wConnection = addConnectionLine(shell, wStepname, middle, margin);
+		wConnection = addConnectionLine(shell, wStepname, middle, margin, null, transMeta);
 		if (input.getDatabaseMeta()==null && transMeta.nrDatabases()==1) wConnection.select(0);
 		wConnection.addModifyListener(lsMod);
 
@@ -360,6 +377,65 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
         wEncoding.setLayoutData(fdEncoding);
         wEncoding.addModifyListener(lsMod);
 
+		wlTruncate=new Label(shell, SWT.RIGHT);
+		wlTruncate.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Truncate.Label"));
+ 		props.setLook(wlTruncate);
+		fdlTruncate=new FormData();
+		fdlTruncate.left  = new FormAttachment(0, 0);
+		fdlTruncate.top   = new FormAttachment(wEncoding, margin);
+		fdlTruncate.right = new FormAttachment(middle, -margin);
+		wlTruncate.setLayoutData(fdlTruncate);
+		wTruncate=new Button(shell, SWT.CHECK);
+ 		props.setLook(wTruncate);
+		fdTruncate=new FormData();
+		fdTruncate.left  = new FormAttachment(middle, 0);
+		fdTruncate.top   = new FormAttachment(wlEncoding, margin);
+		fdTruncate.right = new FormAttachment(100, 0);
+		wTruncate.setLayoutData(fdTruncate);
+		SelectionAdapter lsSelMod = new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent arg0)
+            {
+                input.setChanged();
+            }
+        };
+		wTruncate.addSelectionListener(lsSelMod);
+
+/*
+		wlAutoSchema=new Label(shell, SWT.RIGHT);
+		wlAutoSchema.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.AutoSchema.Label"));
+ 		props.setLook(wlAutoSchema);
+		fdlAutoSchema=new FormData();
+		fdlAutoSchema.left  = new FormAttachment(0, 0);
+		fdlAutoSchema.top   = new FormAttachment(wTruncate, margin);
+		fdlAutoSchema.right = new FormAttachment(middle, -margin);
+		wlAutoSchema.setLayoutData(fdlAutoSchema);
+		wAutoSchema=new Button(shell, SWT.CHECK);
+ 		props.setLook(wAutoSchema);
+		fdAutoSchema=new FormData();
+		fdAutoSchema.left  = new FormAttachment(middle, 0);
+		fdAutoSchema.top   = new FormAttachment(wlTruncate, margin);
+		fdAutoSchema.right = new FormAttachment(100, 0);
+		wAutoSchema.setLayoutData(fdAutoSchema);
+		wAutoSchema.addSelectionListener(lsSelMod);
+		
+		wlAutoStringWidths=new Label(shell, SWT.RIGHT);
+		wlAutoStringWidths.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.AutoStringWidths.Label"));
+ 		props.setLook(wlAutoStringWidths);
+		fdlAutoStringWidths=new FormData();
+		fdlAutoStringWidths.left  = new FormAttachment(0, 0);
+		fdlAutoStringWidths.top   = new FormAttachment(wlAutoSchema, margin);
+		fdlAutoStringWidths.right = new FormAttachment(middle, -margin);
+		wlAutoStringWidths.setLayoutData(fdlAutoStringWidths);
+		wAutoStringWidths=new Button(shell, SWT.CHECK);
+ 		props.setLook(wAutoStringWidths);
+		fdAutoStringWidths=new FormData();
+		fdAutoStringWidths.left  = new FormAttachment(middle, 0);
+		fdAutoStringWidths.top   = new FormAttachment(wlAutoSchema, margin);
+		fdAutoStringWidths.right = new FormAttachment(100, 0);
+		wAutoStringWidths.setLayoutData(fdAutoStringWidths);
+		wAutoStringWidths.addSelectionListener(lsSelMod);		
+*/		
 		// THE BUTTONS
 		wOK = new Button(shell, SWT.PUSH);
 		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
@@ -376,7 +452,7 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
  		props.setLook(wlReturn);
 		fdlReturn = new FormData();
 		fdlReturn.left = new FormAttachment(0, 0);
-		fdlReturn.top = new FormAttachment(wEncoding, margin);
+		fdlReturn.top = new FormAttachment(wTruncate, margin);
 		wlReturn.setLayoutData(fdlReturn);
 
 		int UpInsCols = 3;
@@ -562,7 +638,7 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 		}
 		return stepname;
 	}
-	private void setTableFieldCombo(){
+	protected void setTableFieldCombo(){
 		Runnable fieldLoader = new Runnable() {
 			public void run() {
 				//clear
@@ -639,13 +715,16 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 		if (input.getMClientPath() != null) wMClientPath.setText(input.getMClientPath());
 		if (input.getLogFile() != null) wLogFile.setText(input.getLogFile());
 		if (input.getEncoding() != null) wEncoding.setText(input.getEncoding());
+		wTruncate.setSelection(input.isTruncate());
+//		wAutoSchema.setSelection(input.isAutoSchema());
+//		wAutoStringWidths.setSelection(input.isAutoStringWidths());
 		
 		wStepname.selectAll();
 		wReturn.setRowNums();
 		wReturn.optWidth(true);
 	}
 	
-	private void cancel()
+	protected void cancel()
 	{
 		stepname = null;
 		input.setChanged(changed);
@@ -666,9 +745,12 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
         String[] fieldNames= (String[]) entries.toArray(new String[entries.size()]);
         Const.sortStrings(fieldNames);
         // return fields
-        ciReturn[1].setComboValues(fieldNames);
+        if( ciReturn != null ) {
+        	ciReturn[1].setComboValues(fieldNames);
+        }
     }
-	private void getInfo(MonetDBBulkLoaderMeta inf)
+	
+	protected void getInfo(MonetDBBulkLoaderMeta inf)
 	{
 		int nrfields = wReturn.nrNonEmpty();
 
@@ -691,36 +773,45 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 		inf.setMClientPath( wMClientPath.getText() );
 		inf.setLogFile( wLogFile.getText() );
 		inf.setEncoding( wEncoding.getText() );
+		inf.setTruncate(wTruncate.getSelection());
+		inf.setAutoSchema(false);
+		inf.setAutoStringWidths(false);
+		inf.setDbConnectionName(wConnection.getText());
+//		inf.setAutoSchema(wAutoSchema.getSelection());
+//		inf.setAutoStringWidths(wAutoStringWidths.getSelection());
 
 		stepname = wStepname.getText(); // return value
 	}
 
-	private void ok()
+	protected void ok()
 	{
 		if (Const.isEmpty(wStepname.getText())) return;
 
 		// Get the information for the dialog into the input structure.
 		getInfo(input);
 
-		if (input.getDatabaseMeta() == null)
+/*		if (input.getDatabaseMeta() == null)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
 			mb.setMessage(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.InvalidConnection.DialogMessage")); //$NON-NLS-1$
 			mb.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.InvalidConnection.DialogTitle")); //$NON-NLS-1$
 			mb.open();
 		}
-
+*/
 		dispose();
 	}
 
-	private void getTableName()
+	protected void getTableName()
 	{
 		DatabaseMeta inf = null;
 		// New class: SelectTableDialog
-		int connr = wConnection.getSelectionIndex();
-		if (connr >= 0)
+		int connr = -1;
+		if( wConnection != null && wConnection.getCComboWidget() != null ) {
+			connr = wConnection.getCComboWidget().getSelectionIndex();
+		}
+		if (connr >= 0) {
 			inf = transMeta.getDatabase(connr);
-
+		}
 		if (inf != null)
 		{
 			if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Log.LookingAtConnection") + inf.toString()); //$NON-NLS-1$
@@ -888,10 +979,8 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 			getInfo(info);
 
 			String name = stepname; // new name might not yet be linked to other steps!
-			StepMeta stepMeta = new StepMeta(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.StepMeta.Title"), name, info); //$NON-NLS-1$
-			RowMetaInterface prev = transMeta.getPrevStepFields(stepname);
 
-			SQLStatement sql = info.getSQLStatements(transMeta, stepMeta, prev);
+			SQLStatement sql = info.getTableDdl(transMeta, name, false, null, false);
 			if (!sql.hasError())
 			{
 				if (sql.hasSQL())
@@ -922,4 +1011,127 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 					BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.CouldNotBuildSQL.DialogMessage"), ke); //$NON-NLS-1$
 		}
 	}
+	
+    public ComboVar addConnectionLine(Composite parent, Control previous, int middle, int margin, 
+    	      final Class<? extends DatabaseInterface> databaseType, final TransMeta transMeta) {
+	    final ComboVar wConnection;
+	    final FormData fdlConnection, fdbConnection, fdeConnection, fdConnection;
+
+	    wConnection = new ComboVar(transMeta, parent, SWT.BORDER );
+	    props.setLook(wConnection);
+
+	    addDatabases(wConnection, null);
+
+	    Label wlConnection = new Label(parent, SWT.RIGHT);
+	    wlConnection.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Connection.Label")); //$NON-NLS-1$
+	    props.setLook(wlConnection);
+	    fdlConnection = new FormData();
+	    fdlConnection.left = new FormAttachment(0, 0);
+	    fdlConnection.right = new FormAttachment(middle, -margin);
+	    if (previous != null)
+	      fdlConnection.top = new FormAttachment(previous, margin);
+	    else
+	      fdlConnection.top = new FormAttachment(0, 0);
+	    wlConnection.setLayoutData(fdlConnection);
+
+	    // 
+	    // NEW button
+	    //
+	    Button wbnConnection = new Button(parent, SWT.RIGHT);
+	    wbnConnection.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.NewConnectionButton.Label")); //$NON-NLS-1$
+	    wbnConnection.addSelectionListener(new SelectionAdapter() {
+	      public void widgetSelected(SelectionEvent e) {
+	        DatabaseMeta databaseMeta = new DatabaseMeta();
+	        databaseMeta.shareVariablesWith(transMeta);
+	        DatabaseDialog cid = getDatabaseDialog(shell);
+	        cid.setDatabaseMeta(databaseMeta);
+	        cid.setModalDialog(true);
+	        if (cid.open() != null) {
+	          transMeta.addDatabase(databaseMeta);
+	          wConnection.removeAll();
+	          addDatabases(wConnection, databaseType);
+	          selectDatabase(wConnection, databaseMeta.getName());
+	        }
+	      }
+	    });
+	    fdbConnection = new FormData();
+	    fdbConnection.right = new FormAttachment(100, 0);
+	    if (previous != null)
+	      fdbConnection.top = new FormAttachment(previous, margin);
+	    else
+	      fdbConnection.top = new FormAttachment(0, 0);
+	    wbnConnection.setLayoutData(fdbConnection);
+
+	    //
+	    // Edit button
+	    //
+	    Button wbeConnection = new Button(parent, SWT.RIGHT);
+	    wbeConnection.setText(BaseMessages.getString(PKG, "BaseStepDialog.EditConnectionButton.Label")); //$NON-NLS-1$
+	    wbeConnection.addSelectionListener(new SelectionAdapter() {
+	      public void widgetSelected(SelectionEvent e) {
+	        DatabaseMeta databaseMeta = transMeta.findDatabase(wConnection.getText());
+	        if (databaseMeta != null) {
+	          databaseMeta.shareVariablesWith(transMeta);
+	          
+	          DatabaseDialog cid = getDatabaseDialog(shell);
+	          cid.setDatabaseMeta(databaseMeta);
+	          cid.setModalDialog(true);
+	          if (cid.open() != null) {
+	            wConnection.removeAll();
+	            addDatabases(wConnection, null);
+	            selectDatabase(wConnection, databaseMeta.getName());
+	          }
+	        }
+	      }
+	    });
+	    fdeConnection = new FormData();
+	    fdeConnection.right = new FormAttachment(wbnConnection, -margin);
+	    if (previous != null)
+	      fdeConnection.top = new FormAttachment(previous, margin);
+	    else
+	      fdeConnection.top = new FormAttachment(0, 0);
+	    wbeConnection.setLayoutData(fdeConnection);
+
+	    //
+	    // what's left of the line: combo box
+	    //
+	    fdConnection = new FormData();
+	    fdConnection.left = new FormAttachment(middle, 0);
+	    if (previous != null)
+	      fdConnection.top = new FormAttachment(previous, margin);
+	    else
+	      fdConnection.top = new FormAttachment(0, 0);
+	    fdConnection.right = new FormAttachment(wbeConnection, -margin);
+	    wConnection.setLayoutData(fdConnection);
+
+	    return wConnection;
+	  }
+
+    public void addDatabases(ComboVar wConnection, Class<? extends DatabaseInterface> databaseType) {
+	   for (int i = 0; i < transMeta.nrDatabases(); i++) {
+	       DatabaseMeta ci = transMeta.getDatabase(i);
+	       if (databaseType==null || ci.getDatabaseInterface().getClass().equals(databaseType)) {
+	    	  wConnection.add(ci.getName());
+	      }
+	   }
+	   //  Add the metaDBConnectionName if we have it 
+	   //  and it is already not added to the list in wConnection.
+	   if (!Const.isEmpty(input.getDbConnectionName())) {
+		   String[] arrayDatabaseList = wConnection.getItems();
+		   if (arrayDatabaseList == null) {
+			   List<String> databaseNameList = Arrays.asList(arrayDatabaseList);
+			   if (!databaseNameList.contains(input.getDbConnectionName())) {
+				   wConnection.add(input.getDbConnectionName());
+			   }
+		   }
+	   }
+    }
+    
+    public void selectDatabase(ComboVar wConnection, String name) {
+        int idx = wConnection.getCComboWidget().indexOf(name);
+        if (idx >= 0) {
+          wConnection.select(idx);
+        }
+      }
+	
 }

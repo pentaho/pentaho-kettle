@@ -28,6 +28,7 @@ import java.util.Map;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
+import org.pentaho.di.core.ProvidesDatabaseConnectionInformation;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -51,7 +52,7 @@ import org.w3c.dom.Node;
 /**
  * Metadata for the VectorWise bulk loader.
  */
-public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMetaInterface {
+public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMetaInterface, ProvidesDatabaseConnectionInformation {
 
   /** For i18n purposes, needed by Translator2!! */
   private static Class<?> PKG          = IngresVectorwiseLoaderMeta.class; 
@@ -363,7 +364,7 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
   /**
    * @return the tablename
    */
-  public String getTablename() {
+  public String getTableName() {
     return tablename;
   }
 
@@ -639,5 +640,15 @@ public class IngresVectorwiseLoaderMeta extends BaseStepMeta implements StepMeta
   
   public void setMaxNrErrors(String maxNrErrors) {
     this.maxNrErrors = maxNrErrors;
+  }
+
+  @Override
+  public String getSchemaName() {
+	return null;
+  }
+
+  @Override
+  public String getMissingDatabaseConnectionInformationMessage() {
+	return null;
   }
 }

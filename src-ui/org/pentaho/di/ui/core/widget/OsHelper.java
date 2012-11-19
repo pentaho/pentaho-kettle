@@ -102,7 +102,7 @@ public class OsHelper {
 			@Override
 			public void handleEvent(Event event) {
 				try {
-					event.doit = Spoon.getInstance().quitFile();
+					event.doit = Spoon.getInstance().quitFile(false);
 				} catch (KettleException e) {
 					e.printStackTrace();
 				}

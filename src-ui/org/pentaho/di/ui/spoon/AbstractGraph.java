@@ -23,10 +23,10 @@
 package org.pentaho.di.ui.spoon;
 
 import java.util.List;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.gui.Point;
@@ -188,7 +188,7 @@ public abstract class AbstractGraph extends Composite {
      super.dispose();
      List<XulComponent> pops = xulDomContainer.getDocumentRoot().getElementsByTagName("menupopup");
      for(XulComponent pop : pops){
-       ((Menu) pop.getManagedObject()).dispose();
+       ((MenuManager) pop.getManagedObject()).dispose();
      }
   }
 }

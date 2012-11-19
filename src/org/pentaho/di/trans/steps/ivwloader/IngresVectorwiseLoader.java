@@ -171,7 +171,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
 
   private String createLoadCommand() {
     String loadCommand = "";
-    loadCommand += "COPY TABLE " + meta.getDatabaseMeta().getQuotedSchemaTableCombination(null, meta.getTablename()) + " ";
+    loadCommand += "COPY TABLE " + meta.getDatabaseMeta().getQuotedSchemaTableCombination(null, meta.getTableName()) + " ";
 
     // Build list of column names to set
     //
@@ -302,7 +302,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
       String port = environmentSubstitute(Const.NVL(dm.getDatabasePortNumberString(), "")).replace("7", "");
       String username = environmentSubstitute(Const.NVL(dm.getDatabaseInterface().getUsername(), ""));
       String hostname = environmentSubstitute(Const.NVL(dm.getDatabaseInterface().getHostname(), ""));
-      String schemaTable = dm.getQuotedSchemaTableCombination(null, environmentSubstitute(meta.getTablename()));
+      String schemaTable = dm.getQuotedSchemaTableCombination(null, environmentSubstitute(meta.getTableName()));
       String encoding = environmentSubstitute(Const.NVL(meta.getEncoding(), ""));
       String fifoFile = Const.optionallyQuoteStringByOS(environmentSubstitute(Const.NVL(meta.getFifoFileName(), "")));
       String errorFile = Const.optionallyQuoteStringByOS(environmentSubstitute(Const.NVL(meta.getErrorFileName(), "")));
@@ -574,7 +574,7 @@ public class IngresVectorwiseLoader extends BaseStep implements StepInterface {
       data.doubleQuote = data.getBytes("\"");
 
       // Schema-table combination...
-      data.schemaTable = meta.getDatabaseMeta().getQuotedSchemaTableCombination(null, environmentSubstitute(meta.getTablename()));
+      data.schemaTable = meta.getDatabaseMeta().getQuotedSchemaTableCombination(null, environmentSubstitute(meta.getTableName()));
 
       data.encoding = environmentSubstitute(meta.getEncoding());
       data.isEncoding = !Const.isEmpty(environmentSubstitute(meta.getEncoding()));

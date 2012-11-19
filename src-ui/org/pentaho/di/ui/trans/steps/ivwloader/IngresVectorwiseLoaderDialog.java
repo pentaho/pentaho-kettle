@@ -472,7 +472,7 @@ public class IngresVectorwiseLoaderDialog extends BaseStepDialog implements Step
     if (input.getDatabaseMeta()!=null) {
       serverConnection.setText(input.getDatabaseMeta().getName());
     }
-    wTable.setText(Const.NVL(input.getTablename(), ""));
+    wTable.setText(Const.NVL(input.getTableName(), ""));
     wFifoFile.setText(Const.NVL(input.getFifoFileName(), ""));
     wSqlPath.setText(Const.NVL(input.getSqlPath(), ""));
     wUseSSV.setSelection(input.isUseSSV());

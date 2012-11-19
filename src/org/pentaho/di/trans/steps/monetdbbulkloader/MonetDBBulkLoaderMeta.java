@@ -32,6 +32,7 @@ import org.pentaho.di.core.Counter;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
+import org.pentaho.di.core.database.MonetDBDatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.exception.KettleXMLException;
@@ -52,6 +53,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.core.ProvidesDatabaseConnectionInformation;
 import org.w3c.dom.Node;
 
 
@@ -60,11 +62,14 @@ import org.w3c.dom.Node;
  * 
  * @author Sven Boden
  */
-public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
+public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface, ProvidesDatabaseConnectionInformation
 {
 	private static Class<?> PKG = MonetDBBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-    /** what's the schema for the target? */
+	/**  The database connection name **/
+    private String dbConnectionName;
+	
+	/** what's the schema for the target? */
     private String schemaName;
 
     /** what's the table for the target? */
@@ -91,7 +96,39 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 	/** Encoding to use */
 	private String encoding;
 	
+	/** Truncate table? */
+	private boolean truncate = false;
 	
+	/** Auto adjust the table structure? */
+	private boolean autoSchema = false;
+		
+	/** Auto adjust strings that are too long? */
+	private boolean autoStringWidths = false;
+
+	public boolean isAutoStringWidths() {
+		return autoStringWidths;
+	}
+
+	public void setAutoStringWidths(boolean autoStringWidths) {
+		this.autoStringWidths = autoStringWidths;
+	}
+
+	public boolean isTruncate() {
+		return truncate;
+	}
+
+	public void setTruncate(boolean truncate) {
+		this.truncate = truncate;
+	}
+
+	public boolean isAutoSchema() {
+		return autoSchema;
+	}
+
+	public void setAutoSchema(boolean autoSchema) {
+		this.autoSchema = autoSchema;
+	}
+
 	/** The number of rows to buffer before passing them over to MonetDB.
 	 *  This number should be non-zero since we need to specify the number of rows we pass.
 	 */
@@ -107,6 +144,14 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
      * @return Returns the database.
      */
     public DatabaseMeta getDatabaseMeta()
+    {
+        return databaseMeta;
+    }
+
+    /**
+     * @return Returns the database.
+     */
+    public DatabaseMeta getDatabaseMeta(MonetDBBulkLoader loader)
     {
         return databaseMeta;
     }
@@ -200,8 +245,8 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 	{
 		try
 		{
-			String con     = XMLHandler.getTagValue(stepnode, "connection");   //$NON-NLS-1$
-			databaseMeta   = DatabaseMeta.findDatabase(databases, con);
+			dbConnectionName     = XMLHandler.getTagValue(stepnode, "connection");   //$NON-NLS-1$
+			databaseMeta   = DatabaseMeta.findDatabase(databases, dbConnectionName);
 
 			bufferSize = XMLHandler.getTagValue(stepnode, "buffer_size");       //$NON-NLS-1$
 
@@ -211,6 +256,10 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 			mClientPath         = XMLHandler.getTagValue(stepnode, "mclient_path");       //$NON-NLS-1$
 			logFile        = XMLHandler.getTagValue(stepnode, "log_file");     //$NON-NLS-1$
 			encoding       = XMLHandler.getTagValue(stepnode, "encoding");         //$NON-NLS-1$
+			truncate       = "Y".equals(XMLHandler.getTagValue(stepnode, "truncate"));         //$NON-NLS-1$
+			autoSchema     = "Y".equals(XMLHandler.getTagValue(stepnode, "auto_schema"));         //$NON-NLS-1$
+			autoStringWidths = "Y".equals(XMLHandler.getTagValue(stepnode, "auto_string_widths"));         //$NON-NLS-1$
+			
 
 			int nrvalues = XMLHandler.countNodes(stepnode, "mapping");      //$NON-NLS-1$
 			allocate(nrvalues);
@@ -241,6 +290,9 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 		mClientPath  = "/usr/local/bin/mclient";              //$NON-NLS-1$
 		logFile      = "";                                    //$NON-NLS-1$
         encoding     = "";                                    //$NON-NLS-1$
+        truncate 	 = false;
+        autoSchema   = false;
+        autoStringWidths = false;
         
 		allocate(0);
 	}
@@ -249,13 +301,16 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 	{
         StringBuffer retval = new StringBuffer(300);
 
-		retval.append("    ").append(XMLHandler.addTagValue("connection",   databaseMeta==null?"":databaseMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		retval.append("    ").append(XMLHandler.addTagValue("connection",   dbConnectionName)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		retval.append("    ").append(XMLHandler.addTagValue("buffer_size",  bufferSize));     //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    ").append(XMLHandler.addTagValue("schema",       schemaName));    //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("table",        tableName));     //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("mclient_path", mClientPath));        //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("log_file",     logFile));       //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("encoding",     encoding));      //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("truncate",     truncate));      //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("auto_schema",     autoSchema));      //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("auto_string_widths",     autoStringWidths));      //$NON-NLS-1$ //$NON-NLS-2$
 		
 		for (int i=0;i<fieldTable.length;i++)
 		{
@@ -276,11 +331,15 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 		{
 			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);
      		bufferSize     =      rep.getStepAttributeString(id_step, "buffer_size");         //$NON-NLS-1$
+     		dbConnectionName =      rep.getStepAttributeString(id_step,  "db_connection_name");         //$NON-NLS-1$
             schemaName     =      rep.getStepAttributeString(id_step,  "schema");         //$NON-NLS-1$
 			tableName      =      rep.getStepAttributeString(id_step,  "table");          //$NON-NLS-1$
 			mClientPath    =      rep.getStepAttributeString(id_step,  "mclient_path");         //$NON-NLS-1$
 			logFile        =      rep.getStepAttributeString(id_step,  "log_file");       //$NON-NLS-1$
 			encoding       =      rep.getStepAttributeString(id_step,  "encoding");       //$NON-NLS-1$
+			truncate       =      Boolean.parseBoolean(rep.getStepAttributeString(id_step,  "truncate"));       //$NON-NLS-1$
+			autoSchema     =      Boolean.parseBoolean(rep.getStepAttributeString(id_step,  "auto_schema"));       //$NON-NLS-1$
+			autoStringWidths =    Boolean.parseBoolean(rep.getStepAttributeString(id_step,  "auto_string_widths"));       //$NON-NLS-1$
 			
 			int nrvalues = rep.countNrStepAttributes(id_step, "stream_name");             //$NON-NLS-1$
 
@@ -307,6 +366,7 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 		{
 			rep.saveDatabaseMetaStepAttribute(id_transformation, id_step, "id_connection", databaseMeta);
 			rep.saveStepAttribute(id_transformation, id_step, "buffer_size",     bufferSize);     //$NON-NLS-1$
+			 rep.saveStepAttribute(id_transformation, id_step, "db_connection_name",          dbConnectionName);    //$NON-NLS-1$
             rep.saveStepAttribute(id_transformation, id_step, "schema",          schemaName);    //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "table",           tableName);     //$NON-NLS-1$
 			
@@ -314,6 +374,9 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 			rep.saveStepAttribute(id_transformation, id_step, "log_file",        logFile);       //$NON-NLS-1$
 
 			rep.saveStepAttribute(id_transformation, id_step, "encoding",        encoding);      //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "truncate",        truncate);      //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "auto_schema",     autoSchema);      //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "auto_string_widths",     autoStringWidths);      //$NON-NLS-1$
 
 			for (int i=0;i<fieldTable.length;i++)
 			{
@@ -479,7 +542,47 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 		}
 	}
 
-	public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev) throws KettleStepException
+	public SQLStatement getTableDdl( TransMeta transMeta, String stepname, boolean autoSchema, MonetDBBulkLoaderData data, boolean safeMode ) throws KettleException
+	{
+
+			String name = stepname; // new name might not yet be linked to other steps!
+			StepMeta stepMeta = new StepMeta(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.StepMeta.Title"), name, this); //$NON-NLS-1$
+			RowMetaInterface prev = transMeta.getPrevStepFields(stepname);
+
+			SQLStatement sql = getSQLStatements(transMeta, stepMeta, prev, autoSchema, data, safeMode);
+			return sql;
+	}	
+
+	public RowMetaInterface updateFields( TransMeta transMeta, String stepname, MonetDBBulkLoaderData data ) throws KettleStepException {
+
+		RowMetaInterface prev = transMeta.getPrevStepFields(stepname);
+		return updateFields( prev, data );
+	}
+	
+	public RowMetaInterface updateFields( RowMetaInterface prev, MonetDBBulkLoaderData data ) {
+    	// update the field table from the fields coming from the previous step
+		RowMetaInterface tableFields = new RowMeta();
+		List<ValueMetaInterface> fields = prev.getValueMetaList();
+    	fieldTable = new String[fields.size()];
+    	fieldStream = new String[fields.size()];
+    	fieldFormatOk = new boolean[fields.size()];
+    	int idx = 0;
+    	for( ValueMetaInterface field: fields) {
+            ValueMetaInterface tableField = field.clone();
+            tableFields.addValueMeta(tableField);
+            fieldTable[idx] = field.getName();
+            fieldStream[idx] = field.getName();
+            fieldFormatOk[idx] = true;
+    	}
+    	
+		data.keynrs = new int[getFieldStream().length];
+		for (int i=0;i<data.keynrs.length;i++) {
+			data.keynrs[i] = i;
+		}                
+        return tableFields;
+	}
+	
+	public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, RowMetaInterface prev, boolean autoSchema, MonetDBBulkLoaderData data, boolean safeMode) throws KettleStepException
 	{
 		SQLStatement retval = new SQLStatement(stepMeta.getName(), databaseMeta, null); // default: nothing to do!
 
@@ -488,21 +591,22 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 			if (prev!=null && prev.size()>0)
 			{
                 // Copy the row
-                RowMetaInterface tableFields = new RowMeta();
+                RowMetaInterface tableFields;
 
-                // Now change the field names
-                for (int i=0;i<fieldTable.length;i++)
-                {
-                    ValueMetaInterface v = prev.searchValueMeta(fieldStream[i]);
-                    if (v!=null)
+                if( autoSchema ) {
+                	tableFields = updateFields( prev, data );
+                } else {
+                	tableFields = new RowMeta();
+                    // Now change the field names
+                    for (int i=0;i<fieldTable.length;i++)
                     {
-                        ValueMetaInterface tableField = v.clone();
-                        tableField.setName(fieldTable[i]);
-                        tableFields.addValueMeta(tableField);
-                    }
-                    else
-                    {
-                        throw new KettleStepException("Unable to find field ["+fieldStream[i]+"] in the input rows");
+                        ValueMetaInterface v = prev.searchValueMeta(fieldStream[i]);
+                        if (v!=null)
+                        {
+                            ValueMetaInterface tableField = v.clone();
+                            tableField.setName(fieldTable[i]);
+                            tableFields.addValueMeta(tableField);
+                        }
                     }
                 }
 
@@ -516,7 +620,8 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 
                         String schemaTable = databaseMeta.getQuotedSchemaTableCombination(transMeta.environmentSubstitute(schemaName), 
                         		                                                          transMeta.environmentSubstitute(tableName));                        
-						String cr_table = db.getDDL(schemaTable,
+                        MonetDBDatabaseMeta.safeModeLocal.set(safeMode);
+                        String cr_table = db.getDDL(schemaTable,
 													tableFields,
 													null,
 													false,
@@ -530,6 +635,10 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 					catch(KettleException e)
 					{
 						retval.setError(BaseMessages.getString(PKG, "MonetDBBulkLoaderMeta.GetSQL.ErrorOccurred")+e.getMessage()); //$NON-NLS-1$
+					}
+					finally {
+						db.disconnect();
+						MonetDBDatabaseMeta.safeModeLocal.remove();
 					}
 				}
 				else
@@ -716,6 +825,26 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 	 */
 	public String getMClientPath() {
 		return mClientPath;
+	}
+
+	@Override
+	public String getMissingDatabaseConnectionInformationMessage() {
+		// TODO
+		return null;
+	}
+	
+	/**
+	 * @param database connection name to set
+	 */
+	public void setDbConnectionName(String dbConnectionName) {
+		this.dbConnectionName = dbConnectionName;
+	}
+	
+	/**
+	 * @return the database connection name
+	 */
+	public String getDbConnectionName() {
+		return this.dbConnectionName;
 	}
 
 }

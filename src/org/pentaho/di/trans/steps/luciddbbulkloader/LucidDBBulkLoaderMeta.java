@@ -29,6 +29,7 @@ import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Counter;
+import org.pentaho.di.core.ProvidesDatabaseConnectionInformation;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -93,7 +94,7 @@ import org.w3c.dom.Node;
  * Created on 24-oct-2007<br>
  * @author Matt Casters<br>
  */
-public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface
+public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInterface, ProvidesDatabaseConnectionInformation
 {
 	private static Class<?> PKG = LucidDBBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
@@ -777,6 +778,12 @@ public class LucidDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 	 */
 	public void setFifoDirectory(String fifoDirectory) {
 		this.fifoDirectory = fifoDirectory;
+	}
+
+	@Override
+	public String getMissingDatabaseConnectionInformationMessage() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
