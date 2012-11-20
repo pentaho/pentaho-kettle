@@ -46,7 +46,7 @@
 	<classpathentry exported="true" kind="lib" path="test/libext/junit.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/dom4j-1.6.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/jaxen-1.1.1.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/JDBC/monetdb-1.7-jdbc.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/JDBC/monetdb-jdbc-2.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/jxl.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/trilead-ssh2-build213.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/feeds/georss-rome-0.9.8.jar"/>

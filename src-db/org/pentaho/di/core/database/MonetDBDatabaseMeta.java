@@ -22,6 +22,9 @@
 
 package org.pentaho.di.core.database;
 
+import java.util.Collection;
+import java.util.HashSet;
+
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.row.ValueMetaInterface;
 
@@ -39,6 +42,91 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 		
 	public static final int DEFAULT_VARCHAR_LENGTH = 100;
 	
+	private static final String FIELDNAME_PROTECTOR = "_";
+
+	private static Collection<String> reservedWordAlt = new HashSet<String>();
+
+	static {
+		reservedWordAlt.add("IS");
+		reservedWordAlt.add("ISNULL");
+		reservedWordAlt.add("NOTNULL");
+		reservedWordAlt.add("IN");
+		reservedWordAlt.add("BETWEEN");
+		reservedWordAlt.add("OVERLAPS");
+		reservedWordAlt.add("LIKE");
+		reservedWordAlt.add("ILIKE");
+		reservedWordAlt.add("NOT");
+		reservedWordAlt.add("AND");
+		reservedWordAlt.add("OR");
+		reservedWordAlt.add("CHAR");
+		reservedWordAlt.add("VARCHAR");
+		reservedWordAlt.add("CLOB");
+		reservedWordAlt.add("BLOB");
+		reservedWordAlt.add("DECIMAL");
+		reservedWordAlt.add("DEC");
+		reservedWordAlt.add("NUMERIC");
+		reservedWordAlt.add("TINYINT");
+		reservedWordAlt.add("SMALLINT");
+		reservedWordAlt.add("INT");
+		reservedWordAlt.add("BIGINT");
+		reservedWordAlt.add("REAL");
+		reservedWordAlt.add("DOUBLE");
+		reservedWordAlt.add("BOOLEAN");
+		reservedWordAlt.add("DATE");
+		reservedWordAlt.add("TIME");
+		reservedWordAlt.add("TIMESTAMP");
+		reservedWordAlt.add("INTERVAL");
+		reservedWordAlt.add("YEAR");
+		reservedWordAlt.add("MONTH");
+		reservedWordAlt.add("DAY");
+		reservedWordAlt.add("HOUR");
+		reservedWordAlt.add("MINUTE");
+		reservedWordAlt.add("SECOND");
+		reservedWordAlt.add("TIMEZONE");
+		reservedWordAlt.add("EXTRACT");
+		reservedWordAlt.add("CURRENT_DATE");
+		reservedWordAlt.add("CURRENT_TIME");
+		reservedWordAlt.add("CURRENT_TIMESTAMP");
+		reservedWordAlt.add("LOCALTIME");
+		reservedWordAlt.add("LOCALTIMESTAMP");
+		reservedWordAlt.add("CURRENT_TIME");
+		reservedWordAlt.add("SERIAL");
+		reservedWordAlt.add("START");
+		reservedWordAlt.add("WITH");
+		reservedWordAlt.add("INCREMENT");
+		reservedWordAlt.add("CACHE");
+		reservedWordAlt.add("CYCLE");
+		reservedWordAlt.add("SEQUENCE");
+		reservedWordAlt.add("GETANCHOR");
+		reservedWordAlt.add("GETBASENAME");
+		reservedWordAlt.add("GETCONTENT");
+		reservedWordAlt.add("GETCONTEXT");
+		reservedWordAlt.add("GETDOMAIN");
+		reservedWordAlt.add("GETEXTENSION");
+		reservedWordAlt.add("GETFILE");
+		reservedWordAlt.add("GETHOST");
+		reservedWordAlt.add("GETPORT");
+		reservedWordAlt.add("GETPROTOCOL");
+		reservedWordAlt.add("GETQUERY");
+		reservedWordAlt.add("GETUSER");
+		reservedWordAlt.add("GETROBOTURL");
+		reservedWordAlt.add("ISURL");
+		reservedWordAlt.add("NEWURL");
+		reservedWordAlt.add("BROADCAST");
+		reservedWordAlt.add("MASKLEN");
+		reservedWordAlt.add("SETMASKLEN");
+		reservedWordAlt.add("NETMASK");
+		reservedWordAlt.add("HOSTMASK");
+		reservedWordAlt.add("NETWORK");
+		reservedWordAlt.add("TEXT");
+		reservedWordAlt.add("ABBREV");
+		reservedWordAlt.add("CREATE");
+		reservedWordAlt.add("TYPE");
+		reservedWordAlt.add("NAME");
+		reservedWordAlt.add("DROP");
+		reservedWordAlt.add("USER");
+	}
+
 	public int[] getAccessTypeList()
 	{
 		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
@@ -162,25 +250,45 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 		return "ALTER TABLE "+tablename+" MODIFY "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
 	}
 
-	public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
+	public String getSafeFieldname( String fieldname ) {
+
+		if( reservedWordAlt.contains(fieldname.toUpperCase() ) ) {
+			fieldname = fieldname + FIELDNAME_PROTECTOR;
+		}
+		fieldname = fieldname.replace(" ", "_");
+		return fieldname;
+	}
+
+	public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr )
 	{
-		String retval="";
+		StringBuffer retval = new StringBuffer();
 		
 		String fieldname = v.getName();
 		int    length    = v.getLength();
 		int    precision = v.getPrecision();
 		
-		if (add_fieldname) retval+=fieldname+" ";
+		Boolean mode = MonetDBDatabaseMeta.safeModeLocal.get();
+		boolean safeMode = mode != null && mode.booleanValue();
 		
+		if (add_fieldname)
+		{
+			// protect the fieldname
+			if( safeMode ) {
+				fieldname = getSafeFieldname(fieldname);
+			}
+
+			retval.append(fieldname+" ");
+		}
+
 		int type         = v.getType();
 		switch(type)
 		{
-		case ValueMetaInterface.TYPE_DATE   : retval+="TIMESTAMP"; break;
+		case ValueMetaInterface.TYPE_DATE   : retval.append("TIMESTAMP"); break;
 		case ValueMetaInterface.TYPE_BOOLEAN:
 			if (supportsBooleanDataType()) {
-				retval+="BOOLEAN"; 
+				retval.append("BOOLEAN");
 			} else {
-				retval+="CHAR(1)";
+				retval.append("CHAR(1)");
 			}
 			break;
 		case ValueMetaInterface.TYPE_NUMBER    :
@@ -192,11 +300,11 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 			{
 				if (use_autoinc)
 				{
-					retval+="SERIAL";
+					retval.append("SERIAL");
 				}
 				else
 				{
-					retval+="BIGINT";
+					retval.append("BIGINT");
 				}
 			} 
 			else
@@ -209,14 +317,18 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 						if (length<19) {
 							// can hold signed values between -9223372036854775808 and 9223372036854775807
 							// 18 significant digits
-							retval+="BIGINT";
+							retval.append("BIGINT");
 						} else {
-							retval+="DECIMAL("+length+")";
+							retval.append("DECIMAL(").append(length).append(")");
 						}
+					}
+					else if (type == ValueMetaInterface.TYPE_NUMBER )
+					{
+						retval.append("DOUBLE");
 					}
 					else
 					{
-						retval+="INT";
+						retval.append("BIGINT");
 					}
 				}
 				// Floating point values...
@@ -224,15 +336,15 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 				{
 					if (length>15)
 					{
-						retval+="DECIMAL("+length;
-						if (precision>0) retval+=", "+precision;
-						retval+=")";
+						retval.append("DECIMAL(").append(length);
+						if (precision>0) retval.append(", ").append(precision);
+						retval.append(")");
 					}
 					else
 					{
 						// A double-precision floating-point number is accurate to approximately 15 decimal places.
 						// http://mysql.mirrors-r-us.net/doc/refman/5.1/en/numeric-type-overview.html 
-						retval+="DOUBLE";
+						retval.append("DOUBLE");
 					}
 				}
 			}
@@ -240,35 +352,54 @@ public class MonetDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 		case ValueMetaInterface.TYPE_STRING:
 			if (length>=DatabaseMeta.CLOB_LENGTH)
 			{
-				retval+="CLOB";
+				retval.append("CLOB");
 			}
 			else
 			{
-				retval+="VARCHAR"; 
+				retval.append("VARCHAR(");
 				if (length>0)
 				{
-					retval+="("+length;
+					retval.append(length);
 				}
 				else
 				{
-					retval+="("; // Maybe use some default DB String length?
+					if( safeMode ) {
+						retval .append( DEFAULT_VARCHAR_LENGTH );
 				}
-				retval+=")";
+			}
+				retval.append(")");
 			}
 			break;
 		default:
-			retval+=" UNKNOWN";
+			retval.append(" UNKNOWN");
 			break;
 		}
 		
-		if (add_cr) retval+=Const.CR;
+		if (add_cr) retval.append(Const.CR);
 		
-		return retval;
+		return retval.toString();
 	}
 
     public String[] getUsedLibraries()
     {
-        return new String[] { "monetdb-1.7-jdbc.jar", };
+        return new String[] { "monetdb-jdbc-2.1.jar", };
     }
 
+	/**
+	 * Returns the minimal SQL to launch in order to determine the layout of the resultset for a given database table
+	 * @param tableName The name of the table to determine the layout for
+	 * @return The SQL to launch.
+	 */
+    @Override
+	public String getSQLQueryFields(String tableName)
+	{
+	    return "SELECT * FROM "+tableName+";";
+  }
+
+  @Override
+  public boolean supportsResultSetMetadataRetrievalOnly() {
+    return true;
+  }
+
 }
+

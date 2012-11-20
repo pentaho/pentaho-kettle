@@ -971,4 +971,10 @@ public interface DatabaseInterface extends Cloneable
    */
   public String getSQLValue(ValueMetaInterface valueMeta, Object valueData, String dateFormat) throws KettleValueException;
 
+  /**
+   * @return true if this database only supports metadata retrieval on a result set,
+   * never on a statement (even if the statement has been executed)
+   */
+  public boolean supportsResultSetMetadataRetrievalOnly();
+
 }

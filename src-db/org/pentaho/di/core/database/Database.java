@@ -2328,9 +2328,11 @@ public class Database implements VariableSpace, LoggingObjectInterface
 
 		try
 		{
-			if (inform==null 
+			if ( ( inform==null
 					// Hack for MSSQL jtds 1.2 when using xxx NOT IN yyy we have to use a prepared statement (see BugID 3214)
-					&& ( databaseMeta.getDatabaseInterface() instanceof MSSQLServerDatabaseMeta || databaseMeta.getDatabaseInterface() instanceof KettleDatabaseMeta) 
+					  && ( databaseMeta.getDatabaseInterface() instanceof MSSQLServerDatabaseMeta
+            || databaseMeta.getDatabaseInterface() instanceof KettleDatabaseMeta) )
+          || databaseMeta.getDatabaseInterface().supportsResultSetMetadataRetrievalOnly()
 			   )
 			{
 				sel_stmt = connection.createStatement(ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
