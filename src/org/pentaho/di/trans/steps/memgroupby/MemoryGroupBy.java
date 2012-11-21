@@ -43,7 +43,6 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
-import org.pentaho.di.trans.steps.groupby.GroupByMeta;
 import org.pentaho.di.trans.steps.memgroupby.MemoryGroupByData.HashEntry;
 
 
@@ -464,8 +463,8 @@ public class MemoryGroupBy extends BaseStep implements StepInterface
                     	double sum = (Double)ag / aggregate.counts[i];
                     	ag = Double.valueOf( Math.sqrt( sum ) );
                     	break;
-                    case GroupByMeta.TYPE_GROUP_CONCAT_COMMA:;
-                    case GroupByMeta.TYPE_GROUP_CONCAT_STRING: 
+                    case MemoryGroupByMeta.TYPE_GROUP_CONCAT_COMMA:;
+                    case MemoryGroupByMeta.TYPE_GROUP_CONCAT_STRING: 
                       ag = ((StringBuilder) ag).toString();
                       break;
                     default: break;
