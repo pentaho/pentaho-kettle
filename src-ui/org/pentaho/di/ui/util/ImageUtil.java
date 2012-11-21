@@ -37,6 +37,7 @@ import java.awt.image.DirectColorModel;
 import java.awt.image.IndexColorModel;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 
 import org.apache.commons.vfs.FileObject;
@@ -126,8 +127,10 @@ public class ImageUtil
     	// TODO: find other instances of getImage (plugin, steps) and transition them to new model through an laf manager
     	try
     	{
-    		return new Image(display, KettleVFS.getInputStream(location));
-    		
+    		InputStream is = KettleVFS.getInputStream(location);
+    		Image im = new Image(display, is);
+    		is.close();
+    		return im;
     	}
     	catch(Exception e)
     	{
