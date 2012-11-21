@@ -252,7 +252,7 @@
 	<classpathentry kind="lib" path="libext/j-interopdeps.jar"/>
 	<classpathentry kind="lib" path="libext/commons/commons-codec-1.4.jar"/>
 	<classpathentry kind="lib" path="libext/commons/commons-lang-2.6.jar"/>
-	<classpathentry kind="lib" path="libext/commons/commons-math-2.1.jar"/>
+	<classpathentry kind="lib" path="libext/commons/commons-math-1.1.jar"/>
 	<classpathentry kind="lib" path="libext/jersey/mimepull-1.5.jar"/>
 	<classpathentry kind="lib" path="libext/jfree/jfreechart-1.0.13.jar"/>
 	<classpathentry kind="lib" path="libext/slf4j-api-1.6.1.jar"/>
