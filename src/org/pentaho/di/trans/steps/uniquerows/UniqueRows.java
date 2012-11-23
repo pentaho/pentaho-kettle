@@ -56,8 +56,7 @@ public class UniqueRows extends BaseStep implements StepInterface
 		data=(UniqueRowsData)stepDataInterface; // create new data object.
 	}
 	
-	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
-	{
+  public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException {
 		meta=(UniqueRowsMeta)smi;
 		data=(UniqueRowsData)sdi;
 
@@ -65,8 +64,7 @@ public class UniqueRows extends BaseStep implements StepInterface
 		if (r==null)  // no more input to be expected...
 		{
 			// Don't forget the last set of rows...
-			if (data.previous!=null) 
-			{
+      if (data.previous != null) {
 				Object[] outputRow = addCounter(data.outputRowMeta, data.previous, data.counter);
 				putRow(data.outputRowMeta, outputRow);
 			} 
@@ -74,9 +72,9 @@ public class UniqueRows extends BaseStep implements StepInterface
 			return false;
 		}
 
-		if (first)
-		{
-            
+    if (first) {
+      // Don't set first to false here like we normally do, because it is being checked outside the 
+      // if(first) block to determine whether to send the row as a duplicate.
             data.inputRowMeta = getInputRowMeta().clone();
             data.compareRowMeta = getInputRowMeta().clone();
             data.outputRowMeta = getInputRowMeta().clone();
@@ -87,11 +85,9 @@ public class UniqueRows extends BaseStep implements StepInterface
 			// Cache lookup of fields
 			data.fieldnrs=new int[meta.getCompareFields().length];
             
-			for (int i=0;i<meta.getCompareFields().length;i++)
-			{
+      for (int i = 0; i < meta.getCompareFields().length; i++) {
 				data.fieldnrs[i] = getInputRowMeta().indexOfValue(meta.getCompareFields()[i]);
-				if (data.fieldnrs[i]<0)
-				{
+        if (data.fieldnrs[i] < 0) {
 					logError(BaseMessages.getString(PKG, "UniqueRows.Log.CouldNotFindFieldInRow",meta.getCompareFields()[i])); //$NON-NLS-1$ //$NON-NLS-2$
 					setErrors(1);
 					stopAll();
@@ -101,8 +97,7 @@ public class UniqueRows extends BaseStep implements StepInterface
 				//
                 data.compareRowMeta.getValueMeta(data.fieldnrs[i]).setCaseInsensitive(meta.getCaseInsensitive()[i]);
                 
-				if(data.sendDuplicateRows)
-				{
+        if (data.sendDuplicateRows) {
 					data.compareFields=data.compareFields==null?meta.getCompareFields()[i]:data.compareFields+","+meta.getCompareFields()[i];
 				}
 			}
@@ -110,38 +105,38 @@ public class UniqueRows extends BaseStep implements StepInterface
 				data.realErrorDescription=environmentSubstitute(meta.getErrorDescription());
 		}
 		
+    // Emptied in a previous batch in single threading mode.
+    //
+    if (data.previous==null) {
+      data.previous = data.inputRowMeta.cloneRow(r);
+    }
+
 		boolean isEqual = false;
 		
-		if (meta.getCompareFields()==null || meta.getCompareFields().length==0)
-		{
+    if (meta.getCompareFields() == null || meta.getCompareFields().length == 0) {
 		    // Compare the complete row...
 		    isEqual = data.outputRowMeta.compare(r, data.previous)==0;
-		}
-		else
-		{
+    } else {
 		    isEqual = data.outputRowMeta.compare(r, data.previous, data.fieldnrs)==0;
 		}
-		if (!isEqual)
-		{
+    if (!isEqual) {
 			Object[] outputRow = addCounter(data.outputRowMeta, data.previous, data.counter);
-			putRow(data.outputRowMeta, outputRow); // copy row to possible alternate rowset(s).
+      putRow(data.outputRowMeta, outputRow); // copy row to possible alternate
+                                             // rowset(s).
 			data.previous=data.inputRowMeta.cloneRow(r);
 			data.counter=1;
-		}
-		else
-		{
+    } else {
 			data.counter++;
-			if(data.sendDuplicateRows && !first) 
-			{
+      if (data.sendDuplicateRows && !first) {
 				putError(getInputRowMeta(), r, 1, data.realErrorDescription, data.compareFields==""?null:data.compareFields, "UNR001");
 			}
 		}
 
-        if (checkFeedback(getLinesRead())) 
-        {
-        	if(log.isBasic()) logBasic(BaseMessages.getString(PKG, "UniqueRows.Log.LineNumber")+getLinesRead()); //$NON-NLS-1$
+    if (checkFeedback(getLinesRead())) {
+      if (log.isBasic())
+        logBasic(BaseMessages.getString(PKG, "UniqueRows.Log.LineNumber") + getLinesRead()); //$NON-NLS-1$
         }
-		if(first) first=false;
+    first = false;
 		return true;
 	}
 	
@@ -173,4 +168,16 @@ public class UniqueRows extends BaseStep implements StepInterface
 		return false;
 	}
 
+  
+  @Override
+  public void batchComplete() throws KettleException {
+    // If there's a previous row, output it at the end of the batch...
+    //
+    if (data.previous!=null) 
+    {
+      Object[] outputRow = addCounter(data.outputRowMeta, data.previous, data.counter);
+      putRow(data.outputRowMeta, outputRow);
+      data.previous = null;
+    }
+  }
 }
