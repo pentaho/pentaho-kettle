@@ -148,7 +148,7 @@ public class VerticaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 			retval+="INTEGER";
 			break;
 		case ValueMetaInterface.TYPE_STRING:
-			retval+="VARCHAR("+length+")"; 
+			retval += (length < 1) ? "VARCHAR" : "VARCHAR("+length+")";   
 			break;
 		default:
 			retval+=" UNKNOWN";
