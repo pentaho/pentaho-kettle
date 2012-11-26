@@ -88,13 +88,12 @@ public class MonetDBAgileMartMeta extends MonetDBBulkLoaderMeta {
 		this.setFieldTable(null);
 		
 		this.setBufferSize( getStringProperty("MonetDBDefaultBufferSize", "100000") );
-        this.setSchemaName( getStringProperty("MonetDBDefaultSchemaName", "") );           
-		this.setMClientPath( getStringProperty("MonetDBDefaultMClientPath", "") );         
-		this.setLogFile( getStringProperty("MonetDBDefaultLogFile","") );                                 
-        this.setEncoding( getStringProperty("MonetDBDefaultEncoding","UTF-8") );                           
-        this.setTruncate(true);
-        this.setAutoSchema(true);
-        this.setAutoStringWidths(true);
+    this.setSchemaName( getStringProperty("MonetDBDefaultSchemaName", "") );
+		this.setLogFile( getStringProperty("MonetDBDefaultLogFile","") );
+    this.setEncoding( getStringProperty("MonetDBDefaultEncoding","UTF-8") );
+    this.setTruncate(true);
+    this.setAutoSchema(true);
+    this.setAutoStringWidths(true);
         
 		allocate(0);
 	}

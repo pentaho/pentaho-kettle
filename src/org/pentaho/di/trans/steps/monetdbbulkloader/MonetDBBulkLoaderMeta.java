@@ -75,9 +75,6 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
     /** what's the table for the target? */
 	private String tableName;
 	
-	/** Path to the mclient utility */
-	private String mClientPath;
-	
 	/** Path to the log file */
 	private String logFile;
 
@@ -253,7 +250,6 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
             schemaName     = XMLHandler.getTagValue(stepnode, "schema");       //$NON-NLS-1$
 			tableName      = XMLHandler.getTagValue(stepnode, "table");        //$NON-NLS-1$
 			
-			mClientPath         = XMLHandler.getTagValue(stepnode, "mclient_path");       //$NON-NLS-1$
 			logFile        = XMLHandler.getTagValue(stepnode, "log_file");     //$NON-NLS-1$
 			encoding       = XMLHandler.getTagValue(stepnode, "encoding");         //$NON-NLS-1$
 			truncate       = "Y".equals(XMLHandler.getTagValue(stepnode, "truncate"));         //$NON-NLS-1$
@@ -287,7 +283,6 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 		bufferSize   = "100000";
         schemaName   = "";                //$NON-NLS-1$
 		tableName    = BaseMessages.getString(PKG, "MonetDBBulkLoaderMeta.DefaultTableName"); //$NON-NLS-1$
-		mClientPath  = "/usr/local/bin/mclient";              //$NON-NLS-1$
 		logFile      = "";                                    //$NON-NLS-1$
         encoding     = "";                                    //$NON-NLS-1$
         truncate 	 = false;
@@ -305,7 +300,6 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 		retval.append("    ").append(XMLHandler.addTagValue("buffer_size",  bufferSize));     //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    ").append(XMLHandler.addTagValue("schema",       schemaName));    //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("table",        tableName));     //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("mclient_path", mClientPath));        //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("log_file",     logFile));       //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("encoding",     encoding));      //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    ").append(XMLHandler.addTagValue("truncate",     truncate));      //$NON-NLS-1$ //$NON-NLS-2$
@@ -334,7 +328,6 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
      		dbConnectionName =      rep.getStepAttributeString(id_step,  "db_connection_name");         //$NON-NLS-1$
             schemaName     =      rep.getStepAttributeString(id_step,  "schema");         //$NON-NLS-1$
 			tableName      =      rep.getStepAttributeString(id_step,  "table");          //$NON-NLS-1$
-			mClientPath    =      rep.getStepAttributeString(id_step,  "mclient_path");         //$NON-NLS-1$
 			logFile        =      rep.getStepAttributeString(id_step,  "log_file");       //$NON-NLS-1$
 			encoding       =      rep.getStepAttributeString(id_step,  "encoding");       //$NON-NLS-1$
 			truncate       =      Boolean.parseBoolean(rep.getStepAttributeString(id_step,  "truncate"));       //$NON-NLS-1$
@@ -370,7 +363,6 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
             rep.saveStepAttribute(id_transformation, id_step, "schema",          schemaName);    //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "table",           tableName);     //$NON-NLS-1$
 			
-			rep.saveStepAttribute(id_transformation, id_step, "mclient_path",    mClientPath);        //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "log_file",        logFile);       //$NON-NLS-1$
 
 			rep.saveStepAttribute(id_transformation, id_step, "encoding",        encoding);      //$NON-NLS-1$
@@ -813,19 +805,6 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 		this.fieldFormatOk = fieldFormatOk;
 	}
 
-	/**
-	 * @param clientPath the mClientPath to set
-	 */
-	public void setMClientPath(String clientPath) {
-		mClientPath = clientPath;
-	}
-
-	/**
-	 * @return the mClientPath
-	 */
-	public String getMClientPath() {
-		return mClientPath;
-	}
 
 	@Override
 	public String getMissingDatabaseConnectionInformationMessage() {

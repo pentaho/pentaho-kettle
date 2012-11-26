@@ -19,37 +19,31 @@
  * limitations under the License.
  *
  ******************************************************************************/
-
 package org.pentaho.di.trans.steps.monetdbbulkloader;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Date;
-
-import org.apache.commons.vfs.FileObject;
+import nl.cwi.monetdb.mcl.io.BufferedMCLReader;
+import nl.cwi.monetdb.mcl.io.BufferedMCLWriter;
+import nl.cwi.monetdb.mcl.net.MapiSocket;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.SQLStatement;
 import org.pentaho.di.core.database.DatabaseMeta;
 import org.pentaho.di.core.database.MonetDBDatabaseMeta;
 import org.pentaho.di.core.exception.KettleException;
-import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.logging.LogChannelInterface;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.StreamLogger;
-import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
-import org.pentaho.di.trans.step.BaseStep;
-import org.pentaho.di.trans.step.StepDataInterface;
-import org.pentaho.di.trans.step.StepInterface;
-import org.pentaho.di.trans.step.StepMeta;
-import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.step.*;
 import org.pentaho.di.trans.steps.monetdbagilemart.MonetDBRowLimitException;
 import org.pentaho.di.trans.steps.tableagilemart.AgileMartUtil;
+
+import java.io.ByteArrayOutputStream;
+import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -104,153 +98,39 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 		}
 		return sb.toString();
 	}
-	
-	/**
-	 * Create the command line for a psql process depending on the meta
-	 * information supplied.
-	 * 
-	 * @param meta The meta data to create the command line from
-	 * 
-	 * @return The string to execute.
-	 * 
-	 * @throws KettleException Upon any exception
-	 */
-	public String createCommandLine(MonetDBBulkLoaderMeta meta, boolean lSql) throws KettleException
-	{
-	   StringBuffer sb = new StringBuffer(300);
-	   
-	   String osName = System.getProperty("os.name");
-	   boolean isWindows = osName.toLowerCase().indexOf("windows") != -1;
-	   if ( !Const.isEmpty(meta.getMClientPath()) )
-	   {
-		   try
-		   {
-	           FileObject fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getMClientPath()), getTransMeta());
-  	      	   String psqlexec = KettleVFS.getFilename(fileObject);
-  	      	   psqlexec = escapeOsPath( psqlexec, isWindows );
-		       sb.append(psqlexec);
-  	       }
-	       catch ( KettleFileException ex )
-	       {
-	           throw new KettleException("Error retrieving mclient application string", ex);
-	       }		       
-	   }
-	   else
-	   {
-		   throw new KettleException("No mclient application specified");
-	   }
 
-	   String enclosure = isWindows ? "\"" : "";
-	   
-	   if( isWindows ) {
-		   sb.append(" /STARTED-FROM-MENU");
-	   }
-	   
-	   // Add standard options to the mclient command:
-	   //
-	   if( lSql ) {
-		   sb.append(" -lsql");
-	   }
-	   // See if the encoding is set...
-	   //
-	   if ( !Const.isEmpty(meta.getEncoding()))
-	   {
-		   sb.append(" ").append(enclosure).append("--encoding=");
-		   sb.append(environmentSubstitute(meta.getEncoding())).append(enclosure);
-	   }
-	   
-//	   if ( !Const.isEmpty(meta.getLogFile()))
-//	   {
-//		   try 
-//		   {
-//		       FileObject fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getLogFile()), getTransMeta());   
-//	    	   sb.append(" ").append(enclosure).append("--log=");
-//		       sb.append('\'').append(KettleVFS.getFilename(fileObject)).append('\'').append(enclosure);
-//		   }
-//		   catch ( KettleFileException ex )
-//		   {
-//		       throw new KettleException("Error retrieving logfile string", ex);
-//		   }
-//	   }
-	   
-       DatabaseMeta dm = meta.getDatabaseMeta();
-       if ( dm != null )
-       {
-           String hostname = environmentSubstitute(Const.NVL(dm.getHostname(), ""));
-           String portnum  = environmentSubstitute(Const.NVL(dm.getDatabasePortNumberString(), ""));
-           String dbname   = environmentSubstitute(Const.NVL(dm.getDatabaseName(), ""));
-
-           if (!Const.isEmpty(hostname)) {
-        	   sb.append(" ").append(enclosure).append("--host=").append(hostname).append(enclosure);
-           }
-           if (!Const.isEmpty(portnum) && Const.toInt(portnum, -1)>0) {
-        	   sb.append(" ").append(enclosure).append("--port=").append(portnum).append(enclosure);
-           }
-           if (!Const.isEmpty(dbname)) {
-        	   sb.append(" ").append(enclosure).append("--database=").append(dbname).append(enclosure);
-           }
-       }
-	   else
-	   {
-		   throw new KettleException("No connection specified");
-	   }
-
-	   return sb.toString(); 
-	}
-	
 	public boolean execute(MonetDBBulkLoaderMeta meta, boolean wait) throws KettleException
 	{
-		Runtime rt = Runtime.getRuntime();
 		if (log.isDetailed()) logDetailed("Started execute" );
 
-    	String cmdLSql = null;
-		if (log.isDetailed()) logDetailed("Creating commands" );
-        try 
-        {
-        	cmdLSql = createCommandLine(meta, true);
-        }
-        catch ( Exception ex )
-        {
-           	throw new KettleException("Error while generating MonetDB commands", ex);
-        }
-		if (log.isDetailed()) logDetailed("Created command: "+cmdLSql );
-
-        try  
+        try
         {
 
        		if (log.isDetailed()) logDetailed("Auto String Length flag: "+meta.isAutoStringWidths() );
         	
-        	logBasic("Executing command: "+cmdLSql);
-			ProcessHolder holder = startMClient( rt, cmdLSql );
+          DatabaseMeta dm = meta.getDatabaseMeta();
+          String hostname = environmentSubstitute(Const.NVL(dm.getHostname(), ""));
+          String portnum  = environmentSubstitute(Const.NVL(dm.getDatabasePortNumberString(), ""));
+          int port = Integer.valueOf(portnum);
+          String dbname   = environmentSubstitute(Const.NVL(dm.getDatabaseName(), ""));
 
-			if( !holder.isRunning ) {
-				message = holder.message;
-				throw new KettleException("An error occurred writing data to the mclient process: "+message);
-			}
+          MapiSocket mserver = getMonetDBConnection();
+          data.mserver = mserver;
+
+          data.in = mserver.getReader();
+          data.out = mserver.getWriter();
+
+          String error = data.in.waitForPrompt();
+          if(error != null) {
+            throw new KettleException("Error while connecting to MonetDB for bulk loading : " + error);
+			    }
         	
-        	data.mClientlProcess = holder.process;
-            
-            // any error message?
-            //
-            data.errorLogger = new StreamLogger(log, data.mClientlProcess.getErrorStream(), "ERROR");
-        
-            // any output?
-            data.outputLogger = new StreamLogger(log, data.mClientlProcess.getInputStream(), "OUTPUT");
-            
-            // Where do we send the data to?  --> To STDIN of the mclient process
-            //
-            data.monetOutputStream = data.mClientlProcess.getOutputStream();
-            
-            // kick them off
-            new Thread(data.errorLogger).start();
-            new Thread(data.outputLogger).start();                              
+          data.outputLogger = new StreamLogger(log, mserver.getInputStream(), "OUTPUT");
 
-            // OK, from here on, we need to feed the COPY INTO command followed by the data into the monetOutputStream
-            //
         }
         catch ( Exception ex )
         {
-        	throw new KettleException("Error while executing mclient : " + cmdLSql, ex);
+        	throw new KettleException(ex);
         }
         
         return true;
@@ -267,19 +147,15 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 			if (r==null)          // no more input to be expected...
 			{
 				setOutputDone();
-
-	    		writeBufferToMonetDB();
-				// Close the output stream...
-				//
-	    		if( data.monetOutputStream != null ) {
-	    			data.monetOutputStream.flush();
-	    			data.monetOutputStream.close();
-	                // wait for the mclient process to finish and check for any error...
-					//
-	            	int exitVal = data.mClientlProcess.waitFor();
-					logBasic(BaseMessages.getString(PKG, "MonetDBBulkLoader.Log.ExitValuePsqlPath", "" + exitVal)); //$NON-NLS-1$
-	    		}
-	    		util.updateMetadata( meta, rowsWritten );
+        try {
+	    	  writeBufferToMonetDB();
+          data.out.flush();
+        } catch (KettleException ke) {
+          throw ke;
+        } finally {
+          data.mserver.close();
+        }
+        util.updateMetadata( meta, rowsWritten );
 				return false;
 			}
 			
@@ -320,12 +196,12 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 		} 
 	}
 
-    protected void writeRowToMonetDB(RowMetaInterface rowMeta, Object[] r) throws KettleException {
-    	if (data.bufferIndex==data.bufferSize || log.isDebug() ) {
-    		writeBufferToMonetDB();
-    	}
-		addRowToBuffer(rowMeta, r);
+  protected void writeRowToMonetDB(RowMetaInterface rowMeta, Object[] r) throws KettleException {
+    if (data.bufferIndex==data.bufferSize || log.isDebug() ) {
+      writeBufferToMonetDB();
     }
+		addRowToBuffer(rowMeta, r);
+  }
 
 	protected void addRowToBuffer(RowMetaInterface rowMeta, Object[] r) throws KettleException {
 
@@ -450,11 +326,10 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 			// finally write a newline
 			//
 			line.write(data.newline);
-			if( log.isDebug() ) log.logDebug( new String(line.toByteArray()) );
-			
+
 			// Now that we have the line, grab the content and store it in the buffer...
 			//
-			data.rowBuffer[data.bufferIndex] = line.toByteArray();
+			data.rowBuffer[data.bufferIndex] = line.toString(); //line.toByteArray();
 			data.bufferIndex++;
     	}
     	catch(Exception e)
@@ -464,130 +339,38 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 		
 	}
 	
-	public void truncateTable( Runtime rt, String mClientCmd ) throws KettleException {
-		
-    	try {
-		   if (log.isDetailed()) logDetailed("attempting to truncate table" );
-			ProcessHolder holder = startMClient( rt, mClientCmd );
-			if(!holder.isRunning ) {
-				message = holder.message;
-				throw new KettleException("An error occurred writing data to the mclient process: "+message);
-			}
-		  	
-		  	String cmd;
-		  	cmd = meta.getDatabaseMeta().getTruncateTableStatement(null, data.schemaTable)+";";		  	
-		  	
-		  	if (log.isDetailed()) logDetailed("Trying: "+cmd);
-		  	holder.stdIn.write(cmd.getBytes());
-		   
-		  	holder.stdIn.flush();
-		  	holder.stdIn.close();
-		    // wait for the process to finish and check for any error...
+	public void truncate() throws KettleException {
+    String cmd;
+    String table = data.schemaTable;
+    cmd = meta.getDatabaseMeta().getTruncateTableStatement(null, table)+";";
 
-		   int exitVal = holder.process.waitFor();
- 		   byte buffer[] = new byte[4096];
- 		  holder.stdOut.read(buffer);
- 		   message = new String( buffer );
-		   logBasic(BaseMessages.getString(PKG, "MonetDBBulkLoader.Log.ExitValuePsqlPath", "" + exitVal)); //$NON-NLS-1$
-		   if( exitVal != 0 ) {
-			   logError(BaseMessages.getString(PKG, "MonetDBBulkLoader.Log.ExitMessage",message)); //$NON-NLS-1$
-		   } else {
-			   logDebug(BaseMessages.getString(PKG, "MonetDBBulkLoader.Log.ExitMessage",message)); //$NON-NLS-1$
-		   }
- 		   if( exitVal != 0 ) {
-	     		throw new KettleException("An error occurred executing a statement");
-		   }
-	
- 		   // try to update the metadata registry
- 		   util.updateMetadata( meta, -1 );
-		  	if (log.isDetailed()) logDetailed("Successfull: "+cmd);
-	    
-    	}
-    	catch(Exception e) {
-    		throw new KettleException("An error occurred writing data to the mclient process", e);
-    	}		
-	}
-
-	protected ProcessHolder startMClient( Runtime rt, String command ) {
-		ProcessHolder holder = new ProcessHolder();
-		holder.isRunning = true;
-    	try {
-    		
-		   holder.process = rt.exec(command);
-		   holder.stdIn = holder.process.getOutputStream();
-		   holder.stdOut = holder.process.getInputStream();
-		   holder.stdErr = holder.process.getErrorStream();
-
-		  	try {
-				int exitValue = holder.process.exitValue();
-				// if we get here, mclient has terminated
-				byte buffer[] = new byte[4096];
-				holder.stdErr.read(buffer);
-				holder.message = new String(buffer);
-				holder.isRunning = false;
-		  	} catch (Exception e) {
-		  		// mclient is still running, this is a good thing
-		  	}
-    	} catch (Exception e) {
-    		log.logError("Could not execute MonetDB mclient command: "+command);
-    	}
-	  	return holder;
-	}
-	
-	public void dropTable( Runtime rt, String mClientCmd ) throws KettleException {
-		
-		if (log.isDetailed()) logDetailed("attempting to truncate table" );
-
-		ProcessHolder holder = startMClient( rt, mClientCmd );
-		if(!holder.isRunning ) {
-			message = holder.message;
-			throw new KettleException("An error occurred writing data to the mclient process: "+message);
+    try {
+      executeSql(cmd);
+    } catch (Exception e) {
+      throw new KettleException("Error while truncating table " + table, e);
 		}
-		  	
-		try {
-			   // this will fail if the table does not exist
-		  	String cmd;
-		  	cmd = "drop table " + data.schemaTable+";";		  	
-		  	
-		  	if (log.isDetailed()) logDetailed("Trying: "+cmd);
-		  	holder.stdIn.write(cmd.getBytes());
-		   
-		  	holder.stdIn.flush();
-		  	holder.stdIn.close();
-		    // wait for the process to finish and check for any error...
 
-		   int exitVal = holder.process.waitFor();
- 		   byte buffer[] = new byte[4096];
- 		  holder.stdOut.read(buffer);
- 		   message = new String(buffer);
-		   logBasic(BaseMessages.getString(PKG, "MonetDBBulkLoader.Log.ExitValuePsqlPath", "" + exitVal)); //$NON-NLS-1$
-		   logDebug(BaseMessages.getString(PKG, "MonetDBBulkLoader.Log.ExitMessage",message)); //$NON-NLS-1$
- 		   // try to update the metadata registry
- 		   util.updateMetadata( meta, -1 );
-		  	if (log.isDetailed()) logDetailed("Successfull: "+cmd);
+    // try to update the metadata registry
+    util.updateMetadata( meta, -1 );
+    if (log.isDetailed()) logDetailed("Successfull: "+cmd);
 
-    	}
-    	catch(Exception e) {
-    		throw new KettleException("An error occurred writing data to the mclient process", e);
-    	}		
-	}	
-	
-	public void autoAdjustSchema( MonetDBBulkLoaderMeta meta, Runtime rt, String mClientCmd )  throws KettleException {
+  }
+
+  public void drop() throws KettleException {
+    try {
+      executeSql("drop table " + data.schemaTable);
+    } catch (Exception e) {
+      throw new KettleException("Error while dropping table " + data.schemaTable, e);
+    }
+
+  }
+
+	public void autoAdjustSchema( MonetDBBulkLoaderMeta meta )  throws KettleException {
 		
-		ProcessHolder holder = null;
-    	try {
  		   if (log.isDetailed()) logDetailed("Attempting to auto adjust table structure" );
- 		
- 		   // monetDB cannot alter table column definitions
- 		   dropTable(rt, mClientCmd);
-			mClientCmd = createCommandLine(meta, false);
- 		   
-			holder = startMClient( rt, mClientCmd );
-			if(!holder.isRunning ) {
-				message = holder.message;
-				throw new KettleException("An error occurred writing data to the mclient process: "+message);
-			}
- 		  	
+
+    drop();
+
 		   if (log.isDetailed()) logDetailed("getTransMeta: "+getTransMeta() );
    		   if (log.isDetailed()) logDetailed("getStepname: "+getStepname() );
    		   SQLStatement statement = meta.getTableDdl(getTransMeta(), getStepname(), true, data, true);
@@ -596,51 +379,13 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
     		
   		   if(statement != null && statement.hasSQL()) {
     			String cmd = statement.getSQL();
-    			this.message = "";
-     		  	if (log.isDetailed()) logDetailed("Trying: "+cmd);
-     		  	holder.stdIn.write(cmd.getBytes());
-    			holder.stdIn.flush();
-    			holder.stdIn.close();
-     		    // wait for the process to finish and check for any error...
-     		  	try {
-          		   int exitVal = holder.process.waitFor();
-         		   byte buffer[] = new byte[4096];
-         		  holder.stdOut.read(buffer);
-         		   this.message = new String(buffer);
-         		   logBasic(BaseMessages.getString(PKG, "MonetDBBulkLoader.Log.ExitValuePsqlPath", "" + exitVal)); //$NON-NLS-1$
-        		   if( exitVal != 0 ) {
-        			   logError(BaseMessages.getString(PKG, "MonetDBBulkLoader.Log.ExitMessage",message)); //$NON-NLS-1$
-        		   } else {
-        			   logDebug(BaseMessages.getString(PKG, "MonetDBBulkLoader.Log.ExitMessage",message)); //$NON-NLS-1$
-        		   }
-         		   if( exitVal != 0 ) {
-         	     		throw new KettleException("An error occurred executing a statement");
-         		   }
-     		  	} catch(Exception e) {
-     	     		// can we get an error message
-     	     		if( holder != null && holder.stdOut != null ) {
-     	      		   byte buffer[] = new byte[4096];
-     	     		   try {
-     	     			  holder.stdOut.read(buffer);
-     		     		   this.message = new String(buffer);
-     		     		   logError(BaseMessages.getString(PKG, "MonetDBBulkLoader.Log.ExitMessage", new String(buffer))); //$NON-NLS-1$
-     	     		   } catch (IOException e1) {
-     					// well we tried
-     	     		   }
-     	     		}
-     	     		throw new KettleException("An error occurred writing data to the mclient process", e);
-     	     	}
+     		  try {
+            executeSql(cmd);
+          } catch (Exception e) {
+            throw new KettleException("Error while creating table " + data.schemaTable, e);
+     	    }
+     	 }
 
-  		   } else {
-  			   this.message = statement.getError();
-  			   logError(statement.getError());
-  	     		throw new KettleException("An error occurred creating SQL statement");
-  		   }
- 		  	 		   
-     	}
-     	catch(Exception e) {
-     		throw new KettleException("An error occurred writing data to the mclient process", e);
-     	}		
 		if (log.isDetailed()) logDetailed("Successfull");
 	}
 		
@@ -657,21 +402,43 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
     		.append(data.schemaTable)
     		.append(" FROM STDIN USING DELIMITERS '")
     		.append(new String(data.separator))
-    		.append("','\\n','")
+    		.append("','" + Const.CR + "','")
     		.append(new String(data.quote))
     		.append("';");
     		String cmd = cmdBuff.toString();
 	    	if (log.isDetailed()) logDetailed(cmd);
-	    	data.monetOutputStream.write(cmd.getBytes());
-	    	
+
+        data.out.write('s');
+        data.out.write(cmdBuff.toString());
+        data.out.newLine();
+
 	    	for (int i=0;i<data.bufferIndex;i++) {
-	    		data.monetOutputStream.write(data.rowBuffer[i]);
-		    	if (log.isRowLevel()) logRowlevel(new String(data.rowBuffer[i]));
+          String buffer = data.rowBuffer[i];
+          data.out.write(buffer);
+		    	if (log.isRowLevel()) logRowlevel(buffer);
 	    	}
 	    	
-	    	// Also write an empty row
-	    	//
-//	    	data.monetOutputStream.write(Const.CR.getBytes());
+        // wait for the prompt
+        String error = data.in.waitForPrompt();
+        if(error != null) {
+          throw new KettleException("Error loading data: " + error);
+        }
+        // write an empty line, forces the flush of the stream
+        data.out.writeLine("");
+
+        // again...
+        error = data.in.waitForPrompt();
+        if(error != null) {
+          throw new KettleException("Error loading data: " + error);
+        }
+        data.out.writeLine("");
+
+        // and again, making sure we commit all the records
+        error = data.in.waitForPrompt();
+        if(error != null) {
+          throw new KettleException("Error loading data: " + error);
+        }
+
 	    	if (log.isRowLevel()) logRowlevel(Const.CR);
 	    	
 	    	// reset the buffer pointer...
@@ -708,7 +475,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 			
 			// Allocate the buffer
 			// 
-			data.rowBuffer = new byte[data.bufferSize][];
+			data.rowBuffer = new String[data.bufferSize]; //new byte[data.bufferSize][];
 			data.bufferIndex = 0;
 			
 			//
@@ -733,28 +500,6 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 	    meta = (MonetDBBulkLoaderMeta)smi;
 	    data = (MonetDBBulkLoaderData)sdi;
 
-	    // Close the mclient output stream
-	    //
-	    try {
-	    	if( data.monetOutputStream != null ) {
-	    		data.monetOutputStream.close();
-		    	int exitVal = data.mClientlProcess.waitFor();
-				   logBasic(BaseMessages.getString(PKG, "MonetDBBulkLoader.Log.ExitValuePsqlPath", "" + exitVal)); //$NON-NLS-1$
-				   if( exitVal != 0 ) {
-					   logError(BaseMessages.getString(PKG, "MonetDBBulkLoader.Log.ExitMessage",message)); //$NON-NLS-1$
-				   } else {
-					   logDebug(BaseMessages.getString(PKG, "MonetDBBulkLoader.Log.ExitMessage",message)); //$NON-NLS-1$
-				   }
-		 		   if( exitVal != 0 ) {
-			     		throw new KettleException("An error occurred executing a statement");
-				   }
-	    	}
-	    }
-	    catch(Exception e) {
-	    	setErrors(1L);
-	    	logError("Unexpected error encountered while finishing the mclient process", e);
-	    }
-	    
 	    super.dispose(smi, sdi);
 	}
 
@@ -762,14 +507,121 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 		return this.data;
 	}
 
-	private class ProcessHolder {
-		Process process;
-	  	boolean isRunning = true;
-	  	OutputStream stdIn = null;
-	  	InputStream stdOut = null;
-	  	InputStream stdErr = null;
-	  	String message;
-		
-	}
-	
+  protected MapiSocket getMonetDBConnection() throws Exception {
+    if(this.meta == null) {
+      throw new KettleException("No metadata available to determine connection information from.");
+    }
+    DatabaseMeta dm = meta.getDatabaseMeta();
+    String hostname = environmentSubstitute(Const.NVL(dm.getHostname(), ""));
+    String portnum  = environmentSubstitute(Const.NVL(dm.getDatabasePortNumberString(), ""));
+    String user = environmentSubstitute(Const.NVL(dm.getUsername(), ""));
+    String password = environmentSubstitute(Const.NVL(dm.getPassword(), ""));
+    String db = environmentSubstitute(Const.NVL(dm.getDatabaseName(), ""));
+
+    MapiSocket mserver = getMonetDBConnection(hostname, Integer.valueOf(portnum), user, password, db, log);
+    return mserver;
+
+  }
+  protected static MapiSocket getMonetDBConnection(String host, int port, String user, String password, String db) throws Exception {
+    return getMonetDBConnection(host, port, user, password, db, null);
+  }
+
+  protected static MapiSocket getMonetDBConnection(String host, int port, String user, String password, String db, LogChannelInterface log) throws Exception {
+    MapiSocket mserver = new MapiSocket();
+    mserver.setDatabase(db);
+    mserver.setLanguage("sql");
+
+//    mserver.debug("mserver-instaview.debug.log");
+
+    try {
+
+      List warnings = mserver.connect(host, port, user, password);
+      if(warnings != null) {
+        for (Object warning : warnings) {
+          if(log != null) {
+            log.logBasic("MonetDB connection warning: " + warning);
+          }
+        }
+      } else {
+        if (log != null) {
+          log.logDebug("Successful MapiSocket connection to MonetDB established.");
+        }
+      }
+      return mserver;
+
+    } catch (Exception e) {
+      throw e;
+    }
+  }
+
+  protected void executeSql(String query) throws Exception {
+    if(this.meta == null) {
+      throw new KettleException("No metadata available to determine connection information from.");
+    }
+    DatabaseMeta dm = meta.getDatabaseMeta();
+    String hostname = environmentSubstitute(Const.NVL(dm.getHostname(), ""));
+    String portnum  = environmentSubstitute(Const.NVL(dm.getDatabasePortNumberString(), ""));
+    String user = environmentSubstitute(Const.NVL(dm.getUsername(), ""));
+    String password = environmentSubstitute(Const.NVL(dm.getPassword(), ""));
+    String db = environmentSubstitute(Const.NVL(dm.getDatabaseName(), ""));
+
+    executeSql(query, hostname, Integer.valueOf(portnum), user, password, db);
+
+  }
+
+  protected static void executeSql(String query, String host, int port, String user, String password, String db) throws Exception {
+    MapiSocket mserver = null;
+    try {
+      mserver = getMonetDBConnection(host, port, user, password, db);
+
+      BufferedMCLReader in = mserver.getReader();
+      BufferedMCLWriter out = mserver.getWriter();
+
+      String error = in.waitForPrompt();
+      if(error != null) {
+        throw new Exception("ERROR waiting for input reader: " + error);
+      }
+
+      // the leading 's' is essential, since it is a protocol
+      // marker that should not be omitted, likewise the
+      // trailing semicolon
+      out.write('s');
+      System.out.println(query);
+      out.write(query);
+      out.write(';');
+      out.newLine();
+
+      out.writeLine("");
+
+      String line = null;
+      while( (line = in.readLine()) != null  ) {
+        int type = in.getLineType();
+
+        // read till we get back to the prompt
+        if (type == BufferedMCLReader.PROMPT) {
+          break;
+        }
+
+        switch(type) {
+          case BufferedMCLReader.ERROR:
+            System.err.println(line);
+            break;
+          case BufferedMCLReader.RESULT:
+            System.out.println(line);
+            break;
+          default:
+            // unknown, header, ...
+            break;
+        }
+      }
+
+    } catch (Exception e) {
+      throw e;
+    } finally {
+      mserver.close();
+    }
+
+  }
+
 }
+

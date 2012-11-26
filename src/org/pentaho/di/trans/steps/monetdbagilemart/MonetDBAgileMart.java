@@ -66,13 +66,11 @@ public class MonetDBAgileMart extends MonetDBBulkLoader implements TableManager 
 		if(  meta.isAutoSchema() || meta.isTruncate() ) {
 	        try 
 	        {
-        		Runtime rt = Runtime.getRuntime();
-            	String cmd = createCommandLine(meta, false);
 	            if( meta.isAutoSchema() ) {
-	            	autoAdjustSchema( meta, rt, cmd );
+	            	autoAdjustSchema( meta );
 	            } else {
 	                if( meta.isTruncate() ) {
-	                	truncateTable( rt, cmd );
+	                	truncateTable( );
 	                }
 	            }
 	        }
@@ -94,7 +92,7 @@ public class MonetDBAgileMart extends MonetDBBulkLoader implements TableManager 
 			// we are done, ignore any new rows
 			AgileMartUtil util = new AgileMartUtil();
 			util.updateMetadata( getMeta(), rowsWritten );
-			throw new MonetDBRowLimitException("Row limit exceeded");
+			throw new MonetDBRowLimitException(BaseMessages.getString("MonetDBAgileMart.Log.RowLimitExceeded"));
 		}
 		MonetDBBulkLoaderData data = getData();
 		if (bufferLimit==data.bufferIndex || log.isDebug() ) {
@@ -105,8 +103,8 @@ public class MonetDBAgileMart extends MonetDBBulkLoader implements TableManager 
     		}
     		if( rowsWritten >= rowLimit ) {
     			// we are done, stop the transformation
-    			throw new MonetDBRowLimitException("Row limit exceeded");
-    		}
+          throw new MonetDBRowLimitException(BaseMessages.getString("MonetDBAgileMart.Log.RowLimitExceeded"));
+        }
     	}
 		addRowToBuffer(rowMeta, r);
 		rowsWritten++;
@@ -135,17 +133,15 @@ public class MonetDBAgileMart extends MonetDBBulkLoader implements TableManager 
 	
 	public boolean truncateTable( ) {
 		MonetDBBulkLoaderMeta meta = getMeta();
-		try {
-			Runtime rt = Runtime.getRuntime();
-			String cmd = createCommandLine(meta, false);
-			truncateTable( rt, cmd );
-			return true;
-		} catch (KettleException e) {
-			setMessage( BaseMessages.getString(PKG, "MonetDBAgileMart.Log.TruncateError", meta.getTableName(), this.getMessage() ) );
-			log.logError(BaseMessages.getString(PKG, "MonetDBAgileMart.Log.TruncateError", meta.getTableName(), this.getMessage() ), e);
-		}
-		return false;
-	}	
+    try {
+      super.truncate();
+      return true;
+    } catch (KettleException e) {
+      setMessage( BaseMessages.getString(PKG, "MonetDBAgileMart.Log.TruncateError", meta.getTableName(), this.getMessage() ) );
+      log.logError(BaseMessages.getString(PKG, "MonetDBAgileMart.Log.TruncateError", meta.getTableName(), this.getMessage() ), e);
+      return false;
+    }
+  }
 	
 	@Override
 	public void setTableName(String tableName) {
@@ -158,9 +154,7 @@ public class MonetDBAgileMart extends MonetDBBulkLoader implements TableManager 
 
 		MonetDBBulkLoaderMeta meta = getMeta();
 		try {
-			Runtime rt = Runtime.getRuntime();
-			String cmd = createCommandLine(meta, false);
-			autoAdjustSchema( meta, rt, cmd );
+			autoAdjustSchema( meta );
 			return true;
 		} catch (KettleException e) {
 			setMessage( BaseMessages.getString(PKG, "MonetDBAgileMart.Log.SchemaError", meta.getTableName(), this.getMessage() ) );
@@ -172,9 +166,7 @@ public class MonetDBAgileMart extends MonetDBBulkLoader implements TableManager 
 	public boolean dropTable( )  {
 		MonetDBBulkLoaderMeta meta = getMeta();
 		try {
-			Runtime rt = Runtime.getRuntime();
-			String cmd = createCommandLine(meta, false);
-			dropTable( rt, cmd );
+			drop();
 			return true;
 		} catch (KettleException e) {
 			setMessage( BaseMessages.getString(PKG, "MonetDBAgileMart.Log.DropError", meta.getTableName(), this.getMessage() ) );

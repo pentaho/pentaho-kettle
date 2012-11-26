@@ -83,11 +83,6 @@ public class MonetDBAgileMartDialog extends MonetDBBulkLoaderDialog implements S
 	private TextVar				wTable;
 	private FormData			fdlTable, fdbTable, fdTable;
 
-	private Label				wlMClientPath;
-	private Button				wbMClientPath;
-	private TextVar				wMClientPath;
-	private FormData			fdlMclientPath, fdbMclientPath, fdMclientPath;
-	
 	private MonetDBBulkLoaderMeta	input;
 	
     private static final String[] ALL_FILETYPES = new String[] {
@@ -205,31 +200,7 @@ public class MonetDBAgileMartDialog extends MonetDBBulkLoaderDialog implements S
 		wTable.setLayoutData(fdTable);
 
 		// PsqlPath line...
-		wlMClientPath = new Label(shell, SWT.RIGHT);
-		wlMClientPath.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.MClientPath.Label")); //$NON-NLS-1$
- 		props.setLook(wlMClientPath);
-		fdlMclientPath = new FormData();
-		fdlMclientPath.left = new FormAttachment(0, 0);
-		fdlMclientPath.right = new FormAttachment(middle, -margin);
-		fdlMclientPath.top = new FormAttachment(wTable, margin);
-		wlMClientPath.setLayoutData(fdlMclientPath);
-		
-		wbMClientPath = new Button(shell, SWT.PUSH | SWT.CENTER);
- 		props.setLook(wbMClientPath);
-		wbMClientPath.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Browse.Button")); //$NON-NLS-1$
-		fdbMclientPath = new FormData();
-		fdbMclientPath.right = new FormAttachment(100, 0);
-		fdbMclientPath.top = new FormAttachment(wTable, margin);
-		wbMClientPath.setLayoutData(fdbMclientPath);
-		wMClientPath = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wMClientPath);
-		wMClientPath.addModifyListener(lsMod);
-		fdMclientPath = new FormData();
-		fdMclientPath.left = new FormAttachment(middle, 0);
-		fdMclientPath.top = new FormAttachment(wTable, margin);
-		fdMclientPath.right = new FormAttachment(wbMClientPath, -margin);
-		wMClientPath.setLayoutData(fdMclientPath);
-						
+
 		// THE BUTTONS
 		wOK = new Button(shell, SWT.PUSH);
 		wOK.setText(BaseMessages.getString(PKG, "System.Button.OK")); //$NON-NLS-1$
@@ -252,26 +223,6 @@ public class MonetDBAgileMartDialog extends MonetDBBulkLoaderDialog implements S
         };
         new Thread(runnable).start();
 		
-
-		wbMClientPath.addSelectionListener(new SelectionAdapter()
-        {
-            public void widgetSelected(SelectionEvent e)
-            {
-                FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-                dialog.setFilterExtensions(new String[] { "*" });
-                if (wMClientPath.getText() != null)
-                {
-                    dialog.setFileName(wMClientPath.getText());
-                }
-                dialog.setFilterNames(ALL_FILETYPES);
-                if (dialog.open() != null)
-                {
-                	wMClientPath.setText(dialog.getFilterPath() + Const.FILE_SEPARATOR
-                                      + dialog.getFileName());
-                }
-            }
-        });
-
 		// Add listeners
 		lsOK = new Listener()
 		{
@@ -349,7 +300,6 @@ public class MonetDBAgileMartDialog extends MonetDBBulkLoaderDialog implements S
 		}*/
         if (input.getSchemaName() != null) wSchema.setText(input.getSchemaName());
 		if (input.getTableName() != null) wTable.setText(input.getTableName());
-		if (input.getMClientPath() != null) wMClientPath.setText(input.getMClientPath());
 		if (input.getDbConnectionName() != null) wConnection.setText(input.getDbConnectionName());
 		
 		wStepname.selectAll();
@@ -368,7 +318,6 @@ public class MonetDBAgileMartDialog extends MonetDBBulkLoaderDialog implements S
         inf.setSchemaName( wSchema.getText() );
 		inf.setTableName( wTable.getText() );
 		inf.setDbConnectionName(wConnection.getText());
-		inf.setMClientPath( wMClientPath.getText() );
 		inf.setLogFile( DEFAULT_LOG_FILE );
 		inf.setEncoding( DEFAULT_ENCODING );
 		inf.setTruncate( true);

@@ -24,6 +24,9 @@ package org.pentaho.di.trans.steps.monetdbbulkloader;
 
 import java.io.OutputStream;
 
+import nl.cwi.monetdb.mcl.io.BufferedMCLReader;
+import nl.cwi.monetdb.mcl.io.BufferedMCLWriter;
+import nl.cwi.monetdb.mcl.net.MapiSocket;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.StreamLogger;
@@ -44,11 +47,15 @@ public class MonetDBBulkLoaderData extends BaseStepData implements StepDataInter
 
 	public StreamLogger errorLogger;
 
-	public Process mClientlProcess;
+//	public Process mClientlProcess;
 
 	public StreamLogger outputLogger;
 
-	public OutputStream monetOutputStream;
+  public MapiSocket mserver;
+  public BufferedMCLReader in;
+  public BufferedMCLWriter out;
+
+//	public OutputStream monetOutputStream;
 
 	public byte[] quote;
 	public byte[] separator;
@@ -61,7 +68,7 @@ public class MonetDBBulkLoaderData extends BaseStepData implements StepDataInter
 	
 	public int bufferSize;
 	
-	public byte[][] rowBuffer;
+	public String[] rowBuffer;
 
 	public int bufferIndex;
 
