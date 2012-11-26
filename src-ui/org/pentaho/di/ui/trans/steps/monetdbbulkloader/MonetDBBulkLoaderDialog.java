@@ -712,7 +712,6 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 		}
         if (input.getSchemaName() != null) wSchema.setText(input.getSchemaName());
 		if (input.getTableName() != null) wTable.setText(input.getTableName());
-		if (input.getMClientPath() != null) wMClientPath.setText(input.getMClientPath());
 		if (input.getLogFile() != null) wLogFile.setText(input.getLogFile());
 		if (input.getEncoding() != null) wEncoding.setText(input.getEncoding());
 		wTruncate.setSelection(input.isTruncate());
@@ -770,7 +769,6 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
         inf.setSchemaName( wSchema.getText() );
 		inf.setTableName( wTable.getText() );
 		inf.setDatabaseMeta(  transMeta.findDatabase(wConnection.getText()) );
-		inf.setMClientPath( wMClientPath.getText() );
 		inf.setLogFile( wLogFile.getText() );
 		inf.setEncoding( wEncoding.getText() );
 		inf.setTruncate(wTruncate.getSelection());
