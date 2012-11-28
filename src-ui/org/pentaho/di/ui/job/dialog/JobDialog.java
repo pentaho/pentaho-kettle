@@ -67,6 +67,7 @@ import org.pentaho.di.core.logging.LogTableInterface;
 import org.pentaho.di.core.parameters.DuplicateParamException;
 import org.pentaho.di.core.parameters.UnknownParamException;
 import org.pentaho.di.core.plugins.JobEntryPluginType;
+import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
@@ -138,8 +139,8 @@ public class JobDialog extends Dialog
 
     private Button       wUniqueConnections;
     
-	private Button wOK, wSQL, wCancel;
-	private Listener lsOK, lsSQL, lsCancel;
+	protected Button wOK, wSQL, wCancel;
+	protected Listener lsOK, lsSQL, lsCancel, lsHelp;
 
 	private JobMeta jobMeta;
 	private Shell  shell;
@@ -1887,20 +1888,21 @@ public class JobDialog extends Dialog
         return sharedObjectsFileChanged;
     }
     
-    public static final void setShellImage(Shell shell, JobEntryInterface jobEntryInterface)
-    {
-        try
-        {
-            String id = PluginRegistry.getInstance().getPluginId(JobEntryPluginType.class, jobEntryInterface);
-            if (id!=null)
-            {
-                shell.setImage((Image) GUIResource.getInstance().getImagesJobentries().get(id));
-            }
-        }
-        catch(Throwable e)
-        {
-        }
+  public static final void setShellImage(Shell shell,
+ JobEntryInterface jobEntryInterface) {
+    try {
+      final PluginInterface plugin = PluginRegistry.getInstance().getPlugin(JobEntryPluginType.class, jobEntryInterface);
+      if (!Const.isEmpty(plugin.getDocumentationUrl())) {
+        BaseStepDialog.createHelpButton(shell, "Documentation for job entry "+jobEntryInterface.getName(), plugin);
+      }
+
+      String id = plugin.getIds()[0];
+      if (id != null) {
+        shell.setImage((Image) GUIResource.getInstance().getImagesJobentries().get(id));
+      }
+    } catch (Throwable e) {
     }
+  }
     
 	public void setDirectoryChangeAllowed(boolean directoryChangeAllowed) {
 		this.directoryChangeAllowed = directoryChangeAllowed;

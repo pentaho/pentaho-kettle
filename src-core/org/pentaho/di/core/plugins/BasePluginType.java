@@ -306,7 +306,7 @@ public abstract class BasePluginType implements PluginTypeInterface{
     Map<Class<?>, String> classMap = new HashMap<Class<?>, String>();
     PluginMainClassType mainClassTypesAnnotation = pluginType.getAnnotation(PluginMainClassType.class);
     classMap.put(mainClassTypesAnnotation.value(), clazz.getName());
-    PluginInterface stepPlugin = new Plugin(new String[]{id}, pluginType, mainClassTypesAnnotation.value(), category, name, description, image, false, false, classMap, new ArrayList<String>(), null, null);
+    PluginInterface stepPlugin = new Plugin(new String[]{id}, pluginType, mainClassTypesAnnotation.value(), category, name, description, image, false, false, classMap, new ArrayList<String>(), null, null, null, null, null);
     registry.registerPlugin(pluginType, stepPlugin);
   }
 
@@ -322,6 +322,9 @@ public abstract class BasePluginType implements PluginTypeInterface{
             String category = getTagOrAttribute(pluginNode, "category"); //$NON-NLS-1$
             String classname = getTagOrAttribute(pluginNode, "classname"); //$NON-NLS-1$
             String errorHelpfile = getTagOrAttribute(pluginNode, "errorhelpfile"); //$NON-NLS-1$
+            String documentationUrl = getTagOrAttribute(pluginNode, "documentation_url"); //$NON-NLS-1$
+            String casesUrl = getTagOrAttribute(pluginNode, "cases_url"); //$NON-NLS-1$
+            String forumUrl = getTagOrAttribute(pluginNode, "forum_url"); //$NON-NLS-1$
             
             Node libsnode = XMLHandler.getSubNode(pluginNode, "libraries"); //$NON-NLS-1$
             int nrlibs = XMLHandler.countNodes(libsnode, "library"); //$NON-NLS-1$
@@ -374,7 +377,7 @@ public abstract class BasePluginType implements PluginTypeInterface{
               classMap.put(entry.getKey(), clzName); 
             }
             
-            PluginInterface pluginInterface = new Plugin(id.split(","), pluginType, mainClassTypesAnnotation.value(), category, description, tooltip, iconFilename, false, nativePlugin, classMap, jarFiles, errorHelpFileFull, pluginFolder);
+            PluginInterface pluginInterface = new Plugin(id.split(","), pluginType, mainClassTypesAnnotation.value(), category, description, tooltip, iconFilename, false, nativePlugin, classMap, jarFiles, errorHelpFileFull, pluginFolder, documentationUrl, casesUrl, forumUrl);
             registry.registerPlugin(pluginType, pluginInterface);
             
             return pluginInterface;
@@ -484,6 +487,9 @@ public abstract class BasePluginType implements PluginTypeInterface{
 	protected abstract String extractImageFile(java.lang.annotation.Annotation annotation);
 	protected abstract boolean extractSeparateClassLoader(java.lang.annotation.Annotation annotation);
 	protected abstract String extractI18nPackageName(java.lang.annotation.Annotation annotation);
+	protected abstract String extractDocumentationUrl(java.lang.annotation.Annotation annotation);
+  protected abstract String extractCasesUrl(java.lang.annotation.Annotation annotation);
+  protected abstract String extractForumUrl(java.lang.annotation.Annotation annotation);
 
   /**
    * When set to true the FluginFolder objects created by this type will be instructed to search
@@ -583,6 +589,9 @@ public abstract class BasePluginType implements PluginTypeInterface{
       String category = getTranslation(extractCategory(annotation), packageName, altPackageName, clazz);
       String imageFile = extractImageFile(annotation); 
       boolean separateClassLoader = extractSeparateClassLoader(annotation); 
+      String documentationUrl = extractDocumentationUrl(annotation); 
+      String casesUrl = extractCasesUrl(annotation); 
+      String forumUrl = extractForumUrl(annotation); 
       
       Map<Class<?>, String> classMap = new HashMap<Class<?>, String>();
 
@@ -608,7 +617,7 @@ public abstract class BasePluginType implements PluginTypeInterface{
       }
       */
       
-      PluginInterface plugin = new Plugin(ids, this.getClass(), mainType.value(), category, name, description, imageFile, separateClassLoader, nativePluginType, classMap, libraries, null, pluginFolder);
+      PluginInterface plugin = new Plugin(ids, this.getClass(), mainType.value(), category, name, description, imageFile, separateClassLoader, nativePluginType, classMap, libraries, null, pluginFolder, documentationUrl, casesUrl, forumUrl);
       registry.registerPlugin(this.getClass(), plugin);
       
       if (libraries!=null && libraries.size()>0) {

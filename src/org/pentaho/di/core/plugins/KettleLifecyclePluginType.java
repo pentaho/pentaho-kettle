@@ -83,4 +83,20 @@ public class KettleLifecyclePluginType extends BasePluginType implements PluginT
   protected void addExtraClasses(Map<Class<?>, String> classMap, Class<?> clazz, Annotation annotation) {
     classMap.put(KettleLifecyclePlugin.class, clazz.getName());
   }
+
+  @Override
+  protected String extractDocumentationUrl(Annotation annotation) {
+    return null;
+  }
+  
+  @Override
+  protected String extractCasesUrl(Annotation annotation) {
+    return null;
+  }
+
+  @Override
+  protected String extractForumUrl(Annotation annotation) {
+    return null;
+  }
+
 }

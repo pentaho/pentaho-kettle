@@ -80,7 +80,10 @@ public class PluginRegistryTest extends TestCase
 					classMap,
 					new ArrayList<String>(),
 					null, // No error help file
-					null // pluginFolder
+					null, // pluginFolder
+					null, // documentation URL
+          null, // cases URL
+          null  // forum URL
 				);
 		registry.registerPlugin(pluginType, tableInputPlugin);
 
@@ -108,7 +111,10 @@ public class PluginRegistryTest extends TestCase
 					classMap,
 					new ArrayList<String>(),
 					null, // No error help file
-          null // pluginFolder
+					null, // pluginFolder
+					null, // documentation URL
+          null, // cases URL
+          null  // forum URL
 				);
 		registry.registerPlugin(pluginType, tableOutputPlugin);
 

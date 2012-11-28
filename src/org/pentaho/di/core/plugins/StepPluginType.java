@@ -196,4 +196,21 @@ public class StepPluginType extends BasePluginType implements PluginTypeInterfac
   @Override
   protected void addExtraClasses(Map<Class<?>, String> classMap, Class<?> clazz, Annotation annotation) {	  
   }
+  
+  @Override
+  protected String extractDocumentationUrl(Annotation annotation) {
+    return ((Step)annotation).documentationUrl();
+  }
+
+  @Override
+  protected String extractCasesUrl(Annotation annotation) {
+    return ((Step)annotation).casesUrl();
+  }
+
+  @Override
+  protected String extractForumUrl(Annotation annotation) {
+    return ((Step)annotation).forumUrl();
+  }
+  
+  
 }

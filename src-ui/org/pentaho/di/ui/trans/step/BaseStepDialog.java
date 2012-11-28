@@ -57,6 +57,7 @@ import org.pentaho.di.core.logging.LogChannel;
 import org.pentaho.di.core.logging.LoggingObjectInterface;
 import org.pentaho.di.core.logging.LoggingObjectType;
 import org.pentaho.di.core.logging.SimpleLoggingObject;
+import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.StepPluginType;
 import org.pentaho.di.core.row.RowMetaInterface;
@@ -76,6 +77,7 @@ import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.database.wizard.CreateDatabaseWizard;
 import org.pentaho.di.ui.core.dialog.EnterMappingDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
+import org.pentaho.di.ui.core.dialog.ShowBrowserDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.gui.WindowProperty;
 import org.pentaho.di.ui.core.widget.ComboVar;
@@ -226,7 +228,12 @@ public class BaseStepDialog extends Dialog {
    */
   public void setShellImage(Shell shell, StepMetaInterface stepMetaInterface) {
     try {
-      String id = PluginRegistry.getInstance().getPluginId(StepPluginType.class, stepMetaInterface);
+      final PluginInterface plugin = PluginRegistry.getInstance().getPlugin(StepPluginType.class, stepMeta.getStepMetaInterface());
+      if (!Const.isEmpty(plugin.getDocumentationUrl())) {
+        createHelpButton(shell, stepMeta, plugin);
+      }
+
+      String id = plugin.getIds()[0];
       if (id != null) {
         shell.setImage(GUIResource.getInstance().getImagesSteps().get(id));
       }
@@ -1196,7 +1203,53 @@ public class BaseStepDialog extends Dialog {
      * @param arguments the arguments
      */
     public void logError(String message, Object...arguments) { log.logError(message, arguments); }
-    
 
+    protected Button createHelpButton(final Shell shell, final StepMeta stepMeta, final PluginInterface plugin) {
+      return createHelpButton(shell, "Step documentation for "+plugin.getName(), plugin);
+    }
+    
+    public static Button createHelpButton(final Shell shell, final String title, final PluginInterface plugin) {
+      Button button = new Button(shell, SWT.PUSH);
+      button.setImage(shell.getDisplay().getSystemImage(SWT.ICON_INFORMATION));
+      button.setToolTipText(BaseMessages.getString(PKG, "System.Tooltip.Help"));
+      FormData fdButton = new FormData();
+      fdButton.left = new FormAttachment(0,0);
+      fdButton.bottom = new FormAttachment(100, 0);
+      button.setLayoutData(fdButton);
+      
+      button.addSelectionListener(new SelectionAdapter() {
+        @Override
+        public void widgetSelected(SelectionEvent arg0) {
+          StringBuilder html = new StringBuilder();
+          html.append("<HTML><TITLE>").append(plugin.getName()).append("</TITLE>");
+          html.append("<HEAD>");
+          // html.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"docs/English/welcome/kettle.css\" />");
+          html.append("</HEAD>");
+          html.append("<BODY>");
+          html.append("Name: ").append(plugin.getName()).append("<br>");
+          html.append("ID: ").append(plugin.getIds()[0]).append("<br>");
+          if (!Const.isEmpty(plugin.getDescription())) {
+            html.append("Description: ").append(plugin.getDescription()).append("<br>");
+          }
+          if (!Const.isEmpty(plugin.getImageFile())) {
+            html.append("Icon: ").append(plugin.getImageFile()).append("<br>");
+          }
+          if (!Const.isEmpty(plugin.getDocumentationUrl())) {
+            html.append("Documenation : <a href=\"").append(plugin.getDocumentationUrl()).append("\">").append("Click here to view the documentation").append("</a><br>");
+          }
+          if (!Const.isEmpty(plugin.getCasesUrl())) {
+            html.append("Cases: <a href=\"").append(plugin.getCasesUrl()).append("\">").append("Click here to view related PDI cases").append("</a><br>");
+          }
+          if (!Const.isEmpty(plugin.getForumUrl())) {
+            html.append("Forum: <a href=\"").append(plugin.getCasesUrl()).append("\">").append("Click here to go to the forum").append("</a><br>");
+          }
+          html.append("</BODY></HTML>");
+          
+          ShowBrowserDialog browserDialog = new ShowBrowserDialog(shell, title, html.toString());
+          browserDialog.open();
+        }
+      });
+      return button;
+    }
 
 }

@@ -43,93 +43,109 @@ import org.w3c.dom.Node;
  * This class represents the carte plugin type.
  * 
  * @author matt
- *
+ * 
  */
 @PluginMainClassType(CartePluginInterface.class)
 @PluginAnnotationType(CarteServlet.class)
-public class CartePluginType extends BasePluginType implements PluginTypeInterface {
-	
-	private static CartePluginType cartePluginType;
-	
-	private CartePluginType() {
-		super(CarteServlet.class, "CARTE_SERVLET", "Carte Servlet");
-		populateFolders("servlets");
-	}
-	
-	public static CartePluginType getInstance() {
-		if (cartePluginType==null) {
-			cartePluginType=new CartePluginType();
-		}
-		return cartePluginType;
-	}
-	
-	/**
-	 * Scan & register internal step plugins
-	 */
-	protected void registerNatives() throws KettlePluginException {
-		// Scan the native steps...
-		//
-		String kettleServletsXmlFile = Const.XML_FILE_KETTLE_SERVLETS;
-		String alternative = System.getProperty(Const.KETTLE_CORE_SERVLETS_FILE, null);
-		if (!Const.isEmpty(alternative)) {
-		  kettleServletsXmlFile = alternative;
-		}
-		
-		// Load the plugins for this file...
-		//
-		try {
-			InputStream inputStream = getClass().getResourceAsStream(kettleServletsXmlFile);
-			if (inputStream==null) {
-			  inputStream =  getClass().getResourceAsStream("/"+kettleServletsXmlFile);
-			}
-			// Retry to load a regular file...
-			if (inputStream==null && !Const.isEmpty(alternative)) {
-			  try {
-			    inputStream = new FileInputStream(kettleServletsXmlFile);
-			  } catch(Exception e) {
-			    throw new KettlePluginException("Unable to load native servlet plugins '"+kettleServletsXmlFile+"'", e);
-			  }
-			}
-			if (inputStream==null) {
-				throw new KettlePluginException("Unable to find native servlets definition file: '"+kettleServletsXmlFile+"'");
-			}
-			Document document = XMLHandler.loadXMLFile(inputStream, null, true, false);
-			
-			// Document document = XMLHandler.loadXMLFile(kettleStepsXmlFile);
-			
-			Node servletsNode = XMLHandler.getSubNode(document, "servlets");
-			List<Node> servletNodes = XMLHandler.getNodes(servletsNode, "servlet");
-			for (Node servletNode : servletNodes) {
-				registerPluginFromXmlResource(servletNode, null, this.getClass(), true, null);
-			}
-			
-		} catch (KettleXMLException e) {
-			throw new KettlePluginException("Unable to read the kettle servlets XML config file: '"+kettleServletsXmlFile+"'", e);
-		}
-	}
-	
-	protected void registerXmlPlugins() throws KettlePluginException {
-		for (PluginFolderInterface folder : pluginFolders) {
-			
-			if (folder.isPluginXmlFolder()) {
-				List<FileObject> pluginXmlFiles = findPluginXmlFiles(folder.getFolder());
-				for (FileObject file : pluginXmlFiles) {
-					
-					try {
-						Document document = XMLHandler.loadXMLFile(file);
-						Node pluginNode = XMLHandler.getSubNode(document, "plugin");
-						if (pluginNode!=null) {
-							registerPluginFromXmlResource(pluginNode, KettleVFS.getFilename(file.getParent()), this.getClass(), false, file.getParent().getURL());
-						}
-					} catch(Exception e) {
-						// We want to report this plugin.xml error, perhaps an XML typo or something like that...
-						//
-						log.logError("Error found while reading step plugin.xml file: "+file.getName().toString(), e);
-					}
-				}
-			}
-		}
-	}
+public class CartePluginType extends BasePluginType implements
+    PluginTypeInterface {
+
+  private static CartePluginType cartePluginType;
+
+  private CartePluginType() {
+    super(CarteServlet.class, "CARTE_SERVLET", "Carte Servlet");
+    populateFolders("servlets");
+  }
+
+  public static CartePluginType getInstance() {
+    if (cartePluginType == null) {
+      cartePluginType = new CartePluginType();
+    }
+    return cartePluginType;
+  }
+
+  /**
+   * Scan & register internal step plugins
+   */
+  protected void registerNatives() throws KettlePluginException {
+    // Scan the native steps...
+    //
+    String kettleServletsXmlFile = Const.XML_FILE_KETTLE_SERVLETS;
+    String alternative = System.getProperty(Const.KETTLE_CORE_SERVLETS_FILE,
+        null);
+    if (!Const.isEmpty(alternative)) {
+      kettleServletsXmlFile = alternative;
+    }
+
+    // Load the plugins for this file...
+    //
+    try {
+      InputStream inputStream = getClass().getResourceAsStream(
+          kettleServletsXmlFile);
+      if (inputStream == null) {
+        inputStream = getClass().getResourceAsStream(
+            "/" + kettleServletsXmlFile);
+      }
+      // Retry to load a regular file...
+      if (inputStream == null && !Const.isEmpty(alternative)) {
+        try {
+          inputStream = new FileInputStream(kettleServletsXmlFile);
+        } catch (Exception e) {
+          throw new KettlePluginException(
+              "Unable to load native servlet plugins '" + kettleServletsXmlFile
+                  + "'", e);
+        }
+      }
+      if (inputStream == null) {
+        throw new KettlePluginException(
+            "Unable to find native servlets definition file: '"
+                + kettleServletsXmlFile + "'");
+      }
+      Document document = XMLHandler
+          .loadXMLFile(inputStream, null, true, false);
+
+      // Document document = XMLHandler.loadXMLFile(kettleStepsXmlFile);
+
+      Node servletsNode = XMLHandler.getSubNode(document, "servlets");
+      List<Node> servletNodes = XMLHandler.getNodes(servletsNode, "servlet");
+      for (Node servletNode : servletNodes) {
+        registerPluginFromXmlResource(servletNode, null, this.getClass(), true,
+            null);
+      }
+
+    } catch (KettleXMLException e) {
+      throw new KettlePluginException(
+          "Unable to read the kettle servlets XML config file: '"
+              + kettleServletsXmlFile + "'", e);
+    }
+  }
+
+  protected void registerXmlPlugins() throws KettlePluginException {
+    for (PluginFolderInterface folder : pluginFolders) {
+
+      if (folder.isPluginXmlFolder()) {
+        List<FileObject> pluginXmlFiles = findPluginXmlFiles(folder.getFolder());
+        for (FileObject file : pluginXmlFiles) {
+
+          try {
+            Document document = XMLHandler.loadXMLFile(file);
+            Node pluginNode = XMLHandler.getSubNode(document, "plugin");
+            if (pluginNode != null) {
+              registerPluginFromXmlResource(pluginNode,
+                  KettleVFS.getFilename(file.getParent()), this.getClass(),
+                  false, file.getParent().getURL());
+            }
+          } catch (Exception e) {
+            // We want to report this plugin.xml error, perhaps an XML typo or
+            // something like that...
+            //
+            log.logError("Error found while reading step plugin.xml file: "
+                + file.getName().toString(), e);
+          }
+        }
+      }
+    }
+  }
 
   @Override
   protected String extractCategory(Annotation annotation) {
@@ -150,12 +166,12 @@ public class CartePluginType extends BasePluginType implements PluginTypeInterfa
   protected String extractName(Annotation annotation) {
     return ((CarteServlet) annotation).name();
   }
-  
+
   @Override
   protected String extractImageFile(Annotation annotation) {
     return "";
   }
-  
+
   @Override
   protected boolean extractSeparateClassLoader(Annotation annotation) {
     return ((CarteServlet) annotation).isSeparateClassLoaderNeeded();
@@ -167,6 +183,23 @@ public class CartePluginType extends BasePluginType implements PluginTypeInterfa
   }
 
   @Override
-  protected void addExtraClasses(Map<Class<?>, String> classMap, Class<?> clazz, Annotation annotation) {	  
+  protected void addExtraClasses(Map<Class<?>, String> classMap,
+      Class<?> clazz, Annotation annotation) {
   }
+
+  @Override
+  protected String extractDocumentationUrl(Annotation annotation) {
+    return null;
+  }
+  
+  @Override
+  protected String extractCasesUrl(Annotation annotation) {
+    return null;
+  }
+
+  @Override
+  protected String extractForumUrl(Annotation annotation) {
+    return null;
+  }
+
 }

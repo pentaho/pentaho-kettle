@@ -58,4 +58,11 @@ public @interface JobEntry
 	String categoryDescription() default "";
 	
 	String i18nPackageName() default "";
+	
+	String documentationUrl() default "";
+
+  String casesUrl() default "";
+
+  String forumUrl() default "";
+
 }

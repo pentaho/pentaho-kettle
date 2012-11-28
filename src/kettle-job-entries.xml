@@ -10,6 +10,9 @@
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.General</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.Trans.Tooltip</tooltip>
 		<iconfile>ui/images/TRN.png</iconfile>
+	    <documentation_url>http://wiki.pentaho.com/display/EAI/Transformation+%28job+entry%29</documentation_url>
+		<cases_url>http://jira.pentaho.com/browse/PDI</cases_url>
+        <forum_url>forums.pentaho.com&#47;forumdisplay.php?135-Pentaho-Data-Integration-Kettle</forum_url>
 	</job-entry>
 
 	<job-entry id="JOB">
@@ -18,6 +21,9 @@
 		<category>i18n:org.pentaho.di.job:JobCategory.Category.General</category>
 		<tooltip>i18n:org.pentaho.di.job.entry:JobEntry.Job.Tooltip</tooltip>
 		<iconfile>ui/images/JOB.png</iconfile>
+	    <documentation_url>http://wiki.pentaho.com/display/EAI/Job+%28Job+Entry%29</documentation_url>
+		<cases_url>http://jira.pentaho.com/browse/PDI</cases_url>
+        <forum_url>forums.pentaho.com&#47;forumdisplay.php?135-Pentaho-Data-Integration-Kettle</forum_url>
 	</job-entry>
 	
 	<job-entry id="SHELL">

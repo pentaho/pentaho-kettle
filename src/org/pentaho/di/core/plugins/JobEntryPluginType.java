@@ -211,4 +211,20 @@ public class JobEntryPluginType extends BasePluginType implements PluginTypeInte
   @Override
   protected void addExtraClasses(Map<Class<?>, String> classMap, Class<?> clazz, Annotation annotation) {	  
   }
+  
+  @Override
+  protected String extractDocumentationUrl(Annotation annotation) {
+    return ((JobEntry)annotation).documentationUrl();
+  }
+
+  @Override
+  protected String extractCasesUrl(Annotation annotation) {
+    return ((JobEntry)annotation).casesUrl();
+  }
+
+  @Override
+  protected String extractForumUrl(Annotation annotation) {
+    return ((JobEntry)annotation).forumUrl();
+  }
+
 }

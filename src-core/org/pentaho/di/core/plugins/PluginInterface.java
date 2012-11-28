@@ -103,4 +103,36 @@ public interface PluginInterface {
 	public String getErrorHelpFile();
 	
 	public URL getPluginDirectory();
+	
+	/**
+	 * @return the documentationUrl
+	 */
+	public String getDocumentationUrl();
+
+	/**
+	 * @param documentationUrl
+	 *            the documentationUrl to set
+	 */
+	public void setDocumentationUrl(String documentationUrl);
+
+	/**
+	 * @return The cases URL of the plugin
+	 */
+  public String getCasesUrl(); 
+
+  /**
+   * @param casesUrl the cases URL to set for this plugin
+   */
+  public void setCasesUrl(String casesUrl);
+
+  /**
+   * @return the forum URL
+   */
+  public String getForumUrl();
+
+  /**
+   * @param forumUrl the forum URL to set
+   */
+  public void setForumUrl(String forumUrl);
+
 }

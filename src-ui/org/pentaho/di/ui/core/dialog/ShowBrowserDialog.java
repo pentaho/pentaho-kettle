@@ -25,7 +25,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.browser.Browser;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -40,6 +39,7 @@ import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.ui.core.PropsUI;
 import org.pentaho.di.ui.core.database.dialog.DatabaseDialog;
 import org.pentaho.di.ui.core.gui.GUIResource;
+import org.pentaho.di.ui.trans.step.BaseStepDialog;
 
 
 /**
@@ -65,8 +65,8 @@ public class ShowBrowserDialog extends Dialog
 	private Shell  shell;
 	private PropsUI props;
 	
-	private int prefWidth = -1;
-	private int prefHeight = -1;
+	// private int prefWidth = -1;
+	// private int prefHeight = -1;
 	
 	private int buttonHeight = 30;
 
@@ -76,8 +76,8 @@ public class ShowBrowserDialog extends Dialog
         props=PropsUI.getInstance();
         this.dialogTitle = dialogTitle;
         this.content = content;
-        prefWidth = -1;
-        prefHeight = -1;
+        // prefWidth = -1;
+        // prefHeight = -1;
     }
 
 	public void open()
@@ -85,7 +85,7 @@ public class ShowBrowserDialog extends Dialog
 		Shell parent = getParent();
 		Display display = parent.getDisplay();
 		
-		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.SHEET| SWT.RESIZE | SWT.MAX | SWT.MIN);
+		shell = new Shell(parent, SWT.RESIZE | SWT.MAX | SWT.MIN);
 		shell.setImage(GUIResource.getInstance().getImageSpoon());
 		props.setLook(shell);
 
@@ -125,6 +125,7 @@ public class ShowBrowserDialog extends Dialog
 		// Detect [X] or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { ok(); } } );
 
+		/*
 
 		//shell.pack();
 		if (prefWidth>0 && prefHeight>0)
@@ -139,8 +140,11 @@ public class ShowBrowserDialog extends Dialog
 		{
 			shell.setSize(400, 400);
 		}
+		*/
 
 		getData();
+		
+		BaseStepDialog.setSize(shell, 800, 600, true);
 		
 		shell.open();
 		while (!shell.isDisposed())

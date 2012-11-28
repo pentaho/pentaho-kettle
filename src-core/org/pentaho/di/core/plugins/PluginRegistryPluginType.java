@@ -100,4 +100,20 @@ public class PluginRegistryPluginType extends BasePluginType implements
   protected String extractI18nPackageName(Annotation annotation) {
     return null;
   }
+  
+  @Override
+  protected String extractDocumentationUrl(Annotation annotation) {
+    return null;
+  }
+
+  @Override
+  protected String extractCasesUrl(Annotation annotation) {
+    return null;
+  }
+
+  @Override
+  protected String extractForumUrl(Annotation annotation) {
+    return null;
+  }
+
 }

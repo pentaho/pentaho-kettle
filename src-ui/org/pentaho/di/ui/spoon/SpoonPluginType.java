@@ -116,4 +116,19 @@ public class SpoonPluginType extends BasePluginType implements PluginTypeInterfa
   protected void addExtraClasses(Map<Class<?>, String> classMap, Class<?> clazz, Annotation annotation) {	  
   }
 
+  @Override
+  protected String extractDocumentationUrl(Annotation annotation) {
+    return null;
+  }
+
+  @Override
+  protected String extractCasesUrl(Annotation annotation) {
+    return null;
+  }
+
+  @Override
+  protected String extractForumUrl(Annotation annotation) {
+    return null;
+  }
+
 }

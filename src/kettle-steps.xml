@@ -26,6 +26,9 @@
     <category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
     <tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.TableInput</tooltip>
     <iconfile>ui/images/TIP.png</iconfile>
+    <documentation_url>http://wiki.pentaho.com/display/EAI/Table+Input</documentation_url>
+	<cases_url>http://jira.pentaho.com/browse/PDI</cases_url>
+    <forum_url>forums.pentaho.com&#47;forumdisplay.php?135-Pentaho-Data-Integration-Kettle</forum_url>
   </step>
 
   <step id="SocketReader">
@@ -50,6 +53,9 @@
     <category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Transform</category>
     <tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.SelectValues</tooltip>
     <iconfile>ui/images/SEL.png</iconfile>
+    <documentation_url>http://wiki.pentaho.com/display/EAI/Select+Values</documentation_url>
+	<cases_url>http://jira.pentaho.com/browse/PDI</cases_url>
+    <forum_url>forums.pentaho.com&#47;forumdisplay.php?135-Pentaho-Data-Integration-Kettle</forum_url>
   </step>
 
   <step id="TextFileInput">
@@ -58,6 +64,9 @@
     <category>i18n:org.pentaho.di.trans.step:BaseStep.Category.Input</category>
     <tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.TextInputFile</tooltip>
     <iconfile>ui/images/TFI.png</iconfile>
+    <documentation_url>http://wiki.pentaho.com/display/EAI/Text+File+Input</documentation_url>
+	<cases_url>http://jira.pentaho.com/browse/PDI</cases_url>
+    <forum_url>forums.pentaho.com&#47;forumdisplay.php?135-Pentaho-Data-Integration-Kettle</forum_url>
   </step>
 
   <step id="Calculator">
@@ -67,6 +76,7 @@
     <tooltip>i18n:org.pentaho.di.trans.step:BaseStep.TypeTooltipDesc.Calculator</tooltip>
 		Database join
     <iconfile>ui/images/CLC.png</iconfile>
+    <documentation_url>http://wiki.pentaho.com/display/EAI/Calculator</documentation_url>
   </step>
 
   <step id="Constant">

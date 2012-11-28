@@ -65,4 +65,9 @@ public @interface Step
 	
 	String i18nPackageName() default "";
 	
+	String documentationUrl() default "";
+
+  String casesUrl() default "";
+
+  String forumUrl() default "";
 }

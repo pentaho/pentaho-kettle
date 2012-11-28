@@ -37,19 +37,22 @@ import org.pentaho.di.core.Const;
  */
 public class Plugin implements PluginInterface {
 
-	private String						category;
-	private String						name;
-	private String						description;
-	private String[]					ids;
-	private Class<? extends PluginTypeInterface>			pluginType;
-	private String						imageFile;
-	private boolean						separateClassLoaderNeeded;
-	private boolean						nativePlugin;
-	private Map<Class<?>, String>	classMap;
-	private List<String>				libraries;
-	private String                      errorHelpFile;
-	private Class<?>             mainType;
-	private URL              pluginFolder;
+	private String category;
+	private String name;
+	private String description;
+	private String[] ids;
+	private Class<? extends PluginTypeInterface> pluginType;
+	private String imageFile;
+	private boolean separateClassLoaderNeeded;
+	private boolean nativePlugin;
+	private Map<Class<?>, String> classMap;
+	private List<String> libraries;
+	private String errorHelpFile;
+	private Class<?> mainType;
+	private URL pluginFolder;
+	private String documentationUrl;
+  private String casesUrl;
+  private String forumUrl;
 
 	/**
 	 * @param ids
@@ -63,7 +66,10 @@ public class Plugin implements PluginInterface {
 	 * @param classMap
 	 * @param libraries
 	 */
-	public Plugin(String[] ids, Class<? extends PluginTypeInterface> pluginType, Class<?> mainType, String category, String name, String description, String imageFile, boolean separateClassLoaderNeeded, boolean nativePlugin, Map<Class<?>, String> classMap, List<String> libraries, String errorHelpFile, URL pluginFolder) {
+	public Plugin(String[] ids, Class<? extends PluginTypeInterface> pluginType, Class<?> mainType, 
+	    String category, String name, String description, String imageFile, boolean separateClassLoaderNeeded, boolean nativePlugin, Map<Class<?>, String> classMap, List<String> libraries, 
+	    String errorHelpFile, URL pluginFolder, String documentationUrl, String casesUrl, String forumUrl) {
+	  
 		this.ids = ids;
 		this.pluginType = pluginType;
 		this.mainType = mainType;
@@ -77,6 +83,10 @@ public class Plugin implements PluginInterface {
 		this.libraries = libraries;
 		this.errorHelpFile = errorHelpFile;
 		this.pluginFolder = pluginFolder;
+		this.documentationUrl = documentationUrl; 		
+    this.casesUrl = casesUrl;     
+    this.forumUrl = forumUrl;     
+    
 	}
 	
 	@Override
@@ -276,16 +286,55 @@ public class Plugin implements PluginInterface {
 		this.errorHelpFile = errorHelpFile;
 	}
 
-  public Class<?> getMainType() {
-    return mainType;
+	public Class<?> getMainType() {
+		return mainType;
+	}
+
+	public URL getPluginDirectory() {
+		return this.pluginFolder;
+	}
+
+	/**
+	 * @return the documentationUrl
+	 */
+	public String getDocumentationUrl() {
+		return documentationUrl;
+	}
+
+	/**
+	 * @param documentationUrl
+	 *            the documentationUrl to set
+	 */
+	public void setDocumentationUrl(String documentationUrl) {
+		this.documentationUrl = documentationUrl;
+	}
+
+  /**
+   * @return the casesUrl
+   */
+  public String getCasesUrl() {
+    return casesUrl;
   }
 
-  public URL getPluginDirectory() {
-    return this.pluginFolder;
+  /**
+   * @param casesUrl the casesUrl to set
+   */
+  public void setCasesUrl(String casesUrl) {
+    this.casesUrl = casesUrl;
   }
-  
 
-	
-	
+  /**
+   * @return the forum URL
+   */
+  public String getForumUrl() {
+    return forumUrl;
+  }
+
+  /**
+   * @param forumUrl the forum URL to set
+   */
+  public void setForumUrl(String forumUrl) {
+    this.forumUrl = forumUrl;
+  }  
 	
 }
