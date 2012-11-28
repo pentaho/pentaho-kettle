@@ -12,7 +12,7 @@
 		<iconfile>ui/images/TRN.png</iconfile>
 	    <documentation_url>http://wiki.pentaho.com/display/EAI/Transformation+%28job+entry%29</documentation_url>
 		<cases_url>http://jira.pentaho.com/browse/PDI</cases_url>
-        <forum_url>forums.pentaho.com&#47;forumdisplay.php?135-Pentaho-Data-Integration-Kettle</forum_url>
+        <forum_url>http://forums.pentaho.com&#47;forumdisplay.php?135-Pentaho-Data-Integration-Kettle</forum_url>
 	</job-entry>
 
 	<job-entry id="JOB">
@@ -23,7 +23,7 @@
 		<iconfile>ui/images/JOB.png</iconfile>
 	    <documentation_url>http://wiki.pentaho.com/display/EAI/Job+%28Job+Entry%29</documentation_url>
 		<cases_url>http://jira.pentaho.com/browse/PDI</cases_url>
-        <forum_url>forums.pentaho.com&#47;forumdisplay.php?135-Pentaho-Data-Integration-Kettle</forum_url>
+        <forum_url>http://forums.pentaho.com&#47;forumdisplay.php?135-Pentaho-Data-Integration-Kettle</forum_url>
 	</job-entry>
 	
 	<job-entry id="SHELL">
