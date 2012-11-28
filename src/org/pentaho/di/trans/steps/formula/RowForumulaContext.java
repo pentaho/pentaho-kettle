@@ -31,9 +31,9 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.reporting.libraries.base.config.Configuration;
-import org.pentaho.reporting.libraries.formula.ContextEvaluationException;
 import org.pentaho.reporting.libraries.formula.DefaultFormulaContext;
 import org.pentaho.reporting.libraries.formula.ErrorValue;
+import org.pentaho.reporting.libraries.formula.EvaluationException;
 import org.pentaho.reporting.libraries.formula.FormulaContext;
 import org.pentaho.reporting.libraries.formula.LibFormulaErrorValue;
 import org.pentaho.reporting.libraries.formula.LocalizationContext;
@@ -58,7 +58,7 @@ public class RowForumulaContext implements FormulaContext
         this.valueIndexMap = new Hashtable<String, Integer>();
     }
     
-    public Type resolveReferenceType(Object name) throws ContextEvaluationException
+    public Type resolveReferenceType(Object name)
     {
         return AnyType.TYPE;
     }
@@ -68,7 +68,7 @@ public class RowForumulaContext implements FormulaContext
      * 
      * @see org.jfree.formula.FormulaContext#resolveReference(java.lang.Object)
      */
-    public Object resolveReference(Object name) throws ContextEvaluationException
+    public Object resolveReference(Object name) throws EvaluationException
     {
         if(name instanceof String)
         {
@@ -84,7 +84,7 @@ public class RowForumulaContext implements FormulaContext
                 if (index<0)
                 {
                 	ErrorValue errorValue = new LibFormulaErrorValue(LibFormulaErrorValue.ERROR_INVALID_ARGUMENT);
-    				throw new ContextEvaluationException(errorValue);
+    				throw new EvaluationException(errorValue);
                 }
                 valueMeta = rowMeta.getValueMeta(index);
                 idx = new Integer(index);
@@ -94,7 +94,7 @@ public class RowForumulaContext implements FormulaContext
             try {
 				return getPrimitive(valueMeta, valueData);
 			} catch (KettleValueException e) {
-				throw new ContextEvaluationException(LibFormulaErrorValue.ERROR_ARITHMETIC_VALUE);
+				throw new EvaluationException(LibFormulaErrorValue.ERROR_ARITHMETIC_VALUE);
 			}
         }
         return null;
@@ -125,7 +125,7 @@ public class RowForumulaContext implements FormulaContext
       return formulaContext.getTypeRegistry();
     }
 
-    public boolean isReferenceDirty(Object name) throws ContextEvaluationException
+    public boolean isReferenceDirty(Object name) throws EvaluationException
     {
       return formulaContext.isReferenceDirty(name);
     }
@@ -193,5 +193,9 @@ public class RowForumulaContext implements FormulaContext
         case ValueMetaInterface.TYPE_STRING: return String.class;
         default: return null;
         }
+    }
+
+    public Date getCurrentDate() {
+      return new Date();
     }
 }
