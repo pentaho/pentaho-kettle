@@ -105,11 +105,6 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 	private TextVar				wTable;
 	private FormData			fdlTable, fdbTable, fdTable;
 
-	private Label				wlMClientPath;
-	private Button				wbMClientPath;
-	private TextVar				wMClientPath;
-	private FormData			fdlMclientPath, fdbMclientPath, fdMclientPath;
-	
 	private Label				wlBufferSize;
 	private TextVar				wBufferSize;
 	private FormData			fdlBufferSize, fdBufferSize;
@@ -282,40 +277,13 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 		fdTable.right = new FormAttachment(wbTable, -margin);
 		wTable.setLayoutData(fdTable);
 
-		// PsqlPath line...
-		wlMClientPath = new Label(shell, SWT.RIGHT);
-		wlMClientPath.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.MClientPath.Label")); //$NON-NLS-1$
- 		props.setLook(wlMClientPath);
-		fdlMclientPath = new FormData();
-		fdlMclientPath.left = new FormAttachment(0, 0);
-		fdlMclientPath.right = new FormAttachment(middle, -margin);
-		fdlMclientPath.top = new FormAttachment(wTable, margin);
-		wlMClientPath.setLayoutData(fdlMclientPath);
-		
-		wbMClientPath = new Button(shell, SWT.PUSH | SWT.CENTER);
- 		props.setLook(wbMClientPath);
-		wbMClientPath.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Browse.Button")); //$NON-NLS-1$
-		fdbMclientPath = new FormData();
-		fdbMclientPath.right = new FormAttachment(100, 0);
-		fdbMclientPath.top = new FormAttachment(wTable, margin);
-		wbMClientPath.setLayoutData(fdbMclientPath);
-		wMClientPath = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wMClientPath);
-		wMClientPath.addModifyListener(lsMod);
-		fdMclientPath = new FormData();
-		fdMclientPath.left = new FormAttachment(middle, 0);
-		fdMclientPath.top = new FormAttachment(wTable, margin);
-		fdMclientPath.right = new FormAttachment(wbMClientPath, -margin);
-		wMClientPath.setLayoutData(fdMclientPath);
-				
-
 		// Buffer size file line
 		wlBufferSize = new Label(shell, SWT.RIGHT);
 		wlBufferSize.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.BufferSize.Label")); //$NON-NLS-1$
  		props.setLook(wlBufferSize);
 		fdlBufferSize = new FormData();
 		fdlBufferSize.left = new FormAttachment(0, 0);
-		fdlBufferSize.top = new FormAttachment(wMClientPath, margin);
+		fdlBufferSize.top = new FormAttachment(wbTable, margin);
 		fdlBufferSize.right = new FormAttachment(middle, -margin);
 		wlBufferSize.setLayoutData(fdlBufferSize);
 		wBufferSize = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -323,7 +291,7 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
 		wBufferSize.addModifyListener(lsMod);
 		fdBufferSize = new FormData();
 		fdBufferSize.left = new FormAttachment(middle, 0);
-		fdBufferSize.top = new FormAttachment(wMClientPath, margin);
+		fdBufferSize.top = new FormAttachment(wbTable, margin);
 		fdBufferSize.right = new FormAttachment(100, 0);
 		wBufferSize.setLayoutData(fdBufferSize);						
 
@@ -520,27 +488,7 @@ public class MonetDBBulkLoaderDialog extends BaseStepDialog implements StepDialo
             }
         };
         new Thread(runnable).start();
-		
 
-		wbMClientPath.addSelectionListener(new SelectionAdapter()
-        {
-            public void widgetSelected(SelectionEvent e)
-            {
-                FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-                dialog.setFilterExtensions(new String[] { "*" });
-                if (wMClientPath.getText() != null)
-                {
-                    dialog.setFileName(wMClientPath.getText());
-                }
-                dialog.setFilterNames(ALL_FILETYPES);
-                if (dialog.open() != null)
-                {
-                	wMClientPath.setText(dialog.getFilterPath() + Const.FILE_SEPARATOR
-                                      + dialog.getFileName());
-                }
-            }
-        });
-			
 		wbLogFile.addSelectionListener(new SelectionAdapter()
         {
             public void widgetSelected(SelectionEvent e)
