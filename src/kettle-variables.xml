@@ -1,6 +1,12 @@
 <kettle-variables>
 
     <kettle-variable>
+    	<description>Do not show the developer version warning dialog at Spoon startup?</description>
+		<variable>KETTLE_HIDE_DEVELOPMENT_VERSION_WARNING</variable>
+		<default-value>N</default-value>
+	</kettle-variable>
+
+    <kettle-variable>
     	<description>System wide flag to allow lenient string to number conversion for backward compatibility. If this setting is set to "Y", an string starting with digits will be converted successfully into a number. (example: 192.168.1.1 will be converted into 192 or 192.168 or 192168 depending on the decimal and grouping symbol). The default (N) will be to throw an error if non-numeric symbols are found in the string.</description>
 		<variable>KETTLE_LENIENT_STRING_TO_NUMBER_CONVERSION</variable>
 		<default-value>N</default-value>

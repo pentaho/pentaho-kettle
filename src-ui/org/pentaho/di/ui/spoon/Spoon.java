@@ -85,8 +85,6 @@ import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.ShellAdapter;
-import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.events.TreeAdapter;
 import org.eclipse.swt.events.TreeEvent;
 import org.eclipse.swt.graphics.Color;
@@ -108,7 +106,6 @@ import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Sash;
 import org.eclipse.swt.widgets.Shell;
@@ -305,7 +302,6 @@ import org.pentaho.ui.xul.jface.tags.JfaceMenuitem;
 import org.pentaho.ui.xul.jface.tags.JfaceMenupopup;
 import org.pentaho.ui.xul.swt.SwtXulLoader;
 import org.pentaho.ui.xul.swt.tags.SwtDeck;
-import org.pentaho.ui.xul.swt.tags.SwtMenupopup;
 import org.pentaho.ui.xul.swt.tags.SwtToolbarbutton;
 import org.pentaho.vfs.ui.VfsFileChooserDialog;
 import org.pentaho.xul.swt.tab.TabItem;
@@ -7125,7 +7121,8 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
 
     //  If we are a MILESTONE or RELEASE_CANDIDATE    
-    if (Const.RELEASE.equals(Const.ReleaseType.MILESTONE)) { // || Const.RELEASE.equals(Const.ReleaseType.RELEASE_CANDIDATE)) {
+    if (!ValueMeta.convertStringToBoolean(System.getProperty("KETTLE_HIDE_DEVELOPMENT_VERSION_WARNING", "N")) && 
+    		Const.RELEASE.equals(Const.ReleaseType.MILESTONE)) {
 
       //  display the same warning message
       MessageBox dialog = new MessageBox(shell, SWT.ICON_WARNING);

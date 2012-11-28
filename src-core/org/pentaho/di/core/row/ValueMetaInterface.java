@@ -914,5 +914,15 @@ public interface ValueMetaInterface extends Cloneable
 	 * @return boolean
 	 */
 	public boolean requiresRealClone();
-	
+
+	/**
+	 * @return true if string to number conversion is occurring in a lenient fashion, parsing numbers successfully until a non-numeric character is found.
+	 */
+	public boolean isLenientStringToNumber();
+
+	/**
+	 * @param lenientStringToNumber Set to if string to number conversion is to occur in a lenient fashion, parsing numbers successfully until a non-numeric character is found.
+	 */
+	public void setLenientStringToNumber(boolean lenientStringToNumber);
+
 }

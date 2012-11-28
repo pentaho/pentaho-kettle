@@ -50,6 +50,8 @@ public class SelectMetadataChange implements Cloneable, XMLInterface{
 	private String conversionMask;
 	/** Treat the date format as lenient */
 	private boolean dateFormatLenient;
+	/** Treat string to number format as lenient */
+	private boolean lenientStringToNumber;
 	/** The decimal symbol for number conversions */
 	private String decimalSymbol; 
 	/** The grouping symbol for number conversions */
@@ -57,7 +59,8 @@ public class SelectMetadataChange implements Cloneable, XMLInterface{
 	/** The currency symbol for number conversions */
 	private String currencySymbol;
 	/** The encoding to use when decoding binary data to Strings */
-  private String encoding;
+	private String encoding;
+  
 
   private StepAttributesInterface attributesInterface;
 	
@@ -75,7 +78,7 @@ public class SelectMetadataChange implements Cloneable, XMLInterface{
 	public SelectMetadataChange(StepAttributesInterface attributesInterface, String name, String rename, int type, int length, int precision, int storageType,
       String conversionMask, String decimalSymbol, String groupingSymbol, String currencySymbol) {
 	  this(attributesInterface, name, rename, type, length, precision, storageType,
-      conversionMask, false, decimalSymbol, groupingSymbol, currencySymbol);
+      conversionMask, false, false, decimalSymbol, groupingSymbol, currencySymbol);
 	}
 
 	/**
@@ -87,12 +90,13 @@ public class SelectMetadataChange implements Cloneable, XMLInterface{
 	 * @param storageType
 	 * @param conversionMask
 	 * @param dateFormatLenient
+	 * @param lenientStringToNumber
 	 * @param decimalSymbol
 	 * @param groupingSymbol
 	 * @param currencySymbol
 	 */
 	public SelectMetadataChange(StepAttributesInterface attributesInterface, String name, String rename, int type, int length, int precision, int storageType,
-			String conversionMask, boolean dateFormatLenient, String decimalSymbol, String groupingSymbol, String currencySymbol) {
+			String conversionMask, boolean dateFormatLenient, boolean lenientStringToNumber, String decimalSymbol, String groupingSymbol, String currencySymbol) {
 	    this(attributesInterface);
 		this.name = name;
 		this.rename = rename;
@@ -102,6 +106,7 @@ public class SelectMetadataChange implements Cloneable, XMLInterface{
 		this.storageType = storageType;
 		this.conversionMask = conversionMask;
 		this.dateFormatLenient = dateFormatLenient;
+		this.lenientStringToNumber = lenientStringToNumber;
 		this.decimalSymbol = decimalSymbol;
 		this.groupingSymbol = groupingSymbol;
 		this.currencySymbol = currencySymbol;
@@ -117,6 +122,7 @@ public class SelectMetadataChange implements Cloneable, XMLInterface{
 		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_PRECISION"),       precision)); //$NON-NLS-1$ 
 		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_CONVERSION_MASK"), conversionMask)); //$NON-NLS-1$
 		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_DATE_FORMAT_LENIENT"),   Boolean.toString(dateFormatLenient))); //$NON-NLS-1$
+		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_LENIENT_STRING_TO_NUMBER"),   Boolean.toString(lenientStringToNumber))); //$NON-NLS-1$
 		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_ENCODING"),        encoding)); //$NON-NLS-1$
 		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_DECIMAL"),         decimalSymbol)); //$NON-NLS-1$
 		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_GROUPING"),        groupingSymbol)); //$NON-NLS-1$
@@ -135,6 +141,7 @@ public class SelectMetadataChange implements Cloneable, XMLInterface{
 		storageType    = ValueMeta.getStorageType( XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_STORAGE_TYPE")) ); //$NON-NLS-1$
 		conversionMask = XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_CONVERSION_MASK")); //$NON-NLS-1$
 		dateFormatLenient = Boolean.parseBoolean(XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_DATE_FORMAT_LENIENT"))); //$NON-NLS-1$
+		lenientStringToNumber = Boolean.parseBoolean(XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_LENIENT_STRING_TO_NUMBER"))); //$NON-NLS-1$
 		encoding       = XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_ENCODING")); //$NON-NLS-1$
 		decimalSymbol  = XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_DECIMAL")); //$NON-NLS-1$
 		groupingSymbol = XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_GROUPING")); //$NON-NLS-1$
@@ -308,16 +315,31 @@ public class SelectMetadataChange implements Cloneable, XMLInterface{
 	/**
 	 * @return the encoding to use when decoding binary data to strings
 	 */
-  public String getEncoding() {
-    return encoding;
-  }
-  
-  /**
-   * @param encoding the encoding to use when decoding binary data to strings
-   */
-  public void setEncoding(String encoding) {
-    this.encoding = encoding;
-  }
-	
+	public String getEncoding() {
+		return encoding;
+	}
+
+	/**
+	 * @param encoding
+	 *            the encoding to use when decoding binary data to strings
+	 */
+	public void setEncoding(String encoding) {
+		this.encoding = encoding;
+	}
+
+	/**
+	 * @return the lenientStringToNumber
+	 */
+	public boolean isLenientStringToNumber() {
+		return lenientStringToNumber;
+	}
+
+	/**
+	 * @param lenientStringToNumber
+	 *            the lenientStringToNumber to set
+	 */
+	public void setLenientStringToNumber(boolean lenientStringToNumber) {
+		this.lenientStringToNumber = lenientStringToNumber;
+	}
 	
 }

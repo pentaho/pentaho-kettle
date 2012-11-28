@@ -389,6 +389,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Storage.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO,   new String[] {BaseMessages.getString(PKG, "System.Combo.Yes"), BaseMessages.getString(PKG, "System.Combo.No"), } ), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Format"),        ColumnInfo.COLUMN_TYPE_FORMAT,   3), //$NON-NLS-1$
 			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.DateLenient"),   ColumnInfo.COLUMN_TYPE_CCOMBO,   new String[] {BaseMessages.getString(PKG, "System.Combo.Yes"), BaseMessages.getString(PKG, "System.Combo.No"), } ), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.LenientStringToNumber"),   ColumnInfo.COLUMN_TYPE_CCOMBO,   new String[] {BaseMessages.getString(PKG, "System.Combo.Yes"), BaseMessages.getString(PKG, "System.Combo.No"), } ), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Encoding"),      ColumnInfo.COLUMN_TYPE_CCOMBO,   getCharsets(), false), //$NON-NLS-1$
 			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Decimal"),       ColumnInfo.COLUMN_TYPE_TEXT,     false), //$NON-NLS-1$
 			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Grouping"),      ColumnInfo.COLUMN_TYPE_TEXT,     false), //$NON-NLS-1$
@@ -591,21 +592,23 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 				SelectMetadataChange change = input.getMeta()[i];
 				
 				TableItem item = wMeta.table.getItem(i);
-				item.setText( 1, Const.NVL(change.getName(), ""));
+				int index=1;
+				item.setText( index++, Const.NVL(change.getName(), ""));
 				if (change.getRename()!=null && !change.getRename().equals(change.getName()))
 				{
-					item.setText(2, change.getRename());
+					item.setText(index++, change.getRename());
 				}
-				item.setText( 3, ValueMeta.getTypeDesc( change.getType()) );
-				item.setText( 4, change.getLength()   <0?"":""+change.getLength()); //$NON-NLS-1$ //$NON-NLS-2$
-				item.setText( 5, change.getPrecision()<0?"":""+change.getPrecision()); //$NON-NLS-1$ //$NON-NLS-2$
-				item.setText( 6, change.getStorageType()==ValueMetaInterface.STORAGE_TYPE_NORMAL?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No")); //$NON-NLS-1$ //$NON-NLS-2$
-				item.setText( 7, Const.NVL(change.getConversionMask(), ""));
-				item.setText( 8, change.isDateFormatLenient()?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No")); //$NON-NLS-1$ //$NON-NLS-2$
-				item.setText( 9, Const.NVL(change.getEncoding(), ""));
-				item.setText( 10, Const.NVL(change.getDecimalSymbol(), ""));
-				item.setText( 11, Const.NVL(change.getGroupingSymbol(), ""));
-				item.setText( 12, Const.NVL(change.getCurrencySymbol(), ""));
+				item.setText( index++, ValueMeta.getTypeDesc( change.getType()) );
+				item.setText( index++, change.getLength()   <0?"":""+change.getLength()); //$NON-NLS-1$ //$NON-NLS-2$
+				item.setText( index++, change.getPrecision()<0?"":""+change.getPrecision()); //$NON-NLS-1$ //$NON-NLS-2$
+				item.setText( index++, change.getStorageType()==ValueMetaInterface.STORAGE_TYPE_NORMAL?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No")); //$NON-NLS-1$ //$NON-NLS-2$
+				item.setText( index++, Const.NVL(change.getConversionMask(), ""));
+				item.setText( index++, change.isDateFormatLenient()?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No")); //$NON-NLS-1$ //$NON-NLS-2$
+				item.setText( index++, change.isLenientStringToNumber()?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No")); //$NON-NLS-1$ //$NON-NLS-2$
+				item.setText( index++, Const.NVL(change.getEncoding(), ""));
+				item.setText( index++, Const.NVL(change.getDecimalSymbol(), ""));
+				item.setText( index++, Const.NVL(change.getGroupingSymbol(), ""));
+				item.setText( index++, Const.NVL(change.getCurrencySymbol(), ""));
 			}
 			wMeta.setRowNums();
 			wMeta.optWidth(true);
@@ -679,31 +682,33 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 			
 			TableItem item = wMeta.getNonEmpty(i);
 			
-			change.setName(item.getText(1));
-			change.setRename(item.getText(2));
+			int index=1;
+			change.setName(item.getText(index++));
+			change.setRename(item.getText(index++));
 			if (Const.isEmpty(change.getRename()))
 			{
 				change.setRename(change.getName());
 			}
-			change.setType(ValueMeta.getType(item.getText(3)) );
+			change.setType(ValueMeta.getType(item.getText(index++)) );
 			
-			change.setLength(Const.toInt(item.getText(4), -2));
-			change.setPrecision(Const.toInt(item.getText(5), -2));
+			change.setLength(Const.toInt(item.getText(index++), -2));
+			change.setPrecision(Const.toInt(item.getText(index++), -2));
 			
 			if (change.getLength()<-2) change.setLength(-2);
 			if (change.getPrecision()<-2) change.setPrecision(-2);
-			if (BaseMessages.getString(PKG, "System.Combo.Yes").equalsIgnoreCase(item.getText(6))) 
+			if (BaseMessages.getString(PKG, "System.Combo.Yes").equalsIgnoreCase(item.getText(index++))) 
 			{
 				change.setStorageType(ValueMetaInterface.STORAGE_TYPE_NORMAL);
 			}
 			
-			change.setConversionMask(item.getText(7));
+			change.setConversionMask(item.getText(index++));
 			// If DateFormatLenient is anything but Yes (including blank) then it is false
-			change.setDateFormatLenient(item.getText(8).equalsIgnoreCase(BaseMessages.getString(PKG, "System.Combo.Yes"))?true:false);
-			change.setEncoding(item.getText(9));
-			change.setDecimalSymbol(item.getText(10));
-			change.setGroupingSymbol(item.getText(11));
-			change.setCurrencySymbol(item.getText(12));
+			change.setDateFormatLenient(item.getText(index++).equalsIgnoreCase(BaseMessages.getString(PKG, "System.Combo.Yes"))?true:false);
+			change.setLenientStringToNumber(item.getText(index++).equalsIgnoreCase(BaseMessages.getString(PKG, "System.Combo.Yes"))?true:false);
+			change.setEncoding(item.getText(index++));
+			change.setDecimalSymbol(item.getText(index++));
+			change.setGroupingSymbol(item.getText(index++));
+			change.setCurrencySymbol(item.getText(index++));
 		}
 		dispose();
 	}
