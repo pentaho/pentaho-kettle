@@ -1241,7 +1241,7 @@ public class BaseStepDialog extends Dialog {
             html.append("Cases: <a href=\"").append(plugin.getCasesUrl()).append("\">").append("Click here to view related PDI cases").append("</a><br>");
           }
           if (!Const.isEmpty(plugin.getForumUrl())) {
-            html.append("Forum: <a href=\"").append(plugin.getCasesUrl()).append("\">").append("Click here to go to the forum").append("</a><br>");
+            html.append("Forum: <a href=\"").append(plugin.getForumUrl()).append("\">").append("Click here to go to the forum").append("</a><br>");
           }
           html.append("</BODY></HTML>");
           
