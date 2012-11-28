@@ -66,6 +66,7 @@ public class ValueMeta implements ValueMetaInterface
 	
 	public static final boolean EMPTY_STRING_AND_NULL_ARE_DIFFERENT = convertStringToBoolean( Const.NVL(System.getProperty(Const.KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL, "N"), "N") );
 	
+	
     private String   name;
     private int      length;
     private int      precision;
@@ -86,6 +87,7 @@ public class ValueMeta implements ValueMetaInterface
     private boolean  largeTextField;
     private Locale   dateFormatLocale;
     private boolean  dateFormatLenient;
+	private boolean lenientStringToNumber;
     
     private SimpleDateFormat dateFormat;
     private boolean dateFormatChanged;
@@ -162,6 +164,7 @@ public class ValueMeta implements ValueMetaInterface
         this.dateFormatLocale = Locale.getDefault();
         this.identicalFormat = true;
         this.bigNumberFormatting = true;
+        this.lenientStringToNumber = convertStringToBoolean( Const.NVL(System.getProperty(Const.KETTLE_LENIENT_STRING_TO_NUMBER_CONVERSION, "N"), "N") );
         
         determineSingleByteEncoding();
         setDefaultConversionMask();
@@ -703,10 +706,20 @@ public class ValueMeta implements ValueMetaInterface
 
         try
         {   
-            ParsePosition parsePosition = new ParsePosition(0);
-            Number number = getDecimalFormat(false).parse(string, parsePosition);
-            // System.out.println("String: "+string+",  number: "+number+", index: "+parsePosition.getIndex()+", errorIndex: "+parsePosition.getErrorIndex());
-            return new Double( number.doubleValue() );
+        	Number number;
+        	if (lenientStringToNumber) {
+        		number = getDecimalFormat(false).parse(string);
+        	} else {
+        		ParsePosition parsePosition = new ParsePosition(0);
+                number = getDecimalFormat(false).parse(string, parsePosition);
+                
+                if (parsePosition.getIndex()<string.length()) {
+                	throw new KettleValueException(toString()+" : couldn't convert String to number : non-numeric character found at position "+(parsePosition.getIndex()+1)+" for value ["+string+"]");
+                }
+                
+        	}
+        	
+        	return new Double( number.doubleValue() );
         }
         catch(Exception e)
         {
@@ -2442,7 +2455,10 @@ public class ValueMeta implements ValueMetaInterface
             
             // date format locale?
             writeString(outputStream, dateFormatLocale!=null ? dateFormatLocale.toString() : null);
-            
+
+            // string to number conversion lenient?
+            outputStream.writeBoolean(lenientStringToNumber);
+
         }
         catch(IOException e)
         {
@@ -2547,6 +2563,9 @@ public class ValueMeta implements ValueMetaInterface
             {
                 dateFormatLocale = EnvUtil.createLocale(strDateFormatLocale);
             }
+
+            // is string to number parsing lenient?
+            lenientStringToNumber = inputStream.readBoolean();
         }
         catch(EOFException e)
         {
@@ -2631,6 +2650,7 @@ public class ValueMeta implements ValueMetaInterface
         xml.append( XMLHandler.addTagValue("output_padding", outputPaddingEnabled) );
         xml.append( XMLHandler.addTagValue("date_format_lenient", dateFormatLenient) );
         xml.append( XMLHandler.addTagValue("date_format_locale", dateFormatLocale.toString()) );
+        xml.append( XMLHandler.addTagValue("lenient_string_to_number", lenientStringToNumber) );
         
     	xml.append(XMLHandler.closeTag(XML_META_TAG));
     	
@@ -2713,6 +2733,7 @@ public class ValueMeta implements ValueMetaInterface
         {
         	dateFormatLocale = EnvUtil.createLocale(dateFormatLocaleString);
         }
+        lenientStringToNumber = "Y".equalsIgnoreCase( XMLHandler.getTagValue(node, "lenient_string_to_number") );
 	}
 
     public String getDataXML(Object object) throws IOException
@@ -3750,5 +3771,19 @@ public class ValueMeta implements ValueMetaInterface
 	
 	public boolean requiresRealClone() {
 		return type==TYPE_BINARY || type==TYPE_SERIALIZABLE;
+	}
+
+	/**
+	 * @return the lenientStringToNumber
+	 */
+	public boolean isLenientStringToNumber() {
+		return lenientStringToNumber;
+	}
+
+	/**
+	 * @param lenientStringToNumber the lenientStringToNumber to set
+	 */
+	public void setLenientStringToNumber(boolean lenientStringToNumber) {
+		this.lenientStringToNumber = lenientStringToNumber;
 	}
 }

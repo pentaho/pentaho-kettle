@@ -628,6 +628,13 @@ public class Const
 	public static final String KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL = "KETTLE_EMPTY_STRING_DIFFERS_FROM_NULL";
 
 	/**
+	 * System wide flag to allow non-strict string to number conversion for backward compatibility.  
+	 * If this setting is set to "Y", an string starting with digits will be converted successfully into a number. (example: 192.168.1.1 will be converted into 192 or 192.168 depending on the decimal symbol).
+	 * The default (N) will be to throw an error if non-numeric symbols are found in the string.   
+	 */
+	public static final String KETTLE_LENIENT_STRING_TO_NUMBER_CONVERSION = "KETTLE_LENIENT_STRING_TO_NUMBER_CONVERSION";
+
+	/**
 	 * System wide flag to set the maximum number of log lines that are kept internally by Kettle.
 	 * Set to 0 to keep all rows (default)
 	 */
