@@ -83,6 +83,10 @@ public class MonetDBAgileMartDialog extends MonetDBBulkLoaderDialog implements S
 	private TextVar				wTable;
 	private FormData			fdlTable, fdbTable, fdTable;
 
+    private Label wlBufferSize;
+    private TextVar wBufferSize;
+    private FormData fdBufferSize,fdlBufferSize;
+
 	private MonetDBBulkLoaderMeta	input;
 	
     private static final String[] ALL_FILETYPES = new String[] {
@@ -199,7 +203,24 @@ public class MonetDBAgileMartDialog extends MonetDBBulkLoaderDialog implements S
 		fdTable.right = new FormAttachment(wbTable, -margin);
 		wTable.setLayoutData(fdTable);
 
-		// PsqlPath line...
+
+        // Buffer size file line
+        wlBufferSize = new Label(shell, SWT.RIGHT);
+        wlBufferSize.setText(BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.BufferSize.Label")); //$NON-NLS-1$
+        props.setLook(wlBufferSize);
+        fdlBufferSize = new FormData();
+        fdlBufferSize.left = new FormAttachment(0, 0);
+        fdlBufferSize.top = new FormAttachment(wbTable, margin);
+        fdlBufferSize.right = new FormAttachment(middle, -margin);
+        wlBufferSize.setLayoutData(fdlBufferSize);
+        wBufferSize = new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wBufferSize);
+        wBufferSize.addModifyListener(lsMod);
+        fdBufferSize = new FormData();
+        fdBufferSize.left = new FormAttachment(middle, 0);
+        fdBufferSize.top = new FormAttachment(wbTable, margin);
+        fdBufferSize.right = new FormAttachment(100, 0);
+        wBufferSize.setLayoutData(fdBufferSize);
 
 		// THE BUTTONS
 		wOK = new Button(shell, SWT.PUSH);
@@ -247,6 +268,7 @@ public class MonetDBAgileMartDialog extends MonetDBBulkLoaderDialog implements S
 		wStepname.addSelectionListener(lsDef);
         wSchema.addSelectionListener(lsDef);
         wTable.addSelectionListener(lsDef);
+        wBufferSize.addSelectionListener(lsDef);
 
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(new ShellAdapter()
@@ -298,6 +320,9 @@ public class MonetDBAgileMartDialog extends MonetDBBulkLoaderDialog implements S
 				wConnection.setText(transMeta.getDatabase(0).getName());
 			}
 		}*/
+
+        wBufferSize.setText("" + input.getBufferSize());   //$NON-NLS-1$
+
         if (input.getSchemaName() != null) wSchema.setText(input.getSchemaName());
 		if (input.getTableName() != null) wTable.setText(input.getTableName());
 		if (input.getDbConnectionName() != null) wConnection.setText(input.getDbConnectionName());
@@ -313,8 +338,7 @@ public class MonetDBAgileMartDialog extends MonetDBBulkLoaderDialog implements S
 	protected void getInfo(MonetDBBulkLoaderMeta inf)
 	{
 
-		inf.setBufferSize( DEFAULT_BUFFER_SIZE );
-
+        inf.setBufferSize( wBufferSize.getText() );
         inf.setSchemaName( wSchema.getText() );
 		inf.setTableName( wTable.getText() );
 		inf.setDbConnectionName(wConnection.getText());

@@ -472,7 +472,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 			data.monetNumberMeta.setStringEncoding(meta.getEncoding());
 
 			data.bufferSize = Const.toInt(environmentSubstitute(meta.getBufferSize()), 100000);
-			
+
 			// Allocate the buffer
 			// 
 			data.rowBuffer = new String[data.bufferSize]; //new byte[data.bufferSize][];
