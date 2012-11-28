@@ -597,6 +597,8 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 				if (change.getRename()!=null && !change.getRename().equals(change.getName()))
 				{
 					item.setText(index++, change.getRename());
+				} else {
+					index++;
 				}
 				item.setText( index++, ValueMeta.getTypeDesc( change.getType()) );
 				item.setText( index++, change.getLength()   <0?"":""+change.getLength()); //$NON-NLS-1$ //$NON-NLS-2$

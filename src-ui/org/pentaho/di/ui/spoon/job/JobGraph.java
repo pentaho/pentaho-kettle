@@ -108,11 +108,11 @@ import org.pentaho.di.core.logging.SimpleLoggingObject;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.job.Job;
+import org.pentaho.di.job.JobAdapter;
 import org.pentaho.di.job.JobEntryListener;
 import org.pentaho.di.job.JobEntryResult;
 import org.pentaho.di.job.JobExecutionConfiguration;
 import org.pentaho.di.job.JobHopMeta;
-import org.pentaho.di.job.JobAdapter;
 import org.pentaho.di.job.JobMeta;
 import org.pentaho.di.job.JobPainter;
 import org.pentaho.di.job.entries.job.JobEntryJob;
@@ -162,6 +162,7 @@ import org.pentaho.ui.xul.containers.XulMenupopup;
 import org.pentaho.ui.xul.containers.XulToolbar;
 import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.impl.XulEventHandler;
+import org.pentaho.ui.xul.jface.tags.JfaceMenupopup;
 import org.pentaho.ui.xul.swt.SwtXulLoader;
 import org.pentaho.ui.xul.swt.tags.SwtMenuitem;
 
@@ -1778,13 +1779,14 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
             child.setLabel(referencedObject);
             child.setDisabled(!enabledObjects[i]);
             launchMenu.addChild(child);
-            MenuItem swtItem = (MenuItem) child.getManagedObject();
-            final int index = i;
-            swtItem.addSelectionListener(new SelectionAdapter() {
-              public void widgetSelected(SelectionEvent event) {
-                loadReferencedObject(jobEntry, index);
-              }
-            });
+            
+            // MenuItem swtItem = child.getManagedObject();
+            // final int index = i;
+            // swtItem.addSelectionListener(new SelectionAdapter() {
+            //   public void widgetSelected(SelectionEvent event) {
+            //     loadReferencedObject(jobEntry, index);
+            //  }
+            // });
           }
         }
 
@@ -1896,7 +1898,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
               item.setDisabled(clipcontent == null);
             }
 
-            ConstUI.displayMenu((Menu)menu.getManagedObject(), canvas);
+            ConstUI.displayMenu(menu, canvas);
           }
         }
       }

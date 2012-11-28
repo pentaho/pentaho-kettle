@@ -300,6 +300,7 @@ public class SelectValues extends BaseStep implements StepInterface
 				}
 				
 				valueMeta.setDateFormatLenient(change.isDateFormatLenient());
+				valueMeta.setLenientStringToNumber(change.isLenientStringToNumber());
 				
 				if (!Const.isEmpty(change.getEncoding()))
 				{

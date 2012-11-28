@@ -2349,6 +2349,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
                 child.setLabel(referencedObject);
                 child.setDisabled(!enabledObjects[i]);
                 launchMenu.addChild(child);
+                /*
                 MenuItem swtItem = (MenuItem) child.getManagedObject();
                 final int index = i;
                 swtItem.addSelectionListener(new SelectionAdapter() {
@@ -2356,6 +2357,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
                     openMapping(stepMeta, index);
                   }
                 });
+                */
               }
             }
 
