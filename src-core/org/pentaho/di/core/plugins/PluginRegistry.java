@@ -108,8 +108,14 @@ public class PluginRegistry {
 	}
 	
   public synchronized void  removePlugin(Class<? extends PluginTypeInterface> pluginType, PluginInterface plugin){
-		List<PluginInterface> list = pluginMap.get(pluginType);
-    list.remove(plugin);
+	  List<PluginInterface> list = pluginMap.get(pluginType);
+	  list.remove(plugin);
+	  List<PluginTypeListener> listeners = this.getListenersForType(pluginType);
+      if (listeners != null) {
+        for (PluginTypeListener listener : listeners) {
+          listener.pluginRemoved(plugin);
+        }
+      }
   }
 
 	public synchronized void registerPlugin(Class<? extends PluginTypeInterface> pluginType, PluginInterface plugin) throws KettlePluginException {
@@ -177,6 +183,12 @@ public class PluginRegistry {
 				}				
 			}
 		}
+		List<PluginTypeListener> listeners = this.getListenersForType(pluginType);
+        if (listeners != null) {
+          for (PluginTypeListener listener : listeners) {
+            listener.pluginAdded(plugin);
+          }
+        }
 	}
 	
 	/**
@@ -852,7 +864,7 @@ public class PluginRegistry {
 
   }
 
-  public List<PluginTypeListener> getListenersForType(Class<? extends PluginTypeInterface> clazz){
+  protected List<PluginTypeListener> getListenersForType(Class<? extends PluginTypeInterface> clazz){
     return listeners.get(clazz);
   }
 }
