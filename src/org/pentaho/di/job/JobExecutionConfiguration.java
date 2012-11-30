@@ -401,8 +401,11 @@ public class JobExecutionConfiguration implements Cloneable
         {
             xml.append(XMLHandler.openTag("repository"));
             xml.append(XMLHandler.addTagValue("name", repository.getName()));
-            xml.append(XMLHandler.addTagValue("login", repository.getUserInfo().getLogin()));
-            xml.append(XMLHandler.addTagValue("password", Encr.encryptPassword(repository.getUserInfo().getPassword())));
+            // File base repositories doesn't have user info
+            if (repository.getUserInfo() != null){ 
+              xml.append(XMLHandler.addTagValue("login", repository.getUserInfo().getLogin()));
+              xml.append(XMLHandler.addTagValue("password", Encr.encryptPassword(repository.getUserInfo().getPassword())));
+            }
             xml.append(XMLHandler.closeTag("repository"));
         }
         
