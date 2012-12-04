@@ -88,7 +88,7 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
 
     public String getTruncateTableStatement(String tableName)
     {
-        return "DELETE FROM "+tableName;
+        return "DELETE FROM "+tableName.toUpperCase();
     }
     
 	/**
@@ -104,7 +104,7 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
 	 */
 	public String getAddColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
-		return "ALTER TABLE "+tablename+" ADD "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
+		return "ALTER TABLE "+tablename.toUpperCase()+" ADD "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
 	}
 
 	/**
@@ -119,7 +119,7 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
 	 */
 	public String getModifyColumnStatement(String tablename, ValueMetaInterface v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
-		return "ALTER TABLE "+tablename+" ALTER COLUMN "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
+		return "ALTER TABLE "+tablename.toUpperCase()+" ALTER COLUMN "+getFieldDefinition(v, tk, pk, use_autoinc, true, false);
 	}
 
 	public String getFieldDefinition(ValueMetaInterface v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
@@ -311,4 +311,26 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
           return "SELECT NEXT VALUE FOR "+sequenceName+" FROM INFORMATION_SCHEMA.SYSTEM_SEQUENCES WHERE SEQUENCE_NAME = '"+sequenceName.toUpperCase()+"'";
       }
 
+  	/**
+  	 * Get the schema-table combination to query the right table.
+  	 * Usually that is SCHEMA.TABLENAME, however there are exceptions to this rule...
+  	 * @param schema_name The schema name
+  	 * @param table_part The tablename
+  	 * @return the schema-table combination to query the right table.
+  	 */
+      @Override
+  	public String getSchemaTableCombination(String schema_name, String table_part)
+  	{
+    	  if( schema_name != null && !schema_name.equals("")) {
+    	  		return schema_name.toUpperCase()+"."+table_part.toUpperCase();
+    	  } else {
+    	  		return table_part.toUpperCase();
+    	  }
+  	}
+
+  	@Override
+	public String getSQLQueryFields(String tableName)
+	{
+	    return "SELECT * FROM "+tableName.toUpperCase();
+	}
 }
