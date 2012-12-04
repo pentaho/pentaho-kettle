@@ -35,7 +35,6 @@ import java.util.HashSet;
 import java.util.Vector;
 import java.util.jar.JarFile;
 
-import org.hibernate.util.ReflectHelper;
 import org.pentaho.di.i18n.BaseMessages;
 
 public class KettleURLClassLoader extends URLClassLoader
@@ -212,7 +211,17 @@ public class KettleURLClassLoader extends URLClassLoader
       HashMap fCache = null;
       
       try {
-        Class factory = getFieldObject(ReflectHelper.classForName("sun.net.www.protocol.jar.JarURLConnection"), "factory", null).getClass();
+        Class jarUrlConnClass = null;
+        try {
+          ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
+          jarUrlConnClass = contextClassLoader.loadClass("sun.net.www.protocol.jar.JarURLConnection");
+        } catch (Throwable skip) {
+          // skip
+        }
+        if (jarUrlConnClass == null) {
+          jarUrlConnClass = Class.forName("sun.net.www.protocol.jar.JarURLConnection");
+        }
+        Class factory = getFieldObject(jarUrlConnClass, "factory", null).getClass();
         try {
           fCache = (HashMap) getFieldObject(factory, "fileCache", null);
         } catch (Exception e) {
