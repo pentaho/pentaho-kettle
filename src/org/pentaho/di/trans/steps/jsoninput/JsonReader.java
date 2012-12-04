@@ -23,7 +23,6 @@
 package org.pentaho.di.trans.steps.jsoninput;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -36,6 +35,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONValue;
 import org.jsonpath.JsonJar;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 
 public class JsonReader {
@@ -104,10 +104,10 @@ public class JsonReader {
 		return (Invocable) getEngine();
 	}
 	public void readFile(String filename) throws KettleException {
-		FileReader fr=null;
+		InputStreamReader isr=null;
 		try {
-			fr = new FileReader(filename);
-			Object o = JSONValue.parse(fr);
+			isr = new InputStreamReader(KettleVFS.getInputStream(filename));
+			Object o = JSONValue.parse(isr);
 			if(o==null) {
 				throw new KettleException(BaseMessages.getString(PKG, "JsonReader.Error.ParsingFile", filename));
 			}
@@ -116,7 +116,7 @@ public class JsonReader {
 			throw new KettleException(e);
 		}finally {
 			try {
-				if(fr!=null) fr.close();
+				if(isr!=null) isr.close();
 			}catch(Exception e){}
 		}
 	}
