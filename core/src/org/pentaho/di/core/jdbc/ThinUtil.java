@@ -8,12 +8,12 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleSQLException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.pms.util.Const;
 
 public class ThinUtil {
   

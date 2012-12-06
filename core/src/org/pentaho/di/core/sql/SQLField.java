@@ -2,13 +2,13 @@ package org.pentaho.di.core.sql;
 
 import java.util.List;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleSQLException;
 import org.pentaho.di.core.jdbc.ThinUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
-import org.pentaho.pms.util.Const;
 
 public class SQLField {
   private String             tableAlias;
