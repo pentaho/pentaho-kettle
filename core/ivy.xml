@@ -6,7 +6,6 @@
   </publications>  
     
   <dependencies defaultconf="default->default">
-    <dependency org="xerces" name="xercesImpl" rev="2.9.1"/>
     
     <!--  external dependencies -->
     <dependency org="commons-beanutils"   name="commons-beanutils"   rev="1.8.0"            transitive="false"/>
