@@ -60,7 +60,7 @@
   		<for list="${plugin-ids}" param="plugin" trim="true">
 	  		<sequential>
 	  			<copy todir="${approot.stage.dir}/plugins">
-	  				<fileset dir="../src-plugins/@{plugin}/bin/stage" includes="**/*" />
+	  				<fileset dir="../plugins/@{plugin}/bin/stage" includes="**/*" />
 	  			</copy>
   			</sequential>
   		</for>	
