@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0">
+  <info organisation="pentaho" module="pentaho-kettle-assembly" revision="${project.revision}" />
+  <configurations>
+    <conf name="default" />
+    <conf name="test" visibility="private" />
+  </configurations>
+  <dependencies defaultconf="default->default">
+
+    <!-- Pentaho -->
+    <!--  TODO uncomment as these jars and transitives become available -->
+    <dependency org="pentaho-kettle" name="kettle-core" rev="${project.revision}" changing="true"/>
+    <!--
+    <dependency org="pentaho-kettle" name="kettle-db" rev="${project.revision}" changing="true"/>
+    <dependency org="pentaho-kettle" name="kettle-engine" rev="${project.revision}" changing="true"/>
+    <dependency org="pentaho-kettle" name="kettle-dbdialog" rev="${project.revision}" changing="true"/>
+    <dependency org="pentaho-kettle" name="kettle-ui-swt" rev="${project.revision}" changing="true"/>
+     -->
+     
+  </dependencies>
+
+</ivy-module>
