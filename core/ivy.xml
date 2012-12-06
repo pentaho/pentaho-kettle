@@ -7,5 +7,22 @@
     
   <dependencies defaultconf="default->default">
     <dependency org="xerces" name="xercesImpl" rev="2.9.1"/>
+    
+    <!--  external dependencies -->
+    <dependency org="commons-beanutils"   name="commons-beanutils"   rev="1.8.0"            transitive="false"/>
+    <dependency org="commons-codec"       name="commons-codec"       rev="1.4"              transitive="false"/>
+    <dependency org="commons-collections" name="commons-collections" rev="3.2"              transitive="false"/>
+    <dependency org="commons-logging"     name="commons-logging"     rev="1.1"              transitive="false"/>
+    <dependency org="commons-lang"        name="commons-lang"        rev="2.6"              transitive="false"/>
+    <dependency org="commons-httpclient"  name="commons-httpclient"  rev="3.1"              transitive="false"/>
+    <dependency org="commons-vfs"         name="commons-vfs"         rev="20091118-pentaho" transitive="false"/>
+    <dependency org="dom4j"               name="dom4j"               rev="1.6.1"            transitive="false"/>
+    <dependency org="org.mortbay.jetty"   name="jetty"               rev="6.1.21"           transitive="false"/>
+    <dependency org="jug-lgpl"            name="jug-lgpl"            rev="2.0.0"            transitive="false"/>
+    <dependency org="com.jcraft"          name="jsch"                rev="0.1.46"           transitive="false"/>
+    <dependency org="log4j"               name="log4j"               rev="1.2.16"           transitive="false"/>
+    <dependency org="ognl"                name="ognl"                rev="2.6.9"            transitive="false"/>
+    <dependency org="net.sf.scannotation" name="scannotation"        rev="1.0.2"            transitive="false"/>
+    <dependency org="secondstring"        name="secondstring"        rev="20060615"         transitive="false"/>           
   </dependencies>
 </ivy-module>
