@@ -34,7 +34,6 @@
 	  	<mkdir dir="${macdistrib}"/>
 		<mkdir dir="${docs}"/>
 		<mkdir dir="${api}"/>
-		<mkdir dir="${webstart}"/>
 		<mkdir dir="${junit}"/>
 	  	<mkdir dir="${pdice.package.basedir}"/>
 	  	
@@ -92,8 +91,8 @@
 			<arg value="-make"/>
 			<arg value="-verbose"/>
 			<arg value="-o"/>
-			<arg path="src/org/pentaho/di/trans/steps/edi2xml/grammar"/>
-			<arg path="src/org/pentaho/di/trans/steps/edi2xml/grammar/FastSimpleGenericEdifactDirectXML.g"/>
+			<arg path="${src}/org/pentaho/di/trans/steps/edi2xml/grammar"/>
+			<arg path="${src}/org/pentaho/di/trans/steps/edi2xml/grammar/FastSimpleGenericEdifactDirectXML.g"/>
 		</java>
 	  </target>
 	
@@ -219,10 +218,7 @@
 	    <copy todir="${classes-ui}">
 	    	<fileset dir="${src-ui}" includes="**/*.png **/*.xml **/*.xul **/*txt **/*properties"/>
 	  	    </copy>
-        <!-- embedd the UI definition files in the jar so that webstart will work -->
-	    <copy todir="${classes-ui}/ui">
-	    	<fileset dir="${ui}" includes="**/*.png **/*.xml **/*.xul **/*.properties"/>
-	  	    </copy>
+        
 	  </target>
 	  
 		<!--
@@ -540,64 +536,11 @@
 	  	<jar jarfile="${dist.dir}/${impl.productID}-src-${version}-r${revision}.zip" 
 	  		 basedir="."
 	    	 includes="**/*"
-	  	     excludes="*.zip ${classes}/**/* ${distrib}/**/* homepage/**/* Licenses/**/* ${lib}/**/* ${webstart}/**/* docs/api/** docs/api-core/**"
+	  	     excludes="*.zip ${classes}/**/* ${distrib}/**/* homepage/**/* Licenses/**/* ${lib}/**/* docs/api/** docs/api-core/**"
 	  		/>
 	  </target>
 
-	<!--
-	       ==========================
-	            Webstart part...
-	       ==========================
-	  -->
-
 	
-	<target name="copy2webstart" depends="init, kettle, kettle-ui" description="Copy resources to webstart">
-    	<echo>Copying resources to webstart...</echo>
-
-		<copy todir="${webstart}/libext">
-			<fileset dir="${libext}" includes="**/*.jar" excludes="mail.jar web/activation.jar"/>
-			</copy>
-
-		<copy todir="${webstart}/libswt">
-			<fileset dir="${libswt}" includes="**/*.jar" excludes="commands.jar common.jar jface.jar runtime.jar"/>
-		</copy>
-
-		<copy todir="${webstart}/">
-			<fileset dir="${bin}" includes="**/*"/>
-		</copy>
-
-		<copy todir="${webstart}/lib">
-			<fileset dir="${lib}" includes="**/*.jar"/>
-		</copy>
-
-		<copy todir="${webstart}">
-			<fileset dir="${src}/org/pentaho/di/images/" includes="kettle_logo.png"/>
-		</copy>
-
-		<jar destfile="${webstart}/libswt/win32/libs.jar">
-			<fileset dir="${libswt}/win32" includes="**/*.dll"/>
-			<fileset dir="${libswt}/win32" includes="**/*.manifest"/>
-		</jar>
-			
-		<jar destfile="${webstart}/libswt/linux/libs.jar">
-			<fileset dir="${libswt}/linux" includes="**/*.so"/>
-		</jar>
-
-		<jar destfile="${webstart}/libswt/solaris/libs.jar">
-			<fileset dir="${libswt}/solaris" includes="**/*.so"/>
-		</jar>
-
-		<jar destfile="${webstart}/libswt/aix/libs.jar">
-			<fileset dir="${libswt}/aix" includes="**/*.a"/>
-		</jar>
-
-		<jar destfile="${webstart}/libswt/osx/libs.jar">
-			<fileset dir="${libswt}/osx" includes="**/*.jnilib"/>
-			<fileset dir="${libswt}/osx" includes="**/java_swt"/>
-		</jar>
-		
-	</target>
-
 	<!---
 	
 	   src 
@@ -623,61 +566,7 @@
 		  	     excludes="**/Thumbs.db **/.svn"
 		  		/>
 	</target>
-	
-	
-	<target name="keystore" depends="copy2webstart" description="Create the keystore...">
-    	<echo>Create the keystore...</echo>
-
-		<exec executable="keytool">
-			<arg line="-genkey -keyalg RSA -alias kettle -keystore &quot;${keystore}&quot; -storepass &quot;${keystorePassword}&quot; -keypass &quot;${keystorePassword}&quot; -dname &quot;CN=Matt Casters, OU=Pentaho Corporation, O=Pentaho Data Integration, L=Orlando, S=FL, C=US&quot;"/>
-		</exec>
-	</target>
-	
-    <target name="sign-jars" depends="keystore" description="Sign all used jars">
-    	<echo>Signing JARS...</echo>
-    	
-    	<signjar keystore="${keystore}" alias="kettle" storepass="${keystorePassword}">
-    		<fileset dir="${webstart}" includes="**/*.jar"/>
-	    </signjar>
-    	<!-- for jars that are already signed by other parties, copy the originals back over -->
-
-    	<echo>Copying third-party signed jars</echo>
-    	
-		<copy todir="${webstart}/libext">
-			<fileset dir="${libext}" includes="mail.jar web/activation.jar"/>
-			</copy>
-
-		<copy todir="${webstart}/libswt">
-			<fileset dir="${libswt}" includes="commands.jar common.jar jface.jar runtime.jar"/>
-		</copy>
-    	
-    </target> 
-
-    <target name="webstart" depends="sign-jars" description="Package WAR">
-    	<echo>Create the webstart WAR file...</echo>
-
-        <war destfile="${webstart}/${impl.productID}-${version}.war" webxml="${web}/web.xml" compress="true">
-            
-        	<fileset dir="${web}">
-		      <include name="**/*.html"/>
-		      <include name="**/*.jnlp"/>
-		      <exclude name="**/*.xml"/>
-	    	</fileset>
-
-            <fileset dir="${webstart}">
-			  <include name="**/*.jar"/>
-    		  <include name="**/*.properties"/>
-			  <include name="**/repositories.xml"/>
-              <include name="**/*.xul"/>
-              <include name="images/*"/>
-  			  <include name="kettle_logo.png"/>
-              <exclude name="${keystore}"/>
-              <exclude name="kettle.war"/>
-	    	</fileset>
-        	
-        </war>
-	</target>
-	
+		
 	<target name="junit-report" depends="tests-all" description="Create an HTML report of ALL unit tests">
 		<junitreport todir="${junit}">
 		  <fileset dir="${junit}">
@@ -934,7 +823,6 @@
 	    <delete dir="${junit}"/>
 	    <delete dir="${distrib}"/>
 	  	<delete dir="${api}"/>
-	  	<delete dir="${webstart}"/>
 	  	<delete dir="libvars"/>
 	  	<delete dir="test/derbyOld"/>
 	  	<delete dir="test/derbyNew"/>
