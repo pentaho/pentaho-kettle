@@ -133,7 +133,7 @@ public class VectorWiseDatabaseMeta extends IngresDatabaseMeta implements Databa
                     }
                     else
                     {
-                        if (length>4)
+                        if (length == -1 || length>4) // If the length is undefined or greater than 4, use a standard INTEGER
                         {
                             retval+="INTEGER";
                         }
