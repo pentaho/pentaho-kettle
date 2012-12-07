@@ -1,4 +1,4 @@
-<project name="Kettle Engine" default="default" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
+<project name="Kettle DB" default="default" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
 
 	  <description>
 	      Kettle Engine build file
@@ -16,32 +16,7 @@
 		<property file="override.properties"/>
         <!-- set global properties for this build -->
 		<property file="build.properties"/>
-	  		
-	  <!--
-	       ==========================
-	             Kettle library
-	       ==========================
-	  -->
-			
-	  <target name="kettle" depends="resolve, compile" description="generate the kettle library kettle-engine.jar">
-	  	<echo>Generating the Kettle library kettle-engine.jar ...</echo>
-	  	<jar jarfile="${dist}/kettle-engine.jar" 
-	    	 basedir="${classes}" 
-	    	 includes="**/* ${version.file.path}"
-	  	     excludes="**/Thumbs.db **/*.jar **/derbyOld/* **/derbyNew/* org/pentaho/di/run/**/*.ktr org/pentaho/di/run/**/*.txt org/pentaho/di/run/**/*.xls org/pentaho/di/run/**/*.swp org/pentaho/di/ui/**/*"
-	  		>
-            <manifest>
-                <attribute name="Implementation-Title" value="${impl.title.engine}" />
-                <attribute name="Implementation-Version" value="${impl.version}" />
-                <attribute name="Specification-Version" value="${revision}" />
-                <attribute name="Implementation-Vendor" value="${impl.vendor}" />
-				<attribute name="Implementation-ProductID" value="${impl.productID}" />
-                <attribute name="Compile-Timestamp" value="${compile.timestamp}" />
-                <attribute name="Compile-User" value="${user.name}" />
-            </manifest>
-        </jar>
-	  </target>	
-		
+	  				
 	  <!--=======================================================================
 	      install-antcontrib (borrowed from subfloor.xml)
 	      
@@ -101,6 +76,6 @@
 	    </copy>
 	  </target>
 	
-	<target name="default" depends="kettle"/> 
+	<!-- target name="default" depends="db"/ --> 
 			  		
 </project>

@@ -100,10 +100,6 @@
     <dependency org="org.mortbay.jetty" name="jetty-plus" rev="6.1.21" />
     <dependency org="org.mortbay.jetty" name="jetty-util" rev="6.1.21" />
     <dependency org="javax.xml" name="jaxrpc-api" rev="1.1" />
-    
-    <!--   need SassyReader 
-      need mortbay  
-      need olap4j-1.0.1.539.jar 
-  -->
+    <dependency org="junit" name="junit" rev="4.4" conf="test->default" />
     </dependencies>
   </ivy-module>

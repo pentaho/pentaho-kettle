@@ -10,9 +10,7 @@
 	<classpathentry kind="src" path="plugins/kettle-openerp-plugin/src"/>
 	<classpathentry kind="src" path="plugins/star-modeler/src"/>
 	<classpathentry kind="src" path="engine/src"/>
-	<classpathentry kind="src" path="src-ui"/>
 	<classpathentry kind="src" path="test"/>
-	<classpathentry kind="src" path="src-db"/>
 	<classpathentry kind="src" path="src-dbdialog"/>
 	<classpathentry kind="src" path="src-jdbc"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
