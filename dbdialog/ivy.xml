@@ -14,7 +14,19 @@
     <artifact name="${ivy.artifact.id}" m:classifier="sources" type="source" ext="jar" conf="source"/>
   </publications>  
   
-  <dependencies defaultconf="default-ext->default">  
+  <dependencies defaultconf="default-ext->default">
+  
+    <dependency org="pentaho-kettle" name="kettle-core"     rev="${dependency.kettle.revision}" changing="true"/>  
+    <dependency org="pentaho-kettle" name="kettle-db"     rev="${dependency.kettle.revision}" changing="true"/>  
+  
+    <dependency org="pentaho"             name="pentaho-xul-core"    rev="${dependency.pentaho-xul.revision}" changing="true">
+      <artifact name="pentaho-xul-core"/>
+      <artifact name="pentaho-xul-core" type="source" ext="jar" m:classifier="sources"/>
+    </dependency>
+    <dependency org="pentaho" name="pentaho-xul-swt" rev="${dependency.pentaho-xul.revision}" conf="default->default"
+                changing="true" transitive="false"/>
+  
+  <!--   
     <dependency org="pentaho-kettle" name="kettle-core" rev="${dependency.kettle.revision}" changing="true"/>   
     <dependency org="commons-logging" name="commons-logging" rev="1.1" transitive="false" />
     <dependency org="commons-vfs" name="commons-vfs" rev="20091118-pentaho" transitive="false" />
@@ -22,5 +34,7 @@
     <dependency org="commons-lang" name="commons-lang" rev="2.2" />
     <dependency org="commons-pool" name="commons-pool" rev="1.5.7" transitive="false" />
     <dependency org="junit" name="junit" rev="4.4" conf="test->default" />
+   -->  
+  
   </dependencies>
 </ivy-module>

@@ -1,4 +1,4 @@
-<project name="Kettle DB" default="default" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
+<project name="Kettle DB Dialog" default="default" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
 
 	  <description>
 	      Kettle Engine build file
@@ -74,8 +74,5 @@
 	        <include name="**/*.jar" />
 	      </fileset>
 	    </copy>
-	  </target>
-	
-	<!-- target name="default" depends="db"/ --> 
-			  		
+	  </target>			  		
 </project>
