@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="core/src"/>
+	<classpathentry kind="src" path="db/src"/>
+	<classpathentry kind="src" path="ui/src"/>
 	<classpathentry kind="src" path="plugins/market/src"/>
 	<classpathentry kind="src" path="plugins/kettle-palo-plugin/src"/>
 	<classpathentry kind="src" path="plugins/kettle-hl7-plugin/src"/>

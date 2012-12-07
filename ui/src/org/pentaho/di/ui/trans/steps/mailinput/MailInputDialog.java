@@ -28,7 +28,6 @@ import java.util.Calendar;
 
 import javax.mail.Folder;
 
-import org.drools.util.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
@@ -1882,7 +1881,7 @@ public class MailInputDialog extends BaseStepDialog implements StepDialogInterfa
 		}
 
 		private Integer getInteger(String toParse){
-			if(StringUtils.isEmpty(toParse)) return null;
+			if(Const.isEmpty(toParse)) return null;
 			
 			try{
 				return new Integer(toParse);
