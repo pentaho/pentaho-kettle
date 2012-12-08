@@ -13,6 +13,7 @@
     
     <!--  external dependencies -->
     <dependency org="org.antlr"           name="antlr"               rev="3.4-complete"     transitive="false"/>
+    <dependency org="org.apache.axis"     name="axis"                rev="1.4"              transitive="false"/>            
     <dependency org="commons-beanutils"   name="commons-beanutils"   rev="1.8.0"            transitive="false"/>
     <dependency org="commons-codec"       name="commons-codec"       rev="1.4"              transitive="false"/>
     <dependency org="commons-collections" name="commons-collections" rev="3.2"              transitive="false"/>
@@ -27,6 +28,7 @@
     <dependency org="com.google.gdata"    name="gdata-analytics"     rev="2.3.0"            transitive="false"/>
     <dependency org="com.google.gdata"    name="gdata-core"          rev="1.41.4"           transitive="false"/>
     <dependency org="infobright"          name="infobright-core"     rev="3.4"              transitive="false"/>
+    <dependency org="org.ini4j"           name="ini4j"               rev="0.5.1"            transitive="false"/>            
     <dependency org="org.mortbay.jetty"   name="jetty"               rev="6.1.21"           transitive="false"/>
     <dependency org="jug-lgpl"            name="jug-lgpl"            rev="2.0.0"            transitive="false"/>
     <dependency org="com.jcraft"          name="jsch"                rev="0.1.46"           transitive="false"/>
@@ -45,12 +47,15 @@
                 changing="true" transitive="false"/>
     <dependency org="pentaho-reporting-engine" name="pentaho-reporting-engine-classic-core" 
                 rev="${dependency.pentaho-reporting-core.revision}" transitive="false"/>
+    <dependency org="pentaho"             name="salesforce-partner"  rev="24.0"             transitive="false"/>
     <dependency org="org.apache.poi"      name="poi"                 rev="3.8"              transitive="false"/>
     <dependency org="rhino"               name="js"                  rev="1.7R3"            transitive="false"/>            
     <dependency org="net.sf.scannotation" name="scannotation"        rev="1.0.2"            transitive="false"/>
     <dependency org="secondstring"        name="secondstring"        rev="20060615"         transitive="false"/>
     <dependency org="org.snmp4j"          name="snmp4j"              rev="1.9.3d"           transitive="false"/>
     <dependency org="trilead-ssh2"        name="trilead-ssh2"        rev="build213"         transitive="false"/>
+    <dependency org="wsdl4j"              name="wsdl4j"              rev="1.6.2"            transitive="false"/>
+            
     
     <!-- SWT it required to compile any version of any architecture will work -->
     <dependency org="org.eclipse.swt"     name="swt-linux-x86_64"    rev="3.6"              transitive="false" />
