@@ -25,12 +25,12 @@ package org.pentaho.di.trans.steps.fieldsplitter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.trans.step.StepInjectionMetaEntry;
 import org.pentaho.di.trans.step.StepMetaInjectionInterface;
-import org.pentaho.pms.util.Const;
 
 /**
  * This takes care of the external metadata injection into the FieldSplitterMeta class
