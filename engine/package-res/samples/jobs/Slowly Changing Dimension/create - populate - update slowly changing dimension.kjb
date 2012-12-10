@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<job>
+  <name>create  populate  update slowly changing dimension</name>
+    <description/>
+    <extended_description/>
+    <job_version/>
+  <directory>&#47;</directory>
+  <created_user>-</created_user>
+  <created_date>2007&#47;04&#47;11 15:14:53.203</created_date>
+  <modified_user>-</modified_user>
+  <modified_date>2007&#47;04&#47;11 15:14:53.203</modified_date>
+  <connection>
+    <name>H2 test</name>
+    <server/>
+    <type>H2</type>
+    <access>Native</access>
+    <database>test</database>
+    <port>-1</port>
+    <username/>
+    <password>Encrypted </password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>MAXIMUM_POOL_SIZE</code><attribute>10</attribute></attribute>
+      <attribute><code>STREAM_RESULTS</code><attribute>Y</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
+  <logconnection/>
+  <logtable/>
+   <use_batchid>Y</use_batchid>
+   <pass_batchid>N</pass_batchid>
+   <use_logfield>Y</use_logfield>
+   <shared_objects_file/>
+  <entries>
+    <entry>
+      <name>Start</name>
+      <description/>
+      <type>SPECIAL</type>
+      <start>Y</start>
+      <dummy>N</dummy>
+      <repeat>N</repeat>
+      <schedulerType>0</schedulerType>
+      <interval>60</interval>
+      <hour>12</hour>
+      <minutes>0</minutes>
+      <weekDay>1</weekDay>
+      <DayOfMonth>1</DayOfMonth>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>94</xloc>
+      <yloc>138</yloc>
+      </entry>
+    <entry>
+      <name>Populate</name>
+      <description/>
+      <type>TRANS</type>
+      <filename>${Internal.Job.Filename.Directory}&#47;DimensionLookup - update dimension table.ktr</filename>
+      <transname/>
+      <directory>&#47;</directory>
+      <arg_from_previous>N</arg_from_previous>
+      <exec_per_row>N</exec_per_row>
+      <clear_rows>Y</clear_rows>
+      <clear_files>Y</clear_files>
+      <set_logfile>N</set_logfile>
+      <logfile/>
+      <logext/>
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <loglevel>Error</loglevel>
+      <cluster>N</cluster>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>514</xloc>
+      <yloc>138</yloc>
+      </entry>
+    <entry>
+      <name>Create table</name>
+      <description/>
+      <type>SQL</type>
+      <sql>CREATE TABLE D_CUSTOMER
+(
+  customer_tk IDENTITY
+, version INTEGER
+, date_from TIMESTAMP
+, date_to TIMESTAMP
+, id INTEGER
+, Name VARCHAR(50)
+, Firstname VARCHAR(50)
+)
+;
+CREATE INDEX idx_D_CUSTOMER_lookup
+ ON D_CUSTOMER
+( 
+  id
+)
+;
+CREATE INDEX idx_D_CUSTOMER_tk
+ ON D_CUSTOMER
+( 
+  customer_tk
+)
+;
+</sql>
+      <useVariableSubstitution>F</useVariableSubstitution>
+      <connection>H2 test</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>374</xloc>
+      <yloc>51</yloc>
+      </entry>
+    <entry>
+      <name>Table exists 1</name>
+      <description/>
+      <type>TABLE_EXISTS</type>
+      <tablename>D_CUSTOMER</tablename>
+      <connection>H2 test</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>234</xloc>
+      <yloc>138</yloc>
+      </entry>
+    <entry>
+      <name>Update</name>
+      <description/>
+      <type>TRANS</type>
+      <filename>${Internal.Job.Filename.Directory}&#47;DimensionLookup - update dimension table 2.ktr</filename>
+      <transname/>
+      <directory>&#47;</directory>
+      <arg_from_previous>N</arg_from_previous>
+      <exec_per_row>N</exec_per_row>
+      <clear_rows>Y</clear_rows>
+      <clear_files>Y</clear_files>
+      <set_logfile>N</set_logfile>
+      <logfile/>
+      <logext/>
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <loglevel>Error</loglevel>
+      <cluster>N</cluster>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>654</xloc>
+      <yloc>138</yloc>
+      </entry>
+    <entry>
+      <name>Truncate table</name>
+      <description/>
+      <type>SQL</type>
+      <sql>TRUNCATE TABLE D_CUSTOMER
+;
+
+</sql>
+      <useVariableSubstitution>F</useVariableSubstitution>
+      <connection>H2 test</connection>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>374</xloc>
+      <yloc>223</yloc>
+      </entry>
+  </entries>
+  <hops>
+    <hop>
+      <from>Create table</from>
+      <to>Populate</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>Start</from>
+      <to>Table exists 1</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
+    </hop>
+    <hop>
+      <from>Table exists 1</from>
+      <to>Create table</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>N</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>Populate</from>
+      <to>Update</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>Table exists 1</from>
+      <to>Truncate table</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>Truncate table</from>
+      <to>Populate</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+  </hops>
+  <notepads>
+  </notepads>
+</job>
