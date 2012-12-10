@@ -133,7 +133,7 @@
 	<classpathentry exported="true" kind="lib" path="libext/reporting/bsf-2.4.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/bsh-1.3.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/cglib-nodep-2.1_3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/reporting/ehcache-core-2.0.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libext/reporting/ehcache-core-2.5.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/groovy-all-1.8.0.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/hibernate-3.2.6.ga.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/reporting/itext-2.1.7.jar"/>
