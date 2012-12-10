@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="core/src"/>
+	<classpathentry kind="src" path="dbdialog/src"/>
 	<classpathentry kind="src" path="db/src"/>
 	<classpathentry kind="src" path="ui/src"/>
 	<classpathentry kind="src" path="plugins/market/src"/>
@@ -13,7 +14,6 @@
 	<classpathentry kind="src" path="plugins/star-modeler/src"/>
 	<classpathentry kind="src" path="engine/src"/>
 	<classpathentry kind="src" path="test"/>
-	<classpathentry kind="src" path="src-dbdialog"/>
 	<classpathentry kind="src" path="src-jdbc"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="lib" path="libext/js.jar"/>
