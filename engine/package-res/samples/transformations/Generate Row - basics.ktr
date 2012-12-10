@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name/>
+    <directory>/</directory>
+    <log>
+      <read/>
+      <write/>
+      <input/>
+      <output/>
+      <update/>
+      <connection/>
+      <table/>
+      <use_batchid>Y</use_batchid>
+      <use_logfield>N</use_logfield>
+      </log>
+    <maxdate>
+      <connection/>
+      <table/>
+      <field/>
+      <offset>0.0</offset>
+      <maxdiff>0.0</maxdiff>
+      </maxdate>
+    <size_rowset>1000</size_rowset>
+    <sleep_time_empty>1</sleep_time_empty>
+    <sleep_time_full>1</sleep_time_full>
+    <dependencies>
+      </dependencies>
+    </info>
+  <notepads>
+    <notepad>
+      <note>Generate 10 rows with some constant fields
+of various field types.</note>
+      <xloc>41</xloc>
+      <yloc>90</yloc>
+      <width>220</width>
+      <heigth>36</heigth>
+      </notepad>
+    <notepad>
+      <note>To see the result, do a preview on this Dummy step
+... or add an output step.</note>
+      <xloc>328</xloc>
+      <yloc>91</yloc>
+      <width>257</width>
+      <heigth>36</heigth>
+      </notepad>
+    <notepad>
+      <note>For international usage a &apos;.&apos; is used in the Decimal-column.</note>
+      <xloc>29</xloc>
+      <yloc>242</yloc>
+      <width>287</width>
+      <heigth>23</heigth>
+      </notepad>
+    <notepad>
+      <note>Revision notes:
+2006-08-07 Jens Bleuel: created</note>
+      <xloc>13</xloc>
+      <yloc>566</yloc>
+      <width>166</width>
+      <heigth>36</heigth>
+      </notepad>
+    </notepads>
+  <order>
+  <hop> <from>Generate Rows</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  </order>
+
+  <step>
+    <name>Dummy (do nothing)</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>451</xloc>
+      <yloc>160</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Generate Rows</name>
+    <type>RowGenerator</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <fields>
+      <field>
+        <name>FieldAsNumber</name>
+        <type>Number</type>
+        <format/>
+        <currency/>
+        <decimal>.</decimal>
+        <group/>
+        <nullif>1.2345</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>
+      <field>
+        <name>FieldAsString</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>Test</nullif>
+        <length>20</length>
+        <precision>-1</precision>
+        </field>
+      <field>
+        <name>FieldAsDate</name>
+        <type>Date</type>
+        <format>yyyy-MM-dd</format>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>2006-07-27</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>
+      <field>
+        <name>FieldAsBoolean</name>
+        <type>Boolean</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>True</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>
+      <field>
+        <name>FieldAsInteger</name>
+        <type>Integer</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>12345</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>
+      <field>
+        <name>FieldAsBigNumber</name>
+        <type>BigNumber</type>
+        <format/>
+        <currency/>
+        <decimal>.</decimal>
+        <group/>
+        <nullif>1.2345</nullif>
+        <length>10</length>
+        <precision>5</precision>
+        </field>
+      </fields>
+    <limit>10</limit>
+    <GUI>
+      <xloc>127</xloc>
+      <yloc>160</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+</transformation>

@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name/>
+    <directory>/</directory>
+    <log>
+      <read/>
+      <write/>
+      <input/>
+      <output/>
+      <update/>
+      <connection/>
+      <table/>
+      <use_batchid>Y</use_batchid>
+      <use_logfield>N</use_logfield>
+      </log>
+    <maxdate>
+      <connection/>
+      <table/>
+      <field/>
+      <offset>0.0</offset>
+      <maxdiff>0.0</maxdiff>
+      </maxdate>
+    <size_rowset>1000</size_rowset>
+    <sleep_time_empty>1</sleep_time_empty>
+    <sleep_time_full>1</sleep_time_full>
+    <dependencies>
+      </dependencies>
+  <modified_user>-</modified_user>
+  <modified_date>2006/10/19 09:42:16.843</modified_date>
+    </info>
+  <notepads>
+    </notepads>
+  <connection>
+    <name>H2</name>
+    <server>localhost</server>
+    <type>H2</type>
+    <access>Native</access>
+    <database>test</database>
+    <port/>
+    <username>SA</username>
+    <password>Encrypted </password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
+      <attribute><code>MAXIMUM_POOL_SIZE</code><attribute>10</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
+  <order>
+  <hop> <from>Deleted?</from><to>Changed?</to><enabled>Y</enabled> </hop>  <hop> <from>Changed?</from><to>Sink</to><enabled>Y</enabled> </hop>  <hop> <from>Deleted?</from><to>Delete row</to><enabled>Y</enabled> </hop>  <hop> <from>Get rows from result</from><to>New?</to><enabled>Y</enabled> </hop>  <hop> <from>New?</from><to>Deleted?</to><enabled>Y</enabled> </hop>  <hop> <from>Changed?</from><to>Update row</to><enabled>Y</enabled> </hop>  <hop> <from>New?</from><to>remove flag</to><enabled>Y</enabled> </hop>  <hop> <from>remove flag</from><to>temp.txt</to><enabled>Y</enabled> </hop>  <hop> <from>temp.txt</from><to>Insert row</to><enabled>Y</enabled> </hop>  </order>
+
+  <step>
+    <name>Changed?</name>
+    <type>FilterRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+<send_true_to>Update row</send_true_to>
+<send_false_to>Sink</send_false_to>
+    <compare>
+<condition>
+ <negated>N</negated>
+ <leftvalue>flag</leftvalue>
+ <function>=</function>
+ <rightvalue/>
+<value>   <name>constant</name><type>String</type><text>C</text><length>-1</length><precision>-1</precision><isnull>N</isnull>  </value> </condition>
+    </compare>
+    <GUI>
+      <xloc>427</xloc>
+      <yloc>478</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Delete row</name>
+    <type>Delete</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <connection>H2</connection>
+    <commit>0</commit>
+    <lookup>
+      <table>changelog</table>
+      <key>
+        <name>id</name>
+        <field>id</field>
+        <condition>=</condition>
+        <name2/>
+        </key>
+      </lookup>
+    <GUI>
+      <xloc>827</xloc>
+      <yloc>308</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Deleted?</name>
+    <type>FilterRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+<send_true_to>Delete row</send_true_to>
+<send_false_to>Changed?</send_false_to>
+    <compare>
+<condition>
+ <negated>N</negated>
+ <leftvalue>flag</leftvalue>
+ <function>=</function>
+ <rightvalue/>
+<value>   <name>constant</name><type>String</type><text>D</text><length>-1</length><precision>-1</precision><isnull>N</isnull>  </value> </condition>
+    </compare>
+    <GUI>
+      <xloc>427</xloc>
+      <yloc>308</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Get rows from result</name>
+    <type>RowsFromResult</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <fields>      <field>        <name>flag</name>
+        <type>String</type>
+        <length>1</length>
+        <precision>-1</precision>
+        </field>      <field>        <name>id</name>
+        <type>Integer</type>
+        <length>2</length>
+        <precision>0</precision>
+        </field>      <field>        <name>foo</name>
+        <type>String</type>
+        <length>10</length>
+        <precision>-1</precision>
+        </field>      </fields>    <GUI>
+      <xloc>227</xloc>
+      <yloc>138</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Insert row</name>
+    <type>TableOutput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <connection>H2</connection>
+    <table>CHANGELOG</table>
+    <commit>0</commit>
+    <truncate>N</truncate>
+    <ignore_errors>N</ignore_errors>
+    <use_batch>N</use_batch>
+    <partitioning_enabled>N</partitioning_enabled>
+    <partitioning_field/>
+    <partitioning_daily>N</partitioning_daily>
+    <partitioning_monthly>Y</partitioning_monthly>
+    <tablename_in_field>N</tablename_in_field>
+    <tablename_field/>
+    <tablename_in_table>Y</tablename_in_table>
+    <return_keys>N</return_keys>
+    <return_field/>
+    <GUI>
+      <xloc>929</xloc>
+      <yloc>137</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>New?</name>
+    <type>FilterRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+<send_true_to>remove flag</send_true_to>
+<send_false_to>Deleted?</send_false_to>
+    <compare>
+<condition>
+ <negated>N</negated>
+ <leftvalue>flag</leftvalue>
+ <function>=</function>
+ <rightvalue/>
+<value>   <name>constant</name><type>String</type><text>N</text><length>-1</length><precision>-1</precision><isnull>N</isnull>  </value> </condition>
+    </compare>
+    <GUI>
+      <xloc>427</xloc>
+      <yloc>138</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Sink</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>427</xloc>
+      <yloc>648</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Update row</name>
+    <type>Update</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <connection>H2</connection>
+    <commit>0</commit>
+    <error_ignored>N</error_ignored>
+    <ignore_flag_field/>
+    <lookup>
+      <table>CHANGELOG</table>
+      <key>
+        <name>id</name>
+        <field>id</field>
+        <condition>=</condition>
+        <name2/>
+        </key>
+      <value>
+        <name>foo</name>
+        <rename>foo</rename>
+        </value>
+      </lookup>
+    <GUI>
+      <xloc>827</xloc>
+      <yloc>478</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>remove flag</name>
+    <type>SelectValues</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <fields>      <remove>        <name>flag</name>
+        </remove>      </fields>    <GUI>
+      <xloc>627</xloc>
+      <yloc>138</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>temp.txt</name>
+    <type>TextFileOutput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <separator>;</separator>
+    <enclosure>&quot;</enclosure>
+    <enclosure_forced>N</enclosure_forced>
+    <header>Y</header>
+    <footer>N</footer>
+    <format>DOS</format>
+    <encoding/>
+    <endedLine/>
+    <file>
+      <name>C:\Documents and Settings\Matt\Bureaublad\temp.txt</name>
+      <extention/>
+      <append>N</append>
+      <split>N</split>
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <zipped>N</zipped>
+      <pad>N</pad>
+      <splitevery>0</splitevery>
+      </file>
+    <fields>
+      <field>
+        <name>id</name>
+        <type>Integer</type>
+        <format>0</format>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>
+      <field>
+        <name>foo</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif/>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>
+      </fields>
+    <GUI>
+      <xloc>784</xloc>
+      <yloc>141</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+</transformation>

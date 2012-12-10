@@ -1,0 +1,18 @@
+<database>
+	<item id="111" clientName="Sven Boden">		
+		<detail child_id="1">
+		    <name>Bisoprolol</name>
+		    <amount>2</amount>
+		</detail>
+		<detail child_id="2">
+		    <name>Aspirine</name>
+		    <amount>20</amount>
+		</detail>			
+	</item>
+	<item id="112" clientName="Gusia Jakobczyk">
+		<detail child_id="1">
+		    <name>Libitor</name>
+		    <amount>1</amount>
+		</detail>	
+	</item>
+</database>

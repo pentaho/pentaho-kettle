@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<AllRows testDescription="3 - error handling">
+<Rows rowID="CONVERSIONERROR1">first row chunk of data
+ <Row><v1>1.1.1</v1><v2>1.1.2</v2></Row>
+ <Row><v2>1.2.2</v2></Row>
+</Rows>
+<Rows rowID="2">second row chunk of data
+ <Row><v1>2.1.1</v1><v2>2.1.2</v2></Row>
+</Rows>
+<Rows rowID="CONVERSIONERROR2">third row chunk of data
+ <Row><v1>3.1.1</v1><v2>3.1.2</v2></Row>
+ <Row><v1>3.2.1</v1></Row>
+</Rows>
+<Rows rowID="4">second row chunk of data
+ <Row><v1>2.1.1</v1><v2>2.1.2</v2>><v3>ERRORTEST in last element</v3></Row>
+</Rows>
+</AllRows>

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name/>
+    <directory>/</directory>
+    <log>
+      <read/>
+      <write/>
+      <input/>
+      <output/>
+      <update/>
+      <connection/>
+      <table/>
+      <use_batchid>Y</use_batchid>
+      <use_logfield>N</use_logfield>
+      </log>
+    <maxdate>
+      <connection/>
+      <table/>
+      <field/>
+      <offset>0.0</offset>
+      <maxdiff>0.0</maxdiff>
+      </maxdate>
+    <size_rowset>350</size_rowset>
+    <sleep_time_empty>1</sleep_time_empty>
+    <sleep_time_full>1</sleep_time_full>
+    <dependencies>
+      </dependencies>
+    </info>
+  <notepads>
+    <notepad>
+      <note>To see the result, do a preview on this Dummy step
+... or add an output step.</note>
+      <xloc>149</xloc>
+      <yloc>196</yloc>
+      <width>268</width>
+      <heigth>37</heigth>
+      </notepad>
+    <notepad>
+      <note>Load the example dBase file.</note>
+      <xloc>41</xloc>
+      <yloc>58</yloc>
+      <width>150</width>
+      <heigth>23</heigth>
+      </notepad>
+    <notepad>
+      <note>Revision notes:
+2006-08-07 Jens Bleuel: created
+2006-09-08 Specified the filename using internal variable, simplify example</note>
+      <xloc>14</xloc>
+      <yloc>567</yloc>
+      <width>375</width>
+      <heigth>50</heigth>
+      </notepad>
+    </notepads>
+  <order>
+  <hop> <from>XBase input</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  </order>
+
+  <step>
+    <name>Dummy (do nothing)</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>262</xloc>
+      <yloc>108</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>XBase input</name>
+    <type>XBaseInput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <file_dbf>${Internal.Transformation.Filename.Directory}/files/XBase - dBase sample data.dbf</file_dbf>
+    <limit>0</limit>
+    <add_rownr>N</add_rownr>
+    <field_rownr/>
+    <include>N</include>
+    <include_field/>
+    <accept_filenames>N</accept_filenames>
+    <accept_field>filenameDBF</accept_field>
+    <accept_stepname/>
+    <GUI>
+      <xloc>93</xloc>
+      <yloc>108</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+</transformation>
