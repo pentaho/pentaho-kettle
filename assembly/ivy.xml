@@ -6,17 +6,12 @@
     <conf name="test" visibility="private" />
   </configurations>
   <dependencies defaultconf="default->default">
-
     <!-- Pentaho -->
-    <!--  TODO uncomment as these jars and transitives become available -->
-    <dependency org="pentaho-kettle" name="kettle-core" rev="${project.revision}" changing="true"/>
-    <!--
-    <dependency org="pentaho-kettle" name="kettle-db" rev="${project.revision}" changing="true"/>
-    <dependency org="pentaho-kettle" name="kettle-engine" rev="${project.revision}" changing="true"/>
-    <dependency org="pentaho-kettle" name="kettle-dbdialog" rev="${project.revision}" changing="true"/>
-    <dependency org="pentaho-kettle" name="kettle-ui-swt" rev="${project.revision}" changing="true"/>
-     -->
-     
+    <dependency org="pentaho-kettle" name="kettle-core" rev="${project.revision}" changing="true" transitive="true" />
+    <dependency org="pentaho-kettle" name="kettle-db" rev="${project.revision}" changing="true" transitive="true" />
+    <dependency org="pentaho-kettle" name="kettle-engine" rev="${project.revision}" changing="true" transitive="true" />
+    <dependency org="pentaho-kettle" name="kettle-dbdialog" rev="${project.revision}" changing="true" transitive="true" />
+    <dependency org="pentaho-kettle" name="kettle-ui-swt" rev="${project.revision}" changing="true" transitive="true" />
   </dependencies>
 
 </ivy-module>

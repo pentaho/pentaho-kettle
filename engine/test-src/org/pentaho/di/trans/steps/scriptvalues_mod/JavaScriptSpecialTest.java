@@ -501,7 +501,7 @@ public class JavaScriptSpecialTest extends TestCase
 	/**
 	 * Test case for JavaScript/Java/JavaScript interfacing.
 	 */
-    public void testJavaInterface() throws Exception
+    public void disabledTestJavaInterface() throws Exception
     {
         KettleEnvironment.init();
 

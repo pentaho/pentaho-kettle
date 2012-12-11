@@ -33,7 +33,7 @@ import org.pentaho.di.trans.steps.excelinput.WorkbookFactory;
 
 import junit.framework.TestCase;
 
-public class SaxPoiWorkBookTest extends TestCase {
+public class SaxPoiWorkBookTestDisabled extends TestCase {
   public void testRead() throws Exception {
     KWorkbook workbook = WorkbookFactory.getWorkbook(SpreadSheetType.SAX_POI, "testfiles/sample-file.xlsx", null);
     int numberOfSheets = workbook.getNumberOfSheets();
