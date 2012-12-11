@@ -13,5 +13,16 @@
   </publications>
 
   <dependencies defaultconf="default->default">
+    <dependency org="pentaho-kettle" name="kettle-core"     rev="${dependency.kettle.revision}" changing="true"/>  
+    <dependency org="pentaho-kettle" name="kettle-engine"   rev="${dependency.kettle.revision}" changing="true"/>
+    <dependency org="pentaho-kettle" name="kettle-db"       rev="${dependency.kettle.revision}" changing="true"/>
+    <dependency org="pentaho-kettle" name="kettle-ui-swt"   rev="${dependency.kettle.revision}" changing="true"/>
+    
+    <!--  TODO: Uncomment this line and remove the palo-core JAR once in Artifactory
+    <dependency org="pentaho" name="palo-core"   rev="TBD" changing="true"/>
+     -->
+    
+    <dependency org="org.eclipse"    name="jface"           rev="3.3.0-I20070606-0010" transitive="false" conf="default->default" />  
+    
   </dependencies>
 </ivy-module>

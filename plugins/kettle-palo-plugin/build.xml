@@ -7,7 +7,7 @@
   
   See common_build.xml for more details
 ============================================================================-->
-<project name="kettle-gpload-plugin" basedir="." default="default">
+<project name="kettle-palo-plugin" basedir="." default="default">
 
   <description>
     This build file is used to create the API project
