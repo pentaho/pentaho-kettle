@@ -14,12 +14,13 @@
 
   <dependencies defaultconf="default->default">
     <dependency org="pentaho-kettle" name="kettle-core" rev="${dependency.kettle.revision}" changing="true"/>
-    <dependency org="pentaho-kettle" name="kettle-db" rev="${dependency.kettle.revision}" changing="true"/>
     <dependency org="pentaho-kettle" name="kettle-engine" rev="${dependency.kettle.revision}" changing="true"/>
+    <!-- <dependency org="pentaho-kettle" name="kettle-db" rev="${dependency.kettle.revision}" changing="true"/> -->
     <dependency org="pentaho-kettle" name="kettle-ui-swt" rev="${dependency.kettle.revision}" changing="true"/>  
-    <dependency org="commons-vfs" name="commons-vfs" rev="20091118-pentaho" transitive="false" />
-    <dependency org="org.eclipse" name="jface" rev="3.3.0-I20070606-0010" transitive="false" conf="default->default" />
-    <dependency org="junit" name="junit" rev="4.7"/>
+    <!-- <dependency org="commons-vfs" name="commons-vfs" rev="20091118-pentaho" transitive="false" />
+    <dependency org="org.eclipse" name="jface" rev="3.3.0-I20070606-0010" transitive="false" conf="default->default" /> -->
+    
+    <dependency org="junit" name="junit" rev="4.7" conf="test->default"/>
             
     
   </dependencies>
