@@ -876,12 +876,16 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 				public void widgetSelected(SelectionEvent e) 
 				{
 					FileDialog dialog = new FileDialog(shell, SWT.SAVE);
-					dialog.setFilterExtensions(new String[] {"*.txt", "*.csv", "*"});
+					dialog.setFilterExtensions(new String[] {"*.xml", "*.txt", "*.csv", "*"});
 					if (wFilename.getText()!=null)
 					{
 						dialog.setFileName(transMeta.environmentSubstitute(wFilename.getText()));
 					}
-					dialog.setFilterNames(new String[] {BaseMessages.getString(PKG, "System.FileType.TextFiles"), BaseMessages.getString(PKG, "System.FileType.CSVFiles"), BaseMessages.getString(PKG, "System.FileType.AllFiles")});
+					dialog.setFilterNames(new String[] {
+					    BaseMessages.getString(PKG, "System.FileType.XMLFiles"),
+					    BaseMessages.getString(PKG, "System.FileType.TextFiles"), 
+					    BaseMessages.getString(PKG, "System.FileType.CSVFiles"), 
+					    BaseMessages.getString(PKG, "System.FileType.AllFiles")});
 					if (dialog.open()!=null)
 					{
 						wFilename.setText(dialog.getFilterPath()+System.getProperty("file.separator")+dialog.getFileName());
