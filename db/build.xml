@@ -4,7 +4,7 @@
 	      Kettle Engine build file
 	  </description>
 	 
-	 <import file="build-res/subfloor-pkg.xml" />
+	 <import file="build-res/subfloor.xml" />
 	  
 	  <tstamp prefix="start"/>
 	

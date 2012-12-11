@@ -9,20 +9,21 @@
   </configurations>
 
   <publications>
-    <artifact name="${ivy.artifact.id}" type="${artifact.type}" conf="default" />
+    <artifact name="${ivy.artifact.id}" type="jar" conf="default"/>
+    <artifact name="${ivy.artifact.id}" m:classifier="sources" type="source" ext="jar" conf="source"/>
   </publications>
 
   <dependencies defaultconf="default->default">
     <dependency org="pentaho-kettle" name="kettle-core"     rev="${dependency.kettle.revision}" changing="true"/>  
-    <dependency org="pentaho-kettle" name="kettle-engine"   rev="${dependency.kettle.revision}" changing="true"/>
     <dependency org="pentaho-kettle" name="kettle-db"       rev="${dependency.kettle.revision}" changing="true"/>
+    <dependency org="pentaho-kettle" name="kettle-engine"   rev="${dependency.kettle.revision}" changing="true"/>
     <dependency org="pentaho-kettle" name="kettle-ui-swt"   rev="${dependency.kettle.revision}" changing="true"/>
     
-    <!--  TODO: Uncomment this line and remove the palo-core JAR once in Artifactory
-    <dependency org="pentaho" name="palo-core"   rev="TBD" changing="true"/>
-     -->
+    <dependency org="pentaho"        name="pdi-palo-plugin" rev="${dependency.pdi-palo-plugin.revision}" transitive="false"/>
+
+    <dependency org="org.eclipse"    name="jface"           rev="3.3.0-I20070606-0010" transitive="false" conf="default->default" /> 
     
-    <dependency org="org.eclipse"    name="jface"           rev="3.3.0-I20070606-0010" transitive="false" conf="default->default" />  
+    <dependency org="junit"          name="junit"           rev="4.7"          conf="test->default"/> 
     
   </dependencies>
 </ivy-module>

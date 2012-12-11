@@ -9,7 +9,8 @@
   </configurations>
 
   <publications>
-    <artifact name="${ivy.artifact.id}" type="${artifact.type}" conf="default" />
+    <artifact name="${ivy.artifact.id}" type="jar" conf="default"/>
+    <artifact name="${ivy.artifact.id}" m:classifier="sources" type="source" ext="jar" conf="source"/>
   </publications>
 
   <dependencies defaultconf="default->default">
@@ -19,8 +20,8 @@
     <dependency org="pentaho-kettle" name="kettle-ui-swt" rev="${dependency.kettle.revision}" changing="true"/>  
     <dependency org="commons-vfs" name="commons-vfs" rev="20091118-pentaho" transitive="false" />
     <dependency org="org.eclipse" name="jface" rev="3.3.0-I20070606-0010" transitive="false" conf="default->default" />
-    <dependency org="junit" name="junit" rev="4.7"/>
-            
+    
+    <dependency org="junit" name="junit" rev="4.7" conf="test->default"/>            
     
   </dependencies>
 </ivy-module>
