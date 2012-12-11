@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0" xmlns:m="http://ant.apache.org/ivy/maven">
   <info organisation="pentaho-kettle" module="kettle-core" revision="${project.revision}"/>
+  
+  <configurations>
+        <conf name="default" extends="runtime,default-ext"/>
+        <conf name="default-ext"/>
+        <conf name="runtime" />
+        <conf name="test" extends="runtime" visibility="private" />
+        <conf name="source" />  
+  </configurations>
+  
   <publications>
     <artifact name="kettle-core" type="jar" conf="default"/>
   </publications>  
