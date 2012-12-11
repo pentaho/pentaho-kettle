@@ -414,7 +414,7 @@ public class SpoonJobDelegate extends SpoonDelegate
 			{
 				Node entrynode = XMLHandler.getSubNodeByNr(entriesnode, "entry", i); //$NON-NLS-1$
 				JobEntryCopy copy = new JobEntryCopy(entrynode, jobMeta.getDatabases(), jobMeta.getSlaveServers(), spoon.getRepository());
-				if (copy.isStart()) {
+				if (copy.isStart() && (jobMeta.findStart() != null) ) {
 					JobGraph.showOnlyStartOnceMessage(spoon.getShell());
 					continue;
 				}
