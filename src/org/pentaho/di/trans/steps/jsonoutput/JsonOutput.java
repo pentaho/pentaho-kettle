@@ -101,10 +101,10 @@ public class JsonOutput extends BaseStep implements StepInterface
           data.nrRow++;
           
           if(data.nrRowsInBloc>0) {
-             System.out.println("data.nrRow%data.nrRowsInBloc = "+ data.nrRow%data.nrRowsInBloc);
+             // System.out.println("data.nrRow%data.nrRowsInBloc = "+ data.nrRow%data.nrRowsInBloc);
              if(data.nrRow%data.nrRowsInBloc==0) {
                 // We can now output an object
-                System.out.println("outputting the row.");
+                // System.out.println("outputting the row.");
                 outPutRow(row);
              }
           }
@@ -146,10 +146,10 @@ public class JsonOutput extends BaseStep implements StepInterface
           data.nrRow++;
           
           if(data.nrRowsInBloc > 0) {
-             System.out.println("data.nrRow%data.nrRowsInBloc = "+ data.nrRow%data.nrRowsInBloc);
+             // System.out.println("data.nrRow%data.nrRowsInBloc = "+ data.nrRow%data.nrRowsInBloc);
              if(data.nrRow%data.nrRowsInBloc==0) {
                 // We can now output an object
-                System.out.println("outputting the row.");
+                // System.out.println("outputting the row.");
                 outPutRow(row);
              }
           }
