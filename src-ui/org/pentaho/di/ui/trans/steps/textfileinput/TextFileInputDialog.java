@@ -173,7 +173,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 	private FormData     fdlFilenameList, fdFilenameList;
 
 	private Label        wlFilemask;
-	private Text         wFilemask;
+	//PDI-8664
+	private TextVar         wFilemask;
 	private FormData     fdlFilemask, fdFilemask;
 
 	private Button       wbShowFiles;
@@ -805,7 +806,10 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fdlFilemask.top  = new FormAttachment(wFilename, margin);
         fdlFilemask.right= new FormAttachment(middle, -margin);        
         wlFilemask.setLayoutData(fdlFilemask);
-        wFilemask=new Text(wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        
+        //PDI-8664
+        wFilemask = new TextVar(transMeta, wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        
         props.setLook(wFilemask);
         wFilemask.addModifyListener(lsMod);
         fdFilemask=new FormData();
@@ -997,7 +1001,11 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
         colinfo[ 0].setUsingVariables(true);
         colinfo[ 1].setToolTip(BaseMessages.getString(PKG, "TextFileInputDialog.RegExpColumn.Column"));
-		colinfo[2].setUsingVariables(true);
+        
+        //PDI-8664
+        colinfo[ 1].setUsingVariables(true);
+		
+        colinfo[2].setUsingVariables(true);
 		colinfo[2].setToolTip(BaseMessages.getString(PKG, "TextFileInputDialog.Files.ExcludeWildcard.Tooltip"));
         colinfo[3].setToolTip(BaseMessages.getString(PKG, "TextFileInputDialog.RequiredColumn.Tooltip"));
 		colinfo[4].setToolTip(BaseMessages.getString(PKG, "TextFileInputDialog.IncludeSubDirs.Tooltip"));
