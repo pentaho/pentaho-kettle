@@ -11,6 +11,7 @@
     <dependency org="pentaho-kettle" name="kettle-db" rev="${project.revision}" changing="true" transitive="true" />
     <dependency org="pentaho-kettle" name="kettle-engine" rev="${project.revision}" changing="true" transitive="true" />
     <dependency org="pentaho-kettle" name="kettle-dbdialog" rev="${project.revision}" changing="true" transitive="true" />
+    <dependency org="pentaho-kettle" name="kettle-jdbc" rev="${project.revision}" changing="true" transitive="true" />
     <dependency org="pentaho-kettle" name="kettle-ui-swt" rev="${project.revision}" changing="true" transitive="true" />
   </dependencies>
 

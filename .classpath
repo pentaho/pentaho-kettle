@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="core/src"/>
+	<classpathentry kind="src" path="jdbc/src"/>
 	<classpathentry kind="src" path="core/test-src"/>
 	<classpathentry kind="src" path="db/test-src"/>
 	<classpathentry kind="src" path="dbdialog/test-src"/>
@@ -17,7 +18,6 @@
 	<classpathentry kind="src" path="plugins/star-modeler/src"/>
 	<classpathentry kind="src" path="engine/src"/>
 	<classpathentry kind="src" path="test"/>
-	<classpathentry kind="src" path="src-jdbc"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry exported="true" kind="lib" path="libext/js.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/mail-1.4.1.jar"/>
@@ -66,7 +66,6 @@
 	<classpathentry exported="true" kind="lib" path="libext/janino.jar" sourcepath="libext-src/janino-2.5.16-src.zip"/>
 	<classpathentry exported="true" kind="lib" path="libext/SNMP4J.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/jcifs-1.3.3.jar"/>
-	<classpathentry exported="true" kind="lib" path="libext/pentaho/pentaho-formula-editor-0.0.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/ini4j-0.5.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libext/pentaho/pentaho-xul-core-TRUNK-SNAPSHOT.jar" sourcepath="/pentaho-xul-core/src"/>
 	<classpathentry exported="true" kind="lib" path="libext/pentaho/pentaho-xul-swt-TRUNK-SNAPSHOT.jar" sourcepath="/pentaho-xul-swt/src"/>
@@ -182,7 +181,6 @@
 	<classpathentry kind="lib" path="plugins/kettle-hl7-plugin/lib/hapi-structures-v26-1.1.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/infobright-core-3.4.jar"/>
 	<classpathentry kind="lib" path="libext/JDBC/sqlite-jdbc-3.7.2.jar"/>
-	<classpathentry kind="lib" path="plugins/kettle-palo-plugin/lib/palo-core.jar"/>
 	<classpathentry kind="lib" path="libext/jackson-core-asl-1.5.2.jar"/>
 	<classpathentry kind="lib" path="libext/jackson-mapper-asl-1.5.2.jar"/>
 	<classpathentry kind="lib" path="libext/jersey/jersey-apache-client-1.11.jar"/>
@@ -249,7 +247,6 @@
 	<classpathentry kind="lib" path="plugins/kettle-profiling-datacleaner/lib/MetaModel-jdbc-3.0-beta3.jar"/>
 	<classpathentry kind="lib" path="plugins/kettle-profiling-datacleaner/lib/MetaModel-full-3.0-beta3.jar"/>
 	<classpathentry kind="lib" path="libext/pentaho/pentaho-vfs-browser-TRUNK-SNAPSHOT.jar"/>
-	<classpathentry kind="lib" path="libswt/linux/x86_64/swt.jar"/>
 	<classpathentry kind="lib" path="plugins/kettle-openerp-plugin/lib/openerp-java-api-1.0.0.jar"/>
 	<classpathentry kind="lib" path="libext/poi/poi-3.8-20120326.jar"/>
 	<classpathentry kind="lib" path="libext/poi/poi-ooxml-3.8-20120326.jar"/>
