@@ -61,11 +61,11 @@
     <dependency org="trilead-ssh2"        name="trilead-ssh2"        rev="build213"         transitive="false"/>
     <dependency org="wsdl4j"              name="wsdl4j"              rev="1.6.2"            transitive="false"/>
             
-    
+    <dependency org="org.eclipse.equinox" name="common"              rev="3.3.0-v20070426"  transitive="false"/>
     <!-- SWT it required to compile any version of any architecture will work -->
     <dependency org="org.eclipse.swt"     name="swt-linux-x86_64"    rev="3.7"              transitive="false" />
-    <dependency org="org.eclipse"         name="jface" rev="3.3.0-I20070606-0010" transitive="false" conf="default->default" />
+    <dependency org="org.eclipse"         name="jface"               rev="3.3.0-I20070606-0010" transitive="false" conf="default->default" />
     
-    <dependency org="junit"               name="junit" rev="4.7" conf="test->default" />          
+    <dependency org="junit"               name="junit"               rev="4.7" conf="test->default" />          
   </dependencies>
 </ivy-module>
