@@ -842,6 +842,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 		}catch (Exception e)
 		{
 			logError(BaseMessages.getString(PKG, "JobMoveFiles.Error.Exception.MoveProcessError",sourcefilename.toString(),destinationfilename.toString(),e.getMessage()));
+			updateErrors();
 		}
 		finally 
 		{
