@@ -26,6 +26,9 @@
                 changing="true" transitive="false"/>
     <dependency org="pentaho" name="pentaho-xul-swing" rev="${dependency.pentaho-xul.revision}" conf="default->default"
                 changing="true" transitive="false"/>
-    <dependency org="junit" name="junit" rev="4.4" conf="test->default" />
+    <!-- SWT it required to compile any version of any architecture will work -->
+    <dependency org="org.eclipse.swt"     name="swt-linux-x86_64"    rev="3.7"              transitive="false" />
+    
+    <dependency org="junit" name="junit" rev="4.7" conf="test->default" />
   </dependencies>
 </ivy-module>
