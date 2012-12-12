@@ -48,12 +48,8 @@
     <dependency org="jfree"               name="jfreechart"          rev="1.0.13"           transitive="false"/>            
     <dependency org="ognl"                name="ognl"                rev="2.6.9"            transitive="false"/>
     <dependency org="pentaho"             name="pentaho-vfs-browser" rev="${dependency.pentaho-vfs-browser.revision}" transitive="false"/>
-    <dependency org="pentaho"             name="pentaho-xul-core"    rev="${dependency.pentaho-xul.revision}" changing="true">
-      <artifact name="pentaho-xul-core"/>
-      <artifact name="pentaho-xul-core" type="source" ext="jar" m:classifier="sources"/>
-    </dependency>
-    <dependency org="pentaho" name="pentaho-xul-swt" rev="${dependency.pentaho-xul.revision}" conf="default->default"
-                changing="true" transitive="false"/>
+    <dependency org="pentaho"             name="pentaho-xul-core"    rev="${dependency.pentaho-xul.revision}" changing="true"/>
+    <dependency org="pentaho"             name="pentaho-xul-swt"     rev="${dependency.pentaho-xul.revision}" conf="default->default" changing="true"/>
     <dependency org="pentaho-reporting-engine" name="pentaho-reporting-engine-classic-core" 
                 rev="${dependency.pentaho-reporting-core.revision}" transitive="false"/>
     <dependency org="pentaho"             name="salesforce-partner"  rev="24.0"             transitive="false"/>
@@ -67,7 +63,9 @@
             
     
     <!-- SWT it required to compile any version of any architecture will work -->
-    <dependency org="org.eclipse.swt"     name="swt-linux-x86_64"    rev="3.6"              transitive="false" />
-    <dependency org="org.eclipse" name="jface" rev="3.3.0-I20070606-0010" transitive="false" conf="default->default" />          
+    <dependency org="org.eclipse.swt"     name="swt-linux-x86_64"    rev="3.7"              transitive="false" />
+    <dependency org="org.eclipse"         name="jface" rev="3.3.0-I20070606-0010" transitive="false" conf="default->default" />
+    
+    <dependency org="junit"               name="junit" rev="4.7" conf="test->default" />          
   </dependencies>
 </ivy-module>

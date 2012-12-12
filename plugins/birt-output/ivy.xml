@@ -17,9 +17,22 @@
     <dependency org="pentaho-kettle" name="kettle-engine" rev="${dependency.kettle.revision}" changing="true"/>
     <!-- <dependency org="pentaho-kettle" name="kettle-db" rev="${dependency.kettle.revision}" changing="true"/> -->
     <dependency org="pentaho-kettle" name="kettle-ui-swt" rev="${dependency.kettle.revision}" changing="true"/>  
-    <!-- <dependency org="commons-vfs" name="commons-vfs" rev="20091118-pentaho" transitive="false" />
-    <dependency org="org.eclipse" name="jface" rev="3.3.0-I20070606-0010" transitive="false" conf="default->default" /> -->
     
+    <!-- <dependency org="commons-vfs" name="commons-vfs" rev="20091118-pentaho" transitive="false" /> -->
+    <!-- SWT it required to compile any version of any architecture will work -->
+    <dependency org="org.eclipse.swt" name="swt-linux-x86_64" rev="3.6"              transitive="false" />
+    <!-- <dependency org="org.eclipse" name="jface" rev="3.3.0-I20070606-0010" transitive="false" conf="default->default" /> -->
+    <dependency org="org.eclipse/birt" name="chartengineapi" rev="2.2.1" transitive="false"/>
+    <dependency org="commons-cli" name="commons-cli" rev="1.0" transitive="false"/>
+    <dependency org="pentaho-library" name="flute" rev="1.3-SNAPSHOT"/>
+    <dependency org="org.apache.poi" name="poi-ooxml" rev="3.8"/>
+    
+    <!-- TODO get correct versions? -->     
+    <dependency org="org.eclipse.emf" name="org.eclipse.emf.common" rev="2.6.0.v20100614-1136"/>
+    <dependency org="org.eclipse.emf" name="org.eclipse.emf.ecore.xmi" rev="2.5.0.v20100521-1846"/>
+    <dependency org="org.eclipse.emf" name="org.eclipse.emf.ecore" rev="2.6.0.v20100614-1136"/>
+    <dependency org="org.w3c.css" name="sac" rev="1.3"/>
+            
     <dependency org="junit" name="junit" rev="4.7" conf="test->default"/>
             
     
