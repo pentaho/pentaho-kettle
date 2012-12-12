@@ -540,6 +540,9 @@ public class XulDatabaseExplorerController extends AbstractXulEventHandler {
   }
 
   public void dataProfile(){
+    if(model.getTable() == null){
+      return;
+    }
     Shell dbShell = (Shell) dbExplorerDialog.getRootObject();
     try {
       TransProfileFactory profileFactory = new TransProfileFactory(this.model.getDatabaseMeta(), getSchemaAndTable(this.model));
