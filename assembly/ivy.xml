@@ -4,15 +4,23 @@
   <configurations>
     <conf name="default" />
     <conf name="test" visibility="private" />
+    <conf name="swtlibs"/>
   </configurations>
+  
   <dependencies defaultconf="default->default">
     <!-- Pentaho -->
-    <dependency org="pentaho-kettle" name="kettle-core" rev="${project.revision}" changing="true" transitive="true" />
-    <dependency org="pentaho-kettle" name="kettle-db" rev="${project.revision}" changing="true" transitive="true" />
-    <dependency org="pentaho-kettle" name="kettle-engine" rev="${project.revision}" changing="true" transitive="true" />
+    <dependency org="pentaho-kettle" name="kettle-core"     rev="${project.revision}" changing="true" transitive="true" />
+    <dependency org="pentaho-kettle" name="kettle-db"       rev="${project.revision}" changing="true" transitive="true" />
+    <dependency org="pentaho-kettle" name="kettle-engine"   rev="${project.revision}" changing="true" transitive="true" />
     <dependency org="pentaho-kettle" name="kettle-dbdialog" rev="${project.revision}" changing="true" transitive="true" />
-    <dependency org="pentaho-kettle" name="kettle-jdbc" rev="${project.revision}" changing="true" transitive="true" />
-    <dependency org="pentaho-kettle" name="kettle-ui-swt" rev="${project.revision}" changing="true" transitive="true" />
+    <dependency org="pentaho-kettle" name="kettle-jdbc"     rev="${project.revision}" changing="true" transitive="true" />
+    <dependency org="pentaho-kettle" name="kettle-ui-swt"   rev="${project.revision}" changing="true" transitive="true" />
+    
+    <dependency org="org.pentaho"    name="pentaho-vfs"     rev="1.0" transitive="false"/>
+    
+    <dependency org="org.eclipse" name="swtlibs" rev="3.7" conf="swtlibs->default" transitive="false">
+      <artifact name="swtlibs" type="zip"/>
+    </dependency>
   </dependencies>
 
 </ivy-module>

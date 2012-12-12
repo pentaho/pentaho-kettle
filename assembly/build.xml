@@ -24,9 +24,9 @@
 
   <import file="build-res/subfloor-pkg.xml" />
 
-  <target name="dist" depends="init,resolve,package" description="Builds and packages the application" />
+  <target name="dist" depends="init,resolve,resolve-swtlibs,package" description="Builds and packages the application" />
 
-  <target name="assemble-full" depends="init,resolve,assemble" description="Builds the application" />
+  <target name="assemble-full" depends="init,resolve,resolve-swtlibs,assemble" description="Builds the application" />
 
 	
   <target name="assemble" depends="subfloor-pkg.assemble" description="copy jar files to distribution directory" >
@@ -40,6 +40,16 @@
 
   </target>
 	
+	<!--=======================================================================
+	        resolve-swtlibs
+	        
+	        Resolved the swtlibs configuration from ivy.xml
+	    =====================================================================-->
+	  <target name="resolve-swtlibs" depends="install-ivy">
+	    <delete dir="${swtlib.dir}" />
+	    <ivy:resolve file="${ivyfile}" conf="test" />
+	    <ivy:retrieve conf="swtlibs" pattern="${swtlib.dir}/[module]-[revision](-[classifier]).[ext]" symlink="${ivy.use.symlinks.internal}" />
+	  </target>
 	
 	
 </project>
