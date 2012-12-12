@@ -2565,14 +2565,16 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
 			for (int i = 0; i < nrDatabases(); i++) {
 				DatabaseMeta meta = getDatabase(i);
 				stringList.add(new StringSearchResult(meta.getName(), meta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.DatabaseConnectionName"))); //$NON-NLS-1$
-				if (meta.getDatabaseName() != null)
-					stringList.add(new StringSearchResult(meta.getDatabaseName(), meta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.DatabaseName"))); //$NON-NLS-1$
-				if (meta.getUsername() != null)
-					stringList.add(new StringSearchResult(meta.getUsername(), meta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.DatabaseUsername"))); //$NON-NLS-1$
-				if (meta.getPluginId() != null)
-					stringList.add(new StringSearchResult(meta.getPluginId(), meta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.DatabaseTypeDescription"))); //$NON-NLS-1$
-				if (meta.getDatabasePortNumberString() != null)
-					stringList.add(new StringSearchResult(meta.getDatabasePortNumberString(), meta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.DatabasePort"))); //$NON-NLS-1$
+        if (meta.getHostname()!=null) stringList.add(new StringSearchResult(meta.getHostname(), meta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.DatabaseHostName")));  //$NON-NLS-1$
+        if (meta.getDatabaseName()!=null) stringList.add(new StringSearchResult(meta.getDatabaseName(), meta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.DatabaseName")));  //$NON-NLS-1$
+        if (meta.getUsername()!=null) stringList.add(new StringSearchResult(meta.getUsername(), meta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.DatabaseUsername")));  //$NON-NLS-1$
+        if (meta.getPluginId()!=null) stringList.add(new StringSearchResult(meta.getPluginId(), meta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.DatabaseTypeDescription")));  //$NON-NLS-1$
+        if (meta.getDatabasePortNumberString()!=null) stringList.add(new StringSearchResult(meta.getDatabasePortNumberString(), meta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.DatabasePort")));  //$NON-NLS-1$
+        if (meta.getServername()!=null) stringList.add(new StringSearchResult(meta.getServername(), meta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.DatabaseServer")));  //$NON-NLS-1$ 
+        //if ( includePasswords )
+        //{
+          if (meta.getPassword()!=null) stringList.add(new StringSearchResult(meta.getPassword(), meta, this, BaseMessages.getString(PKG, "JobMeta.SearchMetadata.DatabasePassword")));  //$NON-NLS-1$
+        //}
 			}
 		}
 

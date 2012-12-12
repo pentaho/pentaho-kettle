@@ -5442,8 +5442,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             for (int i=0;i<nrSteps();i++)
             {
                 StepMeta stepMeta = getStep(i);
-                stringList.add(new StringSearchResult(stepMeta.getName(), stepMeta, this, "Step name"));
-                if (stepMeta.getDescription()!=null) stringList.add(new StringSearchResult(stepMeta.getDescription(), stepMeta, this, "Step description"));
+                stringList.add(new StringSearchResult(stepMeta.getName(), stepMeta, this, BaseMessages.getString(PKG, "TransMeta.SearchMetadata.StepName")));  //$NON-NLS-1$
+                if (stepMeta.getDescription()!=null) stringList.add(new StringSearchResult(stepMeta.getDescription(), stepMeta, this, BaseMessages.getString(PKG, "TransMeta.SearchMetadata.StepDescription")));  //$NON-NLS-1$
                 StepMetaInterface metaInterface = stepMeta.getStepMetaInterface();
                 StringSearcher.findMetaData(metaInterface, 1, stringList, stepMeta, this);
             }
@@ -5455,16 +5455,16 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             for (int i=0;i<nrDatabases();i++)
             {
                 DatabaseMeta meta = getDatabase(i);
-                stringList.add(new StringSearchResult(meta.getName(), meta, this, "Database connection name"));
-                if (meta.getHostname()!=null) stringList.add(new StringSearchResult(meta.getHostname(), meta, this, "Database hostname"));
-                if (meta.getDatabaseName()!=null) stringList.add(new StringSearchResult(meta.getDatabaseName(), meta, this, "Database name"));
-                if (meta.getUsername()!=null) stringList.add(new StringSearchResult(meta.getUsername(), meta, this, "Database Username"));
-                if (meta.getPluginId()!=null) stringList.add(new StringSearchResult(meta.getPluginId(), meta, this, "Database type description"));
-                if (meta.getDatabasePortNumberString()!=null) stringList.add(new StringSearchResult(meta.getDatabasePortNumberString(), meta, this, "Database port"));
-                if (meta.getServername()!=null) stringList.add(new StringSearchResult(meta.getServername(), meta, this, "Database server")); 
+                stringList.add(new StringSearchResult(meta.getName(), meta, this, BaseMessages.getString(PKG, "TransMeta.SearchMetadata.DatabaseConnectionName")));  //$NON-NLS-1$
+                if (meta.getHostname()!=null) stringList.add(new StringSearchResult(meta.getHostname(), meta, this, BaseMessages.getString(PKG, "TransMeta.SearchMetadata.DatabaseHostName")));  //$NON-NLS-1$
+                if (meta.getDatabaseName()!=null) stringList.add(new StringSearchResult(meta.getDatabaseName(), meta, this, BaseMessages.getString(PKG, "TransMeta.SearchMetadata.DatabaseName")));  //$NON-NLS-1$
+                if (meta.getUsername()!=null) stringList.add(new StringSearchResult(meta.getUsername(), meta, this, BaseMessages.getString(PKG, "TransMeta.SearchMetadata.DatabaseUsername")));  //$NON-NLS-1$
+                if (meta.getPluginId()!=null) stringList.add(new StringSearchResult(meta.getPluginId(), meta, this, BaseMessages.getString(PKG, "TransMeta.SearchMetadata.DatabaseTypeDescription")));  //$NON-NLS-1$
+                if (meta.getDatabasePortNumberString()!=null) stringList.add(new StringSearchResult(meta.getDatabasePortNumberString(), meta, this, BaseMessages.getString(PKG, "TransMeta.SearchMetadata.DatabasePort")));  //$NON-NLS-1$
+                if (meta.getServername()!=null) stringList.add(new StringSearchResult(meta.getServername(), meta, this, BaseMessages.getString(PKG, "TransMeta.SearchMetadata.DatabaseServer")));  //$NON-NLS-1$ 
                 if ( includePasswords )
                 {
-                	if (meta.getPassword()!=null) stringList.add(new StringSearchResult(meta.getPassword(), meta, this, "Database password"));
+                	if (meta.getPassword()!=null) stringList.add(new StringSearchResult(meta.getPassword(), meta, this, BaseMessages.getString(PKG, "TransMeta.SearchMetadata.DatabasePassword")));  //$NON-NLS-1$
                 }               
             }
         }
@@ -5475,7 +5475,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
             for (int i=0;i<nrNotes();i++)
             {
                 NotePadMeta meta = getNote(i);
-                if (meta.getNote()!=null) stringList.add(new StringSearchResult(meta.getNote(), meta, this, "Notepad text"));
+                if (meta.getNote()!=null) stringList.add(new StringSearchResult(meta.getNote(), meta, this, BaseMessages.getString(PKG, "TransMeta.SearchMetadata.NotepadText")));  //$NON-NLS-1$
             }
         }
 
