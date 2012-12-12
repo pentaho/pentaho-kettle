@@ -710,7 +710,7 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 	
 	private boolean MoveFile(String shortfilename,FileObject sourcefilename,
 			FileObject destinationfilename,FileObject movetofolderfolder,
-			Job parentJob,Result result)
+			Job parentJob,Result result) 
 	{
 		
 		FileObject destinationfile=null;
@@ -842,6 +842,8 @@ public class JobEntryMoveFiles extends JobEntryBase implements Cloneable, JobEnt
 		}catch (Exception e)
 		{
 			logError(BaseMessages.getString(PKG, "JobMoveFiles.Error.Exception.MoveProcessError",sourcefilename.toString(),destinationfilename.toString(),e.getMessage()));
+			// throw new KettleException(e);
+			updateErrors();
 		}
 		finally 
 		{
