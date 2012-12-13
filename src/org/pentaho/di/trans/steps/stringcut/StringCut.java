@@ -89,7 +89,7 @@ public class StringCut extends BaseStep implements StepInterface {
 		return rcode;
 	}
 
-	private synchronized Object[] getOneRow(RowMetaInterface rowMeta,Object[] row) 
+	private Object[] getOneRow(RowMetaInterface rowMeta,Object[] row) 
 	throws KettleException {
 		Object[] RowData = new Object[data.outputRowMeta.size()];
 
