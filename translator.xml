@@ -4,13 +4,12 @@
   <reference-locale>en_US</reference-locale>
 
   <source-directories>
-    <root>src</root>
-    <root>src-core</root>
-    <root>src-ui</root>
-    <root>src-db</root>
-    <root>src-dbdialog</root>
-    <root>src-plugins/kettle-gpload-plugin/src</root>
-    <root>src-plugins/kettle-palo-plugin/src</root>
+    <root>core/src</root>
+    <root>engine/src</root>
+    <root>ui/src</root>
+    <root>db/src</root>
+    <root>dbdialog/src</root>
+    <root>jdbc/src</root>
   </source-directories>
   
   <scan-phrases>
