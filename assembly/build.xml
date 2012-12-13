@@ -24,7 +24,18 @@
 
   <import file="build-res/subfloor-pkg.xml" />
 
-  <target name="dist" depends="init,resolve,resolve-swtlibs,package" description="Builds and packages the application" />
+  <target name="dist" depends="init,resolve,resolve-swtlibs,package" description="Builds and packages the application"/>
+  	
+	<target name="package" depends="assemble,unzip-swtlibs,package-zip" description="Creates packaged distributable artifacts" />
+	
+	<target name="unzip-swtlibs" depends="resolve-swtlibs" description="Unzips the swtlibs bundle">
+		<!-- Unzip the libswt package into the libswt folder of the distribution -->
+	  <unzip dest="${stage.dir}/${package.root.dir}" overwrite="true">
+	    <fileset dir="${swtlib.dir}">
+	      <include name="**/*.zip"/>
+	    </fileset>
+	  </unzip>
+  </target>
 
   <target name="assemble-full" depends="init,resolve,resolve-swtlibs,assemble" description="Builds the application" />
 
