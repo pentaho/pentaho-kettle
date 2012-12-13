@@ -75,5 +75,37 @@
 	        <include name="**/*.jar" />
 	      </fileset>
 	    </copy>
-	  </target>			  		
+	  </target>
+	
+	  <target name="set-revision">
+	    <condition property="revision" value="${svn-revision}" else="1">
+	        <length string="${svn-revision}" length="7" when="less"/>
+	    </condition>
+	    
+	    <echo message="Revision set to r${revision}"/>
+	  </target>
+	
+	  <!--=======================================================================
+	      generate.manifest
+	      
+	      Creates a new manifest file if one is not specified, or updates
+	      an existing manifest file if one is specified.
+	      ====================================================================-->
+	  <target name="generate.manifest" depends="init,set-build.id,set-revision">
+	    <delete file="${dist.manifest.file}" />
+	    <touch file="${dist.manifest.file}" />
+	    <copy file="${manifest.file}" tofile="${dist.manifest.file}" overwrite="true" failonerror="false" />
+
+	    <manifest file="${dist.manifest.file}" mode="update">
+	      <attribute name="Implementation-Title" value="${impl.title}" />
+	        <attribute name="Implementation-Version" value="${impl.version}" />
+	        <attribute name="Specification-Version" value="${revision}" />
+	      <attribute name="Implementation-Vendor" value="${impl.vendor}" />
+	      <attribute name="Implementation-ProductID" value="${impl.productID}" />
+	        <attribute name="Compile-Timestamp" value="${compile.timestamp}" />
+	        <attribute name="Compile-User" value="${user.name}" />
+	    </manifest>
+	  </target>
+
+	
 </project>
