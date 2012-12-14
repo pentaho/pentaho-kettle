@@ -371,7 +371,7 @@
 	       ==========================
 	  -->
 
-	<target name="default" depends="build-all" description="default = build distribution package"/>
+	<target name="default" depends="resolve,build-all" description="default = build distribution package"/>
 
 
 	
