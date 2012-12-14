@@ -180,7 +180,7 @@ public class SlavesController extends LazilyInitializedController implements IUI
         ObjectId slaveId = repository.getSlaveID(slaveServer.getName());
         if(slaveId == null) {
           MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-          mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.DoesNotExists.Message")); //$NON-NLS-1$
+          mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.DoesNotExists.Message", slaveServerName)); //$NON-NLS-1$
           mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Edit.Title")); //$NON-NLS-1$
           mb.open();
         } else {
@@ -228,7 +228,7 @@ public class SlavesController extends LazilyInitializedController implements IUI
             ObjectId slaveId = repository.getSlaveID(slaveServer.getName());
             if(slaveId == null) {
               MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-              mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.DoesNotExists.Message")); //$NON-NLS-1$
+              mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.DoesNotExists.Message", slaveServerName)); //$NON-NLS-1$
               mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Slave.Delete.Title")); //$NON-NLS-1$
               mb.open();
             } else {
