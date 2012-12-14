@@ -709,4 +709,35 @@
 	      <target name="assemble-full" />
 	    </ant>
 	  </target>
+	
+	<target name="compile" depends="install-antcontrib" description="compile the source code">
+    <for list="${dev-project.list}" param="module" trim="true">
+      <sequential>
+        <ant antfile="build.xml" dir="@{module}" inheritall="false" >
+          <target name="compile" />
+        </ant>
+      </sequential>
+    </for>
+  </target>
+	
+	<target name="clean" depends="install-antcontrib" description="compile the source code">
+    <for list="${dev-project.list}" param="module" trim="true">
+      <sequential>
+        <ant antfile="build.xml" dir="@{module}" inheritall="false" >
+          <target name="clean" />
+        </ant>
+      </sequential>
+    </for>
+  </target>
+	
+	<target name="clean-all" depends="install-antcontrib" description="compile the source code">
+    <for list="${dev-project.list}" param="module" trim="true">
+      <sequential>
+        <ant antfile="build.xml" dir="@{module}" inheritall="false" >
+          <target name="clean-all" />
+        </ant>
+      </sequential>
+    </for>
+  </target>
+	
 </project>
