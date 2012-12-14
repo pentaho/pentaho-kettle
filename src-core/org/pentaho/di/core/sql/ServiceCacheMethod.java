@@ -1,4 +1,4 @@
-package org.pentaho.di.trans;
+package org.pentaho.di.core.sql;
 
 
 public enum ServiceCacheMethod {

@@ -2,6 +2,7 @@ package org.pentaho.di.trans;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.sql.ServiceCacheMethod;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.repository.ObjectId;

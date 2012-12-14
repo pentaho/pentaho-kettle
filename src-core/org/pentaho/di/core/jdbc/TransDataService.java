@@ -6,10 +6,10 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.pentaho.di.core.jdbc.FieldVariableMapping.MappingType;
+import org.pentaho.di.core.sql.ServiceCacheMethod;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
 import org.pentaho.di.repository.ObjectId;
-import org.pentaho.di.trans.ServiceCacheMethod;
 import org.w3c.dom.Node;
 
 /**
