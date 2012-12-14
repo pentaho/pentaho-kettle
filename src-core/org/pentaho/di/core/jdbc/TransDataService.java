@@ -8,6 +8,8 @@ import java.util.List;
 import org.pentaho.di.core.jdbc.FieldVariableMapping.MappingType;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.core.xml.XMLInterface;
+import org.pentaho.di.repository.ObjectId;
+import org.pentaho.di.trans.ServiceCacheMethod;
 import org.w3c.dom.Node;
 
 /**
@@ -25,13 +27,16 @@ public class TransDataService implements XMLInterface {
   private String name;
   
   private String fileName;
-  private String repositoryName;
-  private String repositoryId;
+  
+  private ObjectId objectId;
   
   private String serviceStepName;
+  
   private List<FieldVariableMapping> fieldVariableMappings;
   
   private boolean dual;
+  
+  private ServiceCacheMethod cacheMethod;
 
   public TransDataService() {
     this((String)null);
@@ -41,7 +46,7 @@ public class TransDataService implements XMLInterface {
    * @param name
    */
   public TransDataService(String name) {
-    this(name, null, null, null, null);
+    this(name, null, null, null, null, ServiceCacheMethod.None);
   }
 
 
@@ -49,10 +54,10 @@ public class TransDataService implements XMLInterface {
     this(
         XMLHandler.getTagValue(serviceNode, "name"),
         XMLHandler.getTagValue(serviceNode, "filename"),
-        XMLHandler.getTagValue(serviceNode, "repository_name"),
-        XMLHandler.getTagValue(serviceNode, "repository_object_id"),
+        null,
         XMLHandler.getTagValue(serviceNode, "service_step"),
-        extractFieldVariableMapping(serviceNode)
+        extractFieldVariableMapping(serviceNode),
+        ServiceCacheMethod.None
        );
   }
 
@@ -63,8 +68,8 @@ public class TransDataService implements XMLInterface {
    * @param repositoryId
    * @param serviceStepName
    */
-  public TransDataService(String name, String fileName, String repositoryName, String repositoryId, String serviceStepName) {
-    this(name, fileName, repositoryName, repositoryId, serviceStepName, new ArrayList<FieldVariableMapping>());
+  public TransDataService(String name, String fileName, ObjectId objectId, String serviceStepName) {
+    this(name, fileName, objectId, serviceStepName, new ArrayList<FieldVariableMapping>(), ServiceCacheMethod.None);
   }
   
   /**
@@ -74,13 +79,13 @@ public class TransDataService implements XMLInterface {
    * @param repositoryId
    * @param serviceStepName
    */
-  public TransDataService(String name, String fileName, String repositoryName, String repositoryId, String serviceStepName, List<FieldVariableMapping> fieldVariableMappings) {
+  public TransDataService(String name, String fileName, ObjectId objectId, String serviceStepName, List<FieldVariableMapping> fieldVariableMappings, ServiceCacheMethod cacheMethod) {
     this.name = name;
     this.fileName = fileName;
-    this.repositoryName = repositoryName;
-    this.repositoryId = repositoryId;
+    this.objectId = objectId;
     this.serviceStepName = serviceStepName;
     this.fieldVariableMappings = fieldVariableMappings;
+    this.cacheMethod = cacheMethod;
   }
 
   private static List<FieldVariableMapping> extractFieldVariableMapping(Node serviceNode) {
@@ -102,8 +107,6 @@ public class TransDataService implements XMLInterface {
     StringBuilder xml = new StringBuilder();
     xml.append(XMLHandler.addTagValue("name", name));
     xml.append(XMLHandler.addTagValue("filename", fileName));
-    xml.append(XMLHandler.addTagValue("repository_name", repositoryName));
-    xml.append(XMLHandler.addTagValue("repository_object_id", repositoryId));
     xml.append(XMLHandler.addTagValue("service_step", serviceStepName));
     xml.append(XMLHandler.openTag(XML_TAG_VARIABLE_MAPS));
     List<FieldVariableMapping> list = new ArrayList<FieldVariableMapping>(fieldVariableMappings);
@@ -155,34 +158,6 @@ public class TransDataService implements XMLInterface {
   }
 
   /**
-   * @return the repositoryName
-   */
-  public String getRepositoryName() {
-    return repositoryName;
-  }
-
-  /**
-   * @param repositoryName the repositoryName to set
-   */
-  public void setRepositoryName(String repositoryName) {
-    this.repositoryName = repositoryName;
-  }
-
-  /**
-   * @return the repositoryId
-   */
-  public String getRepositoryId() {
-    return repositoryId;
-  }
-
-  /**
-   * @param repositoryId the repositoryId to set
-   */
-  public void setRepositoryId(String repositoryId) {
-    this.repositoryId = repositoryId;
-  }
-
-  /**
    * @return the serviceStepName
    */
   public String getServiceStepName() {
@@ -222,5 +197,33 @@ public class TransDataService implements XMLInterface {
    */
   public void setFieldVariableMappings(List<FieldVariableMapping> fieldVariableMappings) {
     this.fieldVariableMappings = fieldVariableMappings;
+  }
+
+  /**
+   * @return the objectId
+   */
+  public ObjectId getObjectId() {
+    return objectId;
+  }
+
+  /**
+   * @param objectId the objectId to set
+   */
+  public void setObjectId(ObjectId objectId) {
+    this.objectId = objectId;
+  }
+
+  /**
+   * @return the cacheMethod
+   */
+  public ServiceCacheMethod getCacheMethod() {
+    return cacheMethod;
+  }
+
+  /**
+   * @param cacheMethod the cacheMethod to set
+   */
+  public void setCacheMethod(ServiceCacheMethod cacheMethod) {
+    this.cacheMethod = cacheMethod;
   }
 }

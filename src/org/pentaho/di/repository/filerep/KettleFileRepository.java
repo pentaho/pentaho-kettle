@@ -32,6 +32,8 @@ import java.util.Map;
 
 import org.apache.commons.vfs.FileName;
 import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSelectInfo;
+import org.apache.commons.vfs.FileSelector;
 import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.FileType;
 import org.pentaho.di.cluster.ClusterSchema;
@@ -73,6 +75,7 @@ import org.pentaho.di.repository.StringObjectId;
 import org.pentaho.di.repository.UserInfo;
 import org.pentaho.di.shared.SharedObjectInterface;
 import org.pentaho.di.shared.SharedObjects;
+import org.pentaho.di.trans.DataServiceMeta;
 import org.pentaho.di.trans.HasDatabasesInterface;
 import org.pentaho.di.trans.TransMeta;
 import org.w3c.dom.Document;
@@ -86,6 +89,7 @@ public class KettleFileRepository implements Repository {
 	private static final String	EXT_SLAVE_SERVER 		= ".ksl";
 	private static final String	EXT_CLUSTER_SCHEMA 		= ".kcs";
 	private static final String	EXT_PARTITION_SCHEMA	= ".kps";
+	private static final String EXT_DATA_SERVICE = ".das";
 	
 	private static final String LOG_FILE = "repository.log";
 	
@@ -280,6 +284,30 @@ public class KettleFileRepository implements Repository {
 			if (repositoryElement.getObjectId()!=null && !repositoryElement.getObjectId().equals(objectId)) {
 				delObject(repositoryElement.getObjectId());
 			}
+			
+			// See if this is a transformation & if the transformation has a defined data service.
+			// If so, we want to store a separate .das (DAta Service) file for performance reasons.
+			//
+			if (repositoryElement instanceof TransMeta) {
+	      FileObject dasFile = KettleVFS.getFileObject(calcFilename(repositoryElement.getRepositoryDirectory(), repositoryElement.getName(), EXT_DATA_SERVICE));
+
+	      // Remove possible old file
+	      //
+	      if (dasFile.exists()) {
+	        dasFile.delete();
+	      }
+	      TransMeta transMeta = (TransMeta)repositoryElement;
+			  if (transMeta.getDataService().isDefined()) {
+			    // Write new data service file
+			    //
+			    xml = transMeta.getDataService().getXML();
+		      os = KettleVFS.getOutputStream(dasFile, false);
+          os.write(XMLHandler.getXMLHeader().getBytes(Const.XML_ENCODING));
+		      os.write(xml.getBytes(Const.XML_ENCODING));
+		      os.close();
+			  }
+			}
+			
 
 			repositoryElement.setObjectId(objectId);
 		} catch(Exception e) {
@@ -1270,5 +1298,64 @@ public class KettleFileRepository implements Repository {
 
   public IRepositoryImporter getImporter() {
     return new RepositoryImporter(this);
+  }
+  
+  public synchronized List<RepositoryElementMetaInterface> listAllDataServiceTransformations() throws KettleException {
+    List<RepositoryElementMetaInterface> list = new ArrayList<RepositoryElementMetaInterface>();
+    return list;
+  }
+
+  public List<String> findDataServiceNames() {
+    List<String> list = new ArrayList<String>();
+    return list;
+  }
+  
+  @Override
+  public List<DataServiceMeta> listDataServices() throws KettleException {
+    try {
+      RepositoryDirectoryInterface tree = loadRepositoryDirectoryTree();
+      
+      List<DataServiceMeta> list = new ArrayList<DataServiceMeta>();
+      // Find all .das files in the tree...
+      //
+      FileObject rootFolder = KettleVFS.getFileObject(repositoryMeta.getBaseDirectory());
+      FileObject[] dataServiceFiles = rootFolder.findFiles(new FileSelector() {
+        
+        @Override
+        public boolean traverseDescendents(FileSelectInfo arg0) throws Exception {
+          return true;
+        }
+        
+        @Override
+        public boolean includeFile(FileSelectInfo fsi) throws Exception {
+          return EXT_DATA_SERVICE.substring(1).equalsIgnoreCase(fsi.getFile().getName().getExtension());
+        }
+      });
+      
+      for (FileObject dataServiceFile : dataServiceFiles) {
+        Document dataServiceDocument = XMLHandler.loadXMLFile(dataServiceFile);
+        Node dataServiceNode = XMLHandler.getSubNode(dataServiceDocument, DataServiceMeta.XML_TAG);
+        DataServiceMeta dataService = new DataServiceMeta(dataServiceNode);
+        
+        // Path relative to the root folder
+        //
+        String dirPath = dataServiceFile.getParent().toString().substring(rootFolder.toString().length());
+        
+        // Strip .das from name
+        //
+        String name = dataServiceFile.getName().getBaseName();
+        name = name.substring(0, name.length()-4);
+        
+        // Object ID
+        //
+        dataService.setObjectId(new StringObjectId(dirPath+"/"+name+EXT_TRANSFORMATION));
+        
+        list.add(dataService);
+      }
+      
+      return list;
+    } catch(Exception e) {
+      throw new KettleException("Error listing data services", e);
+    }
   }
 }

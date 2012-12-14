@@ -37,6 +37,7 @@ import java.util.UUID;
 
 import org.apache.log4j.spi.LoggingEvent;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
@@ -184,6 +185,8 @@ import org.pentaho.ui.xul.containers.XulMenupopup;
 import org.pentaho.ui.xul.containers.XulToolbar;
 import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.impl.XulEventHandler;
+import org.pentaho.ui.xul.jface.tags.JfaceMenuitem;
+import org.pentaho.ui.xul.jface.tags.JfaceMenupopup;
 import org.pentaho.ui.xul.swt.SwtXulLoader;
 import org.pentaho.ui.xul.swt.tags.SwtMenuitem;
 
@@ -879,6 +882,10 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
 				case STEP_COPIES_TEXT:
 				  copies((StepMeta) areaOwner.getOwner());
+				  break;
+				
+				case STEP_DATA_SERVICE:
+				  editProperties(transMeta, spoon, spoon.getRepository(), true, TransDialog.Tabs.DATA_SERVICE_TAB);
 				  break;
 				}
       } else {
@@ -2333,33 +2340,28 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             XulMenuitem item = (XulMenuitem) doc.getElementById("trans-graph-entry-newhop"); //$NON-NLS-1$
             item.setDisabled(sels != 2);
 
-            XulMenupopup launchMenu = (XulMenupopup) doc.getElementById("trans-graph-entry-launch-popup");
+            JfaceMenupopup launchMenu = (JfaceMenupopup) doc.getElementById("trans-graph-entry-launch-popup");
             String[] referencedObjects = stepMeta.getStepMetaInterface().getReferencedObjectDescriptions();
             boolean[] enabledObjects = stepMeta.getStepMetaInterface().isReferencedObjectEnabled();
             launchMenu.setDisabled(Const.isEmpty(referencedObjects));
+
+            launchMenu.removeChildren();
             
-            List<XulComponent> childNodes = launchMenu.getChildNodes();
-            for (XulComponent childNode : childNodes) {
-              item.removeChild(childNode);
-            }
             if (!Const.isEmpty(referencedObjects)) {
               for (int i=0;i<referencedObjects.length;i++) {
+                final int index = i;
                 String referencedObject = referencedObjects[i];
-                XulMenuitem child = new SwtMenuitem(launchMenu, xulDomContainer, referencedObject, i);
+                Action action = new Action(referencedObject, Action.AS_DROP_DOWN_MENU) {
+                  public void run() {
+                    openMapping(stepMeta, index);
+                  };
+                };            
+                JfaceMenuitem child = new JfaceMenuitem(null, launchMenu, xulDomContainer, referencedObject, i, action);
                 child.setLabel(referencedObject);
                 child.setDisabled(!enabledObjects[i]);
-                launchMenu.addChild(child);
-                /*
-                MenuItem swtItem = (MenuItem) child.getManagedObject();
-                final int index = i;
-                swtItem.addSelectionListener(new SelectionAdapter() {
-                  public void widgetSelected(SelectionEvent event) {
-                    openMapping(stepMeta, index);
-                  }
-                });
-                */
               }
             }
+                        
 
             item = (XulMenuitem) doc.getElementById("trans-graph-entry-align-snap"); //$NON-NLS-1$
 
@@ -2595,6 +2597,11 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           tip.append(BaseMessages.getString(PKG, "TransGraph.StepInjectionNotSupported.Tooltip")); //$NON-NLS-1$
         }
         tipImage = GUIResource.getInstance().getImageEdit();
+        break;
+      case STEP_DATA_SERVICE:
+        transMeta = (TransMeta) areaOwner.getParent();
+        tip.append(BaseMessages.getString(PKG, "TransGraph.DataServiceDefined", transMeta.getDataService().getName())); // $NON-NLS-1$
+        tipImage = GUIResource.getInstance().getImageConnection();
         break;
 			}
 		}

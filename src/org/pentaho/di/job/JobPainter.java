@@ -81,8 +81,8 @@ public class JobPainter extends BasePainter {
 
 		gc.setBackground(EColor.BACKGROUND);
 
-		hori.setThumb(thumb.x);
-		vert.setThumb(thumb.y);
+		if (hori!=null) hori.setThumb(thumb.x);
+		if (vert!=null) vert.setThumb(thumb.y);
 
 		// If there is a shadow, we draw the transformation first with an alpha
 		// setting

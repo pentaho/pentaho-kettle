@@ -93,8 +93,6 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 			if (monitor != null)
 				monitor.beginTask(BaseMessages.getString(PKG, "JobMeta.Monitor.SavingTransformation") + jobMeta.getRepositoryDirectory() + Const.FILE_SEPARATOR + jobMeta.getName(), nrWorks); //$NON-NLS-1$
 
-			repository.lockRepository();
-
 			repository.insertLogEntry("save job '" + jobMeta.getName() + "'"); //$NON-NLS-1$ //$NON-NLS-2$
 
 			// Before we start, make sure we have a valid job ID!
@@ -207,14 +205,7 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 		} catch (KettleDatabaseException dbe) {
 			repository.rollback();
 			throw new KettleException(BaseMessages.getString(PKG, "JobMeta.Exception.UnableToSaveJobInRepositoryRollbackPerformed"), dbe); //$NON-NLS-1$
-		} finally {
-			// don't forget to unlock the repository.
-			// Normally this is done by the commit / rollback statement, but hey
-			// there are some freaky database out
-			// there...
-			repository.unlockRepository();
 		}
-
 	}
 
     
@@ -420,7 +411,11 @@ public class KettleDatabaseRepositoryJobDelegate extends KettleDatabaseRepositor
 						monitor.subTask(BaseMessages.getString(PKG, "JobMeta.Monitor.FinishedLoadOfJob")); //$NON-NLS-1$
 					if (monitor != null)
 						monitor.done();
-					
+				
+          // close prepared statements, minimize locking etc.
+          //
+          repository.connectionDelegate.closeAttributeLookupPreparedStatements();
+
 					return jobMeta;
 				} else {
 					throw new KettleException(BaseMessages.getString(PKG, "JobMeta.Exception.CanNotFindJob") + jobname); //$NON-NLS-1$

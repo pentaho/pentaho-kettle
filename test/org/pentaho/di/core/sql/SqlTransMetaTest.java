@@ -19,7 +19,7 @@ public class SqlTransMetaTest extends TestCase {
 
   private List<TransDataService> getServices() {
     List<TransDataService> services = new ArrayList<TransDataService>();
-    TransDataService service = new TransDataService("Service", "testfiles/sql-transmeta-test-data.ktr", null, null, "Output");
+    TransDataService service = new TransDataService("Service", "testfiles/sql-transmeta-test-data.ktr", null, "Output");
     services.add(service);
     return services;
   }

@@ -35,13 +35,14 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.codec.binary.Base64;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
+import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepStatus;
-import org.pentaho.di.trans.step.BaseStepData.StepExecutionStatus;
 
 public class GetTransStatusServlet extends BaseHttpServlet implements CartePluginInterface {
   private static Class<?> PKG = GetTransStatusServlet.class; // for i18n purposes, needed by Translator2!! $NON-NLS-1$
@@ -77,6 +78,7 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
     } else {
       response.setCharacterEncoding("UTF-8");
       response.setContentType("text/html;charset=UTF-8");
+      
     }
 
     PrintWriter out = response.getWriter();
@@ -152,6 +154,7 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
         }
       } else {
         response.setContentType("text/html;charset=UTF-8");
+        
 
         out.println("<HTML>");
         out.println("<HEAD>");
@@ -177,6 +180,16 @@ public class GetTransStatusServlet extends BaseHttpServlet implements CartePlugi
           out.print("</tr>");
           out.print("</table>");
 
+          out.print("<p>");
+          
+          // Get the transformation image
+          //
+          // out.print("<a href=\"" + convertContextPath(GetTransImageServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "&id="+id+"\">"
+          //     + BaseMessages.getString(PKG, "TransStatusServlet.GetTransImage") + "</a>");
+          Point max = trans.getTransMeta().getMaximum();
+          max.x+=20;
+          max.y+=20;
+          out.print("<iframe height=\""+max.y+"\" width=\""+max.x+"\" seamless src=\"" + convertContextPath(GetTransImageServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(transName, "UTF-8") + "&id="+id+"\"></iframe>");
           out.print("<p>");
 
           if ((trans.isFinished() && trans.isRunning()) || (!trans.isRunning() && !trans.isPreparing() && !trans.isInitializing())) {

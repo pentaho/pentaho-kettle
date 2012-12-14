@@ -32,6 +32,11 @@ import org.pentaho.di.core.row.ValueMeta;
  *
  */
 public class XMLField implements Cloneable {
+  
+  public enum ContentType {
+    Element, Attribute,
+  }
+  
   private String fieldName;
 
   private String elementName;
@@ -51,9 +56,12 @@ public class XMLField implements Cloneable {
   private String groupingSymbol;
 
   private String nullString;
+  
+  private ContentType contentType;
 
-  public XMLField(String fieldName, String elementName, int type, String format, int length, int precision,
+  public XMLField(ContentType contentType, String fieldName, String elementName, int type, String format, int length, int precision,
       String currencySymbol, String decimalSymbol, String groupSymbol, String nullString) {
+    this.contentType = contentType;
     this.fieldName = fieldName;
     this.elementName = elementName;
     this.type = type;
@@ -67,6 +75,7 @@ public class XMLField implements Cloneable {
   }
 
   public XMLField() {
+    contentType = ContentType.Element;
   }
 
   public int compare(Object obj) {
@@ -186,5 +195,19 @@ public class XMLField implements Cloneable {
    */
   public void setElementName(String elementName) {
     this.elementName = elementName;
+  }
+
+  /**
+   * @return the contentType
+   */
+  public ContentType getContentType() {
+    return contentType;
+  }
+
+  /**
+   * @param contentType the contentType to set
+   */
+  public void setContentType(ContentType contentType) {
+    this.contentType = contentType;
   }
 }

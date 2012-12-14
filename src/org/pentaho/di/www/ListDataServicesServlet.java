@@ -23,17 +23,22 @@
 package org.pentaho.di.www;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.pentaho.di.core.Const;
 import org.pentaho.di.core.jdbc.ThinDriver;
 import org.pentaho.di.core.jdbc.TransDataService;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.trans.DataServiceMeta;
 import org.pentaho.di.trans.TransMeta;
 
 /**
@@ -78,15 +83,41 @@ public class ListDataServicesServlet extends BaseHttpServlet implements CartePlu
 
     response.getWriter().println(XMLHandler.getXMLHeader());
     response.getWriter().println(XMLHandler.openTag(XML_TAG_SERVICES));
-    for (TransDataService service : transformationMap.getSlaveServerConfig().getServices()) {
+    
+    // Copy the list locally so we can add the current repository services...
+    //
+    List<TransDataService> services = new ArrayList<TransDataService>(transformationMap.getSlaveServerConfig().getServices());
+    
+    // Add possible services from the repository...
+    //
+    Repository repository = transformationMap.getSlaveServerConfig().getRepository();
+    if (repository!=null) {
+      try {
+        List<DataServiceMeta> dataServices = repository.listDataServices();
+        for (DataServiceMeta dataService : dataServices) {
+          if (!Const.isEmpty(dataService.getName()) && !Const.isEmpty(dataService.getStepname())) {
+            services.add(new TransDataService(dataService.getName(), null, dataService.getObjectId(), dataService.getStepname()));
+          }
+        }
+      } catch(Exception e) {
+        log.logError("Unable to list extra repository services", e);
+      }
+    }
+    
+    for (TransDataService service : services) {
       response.getWriter().println(XMLHandler.openTag(XML_TAG_SERVICE));
       response.getWriter().println(XMLHandler.addTagValue("name", service.getName()));
       
       // Also include the row layout of the service step.
       //
       try {
+        TransMeta transMeta = null;
+        if (service.getObjectId()!=null) {
+          transMeta = repository.loadTransformation(service.getObjectId(), null);
+        } else {
+          transMeta = new TransMeta(service.getFileName());
+        }
         
-        TransMeta transMeta = new TransMeta(service.getFileName());
         for (String name : parameters.keySet()) {
           transMeta.setParameterValue(name, parameters.get(name));
         }

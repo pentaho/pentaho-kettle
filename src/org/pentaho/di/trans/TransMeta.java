@@ -344,6 +344,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
     /** The container object id. */
     protected String containerObjectId;
     
+    protected DataServiceMeta dataService;
+    
     /**
      * The TransformationType enum describes the various types of transformations in terms of execution,
      * including Normal, Serial Single-Threaded, and Single-Threaded.
@@ -704,6 +706,8 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         clusterSchemas = new ArrayList<ClusterSchema>();
         
         slaveStepCopyPartitionDistribution = new SlaveStepCopyPartitionDistribution();
+        
+        dataService = new DataServiceMeta();
         
         setName(null);
 		description=null;
@@ -2523,7 +2527,7 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         retval.append(channelLogTable.getXML());
         retval.append(stepLogTable.getXML());
         retval.append(metricsLogTable.getXML());
-        
+                
         retval.append("    </log>").append(Const.CR); //$NON-NLS-1$
         retval.append("    <maxdate>").append(Const.CR); //$NON-NLS-1$
         retval.append("      ").append(XMLHandler.addTagValue("connection", maxDateConnection == null ? "" : maxDateConnection.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -2600,6 +2604,10 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
         retval.append("  ").append(XMLHandler.addTagValue("modified_date", XMLHandler.date2string(modifiedDate)));
 
         retval.append("  ").append(XMLHandler.closeTag(XML_TAG_INFO)).append(Const.CR); //$NON-NLS-1$
+        
+        // Add the data service details of this transformation
+        //
+        retval.append(dataService.getXML()).append(Const.CR);
         
         retval.append("  ").append(XMLHandler.openTag(XML_TAG_NOTEPADS)).append(Const.CR); //$NON-NLS-1$
         if (notes != null) for (int i = 0; i < nrNotes(); i++)
@@ -2947,6 +2955,11 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
                     }
                 }
             }
+            
+            // Read data service metadata
+            //
+            Node dataServiceNode = XMLHandler.getSubNode(transnode, DataServiceMeta.XML_TAG);
+            dataService = new DataServiceMeta(dataServiceNode);
 
             // Read the notes...
             Node notepadsnode = XMLHandler.getSubNode(transnode, XML_TAG_NOTEPADS); //$NON-NLS-1$
@@ -7123,5 +7136,13 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   @Override
   public void setGatheringMetrics(boolean gatheringMetrics) {
     log.setGatheringMetrics(gatheringMetrics);
+  }
+  
+  public DataServiceMeta getDataService() {
+    return dataService;
+  }
+  
+  public void setDataService(DataServiceMeta dataService) {
+    this.dataService = dataService;
   }
 }

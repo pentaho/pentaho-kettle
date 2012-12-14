@@ -123,7 +123,7 @@ public class TransDataServletTest extends TestCase {
 
   private List<TransDataService> getServicesMap() {
     List<TransDataService> servicesMap = new ArrayList<TransDataService>();
-    TransDataService service = new TransDataService("Service", "testfiles/sql-transmeta-test-data.ktr", null, null, "Output");
+    TransDataService service = new TransDataService("Service", "testfiles/sql-transmeta-test-data.ktr", null, "Output");
     servicesMap.add(service);
     return servicesMap;
   }

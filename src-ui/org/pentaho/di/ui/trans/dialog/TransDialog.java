@@ -22,6 +22,8 @@
 
 package org.pentaho.di.ui.trans.dialog;
 
+import java.util.Arrays;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
@@ -71,6 +73,8 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.repository.RepositoryDirectory;
 import org.pentaho.di.repository.RepositoryDirectoryInterface;
+import org.pentaho.di.trans.DataServiceMeta;
+import org.pentaho.di.trans.ServiceCacheMethod;
 import org.pentaho.di.trans.TransDependency;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.TransMeta.TransformationType;
@@ -103,12 +107,12 @@ public class TransDialog extends Dialog
 	
 	private static Class<?> PKG = TransDialog.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-    public static enum Tabs { TRANS_TAB, PARAM_TAB, LOG_TAB, DATE_TAB, DEP_TAB, MISC_TAB, MONITOR_TAB, };
+    public static enum Tabs { TRANS_TAB, PARAM_TAB, LOG_TAB, DATE_TAB, DEP_TAB, MISC_TAB, MONITOR_TAB, DATA_SERVICE_TAB, };
   
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
 	
-	private CTabItem     wTransTab, wParamTab, wLogTab, wDateTab, wDepTab, wMiscTab, wMonitorTab;
+	private CTabItem     wTransTab, wParamTab, wLogTab, wDateTab, wDepTab, wMiscTab, wMonitorTab, wDataServiceTab;
 
 	private Text         wTransname;
 
@@ -220,6 +224,11 @@ public class TransDialog extends Dialog
   private DatabaseDialog databaseDialog;
 	private SelectionAdapter	lsModSel;
   private TextVar wStepPerfMaxSize;
+  private TextVar wServiceName;
+  private CCombo wServiceStep;
+  private Button wServiceOutput;
+  private Button wServiceAllowOptimization;
+  private CCombo wServiceCacheMethod;
 	
   public TransDialog(Shell parent, int style, TransMeta transMeta, Repository rep, Tabs currentTab)
   {
@@ -282,8 +291,9 @@ public class TransDialog extends Dialog
 		addDateTab();
 		addDepTab();
 		addMiscTab();
-        addMonitoringTab();
-		
+    addMonitoringTab();
+    addDataServiceTab();
+    
 		fdTabFolder = new FormData();
 		fdTabFolder.left  = new FormAttachment(0, 0);
 		fdTabFolder.top   = new FormAttachment(0, 0);
@@ -2034,6 +2044,153 @@ public class TransDialog extends Dialog
 
   }
 
+  private void addDataServiceTab() {
+    // ////////////////////////
+    // START OF DATA SERVICE TAB///
+    // /
+    wDataServiceTab = new CTabItem(wTabFolder, SWT.NONE);
+    wDataServiceTab.setText(BaseMessages.getString(PKG, "TransDialog.DataServiceTab.Label")); //$NON-NLS-1$
+
+    Composite wDataServiceComp = new Composite(wTabFolder, SWT.NONE);
+    props.setLook(wDataServiceComp);
+
+    FormLayout dataServiceLayout = new FormLayout();
+    dataServiceLayout.marginWidth = Const.FORM_MARGIN;
+    dataServiceLayout.marginHeight = Const.FORM_MARGIN;
+    wDataServiceComp.setLayout(dataServiceLayout);
+
+    // 
+    // Service name
+    //
+    Label wlServiceName = new Label(wDataServiceComp, SWT.LEFT);
+    wlServiceName.setText(BaseMessages.getString(PKG, "TransDialog.DataServiceName.Label")); //$NON-NLS-1$
+    wlServiceName.setToolTipText(BaseMessages.getString(PKG, "TransDialog.DataServiceName.Tooltip"));
+    props.setLook(wlServiceName);
+    FormData fdlServiceName = new FormData();
+    fdlServiceName.left = new FormAttachment(0, 0);
+    fdlServiceName.right = new FormAttachment(middle, -margin);
+    fdlServiceName.top = new FormAttachment(0, 0);
+    wlServiceName.setLayoutData(fdlServiceName);
+    wServiceName = new TextVar(transMeta, wDataServiceComp, SWT.LEFT | SWT.BORDER | SWT.SINGLE);
+    wServiceName.setToolTipText(BaseMessages.getString(PKG, "TransDialog.DataServiceName.Tooltip"));
+    props.setLook(wServiceName);
+    FormData fdServiceName = new FormData();
+    fdServiceName.left = new FormAttachment(middle, 0);
+    fdServiceName.right = new FormAttachment(100, 0);
+    fdServiceName.top = new FormAttachment(0, 0);
+    wServiceName.setLayoutData(fdServiceName);
+    wServiceName.addModifyListener(lsMod);
+
+    // 
+    // Service step
+    //
+    Label wlServiceStep = new Label(wDataServiceComp, SWT.LEFT);
+    wlServiceStep.setText(BaseMessages.getString(PKG, "TransDialog.DataServiceStep.Label")); //$NON-NLS-1$
+    wlServiceStep.setToolTipText(BaseMessages.getString(PKG, "TransDialog.DataServiceStep.Tooltip"));
+    props.setLook(wlServiceStep);
+    FormData fdlServiceStep = new FormData();
+    fdlServiceStep.left = new FormAttachment(0, 0);
+    fdlServiceStep.right = new FormAttachment(middle, -margin);
+    fdlServiceStep.top = new FormAttachment(wServiceName, margin);
+    wlServiceStep.setLayoutData(fdlServiceStep);
+    wServiceStep = new CCombo(wDataServiceComp, SWT.LEFT | SWT.BORDER | SWT.SINGLE);
+    wServiceStep.setToolTipText(BaseMessages.getString(PKG, "TransDialog.DataServiceStep.Tooltip"));
+    props.setLook(wServiceStep);
+    FormData fdServiceStep = new FormData();
+    fdServiceStep.left = new FormAttachment(middle, 0);
+    fdServiceStep.right = new FormAttachment(100, 0);
+    fdServiceStep.top = new FormAttachment(wServiceName, margin);
+    wServiceStep.setLayoutData(fdServiceStep);
+    wServiceStep.addModifyListener(lsMod);
+    String[] stepnames = transMeta.getStepNames();
+    Arrays.sort(stepnames);
+    wServiceStep.setItems(stepnames);
+    
+    // 
+    // Service step
+    //
+    Label wlServiceCacheMethod = new Label(wDataServiceComp, SWT.LEFT);
+    wlServiceCacheMethod.setText(BaseMessages.getString(PKG, "TransDialog.DataServiceCacheMethod.Label")); //$NON-NLS-1$
+    wlServiceCacheMethod.setToolTipText(BaseMessages.getString(PKG, "TransDialog.DataServiceCacheMethod.Tooltip"));
+    props.setLook(wlServiceCacheMethod);
+    FormData fdlServiceCacheMethod = new FormData();
+    fdlServiceCacheMethod.left = new FormAttachment(0, 0);
+    fdlServiceCacheMethod.right = new FormAttachment(middle, -margin);
+    fdlServiceCacheMethod.top = new FormAttachment(wServiceStep, margin);
+    wlServiceCacheMethod.setLayoutData(fdlServiceCacheMethod);
+    wServiceCacheMethod = new CCombo(wDataServiceComp, SWT.LEFT | SWT.BORDER | SWT.SINGLE);
+    wServiceCacheMethod.setToolTipText(BaseMessages.getString(PKG, "TransDialog.DataServiceCacheMethod.Tooltip"));
+    props.setLook(wServiceCacheMethod);
+    FormData fdServiceCacheMethod = new FormData();
+    fdServiceCacheMethod.left = new FormAttachment(middle, 0);
+    fdServiceCacheMethod.right = new FormAttachment(100, 0);
+    fdServiceCacheMethod.top = new FormAttachment(wServiceStep, margin);
+    wServiceCacheMethod.setLayoutData(fdServiceCacheMethod);
+    wServiceCacheMethod.addModifyListener(lsMod);
+    String[] cacheMethodDescriptions = ServiceCacheMethod.getDescriptions();
+    Arrays.sort(cacheMethodDescriptions);
+    wServiceCacheMethod.setItems(cacheMethodDescriptions);
+    
+    // 
+    // output service?
+    //
+    Label wlServiceOutput = new Label(wDataServiceComp, SWT.LEFT);
+    wlServiceOutput.setText(BaseMessages.getString(PKG, "TransDialog.DataServiceOutput.Label")); //$NON-NLS-1$
+    props.setLook(wlServiceOutput);
+    FormData fdlServiceOutput = new FormData();
+    fdlServiceOutput.left = new FormAttachment(0, 0);
+    fdlServiceOutput.right = new FormAttachment(middle, -margin);
+    fdlServiceOutput.top = new FormAttachment(wServiceCacheMethod, margin);
+    wlServiceOutput.setLayoutData(fdlServiceOutput);
+    wlServiceOutput.setEnabled(false);
+    wServiceOutput = new Button(wDataServiceComp, SWT.CHECK);
+    props.setLook(wServiceOutput);
+    FormData fdServiceOutput = new FormData();
+    fdServiceOutput.left = new FormAttachment(middle, 0);
+    fdServiceOutput.right = new FormAttachment(100, 0);
+    fdServiceOutput.top = new FormAttachment(wServiceCacheMethod, margin);
+    wServiceOutput.setLayoutData(fdServiceOutput);
+    wServiceOutput.setEnabled(false);
+
+    // 
+    // Allow optimisation?
+    //
+    Label wlServiceAllowOptimization = new Label(wDataServiceComp, SWT.LEFT);
+    wlServiceAllowOptimization.setText(BaseMessages.getString(PKG, "TransDialog.DataServiceAllowOptimization.Label")); //$NON-NLS-1$
+    props.setLook(wlServiceAllowOptimization);
+    FormData fdlServiceAllowOptimization = new FormData();
+    fdlServiceAllowOptimization.left = new FormAttachment(0, 0);
+    fdlServiceAllowOptimization.right = new FormAttachment(middle, -margin);
+    fdlServiceAllowOptimization.top = new FormAttachment(wServiceOutput, margin);
+    wlServiceAllowOptimization.setLayoutData(fdlServiceAllowOptimization);
+    wlServiceAllowOptimization.setEnabled(false);
+    wServiceAllowOptimization = new Button(wDataServiceComp, SWT.CHECK);
+    props.setLook(wServiceAllowOptimization);
+    FormData fdServiceAllowOptimization = new FormData();
+    fdServiceAllowOptimization.left = new FormAttachment(middle, 0);
+    fdServiceAllowOptimization.right = new FormAttachment(100, 0);
+    fdServiceAllowOptimization.top = new FormAttachment(wServiceOutput, margin);
+    wServiceAllowOptimization.setLayoutData(fdServiceAllowOptimization);
+    wServiceAllowOptimization.setEnabled(false);
+    
+
+    FormData fdDataServiceComp = new FormData();
+    fdDataServiceComp.left = new FormAttachment(0, 0);
+    fdDataServiceComp.top = new FormAttachment(0, 0);
+    fdDataServiceComp.right = new FormAttachment(100, 0);
+    fdDataServiceComp.bottom = new FormAttachment(100, 0);
+    wDataServiceComp.setLayoutData(fdDataServiceComp);
+
+    wDataServiceComp.layout();
+    wDataServiceTab.setControl(wDataServiceComp);
+
+    // ///////////////////////////////////////////////////////////
+    // / END OF MONITORING TAB
+    // ///////////////////////////////////////////////////////////
+
+  }
+
+  
     public void dispose()
 	{
 		shell.dispose();
@@ -2042,95 +2199,112 @@ public class TransDialog extends Dialog
 	/**
 	 * Copy information from the meta-data input to the dialog fields.
 	 */ 
-	public void getData()
-	{
-		wTransname.setText( Const.NVL(transMeta.getName(), "") );
-		wTransFilename.setText(Const.NVL(transMeta.getFilename(), "") );
-		wTransdescription.setText( Const.NVL(transMeta.getDescription(), "") );
-		wExtendeddescription.setText( Const.NVL(transMeta.getExtendedDescription(), "") );
-		wTransversion.setText( Const.NVL(transMeta.getTransversion(), "") );
-		wTransstatus.select( transMeta.getTransstatus()-1 );
-		
+  public void getData() {
+    wTransname.setText(Const.NVL(transMeta.getName(), ""));
+    wTransFilename.setText(Const.NVL(transMeta.getFilename(), ""));
+    wTransdescription.setText(Const.NVL(transMeta.getDescription(), ""));
+    wExtendeddescription.setText(Const.NVL(transMeta.getExtendedDescription(), ""));
+    wTransversion.setText(Const.NVL(transMeta.getTransversion(), ""));
+    wTransstatus.select(transMeta.getTransstatus() - 1);
 
-		if (transMeta.getCreatedUser()!=null)     wCreateUser.setText          ( transMeta.getCreatedUser() );
-		if (transMeta.getCreatedDate()!=null )    wCreateDate.setText          ( transMeta.getCreatedDate().toString() );
-		
-		if (transMeta.getModifiedUser()!=null) wModUser.setText          ( transMeta.getModifiedUser() );
-		if (transMeta.getModifiedDate()!=null) wModDate.setText          ( transMeta.getModifiedDate().toString() );
-		
-		if (transMeta.getMaxDateConnection()!=null) wMaxdateconnection.setText( transMeta.getMaxDateConnection().getName());
-		if (transMeta.getMaxDateTable()!=null)      wMaxdatetable.setText     ( transMeta.getMaxDateTable());
-		if (transMeta.getMaxDateField()!=null)      wMaxdatefield.setText     ( transMeta.getMaxDateField());
-		wMaxdateoffset.setText(Double.toString(transMeta.getMaxDateOffset()));
-		wMaxdatediff.setText(Double.toString(transMeta.getMaxDateDifference()));
+    if (transMeta.getCreatedUser() != null)
+      wCreateUser.setText(transMeta.getCreatedUser());
+    if (transMeta.getCreatedDate() != null)
+      wCreateDate.setText(transMeta.getCreatedDate().toString());
 
-		// The dependencies
-		for (int i=0;i<transMeta.nrDependencies();i++)
-		{
-			TableItem item = wFields.table.getItem(i);
-			TransDependency td = transMeta.getDependency(i);
-			
-			DatabaseMeta conn = td.getDatabase();
-			String table   = td.getTablename();
-			String field   = td.getFieldname();
-			if (conn !=null) item.setText(1, conn.getName() );
-			if (table!=null) item.setText(2, table);
-			if (field!=null) item.setText(3, field);
-		}
+    if (transMeta.getModifiedUser() != null)
+      wModUser.setText(transMeta.getModifiedUser());
+    if (transMeta.getModifiedDate() != null)
+      wModDate.setText(transMeta.getModifiedDate().toString());
 
-		// The named parameters
-		String[] parameters = transMeta.listParameters();
-		for (int idx=0;idx<parameters.length;idx++)
-		{
-			TableItem item = wParamFields.table.getItem(idx);
-			
-			String defValue;
-			try {
-				defValue = transMeta.getParameterDefault(parameters[idx]);
-			} catch (UnknownParamException e) {
-				defValue = "";
-			}
-			String description;
-			try {
-				description = transMeta.getParameterDescription(parameters[idx]);
-			} catch (UnknownParamException e) {
-				description = "";
-			}
-						
-			item.setText(1, parameters[idx]);
-			item.setText(2, Const.NVL(defValue, ""));
-			item.setText(3, Const.NVL(description, ""));
-		}
-				
-		wSizeRowset.setText(Integer.toString(transMeta.getSizeRowset()));
-		wUniqueConnections.setSelection(transMeta.isUsingUniqueConnections());
-		wShowFeedback.setSelection(transMeta.isFeedbackShown());
-        wFeedbackSize.setText(Integer.toString(transMeta.getFeedbackSize()));
-        wSharedObjectsFile.setText(Const.NVL(transMeta.getSharedObjectsFile(), ""));
-        wManageThreads.setSelection(transMeta.isUsingThreadPriorityManagment());
-		wTransformationType.setText(transMeta.getTransformationType().getDescription());
+    if (transMeta.getMaxDateConnection() != null)
+      wMaxdateconnection.setText(transMeta.getMaxDateConnection().getName());
+    if (transMeta.getMaxDateTable() != null)
+      wMaxdatetable.setText(transMeta.getMaxDateTable());
+    if (transMeta.getMaxDateField() != null)
+      wMaxdatefield.setText(transMeta.getMaxDateField());
+    wMaxdateoffset.setText(Double.toString(transMeta.getMaxDateOffset()));
+    wMaxdatediff.setText(Double.toString(transMeta.getMaxDateDifference()));
 
-		wFields.setRowNums();
-		wFields.optWidth(true);
-		
-		wParamFields.setRowNums();
-		wParamFields.optWidth(true);
-        
-		// Directory:
-		if (transMeta.getRepositoryDirectory()!=null && transMeta.getRepositoryDirectory().getPath()!=null) 
-			wDirectory.setText(transMeta.getRepositoryDirectory().getPath());
-		
-		// Performance monitoring tab:
-		//
-		wEnableStepPerfMonitor.setSelection(transMeta.isCapturingStepPerformanceSnapShots());
-		wStepPerfInterval.setText(Long.toString(transMeta.getStepPerformanceCapturingDelay()));
+    // The dependencies
+    for (int i = 0; i < transMeta.nrDependencies(); i++) {
+      TableItem item = wFields.table.getItem(i);
+      TransDependency td = transMeta.getDependency(i);
+
+      DatabaseMeta conn = td.getDatabase();
+      String table = td.getTablename();
+      String field = td.getFieldname();
+      if (conn != null)
+        item.setText(1, conn.getName());
+      if (table != null)
+        item.setText(2, table);
+      if (field != null)
+        item.setText(3, field);
+    }
+
+    // The named parameters
+    String[] parameters = transMeta.listParameters();
+    for (int idx = 0; idx < parameters.length; idx++) {
+      TableItem item = wParamFields.table.getItem(idx);
+
+      String defValue;
+      try {
+        defValue = transMeta.getParameterDefault(parameters[idx]);
+      } catch (UnknownParamException e) {
+        defValue = "";
+      }
+      String description;
+      try {
+        description = transMeta.getParameterDescription(parameters[idx]);
+      } catch (UnknownParamException e) {
+        description = "";
+      }
+
+      item.setText(1, parameters[idx]);
+      item.setText(2, Const.NVL(defValue, ""));
+      item.setText(3, Const.NVL(description, ""));
+    }
+
+    wSizeRowset.setText(Integer.toString(transMeta.getSizeRowset()));
+    wUniqueConnections.setSelection(transMeta.isUsingUniqueConnections());
+    wShowFeedback.setSelection(transMeta.isFeedbackShown());
+    wFeedbackSize.setText(Integer.toString(transMeta.getFeedbackSize()));
+    wSharedObjectsFile.setText(Const.NVL(transMeta.getSharedObjectsFile(), ""));
+    wManageThreads.setSelection(transMeta.isUsingThreadPriorityManagment());
+    wTransformationType.setText(transMeta.getTransformationType().getDescription());
+
+    wFields.setRowNums();
+    wFields.optWidth(true);
+
+    wParamFields.setRowNums();
+    wParamFields.optWidth(true);
+
+    // Directory:
+    if (transMeta.getRepositoryDirectory() != null && transMeta.getRepositoryDirectory().getPath() != null)
+      wDirectory.setText(transMeta.getRepositoryDirectory().getPath());
+
+    // Performance monitoring tab:
+    //
+    wEnableStepPerfMonitor.setSelection(transMeta.isCapturingStepPerformanceSnapShots());
+    wStepPerfInterval.setText(Long.toString(transMeta.getStepPerformanceCapturingDelay()));
     wStepPerfMaxSize.setText(Const.NVL(transMeta.getStepPerformanceCapturingSizeLimit(), ""));
-		
-		wTransname.selectAll();
-		wTransname.setFocus();
-		
-		setFlags();
-	}
+
+    // Data service metadata
+    //
+    DataServiceMeta dataService = transMeta.getDataService();
+    if (dataService != null) {
+      wServiceName.setText(Const.NVL(dataService.getName(), ""));
+      wServiceStep.setText(Const.NVL(dataService.getStepname(), ""));
+      wServiceOutput.setSelection(dataService.isOutput());
+      wServiceAllowOptimization.setSelection(dataService.isOptimizationAllowed());
+      wServiceCacheMethod.setText(dataService.getCacheMethod()==null ? "" : dataService.getCacheMethod().getDescription());
+    }
+
+    wTransname.selectAll();
+    wTransname.setFocus();
+
+    setFlags();
+  }
 	
 	public void setFlags()
     {
@@ -2145,12 +2319,11 @@ public class TransDialog extends Dialog
         // wLogSizeLimit.setEnabled(wLogfield.getSelection());
      }
 
-    private void cancel()
-	{
-		props.setScreen(new WindowProperty(shell));
-		transMeta=null;
-		dispose();
-	}
+  private void cancel() {
+    props.setScreen(new WindowProperty(shell));
+    transMeta = null;
+    dispose();
+  }
 	
 	private void ok() {
 		boolean OK = true;
@@ -2285,6 +2458,15 @@ public class TransDialog extends Dialog
 			wStepPerfInterval.selectAll();
 			OK = false;
 		}
+		
+		// Get data service details...
+		//
+		DataServiceMeta dataService = transMeta.getDataService();
+		dataService.setName(wServiceName.getText());
+    dataService.setStepname(wServiceStep.getText());
+    dataService.setOutput(wServiceOutput.getSelection());
+    dataService.setOptimizationAllowed(wServiceAllowOptimization.getSelection());
+    dataService.setCacheMethod(ServiceCacheMethod.getMethodByDescription(wServiceCacheMethod.getText()));
 
 		if (OK) {
 			transMeta.setChanged(changed || transMeta.hasChanged());
@@ -2460,6 +2642,9 @@ public class TransDialog extends Dialog
 		case MONITOR_TAB:
 			wTabFolder.setSelection(wMonitorTab);
 			break;
+    case DATA_SERVICE_TAB:
+      wTabFolder.setSelection(wDataServiceTab);
+      break;
 			
 		case TRANS_TAB:
     default:

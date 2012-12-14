@@ -39,6 +39,7 @@ import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.Const;
@@ -86,6 +87,7 @@ public class ValueMeta implements ValueMetaInterface
     private boolean  outputPaddingEnabled;
     private boolean  largeTextField;
     private Locale   dateFormatLocale;
+    private TimeZone dateFormatTimeZone;
     private boolean  dateFormatLenient;
 	private boolean lenientStringToNumber;
     
@@ -162,6 +164,7 @@ public class ValueMeta implements ValueMetaInterface
         this.decimalSymbol = ""+Const.DEFAULT_DECIMAL_SEPARATOR;
         this.groupingSymbol = ""+Const.DEFAULT_GROUPING_SEPARATOR;
         this.dateFormatLocale = Locale.getDefault();
+        this.dateFormatTimeZone = TimeZone.getDefault();
         this.identicalFormat = true;
         this.bigNumberFormatting = true;
         this.lenientStringToNumber = convertStringToBoolean( Const.NVL(System.getProperty(Const.KETTLE_LENIENT_STRING_TO_NUMBER_CONVERSION, "N"), "N") );
@@ -226,6 +229,7 @@ public class ValueMeta implements ValueMetaInterface
             valueMeta.dateFormat = null;
             valueMeta.decimalFormat = null;
             if (dateFormatLocale!=null) valueMeta.dateFormatLocale = (Locale) dateFormatLocale.clone();
+            if (dateFormatTimeZone!=null) valueMeta.dateFormatTimeZone= (TimeZone) dateFormatTimeZone.clone();
             if (storageMetadata!=null) valueMeta.storageMetadata = storageMetadata.clone();
             if (conversionMetadata!=null) valueMeta.conversionMetadata = conversionMetadata.clone();
             
@@ -620,8 +624,8 @@ public class ValueMeta implements ValueMetaInterface
         }
         catch (ParseException e)
         {
-        	String dateFormat = (getDateFormat() != null) ? getDateFormat().toPattern() : "null";
-            throw new KettleValueException(toString()+" : couldn't convert string ["+string+"] to a date using format ["+dateFormat+"]", e);
+          String dateFormat = (getDateFormat() != null) ? getDateFormat().toPattern() : "null";
+            throw new KettleValueException(toString()+" : couldn't convert string ["+string+"] to a date using format ["+dateFormat+"] on offset location "+e.getErrorOffset(), e);
         }
     }
 
@@ -753,6 +757,8 @@ public class ValueMeta implements ValueMetaInterface
                 mask = conversionMask;
             }
             
+            // Do we have a locale?
+            //
             if (dateFormatLocale==null || dateFormatLocale.equals(Locale.getDefault()))
             {
                 dateFormat = new SimpleDateFormat(mask);
@@ -760,6 +766,12 @@ public class ValueMeta implements ValueMetaInterface
             else
             {
                 dateFormat = new SimpleDateFormat(mask, dateFormatLocale);
+            }
+            
+            // Do we have a time zone?
+            //
+            if (dateFormatTimeZone!=null) {
+              dateFormat.setTimeZone(dateFormatTimeZone);
             }
             
             // Set the conversion leniency as well
@@ -2456,9 +2468,11 @@ public class ValueMeta implements ValueMetaInterface
             // date format locale?
             writeString(outputStream, dateFormatLocale!=null ? dateFormatLocale.toString() : null);
 
+            // date time zone?
+            writeString(outputStream, dateFormatTimeZone!=null ? dateFormatTimeZone.toString() : null);
+
             // string to number conversion lenient?
             outputStream.writeBoolean(lenientStringToNumber);
-
         }
         catch(IOException e)
         {
@@ -2519,53 +2533,62 @@ public class ValueMeta implements ValueMetaInterface
 	            
 	        default:
 	        	break;
-            }
+          }
             
-            // name
-            name = readString(inputStream);  
-            
-            // length & precision
-            length = inputStream.readInt();
-            precision = inputStream.readInt();
-            
-            // Origin
-            origin = readString(inputStream);
+          // name
+          name = readString(inputStream);  
+          
+          // length & precision
+          length = inputStream.readInt();
+          precision = inputStream.readInt();
+          
+          // Origin
+          origin = readString(inputStream);
 
-            // Comments
-            comments=readString(inputStream);
-            
-            // formatting Mask, decimal, grouping, currency
-            
-            conversionMask=readString(inputStream);
-            decimalSymbol=readString(inputStream);
-            groupingSymbol=readString(inputStream);
-            currencySymbol=readString(inputStream);
-            trimType=inputStream.readInt();
-            
-            // Case sensitivity
-            caseInsensitive = inputStream.readBoolean();
-            
-            // Sorting type
-            sortedDescending = inputStream.readBoolean();
-            
-            // Output padding?
-            outputPaddingEnabled = inputStream.readBoolean();
-            
-            // is date parsing lenient?
-            dateFormatLenient = inputStream.readBoolean();
-            
-            String strDateFormatLocale = readString(inputStream);
-            if (Const.isEmpty(strDateFormatLocale)) 
-            {
-                dateFormatLocale = null; 
-            }
-            else
-            {
-                dateFormatLocale = EnvUtil.createLocale(strDateFormatLocale);
-            }
-
-            // is string to number parsing lenient?
-            lenientStringToNumber = inputStream.readBoolean();
+          // Comments
+          comments=readString(inputStream);
+          
+          // formatting Mask, decimal, grouping, currency
+          
+          conversionMask=readString(inputStream);
+          decimalSymbol=readString(inputStream);
+          groupingSymbol=readString(inputStream);
+          currencySymbol=readString(inputStream);
+          trimType=inputStream.readInt();
+          
+          // Case sensitivity
+          caseInsensitive = inputStream.readBoolean();
+          
+          // Sorting type
+          sortedDescending = inputStream.readBoolean();
+          
+          // Output padding?
+          outputPaddingEnabled = inputStream.readBoolean();
+          
+          // is date parsing lenient?
+          //
+          dateFormatLenient = inputStream.readBoolean();
+          
+          // What is the date format locale?
+          //
+          String strDateFormatLocale = readString(inputStream);
+          if (Const.isEmpty(strDateFormatLocale)) {
+              dateFormatLocale = null; 
+          } else {
+              dateFormatLocale = EnvUtil.createLocale(strDateFormatLocale);
+          }
+          
+          // What is the time zone to use for date parsing?
+          //
+          String strTimeZone = readString(inputStream);
+          if (Const.isEmpty(strTimeZone)) {
+            dateFormatTimeZone = TimeZone.getDefault(); 
+          } else {
+            dateFormatTimeZone= EnvUtil.createTimeZone(strTimeZone);
+          }
+        
+          // is string to number parsing lenient?
+          lenientStringToNumber = inputStream.readBoolean();
         }
         catch(EOFException e)
         {
@@ -2650,6 +2673,7 @@ public class ValueMeta implements ValueMetaInterface
         xml.append( XMLHandler.addTagValue("output_padding", outputPaddingEnabled) );
         xml.append( XMLHandler.addTagValue("date_format_lenient", dateFormatLenient) );
         xml.append( XMLHandler.addTagValue("date_format_locale", dateFormatLocale.toString()) );
+        xml.append( XMLHandler.addTagValue("date_format_timezone", dateFormatTimeZone!=null ? dateFormatTimeZone.toString() : null) );
         xml.append( XMLHandler.addTagValue("lenient_string_to_number", lenientStringToNumber) );
         
     	xml.append(XMLHandler.closeTag(XML_META_TAG));
@@ -2732,6 +2756,13 @@ public class ValueMeta implements ValueMetaInterface
         if (!Const.isEmpty( dateFormatLocaleString ))
         {
         	dateFormatLocale = EnvUtil.createLocale(dateFormatLocaleString);
+        }
+        String dateTimeZoneString = XMLHandler.getTagValue(node, "date_format_timezone");
+        if (!Const.isEmpty( dateTimeZoneString ))
+        {
+          dateFormatTimeZone = EnvUtil.createTimeZone(dateTimeZoneString);
+        } else {
+          dateFormatTimeZone = TimeZone.getDefault();
         }
         lenientStringToNumber = "Y".equalsIgnoreCase( XMLHandler.getTagValue(node, "lenient_string_to_number") );
 	}
@@ -3786,4 +3817,19 @@ public class ValueMeta implements ValueMetaInterface
 	public void setLenientStringToNumber(boolean lenientStringToNumber) {
 		this.lenientStringToNumber = lenientStringToNumber;
 	}
+
+  /**
+   * @return the date format time zone
+   */
+  public TimeZone getDateFormatTimeZone() {
+    return dateFormatTimeZone;
+  }
+
+  /**
+   * @param dateFormatTimeZone the date format time zone to set
+   */
+  public void setDateFormatTimeZone(TimeZone dateFormatTimeZone) {
+    this.dateFormatTimeZone = dateFormatTimeZone;
+    dateFormatChanged = true;
+  }  
 }

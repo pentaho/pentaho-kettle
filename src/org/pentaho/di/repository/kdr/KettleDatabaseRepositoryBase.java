@@ -380,52 +380,63 @@ public class KettleDatabaseRepositoryBase {
 	public static final String FIELD_JOB_LOCK_LOCK_MESSAGE = "LOCK_MESSAGE";
 	public static final String FIELD_JOB_LOCK_LOCK_DATE = "LOCK_DATE";
 
+	public static final String TABLE_R_TRANS_DATA_SERVICE = "R_TRANS_DATA_SERVICE";
+  public static final String FIELD_TRANS_DATA_SERVICE_ID_TRANS_DATA_SERVICE = "ID_TRANS_DATA_SERVICE";
+  public static final String FIELD_TRANS_DATA_SERVICE_ID_TRANS = "ID_TRANS";
+  public static final String FIELD_TRANS_DATA_SERVICE_SERVICE_NAME = "SERVICE_NAME";
+  public static final String FIELD_TRANS_DATA_SERVICE_STEP_NAME = "STEP_NAME";
+  public static final String FIELD_TRANS_DATA_SERVICE_IS_OUTPUT = "IS_OUTPUT";
+  public static final String FIELD_TRANS_DATA_SERVICE_ALLOW_OPTIMIZATION = "ALLOW_OPTIMIZATION";
+  public static final String FIELD_TRANS_DATA_SERVICE_CACHE_METHOD = "CACHE_METHOD";
+
 
     public static final String repositoryTableNames[] = new String[] 
          { 
-    		  TABLE_R_CLUSTER
-    		, TABLE_R_CLUSTER_SLAVE
-    		, TABLE_R_CONDITION
-    		, TABLE_R_DATABASE
-    		, TABLE_R_DATABASE_ATTRIBUTE
-    		, TABLE_R_DATABASE_CONTYPE
-    		, TABLE_R_DATABASE_TYPE
-    		, TABLE_R_DEPENDENCY
-    		, TABLE_R_DIRECTORY
-    		, TABLE_R_JOB
-    		, TABLE_R_JOBENTRY
-    		, TABLE_R_JOBENTRY_ATTRIBUTE
-    		, TABLE_R_JOBENTRY_COPY
-    		, TABLE_R_JOBENTRY_DATABASE
-    		, TABLE_R_JOBENTRY_TYPE
-    		, TABLE_R_JOB_HOP
-    		, TABLE_R_JOB_NOTE
-    		, TABLE_R_LOG
-    		, TABLE_R_LOGLEVEL
-    		, TABLE_R_NOTE
-    		, TABLE_R_PARTITION
-    		, TABLE_R_PARTITION_SCHEMA
-    		, TABLE_R_REPOSITORY_LOG
-    		, TABLE_R_SLAVE
-    		, TABLE_R_STEP
-    		, TABLE_R_STEP_ATTRIBUTE
-    		, TABLE_R_STEP_DATABASE
-    		, TABLE_R_STEP_TYPE
-    		, TABLE_R_TRANSFORMATION
-    		, TABLE_R_TRANS_ATTRIBUTE
-    		, TABLE_R_JOB_ATTRIBUTE
-    		, TABLE_R_TRANS_CLUSTER
-    		, TABLE_R_TRANS_HOP
-    		, TABLE_R_TRANS_NOTE
-    		, TABLE_R_TRANS_PARTITION_SCHEMA
-    		, TABLE_R_TRANS_SLAVE
-    		, TABLE_R_TRANS_STEP_CONDITION
-    		, TABLE_R_USER
-    		, TABLE_R_VALUE
-    		, TABLE_R_VERSION
-    		, TABLE_R_TRANS_LOCK
-    		, TABLE_R_JOB_LOCK
-         };
+              TABLE_R_CLUSTER
+            , TABLE_R_CLUSTER_SLAVE
+            , TABLE_R_CONDITION
+            , TABLE_R_DATABASE
+            , TABLE_R_DATABASE_ATTRIBUTE
+            , TABLE_R_DATABASE_CONTYPE
+            , TABLE_R_DATABASE_TYPE
+            , TABLE_R_DEPENDENCY
+            , TABLE_R_DIRECTORY
+            , TABLE_R_JOB
+            , TABLE_R_JOBENTRY
+            , TABLE_R_JOBENTRY_ATTRIBUTE
+            , TABLE_R_JOBENTRY_COPY
+            , TABLE_R_JOBENTRY_DATABASE
+            , TABLE_R_JOBENTRY_TYPE
+            , TABLE_R_JOB_ATTRIBUTE
+            , TABLE_R_JOB_HOP
+            , TABLE_R_JOB_LOCK
+            , TABLE_R_JOB_NOTE
+            , TABLE_R_LOG
+            , TABLE_R_LOGLEVEL
+            , TABLE_R_NOTE
+            , TABLE_R_PARTITION
+            , TABLE_R_PARTITION_SCHEMA
+            , TABLE_R_REPOSITORY_LOG
+            , TABLE_R_SLAVE
+            , TABLE_R_STEP
+            , TABLE_R_STEP_ATTRIBUTE
+            , TABLE_R_STEP_DATABASE
+            , TABLE_R_STEP_TYPE
+            , TABLE_R_TRANSFORMATION
+            , TABLE_R_TRANS_ATTRIBUTE
+            , TABLE_R_TRANS_CLUSTER
+            , TABLE_R_TRANS_DATA_SERVICE
+            , TABLE_R_TRANS_HOP
+            , TABLE_R_TRANS_LOCK
+            , TABLE_R_TRANS_NOTE
+            , TABLE_R_TRANS_PARTITION_SCHEMA
+            , TABLE_R_TRANS_SLAVE
+            , TABLE_R_TRANS_STEP_CONDITION
+            , TABLE_R_USER
+            , TABLE_R_VALUE
+            , TABLE_R_VERSION
+         }
+         ;
 
     /** The maximum length of a text field in a Kettle repository : 2.000.000 is enough for everyone ;-) */ 
     public static final int REP_STRING_LENGTH      = 2000000;

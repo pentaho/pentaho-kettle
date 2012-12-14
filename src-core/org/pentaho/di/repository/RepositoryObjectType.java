@@ -32,6 +32,7 @@ public enum RepositoryObjectType {
 	PARTITION_SCHEMA("partition schema", ".kps"),
 	STEP("step", ".kst"),
 	JOB_ENTRY("job entry", ".kje"),
+  TRANS_DATA_SERVICE("transformation data service", ".das"),
 	PLUGIN("plugin", ""),
   UNKNOWN("unknown", ""),
 	

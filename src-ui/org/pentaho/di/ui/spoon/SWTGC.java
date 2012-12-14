@@ -142,6 +142,7 @@ public class SWTGC implements GCInterface {
 		case COPY_ROWS: return GUIResource.getInstance().getImageCopyHop();
     case LOAD_BALANCE: return GUIResource.getInstance().getImageBalance();
     case CHECKPOINT: return GUIResource.getInstance().getImageCheckpoint();
+    case DB : return GUIResource.getInstance().getImageConnection();
 		case PARALLEL: return GUIResource.getInstance().getImageParallelHop();
 		case UNCONDITIONAL: return GUIResource.getInstance().getImageUnconditionalHop();
 		case BUSY: return GUIResource.getInstance().getImageBusy();

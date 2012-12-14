@@ -35,6 +35,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.codec.binary.Base64;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
+import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -166,6 +167,18 @@ public class GetJobStatusServlet extends BaseHttpServlet implements CartePluginI
           out.print("</table>");
 
           out.print("<p>");
+
+          // Show job image?
+          //
+          Point max = job.getJobMeta().getMaximum();
+          max.x+=20;
+          max.y+=20;
+          out.print("<iframe height=\""+max.y+"\" width=\""+max.x+"\" seamless src=\"" + convertContextPath(GetJobImageServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(jobName, "UTF-8") + "&id="+id+"\"></iframe>");
+          out.print("<p>");
+
+          // out.print("<a href=\"" + convertContextPath(GetJobImageServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(Const.NVL(jobName, ""), "UTF-8") + "&id="+id+"\">"
+          //     + BaseMessages.getString(PKG, "GetJobImageServlet.GetJobImage") + "</a>");
+          // out.print("<p>");
 
           if (job.isFinished()) {
             out.print("<a href=\"" + convertContextPath(StartJobServlet.CONTEXT_PATH) + "?name=" + URLEncoder.encode(Const.NVL(jobName, ""), "UTF-8") + "&id="+id+"\">"

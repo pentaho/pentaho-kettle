@@ -871,6 +871,16 @@ public class TransPainter extends BasePainter
         	}
         }
         
+        // Is this step a data service provider?
+        //
+        DataServiceMeta dataService = transMeta.getDataService();
+        if (dataService.isDefined() && stepMeta.getName().equalsIgnoreCase(transMeta.getDataService().getStepname())) {
+          // Draw a database icon in the upper right corner.
+          //
+          gc.drawImage(EImage.DB, x-8+iconsize, y-8);
+          areaOwners.add(new AreaOwner(AreaType.STEP_DATA_SERVICE, x-8+iconsize, y-8, 16, 16, offset, transMeta, stepMeta));
+        }
+        
         // Restore the previous alpha value
         //
         gc.setAlpha(alpha);
