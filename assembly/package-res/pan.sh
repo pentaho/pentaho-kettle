@@ -14,15 +14,15 @@ cd - > /dev/null
 setPentahoEnv
 
 CLASSPATH=$BASEDIR
-CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-core.jar
-CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-db.jar
-CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-engine.jar
+CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-core-TRUNK-SNAPSHOT.jar
+CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-db-TRUNK-SNAPSHOT.jar
+CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle-engine-TRUNK-SNAPSHOT.jar
 
 # **************************************************
 # ** JDBC & other libraries used by Kettle:       **
 # **************************************************
 
-for f in `find $BASEDIR/libext -type f -name "*.jar"` `find $BASEDIR/libext -type f -name "*.zip"`
+for f in `find $BASEDIR/lib -type f -name "*.jar"` `find $BASEDIR/lib -type f -name "*.zip"`
 do
   CLASSPATH=$CLASSPATH:$f
 done
@@ -57,7 +57,7 @@ fi
 OPT="$PENTAHO_DI_JAVA_OPTIONS -cp $CLASSPATH -DDI_HOME=$DIR -DKETTLE_HOME=$KETTLE_HOME -DKETTLE_REPOSITORY=$KETTLE_REPOSITORY -DKETTLE_USER=$KETTLE_USER -DKETTLE_PASSWORD=$KETTLE_PASSWORD -DKETTLE_PLUGIN_PACKAGES=$KETTLE_PLUGIN_PACKAGES -DKETTLE_LOG_SIZE_LIMIT=$KETTLE_LOG_SIZE_LIMIT -DKETTLE_JNDI_ROOT=$KETTLE_JNDI_ROOT"
 
 if [ "$1" = "-x" ]; then
-  set LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$BASEDIR/libext
+  set LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$BASEDIR/lib
   export LD_LIBRARY_PATH
   OPT="-Xruntracer $OPT"
   shift

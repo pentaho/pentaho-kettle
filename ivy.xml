@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ivy-module version="2.0">
+  <info organisation="pentaho" module="pentaho-kettle" revision="${project.revision}" />
+  <configurations>
+    <conf name="default" />
+    <conf name="test" visibility="private" />
+    <conf name="swtlibs"/>
+  </configurations>
+  
+  <dependencies defaultconf="default->default">
+    <!-- Saxon -->
+    <dependency org="net.sf.saxon" name="saxon-dom" rev="9.1.0.8" transitive="false"/>
+  </dependencies>
+</ivy-module>

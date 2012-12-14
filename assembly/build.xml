@@ -58,5 +58,7 @@
 	    <ivy:retrieve conf="swtlibs" pattern="${swtlib.dir}/[module]-[revision](-[classifier]).[ext]" symlink="${ivy.use.symlinks.internal}" />
 	  </target>
 	
-	
+	    <target name="package.lib" depends="resolve">
+	      <jar jarfile="dist/${lib.zip.filename}" basedir="lib" />
+	    </target>	
 </project>
