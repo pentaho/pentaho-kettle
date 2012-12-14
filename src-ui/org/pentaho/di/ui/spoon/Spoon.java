@@ -2173,6 +2173,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
     }
 
     if (showTrans) {
+      selectionLabel.setText(BaseMessages.getString(PKG,"Spoon.Steps"));
       // Fill the base components...
       //
       // ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2257,6 +2258,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       // JOBS
       // ////////////////////////////////////////////////////////////////////////////////////////////////
 
+      selectionLabel.setText(BaseMessages.getString(PKG,"Spoon.Entries"));
       PluginRegistry registry = PluginRegistry.getInstance();
       List<PluginInterface> baseJobEntries = registry.getPlugins(JobEntryPluginType.class);
       List<String> baseCategories = registry.getCategories(JobEntryPluginType.class);
