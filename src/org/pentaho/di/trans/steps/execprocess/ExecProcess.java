@@ -216,8 +216,18 @@ public class ExecProcess extends BaseStep implements StepInterface
     {
    	   StringBuffer retvalBuff=new StringBuffer();
    	   String line;	
-   		while ((line = b.readLine()) != null) 
-   		{
+   	   String delim = meta.getOutputLineDelimiter();
+   	   if (delim == null) {
+   	     delim = "";
+   	   } else {
+   	     delim = environmentSubstitute(delim);
+   	   }
+   	     	   
+   	  while ((line = b.readLine()) != null) 
+      {
+   	    if (retvalBuff.length() > 0) {
+   	     retvalBuff.append(delim);
+   	    }
    			retvalBuff.append(line);
    		}
    		return retvalBuff.toString();

@@ -84,6 +84,11 @@ public class ExecProcessDialog extends BaseStepDialog implements StepDialogInter
 	private Label        wlFailWhenNotSuccess;
 	private Button       wFailWhenNotSuccess;
 	private FormData     fdlFailWhenNotSuccess, fdFailWhenNotSuccess;
+	
+  private Label        wlOutputDelim;
+  private TextVar      wOutputDelim;
+  private FormData     fdlOutputDelim, fdOutputDelim;
+	
 
 	private ExecProcessMeta input;
 	private boolean gotPreviousFields=false;
@@ -206,6 +211,27 @@ public class ExecProcessDialog extends BaseStepDialog implements StepDialogInter
 			}
 		);
 
+    // Output Line Delimiter
+    wlOutputDelim=new Label(shell, SWT.RIGHT);
+    wlOutputDelim.setText(BaseMessages.getString(PKG, "ExecProcessDialog.OutputDelimiterField.Label")); //$NON-NLS-1$
+    props.setLook(wlOutputDelim);
+    fdlOutputDelim=new FormData();
+    fdlOutputDelim.left = new FormAttachment(0, 0);
+    fdlOutputDelim.right= new FormAttachment(middle, -margin);
+    fdlOutputDelim.top  = new FormAttachment(wFailWhenNotSuccess, margin);
+    wlOutputDelim.setLayoutData(fdlOutputDelim);
+    wOutputDelim=new TextVar(transMeta, shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+    wOutputDelim.setToolTipText(BaseMessages.getString(PKG, "ExecProcessDialog.OutputDelimiterField.Tooltip"));
+    props.setLook(wOutputDelim);
+    wOutputDelim.addModifyListener(lsMod);
+    fdOutputDelim=new FormData();
+    fdOutputDelim.left = new FormAttachment(middle, 0);
+    fdOutputDelim.top  = new FormAttachment(wFailWhenNotSuccess, margin);
+    fdOutputDelim.right= new FormAttachment(100, 0);
+    wOutputDelim.setLayoutData(fdOutputDelim);
+		
+		
+		
 		///////////////////////////////// 
 		// START OF OUTPUT Fields GROUP  //
 		///////////////////////////////// 
@@ -279,11 +305,9 @@ public class ExecProcessDialog extends BaseStepDialog implements StepDialogInter
 		fdExitValue.right= new FormAttachment(100, 0);
 		wExitValue.setLayoutData(fdExitValue);
 		
-		
-		
 		fdOutputFields= new FormData();
 		fdOutputFields.left = new FormAttachment(0, margin);
-		fdOutputFields.top = new FormAttachment(wFailWhenNotSuccess, 2*margin);
+		fdOutputFields.top = new FormAttachment(wOutputDelim, 2*margin);
 		fdOutputFields.right = new FormAttachment(100, -margin);
 		wOutputFields.setLayoutData(fdOutputFields);
 		
@@ -340,6 +364,7 @@ public class ExecProcessDialog extends BaseStepDialog implements StepDialogInter
 		if (input.getResultFieldName()!=null)   wResult.setText(input.getResultFieldName());	
 		if (input.getErrorFieldName()!=null)   wError.setText(input.getErrorFieldName());	
 		if (input.getExitValueFieldName()!=null)   wExitValue.setText(input.getExitValueFieldName());	
+		if (input.getOutputLineDelimiter() != null) wOutputDelim.setText(input.getOutputLineDelimiter());
 		wFailWhenNotSuccess.setSelection(input.isFailWhenNotSuccess());
 		wStepname.selectAll();
 	}
@@ -359,6 +384,7 @@ public class ExecProcessDialog extends BaseStepDialog implements StepDialogInter
 		input.setErrorFieldName(wError.getText() );
 		input.setExitValueFieldName(wExitValue.getText() );
 		input.setFailWhentNoSuccess(wFailWhenNotSuccess.getSelection());
+		input.setOutputLineDelimiter(wOutputDelim.getText());
 		stepname = wStepname.getText(); // return value
 		
 		dispose();
