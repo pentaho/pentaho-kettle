@@ -8,7 +8,7 @@
   
   See subfloor.xml for more details
 ============================================================================-->
-<project name="Publish Kettle Core Jar" basedir="." default="help" 
+<project name="Publish Kettle UI Jar" basedir="." default="help" 
   xmlns:ivy="antlib:org.apache.ivy.ant" >
   
   <description>
@@ -29,7 +29,7 @@
 
     
   <property name="kettle.module.list"
-            value="kettle-core"
+            value="kettle-ui"
             description="The list of kettle modules" />
 
   <!-- Import the common_build.xml file which contains all the default tasks -->  
