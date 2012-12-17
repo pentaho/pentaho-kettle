@@ -24,9 +24,9 @@
 
   <import file="build-res/subfloor-pkg.xml" />
 
-  <target name="dist" depends="init,resolve,resolve-swtlibs,package" description="Builds and packages the application"/>
+  <target name="dist" depends="init,resolve,resolve-swtlibs,resolve-launcher,package" description="Builds and packages the application"/>
   	
-	<target name="assemble-full" depends="init,resolve,resolve-swtlibs,assemble" description="Builds the application" />
+	<target name="assemble-full" depends="init,resolve,resolve-swtlibs,resolve-launcher,assemble" description="Builds the application" />
 
 	
   <target name="assemble" depends="subfloor-pkg.assemble" description="copy jar files to distribution directory" >
@@ -61,4 +61,9 @@
 	    <target name="package.lib" depends="resolve">
 	      <jar jarfile="dist/${lib.zip.filename}" basedir="lib" />
 	    </target>	
+	
+	 <target name="resolve-launcher" depends="install-ivy">
+      <ivy:resolve file="${ivyfile}" conf="launcher" />
+      <ivy:retrieve conf="launcher" pattern="${stage.dir}/${package.root.dir}/launcher/[module].[ext]" symlink="${ivy.use.symlinks.internal}" />
+    </target>
 </project>
