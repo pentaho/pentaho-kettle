@@ -20,8 +20,8 @@
     <!--  external dependencies -->
     <dependency org="commons-beanutils"   name="commons-beanutils"   rev="1.8.0"            transitive="false"/>
     <dependency org="commons-codec"       name="commons-codec"       rev="1.4"              transitive="false"/>
-    <dependency org="commons-collections" name="commons-collections" rev="3.2"              transitive="false"/>
-    <dependency org="commons-logging"     name="commons-logging"     rev="1.1"              transitive="false"/>
+    <dependency org="commons-collections" name="commons-collections" rev="3.2.1"            transitive="false"/>
+    <dependency org="commons-logging"     name="commons-logging"     rev="1.1.1"            transitive="false"/>
     <dependency org="commons-lang"        name="commons-lang"        rev="2.6"              transitive="false"/>
     <dependency org="commons-httpclient"  name="commons-httpclient"  rev="3.1"              transitive="false"/>
     <dependency org="commons-vfs"         name="commons-vfs"         rev="20091118-pentaho" transitive="false"/>

@@ -15,20 +15,19 @@
   </publications>  
   
   <dependencies defaultconf="default-ext->default">
-    <dependency org="pentaho-kettle" name="kettle-core"  rev="${dependency.kettle.revision}" changing="true"/>  
-    <dependency org="pentaho-kettle" name="kettle-engine" rev="${dependency.kettle.revision}" changing="true"/>  
-    <dependency org="pentaho-kettle" name="kettle-db" rev="${dependency.kettle.revision}" changing="true"/>  
-    <dependency org="pentaho" name="pentaho-xul-core" rev="${dependency.pentaho-xul.revision}" changing="true">
-      <artifact name="pentaho-xul-core"/>
-      <artifact name="pentaho-xul-core" type="source" ext="jar" m:classifier="sources"/>
-    </dependency>
-    <dependency org="pentaho" name="pentaho-xul-swt" rev="${dependency.pentaho-xul.revision}" conf="default->default"
-                changing="true" transitive="false"/>
-    <dependency org="pentaho" name="pentaho-xul-swing" rev="${dependency.pentaho-xul.revision}" conf="default->default"
-                changing="true" transitive="false"/>
-    <!-- SWT it required to compile any version of any architecture will work -->
-    <dependency org="org.eclipse.swt"     name="swt-linux-x86_64"    rev="3.7"              transitive="false" />
+    <dependency org="pentaho-kettle"  name="kettle-core"       rev="${dependency.kettle.revision}" changing="true" transitive="false"/>  
+    <dependency org="pentaho-kettle"  name="kettle-engine"     rev="${dependency.kettle.revision}" changing="true" transitive="false"/>  
+    <dependency org="pentaho-kettle"  name="kettle-db"         rev="${dependency.kettle.revision}" changing="true" transitive="false"/>  
+    <dependency org="pentaho"         name="pentaho-xul-core"  rev="${dependency.pentaho-xul.revision}" changing="true" transitive="false"/>
+    <dependency org="pentaho"         name="pentaho-xul-swt"   rev="${dependency.pentaho-xul.revision}" conf="default->default" changing="true" transitive="false"/>
+    <dependency org="pentaho"         name="pentaho-xul-swing" rev="${dependency.pentaho-xul.revision}" conf="default->default" changing="true" transitive="false"/>
     
-    <dependency org="junit" name="junit" rev="4.7" conf="test->default" />
+    <dependency org="commons-lang"    name="commons-lang"      rev="2.6" transitive="false"/>
+    <dependency org="dom4j"           name="dom4j"             rev="1.6.1" transitive="false"/>
+    
+    <!-- SWT it required to compile any version of any architecture will work -->
+    <dependency org="org.eclipse.swt" name="swt-linux-x86_64"  rev="3.7" transitive="false" />
+    
+    <dependency org="junit" name="junit" rev="4.7" conf="test->default" transitive="false"/>
   </dependencies>
 </ivy-module>
