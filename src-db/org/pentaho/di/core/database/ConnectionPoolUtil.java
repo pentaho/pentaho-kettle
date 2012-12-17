@@ -54,7 +54,7 @@ public class ConnectionPoolUtil
         	String name = dbMeta.getName()+Const.NVL(partitionId, "");;
             return Const.indexOfString(name, pd.getPoolNames())>=0;
         } 
-        catch (SQLException e)
+        catch (Exception e)
         {
             throw new KettleDatabaseException(BaseMessages.getString(PKG, "Database.UnableToCheckIfConnectionPoolExists.Exception"), e);
         }
