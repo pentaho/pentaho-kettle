@@ -84,6 +84,12 @@
     <dependency org="com.sun.jersey"                   name="jersey-bundle" rev="1.16" transitive="false" />
     <dependency org="com.sun.jersey"                   name="jersey-client" rev="1.16" transitive="false" />
     <dependency org="com.sun.jersey"                   name="jersey-json" rev="1.16" transitive="false" />
+    
+    <!--  These are needed by Agile BI / Analyzer, or other plugins that use Spring -->
+    <dependency org="com.sun.jersey"                   name="jersey-server" rev="1.16" transitive="false" />
+    <dependency org="com.sun.jersey"                   name="jersey-servlet" rev="1.16" transitive="false" />
+    <dependency org="com.sun.jersey.contribs"          name="jersey-spring" rev="1.16" transitive="false" />
+    
     <dependency org="georss-rome"                      name="georss-rome" rev="0.9.8" transitive="false"/>
     <dependency org="rome"                             name="rome" rev="1.0" transitive="false"/>
     <dependency org="org.apache.axis"                  name="axis" rev="1.4" transitive="false"/>
