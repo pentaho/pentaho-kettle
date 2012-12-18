@@ -20,7 +20,7 @@
     <dependency org="${ivy.artifact.group}"  name="kettle-core"     rev="${dependency.kettle.revision}" changing="true" transitive="true"/>
     <dependency org="${ivy.artifact.group}"  name="kettle-engine"   rev="${dependency.kettle.revision}" changing="true" transitive="false"/>
     
-    <dependency org="commons-logging" name="commons-logging" rev="1.1" transitive="false" />
+    <dependency org="commons-logging" name="commons-logging" rev="1.1.1" transitive="false" />
     <dependency org="commons-vfs"     name="commons-vfs"     rev="20091118-pentaho" transitive="false"/>
      
     <dependency org="junit"          name="junit"         rev="4.7" transitive="false" conf="test->default"/>          

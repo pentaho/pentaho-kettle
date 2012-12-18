@@ -55,8 +55,8 @@
     <dependency org="org.apache.poi"                   name="poi"              rev="3.8"                            transitive="false" />
     <dependency org="org.apache.poi"                   name="poi-ooxml"        rev="3.8"                            transitive="false" />
     <dependency org="org.apache.poi"                   name="poi-ooxml-schemas" rev="3.8"                           transitive="false" />
-    <dependency org="org.codehaus.jackson"             name="jackson-core-asl"   rev="1.5.2" changing="true" transitive="false"/>
-    <dependency org="org.codehaus.jackson"             name="jackson-mapper-asl" rev="1.5.2" changing="true" transitive="false"/>
+    <dependency org="org.codehaus.jackson"             name="jackson-core-asl"   rev="1.9.2" changing="true" transitive="false"/>
+    <dependency org="org.codehaus.jackson"             name="jackson-mapper-asl" rev="1.9.2" changing="true" transitive="false"/>
     <dependency org="dom4j"                            name="dom4j" rev="1.6.1" transitive="false" />
     <dependency org="org.drools"                       name="drools-api"       rev="5.0.1"                          transitive="false" />
     <dependency org="elasticsearch"                    name="elasticsearch" rev="0.16.3" transitive="false"/>
