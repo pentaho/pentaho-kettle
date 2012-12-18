@@ -34,9 +34,6 @@
     <!-- make JavaApplicationStub executable for OSX -->
     <chmod file="${approot.stage.dir}/Data Integration 32-bit.app/Contents/MacOS/JavaApplicationStub" perm="ugo+rx"/>
     <chmod file="${approot.stage.dir}/Data Integration 64-bit.app/Contents/MacOS/JavaApplicationStub" perm="ugo+rx"/>
-
-    <!-- LICENSE.txt -->
-		<copy todir="${approot.stage.dir}/" file="../LICENSE.txt" />
   	
     <!-- Unzip the libswt package into the libswt folder of the distribution -->
     <unzip dest="${stage.dir}/${package.root.dir}" overwrite="true">
