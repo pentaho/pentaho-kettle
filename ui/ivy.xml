@@ -15,10 +15,10 @@
   </publications>  
     
   <dependencies defaultconf="default->default">
-    <dependency org="pentaho-kettle" name="kettle-core"     rev="${dependency.kettle.revision}" changing="true" transitive="false"/>  
-    <dependency org="pentaho-kettle" name="kettle-engine"   rev="${dependency.kettle.revision}" changing="true" transitive="false"/>
-    <dependency org="pentaho-kettle" name="kettle-db"       rev="${dependency.kettle.revision}" changing="true" transitive="false"/>
-    <dependency org="pentaho-kettle" name="kettle-dbdialog" rev="${dependency.kettle.revision}" changing="true" transitive="false"/>
+    <dependency org="${ivy.artifact.group}" name="kettle-core"     rev="${dependency.kettle.revision}" changing="true" transitive="false"/>  
+    <dependency org="${ivy.artifact.group}" name="kettle-engine"   rev="${dependency.kettle.revision}" changing="true" transitive="false"/>
+    <dependency org="${ivy.artifact.group}" name="kettle-db"       rev="${dependency.kettle.revision}" changing="true" transitive="false"/>
+    <dependency org="${ivy.artifact.group}" name="kettle-dbdialog" rev="${dependency.kettle.revision}" changing="true" transitive="false"/>
     
     <!--  external dependencies -->
     <dependency org="org.antlr"           name="antlr"               rev="3.4-complete"     transitive="false"/>

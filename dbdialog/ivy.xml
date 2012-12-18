@@ -15,9 +15,9 @@
   </publications>  
   
   <dependencies defaultconf="default-ext->default">
-    <dependency org="pentaho-kettle"  name="kettle-core"       rev="${dependency.kettle.revision}" changing="true" transitive="false"/>  
-    <dependency org="pentaho-kettle"  name="kettle-engine"     rev="${dependency.kettle.revision}" changing="true" transitive="false"/>  
-    <dependency org="pentaho-kettle"  name="kettle-db"         rev="${dependency.kettle.revision}" changing="true" transitive="false"/>  
+    <dependency org="${ivy.artifact.group}"  name="kettle-core"       rev="${dependency.kettle.revision}" changing="true" transitive="false"/>  
+    <dependency org="${ivy.artifact.group}"  name="kettle-engine"     rev="${dependency.kettle.revision}" changing="true" transitive="false"/>  
+    <dependency org="${ivy.artifact.group}"  name="kettle-db"         rev="${dependency.kettle.revision}" changing="true" transitive="false"/>  
     <dependency org="pentaho"         name="pentaho-xul-core"  rev="${dependency.pentaho-xul.revision}" changing="true" transitive="false"/>
     <dependency org="pentaho"         name="pentaho-xul-swt"   rev="${dependency.pentaho-xul.revision}" conf="default->default" changing="true" transitive="false"/>
     <dependency org="pentaho"         name="pentaho-xul-swing" rev="${dependency.pentaho-xul.revision}" conf="default->default" changing="true" transitive="false"/>
