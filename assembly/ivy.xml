@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0">
-  <info organisation="pentaho" module="pentaho-kettle-assembly" revision="${project.revision}" />
+  <info organisation="${ivy.artifact.group}" module="pentaho-kettle-assembly" revision="${project.revision}" />
   <configurations>
     <conf name="default" />
     <conf name="test" visibility="private" />
@@ -10,14 +10,14 @@
   
   <dependencies defaultconf="default->default">
     <!-- Pentaho -->
-    <dependency org="pentaho-kettle"       name="kettle-core"     rev="${project.revision}" changing="true" transitive="true" />
-    <dependency org="pentaho-kettle"       name="kettle-db"       rev="${project.revision}" changing="true" transitive="true" />
-    <dependency org="pentaho-kettle"       name="kettle-engine"   rev="${project.revision}" changing="true" transitive="true" />
-    <dependency org="pentaho-kettle"       name="kettle-dbdialog" rev="${project.revision}" changing="true" transitive="true" />
-    <dependency org="pentaho-kettle"       name="kettle-jdbc"     rev="${project.revision}" changing="true" transitive="true" />
-    <dependency org="pentaho-kettle"       name="kettle-ui-swt"   rev="${project.revision}" changing="true" transitive="true" />
-    <dependency org="pentaho"              name="launcher"        rev="1.0.0" conf="launcher->default"/>
-    <dependency org="pentaho"              name="pentaho-hadoop-hive-jdbc-shim" rev="${pentaho.haddop.hive.shim.version}" transitive="false"/>
+    <dependency org="${ivy.artifact.group}" name="kettle-core"     rev="${project.revision}" changing="true" transitive="true" />
+    <dependency org="${ivy.artifact.group}" name="kettle-db"       rev="${project.revision}" changing="true" transitive="true" />
+    <dependency org="${ivy.artifact.group}" name="kettle-engine"   rev="${project.revision}" changing="true" transitive="true" />
+    <dependency org="${ivy.artifact.group}" name="kettle-dbdialog" rev="${project.revision}" changing="true" transitive="true" />
+    <dependency org="${ivy.artifact.group}" name="kettle-jdbc"     rev="${project.revision}" changing="true" transitive="true" />
+    <dependency org="${ivy.artifact.group}" name="kettle-ui-swt"   rev="${project.revision}" changing="true" transitive="true" />
+    <dependency org="pentaho"               name="launcher"        rev="1.0.0" conf="launcher->default"/>
+    <dependency org="pentaho"               name="pentaho-hadoop-hive-jdbc-shim" rev="${pentaho.haddop.hive.shim.version}" transitive="false"/>
        
     <dependency org="org.eclipse"          name="swtlibs"         rev="3.7" conf="swtlibs->default" transitive="false">
       <artifact name="swtlibs" type="zip"/>
