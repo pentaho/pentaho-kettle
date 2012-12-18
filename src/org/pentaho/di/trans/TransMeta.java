@@ -7137,6 +7137,16 @@ public class TransMeta extends ChangedFlag implements XMLInterface, Comparator<T
   public void setGatheringMetrics(boolean gatheringMetrics) {
     log.setGatheringMetrics(gatheringMetrics);
   }
+ 
+  @Override
+  public boolean isForcingSeparateLogging() {
+    return log.isForcingSeparateLogging();
+  }
+  
+  @Override
+  public void setForcingSeparateLogging(boolean forcingSeparateLogging) {
+    log.setForcingSeparateLogging(forcingSeparateLogging);
+  }
   
   public DataServiceMeta getDataService() {
     return dataService;

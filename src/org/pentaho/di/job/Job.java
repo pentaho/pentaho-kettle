@@ -2433,22 +2433,28 @@ public class Job extends Thread implements VariableSpace, NamedParams, HasLogCha
     setExecutingServer(Const.getHostname());
   }
  
-  /**
-   * Gets whether or not the log is gathering metrics.
-   * @return Boolean log.isGatheringMetrics.
-   */
   @Override
   public boolean isGatheringMetrics() {
-    return log.isGatheringMetrics();
+    return log!=null && log.isGatheringMetrics();
   }
   
-  /**
-   * Sets the log's gathering metrics property.
-   * @param boolean gatheringMetrics
-   */
   @Override
   public void setGatheringMetrics(boolean gatheringMetrics) {
-    log.setGatheringMetrics(gatheringMetrics);
+    if (log!=null) {
+      log.setGatheringMetrics(gatheringMetrics);
+    }
+  }
+  
+  @Override
+  public boolean isForcingSeparateLogging() {
+    return log!=null && log.isForcingSeparateLogging();
+  }
+  
+  @Override
+  public void setForcingSeparateLogging(boolean forcingSeparateLogging) {
+    if (log!=null) {
+      log.setForcingSeparateLogging(forcingSeparateLogging);
+    }
   }
   
   /**

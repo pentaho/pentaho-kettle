@@ -226,6 +226,16 @@ public class JobEntryWriteToLog extends JobEntryBase implements Cloneable, JobEn
     public void setGatheringMetrics(boolean gatheringMetrics) {
       log.setGatheringMetrics(gatheringMetrics);
     }
+    
+    @Override
+    public boolean isForcingSeparateLogging() {
+      return log.isForcingSeparateLogging();
+    }
+    
+    @Override
+    public void setForcingSeparateLogging(boolean forcingSeparateLogging) {
+      log.setForcingSeparateLogging(forcingSeparateLogging);
+    }
 	}
 
 	/**

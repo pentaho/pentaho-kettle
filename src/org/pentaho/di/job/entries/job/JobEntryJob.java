@@ -121,6 +121,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
   public boolean               passingAllParameters = true;
 
   private boolean              passingExport;
+  
+  private boolean              forcingSeparateLogging;
 
   public static final LogLevel DEFAULT_LOG_LEVEL    = LogLevel.NOTHING;
 
@@ -248,7 +250,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     retval.append("      ").append(XMLHandler.addTagValue("follow_abort_remote", followingAbortRemotely));
     retval.append("      ").append(XMLHandler.addTagValue("create_parent_folder", createParentFolder));
     retval.append("      ").append(XMLHandler.addTagValue("pass_export", passingExport));
-
+    retval.append("      ").append(XMLHandler.addTagValue("force_separate_logging", forcingSeparateLogging));
+    
     if (arguments != null) {
       for (int i = 0; i < arguments.length; i++) {
         // This is a very very bad way of making an XML file, don't use it (or
@@ -326,6 +329,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       passingExport = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "pass_export"));
       directory = XMLHandler.getTagValue(entrynode, "directory");
       createParentFolder = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "create_parent_folder"));
+      forcingSeparateLogging = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "force_separate_logging"));
 
       String wait = XMLHandler.getTagValue(entrynode, "wait_until_finished");
       if (Const.isEmpty(wait))
@@ -402,6 +406,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       waitingToFinish = rep.getJobEntryAttributeBoolean(id_jobentry, "wait_until_finished", true);
       followingAbortRemotely = rep.getJobEntryAttributeBoolean(id_jobentry, "follow_abort_remote");
       createParentFolder = rep.getJobEntryAttributeBoolean(id_jobentry, "create_parent_folder");
+      forcingSeparateLogging = rep.getJobEntryAttributeBoolean(id_jobentry, "force_separate_logging");
 
       // How many arguments?
       int argnr = rep.countNrJobEntryAttributes(id_jobentry, "argument");
@@ -456,6 +461,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
       rep.saveJobEntryAttribute(id_job, getObjectId(), "wait_until_finished", waitingToFinish);
       rep.saveJobEntryAttribute(id_job, getObjectId(), "follow_abort_remote", followingAbortRemotely);
       rep.saveJobEntryAttribute(id_job, getObjectId(), "create_parent_folder", createParentFolder);
+      rep.saveJobEntryAttribute(id_job, getObjectId(), "force_separate_logging", forcingSeparateLogging);
 
       // save the arguments...
       if (arguments != null) {
@@ -749,6 +755,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
           // Create a new job
           // 
           job = new Job(rep, jobMeta, this);
+          job.setForcingSeparateLogging(forcingSeparateLogging);
           job.setParentJob(parentJob);
           job.setLogLevel(jobLogLevel);
           job.shareVariablesWith(this);
@@ -1367,5 +1374,19 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
    */
   public Object loadReferencedObject(int index, Repository rep, VariableSpace space) throws KettleException {
     return getJobMeta(rep, space);
+  }
+
+  /**
+   * @return the forcingSeparateLogging
+   */
+  public boolean isForcingSeparateLogging() {
+    return forcingSeparateLogging;
+  }
+
+  /**
+   * @param forcingSeparateLogging the forcingSeparateLogging to set
+   */
+  public void setForcingSeparateLogging(boolean forcingSeparateLogging) {
+    this.forcingSeparateLogging = forcingSeparateLogging;
   }
 }

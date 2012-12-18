@@ -223,8 +223,15 @@ public class KettleLogChannelAppenderTest {
 
     @Override
     public void snap(MetricsInterface metric, long... value) {
-      // TODO Auto-generated method stub
-      
+    }
+    
+    @Override
+    public boolean isForcingSeparateLogging() {
+      return false;
+    }
+    
+    @Override
+    public void setForcingSeparateLogging(boolean forcingSeparateLogging) {      
     }
 
     @Override

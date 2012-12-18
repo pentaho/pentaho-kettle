@@ -1177,11 +1177,25 @@ public class JobEntryBase implements Cloneable, VariableSpace, CheckResultSource
   
   @Override
   public boolean isGatheringMetrics() {
-    return log.isGatheringMetrics();
+    return log!=null && log.isGatheringMetrics();
   }
   
   @Override
   public void setGatheringMetrics(boolean gatheringMetrics) {
-    log.setGatheringMetrics(gatheringMetrics);
+    if (log!=null) {
+      log.setGatheringMetrics(gatheringMetrics);
+    }
+  }
+  
+  @Override
+  public boolean isForcingSeparateLogging() {
+    return log!=null && log.isForcingSeparateLogging();
+  }
+  
+  @Override
+  public void setForcingSeparateLogging(boolean forcingSeparateLogging) {
+    if (log!=null) {
+      log.setForcingSeparateLogging(forcingSeparateLogging);
+    }
   }
 }

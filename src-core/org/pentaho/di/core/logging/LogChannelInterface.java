@@ -83,6 +83,17 @@ public interface LogChannelInterface {
   public boolean isGatheringMetrics();
 
   public void setGatheringMetrics(boolean gatheringMetrics);
+  
+  /**
+   * This option will force the create of a separate logging channel even if the logging concerns identical objects with identical names.
+   * @param forcingSeparateLogging Set to true to force separate logging 
+   */
+  public void setForcingSeparateLogging(boolean forcingSeparateLogging);
+  
+  /**
+   * @return True if the logging is forcibly separated out from even identical objects. 
+   */
+  public boolean isForcingSeparateLogging();
     
   /**
    * Add a snapshot to the metrics system for this log channel at the time of invocation.

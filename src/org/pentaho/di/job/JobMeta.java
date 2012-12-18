@@ -3750,6 +3750,15 @@ public class JobMeta extends ChangedFlag implements Cloneable, Comparable<JobMet
   public void setGatheringMetrics(boolean gatheringMetrics) {
   }
   
+  @Override
+  public boolean isForcingSeparateLogging() {
+    return false;
+  }
+  
+  @Override
+  public void setForcingSeparateLogging(boolean forcingSeparateLogging) {
+  }
+  
   /**
    * Returns whether or not the job is using unique connections.
    * @return the usingUniqueConnections

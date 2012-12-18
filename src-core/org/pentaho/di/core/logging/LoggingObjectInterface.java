@@ -114,4 +114,15 @@ public interface LoggingObjectInterface {
 	 * @param gatheringMetrics set to true to enable metrics gathering during execution. 
 	 */
 	public void setGatheringMetrics(boolean gatheringMetrics);
+	
+	/**
+	 * This option will force the create of a separate logging channel even if the logging concerns identical objects with identical names.
+	 * @param forcingSeparateLogging Set to true to force separate logging 
+	 */
+	public void setForcingSeparateLogging(boolean forcingSeparateLogging);
+	
+	/**
+	 * @return True if the logging is forcibly separated out from even identical objects. 
+	 */
+	public boolean isForcingSeparateLogging();
 }

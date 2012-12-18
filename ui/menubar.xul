@@ -107,6 +107,14 @@
       </menupopup>
     </menu>
   
+    <menu id="session" label="${Spoon.Menu.Session}">
+      <menupopup id="session-popup">
+        <menuitem id="open-session" label="${Spoon.Menu.Session.Open}" command="spoon.openSession()" />
+        <menuitem id="save-session" label="${Spoon.Menu.Session.Save}" command="spoon.saveSession()" />
+        <menuitem id="copy-session" label="${Spoon.Menu.Session.Copy}" command="spoon.copySession()" />
+      </menupopup>
+    </menu>
+  
     <menu id="action" label="${Spoon.Menu.Action}">
       <menupopup id="trans-popup">
         <menuitem id="process-run" acceltext="F9" accesskey="f9" label="${Spoon.Menu.Transformation.Run}"

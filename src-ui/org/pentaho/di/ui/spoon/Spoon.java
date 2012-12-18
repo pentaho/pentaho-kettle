@@ -7721,8 +7721,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
         getDisplay().asyncExec(new Runnable() {
           public void run() {
             try {
-              delegates.trans
-                  .executeTransformation(transMeta, local, remote, cluster, preview, debug, replayDate, safe, logLevel);
+              delegates.trans.executeTransformation(transMeta, local, remote, cluster, preview, debug, replayDate, safe, logLevel);
             } catch (Exception e) {
               new ErrorDialog(shell, "Execute transformation", "There was an error during transformation execution", e);
             }
@@ -8431,6 +8430,7 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
 	public String getStartupPerspective() {
 		return startupPerspective;
 	}
+	
 }
 
 	

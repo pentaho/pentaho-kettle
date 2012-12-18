@@ -37,6 +37,7 @@ public class SimpleLoggingObject implements LoggingObjectInterface {
 	private String containerObjectId;
 	private Date registrationDate;
   private boolean gatheringMetrics;
+  private boolean forcingSeparateLogging;
   
 	/**
 	 * @param objectName
@@ -164,5 +165,19 @@ public class SimpleLoggingObject implements LoggingObjectInterface {
    */
   public void setGatheringMetrics(boolean gatheringMetrics) {
     this.gatheringMetrics = gatheringMetrics;
+  }
+
+  /**
+   * @return the forcingSeparateLogging
+   */
+  public boolean isForcingSeparateLogging() {
+    return forcingSeparateLogging;
+  }
+
+  /**
+   * @param forcingSeparateLogging the forcingSeparateLogging to set
+   */
+  public void setForcingSeparateLogging(boolean forcingSeparateLogging) {
+    this.forcingSeparateLogging = forcingSeparateLogging;
   }
 }
