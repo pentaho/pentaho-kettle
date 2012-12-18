@@ -168,24 +168,30 @@ public class Variables implements VariableSpace
 		// implementation
 	}
 
-	public void injectVariables(Map<String, String> prop) {
-		if ( initialized )
-		{
-		    // variables are already initialized
-       	    if ( prop != null )
-			{
-			     properties.putAll(prop);
-			     injection = null;			     
-			}
-		}
-		else
-		{
-			// We have our own personal copy, so changes afterwards
-			// to the input properties don't affect us.
-			injection = new Hashtable<String, String>();
-			injection.putAll(prop);
-		}	
-	}
+  public void injectVariables(Map<String, String> prop) {
+    if (initialized) {
+      // variables are already initialized
+      if (prop != null) {
+        for (String key : prop.keySet()) {
+          String value = prop.get(key);
+          if (!Const.isEmpty(key)) {
+            properties.put(key, Const.NVL(value, ""));
+          }
+        }
+        injection = null;
+      }
+    } else {
+      // We have our own personal copy, so changes afterwards
+      // to the input properties don't affect us.
+      injection = new Hashtable<String, String>();
+      for (String key : prop.keySet()) {
+        String value = prop.get(key);
+        if (!Const.isEmpty(key)) {
+          injection.put(key, Const.NVL(value, ""));
+        }
+      }
+    }
+  }
 	
 	/**
 	 * Get a default variable space as a placeholder. Everytime you 
