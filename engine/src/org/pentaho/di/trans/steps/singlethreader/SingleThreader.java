@@ -124,7 +124,9 @@ public class SingleThreader extends BaseStep implements StepInterface
 		    logError(BaseMessages.getString(PKG, "SingleThreader.Log.ErrorOccurredInSubTransformation"));
 		    return false;
 		} finally {
-      data.errorBuffer.clear();
+   	      if (getStepMeta().isDoingErrorHandling()) {
+              data.errorBuffer.clear();
+   	      }
 		}
 		return more;
 	}
