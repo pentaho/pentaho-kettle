@@ -44,8 +44,8 @@
   	
   	<!-- Insert launcher revision number into batch files -->
     <replace dir="${stage.dir}/${package.root.dir}">
-      <include name="*.bat"/>
-    	<include name="*.sh"/>
+      <include name="**/*.bat"/>
+    	<include name="**/*.sh"/>
     	<include name="**/*.plist"/>
       <replacefilter token="launcher.jar" value="launcher-${launcher.revision}.jar"/>     
     </replace>
