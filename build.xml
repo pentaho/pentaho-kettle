@@ -740,4 +740,52 @@
     </for>
   </target>
 	
+  <!--=======================================================================
+        create-dot-classpath
+ 
+        Creates the Eclipse .classpath file from the resolved
+        classpath from Ant.
+      ====================================================================-->
+  <target name="create-dot-classpath" depends="install-pentaho-ant-tasks,init,resolve-all">
+    <dot-classpath>
+      <classpath>
+          <fileset dir="${lib.dir}">
+               <include name="*.jar" />
+          </fileset>
+          <fileset dir="assembly/${lib.dir}">
+               <include name="*.jar" />
+          </fileset>
+      </classpath>
+    </dot-classpath>
+  </target>
+	
+   <target name="resolve-all"
+              description="Resolve dependencies  all projects."
+              depends="install-antcontrib">
+        <for list="${dev-project.list}" param="module" trim="true">
+          <sequential>
+            <ant antfile="build.xml" dir="@{module}" inheritall="false" >
+              <target name="clean" />
+              <target name="init" />
+              <target name="resolve" />
+            </ant>
+          </sequential>
+        </for>
+        <ant antfile="build.xml" dir="${assembly.dir}" inheritall="false">
+          <target name="clean-all" />
+          <target name="resolve" />
+        </ant>
+      </target>
+	
+	 <target name="assemble-full"
+	              description="Calls assemble-all in assembly"
+	              depends="install-antcontrib, build-all">
+	     <ant antfile="build.xml" dir="assembly" inheritall="false" >
+	          <target name="clean" />
+	          <target name="init" />
+	          <target name="resolve" />
+	     	  <target name="assemble-full" />
+	     </ant>
+	 </target>
+
 </project>
