@@ -15,12 +15,9 @@
   </publications>  
   
   <dependencies defaultconf="default-ext->default">  
-    <dependency org="${ivy.artifact.group}"  name="kettle-core"     rev="${dependency.kettle.revision}" changing="true" transitive="false"/>   
+    <dependency org="${ivy.artifact.group}"  name="kettle-core"     rev="${dependency.kettle.revision}" changing="true" transitive="true"/>   
            
-    <dependency org="commons-logging" name="commons-logging" rev="1.1.1" transitive="false" />
-    <dependency org="commons-vfs"     name="commons-vfs"     rev="20091118-pentaho" transitive="false" />
     <dependency org="commons-dbcp"    name="commons-dbcp"    rev="1.4" transitive="false" />
-    <dependency org="commons-lang"    name="commons-lang"    rev="2.6" transitive="false"/>
     <dependency org="commons-pool"    name="commons-pool"    rev="1.5.7" transitive="false" />
     
     <dependency org="junit"           name="junit"           rev="4.7" conf="test->default" transitive="false"/>

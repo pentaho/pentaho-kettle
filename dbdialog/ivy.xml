@@ -15,15 +15,18 @@
   </publications>  
   
   <dependencies defaultconf="default-ext->default">
-    <dependency org="${ivy.artifact.group}"  name="kettle-core"       rev="${dependency.kettle.revision}" changing="true" transitive="false"/>  
-    <dependency org="${ivy.artifact.group}"  name="kettle-engine"     rev="${dependency.kettle.revision}" changing="true" transitive="false"/>  
-    <dependency org="${ivy.artifact.group}"  name="kettle-db"         rev="${dependency.kettle.revision}" changing="true" transitive="false"/>  
-    <dependency org="pentaho"         name="pentaho-xul-core"  rev="${dependency.pentaho-xul.revision}" changing="true" transitive="false"/>
-    <dependency org="pentaho"         name="pentaho-xul-swt"   rev="${dependency.pentaho-xul.revision}" conf="default->default" changing="true" transitive="false"/>
-    <dependency org="pentaho"         name="pentaho-xul-swing" rev="${dependency.pentaho-xul.revision}" conf="default->default" changing="true" transitive="false"/>
+  
+    <!-- Kettle dependencies -->
+    <dependency org="${ivy.artifact.group}"  name="kettle-core"       rev="${dependency.kettle.revision}" changing="true"/>  
+    <dependency org="${ivy.artifact.group}"  name="kettle-engine"     rev="${dependency.kettle.revision}" changing="true"/>  
+    <dependency org="${ivy.artifact.group}"  name="kettle-db"         rev="${dependency.kettle.revision}" changing="true"/>
+      
+    <!--  Pentaho (non-Kettle) dependencies -->
+    <dependency org="pentaho"         name="pentaho-xul-core"  rev="${dependency.pentaho-xul.revision}" changing="true"/>
+    <dependency org="pentaho"         name="pentaho-xul-swt"   rev="${dependency.pentaho-xul.revision}" changing="true"/>
+    <dependency org="pentaho"         name="pentaho-xul-swing" rev="${dependency.pentaho-xul.revision}" changing="true"/>
     
-    <dependency org="commons-lang"    name="commons-lang"      rev="2.6" transitive="false"/>
-    <dependency org="dom4j"           name="dom4j"             rev="1.6.1" transitive="false"/>
+    <!--  Third-party (external) dependencies -->
     
     <!-- SWT it required to compile any version of any architecture will work -->
     <dependency org="org.eclipse.swt" name="swt-linux-x86_64"  rev="3.7" transitive="false" />
