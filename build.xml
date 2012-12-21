@@ -371,8 +371,7 @@
 	       ==========================
 	  -->
 
-	<target name="default" depends="resolve,build-all" description="default = build distribution package"/>
-
+	<target name="default" depends="clean-all,init,resolve,compile,compile-tests,dist-source,dist" description="default = build distribution package"/>
 
 	
 	 <target name="coverage" depends="clean, compileTests" > <!-- , tests-core, tests-resource, tests-trans, tests-run -->
@@ -714,6 +713,8 @@
     <for list="${dev-project.list}" param="module" trim="true">
       <sequential>
         <ant antfile="build.xml" dir="@{module}" inheritall="false" >
+        	<property name="src.dir" value="src"/>
+        	<property name="lib.dir" value="../lib"/>
           <target name="compile" />
         </ant>
       </sequential>
@@ -750,17 +751,17 @@
     <dot-classpath>
       <classpath>
           <fileset dir="${lib.dir}">
-               <include name="*.jar" />
+          	<include name="*.jar" />
           </fileset>
-          <fileset dir="assembly/${lib.dir}">
-               <include name="*.jar" />
+      	  <fileset dir="${testlib.dir}">
+            <include name="*.jar" />
           </fileset>
       </classpath>
     </dot-classpath>
   </target>
 	
    <target name="resolve-all"
-              description="Resolve dependencies  all projects."
+              description="Resolve dependencies for all projects."
               depends="install-antcontrib">
         <for list="${dev-project.list}" param="module" trim="true">
           <sequential>
@@ -787,5 +788,53 @@
 	     	  <target name="assemble-full" />
 	     </ant>
 	 </target>
+	
+	  <!--=======================================================================
+	      dist-source
+	      
+	      Generates zip and targz distributions of the javadoc
+	      ====================================================================-->
+	  <target name="dist-source" depends="source.jar, source.zip" />
+
+
+	  <!--=======================================================================
+	      source.jar
+	      
+	      Creates a jar of the project source for distribution
+	      ====================================================================-->
+	  <target name="source.jar" depends="init,install-antcontrib">
+	  	<delete file="${dist.dir}/${ivy.artifact.id}-${project.revision}-sources.jar"/>
+	  	<for list="${dev-project.list}" param="module" trim="true">
+	  		<sequential>
+	  		  <jar jarfile="${dist.dir}/${ivy.artifact.id}-${project.revision}-sources.jar" basedir="@{module}/src" update="true"/>
+        </sequential>
+      </for>
+	    	
+	    <if>
+	      <equals arg1="${tests.publish}" arg2="true" />
+	      <then>
+	      	<delete file="${dist.dir}/${ivy.artifact.id}-test-${project.revision}-sources.jar"/>
+  	      <for list="${dev-project.list}" param="module" trim="true">
+  	        <sequential>
+  	          <jar jarfile="${dist.dir}/${ivy.artifact.id}-test-${project.revision}-sources.jar" basedir="@{module}/src" update="true"/>
+  	        </sequential>
+  	      </for>
+	      </then>
+	    </if>
+	  </target>
+
+	  <!--=======================================================================
+	      source.zip
+	      
+	      Creates a zip of the project source for distribution
+	      ====================================================================-->
+	  <target name="source.zip" depends="init,install-antcontrib">
+	  	<delete file="${dist.dir}/${ivy.artifact.id}-${project.revision}-sources.jar"/>
+	      <for list="${dev-project.list}" param="module" trim="true">
+	  	    <sequential>
+	          <jar jarfile="${dist.dir}/${source.zip.filename}" basedir="@{module}/src" update="true" />
+	  	    </sequential>
+	  	  </for>
+	  </target>
 
 </project>

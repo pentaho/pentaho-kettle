@@ -17,8 +17,5 @@
 	<classpathentry kind="src" path="engine/src"/>
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry exported="true" kind="lib" path="test/libext/junit.jar"/>
-	<classpathentry exported="true" kind="lib" path="test/libext/jetty-servlet-tester-6.1.21.jar"/>
-	<classpathentry exported="true" kind="lib" path="test/libext/pentaho-xul-swing-TRUNK-SNAPSHOT.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
