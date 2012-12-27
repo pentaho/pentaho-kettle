@@ -13,10 +13,10 @@
   </publications>
 
   <dependencies defaultconf="default->default">
-    <dependency org="pentaho-kettle"             name="kettle-core"      rev="${dependency.kettle.revision}" changing="true"/>
-    <dependency org="pentaho-kettle"             name="kettle-engine"    rev="${dependency.kettle.revision}" changing="true"/>
-    <dependency org="pentaho-kettle"             name="kettle-db"        rev="${dependency.kettle.revision}" changing="true"/>
-    <dependency org="pentaho-kettle"             name="kettle-ui-swt"    rev="${dependency.kettle.revision}" changing="true"/> 
+    <dependency org="${ivy.artifact.group}"             name="kettle-core"      rev="${dependency.kettle.revision}" changing="true"/>
+    <dependency org="${ivy.artifact.group}"             name="kettle-engine"    rev="${dependency.kettle.revision}" changing="true"/>
+    <dependency org="${ivy.artifact.group}"             name="kettle-db"        rev="${dependency.kettle.revision}" changing="true"/>
+    <dependency org="${ivy.artifact.group}"             name="kettle-ui-swt"    rev="${dependency.kettle.revision}" changing="true"/> 
      
     <dependency org="org.apache.xmlrpc"          name="xmlrpc-common"    rev="3.1.3"/>
     <!-- SWT it required to compile any version of any architecture will work -->
