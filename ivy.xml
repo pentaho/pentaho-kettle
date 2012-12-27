@@ -16,6 +16,12 @@
     <dependency org="${ivy.artifact.group}" name="kettle-dbdialog" rev="${project.revision}" changing="true"/>
     <dependency org="${ivy.artifact.group}" name="kettle-jdbc"     rev="${project.revision}" changing="true"/>
     <dependency org="${ivy.artifact.group}" name="kettle-ui-swt"   rev="${project.revision}" changing="true"/>
+    <dependency org="${ivy.artifact.group}" name="kettle-gpload-plugin" rev="${project.revision}" changing="true"/>
+    <dependency org="${ivy.artifact.group}" name="kettle-hl7-plugin" rev="${project.revision}" changing="true"/>
+    <dependency org="${ivy.artifact.group}" name="kettle-openerp-plugin" rev="${project.revision}" changing="true"/>
+    <!-- <dependency org="${ivy.artifact.group}" name="kettle-palo-plugin" rev="${project.revision}" changing="true"/>-->
+    <dependency org="${ivy.artifact.group}" name="market" rev="${project.revision}" changing="true"/>
+    <dependency org="${ivy.artifact.group}" name="star-modeler" rev="${project.revision}" changing="true"/>
   
     <!-- Saxon -->
     <dependency org="net.sf.saxon" name="saxon-dom" rev="9.1.0.8" transitive="false"/>

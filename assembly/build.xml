@@ -13,10 +13,6 @@
   <property file="build.properties"
             description="Properties customized for your particular project belong in this file." />
   
-   <!-- TODO delete when plugins are resolved -->
-
-  <property name="plugin-ids" value="kettle-gpload-plugin,kettle-palo-plugin,kettle-hl7-plugin,kettle-openerp-plugin,kettle-profiling-datacleaner,birt-output,star-modeler,market"/>
-
   <!-- the impl properties are used to create the manifest file -->
   <property name="impl.title" value="Kettle" />
   <property name="impl.version" value="${project.revision}" />
@@ -24,7 +20,7 @@
 
   <import file="build-res/subfloor-pkg.xml" />
 
-  <target name="dist" depends="init,resolve,resolve-swtlibs,resolve-launcher,package" description="Builds and packages the application"/>
+  <target name="dist" depends="init,build-subprojects,resolve,resolve-swtlibs,resolve-launcher,package" description="Builds and packages the application"/>
   	
 	<target name="assemble-full" depends="init,resolve,resolve-swtlibs,resolve-launcher,assemble" description="Builds the application" />
 
@@ -50,6 +46,47 @@
       <replacefilter token="launcher.jar" value="launcher-${launcher.revision}.jar"/>     
     </replace>
   	
+  </target>
+	
+	<!--=======================================================================
+	      build-subprojects
+	      
+	      Builds all sub-projects (modules, plugins, etc.) of the Kettle assembly 
+	    ====================================================================-->
+  <target name="build-subprojects" 
+  	        description="Builds all sub-projects (modules, plugins, etc.) of the Kettle assembly"
+            depends="clean-all, build-publish-modules, build-publish-plugins" />
+	
+	<target name="build-publish-modules"
+	          description="Builds each Kettle module and publishes the artifacts."
+	          depends="install-antcontrib">
+	    <for list="${module.list}" param="module" trim="true">
+	      <sequential>
+	        <ant antfile="build.xml" dir="../@{module}" inheritall="false" >
+	          <target name="clean" />
+	          <target name="init" />
+	          <target name="resolve" />
+	        	<target name="dist" />
+	          <target name="publish-local" />
+	        </ant>
+	      </sequential>
+	    </for>
+	  </target>
+	
+	<target name="build-publish-plugins"
+          description="Builds each Kettle plugin (in the source tree) and publishes the artifacts."
+          depends="install-antcontrib">
+    <for list="${plugin.list}" param="plugin" trim="true">
+      <sequential>
+        <ant antfile="build.xml" dir="../plugins/@{plugin}" inheritall="false" >
+          <target name="clean" />
+          <target name="init" />
+          <target name="resolve" />
+        	<target name="dist" />
+        	<target name="publish-local" />
+        </ant>
+      </sequential>
+    </for>
   </target>
   	
 	<!--=======================================================================
