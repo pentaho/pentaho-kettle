@@ -103,7 +103,6 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
   <target name="assemble.copy-libs">
     <copy todir="${approot.stage.dir}/lib">
       <fileset dir="${lib.dir}" />
-      <fileset file="${dist.dir}/${ivy.artifact.id}-${project.revision}.jar" />
     </copy>
   </target>
 
