@@ -371,7 +371,7 @@
 	       ==========================
 	  -->
 
-	<target name="default" depends="clean-all,init,resolve,compile,compile-tests,dist-source,dist" description="default = build distribution package"/>
+	<target name="default" depends="clean-all,init,build-subprojects,resolve,compile,compile-tests,dist-source,dist" description="default = build distribution package"/>
 
 	
 	 <target name="coverage" depends="clean, compileTests" > <!-- , tests-core, tests-resource, tests-trans, tests-run -->
@@ -747,7 +747,7 @@
         Creates the Eclipse .classpath file from the resolved
         classpath from Ant.
       ====================================================================-->
-  <target name="create-dot-classpath" depends="install-pentaho-ant-tasks,init,resolve,remove-kettle-jars">
+  <target name="create-dot-classpath" depends="install-pentaho-ant-tasks,init,build-subprojects,resolve,remove-kettle-jars">
     <dot-classpath>
       <classpath>
           <fileset dir="${lib.dir}">
@@ -830,6 +830,68 @@
 	  	  </for>
 	  </target>
 
+	<!--=======================================================================
+	        build-subprojects
+	        
+	        Builds all sub-projects (modules, plugins, etc.) of the Kettle assembly 
+	      ====================================================================-->
+	  <target name="build-subprojects" 
+	            description="Builds all sub-projects (modules, plugins, etc.) of the Kettle assembly"
+	            depends="clean-all, build-publish-modules, build-publish-plugins" />
+	  
+	  <target name="build-publish-modules"
+	            description="Builds each Kettle module and publishes the artifacts."
+	            depends="install-antcontrib">
+	      <for list="${dev-project.list}" param="module" trim="true">
+	        <sequential>
+	          <ant antfile="build.xml" dir="@{module}" inheritall="false" >
+	            <target name="clean" />
+	            <target name="init" />
+	            <target name="resolve" />
+	            <target name="dist" />
+	            <target name="publish-local" />
+	          </ant>
+	        </sequential>
+	      </for>
+	    </target>
+	  
+	  <target name="build-publish-plugins"
+	          description="Builds each Kettle plugin (in the source tree) and publishes the artifacts."
+	          depends="install-antcontrib">
+	    <for list="${plugin-ids}" param="plugin" trim="true">
+	      <sequential>
+	        <ant antfile="build.xml" dir="plugins/@{plugin}" inheritall="false" >
+	          <target name="clean" />
+	          <target name="init" />
+	          <target name="resolve" />
+	          <target name="dist" />
+	        </ant>
+	      </sequential>
+	    </for>
+	    <antcall target="publish-local-plugins"/>
+	  </target>
+	    
+	  <target name="publish-local-plugins" depends="install-antcontrib">
+	    <for list="${plugin-ids}" param="module" trim="true">
+	      <sequential>
+	        <!-- publish jar -->
+	        <antcall target="publish-local-plugin-task">
+	          <param name="ivy.artifact.id" value="@{module}" />
+	          <param name="pluginfolder" value="plugins/@{module}"/>
+	          <param name="artifact.type" value="jar"/>
+	        </antcall>
+	      </sequential>
+	    </for>
+	  </target>
+	    
+	  <target name="publish-local-plugin-task" depends="install-ivy">
+	    <copy overwrite="true" file="${pluginfolder}/ivy.xml" tofile="${pluginfolder}/dist/ivy-${artifact.type}.xml"/>
+	    <ivy:resolve file="${pluginfolder}/dist/ivy-${artifact.type}.xml" />
+	    <ivy:publish resolver="local" srcivypattern="${pluginfolder}/ivy-${artifact.type}.xml" pubrevision="${project.revision}" overwrite="true" forcedeliver="true">
+	      <artifacts pattern="${pluginfolder}/dist/[artifact]-[revision].[ext]" />
+	    </ivy:publish>
+	  </target>
+	
 	<target name="remove-kettle-jars" depends="init,install-antcontrib">
 		<for list="${dev-project.list}" param="module" trim="true">
       <sequential>
@@ -838,5 +900,12 @@
       	</delete>
       </sequential>
 		</for>
+		<for list="${plugin-ids}" param="plugin" trim="true">
+      <sequential>
+        <delete>
+          <fileset dir="${lib.dir}" includes="@{plugin}*.jar"/>             
+        </delete>
+      </sequential>
+    </for>
 	</target>
 </project>

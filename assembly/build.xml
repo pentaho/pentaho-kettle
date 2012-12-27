@@ -20,9 +20,9 @@
 
   <import file="build-res/subfloor-pkg.xml" />
 
-  <target name="dist" depends="init,build-subprojects,resolve,resolve-swtlibs,resolve-launcher,package" description="Builds and packages the application"/>
+  <target name="dist" depends="init,resolve,resolve-swtlibs,resolve-launcher,package" description="Builds and packages the application"/>
   	
-	<target name="assemble-full" depends="init,build-subprojects,resolve,resolve-swtlibs,resolve-launcher,assemble" description="Builds the application" />
+	<target name="assemble-full" depends="init,resolve,resolve-swtlibs,resolve-launcher,assemble" description="Builds the application" />
 
 	
   <target name="assemble" depends="subfloor-pkg.assemble" description="copy jar files to distribution directory" >
@@ -48,67 +48,7 @@
   	
   </target>
 	
-	<!--=======================================================================
-	      build-subprojects
-	      
-	      Builds all sub-projects (modules, plugins, etc.) of the Kettle assembly 
-	    ====================================================================-->
-  <target name="build-subprojects" 
-  	        description="Builds all sub-projects (modules, plugins, etc.) of the Kettle assembly"
-            depends="clean-all, build-publish-modules, build-publish-plugins" />
 	
-	<target name="build-publish-modules"
-	          description="Builds each Kettle module and publishes the artifacts."
-	          depends="install-antcontrib">
-	    <for list="${module.list}" param="module" trim="true">
-	      <sequential>
-	        <ant antfile="build.xml" dir="../@{module}" inheritall="false" >
-	          <target name="clean" />
-	          <target name="init" />
-	          <target name="resolve" />
-	        	<target name="dist" />
-	          <target name="publish-local" />
-	        </ant>
-	      </sequential>
-	    </for>
-	  </target>
-	
-	<target name="build-publish-plugins"
-          description="Builds each Kettle plugin (in the source tree) and publishes the artifacts."
-          depends="install-antcontrib">
-    <for list="${plugin.list}" param="plugin" trim="true">
-      <sequential>
-        <ant antfile="build.xml" dir="../plugins/@{plugin}" inheritall="false" >
-          <target name="clean" />
-          <target name="init" />
-          <target name="resolve" />
-        	<target name="dist" />
-        </ant>
-      </sequential>
-    </for>
-    <antcall target="publish-local-plugins"/>
-  </target>
-  	
-	<target name="publish-local-plugins" depends="install-antcontrib">
-    <for list="${plugin.list}" param="module" trim="true">
-      <sequential>
-        <!-- publish jar -->
-        <antcall target="publish-local-plugin-task">
-          <param name="ivy.artifact.id" value="@{module}" />
-          <param name="pluginfolder" value="../plugins/@{module}"/>
-          <param name="artifact.type" value="jar"/>
-        </antcall>
-      </sequential>
-    </for>
-  </target>
-    
-  <target name="publish-local-plugin-task" depends="install-ivy">
-    <copy overwrite="true" file="${pluginfolder}/ivy.xml" tofile="${pluginfolder}/dist/ivy-${artifact.type}.xml"/>
-    <ivy:resolve file="${pluginfolder}/dist/ivy-${artifact.type}.xml" />
-    <ivy:publish resolver="local" srcivypattern="${pluginfolder}/ivy-${artifact.type}.xml" pubrevision="${project.revision}" overwrite="true" forcedeliver="true">
-      <artifacts pattern="${pluginfolder}/dist/[artifact]-[revision].[ext]" />
-    </ivy:publish>
-  </target>
 	<!--=======================================================================
 	        resolve-swtlibs
 	        
