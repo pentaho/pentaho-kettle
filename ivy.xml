@@ -8,7 +8,15 @@
   </configurations>
   
   <dependencies defaultconf="default->default">
-    
+  
+    <!-- Kettle module dependencies-->
+    <dependency org="${ivy.artifact.group}" name="kettle-core"     rev="${project.revision}" changing="true"/>
+    <dependency org="${ivy.artifact.group}" name="kettle-db"       rev="${project.revision}" changing="true"/>
+    <dependency org="${ivy.artifact.group}" name="kettle-engine"   rev="${project.revision}" changing="true"/>
+    <dependency org="${ivy.artifact.group}" name="kettle-dbdialog" rev="${project.revision}" changing="true"/>
+    <dependency org="${ivy.artifact.group}" name="kettle-jdbc"     rev="${project.revision}" changing="true"/>
+    <dependency org="${ivy.artifact.group}" name="kettle-ui-swt"   rev="${project.revision}" changing="true"/>
+  
     <!-- Saxon -->
     <dependency org="net.sf.saxon" name="saxon-dom" rev="9.1.0.8" transitive="false"/>
     

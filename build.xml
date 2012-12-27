@@ -768,8 +768,8 @@
 	      the defined directories.
 	      ====================================================================-->
 	  <target name="resolve" 
-	          depends="resolve-default, resolve-modules, resolve-test, ivy.check-releasable"
-	          description="Retrieves all the dependent libraries" />
+	          depends="subfloor.resolve, remove-kettle-jars"
+	          description="Retrieves all the dependent libraries, but deletes the Kettle JARs" />
 	
    <target name="resolve-all"
               description="Resolve dependencies for all projects."
@@ -866,4 +866,13 @@
 	  	  </for>
 	  </target>
 
+	<target name="remove-kettle-jars" depends="init,install-antcontrib">
+		<for list="${dev-project.list}" param="module" trim="true">
+      <sequential>
+      	<delete>
+      		<fileset dir="${lib.dir}" includes="kettle-@{module}*.jar"/>      			 
+      	</delete>
+      </sequential>
+		</for>
+	</target>
 </project>
