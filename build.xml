@@ -747,7 +747,7 @@
         Creates the Eclipse .classpath file from the resolved
         classpath from Ant.
       ====================================================================-->
-  <target name="create-dot-classpath" depends="install-pentaho-ant-tasks,init,resolve">
+  <target name="create-dot-classpath" depends="install-pentaho-ant-tasks,init,resolve,remove-kettle-jars">
     <dot-classpath>
       <classpath>
           <fileset dir="${lib.dir}">
@@ -768,46 +768,10 @@
 	      the defined directories.
 	      ====================================================================-->
 	  <target name="resolve" 
-	          depends="subfloor.resolve, remove-kettle-jars"
+	          depends="subfloor.resolve"
 	          description="Retrieves all the dependent libraries, but deletes the Kettle JARs" />
 	
-   <target name="resolve-all"
-              description="Resolve dependencies for all projects."
-              depends="install-antcontrib">
-        <for list="${dev-project.list}" param="module" trim="true">
-          <sequential>
-            <ant antfile="build.xml" dir="@{module}" inheritall="false" >
-              <target name="clean" />
-              <target name="init" />
-              <target name="resolve" />
-            </ant>
-          </sequential>
-        </for>
-        <ant antfile="build.xml" dir="${assembly.dir}" inheritall="false">
-          <target name="clean-all" />
-          <target name="resolve" />
-        </ant>
-      </target>
-	
-	<target name="resolve-plugins" description="Resolve dependencies for all projects." depends="install-antcontrib">
-		<for list="${plugin-ids}" param="plugin" trim="true">
-      <sequential>
-      	<ivy:resolve file="plugins/@{plugin}/ivy.xml" conf="default" />
-      	<ivy:retrieve conf="default" pattern="${lib.dir}/[module]-[revision](-[classifier]).[ext]" symlink="${ivy.use.symlinks.internal}" />
-      </sequential>
-    </for>
-  </target>
-	
-	<target name="resolve-modules" description="Resolve dependencies for all projects." depends="install-antcontrib">
-    <for list="${dev-project.list}" param="module" trim="true">
-      <sequential>
-      	<ivy:resolve file="@{module}/ivy.xml" conf="default"/>
-        <ivy:retrieve conf="default" pattern="${lib.dir}/[module]-[revision](-[classifier]).[ext]" symlink="${ivy.use.symlinks.internal}" />
-      </sequential>
-    </for>
-  </target>
-	  
-	 <target name="assemble-full"
+   <target name="assemble-full"
 	              description="Calls assemble-all in assembly"
 	              depends="install-antcontrib, build-all">
 	     <ant antfile="build.xml" dir="assembly" inheritall="false" >
