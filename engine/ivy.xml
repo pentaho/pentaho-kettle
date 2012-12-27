@@ -35,7 +35,7 @@
     <dependency org="com.googlecode.jsendnsca"         name="jsendnsca"            rev="2.0.1"           transitive="false"/>
     <dependency org="com.healthmarketscience.jackcess" name="jackcess"             rev="1.2.6"           transitive="false"/>
     <dependency org="org.drools"                       name="drools-api"           rev="5.0.1"           transitive="false"/>
-    <dependency org="org.drools"                       name="drools-core"          rev="5.0.1"           transitive="false" />
+    <dependency org="org.drools"                       name="drools-core"          rev="5.0.1"           transitive="false"/>
     <dependency org="elasticsearch"                    name="elasticsearch"        rev="0.16.3"          transitive="false"/>
     <dependency org="feed4j"                           name="feed4j"               rev="1.0"             transitive="false"/>
     <dependency org="ftp4che"                          name="ftp4che"              rev="0.7.1"           transitive="false"/>
@@ -49,11 +49,11 @@
     <dependency org="javadbf"                          name="javadbf"              rev="20081125"        transitive="false"/>
     <dependency org="jfree"                            name="jcommon"              rev="1.0.14"          transitive="false"/>
     <dependency org="com.googlecode.json-simple"       name="json-simple"          rev="1.1"             transitive="false"/>
-    <dependency org="jsonpath"                         name="jsonpath"             rev="1.0"             transitive="false" />
+    <dependency org="jsonpath"                         name="jsonpath"             rev="1.0"             transitive="false"/>
     <dependency org="com.sun.jersey.contribs"          name="jersey-apache-client" rev="1.14"            transitive="false"/>
-    <dependency org="com.sun.jersey"                   name="jersey-bundle"        rev="1.16"            transitive="false" />
-    <dependency org="com.sun.jersey"                   name="jersey-client"        rev="1.16"            transitive="false" />
-    <dependency org="com.sun.jersey"                   name="jersey-core"          rev="1.16"            transitive="false" />
+    <dependency org="com.sun.jersey"                   name="jersey-bundle"        rev="1.16"            transitive="false"/>
+    <dependency org="com.sun.jersey"                   name="jersey-client"        rev="1.16"            transitive="false"/>
+    <dependency org="com.sun.jersey"                   name="jersey-core"          rev="1.16"            transitive="false"/>
     <dependency org="org.mortbay.jetty"                name="jetty-plus"           rev="6.1.21"          transitive="false"/>
     <dependency org="org.mortbay.jetty"                name="jetty-util"           rev="6.1.21"          transitive="false"/>
     <dependency org="org.kohsuke.jinterop"             name="j-interop"            rev="2.0.8-kohsuke-1" transitive="false"/>
@@ -61,10 +61,10 @@
     <dependency org="jexcelapi"                        name="jxl"                  rev="2.6.12"          transitive="false"/>     
     <dependency org="ldapjdk"                          name="ldapjdk"              rev="20000524"        transitive="false"/>
     <dependency org="monetdb"                          name="monetdb-jdbc"         rev="2.1"             transitive="false"/>
-    <dependency org="org.odftoolkit"                   name="odfdom-java"          rev="0.8.6"           transitive="false" />
-    <dependency org="org.apache.poi"                   name="poi"                  rev="3.8"             transitive="false" />
-    <dependency org="org.apache.poi"                   name="poi-ooxml"            rev="3.8"             transitive="false" />
-    <dependency org="org.apache.poi"                   name="poi-ooxml-schemas"    rev="3.8"             transitive="false" />
+    <dependency org="org.odftoolkit"                   name="odfdom-java"          rev="0.8.6"           transitive="false"/>
+    <dependency org="org.apache.poi"                   name="poi"                  rev="3.8"             transitive="false"/>
+    <dependency org="org.apache.poi"                   name="poi-ooxml"            rev="3.8"             transitive="false"/>
+    <dependency org="org.apache.poi"                   name="poi-ooxml-schemas"    rev="3.8"             transitive="false"/>
     <dependency org="postgresql"                       name="postgresql"           rev="8.4-702.jdbc3"   transitive="false"/>
     <dependency org="rome"                             name="rome"                 rev="1.0"             transitive="false"/>
     <dependency org="org.eobjects.sassyreader"         name="SassyReader"          rev="0.5"             transitive="false"/>
@@ -83,12 +83,12 @@
     <dependency org="xerces"                           name="xercesImpl"           rev="2.8.1"           transitive="false"/>
     
     <!--  for testing -->
-    <dependency org="com.h2database" name="h2" rev="1.2.131" conf="test->default" transitive="false"/>
-        <dependency org="org.apache.xmlbeans" name="xmlbeans" rev="2.5.0" conf="test->default" transitive="false"/>
-    <dependency org="org.slf4j" name="slf4j-api" rev="1.6.1" conf="test->default" transitive="false"/>
-    <dependency org="org.slf4j" name="slf4j-log4j12" rev="1.6.1" conf="test->default"  transitive="false"/>
-    <dependency org="oro" name="oro" rev="2.0.8" conf="test->default" transitive="false"/>
-    <dependency org="jaxen" name="jaxen" rev="1.1" conf="test->default" transitive="false"/>
-    <dependency org="junit" name="junit" rev="4.7" conf="test->default" />
+    <dependency org="com.h2database"      name="h2"            rev="1.2.131" conf="test->default" transitive="false"/>
+    <dependency org="org.apache.xmlbeans" name="xmlbeans"      rev="2.5.0"   conf="test->default" transitive="false"/>
+    <dependency org="org.slf4j"           name="slf4j-api"     rev="1.6.1"   conf="test->default" transitive="false"/>
+    <dependency org="org.slf4j"           name="slf4j-log4j12" rev="1.6.1"   conf="test->default" transitive="false"/>
+    <dependency org="oro"                 name="oro"           rev="2.0.8"   conf="test->default" transitive="false"/>
+    <dependency org="jaxen"               name="jaxen"         rev="1.1"     conf="test->default" transitive="false"/>
+    <dependency org="junit"               name="junit"         rev="4.7"     conf="test->default" transitive="false"/>
   </dependencies>
 </ivy-module>
