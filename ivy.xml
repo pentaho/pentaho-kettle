@@ -31,8 +31,8 @@
     <dependency org="ca.uhn.hapi"                name="hapi-structures-v26"  rev="1.1"   transitive="false"/>
     <dependency org="org.apache.xmlrpc"          name="xmlrpc-common"        rev="3.1.3" transitive="false"/>
     <dependency org="com.debortoliwines.openerp" name="openerp-java-api"     rev="1.0.0" transitive="false"/>
-    <dependency org="pentaho"                    name="pentaho-palo-core"    rev="TRUNK-SNAPSHOT" transitive="false"/>
-
+    <dependency org="pentaho"                    name="pentaho-palo-core"    rev="${dependency.pdi-palo-plugin.revision}" transitive="false"/>
+    
     <!-- Saxon -->
     <dependency org="net.sf.saxon" name="saxon-dom" rev="9.1.0.8" transitive="false"/>
     
