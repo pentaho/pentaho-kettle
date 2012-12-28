@@ -106,7 +106,7 @@
 	  </target>	
 
 	<target name="distrib-nodeps" description="copy jar files to distribution directory" >
-		<ant antfile="build.xml" dir="assembly" target="assemble-full">
+		<ant antfile="build.xml" dir="${assembly.dir}" target="assemble-full">
 			<property name="project.revision" value="TRUNK-SNAPSHOT"/>
 			<property name="dist.dir" value="dist"/>
 		</ant>
@@ -763,7 +763,7 @@
    <target name="assemble-full"
 	              description="Calls assemble-all in assembly"
 	              depends="install-antcontrib, build-all">
-	     <ant antfile="build.xml" dir="assembly" inheritall="false" >
+	     <ant antfile="build.xml" dir="${assembly.dir}" inheritall="false" >
 	          <target name="clean" />
 	          <target name="init" />
 	          <target name="resolve" />
@@ -954,4 +954,16 @@
       </sequential>
     </for>
 	</target>
+	
+	<!--=======================================================================
+	      dist
+	      
+	      Creates a distribution of this project
+	      ====================================================================-->
+  <target name="dist" depends="install-antcontrib" description="Creates a distribution">
+  	<ant antfile="build.xml" dir="${assembly.dir}" inheritall="false" >
+      <target name="assemble-full" />
+    </ant> 	
+  </target>
+	
 </project>

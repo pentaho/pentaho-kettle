@@ -14,13 +14,12 @@
   </publications>
 
   <dependencies defaultconf="default->default">
-    <dependency org="${ivy.artifact.group}"  name="kettle-core"      rev="${dependency.kettle.revision}" changing="true"/>  
-    <dependency org="${ivy.artifact.group}"  name="kettle-db"        rev="${dependency.kettle.revision}" changing="true"/>
-    <dependency org="${ivy.artifact.group}"  name="kettle-engine"    rev="${dependency.kettle.revision}" changing="true"/>
-    <dependency org="${ivy.artifact.group}"  name="kettle-ui-swt"    rev="${dependency.kettle.revision}" changing="true"/>
+    <dependency org="${ivy.artifact.group}"  name="kettle-core"          rev="${dependency.kettle.revision}" changing="true"/>  
+    <dependency org="${ivy.artifact.group}"  name="kettle-db"            rev="${dependency.kettle.revision}" changing="true"/>
+    <dependency org="${ivy.artifact.group}"  name="kettle-engine"        rev="${dependency.kettle.revision}" changing="true"/>
+    <dependency org="${ivy.artifact.group}"  name="kettle-ui-swt"        rev="${dependency.kettle.revision}" changing="true"/>
+    <dependency org="pentaho"                name="pentaho-palo-core"    rev="${dependency.pdi-palo-plugin.revision}" transitive="false"/>
     
-    <dependency org="pentaho"         name="pdi-palo-plugin"  rev="${dependency.pdi-palo-plugin.revision}" transitive="false"/>
-
     <!-- SWT it required to compile any version of any architecture will work -->
     <dependency org="org.eclipse.swt" name="swt-linux-x86_64" rev="3.6" transitive="false" />
     <dependency org="org.eclipse"     name="jface"            rev="3.3.0-I20070606-0010" transitive="false" conf="default->default" /> 
