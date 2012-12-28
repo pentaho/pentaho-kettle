@@ -855,13 +855,13 @@
 	      <sequential>
 	        <!-- publish jar -->
 	        <antcall target="publish-plugin-task">
-	          <param name="ivy.artifact.id" value="@{plugin}" />
+	          <param name="ivy.artifact.id" value="@{plugin}-${version}" />
 	          <param name="pluginfolder" value="plugins/@{plugin}"/>
 	          <param name="artifact.type" value="jar"/>
 	        </antcall>
 	        <!-- publish zip -->
 	        <antcall target="publish-plugin-task">
-	          <param name="ivy.artifact.id" value="@{plugin}" />
+	          <param name="ivy.artifact.id" value="@{plugin}-${version}" />
 	          <param name="pluginfolder" value="plugins/@{plugin}"/>
 	          <param name="artifact.type" value="zip"/>
 	        </antcall>
