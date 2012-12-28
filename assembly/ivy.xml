@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ivy-module version="2.0">
-  <info organisation="${ivy.artifact.group}" module="pentaho-kettle-assembly" revision="${project.revision}" />
+  <info organisation="${ivy.artifact.group}" module="${ivy.artifact.id}" revision="${project.revision}" />
   <configurations>
     <conf name="default" />
     <conf name="test" visibility="private" />
     <conf name="swtlibs"/>
     <conf name="launcher" />
   </configurations>
+  
+  <publications>
+    <artifact name="${ivy.artifact.id}" type="zip"/>
+  </publications>
   
   <dependencies defaultconf="default->default">
     <!-- Kettle module dependencies-->

@@ -48,6 +48,30 @@
   	
   </target>
 	
+	<!--=======================================================================
+	      publish-local
+	      
+	      Builds and publishes the jar file for this project to the user's 
+	      local repository for download by other projects currently being 
+	      executed on the user's system.
+	      ====================================================================-->
+	  <target name="publish-local"
+	          depends="assemble-full, package-zip, publish-local-nojar"
+	          description="Builds and publishes the jar file to the local repository">
+	  </target>
+
+
+	  <!--=======================================================================
+	        publish
+	    
+	        Creates and publishes the jar file for this project to a Maven2 
+	        repository. 
+	        ====================================================================-->
+	 <target name="publish"
+	         depends="assemble-full, package-zip, publish-nojar"
+	         description="Builds and publishes the jar file to the local repository">
+	 </target>
+	
 	
 	<!--=======================================================================
 	        resolve-swtlibs
