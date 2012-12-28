@@ -21,25 +21,7 @@
 	
 	  <!--Import Open Assembly ant file -->
 	  <import file="build-res/subfloor.xml" />
-	  <!--
-	  
-	       ==========================
-	            Compile the code
-	       ==========================
-	  -->
-		
-	  <!-- target name="generate-parser-for-edi2xml-step" depends="compile-core" description="">
-	  	<echo>Generating parser java classes for the  edi2xml step...</echo>
-		<java classname="org.antlr.Tool" fork="true" failonerror="true">
-			<classpath refid="cp-kettle-core" />
-			<arg value="-make"/>
-			<arg value="-verbose"/>
-			<arg value="-o"/>
-			<arg path="${src}/org/pentaho/di/trans/steps/edi2xml/grammar"/>
-			<arg path="${src}/org/pentaho/di/trans/steps/edi2xml/grammar/FastSimpleGenericEdifactDirectXML.g"/>
-		</java>
-	  </target -->
-	
+
 		<!--
 		       ==========================
 		          Compile the test code
@@ -111,33 +93,7 @@
 			<property name="dist.dir" value="dist"/>
 		</ant>
 	</target>
-		
-	  <!--
-	       ==========================
-	             Source zipfile
-	       ==========================
-	  -->
-		
-	  <!-- target name="sourcezip" depends="init" description="generate the Kettle-src-${version}-${release.build.number}-r${revision}.zip file">
-	  	<echo>Generating the Kettle source packge zip file (${impl.productID}-src-${version}-r${revision}.zip) ...</echo>
-	  	<jar jarfile="${dist.dir}/${impl.productID}-src-${version}-r${revision}.zip" 
-	  		 basedir="."
-	    	 includes="**/*"
-	  	     excludes="*.zip ${classes}/**/* ${distrib}/**/* homepage/**/* Licenses/**/* ${lib}/**/* docs/api/** docs/api-core/**"
-	  		/>
-	  </target -->
-
-	
-	
-	<!-- target name="i18n" depends="kettle-ui" description="generate the Kettle-i18n-${version}-r${revision}.zip file">
-		  	<echo>Generating the Kettle i18n distribution package Kettle-i18n-${version}-r${revision}.zip ...</echo>
-		  	<jar jarfile="${dist.dir}/Kettle-i18n-${version}-r${revision}.zip" 
-		    	 basedir="." 
-		    	 includes="src/**/*.java src/**/*.properties src-ui/**/*.java src-ui/**/*.properties lib/*.jar libswt/win32/*.jar libswt/linux/x86/*.jar libswt/*.jar libext/log4j-1.2.8.jar libext/spring/spring-core.jar libext/commons/commons-vfs*.jar libext/commons/commons-logging*.jar ui/*.xul Translator.bat translator.sh translator.xml"
-		  	     excludes="**/Thumbs.db **/.svn"
-		  		/>
-	</target -->
-		
+			
 	<target name="junit-report" depends="tests-all" description="Create an HTML report of ALL unit tests">
 		<junitreport todir="${junit}">
 		  <fileset dir="${junit}">
@@ -979,5 +935,14 @@
       <fileset dir="${assembly.stage.pdi-client.dir}" />
     </copy>
   </target>
+	
+   <target name="package-dev-env" depends="clean, create-dot-classpath">
+        <jar jarfile="${dist.dir}/${product.name}-${product.release.type}-dev-env-${version}.zip">
+            <fileset dir=".">
+                <exclude name="bin/**" />
+                <exclude name="classes/**" />
+            </fileset>
+        </jar>     
+    </target>
 	
 </project>
