@@ -16,13 +16,23 @@
     <dependency org="${ivy.artifact.group}" name="kettle-dbdialog" rev="${project.revision}" changing="true"/>
     <dependency org="${ivy.artifact.group}" name="kettle-jdbc"     rev="${project.revision}" changing="true"/>
     <dependency org="${ivy.artifact.group}" name="kettle-ui-swt"   rev="${project.revision}" changing="true"/>
-    <dependency org="${ivy.artifact.group}" name="kettle-gpload-plugin" rev="${project.revision}" changing="true"/>
-    <dependency org="${ivy.artifact.group}" name="kettle-hl7-plugin" rev="${project.revision}" changing="true"/>
-    <dependency org="${ivy.artifact.group}" name="kettle-openerp-plugin" rev="${project.revision}" changing="true"/>
-    <!-- <dependency org="${ivy.artifact.group}" name="kettle-palo-plugin" rev="${project.revision}" changing="true"/>-->
-    <dependency org="${ivy.artifact.group}" name="market" rev="${project.revision}" changing="true"/>
-    <dependency org="${ivy.artifact.group}" name="star-modeler" rev="${project.revision}" changing="true"/>
-  
+    
+    <!--  Kettle plugin dependencies -->
+    <dependency org="ca.uhn.hapi"                name="hapi"                 rev="1.1"   transitive="false"/>
+    <dependency org="ca.uhn.hapi"                name="hapi-base"            rev="1.1"   transitive="false"/>
+    <dependency org="ca.uhn.hapi"                name="hapi-examples"        rev="1.1"   transitive="false"/>
+    <dependency org="ca.uhn.hapi"                name="hapi-structures-v21"  rev="1.1"   transitive="false"/>
+    <dependency org="ca.uhn.hapi"                name="hapi-structures-v22"  rev="1.1"   transitive="false"/>
+    <dependency org="ca.uhn.hapi"                name="hapi-structures-v23"  rev="1.1"   transitive="false"/>
+    <dependency org="ca.uhn.hapi"                name="hapi-structures-v231" rev="1.1"   transitive="false"/>
+    <dependency org="ca.uhn.hapi"                name="hapi-structures-v24"  rev="1.1"   transitive="false"/>
+    <dependency org="ca.uhn.hapi"                name="hapi-structures-v25"  rev="1.1"   transitive="false"/>
+    <dependency org="ca.uhn.hapi"                name="hapi-structures-v251" rev="1.1"   transitive="false"/>
+    <dependency org="ca.uhn.hapi"                name="hapi-structures-v26"  rev="1.1"   transitive="false"/>
+    <dependency org="org.apache.xmlrpc"          name="xmlrpc-common"        rev="3.1.3" transitive="false"/>
+    <dependency org="com.debortoliwines.openerp" name="openerp-java-api"     rev="1.0.0" transitive="false"/>
+    <dependency org="pentaho"                    name="pdi-palo-plugin"      rev="${dependency.pdi-palo-plugin.revision}" transitive="false"/>
+    
     <!-- Saxon -->
     <dependency org="net.sf.saxon" name="saxon-dom" rev="9.1.0.8" transitive="false"/>
     
