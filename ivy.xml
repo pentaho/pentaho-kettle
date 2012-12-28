@@ -4,7 +4,6 @@
   <configurations>
     <conf name="default" />
     <conf name="test" visibility="private" />
-    <conf name="swtlibs"/>
   </configurations>
   
   <dependencies defaultconf="default->default">
@@ -16,6 +15,11 @@
     <dependency org="${ivy.artifact.group}" name="kettle-dbdialog" rev="${project.revision}" changing="true"/>
     <dependency org="${ivy.artifact.group}" name="kettle-jdbc"     rev="${project.revision}" changing="true"/>
     <dependency org="${ivy.artifact.group}" name="kettle-ui-swt"   rev="${project.revision}" changing="true"/>
+    
+    <!-- The OS-specific libraries are bundled together, unzip them all for assembly -->
+    <dependency org="org.eclipse"          name="swtlibs"          rev="3.7" conf="default->default" transitive="false">
+      <artifact name="swtlibs" type="zip"/>
+    </dependency>
     
     <!--  Kettle plugin dependencies -->
     <dependency org="ca.uhn.hapi"                name="hapi"                 rev="1.1"   transitive="false"/>

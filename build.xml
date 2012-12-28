@@ -375,7 +375,7 @@
 	       ==========================
 	  -->
 
-	<target name="default" depends="clean-all,init,resolve,compile,compile-tests,dist-source,dist" description="default = build distribution package"/>
+	<target name="default" depends="clean-all,init,resolve,compile,compile-tests,dist" description="default = build distribution package"/>
 
 	
 	 <target name="coverage" depends="clean, compileTests" > <!-- , tests-core, tests-resource, tests-trans, tests-run -->
@@ -736,7 +736,7 @@
         Creates the Eclipse .classpath file from the resolved
         classpath from Ant.
       ====================================================================-->
-  <target name="create-dot-classpath" depends="install-pentaho-ant-tasks,init,resolve,remove-kettle-jars">
+  <target name="create-dot-classpath" depends="install-pentaho-ant-tasks,init,resolve,unzip-swtlibs,remove-kettle-jars">
     <dot-classpath>
       <classpath>
           <fileset dir="${lib.dir}">
@@ -955,15 +955,29 @@
     </for>
 	</target>
 	
+	<!-- Unzip the libswt package into the libswt folder of the distribution -->
+	<target name="unzip-swtlibs" depends="resolve">
+    <unzip dest="." overwrite="true">
+      <fileset dir="${lib.dir}">
+        <include name="**/*.zip"/>
+      </fileset>
+    </unzip>
+	</target>
+	
 	<!--=======================================================================
 	      dist
 	      
 	      Creates a distribution of this project
 	      ====================================================================-->
   <target name="dist" depends="install-antcontrib" description="Creates a distribution">
+  	
+  	<!-- run the assembly's tasks, then copy the staging directory back to the distrib directory -->
   	<ant antfile="build.xml" dir="${assembly.dir}" inheritall="false" >
       <target name="assemble-full" />
-    </ant> 	
+    </ant>
+  	<copy todir="${distrib}">
+      <fileset dir="${assembly.stage.pdi-client.dir}" />
+    </copy>
   </target>
 	
 </project>
