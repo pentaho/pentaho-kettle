@@ -859,12 +859,12 @@
 	          <param name="pluginfolder" value="plugins/@{plugin}"/>
 	          <param name="artifact.type" value="jar"/>
 	        </antcall>
-	        <!-- publish zip -->
+	        <!-- publish zip - TODO - put back in?
 	        <antcall target="publish-plugin-task">
 	          <param name="ivy.artifact.id" value="@{plugin}-${version}" />
 	          <param name="pluginfolder" value="plugins/@{plugin}"/>
 	          <param name="artifact.type" value="zip"/>
-	        </antcall>
+	        </antcall>-->
 	      </sequential>
 	    </for>
 
