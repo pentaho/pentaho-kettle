@@ -275,9 +275,6 @@
 	<classpathentry kind="lib" path="libext/jackson-mapper-asl-1.9.2.jar"/>
 	<classpathentry kind="lib" path="libext/mstor-0.9.13.jar"/>
 	<classpathentry kind="lib" path="libext/stax-1.2.0.jar"/>
-	<classpathentry kind="lib" path="libext/reporting/asm-attrs-2.2.3.jar"/>
-	<classpathentry kind="lib" path="libext/reporting/avalon-framework-4.1.5.jar"/>
-	<classpathentry kind="lib" path="libext/reporting/cglib-nodep-2.2.jar"/>
 	<classpathentry kind="lib" path="libext/commons/commons-cli-1.2.jar"/>
 	<classpathentry kind="lib" path="libext/commons/commons-collections-3.2.1.jar"/>
 	<classpathentry kind="lib" path="libext/commons/commons-dbcp-1.4.jar"/>
