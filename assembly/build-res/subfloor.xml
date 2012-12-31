@@ -862,7 +862,7 @@ TYPICAL TARGET SEQUENCE
 
     <antcall target="maven-publish-artifact">
       <param name="publish.pomFile" value="${ivy.artifact.pomfile}" />
-      <param name="publish.file" value="${dist.dir}/${ivy.artifact.id}-${project.revision}.jar" />
+      <param name="publish.file" value="${dist.dir}/${ivy.artifact.id}-${project.revision}.zip" />
     </antcall>
 
     <antcall target="maven-publish.post"/>
