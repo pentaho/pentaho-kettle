@@ -69,6 +69,7 @@ import org.pentaho.di.trans.step.StepDialogInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.steps.xmloutput.XMLField;
 import org.pentaho.di.trans.steps.xmloutput.XMLOutputMeta;
+import org.pentaho.di.trans.steps.xmloutput.XMLField.ContentType;
 import org.pentaho.di.ui.core.dialog.EnterSelectionDialog;
 import org.pentaho.di.ui.core.dialog.ErrorDialog;
 import org.pentaho.di.ui.core.widget.ColumnInfo;
@@ -758,10 +759,10 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		for (int x=0;x<dats.length;x++) formats[x] = dats[x];
 		for (int x=0;x<nums.length;x++) formats[dats.length+x] = nums[x];
 		
-		colinf=new ColumnInfo[]
-          {
+    colinf = new ColumnInfo[] {
     		new ColumnInfo(BaseMessages.getString(PKG, "XMLOutputDialog.Fieldname.Column"),   ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
             new ColumnInfo(BaseMessages.getString(PKG, "XMLOutputDialog.ElementName.Column"), ColumnInfo.COLUMN_TYPE_TEXT,   false),
+        new ColumnInfo(BaseMessages.getString(PKG, "XMLOutputDialog.ContentType.Column"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "Element", "Attribute", }, false),
     		new ColumnInfo(BaseMessages.getString(PKG, "XMLOutputDialog.Type.Column"),        ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ),
     		new ColumnInfo(BaseMessages.getString(PKG, "XMLOutputDialog.Format.Column"),      ColumnInfo.COLUMN_TYPE_CCOMBO, formats),
     		new ColumnInfo(BaseMessages.getString(PKG, "XMLOutputDialog.Length.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,   false),
@@ -769,8 +770,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
     		new ColumnInfo(BaseMessages.getString(PKG, "XMLOutputDialog.Currency.Column"),    ColumnInfo.COLUMN_TYPE_TEXT,   false),
     		new ColumnInfo(BaseMessages.getString(PKG, "XMLOutputDialog.Decimal.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,   false),
     		new ColumnInfo(BaseMessages.getString(PKG, "XMLOutputDialog.Group.Column"),       ColumnInfo.COLUMN_TYPE_TEXT,   false),
-    		new ColumnInfo(BaseMessages.getString(PKG, "XMLOutputDialog.Null.Column"),        ColumnInfo.COLUMN_TYPE_TEXT,   false)
-          };
+        new ColumnInfo(BaseMessages.getString(PKG, "XMLOutputDialog.Null.Column"), ColumnInfo.COLUMN_TYPE_TEXT, false) };
 		
 		wFields=new TableView(transMeta, wFieldsComp, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -876,12 +876,16 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 				public void widgetSelected(SelectionEvent e) 
 				{
 					FileDialog dialog = new FileDialog(shell, SWT.SAVE);
-					dialog.setFilterExtensions(new String[] {"*.txt", "*.csv", "*"});
+					dialog.setFilterExtensions(new String[] {"*.xml", "*.txt", "*.csv", "*"});
 					if (wFilename.getText()!=null)
 					{
 						dialog.setFileName(transMeta.environmentSubstitute(wFilename.getText()));
 					}
-					dialog.setFilterNames(new String[] {BaseMessages.getString(PKG, "System.FileType.TextFiles"), BaseMessages.getString(PKG, "System.FileType.CSVFiles"), BaseMessages.getString(PKG, "System.FileType.AllFiles")});
+					dialog.setFilterNames(new String[] {
+					    BaseMessages.getString(PKG, "System.FileType.XMLFiles"),
+					    BaseMessages.getString(PKG, "System.FileType.TextFiles"), 
+					    BaseMessages.getString(PKG, "System.FileType.CSVFiles"), 
+					    BaseMessages.getString(PKG, "System.FileType.AllFiles")});
 					if (dialog.open()!=null)
 					{
 						wFilename.setText(dialog.getFilterPath()+System.getProperty("file.separator")+dialog.getFileName());
@@ -1023,28 +1027,29 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		    XMLField field = input.getOutputFields()[i];
 
 			TableItem item = wFields.table.getItem(i);
-			if (field.getFieldName()!=null) item.setText(1, field.getFieldName());
-            if (field.getElementName()!=null) 
-           	{
-            	item.setText(2, field.getElementName());
-           	}
-            else
-            {
+			int index=1;
+			
+			if (field.getFieldName()!=null) item.setText(index++, field.getFieldName());
+      if (field.getElementName() != null) {
+        item.setText(index++, field.getElementName());
+      } else {
             	// Fixup for defect JIRA PDI-607. Make it the same functionality
             	// as the loading of the original XML file.
-            	if (field.getFieldName()!=null)
-            	{
-            		item.setText(2, field.getFieldName());
+        if (field.getFieldName() != null) {
+          item.setText(index++, field.getFieldName());
+        } else {
+          index++;
             	}            
             }
-			item.setText(3, field.getTypeDesc());
-			if (field.getFormat()!=null) item.setText(4, field.getFormat());
-			if (field.getLength()>=0) item.setText(5, ""+field.getLength());
-			if (field.getPrecision()>=0) item.setText(6, ""+field.getPrecision());
-			if (field.getCurrencySymbol()!=null) item.setText(7, field.getCurrencySymbol());
-			if (field.getDecimalSymbol()!=null) item.setText(8, field.getDecimalSymbol());
-			if (field.getGroupingSymbol()!=null) item.setText(9, field.getGroupingSymbol());
-			if (field.getNullString()!=null) item.setText(10, field.getNullString());
+      item.setText(index++, field.getContentType().name());
+			item.setText(index++, field.getTypeDesc());
+			if (field.getFormat()!=null) item.setText(index++, field.getFormat()); else index++;
+			if (field.getLength()>=0) item.setText(index++, ""+field.getLength()); else index++;
+			if (field.getPrecision()>=0) item.setText(index++, ""+field.getPrecision()); else index++;
+			if (field.getCurrencySymbol()!=null) item.setText(index++, field.getCurrencySymbol()); else index++;
+			if (field.getDecimalSymbol()!=null) item.setText(index++, field.getDecimalSymbol()); else index++;
+			if (field.getGroupingSymbol()!=null) item.setText(index++, field.getGroupingSymbol()); else index++;
+			if (field.getNullString()!=null) item.setText(index++, field.getNullString()); else index++;
 		}
 		
 		wFields.optWidth(true);
@@ -1093,19 +1098,20 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		    XMLField field = new XMLField();
 		    
 			TableItem item = wFields.getNonEmpty(i);
-			field.setFieldName( item.getText(1) );
-            field.setElementName( item.getText(2) );
-            
+			int index=1;
+			field.setFieldName( item.getText(index++) );
+      field.setElementName( item.getText(index++) );
             if (field.getFieldName().equals(field.getElementName())) field.setElementName("");
             
-			field.setType( item.getText(3) );
-			field.setFormat( item.getText(4) );
-			field.setLength( Const.toInt(item.getText(5), -1) );
-			field.setPrecision( Const.toInt(item.getText(6), -1) );
-			field.setCurrencySymbol( item.getText(7) );
-			field.setDecimalSymbol( item.getText(8) );
-			field.setGroupingSymbol( item.getText(9) );
-			field.setNullString( item.getText(10) );
+      field.setContentType( ContentType.valueOf(item.getText(index++)) );
+			field.setType( item.getText(index++) );
+			field.setFormat( item.getText(index++) );
+			field.setLength( Const.toInt(item.getText(index++), -1) );
+			field.setPrecision( Const.toInt(item.getText(index++), -1) );
+			field.setCurrencySymbol( item.getText(index++) );
+			field.setDecimalSymbol( item.getText(index++) );
+			field.setGroupingSymbol( item.getText(index++) );
+			field.setNullString( item.getText(index++) );
 			
 			xmlOutputMeta.getOutputFields()[i]  = field;
 		}
@@ -1161,7 +1167,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
                             return true;
                         }
                     };
-                BaseStepDialog.getFieldsFromPrevious(r, wFields, 1, new int[] { 1 }, new int[] { 3 }, 5, 6, listener);
+                BaseStepDialog.getFieldsFromPrevious(r, wFields, 1, new int[] { 1 }, new int[] { 4 }, 6, 7, listener);
 			}
 		}
 		catch(KettleException ke)
