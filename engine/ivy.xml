@@ -82,6 +82,10 @@
     <dependency org="woodstox"                         name="wstx-asl"             rev="3.2.4"           transitive="false"/> 
     <dependency org="xerces"                           name="xercesImpl"           rev="2.8.1"           transitive="false"/>
     <dependency org="net.sf.ehcache"                   name="ehcache-core"         rev="2.5.1"           transitive="false"/>
+    <dependency org="org.codehaus.jackson"             name="jackson-core-asl"     rev="1.9.2"           transitive="false"/>
+    <dependency org="org.codehaus.jackson"             name="jackson-mapper-asl"   rev="1.9.2"           transitive="false"/>
+    <dependency org="org.codehaus.jackson"             name="jackson-jaxrs"        rev="1.9.2"           transitive="false"/>
+    <dependency org="stax"                             name="stax"                 rev="1.2.0"           transitive="false"/>
 
     <!--  for testing -->
     <dependency org="com.h2database"      name="h2"            rev="1.2.131" conf="test->default" transitive="false"/>
