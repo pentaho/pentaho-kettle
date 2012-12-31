@@ -85,7 +85,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 	public int afterunzip;
 	private String wildcard;
 	private String wildcardexclude;
-	private String targetdirectory;
+	private String sourcedirectory; // targetdirectory on screen, renamed because of PDI-7761
 	private String movetodirectory;
 	private boolean addfiletoresult;
 	private boolean isfromprevious;
@@ -157,7 +157,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 		afterunzip=0;
 		wildcard=null;
 		wildcardexclude=null;
-		targetdirectory=null;
+		sourcedirectory=null;
 		movetodirectory=null;
 		addfiletoresult = false;
 		isfromprevious = false;
@@ -197,7 +197,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 		retval.append("      ").append(XMLHandler.addTagValue("zipfilename",      zipFilename));
 		retval.append("      ").append(XMLHandler.addTagValue("wildcard",         wildcard));
 		retval.append("      ").append(XMLHandler.addTagValue("wildcardexclude",  wildcardexclude));
-		retval.append("      ").append(XMLHandler.addTagValue("targetdirectory",  targetdirectory));
+		retval.append("      ").append(XMLHandler.addTagValue("targetdirectory",  sourcedirectory));
 		retval.append("      ").append(XMLHandler.addTagValue("movetodirectory",  movetodirectory));
 		retval.append("      ").append(XMLHandler.addTagValue("afterunzip",  afterunzip));
 		retval.append("      ").append(XMLHandler.addTagValue("addfiletoresult",  addfiletoresult));
@@ -229,7 +229,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 
     		wildcard = XMLHandler.getTagValue(entrynode, "wildcard");
 			wildcardexclude = XMLHandler.getTagValue(entrynode, "wildcardexclude");
-			targetdirectory = XMLHandler.getTagValue(entrynode, "targetdirectory");
+			sourcedirectory = XMLHandler.getTagValue(entrynode, "targetdirectory");
 			movetodirectory = XMLHandler.getTagValue(entrynode, "movetodirectory");
 			addfiletoresult = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "addfiletoresult"));
 			isfromprevious = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "isfromprevious"));	
@@ -262,7 +262,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 			afterunzip=(int) rep.getJobEntryAttributeInteger(id_jobentry, "afterunzip");
 			wildcard = rep.getJobEntryAttributeString(id_jobentry, "wildcard");
 			wildcardexclude = rep.getJobEntryAttributeString(id_jobentry, "wildcardexclude");
-			targetdirectory = rep.getJobEntryAttributeString(id_jobentry, "targetdirectory");
+			sourcedirectory = rep.getJobEntryAttributeString(id_jobentry, "targetdirectory");
 			movetodirectory = rep.getJobEntryAttributeString(id_jobentry, "movetodirectory");
 			addfiletoresult=rep.getJobEntryAttributeBoolean(id_jobentry, "addfiletoresult");
 			isfromprevious=rep.getJobEntryAttributeBoolean(id_jobentry, "isfromprevious");
@@ -297,7 +297,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "afterunzip", afterunzip);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "wildcard", wildcard);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "wildcardexclude", wildcardexclude);
-			rep.saveJobEntryAttribute(id_job, getObjectId(), "targetdirectory", targetdirectory);
+			rep.saveJobEntryAttribute(id_job, getObjectId(), "targetdirectory", sourcedirectory);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "movetodirectory", movetodirectory);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "addfiletoresult", addfiletoresult);
 			rep.saveJobEntryAttribute(id_job, getObjectId(), "isfromprevious", isfromprevious);
@@ -335,7 +335,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 		String realWildcardSource    = environmentSubstitute(wildcardSource);
 		String realWildcard          = environmentSubstitute(wildcard);
 		String realWildcardExclude   = environmentSubstitute(wildcardexclude);
-		String realTargetdirectory   = environmentSubstitute(targetdirectory);
+		String realTargetdirectory   = environmentSubstitute(sourcedirectory);
 		String realMovetodirectory   = environmentSubstitute(movetodirectory);
 
 		limitFiles=Const.toInt(environmentSubstitute(getLimit()),10);
@@ -480,7 +480,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 				}
 		
 				if (log.isDetailed()) logDetailed(BaseMessages.getString(PKG, "JobUnZip.Zip_FileExists.Label",realFilenameSource));
-				if(Const.isEmpty(targetdirectory))
+				if(Const.isEmpty(sourcedirectory))
 				{
 					log.logError(BaseMessages.getString(PKG, "JobUnZip.Error.Label"), BaseMessages.getString(PKG, "JobUnZip.TargetFolderNotFound.Label"));
 					return result;
@@ -1102,7 +1102,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 	
 	public void setSourceDirectory(String targetdirectoryin)
 	{
-		this.targetdirectory = targetdirectoryin;
+		this.sourcedirectory = targetdirectoryin;
 	}
 	
 	public void setMoveToDirectory(String movetodirectory)
@@ -1112,7 +1112,7 @@ public class JobEntryUnZip extends JobEntryBase implements Cloneable, JobEntryIn
 	
 	public String getSourceDirectory()
 	{
-		return targetdirectory;
+		return sourcedirectory;
 	}
 
 	public String getMoveToDirectory()
