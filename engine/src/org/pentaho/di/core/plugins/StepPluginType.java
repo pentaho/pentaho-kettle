@@ -58,6 +58,7 @@ import org.w3c.dom.Node;
    ,"BaseStep.Category.DataWarehouse"
    ,"BaseStep.Category.Validation"
    ,"BaseStep.Category.Statistics"
+   ,"BaseStep.Category.DataMining"   
    ,"BaseStep.Category.BigData"
    ,"BaseStep.Category.Agile"   
    ,"BaseStep.Category.DataQuality"
