@@ -74,6 +74,7 @@ public class GPBulkLoader extends BaseStep implements StepInterface
 	private GPBulkLoaderMeta meta;
 	protected GPBulkLoaderData data;
 	private GPBulkDataOutput output = null;
+	private String enclosure;
 		
 	/*
 	 * Local copy of the transformation "preview" property. We only forward
@@ -122,6 +123,11 @@ public class GPBulkLoader extends BaseStep implements StepInterface
 	public GPBulkLoader(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
 	{
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
+		if (Const.getOS().startsWith("Windows")) {
+		  enclosure = "\"";
+		} else {
+		  enclosure = "'";
+	}
 	}
 
 	/**
@@ -134,7 +140,7 @@ public class GPBulkLoader extends BaseStep implements StepInterface
 	public String getControlFileContents(GPBulkLoaderMeta meta, RowMetaInterface rm, Object[] r) throws KettleException
 	{
 		DatabaseMeta dm = meta.getDatabaseMeta();
-		String inputName = "'" + environmentSubstitute(meta.getDataFile()) + "'";
+		String inputName = String.format("%s%s%s", enclosure, environmentSubstitute(meta.getDataFile()), enclosure); 
 
 		//if ( GPBulkLoaderMeta.METHOD_AUTO_CONCURRENT.equals(meta.getLoadMethod()) )
 		//{
@@ -325,7 +331,7 @@ public class GPBulkLoader extends BaseStep implements StepInterface
 		   {
 	           FileObject fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getPsqlpath()), getTransMeta());
   	      	   String psqlexec = KettleVFS.getFilename(fileObject);
-		       sb.append('\'').append(psqlexec).append('\'');
+		       sb.append(enclosure).append(psqlexec).append(enclosure);
   	       }
 	       catch ( Exception ex )
 	       {
@@ -344,7 +350,7 @@ public class GPBulkLoader extends BaseStep implements StepInterface
 	           FileObject fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getControlFile()), getTransMeta());   
 		   
 	           sb.append(" -n -f ");
-	           sb.append('\'').append(KettleVFS.getFilename(fileObject)).append('\'');
+	           sb.append(enclosure).append(KettleVFS.getFilename(fileObject)).append(enclosure);
   	       }
 	       catch ( Exception ex )
 	       {
@@ -363,7 +369,7 @@ public class GPBulkLoader extends BaseStep implements StepInterface
 		       FileObject fileObject = KettleVFS.getFileObject(environmentSubstitute(meta.getLogFile()), getTransMeta());   
 	   
 		       sb.append(" -o ");
-		       sb.append('\'').append(KettleVFS.getFilename(fileObject)).append('\'');
+		       sb.append(enclosure).append(KettleVFS.getFilename(fileObject)).append(enclosure);
 		   }
 		   catch ( Exception ex )
 		   {
