@@ -186,7 +186,7 @@ public class StringOperations extends BaseStep implements StepInterface {
 	}
 
 
-	private synchronized Object[] processRow(RowMetaInterface rowMeta, Object[] row) throws KettleException {
+	private Object[] processRow(RowMetaInterface rowMeta, Object[] row) throws KettleException {
 
 		Object[] RowData = new Object[data.outputRowMeta.size()];
 		// Copy the input fields.
