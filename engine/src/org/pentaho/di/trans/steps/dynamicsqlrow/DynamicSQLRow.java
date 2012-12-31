@@ -76,7 +76,13 @@ public class DynamicSQLRow extends BaseStep implements StepInterface
 		
 		
 		// get dynamic SQL statement
-		String sql=getInputRowMeta().getString(rowData,data.indexOfSQLField);
+    String sqlTemp=getInputRowMeta().getString(rowData,data.indexOfSQLField);
+    String sql = null;
+    if (meta.isVariableReplace()) {
+      sql = environmentSubstitute(sqlTemp);
+    } else {
+      sql = sqlTemp;
+    }
 		
 		if(log.isDebug()) logDebug(BaseMessages.getString(PKG, "DynamicSQLRow.Log.SQLStatement",sql));
 		
