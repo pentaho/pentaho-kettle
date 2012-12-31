@@ -1134,7 +1134,14 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		wMinWidth =new Button(wFieldsComp, SWT.PUSH);
 		wMinWidth.setText(BaseMessages.getString(PKG, "TextFileOutputDialog.MinWidth.Button"));
 		wMinWidth.setToolTipText(BaseMessages.getString(PKG, "TextFileOutputDialog.MinWidth.Tooltip"));
-
+    wMinWidth.addSelectionListener(new SelectionAdapter() 
+      {
+        public void widgetSelected(SelectionEvent e) 
+        {
+          input.setChanged();
+        }
+      }
+    );
 		setButtonPositions(new Button[] { wGet, wMinWidth}, margin, null);
 
 		final int FieldsCols=10;
