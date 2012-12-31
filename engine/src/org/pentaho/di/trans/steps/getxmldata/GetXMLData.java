@@ -55,6 +55,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.dom4j.Node;
 
 
 
@@ -773,14 +774,26 @@ public class GetXMLData extends BaseStep implements StepInterface
 					xpathField.setNamespaceURIs(data.NAMESPACE);
 					if(xmlDataField.getResultType()== GetXMLDataField.RESULT_TYPE_VALUE_OF)
 						nodevalue=xpathField.valueOf(node);
+					else {
+						// nodevalue=xpathField.selectSingleNode(node).asXML();
+            Node n = xpathField.selectSingleNode(node);
+            if (n != null)
+              nodevalue = n.asXML();
 					else
-						nodevalue=xpathField.selectSingleNode(node).asXML();
+              nodevalue = "";
+          }
 				}else
 				{
 					if(xmlDataField.getResultType()== GetXMLDataField.RESULT_TYPE_VALUE_OF)
 						nodevalue=node.valueOf(XPathValue);
+					else {
+						// nodevalue=node.selectSingleNode(XPathValue).asXML();
+            Node n = node.selectSingleNode(XPathValue);
+            if (n != null)
+              nodevalue = n.asXML();
 					else
-						nodevalue=node.selectSingleNode(XPathValue).asXML();
+              nodevalue = "";
+          }
 				}
 				
 				// Do trimming
