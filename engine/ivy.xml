@@ -86,6 +86,7 @@
     <dependency org="org.codehaus.jackson"             name="jackson-mapper-asl"   rev="1.9.2"           transitive="false"/>
     <dependency org="org.codehaus.jackson"             name="jackson-jaxrs"        rev="1.9.2"           transitive="false"/>
     <dependency org="stax"                             name="stax"                 rev="1.2.0"           transitive="false"/>
+    <dependency org="org.springframework"              name="spring"               rev="2.5.6"           transitive="false"/>
 
     <!--  for testing -->
     <dependency org="com.h2database"      name="h2"            rev="1.2.131" conf="test->default" transitive="false"/>
