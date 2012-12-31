@@ -76,6 +76,9 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface
     /** fail if the exit status is different from 0 **/
     private boolean      failwhennotsuccess;
     
+    /** Output Line Delimiter - defaults to empty string for backward compatibility **/
+    public String outputLineDelimiter = "";
+    
     
     public ExecProcessMeta()
     {
@@ -220,6 +223,7 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    " + XMLHandler.addTagValue("errorfieldname", errorfieldname));
         retval.append("    " + XMLHandler.addTagValue("exitvaluefieldname", exitvaluefieldname));
         retval.append("    " + XMLHandler.addTagValue("failwhennotsuccess", failwhennotsuccess));
+        retval.append("    " + XMLHandler.addTagValue("outputlinedelimiter", outputLineDelimiter));
         return retval.toString();
     }
 
@@ -232,6 +236,10 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface
             errorfieldname = XMLHandler.getTagValue(stepnode, "errorfieldname"); 
             exitvaluefieldname = XMLHandler.getTagValue(stepnode, "exitvaluefieldname"); 
             failwhennotsuccess     = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "failwhennotsuccess"));
+            outputLineDelimiter = XMLHandler.getTagValue(stepnode, "outputlinedelimiter");
+            if (outputLineDelimiter == null) {
+              outputLineDelimiter = ""; // default to empty string for backward compatibility
+            }
         }
         catch (Exception e)
         {
@@ -249,6 +257,10 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface
             errorfieldname = rep.getStepAttributeString(id_step, "errorfieldname");    
             exitvaluefieldname = rep.getStepAttributeString(id_step, "exitvaluefieldname"); 
             failwhennotsuccess   =      rep.getStepAttributeBoolean(id_step, "failwhennotsuccess");
+            outputLineDelimiter = rep.getStepAttributeString(id_step, "outputlinedelimiter");    
+            if (outputLineDelimiter == null) {
+              outputLineDelimiter = ""; // default to empty string for backward compatibility
+            }
         }
         catch (Exception e)
         {
@@ -265,6 +277,7 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface
             rep.saveStepAttribute(id_transformation, id_step, "errorfieldname", errorfieldname);
             rep.saveStepAttribute(id_transformation, id_step, "exitvaluefieldname", exitvaluefieldname);
             rep.saveStepAttribute(id_transformation, id_step, "failwhennotsuccess",           failwhennotsuccess);
+            rep.saveStepAttribute(id_transformation, id_step, "outputlinedelimiter", outputLineDelimiter);
         }
         catch (Exception e)
         {
@@ -325,4 +338,13 @@ public class ExecProcessMeta extends BaseStepMeta implements StepMetaInterface
     {
         return failwhennotsuccess;
     }
+    
+    public void setOutputLineDelimiter(String value) {
+      this.outputLineDelimiter = value;
+    }
+    
+    public String getOutputLineDelimiter() {
+      return outputLineDelimiter;
+    }
+    
 }
