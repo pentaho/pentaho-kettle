@@ -27,11 +27,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
+import java.util.TimeZone;
 
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
@@ -270,6 +272,33 @@ public class EnvUtil
         }
       }
       return resultLocale;
+    }
+
+    public static TimeZone createTimeZone(String timeZoneCode) {
+      
+      TimeZone resultTimeZone = null;
+      if (!Const.isEmpty(timeZoneCode)) {
+        return TimeZone.getTimeZone(timeZoneCode);
+      } else {
+        resultTimeZone = TimeZone.getDefault();
+      }
+      return resultTimeZone;
+    }
+    
+    public static String[] getTimeZones() {
+      String[] timeZones = TimeZone.getAvailableIDs();
+      Arrays.sort(timeZones);
+      return timeZones;
+    }
+    
+    public static String[] getLocaleList() {
+      Locale[] locales = Locale.getAvailableLocales();
+      String[] strings = new String[locales.length];
+      for (int i=0;i<strings.length;i++) {
+        strings[i] = locales[i].toString();
+      }
+      Arrays.sort(strings);
+      return strings;
     }
     
 

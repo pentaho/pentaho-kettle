@@ -49,6 +49,7 @@ public class LoggingObject implements LoggingObjectInterface {
 	private Date registrationDate;
 	
 	private boolean gatheringMetrics;
+	private boolean forcingSeparateLogging;
 	
 	public LoggingObject(Object object) {
 		if (object instanceof LoggingObjectInterface) {
@@ -131,6 +132,8 @@ public class LoggingObject implements LoggingObjectInterface {
 		objectCopy = loggingObject.getObjectCopy();
 		logLevel = loggingObject.getLogLevel();
 		containerObjectId = loggingObject.getContainerObjectId();
+		forcingSeparateLogging = loggingObject.isForcingSeparateLogging();
+		gatheringMetrics = loggingObject.isGatheringMetrics();
 		
 		if (loggingObject.getParent()!=null) {
 			getParentLoggingObject(loggingObject.getParent());
@@ -350,5 +353,19 @@ public class LoggingObject implements LoggingObjectInterface {
    */
   public void setGatheringMetrics(boolean gatheringMetrics) {
     this.gatheringMetrics = gatheringMetrics;
+  }
+
+  /**
+   * @return the forcingSeparateLogging
+   */
+  public boolean isForcingSeparateLogging() {
+    return forcingSeparateLogging;
+  }
+
+  /**
+   * @param forcingSeparateLogging the forcingSeparateLogging to set
+   */
+  public void setForcingSeparateLogging(boolean forcingSeparateLogging) {
+    this.forcingSeparateLogging = forcingSeparateLogging;
   }
 }

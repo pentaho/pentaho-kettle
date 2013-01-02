@@ -32,4 +32,9 @@ public class Point
     
     public int x;
     public int y;
+    
+    public void multiply(float factor) {
+      x=Math.round(x*factor);
+      y=Math.round(y*factor);
+    }
 }

@@ -37,6 +37,7 @@ import java.util.UUID;
 
 import org.apache.log4j.spi.LoggingEvent;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
@@ -173,7 +174,6 @@ import org.pentaho.di.ui.spoon.dialog.NotePadDialog;
 import org.pentaho.di.ui.spoon.dialog.SearchFieldsProgressDialog;
 import org.pentaho.di.ui.spoon.job.JobGraph;
 import org.pentaho.di.ui.trans.dialog.TransDialog;
-import org.pentaho.ui.xul.XulComponent;
 import org.pentaho.ui.xul.XulDomContainer;
 import org.pentaho.ui.xul.XulException;
 import org.pentaho.ui.xul.XulLoader;
@@ -184,8 +184,9 @@ import org.pentaho.ui.xul.containers.XulMenupopup;
 import org.pentaho.ui.xul.containers.XulToolbar;
 import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.impl.XulEventHandler;
+import org.pentaho.ui.xul.jface.tags.JfaceMenuitem;
+import org.pentaho.ui.xul.jface.tags.JfaceMenupopup;
 import org.pentaho.ui.xul.swt.SwtXulLoader;
-import org.pentaho.ui.xul.swt.tags.SwtMenuitem;
 
 /**
  * This class handles the display of the transformations in a graphical way using icons, arrows, etc.
@@ -342,6 +343,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   
   Timer redrawTimer;
 
+  private TransPreviewDelegate transPreviewDelegate;
+
   public void setCurrentNote(NotePadMeta ni) {
     this.ni = ni;
   }
@@ -382,6 +385,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     transHistoryDelegate = new TransHistoryDelegate(spoon, this);
     transPerfDelegate = new TransPerfDelegate(spoon, this);
     transMetricsDelegate = new TransMetricsDelegate(spoon, this);
+    transPreviewDelegate = new TransPreviewDelegate(spoon, this);
 
     try {
       XulLoader loader = new SwtXulLoader();
@@ -741,7 +745,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       }
     }
 
-    public void mouseDown(MouseEvent e) {
+  public void mouseDown(MouseEvent e) {
 
 		boolean alt = (e.stateMask & SWT.ALT) != 0;
 		boolean control = (e.stateMask & SWT.MOD1) != 0;
@@ -836,6 +840,10 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 					
 					if (candidate != null) {
 						addCandidateAsHop(e.x, e.y);
+					} else {
+					  if (transPreviewDelegate.isActive()) {
+					    transPreviewDelegate.refreshView();
+					  }
 					}
 					// ALT-Click: edit error handling
 					//
@@ -879,6 +887,10 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
 				case STEP_COPIES_TEXT:
 				  copies((StepMeta) areaOwner.getOwner());
+				  break;
+				
+				case STEP_DATA_SERVICE:
+				  editProperties(transMeta, spoon, spoon.getRepository(), true, TransDialog.Tabs.DATA_SERVICE_TAB);
 				  break;
 				}
       } else {
@@ -2333,33 +2345,28 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             XulMenuitem item = (XulMenuitem) doc.getElementById("trans-graph-entry-newhop"); //$NON-NLS-1$
             item.setDisabled(sels != 2);
 
-            XulMenupopup launchMenu = (XulMenupopup) doc.getElementById("trans-graph-entry-launch-popup");
+            JfaceMenupopup launchMenu = (JfaceMenupopup) doc.getElementById("trans-graph-entry-launch-popup");
             String[] referencedObjects = stepMeta.getStepMetaInterface().getReferencedObjectDescriptions();
             boolean[] enabledObjects = stepMeta.getStepMetaInterface().isReferencedObjectEnabled();
             launchMenu.setDisabled(Const.isEmpty(referencedObjects));
+
+            launchMenu.removeChildren();
             
-            List<XulComponent> childNodes = launchMenu.getChildNodes();
-            for (XulComponent childNode : childNodes) {
-              item.removeChild(childNode);
-            }
             if (!Const.isEmpty(referencedObjects)) {
               for (int i=0;i<referencedObjects.length;i++) {
+                final int index = i;
                 String referencedObject = referencedObjects[i];
-                XulMenuitem child = new SwtMenuitem(launchMenu, xulDomContainer, referencedObject, i);
+                Action action = new Action(referencedObject, Action.AS_DROP_DOWN_MENU) {
+                  public void run() {
+                    openMapping(stepMeta, index);
+                  };
+                };            
+                JfaceMenuitem child = new JfaceMenuitem(null, launchMenu, xulDomContainer, referencedObject, i, action);
                 child.setLabel(referencedObject);
                 child.setDisabled(!enabledObjects[i]);
-                launchMenu.addChild(child);
-                /*
-                MenuItem swtItem = (MenuItem) child.getManagedObject();
-                final int index = i;
-                swtItem.addSelectionListener(new SelectionAdapter() {
-                  public void widgetSelected(SelectionEvent event) {
-                    openMapping(stepMeta, index);
-                  }
-                });
-                */
               }
             }
+                        
 
             item = (XulMenuitem) doc.getElementById("trans-graph-entry-align-snap"); //$NON-NLS-1$
 
@@ -2595,6 +2602,11 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
           tip.append(BaseMessages.getString(PKG, "TransGraph.StepInjectionNotSupported.Tooltip")); //$NON-NLS-1$
         }
         tipImage = GUIResource.getInstance().getImageEdit();
+        break;
+      case STEP_DATA_SERVICE:
+        transMeta = (TransMeta) areaOwner.getParent();
+        tip.append(BaseMessages.getString(PKG, "TransGraph.DataServiceDefined", transMeta.getDataService().getName())); // $NON-NLS-1$
+        tipImage = GUIResource.getInstance().getImageConnection();
         break;
 			}
 		}
@@ -3487,6 +3499,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
     transGridDelegate.addTransGrid();
     transPerfDelegate.addTransPerf();
     transMetricsDelegate.addTransMetrics();
+    transPreviewDelegate.addTransPreview();
     
     if (tabItemSelection!=null) {
       extraViewTabFolder.setSelection(tabItemSelection);
@@ -3550,6 +3563,12 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
             showPreview(transDebugMeta, stepDebugMeta, rowBufferMeta, rowBuffer);
           }
         });
+        
+        // Do we capture data?
+        //
+        if (transPreviewDelegate.isActive()) {
+          transPreviewDelegate.capturePreviewData(trans, transMeta.getSteps());
+        }
 
         // Start the threads for the steps...
         //
@@ -4396,26 +4415,30 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   }
   
   public void handleTransMetaChanges(TransMeta transMeta) throws KettleException {
-	     if (transMeta.hasChanged()) {
-	        if (spoon.props.getAutoSave()) {
-	           spoon.saveToFile(transMeta);
-	        } 
-	        else {
-	           MessageDialogWithToggle md = new MessageDialogWithToggle(
-	             shell,
-	             BaseMessages.getString(PKG, "TransLog.Dialog.FileHasChanged.Title"), //$NON-NLS-1$
-	             null,
-	             BaseMessages.getString(PKG, "TransLog.Dialog.FileHasChanged1.Message") + Const.CR + BaseMessages.getString(PKG, "TransLog.Dialog.FileHasChanged2.Message") + Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
-	             MessageDialog.QUESTION, new String[] {
-	                 BaseMessages.getString(PKG, "System.Button.Yes"), BaseMessages.getString(PKG, "System.Button.No") }, //$NON-NLS-1$ //$NON-NLS-2$
-	             0, BaseMessages.getString(PKG, "TransLog.Dialog.Option.AutoSaveTransformation"), //$NON-NLS-1$
-	             spoon.props.getAutoSave());
-	           int answer = md.open();
-	           if ((answer & 0xFF) == 0) {
-	             spoon.saveToFile(transMeta);
-	           }
-	           spoon.props.setAutoSave(md.getToggleState());
-	        }
-	     }
-	  }
-	}
+    if (transMeta.hasChanged()) {
+      if (spoon.props.getAutoSave()) {
+        spoon.saveToFile(transMeta);
+      } else {
+        MessageDialogWithToggle md = new MessageDialogWithToggle(
+            shell,
+            BaseMessages.getString(PKG, "TransLog.Dialog.FileHasChanged.Title"), //$NON-NLS-1$
+            null,
+            BaseMessages.getString(PKG, "TransLog.Dialog.FileHasChanged1.Message") + Const.CR + BaseMessages.getString(PKG, "TransLog.Dialog.FileHasChanged2.Message") + Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
+            MessageDialog.QUESTION,
+            new String[] { BaseMessages.getString(PKG, "System.Button.Yes"), BaseMessages.getString(PKG, "System.Button.No") }, //$NON-NLS-1$ //$NON-NLS-2$
+            0, BaseMessages.getString(PKG, "TransLog.Dialog.Option.AutoSaveTransformation"), //$NON-NLS-1$
+            spoon.props.getAutoSave());
+        int answer = md.open();
+        if ((answer & 0xFF) == 0) {
+          spoon.saveToFile(transMeta);
+        }
+        spoon.props.setAutoSave(md.getToggleState());
+      }
+    }
+  }
+  
+  public void enableDisablePreviewMode() {
+    transPreviewDelegate.setActive(!transPreviewDelegate.isActive());
+  }
+}
+

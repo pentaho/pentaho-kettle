@@ -1839,6 +1839,34 @@ public class KettleDatabaseRepositoryCreationHelper {
             if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
+		
+    //
+    // R_TRANS_DATA_SERVICE
+    //
+    // Create table...
+    table = new RowMeta();
+    tablename = KettleDatabaseRepository.TABLE_R_TRANS_DATA_SERVICE;
+    schemaTable = databaseMeta.getQuotedSchemaTableCombination(null, tablename);
+    if (monitor!=null) monitor.subTask("Checking table "+schemaTable);
+    table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_DATA_SERVICE_ID_TRANS_DATA_SERVICE, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+    table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_DATA_SERVICE_ID_TRANS, ValueMetaInterface.TYPE_INTEGER, KEY, 0));
+    table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_DATA_SERVICE_SERVICE_NAME, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_LENGTH, 0));
+    table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_DATA_SERVICE_STEP_NAME, ValueMetaInterface.TYPE_STRING, KettleDatabaseRepository.REP_STRING_LENGTH, 0));
+    table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_DATA_SERVICE_IS_OUTPUT, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+    table.addValueMeta(new ValueMeta(KettleDatabaseRepository.FIELD_TRANS_DATA_SERVICE_ALLOW_OPTIMIZATION, ValueMetaInterface.TYPE_BOOLEAN, 1, 0));
+    sql = database.getDDL(schemaTable, table, null, false, KettleDatabaseRepository.FIELD_TRANS_DATA_SERVICE_ID_TRANS_DATA_SERVICE, false);
+
+    if (!Const.isEmpty(sql)) {
+      statements.add(sql);
+      if (!dryrun) {
+        if (log.isDetailed()) log.logDetailed("executing SQL statements: " + Const.CR + sql);
+        database.execStatements(sql);
+        if (log.isDetailed()) log.logDetailed("Created or altered table " + schemaTable);
+      }
+    } else {
+      if (log.isDetailed()) log.logDetailed("Table " + schemaTable + " is OK.");
+    }
+    if (monitor!=null) monitor.worked(1);
 
 		///////////////////////////////////////////////////////////////////////////////////
 		//

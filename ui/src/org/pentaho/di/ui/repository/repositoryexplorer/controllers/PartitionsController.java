@@ -119,7 +119,7 @@ public class PartitionsController extends LazilyInitializedController implements
         ObjectId partitionId = repository.getPartitionSchemaID(partitionSchema.getName());
         if (partitionId == null) {
           MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-          mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.DoesNotExists.Message")); //$NON-NLS-1$
+          mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.DoesNotExists.Message", partitionSchemaName)); //$NON-NLS-1$
           mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Edit.Title")); //$NON-NLS-1$
           mb.open();
         } else {
@@ -204,7 +204,7 @@ public class PartitionsController extends LazilyInitializedController implements
             ObjectId partitionId = repository.getPartitionSchemaID(partitionSchema.getName());
             if (partitionId == null) {
               MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-              mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.DoesNotExists.Message")); //$NON-NLS-1$
+              mb.setMessage(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.DoesNotExists.Message", partitionSchemaName)); //$NON-NLS-1$
               mb.setText(BaseMessages.getString(PKG, "RepositoryExplorerDialog.Partition.Delete.Title")); //$NON-NLS-1$
               mb.open();
             } else {

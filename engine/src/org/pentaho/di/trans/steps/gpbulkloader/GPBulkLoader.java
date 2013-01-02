@@ -127,7 +127,7 @@ public class GPBulkLoader extends BaseStep implements StepInterface
 		  enclosure = "\"";
 		} else {
 		  enclosure = "'";
-	}
+		}
 	}
 
 	/**

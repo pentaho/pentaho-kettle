@@ -26,8 +26,10 @@ import java.io.DataOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -43,9 +45,12 @@ import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.jdbc.ThinConnection;
 import org.pentaho.di.core.jdbc.ThinDriver;
+import org.pentaho.di.core.jdbc.TransDataService;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
+import org.pentaho.di.repository.Repository;
+import org.pentaho.di.trans.DataServiceMeta;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransConfiguration;
 import org.pentaho.di.trans.TransExecutionConfiguration;
@@ -104,9 +109,33 @@ public class TransDataServlet extends BaseHttpServlet implements CartePluginInte
     Map<String, String> parameters = getParametersFromRequestHeader(request);
     
     try {
+      // Get the list of services...
+      //
+      List<TransDataService> services = new ArrayList<TransDataService>(transformationMap.getSlaveServerConfig().getServices());
+      
+      // Add possible services from the repository...
+      //
+      Repository repository = transformationMap.getSlaveServerConfig().getRepository();
+      if (repository!=null) {
+        List<DataServiceMeta> dataServices = repository.listDataServices();
+        for (DataServiceMeta dataService : dataServices) {
+          if (!Const.isEmpty(dataService.getName()) && !Const.isEmpty(dataService.getStepname())) {
+            services.add(new TransDataService(
+                                dataService.getName(), 
+                                null, 
+                                dataService.getObjectId(), 
+                                dataService.getStepname(), 
+                                null, 
+                                dataService.getCacheMethod()
+                              )
+                          );
+          }
+        }
+      }
+      
       // Execute the SQL using a few transformations...
       //
-      final SqlTransExecutor executor = new SqlTransExecutor(sqlQuery, getTransformationMap().getSlaveServerConfig().getServices(), parameters);
+      final SqlTransExecutor executor = new SqlTransExecutor(sqlQuery, services, parameters, repository, 0);
             
       // First write the service name and the metadata
       //

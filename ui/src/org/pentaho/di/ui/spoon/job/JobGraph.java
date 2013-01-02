@@ -33,6 +33,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.UUID;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.window.DefaultToolTip;
@@ -162,6 +163,7 @@ import org.pentaho.ui.xul.containers.XulMenupopup;
 import org.pentaho.ui.xul.containers.XulToolbar;
 import org.pentaho.ui.xul.dom.Document;
 import org.pentaho.ui.xul.impl.XulEventHandler;
+import org.pentaho.ui.xul.jface.tags.JfaceMenuitem;
 import org.pentaho.ui.xul.jface.tags.JfaceMenupopup;
 import org.pentaho.ui.xul.swt.SwtXulLoader;
 import org.pentaho.ui.xul.swt.tags.SwtMenuitem;
@@ -1759,34 +1761,29 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
         XulMenuitem item = (XulMenuitem) doc.getElementById("job-graph-entry-newhop");
         item.setDisabled(sels < 2);
         
-        XulMenupopup launchMenu = (XulMenupopup) doc.getElementById("job-graph-entry-launch-popup");
-        String[] referencedObjects = jobEntry.getEntry().getReferencedObjectDescriptions();
-        boolean[] enabledObjects = jobEntry.getEntry().isReferencedObjectEnabled();
-        launchMenu.setDisabled(Const.isEmpty(referencedObjects));
-        
         item = (XulMenuitem) doc.getElementById("job-graph-entry-checkpoint");
         item.setDisabled(!jobMeta.getCheckpointLogTable().isDefined());
         item.setSelected(jobEntry.isCheckpoint());
         
-        List<XulComponent> childNodes = launchMenu.getChildNodes();
-        for (XulComponent childNode : childNodes) {
-          item.removeChild(childNode);
-        }
+        JfaceMenupopup launchMenu = (JfaceMenupopup) doc.getElementById("job-graph-entry-launch-popup");
+        String[] referencedObjects = jobEntry.getEntry().getReferencedObjectDescriptions();
+        boolean[] enabledObjects = jobEntry.getEntry().isReferencedObjectEnabled();
+        launchMenu.setDisabled(Const.isEmpty(referencedObjects));
+        
+        launchMenu.removeChildren();
+        
         if (!Const.isEmpty(referencedObjects)) {
           for (int i=0;i<referencedObjects.length;i++) {
+            final int index = i;
             String referencedObject = referencedObjects[i];
-            XulMenuitem child = new SwtMenuitem(launchMenu, xulDomContainer, referencedObject, i);
+            Action action = new Action(referencedObject, Action.AS_DROP_DOWN_MENU) {
+              public void run() {
+                loadReferencedObject(jobEntry, index);
+              };
+            };            
+            JfaceMenuitem child = new JfaceMenuitem(null, launchMenu, xulDomContainer, referencedObject, i, action);
             child.setLabel(referencedObject);
             child.setDisabled(!enabledObjects[i]);
-            launchMenu.addChild(child);
-            
-            // MenuItem swtItem = child.getManagedObject();
-            // final int index = i;
-            // swtItem.addSelectionListener(new SelectionAdapter() {
-            //   public void widgetSelected(SelectionEvent event) {
-            //     loadReferencedObject(jobEntry, index);
-            //  }
-            // });
           }
         }
 
@@ -1821,7 +1818,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
           item.setSelected(jobEntry.isLaunchingInParallel());
         }
 
-        ConstUI.displayMenu((Menu)menu.getManagedObject(), canvas);
+        ConstUI.displayMenu(menu, canvas);
       }
 
     } else // Clear the menu
@@ -1877,7 +1874,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
             else
               miDisHop.setLabel(BaseMessages.getString(PKG, "JobGraph.PopupMenu.Hop.Enable")); //$NON-NLS-1$
           }
-          ConstUI.displayMenu((Menu)menu.getManagedObject(), canvas);
+          ConstUI.displayMenu(menu, canvas);
         }
 
       } else {
@@ -1887,7 +1884,7 @@ public JobGraph(Composite par, final Spoon spoon, final JobMeta jobMeta) {
         if (ni != null) {
           XulMenupopup menu = (XulMenupopup) doc.getElementById("job-graph-note");
           if (menu != null) {
-            ConstUI.displayMenu((Menu)menu.getManagedObject(), canvas);
+            ConstUI.displayMenu(menu, canvas);
           }
         } else {
           XulMenupopup menu = (XulMenupopup) doc.getElementById("job-graph-background");

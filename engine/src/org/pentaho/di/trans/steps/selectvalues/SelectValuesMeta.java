@@ -41,6 +41,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
@@ -402,6 +403,8 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface,
 					}
 
 					v.setDateFormatLenient(metaChange.isDateFormatLenient());
+					v.setDateFormatLocale(EnvUtil.createLocale(metaChange.getDateFormatLocale()));
+          v.setDateFormatTimeZone(EnvUtil.createTimeZone(metaChange.getDateFormatTimeZone()));
 					v.setLenientStringToNumber(metaChange.isLenientStringToNumber());
 					
 					if (!Const.isEmpty(metaChange.getEncoding())) 
@@ -505,7 +508,9 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface,
 				meta[i].setStorageType(ValueMeta.getStorageType(rep.getStepAttributeString (id_step, i, getRepCode("META_STORAGE_TYPE")))); //$NON-NLS-1$ 
 				meta[i].setConversionMask(rep.getStepAttributeString (id_step, i, getRepCode("META_CONVERSION_MASK"))); //$NON-NLS-1$
 				meta[i].setDateFormatLenient(Boolean.parseBoolean(rep.getStepAttributeString (id_step, i, getRepCode("META_DATE_FORMAT_LENIENT")))); //$NON-NLS-1$
-				meta[i].setLenientStringToNumber(Boolean.parseBoolean(rep.getStepAttributeString (id_step, i, getRepCode("META_LENIENT_STRING_TO_NUMBER")))); //$NON-NLS-1$
+        meta[i].setDateFormatLocale(rep.getStepAttributeString (id_step, i, getRepCode("META_DATE_FORMAT_LOCALE"))); //$NON-NLS-1$
+        meta[i].setDateFormatTimeZone(rep.getStepAttributeString (id_step, i, getRepCode("META_DATE_FORMAT_TIMEZONE"))); //$NON-NLS-1$
+        meta[i].setLenientStringToNumber(Boolean.parseBoolean(rep.getStepAttributeString (id_step, i, getRepCode("META_LENIENT_STRING_TO_NUMBER")))); //$NON-NLS-1$
 				meta[i].setEncoding(rep.getStepAttributeString (id_step, i, getRepCode("META_ENCODING"))); //$NON-NLS-1$
 				meta[i].setDecimalSymbol(rep.getStepAttributeString (id_step, i, getRepCode("META_DECIMAL"))); //$NON-NLS-1$
 				meta[i].setGroupingSymbol(rep.getStepAttributeString (id_step, i, getRepCode("META_GROUPING"))); //$NON-NLS-1$
@@ -547,6 +552,8 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface,
 				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_STORAGE_TYPE"),    ValueMeta.getStorageTypeCode(meta[i].getStorageType())); //$NON-NLS-1$
 				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_CONVERSION_MASK"), meta[i].getConversionMask()); //$NON-NLS-1$
 				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_DATE_FORMAT_LENIENT"), Boolean.toString(meta[i].isDateFormatLenient())); //$NON-NLS-1$
+        rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_DATE_FORMAT_LOCALE"), meta[i].getDateFormatLocale() == null ? null : meta[i].getDateFormatLocale().toString()); //$NON-NLS-1$
+        rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_DATE_FORMAT_TIMEZONE"), meta[i].getDateFormatTimeZone() == null ? null : meta[i].getDateFormatTimeZone().toString()); //$NON-NLS-1$
 				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_LENIENT_STRING_TO_NUMBER"), Boolean.toString(meta[i].isLenientStringToNumber())); //$NON-NLS-1$
 				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_DECIMAL"),  meta[i].getDecimalSymbol()); //$NON-NLS-1$
 				rep.saveStepAttribute(id_transformation, id_step, i, getRepCode("META_GROUPING"), meta[i].getGroupingSymbol()); //$NON-NLS-1$

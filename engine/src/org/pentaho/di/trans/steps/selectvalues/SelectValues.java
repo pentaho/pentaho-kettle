@@ -33,6 +33,7 @@ import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.RowDataUtil;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
@@ -300,6 +301,8 @@ public class SelectValues extends BaseStep implements StepInterface
 				}
 				
 				valueMeta.setDateFormatLenient(change.isDateFormatLenient());
+        valueMeta.setDateFormatLocale(EnvUtil.createLocale(change.getDateFormatLocale()));
+				valueMeta.setDateFormatTimeZone(EnvUtil.createTimeZone(change.getDateFormatTimeZone()));
 				valueMeta.setLenientStringToNumber(change.isLenientStringToNumber());
 				
 				if (!Const.isEmpty(change.getEncoding()))

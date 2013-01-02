@@ -56,7 +56,7 @@ public class XMLField implements Cloneable {
   private String groupingSymbol;
 
   private String nullString;
-
+  
   private ContentType contentType;
 
   public XMLField(ContentType contentType, String fieldName, String elementName, int type, String format, int length, int precision,

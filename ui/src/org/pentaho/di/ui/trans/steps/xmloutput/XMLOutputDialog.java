@@ -760,16 +760,16 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		for (int x=0;x<nums.length;x++) formats[dats.length+x] = nums[x];
 		
     colinf = new ColumnInfo[] {
-    		new ColumnInfo(BaseMessages.getString(PKG, "XMLOutputDialog.Fieldname.Column"),   ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
-            new ColumnInfo(BaseMessages.getString(PKG, "XMLOutputDialog.ElementName.Column"), ColumnInfo.COLUMN_TYPE_TEXT,   false),
+        new ColumnInfo(BaseMessages.getString(PKG, "XMLOutputDialog.Fieldname.Column"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
+        new ColumnInfo(BaseMessages.getString(PKG, "XMLOutputDialog.ElementName.Column"), ColumnInfo.COLUMN_TYPE_TEXT, false),
         new ColumnInfo(BaseMessages.getString(PKG, "XMLOutputDialog.ContentType.Column"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "Element", "Attribute", }, false),
-    		new ColumnInfo(BaseMessages.getString(PKG, "XMLOutputDialog.Type.Column"),        ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes() ),
-    		new ColumnInfo(BaseMessages.getString(PKG, "XMLOutputDialog.Format.Column"),      ColumnInfo.COLUMN_TYPE_CCOMBO, formats),
-    		new ColumnInfo(BaseMessages.getString(PKG, "XMLOutputDialog.Length.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,   false),
-    		new ColumnInfo(BaseMessages.getString(PKG, "XMLOutputDialog.Precision.Column"),   ColumnInfo.COLUMN_TYPE_TEXT,   false),
-    		new ColumnInfo(BaseMessages.getString(PKG, "XMLOutputDialog.Currency.Column"),    ColumnInfo.COLUMN_TYPE_TEXT,   false),
-    		new ColumnInfo(BaseMessages.getString(PKG, "XMLOutputDialog.Decimal.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,   false),
-    		new ColumnInfo(BaseMessages.getString(PKG, "XMLOutputDialog.Group.Column"),       ColumnInfo.COLUMN_TYPE_TEXT,   false),
+        new ColumnInfo(BaseMessages.getString(PKG, "XMLOutputDialog.Type.Column"), ColumnInfo.COLUMN_TYPE_CCOMBO, ValueMeta.getTypes()),
+        new ColumnInfo(BaseMessages.getString(PKG, "XMLOutputDialog.Format.Column"), ColumnInfo.COLUMN_TYPE_CCOMBO, formats),
+        new ColumnInfo(BaseMessages.getString(PKG, "XMLOutputDialog.Length.Column"), ColumnInfo.COLUMN_TYPE_TEXT, false),
+        new ColumnInfo(BaseMessages.getString(PKG, "XMLOutputDialog.Precision.Column"), ColumnInfo.COLUMN_TYPE_TEXT, false),
+        new ColumnInfo(BaseMessages.getString(PKG, "XMLOutputDialog.Currency.Column"), ColumnInfo.COLUMN_TYPE_TEXT, false),
+        new ColumnInfo(BaseMessages.getString(PKG, "XMLOutputDialog.Decimal.Column"), ColumnInfo.COLUMN_TYPE_TEXT, false),
+        new ColumnInfo(BaseMessages.getString(PKG, "XMLOutputDialog.Group.Column"), ColumnInfo.COLUMN_TYPE_TEXT, false),
         new ColumnInfo(BaseMessages.getString(PKG, "XMLOutputDialog.Null.Column"), ColumnInfo.COLUMN_TYPE_TEXT, false) };
 		
 		wFields=new TableView(transMeta, wFieldsComp, 
@@ -1033,14 +1033,14 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
       if (field.getElementName() != null) {
         item.setText(index++, field.getElementName());
       } else {
-            	// Fixup for defect JIRA PDI-607. Make it the same functionality
-            	// as the loading of the original XML file.
+        // Fixup for defect JIRA PDI-607. Make it the same functionality
+        // as the loading of the original XML file.
         if (field.getFieldName() != null) {
           item.setText(index++, field.getFieldName());
         } else {
           index++;
-            	}            
-            }
+        }
+      }
       item.setText(index++, field.getContentType().name());
 			item.setText(index++, field.getTypeDesc());
 			if (field.getFormat()!=null) item.setText(index++, field.getFormat()); else index++;
@@ -1101,7 +1101,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 			int index=1;
 			field.setFieldName( item.getText(index++) );
       field.setElementName( item.getText(index++) );
-            if (field.getFieldName().equals(field.getElementName())) field.setElementName("");
+      if (field.getFieldName().equals(field.getElementName())) field.setElementName("");
             
       field.setContentType( ContentType.valueOf(item.getText(index++)) );
 			field.setType( item.getText(index++) );

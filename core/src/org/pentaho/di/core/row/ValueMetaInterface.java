@@ -31,6 +31,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import org.pentaho.di.compatibility.Value;
 import org.pentaho.di.core.exception.KettleEOFException;
@@ -488,6 +489,16 @@ public interface ValueMetaInterface extends Cloneable
      * @param dateFormatLocale the date format locale to set
      */
     public void setDateFormatLocale(Locale dateFormatLocale);
+
+    /**
+     * @return the date format time zone
+     */
+    public TimeZone getDateFormatTimeZone();
+
+    /**
+     * @param dateFormatTimeZone the date format time zone to set
+     */
+    public void setDateFormatTimeZone(TimeZone dateFormatTimeZone);
 
     /**
      *  store original JDBC RecordSetMetaData for later use

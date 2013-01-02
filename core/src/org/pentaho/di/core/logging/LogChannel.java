@@ -45,6 +45,7 @@ public class LogChannel implements LogChannelInterface {
 	private String containerObjectId;
 	
   private boolean gatheringMetrics;
+  private boolean forcingSeparateLogging;
     
   private static MetricsRegistry metricsRegistry = MetricsRegistry.getInstance();
 
@@ -204,6 +205,16 @@ public class LogChannel implements LogChannelInterface {
    */
   public void setGatheringMetrics(boolean gatheringMetrics) {
     this.gatheringMetrics = gatheringMetrics;
+  }
+  
+  @Override
+  public boolean isForcingSeparateLogging() {
+    return forcingSeparateLogging;
+  }
+  
+  @Override
+  public void setForcingSeparateLogging(boolean forcingSeparateLogging) {
+    this.forcingSeparateLogging = forcingSeparateLogging;
   }
 
   public void snap(MetricsInterface metric, long...value) {

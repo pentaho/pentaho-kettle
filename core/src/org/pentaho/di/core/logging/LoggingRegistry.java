@@ -99,6 +99,9 @@ public class LoggingRegistry {
 		//
 		LoggingObjectInterface found = findExistingLoggingSource(loggingSource);
 		if (found!=null && found.getParent()!=null) {
+		  if (loggingSource.isForcingSeparateLogging() || ( loggingSource.getParent()!=null && loggingSource.getParent().isForcingSeparateLogging() )) {
+		    System.out.println("Separate logging!!!");
+		  }
 		  // Return the previous log channel ID
 		  //
 			return found.getLogChannelId();

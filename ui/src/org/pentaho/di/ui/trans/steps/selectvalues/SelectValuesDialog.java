@@ -61,6 +61,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -389,6 +390,8 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Storage.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO,   new String[] {BaseMessages.getString(PKG, "System.Combo.Yes"), BaseMessages.getString(PKG, "System.Combo.No"), } ), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Format"),        ColumnInfo.COLUMN_TYPE_FORMAT,   3), //$NON-NLS-1$
 			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.DateLenient"),   ColumnInfo.COLUMN_TYPE_CCOMBO,   new String[] {BaseMessages.getString(PKG, "System.Combo.Yes"), BaseMessages.getString(PKG, "System.Combo.No"), } ), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+      new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.DateFormatLocale"),  ColumnInfo.COLUMN_TYPE_CCOMBO,  EnvUtil.getLocaleList()  ), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+      new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.DateFormatTimeZone"), ColumnInfo.COLUMN_TYPE_CCOMBO,   EnvUtil.getTimeZones() ), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.LenientStringToNumber"),   ColumnInfo.COLUMN_TYPE_CCOMBO,   new String[] {BaseMessages.getString(PKG, "System.Combo.Yes"), BaseMessages.getString(PKG, "System.Combo.No"), } ), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Encoding"),      ColumnInfo.COLUMN_TYPE_CCOMBO,   getCharsets(), false), //$NON-NLS-1$
 			new ColumnInfo(BaseMessages.getString(PKG, "SelectValuesDialog.ColumnInfo.Decimal"),       ColumnInfo.COLUMN_TYPE_TEXT,     false), //$NON-NLS-1$
@@ -606,6 +609,8 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 				item.setText( index++, change.getStorageType()==ValueMetaInterface.STORAGE_TYPE_NORMAL?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No")); //$NON-NLS-1$ //$NON-NLS-2$
 				item.setText( index++, Const.NVL(change.getConversionMask(), ""));
 				item.setText( index++, change.isDateFormatLenient()?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No")); //$NON-NLS-1$ //$NON-NLS-2$
+        item.setText( index++, change.getDateFormatLocale() == null ? "" : change.getDateFormatLocale().toString());
+        item.setText( index++, change.getDateFormatTimeZone() == null ? "" : change.getDateFormatTimeZone().toString());
 				item.setText( index++, change.isLenientStringToNumber()?BaseMessages.getString(PKG, "System.Combo.Yes"):BaseMessages.getString(PKG, "System.Combo.No")); //$NON-NLS-1$ //$NON-NLS-2$
 				item.setText( index++, Const.NVL(change.getEncoding(), ""));
 				item.setText( index++, Const.NVL(change.getDecimalSymbol(), ""));
@@ -706,6 +711,8 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 			change.setConversionMask(item.getText(index++));
 			// If DateFormatLenient is anything but Yes (including blank) then it is false
 			change.setDateFormatLenient(item.getText(index++).equalsIgnoreCase(BaseMessages.getString(PKG, "System.Combo.Yes"))?true:false);
+      change.setDateFormatLocale(item.getText(index++));
+      change.setDateFormatTimeZone(item.getText(index++));
 			change.setLenientStringToNumber(item.getText(index++).equalsIgnoreCase(BaseMessages.getString(PKG, "System.Combo.Yes"))?true:false);
 			change.setEncoding(item.getText(index++));
 			change.setDecimalSymbol(item.getText(index++));

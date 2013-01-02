@@ -23,6 +23,7 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.sql.SQL;
+import org.pentaho.di.core.sql.ServiceCacheMethod;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.trans.RowProducer;
 import org.pentaho.di.trans.Trans;
@@ -56,6 +57,7 @@ public class SqlTransExecutor {
   private DecimalFormat sqlNumericFormat;
   private SimpleDateFormat sqlDateFormat;
   private SimpleDateFormat jsonDateFormat;
+  private List<Object[]> serviceData;
 
   /**
    * Create a new SqlTransExecutor without parameters
@@ -106,30 +108,50 @@ public class SqlTransExecutor {
   private void prepareExecution() throws KettleException {
     sql = new SQL(sqlQuery);
     serviceName = sql.getServiceName();
-    
-    // Dual
+
+    // First see if this is a special "dual" table we're reading from...
+    //
     if (Const.isEmpty(serviceName) || "dual".equalsIgnoreCase(serviceName)) {
       service = new TransDataService("dual");
       service.setDual(true);
       serviceFields = new RowMeta(); // nothing to report from dual
     } else {
       service = findService(serviceName);
-      
       if (service==null) {
         throw new KettleException("Unable to find service with name '"+service+"' and SQL: "+sqlQuery);
       }
+      
+      // See if we're dealing with cached data...
+      //
+      if (service.getCacheMethod()==ServiceCacheMethod.LocalMemory) {
+        serviceFields = TransDataCache.getInstance().retrieveRowMeta(serviceName);
+        if (serviceFields!=null) {
 
-      // TODO: allow for repository transformation loading...
+          // This is cached data...
+          //
+          serviceData = TransDataCache.getInstance().retrieveRowData(serviceName);
+          
+          service = findService(serviceName);
+          if (service==null) {
+            throw new KettleException("Unable to find service with name '"+service+"' and SQL: "+sqlQuery);
+          }
+          service.setDual(true); // to prevent us from starting up the service transformation...
+          
+        } 
+      }
+      // No dual, no cache, let's run the service xform
       //
-      serviceTransMeta = loadTransMeta(repository);
-      serviceTransMeta.setName(calculateTransname(sql, true));
-      
-      serviceTransMeta.activateParameters();
-      
-      // The dummy step called "Output" provides the output fields...
-      //
-      serviceStepName = service.getServiceStepName();
-      serviceFields = serviceTransMeta.getStepFields(serviceStepName);
+      if (serviceFields==null) { 
+        serviceTransMeta = loadTransMeta(repository);
+        serviceTransMeta.setName(calculateTransname(sql, true));
+        
+        serviceTransMeta.activateParameters();
+        
+        // The dummy step called "Output" provides the output fields...
+        //
+        serviceStepName = service.getServiceStepName();
+        serviceFields = serviceTransMeta.getStepFields(serviceStepName);
+      }
     }
   }
 
@@ -386,6 +408,8 @@ public class SqlTransExecutor {
     //
     genTrans = new Trans(genTransMeta);
     genTrans.prepareExecution(null);
+    
+    final List<Object[]> serviceRowsWhenCached = new ArrayList<Object[]>();
 
     if (!service.isDual()) {
       // This is where we will inject the rows from the service transformation step
@@ -408,6 +432,12 @@ public class SqlTransExecutor {
         }
   
         rowProducer.putRow(rowMeta, row);
+
+        // Keep the rows for the cache.
+        //
+        if (service.getCacheMethod()==ServiceCacheMethod.LocalMemory) {
+          serviceRowsWhenCached.add(row);
+        }
       } });
     
       // Let the other transformation know when there are no more rows
@@ -416,8 +446,24 @@ public class SqlTransExecutor {
         @Override
         public void transFinished(Trans trans) throws KettleException {
           rowProducer.finished();
+          
+          // Cache the data, ready for the next query...
+          //
+          if (service.getCacheMethod()==ServiceCacheMethod.LocalMemory) {
+            TransDataCache.getInstance().store(serviceName, serviceFields, serviceRowsWhenCached);
+          }
         }
       });
+    }
+    
+    // If this is cached data, inject it into the generated transformation...
+    //
+    if (serviceData!=null) {
+      final RowProducer rowProducer = genTrans.addRowProducer(sqlTransMeta.getInjectorStepName(), 0);
+      for (Object[] row : serviceData) {
+        rowProducer.putRow(serviceFields, row);
+      }
+      rowProducer.finished();
     }
       
     // Give back the eventual result rows...
@@ -452,7 +498,12 @@ public class SqlTransExecutor {
         throw new KettleException("Unable to load service transformation for service '"+serviceName+"'", e);
       }
     } else {
-      throw new KettleException("Loading from a repository is not supported yet (or the filename is not specified for a service)");
+      try {
+        transMeta = repository.loadTransformation(service.getObjectId(), null);
+        transMeta.getLogChannel().logDetailed("Service transformation was loaded from repository for service [" + service.getName()+ "]");
+      } catch(Exception e) {
+        throw new KettleException("Unable to load service transformation for service '"+serviceName+"' from the repository", e);
+      }
     }
     return transMeta;
   }
@@ -546,7 +597,7 @@ public class SqlTransExecutor {
    * @return the generated name;
    */
   public static String calculateTransname(SQL sql, boolean isService) {
-    StringBuilder sbsql = new StringBuilder(sql.getServiceName()+" - "+(isService?"Service data":"Execute SQL")+" - "+sql.getSqlString());
+    StringBuilder sbsql = new StringBuilder(sql.getServiceName()+" - "+(isService?"Service":"SQL")+" - "+sql.getSqlString());
     for (int i=sbsql.length()-1;i>=0;i--)
     {
       if (sbsql.charAt(i)=='\n' || sbsql.charAt(i)=='\r') sbsql.setCharAt(i, ' ');

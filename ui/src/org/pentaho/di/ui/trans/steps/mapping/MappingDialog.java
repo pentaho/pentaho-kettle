@@ -906,7 +906,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 	{
 		addMappingDefinitionTab(outputMappings.get(index), index + 1 + inputMappings.size(), 
 				BaseMessages.getString(PKG, "MappingDialog.OutputTab.Title"), 
-				BaseMessages.getString(PKG, "MappingDialog.InputTab.Tooltip"), 
+				BaseMessages.getString(PKG, "MappingDialog.OutputTab.Tooltip"), 
 				BaseMessages.getString(PKG, "MappingDialog.OutputTab.label.InputSourceStepName"), 
 				BaseMessages.getString(PKG, "MappingDialog.OutputTab.label.OutputTargetStepName"), 
 				BaseMessages.getString(PKG, "MappingDialog.OutputTab.label.Description"), 

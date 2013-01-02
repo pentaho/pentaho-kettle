@@ -55,6 +55,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.xmloutput.XMLField.ContentType;
 import org.w3c.dom.Node;
 
 /**
@@ -352,6 +353,8 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
         Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i);
 
         outputFields[i] = new XMLField();
+        String contentTypeString = Const.NVL(XMLHandler.getTagValue(fnode, "content_type"), ContentType.Element.name());
+        outputFields[i].setContentType(ContentType.valueOf(contentTypeString));
         String fieldName = XMLHandler.getTagValue(fnode, "name");
         outputFields[i].setFieldName(fieldName);
         String elementName = XMLHandler.getTagValue(fnode, "element");
@@ -408,7 +411,7 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
 
     for (int i = 0; i < nrfields; i++) {
       outputFields[i] = new XMLField();
-
+      outputFields[i].setContentType(ContentType.Element);
       outputFields[i].setFieldName("field" + i);
       outputFields[i].setElementName("field" + i);
       outputFields[i].setType("Number");
@@ -560,6 +563,7 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
 
       if (field.getFieldName() != null && field.getFieldName().length() != 0) {
         retval.append("      <field>").append(Const.CR);
+        retval.append("        ").append(XMLHandler.addTagValue("content_type", field.getContentType().name()));
         retval.append("        ").append(XMLHandler.addTagValue("name", field.getFieldName()));
         retval.append("        ").append(XMLHandler.addTagValue("element", field.getElementName()));
         retval.append("        ").append(XMLHandler.addTagValue("type", field.getTypeDesc()));
@@ -609,6 +613,7 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
       for (int i = 0; i < nrfields; i++) {
         outputFields[i] = new XMLField();
 
+        outputFields[i].setContentType(ContentType.valueOf(Const.NVL(rep.getStepAttributeString(id_step, i, "field_content_type"), ContentType.Element.name())));
         outputFields[i].setFieldName(rep.getStepAttributeString(id_step, i, "field_name"));
         outputFields[i].setElementName(rep.getStepAttributeString(id_step, i, "field_element"));
         outputFields[i].setType(rep.getStepAttributeString(id_step, i, "field_type"));
@@ -650,6 +655,7 @@ public class XMLOutputMeta extends BaseStepMeta implements StepMetaInterface {
       for (int i = 0; i < outputFields.length; i++) {
         XMLField field = outputFields[i];
 
+        rep.saveStepAttribute(id_transformation, id_step, i, "field_content_type", field.getContentType().name());
         rep.saveStepAttribute(id_transformation, id_step, i, "field_name", field.getFieldName());
         rep.saveStepAttribute(id_transformation, id_step, i, "field_element", field.getElementName());
         rep.saveStepAttribute(id_transformation, id_step, i, "field_type", field.getTypeDesc());

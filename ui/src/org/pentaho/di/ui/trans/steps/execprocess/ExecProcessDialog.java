@@ -84,7 +84,7 @@ public class ExecProcessDialog extends BaseStepDialog implements StepDialogInter
 	private Label        wlFailWhenNotSuccess;
 	private Button       wFailWhenNotSuccess;
 	private FormData     fdlFailWhenNotSuccess, fdFailWhenNotSuccess;
-
+	
   private Label        wlOutputDelim;
   private TextVar      wOutputDelim;
   private FormData     fdlOutputDelim, fdOutputDelim;
@@ -304,8 +304,6 @@ public class ExecProcessDialog extends BaseStepDialog implements StepDialogInter
 		fdExitValue.top  = new FormAttachment(wError, margin);
 		fdExitValue.right= new FormAttachment(100, 0);
 		wExitValue.setLayoutData(fdExitValue);
-		
-		
 		
 		fdOutputFields= new FormData();
 		fdOutputFields.left = new FormAttachment(0, margin);

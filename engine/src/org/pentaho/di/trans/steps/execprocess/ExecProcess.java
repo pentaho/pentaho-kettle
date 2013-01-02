@@ -223,8 +223,8 @@ public class ExecProcess extends BaseStep implements StepInterface
    	     delim = environmentSubstitute(delim);
    	   }
    	     	   
-   		while ((line = b.readLine()) != null) 
-   		{
+   	  while ((line = b.readLine()) != null) 
+      {
    	    if (retvalBuff.length() > 0) {
    	     retvalBuff.append(delim);
    	    }

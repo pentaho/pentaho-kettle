@@ -82,6 +82,7 @@ public class TransExecutionConfiguration implements Cloneable
     private Repository repository;
     
     private boolean gatheringMetrics;
+    private boolean showingSubComponents;
 
     public TransExecutionConfiguration()
     {
@@ -103,6 +104,9 @@ public class TransExecutionConfiguration implements Cloneable
         logLevel = LogLevel.BASIC;
         
         clearingLog = true;
+        
+        gatheringMetrics=false;
+        showingSubComponents=true;
     }
     
     public Object clone()
@@ -536,6 +540,7 @@ public class TransExecutionConfiguration implements Cloneable
         xml.append("    ").append(XMLHandler.addTagValue("log_level", logLevel.getCode()));
         xml.append("    ").append(XMLHandler.addTagValue("clear_log", clearingLog));
         xml.append("    ").append(XMLHandler.addTagValue("gather_metrics", gatheringMetrics));
+        xml.append("    ").append(XMLHandler.addTagValue("show_subcomponents", showingSubComponents));
         
         // The source rows...
         //
@@ -630,6 +635,7 @@ public class TransExecutionConfiguration implements Cloneable
         logLevel = LogLevel.getLogLevelForCode( XMLHandler.getTagValue(trecNode, "log_level") );
         clearingLog = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "clear_log"));
         gatheringMetrics = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "gather_metrics"));
+        showingSubComponents = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "show_subcomponents"));
         
         Node resultNode = XMLHandler.getSubNode(trecNode, Result.XML_TAG);
         if (resultNode!=null)
@@ -776,4 +782,21 @@ public class TransExecutionConfiguration implements Cloneable
   public void setGatheringMetrics(boolean gatheringMetrics) {
     this.gatheringMetrics = gatheringMetrics;
   }
+
+  /**
+   * @return the showingSubComponents
+   */
+  public boolean isShowingSubComponents() {
+    return showingSubComponents;
+  }
+
+  /**
+   * @param showingSubComponents the showingSubComponents to set
+   */
+  public void setShowingSubComponents(boolean showingSubComponents) {
+    this.showingSubComponents = showingSubComponents;
+  }
+
+
+
 }

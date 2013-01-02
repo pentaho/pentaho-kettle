@@ -50,6 +50,13 @@ public class SelectMetadataChange implements Cloneable, XMLInterface{
 	private String conversionMask;
 	/** Treat the date format as lenient */
 	private boolean dateFormatLenient;
+	
+	/** This is the locale to use for date parsing */
+	private String dateFormatLocale;
+	
+	/** This is the time zone to use for date parsing */
+	private String dateFormatTimeZone;
+	
 	/** Treat string to number format as lenient */
 	private boolean lenientStringToNumber;
 	/** The decimal symbol for number conversions */
@@ -78,10 +85,12 @@ public class SelectMetadataChange implements Cloneable, XMLInterface{
 	public SelectMetadataChange(StepAttributesInterface attributesInterface, String name, String rename, int type, int length, int precision, int storageType,
       String conversionMask, String decimalSymbol, String groupingSymbol, String currencySymbol) {
 	  this(attributesInterface, name, rename, type, length, precision, storageType,
-      conversionMask, false, false, decimalSymbol, groupingSymbol, currencySymbol);
+      conversionMask, false, null, null, false, decimalSymbol, groupingSymbol, currencySymbol);
 	}
 
 	/**
+	 * 
+	 * @param attributesInterface
 	 * @param name
 	 * @param rename
 	 * @param type
@@ -90,13 +99,15 @@ public class SelectMetadataChange implements Cloneable, XMLInterface{
 	 * @param storageType
 	 * @param conversionMask
 	 * @param dateFormatLenient
+	 * @param dateFormatLocale
+	 * @param dateFormatTimeZone
 	 * @param lenientStringToNumber
 	 * @param decimalSymbol
 	 * @param groupingSymbol
 	 * @param currencySymbol
 	 */
 	public SelectMetadataChange(StepAttributesInterface attributesInterface, String name, String rename, int type, int length, int precision, int storageType,
-			String conversionMask, boolean dateFormatLenient, boolean lenientStringToNumber, String decimalSymbol, String groupingSymbol, String currencySymbol) {
+			String conversionMask, boolean dateFormatLenient, String dateFormatLocale, String dateFormatTimeZone, boolean lenientStringToNumber, String decimalSymbol, String groupingSymbol, String currencySymbol) {
 	    this(attributesInterface);
 		this.name = name;
 		this.rename = rename;
@@ -106,6 +117,8 @@ public class SelectMetadataChange implements Cloneable, XMLInterface{
 		this.storageType = storageType;
 		this.conversionMask = conversionMask;
 		this.dateFormatLenient = dateFormatLenient;
+		this.dateFormatLocale = dateFormatLocale;
+		this.dateFormatTimeZone = dateFormatTimeZone;
 		this.lenientStringToNumber = lenientStringToNumber;
 		this.decimalSymbol = decimalSymbol;
 		this.groupingSymbol = groupingSymbol;
@@ -122,6 +135,8 @@ public class SelectMetadataChange implements Cloneable, XMLInterface{
 		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_PRECISION"),       precision)); //$NON-NLS-1$ 
 		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_CONVERSION_MASK"), conversionMask)); //$NON-NLS-1$
 		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_DATE_FORMAT_LENIENT"),   Boolean.toString(dateFormatLenient))); //$NON-NLS-1$
+    retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_DATE_FORMAT_LOCALE"),   dateFormatLocale)); //$NON-NLS-1$
+    retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_DATE_FORMAT_TIMEZONE"),   dateFormatTimeZone)); //$NON-NLS-1$
 		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_LENIENT_STRING_TO_NUMBER"),   Boolean.toString(lenientStringToNumber))); //$NON-NLS-1$
 		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_ENCODING"),        encoding)); //$NON-NLS-1$
 		retval.append("        ").append(XMLHandler.addTagValue(attributesInterface.getXmlCode("META_DECIMAL"),         decimalSymbol)); //$NON-NLS-1$
@@ -141,6 +156,9 @@ public class SelectMetadataChange implements Cloneable, XMLInterface{
 		storageType    = ValueMeta.getStorageType( XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_STORAGE_TYPE")) ); //$NON-NLS-1$
 		conversionMask = XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_CONVERSION_MASK")); //$NON-NLS-1$
 		dateFormatLenient = Boolean.parseBoolean(XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_DATE_FORMAT_LENIENT"))); //$NON-NLS-1$
+    dateFormatLocale = XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_DATE_FORMAT_LOCALE")); //$NON-NLS-1$
+    dateFormatTimeZone = XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_DATE_FORMAT_TIMEZONE")); //$NON-NLS-1$
+    encoding       = XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_ENCODING")); //$NON-NLS-1$
 		lenientStringToNumber = Boolean.parseBoolean(XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_LENIENT_STRING_TO_NUMBER"))); //$NON-NLS-1$
 		encoding       = XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_ENCODING")); //$NON-NLS-1$
 		decimalSymbol  = XMLHandler.getTagValue(metaNode, attributesInterface.getXmlCode("META_DECIMAL")); //$NON-NLS-1$
@@ -341,5 +359,32 @@ public class SelectMetadataChange implements Cloneable, XMLInterface{
 	public void setLenientStringToNumber(boolean lenientStringToNumber) {
 		this.lenientStringToNumber = lenientStringToNumber;
 	}
-	
+
+  /**
+   * @return the dateFormatLocale
+   */
+  public String getDateFormatLocale() {
+    return dateFormatLocale;
+  }
+
+  /**
+   * @param dateFormatLocale the dateFormatLocale to set
+   */
+  public void setDateFormatLocale(String dateFormatLocale) {
+    this.dateFormatLocale = dateFormatLocale;
+  }
+
+  /**
+   * @return the dateFormatTimeZone
+   */
+  public String getDateFormatTimeZone() {
+    return dateFormatTimeZone;
+  }
+
+  /**
+   * @param dateFormatTimeZone the dateFormatTimeZone to set
+   */
+  public void setDateFormatTimeZone(String dateFormatTimeZone) {
+    this.dateFormatTimeZone = dateFormatTimeZone;
+  }	
 }

@@ -190,7 +190,7 @@ public class ExcelInput extends BaseStep implements StepInterface
                 KCellType ct = cell.getType();
                 logDetailed(BaseMessages.getString(PKG, "ExcelInput.Log.UnknownType", ((ct != null) ? ct.toString():"null"), cell.getContents()));
               }
-                            r[rowcolumn] = null;
+              r[rowcolumn] = null;
 						}
 					}
 				}

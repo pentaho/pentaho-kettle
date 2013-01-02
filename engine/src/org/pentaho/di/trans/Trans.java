@@ -4686,24 +4686,30 @@ public class Trans implements VariableSpace, NamedParams, HasLogChannelInterface
     this.executingUser = executingUser;
   }
 
-  /**
-   * Checks whether the transformation is gathering metrics.
-   * 
-   * @return true if the transformation is gathering metrics, false otherwise
-   */
+  @Override
   public boolean isGatheringMetrics() {
-    return log.isGatheringMetrics();
+    return log!=null && log.isGatheringMetrics();
   }
-
-  /**
-   * Sets whether the transformation is gathering metrics.
-   * 
-   * @param gatheringMetrics true if the transformation should gather metrics, false otherwise
-   */
+  
+  @Override
   public void setGatheringMetrics(boolean gatheringMetrics) {
-    log.setGatheringMetrics(gatheringMetrics);
+    if (log!=null) {
+      log.setGatheringMetrics(gatheringMetrics);
+    }
   }
-
+  
+  @Override
+  public boolean isForcingSeparateLogging() {
+    return log!=null && log.isForcingSeparateLogging();
+  }
+  
+  @Override
+  public void setForcingSeparateLogging(boolean forcingSeparateLogging) {
+    if (log!=null) {
+      log.setForcingSeparateLogging(forcingSeparateLogging);
+    }
+  }
+  
   /**
    * Clear the error in the transformation, clear all the rows from all the row sets, to make sure the transformation can continue with other data. 
    * This is intended for use when running single threaded.

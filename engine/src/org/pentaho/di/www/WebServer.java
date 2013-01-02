@@ -104,7 +104,7 @@ public class WebServer {
 
   public void startServer() throws Exception {
     server = new Server();
-
+    
     Constraint constraint = new Constraint();
     constraint.setName(Constraint.__BASIC_AUTH);
     ;
@@ -173,8 +173,13 @@ public class WebServer {
     // Context mobileContext = new Context(contexts, "/mobile", Context.SESSIONS);
     // mobileContext.setHandler(mobileResourceHandler);
     
+    // Allow png files to be shown for transformations and jobs...
+    //
+    ResourceHandler resourceHandler = new ResourceHandler();
+    resourceHandler.setResourceBase("temp");
+    
     // add all handlers/contexts to server
-    server.setHandlers(new Handler[] { securityHandler, contexts });
+    server.setHandlers(new Handler[] { securityHandler, contexts, resourceHandler, });
 
     // Start execution
     createListeners();

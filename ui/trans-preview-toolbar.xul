@@ -1,0 +1,8 @@
+<window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" align="stretch">
+
+  <toolbar id="nav-toolbar" mode="icons">
+    <toolbarbutton id="enable-disable-preview-mode" label="${TransLog.Button.EnableDisablePreviewMode.Label}" image="images/show-inactive.png"
+      tooltiptext="${TransLog.Button.EnableDisablePreviewMode.Tooltip}" onclick="transGraph.enableDisablePreviewMode()" />
+  </toolbar>
+
+</window>

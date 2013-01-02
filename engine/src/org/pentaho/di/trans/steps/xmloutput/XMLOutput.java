@@ -44,6 +44,7 @@ import org.pentaho.di.trans.step.StepDataInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.pentaho.di.trans.steps.xmloutput.XMLField.ContentType;
 
 /**
  * Converts input rows to one or more XML files.
@@ -186,29 +187,50 @@ public class XMLOutput extends BaseStep implements StepInterface
 				/*
 				 * Only write the fields specified!
 				 */
+        // Write a new row to the XML file:
+        data.writer.write((" <" + meta.getRepeatElement()).toCharArray()); //$NON-NLS-1$ //$NON-NLS-2$
+			  
+			  // First do the attributes...
+			  //
+			  for(int i=0;i<meta.getOutputFields().length;i++) {
+			    XMLField xmlField = meta.getOutputFields()[i];
+			    if (xmlField.getContentType() == ContentType.Attribute) {
+			      ValueMetaInterface valueMeta = data.formatRowMeta.getValueMeta(data.fieldnrs[i]);
+	          Object valueData = r[data.fieldnrs[i]];
 
-				// Write a new row to the XML file:
-				data.writer.write((" <" + meta.getRepeatElement() + ">").toCharArray()); //$NON-NLS-1$ //$NON-NLS-2$
+	          String elementName = xmlField.getElementName();
+	          if ( Const.isEmpty(elementName) )
+	          {
+	            elementName = xmlField.getFieldName();
+	          }
+            data.writer.write((" "+elementName+"=\""+valueMeta.getString(valueData)+"\"").toCharArray());
+			    }
+			  }
 
+			  data.writer.write(">".toCharArray()); //$NON-NLS-1$ //$NON-NLS-2$
+			  
+			  // Now write the elements
+			  //
 				for (int i = 0; i < meta.getOutputFields().length; i++)
 				{
 					XMLField outputField = meta.getOutputFields()[i];
-
-					if (i > 0)
-						data.writer.write(' '); // a space between
-					// elements
-
-					ValueMetaInterface valueMeta = data.formatRowMeta.getValueMeta(data.fieldnrs[i]);
-					Object valueData = r[data.fieldnrs[i]];
-
-					String elementName = outputField.getElementName();
-					if ( Const.isEmpty(elementName) )
-					{
-						elementName = outputField.getFieldName();
-					}
-
-					if (!(valueMeta.isNull(valueData) && meta.isOmitNullValues())) {
-					  writeField(valueMeta, valueData, elementName);
+					if (outputField.getContentType()==ContentType.Element) {
+  					if (i > 0)
+  						data.writer.write(' '); // a space between
+  					// elements
+  
+  					ValueMetaInterface valueMeta = data.formatRowMeta.getValueMeta(data.fieldnrs[i]);
+  					Object valueData = r[data.fieldnrs[i]];
+  
+  					String elementName = outputField.getElementName();
+  					if ( Const.isEmpty(elementName) )
+  					{
+  						elementName = outputField.getFieldName();
+  					}
+  
+  					if (!(valueMeta.isNull(valueData) && meta.isOmitNullValues())) {
+  					  writeField(valueMeta, valueData, elementName);
+  					}
 					}
 				}
 			}
