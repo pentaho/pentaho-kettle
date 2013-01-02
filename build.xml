@@ -14,7 +14,11 @@
 	            value="${basedir}/ivydist"
 	            description="Directory that hosts Jar files required to compile project source.  (IVY will populate this directory with required jars)" />
 
-        <!-- Look for user-override properties file first -->        
+    <property name="plugins.publish-local"
+              value="true"
+	            description="Whether to publish plugins locally during the build process. CI should override this"/>
+	
+    <!-- Look for user-override properties file first -->        
 		<property file="override.properties"/>
         <!-- set global properties for this build -->
 		<property file="build.properties"/>
@@ -480,6 +484,7 @@
 	      <sequential>
 	      	<delete dir="plugins/@{plugin}/bin"/>
 	      	<delete dir="plugins/@{plugin}/dist"/>
+	      	<delete dir="plugins/@{plugin}/lib"/>
 		  </sequential>
 		</for>
 	</target>
@@ -780,13 +785,27 @@
 	            depends="install-antcontrib">
 	      <for list="${dev-project.list}" param="module" trim="true">
 	        <sequential>
-	          <ant antfile="build.xml" dir="@{module}" inheritall="false" >
-	            <target name="clean" />
-	            <target name="init" />
-	            <target name="resolve" />
-	            <target name="dist" />
-	          	<target name="publish" />
-	          </ant>
+	        	<if>
+               <equals arg1="${plugins.publish-local}" arg2="true" />
+               <then>
+      	          <ant antfile="build.xml" dir="@{module}" inheritall="false" >
+      	            <target name="clean" />
+      	            <target name="init" />
+      	            <target name="resolve" />
+      	            <target name="dist" />
+      	           	<target name="publish-local" />
+      	          </ant>
+	          	 </then>
+	          	 <else>
+	          	 	<ant antfile="build.xml" dir="@{module}" inheritall="false" >
+                  <target name="clean" />
+                  <target name="init" />
+                  <target name="resolve" />
+                  <target name="dist" />
+                  <target name="publish" />
+                </ant>
+	          	 </else>
+	          	</if>
 	        </sequential>
 	      </for>
 	    </target>
