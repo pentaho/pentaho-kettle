@@ -697,7 +697,7 @@
         Creates the Eclipse .classpath file from the resolved
         classpath from Ant.
       ====================================================================-->
-  <target name="create-dot-classpath" depends="install-pentaho-ant-tasks,init,resolve,unzip-swtlibs,remove-kettle-jars">
+  <target name="create-dot-classpath" depends="install-pentaho-ant-tasks,init,resolve,unzip-swtlibs,remove-kettle-jars,update-launch-config">
     <dot-classpath>
       <classpath>
           <fileset dir="${lib.dir}">
@@ -708,7 +708,34 @@
           </fileset>
       </classpath>
     </dot-classpath>
+  	<echo message="NOTE: If your OS is not 64-bit Linux, edit your classpath to point to the appropriate SWT jar under the libswt folder."/>
   </target>
+	
+	<!--=======================================================================
+	        update-launch-config
+	 
+	        Creates an Eclipse launch configuration from a template using the
+	        project directory name as the project name, location, etc.
+	      ====================================================================-->
+	<target name="update-launch-config" depends="install-antcontrib">
+	  <basename property="project.dir.name" file="${basedir}"/>
+		<available file="${basedir}/${project.dir.name}.launch" property="launch.config.exists"/>
+		<available file="${basedir}/project.launch" property="project-dot-launch.exists"/>
+		<if>
+			<and>
+		    <isfalse value="${launch.config.exists}"/>
+				<istrue  value="${project-dot-launch.exists}"/>
+			</and>
+		  <then>
+		  	<copy file="${basedir}/project.launch" tofile="${basedir}/${project.dir.name}.launch"/>
+		 	  <replace file="${basedir}/${project.dir.name}.launch" token="@@@" value="${project.dir.name}"/>
+		 	  <echo message="NOTE: You must restart Eclipse to enable the use of the launch configuration."/>
+		  </then>
+		  <else>
+		    <echo message="The launch configuration already exists, or no project.launch file exists." />
+		  </else>
+		</if>
+	</target>
 	
 	<!--=======================================================================
 	      resolve
