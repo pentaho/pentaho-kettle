@@ -90,6 +90,18 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 	/** flag to indicate that the format is OK for MonetDB*/
 	private boolean fieldFormatOk[];
 
+	/** Field separator character or string used to delimit fields */ 
+	private String fieldSeparator;
+	
+	/** Specifies which character surrounds each field's data. i.e. double quotes, single quotes or something else */
+	private String fieldEnclosure;
+	
+	/** How are NULLs represented as text to the MonetDB API or mclient i.e. can be an empty string or something else
+	 *  the value is written out as text to the API and MonetDB is able to interpret it to the correct representation of NULL in the database for the 
+	 *  given column type.
+	 */
+	private String NULLrepresentation;
+	
 	/** Encoding to use */
 	private String encoding;
 	
@@ -245,16 +257,19 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 			dbConnectionName     = XMLHandler.getTagValue(stepnode, "connection");   //$NON-NLS-1$
 			databaseMeta   = DatabaseMeta.findDatabase(databases, dbConnectionName);
 
-			bufferSize = XMLHandler.getTagValue(stepnode, "buffer_size");       //$NON-NLS-1$
 
             schemaName     = XMLHandler.getTagValue(stepnode, "schema");       //$NON-NLS-1$
 			tableName      = XMLHandler.getTagValue(stepnode, "table");        //$NON-NLS-1$
-			
+			bufferSize     = XMLHandler.getTagValue(stepnode, "buffer_size");  //$NON-NLS-1$
 			logFile        = XMLHandler.getTagValue(stepnode, "log_file");     //$NON-NLS-1$
-			encoding       = XMLHandler.getTagValue(stepnode, "encoding");         //$NON-NLS-1$
 			truncate       = "Y".equals(XMLHandler.getTagValue(stepnode, "truncate"));         //$NON-NLS-1$
-			autoSchema     = "Y".equals(XMLHandler.getTagValue(stepnode, "auto_schema"));         //$NON-NLS-1$
-			autoStringWidths = "Y".equals(XMLHandler.getTagValue(stepnode, "auto_string_widths"));         //$NON-NLS-1$
+			
+			fieldSeparator 		= XMLHandler.getTagValue(stepnode, "field_separator"); 		//$NON-NLS-1$
+			fieldEnclosure 		= XMLHandler.getTagValue(stepnode, "field_enclosure"); 		//$NON-NLS-1$
+			NULLrepresentation 	= XMLHandler.getTagValue(stepnode, "null_representation"); 	//$NON-NLS-1$
+			encoding       		= XMLHandler.getTagValue(stepnode, "encoding");         	//$NON-NLS-1$
+			//autoSchema     = "Y".equals(XMLHandler.getTagValue(stepnode, "auto_schema"));         //$NON-NLS-1$
+			//autoStringWidths = "Y".equals(XMLHandler.getTagValue(stepnode, "auto_string_widths"));         //$NON-NLS-1$
 			
 
 			int nrvalues = XMLHandler.countNodes(stepnode, "mapping");      //$NON-NLS-1$
@@ -280,15 +295,17 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 	{
 		fieldTable   = null;
 		databaseMeta = null;
-		bufferSize   = "100000";
         schemaName   = "";                //$NON-NLS-1$
 		tableName    = BaseMessages.getString(PKG, "MonetDBBulkLoaderMeta.DefaultTableName"); //$NON-NLS-1$
-		logFile      = "";                                    //$NON-NLS-1$
-        encoding     = "";                                    //$NON-NLS-1$
-        truncate 	 = false;
-        autoSchema   = false;
-        autoStringWidths = false;
-        
+		bufferSize   = "100000";
+		logFile      = "";                //$NON-NLS-1$
+		truncate 	 = false;
+
+        // MonetDB safe defaults.
+        fieldSeparator     = "|";	      //$NON-NLS-1$
+        fieldEnclosure     = "\\,";	      //$NON-NLS-1$
+        NULLrepresentation = "";	      //$NON-NLS-1$
+        encoding     = "UTF-8";           //$NON-NLS-1$
 		allocate(0);
 	}
 
@@ -296,16 +313,21 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 	{
         StringBuffer retval = new StringBuffer(300);
 
-		retval.append("    ").append(XMLHandler.addTagValue("connection",   dbConnectionName)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		retval.append("    ").append(XMLHandler.addTagValue("buffer_size",  bufferSize));     //$NON-NLS-1$ //$NON-NLS-2$
-        retval.append("    ").append(XMLHandler.addTagValue("schema",       schemaName));    //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("table",        tableName));     //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("log_file",     logFile));       //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("encoding",     encoding));      //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("truncate",     truncate));      //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("auto_schema",     autoSchema));      //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("    ").append(XMLHandler.addTagValue("auto_string_widths",     autoStringWidths));      //$NON-NLS-1$ //$NON-NLS-2$
+        // General Settings Tab
+		retval.append("    ").append(XMLHandler.addTagValue("connection",   	    dbConnectionName));     //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		retval.append("    ").append(XMLHandler.addTagValue("buffer_size",  	    bufferSize));           //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    ").append(XMLHandler.addTagValue("schema",       	    schemaName));   	    //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("table",        	    tableName));            //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("log_file",     	    logFile));              //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("truncate",     	    truncate));             //$NON-NLS-1$ //$NON-NLS-2$
+
+		// MonetDB Settings Tab
+		retval.append("    ").append(XMLHandler.addTagValue("field_separator",      fieldSeparator));       //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("field_enclosure",      fieldEnclosure));       //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("null_representation",  NULLrepresentation));   //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    ").append(XMLHandler.addTagValue("encoding",     	    encoding));      		//$NON-NLS-1$ //$NON-NLS-2$
 		
+		// Output Fields Tab
 		for (int i=0;i<fieldTable.length;i++)
 		{
 			retval.append("      <mapping>").append(Const.CR); //$NON-NLS-1$
@@ -325,14 +347,15 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 		{
 			databaseMeta = rep.loadDatabaseMetaFromStepAttribute(id_step, "id_connection", databases);
      		bufferSize     =      rep.getStepAttributeString(id_step, "buffer_size");         //$NON-NLS-1$
-     		dbConnectionName =      rep.getStepAttributeString(id_step,  "db_connection_name");         //$NON-NLS-1$
-            schemaName     =      rep.getStepAttributeString(id_step,  "schema");         //$NON-NLS-1$
-			tableName      =      rep.getStepAttributeString(id_step,  "table");          //$NON-NLS-1$
-			logFile        =      rep.getStepAttributeString(id_step,  "log_file");       //$NON-NLS-1$
-			encoding       =      rep.getStepAttributeString(id_step,  "encoding");       //$NON-NLS-1$
+     		dbConnectionName =    rep.getStepAttributeString(id_step,  "db_connection_name"); //$NON-NLS-1$
+            schemaName     =      rep.getStepAttributeString(id_step,  "schema");             //$NON-NLS-1$
+			tableName      =      rep.getStepAttributeString(id_step,  "table");              //$NON-NLS-1$
+			logFile        =      rep.getStepAttributeString(id_step,  "log_file");           //$NON-NLS-1$
+			fieldSeparator = 	  rep.getStepAttributeString(id_step,  "field_separator");     //$NON-NLS-1$
+			fieldEnclosure = 	  rep.getStepAttributeString(id_step,  "field_enclosure");     //$NON-NLS-1$
+			NULLrepresentation =  rep.getStepAttributeString(id_step,  "null_representation"); //$NON-NLS-1$
+			encoding       =      rep.getStepAttributeString(id_step,  "encoding");           //$NON-NLS-1$
 			truncate       =      Boolean.parseBoolean(rep.getStepAttributeString(id_step,  "truncate"));       //$NON-NLS-1$
-			autoSchema     =      Boolean.parseBoolean(rep.getStepAttributeString(id_step,  "auto_schema"));       //$NON-NLS-1$
-			autoStringWidths =    Boolean.parseBoolean(rep.getStepAttributeString(id_step,  "auto_string_widths"));       //$NON-NLS-1$
 			
 			int nrvalues = rep.countNrStepAttributes(id_step, "stream_name");             //$NON-NLS-1$
 
@@ -358,18 +381,21 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 		try
 		{
 			rep.saveDatabaseMetaStepAttribute(id_transformation, id_step, "id_connection", databaseMeta);
-			rep.saveStepAttribute(id_transformation, id_step, "buffer_size",     bufferSize);     //$NON-NLS-1$
-			 rep.saveStepAttribute(id_transformation, id_step, "db_connection_name",          dbConnectionName);    //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, "schema",          schemaName);    //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "table",           tableName);     //$NON-NLS-1$
+			// General Settings Tab
+			rep.saveStepAttribute(id_transformation, id_step, "db_connection_name",     dbConnectionName);    //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "schema",          		schemaName);          //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "table",           		tableName);           //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "buffer_size",     		bufferSize);          //$NON-NLS-1$			
+			rep.saveStepAttribute(id_transformation, id_step, "log_file",        		logFile);             //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "truncate",               truncate);            //$NON-NLS-1$
 			
-			rep.saveStepAttribute(id_transformation, id_step, "log_file",        logFile);       //$NON-NLS-1$
+			// MonetDB Settings Tab
+			rep.saveStepAttribute(id_transformation, id_step, "field_separator",        fieldSeparator);      //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "field_enclosure",        fieldEnclosure);      //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "null_representation",    NULLrepresentation);  //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "encoding",        		encoding);            //$NON-NLS-1$
 
-			rep.saveStepAttribute(id_transformation, id_step, "encoding",        encoding);      //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "truncate",        truncate);      //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "auto_schema",     autoSchema);      //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "auto_string_widths",     autoStringWidths);      //$NON-NLS-1$
-
+			// Output Fields Tab
 			for (int i=0;i<fieldTable.length;i++)
 			{
 				rep.saveStepAttribute(id_transformation, id_step, i, "stream_name", fieldTable[i]);  //$NON-NLS-1$
@@ -761,20 +787,36 @@ public class MonetDBBulkLoaderMeta extends BaseStepMeta implements StepMetaInter
 		this.logFile = logFile;
 	}
 	
+	public String getFieldSeparator() {
+		return fieldSeparator;
+	}
+	
+	public void setFieldSeparator(String fieldSeparatorStr) {
+		this.fieldSeparator = fieldSeparatorStr;
+	}
+	
+	public String getFieldEnclosure() {
+		return fieldEnclosure;
+	}
+	
+	public void setFieldEnclosure(String fieldEnclosureStr) {
+		this.fieldEnclosure = fieldEnclosureStr;
+	}
+	
+	public String getNULLrepresentation() {
+		return NULLrepresentation;
+	}
+	
+	public void setNULLrepresentation(String NULLrepresentationStr) {
+		this.NULLrepresentation = NULLrepresentationStr;
+	}
+	
 	public String getEncoding() {
 		return encoding;
 	}
 
 	public void setEncoding(String encoding) {
 		this.encoding = encoding;
-	}
-
-	public String getDelimiter() {
-		return ",";
-	}
-
-	public String getEnclosure() {
-		return "\"";
 	}
 
 	/**

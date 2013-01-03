@@ -34,10 +34,11 @@ import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 
 /**
- * Stores data for the GPBulkLoader step.
+ * Stores data for the MonetDBBulkLoader step.
  *
- * @author Sven Boden
- * @since  20-feb-2005
+ * @author James Dixon and Brandon Jackson, inspired by Sven Boden
+ * @since  20-feb-2005 updated 01-Jan-2013
+ *
  */
 public class MonetDBBulkLoaderData extends BaseStepData implements StepDataInterface
 {
@@ -47,21 +48,17 @@ public class MonetDBBulkLoaderData extends BaseStepData implements StepDataInter
 
 	public StreamLogger errorLogger;
 
-//	public Process mClientlProcess;
-
 	public StreamLogger outputLogger;
 
-  public MapiSocket mserver;
-  public BufferedMCLReader in;
-  public BufferedMCLWriter out;
+	// MonetDB API 
+	public MapiSocket mserver;
+  	public BufferedMCLReader in;
+  	public BufferedMCLWriter out;
 
-//	public OutputStream monetOutputStream;
-
-	public byte[] quote;
-	public byte[] separator;
-	public byte[] newline;
-
-//	public PGConnection pgdb;
+	public byte[] quote;               // fieldEnclosure in MonetDBBulkLoaderMeta
+	public byte[] separator;   		   // fieldSeparator in MonetDBBulkLoaderMeta
+	public byte[] nullrepresentation;  // NULLrepresentation in MonetDBBulkLoaderMeta
+	public byte[] newline;             // receives value in the init(...) in MonetDBBulkLoader
 	
 	public ValueMetaInterface monetDateMeta;
 	public ValueMetaInterface monetNumberMeta;

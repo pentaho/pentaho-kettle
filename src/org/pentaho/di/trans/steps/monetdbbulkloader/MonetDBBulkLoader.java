@@ -264,18 +264,49 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 		    				}
 		    			}
 		    			break;
+		    			//
+		    			// TODO: Check MonetDB API for true column types and help set or suggest the correct formatter pattern to the user.
+		    			//
 		    		case ValueMetaInterface.TYPE_DATE:
 		    			// Keep the data format as indicated.
 		    			//
 		    			if (valueMeta.isStorageBinaryString() && meta.getFieldFormatOk()[i]) {
 		    				line.write((byte[])valueData);
 		    			} else {
-		    				Date value = valueMeta.getDate(valueData);
+		    				//Date value = valueMeta.getDate(valueData);
 		    				// Convert it to the MonetDB date format "yyyy/MM/dd HH:mm:ss"
-		    				if( value == null ) {
+		    				//if( value == null ) {
+		    				//	line.write("null".getBytes());
+		    				//} else {
+		    				//	line.write(data.monetDateMeta.getString(value).getBytes());
+		    				//}
+
+		    				// MonetDB makes a distinction between the acceptable incoming string formats for
+		    				// the type DATE and TIMESTAMP.
+		    				//
+		    				//    DATE - for date values (e.g., 2012-12-21)
+		    				//    TIME - for time values (e.g., 15:51:36)
+		    				//    TIMESTAMP - DATE and TIME put together (e.g., 2012-12-21  15:51:36)
+		    				// We throw this responsibility on the user for formatting.
+		    				String str1 = valueMeta.getString(valueData);
+		    				if( str1 == null ) {
 		    					line.write("null".getBytes());
-		    				} else {
-		    					line.write(data.monetDateMeta.getString(value).getBytes());
+		    				} else {		    				
+		    					// escape any backslashes
+				    			str1 = str1.replace("\\", "\\\\");
+				    			if(meta.isAutoStringWidths()) {
+				    				int len = valueMeta.getLength();
+				    				if( len < 1 ) {
+				    					len = MonetDBDatabaseMeta.DEFAULT_VARCHAR_LENGTH;
+				    				}
+				    				if( str1.length() > len ) {
+				    					// TODO log this event
+				    					str1 = str1.substring(0, len);
+				    				}
+				    				line.write(str1.getBytes(meta.getEncoding()));
+				    			} else {
+				    				line.write(str1.getBytes(meta.getEncoding()));
+				    			}		    					
 		    				}
 		    			}
 		    			break;
@@ -334,7 +365,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
     	}
     	catch(Exception e)
     	{
-    		throw new KettleException("Error serializing rows of data to the psql command", e);
+    		throw new KettleException("Error serializing rows of data to the MonetDB API (MAPI).", e);
     	}
 		
 	}
@@ -393,9 +424,18 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
     	if (data.bufferIndex==0) return;
     	
     	try {
+    		StringBuffer cmdBuff = new StringBuffer();
+    		// If the truncate table checkbox is checked, we can to the truncate here.
+    		// MonetDB doees not know the TRUNCATE keyword, but does understand DELETE FROM table
+    		if(meta.isTruncate()) {
+    			logBasic(BaseMessages.getString(PKG, "MonetDBBulkLoader.writeBufferToMonetDB - Truncating the destination table using SQL DELETE FROM syntax.", "")); //$NON-NLS-1$
+    			cmdBuff.append("DELETE FROM " + data.schemaTable + ";");
+    		}
+    		
+    		
 	    	// first write the COPY INTO command...
 	    	//
-    		StringBuffer cmdBuff = new StringBuffer();
+    		
     		cmdBuff.append( "COPY " )
     		.append(data.bufferIndex)
     		.append(" RECORDS INTO ")
@@ -404,7 +444,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
     		.append(new String(data.separator))
     		.append("','" + Const.CR + "','")
     		.append(new String(data.quote))
-    		.append("';");
+    		.append("' NULL AS '" + new String(data.nullrepresentation) + ";");
     		String cmd = cmdBuff.toString();
 	    	if (log.isDetailed()) logDetailed(cmd);
 
@@ -446,7 +486,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 	    	data.bufferIndex=0;
     	}
     	catch(Exception e) {
-    		throw new KettleException("An error occurred writing data to the mclient process", e);
+    		throw new KettleException("An error occurred writing data to the MonetDB API (MAPI) process", e);
     	}
 	}
 
@@ -457,8 +497,9 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 
 		if (super.init(smi, sdi))
 		{			
-			data.quote = "\"".getBytes();
-			data.separator = "|".getBytes();
+			data.quote = meta.getFieldEnclosure().getBytes();
+			data.separator = meta.getFieldSeparator().getBytes();
+			data.nullrepresentation = meta.getNULLrepresentation().getBytes();
 			data.newline = Const.CR.getBytes();
 
 			data.monetDateMeta = new ValueMeta("dateMeta", ValueMetaInterface.TYPE_DATE);
@@ -478,7 +519,7 @@ public class MonetDBBulkLoader extends BaseStep implements StepInterface
 			data.rowBuffer = new String[data.bufferSize]; //new byte[data.bufferSize][];
 			data.bufferIndex = 0;
 			
-			//
+			// Support parameterized database connection names
 			String connectionName = meta.getDbConnectionName();
 			if (!Const.isEmpty(connectionName) && connectionName.startsWith("${") && connectionName.endsWith("}")) {
 				meta.setDatabaseMeta(localTransMeta.findDatabase(environmentSubstitute(connectionName)));	
