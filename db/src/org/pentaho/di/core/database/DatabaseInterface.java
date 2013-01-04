@@ -651,7 +651,7 @@ public interface DatabaseInterface extends Cloneable
     public void setPartitioningInformation(PartitionDatabaseMeta[] partitionInfo);
     
     /**
-     * @return the required libraries (in libext) for this database connection.
+     * @return the required libraries (in lib) for this database connection.
      */
     public String[] getUsedLibraries();
 
