@@ -11,8 +11,8 @@ import org.w3c.dom.Node;
  * <pre>
 	 <example><expression>"Hi " &amp; "there"</expression> <result>"Hi there"</result> <level>1</level> <comment>Simple concatenation.</comment></example>
 	 <example><expression>"H" &amp; ""</expression> <result>"H"</result> <level>1</level> <comment>Concatenating an empty string produces no change.</comment></example>
-	 <example><expression>-5&amp;"b"</expression> <result>“-5b”</result> <level>1</level> <comment>Unary “-” has higher precedence than “&amp;”</comment></example>
-	 <example><expression>3&amp;2-1</expression> <result>“31”</result> <level>1</level> <comment>Binary “-” has higher precedence than “&amp;”</comment></example>
+	 <example><expression>-5&amp;"b"</expression> <result>-5b</result> <level>1</level> <comment>Unary - has higher precedence than &amp;</comment></example>
+	 <example><expression>3&amp;2-1</expression> <result>31</result> <level>1</level> <comment>Binary - has higher precedence than &amp;</comment></example>
  * </pre>
  */
 public class FunctionExample {

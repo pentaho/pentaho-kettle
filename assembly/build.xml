@@ -31,6 +31,11 @@
     <chmod file="${approot.stage.dir}/Data Integration 32-bit.app/Contents/MacOS/JavaApplicationStub" perm="ugo+rx"/>
     <chmod file="${approot.stage.dir}/Data Integration 64-bit.app/Contents/MacOS/JavaApplicationStub" perm="ugo+rx"/>
   	
+  	<!-- Remove the SWT JAR used for compilation -->
+  	<delete quiet="true">
+  		<fileset dir="${stage.dir}/${package.root.dir}/lib" includes="swt*.jar" />
+  	</delete>
+  	
     <!-- Unzip the libswt package into the libswt folder of the distribution -->
     <unzip dest="${stage.dir}/${package.root.dir}" overwrite="true">
       <fileset dir="${swtlib.dir}">

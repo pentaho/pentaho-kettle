@@ -22,10 +22,16 @@
     <dependency org="${ivy.artifact.group}" name="kettle-dbdialog"     rev="${dependency.kettle.revision}" changing="true"/>
     
     <!-- Pentaho (non-Kettle) dependencies -->
-    <dependency org="pentaho"               name="pentaho-vfs-browser" rev="${dependency.pentaho-vfs-browser.revision}"/>
+    <dependency org="pentaho"               name="pentaho-vfs-browser" rev="${dependency.pentaho-vfs-browser.revision}" changing="true"/>
+    <dependency org="pentaho"               name="pentaho-xul-core"    rev="${dependency.pentaho-xul.revision}" changing="true"/>
+    <dependency org="pentaho"               name="pentaho-xul-swt"     rev="${dependency.pentaho-xul.revision}" changing="true"/>
+    <dependency org="pentaho"               name="pentaho-xul-swing"   rev="${dependency.pentaho-xul.revision}" changing="true"/>
     
+    <!--  Third-party (external) dependencies -->
     
-    <!--  external dependencies -->
+    <!-- SWT it required to compile any version of any architecture will work -->
+    <dependency org="org.eclipse.swt"       name="swt-linux-x86_64"    rev="3.7" transitive="false" />
+    
     <dependency org="org.eclipse.equinox"   name="common"              rev="3.3.0-v20070426"  transitive="false"/>
     <dependency org="org.eclipse"           name="jface"               rev="3.3.0-I20070606-0010" transitive="false" conf="default->default" />
     <dependency org="jfree"                 name="jfreechart"          rev="1.0.13"           transitive="false"/>

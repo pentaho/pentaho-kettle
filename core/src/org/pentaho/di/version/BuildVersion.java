@@ -79,7 +79,7 @@ public class BuildVersion
         	buildDate = manifest.getMainAttributes().getValue("Compile-Timestamp");
         	buildUser = manifest.getMainAttributes().getValue("Compile-User");
         }
-        catch(Exception e) {
+        catch(Throwable e) {
           // System.out.println("Unable to read version information from manifest : not running from jar files (Igored)");
           
           version = Const.VERSION;

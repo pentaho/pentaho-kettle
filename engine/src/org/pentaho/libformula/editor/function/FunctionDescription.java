@@ -26,9 +26,9 @@ import org.w3c.dom.Node;
   	<semantics>Concatenates two text (string) values. Due to the way conversion works, numbers are converted to strings. Note that this is equivalent to CONCATENATE(Left,Right). (Note: CONCATENATE is not yet available in libformula version 0.1.18.2)</semantics>
   	<examples>
   		<example><expression>"Hi " &amp; "there"</expression> <result>"Hi there"</result> <level>1</level> <comment>Simple concatenation.</comment></example>
-  		<example><expression>"H" &amp; ""</expression> <result>"H"</result> <level>1</level> <comment>Concatenating an empty string produces no change.</comment></example>
-  		<example><expression>-5&amp;"b"</expression> <result>“-5b”</result> <level>1</level> <comment>Unary “-” has higher precedence than “&amp;”</comment></example>
-  		<example><expression>3&amp;2-1</expression> <result>“31”</result> <level>1</level> <comment>Binary “-” has higher precedence than “&amp;”</comment></example>
+	 <example><expression>"H" &amp; ""</expression> <result>"H"</result> <level>1</level> <comment>Concatenating an empty string produces no change.</comment></example>
+	 <example><expression>-5&amp;"b"</expression> <result>-5b</result> <level>1</level> <comment>Unary - has higher precedence than &amp;</comment></example>
+	 <example><expression>3&amp;2-1</expression> <result>31</result> <level>1</level> <comment>Binary - has higher precedence than &amp;</comment></example>
   	</examples>
   </function>
   

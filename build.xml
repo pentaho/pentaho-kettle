@@ -16,7 +16,11 @@
 
     <property name="plugins.publish-local"
               value="true"
-	            description="Whether to publish plugins locally during the build process. CI should override this"/>
+	            description="Whether to publish plugins locally during the build process. CI should override this or call publish-local-plugins"/>
+	
+	  <property name="modules.publish-local"
+	              value="true"
+	              description="Whether to publish modules locally during the build process. CI should override this"/>
 	
     <!-- Look for user-override properties file first -->        
 		<property file="override.properties"/>
@@ -335,7 +339,7 @@
 	       ==========================
 	  -->
 
-	<target name="default" depends="clean-all,init,resolve,compile,compile-tests,dist" description="default = build distribution package"/>
+	<target name="default" depends="clean,init,build-all,dist" description="default = build distribution package"/>
 
 	
 	 <target name="coverage" depends="clean, compileTests" > <!-- , tests-core, tests-resource, tests-trans, tests-run -->
@@ -484,8 +488,7 @@
 	      <sequential>
 	      	<delete dir="plugins/@{plugin}/bin"/>
 	      	<delete dir="plugins/@{plugin}/dist"/>
-	      	<delete dir="plugins/@{plugin}/lib"/>
-		  </sequential>
+	    </sequential>
 		</for>
 	</target>
 	
@@ -520,8 +523,6 @@
 	      	</sequential>
       	</for>
 	</target>
-	
-	<target name="compile-plugins" description="compile the core plugins"/>
 	
 	<target name="kettle-plugins-jar-standalone" depends="compile-plugins-standalone" description="generate all the kettle plugin jars">
 	  	<for list="${plugin-ids}" param="plugin" trim="true">
@@ -656,15 +657,33 @@
 	
 	<target name="build-all"
 	        description="Build all projects."
-	        depends="install-antcontrib, clean-all, init, build-publish-modules, build-plugins">
+	        depends="install-antcontrib, clean, init, build-publish-modules, build-publish-plugins">
   </target>
 	
-	<target name="compile" depends="install-antcontrib" description="compile the source code">
-    <for list="${dev-project.list}" param="module" trim="true">
+	<target name="compile" depends="install-antcontrib,compile-modules,compile-plugins" description="compile the Kettle source code">
+		
+  </target>
+	
+	<target name="compile-modules" depends="install-antcontrib" description="compile the source code for the Kettle modules">
+	  <for list="${dev-project.list}" param="module" trim="true">
       <sequential>
         <ant antfile="build.xml" dir="@{module}" inheritall="false" >
-        	<property name="src.dir" value="src"/>
-        	<property name="lib.dir" value="../lib"/>
+          <property name="src.dir" value="src"/>
+          <property name="lib.dir" value="../${lib}"/>
+          <property name="classes.dir" value="../${classes.dir}"/>
+        	<target name="compile" />
+        </ant>
+      </sequential>
+    </for>
+	</target>
+	
+	<target name="compile-plugins" depends="install-antcontrib" description="compile the core plugins">
+    <for list="${plugin-ids}" param="plugin" trim="true">
+      <sequential>
+        <ant antfile="build.xml" dir="plugins/@{plugin}" inheritall="false" >
+          <property name="src.dir" value="src"/>
+          <property name="lib.dir" value="../../${lib}"/>
+          <property name="classes.dir" value="../../${classes.dir}"/>
           <target name="compile" />
         </ant>
       </sequential>
@@ -679,12 +698,26 @@
         </ant>
       </sequential>
     </for>
+		<for list="${plugin-ids}" param="plugin" trim="true">
+      <sequential>
+        <ant antfile="build.xml" dir="plugins/@{plugin}" inheritall="false" >
+          <target name="clean" />
+        </ant>
+      </sequential>
+    </for>
   </target>
 	
 	<target name="clean-all" depends="install-antcontrib,subfloor.clean-all" description="compile the source code">
     <for list="${dev-project.list}" param="module" trim="true">
       <sequential>
         <ant antfile="build.xml" dir="@{module}" inheritall="false" >
+          <target name="clean-all" />
+        </ant>
+      </sequential>
+    </for>
+		<for list="${plugin-ids}" param="plugin" trim="true">
+      <sequential>
+        <ant antfile="build.xml" dir="plugins/@{plugin}" inheritall="false" >
           <target name="clean-all" />
         </ant>
       </sequential>
@@ -746,7 +779,7 @@
 	      ====================================================================-->
 	  <target name="resolve" 
 	          depends="subfloor.resolve"
-	          description="Retrieves all the dependent libraries, but deletes the Kettle JARs" />
+	          description="Retrieves all the dependent libraries" />
 	
    <target name="assemble-full"
 	              description="Calls assemble-all in assembly"
@@ -810,46 +843,71 @@
 	  <target name="build-publish-modules"
 	            description="Builds each Kettle module and publishes the artifacts."
 	            depends="install-antcontrib">
-	      <for list="${dev-project.list}" param="module" trim="true">
-	        <sequential>
-	        	<if>
-               <equals arg1="${plugins.publish-local}" arg2="true" />
-               <then>
-      	          <ant antfile="build.xml" dir="@{module}" inheritall="false" >
-      	            <target name="clean" />
-      	            <target name="init" />
-      	            <target name="resolve" />
-      	            <target name="dist" />
-      	           	<target name="publish-local" />
-      	          </ant>
-	          	 </then>
-	          	 <else>
-	          	 	<ant antfile="build.xml" dir="@{module}" inheritall="false" >
-                  <target name="clean" />
-                  <target name="init" />
-                  <target name="resolve" />
-                  <target name="dist" />
-                  <target name="publish" />
-                </ant>
-	          	 </else>
-	          	</if>
-	        </sequential>
-	      </for>
-	    </target>
+	  	
+	  	<for list="${dev-project.list}" param="module" trim="true">
+        <sequential>
+        	<ant antfile="build.xml" dir="@{module}" inheritall="false" >
+        		<property name="src.dir" value="src"/>
+  		      <property name="lib.dir" value="../${lib}"/>
+  		      <property name="classes.dir" value="../${classes.dir}"/>
+        		<property name="ivy.local.default.root" value="${ivy.default.ivy.user.dir}/local-dev" />
+	          <target name="init" />
+        		<target name="resolve" />
+	        </ant>
+        	<if>
+             <equals arg1="${modules.publish-local}" arg2="true" />
+             <then>
+    	          <ant antfile="build.xml" dir="@{module}" inheritall="false" >
+    	          	<property name="src.dir" value="src"/>
+          	      <property name="lib.dir" value="../${lib}"/>
+          	      <property name="classes.dir" value="../${classes.dir}"/>
+    	          	<property name="ivy.local.default.root" value="${ivy.default.ivy.user.dir}/local-dev" />
+    	            <target name="publish-local" />
+    	          </ant>
+          	 </then>
+          	 <else>
+          	 	<ant antfile="build.xml" dir="@{module}" inheritall="false" >
+          	 		<property name="src.dir" value="src"/>
+    	 		      <property name="lib.dir" value="../${lib}"/>
+    	 		      <property name="classes.dir" value="../${classes.dir}"/>
+                <target name="publish" />
+              </ant>
+          	 </else>
+          	</if>
+        </sequential>
+      </for>
+    </target>
 	
 	  <target name="build-plugins"
 	          description="Builds each Kettle plugin (in the source tree) and publishes the artifacts."
 	          depends="install-antcontrib">
 	    <for list="${plugin-ids}" param="plugin" trim="true">
 	      <sequential>
-	        <ant antfile="build.xml" dir="plugins/@{plugin}" inheritall="false" >
-	          <target name="clean" />
-	          <target name="init" />
-	          <target name="resolve" />
-	          <target name="dist" />
-	        </ant>
+	      	<ant antfile="build.xml" dir="plugins/@{plugin}" inheritall="false" >
+	      		<property name="src.dir" value="src"/>
+            <property name="lib.dir" value="../../${lib}"/>
+            <property name="classes.dir" value="../../${classes.dir}"/>
+	      		<property name="ivy.local.default.root" value="${ivy.default.ivy.user.dir}/local-dev" />
+            <target name="init" />
+            <target name="resolve" />
+	      		<target name="dist" />
+	      	</ant>
 	      </sequential>
 	    </for>
+	  </target>
+	
+	  <target name="build-publish-plugins" depends="build-plugins">
+	  	<if>
+      <equals arg1="${plugins.publish-local}" arg2="true" />
+      <then>
+      	<antcall target="publish-local-plugins" >
+      		<param name="ivy.local.default.root" value="${ivy.default.ivy.user.dir}/local-dev" />
+      	</antcall>
+      </then>
+	  	<else>
+	  		<antcall target="publish-plugins" />
+      </else>
+      </if>
 	  </target>
 	
 	  <target name="publish-plugins" depends="install-antcontrib">
@@ -877,6 +935,7 @@
 	      <sequential>
 	        <!-- publish jar -->
 	        <antcall target="publish-local-plugin-task">
+	        	<param name="ivy.local.default.root" value="${ivy.default.ivy.user.dir}/local-dev" />
 	          <param name="ivy.artifact.id" value="@{module}" />
 	          <param name="pluginfolder" value="plugins/@{module}"/>
 	          <param name="artifact.type" value="jar"/>
@@ -975,20 +1034,38 @@
   	
   	<!-- run the assembly's tasks, then copy the staging directory back to the distrib directory -->
   	<ant antfile="build.xml" dir="${assembly.dir}" inheritall="false" >
+  		<property name="ivy.local.default.root" value="${ivy.default.ivy.user.dir}/local-dev" />
+  		<target name="clean" />
       <target name="assemble-full" />
     </ant>
-  	<copy todir="${distrib}">
+  	<move todir="${distrib}">
       <fileset dir="${assembly.stage.pdi-client.dir}" />
-    </copy>
+    </move>
   </target>
 	
-   <target name="package-dev-env" depends="clean, create-dot-classpath">
-        <jar jarfile="${dist.dir}/${product.name}-${product.release.type}-dev-env-${version}.zip">
-            <fileset dir=".">
-                <exclude name="bin/**" />
-                <exclude name="classes/**" />
-            </fileset>
-        </jar>     
-    </target>
+	<!--=======================================================================
+        package-dev-env
+        
+        Creates a distribution of this project that contains all resolved JARs
+        ====================================================================-->
+  <target name="package-dev-env" depends="clean, create-dot-classpath">
+    <jar jarfile="${dist.dir}/${product.name}-${product.release.type}-dev-env-${version}.zip">
+        <fileset dir=".">
+            <exclude name="bin/**" />
+            <exclude name="classes/**" />
+        </fileset>
+    </jar>     
+  </target>
+	
+	<!--=======================================================================
+	      ivy-clean-local-dev
+	      
+	      Completely cleans your local development repository of any modules or
+	      plugins published locally by various Ant tasks.
+	      ====================================================================-->
+	<target name="ivy-clean-local-dev" depends="install-ivy,install-antcontrib">
+		<property name="ivy.local.default.root" value="${ivy.default.ivy.user.dir}/local-dev" />
+		<delete dir="${ivy.local.default.root}/" />
+	</target>
 	
 </project>

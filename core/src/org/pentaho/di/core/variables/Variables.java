@@ -56,10 +56,14 @@ public class Variables implements VariableSpace
         properties.put(Const.INTERNAL_VARIABLE_KETTLE_VERSION, Const.VERSION);
 
         // The Kettle build version
-        properties.put(Const.INTERNAL_VARIABLE_KETTLE_BUILD_VERSION, BuildVersion.getInstance().getRevision() );
+        String revision = BuildVersion.getInstance().getRevision();
+        if(revision == null) revision = "";
+        properties.put(Const.INTERNAL_VARIABLE_KETTLE_BUILD_VERSION, revision);
 
         // The Kettle build date
-        properties.put(Const.INTERNAL_VARIABLE_KETTLE_BUILD_DATE, BuildVersion.getInstance().getBuildDate() );
+        String buildDate = BuildVersion.getInstance().getBuildDate();
+        if(buildDate == null) buildDate = "";
+        properties.put(Const.INTERNAL_VARIABLE_KETTLE_BUILD_DATE, buildDate);
     }
 
 	public void copyVariablesFrom(VariableSpace space) {
