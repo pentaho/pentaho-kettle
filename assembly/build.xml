@@ -86,7 +86,7 @@
 	  <target name="resolve-swtlibs" depends="install-ivy">
 	    <delete dir="${swtlib.dir}" />
 	    <ivy:resolve file="${ivyfile}" conf="test" />
-	    <ivy:retrieve conf="swtlibs" pattern="${swtlib.dir}/[module]-[revision](-[classifier]).[ext]" symlink="${ivy.use.symlinks.internal}" />
+	    <ivy:retrieve conf="swtlibs" pattern="${swtlib.dir}/[module]-[revision](-[classifier]).[ext]" />
 	  </target>
 	
 	    <target name="package.lib" depends="resolve">
@@ -95,6 +95,6 @@
 	
 	 <target name="resolve-launcher" depends="install-ivy">
       <ivy:resolve file="${ivyfile}" conf="launcher" />
-      <ivy:retrieve conf="launcher" pattern="${stage.dir}/${package.root.dir}/launcher/[module]-[revision](-[classifier]).[ext]" symlink="${ivy.use.symlinks.internal}" />
+      <ivy:retrieve conf="launcher" pattern="${stage.dir}/${package.root.dir}/launcher/[module]-[revision](-[classifier]).[ext]" />
     </target>
 </project>
