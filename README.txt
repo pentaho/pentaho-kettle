@@ -85,7 +85,7 @@ OK.  I just want to add a new property to a step using Eclipse as my IDE.  What 
 
      - Check out the project and set it up as an Eclipse Java project.
      - Run the create-dot-classpath ant target
-     - Refresh the Eclipse changes.
+     - Refresh the Eclipse project to synch the workspace with the file system.
      - Make the appropriate code changes in the step meta and the step dialog.
      - Changes can be verified by running the <project>.launch file where <project>
        is the name of the Eclipse project.
