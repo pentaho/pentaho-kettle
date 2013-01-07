@@ -18,7 +18,7 @@ What is that "assembly" folder?
      The assembly folder serves two purposes:
      
         1- It provides a staging area for building Kettle.
-        2- It contains all resources needed for a Kettle distribution. The resources are contained in the "package-res" folder.        
+        2- It contains resources needed for a Kettle distribution. The resources are contained in the "package-res" folder.        
         
 
         
@@ -79,6 +79,17 @@ How do I set up Run and Debug configurations in Eclipse?
      configuration is available without restarting Eclipse by right-clicking on the .launch file and selecting "Run As..." then the name of 
      the project.
 
+
+
+OK.  I just want to add a new property to a step using Eclipse as my IDE.  What do I have to do?
+
+     - Check out the project and set it up as an Eclipse Java project.
+     - Run the create-dot-classpath ant target
+     - Refresh the Eclipse changes.
+     - Make the appropriate code changes in the step meta and the step dialog.
+     - Changes can be verified by running the <project>.launch file where <project>
+       is the name of the Eclipse project.
+     
      
      
 Why does the build output appear to download JARs multiple times?
@@ -119,4 +130,6 @@ I'm making a change to Kettle that requires a new (or newer version of a) third-
      This will allow Pentaho to ensure that updating the dependencies won't interfere with other modules that use the same JARs. 
      
      If a new dependency is needed, simply add the dependency to the appropriate ivy.xml file and commit with descriptive comments.
+     
+     
      
