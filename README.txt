@@ -46,11 +46,9 @@ I got the source, so now what can I do?
      
      Linux example:
         
-         /workspace/Kettle-trunk/ant 
-         /workspace/Kettle-trunk/cd dist
-         /workspace/Kettle-trunk/chmod 777 spoon.sh
-         /workspace/Kettle-trunk/./spoon.sh     
-
+         ant 
+         cd dist
+         sh spoon.sh     
          
      
 What about that .classpath file that Eclipse needs?
