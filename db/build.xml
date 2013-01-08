@@ -1,4 +1,4 @@
-<project name="kettle-db" default="dist" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
+<project name="kettle-db" default="default" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
 
 	  <description>
 	      Kettle DB build file
@@ -77,5 +77,7 @@
 	  </target>
 	
 	<target name="create-dot-classpath" depends="init,resolve,subfloor.create-dot-classpath"/>
+
+	<target name="default" depends="clean,init, resolve, dist" />
 
 </project>
