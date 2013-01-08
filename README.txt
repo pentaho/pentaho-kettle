@@ -92,14 +92,14 @@ OK.  I just want to add a new property to a step using Eclipse as my IDE.  What 
      
 If I want to build the project with ant should I always use the default target?
 
-     I would right after checking out the project but would avoid that target- it does
-     quite a bit with cleaning and resolving.
+     I would right after checking out the project but would avoid that target from that
+     point on. The default target does quite a bit with cleaning and resolving.
      
      Consider the previous scenario with adding a new property to a step.  You checked out the project 
-     and ran the default ant target.  You then the steps meta, dialog and execution java source.  Do you 
-     want to clean the project and resolve the dependencies again?
+     and ran the default ant target.  You change only the steps meta, dialog and execution java source.  Do you 
+     want to clean the project and resolve the dependencies again?  Probably not.  
      
-     Probably not.  Running the ant "compile" target in the project's root folder will compile changed source
+     Running the ant "compile" target in the project's root folder will compile changed source
      code for all the modules.
      
 
@@ -127,6 +127,31 @@ That seems redundant.
      the dependencies the resolve should be quick.
 
 
+
+I ran Spoon from the project's dist folder.  Why can't I see my changes I just compiled?
+
+     You need to do a an "ant dist" at the project level.  In the scenario of adding a new
+     property to a step we do not need to resolve dependencies so the dist_nodeps target is 
+     even quicker:
+     
+         Here is an example of compiling engine source and then "disting" the project:
+     
+         Kettle> cd engine
+         Kettle/engine>ant compile
+         
+             No compile errors!  
+             
+         Kettle/engine>cd ..
+         Kettle>ant dist-nodeps
+         
+             No errors!
+             
+         Kettle>cd dist
+         Kettle>sh spoon.sh
+         
+             Changes should be reflected in Spoon!
+             
+ 
      
 Why does the build output appear to download JARs multiple times?
 
