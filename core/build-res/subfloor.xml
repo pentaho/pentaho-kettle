@@ -1142,7 +1142,6 @@ TYPICAL TARGET SEQUENCE
       Performs the actual compile
       ====================================================================-->
   <target name="compile.compile" depends="init">
-  	<echo message="${toString:classpath}"/>
   	      
     <javac destdir="${classes.dir}"
            debug="${javac.debug}"
