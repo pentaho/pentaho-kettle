@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+    <classpathentry kind="src" path="engine/src"/>
+    <classpathentry kind="src" path="engine/test-src"/>
+</classpath>
