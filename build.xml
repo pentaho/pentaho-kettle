@@ -332,7 +332,7 @@
 	       ==========================
 	  -->
 
-	<target name="default" depends="init,resolve,dist" description="default = build distribution package"/>
+	<target name="default" depends="dist" description="default = build distribution package"/>
 
 	
 	<target name="coverage" depends="clean, compileTests" > <!-- , tests-core, tests-resource, tests-trans, tests-run -->
@@ -851,6 +851,7 @@
     	          	<property name="src.dir" value="src"/>
           	      <property name="lib.dir" value="../${lib}"/>
           	      <property name="ivy.local.default.root" value="${ivy.default.ivy.user.dir}/local-dev" />
+    	          	<target name="resolve" />
     	            <target name="publish-local" />
     	          </ant>
           	 </then>
@@ -858,7 +859,8 @@
           	 	<ant antfile="build.xml" dir="@{module}" inheritall="false" >
           	 		<property name="src.dir" value="src"/>
     	 		      <property name="lib.dir" value="../${lib}"/>
-    	 		      <target name="publish" />
+          	 		<target name="resolve" />
+          	 		<target name="publish" />
               </ant>
           	 </else>
           	</if>
@@ -875,6 +877,7 @@
 	      		<property name="src.dir" value="src"/>
             <property name="lib.dir" value="../../${lib}"/>
             <property name="ivy.local.default.root" value="${ivy.default.ivy.user.dir}/local-dev" />
+	      		<target name="resolve"/>
             <target name="dist" />
 	      	</ant>
 	      </sequential>
@@ -1020,7 +1023,7 @@
       Creates a distribution of this project
       ====================================================================-->
 	<target name="dist" 
-		      depends="install-antcontrib,build-all,copy-package-res,dist-final" 
+		      depends="install-antcontrib,build-all,resolve,copy-package-res,dist-final" 
 		      description="Creates a distribution">
 	  <echo message="To avoid library resolution on your next build, use the dist-nodeps Ant target"/>
 	</target>
