@@ -22,8 +22,10 @@
 
 package org.pentaho.di.job.entries.webserviceavailable;
 
+import java.io.InputStream;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.List;
-import org.w3c.dom.Node;
 
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
@@ -38,11 +40,7 @@ import org.pentaho.di.job.entry.JobEntryBase;
 import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
-
-
-import java.io.InputStream;
-import java.net.URL;
-import java.net.URLConnection;
+import org.w3c.dom.Node;
 
 /**
  * This defines a webservice available job entry.

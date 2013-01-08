@@ -425,12 +425,16 @@ public class PluginRegistry {
 	  pluginTypes.add(type);
 	}
 	
+	public synchronized static void init() throws KettlePluginException {
+		init(false);
+	}
+	
 	/**
 	 * This method registers plugin types and loads their respective plugins 
 	 * 
 	 * @throws KettlePluginException
 	 */
-  public synchronized static void init() throws KettlePluginException {
+  public synchronized static void init(boolean keepCache) throws KettlePluginException {
 
       final PluginRegistry registry = getInstance();
 

@@ -22,7 +22,6 @@
 
 package org.pentaho.di.core.gui;
 
-import org.pentaho.di.core.gui.Rectangle;
 
 /**
  * When we draw something in Spoon (TransPainter) we keep a list of all the

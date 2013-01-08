@@ -7,6 +7,8 @@ import java.sql.DriverPropertyInfo;
 import java.sql.SQLException;
 import java.util.Properties;
 
+import org.pentaho.di.core.KettleClientEnvironment;
+
 public class ThinDriver implements Driver {
   
   public static final String BASE_URL = "jdbc:pdi://";
@@ -14,8 +16,9 @@ public class ThinDriver implements Driver {
   
   static {
     try {
+    	KettleClientEnvironment.init();
       DriverManager.registerDriver(new ThinDriver());
-    } catch (SQLException e) {
+    } catch (Exception e) {
       throw new RuntimeException("Something went wrong registering the thin Kettle JDBC driver", e);
     }
   }

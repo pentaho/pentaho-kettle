@@ -24,13 +24,13 @@ package org.pentaho.di.trans.steps.xmlinputstream;
 
 import java.io.FileInputStream;
 
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLInputFactory;
+
 import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
-
-import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLInputFactory;
 
 /**
  * @author Jens Bleuel

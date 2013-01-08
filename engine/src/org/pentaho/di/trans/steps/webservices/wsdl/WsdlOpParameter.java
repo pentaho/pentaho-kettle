@@ -22,8 +22,9 @@
 
 package org.pentaho.di.trans.steps.webservices.wsdl;
 
-import org.w3c.dom.Element;
 import javax.xml.namespace.QName;
+
+import org.w3c.dom.Element;
 
 /**
  * WSDL operation parameter abstraction.

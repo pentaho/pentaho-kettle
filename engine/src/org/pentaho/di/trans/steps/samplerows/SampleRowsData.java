@@ -22,8 +22,8 @@
 
 package org.pentaho.di.trans.steps.samplerows;
 
-import java.util.Set;
 import java.util.HashSet;
+import java.util.Set;
 
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;

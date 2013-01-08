@@ -30,28 +30,24 @@ import org.apache.log4j.spi.LoggingEvent;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.version.BuildVersion;
 
-
-public class Log4jKettleLayout extends Layout implements Log4JLayoutInterface
-{
-	private static final ThreadLocal<SimpleDateFormat> LOCAL_SIMPLE_DATE_PARSER = new ThreadLocal<SimpleDateFormat>() {
-		protected SimpleDateFormat initialValue() {
-			return new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-     	}
-    };
-
-	public static final String ERROR_STRING = "ERROR";
-    
-    private boolean timeAdded;
-
-    public Log4jKettleLayout()
-    {
-    	this(true);
+public class Log4jKettleLayout extends Layout implements Log4JLayoutInterface {
+  private static final ThreadLocal<SimpleDateFormat> LOCAL_SIMPLE_DATE_PARSER = new ThreadLocal<SimpleDateFormat>() {
+    protected SimpleDateFormat initialValue() {
+      return new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
     }
+  };
 
-    public Log4jKettleLayout(boolean addTime)
-    {
-        this.timeAdded = addTime;
-    }
+  public static final String ERROR_STRING = "ERROR";
+
+  private boolean timeAdded;
+
+  public Log4jKettleLayout() {
+    this(true);
+  }
+
+  public Log4jKettleLayout(boolean addTime) {
+    this.timeAdded = addTime;
+  }
 
   public String format(LoggingEvent event) {
     // OK, perhaps the logging information has multiple lines of data.
@@ -69,7 +65,7 @@ public class Log4jKettleLayout extends Layout implements Log4JLayoutInterface
     if (object instanceof LogMessage) {
       LogMessage message = (LogMessage) object;
 
-      String parts[] = message.getMessage()==null ? new String[] {} : message.getMessage().split(Const.CR);
+      String parts[] = message.getMessage() == null ? new String[] {} : message.getMessage().split(Const.CR);
       for (int i = 0; i < parts.length; i++) {
         // Start every line of the output with a dateTimeString
         line.append(dateTimeString);
@@ -83,7 +79,7 @@ public class Log4jKettleLayout extends Layout implements Log4JLayoutInterface
           line.append(" - ");
         }
 
-        if (message.isError()) {
+        if (i==0 && message.isError()) {
           BuildVersion buildVersion = BuildVersion.getInstance();
           line.append(ERROR_STRING);
           line.append(" (version ");
@@ -115,22 +111,18 @@ public class Log4jKettleLayout extends Layout implements Log4JLayoutInterface
     return line.toString();
   }
 
-    public boolean ignoresThrowable()
-    {
-        return false;
-    }
+  public boolean ignoresThrowable() {
+    return false;
+  }
 
-    public void activateOptions()
-    {
-    }
+  public void activateOptions() {
+  }
 
-    public boolean isTimeAdded()
-    {
-        return timeAdded;
-    }
+  public boolean isTimeAdded() {
+    return timeAdded;
+  }
 
-    public void setTimeAdded(boolean addTime)
-    {
-        this.timeAdded = addTime;
-    }
+  public void setTimeAdded(boolean addTime) {
+    this.timeAdded = addTime;
+  }
 }

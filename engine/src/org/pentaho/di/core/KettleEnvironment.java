@@ -22,10 +22,6 @@
 
 package org.pentaho.di.core;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.lifecycle.KettleLifecycleSupport;
@@ -41,7 +37,6 @@ import org.pentaho.di.core.plugins.PartitionerPluginType;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.plugins.RepositoryPluginType;
 import org.pentaho.di.core.plugins.StepPluginType;
-import org.pentaho.di.core.util.EnvUtil;
 import org.pentaho.di.i18n.BaseMessages;
 
 /**
@@ -86,14 +81,12 @@ public class KettleEnvironment {
 	 */
 	public static void init(boolean simpleJndi) throws KettleException {
 		if (initialized==null) {
-			
-			// Create a home for Kettle if it doesn't exist yet.
+
+			// This creates .kettle and kettle.properties...
 			//
-			createKettleHome();
-			
-			// Read the kettle.properties file before anything else
-			//
-			EnvUtil.environmentInit();
+			if (!KettleClientEnvironment.isInitialized()) {
+				KettleClientEnvironment.init();
+			}
 			
 			// Initialize the logging back-end.
 			//
@@ -155,65 +148,6 @@ public class KettleEnvironment {
     });
 
   }
-
-  /**
-   * Creates the kettle home area, which is a directory containing a default kettle.properties file
-   */
-  public static void createKettleHome() {
-
-		// Try to create the directory...
-		//
-		String directory = Const.getKettleDirectory();
-		File dir = new File(directory);
-		try 
-		{ 
-			dir.mkdirs();
-			
-			// Also create a file called kettle.properties
-			//
-			createDefaultKettleProperties(directory);
-		} 
-		catch(Exception e) 
-		{ 
-			
-		}
-	}
-	
-	/**
-	 * Creates the default kettle properties file, containing the standard header.
-	 *
-	 * @param directory the directory
-	 */
-	private static void createDefaultKettleProperties(String directory) {
-		
-		String kpFile = directory+Const.FILE_SEPARATOR+Const.KETTLE_PROPERTIES;
-		File file = new File(kpFile);
-		if (!file.exists()) 
-		{
-			FileOutputStream out = null;
-			try 
-			{
-				out = new FileOutputStream(file);
-				out.write(Const.getKettlePropertiesFileHeader().getBytes());
-			} 
-			catch (IOException e) 
-			{
-				System.err.println(BaseMessages.getString(PKG, "Props.Log.Error.UnableToCreateDefaultKettleProperties.Message", Const.KETTLE_PROPERTIES, kpFile));
-				System.err.println(e.getStackTrace());
-			}
-			finally 
-			{
-				if (out!=null) {
-					try {
-						out.close();
-					} catch (IOException e) {
-						System.err.println(BaseMessages.getString(PKG, "Props.Log.Error.UnableToCreateDefaultKettleProperties.Message", Const.KETTLE_PROPERTIES, kpFile));
-						System.err.println(e.getStackTrace());
-					}
-				}
-			}
-		}
-	}
 
 
 	/**

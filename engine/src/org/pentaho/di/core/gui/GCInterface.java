@@ -22,7 +22,6 @@
 
 package org.pentaho.di.core.gui;
 
-import org.pentaho.di.core.gui.Point;
 import org.pentaho.di.job.entry.JobEntryCopy;
 import org.pentaho.di.trans.step.StepMeta;
 

@@ -153,14 +153,14 @@ public class Log4jBufferAppender implements Appender
     }
 
     public StringBuffer getBuffer(String parentLogChannelId, boolean includeGeneral, int startLineNr, int endLineNr) {
-    	StringBuffer stringBuffer = new StringBuffer(10000);
-    	
-    	List<LoggingEvent> events = getLogBufferFromTo(parentLogChannelId, includeGeneral, startLineNr, endLineNr);
-    	for (LoggingEvent event : events) {
-			stringBuffer.append( layout.format(event) ).append(Const.CR);
-		}
-    	
-    	return stringBuffer;
+      StringBuffer stringBuffer = new StringBuffer(10000);
+  
+      List<LoggingEvent> events = getLogBufferFromTo(parentLogChannelId, includeGeneral, startLineNr, endLineNr);
+      for (LoggingEvent event : events) {
+        stringBuffer.append(layout.format(event)).append(Const.CR);
+      }
+  
+      return stringBuffer;
     }
     
     public StringBuffer getBuffer(String parentLogChannelId, boolean includeGeneral) {

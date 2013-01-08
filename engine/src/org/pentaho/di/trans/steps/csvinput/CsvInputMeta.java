@@ -47,9 +47,9 @@ import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceDefinition;
 import org.pentaho.di.resource.ResourceEntry;
+import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.pentaho.di.resource.ResourceNamingInterface;
 import org.pentaho.di.resource.ResourceReference;
-import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStepMeta;
@@ -127,6 +127,14 @@ public class CsvInputMeta extends BaseStepMeta implements StepMetaInterface, Inp
 		lazyConversionActive=true;
 		isaddresult=false;
 		bufferSize="50000";
+		
+		TextFileInputField field = new TextFileInputField();
+		field.setName("field");
+		field.setType(ValueMetaInterface.TYPE_STRING);
+		
+		inputFields = new TextFileInputField[] {
+		    field,
+		};
 	}
 	
 	private void readData(Node stepnode) throws KettleXMLException

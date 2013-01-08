@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.randomvalue;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+
 import javax.crypto.KeyGenerator;
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;

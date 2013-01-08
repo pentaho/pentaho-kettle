@@ -22,11 +22,11 @@
 
 package org.pentaho.di.laf;
 
-import java.util.Properties;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Properties;
 
 public class OverlayProperties extends Properties implements PropertyHandler {
 

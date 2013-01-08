@@ -22,14 +22,9 @@
 
 package org.pentaho.di.trans.steps.ssh;
 
-import org.w3c.dom.Node;
-
 import java.io.File;
 import java.util.List;
 import java.util.Map;
-
-import com.trilead.ssh2.Connection;
-import com.trilead.ssh2.HTTPProxyData;
 
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;
@@ -58,6 +53,10 @@ import org.pentaho.di.trans.step.StepIOMetaInterface;
 import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
+import org.w3c.dom.Node;
+
+import com.trilead.ssh2.Connection;
+import com.trilead.ssh2.HTTPProxyData;
 
 /*
  * Created on 03-Juin-2008

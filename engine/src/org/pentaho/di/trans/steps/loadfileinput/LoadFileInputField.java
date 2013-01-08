@@ -22,13 +22,12 @@
 
 package org.pentaho.di.trans.steps.loadfileinput;
 
-import org.w3c.dom.Node;
-
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.pentaho.di.i18n.BaseMessages;
+import org.w3c.dom.Node;
 
 
 /**

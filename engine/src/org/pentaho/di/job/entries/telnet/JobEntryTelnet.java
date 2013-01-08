@@ -30,7 +30,6 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.List;
 
-import org.w3c.dom.Node;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.CheckResultInterface;
 import org.pentaho.di.core.Const;
@@ -49,6 +48,7 @@ import org.pentaho.di.repository.Repository;
 import org.pentaho.di.resource.ResourceEntry;
 import org.pentaho.di.resource.ResourceEntry.ResourceType;
 import org.pentaho.di.resource.ResourceReference;
+import org.w3c.dom.Node;
 
 
 /**

@@ -23,11 +23,11 @@
 package org.pentaho.di.trans.steps.getsubfolders;
 
 
+import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.fileinput.FileInputList;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
-import org.apache.commons.vfs.FileObject;
 
 /**
  * @author Samatar

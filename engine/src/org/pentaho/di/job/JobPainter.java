@@ -31,16 +31,16 @@ import java.util.Map;
 import org.pentaho.di.core.NotePadMeta;
 import org.pentaho.di.core.Result;
 import org.pentaho.di.core.gui.AreaOwner;
+import org.pentaho.di.core.gui.AreaOwner.AreaType;
 import org.pentaho.di.core.gui.BasePainter;
 import org.pentaho.di.core.gui.GCInterface;
-import org.pentaho.di.core.gui.Point;
-import org.pentaho.di.core.gui.Rectangle;
-import org.pentaho.di.core.gui.ScrollBarInterface;
-import org.pentaho.di.core.gui.AreaOwner.AreaType;
 import org.pentaho.di.core.gui.GCInterface.EColor;
 import org.pentaho.di.core.gui.GCInterface.EFont;
 import org.pentaho.di.core.gui.GCInterface.EImage;
 import org.pentaho.di.core.gui.GCInterface.ELineStyle;
+import org.pentaho.di.core.gui.Point;
+import org.pentaho.di.core.gui.Rectangle;
+import org.pentaho.di.core.gui.ScrollBarInterface;
 import org.pentaho.di.job.entry.JobEntryCopy;
 
 public class JobPainter extends BasePainter {

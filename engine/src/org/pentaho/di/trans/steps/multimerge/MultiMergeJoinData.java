@@ -22,9 +22,9 @@
 
 package org.pentaho.di.trans.steps.multimerge;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.PriorityQueue;
-import java.util.Comparator;
 
 import org.pentaho.di.core.RowSet;
 import org.pentaho.di.core.exception.KettleException;

@@ -34,7 +34,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.variables.VariableSpace;
-import org.pentaho.di.ui.core.widget.TextVar;
 import org.pentaho.di.ui.core.PropsUI;
 
 /**

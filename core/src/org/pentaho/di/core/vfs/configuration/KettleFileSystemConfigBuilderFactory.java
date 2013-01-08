@@ -25,6 +25,7 @@ package org.pentaho.di.core.vfs.configuration;
 import java.io.IOException;
 import java.lang.reflect.Method;
 
+import org.apache.commons.vfs.FileSystemConfigBuilder;
 import org.pentaho.di.core.variables.VariableSpace;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;

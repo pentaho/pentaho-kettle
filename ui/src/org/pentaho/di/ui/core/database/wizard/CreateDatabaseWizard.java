@@ -28,17 +28,8 @@ import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
 import org.eclipse.swt.widgets.Shell;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.ui.core.database.wizard.CreateDatabaseWizardPage1;
-import org.pentaho.di.ui.core.database.wizard.CreateDatabaseWizardPage2;
-import org.pentaho.di.ui.core.database.wizard.CreateDatabaseWizardPageGeneric;
-import org.pentaho.di.ui.core.database.wizard.CreateDatabaseWizardPageInformix;
-import org.pentaho.di.ui.core.database.wizard.CreateDatabaseWizardPageJDBC;
-import org.pentaho.di.ui.core.database.wizard.CreateDatabaseWizardPageOCI;
-import org.pentaho.di.ui.core.database.wizard.CreateDatabaseWizardPageODBC;
-import org.pentaho.di.ui.core.database.wizard.CreateDatabaseWizardPageOracle;
-import org.pentaho.di.ui.core.database.wizard.CreateDatabaseWizardPageSAPR3;
-import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.gui.GUIResource;
 
 
 

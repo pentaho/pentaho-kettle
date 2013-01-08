@@ -24,13 +24,12 @@ package org.pentaho.di.trans.steps.salesforceinsert;
 
 import java.util.ArrayList;
 
-import com.sforce.soap.partner.sobject.SObject;
-
 import org.apache.axis.message.MessageElement;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;
+import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
 import org.pentaho.di.trans.TransMeta;
 import org.pentaho.di.trans.step.BaseStep;
@@ -39,7 +38,8 @@ import org.pentaho.di.trans.step.StepInterface;
 import org.pentaho.di.trans.step.StepMeta;
 import org.pentaho.di.trans.step.StepMetaInterface;
 import org.pentaho.di.trans.steps.salesforceinput.SalesforceConnection;
-import org.pentaho.di.i18n.BaseMessages;
+
+import com.sforce.soap.partner.sobject.SObject;
 
 
 

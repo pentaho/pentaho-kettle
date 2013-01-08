@@ -22,6 +22,10 @@
 
 package org.pentaho.di.trans.steps.wmiinput;
 
+import static org.jinterop.dcom.core.JIProgId.valueOf;
+import static org.jinterop.dcom.impls.JIObjectFactory.narrowObject;
+import static org.jinterop.dcom.impls.automation.IJIDispatch.IID;
+
 import java.util.logging.Level;
 
 import org.jinterop.dcom.common.JISystem;
@@ -41,10 +45,6 @@ import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMeta;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.i18n.BaseMessages;
-
-import static org.jinterop.dcom.core.JIProgId.valueOf;
-import static org.jinterop.dcom.impls.automation.IJIDispatch.IID;
-import static org.jinterop.dcom.impls.JIObjectFactory.narrowObject;
 
 
 /**

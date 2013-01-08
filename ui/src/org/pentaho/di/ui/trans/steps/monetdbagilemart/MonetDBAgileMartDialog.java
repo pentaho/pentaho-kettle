@@ -23,7 +23,6 @@
 package org.pentaho.di.ui.trans.steps.monetdbagilemart;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.FocusAdapter;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
@@ -39,7 +38,6 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
@@ -64,17 +62,13 @@ public class MonetDBAgileMartDialog extends MonetDBBulkLoaderDialog implements S
 {
 	private static Class<?> PKG = MonetDBBulkLoaderMeta.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
 
-	private static final String DEFAULT_BUFFER_SIZE = "1000";
+	// private static final String DEFAULT_BUFFER_SIZE = "1000";
 	private static final String DEFAULT_ENCODING = "UTF-8";
 	private static final String DEFAULT_LOG_FILE = "MonetDBAgileMart.log";
 	
 	private ComboVar			wConnection;
 	
-	private Label               wlConnection;
-    private Button              wbnConnection;
-    private Button              wbeConnection;
-
-    private Label               wlSchema;
+	  private Label               wlSchema;
     private TextVar             wSchema;
     private FormData            fdlSchema, fdSchema;
 
@@ -89,8 +83,7 @@ public class MonetDBAgileMartDialog extends MonetDBBulkLoaderDialog implements S
 
 	private MonetDBBulkLoaderMeta	input;
 	
-    private static final String[] ALL_FILETYPES = new String[] {
-    	BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Filetype.All") };	
+  // private static final String[] ALL_FILETYPES = new String[] { BaseMessages.getString(PKG, "MonetDBBulkLoaderDialog.Filetype.All") };	
 	
 	public MonetDBAgileMartDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{

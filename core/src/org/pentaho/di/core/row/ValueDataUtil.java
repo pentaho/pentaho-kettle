@@ -28,28 +28,27 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.security.MessageDigest;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-import java.util.zip.CheckedInputStream;
 import java.util.zip.Adler32;
 import java.util.zip.CRC32;
-import java.security.MessageDigest;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.codec.language.Metaphone;
+import java.util.zip.CheckedInputStream;
+
 import org.apache.commons.codec.language.DoubleMetaphone;
+import org.apache.commons.codec.language.Metaphone;
 import org.apache.commons.codec.language.RefinedSoundex;
 import org.apache.commons.codec.language.Soundex;
-
-import org.pentaho.di.core.util.Utils;
-import org.pentaho.di.core.vfs.KettleVFS;
-import org.pentaho.di.core.xml.XMLCheck;
-
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.provider.local.LocalFile;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleValueException;
 import org.pentaho.di.core.fileinput.CharsetToolkit;
+import org.pentaho.di.core.util.Utils;
+import org.pentaho.di.core.vfs.KettleVFS;
+import org.pentaho.di.core.xml.XMLCheck;
 
 import com.wcohen.ss.Jaro;
 import com.wcohen.ss.JaroWinkler;

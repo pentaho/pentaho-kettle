@@ -54,14 +54,13 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-
 import javax.script.Bindings;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
-import org.apache.commons.vfs.FileUtil;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.FileType;
+import org.apache.commons.vfs.FileUtil;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.database.DatabaseMeta;
@@ -454,7 +453,7 @@ public class ScriptAddedFunctions {
 	    		try{
 	    			 if (scm.getTransMeta().isUsingUniqueConnections())
 	                 {
-	                     synchronized (scm.getTrans()) { db.connect(scm.getTrans().getThreadName(), scm.getPartitionID()); }
+	                     synchronized (scm.getTrans()) { db.connect(scm.getTrans().getTransactionId(), scm.getPartitionID()); }
 	                 }
 	                 else
 	                 {

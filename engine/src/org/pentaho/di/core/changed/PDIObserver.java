@@ -22,7 +22,6 @@
 
 package org.pentaho.di.core.changed;
 
-import org.pentaho.di.core.changed.ChangedFlagInterface;
 
 public interface PDIObserver 
 {

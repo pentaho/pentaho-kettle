@@ -22,8 +22,6 @@
 
 package org.pentaho.di.trans.steps.loadfileinput;
 
-import org.apache.commons.vfs.FileObject;
-
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -31,6 +29,7 @@ import java.io.InputStreamReader;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.ResultFile;
 import org.pentaho.di.core.exception.KettleException;

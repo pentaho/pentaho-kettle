@@ -163,7 +163,7 @@ public class KettleURLClassLoader extends URLClassLoader
         }
     }
     
-    private static Object getFieldObject( Class clazz, String name, Object obj) throws Exception {
+    private static Object getFieldObject( Class<?> clazz, String name, Object obj) throws Exception {
       Field field = clazz.getDeclaredField(name);
       field.setAccessible(true);
       return field.get(obj);
@@ -178,7 +178,7 @@ public class KettleURLClassLoader extends URLClassLoader
       HashSet<String> closedFiles = new HashSet<String>();
       try {
         Object obj = getFieldObject(URLClassLoader.class, "ucp", this);
-        ArrayList loaders = (ArrayList) getFieldObject(obj.getClass(), "loaders", obj);
+        ArrayList<?> loaders = (ArrayList<?>) getFieldObject(obj.getClass(), "loaders", obj);
         for (Object ldr : loaders) {
           try {
             JarFile file = (JarFile) getFieldObject(ldr.getClass(), "jar", ldr);
@@ -193,7 +193,7 @@ public class KettleURLClassLoader extends URLClassLoader
       }
       
       try {
-        Vector nativeLibArr = (Vector) getFieldObject(ClassLoader.class, "nativeLibraries", this);
+        Vector<?> nativeLibArr = (Vector<?>) getFieldObject(ClassLoader.class, "nativeLibraries", this);
         for (Object lib : nativeLibArr) {
           try {
             Method fMethod = lib.getClass().getDeclaredMethod("finalize", new Class[0]);
@@ -207,11 +207,11 @@ public class KettleURLClassLoader extends URLClassLoader
         // skip
       }
     
-      HashMap uCache = null;
-      HashMap fCache = null;
+      HashMap<?,?> uCache = null;
+      HashMap<?,?> fCache = null;
       
       try {
-        Class jarUrlConnClass = null;
+        Class<?> jarUrlConnClass = null;
         try {
           ClassLoader contextClassLoader = Thread.currentThread().getContextClassLoader();
           jarUrlConnClass = contextClassLoader.loadClass("sun.net.www.protocol.jar.JarURLConnection");
@@ -221,19 +221,19 @@ public class KettleURLClassLoader extends URLClassLoader
         if (jarUrlConnClass == null) {
           jarUrlConnClass = Class.forName("sun.net.www.protocol.jar.JarURLConnection");
         }
-        Class factory = getFieldObject(jarUrlConnClass, "factory", null).getClass();
+        Class<?> factory = getFieldObject(jarUrlConnClass, "factory", null).getClass();
         try {
-          fCache = (HashMap) getFieldObject(factory, "fileCache", null);
+          fCache = (HashMap<?,?>) getFieldObject(factory, "fileCache", null);
         } catch (Exception e) {
           // skip
         }
         try {
-          uCache = (HashMap) getFieldObject(factory, "urlCache", null);
+          uCache = (HashMap<?,?>) getFieldObject(factory, "urlCache", null);
         } catch (Exception e) {
           // skip
         }
         if (uCache != null) {
-          for (Object file : ((HashMap)uCache.clone()).keySet()) {
+          for (Object file : ((HashMap<?,?>)uCache.clone()).keySet()) {
             if (file instanceof JarFile) {
               JarFile jar = (JarFile) file;
               if (!closedFiles.contains(jar.getName())) continue;
@@ -247,7 +247,7 @@ public class KettleURLClassLoader extends URLClassLoader
             }
           }
         } else if (fCache != null) {
-          for (Object key : ((HashMap) fCache.clone()).keySet()) {
+          for (Object key : ((HashMap<?,?>) fCache.clone()).keySet()) {
             Object file = fCache.get(key);
             if (file instanceof JarFile) {
               JarFile jar = (JarFile) file;

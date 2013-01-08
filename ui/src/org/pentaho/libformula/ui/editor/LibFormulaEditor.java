@@ -253,7 +253,7 @@ public class LibFormulaEditor extends Dialog implements KeyListener {
 	}
 
 	public void readFunctions() throws Exception {
-		URL url = this.getClass().getResource("/"+FunctionLib.class.getPackage().getName().replace(".","/")+"/"+FUNCTIONS_FILE);
+		// URL url = this.getClass().getResource("/"+FunctionLib.class.getPackage().getName().replace(".","/")+"/"+FUNCTIONS_FILE);
 		functionLib = new FunctionLib(FUNCTIONS_FILE);
 		functions = functionLib.getFunctionNames();
 		categories = functionLib.getFunctionCategories();

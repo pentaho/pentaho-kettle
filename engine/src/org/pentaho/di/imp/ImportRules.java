@@ -31,8 +31,8 @@ import org.pentaho.di.core.plugins.ImportRulePluginType;
 import org.pentaho.di.core.plugins.PluginInterface;
 import org.pentaho.di.core.plugins.PluginRegistry;
 import org.pentaho.di.core.xml.XMLHandler;
-import org.pentaho.di.imp.rule.ImportValidationFeedback;
 import org.pentaho.di.imp.rule.ImportRuleInterface;
+import org.pentaho.di.imp.rule.ImportValidationFeedback;
 import org.pentaho.di.imp.rules.BaseImportRule;
 import org.w3c.dom.Node;
 

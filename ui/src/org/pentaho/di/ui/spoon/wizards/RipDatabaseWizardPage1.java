@@ -34,7 +34,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.List;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.database.DatabaseMeta;
-import org.pentaho.di.ui.spoon.wizards.RipDatabaseWizardPage2;
 import org.pentaho.di.ui.core.PropsUI;
 
 

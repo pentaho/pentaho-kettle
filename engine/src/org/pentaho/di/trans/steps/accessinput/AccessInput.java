@@ -36,6 +36,7 @@ import org.pentaho.di.core.row.RowMeta;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.row.ValueMetaAndData;
 import org.pentaho.di.core.row.ValueMetaInterface;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.vfs.KettleVFS;
 import org.pentaho.di.i18n.BaseMessages;
 import org.pentaho.di.trans.Trans;
@@ -288,7 +289,9 @@ public class AccessInput extends BaseStep implements StepInterface
 					//
 					data.convertRowMeta = data.outputRowMeta.clone();
 					for (int i=0;i<data.convertRowMeta.size();i++) {
-						data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);            
+						data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);  
+						ValueMetaInterface valueMeta = data.convertRowMeta.getValueMeta(i);
+	                    data.convertRowMeta.setValueMeta(i, ValueMetaFactory.cloneValueMeta(valueMeta, ValueMetaInterface.TYPE_STRING));
 					}
 					
 					// Check is filename field is provided
@@ -452,7 +455,8 @@ public class AccessInput extends BaseStep implements StepInterface
 					//
 					data.convertRowMeta = data.outputRowMeta.clone();
 					for (int i=0;i<data.convertRowMeta.size();i++) {
-						data.convertRowMeta.getValueMeta(i).setType(ValueMetaInterface.TYPE_STRING);           
+					  ValueMetaInterface valueMeta = data.convertRowMeta.getValueMeta(i);
+					  data.convertRowMeta.setValueMeta(i, ValueMetaFactory.cloneValueMeta(valueMeta, ValueMetaInterface.TYPE_STRING));
 					}
 				}
 				catch(Exception e)

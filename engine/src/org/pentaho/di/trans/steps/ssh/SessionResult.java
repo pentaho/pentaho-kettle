@@ -29,7 +29,6 @@ import java.io.InputStreamReader;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleException;
 
-
 import com.trilead.ssh2.Session;
 
 public class SessionResult {

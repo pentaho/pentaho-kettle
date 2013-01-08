@@ -323,6 +323,8 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 
   public TransMetricsDelegate transMetricsDelegate;
 
+  public TransPreviewDelegate transPreviewDelegate;
+
   /** A map that keeps track of which log line was written by which step */
   private Map<StepMeta, String> stepLogMap;
 
@@ -343,7 +345,6 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
   
   Timer redrawTimer;
 
-  private TransPreviewDelegate transPreviewDelegate;
 
   public void setCurrentNote(NotePadMeta ni) {
     this.ni = ni;
@@ -842,6 +843,7 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 						addCandidateAsHop(e.x, e.y);
 					} else {
 					  if (transPreviewDelegate.isActive()) {
+					    transPreviewDelegate.setSelectedStep(currentStep);
 					    transPreviewDelegate.refreshView();
 					  }
 					}
@@ -3542,6 +3544,13 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
         	transLogDelegate.clearLog();
         }
         
+        // Do we have a previous execution to clean up in the logging registry?
+        //
+        if (trans!=null) {
+          CentralLogStore.discardLines(trans.getLogChannelId(), false);
+          LoggingRegistry.getInstance().removeIncludingChildren(trans.getLogChannelId());
+        }
+        
         // Create a new transformation to execution
         //
         trans = new Trans(transMeta);
@@ -3763,6 +3772,13 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
       public void run() {
         try {
           trans.prepareExecution(args);
+          
+          // Do we capture data?
+          //
+          if (transPreviewDelegate.isActive()) {
+            transPreviewDelegate.capturePreviewData(trans, transMeta.getSteps());
+          }
+          
           initialized = true;
         } catch (KettleException e) {
           log.logError(trans.getName()+": preparing transformation execution failed", e); //$NON-NLS-1$
@@ -4198,7 +4214,6 @@ public class TransGraph extends AbstractGraph implements XulEventHandler, Redraw
 		}
 	}  
 
-  
   public String getName() {
     return "transgraph"; //$NON-NLS-1$
   }

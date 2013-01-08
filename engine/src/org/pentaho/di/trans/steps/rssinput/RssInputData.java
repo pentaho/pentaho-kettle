@@ -24,12 +24,12 @@ package org.pentaho.di.trans.steps.rssinput;
 
 import it.sauronsoftware.feed4j.bean.Feed;
 
-import java.util.Date;
 import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;

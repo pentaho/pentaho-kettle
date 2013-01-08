@@ -5942,10 +5942,11 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
       if (stepPlugin != null && !Const.isEmpty(filename)) {
         // OK, in stead of a normal error message, we give back the
         // content of the error help file... (HTML)
+      	FileInputStream fis = null;
         try {
           StringBuffer content = new StringBuffer();
 
-          FileInputStream fis = new FileInputStream(new File(filename));
+          fis = new FileInputStream(new File(filename));
           int ch = fis.read();
           while (ch >= 0) {
             content.append((char) ch);
@@ -5960,6 +5961,14 @@ public class Spoon extends ApplicationWindow implements AddUndoPositionInterface
           // "Error showing help text"
               BaseMessages.getString(PKG, "Spoon.Dialog.ErrorShowingHelpText.Title"), BaseMessages.getString(PKG,
                   "Spoon.Dialog.ErrorShowingHelpText.Message"), ex);
+        } finally {
+        	if (fis!=null) {
+        		try {
+        			fis.close();
+        		} catch(Exception ex) {
+        			log.logError("Error closing plugin help file", ex);
+        		}
+        	}
         }
       } else {
         new ErrorDialog(shell,

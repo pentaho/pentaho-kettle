@@ -22,7 +22,18 @@
 
 package org.pentaho.di.job.entries.dostounix;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.commons.vfs.AllFileSelector;
 import org.apache.commons.vfs.FileObject;
+import org.apache.commons.vfs.FileSelectInfo;
+import org.apache.commons.vfs.FileType;
 import org.pentaho.di.cluster.SlaveServer;
 import org.pentaho.di.core.Const;
 import org.pentaho.di.core.Result;
@@ -41,18 +52,6 @@ import org.pentaho.di.job.entry.JobEntryInterface;
 import org.pentaho.di.repository.ObjectId;
 import org.pentaho.di.repository.Repository;
 import org.w3c.dom.Node;
-
-import org.apache.commons.vfs.AllFileSelector;
-import org.apache.commons.vfs.FileSelectInfo;
-import org.apache.commons.vfs.FileType;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 /**
@@ -453,25 +452,30 @@ public class JobEntryDosToUnix extends JobEntryBase implements Cloneable, JobEnt
 	private static int getFileType(FileObject file) throws Exception {
 	    int aCount = 0; // occurences of LF
 	    int dCount = 0; // occurences of CR
-	    FileInputStream in = new FileInputStream( file.getName().getPathDecoded());
-	    while (in.available() > 0) {
-	      int b = in.read();
-	      if (b == CR) {
-	        dCount++;
-	        if (in.available() > 0) {
-	          b = in.read();
-	          if (b == LF) {
-	            aCount++;
-	          } else {
-	            return TYPE_BINAY_FILE;
-	          }
-	        }
-	      }
-	      else if (b == LF) {
-	        aCount++;
-	      }
+	    FileInputStream in = null;
+	    try {
+		    in = new FileInputStream( file.getName().getPathDecoded());
+		    while (in.available() > 0) {
+		      int b = in.read();
+		      if (b == CR) {
+		        dCount++;
+		        if (in.available() > 0) {
+		          b = in.read();
+		          if (b == LF) {
+		            aCount++;
+		          } else {
+		            return TYPE_BINAY_FILE;
+		          }
+		        }
+		      }
+		      else if (b == LF) {
+		        aCount++;
+		      }
+		    }
+	    } finally {
+	    	in.close();
 	    }
-	    in.close();
+	    
 	    if (aCount == dCount) {
 	      return TYPE_DOS_FILE;
 	    } else {

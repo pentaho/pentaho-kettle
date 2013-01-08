@@ -41,7 +41,9 @@ import org.pentaho.di.core.Const;
 import org.pentaho.di.core.exception.KettleEOFException;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleFileException;
+import org.pentaho.di.core.exception.KettlePluginException;
 import org.pentaho.di.core.exception.KettleValueException;
+import org.pentaho.di.core.row.value.ValueMetaFactory;
 import org.pentaho.di.core.xml.XMLHandler;
 import org.w3c.dom.Node;
 
@@ -67,6 +69,24 @@ public class RowMeta implements RowMetaInterface
             rowMeta.addValueMeta( valueMeta.clone() );
         }
         return rowMeta;
+    }
+    
+    /**
+     * This method copies the row metadata and sets all values to the specified type (usually String)
+     * @param targetType The target type
+     * @return The cloned metadata
+     * @throws if the target type could not be loaded from the plugin registry
+     */
+    public RowMetaInterface cloneToType(int targetType) throws KettleValueException {
+      try {
+        RowMeta rowMeta = new RowMeta();
+        for (ValueMetaInterface valueMeta : getValueMetaList()) {
+          rowMeta.addValueMeta(ValueMetaFactory.cloneValueMeta(valueMeta, targetType));
+        }
+        return rowMeta;
+      } catch(KettlePluginException e) {
+        throw new KettleValueException(e);
+      }
     }
 
     @Override

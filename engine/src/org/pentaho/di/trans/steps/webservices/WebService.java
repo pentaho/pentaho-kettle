@@ -24,6 +24,7 @@ package org.pentaho.di.trans.steps.webservices;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
@@ -91,7 +92,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import com.ctc.wstx.exc.WstxParsingException;
-import java.io.InputStreamReader;
 
 public class WebService extends BaseStep implements StepInterface
 {

@@ -243,6 +243,14 @@ public interface RowMetaInterface extends Cloneable
     public RowMetaInterface clone();
     
     /**
+     * This method copies the row metadata and sets all values to the specified type (usually String)
+     * @param targetType The target type
+     * @return The cloned metadata
+     * @throws if the target type could not be loaded from the plugin registry
+     */
+    public RowMetaInterface cloneToType(int targetType) throws KettleValueException;
+    
+    /**
      * Gets the string.
      *
      * @param dataRow the data row

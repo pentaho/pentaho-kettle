@@ -25,6 +25,7 @@ package org.pentaho.di.core;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
+
 import org.apache.commons.httpclient.Credentials;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.UsernamePasswordCredentials;

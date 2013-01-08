@@ -22,10 +22,9 @@
 
 package org.pentaho.di.laf;
 
-import org.pentaho.di.i18n.MessageHandler;
-import org.pentaho.di.laf.Handler;
-
 import java.util.HashMap;
+
+import org.pentaho.di.i18n.MessageHandler;
 
 /** 
  * the LAFFactory provides a mechanism whereby @see Handler s can be dynamically replaced to 

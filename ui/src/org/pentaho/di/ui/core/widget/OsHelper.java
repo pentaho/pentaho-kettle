@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.swt.SWT;
-//import org.eclipse.swt.internal.cocoa.NSWindow;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
@@ -14,6 +13,7 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.ui.spoon.Spoon;
+//import org.eclipse.swt.internal.cocoa.NSWindow;
 
 public class OsHelper {
 

@@ -91,6 +91,8 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
   
   private boolean active;
   
+  private StepMeta selectedStep;
+  
   /**
    * @param spoon
    * @param transGraph
@@ -195,9 +197,13 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
    */
   public synchronized void refreshView() {
     
+    if (previewComposite==null || previewComposite.isDisposed()) {
+      return;
+    }
+    
     // Which step do we preview...
     //
-    StepMeta stepMeta = transGraph.getCurrentStep();
+    StepMeta stepMeta = selectedStep; // copy to prevent race conditions and so on.
     if (stepMeta==null) {
       return;
     }
@@ -242,7 +248,12 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
     //
     for (int rowNr=0;rowNr<rowsData.size();rowNr++) {
       Object[] rowData = rowsData.get(rowNr);
-      TableItem item = tableView.table.getItem(rowNr);
+      TableItem item;
+      if (rowNr<tableView.table.getItemCount()) {
+        item = tableView.table.getItem(rowNr);
+      } else {
+        item = new TableItem(tableView.table, SWT.NONE);
+      }
       for (int colNr=0;colNr<rowMeta.size();colNr++) {
         String string = rowMeta.getString(rowData, colNr);
         if (string == null) {
@@ -253,6 +264,9 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
         }
       }
     }
+    tableView.setRowNums();
+    tableView.setShowingConversionErrorsInline(true);
+    tableView.optWidth(true);
     
     previewComposite.layout(true, true);
   }
@@ -403,5 +417,25 @@ public class TransPreviewDelegate extends SpoonDelegate implements XulEventHandl
         }
       };
     });
+  }
+
+  public void addPreviewData(StepMeta stepMeta, RowMetaInterface rowMeta, List<Object[]> rowsData, StringBuffer buffer) {
+    previewLogMap.put(stepMeta, buffer);
+    previewMetaMap.put(stepMeta, rowMeta);
+    previewDataMap.put(stepMeta, rowsData);
+  }
+
+  /**
+   * @return the selectedStep
+   */
+  public StepMeta getSelectedStep() {
+    return selectedStep;
+  }
+
+  /**
+   * @param selectedStep the selectedStep to set
+   */
+  public void setSelectedStep(StepMeta selectedStep) {
+    this.selectedStep = selectedStep;
   }
 }

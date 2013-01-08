@@ -32,8 +32,8 @@ import java.util.Map;
 
 import org.codehaus.janino.ClassBodyEvaluator;
 import org.codehaus.janino.CompileException;
-import org.codehaus.janino.Scanner;
 import org.codehaus.janino.Parser.ParseException;
+import org.codehaus.janino.Scanner;
 import org.codehaus.janino.Scanner.ScanException;
 import org.pentaho.di.core.CheckResult;
 import org.pentaho.di.core.CheckResultInterface;

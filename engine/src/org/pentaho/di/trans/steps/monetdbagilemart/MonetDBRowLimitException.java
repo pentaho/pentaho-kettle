@@ -16,8 +16,11 @@ import org.pentaho.di.core.exception.KettleException;
  * Date: 10/31/12
  */
 public class MonetDBRowLimitException extends KettleException {
-  /**
-   * Constructs a new throwable with null as its detail message.
+  
+	private static final long serialVersionUID = -2456127057531651057L;
+
+	/**
+   * Constructs a new {@link Throwable} with null as its detail message.
    */
   public MonetDBRowLimitException()
   {
@@ -25,7 +28,7 @@ public class MonetDBRowLimitException extends KettleException {
   }
 
   /**
-   * Constructs a new throwable with the specified detail message.
+   * Constructs a new {@link Throwable} with the specified detail message.
    * @param message - the detail message. The detail message is saved for later retrieval by the getMessage() method.
    */
   public MonetDBRowLimitException(String message)

@@ -146,78 +146,79 @@ public class MySQLBulkLoader extends BaseStep implements StepInterface
         return true;
 	}
 
-	private void executeLoadCommand() throws Exception {
-		
-        String loadCommand = "";
-        loadCommand += "LOAD DATA "+(meta.isLocalFile()?"LOCAL":"")+" INFILE '"+environmentSubstitute(meta.getFifoFileName())+"' ";
-        if (meta.isReplacingData()) {
-        	loadCommand += "REPLACE ";
-        } else if (meta.isIgnoringErrors()) {
-        	loadCommand += "IGNORE ";
+  private void executeLoadCommand() throws Exception {
+
+    String loadCommand = "";
+    loadCommand += "LOAD DATA " + (meta.isLocalFile() ? "LOCAL" : "") + " INFILE '" + environmentSubstitute(meta.getFifoFileName()) + "' ";
+    if (meta.isReplacingData()) {
+      loadCommand += "REPLACE ";
+    } else if (meta.isIgnoringErrors()) {
+      loadCommand += "IGNORE ";
+    }
+    loadCommand += "INTO TABLE " + data.schemaTable + " ";
+    if (!Const.isEmpty(meta.getEncoding())) {
+      loadCommand += "CHARACTER SET " + meta.getEncoding() + " ";
+    }
+    String delStr = meta.getDelimiter();
+    if ("\t".equals(delStr))
+      delStr = "\\t";
+
+    loadCommand += "FIELDS TERMINATED BY '" + delStr + "' ";
+    if (!Const.isEmpty(meta.getEnclosure())) {
+      loadCommand += "OPTIONALLY ENCLOSED BY '" + meta.getEnclosure() + "' ";
+    }
+    loadCommand += "ESCAPED BY '" + meta.getEscapeChar() + ("\\".equals(meta.getEscapeChar()) ? meta.getEscapeChar() : "") + "' ";
+
+    // Build list of column names to set
+    loadCommand += "(";
+    for (int cnt = 0; cnt < meta.getFieldTable().length; cnt++) {
+      loadCommand += meta.getDatabaseMeta().quoteField(meta.getFieldTable()[cnt]);
+      if (cnt < meta.getFieldTable().length - 1)
+        loadCommand += ",";
+    }
+
+    loadCommand += ");" + Const.CR;
+
+    logBasic("Starting the MySQL bulk Load in a separate thread : " + loadCommand);
+    data.sqlRunner = new SqlRunner(data, loadCommand);
+    data.sqlRunner.start();
+
+    // Ready to start writing rows to the FIFO file now...
+    //
+    if (!Const.isWindows()) {
+      logBasic("Opening fifo " + data.fifoFilename + " for writing.");
+      OpenFifo openFifo = new OpenFifo(data.fifoFilename, 1000);
+      openFifo.start();
+
+      // Wait for either the sql statement to throw an error or the
+      // fifo writer to throw an error
+      while (true) {
+        openFifo.join(200);
+        if (openFifo.getState() == Thread.State.TERMINATED)
+          break;
+
+        try {
+          data.sqlRunner.checkExcn();
+        } catch (Exception e) {
+          // We need to open a stream to the fifo to unblock the fifo writer
+          // that was waiting for the sqlRunner that now isn't running
+          new BufferedInputStream(new FileInputStream(data.fifoFilename)).close();
+          openFifo.join();
+          logError("Make sure user has been granted the FILE privilege.");
+          logError("");
+          throw e;
         }
-        loadCommand += "INTO TABLE "+data.schemaTable+" ";
-        if (!Const.isEmpty(meta.getEncoding())) {
-        	loadCommand += "CHARACTER SET "+meta.getEncoding()+" ";
+
+        try {
+          openFifo.checkExcn();
+        } catch (Exception e) {
+          throw e;
         }
-        String delStr = meta.getDelimiter();
-        if ("\t".equals(delStr)) delStr="\\t";
-        
-        loadCommand += "FIELDS TERMINATED BY '"+delStr+"' ";
-        if (!Const.isEmpty(meta.getEnclosure())) {
-        	loadCommand += "OPTIONALLY ENCLOSED BY '"+meta.getEnclosure()+"' ";
-        }
-        loadCommand += "ESCAPED BY '"+meta.getEscapeChar()+("\\".equals(meta.getEscapeChar())?meta.getEscapeChar():"")+"' ";
-        
-        // Build list of column names to set
-        loadCommand += "(";
-        for (int cnt = 0; cnt < meta.getFieldTable().length; cnt++){
-        	loadCommand += meta.getDatabaseMeta().quoteField( meta.getFieldTable()[cnt] );
-        	if (cnt < meta.getFieldTable().length - 1)
-        		loadCommand += ",";
-        }
-        
-        loadCommand += ");"+Const.CR;
-        
-        logBasic("Starting the MySQL bulk Load in a separate thread : "+loadCommand);
-        data.sqlRunner = new SqlRunner(data, loadCommand);
-        data.sqlRunner.start();
-        
-        // Ready to start writing rows to the FIFO file now...
-        //
-        logBasic("Opening fifo " + data.fifoFilename + " for writing.");
-        OpenFifo openFifo = new OpenFifo(data.fifoFilename, 1000);
-        openFifo.start();
-        
-        // Wait for either the sql statement to throw an error or the
-        // fifo writer to throw an error
-        while (true){
-        	openFifo.join(200);
-        	if (openFifo.getState() == Thread.State.TERMINATED)
-        		break;
-        	
-        	try{
-        		data.sqlRunner.checkExcn();
-        	}
-        	catch (Exception e){
-        		// We need to open a stream to the fifo to unblock the fifo writer
-        		// that was waiting for the sqlRunner that now isn't running
-        		new BufferedInputStream( new FileInputStream( data.fifoFilename )).close();
-        		openFifo.join();
-        		logError("Make sure user has been granted the FILE privilege.");
-        		logError("");
-                throw e;
-        	}
-        	
-        	try{
-            	openFifo.checkExcn();
-        	}
-        	catch (Exception e){
-        		throw e;
-        	}
-        }
-        
-    	data.fifoStream = openFifo.getFifoStream();
-	}
+      }
+      data.fifoStream = openFifo.getFifoStream();
+    }
+
+  }
 
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{

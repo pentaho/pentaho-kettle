@@ -26,6 +26,7 @@ package org.pentaho.di.trans.steps.xsdvalidator;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
+import java.net.URL;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.Source;
@@ -37,7 +38,6 @@ import javax.xml.validation.Validator;
 import org.apache.commons.vfs.FileObject;
 import org.apache.commons.vfs.provider.http.HttpFileObject;
 import org.apache.commons.vfs.provider.local.LocalFile;
-import java.net.URL;
 import org.pentaho.di.core.exception.KettleException;
 import org.pentaho.di.core.exception.KettleStepException;
 import org.pentaho.di.core.row.RowDataUtil;

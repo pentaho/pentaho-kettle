@@ -22,8 +22,8 @@
 
 package org.pentaho.di.trans.steps.xmljoin;
 
-import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.core.RowSet;
+import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
 import org.w3c.dom.Document;

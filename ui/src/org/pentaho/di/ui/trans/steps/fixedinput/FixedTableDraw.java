@@ -44,10 +44,10 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ScrollBar;
-import org.pentaho.di.trans.steps.fixedinput.FixedFileInputField;
-import org.pentaho.di.ui.core.gui.GUIResource;
 import org.pentaho.di.core.row.ValueMeta;
+import org.pentaho.di.trans.steps.fixedinput.FixedFileInputField;
 import org.pentaho.di.ui.core.PropsUI;
+import org.pentaho.di.ui.core.gui.GUIResource;
 
 /**
  * Widget to draw the character of a fixed length text-file in a graphical way.

@@ -22,34 +22,40 @@
 
 package org.pentaho.di.trans.step;
 
+import java.util.List;
+
 import org.pentaho.di.core.Const;
+import org.pentaho.di.core.logging.CentralLogStore;
 import org.pentaho.di.core.logging.LogChannelInterface;
+import org.pentaho.di.core.logging.LoggingObjectInterface;
+import org.pentaho.di.core.logging.LoggingRegistry;
 import org.pentaho.di.core.logging.Metrics;
 import org.pentaho.di.i18n.BaseMessages;
 
 public class RunThread implements Runnable {
 
-	private static Class<?> PKG = BaseStep.class; // for i18n purposes, needed by Translator2!!   $NON-NLS-1$
+  /** for i18n purposes, needed byTranslator2!! */
+  private static Class<?> PKG = BaseStep.class;
 
-	private StepInterface	step;
-	private StepMetaInterface	meta;
-	private StepDataInterface	data;
-	private LogChannelInterface	log;
+  private StepInterface step;
+  private StepMetaInterface meta;
+  private StepDataInterface data;
+  private LogChannelInterface log;
 
-	public RunThread(StepMetaDataCombi combi) {
-		this.step = combi.step;
-		this.meta = combi.meta;
-		this.data = combi.data;
-		this.log = step.getLogChannel();
-	}
-	
-	public void run() {
+  public RunThread(StepMetaDataCombi combi) {
+    this.step = combi.step;
+    this.meta = combi.meta;
+    this.data = combi.data;
+    this.log = step.getLogChannel();
+  }
+
+  public void run() {
 		try
 		{
 			step.setRunning(true);
 			step.getLogChannel().snap(Metrics.METRIC_STEP_EXECUTION_START);
 			
-			if (log.isDetailed()) log.logDetailed(BaseMessages.getString(PKG, "System.Log.StartingToRun")); //$NON-NLS-1$
+			if (log.isDetailed()) log.logDetailed(BaseMessages.getString("System.Log.StartingToRun")); //$NON-NLS-1$
 
 			while (step.processRow(meta, data) && !step.isStopped());
 		}
@@ -65,8 +71,16 @@ public class RunThread implements Runnable {
 		        	log.logError("UnexpectedError: ", t); //$NON-NLS-1$
 		        } else {
 		          t.printStackTrace();
-		        	log.logError(BaseMessages.getString(PKG, "System.Log.UnexpectedError"), t); //$NON-NLS-1$ //$NON-NLS-2$
+		        	log.logError(BaseMessages.getString("System.Log.UnexpectedError"), t); //$NON-NLS-1$ //$NON-NLS-2$
 		        }
+		        
+		        String logChannelId = log.getLogChannelId();
+		        LoggingObjectInterface loggingObject = LoggingRegistry.getInstance().getLoggingObject(logChannelId);
+		        String parentLogChannelId = loggingObject.getParent().getLogChannelId();
+		        List<String> logChannelChildren = LoggingRegistry.getInstance().getLogChannelChildren(parentLogChannelId);
+		        int childIndex = Const.indexOfString(log.getLogChannelId(), logChannelChildren);
+		        System.out.println("child index = "+childIndex+", logging object : "+loggingObject.toString()+" parent="+parentLogChannelId);
+		        CentralLogStore.getAppender().getBuffer("2bcc6b3f-c660-4a8b-8b17-89e8cbd5b29b", false);
 		        // baseStep.logError(Const.getStackTracker(t));
 		    }
 		    catch(OutOfMemoryError e)
@@ -105,5 +119,4 @@ public class RunThread implements Runnable {
 			}
 		}
 	}
-
 }

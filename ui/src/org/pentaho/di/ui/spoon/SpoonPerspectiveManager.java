@@ -24,7 +24,14 @@ package org.pentaho.di.ui.spoon;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 import org.antlr.misc.OrderedHashSet;
 import org.eclipse.swt.widgets.Composite;
@@ -54,7 +61,7 @@ import org.pentaho.ui.xul.swt.tags.SwtToolbarbutton;
 public class SpoonPerspectiveManager {
   private static SpoonPerspectiveManager instance = new SpoonPerspectiveManager();
   private Map<Class<? extends SpoonPerspective>, SpoonPerspective> perspectives = new LinkedHashMap<Class<? extends SpoonPerspective>, SpoonPerspective>();
-  private Set<SpoonPerspective> orderedPerspectives = new OrderedHashSet<SpoonPerspective>();
+  private OrderedHashSet<SpoonPerspective> orderedPerspectives = new OrderedHashSet<SpoonPerspective>();
 
   private XulDeck deck;
   private SpoonPerspective activePerspective;
@@ -131,7 +138,7 @@ protected static class SpoonPerspectiveComparator implements Comparator<SpoonPer
    * @return
    */
   public List<SpoonPerspective> getPerspectives(){
-    return Collections.unmodifiableList(new ArrayList<SpoonPerspective>(orderedPerspectives));
+    return Collections.unmodifiableList(orderedPerspectives.elements());
   }
   
   private void unloadPerspective(SpoonPerspective per){

@@ -22,10 +22,10 @@
 
 package org.pentaho.di.trans.steps.fileexists;
 
+import org.apache.commons.vfs.FileObject;
 import org.pentaho.di.core.row.RowMetaInterface;
 import org.pentaho.di.trans.step.BaseStepData;
 import org.pentaho.di.trans.step.StepDataInterface;
-import org.apache.commons.vfs.FileObject;
 
 
 

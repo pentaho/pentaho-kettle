@@ -1313,7 +1313,7 @@ public class KettleFileRepository implements Repository {
   @Override
   public List<DataServiceMeta> listDataServices() throws KettleException {
     try {
-      RepositoryDirectoryInterface tree = loadRepositoryDirectoryTree();
+      // RepositoryDirectoryInterface tree = loadRepositoryDirectoryTree();
       
       List<DataServiceMeta> list = new ArrayList<DataServiceMeta>();
       // Find all .das files in the tree...

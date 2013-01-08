@@ -22,11 +22,10 @@
 
 package org.pentaho.di.trans.steps.monetdbbulkloader;
 
-import java.io.OutputStream;
-
 import nl.cwi.monetdb.mcl.io.BufferedMCLReader;
 import nl.cwi.monetdb.mcl.io.BufferedMCLWriter;
 import nl.cwi.monetdb.mcl.net.MapiSocket;
+
 import org.pentaho.di.core.database.Database;
 import org.pentaho.di.core.row.ValueMetaInterface;
 import org.pentaho.di.core.util.StreamLogger;
