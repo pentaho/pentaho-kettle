@@ -7,7 +7,7 @@
   
   See common_build.xml for more details
 ============================================================================-->
-<project name="kettle-gpload-plugin" basedir="." default="default">
+<project name="kettle-gpload-plugin" basedir="." default="dist">
 
   <description>
     This build file is used to create the API project
@@ -28,5 +28,7 @@
       THE TASKS THAT NEED TO DIFFER FROM THE DEFAULT IMPLEMENTATION OF THE TASKS
       FOUND IN common_build.xml.
     --> 
-
+	
+	<target name="create-dot-classpath" depends="init,resolve,subfloor.create-dot-classpath"/>
+	    
 </project>

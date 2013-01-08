@@ -1,7 +1,7 @@
-<project name="Kettle DB" default="default" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
+<project name="kettle-db" default="dist" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
 
 	  <description>
-	      Kettle Engine build file
+	      Kettle DB build file
 	  </description>
 	 
 	 <import file="build-res/subfloor.xml" />
@@ -76,6 +76,6 @@
 	    </copy>
 	  </target>
 	
-	<!-- target name="default" depends="db"/ --> 
-			  		
+	<target name="create-dot-classpath" depends="init,resolve,subfloor.create-dot-classpath"/>
+
 </project>

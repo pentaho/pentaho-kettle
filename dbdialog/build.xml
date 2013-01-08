@@ -1,7 +1,7 @@
-<project name="Kettle DB Dialog" default="default" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
+<project name="kettle-dbdialog" default="dist" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
 
 	  <description>
-	      Kettle Engine build file
+	      Kettle DBDialog build file
 	  </description>
 	 
 	 <import file="build-res/subfloor.xml" />
@@ -74,5 +74,8 @@
 	        <include name="**/*.jar" />
 	      </fileset>
 	    </copy>
-	  </target>			  		
+	  </target>
+	
+	<target name="create-dot-classpath" depends="init,resolve,subfloor.create-dot-classpath"/>
+	   
 </project>

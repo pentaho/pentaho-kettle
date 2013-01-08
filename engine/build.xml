@@ -1,4 +1,4 @@
-<project name="Kettle Engine" default="default" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
+<project name="kettle-engine" default="dist" basedir="." xmlns:ivy="antlib:org.apache.ivy.ant">
 
 	  <description>
 	      Kettle Engine build file
@@ -107,5 +107,6 @@
 	    </manifest>
 	  </target>
 
-	
+	<target name="create-dot-classpath" depends="init,resolve,subfloor.create-dot-classpath"/>
+	    
 </project>

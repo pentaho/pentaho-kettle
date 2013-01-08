@@ -7,7 +7,7 @@
   
   See common_build.xml for more details
 ============================================================================-->
-<project name="kettle-core" basedir="." default="default">
+<project name="kettle-core" basedir="." default="dist">
 
   <description>
     This build file is used to create the API project
@@ -29,34 +29,36 @@
       FOUND IN common_build.xml.
     --> 
     
-    <target name="set-revision">
-      <condition property="revision" value="${svn-revision}" else="1">
-          <length string="${svn-revision}" length="7" when="less"/>
-      </condition>
-      
-      <echo message="Revision set to r${revision}"/>
-    </target>
-	
-    <!--=======================================================================
-        generate.manifest
-        
-        Creates a new manifest file if one is not specified, or updates
-        an existing manifest file if one is specified.
-        ====================================================================-->
-    <target name="generate.manifest" depends="init,set-build.id,set-revision">
-      <delete file="${dist.manifest.file}" />
-      <touch file="${dist.manifest.file}" />
-      <copy file="${manifest.file}" tofile="${dist.manifest.file}" overwrite="true" failonerror="false" />
+	<target name="create-dot-classpath" depends="init,resolve,subfloor.create-dot-classpath"/>
+	    
+  <target name="set-revision">
+    <condition property="revision" value="${svn-revision}" else="1">
+        <length string="${svn-revision}" length="7" when="less"/>
+    </condition>
+    
+    <echo message="Revision set to r${revision}"/>
+  </target>
 
-      <manifest file="${dist.manifest.file}" mode="update">
-        <attribute name="Implementation-Title" value="${impl.title}" />
-        <attribute name="Implementation-Version" value="${impl.version}" />
-        <attribute name="Specification-Version" value="${revision}" />
-        <attribute name="Implementation-Vendor" value="${impl.vendor}" />
-        <attribute name="Implementation-ProductID" value="${impl.productID}" />
-        <attribute name="Compile-Timestamp" value="${compile.timestamp}" />
-        <attribute name="Compile-User" value="${user.name}" />
-      </manifest>
-    </target>
+  <!--=======================================================================
+      generate.manifest
+      
+      Creates a new manifest file if one is not specified, or updates
+      an existing manifest file if one is specified.
+      ====================================================================-->
+  <target name="generate.manifest" depends="init,set-build.id,set-revision">
+    <delete file="${dist.manifest.file}" />
+    <touch file="${dist.manifest.file}" />
+    <copy file="${manifest.file}" tofile="${dist.manifest.file}" overwrite="true" failonerror="false" />
+
+    <manifest file="${dist.manifest.file}" mode="update">
+      <attribute name="Implementation-Title" value="${impl.title}" />
+      <attribute name="Implementation-Version" value="${impl.version}" />
+      <attribute name="Specification-Version" value="${revision}" />
+      <attribute name="Implementation-Vendor" value="${impl.vendor}" />
+      <attribute name="Implementation-ProductID" value="${impl.productID}" />
+      <attribute name="Compile-Timestamp" value="${compile.timestamp}" />
+      <attribute name="Compile-User" value="${user.name}" />
+    </manifest>
+  </target>
 
 </project>

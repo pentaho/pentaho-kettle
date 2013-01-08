@@ -7,10 +7,10 @@
   
   See common_build.xml for more details
 ============================================================================-->
-<project name="kettle-ui-swt" basedir="." default="default">
+<project name="kettle-ui-swt" basedir="." default="dist">
 
   <description>
-    This build file is used to create the API project
+    This build file is used to create the Kettle UI module
     and works with the subfloor.xml file.
   </description>
 
@@ -27,6 +27,8 @@
       AS STATED ABOVE, THE ONLY TASKS THAT SHOULD EXIST IN THIS BUILD FILE ARE
       THE TASKS THAT NEED TO DIFFER FROM THE DEFAULT IMPLEMENTATION OF THE TASKS
       FOUND IN common_build.xml.
-    --> 
+    -->
+	
+	<target name="create-dot-classpath" depends="init,resolve,subfloor.create-dot-classpath"/>
 
 </project>
