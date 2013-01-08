@@ -7,7 +7,7 @@
   
   See common_build.xml for more details
 ============================================================================-->
-<project name="kettle-core" basedir="." default="dist">
+<project name="kettle-core" basedir="." default="default">
 
   <description>
     This build file is used to create the API project
@@ -30,6 +30,8 @@
     --> 
     
 	<target name="create-dot-classpath" depends="init,resolve,subfloor.create-dot-classpath"/>
+	
+	<target name="default" depends="clean,init,resolve,dist"/>
 	    
   <target name="set-revision">
     <condition property="revision" value="${svn-revision}" else="1">

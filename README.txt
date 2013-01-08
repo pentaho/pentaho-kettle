@@ -46,7 +46,7 @@ I got the source, so now what can I do?
      
      Linux example:
         
-         ant 
+         Ant 
          cd dist
          sh spoon.sh     
          
@@ -82,7 +82,7 @@ How do I set up Run and Debug configurations in Eclipse?
 OK.  I just want to add a new property to a step using Eclipse as my IDE.  What do I have to do?
 
      - Check out the project and set it up as an Eclipse Java project.
-     - Run the create-dot-classpath ant target
+     - Run the create-dot-classpath Ant target
      - Refresh the Eclipse project to synch the workspace with the file system.
      - Make the appropriate code changes in the step meta and the step dialog.
      - Changes can be verified by running the <project>.launch file where <project>
@@ -90,21 +90,21 @@ OK.  I just want to add a new property to a step using Eclipse as my IDE.  What 
      
      
      
-If I want to build the project with ant should I always use the default target?
+If I want to build the project with Ant should I always use the default target?
 
      I would right after checking out the project but would avoid that target from that
      point on. The default target does quite a bit with cleaning and resolving.
      
      Consider the previous scenario with adding a new property to a step.  You checked out the project 
-     and ran the default ant target.  You change only the steps meta, dialog and execution java source.  Do you 
+     and ran the default Ant target.  You change only the steps meta, dialog and execution java source.  Do you 
      want to clean the project and resolve the dependencies again?  Probably not.  
      
-     Running the ant "compile" target in the project's root folder will compile changed source
+     Running the Ant "compile" target in the project's root folder will compile changed source
      code for all the modules.
      
 
 
-My code changes were just in the engine module.  Can I run ant from there?
+My code changes were just in the engine module.  Can I run Ant from there?
 
      You can use the build file located in the engine folder, e.g., 
      
@@ -191,6 +191,10 @@ I'm making a change to Kettle that requires a new (or newer version of a) third-
      This will allow Pentaho to ensure that updating the dependencies won't interfere with other modules that use the same JARs. 
      
      If a new dependency is needed, simply add the dependency to the appropriate ivy.xml file and commit with descriptive comments.
+     
+     IMPORTANT: If a new dependency (JAR) is being introduced, make sure the license is _not_ GPL or AGPL. These licenses are not "Pentaho-friendly" and we cannot
+     distribute these JARs without all Kettle source code becoming GPL.  LGPL licensing is ok for JARs but not for code. The most "Pentaho-friendly" licenses are
+     permissive licenses such as Apache or MIT. If you have any questions about licensing, please contact Pentaho.
      
      
      
