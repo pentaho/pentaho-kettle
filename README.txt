@@ -90,6 +90,44 @@ OK.  I just want to add a new property to a step using Eclipse as my IDE.  What 
      
      
      
+If I want to build the project with ant should I always use the default target?
+
+     I would right after checking out the project but would avoid that target- it does
+     quite a bit with cleaning and resolving.
+     
+     Consider the previous scenario with adding a new property to a step.  You checked out the project 
+     and ran the default ant target.  You then the steps meta, dialog and execution java source.  Do you 
+     want to clean the project and resolve the dependencies again?
+     
+     Probably not.  Running the ant "compile" target in the project's root folder will compile changed source
+     code for all the modules.
+     
+
+
+My code changes were just in the engine module.  Can I run ant from there?
+
+     You can use the build file located in the engine folder, e.g., 
+     
+         Kettle>cd engine
+         Kettle>ant compile
+     
+
+I get compile errors!  Cannot find symbols and packages that don't exist!
+
+     When you did that default build from the projects root folder you resolved dependencies into it's 
+     lib folder.  You need to resolve engine's dependencies and then compile:
+     
+         Kettle>cd engine
+         Kettle>ant resolve compile
+
+
+That seems redundant.
+
+     Yes but we are building modules now.  Since your ivy cache should already have 
+     the dependencies the resolve should be quick.
+
+
+     
 Why does the build output appear to download JARs multiple times?
 
      Although it may _appear_ to be downloading JARs multiple times, Ivy will download the dependencies _once_ and cache them (in your home folder 
