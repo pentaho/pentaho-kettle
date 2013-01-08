@@ -95,13 +95,6 @@
         </jar>
 	  </target>	
 
-	<target name="distrib-nodeps" description="copy jar files to distribution directory" >
-		<ant antfile="build.xml" dir="${assembly.dir}" target="assemble-full">
-			<property name="project.revision" value="TRUNK-SNAPSHOT"/>
-			<property name="dist.dir" value="dist"/>
-		</ant>
-	</target>
-			
 	<target name="junit-report" depends="tests-all" description="Create an HTML report of ALL unit tests">
 		<junitreport todir="${junit}">
 		  <fileset dir="${junit}">
@@ -339,16 +332,16 @@
 	       ==========================
 	  -->
 
-	<target name="default" depends="clean,init,build-all,dist" description="default = build distribution package"/>
+	<target name="default" depends="init,resolve,dist" description="default = build distribution package"/>
 
 	
-	 <target name="coverage" depends="clean, compileTests" > <!-- , tests-core, tests-resource, tests-trans, tests-run -->
+	<target name="coverage" depends="clean, compileTests" > <!-- , tests-core, tests-resource, tests-trans, tests-run -->
 	 	<ant antfile="build_coverage.xml" dir="." target="coverage" />
-	 </target>
+	</target>
 	
-	 <target name="nightly" depends="clean, build-all" > <!-- , tests-core, tests-resource, tests-trans, tests-run -->
+	<target name="nightly" depends="clean, build-all" > <!-- , tests-core, tests-resource, tests-trans, tests-run -->
 	 	<ant antfile="build_coverage.xml" dir="." target="zip-reports" />
-	 </target>
+	</target>
 	
 	<!--
 		BEFORE USING : Please download JarBundler version 1.9 and unzip it in tools/libant/
@@ -655,23 +648,25 @@
 		</for>
 	</target>
 	
-	<target name="build-all"
+	<target name="build-nodeps"
 	        description="Build all projects."
-	        depends="install-antcontrib, clean, init, build-publish-modules, build-publish-plugins">
+	        depends="install-antcontrib, build-modules, build-plugins">
   </target>
 	
-	<target name="compile" depends="install-antcontrib,compile-modules,compile-plugins" description="compile the Kettle source code">
+	<target name="build-all"
+	          description="Build all projects."
+	          depends="install-antcontrib, build-publish-modules, build-publish-plugins">
+	</target>
+	  
+	<target name="compile" depends="install-antcontrib,compile-modules,compile-plugins" description="compile the Kettle source code"/>
 		
-  </target>
-	
 	<target name="compile-modules" depends="install-antcontrib" description="compile the source code for the Kettle modules">
 	  <for list="${dev-project.list}" param="module" trim="true">
       <sequential>
         <ant antfile="build.xml" dir="@{module}" inheritall="false" >
           <property name="src.dir" value="src"/>
           <property name="lib.dir" value="../${lib}"/>
-          <property name="classes.dir" value="../${classes.dir}"/>
-        	<target name="compile" />
+          <target name="compile" />
         </ant>
       </sequential>
     </for>
@@ -683,8 +678,6 @@
         <ant antfile="build.xml" dir="plugins/@{plugin}" inheritall="false" >
           <property name="src.dir" value="src"/>
           <property name="lib.dir" value="../../${lib}"/>
-          <property name="classes.dir" value="../../${classes.dir}"/>
-          <target name="compile" />
         </ant>
       </sequential>
     </for>
@@ -770,18 +763,7 @@
 		</if>
 	</target>
 	
-	<!--=======================================================================
-	      resolve
-	      
-	      Using ivy and the dependencies for the project (defined in the ivy.xml
-	      file), this task will retrieve the needed files and place them into 
-	      the defined directories.
-	      ====================================================================-->
-	  <target name="resolve" 
-	          depends="subfloor.resolve"
-	          description="Retrieves all the dependent libraries" />
-	
-   <target name="assemble-full"
+	<target name="assemble-full"
 	              description="Calls assemble-all in assembly"
 	              depends="install-antcontrib, build-all">
 	     <ant antfile="build.xml" dir="${assembly.dir}" inheritall="false" >
@@ -840,28 +822,35 @@
 	  	  </for>
 	  </target>
 
+	<target name="build-modules"
+	              description="Builds each Kettle module."
+	              depends="install-antcontrib">
+	      
+      <for list="${dev-project.list}" param="module" trim="true">
+        <sequential>
+          <ant antfile="build.xml" dir="@{module}" inheritall="false" >
+            <!--<property name="src.dir" value="src"/>-->
+            <property name="lib.dir" value="../${lib}"/>
+          	<property name="dist.dir" value="../${lib}"/>
+          	<target name="dist" />
+          </ant>
+        </sequential>
+      </for>
+    </target>
+	
 	  <target name="build-publish-modules"
 	            description="Builds each Kettle module and publishes the artifacts."
 	            depends="install-antcontrib">
 	  	
 	  	<for list="${dev-project.list}" param="module" trim="true">
         <sequential>
-        	<ant antfile="build.xml" dir="@{module}" inheritall="false" >
-        		<property name="src.dir" value="src"/>
-  		      <property name="lib.dir" value="../${lib}"/>
-  		      <property name="classes.dir" value="../${classes.dir}"/>
-        		<property name="ivy.local.default.root" value="${ivy.default.ivy.user.dir}/local-dev" />
-	          <target name="init" />
-        		<target name="resolve" />
-	        </ant>
         	<if>
              <equals arg1="${modules.publish-local}" arg2="true" />
              <then>
     	          <ant antfile="build.xml" dir="@{module}" inheritall="false" >
     	          	<property name="src.dir" value="src"/>
           	      <property name="lib.dir" value="../${lib}"/>
-          	      <property name="classes.dir" value="../${classes.dir}"/>
-    	          	<property name="ivy.local.default.root" value="${ivy.default.ivy.user.dir}/local-dev" />
+          	      <property name="ivy.local.default.root" value="${ivy.default.ivy.user.dir}/local-dev" />
     	            <target name="publish-local" />
     	          </ant>
           	 </then>
@@ -869,8 +858,7 @@
           	 	<ant antfile="build.xml" dir="@{module}" inheritall="false" >
           	 		<property name="src.dir" value="src"/>
     	 		      <property name="lib.dir" value="../${lib}"/>
-    	 		      <property name="classes.dir" value="../${classes.dir}"/>
-                <target name="publish" />
+    	 		      <target name="publish" />
               </ant>
           	 </else>
           	</if>
@@ -886,11 +874,8 @@
 	      	<ant antfile="build.xml" dir="plugins/@{plugin}" inheritall="false" >
 	      		<property name="src.dir" value="src"/>
             <property name="lib.dir" value="../../${lib}"/>
-            <property name="classes.dir" value="../../${classes.dir}"/>
-	      		<property name="ivy.local.default.root" value="${ivy.default.ivy.user.dir}/local-dev" />
-            <target name="init" />
-            <target name="resolve" />
-	      		<target name="dist" />
+            <property name="ivy.local.default.root" value="${ivy.default.ivy.user.dir}/local-dev" />
+            <target name="dist" />
 	      	</ant>
 	      </sequential>
 	    </for>
@@ -945,9 +930,8 @@
 	  </target>
 	    
 	  <target name="publish-local-plugin-task" depends="install-ivy">
-	    <copy overwrite="true" file="${pluginfolder}/ivy.xml" tofile="${pluginfolder}/dist/ivy-${artifact.type}.xml"/>
-	    <ivy:resolve file="${pluginfolder}/dist/ivy-${artifact.type}.xml" />
-	    <ivy:publish resolver="local" srcivypattern="${pluginfolder}/ivy-${artifact.type}.xml" pubrevision="${project.revision}" overwrite="true" forcedeliver="true">
+	    <ivy:resolve file="${pluginfolder}/ivy.xml" />
+	    <ivy:publish resolver="local" srcivypattern="${pluginfolder}/ivy.xml" pubrevision="${project.revision}" overwrite="true" forcedeliver="true">
 	      <artifacts pattern="${pluginfolder}/dist/[artifact]-[revision].[ext]" />
 	    </ivy:publish>
 	  </target>
@@ -1017,30 +1001,84 @@
 	</target>
 	
 	<!-- Unzip the libswt package into the libswt folder of the distribution -->
-	<target name="unzip-swtlibs" depends="resolve">
-    <unzip dest="." overwrite="true">
+	<target name="unzip-swtlibs" depends="init">
+    <unzip dest="${libswt}/.." overwrite="true">
       <fileset dir="${lib.dir}">
-        <include name="**/*.zip"/>
+        <include name="swtlibs*.zip"/>
       </fileset>
     </unzip>
 	</target>
 	
+	<target name="copy-package-res">
+	  <copy todir="${distrib}" overwrite="true">
+	    <fileset dir="${package-res.dir}" />
+	  </copy>
+	</target>
 	<!--=======================================================================
-	      dist
-	      
-	      Creates a distribution of this project
-	      ====================================================================-->
-  <target name="dist" depends="install-antcontrib" description="Creates a distribution">
+      dist
+      
+      Creates a distribution of this project
+      ====================================================================-->
+	<target name="dist" 
+		      depends="install-antcontrib,build-all,copy-package-res,dist-final" 
+		      description="Creates a distribution">
+	  <echo message="To avoid library resolution on your next build, use the dist-nodeps Ant target"/>
+	</target>
+	
+	<!--=======================================================================
+      dist-nodeps
+      
+      Creates a distribution of this project without resolving dependencies
+      ====================================================================-->
+	<target name="dist-nodeps" 
+		      depends="install-antcontrib,build-nodeps,copy-package-res,dist-final" 
+		      description="Creates a distribution without resolving dependencies"/>
+		      
+	<!--=======================================================================
+      dist-final
+      
+      Performs any final processing to produce the distibution directory
+      ====================================================================-->
+	  <target name="dist-final" depends="install-antcontrib,build-nodeps">
   	
-  	<!-- run the assembly's tasks, then copy the staging directory back to the distrib directory -->
-  	<ant antfile="build.xml" dir="${assembly.dir}" inheritall="false" >
-  		<property name="ivy.local.default.root" value="${ivy.default.ivy.user.dir}/local-dev" />
-  		<target name="clean" />
-      <target name="assemble-full" />
-    </ant>
-  	<move todir="${distrib}">
-      <fileset dir="${assembly.stage.pdi-client.dir}" />
-    </move>
+    <chmod perm="a+x" dir="${distrib}" includes="**/*.sh" />
+  	
+  	<!-- make JavaApplicationStub executable for OSX -->
+    <chmod file="${distrib}/Data Integration 32-bit.app/Contents/MacOS/JavaApplicationStub" perm="ugo+rx"/>
+    <chmod file="${distrib}/Data Integration 64-bit.app/Contents/MacOS/JavaApplicationStub" perm="ugo+rx"/>
+    
+  	<!-- Copy dependencies to distribution folder -->
+  	<copy todir="${distrib}/${lib.dir}" overwrite="true">
+      <fileset dir="${lib.dir}" />
+    </copy>
+	  	
+	  <!-- Move launcher jar to launcher folder -->
+	  <move todir="${distrib}/launcher">
+	  	<fileset dir="${distrib}/${lib}" includes="launcher*.jar"/>
+	  </move>
+  	
+    <!-- Unzip the libswt package into the libswt folder of the distribution -->
+	  	<antcall target="unzip-swtlibs">
+	  		<param name="libswt" value="${distrib}/${libswt}"/>
+	  	</antcall>
+    <!--<unzip dest="${distrib}" overwrite="true">
+      <fileset dir="${lib.dir}">
+        <include name="**/swtlibs*.zip"/>
+      </fileset>
+    </unzip>-->
+    
+  	<!-- Remove the SWT JAR used for compilation -->
+    <delete quiet="true">
+      <fileset dir="${distrib}/${lib.dir}" includes="swt*.*" />
+    </delete>
+  	
+  	<!-- Insert launcher revision number into batch files -->
+    <replace dir="${distrib}">
+      <include name="**/*.bat"/>
+      <include name="**/*.sh"/>
+      <include name="**/*.plist"/>
+      <replacefilter token="launcher.jar" value="launcher-${launcher.revision}.jar"/>     
+    </replace>
   </target>
 	
 	<!--=======================================================================

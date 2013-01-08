@@ -16,8 +16,10 @@
     <dependency org="${ivy.artifact.group}" name="kettle-jdbc"     rev="${project.revision}" changing="true"/>
     <dependency org="${ivy.artifact.group}" name="kettle-ui-swt"   rev="${project.revision}" changing="true"/>
     
+    <dependency org="pentaho"               name="launcher"        rev="${launcher.revision}" />
+    
     <!-- The OS-specific libraries are bundled together, unzip them all for assembly -->
-    <dependency org="org.eclipse"          name="swtlibs"          rev="3.7" conf="default->default" transitive="false">
+    <dependency org="org.eclipse"          name="swtlibs"          rev="3.7" transitive="false">
       <artifact name="swtlibs" type="zip"/>
     </dependency>
     
