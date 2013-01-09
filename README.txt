@@ -151,7 +151,23 @@ I ran Spoon from the project's dist folder.  Why can't I see my changes I just c
          
              Changes should be reflected in Spoon!
              
- 
+
+If I needed to change something in DB, like the default port for PostgreSQL, do I need to check out all
+of Kettle and build it?
+
+     No you don't.  You can check out the db module.  Run it's default ant target.  If
+     you are using Eclipse run the create-dot-classpath and refresh the project in Eclipse.
+     Make your code change in PostgreSQLDatabaseMeta and run the dist ant target.  
+     A kettle-db jar will be built and placed in the project's dist folder.
+     
+     To test out your changes you can grab a Kettle build from CI:
+        http://ci.pentaho.com/view/Data Integration/job/Kettle/
+        
+     Replace the kettle-db jar in the CI build's lib folder and run Spoon.  Create
+     a new DB connection with PostgreSQL as the connection yype.  You should see
+     your new default port number.
+     
+    
      
 Why does the build output appear to download JARs multiple times?
 
